@@ -4,7 +4,6 @@ import { computed, onMounted, onUnmounted, reactive, Ref, toRefs, watch } from '
 import { MinecraftVersion } from '@xmcl/installer'
 import { useBusy } from './useSemaphore'
 import { useService, useServiceOnly } from './useService'
-import { useStore } from './useStore'
 import { InstallServiceKey } from '/@shared/services/InstallService'
 import { VersionServiceKey } from '/@shared/services/VersionService'
 
@@ -12,9 +11,17 @@ export function useVersions() {
   return useServiceOnly(VersionServiceKey, 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory')
 }
 
+export function useInstallService() {
+  return useService(InstallServiceKey)
+}
+
+export function useVersionService() {
+  return useService(VersionServiceKey)
+}
+
 export function useLocalVersions() {
-  const { state } = useStore()
-  const localVersions = computed(() => state.version.local)
+  const { state } = useVersionService()
+  const localVersions = computed(() => state.local)
   const versions = useVersions()
 
   onMounted(() => {
@@ -29,20 +36,20 @@ export function useLocalVersions() {
 }
 
 export function useMinecraftVersions() {
-  const { state } = useStore()
-  const { refreshMinecraft } = useService(InstallServiceKey)
+  const { state } = useVersionService()
+  const { state: installState, refreshMinecraft } = useInstallService()
   const refreshing = useBusy('refreshMinecraft')
-  const versions = computed(() => state.version.minecraft.versions)
-  const release = computed(() => state.version.minecraft.versions.find(v => v.id === state.version.minecraft.latest.release))
-  const snapshot = computed(() => state.version.minecraft.versions.find(v => v.id === state.version.minecraft.latest.snapshot))
+  const versions = computed(() => installState.minecraft.versions)
+  const release = computed(() => installState.minecraft.versions.find(v => v.id === installState.minecraft.latest.release))
+  const snapshot = computed(() => installState.minecraft.versions.find(v => v.id === installState.minecraft.latest.snapshot))
 
   const statuses = computed(() => {
     const localVersions: { [k: string]: boolean } = {}
-    state.version.local.forEach((ver) => {
+    state.local.forEach((ver) => {
       if (ver.minecraftVersion) localVersions[ver.minecraftVersion] = true
     })
     const statusMap: { [key: string]: Status } = {}
-    for (const ver of state.version.minecraft.versions) {
+    for (const ver of installState.minecraft.versions) {
       statusMap[ver.id] = localVersions[ver.id] ? 'local' : 'remote'
     }
     return statusMap
@@ -81,18 +88,18 @@ export function useMinecraftVersionFilter(filterText: Ref<string>) {
 }
 
 export function useFabricVersions() {
-  const { state } = useStore()
-  const { refreshFabric } = useService(InstallServiceKey)
-  const loaderVersions = computed(() => state.version.fabric.loaders ?? [])
-  const yarnVersions = computed(() => state.version.fabric.yarns ?? [])
+  const { state: installState, refreshFabric } = useInstallService()
+  const { state } = useVersionService()
+  const loaderVersions = computed(() => installState.fabric.loaders ?? [])
+  const yarnVersions = computed(() => installState.fabric.yarns ?? [])
   const loaderStatus = computed(() => {
     const statusMap: { [key: string]: Status } = {}
     const locals: { [k: string]: boolean } = {}
-    state.version.local.forEach((ver) => {
+    state.local.forEach((ver) => {
       const lib = ver.libraries.find(isFabricLoaderLibrary)
       if (lib) locals[lib.version] = true
     })
-    state.version.fabric.loaders.forEach((v) => {
+    installState.fabric.loaders.forEach((v) => {
       statusMap[v.version] = locals[v.version] ? 'local' : 'remote'
     })
     return statusMap
@@ -100,10 +107,10 @@ export function useFabricVersions() {
   const yarnStatus = computed(() => {
     const statusMap: { [key: string]: Status } = {}
     const locals: { [k: string]: boolean } = {}
-    // state.version.local.forEach((ver) => {
+    // installState.local.forEach((ver) => {
     //     if (ver.yarn) locals[ver.yarn] = true;
     // });
-    state.version.fabric.yarns.forEach((v) => {
+    installState.fabric.yarns.forEach((v) => {
       statusMap[v.version] = locals[v.version] ? 'local' : 'remote'
     })
     return statusMap
@@ -127,9 +134,9 @@ export function useFabricVersions() {
 }
 
 export function useForgeVersions(minecraftVersion: Ref<string>) {
-  const { state } = useStore()
-  const { refreshForge } = useService(InstallServiceKey)
-  const versions = computed(() => state.version.forge.find(v => v.mcversion === minecraftVersion.value)?.versions ?? [])
+  const { state: installState, refreshForge } = useInstallService()
+  const { state } = useVersionService()
+  const versions = computed(() => installState.forge.find(v => v.mcversion === minecraftVersion.value)?.versions ?? [])
   const refreshing = useBusy('refreshForge')
 
   const recommended = computed(() => {
@@ -145,11 +152,11 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
   const statuses = computed(() => {
     const statusMap: { [key: string]: Status } = {}
     const localForgeVersion: { [k: string]: boolean } = {}
-    state.version.local.forEach((ver) => {
+    state.local.forEach((ver) => {
       const lib = ver.libraries.find(isForgeLibrary)
       if (lib) localForgeVersion[lib.version] = true
     })
-    state.version.forge.forEach((container) => {
+    installState.forge.forEach((container) => {
       container.versions.forEach((version) => {
         statusMap[version.version] = localForgeVersion[version.version] ? 'local' : 'remote'
       })
@@ -180,10 +187,10 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
 }
 
 export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
-  const { state } = useStore()
-  const { refreshLiteloader } = useService(InstallServiceKey)
+  const { state: installState, refreshLiteloader } = useInstallService()
+  const { state } = useVersionService()
 
-  const versions = computed(() => Object.values(state.version.liteloader.versions[minecraftVersion.value] || {}).filter(isNonnull))
+  const versions = computed(() => Object.values(installState.liteloader.versions[minecraftVersion.value] || {}).filter(isNonnull))
   const refreshing = useBusy('refreshLiteloader')
   onMounted(() => {
     watch(minecraftVersion, () => {
@@ -205,15 +212,15 @@ export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
 }
 
 export function useOptifineVersions(minecraftVersion: Ref<string>) {
-  const { state } = useStore()
-  const { refreshOptifine } = useService(InstallServiceKey)
+  const { state: installState, refreshOptifine } = useInstallService()
+  const { state } = useVersionService()
 
-  const versions = computed(() => state.version.optifine.versions.filter(v => v.mcversion === minecraftVersion.value))
+  const versions = computed(() => installState.optifine.versions.filter(v => v.mcversion === minecraftVersion.value))
   const refreshing = useBusy('refreshOptifine')
 
   const statuses = computed(() => {
     const localVersions: { [k: string]: boolean } = {}
-    state.version.local.forEach((ver) => {
+    state.local.forEach((ver) => {
       const lib = ver.libraries.find(isOptifineLibrary)
       if (lib) {
         const optifineVer = filterOptfineVersion(lib?.version)
@@ -221,7 +228,7 @@ export function useOptifineVersions(minecraftVersion: Ref<string>) {
       }
     })
     const statusMap: { [key: string]: Status } = {}
-    for (const ver of state.version.optifine.versions) {
+    for (const ver of installState.optifine.versions) {
       const optifineVersion = ver.mcversion + '_' + ver.type + '_' + ver.patch
       statusMap[optifineVersion] = localVersions[optifineVersion] ? 'local' : 'remote'
     }

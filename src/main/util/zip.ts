@@ -1,5 +1,7 @@
+import { path7za } from '7zip-bin'
 import { unpack } from '7zip-min'
-import { CancelledError, TaskLooped } from '@xmcl/task'
+import { BaseTask, CancelledError } from '@xmcl/task'
+import { spawn } from 'child_process'
 import { createWriteStream, promises } from 'fs'
 import { ensureFile, stat } from 'fs-extra'
 import { join } from 'path'
@@ -12,7 +14,7 @@ import { pipeline } from './fs'
 export const gunzip: (data: Buffer) => Promise<Buffer> = promisify(_gunzip)
 export const gzip: (data: Buffer) => Promise<Buffer> = promisify(_gzip)
 
-export class ZipTask extends TaskLooped<void> {
+export class ZipTask extends BaseTask<void> {
   private writeStream: Writable | undefined
 
   constructor(readonly destination: string, readonly zipFile: ZipFile = new ZipFile()) {
@@ -54,7 +56,7 @@ export class ZipTask extends TaskLooped<void> {
     this.zipFile.addEmptyDirectory(metadataPath, options)
   }
 
-  protected async process(): Promise<[boolean, void | undefined]> {
+  protected async process(): Promise<void> {
     if (!this.writeStream) {
       await ensureFile(this.destination)
       this.writeStream = createWriteStream(this.destination)
@@ -73,7 +75,6 @@ export class ZipTask extends TaskLooped<void> {
       })
     }
     await promise
-    return [true, undefined]
   }
 
   protected async validate(): Promise<void> { }
@@ -83,17 +84,48 @@ export class ZipTask extends TaskLooped<void> {
   protected async abort(isCancelled: boolean): Promise<void> {
     if (isCancelled) {
       this.zipFile.outputStream.unpipe()
-      this.writeStream?.destroy(new CancelledError(undefined))
+      this.writeStream?.destroy(new CancelledError())
     } else {
       this.zipFile.outputStream.pause()
     }
   }
 
-  protected reset(): void { }
+  protected runTask(): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+  protected cancelTask(): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+  protected pauseTask(): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+  protected resumeTask(): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
 }
 
 export function unpack7z(archivePath: string, destinationDirectory: string) {
   return new Promise<void>((resolve, reject) => {
     unpack(archivePath, destinationDirectory, (e) => { if (e) reject(e); else resolve() })
+  })
+}
+
+export function extractLzma(lzmaFilePath: string) {
+  return new Promise<void>((resolve, reject) => {
+    const proc = spawn(path7za, ['-y', '-aoa', lzmaFilePath])
+    // let output = '';
+    proc.on('error', function (err) {
+      reject(err);
+    });
+    proc.on('exit', function (code) {
+      if (code) {
+        reject(new Error('Exited with code ' + code))
+      } else {
+        resolve()
+      }
+    });
+    // proc.stdout.on('data', (chunk) => {
+    //   output += chunk.toString();
+    // });
   })
 }

@@ -1,21 +1,23 @@
-import { JavaRecord } from '/@shared/entities/java'
 import { computed } from '@vue/composition-api'
-import { useService } from './useService'
-import { useStore } from './useStore'
 import { useBusy } from './useSemaphore'
-import { JavaServiceKey } from '/@shared/services/JavaService'
+import { useService } from './useService'
+import { JavaRecord } from '/@shared/entities/java'
 import { BaseServiceKey } from '/@shared/services/BaseService'
+import { JavaServiceKey } from '/@shared/services/JavaService'
 
-export function useJava () {
-  const { state, getters, commit } = useStore()
-  const { resolveJava, installDefaultJava: installJava, refreshLocalJava } = useService(JavaServiceKey)
+export function useJavaServie() {
+  return useService(JavaServiceKey)
+}
+
+export function useJava() {
+  const { state, resolveJava, installDefaultJava: installJava, refreshLocalJava } = useJavaServie()
   const { openInBrowser } = useService(BaseServiceKey)
-  const all = computed(() => state.java.all)
-  const defaultJava = computed(() => state.java.all.find(j => j.majorVersion === 8) ?? state.java.all[0])
-  const missing = computed(() => getters.missingJava)
+  const all = computed(() => state.all)
+  const defaultJava = computed(() => state.all.find(j => j.majorVersion === 8) ?? state.all[0])
+  const missing = computed(() => state.missingJava)
   const refreshing = useBusy('java')
-  function remove (java: JavaRecord) {
-    commit('javaRemove', java)
+  function remove(java: JavaRecord) {
+    state.javaRemove(java)
   }
 
   return {

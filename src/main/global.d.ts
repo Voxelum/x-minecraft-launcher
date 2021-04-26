@@ -41,3 +41,7 @@ declare module '/@preload/*' {
   const path: string
   export default path
 }
+
+declare module '7zip-bin' {
+  export const path7za: string
+}

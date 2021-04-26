@@ -9,4 +9,4 @@ export const BUILTIN_TRUSTED_SITES = Object.freeze(['https://www.java.com/downlo
 export const APP_INSIGHT_KEY = '294f3664-8208-4963-a2b0-62405ff9d48e'
 export const MAX_RESOURCE_SIZE = 1024 * 1024 * 50
 export const CLIENT_ID = '1363d629-5b06-48a9-a5fb-c65de945f13e'
-export const RESOURCE_FILE_VERSION = 1
+export const RESOURCE_FILE_VERSION = 2

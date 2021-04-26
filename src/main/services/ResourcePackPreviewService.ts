@@ -2,10 +2,13 @@ import { Queue } from '/@main/util/mutex'
 import { MinecraftFolder } from '@xmcl/core'
 import { ModelLoader, ResourceManager, ResourcePack, ResourcePackWrapper } from '@xmcl/resourcepack'
 import { join } from 'path'
-import InstanceResourceService from './InstanceResourceService'
+import InstanceResourcePackService from './InstanceResourcePacksService'
 import AbstractService, { ExportService, Inject, Subscribe } from './Service'
 import LauncherApp from '../app/LauncherApp'
 import { ResourcePackPreviewServiceKey, ResourcePackPreviewService as IResourcePackPreviewService, BlockStateJson } from '/@shared/services/ResourcePackPreviewService'
+import InstanceService from './InstanceService'
+import InstanceGameSettingService from './InstanceGameSettingService'
+import InstanceVersionService from './InstanceVersionService'
 
 interface NamedResourcePackWrapper extends ResourcePackWrapper {
   path: string
@@ -26,7 +29,11 @@ export default class ResourcePackPreviewService extends AbstractService implemen
   private active = false
 
   constructor(app: LauncherApp,
-    @Inject(InstanceResourceService) private instanceResourceService: InstanceResourceService) {
+    @Inject(InstanceResourcePackService) private instanceResourceService: InstanceResourcePackService,
+    @Inject(InstanceService) private instanceService: InstanceService,
+    @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
+    @Inject(InstanceGameSettingService) private instanceGameSettingService: InstanceGameSettingService,
+  ) {
     super(app)
     this.app.on('minecraft-start', () => {
       if (this.active) {
@@ -54,12 +61,12 @@ export default class ResourcePackPreviewService extends AbstractService implemen
 
   protected getResourcePackPath(pack: string) {
     if (pack === 'vanilla') {
-      const version = this.getters.instanceVersion.minecraftVersion
+      const version = this.instanceVersionService.state.instanceVersion.minecraftVersion
       const jarPath = new MinecraftFolder(this.getPath()).getVersionJar(version)
       return jarPath
     }
     pack = pack.startsWith('file/') ? pack.substring(5) : pack
-    return join(this.state.instance.path, 'resourcepacks', pack)
+    return join(this.instanceService.state.path, 'resourcepacks', pack)
   }
 
   protected async loadResourcePack(path: string) {
@@ -135,7 +142,7 @@ export default class ResourcePackPreviewService extends AbstractService implemen
   }
 
   async getBlockStates(): Promise<BlockStateJson[]> {
-    const gameVersion = this.getters.instanceVersion.id
+    const gameVersion = this.instanceVersionService.state.instanceVersion.id
     if (this.cachedJsonVersion === gameVersion && this.cachedBlocks) {
       // cache hit
       this.log(`Use cached ${this.cachedBlocks.length} blockstates from ${gameVersion}.jar`)
@@ -147,7 +154,7 @@ export default class ResourcePackPreviewService extends AbstractService implemen
     if (this.resourceManager.list.length === 0) {
       // if no resource packs loaded, load it...
       if (!this.queue.isWaiting()) {
-        await this.updateResourcePacks(this.state.instanceGameSetting.resourcePacks)
+        await this.updateResourcePacks(this.instanceGameSettingService.state.resourcePacks)
       } else {
         await this.queue.waitUntilEmpty()
       }

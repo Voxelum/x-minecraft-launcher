@@ -2,10 +2,10 @@ import { InjectionKey } from '@vue/composition-api'
 import type { Clipboard, Dialog, IpcRenderer, IpcRendererEvent } from 'electron'
 import VueI18n from 'vue-i18n'
 import VueRouter from 'vue-router'
+import { Store } from 'vuex'
 import { TaskProxy } from './taskProxy'
 import { ActionInvoker, IPCActions, RendererEventHandler } from '/@shared/ipc'
 import { ServiceKey } from '/@shared/services/Service'
-import { Store } from '/@shared/store'
 
 export type IPCRenderer = ActionInvoker<IPCActions> & RendererEventHandler<IpcRendererEvent> & IpcRenderer
 export type ServiceProxy = <T >(key: ServiceKey<T>) => T
@@ -13,7 +13,7 @@ export type ServiceProxy = <T >(key: ServiceKey<T>) => T
 export const REMOTE_DIALOG_KEY: InjectionKey<Dialog> = Symbol('REMOTE_DIALOG_KEY')
 export const ELECTRON_CLIPBOARD: InjectionKey<Clipboard> = Symbol('ELECTRON_CLIPBOARD')
 export const IPC_KEY: InjectionKey<IPCRenderer> = Symbol('IPC_KEY')
-export const STORE_KEY: InjectionKey<Store> = Symbol('STORE_KEY')
+export const STORE_KEY: InjectionKey<Store<any>> = Symbol('STORE_KEY')
 export const ROUTER_KEY: InjectionKey<VueRouter> = Symbol('ROUTER_KEY')
 export const SERVICES_KEY: InjectionKey<ServiceProxy> = Symbol('SERVICES_KEY')
 export const SERVICES_SEMAPHORE_KEY: InjectionKey<Record<string, number>> = Symbol('SERVICES_SHEMAPHORE_KEY')

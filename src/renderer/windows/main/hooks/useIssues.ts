@@ -1,21 +1,22 @@
+import { provide } from '@vue/composition-api'
 import { useDialog } from '.'
 import { useJavaWizardDialog } from './useDialog'
-import { useModResource, useRouter, useService } from '/@/hooks'
+import { IssueHandler, useModResource, useRouter, useService } from '/@/hooks'
 import { Issue, IssueType } from '/@shared/entities/issue'
-import { DiagnoseServiceKey } from '/@shared/services/DiagnoseService'
-import { InstanceResourceServiceKey } from '/@shared/services/InstanceResourceService'
+import { InstanceResourcePacksServiceKey } from '/@shared/services/InstanceResourcePacksService'
 
-export function useIssueHandler() {
-  const { fix: fixIssue } = useService(DiagnoseServiceKey)
+export function provideIssueHandler() {
   const { replace } = useRouter()
   const { show: showJavaDialog, javaIssue } = useJavaWizardDialog()
   const { show: showModDialog } = useDialog('download-missing-mods' as any) // TODO: fix this
-  const { deploy } = useService(InstanceResourceServiceKey)
+  const { install: deploy } = useService(InstanceResourcePacksServiceKey)
   const { resources } = useModResource()
 
-  const handlerRegistry: Record<string, () => void> = {}
+  const handlerRegistry: Record<string, (issue: Issue) => void> = {}
 
-  function register(issue: IssueType, f: () => void) {
+  provide(IssueHandler, handlerRegistry)
+
+  function register(issue: IssueType, f: (issue: Issue) => void) {
     handlerRegistry[issue] = f
   }
 
@@ -23,12 +24,15 @@ export function useIssueHandler() {
   register('unknownMod', () => replace('/mod-setting'))
   register('incompatibleMod', () => replace('/mod-setting'))
   register('incompatibleResourcePack', () => replace('/resource-pack-setting'))
-  register('incompatibleJava', () => {
-    javaIssue.value = 'incompatible'
+  register('incompatibleJava', (issue) => {
+    javaIssue.value.type = 'incompatible'
+    if (!(issue.parameters instanceof Array)) {
+      javaIssue.value.version = issue.parameters.targetVersion
+    }
     showJavaDialog()
   })
   register('missingJava', () => {
-    javaIssue.value = 'missing'
+    javaIssue.value.type = 'missing'
     showJavaDialog()
   })
   register('requireForge', () => replace('/version-setting'))
@@ -41,17 +45,4 @@ export function useIssueHandler() {
       replace('/curseforge/mc-mods/306612')
     }
   })
-
-  function fix(issue: Issue, issues: readonly Issue[]) {
-    console.log(`Fix issue ${issue.id}`)
-    const handler = handlerRegistry[issue.id]
-    if (handler) {
-      handler()
-    } else if (issue.autofix) {
-      fixIssue(issues)
-    } else {
-      console.error(`Cannot fix the issue ${issue.id} as it's not implemented`)
-    }
-  }
-  return { fix }
 }

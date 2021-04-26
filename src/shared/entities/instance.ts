@@ -1,13 +1,7 @@
 import { InstanceSchema } from './instance.schema'
-import { ServerStatus, UNKNOWN_STATUS } from './serverStatus'
 
 export interface Instance extends InstanceSchema {
   path: string
-
-  /**
-   * The server status
-   */
-  serverStatus: ServerStatus
 }
 
 export const DEFAULT_PROFILE: InstanceSchema = Object.freeze(createTemplate())
@@ -46,7 +40,6 @@ export function createTemplate(): Instance {
 
     lastAccessDate: -1,
     creationDate: -1,
-    serverStatus: UNKNOWN_STATUS,
   }
   return base
 }

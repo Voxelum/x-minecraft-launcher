@@ -1,10 +1,12 @@
 import { computed } from '@vue/composition-api'
 import { FabricModMetadata } from '@xmcl/mod-parser'
-import { useService, useStore } from '.'
+import { useService } from '.'
 import { useBusy } from './useSemaphore'
 import { AnyResource, FabricResource, ForgeResource, isModResource, LiteloaderResource, ModResource } from '/@shared/entities/resource'
 import { Resource } from '/@shared/entities/resource.schema'
-import { InstanceResourceServiceKey } from '/@shared/services/InstanceResourceService'
+import { InstanceModsServiceKey } from '/@shared/services/InstanceModsService'
+import { InstanceResourcePacksServiceKey } from '../../shared/services/InstanceResourcePacksService'
+import { ResourceServiceKey } from '/@shared/services/ResourceService'
 import { isNonnull } from '/@shared/util/assert'
 
 /**
@@ -61,19 +63,24 @@ export interface ModItem {
   }
 }
 
+export function useInstanceModsService() {
+  return useService(InstanceModsServiceKey)
+}
+
 /**
  * Open read/write for current instance mods
  */
 export function useInstanceMods() {
-  const { state } = useStore()
-  const { deploy, undeploy } = useService(InstanceResourceServiceKey)
+  const { state } = useInstanceModsService()
+  const { state: resourceState } = useService(ResourceServiceKey)
+  const { install: deploy, uninstall: undeploy } = useService(InstanceResourcePacksServiceKey)
   const loading = useBusy('mountModResources')
 
   function getUrl(resource: Resource) {
     return resource.uri.find(u => u.startsWith('http')) ?? ''
   }
   function getModItemFromModResource(resource: ForgeResource | FabricResource | LiteloaderResource | AnyResource): ModItem {
-    const icon = `dataroot://${resource.location}.png`
+    const icon = `dataroot://${resource.domain}/${resource.fileName}.png`
     const modItem: ModItem = {
       path: 'filePath' in resource ? (resource as any).filePath : resource.path,
       id: '',
@@ -122,7 +129,7 @@ export function useInstanceMods() {
       }
     } else {
       modItem.type = 'unknown'
-      modItem.name = resource.location
+      modItem.name = resource.fileName
     }
     return modItem
   }
@@ -151,10 +158,10 @@ export function useInstanceMods() {
   }
 
   /**
-     * Commit the change for current mods setting
-     */
+   * Commit the change for current mods setting
+   */
   async function commit(items: ModItem[]) {
-    const mods = state.resource.mods
+    const mods = resourceState.mods
     const map = new Map<string, ModResource>()
     for (const mod of mods) {
       map.set(mod.hash, mod)
@@ -169,8 +176,8 @@ export function useInstanceMods() {
   }
 
   const items = computed(() => {
-    const items = state.resource.mods.map(getModItemFromResource)
-    const hashs = new Set(state.instanceResource.mods.map(m => m.hash))
+    const items = resourceState.mods.map(getModItemFromResource)
+    const hashs = new Set(state.mods.map(m => m.hash))
     for (const item of items) {
       if (hashs.has(item.hash)) {
         item.enabled = true

@@ -1,10 +1,10 @@
-import LauncherApp from '/@main/app/LauncherApp'
-import { Client } from '/@main/engineBridge'
-import { TaskEventEmitter, createTaskPusher, mapTaskToTaskPayload } from '/@main/entities/task'
-import { CancelledError, task, Task, TaskContext, TaskLooped, TaskState } from '@xmcl/task'
+import { Task, TaskContext, TaskState } from '@xmcl/task'
 import { EventEmitter } from 'events'
 import { v4 } from 'uuid'
 import { Manager } from '.'
+import LauncherApp from '/@main/app/LauncherApp'
+import { Client } from '/@main/engineBridge'
+import { createTaskPusher, mapTaskToTaskPayload, TaskEventEmitter } from '/@main/entities/task'
 
 export default class TaskManager extends Manager {
   readonly emitter: TaskEventEmitter = new EventEmitter()
@@ -71,7 +71,7 @@ export default class TaskManager extends Manager {
   /**
    * Submit a task to run
    */
-  submit<T >(task: Task<T>): Promise<T> {
+  submit<T>(task: Task<T>): Promise<T> {
     const uid = v4()
     const listener = this.createTaskListener(uid)
     this.record[uid] = task
@@ -79,6 +79,7 @@ export default class TaskManager extends Manager {
     const index = this.tasks.length
     this.tasks.push(task)
     return task.wait().finally(() => {
+      this.log(`Task done and delete record!`)
       delete this.record[uid]
       this.tasks.splice(index, 1)
     })
@@ -89,97 +90,6 @@ export default class TaskManager extends Manager {
   }
 
   storeReady() {
-    class SampleTask extends TaskLooped<void> {
-      private handle!: NodeJS.Timeout
-
-      constructor(total: number) {
-        super()
-        this._total = total
-      }
-
-      protected process(): Promise<[boolean, void | undefined ]> {
-        return new Promise((resolve, reject) => {
-          this.handle = setInterval(() => {
-            if (this.isRunning) {
-              this._progress += 1
-              if (this._progress >= this._total) {
-                this._progress = 0
-              }
-              this.update(1)
-            } else {
-              clearInterval(this.handle)
-              if (this.state === TaskState.Paused) {
-                resolve([false, undefined])
-              } else {
-                reject(new CancelledError(undefined))
-              }
-            }
-          }, 1000)
-        })
-      }
-
-      protected async validate(): Promise<void> {
-      }
-
-      protected shouldTolerant(e: any): boolean {
-        return false
-      }
-
-      protected async abort(isCancelled: boolean): Promise<void> {
-      }
-
-      protected reset(): void {
-      }
-    }
-    // this.submit(task('a', async function () {
-    //     const first = (new SampleTask(10).setName('test1'));
-    //     const sec = (new SampleTask(10).setName('test2'));
-    //     const failed = (task('failed', async () => {
-    //         await new Promise((resolve) => setTimeout(resolve, 5000));
-    //         throw new Error('wtf');
-    //     }));
-    //     await this.all([first, sec, failed], {
-    //         throwErrorImmediately: true,
-    //         getErrorMessage() { return 'failed~' },
-    //     });
-    // }));
-    // this.submit(Task.create('test', (c) => {
-    //     c.execute(Task.create('a', (ctx) => {
-    //         let progress = 0;
-    //         let paused = false;
-    //         ctx.pausealbe(() => {
-    //             paused = true;
-    //         }, () => {
-    //             paused = false;
-    //         });
-    //         setInterval(() => {
-    //             if (!paused) {
-    //                 ctx.update(progress, 100, progress.toString());
-    //                 progress += 10;
-    //                 progress = progress > 100 ? 0 : progress;
-    //             }
-    //         }, 2000);
-    //         return new Promise(() => { });
-    //     }), 100);
-    //     c.execute(Task.create('b', (ctx) => {
-    //         let progress = 0;
-    //         let paused = false;
-    //         ctx.pausealbe(() => {
-    //             paused = true;
-    //         }, () => {
-    //             paused = false;
-    //         });
-    //         setInterval(() => {
-    //             if (!paused) {
-    //                 ctx.update(progress, 100, progress.toString());
-    //                 progress += 10;
-    //                 progress = progress > 100 ? 0 : progress;
-    //             }
-    //         }, 2000);
-    //         return new Promise(() => { });
-    //     }));
-    //     return new Promise(() => { });
-    // }));
   }
 
   // SETUP CODE

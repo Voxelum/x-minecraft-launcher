@@ -2,7 +2,6 @@ import Vue from 'vue'
 
 Vue.directive('draggable-card', (el) => {
   el.addEventListener('dragstart', (e) => {
-    console.log(e.dataTransfer?.effectAllowed)
     e.dataTransfer!.effectAllowed = 'move'
     el.classList.add('dragged')
   })

@@ -276,7 +276,7 @@ export const RESOURCE_PARSERS = [
 export function createPersistedResourceBuilder(source: SourceInformation = {}): PersistedResourceBuilder {
   return {
     name: '',
-    location: '',
+    fileName: '',
     path: '',
     hash: '',
     ext: '',
@@ -340,10 +340,11 @@ export async function resolveResourceWithParser(path: string, fileType: FileType
   }
   const slice = sha1.slice(0, 6)
   const name = parser.getSuggestedName(metadata) || basename(path, ext)
+  const fileName = `${name}.${slice}`
 
   return [{
     path,
-    location: join(parser.domain, `${name}.${slice}`),
+    fileName,
     name,
     ino: stat.ino,
     size: stat.size,
@@ -407,8 +408,8 @@ export async function persistResource(resolved: Resource, respository: string, s
 
   const name = filenamify(suggestedName, { replacement: '-' })
   const slice = builder.hash.slice(0, 6)
-
-  const location = join(builder.domain, `${name}.${slice}`)
+  const fileName = `${name}.${slice}`
+  const location = join(builder.domain, fileName)
   const filePath = join(respository, `${location}${builder.ext}`)
   const metadataPath = join(respository, `${location}.json`)
   const iconPath = join(respository, `${location}.png`)
@@ -421,7 +422,7 @@ export async function persistResource(resolved: Resource, respository: string, s
 
   const fileStatus = await stat(filePath)
 
-  builder.location = location
+  builder.fileName = fileName
   builder.path = filePath
   builder.size = fileStatus.size
   builder.ino = fileStatus.ino

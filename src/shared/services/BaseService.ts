@@ -1,9 +1,109 @@
-import { ServiceKey } from './Service'
+import { SettingSchema } from '../entities/setting.schema'
+import { UpdateInfo } from '../entities/update'
+import { StatefulService, ServiceKey, State } from './Service'
 
 export interface MigrateOptions {
   destination: string
 }
-export interface BaseService {
+
+export class BaseState implements SettingSchema {
+  locale = ''
+  /**
+   * All supported languages of the launcher
+   */
+  locales: string[] = []
+  updateInfo: UpdateInfo | null = null
+  updateStatus: 'ready' | 'none' | 'pending' = 'none'
+  allowPrerelease = false
+  autoInstallOnAppQuit = false
+  autoDownload = false
+  apiSetsPreference: 'mojang' | 'mcbbs' | 'bmcl' = 'mcbbs'
+  apiSets = [{ name: 'mcbbs', url: 'https://download.mcbbs.net' }, { name: 'bmcl', url: 'https://bmclapi2.bangbang93.com' }]
+  version = ''
+  build = 0
+  /**
+    * launcher root data folder path
+    */
+  root = ''
+  /**
+   * The version of the launcher
+   */
+  launcherVersion = ''
+  /**
+   * Is current environment connecting to internet?
+   */
+  online = false
+  /**
+   * The current operating system platform
+   */
+  platform: NodeJS.Platform = 'win32'
+
+  config(config: SettingSchema) {
+    this.locale = config.locale
+    this.autoDownload = config.autoDownload || false
+    this.autoInstallOnAppQuit = config.autoDownload || false
+    this.allowPrerelease = config.allowPrerelease || false
+    this.apiSetsPreference = typeof config.apiSetsPreference === 'string' ? config.apiSetsPreference : 'mcbbs'
+  }
+
+  localeSet(language: string) {
+    this.locale = language
+  }
+
+  localesSet(languages: string[]) {
+    this.locales = languages
+  }
+
+  allowPrereleaseSet(allowPrerelease: boolean) {
+    if (typeof allowPrerelease === 'boolean') { this.allowPrerelease = allowPrerelease }
+  }
+
+  autoInstallOnAppQuitSet(autoInstallOnAppQuit: boolean) {
+    if (typeof autoInstallOnAppQuit === 'boolean') this.autoInstallOnAppQuit = autoInstallOnAppQuit
+  }
+
+  updateStatusSet(updateStatus: 'ready' | 'none' | 'pending') {
+    this.updateStatus = updateStatus
+  }
+
+  autoDownloadSet(autoDownload: boolean) {
+    if (typeof autoDownload === 'boolean') this.autoDownload = autoDownload
+  }
+
+  updateInfoSet(updateInfo: UpdateInfo) {
+    if (typeof updateInfo === 'object') this.updateInfo = updateInfo
+  }
+
+  apiSetsPreferenceSet(apiSetsPreference: 'mojang' | 'bmcl' | 'mcbbs') {
+    this.apiSetsPreference = apiSetsPreference
+  }
+
+  apiSetsSet(sets: { name: string; url: string }[]) {
+    this.apiSets = sets
+  }
+
+  versionSet([version, build]: [string, number]) {
+    this.version = version; this.build = build ?? 0
+  }
+
+  rootSet(root: string) {
+    this.root = root
+  }
+
+  onlineSet(online: boolean) {
+    this.online = online
+  }
+
+  launcherVersionSet(launcherVersion: string) {
+    this.launcherVersion = launcherVersion
+  }
+
+  platformSet(platform: NodeJS.Platform) {
+    this.platform = platform
+  }
+}
+
+export interface BaseService extends StatefulService<BaseState> {
   /**
    * let the launcher to handle a url open. The url can be xmcl:// protocol
    */

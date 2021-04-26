@@ -33,7 +33,7 @@
 
 <script lang=ts>
 import { defineComponent } from '@vue/composition-api'
-import { useNotifyQueueConsumer } from '../hooks'
+import { useNotifyQueueConsumer } from '/@/windows/main/hooks'
 
 export default defineComponent({
   setup() {

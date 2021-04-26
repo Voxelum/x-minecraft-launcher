@@ -5,7 +5,6 @@ import { readJSON } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import BaseService from '../services/BaseService'
-import { StaticStore } from '../util/staticStore'
 import i18n from './locales'
 import { LauncherAppController } from '/@main/app/LauncherAppController'
 import { IS_DEV } from '/@main/constant'
@@ -19,6 +18,8 @@ import { TaskNotification } from '/@shared/entities/notification'
 import iconPath from '/@static/apple-touch-icon.png'
 import favcon2XPath from '/@static/favicon@2x.png'
 import './controlIpc'
+import './dialog'
+import { InstanceServiceKey } from '/@shared/services/InstanceService'
 
 export default class Controller implements LauncherAppController {
   private mainWin: BrowserWindow | undefined = undefined
@@ -30,8 +31,6 @@ export default class Controller implements LauncherAppController {
   private i18n = i18n
 
   private tray: Tray | undefined
-
-  private store!: StaticStore<any>
 
   constructor(protected app: LauncherApp) { }
 
@@ -146,7 +145,7 @@ export default class Controller implements LauncherAppController {
       vibrancy: 'sidebar', // or popover
       icon: iconPath,
       webPreferences: {
-        nodeIntegration: IS_DEV, // enable node for webpack in dev
+        // nodeIntegration: IS_DEV, // enable node for webpack in dev
         preload: indexPreload,
         session: sess,
         webviewTag: true,
@@ -169,7 +168,6 @@ export default class Controller implements LauncherAppController {
     })
 
     this.setupBrowserLogger(browser, 'main')
-    this.setWindowArcry(browser)
 
     trackWindowSize(browser, config, configPath)
 
@@ -325,23 +323,33 @@ export default class Controller implements LauncherAppController {
   }
 
   onMinecraftWindowReady() {
-    const { getters } = this.store
+    const instance = this.app.serviceManager.getService(InstanceServiceKey)?.state.instance
+    if (!instance) {
+      this.app.warn('Cannot find active instance while Minecraft window ready! Perhaps something strange happed?')
+      return
+    }
+    // const { getters } = this.store
     if (this.mainWin && this.mainWin.isVisible()) {
       this.mainWin.webContents.send('minecraft-window-ready')
 
-      const { hideLauncher } = getters.instance
+      const { hideLauncher } = instance
       if (hideLauncher) {
         this.mainWin.hide()
       }
     }
 
-    if (this.loggerWin === undefined && getters.instance.showLog) {
+    if (this.loggerWin === undefined && instance.showLog) {
       this.createLoggerWindow()
     }
   }
 
   onMinecraftExited(status: any) {
-    const { hideLauncher } = this.store.getters.instance
+    const instance = this.app.serviceManager.getService(InstanceServiceKey)?.state.instance
+    if (!instance) {
+      this.app.warn('Cannot find active instance while Minecraft exit! Perhaps something strange happed?')
+      return
+    }
+    const { hideLauncher } = instance
     if (hideLauncher) {
       if (this.mainWin) {
         this.mainWin.show()
@@ -381,6 +389,10 @@ export default class Controller implements LauncherAppController {
     this.setupTray()
     this.setupTask()
 
+    this.app.storeManager.subscribe('localeSet', (l) => {
+      this.i18n.use(l)
+    })
+
     this.app.on('minecraft-stdout', (...args) => {
       this.app.broadcast('minecraft-stdout', ...args)
     })
@@ -393,26 +405,15 @@ export default class Controller implements LauncherAppController {
       .on('minecraft-exit', this.onMinecraftExited.bind(this))
   }
 
-  async dataReady(store: StaticStore<any>): Promise<void> {
+  async dataReady(): Promise<void> {
     this.mainWin!.show()
-    this.store = store
-    this.store.commit('locales', this.i18n.locales)
-    this.store.subscribe((mutation) => {
-      if (mutation.type === 'locale') {
-        this.i18n.use(mutation.payload)
-      }
-    })
-    this.i18n.use(this.store.state.base.locale)
-
     const $t = this.i18n.t
     const tray = this.tray
     if (tray) {
       tray.setContextMenu(this.createMenu())
-      store.subscribe((m) => {
-        if (m.type === 'locale') {
-          tray.setToolTip($t('title'))
-          tray.setContextMenu(this.createMenu())
-        }
+      this.app.storeManager.subscribe('localeSet', (l) => {
+        tray.setToolTip($t('title'))
+        tray.setContextMenu(this.createMenu())
       })
     }
   }

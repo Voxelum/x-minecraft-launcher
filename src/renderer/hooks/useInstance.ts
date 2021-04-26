@@ -1,23 +1,22 @@
-import { computed, reactive, toRefs } from '@vue/composition-api'
+import { computed, Data, reactive, Ref, toRefs } from '@vue/composition-api'
 import { Frame as GameSetting } from '@xmcl/gamesetting'
 import { useBusy, useSemaphore } from './useSemaphore'
 import { useService, useServiceOnly } from './useService'
-import { useStore } from './useStore'
 import { useCurrentUser } from './useUser'
 import { useMinecraftVersions } from './useVersion'
-import { InstanceSchema as InstanceConfig, RuntimeVersions } from '/@shared/entities/instance.schema'
-import { CurseforgeModpackResource, ModpackResource } from '/@shared/entities/resource'
-import { ResourceType } from '/@shared/entities/resource.schema'
+import { InstanceData, RuntimeVersions } from '/@shared/entities/instance.schema'
 import { getExpectVersion } from '/@shared/entities/version'
 import { InstanceGameSettingServiceKey } from '/@shared/services/InstanceGameSettingService'
 import { InstanceIOServiceKey } from '/@shared/services/InstanceIOService'
 import { InstanceLogServiceKey } from '/@shared/services/InstanceLogService'
 import { CloneSaveOptions, DeleteSaveOptions, ImportSaveOptions, InstanceSavesServiceKey } from '/@shared/services/InstanceSavesService'
-import { CreateOption, InstanceServiceKey } from '/@shared/services/InstanceService'
+import { InstanceServiceKey } from '/@shared/services/InstanceService'
+import { InstanceVersionServiceKey } from '/@shared/services/InstanceVersionService'
+import { ResourceServiceKey } from '/@shared/services/ResourceService'
 
 export function useInstanceBase() {
-  const { state } = useStore()
-  const path = computed(() => state.instance.path)
+  const { state } = useService(InstanceServiceKey)
+  const path = computed(() => state.path)
   return { path }
 }
 
@@ -25,27 +24,27 @@ export function useInstanceBase() {
  * Use the general info of the instance
  */
 export function useInstance() {
-  const { getters, state } = useStore()
+  const { state, editInstance } = useService(InstanceServiceKey)
 
-  const path = computed(() => state.instance.path)
-  const name = computed(() => getters.instance.name)
-  const author = computed(() => getters.instance.author || '')
-  const description = computed(() => getters.instance.description)
-  const showLog = computed(() => getters.instance.showLog)
-  const hideLauncher = computed(() => getters.instance.hideLauncher)
-  const runtime = computed(() => getters.instance.runtime)
-  const java = computed(() => getters.instance.java)
-  const resolution = computed(() => getters.instance.resolution)
-  const minMemory = computed(() => getters.instance.minMemory)
-  const maxMemory = computed(() => getters.instance.maxMemory)
-  const vmOptions = computed(() => getters.instance.vmOptions)
-  const mcOptions = computed(() => getters.instance.mcOptions)
-  const url = computed(() => getters.instance.url)
-  const icon = computed(() => getters.instance.icon)
-  const lastAccessDate = computed(() => getters.instance.lastAccessDate)
-  const creationDate = computed(() => getters.instance.creationDate)
-  const server = computed(() => getters.instance.server)
-  const version = computed(() => getters.instance.version)
+  const path = computed(() => state.path)
+  const name = computed(() => state.instance.name)
+  const author = computed(() => state.instance.author)
+  const description = computed(() => state.instance.description)
+  const showLog = computed(() => state.instance.showLog)
+  const hideLauncher = computed(() => state.instance.hideLauncher)
+  const runtime = computed(() => state.instance.runtime)
+  const java = computed(() => state.instance.java)
+  const resolution = computed(() => state.instance.resolution)
+  const minMemory = computed(() => state.instance.minMemory)
+  const maxMemory = computed(() => state.instance.maxMemory)
+  const vmOptions = computed(() => state.instance.vmOptions)
+  const mcOptions = computed(() => state.instance.mcOptions)
+  const url = computed(() => state.instance.url)
+  const icon = computed(() => state.instance.icon)
+  const lastAccessDate = computed(() => state.instance.lastAccessDate)
+  const creationDate = computed(() => state.instance.creationDate)
+  const server = computed(() => state.instance.server)
+  const version = computed(() => state.instance.version)
   return {
     path,
     name,
@@ -66,9 +65,9 @@ export function useInstance() {
     lastAccessDate,
     creationDate,
     server,
-    isServer: computed(() => getters.instance.server !== null),
+    isServer: computed(() => state.instance.server !== null),
     refreshing: computed(() => useSemaphore('instance').value !== 0),
-    ...useServiceOnly(InstanceServiceKey, 'editInstance', 'refreshServerStatus'),
+    editInstance,
     ...useServiceOnly(InstanceIOServiceKey, 'exportInstance'),
   }
 }
@@ -77,13 +76,21 @@ export function useInstance() {
  * Hook of a view of all instances & some deletion/selection functions
  */
 export function useInstances() {
-  const { getters } = useStore()
+  const { state } = useService(InstanceServiceKey)
   return {
-    instances: computed(() => getters.instances),
+    instances: computed(() => state.instances),
 
-    ...useServiceOnly(InstanceServiceKey, 'mountInstance', 'deleteInstance', 'refreshServerStatusAll'),
+    ...useServiceOnly(InstanceServiceKey, 'mountInstance', 'deleteInstance'),
     ...useServiceOnly(InstanceIOServiceKey, 'importInstance', 'linkInstance'),
   }
+}
+
+export function useInstanceServerEdit(server: Ref<InstanceData['server']>) {
+  const result = computed({
+    get: () => server.value ?? { host: '', port: undefined },
+    set: (v) => { server.value = v },
+  })
+  return result
 }
 
 /**
@@ -93,24 +100,23 @@ export function useInstanceCreation() {
   const { gameProfile } = useCurrentUser()
   const { createAndMount: createAndSelect } = useService(InstanceServiceKey)
   const { release } = useMinecraftVersions()
-  const data = reactive({
+  const data = reactive<InstanceData & Data>({
     name: '',
     runtime: { forge: '', minecraft: release.value?.id || '', liteloader: '', fabricLoader: '', yarn: '' } as RuntimeVersions,
+    version: '',
     java: '',
     showLog: false,
     hideLauncher: true,
     vmOptions: [] as string[],
     mcOptions: [] as string[],
-    maxMemory: undefined as undefined | number,
-    minMemory: undefined as undefined | number,
+    maxMemory: 0,
+    minMemory: 0,
     author: gameProfile.value.name,
     description: '',
-    resolution: undefined as undefined | CreateOption['resolution'],
+    resolution: null,
     url: '',
     icon: '',
-    image: '',
-    blur: 4,
-    server: null as undefined | CreateOption['server'],
+    server: null,
   })
   const refs = toRefs(data)
   const required: Required<typeof refs> = toRefs(data) as any
@@ -139,68 +145,26 @@ export function useInstanceCreation() {
       data.hideLauncher = true
       data.vmOptions = []
       data.mcOptions = []
-      data.maxMemory = undefined
-      data.minMemory = undefined
+      data.maxMemory = 0
+      data.minMemory = 0
       data.author = gameProfile.value.name
       data.description = ''
-      data.resolution = undefined
+      data.resolution = null
       data.url = ''
       data.icon = ''
       data.image = ''
       data.blur = 4
       data.server = null
     },
-    /**
-     * Use the same configuration as the input instance
-     * @param instance The instance will be copied
-     */
-    use(instance: InstanceConfig) {
-      data.name = instance.name
-      data.runtime = { ...instance.runtime }
-      data.java = instance.java
-      data.showLog = instance.showLog
-      data.hideLauncher = instance.hideLauncher
-      data.vmOptions = [...instance.vmOptions]
-      data.mcOptions = [...instance.mcOptions]
-      data.maxMemory = instance.maxMemory
-      data.minMemory = instance.minMemory
-      data.author = instance.author
-      data.description = instance.description
-      data.url = instance.url
-      data.icon = instance.icon
-      data.server = instance.server ? { ...instance.server } : undefined
-    },
-
-    useModpack(resource: CurseforgeModpackResource | ModpackResource) {
-      if (resource.type === ResourceType.CurseforgeModpack) {
-        const metadata = resource.metadata
-        data.name = `${metadata.name} - ${metadata.version}`
-        data.runtime.minecraft = metadata.minecraft.version
-        if (metadata.minecraft.modLoaders.length > 0) {
-          for (const loader of metadata.minecraft.modLoaders) {
-            if (loader.id.startsWith('forge-')) {
-              data.runtime.forge = loader.id.substring('forge-'.length)
-            }
-          }
-        }
-        data.author = metadata.author
-      } else {
-        const metadata = resource.metadata
-        data.name = resource.name
-        data.runtime.minecraft = metadata.runtime.minecraft
-        data.runtime.forge = metadata.runtime.forge
-        data.runtime.fabricLoader = metadata.runtime.fabricLoader
-      }
-    },
   }
 }
 
 export function useInstanceVersionBase() {
-  const { getters } = useStore()
-  const minecraft = computed(() => getters.instance.runtime.minecraft)
-  const forge = computed(() => getters.instance.runtime.forge)
-  const fabricLoader = computed(() => getters.instance.runtime.fabricLoader)
-  const yarn = computed(() => getters.instance.runtime.yarn)
+  const { state } = useService(InstanceServiceKey)
+  const minecraft = computed(() => state.instance.runtime.minecraft)
+  const forge = computed(() => state.instance.runtime.forge)
+  const fabricLoader = computed(() => state.instance.runtime.fabricLoader)
+  const yarn = computed(() => state.instance.runtime.yarn)
   return {
     minecraft,
     forge,
@@ -210,35 +174,35 @@ export function useInstanceVersionBase() {
 }
 
 export function useInstanceTemplates() {
-  const { getters, state } = useStore()
+  const { state } = useService(InstanceServiceKey)
+  const { state: resourceState } = useService(ResourceServiceKey)
   return {
-    instances: computed(() => getters.instances),
-    modpacks: computed(() => state.resource.modpacks),
+    instances: computed(() => state.instances),
+    modpacks: computed(() => resourceState.modpacks),
   }
 }
 
 export function useInstanceGameSetting() {
-  const { state } = useStore()
-  const { refresh: _refresh, edit, showInFolder } = useService(InstanceGameSettingServiceKey)
+  const { state, refresh: _refresh, edit, showInFolder } = useService(InstanceGameSettingServiceKey)
   const refresh = () => _refresh()
-  const fancyGraphics = computed(() => state.instanceGameSetting.fancyGraphics)
-  const renderClouds = computed(() => state.instanceGameSetting.renderClouds)
-  const ao = computed(() => state.instanceGameSetting.ao)
-  const entityShadows = computed(() => state.instanceGameSetting.entityShadows)
-  const particles = computed(() => state.instanceGameSetting.particles)
-  const mipmapLevels = computed(() => state.instanceGameSetting.mipmapLevels)
-  const useVbo = computed(() => state.instanceGameSetting.useVbo)
-  const fboEnable = computed(() => state.instanceGameSetting.fboEnable)
-  const enableVsync = computed(() => state.instanceGameSetting.enableVsync)
-  const anaglyph3d = computed(() => state.instanceGameSetting.anaglyph3d)
+  const fancyGraphics = computed(() => state.fancyGraphics)
+  const renderClouds = computed(() => state.renderClouds)
+  const ao = computed(() => state.ao)
+  const entityShadows = computed(() => state.entityShadows)
+  // const particles = computed(() => state.particles)
+  // const mipmapLevels = computed(() => state.mipmapLevels)
+  const useVbo = computed(() => state.useVbo)
+  const fboEnable = computed(() => state.fboEnable)
+  const enableVsync = computed(() => state.enableVsync)
+  const anaglyph3d = computed(() => state.anaglyph3d)
 
   return {
     fancyGraphics,
     renderClouds,
     ao,
     entityShadows,
-    particles,
-    mipmapLevels,
+    // particles,
+    // mipmapLevels,
     useVbo,
     fboEnable,
     enableVsync,
@@ -253,9 +217,9 @@ export function useInstanceGameSetting() {
 }
 
 export function useInstanceSaves() {
-  const { state } = useStore()
-  const { cloneSave, deleteSave, exportSave, readAllInstancesSaves, importSave, mountInstanceSaves } = useService(InstanceSavesServiceKey)
-  const refresh = () => mountInstanceSaves(state.instance.path)
+  const { path } = useInstanceBase()
+  const { state, cloneSave, deleteSave, exportSave, readAllInstancesSaves, importSave, mountInstanceSaves } = useService(InstanceSavesServiceKey)
+  const refresh = () => mountInstanceSaves(path.value)
   return {
     refresh,
     cloneSave: (options: CloneSaveOptions) => cloneSave(options).finally(refresh),
@@ -263,8 +227,8 @@ export function useInstanceSaves() {
     exportSave,
     readAllInstancesSaves,
     importSave: (options: ImportSaveOptions) => importSave(options).finally(refresh),
-    path: computed(() => state.instance.path),
-    saves: computed(() => state.instanceSave.saves),
+    // path: computed(() => state.instance.path),
+    saves: computed(() => state.saves),
   }
 }
 
@@ -272,10 +236,11 @@ export function useInstanceSaves() {
  * Use references of all the version info of this instance
  */
 export function useInstanceVersion() {
-  const { getters } = useStore()
+  const { state } = useService(InstanceVersionServiceKey)
+  const { state: instanceState } = useService(InstanceServiceKey)
 
-  const folder = computed(() => getters.instanceVersion.id || 'unknown')
-  const id = computed(() => getExpectVersion(getters.instance.runtime))
+  const folder = computed(() => state.instanceVersion.id || 'unknown')
+  const id = computed(() => getExpectVersion(instanceState.instance.runtime))
 
   return {
     ...useInstanceVersionBase(),
@@ -285,9 +250,9 @@ export function useInstanceVersion() {
 }
 
 export function useInstanceLogs() {
-  const { state } = useStore()
+  const { path } = useInstanceBase()
   return {
-    path: computed(() => state.instance.path),
+    path,
     ...useServiceOnly(InstanceLogServiceKey, 'getCrashReportContent', 'getLogContent', 'listCrashReports', 'listLogs', 'removeCrashReport', 'removeLog', 'showCrash', 'showLog'),
   }
 }

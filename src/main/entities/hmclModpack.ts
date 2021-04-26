@@ -1,7 +1,7 @@
 import { CancelledError, TaskBase } from '@xmcl/task'
 import { open, openEntryReadStream, readAllEntries, readEntry, walkEntriesGenerator } from '@xmcl/unzip'
 import { createWriteStream } from 'fs'
-import { Readable } from 'node:stream'
+import { Readable } from 'stream'
 import { join } from 'path'
 import { Entry, ZipFile } from 'yauzl'
 import { pipeline } from '../util/fs'

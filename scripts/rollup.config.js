@@ -28,11 +28,11 @@ const config = [{
     if (warning.plugin === 'typescript:checker') {
       console.log(chalk.yellow(warning.message))
     } else {
-      console.log(warning.plugin)
+      console.log(`Plugin: ${warning.plugin}`)
       console.log(chalk.yellow(warning.toString()))
     }
   },
-  external: [...builtins, 'electron', ...external],
+  external: [...builtins, 'electron'],
   plugins: [
     pluginAlias({
       entries: {
@@ -44,17 +44,17 @@ const config = [{
     pluginRenedrer(),
     pluginPreload(),
     pluginWorker(),
-    pluginTypescript({
-      tsconfig: [join(__dirname, '../src/main/tsconfig.json'), join(__dirname, '../src/preload/tsconfig.json')]
-    }),
-    pluginResolve(),
-    pluginEsbuild(),
     nodeResolve({
       browser: false
     }),
     pluginCommonJs({
       extensions: ['.js', '.cjs']
     }),
+    pluginTypescript({
+      tsconfig: [join(__dirname, '../src/main/tsconfig.json'), join(__dirname, '../src/preload/tsconfig.json')]
+    }),
+    pluginResolve(),
+    pluginEsbuild(),
     pluginJson({
       preferConst: true,
       indent: '  ',

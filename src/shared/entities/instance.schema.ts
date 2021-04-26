@@ -40,8 +40,7 @@ export interface RuntimeVersions {
   [id: string]: undefined | string
 }
 
-// eslint-disable-next-line @typescript-eslint/no-redeclare
-export interface InstanceSchema {
+export interface InstanceData {
   /**
    * The display name of the profile. It will also be the modpack display name
    * @default ""
@@ -113,14 +112,6 @@ export interface InstanceSchema {
    */
   icon: string
   /**
-   * @default 0
-   */
-  lastAccessDate: number
-  /**
-   * @default 0
-   */
-  creationDate: number
-  /**
    * The option for instance to launch server directly
    * @default null
    */
@@ -128,6 +119,18 @@ export interface InstanceSchema {
     host: string
     port?: number
   } | null
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export interface InstanceSchema extends InstanceData {
+  /**
+   * @default 0
+   */
+  lastAccessDate: number
+  /**
+   * @default 0
+   */
+  creationDate: number
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare

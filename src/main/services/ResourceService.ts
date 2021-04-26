@@ -1,18 +1,19 @@
 import { task } from '@xmcl/task'
-import { stat, unlink } from 'fs-extra'
+import { readJSON, stat, unlink } from 'fs-extra'
 import { basename, extname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { AggregateExecutor } from '../util/aggregator'
 import { RelativeMappedFile } from '../util/persistance'
+import { createPromiseSignal } from '../util/promiseSignal'
 import { BufferJsonSerializer } from '../util/serialize'
-import AbstractService, { ExportService, internal } from './Service'
+import { ExportService, internal, StatefulService } from './Service'
 import { FileStat, mutateResource, persistResource, readFileStat, remove, ResourceCache } from '/@main/entities/resource'
 import { fixResourceSchema } from '/@main/util/dataFix'
 import { copyPassively, ENOENT_ERROR, fileType, FileType, readdirEnsured } from '/@main/util/fs'
 import { Exception } from '/@shared/entities/exception'
 import { AnyPersistedResource, AnyResource, isPersistedResource, PersistedResource } from '/@shared/entities/resource'
 import { PersistedResourceSchema, Resource, ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
-import { ImportFileOptions, ImportFilesOptions, ParseFileOptions, ParseFilesOptions, RenameResourceOptions, ResourceService as IResourceService, ResourceServiceKey, SetResourceTagsOptions } from '/@shared/services/ResourceService'
+import { ImportFileOptions, ImportFilesOptions, ParseFileOptions, ParseFilesOptions, RenameResourceOptions, ResourceState, ResourceService as IResourceService, ResourceServiceKey, SetResourceTagsOptions } from '/@shared/services/ResourceService'
 import { isNonnull, requireString } from '/@shared/util/assert'
 
 export interface ParseResourceContext {
@@ -28,14 +29,22 @@ export interface Query {
 }
 
 @ExportService(ResourceServiceKey)
-export default class ResourceService extends AbstractService implements IResourceService {
+export default class ResourceService extends StatefulService<ResourceState> implements IResourceService {
+  createState() { return new ResourceState() }
+
   private cache = new ResourceCache()
 
-  private loadPromises: Record<string, Promise<void>> = {}
+  private loadPromises = {
+    [ResourceDomain.Mods]: createPromiseSignal(),
+    [ResourceDomain.Saves]: createPromiseSignal(),
+    [ResourceDomain.ResourcePacks]: createPromiseSignal(),
+    [ResourceDomain.Modpacks]: createPromiseSignal(),
+    [ResourceDomain.Unknown]: createPromiseSignal(),
+  }
 
   private resourceRemove = new AggregateExecutor<AnyPersistedResource, AnyPersistedResource[]>(_ => _,
     (res) => {
-      this.commit('resourcesRemove', res)
+      this.state.resourcesRemove(res)
       for (const resource of res) {
         this.cache.discard(resource)
         this.unpersistResource(resource)
@@ -44,11 +53,11 @@ export default class ResourceService extends AbstractService implements IResourc
 
   private resourceUpdate = new AggregateExecutor<AnyPersistedResource, AnyPersistedResource[]>(_ => _,
     (res) => {
-      this.commit('resources', res)
+      this.state.resources(res)
       for (const resource of res) {
         this.cache.discard(resource)
         this.cache.put(resource)
-        this.resourceFile.writeTo(this.getPath(resource.location + '.json'), { ...(resource as any), version: 1 })
+        this.resourceFile.writeTo(this.getPath(resource.domain, resource.fileName + '.json'), { ...(resource as any), version: 1 })
       }
     }, 1000)
 
@@ -113,7 +122,7 @@ export default class ResourceService extends AbstractService implements IResourc
   }
 
   @internal
-  private async loadDomain(domain: string) {
+  private async loadDomain(domain: ResourceDomain) {
     const path = this.getPath(domain)
     const files = await readdirEnsured(path)
     const result: PersistedResource[] = []
@@ -121,14 +130,13 @@ export default class ResourceService extends AbstractService implements IResourc
       if (!file.endsWith('.json')) return
       const filePath = join(path, file)
       try {
-        const resourceData = await this.resourceFile.readTo(filePath)
-
+        const resourceData = await readJSON(filePath) // this.resourceFile.readTo(filePath)
         await fixResourceSchema({ log: this.log, warn: this.warn, error: this.error }, filePath, resourceData, this.getPath())
 
-        const resourceFilePath = this.getPath(resourceData.location) + resourceData.ext
+        const resourceFilePath = this.getPath(resourceData.domain, resourceData.fileName) + resourceData.ext
         const { size, ino } = await stat(resourceFilePath)
         const resource: PersistedResource<any> = Object.freeze({
-          location: resourceData.location,
+          fileName: resourceData.fileName,
           name: resourceData.name,
           domain: resourceData.domain,
           type: resourceData.type,
@@ -161,22 +169,30 @@ export default class ResourceService extends AbstractService implements IResourc
       }
     }
     await Promise.all(files.map(processFile))
+    this.log(`Load ${result.length} resources in domain ${domain}`)
     this.commitResources(result)
   }
 
   @internal
   async initialize() {
-    for (const domain of ['mods', 'resourcepacks', 'saves', 'modpacks', 'unknown']) {
-      this.loadPromises[domain] = this.loadDomain(domain)
+    for (const domain of [
+      ResourceDomain.Mods, ResourceDomain.ResourcePacks,
+      ResourceDomain.Saves, ResourceDomain.Modpacks, ResourceDomain.Unknown,
+    ]) {
+      this.loadPromises[domain].accept(this.loadDomain(domain))
     }
   }
 
   whenModsReady() {
-    return this.loadPromises.mods
+    return this.loadPromises.mods.promise
   }
 
   whenResourcePacksReady() {
-    return this.loadPromises.resourcepacks
+    return this.loadPromises.resourcepacks.promise
+  }
+
+  whenReady(resourceDomain: ResourceDomain) {
+    return this.loadPromises[resourceDomain].promise
   }
 
   /**
@@ -421,7 +437,7 @@ export default class ResourceService extends AbstractService implements IResourc
         fileType: fileType!,
         ino: stat.ino,
         path,
-        location: '',
+        fileName: '',
         name: basename(path),
         size: stat.size,
         ext: extname(path),
@@ -483,7 +499,7 @@ export default class ResourceService extends AbstractService implements IResourc
     for (const resource of resources) {
       this.cache.put(resource as any)
     }
-    this.commit('resources', resources as any)
+    this.state.resources(resources as any)
   }
 
   @internal
