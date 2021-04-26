@@ -6,18 +6,20 @@ import { basename, dirname, join } from 'path'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
 import DiagnoseService from './DiagnoseService'
-import AbstractService, { ExportService, Inject, Singleton } from './Service'
+import { ExportService, Inject, Singleton, StatefulService } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
 import { getTsingHuaAdpotOponJDKPageUrl, parseTsingHuaAdpotOpenJDKHotspotArchive } from '/@main/entities/java'
 import { missing, readdirIfPresent } from '/@main/util/fs'
 import { unpack7z } from '/@main/util/zip'
 import { JavaRecord } from '/@shared/entities/java'
 import { Java, JavaSchema } from '/@shared/entities/java.schema'
-import { JavaService as IJavaService, JavaServiceKey } from '/@shared/services/JavaService'
+import { JavaState, JavaService as IJavaService, JavaServiceKey } from '/@shared/services/JavaService'
 import { requireString } from '/@shared/util/assert'
 
 @ExportService(JavaServiceKey)
-export default class JavaService extends AbstractService implements IJavaService {
+export default class JavaService extends StatefulService<JavaState> implements IJavaService {
+  createState() { return new JavaState() }
+
   protected readonly config = new MappedFile<JavaSchema>(this.getPath('java.json'), new BufferJsonSerializer(JavaSchema))
 
   private readonly internalJavaLocation = this.app.platform.name === 'osx'
@@ -38,16 +40,16 @@ export default class JavaService extends AbstractService implements IJavaService
     const data = await this.config.read()
     const valid = data.all.filter(l => typeof l.path === 'string').map(a => ({ ...a, valid: true }))
     this.log(`Loaded ${valid.length} java from cache.`)
-    this.commit('javaUpdate', valid)
+    this.state.javaUpdate(valid)
 
     const local = this.internalJavaLocation
-    if (!this.state.java.all.map(j => j.path).some(p => p === local)) {
+    if (!this.state.all.map(j => j.path).some(p => p === local)) {
       this.resolveJava(local)
     }
     this.refreshLocalJava()
 
     this.storeManager.subscribeAll(['javaUpdate', 'javaRemove'], () => {
-      this.config.write(this.state.java)
+      this.config.write(this.state)
     })
   }
 
@@ -56,7 +58,7 @@ export default class JavaService extends AbstractService implements IJavaService
    */
   @Singleton('java')
   async installDefaultJava() {
-    if (this.state.java.all.find(j => j.path === this.internalJavaLocation)) {
+    if (this.state.all.find(j => j.path === this.internalJavaLocation)) {
       return
     }
     const task = this.networkManager.isInGFW ? this.installFromTsingHuaTask() : this.installFromMojangTask()
@@ -135,7 +137,7 @@ export default class JavaService extends AbstractService implements IJavaService
   async resolveJava(javaPath: string): Promise<undefined | Java> {
     requireString(javaPath)
 
-    const found = this.state.java.all.find(java => java.path === javaPath)
+    const found = this.state.all.find(java => java.path === javaPath)
     if (found) {
       return found
     }
@@ -144,7 +146,7 @@ export default class JavaService extends AbstractService implements IJavaService
 
     const java = await resolveJava(javaPath)
     if (java) {
-      this.commit('javaUpdate', { ...java, valid: true })
+      this.state.javaUpdate({ ...java, valid: true })
     }
     return java
   }
@@ -154,7 +156,7 @@ export default class JavaService extends AbstractService implements IJavaService
    */
   @Singleton('java')
   async refreshLocalJava() {
-    if (this.state.java.all.length === 0) {
+    if (this.state.all.length === 0) {
       this.log('No local cache found. Scan java through the disk.')
       const commonLocations = [] as string[]
       if (this.app.platform.name === 'windows') {
@@ -165,16 +167,16 @@ export default class JavaService extends AbstractService implements IJavaService
       const javas = await scanLocalJava(commonLocations)
       const infos = javas.map(j => ({ ...j, valid: true }))
       this.log(`Found ${infos.length} java.`)
-      this.commit('javaUpdate', infos)
+      this.state.javaUpdate(infos)
     } else {
-      this.log(`Re-validate cached ${this.state.java.all.length} java locations.`)
+      this.log(`Re-validate cached ${this.state.all.length} java locations.`)
       const javas: JavaRecord[] = []
-      for (let i = 0; i < this.state.java.all.length; ++i) {
-        const result = await resolveJava(this.state.java.all[i].path)
+      for (let i = 0; i < this.state.all.length; ++i) {
+        const result = await resolveJava(this.state.all[i].path)
         if (result) {
           javas.push({ ...result, valid: true })
         } else {
-          javas.push({ ...this.state.java.all[i], valid: false })
+          javas.push({ ...this.state.all[i], valid: false })
         }
       }
       const invalided = javas.filter(j => !j.valid).length
@@ -184,7 +186,7 @@ export default class JavaService extends AbstractService implements IJavaService
           this.log(i.path)
         }
       }
-      this.commit('javaUpdate', javas)
+      this.state.javaUpdate(javas)
     }
   }
 }

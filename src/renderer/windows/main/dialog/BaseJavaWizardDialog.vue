@@ -49,8 +49,10 @@
 
 <script lang=ts>
 import { reactive, computed, toRefs, defineComponent } from '@vue/composition-api'
-import { useI18n, useStore, useJava, useNativeDialog, useServiceOnly, useInstance } from '/@/hooks'
+import { useI18n, useJava, useNativeDialog, useServiceOnly, useInstance, useService } from '/@/hooks'
 import { useJavaWizardDialog, useNotifier } from '../hooks'
+import { InstanceJavaServiceKey } from '/@shared/services/InstanceJavaService'
+import { JavaServiceKey } from '/@shared/services/JavaService'
 
 export default defineComponent({
   props: {
@@ -61,15 +63,14 @@ export default defineComponent({
   },
   setup() {
     const { showOpenDialog } = useNativeDialog()
-    const { state } = useStore()
     const { $t } = useI18n()
     const { show, isShown, javaIssue } = useJavaWizardDialog()
     const { add, refreshLocalJava } = useJava()
     const { editInstance } = useInstance()
-    const { fixNoJava } = useServiceOnly('DiagnoseService', 'fixNoJava')
+    const { state, installDefaultJava } = useService(JavaServiceKey)
     const { subscribeTask } = useNotifier()
 
-    const java8 = computed(() => state.java.all.find(j => j.majorVersion === 8 && j.valid))
+    const java8 = computed(() => state.all.find(j => j.majorVersion === 8 && j.valid))
     const data = reactive({
       step: 0,
 
@@ -125,7 +126,7 @@ export default defineComponent({
           subscribeTask(editInstance({ java: java8.value!.path }), $t('java.modifyInstance'))
           isShown.value = false
         } else if (index === 1) {
-          fixNoJava()
+          installDefaultJava()
           isShown.value = false
         } else if (index === 2) {
           const { filePaths, canceled } = await showOpenDialog({

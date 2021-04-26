@@ -1,11 +1,9 @@
 import { EventEmitter } from 'events'
 import { Manager } from '.'
-import storeTemplate, { MutationKeys, MutationPayload, RootState } from '/@shared/store'
-import { createStaticStore, StaticStore } from '../util/staticStore'
+import { State } from '/@shared/services/Service'
+import { MutationKeys, MutationPayload } from '/@shared/store'
 
 export default class StoreManager extends Manager {
-  public store: StaticStore<RootState> = createStaticStore(storeTemplate as any, this) as any
-
   private eventbus = new EventEmitter()
 
   /**
@@ -14,48 +12,20 @@ export default class StoreManager extends Manager {
    */
   private checkPointId = 0
 
-  private checkPoint: any
+  private registeredState: Record<string, any> = {}
 
-  sync(currentId: number) {
+  private mutations: Record<string, Array<(payload: any) => void>> = {}
+
+  snapshot(currentId: number) {
     const checkPointId = this.checkPointId
     this.log(`Sync from renderer: ${currentId}, main: ${checkPointId}.`)
     if (currentId === checkPointId) {
       return undefined
     }
     return {
-      state: JSON.parse(JSON.stringify(this.checkPoint)),
+      state: JSON.parse(JSON.stringify(this.registeredState)),
       length: checkPointId,
     }
-  }
-
-  /**
-   * Auto sync will watch every mutation and send to each client,
-   * and it will response for `sync` channel which will send the mutation histories to the client.
-   */
-  private setupAutoSync() {
-    this.store.subscribe((mutation, state) => {
-      this.checkPoint = state
-      this.checkPointId += 1 // record the total order
-      // broadcast commit
-      this.app.broadcast('commit', mutation, this.checkPointId)
-    })
-  }
-
-  // SETUP CODE
-
-  setup() {
-    this.app.handle('sync', (_, id) => this.app.serviceReadyPromise.then(() => this.sync(id)))
-    this.store.commit('root', this.app.gameDataPath)
-    this.setupAutoSync()
-    this.store.subscribe((mutation) => {
-      this.eventbus.emit(mutation.type, mutation.payload)
-    })
-  }
-
-  engineReady() {
-    this.app.handle('commit', (event, type, payload) => {
-      this.store!.commit(type, payload)
-    })
   }
 
   subscribe<T extends MutationKeys>(key: T, listener: (payload: MutationPayload<T>) => void) {
@@ -68,5 +38,55 @@ export default class StoreManager extends Manager {
       this.eventbus.addListener(e, listener)
     }
     return this
+  }
+
+  register<T extends State>(name: string, store: T): T {
+    const bus = this.eventbus
+    const mutations = this.mutations
+    const stateKeys = [] as string[]
+    const stateSnapshoter: any = {
+      toJSON() {
+        const obj = {} as any
+        for (const key of stateKeys) {
+          obj[key] = store[key]
+        }
+        return obj
+      },
+    }
+    const update = (key: string, value: any) => {
+      this.checkPointId += 1
+      app.broadcast('commit', { type: key, payload: value }, this.checkPointId)
+      bus.emit(key, value)
+    }
+    const app = this.app
+    for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(Object.getPrototypeOf(store)))) {
+      if (key !== 'constructor' && prop.value instanceof Function) {
+        const original = prop.value
+        // eslint-disable-next-line no-inner-declarations
+        function wrapped(this: any, value: any) {
+          original.call(this, value)
+          update(key, value)
+        }
+        mutations[key] = wrapped.bind(store) as any
+        Reflect.set(store, key, wrapped)
+      }
+    }
+    for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(store))) {
+      stateKeys.push(key)
+    }
+    this.registeredState[name] = stateSnapshoter
+    return store
+  }
+
+  // SETUP CODE
+
+  setup() {
+    this.app.handle('sync', (_, id) => this.app.serviceReadyPromise.then(() => this.snapshot(id)))
+  }
+
+  engineReady() {
+    this.app.handle('commit', (event, type, payload) => {
+      this.mutations[type].forEach(m => m(payload))
+    })
   }
 }

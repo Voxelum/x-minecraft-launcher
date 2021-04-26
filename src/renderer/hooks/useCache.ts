@@ -5,12 +5,17 @@ const CACHE: Map<string, any> = new Map()
 /**
  * im-memory cache
  */
-export function useInMemoryCache<T>(key: string, defaultValue: T): T {
-  if (CACHE.has(key)) {
-    return CACHE.get(key)!
-  }
-  CACHE.set(key, defaultValue)
-  return defaultValue
+export function useInMemoryCache<T>(key: Ref<string>, defaultValue: () => T): Ref<T> {
+  const val = CACHE.get(key.value) ?? defaultValue()
+  const reference = ref(val)
+  CACHE.set(key.value, val)
+  watch(key, (newVal) => {
+    reference.value = CACHE.get(newVal) ?? defaultValue()
+  })
+  watch(reference, (newVal) => {
+    CACHE.set(key.value, newVal)
+  })
+  return reference
 }
 
 export function clearInMemoryCacheAll() {

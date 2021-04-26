@@ -7,21 +7,24 @@ import { ensureFile, readJson, writeFile } from 'fs-extra'
 import { join } from 'path'
 import DiagnoseService from './DiagnoseService'
 import ResourceService from './ResourceService'
-import AbstractService, { ExportService, Inject } from './Service'
+import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service'
 import LauncherApp from '../app/LauncherApp'
 import { ExternalAuthSkinServiceKey, ExternalAuthSkinService as IExternalAuthSkinService } from '/@shared/services/ExternalAuthSkinService'
+import UserService from './UserService'
+import { compareRelease } from '/@shared/entities/version'
 
 @ExportService(ExternalAuthSkinServiceKey)
 export default class ExternalAuthSkinService extends AbstractService implements IExternalAuthSkinService {
   constructor(
     app: LauncherApp,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
+    @Inject(UserService) private userService: UserService,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app)
     diagnoseService.registerMatchedFix(['missingAuthlibInjector'],
       () => this.installAuthlibInjection(),
-      diagnoseService.diagnoseUser.bind(diagnoseService))
+      this.diagnoseAuthlibInjector.bind(this))
 
     // diagnoseService.registerMatchedFix(['missingCustomSkinLoader'],
     //   async ([issue]) => {
@@ -128,9 +131,98 @@ export default class ExternalAuthSkinService extends AbstractService implements 
     }
 
     const report: Partial<IssueReport> = {}
-    this.diagnoseService.diagnoseUser(report)
+    this.diagnoseAuthlibInjector(report)
     this.diagnoseService.report(report)
 
     return path
   }
+
+  @Subscribe('userGameProfileSelect', 'userProfileUpdate', 'userSnapshot')
+  async onUserUpdate() {
+    const report: Partial<IssueReport> = {}
+    await this.diagnoseAuthlibInjector(report)
+    this.diagnoseService.report(report)
+  }
+
+  @Singleton()
+  async diagnoseAuthlibInjector(report: Partial<IssueReport>) {
+    this.aquire('diagnose')
+    const doesAuthlibInjectionExisted = async () => {
+      const jsonPath = this.getPath('authlib-injection.json')
+      const content = await readJson(jsonPath).catch(() => undefined)
+      if (!content) return false
+      const info = LibraryInfo.resolve(`${AUTHLIB_ORG_NAME}:${content.version}`)
+      const mc = new MinecraftFolder(this.getPath())
+      const libPath = mc.getLibraryByPath(info.path)
+      return validateSha256(libPath, content.checksums.sha256)
+    }
+    try {
+      const user = this.userService.state.users[this.userService.state.selectedUser.id]
+
+      if (user) {
+        this.log(`Diagnose user ${user.username}`)
+        const tree: Pick<IssueReport, 'missingAuthlibInjector'> = {
+          missingAuthlibInjector: [],
+        }
+
+        if (this.userService.state.isThirdPartyAuthentication) {
+          if (!await doesAuthlibInjectionExisted()) {
+            tree.missingAuthlibInjector.push({})
+          }
+        }
+        Object.assign(report, tree)
+      }
+    } finally {
+      this.release('diagnose')
+    }
+  }
+
+  // @Singleton()
+  // async diagnoseCustomSkin(report: Partial<IssueReport>) {
+  //   this.aquire('diagnose')
+  //   try {
+  //     const user = this.state.user.users[this.state.user.selectedUser.id]
+  //     const tree: Pick<IssueReport, 'missingCustomSkinLoader'> = {
+  //       missingCustomSkinLoader: [],
+  //     }
+  //     if (user) {
+  //       if (user.profileService !== 'mojang') {
+  //         const instance = this.state.instance.all[this.state.instance.path]
+  //         const { minecraft, fabricLoader, forge } = instance.runtime
+  //         if ((!forge && !fabricLoader) || forge) {
+  //           if (compareRelease(minecraft, '1.8.9') >= 0) {
+  //             // use forge by default
+  //             const res = this.state.instanceResource.mods.find((r) => r.type === 'forge' && (r.metadata as any)[0].modid === 'customskinloader')
+  //             if (!res || !forge) {
+  //               tree.missingCustomSkinLoader.push({
+  //                 target: 'forge',
+  //                 skinService: user.profileService,
+  //                 missingJar: !res,
+  //                 noVersionSelected: !forge,
+  //               })
+  //             }
+  //           } else {
+  //             this.warn('Current support on custom skin loader forge does not support version below 1.8.9!')
+  //           }
+  //         } else if (compareRelease(minecraft, '1.14') >= 0) {
+  //           const res = this.state.instanceResource.mods.find((r) => r.type === 'fabric' && (r.metadata as any).id === 'customskinloader')
+  //           if (!res) {
+  //             tree.missingCustomSkinLoader.push({
+  //               target: 'fabric',
+  //               skinService: user.profileService,
+  //               missingJar: true,
+  //               noVersionSelected: false,
+  //             })
+  //           }
+  //         } else {
+  //           this.warn('Current support on custom skin loader fabric does not support version below 1.14!')
+  //         }
+  //       }
+  //     }
+
+  //     Object.assign(report, tree)
+  //   } finally {
+  //     this.release('diagnose')
+  //   }
+  // }
 }

@@ -9,19 +9,22 @@ import InstallService from '../services/InstallService'
 import InstanceCurseforgeIOService from '../services/InstanceCurseforgeIOService'
 import InstanceGameSettingService from '../services/InstanceGameSettingService'
 import InstanceIOService from '../services/InstanceIOService'
+import InstanceJavaService from '../services/InstanceJavaService'
 import InstanceLogService from '../services/InstanceLogService'
-import InstanceResourceService from '../services/InstanceResourceService'
+import InstanceModsService from '../services/InstanceModsService'
+import InstanceResourcePackService from '../services/InstanceResourcePacksService'
 import InstanceSavesService from '../services/InstanceSavesService'
 import InstanceService from '../services/InstanceService'
+import InstanceVersionService from '../services/InstanceVersionService'
 import JavaService from '../services/JavaService'
 import LaunchService from '../services/LaunchService'
 import ResourcePackPreviewService from '../services/ResourcePackPreviewService'
 import ResourceService from '../services/ResourceService'
 import ServerStatusService from '../services/ServerStatusService'
+import AbstractService, { KEYS_SYMBOL, PARAMS_SYMBOL, ServiceConstructor, StatefulService, SUBSCRIBE_SYMBOL } from '../services/Service'
 import UserService from '../services/UserService'
 import VersionService from '../services/VersionService'
 import { Client } from '/@main/engineBridge'
-import AbstractService, { KEYS_SYMBOL, PARAMS_SYMBOL, ServiceConstructor, SUBSCRIBE_SYMBOL } from '../services/Service'
 import { Exception } from '/@shared/entities/exception'
 import { ServiceKey } from '/@shared/services/Service'
 import { aquire, isBusy, release } from '/@shared/util/semaphore'
@@ -106,9 +109,12 @@ export default class ServiceManager extends Manager {
             if (injection.getObject(type)) {
               // inject object
               params[i] = injection.getObject(type)
-            } else if (Object.getPrototypeOf(type) === AbstractService) {
+            } else if (Object.getPrototypeOf(type) === AbstractService || Object.getPrototypeOf(type) === StatefulService) {
               // injecting a service
               params[i] = discoverService(type)
+              if (!params[i]) {
+                throw new Error(`Cannot find service ${type}`)
+              }
             } else {
               throw new Error(`Cannot inject type ${type} to service ${type.name}!`)
             }
@@ -150,6 +156,8 @@ export default class ServiceManager extends Manager {
     await Promise.all(this.activeServices.map(s => s.initialize().catch((e) => {
       this.error(`Error during initialize service: ${Object.getPrototypeOf(s).constructor.name}`)
       this.error(e)
+    }).finally(() => {
+      this.app.emit('service-ready', s)
     })))
 
     this.log(`Successfully initialize services. Total Time is ${Date.now() - startingTime}ms.`)
@@ -259,7 +267,8 @@ export default class ServiceManager extends Manager {
     this.addService(InstanceGameSettingService)
     this.addService(InstanceIOService)
     this.addService(InstanceLogService)
-    this.addService(InstanceResourceService)
+    this.addService(InstanceModsService)
+    this.addService(InstanceResourcePackService)
     this.addService(InstanceSavesService)
     this.addService(InstanceService)
     this.addService(JavaService)
@@ -269,10 +278,12 @@ export default class ServiceManager extends Manager {
     this.addService(ServerStatusService)
     this.addService(UserService)
     this.addService(VersionService)
+    this.addService(InstanceVersionService)
+    this.addService(InstanceJavaService)
 
     this.setupServices()
     await this.initializeServices()
-    this.app.emit('service-ready')
+    this.app.emit('all-services-ready')
   }
 
   async engineReady() {

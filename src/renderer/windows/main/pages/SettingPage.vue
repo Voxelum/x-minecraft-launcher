@@ -404,7 +404,7 @@
 import { defineComponent, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
 import UpdateInfoDialog from './SettingPageUpdateInfoDialog.vue'
 import localMapping from '/@/assets/locales/index.json'
-import { useBackgroundBlur, useBackgroundImage, useI18n, useLauncherVersion, useNativeDialog, useParticle, useService, useSettings, useStore } from '/@/hooks'
+import { useBackgroundBlur, useBackgroundImage, useBaseService, useI18n, useLauncherVersion, useNativeDialog, useParticle, useService, useSettings } from '/@/hooks'
 import { BaseServiceKey } from '/@shared/services/BaseService'
 
 function setupImage() {
@@ -440,12 +440,11 @@ export default defineComponent({
     const dialog = useNativeDialog()
     const { showParticle, particleMode } = useParticle()
     const { blurMainBody } = useBackgroundBlur()
-    const { migrate, postMigrate, openDirectory } = useService(BaseServiceKey)
-    const { state } = useStore()
+    const { migrate, postMigrate, openDirectory, state } = useBaseService()
     const settings = useSettings()
     const { $t } = useI18n()
     const data = reactive({
-      rootLocation: state.base.root,
+      rootLocation: state.root,
 
       clearData: false,
       migrateData: false,
@@ -493,7 +492,7 @@ export default defineComponent({
       },
       doCancelApplyRoot() {
         data.migrateDialog = false
-        data.rootLocation = state.base.root
+        data.rootLocation = state.root
       },
       doApplyRoot() {
         data.migrateState = 1

@@ -30,7 +30,7 @@
           >
             {{ $tc('task.name', 2) }}
           </v-tab>
-          <v-tab
+          <!-- <v-tab
             :key="1"
           >
             {{ $t('issue.name') }}
@@ -39,7 +39,7 @@
             :key="2"
           >
             {{ $t('notification.name') }}
-          </v-tab>
+          </v-tab> -->
         </v-tabs>
       </template>
     </v-toolbar>
@@ -49,7 +49,7 @@
       >
         <task-view />
       </v-tab-item>
-      <v-tab-item
+      <!-- <v-tab-item
         :key="1"
       >
         <issue-view />
@@ -58,7 +58,7 @@
         :key="2"
       >
         <notification-view />
-      </v-tab-item>
+      </v-tab-item> -->
     </v-tabs-items>
   </v-dialog>
 </template>
@@ -67,12 +67,10 @@
 import { reactive, toRefs, defineComponent } from '@vue/composition-api'
 import { useDialog } from '../hooks'
 import TaskView from './BaseTaskDialogTaskView.vue'
-import IssueView from './BaseTaskDialogIssueView.vue'
-import NotificationView from './BaseTaskDialogNotificationView.vue'
 import { useRouter } from '/@/hooks'
 
 export default defineComponent({
-  components: { TaskView, IssueView, NotificationView },
+  components: { TaskView },
   setup() {
     const { hide, isShown } = useDialog('task')
 

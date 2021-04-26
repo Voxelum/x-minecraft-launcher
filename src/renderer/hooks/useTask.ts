@@ -4,7 +4,7 @@ import { requireNonnull } from '/@shared/util/assert'
 import { computed, inject, Ref } from '@vue/composition-api'
 import { TaskState } from '/@shared/task'
 
-export function useTaskCount () {
+export function useTaskCount() {
   const proxy = inject(TASK_PROXY)
   requireNonnull(proxy)
   const { tasks } = proxy
@@ -12,14 +12,14 @@ export function useTaskCount () {
   return { count }
 }
 
-export function useTasks () {
+export function useTasks() {
   const proxy = inject(TASK_PROXY)
   requireNonnull(proxy)
   const { pause, resume, cancel, tasks } = proxy
   return { tasks, pause, resume, cancel }
 }
 
-export function useTaskFromServiceCall (call: Ref<Readonly<Promise<any> | undefined>>) {
+export function useTaskFromServiceCall(call: Ref<Readonly<Promise<any> | undefined>>) {
   const proxy = inject(TASK_PROXY)
   requireNonnull(proxy)
 
@@ -33,7 +33,7 @@ export function useTaskFromServiceCall (call: Ref<Readonly<Promise<any> | undefi
   const total = computed(() => task.value?.total ?? -1)
   const message = computed(() => task.value?.message ?? '')
 
-  function wait () {
+  function wait() {
     // return dispatch('waitTask', taskHandle);
   }
   return {

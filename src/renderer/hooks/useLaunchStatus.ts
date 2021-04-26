@@ -1,6 +1,5 @@
 import { computed, reactive, toRefs } from '@vue/composition-api'
 import { useService, useServiceOnly } from './useService'
-import { useStore } from './useStore'
 import { LaunchServiceKey } from '/@shared/services/LaunchService'
 
 export function useLaunchEvent() {
@@ -8,10 +7,10 @@ export function useLaunchEvent() {
 }
 
 export function useLaunch() {
-  const { state } = useStore()
-  const status = computed(() => state.launch.status)
-  const errorType = computed(() => state.launch.errorType)
-  const errors = computed(() => state.launch.errors.map((e) => {
+  const { state, launch } = useService(LaunchServiceKey)
+  const status = computed(() => state.status)
+  const errorType = computed(() => state.errorType)
+  const errors = computed(() => state.errors.map((e) => {
     if (e instanceof Error) {
       return e.stack
     }
@@ -21,7 +20,7 @@ export function useLaunch() {
     status,
     errorType,
     errors,
-    ...useServiceOnly(LaunchServiceKey, 'launch'),
+    launch,
   }
 }
 

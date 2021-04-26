@@ -4,44 +4,56 @@ import { EOL } from 'os'
 import LauncherApp from '../app/LauncherApp'
 import DiagnoseService from './DiagnoseService'
 import ExternalAuthSkinService from './ExternalAuthSkinService'
-import InstanceResourceService from './InstanceResourceService'
-import AbstractService, { ExportService, Inject } from './Service'
+import InstanceJavaService from './InstanceJavaService'
+import InstanceResourcePackService from './InstanceResourcePacksService'
+import InstanceService from './InstanceService'
+import InstanceVersionService from './InstanceVersionService'
+import JavaService from './JavaService'
+import { ExportService, Inject, StatefulService } from './Service'
+import UserService from './UserService'
 import { Exception } from '/@shared/entities/exception'
-import { LaunchService as ILaunchService, LaunchServiceKey } from '/@shared/services/LaunchService'
+import { LaunchState, LaunchService as ILaunchService, LaunchServiceKey } from '/@shared/services/LaunchService'
 
 @ExportService(LaunchServiceKey)
-export default class LaunchService extends AbstractService implements ILaunchService {
+export default class LaunchService extends StatefulService<LaunchState> implements ILaunchService {
+  private launchedProcess: ChildProcess | undefined
+
+  createState() { return new LaunchState() }
+
   constructor(app: LauncherApp,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
     @Inject(ExternalAuthSkinService) private externalAuthSkinService: ExternalAuthSkinService,
-    @Inject(InstanceResourceService) private instanceResourceService: InstanceResourceService,
+    @Inject(InstanceResourcePackService) private instanceResourceService: InstanceResourcePackService,
+    @Inject(InstanceService) private instanceService: InstanceService,
+    @Inject(InstanceJavaService) private instanceJavaService: InstanceJavaService,
+    @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
+    @Inject(JavaService) private javaService: JavaService,
+    @Inject(UserService) private userService: UserService,
   ) {
     super(app)
   }
 
-  private launchedProcess: ChildProcess | undefined
-
   async generateArguments() {
-    const instance = this.getters.instance
-    const user = this.getters.user
-    const gameProfile = this.getters.gameProfile
+    const instance = this.instanceService.state.instance
+    const user = this.userService.state
+    const gameProfile = user.gameProfile
 
     const minecraftFolder = new MinecraftFolder(instance.path)
-    const javaPath = this.getters.instanceJava.path || this.getters.defaultJava.path
+    const javaPath = this.instanceJavaService.state.instanceJava.path || this.javaService.state.defaultJava.path
 
-    const instanceVersion = this.getters.instanceVersion
+    const instanceVersion = this.instanceVersionService.state.instanceVersion
     if (!instanceVersion.id) {
       throw new Exception({ type: 'launchNoVersionInstalled' })
     }
     const version = instanceVersion.id
-    const useAuthLib = user.authService !== 'mojang' && user.authService !== 'offline'
+    const useAuthLib = this.userService.state.isThirdPartyAuthentication
 
     /**
        * Build launch condition
        */
     const option: LaunchOption = {
       gameProfile,
-      accessToken: user.accessToken,
+      accessToken: user.user.accessToken,
       properties: {},
       gamePath: minecraftFolder.root,
       resourcePath: this.getPath(),
@@ -57,7 +69,7 @@ export default class LaunchService extends AbstractService implements ILaunchSer
       extraMCArgs: instance.mcOptions,
       yggdrasilAgent: useAuthLib ? {
         jar: await this.externalAuthSkinService.installAuthlibInjection(),
-        server: this.getters.authService.hostName,
+        server: user.authService.hostName,
       } : undefined,
     }
 
@@ -71,41 +83,42 @@ export default class LaunchService extends AbstractService implements ILaunchSer
    */
   async launch(force?: boolean) {
     try {
-      if (this.state.launch.status !== 'ready') {
+      if (this.state.status !== 'ready') {
         return false
       }
 
-      this.commit('launchStatus', 'checkingProblems')
+      this.state.launchStatus('checkingProblems')
 
       /**
-           * current selected profile
-           */
-      const instance = this.getters.instance
-      const user = this.getters.user
-      const gameProfile = this.getters.gameProfile
+       * current selected profile
+       */
+      const instance = this.instanceService.state.instance
+      const user = this.userService.state
+      const gameProfile = user.gameProfile
       if (user.accessToken === '' || gameProfile.name === '' || gameProfile.id === '') {
         throw new Exception({ type: 'launchIllegalAuth' })
       }
 
-      for (let problems = this.getters.issues.filter(p => p.autofix), i = 0;
+      const issues = this.diagnoseService.state.issues
+      for (let problems = issues.filter(p => p.autofix), i = 0;
         problems.length !== 0 && i < 1;
-        problems = this.getters.issues.filter(p => p.autofix), i += 1) {
-        await this.diagnoseService.fix(this.getters.issues.filter(p => !p.optional && p.autofix))
+        problems = issues.filter(p => p.autofix), i += 1) {
+        await this.diagnoseService.fix(issues.filter(p => !p.optional && p.autofix))
       }
 
-      if (!force && this.getters.issues.some(p => !p.optional)) {
-        throw new Exception({ type: 'launchBlockedIssues', issues: this.getters.issues.filter(p => !p.optional) })
+      if (!force && issues.some(p => !p.optional)) {
+        throw new Exception({ type: 'launchBlockedIssues', issues: issues.filter(p => !p.optional) })
       }
 
-      if (this.state.launch.status === 'ready') { // check if we have cancel (set to ready) this launch
+      if (this.state.status === 'ready') { // check if we have cancel (set to ready) this launch
         return false
       }
 
-      this.commit('launchStatus', 'launching')
+      this.state.launchStatus('launching')
 
       const minecraftFolder = new MinecraftFolder(instance.path)
 
-      let version = this.getters.instanceVersion
+      let version = this.instanceVersionService.state.instanceVersion
       if (!version.id) {
         throw new Exception({ type: 'launchNoVersionInstalled' })
       }
@@ -113,17 +126,17 @@ export default class LaunchService extends AbstractService implements ILaunchSer
 
       this.log(`Will launch with ${version} version.`)
 
-      const javaPath = this.getters.instanceJava.path || this.getters.defaultJava.path
+      const javaPath = this.instanceJavaService.state.instanceJava.path || this.javaService.state.defaultJava.path
 
       await this.instanceResourceService.ensureResourcePacksDeployment()
-      const useAuthLib = user.authService !== 'mojang' && user.authService !== 'offline' && user.authService !== 'microsoft'
+      const useAuthLib = user.isThirdPartyAuthentication
 
       /**
            * Build launch condition
            */
       const option: LaunchOption = {
         gameProfile,
-        accessToken: user.accessToken,
+        accessToken: user.user.accessToken,
         properties: {},
         gamePath: minecraftFolder.root,
         resourcePath: this.getPath(),
@@ -139,7 +152,7 @@ export default class LaunchService extends AbstractService implements ILaunchSer
         extraMCArgs: instance.mcOptions,
         yggdrasilAgent: useAuthLib ? {
           jar: await this.externalAuthSkinService.installAuthlibInjection(),
-          server: this.getters.authService.hostName,
+          server: user.authService.hostName,
         } : undefined,
       }
 
@@ -157,7 +170,7 @@ export default class LaunchService extends AbstractService implements ILaunchSer
       // Launch
       const process = await launch(option)
       this.launchedProcess = process
-      this.commit('launchStatus', 'launched')
+      this.state.launchStatus('launched')
 
       this.app.emit('minecraft-start', {
         version: version.id,
@@ -173,7 +186,7 @@ export default class LaunchService extends AbstractService implements ILaunchSer
       })
       watcher.on('error', (err) => {
         this.pushException({ type: 'launchGeneralException', error: err })
-        this.commit('launchStatus', 'ready')
+        this.state.launchStatus('ready')
       }).on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation }) => {
         this.log(`Minecraft exit: ${code}, signal: ${signal}`)
         if (crashReportLocation) {
@@ -186,7 +199,7 @@ export default class LaunchService extends AbstractService implements ILaunchSer
           crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
           errorLog: errorLogs.join('\n'),
         })
-        this.commit('launchStatus', 'ready')
+        this.state.launchStatus('ready')
         this.launchedProcess = undefined
       }).on('minecraft-window-ready', () => {
         this.app.emit('minecraft-window-ready')
@@ -203,7 +216,7 @@ export default class LaunchService extends AbstractService implements ILaunchSer
       process.unref()
       return true
     } catch (e) {
-      this.commit('launchStatus', 'ready')
+      this.state.launchStatus('ready')
       this.error(e)
       throw new Exception({ type: 'launchGeneralException', error: e })
     }

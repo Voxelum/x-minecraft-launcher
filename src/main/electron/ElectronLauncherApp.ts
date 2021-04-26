@@ -1,33 +1,16 @@
 import { Task } from '@xmcl/task'
-import { app, BrowserWindow, dialog, ipcMain, shell } from 'electron'
-import { autoUpdater } from 'electron-updater'
+import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { createServer } from 'http'
 import { join } from 'path'
 import { URL } from 'url'
-import { StaticStore } from '../util/staticStore'
 import Controller from './Controller'
-import { checkUpdateTask as _checkUpdateTask, DownloadAsarUpdateTask, DownloadFullUpdateTask, quitAndInstallAsar, quitAndInstallFullUpdate } from './updater'
+import { checkUpdateTask as _checkUpdateTask, DownloadAsarUpdateTask, DownloadFullUpdateTask, quitAndInstallAsar, quitAndInstallFullUpdate, setup } from './updater'
 import LauncherApp from '/@main/app/LauncherApp'
 import { LauncherAppController } from '/@main/app/LauncherAppController'
 import { IS_DEV } from '/@main/constant'
 import { isDirectory } from '/@main/util/fs'
 import { UpdateInfo } from '/@shared/entities/update'
 
-ipcMain.handle('dialog:showCertificateTrustDialog', (event, ...args) => {
-  return dialog.showCertificateTrustDialog(args[0])
-})
-ipcMain.handle('dialog:showErrorBox', (event, ...args) => {
-  return dialog.showErrorBox(args[0], args[1])
-})
-ipcMain.handle('dialog:showMessageBox', (event, ...args) => {
-  return dialog.showMessageBox(args[0])
-})
-ipcMain.handle('dialog:showOpenDialog', (event, ...args) => {
-  return dialog.showOpenDialog(args[0])
-})
-ipcMain.handle('dialog:showSaveDialog', (event, ...args) => {
-  return dialog.showSaveDialog(args[0])
-})
 export default class ElectronLauncherApp extends LauncherApp {
   createController(): LauncherAppController {
     return new Controller(this)
@@ -99,27 +82,20 @@ export default class ElectronLauncherApp extends LauncherApp {
     return _checkUpdateTask.bind(this)()
   }
 
-  downloadUpdateTask(): Task<void> {
-    if (this.storeManager.store.state.base.updateInfo) {
-      if (this.storeManager.store.state.base.updateInfo.incremental) {
-        const updatePath = join(this.appDataPath, 'pending_update')
-        return new DownloadAsarUpdateTask(this.storeManager.store.state.base.updateInfo, this.networkManager.isInGFW, updatePath)
-          .map(() => undefined)
-      }
-      return new DownloadFullUpdateTask()
+  downloadUpdateTask(updateInfo: UpdateInfo): Task<void> {
+    if (updateInfo.incremental) {
+      const updatePath = join(this.appDataPath, 'pending_update')
+      return new DownloadAsarUpdateTask(updateInfo, this.networkManager.isInGFW, updatePath)
+        .map(() => undefined)
     }
-    throw new Error('Please check update first!')
+    return new DownloadFullUpdateTask()
   }
 
-  async installUpdateAndQuit(): Promise<void> {
-    if (this.storeManager.store.state.base.updateInfo) {
-      if (this.storeManager.store.state.base.updateInfo.incremental) {
-        await quitAndInstallAsar.bind(this)()
-      } else {
-        quitAndInstallFullUpdate()
-      }
+  async installUpdateAndQuit(updateInfo: UpdateInfo): Promise<void> {
+    if (updateInfo.incremental) {
+      await quitAndInstallAsar.bind(this)()
     } else {
-      throw new Error('Please check and download update first!')
+      quitAndInstallFullUpdate()
     }
   }
 
@@ -193,6 +169,8 @@ export default class ElectronLauncherApp extends LauncherApp {
     })
 
     await super.setup()
+
+    setup(this.storeManager)
   }
 
   getLocale() {
@@ -219,33 +197,11 @@ export default class ElectronLauncherApp extends LauncherApp {
     return super.onEngineReady()
   }
 
-  protected async onStoreReady(store: StaticStore<any>) {
+  protected async onStoreReady() {
     this.parking = true
-
-    store.subscribe(({ type, payload }) => {
-      if (type === 'autoInstallOnAppQuit') {
-        autoUpdater.autoInstallOnAppQuit = payload
-      } else if (type === 'allowPrerelease') {
-        // autoUpdater.allowPrerelease = payload;
-      } else if (type === 'autoDownload') {
-        autoUpdater.autoDownload = payload
-      }
-    })
-
-    if (!store.state.base.locale) {
-      store.commit('locale', app.getLocale())
-    }
 
     this.log(`Current launcher core version is ${this.version}.`)
 
-    autoUpdater.autoInstallOnAppQuit = store.state.base.autoInstallOnAppQuit
-    autoUpdater.autoDownload = store.state.base.autoDownload
-    // autoUpdater.allowPrerelease = store.state.base.allowPrerelease;
-
-    autoUpdater.allowPrerelease = true
-
-    this.storeManager.store.commit('version', [app.getVersion(), process.env.BUILD_NUMBER])
-
-    await super.onStoreReady(store)
+    await super.onStoreReady()
   }
 }

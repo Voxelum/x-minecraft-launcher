@@ -4,10 +4,24 @@ import { RuntimeVersions } from './instance.schema'
 
 export interface Issue {
   id: string
-  arguments: { [key: string]: any }
+  parameters: { [key: string]: any }
   autofix?: boolean
   optional?: boolean
   multi: boolean
+}
+
+export interface IssueReg<P> {
+  actived: Array<(P & { file?: string; actual?: string; expect?: string })>
+  fixing: boolean
+  autofix: boolean
+  optional: boolean
+}
+
+export interface Registry<PARAM, AF = boolean, OP = boolean> {
+  fixing: boolean
+  autofix: AF
+  optional: OP
+  actived: (PARAM & { file?: string; actual?: string; expect?: string })[]
 }
 
 export type IssueReport = {
@@ -17,6 +31,7 @@ export type IssueReport = {
 export type IssueType = keyof IssueRegistry
 
 export interface IssueRegistry {
+  missingVersion: Registry<{ version: string } & RuntimeVersions>
   missingVersionJar: Registry<{ version: string } & RuntimeVersions>
   missingVersionJson: Registry<{ version: string } & RuntimeVersions>
   missingLibraries: Registry<ResolvedLibrary>
@@ -41,8 +56,6 @@ export interface IssueRegistry {
   missingCustomSkinLoader: Registry<{ target: 'forge' | 'fabric'; skinService: string; noVersionSelected: boolean; missingJar: boolean }, true, true>
   missingModsOnServer: Registry<{ modid: string; version: string }, false, false>
 
-  missingVersion: Registry<{ version: string } & RuntimeVersions>
-
   requireForge: Registry<{}, false, true>
   requireFabric: Registry<{}, false, true>
   requireFabricAPI: Registry<{ version: string; name: string }, false, true>
@@ -55,11 +68,4 @@ export interface IssueRegistry {
     optional: boolean
     actived: { [key: string]: any }[]
   }
-}
-
-export interface Registry<A, AF = true, OP = false > {
-  fixing: boolean
-  autofix: AF
-  optional: OP
-  actived: (A & { file?: string; actual?: string; expect?: string })[]
 }

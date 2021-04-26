@@ -2,18 +2,27 @@ import { Frame, parse, stringify } from '@xmcl/gamesetting'
 import { FSWatcher, readFile, writeFile } from 'fs-extra'
 import watch from 'node-watch'
 import { join } from 'path'
-import AbstractService, { ExportService, Singleton, Subscribe } from './Service'
+import LauncherApp from '../app/LauncherApp'
+import InstanceService from './InstanceService'
+import { ExportService, Inject, Singleton, StatefulService, Subscribe } from './Service'
 import { exists, missing } from '/@main/util/fs'
 import { Exception } from '/@shared/entities/exception'
 import { compareRelease, compareSnapshot, isReleaseVersion, isSnapshotPreview } from '/@shared/entities/version'
-import { EditGameSettingOptions, InstanceGameSettingService as IInstanceGameSettingService, InstanceGameSettingServiceKey } from '/@shared/services/InstanceGameSettingService'
+import { EditGameSettingOptions, GameSettingState, InstanceGameSettingService as IInstanceGameSettingService, InstanceGameSettingServiceKey } from '/@shared/services/InstanceGameSettingService'
 import { requireString } from '/@shared/util/assert'
 
 /**
  * The service for game setting
  */
 @ExportService(InstanceGameSettingServiceKey)
-export default class InstanceGameSettingService extends AbstractService implements IInstanceGameSettingService {
+export default class InstanceGameSettingService extends StatefulService<GameSettingState> implements IInstanceGameSettingService {
+  createState() { return new GameSettingState() }
+
+  constructor(app: LauncherApp,
+    @Inject(InstanceService) private instanceService: InstanceService) {
+    super(app)
+  }
+
   private watcher: FSWatcher | undefined
 
   private watchingInstance = ''
@@ -55,13 +64,13 @@ export default class InstanceGameSettingService extends AbstractService implemen
         const optionsPath = join(path, 'options.txt')
         this.log(`Load instance options.txt ${optionsPath}`)
         const result = await readFile(optionsPath, 'utf-8').then(parse)
-        this.commit('instanceGameSettingsLoad', result)
+        this.state.instanceGameSettingsLoad(result)
       } catch (e) {
         if (!e.message.startsWith('ENOENT:')) {
           this.warn(`An error ocurrs during parse game options of ${path}.`)
           this.warn(e)
         }
-        this.commit('instanceGameSettingsLoad', { resourcePacks: [] })
+        this.state.instanceGameSettingsLoad({ resourcePacks: [] })
       }
       this.dirty = false
     }
@@ -75,11 +84,12 @@ export default class InstanceGameSettingService extends AbstractService implemen
 
   @Subscribe('instanceGameSettings')
   async saveInstanceGameSetting() {
-    const optionsTxtPath = join(this.state.instance.path, 'options.txt')
+    const instancePath = this.watchingInstance
+    const optionsTxtPath = join(instancePath, 'options.txt')
     if (await exists(optionsTxtPath)) {
       const buf = await readFile(optionsTxtPath)
       const content = parse(buf.toString())
-      for (const [key, value] of Object.entries(this.state.instanceGameSetting)) {
+      for (const [key, value] of Object.entries(this.state)) {
         if (key in content && typeof value !== 'undefined' && value !== null) {
           (content as any)[key] = value
         }
@@ -87,7 +97,7 @@ export default class InstanceGameSettingService extends AbstractService implemen
       await writeFile(optionsTxtPath, stringify(content))
     } else {
       const result: Record<string, unknown> = {}
-      for (const [key, value] of Object.entries(this.state.instanceGameSetting)) {
+      for (const [key, value] of Object.entries(this.state)) {
         if (typeof value !== 'undefined') {
           result[key] = value
         }
@@ -95,18 +105,18 @@ export default class InstanceGameSettingService extends AbstractService implemen
       await writeFile(optionsTxtPath, stringify(result))
     }
 
-    this.log(`Saved instance gamesettings ${this.state.instance.path}`)
+    this.log(`Saved instance gamesettings ${instancePath}`)
   }
 
   async edit(options: EditGameSettingOptions) {
-    const instancePath = options.instancePath ?? this.state.instance.path
-    const instance = this.state.instance.all[instancePath]
+    const instancePath = options.instancePath ?? this.watchingInstance
+    const instance = this.instanceService.state.all[instancePath]
     if (!instance) {
       throw new Exception({ type: 'instanceNotFound', instancePath: options.instancePath! })
     }
     const current = instancePath !== this.watchingInstance
       ? await this.getInstanceGameSettings(instancePath)
-      : this.state.instanceGameSetting
+      : this.state
 
     const result: Frame = {}
     for (const key of Object.keys(options)) {
@@ -137,7 +147,7 @@ export default class InstanceGameSettingService extends AbstractService implemen
     }
     if (Object.keys(result).length > 0) {
       this.log(`Edit gamesetting: ${JSON.stringify(result, null, 4)} to ${instancePath}`)
-      this.commit('instanceGameSettings', result)
+      this.state.instanceGameSettings(result)
     }
   }
 

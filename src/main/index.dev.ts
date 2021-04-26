@@ -42,7 +42,7 @@ app.whenReady().then(() => {
   })
 })
 
-const devServer = new Socket({}).connect(25555, '127.0.0.1')
+const devServer = new Socket({}).connect(3031, '127.0.0.1')
 devServer.on('data', () => {
   BrowserWindow.getAllWindows().forEach(w => w.reload())
 })

@@ -1,6 +1,5 @@
 import { computed } from '@vue/composition-api'
-import { useServiceOnly } from './useService'
-import { useStore } from './useStore'
+import { useService, useServiceOnly } from './useService'
 import { InstanceCurseforgeIOServiceKey } from '/@shared/services/InstanceCurseforgeIOServic'
 import { ResourceServiceKey } from '/@shared/services/ResourceService'
 
@@ -12,27 +11,31 @@ export function useResourceOperation() {
   }
 }
 
+export function useResourceService() {
+  return useService(ResourceServiceKey)
+}
+
 export function useSaveResource() {
-  const { state } = useStore()
+  const { state } = useResourceService()
   return {
     ...useResourceOperation(),
-    resources: computed(() => state.resource.saves),
+    resources: computed(() => state.saves),
   }
 }
 
 export function useModResource() {
-  const { state } = useStore()
+  const { state } = useResourceService()
   return {
     ...useResourceOperation(),
-    resources: computed(() => state.resource.mods),
+    resources: computed(() => state.mods),
   }
 }
 
 export function useResourcePackResource() {
-  const { state } = useStore()
+  const { state } = useResourceService()
   return {
     ...useResourceOperation(),
-    resources: computed(() => state.resource.resourcepacks),
+    resources: computed(() => state.resourcepacks),
   }
 }
 

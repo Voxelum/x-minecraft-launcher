@@ -1,15 +1,123 @@
 import type { ResolvedLibrary, Version } from '@xmcl/core'
-import type { installForgeTask, LiteloaderVersion, MinecraftVersion } from '@xmcl/installer'
+import type { FabricArtifactVersion, installForgeTask, InstallProfile, LiteloaderVersion, LiteloaderVersionList, MinecraftVersion, MinecraftVersionList } from '@xmcl/installer'
 import { OptifineVersion } from '../entities/version.schema'
-import { ServiceKey } from './Service'
+import { StatefulService, ServiceKey, State } from './Service'
+import { LATEST_RELEASE } from '/@shared/entities/version'
+import { ForgeVersionList, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '/@shared/entities/version.schema'
+
+export interface InstallState extends State { }
+export class InstallState {
+  /**
+   * Minecraft version metadata list. Helps to download.
+   */
+  minecraft = {
+    timestamp: '',
+    latest: {
+      snapshot: '',
+      release: '',
+    },
+    versions: [],
+  } as VersionMinecraftSchema
+
+  /**
+    * Forge version metadata dictionary. Helps to download.
+    */
+  forge = [] as VersionForgeSchema
+  /**
+   * Liteloader version metadata list. Helps to download.
+   */
+  liteloader = {
+    timestamp: '',
+    meta: {
+      description: '',
+      authors: '',
+      url: '',
+      updated: '',
+      updatedTime: 0,
+    },
+    versions: {},
+  } as VersionLiteloaderSchema
+
+  /**
+   * Fabric version metadata dictionary. Helps to download.
+   */
+  fabric = {
+    yarnTimestamp: '',
+    loaderTimestamp: '',
+    yarns: [],
+    loaders: [],
+  } as VersionFabricSchema
+
+  /**
+   * The optifine version list
+   */
+  optifine = {
+    etag: '',
+    versions: [],
+  } as VersionOptifineSchema
+
+  /**
+    * latest snapshot
+    */
+  get minecraftSnapshot() {
+    return this.minecraft.versions.find(v => v.id === this.minecraft.latest.snapshot)
+  }
+
+  /**
+   * latest release
+   */
+  get minecraftRelease() {
+    return this.minecraft.versions.find(v => v.id === this.minecraft.latest.release) || LATEST_RELEASE
+  }
+
+  minecraftMetadata(metadata: MinecraftVersionList) {
+    this.minecraft = Object.freeze(metadata)
+  }
+
+  forgeMetadata(metadata: ForgeVersionList) {
+    const existed = this.forge.find((version) => version.mcversion === metadata.mcversion)
+    if (existed) {
+      existed.timestamp = metadata.timestamp
+      existed.versions = Object.freeze(metadata.versions)
+    } else {
+      const result = { ...metadata, versions: Object.freeze(metadata.versions) }
+      this.forge.push(result)
+    }
+  }
+
+  liteloaderMetadata(metadata: LiteloaderVersionList) {
+    this.liteloader = Object.freeze(metadata)
+  }
+
+  fabricYarnMetadata({ versions, timestamp }: { versions: FabricArtifactVersion[]; timestamp: string }) {
+    this.fabric.yarnTimestamp = timestamp
+    this.fabric.yarns = Object.seal(versions)
+  }
+
+  fabricLoaderMetadata({ versions, timestamp }: { versions: FabricArtifactVersion[]; timestamp: string }) {
+    this.fabric.loaderTimestamp = timestamp
+    this.fabric.loaders = Object.seal(versions)
+  }
+
+  optifineMetadata({ versions, etag: timestamp }: VersionOptifineSchema) {
+    this.optifine.versions = Object.seal(versions)
+    this.optifine.etag = timestamp
+  }
+}
 
 export interface InstallOptifineOptions extends OptifineVersion {
   inhrenitFrom?: string
 }
+
+export interface RefreshForgeOptions {
+  force?: boolean
+  mcversion: string
+}
+
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
  */
-export interface InstallService {
+export interface InstallService extends StatefulService<InstallState> {
   /**
    * Request minecraft version list and cache in to store and disk.
    */
@@ -47,10 +155,7 @@ export interface InstallService {
   /**
    * Refresh forge remote versions cache from forge websites or BMCL API
    */
-  refreshForge(options?: {
-    force?: boolean
-    mcversion?: string
-  }): Promise<void>
+  refreshForge(options: RefreshForgeOptions): Promise<void>
   /**
    * Install forge by forge version metadata
    */
@@ -85,6 +190,8 @@ export interface InstallService {
    * Install a specific liteloader version
    */
   installLiteloader(meta: LiteloaderVersion): Promise<void>
+
+  installByProfile(profile: InstallProfile): Promise<void>
 }
 
 export const InstallServiceKey: ServiceKey<InstallService> = 'InstallService'

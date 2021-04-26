@@ -60,19 +60,19 @@ const mod: DiagnoseModule = {
         if (reg.actived.length >= 4) {
           issues.push({
             id,
-            arguments: { count: reg.actived.length, values: reg.actived },
+            parameters: { count: reg.actived.length, values: reg.actived },
             autofix: reg.autofix,
             optional: reg.optional,
             multi: true,
           })
         } else {
-          issues.push(...reg.actived.map(a => ({
-            id,
-            arguments: a,
-            autofix: reg.autofix,
-            optional: reg.optional,
-            multi: false,
-          })))
+          // issues.push(...reg.actived.map(a => ({
+          //   id,
+          //   arguments: a,
+          //   autofix: reg.autofix,
+          //   optional: reg.optional,
+          //   multi: false,
+          // })))
         }
       }
 

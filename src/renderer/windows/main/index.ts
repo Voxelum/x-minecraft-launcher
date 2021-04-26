@@ -2,9 +2,9 @@ import '/@/assets/google.font.css'
 import locales from '/@/assets/locales'
 import { I18N_KEY, ROUTER_KEY } from '/@/constant'
 import provideElectron from '/@/providers/provideElectron'
-import provideServiceProxy from '/@/providers/provideServiceProxy'
+import provideServiceProxy, { provideSemaphore } from '/@/providers/provideServiceProxy'
 import provideVueI18n from '/@/providers/provideVueI18n'
-import provideVuexStore from '/@/providers/provideVuexStore'
+import provideSyncableVuexStore from '/@/providers/provideVuexStore'
 import SkinView from '/@/skin/SkinView.vue'
 import TextComponent from '/@/TextComponent'
 import Vue from 'vue'
@@ -26,6 +26,7 @@ import ForgeIcon from './components/ForgeIcon.vue'
 import FabricIcon from './components/FabricIcon.vue'
 import MainWindow from './MainWindow.vue'
 import router from './router'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 Vue.use(VueCompositionApi)
 
@@ -85,12 +86,32 @@ function startApp() {
     i18n,
     setup() {
       provideElectron()
-      provideServiceProxy()
-      const store = provideVuexStore()
+      provideSemaphore()
+      const store = provideSyncableVuexStore()
+      const proxy = provideServiceProxy(store)
+      const { openInBrowser } = proxy(BaseServiceKey)
+      store.sync()
       provide(I18N_KEY, i18n)
-      store.watch((state) => state.base.locale, (newValue: string, oldValue: string) => {
+      store.watch((state) => state[BaseServiceKey.toString()].locale, (newValue: string, oldValue: string) => {
         console.log(`Locale changed ${oldValue} -> ${newValue}`)
         i18n.locale = newValue
+      })
+
+      router.beforeEach((to, from, next) => {
+        const full = to.fullPath.substring(1)
+        if (full.startsWith('https:') || full.startsWith('http:') || full.startsWith('external')) {
+          next(false)
+          console.log(`Prevent ${from.fullPath} -> ${to.fullPath}`)
+          if (full.startsWith('external')) {
+            console.log(full.substring('external/'.length))
+            openInBrowser(full.substring('external/'.length))
+          } else {
+            openInBrowser(full)
+          }
+        } else {
+          console.log(`Route ${from.fullPath} -> ${to.fullPath}`)
+          next()
+        }
       })
       provide(ROUTER_KEY, new Proxy(router, {
         get(target, key) {

@@ -35,10 +35,10 @@
         >
           <v-list-tile-content>
             <v-list-tile-title>
-              {{ $tc(`diagnosis.${item.id}`, item.arguments.count || 0, item.arguments) }}
+              {{ $tc(`diagnosis.${item.id}`, item.parameters.count || 0, item.parameters) }}
             </v-list-tile-title>
             <v-list-tile-sub-title>
-              {{ $t(`diagnosis.${item.id}.message`, item.arguments || {}) }}
+              {{ $t(`diagnosis.${item.id}.message`, item.parameters || {}) }}
             </v-list-tile-sub-title>
           </v-list-tile-content>
           <v-list-tile-action>

@@ -28,7 +28,7 @@
       <v-avatar>
         <img
           v-if="isServer"
-          :src="favicon"
+          :src="status.favicon"
         >
         <v-icon v-else>
           power
@@ -47,11 +47,11 @@
       <v-avatar>
         <v-icon>people</v-icon>
       </v-avatar>
-      {{ players.online }} / {{ players.max }}
+      {{ status.players.online }} / {{ status.players.max }}
     </v-chip>
     <v-chip
       v-if="isServer"
-      :style="{ color: ping < 100 ? 'green' : ping < 300 ? 'orange' : 'red' }"
+      :style="{ color: status.ping < 100 ? 'green' : status.ping < 300 ? 'orange' : 'red' }"
       label
       class="pointer"
       outline
@@ -60,12 +60,12 @@
     >
       <v-avatar>
         <v-icon
-          :style="{ color: ping < 100 ? 'green' : ping < 300 ? 'orange' : 'red' }"
+          :style="{ color: status.ping < 100 ? 'green' : status.ping < 300 ? 'orange' : 'red' }"
         >
           signal_cellular_alt
         </v-icon>
       </v-avatar>
-      {{ ping }} ms
+      {{ status.ping }} ms
     </v-chip>
   </div>
 </template>
@@ -82,7 +82,7 @@ export default defineComponent({
   setup() {
     const { runtime, name, author, isServer } = useInstance()
     const { id, folder } = useInstanceVersion()
-    const { players, ping, favicon } = useInstanceServerStatus()
+    const { status } = useInstanceServerStatus()
     return {
       version: runtime,
       name,
@@ -90,9 +90,7 @@ export default defineComponent({
       isServer,
       id,
       folder,
-      players,
-      ping,
-      favicon,
+      status,
     }
   },
 })

@@ -71,7 +71,7 @@
             :selected="false"
             @click.stop
           >
-            <text-component :source="version.name" />
+            <text-component :source="status.version.name" />
           </v-chip>
           <v-chip
             v-if="instance.server"
@@ -81,11 +81,11 @@
             @click.stop
           >
             <v-avatar>
-              <v-icon :style="{ color: ping < 0 ? 'grey' : ping < 100 ? 'green' : ping < 300 ? 'orange' : 'red' }">
+              <v-icon :style="{ color: status.ping < 0 ? 'grey' : status.ping < 100 ? 'green' : status.ping < 300 ? 'orange' : 'red' }">
                 signal_cellular_alt
               </v-icon>
             </v-avatar>
-            {{ ping }} ms
+            {{ status.ping }} ms
           </v-chip>
           <v-chip
             v-if="instance.server"
@@ -97,7 +97,7 @@
             <v-avatar>
               <v-icon>people</v-icon>
             </v-avatar>
-            {{ players.online }} / {{ players.max }}
+            {{ status.players.online }} / {{ status.players.max }}
           </v-chip>
           <v-chip
             label
@@ -143,12 +143,13 @@ export default defineComponent({
     function onDragStart(event: DragEvent) {
       event.dataTransfer!.effectAllowed = 'move'
     }
-    const { favicon, ...status } = useInstanceServerStatus(props.instance.path)
+    const { status } = useInstanceServerStatus(props.instance.path)
     const image = computed(() => {
-      if (favicon.value !== unknownServer) {
-        return favicon.value
+      if (status.value.favicon && status.value.favicon !== unknownServer) {
+        return status.value.favicon
       }
       const banner = getBanner(props.instance.runtime.minecraft)
+      console.log(banner)
       if (banner) {
         return banner
       }
@@ -156,7 +157,7 @@ export default defineComponent({
     })
     return {
       image,
-      ...status,
+      status,
       description: computed(() => props.instance.description),
       onDragStart,
     }

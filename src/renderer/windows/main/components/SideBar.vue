@@ -128,18 +128,14 @@
 
 <script lang=ts>
 import {
-  reactive,
-  toRefs,
   defineComponent,
 } from '@vue/composition-api'
+import { useDialog } from '../hooks'
 import {
-  provideRouterHistory,
-  useRouter,
   useTaskCount,
   useUpdateInfo,
 } from '/@/hooks'
 import { required } from '/@/util/props'
-import { useDialog } from '../hooks'
 
 export default defineComponent({
   props: {

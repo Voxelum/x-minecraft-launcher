@@ -1,20 +1,18 @@
-import { Status } from '@xmcl/client'
-import { ServerInfo } from '@xmcl/server-info'
-import { ensureDir, readdir, remove } from 'fs-extra'
-import { join, resolve } from 'path'
+import { ensureDir, remove } from 'fs-extra'
+import { resolve } from 'path'
 import { v4 } from 'uuid'
-import DiagnoseService from './DiagnoseService'
+import InstallService from './InstallService'
 import ServerStatusService from './ServerStatusService'
-import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service'
+import { ExportService, Inject, Singleton, StatefulService } from './Service'
+import UserService from './UserService'
 import LauncherApp from '/@main/app/LauncherApp'
 import { exists, missing, readdirEnsured } from '/@main/util/fs'
 import { MappedFile, RelativeMappedFile } from '/@main/util/persistance'
 import { BufferJsonSerializer } from '/@main/util/serialize'
 import { createTemplate } from '/@shared/entities/instance'
 import { InstanceSchema, InstancesSchema, RuntimeVersions } from '/@shared/entities/instance.schema'
-import { getHostAndPortFromIp, PINGING_STATUS } from '/@shared/entities/serverStatus'
 import { LATEST_RELEASE } from '/@shared/entities/version'
-import { CreateOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceServiceKey } from '/@shared/services/InstanceService'
+import { CreateOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceServiceKey, InstanceState } from '/@shared/services/InstanceService'
 import { requireObject, requireString } from '/@shared/util/assert'
 import { assignShallow } from '/@shared/util/object'
 
@@ -24,37 +22,28 @@ const INSTANCES_FOLDER = 'instances'
  * Provide instance spliting service. It can split the game into multiple environment and dynamiclly deploy the resource to run.
  */
 @ExportService(InstanceServiceKey)
-export class InstanceService extends AbstractService implements IInstanceService {
+export class InstanceService extends StatefulService<InstanceState> implements IInstanceService {
   protected readonly instancesFile = new MappedFile<InstancesSchema>(this.getPath('instances.json'), new BufferJsonSerializer(InstancesSchema))
-    .setSaveSource(() => ({ instances: Object.keys(this.state.instance.all), selectedInstance: this.state.instance.path }))
+    .setSaveSource(() => ({ instances: Object.keys(this.state.all), selectedInstance: this.state.path }))
 
   protected readonly instanceFile = new RelativeMappedFile<InstanceSchema>('instance.json', new BufferJsonSerializer(InstanceSchema))
 
   constructor(app: LauncherApp,
-    @Inject(DiagnoseService) diagnoseService: DiagnoseService,
-    @Inject(ServerStatusService) protected statusService: ServerStatusService) {
+    @Inject(ServerStatusService) protected statusService: ServerStatusService,
+    @Inject(UserService) private userService: UserService,
+    @Inject(InstallService) private installService: InstallService,
+  ) {
     super(app)
-
-    diagnoseService.registerMatchedFix(['invalidJava'], () => {
-      this.editInstance({ java: this.getters.defaultJava.path })
-    })
   }
+
+  createState() { return new InstanceState() }
 
   protected getPathUnder(...ps: string[]) {
     return this.getPath(INSTANCES_FOLDER, ...ps)
   }
 
-  @Subscribe('javaUpdate')
-  private async onJavaUpdate() {
-    if (!this.getters.instanceJava.valid) {
-      await this.editInstance({ java: this.getters.defaultJava.path })
-    }
-  }
-
   async loadInstance(path: string) {
     requireString(path)
-
-    const { commit, getters } = this
 
     let option: InstanceSchema
     try {
@@ -68,7 +57,7 @@ export class InstanceService extends AbstractService implements IInstanceService
     const instance = createTemplate()
 
     instance.path = path
-    instance.author = instance.author || getters.gameProfile?.name || ''
+    instance.author = instance.author || this.userService.state.gameProfile?.name || ''
     instance.runtime.minecraft = LATEST_RELEASE.id
 
     assignShallow(instance, option)
@@ -82,9 +71,12 @@ export class InstanceService extends AbstractService implements IInstanceService
         instance.resolution = option.resolution
       }
     }
-    instance.server = option.server
 
-    commit('instanceAdd', instance)
+    if (option.server) {
+      instance.server = option.server
+    }
+
+    this.state.instanceAdd(instance)
 
     this.log(`Loaded instance ${instance.path}`)
 
@@ -104,14 +96,14 @@ export class InstanceService extends AbstractService implements IInstanceService
 
     await Promise.all(all.map(path => this.loadInstance(path)))
 
-    if (Object.keys(state.instance.all).length === 0) {
+    if (Object.keys(state.all).length === 0) {
       this.log('Cannot find any instances, try to init one default modpack.')
       await this.createAndMount({})
     } else {
-      if (this.state.instance.all[instanceConfig.selectedInstance]) {
+      if (this.state.all[instanceConfig.selectedInstance]) {
         await this.mountInstance(instanceConfig.selectedInstance)
       } else {
-        await this.mountInstance(Object.keys(state.instance.all)[0])
+        await this.mountInstance(Object.keys(state.all)[0])
       }
     }
 
@@ -126,22 +118,17 @@ export class InstanceService extends AbstractService implements IInstanceService
         this.log(`Removed instance files under ${this.state.instance.path}`)
       })
       .subscribe('instance', async () => {
-        const inst = this.state.instance.all[this.state.instance.path]
+        const inst = this.state.all[this.state.instance.path]
         await this.instanceFile.saveTo(inst.path, inst)
         this.log(`Saved instance ${this.state.instance.path}`)
       })
       .subscribe('instanceSelect', async (path) => {
-        await this.instanceFile.saveTo(path, this.state.instance.all[path])
+        await this.instanceFile.saveTo(path, this.state.all[path])
         await this.instancesFile.save()
         this.log(`Saved instance selection ${path}`)
       })
   }
 
-  /**
-   * Create a managed instance (either a modpack or a server) under the managed folder.
-   * @param option The creation option
-   * @returns The instance path
-   */
   async createInstance(payload: CreateOption): Promise<string> {
     requireObject(payload)
 
@@ -163,8 +150,8 @@ export class InstanceService extends AbstractService implements IInstanceService
     }
 
     instance.path = payload.path || this.getPathUnder(v4())
-    instance.runtime.minecraft = instance.runtime.minecraft || this.getters.minecraftRelease.id
-    instance.author = this.getters.gameProfile?.name ?? ''
+    instance.runtime.minecraft = instance.runtime.minecraft || this.installService.state.minecraftRelease.id
+    instance.author = this.userService.state.gameProfile?.name ?? ''
     instance.creationDate = Date.now()
     instance.lastAccessDate = Date.now()
 
@@ -173,7 +160,7 @@ export class InstanceService extends AbstractService implements IInstanceService
     instance.showLog = payload.showLog ?? instance.showLog
 
     await ensureDir(instance.path)
-    this.commit('instanceAdd', instance)
+    this.state.instanceAdd(instance)
 
     this.log('Created instance with option')
     this.log(JSON.stringify(instance, null, 4))
@@ -212,7 +199,7 @@ export class InstanceService extends AbstractService implements IInstanceService
 
     // not await this to improve the performance
 
-    this.commit('instanceSelect', path)
+    this.state.instanceSelect(path)
   }
 
   /**
@@ -224,7 +211,7 @@ export class InstanceService extends AbstractService implements IInstanceService
 
     // if the instance is selected now
     if (this.state.instance.path === path) {
-      const restPath = Object.keys(this.state.instance.all).filter(p => p !== path)
+      const restPath = Object.keys(this.state.all).filter(p => p !== path)
       // if only one instance left
       if (restPath.length === 0) {
         // then create and select a new one
@@ -235,7 +222,7 @@ export class InstanceService extends AbstractService implements IInstanceService
       }
     }
 
-    this.commit('instanceRemove', path)
+    this.state.instanceRemove(path)
 
     const isManaged = resolve(path).startsWith(resolve(this.getPathUnder()))
     if (isManaged && await exists(path)) {
@@ -251,7 +238,7 @@ export class InstanceService extends AbstractService implements IInstanceService
     requireObject(options)
 
     const instancePath = options.instancePath || this.state.instance.path
-    const state = this.state.instance.all[instancePath]
+    const state = this.state.all[instancePath]
 
     const ignored = { runtime: true, deployments: true, server: true, vmOptions: true, mcOptions: true, minMemory: true, maxMemory: true }
     const result: Record<string, any> = {}
@@ -329,64 +316,8 @@ export class InstanceService extends AbstractService implements IInstanceService
 
     if (Object.keys(result).length > 0) {
       this.log(`Modify instance ${JSON.stringify(result, null, 4)}.`)
-      this.commit('instance', { ...result, path: instancePath })
+      this.state.instanceEdit({ ...result, path: instancePath })
     }
-  }
-
-  /**
-  * If current instance is a server. It will refresh the server status
-  */
-  @Singleton()
-  async refreshServerStatus() {
-    const prof = this.getters.instance
-    if (prof.server) {
-      const { host, port } = prof.server
-      this.log(`Ping server ${host}:${port}`)
-      this.commit('instanceStatus', PINGING_STATUS)
-      const status = await this.statusService.pingServer({ host, port })
-      this.commit('instanceStatus', status)
-    }
-  }
-
-  /**
-   * Refresh all instance server status if present
-   */
-  async refreshServerStatusAll() {
-    const all = Object.values(this.state.instance.all).filter(p => !!p.server)
-    const results = await Promise.all(all.map(async p => ({ [p.path]: await this.statusService.pingServer(p.server!) })))
-    this.commit('instancesStatus', results.reduce((a, b) => { Object.assign(a, b); return a }, {}))
-  }
-
-  /**
-   * Create a instance by server info and status.
-   * This will try to ping the server and apply the mod list if it's a forge server.
-   */
-  createInstanceFromServer(info: ServerInfo & { status: Status }) {
-    const options: Partial<InstanceSchema> = {}
-    options.name = info.name
-    if (info.status) {
-      // if (typeof info.status.description === 'string') {
-      //     options.description = info.status.description;
-      // } else if (typeof info.status.description === 'object') {
-      //     options.description = TextComponent.from(info.status.description).formatted;
-      // }
-      options.runtime = {
-        minecraft: this.state.client.protocolMapping.mcversion[info.status.version.protocol][0],
-        forge: '',
-        liteloader: '',
-        fabricLoader: '',
-        yarn: '',
-        optifinePatch: '',
-        optifineType: '',
-      }
-      if (info.status.modinfo && info.status.modinfo.type === 'FML') {
-        // TODO: handle mod server
-      }
-    }
-    return this.createInstance({
-      ...options,
-      server: getHostAndPortFromIp(info.ip),
-    })
   }
 }
 

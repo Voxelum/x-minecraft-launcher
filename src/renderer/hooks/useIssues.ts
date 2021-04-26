@@ -1,10 +1,11 @@
 import { computed } from '@vue/composition-api'
-import { useStore } from './useStore'
 import { useBusy } from './useSemaphore'
+import { useService } from './useService'
+import { DiagnoseServiceKey } from '/@shared/services/DiagnoseService'
 
 export function useIssues () {
-  const { getters } = useStore()
-  const issues = computed(() => getters.issues)
+  const { state } = useService(DiagnoseServiceKey)
+  const issues = computed(() => state.issues)
   const refreshing = useBusy('diagnose')
 
   return {

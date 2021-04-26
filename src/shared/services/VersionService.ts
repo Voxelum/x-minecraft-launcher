@@ -1,17 +1,44 @@
 import { ResolvedVersion } from '@xmcl/core'
-import { ServiceKey } from './Service'
+import { StatefulService, ServiceKey, State } from './Service'
+
+export interface VersionState extends State { }
+export class VersionState {
+  /**
+   * All the local versions installed in the disk
+   */
+  local = [] as ResolvedVersion[]
+  localVersions(local: ResolvedVersion[]) {
+    local.forEach(Object.freeze)
+    this.local = local
+  }
+
+  localVersionAdd(local: ResolvedVersion) {
+    Object.freeze(local)
+    const found = this.local.findIndex(l => l.id === local.id)
+    if (found !== -1) {
+      this.local[found] = local
+    } else {
+      this.local.push(local as any)
+      this.local = this.local.sort((a, b) => a.id.localeCompare(b.id))
+    }
+  }
+
+  localVersionRemove(folder: string) {
+    this.local = this.local.filter(v => v.id === folder)
+  }
+}
+
 /**
  * The local version serivce maintains the installed versions on disk
  */
-export interface VersionService {
+export interface VersionService extends StatefulService<VersionState> {
   /**
-     * Scan .minecraft folder and copy libraries/assets/versions files from it to launcher managed place.
-     *
-     * This will not replace the existed files
-     */
+   * Scan .minecraft folder and copy libraries/assets/versions files from it to launcher managed place.
+   *
+   * This will not replace the existed files
+   */
   checkLocalMinecraftFiles(): Promise<void>
   resolveLocalVersion(versionFolder: string, root?: string): Promise<ResolvedVersion>
-  resolveVersionId(): Promise<string>
   /**
      * Refresh a version in the version folder.
      * @param versionFolder The version folder name. It must existed under the `versions` folder.

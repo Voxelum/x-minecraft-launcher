@@ -6,6 +6,7 @@ import { tmpdir } from 'os'
 import { basename, join, relative, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import InstanceService from './InstanceService'
+import InstanceVersionService from './InstanceVersionService'
 import ResourceService from './ResourceService'
 import AbstractService, { ExportService, Inject, Singleton } from './Service'
 import VersionService from './VersionService'
@@ -24,6 +25,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
   constructor(app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
+    @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(VersionService) private versionService: VersionService,
   ) {
     super(app)
@@ -37,14 +39,14 @@ export default class InstanceIOService extends AbstractService implements IInsta
   async exportInstance(options: ExportInstanceOptions) {
     requireObject(options)
 
-    const { src = this.state.instance.path, destinationPath: dest, includeAssets = true, includeLibraries = true, files, includeVersionJar = true } = options
+    const { src = this.instanceService.state.path, destinationPath: dest, includeAssets = true, includeLibraries = true, files, includeVersionJar = true } = options
 
-    if (!this.state.instance.all[src]) {
+    if (!this.instanceService.state.all[src]) {
       this.warn(`Cannot export unmanaged instance ${src}`)
       return
     }
 
-    const version = this.getters.instanceVersion
+    const version = this.instanceVersionService.state.instanceVersion
 
     if (version.id === '') {
       // TODO: throw
@@ -102,7 +104,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
    * It will hint if a mod resource is in curseforge
    */
   async getInstanceFiles(): Promise<InstanceFile[]> {
-    const path = this.state.instance.path
+    const path = this.instanceService.state.path
     const files = [] as InstanceFile[]
 
     const scan = async (p: string) => {
@@ -130,7 +132,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
    * @param path
    */
   async linkInstance(path: string) {
-    if (this.state.instance.all[path]) {
+    if (this.instanceService.state.all[path]) {
       this.log(`Skip to link already managed instance ${path}`)
       return false
     }

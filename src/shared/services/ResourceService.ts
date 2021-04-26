@@ -1,5 +1,6 @@
-import { AnyPersistedResource, AnyResource, SourceInformation } from '../entities/resource'
-import { ServiceKey } from './Service'
+import { AnyPersistedResource, AnyResource, PersistedCurseforgeModpackResource, PersistedFabricResource, PersistedForgeResource, PersistedLiteloaderResource, PersistedModpackResource, PersistedResource, PersistedResourcePackResource, PersistedSaveResource, PersistedUnknownResource, SourceInformation } from '../entities/resource'
+import { requireString } from '../util/assert'
+import { StatefulService, ServiceKey, State } from './Service'
 import { ResourceDomain } from '/@shared/entities/resource.schema'
 export declare type FileTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save'
 
@@ -59,11 +60,95 @@ export interface RenameResourceOptions {
   resource: AnyResource | string
   name: string
 }
+
+const domains = [
+  'mods',
+  'resourcepacks',
+  'saves',
+  'modpacks',
+  'unknowns',
+] as const
+
+export interface ResourceState extends State { }
+
+export class ResourceState {
+  mods = [] as Array<PersistedForgeResource | PersistedLiteloaderResource | PersistedFabricResource>
+  resourcepacks = [] as Array<PersistedResourcePackResource>
+  saves = [] as Array<PersistedSaveResource>
+  modpacks = [] as Array<PersistedModpackResource | PersistedCurseforgeModpackResource>
+  unknowns = [] as Array<PersistedUnknownResource>
+
+  /**
+  * Query local resource by uri
+  * @param uri The uri
+  */
+  get queryResource() {
+    return (url: string) => {
+      requireString(url)
+      for (const domain of domains) {
+        const resources = this[domain]
+        for (const v of resources) {
+          const uris = v.uri
+          if (uris.some(u => u === url)) {
+            return v
+          }
+        }
+      }
+      return undefined
+    }
+  }
+
+  resource(res: AnyPersistedResource) {
+    let domain: Array<AnyResource> | undefined
+    switch (res.domain) {
+      case ResourceDomain.Mods:
+        domain = this.mods
+        break
+      case ResourceDomain.ResourcePacks:
+        domain = this.resourcepacks
+        break
+      case ResourceDomain.Saves:
+        domain = this.saves
+        break
+      case ResourceDomain.Modpacks:
+        domain = this.modpacks
+        break
+      case ResourceDomain.Unknown:
+        domain = this.unknowns
+        break
+    }
+    if (domain) {
+      domain.push(Object.freeze(res) as any)
+    } else {
+      throw new Error(`Cannot accept resource for unknown domain [${res.domain}]`)
+    }
+  }
+
+  resources(all: AnyPersistedResource[]) {
+    for (const res of all) {
+      if (domains.indexOf(res.domain) !== -1) {
+        const domain = this[res.domain]
+        domain.push(Object.freeze(res) as any)
+      } else {
+        throw new Error(`Cannot accept resource for unknown domain [${res.domain}]`)
+      }
+    }
+  }
+
+  resourcesRemove(resources: AnyPersistedResource[]) {
+    const removal = new Set(resources.map((r) => r.hash))
+    const domains = new Set(resources.map((r) => r.domain))
+    for (const domain of domains) {
+      this[domain] = (this[domain] as PersistedResource[]).filter((r) => !removal.has(r.hash)) as any
+    }
+  }
+}
+
 /**
  * Resource service to manage the mod, resource pack, saves, modpack resources.
  * It maintain a preview for resources in memory
  */
-export interface ResourceService {
+export interface ResourceService extends StatefulService<ResourceState> {
   whenModsReady(): Promise<void>
   whenResourcePacksReady(): Promise<void>
   /**

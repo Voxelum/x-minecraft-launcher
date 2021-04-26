@@ -50,20 +50,14 @@ export enum ResourceDomain {
   Unknown = 'unknowns',
 }
 
-/**
- * The interface represent a resource
- */
-export interface Resource<T = unknown> {
+interface ResourceBase<T> {
   /**
-   * The path of the resource file
+   * The identical file name of the resource without extension.
+   * @default ''
    */
-  path: string
+  fileName: string
   /**
-   * The resource file path relative to the .minecraft without extension
-   */
-  location: string
-  /**
-   * The suggest name of the resource
+   * The display name of the resource
    */
   name: string
   /**
@@ -77,7 +71,7 @@ export interface Resource<T = unknown> {
    */
   size: number
   /**
-   * The suggested ext of the resource
+   * The recorded extension of the resource
    */
   ext: string
   /**
@@ -89,7 +83,7 @@ export interface Resource<T = unknown> {
    */
   type: ResourceType
   /**
-   * The domain of the resource. This decide where (which folder) the resource should go
+   * The expect domain of the resource. This decide where (which folder) the resource should go
    */
   domain: ResourceDomain
   /**
@@ -106,18 +100,24 @@ export interface Resource<T = unknown> {
 }
 
 /**
+ * The interface represent a resource
+ */
+export interface Resource<T = unknown> extends ResourceBase<T> {
+  /**
+   * The path of the resource file
+   */
+  path: string
+}
+
+/**
  * Reprensent a persisted resource
  */
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export interface PersistedResourceSchema extends Omit<Resource<object | object[]>, 'path'> {
+export interface PersistedResourceSchema extends ResourceBase<object | object[]> {
   /**
    * @default 0
    */
   version: number
-  /**
-   * @deprecated
-   */
-  path?: string
   /**
    * The resource extension name
    */

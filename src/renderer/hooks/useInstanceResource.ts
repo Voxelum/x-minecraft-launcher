@@ -3,10 +3,12 @@ import { basename } from '/@/util/basename'
 import { AnyResource, isPersistedResource, isResourcePackResource, PersistedResource } from '/@shared/entities/resource'
 import { computed, onMounted, ref, Ref, watch } from '@vue/composition-api'
 import { PackMeta } from '@xmcl/resourcepack'
-import { useService, useStore } from '.'
+import { useService } from '.'
 import { useBusy } from './useSemaphore'
 import { InstanceGameSettingServiceKey } from '/@shared/services/InstanceGameSettingService'
 import { Resource } from '/@shared/entities/resource.schema'
+import { ResourceServiceKey } from '/@shared/services/ResourceService'
+import { InstanceResourcePacksServiceKey } from '../../shared/services/InstanceResourcePacksService'
 
 export interface ResourcePackItem extends PackMeta.Pack {
   /**
@@ -42,12 +44,13 @@ export interface ResourcePackItem extends PackMeta.Pack {
  * The hook return a reactive resource pack array.
  */
 export function useInstanceResourcePacks() {
-  const { state, getters } = useStore()
-  const { edit } = useService(InstanceGameSettingServiceKey)
+  const { state: gameSettingState, edit } = useService(InstanceGameSettingServiceKey)
+  const { state: resourceState } = useService(ResourceServiceKey)
+  const { state: instanceResourceState } = useService(InstanceResourcePacksServiceKey)
 
   const loading = useBusy('mountResourcepacks')
 
-  const instanceResourcePacks = computed(() => state.instanceResource.resourcepacks)
+  const instanceResourcePacks = computed(() => instanceResourceState.resourcepacks)
   /**
      * The resource pack name array.
      * It's the REVERSED version of the resourcePacks array in options.txt (gamesetting).
@@ -59,7 +62,7 @@ export function useInstanceResourcePacks() {
      */
   const enabled = computed(() => enabledResourcePackNames.value.map(getResourcePackItemFromGameSettingName))
   const storage = computed(() => instanceResourcePacks.value.map(getResourcePackItemFromInstanceResource)
-    .concat(state.resource.resourcepacks
+    .concat(resourceState.resourcepacks
       .filter(r => instanceResourcePacks.value.every(p => p.hash !== r.hash))
       .map(getResourcePackItem)))
   /**
@@ -68,21 +71,21 @@ export function useInstanceResourcePacks() {
   const disabled = computed(() => storage.value.filter((item) => enabledResourcePackNames.value.indexOf(item.id) === -1))
 
   const modified = computed(() => {
-    if (enabledResourcePackNames.value.length !== state.instanceGameSetting.resourcePacks.length) {
+    if (enabledResourcePackNames.value.length !== gameSettingState.resourcePacks.length) {
       return true
     }
-    return enabledResourcePackNames.value.every((v, i) => state.instanceGameSetting.resourcePacks[i] !== v)
+    return enabledResourcePackNames.value.every((v, i) => gameSettingState.resourcePacks[i] !== v)
   })
 
   function getResourcepackFormat(meta: any) {
     return meta ? meta.format ?? meta.pack_format : 3
   }
   function getResourcePackItem(resource: Resource<PackMeta.Pack>): ResourcePackItem {
-    const icon = isPersistedResource(resource) ? `dataroot://${resource.location}.png` : ''
+    const icon = isPersistedResource(resource) ? `dataroot://${resource.domain}/${resource.fileName}.png` : ''
     return {
       path: resource.path,
       name: resource.name,
-      id: `file/${basename(resource.path)}`,
+      id: `file/${basename(resource.fileName)}`,
       url: resource.uri,
       pack_format: resource.metadata.pack_format,
       description: resource.metadata.description,
@@ -183,7 +186,7 @@ export function useInstanceResourcePacks() {
     edit({ resourcePacks: [...enabledResourcePackNames.value].reverse() })
   }
 
-  const settingedResourcePacks = computed(() => state.instanceGameSetting.resourcePacks)
+  const settingedResourcePacks = computed(() => gameSettingState.resourcePacks)
   watch(settingedResourcePacks, (packs) => {
     const arr = [...packs.map((p) => ((p === 'vanilla' || p.startsWith('file/')) ? p : `file/${p}`))]
     if (arr.indexOf('vanilla') === -1) {

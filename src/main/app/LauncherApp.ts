@@ -1,5 +1,10 @@
-import { LAUNCHER_NAME } from '/@main/constant'
-import { Client } from '/@main/engineBridge'
+import { getPlatform } from '@xmcl/core'
+import { DownloadTask } from '@xmcl/installer'
+import { Task } from '@xmcl/task'
+import { EventEmitter } from 'events'
+import { ensureDir, readFile, readJson, writeFile } from 'fs-extra'
+import { extname, join } from 'path'
+import { URL } from 'url'
 import CredentialManager from '../managers/CredentialManager'
 import LogManager from '../managers/LogManager'
 import NetworkManager from '../managers/NetworkManager'
@@ -8,20 +13,15 @@ import StoreManager from '../managers/StoreManager'
 import TaskManager from '../managers/TaskManager'
 import TelemetryManager from '../managers/TelemetryManager'
 import WorkerManager from '../managers/WorkerManager'
+import AbstractService from '../services/Service'
+import { Constructor, LaunchAppContext } from './LaunchAppContext'
+import { LauncherAppController } from './LauncherAppController'
+import { LAUNCHER_NAME } from '/@main/constant'
+import { Client } from '/@main/engineBridge'
 import { exists, isDirectory } from '/@main/util/fs'
 import { GiteeReleaseFetcher, GithubReleaseFetcher, ReleaseFetcher } from '/@main/util/release'
 import { RuntimeVersions } from '/@shared/entities/instance.schema'
 import { UpdateInfo } from '/@shared/entities/update'
-import { StaticStore } from '../util/staticStore'
-import { getPlatform } from '@xmcl/core'
-import { DownloadTask } from '@xmcl/installer'
-import { Task } from '@xmcl/task'
-import { EventEmitter } from 'events'
-import { ensureDir, readFile, readJson, writeFile } from 'fs-extra'
-import { extname, join } from 'path'
-import { URL } from 'url'
-import { LauncherAppController } from './LauncherAppController'
-import { Constructor, LaunchAppContext } from './LaunchAppContext'
 
 export interface Platform {
   /**
@@ -47,7 +47,8 @@ export interface AppManifest {
 export interface LauncherApp {
   on(channel: 'user-login', listener: (authService: string) => void): this
   on(channel: 'window-all-closed', listener: () => void): this
-  on(channel: 'service-ready', listener: () => void): this
+  on(channel: 'all-services-ready', listener: () => void): this
+  on(channel: 'service-ready', listener: (service: AbstractService) => void): this
   on(channel: 'engine-ready', listener: () => void): this
   on(channel: 'minecraft-window-ready', listener: () => void): this
   on(channel: 'minecraft-start', listener: (launchOptions: { version: string } & RuntimeVersions) => void): this
@@ -58,7 +59,8 @@ export interface LauncherApp {
 
   once(channel: 'user-login', listener: (authService: string) => void): this
   once(channel: 'window-all-closed', listener: () => void): this
-  once(channel: 'service-ready', listener: () => void): this
+  once(channel: 'all-services-ready', listener: () => void): this
+  once(channel: 'service-ready', listener: (service: AbstractService) => void): this
   once(channel: 'engine-ready', listener: () => void): this
   once(channel: 'minecraft-window-ready', listener: () => void): this
   once(channel: 'minecraft-start', listener: (launchOptions: { version: string } & RuntimeVersions) => void): this
@@ -71,7 +73,8 @@ export interface LauncherApp {
   emit(channel: 'microsoft-authorize-code', error?: Error, code?: string): this
   emit(channel: 'window-all-closed'): boolean
   emit(channel: 'engine-ready'): boolean
-  emit(channel: 'service-ready'): boolean
+  emit(channel: 'all-services-ready'): boolean
+  emit(channel: 'service-ready', service: AbstractService): boolean
   emit(channel: 'minecraft-window-ready', ...args: any[]): boolean
   emit(channel: 'minecraft-start', launchOptions: { version: string } & RuntimeVersions): boolean
   emit(channel: 'minecraft-exit', exitStatus: { code: number; signal: string; crashReport: string; crashReportLocation: string; errorLog: string }): boolean
@@ -235,12 +238,12 @@ export abstract class LauncherApp extends EventEmitter {
   /**
      * Download the update to the disk. You should first call `checkUpdate`
      */
-  abstract downloadUpdateTask(): Task<void>
+  abstract downloadUpdateTask(updateInfo: UpdateInfo): Task<void>
 
   /**
      * Install update and quit the app.
      */
-  abstract installUpdateAndQuit(): Promise<void>
+  abstract installUpdateAndQuit(updateInfo: UpdateInfo): Promise<void>
 
   abstract relaunch(): void
 
@@ -359,7 +362,7 @@ export abstract class LauncherApp extends EventEmitter {
   }
 
   readonly serviceReadyPromise = new Promise<void>((resolve) => {
-    this.on('service-ready', resolve)
+    this.on('all-services-ready', resolve)
   })
 
   // setup code
@@ -369,7 +372,7 @@ export abstract class LauncherApp extends EventEmitter {
     await this.waitEngineReady()
     await this.onEngineReady()
     await this.serviceReadyPromise
-    await this.onStoreReady(this.storeManager.store)
+    await this.onStoreReady()
   }
 
   protected async setup() {
@@ -420,10 +423,10 @@ export abstract class LauncherApp extends EventEmitter {
     await Promise.all(this.managers.map(m => m.engineReady()))
   }
 
-  protected async onStoreReady(store: StaticStore<any>) {
+  protected async onStoreReady() {
     this.parking = true
-    await Promise.all(this.managers.map(m => m.storeReady(this.storeManager.store)))
-    await this.controller.dataReady(store)
+    await Promise.all(this.managers.map(m => m.storeReady()))
+    await this.controller.dataReady()
     this.log('App booted')
     this.parking = false
   }

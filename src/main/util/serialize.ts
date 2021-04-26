@@ -38,14 +38,15 @@ export class BufferJsonSerializer<T> implements Serializer<Buffer, T> {
     if (!valid) {
       const context = createContext({ object: deepCopy })
       if (validation.errors) {
-        let message = `Error to serialize the datatype ${typeof data}:\n`
-        validation.errors.forEach(e => {
-          message += `- ${e.keyword} error @[${e.dataPath}:${e.schemaPath}]: ${e.message}\n`
-        })
-        const cmd = validation.errors.map(e => `delete object${e.dataPath};`)
-        console.log(message)
-        console.log(cmd.join('\n'))
-        runInContext(cmd.join('\n'), context)
+        console.log(JSON.stringify(validation.errors))
+        // let message = `Error to serialize the datatype ${typeof data}:\n`
+        // validation.errors.forEach(e => {
+        //   message += `- ${e.keyword} error @[${e.dataPath}:${e.schemaPath}]: ${e.message}\n`
+        // })
+        // const cmd = validation.errors.map(e => `delete object${e.dataPath};`)
+        // console.log(message)
+        // console.log(cmd.join('\n'))
+        // runInContext(cmd.join('\n'), context)
       }
     }
     return Buffer.from(JSON.stringify(deepCopy), 'utf-8')
@@ -67,13 +68,14 @@ export class BufferJsonSerializer<T> implements Serializer<Buffer, T> {
         console.warn('Try to remove those invalid keys. This might cause problem.')
         const context = createContext({ object })
         if (validation.errors) {
+          console.log(JSON.stringify(validation.errors))
           // console.warn(`Found invalid config file on ${path}.`)
-          validation.errors.forEach(e => console.warn(e))
-          const cmd = validation.errors.filter(e => e.dataPath).map(e => `delete object${e.dataPath};`)
-          if (cmd.length !== 0) {
-            console.log(cmd.join('\n'))
-            runInContext(cmd.join('\n'), context)
-          }
+          // validation.errors.forEach(e => console.warn(e))
+          // const cmd = validation.errors.filter(e => e.dataPath).map(e => `delete object${e.dataPath};`)
+          // if (cmd.length !== 0) {
+          //   console.log(cmd.join('\n'))
+          //   runInContext(cmd.join('\n'), context)
+          // }
         }
       }
     }

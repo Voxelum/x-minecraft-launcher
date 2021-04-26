@@ -57,5 +57,6 @@ export interface UpdateInfo extends _UpdateInfo {
      */
   readonly stagingPercentage?: number
 
+  newUpdate: boolean
   incremental: boolean
 }

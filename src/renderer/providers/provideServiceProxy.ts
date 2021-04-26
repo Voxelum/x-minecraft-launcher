@@ -1,49 +1,101 @@
-import { provide, reactive, ref, Ref, set } from '@vue/composition-api'
-import { ipcRenderer, SERVICES_KEY, SERVICES_SEMAPHORE_KEY } from '/@/constant'
-import { ServiceKey } from '/@shared/services/Service'
+import { computed, provide, reactive, ref, Ref, set } from '@vue/composition-api'
+import { Store } from 'vuex'
+import { createServiceFactory } from '../service'
+import { ipcRenderer, ServiceProxy, SERVICES_KEY, SERVICES_SEMAPHORE_KEY } from '/@/constant'
+import { State } from '/@shared/services/Service'
+
+const TasksContainer = Symbol('TaskContainer')
 
 export function getServiceCallTasks(promise: Readonly<Promise<any>>): Ref<string[]> {
-  return Reflect.get(promise, '__tasks__')
+  return Reflect.get(promise, TasksContainer)
 }
 
-async function startSession(sessionId: number, tasks: Ref<Array<any>>) {
-  const listener = (event: any, task: string) => {
-    tasks.value.push(task)
-  }
-  ipcRenderer.on(`session-${sessionId}`, listener)
-  const { result, error } = await ipcRenderer.invoke('session', sessionId)
-  ipcRenderer.removeListener(`session-${sessionId}`, listener)
-  if (error) {
-    if (error.errorMessage) {
-      error.toString = () => error.errorMessage
-    }
-    return Promise.reject(error)
-  }
-  return result
-}
+export function createModule(stateTemplate: State) {
+  const state = {} as any
+  const mutations = {} as any
+  const getters = {} as any
 
-export function getServiceProxy<T>(seriv: ServiceKey<T>): T {
-  return new Proxy({} as any, {
-    get(_, functionName) {
-      const func = function (payload: any) {
-        const tasks = ref([])
-        const promise = ipcRenderer.invoke('service-call', seriv, functionName as string, payload).then((r: any) => {
-          if (typeof r !== 'number') {
-            throw new Error(`Cannot find service call named ${functionName as string} in ${seriv}`)
-          }
-          return startSession(r, tasks)
-        })
-        Object.defineProperty(promise, '__tasks__', { value: tasks, enumerable: false, writable: false, configurable: false })
-        return promise
+  for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(Object.getPrototypeOf(stateTemplate)))) {
+    if (prop.value) {
+      const val = prop.value
+      if (val instanceof Function) {
+        // mutation
+        const mut = (state: any, payload: any) => (val as Function).call(state, payload)
+        mutations[key] = mut
+      } else {
+        // state
+        state[key] = val
       }
-      Object.defineProperty(func, 'name', { value: functionName, enumerable: false, writable: false, configurable: false })
-      return func
-    },
-  })
+    } else if (prop.get) {
+      // getters
+      const getter = prop.get
+      getters[key] = (state: any) => getter.call(state)
+    }
+  }
+  for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(stateTemplate))) {
+    if (prop.value) {
+      const val = prop.value
+      if (val instanceof Function) {
+        // mutation
+        const mut = (state: any, payload: any) => (val as Function).call(state, payload)
+        mutations[key] = mut
+      } else {
+        // state
+        state[key] = val
+      }
+    } else if (prop.get) {
+      // getters
+      const getter = prop.get
+      getters[key] = (state: any) => getter.call(state)
+    }
+  }
+  return {
+    state,
+    getters,
+    mutations,
+  }
 }
 
-export default function provideServiceProxy() {
-  provide(SERVICES_KEY, getServiceProxy as any)
+function createAccessor<T extends State>(name: string, store: Store<any>, stateTemplate: T): T {
+  const accessor = {} as any
+  for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(Object.getPrototypeOf(stateTemplate)))) {
+    if (prop.value) {
+      const val = prop.value
+      if (val instanceof Function) {
+        // mutation
+        accessor[key] = (payload: any) => {
+          store.commit(key, payload)
+        }
+      } else {
+        // state
+        accessor[key] = computed(() => (store as any).state[name][key])
+      }
+    } else if (prop.get) {
+      // getters
+      accessor[key] = computed(() => store.getters[key])
+    }
+  }
+  for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(stateTemplate))) {
+    if (prop.value) {
+      const val = prop.value
+      if (val instanceof Function) {
+        // mutation
+        accessor[key] = (payload: any) => {
+          store.commit(key, payload)
+        }
+      } else {
+        // state
+        accessor[key] = computed(() => (store as any).state[name][key])
+      }
+    } else if (prop.get) {
+      // getters
+      accessor[key] = computed(() => store.getters[key])
+    }
+  }
+  return reactive(accessor)
+}
+
+export function provideSemaphore() {
   const semaphore: Record<string, number> = reactive({})
   ipcRenderer.on('aquire', (e, res) => {
     const sem = res instanceof Array ? res : [res]
@@ -66,5 +118,22 @@ export default function provideServiceProxy() {
     }
   })
   provide(SERVICES_SEMAPHORE_KEY, semaphore)
-  return getServiceProxy
+  return semaphore
+}
+
+export default function provideServiceProxy(store: Store<any>) {
+  const factory = createServiceFactory(
+    (service, state) => {
+      store.registerModule(service.toString(), createModule(state))
+      return createAccessor(service.toString(), store, state)
+    },
+    (_, __, p: any, ___, id) => {
+      if (!(p)[TasksContainer]) {
+        Object.defineProperty(p, TasksContainer, { value: ref([]), enumerable: false, writable: false, configurable: false })
+      }
+      p[TasksContainer].value.push(id)
+    })
+  const proxy: ServiceProxy = (key) => factory.getService(key)
+  provide(SERVICES_KEY, proxy)
+  return proxy
 }

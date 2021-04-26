@@ -46,7 +46,7 @@
                 style="display: flex; flex-direction: row"
               >
                 <img
-                  :src="favicon"
+                  :src="status.favicon"
                   style="max-width: 80px; max-height: 80px; min-height: 80px;"
                 >
                 <div style="flex-grow: 1" />
@@ -62,8 +62,8 @@
                     >{{ $t('profile.server.creationHint') }}</div>
                   </span>
                   <text-component
-                    v-if="version.name"
-                    :source="version.name"
+                    v-if="status.version.name"
+                    :source="status.version.name"
                   />
                 </v-layout>
               </v-flex>
@@ -73,7 +73,7 @@
                 style="display: flex; align-items: center"
               >
                 <v-text-field
-                  :value="$t(version.name)"
+                  :value="$t(status.version.name)"
                   dark
                   append-icon="title"
                   :label="$t('profile.server.version')"
@@ -83,7 +83,7 @@
               </v-flex>
               <v-flex style="display: flex; align-items: center">
                 <v-text-field
-                  :value="players.online + '/' + players.max"
+                  :value="status.players.online + '/' + status.players.max"
                   dark
                   append-icon="people"
                   :label="$t('profile.server.players')"
@@ -93,7 +93,7 @@
               </v-flex>
               <v-flex style="display: flex; align-items: center">
                 <v-text-field
-                  :value="ping"
+                  :value="status.ping"
                   dark
                   append-icon="signal_cellular_alt"
                   :label="$t('profile.server.pings')"
@@ -342,14 +342,10 @@ export default defineComponent({
     const dataRef = toRefs(data)
 
     const {
-      favicon,
+      status,
       acceptingVersion,
       refresh,
-      version,
-      players,
-      ping,
       pinging,
-      description,
       reset: resetServer,
     } = useServer(server, ref(undefined))
 
@@ -402,19 +398,15 @@ export default defineComponent({
       ...creationData,
       ...staticData,
       serverField,
-      favicon,
       acceptingVersion,
       refresh,
-      version,
-      players,
-      ping,
+      status,
       ready,
       javas,
       doCreate,
       quit,
       pinging,
       server,
-      description,
     }
   },
 })

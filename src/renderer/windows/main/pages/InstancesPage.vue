@@ -107,19 +107,20 @@ import CreateButton from './InstancesPageCreateButton.vue'
 function useRefreshInstance(notify: Notify) {
   const { $t } = useI18n()
   const pinging = ref(false)
-  const { refreshServerStatusAll } = useInstances()
+  const { instances } = useInstances()
   return {
     pinging,
     refresh() {
       if (pinging.value) return
       pinging.value = true
-      refreshServerStatusAll().then(() => {
-        notify({ level: 'success', title: $t('profile.refreshServers') })
-      }, (e) => {
-        notify({ level: 'error', title: $t('profile.refreshServers') })
-      }).finally(() => {
-        pinging.value = false
-      })
+      // TODO: impl this
+      // refreshServerStatusAll().then(() => {
+      //   notify({ level: 'success', title: $t('profile.refreshServers') })
+      // }, (e) => {
+      //   notify({ level: 'error', title: $t('profile.refreshServers') })
+      // }).finally(() => {
+      //   pinging.value = false
+      // })
     },
   }
 }

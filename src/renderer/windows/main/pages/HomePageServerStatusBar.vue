@@ -8,14 +8,14 @@
       class="v-icon material-icons theme--dark v-alert__icon"
     >
       <img
-        :src="favicon"
+        :src="status.favicon"
         style="max-height: 64px;"
       >
     </i>
     <div>
-      <text-component :source="version.name" />
+      <text-component :source="status.version.name" />
       <v-spacer />
-      <text-component :source="description" />
+      <text-component :source="status.description" />
     </div>
     <v-btn
       icon
@@ -34,18 +34,16 @@ import { useInstanceServerStatus, useBusy } from '/@/hooks'
 
 export default defineComponent({
   setup() {
-    const { refresh, description, favicon, version, ping } = useInstanceServerStatus()
+    const { refresh, status } = useInstanceServerStatus()
     const loading = useBusy('refreshServerStatus')
 
     onMounted(() => {
-      if (ping.value <= 0) {
+      if (status.value.ping <= 0) {
         refresh()
       }
     })
     return {
-      version,
-      favicon,
-      description,
+      status,
       loading,
       refresh,
     }

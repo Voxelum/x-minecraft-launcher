@@ -73,13 +73,13 @@
     </v-stepper-step>
     <v-stepper-content step="2">
       <v-text-field
-        v-for="type in authOrder"
-        :key="type"
-        v-model="newAuth[type]"
+        v-for="t in authOrder"
+        :key="t"
+        v-model="newAuth[t]"
         style="margin-bottom: 10px;"
-        :label="type === 'hostName' ? $t('user.service.hostName') : `API ${type}`"
-        :rules="type === 'hostName' ? urlRules : []"
-        :messages="[$t(`user.service.${type}Hint`)]"
+        :label="t === 'hostName' ? $t('user.service.hostName') : `API ${t}`"
+        :rules="t === 'hostName' ? urlRules : []"
+        :messages="[$t(`user.service.${t}Hint`)]"
       />
       <v-layout row>
         <v-btn
@@ -123,12 +123,12 @@
     </v-stepper-step>
     <v-stepper-content step="3">
       <v-text-field
-        v-for="type in Object.keys(newProfileService)"
-        :key="type"
-        v-model="newProfileService[type]"
+        v-for="t in Object.keys(newProfileService)"
+        :key="t"
+        v-model="newProfileService[t]"
         style="margin-bottom: 10px;"
-        :label="$t(`user.service.${type}`)"
-        :messages="[$t(`user.service.${type}Hint`)]"
+        :label="$t(`user.service.${t}`)"
+        :messages="[$t(`user.service.${t}Hint`)]"
       />
       <v-layout row>
         <v-btn
@@ -158,7 +158,7 @@
 
 <script lang=ts>
 import { defineComponent, reactive, toRefs, onMounted, watch, nextTick } from '@vue/composition-api'
-import { useStore, useI18n } from '/@/hooks'
+import { useI18n, useUserService } from '/@/hooks'
 
 const HTTP_EXP = /(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/
 export default defineComponent({
@@ -169,16 +169,16 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    const { state, commit } = useStore()
     const { $t } = useI18n()
+    const { state } = useUserService()
     const urlRules = [
       (value: string) => !!HTTP_EXP.test(value) || $t('user.service.invalidUrl'),
     ]
     const nameRules = [
       (value: string) => !!value || $t('user.service.requireName'),
-      (value: string) => !state.user.authServices[value] || $t('user.service.duplicatedName'),
+      (value: string) => !state.authServices[value] || $t('user.service.duplicatedName'),
     ]
-    const authOrder = ['hostName', 'authenticate', 'refresh', 'validate', 'invalidate', 'signout']
+    const authOrder = ['hostName', 'authenticate', 'refresh', 'validate', 'invalidate', 'signout'] as const
     const data = reactive({
       name: '',
       step: 0,
@@ -248,11 +248,11 @@ export default defineComponent({
         }
       })
       if (props.modify !== '') {
-        const authSeriv = state.user.authServices[props.modify]
+        const authSeriv = state.authServices[props.modify]
         if (authSeriv) {
           data.newAuth = { ...authSeriv }
         }
-        const profSeriv = state.user.profileServices[props.modify]
+        const profSeriv = state.profileServices[props.modify]
         if (profSeriv) {
           data.newProfileService = { ...profSeriv }
           delete (data.newProfileService as any).publicKey
@@ -292,8 +292,8 @@ export default defineComponent({
       urlRules,
       nameRules,
       finish() {
-        commit('authService', { name: data.name, api: data.newAuth })
-        commit('profileService', { name: data.name, api: data.newProfileService })
+        state.authServiceSet({ name: data.name, api: data.newAuth })
+        state.profileServiceSet({ name: data.name, api: data.newProfileService })
 
         context.emit('cancel')
       },

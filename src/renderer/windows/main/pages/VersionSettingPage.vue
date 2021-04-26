@@ -140,7 +140,7 @@ import OptifineView from './VersionSettingPageOptifineView.vue'
 import {
   useAutoSaveLoad,
   useInstance,
-  useStore,
+  useVersionService,
 } from '/@/hooks'
 import { filterForgeVersion, filterOptfineVersion, getResolvedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary } from '/@shared/entities/version'
 import { OptifineVersion } from '/@shared/entities/version.schema'
@@ -174,7 +174,7 @@ export default defineComponent({
     })
 
     const { editInstance: edit, runtime, version } = useInstance()
-    const { state } = useStore()
+    const { state } = useVersionService()
     const barColor = computed(() => {
       switch (data.active) {
         case 0: return 'white'
@@ -187,7 +187,7 @@ export default defineComponent({
     })
 
     const localVersion = computed(() => {
-      return getResolvedVersion(state.version.local, data as any, '')
+      return getResolvedVersion(state.local, data as any, '')
     })
     function setLocalVersion(v: ResolvedVersion) {
       data.minecraft = v.minecraftVersion

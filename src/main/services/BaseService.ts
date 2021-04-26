@@ -3,13 +3,15 @@ import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
-import AbstractService, { ExportService, Singleton } from './Service'
+import { ExportService, Singleton, StatefulService } from './Service'
 import { IS_DEV } from '/@main/constant'
 import { SettingSchema } from '/@shared/entities/setting.schema'
-import { BaseService as IBaseService, BaseServiceKey, MigrateOptions } from '/@shared/services/BaseService'
+import { BaseService as IBaseService, BaseServiceKey, BaseState, MigrateOptions } from '/@shared/services/BaseService'
 
 @ExportService(BaseServiceKey)
-export default class BaseService extends AbstractService implements IBaseService {
+export default class BaseService extends StatefulService<BaseState> implements IBaseService {
+  createState() { return new BaseState() }
+
   private settingFile = new MappedFile<SettingSchema>(this.getPath('setting.json'), new BufferJsonSerializer(SettingSchema))
 
   constructor(app: LauncherApp) {
@@ -23,20 +25,23 @@ export default class BaseService extends AbstractService implements IBaseService
       'apiSets',
     ], () => {
       this.settingFile.write({
-        locale: this.state.base.locale,
-        autoInstallOnAppQuit: this.state.base.autoInstallOnAppQuit,
-        autoDownload: this.state.base.autoDownload,
-        allowPrerelease: this.state.base.allowPrerelease,
-        apiSets: this.state.base.apiSets,
-        apiSetsPreference: this.state.base.apiSetsPreference,
+        locale: this.state.locale,
+        autoInstallOnAppQuit: this.state.autoInstallOnAppQuit,
+        autoDownload: this.state.autoDownload,
+        allowPrerelease: this.state.allowPrerelease,
+        apiSets: this.state.apiSets,
+        apiSetsPreference: this.state.apiSetsPreference,
       })
     })
+    this.state.localesSet(['en', 'zh-CN', 'ru'])
+    this.state.versionSet([app.version, app.build])
   }
 
   async initialize() {
+    this.state.rootSet(this.app.gameDataPath)
     const data = await this.settingFile.read()
-    this.commit('config', {
-      locale: data.locale,
+    this.state.config({
+      locale: data.locale || this.app.getLocale(),
       autoInstallOnAppQuit: data.autoInstallOnAppQuit,
       autoDownload: data.autoDownload,
       allowPrerelease: data.allowPrerelease,
@@ -73,8 +78,8 @@ export default class BaseService extends AbstractService implements IBaseService
    * Quit and install the update once the update is ready
    */
   async quitAndInstall() {
-    if (this.state.base.updateStatus === 'ready') {
-      await this.app.installUpdateAndQuit()
+    if (this.state.updateStatus === 'ready' && this.state.updateInfo) {
+      await this.app.installUpdateAndQuit(this.state.updateInfo)
     } else {
       this.warn('There is no update avaiable!')
     }
@@ -89,7 +94,10 @@ export default class BaseService extends AbstractService implements IBaseService
     try {
       this.log('Check update')
       const info = await this.submit(this.app.checkUpdateTask())
-      this.commit('updateInfo', info)
+      this.state.updateInfoSet(info)
+      if (info.newUpdate) {
+        this.state.updateStatusSet('pending')
+      }
     } catch (e) {
       this.error('Check update failed')
       this.error(e)
@@ -102,12 +110,12 @@ export default class BaseService extends AbstractService implements IBaseService
    */
   @Singleton()
   async downloadUpdate() {
-    if (!this.state.base.updateInfo) {
+    if (!this.state.updateInfo) {
       throw new Error('Cannot download update if we don\'t check the version update!')
     }
-    this.log(`Start to download update: ${this.state.base.updateInfo.version} incremental=${this.state.base.updateInfo.incremental}`)
-    await this.submit(this.app.downloadUpdateTask().setName('downloadUpdate'))
-    this.commit('updateStatus', 'ready')
+    this.log(`Start to download update: ${this.state.updateInfo.version} incremental=${this.state.updateInfo.incremental}`)
+    await this.submit(this.app.downloadUpdateTask(this.state.updateInfo).setName('downloadUpdate'))
+    this.state.updateStatusSet('ready')
   }
 
   quit = this.app.quit.bind(this.app)
@@ -163,7 +171,7 @@ export default class BaseService extends AbstractService implements IBaseService
     try {
       this.oldMigratedRoot = this.app.gameDataPath
       await this.app.migrateRoot(destination)
-      this.commit('root', destination)
+      this.state.rootSet(destination)
     } catch (e) {
       this.oldMigratedRoot = ''
       throw e

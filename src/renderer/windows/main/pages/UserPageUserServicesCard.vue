@@ -64,7 +64,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, computed, defineComponent } from '@vue/composition-api'
-import { useStore } from '/@/hooks'
+import { useUserService } from '/@/hooks'
 import StepperUserService from './UserPageUserServiceStepper.vue'
 
 interface Service {
@@ -78,7 +78,7 @@ export default defineComponent({
     StepperUserService,
   },
   setup() {
-    const { state, commit } = useStore()
+    const { state } = useUserService()
     const data = reactive({
       editingService: -1,
       addingService: false,
@@ -92,12 +92,12 @@ export default defineComponent({
 
     const services = computed(() => {
       const keys = []
-      for (const k of Object.keys(state.user.authServices)) {
+      for (const k of Object.keys(state.authServices)) {
         if (keys.indexOf(k) === -1) {
           keys.push(k)
         }
       }
-      for (const k of Object.keys(state.user.profileServices)) {
+      for (const k of Object.keys(state.profileServices)) {
         if (keys.indexOf(k) === -1) {
           keys.push(k)
         }
@@ -106,8 +106,8 @@ export default defineComponent({
         text: name,
         value: name,
         body: {
-          ...(state.user.authServices[name] || {}),
-          ...(state.user.profileServices[name] || {}),
+          ...(state.authServices[name] || {}),
+          ...(state.profileServices[name] || {}),
         },
       }))
     })
@@ -116,8 +116,8 @@ export default defineComponent({
       ...toRefs(data),
       services,
       remove(s: Service) {
-        commit('authServiceRemove', s.value)
-        commit('profileServiceRemove', s.value)
+        state.authServiceRemove(s.value)
+        state.profileServiceRemove(s.value)
       },
       newOrEdit(s?: Service) {
         if (s) {

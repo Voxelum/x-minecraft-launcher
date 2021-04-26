@@ -57,11 +57,6 @@ interface Mutations {
    * @param payload The modified data
    */
   instance: DeepPartial<InstanceSchema> & { path: string }
-
-  // non-persistence mutation below, just update cache, nothing saved
-
-  instanceStatus: ServerStatus
-  instancesStatus: { [path: string]: ServerStatus }
 }
 
 export type InstanceModule = ModuleOption<State, Getters, Mutations, {}>
@@ -99,8 +94,8 @@ const mod: InstanceModule = {
        */
       if (!state.all[instance.path]) {
         // TODO: remove in vue3
-        set(state.all, instance.path, { ...instance, serverStatus: UNKNOWN_STATUS })
-        state.all[instance.path] = { ...instance, serverStatus: UNKNOWN_STATUS }
+        set(state.all, instance.path, { ...instance })
+        state.all[instance.path] = { ...instance }
       }
     },
     instanceRemove(state, id) {
@@ -183,14 +178,6 @@ const mod: InstanceModule = {
       }
       if (typeof settings.hideLauncher === 'boolean') {
         inst.hideLauncher = settings.hideLauncher
-      }
-    },
-    instanceStatus(state, status) {
-      state.all[state.path].serverStatus = status
-    },
-    instancesStatus(state, statues) {
-      for (const [path, stat] of Object.entries(statues)) {
-        state.all[path].serverStatus = stat
       }
     },
   },

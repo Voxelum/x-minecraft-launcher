@@ -1,20 +1,20 @@
-import { Status } from '@xmcl/client'
+import type { Status } from '@xmcl/client'
 import { ServiceKey } from './Service'
 
-export interface ServerStatusService {
-  pingServer(payload: {
-    host: string
-    port?: number
-    protocol?: number
-  }): Promise<Status>
+export class ServerStatusState {
+  status: Record<string, Status> = {}
 
-  pingServers(): Promise<{
-    icon: string
-    ip: string
-    name: string
-    acceptTextures: number
-    status: Status
-  }[]>
+  // update(payload: { ho })
+}
+
+export interface PingServerOptions {
+  host: string
+  port?: number
+  protocol?: number
+}
+
+export interface ServerStatusService {
+  pingServer(options: PingServerOptions): Promise<Status>
 }
 
 export const ServerStatusServiceKey: ServiceKey<ServerStatusService> = 'ServerStatusService'

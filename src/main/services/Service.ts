@@ -3,8 +3,8 @@ import { join } from 'path'
 import LauncherApp from '/@main/app/LauncherApp'
 import { WaitingQueue } from '/@main/util/mutex'
 import { Exceptions } from '/@shared/entities/exception'
-import { ServiceKey } from '/@shared/services/Service'
-import { MutationKeys, RootCommit, RootGetters, RootState } from '/@shared/store'
+import { ServiceKey, State } from '/@shared/services/Service'
+import { MutationKeys } from '/@shared/store'
 
 export const PURE_SYMBOL = Symbol('__pure__')
 export const PARAMS_SYMBOL = Symbol('service:params')
@@ -71,8 +71,6 @@ export function Subscribe(...keys: MutationKeys[]) {
   }
 }
 
-export type KeySerializer = (this: AbstractService, ...params: any[]) => string
-
 export enum Policy {
   Skip = 'skip',
   Wait = 'wait',
@@ -121,15 +119,17 @@ export function Enqueue(queue: WaitingQueue) {
   }
 }
 
+export type KeySerializer<T extends AbstractService> = (this: T, ...params: any[]) => string
+
 /**
  * A service method decorator to make sure this service call should run in singleton -- no second call at the time.
  * The later call will wait the first call end and return the first call result.
  */
-export function Singleton(...keys: (string | KeySerializer)[]) {
-  return function (target: AbstractService, propertyKey: string, descriptor: PropertyDescriptor) {
+export function Singleton<T extends AbstractService>(...keys: (string | KeySerializer<T>)[]) {
+  return function (target: T, propertyKey: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value
-    const func = function (this: AbstractService, ...args: any[]) {
-      const semiphores: string[] = [propertyKey, ...keys.map(k => (typeof k === 'string' ? k : k.bind(this)(...args)))]
+    const func = function (this: T, ...args: any[]) {
+      const semiphores: string[] = [propertyKey, ...keys.map(k => (typeof k === 'string' ? k : k.call(this, ...args)))]
       if (semiphores.some((key) => this.isBusy(key))) {
         return runningSingleton[semiphores[0]]
       }
@@ -219,21 +219,6 @@ export default abstract class AbstractService {
   }
 
   /**
-   * The managed state
-   */
-  get state(): RootState { return this.storeManager.store.state }
-
-  /**
-   * The managed getter
-   */
-  get getters(): RootGetters { return this.storeManager.store.getters as any }
-
-  /**
-   * The commit method
-   */
-  get commit(): RootCommit { return this.storeManager.store.commit }
-
-  /**
    * Return the path under the config root
    */
   protected getAppDataPath: (...args: string[]) => string = (...args) => join(this.app.appDataPath, ...args)
@@ -292,4 +277,15 @@ export default abstract class AbstractService {
   protected pushException(e: Exceptions) {
     this.app.broadcast('notification', e)
   }
+}
+
+export abstract class StatefulService<M extends State, D extends State[] = []> extends AbstractService {
+  state: M
+
+  constructor(app: LauncherApp, deps: D = [] as any) {
+    super(app)
+    this.state = app.storeManager.register(this.name, this.createState(deps))
+  }
+
+  abstract createState(deps: D): M
 }

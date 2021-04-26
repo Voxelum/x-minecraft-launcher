@@ -196,7 +196,7 @@ import {
   useUserSecurityStatus,
   useGameProfile,
   useProfileId,
-  useStore,
+  useUserService,
 } from '/@/hooks'
 import { useLoginDialog, useDialog } from '../hooks'
 import ChallengesForm from './UserPageChallengesForm.vue'
@@ -235,8 +235,8 @@ export default defineComponent({
     const loading = computed(() => data.selecting || data.deleting)
     const { begin: beginRemoveProfile, operate: confirmRemoveProfile, data: removingProfile, cancel: cancelRemoveProfile } = useOperation('', (v) => remove(v))
 
-    const { state } = useStore()
-    const removingUserName = computed(() => state.user.users[removingProfile.value]?.username ?? '')
+    const { state } = useUserService()
+    const removingUserName = computed(() => state.users[removingProfile.value]?.username ?? '')
 
     function confirmSelectGameProfile() {
       data.selecting = true

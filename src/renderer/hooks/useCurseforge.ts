@@ -3,23 +3,22 @@ import { AddonInfo, Attachment, File } from '@xmcl/curseforge'
 import { useRouter } from './useRouter'
 import { useBusy } from './useSemaphore'
 import { useService } from './useService'
-import { useStore } from './useStore'
 import { ProjectType } from '/@shared/entities/curseforge'
 import { CurseForgeServiceKey } from '/@shared/services/CurseForgeService'
-import { InstanceResourceServiceKey } from '/@shared/services/InstanceResourceService'
+import { InstanceResourcePacksServiceKey } from '../../shared/services/InstanceResourcePacksService'
+import { ResourceServiceKey } from '/@shared/services/ResourceService'
 
 /**
  * Hook to view the curseforge project downloadable files.
  * @param projectId The project id
  */
 export function useCurseforgeProjectFiles(projectId: number) {
-  const { fetchProjectFiles } = useService(CurseForgeServiceKey)
-  const { getters } = useStore()
+  const { state, fetchProjectFiles } = useService(CurseForgeServiceKey)
   const data = reactive({
     files: [] as readonly File[],
     loading: false,
   })
-  const status = computed(() => data.files.map(file => getters.isFileInstalled({ id: file.id, href: file.downloadUrl })))
+  const status = computed(() => data.files.map(file => state.isFileInstalled({ id: file.id, href: file.downloadUrl })))
   async function refresh() {
     data.loading = true
     try {
@@ -40,19 +39,19 @@ export function useCurseforgeProjectFiles(projectId: number) {
 }
 
 export function useCurseforgeInstall(type: ProjectType, projectId: number) {
-  const { installFile } = useService(CurseForgeServiceKey)
-  const { deploy } = useService(InstanceResourceServiceKey)
-  const { state, getters } = useStore()
+  const { state, installFile } = useService(CurseForgeServiceKey)
+  const { state: resourceState } = useService(ResourceServiceKey)
+  const { install: deploy } = useService(InstanceResourcePacksServiceKey)
   function getFileStatus(file: File): 'downloading' | 'downloaded' | 'remote' {
-    const res = getters.queryResource(file.downloadUrl)
+    const res = resourceState.queryResource(file.downloadUrl)
     if (res) {
       return 'downloaded'
     }
-    const downloading = state.curseforge.downloading.find((f) => f.fileId === file.id)
+    const downloading = state.downloading.find((f) => f.fileId === file.id)
     return downloading ? 'downloading' : 'remote'
   }
   function getFileResource(file: File) {
-    return getters.queryResource(file.downloadUrl)
+    return resourceState.queryResource(file.downloadUrl)
   }
   async function install(file: File, toInstance?: string) {
     const resource = await installFile({ file, type, projectId })
@@ -124,9 +123,8 @@ export function useCurseforgeProject(projectId: number) {
 }
 
 export function useCurseforgeCategories() {
-  const { loadCategories } = useService(CurseForgeServiceKey)
-  const { state } = useStore()
-  const categories = computed(() => state.curseforge.categories)
+  const { state, loadCategories } = useService(CurseForgeServiceKey)
+  const categories = computed(() => state.categories)
   const refreshing = useBusy('loadCategories')
   onMounted(() => {
     loadCategories()

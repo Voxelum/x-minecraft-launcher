@@ -70,7 +70,6 @@ import {
   watch,
   defineComponent,
   ref,
-  provide,
   Ref,
 } from '@vue/composition-api'
 import {
@@ -78,10 +77,10 @@ import {
   useBackgroundImage,
   useIpc,
   useRouter,
-  useStore,
   useBackgroundBlur,
   provideAsyncRoute,
   provideRouterHistory,
+  useBaseService,
 } from '/@/hooks'
 import { provideTasks } from '/@/providers/provideTaskProxy'
 import { provideDialog, provideNotifier, provideContextMenu, provideSearch } from './hooks'
@@ -107,7 +106,7 @@ export default defineComponent({
     const { particleMode, showParticle } = useParticle()
     const { blurMainBody } = useBackgroundBlur()
     const { blur, backgroundImage } = useBackgroundImage()
-    const { state } = useStore()
+    const { state } = useBaseService()
     const router = useRouter()
     const onHomePage = ref(router.currentRoute.path === '/')
     const app: Ref<any> = ref(null)
@@ -142,7 +141,7 @@ export default defineComponent({
           })
         }
       })
-      app.value!.$el.classList.add(state.base.platform)
+      app.value!.$el.classList.add(state.platform)
     })
 
     return {

@@ -1,6 +1,5 @@
 import type { FabricModMetadata, LiteloaderModMetadata } from '@xmcl/mod-parser'
 import type { PackMeta } from '@xmcl/resourcepack'
-import type { LevelDataFrame } from '@xmcl/world'
 import { CurseforgeModpackManifest } from './curseforge'
 import { ForgeModCommonMetadata } from './mod'
 import { Modpack } from './modpack'
@@ -98,6 +97,7 @@ export function isSaveResource(resource: Resource): resource is SaveResource {
 export const NO_RESOURCE: UnknownResource = Object.freeze({
   metadata: {},
   location: '',
+  fileName: '',
   type: ResourceType.Unknown,
   domain: ResourceDomain.Unknown,
   ino: 0,

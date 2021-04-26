@@ -34,7 +34,7 @@
         "@types/three": "^0.127.0",
         "@vue/composition-api": "^1.0.0-rc.2",
         "@xmcl/client": "2.0.6",
-        "@xmcl/core": "2.6.0",
+        "@xmcl/core": "2.6.1",
         "@xmcl/curseforge": "^0.1.2",
         "@xmcl/forge-site-parser": "^2.0.8",
         "@xmcl/gamesetting": "^2.0.2",
