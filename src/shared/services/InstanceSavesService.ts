@@ -1,5 +1,6 @@
-import { ServiceKey } from './Service'
-import { InstanceSave } from '/@shared/entities/save'
+import { ServiceKey, StatefulService } from './Service'
+import { InstanceSave, InstanceSaveMetadata } from '/@shared/entities/save'
+
 export interface ExportSaveOptions {
   /**
    * The instance directory path, e.g. the path of .minecraft folder.
@@ -68,10 +69,26 @@ export interface CloneSaveOptions {
    */
   newSaveName?: string
 }
+
+export class SaveState {
+  saves = [] as InstanceSaveMetadata[]
+  instanceSaves(saves: InstanceSaveMetadata[]) {
+    this.saves = saves
+  }
+
+  instanceSaveAdd(save: InstanceSaveMetadata) {
+    this.saves.push(save)
+  }
+
+  instanceSaveRemove(save: string) {
+    this.saves = this.saves.filter((s) => s.path !== save)
+  }
+}
+
 /**
  * Provide the ability to preview saves data of an instance
  */
-export interface InstanceSavesService {
+export interface InstanceSavesService extends StatefulService<SaveState> {
   /**
    * Read all registered instances' saves metadata
    */

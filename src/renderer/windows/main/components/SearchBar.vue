@@ -1,12 +1,14 @@
 <template>
   <transition name="scale-transition">
     <v-text-field
-      v-if="show"
+      v-show="show"
       ref="self"
       v-model="text"
+      hide-details
       style="position: fixed; z-index: 300;"
       :style="{ top: `${top}px`, right: `${right}px` }"
       solo
+      class="search-bar"
       append-icon="filter_list"
       @focus="focused = true"
       @blur="focused = false"
@@ -15,8 +17,44 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, inject, ref, Ref, nextTick, watch } from '@vue/composition-api'
-import { useSearch, useSearchToggle } from '../hooks'
+import { defineComponent, inject, ref, Ref, nextTick, watch, onMounted } from '@vue/composition-api'
+import { useSearch, onSearchToggle } from '/@/windows/main/hooks'
+
+function setupDraggable(self: Ref<any>) {
+  let initialX = 0
+  let initialY = 0
+  let currentX = 0
+  let currentY = 0
+  let xOff = 0
+  let yOff = 0
+  let active = false
+  watch(self, (v) => {
+    if (!v) return
+    const newVal = v.$el as HTMLElement
+    const control = newVal.querySelector('.v-input__append-inner')! as HTMLElement
+    control.addEventListener('mousedown', (e) => {
+      initialX = e.clientX - xOff
+      initialY = e.clientY - yOff
+      active = true
+    })
+    control.addEventListener('mousemove', (e) => {
+      if (active) {
+        e.preventDefault()
+        currentX = e.clientX - initialX
+        currentY = e.clientY - initialY
+
+        xOff = currentX
+        yOff = currentY
+        newVal.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`
+      }
+    })
+    control.addEventListener('mouseup', (e) => {
+      initialX = currentX
+      initialY = currentY
+      active = false
+    })
+  })
+}
 
 export default defineComponent({
   setup() {
@@ -46,7 +84,8 @@ export default defineComponent({
       })
       return true
     }
-    useSearchToggle(toggleBar)
+    setupDraggable(self)
+    onSearchToggle(toggleBar)
     return {
       show,
       focused,
@@ -60,4 +99,7 @@ export default defineComponent({
 </script>
 
 <style>
+.search-bar .v-input__append-inner {
+  cursor: move;
+}
 </style>

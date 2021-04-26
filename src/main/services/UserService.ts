@@ -5,7 +5,7 @@ import { URL } from 'url'
 import { v4 } from 'uuid'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
-import AbstractService, { ExportService, Singleton } from './Service'
+import { ExportService, Singleton, StatefulService } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
 import { aquireXBoxToken, checkGameOwnership, getGameProfile, loginMinecraftWithXBox } from '/@main/entities/user'
 import { createhDynamicThrottle as createDynamicThrottle } from '/@main/util/trafficAgent'
@@ -15,7 +15,7 @@ import { GameProfileAndTexture, UserSchema } from '/@shared/entities/user.schema
 import {
   LoginMicrosoftOptions, LoginOptions,
   RefreshSkinOptions,
-  UploadSkinOptions, UserService as IUserService, UserServiceKey,
+  UploadSkinOptions, UserService as IUserService, UserServiceKey, UserState,
 } from '/@shared/services/UserService'
 import { requireNonnull, requireObject, requireString } from '/@shared/util/assert'
 
@@ -86,7 +86,9 @@ export interface LauncherProfile {
 }
 
 @ExportService(UserServiceKey)
-export default class UserService extends AbstractService implements IUserService {
+export default class UserService extends StatefulService<UserState> implements IUserService {
+  createState() { return new UserState() }
+
   private refreshSkinRecord: Record<string, boolean> = {}
 
   private lookup = createDynamicThrottle(lookup, (uuid, options = {}) => (options.api ?? PROFILE_API_MOJANG).profile, 2400)
@@ -102,13 +104,13 @@ export default class UserService extends AbstractService implements IUserService
       'userProfileRemove',
       'userProfileUpdate',
       'userGameProfileSelect',
-      'authService',
-      'profileService',
+      'authServiceSet',
+      'profileServiceSet',
       'userInvalidate',
       'authServiceRemove',
       'profileServiceRemove',
     ], async () => {
-      await this.userFile.write(this.state.user)
+      await this.userFile.write(this.state)
     })
   }
 
@@ -130,11 +132,11 @@ export default class UserService extends AbstractService implements IUserService
     if (!result.clientToken) {
       result.clientToken = v4().replace(/-/g, '')
     }
-    this.commit('userSnapshot', result)
+    this.state.userSnapshot(result)
 
     this.refreshUser()
-    if (this.state.user.selectedUser.id === '' && Object.keys(this.state.user.users).length > 0) {
-      const [userId, user] = Object.entries(this.state.user.users)[0]
+    if (this.state.selectedUser.id === '' && Object.keys(this.state.users).length > 0) {
+      const [userId, user] = Object.entries(this.state.users)[0]
       this.switchUserProfile({
         userId,
         profileId: user.selectedProfile,
@@ -147,63 +149,52 @@ export default class UserService extends AbstractService implements IUserService
     return data
   }
 
-  /**
-   * Logout and clear current cache.
-   */
   @Singleton()
   async logout() {
-    const user = this.getters.user
-    if (this.getters.accessTokenValid) {
+    const user = this.state.user
+    if (this.state.isAccessTokenValid) {
       if (user.authService !== 'offline') {
         await invalidate({
           accessToken: user.accessToken,
-          clientToken: this.state.user.clientToken,
-        }, this.getters.authService)
+          clientToken: this.state.clientToken,
+        }, this.state.authService)
       }
     }
-    this.commit('userInvalidate')
+    this.state.userInvalidate()
   }
 
-  /**
-   * Check current ip location and determine wether we need to validate user identity by response challenge.
-   *
-   * See `getChallenges` and `submitChallenges`
-   */
   @Singleton()
   async checkLocation() {
-    if (!this.getters.accessTokenValid) return true
-    const user = this.getters.user
+    const user = this.state.user
+    if (!this.state.isAccessTokenValid) return true
     if (user.authService !== 'mojang') return true
     try {
       const result = await checkLocation(user.accessToken)
-      this.commit('userSecurity', result)
+      this.state.userSecurity(result)
       return result
     } catch (e) {
       if (e.error === 'ForbiddenOperationException' && e.errorMessage === 'Current IP is not secured') {
-        this.commit('userSecurity', false)
+        this.state.userSecurity(false)
         return false
       }
       throw e
     }
   }
 
-  /**
-   * Get all the user set challenges for security reasons.
-   */
   async getChallenges() {
-    if (!this.getters.accessTokenValid) return []
-    const user = this.getters.user
+    if (!this.state.isAccessTokenValid) return []
+    const user = this.state.user
     if (user.profileService !== 'mojang') return []
     return getChallenges(user.accessToken)
   }
 
   async submitChallenges(responses: MojangChallengeResponse[]) {
-    if (!this.getters.accessTokenValid) throw new Error('Cannot submit challenge if not logined')
-    const user = this.getters.user
+    if (!this.state.isAccessTokenValid) throw new Error('Cannot submit challenge if not logined')
+    const user = this.state.user
     if (user.authService !== 'mojang') throw new Error('Cannot sumit challenge if login mode is not mojang!')
     if (!(responses instanceof Array)) throw new Error('Expect responses Array!')
     const result = await responseChallenges(user.accessToken, responses)
-    this.commit('userSecurity', true)
+    this.state.userSecurity(true)
     return result
   }
 
@@ -212,13 +203,13 @@ export default class UserService extends AbstractService implements IUserService
    */
   @Singleton()
   async refreshStatus() {
-    const user = this.getters.user
+    const user = this.state.user
 
-    if (!this.getters.offline) {
+    if (this.state.isYggdrasilService) {
       const valid = await this.validate({
         accessToken: user.accessToken,
-        clientToken: this.state.user.clientToken,
-      }, this.getters.authService).catch((e) => {
+        clientToken: this.state.clientToken,
+      }, this.state.authService).catch((e) => {
         this.error(e)
         return false
       })
@@ -232,10 +223,10 @@ export default class UserService extends AbstractService implements IUserService
       try {
         const result = await refresh({
           accessToken: user.accessToken,
-          clientToken: this.state.user.clientToken,
-        }, this.getters.authService)
+          clientToken: this.state.clientToken,
+        }, this.state.authService)
         this.log(`Refreshed user access token for user: ${user.id}`)
-        this.commit('userProfileUpdate', {
+        this.state.userProfileUpdate({
           id: user.id,
           accessToken: result.accessToken,
           // profiles: result.availableProfiles,
@@ -247,35 +238,35 @@ export default class UserService extends AbstractService implements IUserService
       } catch (e) {
         this.error(e)
         this.warn(`Invalid current user ${user.id} accessToken!`)
-        this.commit('userInvalidate')
+        this.state.userInvalidate()
       }
     } else {
-      this.log(`Current user ${user.id} is offline. Skip to refresh credential.`)
+      this.log(`Current user ${user.id} is not YggdrasilService. Skip to refresh credential.`)
     }
   }
 
   /**
    * Refresh current skin status
    */
-  @Singleton(function (this: AbstractService, o: RefreshSkinOptions = {}) {
+  @Singleton<StatefulService<UserState>>(function (this: StatefulService<UserState>, o: RefreshSkinOptions = {}) {
     const {
-      gameProfileId = this.state.user.selectedUser.profile,
-      userId = this.state.user.selectedUser.id,
+      gameProfileId = this.state.selectedUser.profile,
+      userId = this.state.selectedUser.id,
     } = o ?? {}
     return `${userId}[${gameProfileId}]`
   })
   async refreshSkin(refreshSkinOptions: RefreshSkinOptions = {}) {
     const {
-      gameProfileId = this.state.user.selectedUser.profile,
-      userId = this.state.user.selectedUser.id,
+      gameProfileId = this.state.selectedUser.profile,
+      userId = this.state.selectedUser.id,
       force,
     } = refreshSkinOptions ?? {}
-    const user = this.state.user.users[userId]
+    const user = this.state.users[userId]
     const gameProfile = user.profiles[gameProfileId]
     // if no game profile (maybe not logined), return
     if (gameProfile.name === '') return
     // if user doesn't have a valid access token, return
-    if (!this.getters.accessTokenValid) return
+    if (!this.state.isAccessTokenValid) return
 
     const userAndProfileId = `${userId}[${gameProfileId}]`
     const refreshed = this.refreshSkinRecord[userAndProfileId]
@@ -286,7 +277,7 @@ export default class UserService extends AbstractService implements IUserService
     const { id, name } = gameProfile
     try {
       let profile: GameProfile
-      const api = this.state.user.profileServices[user.profileService]
+      const api = this.state.profileServices[user.profileService]
       const compatible = user.profileService === user.authService
       this.log(`Refresh skin for user ${gameProfile.name} in ${user.profileService} service ${compatible ? 'compatiblely' : 'incompatiblely'}`)
 
@@ -309,7 +300,7 @@ export default class UserService extends AbstractService implements IUserService
       this.refreshSkinRecord[userAndProfileId] = true
       if (skin) {
         this.log(`Update the skin for user ${gameProfile.name} in ${user.profileService} service`)
-        this.commit('gameProfile', {
+        this.state.gameProfileUpdate({
           userId: user.id,
           profile: {
             ...gameProfile,
@@ -338,12 +329,12 @@ export default class UserService extends AbstractService implements IUserService
     if (typeof options.slim !== 'boolean') options.slim = false
 
     const {
-      gameProfileId = this.state.user.selectedUser.profile,
-      userId = this.state.user.selectedUser.id,
+      gameProfileId = this.state.selectedUser.profile,
+      userId = this.state.selectedUser.id,
       url,
       slim,
     } = options
-    const user = this.state.user.users[userId]
+    const user = this.state.users[userId]
     const gameProfile = user.profiles[gameProfileId]
 
     const { protocol } = new URL(url)
@@ -369,7 +360,7 @@ export default class UserService extends AbstractService implements IUserService
         url: skinUrl,
         data,
       },
-    }, this.getters.profileService)
+    }, this.state.profileService)
   }
 
   /**
@@ -388,13 +379,14 @@ export default class UserService extends AbstractService implements IUserService
    */
   @Singleton()
   async refreshUser() {
-    if (!this.getters.accessTokenValid) return
+    if (!this.state.isAccessTokenValid) return
     await this.refreshStatus().catch(_ => _)
   }
 
   /**
   * Switch user account.
   */
+  @Singleton()
   async switchUserProfile(payload: {
     /**
      * The user id of the user
@@ -409,31 +401,31 @@ export default class UserService extends AbstractService implements IUserService
     requireString(payload.userId)
     requireString(payload.profileId)
 
-    if (payload.profileId === this.state.user.selectedUser.profile &&
-      payload.userId === this.state.user.selectedUser.id) {
+    if (payload.profileId === this.state.selectedUser.profile &&
+      payload.userId === this.state.selectedUser.id) {
       return
     }
 
     this.log(`Switch game profile ${payload.userId} ${payload.profileId}`)
-    this.commit('userGameProfileSelect', payload)
+    this.state.userGameProfileSelect(payload)
     await this.refreshUser()
   }
 
-  @Singleton((id: string) => id)
+  @Singleton(id => id)
   async removeUserProfile(userId: string) {
     requireString(userId)
-    if (this.state.user.selectedUser.id === userId) {
-      const user = Object.values(this.state.user.users).find((u) => !!u.selectedProfile)
+    if (this.state.selectedUser.id === userId) {
+      const user = Object.values(this.state.users).find((u) => !!u.selectedProfile)
       if (!user) {
         this.warn(`No valid user after remove user profile ${userId}!`)
       } else {
         const userId = user.id
         const profileId = user.selectedProfile
         this.log(`Switch game profile ${userId} ${profileId}`)
-        this.commit('userGameProfileSelect', { userId, profileId })
+        this.state.userGameProfileSelect({ userId, profileId })
       }
     }
-    this.commit('userProfileRemove', userId)
+    this.state.userProfileRemove(userId)
   }
 
   @Singleton()
@@ -486,6 +478,7 @@ export default class UserService extends AbstractService implements IUserService
   /**
    * Login the user by current login mode. Refresh the skin and account information.
    */
+  @Singleton()
   async login(options: LoginOptions) {
     requireObject(options)
     requireString(options.username)
@@ -497,8 +490,8 @@ export default class UserService extends AbstractService implements IUserService
       profileService = 'mojang',
     } = options
 
-    const selectedUserProfile = this.getters.user
-    const usingAuthService = this.state.user.authServices[authService]
+    const selectedUserProfile = this.state.user
+    const usingAuthService = this.state.authServices[authService]
     password = password ?? ''
 
     if (authService !== 'offline' && authService !== 'microsoft' && !usingAuthService) {
@@ -537,7 +530,7 @@ export default class UserService extends AbstractService implements IUserService
         username,
         password,
         requestUser: true,
-        clientToken: this.state.user.clientToken,
+        clientToken: this.state.clientToken,
       }, usingAuthService).catch((e) => {
         if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {
           throw Exception.from(e, { type: 'loginInternetNotConnected' })
@@ -558,10 +551,10 @@ export default class UserService extends AbstractService implements IUserService
 
     // this.refreshedSkin = false;
 
-    if (!this.state.user.users[userId]) {
+    if (!this.state.users[userId]) {
       this.log(`New user added ${userId}`)
 
-      this.commit('userProfileAdd', {
+      this.state.userProfileAdd({
         id: userId,
         accessToken,
         profiles: availableProfiles,
@@ -575,16 +568,16 @@ export default class UserService extends AbstractService implements IUserService
       })
     } else {
       this.log(`Found existed user ${userId}. Update the profiles of it`)
-      this.commit('userProfileUpdate', {
+      this.state.userProfileUpdate({
         id: userId,
         accessToken,
         profiles: availableProfiles,
         selectedProfile: selectedProfile ? selectedProfile.id : '',
       })
     }
-    if ((!this.state.user.selectedUser.id || options.selectProfile) && selectedProfile) {
+    if ((!this.state.selectedUser.id || options.selectProfile) && selectedProfile) {
       this.log(`Select the game profile ${selectedProfile.id} in user ${userId}`)
-      this.commit('userGameProfileSelect', {
+      this.state.userGameProfileSelect({
         profileId: selectedProfile.id,
         userId,
       })

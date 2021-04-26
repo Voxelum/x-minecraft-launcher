@@ -1,4 +1,3 @@
-import { Contracts, defaultClient, DistributedTracingModes, setup } from 'applicationinsights'
 import { readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { v4 } from 'uuid'
@@ -6,7 +5,6 @@ import { Manager } from '.'
 import { APP_INSIGHT_KEY, IS_DEV } from '/@main/constant'
 
 export default class TelemetryManager extends Manager {
-  private contract = new Contracts.ContextTagKeys()
 
   private sessionId: string = v4()
 
@@ -14,6 +12,8 @@ export default class TelemetryManager extends Manager {
     if (IS_DEV) {
       return
     }
+    const { Contracts, defaultClient, DistributedTracingModes, setup } = await import('applicationinsights')
+    const contract = new Contracts.ContextTagKeys()
 
     const clientSessionFile = join(this.app.appDataPath, 'client_session')
     try {
@@ -41,9 +41,9 @@ export default class TelemetryManager extends Manager {
       .start()
 
     const tags = defaultClient.context.tags
-    tags[this.contract.sessionId] = this.sessionId
-    tags[this.contract.userId] = this.sessionId
-    tags[this.contract.applicationVersion] = `${this.app.version}#${process.env.BUILD_NUMBER}`
+    tags[contract.sessionId] = this.sessionId
+    tags[contract.userId] = this.sessionId
+    tags[contract.applicationVersion] = `${this.app.version}#${process.env.BUILD_NUMBER}`
 
     this.app.on('user-login', (authService) => {
       defaultClient.trackEvent({

@@ -1,25 +1,26 @@
 import { MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
-import { DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL } from '@xmcl/installer'
+import { DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL } from '@xmcl/installer'
 import { task } from '@xmcl/task'
 import { ensureFile, readJSON, writeFile } from 'fs-extra'
 import { URL } from 'url'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
-import DiagnoseService from './DiagnoseService'
+import BaseService from './BaseService'
+import JavaService from './JavaService'
 import ResourceService from './ResourceService'
-import AbstractService, { ExportService, Inject, Singleton } from './Service'
+import { ExportService, Inject, Lock, Singleton, StatefulService } from './Service'
 import VersionService from './VersionService'
 import LauncherApp from '/@main/app/LauncherApp'
-import { RuntimeVersions } from '/@shared/entities/instance.schema'
-import { isFabricLoaderLibrary, isForgeLibrary, isSameForgeVersion, parseOptifineVersion } from '/@shared/entities/version'
+import { isFabricLoaderLibrary, isForgeLibrary } from '/@shared/entities/version'
 import { ForgeVersion, ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '/@shared/entities/version.schema'
-import { InstallServiceKey, InstallOptifineOptions, InstallService as IInstallService } from '/@shared/services/InstallService'
+import { Asset, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallService as IInstallService, InstallServiceKey, InstallState, RefreshForgeOptions } from '/@shared/services/InstallService'
+import { assetsLock, librariesLock, read, versionLockOf, write } from '/@shared/util/mutex'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
  */
 @ExportService(InstallServiceKey)
-export default class InstallService extends AbstractService implements IInstallService {
+export default class InstallService extends StatefulService<InstallState> implements IInstallService {
   private refreshedMinecraft = false
   private refreshedFabric = false
   private refreshedLiteloader = false
@@ -33,114 +34,16 @@ export default class InstallService extends AbstractService implements IInstallS
   private optifineVersionJson = new MappedFile<VersionOptifineSchema>(this.getPath('optifine-versions.json'), new BufferJsonSerializer(VersionOptifineSchema))
 
   constructor(app: LauncherApp,
-    @Inject(VersionService) private local: VersionService,
-    @Inject(DiagnoseService) diagnoseService: DiagnoseService,
+    @Inject(BaseService) private baseService: BaseService,
+    @Inject(VersionService) private versionService: VersionService,
     @Inject(ResourceService) private resourceService: ResourceService,
+    @Inject(JavaService) private javaService: JavaService,
   ) {
     super(app)
+  }
 
-    diagnoseService.registerMatchedFix(['missingVersionJson', 'missingVersionJar', 'corruptedVersionJson', 'corruptedVersionJar'],
-      async (issues) => {
-        const i = issues[0]
-        const { minecraft, forge, fabricLoader } = i.arguments! as RuntimeVersions
-        const metadata = this.state.version.minecraft.versions.find(v => v.id === minecraft)
-        if (metadata) {
-          await this.installMinecraft(metadata)
-          if (forge) {
-            const found = this.state.version.forge.find(f => f.mcversion === minecraft)
-              ?.versions.find(v => v.version === forge)
-            if (found) {
-              const forge = found
-              const fullVersion = await this.installForge(forge)
-              if (fullVersion) {
-                // await this.install.installDependencies(fullVersion);
-              }
-            } else {
-              this.pushException({ type: 'fixVersionNoForgeVersionMetadata', minecraft, forge })
-            }
-          }
-          if (fabricLoader) {
-            await this.installFabric({ loader: fabricLoader, minecraft })
-          }
-
-          // TODO: check liteloader
-        } else {
-          this.pushException({ type: 'fixVersionNoVersionMetadata', minecraft })
-        }
-      },
-      diagnoseService.diagnoseVersion.bind(diagnoseService))
-
-    diagnoseService.registerMatchedFix(['missingVersion'],
-      async (issues) => {
-        if (!issues[0].arguments) return
-        const { minecraft, forge, fabricLoader, optifine } = issues[0].arguments as RuntimeVersions
-        let targetVersion: string | undefined
-        if (minecraft && this.state.version.local.every(v => v.minecraftVersion !== minecraft)) {
-          if (this.state.version.minecraft.versions.length === 0) {
-            await this.refreshMinecraft()
-          }
-          const metadata = this.state.version.minecraft.versions.find(v => v.id === minecraft)
-          if (metadata) {
-            await this.installMinecraft(metadata)
-          }
-          targetVersion = metadata?.id
-        }
-        if (forge) {
-          let forges = this.state.version.forge.find(v => v.mcversion === minecraft)
-          if (!forges) {
-            await this.refreshForge({ mcversion: minecraft })
-          }
-          forges = this.state.version.forge.find(v => v.mcversion === minecraft)
-          const forgeVer = forges?.versions.find(v => isSameForgeVersion(v.version, forge))
-          if (!forgeVer) {
-            targetVersion = await this.installForge({ mcversion: minecraft, version: forge })
-          } else {
-            targetVersion = await this.installForge(forgeVer)
-          }
-        } else if (fabricLoader) {
-          targetVersion = await this.installFabric({ minecraft, loader: fabricLoader })
-        }
-        if (optifine) {
-          const { patch, type } = parseOptifineVersion(optifine)
-          const id = await this.installOptifine({ mcversion: minecraft, patch, type, inhrenitFrom: targetVersion })
-          targetVersion = id
-        }
-        if (targetVersion) {
-          await this.installDependencies(targetVersion)
-        }
-      },
-      diagnoseService.diagnoseVersion.bind(diagnoseService))
-
-    diagnoseService.registerMatchedFix(['missingAssetsIndex', 'corruptedAssetsIndex'],
-      (issues) => this.installAssetsForVersion(issues[0].arguments.version),
-      diagnoseService.diagnoseVersion.bind(diagnoseService))
-
-    diagnoseService.registerMatchedFix(['missingAssets', 'corruptedAssets'],
-      (issues) => {
-        const assets = [
-          ...issues.filter(i => i.multi).map(i => i.arguments.values).reduce((a, b) => [...a, ...b], []),
-          ...issues.filter(i => !i.multi).map(i => i.arguments),
-        ]
-        return this.installAssets(assets)
-      },
-      diagnoseService.diagnoseVersion.bind(diagnoseService))
-
-    diagnoseService.registerMatchedFix(['missingLibraries', 'corruptedLibraries'],
-      async (issues) => {
-        const libs = [
-          ...issues.filter(i => i.multi).map(i => i.arguments.values).reduce((a, b) => [...a, ...b], []),
-          ...issues.filter(i => !i.multi).map(i => i.arguments),
-        ]
-        return this.installLibraries({ libraries: libs })
-      },
-      diagnoseService.diagnoseVersion.bind(diagnoseService))
-
-    diagnoseService.registerMatchedFix(['badInstall'],
-      async (issues) => {
-        const task = installByProfileTask(issues[0].arguments.installProfile, this.getPath(), { java: this.getters.defaultJava.path })
-        await this.submit(task)
-      },
-      diagnoseService.diagnoseVersion.bind(diagnoseService))
+  createState() {
+    return new InstallState()
   }
 
   async initialize() {
@@ -153,40 +56,40 @@ export default class InstallService extends AbstractService implements IInstallS
     ])
 
     if (typeof mc === 'object') {
-      this.commit('minecraftMetadata', mc)
+      this.state.minecraftMetadata(mc)
     }
     if (typeof forge === 'object') {
       for (const value of Object.values(forge)) {
-        this.commit('forgeMetadata', value)
+        this.state.forgeMetadata(value)
       }
     }
     if (liteloader) {
-      this.commit('liteloaderMetadata', liteloader)
+      this.state.liteloaderMetadata(liteloader)
     }
     if (fabric) {
-      this.commit('fabricLoaderMetadata', { versions: fabric.loaders, timestamp: fabric.loaderTimestamp })
-      this.commit('fabricYarnMetadata', { versions: fabric.yarns, timestamp: fabric.yarnTimestamp })
+      this.state.fabricLoaderMetadata({ versions: fabric.loaders, timestamp: fabric.loaderTimestamp })
+      this.state.fabricYarnMetadata({ versions: fabric.yarns, timestamp: fabric.yarnTimestamp })
     }
     if (optifine) {
-      this.commit('optifineMetadata', optifine)
+      this.state.optifineMetadata(optifine)
     }
 
     this.storeManager.subscribe('minecraftMetadata', () => {
-      this.minecraftVersionJson.write(this.state.version.minecraft)
+      this.minecraftVersionJson.write(this.state.minecraft)
     }).subscribe('forgeMetadata', () => {
-      this.forgeVersionJson.write(this.state.version.forge)
+      this.forgeVersionJson.write(this.state.forge)
     }).subscribe('liteloaderMetadata', () => {
-      this.liteloaderVersionJson.write(this.state.version.liteloader)
+      this.liteloaderVersionJson.write(this.state.liteloader)
     }).subscribeAll(['fabricLoaderMetadata', 'fabricYarnMetadata'], () => {
-      this.fabricVersionJson.write(this.state.version.fabric)
+      this.fabricVersionJson.write(this.state.fabric)
     }).subscribe('optifineMetadata', () => {
-      this.optifineVersionJson.write(this.state.version.optifine)
+      this.optifineVersionJson.write(this.state.optifine)
     })
   }
 
   protected getMinecraftJsonManifestRemote() {
-    if (this.networkManager.isInGFW && this.state.base.apiSetsPreference !== 'mojang') {
-      const api = this.state.base.apiSets.find(a => a.name === this.state.base.apiSetsPreference)
+    if (this.networkManager.isInGFW && this.baseService.state.apiSetsPreference !== 'mojang') {
+      const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference)
       if (api) {
         return `${api.url}/mc/game/version_manifest.json`
       }
@@ -197,11 +100,10 @@ export default class InstallService extends AbstractService implements IInstallS
   protected getForgeInstallOptions(): InstallForgeOptions {
     const options: InstallForgeOptions = {
       ...this.networkManager.getDownloadBaseOptions(),
-      overwriteWhen: 'checksumNotMatch',
-      java: this.getters.defaultJava.path,
+      java: this.javaService.state.defaultJava.path,
     }
-    if (this.networkManager.isInGFW && this.state.base.apiSetsPreference !== 'mojang') {
-      const api = this.state.base.apiSets.find(a => a.name === this.state.base.apiSetsPreference)
+    if (this.networkManager.isInGFW && this.baseService.state.apiSetsPreference !== 'mojang') {
+      const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference)
       if (api) {
         options.mavenHost = [`${api.url}/maven`]
       }
@@ -213,12 +115,11 @@ export default class InstallService extends AbstractService implements IInstallS
     const option: Options = {
       assetsDownloadConcurrency: 16,
       ...this.networkManager.getDownloadBaseOptions(),
-      overwriteWhen: 'checksumNotMatch',
       side: 'client',
     }
 
-    if (this.networkManager.isInGFW && this.state.base.apiSetsPreference !== 'mojang') {
-      const api = this.state.base.apiSets.find(a => a.name === this.state.base.apiSetsPreference)
+    if (this.networkManager.isInGFW && this.baseService.state.apiSetsPreference !== 'mojang') {
+      const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference)
       if (api) {
         option.assetsHost = `${api.url}/assets`
         option.mavenHost = `${api.url}/maven`
@@ -297,9 +198,6 @@ export default class InstallService extends AbstractService implements IInstallS
     return result
   }
 
-  /**
-   * Request minecraft version list and cache in to store and disk.
-   */
   @Singleton()
   async refreshMinecraft(force = false) {
     if (!force && this.refreshedMinecraft) {
@@ -307,23 +205,19 @@ export default class InstallService extends AbstractService implements IInstallS
       return
     }
     this.log('Start to refresh minecraft version metadata.')
-    const oldMetadata = this.state.version.minecraft
+    const oldMetadata = this.state.minecraft
     const remote = this.getMinecraftJsonManifestRemote()
     const newMetadata = await getVersionList({ original: oldMetadata, remote })
     if (oldMetadata !== newMetadata) {
       this.log('Found new minecraft version metadata. Update it.')
-      this.commit('minecraftMetadata', newMetadata)
+      this.state.minecraftMetadata(newMetadata)
     } else {
       this.log('Not found new Minecraft version metadata. Use cache.')
     }
     this.refreshedMinecraft = true
   }
 
-  /**
-   * Install assets which defined in this version asset.json. If this version is not present, this will throw error！
-   * @param version The local version id
-   */
-  @Singleton('install')
+  @Lock((v) => [read(versionLockOf(v)), write(assetsLock)])
   async installAssetsForVersion(version: string) {
     const option = this.getInstallOptions()
     const location = this.getPath()
@@ -331,7 +225,7 @@ export default class InstallService extends AbstractService implements IInstallS
     await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
   }
 
-  @Singleton('install')
+  @Lock((v) => [read(versionLockOf(v)), write(assetsLock), write(librariesLock)])
   async installDependencies(version: string) {
     const option = this.getInstallOptions()
     const location = this.getPath()
@@ -340,15 +234,11 @@ export default class InstallService extends AbstractService implements IInstallS
     await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
   }
 
-  /**
-   * If you think a version is corrupted, you can try to reinstall this version
-   * @param version The version to reinstall
-   */
-  @Singleton('install')
+  @Lock(v => [read(versionLockOf(v))])
   async reinstall(version: string) {
     const option = this.getInstallOptions()
     const location = this.getPath()
-    const local = this.state.version.local.find(v => v.id === version)
+    const local = this.versionService.state.local.find(v => v.id === version)
     if (!local) {
       throw new Error(`Cannot reinstall ${version} as it's not found!`)
     }
@@ -365,22 +255,15 @@ export default class InstallService extends AbstractService implements IInstallS
     await this.submit(installAssetsTask(local, option).setName('installAssets'))
   }
 
-  /**
-   * Install assets to the version
-   * @param version The local version id
-   */
-  @Singleton('install')
-  async installAssets(assets: { name: string; size: number; hash: string }[]) {
+  @Lock(write(assetsLock))
+  async installAssets(assets: Asset[]) {
     const option = this.getInstallOptions()
     const location = this.getPath()
     const task = installResolvedAssetsTask(assets, new MinecraftFolder(location), option).setName('installAssets')
     await this.submit(task)
   }
 
-  /**
-   * Download and install a minecract version
-   */
-  @Singleton('install')
+  @Lock((v: MinecraftVersion) => write(versionLockOf(v.id)))
   async installMinecraft(meta: MinecraftVersion) {
     const id = meta.id
 
@@ -388,18 +271,15 @@ export default class InstallService extends AbstractService implements IInstallS
     const task = installVersionTask(meta, this.getPath(), option).setName('installVersion')
     try {
       await this.submit(task)
-      this.local.refreshVersions()
+      this.versionService.refreshVersions()
     } catch (e) {
       this.warn(`An error ocurred during download version ${id}`)
       this.warn(e)
     }
   }
 
-  /**
-   * Install provided libraries to game.
-   */
-  @Singleton('install')
-  async installLibraries({ libraries }: { libraries: (Version.Library | ResolvedLibrary)[] }) {
+  @Lock(write(librariesLock))
+  async installLibraries(libraries: InstallableLibrary[]) {
     let resolved: ResolvedLibrary[]
     if ('downloads' in libraries[0]) {
       resolved = Version.resolveLibraries(libraries)
@@ -416,38 +296,23 @@ export default class InstallService extends AbstractService implements IInstallS
     }
   }
 
-  /**
-  * Refresh forge remote versions cache from forge websites or BMCL API
-  */
   @Singleton()
-  async refreshForge(options: { force?: boolean; mcversion?: string } = {}) {
-    let { mcversion, force } = options
+  async refreshForge(options: RefreshForgeOptions) {
+    const { mcversion: minecraftVersion, force } = options
 
-    mcversion = mcversion || this.getters.instance.runtime.minecraft
-
-    if (!force && this.refreshedForge[mcversion]) {
-      this.log(`Skip to refresh forge metadata from ${mcversion}. Use cache.`)
+    if (!force && this.refreshedForge[minecraftVersion]) {
+      this.log(`Skip to refresh forge metadata from ${minecraftVersion}. Use cache.`)
       return
     }
-    this.refreshedForge[mcversion] = true
-
-    let minecraftVersion = mcversion
-    if (!minecraftVersion) {
-      const prof = this.state.instance.all[this.state.instance.path]
-      if (!prof) {
-        this.log('The instance refreshing is not ready. Break forge versions list update.')
-        return
-      }
-      minecraftVersion = prof.runtime.minecraft
-    }
+    this.refreshedForge[minecraftVersion] = true
 
     try {
-      const currentForgeVersion = this.state.version.forge.find(f => f.mcversion === minecraftVersion)!
+      const currentForgeVersion = this.state.forge.find(f => f.mcversion === minecraftVersion)!
 
       let newForgeVersion = currentForgeVersion
       if (this.networkManager.isInGFW) {
         this.log(`Update forge version list (BMCL) for Minecraft ${minecraftVersion}`)
-        newForgeVersion = await this.getForgesFromBMCL(mcversion, currentForgeVersion)
+        newForgeVersion = await this.getForgesFromBMCL(minecraftVersion, currentForgeVersion)
       } else {
         this.log(`Update forge version list (ForgeOfficial) for Minecraft ${minecraftVersion}`)
         newForgeVersion = await getForgeVersionList({ mcversion: minecraftVersion, original: currentForgeVersion as any }) as any
@@ -455,7 +320,7 @@ export default class InstallService extends AbstractService implements IInstallS
 
       if (newForgeVersion !== currentForgeVersion) {
         this.log('Found new forge versions list. Update it')
-        this.commit('forgeMetadata', newForgeVersion)
+        this.state.forgeMetadata(newForgeVersion)
       } else {
         this.log('No new forge version metadata found. Skip.')
       }
@@ -465,31 +330,24 @@ export default class InstallService extends AbstractService implements IInstallS
     }
   }
 
-  /**
-   * Install forge by forge version metadata
-   */
-  @Singleton('install')
-  async installForge(meta: Parameters<typeof installForgeTask>[0]) {
-    const options = this.getForgeInstallOptions()
+  @Lock((v: _InstallForgeOptions) => write(versionLockOf(`forge-${v.mcversion}-${v.version}`)))
+  async installForge(options: _InstallForgeOptions) {
+    const installOptions = this.getForgeInstallOptions()
 
     let version: string | undefined
     try {
-      this.log(`Start to install forge ${meta.version} on ${meta.mcversion}`)
-      version = await this.submit(installForgeTask(meta, this.getPath(), options))
-      this.local.refreshVersions()
-      this.log(`Success to install forge ${meta.version} on ${meta.mcversion}`)
+      this.log(`Start to install forge ${options.version} on ${options.mcversion}`)
+      version = await this.submit(installForgeTask(options, this.getPath(), installOptions))
+      this.versionService.refreshVersions()
+      this.log(`Success to install forge ${options.version} on ${options.mcversion}`)
     } catch (err) {
-      this.warn(`An error ocurred during download version ${meta.version}@${meta.mcversion}`)
+      this.warn(`An error ocurred during download version ${options.version}@${options.mcversion}`)
       this.warn(err)
     }
 
     return version
   }
 
-  /**
-   * Refresh fabric version list in the store.
-   * @param force shouls the version be refresh regardless if we have already refreshed fabric version.
-   */
   @Singleton()
   async refreshFabric(force = false) {
     if (!force && this.refreshedFabric) {
@@ -504,50 +362,43 @@ export default class InstallService extends AbstractService implements IInstallS
       return [statusCode === 200, headers['last-modified'] ?? timestamp] as const
     }
 
-    const [yarnModified, yarnDate] = await getIfModified(YARN_MAVEN_URL, this.state.version.fabric.yarnTimestamp)
+    const [yarnModified, yarnDate] = await getIfModified(YARN_MAVEN_URL, this.state.fabric.yarnTimestamp)
 
     if (yarnModified) {
       const versions = await getYarnArtifactList()
-      this.commit('fabricYarnMetadata', { versions, timestamp: yarnDate })
+      this.state.fabricYarnMetadata({ versions, timestamp: yarnDate })
       this.log(`Refreshed fabric yarn metadata at ${yarnDate}.`)
     }
 
-    const [loaderModified, loaderDate] = await getIfModified(LOADER_MAVEN_URL, this.state.version.fabric.loaderTimestamp)
+    const [loaderModified, loaderDate] = await getIfModified(LOADER_MAVEN_URL, this.state.fabric.loaderTimestamp)
 
     if (loaderModified) {
       const versions = await getLoaderArtifactList()
-      this.commit('fabricLoaderMetadata', { versions, timestamp: loaderDate })
+      this.state.fabricLoaderMetadata({ versions, timestamp: loaderDate })
       this.log(`Refreshed fabric loader metadata at ${loaderDate}.`)
     }
 
     this.refreshedFabric = true
   }
 
-  /**
-   * Install fabric to the minecraft
-   * @param versions The fabric versions
-   */
-  @Singleton('install')
-  async installFabric(versions: { yarn?: string; loader: string; minecraft: string }) {
+  @Lock((v: InstallFabricOptions) => write(versionLockOf(`fabric-${v.minecraft}-${v.loader}`)))
+  async installFabric(options: InstallFabricOptions) {
     try {
-      this.log(`Start to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`)
+      this.log(`Start to install fabric: yarn ${options.yarn}, loader ${options.loader}.`)
       const result = await this.submit(task('installFabric', async () => {
-        const artifact = await getFabricLoaderArtifact(versions.minecraft, versions.loader)
+        const artifact = await getFabricLoaderArtifact(options.minecraft, options.loader)
         return installFabric(artifact, this.getPath(), { side: 'client' })
       }))
-      this.local.refreshVersions()
-      this.log(`Success to install fabric: yarn ${versions.yarn}, loader ${versions.loader}. The new version is ${result}`)
+      this.versionService.refreshVersions()
+      this.log(`Success to install fabric: yarn ${options.yarn}, loader ${options.loader}. The new version is ${result}`)
       return result
     } catch (e) {
-      this.warn(`An error ocurred during install fabric yarn-${versions.yarn}, loader-${versions.loader}`)
+      this.warn(`An error ocurred during install fabric yarn-${options.yarn}, loader-${options.loader}`)
       this.warn(e)
     }
     return undefined
   }
 
-  /**
-   * Refresh optifine version list from BMCL API
-   */
   @Singleton()
   async refreshOptifine(force = false) {
     if (!force && this.refreshedOptifine) {
@@ -556,8 +407,8 @@ export default class InstallService extends AbstractService implements IInstallS
 
     this.log('Start to refresh optifine metadata')
 
-    const headers = this.state.version.optifine.etag === '' ? undefined : {
-      'If-None-Match': this.state.version.optifine.etag,
+    const headers = this.state.optifine.etag === '' ? undefined : {
+      'If-None-Match': this.state.optifine.etag,
     }
 
     const response = await this.networkManager.request.get('https://bmclapi2.bangbang93.com/optifine/versionList', {
@@ -571,7 +422,7 @@ export default class InstallService extends AbstractService implements IInstallS
       const etag = response.headers.etag as string
       const versions: OptifineVersion[] = JSON.parse(response.body)
 
-      this.commit('optifineMetadata', {
+      this.state.optifineMetadata({
         etag,
         versions,
       })
@@ -581,10 +432,7 @@ export default class InstallService extends AbstractService implements IInstallS
     this.refreshedOptifine = true
   }
 
-  /**
-   * Install the optifine to the minecraft
-   */
-  @Singleton('install')
+  // @Lock(v => )
   async installOptifine(options: InstallOptifineOptions) {
     const minecraft = new MinecraftFolder(this.getPath())
     const optifineVersion = `${options.type}_${options.patch}`
@@ -608,7 +456,7 @@ export default class InstallService extends AbstractService implements IInstallS
       }
     }
 
-    const java = this.getters.defaultJava.valid ? this.getters.defaultJava.path : undefined
+    const java = this.javaService.state.defaultJava.valid ? this.javaService.state.defaultJava.path : undefined
     const resourceService = this.resourceService
     const error = this.error
 
@@ -650,37 +498,44 @@ export default class InstallService extends AbstractService implements IInstallS
     return id
   }
 
-  /**
-   * Refresh the listloader version list from its github
-   */
   @Singleton()
   async refreshLiteloader(force = false) {
     if (!force && this.refreshedLiteloader) {
       return
     }
 
-    const option = this.state.version.liteloader.timestamp === '' ? undefined : {
-      original: this.state.version.liteloader,
+    const option = this.state.liteloader.timestamp === '' ? undefined : {
+      original: this.state.liteloader,
     }
     const remoteList = await getLiteloaderVersionList(option)
-    if (remoteList !== this.state.version.liteloader) {
-      this.commit('liteloaderMetadata', remoteList)
+    if (remoteList !== this.state.liteloader) {
+      this.state.liteloaderMetadata(remoteList)
     }
 
     this.refreshedLiteloader = true
   }
 
-  /**
-   * Install a specific liteloader version
-   */
-  @Singleton('install')
+  @Singleton()
   async installLiteloader(meta: LiteloaderVersion) {
     try {
       await this.submit(installLiteloaderTask(meta, this.getPath()))
     } catch (err) {
       this.warn(err)
     } finally {
-      this.local.refreshVersions()
+      this.versionService.refreshVersions()
+    }
+  }
+
+  @Singleton()
+  async installByProfile(profile: InstallProfile) {
+    try {
+      await this.submit(installByProfileTask(profile, this.getPath(), {
+        ...this.getForgeInstallOptions(),
+      }))
+    } catch (err) {
+      this.warn(err)
+    } finally {
+      this.versionService.refreshVersions()
     }
   }
 }

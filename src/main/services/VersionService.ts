@@ -1,29 +1,31 @@
 import { ResolvedVersion, Version } from '@xmcl/core'
 import { remove } from 'fs-extra'
 import { join } from 'path'
-import AbstractService, { Enqueue, ExportService } from './Service'
+import { ExportService, StatefulService } from './Service'
 import { copyPassively, FileStateWatcher, missing, readdirEnsured } from '/@main/util/fs'
-import { VersionServiceKey, VersionService as IVersionService } from '/@shared/services/VersionService'
+import { VersionState, VersionService as IVersionService, VersionServiceKey } from '/@shared/services/VersionService'
 
 /**
  * The local version serivce maintains the installed versions on disk
  */
 @ExportService(VersionServiceKey)
-export default class VersionService extends AbstractService implements IVersionService {
+export default class VersionService extends StatefulService<VersionState> implements IVersionService {
+  createState() { return new VersionState() }
+
   private versionsWatcher = new FileStateWatcher([] as string[], (state, _, f) => [...new Set([...state, f])])
 
   private versionLoaded = false
 
-  async dispose() {
-    this.versionsWatcher.close()
-  }
-
   async initialize() {
     await this.refreshVersions()
-    if (this.state.version.local.length === 0) {
+    if (this.state.local.length === 0) {
       this.checkLocalMinecraftFiles()
     }
     this.versionsWatcher.watch(this.getPath('versions'))
+  }
+
+  async dispose() {
+    this.versionsWatcher.close()
   }
 
   /**
@@ -47,14 +49,6 @@ export default class VersionService extends AbstractService implements IVersionS
     return Object.freeze(resolved)
   }
 
-  async resolveVersionId() {
-    const cur = this.getters.instanceVersion
-    if (!cur.id) {
-      await this.refreshVersions(true)
-    }
-    return cur.id
-  }
-
   /**
    * Refresh a version in the version folder.
    * @param versionFolder The version folder name. It must existed under the `versions` folder.
@@ -63,9 +57,9 @@ export default class VersionService extends AbstractService implements IVersionS
     try {
       const version = await this.resolveLocalVersion(versionFolder)
       this.log(`Refresh local version ${versionFolder}`)
-      this.commit('localVersion', version)
+      this.state.localVersionAdd(version)
     } catch (e) {
-      this.commit('localVersionRemove', versionFolder)
+      this.state.localVersionRemove(versionFolder)
       this.warn(`An error occured during refresh local version ${versionFolder}`)
       this.warn(e)
     }
@@ -102,10 +96,10 @@ export default class VersionService extends AbstractService implements IVersionS
     if (versions.length !== 0) {
       if (patch) {
         for (const version of versions) {
-          this.commit('localVersion', version)
+          this.state.localVersionAdd(version)
         }
       } else {
-        this.commit('localVersions', versions)
+        this.state.localVersions(versions)
       }
       this.log(`Found ${versions.length} local game versions.`)
     } else if (patch) {
@@ -119,7 +113,7 @@ export default class VersionService extends AbstractService implements IVersionS
   async deleteVersion(version: string) {
     const path = this.getPath('versions', version)
     await remove(path)
-    this.commit('localVersions', this.state.version.local.filter(v => v.id !== version))
+    this.state.localVersions(this.state.local.filter(v => v.id !== version))
   }
 
   async showVersionsDirectory() {

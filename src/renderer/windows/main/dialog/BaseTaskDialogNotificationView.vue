@@ -41,7 +41,7 @@
 
 <script lang=ts>
 import { defineComponent } from '@vue/composition-api'
-import { useNotificationQueue, LocalNotification } from '../hooks'
+import { useNotificationQueue, LocalNotification } from '/@/windows/main/hooks'
 
 export default defineComponent({
   setup() {

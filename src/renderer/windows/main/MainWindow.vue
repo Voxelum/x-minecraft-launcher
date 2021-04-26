@@ -36,16 +36,14 @@
             v-if="showParticle"
             color="#dedede"
             :style="{ 'pointer-events': onHomePage ? 'auto' : 'none' }"
-            style="position: absolute; width: 100%; height: 100%; z-index: 0; tabindex = -1;"
+            style="position: absolute; width: 100%; height: 100%; z-index: 0;"
             :click-mode="particleMode"
           />
           <transition
             name="fade-transition"
             mode="out-in"
           >
-            <!-- <keep-alive> -->
             <router-view />
-            <!-- </keep-alive> -->
           </transition>
         </div>
       </v-layout>
@@ -70,7 +68,6 @@ import {
   watch,
   defineComponent,
   ref,
-  provide,
   Ref,
 } from '@vue/composition-api'
 import {
@@ -78,27 +75,28 @@ import {
   useBackgroundImage,
   useIpc,
   useRouter,
-  useStore,
   useBackgroundBlur,
   provideAsyncRoute,
-  provideRouterHistory,
+  useBaseService,
+  provideServerStatusCache,
 } from '/@/hooks'
 import { provideTasks } from '/@/providers/provideTaskProxy'
-import { provideDialog, provideNotifier, provideContextMenu, provideSearch } from './hooks'
+import { provideDialog, provideNotifier, provideContextMenu, provideSearch, provideIssueHandler } from './hooks'
 import LoginDialog from './dialog/BaseLoginDialog.vue'
 import TaskDialog from './dialog/BaseTaskDialog.vue'
 import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue'
-import Particles from '../../skin/Particles.vue'
+import Particles from '../../components/Particles.vue'
 import JavaWizardDialog from './dialog/BaseJavaWizardDialog.vue'
 
 export default defineComponent({
-  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaWizardDialog, Particles },
+  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaWizardDialog, Particles: (Particles as any) },
   setup() {
     provideDialog()
     provideNotifier()
     provideTasks()
     provideAsyncRoute()
-    const { goBack } = provideRouterHistory()
+    provideServerStatusCache()
+    provideIssueHandler()
 
     const { text, toggle } = provideSearch()
     provideContextMenu()
@@ -107,10 +105,14 @@ export default defineComponent({
     const { particleMode, showParticle } = useParticle()
     const { blurMainBody } = useBackgroundBlur()
     const { blur, backgroundImage } = useBackgroundImage()
-    const { state } = useStore()
+    const { state } = useBaseService()
     const router = useRouter()
     const onHomePage = ref(router.currentRoute.path === '/')
     const app: Ref<any> = ref(null)
+
+    function goBack() {
+      router.back()
+    }
 
     router.afterEach((to) => {
       onHomePage.value = to.path === '/'
@@ -142,7 +144,7 @@ export default defineComponent({
           })
         }
       })
-      app.value!.$el.classList.add(state.base.platform)
+      app.value!.$el.classList.add(state.platform)
     })
 
     return {

@@ -1,6 +1,8 @@
-import { MojangChallengeResponse } from '@xmcl/user'
-import { ServiceKey } from './Service'
-import { GameProfileAndTexture } from '/@shared/entities/user.schema'
+import { GameProfile, MojangChallenge, MojangChallengeResponse, ProfileServiceAPI, YggdrasilAuthAPI } from '@xmcl/user'
+import { EMPTY_GAME_PROFILE, EMPTY_USER } from '../entities/user'
+import { assignShallow, toObjectReducer } from '../util/object'
+import { ServiceKey, StatefulService } from './Service'
+import { GameProfileAndTexture, UserProfile, UserSchema } from '/@shared/entities/user.schema'
 export interface LoginMicrosoftOptions {
   /**
    * The authorization code. If not present, it will try to get the auth code.
@@ -53,41 +55,247 @@ export interface UploadSkinOptions {
    */
   slim: boolean
 }
-export interface UserService {
+
+export class UserState implements UserSchema {
+  // user data
+  users: Record<string, UserProfile> = {}
+  selectedUser = {
+    id: '',
+    profile: '',
+  }
+
+  clientToken = ''
+
+  // client data
+  authServices: Record<string, YggdrasilAuthAPI> = {
+    mojang: {
+      hostName: 'https://authserver.mojang.com',
+      authenticate: '/authenticate',
+      refresh: '/refresh',
+      validate: '/validate',
+      invalidate: '/invalidate',
+      signout: '/signout',
+    },
+  }
+
+  profileServices: Record<string, ProfileServiceAPI> = {
+    mojang: {
+      publicKey: `-----BEGIN PUBLIC KEY-----
+MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAylB4B6m5lz7jwrcFz6Fd
+/fnfUhcvlxsTSn5kIK/2aGG1C3kMy4VjhwlxF6BFUSnfxhNswPjh3ZitkBxEAFY2
+5uzkJFRwHwVA9mdwjashXILtR6OqdLXXFVyUPIURLOSWqGNBtb08EN5fMnG8iFLg
+EJIBMxs9BvF3s3/FhuHyPKiVTZmXY0WY4ZyYqvoKR+XjaTRPPvBsDa4WI2u1zxXM
+eHlodT3lnCzVvyOYBLXL6CJgByuOxccJ8hnXfF9yY4F0aeL080Jz/3+EBNG8RO4B
+yhtBf4Ny8NQ6stWsjfeUIvH7bU/4zCYcYOq4WrInXHqS8qruDmIl7P5XXGcabuzQ
+stPf/h2CRAUpP/PlHXcMlvewjmGU6MfDK+lifScNYwjPxRo4nKTGFZf/0aqHCh/E
+AsQyLKrOIYRE0lDG3bzBh8ogIMLAugsAfBb6M3mqCqKaTMAf/VAjh5FFJnjS+7bE
++bZEV0qwax1CEoPPJL1fIQjOS8zj086gjpGRCtSy9+bTPTfTR/SJ+VUB5G2IeCIt
+kNHpJX2ygojFZ9n5Fnj7R9ZnOM+L8nyIjPu3aePvtcrXlyLhH/hvOfIOjPxOlqW+
+O5QwSFP4OEcyLAUgDdUgyW36Z5mB285uKW/ighzZsOTevVUG2QwDItObIV6i8RCx
+FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
+-----END PUBLIC KEY-----`,
+      // eslint-disable-next-line no-template-curly-in-string
+      texture: 'https://api.mojang.com/user/profile/${uuid}/${type}',
+      // eslint-disable-next-line no-template-curly-in-string
+      profile: 'https://sessionserver.mojang.com/session/minecraft/profile/${uuid}',
+      // eslint-disable-next-line no-template-curly-in-string
+      profileByName: 'https://api.mojang.com/users/profiles/minecraft/${name}',
+    },
+  }
+
   /**
-     * Logout and clear current cache.
-     */
-  logout(): Promise<void>
+   * If this is true, user can get the skin data from mojang, else user has to answer the challenge to continue.
+   */
+  mojangSecurity = false
+
+  get user(): UserProfile {
+    return this.users[this.selectedUser.id] || EMPTY_USER
+  }
+
+  get gameProfile() {
+    return this.user.profiles[this.selectedUser.profile] || EMPTY_GAME_PROFILE
+  }
+
+  get isAccessTokenValid(): boolean {
+    return this.user.accessToken !== ''
+  }
+
+  get offline(): boolean {
+    return this.user.authService === 'offline'
+  }
+
+  get isYggdrasilService(): boolean {
+    return this.user.authService !== 'offline' && this.user.authService !== 'microsoft'
+  }
+
+  get isThirdPartyAuthentication(): boolean {
+    const user = this.user
+    return user.authService !== 'mojang' && user.authService !== 'offline' && user.authService !== 'microsoft'
+  }
+
+  get authService(): YggdrasilAuthAPI {
+    return this.authServices[this.user.authService]
+  }
+
+  get profileService(): ProfileServiceAPI {
+    return this.profileServices[this.user.profileService]
+  }
+
+  userSnapshot(snapshot: UserSchema) {
+    this.clientToken = snapshot.clientToken
+    assignShallow(this.selectedUser, snapshot.selectedUser)
+
+    if (typeof snapshot.users === 'object') {
+      this.users = snapshot.users
+    }
+    if (snapshot.authServices) {
+      this.authServices = { ...this.authServices, ...snapshot.authServices }
+    }
+    if (snapshot.profileServices) {
+      this.profileServices = { ...this.profileServices, ...snapshot.profileServices }
+    }
+  }
+
+  userSecurity(sec: boolean) {
+    this.mojangSecurity = sec
+  }
+
+  gameProfileUpdate({ profile, userId }: { userId: string; profile: (GameProfileAndTexture | GameProfile) }) {
+    const userProfile = this.users[userId]
+    if (profile.id in userProfile.profiles) {
+      const instance = { textures: { SKIN: { url: '' } }, ...profile }
+      userProfile.profiles[profile.id] = instance
+
+      // TODO: remove in vue3
+      // set(userProfile.profiles, profile.id)
+    } else {
+      userProfile.profiles[profile.id] = {
+        textures: { SKIN: { url: '' } },
+        ...profile,
+      }
+    }
+  }
+
+  userInvalidate() {
+    if (this.users[this.selectedUser.id].authService !== 'offline') {
+      this.users[this.selectedUser.id].accessToken = ''
+    }
+  }
+
+  authServiceRemove(name: string) {
+    // TODO: remove in vue3
+    // remove(this.authServices, name)
+    delete this.authServices[name]
+  }
+
+  profileServiceRemove(name: string) {
+    // TODO: remove in vue3
+    // remove(this.profileServices, name)
+    delete this.profileServices[name]
+  }
+
+  userProfileRemove(userId: string) {
+    if (this.selectedUser.id === userId) {
+      this.selectedUser.id = ''
+      this.selectedUser.profile = ''
+    }
+
+    // TODO: remove in vue3
+    // remove(this.users, userId)
+    delete this.users[userId]
+  }
+
+  userProfileAdd(profile: Omit<UserProfile, 'profiles'> & { id: string; profiles: (GameProfileAndTexture | GameProfile)[] }) {
+    const value = {
+      ...profile,
+      profiles: profile.profiles
+        .map(p => ({ ...p, textures: { SKIN: { url: '' } } }))
+        .reduce(toObjectReducer<GameProfileAndTexture, 'id'>('id'), {}),
+      selectedProfile: profile.selectedProfile,
+    }
+    // TODO: remove in vue3
+    // set(this.users, profile.id)
+    this.users[profile.id] = value
+  }
+
+  userProfileUpdate(profile: { id: string; accessToken: string; profiles: (GameProfileAndTexture | GameProfile)[]; selectedProfile?: string }) {
+    const user = this.users[profile.id]
+    user.accessToken = profile.accessToken
+    profile.profiles.forEach((p) => {
+      if (user.profiles[p.id]) {
+        user.profiles[p.id] = {
+          ...user.profiles[p.id],
+          ...p,
+        }
+      } else {
+        user.profiles[p.id] = {
+          textures: { SKIN: { url: '' } },
+          ...p,
+        }
+      }
+    })
+    if (profile.selectedProfile !== undefined) {
+      user.selectedProfile = profile.selectedProfile
+    }
+  }
+
+  userGameProfileSelect({ userId, profileId }: { userId: string; profileId: string }) {
+    this.selectedUser.id = userId
+    this.selectedUser.profile = profileId
+  }
+
+  authServiceSet({ name, api }: { name: string; api: YggdrasilAuthAPI }) {
+    if (name in this.authServices) {
+      this.authServices[name] = api
+    } else {
+      // TODO: remove in vue3
+      // set(this.authServices, name)
+      this.authServices[name] = api
+    }
+  }
+
+  profileServiceSet({ name, api }: { name: string; api: ProfileServiceAPI }) {
+    if (name in this.profileServices) {
+      this.profileServices[name] = api
+    } else {
+      // TODO: remove in vue3
+      // set(this.profileServices, name)
+      this.profileServices[name] = api
+    }
+  }
+}
+
+export interface UserService extends StatefulService<UserState> {
   /**
-     * Check current ip location and determine wether we need to validate user identity by response challenge.
-     *
-     * See `getChallenges` and `submitChallenges`
-     */
+   * Check current ip location and determine wether we need to validate user identity by response challenge.
+   *
+   * See `getChallenges` and `submitChallenges`
+   */
   checkLocation(): Promise<boolean>
   /**
-     * Get all the user set challenges for security reasons.
-     */
-  getChallenges(): Promise<import('@xmcl/user').MojangChallenge[]>
+   * Get all the user set challenges for security reasons.
+   */
+  getChallenges(): Promise<MojangChallenge[]>
   submitChallenges(responses: MojangChallengeResponse[]): Promise<boolean>
   /**
-     * Refresh the user auth status
-     */
+   * Refresh the user auth status
+   */
   refreshStatus(): Promise<void>
   /**
-     * Refresh current skin status
-     */
+   * Refresh current skin status
+   */
   refreshSkin(refreshSkinOptions?: RefreshSkinOptions): Promise<void>
   /**
-     * Upload the skin to server. If the userId and profileId is not assigned,
-     * it will use the selected user and selected profile.
-     *
-     * Notice that this operation might fail if the user is not authorized (accessToken is not valid).
-     * If that happened, please let user refresh it credential or relogin.
-     */
+   * Upload the skin to server. If the userId and profileId is not assigned,
+   * it will use the selected user and selected profile.
+   *
+   * Notice that this operation might fail if the user is not authorized (accessToken is not valid).
+   * If that happened, please let user refresh it credential or relogin.
+   */
   uploadSkin(options: UploadSkinOptions): Promise<void>
   /**
-     * Save the skin to the disk.
-     */
+   * Save the skin to the disk.
+   */
   saveSkin(options: {
     url: string
     path: string
@@ -112,6 +320,7 @@ export interface UserService {
   }): Promise<void>
 
   removeUserProfile(userId: string): Promise<void>
+
   loginMicrosoft(options: LoginMicrosoftOptions): Promise<{
     userId: string
     accessToken: string
@@ -127,9 +336,13 @@ export interface UserService {
   }>
 
   /**
-     * Login the user by current login mode. Refresh the skin and account information.
-     */
+   * Login the user by current login mode. Refresh the skin and account information.
+   */
   login(options: LoginOptions): Promise<void>
+  /**
+   * Logout and clear current cache.
+   */
+  logout(): Promise<void>
 }
 
 export const UserServiceKey: ServiceKey<UserService> = 'UserService'

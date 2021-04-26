@@ -9,22 +9,25 @@ import InstallService from '../services/InstallService'
 import InstanceCurseforgeIOService from '../services/InstanceCurseforgeIOService'
 import InstanceGameSettingService from '../services/InstanceGameSettingService'
 import InstanceIOService from '../services/InstanceIOService'
+import InstanceJavaService from '../services/InstanceJavaService'
 import InstanceLogService from '../services/InstanceLogService'
-import InstanceResourceService from '../services/InstanceResourceService'
+import InstanceModsService from '../services/InstanceModsService'
+import InstanceResourcePackService from '../services/InstanceResourcePacksService'
 import InstanceSavesService from '../services/InstanceSavesService'
 import InstanceService from '../services/InstanceService'
+import InstanceVersionService from '../services/InstanceVersionService'
 import JavaService from '../services/JavaService'
 import LaunchService from '../services/LaunchService'
 import ResourcePackPreviewService from '../services/ResourcePackPreviewService'
 import ResourceService from '../services/ResourceService'
 import ServerStatusService from '../services/ServerStatusService'
+import AbstractService, { KEYS_SYMBOL, PARAMS_SYMBOL, ServiceConstructor, StatefulService, SUBSCRIBE_SYMBOL } from '../services/Service'
 import UserService from '../services/UserService'
 import VersionService from '../services/VersionService'
 import { Client } from '/@main/engineBridge'
-import AbstractService, { KEYS_SYMBOL, PARAMS_SYMBOL, ServiceConstructor, SUBSCRIBE_SYMBOL } from '../services/Service'
 import { Exception } from '/@shared/entities/exception'
 import { ServiceKey } from '/@shared/services/Service'
-import { aquire, isBusy, release } from '/@shared/util/semaphore'
+import { ReadWriteLock } from '../util/mutex'
 
 interface ServiceCallSession {
   id: number
@@ -47,9 +50,9 @@ export default class ServiceManager extends Manager {
 
   private sessions: { [key: number]: ServiceCallSession } = {}
 
-  private semaphore: Record<string, number> = {}
+  private locks: Record<string, ReadWriteLock> = {}
 
-  getService<T extends ServiceConstructor>(key: ServiceKey<T>): InstanceType<T> | undefined {
+  getService<T>(key: ServiceKey<T>): T | undefined {
     return this.exposedService[key as any] as any
   }
 
@@ -57,12 +60,24 @@ export default class ServiceManager extends Manager {
     this.registeredServices.push(type)
   }
 
+  getLock(resourcePath: string) {
+    if (!this.locks[resourcePath]) {
+      this.locks[resourcePath] = new ReadWriteLock((delta) => {
+        if (delta > 0) {
+          this.app.broadcast('aquire', resourcePath)
+        } else {
+          this.app.broadcast('release', resourcePath)
+        }
+      })
+    }
+    return this.locks[resourcePath]
+  }
+
   /**
    * Aquire and boradcast the key is in used.
    * @param key The key or keys to aquire
    */
-  aquire(key: string | string[]) {
-    aquire(this.semaphore, key)
+  up(key: string) {
     this.app.broadcast('aquire', key)
   }
 
@@ -70,17 +85,8 @@ export default class ServiceManager extends Manager {
    * Release and boradcast the key is not used.
    * @param key The key or keys to release
    */
-  release(key: string | string[]) {
-    release(this.semaphore, key)
+  release(key: string) {
     this.app.broadcast('release', key)
-  }
-
-  /**
-   * Determine if a key is in used.
-   * @param key key value representing some operation
-   */
-  isBusy(key: string) {
-    return isBusy(this.semaphore, key)
   }
 
   /**
@@ -106,9 +112,12 @@ export default class ServiceManager extends Manager {
             if (injection.getObject(type)) {
               // inject object
               params[i] = injection.getObject(type)
-            } else if (Object.getPrototypeOf(type) === AbstractService) {
+            } else if (Object.getPrototypeOf(type) === AbstractService || Object.getPrototypeOf(type) === StatefulService) {
               // injecting a service
               params[i] = discoverService(type)
+              if (!params[i]) {
+                throw new Error(`Cannot find service ${type}`)
+              }
             } else {
               throw new Error(`Cannot inject type ${type} to service ${type.name}!`)
             }
@@ -150,6 +159,8 @@ export default class ServiceManager extends Manager {
     await Promise.all(this.activeServices.map(s => s.initialize().catch((e) => {
       this.error(`Error during initialize service: ${Object.getPrototypeOf(s).constructor.name}`)
       this.error(e)
+    }).finally(() => {
+      this.app.emit('service-ready', s)
     })))
 
     this.log(`Successfully initialize services. Total Time is ${Date.now() - startingTime}ms.`)
@@ -169,7 +180,7 @@ export default class ServiceManager extends Manager {
         return r.then(r => ({ result: r }), (e) => {
           this.warn(`Error during service call session ${id}(${this.sessions[id].name}):`)
           if (e instanceof Error) {
-            this.warn(e)
+            this.warn(e.stack)
           } else {
             this.warn(JSON.stringify(e))
           }
@@ -259,7 +270,8 @@ export default class ServiceManager extends Manager {
     this.addService(InstanceGameSettingService)
     this.addService(InstanceIOService)
     this.addService(InstanceLogService)
-    this.addService(InstanceResourceService)
+    this.addService(InstanceModsService)
+    this.addService(InstanceResourcePackService)
     this.addService(InstanceSavesService)
     this.addService(InstanceService)
     this.addService(JavaService)
@@ -269,13 +281,16 @@ export default class ServiceManager extends Manager {
     this.addService(ServerStatusService)
     this.addService(UserService)
     this.addService(VersionService)
+    this.addService(InstanceVersionService)
+    this.addService(InstanceJavaService)
 
     this.setupServices()
     await this.initializeServices()
-    this.app.emit('service-ready')
+    this.app.emit('all-services-ready')
   }
 
   async engineReady() {
+    this.log(`Register service manager to handle ipc`)
     this.app.handle('service-call', (e, service: string, name: string, payload: any) => this.prepareServiceCall(e.sender, service, name, payload))
     this.app.handle('session', (_, id) => this.startServiceCall(id))
   }

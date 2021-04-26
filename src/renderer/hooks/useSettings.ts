@@ -1,41 +1,44 @@
 import { computed, Ref } from '@vue/composition-api'
 import { UpdateInfo } from 'electron-updater'
-import { useStore } from './useStore'
-import { useServiceOnly } from './useService'
+import { useService, useServiceOnly } from './useService'
 import { useBusy } from './useSemaphore'
 import { BaseServiceKey } from '/@shared/services/BaseService'
 
-export function useSettings () {
-  const { state, commit } = useStore()
-  const locales = computed(() => state.base.locales || [])
+export function useBaseService() {
+  return useService(BaseServiceKey)
+}
+
+export function useSettings() {
+  const { state, checkUpdate } = useBaseService()
+  const locales = computed(() => state.locales || [])
   const selectedLocale = computed({
-    get: () => locales.value.find(l => l === state.base.locale) || 'en',
-    set: v => commit('locale', v),
+    get: () => locales.value.find(l => l === state.locale) || 'en',
+    set: v => state.localeSet(v),
   })
   const allowPrerelease = computed({
-    get: () => state.base.allowPrerelease,
-    set: v => commit('allowPrerelease', v),
+    get: () => state.allowPrerelease,
+    set: v => state.allowPrereleaseSet(v),
   })
   const autoInstallOnAppQuit = computed({
-    get: () => state.base.autoInstallOnAppQuit,
-    set: v => commit('autoInstallOnAppQuit', v),
+    get: () => state.autoInstallOnAppQuit,
+    set: v => state.autoInstallOnAppQuitSet(v),
   })
   const autoDownload = computed({
-    get: () => state.base.autoDownload,
-    set: v => commit('autoDownload', v),
+    get: () => state.autoDownload,
+    set: v => state.autoDownloadSet(v),
   })
   const apiSetsPreference = computed({
-    get: () => state.base.apiSetsPreference,
-    set: v => commit('apiSetsPreference', v),
+    get: () => state.apiSetsPreference,
+    set: v => state.apiSetsPreferenceSet(v),
   })
-  const apiSets = computed(() => ['mojang', ...state.base.apiSets])
-  const updateStatus = computed(() => state.base.updateStatus)
+  const apiSets = computed(() => ['mojang', ...state.apiSets])
+  const updateStatus = computed(() => state.updateStatus)
   const checkingUpdate = useBusy('checkUpdate')
   const downloadingUpdate = useBusy('downloadUpdate')
-  const updateInfo: Ref<UpdateInfo> = computed(() => state.base.updateInfo || {}) as any
+  const updateInfo: Ref<UpdateInfo> = computed(() => state.updateInfo || {}) as any
 
   return {
-    ...useServiceOnly(BaseServiceKey, 'checkUpdate'),
+    checkUpdate,
     locales,
     selectedLocale,
     allowPrerelease,
@@ -50,27 +53,29 @@ export function useSettings () {
   }
 }
 
-export function useLauncherVersion () {
-  const { state } = useStore()
-  const version = computed(() => state.base.version)
-  const build = computed(() => state.base.build)
+export function useLauncherVersion() {
+  const { state } = useBaseService()
+  const version = computed(() => state.version)
+  const build = computed(() => state.build)
   return {
     version,
     build,
   }
 }
 
-export function useUpdateInfo () {
-  const { state } = useStore()
+export function useUpdateInfo() {
+  const { state, checkUpdate, downloadUpdate, quitAndInstall } = useBaseService()
   const checkingUpdate = useBusy('checkUpdate')
   const downloadingUpdate = useBusy('downloadUpdate')
-  const updateInfo = computed(() => state.base.updateInfo)
-  const updateStatus = computed(() => state.base.updateStatus)
+  const updateInfo = computed(() => state.updateInfo)
+  const updateStatus = computed(() => state.updateStatus)
   return {
     checkingUpdate,
     downloadingUpdate,
     updateInfo,
     updateStatus,
-    ...useServiceOnly(BaseServiceKey, 'downloadUpdate', 'quitAndInstall', 'checkUpdate'),
+    checkUpdate,
+    downloadUpdate,
+    quitAndInstall,
   }
 }

@@ -3,8 +3,9 @@ import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import InstanceGameSettingService from './InstanceGameSettingService'
 import InstanceIOService from './InstanceIOService'
-import InstanceResourceService from './InstanceResourceService'
+import InstanceResourcePackService from './InstanceResourcePacksService'
 import InstanceSavesService from './InstanceSavesService'
+import InstanceService from './InstanceService'
 import ResourceService, { ParseResourceContext } from './ResourceService'
 import AbstractService, { ExportService, Inject } from './Service'
 import { ZipTask } from '/@main/util/zip'
@@ -18,9 +19,10 @@ export default class ImportService extends AbstractService implements IImportSer
     app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceIOService) private instanceIOService: InstanceIOService,
-    @Inject(InstanceResourceService) private instanceResourcesService: InstanceResourceService,
+    @Inject(InstanceResourcePackService) private instanceResourcesService: InstanceResourcePackService,
     @Inject(InstanceSavesService) private instanceSaveService: InstanceSavesService,
     @Inject(InstanceGameSettingService) private instanceGameSettingService: InstanceGameSettingService,
+    @Inject(InstanceService) private instanceService: InstanceService,
   ) {
     super(app)
   }
@@ -33,7 +35,7 @@ export default class ImportService extends AbstractService implements IImportSer
       // return existed
     }
     const [resolved, icon] = await this.resourceService.resolveResource(options, context)
-    const getInstancePath = (inst: string | boolean) => typeof inst === 'boolean' ? this.state.instance.path : inst
+    const getInstancePath = (inst: string | boolean) => typeof inst === 'boolean' ? this.instanceService.state.path : inst
     const resolveOptions = () => {
       if (resolved.domain === ResourceDomain.Saves) {
         return {
@@ -83,19 +85,19 @@ export default class ImportService extends AbstractService implements IImportSer
           await this.instanceIOService.importInstance(resolved.metadata.root)
         } else if (isModResource(resolved)) {
           this.warn(`Deploy directory mod to instance ${instancePath}. This might not work!`)
-          await this.instanceResourcesService.deploy({ resources: [resolved], path: instancePath })
+          await this.instanceResourcesService.install({ resources: [resolved], path: instancePath })
         } else if (isSaveResource(resolved)) {
           await this.instanceSaveService.importSave({
             instancePath,
             source: join(resolved.path, resolved.metadata.root),
           })
         } else if (isResourcePackResource(resolved)) {
-          await this.instanceResourcesService.deploy({ resources: [resolved], path: instancePath })
-          if (instancePath !== this.state.instance.path) {
+          await this.instanceResourcesService.install({ resources: [resolved], path: instancePath })
+          if (instancePath !== this.instanceService.state.path) {
             const frame = await this.instanceGameSettingService.getInstanceGameSettings(instancePath)
             await this.instanceGameSettingService.edit({ ...frame, resourcePacks: [...(frame.resourcePacks || []), resolved.path] })
           } else {
-            await this.instanceGameSettingService.edit({ resourcePacks: [...this.state.instanceGameSetting.resourcePacks, resolved.path] })
+            await this.instanceGameSettingService.edit({ resourcePacks: [...this.instanceGameSettingService.state.resourcePacks, resolved.path] })
           }
         }
       }
@@ -108,19 +110,19 @@ export default class ImportService extends AbstractService implements IImportSer
         if (isModpackResource(resolved)) {
           await this.instanceIOService.importInstance(resolved.metadata.root)
         } else if (isModResource(resolved)) {
-          await this.instanceResourcesService.deploy({ resources: [resolved], path: instancePath })
+          await this.instanceResourcesService.install({ resources: [resolved], path: instancePath })
         } else if (isSaveResource(resolved)) {
           await this.instanceSaveService.importSave({
             instancePath,
             source: join(resolved.path, resolved.metadata.root),
           })
         } else if (isResourcePackResource(resolved)) {
-          await this.instanceResourcesService.deploy({ resources: [resolved], path: instancePath })
-          if (instancePath !== this.state.instance.path) {
+          await this.instanceResourcesService.install({ resources: [resolved], path: instancePath })
+          if (instancePath !== this.instanceService.state.path) {
             const frame = await this.instanceGameSettingService.getInstanceGameSettings(instancePath)
             await this.instanceGameSettingService.edit({ ...frame, resourcePacks: [...(frame.resourcePacks || []), resolved.path] })
           } else {
-            await this.instanceGameSettingService.edit({ resourcePacks: [...this.state.instanceGameSetting.resourcePacks, resolved.path] })
+            await this.instanceGameSettingService.edit({ resourcePacks: [...this.instanceGameSettingService.state.resourcePacks, resolved.path] })
           }
         }
       }

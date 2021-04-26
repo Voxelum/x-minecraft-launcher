@@ -3,10 +3,11 @@ import { task } from '@xmcl/task'
 import { ensureDir, rename } from 'fs-extra'
 import { basename, dirname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
-import InstanceResourceService from './InstanceResourceService'
+import InstanceResourcePackService from './InstanceResourcePacksService'
 import InstanceService from './InstanceService'
 import ResourceService from './ResourceService'
 import AbstractService, { ExportService, Inject } from './Service'
+import VersionService from './VersionService'
 import { getCurseforgeUrl } from '/@main/entities/resource'
 import { isFile } from '/@main/util/fs'
 import { ZipTask } from '/@main/util/zip'
@@ -25,7 +26,8 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
   constructor(app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
-    @Inject(InstanceResourceService) private instanceResourceService: InstanceResourceService,
+    @Inject(VersionService) private versionService: VersionService,
+    @Inject(InstanceResourcePackService) private instanceResourceService: InstanceResourcePackService,
   ) {
     super(app)
   }
@@ -37,15 +39,15 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
   async exportCurseforgeModpack(options: ExportCurseforgeModpackOptions) {
     requireObject(options)
 
-    const { instancePath = this.state.instance.path, destinationPath, overrides, name, version, gameVersion, author } = options
+    const { instancePath = this.instanceService.state.path, destinationPath, overrides, name, version, gameVersion, author } = options
 
-    if (!this.state.instance.all[instancePath]) {
+    if (!this.instanceService.state.all[instancePath]) {
       this.warn(`Cannot export unmanaged instance ${instancePath}`)
       return
     }
 
-    const ganeVersionInstance = this.state.version.local.find(v => v.id === gameVersion)
-    const instance = this.state.instance.all[instancePath]
+    const ganeVersionInstance = this.versionService.state.local.find(v => v.id === gameVersion)
+    const instance = this.instanceService.state.all[instancePath]
     const modLoaders = instance.runtime.forge ? [{
       id: `forge-${instance.runtime.forge}`,
       primary: true,
@@ -145,7 +147,7 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
       await ensureDir(join(instancePath, 'mods'))
       await ensureDir(join(instancePath, 'resourcepacks'))
       log(`Deploy ${filesToDeploy.length} existed resources from curseforge modpack!`)
-      await instanceResourceService.deploy({ resources: filesToDeploy, path: instancePath })
+      await instanceResourceService.install({ resources: filesToDeploy, path: instancePath })
 
       // filter out existed resources
       manifest.files = manifest.files.filter((f) => !resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID)))
@@ -186,7 +188,7 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
         // rename the resource to correct name
         for (const res of resources.filter(r => r !== NO_RESOURCE)) {
           const path = mapping[`${res.curseforge!.projectId}:${res.curseforge!.fileId}`]
-          const realName = basename(res.location) + res.ext
+          const realName = res.fileName + res.ext
           const realPath = dirname(path) + realName
           await rename(path, realPath)
         }

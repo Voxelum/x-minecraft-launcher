@@ -1,106 +1,86 @@
-import { getServiceProxy } from '/@/providers/provideServiceProxy'
 import Router from 'vue-router'
-import BaseSettingPage from './pages/BaseSettingPage.vue'
-import CurseforgePage from './pages/CurseforgePage.vue'
-import CurseforgeProjectPage from './pages/CurseforgeProjectPage.vue'
-import CurseforgeViewPage from './pages/CurseforgeViewPage.vue'
-import GameSettingPage from './pages/GameSettingPage.vue'
-import HomePage from './pages/HomePage.vue'
-import InstancesPage from './pages/InstancesPage.vue'
-import ModSettingPage from './pages/ModSettingPage.vue'
-import ResourcePackSettingPage from './pages/ResourcePackSettingPage.vue'
-import ResourcePackPreviewPage from './pages/ResourcePackPreviewPage.vue'
-import SaveViewPage from './pages/SaveViewPage.vue'
-import SettingPage from './pages/SettingPage.vue'
-import UserPage from './pages/UserPage.vue'
-import VersionSettingPage from './pages/VersionSettingPage.vue'
-import MCWikiPage from './pages/MCWikiPage.vue'
-import { BaseServiceKey } from '/@shared/services/BaseService'
+import root from './pages'
+import baseSetting from './pages/base-setting'
+import curseforge from './pages/curseforge'
+import curseforgeType from './pages/curseforge/[type]'
+import curseforgeTypeId from './pages/curseforge/[type]/[id]'
+import gameSetting from './pages/game-setting'
+import instances from './pages/instances'
+import mcwiki from './pages/mcwiki'
+import modSetting from './pages/mod-setting'
+import resourcePackPreview from './pages/resource-pack-preview'
+import resourcePackSetting from './pages/resource-pack-setting'
+import save from './pages/save'
+import setting from './pages/setting'
+import user from './pages/user'
+import versionSetting from './pages/version-setting'
 
 const router = new Router({
   routes: [
     {
       path: '/',
-      component: HomePage,
+      component: root,
     },
     {
       path: '/instances',
-      component: InstancesPage,
+      component: instances,
     },
     {
       path: '/setting',
-      component: SettingPage,
+      component: setting,
     },
     {
       path: '/user',
-      component: UserPage,
+      component: user,
     },
     {
       path: '/save',
-      component: SaveViewPage,
+      component: save,
     },
     {
       path: '/base-setting',
-      component: BaseSettingPage,
+      component: baseSetting,
     },
     {
       path: '/mod-setting',
-      component: ModSettingPage,
+      component: modSetting,
     },
     {
       path: '/game-setting',
-      component: GameSettingPage,
+      component: gameSetting,
     },
     {
       path: '/resource-pack-setting',
-      component: ResourcePackSettingPage,
+      component: resourcePackSetting,
     },
     {
       path: '/resource-pack-preview',
-      component: ResourcePackPreviewPage,
+      component: resourcePackPreview,
     },
     {
       path: '/version-setting',
-      component: VersionSettingPage,
+      component: versionSetting,
     },
     {
       path: '/curseforge',
-      component: CurseforgePage,
+      component: curseforge,
     },
     {
       path: '/curseforge/:type',
-      component: CurseforgeViewPage,
+      component: curseforgeType,
       props: (route) => ({ keyword: route.query.keyword, page: Number.parseInt(route.query.page as any ?? '1', 10), type: route.path.split('/')[2], from: route.query.from }),
     },
     {
       path: '/curseforge/:type/:id',
-      component: CurseforgeProjectPage,
+      component: curseforgeTypeId,
       props: (route) => ({ type: route.path.split('/')[2], id: route.path.split('/')[3], from: route.query.from }),
     },
     {
       path: '/mcwiki',
-      component: MCWikiPage,
+      component: mcwiki,
       props: (route) => ({ path: route.query.path }),
     },
   ],
-})
-
-router.beforeEach((to, from, next) => {
-  const full = to.fullPath.substring(1)
-  const { openInBrowser } = getServiceProxy(BaseServiceKey)
-  if (full.startsWith('https:') || full.startsWith('http:') || full.startsWith('external')) {
-    next(false)
-    console.log(`Prevent ${from.fullPath} -> ${to.fullPath}`)
-    if (full.startsWith('external')) {
-      console.log(full.substring('external/'.length))
-      openInBrowser(full.substring('external/'.length))
-    } else {
-      openInBrowser(full)
-    }
-  } else {
-    console.log(`Route ${from.fullPath} -> ${to.fullPath}`)
-    next()
-  }
 })
 
 export default router

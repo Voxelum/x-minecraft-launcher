@@ -1,5 +1,4 @@
 import LauncherApp from '/@main/app/LauncherApp'
-import { StaticStore } from '../util/staticStore'
 
 export abstract class Manager {
   constructor(protected app: LauncherApp) { }
@@ -13,7 +12,7 @@ export abstract class Manager {
 
   engineReady(): Promise<void> | void { }
 
-  storeReady(store: StaticStore<any>): Promise<void> | void { }
+  storeReady(): Promise<void> | void { }
   /* eslint-enable */
 
   beforeQuit(): Promise<void> | void { }

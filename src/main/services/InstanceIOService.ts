@@ -6,8 +6,9 @@ import { tmpdir } from 'os'
 import { basename, join, relative, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import InstanceService from './InstanceService'
+import InstanceVersionService from './InstanceVersionService'
 import ResourceService from './ResourceService'
-import AbstractService, { ExportService, Inject, Singleton } from './Service'
+import AbstractService, { ExportService, Inject } from './Service'
 import VersionService from './VersionService'
 import { copyPassively, exists, isDirectory, isFile, readdirIfPresent } from '/@main/util/fs'
 import { ZipTask } from '/@main/util/zip'
@@ -15,6 +16,7 @@ import { createTemplate } from '/@shared/entities/instance'
 import { InstanceSchema, RuntimeVersions } from '/@shared/entities/instance.schema'
 import { ExportInstanceOptions, InstanceFile, InstanceIOService as IInstanceIOService, InstanceIOServiceKey } from '/@shared/services/InstanceIOService'
 import { requireObject, requireString } from '/@shared/util/assert'
+import { assetsLock, librariesLock, versionLockOf } from '/@shared/util/mutex'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
@@ -24,6 +26,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
   constructor(app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
+    @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(VersionService) private versionService: VersionService,
   ) {
     super(app)
@@ -33,18 +36,17 @@ export default class InstanceIOService extends AbstractService implements IInsta
    * Export current instance as a modpack. Can be either curseforge or normal full Minecraft
    * @param options The export instance options
    */
-  @Singleton('instance')
   async exportInstance(options: ExportInstanceOptions) {
     requireObject(options)
 
-    const { src = this.state.instance.path, destinationPath: dest, includeAssets = true, includeLibraries = true, files, includeVersionJar = true } = options
+    const { src = this.instanceService.state.path, destinationPath: dest, includeAssets = true, includeLibraries = true, files, includeVersionJar = true } = options
 
-    if (!this.state.instance.all[src]) {
+    if (!this.instanceService.state.all[src]) {
       this.warn(`Cannot export unmanaged instance ${src}`)
       return
     }
 
-    const version = this.getters.instanceVersion
+    const version = this.instanceVersionService.state.instanceVersion
 
     if (version.id === '') {
       // TODO: throw
@@ -57,8 +59,11 @@ export default class InstanceIOService extends AbstractService implements IInsta
 
     const zipTask = new ZipTask(dest).setName('profile.modpack.export')
 
+    const releases: Array<() => void> = []
+
     // add assets
     if (includeAssets) {
+      releases.push(await this.serviceManager.getLock(assetsLock).aquireRead())
       const assetsJson = resolve(root, 'assets', 'indexes', `${version.assets}.json`)
       zipTask.addFile(assetsJson, `assets/indexes/${version.assets}.json`)
       const objects = await readJson(assetsJson).then(manifest => manifest.objects)
@@ -71,6 +76,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
     const verionsChain = version.pathChain
     for (const versionPath of verionsChain) {
       const versionId = basename(versionPath)
+      releases.push(await this.serviceManager.getLock(versionLockOf(versionId)).aquireRead())
       if (includeVersionJar && await exists(join(versionPath, `${versionId}.jar`))) {
         zipTask.addFile(join(versionPath, `${versionId}.jar`), `versions/${versionId}/${versionId}.jar`)
       }
@@ -79,6 +85,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
 
     // add libraries
     if (includeLibraries) {
+      releases.push(await this.serviceManager.getLock(librariesLock).aquireRead())
       for (const lib of version.libraries) {
         zipTask.addFile(resolve(root, 'libraries', lib.download.path),
           `libraries/${lib.download.path}`)
@@ -94,7 +101,11 @@ export default class InstanceIOService extends AbstractService implements IInsta
       await zipTask.includeAs(from, '')
     }
 
-    await this.submit(zipTask)
+    try {
+      await this.submit(zipTask)
+    } finally {
+      releases.forEach(l => l())
+    }
   }
 
   /**
@@ -102,7 +113,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
    * It will hint if a mod resource is in curseforge
    */
   async getInstanceFiles(): Promise<InstanceFile[]> {
-    const path = this.state.instance.path
+    const path = this.instanceService.state.path
     const files = [] as InstanceFile[]
 
     const scan = async (p: string) => {
@@ -130,7 +141,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
    * @param path
    */
   async linkInstance(path: string) {
-    if (this.state.instance.all[path]) {
+    if (this.instanceService.state.all[path]) {
       this.log(`Skip to link already managed instance ${path}`)
       return false
     }

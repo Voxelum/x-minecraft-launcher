@@ -100,7 +100,6 @@
 
 <script lang=ts>
 import { reactive, toRefs, defineComponent, computed } from '@vue/composition-api'
-import { useStore } from '/@/hooks'
 import { Registry } from '/@shared/entities/issue'
 
 interface IssueType {
@@ -118,87 +117,87 @@ interface IssueLeaf {
 }
 
 function useIssuesTree() {
-  const { state } = useStore()
-  let $id = 0
+  // const { state } = useStore()
+  // let $id = 0
 
-  function collect(id: string, reg: Registry<any, any, any>) {
-    return reg.actived.map((a) => ({
-      id,
-      $id: $id++,
-      fixing: reg.fixing,
-      autofix: reg.autofix,
-      optional: reg.optional,
-      arguments: a,
-    }))
-  }
+  // function collect(id: string, reg: Registry<any, any, any>) {
+  //   return reg.actived.map((a) => ({
+  //     id,
+  //     $id: $id++,
+  //     fixing: reg.fixing,
+  //     autofix: reg.autofix,
+  //     optional: reg.optional,
+  //     arguments: a,
+  //   }))
+  // }
 
-  const assets = computed(() => {
-    const items: IssueLeaf[] = []
-    const corruptedAssets = state.diagnose.corruptedAssets
-    const missingAssets = state.diagnose.missingAssets
-    if (corruptedAssets.actived.length !== 0) {
-      items.push(...collect('corruptedAssets', corruptedAssets))
-    }
-    if (missingAssets.actived.length !== 0) {
-      items.push(...collect('missingAssets', missingAssets))
-    }
-    return { name: 'assets', items, location: `${state.base.root}/assets`, $id: $id++ }
-  })
-  const libraries = computed(() => {
-    const items: IssueLeaf[] = []
-    const corruptedLibraries = state.diagnose.corruptedLibraries
-    const missingLibraries = state.diagnose.missingLibraries
-    if (corruptedLibraries.actived.length !== 0) {
-      items.push(...collect('corruptedLibraries', corruptedLibraries))
-    }
-    if (missingLibraries.actived.length !== 0) {
-      items.push(...collect('missingLibraries', missingLibraries))
-    }
-    return { name: 'libraries', items, location: `${state.base.root}/libraries`, $id: $id++ }
-  })
-  const version = computed(() => {
-    const items: IssueLeaf[] = []
-    const missingVersionJar = state.diagnose.missingVersionJar
-    const missingVersionJson = state.diagnose.missingVersionJson
-    const corruptedVersionJar = state.diagnose.corruptedVersionJar
-    if (missingVersionJar.actived.length !== 0) {
-      items.push(...collect('missingVersionJar', missingVersionJar))
-    }
-    if (missingVersionJson.actived.length !== 0) {
-      items.push(...collect('missingVersionJson', missingVersionJson))
-    }
-    if (corruptedVersionJar.actived.length !== 0) {
-      items.push(...collect('corruptedVersionJar', corruptedVersionJar))
-    }
-    return { name: 'version', items, location: `${state.base.root}/versions`, $id: $id++ }
-  })
-  const mods = computed(() => {
-    const items: IssueLeaf[] = []
-    const incompatibleMod = state.diagnose.incompatibleMod
-    if (incompatibleMod.actived.length !== 0) {
-      items.push(...collect('incompatibleMod', incompatibleMod))
-    }
-    return { name: 'mod', items, location: `${state.base.root}/mods`, $id: $id++ }
-  })
+  // const assets = computed(() => {
+  //   const items: IssueLeaf[] = []
+  //   const corruptedAssets = state.diagnose.corruptedAssets
+  //   const missingAssets = state.diagnose.missingAssets
+  //   if (corruptedAssets.actived.length !== 0) {
+  //     items.push(...collect('corruptedAssets', corruptedAssets))
+  //   }
+  //   if (missingAssets.actived.length !== 0) {
+  //     items.push(...collect('missingAssets', missingAssets))
+  //   }
+  //   return { name: 'assets', items, location: `${state.base.root}/assets`, $id: $id++ }
+  // })
+  // const libraries = computed(() => {
+  //   const items: IssueLeaf[] = []
+  //   const corruptedLibraries = state.diagnose.corruptedLibraries
+  //   const missingLibraries = state.diagnose.missingLibraries
+  //   if (corruptedLibraries.actived.length !== 0) {
+  //     items.push(...collect('corruptedLibraries', corruptedLibraries))
+  //   }
+  //   if (missingLibraries.actived.length !== 0) {
+  //     items.push(...collect('missingLibraries', missingLibraries))
+  //   }
+  //   return { name: 'libraries', items, location: `${state.base.root}/libraries`, $id: $id++ }
+  // })
+  // const version = computed(() => {
+  //   const items: IssueLeaf[] = []
+  //   const missingVersionJar = state.diagnose.missingVersionJar
+  //   const missingVersionJson = state.diagnose.missingVersionJson
+  //   const corruptedVersionJar = state.diagnose.corruptedVersionJar
+  //   if (missingVersionJar.actived.length !== 0) {
+  //     items.push(...collect('missingVersionJar', missingVersionJar))
+  //   }
+  //   if (missingVersionJson.actived.length !== 0) {
+  //     items.push(...collect('missingVersionJson', missingVersionJson))
+  //   }
+  //   if (corruptedVersionJar.actived.length !== 0) {
+  //     items.push(...collect('corruptedVersionJar', corruptedVersionJar))
+  //   }
+  //   return { name: 'version', items, location: `${state.base.root}/versions`, $id: $id++ }
+  // })
+  // const mods = computed(() => {
+  //   const items: IssueLeaf[] = []
+  //   const incompatibleMod = state.diagnose.incompatibleMod
+  //   if (incompatibleMod.actived.length !== 0) {
+  //     items.push(...collect('incompatibleMod', incompatibleMod))
+  //   }
+  //   return { name: 'mod', items, location: `${state.base.root}/mods`, $id: $id++ }
+  // })
 
-  const items = computed(() => {
-    const result: IssueType[] = []
-    if (version.value.items.length) {
-      result.push(version.value)
-    }
-    if (assets.value.items.length) {
-      result.push(assets.value)
-    }
-    if (libraries.value.items.length) {
-      result.push(libraries.value)
-    }
-    if (mods.value.items.length) {
-      result.push(mods.value)
-    }
-    return result
-  })
+  // const items = computed(() => {
+  //   const result: IssueType[] = []
+  //   if (version.value.items.length) {
+  //     result.push(version.value)
+  //   }
+  //   if (assets.value.items.length) {
+  //     result.push(assets.value)
+  //   }
+  //   if (libraries.value.items.length) {
+  //     result.push(libraries.value)
+  //   }
+  //   if (mods.value.items.length) {
+  //     result.push(mods.value)
+  //   }
+  //   return result
+  // })
 
-  return { items, root: state.base.root }
+  // return { items, root: state.base.root }
 }
 
 export default defineComponent({
@@ -210,7 +209,7 @@ export default defineComponent({
 
     return {
       ...toRefs(data),
-      ...useIssuesTree(),
+      // ...useIssuesTree(),
     }
   },
 })

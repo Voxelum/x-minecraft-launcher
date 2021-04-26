@@ -4,7 +4,9 @@
     "module": "ESNext",
     "downlevelIteration": true,
     "resolveJsonModule": true,
-    "lib": ["ESNext"],
+    "lib": [
+      "ESNext"
+    ],
     "strict": true,
     "moduleResolution": "node",
     "baseUrl": ".",

@@ -4,19 +4,33 @@ import { RuntimeVersions } from './instance.schema'
 
 export interface Issue {
   id: string
-  arguments: { [key: string]: any }
+  parameters: Record<string, any> | Array<Record<string, any>>
   autofix?: boolean
   optional?: boolean
-  multi: boolean
+}
+
+export interface IssueRegistry<P> {
+  actived: Array<(P & { file?: string; actual?: string; expect?: string })>
+  fixing: boolean
+  autofix: boolean
+  optional: boolean
+}
+
+export interface Registry<PARAM, AF = boolean, OP = boolean> {
+  fixing: boolean
+  autofix: AF
+  optional: OP
+  actived: (PARAM & { file?: string; actual?: string; expect?: string })[]
 }
 
 export type IssueReport = {
-  [K in keyof IssueRegistry]: IssueRegistry[K]['actived']
+  [K in keyof IssueRegistries]: IssueRegistries[K]['actived']
 }
 
-export type IssueType = keyof IssueRegistry
+export type IssueType = keyof IssueRegistries
 
-export interface IssueRegistry {
+export interface IssueRegistries {
+  missingVersion: Registry<{ version: string } & RuntimeVersions>
   missingVersionJar: Registry<{ version: string } & RuntimeVersions>
   missingVersionJson: Registry<{ version: string } & RuntimeVersions>
   missingLibraries: Registry<ResolvedLibrary>
@@ -32,7 +46,7 @@ export interface IssueRegistry {
   unknownMod: Registry<{ name: string; actual: string }, false, true>
   incompatibleMod: Registry<{ name: string; actual: string; accepted: string }, false, true>
   incompatibleResourcePack: Registry<{ name: string; actual: string; accepted: string }, false, true>
-  incompatibleJava: Registry<{ java: string; type: string; version: string }, false, true>
+  incompatibleJava: Registry<{ java: string; type: string; version: string; targetVersion: '8' | '16' }, false, true>
 
   missingJava: Registry<{}>
   invalidJava: Registry<{ java: string }>
@@ -40,8 +54,6 @@ export interface IssueRegistry {
   missingAuthlibInjector: Registry<{}, true, true>
   missingCustomSkinLoader: Registry<{ target: 'forge' | 'fabric'; skinService: string; noVersionSelected: boolean; missingJar: boolean }, true, true>
   missingModsOnServer: Registry<{ modid: string; version: string }, false, false>
-
-  missingVersion: Registry<{ version: string } & RuntimeVersions>
 
   requireForge: Registry<{}, false, true>
   requireFabric: Registry<{}, false, true>
@@ -55,11 +67,4 @@ export interface IssueRegistry {
     optional: boolean
     actived: { [key: string]: any }[]
   }
-}
-
-export interface Registry<A, AF = true, OP = false > {
-  fixing: boolean
-  autofix: AF
-  optional: OP
-  actived: (A & { file?: string; actual?: string; expect?: string })[]
 }

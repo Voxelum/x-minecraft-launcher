@@ -144,7 +144,7 @@
       "": "没有分配Java",
       "autoDownload": {
         "": "自动下载",
-        "message": "启动器将从Mojang源下载并安装Java"
+        "message": "启动器将从 Mojang 源下载并安装 Java {version}"
       },
       "manualDownload": {
         "": "手动下载",
@@ -156,9 +156,9 @@
         "message": "也许只是启动器没找到你电脑里的Java,你可以手工选择一下"
       },
       "switch": {
-        "": "切换到 Java 8",
-        "disabled": "在电脑中没有检测到 Java，无法切换",
-        "message": "启动器将使用您现在安装的 Java 8"
+        "": "切换到 Java {version}",
+        "disabled": "在电脑中没有检测到 Java {version}，无法切换",
+        "message": "启动器将使用您现在安装的 Java {version}"
       }
     },
     "missingLibraries": {
@@ -427,7 +427,7 @@
     "browser": "从文件导入 Java",
     "errorDownload": "自动下载Java失败，请检查你的网络连接。当然你也可以点击返回尝试别的方法。",
     "incompatibleJava": "不兼容的 Java",
-    "incompatibleJavaHint": "当前 Java 版本无法运已选择的 Minecraft 版本",
+    "incompatibleJavaHint": "当前 Java 版本无法运已选择的 Minecraft 版本，需要 Java {version}",
     "invalid": "无效的 Java 路径",
     "location": "Java 路径",
     "locationPlaceHolder": "使用系统已经安装的 Java",

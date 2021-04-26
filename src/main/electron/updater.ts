@@ -1,7 +1,7 @@
 import { ChecksumNotMatchError, DownloadTask } from '@xmcl/installer'
 import { task, Task, TaskBase } from '@xmcl/task'
 import { spawn } from 'child_process'
-import { autoUpdater, CancellationToken, Provider, UpdateInfo, UpdaterSignal } from 'electron-updater'
+import { autoUpdater, Provider, UpdateInfo, UpdaterSignal, CancellationToken } from 'electron-updater'
 import { close, stat, writeFile } from 'fs-extra'
 import got from 'got'
 import { closeSync, existsSync, open, rename, unlink } from 'original-fs'
@@ -9,6 +9,7 @@ import { basename, dirname, join } from 'path'
 import { SemVer } from 'semver'
 import { URL } from 'url'
 import { promisify } from 'util'
+import StoreManager from '../managers/StoreManager'
 import { checksum } from '../util/fs'
 import ElectronLauncherApp from './ElectronLauncherApp'
 import { AZURE_CDN, AZURE_CDN_HOST, IS_DEV } from '/@main/constant'
@@ -199,9 +200,8 @@ export function checkUpdateTask(this: ElectronLauncherApp): Task<_UpdateInfo> {
   return task('checkUpdate', async () => {
     autoUpdater.once('update-available', () => {
       this.log('Update available and set status to pending')
-      this.storeManager.store.commit('updateStatus', 'pending')
+      updateInfo.newUpdate = true
     })
-    console.log('check update task')
     const info = await autoUpdater.checkForUpdates()
 
     if (this.networkManager.isInGFW && !injectedUpdate) {
@@ -229,5 +229,19 @@ export function checkUpdateTask(this: ElectronLauncherApp): Task<_UpdateInfo> {
     }
 
     return updateInfo
+  })
+}
+
+export function setup(storeMananger: StoreManager) {
+  storeMananger.subscribe('autoInstallOnAppQuitSet', (value) => {
+    autoUpdater.autoInstallOnAppQuit = value
+  }).subscribe('allowPrereleaseSet', (value) => {
+    autoUpdater.allowPrerelease = value
+  }).subscribe('autoDownloadSet', (value) => {
+    autoUpdater.autoDownload = value
+  }).subscribe('config', (config) => {
+    autoUpdater.autoInstallOnAppQuit = config.autoInstallOnAppQuit
+    autoUpdater.allowPrerelease = config.allowPrerelease
+    autoUpdater.autoDownload = config.autoDownload
   })
 }
