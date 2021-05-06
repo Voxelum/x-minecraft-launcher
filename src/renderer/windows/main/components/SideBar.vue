@@ -30,7 +30,7 @@
         style="display: block !important;"
       />
       <v-list-tile
-        replace
+        push
         to="/"
       >
         <v-list-tile-action>
@@ -38,7 +38,7 @@
         </v-list-tile-action>
       </v-list-tile>
       <v-list-tile
-        replace
+        push
         to="/instances"
       >
         <v-list-tile-action>
@@ -46,7 +46,7 @@
         </v-list-tile-action>
       </v-list-tile>
       <v-list-tile
-        replace
+        push
         to="/user"
       >
         <v-list-tile-action>
@@ -54,7 +54,7 @@
         </v-list-tile-action>
       </v-list-tile>
       <v-list-tile
-        replace
+        push
         to="/curseforge"
       >
         <v-list-tile-action style="padding-right: 2px;">
@@ -64,7 +64,7 @@
         </v-list-tile-action>
       </v-list-tile>
       <!-- <v-list-tile
-        replace
+        push
         to="/mcwiki"
       >
         <v-list-tile-action style="padding-right: 2px;">
@@ -105,7 +105,7 @@
         style="display: block !important;"
       />
       <v-list-tile
-        replace
+        push
         to="/setting"
       >
         <v-list-tile-action>
@@ -130,7 +130,7 @@
 import {
   defineComponent,
 } from '@vue/composition-api'
-import { useDialog } from '../hooks'
+import { useDialog } from '/@/windows/main/hooks'
 import {
   useTaskCount,
   useUpdateInfo,
@@ -155,7 +155,7 @@ export default defineComponent({
 })
 </script>
 
-<style>
+<style scoped>
 .sidebar {
   min-width: 80px;
 }

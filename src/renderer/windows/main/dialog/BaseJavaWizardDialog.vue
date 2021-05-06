@@ -50,7 +50,7 @@
 <script lang=ts>
 import { reactive, computed, toRefs, defineComponent } from '@vue/composition-api'
 import { useI18n, useJava, useNativeDialog, useServiceOnly, useInstance, useService } from '/@/hooks'
-import { useJavaWizardDialog, useNotifier } from '../hooks'
+import { useJavaWizardDialog, useNotifier } from '/@/windows/main/hooks'
 import { InstanceJavaServiceKey } from '/@shared/services/InstanceJavaService'
 import { JavaServiceKey } from '/@shared/services/JavaService'
 

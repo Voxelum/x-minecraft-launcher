@@ -31,38 +31,3 @@ export function useAsyncRoute() {
     beforeUnmount,
   }
 }
-
-export function provideRouterHistory() {
-  const localHistory: string[] = []
-  const router = useRouter()
-  const beforeLeaves = useAsyncRouteBeforeLeaves()
-
-  let timeTraveling = false
-  router.afterEach((to, from) => {
-    if (!timeTraveling) localHistory.push(from.fullPath)
-  })
-  async function goBack() {
-    timeTraveling = true
-    const before = localHistory.pop()
-    if (before) {
-      for (let hook = beforeLeaves.pop(); hook; hook = beforeLeaves.pop()) {
-        const result = hook()
-        if (result instanceof Promise) {
-          await result
-        }
-      }
-      router.replace(before)
-    }
-    timeTraveling = false
-  }
-
-  provide('history', localHistory)
-
-  return {
-    goBack,
-  }
-}
-
-export function useRouterHistory() {
-  return inject('history', [] as string[])
-}

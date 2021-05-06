@@ -1,13 +1,25 @@
-import { computed, Ref, ref } from '@vue/composition-api'
-import { useInMemoryCache } from './useCache'
+import { computed, inject, InjectionKey, provide, reactive, Ref, ref, set, watch } from '@vue/composition-api'
 import { useService } from './useService'
 import { PINGING_STATUS, ServerStatus, UNKNOWN_STATUS } from '/@shared/entities/serverStatus'
 import { InstanceServiceKey } from '/@shared/services/InstanceService'
 import { ServerStatusServiceKey } from '/@shared/services/ServerStatusService'
+import { isNonnull } from '/@shared/util/assert'
 import mapping from '/@shared/util/protocolToMinecraft'
 
-export function useSeverStatusAcceptVersion(protocol: Ref<number>) {
+export function useProtocolAcceptVersion(protocol: Ref<number>) {
   return computed(() => `[${mapping[protocol.value].join(', ')}]`)
+}
+
+export function useSeverStatusAcceptVersion(status: Ref<ServerStatus>) {
+  return computed(() => `[${(mapping[status.value.version.protocol] ?? []).join(', ')}]`)
+}
+
+export const ServerStatusCache: InjectionKey<Record<string, ServerStatus>> = Symbol('ServerStatusCache')
+
+export function provideServerStatusCache() {
+  const cache = reactive({})
+  // WARN: potential memory leak
+  provide(ServerStatusCache, cache)
 }
 
 export function useInstanceServerStatus(instancePath?: string) {
@@ -17,17 +29,53 @@ export function useInstanceServerStatus(instancePath?: string) {
   return useServer(serverRef, ref(25565))
 }
 
+export function useInstancesServerStatus() {
+  const { state } = useService(InstanceServiceKey)
+  const cache = inject(ServerStatusCache, {})
+  const { pingServer } = useService(ServerStatusServiceKey)
+  const pinging = ref(false)
+  async function refreshOne(server: { host: string; port?: number }) {
+    const id = `${server.host}:${server.port ?? 25565}`
+    set(cache, id, PINGING_STATUS)
+    cache[id] = await pingServer({
+      host: server.host,
+      port: server.port,
+    })
+  }
+  function refresh() {
+    pinging.value = true
+    return Promise.all(state.instances.map(i => i.server).filter(isNonnull).map(refreshOne)).finally(() => { pinging.value = false })
+  }
+  return {
+    pinging,
+    refresh,
+  }
+}
+
 export function useServer(serverRef: Ref<{ host: string; port?: number }>, protocol: Ref<number | undefined>) {
   const { pingServer } = useService(ServerStatusServiceKey)
-  const status = useInMemoryCache<ServerStatus>(computed(() => `server:${serverRef.value.host}:${serverRef.value.port ?? 25565}`), () => UNKNOWN_STATUS)
+  const cache = inject(ServerStatusCache, {})
+  const serverId = computed(() => `${serverRef.value.host}:${serverRef.value.port ?? 25565}`)
+  if (!cache[serverId.value]) {
+    set(cache, serverId.value, UNKNOWN_STATUS)
+  }
+  watch(serverId, () => {
+    if (!cache[serverId.value]) {
+      set(cache, serverId.value, UNKNOWN_STATUS)
+    }
+  })
+  const status = computed<ServerStatus>({
+    get() { return cache[serverId.value] },
+    set(v) { set(cache, serverId.value, v) },
+  })
   const pinging = ref(false)
   /**
      * Refresh the server status. If the server is empty, it will do nothing.
      */
   async function refresh() {
-    pinging.value = true
     const server = serverRef.value
     if (!server.host) return
+    pinging.value = true
     status.value = PINGING_STATUS
     status.value = await pingServer({
       host: server.host,
@@ -49,11 +97,15 @@ export function useServer(serverRef: Ref<{ host: string; port?: number }>, proto
         }); */
   }
 
+  watch(serverRef, () => {
+    reset()
+  })
+
   function reset() {
     status.value = UNKNOWN_STATUS
   }
 
-  const acceptingVersion = useSeverStatusAcceptVersion(computed(() => status.value.version.protocol))
+  const acceptingVersion = useSeverStatusAcceptVersion(status)
   return {
     acceptingVersion,
     status,

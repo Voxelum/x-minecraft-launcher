@@ -1,6 +1,6 @@
 import VueI18n from 'vue-i18n'
 
-export default function provideVueI18n (locale: string, messages: VueI18n.LocaleMessages) {
+export default function provideVueI18n(locale: string, messages: VueI18n.LocaleMessages) {
   const i18n: any = new VueI18n({
     locale,
     fallbackLocale: 'en',

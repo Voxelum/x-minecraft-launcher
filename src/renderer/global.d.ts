@@ -7,12 +7,21 @@ declare module '*.webp' {
   const value: string
   export default value
 }
-declare module 'vue-particles' {
-  const module: import('vue').PluginObject<any>
-  export default module
-}
 declare module 'vue-virtual-scroll-list' {
 
   const component: import('vue').Component<any, any, any, { size: number; remain: number }>
   export = component
+}
+
+declare module '/@/assets/locales/index.json' {
+  type Locale = {
+    [range: string]: string
+  }
+  const locale: Locale
+  export = locale
+}
+
+declare module '*.png' {
+  const value: string
+  export default value
 }

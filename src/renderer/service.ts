@@ -56,9 +56,9 @@ function createServiceCallerFunction(serviceKey: ServiceKey<any>, name: string, 
   return func
 }
 
-export function createServiceFactory(createState: StateProcessor<any>, taskListener: TaskListener) {
+export function createServiceFactory(processState: StateProcessor<any>, taskListener: TaskListener) {
   function createServiceProxy<T>(serviceKey: ServiceKey<T>, state?: State): T {
-    const accessor = state ? createState(serviceKey, state) : undefined
+    const accessor = state ? processState(serviceKey, state) : undefined
     const cache: Record<string, any> = {
       state: accessor,
     }

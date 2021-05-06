@@ -1,18 +1,16 @@
-import { computed, reactive, toRefs } from '@vue/composition-api'
+import { computed, Data, reactive, Ref, toRefs } from '@vue/composition-api'
 import { Frame as GameSetting } from '@xmcl/gamesetting'
 import { useBusy, useSemaphore } from './useSemaphore'
 import { useService, useServiceOnly } from './useService'
 import { useCurrentUser } from './useUser'
 import { useMinecraftVersions } from './useVersion'
-import { InstanceSchema as InstanceConfig, RuntimeVersions } from '/@shared/entities/instance.schema'
-import { CurseforgeModpackResource, ModpackResource } from '/@shared/entities/resource'
-import { ResourceType } from '/@shared/entities/resource.schema'
+import { InstanceData, RuntimeVersions } from '/@shared/entities/instance.schema'
 import { getExpectVersion } from '/@shared/entities/version'
 import { InstanceGameSettingServiceKey } from '/@shared/services/InstanceGameSettingService'
 import { InstanceIOServiceKey } from '/@shared/services/InstanceIOService'
 import { InstanceLogServiceKey } from '/@shared/services/InstanceLogService'
 import { CloneSaveOptions, DeleteSaveOptions, ImportSaveOptions, InstanceSavesServiceKey } from '/@shared/services/InstanceSavesService'
-import { CreateOption, InstanceServiceKey } from '/@shared/services/InstanceService'
+import { InstanceServiceKey } from '/@shared/services/InstanceService'
 import { InstanceVersionServiceKey } from '/@shared/services/InstanceVersionService'
 import { ResourceServiceKey } from '/@shared/services/ResourceService'
 
@@ -87,6 +85,14 @@ export function useInstances() {
   }
 }
 
+export function useInstanceServerEdit(server: Ref<InstanceData['server']>) {
+  const result = computed({
+    get: () => server.value ?? { host: '', port: undefined },
+    set: (v) => { server.value = v },
+  })
+  return result
+}
+
 /**
  * Hook to create a general instance
  */
@@ -94,24 +100,23 @@ export function useInstanceCreation() {
   const { gameProfile } = useCurrentUser()
   const { createAndMount: createAndSelect } = useService(InstanceServiceKey)
   const { release } = useMinecraftVersions()
-  const data = reactive({
+  const data = reactive<InstanceData & Data>({
     name: '',
     runtime: { forge: '', minecraft: release.value?.id || '', liteloader: '', fabricLoader: '', yarn: '' } as RuntimeVersions,
+    version: '',
     java: '',
     showLog: false,
     hideLauncher: true,
     vmOptions: [] as string[],
     mcOptions: [] as string[],
-    maxMemory: undefined as undefined | number,
-    minMemory: undefined as undefined | number,
+    maxMemory: 0,
+    minMemory: 0,
     author: gameProfile.value.name,
     description: '',
-    resolution: undefined as undefined | CreateOption['resolution'],
+    resolution: null,
     url: '',
     icon: '',
-    image: '',
-    blur: 4,
-    server: null as undefined | CreateOption['server'],
+    server: null,
   })
   const refs = toRefs(data)
   const required: Required<typeof refs> = toRefs(data) as any
@@ -140,58 +145,16 @@ export function useInstanceCreation() {
       data.hideLauncher = true
       data.vmOptions = []
       data.mcOptions = []
-      data.maxMemory = undefined
-      data.minMemory = undefined
+      data.maxMemory = 0
+      data.minMemory = 0
       data.author = gameProfile.value.name
       data.description = ''
-      data.resolution = undefined
+      data.resolution = null
       data.url = ''
       data.icon = ''
       data.image = ''
       data.blur = 4
       data.server = null
-    },
-    /**
-     * Use the same configuration as the input instance
-     * @param instance The instance will be copied
-     */
-    use(instance: InstanceConfig) {
-      data.name = instance.name
-      data.runtime = { ...instance.runtime }
-      data.java = instance.java
-      data.showLog = instance.showLog
-      data.hideLauncher = instance.hideLauncher
-      data.vmOptions = [...instance.vmOptions]
-      data.mcOptions = [...instance.mcOptions]
-      data.maxMemory = instance.maxMemory
-      data.minMemory = instance.minMemory
-      data.author = instance.author
-      data.description = instance.description
-      data.url = instance.url
-      data.icon = instance.icon
-      data.server = instance.server ? { ...instance.server } : undefined
-    },
-
-    useModpack(resource: CurseforgeModpackResource | ModpackResource) {
-      if (resource.type === ResourceType.CurseforgeModpack) {
-        const metadata = resource.metadata
-        data.name = `${metadata.name} - ${metadata.version}`
-        data.runtime.minecraft = metadata.minecraft.version
-        if (metadata.minecraft.modLoaders.length > 0) {
-          for (const loader of metadata.minecraft.modLoaders) {
-            if (loader.id.startsWith('forge-')) {
-              data.runtime.forge = loader.id.substring('forge-'.length)
-            }
-          }
-        }
-        data.author = metadata.author
-      } else {
-        const metadata = resource.metadata
-        data.name = resource.name
-        data.runtime.minecraft = metadata.runtime.minecraft
-        data.runtime.forge = metadata.runtime.forge
-        data.runtime.fabricLoader = metadata.runtime.fabricLoader
-      }
     },
   }
 }
@@ -226,8 +189,8 @@ export function useInstanceGameSetting() {
   const renderClouds = computed(() => state.renderClouds)
   const ao = computed(() => state.ao)
   const entityShadows = computed(() => state.entityShadows)
-  const particles = computed(() => state.particles)
-  const mipmapLevels = computed(() => state.mipmapLevels)
+  // const particles = computed(() => state.particles)
+  // const mipmapLevels = computed(() => state.mipmapLevels)
   const useVbo = computed(() => state.useVbo)
   const fboEnable = computed(() => state.fboEnable)
   const enableVsync = computed(() => state.enableVsync)
@@ -238,8 +201,8 @@ export function useInstanceGameSetting() {
     renderClouds,
     ao,
     entityShadows,
-    particles,
-    mipmapLevels,
+    // particles,
+    // mipmapLevels,
     useVbo,
     fboEnable,
     enableVsync,

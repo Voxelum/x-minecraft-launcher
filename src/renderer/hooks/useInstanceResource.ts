@@ -1,14 +1,15 @@
-import unknownPack from '/@/assets/unknown_pack.png'
-import { basename } from '/@/util/basename'
-import { AnyResource, isPersistedResource, isResourcePackResource, PersistedResource } from '/@shared/entities/resource'
 import { computed, onMounted, ref, Ref, watch } from '@vue/composition-api'
 import { PackMeta } from '@xmcl/resourcepack'
 import { useService } from '.'
 import { useBusy } from './useSemaphore'
-import { InstanceGameSettingServiceKey } from '/@shared/services/InstanceGameSettingService'
+import unknownPack from '/@/assets/unknown_pack.png'
+import { basename } from '/@/util/basename'
+import { AnyResource, isPersistedResource, isResourcePackResource } from '/@shared/entities/resource'
 import { Resource } from '/@shared/entities/resource.schema'
+import { InstanceGameSettingServiceKey } from '/@shared/services/InstanceGameSettingService'
+import { InstanceResourcePacksServiceKey } from '/@shared/services/InstanceResourcePacksService'
 import { ResourceServiceKey } from '/@shared/services/ResourceService'
-import { InstanceResourcePacksServiceKey } from '../../shared/services/InstanceResourcePacksService'
+import mappings from '/@shared/util/packFormatVersionRange'
 
 export interface ResourcePackItem extends PackMeta.Pack {
   /**
@@ -89,7 +90,7 @@ export function useInstanceResourcePacks() {
       url: resource.uri,
       pack_format: resource.metadata.pack_format,
       description: resource.metadata.description,
-      acceptingRange: getters.getAcceptMinecraftRangeByFormat(getResourcepackFormat(resource.metadata)),
+      acceptingRange: mappings[getResourcepackFormat(resource.metadata)],
       icon,
 
       resource: Object.freeze(resource) as any,

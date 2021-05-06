@@ -4,8 +4,8 @@ import { I18N_KEY, ROUTER_KEY } from '/@/constant'
 import provideElectron from '/@/providers/provideElectron'
 import provideServiceProxy, { provideSemaphore } from '/@/providers/provideServiceProxy'
 import provideVueI18n from '/@/providers/provideVueI18n'
-import provideSyncableVuexStore from '/@/providers/provideVuexStore'
-import SkinView from '/@/skin/SkinView.vue'
+import provideVuexStore from '/@/providers/provideVuexStore'
+import SkinView from '/@/components/SkinView.vue'
 import TextComponent from '/@/TextComponent'
 import Vue from 'vue'
 import VueCompositionApi, { createApp, h, provide } from '@vue/composition-api'
@@ -87,12 +87,12 @@ function startApp() {
     setup() {
       provideElectron()
       provideSemaphore()
-      const store = provideSyncableVuexStore()
+      const store = provideVuexStore()
       const proxy = provideServiceProxy(store)
       const { openInBrowser } = proxy(BaseServiceKey)
-      store.sync()
       provide(I18N_KEY, i18n)
-      store.watch((state) => state[BaseServiceKey.toString()].locale, (newValue: string, oldValue: string) => {
+
+      store.watch((state) => state[`services/${BaseServiceKey.toString()}`].locale, (newValue: string, oldValue: string) => {
         console.log(`Locale changed ${oldValue} -> ${newValue}`)
         i18n.locale = newValue
       })

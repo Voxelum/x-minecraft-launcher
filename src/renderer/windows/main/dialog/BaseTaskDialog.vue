@@ -65,7 +65,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, defineComponent } from '@vue/composition-api'
-import { useDialog } from '../hooks'
+import { useDialog } from '/@/windows/main/hooks'
 import TaskView from './BaseTaskDialogTaskView.vue'
 import { useRouter } from '/@/hooks'
 

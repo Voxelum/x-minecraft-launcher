@@ -463,9 +463,9 @@
     "noMemory": "Do not limit memory usage",
     "refresh": "Refresh Local Java",
     "refreshAfter": "Please Refresh After you install the java.",
-    "switchVersion": "Java Version Changed"
+    "switchVersion": "Java Version Changed",
+    "locationPlaceHolder": "Use system default java"
   },
-  "java.locationPlaceHolder": "Use system default java",
   "launch": {
     "blocked": {
       "description": "There are still some unresolveable issues existed. They might impact the launch workflow, but you can still let Minecraft have a try.",

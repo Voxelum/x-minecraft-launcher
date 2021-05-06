@@ -1,12 +1,11 @@
+import { provide } from '@vue/composition-api'
 import { useDialog } from '.'
 import { useJavaWizardDialog } from './useDialog'
-import { useModResource, useRouter, useService } from '/@/hooks'
-import { Issue, IssueType } from '/@shared/entities/issue'
-import { DiagnoseServiceKey } from '/@shared/services/DiagnoseService'
-import { InstanceResourcePacksServiceKey } from '../../../../shared/services/InstanceResourcePacksService'
+import { IssueHandler, useModResource, useRouter, useService } from '/@/hooks'
+import { IssueType } from '/@shared/entities/issue'
+import { InstanceResourcePacksServiceKey } from '/@shared/services/InstanceResourcePacksService'
 
-export function useIssueHandler() {
-  const { fix: fixIssue } = useService(DiagnoseServiceKey)
+export function provideIssueHandler() {
   const { replace } = useRouter()
   const { show: showJavaDialog, javaIssue } = useJavaWizardDialog()
   const { show: showModDialog } = useDialog('download-missing-mods' as any) // TODO: fix this
@@ -14,6 +13,8 @@ export function useIssueHandler() {
   const { resources } = useModResource()
 
   const handlerRegistry: Record<string, () => void> = {}
+
+  provide(IssueHandler, handlerRegistry)
 
   function register(issue: IssueType, f: () => void) {
     handlerRegistry[issue] = f
@@ -41,17 +42,4 @@ export function useIssueHandler() {
       replace('/curseforge/mc-mods/306612')
     }
   })
-
-  function fix(issue: Issue, issues: readonly Issue[]) {
-    console.log(`Fix issue ${issue.id}`)
-    const handler = handlerRegistry[issue.id]
-    if (handler) {
-      handler()
-    } else if (issue.autofix) {
-      fixIssue(issues)
-    } else {
-      console.error(`Cannot fix the issue ${issue.id} as it's not implemented`)
-    }
-  }
-  return { fix }
 }

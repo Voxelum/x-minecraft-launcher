@@ -62,8 +62,8 @@ export function provideTasks() {
   const dictionary: Record<string, TaskItem> = {}
   const watchers: Record<string, ChildrenWatcer> = {}
   /**
-     * All the root tasks
-     */
+   * All the root tasks
+   */
   const tasks: Ref<TaskItem[]> = ref(reactive([]))
   const pause = (task: TaskItem) => {
     ipc.invoke('task-operation', { type: 'pause', id: task.taskId })
