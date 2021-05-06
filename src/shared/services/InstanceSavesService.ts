@@ -1,4 +1,4 @@
-import { StatefulService, ServiceKey, State } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 import { InstanceSave, InstanceSaveMetadata } from '/@shared/entities/save'
 
 export interface ExportSaveOptions {
@@ -68,9 +68,6 @@ export interface CloneSaveOptions {
    * @default Generated name from the `saveName`
    */
   newSaveName?: string
-}
-
-export interface SaveState extends State {
 }
 
 export class SaveState {

@@ -1,7 +1,6 @@
 import { ResolvedVersion } from '@xmcl/core'
-import { StatefulService, ServiceKey, State } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 
-export interface VersionState extends State { }
 export class VersionState {
   /**
    * All the local versions installed in the disk

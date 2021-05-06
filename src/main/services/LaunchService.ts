@@ -95,7 +95,7 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
       const instance = this.instanceService.state.instance
       const user = this.userService.state
       const gameProfile = user.gameProfile
-      if (user.accessToken === '' || gameProfile.name === '' || gameProfile.id === '') {
+      if (user.user.accessToken === '' || gameProfile.name === '' || gameProfile.id === '') {
         throw new Exception({ type: 'launchIllegalAuth' })
       }
 

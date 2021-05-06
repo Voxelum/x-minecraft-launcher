@@ -52,7 +52,7 @@ export default class ServiceManager extends Manager {
 
   private semaphore: Record<string, number> = {}
 
-  getService<T extends ServiceConstructor>(key: ServiceKey<T>): InstanceType<T> | undefined {
+  getService<T>(key: ServiceKey<T>): T | undefined {
     return this.exposedService[key as any] as any
   }
 

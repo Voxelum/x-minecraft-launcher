@@ -9,10 +9,10 @@ import LauncherApp from '/@main/app/LauncherApp'
 import { exists, missing, readdirEnsured } from '/@main/util/fs'
 import { MappedFile, RelativeMappedFile } from '/@main/util/persistance'
 import { BufferJsonSerializer } from '/@main/util/serialize'
-import { createTemplate } from '/@shared/entities/instance'
+import { createTemplate, Instance } from '/@shared/entities/instance'
 import { InstanceSchema, InstancesSchema, RuntimeVersions } from '/@shared/entities/instance.schema'
 import { LATEST_RELEASE } from '/@shared/entities/version'
-import { CreateOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceServiceKey, InstanceState } from '/@shared/services/InstanceService'
+import { CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceServiceKey, InstanceState } from '/@shared/services/InstanceService'
 import { requireObject, requireString } from '/@shared/util/assert'
 import { assignShallow } from '/@shared/util/object'
 
@@ -108,7 +108,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
 
     this.storeManager
-      .subscribe('instanceAdd', async (payload) => {
+      .subscribe('instanceAdd', async (payload: Instance) => {
         await this.instanceFile.saveTo(payload.path, payload)
         await this.instancesFile.save()
         this.log(`Saved new instance ${payload.path}`)
@@ -117,7 +117,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         await this.instancesFile.save()
         this.log(`Removed instance files under ${this.state.instance.path}`)
       })
-      .subscribe('instance', async () => {
+      .subscribe('instanceEdit', async () => {
         const inst = this.state.all[this.state.instance.path]
         await this.instanceFile.saveTo(inst.path, inst)
         this.log(`Saved instance ${this.state.instance.path}`)
@@ -129,7 +129,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       })
   }
 
-  async createInstance(payload: CreateOption): Promise<string> {
+  async createInstance(payload: CreateInstanceOption): Promise<string> {
     requireObject(payload)
 
     const instance = createTemplate()
@@ -171,7 +171,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
   /**
    * Create a managed instance in storage.
    */
-  async createAndMount(payload: CreateOption): Promise<string> {
+  async createAndMount(payload: CreateInstanceOption): Promise<string> {
     requireObject(payload)
 
     const path = await this.createInstance(payload)

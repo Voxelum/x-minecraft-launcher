@@ -19,6 +19,7 @@ import iconPath from '/@static/apple-touch-icon.png'
 import favcon2XPath from '/@static/favicon@2x.png'
 import './controlIpc'
 import './dialog'
+import { InstanceServiceKey } from '/@shared/services/InstanceService'
 
 export default class Controller implements LauncherAppController {
   private mainWin: BrowserWindow | undefined = undefined
@@ -322,34 +323,43 @@ export default class Controller implements LauncherAppController {
   }
 
   onMinecraftWindowReady() {
-    // TODO: implement this
+    const instance = this.app.serviceManager.getService(InstanceServiceKey)?.state.instance
+    if (!instance) {
+      this.app.warn('Cannot find active instance while Minecraft window ready! Perhaps something strange happed?')
+      return
+    }
     // const { getters } = this.store
-    // if (this.mainWin && this.mainWin.isVisible()) {
-    //   this.mainWin.webContents.send('minecraft-window-ready')
+    if (this.mainWin && this.mainWin.isVisible()) {
+      this.mainWin.webContents.send('minecraft-window-ready')
 
-    //   const { hideLauncher } = getters.instance
-    //   if (hideLauncher) {
-    //     this.mainWin.hide()
-    //   }
-    // }
+      const { hideLauncher } = instance
+      if (hideLauncher) {
+        this.mainWin.hide()
+      }
+    }
 
-    // if (this.loggerWin === undefined && getters.instance.showLog) {
-    //   this.createLoggerWindow()
-    // }
+    if (this.loggerWin === undefined && instance.showLog) {
+      this.createLoggerWindow()
+    }
   }
 
   onMinecraftExited(status: any) {
-    // const { hideLauncher } = this.store.getters.instance
-    // if (hideLauncher) {
-    //   if (this.mainWin) {
-    //     this.mainWin.show()
-    //   }
-    // }
-    // this.app.broadcast('minecraft-exit', status)
-    // if (this.loggerWin) {
-    //   this.loggerWin.close()
-    //   this.loggerWin = undefined
-    // }
+    const instance = this.app.serviceManager.getService(InstanceServiceKey)?.state.instance
+    if (!instance) {
+      this.app.warn('Cannot find active instance while Minecraft exit! Perhaps something strange happed?')
+      return
+    }
+    const { hideLauncher } = instance
+    if (hideLauncher) {
+      if (this.mainWin) {
+        this.mainWin.show()
+      }
+    }
+    this.app.broadcast('minecraft-exit', status)
+    if (this.loggerWin) {
+      this.loggerWin.close()
+      this.loggerWin = undefined
+    }
   }
 
   async processFirstLaunch(): Promise<string> {
@@ -379,7 +389,7 @@ export default class Controller implements LauncherAppController {
     this.setupTray()
     this.setupTask()
 
-    this.app.storeManager.subscribe('locale', (l) => {
+    this.app.storeManager.subscribe('localeSet', (l) => {
       this.i18n.use(l)
     })
 
@@ -401,7 +411,7 @@ export default class Controller implements LauncherAppController {
     const tray = this.tray
     if (tray) {
       tray.setContextMenu(this.createMenu())
-      this.app.storeManager.subscribe('locale', (l) => {
+      this.app.storeManager.subscribe('localeSet', (l) => {
         tray.setToolTip($t('title'))
         tray.setContextMenu(this.createMenu())
       })

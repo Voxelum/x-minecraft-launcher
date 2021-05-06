@@ -1,7 +1,7 @@
 import { GameProfile, MojangChallenge, MojangChallengeResponse, ProfileServiceAPI, YggdrasilAuthAPI } from '@xmcl/user'
 import { EMPTY_GAME_PROFILE, EMPTY_USER } from '../entities/user'
 import { assignShallow, toObjectReducer } from '../util/object'
-import { StatefulService, ServiceKey, State } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 import { GameProfileAndTexture, UserProfile, UserSchema } from '/@shared/entities/user.schema'
 export interface LoginMicrosoftOptions {
   /**
@@ -56,9 +56,6 @@ export interface UploadSkinOptions {
   slim: boolean
 }
 
-export interface UserState extends State {
-
-}
 export class UserState implements UserSchema {
   // user data
   users: Record<string, UserProfile> = {}

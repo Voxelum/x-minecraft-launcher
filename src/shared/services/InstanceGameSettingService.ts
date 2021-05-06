@@ -9,9 +9,20 @@ export interface EditGameSettingOptions extends GameSetting {
   instancePath?: string
 }
 
-export interface GameSettingState extends State { }
 export class GameSettingState implements GameSetting {
   resourcePacks = [] as Array<string>
+  anaglyph3d: boolean | undefined
+  ao: any
+  useVbo: boolean | undefined
+  enableVsync: boolean | undefined
+  difficulty: any
+  entityShadows: boolean | undefined
+  fboEnable: boolean | undefined
+  fullscreen: boolean | undefined
+  renderDistance: GameSetting['renderDistance']
+  fancyGraphics: boolean | undefined
+  renderClouds: 'fast' | boolean | undefined
+
   /**
    * Update the game settings in options.txt
    * @param payload The new game settings.

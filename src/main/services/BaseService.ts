@@ -17,12 +17,12 @@ export default class BaseService extends StatefulService<BaseState> implements I
   constructor(app: LauncherApp) {
     super(app)
     this.storeManager.subscribeAll([
-      'locale',
-      'allowPrerelease',
-      'autoInstallOnAppQuit',
-      'autoDownload',
-      'apiSetsPreference',
-      'apiSets',
+      'localeSet',
+      'allowPrereleaseSet',
+      'autoInstallOnAppQuitSet',
+      'autoDownloadSet',
+      'apiSetsPreferenceSet',
+      'apiSetsSet',
     ], () => {
       this.settingFile.write({
         locale: this.state.locale,

@@ -1,5 +1,5 @@
 import { Resource } from '../entities/resource.schema'
-import { StatefulService, ServiceKey, State } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 import { AnyResource } from '/@shared/entities/resource'
 export interface InstallResourcePacksOptions {
   resources: Resource[]
@@ -8,8 +8,6 @@ export interface InstallResourcePacksOptions {
    */
   path?: string
 }
-
-export interface InstanceResourcePacksState extends State { }
 
 export class InstanceResourcePacksState {
   /**

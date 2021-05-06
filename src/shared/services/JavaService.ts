@@ -1,10 +1,7 @@
 import { EMPTY_JAVA, JavaRecord } from '../entities/java'
 import { requireObject, requireString } from '../util/assert'
-import { StatefulService, ServiceKey, State } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 import { Java } from '/@shared/entities/java.schema'
-
-export interface JavaState extends State {
-}
 
 export class JavaState {
   all = [] as JavaRecord[]

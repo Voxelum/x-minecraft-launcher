@@ -4,13 +4,12 @@ import { RuntimeVersions } from './instance.schema'
 
 export interface Issue {
   id: string
-  parameters: { [key: string]: any }
+  parameters: Record<string, any> | Array<Record<string, any>>
   autofix?: boolean
   optional?: boolean
-  multi: boolean
 }
 
-export interface IssueReg<P> {
+export interface IssueRegistry<P> {
   actived: Array<(P & { file?: string; actual?: string; expect?: string })>
   fixing: boolean
   autofix: boolean
@@ -25,12 +24,12 @@ export interface Registry<PARAM, AF = boolean, OP = boolean> {
 }
 
 export type IssueReport = {
-  [K in keyof IssueRegistry]: IssueRegistry[K]['actived']
+  [K in keyof IssueRegistries]: IssueRegistries[K]['actived']
 }
 
-export type IssueType = keyof IssueRegistry
+export type IssueType = keyof IssueRegistries
 
-export interface IssueRegistry {
+export interface IssueRegistries {
   missingVersion: Registry<{ version: string } & RuntimeVersions>
   missingVersionJar: Registry<{ version: string } & RuntimeVersions>
   missingVersionJson: Registry<{ version: string } & RuntimeVersions>

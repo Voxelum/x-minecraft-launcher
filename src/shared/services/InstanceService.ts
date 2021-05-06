@@ -1,34 +1,27 @@
 import { DEFAULT_PROFILE, Instance } from '../entities/instance'
 import { DeepPartial } from '../util/object'
-import { ServiceKey, State, StatefulService } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 import { InstanceSchema, RuntimeVersions } from '/@shared/entities/instance.schema'
-export declare type CreateOption = DeepPartial<Omit<InstanceSchema, 'id' | 'lastAccessDate' | 'creationDate'> & {
-  path: string
-}>
-export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'deployments' | 'runtime' | 'server'>> {
-  deployments?: Record<string, string[]>
-  runtime?: Partial<RuntimeVersions>
+
+export type CreateInstanceOption = Partial<Omit<InstanceSchema, 'lastAccessDate' | 'creationDate'>> & {
+  path?: string
+  resolution?: InstanceSchema['resolution']
+  runtime?: InstanceSchema['runtime']
+  server?: InstanceSchema['server']
+}
+export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'runtime' | 'server'>> {
+  resolution?: InstanceSchema['resolution']
+  runtime?: InstanceSchema['runtime']
   /**
-     * If this is undefined, it will disable the server of this instance
-     */
-  server?: {
-    /**
-         * The host of the server (ip)
-         */
-    host: string
-    /**
-         * The port of the server
-         */
-    port?: number
-  } | null
+   * If this is undefined, it will disable the server of this instance
+   */
+  server?: InstanceSchema['server']
   /**
     * The target instance path. If this is absent, it will use the selected instance.
     */
   instancePath?: string
 }
 
-export interface InstanceState extends State {
-}
 export class InstanceState {
   /**
      * All loaded launch instances
@@ -167,11 +160,11 @@ export interface InstanceService extends StatefulService<InstanceState> {
    * @param option The creation option
    * @returns The instance path
    */
-  createInstance(payload: CreateOption): Promise<string>
+  createInstance(payload: CreateInstanceOption): Promise<string>
   /**
    * Create a managed instance in storage.
    */
-  createAndMount(payload: CreateOption): Promise<string>
+  createAndMount(payload: CreateInstanceOption): Promise<string>
   /**
    * Mount the instance as the current active instance.
    * @param path the instance path

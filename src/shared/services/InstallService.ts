@@ -1,11 +1,10 @@
 import type { ResolvedLibrary, Version } from '@xmcl/core'
 import type { FabricArtifactVersion, installForgeTask, InstallProfile, LiteloaderVersion, LiteloaderVersionList, MinecraftVersion, MinecraftVersionList } from '@xmcl/installer'
 import { OptifineVersion } from '../entities/version.schema'
-import { StatefulService, ServiceKey, State } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 import { LATEST_RELEASE } from '/@shared/entities/version'
 import { ForgeVersionList, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '/@shared/entities/version.schema'
 
-export interface InstallState extends State { }
 export class InstallState {
   /**
    * Minecraft version metadata list. Helps to download.
@@ -114,6 +113,14 @@ export interface RefreshForgeOptions {
   mcversion: string
 }
 
+export interface Asset {
+  name: string
+  size: number
+  hash: string
+}
+
+export type InstallableLibrary = Version.Library | ResolvedLibrary
+
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
  */
@@ -137,11 +144,7 @@ export interface InstallService extends StatefulService<InstallState> {
    * Install assets to the version
    * @param version The local version id
    */
-  installAssets(assets: {
-    name: string
-    size: number
-    hash: string
-  }[]): Promise<void>
+  installAssets(assets: Asset[]): Promise<void>
   /**
    * Download and install a minecract version
    */
@@ -149,9 +152,7 @@ export interface InstallService extends StatefulService<InstallState> {
   /**
    * Install provided libraries to game.
    */
-  installLibraries({ libraries }: {
-    libraries: (Version.Library | ResolvedLibrary)[]
-  }): Promise<void>
+  installLibraries(libraries: InstallableLibrary[]): Promise<void>
   /**
    * Refresh forge remote versions cache from forge websites or BMCL API
    */

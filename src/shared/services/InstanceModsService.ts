@@ -9,8 +9,6 @@ export interface InstallModsOptions {
   path?: string
 }
 
-export interface InstanceModsState extends State { }
-
 /**
  * The service manage all enable mods in mounted instance
  */

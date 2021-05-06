@@ -14,7 +14,7 @@ import VersionService from './VersionService'
 import LauncherApp from '/@main/app/LauncherApp'
 import { isFabricLoaderLibrary, isForgeLibrary } from '/@shared/entities/version'
 import { ForgeVersion, ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '/@shared/entities/version.schema'
-import { InstallOptifineOptions, InstallService as IInstallService, InstallServiceKey, InstallState, RefreshForgeOptions } from '/@shared/services/InstallService'
+import { Asset, InstallableLibrary, InstallOptifineOptions, InstallService as IInstallService, InstallServiceKey, InstallState, RefreshForgeOptions } from '/@shared/services/InstallService'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -259,7 +259,7 @@ export default class InstallService extends StatefulService<InstallState> implem
   }
 
   @Singleton('install')
-  async installAssets(assets: { name: string; size: number; hash: string }[]) {
+  async installAssets(assets: Asset[]) {
     const option = this.getInstallOptions()
     const location = this.getPath()
     const task = installResolvedAssetsTask(assets, new MinecraftFolder(location), option).setName('installAssets')
@@ -282,7 +282,7 @@ export default class InstallService extends StatefulService<InstallState> implem
   }
 
   @Singleton('install')
-  async installLibraries({ libraries }: { libraries: (Version.Library | ResolvedLibrary)[] }) {
+  async installLibraries(libraries: InstallableLibrary[]) {
     let resolved: ResolvedLibrary[]
     if ('downloads' in libraries[0]) {
       resolved = Version.resolveLibraries(libraries)

@@ -1,9 +1,8 @@
-import { ServiceKey, State, StatefulService } from './Service'
-import { Issue, IssueRegistry, IssueReport } from '/@shared/entities/issue'
+import { ServiceKey, StatefulService } from './Service'
+import { Issue, IssueRegistries, IssueReport } from '/@shared/entities/issue'
 
-export interface DiagnoseState extends State { }
 export class DiagnoseState {
-  report: IssueRegistry = {
+  report: IssueRegistries = {
     missingVersion: { fixing: false, autofix: true, optional: false, actived: [] },
     missingVersionJar: { fixing: false, autofix: true, optional: false, actived: [] },
     missingAssetsIndex: { fixing: false, autofix: true, optional: false, actived: [] },
@@ -39,15 +38,6 @@ export class DiagnoseState {
 
     for (const [id, reg] of Object.entries(this.report)) {
       if (reg.actived.length === 0) continue
-      // if (reg.actived.length >= 4) {
-      //   issues.push({
-      //     id,
-      //     parameters: { count: reg.actived.length, values: reg.actived },
-      //     autofix: reg.autofix,
-      //     optional: reg.optional,
-      //     multi: true,
-      //   })
-      // } else {
       issues.push(...reg.actived.map(a => ({
         id,
         parameters: a,
@@ -55,7 +45,6 @@ export class DiagnoseState {
         optional: reg.optional,
         multi: false,
       })))
-      // }
     }
     return issues
   }

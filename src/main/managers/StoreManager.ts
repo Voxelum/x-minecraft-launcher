@@ -1,7 +1,8 @@
 import { EventEmitter } from 'events'
 import { Manager } from '.'
+import { isState } from '../services/Service'
 import { State } from '/@shared/services/Service'
-import { MutationKeys, MutationPayload } from '/@shared/store'
+import { MutationKeys, MutationPayload } from '/@shared/state'
 
 export default class StoreManager extends Manager {
   private eventbus = new EventEmitter()
@@ -40,26 +41,17 @@ export default class StoreManager extends Manager {
     return this
   }
 
-  register<T extends State>(name: string, store: T): T {
+  register<T extends State<T>>(name: string, state: T): T {
     const bus = this.eventbus
     const mutations = this.mutations
     const stateKeys = [] as string[]
-    const stateSnapshoter: any = {
-      toJSON() {
-        const obj = {} as any
-        for (const key of stateKeys) {
-          obj[key] = store[key]
-        }
-        return obj
-      },
-    }
     const update = (key: string, value: any) => {
       this.checkPointId += 1
       app.broadcast('commit', { type: key, payload: value }, this.checkPointId)
       bus.emit(key, value)
     }
     const app = this.app
-    for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(Object.getPrototypeOf(store)))) {
+    for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(Object.getPrototypeOf(state)))) {
       if (key !== 'constructor' && prop.value instanceof Function) {
         const original = prop.value
         // eslint-disable-next-line no-inner-declarations
@@ -67,15 +59,25 @@ export default class StoreManager extends Manager {
           original.call(this, value)
           update(key, value)
         }
-        mutations[key] = wrapped.bind(store) as any
-        Reflect.set(store, key, wrapped)
+        mutations[key] = wrapped.bind(state) as any
+        Reflect.set(state, key, wrapped)
       }
     }
-    for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(store))) {
-      stateKeys.push(key)
+    for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(state))) {
+      if (prop.value && !isState(prop.value)) {
+        stateKeys.push(key)
+      }
     }
-    this.registeredState[name] = stateSnapshoter
-    return store
+    this.registeredState[name] = {
+      toJSON() {
+        const obj = {} as any
+        for (const key of stateKeys) {
+          obj[key] = (state as any)[key]
+        }
+        return obj
+      },
+    }
+    return state
   }
 
   // SETUP CODE

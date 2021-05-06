@@ -19,7 +19,6 @@ export class ServerInfoWithStatus implements ServerInfo {
   }
 }
 
-export interface ServerInfoState extends State { }
 export class ServerInfoState {
   /**
    * Cache loaded server info in servers.dat

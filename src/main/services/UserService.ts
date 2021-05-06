@@ -1,11 +1,8 @@
-import { LibraryInfo, MinecraftFolder } from '@xmcl/core'
 import { DownloadTask } from '@xmcl/installer'
 import { AUTH_API_MOJANG, checkLocation, GameProfile, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user'
-import { readFile, readJson, readJSON } from 'fs-extra'
+import { readFile, readJSON } from 'fs-extra'
 import { URL } from 'url'
 import { v4 } from 'uuid'
-import { AUTHLIB_ORG_NAME } from '../constant'
-import { validateSha256 } from '../util/fs'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
 import { ExportService, Singleton, StatefulService } from './Service'
@@ -14,12 +11,11 @@ import { aquireXBoxToken, checkGameOwnership, getGameProfile, loginMinecraftWith
 import { createhDynamicThrottle as createDynamicThrottle } from '/@main/util/trafficAgent'
 import { fitMinecraftLauncherProfileData } from '/@main/util/userData'
 import { Exception } from '/@shared/entities/exception'
-import { IssueReport } from '/@shared/entities/issue'
 import { GameProfileAndTexture, UserSchema } from '/@shared/entities/user.schema'
 import {
   LoginMicrosoftOptions, LoginOptions,
   RefreshSkinOptions,
-  UploadSkinOptions, UserService as IUserService, UserServiceKey, UserState
+  UploadSkinOptions, UserService as IUserService, UserServiceKey, UserState,
 } from '/@shared/services/UserService'
 import { requireNonnull, requireObject, requireString } from '/@shared/util/assert'
 
@@ -108,8 +104,8 @@ export default class UserService extends StatefulService<UserState> implements I
       'userProfileRemove',
       'userProfileUpdate',
       'userGameProfileSelect',
-      'authService',
-      'profileService',
+      'authServiceSet',
+      'profileServiceSet',
       'userInvalidate',
       'authServiceRemove',
       'profileServiceRemove',

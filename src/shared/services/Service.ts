@@ -2,12 +2,16 @@
 
 export interface ServiceKey<T> extends String { }
 
-export interface StatefulService<M extends State> {
+export interface StatefulService<M extends State<M>> {
   state: M
 }
 
-export interface State {
-  [name: string]: NotPromise | ((payload: any) => void)
+export type NoPromiseType<T> = {
+  [key in keyof T]: T[key] extends Promise<any> ? never : T[keyof T]
+}
+
+export type State<T> = {
+  [key in keyof T]: NotPromise | ((payload: any) => void)
 }
 
 type Not<T> = { [P in keyof T]?: void; }

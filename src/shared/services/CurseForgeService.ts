@@ -1,7 +1,7 @@
 import { AddonInfo, Category, File, GetFeaturedAddonOptions, SearchOptions } from '@xmcl/curseforge'
 import { PersistedResource } from '../entities/resource'
 import { ResourceState } from './ResourceService'
-import { StatefulService, ServiceKey, State } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 import { ProjectType } from '/@shared/entities/curseforge'
 export interface InstallFileOptions {
   /**
@@ -11,8 +11,6 @@ export interface InstallFileOptions {
   projectId: number
   type: ProjectType
 }
-
-export interface CurseforgeState extends State { }
 
 export class CurseforgeState {
   downloading = [] as { fileId: number; taskId: string }[]
@@ -61,6 +59,8 @@ export class CurseforgeState {
       return undefined
     }
   }
+
+  async x() { }
 
   curseforgeDownloadFileStart({ fileId, taskId }: { fileId: number; taskId: string }) {
     this.downloading.push({ fileId, taskId })

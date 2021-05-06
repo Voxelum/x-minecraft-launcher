@@ -1,11 +1,14 @@
 import { InstanceState } from './InstanceService'
 import { JavaState } from './JavaService'
-import { ServiceKey, State, StatefulService } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 
-export interface InstanceJavaState extends State {
-}
 export class InstanceJavaState {
-  constructor(private instance: InstanceState, private java: JavaState) { }
+  private instance: InstanceState
+
+  constructor(instance: InstanceState, private java: JavaState) {
+    this.instance = instance
+  }
+
   /**
    * The selected instance mapped local java.
    * If there is no matching java for current instance, it will return the `DEFAULT_JAVA`

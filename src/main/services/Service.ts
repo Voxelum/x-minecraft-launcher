@@ -4,7 +4,7 @@ import LauncherApp from '/@main/app/LauncherApp'
 import { WaitingQueue } from '/@main/util/mutex'
 import { Exceptions } from '/@shared/entities/exception'
 import { ServiceKey, State } from '/@shared/services/Service'
-import { MutationKeys } from '/@shared/store'
+import { MutationKeys } from '/@shared/state'
 
 export const PURE_SYMBOL = Symbol('__pure__')
 export const PARAMS_SYMBOL = Symbol('service:params')
@@ -14,6 +14,12 @@ export const SUBSCRIBE_SYMBOL = Symbol('service:subscribe')
 
 export type ServiceConstructor<T extends AbstractService = any> = {
   new(...args: any[]): T
+}
+
+const STATE_SYMBOL = Symbol('Injected')
+
+export function isState(o: any) {
+  return o[STATE_SYMBOL]
 }
 
 export function Inject<T extends AbstractService>(con: ServiceConstructor<T>) {
@@ -279,12 +285,14 @@ export default abstract class AbstractService {
   }
 }
 
-export abstract class StatefulService<M extends State, D extends State[] = []> extends AbstractService {
+export abstract class StatefulService<M extends State<M>, D extends any[] = []> extends AbstractService {
   state: M
 
   constructor(app: LauncherApp, deps: D = [] as any) {
     super(app)
-    this.state = app.storeManager.register(this.name, this.createState(deps))
+    const s = this.createState(deps)
+    Object.defineProperty(s, STATE_SYMBOL, { value: true })
+    this.state = app.storeManager.register(this.name, s)
   }
 
   abstract createState(deps: D): M

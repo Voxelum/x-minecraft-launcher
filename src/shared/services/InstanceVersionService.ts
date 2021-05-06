@@ -4,7 +4,6 @@ import { InstanceState } from './InstanceService'
 import { ServiceKey, State, StatefulService } from './Service'
 import { VersionState } from './VersionService'
 
-export interface InstanceVersionState extends State { }
 export class InstanceVersionState {
   constructor(private instance: InstanceState, private version: VersionState) { }
   /**

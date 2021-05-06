@@ -1,7 +1,6 @@
-import { StatefulService, ServiceKey, State } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 import { LaunchStatus } from '/@shared/entities/launch'
 
-export interface LaunchState extends State { }
 export class LaunchState {
   status = 'ready' as LaunchStatus
   errorType = ''

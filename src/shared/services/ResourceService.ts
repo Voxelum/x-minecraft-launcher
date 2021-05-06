@@ -1,6 +1,6 @@
 import { AnyPersistedResource, AnyResource, PersistedCurseforgeModpackResource, PersistedFabricResource, PersistedForgeResource, PersistedLiteloaderResource, PersistedModpackResource, PersistedResource, PersistedResourcePackResource, PersistedSaveResource, PersistedUnknownResource, SourceInformation } from '../entities/resource'
 import { requireString } from '../util/assert'
-import { StatefulService, ServiceKey, State } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 import { ResourceDomain } from '/@shared/entities/resource.schema'
 export declare type FileTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save'
 
@@ -68,8 +68,6 @@ const domains = [
   'modpacks',
   'unknowns',
 ] as const
-
-export interface ResourceState extends State { }
 
 export class ResourceState {
   mods = [] as Array<PersistedForgeResource | PersistedLiteloaderResource | PersistedFabricResource>

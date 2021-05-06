@@ -19,7 +19,6 @@ export enum InstanceManagerType {
   ForgeServer,
 }
 
-export interface InstanceManagingState extends State { }
 
 export class InstanceManagingState {
   type: InstanceManagerType = InstanceManagerType.None

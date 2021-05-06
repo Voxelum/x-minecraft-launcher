@@ -38,8 +38,9 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
       this.app.on('service-ready', listener)
     }).then(() => {
       this.storeManager.subscribeAll(['javaUpdate', 'javaRemove'], async () => {
-        if (!this.javaService.state.valid) {
-          await this.instanceService.editInstance({ java: this.javaService.state.defaultJava.path })
+        const defaultJava = this.javaService.state.defaultJava
+        if (!defaultJava.valid) {
+          await this.instanceService.editInstance({ java: defaultJava.path })
         }
         await this.diagnoseJava()
       })
@@ -56,7 +57,7 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
     await this.diagnoseJava()
   }
 
-  @Subscribe('instance')
+  @Subscribe('instanceEdit')
   @internal
   async onInstance(payload: InstanceSchema & { path: string }) {
     if (payload.path !== this.instanceService.state.path) {

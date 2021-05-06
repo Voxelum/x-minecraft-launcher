@@ -12,6 +12,7 @@ import VersionService from './VersionService'
 import { RuntimeVersions } from '/@shared/entities/instance.schema'
 import { IssueReport } from '/@shared/entities/issue'
 import { getExpectVersion, isSameForgeVersion, parseOptifineVersion } from '/@shared/entities/version'
+import { Asset, InstallableLibrary } from '/@shared/services/InstallService'
 import { InstanceState } from '/@shared/services/InstanceService'
 import { InstanceVersionService as IInstanceVersionService, InstanceVersionState } from '/@shared/services/InstanceVersionService'
 import { VersionState } from '/@shared/services/VersionService'
@@ -98,32 +99,44 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
       this.diagnoseVersion.bind(this))
 
     diagnoseService.registerMatchedFix(['missingAssetsIndex', 'corruptedAssetsIndex'],
-      (issues) => installService.installAssetsForVersion(issues[0].parameters.version),
+      (issues) => installService.installAssetsForVersion((issues[0].parameters as any).version),
       this.diagnoseVersion.bind(this))
 
     diagnoseService.registerMatchedFix(['missingAssets', 'corruptedAssets'],
       (issues) => {
-        const assets = [
-          ...issues.filter(i => i.multi).map(i => i.parameters.values).reduce((a, b) => [...a, ...b], []),
-          ...issues.filter(i => !i.multi).map(i => i.parameters),
-        ]
+        const assets: Asset[] = []
+
+        for (const i of issues) {
+          if (i.parameters instanceof Array) {
+            assets.push(...(i.parameters as any))
+          } else {
+            assets.push(i.parameters as any)
+          }
+        }
+
         return installService.installAssets(assets)
       },
       this.diagnoseVersion.bind(this))
 
     diagnoseService.registerMatchedFix(['missingLibraries', 'corruptedLibraries'],
       async (issues) => {
-        const libs = [
-          ...issues.filter(i => i.multi).map(i => i.parameters.values).reduce((a, b) => [...a, ...b], []),
-          ...issues.filter(i => !i.multi).map(i => i.parameters),
-        ]
-        return installService.installLibraries({ libraries: libs })
+        const libraries: InstallableLibrary[] = []
+
+        for (const i of issues) {
+          if (i.parameters instanceof Array) {
+            libraries.push(...(i.parameters as any))
+          } else {
+            libraries.push(i.parameters as any)
+          }
+        }
+
+        return installService.installLibraries(libraries)
       },
       this.diagnoseVersion.bind(this))
 
     diagnoseService.registerMatchedFix(['badInstall'],
       async (issues) => {
-        await installService.installByProfile(issues[0].parameters.installProfile)
+        await installService.installByProfile((issues[0].parameters as any).installProfile)
       },
       this.diagnoseVersion.bind(this))
   }
@@ -150,7 +163,7 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
     this.release('diagnose')
   }
 
-  @Subscribe('instance')
+  @Subscribe('instanceEdit')
   protected async onInstance(payload: any) {
     if (payload.path !== this.instanceService.state.path) {
       return

@@ -233,11 +233,11 @@ export function checkUpdateTask(this: ElectronLauncherApp): Task<_UpdateInfo> {
 }
 
 export function setup(storeMananger: StoreManager) {
-  storeMananger.subscribe('autoInstallOnAppQuit', (value) => {
+  storeMananger.subscribe('autoInstallOnAppQuitSet', (value) => {
     autoUpdater.autoInstallOnAppQuit = value
-  }).subscribe('allowPrerelease', (value) => {
+  }).subscribe('allowPrereleaseSet', (value) => {
     autoUpdater.allowPrerelease = value
-  }).subscribe('autoDownload', (value) => {
+  }).subscribe('autoDownloadSet', (value) => {
     autoUpdater.autoDownload = value
   }).subscribe('config', (config) => {
     autoUpdater.autoInstallOnAppQuit = config.autoInstallOnAppQuit

@@ -6,9 +6,6 @@ export interface MigrateOptions {
   destination: string
 }
 
-export interface BaseState extends SettingSchema, State {
-}
-
 export class BaseState implements SettingSchema {
   locale = ''
   /**
