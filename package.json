@@ -140,6 +140,7 @@
         "@typescript-eslint/eslint-plugin": "^4.18.0",
         "@typescript-eslint/parser": "^4.18.0",
         "@vue/devtools": "^5.3.3",
+        "@vue/runtime-dom": "latest",
         "builtin-modules": "^3.1.0",
         "chalk": "^4.1.0",
         "conventional-changelog": "^3.1.18",
