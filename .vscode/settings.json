@@ -12,6 +12,7 @@
         "**/.DS_Store": true,
         "**/node_modules": true
     },
+    "typescript.preferences.quoteStyle": "single",
     "vetur.format.defaultFormatter.js": "vscode-typescript",
     "vetur.format.defaultFormatter.ts": "vscode-typescript",
     "vetur.format.enable": true,
@@ -40,5 +41,7 @@
         "logining",
         "mojang",
         "xmcl"
-    ]
+    ],
+    "volar.tsPlugin": true,
+    "cSpell.enabled": true
 }
