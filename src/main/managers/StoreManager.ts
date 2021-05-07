@@ -64,8 +64,14 @@ export default class StoreManager extends Manager {
       }
     }
     for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(state))) {
-      if (prop.value && !isState(prop.value)) {
-        stateKeys.push(key)
+      if (!prop.get) {
+        if (prop.value) {
+          if (!isState(prop.value)) {
+            stateKeys.push(key)
+          }
+        } else {
+          stateKeys.push(key)
+        }
       }
     }
     this.registeredState[name] = {

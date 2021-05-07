@@ -4,6 +4,7 @@ import { basename, extname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { AggregateExecutor } from '../util/aggregator'
 import { RelativeMappedFile } from '../util/persistance'
+import { createPromiseSignal } from '../util/promiseSignal'
 import { BufferJsonSerializer } from '../util/serialize'
 import { ExportService, internal, StatefulService } from './Service'
 import { FileStat, mutateResource, persistResource, readFileStat, remove, ResourceCache } from '/@main/entities/resource'
@@ -33,7 +34,13 @@ export default class ResourceService extends StatefulService<ResourceState> impl
 
   private cache = new ResourceCache()
 
-  private loadPromises: Record<string, Promise<void>> = {}
+  private loadPromises = {
+    [ResourceDomain.Mods]: createPromiseSignal(),
+    [ResourceDomain.Saves]: createPromiseSignal(),
+    [ResourceDomain.ResourcePacks]: createPromiseSignal(),
+    [ResourceDomain.Modpacks]: createPromiseSignal(),
+    [ResourceDomain.Unknown]: createPromiseSignal(),
+  }
 
   private resourceRemove = new AggregateExecutor<AnyPersistedResource, AnyPersistedResource[]>(_ => _,
     (res) => {
@@ -115,7 +122,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
   }
 
   @internal
-  private async loadDomain(domain: string) {
+  private async loadDomain(domain: ResourceDomain) {
     const path = this.getPath(domain)
     const files = await readdirEnsured(path)
     const result: PersistedResource[] = []
@@ -162,22 +169,30 @@ export default class ResourceService extends StatefulService<ResourceState> impl
       }
     }
     await Promise.all(files.map(processFile))
+    this.log(`Load ${result.length} resources in domain ${domain}`)
     this.commitResources(result)
   }
 
   @internal
   async initialize() {
-    for (const domain of ['mods', 'resourcepacks', 'saves', 'modpacks', 'unknown']) {
-      this.loadPromises[domain] = this.loadDomain(domain)
+    for (const domain of [
+      ResourceDomain.Mods, ResourceDomain.ResourcePacks,
+      ResourceDomain.Saves, ResourceDomain.Modpacks, ResourceDomain.Unknown,
+    ]) {
+      this.loadPromises[domain].accept(this.loadDomain(domain))
     }
   }
 
   whenModsReady() {
-    return this.loadPromises.mods
+    return this.loadPromises.mods.promise
   }
 
   whenResourcePacksReady() {
-    return this.loadPromises.resourcepacks
+    return this.loadPromises.resourcepacks.promise
+  }
+
+  whenReady(resourceDomain: ResourceDomain) {
+    return this.loadPromises[resourceDomain].promise
   }
 
   /**

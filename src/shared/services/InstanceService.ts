@@ -65,9 +65,9 @@ export class InstanceState {
     delete this.all[id]
   }
 
-  instanceSelect(id: string) {
-    if (this.all[id]) {
-      this.path = id
+  instanceSelect(path: string) {
+    if (this.all[path]) {
+      this.path = path
     } else if (this.path === '') {
       this.path = Object.keys(this.all)[0]
     }

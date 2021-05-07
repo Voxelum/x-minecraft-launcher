@@ -83,47 +83,40 @@ export enum Policy {
 }
 
 const runningSingleton: Record<string, Promise<any>> = {}
-const waitingQueue: Record<string, WaitingQueue> = {}
+const waitingQueue: Record<string, Promise<any>> = {}
 
-function getQueue(name: string) {
-  if (!(name in waitingQueue)) {
-    waitingQueue[name] = new WaitingQueue()
-  }
-  return waitingQueue[name]
-}
-
-export function Enqueue(queue: WaitingQueue) {
-  return function (target: AbstractService, propertyKey: string, descriptor: PropertyDescriptor) {
-    const method = descriptor.value
-    const func = function (this: AbstractService, ...args: any[]) {
-      return queue.enqueue(async () => {
-        let isPromise = false
-        try {
-          const result = method.apply(this, args)
-          if (result instanceof Promise) {
-            isPromise = true
-            const promise = result.finally(() => {
-              // for (const s of semiphores) {
-              //     delete runningSingleton[s];
-              // }
-              // this.release(semiphores);
-            })
-            // for (const s of semiphores) {
-            //     runningSingleton[s] = promise;
-            // }
-            return promise
-          }
-          return result
-        } finally {
-          if (!isPromise) {
-            // this.release(semiphores);
-          }
-        }
-      })
-    }
-    descriptor.value = func
-  }
-}
+// export function Enqueue(queue: WaitingQueue) {
+//   return function (target: AbstractService, propertyKey: string, descriptor: PropertyDescriptor) {
+//     const method = descriptor.value
+//     const func = function (this: AbstractService, ...args: any[]) {
+//       return queue.enqueue(async () => {
+//         let isPromise = false
+//         try {
+//           const result = method.apply(this, args)
+//           if (result instanceof Promise) {
+//             isPromise = true
+//             const promise = result.finally(() => {
+//               // for (const s of semiphores) {
+//               //     delete runningSingleton[s];
+//               // }
+//               // this.release(semiphores);
+//             })
+//             // for (const s of semiphores) {
+//             //     runningSingleton[s] = promise;
+//             // }
+//             return promise
+//           }
+//           return result
+//         } finally {
+//           if (!isPromise) {
+//             // this.release(semiphores);
+//           }
+//         }
+//       })
+//     }
+//     descriptor.value = func
+//   }
+// }
 
 export type KeySerializer<T extends AbstractService> = (this: T, ...params: any[]) => string
 
@@ -135,7 +128,7 @@ export function Singleton<T extends AbstractService>(...keys: (string | KeySeria
   return function (target: T, propertyKey: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value
     const func = function (this: T, ...args: any[]) {
-      const semiphores: string[] = [propertyKey, ...keys.map(k => (typeof k === 'string' ? k : k.call(this, ...args)))]
+      const semiphores: string[] = [`${Object.getPrototypeOf(this).constructor.name}::${propertyKey}`, ...keys.map(k => (typeof k === 'string' ? k : k.call(this, ...args)))]
       if (semiphores.some((key) => this.isBusy(key))) {
         return runningSingleton[semiphores[0]]
       }

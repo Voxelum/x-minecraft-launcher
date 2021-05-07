@@ -152,7 +152,7 @@ export default class UserService extends StatefulService<UserState> implements I
   @Singleton()
   async logout() {
     const user = this.state.user
-    if (this.state.accessTokenValid) {
+    if (this.state.isAccessTokenValid) {
       if (user.authService !== 'offline') {
         await invalidate({
           accessToken: user.accessToken,
@@ -165,8 +165,8 @@ export default class UserService extends StatefulService<UserState> implements I
 
   @Singleton()
   async checkLocation() {
-    if (!this.state.accessTokenValid) return true
     const user = this.state.user
+    if (!this.state.isAccessTokenValid) return true
     if (user.authService !== 'mojang') return true
     try {
       const result = await checkLocation(user.accessToken)
@@ -182,14 +182,14 @@ export default class UserService extends StatefulService<UserState> implements I
   }
 
   async getChallenges() {
-    if (!this.state.accessTokenValid) return []
+    if (!this.state.isAccessTokenValid) return []
     const user = this.state.user
     if (user.profileService !== 'mojang') return []
     return getChallenges(user.accessToken)
   }
 
   async submitChallenges(responses: MojangChallengeResponse[]) {
-    if (!this.state.accessTokenValid) throw new Error('Cannot submit challenge if not logined')
+    if (!this.state.isAccessTokenValid) throw new Error('Cannot submit challenge if not logined')
     const user = this.state.user
     if (user.authService !== 'mojang') throw new Error('Cannot sumit challenge if login mode is not mojang!')
     if (!(responses instanceof Array)) throw new Error('Expect responses Array!')
@@ -205,7 +205,7 @@ export default class UserService extends StatefulService<UserState> implements I
   async refreshStatus() {
     const user = this.state.user
 
-    if (!this.state.offline) {
+    if (this.state.isYggdrasilService) {
       const valid = await this.validate({
         accessToken: user.accessToken,
         clientToken: this.state.clientToken,
@@ -241,7 +241,7 @@ export default class UserService extends StatefulService<UserState> implements I
         this.state.userInvalidate()
       }
     } else {
-      this.log(`Current user ${user.id} is offline. Skip to refresh credential.`)
+      this.log(`Current user ${user.id} is not YggdrasilService. Skip to refresh credential.`)
     }
   }
 
@@ -266,7 +266,7 @@ export default class UserService extends StatefulService<UserState> implements I
     // if no game profile (maybe not logined), return
     if (gameProfile.name === '') return
     // if user doesn't have a valid access token, return
-    if (!this.state.accessTokenValid) return
+    if (!this.state.isAccessTokenValid) return
 
     const userAndProfileId = `${userId}[${gameProfileId}]`
     const refreshed = this.refreshSkinRecord[userAndProfileId]
@@ -379,7 +379,7 @@ export default class UserService extends StatefulService<UserState> implements I
    */
   @Singleton()
   async refreshUser() {
-    if (!this.state.accessTokenValid) return
+    if (!this.state.isAccessTokenValid) return
     await this.refreshStatus().catch(_ => _)
   }
 

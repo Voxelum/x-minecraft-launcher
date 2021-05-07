@@ -116,12 +116,16 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
     return this.user.profiles[this.selectedUser.profile] || EMPTY_GAME_PROFILE
   }
 
-  get accessTokenValid(): boolean {
+  get isAccessTokenValid(): boolean {
     return this.user.accessToken !== ''
   }
 
   get offline(): boolean {
     return this.user.authService === 'offline'
+  }
+
+  get isYggdrasilService(): boolean {
+    return this.user.authService !== 'offline' && this.user.authService !== 'microsoft'
   }
 
   get isThirdPartyAuthentication(): boolean {

@@ -1,4 +1,4 @@
-export function aquire (semaphore: Record<string, number>, res: string | string[]) {
+export function aquire(semaphore: Record<string, number>, res: string | string[]) {
   const sem = res instanceof Array ? res : [res]
   for (const s of sem) {
     if (s in semaphore) {
@@ -9,7 +9,7 @@ export function aquire (semaphore: Record<string, number>, res: string | string[
   }
 }
 
-export function release (semaphore: Record<string, number>, res: string | string[]) {
+export function release(semaphore: Record<string, number>, res: string | string[]) {
   const sem = res instanceof Array ? res : [res]
   for (const s of sem) {
     if (s in semaphore) {
@@ -18,6 +18,6 @@ export function release (semaphore: Record<string, number>, res: string | string
   }
 }
 
-export function isBusy (semaphore: Record<string, number>, key: string) {
+export function isBusy(semaphore: Record<string, number>, key: string) {
   return semaphore[key] > 0
 }
