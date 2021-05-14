@@ -1,7 +1,6 @@
 import { Task } from '@xmcl/task'
 import { join } from 'path'
 import LauncherApp from '/@main/app/LauncherApp'
-import { WaitingQueue } from '/@main/util/mutex'
 import { Exceptions } from '/@shared/entities/exception'
 import { ServiceKey, State } from '/@shared/services/Service'
 import { MutationKeys } from '/@shared/state'
@@ -78,45 +77,11 @@ export function Subscribe(...keys: MutationKeys[]) {
 }
 
 export enum Policy {
-  Skip = 'skip',
+  Immidate = 'immidate',
   Wait = 'wait',
 }
 
-const runningSingleton: Record<string, Promise<any>> = {}
-const waitingQueue: Record<string, Promise<any>> = {}
-
-// export function Enqueue(queue: WaitingQueue) {
-//   return function (target: AbstractService, propertyKey: string, descriptor: PropertyDescriptor) {
-//     const method = descriptor.value
-//     const func = function (this: AbstractService, ...args: any[]) {
-//       return queue.enqueue(async () => {
-//         let isPromise = false
-//         try {
-//           const result = method.apply(this, args)
-//           if (result instanceof Promise) {
-//             isPromise = true
-//             const promise = result.finally(() => {
-//               // for (const s of semiphores) {
-//               //     delete runningSingleton[s];
-//               // }
-//               // this.release(semiphores);
-//             })
-//             // for (const s of semiphores) {
-//             //     runningSingleton[s] = promise;
-//             // }
-//             return promise
-//           }
-//           return result
-//         } finally {
-//           if (!isPromise) {
-//             // this.release(semiphores);
-//           }
-//         }
-//       })
-//     }
-//     descriptor.value = func
-//   }
-// }
+const MutexSymbol = Symbol('MutexSymbol')
 
 export type KeySerializer<T extends AbstractService> = (this: T, ...params: any[]) => string
 
@@ -124,36 +89,92 @@ export type KeySerializer<T extends AbstractService> = (this: T, ...params: any[
  * A service method decorator to make sure this service call should run in singleton -- no second call at the time.
  * The later call will wait the first call end and return the first call result.
  */
-export function Singleton<T extends AbstractService>(...keys: (string | KeySerializer<T>)[]) {
+export function Mutex<T extends AbstractService>(key?: (string | KeySerializer<T>)) {
   return function (target: T, propertyKey: string, descriptor: PropertyDescriptor) {
-    const method = descriptor.value
+    if (!Reflect.has(target, MutexSymbol)) {
+      Object.defineProperty(target, MutexSymbol, { value: {} })
+    }
+    const method = descriptor.value as Function
+    const mutex: Record<string, Promise<any> | undefined> = Reflect.get(target, MutexSymbol)
     const func = function (this: T, ...args: any[]) {
-      const semiphores: string[] = [`${Object.getPrototypeOf(this).constructor.name}::${propertyKey}`, ...keys.map(k => (typeof k === 'string' ? k : k.call(this, ...args)))]
-      if (semiphores.some((key) => this.isBusy(key))) {
-        return runningSingleton[semiphores[0]]
-      }
-      this.aquire(semiphores)
-      let isPromise = false
-      try {
-        const result = method.apply(this, args)
-        if (result instanceof Promise) {
-          isPromise = true
-          const promise = result.finally(() => {
-            for (const s of semiphores) {
-              delete runningSingleton[s]
-            }
-            this.release(semiphores)
-          })
-          for (const s of semiphores) {
-            runningSingleton[s] = promise
+      const targetKey = key
+        ? typeof key === 'function' ? key.call(this, ...args) : key
+        : `${Object.getPrototypeOf(this).constructor.name}.${propertyKey}`
+      const exec = () => {
+        try {
+          const result = method.apply(this, args)
+          if (result instanceof Promise) {
+            return result
+          } else {
+            return Promise.resolve(result)
           }
-          return promise
+        } catch (e) {
+          return Promise.reject(e)
         }
-        return result
-      } finally {
-        if (!isPromise) {
-          this.release(semiphores)
+      }
+      const start = () => {
+        this.aquire([targetKey])
+        // enter the criticle section
+        mutex[targetKey] = exec().finally(() => {
+          this.release([targetKey])
+          delete mutex[targetKey]
+        })
+      }
+      const last = mutex[targetKey]
+      if (last) {
+        last.finally(start)
+      } else {
+        start()
+      }
+    }
+    descriptor.value = func
+  }
+}
+
+/**
+ * A service method decorator to make sure this service call should run in singleton -- no second call at the time.
+ * The later call will wait the first call end and return the first call result.
+ */
+export function Singleton<T extends AbstractService>(key?: (string | KeySerializer<T>), policy: Policy = Policy.Immidate) {
+  return function (target: T, propertyKey: string, descriptor: PropertyDescriptor) {
+    if (!Reflect.has(target, MutexSymbol)) {
+      Object.defineProperty(target, MutexSymbol, { value: {} })
+    }
+    const method = descriptor.value as Function
+    const mutex: Record<string, Promise<any> | undefined> = Reflect.get(target, MutexSymbol)
+    const func = function (this: T, ...args: any[]) {
+      const targetKey = key
+        ? typeof key === 'function' ? key.call(this, ...args) : key
+        : `${Object.getPrototypeOf(this).constructor.name}.${propertyKey}`
+      const exec = () => {
+        try {
+          const result = method.apply(this, args)
+          if (result instanceof Promise) {
+            return result
+          } else {
+            return Promise.resolve(result)
+          }
+        } catch (e) {
+          return Promise.reject(e)
         }
+      }
+      const start = () => {
+        this.aquire([targetKey])
+        // enter the criticle section
+        mutex[targetKey] = exec().finally(() => {
+          this.release([targetKey])
+          delete mutex[targetKey]
+        })
+      }
+      const last = mutex[targetKey]
+      if (last) {
+        if (policy === Policy.Wait) {
+          last.finally(start)
+        } else if (policy === Policy.Immidate) {
+          return last
+        }
+      } else {
+        start()
       }
     }
     descriptor.value = func
@@ -266,7 +287,7 @@ export default abstract class AbstractService {
   }
 
   protected aquire(key: string | string[]) {
-    this.serviceManager.aquire(key)
+    this.serviceManager.up(key)
   }
 
   protected release(key: string | string[]) {

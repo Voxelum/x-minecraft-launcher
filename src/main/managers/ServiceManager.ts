@@ -27,7 +27,7 @@ import VersionService from '../services/VersionService'
 import { Client } from '/@main/engineBridge'
 import { Exception } from '/@shared/entities/exception'
 import { ServiceKey } from '/@shared/services/Service'
-import { aquire, isBusy, release } from '/@shared/util/semaphore'
+import { Semaphore } from '/@shared/util/semaphore'
 
 interface ServiceCallSession {
   id: number
@@ -50,7 +50,7 @@ export default class ServiceManager extends Manager {
 
   private sessions: { [key: number]: ServiceCallSession } = {}
 
-  private semaphore: Record<string, number> = {}
+  readonly semaphore = new Semaphore()
 
   getService<T>(key: ServiceKey<T>): T | undefined {
     return this.exposedService[key as any] as any
@@ -64,17 +64,21 @@ export default class ServiceManager extends Manager {
    * Aquire and boradcast the key is in used.
    * @param key The key or keys to aquire
    */
-  aquire(key: string | string[]) {
-    aquire(this.semaphore, key)
+  up(key: string) {
+    this.semaphore.up(key)
     this.app.broadcast('aquire', key)
+  }
+
+  aquire(key: string) {
+    return this.semaphore.aquire(key)
   }
 
   /**
    * Release and boradcast the key is not used.
    * @param key The key or keys to release
    */
-  release(key: string | string[]) {
-    release(this.semaphore, key)
+  release(key: string) {
+    this.semaphore.down(key)
     this.app.broadcast('release', key)
   }
 
@@ -83,7 +87,7 @@ export default class ServiceManager extends Manager {
    * @param key key value representing some operation
    */
   isBusy(key: string) {
-    return isBusy(this.semaphore, key)
+    return this.semaphore.isBusy(key)
   }
 
   /**

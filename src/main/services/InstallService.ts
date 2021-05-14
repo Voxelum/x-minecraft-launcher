@@ -9,12 +9,12 @@ import BaseService from './BaseService'
 import DiagnoseService from './DiagnoseService'
 import JavaService from './JavaService'
 import ResourceService from './ResourceService'
-import { ExportService, Inject, Singleton, StatefulService } from './Service'
+import { ExportService, Inject, Mutex, Singleton, StatefulService } from './Service'
 import VersionService from './VersionService'
 import LauncherApp from '/@main/app/LauncherApp'
 import { isFabricLoaderLibrary, isForgeLibrary } from '/@shared/entities/version'
 import { ForgeVersion, ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '/@shared/entities/version.schema'
-import { Asset, InstallableLibrary, InstallOptifineOptions, InstallService as IInstallService, InstallServiceKey, InstallState, RefreshForgeOptions } from '/@shared/services/InstallService'
+import { Asset, InstallableLibrary, InstallFabricOptions, InstallOptifineOptions, InstallService as IInstallService, InstallServiceKey, InstallState, RefreshForgeOptions, InstallForgeOptions as _InstallForgeOptions } from '/@shared/services/InstallService'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -220,7 +220,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     this.refreshedMinecraft = true
   }
 
-  @Singleton('install')
+  @Mutex('install')
   async installAssetsForVersion(version: string) {
     const option = this.getInstallOptions()
     const location = this.getPath()
@@ -228,7 +228,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
   }
 
-  @Singleton('install')
+  @Mutex('install')
   async installDependencies(version: string) {
     const option = this.getInstallOptions()
     const location = this.getPath()
@@ -237,7 +237,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
   }
 
-  @Singleton('install')
+  @Mutex('install')
   async reinstall(version: string) {
     const option = this.getInstallOptions()
     const location = this.getPath()
@@ -258,7 +258,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     await this.submit(installAssetsTask(local, option).setName('installAssets'))
   }
 
-  @Singleton('install')
+  @Mutex('install')
   async installAssets(assets: Asset[]) {
     const option = this.getInstallOptions()
     const location = this.getPath()
@@ -266,7 +266,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     await this.submit(task)
   }
 
-  @Singleton('install')
+  @Mutex('install')
   async installMinecraft(meta: MinecraftVersion) {
     const id = meta.id
 
@@ -281,7 +281,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     }
   }
 
-  @Singleton('install')
+  @Mutex('install')
   async installLibraries(libraries: InstallableLibrary[]) {
     let resolved: ResolvedLibrary[]
     if ('downloads' in libraries[0]) {
@@ -334,17 +334,17 @@ export default class InstallService extends StatefulService<InstallState> implem
   }
 
   @Singleton('install')
-  async installForge(meta: Parameters<typeof installForgeTask>[0]) {
-    const options = this.getForgeInstallOptions()
+  async installForge(options: _InstallForgeOptions) {
+    const installOptions = this.getForgeInstallOptions()
 
     let version: string | undefined
     try {
-      this.log(`Start to install forge ${meta.version} on ${meta.mcversion}`)
-      version = await this.submit(installForgeTask(meta, this.getPath(), options))
+      this.log(`Start to install forge ${options.version} on ${options.mcversion}`)
+      version = await this.submit(installForgeTask(options, this.getPath(), installOptions))
       this.versionService.refreshVersions()
-      this.log(`Success to install forge ${meta.version} on ${meta.mcversion}`)
+      this.log(`Success to install forge ${options.version} on ${options.mcversion}`)
     } catch (err) {
-      this.warn(`An error ocurred during download version ${meta.version}@${meta.mcversion}`)
+      this.warn(`An error ocurred during download version ${options.version}@${options.mcversion}`)
       this.warn(err)
     }
 
@@ -384,19 +384,19 @@ export default class InstallService extends StatefulService<InstallState> implem
     this.refreshedFabric = true
   }
 
-  @Singleton('install')
-  async installFabric(versions: { yarn?: string; loader: string; minecraft: string }) {
+  @Singleton((options: InstallFabricOptions) => `installFabric(${JSON.stringify(options)})`)
+  async installFabric(options: InstallFabricOptions) {
     try {
-      this.log(`Start to install fabric: yarn ${versions.yarn}, loader ${versions.loader}.`)
+      this.log(`Start to install fabric: yarn ${options.yarn}, loader ${options.loader}.`)
       const result = await this.submit(task('installFabric', async () => {
-        const artifact = await getFabricLoaderArtifact(versions.minecraft, versions.loader)
+        const artifact = await getFabricLoaderArtifact(options.minecraft, options.loader)
         return installFabric(artifact, this.getPath(), { side: 'client' })
       }))
       this.versionService.refreshVersions()
-      this.log(`Success to install fabric: yarn ${versions.yarn}, loader ${versions.loader}. The new version is ${result}`)
+      this.log(`Success to install fabric: yarn ${options.yarn}, loader ${options.loader}. The new version is ${result}`)
       return result
     } catch (e) {
-      this.warn(`An error ocurred during install fabric yarn-${versions.yarn}, loader-${versions.loader}`)
+      this.warn(`An error ocurred during install fabric yarn-${options.yarn}, loader-${options.loader}`)
       this.warn(e)
     }
     return undefined
@@ -518,7 +518,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     this.refreshedLiteloader = true
   }
 
-  @Singleton('install')
+  @Singleton((meta: LiteloaderVersion) => `installLitloader(${JSON.stringify(meta)})`)
   async installLiteloader(meta: LiteloaderVersion) {
     try {
       await this.submit(installLiteloaderTask(meta, this.getPath()))

@@ -119,6 +119,44 @@ export interface Asset {
   hash: string
 }
 
+export interface InstallForgeOptions {
+  /**
+   * The installer info.
+   *
+   * If this is not presented, it will genreate from mcversion and forge version.
+   */
+  installer?: {
+    sha1?: string
+    /**
+     * The url path to concat with forge maven
+     */
+    path: string
+  }
+  /**
+   * The minecraft version
+   */
+  mcversion: string
+  /**
+   * The forge version (without minecraft version)
+   */
+  version: string
+}
+
+export interface InstallFabricOptions {
+  /**
+   * Forcing fabric yarn version
+   */
+  yarn?: string
+  /**
+   * The fabric loader version to install
+   */
+  loader: string
+  /**
+   * The minecraft version to install
+   */
+  minecraft: string
+}
+
 export type InstallableLibrary = Version.Library | ResolvedLibrary
 
 /**
@@ -160,7 +198,7 @@ export interface InstallService extends StatefulService<InstallState> {
   /**
    * Install forge by forge version metadata
    */
-  installForge(meta: Parameters<typeof installForgeTask>[0]): Promise<string | undefined>
+  installForge(options: InstallForgeOptions): Promise<string | undefined>
   /**
    * Refresh fabric version list in the store.
    * @param force shouls the version be refresh regardless if we have already refreshed fabric version.
@@ -168,13 +206,9 @@ export interface InstallService extends StatefulService<InstallState> {
   refreshFabric(force?: boolean): Promise<void>
   /**
    * Install fabric to the minecraft
-   * @param versions The fabric versions
+   * @param options Install options for fabric
    */
-  installFabric(versions: {
-    yarn?: string
-    loader: string
-    minecraft: string
-  }): Promise<string | undefined>
+  installFabric(options: InstallFabricOptions): Promise<string | undefined>
   /**
    * Refresh optifine version list from BMCL API
    */
