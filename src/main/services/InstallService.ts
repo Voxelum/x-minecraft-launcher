@@ -6,15 +6,15 @@ import { URL } from 'url'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
 import BaseService from './BaseService'
-import DiagnoseService from './DiagnoseService'
 import JavaService from './JavaService'
 import ResourceService from './ResourceService'
-import { ExportService, Inject, Mutex, Singleton, StatefulService } from './Service'
+import { ExportService, Inject, Lock, Singleton, StatefulService } from './Service'
 import VersionService from './VersionService'
 import LauncherApp from '/@main/app/LauncherApp'
 import { isFabricLoaderLibrary, isForgeLibrary } from '/@shared/entities/version'
 import { ForgeVersion, ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '/@shared/entities/version.schema'
-import { Asset, InstallableLibrary, InstallFabricOptions, InstallOptifineOptions, InstallService as IInstallService, InstallServiceKey, InstallState, RefreshForgeOptions, InstallForgeOptions as _InstallForgeOptions } from '/@shared/services/InstallService'
+import { Asset, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallService as IInstallService, InstallServiceKey, InstallState, RefreshForgeOptions } from '/@shared/services/InstallService'
+import { assetsLock, librariesLock, read, versionLockOf, write } from '/@shared/util/mutex'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -36,7 +36,6 @@ export default class InstallService extends StatefulService<InstallState> implem
   constructor(app: LauncherApp,
     @Inject(BaseService) private baseService: BaseService,
     @Inject(VersionService) private versionService: VersionService,
-    @Inject(DiagnoseService) diagnoseService: DiagnoseService,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(JavaService) private javaService: JavaService,
   ) {
@@ -220,7 +219,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     this.refreshedMinecraft = true
   }
 
-  @Mutex('install')
+  @Lock((v) => [read(versionLockOf(v)), write(assetsLock)])
   async installAssetsForVersion(version: string) {
     const option = this.getInstallOptions()
     const location = this.getPath()
@@ -228,7 +227,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
   }
 
-  @Mutex('install')
+  @Lock((v) => [read(versionLockOf(v)), write(assetsLock), write(librariesLock)])
   async installDependencies(version: string) {
     const option = this.getInstallOptions()
     const location = this.getPath()
@@ -237,7 +236,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
   }
 
-  @Mutex('install')
+  @Lock(v => [read(versionLockOf(v))])
   async reinstall(version: string) {
     const option = this.getInstallOptions()
     const location = this.getPath()
@@ -258,7 +257,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     await this.submit(installAssetsTask(local, option).setName('installAssets'))
   }
 
-  @Mutex('install')
+  @Lock(write(assetsLock))
   async installAssets(assets: Asset[]) {
     const option = this.getInstallOptions()
     const location = this.getPath()
@@ -266,7 +265,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     await this.submit(task)
   }
 
-  @Mutex('install')
+  @Lock((v: MinecraftVersion) => write(versionLockOf(v.id)))
   async installMinecraft(meta: MinecraftVersion) {
     const id = meta.id
 
@@ -281,7 +280,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     }
   }
 
-  @Mutex('install')
+  @Lock(write(librariesLock))
   async installLibraries(libraries: InstallableLibrary[]) {
     let resolved: ResolvedLibrary[]
     if ('downloads' in libraries[0]) {
@@ -333,7 +332,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     }
   }
 
-  @Singleton('install')
+  @Lock((v: _InstallForgeOptions) => write(versionLockOf(`forge-${v.mcversion}-${v.version}`)))
   async installForge(options: _InstallForgeOptions) {
     const installOptions = this.getForgeInstallOptions()
 
@@ -384,7 +383,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     this.refreshedFabric = true
   }
 
-  @Singleton((options: InstallFabricOptions) => `installFabric(${JSON.stringify(options)})`)
+  @Lock((v: InstallFabricOptions) => write(versionLockOf(`fabric-${v.minecraft}-${v.loader}`)))
   async installFabric(options: InstallFabricOptions) {
     try {
       this.log(`Start to install fabric: yarn ${options.yarn}, loader ${options.loader}.`)
@@ -435,7 +434,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     this.refreshedOptifine = true
   }
 
-  @Singleton('install')
+  // @Lock(v => )
   async installOptifine(options: InstallOptifineOptions) {
     const minecraft = new MinecraftFolder(this.getPath())
     const optifineVersion = `${options.type}_${options.patch}`
@@ -518,7 +517,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     this.refreshedLiteloader = true
   }
 
-  @Singleton((meta: LiteloaderVersion) => `installLitloader(${JSON.stringify(meta)})`)
+  @Mutex('')
   async installLiteloader(meta: LiteloaderVersion) {
     try {
       await this.submit(installLiteloaderTask(meta, this.getPath()))
@@ -529,7 +528,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     }
   }
 
-  @Singleton('install')
+  @Mutex('install')
   async installByProfile(profile: InstallProfile) {
     try {
       await this.submit(installByProfileTask(profile, this.getPath(), {

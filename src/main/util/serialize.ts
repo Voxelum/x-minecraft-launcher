@@ -19,12 +19,12 @@ export function pipe<A, B, C>(serialzerIn: Serializer<A, B>, serialzerOut: Seria
   }
 }
 
-export function serverDatSerializer(): Serializer<Uint8Array, ServerInfo[]> {
-  return {
-    serialize(value) { return writeInfo(value) },
-    async deserialize(buff) { return readInfo(buff) },
-  }
-}
+// export function serverDatSerializer(): Serializer<Uint8Array, ServerInfo[]> {
+//   return {
+//     serialize(value) { return writeInfo(value) },
+//     async deserialize(buff) { return readInfo(buff) },
+//   }
+// }
 
 export class BufferJsonSerializer<T> implements Serializer<Buffer, T> {
   constructor(readonly schema: Schema<T>) { }

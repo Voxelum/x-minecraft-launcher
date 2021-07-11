@@ -12,6 +12,7 @@ const chalk = require('chalk')
 const { watch } = require('rollup')
 const { EOL } = require('os')
 const { loadRollupConfig } = require('./util')
+const { writeFileSync } = require('fs')
 
 let manualRestart = false
 
@@ -190,6 +191,7 @@ async function main() {
           break
         case 'ERROR':
           console.error(event)
+          writeFileSync('error.json', JSON.stringify(event))
           shouldReloadElectron = false
           break
       }

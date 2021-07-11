@@ -146,7 +146,7 @@ export default class ExternalAuthSkinService extends AbstractService implements 
 
   @Singleton()
   async diagnoseAuthlibInjector(report: Partial<IssueReport>) {
-    this.aquire('diagnose')
+    this.up('diagnose')
     const doesAuthlibInjectionExisted = async () => {
       const jsonPath = this.getPath('authlib-injection.json')
       const content = await readJson(jsonPath).catch(() => undefined)
@@ -173,7 +173,7 @@ export default class ExternalAuthSkinService extends AbstractService implements 
         Object.assign(report, tree)
       }
     } finally {
-      this.release('diagnose')
+      this.down('diagnose')
     }
   }
 

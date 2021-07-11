@@ -1,4 +1,3 @@
-import { EventEmitter } from 'keyv'
 
 export function up(semaphore: Record<string, number>, res: string | string[]) {
   const sem = res instanceof Array ? res : [res]
@@ -41,11 +40,10 @@ export class Semaphore {
     return isBusy(this.semaphore, key)
   }
 
-  aquire(key: string, process: () => Promise<void>) {
+  aquire(key: string[], process: () => Promise<void>) {
     const promise = this.semaphore[key] === 0
       ? Promise.resolve()
       : new Promise<void>((resolve) => {
-        this.emitter.once(key, resolve)
       })
     promise.then(() => {
       this.up(key)

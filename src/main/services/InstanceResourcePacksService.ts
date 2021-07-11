@@ -84,7 +84,7 @@ export default class InstanceResourcePackService extends StatefulService<Instanc
 
   @Singleton()
   async diagnoseResourcePacks() {
-    this.aquire('diagnose')
+    this.up('diagnose')
     try {
       const report: Partial<IssueReport> = {}
       this.log('Diagnose resource packs')
@@ -115,7 +115,7 @@ export default class InstanceResourcePackService extends StatefulService<Instanc
       Object.assign(report, tree)
       this.diagnoseService.report(report)
     } finally {
-      this.release('diagnose')
+      this.down('diagnose')
     }
   }
 

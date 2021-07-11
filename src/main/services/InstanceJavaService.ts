@@ -70,7 +70,7 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
 
   @Singleton()
   async diagnoseJava() {
-    this.aquire('diagnose')
+    this.up('diagnose')
     try {
       this.log('Diagnose java')
       const report: Partial<IssueReport> = {}
@@ -105,7 +105,7 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
       Object.assign(report, tree)
       this.diagnoseService.report(report)
     } finally {
-      this.release('diagnose')
+      this.down('diagnose')
     }
   }
 }

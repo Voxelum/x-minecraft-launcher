@@ -27,7 +27,8 @@ import VersionService from '../services/VersionService'
 import { Client } from '/@main/engineBridge'
 import { Exception } from '/@shared/entities/exception'
 import { ServiceKey } from '/@shared/services/Service'
-import { Semaphore } from '/@shared/util/semaphore'
+import { Semaphore } from '../util/semaphore'
+import { ReadWriteLock } from '../util/mutex'
 
 interface ServiceCallSession {
   id: number
@@ -50,7 +51,7 @@ export default class ServiceManager extends Manager {
 
   private sessions: { [key: number]: ServiceCallSession } = {}
 
-  readonly semaphore = new Semaphore()
+  private locks: Record<string, ReadWriteLock> = {}
 
   getService<T>(key: ServiceKey<T>): T | undefined {
     return this.exposedService[key as any] as any
@@ -60,17 +61,25 @@ export default class ServiceManager extends Manager {
     this.registeredServices.push(type)
   }
 
+  getLock(resourcePath: string) {
+    if (!this.locks[resourcePath]) {
+      this.locks[resourcePath] = new ReadWriteLock((delta) => {
+        if (delta > 0) {
+          this.app.broadcast('aquire', resourcePath)
+        } else {
+          this.app.broadcast('release', resourcePath)
+        }
+      })
+    }
+    return this.locks[resourcePath]
+  }
+
   /**
    * Aquire and boradcast the key is in used.
    * @param key The key or keys to aquire
    */
   up(key: string) {
-    this.semaphore.up(key)
     this.app.broadcast('aquire', key)
-  }
-
-  aquire(key: string) {
-    return this.semaphore.aquire(key)
   }
 
   /**
@@ -78,16 +87,7 @@ export default class ServiceManager extends Manager {
    * @param key The key or keys to release
    */
   release(key: string) {
-    this.semaphore.down(key)
     this.app.broadcast('release', key)
-  }
-
-  /**
-   * Determine if a key is in used.
-   * @param key key value representing some operation
-   */
-  isBusy(key: string) {
-    return this.semaphore.isBusy(key)
   }
 
   /**
