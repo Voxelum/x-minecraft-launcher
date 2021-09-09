@@ -56,7 +56,7 @@ export default class JavaService extends StatefulService<JavaState> implements I
   /**
    * Install a default jdk 8 to the a preserved location. It'll be installed under your launcher root location `jre` folder
    */
-  @Singleton('java')
+  @Singleton()
   async installDefaultJava() {
     if (this.state.all.find(j => j.path === this.internalJavaLocation)) {
       return
@@ -154,7 +154,7 @@ export default class JavaService extends StatefulService<JavaState> implements I
   /**
    * scan local java locations and cache
    */
-  @Singleton('java')
+  @Singleton()
   async refreshLocalJava() {
     if (this.state.all.length === 0) {
       this.log('No local cache found. Scan java through the disk.')

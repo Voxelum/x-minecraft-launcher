@@ -386,6 +386,7 @@ export default class UserService extends StatefulService<UserState> implements I
   /**
   * Switch user account.
   */
+  @Singleton()
   async switchUserProfile(payload: {
     /**
      * The user id of the user
@@ -410,7 +411,7 @@ export default class UserService extends StatefulService<UserState> implements I
     await this.refreshUser()
   }
 
-  @Singleton((id: string) => id)
+  @Singleton(id => id)
   async removeUserProfile(userId: string) {
     requireString(userId)
     if (this.state.selectedUser.id === userId) {
@@ -477,6 +478,7 @@ export default class UserService extends StatefulService<UserState> implements I
   /**
    * Login the user by current login mode. Refresh the skin and account information.
    */
+  @Singleton()
   async login(options: LoginOptions) {
     requireObject(options)
     requireString(options.username)

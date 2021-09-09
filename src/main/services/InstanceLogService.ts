@@ -32,7 +32,7 @@ export default class InstanceLogService extends AbstractService implements IInst
    * Remove a log from disk
    * @param name The log file name
    */
-  @Singleton((name) => `removeLog#${name}`)
+  @Singleton(name => name)
   async removeLog(name: string) {
     const filePath = join(this.instanceService.state.path, 'logs', name)
     this.log(`Remove log ${filePath}`)
@@ -43,7 +43,7 @@ export default class InstanceLogService extends AbstractService implements IInst
    * Get the log content.
    * @param name The log file name
    */
-  @Singleton((name) => `getLogContent#${name}`)
+  @Singleton(name => name)
   async getLogContent(name: string) {
     try {
       const filePath = join(this.instanceService.state.path, 'logs', name)
@@ -73,7 +73,7 @@ export default class InstanceLogService extends AbstractService implements IInst
    * Remove a crash report from disk
    * @param name The crash report file name
    */
-  @Singleton((name) => `removeCrashReport#${name}`)
+  @Singleton((name) => name)
   async removeCrashReport(name: string) {
     const filePath = join(this.instanceService.state.path, 'crash-reports', name)
     this.log(`Remove crash report ${filePath}`)
@@ -84,7 +84,7 @@ export default class InstanceLogService extends AbstractService implements IInst
    * Get the crash report content
    * @param name The name of crash report
    */
-  @Singleton((name) => `getCrashReportContent#${name}`)
+  @Singleton((name) => name)
   async getCrashReportContent(name: string) {
     let filePath: string
     if (isAbsolute(name)) {

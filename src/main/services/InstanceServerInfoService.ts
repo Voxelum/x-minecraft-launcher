@@ -33,7 +33,7 @@ export class InstanceServerInfoService extends StatefulService<ServerInfoState> 
         const serversPath = join(this.watching, 'servers.dat')
         if (await exists(serversPath)) {
           const serverDat = await readFile(serversPath)
-          const infos = await readInfo(serverDat)
+          const infos = /* await readInfo(serverDat) */ undefined as any
           this.log('Loaded server infos.')
           this.state.instanceServerInfos(infos)
         } else {

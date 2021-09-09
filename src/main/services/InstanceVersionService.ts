@@ -7,7 +7,7 @@ import { exists } from '../util/fs'
 import DiagnoseService from './DiagnoseService'
 import InstallService from './InstallService'
 import InstanceService from './InstanceService'
-import { Inject, Singleton, StatefulService, Subscribe } from './Service'
+import { Inject, Lock, Singleton, StatefulService, Subscribe } from './Service'
 import VersionService from './VersionService'
 import { RuntimeVersions } from '/@shared/entities/instance.schema'
 import { IssueReport } from '/@shared/entities/issue'
@@ -16,6 +16,7 @@ import { Asset, InstallableLibrary } from '/@shared/services/InstallService'
 import { InstanceState } from '/@shared/services/InstanceService'
 import { InstanceVersionService as IInstanceVersionService, InstanceVersionState } from '/@shared/services/InstanceVersionService'
 import { VersionState } from '/@shared/services/VersionService'
+import { read, versionLockOf } from '/@shared/util/mutex'
 
 export default class InstanceVersionService extends StatefulService<InstanceVersionState, [InstanceState, VersionState]> implements IInstanceVersionService {
   constructor(app: LauncherApp,
@@ -147,20 +148,20 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
 
   @Subscribe('instanceSelect')
   protected async onInstanceSelect() {
-    this.aquire('diagnose')
+    this.up('diagnose')
     const report: Partial<IssueReport> = {}
     await this.diagnoseVersion(report)
     this.diagnoseService.report(report)
-    this.release('diagnose')
+    this.down('diagnose')
   }
 
   @Subscribe('localVersions')
   protected async onLocalVersionsChanegd() {
-    this.aquire('diagnose')
+    this.up('diagnose')
     const report: Partial<IssueReport> = {}
     await this.diagnoseVersion(report)
     this.diagnoseService.report(report)
-    this.release('diagnose')
+    this.down('diagnose')
   }
 
   @Subscribe('instanceEdit')
@@ -179,7 +180,7 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
 
   @Singleton()
   private async diagnoseVersion(report: Partial<IssueReport>) {
-    this.aquire('diagnose')
+    this.up('diagnose')
     try {
       const id = this.instanceService.state.path
       const selected = this.instanceService.state.all[id]
@@ -236,7 +237,8 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
         this.log(`Diagnose for version ${targetVersion}`)
 
         const location = this.getPath()
-        const gameReport = await diagnose(targetVersion, location)
+        const gameReport = await this.serviceManager.getLock(versionLockOf(targetVersion))
+          .read(() => diagnose(targetVersion, location))
 
         for (const issue of gameReport.issues) {
           if (issue.role === 'versionJson') {
@@ -300,7 +302,7 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
       }
       Object.assign(report, tree)
     } finally {
-      this.release('diagnose')
+      this.down('diagnose')
     }
   }
 }

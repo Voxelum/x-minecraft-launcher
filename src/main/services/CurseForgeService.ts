@@ -58,19 +58,19 @@ export default class CurseForgeService extends StatefulService<CurseforgeState, 
     }
   }
 
-  @Singleton((projectId: number) => `cfproject-${projectId.toString()}`)
+  @Singleton(v => v.toString())
   async fetchProject(projectId: number) {
     this.log(`Fetch project: ${projectId}`)
     return this.fetchOrGetFromCache('project', this.projectCache, projectId, () => getAddonInfo(projectId, { userAgent: this.userAgent }))
   }
 
-  @Singleton((projectId: number) => `cfdescription-${projectId.toString()}`)
+  @Singleton(v => v.toString())
   fetchProjectDescription(projectId: number) {
     this.log(`Fetch project description: ${projectId}`)
     return this.fetchOrGetFromCache('project description', this.projectDescriptionCache, projectId, () => getAddonDescription(projectId, { userAgent: this.userAgent }))
   }
 
-  @Singleton((projectId: number) => `cffiles-${projectId.toString()}`)
+  @Singleton(v => v.toString())
   fetchProjectFiles(projectId: number) {
     this.log(`Fetch project files: ${projectId}`)
     return this.fetchOrGetFromCache('project files', this.projectFilesCache, projectId, () => getAddonFiles(projectId, { userAgent: this.userAgent }).then(files => files.sort((a, b) => compareDate(new Date(b.fileDate), new Date(a.fileDate)))))

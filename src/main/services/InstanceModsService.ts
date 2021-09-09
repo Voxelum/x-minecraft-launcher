@@ -78,7 +78,7 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
 
   @Singleton()
   async diagnoseMods() {
-    this.aquire('diagnose')
+    this.up('diagnose')
     try {
       const report: Partial<IssueReport> = {}
       const { runtime: version } = this.instanceService.state.instance
@@ -138,7 +138,7 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
       Object.assign(report, tree)
       this.diagnoseService.report(report)
     } finally {
-      this.release('diagnose')
+      this.down('diagnose')
     }
   }
 

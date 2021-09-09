@@ -145,7 +145,7 @@ export default class DiagnoseService extends StatefulService<DiagnoseState> impl
    * @param issues The issues to be fixed.
    */
   async fix(issues: readonly Issue[]) {
-    this.aquire('diagnose')
+    this.up('diagnose')
     try {
       const unfixed = issues.filter(p => p.autofix)
         .filter(p => !this.state.report[p.id].fixing)
@@ -174,7 +174,7 @@ export default class DiagnoseService extends StatefulService<DiagnoseState> impl
         this.state.issuesEndResolve(unfixed)
       }
     } finally {
-      this.release('diagnose')
+      this.down('diagnose')
     }
   }
 }
