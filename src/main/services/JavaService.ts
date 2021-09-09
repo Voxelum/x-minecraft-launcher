@@ -61,7 +61,7 @@ export default class JavaService extends StatefulService<JavaState> implements I
     if (this.state.all.find(j => j.path === this.internalJavaLocation)) {
       return
     }
-    const task = this.networkManager.isInGFW ? this.installFromTsingHuaTask() : this.installFromMojangTask()
+    const task = this.networkManager.isInGFW ? this.installFromTsingHuaTask('8') : this.installFromMojangTask()
     await ensureFile(this.internalJavaLocation)
     await this.submit(task)
     await this.resolveJava(this.internalJavaLocation)
@@ -76,13 +76,13 @@ export default class JavaService extends StatefulService<JavaState> implements I
     })
   }
 
-  private installFromTsingHuaTask() {
+  private installFromTsingHuaTask(java: '8' | '9' | '11' | '12' | '13' | '14' | '15' | '16') {
     const { app, networkManager, log, getTempPath, state, getPath } = this
     return task('installJre', async function () {
       const system = app.platform.name === 'osx' ? 'mac' as const : app.platform.name
       const arch = app.platform.arch === 'x64' ? '64' as const : '32' as const
 
-      const baseUrl = getTsingHuaAdpotOponJDKPageUrl(system, arch)
+      const baseUrl = getTsingHuaAdpotOponJDKPageUrl(system, arch, java)
       const htmlText = await networkManager.request.get(baseUrl).text()
       const archiveInfo = parseTsingHuaAdpotOpenJDKHotspotArchive(htmlText, baseUrl)
 

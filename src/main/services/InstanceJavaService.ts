@@ -68,6 +68,18 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
     }
   }
 
+  async ensureJavaEnvironment() {
+    const instance = this.instanceService.state.instance
+    const instanceJava = this.state.instanceJava
+
+    const mcversion = instance.runtime.minecraft
+    const resolvedMcVersion = parseVersion(mcversion)
+
+    if (instanceJava === EMPTY_JAVA || this.javaService.state.missingJava) {
+      this.javaService.installDefaultJava()
+    }
+  }
+
   @Singleton()
   async diagnoseJava() {
     this.aquire('diagnose')
@@ -99,6 +111,12 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
           tree.incompatibleJava.push({ java: instanceJava.version, version: mcversion, type: 'Minecraft' })
         } else if (resolvedMcVersion.minorVersion >= 13 && instance.runtime.forge && instanceJava.majorVersion > 10) {
           tree.incompatibleJava.push({ java: instanceJava.version, version: instance.runtime.forge, type: 'MinecraftForge' })
+        }
+      }
+
+      if (resolvedMcVersion.minorVersion && resolvedMcVersion.minorVersion >= 17) {
+        if (instanceJava.majorVersion < 16) {
+          tree.incompatibleJava.push({ java: instanceJava.version, version: mcversion, type: 'Minecraft' })
         }
       }
 

@@ -12,12 +12,12 @@ export interface TsingHuaJreTarget {
   sha256Url?: string
 }
 
-export function parseTsingHuaAdoptOpenJDKFileList (fileList: string[], os: 'linux' | 'windows' | 'unknown' | 'mac', arch: '32' | '64'): TsingHuaJreTarget | undefined {
+export function parseTsingHuaAdoptOpenJDKFileList(fileList: string[], os: 'linux' | 'windows' | 'unknown' | 'mac', arch: '32' | '64'): TsingHuaJreTarget | undefined {
   const list = fileList.map(l => l.split('/').slice(5))
   const zipFile = list.find(l => l[0] === 'jre' &&
-        l[1] === `x${arch}` &&
-        l[2] === os &&
-        (l[3].endsWith('.zip') || l[3].endsWith('.tar.gz')))
+    l[1] === `x${arch}` &&
+    l[2] === os &&
+    (l[3].endsWith('.zip') || l[3].endsWith('.tar.gz')))
   if (zipFile) {
     const sha256File = list.find(l => l[3] === `${zipFile[3]}.sha256.txt`)
     return {
@@ -29,7 +29,7 @@ export function parseTsingHuaAdoptOpenJDKFileList (fileList: string[], os: 'linu
   return undefined
 }
 
-export function parseTsingHuaAdpotOpenJDKHotspotArchive (pageText: string, baseUrl: string): TsingHuaJreTarget | undefined {
+export function parseTsingHuaAdpotOpenJDKHotspotArchive(pageText: string, baseUrl: string): TsingHuaJreTarget | undefined {
   const exp = /<a href="([a-zA-Z0-9-._]+)" title="([a-zA-Z0-9-._]+)">/g
   const result = pageText.match(exp)
 
@@ -48,6 +48,6 @@ export function parseTsingHuaAdpotOpenJDKHotspotArchive (pageText: string, baseU
   return undefined
 }
 
-export function getTsingHuaAdpotOponJDKPageUrl (os: 'linux' | 'windows' | 'unknown' | 'mac', arch: '32' | '64') {
-  return `https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/8/jre/x${arch}/${os}/`
+export function getTsingHuaAdpotOponJDKPageUrl(os: 'linux' | 'windows' | 'unknown' | 'mac', arch: '32' | '64', java: '8' | '9' | '11' | '12' | '13' | '14' | '15' | '16') {
+  return `https://mirrors.tuna.tsinghua.edu.cn/AdoptOpenJDK/${java}/jre/x${arch}/${os}/`
 }
