@@ -59,14 +59,14 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, computed, toRefs, ref, watch } from '@vue/composition-api'
+import { defineComponent, ref, watch } from '@vue/composition-api'
+import type { ResolvedVersion } from '@xmcl/core'
 import { useLocalVersions } from '/@/hooks'
 import { required } from '/@/util/props'
-import { LocalVersion } from '/@shared/entities/version'
 
 export default defineComponent({
   props: {
-    value: required<LocalVersion[]>(Array),
+    value: required<ResolvedVersion[]>(Array),
   },
   setup(props, context) {
     const { localVersions, showVersionsDirectory, showVersionDirectory, refreshVersions } = useLocalVersions()
@@ -74,7 +74,7 @@ export default defineComponent({
 
     const selected = ref([] as boolean[])
 
-    function selectVersion(v: LocalVersion) {
+    function selectVersion(v: ResolvedVersion) {
       context.emit('input', v)
     }
     function browseVersoinsFolder() {
