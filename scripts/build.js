@@ -1,21 +1,31 @@
-process.env.NODE_ENV = 'production'
-
-const { join } = require('path')
-const { build } = require('vite')
 const chalk = require('chalk')
 const { build: electronBuilder } = require('electron-builder')
-const { stat, remove, writeFile } = require('fs-extra')
-const { rollup } = require('rollup')
-const { loadRollupConfig } = require('./util')
+const { build: esbuild } = require('esbuild')
+const fsExtra = require('fs-extra')
+const path = require('path')
+const { build } = require('vite')
+const esbuildConfig = require('./esbuild.config')
+const config = require('./vite.config')
 const { createHash } = require('crypto')
-const { createReadStream, createWriteStream } = require('fs')
+const { existsSync, createReadStream, createWriteStream } = require('fs')
 const { promisify } = require('util')
 const { pipeline } = require('stream')
-const { existsSync } = require('fs')
+
+const { remove, stat } = fsExtra
+
+process.env.NODE_ENV = 'production'
 
 /**
- * Generate the distribution version of package json
+ * @param {string} algorithm The hash algorithm
+ * @param {string} path path of the file
+ * @param {string} destination
+ * @returns Hash string
  */
+async function writeHash(algorithm, path, destination) {
+  let hash = createHash(algorithm).setEncoding("hex");
+  await promisify(pipeline)(createReadStream(path), hash, createWriteStream(destination));
+}
+
 async function generatePackageJson() {
   const original = require('../package.json')
   const result = {
@@ -27,70 +37,50 @@ async function generatePackageJson() {
     main: './index.js',
     dependencies: Object.entries(original.dependencies).filter(([name, version]) => original.external.indexOf(name) !== -1).reduce((object, entry) => ({ ...object, [entry[0]]: entry[1] }), {})
   }
-  await writeFile('dist/package.json', JSON.stringify(result))
+  await fsExtra.writeFile('dist/package.json', JSON.stringify(result))
 }
-
 /**
- * Print the rollup output
- * @param {import('rollup').RollupOutput} output
+ * Use esbuild to build main process
+ * @param {import('esbuild').BuildOptions} options
  */
-async function printOutput({ output }) {
-  for (const chunk of output) {
-    if (chunk.type === 'chunk') {
-      const filepath = join('dist', chunk.fileName)
-      const { size } = await stat(join(__dirname, '..', filepath))
+async function buildMain(options) {
+  const result = await esbuild({
+    ...options,
+    entryPoints: [path.join(__dirname, '../src/main/index.ts')]
+  })
+
+  if (!result.metafile) {
+    throw new Error('Unexpected rollup config to build!')
+  }
+
+  /**
+   * Print the esbuild output
+ * @param {import('esbuild').Metafile} options
+   */
+  async function printOutput(options) {
+    for (const [file, chunk] of Object.entries(options.outputs)) {
       console.log(
-        `${chalk.gray('[write]')} ${chalk.cyan(filepath)}  ${(
-          size / 1024
+        `${chalk.gray('[write]')} ${chalk.cyan(file)}  ${(
+          chunk.bytes / 1024
         ).toFixed(2)}kb`
       )
     }
   }
-}
-
-/**
- * Use rollup to build main process
- * @param {import('rollup').RollupOptions} config
- */
-async function buildMain(config) {
-  const input = {
-    index: join(__dirname, '../src/main/index.ts')
+  if (result.metafile) {
+    await printOutput(result.metafile)
   }
-
-  const bundle = await rollup({
-    ...config,
-    input
-  })
-  if (!config.output) {
-    throw new Error('Unexpected rollup config to build!')
-  }
-
-  await printOutput(await bundle.write(config.output[0]))
 }
 
 /**
  * Use vite to build renderer process
  */
 function buildRenderer() {
-  const config = require('./vite.config')
-
   console.log(chalk.bold.underline('Build renderer process'))
 
   return build({
     ...config,
     mode: process.env.NODE_ENV
   })
-}
-
-/**
- * @param {string} algorithm The hash algorithm
- * @param {string} path path of the file
- * @param {string} destination
- * @returns Hash string
- */
-async function writeHash(algorithm, path, destination) {
-  let hash = createHash(algorithm).setEncoding("hex");
-  await promisify(pipeline)(createReadStream(path), hash, createWriteStream(destination));
 }
 
 /**
@@ -106,17 +96,21 @@ async function buildElectron(config, dir) {
 
   for (const file of files) {
     const fstat = await stat(file)
-    if (!file.endsWith('.blockmap')) {
-      await writeHash('sha256', file, `${file}.sha256`);
-      await writeHash('sha1', file, `${file}.sha1`);
-    }
     console.log(
       `${chalk.gray('[write]')} ${chalk.yellow(file)} ${(
         fstat.size /
         1024 /
         1024
-      ).toFixed(2)}mb.`
+      ).toFixed(2)}mb`
     )
+  }
+
+  for (const file of files) {
+    const fstat = await stat(file)
+    if (!file.endsWith('.blockmap')) {
+      await writeHash('sha256', file, `${file}.sha256`);
+      await writeHash('sha1', file, `${file}.sha1`);
+    }
   }
 
   if (existsSync('build/win-unpacked/resources/app.asar')) {
@@ -140,35 +134,23 @@ async function start() {
         return require('./build.lite.config')
     }
   }
-  const onlyRenderer = process.env.ONLY === 'renderer'
-  const onlyMain = process.env.ONLY === 'main'
-  const onlyElectron = process.env.ONLY === 'electron'
 
-  if (!onlyRenderer && !onlyElectron) {
-    const [mainConfig] = await loadRollupConfig()
+  await remove(path.join(__dirname, '../dist'))
 
-    await remove(join(__dirname, '../dist'))
+  console.log(chalk.bold.underline('Build main process & preload'))
+  const startTime = Date.now()
+  await buildMain(esbuildConfig)
+  console.log(
+    `Build completed in ${((Date.now() - startTime) / 1000).toFixed(2)}s.\n`
+  )
+  await buildRenderer()
 
-    console.log(chalk.bold.underline('Build main process & preload'))
-    const startTime = Date.now()
-    await buildMain(mainConfig)
-    console.log(
-      `Build completed in ${((Date.now() - startTime) / 1000).toFixed(2)}s.\n`
-    )
-  }
-
-  if (!onlyMain && !onlyElectron) {
-    await buildRenderer()
-    console.log()
-  }
-
-  if (!onlyMain && !onlyRenderer) {
-    if (process.env.BUILD_TARGET) {
-      const config = loadElectronBuilderConfig()
-      const dir = process.env.BUILD_TARGET === 'dir'
-      await generatePackageJson()
-      await buildElectron(config, dir)
-    }
+  console.log()
+  if (process.env.BUILD_TARGET) {
+    const config = loadElectronBuilderConfig()
+    const dir = process.env.BUILD_TARGET === 'dir'
+    await generatePackageJson()
+    await buildElectron(config, dir)
   }
 }
 
