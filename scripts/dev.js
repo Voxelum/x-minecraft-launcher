@@ -1,18 +1,15 @@
 process.env.NODE_ENV = 'development'
 
-process.once('exit', terminate)
-  .once('SIGINT', terminate)
+process.once('exit', terminate).once('SIGINT', terminate)
 
 const electron = require('electron')
 const { spawn } = require('child_process')
-const { join, resolve } = require('path')
+const { join } = require('path')
 const { createServer } = require('vite')
-const { createServer: createSocketServer } = require('net')
 const chalk = require('chalk')
-const { watch } = require('rollup')
-const { EOL } = require('os')
-const { loadRollupConfig } = require('./util')
-const { writeFileSync } = require('fs')
+const { build } = require('esbuild')
+const { remove } = require('fs-extra')
+const esbuildOptions = require('./esbuild.config')
 
 let manualRestart = false
 
@@ -22,18 +19,16 @@ let manualRestart = false
 let electronProcess = null
 
 /**
- * The current active dev socket connecting to the electron main process.
- * Currently, this is only used for preloading the preload script
- * @type {import('net').Socket | null}
+ * The esbuild watch handle.
+ * @type {import('esbuild').BuildResult  | null}
  */
-let devSocket = null
+let esbuild = null
 
 /**
- * The customized devserver communicated with the electron main process.
- * Currently, this is only used for preloading the preload script
- * @type {import('net').Server  | null}
+ * The vite dev server which watching renderer process files.
+ * @type {import('vite').ViteDevServer  | null}
  */
-let devServer = null
+let viteServer = null
 
 /**
  * Start electron process and inspect port 5858 with 9222 as debug port.
@@ -41,10 +36,11 @@ let devServer = null
 function startElectron() {
   /** @type {any} */
   const electronPath = electron
-  const spawnProcess = spawn(
-    electronPath,
-    ['--inspect=5858', '--remote-debugging-port=9222', join(__dirname, '../dist/index.js')]
-  )
+  const spawnProcess = spawn(electronPath, [
+    '--inspect=5858',
+    '--remote-debugging-port=9222',
+    join(__dirname, '../dist/index.js')
+  ])
 
   /**
    * @param {string | Buffer} data
@@ -61,10 +57,13 @@ function startElectron() {
       return chalk.grey('[CONSOLE] ') + line
     }
     console.log(
-      data.toString()
-        .split(EOL)
-        .filter(s => s.trim() !== '')
-        .map(colorize).join(EOL)
+      data
+        .toString()
+        .split('\n')
+        .filter((s) => s.trim() !== '')
+        .filter((s) => s.indexOf('source: chrome-extension:') === -1)
+        .map(colorize)
+        .join('\n')
     )
   }
 
@@ -75,7 +74,8 @@ function startElectron() {
       // if (!devtoolProcess.killed) {
       //     devtoolProcess.kill(0);
       // }
-      if (!signal) { // Manual close
+      if (!signal) {
+        // Manual close
         process.exit(0)
       }
     } else {
@@ -93,17 +93,40 @@ function reloadElectron() {
   if (electronProcess) {
     manualRestart = true
     electronProcess.kill('SIGTERM')
-    console.log(`${chalk.cyan('[DEV]')} ${chalk.bold.underline.green('Electron app restarted')}`)
+    console.log(
+      `${chalk.cyan('[DEV]')} ${chalk.bold.underline.green(
+        'Electron app restarted'
+      )}`
+    )
   } else {
-    console.log(`${chalk.cyan('[DEV]')} ${chalk.bold.underline.green('Electron app started')}`)
+    console.log(
+      `${chalk.cyan('[DEV]')} ${chalk.bold.underline.green(
+        'Electron app started'
+      )}`
+    )
   }
   startElectron()
 }
 
-function reloadPreload() {
-  if (devSocket) {
-    devSocket.write(Buffer.from([0]))
-  }
+/**
+ * Start esbuild service for main process and preload script
+ */
+async function startMain() {
+  const result = await build({
+    ...esbuildOptions,
+    entryPoints: { index: join(__dirname, '../src/main/index.dev.ts') },
+    incremental: true,
+    watch: {
+      onRebuild(err, result) {
+        if (err) {
+          console.warn(err)
+        } else {
+          reloadElectron()
+        }
+      }
+    }
+  })
+  return result
 }
 
 /**
@@ -119,102 +142,34 @@ async function startRenderer() {
 }
 
 /**
- * @param {import('rollup').RollupOptions} config
- */
-async function loadMainConfig(config) {
-  const input = {
-    index: join(__dirname, '../src/main/index.dev.ts')
-  }
-
-  return {
-    ...config,
-    input,
-    watch: {
-      buildDelay: 500
-    }
-  }
-}
-
-/**
  * Main method of this script
  */
 async function main() {
-  const [mainConfig] = await loadRollupConfig()
-
-  devServer = createSocketServer((sock) => {
-    console.log(`${chalk.cyan('[DEV]')} Dev socket connected`)
-    devSocket = sock
-    sock.on('error', (e) => {
-      // @ts-ignore
-      if (e.code !== 'ECONNRESET') {
-        console.error(e)
-      }
-    })
-  }).listen(3031, () => {
-    console.log(`${chalk.cyan('[DEV]')} Dev server listening on 3031`)
-  })
-
-  const preloadPrefix = resolve(__dirname, '../src/preload')
-  let shouldReloadElectron = true
-  let shouldReloadPreload = false
-  const config = await loadMainConfig(mainConfig)
-  await startRenderer()
-
+  // start renderer dev server
+  viteServer = await startRenderer()
   // start watch the main & preload
-  watch(config)
-    .on('change', (id) => {
-      console.log(`${chalk.cyan('[DEV]')} change ${id}`)
-      if (id.startsWith(preloadPrefix)) {
-        shouldReloadPreload = true
-      } else {
-        shouldReloadElectron = true
-      }
-    })
-    .on('event', (event) => {
-      switch (event.code) {
-        case 'END':
-          if (shouldReloadElectron || !electronProcess) {
-            reloadElectron()
-            shouldReloadElectron = false
-          } else {
-            console.log(`${chalk.cyan('[DEV]')} Skip start/reload electron.`)
-          }
-          if (shouldReloadPreload) {
-            reloadPreload()
-            shouldReloadPreload = false
-          } else {
-            console.log(`${chalk.cyan('[DEV]')} Skip start/reload preload.`)
-          }
-          break
-        case 'BUNDLE_END':
-          console.log(`${chalk.cyan('[DEV]')} Bundle ${event.output} ${event.duration + 'ms'}`)
-          break
-        case 'ERROR':
-          console.error(event)
-          writeFileSync('error.json', JSON.stringify(event))
-          shouldReloadElectron = false
-          break
-      }
-    })
+  esbuild = await startMain()
 }
 
-main().catch(e => {
-  console.error(e)
-  terminate()
-  process.exit(1)
-})
+remove(join(__dirname, '../dist'))
+  .then(() => main())
+  .catch((e) => {
+    console.error(e)
+    terminate()
+    process.exit(1)
+  })
 
 function terminate() {
   if (electronProcess) {
     electronProcess.kill()
     electronProcess = null
   }
-  if (devSocket) {
-    devSocket.destroy()
-    devSocket = null
+  if (viteServer) {
+    viteServer.close()
+    viteServer = null
   }
-  if (devServer) {
-    devServer.close()
-    devServer = null
+  if (esbuild && esbuild.stop) {
+    esbuild.stop()
+    esbuild = null
   }
 }
