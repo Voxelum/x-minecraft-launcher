@@ -1,11 +1,24 @@
 <template>
   <div
+    style="display: flex; align-items: center; justify-content: center; margin-right: 7px; gap: 5px;"
     @mouseenter="hover = true"
     @mouseleave="hover = false"
   >
     <v-icon
+      v-if="item.state === 1"
+      v-ripple
+      :size="20"
+      style="border-radius: 100%; padding: 3px;"
+      :color="color"
+      @click="onPause"
+    >
+      pause
+    </v-icon>
+    <v-icon
       v-if="item.state !== 1 || hover"
-      style="margin-right: 5px"
+      v-ripple
+      :size="20"
+      style="border-radius: 100%; padding: 3px;"
       :color="color"
       @click="onClick"
     >
@@ -13,7 +26,7 @@
     </v-icon>
     <v-progress-circular
       v-else-if="indeterminate || !showNumber"
-      style="margin-right: 7px"
+      style="margin-left: 6px; padding: 3px;"
       class="mb-0"
       color="white"
       small
@@ -63,7 +76,7 @@ export default defineComponent({
     const icon = computed(() => {
       if (hover.value) {
         if (props.item.state === TaskState.Running) {
-          return 'pause'
+          return 'close'
         }
       }
       switch (props.item.state) {
@@ -82,10 +95,13 @@ export default defineComponent({
     const percentage = computed(() => props.item.progress! / props.item.total! * 100)
     const onClick = () => {
       if (props.item.state === TaskState.Running) {
-        context.emit('pause')
+        context.emit('cancel')
       } else if (props.item.state === TaskState.Paused) {
         context.emit('resume')
       }
+    }
+    const onPause = () => {
+      context.emit('pause')
     }
     return {
       indeterminate,
@@ -94,6 +110,7 @@ export default defineComponent({
       icon,
       percentage,
       onClick,
+      onPause,
     }
   },
 })
