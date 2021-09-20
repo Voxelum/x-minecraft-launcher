@@ -23,6 +23,7 @@
             :show-number="hovered[item.id]"
             @pause="pause(item)"
             @resume="resume(item)"
+            @cancel="cancel(item)"
           />
         </template>
 
