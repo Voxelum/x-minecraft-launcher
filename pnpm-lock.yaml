@@ -1,186 +1,344 @@
 lockfileVersion: 5.3
 
-specifiers:
-  7zip-min: ^1.3.2
-  '@actions/core': ^1.5.0
-  '@azure/msal-common': ^5.0.0
-  '@azure/msal-node': ^1.3.1
-  '@types/7zip-min': ^1.3.1
-  '@types/bytebuffer': ^5.0.42
-  '@types/electron-devtools-installer': ^2.2.0
-  '@types/fs-extra': ^8.1.2
-  '@types/jest': ^24.9.1
-  '@types/lodash.debounce': ^4.0.6
-  '@types/lodash.throttle': ^4.1.6
-  '@types/long': ^4.0.1
-  '@types/node': ^12.20.24
-  '@types/node-powershell': ^4.0.1
-  '@types/three': ^0.127.1
-  '@types/uuid': ^3.4.10
-  '@types/yauzl': ^2.9.2
-  '@types/yazl': ^2.4.2
-  '@typescript-eslint/eslint-plugin': ^4.31.0
-  '@typescript-eslint/parser': ^4.31.0
-  '@vue/composition-api': ^1.1.4
-  '@vue/devtools': ^5.3.4
-  '@vue/runtime-dom': latest
-  '@xmcl/client': 2.0.6
-  '@xmcl/core': 2.6.2
-  '@xmcl/curseforge': ^0.1.2
-  '@xmcl/forge-site-parser': ^2.0.8
-  '@xmcl/gamesetting': ^2.0.2
-  '@xmcl/installer': ^3.2.2
-  '@xmcl/mod-parser': ^3.1.0
-  '@xmcl/model': ^1.0.17
-  '@xmcl/nbt': ^2.0.3
-  '@xmcl/resourcepack': ^1.1.0
-  '@xmcl/server-info': ^2.0.4
-  '@xmcl/system': ^2.2.1
-  '@xmcl/task': ^3.0.0
-  '@xmcl/text-component': ^2.1.1
-  '@xmcl/unzip': ^2.0.0
-  '@xmcl/user': ^2.1.5
-  '@xmcl/world': ^1.1.4
-  ajv: ^6.12.6
-  applicationinsights: ^2.1.6
-  atomically: ^1.7.0
-  builtin-modules: ^3.2.0
-  chalk: ^4.1.2
-  conventional-changelog: ^3.1.24
-  conventional-recommended-bump: ^6.1.0
-  cross-env: ^5.2.1
-  electron: ^14.0.0
-  electron-builder: ^22.11.7
-  electron-devtools-installer: ^3.2.0
-  electron-updater: ^4.3.9
-  esbuild: ^0.12.25
-  eslint: ^7.32.0
-  eslint-config-standard: ^16.0.3
-  eslint-plugin-vue: ^7.17.0
-  file-type: ^16.5.3
-  filenamify: ^4.3.0
-  fs-extra: ^10.0.0
-  fuzzy: ^0.1.3
-  got: ^11.8.2
-  iconv-lite: ^0.5.2
-  jest: ^24.9.0
-  jschardet: ^2.3.0
-  keytar: ^7.7.0
-  lodash.debounce: ^4.0.8
-  lodash.throttle: ^4.1.1
-  node-powershell: ^4.0.0
-  node-watch: ^0.6.4
-  original-fs: ^1.1.0
-  semver: ^7.3.5
-  three: ^0.127.0
-  ts-jest: ^24.3.0
-  tslib: ^1.14.1
-  typescript: ^4.4.2
-  typescript-json-schema: ^0.49.0
-  uuid: ^7.0.3
-  vite: ^2.5.6
-  vite-plugin-vue2: ^1.8.2
-  vue: ^2.6.14
-  vue-i18n: ^7.8.1
-  vue-observe-visibility: ^0.4.6
-  vue-router: ^3.5.2
-  vue-template-compiler: ^2.6.14
-  vue-virtual-scroll-list: ^2.3.3
-  vuetify: ^1.5.24
-  vuex: ^3.6.2
-  yazl: ^2.5.1
+importers:
 
-dependencies:
-  7zip-min: 1.3.2
-  '@azure/msal-common': 5.0.0
-  '@azure/msal-node': 1.3.1
-  '@types/three': 0.127.1
-  '@vue/composition-api': 1.1.4_vue@2.6.14
-  '@xmcl/client': 2.0.6
-  '@xmcl/core': 2.6.2
-  '@xmcl/curseforge': 0.1.2
-  '@xmcl/forge-site-parser': 2.0.8
-  '@xmcl/gamesetting': 2.0.2
-  '@xmcl/installer': 3.2.2
-  '@xmcl/mod-parser': 3.1.0
-  '@xmcl/model': 1.0.17_ccb0dddd95c571d39f869a421725fe22
-  '@xmcl/nbt': 2.0.3
-  '@xmcl/resourcepack': 1.1.0
-  '@xmcl/server-info': 2.0.4
-  '@xmcl/system': 2.2.1
-  '@xmcl/task': 3.0.0
-  '@xmcl/text-component': 2.1.1
-  '@xmcl/unzip': 2.0.0
-  '@xmcl/user': 2.1.5
-  '@xmcl/world': 1.1.4
-  ajv: 6.12.6
-  applicationinsights: 2.1.6
-  atomically: 1.7.0
-  electron-updater: 4.3.9
-  file-type: 16.5.3
-  filenamify: 4.3.0
-  fs-extra: 10.0.0
-  got: 11.8.2
-  iconv-lite: 0.5.2
-  jschardet: 2.3.0
-  keytar: 7.7.0
-  lodash.debounce: 4.0.8
-  lodash.throttle: 4.1.1
-  node-powershell: 4.0.0
-  node-watch: 0.6.4
-  original-fs: 1.1.0
-  three: 0.127.0
-  uuid: 7.0.3
-  vue: 2.6.14
-  vue-i18n: 7.8.1
-  vue-router: 3.5.2
-  vue-virtual-scroll-list: 2.3.3
-  vuetify: 1.5.24_vue@2.6.14
-  vuex: 3.6.2_vue@2.6.14
-  yazl: 2.5.1
+  .:
+    specifiers:
+      '@actions/core': ^1.5.0
+      '@azure/msal-common': ^5.0.0
+      '@azure/msal-node': ^1.3.1
+      '@types/7zip-min': ^1.3.1
+      '@types/bytebuffer': ^5.0.42
+      '@types/electron-devtools-installer': ^2.2.0
+      '@types/fs-extra': ^8.1.2
+      '@types/jest': ^24.9.1
+      '@types/lodash.debounce': ^4.0.6
+      '@types/lodash.throttle': ^4.1.6
+      '@types/long': ^4.0.1
+      '@types/node': ^12.20.24
+      '@types/node-powershell': ^4.0.1
+      '@types/three': ^0.127.1
+      '@types/uuid': ^3.4.10
+      '@types/yauzl': ^2.9.2
+      '@types/yazl': ^2.4.2
+      '@typescript-eslint/eslint-plugin': ^4.31.0
+      '@typescript-eslint/parser': ^4.31.0
+      '@vue/composition-api': ^1.1.4
+      '@vue/devtools': ^5.3.4
+      '@vue/runtime-dom': latest
+      '@xmcl/client': 2.0.6
+      '@xmcl/core': 2.6.2
+      '@xmcl/curseforge': ^0.1.2
+      '@xmcl/forge-site-parser': ^2.0.8
+      '@xmcl/gamesetting': ^2.0.2
+      '@xmcl/installer': ^3.2.2
+      '@xmcl/mod-parser': ^3.1.0
+      '@xmcl/model': ^1.0.17
+      '@xmcl/nbt': ^2.0.3
+      '@xmcl/resourcepack': ^1.1.0
+      '@xmcl/server-info': ^2.0.4
+      '@xmcl/system': ^2.2.1
+      '@xmcl/task': ^3.0.0
+      '@xmcl/text-component': ^2.1.1
+      '@xmcl/unzip': ^2.0.0
+      '@xmcl/user': ^2.1.5
+      '@xmcl/world': ^1.1.4
+      7zip-min: ^1.3.2
+      ajv: ^6.12.6
+      applicationinsights: ^2.1.6
+      atomically: ^1.7.0
+      builtin-modules: ^3.2.0
+      chalk: ^4.1.2
+      conventional-changelog: ^3.1.24
+      conventional-recommended-bump: ^6.1.0
+      cross-env: ^5.2.1
+      electron: ^14.0.0
+      electron-builder: ^22.11.7
+      electron-devtools-installer: ^3.2.0
+      electron-updater: ^4.3.9
+      esbuild: ^0.12.25
+      eslint: ^7.32.0
+      eslint-config-standard: ^16.0.3
+      eslint-plugin-vue: ^7.17.0
+      file-type: ^16.5.3
+      filenamify: ^4.3.0
+      fs-extra: ^10.0.0
+      fuzzy: ^0.1.3
+      got: ^11.8.2
+      iconv-lite: ^0.5.2
+      jest: ^24.9.0
+      jschardet: ^2.3.0
+      keytar: ^7.7.0
+      lodash.debounce: ^4.0.8
+      lodash.throttle: ^4.1.1
+      node-powershell: ^4.0.0
+      node-watch: ^0.6.4
+      original-fs: ^1.1.0
+      semver: ^7.3.5
+      three: ^0.127.0
+      ts-jest: ^24.3.0
+      tslib: ^1.14.1
+      typescript: ^4.4.2
+      typescript-json-schema: ^0.49.0
+      uuid: ^7.0.3
+      vite: ^2.5.6
+      vite-plugin-vue2: ^1.8.2
+      vue: ^2.6.14
+      vue-i18n: ^7.8.1
+      vue-observe-visibility: ^0.4.6
+      vue-router: ^3.5.2
+      vue-template-compiler: ^2.6.14
+      vue-virtual-scroll-list: ^2.3.3
+      vuetify: ^1.5.24
+      vuex: ^3.6.2
+      yazl: ^2.5.1
+    dependencies:
+      '@azure/msal-common': 5.0.0
+      '@azure/msal-node': 1.3.1
+      '@types/three': 0.127.1
+      '@vue/composition-api': 1.1.4_vue@2.6.14
+      '@xmcl/client': link:xmcl/packages/client
+      '@xmcl/core': link:xmcl/packages/core
+      '@xmcl/curseforge': link:xmcl/packages/curseforge
+      '@xmcl/forge-site-parser': link:xmcl/packages/forge-site-parser
+      '@xmcl/gamesetting': link:xmcl/packages/gamesetting
+      '@xmcl/installer': link:xmcl/packages/installer
+      '@xmcl/mod-parser': link:xmcl/packages/mod-parser
+      '@xmcl/model': link:xmcl/packages/model
+      '@xmcl/nbt': link:xmcl/packages/nbt
+      '@xmcl/resourcepack': link:xmcl/packages/resourcepack
+      '@xmcl/server-info': link:xmcl/packages/server-info
+      '@xmcl/system': link:xmcl/packages/system
+      '@xmcl/task': link:xmcl/packages/task
+      '@xmcl/text-component': link:xmcl/packages/text-component
+      '@xmcl/unzip': link:xmcl/packages/unzip
+      '@xmcl/user': link:xmcl/packages/user
+      '@xmcl/world': link:xmcl/packages/world
+      7zip-min: 1.3.2
+      ajv: 6.12.6
+      applicationinsights: 2.1.6
+      atomically: 1.7.0
+      electron-updater: 4.3.9
+      file-type: 16.5.3
+      filenamify: 4.3.0
+      fs-extra: 10.0.0
+      got: 11.8.2
+      iconv-lite: 0.5.2
+      jschardet: 2.3.0
+      keytar: 7.7.0
+      lodash.debounce: 4.0.8
+      lodash.throttle: 4.1.1
+      node-powershell: 4.0.0
+      node-watch: 0.6.4
+      original-fs: 1.1.0
+      three: 0.127.0
+      uuid: 7.0.3
+      vue: 2.6.14
+      vue-i18n: 7.8.1
+      vue-router: 3.5.2
+      vue-virtual-scroll-list: 2.3.3
+      vuetify: 1.5.24_vue@2.6.14
+      vuex: 3.6.2_vue@2.6.14
+      yazl: 2.5.1
+    devDependencies:
+      '@actions/core': 1.5.0
+      '@types/7zip-min': 1.3.1
+      '@types/bytebuffer': 5.0.42
+      '@types/electron-devtools-installer': 2.2.0
+      '@types/fs-extra': 8.1.2
+      '@types/jest': 24.9.1
+      '@types/lodash.debounce': 4.0.6
+      '@types/lodash.throttle': 4.1.6
+      '@types/long': 4.0.1
+      '@types/node': 12.20.24
+      '@types/node-powershell': 4.0.1
+      '@types/uuid': 3.4.10
+      '@types/yauzl': 2.9.2
+      '@types/yazl': 2.4.2
+      '@typescript-eslint/eslint-plugin': 4.31.0_a690ff3776b01e92cf0b93501bb5ae6a
+      '@typescript-eslint/parser': 4.31.0_eslint@7.32.0+typescript@4.4.2
+      '@vue/devtools': 5.3.4
+      '@vue/runtime-dom': 3.2.12
+      builtin-modules: 3.2.0
+      chalk: 4.1.2
+      conventional-changelog: 3.1.24
+      conventional-recommended-bump: 6.1.0
+      cross-env: 5.2.1
+      electron: 14.0.0
+      electron-builder: 22.11.7
+      electron-devtools-installer: 3.2.0
+      esbuild: 0.12.25
+      eslint: 7.32.0
+      eslint-config-standard: 16.0.3_eslint@7.32.0
+      eslint-plugin-vue: 7.17.0_eslint@7.32.0
+      fuzzy: 0.1.3
+      jest: 24.9.0
+      semver: 7.3.5
+      ts-jest: 24.3.0_jest@24.9.0
+      tslib: 1.14.1
+      typescript: 4.4.2
+      typescript-json-schema: 0.49.0
+      vite: 2.5.6
+      vite-plugin-vue2: 1.8.2_82b4a8822fd602b2bca94494e079fae8
+      vue-observe-visibility: 0.4.6
+      vue-template-compiler: 2.6.14
 
-devDependencies:
-  '@actions/core': 1.5.0
-  '@types/7zip-min': 1.3.1
-  '@types/bytebuffer': 5.0.42
-  '@types/electron-devtools-installer': 2.2.0
-  '@types/fs-extra': 8.1.2
-  '@types/jest': 24.9.1
-  '@types/lodash.debounce': 4.0.6
-  '@types/lodash.throttle': 4.1.6
-  '@types/long': 4.0.1
-  '@types/node': 12.20.24
-  '@types/node-powershell': 4.0.1
-  '@types/uuid': 3.4.10
-  '@types/yauzl': 2.9.2
-  '@types/yazl': 2.4.2
-  '@typescript-eslint/eslint-plugin': 4.31.0_a690ff3776b01e92cf0b93501bb5ae6a
-  '@typescript-eslint/parser': 4.31.0_eslint@7.32.0+typescript@4.4.2
-  '@vue/devtools': 5.3.4
-  '@vue/runtime-dom': 3.2.11
-  builtin-modules: 3.2.0
-  chalk: 4.1.2
-  conventional-changelog: 3.1.24
-  conventional-recommended-bump: 6.1.0
-  cross-env: 5.2.1
-  electron: 14.0.0
-  electron-builder: 22.11.7
-  electron-devtools-installer: 3.2.0
-  esbuild: 0.12.25
-  eslint: 7.32.0
-  eslint-config-standard: 16.0.3_eslint@7.32.0
-  eslint-plugin-vue: 7.17.0_eslint@7.32.0
-  fuzzy: 0.1.3
-  jest: 24.9.0
-  semver: 7.3.5
-  ts-jest: 24.3.0_jest@24.9.0
-  tslib: 1.14.1
-  typescript: 4.4.2
-  typescript-json-schema: 0.49.0
-  vite: 2.5.6
-  vite-plugin-vue2: 1.8.2_82b4a8822fd602b2bca94494e079fae8
-  vue-observe-visibility: 0.4.6
-  vue-template-compiler: 2.6.14
+  xmcl/packages/asm:
+    specifiers:
+      long: ~3
+    dependencies:
+      long: 3.2.0
+
+  xmcl/packages/client:
+    specifiers:
+      '@xmcl/nbt': ^2.0.3
+      '@xmcl/text-component': ^2.1.1
+      bytebuffer: ^5.0.1
+      long: ~3
+      uuid: ^7.0.2
+    dependencies:
+      '@xmcl/nbt': link:../nbt
+      '@xmcl/text-component': link:../text-component
+      bytebuffer: 5.0.1
+      long: 3.2.0
+      uuid: 7.0.3
+
+  xmcl/packages/core:
+    specifiers:
+      '@xmcl/unzip': ^2.0.0
+      yauzl: ^2.10.0
+    dependencies:
+      '@xmcl/unzip': link:../unzip
+      yauzl: 2.10.0
+
+  xmcl/packages/curseforge:
+    specifiers: {}
+
+  xmcl/packages/curseforge/http:
+    specifiers: {}
+
+  xmcl/packages/forge-site-parser:
+    specifiers:
+      node-html-parser: 1.2.16
+    dependencies:
+      node-html-parser: 1.2.16
+
+  xmcl/packages/gamesetting:
+    specifiers: {}
+
+  xmcl/packages/installer:
+    specifiers:
+      '@xmcl/asm': ^0.1.0
+      '@xmcl/core': ^2.6.2
+      '@xmcl/forge-site-parser': ^2.0.8
+      '@xmcl/task': ^3.0.0
+      '@xmcl/unzip': ^2.0.0
+      yauzl: ^2.10.0
+    dependencies:
+      '@xmcl/asm': link:../asm
+      '@xmcl/core': link:../core
+      '@xmcl/forge-site-parser': link:../forge-site-parser
+      '@xmcl/task': link:../task
+      '@xmcl/unzip': link:../unzip
+      yauzl: 2.10.0
+
+  xmcl/packages/mod-parser:
+    specifiers:
+      '@iarna/toml': 2.2.3
+      '@xmcl/asm': ^0.1.1
+      '@xmcl/system': ^2.2.1
+    dependencies:
+      '@iarna/toml': 2.2.3
+      '@xmcl/asm': link:../asm
+      '@xmcl/system': link:../system
+
+  xmcl/packages/model:
+    specifiers: {}
+
+  xmcl/packages/nbt:
+    specifiers:
+      bytebuffer: ^5.0.1
+      file-type: ^12.4.2
+      long: ~3
+      pako: ^1.0.10
+    dependencies:
+      bytebuffer: 5.0.1
+      file-type: 12.4.2
+      long: 3.2.0
+      pako: 1.0.11
+
+  xmcl/packages/nbt/zlib:
+    specifiers:
+      bytebuffer: ^5.0.1
+      file-type: ^11.0.0
+      long: ^3.2.0
+      pako: ^1.0.10
+    dependencies:
+      bytebuffer: 5.0.1
+      file-type: 11.1.0
+      long: 3.2.0
+      pako: 1.0.11
+
+  xmcl/packages/resourcepack:
+    specifiers:
+      '@xmcl/system': ^2.2.1
+    dependencies:
+      '@xmcl/system': link:../system
+
+  xmcl/packages/server-info:
+    specifiers:
+      '@xmcl/nbt': ^2.0.3
+    dependencies:
+      '@xmcl/nbt': link:../nbt
+
+  xmcl/packages/system:
+    specifiers:
+      '@xmcl/unzip': ^2.0.0
+      jszip: ^3.2.2
+    dependencies:
+      '@xmcl/unzip': link:../unzip
+      jszip: 3.7.1
+
+  xmcl/packages/task:
+    specifiers: {}
+
+  xmcl/packages/text-component:
+    specifiers: {}
+
+  xmcl/packages/unzip:
+    specifiers:
+      yauzl: ^2.10.0
+    devDependencies:
+      yauzl: 2.10.0
+
+  xmcl/packages/user:
+    specifiers:
+      form-data: ^3.0.0
+      uuid: ^7.0.2
+    dependencies:
+      form-data: 3.0.1
+      uuid: 7.0.3
+
+  xmcl/packages/user/util:
+    specifiers:
+      form-data: ^3.0.0
+      uuid: ^3.2.1
+    dependencies:
+      form-data: 3.0.1
+      uuid: 3.4.0
+
+  xmcl/packages/user/v5:
+    specifiers: {}
+
+  xmcl/packages/world:
+    specifiers:
+      '@xmcl/nbt': ^2.0.3
+      '@xmcl/system': ^2.2.1
+      long: ~3
+    dependencies:
+      '@xmcl/nbt': link:../nbt
+      '@xmcl/system': link:../system
+      long: 3.2.0
 
 packages:
 
@@ -1454,184 +1612,30 @@ packages:
       - utf-8-validate
     dev: true
 
-  /@vue/reactivity/3.2.11:
-    resolution: {integrity: sha512-hEQstxPQbgGZq5qApzrvbDmRdK1KP96O/j4XrwT8fVkT1ytkFs4fH2xNEh9QKwXfybbQkLs77W7OfXCv5o6qbA==}
+  /@vue/reactivity/3.2.12:
+    resolution: {integrity: sha512-Lr5CTQjFm5mT/6DGnVNhptmba/Qg1DbD6eNWWmiHLMlpPt4q2ww9A2orEjVw0qNcdTJ04JLPEVAz5jhTZTCfIg==}
     dependencies:
-      '@vue/shared': 3.2.11
+      '@vue/shared': 3.2.12
     dev: true
 
-  /@vue/runtime-core/3.2.11:
-    resolution: {integrity: sha512-horlxjWwSvModC87WdsWswzzHE5IexmKkQA65S5vFgP5hLUBW+HRyScDeuB/RRcFmqnf+ozacNCfap0kqcpODw==}
+  /@vue/runtime-core/3.2.12:
+    resolution: {integrity: sha512-LO+ztgcmsomavYUaSq7BTteh8pmnUmvUnXUFVYdlcg3VCdYRS0ImlclpYsNHqjAk2gU+H09dr2PP0kL961xUfQ==}
     dependencies:
-      '@vue/reactivity': 3.2.11
-      '@vue/shared': 3.2.11
+      '@vue/reactivity': 3.2.12
+      '@vue/shared': 3.2.12
     dev: true
 
-  /@vue/runtime-dom/3.2.11:
-    resolution: {integrity: sha512-cOK1g0INdiCbds2xrrJKrrN+pDHuLz6esUs/crdEiupDuX7IeiMbdqrAQCkYHp5P1KLWcbGlkmwfVD7HQGii0Q==}
+  /@vue/runtime-dom/3.2.12:
+    resolution: {integrity: sha512-+NSDqivgihvoPYbKFDmzFu1tW7SOzwc7r0b7T8vsJtooVPGxwtfAFZ6wyLtteOXXrCpyTR3kpyTCIp31uY7aJg==}
     dependencies:
-      '@vue/runtime-core': 3.2.11
-      '@vue/shared': 3.2.11
+      '@vue/runtime-core': 3.2.12
+      '@vue/shared': 3.2.12
       csstype: 2.6.17
     dev: true
 
-  /@vue/shared/3.2.11:
-    resolution: {integrity: sha512-ovfXAsSsCvV9JVceWjkqC/7OF5HbgLOtCWjCIosmPGG8lxbPuavhIxRH1dTx4Dg9xLgRTNLvI3pVxG4ItQZekg==}
+  /@vue/shared/3.2.12:
+    resolution: {integrity: sha512-5CkaifUCJwcTuru7FDwKFacPJuEoGUTw0LKSa5bw40B23s0TS+MGlYR1285nbV/ju3QUGlA6d6PD+GJkWy7uFg==}
     dev: true
-
-  /@xmcl/asm/0.1.1:
-    resolution: {integrity: sha512-hZCOAJ1bkRCRAjLzPsyMhJz7dNX0kJ79tzpxm6tpUifUrrpLD30nTAVb6BC2RKrGOn7aWuKnx7yLaU/2rhjPyg==}
-    engines: {node: '>=10.0'}
-    dev: false
-
-  /@xmcl/client/2.0.6:
-    resolution: {integrity: sha512-0ihrYVlvkqevPKG9xhy6UQsPFpsdW7apjALZM3beo64HFso8znc+TEgrgeWZWx9l9DidJKGtHiZKN6MvWG92IQ==}
-    engines: {node: '>=10.0'}
-    dependencies:
-      '@xmcl/nbt': 2.0.3
-      '@xmcl/text-component': 2.1.1
-      bytebuffer: 5.0.1
-      long: 3.2.0
-      uuid: 7.0.3
-    dev: false
-
-  /@xmcl/core/2.6.2:
-    resolution: {integrity: sha512-zj4P53kxyJnS4ePvF3OerkueozKoTgCCeAvVF1VZ7NhqyPKRgLINDLmLi6l/idIDgibjtHoWEd3nkYyp57HWCA==}
-    engines: {node: '>=10.0'}
-    dependencies:
-      '@xmcl/unzip': 2.0.0_yauzl@2.10.0
-      yauzl: 2.10.0
-    dev: false
-
-  /@xmcl/curseforge/0.1.2:
-    resolution: {integrity: sha512-wQZtd1hU6aQIToRg4KzrULGyKgXLN437K2suIwrD9ZBBdOokZng/ia1Ct/y/+w34it21yD42aB9zw5zLm3CBuA==}
-    engines: {node: '>=10.0'}
-    dev: false
-
-  /@xmcl/forge-site-parser/2.0.8:
-    resolution: {integrity: sha512-uygvduMfUH36jh6I0j2vF17G1BRFpuoiTYeyalmnZzLD2u0/e0jz+KDBgIrjhNIdQKShJOaPXSKnzmUXBS47vQ==}
-    engines: {node: '>=10.0'}
-    dependencies:
-      node-html-parser: 1.2.16
-    dev: false
-
-  /@xmcl/gamesetting/2.0.2:
-    resolution: {integrity: sha512-Unq/l+Jwhizr3e2axBg63CwASs8LnYdAjXZrE2ccMo/aMxL1diRHBhDDnzf2UwH4s0cjlQW4H+GCc9Z3guZj1g==}
-    engines: {node: '>=10.0'}
-    dev: false
-
-  /@xmcl/installer/3.2.2:
-    resolution: {integrity: sha512-nMCmNMARFcM5QCv0LgsOxNRdBVUrZxHuv8WH1sN9YQwPm6y5OYACkkd3yXnEmUew/Gj9gbD6FDBG7rHq18vD2g==}
-    engines: {node: '>=10.0'}
-    dependencies:
-      '@xmcl/asm': 0.1.1
-      '@xmcl/core': 2.6.2
-      '@xmcl/forge-site-parser': 2.0.8
-      '@xmcl/task': 3.0.0
-      '@xmcl/unzip': 2.0.0_yauzl@2.10.0
-      yauzl: 2.10.0
-    dev: false
-
-  /@xmcl/mod-parser/3.1.0:
-    resolution: {integrity: sha512-fVZxuDBr3QC8ck3Hd6z+xobbY4lJYfHaiCZ7Stmvo2ZG4ma4ieBasNlFtjvHmktdwNxttthbyBqNSe4K3CO0NQ==}
-    engines: {node: '>=10.0'}
-    dependencies:
-      '@iarna/toml': 2.2.3
-      '@xmcl/asm': 0.1.1
-      '@xmcl/system': 2.2.1
-    transitivePeerDependencies:
-      - yauzl
-    dev: false
-
-  /@xmcl/model/1.0.17_ccb0dddd95c571d39f869a421725fe22:
-    resolution: {integrity: sha512-8J92F4tuinci5A0qzoqo1aJaHVgRjvlp/NJWSw+BZ8oF2Q73CQ0GY4v2LA6W0WBGAU0iuUPD/3y5JpvMdIZv8w==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      '@xmcl/resourcepack': ^1.0.16
-      three: ^0.127.0
-    dependencies:
-      '@xmcl/resourcepack': 1.1.0
-      three: 0.127.0
-    dev: false
-
-  /@xmcl/nbt/2.0.3:
-    resolution: {integrity: sha512-q43GU1cEHm+tGpvq8vVn9euAhwiz4DQV8uK4UjT/sfVmwZPOQEI0DaCS8tP8LO4zgRErIJIjTDCR5IQ4hgYiAA==}
-    engines: {node: '>=10.0'}
-    dependencies:
-      bytebuffer: 5.0.1
-      file-type: 12.4.2
-      long: 3.2.0
-      pako: 1.0.11
-    dev: false
-
-  /@xmcl/resourcepack/1.1.0:
-    resolution: {integrity: sha512-mhRH1SNqJ50eFIIyNwV/Uj+fLYvl6iqof2b7Nj5mvnqmFc5WdKg8VkCB+HLz1nzonM5GUEjzOp/X2oy+ODsZ2g==}
-    engines: {node: '>=10.0'}
-    dependencies:
-      '@xmcl/system': 2.2.1
-    transitivePeerDependencies:
-      - yauzl
-    dev: false
-
-  /@xmcl/server-info/2.0.4:
-    resolution: {integrity: sha512-P1iItL6SYfeG7B0jV3bLCqOw7/DBAcz4uVeqHeLIyRfVSPwOyeqn7ZiaYg13+46bjoJ60QYAJQtte6NHaGv01w==}
-    engines: {node: '>=10.0'}
-    dependencies:
-      '@xmcl/nbt': 2.0.3
-    dev: false
-
-  /@xmcl/system/2.2.1:
-    resolution: {integrity: sha512-XvsTlSPeeVSg3QyaAeT5YcTeKxMDHbZapUEIQxKZY5+hmFqCNUlB0nQBDMD+2T+irG1FFV35JC7BXfyENpWZVA==}
-    engines: {node: '>=10.0'}
-    dependencies:
-      '@xmcl/unzip': 2.0.0
-      jszip: 3.7.1
-    transitivePeerDependencies:
-      - yauzl
-    dev: false
-
-  /@xmcl/task/3.0.0:
-    resolution: {integrity: sha512-xaH9Qhn6yNzIP61mwTbz1leKcj0b88ZBkwwdPfRb627uLxtVgU6inzTlM4eeaWbL0D2FUBBv3D6OLQ9sW9DUvQ==}
-    dev: false
-
-  /@xmcl/text-component/2.1.1:
-    resolution: {integrity: sha512-VRRNEwlxeSLE/hEnpnYpohSqMBIOthwgEfzRLsk6MFDJFklC5SuiO4zbpcrC34oFAJDH2SkZFqT03i3e1/QsMg==}
-    engines: {node: '>=10.0'}
-    dev: false
-
-  /@xmcl/unzip/2.0.0:
-    resolution: {integrity: sha512-Q9OST4o20X9kI40ZC7gjhW3hELu68iAR8APxsmqjiyX6Owsx79qP1aB7sKpcR+tizBGKBV5lzUUQiPQBBp+L4Q==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      yauzl: ^2.10.0
-    dev: false
-
-  /@xmcl/unzip/2.0.0_yauzl@2.10.0:
-    resolution: {integrity: sha512-Q9OST4o20X9kI40ZC7gjhW3hELu68iAR8APxsmqjiyX6Owsx79qP1aB7sKpcR+tizBGKBV5lzUUQiPQBBp+L4Q==}
-    engines: {node: '>=10.0'}
-    peerDependencies:
-      yauzl: ^2.10.0
-    dependencies:
-      yauzl: 2.10.0
-    dev: false
-
-  /@xmcl/user/2.1.5:
-    resolution: {integrity: sha512-rxdZb7VmlhQge6tReefJWust0dV/rOZryr7TPvNjs/cIbxJ0wy1inkEPf93/Jma5I4YoU0UVcnJWCY1OIQMK0w==}
-    engines: {node: '>=10.0'}
-    dependencies:
-      form-data: 3.0.1
-      uuid: 7.0.3
-    dev: false
-
-  /@xmcl/world/1.1.4:
-    resolution: {integrity: sha512-2CmAh9Qrs5hUoD15EXkwOtSsbZIDM5L1+qNn58Kq0DPq9OYBmWctRUHH8hPwmF79xCJ6rbAUfUB69jIPSpbwCw==}
-    engines: {node: '>=10.0'}
-    dependencies:
-      '@xmcl/nbt': 2.0.3
-      '@xmcl/system': 2.2.1
-    transitivePeerDependencies:
-      - yauzl
-    dev: false
 
   /JSONStream/1.3.5:
     resolution: {integrity: sha512-E+iruNOY8VV9s4JEbe1aNEm6MiszPRr/UfcHMz0TQh1BXSxHK+ASV1R6W4HpjBhSeS+54PIsAMCBmwD06LLsqQ==}
@@ -1747,6 +1751,7 @@ packages:
   /ansi-regex/3.0.0:
     resolution: {integrity: sha1-7QMXwyIGT3lGbAKWa922Bas32Zg=}
     engines: {node: '>=4'}
+    requiresBuild: true
     dev: true
 
   /ansi-regex/4.1.0:
@@ -4295,6 +4300,11 @@ packages:
     dependencies:
       flat-cache: 3.0.4
     dev: true
+
+  /file-type/11.1.0:
+    resolution: {integrity: sha512-rM0UO7Qm9K7TWTtA6AShI/t7H5BPjDeGVDaNyg9BjHAj3PysKy7+8C8D137R88jnR3rFJZQB/tFgydl5sN5m7g==}
+    engines: {node: '>=6'}
+    dev: false
 
   /file-type/12.4.2:
     resolution: {integrity: sha512-UssQP5ZgIOKelfsaB5CuGAL+Y+q7EmONuiwF3N5HAH0t27rvrttgi6Ra9k/+DVaY9UF6+ybxu5pOXLUdA8N7Vg==}
@@ -8706,7 +8716,6 @@ packages:
     resolution: {integrity: sha512-HjSDRw6gZE5JMggctHBcjVak08+KEVhSIiDzFnT9S9aegmp85S/bReBVTb4QTFaRNptJ9kuYaNhnbNEOkbKb/A==}
     deprecated: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
     hasBin: true
-    dev: true
 
   /uuid/7.0.3:
     resolution: {integrity: sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==}
