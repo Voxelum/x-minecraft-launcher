@@ -517,7 +517,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     this.refreshedLiteloader = true
   }
 
-  @Mutex('')
+  @Singleton()
   async installLiteloader(meta: LiteloaderVersion) {
     try {
       await this.submit(installLiteloaderTask(meta, this.getPath()))
@@ -528,7 +528,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     }
   }
 
-  @Mutex('install')
+  @Singleton()
   async installByProfile(profile: InstallProfile) {
     try {
       await this.submit(installByProfileTask(profile, this.getPath(), {
