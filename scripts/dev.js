@@ -99,13 +99,14 @@ function reloadElectron() {
       )}`
     )
   } else {
-    console.log(
-      `${chalk.cyan('[DEV]')} ${chalk.bold.underline.green(
-        'Electron app started'
-      )}`
-    )
+    console.log('Electron app started')
+    // console.log(
+    //   `${chalk.cyan('[DEV]')} ${chalk.bold.underline.green(
+    //     'Electron app started'
+    //   )}`
+    // )
   }
-  startElectron()
+  // startElectron()
 }
 
 /**
@@ -114,6 +115,7 @@ function reloadElectron() {
 async function startMain() {
   const result = await build({
     ...esbuildOptions,
+    publicPath: './dist',
     entryPoints: { index: join(__dirname, '../src/main/index.dev.ts') },
     incremental: true,
     watch: {
@@ -145,10 +147,16 @@ async function startRenderer() {
  * Main method of this script
  */
 async function main() {
-  // start renderer dev server
-  viteServer = await startRenderer()
-  // start watch the main & preload
-  esbuild = await startMain()
+  if (process.env.target === 'renderer') {
+    // start renderer dev server
+    viteServer = await startRenderer()
+  } else if (process.env.target === 'main') {
+    // start watch the main & preload
+    esbuild = await startMain()
+  } else {
+    viteServer = await startRenderer()
+    esbuild = await startMain()
+  }
 }
 
 remove(join(__dirname, '../dist'))

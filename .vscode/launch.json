@@ -5,27 +5,52 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Electron: Main (launch)",
+            "type": "node",
+            "request": "launch",
+            "preLaunchTask": "dev",
+            "program": "${workspaceFolder}/dist/index.js",
+            "args": ["--remote-debugging-port=9300"],
+            "sourceMaps": true, 
+            "outFiles": ["${workspaceFolder}/dist/*.js"],
+            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+            "protocol": "inspector",
+            "env": {
+                "NODE_ENV": "development"
+            }
+        },
+        {
+            "name": "Electron: Renderer (attach)",
+            "type": "chrome",
+            "request": "attach",
+            "restart": true,
+            "port": 9300,
+            "webRoot": "${workspaceFolder}",
+            "timeout": 15000
+        },
+        {
             "name": "Electron: Main (attach)",
             "type": "node",
             "request": "attach",
             "cwd": "${workspaceFolder}",
             "outFiles": [
-                "${workspaceFolder}/dist/*.js",
-                "${workspaceFolder}/src/**/*.js"
+                "${workspaceFolder}/dist/*.js"
             ],
             "smartStep": true,
             "sourceMaps": true,
             "protocol": "inspector",
             "port": 5858,
             "timeout": 20000
-        },
+        }
+    ],
+    "compounds": [
         {
-            "name": "Electron: Renderer (attach)",
-            "type": "chrome",
-            "request": "attach",
-            "port": 9222,
-            "webRoot": "${workspaceFolder}",
-            "timeout": 15000
+            "name": "Electron: All",
+            "preLaunchTask": "dev",
+            "configurations": [
+                "Electron: Main (launch)",
+                "Electron: Renderer (attach)"
+            ]
         }
     ]
 }

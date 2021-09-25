@@ -5,6 +5,7 @@ const pluginStatic = require('./plugins/esbuild.static.plugin')
 const pluginWorker = require('./plugins/esbuild.worker.plugin')
 const pluginVueDevtools = require('./plugins/esbuild.devtool.plugin')
 const pluginNode = require('./plugins/esbuild.node.plugin')
+const plugin7Zip = require('./plugins/esbuild.7zipbin.plugin')
 const { external } = require('../package.json')
 
 /**
@@ -17,6 +18,7 @@ const config = {
   entryNames: '[dir]/[name]',
   format: 'cjs',
   outdir: path.join(__dirname, '../dist'),
+  // sourcemap: 'external',
   sourcemap: 'inline',
   // sourceRoot: path.join(__dirname, '../src'),
   platform: 'node',
@@ -34,6 +36,7 @@ const config = {
     pluginStatic(path.join(__dirname, '../static')),
     pluginVueDevtools(path.join(__dirname, '../extensions')),
     pluginWorker(),
+    plugin7Zip(path.join(__dirname, '../node_modules')),
     pluginNode()
   ],
   external: ['electron', ...external]
