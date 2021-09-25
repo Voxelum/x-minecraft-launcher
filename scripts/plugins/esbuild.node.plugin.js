@@ -36,6 +36,7 @@ module.exports = function createNodePlugin() {
                 (args) => ({
                     path: args.path,
                     namespace: "file",
+                    external: !!build.initialOptions.watch,
                 })
             );
 
