@@ -12,6 +12,58 @@
             }
         },
         {
+            "label": "dev",
+            "dependsOn": ["dev:main", "dev:renderer"]
+        },
+        {
+            "label": "dev:main",
+            "type": "npm",
+            "script": "dev:main",
+            "group": "build",
+            "isBackground": true,
+            "problemMatcher": [
+                {
+                    "pattern": [
+                        {
+                            "regexp": ".",
+                            "file": 1,
+                            "location": 2,
+                            "message": 3
+                        }
+                    ],
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": ".",
+                        "endsPattern": "Electron app started",
+                    }
+                }
+            ]
+        },
+        {
+            "label": "dev:renderer",
+            "type": "npm",
+            "script": "dev:renderer",
+            "group": "none",
+            "isBackground": true,
+            "problemMatcher": [
+                {
+                    "pattern": [
+                        {
+                            "regexp": ".",
+                            "file": 1,
+                            "location": 2,
+                            "message": 3
+                        }
+                    ],
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": ".",
+                        "endsPattern": ".",
+                    }
+                }
+            ]
+        },
+        {
             "type": "npm",
             "script": "lint",
             "problemMatcher": [

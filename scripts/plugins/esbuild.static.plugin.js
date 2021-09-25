@@ -4,11 +4,12 @@
  * @returns {import('esbuild').Plugin}
  */
 module.exports = function createStaticPlugin(staticRoot) {
+  console.log(staticRoot)
   return {
     name: 'resolve-static',
     setup(build) {
       build.onResolve({ filter: /@static\/.+/g }, async ({ path }) => ({
-        path: path.replace('/@static', staticRoot)
+        path: path.replace('/@static', staticRoot),
       }))
     }
   }
