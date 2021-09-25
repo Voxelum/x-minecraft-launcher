@@ -43,7 +43,12 @@ export default class ElectronLauncherApp extends LauncherApp {
    */
   broadcast(channel: string, ...payload: any[]): void {
     BrowserWindow.getAllWindows().forEach(w => {
-      w.webContents.send(channel, ...payload)
+      try {
+        w.webContents.send(channel, ...payload)
+      } catch (e) {
+        this.warn(`Drop message to ${channel} to ${w.getTitle()} as`)
+        this.warn(e.stack)
+      }
     })
   }
 
@@ -193,7 +198,6 @@ export default class ElectronLauncherApp extends LauncherApp {
   }
 
   protected async onEngineReady() {
-    app.allowRendererProcessReuse = true
     return super.onEngineReady()
   }
 

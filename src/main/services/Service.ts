@@ -122,8 +122,7 @@ export function Lock<T extends AbstractService>(key: (string | string[] | MutexS
       const keyOrKeys = typeof key === 'function' ? key.call(target, ...args) : key
       const keys = keyOrKeys instanceof Array ? keyOrKeys : [keyOrKeys]
       const promises: Promise<() => void>[] = []
-      for (const k of keys) {
-        const key = k
+      for (const key of keys) {
         const lock = this.serviceManager.getLock(key)
         promises.push(lock.aquireWrite())
       }
@@ -186,9 +185,12 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
       if (last) {
         return last
       } else {
+        this.log(`aquire singleton ${targetKey}`)
         instances[targetKey] = exec().finally(() => {
+          this.log(`release singleton ${targetKey}`)
           delete instances[targetKey]
         })
+        return instances[targetKey]
       }
     }
     descriptor.value = func

@@ -27,7 +27,6 @@ import VersionService from '../services/VersionService'
 import { Client } from '/@main/engineBridge'
 import { Exception } from '/@shared/entities/exception'
 import { ServiceKey } from '/@shared/services/Service'
-import { Semaphore } from '../util/semaphore'
 import { ReadWriteLock } from '../util/mutex'
 
 interface ServiceCallSession {
@@ -181,7 +180,7 @@ export default class ServiceManager extends Manager {
         return r.then(r => ({ result: r }), (e) => {
           this.warn(`Error during service call session ${id}(${this.sessions[id].name}):`)
           if (e instanceof Error) {
-            this.warn(e)
+            this.warn(e.stack)
           } else {
             this.warn(JSON.stringify(e))
           }
@@ -291,6 +290,7 @@ export default class ServiceManager extends Manager {
   }
 
   async engineReady() {
+    this.log(`Register service manager to handle ipc`)
     this.app.handle('service-call', (e, service: string, name: string, payload: any) => this.prepareServiceCall(e.sender, service, name, payload))
     this.app.handle('session', (_, id) => this.startServiceCall(id))
   }

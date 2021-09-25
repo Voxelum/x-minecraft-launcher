@@ -47,9 +47,9 @@ export class JavaState {
 
 export interface JavaService extends StatefulService<JavaState> {
   /**
-   * Install a default jdk 8 to the a preserved location. It'll be installed under your launcher root location `jre` folder
+   * Install a default jdk 8 or 16 to the a preserved location. It'll be installed under your launcher root location `jre` folder
    */
-  installDefaultJava(): Promise<void>
+  installDefaultJava(version: '8' | '16'): Promise<void>
   /**
    * Resolve java info. If the java is not known by launcher. It will cache it into the launcher java list.
    */

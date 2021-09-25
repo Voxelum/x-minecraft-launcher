@@ -4,7 +4,7 @@ import { useService } from './useService'
 import { Issue } from '/@shared/entities/issue'
 import { DiagnoseServiceKey } from '/@shared/services/DiagnoseService'
 
-export const IssueHandler: InjectionKey<Record<string, () => void>> = Symbol('IssueHandler')
+export const IssueHandler: InjectionKey<Record<string, (issue: Issue) => void>> = Symbol('IssueHandler')
 
 export function useIssues() {
   const { state, fix: fixIssue } = useService(DiagnoseServiceKey)
@@ -37,7 +37,7 @@ export function useIssues() {
     console.log(`Fix issue ${issue.id}`)
     const handler = handlers[issue.id]
     if (handler) {
-      handler()
+      handler(issue)
     } else if (issue.autofix) {
       fixIssue(issues)
     } else {

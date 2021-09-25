@@ -2,7 +2,7 @@ import type { Status as ServerStatus } from '@xmcl/client'
 
 export { ServerStatus }
 
-export const UNKNOWN_STATUS: ServerStatus = Object.freeze({
+export const UNKNOWN_STATUS: ServerStatus = ({
   version: {
     name: 'profile.server.unknown',
     protocol: -1,
@@ -16,7 +16,7 @@ export const UNKNOWN_STATUS: ServerStatus = Object.freeze({
   ping: 0,
 })
 
-export const PINGING_STATUS: ServerStatus = Object.freeze({
+export const PINGING_STATUS: ServerStatus = ({
   version: {
     name: 'profile.server.ping',
     protocol: -1,

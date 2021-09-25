@@ -10,12 +10,9 @@
 // Set environment for development
 // process.env.NODE_ENV = 'development';
 
-import { app, BrowserWindow } from 'electron';
+import { app } from 'electron';
+import install, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
 import { autoUpdater } from 'electron-updater';
-import { existsSync } from 'fs-extra';
-import { Socket } from 'net';
-import { join } from 'path';
-import install, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import './main';
 
 app.on('web-contents-created', (event, contents) => {
@@ -23,7 +20,9 @@ app.on('web-contents-created', (event, contents) => {
   // if (existsSync(extensionDir)) {
   //   contents.session.loadExtension(extensionDir)
   // }
-  contents.openDevTools({ mode: 'detach' });
+  // contents.openDevTools({ mode: 'detach' });
+  console.log(event)
+  console.log(contents.getURL())
 })
 
 autoUpdater.setFeedURL({

@@ -215,8 +215,8 @@ export abstract class LauncherApp extends EventEmitter {
   abstract exit(code?: number): void
 
   /**
-     * Get the system provided path
-     */
+   * Get the system provided path
+   */
   abstract getPath(key: 'home' | 'appData' | 'userData' | 'cache' | 'temp' | 'exe' | 'module' | 'desktop' | 'documents' | 'downloads' | 'music' | 'pictures' | 'videos' | 'logs' | 'pepperFlashSystemPlugin'): string
 
   /**
@@ -376,12 +376,13 @@ export abstract class LauncherApp extends EventEmitter {
   }
 
   protected async setup() {
+    console.log(`Boot from ${this.appDataPath}`)
     try {
       await ensureDir(this.appDataPath)
       const self = this as any
       self.gameDataPath = await readFile(join(this.appDataPath, 'root')).then((b) => b.toString().trim())
     } catch (e) {
-      if (e.code === 'ENOENT') {
+      if (e instanceof Error && e.code === 'ENOENT') {
         // first launch
         await this.waitEngineReady();
         (this.gameDataPath as any) = await this.controller.processFirstLaunch()
@@ -392,12 +393,13 @@ export abstract class LauncherApp extends EventEmitter {
     }
 
     try {
-      await Promise.all([ensureDir(this.gameDataPath), ensureDir(this.temporaryPath)])
+      await ensureDir(this.gameDataPath)
     } catch {
       (this.gameDataPath as any) = this.appDataPath
-      await Promise.all([ensureDir(this.gameDataPath), ensureDir(this.temporaryPath)])
+      await Promise.all([ensureDir(this.gameDataPath)])
     }
     (this.temporaryPath as any) = join(this.gameDataPath, 'temp')
+    await ensureDir(this.temporaryPath)
     await Promise.all(this.managers.map(m => m.setup()))
     this.log(process.cwd())
     this.log(process.argv)

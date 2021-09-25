@@ -64,6 +64,9 @@ export function createTaskMonitor (
   function status (uuid: string, task: Task<any>) {
     const partial = getUpdate(uuid, task)
     partial.state = task.state
+    if( task.state === 2){
+      console.log(`Update task status ${uuid} ${task.state}`)
+    }
     notify()
   }
   function fail (uuid: string, task: Task<any>, error: any) {

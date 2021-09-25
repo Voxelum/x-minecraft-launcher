@@ -100,7 +100,6 @@ export default class InstallService extends StatefulService<InstallState> implem
   protected getForgeInstallOptions(): InstallForgeOptions {
     const options: InstallForgeOptions = {
       ...this.networkManager.getDownloadBaseOptions(),
-      overwriteWhen: 'checksumNotMatch',
       java: this.javaService.state.defaultJava.path,
     }
     if (this.networkManager.isInGFW && this.baseService.state.apiSetsPreference !== 'mojang') {
@@ -116,7 +115,6 @@ export default class InstallService extends StatefulService<InstallState> implem
     const option: Options = {
       assetsDownloadConcurrency: 16,
       ...this.networkManager.getDownloadBaseOptions(),
-      overwriteWhen: 'checksumNotMatch',
       side: 'client',
     }
 

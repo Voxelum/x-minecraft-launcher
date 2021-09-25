@@ -145,7 +145,7 @@ export default class Controller implements LauncherAppController {
       vibrancy: 'sidebar', // or popover
       icon: iconPath,
       webPreferences: {
-        nodeIntegration: IS_DEV, // enable node for webpack in dev
+        // nodeIntegration: IS_DEV, // enable node for webpack in dev
         preload: indexPreload,
         session: sess,
         webviewTag: true,

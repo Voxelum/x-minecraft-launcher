@@ -1,7 +1,6 @@
 <template>
   <div
     class="display-1 white--text"
-    style
   >
     <span style="margin-right: 10px;">{{ name || `Minecraft ${version.minecraft}` }}</span>
     <v-chip

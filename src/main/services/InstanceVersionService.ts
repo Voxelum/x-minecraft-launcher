@@ -148,20 +148,12 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
 
   @Subscribe('instanceSelect')
   protected async onInstanceSelect() {
-    this.up('diagnose')
-    const report: Partial<IssueReport> = {}
-    await this.diagnoseVersion(report)
-    this.diagnoseService.report(report)
-    this.down('diagnose')
+    await this.diagnoseVersion()
   }
 
   @Subscribe('localVersions')
   protected async onLocalVersionsChanegd() {
-    this.up('diagnose')
-    const report: Partial<IssueReport> = {}
-    await this.diagnoseVersion(report)
-    this.diagnoseService.report(report)
-    this.down('diagnose')
+    await this.diagnoseVersion()
   }
 
   @Subscribe('instanceEdit')
@@ -171,7 +163,7 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
     }
     const report: Partial<IssueReport> = {}
     if ('runtime' in payload) {
-      await this.diagnoseVersion(report)
+      await this.diagnoseVersion()
       this.diagnoseService.report(report)
       return
     }
@@ -179,7 +171,8 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
   }
 
   @Singleton()
-  private async diagnoseVersion(report: Partial<IssueReport>) {
+  private async diagnoseVersion() {
+    const report: Partial<IssueReport> = {}
     this.up('diagnose')
     try {
       const id = this.instanceService.state.path
@@ -301,6 +294,7 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
         }
       }
       Object.assign(report, tree)
+      this.diagnoseService.report(report)
     } finally {
       this.down('diagnose')
     }

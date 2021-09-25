@@ -67,12 +67,12 @@ const router = new Router({
     },
     {
       path: '/curseforge/:type',
-      component: curseforgeTypeId,
+      component: curseforgeType,
       props: (route) => ({ keyword: route.query.keyword, page: Number.parseInt(route.query.page as any ?? '1', 10), type: route.path.split('/')[2], from: route.query.from }),
     },
     {
       path: '/curseforge/:type/:id',
-      component: curseforgeType,
+      component: curseforgeTypeId,
       props: (route) => ({ type: route.path.split('/')[2], id: route.path.split('/')[3], from: route.query.from }),
     },
     {

@@ -46,7 +46,7 @@ export interface IssueRegistries {
   unknownMod: Registry<{ name: string; actual: string }, false, true>
   incompatibleMod: Registry<{ name: string; actual: string; accepted: string }, false, true>
   incompatibleResourcePack: Registry<{ name: string; actual: string; accepted: string }, false, true>
-  incompatibleJava: Registry<{ java: string; type: string; version: string }, false, true>
+  incompatibleJava: Registry<{ java: string; type: string; version: string; targetVersion: '8' | '16' }, false, true>
 
   missingJava: Registry<{}>
   invalidJava: Registry<{ java: string }>

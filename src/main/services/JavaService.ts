@@ -1,7 +1,7 @@
-import { DownloadTask, installJreFromMojangTask, resolveJava, scanLocalJava, UnzipTask } from '@xmcl/installer'
+import { DownloadTask, resolveJava, scanLocalJava, UnzipTask, installJavaRuntimesTask, fetchJavaRuntimeManifest, JavaRuntimeTargetType, parseJavaVersion } from '@xmcl/installer'
 import { task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
-import { ensureFile, move, readdir, remove, unlink } from 'fs-extra'
+import { ensureFile, move, readdir, readFile, remove, unlink } from 'fs-extra'
 import { basename, dirname, join } from 'path'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
@@ -10,7 +10,7 @@ import { ExportService, Inject, Singleton, StatefulService } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
 import { getTsingHuaAdpotOponJDKPageUrl, parseTsingHuaAdpotOpenJDKHotspotArchive } from '/@main/entities/java'
 import { missing, readdirIfPresent } from '/@main/util/fs'
-import { unpack7z } from '/@main/util/zip'
+import { extractLzma, unpack7z } from '/@main/util/zip'
 import { JavaRecord } from '/@shared/entities/java'
 import { Java, JavaSchema } from '/@shared/entities/java.schema'
 import { JavaState, JavaService as IJavaService, JavaServiceKey } from '/@shared/services/JavaService'
@@ -22,18 +22,22 @@ export default class JavaService extends StatefulService<JavaState> implements I
 
   protected readonly config = new MappedFile<JavaSchema>(this.getPath('java.json'), new BufferJsonSerializer(JavaSchema))
 
-  private readonly internalJavaLocation = this.app.platform.name === 'osx'
-    ? this.getPath('jre', 'Contents', 'Home', 'bin', 'java')
-    : this.getPath('jre', 'bin',
-      this.app.platform.name === 'windows' ? 'javaw.exe' : 'java')
-
   constructor(app: LauncherApp,
     @Inject(DiagnoseService) diagnoseService: DiagnoseService) {
     super(app)
 
-    diagnoseService.registerMatchedFix(['missingJava'], () => {
-      this.installDefaultJava()
+    diagnoseService.registerMatchedFix(['missingJava'], (issue) => {
+      const version = (issue[0].parameters as any).targetVersion
+      this.installDefaultJava(version)
     })
+  }
+
+  getInternalJavaLocation(version: '8' | '16') {
+    const parent = version === '8' ? 'jre' : 'jre-next'
+    return this.app.platform.name === 'osx'
+      ? this.getPath(parent, 'Contents', 'Home', 'bin', 'java')
+      : this.getPath(parent, 'bin',
+        this.app.platform.name === 'windows' ? 'java.exe' : 'java')
   }
 
   async initialize() {
@@ -42,7 +46,7 @@ export default class JavaService extends StatefulService<JavaState> implements I
     this.log(`Loaded ${valid.length} java from cache.`)
     this.state.javaUpdate(valid)
 
-    const local = this.internalJavaLocation
+    const local = this.getInternalJavaLocation('8')
     if (!this.state.all.map(j => j.path).some(p => p === local)) {
       this.resolveJava(local)
     }
@@ -57,23 +61,30 @@ export default class JavaService extends StatefulService<JavaState> implements I
    * Install a default jdk 8 to the a preserved location. It'll be installed under your launcher root location `jre` folder
    */
   @Singleton()
-  async installDefaultJava() {
-    if (this.state.all.find(j => j.path === this.internalJavaLocation)) {
-      return
-    }
-    const task = this.networkManager.isInGFW ? this.installFromTsingHuaTask('8') : this.installFromMojangTask()
-    await ensureFile(this.internalJavaLocation)
-    await this.submit(task)
-    await this.resolveJava(this.internalJavaLocation)
-  }
-
-  private installFromMojangTask() {
-    const dest = dirname(this.internalJavaLocation)
-    return installJreFromMojangTask({
-      destination: dest,
-      unpackLZMA: unpack7z,
+  async installDefaultJava(target: '8' | '16' = '8') {
+    const location = this.getInternalJavaLocation(target)
+    // if (this.state.all.find(j => j.path === location)) {
+    //   return
+    // }
+    const jreTarget = target === '16' ? JavaRuntimeTargetType.Next : JavaRuntimeTargetType.Legacy
+    const manifest = await fetchJavaRuntimeManifest({
+      apiHost: this.networkManager.isInGFW ? 'bmclapi2.bangbang93.com' : undefined,
       ...this.networkManager.getDownloadBaseOptions(),
+      target: jreTarget
     })
+    this.log(`Install jre runtime ${jreTarget} ${manifest.version.name} ${manifest.version.released}`)
+    const dest = dirname(dirname(location))
+    const task = installJavaRuntimesTask({
+      manifest,
+      apiHost: this.networkManager.isInGFW ? 'bmclapi2.bangbang93.com' : undefined,
+      destination: dest,
+      // lzma: (src) => extractLzma(src),
+      ...this.networkManager.getDownloadBaseOptions(),
+    }).setName('installJre')
+    await ensureFile(location)
+    await this.submit(task)
+    this.log(`Successfully install java internally ${location}`)
+    await this.resolveJava(location)
   }
 
   private installFromTsingHuaTask(java: '8' | '9' | '11' | '12' | '13' | '14' | '15' | '16') {
@@ -147,6 +158,20 @@ export default class JavaService extends StatefulService<JavaState> implements I
     const java = await resolveJava(javaPath)
     if (java) {
       this.state.javaUpdate({ ...java, valid: true })
+    } else {
+      const home = dirname(dirname(javaPath))
+      const releaseData = await readFile(join(home, 'release'), 'utf-8')
+      const javaVersion = releaseData.split('\n').map(l => l.split('=')).find(v => (v[0] === 'JAVA_VERSION'))?.[1]
+      if (javaVersion) {
+        const parsedJavaVersion = parseJavaVersion(javaVersion)
+        if (parsedJavaVersion) {
+          this.state.javaUpdate({ ...parsedJavaVersion, path: javaPath, valid: false })
+        } else {
+          this.state.javaUpdate({ valid: false, path: javaPath, version: '', majorVersion: 0 })
+        }
+      } else {
+        this.state.javaUpdate({ valid: false, path: javaPath, version: '', majorVersion: 0 })
+      }
     }
     return java
   }

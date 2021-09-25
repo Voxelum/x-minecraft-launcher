@@ -63,7 +63,7 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
     if (payload.path !== this.instanceService.state.path) {
       return
     }
-    if ('java' in payload) {
+    if ('java' in payload || 'runtime' in payload) {
       await this.diagnoseJava()
     }
   }
@@ -76,7 +76,7 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
     const resolvedMcVersion = parseVersion(mcversion)
 
     if (instanceJava === EMPTY_JAVA || this.javaService.state.missingJava) {
-      this.javaService.installDefaultJava()
+      this.javaService.installDefaultJava('8')
     }
   }
 
@@ -108,15 +108,17 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
         }
       } else if (instanceJava.majorVersion > 8) {
         if (!resolvedMcVersion.minorVersion || resolvedMcVersion.minorVersion < 13) {
-          tree.incompatibleJava.push({ java: instanceJava.version, version: mcversion, type: 'Minecraft' })
+          tree.incompatibleJava.push({ java: instanceJava.version, version: mcversion, type: 'Minecraft', targetVersion: '8' })
         } else if (resolvedMcVersion.minorVersion >= 13 && instance.runtime.forge && instanceJava.majorVersion > 10) {
-          tree.incompatibleJava.push({ java: instanceJava.version, version: instance.runtime.forge, type: 'MinecraftForge' })
+          if (resolvedMcVersion.minorVersion < 17) {
+            tree.incompatibleJava.push({ java: instanceJava.version, version: instance.runtime.forge, type: 'MinecraftForge', targetVersion: '8' })
+          }
         }
       }
 
       if (resolvedMcVersion.minorVersion && resolvedMcVersion.minorVersion >= 17) {
         if (instanceJava.majorVersion < 16) {
-          tree.incompatibleJava.push({ java: instanceJava.version, version: mcversion, type: 'Minecraft' })
+          tree.incompatibleJava.push({ java: instanceJava.version, version: mcversion, type: 'Minecraft', targetVersion: '16' })
         }
       }
 

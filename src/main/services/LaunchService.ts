@@ -106,9 +106,9 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
         await this.diagnoseService.fix(issues.filter(p => !p.optional && p.autofix))
       }
 
-      if (!force && issues.some(p => !p.optional)) {
-        throw new Exception({ type: 'launchBlockedIssues', issues: issues.filter(p => !p.optional) })
-      }
+      // if (!force && issues.some(p => !p.optional)) {
+      //   throw new Exception({ type: 'launchBlockedIssues', issues: issues.filter(p => !p.optional) })
+      // }
 
       if (this.state.status === 'ready') { // check if we have cancel (set to ready) this launch
         return false

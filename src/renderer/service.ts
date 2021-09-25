@@ -23,7 +23,7 @@ interface TaskListener {
 }
 
 export interface StateProcessor<T> {
-  (service: ServiceKey<T>, state: State): State
+  (service: ServiceKey<T>, state: State<T>): State<T>
 }
 
 async function waitSessionEnd(sessionId: number, listener: (task: string) => void) {
@@ -57,7 +57,7 @@ function createServiceCallerFunction(serviceKey: ServiceKey<any>, name: string, 
 }
 
 export function createServiceFactory(processState: StateProcessor<any>, taskListener: TaskListener) {
-  function createServiceProxy<T>(serviceKey: ServiceKey<T>, state?: State): T {
+  function createServiceProxy<T>(serviceKey: ServiceKey<T>, state?: any): T {
     const accessor = state ? processState(serviceKey, state) : undefined
     const cache: Record<string, any> = {
       state: accessor,
@@ -77,7 +77,7 @@ export function createServiceFactory(processState: StateProcessor<any>, taskList
 
   const factory = new ServiceFactory(createServiceProxy)
 
-  factory.register(BaseServiceKey, [], () => createServiceProxy(BaseServiceKey.toString(), new BaseState()))
+  factory.register(BaseServiceKey, [], () => createServiceProxy(BaseServiceKey, new BaseState()))
   factory.register(CurseForgeServiceKey, [ResourceServiceKey], (res) => createServiceProxy(CurseForgeServiceKey, new CurseforgeState(res.state)))
   factory.register(DiagnoseServiceKey, [], () => createServiceProxy(DiagnoseServiceKey, new DiagnoseState()))
   factory.register(InstanceGameSettingServiceKey, [], () => createServiceProxy(InstanceGameSettingServiceKey, new GameSettingState()))

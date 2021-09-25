@@ -1,4 +1,4 @@
-import { ensureDir, remove } from 'fs-extra'
+import { ensureDir, remove, stat } from 'fs-extra'
 import { resolve } from 'path'
 import { v4 } from 'uuid'
 import InstallService from './InstallService'
@@ -6,7 +6,7 @@ import ServerStatusService from './ServerStatusService'
 import { ExportService, Inject, Singleton, StatefulService } from './Service'
 import UserService from './UserService'
 import LauncherApp from '/@main/app/LauncherApp'
-import { exists, missing, readdirEnsured } from '/@main/util/fs'
+import { exists, isDirectory, missing, readdirEnsured } from '/@main/util/fs'
 import { MappedFile, RelativeMappedFile } from '/@main/util/persistance'
 import { BufferJsonSerializer } from '/@main/util/serialize'
 import { createTemplate, Instance } from '/@shared/entities/instance'
@@ -46,6 +46,11 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     requireString(path)
 
     let option: InstanceSchema
+
+    if (!await isDirectory(path)) {
+      return false
+    }
+    this.log(`Start load instance ${path}`)
     try {
       option = await this.instanceFile.readTo(path)
     } catch (e) {
@@ -56,7 +61,6 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
     const instance = createTemplate()
 
-    instance.path = path
     instance.author = instance.author || this.userService.state.gameProfile?.name || ''
     instance.runtime.minecraft = LATEST_RELEASE.id
 
@@ -76,6 +80,8 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       instance.server = option.server
     }
 
+    instance.path = path
+
     this.state.instanceAdd(instance)
 
     this.log(`Loaded instance ${instance.path}`)
@@ -93,8 +99,20 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     this.log(`Found ${managed.length} managed instances and ${instanceConfig.instances.length} external instances.`)
 
     const all = [...new Set([...instanceConfig.instances, ...managed])]
+    const staleInstances = new Set<string>()
 
-    await Promise.all(all.map(path => this.loadInstance(path)))
+    await Promise.all(all.map(async (path) => {
+      if (!await this.loadInstance(path)) {
+        staleInstances.add(path)
+      }
+    }))
+
+    if (staleInstances.size > 0) {
+      await this.instancesFile.save({
+        selectedInstance: instanceConfig.selectedInstance,
+        instances: instanceConfig.instances.filter(p => !staleInstances.has(p)),
+      })
+    }
 
     if (Object.keys(state.all).length === 0) {
       this.log('Cannot find any instances, try to init one default modpack.')

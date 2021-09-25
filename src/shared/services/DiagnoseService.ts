@@ -16,7 +16,7 @@ export class DiagnoseState {
     corruptedLibraries: { fixing: false, autofix: true, optional: true, actived: [] },
     corruptedAssets: { fixing: false, autofix: true, optional: true, actived: [] },
 
-    invalidJava: { fixing: false, autofix: true, optional: false, actived: [] },
+    invalidJava: { fixing: false, autofix: true, optional: true, actived: [] },
     missingJava: { fixing: false, autofix: true, optional: false, actived: [] },
 
     unknownMod: { fixing: false, autofix: false, optional: true, actived: [] },

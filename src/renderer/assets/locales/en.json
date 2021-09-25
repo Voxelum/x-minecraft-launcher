@@ -167,9 +167,9 @@
         "message": "Maybe the launcher doesn't found your Java. You can tell the launcher where it is."
       },
       "switch": {
-        "": "Switch to Java 8",
-        "disabled": "There is no Java 8 found in database now!",
-        "message": "Use existed Java 8 in you PC"
+        "": "Switch to Java {version}",
+        "disabled": "There is no Java {version} found in database now!",
+        "message": "Use existed Java {version} in you PC"
       }
     },
     "missingLibraries": {
@@ -448,9 +448,10 @@
     "browser": "Import Java From File",
     "errorDownload": "Auto-download & install failed. Please check your network condition. You can try another way.",
     "incompatibleJava": "Incompatible Java",
-    "incompatibleJavaHint": "You can either use discovered Java 8 or download a new one!",
+    "incompatibleJavaHint": "You can either use discovered Java {version} or download a new one!",
     "invalid": "Invalid Java Location",
     "location": "Java Location",
+    "locationPlaceHolder": "Use system default java",
     "maxMemory": "Max Memory",
     "memory": "Java Memory",
     "memoryHint": "This might hit your game performance",
@@ -463,8 +464,7 @@
     "noMemory": "Do not limit memory usage",
     "refresh": "Refresh Local Java",
     "refreshAfter": "Please Refresh After you install the java.",
-    "switchVersion": "Java Version Changed",
-    "locationPlaceHolder": "Use system default java"
+    "switchVersion": "Java Version Changed"
   },
   "launch": {
     "blocked": {
