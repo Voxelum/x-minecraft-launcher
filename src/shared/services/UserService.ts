@@ -1,8 +1,9 @@
 import { GameProfile, MojangChallenge, MojangChallengeResponse, ProfileServiceAPI, YggdrasilAuthAPI } from '@xmcl/user'
 import { EMPTY_GAME_PROFILE, EMPTY_USER } from '../entities/user'
+import { GameProfileAndTexture, UserProfile, UserSchema } from '../entities/user.schema'
 import { assignShallow, toObjectReducer } from '../util/object'
 import { ServiceKey, StatefulService } from './Service'
-import { GameProfileAndTexture, UserProfile, UserSchema } from '/@shared/entities/user.schema'
+
 export interface LoginMicrosoftOptions {
   /**
    * The authorization code. If not present, it will try to get the auth code.

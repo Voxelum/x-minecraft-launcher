@@ -21,7 +21,8 @@
         },
         {
             "name": "Electron: Renderer (attach)",
-            "type": "chrome",
+            // "type": "chrome",
+            "type": "pwa-chrome",
             "request": "attach",
             "restart": true,
             "port": 9300,

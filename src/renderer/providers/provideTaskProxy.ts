@@ -1,5 +1,5 @@
 import { onMounted, onUnmounted, provide, reactive, Ref, ref } from '@vue/composition-api'
-import { ipcRenderer, TASK_PROXY } from '/@/constant'
+import { IPCRenderer, ipcRenderer, TASK_PROXY } from '/@/constant'
 import { TaskItem } from '/@/entities/task'
 import { useI18n } from '/@/hooks'
 import { TaskProxy } from '/@/taskProxy'

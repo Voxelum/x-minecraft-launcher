@@ -11,8 +11,10 @@ import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './
 import LauncherApp from '../app/LauncherApp'
 import { ExternalAuthSkinServiceKey, ExternalAuthSkinService as IExternalAuthSkinService } from '/@shared/services/ExternalAuthSkinService'
 import UserService from './UserService'
-import { compareRelease } from '/@shared/entities/version'
 
+/**
+ * Majorly support the third party skin using authlib injector
+ */
 @ExportService(ExternalAuthSkinServiceKey)
 export default class ExternalAuthSkinService extends AbstractService implements IExternalAuthSkinService {
   constructor(

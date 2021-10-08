@@ -112,10 +112,10 @@ export default defineComponent({
 
       working: false,
 
-      error: null,
+      error: null as any,
     })
 
-    const { cloneSave, path, readAllInstancesSaves: loadAllPreviews, importSave } = useInstanceSaves()
+    const { cloneSave, readAllInstancesSaves: loadAllPreviews, importSave } = useInstanceSaves()
     const { resources: storedSaves } = useSaveResource()
     const nothingSelected = computed(() => data.profilesCopyFrom.every(v => !v) && data.resourcesCopyFrom.every(v => !v))
     const loadingSaves = useBusy(loadAllPreviews)
@@ -148,6 +148,7 @@ export default defineComponent({
 
           if (profilesSaves.length !== 0) {
             for (const s of profilesSaves) {
+              // TODO: fix
               await cloneSave({ saveName: s.name, destInstancePath: [path.value] })
             }
           }

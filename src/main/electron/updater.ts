@@ -1,8 +1,8 @@
 import { ChecksumNotMatchError, DownloadTask } from '@xmcl/installer'
-import { task, Task, TaskBase } from '@xmcl/task'
+import { BaseTask, task, Task } from '@xmcl/task'
 import { spawn } from 'child_process'
-import { autoUpdater, Provider, UpdateInfo, UpdaterSignal, CancellationToken } from 'electron-updater'
-import { close, stat, writeFile } from 'fs-extra'
+import { autoUpdater, CancellationToken, Provider, UpdateInfo, UpdaterSignal } from 'electron-updater'
+import { stat, writeFile } from 'fs-extra'
 import got from 'got'
 import { closeSync, existsSync, open, rename, unlink } from 'original-fs'
 import { basename, dirname, join } from 'path'
@@ -15,6 +15,7 @@ import ElectronLauncherApp from './ElectronLauncherApp'
 import { AZURE_CDN, AZURE_CDN_HOST, IS_DEV } from '/@main/constant'
 import { UpdateInfo as _UpdateInfo } from '/@shared/entities/update'
 
+
 /**
  * Only download asar file update.
  *
@@ -22,69 +23,63 @@ import { UpdateInfo as _UpdateInfo } from '/@shared/entities/update'
  * you can call this to download asar update
  */
 export class DownloadAsarUpdateTask extends DownloadTask {
-  private sha256 = ''
-
   constructor(private updateInfo: UpdateInfo, private isInGFW: boolean, destination: string) {
-    super({ url: '', destination })
+    let sha256 = ''
+    super({
+      url: '', destination, validator: {
+        async validate(fd, file, url) {
+          const missed = await stat(file).then(s => s.size === 0, () => false)
+          if (missed) {
+            return
+          }
+          if (!sha256) {
+            sha256 = await got(`${url}.sha256`).text().catch(() => '')
+          }
+          if (!sha256) {
+            return
+          }
+          const expect = sha256
+          const actual = await checksum(file, 'sha256')
+          if (!expect !== actual) {
+            throw new ChecksumNotMatchError('sha256', expect, actual, file, url);
+          }
+        }
+      }
+    })
   }
 
   protected async process() {
     const provider: Provider<UpdateInfo> = (await (autoUpdater as any).clientPromise)
     const files = provider.resolveFiles(this.updateInfo)
 
+    const urls: string[] = []
     const uObject = files[0].url
     uObject.pathname = `${uObject.pathname.substring(0, uObject.pathname.lastIndexOf('/') + 1)}app.asar`
+    urls.push(uObject.toString())
 
     if (this.isInGFW) {
       uObject.host = AZURE_CDN_HOST
       uObject.hostname = AZURE_CDN_HOST
       uObject.pathname = 'releases/app.asar'
+      urls.unshift(uObject.toString())
     }
 
-    this.url = uObject.toString()
-    this.originalUrl = this.url
+    this.download.urls.pop()
+    this.download.urls.push(...urls)
 
     return super.process()
-  }
-
-  async shouldProcess() {
-    const missed = await stat(this.destination).then(s => s.size === 0, () => false)
-    if (missed) {
-      return true
-    }
-    if (!this.sha256) {
-      this.sha256 = await got(`${this.url}.sha256`).text().catch(() => '')
-    }
-    if (!this.sha256) {
-      return true
-    }
-    const expect = this.sha256
-    const actual = await checksum(this.destination, 'sha256')
-    return expect !== actual
-  }
-
-  async validate() {
-    if (this.sha256) {
-      const expect = this.sha256
-      const actual = await checksum(this.destination, 'sha256')
-      if (actual !== expect) {
-        throw new ChecksumNotMatchError('sha256', expect, actual, this.destination)
-      }
-    }
-    await close(this.fd).catch(() => { })
-    this.fd = -1
   }
 }
 
 /**
  * Download the full update. This size can be larger as it carry the whole electron thing...
  */
-export class DownloadFullUpdateTask extends TaskBase<void> {
+export class DownloadFullUpdateTask extends BaseTask<void> {
   private updateSignal = new UpdaterSignal(autoUpdater)
 
   private cancellationToken = new CancellationToken()
 
-  protected async run(): Promise<void> {
+  protected async runTask(): Promise<void> {
     this.updateSignal.progress((info) => {
       this._progress = info.transferred
       this._total = info.total
@@ -93,19 +88,20 @@ export class DownloadFullUpdateTask extends TaskBase<void> {
     await autoUpdater.downloadUpdate(this.cancellationToken)
   }
 
-  protected performCancel(): Promise<void> {
+  protected cancelTask(): Promise<void> {
     this.cancellationToken.cancel()
     return new Promise((resolve) => {
       autoUpdater.once('update-cancelled', resolve)
     })
   }
 
-  protected async performPause(): Promise<void> {
+  protected async pauseTask(): Promise<void> {
     this.cancellationToken.cancel()
   }
 
-  protected performResume(): void {
-    this.run()
+  protected resumeTask(): Promise<void> {
+    // this.runRunt()
+    return Promise.resolve();
   }
 }
 

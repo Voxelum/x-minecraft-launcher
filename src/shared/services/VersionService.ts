@@ -1,4 +1,4 @@
-import { ResolvedVersion } from '@xmcl/core'
+import type { ResolvedVersion } from '@xmcl/core'
 import { ServiceKey, StatefulService } from './Service'
 
 export class VersionState {

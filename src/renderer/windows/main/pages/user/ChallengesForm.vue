@@ -67,7 +67,7 @@
             >
               <v-spacer />
               <a
-                style="z-index: 1"
+                style="z-index: 1;"
                 href="https://account.mojang.com/me/changeSecretQuestions"
               >{{ $t('user.forgetChallenges') }}</a>
             </v-flex>

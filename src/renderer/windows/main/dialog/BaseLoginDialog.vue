@@ -133,6 +133,7 @@ import { useLogin, useLoginValidation, useI18n, useService } from '/@/hooks'
 import { useLoginDialog } from '../hooks/index'
 import Hint from '../components/Hint.vue'
 import { BaseServiceKey } from '/@shared/services/BaseService'
+import { LoginException } from '/@shared/entities/exception'
 
 export default defineComponent({
   components: { Hint },
@@ -189,7 +190,7 @@ export default defineComponent({
         await login()
         hide()
       } catch (e) {
-        handleError(e)
+        handleError(e as LoginException)
         console.log(e)
       }
     }

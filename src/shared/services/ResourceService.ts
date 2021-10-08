@@ -1,7 +1,8 @@
 import { AnyPersistedResource, AnyResource, PersistedCurseforgeModpackResource, PersistedFabricResource, PersistedForgeResource, PersistedLiteloaderResource, PersistedModpackResource, PersistedResource, PersistedResourcePackResource, PersistedSaveResource, PersistedUnknownResource, SourceInformation } from '../entities/resource'
+import { ResourceDomain } from '../entities/resource.schema'
 import { requireString } from '../util/assert'
 import { ServiceKey, StatefulService } from './Service'
-import { ResourceDomain } from '/@shared/entities/resource.schema'
+
 export declare type FileTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save'
 
 export interface ParseFileOptions {

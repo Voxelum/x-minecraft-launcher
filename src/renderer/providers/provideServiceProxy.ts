@@ -1,4 +1,5 @@
-import { computed, provide, reactive, ref, Ref, set } from '@vue/composition-api'
+import { computed, provide, reactive, ref, Ref } from '@vue/composition-api'
+import Vue from 'vue'
 import { MutationPayload, Store } from 'vuex'
 import { createServiceFactory } from '../service'
 import { ipcRenderer, ServiceProxy, SERVICES_KEY, SERVICES_SEMAPHORE_KEY } from '/@/constant'
@@ -166,6 +167,7 @@ function createSyncable(store: Store<any>) {
   }
 
   ipcRenderer.on('commit', (event, mutation, id) => {
+    console.log('recieved commit! ' + id)
     if (syncing) {
       syncingQueue[id] = mutation
       return
@@ -191,7 +193,7 @@ export function provideSemaphore() {
       if (s in semaphore) {
         semaphore[s] += 1
       } else {
-        set(semaphore, s, 1)
+        Vue.set(semaphore, s, 1)
       }
     }
   })
@@ -201,7 +203,7 @@ export function provideSemaphore() {
       if (s in semaphore) {
         semaphore[s] = Math.max(0, semaphore[s] - 1)
       } else {
-        set(semaphore, s, 0)
+        Vue.set(semaphore, s, 0)
       }
     }
   })
