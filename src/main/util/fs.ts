@@ -128,7 +128,9 @@ export function linkWithTimeout(from: string, to: string, timeout = 1500) {
 }
 
 export function linkWithTimeoutOrCopy(from: string, to: string, timeout = 1500) {
-  return linkWithTimeout(from, to, timeout).catch(() => copy(from, to))
+  return linkWithTimeout(from, to, timeout).catch(() => {
+    copy(from, to) 
+  })
 }
 
 export type FileType = FileExtension | 'unknown' | 'directory'

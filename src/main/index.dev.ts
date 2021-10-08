@@ -20,7 +20,7 @@ app.on('web-contents-created', (event, contents) => {
   // if (existsSync(extensionDir)) {
   //   contents.session.loadExtension(extensionDir)
   // }
-  // contents.openDevTools({ mode: 'detach' });
+  contents.openDevTools({ mode: 'detach' });
   console.log(event)
   console.log(contents.getURL())
 })

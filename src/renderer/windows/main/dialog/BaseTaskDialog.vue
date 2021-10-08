@@ -3,7 +3,7 @@
     v-model="isShown"
     persistent
     hide-overlay
-    width="500"
+    width="700"
     style="max-height: 100%"
     class="task-dialog"
   >

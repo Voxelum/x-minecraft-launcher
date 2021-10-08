@@ -89,7 +89,7 @@ export default defineComponent({
     }
 
     watch(selected, (set) => {
-      context.emit('input', versions.value.filter((v, i) => set[i]).map((v) => v.folder))
+      context.emit('input', versions.value.filter((v, i) => set[i]).map((v) => v.id))
     })
 
     return {

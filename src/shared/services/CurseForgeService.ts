@@ -1,8 +1,8 @@
-import { AddonInfo, Category, File, GetFeaturedAddonOptions, SearchOptions } from '@xmcl/curseforge'
+import type { AddonInfo, Category, File, GetFeaturedAddonOptions, SearchOptions } from '@xmcl/curseforge'
 import { PersistedResource } from '../entities/resource'
 import { ResourceState } from './ResourceService'
 import { ServiceKey, StatefulService } from './Service'
-import { ProjectType } from '/@shared/entities/curseforge'
+import { ProjectType } from '../entities/curseforge'
 export interface InstallFileOptions {
   /**
    * The curseforge file

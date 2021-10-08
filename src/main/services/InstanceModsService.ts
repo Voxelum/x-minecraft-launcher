@@ -224,11 +224,18 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
     const root = join(path, ResourceDomain.Mods)
     for (const resource of mods) {
       if (dirname(resource.path) !== root) {
-        this.warn(`Skip to uninstall unmanaged mod file on ${resource.path}!`)
+        const founded = this.state.mods.find(m => m.ino === resource.ino) ??
+          this.state.mods.find(m => m.hash === resource.hash)
+        if (founded) {
+          promises.push(unlink(founded.path))
+        } else {
+          this.warn(`Skip to uninstall unmanaged mod file on ${resource.path}!`)
+        }
       } else {
         promises.push(unlink(resource.path))
       }
     }
     await Promise.all(promises)
+    this.log(`Finish to uninstall ${mods.length} from ${path}`)
   }
 }
