@@ -1,5 +1,5 @@
 import { ServiceKey, StatefulService } from './Service'
-import { LaunchStatus } from '/@shared/entities/launch'
+import { LaunchStatus } from '../entities/launch'
 
 export class LaunchState {
   status = 'ready' as LaunchStatus

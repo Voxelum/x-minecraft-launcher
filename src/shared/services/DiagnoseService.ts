@@ -1,5 +1,5 @@
+import { Issue, IssueRegistries, IssueReport } from '../entities/issue'
 import { ServiceKey, StatefulService } from './Service'
-import { Issue, IssueRegistries, IssueReport } from '/@shared/entities/issue'
 
 export class DiagnoseState {
   report: IssueRegistries = {

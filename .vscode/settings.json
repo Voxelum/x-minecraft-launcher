@@ -42,6 +42,5 @@
         "mojang",
         "xmcl"
     ],
-    "volar.tsPlugin": true,
     "cSpell.enabled": true
 }

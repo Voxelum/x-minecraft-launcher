@@ -3,6 +3,7 @@ import { FSWatcher, readFile, writeFile } from 'fs-extra'
 import watch from 'node-watch'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
+import { isSystemError } from '../util/error'
 import InstanceService from './InstanceService'
 import { ExportService, Inject, Singleton, StatefulService, Subscribe } from './Service'
 import { exists, missing } from '/@main/util/fs'
@@ -66,7 +67,7 @@ export default class InstanceGameSettingService extends StatefulService<GameSett
         const result = await readFile(optionsPath, 'utf-8').then(parse)
         this.state.instanceGameSettingsLoad(result)
       } catch (e) {
-        if (!e.message.startsWith('ENOENT:')) {
+        if (isSystemError(e)) {
           this.warn(`An error ocurrs during parse game options of ${path}.`)
           this.warn(e)
         }
@@ -86,6 +87,7 @@ export default class InstanceGameSettingService extends StatefulService<GameSett
   async saveInstanceGameSetting() {
     const instancePath = this.watchingInstance
     const optionsTxtPath = join(instancePath, 'options.txt')
+
     if (await exists(optionsTxtPath)) {
       const buf = await readFile(optionsTxtPath)
       const content = parse(buf.toString())

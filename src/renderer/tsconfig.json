@@ -23,6 +23,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
+  "vueCompilerOptions": {
+    "experimentalCompatMode": 2
+  },
   "include": [
     ".",
     "./global.d.ts",

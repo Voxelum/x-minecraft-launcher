@@ -32,7 +32,6 @@ export default class NetworkManager extends Manager {
     return {
       agents: this.agents,
       headers: this.headers,
-      overwriteWhen: 'checksumNotMatchOrEmpty',
     } as const
   }
 

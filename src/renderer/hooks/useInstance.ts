@@ -227,7 +227,6 @@ export function useInstanceSaves() {
     exportSave,
     readAllInstancesSaves,
     importSave: (options: ImportSaveOptions) => importSave(options).finally(refresh),
-    // path: computed(() => state.instance.path),
     saves: computed(() => state.saves),
   }
 }

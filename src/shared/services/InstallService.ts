@@ -2,8 +2,8 @@ import type { ResolvedLibrary, Version } from '@xmcl/core'
 import type { FabricArtifactVersion, installForgeTask, InstallProfile, LiteloaderVersion, LiteloaderVersionList, MinecraftVersion, MinecraftVersionList } from '@xmcl/installer'
 import { OptifineVersion } from '../entities/version.schema'
 import { ServiceKey, StatefulService } from './Service'
-import { LATEST_RELEASE } from '/@shared/entities/version'
-import { ForgeVersionList, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '/@shared/entities/version.schema'
+import { LATEST_RELEASE } from '../entities/version'
+import { ForgeVersionList, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '../entities/version.schema'
 
 export class InstallState {
   /**

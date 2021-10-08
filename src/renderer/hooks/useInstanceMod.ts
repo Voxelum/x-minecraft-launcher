@@ -2,10 +2,9 @@ import { computed } from '@vue/composition-api'
 import { FabricModMetadata } from '@xmcl/mod-parser'
 import { useService } from '.'
 import { useBusy } from './useSemaphore'
-import { AnyResource, FabricResource, ForgeResource, isModResource, LiteloaderResource, ModResource } from '/@shared/entities/resource'
+import { AnyResource, FabricResource, ForgeResource, isModResource, isPersistedResource, LiteloaderResource, ModResource } from '/@shared/entities/resource'
 import { Resource } from '/@shared/entities/resource.schema'
 import { InstanceModsServiceKey } from '/@shared/services/InstanceModsService'
-import { InstanceResourcePacksServiceKey } from '../../shared/services/InstanceResourcePacksService'
 import { ResourceServiceKey } from '/@shared/services/ResourceService'
 import { isNonnull } from '/@shared/util/assert'
 
@@ -73,7 +72,7 @@ export function useInstanceModsService() {
 export function useInstanceMods() {
   const { state } = useInstanceModsService()
   const { state: resourceState } = useService(ResourceServiceKey)
-  const { install: deploy, uninstall: undeploy } = useService(InstanceResourcePacksServiceKey)
+  const { install: deploy, uninstall: undeploy } = useService(InstanceModsServiceKey)
   const loading = useBusy('mountModResources')
 
   function getUrl(resource: Resource) {
@@ -81,8 +80,9 @@ export function useInstanceMods() {
   }
   function getModItemFromModResource(resource: ForgeResource | FabricResource | LiteloaderResource | AnyResource): ModItem {
     const icon = `dataroot://${resource.domain}/${resource.fileName}.png`
+    const isPersisted = isPersistedResource(resource)
     const modItem: ModItem = {
-      path: 'filePath' in resource ? (resource as any).filePath : resource.path,
+      path: resource.path,
       id: '',
       name: resource.path,
       version: '',
@@ -91,11 +91,11 @@ export function useInstanceMods() {
       type: 'forge',
       url: getUrl(resource),
       hash: resource.hash,
-      tags: resource.tags,
+      tags: isPersisted ? resource.tags : [],
       enabled: false,
       subsequence: false,
       hide: false,
-      curseforge: resource.curseforge,
+      curseforge: isPersisted ? resource.curseforge : undefined,
       dependencies: {
         minecraft: '',
       },
@@ -138,6 +138,7 @@ export function useInstanceMods() {
     if (isModResource(resource)) {
       return getModItemFromModResource(resource)
     }
+    const isPersisted = isPersistedResource(resource)
     return {
       path: resource.path,
       id: resource.hash,
@@ -148,11 +149,11 @@ export function useInstanceMods() {
       type: 'unknown',
       url: getUrl(resource),
       hash: resource.hash,
-      tags: resource.tags,
+      tags: isPersisted ? resource.tags : [],
       enabled: false,
       subsequence: false,
       hide: false,
-      curseforge: resource.curseforge,
+      curseforge: isPersisted ? resource.curseforge : undefined,
       dependencies: { minecraft: '[*]' },
     }
   }
@@ -170,8 +171,8 @@ export function useInstanceMods() {
     const disabled = items.filter(m => !m.enabled).map((m) => map.get(m.hash)).filter(isNonnull)
 
     await Promise.all([
-      deploy({ resources: enabled }),
-      undeploy(disabled),
+      deploy({ mods: enabled }),
+      undeploy({ mods: disabled }),
     ])
   }
 

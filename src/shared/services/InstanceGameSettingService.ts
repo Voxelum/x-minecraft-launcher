@@ -1,4 +1,4 @@
-import { Frame as GameSetting } from '@xmcl/gamesetting'
+import type { Frame as GameSetting } from '@xmcl/gamesetting'
 import { StatefulService, ServiceKey, State } from './Service'
 export interface EditGameSettingOptions extends GameSetting {
   /**

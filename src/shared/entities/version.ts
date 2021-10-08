@@ -23,7 +23,7 @@ export const resolveFabricYarnVersion: PartialVersionResolver = (v) => v.librari
 export const resolveMinecraftVersion: PartialVersionResolver = (v) => (v.inheritsFrom ? '' : v.id)
 
 export function isForgeLibrary(lib: LibraryInfo) {
-  return lib.groupId === 'net.minecraftforge' && lib.artifactId === 'forge'
+  return lib.groupId === 'net.minecraftforge' && (lib.artifactId === 'forge' || lib.artifactId === 'fmlloader')
 }
 
 export function isFabricLoaderLibrary(lib: LibraryInfo) {

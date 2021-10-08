@@ -90,6 +90,10 @@ export default class TaskManager extends Manager {
   }
 
   storeReady() {
+    this.emitter.on("fail", (uuid, task, error) => {
+      this.warn(`Task ${task.name}(${uuid}) failed!`)
+      this.warn(error)
+    })
   }
 
   // SETUP CODE

@@ -1,7 +1,7 @@
 import { EMPTY_JAVA, JavaRecord } from '../entities/java'
 import { requireObject, requireString } from '../util/assert'
 import { ServiceKey, StatefulService } from './Service'
-import { Java } from '/@shared/entities/java.schema'
+import { Java } from '../entities/java.schema'
 
 export class JavaState {
   all = [] as JavaRecord[]
@@ -47,7 +47,7 @@ export class JavaState {
 
 export interface JavaService extends StatefulService<JavaState> {
   /**
-   * Install a default jdk 8 or 16 to the a preserved location. It'll be installed under your launcher root location `jre` folder
+   * Install a default jdk 8 or 16 to the a preserved location. It'll be installed under your launcher root location `jre` or `jre-next` folder
    */
   installDefaultJava(version: '8' | '16'): Promise<void>
   /**
