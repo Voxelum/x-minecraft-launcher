@@ -1,3 +1,6 @@
 [submodule "xmcl"]
 	path = xmcl
 	url = https://github.com/Voxelum/minecraft-launcher-core-node
+[submodule "src/purelauncher"]
+	path = purelauncher
+	url = https://github.com/Apisium/PureLauncher
