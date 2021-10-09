@@ -95,6 +95,7 @@ const iconMap: Record<string, string> = {
   fabric: '$vuetify.icons.fabric',
   unknown: 'device_unknown',
   resourcepack: '$vuetify.icons.zip',
+  shaderpack: '$vuetify.icons.zip',
   'curseforge-modpack': '$vuetify.icons.curseforge',
   modpack: '$vuetify.icons.package',
   save: '$vuetify.icons.zip',
@@ -128,8 +129,10 @@ export default defineComponent({
         case 'modpack': return $tc('profile.modpack.name', 0)
         case 'save': return $t('curseforge.worlds.name')
         case 'curseforge-modpack': return $t('curseforge.modpacks.name')
+        case 'shaderpack': return $t('shaderpack.name')
+        case 'unknown':
         default:
-        case 'unknown': return $t('unknownResource')
+          return $t('unknownResource')
       }
     })
     return { disabled, tryEnable, icon, typeName, enabled }

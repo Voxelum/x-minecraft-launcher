@@ -803,6 +803,10 @@
     "viewUpdate": "详细信息",
     "waitReload": "迁移数据中。请勿在此时关闭启动器，否则你将可能失去一部分数据。"
   },
+  "shaderpack": {
+    "hint": "调整此配置的光影包",
+    "name": "光影包"
+  },
   "summery": "简介",
   "task": {
     "cancelled": "已取消",

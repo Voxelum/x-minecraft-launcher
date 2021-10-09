@@ -39,6 +39,7 @@ export enum ResourceType {
   McbbsModpack = 'mcbbs-modpack',
   Save = 'save',
   ResourcePack = 'resourcepack',
+  ShaderPack = 'shaderpack',
   Unknown = 'unknown',
 }
 
@@ -46,6 +47,7 @@ export enum ResourceDomain {
   Mods = 'mods',
   Saves = 'saves',
   ResourcePacks = 'resourcepacks',
+  ShaderPacks = 'shaderpacks',
   Modpacks = 'modpacks',
   Unknown = 'unknowns',
 }
