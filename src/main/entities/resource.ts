@@ -13,6 +13,7 @@ import { ForgeModCommonMetadata, normalizeForgeModMetadata } from '/@shared/enti
 import { AnyPersistedResource, AnyResource, PersistedResource, SourceInformation } from '/@shared/entities/resource'
 import { PersistedResourceSchema, Resource, ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
 import { ResourceSaveMetadata } from '/@shared/entities/save'
+import { ShaderPack } from '/@shared/entities/shaderpack'
 import { resolveRuntimeVersion } from '/@shared/entities/version'
 import { FileTypeHint } from '/@shared/services/ResourceService'
 
@@ -258,6 +259,22 @@ export const RESOURCE_PARSER_COMMON_MODPACK: ResourceParser<{ root: string; runt
   getSuggestedName: () => '',
   getUri: (_) => [],
 })
+export const RESOURCE_PARSER_SHADERPACK: ResourceParser<ShaderPack> = {
+  type: ResourceType.ShaderPack,
+  domain: ResourceDomain.ShaderPacks,
+  ext: '.zip',
+  parseIcon: () => Promise.resolve(undefined),
+  parseMetadata: async (fs) => {
+    const shaderPropertiesExisted = await fs.existsFile('shaders/shaders.properties')
+    if (shaderPropertiesExisted) {
+      return {}
+    }
+    throw new Error()
+  },
+  getSuggestedName: () => '',
+  getUri: (_) => [],
+}
+
 export const RESOURCE_PARSERS = [
   RESOURCE_PARSER_COMMON_MODPACK,
   RESOURCE_PARSER_FORGE,
@@ -266,6 +283,7 @@ export const RESOURCE_PARSERS = [
   RESOURCE_PARSER_RESOURCE_PACK,
   RESOURCE_PARSER_SAVE,
   RESOURCE_PARSER_MODPACK,
+  RESOURCE_PARSER_SHADERPACK,
 ]
 
 // resource functions

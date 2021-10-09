@@ -10,6 +10,7 @@ import mcwiki from './pages/mcwiki'
 import modSetting from './pages/mod-setting'
 import resourcePackPreview from './pages/resource-pack-preview'
 import resourcePackSetting from './pages/resource-pack-setting'
+import shaderPackSetting from './pages/shader-pack-setting'
 import save from './pages/save'
 import setting from './pages/setting'
 import user from './pages/user'
@@ -52,6 +53,10 @@ const router = new Router({
     {
       path: '/resource-pack-setting',
       component: resourcePackSetting,
+    },
+    {
+      path: '/shader-pack-setting',
+      component: shaderPackSetting,
     },
     {
       path: '/resource-pack-preview',

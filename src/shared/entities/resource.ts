@@ -35,6 +35,7 @@ export type CurseforgeModpackResource = Resource<CurseforgeModpackManifest> & { 
 export type McbbsModpackResource = Resource<Modpack> & { readonly type: ResourceType.McbbsModpack }
 export type ModpackResource = Resource<Modpack> & { readonly type: ResourceType.Modpack }
 export type SaveResource = Resource<ResourceSaveMetadata> & { readonly type: ResourceType.Save }
+export type ShaderPackResource = Resource<ShaderPackResource> & { readonly type: ResourceType.ShaderPack }
 export type UnknownResource = Resource<unknown> & { readonly type: ResourceType.Unknown }
 export type ModResource = ForgeResource | FabricResource | LiteloaderResource
 export type AnyResource = ForgeResource
@@ -45,6 +46,7 @@ export type AnyResource = ForgeResource
 | ResourcePackResource
 | SaveResource
 | McbbsModpackResource
+| ShaderPackResource
 | UnknownResource
 
 export type PersistedForgeResource = PersistedResource<ForgeModCommonMetadata> & { readonly type: ResourceType.Forge }
@@ -55,6 +57,7 @@ export type PersistedCurseforgeModpackResource = PersistedResource<CurseforgeMod
 export type PersistedMcbbsModpackResource = PersistedResource<Modpack> & { readonly type: ResourceType.McbbsModpack }
 export type PersistedModpackResource = PersistedResource<Modpack> & { readonly type: ResourceType.Modpack }
 export type PersistedSaveResource = PersistedResource<ResourceSaveMetadata> & { readonly type: ResourceType.Save }
+export type PersistedShaderPackResource = PersistedResource<ShaderPackResource> & { readonly type: ResourceType.ShaderPack }
 export type PersistedUnknownResource = PersistedResource<unknown> & { readonly type: ResourceType.Unknown }
 export type PersistedModResource = PersistedForgeResource | PersistedFabricResource | PersistedLiteloaderResource
 export type AnyPersistedResource = PersistedForgeResource
@@ -65,6 +68,7 @@ export type AnyPersistedResource = PersistedForgeResource
 | PersistedResourcePackResource
 | PersistedSaveResource
 | PersistedMcbbsModpackResource
+| PersistedShaderPackResource
 | PersistedUnknownResource
 
 export function isForgeResource(resource: Resource): resource is ForgeResource {

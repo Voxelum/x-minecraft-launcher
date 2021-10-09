@@ -826,6 +826,10 @@
     "viewUpdate": "View Update Detail",
     "waitReload": "Migrating data. Please don't close the Launcher or you will lose your data."
   },
+  "shaderpack": {
+    "hint": "Enable or disable shader packs to this launch profile",
+    "name": "Shader Pack"
+  },
   "skin": {
     "change": "Change Skin",
     "export": "Export Skin",

@@ -118,6 +118,29 @@
 
           <v-list-tile
             push
+            to="/shader-pack-setting"
+            avatar
+          >
+            <v-list-tile-action>
+              <v-icon>gradient</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{ $tc("shaderpack.name", 2) }}
+              </v-list-tile-title>
+              <v-list-tile-sub-title>
+                {{ $t("shaderpack.hint") }}
+              </v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-btn icon>
+                <v-icon>arrow_right</v-icon>
+              </v-btn>
+            </v-list-tile-action>
+          </v-list-tile>
+
+          <v-list-tile
+            push
             to="/mod-setting"
             avatar
           >
