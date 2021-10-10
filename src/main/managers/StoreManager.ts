@@ -59,7 +59,10 @@ export default class StoreManager extends Manager {
           original.call(this, value)
           update(key, value)
         }
-        mutations[key] = wrapped.bind(state) as any
+        if (!mutations[key]) {
+          mutations[key] = []
+        }
+        mutations[key].push(wrapped.bind(state))
         Reflect.set(state, key, wrapped)
       }
     }
