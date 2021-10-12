@@ -8,6 +8,7 @@ import { URL } from 'url'
 import CredentialManager from '../managers/CredentialManager'
 import LogManager from '../managers/LogManager'
 import NetworkManager from '../managers/NetworkManager'
+import { SemaphoreManager } from '../managers/SemaphoreManager'
 import ServiceManager from '../managers/ServiceManager'
 import StoreManager from '../managers/StoreManager'
 import TaskManager from '../managers/TaskManager'
@@ -126,6 +127,8 @@ export abstract class LauncherApp extends EventEmitter {
 
   readonly workerManager = new WorkerManager(this)
 
+  readonly semaphoreManager = new SemaphoreManager(this)
+
   readonly platform: Platform = getPlatform()
 
   readonly context = new LaunchAppContext()
@@ -136,7 +139,7 @@ export abstract class LauncherApp extends EventEmitter {
 
   get isParking(): boolean { return this.parking }
 
-  protected managers = [this.logManager, this.networkManager, this.taskManager, this.storeManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager]
+  protected managers = [this.logManager, this.networkManager, this.taskManager, this.storeManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager, this.semaphoreManager]
 
   readonly controller: LauncherAppController
 

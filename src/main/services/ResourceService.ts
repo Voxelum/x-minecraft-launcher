@@ -3,6 +3,7 @@ import { readJSON, stat, unlink } from 'fs-extra'
 import { basename, extname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { AggregateExecutor } from '../util/aggregator'
+import { isSystemError } from '../util/error'
 import { RelativeMappedFile } from '../util/persistance'
 import { createPromiseSignal } from '../util/promiseSignal'
 import { BufferJsonSerializer } from '../util/serialize'
@@ -39,6 +40,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
     [ResourceDomain.Saves]: createPromiseSignal(),
     [ResourceDomain.ResourcePacks]: createPromiseSignal(),
     [ResourceDomain.Modpacks]: createPromiseSignal(),
+    [ResourceDomain.ShaderPacks]: createPromiseSignal(),
     [ResourceDomain.Unknown]: createPromiseSignal(),
   }
 
@@ -155,12 +157,12 @@ export default class ResourceService extends StatefulService<ResourceState> impl
         })
         result.push(resource)
       } catch (e) {
-        if (e.code === ENOENT_ERROR) {
+        if (isSystemError(e) && e.code === ENOENT_ERROR) {
           this.warn(`The resource file ${filePath} cannot be found! Remove this resource record!`)
           unlink(filePath)
         } else {
           this.error(`Cannot load resource ${file}`)
-          if (e.stack) {
+          if (e instanceof Error && e.stack) {
             this.error(e.stack)
           } else {
             this.error(e)
@@ -177,7 +179,9 @@ export default class ResourceService extends StatefulService<ResourceState> impl
   async initialize() {
     for (const domain of [
       ResourceDomain.Mods, ResourceDomain.ResourcePacks,
-      ResourceDomain.Saves, ResourceDomain.Modpacks, ResourceDomain.Unknown,
+      ResourceDomain.Saves, ResourceDomain.Modpacks,
+      ResourceDomain.ShaderPacks,
+      ResourceDomain.Unknown,
     ]) {
       this.loadPromises[domain].accept(this.loadDomain(domain))
     }

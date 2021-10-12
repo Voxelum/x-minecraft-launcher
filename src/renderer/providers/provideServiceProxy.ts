@@ -167,7 +167,6 @@ function createSyncable(store: Store<any>) {
   }
 
   ipcRenderer.on('commit', (event, mutation, id) => {
-    console.log('recieved commit! ' + id)
     if (syncing) {
       syncingQueue[id] = mutation
       return
@@ -187,6 +186,11 @@ function createSyncable(store: Store<any>) {
 
 export function provideSemaphore() {
   const semaphore: Record<string, number> = reactive({})
+  ipcRenderer.invoke('semaphore').then((sem) => {
+    for (const [key, val] of Object.entries(sem)) {
+      Vue.set(semaphore, key, val)
+    }
+  })
   ipcRenderer.on('aquire', (e, res) => {
     const sem = res instanceof Array ? res : [res]
     for (const s of sem) {

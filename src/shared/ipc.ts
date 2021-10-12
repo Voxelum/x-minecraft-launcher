@@ -4,6 +4,7 @@ import { TaskBatchPayload, TaskPayload } from './task'
 
 export interface IPCActions {
   'service-call': (service: string, key: string, payload: any) => Promise<string>
+  'semaphore': () => Promise<Record<string, number>>
   session: (sessionId: number) => Promise<any>
   sync: (id: number) => Promise<{ state: any; length: number }>
   commit: (type: string, payload: any) => Promise<void>

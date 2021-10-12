@@ -230,7 +230,7 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
         this.log(`Diagnose for version ${targetVersion}`)
 
         const location = this.getPath()
-        const gameReport = await this.serviceManager.getLock(versionLockOf(targetVersion))
+        const gameReport = await this.semaphoreManager.getLock(versionLockOf(targetVersion))
           .read(() => diagnose(targetVersion, location))
 
         for (const issue of gameReport.issues) {
