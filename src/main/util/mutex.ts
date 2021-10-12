@@ -1,3 +1,5 @@
+import { createPromiseSignal } from './promiseSignal'
+
 export enum LockStatus {
   Idel,
   Reading,
@@ -81,16 +83,13 @@ export class ReadWriteLock {
       return this.perform(operation)
     }
     return new Promise<T>((resolve, reject) => {
-      let _resolveRead = () => { }
       // the shared read section promise
-      const readingPromise = new Promise<void>((resolve) => {
-        _resolveRead = resolve
-      })
+      const readingPromise = createPromiseSignal()
       const wrapper = () => {
         this.perform(operation).then(resolve, reject)
-        return readingPromise
+        return readingPromise.promise
       }
-      this.queue.push([wrapper, _resolveRead])
+      this.queue.push([wrapper, readingPromise.resolve])
       this.processIfIdel()
     })
   }

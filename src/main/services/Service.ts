@@ -87,7 +87,7 @@ export function ReadLock<T extends AbstractService>(key: (string | string[] | Mu
       const promises: Promise<() => void>[] = []
       for (const k of keys) {
         const key = k
-        const lock = this.serviceManager.getLock(key)
+        const lock = this.semaphoreManager.getLock(key)
         promises.push(lock.aquireRead())
       }
       const exec = () => {
@@ -123,7 +123,7 @@ export function Lock<T extends AbstractService>(key: (string | string[] | MutexS
       const keys = keyOrKeys instanceof Array ? keyOrKeys : [keyOrKeys]
       const promises: Promise<() => void>[] = []
       for (const key of keys) {
-        const lock = this.serviceManager.getLock(key)
+        const lock = this.semaphoreManager.getLock(key)
         promises.push(lock.aquireWrite())
       }
       const exec = () => {
@@ -236,6 +236,8 @@ export default abstract class AbstractService {
 
   get workerManager() { return this.app.workerManager }
 
+  get semaphoreManager() {return this.app.semaphoreManager }
+
   /**
    * Submit a task into the task manager.
    *
@@ -299,11 +301,11 @@ export default abstract class AbstractService {
   }
 
   protected up(key: string) {
-    this.serviceManager.up(key)
+    this.semaphoreManager.aquire(key)
   }
 
   protected down(key: string) {
-    this.serviceManager.release(key)
+    this.semaphoreManager.release(key)
   }
 
   protected pushException(e: Exceptions) {

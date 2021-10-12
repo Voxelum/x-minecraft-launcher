@@ -64,7 +64,13 @@ export class GameSettingState implements GameSetting {
  * The service for game setting
  */
 export interface InstanceGameSettingService extends StatefulService<GameSettingState> {
+  /**
+   * Refersh the game setting from options.txt file
+   */
   refresh(): Promise<void>
+  /**
+   * Save current gamesetting to the instance options.txt file
+   */
   saveInstanceGameSetting(): Promise<void>
   /**
    * Read the instance game settings. If the instance does not have game setting, then it will return the empty object {}.
@@ -76,6 +82,9 @@ export interface InstanceGameSettingService extends StatefulService<GameSettingS
    * @param gameSetting The game setting edit options
    */
   edit(gameSetting: EditGameSettingOptions): Promise<void>
+  /**
+   * Show open gamesetting instance
+   */
   showInFolder(): Promise<void>
 }
 

@@ -55,6 +55,22 @@ class ChildrenWatcer {
   }
 }
 
+abstract class AbstractTaskChannel {
+  constructor(readonly ipc: IPCRenderer) { }
+
+  pause(task: TaskItem) {
+    this.ipc.invoke('task-operation', { type: 'pause', id: task.taskId })
+  }
+
+  resume(task: TaskItem) {
+    this.ipc.invoke('task-operation', { type: 'resume', id: task.taskId })
+  }
+
+  cancel(task: TaskItem) {
+    this.ipc.invoke('task-operation', { type: 'cancel', id: task.taskId })
+  }
+}
+
 export function provideTasks() {
   const ipc = ipcRenderer
 

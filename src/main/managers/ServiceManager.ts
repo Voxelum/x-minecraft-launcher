@@ -27,7 +27,6 @@ import VersionService from '../services/VersionService'
 import { Client } from '/@main/engineBridge'
 import { Exception } from '/@shared/entities/exception'
 import { ServiceKey } from '/@shared/services/Service'
-import { ReadWriteLock } from '../util/mutex'
 
 interface ServiceCallSession {
   id: number
@@ -50,43 +49,12 @@ export default class ServiceManager extends Manager {
 
   private sessions: { [key: number]: ServiceCallSession } = {}
 
-  private locks: Record<string, ReadWriteLock> = {}
-
   getService<T>(key: ServiceKey<T>): T | undefined {
     return this.exposedService[key as any] as any
   }
 
   protected addService<S extends AbstractService>(type: ServiceConstructor<S>) {
     this.registeredServices.push(type)
-  }
-
-  getLock(resourcePath: string) {
-    if (!this.locks[resourcePath]) {
-      this.locks[resourcePath] = new ReadWriteLock((delta) => {
-        if (delta > 0) {
-          this.app.broadcast('aquire', resourcePath)
-        } else {
-          this.app.broadcast('release', resourcePath)
-        }
-      })
-    }
-    return this.locks[resourcePath]
-  }
-
-  /**
-   * Aquire and boradcast the key is in used.
-   * @param key The key or keys to aquire
-   */
-  up(key: string) {
-    this.app.broadcast('aquire', key)
-  }
-
-  /**
-   * Release and boradcast the key is not used.
-   * @param key The key or keys to release
-   */
-  release(key: string) {
-    this.app.broadcast('release', key)
   }
 
   /**
