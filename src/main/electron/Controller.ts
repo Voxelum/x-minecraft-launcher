@@ -20,6 +20,7 @@ import favcon2XPath from '/@static/favicon@2x.png'
 import './controlIpc'
 import './dialog'
 import { InstanceServiceKey } from '/@shared/services/InstanceService'
+import { LaunchServiceKey } from '/@shared/services/LaunchService'
 
 export default class Controller implements LauncherAppController {
   private mainWin: BrowserWindow | undefined = undefined
@@ -400,9 +401,12 @@ export default class Controller implements LauncherAppController {
       this.app.broadcast('minecraft-stderr', ...args)
     })
 
-    this.app
+    const launchService = this.app.serviceManager.getService(LaunchServiceKey)
+    if (launchService) {
+      launchService
       .on('minecraft-window-ready', this.onMinecraftWindowReady.bind(this))
       .on('minecraft-exit', this.onMinecraftExited.bind(this))
+    }
   }
 
   async dataReady(): Promise<void> {

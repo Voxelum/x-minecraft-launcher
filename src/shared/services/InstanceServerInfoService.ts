@@ -1,7 +1,7 @@
 import type { Status } from '@xmcl/client'
 import type { ServerInfo } from '@xmcl/server-info'
 import { UNKNOWN_STATUS } from '../entities/serverStatus'
-import { ServiceKey, State, StatefulService } from './Service'
+import { ServiceKey, ServiceTemplate, State, StatefulService } from './Service'
 
 export class ServerInfoWithStatus implements ServerInfo {
   status: Status = UNKNOWN_STATUS
@@ -54,3 +54,8 @@ export interface InstanceServerInfoService extends StatefulService<ServerInfoSta
 }
 
 export const InstanceServerInfoServiceKey: ServiceKey<InstanceServerInfoService> = 'InstanceServerInfoService'
+export const InstanceServerInfoServiceMethods: ServiceTemplate<InstanceServerInfoService> = {
+  refresh: undefined,
+  pingServerStatus: undefined,
+  state: undefined
+}

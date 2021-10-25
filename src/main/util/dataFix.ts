@@ -1,7 +1,6 @@
 import { RESOURCE_FILE_VERSION } from '/@main/constant'
 import { RESOURCE_PARSER_FORGE } from '/@main/entities/resource'
 import { Logger } from '../managers/LogManager'
-import { PersistedResourceSchema } from '/@shared/entities/resource.schema'
 import { openFileSystem } from '@xmcl/system'
 import { writeJSON } from 'fs-extra'
 import { basename, extname, join, relative } from 'path'

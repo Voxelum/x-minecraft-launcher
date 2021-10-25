@@ -6,7 +6,7 @@
   >
     <v-layout
       wrap
-      style="padding: 6px; 8px; max-height: 90vh"
+      style="padding: 6px 8px; max-height: 90vh"
       fill-height
     >
       <v-flex
@@ -404,10 +404,10 @@
 import { defineComponent, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
 import UpdateInfoDialog from './UpdateInfoDialog.vue'
 import localMapping from '/@/assets/locales/index.json'
-import { useBackgroundBlur, useBackgroundImage, useBaseService, useI18n, useLauncherVersion, useNativeDialog, useParticle, useService, useSettings } from '/@/hooks'
+import { useBackgroundBlur, useBackgroundImage, useBaseService, useI18n, useLauncherVersion, useWindowController, useParticle, useService, useSettings } from '/@/hooks'
 
 function setupImage() {
-  const { showOpenDialog } = useNativeDialog()
+  const { showOpenDialog } = useWindowController()
   const { backgroundImage, setBackgroundImage, blur } = useBackgroundImage()
   function selectImage() {
     showOpenDialog({
@@ -436,7 +436,7 @@ function setupImage() {
 export default defineComponent({
   components: { UpdateInfoDialog },
   setup() {
-    const dialog = useNativeDialog()
+    const dialog = useWindowController()
     const { showParticle, particleMode } = useParticle()
     const { blurMainBody } = useBackgroundBlur()
     const { migrate, postMigrate, openDirectory, state } = useBaseService()

@@ -1,9 +1,8 @@
 import type { ResolvedLibrary, Version } from '@xmcl/core'
-import type { FabricArtifactVersion, installForgeTask, InstallProfile, LiteloaderVersion, LiteloaderVersionList, MinecraftVersion, MinecraftVersionList } from '@xmcl/installer'
-import { OptifineVersion } from '../entities/version.schema'
-import { ServiceKey, StatefulService } from './Service'
+import type { FabricArtifactVersion, InstallProfile, LiteloaderVersion, LiteloaderVersionList, MinecraftVersion, MinecraftVersionList } from '@xmcl/installer'
 import { LATEST_RELEASE } from '../entities/version'
-import { ForgeVersionList, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '../entities/version.schema'
+import { ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '../entities/version.schema'
+import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
 
 export class InstallState {
   /**
@@ -230,3 +229,22 @@ export interface InstallService extends StatefulService<InstallState> {
 }
 
 export const InstallServiceKey: ServiceKey<InstallService> = 'InstallService'
+export const InstallServiceMethods: ServiceTemplate<InstallService> = {
+  refreshMinecraft: undefined,
+  installAssetsForVersion: undefined,
+  installDependencies: undefined,
+  reinstall: undefined,
+  installAssets: undefined,
+  installMinecraft: undefined,
+  installLibraries: undefined,
+  refreshForge: undefined,
+  installForge: undefined,
+  refreshFabric: undefined,
+  installFabric: undefined,
+  refreshOptifine: undefined,
+  installOptifine: undefined,
+  refreshLiteloader: undefined,
+  installLiteloader: undefined,
+  installByProfile: undefined,
+  state: undefined
+}

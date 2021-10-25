@@ -76,6 +76,9 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       }
     }
 
+    instance.runtime.minecraft = instance.runtime.minecraft || LATEST_RELEASE.id
+    instance.author = instance.author || this.userService.state.gameProfile?.name || ''
+
     if (option.server) {
       instance.server = option.server
     }

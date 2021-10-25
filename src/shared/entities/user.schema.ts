@@ -52,8 +52,8 @@ export interface UserProfile {
   selectedProfile: string
 
   /**
-     * The avatar uri. This can be base64 data uri.
-     */
+    * The avatar uri. This can be base64 data uri.
+    */
   avatar?: string
 }
 

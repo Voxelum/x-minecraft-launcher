@@ -609,6 +609,7 @@
     "logsCrashes": {
       "crashes": "Crash Reports",
       "logs": "Logs",
+      "placeholder": "No Files Found",
       "title": "Logs or Crash Reports"
     },
     "mcOptions": "Minecraft Options",

@@ -57,9 +57,15 @@
               justify-center
               align-center
             >
-              <h1>
-                Empty
+              <h1 v-if="loading">
+                {{ $t('profile.logsCrashes.placeholder') }}
               </h1>
+              <v-progress-circular
+                v-else
+                :size="100"
+                color="white"
+                indeterminate
+              />
             </v-layout>
           </v-container>
         </div>
@@ -105,6 +111,7 @@ export default defineComponent({
     getFileContent: required<(file: string) => Promise<string>>(Function),
     removeFile: required<(file: string) => Promise<void>>(Function),
     showFile: required<(file: string) => void>(Function),
+    loading: required<boolean>(Boolean),
   },
   setup(props) {
     const content = ref('')

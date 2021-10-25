@@ -1,5 +1,6 @@
 import { Task } from '@xmcl/task'
 import { join } from 'path'
+import { EventEmitter } from 'stream'
 import LauncherApp from '/@main/app/LauncherApp'
 import { Exceptions } from '/@shared/entities/exception'
 import { ServiceKey, State } from '/@shared/services/Service'
@@ -11,7 +12,7 @@ export const KEYS_SYMBOL = Symbol('service:key')
 export const INTERNAL_SYMBOL = Symbol('service:internal')
 export const SUBSCRIBE_SYMBOL = Symbol('service:subscribe')
 
-export type ServiceConstructor<T extends AbstractService = any> = {
+export type ServiceConstructor<T extends AbstractService = AbstractService> = {
   new(...args: any[]): T
 }
 
@@ -185,9 +186,9 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
       if (last) {
         return last
       } else {
-        this.log(`aquire singleton ${targetKey}`)
+        this.log(`Aquire singleton ${targetKey}`)
         instances[targetKey] = exec().finally(() => {
-          this.log(`release singleton ${targetKey}`)
+          this.log(`Release singleton ${targetKey}`)
           delete instances[targetKey]
         })
         return instances[targetKey]
@@ -215,10 +216,11 @@ export class ServiceException extends Error {
  *
  * The service is a stateful object has life cycle. It will be created when the launcher program start, and destroied
  */
-export default abstract class AbstractService {
+export default abstract class AbstractService extends EventEmitter {
   readonly name: string
 
   constructor(readonly app: LauncherApp) {
+    super()
     this.name = Object.getPrototypeOf(this).constructor.name
   }
 
@@ -236,7 +238,12 @@ export default abstract class AbstractService {
 
   get workerManager() { return this.app.workerManager }
 
-  get semaphoreManager() {return this.app.semaphoreManager }
+  get semaphoreManager() { return this.app.semaphoreManager }
+
+  emit(event: string, ...args: any[]): boolean {
+    this.serviceManager.propagateEvent(this.name, event, ...args)
+    return super.emit(event, ...args)
+  }
 
   /**
    * Submit a task into the task manager.
@@ -306,10 +313,6 @@ export default abstract class AbstractService {
 
   protected down(key: string) {
     this.semaphoreManager.release(key)
-  }
-
-  protected pushException(e: Exceptions) {
-    this.app.broadcast('notification', e)
   }
 }
 

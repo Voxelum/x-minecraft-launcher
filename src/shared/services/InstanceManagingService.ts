@@ -1,4 +1,4 @@
-import { ServiceKey, State, StatefulService } from './Service'
+import { ServiceKey, ServiceTemplate, State, StatefulService } from './Service'
 
 export interface ImportHMCLModpackOptions {
   /**
@@ -65,3 +65,9 @@ export interface InstanceManagingService extends StatefulService<InstanceManagin
 }
 
 export const InstanceManagingServiceKey: ServiceKey<InstanceManagingService> = 'InstanceManagingService'
+export const InstanceManagingServiceMethods: ServiceTemplate<InstanceManagingService> = {
+  createManagedInstance: undefined,
+  refresh: undefined,
+  update: undefined,
+  state: undefined,
+}

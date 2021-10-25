@@ -55,13 +55,12 @@
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, defineComponent } from '@vue/composition-api'
-import { useClipboard, useTasks } from '/@/hooks'
+import { defineComponent, reactive, toRefs } from '@vue/composition-api'
 import { TaskItem } from '/@/entities/task'
+import { useTasks } from '/@/hooks'
 
 export default defineComponent({
   setup() {
-    const clipboard = useClipboard()
     const { tasks, pause, resume, cancel } = useTasks()
 
     const data = reactive({
@@ -78,7 +77,7 @@ export default defineComponent({
       resume,
       cancel,
       onTaskClick(event: MouseEvent, item: TaskItem) {
-        clipboard.writeText(item.message || '')
+        navigator.clipboard.writeText(item.message ?? '')
       },
     }
   },

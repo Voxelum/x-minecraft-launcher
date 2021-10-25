@@ -5,7 +5,6 @@ import { Manager } from '.'
 import { APP_INSIGHT_KEY, IS_DEV } from '/@main/constant'
 
 export default class TelemetryManager extends Manager {
-
   private sessionId: string = v4()
 
   async setup() {

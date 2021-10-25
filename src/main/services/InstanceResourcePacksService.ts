@@ -142,9 +142,8 @@ export default class InstanceResourcePackService extends StatefulService<Instanc
     await ensureDir(basePath)
     await this.resourceService.whenResourcePacksReady()
     this.state.instanceResourcepacks({ instance: instancePath, resources: await this.scanResourcepacks(basePath) })
-    this.resourcepacksWatcher = watch(basePath, (event, name) => {
-      if (name.startsWith('.')) return
-      const filePath = name
+    this.resourcepacksWatcher = watch(basePath, (event, filePath) => {
+      if (filePath.startsWith('.')) return
       if (event === 'update') {
         this.resourceService.parseFile({ path: filePath, type: 'resourcepacks' }).then(([resource, icon]) => {
           if (isResourcePackResource(resource)) {

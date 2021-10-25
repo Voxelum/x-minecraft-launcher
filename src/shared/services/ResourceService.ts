@@ -1,7 +1,7 @@
-import { AnyPersistedResource, AnyResource, PersistedCurseforgeModpackResource, PersistedFabricResource, PersistedForgeResource, PersistedLiteloaderResource, PersistedModpackResource, PersistedResource, PersistedResourcePackResource, PersistedSaveResource, PersistedUnknownResource, SourceInformation } from '../entities/resource'
+import { AnyPersistedResource, AnyResource, PersistedCurseforgeModpackResource, PersistedFabricResource, PersistedForgeResource, PersistedLiteloaderResource, PersistedModpackResource, PersistedResource, PersistedResourcePackResource, PersistedSaveResource, PersistedShaderPackResource, PersistedUnknownResource, SourceInformation } from '../entities/resource'
 import { ResourceDomain } from '../entities/resource.schema'
 import { requireString } from '../util/assert'
-import { ServiceKey, StatefulService } from './Service'
+import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
 
 export declare type FileTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save'
 
@@ -68,6 +68,7 @@ const domains = [
   'saves',
   'modpacks',
   'unknowns',
+  'shaderpacks',
 ] as const
 
 export class ResourceState {
@@ -75,6 +76,7 @@ export class ResourceState {
   resourcepacks = [] as Array<PersistedResourcePackResource>
   saves = [] as Array<PersistedSaveResource>
   modpacks = [] as Array<PersistedModpackResource | PersistedCurseforgeModpackResource>
+  shaderpacks = [] as Array<PersistedShaderPackResource>
   unknowns = [] as Array<PersistedUnknownResource>
 
   /**
@@ -200,3 +202,16 @@ export interface ResourceService extends StatefulService<ResourceState> {
 }
 
 export const ResourceServiceKey: ServiceKey<ResourceService> = 'ResourceService'
+export const ResourceServiceMethods: ServiceTemplate<ResourceService> = {
+  whenModsReady: undefined,
+  whenResourcePacksReady: undefined,
+  removeResource: undefined,
+  renameResource: undefined,
+  setResourceTags: undefined,
+  parseFile: undefined,
+  parseFiles: undefined,
+  importFile: undefined,
+  importFiles: undefined,
+  exportResource: undefined,
+  state: undefined
+}

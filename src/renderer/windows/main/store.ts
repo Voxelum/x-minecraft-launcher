@@ -1,18 +1,21 @@
-import { provide } from '@vue/composition-api'
 import Vuex, { Store } from 'vuex'
-import { STORE_KEY } from '../constant'
 
 /**
  * Provide vuex store for certain modules.
  */
-export default function provideVuexStore(): Store<any> {
+export function createStore(): Store<any> {
   const options = {
+    state: {
+      loading: false
+    },
     modules: {
     },
     mutations: {
+      setLoading(state: any, isLoading: boolean) {
+        
+      }
     },
   }
   const store = new Vuex.Store(options)
-  provide(STORE_KEY, store)
   return store
 }

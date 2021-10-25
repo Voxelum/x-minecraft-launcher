@@ -9,6 +9,7 @@ import InstallService from './InstallService'
 import InstanceService from './InstanceService'
 import { Inject, Lock, Singleton, StatefulService, Subscribe } from './Service'
 import VersionService from './VersionService'
+import { Exception } from '/@shared/entities/exception'
 import { RuntimeVersions } from '/@shared/entities/instance.schema'
 import { IssueReport } from '/@shared/entities/issue'
 import { getExpectVersion, isSameForgeVersion, parseOptifineVersion } from '/@shared/entities/version'
@@ -44,7 +45,7 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
                 // await this.install.installDependencies(fullVersion);
               }
             } else {
-              this.pushException({ type: 'fixVersionNoForgeVersionMetadata', minecraft, forge })
+              this.emit('error', new Exception({ type: 'fixVersionNoForgeVersionMetadata', minecraft, forge }))
             }
           }
           if (fabricLoader) {
@@ -53,7 +54,7 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
 
           // TODO: check liteloader
         } else {
-          this.pushException({ type: 'fixVersionNoVersionMetadata', minecraft })
+          this.emit('error', new Exception({ type: 'fixVersionNoVersionMetadata', minecraft }))
         }
       },
       this.diagnoseVersion.bind(this))

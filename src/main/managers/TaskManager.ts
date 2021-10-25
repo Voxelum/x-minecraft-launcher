@@ -79,7 +79,7 @@ export default class TaskManager extends Manager {
     const index = this.tasks.length
     this.tasks.push(task)
     return task.wait().finally(() => {
-      this.log(`Task done and delete record!`)
+      this.log('Task done and delete record!')
       delete this.record[uid]
       this.tasks.splice(index, 1)
     })
@@ -90,7 +90,7 @@ export default class TaskManager extends Manager {
   }
 
   storeReady() {
-    this.emitter.on("fail", (uuid, task, error) => {
+    this.emitter.on('fail', (uuid, task, error) => {
       this.warn(`Task ${task.name}(${uuid}) failed!`)
       this.warn(error)
     })

@@ -67,10 +67,6 @@ export class ReadWriteLock {
     return this.status
   }
 
-  getSemaphore() {
-    return this.semaphore
-  }
-
   /**
    * Submit a read operation to the resource. Once the resource is reading, all read operations can get the lock.
    *

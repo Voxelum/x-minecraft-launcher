@@ -1,11 +1,11 @@
-import { TASK_PROXY } from '/@/constant'
-import { getServiceCallTasks } from '/@/providers/provideServiceProxy'
 import { requireNonnull } from '/@shared/util/assert'
 import { computed, inject, Ref } from '@vue/composition-api'
 import { TaskState } from '/@shared/task'
+import { getServiceCallTasks } from '../serviceProxy'
+import { TASK_MANAGER } from '../windows/main/provideTaskProxy'
 
 export function useTaskCount() {
-  const proxy = inject(TASK_PROXY)
+  const proxy = inject(TASK_MANAGER)
   requireNonnull(proxy)
   const { tasks } = proxy
   const count = computed(() => tasks.value.filter(t => t.state === TaskState.Running).length)
@@ -13,14 +13,14 @@ export function useTaskCount() {
 }
 
 export function useTasks() {
-  const proxy = inject(TASK_PROXY)
+  const proxy = inject(TASK_MANAGER)
   requireNonnull(proxy)
   const { pause, resume, cancel, tasks } = proxy
   return { tasks, pause, resume, cancel }
 }
 
 export function useTaskFromServiceCall(call: Ref<Readonly<Promise<any> | undefined>>) {
-  const proxy = inject(TASK_PROXY)
+  const proxy = inject(TASK_MANAGER)
   requireNonnull(proxy)
 
   const { tasks } = proxy

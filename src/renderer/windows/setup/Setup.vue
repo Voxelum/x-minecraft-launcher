@@ -92,15 +92,15 @@
 
 <script lang=ts>
 import { defineComponent, reactive, toRefs, inject } from '@vue/composition-api'
-import { useIpc, useNativeDialog, useI18n } from '/@/hooks'
+import { useWindowController, useI18n } from '/@/hooks'
 import { I18N_KEY } from '/@/constant'
+import { ipcRenderer } from 'electron'
 
 export default defineComponent({
   setup() {
     const i18n = inject(I18N_KEY)
     const { $t } = useI18n()
-    const ipcRenderer = useIpc()
-    const dialog = useNativeDialog()
+    const dialog = useWindowController()
     const data = reactive({
       fetching: true,
       minecraftPath: '',

@@ -57,7 +57,7 @@ import { computed, defineComponent, ref } from '@vue/composition-api'
 import {
   useI18n,
   useUserSkin,
-  useNativeDialog,
+  useWindowController,
   useUserSecurityStatus,
 } from '/@/hooks'
 import { required } from '/@/util/props'
@@ -80,7 +80,7 @@ export default defineComponent({
     const { watcherTask } = useNotifier()
     const { security } = useUserSecurityStatus()
     const { url, slim, refreshing, refresh, save, exportTo, loading, modified, reset } = useUserSkin(computed(() => props.userId), computed(() => props.profileId))
-    const { showOpenDialog, showSaveDialog } = useNativeDialog()
+    const { showOpenDialog, showSaveDialog } = useWindowController()
     const isImportSkinDialogShown = ref(false)
     const pending = computed(() => refreshing.value || loading.value)
     async function loadSkin() {

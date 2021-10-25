@@ -1,5 +1,5 @@
 import { Resource } from '../entities/resource.schema'
-import { ServiceKey, StatefulService } from './Service'
+import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
 import { AnyResource } from '../entities/resource'
 export interface InstallResourcePacksOptions {
   resources: Resource[]
@@ -46,3 +46,11 @@ export interface InstanceResourcePacksService extends StatefulService<InstanceRe
 }
 
 export const InstanceResourcePacksServiceKey: ServiceKey<InstanceResourcePacksService> = 'InstanceResourcePacksService'
+export const InstanceResourcePacksServiceMethods: ServiceTemplate<InstanceResourcePacksService> = {
+  refresh: undefined,
+  mount: undefined,
+  ensureResourcePacksDeployment: undefined,
+  install: undefined,
+  uninstall: undefined,
+  state: undefined
+}

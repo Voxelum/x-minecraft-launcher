@@ -24,7 +24,7 @@ export default class NetworkManager extends Manager {
 
   private natType: NatType = 'Blocked'
 
-  private publicIp: string = ''
+  private publicIp = ''
 
   private discoveredPort: number[] = []
 
@@ -60,13 +60,13 @@ export default class NetworkManager extends Manager {
   }
 
   async updateNatType() {
-    this.log(`Try to get NAT type`)
-    this.natType = await getNatType({ logsEnabled: false, stunHost: this.inGFW ? "stun.qq.com" : undefined })
+    this.log('Try to get NAT type')
+    this.natType = await getNatType({ logsEnabled: false, stunHost: this.inGFW ? 'stun.qq.com' : undefined })
     this.log(`Update NAT type: ${this.natType}`)
   }
 
   async updatePublicIp() {
-    this.log(`Try update public ip`)
+    this.log('Try update public ip')
 
     this.publicIp = await new Promise<string>((resolve, reject) => {
       this.nat.externalIp((err, ip) => {
@@ -95,8 +95,7 @@ export default class NetworkManager extends Manager {
   getPublicIp() {
     return new Promise<string>((resolve, reject) => {
       this.nat.externalIp((err, ip) => {
-        if (err) { reject(err) }
-        else { resolve(ip) }
+        if (err) { reject(err) } else { resolve(ip) }
       })
     })
   }

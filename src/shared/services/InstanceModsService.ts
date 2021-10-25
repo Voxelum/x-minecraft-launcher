@@ -1,5 +1,5 @@
 import { Resource } from '../entities/resource.schema'
-import { StatefulService, ServiceKey, State } from './Service'
+import { StatefulService, ServiceKey, State, ServiceTemplate } from './Service'
 import { AnyResource } from '../entities/resource'
 export interface InstallModsOptions {
   mods: Resource[]
@@ -62,3 +62,10 @@ export interface InstanceModsService extends StatefulService<InstanceModsState> 
 }
 
 export const InstanceModsServiceKey: ServiceKey<InstanceModsService> = 'InstanceModsService'
+export const InstanceModsServiceMethods: ServiceTemplate<InstanceModsService> = {
+  mount: undefined,
+  refresh: undefined,
+  install: undefined,
+  uninstall: undefined,
+  state: undefined
+}

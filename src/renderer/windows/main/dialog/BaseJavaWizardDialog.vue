@@ -29,7 +29,7 @@
 
 <script lang=ts>
 import { reactive, computed, toRefs, defineComponent } from '@vue/composition-api'
-import { useI18n, useJava, useNativeDialog, useServiceOnly, useInstance, useService } from '/@/hooks'
+import { useI18n, useJava, useWindowController, useServiceOnly, useInstance, useService } from '/@/hooks'
 import { useJavaWizardDialog, useNotifier } from '/@/windows/main/hooks'
 import { JavaServiceKey } from '/@shared/services/JavaService'
 
@@ -41,7 +41,7 @@ export default defineComponent({
     },
   },
   setup() {
-    const { showOpenDialog } = useNativeDialog()
+    const { showOpenDialog } = useWindowController()
     const { $t } = useI18n()
     const { show, isShown, javaIssue } = useJavaWizardDialog()
     const { add, refreshLocalJava } = useJava()
@@ -49,7 +49,7 @@ export default defineComponent({
     const { state, installDefaultJava } = useService(JavaServiceKey)
     const { subscribeTask } = useNotifier()
 
-    const validJava = computed(() => javaIssue.value.version === '8' 
+    const validJava = computed(() => javaIssue.value.version === '8'
       ? state.all.find(j => j.majorVersion === 8 && j.valid)
       : state.all.find(j => j.majorVersion >= 16))
     const data = reactive({

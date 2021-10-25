@@ -1,6 +1,6 @@
 import { EMPTY_JAVA, JavaRecord } from '../entities/java'
 import { requireObject, requireString } from '../util/assert'
-import { ServiceKey, StatefulService } from './Service'
+import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
 import { Java } from '../entities/java.schema'
 
 export class JavaState {
@@ -61,3 +61,9 @@ export interface JavaService extends StatefulService<JavaState> {
 }
 
 export const JavaServiceKey: ServiceKey<JavaService> = 'JavaService'
+export const JavaServiceMethods: ServiceTemplate<JavaService> = {
+  installDefaultJava: undefined,
+  resolveJava: undefined,
+  refreshLocalJava: undefined,
+  state: undefined
+}

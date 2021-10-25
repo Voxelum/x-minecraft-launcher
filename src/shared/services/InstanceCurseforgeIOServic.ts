@@ -1,4 +1,4 @@
-import { ServiceKey } from './Service'
+import { ServiceKey, ServiceTemplate } from './Service'
 
 export interface ExportCurseforgeModpackOptions {
   /**
@@ -45,3 +45,7 @@ export interface InstanceCurseforgeIOService {
 }
 
 export const InstanceCurseforgeIOServiceKey: ServiceKey<InstanceCurseforgeIOService> = 'InstanceCurseforgeIOService'
+export const InstanceCurseforgeIOServiceMethods: ServiceTemplate<InstanceCurseforgeIOService> ={
+  exportCurseforgeModpack: undefined,
+  importCurseforgeModpack: undefined
+}

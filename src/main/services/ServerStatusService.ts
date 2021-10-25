@@ -1,5 +1,6 @@
 import { queryStatus } from '@xmcl/client'
 import mapping from '../../shared/util/protocolToMinecraft'
+import { isSystemError } from '../util/error'
 import AbstractService, { ExportService, Pure } from './Service'
 import { createFailureServerStatus } from '/@shared/entities/serverStatus'
 import { PingServerOptions, ServerStatusService as IServerStatusService, ServerStatusServiceKey } from '/@shared/services/ServerStatusService'
@@ -60,19 +61,21 @@ export default class ServerStatusService extends AbstractService implements ISer
       const status = await queryStatus({ host, port }, { protocol })
       return status
     } catch (e) {
-      if (e.message === 'Connection timeout.') {
+      if (e && typeof e === 'object' && 'message' in e && e.message === 'Connection timeout.') {
         return createFailureServerStatus('profile.server.status.timeout')
       }
-      switch (e.code) {
-        case 'ETIMEOUT':
-          return createFailureServerStatus('profile.server.status.timeout')
-        case 'ENOTFOUND':
-          return createFailureServerStatus('profile.server.status.nohost')
-        case 'ECONNREFUSED':
-          return createFailureServerStatus('profile.server.status.refuse')
-        default:
-          return createFailureServerStatus('profile.server.status.ping')
+      if (isSystemError(e)) {
+        switch (e.code) {
+          case 'ETIMEOUT':
+            return createFailureServerStatus('profile.server.status.timeout')
+          case 'ENOTFOUND':
+            return createFailureServerStatus('profile.server.status.nohost')
+          case 'ECONNREFUSED':
+            return createFailureServerStatus('profile.server.status.refuse')
+          default:
+        }
       }
+      return createFailureServerStatus('profile.server.status.ping')
     }
   }
 

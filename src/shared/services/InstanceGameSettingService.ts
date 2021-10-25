@@ -1,5 +1,5 @@
 import type { Frame as GameSetting } from '@xmcl/gamesetting'
-import { StatefulService, ServiceKey, State } from './Service'
+import { StatefulService, ServiceKey, State, ServiceTemplate } from './Service'
 export interface EditGameSettingOptions extends GameSetting {
   /**
    * The instance to edit game setting.
@@ -89,3 +89,11 @@ export interface InstanceGameSettingService extends StatefulService<GameSettingS
 }
 
 export const InstanceGameSettingServiceKey: ServiceKey<InstanceGameSettingService> = 'InstanceGameSettingService'
+export const InstanceGameSettingServiceMethods: ServiceTemplate<InstanceGameSettingService> = {
+  refresh: undefined,
+  saveInstanceGameSetting: undefined,
+  getInstanceGameSettings: undefined,
+  edit: undefined,
+  showInFolder: undefined,
+  state: undefined
+}

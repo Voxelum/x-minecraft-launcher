@@ -1,4 +1,4 @@
-import { ServiceKey, StatefulService } from './Service'
+import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
 import { InstanceSave, InstanceSaveMetadata } from '../entities/save'
 
 export interface ExportSaveOptions {
@@ -131,3 +131,13 @@ export interface InstanceSavesService extends StatefulService<SaveState> {
 }
 
 export const InstanceSavesServiceKey: ServiceKey<InstanceSavesService> = 'InstanceSavesService'
+export const InstanceSavesServiceMethods: ServiceTemplate<InstanceSavesService> = {
+  readAllInstancesSaves: undefined,
+  getScreenshotUrls: undefined,
+  mountInstanceSaves: undefined,
+  cloneSave: undefined,
+  deleteSave: undefined,
+  importSave: undefined,
+  exportSave: undefined,
+  state: undefined
+}

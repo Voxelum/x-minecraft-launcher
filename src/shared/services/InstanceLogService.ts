@@ -1,4 +1,4 @@
-import { ServiceKey } from './Service'
+import { ServiceKey, ServiceTemplate } from './Service'
 
 /**
  * Provide the ability to list/read/remove log and crash reports of a instance.
@@ -45,3 +45,13 @@ export interface InstanceLogService {
 }
 
 export const InstanceLogServiceKey: ServiceKey<InstanceLogService> = 'InstanceLogService'
+export const InstanceLogServiceMethods: ServiceTemplate<InstanceLogService> = {
+  listLogs: undefined,
+  removeLog: undefined,
+  getLogContent: undefined,
+  listCrashReports: undefined,
+  removeCrashReport: undefined,
+  getCrashReportContent: undefined,
+  showLog: undefined,
+  showCrash: undefined
+}

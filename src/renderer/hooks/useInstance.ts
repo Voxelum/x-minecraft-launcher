@@ -1,4 +1,4 @@
-import { computed, Data, reactive, Ref, toRefs } from '@vue/composition-api'
+import { computed, Data, reactive, Ref, toRefs, watch } from '@vue/composition-api'
 import { Frame as GameSetting } from '@xmcl/gamesetting'
 import { useBusy, useSemaphore } from './useSemaphore'
 import { useService, useServiceOnly } from './useService'
@@ -77,6 +77,10 @@ export function useInstance() {
  */
 export function useInstances() {
   const { state } = useService(InstanceServiceKey)
+  console.log(state)
+  watch(computed(() => state.instances), () => {
+    console.log(state.instances)
+  })
   return {
     instances: computed(() => state.instances),
 

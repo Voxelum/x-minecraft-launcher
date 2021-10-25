@@ -1,7 +1,7 @@
 import { DEFAULT_PROFILE, Instance } from '../entities/instance'
 import { InstanceSchema } from '../entities/instance.schema'
 import { DeepPartial } from '../util/object'
-import { ServiceKey, StatefulService } from './Service'
+import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
 
 export type CreateInstanceOption = Partial<Omit<InstanceSchema, 'lastAccessDate' | 'creationDate'>> & {
   path?: string
@@ -190,3 +190,12 @@ export interface InstanceService extends StatefulService<InstanceState> {
 }
 
 export const InstanceServiceKey: ServiceKey<InstanceService> = 'InstanceService'
+export const InstanceServiceMethods: ServiceTemplate<InstanceService> = {
+  loadInstance: undefined,
+  createInstance: undefined,
+  createAndMount: undefined,
+  mountInstance: undefined,
+  deleteInstance: undefined,
+  editInstance: undefined,
+  state: undefined
+}

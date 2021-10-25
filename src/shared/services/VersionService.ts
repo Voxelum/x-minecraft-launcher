@@ -1,5 +1,5 @@
 import type { ResolvedVersion } from '@xmcl/core'
-import { ServiceKey, StatefulService } from './Service'
+import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
 
 export class VersionState {
   /**
@@ -61,3 +61,13 @@ export interface VersionService extends StatefulService<VersionState> {
 }
 
 export const VersionServiceKey: ServiceKey<VersionService> = 'VersionService'
+export const VersionServiceMethods: ServiceTemplate<VersionService> = {
+  checkLocalMinecraftFiles: undefined,
+  resolveLocalVersion: undefined,
+  refreshVersion: undefined,
+  refreshVersions: undefined,
+  deleteVersion: undefined,
+  showVersionsDirectory: undefined,
+  showVersionDirectory: undefined,
+  state: undefined
+}

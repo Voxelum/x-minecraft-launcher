@@ -1,3 +1,5 @@
+import { GenericEventEmitter } from './events'
+
 export enum TaskState {
   Idel,
   Running,
@@ -76,7 +78,29 @@ export interface TaskUpdatePayload extends TaskPayloadBase {
   state?: TaskState
 }
 
-export interface TaskBatchPayload {
-  adds: TaskAddedPayload[]
-  updates: TaskUpdatePayload[]
+export interface TaskBatchUpdatePayloads {
+  readonly adds: TaskAddedPayload[]
+  readonly updates: TaskUpdatePayload[]
+}
+
+interface TaskChannelEventMap {
+  'task-update': TaskBatchUpdatePayloads
+
+  'task-start': TaskLifeCyclePayload
+  'task-finish': TaskLifeCyclePayload
+  'task-fail': TaskLifeCyclePayload
+}
+
+export interface TaskLifeCyclePayload {
+  name: string // the task path
+  arguments?: Record<string, unknown>
+}
+
+export interface TaskChannel extends GenericEventEmitter<TaskChannelEventMap> {
+  subscribe(): Promise<TaskPayload[]>
+  unsubscribe(): Promise<void>
+
+  pause(taskId: string): Promise<void>
+  resume(taskId: string): Promise<void>
+  cancel(taskId: string): Promise<void>
 }
