@@ -30,7 +30,11 @@ module.exports = {
     "@typescript-eslint"
   ],
   "globals": {
-    NodeJS: true
+    NodeJS: true,
+    taskChannel: true,
+    semaphoreChannel: true,
+    serviceChannel: true,
+    controllerChannel: true,
   },
   "settings": {
   },
