@@ -53,6 +53,10 @@ export default class ServiceManager extends Manager {
     return this.exposedService[key as any] as any
   }
 
+  propagateEvent(service: string, event: string, ...args: any[]) {
+    this.app.broadcast('service-event', { service, event, args })
+  }
+
   protected addService<S extends AbstractService>(type: ServiceConstructor<S>) {
     this.registeredServices.push(type)
   }
@@ -258,7 +262,7 @@ export default class ServiceManager extends Manager {
   }
 
   async engineReady() {
-    this.log(`Register service manager to handle ipc`)
+    this.log('Register service manager to handle ipc')
     this.app.handle('service-call', (e, service: string, name: string, payload: any) => this.prepareServiceCall(e.sender, service, name, payload))
     this.app.handle('session', (_, id) => this.startServiceCall(id))
   }

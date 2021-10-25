@@ -1,7 +1,7 @@
 import type { AddonInfo, Category, File, GetFeaturedAddonOptions, SearchOptions } from '@xmcl/curseforge'
 import { PersistedResource } from '../entities/resource'
 import { ResourceState } from './ResourceService'
-import { ServiceKey, StatefulService } from './Service'
+import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
 import { ProjectType } from '../entities/curseforge'
 export interface InstallFileOptions {
   /**
@@ -115,3 +115,13 @@ export interface CurseForgeService extends StatefulService<CurseforgeState> {
 }
 
 export const CurseForgeServiceKey: ServiceKey<CurseForgeService> = 'CurseForgeService'
+export const CurseForgeServiceMethods: ServiceTemplate<CurseForgeService> = {
+  fetchFeaturedProjects: undefined,
+  fetchProject: undefined,
+  fetchProjectDescription: undefined,
+  fetchProjectFiles: undefined,
+  loadCategories: undefined,
+  searchProjects: undefined,
+  installFile: undefined,
+  state: undefined,
+}

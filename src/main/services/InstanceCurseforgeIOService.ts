@@ -48,10 +48,12 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
 
     const ganeVersionInstance = this.versionService.state.local.find(v => v.id === gameVersion)
     const instance = this.instanceService.state.all[instancePath]
-    const modLoaders = instance.runtime.forge ? [{
-      id: `forge-${instance.runtime.forge}`,
-      primary: true,
-    }] : []
+    const modLoaders = instance.runtime.forge
+      ? [{
+        id: `forge-${instance.runtime.forge}`,
+        primary: true,
+      }]
+      : []
     const curseforgeConfig: CurseforgeModpackManifest = {
       manifestType: 'minecraftModpack',
       manifestVersion: 1,

@@ -12,7 +12,6 @@ import { InstanceVersionState } from './services/InstanceVersionService'
 import { JavaState } from './services/JavaService'
 import { LaunchState } from './services/LaunchService'
 import { ResourceState } from './services/ResourceService'
-import { ServerStatusState } from './services/ServerStatusService'
 import { UserState } from './services/UserService'
 import { VersionState } from './services/VersionService'
 
@@ -31,17 +30,11 @@ export type AllServiceMutations =
   & Mutations<JavaState>
   & Mutations<LaunchState>
   & Mutations<ResourceState>
-  & Mutations<ServerStatusState>
   & Mutations<UserState>
   & Mutations<VersionState>
 
 export type MutationKeys = keyof AllServiceMutations
 export type MutationPayload<T extends MutationKeys> = AllServiceMutations[T]
-
-// type Mutations<T> = {
-//   [key in keyof T]: T[key] extends
-//   ((payload: infer P) => void) ? P : never
-// }
 
 type Mutations<T> = {
   [K in keyof T as T[K] extends Function ? K : never]: T[K] extends ((payload: infer P) => void) ? P : never

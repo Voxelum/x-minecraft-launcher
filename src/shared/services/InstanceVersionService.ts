@@ -1,7 +1,7 @@
 import { DEFAULT_PROFILE } from '../entities/instance'
 import { getResolvedVersion } from '../entities/version'
 import { InstanceState } from './InstanceService'
-import { ServiceKey, State, StatefulService } from './Service'
+import { ServiceKey, ServiceTemplate, State, StatefulService } from './Service'
 import { VersionState } from './VersionService'
 
 export class InstanceVersionState {
@@ -22,3 +22,6 @@ export interface InstanceVersionService extends StatefulService<InstanceVersionS
 }
 
 export const InstanceVersionServiceKey: ServiceKey<InstanceVersionService> = 'InstanceVersionService'
+export const InstanceVersionServiceMethods: ServiceTemplate<InstanceVersionService> = {
+  state: undefined
+}

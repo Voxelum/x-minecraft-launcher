@@ -202,12 +202,11 @@ import { BaseServiceKey } from '/@shared/services/BaseService'
 import {
   useI18n,
   useLaunch,
-  useNativeDialog,
+  useWindowController,
   useInstance,
   useJava,
   useQuit,
   useService,
-  useBrowserWindowOperation,
   useInstanceServerStatus,
 } from '/@/hooks'
 import { useDialog, useNotifier, useJavaWizardDialog } from '/@/windows/main/hooks'
@@ -267,7 +266,7 @@ export default defineComponent({
   },
   setup() {
     const { $t } = useI18n()
-    const { showSaveDialog } = useNativeDialog()
+    const { showSaveDialog, minimize } = useWindowController()
     const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useDialog('log')
     const { show: showFeedbackDialog } = useDialog('feedback')
     const { refreshing, name, isServer, path } = useInstance()
@@ -277,7 +276,6 @@ export default defineComponent({
     const { quit } = useQuit()
     const isExportingCurseforge = ref(false)
     const isExportingModpack = ref(false)
-    const { minimize } = useBrowserWindowOperation()
     async function showExport(type: 'normal' | 'curseforge') {
       if (type === 'curseforge') {
         isExportingCurseforge.value = true

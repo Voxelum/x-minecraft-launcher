@@ -2,7 +2,7 @@ import { GameProfile, MojangChallenge, MojangChallengeResponse, ProfileServiceAP
 import { EMPTY_GAME_PROFILE, EMPTY_USER } from '../entities/user'
 import { GameProfileAndTexture, UserProfile, UserSchema } from '../entities/user.schema'
 import { assignShallow, toObjectReducer } from '../util/object'
-import { ServiceKey, StatefulService } from './Service'
+import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
 
 export interface LoginMicrosoftOptions {
   /**
@@ -347,3 +347,20 @@ export interface UserService extends StatefulService<UserState> {
 }
 
 export const UserServiceKey: ServiceKey<UserService> = 'UserService'
+export const UserServiceMethods: ServiceTemplate<UserService> = {
+  checkLocation: undefined,
+  getChallenges: undefined,
+  submitChallenges: undefined,
+  refreshStatus: undefined,
+  refreshSkin: undefined,
+  uploadSkin: undefined,
+  saveSkin: undefined,
+  refreshUser: undefined,
+  switchUserProfile: undefined,
+  removeUserProfile: undefined,
+  loginMicrosoft: undefined,
+  login: undefined,
+  logout: undefined,
+  state: undefined
+}
+

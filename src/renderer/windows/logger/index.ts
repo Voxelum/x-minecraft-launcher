@@ -8,7 +8,6 @@ import Vue from 'vue'
 
 import 'vuetify/dist/vuetify.min.css'
 import Vuetify from 'vuetify'
-import provideElectron from '/@/providers/provideElectron'
 import Logger from './Logger.vue'
 
 Vue.config.productionTip = false
@@ -24,7 +23,6 @@ Vue.use(Vuetify, {
 
 const vue = new Vue({
   setup () {
-    provideElectron()
     return () => h(Logger)
   },
 })

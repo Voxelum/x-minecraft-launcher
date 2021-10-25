@@ -1,9 +1,9 @@
-import { onMounted, onUnmounted, provide, reactive, Ref, ref } from '@vue/composition-api'
-import { IPCRenderer, ipcRenderer, TASK_PROXY } from '/@/constant'
+import { InjectionKey, onMounted, onUnmounted, reactive, Ref, ref } from '@vue/composition-api'
 import { TaskItem } from '/@/entities/task'
 import { useI18n } from '/@/hooks'
-import { TaskProxy } from '/@/taskProxy'
-import { TaskBatchPayload, TaskPayload, TaskState } from '/@shared/task'
+import { TaskBatchUpdatePayloads, TaskPayload, TaskState } from '/@shared/task'
+
+export const TASK_MANAGER: InjectionKey<ReturnType<typeof useTaskManager>> = Symbol('TASK_MANAGER')
 
 class ChildrenWatcer {
   readonly cached: Array<TaskItem> = new Array(10)
@@ -55,25 +55,11 @@ class ChildrenWatcer {
   }
 }
 
-abstract class AbstractTaskChannel {
-  constructor(readonly ipc: IPCRenderer) { }
-
-  pause(task: TaskItem) {
-    this.ipc.invoke('task-operation', { type: 'pause', id: task.taskId })
-  }
-
-  resume(task: TaskItem) {
-    this.ipc.invoke('task-operation', { type: 'resume', id: task.taskId })
-  }
-
-  cancel(task: TaskItem) {
-    this.ipc.invoke('task-operation', { type: 'cancel', id: task.taskId })
-  }
-}
-
-export function provideTasks() {
-  const ipc = ipcRenderer
-
+/**
+ * Create a task manager based on vue reactivity
+ * @returns 
+ */
+export function useTaskManager() {
   const { $t } = useI18n()
   const dictionary: Record<string, TaskItem> = {}
   const watchers: Record<string, ChildrenWatcer> = {}
@@ -81,27 +67,18 @@ export function provideTasks() {
    * All the root tasks
    */
   const tasks: Ref<TaskItem[]> = ref(reactive([]))
+
   const pause = (task: TaskItem) => {
-    ipc.invoke('task-operation', { type: 'pause', id: task.taskId })
+    taskChannel.pause(task.taskId)
   }
   const resume = (task: TaskItem) => {
-    ipc.invoke('task-operation', { type: 'resume', id: task.taskId })
+    taskChannel.resume(task.taskId)
   }
   const cancel = (task: TaskItem) => {
-    ipc.invoke('task-operation', { type: 'cancel', id: task.taskId })
+    taskChannel.cancel(task.taskId)
   }
 
-  const proxy: TaskProxy = ({
-    dictionary,
-    tasks,
-    pause,
-    resume,
-    cancel,
-  })
-
   let syncing: Promise<void> | undefined
-
-  provide(TASK_PROXY, proxy)
 
   function mapAndRecordTaskItem(payload: TaskPayload): TaskItem {
     const children = ref([])
@@ -124,7 +101,7 @@ export function provideTasks() {
     return item
   }
 
-  const taskUpdateHandler = async (event: any, { adds, updates }: TaskBatchPayload) => {
+  const taskUpdateHandler = async ({ adds, updates }: TaskBatchUpdatePayloads) => {
     if (syncing) {
       await syncing
     }
@@ -189,16 +166,22 @@ export function provideTasks() {
   onMounted(() => {
     let _resolve: () => void
     syncing = new Promise((resolve) => { _resolve = resolve })
-    ipc.on('task-update', taskUpdateHandler)
-    ipc.invoke('task-subscribe', true).then((payload) => {
+    taskChannel.on('task-update', taskUpdateHandler)
+    taskChannel.subscribe().then((payload) => {
       tasks.value = payload.map(mapAndRecordTaskItem)
       _resolve()
     })
   })
   onUnmounted(() => {
-    ipc.invoke('task-unsubscribe')
-    ipc.removeListener('task-update', taskUpdateHandler)
+    taskChannel.unsubscribe()
+    taskChannel.removeListener('task-update', taskUpdateHandler)
   })
 
-  return proxy
+  return {
+    dictionary,
+    tasks,
+    pause,
+    resume,
+    cancel,
+  }
 }

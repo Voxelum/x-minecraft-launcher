@@ -1,6 +1,6 @@
 import { SettingSchema } from '../entities/setting.schema'
 import { UpdateInfo } from '../entities/update'
-import { StatefulService, ServiceKey, State } from './Service'
+import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
 
 export interface MigrateOptions {
   destination: string
@@ -150,3 +150,17 @@ export interface BaseService extends StatefulService<BaseState> {
 }
 
 export const BaseServiceKey: ServiceKey<BaseService> = 'BaseService'
+export const BaseServiceMethods: ServiceTemplate<BaseService> = {
+  handleUrl: undefined,
+  openInBrowser: undefined,
+  showItemInDirectory: undefined,
+  openDirectory: undefined,
+  quitAndInstall: undefined,
+  checkUpdate: undefined,
+  downloadUpdate: undefined,
+  quit: undefined,
+  exit: undefined,
+  migrate: undefined,
+  postMigrate: undefined,
+  state: undefined,
+}

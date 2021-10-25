@@ -1,11 +1,11 @@
-import { filterOptfineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, Status } from '/@shared/entities/version'
-import { isNonnull } from '/@shared/util/assert'
-import { computed, onMounted, onUnmounted, reactive, Ref, toRefs, watch } from '@vue/composition-api'
+import { computed, onMounted, reactive, Ref, toRefs, watch } from '@vue/composition-api'
 import { MinecraftVersion } from '@xmcl/installer'
 import { useBusy } from './useSemaphore'
 import { useService, useServiceOnly } from './useService'
+import { filterOptfineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, Status } from '/@shared/entities/version'
 import { InstallServiceKey } from '/@shared/services/InstallService'
 import { VersionServiceKey } from '/@shared/services/VersionService'
+import { isNonnull } from '/@shared/util/assert'
 
 export function useVersions() {
   return useServiceOnly(VersionServiceKey, 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory')

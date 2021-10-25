@@ -1,9 +1,5 @@
 <template>
-  <v-app
-    ref="app"
-    dark
-    style="background: transparent; overflow: hidden"
-  >
+  <v-app ref="app" dark style="background: transparent; overflow: hidden">
     <universal-drop-view />
     <v-container
       v-if="loading"
@@ -13,25 +9,16 @@
       class="loading-background"
       style="position: absolute; width: 100%; height: 100%;"
     />
-    <v-layout
-      v-else
-      fill-height
-    >
+    <v-layout v-else fill-height>
       <side-bar :go-back="goBack" />
-      <v-layout
-        style="padding: 0; background: transparent; max-height: 100vh;"
-        fill-height
-      >
-        <div
-          class="main-body v-sheet"
-          :class="{ solid: !blurMainBody }"
-        >
+      <v-layout style="padding: 0; background: transparent; max-height: 100vh;" fill-height>
+        <div class="main-body v-sheet" :class="{ solid: !blurMainBody }">
           <img
             v-if="backgroundImage"
             :src="backgroundImage"
             :style="{ filter: `blur(${blur}px)` }"
             style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;"
-          >
+          />
           <particles
             v-if="showParticle"
             color="#dedede"
@@ -39,10 +26,7 @@
             style="position: absolute; width: 100%; height: 100%; z-index: 0;"
             :click-mode="particleMode"
           />
-          <transition
-            name="fade-transition"
-            mode="out-in"
-          >
+          <transition name="fade-transition" mode="out-in">
             <router-view />
           </transition>
         </div>
@@ -69,31 +53,36 @@ import {
   defineComponent,
   ref,
   Ref,
+provide,
 } from '@vue/composition-api'
 import {
   useParticle,
   useBackgroundImage,
-  useIpc,
   useRouter,
   useBackgroundBlur,
   provideAsyncRoute,
   useBaseService,
   provideServerStatusCache,
 } from '/@/hooks'
-import { provideTasks } from '/@/providers/provideTaskProxy'
+import { TASK_MANAGER, useTaskManager } from './provideTaskProxy'
 import { provideDialog, provideNotifier, provideContextMenu, provideSearch, provideIssueHandler } from './hooks'
 import LoginDialog from './dialog/BaseLoginDialog.vue'
 import TaskDialog from './dialog/BaseTaskDialog.vue'
 import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue'
 import Particles from '../../components/Particles.vue'
 import JavaWizardDialog from './dialog/BaseJavaWizardDialog.vue'
+import { injection } from '/@/util/inject'
+import { SYNCABLE_KEY } from '/@/hooks/useSyncable'
 
 export default defineComponent({
   components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaWizardDialog, Particles: (Particles as any) },
   setup() {
     provideDialog()
     provideNotifier()
-    provideTasks()
+
+    const taskManager = useTaskManager()
+    provide(TASK_MANAGER, taskManager)
+  
     provideAsyncRoute()
     provideServerStatusCache()
     provideIssueHandler()
@@ -101,10 +90,10 @@ export default defineComponent({
     const { text, toggle } = provideSearch()
     provideContextMenu()
 
-    const ipcRenderer = useIpc()
     const { particleMode, showParticle } = useParticle()
     const { blurMainBody } = useBackgroundBlur()
     const { blur, backgroundImage } = useBackgroundImage()
+    const { syncing } = injection(SYNCABLE_KEY)
     const { state } = useBaseService()
     const router = useRouter()
     const onHomePage = ref(router.currentRoute.path === '/')
@@ -121,18 +110,20 @@ export default defineComponent({
     })
 
     const data = reactive({
-      loading: true,
-      over: false,
+      loading: false,
     })
 
     function refreshImage() {
       const img = backgroundImage
     }
 
-    onMounted(() => {
-      ipcRenderer.once('synced', () => {
+    watch(syncing, (v) => {
+      if (!v && data.loading) {
         data.loading = false
-      })
+      }
+    })
+
+    onMounted(() => {
       watch(backgroundImage, () => {
         refreshImage()
       })
@@ -144,7 +135,7 @@ export default defineComponent({
           })
         }
       })
-      app.value!.$el.classList.add(state.platform)
+      // app.value!.$el.classList.add(state.platform)
     })
 
     return {

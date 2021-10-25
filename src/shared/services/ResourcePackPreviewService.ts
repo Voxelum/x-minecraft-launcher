@@ -1,5 +1,5 @@
 import type { BlockModel } from '@xmcl/resourcepack'
-import { ServiceKey } from './Service'
+import { ServiceKey, ServiceTemplate } from './Service'
 export interface BlockStateJson {
   name: string
   variants: {
@@ -21,3 +21,7 @@ export interface ResourcePackPreviewService {
 }
 
 export const ResourcePackPreviewServiceKey: ServiceKey<ResourcePackPreviewService> = 'ResourcePackPreviewService'
+export const ResourcePackPreviewServiceMethods: ServiceTemplate<ResourcePackPreviewService> = {
+  loadModel: undefined,
+  getBlockStates: undefined
+}

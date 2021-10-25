@@ -1,8 +1,9 @@
-import { useI18n, useIpc } from '/@/hooks'
+import { useI18n } from '/@/hooks'
 import { PingServerException } from '/@shared/entities/exception'
 import { BuiltinNotification, TaskNotification } from '/@shared/entities/notification'
 import { computed, inject, InjectionKey, onMounted, onUnmounted, provide, reactive, Ref, ref, toRefs, watch } from '@vue/composition-api'
 import { useDialog } from './useDialog'
+import { TaskLifeCyclePayload } from '/@shared/task'
 
 export type Level = 'success' | 'info' | 'warning' | 'error'
 const NOTIFY_QUEUE_SYMBOL: InjectionKey<Ref<Array<LocalNotification>>> = Symbol('NotifierQueue')
@@ -20,7 +21,7 @@ export type SubscribeOptions = {
   title: string | ((err?: any, result?: any) => string)
 }
 
-export function useNotificationHandler () {
+export function useNotificationHandler() {
   const { $t } = useI18n()
   const { show: showTask } = useDialog('task')
   interface Handler<T extends BuiltinNotification> {
@@ -32,7 +33,7 @@ export function useNotificationHandler () {
   }
   const registry: Record<string, Handler<any> | undefined> = {}
 
-  function register<T extends BuiltinNotification> (type: BuiltinNotification['type'], handler: Handler<T>) {
+  function register<T extends BuiltinNotification>(type: BuiltinNotification['type'], handler: Handler<T>) {
     registry[type] = handler
   }
 
@@ -74,13 +75,13 @@ export function useNotificationHandler () {
   return registry
 }
 
-export function useNotificationQueue () {
+export function useNotificationQueue() {
   const queue = inject(NOTIFY_QUEUE_SYMBOL)
   if (!queue) throw new Error()
   return queue
 }
 
-export function provideNotifier () {
+export function provideNotifier() {
   const queue = ref([] as LocalNotification[])
 
   provide(NOTIFY_QUEUE_SYMBOL, queue)
@@ -88,7 +89,7 @@ export function provideNotifier () {
   return { queue }
 }
 
-export function useNotifyQueueConsumer () {
+export function useNotifyQueueConsumer() {
   const data = reactive({
     show: false,
     level: 'info' as Level,
@@ -98,12 +99,11 @@ export function useNotifyQueueConsumer () {
     full: false,
   })
   const registry = useNotificationHandler()
-  const ipc = useIpc()
   const refs = toRefs(data)
   const queue = useNotificationQueue()
   const queueLength = computed(() => queue.value.length)
 
-  function consume () {
+  function consume() {
     const not = queue.value.pop()
     if (not) {
       data.level = not.level
@@ -120,7 +120,7 @@ export function useNotifyQueueConsumer () {
     }
   })
 
-  function handleNotification (event: any, payload: BuiltinNotification) {
+  function handleNotification(payload: TaskLifeCyclePayload) {
     const handler = registry[payload.type]
     if (handler) {
       queue.value.push({ level: handler.level, title: handler.title(payload), more: handler.more, full: handler.full })
@@ -129,10 +129,11 @@ export function useNotifyQueueConsumer () {
     }
   }
   onMounted(() => {
-    ipc.on('notification', handleNotification)
+    taskChannel.on('task-start', handleNotification)
+    // ipc.on('notification', handleNotification)
   })
   onUnmounted(() => {
-    ipc.removeListener('notification', handleNotification)
+    // ipc.removeListener('notification', handleNotification)
   })
 
   return {
@@ -140,7 +141,7 @@ export function useNotifyQueueConsumer () {
   }
 }
 
-export function useNotifier () {
+export function useNotifier() {
   const queue = inject(NOTIFY_QUEUE_SYMBOL)
   if (!queue) throw new Error('Cannot init notifier hook!')
 

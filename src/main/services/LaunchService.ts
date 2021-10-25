@@ -67,13 +67,21 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
       },
       extraJVMArgs: instance.vmOptions,
       extraMCArgs: instance.mcOptions,
-      yggdrasilAgent: useAuthLib ? {
-        jar: await this.externalAuthSkinService.installAuthlibInjection(),
-        server: user.authService.hostName,
-      } : undefined,
+      yggdrasilAgent: useAuthLib
+        ? {
+          jar: await this.externalAuthSkinService.installAuthlibInjection(),
+          server: user.authService.hostName,
+        }
+        : undefined,
     }
 
     return generateArguments(option)
+  }
+
+  async kill() {
+    if (this.launchedProcess) {
+      this.launchedProcess.kill()
+    }
   }
 
   /**
@@ -150,10 +158,12 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
         },
         extraJVMArgs: instance.vmOptions,
         extraMCArgs: instance.mcOptions,
-        yggdrasilAgent: useAuthLib ? {
-          jar: await this.externalAuthSkinService.installAuthlibInjection(),
-          server: user.authService.hostName,
-        } : undefined,
+        yggdrasilAgent: useAuthLib
+          ? {
+            jar: await this.externalAuthSkinService.installAuthlibInjection(),
+            server: user.authService.hostName,
+          }
+          : undefined,
       }
 
       if ('server' in instance && instance.server?.host) {
@@ -185,33 +195,42 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
         errorLogs.push(...buf.toString().split(EOL))
       })
       watcher.on('error', (err) => {
-        this.pushException({ type: 'launchGeneralException', error: err })
+        this.emit('error', new Exception({ type: 'launchGeneralException', error: err }))
         this.state.launchStatus('ready')
       }).on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation }) => {
         this.log(`Minecraft exit: ${code}, signal: ${signal}`)
         if (crashReportLocation) {
           crashReportLocation = crashReportLocation.substring(0, crashReportLocation.lastIndexOf('.txt') + 4)
         }
-        this.app.emit('minecraft-exit', {
+        this.emit('minecraft-exit', {
           code,
           signal,
           crashReport,
           crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
           errorLog: errorLogs.join('\n'),
         })
+        // this.app.emit('minecraft-exit', {
+        //   code,
+        //   signal,
+        //   crashReport,
+        //   crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
+        //   errorLog: errorLogs.join('\n'),
+        // })
         this.state.launchStatus('ready')
         this.launchedProcess = undefined
       }).on('minecraft-window-ready', () => {
-        this.app.emit('minecraft-window-ready')
+        this.emit('minecraft-window-ready')
       })
       /* eslint-disable no-unused-expressions */
       process.stdout?.on('data', (s) => {
         const string = s.toString()
-        this.app.emit('minecraft-stdout', string)
+        // this.app.emit('minecraft-stdout', string)
+        this.emit('minecraft-stdout', string)
       })
       process.stderr?.on('data', (s) => {
         this.warn(s.toString())
-        this.app.emit('minecraft-stderr', s.toString())
+        // this.app.emit('minecraft-stderr', s.toString())
+        this.emit('minecraft-stderr', s.toString())
       })
       process.unref()
       return true

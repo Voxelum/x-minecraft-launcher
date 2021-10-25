@@ -191,11 +191,10 @@ import {
 import {
   useI18n,
   useAutoSaveLoad,
-  useNativeDialog,
+  useWindowController,
   useInstance,
   useJava,
   useLaunchPreview,
-  useClipboard,
 } from '/@/hooks'
 import JavaList from './JavaList.vue'
 import { useNotifier } from '../../hooks'
@@ -204,7 +203,7 @@ export default defineComponent({
   components: { JavaList },
   setup() {
     const { $t } = useI18n()
-    const { showOpenDialog } = useNativeDialog()
+    const { showOpenDialog } = useWindowController()
     const {
       editInstance: edit,
       maxMemory,
@@ -215,7 +214,6 @@ export default defineComponent({
     } = useInstance()
     const { preview, refresh, command } = useLaunchPreview()
     const { notify } = useNotifier()
-    const board = useClipboard()
     const { all: javas, add, remove, refreshLocalJava, refreshing: refreshingLocalJava } = useJava()
 
     const data = reactive({
@@ -259,7 +257,7 @@ export default defineComponent({
         .then(refresh)
         .then(() => {
           notify({ level: 'success', title: $t('copy.success') })
-          board.writeText(command.value)
+          navigator.clipboard.writeText(command.value)
         })
     }
     useAutoSaveLoad(save, load)

@@ -1,7 +1,6 @@
 // import 'vuetify/dist/vuetify.css';
 import '/@/assets/google.font.css'
 import { I18N_KEY } from '/@/constant'
-import provideElectron from '/@/providers/provideElectron'
 import VueCompositionApi, { h, provide } from '@vue/composition-api'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
@@ -50,7 +49,6 @@ const i18n = new VueI18n({
 const vue = new Vue({
   i18n,
   setup () {
-    provideElectron()
     provide(I18N_KEY, i18n)
     return () => h(Setup)
   },

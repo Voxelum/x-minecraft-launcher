@@ -1,5 +1,5 @@
-import { Manager } from '.';
-import { ReadWriteLock } from '../util/mutex';
+import { Manager } from '.'
+import { ReadWriteLock } from '../util/mutex'
 
 export class SemaphoreManager extends Manager {
   private locks: Record<string, ReadWriteLock> = {}

@@ -1,14 +1,5 @@
-import '/@/assets/google.font.css'
-import locales from '/@/assets/locales'
-import { I18N_KEY, ROUTER_KEY } from '/@/constant'
-import provideElectron from '/@/providers/provideElectron'
-import provideServiceProxy, { provideSemaphore } from '/@/providers/provideServiceProxy'
-import provideVueI18n from '/@/providers/provideVueI18n'
-import provideVuexStore from '/@/providers/provideVuexStore'
-import SkinView from '/@/components/SkinView.vue'
-import TextComponent from '/@/TextComponent'
+import VueCompositionApi, { createApp, defineComponent, h, provide } from '@vue/composition-api'
 import Vue from 'vue'
-import VueCompositionApi, { createApp, h, provide } from '@vue/composition-api'
 import VueI18n from 'vue-i18n'
 import VueObserveVisibility from 'vue-observe-visibility'
 import Router from 'vue-router'
@@ -16,116 +7,147 @@ import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import colors from 'vuetify/es5/util/colors'
 import Vuex from 'vuex'
-import './directives'
 import components from './components'
 import CurseforgeIcon from './components/CurseforgeIcon.vue'
-import ZipFileIcon from './components/ZipFileIcon.vue'
+import FabricIcon from './components/FabricIcon.vue'
+import ForgeIcon from './components/ForgeIcon.vue'
 import JarFileIcon from './components/JarFileIcon.vue'
 import PackageFileIcon from './components/PackageFileIcon.vue'
-import ForgeIcon from './components/ForgeIcon.vue'
-import FabricIcon from './components/FabricIcon.vue'
+import ZipFileIcon from './components/ZipFileIcon.vue'
+import './directives'
 import MainWindow from './MainWindow.vue'
-import router from './router'
+import { createRouter } from './router'
+import { createStore } from './store'
+import '/@/assets/google.font.css'
+import locales from '/@/assets/locales'
+import SkinView from '/@/components/SkinView.vue'
+import { I18N_KEY, ROUTER_KEY } from '/@/constant'
+import { SERVICES_SEMAPHORES_KEY, useSemaphores } from '/@/hooks'
+import { SYNCABLE_KEY, useSyncable } from '/@/hooks/useSyncable'
+import { createI18n } from '/@/i18n'
+import { createServiceFactory, SERVICES_KEY } from '/@/serviceProxy'
+import TextComponent from '/@/TextComponent'
 import { BaseServiceKey } from '/@shared/services/BaseService'
 
 Vue.use(VueCompositionApi)
-
-function configApp(app: ReturnType<typeof createApp>) {
-  app.config.productionTip = false
-  app.use(VueI18n)
-  app.use(Vuex)
-  app.use(Vuetify, {
-    icons: {
-      curseforge: {
-        component: CurseforgeIcon,
-      },
-      zip: {
-        component: ZipFileIcon,
-      },
-      jar: {
-        component: JarFileIcon,
-      },
-      package: {
-        component: PackageFileIcon,
-      },
-      forge: {
-        component: ForgeIcon,
-      },
-      fabric: {
-        component: FabricIcon,
-      },
-    },
-    theme: {
-      primary: colors.green,
-      // secondary: colors.lime,
-      accent: colors.green.accent3,
-    },
-  })
-  app.use(Router)
-  app.use(VueObserveVisibility)
-  app.component('TextComponent', TextComponent)
-  app.component('SkinView', SkinView)
-  for (const [key, value] of Object.entries(components)) {
-    app.component(key, value)
+// to prevent the universal drop activated on self element dragging
+document.addEventListener('dragstart', (e) => {
+  if (e.dataTransfer?.effectAllowed === 'uninitialized') {
+    e.dataTransfer!.effectAllowed = 'none'
   }
+})
+
+Vue.use(VueI18n)
+Vue.use(Router)
+
+const i18n = createI18n('en', locales)
+const router = createRouter()
+
+const props: Record<string, any> = {
+  i18n,
+  router,
 }
 
-function startApp() {
-  configApp(Vue as any)
-  const i18n = provideVueI18n('en', locales)
+const app = createApp(defineComponent({
+  i18n,
+  router,
+  setup() {
+    // semaphore
+    const semaphores = useSemaphores()
+    provide(SERVICES_SEMAPHORES_KEY, semaphores)
 
-  // to prevent the universal drop activated on self element dragging
-  document.addEventListener('dragstart', (e) => {
-    if (e.dataTransfer?.effectAllowed === 'uninitialized') {
-      e.dataTransfer!.effectAllowed = 'none'
-    }
-  })
+    // i18n
+    provide(I18N_KEY, i18n)
 
-  const app = createApp({
-    router,
-    i18n,
-    setup() {
-      provideElectron()
-      provideSemaphore()
-      const store = provideVuexStore()
-      const proxy = provideServiceProxy(store)
-      const { openInBrowser } = proxy(BaseServiceKey)
-      provide(I18N_KEY, i18n)
+    // service & store
+    const store = createStore()
+    const proxy = createServiceFactory(store)
+    provide(SERVICES_KEY, proxy)
 
-      store.watch((state) => state[`services/${BaseServiceKey.toString()}`].locale, (newValue: string, oldValue: string) => {
-        console.log(`Locale changed ${oldValue} -> ${newValue}`)
-        i18n.locale = newValue
-      })
+    // make syncable
+    const syncable = useSyncable(store)
+    provide(SYNCABLE_KEY, syncable)
 
-      router.beforeEach((to, from, next) => {
-        const full = to.fullPath.substring(1)
-        if (full.startsWith('https:') || full.startsWith('http:') || full.startsWith('external')) {
-          next(false)
-          console.log(`Prevent ${from.fullPath} -> ${to.fullPath}`)
-          if (full.startsWith('external')) {
-            console.log(full.substring('external/'.length))
-            openInBrowser(full.substring('external/'.length))
-          } else {
-            openInBrowser(full)
-          }
-        } else {
-          console.log(`Route ${from.fullPath} -> ${to.fullPath}`)
-          next()
+    syncable.sync()
+
+    // dynamic change locale
+    store.watch((state) => state[`services/${BaseServiceKey.toString()}`].locale, (newValue: string, oldValue: string) => {
+      console.log(`Locale changed ${oldValue} -> ${newValue}`)
+      i18n.locale = newValue
+    })
+
+    // router
+    const { openInBrowser } = proxy.getService(BaseServiceKey)
+
+    const wrappedRouter = new Proxy(router, {
+      get(target, key) {
+        const prop = Reflect.get(target, key)
+        if (prop instanceof Function) {
+          return (prop as Function).bind(target)
         }
-      })
-      provide(ROUTER_KEY, new Proxy(router, {
-        get(target, key) {
-          const prop = Reflect.get(target, key)
-          if (prop instanceof Function) {
-            return (prop as Function).bind(target)
-          }
-          return prop
-        },
-      }))
-      return () => h(MainWindow)
+        return prop
+      },
+    })
+
+    router.beforeEach((to, from, next) => {
+      const full = to.fullPath.substring(1)
+      if (full.startsWith('https:') || full.startsWith('http:') || full.startsWith('external')) {
+        next(false)
+        console.log(`Prevent ${from.fullPath} -> ${to.fullPath}`)
+        if (full.startsWith('external')) {
+          console.log(full.substring('external/'.length))
+          openInBrowser(full.substring('external/'.length))
+        } else {
+          openInBrowser(full)
+        }
+      } else {
+        console.log(`Route ${from.fullPath} -> ${to.fullPath}`)
+        next()
+      }
+    })
+
+    provide(ROUTER_KEY, wrappedRouter)
+
+    // render the main window
+    return () => h(MainWindow)
+  },
+}), props)
+
+app.config.productionTip = false
+app.use(Vuex)
+app.use(Vuetify, {
+  icons: {
+    curseforge: {
+      component: CurseforgeIcon,
     },
-  })
-  app.mount('#app')
+    zip: {
+      component: ZipFileIcon,
+    },
+    jar: {
+      component: JarFileIcon,
+    },
+    package: {
+      component: PackageFileIcon,
+    },
+    forge: {
+      component: ForgeIcon,
+    },
+    fabric: {
+      component: FabricIcon,
+    },
+  },
+  theme: {
+    primary: colors.green,
+    // secondary: colors.lime,
+    accent: colors.green.accent3,
+  },
+})
+app.use(VueObserveVisibility)
+app.component('TextComponent', TextComponent)
+app.component('SkinView', SkinView)
+
+for (const [key, value] of Object.entries(components)) {
+  app.component(key, value)
 }
 
-startApp()
+app.mount('#app')

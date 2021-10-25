@@ -50,6 +50,9 @@ export default class InstanceIOService extends AbstractService implements IInsta
 
     if (version.id === '') {
       // TODO: throw
+      this.emit('error', {
+        type: '',
+      })
       this.warn(`Cannot export instance ${src} as its version is not installed!`)
       return
     }

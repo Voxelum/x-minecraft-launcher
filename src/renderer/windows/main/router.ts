@@ -16,76 +16,80 @@ import setting from './pages/setting'
 import user from './pages/user'
 import versionSetting from './pages/version-setting'
 
-const router = new Router({
-  routes: [
-    {
-      path: '/',
-      component: root,
-    },
-    {
-      path: '/instances',
-      component: instances,
-    },
-    {
-      path: '/setting',
-      component: setting,
-    },
-    {
-      path: '/user',
-      component: user,
-    },
-    {
-      path: '/save',
-      component: save,
-    },
-    {
-      path: '/base-setting',
-      component: baseSetting,
-    },
-    {
-      path: '/mod-setting',
-      component: modSetting,
-    },
-    {
-      path: '/game-setting',
-      component: gameSetting,
-    },
-    {
-      path: '/resource-pack-setting',
-      component: resourcePackSetting,
-    },
-    {
-      path: '/shader-pack-setting',
-      component: shaderPackSetting,
-    },
-    {
-      path: '/resource-pack-preview',
-      component: resourcePackPreview,
-    },
-    {
-      path: '/version-setting',
-      component: versionSetting,
-    },
-    {
-      path: '/curseforge',
-      component: curseforge,
-    },
-    {
-      path: '/curseforge/:type',
-      component: curseforgeType,
-      props: (route) => ({ keyword: route.query.keyword, page: Number.parseInt(route.query.page as any ?? '1', 10), type: route.path.split('/')[2], from: route.query.from }),
-    },
-    {
-      path: '/curseforge/:type/:id',
-      component: curseforgeTypeId,
-      props: (route) => ({ type: route.path.split('/')[2], id: route.path.split('/')[3], from: route.query.from }),
-    },
-    {
-      path: '/mcwiki',
-      component: mcwiki,
-      props: (route) => ({ path: route.query.path }),
-    },
-  ],
-})
+export const createRouter = () => {
 
-export default router
+  const router = new Router({
+    routes: [
+      {
+        path: '/',
+        component: root,
+      },
+      {
+        path: '/instances',
+        component: instances,
+      },
+      {
+        path: '/setting',
+        component: setting,
+      },
+      {
+        path: '/user',
+        component: user,
+      },
+      {
+        path: '/save',
+        component: save,
+      },
+      {
+        path: '/base-setting',
+        component: baseSetting,
+      },
+      {
+        path: '/mod-setting',
+        component: modSetting,
+      },
+      {
+        path: '/game-setting',
+        component: gameSetting,
+      },
+      {
+        path: '/resource-pack-setting',
+        component: resourcePackSetting,
+      },
+      {
+        path: '/shader-pack-setting',
+        component: shaderPackSetting,
+      },
+      {
+        path: '/resource-pack-preview',
+        component: resourcePackPreview,
+      },
+      {
+        path: '/version-setting',
+        component: versionSetting,
+      },
+      {
+        path: '/curseforge',
+        component: curseforge,
+      },
+      {
+        path: '/curseforge/:type',
+        component: curseforgeType,
+        props: (route) => ({ keyword: route.query.keyword, page: Number.parseInt(route.query.page as any ?? '1', 10), type: route.path.split('/')[2], from: route.query.from }),
+      },
+      {
+        path: '/curseforge/:type/:id',
+        component: curseforgeTypeId,
+        props: (route) => ({ type: route.path.split('/')[2], id: route.path.split('/')[3], from: route.query.from }),
+      },
+      {
+        path: '/mcwiki',
+        component: mcwiki,
+        props: (route) => ({ path: route.query.path }),
+      },
+    ],
+  })
+  return router
+}
+
+

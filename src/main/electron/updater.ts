@@ -9,12 +9,11 @@ import { basename, dirname, join } from 'path'
 import { SemVer } from 'semver'
 import { URL } from 'url'
 import { promisify } from 'util'
-import StoreManager from '../managers/StoreManager'
+import ServiceStateManager from '../managers/ServiceStateManager'
 import { checksum } from '../util/fs'
 import ElectronLauncherApp from './ElectronLauncherApp'
 import { AZURE_CDN, AZURE_CDN_HOST, IS_DEV } from '/@main/constant'
 import { UpdateInfo as _UpdateInfo } from '/@shared/entities/update'
-
 
 /**
  * Only download asar file update.
@@ -26,7 +25,9 @@ export class DownloadAsarUpdateTask extends DownloadTask {
   constructor(private updateInfo: UpdateInfo, private isInGFW: boolean, destination: string) {
     let sha256 = ''
     super({
-      url: '', destination, validator: {
+      url: '',
+      destination,
+      validator: {
         async validate(fd, file, url) {
           const missed = await stat(file).then(s => s.size === 0, () => false)
           if (missed) {
@@ -41,10 +42,10 @@ export class DownloadAsarUpdateTask extends DownloadTask {
           const expect = sha256
           const actual = await checksum(file, 'sha256')
           if (!expect !== actual) {
-            throw new ChecksumNotMatchError('sha256', expect, actual, file, url);
+            throw new ChecksumNotMatchError('sha256', expect, actual, file, url)
           }
-        }
-      }
+        },
+      },
     })
   }
 
@@ -101,7 +102,7 @@ export class DownloadFullUpdateTask extends BaseTask<void> {
 
   protected resumeTask(): Promise<void> {
     // this.runRunt()
-    return Promise.resolve();
+    return Promise.resolve()
   }
 }
 
@@ -228,7 +229,7 @@ export function checkUpdateTask(this: ElectronLauncherApp): Task<_UpdateInfo> {
   })
 }
 
-export function setup(storeMananger: StoreManager) {
+export function setup(storeMananger: ServiceStateManager) {
   storeMananger.subscribe('autoInstallOnAppQuitSet', (value) => {
     autoUpdater.autoInstallOnAppQuit = value
   }).subscribe('allowPrereleaseSet', (value) => {

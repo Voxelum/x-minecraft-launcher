@@ -52,34 +52,37 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs } from '@vue/composition-api'
-import { useClipboard, useIpc } from '/@/hooks'
+import { defineComponent, onMounted, onUnmounted, reactive, toRefs } from '@vue/composition-api'
+import { useService, useWindowController } from '/@/hooks'
 import { parseLog, Log } from './log'
+import { LaunchServiceKey } from '/@shared/services/LaunchService'
 
 export default defineComponent({
   setup() {
-    const clipboard = useClipboard()
-    const ipcRenderer = useIpc()
+    const { on, removeListener } = useService(LaunchServiceKey)
+    const { hide } = useWindowController()
     const data = reactive({
       logs: [] as Log[],
     })
     function accept(log: string) {
       data.logs.push(parseLog(log))
     }
-    ipcRenderer.on('minecraft-stdout', (event, str) => {
-      accept(str)
+
+    onMounted(() => {
+      on('minecraft-stderr', accept)
+      on('minecraft-stdout', accept)
     })
-    ipcRenderer.on('minecraft-error', (event, str) => {
-      accept(str)
+    onUnmounted(() => {
+      removeListener('minecraft-stderr', accept)
+      removeListener('minecraft-stdout', accept)
     })
     return {
       ...toRefs(data),
       close() {
-        ipcRenderer.send('window-hide')
+        hide()
       },
       onClick(log: Log) {
-        clipboard.clear()
-        clipboard.writeText(log.raw)
+        navigator.clipboard.writeText(log.raw)
       },
     }
   },

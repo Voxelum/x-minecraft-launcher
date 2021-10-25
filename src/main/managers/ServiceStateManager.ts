@@ -4,7 +4,7 @@ import { isState } from '../services/Service'
 import { State } from '/@shared/services/Service'
 import { MutationKeys, MutationPayload } from '/@shared/state'
 
-export default class StoreManager extends Manager {
+export default class ServiceStateManager extends Manager {
   private eventbus = new EventEmitter()
 
   /**
@@ -47,7 +47,7 @@ export default class StoreManager extends Manager {
     const stateKeys = [] as string[]
     const update = (key: string, value: any) => {
       this.checkPointId += 1
-      app.broadcast('commit', { type: key, payload: value }, this.checkPointId)
+      app.broadcast('commit', { mutation: { type: key, payload: value }, id: this.checkPointId })
       bus.emit(key, value)
     }
     const app = this.app

@@ -84,7 +84,7 @@
 import { reactive, toRefs, computed, defineComponent, Ref, ref } from '@vue/composition-api'
 import {
   useI18n,
-  useNativeDialog,
+  useWindowController,
   useRouter,
   useInstances,
   useResourceOperation,
@@ -143,7 +143,7 @@ function setupInstanceCreation() {
 
 function setupInstanceImport() {
   const { importInstance } = useInstances()
-  const { showOpenDialog } = useNativeDialog()
+  const { showOpenDialog } = useWindowController()
   const { $t } = useI18n()
   const { importResource } = useResourceOperation()
   const { importCurseforgeModpack } = useCurseforgeImport()
@@ -213,6 +213,8 @@ export default defineComponent({
     const { notify } = useNotifier()
     const { push } = useRouter()
     const { text: filter } = useSearch()
+
+    console.log(instances.value)
 
     const filterElem = ref(null) as Ref<any>
 

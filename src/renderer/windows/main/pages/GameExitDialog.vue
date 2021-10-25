@@ -66,12 +66,12 @@
 
 <script lang=ts>
 import { reactive, toRefs, defineComponent } from '@vue/composition-api'
-import { useIpc, useInstanceLogs, useService } from '/@/hooks'
+import { useInstanceLogs, useService } from '/@/hooks'
 import { BaseServiceKey } from '/@shared/services/BaseService'
+import { LaunchServiceKey } from '/@shared/services/LaunchService'
 
 export default defineComponent({
   setup() {
-    const ipc = useIpc()
     const data = reactive({
       isShown: false,
       log: '',
@@ -80,6 +80,7 @@ export default defineComponent({
       errorLog: '',
     })
     const { getLogContent, getCrashReportContent, showLog } = useInstanceLogs()
+    const { on } = useService(LaunchServiceKey)
     const { showItemInDirectory } = useService(BaseServiceKey)
     function decorate(log: string) {
       // let lines = log.split('\n');
@@ -100,7 +101,7 @@ export default defineComponent({
       data.log = decorate(log)
       data.isShown = true
     }
-    ipc.on('minecraft-exit', (event, { code, signal, crashReport, crashReportLocation, errorLog }) => {
+    on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation, errorLog }) => {
       if (code !== 0) {
         console.log(errorLog)
         data.errorLog = errorLog

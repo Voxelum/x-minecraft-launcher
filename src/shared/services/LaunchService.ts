@@ -1,5 +1,6 @@
-import { ServiceKey, StatefulService } from './Service'
+import { GenericEventEmitter } from '../events'
 import { LaunchStatus } from '../entities/launch'
+import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
 
 export class LaunchState {
   status = 'ready' as LaunchStatus
@@ -15,7 +16,18 @@ export class LaunchState {
   }
 }
 
-export interface LaunchService extends StatefulService<LaunchState> {
+interface LaunchServiceEventMap {
+  'minecraft-window-ready': void
+  'minecraft-start': void
+  'minecraft-exit': { code?: number; signal?: string; crashReport?: string; crashReportLocation?: string; errorLog: string }
+  'minecraft-stdout': string
+  'minecraft-stderr': string
+}
+
+export interface LaunchService extends StatefulService<LaunchState>, GenericEventEmitter<LaunchServiceEventMap> {
+  /**
+   * Generate useable launch arugments for current profile
+   */
   generateArguments(): Promise<string[]>
   /**
    * Launch the current selected instance. This will return a boolean promise indeicate whether launch is success.
@@ -26,3 +38,11 @@ export interface LaunchService extends StatefulService<LaunchState> {
 }
 
 export const LaunchServiceKey: ServiceKey<LaunchService> = 'LaunchService'
+export const LaunchServiceMethods: ServiceTemplate<LaunchService> = {
+  generateArguments: undefined,
+  launch: undefined,
+  state: undefined,
+  on: undefined,
+  once: undefined,
+  removeListener: undefined
+}

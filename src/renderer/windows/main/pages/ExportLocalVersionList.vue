@@ -16,8 +16,8 @@
             @click.stop.prevent="select(index)"
           />
         </v-list-tile-avatar>
-        <v-list-tile-title>{{ item.folder }}</v-list-tile-title>
-        <v-list-tile-sub-title>{{ item.minecraft }}</v-list-tile-sub-title>
+        <v-list-tile-title>{{ item.id }}</v-list-tile-title>
+        <v-list-tile-sub-title>{{ item.minecraftVersion }}</v-list-tile-sub-title>
       </v-list-tile>
     </template>
   </v-list>

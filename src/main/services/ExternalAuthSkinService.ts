@@ -27,52 +27,6 @@ export default class ExternalAuthSkinService extends AbstractService implements 
     diagnoseService.registerMatchedFix(['missingAuthlibInjector'],
       () => this.installAuthlibInjection(),
       this.diagnoseAuthlibInjector.bind(this))
-
-    // diagnoseService.registerMatchedFix(['missingCustomSkinLoader'],
-    //   async ([issue]) => {
-    //     const { target, missingJar } = issue.arguments
-    //     const instance = this.getters.instance
-    //     const { fabricLoader, forge, minecraft } = instance.runtime
-    //     if (target === 'forge') {
-    //       if (!forge) {
-    //         const forges = this.state.version.forge.find(f => f.mcversion === minecraft)
-    //         if (forges) {
-    //           const version = forges.versions.find(v => v.type === 'latest') ?? forges.versions.find(v => v.type === 'common')
-    //           if (version) {
-    //             await this.instanceService.editInstance({ runtime: { forge: version?.version ?? '' } })
-    //           }
-    //         }
-    //       }
-    //       if (missingJar) {
-    //         let resource = this.state.resource.mods.find((r) => r.type === 'forge' && (r.metadata as any)[0].modid === 'customskinloader')
-    //         if (!resource) {
-    //           resource = await this.externalAuthSkinService.downloadCustomSkinLoader('forge') as any
-    //         }
-    //         if (!resource) {
-    //           throw new Error('Cannot find custom skin loader event we try to download it!')
-    //         }
-    //         await this.instanceResourceService.deploy({ resources: [resource] })
-    //       }
-    //     } else {
-    //       if (!fabricLoader) {
-    //         const loader = this.state.version.fabric.loaders[0]?.version ?? ''
-    //         const yarn = this.state.version.fabric.yarns.find(y => y.gameVersion === 'minecraft')?.version ?? ''
-    //         const runtime = { yarn, fabricLoader: loader }
-    //         await this.instanceService.editInstance({ runtime })
-    //       }
-    //       if (missingJar) {
-    //         const resource = this.state.resource.mods.find((r) => r.type === 'fabric' && (r.metadata as any).id === 'customskinloader')
-    //         if (!resource) {
-    //           await this.externalAuthSkinService.downloadCustomSkinLoader('fabric')
-    //         }
-    //         if (!resource) {
-    //           throw new Error('Cannot find custom skin loader event we try to download it!')
-    //         }
-    //         await this.instanceResourceService.deploy({ resources: [resource] })
-    //       }
-    //     }
-    //   },
-    //   diagnoseService.diagnoseCustomSkin.bind(diagnoseService))
   }
 
   async downloadCustomSkinLoader(type: 'forge' | 'fabric' = 'forge') {
@@ -178,53 +132,4 @@ export default class ExternalAuthSkinService extends AbstractService implements 
       this.down('diagnose')
     }
   }
-
-  // @Singleton()
-  // async diagnoseCustomSkin(report: Partial<IssueReport>) {
-  //   this.aquire('diagnose')
-  //   try {
-  //     const user = this.state.user.users[this.state.user.selectedUser.id]
-  //     const tree: Pick<IssueReport, 'missingCustomSkinLoader'> = {
-  //       missingCustomSkinLoader: [],
-  //     }
-  //     if (user) {
-  //       if (user.profileService !== 'mojang') {
-  //         const instance = this.state.instance.all[this.state.instance.path]
-  //         const { minecraft, fabricLoader, forge } = instance.runtime
-  //         if ((!forge && !fabricLoader) || forge) {
-  //           if (compareRelease(minecraft, '1.8.9') >= 0) {
-  //             // use forge by default
-  //             const res = this.state.instanceResource.mods.find((r) => r.type === 'forge' && (r.metadata as any)[0].modid === 'customskinloader')
-  //             if (!res || !forge) {
-  //               tree.missingCustomSkinLoader.push({
-  //                 target: 'forge',
-  //                 skinService: user.profileService,
-  //                 missingJar: !res,
-  //                 noVersionSelected: !forge,
-  //               })
-  //             }
-  //           } else {
-  //             this.warn('Current support on custom skin loader forge does not support version below 1.8.9!')
-  //           }
-  //         } else if (compareRelease(minecraft, '1.14') >= 0) {
-  //           const res = this.state.instanceResource.mods.find((r) => r.type === 'fabric' && (r.metadata as any).id === 'customskinloader')
-  //           if (!res) {
-  //             tree.missingCustomSkinLoader.push({
-  //               target: 'fabric',
-  //               skinService: user.profileService,
-  //               missingJar: true,
-  //               noVersionSelected: false,
-  //             })
-  //           }
-  //         } else {
-  //           this.warn('Current support on custom skin loader fabric does not support version below 1.14!')
-  //         }
-  //       }
-  //     }
-
-  //     Object.assign(report, tree)
-  //   } finally {
-  //     this.release('diagnose')
-  //   }
-  // }
 }

@@ -588,6 +588,7 @@
     "logsCrashes": {
       "crashes": "崩溃报告",
       "logs": "日志",
+      "placeholder": "没有找到文件",
       "title": "日志或崩溃报告"
     },
     "mcOptions": "Minecraft 启动选项",

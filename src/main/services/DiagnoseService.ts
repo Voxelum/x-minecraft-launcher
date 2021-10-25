@@ -2,10 +2,12 @@ import { basename } from 'path'
 import { AggregateExecutor } from '../util/aggregator'
 import { ExportService, Singleton, StatefulService } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
+import { Exception } from '/@shared/entities/exception'
 import { Issue, IssueReport } from '/@shared/entities/issue'
 import { DiagnoseService as IDiagnoseService, DiagnoseServiceKey, DiagnoseState } from '/@shared/services/DiagnoseService'
 
 export type DiagnoseFunction = (report: Partial<IssueReport>) => Promise<void>
+
 export interface Fix {
   match(issues: readonly Issue[]): boolean
   fix(issues: readonly Issue[]): Promise<void>
@@ -58,23 +60,6 @@ export default class DiagnoseService extends StatefulService<DiagnoseState> impl
   //   // await this.diagnoseCustomSkin(report);
   //   this.report(report)
   //   this.release('diagnose')
-  // }
-
-  // @Subscribe('instance')
-  // async onInstance(payload: any) {
-  //   if (payload.path !== this.state.instance.path) {
-  //     return
-  //   }
-  //   const report: Partial<IssueReport> = {}
-  //   if ('runtime' in payload) {
-  //     this.aquire('diagnose')
-  //     await this.diagnoseServer(report)
-  //     // await this.diagnoseCustomSkin(report);
-  //     this.release('diagnose')
-  //     this.report(report)
-  //     return
-  //   }
-  //   this.report(report)
   // }
 
   // @Subscribe('instanceStatus')
@@ -160,7 +145,9 @@ export default class DiagnoseService extends StatefulService<DiagnoseState> impl
       try {
         for (const fix of this.fixes) {
           if (fix.match(issues)) {
-            await fix.fix(issues).catch(e => this.pushException({ type: 'issueFix', error: e }))
+            await fix.fix(issues).catch(e => {
+              this.emit('error', new Exception({ type: 'issueFix', error: e }))
+            })
             if (fix.recheck) {
               rechecks.push(fix.recheck)
             }

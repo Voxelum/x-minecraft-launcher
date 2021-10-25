@@ -170,7 +170,7 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
           }
           if (!isPersistedResource(resource)) {
             this.resourceService.importParsedResource({ path: filePath }, resource, icon).catch((e) => {
-              this.warn(e);
+              this.warn(e)
             })
             this.log(`Found new resource in /mods directory! ${filePath}`)
           }

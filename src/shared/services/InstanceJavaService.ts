@@ -1,6 +1,6 @@
 import { InstanceState } from './InstanceService'
 import { JavaState } from './JavaService'
-import { ServiceKey, StatefulService } from './Service'
+import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
 
 export class InstanceJavaState {
   private instance: InstanceState
@@ -36,3 +36,7 @@ export interface InstanceJavaService extends StatefulService<InstanceJavaState> 
 }
 
 export const InstanceJavaServiceKey: ServiceKey<InstanceJavaService> = 'InstanceJavaService'
+export const InstanceJavaServiceMethods: ServiceTemplate<InstanceJavaService> = {
+  diagnoseJava: undefined,
+  state: undefined
+}

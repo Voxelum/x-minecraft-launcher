@@ -70,7 +70,7 @@ export default class JavaService extends StatefulService<JavaState> implements I
     const manifest = await fetchJavaRuntimeManifest({
       apiHost: this.networkManager.isInGFW ? 'bmclapi2.bangbang93.com' : undefined,
       ...this.networkManager.getDownloadBaseOptions(),
-      target: jreTarget
+      target: jreTarget,
     })
     this.log(`Install jre runtime ${jreTarget} ${manifest.version.name} ${manifest.version.released}`)
     const dest = dirname(dirname(location))

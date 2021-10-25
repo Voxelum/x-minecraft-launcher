@@ -1,4 +1,4 @@
-import { CancelledError, TaskBase } from '@xmcl/task'
+import { CancelledError, BaseTask } from '@xmcl/task'
 import { open, openEntryReadStream, readAllEntries, readEntry, walkEntriesGenerator } from '@xmcl/unzip'
 import { createWriteStream } from 'fs'
 import { Readable } from 'stream'
@@ -29,7 +29,7 @@ export function resolveHMCLVersion(version: HMCLVersion) {
  *
  * It will not handle the HMCL version or auto-update function.
  */
-export class InstallHMCLModpackTask extends TaskBase<HMCLServerManagedModpack> {
+export class InstallHMCLModpackTask extends BaseTask<HMCLServerManagedModpack> {
   private zip: ZipFile | undefined
   private entries: (Entry[]) | undefined = []
   private openedStreams: Readable[] = []
@@ -55,7 +55,7 @@ export class InstallHMCLModpackTask extends TaskBase<HMCLServerManagedModpack> {
     this.openedStreams.push(readStream)
   }
 
-  protected async run(): Promise<HMCLServerManagedModpack> {
+  protected async runTask(): Promise<HMCLServerManagedModpack> {
     const [zip, entries] = await this.ensureZip()
     const destination = this._to!
     if (entries.find(e => e.fileName === 'server-manifest.json')) {
@@ -75,19 +75,19 @@ export class InstallHMCLModpackTask extends TaskBase<HMCLServerManagedModpack> {
     throw new Error('Malformed HMCL Modpack!')
   }
 
-  protected async performCancel(): Promise<void> {
+  protected async cancelTask(): Promise<void> {
     for (const stream of this.openedStreams) {
-      stream.destroy(new CancelledError(undefined))
+      stream.destroy(new CancelledError())
     }
   }
 
-  protected async performPause(): Promise<void> {
+  protected async pauseTask(): Promise<void> {
     for (const stream of this.openedStreams) {
       stream.pause()
     }
   }
 
-  protected performResume(): void {
+  protected async resumeTask(): Promise<void> {
     for (const stream of this.openedStreams) {
       stream.resume()
     }

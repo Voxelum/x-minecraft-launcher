@@ -1,11 +1,5 @@
 import type { Status } from '@xmcl/client'
-import { ServiceKey } from './Service'
-
-export class ServerStatusState {
-  status: Record<string, Status> = {}
-
-  // update(payload: { ho })
-}
+import { ServiceKey, ServiceTemplate } from './Service'
 
 export interface PingServerOptions {
   host: string
@@ -18,3 +12,6 @@ export interface ServerStatusService {
 }
 
 export const ServerStatusServiceKey: ServiceKey<ServerStatusService> = 'ServerStatusService'
+export const ServerStatusServiceMethods: ServiceTemplate<ServerStatusService> = {
+  pingServer: undefined
+}

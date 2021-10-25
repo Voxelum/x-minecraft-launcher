@@ -46,6 +46,7 @@
       <tab-item
         :key="0"
         :files="logs"
+        :loading="loadingList"
         :get-file-content="getLogContent"
         :remove-file="removeLog"
         :show-file="showLog"
@@ -53,6 +54,7 @@
       <tab-item
         :key="1"
         :files="crashes"
+        :loading="loadingList"
         :get-file-content="getCrashReportContent"
         :remove-file="removeCrashReport"
         :show-file="showCrashReport"
@@ -79,8 +81,8 @@ export default defineComponent({
     const {
       listLogs,
       listCrashReports,
-      removeLog,
-      removeCrashReport,
+      removeLog: rmLog,
+      removeCrashReport: rmCrash,
       getCrashReportContent,
       getLogContent,
       showLog,
@@ -108,6 +110,14 @@ export default defineComponent({
       }).finally(() => {
         data.loadingList = false
       })
+    }
+    async function removeLog(name: string) {
+      await rmLog(name)
+      loadLogs()
+    }
+    async function removeCrashReport(name: string) {
+      await rmCrash(name)
+      loadCrashes()
     }
     watch(() => props.value, (s) => {
       if (s) {

@@ -1,5 +1,5 @@
 import { ImportFileOptions as _ImportFileOptions } from './ResourceService'
-import { ServiceKey } from './Service'
+import { ServiceKey, ServiceTemplate } from './Service'
 export interface ImportModpackPolicy {
   /**
    * Should import this modpack to storage? (So you can use again in next time)
@@ -65,3 +65,6 @@ export interface ImportService {
 }
 
 export const ImportServiceKey: ServiceKey<ImportService> = 'ImportService'
+export const ImportServiceMethods: ServiceTemplate<ImportService> = {
+  importFile: undefined
+}
