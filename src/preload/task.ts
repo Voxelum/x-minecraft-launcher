@@ -6,7 +6,7 @@ export function createTaskChannel(): ITaskChannel {
   const emitter = new EventEmitter()
 
   ipcRenderer.on('task-update', (_, event) => {
-    emitter.emit(event)
+    emitter.emit('task-update', event)
   })
   return {
     subscribe(): Promise<TaskPayload[]> {
