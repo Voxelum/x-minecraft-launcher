@@ -102,7 +102,7 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, ref } from '@vue/composition-api'
+import { computed, defineComponent, ref } from '@vue/composition-api'
 import { required } from '/@/util/props'
 
 export default defineComponent({
@@ -111,7 +111,7 @@ export default defineComponent({
     getFileContent: required<(file: string) => Promise<string>>(Function),
     removeFile: required<(file: string) => Promise<void>>(Function),
     showFile: required<(file: string) => void>(Function),
-    loading: required<boolean>(Boolean),
+    refreshing: required<boolean>(Boolean),
   },
   setup(props) {
     const content = ref('')
@@ -128,7 +128,7 @@ export default defineComponent({
     }
     return {
       content,
-      loading,
+      loading: computed(() => props.refreshing || loading.value),
       goBack,
       openFile,
       showedFile,

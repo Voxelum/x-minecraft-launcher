@@ -46,7 +46,7 @@
       <tab-item
         :key="0"
         :files="logs"
-        :loading="loadingList"
+        :refreshing="loadingList"
         :get-file-content="getLogContent"
         :remove-file="removeLog"
         :show-file="showLog"
@@ -54,7 +54,7 @@
       <tab-item
         :key="1"
         :files="crashes"
-        :loading="loadingList"
+        :refreshing="loadingList"
         :get-file-content="getCrashReportContent"
         :remove-file="removeCrashReport"
         :show-file="showCrashReport"
