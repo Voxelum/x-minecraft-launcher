@@ -86,7 +86,8 @@ export default defineComponent({
   setup(props, context) {
     const iconImage: Ref<any> = ref(null)
     const { minecraft } = useInstanceVersionBase()
-    const { compatible } = useCompatible(computed(() => props.pack.acceptingRange), minecraft)
+    console.log(props.pack)
+    const { compatible } = useCompatible(computed(() => props.pack.acceptingRange ?? ''), minecraft)
     const { open } = useContextMenu()
     const { $t } = useI18n()
     const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
