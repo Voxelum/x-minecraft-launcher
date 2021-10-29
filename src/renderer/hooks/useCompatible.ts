@@ -3,7 +3,7 @@ import { isCompatible } from '/@shared/entities/version'
 
 export function useCompatible(acceptedRange: Ref<string>, version: Ref<string>, strict = true) {
   const compatible = computed(() => (acceptedRange.value !== 'unknown'
-    ? version.value === '' && !strict
+    ? !version.value && !strict
       ? true
       : isCompatible(acceptedRange.value, version.value)
     : 'unknown'))

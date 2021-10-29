@@ -90,7 +90,7 @@ export function useInstanceResourcePacks() {
       url: resource.uri,
       pack_format: resource.metadata.pack_format,
       description: resource.metadata.description,
-      acceptingRange: mappings[getResourcepackFormat(resource.metadata)],
+      acceptingRange: mappings[getResourcepackFormat(resource.metadata)] ?? '[*]',
       icon,
 
       resource: Object.freeze(resource) as any,
