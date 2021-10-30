@@ -7,6 +7,7 @@ import ExternalAuthSkinService from './ExternalAuthSkinService'
 import InstanceJavaService from './InstanceJavaService'
 import InstanceResourcePackService from './InstanceResourcePacksService'
 import InstanceService from './InstanceService'
+import InstanceShaderPacksService from './InstanceShaderPacksService'
 import InstanceVersionService from './InstanceVersionService'
 import JavaService from './JavaService'
 import { ExportService, Inject, StatefulService } from './Service'
@@ -23,7 +24,8 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
   constructor(app: LauncherApp,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
     @Inject(ExternalAuthSkinService) private externalAuthSkinService: ExternalAuthSkinService,
-    @Inject(InstanceResourcePackService) private instanceResourceService: InstanceResourcePackService,
+    @Inject(InstanceResourcePackService) private instanceResourcePackService: InstanceResourcePackService,
+    @Inject(InstanceShaderPacksService) private instanceShaderPackService: InstanceShaderPacksService,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(InstanceJavaService) private instanceJavaService: InstanceJavaService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
@@ -136,7 +138,10 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
 
       const javaPath = this.instanceJavaService.state.instanceJava.path || this.javaService.state.defaultJava.path
 
-      await this.instanceResourceService.ensureResourcePacksDeployment()
+      await Promise.all([
+        this.instanceResourcePackService.link(),
+        this.instanceShaderPackService.link(),
+      ])
       const useAuthLib = user.isThirdPartyAuthentication
 
       /**

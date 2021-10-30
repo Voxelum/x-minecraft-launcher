@@ -2,10 +2,9 @@ import { BaseState } from './services/BaseService'
 import { CurseforgeState } from './services/CurseForgeService'
 import { DiagnoseState } from './services/DiagnoseService'
 import { InstallState } from './services/InstallService'
-import { GameSettingState } from './services/InstanceGameSettingService'
+import { InstanceOptionsState } from './services/InstanceOptionsService'
 import { InstanceJavaState } from './services/InstanceJavaService'
 import { InstanceModsState } from './services/InstanceModsService'
-import { InstanceResourcePacksState } from './services/InstanceResourcePacksService'
 import { SaveState } from './services/InstanceSavesService'
 import { InstanceState } from './services/InstanceService'
 import { InstanceVersionState } from './services/InstanceVersionService'
@@ -24,8 +23,7 @@ export type AllServiceMutations =
   & Mutations<InstanceJavaState>
   & Mutations<InstanceVersionState>
   & Mutations<InstanceModsState>
-  & Mutations<InstanceResourcePacksState>
-  & Mutations<GameSettingState>
+  & Mutations<InstanceOptionsState>
   & Mutations<SaveState>
   & Mutations<JavaState>
   & Mutations<LaunchState>

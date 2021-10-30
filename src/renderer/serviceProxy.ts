@@ -7,15 +7,16 @@ import { DiagnoseServiceKey, DiagnoseServiceMethods, DiagnoseState } from '/@sha
 import { ImportServiceKey, ImportServiceMethods } from '/@shared/services/ImportService'
 import { InstallServiceKey, InstallServiceMethods, InstallState } from '/@shared/services/InstallService'
 import { InstanceCurseforgeIOServiceKey, InstanceCurseforgeIOServiceMethods } from '/@shared/services/InstanceCurseforgeIOServic'
-import { GameSettingState, InstanceGameSettingServiceKey, InstanceGameSettingServiceMethods } from '/@shared/services/InstanceGameSettingService'
+import { InstanceOptionsState, InstanceOptionsServiceMethods, InstanceOptionsServiceKey } from '../shared/services/InstanceOptionsService'
 import { InstanceIOServiceKey, InstanceIOServiceMethods } from '/@shared/services/InstanceIOService'
 import { InstanceJavaServiceKey, InstanceJavaServiceMethods, InstanceJavaState } from '/@shared/services/InstanceJavaService'
 import { InstanceLogServiceKey, InstanceLogServiceMethods } from '/@shared/services/InstanceLogService'
 import { InstanceModsServiceKey, InstanceModsServiceMethods, InstanceModsState } from '/@shared/services/InstanceModsService'
-import { InstanceResourcePacksServiceKey, InstanceResourcePacksServiceMethods, InstanceResourcePacksState } from '/@shared/services/InstanceResourcePacksService'
+import { InstanceResourcePacksServiceKey, InstanceResourcePacksServiceMethods } from '/@shared/services/InstanceResourcePacksService'
 import { InstanceSavesServiceKey, InstanceSavesServiceMethods, SaveState } from '/@shared/services/InstanceSavesService'
 import { InstanceServerInfoServiceKey, InstanceServerInfoServiceMethods, ServerInfoState } from '/@shared/services/InstanceServerInfoService'
 import { InstanceServiceKey, InstanceServiceMethods, InstanceState } from '/@shared/services/InstanceService'
+import { InstanceShaderPacksServiceKey, InstanceShaderPacksServiceTemplate } from '/@shared/services/InstanceShaderPacksService'
 import { InstanceVersionServiceKey, InstanceVersionServiceMethods, InstanceVersionState } from '/@shared/services/InstanceVersionService'
 import { JavaServiceKey, JavaServiceMethods, JavaState } from '/@shared/services/JavaService'
 import { LaunchServiceKey, LaunchServiceMethods, LaunchState } from '/@shared/services/LaunchService'
@@ -172,13 +173,14 @@ export function createServiceFactory(store: Store<any>) {
   factory.register(ServerStatusServiceKey, ServerStatusServiceMethods, [], () => undefined)
   factory.register(InstanceLogServiceKey, InstanceLogServiceMethods, [], () => undefined)
   factory.register(InstanceCurseforgeIOServiceKey, InstanceCurseforgeIOServiceMethods, [], () => undefined)
+  factory.register(InstanceResourcePacksServiceKey, InstanceResourcePacksServiceMethods, [], () => undefined)
+  factory.register(InstanceShaderPacksServiceKey, InstanceShaderPacksServiceTemplate, [], () => undefined)
 
   factory.register(BaseServiceKey, BaseServiceMethods, [], () => new BaseState())
   factory.register(DiagnoseServiceKey, DiagnoseServiceMethods, [], () => new DiagnoseState())
-  factory.register(InstanceGameSettingServiceKey, InstanceGameSettingServiceMethods, [], () => new GameSettingState())
+  factory.register(InstanceOptionsServiceKey, InstanceOptionsServiceMethods, [], () => new InstanceOptionsState())
   factory.register(InstallServiceKey, InstallServiceMethods, [], () => new InstallState())
   factory.register(InstanceModsServiceKey, InstanceModsServiceMethods, [], () => new InstanceModsState())
-  factory.register(InstanceResourcePacksServiceKey, InstanceResourcePacksServiceMethods, [], () => new InstanceResourcePacksState())
   factory.register(InstanceSavesServiceKey, InstanceSavesServiceMethods, [], () => new SaveState())
   factory.register(InstanceServerInfoServiceKey, InstanceServerInfoServiceMethods, [], () => new ServerInfoState())
   factory.register(InstanceServiceKey, InstanceServiceMethods, [], () => new InstanceState())

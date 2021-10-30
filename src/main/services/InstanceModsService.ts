@@ -50,7 +50,7 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
       url: [] as string[],
       source: undefined,
     }))
-    const resources = await this.resourceService.parseFiles({
+    const resources = await this.resourceService.resolveFiles({
       files: fileArgs,
       type: 'mods',
     })
@@ -156,13 +156,13 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
       this.modsWatcher.close()
     }
     await ensureDir(basePath)
-    await this.resourceService.whenModsReady()
+    await this.resourceService.whenReady(ResourceDomain.Mods)
     this.state.instanceMods({ instance: instancePath, resources: await this.scanMods(basePath) })
     this.modsWatcher = watch(basePath, (event, name) => {
       if (name.startsWith('.')) return
       const filePath = name
       if (event === 'update') {
-        this.resourceService.parseFile({ path: filePath, type: 'mods' }).then(([resource, icon]) => {
+        this.resourceService.resolveFile({ path: filePath, type: 'mods' }).then(([resource, icon]) => {
           if (isModResource(resource)) {
             this.log(`Instace mod add ${filePath}`)
           } else {

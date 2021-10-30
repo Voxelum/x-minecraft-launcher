@@ -39,7 +39,7 @@ export interface CPUWorker {
   checksum(payload: ChecksumWorkPayload): Promise<string>
   fileType(payload: FileTypePayload): Promise<FileType>
   checksumAndFileType(payload: ChecksumWorkPayload): Promise<[string, FileType]>
-  resolveResource(payload: ResolveResourceWorkPayload): Promise<[Resource, Uint8Array | undefined]>
+  parseResource(payload: ResolveResourceWorkPayload): Promise<[Resource, Uint8Array | undefined]>
 }
 
 export class WorkerAgent implements CPUWorker {
@@ -78,7 +78,7 @@ export class WorkerAgent implements CPUWorker {
     return this.submit('checksumAndFileType', payload)
   }
 
-  resolveResource(payload: ResolveResourceWorkPayload): Promise<[Resource<unknown>, Uint8Array | undefined]> {
-    return this.submit('resolveResource', payload)
+  parseResource(payload: ResolveResourceWorkPayload): Promise<[Resource<unknown>, Uint8Array | undefined]> {
+    return this.submit('parseResource', payload)
   }
 }

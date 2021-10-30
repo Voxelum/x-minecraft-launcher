@@ -27,7 +27,7 @@
             <img
               ref="iconImage"
               v-fallback-img="unknownPack"
-              style="user-drag: none; user-select: none; height: 125px"
+              style="user-drag:   none; user-select: none; height: 125px"
               :src="pack.icon"
               contain
             >
@@ -86,7 +86,6 @@ export default defineComponent({
   setup(props, context) {
     const iconImage: Ref<any> = ref(null)
     const { minecraft } = useInstanceVersionBase()
-    console.log(props.pack)
     const { compatible } = useCompatible(computed(() => props.pack.acceptingRange ?? ''), minecraft)
     const { open } = useContextMenu()
     const { $t } = useI18n()
@@ -102,7 +101,7 @@ export default defineComponent({
       if (props.pack.id !== 'vanilla') {
         context.emit('dragstart', e)
       }
-      e.dataTransfer!.setDragImage(iconImage.value.$el, 0, 0)
+      e.dataTransfer!.setDragImage(iconImage.value, 0, 0)
     }
     function onDragEnd(e: DragEvent) {
       if (props.pack.id !== 'vanilla') {

@@ -5,7 +5,7 @@ import { useBusy } from './useSemaphore'
 import { useService } from './useService'
 import { ProjectType } from '/@shared/entities/curseforge'
 import { CurseForgeServiceKey } from '/@shared/services/CurseForgeService'
-import { InstanceResourcePacksServiceKey } from '../../shared/services/InstanceResourcePacksService'
+import { InstanceModsServiceKey } from '/@shared/services/InstanceModsService'
 import { ResourceServiceKey } from '/@shared/services/ResourceService'
 
 /**
@@ -41,7 +41,7 @@ export function useCurseforgeProjectFiles(projectId: number) {
 export function useCurseforgeInstall(type: ProjectType, projectId: number) {
   const { state, installFile } = useService(CurseForgeServiceKey)
   const { state: resourceState } = useService(ResourceServiceKey)
-  const { install: deploy } = useService(InstanceResourcePacksServiceKey)
+  const { install: deploy } = useService(InstanceModsServiceKey)
   function getFileStatus(file: File): 'downloading' | 'downloaded' | 'remote' {
     const res = resourceState.queryResource(file.downloadUrl)
     if (res) {
@@ -56,7 +56,9 @@ export function useCurseforgeInstall(type: ProjectType, projectId: number) {
   async function install(file: File, toInstance?: string) {
     const resource = await installFile({ file, type, projectId })
     if (toInstance) {
-      await deploy({ resources: [resource], path: toInstance })
+      if (resource.domain === 'mods') {
+        await deploy({ mods: [resource], path: toInstance })
+      }
     }
     return resource
   }

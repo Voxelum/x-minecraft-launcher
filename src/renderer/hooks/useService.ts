@@ -1,6 +1,6 @@
+import { ServiceFactory } from '../serviceFactory'
 import { SERVICES_KEY } from '../serviceProxy'
 import { injection } from '../util/inject'
-import { ServiceFactory } from '../../shared/service'
 import { ServiceKey } from '/@shared/services/Service'
 
 export function useServices(): ServiceFactory {

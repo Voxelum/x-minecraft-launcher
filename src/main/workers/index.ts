@@ -4,7 +4,7 @@ import { FileExtension, stream } from 'file-type'
 import { createReadStream } from 'fs'
 import { MessagePort, parentPort } from 'worker_threads'
 import { fileType, pipeline } from '../util/fs'
-import { resolveResource } from '/@main/entities/resource'
+import { parseResource } from '/@main/entities/resource'
 import { ChecksumWorkPayload, CPUWorker, ResolveResourceWorkPayload, WorkPayload } from '/@main/entities/worker'
 
 if (parentPort !== null) {
@@ -15,7 +15,7 @@ const handlers: CPUWorker = {
   fileType: (m) => fileType(m.path),
   checksum: (m: ChecksumWorkPayload) => checksum(m.path, m.algorithm),
   checksumAndFileType: (m: ChecksumWorkPayload) => checksumAndFileType(m.path, m.algorithm),
-  resolveResource: (m: ResolveResourceWorkPayload) => resolveResource(m.path, m.fileType, m.sha1, m.stat, m.hint),
+  parseResource: (m: ResolveResourceWorkPayload) => parseResource(m.path, m.fileType, m.sha1, m.stat, m.hint),
 }
 
 async function checksumAndFileType(path: string, algorithm: string): Promise<[string, FileExtension | 'unknown' ]> {
