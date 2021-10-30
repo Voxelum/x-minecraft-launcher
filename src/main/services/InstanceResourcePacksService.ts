@@ -1,78 +1,44 @@
 import { PackMeta } from '@xmcl/resourcepack'
-import { ensureDir, FSWatcher, stat, unlink } from 'fs-extra'
-import watch from 'node-watch'
-import { dirname, join } from 'path'
-import { InstallResourcePacksOptions, InstanceResourcePacksService as IInstanceResourcePacksService, InstanceResourcePacksServiceKey, InstanceResourcePacksState } from '../../shared/services/InstanceResourcePacksService'
+import { lstat, readdir, readlink, remove, symlink, unlink } from 'fs-extra'
+import { join } from 'path'
+import { InstanceResourcePacksService as IInstanceResourcePacksService, InstanceResourcePacksServiceKey } from '../../shared/services/InstanceResourcePacksService'
 import LauncherApp from '../app/LauncherApp'
-import { AggregateExecutor } from '../util/aggregator'
+import { isSystemError } from '../util/error'
 import DiagnoseService from './DiagnoseService'
-import InstanceGameSettingService from './InstanceGameSettingService'
+import InstanceOptionsService from './InstanceOptionsService'
 import InstanceService from './InstanceService'
 import ResourceService from './ResourceService'
-import { ExportService, Inject, Singleton, StatefulService, Subscribe } from './Service'
-import { linkWithTimeoutOrCopy, readdirIfPresent } from '/@main/util/fs'
+import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service'
+import { ENOENT_ERROR } from '/@main/util/fs'
 import { IssueReport } from '/@shared/entities/issue'
-import { AnyResource, isPersistedResource, isResourcePackResource } from '/@shared/entities/resource'
+import { isPersistedResource, isResourcePackResource } from '/@shared/entities/resource'
 import { ResourceDomain } from '/@shared/entities/resource.schema'
 import { parseVersion, VersionRange } from '/@shared/util/mavenVersion'
+import packFormatVersionRange from '/@shared/util/packFormatVersionRange'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
  */
 @ExportService(InstanceResourcePacksServiceKey)
-export default class InstanceResourcePackService extends StatefulService<InstanceResourcePacksState> implements IInstanceResourcePacksService {
-  private resourcepacksWatcher: FSWatcher | undefined
-
-  private addResourcePack = new AggregateExecutor<AnyResource, AnyResource[]>(v => v,
-    res => this.state.instanceResourcepackAdd(res),
-    1000)
-
-  private removeResourcePack = new AggregateExecutor<AnyResource, AnyResource[]>(v => v,
-    res => this.state.instanceResourcepackRemove(res),
-    1000)
-
-  private packVersionToVersionRange: Record<number, string> = Object.freeze({
-    1: '[1.6, 1.9)',
-    2: '[1.9, 1.11)',
-    3: '[1.11, 1.13)',
-    4: '[1.13,]',
-  })
+export default class InstanceResourcePackService extends AbstractService implements IInstanceResourcePacksService {
+  private packVersionToVersionRange: Record<number, string> = packFormatVersionRange
 
   constructor(
     app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
-    @Inject(InstanceGameSettingService) private gameSettingService: InstanceGameSettingService,
+    @Inject(InstanceOptionsService) private gameSettingService: InstanceOptionsService,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
   ) {
     super(app)
   }
 
-  createState() { return new InstanceResourcePacksState() }
-
-  private async scanResourcepacks(dir: string) {
-    const files = await readdirIfPresent(dir)
-
-    const fileArgs = files.filter((file) => !file.startsWith('.')).map((file) => ({
-      path: join(dir, file),
-      url: [] as string[],
-      source: undefined,
-    }))
-
-    const resources = await this.resourceService.parseFiles({
-      files: fileArgs,
-      type: 'resourcepack',
-    })
-
-    // for (const [res, icon] of resources.filter(r => !isPersistedResource(r[0]))) {
-    //   this.resourceService.importParsedResource({ path: res.path, type: res.type }, res, icon)
-    // }
-    return resources.map(([res]) => res)
-  }
-
   @Subscribe('instanceSelect')
-  protected onInstance() {
-    this.refresh()
+  protected onInstance(instancePath: string) {
+    this.link(instancePath).catch((e) => [
+      // TODO: decorate error
+      this.emit('error', {})
+    ])
   }
 
   @Subscribe('instanceGameSettings')
@@ -89,7 +55,7 @@ export default class InstanceResourcePackService extends StatefulService<Instanc
       const report: Partial<IssueReport> = {}
       this.log('Diagnose resource packs')
       const { runtime: version } = this.instanceService.state.instance
-      const resourcePacks = this.gameSettingService.state.resourcePacks
+      const resourcePacks = this.gameSettingService.state.options.resourcePacks
       const resources = resourcePacks.map((name) => this.resourceService.state.resourcepacks.find((pack) => `file/${pack.name}${pack.ext}` === name))
 
       const mcversion = version.minecraft
@@ -119,111 +85,59 @@ export default class InstanceResourcePackService extends StatefulService<Instanc
     }
   }
 
-  async dispose() {
-    if (this.resourcepacksWatcher) {
-      this.resourcepacksWatcher.close()
-    }
-  }
-
-  async refresh(force?: boolean): Promise<void> {
-    const basePath = this.instanceService.state.path
-    if (force || this.state.instance !== basePath || !this.resourcepacksWatcher) {
-      await this.mount(basePath)
-    }
-  }
 
   @Singleton()
-  async mount(instancePath: string): Promise<void> {
-    const basePath = join(instancePath, 'resourcepacks')
+  async link(instancePath: string = this.instanceService.state.path): Promise<void> {
+    await this.resourceService.whenReady(ResourceDomain.ResourcePacks)
+    const destPath = join(instancePath, 'resourcepacks')
+    const srcPath = this.getPath('resourcepacks')
+    const stat = await lstat(destPath).catch((e) => {
+      if (isSystemError(e) && e.code === ENOENT_ERROR) {
+        return
+      }
+      throw e
+    })
 
-    if (this.resourcepacksWatcher) {
-      this.resourcepacksWatcher.close()
-    }
-    await ensureDir(basePath)
-    await this.resourceService.whenResourcePacksReady()
-    this.state.instanceResourcepacks({ instance: instancePath, resources: await this.scanResourcepacks(basePath) })
-    this.resourcepacksWatcher = watch(basePath, (event, filePath) => {
-      if (filePath.startsWith('.')) return
-      if (event === 'update') {
-        this.resourceService.parseFile({ path: filePath, type: 'resourcepacks' }).then(([resource, icon]) => {
-          if (isResourcePackResource(resource)) {
-            this.log(`Instace resource pack add ${filePath}`)
-          } else {
-            this.warn(`Non resource pack resource added in /resourcepacks directory! ${filePath}`)
-          }
-          if (!isPersistedResource(resource)) {
-            this.resourceService.importParsedResource({ path: filePath }, resource, icon)
-          }
-          this.addResourcePack.push(resource)
-        })
+    await this.resourceService.whenReady(ResourceDomain.ResourcePacks)
+    this.log(`Linking the resourcepacks at domain to ${instancePath}`)
+    if (stat) {
+      if (stat.isSymbolicLink()) {
+        if (await readlink(destPath) === srcPath) {
+          this.log(`Skip linking the resourcepacks at domain as it already linked: ${instancePath}`)
+          return
+        }
+        this.log(`Relink the resourcepacks domain: ${instancePath}`)
+        await unlink(destPath)
       } else {
-        const target = this.state.resourcepacks.find(r => r.path === filePath)
-        if (target) {
-          this.log(`Instace resource pack remove ${filePath}`)
-          this.removeResourcePack.push(target)
+        // Import all directory content
+        if (stat.isDirectory()) {
+          const files = await readdir(destPath)
+
+          this.log(`Import resourcepacks directories while linking: ${instancePath}`)
+          await Promise.all(files.map(f => join(destPath, f)).map(async (filePath) => {
+            const [resource, icon] = await this.resourceService.resolveFile({ path: filePath, type: 'resourcepacks' })
+            if (isResourcePackResource(resource)) {
+              this.log(`Add resource pack ${filePath}`)
+            } else {
+              this.warn(`Non resource pack resource added in /resourcepacks directory! ${filePath}`)
+            }
+            if (!isPersistedResource(resource)) {
+              await this.resourceService.importParsedResource({ path: filePath }, resource, icon).catch((e) => {
+                this.emit('error', {})
+                this.warn(e)
+              })
+              this.log(`Found new resource in /resourcepacks directory! ${filePath}`)
+            }
+          }))
+
+          await remove(destPath)
         } else {
-          this.warn(`Cannot remove the resource pack ${filePath} as it's not found in memory cache!`)
+          // TODO: handle this case
+          throw new Error()
         }
       }
-    })
-    this.log(`Mounted on instance resource packs: ${basePath}`)
-  }
-
-  async ensureResourcePacksDeployment() {
-    const allPacks = this.resourceService.state.resourcepacks
-    const deploiedPacks = this.state.resourcepacks
-
-    const toBeDeploiedPacks = allPacks.filter(p => !deploiedPacks.find((r) => r.hash === p.hash))
-    this.log(`Deploying ${toBeDeploiedPacks.length} resource packs`)
-
-    await this.install({ resources: toBeDeploiedPacks })
-  }
-
-  async install({ resources, path = this.state.instance }: InstallResourcePacksOptions) {
-    const promises: Promise<void>[] = []
-    if (!path) {
-      path = this.state.instance
     }
-    this.log(`Install ${resources.length} resourcepacks to ${path}`)
-    for (const res of resources) {
-      if (res.domain !== ResourceDomain.ResourcePacks) {
-        this.warn(`Install non resourcepack resource ${res.name}!`)
-      }
-      const src = join(res.path)
-      const dest = join(path, ResourceDomain.ResourcePacks, res.fileName + res.ext)
-      const [srcStat, destStat] = await Promise.all([stat(src), stat(dest).catch(() => undefined)])
 
-      let promise: Promise<void> | undefined
-      if (!destStat) {
-        promise = linkWithTimeoutOrCopy(src, dest)
-      } else if (srcStat.ino !== destStat.ino) {
-        promise = unlink(dest).then(() => linkWithTimeoutOrCopy(src, dest))
-      }
-      if (promise) {
-        promises.push(promise.catch((e) => {
-          this.error(`Cannot install the resource from ${src} to ${dest}`)
-          this.error(e)
-          throw e
-        }))
-      }
-    }
-    if (promises.length > 0) {
-      await Promise.all(promises)
-    }
-  }
-
-  async uninstall(options: InstallResourcePacksOptions) {
-    const { resources, path = this.state.instance } = options
-    this.log(`Undeploy ${resources.length} from ${path}`)
-    const promises: Promise<void>[] = []
-    const root = join(path, ResourceDomain.ResourcePacks)
-    for (const resource of resources) {
-      if (dirname(resource.path) !== root) {
-        this.warn(`Skip to uninstall unmanaged resourcepack file on ${resource.path}!`)
-      } else {
-        promises.push(unlink(resource.path))
-      }
-    }
-    await Promise.all(promises)
+    await symlink(srcPath, destPath, 'dir')
   }
 }

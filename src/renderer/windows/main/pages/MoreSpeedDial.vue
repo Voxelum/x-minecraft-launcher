@@ -61,6 +61,20 @@
           icon
           dark
           :loading="refreshing"
+          to="/shader-pack-setting"
+          v-on="on"
+          @click="$emit('show', 'shaderpacks')"
+          @mouseenter="enter($tc('shaderpack.name', 2) )"
+        >
+          <v-icon dark>
+            gradient
+          </v-icon>
+        </v-btn>
+        <v-btn
+          flat
+          icon
+          dark
+          :loading="refreshing"
           to="/save"
           v-on="on"
           @click="$emit('show', 'saves')"

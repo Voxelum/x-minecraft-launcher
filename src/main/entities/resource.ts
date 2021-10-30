@@ -3,8 +3,8 @@ import { FabricModMetadata, LiteloaderModMetadata, readFabricMod, readForgeMod, 
 import { PackMeta, readIcon, readPackMeta } from '@xmcl/resourcepack'
 import { FileSystem, openFileSystem } from '@xmcl/system'
 import filenamify from 'filenamify'
-import { ensureFile, stat, Stats, unlink, writeFile } from 'fs-extra'
-import { basename, extname, join } from 'path'
+import { ensureFile, rename, stat, Stats, unlink, writeFile } from 'fs-extra'
+import { basename, dirname, extname, join } from 'path'
 import { findLevelRootDirectory, readResourceSaveMetadata } from './save'
 import { FileType, linkOrCopy } from '/@main/util/fs'
 import { CurseforgeModpackManifest } from '/@shared/entities/curseforge'
@@ -339,7 +339,7 @@ export function getCurseforgeSourceInfo(project: number, file: number): SourceIn
   }
 }
 
-export async function resolveResourceWithParser(path: string, fileType: FileType, sha1: string, stat: FileStat, parsers: ResourceParser<any>[]): Promise<[AnyResource, Uint8Array | undefined]> {
+export async function parseResourceWithParser(path: string, fileType: FileType, sha1: string, stat: FileStat, parsers: ResourceParser<any>[]): Promise<[AnyResource, Uint8Array | undefined]> {
   const ext = extname(path)
   let parser: ResourceParser<any> = UNKNOWN_ENTRY
   let metadata: any
@@ -391,17 +391,17 @@ export function getRecommendedResourceParsers(path: string, typeHint?: FileTypeH
   return chains
 }
 
-export function resolveResource(path: string, fileType: FileType, sha1: string, stat: FileStat, typeHint?: FileTypeHint) {
-  return resolveResourceWithParser(path, fileType, sha1, stat, getRecommendedResourceParsers(path, typeHint))
+export function parseResource(path: string, fileType: FileType, sha1: string, stat: FileStat, typeHint?: FileTypeHint) {
+  return parseResourceWithParser(path, fileType, sha1, stat, getRecommendedResourceParsers(path, typeHint))
 }
 
 /**
- * Persist a resource to disk
+ * Persist a resource to disk. This will try to copy or link the resource file to domain direcotry, or rename it if it's already in domain directory.
  * @param resolved The resolved resource
  * @param respository The root of the persistence repo
  * @param source The source
  */
-export async function persistResource(resolved: Resource, respository: string, source: SourceInformation, url: string[], icon: Uint8Array | undefined) {
+export async function persistResource(resolved: Resource, respository: string, source: SourceInformation, url: string[], icon: Uint8Array | undefined, pending: Set<string>) {
   const { domain, type, metadata, name: suggestedName, uri, hash } = resolved
 
   const builder = createPersistedResourceBuilder(source)
@@ -432,8 +432,13 @@ export async function persistResource(resolved: Resource, respository: string, s
   const metadataPath = join(respository, `${location}.json`)
   const iconPath = join(respository, `${location}.png`)
 
+  pending.add(filePath)
   await ensureFile(filePath)
-  await linkOrCopy(resolved.path, filePath)
+  if (dirname(resolved.path) === dirname(filePath)) {
+    await rename(resolved.path, filePath)
+  } else {
+    await linkOrCopy(resolved.path, filePath)
+  }
   if (builder.icon) {
     await writeFile(iconPath, builder.icon)
   }

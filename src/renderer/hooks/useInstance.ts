@@ -6,7 +6,7 @@ import { useCurrentUser } from './useUser'
 import { useMinecraftVersions } from './useVersion'
 import { InstanceData, RuntimeVersions } from '/@shared/entities/instance.schema'
 import { getExpectVersion } from '/@shared/entities/version'
-import { InstanceGameSettingServiceKey } from '/@shared/services/InstanceGameSettingService'
+import { InstanceOptionsServiceKey } from '../../shared/services/InstanceOptionsService'
 import { InstanceIOServiceKey } from '/@shared/services/InstanceIOService'
 import { InstanceLogServiceKey } from '/@shared/services/InstanceLogService'
 import { CloneSaveOptions, DeleteSaveOptions, ImportSaveOptions, InstanceSavesServiceKey } from '/@shared/services/InstanceSavesService'
@@ -187,18 +187,18 @@ export function useInstanceTemplates() {
 }
 
 export function useInstanceGameSetting() {
-  const { state, refresh: _refresh, edit, showInFolder } = useService(InstanceGameSettingServiceKey)
+  const { state, refresh: _refresh, editGameSetting: edit, showOptionsFileInFolder: showInFolder } = useService(InstanceOptionsServiceKey)
   const refresh = () => _refresh()
-  const fancyGraphics = computed(() => state.fancyGraphics)
-  const renderClouds = computed(() => state.renderClouds)
-  const ao = computed(() => state.ao)
-  const entityShadows = computed(() => state.entityShadows)
-  // const particles = computed(() => state.particles)
-  // const mipmapLevels = computed(() => state.mipmapLevels)
-  const useVbo = computed(() => state.useVbo)
-  const fboEnable = computed(() => state.fboEnable)
-  const enableVsync = computed(() => state.enableVsync)
-  const anaglyph3d = computed(() => state.anaglyph3d)
+  const fancyGraphics = computed(() => state.options.fancyGraphics)
+  const renderClouds = computed(() => state.options.renderClouds)
+  const ao = computed(() => state.options.ao)
+  const entityShadows = computed(() => state.options.entityShadows)
+  // const particles = computed(() => state.options.particles)
+  // const mipmapLevels = computed(() => state.options.mipmapLevels)
+  const useVbo = computed(() => state.options.useVbo)
+  const fboEnable = computed(() => state.options.fboEnable)
+  const enableVsync = computed(() => state.options.enableVsync)
+  const anaglyph3d = computed(() => state.options.anaglyph3d)
 
   return {
     fancyGraphics,

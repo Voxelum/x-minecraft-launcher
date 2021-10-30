@@ -150,35 +150,37 @@ export class ResourceState {
  * It maintain a preview for resources in memory
  */
 export interface ResourceService extends StatefulService<ResourceState> {
-  whenModsReady(): Promise<void>
-  whenResourcePacksReady(): Promise<void>
   /**
-     * Remove a resource from the launcher
-     * @param resourceOrKey
-     */
+   * Remove a resource from the launcher
+   * @param resourceOrKey
+   */
   removeResource(resourceOrKey: string | AnyPersistedResource): Promise<void>
   /**
-     * Rename resource, this majorly affect displayed name.
-     */
+   * Rename resource, this majorly affect displayed name.
+   */
   renameResource(options: RenameResourceOptions): Promise<void>
   /**
-     * Set the resource tags.
-     */
+   * Set the resource tags.
+   */
   setResourceTags(options: SetResourceTagsOptions): Promise<void>
   /**
-     * Parse a single file as a resource and return the resource object
-     * @param options The parse file option
-     */
-  parseFile(options: ParseFileOptions): Promise<[AnyResource, undefined | Uint8Array]>
+   * Parse a single file as a resource and return the resource object.
+   * 
+   * If the resource existed, it will return the existed persisted resource.
+   * @param options The parse file option
+   */
+  resolveFile(options: ParseFileOptions): Promise<[AnyResource, undefined | Uint8Array]>
   /**
-     * Parse multiple files and return corresponding resources
-     * @param options The parse multiple files options
-     */
-  parseFiles(options: ParseFilesOptions): Promise<[AnyResource, undefined | Uint8Array][]>
+   * Parse multiple files and return corresponding resources
+   * 
+   * If the resource existed, it will return the existed persisted resource.
+   * @param options The parse multiple files options
+   */
+  resolveFiles(options: ParseFilesOptions): Promise<[AnyResource, undefined | Uint8Array][]>
   /**
-     * Import the resource into the launcher.
-     * @returns The resource resolved. If the resource cannot be resolved, it will goes to unknown domain.
-     */
+   * Import the resource into the launcher.
+   * @returns The resource resolved. If the resource cannot be resolved, it will goes to unknown domain.
+   */
   importFile(options: ImportFileOptions): Promise<AnyPersistedResource>
   /**
     * Import the resource from the same disk. This will parse the file and import it into our db by hardlink.
@@ -192,9 +194,9 @@ export interface ResourceService extends StatefulService<ResourceState> {
     */
   importFiles(options: ImportFilesOptions): Promise<AnyPersistedResource[]>
   /**
-     * Export the resources into target directory. This will simply copy the resource out.
-     * If a resource is not found, the export process will be abort. This is not a transaction process.
-     */
+   * Export the resources into target directory. This will simply copy the resource out.
+   * If a resource is not found, the export process will be abort. This is not a transaction process.
+   */
   exportResource(payload: {
     resources: (string | AnyResource)[]
     targetDirectory: string
@@ -203,13 +205,11 @@ export interface ResourceService extends StatefulService<ResourceState> {
 
 export const ResourceServiceKey: ServiceKey<ResourceService> = 'ResourceService'
 export const ResourceServiceMethods: ServiceTemplate<ResourceService> = {
-  whenModsReady: undefined,
-  whenResourcePacksReady: undefined,
   removeResource: undefined,
   renameResource: undefined,
   setResourceTags: undefined,
-  parseFile: undefined,
-  parseFiles: undefined,
+  resolveFile: undefined,
+  resolveFiles: undefined,
   importFile: undefined,
   importFiles: undefined,
   exportResource: undefined,

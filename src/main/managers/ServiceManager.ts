@@ -7,7 +7,7 @@ import ExternalAuthSkinService from '../services/ExternalAuthSkinService'
 import ImportService from '../services/ImportService'
 import InstallService from '../services/InstallService'
 import InstanceCurseforgeIOService from '../services/InstanceCurseforgeIOService'
-import InstanceGameSettingService from '../services/InstanceGameSettingService'
+import InstanceOptionsService from '../services/InstanceOptionsService'
 import InstanceIOService from '../services/InstanceIOService'
 import InstanceJavaService from '../services/InstanceJavaService'
 import InstanceLogService from '../services/InstanceLogService'
@@ -15,6 +15,7 @@ import InstanceModsService from '../services/InstanceModsService'
 import InstanceResourcePackService from '../services/InstanceResourcePacksService'
 import InstanceSavesService from '../services/InstanceSavesService'
 import InstanceService from '../services/InstanceService'
+import InstanceShaderPacksService from '../services/InstanceShaderPacksService'
 import InstanceVersionService from '../services/InstanceVersionService'
 import JavaService from '../services/JavaService'
 import LaunchService from '../services/LaunchService'
@@ -239,7 +240,7 @@ export default class ServiceManager extends Manager {
     this.addService(ImportService)
     this.addService(InstallService)
     this.addService(InstanceCurseforgeIOService)
-    this.addService(InstanceGameSettingService)
+    this.addService(InstanceOptionsService)
     this.addService(InstanceIOService)
     this.addService(InstanceLogService)
     this.addService(InstanceModsService)
@@ -255,6 +256,7 @@ export default class ServiceManager extends Manager {
     this.addService(VersionService)
     this.addService(InstanceVersionService)
     this.addService(InstanceJavaService)
+    this.addService(InstanceShaderPacksService)
 
     this.setupServices()
     await this.initializeServices()

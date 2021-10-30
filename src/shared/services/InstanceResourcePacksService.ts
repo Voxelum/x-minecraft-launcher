@@ -1,56 +1,17 @@
-import { Resource } from '../entities/resource.schema'
-import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
-import { AnyResource } from '../entities/resource'
-export interface InstallResourcePacksOptions {
-  resources: Resource[]
-  /**
-   * The instance path to deploy. This will be the current path by default.
-   */
-  path?: string
-}
-
-export class InstanceResourcePacksState {
-  /**
-   * The instance resourcepacks
-   */
-  resourcepacks = [] as AnyResource[]
-  /**
-   * Mounted instance path
-   */
-  instance = ''
-
-  instanceResourcepackAdd(r: AnyResource[]) {
-    this.resourcepacks.push(...r)
-  }
-
-  instanceResourcepackRemove(packs: AnyResource[]) {
-    const toRemoved = new Set(packs.map(p => p.hash))
-    this.resourcepacks = this.resourcepacks.filter(p => !toRemoved.has(p.hash))
-  }
-
-  instanceResourcepacks(payload: { instance: string; resources: AnyResource[] }) {
-    this.instance = payload.instance
-    this.resourcepacks = payload.resources
-  }
-}
+import { ServiceKey, ServiceTemplate } from './Service'
 
 /**
- * Provide the abilities to import mods and resource packs files to instance
+ * Provide the abilities to diagnose & link resource packs files to instance
  */
-export interface InstanceResourcePacksService extends StatefulService<InstanceResourcePacksState> {
-  refresh(force?: boolean): Promise<void>
-  mount(instancePath: string): Promise<void>
-  ensureResourcePacksDeployment(): Promise<void>
-  install(options: InstallResourcePacksOptions): Promise<void>
-  uninstall(options: InstallResourcePacksOptions): Promise<void>
+export interface InstanceResourcePacksService {
+  /**
+   * Link the `resourcepacks` directory under the instance path to the root `resourcepacks` directory.
+   * @param instancePath The instance path to link
+   */
+  link(instancePath: string): Promise<void>
 }
 
 export const InstanceResourcePacksServiceKey: ServiceKey<InstanceResourcePacksService> = 'InstanceResourcePacksService'
 export const InstanceResourcePacksServiceMethods: ServiceTemplate<InstanceResourcePacksService> = {
-  refresh: undefined,
-  mount: undefined,
-  ensureResourcePacksDeployment: undefined,
-  install: undefined,
-  uninstall: undefined,
-  state: undefined
+  link: undefined,
 }

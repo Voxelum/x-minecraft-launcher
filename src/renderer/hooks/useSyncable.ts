@@ -21,6 +21,7 @@ export function useSyncable(store: Store<any>) {
       } = syncInfo
       console.log(`Synced ${length} commits.`)
 
+      console.log(state)
       store.commit('sync', state)
       lastId = length
       syncing.value = false

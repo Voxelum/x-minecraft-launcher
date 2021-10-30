@@ -99,7 +99,7 @@
           >
             <span
               class="text-sm-center"
-              style="width: 100%; font-size: 16px"
+              style="width: 100%; font-size: 16px; user-select: none;"
             >{{
               $t("resourcepack.unselected")
             }}</span>
@@ -155,7 +155,7 @@
           >
             <span
               class="text-sm-center"
-              style="width: 100%; font-size: 16px"
+              style="width: 100%; font-size: 16px; user-select: none;"
             >{{
               $t("resourcepack.selected")
             }}</span>

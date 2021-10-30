@@ -7,7 +7,7 @@ import AbstractService, { ExportService, Inject, Subscribe } from './Service'
 import LauncherApp from '../app/LauncherApp'
 import { ResourcePackPreviewServiceKey, ResourcePackPreviewService as IResourcePackPreviewService, BlockStateJson } from '/@shared/services/ResourcePackPreviewService'
 import InstanceService from './InstanceService'
-import InstanceGameSettingService from './InstanceGameSettingService'
+import InstanceOptionsService from './InstanceOptionsService'
 import InstanceVersionService from './InstanceVersionService'
 
 interface NamedResourcePackWrapper extends ResourcePackWrapper {
@@ -32,7 +32,7 @@ export default class ResourcePackPreviewService extends AbstractService implemen
     @Inject(InstanceResourcePackService) private instanceResourceService: InstanceResourcePackService,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
-    @Inject(InstanceGameSettingService) private instanceGameSettingService: InstanceGameSettingService,
+    @Inject(InstanceOptionsService) private instanceGameSettingService: InstanceOptionsService,
   ) {
     super(app)
     this.app.on('minecraft-start', () => {

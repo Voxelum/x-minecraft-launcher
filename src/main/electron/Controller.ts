@@ -21,6 +21,7 @@ import './controlIpc'
 import './dialog'
 import { InstanceServiceKey } from '/@shared/services/InstanceService'
 import { LaunchServiceKey } from '/@shared/services/LaunchService'
+import { readFile } from 'fs/promises'
 
 export default class Controller implements LauncherAppController {
   private mainWin: BrowserWindow | undefined = undefined
@@ -70,7 +71,7 @@ export default class Controller implements LauncherAppController {
   async createMainWindow() {
     const configPath = join(this.app.appDataPath, 'main-window-config.json')
     this.app.log(`[Controller] Creating main window by config ${configPath}`)
-    const configData = await readJSON(configPath).catch(() => ({
+    const configData = await readFile(configPath, 'utf-8').then((v) => JSON.parse(v)).catch(() => ({
       width: -1,
       height: -1,
       x: null,
@@ -404,8 +405,8 @@ export default class Controller implements LauncherAppController {
     const launchService = this.app.serviceManager.getService(LaunchServiceKey)
     if (launchService) {
       launchService
-      .on('minecraft-window-ready', this.onMinecraftWindowReady.bind(this))
-      .on('minecraft-exit', this.onMinecraftExited.bind(this))
+        .on('minecraft-window-ready', this.onMinecraftWindowReady.bind(this))
+        .on('minecraft-exit', this.onMinecraftExited.bind(this))
     }
   }
 

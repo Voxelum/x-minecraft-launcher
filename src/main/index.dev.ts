@@ -21,8 +21,7 @@ app.on('web-contents-created', (event, contents) => {
   //   contents.session.loadExtension(extensionDir)
   // }
   contents.openDevTools({ mode: 'detach' });
-  console.log(event)
-  console.log(contents.getURL())
+  console.log(contents)
 })
 
 autoUpdater.setFeedURL({

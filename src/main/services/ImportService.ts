@@ -1,8 +1,9 @@
 import { unlink } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
-import InstanceGameSettingService from './InstanceGameSettingService'
 import InstanceIOService from './InstanceIOService'
+import InstanceModsService from './InstanceModsService'
+import InstanceOptionsService from "./InstanceOptionsService"
 import InstanceResourcePackService from './InstanceResourcePacksService'
 import InstanceSavesService from './InstanceSavesService'
 import InstanceService from './InstanceService'
@@ -20,8 +21,9 @@ export default class ImportService extends AbstractService implements IImportSer
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceIOService) private instanceIOService: InstanceIOService,
     @Inject(InstanceResourcePackService) private instanceResourcesService: InstanceResourcePackService,
+    @Inject(InstanceModsService) private instanceModsService: InstanceModsService,
     @Inject(InstanceSavesService) private instanceSaveService: InstanceSavesService,
-    @Inject(InstanceGameSettingService) private instanceGameSettingService: InstanceGameSettingService,
+    @Inject(InstanceOptionsService) private instanceGameSettingService: InstanceOptionsService,
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {
     super(app)
@@ -34,7 +36,7 @@ export default class ImportService extends AbstractService implements IImportSer
       return
       // return existed
     }
-    const [resolved, icon] = await this.resourceService.resolveResource(options, context)
+    const [resolved, icon] = await this.resourceService.parseResource(options, context)
     const getInstancePath = (inst: string | boolean) => typeof inst === 'boolean' ? this.instanceService.state.path : inst
     const resolveOptions = () => {
       if (resolved.domain === ResourceDomain.Saves) {
@@ -65,7 +67,7 @@ export default class ImportService extends AbstractService implements IImportSer
       const zipedContext: ParseResourceContext = {}
       const existed = await this.resourceService.queryExistedResourceByPath(tempZipPath, zipedContext)
       if (!existed) {
-        const [resolvedZip] = await this.resourceService.resolveResource({ ...options, path: tempZipPath }, zipedContext)
+        const [resolvedZip] = await this.resourceService.parseResource({ ...options, path: tempZipPath }, zipedContext)
         await this.resourceService.importParsedResource({ ...options, path: tempZipPath }, resolvedZip, icon)
       }
       await unlink(tempZipPath)
@@ -85,19 +87,19 @@ export default class ImportService extends AbstractService implements IImportSer
           await this.instanceIOService.importInstance(resolved.metadata.root)
         } else if (isModResource(resolved)) {
           this.warn(`Deploy directory mod to instance ${instancePath}. This might not work!`)
-          await this.instanceResourcesService.install({ resources: [resolved], path: instancePath })
+          await this.instanceModsService.install({ mods: [resolved], path: instancePath })
         } else if (isSaveResource(resolved)) {
           await this.instanceSaveService.importSave({
             instancePath,
             source: join(resolved.path, resolved.metadata.root),
           })
         } else if (isResourcePackResource(resolved)) {
-          await this.instanceResourcesService.install({ resources: [resolved], path: instancePath })
           if (instancePath !== this.instanceService.state.path) {
-            const frame = await this.instanceGameSettingService.getInstanceGameSettings(instancePath)
-            await this.instanceGameSettingService.edit({ ...frame, resourcePacks: [...(frame.resourcePacks || []), resolved.path] })
+            const frame = await this.instanceGameSettingService.getGameOptions(instancePath)
+            await this.instanceGameSettingService.editGameSetting({ ...frame, resourcePacks: [...(frame.resourcePacks || []), resolved.path] })
           } else {
-            await this.instanceGameSettingService.edit({ resourcePacks: [...this.instanceGameSettingService.state.resourcePacks, resolved.path] })
+            // TODO: fix this
+            await this.instanceGameSettingService.editGameSetting({ resourcePacks: [...this.instanceGameSettingService.state.resourcePacks, resolved.path] })
           }
         }
       }
@@ -110,19 +112,19 @@ export default class ImportService extends AbstractService implements IImportSer
         if (isModpackResource(resolved)) {
           await this.instanceIOService.importInstance(resolved.metadata.root)
         } else if (isModResource(resolved)) {
-          await this.instanceResourcesService.install({ resources: [resolved], path: instancePath })
+          await this.instanceModsService.install({ mods: [resolved], path: instancePath })
         } else if (isSaveResource(resolved)) {
           await this.instanceSaveService.importSave({
             instancePath,
             source: join(resolved.path, resolved.metadata.root),
           })
         } else if (isResourcePackResource(resolved)) {
-          await this.instanceResourcesService.install({ resources: [resolved], path: instancePath })
           if (instancePath !== this.instanceService.state.path) {
-            const frame = await this.instanceGameSettingService.getInstanceGameSettings(instancePath)
-            await this.instanceGameSettingService.edit({ ...frame, resourcePacks: [...(frame.resourcePacks || []), resolved.path] })
+            const frame = await this.instanceGameSettingService.getGameOptions(instancePath)
+            await this.instanceGameSettingService.editGameSetting({ ...frame, resourcePacks: [...(frame.resourcePacks || []), resolved.path] })
           } else {
-            await this.instanceGameSettingService.edit({ resourcePacks: [...this.instanceGameSettingService.state.resourcePacks, resolved.path] })
+            // TODO: fix this
+            // await this.instanceGameSettingService.editGameSetting({ resourcePacks: [...this.instanceGameSettingService.state.resourcePacks, resolved.path] })
           }
         }
       }

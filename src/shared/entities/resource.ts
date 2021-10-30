@@ -87,6 +87,9 @@ export function isModResource(resource: Resource): resource is ModResource {
   return resource.type === 'forge' || resource.type === 'fabric' || resource.type === 'liteloader'
 }
 
+export function isShaderPackResource(resource: Resource): resource is ShaderPackResource {
+  return resource.type === 'shaderpack'
+} 
 /**
  * Is this resource a raw modpack resource. The raw modpack means it just containing the .minecraft folder content itself
  */
