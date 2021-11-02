@@ -7,8 +7,8 @@ export function createSemaphoreChannel(): ISemaphoreChannel {
   ipcRenderer.on('release', (event, semaphores) => {
     emitter.emit('release', semaphores)
   })
-  ipcRenderer.on('aquire', (event, semaphores) => {
-    emitter.emit('aquire', semaphores)
+  ipcRenderer.on('acquire', (event, semaphores) => {
+    emitter.emit('acquire', semaphores)
   })
   return {
     subscribe(): Promise<Record<string, number>> {

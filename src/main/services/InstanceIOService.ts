@@ -66,7 +66,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
 
     // add assets
     if (includeAssets) {
-      releases.push(await this.semaphoreManager.getLock(assetsLock).aquireRead())
+      releases.push(await this.semaphoreManager.getLock(assetsLock).acquireRead())
       const assetsJson = resolve(root, 'assets', 'indexes', `${version.assets}.json`)
       zipTask.addFile(assetsJson, `assets/indexes/${version.assets}.json`)
       const objects = await readJson(assetsJson).then(manifest => manifest.objects)
@@ -79,7 +79,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
     const verionsChain = version.pathChain
     for (const versionPath of verionsChain) {
       const versionId = basename(versionPath)
-      releases.push(await this.semaphoreManager.getLock(versionLockOf(versionId)).aquireRead())
+      releases.push(await this.semaphoreManager.getLock(versionLockOf(versionId)).acquireRead())
       if (includeVersionJar && await exists(join(versionPath, `${versionId}.jar`))) {
         zipTask.addFile(join(versionPath, `${versionId}.jar`), `versions/${versionId}/${versionId}.jar`)
       }
@@ -88,7 +88,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
 
     // add libraries
     if (includeLibraries) {
-      releases.push(await this.semaphoreManager.getLock(librariesLock).aquireRead())
+      releases.push(await this.semaphoreManager.getLock(librariesLock).acquireRead())
       for (const lib of version.libraries) {
         zipTask.addFile(resolve(root, 'libraries', lib.download.path),
           `libraries/${lib.download.path}`)

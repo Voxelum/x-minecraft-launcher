@@ -10,7 +10,7 @@ export class SemaphoreManager extends Manager {
     if (!this.locks[resourcePath]) {
       this.locks[resourcePath] = new ReadWriteLock((delta) => {
         if (delta > 0) {
-          this.aquire(resourcePath)
+          this.acquire(resourcePath)
         } else {
           this.release(resourcePath)
         }
@@ -20,12 +20,16 @@ export class SemaphoreManager extends Manager {
   }
 
   /**
-   * Aquire and boradcast the key is in used.
-   * @param key The key or keys to aquire
+   * Acquire and boradcast the key is in used.
+   * @param key The key or keys to acquire
    */
-  aquire(key: string) {
-    this.semaphore[key] += 1
-    this.app.broadcast('aquire', key)
+  acquire(key: string) {
+    if (key in this.semaphore) {
+      this.semaphore[key] += 1
+    } else {
+      this.semaphore[key] = 1
+    }
+    this.app.broadcast('acquire', key)
   }
 
   /**
@@ -33,7 +37,11 @@ export class SemaphoreManager extends Manager {
    * @param key The key or keys to release
    */
   release(key: string) {
-    this.semaphore[key] -= 1
+    if (key in this.semaphore) {
+      this.semaphore[key] -= 1
+    } else {
+      this.semaphore[key] = 0
+    }
     this.app.broadcast('release', key)
   }
 

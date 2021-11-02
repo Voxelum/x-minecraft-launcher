@@ -160,7 +160,7 @@ export async function authorizeXboxLive(request: Got, xblResponseToken: string, 
   return xstsResponse
 }
 
-export async function aquireXBoxToken(request: Got, oauthAccessToken: string) {
+export async function acquireXBoxToken(request: Got, oauthAccessToken: string) {
   const req = request.extend({
     headers: {
       'Content-Type': 'application/json',

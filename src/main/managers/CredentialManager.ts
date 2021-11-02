@@ -37,7 +37,7 @@ export default class CredentialManager extends Manager {
     })
   }
 
-  async aquireMicrosoftToken({ username, code, directRedirectToLauncher }: { username: string; code?: string; directRedirectToLauncher?: boolean }) {
+  async acquireMicrosoftToken({ username, code, directRedirectToLauncher }: { username: string; code?: string; directRedirectToLauncher?: boolean }) {
     const app = await this.getOAuthApp(username)
     if (username && !code) {
       let account: AccountInfo | undefined
@@ -49,7 +49,7 @@ export default class CredentialManager extends Manager {
       }
       if (account) {
         const result = await app.acquireTokenSilent({ scopes: this.scopes, account }).catch((e) => {
-          this.warn(`Fail to aquire microsoft token silently for ${username}`)
+          this.warn(`Fail to acquire microsoft token silently for ${username}`)
           this.warn(e)
           return null
         })

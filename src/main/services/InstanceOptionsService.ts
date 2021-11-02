@@ -1,7 +1,7 @@
 import { Frame, parse, stringify } from '@xmcl/gamesetting'
 import { FSWatcher, readFile, writeFile } from 'fs-extra'
 import watch from 'node-watch'
-import { join } from 'path'
+import { basename, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { deepClone } from '../util/clone'
 import { isSystemError } from '../util/error'
@@ -17,7 +17,7 @@ import ResourceService from './ResourceService'
 import packFormatVersionRange from '/@shared/util/packFormatVersionRange'
 
 /**
- * The service to watch game setting (options.txt) and shader options (shaderoptions.txt)
+ * The service to watch game setting (options.txt) and shader options (optionsshader.txt)
  */
 @ExportService(InstanceOptionsServiceKey)
 export default class InstanceOptionsService extends StatefulService<InstanceOptionsState> implements IInstanceOptionsService {
@@ -57,14 +57,16 @@ export default class InstanceOptionsService extends StatefulService<InstanceOpti
     if (this.watchingInstance !== path) {
       this.log(`Start to watch instance options.txt in ${path}`)
       this.watcher = watch(path, (event, file) => {
-        if (file.endsWith('options.txt')) {
+        if (basename(file) === ('options.txt')) {
           this.loadOptionsTxt(this.watchingInstance)
         }
-        if (file.endsWith('shaderoptions.txt')) {
+        if (basename(file) === ('optionsshaders.txt')) {
           this.loadShaderOptions(this.watchingInstance)
         }
       })
       this.watchingInstance = path
+      this.loadOptionsTxt(this.watchingInstance)
+      this.loadShaderOptions(this.watchingInstance)
     }
   }
 
@@ -74,7 +76,7 @@ export default class InstanceOptionsService extends StatefulService<InstanceOpti
       this.state.instanceShaderOptions(result)
     } catch (e) {
       if (isSystemError(e)) {
-        this.warn(`An error ocurrs during load shader options of ${path}.`)
+        this.warn(`An error ocurred during load shader options of ${path}.`)
         this.warn(e)
       }
       this.state.instanceShaderOptions({ shaderPack: '' })
@@ -87,7 +89,7 @@ export default class InstanceOptionsService extends StatefulService<InstanceOpti
       this.state.instanceGameSettingsLoad(result)
     } catch (e) {
       if (isSystemError(e)) {
-        this.warn(`An error ocurrs during parse game options of ${path}.`)
+        this.warn(`An error ocurred during parse game options of ${path}.`)
         this.warn(e)
       }
       this.state.instanceGameSettingsLoad({ resourcePacks: [] })
@@ -204,7 +206,7 @@ export default class InstanceOptionsService extends StatefulService<InstanceOpti
   }
 
   async showShaderOptionsInFolder() {
-    const optionTxt = join(this.watchingInstance, 'shaderoptions.txt')
+    const optionTxt = join(this.watchingInstance, 'optionsshaders.txt')
     if (await missing(optionTxt)) {
       this.app.openDirectory(this.watchingInstance)
     } else {
