@@ -61,6 +61,7 @@
               label
               color="amber"
               style="margin-left: 1px;"
+              @mousedown.stop
             >
               {{ source.version }}
             </v-chip>
@@ -69,6 +70,7 @@
               outline
               color="orange darken-1"
               label
+              @mousedown.stop
               style="margin-left: 1px;"
             >
               {{ source.id }}
@@ -79,8 +81,25 @@
               label
               color="lime"
               style="margin-left: 1px;"
+              @mousedown.stop
             >
               {{ source.type }}
+            </v-chip>
+
+            <v-chip
+              v-for="(tag, index) in source.tags"
+              small
+              outline
+              label
+              color="lime"
+              style="margin-left: 1px;"
+              @mousedown.stop
+              close
+              @input="onDeleteTag(tag)"
+            >
+            <div contenteditable @input.stop="onEditTag($event, index)">
+              {{ tag }}
+            </div>
             </v-chip>
             <div style="color: #bdbdbd; ">
               {{ source.description }}
@@ -191,6 +210,16 @@ export default defineComponent({
       e.dataTransfer!.setData('id', props.source.url)
       context.emit('dragstart', e)
     }
+    function onDeleteTag(tag: string) {
+      props.source.tags = props.source.tags.filter(t => t !== tag)
+    }
+    function onEditTag(event: InputEvent, index: number) {
+      if (event.target instanceof HTMLDivElement) {
+        props.source.tags[index] = event.target.innerText
+        console.log(event.target.innerText)
+        console.log(props.source.tags)
+      }
+    }   
     function onContextMenu(e: MouseEvent) {
       const items: ContextMenuItem[] = [{
         text: $t('mod.showFile', { file: props.source.path }),
@@ -199,6 +228,13 @@ export default defineComponent({
           showItemInDirectory(props.source.path)
         },
         icon: 'folder',
+      }, {
+        text: $t('mod.createTag'),
+        children: [],
+        onClick: () => {
+          props.source.tags.push('new tag')
+        },
+        icon: 'plus',
       }]
       if (props.source.url) {
         const url = props.source.url
@@ -252,6 +288,8 @@ export default defineComponent({
       minecraft,
       onContextMenu,
       unknownPack,
+      onDeleteTag,
+      onEditTag,
 
       mcCompatible,
       compatibleText,
