@@ -196,3 +196,7 @@ a {
         max-width: unset;
     }
 }
+
+.v-btn--floating .v-icon {
+    height: unset;
+}
