@@ -214,8 +214,6 @@ export default defineComponent({
     const { push } = useRouter()
     const { text: filter } = useSearch()
 
-    console.log(instances.value)
-
     const filterElem = ref(null) as Ref<any>
 
     const filteredInstance = computed(() => {

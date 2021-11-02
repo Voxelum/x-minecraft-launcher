@@ -149,7 +149,6 @@ export default defineComponent({
         return status.value.favicon
       }
       const banner = getBanner(props.instance.runtime.minecraft)
-      console.log(banner)
       if (banner) {
         return banner
       }

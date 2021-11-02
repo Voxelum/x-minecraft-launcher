@@ -107,8 +107,7 @@ export default defineComponent({
           subscribeTask(editInstance({ java: validJava.value!.path }), $t('java.modifyInstance'))
           isShown.value = false
         } else if (index === 1) {
-          await installDefaultJava(javaIssue.value.version)
-
+          subscribeTask(installDefaultJava(javaIssue.value.version), $t('java.modifyInstance'))
           isShown.value = false
         } else if (index === 2) {
           const { filePaths, canceled } = await showOpenDialog({
