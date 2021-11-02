@@ -54,7 +54,7 @@ export class InstanceOptionsState {
   }
 
   instanceShaderOptions(options: ShaderOptions) {
-
+    Object.assign(this.shaderoptions, options)
   }
 
   /**

@@ -32,9 +32,9 @@
         </v-btn> -->
       </v-toolbar>
       <v-layout column>
-        <v-flex class="gap-5">
-          <transition-group tag="div" name="transition-list">
-            <ShaderPackCard v-for="pack in shaderPacks" :key="pack.hash" :pack="pack"></ShaderPackCard>
+        <v-flex >
+          <transition-group tag="div" name="transition-list" class="flex gap-5">
+            <ShaderPackCard v-for="pack in shaderPacks" :key="pack.value" :pack="pack" @select="onSelect"></ShaderPackCard>
           </transition-group>
         </v-flex>
       </v-layout>
@@ -45,14 +45,19 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api';
 import ShaderPackCard from './ShaderPackCard.vue';
-import { useShaderpacks } from '/@/hooks/useShaderpacks';
+import { ShaderPackItem, useShaderpacks } from '/@/hooks/useShaderpacks';
 
 export default defineComponent({
   setup() {
-    const { shaderPacks } = useShaderpacks()
+    const { shaderPacks, selectedShaderPack } = useShaderpacks()
+
+    function onSelect(pack: ShaderPackItem) {
+      selectedShaderPack.value = pack.value
+    }
 
     return {
       shaderPacks,
+      onSelect,
     }
   },
   components: { ShaderPackCard }

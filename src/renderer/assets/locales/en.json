@@ -829,7 +829,9 @@
   },
   "shaderpack": {
     "hint": "Enable or disable shader packs to this launch profile",
-    "name": "Shader Pack"
+    "internal": "Internal Shader",
+    "name": "Shader Pack",
+    "off": "Off"
   },
   "skin": {
     "change": "Change Skin",

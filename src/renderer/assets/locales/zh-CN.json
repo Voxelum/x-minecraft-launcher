@@ -806,7 +806,9 @@
   },
   "shaderpack": {
     "hint": "调整此配置的光影包",
-    "name": "光影包"
+    "internal": "内置",
+    "name": "光影包",
+    "off": "无"
   },
   "summery": "简介",
   "task": {
