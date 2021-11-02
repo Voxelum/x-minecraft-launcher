@@ -89,7 +89,7 @@ export function ReadLock<T extends AbstractService>(key: (string | string[] | Mu
       for (const k of keys) {
         const key = k
         const lock = this.semaphoreManager.getLock(key)
-        promises.push(lock.aquireRead())
+        promises.push(lock.acquireRead())
       }
       const exec = () => {
         try {
@@ -114,7 +114,7 @@ export function ReadLock<T extends AbstractService>(key: (string | string[] | Mu
 }
 
 /**
- * A service method decorator to make sure this service will aquire mutex to run, ensuring the mutual exclusive.
+ * A service method decorator to make sure this service will acquire mutex to run, ensuring the mutual exclusive.
  */
 export function Lock<T extends AbstractService>(key: (string | string[] | MutexSerializer<T>)) {
   return function (target: T, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -125,7 +125,7 @@ export function Lock<T extends AbstractService>(key: (string | string[] | MutexS
       const promises: Promise<() => void>[] = []
       for (const key of keys) {
         const lock = this.semaphoreManager.getLock(key)
-        promises.push(lock.aquireWrite())
+        promises.push(lock.acquireWrite())
       }
       const exec = () => {
         try {
@@ -151,7 +151,7 @@ export function Lock<T extends AbstractService>(key: (string | string[] | MutexS
 
 export type ParamSerializer<T extends AbstractService> = (...params: any[]) => string | undefined
 
-export const IGNORE_PARAMS: ParamSerializer<any> = () => undefined
+export const IGNORE_PARAMS: ParamSerializer<any> = () => ''
 
 export const ALL_PARAMS: ParamSerializer<any> = (...pararms) => JSON.stringify(pararms)
 
@@ -186,9 +186,11 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
       if (last) {
         return last
       } else {
-        this.log(`Aquire singleton ${targetKey}`)
+        this.log(`Acquire singleton ${targetKey}`)
+        this.up(targetKey)
         instances[targetKey] = exec().finally(() => {
           this.log(`Release singleton ${targetKey}`)
+          this.down(targetKey)
           delete instances[targetKey]
         })
         return instances[targetKey]
@@ -308,7 +310,7 @@ export default abstract class AbstractService extends EventEmitter {
   }
 
   protected up(key: string) {
-    this.semaphoreManager.aquire(key)
+    this.semaphoreManager.acquire(key)
   }
 
   protected down(key: string) {

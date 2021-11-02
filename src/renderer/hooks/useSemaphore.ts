@@ -29,10 +29,12 @@ export function useSemaphores() {
     for (const [key, val] of Object.entries(sem)) {
       set(container, key, val)
     }
+    console.log(sem)
   }))
 
-  semaphoreChannel.on('aquire', (res) => {
+  semaphoreChannel.on('acquire', (res) => {
     const sem = res instanceof Array ? res : [res]
+    // console.log(`acquire ${res}`)
     for (const s of sem) {
       if (s in container) {
         container[s] += 1
@@ -43,6 +45,7 @@ export function useSemaphores() {
   })
   semaphoreChannel.on('release', (res) => {
     const sem = res instanceof Array ? res : [res]
+    // console.log(`release ${res}`)
     for (const s of sem) {
       if (s in container) {
         container[s] = Math.max(0, container[s] - 1)

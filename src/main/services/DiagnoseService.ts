@@ -54,7 +54,7 @@ export default class DiagnoseService extends StatefulService<DiagnoseState> impl
 
   // @Subscribe('instanceSelect')
   // async onInstanceSelect() {
-  //   this.aquire('diagnose')
+  //   this.acquire('diagnose')
   //   const report: Partial<IssueReport> = {}
   //   await this.diagnoseServer(report)
   //   // await this.diagnoseCustomSkin(report);
@@ -91,7 +91,7 @@ export default class DiagnoseService extends StatefulService<DiagnoseState> impl
 
   // @Singleton()
   // async diagnoseServer(report: Partial<IssueReport>) {
-  //   this.aquire('diagnose')
+  //   this.acquire('diagnose')
   //   try {
   //     this.log('Diagnose server status')
   //     const stat = this.getters.instance.serverStatus

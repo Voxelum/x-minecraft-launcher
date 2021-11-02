@@ -1,7 +1,7 @@
 import { GenericEventEmitter } from './events'
 
 interface SemaphoreChannelEventMap {
-  'aquire': string[] | string
+  'acquire': string[] | string
   'release': string[] | string
 }
 

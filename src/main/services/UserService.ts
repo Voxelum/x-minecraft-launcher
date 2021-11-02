@@ -7,7 +7,7 @@ import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
 import { ExportService, Singleton, StatefulService } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
-import { aquireXBoxToken, checkGameOwnership, getGameProfile, loginMinecraftWithXBox } from '/@main/entities/user'
+import { acquireXBoxToken, checkGameOwnership, getGameProfile, loginMinecraftWithXBox } from '/@main/entities/user'
 import { createhDynamicThrottle as createDynamicThrottle } from '/@main/util/trafficAgent'
 import { fitMinecraftLauncherProfileData } from '/@main/util/userData'
 import { Exception } from '/@shared/entities/exception'
@@ -433,9 +433,9 @@ export default class UserService extends StatefulService<UserState> implements I
     const { oauthCode, microsoftEmailAddress } = options
 
     const req = this.app.networkManager.request
-    const tokenResult = await this.credentialManager.aquireMicrosoftToken({ username: microsoftEmailAddress, code: oauthCode })
+    const tokenResult = await this.credentialManager.acquireMicrosoftToken({ username: microsoftEmailAddress, code: oauthCode })
     const oauthAccessToken = tokenResult!.accessToken
-    const { xstsResponse, xboxGameProfile } = await aquireXBoxToken(req, oauthAccessToken)
+    const { xstsResponse, xboxGameProfile } = await acquireXBoxToken(req, oauthAccessToken)
 
     const mcResponse = await loginMinecraftWithXBox(req, xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token)
 

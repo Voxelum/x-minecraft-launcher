@@ -11,7 +11,7 @@ export interface SemaphoreListener {
 }
 
 /**
- * A simple implementation of read write mutex on a resource. It provide api to aquire the read/write operation on a resource.
+ * A simple implementation of read write mutex on a resource. It provide api to acquire the read/write operation on a resource.
  *
  * This ensure all operations accessing the resource by this lock will not violate the mutual exclusion.
  */
@@ -90,7 +90,7 @@ export class ReadWriteLock {
     })
   }
 
-  async aquireRead(): Promise<() => void> {
+  async acquireRead(): Promise<() => void> {
     let start = () => { }
     let end = () => { }
     const startPromise = new Promise<void>((resolve) => {
@@ -121,7 +121,7 @@ export class ReadWriteLock {
     })
   }
 
-  async aquireWrite() {
+  async acquireWrite() {
     let start = () => { }
     let end = () => { }
     const startPromise = new Promise<void>((resolve) => {

@@ -60,6 +60,7 @@
         "applicationinsights": "^2.1.6",
         "atomically": "^1.7.0",
         "electron-updater": "^4.3.9",
+        "fast-xml-parser": "^3.21.0",
         "file-type": "^16.5.3",
         "filenamify": "^4.3.0",
         "fs-extra": "^10.0.0",
@@ -126,8 +127,10 @@
         "typescript-json-schema": "^0.49.0",
         "vite": "^2.5.6",
         "vite-plugin-vue2": "^1.8.2",
+        "vite-plugin-windicss": "^1.4.12",
         "vue-observe-visibility": "^0.4.6",
-        "vue-template-compiler": "^2.6.14"
+        "vue-template-compiler": "^2.6.14",
+        "windicss": "^3.2.1"
     },
     "jest": {
         "globals": {

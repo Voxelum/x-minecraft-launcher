@@ -69,6 +69,7 @@ const app = createApp(defineComponent({
     provide(SYNCABLE_KEY, syncable)
 
     syncable.sync()
+    semaphores.refresh()
 
     // dynamic change locale
     store.watch((state) => state[`services/${BaseServiceKey.toString()}`].locale, (newValue: string, oldValue: string) => {
