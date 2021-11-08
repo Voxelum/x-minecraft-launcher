@@ -1,4 +1,4 @@
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from '@vue/composition-api';
+import { computed, onMounted, onUnmounted, ref, watch } from '@vue/composition-api';
 import { useI18n, useService } from '.';
 import { InstanceOptionsServiceKey } from '../../shared/services/InstanceOptionsService';
 import { useRefreshable } from './useRefreshable';
@@ -10,11 +10,13 @@ export interface ShaderPackItem {
   value: string
   resource: PersistedShaderPackResource
   enabled: boolean
+  description: string
+  path: string
   tags: string[]
 }
 
 export function useShaderpacks() {
-  const { state } = useService(ResourceServiceKey)
+  const { state, updateResource, removeResource } = useService(ResourceServiceKey)
   const { state: options, editShaderOptions } = useService(InstanceOptionsServiceKey)
   const { $t } = useI18n()
 
@@ -30,12 +32,16 @@ export function useShaderpacks() {
       value: 'OFF',
       resource: null as any,
       enabled: 'OFF' === options.shaderoptions.shaderPack,
+      description: $t('shaderpack.offDescription'),
+      path: '',
       tags: [],
     }, {
       name: $t('shaderpack.internal'),
       value: '(internal)',
       resource: null as any,
       enabled: '(internal)' === options.shaderoptions.shaderPack,
+      description: $t('shaderpack.internalDescription'),
+      path: '',
       tags: [],
     }]
   }
@@ -46,12 +52,37 @@ export function useShaderpacks() {
       value: fileName,
       resource: res,
       enabled: fileName === options.shaderoptions.shaderPack,
+      description: res.path,
+      path: res.path,
       tags: [...res.tags]
     }
   }
   const { refresh: commit, refreshing: committing } = useRefreshable(async () => {
     editShaderOptions({ shaderPack: selectedShaderPack.value })
   })
+
+  function updateResourceTags() {
+    for (const pack of shaderPacks.value) {
+      if (pack.resource) {
+        const updated = { tags: undefined as undefined | string[], name: undefined as undefined | string }
+        if (pack.tags.length !== pack.resource.tags.length || pack.tags.some((t, i) => t !== pack.resource.tags[i])) {
+          updated.tags = pack.tags
+        }
+        if (pack.name) {
+          updated.name = pack.name
+        }
+        if (updated.name || updated.tags) {
+          updateResource({ resource: pack.resource, ...updated })
+        }
+      }
+    }
+  }
+
+  async function removeShaderPack(item: ShaderPackItem) {
+    if (!item.enabled && item.path) {
+      await removeResource(item.resource)
+    }
+  }
 
   watch(shaderPacksResources, (res) => {
     shaderPacks.value = getBuiltinItems().concat(res.map(getShaderPackItemFromResource))
@@ -65,6 +96,7 @@ export function useShaderpacks() {
 
   onUnmounted(() => {
     commit()
+    updateResourceTags()
   })
 
   watch(selectedShaderPack, (pack) => {
@@ -79,5 +111,6 @@ export function useShaderpacks() {
     selectedShaderPack,
     commit,
     committing,
+    removeShaderPack,
   }
 }

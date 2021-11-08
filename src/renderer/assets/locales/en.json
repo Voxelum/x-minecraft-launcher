@@ -536,6 +536,7 @@
     "deletionRestHint": "And {rest} more Mods...",
     "dropHint": "Drop mod's .jar/.litemod here to import.",
     "export": "Export Mod",
+    "filter": "Filter Mods",
     "hideIncompatible": "Hide Incompatible Mods",
     "hint": "Enable or disable the Mods of this launch profile",
     "import": "Import Mod",
@@ -724,6 +725,7 @@
     "deletionHint": "You will lose the data and metadata of this resource pack. You are sure to do this?",
     "dropHint": "Drop Resource Pack's folder/zip here to import.",
     "export": "Export Resource Pack",
+    "filter": "Filter Resource Packs",
     "hint": "Enable or disable resource packs to this launch profile",
     "import": "Import Resource Pack",
     "incompatible": "Incompatible Resource Pack format({format}). Fitin {accept}. Current {actual}.",
@@ -828,10 +830,16 @@
     "waitReload": "Migrating data. Please don't close the Launcher or you will lose your data."
   },
   "shaderpack": {
+    "deletion": "Delete Shader Pack",
+    "deletionHint": "This will delete the shader pack file {path} and cannot reverted.",
+    "filter": "Filter Shader Packs",
     "hint": "Enable or disable shader packs to this launch profile",
     "internal": "Internal Shader",
+    "internalDescription": "Enable internal default shader pipeline (You can config shader options in this case)",
     "name": "Shader Pack",
-    "off": "Off"
+    "off": "Off",
+    "offDescription": "Turn off the shader",
+    "showFile": "Show this shader pack in folder"
   },
   "skin": {
     "change": "Change Skin",
@@ -843,6 +851,10 @@
     "urlHint": "Place your skin url here"
   },
   "summery": "Summery",
+  "tag": {
+    "create": "Create Tag",
+    "newTag": "New Tag"
+  },
   "task": {
     "cancelled": "Cancelled",
     "empty": "No Running Tasks",

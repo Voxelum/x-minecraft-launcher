@@ -2,7 +2,7 @@ import { task } from '@xmcl/task'
 import { FSWatcher } from 'fs'
 import { readJSON, stat, unlink, writeFile } from 'fs-extra'
 import watch from 'node-watch'
-import { basename, extname, join } from 'path'
+import { basename, extname, join, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { AggregateExecutor } from '../util/aggregator'
 import { isSystemError } from '../util/error'
@@ -14,7 +14,7 @@ import { copyPassively, ENOENT_ERROR, fileType, FileType, readdirEnsured } from 
 import { Exception } from '/@shared/entities/exception'
 import { AnyPersistedResource, AnyResource, isPersistedResource, PersistedResource } from '/@shared/entities/resource'
 import { Resource, ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
-import { ImportFileOptions, ImportFilesOptions, ParseFileOptions, ParseFilesOptions, RenameResourceOptions, ResourceService as IResourceService, ResourceServiceKey, ResourceState, SetResourceTagsOptions } from '/@shared/services/ResourceService'
+import { ImportFileOptions, ImportFilesOptions, ParseFileOptions, ParseFilesOptions, ResourceService as IResourceService, ResourceServiceKey, ResourceState, UpdateResourceOptions } from '/@shared/services/ResourceService'
 import { requireString } from '/@shared/util/assert'
 
 export interface ParseResourceContext {
@@ -71,24 +71,6 @@ export default class ResourceService extends StatefulService<ResourceState> impl
     [ResourceDomain.ShaderPacks]: undefined,
     [ResourceDomain.Unknown]: undefined,
   }
-
-  private resourceRemove = new AggregateExecutor<AnyPersistedResource, AnyPersistedResource[]>(_ => _,
-    (res) => {
-      this.state.resourcesRemove(res)
-      for (const resource of res) {
-        this.cache.discard(resource)
-        this.unpersistResource(resource)
-      }
-    }, 1000)
-
-  private resourceUpdate = new AggregateExecutor<AnyPersistedResource, AnyPersistedResource[]>(_ => _,
-    (res) => {
-      this.state.resources(res)
-      for (const resource of res) {
-        this.cache.discard(resource)
-        this.cache.put(resource)
-      }
-    }, 1000)
 
   @internal
   protected normalizeResource(resource: string | AnyPersistedResource | AnyResource): AnyPersistedResource | undefined {
@@ -161,8 +143,8 @@ export default class ResourceService extends StatefulService<ResourceState> impl
         result.push(resource)
       } catch (e) {
         if (isSystemError(e) && e.code === ENOENT_ERROR) {
-          this.warn(`The resource file ${filePath} cannot be found! Remove this resource record!`)
-          unlink(filePath)
+          this.warn(`The resource file ${filePath} cannot be found! Try remove this resource record!`)
+          unlink(filePath).catch(() => { })
         } else {
           this.error(`Cannot load resource ${file}`)
           if (e instanceof Error && e.stack) {
@@ -186,7 +168,9 @@ export default class ResourceService extends StatefulService<ResourceState> impl
           // this will remove
           const resource = this.cache.get(name)
           if (resource) {
-            this.resourceRemove.push(resource)
+            this.state.resourcesRemove([resource])
+            this.cache.discard(resource)
+            this.unpersistResource(resource)
             this.log(`Remove resource ${resource.path} with its metadata`)
           } else {
             this.log(`Skip to remove untracked resource ${name} & its metadata`)
@@ -199,7 +183,9 @@ export default class ResourceService extends StatefulService<ResourceState> impl
         if (name.endsWith('.json')) {
           try {
             const resource = await this.loadMetadata(name)
-            this.resourceUpdate.push(resource)
+            this.state.resources([resource])
+            this.cache.discard(resource)
+            this.cache.put(resource)
             this.log(`Update resource ${resource.path} metadata`)
           } catch (e) {
             if (isSystemError(e) && e.code === ENOENT_ERROR) {
@@ -230,6 +216,9 @@ export default class ResourceService extends StatefulService<ResourceState> impl
   }
 
   private getMetadataFilePath(resource: AnyResource) {
+    return this.getPath(resource.domain, resource.fileName) + '.json'
+  }
+  private getResourceFilePath(resource: AnyResource) {
     return this.getPath(resource.domain, resource.fileName) + resource.ext
   }
 
@@ -237,7 +226,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
     const resourceData = await readJSON(metadataPath) // this.resourceFile.readTo(filePath)
     await fixResourceSchema({ log: this.log, warn: this.warn, error: this.error }, metadataPath, resourceData, this.getPath())
 
-    const resourceFilePath = this.getMetadataFilePath(resourceData)
+    const resourceFilePath = this.getResourceFilePath(resourceData)
     const { size, ino } = await stat(resourceFilePath)
     const resource: PersistedResource<any> = Object.freeze({
       fileName: resourceData.fileName,
@@ -290,13 +279,12 @@ export default class ResourceService extends StatefulService<ResourceState> impl
         resource: resourceOrKey as string,
       })
     }
-    this.resourceRemove.push(resource)
+    this.state.resourcesRemove([resource])
+    this.cache.discard(resource)
+    await this.unpersistResource(resource)
   }
 
-  /**
-   * Rename resource, this majorly affect displayed name.
-   */
-  async renameResource(options: RenameResourceOptions) {
+  async updateResource(options: UpdateResourceOptions): Promise<void> {
     const resource = this.normalizeResource(options.resource)
     if (!resource) {
       throw new Exception({
@@ -304,23 +292,19 @@ export default class ResourceService extends StatefulService<ResourceState> impl
         resource: options.resource as string,
       })
     }
-    const result = mutateResource<PersistedResource<any>>(resource, (r) => { r.name = options.name })
-    await writeFile(this.getMetadataFilePath(result), JSON.stringify(result))
-  }
-
-  /**
-   * Set the resource tags.
-   */
-  async setResourceTags(options: SetResourceTagsOptions) {
-    const resource = this.normalizeResource(options.resource)
-    if (!resource) {
-      throw new Exception({
-        type: 'resourceNotFoundException',
-        resource: options.resource as string,
-      })
+    let newResource: PersistedResource<any> | undefined
+    if (options.name) {
+      const name = options.name
+      newResource = mutateResource<PersistedResource<any>>(resource, (r) => { r.name = name })
     }
-    const result = mutateResource(resource, (r) => { r.tags = options.tags })
-    await writeFile(this.getMetadataFilePath(result), JSON.stringify(result))
+    if (options.tags) {
+      const tags = options.tags
+      newResource = mutateResource<PersistedResource<any>>(newResource ?? resource, (r) => { r.tags = tags })
+    }
+    if (newResource) {
+      this.state.resource(newResource)
+      await writeFile(this.getMetadataFilePath(newResource), JSON.stringify(newResource))
+    }
   }
 
   /**
@@ -538,16 +522,19 @@ export default class ResourceService extends StatefulService<ResourceState> impl
   * @see {queryExistedResourceByPath}
   */
   async importParsedResource(options: ImportFileOptions, resolved: Resource, icon: Uint8Array | undefined) {
-    if (options.restrictToDomain && resolved.domain !== options.restrictToDomain) {
+    if (options.restrictToDomain && resolved.domain !== options.restrictToDomain && resolved.domain !== ResourceDomain.Unknown) {
       throw new Exception({
-        type: 'resourceDomainMissmatched',
+        type: 'resourceDomainMismatched',
         path: options.path,
         expectedDomain: options.restrictToDomain,
         actualDomain: resolved.domain,
         actualType: resolved.type,
       }, `Non-${options.restrictToDomain} resource at ${options.path} type=${resolved.type}`)
     }
-
+    if (resolved.domain === ResourceDomain.Unknown && options.restrictToDomain) {
+      // enforced unknown resource domain
+      resolved.domain = options.restrictToDomain
+    }
     const result = await persistResource(resolved, this.getPath(), options.source ?? {}, options.url ?? [], icon, this.pending)
     return result as AnyPersistedResource
   }

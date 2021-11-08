@@ -20,8 +20,8 @@ app.on('web-contents-created', (event, contents) => {
   // if (existsSync(extensionDir)) {
   //   contents.session.loadExtension(extensionDir)
   // }
+  console.log(event)
   contents.openDevTools({ mode: 'detach' });
-  console.log(contents)
 })
 
 autoUpdater.setFeedURL({

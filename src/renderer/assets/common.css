@@ -1,6 +1,14 @@
-input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
+}
+
+:root {
+    --primary-color: #388e3c;
+    --warning-color: #e65100;
+    --warning-color-decent: #c45920;
+    --common-color: #424242;
 }
 
 p {
@@ -24,20 +32,24 @@ p {
     -webkit-app-region: no-drag;
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
     transition: opacity 0.01s;
 }
 
-.fade-enter, .fade-leave-to {
+.fade-enter,
+.fade-leave-to {
     opacity: 0;
     transition: all 0.01s;
 }
 
-.transition-list-enter-active, .transition-list-leave-active {
+.transition-list-enter-active,
+.transition-list-leave-active {
     transition: all 0.7s;
 }
 
-.transition-list-enter, .transition-list-leave-to {
+.transition-list-enter,
+.transition-list-leave-to {
     opacity: 0;
     transition: all 0.7s;
     /* transform: translateY(30px); */
@@ -90,7 +102,8 @@ p {
 
 .card-list .v-input__slot {
     box-shadow: none !important;
-    transition: background 0.3s cubic-bezier(0.25, 0.8, 0.5, 1), box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.5, 1) !important;
+    transition: background 0.3s cubic-bezier(0.25, 0.8, 0.5, 1),
+        box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.5, 1) !important;
     transition-property: background;
     transition-duration: 0.3s;
     transition-timing-function: cubic-bezier(0.25, 0.8, 0.5, 1);
@@ -98,11 +111,13 @@ p {
 }
 
 .card-list .v-input__slot:hover {
-    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+        0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
 }
 
 .card-list .v-input--is-focused .v-input__control .v-input__slot {
-    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2), 0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
+    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+        0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
 }
 
 .v-menu {
@@ -125,7 +140,8 @@ p {
     padding-right: 30px;
 }
 
-.theme--dark.v-sheet {}
+.theme--dark.v-sheet {
+}
 
 .sidebar.v-navigation-drawer .v-list {
     background: unset;
@@ -169,7 +185,8 @@ p {
 
 /* Draggable card */
 
-*.selection-mode .draggable-card, .draggable-card.selected {
+*.selection-mode .draggable-card,
+.draggable-card.selected {
     transform: scale(0.95);
 }
 
@@ -199,4 +216,12 @@ a {
 
 .v-btn--floating .v-icon {
     height: unset;
+}
+
+.header-bar {
+    @apply lg:px-15 lg:pt-5 flex flex-row md:px-9 md:pt-2;
+}
+
+.header-bar * {
+    align-self: center;
 }

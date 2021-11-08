@@ -15,7 +15,7 @@
       >
         <span class="headline">{{ $t("profile.versionSetting") }}</span>
       </v-flex>
-      <v-flex xs12>
+      <v-flex xs12 style="display: block;">
         <v-tabs
           v-model="active"
           mandatory
@@ -212,6 +212,7 @@ export default defineComponent({
     function setOptifine(v: OptifineVersion | undefined) {
       if (!v) {
         data.optifine = ''
+        data.folder = ''
       } else {
         data.optifine = `${v.type}_${v.patch}`
         data.folder = ''
@@ -229,6 +230,7 @@ export default defineComponent({
     function setFabric(version?: string) {
       if (version) {
         data.loader = version
+        data.folder = ''
         data.forge = ''
       } else {
         data.loader = ''

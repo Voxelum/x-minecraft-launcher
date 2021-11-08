@@ -29,7 +29,6 @@ export function useSemaphores() {
     for (const [key, val] of Object.entries(sem)) {
       set(container, key, val)
     }
-    console.log(sem)
   }))
 
   semaphoreChannel.on('acquire', (res) => {

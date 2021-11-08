@@ -4,6 +4,7 @@ const { external } = require("../package.json");
 const { createVuePlugin } = require("vite-plugin-vue2");
 const { readdirSync } = require("fs");
 const { VitePWA } = require("vite-plugin-pwa");
+const WindiCSS = require('vite-plugin-windicss')
 
 const entries = readdirSync(join(__dirname, "../src/renderer"))
     .filter((f) => f.endsWith(".html"))
@@ -39,6 +40,18 @@ const config = {
             manifest: {
                 name: "x-minecraft-launcher",
             },
+        }),
+        WindiCSS.default({
+            // config: {
+            //     extract: {
+            //         include: [join(__dirname, '../src')],
+            //         exclude: ['**/node_modules/**', '.git'],
+            //     }
+            // },
+            scan: {
+                dirs: [join(__dirname, '../src')],
+                fileExtensions: ['vue', 'ts']
+            }
         }),
     ],
 };

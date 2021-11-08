@@ -17,50 +17,53 @@
       fill-height
     >
       <v-flex
-        style="margin: 0; padding: 0"
+        class="m-0 p-0"
         xs3
+        md2
       >
         <img
           ref="icon"
           v-fallback-img="unknownPack"
           :src="source.icon"
-          style="min-height: 126px; max-height: 126px; max-width: 126px; min-width; 126px"
+          style="min-height: 126px; max-height: 126px; max-width: 126px; min-width: 126px"
           contain
         >
       </v-flex>
-      <v-flex style="padding: 10px 0; flex-grow: 1">
+      <v-flex class="flex-grow py-2 flex-col gap-3">
         <h3>{{ source.name }}</h3>
         <div style="color: grey">
           {{ new Date(source.lastPlayed) }}
         </div>
-        <v-chip
-          small
-          outline
-          label
-          color="amber"
-          style="margin-left: 1px;"
-        >
-          {{ levelMode }}
-        </v-chip>
-        <v-chip
-          v-if="source.cheat"
-          small
-          outline
-          color="orange darken-1"
-          label
-          style="margin-left: 1px;"
-        >
-          {{ $t('gamesetting.cheat') }}
-        </v-chip>
-        <v-chip
-          small
-          outline
-          label
-          color="lime"
-          style="margin-left: 1px;"
-        >
-          {{ source.gameVersion }}
-        </v-chip>
+        <div>
+          <v-chip
+            small
+            outline
+            label
+            color="amber"
+            style="margin-left: 1px;"
+          >
+            {{ levelMode }}
+          </v-chip>
+          <v-chip
+            v-if="source.cheat"
+            small
+            outline
+            color="orange darken-1"
+            label
+            style="margin-left: 1px;"
+          >
+            {{ $t('gamesetting.cheat') }}
+          </v-chip>
+          <v-chip
+            small
+            outline
+            label
+            color="lime"
+            style="margin-left: 1px;"
+          >
+            {{ source.gameVersion }}
+          </v-chip>
+        </div>
         <!-- <div style="color: #bdbdbd; ">{{ source.description }}</div> -->
       </v-flex>
       <v-flex style="flex-grow: 0">

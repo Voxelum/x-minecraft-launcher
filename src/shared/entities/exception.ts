@@ -1,7 +1,7 @@
 import { AnyResource, PersistedResource } from '/@shared/entities/resource'
 import { Issue } from '/@shared/entities/issue'
 
-export type Exceptions = InstanceNotFoundException | ResourceNotFoundException | ResourceImportDirectoryException | ResourceDomainMissmatchedException | MinecraftProfileError | PingServerException | UserNoProfilesException | CurseforgeModpackImportException | IssueBlockedException | InstanceDeleteSaveException | FixVersionException | LaunchGeneralException | LaunchBlockedException | LaunchException | LoginException | InstanceImportSaveException | InstanceImportResourceException | InstanceCopySaveException | GeneralException | ResourceException
+export type Exceptions = InstanceNotFoundException | ResourceNotFoundException | ResourceImportDirectoryException | ResourceDomainMismatchedException | MinecraftProfileError | PingServerException | UserNoProfilesException | CurseforgeModpackImportException | IssueBlockedException | InstanceDeleteSaveException | FixVersionException | LaunchGeneralException | LaunchBlockedException | LaunchException | LoginException | InstanceImportSaveException | InstanceImportResourceException | InstanceCopySaveException | GeneralException | ResourceException
 
 export interface ExceptionBase {
   type: string
@@ -31,8 +31,8 @@ export interface InstanceImportResourceException extends ExceptionBase {
   file: string
 }
 
-export interface ResourceDomainMissmatchedException extends ExceptionBase {
-  type: 'resourceDomainMissmatched'
+export interface ResourceDomainMismatchedException extends ExceptionBase {
+  type: 'resourceDomainMismatched'
   path: string
   expectedDomain: string
   actualDomain: string

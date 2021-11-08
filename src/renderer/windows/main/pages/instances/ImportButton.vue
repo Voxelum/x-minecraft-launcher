@@ -16,7 +16,6 @@
             fab
             dark
             small
-            style="margin-left: 5px; margin-top: 5px;"
             @click="$emit('import', 'normal')"
             v-on="on"
           >
