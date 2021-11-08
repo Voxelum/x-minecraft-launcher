@@ -26,7 +26,7 @@
         />
       </v-flex>
       <v-flex
-        style="overflow: auto; max-height: 75vh; min-height: 75vh;"
+        style="overflow: auto; max-height: 75vh; min-height: 75vh; display: block;"
         xs12
       >
         <v-container
@@ -47,6 +47,7 @@
         <v-flex
           v-for="proj in projects"
           :key="proj.id"
+          style="display: block;"
           d-flex
           xs12
         >
@@ -62,9 +63,9 @@
               align-center
               justify-center
             >
-              <v-flex shrink>
+              <v-flex shrink style="display: block">
                 <v-img
-                  :src="proj.attachments[0].thumbnailUrl"
+                  :src="proj.attachments[0] ? proj.attachments[0].thumbnailUrl : ''"
                   :width="64"
                 >
                   <template #placeholder>
@@ -87,7 +88,7 @@
                 style="padding-left: 10px;"
                 inset
               />
-              <v-flex xs6>
+              <v-flex xs6 style="display: block">
                 <v-card-title>
                   <span style="font-weight: bold;">{{ proj.name }}</span>
                   <span style="padding-left: 3px;">by {{ proj.authors[0].name }}</span>
@@ -100,7 +101,7 @@
               </v-flex>
               <v-flex
                 xs4
-                style="padding-top: 10px;"
+                style="padding-top: 10px; display: block;"
               >
                 <v-chip
                   v-for="cat of proj.categories"

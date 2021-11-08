@@ -25,14 +25,14 @@
               row
               fill-height
             >
-              <v-flex
+              <div
                 v-if="loading"
               >
                 <refreshing-tile />
-              </v-flex>
-              <v-flex
+              </div>
+              <div
                 v-else-if="pending"
-                style="text-align: center; user-select: none"
+                class="text-center select-none"
               >
                 <v-icon
                   :style="{ 'font-size': `${50}px` }"
@@ -62,7 +62,7 @@
                   </v-icon>
                   {{ $tc("profile.modpack.name", 0) }}
                 </v-card-text>
-              </v-flex>
+              </div>
               <preview-view
                 v-else
                 :previews="previews"
@@ -82,7 +82,7 @@ import { defineComponent, ref } from '@vue/composition-api'
 import PreviewView from './UniversalDropViewPreview.vue'
 import { useFileDrop } from '/@/hooks'
 import { isPersistedResource } from '/@shared/entities/resource'
-import { Resource, ResourceType } from '/@shared/entities/resource.schema'
+import { Resource } from '/@shared/entities/resource.schema'
 
 export interface FilePreview extends Resource {
   enabled: boolean
@@ -98,7 +98,7 @@ export default defineComponent({
     const inside = ref(false)
     const loading = ref(false)
     const previews = ref([] as FilePreview[])
-    const { parseFiles } = useFileDrop()
+    const { resolveFiles } = useFileDrop()
     async function onDrop(event: DragEvent) {
       const files = [] as Array<File>
       const dataTransfer = event.dataTransfer!
@@ -111,7 +111,7 @@ export default defineComponent({
         }
       }
       loading.value = true
-      const result = await parseFiles({ files: files.map(f => ({ path: f.path })) }).finally(() => { loading.value = false })
+      const result = await resolveFiles({ files: files.map(f => ({ path: f.path })) }).finally(() => { loading.value = false })
       for (let i = 0; i < result.length; i++) {
         const r = result[i][0]
         const f = files[i]

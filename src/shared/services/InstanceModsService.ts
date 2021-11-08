@@ -22,8 +22,15 @@ export class InstanceModsState {
    */
   instance = ''
 
-  instanceModAdd(r: AnyResource[]) {
-    this.mods.push(...r)
+  instanceModUpdate(r: AnyResource[]) {
+    for (const res of r) {
+      const existed = this.mods.find(m => m.hash === res.hash)
+      if (existed) {
+        Object.assign(existed, r)
+      } else {
+        this.mods.push(res)
+      }
+    }
   }
 
   instanceModRemove(mods: AnyResource[]) {

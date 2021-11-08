@@ -11,6 +11,7 @@
     >
       <v-flex
         tag="h1"
+        style="display: block;"
         class="white--text"
         xs12
       >
@@ -18,6 +19,7 @@
       </v-flex>
       <v-flex
         v-for="target in targets"
+        style="display: block;"
         :key="target"
         xs6
       >
@@ -43,7 +45,7 @@
             </v-img>
           </v-responsive>
           <v-card-title>
-            <h2>{{ $t(`curseforge.${target}.name`) }}</h2>
+            <h2 class="headline">{{ $t(`curseforge.${target}.name`) }}</h2>
           </v-card-title>
           <v-card-text>{{ $t(`curseforge.${target}.description`) }}</v-card-text>
         </v-card>
@@ -66,13 +68,14 @@ export default defineComponent({
     const { refreshing } = useCurseforgeCategories()
     const ready = computed(() => online.value && !refreshing.value)
     return {
-      targets: ['mc-mods', 'texture-packs', 'worlds', 'modpacks'] as const,
+      targets: ['mc-mods', 'texture-packs', 'worlds', 'modpacks', 'customization'] as const,
       ready,
       images: {
         'texture-packs': resourcepack,
         'mc-mods': mods,
         modpacks: modpack,
         worlds,
+        customization: resourcepack,
       },
     }
   },

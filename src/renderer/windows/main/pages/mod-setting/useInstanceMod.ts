@@ -1,7 +1,8 @@
-import { computed } from '@vue/composition-api'
+import { computed, ref, Ref, watch } from '@vue/composition-api'
 import { FabricModMetadata } from '@xmcl/mod-parser'
-import { useService } from '.'
-import { useBusy } from './useSemaphore'
+import { useBusy, useService } from '/@/hooks'
+import { useRefreshable } from '/@/hooks/useRefreshable'
+import { isStringArrayEquals } from '/@/util/equal'
 import { AnyResource, FabricResource, ForgeResource, isModResource, isPersistedResource, LiteloaderResource, ModResource } from '/@shared/entities/resource'
 import { Resource } from '/@shared/entities/resource.schema'
 import { InstanceModsServiceKey } from '/@shared/services/InstanceModsService'
@@ -34,6 +35,9 @@ export interface ModItem {
    */
   icon: string
 
+  /**
+   * The resource tag
+   */
   tags: string[]
 
   dependencies: {
@@ -41,7 +45,9 @@ export interface ModItem {
     fabricLoader?: string
     forge?: string
   }
-
+  /**
+   * The hash of the resource
+   */
   hash: string
   /**
    * The universal location of the mod
@@ -54,12 +60,16 @@ export interface ModItem {
 
   subsequence: boolean
 
+  selected: boolean
   hide: boolean
+  dragged: boolean
 
   curseforge?: {
     projectId: number
     fileId: number
   }
+
+  resource: Resource
 }
 
 export function useInstanceModsService() {
@@ -71,9 +81,78 @@ export function useInstanceModsService() {
  */
 export function useInstanceMods() {
   const { state } = useInstanceModsService()
-  const { state: resourceState } = useService(ResourceServiceKey)
-  const { install: deploy, uninstall: undeploy } = useService(InstanceModsServiceKey)
+  const { state: resourceState, updateResource } = useService(ResourceServiceKey)
+  const { install, uninstall } = useService(InstanceModsServiceKey)
   const loading = useBusy('mountModResources')
+  const items: Ref<ModItem[]> = ref([])
+  const pendingUninstallItems = computed(() => items.value.filter(i => !i.enabled && cachedEnabledSet.has(i.hash)))
+  const pendingInstallItems = computed(() => items.value.filter(i => i.enabled && !cachedEnabledSet.has(i.hash)))
+  const pendingEditItems = computed(() => items.value.filter(i => (isPersistedResource(i.resource) && !isStringArrayEquals(i.tags, i.resource.tags))))
+  const isModified = computed(() => pendingInstallItems.value.length > 0 || pendingUninstallItems.value.length > 0 || pendingEditItems.value.length > 0)
+
+  const cachedEnabledSet = new Set<string>()
+  const cachedDirectory = new Map<string, ModItem>()
+
+  const { refresh: commit, refreshing: committing } = useRefreshable(async () => {
+    const promises: Promise<any>[] = []
+
+    for (const i of pendingEditItems.value) {
+      promises.push(updateResource({
+        resource: i.resource.hash,
+        name: i.name,
+        tags: i.tags,
+      }))
+    }
+    if (pendingInstallItems.value.length > 0) {
+      promises.push(install({ mods: pendingInstallItems.value.map(v => v.resource) }))
+    }
+    if (pendingUninstallItems.value.length > 0) {
+      promises.push(uninstall({ mods: pendingUninstallItems.value.map(v => v.resource) }))
+    }
+
+    await Promise.all(promises)
+  })
+
+  function updateItems() {
+    const enabled = state.mods.map(getModItemFromResource)
+    const enabledItemHashes = new Set(state.mods.map(m => m.hash))
+    const disabled = resourceState.mods.filter(res => !enabledItemHashes.has(res.hash)).map(getModItemFromModResource)
+    for (const item of enabled) {
+      item.enabled = true
+    }
+
+    const result = [
+      ...enabled,
+      ...disabled,
+    ]
+
+    for (const item of result) {
+      const old = cachedDirectory.get(item.hash)
+      if (old) {
+        item.selected = old.selected
+        item.dragged = old.dragged
+      }
+    }
+    
+    cachedDirectory.clear()
+    cachedEnabledSet.clear()
+    for (const item of result) {
+      if (item.enabled) {
+        cachedEnabledSet.add(item.hash)
+      }
+      cachedDirectory.set(item.hash, item)
+    }
+
+    items.value = result
+  }
+
+  watch(computed(() => state.mods), (val) => {
+    updateItems()
+  })
+
+  watch(computed(() => resourceState.mods), (val) => {
+    updateItems()
+  })
 
   function getUrl(resource: Resource) {
     return resource.uri.find(u => u.startsWith('http')) ?? ''
@@ -91,14 +170,17 @@ export function useInstanceMods() {
       type: 'forge',
       url: getUrl(resource),
       hash: resource.hash,
-      tags: isPersisted ? resource.tags : [],
+      tags: isPersisted ? [...resource.tags] : [],
       enabled: false,
       subsequence: false,
       hide: false,
+      selected: false,
       curseforge: isPersisted ? resource.curseforge : undefined,
+      dragged: false,
       dependencies: {
         minecraft: '',
       },
+      resource,
     }
     if (resource.type === 'forge') {
       const meta = resource.metadata
@@ -149,47 +231,25 @@ export function useInstanceMods() {
       type: 'unknown',
       url: getUrl(resource),
       hash: resource.hash,
-      tags: isPersisted ? resource.tags : [],
+      tags: isPersisted ? [...resource.tags] : [],
       enabled: false,
       subsequence: false,
       hide: false,
+      selected: false,
+      dragged: false,
       curseforge: isPersisted ? resource.curseforge : undefined,
+      resource,
       dependencies: { minecraft: '[*]' },
     }
   }
 
-  /**
-   * Commit the change for current mods setting
-   */
-  async function commit(items: ModItem[]) {
-    const mods = resourceState.mods
-    const map = new Map<string, ModResource>()
-    for (const mod of mods) {
-      map.set(mod.hash, mod)
-    }
-    const enabled = items.filter(m => m.enabled).map((m) => map.get(m.hash)).filter(isNonnull)
-    const disabled = items.filter(m => !m.enabled).map((m) => map.get(m.hash)).filter(isNonnull)
-
-    await Promise.all([
-      deploy({ mods: enabled }),
-      undeploy({ mods: disabled }),
-    ])
-  }
-
-  const items = computed(() => {
-    const items = resourceState.mods.map(getModItemFromResource)
-    const hashs = new Set(state.mods.map(m => m.hash))
-    for (const item of items) {
-      if (hashs.has(item.hash)) {
-        item.enabled = true
-      }
-    }
-    return items
-  })
+  updateItems()
 
   return {
+    isModified,
     items,
     commit,
+    committing,
     loading,
   }
 }

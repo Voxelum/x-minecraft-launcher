@@ -12,7 +12,7 @@ import { linkWithTimeoutOrCopy, readdirIfPresent } from '/@main/util/fs'
 import { IssueReport } from '/@shared/entities/issue'
 import { ForgeModCommonMetadata } from '/@shared/entities/mod'
 import { AnyResource, FabricResource, isModResource, isPersistedResource } from '/@shared/entities/resource'
-import { ResourceDomain } from '/@shared/entities/resource.schema'
+import { ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
 import { InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState } from '/@shared/services/InstanceModsService'
 import { parseVersion, VersionRange } from '/@shared/util/mavenVersion'
 
@@ -24,12 +24,12 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
   private modsWatcher: FSWatcher | undefined
 
   private addMod = new AggregateExecutor<AnyResource, AnyResource[]>(v => v,
-    res => this.state.instanceModAdd(res),
-    1000)
+    res => this.state.instanceModUpdate(res),
+    0)
 
   private removeMod = new AggregateExecutor<AnyResource, AnyResource[]>(v => v,
     res => this.state.instanceModRemove(res),
-    1000)
+    0)
 
   constructor(
     app: LauncherApp,
@@ -54,10 +54,10 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
       files: fileArgs,
       type: 'mods',
     })
-    for (const [res, icon] of resources.filter(r => !isPersistedResource(r[0]))) {
-      this.resourceService.importParsedResource({ path: res.path, type: res.type }, res, icon)
-    }
-    return resources.map(([res]) => res)
+    const persisted = await Promise.all(resources
+      .filter(([res]) => !(res.fileType === 'directory' && res.domain === ResourceDomain.Unknown)) // unknown directory
+      .map(([res, icon]) => !isPersistedResource(res) ? this.resourceService.importParsedResource({ path: res.path, type: res.type }, res, icon) : Promise.resolve(res)))
+    return persisted
   }
 
   @Subscribe('instanceSelect')
@@ -65,7 +65,7 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
     this.refresh()
   }
 
-  @Subscribe('instanceMods', 'instanceModAdd', 'instanceModRemove')
+  @Subscribe('instanceMods', 'instanceModUpdate', 'instanceModRemove')
   async onInstanceModsLoad() {
     await this.diagnoseMods()
   }
@@ -164,22 +164,31 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
       if (event === 'update') {
         this.resourceService.resolveFile({ path: filePath, type: 'mods' }).then(([resource, icon]) => {
           if (isModResource(resource)) {
-            this.log(`Instace mod add ${filePath}`)
+            this.log(`Instance mod add ${filePath}`)
           } else {
             this.warn(`Non mod resource added in /mods directory! ${filePath}`)
           }
           if (!isPersistedResource(resource)) {
-            this.resourceService.importParsedResource({ path: filePath }, resource, icon).catch((e) => {
+            if (resource.fileType !== 'directory' && resource.type === ResourceType.Unknown) {
+              this.log(`Skip to import unknown directory to /mods! ${filePath}`)
+              return
+            }
+            this.resourceService.importParsedResource({ path: filePath }, resource, icon).then((res) => {
+              this.addMod.push(res)
+            }, (e) => {
+              this.addMod.push(resource)
+              this.warn(`Fail to persist resource in /mods directory! ${filePath}`)
               this.warn(e)
             })
             this.log(`Found new resource in /mods directory! ${filePath}`)
+          } else {
+            this.addMod.push(resource)
           }
-          this.addMod.push(resource)
         })
       } else {
         const target = this.state.mods.find(r => r.path === filePath)
         if (target) {
-          this.log(`Instace mod remove ${filePath}`)
+          this.log(`Instance mod remove ${filePath}`)
           this.removeMod.push(target)
         } else {
           this.warn(`Cannot remove the mod ${filePath} as it's not found in memory cache!`)

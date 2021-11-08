@@ -9,6 +9,7 @@
   >
     <v-flex
       v-if="instancesByTime[0].length !== 0"
+      class="justify-center"
       style="color: grey"
       xs12
     >
@@ -29,6 +30,7 @@
     </v-flex>
     <v-flex
       v-if="instancesByTime[1].length !== 0"
+      class="justify-center"
       style="color: grey"
       xs12
     >
@@ -49,6 +51,7 @@
     </v-flex>
     <v-flex
       v-if="instancesByTime[2].length !== 0"
+      class="justify-center"
       style="color: grey"
       xs12
     >

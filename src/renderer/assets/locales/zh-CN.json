@@ -514,6 +514,7 @@
     "deletionRestHint": "等 {rest} 个模组……",
     "dropHint": "将Mod的jar文件拖入此处来导入",
     "export": "导出 Mod",
+    "filter": "过滤 Mods",
     "hideIncompatible": "隐藏不兼容 Mods",
     "hint": "调整此启动配置所使用的的 Mod ",
     "import": "导入 Mod",
@@ -701,6 +702,7 @@
     "deletionHint": "你将永远失去该资源包的数据以及相关信息，你进行此操作吗？",
     "dropHint": "将资源包zip或文件夹拖入此处导入",
     "export": "导出资源包",
+    "filter": "过滤材质包",
     "hint": "调整本启动配置使用的资源包",
     "import": "导入资源包",
     "incompatible": "不兼容的资源包格式({format})。适用范围 {accept}。当前版本 {actual}。",
@@ -805,12 +807,22 @@
     "waitReload": "迁移数据中。请勿在此时关闭启动器，否则你将可能失去一部分数据。"
   },
   "shaderpack": {
+    "deletion": "删除光影包",
+    "deletionHint": "这将把光影包文件 {path} 永久删除。",
+    "filter": "过滤光影包",
     "hint": "调整此配置的光影包",
     "internal": "内置",
+    "internalDescription": "使用内置 shader，在此模式下你可以编辑 shader 管线选项",
     "name": "光影包",
-    "off": "无"
+    "off": "无",
+    "offDescription": "关闭 shader 引擎",
+    "showFile": "在文件夹中显示此 shader pack"
   },
   "summery": "简介",
+  "tag": {
+    "create": "创建标签",
+    "newTag": "新标签"
+  },
   "task": {
     "cancelled": "已取消",
     "empty": "目前没有运行中的任务",

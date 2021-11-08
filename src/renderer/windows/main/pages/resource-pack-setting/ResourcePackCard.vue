@@ -11,46 +11,59 @@
     @dragstart="onDragStart"
     @dragend.prevent="onDragEnd"
     @contextmenu="openContextMenu"
+    @mouseenter="hovered = true"
+    @mouseleave="hovered = false"
   >
     <v-tooltip top>
       <template #activator="{ on }">
-        <v-layout
-          justify-center
-          align-center
-          fill-height
-          v-on="on"
-        >
-          <v-flex
-            xs6
-            style="padding: 0"
-          >
+        <v-layout justify-center align-center fill-height v-on="on">
+          <v-flex class="p-0">
             <img
               ref="iconImage"
               v-fallback-img="unknownPack"
-              style="user-drag:   none; user-select: none; height: 125px"
+              class="select-none h-[125px]"
               :src="pack.icon"
               contain
-            >
-            <!-- <v-img
-
-            /> -->
+            />
           </v-flex>
-          <v-flex
-            xs6
-            style="padding-top: 10px"
-          >
-            <text-component
-              style="white-space: normal; word-break: break-word"
-              :source="pack.name"
-              class="title"
-            />
-            <br>
-            <text-component
-              style="white-space: normal; word-break: break-word"
-              :source="pack.description"
-            />
+          <v-flex xs7 md8 lg9 class="flex-col">
+            <div class="py-2 flex flex-col gap-2">
+              <text-component
+                v-once
+                style="white-space: normal; word-break: break-word"
+                :source="pack.name"
+                editable
+                @edit="onEditPackName(pack, $event)"
+                class="title"
+              />
+              <text-component
+                style="white-space: normal; word-break: break-word"
+                :source="pack.description"
+              />
+            </div>
           </v-flex>
         </v-layout>
+        <v-divider v-show="pack.tags.length > 0" class="mt-1"></v-divider>
+        <v-card-actions v-show="pack.tags.length > 0">
+          <div>
+            <v-chip
+              v-for="(tag, index) in pack.tags"
+              :color="colors[index % colors.length]"
+              label
+              outline
+              :key="`${tag}-${index}`"
+              close
+              @input="onDeleteTag(tag)"
+            >
+              <span
+                contenteditable
+                class="max-w-90 sm:max-w-40 overflow-scroll"
+                :class="{ 'text-white': hovered }"
+                @input.stop="onEditTag($event, index)"
+              >{{ tag }}</span>
+            </v-chip>
+          </div>
+        </v-card-actions>
       </template>
       <span>
         {{
@@ -71,8 +84,8 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, ref, Ref, computed } from '@vue/composition-api'
-import { useInstanceVersionBase, useCompatible, useDragTransferItem, ResourcePackItem, useI18n, useService } from '/@/hooks'
+import { defineComponent, ref, Ref, computed, set } from '@vue/composition-api'
+import { useInstanceVersionBase, useCompatible, useDragTransferItem, ResourcePackItem, useI18n, useService, useTagColors, useTagCreation, useTags } from '/@/hooks'
 import { required } from '/@/util/props'
 import { useContextMenu, ContextMenuItem, useCurseforgeRoute } from '../../hooks'
 import { BaseServiceKey } from '/@shared/services/BaseService'
@@ -93,10 +106,17 @@ export default defineComponent({
     const { showItemInDirectory } = useService(BaseServiceKey)
     const card: Ref<any> = ref(null)
 
+    const hovered = ref(false)
+    const { colors } = useTagColors()
+    const { editTag, createTag, removeTag } = useTags(computed({
+      get: () => props.pack.tags,
+      set: (v) => { props.pack.tags = v }
+    }))
+
     useDragTransferItem(computed(() => card.value?.$el as HTMLElement), props.pack.id, props.isSelected ? 'right' : 'left')
+    const tags = ref([...props.pack.tags])
 
     function onDragStart(e: DragEvent) {
-      // e.dataTransfer!.dropEffect = 'move';
       e.dataTransfer!.effectAllowed = 'move'
       if (props.pack.id !== 'vanilla') {
         context.emit('dragstart', e)
@@ -107,6 +127,12 @@ export default defineComponent({
       if (props.pack.id !== 'vanilla') {
         context.emit('dragend', e)
       }
+    }
+    function onEditTag(event: InputEvent, index: number) {
+      editTag(event.target.innerText, index)
+    }
+    function onEditPackName(item: ResourcePackItem, name: string) {
+      item.name = name
     }
     function openContextMenu(e: MouseEvent) {
       if (props.pack.id === 'vanilla') {
@@ -119,6 +145,13 @@ export default defineComponent({
           showItemInDirectory(props.pack.path)
         },
         icon: 'folder',
+      }, {
+        text: $t('tag.create'),
+        children: [],
+        onClick() {
+          createTag()
+        },
+        icon: 'add'
       }]
       if (props.pack.resource && props.pack.resource.curseforge) {
         menuItems.push({
@@ -142,14 +175,20 @@ export default defineComponent({
       open(e.clientX, e.clientY, menuItems)
     }
     return {
+      onEditPackName,
       compatible,
       iconImage,
       onDragStart,
       onDragEnd,
       mcversion: minecraft,
       card,
+      onEditTag,
       openContextMenu,
       unknownPack,
+      tags,
+      colors,
+      onDeleteTag: removeTag,
+      hovered,
     }
   },
 })
@@ -157,10 +196,10 @@ export default defineComponent({
 
 <style scoped=true>
 .incompatible.draggable-card:hover {
-  background-color: #e65100;
+  background-color: var(--warning-color-decent);
 }
 .draggable-card:hover {
-  background-color: #388e3c;
+  background-color: var(--primary-color);
 }
 .title {
   max-width: 100%;

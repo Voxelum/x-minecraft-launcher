@@ -21,7 +21,7 @@
           </v-list-tile-avatar>
           <v-list-tile-title>{{ item.text }}</v-list-tile-title>
         </v-list-tile>
-        <v-divider :key="index" />
+        <v-divider v-if="index !== items.length" :key="index" />
       </template>
     </v-list>
   </v-menu>

@@ -99,6 +99,9 @@ export default class TaskManager extends Manager {
   // SETUP CODE
   setup() {
     this.app.handle('task-subscribe', (event) => {
+      if (this.pushers.has(event.sender)) {
+        this.pushers.get(event.sender)!()
+      }
       const pusher = createTaskPusher(this.emitter, 500, 30, (payload) => {
         event.sender.send('task-update', payload)
       })

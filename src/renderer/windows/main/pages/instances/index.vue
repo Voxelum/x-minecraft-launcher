@@ -1,83 +1,84 @@
 <template>
-  <v-container
-    grid-list-md
-    text-xs-center
-    style="z-index: 1"
-    @dragover.prevent
-  >
-    <transition
-      name="scale-transition"
-      mode="out-in"
-    >
-      <v-btn
-        v-if="draggingInstance.path === ''"
-        :key="0"
-        absolute
-        fab
-        color="primary"
-        style="right: 20px; bottom: 20px; transition: all 0.15s ease;"
-        :loading="pinging"
-        @click="refresh"
-      >
-        <v-icon>refresh</v-icon>
-      </v-btn>
-      <v-btn
-        v-else
-        :key="1"
-        absolute
-        fab
-        color="red"
-        style="right: 20px; bottom: 20px; transition: all 0.15s ease;"
-        :loading="pinging"
-        @drop="drop"
-      >
-        <v-icon>delete</v-icon>
-      </v-btn>
-    </transition>
-    <v-layout row>
-      <v-flex xs10>
-        <v-text-field
-          ref="filterElem"
-          v-model="filter"
-          hide-details
-          append-icon="filter_list"
-          :label="$t('filter')"
-          solo
-          dark
-          color="green darken-1"
-        />
-      </v-flex>
-      <v-flex xs1>
+  <div>
+    <div class="header-bar">
+      <v-text-field
+        ref="filterElem"
+        v-model="filter"
+        hide-details
+        class="flex-grow pr-2"
+        prepend-inner-icon="filter_list"
+        :label="$t('filter')"
+        solo
+        dark
+        color="green darken-1"
+      />
+      <v-flex class="flex-grow-0">
         <create-button @create="onCreate" />
       </v-flex>
-      <v-flex xs1>
+      <v-flex class="flex-grow-0">
         <import-button @import="onImport" />
       </v-flex>
-    </v-layout>
-    <instances-view
-      :instances="instances"
-      @select="selectInstance"
-      @dragstart="dragStart"
-      @dragend="dragEnd"
-    />
-
-    <delete-dialog
-      :instance="deletingInstance"
-      :confirm="doDelete"
-      :cancel="cancelDelete"
-    />
-    <v-dialog
-      v-model="wizard"
-      persistent
+    </div>
+    <v-container
+      grid-list-md
+      text-xs-center
+      class="pt-2"
+      @dragover.prevent
     >
-      <component
-        :is="wizardContent"
-        :show="wizard"
-        @create="onCreated"
-        @quit="onCreated(true)"
+      <transition
+        name="scale-transition"
+        mode="out-in"
+      >
+        <v-btn
+          v-if="draggingInstance.path === ''"
+          :key="0"
+          absolute
+          fab
+          color="primary"
+          style="right: 20px; bottom: 20px; transition: all 0.15s ease;"
+          :loading="pinging"
+          @click="refresh"
+        >
+          <v-icon>refresh</v-icon>
+        </v-btn>
+        <v-btn
+          v-else
+          :key="1"
+          absolute
+          fab
+          color="red"
+          style="right: 20px; bottom: 20px; transition: all 0.15s ease;"
+          :loading="pinging"
+          @drop="drop"
+        >
+          <v-icon>delete</v-icon>
+        </v-btn>
+      </transition>
+      <instances-view
+        :instances="instances"
+        @select="selectInstance"
+        @dragstart="dragStart"
+        @dragend="dragEnd"
       />
-    </v-dialog>
-  </v-container>
+
+      <delete-dialog
+        :instance="deletingInstance"
+        :confirm="doDelete"
+        :cancel="cancelDelete"
+      />
+      <v-dialog
+        v-model="wizard"
+        persistent
+      >
+        <component
+          :is="wizardContent"
+          :show="wizard"
+          @create="onCreated"
+          @quit="onCreated(true)"
+        />
+      </v-dialog>
+    </v-container>
+  </div>
 </template>
 
 <script lang=ts>
@@ -270,5 +271,11 @@ export default defineComponent({
 <style>
 .ghost {
   opacity: 0.5;
+}
+.v-text-field__slot {
+  @apply pl-2;
+}
+.v-text-field__slot label {
+  left: 0.5rem !important;
 }
 </style>

@@ -105,6 +105,10 @@ export function useTaskManager() {
     if (syncing) {
       await syncing
     }
+    console.log(`Task adds:`)
+    console.log(adds)
+    console.log(`Task updates:`)
+    console.log(updates)
     for (const add of adds) {
       const { uuid, id, path, param, time, to, from, parentId } = add
       const localId = `${uuid}@${id}`

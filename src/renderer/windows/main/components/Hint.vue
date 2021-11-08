@@ -9,10 +9,9 @@
       row
       fill-height
     >
-      <v-flex
+      <div
         v-if="!button"
-        style="text-align:center; user-select: none;"
-        class="headline"
+        class="headline text-center select-none"
       >
         <v-icon
           :style="{ 'font-size' : `${size}px` }"
@@ -21,11 +20,10 @@
           {{ icon }}
         </v-icon>
         {{ text }}
-      </v-flex>
-      <v-flex
+      </div>
+      <div
         v-else
-        style="text-align:center; user-select: none;"
-        class="headline"
+        class="headline text-center select-none"
       >
         <v-btn>
           <v-icon
@@ -36,7 +34,7 @@
           </v-icon>
           {{ text }}
         </v-btn>
-      </v-flex>
+      </div>
     </v-layout>
   </v-container>
 </template>

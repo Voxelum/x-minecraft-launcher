@@ -3,14 +3,14 @@
     v-selectable-card
     v-long-press="emitSelect"
     hover
-    :draggable="!enabled"
-    :dark="!source.subsequence"
+    :draggable="!mod.enabled"
+    :dark="!mod.subsequence"
     :class="{
       incompatible: compatible === false,
       maybe: compatible === 'maybe',
       unknown: compatible === 'unknown',
-      subsequence: source.subsequence === true,
-      dragged: dragged
+      subsequence: mod.subsequence === true,
+      dragged: mod.dragged
     }"
     class="white--text draggable-card mod-card"
     style="margin-top: 10px; padding: 0 10px; transition-duration: 0.2s;"
@@ -28,33 +28,14 @@
           tag="div"
           style="user-select: none"
         >
-          <v-flex
-            v-if="selection"
-            :key="0"
-            style="flex-grow: 0"
-          >
-            <v-checkbox :value="selected" />
+          <v-flex v-if="selection" :key="0" class="flex-grow-0">
+            <v-checkbox :value="mod.selected" />
           </v-flex>
-          <v-flex
-            v-if="!source.subsequence"
-            :key="1"
-            class="avatar"
-          >
-            <img
-              ref="iconImage"
-              v-fallback-img="unknownPack"
-              :src="source.icon"
-              contain
-            >
+          <v-flex v-if="!mod.subsequence" :key="1" class="avatar">
+            <img ref="iconImage" v-fallback-img="unknownPack" :src="mod.icon" contain />
           </v-flex>
-          <v-flex
-            :key="2"
-            style="padding: 10px 0; flex-grow: 1"
-            v-on="on"
-          >
-            <h3 v-if="!source.subsequence">
-              {{ source.name }}
-            </h3>
+          <div :key="2" class="flex-grow py-2" v-on="on">
+            <h3 class="text-lg font-bold" v-if="!mod.subsequence">{{ mod.name }}</h3>
             <v-chip
               small
               outline
@@ -62,9 +43,7 @@
               color="amber"
               style="margin-left: 1px;"
               @mousedown.stop
-            >
-              {{ source.version }}
-            </v-chip>
+            >{{ mod.version }}</v-chip>
             <v-chip
               small
               outline
@@ -72,9 +51,7 @@
               label
               @mousedown.stop
               style="margin-left: 1px;"
-            >
-              {{ source.id }}
-            </v-chip>
+            >{{ mod.id }}</v-chip>
             <v-chip
               small
               outline
@@ -82,12 +59,11 @@
               color="lime"
               style="margin-left: 1px;"
               @mousedown.stop
-            >
-              {{ source.type }}
-            </v-chip>
+            >{{ mod.type }}</v-chip>
 
             <v-chip
-              v-for="(tag, index) in source.tags"
+              v-for="(tag, index) in mod.tags"
+              :key="`${tag}-${index}`"
               small
               outline
               label
@@ -97,21 +73,16 @@
               close
               @input="onDeleteTag(tag)"
             >
-            <div contenteditable @input.stop="onEditTag($event, index)">
-              {{ tag }}
-            </div>
+              <div
+                contenteditable
+                class="max-w-50 overflow-auto"
+                @input.stop="onEditTag($event, index)"
+              >{{ tag }}</div>
             </v-chip>
-            <div style="color: #bdbdbd; ">
-              {{ source.description }}
-            </div>
-          </v-flex>
-          <v-flex
-            :key="3"
-            style="flex-grow: 0"
-            @click.stop
-            @mousedown.stop
-          >
-            <v-switch v-model="modEnableState" />
+            <div style="color: #bdbdbd; ">{{ mod.description }}</div>
+          </div>
+          <v-flex :key="3" style="flex-grow: 0" @click.stop @mousedown.stop>
+            <v-switch v-model="enabled" />
           </v-flex>
         </transition-group>
       </template>
@@ -123,40 +94,34 @@
 
 <script lang=ts>
 import { computed, defineComponent, ref, Ref } from '@vue/composition-api'
+import { ModItem } from './useInstanceMod'
 import unknownPack from '/@/assets/unknown_pack.png'
-import { ModItem, useCompatible, useI18n, useInstanceVersionBase, useService } from '/@/hooks'
+import { useCompatible, useI18n, useInstanceVersionBase, useService, useTags } from '/@/hooks'
 import { required } from '/@/util/props'
 import { ContextMenuItem, useContextMenu, useCurseforgeRoute, useMcWikiRoute } from '/@/windows/main/hooks'
 import { BaseServiceKey } from '/@shared/services/BaseService'
 
 export default defineComponent({
   props: {
-    source: required<ModItem>(Object),
-    selected: required<boolean>(Boolean),
-    enabled: required<boolean>(Boolean),
-    dragged: required<boolean>(Boolean),
+    mod: required<ModItem>(Object),
     selection: required<boolean>(Boolean),
   },
   setup(props, context) {
     const { minecraft, forge } = useInstanceVersionBase()
-    const { compatible: mcCompatible } = useCompatible(computed(() => props.source.dependencies.minecraft), minecraft, true)
-    const { compatible: loaderCompatible } = useCompatible(computed(() => props.source.dependencies.forge ?? ''), computed(() => forge.value || ''), false)
+    const { compatible: mcCompatible } = useCompatible(computed(() => props.mod.dependencies.minecraft), minecraft, true)
+    const { compatible: loaderCompatible } = useCompatible(computed(() => props.mod.dependencies.forge ?? ''), computed(() => forge.value || ''), false)
     const { open } = useContextMenu()
     const { openInBrowser, showItemInDirectory } = useService(BaseServiceKey)
     const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
     const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute()
     const { $t } = useI18n()
-
-    const modEnableState = computed({
-      get() {
-        return props.enabled
-      },
-      set(e: boolean) {
-        context.emit('enable', e)
-      },
-    })
+    const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.mod.tags, set(v) { props.mod.tags = v } }))
 
     const iconImage: Ref<HTMLImageElement | null> = ref(null)
+    const enabled = computed({
+      get() { return props.mod.enabled },
+      set(v: boolean) { context.emit('enable', { item: props.mod, enabled: v }) }
+    })
 
     const compatible = computed(() => {
       if (mcCompatible.value === true) {
@@ -175,7 +140,7 @@ export default defineComponent({
     })
 
     const compatibleText = computed(() => {
-      const deps = props.source.dependencies
+      const deps = props.mod.dependencies
       let acceptVersionText = $t('mod.acceptVersion', { version: deps.minecraft })
       if (deps.forge) {
         acceptVersionText += `, Forge ${deps.forge}`
@@ -192,14 +157,14 @@ export default defineComponent({
     })
 
     function onDragStart(e: DragEvent) {
-      if (props.enabled) {
+      if (props.mod.enabled) {
         return
       }
       if (iconImage.value) {
         e.dataTransfer!.setDragImage(iconImage.value!, 0, 0)
       } else {
         const img = document.createElement('img')
-        img.src = props.source.icon
+        img.src = props.mod.icon
         img.style.maxHeight = '126px'
         img.style.maxWidth = '126px'
         img.style.objectFit = 'contain'
@@ -207,37 +172,32 @@ export default defineComponent({
         e.dataTransfer!.setDragImage(img, 0, 0)
       }
       e.dataTransfer!.effectAllowed = 'move'
-      e.dataTransfer!.setData('id', props.source.url)
+      e.dataTransfer!.setData('id', props.mod.url)
       context.emit('dragstart', e)
-    }
-    function onDeleteTag(tag: string) {
-      props.source.tags = props.source.tags.filter(t => t !== tag)
     }
     function onEditTag(event: InputEvent, index: number) {
       if (event.target instanceof HTMLDivElement) {
-        props.source.tags[index] = event.target.innerText
-        console.log(event.target.innerText)
-        console.log(props.source.tags)
+        editTag(event.target.innerText, index)
       }
-    }   
+    }
     function onContextMenu(e: MouseEvent) {
       const items: ContextMenuItem[] = [{
-        text: $t('mod.showFile', { file: props.source.path }),
+        text: $t('mod.showFile', { file: props.mod.path }),
         children: [],
         onClick: () => {
-          showItemInDirectory(props.source.path)
+          showItemInDirectory(props.mod.path)
         },
         icon: 'folder',
       }, {
-        text: $t('mod.createTag'),
+        text: $t('tag.create'),
         children: [],
         onClick: () => {
-          props.source.tags.push('new tag')
+          createTag()
         },
-        icon: 'plus',
+        icon: 'add',
       }]
-      if (props.source.url) {
-        const url = props.source.url
+      if (props.mod.url) {
+        const url = props.mod.url
         items.push({
           text: $t('mod.openLink', { url }),
           children: [],
@@ -247,10 +207,10 @@ export default defineComponent({
           icon: 'link',
         })
       }
-      if (props.source.curseforge) {
-        const curseforge = props.source.curseforge
+      if (props.mod.curseforge) {
+        const curseforge = props.mod.curseforge
         items.push({
-          text: $t('mod.showInCurseforge', { name: props.source.name }),
+          text: $t('mod.showInCurseforge', { name: props.mod.name }),
           children: [],
           onClick: () => {
             goProjectAndRoute(curseforge.projectId, 'mc-mods')
@@ -259,19 +219,19 @@ export default defineComponent({
         })
       } else {
         items.push({
-          text: $t('mod.searchOnCurseforge', { name: props.source.name }),
+          text: $t('mod.searchOnCurseforge', { name: props.mod.name }),
           children: [],
           onClick: () => {
-            searchProjectAndRoute(props.source.name, 'mc-mods')
+            searchProjectAndRoute(props.mod.name, 'mc-mods')
           },
           icon: 'search',
         })
       }
       items.push({
-        text: $t('mod.searchOnMcWiki', { name: props.source.name }),
+        text: $t('mod.searchOnMcWiki', { name: props.mod.name }),
         children: [],
         onClick: () => {
-          searchMcWiki(props.source.name)
+          searchMcWiki(props.mod.name)
         },
         icon: 'search',
       })
@@ -288,13 +248,13 @@ export default defineComponent({
       minecraft,
       onContextMenu,
       unknownPack,
-      onDeleteTag,
+      onDeleteTag: removeTag,
       onEditTag,
 
       mcCompatible,
+      enabled,
       compatibleText,
       emitSelect,
-      modEnableState,
     }
   },
 })

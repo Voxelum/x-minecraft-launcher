@@ -356,6 +356,7 @@ export async function parseResourceWithParser(path: string, fileType: FileType, 
       // skip
     }
   }
+  fs.close()
   const slice = sha1.slice(0, 6)
   const name = parser.getSuggestedName(metadata) || basename(path, ext)
   const fileName = `${name}.${slice}`
@@ -464,8 +465,8 @@ export async function remove(resource: Readonly<PersistedResource>, root: string
   const metadataPath = join(root, resource.domain, `${baseName}.json`)
   const iconPath = join(root, resource.domain, `${baseName}.png`)
 
-  await unlink(filePath)
-  await unlink(metadataPath)
+  await unlink(filePath).catch(() => { })
+  await unlink(metadataPath).catch(() => { })
   await unlink(iconPath).catch(() => { })
 }
 

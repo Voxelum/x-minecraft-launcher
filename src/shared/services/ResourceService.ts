@@ -25,8 +25,8 @@ export interface ParseFileOptions {
 }
 export interface ImportFileOptions extends ParseFileOptions {
   /**
-     * Require the resource to be these specific domain
-     */
+   * Require the resource to be these specific domain
+   */
   restrictToDomain?: ResourceDomain
   /**
    * Is import file task in background?
@@ -53,13 +53,11 @@ export interface ImportFilesOptions extends ParseFilesOptions {
      */
   restrictToDomain?: ResourceDomain
 }
-export interface SetResourceTagsOptions {
+
+export interface UpdateResourceOptions {
   resource: AnyResource | string
-  tags: string[]
-}
-export interface RenameResourceOptions {
-  resource: AnyResource | string
-  name: string
+  name?: string
+  tags?: string[]
 }
 
 const domains = [
@@ -117,9 +115,16 @@ export class ResourceState {
       case ResourceDomain.Unknown:
         domain = this.unknowns
         break
+      case ResourceDomain.ShaderPacks:
+        domain = this.shaderpacks
+        break
     }
     if (domain) {
-      domain.push(Object.freeze(res) as any)
+      if (domain.find((r) => r.hash === res.hash)) {
+        this[res.domain] = domain.map((r) => r.hash === res.hash ? Object.freeze(res) as any : r)
+      } else {
+        domain.push(Object.freeze(res) as any)
+      }
     } else {
       throw new Error(`Cannot accept resource for unknown domain [${res.domain}]`)
     }
@@ -128,8 +133,13 @@ export class ResourceState {
   resources(all: AnyPersistedResource[]) {
     for (const res of all) {
       if (domains.indexOf(res.domain) !== -1) {
-        const domain = this[res.domain]
-        domain.push(Object.freeze(res) as any)
+        const domain = this[res.domain] as AnyPersistedResource[]
+        
+        if (domain.find((r) => r.hash === res.hash)) {
+          this[res.domain] = domain.map((r) => r.hash === res.hash ? Object.freeze(res) as any : r)
+        } else {
+          domain.push(Object.freeze(res) as any)
+        }
       } else {
         throw new Error(`Cannot accept resource for unknown domain [${res.domain}]`)
       }
@@ -156,13 +166,12 @@ export interface ResourceService extends StatefulService<ResourceState> {
    */
   removeResource(resourceOrKey: string | AnyPersistedResource): Promise<void>
   /**
-   * Rename resource, this majorly affect displayed name.
+   * Update the resource content.
+   * 
+   * You can update `name`, `tags` in this method.
+   * @param options The update resource payload
    */
-  renameResource(options: RenameResourceOptions): Promise<void>
-  /**
-   * Set the resource tags.
-   */
-  setResourceTags(options: SetResourceTagsOptions): Promise<void>
+  updateResource(options: UpdateResourceOptions): Promise<void>
   /**
    * Parse a single file as a resource and return the resource object.
    * 
@@ -206,12 +215,11 @@ export interface ResourceService extends StatefulService<ResourceState> {
 export const ResourceServiceKey: ServiceKey<ResourceService> = 'ResourceService'
 export const ResourceServiceMethods: ServiceTemplate<ResourceService> = {
   removeResource: undefined,
-  renameResource: undefined,
-  setResourceTags: undefined,
   resolveFile: undefined,
   resolveFiles: undefined,
   importFile: undefined,
   importFiles: undefined,
   exportResource: undefined,
-  state: undefined
+  state: undefined,
+  updateResource: undefined
 }

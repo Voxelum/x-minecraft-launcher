@@ -28,6 +28,7 @@ import { createI18n } from '/@/i18n'
 import { createServiceFactory, SERVICES_KEY } from '/@/serviceProxy'
 import TextComponent from '/@/TextComponent'
 import { BaseServiceKey } from '/@shared/services/BaseService'
+import 'virtual:windi.css'
 
 Vue.use(VueCompositionApi)
 // to prevent the universal drop activated on self element dragging

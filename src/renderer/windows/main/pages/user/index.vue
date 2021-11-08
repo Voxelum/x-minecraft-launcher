@@ -77,7 +77,7 @@
               {{ $t('user.insecureClient') }}
             </v-alert>
           </v-flex>
-          <v-flex style="height: 100%; overflow: auto">
+          <v-flex class="h-full overflow-auto" style="display: block;">
             <user-list
               :user-id="userId"
               :profile-id="profileId"
