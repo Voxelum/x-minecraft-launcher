@@ -1,15 +1,15 @@
-import { computed, onMounted, reactive, ref, Ref, watch } from '@vue/composition-api'
+import { computed, onMounted, ref, Ref, watch } from '@vue/composition-api'
 import { PackMeta } from '@xmcl/resourcepack'
 import { useService } from '.'
+import { InstanceOptionsServiceKey } from '../../shared/services/InstanceOptionsService'
+import { isStringArrayEquals } from '../util/equal'
 import { useBusy } from './useSemaphore'
 import unknownPack from '/@/assets/unknown_pack.png'
 import { basename } from '/@/util/basename'
-import { AnyResource, isPersistedResource, PersistedResourcePackResource } from '/@shared/entities/resource'
-import { Resource } from '/@shared/entities/resource.schema'
-import { InstanceOptionsServiceKey } from '../../shared/services/InstanceOptionsService'
+import { isPersistedResource, PersistedResourcePackResource } from '/@shared/entities/resource'
+import { InstanceResourcePacksServiceKey } from '/@shared/services/InstanceResourcePacksService'
 import { ResourceServiceKey } from '/@shared/services/ResourceService'
 import mappings from '/@shared/util/packFormatVersionRange'
-import { isStringArrayEquals } from '../util/equal'
 
 export interface ResourcePackItem extends PackMeta.Pack {
   /**
@@ -49,6 +49,7 @@ export interface ResourcePackItem extends PackMeta.Pack {
 export function useInstanceResourcePacks() {
   const { state: gameSettingState, editGameSetting } = useService(InstanceOptionsServiceKey)
   const { state: resourceState, updateResource } = useService(ResourceServiceKey)
+  const { showDirectory } = useService(InstanceResourcePacksServiceKey)
 
   const loading = useBusy('editGameSetting')
   /**
@@ -191,6 +192,7 @@ export function useInstanceResourcePacks() {
   })
 
   return {
+    showDirectory,
     modified,
     enabled,
     disabled,

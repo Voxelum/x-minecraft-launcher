@@ -1,91 +1,52 @@
 <template>
-  <v-container
-    grid-list-md
-    fill-height
-    style="overflow: auto;"
-    @dragover.prevent
-    @drop="onDropSave"
-  >
-    <v-layout
-      column
+  <div class="flex flex-col h-full">
+    <div class="header-bar">
+      <v-toolbar-title>{{ $tc('save.name', 2) }}</v-toolbar-title>
+      <v-spacer />
+      <v-btn flat @click="showCopyFromDialog">
+        <v-icon left>input</v-icon>
+        {{ $t('save.copyFrom.title') }}
+      </v-btn>
+      <v-btn flat @click="doImport">
+        <v-icon left>move_to_inbox</v-icon>
+        {{ $t('save.import') }}
+      </v-btn>
+    </div>
+    <v-container
+      grid-list-md
       fill-height
-      style="max-height: 100%;"
+      style="overflow: auto;"
+      @dragover.prevent
+      @drop="onDropSave"
     >
-      <v-toolbar
-        dark
-        flat
-        color="transparent"
-      >
-        <v-toolbar-title>{{ $tc('save.name', 2) }}</v-toolbar-title>
-        <v-spacer />
-        <v-btn
-          flat
-          @click="showCopyFromDialog"
-        >
-          <v-icon left>
-            input
-          </v-icon>
-          {{ $t('save.copyFrom.title') }}
-        </v-btn>
-        <v-btn
-          flat
-          @click="doImport"
-        >
-          <v-icon left>
-            move_to_inbox
-          </v-icon>
-          {{ $t('save.import') }}
-        </v-btn>
-      </v-toolbar>
-      <v-flex
-        d-flex
-        xs12
-        style="padding-right: 5px;"
-      >
-        <v-list
-          class="list"
-          style="overflow-y: auto; background: transparent;"
-        >
-          <hint
-            v-if="saves.length === 0"
-            style="flex-grow: 1; height: 100%;"
-            icon="map"
-            :text="$t('save.dropHint')"
+      <div class="flex flex-col h-full">
+        <hint v-if="saves.length === 0" class="h-full" icon="map" :text="$t('save.dropHint')" />
+        <transition-group tag="div" name="transition-list">
+          <save-view-page-preview-card
+            v-for="s of saves"
+            :key="s.path"
+            :source="s"
+            :delete-save="startDelete"
+            :export-save="doExport"
+            @dragstart="dragging = true"
+            @dragend="dragging = false"
           />
-          <transition-group
-            tag="div"
-            name="transition-list"
-          >
-            <save-view-page-preview-card
-              v-for="s of saves"
-              :key="s.path"
-              :source="s"
-              :delete-save="startDelete"
-              :export-save="doExport"
-              @dragstart="dragging=true"
-              @dragend="dragging=false"
-            />
-          </transition-group>
-        </v-list>
-      </v-flex>
-    </v-layout>
-    <save-view-page-copy-from-dialog v-model="isCopyFromDialogShown" />
-    <save-view-page-copy-to-dialog
-      :value="copying"
-      :operate="doCopy"
-      :cancel="cancelCopy"
-      :instances="instances"
-    />
-    <save-view-page-delete-dialog
-      :value="deleting"
-      :operate="doDelete"
-      :cancel="cancelDelete"
-    />
-    <save-view-page-float-button
-      :visible="dragging"
-      @drop="deleting = $event.dataTransfer.getData('id')"
-    />
-  </v-container>
+        </transition-group>
+      </div>
+      <save-view-page-copy-from-dialog v-model="isCopyFromDialogShown" />
+      <save-view-page-copy-to-dialog
+        :value="copying"
+        :operate="doCopy"
+        :cancel="cancelCopy"
+        :instances="instances"
+      />
+      <save-view-page-delete-dialog :value="deleting" :operate="doDelete" :cancel="cancelDelete" />
+      <save-view-page-float-button
+        :visible="dragging"
+        @drop="deleting = $event.dataTransfer.getData('id')"
+      />
+    </v-container>
+  </div>
 </template>
 
 <script lang="ts">

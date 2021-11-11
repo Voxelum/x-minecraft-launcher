@@ -23,10 +23,9 @@
     <v-tooltip top>
       <template #activator="{ on }">
         <transition-group
-          class="layout justify-center align-center fill-height"
+          class="layout justify-center align-center fill-height select-none"
           name="transition-list"
           tag="div"
-          style="user-select: none"
         >
           <v-flex v-if="selection" :key="0" class="flex-grow-0">
             <v-checkbox :value="mod.selected" />

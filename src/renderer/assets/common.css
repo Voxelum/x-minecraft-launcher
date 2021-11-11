@@ -225,3 +225,7 @@ a {
 .header-bar * {
     align-self: center;
 }
+
+.v-text-field input {
+    @apply z-10
+}

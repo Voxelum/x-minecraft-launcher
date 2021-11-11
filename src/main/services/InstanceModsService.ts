@@ -40,6 +40,10 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
     super(app)
   }
 
+  async showDirectory(): Promise<void> {
+    await this.app.openDirectory(join(this.instanceService.state.path, 'mods'))
+  }
+
   createState() { return new InstanceModsState() }
 
   private async scanMods(dir: string) {

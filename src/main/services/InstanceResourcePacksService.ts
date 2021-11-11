@@ -32,7 +32,7 @@ export default class InstanceResourcePackService extends AbstractService impleme
   ) {
     super(app)
   }
-
+  
   @Subscribe('instanceSelect')
   protected onInstance(instancePath: string) {
     this.link(instancePath).catch((e) => [
@@ -139,5 +139,9 @@ export default class InstanceResourcePackService extends AbstractService impleme
     }
 
     await symlink(srcPath, destPath, 'dir')
+  }
+
+  async showDirectory(): Promise<void> {
+    await this.app.openDirectory(join(this.instanceService.state.path, 'resourcepacks'))
   }
 }

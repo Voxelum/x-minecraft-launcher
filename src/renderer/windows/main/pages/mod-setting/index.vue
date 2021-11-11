@@ -4,19 +4,45 @@
       <v-toolbar-title class="headline self-center pl-2">{{ $tc("mod.name", 2) }}</v-toolbar-title>
       <v-spacer />
       <v-combobox
+        ref="searchElem"
         v-model="filteredItems"
         :items="filterOptions"
         :label="$t('mod.filter')"
-        class="pr-3"
+        class="pr-3 max-w-200 max-h-full"
         :search-input.sync="filteredText"
         chips
         clearable
         hide-details
-        :overflow="true"
+        :allow-overflow="true"
         prepend-inner-icon="filter_list"
         multiple
         solo
-      ></v-combobox>
+        @click:clear="clearFilterItems"
+      >
+        <template v-slot:item="{ index, item, tile }">
+          <v-list-tile-action>
+            <v-checkbox :value="tile.props.value" hide-details />
+          </v-list-tile-action>
+          <v-chip label outline :color="item.color ? item.color : 'pink'">
+            <v-icon left>{{ item.label ? item.label : 'label' }}</v-icon>
+            {{ item.value }}
+          </v-chip>
+        </template>
+        <template v-slot:selection="{ index, item, selected }">
+          <v-chip
+            label
+            outline
+            :color="item.color ? item.color : 'pink'"
+            :selected="selected"
+            close
+            @input="removeFilteredItem(index)"
+          >
+            <v-icon left v-if="item.label">{{ item.label }}</v-icon>
+            <!-- <v-icon left v-else>filter_list</v-icon> -->
+            {{ item.value }}
+          </v-chip>
+        </template>
+      </v-combobox>
       <!-- <v-tooltip bottom>
       <template v-slot:activator="{ on }">-->
       <v-btn icon @click="showModsFolder()">
@@ -49,14 +75,6 @@
             : $t("mod.hideIncompatible")
         }}
       </v-tooltip>
-      <!-- <v-tooltip bottom>
-        <template #activator="{ on }">
-          <v-btn icon v-on="on" @click="toggle()">
-            <v-icon>search</v-icon>
-          </v-btn>
-        </template>
-        {{ $t("filter") }}
-      </v-tooltip> -->
     </div>
     <v-container
       fill-height
@@ -106,9 +124,9 @@
 </template>
 
 <script lang=ts>
-import { computed, defineComponent, nextTick, onMounted, onUnmounted, ref, Ref } from '@vue/composition-api'
+import { computed, defineComponent, nextTick, onMounted, onUnmounted, ref, Ref, watch } from '@vue/composition-api'
 import { filter } from 'fuzzy'
-import { useSearch, useSearchToggles } from '../../hooks'
+import { onSearchToggle } from '../../hooks'
 import DeleteView from './DeleteView.vue'
 import FloatButton from './FloatButton.vue'
 import ModCard from './ModCard.vue'
@@ -237,13 +255,38 @@ function setupSelection(items: Ref<ModItem[]>) {
   }
 }
 
+interface FilterItem {
+  type: string
+  label?: string
+  value: string
+  color?: string
+}
+
 function setupFilter(items: Ref<ModItem[]>, minecraft: Ref<string>) {
-  const { text: filteredText } = useSearch()
-  const filteredItems = ref([] as any[])
-  const filteredItemsSet = computed(() => new Set(filteredItems.value))
+  const filteredText = ref('')
+  const filteredItems = ref([] as Array<FilterItem | string>)
   const visibleCount = ref(10)
   const filterInCompatible = useLocalStorageCacheBool('ModSettingPage.filterInCompatible', false)
-  const filterOptions = computed(() => items.value.map(m => [m.id, ...m.tags]).reduce((a, b) => [...a, ...b], []))
+  const filterOptions = computed(() => {
+    const result = [] as FilterItem[]
+    for (const item of items.value) {
+      result.unshift({ label: 'info', type: 'tag', value: item.type, color: 'lime' }, { type: 'tag', value: item.id, color: 'orange darken-1' })
+      result.push(...[...new Set<string>(item.tags)].map(s => ({ type: 'tag', value: s, label: 'label' })))
+    }
+    return result
+  })
+
+  watch(filteredItems, (newItems, oldItems) => {
+    if (newItems.length === oldItems.length) { return }
+    if (typeof newItems[newItems.length - 1] === 'string') {
+      filteredItems.value = newItems.filter(v => typeof v === 'string' || (typeof v === 'object' && v.type !== 'keyword')).map(v => {
+        if (typeof v === 'string') {
+          return { type: 'keyword', value: v }
+        }
+        return v
+      })
+    }
+  })
 
   function isCompatibleMod(mod: ModItem) {
     if (mod.enabled) {
@@ -266,21 +309,43 @@ function setupFilter(items: Ref<ModItem[]>, minecraft: Ref<string>) {
     }
     return list
   }
-  const mods = computed(() =>
-    filter(filteredText.value, items.value, { extract: v => `${v.name} ${v.version} ${v.dependencies.minecraft}` })
-      .map((r) => r.original ? r.original : r as any as ModItem)
-      .filter(i => filteredItems.value.length > 0 ? i.tags.some(t => filteredItems.value.indexOf(t) !== -1) || filteredItems.value.indexOf(i.id) !== -1 : true)
-      .filter(i => !!i)
+  function isValidItem(item: ModItem) {
+    for (const tag of filteredItems.value) {
+      if (typeof tag === 'object') {
+        if (tag.type === 'tag') {
+          const match = item.tags.some(t => t === tag.value) || item.id === tag.value || item.type === tag.value
+          if (!match) {
+            return false
+          }
+        }
+      }
+    }
+    return true
+  }
+  const mods = computed(() => {
+    const filteringOn = filteredText.value ? filteredText.value : (filteredItems.value.find(i => typeof i === 'object' && i.type === 'keyword') as any)?.value as string | undefined
+    const baseItems = filteringOn
+      ? filter(filteringOn, items.value, { extract: v => `${v.name} ${v.version} ${v.dependencies.minecraft}` }).map((r) => r.original ? r.original : r as any as ModItem)
+      : items.value
+    return baseItems
+      .filter(isValidItem)
       .filter(isCompatibleMod)
       .sort((a, b) => (a.enabled ? -1 : 1))
       .reduce(group, [])
-      .filter((m, i) => i < visibleCount.value))
+      .filter((m, i) => i < visibleCount.value)
+  })
 
   function onVisible(visible: boolean, index: number) {
     if (!visible) return
     if (visibleCount.value < index + 20) {
       visibleCount.value += 20
     }
+  }
+  function removeFilteredItem(index: number) {
+    filteredItems.value = filteredItems.value.filter((v, i) => i !== index)
+  }
+  function clearFilterItems() {
+    filteredItems.value = []
   }
 
   return {
@@ -290,6 +355,8 @@ function setupFilter(items: Ref<ModItem[]>, minecraft: Ref<string>) {
     items: mods,
     filteredText,
     filterInCompatible,
+    removeFilteredItem,
+    clearFilterItems,
   }
 }
 
@@ -302,8 +369,8 @@ export default defineComponent({
   setup() {
     const { minecraft } = useInstanceVersionBase()
     const { importResource } = useResourceOperation()
-    const { items: mods, commit, committing, isModified } = useInstanceMods()
-    const { toggle } = useSearchToggles()
+    const { items: mods, commit, committing, isModified, showDirectory } = useInstanceMods()
+    const searchElem = ref(null as null | any)
     const { path } = useInstanceBase()
     const { openDirectory } = useService(BaseServiceKey)
     const { push } = useRouter()
@@ -322,16 +389,31 @@ export default defineComponent({
     function goToCurseforgeMods() {
       push(`/curseforge/mc-mods?from=${path.value}`)
     }
-    function showModsFolder() {
-      openDirectory(`${path.value}/mods`)
-    }
+    onSearchToggle(() => {
+      if (searchElem.value) {
+        searchElem.value.focus()
+      }
+      return true
+    })
+
+    onMounted(() => {
+      (searchElem.value!.$el as HTMLElement).addEventListener('focus', (e) => {
+        console.log('focus')
+        const keyword = filtered.filteredItems.value.find(v => typeof v === 'object' && v.type !== 'keyword')
+        filtered.filteredItems.value = filtered.filteredItems.value.filter(v => typeof v === 'object' && v.type !== 'keyword')
+        if (keyword && typeof keyword === 'object') {
+          filtered.filteredText.value = keyword.value
+        }
+      })
+    })
 
     return {
       ...setupDragMod(filtered.items, selectedItems, isSelectionMode),
       ...setupDeletion(mods),
       ...filtered,
+      searchElem,
 
-      showModsFolder,
+      showModsFolder: showDirectory,
       goToCurseforgeMods,
       onDropToImport,
       onDragOver,

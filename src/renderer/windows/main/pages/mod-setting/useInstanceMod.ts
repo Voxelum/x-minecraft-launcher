@@ -82,7 +82,7 @@ export function useInstanceModsService() {
 export function useInstanceMods() {
   const { state } = useInstanceModsService()
   const { state: resourceState, updateResource } = useService(ResourceServiceKey)
-  const { install, uninstall } = useService(InstanceModsServiceKey)
+  const { install, uninstall, showDirectory } = useService(InstanceModsServiceKey)
   const loading = useBusy('mountModResources')
   const items: Ref<ModItem[]> = ref([])
   const pendingUninstallItems = computed(() => items.value.filter(i => !i.enabled && cachedEnabledSet.has(i.hash)))
@@ -251,5 +251,6 @@ export function useInstanceMods() {
     commit,
     committing,
     loading,
+    showDirectory,
   }
 }
