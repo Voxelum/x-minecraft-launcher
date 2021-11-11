@@ -3,6 +3,7 @@ import { useI18n, useService } from '.';
 import { InstanceOptionsServiceKey } from '../../shared/services/InstanceOptionsService';
 import { useRefreshable } from './useRefreshable';
 import { PersistedShaderPackResource } from '/@shared/entities/resource';
+import { InstanceShaderPacksServiceKey } from '/@shared/services/InstanceShaderPacksService';
 import { ResourceServiceKey } from '/@shared/services/ResourceService';
 
 export interface ShaderPackItem {
@@ -18,6 +19,7 @@ export interface ShaderPackItem {
 export function useShaderpacks() {
   const { state, updateResource, removeResource } = useService(ResourceServiceKey)
   const { state: options, editShaderOptions } = useService(InstanceOptionsServiceKey)
+  const { showDirectory } = useService(InstanceShaderPacksServiceKey)
   const { $t } = useI18n()
 
   const shaderPacks = ref([] as ShaderPackItem[])
@@ -112,5 +114,6 @@ export function useShaderpacks() {
     commit,
     committing,
     removeShaderPack,
+    showDirectory,
   }
 }

@@ -35,8 +35,6 @@ export function useTags(tags: Ref<string[]>) {
   const { $t } = useI18n()
   function removeTag(tag: string) {
     tags.value = tags.value.filter(t => t !== tag)
-    console.log(`remove tag`)
-    console.log(tags.value)
   }
   function editTag(text: string, index: number) {
     tags.value[index] = text

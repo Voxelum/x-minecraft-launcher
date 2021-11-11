@@ -17,6 +17,9 @@
         multiple
         solo
       ></v-combobox>
+      <v-btn icon @click="showDirectory()">
+        <v-icon>folder</v-icon>
+      </v-btn>
     </div>
     <v-container grid-list-md @dragover.prevent class="flex flex-col overflow-auto">
       <transition-group
@@ -85,7 +88,7 @@ function setupFilter(items: Ref<ShaderPackItem[]>) {
 
 export default defineComponent({
   setup() {
-    const { shaderPacks, selectedShaderPack, removeShaderPack } = useShaderpacks()
+    const { shaderPacks, selectedShaderPack, removeShaderPack, showDirectory } = useShaderpacks()
     const draggingPack = ref(undefined as undefined | ShaderPackItem)
     const deletingPack = ref(undefined as undefined | ShaderPackItem)
     const isDeleteViewShown = ref(false)
@@ -121,6 +124,7 @@ export default defineComponent({
 
     return {
       shaderPacks,
+      showDirectory,
       onSelect,
       draggingPack,
       deletingPack,

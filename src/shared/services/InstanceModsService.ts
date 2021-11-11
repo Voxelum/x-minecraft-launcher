@@ -56,6 +56,8 @@ export interface InstanceModsService extends StatefulService<InstanceModsState> 
    * Refresh current mounted instance mods. It will reload the mods in state.
    */
   refresh(force?: boolean): Promise<void>
+
+  showDirectory(): Promise<void>
   /**
    * Install certain mods to the instance.
    * @param options The install options
@@ -74,5 +76,6 @@ export const InstanceModsServiceMethods: ServiceTemplate<InstanceModsService> = 
   refresh: undefined,
   install: undefined,
   uninstall: undefined,
-  state: undefined
+  state: undefined,
+  showDirectory: undefined
 }

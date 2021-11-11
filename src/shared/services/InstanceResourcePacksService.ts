@@ -9,9 +9,12 @@ export interface InstanceResourcePacksService {
    * @param instancePath The instance path to link
    */
   link(instancePath: string): Promise<void>
+
+  showDirectory(): Promise<void>
 }
 
 export const InstanceResourcePacksServiceKey: ServiceKey<InstanceResourcePacksService> = 'InstanceResourcePacksService'
 export const InstanceResourcePacksServiceMethods: ServiceTemplate<InstanceResourcePacksService> = {
   link: undefined,
+  showDirectory: undefined
 }

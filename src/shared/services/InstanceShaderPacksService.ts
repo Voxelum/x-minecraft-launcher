@@ -7,9 +7,12 @@ export interface InstanceShaderPacksService {
    * @param instancePath The instance absolute path
    */
   link(instancePath: string): Promise<void>
+
+  showDirectory(): Promise<void>
 }
 
 export const InstanceShaderPacksServiceKey: ServiceKey<InstanceShaderPacksService> = 'InstanceShaderPacksService'
 export const InstanceShaderPacksServiceTemplate: ServiceTemplate<InstanceShaderPacksService> = {
   link: undefined,
+  showDirectory: undefined
 }

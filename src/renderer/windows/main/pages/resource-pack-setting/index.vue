@@ -236,11 +236,10 @@ export default defineComponent({
     const { text: filterText } = useSearch()
     const rightList: Ref<any> = ref(null)
     const leftList: Ref<any> = ref(null)
-    const { enabled, disabled, add, remove, commit, insert } = useInstanceResourcePacks()
+    const { enabled, disabled, add, remove, commit, insert, showDirectory } = useInstanceResourcePacks()
     const { removeResource } = useResourceOperation()
     const { push } = useRouter()
     const { path } = useInstanceBase()
-    const { openDirectory } = useService(BaseServiceKey)
     const searchBar: Ref<any> = ref(null)
     const data = reactive({
       dragging: false,
@@ -284,9 +283,6 @@ export default defineComponent({
     function goToCurseforge() {
       push(`/curseforge/texture-packs?from=${path.value}`)
     }
-    function showFolder() {
-      openDirectory(`${path.value}/resourcepacks`)
-    }
     return {
       ...toRefs(data),
       unselectedItems,
@@ -300,8 +296,7 @@ export default defineComponent({
       searchText,
       filteredItems,
       filterOptions,
-      showFolder,
-
+      showFolder: showDirectory,
     }
   },
   // async mounted() {

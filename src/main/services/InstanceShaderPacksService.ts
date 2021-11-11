@@ -5,11 +5,12 @@ import { isSystemError } from '../util/error';
 import { ENOENT_ERROR } from '../util/fs';
 import InstanceService from './InstanceService';
 import ResourceService from './ResourceService';
-import AbstractService, { Inject, Singleton, Subscribe } from './Service';
+import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service';
 import { isPersistedResource, isShaderPackResource } from '/@shared/entities/resource';
 import { ResourceDomain } from '/@shared/entities/resource.schema';
-import { InstanceShaderPacksService as IInstanceShaderPacksServic } from '/@shared/services/InstanceShaderPacksService';
+import { InstanceShaderPacksService as IInstanceShaderPacksServic, InstanceShaderPacksServiceKey } from '/@shared/services/InstanceShaderPacksService';
 
+@ExportService(InstanceShaderPacksServiceKey)
 export default class InstanceShaderPacksService extends AbstractService implements IInstanceShaderPacksServic {
   constructor(
     app: LauncherApp,
@@ -76,5 +77,9 @@ export default class InstanceShaderPacksService extends AbstractService implemen
     }
 
     await symlink(srcPath, destPath, 'dir')
+  }
+
+  async showDirectory(): Promise<void> {
+    await this.app.openDirectory(join(this.instanceService.state.path, 'shaderpacks'))
   }
 }

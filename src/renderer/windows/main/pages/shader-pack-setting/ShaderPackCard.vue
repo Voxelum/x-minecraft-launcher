@@ -1,10 +1,11 @@
 <template>
   <v-card
     v-draggable-card
+    v-selectable-card
     hover
     dark
-    draggable
-    class="white--text draggable-card flex duration-200 mt-2 flex-row flex-nowrap"
+    :draggable="!pack.enabled && pack.path"
+    class="white--text draggable-card flex duration-200 mt-2 flex-row flex-nowrap select-none"
     :class="{ enabled: pack.enabled }"
     @contextmenu="onContextMenu"
     @click="onSelect"
