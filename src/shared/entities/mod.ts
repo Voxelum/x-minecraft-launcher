@@ -20,12 +20,12 @@ export interface ForgeModCommonMetadata extends ForgeModMetadata {
 
   version: string
   /**
-     * Accept minecraft version range
-     */
+   * Accept minecraft version range
+   */
   acceptMinecraft: string
   /**
-     * Accept forge version range
-     */
+   * Accept forge version range
+   */
   acceptForge: string
 }
 
@@ -69,7 +69,7 @@ export function normalizeForgeModMetadata (metadata: ForgeModMetadata): ForgeMod
     const annotation = metadata.modAnnotations[0]
 
     result.modid = annotation.modid
-    result.name = annotation.name
+    result.name = annotation.name || annotation.modid
     result.version = annotation.version
     result.description = ''
     result.acceptMinecraft = annotation.acceptedMinecraftVersions || ''

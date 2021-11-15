@@ -79,6 +79,10 @@ export function isFabricResource(resource: Resource): resource is FabricResource
   return resource.type === 'fabric'
 }
 
+export function isLiteloaderResource(resource: Resource): resource is LiteloaderResource {
+  return resource.type === 'liteloader'
+}
+
 export function isResourcePackResource(resource: Resource): resource is ResourcePackResource {
   return resource.type === 'resourcepack'
 }
