@@ -55,27 +55,24 @@ export default defineComponent({
     const data = reactive({
       step: 0,
 
-      items: [],
-
-      status: 'none',
-
-      options: [{
+      options: [reactive({
         autofix: true,
-        title: $t('diagnosis.missingJava.switch', { version: javaIssue.value.version }),
-        message: $t('diagnosis.missingJava.switch.message', { version: javaIssue.value.version }),
-        'disabled-message': $t('diagnosis.missingJava.switch.disabled', { version: javaIssue.value.version }),
+        title: computed(() => $t('diagnosis.missingJava.switch', { version: javaIssue.value.version })),
+        message: computed(() => $t('diagnosis.missingJava.switch.message', { version: javaIssue.value.version })),
+        'disabled-message': computed(() => $t('diagnosis.missingJava.switch.disabled', { version: javaIssue.value.version })),
         disabled: validJava.value === undefined,
         recommended: true,
-      }, {
+      }), reactive({
         autofix: true,
-        title: $t('diagnosis.missingJava.autoDownload'),
-        message: $t('diagnosis.missingJava.autoDownload.message', { version: javaIssue.value.version }),
+        title: computed(() => $t('diagnosis.missingJava.autoDownload')),
+        message: computed(() => $t('diagnosis.missingJava.autoDownload.message', { version: javaIssue.value.version })),
         disabled: false,
-      }, {
-        title: $t('diagnosis.missingJava.selectJava'),
-        message: $t('diagnosis.missingJava.selectJava.message'),
+      }), reactive({
+        autofix: false,
+        title: computed(() => $t('diagnosis.missingJava.selectJava')),
+        message: computed(() => $t('diagnosis.missingJava.selectJava.message')),
         disabled: false,
-      }],
+      })],
     })
 
     const missing = computed(() => javaIssue.value.type === 'missing')
@@ -83,10 +80,10 @@ export default defineComponent({
     const hint = computed(() => (!missing.value ? $t('java.incompatibleJavaHint', { version: javaIssue.value.version }) : $t('java.missingHint')))
 
     function refresh() {
-      data.status = 'resolving'
+      // data.status = 'resolving'
       refreshLocalJava().finally(() => {
         if (missing.value) {
-          data.status = 'error'
+          // data.status = 'error'
           show()
         }
       })

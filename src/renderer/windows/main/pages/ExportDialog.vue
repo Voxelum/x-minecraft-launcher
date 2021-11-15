@@ -1,39 +1,18 @@
 <template>
-  <v-dialog
-    :value="value"
-    width="600"
-    @input="$emit('input', $event)"
-  >
+  <v-dialog :value="value" width="600" @input="$emit('input', $event)">
     <v-card>
-      <v-toolbar
-        dark
-        tabs
-        color="green darken"
-      >
-        <v-toolbar-title v-if="isCurseforge">
-          {{ $t('profile.modpack.exportCurseforge') }}
-        </v-toolbar-title>
-        <v-toolbar-title v-else>
-          {{ $t('profile.modpack.export') }}
-        </v-toolbar-title>
+      <v-toolbar dark tabs color="green darken">
+        <v-toolbar-title v-if="isCurseforge">{{ $t('profile.modpack.exportCurseforge') }}</v-toolbar-title>
+        <v-toolbar-title v-else>{{ $t('profile.modpack.export') }}</v-toolbar-title>
 
         <v-spacer />
-        <v-btn
-          icon
-          @click="$emit('input', false)"
-        >
+        <v-btn icon @click="$emit('input', false)">
           <v-icon>arrow_drop_down</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-container
-        grid-list-sm
-        style="overflow: auto; max-height: 450px"
-      >
+      <v-container grid-list-sm style="overflow: auto; max-height: 450px">
         <v-subheader>{{ $t('profile.modpack.general') }}</v-subheader>
-        <v-container
-          grid-list-md
-          style="padding-top: 0px"
-        >
+        <v-container grid-list-md style="padding-top: 0px">
           <v-layout row>
             <v-flex d-flex>
               <v-text-field
@@ -67,10 +46,7 @@
                 required
               />
             </v-flex>
-            <v-flex
-              d-flex
-              xs6
-            >
+            <v-flex d-flex xs6>
               <v-select
                 v-model="gameVersion"
                 :items="localVersions"
@@ -82,10 +58,7 @@
               />
             </v-flex>
           </v-layout>
-          <v-layout
-            v-if="!isCurseforge"
-            row
-          >
+          <v-layout v-if="!isCurseforge" row>
             <v-flex d-flex>
               <v-checkbox
                 v-model="includeAssets"
@@ -93,10 +66,7 @@
                 hint="abc"
               />
             </v-flex>
-            <v-flex
-              d-flex
-              xs6
-            >
+            <v-flex d-flex xs6>
               <v-checkbox
                 v-model="includeLibraries"
                 :label="$t('profile.modpack.includeLibraries')"
@@ -107,39 +77,22 @@
         </v-container>
 
         <v-layout>
-          <v-subheader v-if="isCurseforge">
-            {{ $t('profile.modpack.overrides') }}
-          </v-subheader>
-          <v-subheader v-else>
-            {{ $t('profile.modpack.includes') }}
-          </v-subheader>
+          <v-subheader v-if="isCurseforge">{{ $t('profile.modpack.overrides') }}</v-subheader>
+          <v-subheader v-else>{{ $t('profile.modpack.includes') }}</v-subheader>
         </v-layout>
-        <v-layout
-          row
-          style="padding: 5px; margin-bottom: 5px"
-        >
-          <instance-files
-            v-model="selected"
-            :items="files"
-          />
+        <v-layout row style="padding: 5px; margin-bottom: 5px">
+          <instance-files v-model="selected" :items="files" />
         </v-layout>
         <v-layout row>
-          <v-btn
-            flat
-            large
-            @click="cancel"
-          >
-            {{ $t('cancel') }}
-          </v-btn>
+          <v-btn flat large :disabled="exporting" @click="cancel">{{ $t('cancel') }}</v-btn>
           <v-spacer />
           <v-btn
             flat
             color="primary"
             large
+            :loading="exporting"
             @click="confirm"
-          >
-            {{ $t('profile.modpack.export') }}
-          </v-btn>
+          >{{ $t('profile.modpack.export') }}</v-btn>
         </v-layout>
       </v-container>
     </v-card>
@@ -147,7 +100,7 @@
 </template>
 
 <script lang=ts>
-import { computed, defineComponent, nextTick, reactive, toRefs, watch } from '@vue/composition-api'
+import { computed, defineComponent, nextTick, onMounted, reactive, toRefs, watch } from '@vue/composition-api'
 import { useZipFilter } from '/@/windows/main/hooks'
 import InstanceFiles from './InstanceFiles.vue'
 import { useI18n, useInstance, useInstanceVersion, useLocalVersions, useWindowController, useService } from '/@/hooks'
@@ -178,10 +131,14 @@ export default defineComponent({
       exporting: false,
       selected: [] as string[],
       files: [] as InstanceFile[],
-      includeLibraries: true,
-      includeAssets: true,
+      includeLibraries: false,
+      includeAssets: false,
     })
     function reset() {
+      data.includeAssets = false
+      data.includeLibraries = false
+      data.name = name.value
+      data.author = author.value
       data.selected = []
       data.gameVersion = folder.value ? folder.value : ''
     }
@@ -194,6 +151,7 @@ export default defineComponent({
           selected = files.filter(p => p.path.startsWith('config') || p.path.startsWith('mods')).map(p => p.path)
         } else {
           selected = files
+            .filter(file => !file.path.startsWith('.'))
             .filter(file => !file.path.startsWith('logs'))
             .filter(file => !file.path.startsWith('resourcepacks'))
             .map(file => file.path)
@@ -206,13 +164,13 @@ export default defineComponent({
       context.emit('input', false)
     }
     async function confirm() {
-      data.exporting = true
       const { filePath } = await showSaveDialog({
         title: $t('profile.modpack.export'),
         defaultPath: `${data.name}-${data.version}`,
         filters: [zipFilter],
       })
       if (filePath) {
+        data.exporting = true
         if (props.isCurseforge) {
           try {
             const overrides = data.selected.filter(p => !!data.files.find(f => f.path === p && !f.isDirectory))
@@ -236,9 +194,10 @@ export default defineComponent({
             files,
           })
         }
+        data.exporting = false
       }
 
-      data.exporting = false
+      context.emit('input', false)
     }
     watch(() => props.value, () => {
       if (props.value) {

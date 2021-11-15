@@ -18,7 +18,7 @@
 
 <script lang=ts>
 import { defineComponent, inject, ref, Ref, nextTick, watch, onMounted } from '@vue/composition-api'
-import { useSearch, onSearchToggle } from '/@/windows/main/hooks'
+import { useSearch, onSearchToggle, useSearchToggles } from '/@/windows/main/hooks'
 
 function setupDraggable(self: Ref<any>) {
   let initialX = 0
@@ -85,7 +85,8 @@ export default defineComponent({
       return true
     }
     setupDraggable(self)
-    onSearchToggle(toggleBar)
+    const { toggles } = useSearchToggles()
+    toggles.unshift(toggleBar)
     return {
       show,
       focused,
