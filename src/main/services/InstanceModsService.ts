@@ -69,7 +69,7 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
     this.refresh()
   }
 
-  @Subscribe('instanceMods', 'instanceModUpdate', 'instanceModRemove')
+  @Subscribe('instanceMods', 'instanceModUpdate', 'instanceModRemove', 'instanceEdit', 'localVersionAdd', 'localVersionRemove', 'localVersions')
   async onInstanceModsLoad() {
     await this.diagnoseMods()
   }
