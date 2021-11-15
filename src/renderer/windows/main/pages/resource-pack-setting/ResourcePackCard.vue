@@ -48,7 +48,7 @@
           <div>
             <v-chip
               v-for="(tag, index) in pack.tags"
-              :color="colors[index % colors.length]"
+              :color="getColor(tag)"
               label
               outline
               :key="`${tag}-${index}`"
@@ -60,6 +60,7 @@
                 class="max-w-90 sm:max-w-40 overflow-scroll"
                 :class="{ 'text-white': hovered }"
                 @input.stop="onEditTag($event, index)"
+                @blur="notfiyTagChange(pack)"
               >{{ tag }}</span>
             </v-chip>
           </div>
@@ -90,6 +91,7 @@ import { required } from '/@/util/props'
 import { useContextMenu, ContextMenuItem, useCurseforgeRoute } from '../../hooks'
 import { BaseServiceKey } from '/@shared/services/BaseService'
 import unknownPack from '/@/assets/unknown_pack.png'
+import { getColor } from '/@/util/color'
 
 export default defineComponent({
   props: {
@@ -130,6 +132,9 @@ export default defineComponent({
     }
     function onEditTag(event: InputEvent, index: number) {
       editTag(event.target.innerText, index)
+    }
+    function notfiyTagChange(item: ResourcePackItem) {
+      item.tags = [...item.tags]
     }
     function onEditPackName(item: ResourcePackItem, name: string) {
       item.name = name
@@ -184,10 +189,12 @@ export default defineComponent({
       card,
       onEditTag,
       openContextMenu,
+      getColor,
       unknownPack,
       tags,
       colors,
       onDeleteTag: removeTag,
+      notfiyTagChange,
       hovered,
     }
   },

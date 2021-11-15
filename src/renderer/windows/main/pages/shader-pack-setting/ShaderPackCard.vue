@@ -27,14 +27,18 @@
           <v-chip
             v-for="(tag, index) in pack.tags"
             :key="`${tag}${index}`"
-            :color="colors[index % colors.length]"
+            :color="getColor(tag)"
             label
             small
             close
             outline
             @input="onRemoveTag(tag)"
           >
-            <div contenteditable @input.stop="onEditTag($event, index)">{{ tag }}</div>
+            <div
+              contenteditable
+              @input.stop="onEditTag($event, index)"
+              @blur="onEditTagEnd(pack)"
+            >{{ tag }}</div>
           </v-chip>
         </div>
         <div style="color: #bdbdbd; ">{{ pack.description }}</div>
@@ -48,10 +52,11 @@
 <script lang="ts">
 import { computed, defineComponent } from '@vue/composition-api';
 import { useContextMenu } from '../../hooks';
-import { useI18n, useService, useTagColors, useTags } from '/@/hooks';
+import unknownPack from '/@/assets/unknown_pack.png';
+import { useI18n, useService, useTags } from '/@/hooks';
 import { ShaderPackItem } from '/@/hooks/useShaderpacks';
+import { getColor } from '/@/util/color';
 import { required } from '/@/util/props';
-import unknownPack from '/@/assets/unknown_pack.png'
 import { BaseServiceKey } from '/@shared/services/BaseService';
 
 export default defineComponent({
@@ -61,7 +66,6 @@ export default defineComponent({
   setup(props, context) {
     const { open } = useContextMenu()
     const { $t } = useI18n()
-    const { colors } = useTagColors()
     const { showItemInDirectory } = useService(BaseServiceKey)
 
     const builtin = computed(() => props.pack.value === 'OFF' || props.pack.value === '(internal)')
@@ -70,6 +74,9 @@ export default defineComponent({
       if (event.target instanceof HTMLDivElement) {
         editTag(event.target.innerText, index)
       }
+    }
+    function onEditTagEnd(item: ShaderPackItem) {
+      item.tags = [...item.tags]
     }
     function updateName(event: InputEvent) {
       if (event.target instanceof HTMLDivElement) {
@@ -102,7 +109,7 @@ export default defineComponent({
     function onSelect() {
       context.emit('select', props.pack)
     }
-    return { onSelect, onContextMenu, colors, onEditTag, onRemoveTag: removeTag, updateName, builtin, unknownPack }
+    return { getColor, onSelect, onContextMenu, onEditTag, onRemoveTag: removeTag, updateName, builtin, unknownPack, onEditTagEnd }
   }
 })
 </script>
