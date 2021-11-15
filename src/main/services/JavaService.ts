@@ -50,6 +50,10 @@ export default class JavaService extends StatefulService<JavaState> implements I
     if (!this.state.all.map(j => j.path).some(p => p === local)) {
       this.resolveJava(local)
     }
+    const local16 = this.getInternalJavaLocation('16')
+    if (!this.state.all.map(j => j.path).some(p => p === local16)) {
+      this.resolveJava(local16)
+    }
     this.refreshLocalJava()
 
     this.storeManager.subscribeAll(['javaUpdate', 'javaRemove'], () => {
@@ -63,6 +67,7 @@ export default class JavaService extends StatefulService<JavaState> implements I
   @Singleton()
   async installDefaultJava(target: '8' | '16' = '8') {
     const location = this.getInternalJavaLocation(target)
+    this.log(`Try to install official java ${target} to ${location}`)
     // if (this.state.all.find(j => j.path === location)) {
     //   return
     // }
@@ -148,15 +153,22 @@ export default class JavaService extends StatefulService<JavaState> implements I
   async resolveJava(javaPath: string): Promise<undefined | Java> {
     requireString(javaPath)
 
+    this.log(`Resolve java ${javaPath}`)
+
     const found = this.state.all.find(java => java.path === javaPath)
     if (found) {
+      this.log(`Found in memory ${found.valid ? 'valid' : 'invalid'} java ${found.version} in ${javaPath}`)
       return found
     }
 
-    if (await missing(javaPath)) return undefined
+    if (await missing(javaPath)) {
+      this.log(`Skip for missing java ${javaPath}`)
+      return undefined
+    }
 
     const java = await resolveJava(javaPath)
     if (java) {
+      this.log(`Resolved java ${java.version} in ${javaPath}`)
       this.state.javaUpdate({ ...java, valid: true })
     } else {
       const home = dirname(dirname(javaPath))
@@ -165,11 +177,14 @@ export default class JavaService extends StatefulService<JavaState> implements I
       if (javaVersion) {
         const parsedJavaVersion = parseJavaVersion(javaVersion)
         if (parsedJavaVersion) {
+          this.log(`Resolved invalid java ${parsedJavaVersion.version} in ${javaPath}`)
           this.state.javaUpdate({ ...parsedJavaVersion, path: javaPath, valid: false })
         } else {
+          this.log(`Resolved invalid unknown version java in ${javaPath}`)
           this.state.javaUpdate({ valid: false, path: javaPath, version: '', majorVersion: 0 })
         }
       } else {
+        this.log(`Resolved invalid unknown version java in ${javaPath}`)
         this.state.javaUpdate({ valid: false, path: javaPath, version: '', majorVersion: 0 })
       }
     }
