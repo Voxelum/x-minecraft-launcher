@@ -1,9 +1,26 @@
 import { watch } from '@vue/composition-api'
-import { useLocalStorageCacheInt, useLocalStorageCacheStringValue } from './useCache'
+import { useLocalStorageCacheBool, useLocalStorageCacheInt, useLocalStorageCacheStringValue } from './useCache'
 
-export function useBackgroundImage() {
+export enum ParticleMode {
+  PUSH = 'push',
+  REMOVE = 'remove',
+  REPULSE = 'repulse',
+  BUBBLE = 'bubble',
+}
+
+export enum BackgroundType {
+  NONE = 'none',
+  PARTICLE = 'particle',
+  HALO = 'halo',
+  IMAGE = 'image'
+}
+
+export function useBackground() {
+  const backgroundType = useLocalStorageCacheStringValue('backgroundType', BackgroundType.PARTICLE)
   const blur = useLocalStorageCacheInt('blur', 4)
+  const blurMainBody = useLocalStorageCacheBool('blurMainBody', false)
   const backgroundImage = useLocalStorageCacheStringValue('background', '')
+  const particleMode = useLocalStorageCacheStringValue<ParticleMode>('particleMode', ParticleMode.PUSH)
   async function setBackgroundImage(path: string) {
     const img = document.createElement('img')
     img.src = `image://${path}`
@@ -19,6 +36,9 @@ export function useBackgroundImage() {
   }
   return {
     blur,
+    blurMainBody,
+    particleMode,
+    backgroundType,
     backgroundImage,
     setBackgroundImage,
   }

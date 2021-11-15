@@ -13,19 +13,7 @@
       <side-bar :go-back="goBack" />
       <v-layout style="padding: 0; background: transparent; max-height: 100vh;" fill-height>
         <div class="main-body v-sheet" :class="{ solid: !blurMainBody }">
-          <img
-            v-if="backgroundImage"
-            :src="backgroundImage"
-            :style="{ filter: `blur(${blur}px)` }"
-            style="z-index: -0; filter: blur(4px); position: absolute; width: 100%; height: 100%;"
-          />
-          <particles
-            v-if="showParticle"
-            color="#dedede"
-            :style="{ 'pointer-events': onHomePage ? 'auto' : 'none' }"
-            style="position: absolute; width: 100%; height: 100%; z-index: 0;"
-            :click-mode="particleMode"
-          />
+          <background />
           <transition name="fade-transition" mode="out-in">
             <router-view />
           </transition>
@@ -53,16 +41,14 @@ import {
   defineComponent,
   ref,
   Ref,
-provide,
+  provide,
 } from '@vue/composition-api'
 import {
-  useParticle,
-  useBackgroundImage,
   useRouter,
-  useBackgroundBlur,
   provideAsyncRoute,
   useBaseService,
   provideServerStatusCache,
+useBackground,
 } from '/@/hooks'
 import { TASK_MANAGER, useTaskManager } from './provideTaskProxy'
 import { provideDialog, provideNotifier, provideContextMenu, provideSearch, provideIssueHandler } from './hooks'
@@ -73,16 +59,19 @@ import Particles from '../../components/Particles.vue'
 import JavaWizardDialog from './dialog/BaseJavaWizardDialog.vue'
 import { injection } from '/@/util/inject'
 import { SYNCABLE_KEY } from '/@/hooks/useSyncable'
+import Halo from '/@/components/Halo.vue'
+import Background from './Background.vue'
 
 export default defineComponent({
-  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaWizardDialog, Particles: (Particles as any) },
+  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaWizardDialog, Particles: (Particles as any), Halo, Background },
   setup() {
     provideDialog()
     provideNotifier()
 
     const taskManager = useTaskManager()
     provide(TASK_MANAGER, taskManager)
-  
+    const { blurMainBody } = useBackground()
+
     provideAsyncRoute()
     provideServerStatusCache()
     provideIssueHandler()
@@ -90,9 +79,6 @@ export default defineComponent({
     const { text, toggle } = provideSearch()
     provideContextMenu()
 
-    const { particleMode, showParticle } = useParticle()
-    const { blurMainBody } = useBackgroundBlur()
-    const { blur, backgroundImage } = useBackgroundImage()
     const { syncing } = injection(SYNCABLE_KEY)
     const { state } = useBaseService()
     const router = useRouter()
@@ -113,41 +99,18 @@ export default defineComponent({
       loading: false,
     })
 
-    function refreshImage() {
-      const img = backgroundImage
-    }
-
     watch(syncing, (v) => {
       if (!v && data.loading) {
         data.loading = false
       }
     })
 
-    onMounted(() => {
-      watch(backgroundImage, () => {
-        refreshImage()
-      })
-      watch(particleMode, () => {
-        if (showParticle.value) {
-          showParticle.value = false
-          setImmediate(() => {
-            showParticle.value = true
-          })
-        }
-      })
-      // app.value!.$el.classList.add(state.platform)
-    })
 
     return {
       ...toRefs(data),
       app,
-      blur,
-      backgroundImage,
-      blurMainBody,
-      particleMode,
-      showParticle,
-      onHomePage,
       goBack,
+      blurMainBody,
     }
   },
 })

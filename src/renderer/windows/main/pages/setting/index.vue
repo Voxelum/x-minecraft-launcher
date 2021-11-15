@@ -166,23 +166,40 @@
           </v-list-tile-content>
         </v-list-tile>
         <v-list-tile avatar>
-          <v-list-tile-action>
-            <v-checkbox v-model="showParticle" />
-          </v-list-tile-action>
           <v-list-tile-content>
             <v-list-tile-title>
               {{
-                $t("setting.showParticle")
+                $t("setting.backgroundType")
               }}
             </v-list-tile-title>
             <v-list-tile-sub-title>
               {{
-                $t("setting.showParticleDescription")
+                $t("setting.backgroundTypeDescription")
               }}
             </v-list-tile-sub-title>
           </v-list-tile-content>
+          <v-list-tile-action>
+            <v-select v-model="backgroundType" :items="backgroundTypes" />
+          </v-list-tile-action>
         </v-list-tile>
-        <v-list-tile>
+        <!-- <v-list-tile v-if="backgroundType === 'halo'">
+          <v-list-tile-content>
+            <v-list-tile-title>
+              {{
+                $t("setting.particleMode")
+              }}
+            </v-list-tile-title>
+            <v-list-tile-sub-title>
+              {{
+                $t("setting.particleModeDescription")
+              }}
+            </v-list-tile-sub-title>
+          </v-list-tile-content>
+          <v-list-tile-action>
+            <v-select v-model="particleMode" :items="particleModes" />
+          </v-list-tile-action>
+        </v-list-tile>-->
+        <v-list-tile v-if="backgroundType === 'particle'">
           <v-list-tile-content>
             <v-list-tile-title>
               {{
@@ -199,7 +216,7 @@
             <v-select v-model="particleMode" :items="particleModes" />
           </v-list-tile-action>
         </v-list-tile>
-        <v-list-tile>
+        <v-list-tile v-if="backgroundType === 'image'">
           <v-list-tile-content>
             <v-list-tile-title>
               {{
@@ -311,14 +328,14 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
+import { computed, defineComponent, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
 import UpdateInfoDialog from './UpdateInfoDialog.vue'
 import localMapping from '/@/assets/locales/index.json'
-import { useBackgroundBlur, useBackgroundImage, useBaseService, useI18n, useLauncherVersion, useWindowController, useParticle, useService, useSettings } from '/@/hooks'
+import { useBackground, useBaseService, useI18n, useLauncherVersion, useWindowController, useSettings, BackgroundType } from '/@/hooks'
 
 function setupImage() {
   const { showOpenDialog } = useWindowController()
-  const { backgroundImage, setBackgroundImage, blur } = useBackgroundImage()
+  const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, blurMainBody } = useBackground()
   function selectImage() {
     showOpenDialog({
       title: '选择图片',
@@ -337,9 +354,12 @@ function setupImage() {
   }
   return {
     blur,
+    blurMainBody,
     backgroundImage,
     selectImage,
     clearImage,
+    particleMode,
+    backgroundType,
   }
 }
 
@@ -347,8 +367,6 @@ export default defineComponent({
   components: { UpdateInfoDialog },
   setup() {
     const dialog = useWindowController()
-    const { showParticle, particleMode } = useParticle()
-    const { blurMainBody } = useBackgroundBlur()
     const { migrate, postMigrate, openDirectory, state } = useBaseService()
     const settings = useSettings()
     const { $t } = useI18n()
@@ -368,19 +386,19 @@ export default defineComponent({
     })
 
     const { version, build } = useLauncherVersion()
-    const particleModes: Ref<{ value: string; text: string }[]> = ref(['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: $t(`setting.particleMode.${t}`) })))
-    watch(settings.selectedLocale, () => {
-      particleModes.value = ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: $t(`setting.particleMode.${t}`) }))
-    })
+    const particleModes = computed(() => ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: $t(`setting.particleMode.${t}`) })))
+    const backgroundTypes = computed(() => [
+      { value: BackgroundType.NONE, text: $t('setting.backgroundTypes.none') },
+      { value: BackgroundType.IMAGE, text: $t('setting.backgroundTypes.image') },
+      { value: BackgroundType.PARTICLE, text: $t('setting.backgroundTypes.particle') },
+      { value: BackgroundType.HALO, text: $t('setting.backgroundTypes.halo') },
+    ])
     return {
       ...toRefs(data),
       ...settings,
       version,
       build,
       locales: settings.locales.value.map(l => ({ text: localMapping[l] ?? l, value: l })),
-      showParticle,
-      particleMode,
-      blurMainBody,
       particleModes,
       viewUpdateDetail() {
         data.viewingUpdateDetail = true
@@ -424,6 +442,7 @@ export default defineComponent({
           data.migrateDialog = false
         }
       },
+      backgroundTypes,
       ...setupImage(),
     }
   },
