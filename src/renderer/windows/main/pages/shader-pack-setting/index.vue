@@ -3,20 +3,7 @@
     <div class="header-bar">
       <v-toolbar-title class="headline text-bold">{{ $tc('shaderpack.name', 2) }}</v-toolbar-title>
       <v-spacer />
-      <v-combobox
-        v-model="filteredItems"
-        :items="filterOptions"
-        class="max-w-150"
-        :label="$t('shaderpack.filter')"
-        :search-input.sync="searchText"
-        chips
-        clearable
-        hide-details
-        :overflow="true"
-        prepend-inner-icon="filter_list"
-        multiple
-        solo
-      ></v-combobox>
+      <FilterCombobox class="max-w-150 mr-2" :label="$t('shaderpack.filter')" />
       <v-btn icon @click="showDirectory()">
         <v-icon>folder</v-icon>
       </v-btn>
@@ -51,38 +38,26 @@
 
 <script lang="ts">
 import { computed, defineComponent, Ref, ref } from '@vue/composition-api';
-import { filter } from 'fuzzy';
 import DeleteButton from './DeleteButton.vue';
 import DeleteView from './DeleteView.vue';
 import ShaderPackCard from './ShaderPackCard.vue';
+import { useFilterCombobox } from '/@/components/FilterCombobox.vue';
 import { useRefreshable } from '/@/hooks/useRefreshable';
 import { ShaderPackItem, useShaderpacks } from '/@/hooks/useShaderpacks';
+import FilterCombobox from '../../../../components/FilterCombobox.vue';
 
 function setupFilter(items: Ref<ShaderPackItem[]>) {
-  const searchText = ref('')
-  const filteredItems = ref([] as string[])
-  const visibleCount = ref(10)
-  const filterOptions = computed(() => items.value.map(m => m.tags).reduce((a, b) => [...a, ...b], []))
-
-  const result = computed(() =>
-    filter(searchText.value, items.value, { extract: v => `${v.name}` })
-      .map((r) => r.original ? r.original : r as any as ShaderPackItem)
-      .filter(i => filteredItems.value.length > 0 ? i.tags.some(t => filteredItems.value.indexOf(t) !== -1) || filteredItems.value.indexOf(i.name) !== -1 : true)
-      .filter((m, i) => i < visibleCount.value))
-
-  function onVisible(visible: boolean, index: number) {
-    if (!visible) return
-    if (visibleCount.value < index + 20) {
-      visibleCount.value += 20
-    }
+  const filterOptions = computed(() => items.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
+  function getFilterOptions(item: ShaderPackItem) {
+    return [
+      ...item.tags.map(t => ({ type: 'tag', value: t, label: 'label' })),
+    ]
   }
+  const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (i) => i.name)
+  const result = computed(() => filter(items.value))
 
   return {
-    filteredItems,
-    filterOptions,
-    onVisible,
     items: result,
-    searchText,
   }
 }
 
@@ -123,7 +98,6 @@ export default defineComponent({
     }
 
     return {
-      shaderPacks,
       showDirectory,
       onSelect,
       draggingPack,
@@ -140,6 +114,6 @@ export default defineComponent({
       ...setupFilter(shaderPacks)
     }
   },
-  components: { ShaderPackCard, DeleteButton, DeleteView }
+  components: { ShaderPackCard, DeleteButton, DeleteView, FilterCombobox }
 })
 </script>

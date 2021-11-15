@@ -3,21 +3,7 @@
     <div class="header-bar">
       <div class="headline align-middle self-center pl-2">{{ $tc("resourcepack.name", 2) }}</div>
       <v-spacer />
-      <v-combobox
-        ref="searchBar"
-        v-model="filteredItems"
-        :items="filterOptions"
-        class="max-w-150 mr-2"
-        :label="$t('resourcepack.filter')"
-        :search-input.sync="searchText"
-        chips
-        clearable
-        hide-details
-        :overflow="true"
-        prepend-inner-icon="filter_list"
-        multiple
-        solo
-      ></v-combobox>
+      <filter-combobox :label="$t('resourcepack.filter')" class="max-w-150 mr-2" />
       <v-btn icon @click="showFolder()">
         <v-icon>folder</v-icon>
       </v-btn>
@@ -75,7 +61,7 @@
               <transition-group name="transition-list" tag="div">
                 <resource-pack-card
                   v-for="item in unselectedItems"
-                  :key="item.id"
+                  :key="item.path"
                   :pack="item"
                   :is-selected="false"
                   @dragstart="dragging = true"
@@ -119,7 +105,7 @@
               <transition-group name="transition-list" tag="div">
                 <resource-pack-card
                   v-for="item in selectedItems"
-                  :key="item.id"
+                  :key="item.path"
                   :pack="item"
                   :is-selected="true"
                   @dragstart="dragging = true"
@@ -184,7 +170,7 @@ deletingPack = null;
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, inject, ref, toRefs, computed, Ref, onUnmounted } from '@vue/composition-api'
+import { defineComponent, reactive, ref, toRefs, computed, Ref, onUnmounted } from '@vue/composition-api'
 import {
   useInstanceResourcePacks,
   useResourceOperation,
@@ -192,45 +178,34 @@ import {
   useDropImport,
   ResourcePackItem,
   useRouter,
-  useService,
   useInstanceBase,
 } from '/@/hooks'
 import ResourcePackCard from './ResourcePackCard.vue'
 import { useSearch, onSearchToggle } from '../../hooks'
-import { BaseServiceKey } from '/@shared/services/BaseService'
-import { filter } from 'fuzzy'
+import FilterCombobox, { useFilterCombobox } from '/@/components/FilterCombobox.vue'
 
 function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {
-  const searchText = ref('')
-  const filteredItems = ref([] as string[])
-  const visibleCount = ref(10)
-  const filterOptions = computed(() => disabled.value.map(m => m.tags).concat(enabled.value.map(m => m.tags)).reduce((a, b) => [...a, ...b], []))
-
-  const selectedItems = computed(() =>
-    filter(searchText.value, enabled.value, { extract: v => `${v.name}` })
-      .map((r) => r.original ? r.original : r as any as ResourcePackItem)
-      .filter(i => filteredItems.value.length > 0 ? i.tags.some(t => filteredItems.value.indexOf(t) !== -1) || filteredItems.value.indexOf(i.name) !== -1 : true)
-      .filter((m, i) => i < visibleCount.value))
-
-  const unselectedItems = computed(() =>
-    filter(searchText.value, disabled.value, { extract: v => v.name })
-      .map((r) => r.original ? r.original : r as any as ResourcePackItem)
-      .filter(i => filteredItems.value.length > 0 ? i.tags.some(t => filteredItems.value.indexOf(t) !== -1) || filteredItems.value.indexOf(i.name) !== -1 : true)
-      .filter((m, i) => i < visibleCount.value))
+  function getFilterOptions(item: ResourcePackItem) {
+    return [
+      ...item.tags.map(t => ({ type: 'tag', value: t, label: 'label' })),
+    ]
+  }
+  const filterOptions = computed(() => disabled.value.map(getFilterOptions).concat(enabled.value.map(getFilterOptions)).reduce((a, b) => [...a, ...b], []))
+  const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (i) => `${i.name} ${i.description}`)
+  const selectedItems = computed(() => filter(enabled.value))
+  const unselectedItems = computed(() => filter(disabled.value))
 
   return {
-    filteredItems,
     filterOptions,
     selectedItems,
     unselectedItems,
-    searchText,
   }
 }
-
 
 export default defineComponent({
   components: {
     ResourcePackCard,
+    FilterCombobox
   },
   setup() {
     const { text: filterText } = useSearch()
@@ -240,7 +215,6 @@ export default defineComponent({
     const { removeResource } = useResourceOperation()
     const { push } = useRouter()
     const { path } = useInstanceBase()
-    const searchBar: Ref<any> = ref(null)
     const data = reactive({
       dragging: false,
       isDeletingPack: false,
@@ -255,7 +229,6 @@ export default defineComponent({
       add,
       remove,
     )
-    onSearchToggle(() => searchBar.value?.focus())
     useDropImport(leftListElem, 'resourcepacks')
     useDropImport(rightListElem, 'resourcepacks')
 
@@ -266,7 +239,7 @@ export default defineComponent({
       return r.name.toLowerCase().indexOf(filterText.value.toLowerCase()) !== -1
     }
 
-    const { unselectedItems, searchText, selectedItems, filteredItems, filterOptions } = setupFilter(computed(() => disabled.value), computed(() => enabled.value))
+    const { unselectedItems, selectedItems, filterOptions } = setupFilter(computed(() => disabled.value), computed(() => enabled.value))
 
     async function confirmDeletingPack() {
       removeResource(data.deletingPack!.id)
@@ -291,11 +264,7 @@ export default defineComponent({
       rightList,
       confirmDeletingPack,
       onDropDelete,
-      goPreview,
       goToCurseforge,
-      searchText,
-      filteredItems,
-      filterOptions,
       showFolder: showDirectory,
     }
   },
