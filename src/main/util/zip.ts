@@ -1,6 +1,6 @@
 import { path7za } from '7zip-bin'
 import { unpack } from '7zip-min'
-import { BaseTask, CancelledError } from '@xmcl/task'
+import { AbortableTask, BaseTask, CancelledError } from '@xmcl/task'
 import { spawn } from 'child_process'
 import { createWriteStream, promises } from 'fs'
 import { ensureFile, stat } from 'fs-extra'
@@ -14,7 +14,8 @@ import { pipeline } from './fs'
 export const gunzip: (data: Buffer) => Promise<Buffer> = promisify(_gunzip)
 export const gzip: (data: Buffer) => Promise<Buffer> = promisify(_gzip)
 
-export class ZipTask extends BaseTask<void> {
+export class ZipTask extends AbortableTask<void> {
+
   private writeStream: Writable | undefined
 
   constructor(readonly destination: string, readonly zipFile: ZipFile = new ZipFile()) {
@@ -75,11 +76,12 @@ export class ZipTask extends BaseTask<void> {
       })
     }
     await promise
+    this.writeStream.end
   }
 
-  protected async validate(): Promise<void> { }
-
-  protected shouldTolerant(e: any): boolean { return false }
+  protected isAbortedError(e: any): boolean {
+    throw false
+  }
 
   protected async abort(isCancelled: boolean): Promise<void> {
     if (isCancelled) {
@@ -88,19 +90,6 @@ export class ZipTask extends BaseTask<void> {
     } else {
       this.zipFile.outputStream.pause()
     }
-  }
-
-  protected runTask(): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-  protected cancelTask(): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-  protected pauseTask(): Promise<void> {
-    throw new Error('Method not implemented.')
-  }
-  protected resumeTask(): Promise<void> {
-    throw new Error('Method not implemented.')
   }
 }
 
