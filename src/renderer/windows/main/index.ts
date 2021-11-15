@@ -29,6 +29,27 @@ import { createServiceFactory, SERVICES_KEY } from '/@/serviceProxy'
 import TextComponent from '/@/TextComponent'
 import { BaseServiceKey } from '/@shared/services/BaseService'
 import 'virtual:windi.css'
+import {
+  LinearFilter, WebGLRenderTarget, RGBAFormat, Vector3, Color, Vector2,
+  WebGLRenderer,
+  Scene,
+  ShaderMaterial,
+  TextureLoader,
+  Mesh,
+  PlaneGeometry,
+  Camera
+} from 'three'
+
+window.THREE = {
+  LinearFilter, WebGLRenderTarget, RGBAFormat, Vector3, Color, Vector2,
+  WebGLRenderer,
+  Scene,
+  ShaderMaterial,
+  TextureLoader,
+  Mesh,
+  PlaneGeometry,
+  Camera
+}
 
 Vue.use(VueCompositionApi)
 // to prevent the universal drop activated on self element dragging

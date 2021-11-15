@@ -1,4 +1,4 @@
-export * from './useBackgroundImage'
+export * from './useBackground'
 export * from './useCompatible'
 export * from './useCurseforge'
 export * from './useI18n'
