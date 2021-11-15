@@ -2,12 +2,11 @@ import { task } from '@xmcl/task'
 import { FSWatcher } from 'fs'
 import { readJSON, stat, unlink, writeFile } from 'fs-extra'
 import watch from 'node-watch'
-import { basename, extname, join, resolve } from 'path'
+import { basename, extname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
-import { AggregateExecutor } from '../util/aggregator'
 import { isSystemError } from '../util/error'
 import { createPromiseSignal } from '../util/promiseSignal'
-import { ExportService, internal, StatefulService } from './Service'
+import { ExportService, Singleton, StatefulService } from './Service'
 import { FileStat, mutateResource, persistResource, readFileStat, remove, ResourceCache } from '/@main/entities/resource'
 import { fixResourceSchema } from '/@main/util/dataFix'
 import { copyPassively, ENOENT_ERROR, fileType, FileType, readdirEnsured } from '/@main/util/fs'
@@ -16,6 +15,7 @@ import { AnyPersistedResource, AnyResource, isPersistedResource, PersistedResour
 import { Resource, ResourceDomain, ResourceType } from '/@shared/entities/resource.schema'
 import { ImportFileOptions, ImportFilesOptions, ParseFileOptions, ParseFilesOptions, ResourceService as IResourceService, ResourceServiceKey, ResourceState, UpdateResourceOptions } from '/@shared/services/ResourceService'
 import { requireString } from '/@shared/util/assert'
+import { resourceLoadSemaphore } from '/@shared/util/semaphore'
 
 export interface ParseResourceContext {
   stat?: FileStat
@@ -72,7 +72,6 @@ export default class ResourceService extends StatefulService<ResourceState> impl
     [ResourceDomain.Unknown]: undefined,
   }
 
-  @internal
   protected normalizeResource(resource: string | AnyPersistedResource | AnyResource): AnyPersistedResource | undefined {
     if (typeof resource === 'string') {
       return this.cache.get(resource)
@@ -91,12 +90,10 @@ export default class ResourceService extends StatefulService<ResourceState> impl
    * Query in memory resource by key.
    * The key can be `hash`, `url` or `ino` of the file.
    */
-  @internal
   getResourceByKey(key: string | number): AnyPersistedResource | undefined {
     return this.cache.get(key)
   }
 
-  @internal
   isResourceInCache(key: string | number) {
     return !!this.cache.get(key)
   }
@@ -105,7 +102,6 @@ export default class ResourceService extends StatefulService<ResourceState> impl
    * Query resource in memory by the resource query
    * @param query The resource query.
    */
-  @internal
   getResource(query: Query) {
     let res: PersistedResource | undefined
     if (query.hash) {
@@ -130,7 +126,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
     return undefined
   }
 
-  @internal
+  @Singleton((key) => resourceLoadSemaphore(key))
   private async loadDomain(domain: ResourceDomain) {
     const path = this.getPath(domain)
     const files = await readdirEnsured(path)
@@ -249,7 +245,6 @@ export default class ResourceService extends StatefulService<ResourceState> impl
     return resource
   }
 
-  @internal
   async initialize() {
     for (const domain of [
       ResourceDomain.Mods,
@@ -429,7 +424,6 @@ export default class ResourceService extends StatefulService<ResourceState> impl
 
   // helper methods
 
-  @internal
   async queryExistedResourceByPath(path: string, context: ParseResourceContext) {
     let result: AnyPersistedResource | undefined
 
@@ -543,7 +537,6 @@ export default class ResourceService extends StatefulService<ResourceState> impl
    * Resolve resource task. This will not write the resource to the cache, but it will persist the resource to disk.
    * @throws DomainMissMatchedError
    */
-  @internal
   private importFileTask(options: ImportFileOptions, context: ParseResourceContext) {
     return task('importResource', async () => {
       if (!context.stat) {
@@ -560,7 +553,6 @@ export default class ResourceService extends StatefulService<ResourceState> impl
     })
   }
 
-  @internal
   private commitResources(resources: PersistedResource[]) {
     for (const resource of resources) {
       this.cache.put(resource as any)
@@ -568,7 +560,6 @@ export default class ResourceService extends StatefulService<ResourceState> impl
     this.state.resources(resources as any)
   }
 
-  @internal
   protected unpersistResource(resource: PersistedResource) {
     return remove(resource, this.getPath())
   }
