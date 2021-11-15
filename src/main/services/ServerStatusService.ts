@@ -1,7 +1,7 @@
 import { queryStatus } from '@xmcl/client'
 import mapping from '../../shared/util/protocolToMinecraft'
 import { isSystemError } from '../util/error'
-import AbstractService, { ExportService, Pure } from './Service'
+import AbstractService, { ExportService } from './Service'
 import { createFailureServerStatus } from '/@shared/entities/serverStatus'
 import { PingServerOptions, ServerStatusService as IServerStatusService, ServerStatusServiceKey } from '/@shared/services/ServerStatusService'
 
@@ -53,7 +53,6 @@ export default class ServerStatusService extends AbstractService implements ISer
     }
   }
 
-  @Pure()
   async pingServer(options: PingServerOptions) {
     const { host, port = 25565, protocol } = options
     this.log(`Ping server ${host}:${port} with protocol: ${protocol}`)

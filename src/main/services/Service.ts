@@ -6,10 +6,8 @@ import { Exceptions } from '/@shared/entities/exception'
 import { ServiceKey, State } from '/@shared/services/Service'
 import { MutationKeys } from '/@shared/state'
 
-export const PURE_SYMBOL = Symbol('__pure__')
 export const PARAMS_SYMBOL = Symbol('service:params')
 export const KEYS_SYMBOL = Symbol('service:key')
-export const INTERNAL_SYMBOL = Symbol('service:internal')
 export const SUBSCRIBE_SYMBOL = Symbol('service:subscribe')
 
 export type ServiceConstructor<T extends AbstractService = AbstractService> = {
@@ -43,20 +41,6 @@ export function ExportService<T extends AbstractService>(key: ServiceKey<T>) {
   return (target: ServiceConstructor<T>) => {
     Reflect.set(target, KEYS_SYMBOL, key)
   }
-}
-
-/**
- * Mark a service method is internal and should not be called by renderer process remotely.
- */
-export function internal(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-  let internal: string[]
-  if (Reflect.has(target, INTERNAL_SYMBOL)) {
-    internal = Reflect.get(target, INTERNAL_SYMBOL)
-  } else {
-    internal = []
-    Reflect.set(target, INTERNAL_SYMBOL, internal)
-  }
-  internal.push(propertyKey)
 }
 
 /**
@@ -197,13 +181,6 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
       }
     }
     descriptor.value = func
-  }
-}
-
-export function Pure() {
-  return function (target: AbstractService, propertyKey: string, descriptor: PropertyDescriptor) {
-    const func = Reflect.get(target, propertyKey)
-    Reflect.set(func, PURE_SYMBOL, true)
   }
 }
 

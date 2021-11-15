@@ -76,8 +76,8 @@ export default class InstanceIOService extends AbstractService implements IInsta
     }
 
     // add version json and jar
-    const verionsChain = version.pathChain
-    for (const versionPath of verionsChain) {
+    const versionsChain = version.pathChain
+    for (const versionPath of versionsChain) {
       const versionId = basename(versionPath)
       releases.push(await this.semaphoreManager.getLock(versionLockOf(versionId)).acquireRead())
       if (includeVersionJar && await exists(join(versionPath, `${versionId}.jar`))) {

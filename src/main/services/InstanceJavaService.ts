@@ -3,7 +3,7 @@ import { missing } from '../util/fs'
 import DiagnoseService from './DiagnoseService'
 import InstanceService from './InstanceService'
 import JavaService from './JavaService'
-import AbstractService, { Inject, internal, Singleton, StatefulService, Subscribe } from './Service'
+import AbstractService, { Inject, Singleton, StatefulService, Subscribe } from './Service'
 import { InstanceSchema } from '/@shared/entities/instance.schema'
 import { IssueReport } from '/@shared/entities/issue'
 import { EMPTY_JAVA } from '/@shared/entities/java'
@@ -52,13 +52,11 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
   }
 
   @Subscribe('instanceSelect')
-  @internal
   async onInstanceSelect() {
     await this.diagnoseJava()
   }
 
   @Subscribe('instanceEdit')
-  @internal
   async onInstance(payload: InstanceSchema & { path: string }) {
     if (payload.path !== this.instanceService.state.path) {
       return
