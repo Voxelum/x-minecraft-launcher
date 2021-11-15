@@ -8,7 +8,6 @@
     :class="{
       incompatible: compatible === false,
       maybe: compatible === 'maybe',
-      unknown: compatible === 'unknown',
       subsequence: mod.subsequence === true,
       dragged: mod.dragged
     }"
@@ -66,7 +65,7 @@
               small
               outline
               label
-              color="lime"
+              :color="getColor(tag)"
               style="margin-left: 1px;"
               @mousedown.stop
               close
@@ -76,6 +75,7 @@
                 contenteditable
                 class="max-w-50 overflow-auto"
                 @input.stop="onEditTag($event, index)"
+                @blur="mod.tags = [...mod.tags]"
               >{{ tag }}</div>
             </v-chip>
             <div style="color: #bdbdbd; ">{{ mod.description }}</div>
@@ -96,9 +96,11 @@ import { computed, defineComponent, ref, Ref } from '@vue/composition-api'
 import { ModItem } from './useInstanceMod'
 import unknownPack from '/@/assets/unknown_pack.png'
 import { useCompatible, useI18n, useInstanceVersionBase, useService, useTags } from '/@/hooks'
+import { getColor } from '/@/util/color'
 import { required } from '/@/util/props'
 import { ContextMenuItem, useContextMenu, useCurseforgeRoute, useMcWikiRoute } from '/@/windows/main/hooks'
 import { BaseServiceKey } from '/@shared/services/BaseService'
+import { InstanceServiceKey } from '/@shared/services/InstanceService'
 
 export default defineComponent({
   props: {
@@ -106,9 +108,9 @@ export default defineComponent({
     selection: required<boolean>(Boolean),
   },
   setup(props, context) {
-    const { minecraft, forge } = useInstanceVersionBase()
-    const { compatible: mcCompatible } = useCompatible(computed(() => props.mod.dependencies.minecraft), minecraft, true)
-    const { compatible: loaderCompatible } = useCompatible(computed(() => props.mod.dependencies.forge ?? ''), computed(() => forge.value || ''), false)
+    const { minecraft, forge, fabricLoader } = useInstanceVersionBase()
+    const { state: instanceState } = useService(InstanceServiceKey)
+    const { compatible } = useCompatible(computed(() => props.mod.resource), computed(() => instanceState.instance.runtime))
     const { open } = useContextMenu()
     const { openInBrowser, showItemInDirectory } = useService(BaseServiceKey)
     const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
@@ -122,32 +124,16 @@ export default defineComponent({
       set(v: boolean) { context.emit('enable', { item: props.mod, enabled: v }) }
     })
 
-    const compatible = computed(() => {
-      if (mcCompatible.value === true) {
-        if (loaderCompatible.value === true) {
-          return true
-        }
-        return 'maybe'
-      }
-      if (mcCompatible.value === 'unknown') {
-        if (loaderCompatible.value === true) {
-          return true
-        }
-        return 'unknown'
-      }
-      return false
-    })
-
     const compatibleText = computed(() => {
       const deps = props.mod.dependencies
       let acceptVersionText = $t('mod.acceptVersion', { version: deps.minecraft })
       if (deps.forge) {
-        acceptVersionText += `, Forge ${deps.forge}`
+        acceptVersionText += `, Forge ${deps.forge} (${forge.value})`
       }
       if (deps.fabricLoader) {
-        acceptVersionText += `, FabricLoader ${deps.fabricLoader}`
+        acceptVersionText += `, FabricLoader ${deps.fabricLoader} (${fabricLoader.value})`
       }
-      const compatibleText = compatible.value === 'unknown'
+      const compatibleText = compatible.value === 'maybe'
         ? $t('mod.nocompatible')
         : compatible.value
           ? $t('mod.compatible')
@@ -250,10 +236,10 @@ export default defineComponent({
       onDeleteTag: removeTag,
       onEditTag,
 
-      mcCompatible,
       enabled,
       compatibleText,
       emitSelect,
+      getColor,
     }
   },
 })

@@ -1,6 +1,6 @@
 import { computed, onMounted, ref, Ref, watch } from '@vue/composition-api'
 import { PackMeta } from '@xmcl/resourcepack'
-import { useService } from '.'
+import { useI18n, useService } from '.'
 import { InstanceOptionsServiceKey } from '../../shared/services/InstanceOptionsService'
 import { isStringArrayEquals } from '../util/equal'
 import { useBusy } from './useSemaphore'
@@ -50,6 +50,7 @@ export function useInstanceResourcePacks() {
   const { state: gameSettingState, editGameSetting } = useService(InstanceOptionsServiceKey)
   const { state: resourceState, updateResource } = useService(ResourceServiceKey)
   const { showDirectory } = useService(InstanceResourcePacksServiceKey)
+  const { $t } = useI18n()
 
   const loading = useBusy('editGameSetting')
   /**
@@ -101,8 +102,8 @@ export function useInstanceResourcePacks() {
         path: '',
         acceptingRange: '[*]',
         icon: unknownPack,
-        name: 'Default',
-        description: 'The default look and feel of Minecraft',
+        name: $t('resourcepack.defaultName'),
+        description: $t('resourcepack.defaultDescription'),
         pack_format: 0,
         id: 'vanilla',
         url: [],

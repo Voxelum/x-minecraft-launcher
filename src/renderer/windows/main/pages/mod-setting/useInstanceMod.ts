@@ -5,9 +5,11 @@ import { useRefreshable } from '/@/hooks/useRefreshable'
 import { isStringArrayEquals } from '/@/util/equal'
 import { AnyResource, FabricResource, ForgeResource, isModResource, isPersistedResource, LiteloaderResource, ModResource } from '/@shared/entities/resource'
 import { Resource } from '/@shared/entities/resource.schema'
+import { isCompatible } from '/@shared/entities/version'
 import { InstanceModsServiceKey } from '/@shared/services/InstanceModsService'
 import { ResourceServiceKey } from '/@shared/services/ResourceService'
 import { isNonnull } from '/@shared/util/assert'
+import { satisfies } from 'semver'
 
 /**
  * Contains some basic info of mod to display in UI.
@@ -76,6 +78,29 @@ export function useInstanceModsService() {
   return useService(InstanceModsServiceKey)
 }
 
+export function useModCompatible(item: Ref<ModItem>, minecraft: Ref<string>, forge: Ref<string>, fabricLoader: Ref<string>) {
+  function calculate(acceptedRange: string, version: string, strict: boolean) {
+    return (acceptedRange !== 'unknown'
+      ? !version && !strict
+        ? true
+        : isCompatible(acceptedRange, version)
+      : 'unknown')
+  }
+  const compatible = computed(() => {
+    if (item.value.type === 'fabric') {
+      const mcCompatible = satisfies(minecraft.value, item.value.dependencies.minecraft)
+    } else {
+      const mcCompatible = satisfies(minecraft.value, item.value.dependencies.minecraft)
+    }
+    (acceptedRange.value !== 'unknown'
+      ? !version.value && !strict
+        ? true
+        : isCompatible(acceptedRange.value, version.value)
+      : 'unknown')
+  })
+  return { compatible }
+}
+
 /**
  * Open read/write for current instance mods
  */
@@ -133,7 +158,7 @@ export function useInstanceMods() {
         item.dragged = old.dragged
       }
     }
-    
+
     cachedDirectory.clear()
     cachedEnabledSet.clear()
     for (const item of result) {
@@ -198,8 +223,8 @@ export function useInstanceMods() {
       modItem.name = resource.metadata.name ?? resource.metadata.id
       modItem.description = resource.metadata.description ?? ''
       const fab = resource.metadata as FabricModMetadata
-      modItem.dependencies.minecraft = (fab.depends?.minecraft as string) ? `[${(fab.depends?.minecraft as string)}]` : ''
-      modItem.dependencies.fabricLoader = fab.depends?.fabricloader as string ?? ''
+      modItem.dependencies.minecraft = fab.depends?.minecraft as string ?? 'unknown'
+      modItem.dependencies.fabricLoader = fab.depends?.fabricloader as string ?? 'unknown'
     } else if (resource.type === 'liteloader') {
       modItem.type = 'liteloader'
       modItem.name = resource.metadata.name
