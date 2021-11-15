@@ -4,6 +4,12 @@
   "advanced": "高级",
   "author": "作者",
   "back": "返回",
+  "backgroundTypes": {
+    "halo": "Halo",
+    "image": "Image",
+    "none": "None",
+    "particle": "Particle"
+  },
   "buttonSettings": {
     "drop": "丢弃",
     "jump": "跳",
@@ -694,6 +700,8 @@
   "resourcepack": {
     "available": "可用的资源包",
     "compatible": "当前格式({format})可用于当前版本 {version}",
+    "defaultDescription": "Minecraft 的默认材质",
+    "defaultName": "默认",
     "delete": {
       "content": "将从磁盘中删除资源包，该操作不可逆，确定继续执行吗",
       "title": "删除资源包"
@@ -761,6 +769,14 @@
     "backgroundImageClear": "清空",
     "backgroundImageDescription": "选择一张背景图片或清空当前图片",
     "backgroundImageSelect": "选择",
+    "backgroundType": "背景效果",
+    "backgroundTypeDescription": "背景是否显示特效（如果觉得卡就可以关掉）",
+    "backgroundTypes": {
+      "halo": "光晕",
+      "image": "图片",
+      "none": "无",
+      "particle": "粒子"
+    },
     "blurMainBody": "模糊窗口主体",
     "blurMainBodyDescription": "是否将启动器窗口右侧主体模糊",
     "browseRoot": "更改",

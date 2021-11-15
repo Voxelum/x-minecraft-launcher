@@ -717,6 +717,8 @@
   "resourcepack": {
     "available": "Available",
     "compatible": "Compatible format {format} with {version}",
+    "defaultDescription": "The default look and feel of Minecraft",
+    "defaultName": "Default",
     "delete": {
       "content": "This will remove the resource pack file from disk, and we cannot redo it. Are you sure to do this?",
       "title": "Delete the resource pack"
@@ -784,6 +786,14 @@
     "backgroundImageClear": "clear",
     "backgroundImageDescription": "select an image as background or clear",
     "backgroundImageSelect": "select",
+    "backgroundType": "Background Type",
+    "backgroundTypes": {
+      "none": "None",
+      "image": "Image",
+      "particle": "Particle",
+      "halo": "Halo"
+    },
+    "backgroundTypeDescription": "Show special effect on background (This may impact performance)",
     "blurMainBody": "Blur Main Body",
     "blurMainBodyDescription": "Should the launcher right pane be blurred",
     "browseRoot": "Browse",
