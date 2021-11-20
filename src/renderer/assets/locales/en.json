@@ -37,6 +37,17 @@
     "description": "CurseForge is now the largest repository for modded Minecraft featuring thousands of mods, texture packs and worlds.",
     "downloadOnly": "Download",
     "downloaded": "Downloaded",
+    "file": {
+      "gameVersion": "Game Version",
+      "releaseType": "Release Type",
+      "sortByDate": "Date",
+      "sortByName": "File Name"
+    },
+    "fileReleaseType": {
+      "alpha": "Alpha",
+      "beta": "Beta",
+      "release": "Release"
+    },
     "gameversion": "Game Version",
     "install": "Install",
     "installTo": "Install to {path}",
@@ -787,13 +798,13 @@
     "backgroundImageDescription": "select an image as background or clear",
     "backgroundImageSelect": "select",
     "backgroundType": "Background Type",
-    "backgroundTypes": {
-      "none": "None",
-      "image": "Image",
-      "particle": "Particle",
-      "halo": "Halo"
-    },
     "backgroundTypeDescription": "Show special effect on background (This may impact performance)",
+    "backgroundTypes": {
+      "halo": "Halo",
+      "image": "Image",
+      "none": "None",
+      "particle": "Particle"
+    },
     "blurMainBody": "Blur Main Body",
     "blurMainBodyDescription": "Should the launcher right pane be blurred",
     "browseRoot": "Browse",
