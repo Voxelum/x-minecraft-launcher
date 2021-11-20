@@ -29,7 +29,7 @@ export interface ForgeModCommonMetadata extends ForgeModMetadata {
   acceptForge: string
 }
 
-export function normalizeForgeModMetadata (metadata: ForgeModMetadata): ForgeModCommonMetadata {
+export function normalizeForgeModMetadata(metadata: ForgeModMetadata): ForgeModCommonMetadata {
   const result: ForgeModCommonMetadata = {
     modid: '',
     name: '',
@@ -44,7 +44,6 @@ export function normalizeForgeModMetadata (metadata: ForgeModMetadata): ForgeMod
   if (metadata.modsToml.length > 0) {
     const modInfo = metadata.modsToml[0]
     const annotation = metadata.modAnnotations[0]
-
     result.modid = modInfo.modid
     result.name = modInfo.displayName
     result.version = modInfo.version
@@ -53,6 +52,26 @@ export function normalizeForgeModMetadata (metadata: ForgeModMetadata): ForgeMod
     result.acceptForge = modInfo.dependencies.find((d) => d.modId === 'forge')?.versionRange ?? '[*]'
     result.authors = modInfo.authors ? [modInfo.authors] : []
     result.logoFile = modInfo.logoFile
+
+    if (modInfo.modid === 'optifine') {
+      // handle optifine explicitly
+      result.modid = annotation.modid || modInfo.modid
+      result.version = annotation.version || result.version
+      result.description = modInfo.description || annotation.description || ''
+      modInfo.dependencies.push({
+        modId: 'minecraft',
+        mandatory: true,
+        versionRange: `[${annotation.mcversion}]`,
+        ordering: 'AFTER',
+        side: 'CLIENT'
+      }, {
+        modId: 'forge',
+        mandatory: true,
+        versionRange: modInfo.loaderVersion,
+        ordering: 'AFTER',
+        side: 'CLIENT'
+      })
+    }
   } else if (metadata.mcmodInfo.length > 0) {
     const modInfo = metadata.mcmodInfo[0]
     const annotation = metadata.modAnnotations[0]

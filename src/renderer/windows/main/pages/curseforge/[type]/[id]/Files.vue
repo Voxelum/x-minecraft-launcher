@@ -1,57 +1,69 @@
 <template>
-  <v-card style="overflow: auto; max-width: 100%; max-height: 70vh; min-height: 70vh">
-    <v-container
-      v-if="loading"
-      fill-height
-      style="min-height: 65vh;"
-    >
-      <v-layout
-        justify-center
-        align-center
-        fill-height
-      >
-        <v-progress-circular
-          indeterminate
-          :size="100"
-        />
+  <v-card class="h-full overflow-auto">
+    <v-container v-if="loading" fill-height style="min-height: 65vh;">
+      <v-layout justify-center align-center fill-height>
+        <v-progress-circular indeterminate :size="100" />
       </v-layout>
     </v-container>
-    <virtual-list
-      v-else
-      class="v-list"
-      style="max-height: inherit; overflow-y: auto; transition: none"
-      :data-component="Tile"
-      :data-key="'id'"
-      :data-sources="files"
-      :estimate-size="56"
-      :extra-props="{ getFileStatus: getFileStatus, install: install, download: download, modpack: type === 'modpacks' }"
-    />
-    <v-dialog
-      v-model="isConfirmDialogShown"
-      persistent
-    >
-    <!-- TODO: impl this -->
+    <div class="flex flex-col h-full overflow-auto" v-else>
+      <div class="flex gap-5 mx-5 mt-3">
+        <v-select
+          v-model="gameVersion"
+          clearable
+          hide-details
+          flat
+          solo
+          dark
+          dense
+          :items="gameVersions"
+          :label="$t('curseforge.file.gameVersion')"
+        ></v-select>
+        <v-select
+          v-model="releaseType"
+          clearable
+          hide-details
+          flat
+          solo
+          dark
+          dense
+          :items="releaseTypes"
+          :label="$t('curseforge.file.releaseType')"
+        ></v-select>
+      </div>
+      <virtual-list
+        class="v-list max-h-[100vh] h-full overflow-auto transition-none"
+        :data-component="Tile"
+        :data-key="'id'"
+        :data-sources="files"
+        :estimate-size="56"
+        :extra-props="{ getFileStatus: getFileStatus, install: install, download: download, modpack: type === 'modpacks' }"
+      />
+    </div>
+    <v-dialog v-model="isConfirmDialogShown" persistent>
+      <!-- TODO: impl this -->
       <!-- <add-instance-stepper
         :show="isConfirmDialogShown"
         :initial-template="initialTemplate"
         @quit="isConfirmDialogShown = false"
-      /> -->
+      />-->
     </v-dialog>
   </v-card>
 </template>
 
 <script lang=ts>
 import VirtualList from 'vue-virtual-scroll-list'
-import { defineComponent, computed, inject, ref, reactive, toRefs } from '@vue/composition-api'
+import { defineComponent, computed, inject, ref, reactive, toRefs, watch } from '@vue/composition-api'
 import { ProjectType } from '/@shared/entities/curseforge'
 import { File } from '@xmcl/curseforge'
 import {
   useCurseforgeProjectFiles,
   useCurseforgeInstall,
+  useI18n,
 } from '/@/hooks'
 import { optional, required } from '/@/util/props'
 import { useSearch } from '/@/windows/main/hooks'
 import Tile from './FilesTile.vue'
+import { isNonnull } from '/@shared/util/assert'
 // import AddInstanceStepper from './InstancesPageAddInstanceStepper.vue'
 
 export default defineComponent({
@@ -68,6 +80,35 @@ export default defineComponent({
     const data = reactive({
       isConfirmDialogShown: false,
       initialTemplate: '',
+    })
+    const { $t } = useI18n()
+    const releaseMappper = computed(() => [,
+      { text: $t('curseforge.fileReleaseType.release'), value: 1 },
+      { text: $t('curseforge.fileReleaseType.alpha'), value: 2 },
+      { text: $t('curseforge.fileReleaseType.beta'), value: 3 },
+    ])
+    const sortBy = ref('date')
+    const sortBys = computed(() => [
+      { text: $t('curseforge.file.sortByName'), value: 'name' },
+      { text: $t('curseforge.file.sortByDate'), value: 'date' },
+    ])
+    const releaseType = ref(undefined as undefined | number)
+    const releaseTypes = computed(() => {
+      const set = new Set<number>()
+      for (const file of files.value) {
+        set.add(file.releaseType)
+      }
+      return [...set].map(i => releaseMappper.value[i]).filter(isNonnull)
+    })
+    const gameVersion = ref('')
+    const gameVersions = computed(() => {
+      const set = new Set<string>()
+      for (const file of files.value) {
+        for (const ver of file.gameVersion) {
+          set.add(ver)
+        }
+      }
+      return [...set]
     })
     async function install(file: File) {
       const stat = getFileStatus(file)
@@ -93,15 +134,29 @@ export default defineComponent({
     async function download(file: File) {
       await installFile(file, props.from)
     }
+    const filteredFiles = computed(() => {
+      const gameVersionVal = gameVersion.value
+      const releaseTypeVal = releaseType.value
+      return files.value.filter(v =>
+        (!releaseTypeVal || (v.releaseType === releaseTypeVal)) &&
+        (!gameVersionVal || v.gameVersion.indexOf(gameVersionVal) !== -1)
+      )
+    })
     return {
       ...toRefs(data),
       Tile,
-      files: computed(() => files.value.filter(f => f.displayName.indexOf(text.value) !== -1)),
+      files: filteredFiles,
       loading,
       refresh,
       getFileStatus,
       download,
       install,
+      gameVersions,
+      releaseTypes,
+      sortBys,
+      releaseType,
+      sortBy,
+      gameVersion,
     }
   },
 })

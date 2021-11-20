@@ -97,7 +97,7 @@ export function getForgeModCompatibility(resource: ForgeResource, runtime: Insta
       deps[mod.modid] = mod.dependencies
       deps[mod.modid].push({ modId: 'forge', versionRange: mod.loaderVersion })
     }
-  } else if (resource.metadata.mcmodInfo.length > 0) {
+  } else {
     // legacy mod
     for (const [modid, dependencies] of Object.entries(getLegacyForgeDependencies(resource.metadata))) {
       deps[modid] = dependencies
@@ -125,6 +125,8 @@ export function getForgeModCompatibility(resource: ForgeResource, runtime: Insta
     }
     result[modid] = compatibility
   }
+  console.log(resource.name)
+  console.log(result)
   return result
 }
 
