@@ -1,5 +1,5 @@
 <template>
-  <v-card style="overflow: auto; max-width: 100%; max-height: 70vh; min-height: 70vh;">
+  <v-card>
     <v-card-text v-if="!loading">
       <div v-html="description" />
     </v-card-text>

@@ -1,13 +1,8 @@
 <template>
   <v-menu>
     <template #activator="{ on }">
-      <v-btn
-        flat
-        v-on="on"
-      >
-        <v-icon left>
-          keyboard_arrow_down
-        </v-icon>
+      <v-btn flat v-on="on">
+        <v-icon left>keyboard_arrow_down</v-icon>
         {{
           selected.path
             ? $t("curseforge.installTo", { path: selected.name })
@@ -18,17 +13,13 @@
     <v-list>
       <v-list-tile @click="onSelect(defaultItem)">
         <v-list-tile-avatar>
-          <v-icon> close </v-icon>
+          <v-icon>close</v-icon>
         </v-list-tile-avatar>
         <v-list-tile-title>{{ defaultItem.name }}</v-list-tile-title>
       </v-list-tile>
-      <v-list-tile
-        v-for="(item, index) in items"
-        :key="index"
-        @click="onSelect(item)"
-      >
+      <v-list-tile v-for="(item, index) in items" :key="index" @click="onSelect(item)">
         <v-list-tile-avatar>
-          <v-icon> golf_course </v-icon>
+          <v-icon>golf_course</v-icon>
         </v-list-tile-avatar>
         <v-list-tile-title>
           {{
@@ -58,14 +49,14 @@ export default defineComponent({
   setup(props, context) {
     const { instances } = useInstances()
     const { $t } = useI18n()
-    const defaultItem: Item = { name: $t('curseforge.installToStorage'), path: '' }
+    const defaultItem = computed(() => ({ name: $t('curseforge.installToStorage'), path: '' }))
     const items = computed(() => instances.value.map(i => ({ path: i.path, name: i.name ?? basename(i.path) })))
     const selected = computed({
       get() {
         const instance = instances.value.find(i => i.path === props.value)
         return instance
           ? { path: instance.path, name: instance.name ?? basename(instance.path) }
-          : defaultItem
+          : defaultItem.value
       },
       set(value: Item) {
         if (!value) {

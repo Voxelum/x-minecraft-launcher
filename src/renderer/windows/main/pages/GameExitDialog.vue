@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="isShown"
-    :width="550"
+    :width="750"
     :persistent="true"
   >
     <v-toolbar color="error">
@@ -26,39 +26,24 @@
         <v-icon>arrow_drop_down</v-icon>
       </v-btn>
     </v-toolbar>
-    <v-card style="overflow: auto; max-height: 450px;">
+    <v-card class="overflow-auto max-h-200">
       <v-card-text>
         <div
           style="padding: 10px"
         >
           {{ isCrash ? $t(`launch.crash`) : $t(`launch.failed.description`) }}
         </div>
-        <p>
+        <pre class="rounded p-5 bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] overflow-auto">
           {{ errorLog }}
-        </p>
-        <v-textarea
-          auto-grow
-          autofocus
-          box
-          readonly
-          hide-details
-          :value="errorLog"
-          style="margin: 8px; line-height: 30px;"
-        />
+        </pre>
         <div
           style="padding: 10px"
         >
           {{ $t(`launch.failed.latest`) }}
         </div>
-        <v-textarea
-          auto-grow
-          autofocus
-          box
-          readonly
-          hide-details
-          :value="log"
-          style="margin: 8px; line-height: 30px"
-        />
+        <pre class="rounded p-5 bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] overflow-auto">
+          {{ log }}
+        </pre>
       </v-card-text>
     </v-card>
   </v-dialog>
