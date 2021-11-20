@@ -42,6 +42,15 @@
     "createdDate": "创建日期",
     "downloadOnly": "只下载",
     "downloaded": "已下载",
+    "file": {
+      "gameVersion": "游戏版本",
+      "releaseType": "类型",
+      "sortByDate": "日期",
+      "sortByName": "文件名"
+    },
+    "fileReleaseType": {
+      "release": "稳定版"
+    },
     "gameversion": "游戏版本",
     "install": "安装",
     "installTo": "安装到 {path}",
@@ -460,7 +469,7 @@
     "checkingProblems": "检测问题中",
     "crash": "游戏崩溃了！",
     "failed": {
-      "description": "没有找到崩溃报告，这里是游戏错误日志和最新的日志文件",
+      "description": "没有找到崩溃报告，这里是游戏输出和最新的日志文件",
       "general": "启动失败",
       "generalText": "如果你反复出现同样的问题，请联系作者!",
       "illegalAuth": "用户数据为空",
