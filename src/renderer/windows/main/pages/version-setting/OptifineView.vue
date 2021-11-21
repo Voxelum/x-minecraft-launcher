@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex !important; height: 100%; flex-direction: column">
+  <div class="flex h-full flex-col">
     <!-- <v-list-tile>
       <v-checkbox
         v-model="showStableOnly"
@@ -7,17 +7,20 @@
       />
     </v-list-tile> -->
     <v-divider dark />
+    <refreshing-tile v-if="refreshing && versions.length === 0" />
     <optifine-version-list
+      v-else-if="versions.length !== 0"
       :versions="versions"
       :version="version"
       :select="select"
       :statuses="statuses"
     />
-    <!-- <hint
-      style="flex-grow: 1"
+    <hint
+      v-else
+      class="flex-grow"
       icon="refresh"
-      :text="$t('fabric.noVersion', { version: minecraft })"
-    /> -->
+      :text="$t('optifine.noVersion', { version: minecraft })"
+    />
   </div>
 </template>
 
@@ -35,7 +38,7 @@ export default defineComponent({
     version: required<OptifineVersion>(Object),
   },
   setup(props) {
-    const { versions, statuses } = useOptifineVersions(computed(() => props.minecraft))
+    const { versions, statuses, refreshing } = useOptifineVersions(computed(() => props.minecraft))
     // const loaderVersions = computed(() => lv.value.filter((v) => {
     //   if (data.showStableOnly && !v.stable) {
     //     return false;
@@ -56,6 +59,7 @@ export default defineComponent({
 
     return {
       versions,
+      refreshing,
       statuses,
     }
   },

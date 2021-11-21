@@ -37,8 +37,8 @@ export function useLocalVersions() {
 
 export function useMinecraftVersions() {
   const { state } = useVersionService()
-  const { state: installState, refreshMinecraft } = useInstallService()
-  const refreshing = useBusy('refreshMinecraft')
+  const { state: installState, refreshMinecraft, installMinecraft } = useInstallService()
+  const refreshing = useBusy('refreshMinecraft()')
   const versions = computed(() => installState.minecraft.versions)
   const release = computed(() => installState.minecraft.versions.find(v => v.id === installState.minecraft.latest.release))
   const snapshot = computed(() => installState.minecraft.versions.find(v => v.id === installState.minecraft.latest.snapshot))
@@ -55,6 +55,9 @@ export function useMinecraftVersions() {
     return statusMap
   })
 
+  const v = computed(() => installState.minecraft.versions.map(v => reactive({ ...v, status: computed(() => statuses.value[v.id]) })))
+
+
   onMounted(() => {
     refreshMinecraft()
   })
@@ -65,6 +68,7 @@ export function useMinecraftVersions() {
     refreshing,
     release,
     snapshot,
+    install: installMinecraft,
     refresh: refreshMinecraft,
   }
 }
@@ -134,10 +138,10 @@ export function useFabricVersions() {
 }
 
 export function useForgeVersions(minecraftVersion: Ref<string>) {
-  const { state: installState, refreshForge } = useInstallService()
+  const { state: installState, refreshForge, installForge } = useInstallService()
   const { state } = useVersionService()
   const versions = computed(() => installState.forge.find(v => v.mcversion === minecraftVersion.value)?.versions ?? [])
-  const refreshing = useBusy('refreshForge')
+  const refreshing = useBusy('refreshForge()')
 
   const recommended = computed(() => {
     const vers = versions.value
@@ -170,6 +174,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
         refreshForge({ mcversion: minecraftVersion.value })
       }
     })
+    refreshForge({ mcversion: minecraftVersion.value })
   })
 
   function refresh() {
@@ -182,6 +187,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
     refreshing,
     statuses,
     recommended,
+    install: installForge,
     latest,
   }
 }
@@ -216,7 +222,7 @@ export function useOptifineVersions(minecraftVersion: Ref<string>) {
   const { state } = useVersionService()
 
   const versions = computed(() => installState.optifine.versions.filter(v => v.mcversion === minecraftVersion.value))
-  const refreshing = useBusy('refreshOptifine')
+  const refreshing = useBusy('refreshOptifine()')
 
   const statuses = computed(() => {
     const localVersions: { [k: string]: boolean } = {}

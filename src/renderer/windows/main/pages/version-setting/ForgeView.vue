@@ -1,24 +1,19 @@
 <template>
-  <div style="display: flex !important; height: 100%; flex-direction: column;">
+  <div class="flex h-full flex-col overflow-auto">
     <v-list-tile>
-      <v-checkbox
-        v-model="recommendedOnly"
-        :label="$t('forge.recommendedAndLatestOnly')"
-      />
+      <v-checkbox v-model="recommendedOnly" :label="$t('forge.recommendedAndLatestOnly')" />
       <v-spacer />
-      <v-checkbox
-        v-model="showBuggy"
-        :label="$t('forge.showBuggy')"
-      />
+      <v-checkbox v-model="showBuggy" :label="$t('forge.showBuggy')" />
     </v-list-tile>
     <v-divider dark />
-    <refreshing-tile v-if="refreshing" />
+    <refreshing-tile v-if="refreshing && versions.length === 0" />
     <forge-version-list
       v-else-if="versions.length !== 0"
       :value="versions"
       :select="select"
       :status="status"
       :selected="version"
+      :install="install"
     />
     <hint
       v-else
@@ -50,7 +45,7 @@ export default defineComponent({
       recommendedOnly: true,
       showBuggy: false,
     })
-    const { statuses, versions: vers, refreshing, refresh } = useForgeVersions(computed(() => props.minecraft))
+    const { statuses, versions: vers, refreshing, refresh, install } = useForgeVersions(computed(() => props.minecraft))
 
     function filterForge(version: ForgeVersion) {
       if (data.recommendedOnly && version.type !== 'recommended' && version.type !== 'latest') return false
@@ -77,15 +72,16 @@ export default defineComponent({
       versions,
       refreshing,
       refresh,
+      install,
     }
   },
 })
 </script>
 
 <style scoped=true>
-.flex {
+/* .flex {
   padding: 6px 8px !important;
-}
+} */
 .subtitle {
   color: grey;
   font-size: 14px;

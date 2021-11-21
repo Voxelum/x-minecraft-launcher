@@ -7,7 +7,7 @@
     :data-component="Tile"
     :data-sources="versions"
     :keep="30"
-    :extra-props="{ select: select, selected: value, showTime: showTime, statuses: statuses }"
+    :extra-props="{ select: select, selected: value, showTime: showTime, statuses: statuses, install: install  }"
   />
 </template>
 
@@ -26,6 +26,7 @@ export default defineComponent({
     statuses: required<Record<string, boolean>>(Object),
     versions: required<Array<MinecraftVersion>>(Array),
     select: required<(version: MinecraftVersion) => void>(Function),
+    install: required<(version: MinecraftVersion) => void>(Function),
   },
   setup(props) {
     const list: Ref<any> = ref(null)

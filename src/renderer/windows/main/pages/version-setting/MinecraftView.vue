@@ -7,13 +7,14 @@
       />
     </v-list-tile>
     <v-divider dark />
-    <refreshing-tile v-if="refreshing" />
+    <refreshing-tile v-if="refreshing && versions.length === 0" />
     <minecraft-version-list
       v-else-if="versions.length !== 0"
       :value="version"
       :statuses="statuses"
       :versions="versions"
       :select="select"
+      :install="install"
     />
     <hint
       v-else
@@ -42,7 +43,7 @@ export default defineComponent({
     version: required<string>(String),
   },
   setup(props) {
-    const { versions: vers, statuses, refreshing, refresh } = useMinecraftVersions()
+    const { versions: vers, statuses, refreshing, refresh, install } = useMinecraftVersions()
     const { filter, showAlpha, acceptingRange } = useMinecraftVersionFilter(computed(() => props.filterText))
     const versions = computed(() => vers.value.filter(filter))
 
@@ -53,6 +54,7 @@ export default defineComponent({
       refreshing,
       statuses,
       refresh,
+      install,
     }
   },
 })
