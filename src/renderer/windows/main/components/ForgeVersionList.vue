@@ -1,24 +1,18 @@
 <template>
-  <v-list
-    dark
-    style="background-color: transparent; height: 100%;"
-  >
-    <v-list-tile
-      ripple
-      @click="select({ version: '' })"
-    >
+  <v-list dark class="h-full flex flex-col overflow-auto" style="background-color: transparent;">
+    <v-list-tile ripple @click="select({ version: '' })">
       <v-list-tile-avatar>
         <v-icon>close</v-icon>
       </v-list-tile-avatar>
       {{ $t('forge.disable') }}
     </v-list-tile>
     <virtual-list
-      style="overflow-y: auto; scrollbar-width: 0; height: 90%"
+      class="h-full overflow-y-auto"
       :data-sources="items"
       :data-key="'version'"
       :data-component="Tile"
       :keep="16"
-      :extra-props="{ selected: selected, select: select }"
+      :extra-props="{ selected: selected, select: select, install: install }"
     />
   </v-list>
 </template>
@@ -38,16 +32,13 @@ export default defineComponent({
     value: required<ForgeVersion[]>(Array),
     status: required<Record<string, Status>>(Object),
     select: required<(version: { version: string }) => void>(Function),
+    install: required<(version: { version: string }) => void>(Function),
     selected: required<string>(String),
+
   },
   setup(props) {
     return {
       items: computed(() => props.value.map((v, i) => ({ ...v, status: props.status[v.version] }))),
-      iconMapping: {
-        buggy: 'bug_report',
-        recommended: 'star',
-        latest: 'fiber_new',
-      },
       Tile,
     }
   },
@@ -56,3 +47,4 @@ export default defineComponent({
 
 <style>
 </style>
+

@@ -582,7 +582,8 @@
   },
   "ok": "OK",
   "optifine": {
-    "disable": "Disable Optifine"
+    "disable": "Disable Optifine",
+    "noVersion": "Optifine not support Minecraft {version}"
   },
   "optional": "Optional",
   "popular": "Popularity",

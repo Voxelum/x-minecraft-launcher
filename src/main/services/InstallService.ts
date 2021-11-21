@@ -313,6 +313,14 @@ export default class InstallService extends StatefulService<InstallState> implem
       if (this.networkManager.isInGFW) {
         this.log(`Update forge version list (BMCL) for Minecraft ${minecraftVersion}`)
         newForgeVersion = await this.getForgesFromBMCL(minecraftVersion, currentForgeVersion)
+        getForgeVersionList({ mcversion: minecraftVersion, original: currentForgeVersion as any }).then((backup) => {
+          if (backup !== currentForgeVersion as any) {
+            // respect the forge official source
+            this.state.forgeMetadata(backup as any)
+          }
+        }, (e) => {
+          this.error(e)
+        })
       } else {
         this.log(`Update forge version list (ForgeOfficial) for Minecraft ${minecraftVersion}`)
         newForgeVersion = await getForgeVersionList({ mcversion: minecraftVersion, original: currentForgeVersion as any }) as any

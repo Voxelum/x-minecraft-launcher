@@ -5,6 +5,7 @@
       grey: selected.type === source.type && selected.patch === source.patch,
       'darken-1':
         selected.patch === source.patch && selected.type === source.type,
+      'elevation-2': selected.patch === source.patch && selected.type === source.type,
     }"
     ripple
     @click="select(source)"

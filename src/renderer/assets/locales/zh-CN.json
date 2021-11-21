@@ -565,7 +565,8 @@
   },
   "ok": "好的",
   "optifine": {
-    "disable": "不启用 Optifine"
+    "disable": "不启用 Optifine",
+    "noVersion": "Optifine 不支持 Minecraft {version}"
   },
   "optional": "可选的",
   "popular": "热度",

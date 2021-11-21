@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex !important; height: 100%; flex-direction: column">
+  <div class="flex flex-col overflow-auto h-full">
     <v-list-tile>
       <v-checkbox
         v-model="showStableOnly"
@@ -82,9 +82,6 @@ export default defineComponent({
 </script>
 
 <style scoped=true>
-.flex {
-  padding: 6px 8px !important;
-}
 .subtitle {
   color: grey;
   font-size: 14px;
