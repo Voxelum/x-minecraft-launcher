@@ -1,3 +1,5 @@
+import v118 from '/@/assets/banners/1.18.webp'
+import v117 from '/@/assets/banners/1.17.webp'
 import v116 from '/@/assets/banners/1.16.webp'
 import v115 from '/@/assets/banners/1.15.webp'
 import v114 from '/@/assets/banners/1.14.webp'
@@ -11,6 +13,8 @@ import v17 from '/@/assets/banners/1.7.webp'
 import v16 from '/@/assets/banners/1.6.webp'
 
 const dic = Object.freeze({
+  v118,
+  v117,
   v116,
   v115,
   v114,
@@ -24,7 +28,7 @@ const dic = Object.freeze({
   v16,
 })
 
-export function getBanner (version: string) {
+export function getBanner(version: string) {
   const [major, minor] = version.split('.')
   return (dic as any)[`v${major}${minor}`]
 }
