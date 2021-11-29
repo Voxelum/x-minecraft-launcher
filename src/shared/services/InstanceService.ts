@@ -24,8 +24,8 @@ export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'runti
 
 export class InstanceState {
   /**
-     * All loaded launch instances
-     */
+   * All loaded launch instances
+   */
   all = {} as { [path: string]: Instance }
   /**
   * Current selected path
@@ -35,9 +35,14 @@ export class InstanceState {
   /**
    * All selected instances.
    */
-  get instances() {
-    return Object.values(this.all)
-  }
+  instances: Instance[] = []
+
+  // /**
+  //  * All selected instances.
+  //  */
+  // get instances() {
+  //   return Object.values(this.all)
+  // }
 
   /**
    * The selected instance config.
@@ -56,13 +61,15 @@ export class InstanceState {
       this.all[instance.path] = {
         ...instance,
       }
+      this.instances.push(instance)
     }
   }
 
-  instanceRemove(id: string) {
+  instanceRemove(path: string) {
     // TODO: remove in vue3
     // remove(this.all, id)
-    delete this.all[id]
+    delete this.all[path]
+    this.instances = this.instances.filter(i => i.path !== path)
   }
 
   instanceSelect(path: string) {
