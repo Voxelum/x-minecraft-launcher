@@ -13,7 +13,10 @@
         :slider-color="barColor"
       >
         <v-tab>
-          <div class="version-tab">{{ $t("version.locals") }}</div>
+          <div class="version-tab">
+            {{ $t("version.locals") }}
+            <div class="subtitle">{{ id }}</div>
+          </div>
         </v-tab>
         <v-tab>
           <div class="version-tab">
@@ -30,7 +33,7 @@
         <v-tab>
           <div class="version-tab">
             Fabric
-            <div class="subtitle">{{ loader || $t("version.unset") }}</div>
+            <div class="subtitle">{{ fabricLoader || $t("version.unset") }}</div>
           </div>
         </v-tab>
         <v-tab>
@@ -49,7 +52,7 @@
         @mousewheel.stop
       >
         <v-tab-item class="h-full overflow-auto" @mousewheel.stop>
-          <local-version-list
+          <local-version-view
             :value="localVersion"
             :filter-text="filterText"
             @input="setLocalVersion"
@@ -69,7 +72,7 @@
         <v-tab-item class="h-full overflow-auto" @mousewheel.stop>
           <fabric-view
             :filter-text="filterText"
-            :loader="loader"
+            :loader="fabricLoader"
             :yarn="yarn"
             :select="setFabric"
             :minecraft="minecraft"
@@ -105,13 +108,13 @@
 </template>
 
 <script lang=ts>
-import { computed, defineComponent, reactive, ref, toRefs } from '@vue/composition-api'
+import { computed, defineComponent, reactive, ref, toRefs, watch } from '@vue/composition-api'
 import type { ResolvedVersion } from '@xmcl/core'
-import type { ForgeVersion, MinecraftVersion } from '@xmcl/installer'
-import FabricView from './FabricView.vue'
-import ForgeView from './ForgeView.vue'
-import MinecraftView from './MinecraftView.vue'
-import OptifineView from './OptifineView.vue'
+import type { FabricArtifactVersion, ForgeVersion, MinecraftVersion } from '@xmcl/installer'
+import FabricView from './components/FabricVersionView.vue'
+import ForgeView from './components/ForgeVersionView.vue'
+import MinecraftView from './components/MinecraftVersionView.vue'
+import OptifineView from './components/OptifineView.vue'
 import {
   useAutoSaveLoad,
   useBusy,
@@ -122,10 +125,15 @@ import {
 import { filterForgeVersion, filterOptfineVersion, getResolvedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary } from '/@shared/entities/version'
 import { OptifineVersion } from '/@shared/entities/version.schema'
 import { InstallServiceKey } from '/@shared/services/InstallService'
+import LocalVersionView from './components/LocalVersionView.vue'
 
 export default defineComponent({
   components: {
-    MinecraftView, ForgeView, FabricView, OptifineView,
+    MinecraftView,
+    ForgeView,
+    FabricView,
+    OptifineView,
+    LocalVersionView
   },
   setup() {
     const filterText = ref('')
@@ -135,7 +143,7 @@ export default defineComponent({
 
       minecraft: '',
       forge: '',
-      loader: '',
+      fabricLoader: '',
       yarn: '',
       optifine: '',
 
@@ -184,23 +192,24 @@ export default defineComponent({
       data.minecraft = v.minecraftVersion
       data.forge = filterForgeVersion(v.libraries.find(isForgeLibrary)?.version ?? '')
       data.liteloader = ''
-      data.loader = v.libraries.find(isFabricLoaderLibrary)?.version ?? ''
+      data.fabricLoader = v.libraries.find(isFabricLoaderLibrary)?.version ?? ''
       data.optifine = filterOptfineVersion(v.libraries.find(isOptifineLibrary)?.version ?? '')
       data.yarn = ''
       data.id = v.id ?? ''
     }
     function setMinecraft(v: MinecraftVersion) {
-      if (data.minecraft !== v.id) {
+      if (data.minecraft !== v.id && v.id.length > 0) {
         data.minecraft = v.id
         data.forge = ''
         data.liteloader = ''
-        data.loader = ''
+        data.fabricLoader = ''
         data.yarn = ''
         data.optifine = ''
         data.id = ''
       }
     }
     function setOptifine(v: OptifineVersion | undefined) {
+      console.log(v)
       if (!v) {
         data.optifine = ''
         data.id = ''
@@ -209,22 +218,22 @@ export default defineComponent({
         data.id = ''
       }
     }
-    function setForge(v: ForgeVersion | undefined) {
+    function setForge(v: { version: string } | undefined) {
       if (!v) {
         data.forge = ''
-      } else {
+      } else if (v.version.length > 0) {
         data.forge = v.version
         data.id = ''
-        data.loader = ''
+        data.fabricLoader = ''
       }
     }
-    function setFabric(version?: string) {
-      if (version) {
-        data.loader = version
+    function setFabric(v?: { version: string }) {
+      if (v) {
+        data.fabricLoader = v.version
         data.id = ''
         data.forge = ''
       } else {
-        data.loader = ''
+        data.fabricLoader = ''
         data.id = ''
         data.yarn = ''
       }
@@ -243,17 +252,19 @@ export default defineComponent({
       }
     }
     function save() {
-      edit({
-        version: data.id,
-        runtime: {
-          minecraft: data.minecraft,
-          forge: data.forge,
-          fabricLoader: data.loader,
-          yarn: data.yarn,
-          liteloader: data.liteloader,
-          optifine: data.optifine,
-        },
-      })
+      if (data.minecraft.length > 0) {
+        edit({
+          version: data.id,
+          runtime: {
+            minecraft: data.minecraft,
+            forge: data.forge,
+            fabricLoader: data.fabricLoader,
+            yarn: data.yarn,
+            liteloader: data.liteloader,
+            optifine: data.optifine,
+          },
+        })
+      }
     }
     async function load() {
       const { forge, minecraft, liteloader, fabricLoader, yarn, optifine } = runtime.value
@@ -261,8 +272,9 @@ export default defineComponent({
       data.minecraft = minecraft
       data.forge = forge ?? ''
       data.yarn = yarn ?? ''
-      data.loader = fabricLoader ?? ''
+      data.fabricLoader = fabricLoader ?? ''
       data.optifine = optifine ?? ''
+      data.liteloader = liteloader ?? ''
     }
 
     useAutoSaveLoad(save, load)
@@ -292,6 +304,7 @@ export default defineComponent({
 .subtitle {
   color: grey;
   font-size: 14px;
+  @apply break-words whitespace-nowrap overflow-auto;
 }
 .version-tab {
   max-width: 100px;

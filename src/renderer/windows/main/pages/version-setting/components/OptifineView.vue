@@ -1,20 +1,29 @@
 <template>
   <div class="flex h-full flex-col">
-    <!-- <v-list-tile>
-      <v-checkbox
-        v-model="showStableOnly"
-        :label="$t('fabric.showStableOnly')"
-      />
-    </v-list-tile> -->
     <v-divider dark />
     <refreshing-tile v-if="refreshing && versions.length === 0" />
-    <optifine-version-list
+    <v-list
       v-else-if="versions.length !== 0"
-      :versions="versions"
-      :version="version"
-      :select="select"
-      :statuses="statuses"
-    />
+      dark
+      class="overflow-hidden"
+      style="background-color: transparent;"
+    >
+      <v-list-tile ripple @click="select(undefined)">
+        <v-list-tile-avatar>
+          <v-icon>close</v-icon>
+        </v-list-tile-avatar>
+        {{ $t("optifine.disable") }}
+      </v-list-tile>
+      <virtual-list
+        ref="list"
+        style="overflow-y: scroll; scrollbar-width: 0; height: 100%"
+        :data-sources="versions"
+        :data-key="'_id'"
+        :data-component="OptifineVersionListTile"
+        :keep="16"
+        :extra-props="{ selected: version, select: select, statuses, install, minecraft }"
+      />
+    </v-list>
     <hint
       v-else
       class="flex-grow"
@@ -25,7 +34,8 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api'
+import { computed, defineComponent } from '@vue/composition-api'
+import OptifineVersionListTile from './OptifineVersionListTile.vue'
 import { useOptifineVersions } from '/@/hooks'
 import { required } from '/@/util/props'
 import { OptifineVersion } from '/@shared/entities/version.schema'
@@ -35,10 +45,10 @@ export default defineComponent({
     select: required<(v: OptifineVersion | undefined) => void>(Function),
     filterText: required<string>(String),
     minecraft: required<string>(String),
-    version: required<OptifineVersion>(Object),
+    version: required<{ type: string; patch: string }>(Object),
   },
   setup(props) {
-    const { versions, statuses, refreshing } = useOptifineVersions(computed(() => props.minecraft))
+    const { versions, statuses, refreshing, install } = useOptifineVersions(computed(() => props.minecraft))
     // const loaderVersions = computed(() => lv.value.filter((v) => {
     //   if (data.showStableOnly && !v.stable) {
     //     return false;
@@ -61,6 +71,8 @@ export default defineComponent({
       versions,
       refreshing,
       statuses,
+      install,
+      OptifineVersionListTile,
     }
   },
 })

@@ -1,19 +1,31 @@
 <template>
   <div class="flex flex-col overflow-auto h-full">
     <v-list-tile>
-      <v-checkbox
-        v-model="showStableOnly"
-        :label="$t('fabric.showStableOnly')"
-      />
+      <v-checkbox v-model="showStableOnly" :label="$t('fabric.showStableOnly')" />
     </v-list-tile>
     <v-divider dark />
-    <fabric-artifact-version-list
+    <v-list
       v-if="fabricSupported"
-      :versions="loaderVersions"
-      :version="loader"
-      :statuses="loaderStatus"
-      :select="selectLoader"
-    />
+      dark
+      class="overflow-hidden"
+      style="background-color: transparent;"
+    >
+      <v-list-tile ripple @click="select('')">
+        <v-list-tile-avatar>
+          <v-icon>close</v-icon>
+        </v-list-tile-avatar>
+        {{ $t('fabric.disable') }}
+      </v-list-tile>
+      <virtual-list
+        ref="list"
+        style="overflow-y: auto; scrollbar-width: 0; height: 100%"
+        :data-sources="loaderVersions"
+        :data-key="'version'"
+        :data-component="FabricArtifactVersionListTile"
+        :keep="16"
+        :extra-props="{ selected: loader, select: select, statuses: loaderStatus, install: install, minecraft }"
+      />
+    </v-list>
     <hint
       v-else
       style="flex-grow: 1"
@@ -30,10 +42,11 @@ import {
 } from '/@/hooks'
 import { required } from '/@/util/props'
 import { FabricArtifactVersion } from '@xmcl/installer'
+import FabricArtifactVersionListTile from './FabricArtifactVersionListTile.vue'
 
 export default defineComponent({
   props: {
-    select: required<(v: string | undefined) => void>(Function),
+    select: required<(v?: { version?: string }) => void>(Function),
     filterText: required<string>(String),
     minecraft: required<string>(String),
     loader: required<string>(String),
@@ -43,7 +56,7 @@ export default defineComponent({
       showStableOnly: false,
     })
 
-    const { yarnVersions: yv, loaderVersions: lv, yarnStatus, loaderStatus } = useFabricVersions()
+    const { yarnVersions: yv, loaderVersions: lv, yarnStatus, loaderStatus, install } = useFabricVersions()
     const loaderVersions = computed(() => lv.value.filter((v) => {
       if (data.showStableOnly && !v.stable) {
         return false
@@ -64,18 +77,20 @@ export default defineComponent({
     const fabricSupported = computed(() => !!yarnVersions.value.find(v => v.gameVersion === props.minecraft))
     const selectLoader = (v: FabricArtifactVersion) => {
       if (!v.version) {
-        props.select('')
+        props.select({ version: '' })
       } else {
-        props.select(v.version)
+        props.select(v)
       }
     }
 
     return {
       ...toRefs(data),
+      install,
       selectLoader,
       loaderVersions,
       fabricSupported,
       loaderStatus,
+      FabricArtifactVersionListTile,
     }
   },
 })
