@@ -77,10 +77,6 @@ export function useInstance() {
  */
 export function useInstances() {
   const { state } = useService(InstanceServiceKey)
-  console.log(state)
-  watch(computed(() => state.instances), () => {
-    console.log(state.instances)
-  })
   return {
     instances: computed(() => state.instances),
 

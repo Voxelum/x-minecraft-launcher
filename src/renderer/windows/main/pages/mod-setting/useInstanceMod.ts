@@ -78,29 +78,6 @@ export function useInstanceModsService() {
   return useService(InstanceModsServiceKey)
 }
 
-export function useModCompatible(item: Ref<ModItem>, minecraft: Ref<string>, forge: Ref<string>, fabricLoader: Ref<string>) {
-  function calculate(acceptedRange: string, version: string, strict: boolean) {
-    return (acceptedRange !== 'unknown'
-      ? !version && !strict
-        ? true
-        : isCompatible(acceptedRange, version)
-      : 'unknown')
-  }
-  const compatible = computed(() => {
-    if (item.value.type === 'fabric') {
-      const mcCompatible = satisfies(minecraft.value, item.value.dependencies.minecraft)
-    } else {
-      const mcCompatible = satisfies(minecraft.value, item.value.dependencies.minecraft)
-    }
-    (acceptedRange.value !== 'unknown'
-      ? !version.value && !strict
-        ? true
-        : isCompatible(acceptedRange.value, version.value)
-      : 'unknown')
-  })
-  return { compatible }
-}
-
 /**
  * Open read/write for current instance mods
  */

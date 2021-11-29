@@ -51,7 +51,7 @@
 import { BlockStateJson } from '/@shared/services/ResourcePackPreviewService'
 import { computed, defineComponent, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
 import { BlockModel } from '@xmcl/resourcepack'
-import { useSearch } from '../../hooks'
+import { useSearch } from '../../composables'
 import Displayer from './Displayer.vue'
 import PreviewItem from './PreviewItem.vue'
 import { useBlockModelPreview, useBlockStateModels } from '/@/hooks'

@@ -198,12 +198,13 @@ import {
   useProfileId,
   useUserService,
 } from '/@/hooks'
-import { useLoginDialog, useDialog } from '../../hooks'
-import ChallengesForm from './ChallengesForm.vue'
-import PageSkinView from './SkinView.vue'
-import UserServicesCard from './UserServicesCard.vue'
-import GameProfileSpeedDial from './GameProfileSpeedDial.vue'
-import UserList from './UserList.vue'
+import { useLoginDialog, useDialog } from '../../composables'
+import ChallengesForm from './components/ChallengesForm.vue'
+import PageSkinView from './components/SkinView.vue'
+import UserServicesCard from './components/UserServicesCard.vue'
+import GameProfileSpeedDial from './components/GameProfileSpeedDial.vue'
+import ImageShowTextureHead from './components/ImageShowTextureHead.vue'
+import UserList from './components/UserList.vue'
 
 export default defineComponent({
   components: {
@@ -212,6 +213,7 @@ export default defineComponent({
     PageSkinView,
     GameProfileSpeedDial,
     UserList,
+    ImageShowTextureHead,
   },
   setup() {
     const { refreshStatus: refreshAccount, refreshSkin } = useCurrentUser()

@@ -1,7 +1,7 @@
 import { TextComponent, render, RenderNode, fromFormattedString } from '@xmcl/text-component'
 import { defineComponent, h } from '@vue/composition-api'
-import { useI18n } from './hooks'
-import { optional, withDefault } from './util/props'
+import { useI18n } from '../hooks'
+import { optional, withDefault } from '../util/props'
 
 export default defineComponent({
   props: {

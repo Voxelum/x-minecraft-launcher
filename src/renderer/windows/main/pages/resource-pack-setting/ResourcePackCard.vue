@@ -60,7 +60,7 @@
                 class="max-w-90 sm:max-w-40 overflow-scroll"
                 :class="{ 'text-white': hovered }"
                 @input.stop="onEditTag($event, index)"
-                @blur="notfiyTagChange(pack)"
+                @blur="notifyTagChange(pack)"
               >{{ tag }}</span>
             </v-chip>
           </div>
@@ -88,7 +88,7 @@
 import { defineComponent, ref, Ref, computed, set } from '@vue/composition-api'
 import { useInstanceVersionBase, useCompatible, useDragTransferItem, ResourcePackItem, useI18n, useService, useTagColors, useTagCreation, useTags } from '/@/hooks'
 import { required } from '/@/util/props'
-import { useContextMenu, ContextMenuItem, useCurseforgeRoute } from '../../hooks'
+import { useContextMenu, ContextMenuItem, useCurseforgeRoute } from '/@/windows/main/composables'
 import { BaseServiceKey } from '/@shared/services/BaseService'
 import unknownPack from '/@/assets/unknown_pack.png'
 import { getColor } from '/@/util/color'
@@ -131,9 +131,11 @@ export default defineComponent({
       }
     }
     function onEditTag(event: InputEvent, index: number) {
-      editTag(event.target.innerText, index)
+      if (event.target && event.target instanceof HTMLElement) {
+        editTag(event.target.innerText, index)
+      }
     }
-    function notfiyTagChange(item: ResourcePackItem) {
+    function notifyTagChange(item: ResourcePackItem) {
       item.tags = [...item.tags]
     }
     function onEditPackName(item: ResourcePackItem, name: string) {
@@ -194,7 +196,7 @@ export default defineComponent({
       tags,
       colors,
       onDeleteTag: removeTag,
-      notfiyTagChange,
+      notifyTagChange,
       hovered,
     }
   },

@@ -29,7 +29,7 @@
 
 <script lang=ts>
 import { defineComponent } from '@vue/composition-api'
-import { useContextMenuData } from '/@/windows/main/hooks'
+import { useContextMenuData } from '/@/windows/main/composables'
 
 export default defineComponent({
   setup() {

@@ -60,7 +60,7 @@ export default defineComponent({
     const hover = ref(false)
     const color = computed(() => {
       switch (props.item.state) {
-        case TaskState.Successed:
+        case TaskState.Succeed:
           return 'green'
         case TaskState.Cancelled:
         case TaskState.Running:
@@ -80,7 +80,7 @@ export default defineComponent({
         }
       }
       switch (props.item.state) {
-        case TaskState.Successed:
+        case TaskState.Succeed:
           return props.item.children && props.item.children.length > 0 ? 'done_all' : 'check'
         case TaskState.Cancelled:
           return 'stop'

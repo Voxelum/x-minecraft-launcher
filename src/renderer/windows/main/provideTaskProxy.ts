@@ -5,23 +5,23 @@ import { TaskBatchUpdatePayloads, TaskPayload, TaskState } from '/@shared/task'
 
 export const TASK_MANAGER: InjectionKey<ReturnType<typeof useTaskManager>> = Symbol('TASK_MANAGER')
 
-class ChildrenWatcer {
+class ChildrenWatcher {
   readonly cached: Array<TaskItem> = new Array(10)
 
-  readonly childrens: Array<TaskItem> = []
+  readonly children: Array<TaskItem> = []
 
   public dirty = false
 
   constructor(private target: Ref<TaskItem[]>, init?: TaskItem[]) {
     if (init) {
-      this.childrens = init
+      this.children = init
       this.dirty = true
       this.update()
     }
   }
 
   addChild(item: TaskItem) {
-    this.childrens.unshift(item)
+    this.children.unshift(item)
     this.dirty = true
   }
 
@@ -29,19 +29,19 @@ class ChildrenWatcer {
     if (!this.dirty) {
       return
     }
-    const successed = []
+    const succeed = []
     const others = []
-    const children = this.childrens
+    const children = this.children
     const cached = this.cached
 
     for (const item of children) {
-      if (item.state === TaskState.Successed) {
-        successed.push(item)
+      if (item.state === TaskState.Succeed) {
+        succeed.push(item)
       } else {
         others.push(item)
       }
     }
-    const combined = others.concat(successed)
+    const combined = others.concat(succeed)
     for (let i = 0; i < this.cached.length; i++) {
       const elem = combined.shift()
       if (elem) {
@@ -62,7 +62,7 @@ class ChildrenWatcer {
 export function useTaskManager() {
   const { $t } = useI18n()
   const dictionary: Record<string, TaskItem> = {}
-  const watchers: Record<string, ChildrenWatcer> = {}
+  const watchers: Record<string, ChildrenWatcher> = {}
   /**
    * All the root tasks
    */
@@ -82,7 +82,7 @@ export function useTaskManager() {
 
   function mapAndRecordTaskItem(payload: TaskPayload): TaskItem {
     const children = ref([])
-    const watcher = new ChildrenWatcer(children, payload.children.map(mapAndRecordTaskItem))
+    const watcher = new ChildrenWatcher(children, payload.children.map(mapAndRecordTaskItem))
     const localId = `${payload.uuid}@${payload.id}`
     watchers[localId] = watcher
     const item = reactive({
@@ -91,6 +91,8 @@ export function useTaskManager() {
       title: $t(payload.path, payload.param),
       time: new Date(payload.time),
       message: payload.error ?? payload.from ?? payload.to ?? '',
+      from: payload.from,
+      to: payload.to,
       throughput: 0,
       state: payload.state,
       progress: payload.progress,
@@ -105,15 +107,11 @@ export function useTaskManager() {
     if (syncing) {
       await syncing
     }
-    console.log(`Task adds:`)
-    console.log(adds)
-    console.log(`Task updates:`)
-    console.log(updates)
     for (const add of adds) {
       const { uuid, id, path, param, time, to, from, parentId } = add
       const localId = `${uuid}@${id}`
       const children = ref([] as TaskItem[])
-      const watcher = new ChildrenWatcer(children)
+      const watcher = new ChildrenWatcher(children)
       const item = reactive({
         taskId: uuid,
         id: localId,
@@ -121,6 +119,8 @@ export function useTaskManager() {
         children,
         time: new Date(time),
         message: from ?? to ?? '',
+        from: from ?? '',
+        to: to ?? '',
         throughput: 0,
         state: TaskState.Running,
         progress: 0,

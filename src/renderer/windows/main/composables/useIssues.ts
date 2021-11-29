@@ -3,13 +3,13 @@ import { useDialog } from '.'
 import { useJavaWizardDialog } from './useDialog'
 import { IssueHandler, useModResource, useRouter, useService } from '/@/hooks'
 import { Issue, IssueType } from '/@shared/entities/issue'
+import { InstanceModsServiceKey } from '/@shared/services/InstanceModsService'
 import { InstanceResourcePacksServiceKey } from '/@shared/services/InstanceResourcePacksService'
 
 export function provideIssueHandler() {
-  const { replace } = useRouter()
-  const { show: showJavaDialog, javaIssue } = useJavaWizardDialog()
+  const { push } = useRouter()
   const { show: showModDialog } = useDialog('download-missing-mods' as any) // TODO: fix this
-  const { install: deploy } = useService(InstanceResourcePacksServiceKey)
+  const { install } = useService(InstanceModsServiceKey)
   const { resources } = useModResource()
 
   const handlerRegistry: Record<string, (issue: Issue) => void> = {}
@@ -21,28 +21,17 @@ export function provideIssueHandler() {
   }
 
   register('missingModsOnServer', showModDialog)
-  register('unknownMod', () => replace('/mod-setting'))
-  register('incompatibleMod', () => replace('/mod-setting'))
-  register('incompatibleResourcePack', () => replace('/resource-pack-setting'))
-  register('incompatibleJava', (issue) => {
-    javaIssue.value.type = 'incompatible'
-    if (!(issue.parameters instanceof Array)) {
-      javaIssue.value.version = issue.parameters.targetVersion
-    }
-    showJavaDialog()
-  })
-  register('missingJava', () => {
-    javaIssue.value.type = 'missing'
-    showJavaDialog()
-  })
-  register('requireForge', () => replace('/version-setting'))
-  register('requireFabric', () => replace('/version-setting'))
+  register('unknownMod', () => push('/mod-setting'))
+  register('incompatibleMod', () => push('/mod-setting'))
+  register('incompatibleResourcePack', () => push('/resource-pack-setting'))
+  register('requireForge', () => push('/version-setting'))
+  register('requireFabric', () => push('/version-setting'))
   register('requireFabricAPI', () => {
     const fabric = resources.value.find((r) => r.type === 'fabric' && r.metadata.id === 'fabric')
     if (fabric) {
-      deploy({ resources: [fabric] })
+      install({ mods: [fabric] })
     } else {
-      replace('/curseforge/mc-mods/306612')
+      push('/curseforge/mc-mods/306612')
     }
   })
 }

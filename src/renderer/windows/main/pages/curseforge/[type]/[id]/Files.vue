@@ -61,7 +61,6 @@ import {
   useI18n,
 } from '/@/hooks'
 import { optional, required } from '/@/util/props'
-import { useSearch } from '/@/windows/main/hooks'
 import Tile from './FilesTile.vue'
 import { isNonnull } from '/@shared/util/assert'
 // import AddInstanceStepper from './InstancesPageAddInstanceStepper.vue'
@@ -76,7 +75,6 @@ export default defineComponent({
   setup(props) {
     const { files, loading, refresh } = useCurseforgeProjectFiles(props.project)
     const { install: installFile, getFileStatus, getFileResource } = useCurseforgeInstall(props.type, props.project)
-    const { text } = useSearch()
     const data = reactive({
       isConfirmDialogShown: false,
       initialTemplate: '',

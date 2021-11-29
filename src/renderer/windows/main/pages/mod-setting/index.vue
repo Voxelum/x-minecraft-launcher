@@ -233,6 +233,7 @@ function setupFilter(items: Ref<ModItem[]>, minecraft: Ref<string>) {
       return true
     }
     if (filterInCompatible.value) {
+      console.log(`${mod.id} ${mod.type} ${mod.path} ${mod.dependencies.minecraft} ${minecraft.value}`)
       return isCompatible(mod.dependencies.minecraft, minecraft.value)
     }
     return true

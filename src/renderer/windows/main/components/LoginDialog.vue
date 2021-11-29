@@ -22,7 +22,7 @@
       <hint
         v-if="showDropHint"
         icon="save_alt"
-        :text="$t('user.dropHint')"
+        :text="$t('user.dropHint').toString()"
         style="height: 350px"
       />
       <v-card-text v-if="!showDropHint">
@@ -130,8 +130,8 @@
 <script lang=ts>
 import { reactive, computed, watch, toRefs, onMounted, ref, defineComponent, Ref, nextTick } from '@vue/composition-api'
 import { useLogin, useLoginValidation, useI18n, useService } from '/@/hooks'
-import { useLoginDialog } from '../hooks/index'
-import Hint from '../components/Hint.vue'
+import { useLoginDialog } from '../composables'
+import Hint from '../../../components/Hint.vue'
 import { BaseServiceKey } from '/@shared/services/BaseService'
 import { LoginException } from '/@shared/entities/exception'
 

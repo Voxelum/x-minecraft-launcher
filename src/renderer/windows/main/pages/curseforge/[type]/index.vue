@@ -140,7 +140,7 @@
 import { computed, defineComponent, ref } from '@vue/composition-api'
 import { useCurseforgeSearch } from '/@/hooks'
 import { withDefault } from '/@/util/props'
-import { onSearchToggle } from '/@/windows/main/hooks'
+import { onSearchToggle } from '/@/windows/main/composables'
 
 export default defineComponent({
   props: {

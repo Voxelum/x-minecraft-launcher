@@ -65,19 +65,20 @@
 
 <script lang=ts>
 import { reactive, toRefs, defineComponent } from '@vue/composition-api'
-import { useDialog } from '/@/windows/main/hooks'
-import TaskView from './BaseTaskDialogTaskView.vue'
+import { useDialog } from '/@/windows/main/composables'
+import TaskView from './TaskDialogTaskView.vue'
 import { useRouter } from '/@/hooks'
 
 export default defineComponent({
   components: { TaskView },
   setup() {
     const { hide, isShown } = useDialog('task')
+    const router = useRouter()
 
     const data = reactive({
       tabs: 0,
     })
-    const router = useRouter()
+
     router.afterEach((g) => {
       if (isShown.value) {
         hide()

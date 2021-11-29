@@ -130,7 +130,7 @@
 import {
   defineComponent,
 } from '@vue/composition-api'
-import { useDialog } from '/@/windows/main/hooks'
+import { useDialog } from '/@/windows/main/composables'
 import {
   useTaskCount,
   useUpdateInfo,

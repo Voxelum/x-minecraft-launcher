@@ -61,8 +61,8 @@ import {
   useUserSecurityStatus,
 } from '/@/hooks'
 import { required } from '/@/util/props'
-import { useNotifier } from '../../hooks'
-import ImportSkinUrlForm from './ImportSkinUrlForm.vue'
+import { useNotifier } from '../../composables'
+import ImportSkinUrlForm from './components/ImportSkinUrlForm.vue'
 import SpeedDial from './SkinSpeedDial.vue'
 
 export default defineComponent({
