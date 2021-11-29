@@ -43,7 +43,7 @@
 <script lang=ts>
 import { computed, defineComponent } from '@vue/composition-api'
 import { useLaunch, useIssues } from '/@/hooks'
-import { useDialog } from '/@/windows/main/hooks'
+import { useDialog } from '/@/windows/main/composables'
 
 export default defineComponent({
   setup() {

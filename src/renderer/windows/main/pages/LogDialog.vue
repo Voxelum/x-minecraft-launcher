@@ -1,8 +1,7 @@
 <template>
   <v-dialog
-    :value="value"
+    v-model="isShown"
     :width="550"
-    @input="$emit($event)"
   >
     <v-toolbar
       color="warning"
@@ -66,16 +65,14 @@
 <script lang=ts>
 import { reactive, toRefs, watch, defineComponent } from '@vue/composition-api'
 import { useInstanceLogs } from '/@/hooks'
-import { required } from '/@/util/props'
 import TabItem from './LogDialogTab.vue'
+import { useDialog } from '../composables'
 
 export default defineComponent({
   components: {
     TabItem,
   },
   props: {
-    value: required(Boolean),
-    hide: required<() => void>(Function),
   },
   setup(props) {
     const {
@@ -88,6 +85,7 @@ export default defineComponent({
       showLog,
       showCrash: showCrashReport,
     } = useInstanceLogs()
+    const { isShown, hide } = useDialog('log')
     const data = reactive({
       tab: null as any as number,
       loadingContent: false,
@@ -119,13 +117,15 @@ export default defineComponent({
       await rmCrash(name)
       loadCrashes()
     }
-    watch(() => props.value, (s) => {
+    watch(isShown, (s) => {
       if (s) {
         data.tab = 0
         loadLogs()
       }
     })
     return {
+      isShown,
+      hide,
       removeLog,
       removeCrashReport,
       getCrashReportContent,

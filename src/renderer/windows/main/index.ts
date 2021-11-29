@@ -9,13 +9,13 @@ import colors from 'vuetify/es5/util/colors'
 import Vuex from 'vuex'
 import components from './components'
 import CurseforgeIcon from './components/CurseforgeIcon.vue'
-import FabricIcon from './components/FabricIcon.vue'
-import ForgeIcon from './components/ForgeIcon.vue'
-import JarFileIcon from './components/JarFileIcon.vue'
-import PackageFileIcon from './components/PackageFileIcon.vue'
-import ZipFileIcon from './components/ZipFileIcon.vue'
+import FabricIcon from '../../components/FabricIcon.vue'
+import ForgeIcon from '../../components/ForgeIcon.vue'
+import JarFileIcon from '../../components/JarFileIcon.vue'
+import PackageFileIcon from '../../components/PackageFileIcon.vue'
+import ZipFileIcon from '../../components/ZipFileIcon.vue'
 import './directives'
-import MainWindow from './MainWindow.vue'
+import MainWindow from './index.vue'
 import { createRouter } from './router'
 import { createStore } from './store'
 import '/@/assets/google.font.css'
@@ -26,7 +26,7 @@ import { SERVICES_SEMAPHORES_KEY, useSemaphores } from '/@/hooks'
 import { SYNCABLE_KEY, useSyncable } from '/@/hooks/useSyncable'
 import { createI18n } from '/@/i18n'
 import { createServiceFactory, SERVICES_KEY } from '/@/serviceProxy'
-import TextComponent from '/@/TextComponent'
+import TextComponent from '../../components/TextComponent'
 import { BaseServiceKey } from '/@shared/services/BaseService'
 import 'virtual:windi.css'
 import {
@@ -40,6 +40,7 @@ import {
   Camera
 } from 'three'
 
+// TODO: fix this after refactor halo
 window.THREE = {
   LinearFilter, WebGLRenderTarget, RGBAFormat, Vector3, Color, Vector2,
   WebGLRenderer,
@@ -49,7 +50,7 @@ window.THREE = {
   Mesh,
   PlaneGeometry,
   Camera
-}
+} as any
 
 Vue.use(VueCompositionApi)
 // to prevent the universal drop activated on self element dragging

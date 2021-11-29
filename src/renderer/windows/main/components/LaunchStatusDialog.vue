@@ -31,7 +31,7 @@
 <script lang=ts>
 import { ref, onMounted, watch, defineComponent } from '@vue/composition-api'
 import { useLaunch, useI18n } from '/@/hooks'
-import { useDialog } from '/@/windows/main/hooks'
+import { useDialog } from '/@/windows/main/composables'
 
 export default defineComponent({
   setup() {

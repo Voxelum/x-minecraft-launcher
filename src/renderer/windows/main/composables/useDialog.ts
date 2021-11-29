@@ -1,15 +1,11 @@
 import { computed, inject, InjectionKey, provide, Ref, ref } from '@vue/composition-api'
+import type { JavaVersion } from '@xmcl/core'
 import type { FileFilter } from 'electron'
 import { useI18n } from '/@/hooks'
 
-export type DialogNames = 'task' | 'java-wizard' | 'login' | 'detail' | ''
-  | 'user-service'
-  | 'log' | 'feedback'
-  | 'launch-status' | 'launch-blocked'
-
-export const DIALOG_SYMBOL: InjectionKey<Ref<DialogNames>> = Symbol('ShowingDialog')
+export const DIALOG_SYMBOL: InjectionKey<Ref<string>> = Symbol('ShowingDialog')
 export const DIALOG_LOGIN_SWITCH_USER: InjectionKey<Ref<boolean>> = Symbol('SwitchingUser')
-export const DIALOG_JAVA_ISSUE: InjectionKey<Ref<{ type: 'incompatible' | 'missing', version: '16' | '8' }>> = Symbol('JavaIssue')
+export const DIALOG_JAVA_ISSUE: InjectionKey<Ref<{ type: 'incompatible' | 'missing', version: JavaVersion }>> = Symbol('JavaIssue')
 
 export function useZipFilter() {
   const { $t } = useI18n()
@@ -23,14 +19,14 @@ export function useZipFilter() {
 export function provideDialog() {
   provide(DIALOG_SYMBOL, ref(''))
   provide(DIALOG_LOGIN_SWITCH_USER, ref(false))
-  provide(DIALOG_JAVA_ISSUE, ref({ type: '', version: '' }))
+  provide(DIALOG_JAVA_ISSUE, ref({ type: '', version: { majorVersion: 8, component: 'jre-legacy' } }))
 }
 
 /**
  * Use a shared dialog between pages
  */
-export function useDialog(dialogName: DialogNames = '') {
-  const shownDialog: Ref<DialogNames> = inject(DIALOG_SYMBOL) as any
+export function useDialog(dialogName: string = '') {
+  const shownDialog: Ref<string> = inject(DIALOG_SYMBOL) as any
   if (!shownDialog) throw new Error('This should not happened')
   const isShown = computed({
     get: () => shownDialog.value === dialogName,

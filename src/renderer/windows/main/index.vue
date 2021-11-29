@@ -25,45 +25,42 @@
       <login-dialog />
       <task-dialog />
       <launch-status-dialog />
-      <java-wizard-dialog />
+      <java-fixer-dialog />
     </v-layout>
   </v-app>
 </template>
 
 <script lang=ts>
-import '/@/assets/common.css'
-
 import {
-  onMounted,
-  reactive,
-  toRefs,
-  watch,
-  defineComponent,
-  ref,
-  Ref,
-  provide,
+  defineComponent, provide, reactive, ref,
+  Ref, toRefs,
+  watch
 } from '@vue/composition-api'
-import {
-  useRouter,
-  provideAsyncRoute,
-  useBaseService,
-  provideServerStatusCache,
-useBackground,
-} from '/@/hooks'
-import { TASK_MANAGER, useTaskManager } from './provideTaskProxy'
-import { provideDialog, provideNotifier, provideContextMenu, provideSearch, provideIssueHandler } from './hooks'
-import LoginDialog from './dialog/BaseLoginDialog.vue'
-import TaskDialog from './dialog/BaseTaskDialog.vue'
-import LaunchStatusDialog from './dialog/BaseLaunchStatusDialog.vue'
 import Particles from '../../components/Particles.vue'
-import JavaWizardDialog from './dialog/BaseJavaWizardDialog.vue'
-import { injection } from '/@/util/inject'
-import { SYNCABLE_KEY } from '/@/hooks/useSyncable'
+import Background from './components/Background.vue'
+import TaskDialog from './components/TaskDialog.vue'
+import { provideContextMenu, provideDialog, provideIssueHandler, provideNotifier, provideSearch } from './composables'
+import JavaFixerDialog from './components/JavaFixerDialog.vue'
+import LaunchStatusDialog from './components/LaunchStatusDialog.vue'
+import ContextMenu from '/@/components/ContextMenu.vue'
+import SearchBar from './components/SearchBar.vue'
+import UniversalDropView from './components/UniversalDropView.vue'
+import SideBar from './components/SideBar.vue'
+import LoginDialog from './components/LoginDialog.vue'
+import { TASK_MANAGER, useTaskManager } from './provideTaskProxy'
+import '/@/assets/common.css'
 import Halo from '/@/components/Halo.vue'
-import Background from './Background.vue'
+import {
+  provideAsyncRoute, provideServerStatusCache,
+  useBackground, useRouter
+} from '/@/hooks'
+import { SYNCABLE_KEY } from '/@/hooks/useSyncable'
+import { injection } from '/@/util/inject'
+import Notifier from './components/Notifier.vue'
+
 
 export default defineComponent({
-  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaWizardDialog, Particles: (Particles as any), Halo, Background },
+  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaFixerDialog, Particles: (Particles as any), Halo, Background, Notifier, ContextMenu, SearchBar, UniversalDropView, SideBar },
   setup() {
     provideDialog()
     provideNotifier()
@@ -80,7 +77,6 @@ export default defineComponent({
     provideContextMenu()
 
     const { syncing } = injection(SYNCABLE_KEY)
-    const { state } = useBaseService()
     const router = useRouter()
     const onHomePage = ref(router.currentRoute.path === '/')
     const app: Ref<any> = ref(null)

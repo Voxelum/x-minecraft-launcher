@@ -1,17 +1,6 @@
 <template>
-  <v-layout
-    class="home-page"
-    row
-    wrap
-  >
-    <v-icon
-      v-ripple
-      class="exit-button"
-      dark
-      @click="quit()"
-    >
-      close
-    </v-icon>
+  <v-layout class="home-page" row wrap>
+    <v-icon v-ripple class="exit-button" dark @click="quit()">close</v-icon>
     <v-icon
       v-ripple
       style="
@@ -27,9 +16,7 @@
       "
       dark
       @click="minimize()"
-    >
-      minimize
-    </v-icon>
+    >minimize</v-icon>
     <v-icon
       v-ripple
       style="
@@ -45,9 +32,7 @@
       "
       dark
       @click="showFeedbackDialog"
-    >
-      help_outline
-    </v-icon>
+    >help_outline</v-icon>
     <v-icon
       v-ripple
       style="
@@ -63,33 +48,19 @@
       "
       dark
       @click="showInstanceFolder"
-    >
-      folder
-    </v-icon>
+    >folder</v-icon>
 
-    <v-flex
-      d-flex
-      xs12
-      style="z-index: 1; padding-top: 50px; padding-left: 50px"
-    >
+    <v-flex d-flex xs12 style="z-index: 1; padding-top: 50px; padding-left: 50px">
       <home-header />
     </v-flex>
 
-    <v-flex
-      v-if="isServer"
-      d-flex
-      xs12
-      style="margin: 40px"
-    >
+    <v-flex v-if="isServer" d-flex xs12 style="margin: 40px">
       <server-status-bar />
     </v-flex>
 
-    <more-speed-dial :refreshing="refreshing" />
+    <settings-speed-dial :refreshing="refreshing" />
 
-    <export-speed-dial
-      :refreshing="refreshing"
-      @show="showExport"
-    />
+    <export-speed-dial :refreshing="refreshing" @show="showExport" />
 
     <v-tooltip top>
       <template #activator="{ on }">
@@ -101,9 +72,7 @@
           v-on="on"
           @click="showLogDialog"
         >
-          <v-icon dark>
-            subtitles
-          </v-icon>
+          <v-icon dark>subtitles</v-icon>
         </v-btn>
       </template>
       {{ $t("profile.logsCrashes.title") }}
@@ -154,41 +123,20 @@
       </v-btn>
     </v-speed-dial>-->
 
-    <v-btn
-      color="primary"
-      dark
-      large
-      :disabled="refreshing"
-      class="launch-button"
-      @click="launch"
-    >
+    <v-btn color="primary" dark large :disabled="refreshing" class="launch-button" @click="launch">
       {{ $t("launch.launch") }}
-      <v-icon
-        v-if="launchStatus === 'ready'"
-        right
-      >
-        play_arrow
-      </v-icon>
-      <v-progress-circular
-        v-else
-        class="v-icon--right"
-        indeterminate
-        :size="20"
-        :width="2"
-      />
+      <v-icon v-if="launchStatus === 'ready'" right>play_arrow</v-icon>
+      <v-progress-circular v-else class="v-icon--right" indeterminate :size="20" :width="2" />
     </v-btn>
-    <log-dialog
-      v-model="isLogDialogShown"
-      :hide="hideLogDialog"
-    />
+    <log-dialog v-model="isLogDialogShown" :hide="hideLogDialog" />
     <game-exit-dialog />
     <feedback-dialog />
     <export-dialog
       :value="isExportingCurseforge || isExportingModpack"
       :is-curseforge="isExportingCurseforge"
       @input="
-        isExportingModpack = false;
-        isExportingCurseforge = false;
+      isExportingModpack = false;
+      isExportingCurseforge = false;
       "
     />
     <launch-blocked-dialog />
@@ -197,29 +145,23 @@
 
 <script lang=ts>
 import { defineComponent, onMounted, ref } from '@vue/composition-api'
-import { LaunchException } from '/@shared/entities/exception'
-import { BaseServiceKey } from '/@shared/services/BaseService'
-import {
-  useI18n,
-  useLaunch,
-  useWindowController,
-  useInstance,
-  useJava,
-  useQuit,
-  useService,
-  useInstanceServerStatus,
-} from '/@/hooks'
-import { useDialog, useNotifier, useJavaWizardDialog } from '/@/windows/main/hooks'
-import GameExitDialog from './GameExitDialog.vue'
-import LaunchBlockedDialog from './LaunchBlockedDialog.vue'
-import FeedbackDialog from './FeedbackDialog.vue'
-import LogDialog from './LogDialog.vue'
-import HomeHeader from './Headline.vue'
-import ProblemsBar from './ProblemsBar.vue'
-import ServerStatusBar from './ServerStatusBar.vue'
 import ExportDialog from './ExportDialog.vue'
 import ExportSpeedDial from './ExportSpeedDial.vue'
-import MoreSpeedDial from './MoreSpeedDial.vue'
+import FeedbackDialog from './FeedbackDialog.vue'
+import GameExitDialog from './GameExitDialog.vue'
+import HomeHeader from './HomeHeader.vue'
+import LaunchBlockedDialog from './LaunchBlockedDialog.vue'
+import LogDialog from './LogDialog.vue'
+import ProblemsBar from './ProblemsBar.vue'
+import ServerStatusBar from './ServerStatusBar.vue'
+import SettingsSpeedDial from './SettingsSpeedDial.vue'
+import {
+  useInstance, useInstanceServerStatus, useJava, useLaunch, useQuit,
+  useService, useWindowController
+} from '/@/hooks'
+import { useDialog, useJavaWizardDialog } from '/@/windows/main/composables'
+import { LaunchException } from '/@shared/entities/exception'
+import { BaseServiceKey } from '/@shared/services/BaseService'
 
 function setupLaunch() {
   const { launch, status: launchStatus } = useLaunch()
@@ -262,17 +204,15 @@ export default defineComponent({
     FeedbackDialog,
     ExportDialog,
     ExportSpeedDial,
-    MoreSpeedDial,
+    SettingsSpeedDial,
   },
   setup() {
-    const { $t } = useI18n()
     const { showSaveDialog, minimize } = useWindowController()
     const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useDialog('log')
     const { show: showFeedbackDialog } = useDialog('feedback')
     const { refreshing, name, isServer, path } = useInstance()
     const { refresh } = useInstanceServerStatus(path.value)
     const { openDirectory } = useService(BaseServiceKey)
-    const { subscribeTask } = useNotifier()
     const { quit } = useQuit()
     const isExportingCurseforge = ref(false)
     const isExportingModpack = ref(false)

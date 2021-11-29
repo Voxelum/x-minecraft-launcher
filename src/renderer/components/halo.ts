@@ -1,3 +1,4 @@
+// @ts-nocheck
 import ShaderBase, { VANTA } from 'vanta/src/_shaderBase.js'
 import { LinearFilter, RGBFormat, WebGLRenderTarget } from 'three'
 

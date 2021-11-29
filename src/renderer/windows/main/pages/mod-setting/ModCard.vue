@@ -98,7 +98,7 @@ import unknownPack from '/@/assets/unknown_pack.png'
 import { useCompatible, useI18n, useInstanceVersionBase, useService, useTags } from '/@/hooks'
 import { getColor } from '/@/util/color'
 import { required } from '/@/util/props'
-import { ContextMenuItem, useContextMenu, useCurseforgeRoute, useMcWikiRoute } from '/@/windows/main/hooks'
+import { ContextMenuItem, useContextMenu, useCurseforgeRoute, useMcWikiRoute } from '/@/windows/main/composables'
 import { BaseServiceKey } from '/@shared/services/BaseService'
 import { InstanceServiceKey } from '/@shared/services/InstanceService'
 

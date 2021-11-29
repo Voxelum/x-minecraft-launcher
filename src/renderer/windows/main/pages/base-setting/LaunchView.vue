@@ -197,7 +197,7 @@ import {
   useLaunchPreview,
 } from '/@/hooks'
 import JavaList from './JavaList.vue'
-import { useNotifier } from '../../hooks'
+import { useNotifier } from '../../composables'
 
 export default defineComponent({
   components: { JavaList },

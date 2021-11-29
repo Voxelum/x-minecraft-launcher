@@ -51,7 +51,7 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent } from '@vue/composition-api';
-import { useContextMenu } from '../../hooks';
+import { useContextMenu } from '/@/windows/main/composables';
 import unknownPack from '/@/assets/unknown_pack.png';
 import { useI18n, useService, useTags } from '/@/hooks';
 import { ShaderPackItem } from '/@/hooks/useShaderpacks';

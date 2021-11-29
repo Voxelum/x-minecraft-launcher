@@ -181,7 +181,7 @@ import {
   useInstanceBase,
 } from '/@/hooks'
 import ResourcePackCard from './ResourcePackCard.vue'
-import { useSearch, onSearchToggle } from '../../hooks'
+import { useSearch } from '../../composables'
 import FilterCombobox, { useFilterCombobox } from '/@/components/FilterCombobox.vue'
 
 function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {

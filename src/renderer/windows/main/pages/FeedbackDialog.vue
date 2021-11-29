@@ -80,7 +80,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, defineComponent } from '@vue/composition-api'
-import { useDialog } from '/@/windows/main/hooks'
+import { useDialog } from '/@/windows/main/composables'
 
 export default defineComponent({
   setup() {

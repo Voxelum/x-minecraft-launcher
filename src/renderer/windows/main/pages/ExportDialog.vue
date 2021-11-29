@@ -101,8 +101,8 @@
 
 <script lang=ts>
 import { computed, defineComponent, nextTick, onMounted, reactive, toRefs, watch } from '@vue/composition-api'
-import { useZipFilter } from '/@/windows/main/hooks'
-import InstanceFiles from './InstanceFiles.vue'
+import { useZipFilter } from '/@/windows/main/composables'
+import InstanceFiles from './ExportDialogInstanceFiles.vue'
 import { useI18n, useInstance, useInstanceVersion, useLocalVersions, useWindowController, useService } from '/@/hooks'
 import { InstanceCurseforgeIOServiceKey } from '/@shared/services/InstanceCurseforgeIOServic'
 import { InstanceFile, InstanceIOServiceKey } from '/@shared/services/InstanceIOService'

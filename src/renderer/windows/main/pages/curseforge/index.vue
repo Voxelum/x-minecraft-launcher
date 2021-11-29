@@ -68,14 +68,14 @@ export default defineComponent({
     const { refreshing } = useCurseforgeCategories()
     const ready = computed(() => online.value && !refreshing.value)
     return {
-      targets: ['mc-mods', 'texture-packs', 'worlds', 'modpacks', 'customization'] as const,
+      targets: ['mc-mods', 'texture-packs', 'worlds', 'modpacks'] as const,
       ready,
       images: {
         'texture-packs': resourcepack,
         'mc-mods': mods,
         modpacks: modpack,
         worlds,
-        customization: resourcepack,
+        // customization: resourcepack,
       },
     }
   },
