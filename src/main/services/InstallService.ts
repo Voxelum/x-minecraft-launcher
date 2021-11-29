@@ -441,6 +441,7 @@ export default class InstallService extends StatefulService<InstallState> implem
   }
 
   // @Lock(v => )
+  @Lock((v: InstallOptifineOptions) => write(versionLockOf(`optifine-${v.mcversion}-${v.type}_${v.patch}`)))
   async installOptifine(options: InstallOptifineOptions) {
     const minecraft = new MinecraftFolder(this.getPath())
     const optifineVersion = `${options.type}_${options.patch}`
@@ -501,6 +502,7 @@ export default class InstallService extends StatefulService<InstallState> implem
       return id
     }))
 
+    this.versionService.refreshVersions()
     this.log(`Succeed to install optifine ${version} on ${options.inhrenitFrom ?? options.mcversion}. ${id}`)
 
     return id
