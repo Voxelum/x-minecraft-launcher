@@ -1,4 +1,5 @@
-import { DownloadTask, resolveJava, scanLocalJava, UnzipTask, installJavaRuntimesTask, fetchJavaRuntimeManifest, JavaRuntimeTargetType, parseJavaVersion } from '@xmcl/installer'
+import { JavaVersion } from '@xmcl/core'
+import { DownloadTask, fetchJavaRuntimeManifest, installJavaRuntimesTask, parseJavaVersion, resolveJava, scanLocalJava, UnzipTask } from '@xmcl/installer'
 import { task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { ensureFile, move, readdir, readFile, remove, unlink } from 'fs-extra'
@@ -10,10 +11,10 @@ import { ExportService, Inject, Singleton, StatefulService } from './Service'
 import LauncherApp from '/@main/app/LauncherApp'
 import { getTsingHuaAdpotOponJDKPageUrl, parseTsingHuaAdpotOpenJDKHotspotArchive } from '/@main/entities/java'
 import { missing, readdirIfPresent } from '/@main/util/fs'
-import { extractLzma, unpack7z } from '/@main/util/zip'
+import { unpack7z } from '/@main/util/zip'
 import { JavaRecord } from '/@shared/entities/java'
 import { Java, JavaSchema } from '/@shared/entities/java.schema'
-import { JavaState, JavaService as IJavaService, JavaServiceKey } from '/@shared/services/JavaService'
+import { JavaService as IJavaService, JavaServiceKey, JavaState } from '/@shared/services/JavaService'
 import { requireString } from '/@shared/util/assert'
 
 @ExportService(JavaServiceKey)
@@ -32,11 +33,10 @@ export default class JavaService extends StatefulService<JavaState> implements I
     })
   }
 
-  getInternalJavaLocation(version: '8' | '16') {
-    const parent = version === '8' ? 'jre' : 'jre-next'
+  getInternalJavaLocation(version: JavaVersion) {
     return this.app.platform.name === 'osx'
-      ? this.getPath(parent, 'Contents', 'Home', 'bin', 'java')
-      : this.getPath(parent, 'bin',
+      ? this.getPath('jre', version.component, 'Contents', 'Home', 'bin', 'java')
+      : this.getPath('jre', version.component, 'bin',
         this.app.platform.name === 'windows' ? 'java.exe' : 'java')
   }
 
@@ -46,13 +46,13 @@ export default class JavaService extends StatefulService<JavaState> implements I
     this.log(`Loaded ${valid.length} java from cache.`)
     this.state.javaUpdate(valid)
 
-    const local = this.getInternalJavaLocation('8')
+    const local = this.getInternalJavaLocation({ majorVersion: 8, component: 'jre-legacy' })
     if (!this.state.all.map(j => j.path).some(p => p === local)) {
-      this.resolveJava(local)
+      this.validateJava(local)
     }
-    const local16 = this.getInternalJavaLocation('16')
-    if (!this.state.all.map(j => j.path).some(p => p === local16)) {
-      this.resolveJava(local16)
+    const localAlpha = this.getInternalJavaLocation({ majorVersion: 16, component: 'java-runtime-alpha' })
+    if (!this.state.all.map(j => j.path).some(p => p === localAlpha)) {
+      this.validateJava(local)
     }
     this.refreshLocalJava()
 
@@ -65,19 +65,18 @@ export default class JavaService extends StatefulService<JavaState> implements I
    * Install a default jdk 8 to the a preserved location. It'll be installed under your launcher root location `jre` folder
    */
   @Singleton()
-  async installDefaultJava(target: '8' | '16' = '8') {
+  async installDefaultJava(target: JavaVersion) {
     const location = this.getInternalJavaLocation(target)
     this.log(`Try to install official java ${target} to ${location}`)
     // if (this.state.all.find(j => j.path === location)) {
     //   return
     // }
-    const jreTarget = target === '16' ? JavaRuntimeTargetType.Next : JavaRuntimeTargetType.Legacy
     const manifest = await fetchJavaRuntimeManifest({
       apiHost: this.networkManager.isInGFW ? 'bmclapi2.bangbang93.com' : undefined,
       ...this.networkManager.getDownloadBaseOptions(),
-      target: jreTarget,
+      target: target.component,
     })
-    this.log(`Install jre runtime ${jreTarget} ${manifest.version.name} ${manifest.version.released}`)
+    this.log(`Install jre runtime ${target.component} (${target.majorVersion}) ${manifest.version.name} ${manifest.version.released}`)
     const dest = dirname(dirname(location))
     const task = installJavaRuntimesTask({
       manifest,
@@ -166,6 +165,10 @@ export default class JavaService extends StatefulService<JavaState> implements I
       return undefined
     }
 
+    return this.validateJava(javaPath)
+  }
+
+  async validateJava(javaPath: string) {
     const java = await resolveJava(javaPath)
     if (java) {
       this.log(`Resolved java ${java.version} in ${javaPath}`)
