@@ -1,21 +1,28 @@
 <template>
   <div style="display: flex !important; height: 100%; flex-direction: column;">
     <v-list-tile style="margin: 0px 0;">
-      <v-checkbox
-        v-model="showAlpha"
-        :label="$t('minecraft.showAlpha')"
-      />
+      <v-checkbox v-model="showAlpha" :label="$t('minecraft.showAlpha')" />
     </v-list-tile>
     <v-divider dark />
     <refreshing-tile v-if="refreshing && versions.length === 0" />
-    <minecraft-version-list
+    <virtual-list
+      v-else-if="versions.length !== 0"
+      ref="list"
+      class="v-list"
+      style="overflow-y: scroll; scrollbar-width: 0; background-color: transparent; transition: none;"
+      :data-key="'id'"
+      :data-component="MinecraftVersionListTile"
+      :data-sources="versions"
+      :keep="30"
+      :extra-props="{ select: select, selected: version, showTime: true, statuses: statuses, install: install }"
+    />
+    <!-- <minecraft-version-list
       v-else-if="versions.length !== 0"
       :value="version"
       :statuses="statuses"
-      :versions="versions"
       :select="select"
       :install="install"
-    />
+    /> -->
     <hint
       v-else
       v-ripple
@@ -35,6 +42,7 @@ import {
 } from '/@/hooks'
 import { required } from '/@/util/props'
 import { MinecraftVersion } from '@xmcl/installer'
+import MinecraftVersionListTile from './MinecraftVersionListTile.vue'
 
 export default defineComponent({
   props: {
@@ -55,6 +63,7 @@ export default defineComponent({
       statuses,
       refresh,
       install,
+      MinecraftVersionListTile,
     }
   },
 })

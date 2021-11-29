@@ -92,7 +92,7 @@ export function useMinecraftVersionFilter(filterText: Ref<string>) {
 }
 
 export function useFabricVersions() {
-  const { state: installState, refreshFabric } = useInstallService()
+  const { state: installState, refreshFabric, installFabric } = useInstallService()
   const { state } = useVersionService()
   const loaderVersions = computed(() => installState.fabric.loaders ?? [])
   const yarnVersions = computed(() => installState.fabric.yarns ?? [])
@@ -131,6 +131,7 @@ export function useFabricVersions() {
   return {
     loaderVersions,
     yarnVersions,
+    install: installFabric,
     refresh,
     loaderStatus,
     yarnStatus,
@@ -165,6 +166,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
         statusMap[version.version] = localForgeVersion[version.version] ? 'local' : 'remote'
       })
     })
+    console.log(statusMap)
     return statusMap
   })
 
@@ -218,7 +220,7 @@ export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
 }
 
 export function useOptifineVersions(minecraftVersion: Ref<string>) {
-  const { state: installState, refreshOptifine } = useInstallService()
+  const { state: installState, refreshOptifine, installOptifine } = useInstallService()
   const { state } = useVersionService()
 
   const versions = computed(() => installState.optifine.versions.filter(v => v.mcversion === minecraftVersion.value))
@@ -254,5 +256,6 @@ export function useOptifineVersions(minecraftVersion: Ref<string>) {
     versions,
     refresh,
     refreshing,
+    install: installOptifine,
   }
 }

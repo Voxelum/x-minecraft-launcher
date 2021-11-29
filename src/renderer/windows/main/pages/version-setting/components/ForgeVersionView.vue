@@ -7,14 +7,27 @@
     </v-list-tile>
     <v-divider dark />
     <refreshing-tile v-if="refreshing && versions.length === 0" />
-    <forge-version-list
+    <v-list
       v-else-if="versions.length !== 0"
-      :value="versions"
-      :select="select"
-      :status="status"
-      :selected="version"
-      :install="install"
-    />
+      dark
+      class="h-full flex flex-col overflow-auto"
+      style="background-color: transparent;"
+    >
+      <v-list-tile ripple @click="select({ version: '' })">
+        <v-list-tile-avatar>
+          <v-icon>close</v-icon>
+        </v-list-tile-avatar>
+        {{ $t('forge.disable') }}
+      </v-list-tile>
+      <virtual-list
+        class="h-full overflow-y-auto"
+        :data-sources="versions"
+        :data-key="'version'"
+        :data-component="ForgeVersionListTile"
+        :keep="16"
+        :extra-props="{ selected: version, select: select, install: install, statuses }"
+      />
+    </v-list>
     <hint
       v-else
       v-ripple
@@ -28,6 +41,7 @@
 
 <script lang=ts>
 import { defineComponent, reactive, computed, toRefs, watch } from '@vue/composition-api'
+import ForgeVersionListTile from './ForgeVersionListTile.vue'
 import { useForgeVersions } from '/@/hooks'
 import { required } from '/@/util/props'
 import { ForgeVersion } from '/@shared/entities/version.schema'
@@ -35,7 +49,7 @@ import { compareDate } from '/@shared/util/object'
 
 export default defineComponent({
   props: {
-    select: required<(v: ForgeVersion | undefined) => void>(Function),
+    select: required<(v: { version: string }) => void>(Function),
     filterText: required<string>(String),
     minecraft: required<string>(String),
     version: required<string>(String),
@@ -58,7 +72,7 @@ export default defineComponent({
         return compareDate(new Date(b.date), new Date(a.date))
       }
       return b.version.localeCompare(a.version)
-    }))
+    }).map(v => ({ ...v, status: statuses.value[v.version] })))
 
     watch(versions, () => {
       if (versions.value.length === 0) {
@@ -68,11 +82,12 @@ export default defineComponent({
 
     return {
       ...toRefs(data),
-      status: statuses,
+      statuses,
       versions,
       refreshing,
       refresh,
       install,
+      ForgeVersionListTile,
     }
   },
 })
