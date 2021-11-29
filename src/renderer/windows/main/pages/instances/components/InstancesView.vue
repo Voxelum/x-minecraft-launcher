@@ -1,6 +1,6 @@
 <template>
   <v-layout
-    class="invisible-scroll"
+    class="invisible-scroll select-none"
     row
     wrap
     style="overflow: scroll; max-height: 85vh;"

@@ -67,6 +67,7 @@
         :cancel="cancelDelete"
       />
       <v-dialog
+        width="900"
         v-model="wizard"
         persistent
       >
@@ -93,13 +94,13 @@ import {
   useOperation,
   useInstancesServerStatus,
 } from '/@/hooks'
-import { Notify, useNotifier, useSearch, onSearchToggle } from '/@/windows/main/hooks'
-import AddInstanceStepper from '/@/windows/main/components/InstanceCreationStepper/InstanceStepper.vue'
-import AddServerStepper from '/@/windows/main/components/InstanceCreationStepper/ServerStepper.vue'
-import InstancesView from './InstancesView.vue'
-import DeleteDialog from './DeleteDialog.vue'
-import ImportButton from './ImportButton.vue'
-import CreateButton from './CreateButton.vue'
+import { Notify, useNotifier, useSearch, onSearchToggle } from '/@/windows/main/composables'
+import AddInstanceStepper from './components/InstanceCreationStepper/InstanceStepper.vue'
+import AddServerStepper from './components/InstanceCreationStepper/ServerStepper.vue'
+import InstancesView from './components/InstancesView.vue'
+import DeleteDialog from './components/DeleteDialog.vue'
+import ImportButton from './components/ImportButton.vue'
+import CreateButton from './components/CreateButton.vue'
 
 function useRefreshInstance(notify: Notify) {
   const { $t } = useI18n()
@@ -117,7 +118,6 @@ function useRefreshInstance(notify: Notify) {
 }
 
 function setupInstanceCreation() {
-  const router = useRouter()
   const data = reactive({
     wizard: false,
     wizardContent: AddInstanceStepper as any,
@@ -135,9 +135,6 @@ function setupInstanceCreation() {
     },
     onCreated(cancelled?: boolean) {
       data.wizard = false
-      if (!cancelled) {
-        router.push('/')
-      }
     },
   }
 }
