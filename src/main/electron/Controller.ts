@@ -133,8 +133,8 @@ export default class Controller implements LauncherAppController {
       title: 'KeyStone Launcher',
       minWidth: 800,
       minHeight: 580,
-      maxWidth: 1200,
-      maxHeight: 870,
+      // maxWidth: 1200,
+      // maxHeight: 870,
       width: config.width > 0 ? config.width : undefined,
       height: config.height > 0 ? config.height : undefined,
       // x: config.x !== null ? config.x : undefined,
@@ -143,7 +143,7 @@ export default class Controller implements LauncherAppController {
       frame: false,
       transparent: true,
       hasShadow: false,
-      maximizable: false,
+      maximizable: true,
       vibrancy: 'sidebar', // or popover
       icon: iconPath,
       webPreferences: {
