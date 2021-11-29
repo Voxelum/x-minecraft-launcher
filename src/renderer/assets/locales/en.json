@@ -235,7 +235,11 @@
   "fabric": {
     "disable": "Disable Fabric",
     "noVersion": "No Fabric Version for Minecraft {version}",
-    "showStableOnly": "Show Stable Only"
+    "showStableOnly": "Show Stable Only",
+    "version": {
+      "stable": "Stable",
+      "unstable": "Unstable"
+    }
   },
   "feedback": {
     "": "Feedback",
@@ -268,7 +272,11 @@
     "recommended": "Recommended",
     "recommendedAndLatestOnly": "Recommended and Latest Only",
     "showBuggy": "Show Buggy",
-    "version": "Forge Version"
+    "version": "Forge Version",
+    "versions": {
+      "latest": "Latest",
+      "recommended": "Recommended"
+    }
   },
   "gamesetting": {
     "anaglyph3d": {
@@ -536,7 +544,11 @@
     "noVersion": "Cannot load Minecraft versions",
     "settings": "Minecraft Settings",
     "showAlpha": "Show Snapshot",
-    "version": "Minecraft Version"
+    "version": "Minecraft Version",
+    "versions": {
+      "release": "Release",
+      "snapshot": "Snapshot"
+    }
   },
   "mod": {
     "acceptVersion": "Accept Minecraft {version}",

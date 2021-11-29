@@ -218,7 +218,11 @@
   "fabric": {
     "disable": "不启用 Fabric",
     "noVersion": "在 Minecraft {version} 下未找到任何 Fabric 版本",
-    "showStableOnly": "只显示稳定版"
+    "showStableOnly": "只显示稳定版",
+    "version": {
+      "stable": "稳定版",
+      "unstable": "预览版"
+    }
   },
   "feedback": {
     "": "反馈",
@@ -251,7 +255,11 @@
     "recommended": "稳定版",
     "recommendedAndLatestOnly": "只显示最新版和稳定版",
     "showBuggy": "显示Buggy版",
-    "version": "Forge"
+    "version": "Forge",
+    "versions": {
+      "latest": "最新版",
+      "recommended": "稳定版"
+    }
   },
   "gamesetting": {
     "anaglyph3d": {
@@ -518,7 +526,11 @@
     "noVersion": "无法加载 Minecraft 版本列表",
     "settings": "Minecraft设置",
     "showAlpha": "显示快照版",
-    "version": "Minecraft 版本"
+    "version": "Minecraft 版本",
+    "versions": {
+      "release": "正式版",
+      "snapshot": "快照版"
+    }
   },
   "mod": {
     "acceptVersion": "需要 Minecraft {version}",
