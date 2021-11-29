@@ -60,6 +60,7 @@ export const EMPTY_VERSION: ResolvedVersion = Object.freeze({
   type: '',
   pathChain: [],
   inheritances: [],
+  javaVersion: { majorVersion: 8, component: 'jre_legacy' }
 })
 export interface LibrariesRecord {
   org: string
@@ -137,18 +138,29 @@ export function isVersionMatched(version: ResolvedVersion, runtime: RuntimeVersi
   if (version.minecraftVersion !== runtime.minecraft) {
     return false
   }
-  let lib = version.libraries.find(isForgeLibrary)
-  if (runtime.forge && !isSameForgeVersion(runtime.forge, lib?.version ?? '')) {
-    // require forge but not forge
-    return false
+  if (runtime.forge) {
+    // require forge
+    const lib = version.libraries.find(isForgeLibrary)
+    if (!lib || !isSameForgeVersion(runtime.forge, lib.version ?? '')) {
+      // require forge but not forge
+      return false
+    }
   }
-  lib = version.libraries.find(isFabricLoaderLibrary)
-  if (runtime.fabricLoader && lib?.version !== runtime.fabricLoader) {
-    return false
+
+  if (runtime.fabricLoader) {
+    // require fabric
+    const lib = version.libraries.find(isFabricLoaderLibrary)
+    if (!lib || lib.version !== runtime.fabricLoader) {
+      return false
+    }
   }
-  lib = version.libraries.find(isOptifineLibrary)
-  if (runtime.optifine && !isSameOptifineVersion(runtime.optifine, lib?.version ?? '')) {
-    return false
+
+  if (runtime.optifine) {
+    // require optifine
+    const lib = version.libraries.find(isOptifineLibrary)
+    if (!lib || !isSameOptifineVersion(runtime.optifine, lib.version ?? '')) {
+      return false
+    }
   }
 
   return true

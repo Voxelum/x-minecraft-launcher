@@ -1,6 +1,6 @@
-import { TaskAddedPayload, TaskBatchPayload, TaskPayload, TaskUpdatePayload } from '/@shared/task'
-import { Task, TaskGroup, TaskState } from '@xmcl/task'
+import { Task, TaskGroup } from '@xmcl/task'
 import { EventEmitter } from 'events'
+import { TaskAddedPayload, TaskBatchUpdatePayloads, TaskPayload, TaskUpdatePayload } from '/@shared/task'
 
 export type TaskEventType = 'update' | 'start' | 'success' | 'fail' | 'pause' | 'cancel' | 'resume'
 
@@ -15,7 +15,7 @@ export interface TaskEventEmitter extends EventEmitter {
 }
 
 export interface TaskMonitor {
-  flush(): TaskBatchPayload
+  flush(): TaskBatchUpdatePayloads
   destroy(): void
 }
 
@@ -118,8 +118,8 @@ export function createTaskMonitor (
   emitter.on('cancel', status)
   emitter.on('fail', fail)
 
-  function flush (): TaskBatchPayload {
-    const result: TaskBatchPayload = {
+  function flush (): TaskBatchUpdatePayloads {
+    const result: TaskBatchUpdatePayloads = {
       adds,
       updates: Object.values(updates),
     }
@@ -155,7 +155,7 @@ export function createTaskPusher (
   emitter: TaskEventEmitter,
   interval: number,
   threshold: number,
-  consume: (payload: TaskBatchPayload) => void,
+  consume: (payload: TaskBatchUpdatePayloads) => void,
 ) {
   const monitor = createTaskMonitor(emitter, (size) => {
     if (size > threshold) {

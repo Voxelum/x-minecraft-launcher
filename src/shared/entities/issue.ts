@@ -1,4 +1,4 @@
-import type { ResolvedLibrary } from '@xmcl/core'
+import type { JavaVersion, ResolvedLibrary } from '@xmcl/core'
 import type { InstallProfile } from '@xmcl/installer'
 import { RuntimeVersions } from './instance.schema'
 
@@ -46,7 +46,7 @@ export interface IssueRegistries {
   unknownMod: Registry<{ name: string; actual: string }, false, true>
   incompatibleMod: Registry<{ name: string; actual: string; accepted: string }, false, true>
   incompatibleResourcePack: Registry<{ name: string; actual: string; accepted: string }, false, true>
-  incompatibleJava: Registry<{ java: string; type: string; version: string; targetVersion: '8' | '16' }, false, true>
+  incompatibleJava: Registry<{ java: string; type: string; version: string; targetVersion: JavaVersion }, false, true>
 
   missingJava: Registry<{}>
   invalidJava: Registry<{ java: string }>

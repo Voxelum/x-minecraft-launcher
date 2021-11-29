@@ -39,15 +39,15 @@ export type ShaderPackResource = Resource<ShaderPackResource> & { readonly type:
 export type UnknownResource = Resource<unknown> & { readonly type: ResourceType.Unknown }
 export type ModResource = ForgeResource | FabricResource | LiteloaderResource
 export type AnyResource = ForgeResource
-| FabricResource
-| LiteloaderResource
-| CurseforgeModpackResource
-| ModpackResource
-| ResourcePackResource
-| SaveResource
-| McbbsModpackResource
-| ShaderPackResource
-| UnknownResource
+  | FabricResource
+  | LiteloaderResource
+  | CurseforgeModpackResource
+  | ModpackResource
+  | ResourcePackResource
+  | SaveResource
+  | McbbsModpackResource
+  | ShaderPackResource
+  | UnknownResource
 
 export type PersistedForgeResource = PersistedResource<ForgeModCommonMetadata> & { readonly type: ResourceType.Forge }
 export type PersistedFabricResource = PersistedResource<FabricModMetadata> & { readonly type: ResourceType.Fabric }
@@ -61,15 +61,15 @@ export type PersistedShaderPackResource = PersistedResource<ShaderPackResource> 
 export type PersistedUnknownResource = PersistedResource<unknown> & { readonly type: ResourceType.Unknown }
 export type PersistedModResource = PersistedForgeResource | PersistedFabricResource | PersistedLiteloaderResource
 export type AnyPersistedResource = PersistedForgeResource
-| PersistedFabricResource
-| PersistedLiteloaderResource
-| PersistedCurseforgeModpackResource
-| PersistedModpackResource
-| PersistedResourcePackResource
-| PersistedSaveResource
-| PersistedMcbbsModpackResource
-| PersistedShaderPackResource
-| PersistedUnknownResource
+  | PersistedFabricResource
+  | PersistedLiteloaderResource
+  | PersistedCurseforgeModpackResource
+  | PersistedModpackResource
+  | PersistedResourcePackResource
+  | PersistedSaveResource
+  | PersistedMcbbsModpackResource
+  | PersistedShaderPackResource
+  | PersistedUnknownResource
 
 export function isForgeResource(resource: Resource): resource is ForgeResource {
   return resource.type === 'forge'
@@ -93,12 +93,16 @@ export function isModResource(resource: Resource): resource is ModResource {
 
 export function isShaderPackResource(resource: Resource): resource is ShaderPackResource {
   return resource.type === 'shaderpack'
-} 
+}
 /**
  * Is this resource a raw modpack resource. The raw modpack means it just containing the .minecraft folder content itself
  */
 export function isModpackResource(resource: Resource): resource is ModpackResource {
   return resource.type === ResourceType.Modpack
+}
+
+export function isCurseforgeModpackResource(resource: Resource): resource is CurseforgeModpackResource {
+  return resource.type === ResourceType.CurseforgeModpack
 }
 
 export function isSaveResource(resource: Resource): resource is SaveResource {
