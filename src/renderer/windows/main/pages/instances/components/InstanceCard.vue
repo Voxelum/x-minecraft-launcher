@@ -1,16 +1,19 @@
 <template>
   <v-card
     v-draggable-card
-    v-ripple
+    :ripple="!isBusy"
     color="grey darken-3"
     class="draggable-card w-full flex flex-col"
     style="padding: 0;"
     hover
     dark
-    draggable
+    :draggable="!isBusy"
     @click="$emit('click', $event)"
     @dragstart="onDragStart"
   >
+    <div v-if="isBusy" class="absolute w-full h-full flex items-center justify-center">
+      <v-progress-circular class="z-10" :size="100" :width="4" indeterminate></v-progress-circular>
+    </div>
     <v-img class="white--text favicon grey darken-2 max-h-50" :src="image">
       <v-layout fill-height class="justify-center flex-col relative">
         <v-flex flexbox class="justify-center items-center">
@@ -78,16 +81,18 @@
 <script lang=ts>
 import { defineComponent, reactive, toRefs, computed } from '@vue/composition-api'
 import unknownServer from '/@/assets/unknown_server.png'
-import { useInstanceServerStatus } from '/@/hooks'
+import { useBusy, useInstanceServerStatus } from '/@/hooks'
 import { Instance } from '/@shared/entities/instance'
 import { required } from '/@/util/props'
 import { getBanner } from '/@/util/banner'
+import { write } from '/@shared/util/mutex'
 
 export default defineComponent({
   props: {
     instance: required<Instance>(Object),
   },
   setup(props, context) {
+    const isBusy = useBusy(write(props.instance.path))
     function onDragStart(event: DragEvent) {
       event.dataTransfer!.effectAllowed = 'move'
     }
@@ -103,6 +108,7 @@ export default defineComponent({
       return unknownServer
     })
     return {
+      isBusy,
       image,
       status,
       description: computed(() => props.instance.description),
