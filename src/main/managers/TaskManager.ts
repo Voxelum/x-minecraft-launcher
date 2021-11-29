@@ -45,7 +45,7 @@ export default class TaskManager extends Manager {
         }
         Reflect.set(task, 'error', errorMessage)
       },
-      onSuccessed(task: Task<any>, result: any) {
+      onSucceed(task: Task<any>, result: any) {
         emitter.emit('success', uid, task)
       },
       onPaused(task: Task<any>) {

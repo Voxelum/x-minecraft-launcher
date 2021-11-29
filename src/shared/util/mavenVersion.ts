@@ -280,7 +280,7 @@ class StringItem implements Item {
   type = Type.STRING
 
   compareTo(item: Item): number {
-    if (item === null) {
+    if (!item) {
       // 1-rc < 1, 1-ga > 1
       return StringItem.compre(StringItem.comparableQualifier(this.value), StringItem.RELEASE_VERSION_INDEX)
     }

@@ -19,6 +19,8 @@ export interface TaskItem {
   time: Date
 
   title: string
+  from: string
+  to: string
   message: string
   total: number
   progress: number

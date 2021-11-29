@@ -4,6 +4,7 @@ import { join } from 'path'
 import { ExportService, StatefulService } from './Service'
 import { copyPassively, FileStateWatcher, missing, readdirEnsured } from '/@main/util/fs'
 import { VersionState, VersionService as IVersionService, VersionServiceKey } from '/@shared/services/VersionService'
+import { isNonnull } from '/@shared/util/assert'
 
 /**
  * The local version serivce maintains the installed versions on disk
@@ -82,16 +83,15 @@ export default class VersionService extends StatefulService<VersionState> implem
 
     files = files.filter(f => !f.startsWith('.'))
 
-    const versions: ResolvedVersion[] = []
-    for (const versionId of files) {
+    const versions: ResolvedVersion[] = (await Promise.all(files.map(async (versionId) => {
       try {
         const version = await this.resolveLocalVersion(versionId)
-        versions.push(version)
+        return version
       } catch (e) {
         this.warn(`An error occured during refresh local version ${versionId}`)
         this.warn(e)
       }
-    }
+    }))).filter(isNonnull)
 
     if (versions.length !== 0) {
       if (patch) {

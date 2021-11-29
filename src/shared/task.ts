@@ -1,11 +1,11 @@
 import { GenericEventEmitter } from './events'
 
 export enum TaskState {
-  Idel,
+  Idle,
   Running,
   Cancelled,
   Paused,
-  Successed,
+  Succeed,
   Failed,
 }
 
