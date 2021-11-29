@@ -1,3 +1,4 @@
+import { EditInstanceOptions } from './InstanceService'
 import { ServiceKey, ServiceTemplate } from './Service'
 
 export interface ExportCurseforgeModpackOptions {
@@ -18,7 +19,10 @@ export interface ExportCurseforgeModpackOptions {
   author: string
   gameVersion: string
 }
-export interface ImportCurseforgeModpackOptions {
+
+export type ImportCurseforgeModpackOptions = ImportCurseforgeModpackToInstanceOptions | ImportCurseforgeModpackCreateInstanceOptions
+
+export interface ImportCurseforgeModpackToInstanceOptions {
   /**
    * The path of curseforge modpack zip file
    */
@@ -26,8 +30,18 @@ export interface ImportCurseforgeModpackOptions {
   /**
    * The destination instance path. If this is empty, it will create a new instance.
    */
-  instancePath?: string
+  instancePath: string
 }
+
+export interface ImportCurseforgeModpackCreateInstanceOptions {
+  /**
+   * The path of curseforge modpack zip file
+   */
+  path: string
+
+  instanceConfig: Omit<EditInstanceOptions, 'instancePath'>
+}
+
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
@@ -45,7 +59,7 @@ export interface InstanceCurseforgeIOService {
 }
 
 export const InstanceCurseforgeIOServiceKey: ServiceKey<InstanceCurseforgeIOService> = 'InstanceCurseforgeIOService'
-export const InstanceCurseforgeIOServiceMethods: ServiceTemplate<InstanceCurseforgeIOService> ={
+export const InstanceCurseforgeIOServiceMethods: ServiceTemplate<InstanceCurseforgeIOService> = {
   exportCurseforgeModpack: undefined,
   importCurseforgeModpack: undefined
 }

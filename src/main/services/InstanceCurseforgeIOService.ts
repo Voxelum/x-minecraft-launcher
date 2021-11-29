@@ -1,5 +1,4 @@
-import { createDefaultCurseforgeQuery, installCurseforgeModpackTask, readManifestTask } from '@xmcl/installer'
-import { task } from '@xmcl/task'
+import { createDefaultCurseforgeQuery, installCurseforgeModpackTask, readManifest } from '@xmcl/installer'
 import { ensureDir, rename } from 'fs-extra'
 import { basename, dirname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
@@ -18,6 +17,7 @@ import { ResourceDomain } from '/@shared/entities/resource.schema'
 import { ExportCurseforgeModpackOptions, ImportCurseforgeModpackOptions, InstanceCurseforgeIOService as IInstanceCurseforgeIOService, InstanceCurseforgeIOServiceKey } from '/@shared/services/InstanceCurseforgeIOServic'
 import { EditInstanceOptions } from '/@shared/services/InstanceService'
 import { isNonnull, requireObject } from '/@shared/util/assert'
+import { write } from '/@shared/util/mutex'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
@@ -109,44 +109,49 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
    * @param options The options provide instance directory path and curseforge modpack zip path
    */
   async importCurseforgeModpack(options: ImportCurseforgeModpackOptions) {
-    let { path, instancePath } = options
+    let { path } = options
 
     if (!await isFile(path)) {
       throw new Exception({ type: 'requireCurseforgeModpackAFile', path }, `Cannot import curseforge modpack ${path}, since it's not a file!`)
     }
 
     this.log(`Import curseforge modpack by path ${path}`)
-    const { instanceResourceService, log, resourceService, instanceService } = this
-    const installCurseforgeModpack = task('installCurseforgeModpack', async function () {
-      const manifest = await this.yield(readManifestTask(path)).catch(() => {
-        throw new Exception({ type: 'invalidCurseforgeModpack', path })
+    const { instanceModsService, log, resourceService, instanceService } = this
+    const manifest = await readManifest(path).catch(() => {
+      throw new Exception({ type: 'invalidCurseforgeModpack', path })
+    })
+
+    const forgeId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('forge'))
+    const fabricId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('fabric'))
+
+    const config: EditInstanceOptions = {
+      runtime: {
+        minecraft: manifest.minecraft.version,
+        forge: forgeId ? forgeId.id.substring(6) : '',
+        liteloader: '',
+        fabricLoader: fabricId ? fabricId.id.substring(7) : '',
+        yarn: '',
+      },
+    }
+
+    let instancePath: string
+    if ('instancePath' in options) {
+      await instanceService.editInstance({
+        instancePath: options.instancePath,
+        ...config,
       })
+      instancePath = options.instancePath
+    } else {
+      instancePath = await instanceService.createInstance({
+        name: manifest.name,
+        author: manifest.author,
+        ...config,
+        ...options.instanceConfig
+      })
+    }
 
-      const forgeId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('forge'))
-
-      const config: EditInstanceOptions = {
-        runtime: {
-          minecraft: manifest.minecraft.version,
-          forge: forgeId ? forgeId.id.substring(6) : '',
-          liteloader: '',
-          fabricLoader: '',
-          yarn: '',
-        },
-      }
-
-      if (instancePath) {
-        await instanceService.editInstance({
-          instancePath,
-          ...config,
-        })
-      } else {
-        instancePath = await instanceService.createInstance({
-          name: manifest.name,
-          author: manifest.author,
-          ...config,
-        })
-      }
-
+    const lock = this.semaphoreManager.getLock(write(instancePath))
+    return lock.write(async () => {
       // deploy existed resources
       const filesToDeploy = manifest.files
         .map((f) => resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID)))
@@ -155,7 +160,7 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
       await ensureDir(join(instancePath, 'mods'))
       log(`Deploy ${filesToDeploy.length} existed resources from curseforge modpack!`)
 
-      await instanceResourceService.install({ mods: filesToDeploy, path: instancePath })
+      await instanceModsService.install({ mods: filesToDeploy, path: instancePath })
 
       // filter out existed resources
       manifest.files = manifest.files.filter((f) => !resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID)))
@@ -165,7 +170,7 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
 
       log(`Install ${manifest.files.length} files from curseforge modpack!`)
 
-      await this.concat(installCurseforgeModpackTask(path, instancePath, {
+      await this.submit(installCurseforgeModpackTask(path, instancePath, {
         manifest,
         async queryFileUrl(projectId: number, fileId: number) {
           const result = await defaultQuery(projectId, fileId)
@@ -174,6 +179,7 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
         },
         filePathResolver(p, f, m, u) {
           const path = m.getMod(basename(u))
+          console.log(path)
           files.find(fi => fi.fileID === f)!.path = path
           return path
         },
@@ -197,13 +203,12 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
         for (const res of resources.filter(r => r !== NO_RESOURCE)) {
           const path = mapping[`${res.curseforge!.projectId}:${res.curseforge!.fileId}`]
           const realName = res.fileName + res.ext
-          const realPath = dirname(path) + realName
+          const realPath = join(dirname(path), realName)
           await rename(path, realPath)
         }
       }
 
       return instancePath
     })
-    return this.submit(installCurseforgeModpack)
   }
 }
