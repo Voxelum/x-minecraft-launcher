@@ -1,76 +1,64 @@
 <template>
-  <v-layout
-    class="invisible-scroll select-none overflow-auto h-full"
-    row
-    wrap
+  <div
+    class="flex flex-col invisible-scroll select-none overflow-auto h-full justify-start items-start w-full gap-5"
     style="overflow: scroll;"
-    justify-start
-    fill-height
   >
-    <v-flex
+    <div
       v-if="instancesByTime[0].length !== 0"
-      class="justify-center"
-      style="color: grey"
-      xs12
-    >
-      {{ $t('profile.today') }}
-    </v-flex>
-    <v-flex
-      v-for="instance in instancesByTime[0]"
-      :key="instance.path"
-      md4
-      sm6
-      @dragstart="$emit('dragstart', instance)"
-      @dragend="$emit('dragend')"
-    >
-      <instance-card
-        :instance="instance"
-        @click.stop="$emit('select', instance.path)"
-      />
-    </v-flex>
-    <v-flex
+      class="justify-center w-full"
+      style="color: grey;"
+    >{{ $t('profile.today') }}</div>
+    <v-layout v-if="instancesByTime[0].length !== 0" row wrap class="w-full items-start">
+      <v-flex
+        v-for="instance in instancesByTime[0]"
+        :key="instance.path"
+        md4
+        sm6
+        @dragstart="$emit('dragstart', instance)"
+        @dragend="$emit('dragend')"
+      >
+        <instance-card :instance="instance" @click.stop="$emit('select', instance.path)" />
+      </v-flex>
+    </v-layout>
+
+    <div
       v-if="instancesByTime[1].length !== 0"
-      class="justify-center"
+      class="justify-center w-full"
       style="color: grey"
       xs12
-    >
-      {{ $t('profile.threeDay') }}
-    </v-flex>
-    <v-flex
-      v-for="instance in instancesByTime[1]"
-      :key="instance.path"
-      md4
-      xs6
-      @dragstart="$emit('dragstart', instance)"
-      @dragend="$emit('dragend')"
-    >
-      <instance-card
-        :instance="instance"
-        @click.stop="$emit('select', instance.path)"
-      />
-    </v-flex>
-    <v-flex
+    >{{ $t('profile.threeDay') }}</div>
+    <v-layout v-if="instancesByTime[1].length !== 0" row wrap class="w-full items-start">
+      <v-flex
+        v-for="instance in instancesByTime[1]"
+        :key="instance.path"
+        md4
+        xs6
+        @dragstart="$emit('dragstart', instance)"
+        @dragend="$emit('dragend')"
+      >
+        <instance-card :instance="instance" @click.stop="$emit('select', instance.path)" />
+      </v-flex>
+    </v-layout>
+
+    <div
       v-if="instancesByTime[2].length !== 0"
-      class="justify-center"
+      class="justify-center w-full"
       style="color: grey"
       xs12
-    >
-      {{ $t('profile.older') }}
-    </v-flex>
-    <v-flex
-      v-for="instance in instancesByTime[2]"
-      :key="instance.path"
-      md4
-      xs6
-      @dragstart="$emit('dragstart', instance)"
-      @dragend="$emit('dragend')"
-    >
-      <instance-card
-        :instance="instance"
-        @click.stop="$emit('select', instance.path)"
-      />
-    </v-flex>
-  </v-layout>
+    >{{ $t('profile.older') }}</div>
+    <v-layout v-if="instancesByTime[2].length !== 0" row wrap class="w-full items-start">
+      <v-flex
+        v-for="instance in instancesByTime[2]"
+        :key="instance.path"
+        md4
+        xs6
+        @dragstart="$emit('dragstart', instance)"
+        @dragend="$emit('dragend')"
+      >
+        <instance-card :instance="instance" @click.stop="$emit('select', instance.path)" />
+      </v-flex>
+    </v-layout>
+  </div>
 </template>
 
 <script lang=ts>
