@@ -58,7 +58,7 @@ export interface JavaService extends StatefulService<JavaState> {
   /**
    * scan local java locations and cache
    */
-  refreshLocalJava(): Promise<void>
+  refreshLocalJava(force?: boolean): Promise<void>
 }
 
 export const JavaServiceKey: ServiceKey<JavaService> = 'JavaService'
