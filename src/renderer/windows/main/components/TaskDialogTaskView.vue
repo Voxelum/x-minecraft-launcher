@@ -34,19 +34,13 @@
             @mouseenter.prevent="hovered[item.id] = true"
             @mouseleave.prevent="hovered[item.id] = false"
           >
-            <span
-              style="max-width: 100px;"
-            >{{ item.title }}</span>
+            <span style="max-width: 100px;">{{ item.title }}</span>
             <div
               style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
-            >
-              {{ item.time }}
-            </div>
+            >{{ item.time }}</div>
             <div
               style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
-            >
-              {{ item.message }}
-            </div>
+            >{{ item.message || item.from || item.to }}</div>
           </div>
         </template>
       </v-treeview>

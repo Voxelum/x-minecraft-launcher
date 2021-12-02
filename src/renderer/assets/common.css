@@ -59,14 +59,14 @@ p {
     transition: transform 0.7s;
 }
 
-::-webkit-scrollbar {
-    width: 12px;
-    cursor: pointer;
-    background: transparent;
+/* ::-webkit-scrollbar { */
+    /* width: 12px; */
+    /* cursor: pointer; */
+    /* background: transparent; */
     /* optional: just make scrollbar invisible */
-}
+/* } */
 
-::-webkit-scrollbar-thumb {
+/* ::-webkit-scrollbar-thumb {
     width: 8px;
     cursor: pointer;
     background: rgba(155, 155, 155, 0.5);
@@ -78,12 +78,20 @@ p {
     width: 12px;
     background: rgba(192, 192, 192, 0.8);
     transition: all 1s;
+} */
+
+/* html ::-webkit-scrollbar {
+    display: none;
 }
 
+::-webkit-scrollbar {
+    display: unset;
+} */
+
 .invisible-scroll::-webkit-scrollbar {
-    width: 0px;
-    height: 0px;
-    background: transparent;
+    /* width: 0px; */
+    /* height: 0px; */
+    /* background: transparent; */
 }
 
 .card-list {
@@ -227,5 +235,5 @@ a {
 }
 
 .v-text-field input {
-    @apply z-10
+    @apply z-10;
 }

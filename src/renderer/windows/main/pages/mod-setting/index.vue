@@ -98,6 +98,7 @@ import {
 import { useLocalStorageCacheBool } from '/@/hooks/useCache'
 import { isCompatible } from '/@shared/entities/version'
 import FilterCombobox from '../../../../components/FilterCombobox.vue'
+import Hint from '/@/components/Hint.vue'
 
 function setupDragMod(items: Ref<ModItem[]>, selectedMods: Ref<ModItem[]>, isSelectionMode: Ref<boolean>) {
   const isDraggingMod = computed(() => items.value.some(i => i.dragged))
@@ -274,8 +275,9 @@ export default defineComponent({
     ModCard,
     DeleteView,
     FloatButton,
-    FilterCombobox
-  },
+    FilterCombobox,
+    Hint
+},
   setup() {
     const { minecraft } = useInstanceVersionBase()
     const { importResource } = useResourceOperation()

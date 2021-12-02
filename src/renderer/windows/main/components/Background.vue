@@ -19,7 +19,7 @@
 import { defineComponent, onMounted } from '@vue/composition-api'
 import Halo from '/@/components/Halo.vue'
 import { BackgroundType, useBackground } from '/@/hooks'
-import Particles from '../../components/Particles.vue'
+import Particles from '/@/components/Particles.vue'
 
 export default defineComponent({
   setup() {

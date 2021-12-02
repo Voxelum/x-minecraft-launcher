@@ -194,6 +194,7 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
               curseforge: { projectId: f.projectID, fileId: f.fileID },
             },
           })),
+          background: true,
         })
         const mapping: Record<string, string> = {}
         for (const file of files) {

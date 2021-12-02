@@ -123,6 +123,8 @@ import { UserProfile } from '/@shared/entities/user.schema'
 import { required } from '/@/util/props'
 import { useService } from '/@/hooks'
 import { BaseServiceKey } from '/@shared/services/BaseService'
+import ImageShowTextureHead from './ImageShowTextureHead.vue'
+
 
 export default defineComponent({
   props: {
@@ -141,6 +143,7 @@ export default defineComponent({
     }
     return { gotoPurchesPage, gotoFAQPage }
   },
+  components: { ImageShowTextureHead },
 })
 </script>
 
