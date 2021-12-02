@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="h-full overflow-auto flex flex-col">
     <div class="header-bar">
       <v-text-field
         ref="filterElem"
@@ -22,13 +22,17 @@
     <v-container
       grid-list-md
       text-xs-center
-      class="pt-2"
+      class="pt-2 h-full overflow-scroll"
       @dragover.prevent
     >
-      <transition
-        name="scale-transition"
-        mode="out-in"
-      >
+      <instances-view
+        :instances="instances"
+        @select="selectInstance"
+        @dragstart="dragStart"
+        @dragend="dragEnd"
+      />
+
+      <transition name="scale-transition" mode="out-in">
         <v-btn
           v-if="draggingInstance.path === ''"
           :key="0"
@@ -54,36 +58,15 @@
           <v-icon>delete</v-icon>
         </v-btn>
       </transition>
-      <instances-view
-        :instances="instances"
-        @select="selectInstance"
-        @dragstart="dragStart"
-        @dragend="dragEnd"
-      />
-
-      <delete-dialog
-        :instance="deletingInstance"
-        :confirm="doDelete"
-        :cancel="cancelDelete"
-      />
-      <v-dialog
-        width="900"
-        v-model="wizard"
-        persistent
-      >
-        <component
-          :is="wizardContent"
-          :show="wizard"
-          @create="onCreated"
-          @quit="onCreated(true)"
-        />
-      </v-dialog>
+      <delete-dialog :instance="deletingInstance" :confirm="doDelete" :cancel="cancelDelete" />
+      <add-instance-dialog />
+      <add-server-dialog />
     </v-container>
   </div>
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, defineComponent, Ref, ref } from '@vue/composition-api'
+import { computed, defineComponent, Ref, ref } from '@vue/composition-api'
 import {
   useI18n,
   useWindowController,
@@ -94,9 +77,9 @@ import {
   useOperation,
   useInstancesServerStatus,
 } from '/@/hooks'
-import { Notify, useNotifier, useSearch, onSearchToggle } from '/@/windows/main/composables'
-import AddInstanceStepper from './components/InstanceCreationStepper/InstanceStepper.vue'
-import AddServerStepper from './components/InstanceCreationStepper/ServerStepper.vue'
+import { Notify, useNotifier, useSearch, onSearchToggle, useDialog } from '/@/windows/main/composables'
+import AddInstanceDialog from './components/AddInstanceDialog.vue'
+import AddServerDialog from './components/AddServerDialog.vue'
 import InstancesView from './components/InstancesView.vue'
 import DeleteDialog from './components/DeleteDialog.vue'
 import ImportButton from './components/ImportButton.vue'
@@ -113,28 +96,6 @@ function useRefreshInstance(notify: Notify) {
       }, () => {
         notify({ level: 'error', title: $t('profile.refreshServers') })
       })
-    },
-  }
-}
-
-function setupInstanceCreation() {
-  const data = reactive({
-    wizard: false,
-    wizardContent: AddInstanceStepper as any,
-  })
-  return {
-    ...toRefs(data),
-    onCreate(type: 'server' | 'instance') {
-      if (type === 'server') {
-        data.wizardContent = AddServerStepper
-        data.wizard = true
-      } else {
-        data.wizardContent = AddInstanceStepper
-        data.wizard = true
-      }
-    },
-    onCreated(cancelled?: boolean) {
-      data.wizard = false
     },
   }
 }
@@ -164,7 +125,7 @@ function setupInstanceImport() {
             type: 'curseforge-modpack',
             background: true,
           })
-          await importCurseforgeModpack({ path: f })
+          await importCurseforgeModpack({ path: f, instanceConfig: {} })
         } else {
           await importInstance(f)
         }
@@ -205,12 +166,17 @@ export default defineComponent({
     ImportButton,
     CreateButton,
     InstancesView,
+    AddServerDialog,
+    AddInstanceDialog,
   },
   setup() {
     const { mountInstance: selectInstance, deleteInstance, instances } = useInstances()
     const { notify } = useNotifier()
     const { push } = useRouter()
     const { text: filter } = useSearch()
+
+    const { show: showAddInstanceDialog } = useDialog('add-instance-dialog')
+    const { show: showAddServerDialog } = useDialog('add-server-dialog')
 
     const filterElem = ref(null) as Ref<any>
 
@@ -227,6 +193,14 @@ export default defineComponent({
             : false),
       )
     })
+
+    function onCreate(type: 'server' | 'instance') {
+      if (type === 'server') {
+        showAddServerDialog()
+      } else {
+        showAddInstanceDialog()
+      }
+    }
 
     onSearchToggle((force?: boolean) => {
       if (force) {
@@ -246,12 +220,11 @@ export default defineComponent({
       // instances display
       instances: filteredInstance,
       filter,
+      onCreate,
 
       // refresh instance operations
       ...useRefreshInstance(notify),
 
-      // instance creation status
-      ...setupInstanceCreation(),
       ...setupInstanceImport(),
 
       selectInstance(path: string) {

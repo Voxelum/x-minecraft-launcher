@@ -1,57 +1,59 @@
 <template>
-  <v-stepper v-model="step" dark>
-    <v-stepper-header>
-      <v-stepper-step :rules="[() => valid]" :editable="!creating" :complete="step > 1" step="1">
-        {{ $t('profile.templateSetting') }}
-        <small>{{ currentTemplate ? currentTemplate.title : '' }}</small>
-      </v-stepper-step>
-      <v-divider />
-      <v-stepper-step
-        :rules="[() => valid]"
-        :editable="!creating"
-        :complete="step > 2"
-        step="2"
-      >{{ $t('profile.baseSetting') }}</v-stepper-step>
-      <v-divider />
-      <!-- <v-stepper-step :complete="step > 2" step="2">{{ $t('profile.templateSetting.importing') }}</v-stepper-step> -->
-    </v-stepper-header>
+  <v-dialog width="900" v-model="isShown" persistent>
+    <v-stepper v-model="step" dark>
+      <v-stepper-header>
+        <v-stepper-step :rules="[() => valid]" :editable="!creating" :complete="step > 1" step="1">
+          {{ $t('profile.templateSetting') }}
+          <small>{{ currentTemplate ? currentTemplate.title : '' }}</small>
+        </v-stepper-step>
+        <v-divider />
+        <v-stepper-step
+          :rules="[() => valid]"
+          :editable="!creating"
+          :complete="step > 2"
+          step="2"
+        >{{ $t('profile.baseSetting') }}</v-stepper-step>
+        <v-divider />
+        <!-- <v-stepper-step :complete="step > 2" step="2">{{ $t('profile.templateSetting.importing') }}</v-stepper-step> -->
+      </v-stepper-header>
 
-    <v-stepper-items>
-      <v-stepper-content step="1" style="overflow: auto; max-height: 450px;">
-        <template-content
-          :preset="template"
-          :value="currentTemplate"
-          :on-activated="onActivated"
-          :on-deactivated="onDeactivated"
-          @select="onSelect"
-        />
-        <stepper-footer
-          :disabled="creating"
-          :creating="creating"
-          next
-          @next="step = 2"
-          @quit="quit"
-        />
-      </v-stepper-content>
-      <v-stepper-content step="2" class="overflow-auto max-h-[70vh]">
-        <!-- <v-list-tile-title> -->
-        <!-- {{ $t('profile.baseSetting') }} -->
-        <!-- </v-list-tile-title> -->
-        <!-- <v-list-tile-title> -->
-        <!-- {{ $t('profile.advancedSetting') }} -->
-        <!-- </v-list-tile-title> -->
-        <base-content :valid.sync="valid" />
-        <advance-content :valid.sync="valid" />
-        <stepper-footer
-          :disabled="!valid || name === '' || runtime.minecraft === ''"
-          :creating="creating"
-          create
-          @create="onCreate"
-          @quit="quit"
-        />
-      </v-stepper-content>
-    </v-stepper-items>
-  </v-stepper>
+      <v-stepper-items>
+        <v-stepper-content step="1" style="overflow: auto; max-height: 450px;">
+          <template-content
+            :preset="template"
+            :value="currentTemplate"
+            :on-activated="onActivated"
+            :on-deactivated="onDeactivated"
+            @select="onSelect"
+          />
+          <stepper-footer
+            :disabled="creating"
+            :creating="creating"
+            next
+            @next="step = 2"
+            @quit="quit"
+          />
+        </v-stepper-content>
+        <v-stepper-content step="2" class="overflow-auto max-h-[70vh]">
+          <!-- <v-list-tile-title> -->
+          <!-- {{ $t('profile.baseSetting') }} -->
+          <!-- </v-list-tile-title> -->
+          <!-- <v-list-tile-title> -->
+          <!-- {{ $t('profile.advancedSetting') }} -->
+          <!-- </v-list-tile-title> -->
+          <base-content :valid.sync="valid" />
+          <advance-content :valid.sync="valid" />
+          <stepper-footer
+            :disabled="!valid || name === '' || runtime.minecraft === ''"
+            :creating="creating"
+            create
+            @create="onCreate"
+            @quit="quit"
+          />
+        </v-stepper-content>
+      </v-stepper-items>
+    </v-stepper>
+  </v-dialog>
 </template>
 
 <script lang=ts>
@@ -60,15 +62,16 @@ import {
   useCurseforgeImport,
   useInstanceCreation,
   useInstances,
-useRouter,
+  useRouter,
 } from '/@/hooks'
 import { JavaRecord } from '/@shared/entities/java'
 import { optional, withDefault } from '/@/util/props'
-import { CreateOptionKey } from './creation'
+import { CreateOptionKey } from './InstanceCreationStepper/creation'
 import StepperFooter from './StepperFooter.vue'
-import AdvanceContent from './AdvanceContent.vue'
-import BaseContent from './BaseContent.vue'
-import TemplateContent, { InstanceTemplate, ModpackTemplate } from './TemplateContent.vue'
+import AdvanceContent from './StepperAdvanceContent.vue'
+import BaseContent from './StepperBaseContent.vue'
+import TemplateContent, { InstanceTemplate, ModpackTemplate } from './StepperTemplateContent.vue'
+import { useDialog } from '/@/windows/main/composables'
 
 export default defineComponent({
   components: {
@@ -82,6 +85,7 @@ export default defineComponent({
     template: optional(String),
   },
   setup(props, context) {
+    const { isShown } = useDialog('add-instance-dialog')
     const { create, reset, ...creationData } = useInstanceCreation()
     const router = useRouter()
     const { mountInstance } = useInstances()
@@ -91,7 +95,7 @@ export default defineComponent({
 
     const data = reactive({
       creating: false,
-      step: 1,
+      step: 2,
       valid: false,
     })
     const java = ref(undefined as undefined | JavaRecord)
@@ -112,7 +116,7 @@ export default defineComponent({
     }
     function quit() {
       if (data.creating) return
-      context.emit('quit')
+      isShown.value = false
     }
     function onSelect(template: any) {
       data.step = 2
@@ -136,8 +140,8 @@ export default defineComponent({
         await new Promise((resolve) => {
           setTimeout(resolve, 1000)
         })
-        context.emit('create')
-
+        
+        isShown.value = false
       } finally {
         data.creating = false
       }
@@ -149,13 +153,14 @@ export default defineComponent({
       }
       reset()
       activate()
-      data.step = 1
+      data.step = 2
       data.creating = false
       data.valid = true
     })
     return {
       ...toRefs(data),
       ...creationData,
+      isShown,
       currentTemplate,
       onActivated,
       onDeactivated,

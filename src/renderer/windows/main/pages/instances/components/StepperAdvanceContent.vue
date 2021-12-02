@@ -39,7 +39,7 @@
         </v-layout>
       </v-form>
     </v-list-tile>
-    <v-list-tile>
+    <v-list-tile v-if="showMinecraft">
       <v-list-tile-content>
         <v-list-tile-title>
           {{
@@ -134,18 +134,19 @@
 
 <script lang=ts>
 import { defineComponent, inject } from '@vue/composition-api'
-import FabricVersionMenu from '../FabricVersionMenu.vue'
-import ForgeVersionMenu from '../ForgeVersionMenu.vue'
-import MinecraftVersionMenu from '../MinecraftVersionMenu.vue'
-import { CreateOptionKey } from './creation'
+import FabricVersionMenu from './FabricVersionMenu.vue'
+import ForgeVersionMenu from './ForgeVersionMenu.vue'
+import MinecraftVersionMenu from './MinecraftVersionMenu.vue'
+import { CreateOptionKey } from './InstanceCreationStepper/creation'
 import { useJava } from '/@/hooks'
-import { required } from '/@/util/props'
+import { required, withDefault } from '/@/util/props'
 import { JavaRecord } from '/@shared/entities/java'
 
 
 export default defineComponent({
   props: {
     valid: required(Boolean),
+    showMinecraft: withDefault(Boolean, () => true)
   },
   components: { ForgeVersionMenu, MinecraftVersionMenu, FabricVersionMenu },
   emits: ['update:valid'],
