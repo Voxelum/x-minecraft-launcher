@@ -43,56 +43,59 @@ import {
 import { required } from '/@/util/props'
 import { FabricArtifactVersion } from '@xmcl/installer'
 import FabricArtifactVersionListTile from './FabricArtifactVersionListTile.vue'
+import Hint from '/@/components/Hint.vue'
 
 export default defineComponent({
-  props: {
-    select: required<(v?: { version?: string }) => void>(Function),
-    filterText: required<string>(String),
-    minecraft: required<string>(String),
-    loader: required<string>(String),
-  },
-  setup(props) {
-    const data = reactive({
-      showStableOnly: false,
-    })
-
-    const { yarnVersions: yv, loaderVersions: lv, yarnStatus, loaderStatus, install } = useFabricVersions()
-    const loaderVersions = computed(() => lv.value.filter((v) => {
-      if (data.showStableOnly && !v.stable) {
-        return false
-      }
-      return true
-      // return v.version.indexOf(filterText.value) !== -1;
-    }))
-    const yarnVersions = computed(() => yv.value.filter((v) => {
-      if (v.gameVersion !== props.minecraft) {
-        return false
-      }
-      if (data.showStableOnly && !v.stable) {
-        return false
-      }
-      return true
-      // return v.version.indexOf(filterText.value) !== -1;
-    }))
-    const fabricSupported = computed(() => !!yarnVersions.value.find(v => v.gameVersion === props.minecraft))
-    const selectLoader = (v: FabricArtifactVersion) => {
-      if (!v.version) {
-        props.select({ version: '' })
-      } else {
-        props.select(v)
-      }
-    }
-
-    return {
-      ...toRefs(data),
-      install,
-      selectLoader,
-      loaderVersions,
-      fabricSupported,
-      loaderStatus,
-      FabricArtifactVersionListTile,
-    }
-  },
+    props: {
+        select: required<(v?: {
+            version?: string;
+        }) => void>(Function),
+        filterText: required<string>(String),
+        minecraft: required<string>(String),
+        loader: required<string>(String),
+    },
+    setup(props) {
+        const data = reactive({
+            showStableOnly: false,
+        });
+        const { yarnVersions: yv, loaderVersions: lv, yarnStatus, loaderStatus, install } = useFabricVersions();
+        const loaderVersions = computed(() => lv.value.filter((v) => {
+            if (data.showStableOnly && !v.stable) {
+                return false;
+            }
+            return true;
+            // return v.version.indexOf(filterText.value) !== -1;
+        }));
+        const yarnVersions = computed(() => yv.value.filter((v) => {
+            if (v.gameVersion !== props.minecraft) {
+                return false;
+            }
+            if (data.showStableOnly && !v.stable) {
+                return false;
+            }
+            return true;
+            // return v.version.indexOf(filterText.value) !== -1;
+        }));
+        const fabricSupported = computed(() => !!yarnVersions.value.find(v => v.gameVersion === props.minecraft));
+        const selectLoader = (v: FabricArtifactVersion) => {
+            if (!v.version) {
+                props.select({ version: "" });
+            }
+            else {
+                props.select(v);
+            }
+        };
+        return {
+            ...toRefs(data),
+            install,
+            selectLoader,
+            loaderVersions,
+            fabricSupported,
+            loaderStatus,
+            FabricArtifactVersionListTile,
+        };
+    },
+    components: { Hint }
 })
 </script>
 

@@ -24,7 +24,7 @@
         :extra-props="{ selected: version, select: select, statuses, install, minecraft }"
       />
     </v-list>
-    <hint
+    <Hint
       v-else
       class="flex-grow"
       icon="refresh"
@@ -39,42 +39,46 @@ import OptifineVersionListTile from './OptifineVersionListTile.vue'
 import { useOptifineVersions } from '/@/hooks'
 import { required } from '/@/util/props'
 import { OptifineVersion } from '/@shared/entities/version.schema'
+import Hint from '/@/components/Hint.vue'
 
 export default defineComponent({
-  props: {
-    select: required<(v: OptifineVersion | undefined) => void>(Function),
-    filterText: required<string>(String),
-    minecraft: required<string>(String),
-    version: required<{ type: string; patch: string }>(Object),
-  },
-  setup(props) {
-    const { versions, statuses, refreshing, install } = useOptifineVersions(computed(() => props.minecraft))
-    // const loaderVersions = computed(() => lv.value.filter((v) => {
-    //   if (data.showStableOnly && !v.stable) {
-    //     return false;
-    //   }
-    //   return true;
-    //   // return v.version.indexOf(filterText.value) !== -1;
-    // }));
-    // const yarnVersions = computed(() => yv.value.filter((v) => {
-    //   if (v.gameVersion !== props.minecraft) {
-    //     return false;
-    //   }
-    //   if (data.showStableOnly && !v.stable) {
-    //     return false;
-    //   }
-    //   return true;
-    //   // return v.version.indexOf(filterText.value) !== -1;
-    // }));
-
-    return {
-      versions,
-      refreshing,
-      statuses,
-      install,
-      OptifineVersionListTile,
-    }
-  },
+    props: {
+        select: required<(v: OptifineVersion | undefined) => void>(Function),
+        filterText: required<string>(String),
+        minecraft: required<string>(String),
+        version: required<{
+            type: string;
+            patch: string;
+        }>(Object),
+    },
+    setup(props) {
+        const { versions, statuses, refreshing, install } = useOptifineVersions(computed(() => props.minecraft));
+        // const loaderVersions = computed(() => lv.value.filter((v) => {
+        //   if (data.showStableOnly && !v.stable) {
+        //     return false;
+        //   }
+        //   return true;
+        //   // return v.version.indexOf(filterText.value) !== -1;
+        // }));
+        // const yarnVersions = computed(() => yv.value.filter((v) => {
+        //   if (v.gameVersion !== props.minecraft) {
+        //     return false;
+        //   }
+        //   if (data.showStableOnly && !v.stable) {
+        //     return false;
+        //   }
+        //   return true;
+        //   // return v.version.indexOf(filterText.value) !== -1;
+        // }));
+        return {
+            versions,
+            refreshing,
+            statuses,
+            install,
+            OptifineVersionListTile,
+        };
+    },
+    components: { Hint }
 })
 </script>
 

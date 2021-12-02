@@ -7,13 +7,12 @@ import Vuetify from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import colors from 'vuetify/es5/util/colors'
 import Vuex from 'vuex'
-import components from './components'
-import CurseforgeIcon from './components/CurseforgeIcon.vue'
-import FabricIcon from '../../components/FabricIcon.vue'
-import ForgeIcon from '../../components/ForgeIcon.vue'
-import JarFileIcon from '../../components/JarFileIcon.vue'
-import PackageFileIcon from '../../components/PackageFileIcon.vue'
-import ZipFileIcon from '../../components/ZipFileIcon.vue'
+import CurseforgeIcon from '/@/components/CurseforgeIcon.vue'
+import FabricIcon from '/@/components/FabricIcon.vue'
+import ForgeIcon from '/@/components/ForgeIcon.vue'
+import JarFileIcon from '/@/components/JarFileIcon.vue'
+import PackageFileIcon from '/@/components/PackageFileIcon.vue'
+import ZipFileIcon from '/@/components/ZipFileIcon.vue'
 import './directives'
 import MainWindow from './index.vue'
 import { createRouter } from './router'
@@ -26,7 +25,7 @@ import { SERVICES_SEMAPHORES_KEY, useSemaphores } from '/@/hooks'
 import { SYNCABLE_KEY, useSyncable } from '/@/hooks/useSyncable'
 import { createI18n } from '/@/i18n'
 import { createServiceFactory, SERVICES_KEY } from '/@/serviceProxy'
-import TextComponent from '../../components/TextComponent'
+import TextComponent from '/@/components/TextComponent'
 import { BaseServiceKey } from '/@shared/services/BaseService'
 import 'virtual:windi.css'
 import {
@@ -168,10 +167,5 @@ app.use(Vuetify, {
 })
 app.use(VueObserveVisibility)
 app.component('TextComponent', TextComponent)
-app.component('SkinView', SkinView)
-
-for (const [key, value] of Object.entries(components)) {
-  app.component(key, value)
-}
 
 app.mount('#app')

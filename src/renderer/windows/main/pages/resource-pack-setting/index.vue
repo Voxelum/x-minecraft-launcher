@@ -183,6 +183,7 @@ import {
 import ResourcePackCard from './ResourcePackCard.vue'
 import { useSearch } from '../../composables'
 import FilterCombobox, { useFilterCombobox } from '/@/components/FilterCombobox.vue'
+import Hint from '/@/components/Hint.vue'
 
 function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {
   function getFilterOptions(item: ResourcePackItem) {
@@ -205,8 +206,9 @@ function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePac
 export default defineComponent({
   components: {
     ResourcePackCard,
-    FilterCombobox
-  },
+    FilterCombobox,
+    Hint
+},
   setup() {
     const { text: filterText } = useSearch()
     const rightList: Ref<any> = ref(null)

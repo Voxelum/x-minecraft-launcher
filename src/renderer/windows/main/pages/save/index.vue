@@ -64,6 +64,7 @@ import SaveViewPageCopyToDialog from './CopyToDialog.vue'
 import SaveViewPageDeleteDialog from './DeleteDialog.vue'
 import SaveViewPagePreviewCard from './PreviewCard.vue'
 import SaveViewPageFloatButton from './FloatButton.vue'
+import Hint from '/@/components/Hint.vue'
 
 export default defineComponent({
   components: {
@@ -72,7 +73,8 @@ export default defineComponent({
     SaveViewPageCopyFromDialog,
     SaveViewPagePreviewCard,
     SaveViewPageFloatButton,
-  },
+    Hint
+},
   setup() {
     const { saves, deleteSave, importSave, exportSave, cloneSave: copySave } = useInstanceSaves()
     const { instances } = useInstances()
