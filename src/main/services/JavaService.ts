@@ -198,9 +198,9 @@ export default class JavaService extends StatefulService<JavaState> implements I
    * scan local java locations and cache
    */
   @Singleton()
-  async refreshLocalJava() {
-    if (this.state.all.length === 0) {
-      this.log('No local cache found. Scan java through the disk.')
+  async refreshLocalJava(force?: boolean) {
+    if (this.state.all.length === 0 || force) {
+      this.log('Force update or no local cache found. Scan java through the disk.')
       const commonLocations = [] as string[]
       if (this.app.platform.name === 'windows') {
         let files = await readdirIfPresent('C:\\Program Files\\Java')
