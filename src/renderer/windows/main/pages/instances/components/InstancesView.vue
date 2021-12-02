@@ -1,9 +1,9 @@
 <template>
   <v-layout
-    class="invisible-scroll select-none"
+    class="invisible-scroll select-none overflow-auto h-full"
     row
     wrap
-    style="overflow: scroll; max-height: 85vh;"
+    style="overflow: scroll;"
     justify-start
     fill-height
   >

@@ -42,7 +42,7 @@
 
 <script lang=ts>
 import { computed, defineComponent, inject, onUnmounted, ref } from '@vue/composition-api'
-import { CreateOptionKey } from './creation'
+import { CreateOptionKey } from './InstanceCreationStepper/creation'
 import {
   useI18n,
   useInstanceTemplates
