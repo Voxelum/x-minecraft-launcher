@@ -112,10 +112,10 @@
 
 <script lang=ts>
 import { computed, defineComponent, inject, ref, watch } from '@vue/composition-api'
-import { CreateOptionKey } from './InstanceCreationStepper/creation'
+import { CreateOptionKey } from '/@/windows/main/components/AddInstanceDialog.vue'
 import { required } from '/@/util/props'
 import { ServerStatus } from '/@shared/entities/serverStatus'
-import MinecraftVersionMenu from './MinecraftVersionMenu.vue'
+import MinecraftVersionMenu from '../../../components/MinecraftVersionMenu.vue'
 import unknownServer from '/@/assets/unknown_server.png'
 import mapping from '/@shared/util/protocolToMinecraft'
 

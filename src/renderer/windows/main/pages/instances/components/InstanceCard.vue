@@ -58,7 +58,8 @@
         </v-chip>
         <v-chip label small :selected="false" @click.stop>
           <v-avatar>
-            <v-icon>power</v-icon>
+            <img :src="minecraftPng" alt="minecraft">
+            <!-- <v-icon>power</v-icon> -->
           </v-avatar>
           {{ instance.runtime.minecraft }}
         </v-chip>
@@ -74,6 +75,18 @@
           </v-avatar>
           {{ instance.author }}
         </v-chip>
+        <v-chip small label v-if="instance.runtime.forge">
+          <v-avatar>
+            <img :src="forgePng" alt="forge" />
+          </v-avatar>
+          {{ instance.runtime.forge }}
+        </v-chip>
+        <v-chip small label v-if="instance.runtime.fabricLoader">
+          <v-avatar>
+            <img :src="fabricPng" alt="fabric"   />
+          </v-avatar>
+          {{ instance.runtime.fabricLoader }}
+        </v-chip>
       </div>
     </v-card-actions>
   </v-card>
@@ -86,6 +99,9 @@ import { Instance } from '/@shared/entities/instance'
 import { required } from '/@/util/props'
 import { getBanner } from '/@/util/banner'
 import { write } from '/@shared/util/mutex'
+import forgePng from '/@/assets/forge.png'
+import minecraftPng from '/@/assets/minecraft.png'
+import fabricPng from '/@/assets/fabric.png'
 
 export default defineComponent({
   props: {
@@ -107,12 +123,16 @@ export default defineComponent({
       }
       return unknownServer
     })
+    console.log(props.instance.name)
     return {
       isBusy,
       image,
       status,
       description: computed(() => props.instance.description),
       onDragStart,
+      minecraftPng,
+      forgePng,
+      fabricPng,
     }
   },
 })

@@ -40,6 +40,10 @@
       </v-form>
     </v-list-tile>
     <v-list-tile v-if="showMinecraft">
+       <v-list-tile-action>
+        <img :src="minecraftPng" width="40">
+        <!-- <v-checkbox /> -->
+      </v-list-tile-action>
       <v-list-tile-content>
         <v-list-tile-title>
           {{
@@ -70,7 +74,8 @@
     </v-list-tile>
     <v-list-tile>
       <v-list-tile-action>
-        <v-checkbox />
+        <img :src="forgePng" width="40">
+        <!-- <v-checkbox /> -->
       </v-list-tile-action>
       <v-list-tile-content>
         <v-list-tile-title>
@@ -102,8 +107,9 @@
     </v-list-tile>
     <v-list-tile>
       <v-list-tile-action>
+        <img :src="fabricPng" width="40">
         <!-- <forge-icon></forge-icon> -->
-        <v-checkbox />
+        <!-- <v-checkbox /> -->
       </v-list-tile-action>
       <v-list-tile-content>
         <v-list-tile-title>Fabric</v-list-tile-title>
@@ -137,10 +143,13 @@ import { defineComponent, inject } from '@vue/composition-api'
 import FabricVersionMenu from './FabricVersionMenu.vue'
 import ForgeVersionMenu from './ForgeVersionMenu.vue'
 import MinecraftVersionMenu from './MinecraftVersionMenu.vue'
-import { CreateOptionKey } from './InstanceCreationStepper/creation'
+import { CreateOptionKey } from './AddInstanceDialog.vue'
 import { useJava } from '/@/hooks'
 import { required, withDefault } from '/@/util/props'
 import { JavaRecord } from '/@shared/entities/java'
+import forgePng from '/@/assets/forge.png'
+import minecraftPng from '/@/assets/minecraft.png'
+import fabricPng from '/@/assets/fabric.png'
 
 
 export default defineComponent({
@@ -196,6 +205,9 @@ export default defineComponent({
       onSelectMinecraft,
       onSelectFabric,
       onSelectForge,
+      forgePng,
+      minecraftPng,
+      fabricPng,
     }
   },
 })

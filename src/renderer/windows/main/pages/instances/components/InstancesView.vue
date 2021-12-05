@@ -25,14 +25,11 @@
       v-if="instancesByTime[1].length !== 0"
       class="justify-center w-full"
       style="color: grey"
-      xs12
     >{{ $t('profile.threeDay') }}</div>
     <v-layout v-if="instancesByTime[1].length !== 0" row wrap class="w-full items-start">
       <v-flex
         v-for="instance in instancesByTime[1]"
         :key="instance.path"
-        md4
-        xs6
         @dragstart="$emit('dragstart', instance)"
         @dragend="$emit('dragend')"
       >

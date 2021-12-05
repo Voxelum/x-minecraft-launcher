@@ -2,8 +2,9 @@ import { computed, inject, InjectionKey, provide, Ref, ref } from '@vue/composit
 import type { JavaVersion } from '@xmcl/core'
 import type { FileFilter } from 'electron'
 import { useI18n } from '/@/hooks'
+import { injection } from '/@/util/inject'
 
-export const DIALOG_SYMBOL: InjectionKey<Ref<string>> = Symbol('ShowingDialog')
+export const DIALOG_SYMBOL: InjectionKey<{ dialog: Ref<string>; parameter: Ref<any> }> = Symbol('ShowingDialog')
 export const DIALOG_LOGIN_SWITCH_USER: InjectionKey<Ref<boolean>> = Symbol('SwitchingUser')
 export const DIALOG_JAVA_ISSUE: InjectionKey<Ref<{ type: 'incompatible' | 'missing', version: JavaVersion }>> = Symbol('JavaIssue')
 
@@ -17,33 +18,36 @@ export function useZipFilter() {
 }
 
 export function provideDialog() {
-  provide(DIALOG_SYMBOL, ref(''))
+  provide(DIALOG_SYMBOL, { dialog: ref(''), parameter: ref(undefined) })
   provide(DIALOG_LOGIN_SWITCH_USER, ref(false))
   provide(DIALOG_JAVA_ISSUE, ref({ type: '', version: { majorVersion: 8, component: 'jre-legacy' } }))
 }
 
+export interface DialogKey<T> extends String { }
+
 /**
  * Use a shared dialog between pages
  */
-export function useDialog(dialogName: string = '') {
-  const shownDialog: Ref<string> = inject(DIALOG_SYMBOL) as any
-  if (!shownDialog) throw new Error('This should not happened')
+export function useDialog<T>(dialogName: DialogKey<T> = '') {
+  const { dialog, parameter } = injection(DIALOG_SYMBOL)
   const isShown = computed({
-    get: () => shownDialog.value === dialogName,
-    set: (v: boolean) => { shownDialog.value = v ? dialogName : '' },
+    get: () => dialog.value === dialogName,
+    set: (v: boolean) => { dialog.value = v ? dialogName.toString() : '' },
   })
   function hide() {
-    if (shownDialog.value === dialogName) {
-      shownDialog.value = ''
+    if (dialog.value === dialogName) {
+      dialog.value = ''
     }
   }
-  function show() {
-    if (shownDialog.value !== dialogName) {
-      shownDialog.value = dialogName
+  function show(param?: T) {
+    if (dialog.value !== dialogName) {
+      parameter.value = param
+      dialog.value = dialogName.toString()
     }
   }
   return {
-    dialog: shownDialog,
+    dialog,
+    parameter: parameter as Ref<T | undefined>,
     show,
     hide,
     isShown,
