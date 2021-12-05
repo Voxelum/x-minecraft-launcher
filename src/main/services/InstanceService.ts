@@ -336,7 +336,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
 
     if (Object.keys(result).length > 0) {
-      this.log(`Modify instance ${JSON.stringify(result, null, 4)}.`)
+      this.log(`Modify instance ${instancePath} (${options.name}) ${JSON.stringify(result, null, 4)}.`)
       this.state.instanceEdit({ ...result, path: instancePath })
     }
   }

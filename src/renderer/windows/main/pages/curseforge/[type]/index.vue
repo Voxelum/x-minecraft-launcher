@@ -104,7 +104,7 @@
                 style="padding-top: 10px; display: block;"
               >
                 <v-chip
-                  v-for="cat of proj.categories"
+                  v-for="cat of dedup(proj.categories, (v) => v.categoryId)"
                   :key="cat.categoryId"
                 >
                   <v-avatar>
@@ -139,6 +139,7 @@
 <script lang=ts>
 import { computed, defineComponent, ref } from '@vue/composition-api'
 import { useCurseforgeSearch } from '/@/hooks'
+import { dedup } from '/@/util/dedup'
 import { withDefault } from '/@/util/props'
 import { onSearchToggle } from '/@/windows/main/composables'
 
@@ -155,7 +156,8 @@ export default defineComponent({
       searchBar.value!.focus()
       return true
     })
-    return { searchBar, ...useCurseforgeSearch(props.type, computed(() => props.page), computed(() => props.keyword)) }
+    
+    return { searchBar, ...useCurseforgeSearch(props.type, computed(() => props.page), computed(() => props.keyword)), dedup }
   },
 })
 </script>

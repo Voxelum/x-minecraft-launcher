@@ -52,8 +52,8 @@
 
 <script lang=ts>
 import { computed, defineComponent } from '@vue/composition-api'
+import { ModItem } from './useInstanceMod'
 import { required } from '/@/util/props'
-import { ModItem } from '/@/hooks'
 
 export default defineComponent({
   props: {

@@ -1,14 +1,14 @@
 import { TextComponent, render, RenderNode, fromFormattedString } from '@xmcl/text-component'
 import { defineComponent, h } from '@vue/composition-api'
 import { useI18n } from '../hooks'
-import { optional, withDefault } from '../util/props'
+import { optional, required, withDefault } from '../util/props'
 
 export default defineComponent({
   props: {
-    source: [String, Object],
+    source: required<string | TextComponent>([String, Object]),
     localized: optional(String),
-    args: { type: Object, default: () => { Object.create(null) } },
-    styled: { type: String, default: 'true' },
+    args: withDefault(Object, () => Object.create(null)),
+    styled: withDefault(String, () => 'true'),
     editable: withDefault(Boolean, () => false)
   },
   setup(props, context) {
@@ -16,8 +16,8 @@ export default defineComponent({
     return () => {
       if (!props.source) return h('div')
 
-      let src = typeof props.source === 'string' ? fromFormattedString($t(props.source)) : props.source as TextComponent
-      if (props.source && props.source.text && Object.keys(props.source).length === 1) {
+      let src = typeof props.source === 'string' ? fromFormattedString($t(props.source)) : props.source
+      if (props.source && typeof props.source === 'object' && props.source.text && Object.keys(props.source).length === 1) {
         src = fromFormattedString($t(props.source.text))
       }
       const hint = render(src)
@@ -28,7 +28,7 @@ export default defineComponent({
           attrs: { contenteditable: props.editable && simpleText },
           on: {
             input: (e: InputEvent) => {
-              if (simpleText) {
+              if (simpleText && e.target instanceof HTMLElement) {
                 context.emit('edit', e.target.innerText)
               }
             } 

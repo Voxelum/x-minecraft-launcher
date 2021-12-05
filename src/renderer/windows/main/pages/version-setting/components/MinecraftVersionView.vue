@@ -23,7 +23,7 @@
       :select="select"
       :install="install"
     /> -->
-    <hint
+    <Hint
       v-else
       v-ripple
       style="flex-grow: 1; cursor: pointer"
@@ -43,29 +43,31 @@ import {
 import { required } from '/@/util/props'
 import { MinecraftVersion } from '@xmcl/installer'
 import MinecraftVersionListTile from './MinecraftVersionListTile.vue'
+import Hint from '/@/components/Hint.vue'
+import RefreshingTile from '/@/components/RefreshingTile.vue'
 
 export default defineComponent({
-  props: {
-    select: required<(v: MinecraftVersion) => void>(Function),
-    filterText: required<string>(String),
-    version: required<string>(String),
-  },
-  setup(props) {
-    const { versions: vers, statuses, refreshing, refresh, install } = useMinecraftVersions()
-    const { filter, showAlpha, acceptingRange } = useMinecraftVersionFilter(computed(() => props.filterText))
-    const versions = computed(() => vers.value.filter(filter))
-
-    return {
-      showAlpha,
-      acceptingRange,
-      versions,
-      refreshing,
-      statuses,
-      refresh,
-      install,
-      MinecraftVersionListTile,
-    }
-  },
+    props: {
+        select: required<(v: MinecraftVersion) => void>(Function),
+        filterText: required<string>(String),
+        version: required<string>(String),
+    },
+    setup(props) {
+        const { versions: vers, statuses, refreshing, refresh, install } = useMinecraftVersions();
+        const { filter, showAlpha, acceptingRange } = useMinecraftVersionFilter(computed(() => props.filterText));
+        const versions = computed(() => vers.value.filter(filter));
+        return {
+            showAlpha,
+            acceptingRange,
+            versions,
+            refreshing,
+            statuses,
+            refresh,
+            install,
+            MinecraftVersionListTile,
+        };
+    },
+    components: { Hint, RefreshingTile }
 })
 </script>
 

@@ -6,8 +6,8 @@ import NatAPI from 'nat-api'
 import { Agent as HttpsAgent, AgentOptions } from 'https'
 import { cpus } from 'os'
 import { Manager } from '.'
-import { MinecraftLanDiscover } from '@xmcl/client'
-import getNatType, { NatType } from 'nat-type-identifier'
+// import { MinecraftLanDiscover } from '@xmcl/client'
+// import getNatType, { NatType } from 'nat-type-identifier'
 
 export default class NetworkManager extends Manager {
   private inGFW = false
@@ -20,13 +20,13 @@ export default class NetworkManager extends Manager {
 
   private nat = new NatAPI()
 
-  private lanDiscover = new MinecraftLanDiscover()
+  // private lanDiscover = new MinecraftLanDiscover()
 
-  private natType: NatType = 'Blocked'
+  // private natType: NatType = 'Blocked'
 
-  private publicIp = ''
+  // private publicIp = ''
 
-  private discoveredPort: number[] = []
+  // private discoveredPort: number[] = []
 
   constructor(app: LauncherApp) {
     super(app)
@@ -59,31 +59,31 @@ export default class NetworkManager extends Manager {
     this.log(this.inGFW ? 'Detected current in China mainland.' : 'Detected current NOT in China mainland.')
   }
 
-  async updateNatType() {
-    this.log('Try to get NAT type')
-    this.natType = await getNatType({ logsEnabled: false, stunHost: this.inGFW ? 'stun.qq.com' : undefined })
-    this.log(`Update NAT type: ${this.natType}`)
-  }
+  // async updateNatType() {
+  //   this.log('Try to get NAT type')
+  //   this.natType = await getNatType({ logsEnabled: false, stunHost: this.inGFW ? 'stun.qq.com' : undefined })
+  //   this.log(`Update NAT type: ${this.natType}`)
+  // }
 
-  async updatePublicIp() {
-    this.log('Try update public ip')
+  // async updatePublicIp() {
+  //   this.log('Try update public ip')
 
-    this.publicIp = await new Promise<string>((resolve, reject) => {
-      this.nat.externalIp((err, ip) => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve(ip)
-        }
-      })
-    })
+  //   this.publicIp = await new Promise<string>((resolve, reject) => {
+  //     this.nat.externalIp((err, ip) => {
+  //       if (err) {
+  //         reject(err)
+  //       } else {
+  //         resolve(ip)
+  //       }
+  //     })
+  //   })
 
-    this.log(`Current public ip is ${this.publicIp}`)
-  }
+  //   this.log(`Current public ip is ${this.publicIp}`)
+  // }
 
-  getNatType() {
-    return this.natType
-  }
+  // getNatType() {
+  //   return this.natType
+  // }
 
   /**
    * Return if current environment is in GFW.
@@ -92,47 +92,47 @@ export default class NetworkManager extends Manager {
     return this.inGFW
   }
 
-  getPublicIp() {
-    return new Promise<string>((resolve, reject) => {
-      this.nat.externalIp((err, ip) => {
-        if (err) { reject(err) } else { resolve(ip) }
-      })
-    })
-  }
+  // getPublicIp() {
+  //   return new Promise<string>((resolve, reject) => {
+  //     this.nat.externalIp((err, ip) => {
+  //       if (err) { reject(err) } else { resolve(ip) }
+  //     })
+  //   })
+  // }
 
-  exposePort(port: number) {
-    return new Promise<void>((resolve, reject) => {
-      this.nat.map(25565, port, (err) => {
-        if (err) {
-          reject(err)
-        } else {
-          resolve()
-        }
-      })
-    })
-  }
+  // exposePort(port: number) {
+  //   return new Promise<void>((resolve, reject) => {
+  //     this.nat.map(25565, port, (err) => {
+  //       if (err) {
+  //         reject(err)
+  //       } else {
+  //         resolve()
+  //       }
+  //     })
+  //   })
+  // }
 
   // setup code
   setup() {
-    this.updateGFW().then(() => this.updateNatType())
+    // this.updateGFW().then(() => this.updateNatType())
 
-    this.updatePublicIp()
+    // this.updatePublicIp()
 
-    this.lanDiscover.bind()
+    // this.lanDiscover.bind()
 
-    this.lanDiscover.on('discover', (event) => {
-      const idx = this.discoveredPort.indexOf(event.port)
-      if (idx === -1) {
-        this.discoveredPort.push(event.port)
-        this.log(`Discover player is opening port: ${event.port} on lan! Exposing it to public network...`)
-        this.exposePort(event.port).then(() => {
-          this.log(`Success to map port ${event.port}. Use ${this.publicIp}:${event.port}`)
-        }, (e) => {
-          this.error(`Fail to map port ${event.port}.`)
-          this.error(e)
-        })
-      }
-    })
+    // this.lanDiscover.on('discover', (event) => {
+    //   const idx = this.discoveredPort.indexOf(event.port)
+    //   if (idx === -1) {
+    //     this.discoveredPort.push(event.port)
+    //     this.log(`Discover player is opening port: ${event.port} on lan! Exposing it to public network...`)
+    //     this.exposePort(event.port).then(() => {
+    //       this.log(`Success to map port ${event.port}. Use ${this.publicIp}:${event.port}`)
+    //     }, (e) => {
+    //       this.error(`Fail to map port ${event.port}.`)
+    //       this.error(e)
+    //     })
+    //   }
+    // })
 
     // @ts-ignore
     this.app.on('before-quit', () => {

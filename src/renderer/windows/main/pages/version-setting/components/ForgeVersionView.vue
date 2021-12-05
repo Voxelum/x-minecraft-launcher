@@ -47,6 +47,7 @@ import { required } from '/@/util/props'
 import { ForgeVersion } from '/@shared/entities/version.schema'
 import { compareDate } from '/@shared/util/object'
 import Hint from '/@/components/Hint.vue'
+import RefreshingTile from '/@/components/RefreshingTile.vue'
 
 export default defineComponent({
     props: {
@@ -91,7 +92,7 @@ export default defineComponent({
             ForgeVersionListTile,
         };
     },
-    components: { Hint }
+    components: { Hint, RefreshingTile }
 })
 </script>
 
