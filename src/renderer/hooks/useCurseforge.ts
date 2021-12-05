@@ -194,7 +194,6 @@ export function useCurseforgeSearch(type: string, page: Ref<number>, keyword: Re
         gameVersion: data.gameVersion,
         searchFilter: keyword.value,
       })
-      console.log(projects)
       if (currentPage.value > data.pages / 2) {
         data.pages += 5
       }

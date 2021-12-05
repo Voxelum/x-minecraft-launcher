@@ -39,20 +39,12 @@
         :extra-props="{ getFileStatus: getFileStatus, install: install, download: download, modpack: type === 'modpacks' }"
       />
     </div>
-    <v-dialog v-model="isConfirmDialogShown" persistent>
-      <!-- TODO: impl this -->
-      <!-- <add-instance-stepper
-        :show="isConfirmDialogShown"
-        :initial-template="initialTemplate"
-        @quit="isConfirmDialogShown = false"
-      />-->
-    </v-dialog>
   </v-card>
 </template>
 
 <script lang=ts>
 import VirtualList from 'vue-virtual-scroll-list'
-import { defineComponent, computed, inject, ref, reactive, toRefs, watch } from '@vue/composition-api'
+import { defineComponent, computed, ref, reactive, toRefs } from '@vue/composition-api'
 import { ProjectType } from '/@shared/entities/curseforge'
 import { File } from '@xmcl/curseforge'
 import {
@@ -63,7 +55,8 @@ import {
 import { optional, required } from '/@/util/props'
 import Tile from './FilesTile.vue'
 import { isNonnull } from '/@shared/util/assert'
-// import AddInstanceStepper from './InstancesPageAddInstanceStepper.vue'
+import { useDialog } from '/@/windows/main/composables'
+import { AddInstanceDialogKey } from '/@/windows/main/components/AddInstanceDialog.vue'
 
 export default defineComponent({
   components: { VirtualList },
@@ -73,10 +66,10 @@ export default defineComponent({
     from: optional(String),
   },
   setup(props) {
+    const { show: showAddInstanceDialog } = useDialog(AddInstanceDialogKey)
     const { files, loading, refresh } = useCurseforgeProjectFiles(props.project)
     const { install: installFile, getFileStatus, getFileResource } = useCurseforgeInstall(props.type, props.project)
     const data = reactive({
-      isConfirmDialogShown: false,
       initialTemplate: '',
     })
     const { $t } = useI18n()
@@ -123,8 +116,7 @@ export default defineComponent({
             throw new Error(`Cannot find installed curseforge file named ${file.displayName} fileId=${file.id} projectId=${file.projectId}`)
           }
         }
-        data.initialTemplate = filePath
-        data.isConfirmDialogShown = true
+        showAddInstanceDialog(filePath)
       } else {
         await installFile(file, props.from)
       }
