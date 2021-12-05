@@ -26,41 +26,42 @@
       <task-dialog />
       <launch-status-dialog />
       <java-fixer-dialog />
+      <add-instance-dialog />
     </v-layout>
   </v-app>
 </template>
 
 <script lang=ts>
 import {
-  defineComponent, provide, reactive, ref,
-  Ref, toRefs,
-  watch
+defineComponent, provide, reactive, ref,
+Ref, toRefs,
+watch
 } from '@vue/composition-api'
 import Particles from '../../components/Particles.vue'
+import AddInstanceDialog from './components/AddInstanceDialog.vue'
 import Background from './components/Background.vue'
-import TaskDialog from './components/TaskDialog.vue'
-import { provideContextMenu, provideDialog, provideIssueHandler, provideNotifier, provideSearch } from './composables'
 import JavaFixerDialog from './components/JavaFixerDialog.vue'
 import LaunchStatusDialog from './components/LaunchStatusDialog.vue'
-import ContextMenu from '/@/components/ContextMenu.vue'
-import SearchBar from './components/SearchBar.vue'
-import UniversalDropView from './components/UniversalDropView.vue'
-import SideBar from './components/SideBar.vue'
 import LoginDialog from './components/LoginDialog.vue'
+import Notifier from './components/Notifier.vue'
+import SearchBar from './components/SearchBar.vue'
+import SideBar from './components/SideBar.vue'
+import TaskDialog from './components/TaskDialog.vue'
+import UniversalDropView from './components/UniversalDropView.vue'
+import { provideContextMenu, provideDialog, provideIssueHandler, provideNotifier, provideSearch } from './composables'
 import { TASK_MANAGER, useTaskManager } from './provideTaskProxy'
 import '/@/assets/common.css'
+import ContextMenu from '/@/components/ContextMenu.vue'
 import Halo from '/@/components/Halo.vue'
 import {
-  provideAsyncRoute, provideServerStatusCache,
-  useBackground, useRouter
+provideAsyncRoute, provideServerStatusCache,
+useBackground, useRouter
 } from '/@/hooks'
 import { SYNCABLE_KEY } from '/@/hooks/useSyncable'
 import { injection } from '/@/util/inject'
-import Notifier from './components/Notifier.vue'
-
 
 export default defineComponent({
-  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaFixerDialog, Particles: (Particles as any), Halo, Background, Notifier, ContextMenu, SearchBar, UniversalDropView, SideBar },
+  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaFixerDialog, Particles: (Particles as any), Halo, Background, Notifier, ContextMenu, SearchBar, UniversalDropView, SideBar, AddInstanceDialog },
   setup() {
     provideDialog()
     provideNotifier()
@@ -127,13 +128,6 @@ img {
   object-fit: contain;
 }
 
-html ::-webkit-scrollbar {
-  display: none;
-}
-
-::-webkit-scrollbar {
-  display: unset;
-}
 </style>
 
 <style scoped=true>
