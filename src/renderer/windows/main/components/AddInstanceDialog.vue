@@ -14,13 +14,17 @@
           step="2"
         >{{ $t('profile.baseSetting') }}</v-stepper-step>
         <v-divider />
-        <!-- <v-stepper-step :complete="step > 2" step="2">{{ $t('profile.templateSetting.importing') }}</v-stepper-step> -->
+        <v-stepper-step
+          :editable="currentTemplate && currentTemplate.type === 'modpack'"
+          :complete="step > 2"
+          step="3"
+        >{{ $t('profile.templateSetting.preview') }}</v-stepper-step>
       </v-stepper-header>
 
       <v-stepper-items>
         <v-stepper-content step="1" style="overflow: auto; max-height: 450px;">
           <template-content
-            :preset="template"
+            :preset="presetTemplate"
             :value="currentTemplate"
             :on-activated="onActivated"
             :on-deactivated="onDeactivated"
@@ -51,27 +55,42 @@
             @quit="quit"
           />
         </v-stepper-content>
+        <v-stepper-content step="3" class="overflow-auto max-h-[70vh]">
+          <stepper-modpack-content
+            v-if="currentTemplate && currentTemplate.type === 'modpack'"
+            :modpack="currentTemplate"
+            :shown="isModpackContentShown"
+          />
+        </v-stepper-content>
       </v-stepper-items>
     </v-stepper>
   </v-dialog>
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, computed, watch, defineComponent, ref, Ref, provide } from '@vue/composition-api'
+import { computed, defineComponent, InjectionKey, provide, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
+import AdvanceContent from './StepperAdvanceContent.vue'
+import BaseContent from './StepperBaseContent.vue'
+import StepperFooter from './StepperFooter.vue'
+import StepperModpackContent from './StepperModpackContent.vue'
+import TemplateContent, { InstanceTemplate, ModpackTemplate } from './StepperTemplateContent.vue'
 import {
   useCurseforgeImport,
   useInstanceCreation,
   useInstances,
-  useRouter,
+  useRouter
 } from '/@/hooks'
+import { DialogKey, useDialog } from '/@/windows/main/composables'
+import { InstanceData } from '/@shared/entities/instance.schema'
 import { JavaRecord } from '/@shared/entities/java'
-import { optional, withDefault } from '/@/util/props'
-import { CreateOptionKey } from './InstanceCreationStepper/creation'
-import StepperFooter from './StepperFooter.vue'
-import AdvanceContent from './StepperAdvanceContent.vue'
-import BaseContent from './StepperBaseContent.vue'
-import TemplateContent, { InstanceTemplate, ModpackTemplate } from './StepperTemplateContent.vue'
-import { useDialog } from '/@/windows/main/composables'
+
+type ToRefs<T> = {
+  [K in keyof T]: Ref<T[K]>
+}
+
+export const CreateOptionKey: InjectionKey<ToRefs<InstanceData>> = Symbol('CreateOption')
+
+export const AddInstanceDialogKey: DialogKey<string> = 'add-instance-dialog'
 
 export default defineComponent({
   components: {
@@ -79,13 +98,12 @@ export default defineComponent({
     BaseContent,
     AdvanceContent,
     TemplateContent,
+    StepperModpackContent
   },
   props: {
-    show: withDefault(Boolean, () => false),
-    template: optional(String),
   },
   setup(props, context) {
-    const { isShown } = useDialog('add-instance-dialog')
+    const { isShown, parameter } = useDialog(AddInstanceDialogKey)
     const { create, reset, ...creationData } = useInstanceCreation()
     const router = useRouter()
     const { mountInstance } = useInstances()
@@ -102,6 +120,7 @@ export default defineComponent({
     const currentTemplate: Ref<InstanceTemplate | ModpackTemplate | undefined> = ref(undefined)
 
     const ready = computed(() => data.valid)
+    const isModpackContentShown = computed(() => data.step === 3)
 
     let activateRef = () => { }
     let deactivatedRef = () => { }
@@ -140,27 +159,30 @@ export default defineComponent({
         await new Promise((resolve) => {
           setTimeout(resolve, 1000)
         })
-        
+
         isShown.value = false
       } finally {
         data.creating = false
       }
     }
-    watch(() => props.show, (v) => {
+    watch(isShown, (v) => {
       if (!v) {
         deactivatedRef()
         return
       }
       reset()
-      activate()
       data.step = 2
       data.creating = false
       data.valid = true
+      activate()
     })
+    const presetTemplate = computed(() => isShown.value ? parameter.value : undefined)
     return {
       ...toRefs(data),
+      isModpackContentShown,
       ...creationData,
       isShown,
+      presetTemplate,
       currentTemplate,
       onActivated,
       onDeactivated,

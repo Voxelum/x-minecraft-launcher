@@ -59,7 +59,6 @@
         </v-btn>
       </transition>
       <delete-dialog :instance="deletingInstance" :confirm="doDelete" :cancel="cancelDelete" />
-      <add-instance-dialog />
       <add-server-dialog />
     </v-container>
   </div>
@@ -78,7 +77,6 @@ import {
   useInstancesServerStatus,
 } from '/@/hooks'
 import { Notify, useNotifier, useSearch, onSearchToggle, useDialog } from '/@/windows/main/composables'
-import AddInstanceDialog from './components/AddInstanceDialog.vue'
 import AddServerDialog from './components/AddServerDialog.vue'
 import InstancesView from './components/InstancesView.vue'
 import DeleteDialog from './components/DeleteDialog.vue'
@@ -167,7 +165,6 @@ export default defineComponent({
     CreateButton,
     InstancesView,
     AddServerDialog,
-    AddInstanceDialog,
   },
   setup() {
     const { mountInstance: selectInstance, deleteInstance, instances } = useInstances()

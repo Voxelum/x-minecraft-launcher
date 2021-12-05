@@ -41,8 +41,8 @@
 </template>
 
 <script lang=ts>
-import { computed, defineComponent, inject, onUnmounted, ref } from '@vue/composition-api'
-import { CreateOptionKey } from './InstanceCreationStepper/creation'
+import { computed, defineComponent, inject, onUnmounted, ref, watch } from '@vue/composition-api'
+import { CreateOptionKey } from './AddInstanceDialog.vue'
 import {
   useI18n,
   useInstanceTemplates
@@ -210,15 +210,18 @@ export default defineComponent({
       context.emit('select', template)
     }
     const searchTextRef = ref(null)
-    props.onActivated(() => {
-      if (props.value) {
-        onUse(props.value)
-      } else if (props.preset) {
+    watch([computed(() => props.preset), templates], () => {
+      if (props.preset) {
         const preset = templates.value.find(t => t.path === props.preset)
         if (preset) {
           onUse(preset)
         }
       }
+    })
+    props.onActivated(() => {
+      if (props.value) {
+        onUse(props.value)
+      } 
       toggles.unshift(() => {
         if (searchTextRef.value) {
           searchTextRef.value.focus()
@@ -227,7 +230,6 @@ export default defineComponent({
       })
     })
     props.onDeactivated(() => {
-      console.log('deactivated')
       toggles.shift()
     })
     onUnmounted(() => {

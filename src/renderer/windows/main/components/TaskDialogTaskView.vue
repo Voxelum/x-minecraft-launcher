@@ -18,7 +18,7 @@
         item-children="children"
       >
         <template #append="{ item }">
-          <task-node-status
+          <TaskDialogNodeStatus
             :item="item"
             :show-number="hovered[item.id]"
             @pause="pause(item)"
@@ -37,7 +37,7 @@
             <span style="max-width: 100px;">{{ item.title }}</span>
             <div
               style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
-            >{{ item.time }}</div>
+            >{{ item.time.toLocaleString() }}</div>
             <div
               style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
             >{{ item.message || item.from || item.to }}</div>
@@ -50,10 +50,12 @@
 
 <script lang=ts>
 import { defineComponent, reactive, toRefs } from '@vue/composition-api'
+import TaskDialogNodeStatus from './TaskDialogNodeStatus.vue'
 import { TaskItem } from '/@/entities/task'
 import { useTasks } from '/@/hooks'
 
 export default defineComponent({
+  components: { TaskDialogNodeStatus },
   setup() {
     const { tasks, pause, resume, cancel } = useTasks()
 

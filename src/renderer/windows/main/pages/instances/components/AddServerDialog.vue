@@ -48,9 +48,9 @@
 <script lang=ts>
 import { computed, defineComponent, provide, reactive, toRefs, watch } from '@vue/composition-api'
 import { useDialog } from '../../../composables'
-import { CreateOptionKey } from './InstanceCreationStepper/creation'
-import AdvanceContent from './StepperAdvanceContent.vue'
-import StepperFooter from './StepperFooter.vue'
+import { CreateOptionKey } from '/@/windows/main/components/AddInstanceDialog.vue'
+import AdvanceContent from '/@/windows/main/components/StepperAdvanceContent.vue'
+import StepperFooter from '/@/windows/main/components/StepperFooter.vue'
 import ServerContent from './StepperServerContent.vue'
 import { useInstanceCreation, useServer } from '/@/hooks'
 import { withDefault } from '/@/util/props'
