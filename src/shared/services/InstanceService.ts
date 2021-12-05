@@ -48,7 +48,7 @@ export class InstanceState {
    * The selected instance config.
    */
   get instance() {
-    return this.all[this.path] ?? DEFAULT_PROFILE
+    return this.instances.find(v => v.path === this.path) ?? DEFAULT_PROFILE
   }
 
   instanceAdd(instance: Instance) {
@@ -58,10 +58,11 @@ export class InstanceState {
     if (!this.all[instance.path]) {
       // TODO: remove in vue3
       // set(this.all, instance.path, { ...instance, serverStatus: UNKNOWN_STATUS })
-      this.all[instance.path] = {
+      const object = {
         ...instance,
       }
-      this.instances.push(instance)
+      this.all[instance.path] = object
+      this.instances.push(this.all[instance.path])
     }
   }
 
@@ -73,12 +74,16 @@ export class InstanceState {
   }
 
   instanceSelect(path: string) {
-    if (this.all[path]) {
+    let inst = this.instances.find(i => i.path === (path || this.path))
+    if (inst) {
       this.path = path
     } else if (this.path === '') {
       this.path = Object.keys(this.all)[0]
     }
-    this.all[this.path].lastAccessDate = Date.now()
+    inst = this.instances.find(i => i.path === (path || this.path))
+    if (inst) {
+      inst.lastAccessDate = Date.now()
+    }
   }
 
   /**
@@ -87,7 +92,7 @@ export class InstanceState {
    * @param payload The modified data
    */
   instanceEdit(settings: DeepPartial<InstanceSchema> & { path: string }) {
-    const inst = this.all[settings.path || this.path]
+    const inst = this.instances.find(i => i.path === (settings.path || this.path)) /* this.all[settings.path || this.path] */
 
     if (!inst) {
       console.error(`Cannot commit profile. Illegal State with missing profile ${this.path}`)
