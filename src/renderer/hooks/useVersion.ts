@@ -159,14 +159,25 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
     const localForgeVersion: { [k: string]: boolean } = {}
     state.local.forEach((ver) => {
       const lib = ver.libraries.find(isForgeLibrary)
-      if (lib) localForgeVersion[lib.version] = true
+      let version = lib?.version
+      if (version) {
+        const parsedVersion = version.split('-')
+        if (parsedVersion.length === 3) {
+          localForgeVersion[parsedVersion[1]] = true
+        } else if (parsedVersion.length === 2) {
+          localForgeVersion[parsedVersion[1]] = true
+        } else if (parsedVersion.length === 1) {
+          localForgeVersion[parsedVersion[0]] = true
+        } else {
+          console.error(`Cannot resolve forge version ${lib!.artifactId}`)
+        }
+      }
     })
     installState.forge.forEach((container) => {
       container.versions.forEach((version) => {
         statusMap[version.version] = localForgeVersion[version.version] ? 'local' : 'remote'
       })
     })
-    console.log(statusMap)
     return statusMap
   })
 
