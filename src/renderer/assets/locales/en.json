@@ -715,6 +715,7 @@
       "": "Template Setting",
       "importing": "Template Importing",
       "modpack": "This is a modpack configuration",
+      "preview": "Modpack Preview",
       "profile": "This is a existed profile configuration",
       "server": "This is a existed server configuration"
     },
