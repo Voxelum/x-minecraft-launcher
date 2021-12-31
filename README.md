@@ -14,25 +14,50 @@ Visit Github Release page to download installer/zip. Or you can visit the [offic
 
 ## Design
 
-The program is splited into two parts like general electron app. The main process and renderer process.
+The program is splited into two parts like general electron app. The main process and renderer process. The content is splitted into multiple sub-project.
+This git repo is a mono-repo for the launcher.
 
-### Tech Stack
+### Tech Stack & Some Background
 
-This project is using [nodejs](https://nodejs.org/) + [electron](https://electron.atom.io) + [vue](https://vuejs.org).
+Here we have a overview of the toolchain & runtime of this project
 
-### File structure:
+For the whole project, we have
 
-- main => main process, the guard process. Store most of the states of launcher. It contains three main part and loaded in following order:
-    1. app => App controller
-    2. managers => The manager tend to be load
-    3. services => The services exposed to the renderer process
-- renderer => renderer process, store the single state tree and display UI
-- universal => some universal things across the main/renderer
-    - store => the definition of store
-- static => static resources
-  - locales => all the localization files
+- [nodejs 14](https://nodejs.org/). The core libraries base environment. Some build scripts are based on node 14.
+- [electron 15](https://electron.atom.io). The actual runtime of the launcher.
+- [pnpm](https://pnpm.io/). Used for monorepo package management.
+- [typescript](https://www.typescriptlang.org/). The whole project uses as much typescript as possible.
 
-Core minecraft launcher logic is implemented [launcher-core](https://github.com/voxelum/ts-minecraft). Therefore some bugs might be cased by this.
+For main process (electron), we have
+
+- [esbuild](https://esbuild.github.io/). We use esbuild to build our main process typescript.
+
+For renderer side, which is the pure front-end
+
+- [vue](https://vuejs.org). Used to build user interfaces.
+- [vite](https://vitejs.dev/). Used as our build system.
+- [vuetify](https://vuetifyjs.com/). Used as a component library.
+- [windicss](https://windicss.org/). Used for css tooling.
+- [vue composition API](https://github.com/vuejs/composition-api). The bridge for compositional API for vue 2. Once the vuetify upgrade to the vue 3, the vue will be upgraded and this will be removed.
+
+### Project structure
+
+![diagram](/assets/diagram.svg)
+
+- xmcl
+  - The linked git repo [launcher-core](https://github.com/voxelum/minecraft-launcher-core-node) is a git submodule in this project.
+  - Implements the core Minecraft install & launch logic, and expose them as a library.
+- xmcl-electron-app
+  - Use electron to implement the runtime.
+  - This directly depends on the xmcl-runtime.
+  - This implicitly depends on xmcl-keystone-ui (temporally, might be removed later?)
+- xmcl-keystone-ui
+  - The major default UI of the launcher.
+  - 100% browser compatible. No electron API involved in this project.
+- xmcl-runtime
+  - The core implementation of the launcher architecture. This only depends on nodejs, and does not require electron runtime.
+- xmcl-runtime-api
+  - This is the shared code & API for xmcl runtime. It can be used for renderer app (browser side)
 
 ### Concept/Structure
 
@@ -42,45 +67,85 @@ The main is the "backend" of the launcher. It manages the windows, and all the p
 
 The renderer is/are just (a) browsers which communicate with main. It maintains a copy of the store. (I can be a full copy, or a partial copy) User's input will trigger an [action](https://vuex.vuejs.org/guide/actions.html) or [commit](https://vuex.vuejs.org/guide/mutations.html), and it will be sync to the main. Though, it does't require any extra action for developer. The local commit and action will automatically send to main. The developer can treat the renderer as a normal vue application.
 
-### Project Tech Stack
+## Contribute
 
-After a whole refactor, the project is mostly covered by Typescript.
-
-Though, this is not optimized now. Typescript on vue side now is lagging the dev compile time. Maybe optimize it later.
-
-The vue part is migrating to [vue composition API](https://github.com/vuejs/composition-api) interface.
-
-## Dev
-
-This project is designed to easy to dev... hopefully.
+Highly recommend to use the VSCode to open the project.
 
 ### Getting Started
 
-After you clone the project
+#### Clone
 
-``` bash
-# install dependencies
-npm install
-
-# serve with hot reload at localhost:9080
-npm run dev
-
-# build electron application for production, don't run this unless you really want to make a product env.... use npm run dev to dev
-npm run build
-
-# run unit tests, whereas no tests yet
-npm test
-```
-
-#### 解决中国国内安装依赖（如electron）太慢的办法
-
-打开你的 git bash，在`npm i`前面加上`registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/"`。使用国内阿里提供的npm以及electron的镜像。
-
-最终输入的command也就是
+Clone the project with submodule flag `--recurse-submodules`.
 
 ```bash
-registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/" npm i
+git clone --recurse-submodules https://github.com/Voxelum/x-minecraft-launcher
 ```
+
+If you forget to add `--recurse-submodules` flag, you need to initialize & update the git submodule manually.
+
+```bash
+git submodule init
+git submodule update
+```
+
+#### Install
+
+Install the project using [pnpm](https://pnpm.io):
+
+```
+pnpm install
+```
+
+<details>
+  <summary> 解决中国国内安装依赖（如electron）太慢的办法 </summary>
+
+  打开你的 git bash，在`pnpm i` 前面加上 `registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/"`。使用国内阿里提供的npm以及electron的镜像。
+
+  最终输入的command也就是
+
+  ```bash
+  registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/" pnpm i
+  ```
+</details>
+
+
+#### Start Launcher
+
+Then you can run the launcher
+
+#### For VSCode
+
+Go `Run and Debug` section, use the profile `Electron: Main (launch)` to start the electron. (Hot key F5)
+
+#### For non VSCode
+
+Open one terminal
+
+```bash
+# Start a dev server for ui
+npm run dev:renderer
+```
+
+Open another terminal
+
+``` bash
+# Start watching main process code
+npm run dev:main
+```
+
+#### Code Change
+
+You have code change, and you want to update the change to the running launcher instance.
+
+##### For Browser process
+
+The vite provide hot reload, it should update automatically. If something went wrong, you can refresh the browser by ctrl+r.
+
+##### For Main process
+
+If you use VSCode to launch the launcher, after you changed the code, you can press the reload button on vscode debugger.
+
+If you don't use VSCode to launch, it should close electron and reload automatically.
 
 ### Found something wrong in launcher core
 
@@ -95,7 +160,7 @@ Please open issue there if you identify any issue related to it.
 - Import your hook by `import { yourHook } from '/@/hooks'` in your vue file
 - Use hook in vue file without directly access of vuex
 
-### Dev with VSCode debugger 
+### VSCode debugger 
 
 The project includes vscode debugger configs. You can add breakpoint on line and debug. Currently, VSCode debugger method only supports debug on main process. 
 
@@ -103,12 +168,11 @@ The project includes vscode debugger configs. You can add breakpoint on line and
 
 We have two options now:
 
-1. Electron: Main (npm)
+1. Electron: Main (launch)
 2. Electron: Main (attach)
 
-Please use the attch option since the first one not work now.
+If you use the first one to launch, it will automatically attach the debugger to the instance.
 
-With attach option, you should first run `npm run dev`, and then attach debugger by VSCode debugger UI.
 
 ### Commit your code
 
@@ -148,5 +212,5 @@ Refer from [this gist](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f
 
 ---
 
-This project was generated with [electron-vue](https://github.com/SimulatedGREG/electron-vue) using [vue-cli](https://github.com/vuejs/vue-cli). Documentation about the original structure can be found [here](https://simulatedgreg.gitbooks.io/electron-vue/content/index.html).
+~~This project was generated with [electron-vue](https://github.com/SimulatedGREG/electron-vue) using [vue-cli](https://github.com/vuejs/vue-cli). Documentation about the original structure can be found [here](https://simulatedgreg.gitbooks.io/electron-vue/content/index.html).~~
 

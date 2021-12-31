@@ -1,6 +1,8 @@
 {
   "private": true,
   "devDependencies": {
+    "conventional-changelog": "^3.1.24",
+    "conventional-recommended-bump": "^6.1.0",
     "@actions/core": "1.2.4"
   }
 }

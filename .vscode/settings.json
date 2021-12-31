@@ -36,11 +36,14 @@
     "i18n-ally.keystyle": "nested",
     "i18n-ally.sortKeys": true,
     "cSpell.words": [
-        "Minecraft",
+        "Curseforge",
         "logined",
         "logining",
+        "Minecraft",
         "mojang",
-        "xmcl"
+        "xmcl",
+        "Modpack"
     ],
-    "cSpell.enabled": true
+    "cSpell.enabled": true,
+    "cmake.configureOnOpen": false
 }

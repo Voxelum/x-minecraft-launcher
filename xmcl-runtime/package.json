@@ -1,0 +1,115 @@
+{
+    "name": "@xmcl/runtime",
+    "private": true,
+    "version": "0.14.0",
+    "author": "ci010 <cijhn@hotmail.com>",
+    "description": "The runtime for x minecraft launcher in nodejs",
+    "license": "MIT",
+    "main": "index.ts",
+    "engines": {
+        "node": ">=15.0.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/voxelum/x-minecraft-launcher"
+    },
+    "scripts": {
+        "build": "node scripts/build.js",
+        "dev": "cross-env NODE_ENV=development node scripts/dev.js",
+        "check": "tsc --project tsconfig.json --noEmit",
+        "lint": "eslint --ext .ts .",
+        "lint:fix": "eslint --ext .ts --fix .",
+        "test": "jest"
+    },
+    "dependencies": {
+        "7zip-bin": "^5.1.1",
+        "7zip-min": "^1.3.2",
+        "@azure/msal-common": "^5.0.0",
+        "@azure/msal-node": "^1.3.1",
+        "@swc-node/jest": "^1.3.2",
+        "@xmcl/client": "2.1.2",
+        "@xmcl/core": "2.8.0",
+        "@xmcl/curseforge": "^0.1.2",
+        "@xmcl/forge-site-parser": "^2.0.8",
+        "@xmcl/gamesetting": "^2.0.2",
+        "@xmcl/installer": "^4.0.2",
+        "@xmcl/mod-parser": "^3.2.0",
+        "@xmcl/model": "^1.0.19",
+        "@xmcl/nbt": "^2.0.3",
+        "@xmcl/resourcepack": "^1.1.2",
+        "@xmcl/runtime-api": "workspace:*",
+        "@xmcl/server-info": "^2.0.4",
+        "@xmcl/system": "^2.2.3",
+        "@xmcl/task": "^4.0.2",
+        "@xmcl/text-component": "^2.1.1",
+        "@xmcl/unzip": "^2.0.0",
+        "@xmcl/user": "^2.1.5",
+        "@xmcl/world": "^1.1.6",
+        "ajv": "^6.12.6",
+        "applicationinsights": "^2.1.6",
+        "atomically": "^1.7.0",
+        "file-type": "^16.5.3",
+        "filenamify": "^4.3.0",
+        "fs-extra": "^10.0.0",
+        "got": "^11.8.2",
+        "iconv-lite": "^0.5.2",
+        "jschardet": "^2.3.0",
+        "keytar": "^7.7.0",
+        "lodash.debounce": "^4.0.8",
+        "lodash.throttle": "^4.1.1",
+        "node-watch": "^0.6.4",
+        "semver": "^7.3.5",
+        "uuid": "^7.0.3",
+        "yazl": "^2.5.1"
+    },
+    "external": [],
+    "devDependencies": {
+        "@types/7zip-min": "^1.3.1",
+        "@types/fs-extra": "^8.1.2",
+        "@types/jest": "^27.0.2",
+        "@types/lodash.debounce": "^4.0.6",
+        "@types/lodash.throttle": "^4.1.6",
+        "@types/long": "^4.0.1",
+        "@types/node": "~15",
+        "@types/uuid": "^3.4.10",
+        "@types/yauzl": "^2.9.2",
+        "@types/yazl": "^2.4.2",
+        "@typescript-eslint/eslint-plugin": "^5.6.0",
+        "@typescript-eslint/parser": "^5.6.0",
+        "eslint": "~7",
+        "eslint-config-standard": "^16.0.3",
+        "eslint-plugin-import": "^2.25.3",
+        "eslint-plugin-node": "^11.1.0",
+        "eslint-plugin-promise": "^5.2.0",
+        "cross-env": "^5.2.1",
+        "esbuild": "^0.12.25",
+        "jest": "^27.2.2",
+        "tslib": "^2.3.1",
+        "typescript": "^4.4.3"
+    },
+    "jest": {
+        "globals": {
+            "ts-jest": {
+                "tsConfig": "tsconfig.json"
+            }
+        },
+        "moduleNameMapper": {
+            "^@universal(.*)$": "<rootDir>/src/universal$1",
+            "^@main(.*)$": "<rootDir>/src/main$1"
+        },
+        "moduleFileExtensions": [
+            "ts",
+            "js",
+            "json"
+        ],
+        "modulePaths": [
+            "src"
+        ],
+        "preset": "ts-jest",
+        "testEnvironment": "node",
+        "testRegex": "src/.*spec\\.ts",
+        "transform": {
+            "^.+(?!\\.d)\\.ts$": "ts-jest"
+        }
+    }
+}
