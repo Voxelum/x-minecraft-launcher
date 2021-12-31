@@ -1,2 +1,6 @@
 packages:
   - 'xmcl/packages/**'
+  - 'xmcl-electron-app'
+  - 'xmcl-runtime-api'
+  - 'xmcl-runtime'
+  - 'xmcl-keystone-ui'

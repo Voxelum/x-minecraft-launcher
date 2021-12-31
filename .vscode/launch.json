@@ -9,12 +9,13 @@
             "type": "node",
             "request": "launch",
             "preLaunchTask": "dev",
-            "program": "${workspaceFolder}/dist/index.js",
-            "args": ["--remote-debugging-port=9300"],
+            "program": "${workspaceFolder}/xmcl-electron-app/dist/index.js",
+            "args": ["--remote-debugging-port=9300", "--trace-uncaught", "--trace-deprecation"],
             "sourceMaps": true, 
-            "outFiles": ["${workspaceFolder}/dist/*.js"],
-            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/electron",
+            "outFiles": ["${workspaceFolder}/xmcl-electron-app/dist/*.js"],
+            "runtimeExecutable": "${workspaceFolder}/xmcl-electron-app/node_modules/.bin/electron",
             "protocol": "inspector",
+            "cwd": "${workspaceFolder}/xmcl-electron-app/dist",
             "env": {
                 "NODE_ENV": "development"
             }

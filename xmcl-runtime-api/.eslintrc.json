@@ -1,0 +1,18 @@
+{
+    "overrides": [
+        {
+            "files": [
+                "**/*.ts"
+            ],
+            "parserOptions": {
+                "parser": "@typescript-eslint/parser",
+                "ecmaVersion": 2020,
+                "sourceType": "module",
+                "tsconfigRootDir": "./xmcl-runtime-api",
+                "project": [
+                    "tsconfig.json"
+                ]
+            }
+        }
+    ]
+}

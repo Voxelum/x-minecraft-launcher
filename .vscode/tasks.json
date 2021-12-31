@@ -21,6 +21,11 @@
             "script": "dev:main",
             "group": "build",
             "isBackground": true,
+            "options": {
+                "env": {
+                    "LAUNCH_BY": "vscode"
+                }
+            },
             "problemMatcher": [
                 {
                     "pattern": [
@@ -34,7 +39,7 @@
                     "background": {
                         "activeOnStart": true,
                         "beginsPattern": ".",
-                        "endsPattern": "Electron app started",
+                        "endsPattern": "electron main ready",
                     }
                 }
             ]

@@ -1,9 +1,0 @@
-{
-    "compilerOptions": {
-        "checkJs": true,
-        "strict": true,
-        "noImplicitAny": false,
-        "resolveJsonModule": true,
-        "allowSyntheticDefaultImports": true
-    }
-}

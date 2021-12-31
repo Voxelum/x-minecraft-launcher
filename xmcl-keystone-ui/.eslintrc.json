@@ -1,0 +1,39 @@
+{
+    "globals": {
+        "taskChannel": true,
+        "semaphoreChannel": true,
+        "serviceChannel": true,
+        "controllerChannel": true
+    },
+    "extends": [
+        "../.eslintrc.json",
+        "plugin:vue/recommended"
+    ],
+    "parser": "vue-eslint-parser",
+    "plugins": [
+        "vue",
+        "@typescript-eslint"
+    ],
+    "parserOptions": {
+        "parser": "@typescript-eslint/parser",
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+    },
+    "env": {
+        "browser": true,
+        "es2021": true
+    },
+    "overrides": [
+        {
+            "files": [
+                "**/*.ts"
+            ],
+            "parserOptions": {
+                "tsconfigRootDir": "./xmcl-keystone-ui",
+                "project": [
+                    "tsconfig.json"
+                ]
+            }
+        }
+    ]
+}

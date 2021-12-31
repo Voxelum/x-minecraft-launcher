@@ -1,4 +1,5 @@
 .DS_Store
+*/dist/*
 dist/*
 dist/web/*
 dist/test/*
@@ -21,3 +22,9 @@ static/semantic
 *.bin
 /temp
 /definitions
+
+nat-api
+p2p.network
+
+
+*/build/output/*
