@@ -62,14 +62,17 @@
       @dragover.prevent="onDragOver"
       @drop="onDropToImport"
     >
+      <refreshing-tile
+        class="h-full"
+        v-if="loading"
+      />
       <hint
-        v-if="items.length === 0"
+        v-else-if="items.length === 0"
         icon="save_alt"
         :text="$t('mod.dropHint')"
         :absolute="true"
         class="h-full"
       />
-
       <transition-group
         v-else
         name="transition-list"
@@ -118,15 +121,15 @@ import DeleteView from './DeleteView.vue'
 import FloatButton from './FloatButton.vue'
 import ModCard from './ModCard.vue'
 import { ModItem, useInstanceMods } from './useInstanceMod'
-import { useFilterCombobox } from '/@/components/FilterCombobox.vue'
+import FilterCombobox, { useFilterCombobox } from '/@/components/FilterCombobox.vue'
 import {
   useDrop,
   useInstanceBase, useInstanceVersionBase, useOperation, useResourceOperation, useRouter,
 } from '/@/hooks'
 import { useLocalStorageCacheBool } from '/@/hooks/useCache'
 import { isCompatible } from '@xmcl/runtime-api'
-import FilterCombobox from '../../../../components/FilterCombobox.vue'
 import Hint from '/@/components/Hint.vue'
+import RefreshingTile from '/@/components/RefreshingTile.vue'
 
 function setupDragMod(items: Ref<ModItem[]>, selectedMods: Ref<ModItem[]>, isSelectionMode: Ref<boolean>) {
   const isDraggingMod = computed(() => items.value.some(i => i.dragged))
@@ -308,11 +311,12 @@ export default defineComponent({
     FloatButton,
     FilterCombobox,
     Hint,
+    RefreshingTile,
   },
   setup() {
     const { minecraft } = useInstanceVersionBase()
     const { importResource } = useResourceOperation()
-    const { items: mods, commit, committing, isModified, showDirectory } = useInstanceMods()
+    const { items: mods, commit, committing, isModified, showDirectory, loading } = useInstanceMods()
     const { path } = useInstanceBase()
     const { push } = useRouter()
 
@@ -343,6 +347,7 @@ export default defineComponent({
       commit,
       committing,
       isModified,
+      loading,
       ModCard,
       ...selection,
     }
