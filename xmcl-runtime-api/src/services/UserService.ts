@@ -166,9 +166,6 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
     if (profile.id in userProfile.profiles) {
       const instance = { textures: { SKIN: { url: '' } }, ...profile }
       userProfile.profiles[profile.id] = instance
-
-      // TODO: remove in vue3
-      // set(userProfile.profiles, profile.id)
     } else {
       userProfile.profiles[profile.id] = {
         textures: { SKIN: { url: '' } },
@@ -184,14 +181,10 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
   }
 
   authServiceRemove(name: string) {
-    // TODO: remove in vue3
-    // remove(this.authServices, name)
     delete this.authServices[name]
   }
 
   profileServiceRemove(name: string) {
-    // TODO: remove in vue3
-    // remove(this.profileServices, name)
     delete this.profileServices[name]
   }
 
@@ -200,9 +193,6 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
       this.selectedUser.id = ''
       this.selectedUser.profile = ''
     }
-
-    // TODO: remove in vue3
-    // remove(this.users, userId)
     delete this.users[userId]
   }
 
@@ -214,8 +204,6 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
         .reduce(toObjectReducer<GameProfileAndTexture, 'id'>('id'), {}),
       selectedProfile: profile.selectedProfile,
     }
-    // TODO: remove in vue3
-    // set(this.users, profile.id)
     this.users[profile.id] = value
   }
 
@@ -246,23 +234,11 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
   }
 
   authServiceSet({ name, api }: { name: string; api: YggdrasilAuthAPI }) {
-    if (name in this.authServices) {
-      this.authServices[name] = api
-    } else {
-      // TODO: remove in vue3
-      // set(this.authServices, name)
-      this.authServices[name] = api
-    }
+    this.authServices[name] = api
   }
 
   profileServiceSet({ name, api }: { name: string; api: ProfileServiceAPI }) {
-    if (name in this.profileServices) {
-      this.profileServices[name] = api
-    } else {
-      // TODO: remove in vue3
-      // set(this.profileServices, name)
-      this.profileServices[name] = api
-    }
+    this.profileServices[name] = api
   }
 }
 
