@@ -239,7 +239,7 @@ export function useLogin() {
   }
   function reset() {
     data.logining = false
-    data.username = username.value
+    data.username = history.value[0] ?? ''
     data.password = ''
   }
   onMounted(() => {
