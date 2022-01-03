@@ -1,5 +1,6 @@
-import { computed, InjectionKey, reactive, ref, Ref } from '@vue/composition-api'
-import { BaseServiceKey, BaseServiceMethods, BaseState, CurseForgeServiceKey, CurseForgeServiceMethods, CurseforgeState, DiagnoseServiceKey, DiagnoseServiceMethods, DiagnoseState, ImportServiceKey, ImportServiceMethods, InstallServiceKey, InstallServiceMethods, InstallState, InstanceCurseforgeIOServiceKey, InstanceCurseforgeIOServiceMethods, InstanceIOServiceKey, InstanceIOServiceMethods, InstanceJavaServiceKey, InstanceJavaServiceMethods, InstanceJavaState, InstanceLogServiceKey, InstanceLogServiceMethods, InstanceModsServiceKey, InstanceModsServiceMethods, InstanceModsState, InstanceOptionsServiceKey, InstanceOptionsServiceMethods, InstanceOptionsState, InstanceResourcePacksServiceKey, InstanceResourcePacksServiceMethods, InstanceSavesServiceKey, InstanceSavesServiceMethods, InstanceServerInfoServiceKey, InstanceServerInfoServiceMethods, InstanceServiceKey, InstanceServiceMethods, InstanceShaderPacksServiceKey, InstanceShaderPacksServiceTemplate, InstanceState, InstanceVersionServiceKey, InstanceVersionServiceMethods, InstanceVersionState, JavaServiceKey, JavaServiceMethods, JavaState, LaunchServiceKey, LaunchServiceMethods, LaunchState, ResourceServiceKey, ResourceServiceMethods, ResourceState, SaveState, ServerInfoState, ServerStatusServiceKey, ServerStatusServiceMethods, State, UserServiceKey, UserServiceMethods, UserState, VersionServiceKey, VersionServiceMethods, VersionState } from '@xmcl/runtime-api'
+import { computed, InjectionKey, reactive, ref, Ref, set, del } from '@vue/composition-api'
+import { BaseServiceKey, BaseServiceMethods, BaseState, CurseForgeServiceKey, CurseForgeServiceMethods, CurseforgeState, DiagnoseServiceKey, DiagnoseServiceMethods, DiagnoseState, GameProfileAndTexture, ImportServiceKey, ImportServiceMethods, InstallServiceKey, InstallServiceMethods, InstallState, InstanceCurseforgeIOServiceKey, InstanceCurseforgeIOServiceMethods, InstanceIOServiceKey, InstanceIOServiceMethods, InstanceJavaServiceKey, InstanceJavaServiceMethods, InstanceJavaState, InstanceLogServiceKey, InstanceLogServiceMethods, InstanceModsServiceKey, InstanceModsServiceMethods, InstanceModsState, InstanceOptionsServiceKey, InstanceOptionsServiceMethods, InstanceOptionsState, InstanceResourcePacksServiceKey, InstanceResourcePacksServiceMethods, InstanceSavesServiceKey, InstanceSavesServiceMethods, InstanceServerInfoServiceKey, InstanceServerInfoServiceMethods, InstanceServiceKey, InstanceServiceMethods, InstanceShaderPacksServiceKey, InstanceShaderPacksServiceTemplate, InstanceState, InstanceVersionServiceKey, InstanceVersionServiceMethods, InstanceVersionState, JavaServiceKey, JavaServiceMethods, JavaState, LaunchServiceKey, LaunchServiceMethods, LaunchState, ResourceServiceKey, ResourceServiceMethods, ResourceState, SaveState, ServerInfoState, ServerStatusServiceKey, ServerStatusServiceMethods, State, UserProfile, UserServiceKey, UserServiceMethods, UserState, VersionServiceKey, VersionServiceMethods, VersionState } from '@xmcl/runtime-api'
+import { GameProfile, ProfileServiceAPI, YggdrasilAuthAPI } from '@xmcl/user'
 import { Store } from 'vuex'
 import { createServiceFactory as _createServiceFactory, ServiceFactory } from './serviceFactory'
 
@@ -90,7 +91,11 @@ function createStoreTemplate(symb: VuexModuleTemplateSymbols) {
 
 function getStoreTemplateSymbol(name: string, stateTemplate: State<any>) {
   function extractSymbol(o: object, s: VuexModuleTemplateSymbols) {
-    for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(o))) {
+    let descriptors = Object.getOwnPropertyDescriptors(o)
+    if (name === 'UserService') {
+      descriptors = Object.assign({}, Object.getOwnPropertyDescriptors(Object.getPrototypeOf(o)), descriptors)
+    }
+    for (const [key, prop] of Object.entries(descriptors)) {
       if (typeof prop.value !== 'undefined') {
         const val = prop.value
         if (val instanceof Function) {
@@ -168,7 +173,60 @@ export function createServiceFactory(store: Store<any>) {
   factory.register(LaunchServiceKey, LaunchServiceMethods, [], () => new LaunchState())
   factory.register(ResourceServiceKey, ResourceServiceMethods, [], () => new ResourceState())
   factory.register(CurseForgeServiceKey, CurseForgeServiceMethods, [ResourceServiceKey], (res) => new CurseforgeState(res))
-  factory.register(UserServiceKey, UserServiceMethods, [], () => new UserState())
+
+  // fix vue 2 reactivity
+  // TOOD: remove this in vue 3
+  class ReactiveUserState extends UserState {
+    gameProfileUpdate({ profile, userId }: { userId: string; profile: (GameProfileAndTexture | GameProfile) }) {
+      const userProfile = this.users[userId]
+      if (profile.id in userProfile.profiles) {
+        const instance = { textures: { SKIN: { url: '' } }, ...profile }
+        set(userProfile.profiles, profile.id, instance)
+      } else {
+        userProfile.profiles[profile.id] = {
+          textures: { SKIN: { url: '' } },
+          ...profile,
+        }
+      }
+    }
+
+    authServiceRemove(name: string) {
+      del(this.authServices, name)
+    }
+
+    profileServiceRemove(name: string) {
+      del(this.profileService, name)
+    }
+
+    userProfileRemove(userId: string) {
+      if (this.selectedUser.id === userId) {
+        this.selectedUser.id = ''
+        this.selectedUser.profile = ''
+      }
+
+      del(this.users, userId)
+    }
+
+    userProfileAdd(profile: Omit<UserProfile, 'profiles'> & { id: string; profiles: (GameProfileAndTexture | GameProfile)[] }) {
+      const value = {
+        ...profile,
+        profiles: profile.profiles
+          .map(p => ({ ...p, textures: { SKIN: { url: '' } } }))
+          .reduce((o: { [key: string]: any }, v) => { o[v.id] = v; return o }, {}),
+        selectedProfile: profile.selectedProfile,
+      }
+      set(this.users, profile.id, value)
+    }
+
+    authServiceSet({ name, api }: { name: string; api: YggdrasilAuthAPI }) {
+      set(this.authServices, name, api)
+    }
+
+    profileServiceSet({ name, api }: { name: string; api: ProfileServiceAPI }) {
+      set(this.profileServices, name, api)
+    }
+  }
+  factory.register(UserServiceKey, UserServiceMethods, [], () => new ReactiveUserState())
 
   return factory
 }
