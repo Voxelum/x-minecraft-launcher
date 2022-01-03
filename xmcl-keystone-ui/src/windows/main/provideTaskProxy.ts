@@ -1,4 +1,4 @@
-import { InjectionKey, onMounted, onUnmounted, reactive, Ref, ref } from '@vue/composition-api'
+import { computed, InjectionKey, onMounted, onUnmounted, reactive, Ref, ref } from '@vue/composition-api'
 import { TaskItem } from '/@/entities/task'
 import { useI18n } from '/@/hooks'
 import { TaskBatchUpdatePayloads, TaskPayload, TaskState } from '@xmcl/runtime-api'
@@ -88,7 +88,7 @@ export function useTaskManager() {
     const item = reactive({
       id: localId,
       taskId: payload.uuid,
-      title: $t(payload.path, payload.param),
+      title: computed(() => $t(payload.path, payload.param)),
       time: new Date(payload.time),
       message: payload.error ?? payload.from ?? payload.to ?? '',
       from: payload.from,
@@ -115,7 +115,7 @@ export function useTaskManager() {
       const item = reactive({
         taskId: uuid,
         id: localId,
-        title: $t(path, param),
+        title: computed(() => $t(path, param)),
         children,
         time: new Date(time),
         message: from ?? to ?? '',
