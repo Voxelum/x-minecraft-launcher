@@ -59,6 +59,8 @@ export interface IssueRegistries {
   requireFabric: Registry<{}, false, true>
   requireFabricAPI: Registry<{ version: string; name: string }, false, true>
 
+  loaderConflict: Registry<{ loaders: Array<'forge' | 'fabric' | 'liteloader'> }>
+
   badInstall: Registry<{ minecraft: string; version: string; installProfile: InstallProfile }>
 
   [id: string]: {

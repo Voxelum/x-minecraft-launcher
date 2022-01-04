@@ -1,5 +1,5 @@
 import { FabricModMetadata } from '@xmcl/mod-parser'
-import { AnyResource, FabricResource, ForgeModCommonMetadata, InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState, isModResource, isPersistedResource, IssueReport, parseVersion, ResourceDomain, ResourceType, VersionRange } from '@xmcl/runtime-api'
+import { AnyResource, FabricResource, ForgeModCommonMetadata, getFabricModCompatibility, getForgeModCompatibility, InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState, isFabricModCompatible, isFabricResource, isForgeModCompatible, isForgeResource, isModResource, isPersistedResource, IssueReport, parseVersion, ResourceDomain, ResourceType, VersionRange } from '@xmcl/runtime-api'
 import { ensureDir, FSWatcher, stat, unlink } from 'fs-extra'
 import watch from 'node-watch'
 import { dirname, join } from 'path'
@@ -89,46 +89,44 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
       }
 
       const mcversion = version.minecraft
-      const resolvedMcVersion = parseVersion(mcversion)
-      const pattern = /^\[.+\]$/
 
-      const tree: Pick<IssueReport, 'unknownMod' | 'incompatibleMod' | 'requireForge' | 'requireFabric' | 'requireFabricAPI'> = {
+      const tree: Pick<IssueReport, 'unknownMod' | 'incompatibleMod' | 'requireForge' | 'requireFabric' | 'requireFabricAPI' | 'loaderConflict'> = {
         unknownMod: [],
         incompatibleMod: [],
         requireForge: [],
         requireFabric: [],
         requireFabricAPI: [],
-      }
-      const forgeMods = mods.filter(m => !!m && m.type === 'forge')
-      for (const mod of forgeMods) {
-        const meta = mod.metadata as ForgeModCommonMetadata
-        const acceptVersion = meta.acceptMinecraft
-        if (!acceptVersion) {
-          tree.unknownMod.push({ name: mod.name, actual: mcversion })
-          continue
-        }
-        const range = VersionRange.createFromVersionSpec(acceptVersion)
-        if (range && !range.containsVersion(resolvedMcVersion)) {
-          tree.incompatibleMod.push({ name: mod.name, accepted: acceptVersion, actual: mcversion })
-        }
-      }
-      if (forgeMods.length > 0) {
-        if (!version.forge) {
-          tree.requireForge.push({})
-        }
+        loaderConflict: [],
       }
 
-      const fabricMods = mods.filter(m => m.type === 'fabric') as FabricResource[]
-      if (fabricMods.length > 0) {
-        if (!version.fabricLoader) {
-          tree.requireFabric.push({})
+      const forgeMods = mods.filter(isForgeResource)
+      const fabricMods = mods.filter(isFabricResource)
+      if (forgeMods.length > 0 && fabricMods.length > 0) {
+        // forge fabric conflict
+        tree.loaderConflict.push({ loaders: ['forge', 'fabric'] })
+      } else if (forgeMods.length > 0) {
+        if (!version.forge) {
+          // no forge
+          tree.requireForge.push({})
+        } else {
+          for (const mod of forgeMods) {
+            const forgeComp = getForgeModCompatibility(mod, version)
+            if (!forgeComp.minecraft) {
+              // minecraft not compatible
+              tree.incompatibleMod.push({ name: mod.name, accepted: mod.metadata.acceptMinecraft, actual: mcversion })
+            }
+          }
         }
-        for (const mod of fabricMods) {
-          const fabMetadata = mod.metadata as FabricModMetadata
-          if (fabMetadata.depends) {
-            const fabApiVer = (fabMetadata.depends as any).fabric
-            if (fabApiVer && !fabricMods.some(m => m.metadata.id === 'fabric')) {
-              tree.requireFabricAPI.push({ version: fabApiVer, name: mod.name })
+      } else if (fabricMods.length > 0) {
+        if (!version.fabricLoader) {
+          // no fabric
+          tree.requireFabric.push({})
+        } else {
+          for (const mod of fabricMods) {
+            const comp = getFabricModCompatibility(mod, version)
+            if (comp.fabric) {
+              // fabric api not compatible
+              tree.requireFabricAPI.push({ version: comp.fabric.version, name: mod.name })
             }
           }
         }
