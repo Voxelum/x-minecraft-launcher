@@ -63,7 +63,10 @@
               align-center
               justify-center
             >
-              <v-flex shrink style="display: block">
+              <v-flex
+                shrink
+                style="display: block"
+              >
                 <v-img
                   :src="proj.attachments[0] ? proj.attachments[0].thumbnailUrl : ''"
                   :width="64"
@@ -88,7 +91,10 @@
                 style="padding-left: 10px;"
                 inset
               />
-              <v-flex xs6 style="display: block">
+              <v-flex
+                xs6
+                style="display: block"
+              >
                 <v-card-title>
                   <span style="font-weight: bold;">{{ proj.name }}</span>
                   <span style="padding-left: 3px;">by {{ proj.authors[0].name }}</span>
@@ -156,7 +162,7 @@ export default defineComponent({
       searchBar.value!.focus()
       return true
     })
-    
+
     return { searchBar, ...useCurseforgeSearch(props.type, computed(() => props.page), computed(() => props.keyword)), dedup }
   },
 })

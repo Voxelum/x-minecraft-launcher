@@ -31,15 +31,23 @@
               style="margin: 0px; height: 48px; border-radius: 0;"
               @click="showBuggy = !showBuggy"
             >
-              <v-icon v-on="on">bug_report</v-icon>
+              <v-icon v-on="on">
+                bug_report
+              </v-icon>
             </v-chip>
           </template>
           {{ $t('version.showSnapshot') }}
         </v-tooltip>
       </template>
     </v-text-field>
-    <v-list dark class="h-full flex flex-col overflow-auto">
-      <v-list-tile ripple @click="select({ version: '' })">
+    <v-list
+      dark
+      class="h-full flex flex-col overflow-auto"
+    >
+      <v-list-tile
+        ripple
+        @click="select({ version: '' })"
+      >
         <v-list-tile-avatar>
           <v-icon>close</v-icon>
         </v-list-tile-avatar>
@@ -62,7 +70,6 @@ import { reactive, toRefs, defineComponent, computed } from '@vue/composition-ap
 import ForgeVersionMenuTile from './ForgeVersionMenuTile.vue'
 import { useForgeVersions } from '/@/hooks'
 import { ForgeVersion } from '@xmcl/runtime-api'
-
 
 export default defineComponent({
   props: {

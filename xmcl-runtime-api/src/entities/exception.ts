@@ -1,5 +1,5 @@
-import { AnyResource, PersistedResource } from '/@shared/entities/resource'
-import { Issue } from '/@shared/entities/issue'
+import { AnyResource, PersistedResource } from './resource'
+import { Issue } from './issue'
 
 export type Exceptions = InstanceNotFoundException | ResourceNotFoundException | ResourceImportDirectoryException | ResourceDomainMismatchedException | MinecraftProfileError | PingServerException | UserNoProfilesException | CurseforgeModpackImportException | IssueBlockedException | InstanceDeleteSaveException | FixVersionException | LaunchGeneralException | LaunchBlockedException | LaunchException | LoginException | InstanceImportSaveException | InstanceImportResourceException | InstanceCopySaveException | GeneralException | ResourceException
 

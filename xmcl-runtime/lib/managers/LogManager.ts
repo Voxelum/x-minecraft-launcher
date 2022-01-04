@@ -48,9 +48,9 @@ export default class LogManager extends Manager {
       this.error('Uncaught Rejection')
       this.error(reason)
     })
-    // if (IS_DEV) {
+    if (IS_DEV) {
       this.output.on('data', (b) => console.log(b.toString()))
-    // }
+    }
   }
 
   readonly log = (message: any, ...options: any[]) => { this.loggerEntries.log.write(formatMsg(message, options)) }

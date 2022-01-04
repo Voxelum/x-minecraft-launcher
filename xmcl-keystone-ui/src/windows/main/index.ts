@@ -36,19 +36,24 @@ import {
   TextureLoader,
   Mesh,
   PlaneGeometry,
-  Camera
+  Camera,
 } from 'three'
 
 // TODO: fix this after refactor halo
 window.THREE = {
-  LinearFilter, WebGLRenderTarget, RGBAFormat, Vector3, Color, Vector2,
+  LinearFilter,
+  WebGLRenderTarget,
+  RGBAFormat,
+  Vector3,
+  Color,
+  Vector2,
   WebGLRenderer,
   Scene,
   ShaderMaterial,
   TextureLoader,
   Mesh,
   PlaneGeometry,
-  Camera
+  Camera,
 } as any
 
 Vue.use(VueCompositionApi)

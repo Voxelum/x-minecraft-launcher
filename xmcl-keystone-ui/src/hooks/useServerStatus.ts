@@ -1,10 +1,7 @@
 import { computed, inject, InjectionKey, provide, reactive, Ref, ref, set, watch } from '@vue/composition-api'
 import { useService } from './useService'
-import { PINGING_STATUS, ServerStatus, UNKNOWN_STATUS } from '@xmcl/runtime-api'
-import { InstanceServiceKey } from '@xmcl/runtime-api'
-import { ServerStatusServiceKey } from '@xmcl/runtime-api'
+import { PINGING_STATUS, ServerStatus, UNKNOWN_STATUS, InstanceServiceKey, ServerStatusServiceKey, protocolToMinecraft } from '@xmcl/runtime-api'
 import { isNonnull } from '@xmcl/runtime-api/utils'
-import { protocolToMinecraft } from '@xmcl/runtime-api'
 
 export function useProtocolAcceptVersion(protocol: Ref<number>) {
   return computed(() => `[${protocolToMinecraft[protocol.value].join(', ')}]`)

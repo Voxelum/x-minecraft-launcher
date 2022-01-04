@@ -63,8 +63,8 @@
       @drop="onDropToImport"
     >
       <refreshing-tile
-        class="h-full"
         v-if="loading"
+        class="h-full"
       />
       <hint
         v-else-if="items.length === 0"
@@ -88,7 +88,8 @@
           :selection="isSelectionMode"
           @enable="onEnable"
           @dragstart="onItemDragstart(item)"
-          @select="select(item)"
+          @tags="item.tags = $event"
+          @select="item.selected = true"
           @click="onClick($event, index)"
         />
       </transition-group>
@@ -311,7 +312,7 @@ export default defineComponent({
     FloatButton,
     FilterCombobox,
     Hint,
-    RefreshingTile,
+    RefreshingTile: RefreshingTile as any,
   },
   setup() {
     const { minecraft } = useInstanceVersionBase()

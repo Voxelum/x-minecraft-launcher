@@ -13,16 +13,24 @@
     @dragend="$emit('dragend')"
   >
     <div class="self-center px-2">
-      <img v-fallback-img="unknownPack" :src="unknownPack" contain width="60" height="60" />
+      <img
+        v-fallback-img="unknownPack"
+        :src="unknownPack"
+        contain
+        width="60"
+        height="60"
+      >
     </div>
     <div class="flex-grow">
       <v-card-title class="flex flex-col items-start gap-2">
         <div
+          v-once
           class="text-lg font-bold text"
           :contenteditable="!builtin"
           @input="updateName"
-          v-once
-        >{{ pack.name }}</div>
+        >
+          {{ pack.name }}
+        </div>
         <div v-if="pack.tags.length > 0">
           <v-chip
             v-for="(tag, index) in pack.tags"
@@ -38,39 +46,48 @@
               contenteditable
               @input.stop="onEditTag($event, index)"
               @blur="onEditTagEnd(pack)"
-            >{{ tag }}</div>
+            >
+              {{ tag }}
+            </div>
           </v-chip>
         </div>
-        <div style="color: #bdbdbd; ">{{ pack.description }}</div>
+        <div style="color: #bdbdbd; ">
+          {{ pack.description }}
+        </div>
       </v-card-title>
     </div>
     <div class="self-center flex-shrink pr-2">
-      <v-switch v-model="pack.enabled" readonly />
+      <v-switch
+        readonly
+        :value="pack.enabled"
+        @input="$emit('enable', $event)"
+      />
     </div>
   </v-card>
 </template>
 <script lang="ts">
-import { computed, defineComponent } from '@vue/composition-api';
-import { useContextMenu } from '/@/windows/main/composables';
-import unknownPack from '/@/assets/unknown_pack.png';
-import { useI18n, useService, useTags } from '/@/hooks';
-import { ShaderPackItem } from '/@/hooks/useShaderpacks';
-import { getColor } from '/@/util/color';
-import { required } from '/@/util/props';
-import { BaseServiceKey } from '@xmcl/runtime-api';
+import { computed, defineComponent } from '@vue/composition-api'
+import { useContextMenu } from '/@/windows/main/composables'
+import unknownPack from '/@/assets/unknown_pack.png'
+import { useI18n, useService, useTags } from '/@/hooks'
+import { ShaderPackItem } from '/@/hooks/useShaderpacks'
+import { getColor } from '/@/util/color'
+import { required } from '/@/util/props'
+import { BaseServiceKey } from '@xmcl/runtime-api'
 
 export default defineComponent({
   props: {
     pack: required<ShaderPackItem>(Object),
   },
+  emits: ['update:name', 'enable', 'tags'],
   setup(props, context) {
     const { open } = useContextMenu()
     const { $t } = useI18n()
     const { showItemInDirectory } = useService(BaseServiceKey)
 
     const builtin = computed(() => props.pack.value === 'OFF' || props.pack.value === '(internal)')
-    const { createTag, editTag, removeTag } = useTags(computed({ get() { return props.pack.tags }, set(v) { props.pack.tags = v } }))
-    function onEditTag(event: InputEvent, index: number) {
+    const { createTag, editTag, removeTag } = useTags(computed({ get() { return props.pack.tags }, set(v) { context.emit('tags', v) } }))
+    function onEditTag(event: Event, index: number) {
       if (event.target instanceof HTMLDivElement) {
         editTag(event.target.innerText, index)
       }
@@ -78,9 +95,9 @@ export default defineComponent({
     function onEditTagEnd(item: ShaderPackItem) {
       item.tags = [...item.tags]
     }
-    function updateName(event: InputEvent) {
+    function updateName(event: Event) {
       if (event.target instanceof HTMLDivElement) {
-        props.pack.name = event.target.innerText
+        context.emit('update:name', event.target.innerText)
       }
     }
     function onContextMenu(e: MouseEvent) {
@@ -103,14 +120,14 @@ export default defineComponent({
             createTag()
           },
           icon: 'add',
-        }
+        },
       ])
     }
     function onSelect() {
       context.emit('select', props.pack)
     }
     return { getColor, onSelect, onContextMenu, onEditTag, onRemoveTag: removeTag, updateName, builtin, unknownPack, onEditTagEnd }
-  }
+  },
 })
 </script>
 

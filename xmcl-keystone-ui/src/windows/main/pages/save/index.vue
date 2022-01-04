@@ -3,12 +3,22 @@
     <div class="header-bar">
       <v-toolbar-title>{{ $tc('save.name', 2) }}</v-toolbar-title>
       <v-spacer />
-      <v-btn flat @click="showCopyFromDialog">
-        <v-icon left>input</v-icon>
+      <v-btn
+        flat
+        @click="showCopyFromDialog"
+      >
+        <v-icon left>
+          input
+        </v-icon>
         {{ $t('save.copyFrom.title') }}
       </v-btn>
-      <v-btn flat @click="doImport">
-        <v-icon left>move_to_inbox</v-icon>
+      <v-btn
+        flat
+        @click="doImport"
+      >
+        <v-icon left>
+          move_to_inbox
+        </v-icon>
         {{ $t('save.import') }}
       </v-btn>
     </div>
@@ -20,8 +30,16 @@
       @drop="onDropSave"
     >
       <div class="flex flex-col h-full">
-        <hint v-if="saves.length === 0" class="h-full" icon="map" :text="$t('save.dropHint')" />
-        <transition-group tag="div" name="transition-list">
+        <hint
+          v-if="saves.length === 0"
+          class="h-full"
+          icon="map"
+          :text="$t('save.dropHint')"
+        />
+        <transition-group
+          tag="div"
+          name="transition-list"
+        >
           <save-view-page-preview-card
             v-for="s of saves"
             :key="s.path"
@@ -40,7 +58,11 @@
         :cancel="cancelCopy"
         :instances="instances"
       />
-      <save-view-page-delete-dialog :value="deleting" :operate="doDelete" :cancel="cancelDelete" />
+      <save-view-page-delete-dialog
+        :value="deleting"
+        :operate="doDelete"
+        :cancel="cancelDelete"
+      />
       <save-view-page-float-button
         :visible="dragging"
         @drop="deleting = $event.dataTransfer.getData('id')"
@@ -73,8 +95,8 @@ export default defineComponent({
     SaveViewPageCopyFromDialog,
     SaveViewPagePreviewCard,
     SaveViewPageFloatButton,
-    Hint
-},
+    Hint,
+  },
   setup() {
     const { saves, deleteSave, importSave, exportSave, cloneSave: copySave } = useInstanceSaves()
     const { instances } = useInstances()

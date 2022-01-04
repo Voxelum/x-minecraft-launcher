@@ -6,14 +6,14 @@ import Vuex, { Store } from 'vuex'
 export function createStore(): Store<any> {
   const options = {
     state: {
-      loading: false
+      loading: false,
     },
     modules: {
     },
     mutations: {
       setLoading(state: any, isLoading: boolean) {
-        
-      }
+
+      },
     },
   }
   const store = new Vuex.Store(options)

@@ -14,7 +14,7 @@ const config: BuildOptions = {
   assetNames: 'assets/[name]-[hash]',
   entryNames: '[dir]/[name]',
   format: 'cjs',
-  sourcemap: process.env.NODE_ENV === 'development' ? 'inline' : false,
+  sourcemap: process.env.NODE_ENV === 'production' ? false : 'inline',
   minify: process.env.NODE_ENV === 'production',
   platform: 'node',
   loader: {

@@ -2,9 +2,7 @@ import { provide } from '@vue/composition-api'
 import { useDialog } from '.'
 import { useJavaWizardDialog } from './useDialog'
 import { IssueHandler, useModResource, useRouter, useService } from '/@/hooks'
-import { Issue, IssueType } from '@xmcl/runtime-api'
-import { InstanceModsServiceKey } from '@xmcl/runtime-api'
-import { InstanceResourcePacksServiceKey } from '@xmcl/runtime-api'
+import { Issue, IssueType, InstanceModsServiceKey, InstanceResourcePacksServiceKey } from '@xmcl/runtime-api'
 
 export function provideIssueHandler() {
   const { push } = useRouter()

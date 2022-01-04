@@ -80,9 +80,9 @@
 <script lang=ts>
 import { defineComponent, ref } from '@vue/composition-api'
 import PreviewView from './UniversalDropViewPreview.vue'
-import { useFileDrop } from '/@/hooks'
-import { isPersistedResource } from '@xmcl/runtime-api'
-import { Resource } from '@xmcl/runtime-api'
+import { useFileDrop, useRouter } from '/@/hooks'
+import { isPersistedResource, Resource } from '@xmcl/runtime-api'
+import RefreshingTile from '/@/components/RefreshingTile.vue'
 
 export interface FilePreview extends Resource {
   enabled: boolean
@@ -92,6 +92,7 @@ export interface FilePreview extends Resource {
 export default defineComponent({
   components: {
     PreviewView,
+    RefreshingTile,
   },
   setup() {
     const pending = ref(true)
@@ -136,7 +137,11 @@ export default defineComponent({
       inside.value = false
       previews.value = []
     }
+    const router = useRouter()
     document.addEventListener('dragleave', (e) => {
+      if (router.currentRoute.fullPath === '/user') {
+        return
+      }
       if ((e as any).fromElement === null && e.dataTransfer!.effectAllowed === 'all') {
         if (!pending.value || previews.value.length > 0) {
           pending.value = false
@@ -146,6 +151,9 @@ export default defineComponent({
       }
     })
     document.addEventListener('dragenter', (e) => {
+      if (router.currentRoute.fullPath === '/user') {
+        return
+      }
       if ((e as any).fromElement === null && e.dataTransfer!.effectAllowed === 'all') {
         inside.value = true
         pending.value = true

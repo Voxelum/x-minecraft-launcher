@@ -9,7 +9,7 @@ export default defineComponent({
     localized: optional(String),
     args: withDefault(Object, () => Object.create(null)),
     styled: withDefault(String, () => 'true'),
-    editable: withDefault(Boolean, () => false)
+    editable: withDefault(Boolean, () => false),
   },
   setup(props, context) {
     const { $t } = useI18n()
@@ -31,8 +31,8 @@ export default defineComponent({
               if (simpleText && e.target instanceof HTMLElement) {
                 context.emit('edit', e.target.innerText)
               }
-            } 
-          }
+            },
+          },
         }, [$t(node.component.text), node.children.map(generate)])
       }
       return generate(hint)

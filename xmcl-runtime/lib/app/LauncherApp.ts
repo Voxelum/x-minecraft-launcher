@@ -277,9 +277,9 @@ export abstract class LauncherApp extends EventEmitter {
   }
 
   /**
-     * Launch app from url request
-     * @param url
-     */
+   * Launch app from url request
+   * @param url
+   */
   protected async startFromUrl(url: string) {
     function parseUrl(url: string): AppManifest {
       const { host, pathname } = new URL(url)

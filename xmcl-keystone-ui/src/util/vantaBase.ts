@@ -1,3 +1,6 @@
+// @ts-nocheck
+/* eslint-disable */
+
 import { Camera, Color, IUniform, PerspectiveCamera, Scene, Texture, Vector2, Vector3, WebGLRenderer } from 'three'
 import { extend, mobileCheck as isMobile, q, color2Hex } from './vantaHelpers'
 // const DEBUGMODE = window.location.toString().indexOf('VANTADEBUG') !== -1
@@ -58,16 +61,16 @@ export abstract class VantaBase {
   mouseY: number
   height: number
   width: number
-  scale: number = 1
+  scale = 1
   mouseEaseX: number
   mouseEaseY: number
   el: HTMLElement
 
   options: Required<UserOptions>
   uniforms: Record<string, IUniform> = {}
-  t: number = 0
-  t2: number = 0
-  req: number = 0
+  t = 0
+  t2 = 0
+  req = 0
 
   constructor(userOptions: UserOptions) {
     const defaultOptions = this.getDefaultOptions()
@@ -92,7 +95,7 @@ export abstract class VantaBase {
 
     this.renderer = new WebGLRenderer({
       alpha: true,
-      antialias: true
+      antialias: true,
     })
 
     this.scene = new Scene()
@@ -104,7 +107,7 @@ export abstract class VantaBase {
       zIndex: 0,
       top: 0,
       left: 0,
-      background: ''
+      background: '',
     })
     canvas.classList.add('vanta-canvas')
 
@@ -214,7 +217,7 @@ export abstract class VantaBase {
       zIndex: 0,
       top: 0,
       left: 0,
-      background: ''
+      background: '',
     })
     extend(canvasEl.style, opts)
     canvasEl.classList.add('vanta-canvas')

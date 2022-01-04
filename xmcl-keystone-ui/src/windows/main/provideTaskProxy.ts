@@ -57,7 +57,7 @@ class ChildrenWatcher {
 
 /**
  * Create a task manager based on vue reactivity
- * @returns 
+ * @returns
  */
 export function useTaskManager() {
   const { $t } = useI18n()

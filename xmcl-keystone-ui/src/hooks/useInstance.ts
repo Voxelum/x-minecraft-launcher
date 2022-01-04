@@ -1,6 +1,7 @@
-import { computed, Data, reactive, Ref, toRefs } from '@vue/composition-api'
+import { computed, Data, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
+import { ResolvedVersion } from '@xmcl/core'
 import { Frame as GameSetting } from '@xmcl/gamesetting'
-import { CloneSaveOptions, DeleteSaveOptions, getExpectVersion, ImportSaveOptions, InstanceData, InstanceIOServiceKey, InstanceLogServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey, InstanceServiceKey, InstanceVersionServiceKey, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { CloneSaveOptions, DeleteSaveOptions, EMPTY_VERSION, getExpectVersion, getResolvedVersion, ImportSaveOptions, InstanceData, InstanceIOServiceKey, InstanceLogServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey, InstanceServiceKey, InstanceVersionServiceKey, ResourceServiceKey, RuntimeVersions, VersionServiceKey } from '@xmcl/runtime-api'
 import { useBusy, useSemaphore } from './useSemaphore'
 import { useService, useServiceOnly } from './useService'
 import { useCurrentUser } from './useUser'
@@ -228,13 +229,17 @@ export function useInstanceSaves() {
  */
 export function useInstanceVersion() {
   const { state } = useService(InstanceVersionServiceKey)
+  const { state: versionState } = useService(VersionServiceKey)
   const { state: instanceState } = useService(InstanceServiceKey)
+  const { runtime, version } = useInstance()
 
-  const folder = computed(() => state.instanceVersion.id || 'unknown')
   const id = computed(() => getExpectVersion(instanceState.instance.runtime))
+  const localVersion = computed(() => getResolvedVersion(versionState.local, runtime.value, version.value))
+  const folder = computed(() => localVersion.value.id || 'unknown')
 
   return {
     ...useInstanceVersionBase(),
+    localVersion,
     id,
     folder,
   }

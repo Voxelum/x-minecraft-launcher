@@ -5,8 +5,14 @@
     :value="valid"
     @input="$emit('update:valid', $event)"
   >
-    <v-container grid-list fill-height>
-      <v-layout row wrap>
+    <v-container
+      grid-list
+      fill-height
+    >
+      <v-layout
+        row
+        wrap
+      >
         <v-flex
           xs12
           class="gap-5 items-center rounded bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] mb-2"
@@ -16,17 +22,27 @@
             :src="status.favicon || unknownServer"
             class="rounded-lg p-1"
             style="max-width: 80px; max-height: 80px; min-height: 80px;"
-          />
+          >
           <span class="flex-grow justify-center flex">
-            <text-component v-if="status.description" :source="status.description" />
+            <text-component
+              v-if="status.description"
+              :source="status.description"
+            />
             <div
               v-else
               style="font-size: 18px; font-weight: bold;"
             >{{ $t('profile.server.creationHint') }}</div>
           </span>
-          <text-component v-if="status.version.name" :source="status.version.name" />
+          <text-component
+            v-if="status.version.name"
+            :source="status.version.name"
+          />
         </v-flex>
-        <v-flex d-flex xs4 style="display: flex; align-items: center;">
+        <v-flex
+          d-flex
+          xs4
+          style="display: flex; align-items: center;"
+        >
           <v-combobox
             box
             hide-details
@@ -35,7 +51,7 @@
             :label="$t('profile.server.version')"
             :readonly="true"
             :loading="pinging"
-          ></v-combobox>
+          />
         </v-flex>
         <v-flex style="display: flex; align-items: center">
           <v-text-field
@@ -64,7 +80,10 @@
           <v-divider />
         </v-flex> -->
 
-        <v-flex d-flex xs4>
+        <v-flex
+          d-flex
+          xs4
+        >
           <v-text-field
             v-model="serverField"
             dark
@@ -74,7 +93,10 @@
             required
           />
         </v-flex>
-        <v-flex d-flex xs4>
+        <v-flex
+          d-flex
+          xs4
+        >
           <minecraft-version-menu
             :accept-range="acceptingVersion"
             @input="runtime.minecraft = $event"
@@ -94,7 +116,10 @@
             </template>
           </minecraft-version-menu>
         </v-flex>
-        <v-flex d-flex xs4>
+        <v-flex
+          d-flex
+          xs4
+        >
           <v-text-field
             v-model="name"
             :placeholder="server.host"
@@ -114,34 +139,34 @@
 import { computed, defineComponent, inject, ref, watch } from '@vue/composition-api'
 import { CreateOptionKey } from '/@/windows/main/components/AddInstanceDialog.vue'
 import { required } from '/@/util/props'
-import { ServerStatus } from '@xmcl/runtime-api'
+import { ServerStatus, protocolToMinecraft } from '@xmcl/runtime-api'
 import MinecraftVersionMenu from '../../../components/MinecraftVersionMenu.vue'
 import unknownServer from '/@/assets/unknown_server.png'
-import { protocolToMinecraft } from '@xmcl/runtime-api'
 
 export default defineComponent({
+  components: { MinecraftVersionMenu },
   props: {
     status: required<ServerStatus>(Object),
     acceptingVersion: required(String),
     pinging: required(Boolean),
     valid: required(Boolean),
   },
-  emits: ["update:valid"],
+  emits: ['update:valid'],
   setup(props) {
-    const content = inject(CreateOptionKey);
+    const content = inject(CreateOptionKey)
     if (!content) {
-      throw new Error("");
+      throw new Error('')
     }
-    const server = computed(() => content.server.value ?? { host: "", port: undefined });
-    const serverField = ref("");
+    const server = computed(() => content.server.value ?? { host: '', port: undefined })
+    const serverField = ref('')
     const acceptingMinecrafts = computed(() => protocolToMinecraft[props.status.version.protocol])
     watch(serverField, (v) => {
-      const [host, port] = v.split(":");
+      const [host, port] = v.split(':')
       content.server.value = {
         host,
         port: port ? Number.parseInt(port, 10) : 25565,
-      };
-    });
+      }
+    })
     return {
       ...content,
       runtime: content.runtime,
@@ -149,8 +174,7 @@ export default defineComponent({
       server,
       unknownServer,
       acceptingMinecrafts,
-    };
+    }
   },
-  components: { MinecraftVersionMenu }
 })
 </script>

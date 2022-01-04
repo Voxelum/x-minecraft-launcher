@@ -32,7 +32,10 @@
         @dragend="dragEnd"
       />
 
-      <transition name="scale-transition" mode="out-in">
+      <transition
+        name="scale-transition"
+        mode="out-in"
+      >
         <v-btn
           v-if="draggingInstance.path === ''"
           :key="0"
@@ -58,7 +61,11 @@
           <v-icon>delete</v-icon>
         </v-btn>
       </transition>
-      <delete-dialog :instance="deletingInstance" :confirm="doDelete" :cancel="cancelDelete" />
+      <delete-dialog
+        :instance="deletingInstance"
+        :confirm="doDelete"
+        :cancel="cancelDelete"
+      />
       <add-server-dialog />
     </v-container>
   </div>

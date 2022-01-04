@@ -1,16 +1,30 @@
 <template>
-  <div class="flex flex-col max-h-full">
+  <div class="flex flex-col max-h-full h-full">
     <div class="header-bar">
-      <div class="headline align-middle self-center pl-2">{{ $tc("resourcepack.name", 2) }}</div>
+      <div class="headline align-middle self-center pl-2">
+        {{ $tc("resourcepack.name", 2) }}
+      </div>
       <v-spacer />
-      <filter-combobox :label="$t('resourcepack.filter')" class="max-w-150 mr-2" />
-      <v-btn icon @click="showFolder()">
+      <filter-combobox
+        :label="$t('resourcepack.filter')"
+        class="max-w-150 mr-2"
+      />
+      <v-btn
+        icon
+        @click="showFolder()"
+      >
         <v-icon>folder</v-icon>
       </v-btn>
       <v-tooltip bottom>
         <template #activator="{ on }">
-          <v-btn icon v-on="on" @click="goToCurseforge()">
-            <v-icon :size="14">$vuetify.icons.curseforge</v-icon>
+          <v-btn
+            icon
+            v-on="on"
+            @click="goToCurseforge()"
+          >
+            <v-icon :size="14">
+              $vuetify.icons.curseforge
+            </v-icon>
           </v-btn>
         </template>
         {{ $t(`curseforge.texture-packs.description`) }}
@@ -26,9 +40,24 @@
       </v-btn>-->
     </div>
 
-    <v-container grid-list-xs fill-height class="resource-pack-page" style="overflow: auto">
-      <v-layout row>
-        <v-flex d-flex xs6 class="pr-2">
+    <v-container
+      grid-list-xs
+      class="resource-pack-page h-full"
+      style="overflow: auto"
+    >
+      <refreshing-tile
+        v-if="loading"
+        class="h-full"
+      />
+      <v-layout
+        v-else
+        row
+      >
+        <v-flex
+          d-flex
+          xs6
+          class="pr-2"
+        >
           <v-card
             ref="leftList"
             dark
@@ -44,7 +73,10 @@
               border-width: 0 0 thin 0;
             "
             >
-              <span class="text-sm-center" style="width: 100%; font-size: 16px; user-select: none;">
+              <span
+                class="text-sm-center"
+                style="width: 100%; font-size: 16px; user-select: none;"
+              >
                 {{
                   $t("resourcepack.unselected")
                 }}
@@ -57,13 +89,21 @@
               :absolute="true"
               class="h-full"
             />
-            <div v-else class="list" style="overflow-x: hidden">
-              <transition-group name="transition-list" tag="div">
+            <div
+              v-else
+              class="list"
+              style="overflow-x: hidden"
+            >
+              <transition-group
+                name="transition-list"
+                tag="div"
+              >
                 <resource-pack-card
                   v-for="item in unselectedItems"
                   :key="item.path"
                   :pack="item"
                   :is-selected="false"
+                  @tags="item.tags = $event"
                   @dragstart="dragging = true"
                   @dragend="dragging = false"
                   @mouseup="dragging = false"
@@ -72,7 +112,11 @@
             </div>
           </v-card>
         </v-flex>
-        <v-flex d-flex xs6 style="padding-left: 5px">
+        <v-flex
+          d-flex
+          xs6
+          style="padding-left: 5px"
+        >
           <v-card
             ref="rightList"
             color="transparent"
@@ -88,7 +132,10 @@
               border-width: 0 0 thin 0;
             "
             >
-              <span class="text-sm-center" style="width: 100%; font-size: 16px; user-select: none;">
+              <span
+                class="text-sm-center"
+                style="width: 100%; font-size: 16px; user-select: none;"
+              >
                 {{
                   $t("resourcepack.selected")
                 }}
@@ -101,8 +148,15 @@
               :absolute="true"
               style="height: 100%"
             />
-            <div v-else class="list" style="overflow-x: hidden">
-              <transition-group name="transition-list" tag="div">
+            <div
+              v-else
+              class="list"
+              style="overflow-x: hidden"
+            >
+              <transition-group
+                name="transition-list"
+                tag="div"
+              >
                 <resource-pack-card
                   v-for="item in selectedItems"
                   :key="item.path"
@@ -133,7 +187,11 @@
           <v-icon>delete</v-icon>
         </v-btn>
       </v-fab-transition>
-      <v-dialog :value="!!deletingPack" width="400" persistance>
+      <v-dialog
+        :value="!!deletingPack"
+        width="400"
+        persistance
+      >
         <v-card>
           <v-card-title primary-title>
             <div>
@@ -153,13 +211,21 @@
             <v-btn
               flat
               @click="
-  isDeletingPack = false;
-deletingPack = null;
+                isDeletingPack = false;
+                deletingPack = null;
               "
-            >{{ $t("no") }}</v-btn>
+            >
+              {{ $t("no") }}
+            </v-btn>
             <v-spacer />
-            <v-btn flat color="red" @click="confirmDeletingPack">
-              <v-icon left>delete</v-icon>
+            <v-btn
+              flat
+              color="red"
+              @click="confirmDeletingPack"
+            >
+              <v-icon left>
+                delete
+              </v-icon>
               {{ $t("yes") }}
             </v-btn>
           </v-card-actions>
@@ -179,11 +245,13 @@ import {
   ResourcePackItem,
   useRouter,
   useInstanceBase,
+  useBusy,
 } from '/@/hooks'
 import ResourcePackCard from './ResourcePackCard.vue'
 import { useSearch } from '../../composables'
 import FilterCombobox, { useFilterCombobox } from '/@/components/FilterCombobox.vue'
 import Hint from '/@/components/Hint.vue'
+import RefreshingTile from '/@/components/RefreshingTile.vue'
 
 function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {
   function getFilterOptions(item: ResourcePackItem) {
@@ -207,12 +275,14 @@ export default defineComponent({
   components: {
     ResourcePackCard,
     FilterCombobox,
-    Hint
-},
+    Hint,
+    RefreshingTile: RefreshingTile as any,
+  },
   setup() {
     const { text: filterText } = useSearch()
     const rightList: Ref<any> = ref(null)
     const leftList: Ref<any> = ref(null)
+    const loading = useBusy('loadDomain(resourcepacks:resource)')
     const { enabled, disabled, add, remove, commit, insert, showDirectory } = useInstanceResourcePacks()
     const { removeResource } = useResourceOperation()
     const { push } = useRouter()
@@ -268,6 +338,7 @@ export default defineComponent({
       onDropDelete,
       goToCurseforge,
       showFolder: showDirectory,
+      loading,
     }
   },
   // async mounted() {

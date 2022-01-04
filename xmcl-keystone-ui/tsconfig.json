@@ -13,7 +13,7 @@
       ],
       "/@shared/*": [
         "../xmcl-runtime-api/src/*"
-      ],
+      ]
     },
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -26,10 +26,6 @@
   "vueCompilerOptions": {
     "experimentalCompatMode": 2
   },
-  "include": [
-    "./src",
-    "./global.d.ts",
-  ],
   "exclude": [
     "node_modules"
   ]

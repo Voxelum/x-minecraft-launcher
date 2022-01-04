@@ -54,6 +54,7 @@ export function useCurseforgeInstall(type: ProjectType, projectId: number) {
     const resource = await installFile({ file, type, projectId })
     if (toInstance) {
       if (resource.domain === 'mods') {
+        console.log(`Install mod ${file.fileName} to ${toInstance}`)
         await installMod({ mods: [resource], path: toInstance })
       }
     }
@@ -137,10 +138,6 @@ export function useCurseforgeCategories() {
 export function useCurseforgeSearch(type: string, page: Ref<number>, keyword: Ref<string | undefined>) {
   let sectionId: number
   switch (type) {
-    default:
-    case 'mc-mods':
-      sectionId = 6
-      break
     case 'modpacks':
       sectionId = 4471
       break
@@ -152,6 +149,10 @@ export function useCurseforgeSearch(type: string, page: Ref<number>, keyword: Re
       break
     case 'customization':
       sectionId = 4546
+      break
+    case 'mc-mods':
+    default:
+      sectionId = 6
       break
   }
 

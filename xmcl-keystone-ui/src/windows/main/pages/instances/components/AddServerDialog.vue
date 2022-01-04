@@ -1,13 +1,23 @@
 <template>
-  <v-dialog width="900" v-model="isShown" persistent>
-    <v-stepper v-model="step" non-linear dark>
+  <v-dialog
+    v-model="isShown"
+    width="900"
+    persistent
+  >
+    <v-stepper
+      v-model="step"
+      non-linear
+      dark
+    >
       <v-stepper-header>
         <v-stepper-step
           :rules="[() => valid]"
           editable
           :complete="step > 1"
           step="1"
-        >{{ $t('profile.baseSetting') }}</v-stepper-step>
+        >
+          {{ $t('profile.baseSetting') }}
+        </v-stepper-step>
         <v-divider />
         <!-- <v-stepper-step editable :complete="step > 2" step="2">
           {{ $t('profile.advancedSetting') }}
@@ -17,14 +27,20 @@
       </v-stepper-header>
 
       <v-stepper-items>
-        <v-stepper-content step="1" style="overflow: auto; max-height: 550px;">
+        <v-stepper-content
+          step="1"
+          style="overflow: auto; max-height: 550px;"
+        >
           <server-content
             :status="status"
             :pinging="pinging"
             :accepting-version="acceptingVersion"
             :valid.sync="valid"
           />
-          <advance-content :show-minecraft="false" :valid.sync="valid" />
+          <advance-content
+            :show-minecraft="false"
+            :valid.sync="valid"
+          />
           <stepper-footer
             :disabled="!valid || runtime.minecraft === ''"
             :creating="creating"
@@ -37,7 +53,9 @@
               :loading="pinging"
               :disabled="!server.host || !server.port"
               @click="refresh"
-            >{{ $t('profile.server.ping') }}</v-btn>
+            >
+              {{ $t('profile.server.ping') }}
+            </v-btn>
           </stepper-footer>
         </v-stepper-content>
       </v-stepper-items>

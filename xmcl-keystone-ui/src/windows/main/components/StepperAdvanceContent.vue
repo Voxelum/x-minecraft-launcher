@@ -1,8 +1,21 @@
 <template>
-  <v-list three-line subheader style="background: transparent; width: 100%">
+  <v-list
+    three-line
+    subheader
+    style="background: transparent; width: 100%"
+  >
     <v-list-tile>
-      <v-form lazy-validation class="w-full" :value="valid" @input="$emit('update:valid', $event)">
-        <v-layout row wrap class="gap-4">
+      <v-form
+        lazy-validation
+        class="w-full"
+        :value="valid"
+        @input="$emit('update:valid', $event)"
+      >
+        <v-layout
+          row
+          wrap
+          class="gap-4"
+        >
           <v-flex d-flex>
             <v-select
               v-model="java"
@@ -16,7 +29,10 @@
               required
             />
           </v-flex>
-          <v-flex d-flex xs2>
+          <v-flex
+            d-flex
+            xs2
+          >
             <v-text-field
               v-model="minMemory"
               hide-details
@@ -26,7 +42,10 @@
               required
             />
           </v-flex>
-          <v-flex d-flex xs2>
+          <v-flex
+            d-flex
+            xs2
+          >
             <v-text-field
               v-model="maxMemory"
               hide-details
@@ -40,8 +59,11 @@
       </v-form>
     </v-list-tile>
     <v-list-tile v-if="showMinecraft">
-       <v-list-tile-action>
-        <img :src="minecraftPng" width="40">
+      <v-list-tile-action>
+        <img
+          :src="minecraftPng"
+          width="40"
+        >
         <!-- <v-checkbox /> -->
       </v-list-tile-action>
       <v-list-tile-content>
@@ -74,7 +96,10 @@
     </v-list-tile>
     <v-list-tile>
       <v-list-tile-action>
-        <img :src="forgePng" width="40">
+        <img
+          :src="forgePng"
+          width="40"
+        >
         <!-- <v-checkbox /> -->
       </v-list-tile-action>
       <v-list-tile-content>
@@ -90,7 +115,10 @@
         </v-list-tile-sub-title>
       </v-list-tile-content>
       <v-list-tile-action>
-        <forge-version-menu :minecraft="runtime.minecraft" @input="onSelectForge">
+        <forge-version-menu
+          :minecraft="runtime.minecraft"
+          @input="onSelectForge"
+        >
           <template #default="{ on }">
             <v-text-field
               :value="runtime.forge"
@@ -107,7 +135,10 @@
     </v-list-tile>
     <v-list-tile>
       <v-list-tile-action>
-        <img :src="fabricPng" width="40">
+        <img
+          :src="fabricPng"
+          width="40"
+        >
         <!-- <forge-icon></forge-icon> -->
         <!-- <v-checkbox /> -->
       </v-list-tile-action>
@@ -120,7 +151,10 @@
         </v-list-tile-sub-title>
       </v-list-tile-content>
       <v-list-tile-action>
-        <fabric-version-menu :minecraft="runtime.minecraft" @input="onSelectFabric">
+        <fabric-version-menu
+          :minecraft="runtime.minecraft"
+          @input="onSelectFabric"
+        >
           <template #default="{ on }">
             <v-text-field
               :value="runtime.fabricLoader"
@@ -151,13 +185,12 @@ import forgePng from '/@/assets/forge.png'
 import minecraftPng from '/@/assets/minecraft.png'
 import fabricPng from '/@/assets/fabric.png'
 
-
 export default defineComponent({
+  components: { ForgeVersionMenu, MinecraftVersionMenu, FabricVersionMenu },
   props: {
     valid: required(Boolean),
-    showMinecraft: withDefault(Boolean, () => true)
+    showMinecraft: withDefault(Boolean, () => true),
   },
-  components: { ForgeVersionMenu, MinecraftVersionMenu, FabricVersionMenu },
   emits: ['update:valid'],
   setup() {
     const memoryRule = [(v: any) => Number.isInteger(v)]

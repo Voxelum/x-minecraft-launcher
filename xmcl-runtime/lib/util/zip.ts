@@ -1,11 +1,11 @@
 import { path7za } from '7zip-bin'
 import { unpack } from '7zip-min'
-import { AbortableTask, BaseTask, CancelledError } from '@xmcl/task'
+import { AbortableTask, CancelledError } from '@xmcl/task'
 import { spawn } from 'child_process'
 import { createWriteStream, promises } from 'fs'
 import { ensureFile, stat } from 'fs-extra'
 import { join } from 'path'
-import { Writable } from 'stream'
+import { Readable, Writable } from 'stream'
 import { promisify } from 'util'
 import { DirectoryOptions, Options, ReadStreamOptions, ZipFile } from 'yazl'
 import { gunzip as _gunzip, gzip as _gzip } from 'zlib'
@@ -44,7 +44,7 @@ export class ZipTask extends AbortableTask<void> {
     this.zipFile.addFile(realPath, metadataPath, options)
   }
 
-  addReadStream(input: NodeJS.ReadableStream, metadataPath: string, options?: Partial<ReadStreamOptions>): void {
+  addReadStream(input: Readable, metadataPath: string, options?: Partial<ReadStreamOptions>): void {
     this.zipFile.addReadStream(input, metadataPath, options)
   }
 

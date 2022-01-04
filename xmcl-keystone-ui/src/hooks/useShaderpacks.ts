@@ -1,10 +1,7 @@
-import { computed, onMounted, onUnmounted, ref, watch } from '@vue/composition-api';
-import { useI18n, useService } from '.';
-import { InstanceOptionsServiceKey } from '@xmcl/runtime-api';
-import { useRefreshable } from './useRefreshable';
-import { PersistedShaderPackResource } from '@xmcl/runtime-api';
-import { InstanceShaderPacksServiceKey } from '@xmcl/runtime-api';
-import { ResourceServiceKey } from '@xmcl/runtime-api';
+import { computed, onMounted, onUnmounted, ref, watch } from '@vue/composition-api'
+import { useBusy, useI18n, useService } from '.'
+import { InstanceOptionsServiceKey, PersistedShaderPackResource, InstanceShaderPacksServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
+import { useRefreshable } from './useRefreshable'
 
 export interface ShaderPackItem {
   name: string
@@ -20,6 +17,7 @@ export function useShaderpacks() {
   const { state, updateResource, removeResource } = useService(ResourceServiceKey)
   const { state: options, editShaderOptions } = useService(InstanceOptionsServiceKey)
   const { showDirectory } = useService(InstanceShaderPacksServiceKey)
+  const loading = useBusy('loadDomain(shaderpacks:resource)')
   const { $t } = useI18n()
 
   const shaderPacks = ref([] as ShaderPackItem[])
@@ -33,7 +31,7 @@ export function useShaderpacks() {
       name: $t('shaderpack.off'),
       value: 'OFF',
       resource: null as any,
-      enabled: 'OFF' === options.shaderoptions.shaderPack,
+      enabled: options.shaderoptions.shaderPack === 'OFF',
       description: $t('shaderpack.offDescription'),
       path: '',
       tags: [],
@@ -41,7 +39,7 @@ export function useShaderpacks() {
       name: $t('shaderpack.internal'),
       value: '(internal)',
       resource: null as any,
-      enabled: '(internal)' === options.shaderoptions.shaderPack,
+      enabled: options.shaderoptions.shaderPack === '(internal)',
       description: $t('shaderpack.internalDescription'),
       path: '',
       tags: [],
@@ -56,7 +54,7 @@ export function useShaderpacks() {
       enabled: fileName === options.shaderoptions.shaderPack,
       description: res.path,
       path: res.path,
-      tags: [...res.tags]
+      tags: [...res.tags],
     }
   }
   const { refresh: commit, refreshing: committing } = useRefreshable(async () => {
@@ -92,8 +90,6 @@ export function useShaderpacks() {
 
   onMounted(() => {
     shaderPacks.value = getBuiltinItems().concat(shaderPacksResources.value.map(getShaderPackItemFromResource))
-    console.log(shaderPacks.value)
-    console.log(selectedShaderPack.value)
   })
 
   onUnmounted(() => {
@@ -115,5 +111,6 @@ export function useShaderpacks() {
     committing,
     removeShaderPack,
     showDirectory,
+    loading,
   }
 }

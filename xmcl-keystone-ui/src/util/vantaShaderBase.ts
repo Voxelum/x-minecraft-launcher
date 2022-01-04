@@ -1,3 +1,6 @@
+// @ts-nocheck
+/* eslint-disable */
+
 import { Camera, Mesh, PlaneGeometry, ShaderMaterial, TextureLoader, Vector2, Vector3 } from 'three'
 import { UserOptions, VantaBase } from './vantaBase'
 import { extend } from './vantaHelpers'
@@ -14,19 +17,19 @@ export class ShaderBase extends VantaBase {
   constructor(userOptions: UserOptions, shaders: Shaders) {
     super(userOptions)
     this.updateUniforms = this.updateUniforms.bind(this)
-    this.fragmentShader = shaders.fragmentShader || ""
-    this.vertexShader = shaders.vertexShader ?? "uniform float uTime;\nuniform vec2 uResolution;\nvoid main() {\n  gl_Position = vec4( position, 1.0 );\n}"
+    this.fragmentShader = shaders.fragmentShader || ''
+    this.vertexShader = shaders.vertexShader ?? 'uniform float uTime;\nuniform vec2 uResolution;\nvoid main() {\n  gl_Position = vec4( position, 1.0 );\n}'
     const material = new ShaderMaterial({
       uniforms: this.uniforms,
       vertexShader: this.vertexShader,
-      fragmentShader: this.fragmentShader
+      fragmentShader: this.fragmentShader,
     })
 
     const texPath = this.options.texturePath
     if (texPath) {
       this.uniforms.iTex = {
-        type: "t",
-        value: new TextureLoader().load(texPath)
+        type: 't',
+        value: new TextureLoader().load(texPath),
       }
     }
     const mesh = new Mesh(new PlaneGeometry(2, 2), material)
@@ -38,21 +41,21 @@ export class ShaderBase extends VantaBase {
   init() {
     this.uniforms = {
       iTime: {
-        type: "f",
-        value: 1.0
+        type: 'f',
+        value: 1.0,
       },
       iResolution: {
-        type: "v2",
-        value: new Vector2(1, 1)
+        type: 'v2',
+        value: new Vector2(1, 1),
       },
       iDpr: {
-        type: "f",
-        value: window.devicePixelRatio || 1
+        type: 'f',
+        value: window.devicePixelRatio || 1,
       },
       iMouse: {
-        type: "v2",
-        value: new Vector2(this.mouseX || 0, this.mouseY || 0)
-      }
+        type: 'v2',
+        value: new Vector2(this.mouseX || 0, this.mouseY || 0),
+      },
     }
     super.init()
     this.initBasicShader()
@@ -65,10 +68,9 @@ export class ShaderBase extends VantaBase {
 
   initBasicShader() {
     this.updateUniforms()
-    if (typeof this.valuesChanger === "function") {
+    if (typeof this.valuesChanger === 'function') {
       this.valuesChanger() // Some effects define this themselves
     }
-
   }
 
   updateUniforms() {
@@ -78,13 +80,13 @@ export class ShaderBase extends VantaBase {
       v = this.options[k]
       if (k.toLowerCase().indexOf('color') !== -1) {
         newUniforms[k] = {
-          type: "v3",
-          value: new Color(v).toVector()
+          type: 'v3',
+          value: new Color(v).toVector(),
         }
       } else if (typeof v === 'number') {
         newUniforms[k] = {
-          type: "f",
-          value: v
+          type: 'f',
+          value: v,
         }
       }
     }

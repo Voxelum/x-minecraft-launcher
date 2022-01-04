@@ -1,14 +1,32 @@
 <template>
-  <v-dialog v-model="isShown" :persistent="missing" width="600">
-    <v-card dark color="grey darken-4">
-      <v-toolbar dark tabs color="grey darken-3">
+  <v-dialog
+    v-model="isShown"
+    :persistent="missing"
+    width="600"
+  >
+    <v-card
+      dark
+      color="grey darken-4"
+    >
+      <v-toolbar
+        dark
+        tabs
+        color="grey darken-3"
+      >
         <v-toolbar-title>{{ reason }}</v-toolbar-title>
       </v-toolbar>
-      <v-window v-model="step" class="p-4">
+      <v-window
+        v-model="step"
+        class="p-4"
+      >
         <v-window-item :value="0">
           <v-card-text>{{ hint }}</v-card-text>
 
-          <v-list style="width: 100%" class="grey darken-4" dark>
+          <v-list
+            style="width: 100%"
+            class="grey darken-4"
+            dark
+          >
             <v-list-tile
               :ripple="!disableUseExistedJava"
               :disabled="disableUseExistedJava"
@@ -19,19 +37,34 @@
                 <v-list-tile-sub-title>{{ disableUseExistedJava ? $t('diagnosis.missingJava.switch.disabled', { version: javaIssue.version.majorVersion }) : $t('diagnosis.missingJava.switch.message', { version: javaIssue.version.majorVersion }) }}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-action>
-                <v-icon v-if="!refreshing">build</v-icon>
-                <v-progress-circular indeterminate :size="24" v-else></v-progress-circular>
+                <v-icon v-if="!refreshing">
+                  build
+                </v-icon>
+                <v-progress-circular
+                  v-else
+                  indeterminate
+                  :size="24"
+                />
               </v-list-tile-action>
             </v-list-tile>
 
-            <v-list-tile ripple @click="downloadAndInstallJava">
+            <v-list-tile
+              ripple
+              @click="downloadAndInstallJava"
+            >
               <v-list-tile-content>
                 <v-list-tile-title>2. {{ $t('diagnosis.missingJava.autoDownload') }}</v-list-tile-title>
                 <v-list-tile-sub-title>{{ $t('diagnosis.missingJava.autoDownload.message', { version: javaIssue.version.majorVersion }) }}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-action>
-                <v-icon v-if="!downloadingJava">build</v-icon>
-                <v-progress-circular indeterminate :size="24" v-else></v-progress-circular>
+                <v-icon v-if="!downloadingJava">
+                  build
+                </v-icon>
+                <v-progress-circular
+                  v-else
+                  indeterminate
+                  :size="24"
+                />
               </v-list-tile-action>
             </v-list-tile>
 
@@ -87,7 +120,7 @@ export default defineComponent({
     const reason = computed(() => (!missing.value ? $t('java.incompatibleJava') : $t('java.missing')))
     const hint = computed(() => (!missing.value ? $t('java.incompatibleJavaHint', { version: javaIssue.value.version.majorVersion }) : $t('java.missingHint')))
 
-    handlers['incompatibleJava'] = (issue) => {
+    handlers.incompatibleJava = (issue) => {
       javaIssue.value.type = 'incompatible'
       if (!(issue.parameters instanceof Array)) {
         javaIssue.value.version = issue.parameters.targetVersion
@@ -95,7 +128,7 @@ export default defineComponent({
       show()
     }
 
-    handlers['missingJava'] = (issue) => {
+    handlers.missingJava = (issue) => {
       javaIssue.value.type = 'missing'
       show()
     }

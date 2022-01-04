@@ -1,7 +1,7 @@
 <template>
   <v-list
-    class="local-version-list overflow-auto h-full flex flex-col"
     v-if="versions.length !== 0"
+    class="local-version-list overflow-auto h-full flex flex-col"
     dark
     style="background-color: transparent"
   >
@@ -9,11 +9,11 @@
       <v-spacer />
       <!-- class="max-w-40 ml-22" -->
       <v-select
+        v-model="filteredMinecraft"
         label="Minecraft"
         class="max-w-40"
         flat
         :items="minecraftVersions"
-        v-model="filteredMinecraft"
         clearable
       />
       <!-- <v-spacer /> -->
@@ -32,7 +32,11 @@
           @click="selectVersion(item)"
         >
           <v-list-tile-avatar>
-            <v-btn icon style="cursor: pointer" @click.stop="openVersionDir(item)">
+            <v-btn
+              icon
+              style="cursor: pointer"
+              @click.stop="openVersionDir(item)"
+            >
               <v-icon>folder</v-icon>
             </v-btn>
           </v-list-tile-avatar>
@@ -65,42 +69,98 @@
       </template>
     </div>
 
-    <v-dialog v-model="deletingVersion" max-width="290">
+    <v-dialog
+      v-model="deletingVersion"
+      max-width="290"
+    >
       <v-card dark>
-        <v-card-title class="headline">{{ $t('version.deleteTitle') }}</v-card-title>
+        <v-card-title class="headline">
+          {{ $t('version.deleteTitle') }}
+        </v-card-title>
         <v-card-text>{{ $t('version.deleteDescription') }}</v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn flat @click="cancelDeleting()">{{ $t('no') }}</v-btn>
-          <v-btn color="red darken-1" flat @click="comfireDeleting()">{{ $t('yes') }}</v-btn>
+          <v-btn
+            flat
+            @click="cancelDeleting()"
+          >
+            {{ $t('no') }}
+          </v-btn>
+          <v-btn
+            color="red darken-1"
+            flat
+            @click="comfireDeleting()"
+          >
+            {{ $t('yes') }}
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="reinstallVersion" max-width="390">
+    <v-dialog
+      v-model="reinstallVersion"
+      max-width="390"
+    >
       <v-card dark>
         <v-card-title
           class="headline"
-        >{{ $t('version.reinstallTitle', { version: reinstallVersionId }) }}</v-card-title>
+        >
+          {{ $t('version.reinstallTitle', { version: reinstallVersionId }) }}
+        </v-card-title>
         <v-card-text>{{ $t('version.reinstallDescription') }}</v-card-text>
         <v-card-actions>
           <v-spacer />
-          <v-btn flat @click="cancelReinstall()">{{ $t('no') }}</v-btn>
-          <v-btn color="orange darken-1" flat @click="comfireReinstall()">
-            <v-icon left>build</v-icon>
+          <v-btn
+            flat
+            @click="cancelReinstall()"
+          >
+            {{ $t('no') }}
+          </v-btn>
+          <v-btn
+            color="orange darken-1"
+            flat
+            @click="comfireReinstall()"
+          >
+            <v-icon left>
+              build
+            </v-icon>
             {{ $t('yes') }}
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
   </v-list>
-  <v-container v-else fill-height>
-    <v-layout align-center justify-center row fill-height>
-      <v-flex shrink tag="h1" class="white--text">
-        <v-btn large color="primary" @click="browseVersoinsFolder">
-          <v-icon left>folder</v-icon>
+  <v-container
+    v-else
+    fill-height
+  >
+    <v-layout
+      align-center
+      justify-center
+      row
+      fill-height
+    >
+      <v-flex
+        shrink
+        tag="h1"
+        class="white--text"
+      >
+        <v-btn
+          large
+          color="primary"
+          @click="browseVersoinsFolder"
+        >
+          <v-icon left>
+            folder
+          </v-icon>
           {{ $t('version.noLocalVersion') }}
         </v-btn>
-        <v-btn large color="primary" @click="refreshVersions">{{ $t('version.refresh') }}</v-btn>
+        <v-btn
+          large
+          color="primary"
+          @click="refreshVersions"
+        >
+          {{ $t('version.refresh') }}
+        </v-btn>
       </v-flex>
     </v-layout>
   </v-container>
@@ -128,7 +188,7 @@ export default defineComponent({
       filteredMinecraft: '',
     })
     const { localVersions, deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions, reinstall } = useLocalVersions()
-    const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1).filter(v => !data.filteredMinecraft || v.minecraftVersion == data.filteredMinecraft))
+    const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1).filter(v => !data.filteredMinecraft || v.minecraftVersion === data.filteredMinecraft))
     const minecraftVersions = computed(() => [...new Set(localVersions.value.map(v => v.minecraftVersion))])
     function isSelected(v: ResolvedVersion) {
       if (!props.value) return false

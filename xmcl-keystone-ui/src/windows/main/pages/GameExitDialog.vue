@@ -52,8 +52,7 @@
 <script lang=ts>
 import { reactive, toRefs, defineComponent } from '@vue/composition-api'
 import { useInstanceLogs, useService } from '/@/hooks'
-import { BaseServiceKey } from '@xmcl/runtime-api'
-import { LaunchServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
 
 export default defineComponent({
   setup() {

@@ -16,7 +16,11 @@
     <v-list-tile-title>{{ source.mcversion }}_{{ source.type }}_{{ source.patch }}</v-list-tile-title>
     <v-list-tile-sub-title>{{ source.patch }}</v-list-tile-sub-title>
     <v-list-tile-action class="flex justify-end">
-      <v-btn icon :loading="installing" @click.stop="onClick(source)">
+      <v-btn
+        icon
+        :loading="installing"
+        @click.stop="onClick(source)"
+      >
         <v-icon>{{ status === "remote" ? "file_download" : "folder" }}</v-icon>
       </v-btn>
     </v-list-tile-action>
@@ -27,8 +31,7 @@
 import { computed, defineComponent } from '@vue/composition-api'
 import { useBusy } from '/@/hooks'
 import { required } from '/@/util/props'
-import { Status } from '@xmcl/runtime-api'
-import { OptifineVersion } from '@xmcl/runtime-api'
+import { Status, OptifineVersion } from '@xmcl/runtime-api'
 import { versionLockOf, write } from '@xmcl/runtime-api/utils'
 
 export default defineComponent({

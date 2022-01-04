@@ -11,7 +11,6 @@
                 "parser": "@typescript-eslint/parser",
                 "ecmaVersion": 2020,
                 "sourceType": "module",
-                "tsconfigRootDir": "./xmcl-runtime",
                 "project": [
                     "tsconfig.json"
                 ]

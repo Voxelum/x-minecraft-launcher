@@ -12,7 +12,7 @@ import { promisify } from 'util'
 import type { ServiceStateManager } from '@xmcl/runtime'
 import { checksum } from './utils/fs'
 import ElectronLauncherApp from './ElectronLauncherApp'
-import { AZURE_CDN, AZURE_CDN_HOST, IS_DEV } from '/@main/constant'
+import { AZURE_CDN, AZURE_CDN_HOST, IS_DEV } from '@/constant'
 import { UpdateInfo as _UpdateInfo } from '@xmcl/runtime-api'
 
 /**

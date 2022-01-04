@@ -1,18 +1,33 @@
 <template>
-  <div class="flex flex-col max-h-full">
+  <div class="flex flex-col max-h-full h-full">
     <div class="header-bar">
-      <v-toolbar-title class="headline text-bold">{{ $tc('shaderpack.name', 2) }}</v-toolbar-title>
+      <v-toolbar-title class="headline text-bold">
+        {{ $tc('shaderpack.name', 2) }}
+      </v-toolbar-title>
       <v-spacer />
-      <FilterCombobox class="max-w-150 mr-2" :label="$t('shaderpack.filter')" />
-      <v-btn icon @click="showDirectory()">
+      <FilterCombobox
+        class="max-w-150 mr-2"
+        :label="$t('shaderpack.filter')"
+      />
+      <v-btn
+        icon
+        @click="showDirectory()"
+      >
         <v-icon>folder</v-icon>
       </v-btn>
     </div>
-    <v-container grid-list-md @dragover.prevent class="flex flex-col overflow-auto">
+    <RefreshingTile
+      v-if="loading"
+      class="h-full"
+    />
+    <v-container
+      v-else
+      grid-list-md
+      class="flex flex-col overflow-auto max-h-full w-full  py-1 "
+      @dragover.prevent
+    >
       <transition-group
-        tag="div"
         name="transition-list"
-        class="w-full flex flex-col py-1 overflow-auto max-h-full"
       >
         <ShaderPackCard
           v-for="pack in items"
@@ -21,10 +36,20 @@
           @select="onSelect"
           @dragstart="onDragStart"
           @dragend="onDragEnd"
-        ></ShaderPackCard>
+          @enable="pack.enabled = $event"
+          @update:name="pack.name = $event"
+          @tags="pack.tags = $event"
+        />
       </transition-group>
-      <DeleteButton :visible="!!draggingPack" :drop="onDelete" />
-      <v-dialog v-model="isDeleteViewShown" width="400" persistance>
+      <DeleteButton
+        :visible="!!draggingPack"
+        :drop="onDelete"
+      />
+      <v-dialog
+        v-model="isDeleteViewShown"
+        width="400"
+        persistance
+      >
         <DeleteView
           :item="deletingPack"
           :confirm="onConfirmDeleted"
@@ -37,14 +62,14 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, Ref, ref } from '@vue/composition-api';
-import DeleteButton from './DeleteButton.vue';
-import DeleteView from './DeleteView.vue';
-import ShaderPackCard from './ShaderPackCard.vue';
-import { useFilterCombobox } from '/@/components/FilterCombobox.vue';
-import { useRefreshable } from '/@/hooks/useRefreshable';
-import { ShaderPackItem, useShaderpacks } from '/@/hooks/useShaderpacks';
-import FilterCombobox from '../../../../components/FilterCombobox.vue';
+import { computed, defineComponent, Ref, ref } from '@vue/composition-api'
+import DeleteButton from './DeleteButton.vue'
+import DeleteView from './DeleteView.vue'
+import ShaderPackCard from './ShaderPackCard.vue'
+import { useRefreshable } from '/@/hooks/useRefreshable'
+import { ShaderPackItem, useShaderpacks } from '/@/hooks/useShaderpacks'
+import FilterCombobox, { useFilterCombobox } from '/@/components/FilterCombobox.vue'
+import RefreshingTile from '/@/components/RefreshingTile.vue'
 
 function setupFilter(items: Ref<ShaderPackItem[]>) {
   const filterOptions = computed(() => items.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
@@ -62,8 +87,9 @@ function setupFilter(items: Ref<ShaderPackItem[]>) {
 }
 
 export default defineComponent({
+  components: { ShaderPackCard, DeleteButton, DeleteView, FilterCombobox, RefreshingTile: RefreshingTile as any },
   setup() {
-    const { shaderPacks, selectedShaderPack, removeShaderPack, showDirectory } = useShaderpacks()
+    const { shaderPacks, selectedShaderPack, removeShaderPack, showDirectory, loading } = useShaderpacks()
     const draggingPack = ref(undefined as undefined | ShaderPackItem)
     const deletingPack = ref(undefined as undefined | ShaderPackItem)
     const isDeleteViewShown = ref(false)
@@ -104,6 +130,7 @@ export default defineComponent({
       deletingPack,
       isDeleteViewShown,
       deleting,
+      loading,
 
       onDragStart,
       onDragEnd,
@@ -111,9 +138,8 @@ export default defineComponent({
       onConfirmDeleted,
       onCancelDelete,
 
-      ...setupFilter(shaderPacks)
+      ...setupFilter(shaderPacks),
     }
   },
-  components: { ShaderPackCard, DeleteButton, DeleteView, FilterCombobox }
 })
 </script>

@@ -149,7 +149,7 @@ export default defineComponent({
           if (profilesSaves.length !== 0) {
             for (const s of profilesSaves) {
               // TODO: fix
-              await cloneSave({ saveName: s.name, destInstancePath: [path.value] })
+              await cloneSave({ saveName: s.name, destInstancePath: s.instanceName })
             }
           }
           context.emit('input', false)

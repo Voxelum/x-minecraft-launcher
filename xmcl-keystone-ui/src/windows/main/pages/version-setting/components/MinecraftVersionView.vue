@@ -1,7 +1,10 @@
 <template>
   <div style="display: flex !important; height: 100%; flex-direction: column;">
     <v-list-tile style="margin: 0px 0;">
-      <v-checkbox v-model="showAlpha" :label="$t('minecraft.showAlpha')" />
+      <v-checkbox
+        v-model="showAlpha"
+        :label="$t('minecraft.showAlpha')"
+      />
     </v-list-tile>
     <v-divider dark />
     <refreshing-tile v-if="refreshing && versions.length === 0" />
@@ -47,27 +50,27 @@ import Hint from '/@/components/Hint.vue'
 import RefreshingTile from '/@/components/RefreshingTile.vue'
 
 export default defineComponent({
-    props: {
-        select: required<(v: MinecraftVersion) => void>(Function),
-        filterText: required<string>(String),
-        version: required<string>(String),
-    },
-    setup(props) {
-        const { versions: vers, statuses, refreshing, refresh, install } = useMinecraftVersions();
-        const { filter, showAlpha, acceptingRange } = useMinecraftVersionFilter(computed(() => props.filterText));
-        const versions = computed(() => vers.value.filter(filter));
-        return {
-            showAlpha,
-            acceptingRange,
-            versions,
-            refreshing,
-            statuses,
-            refresh,
-            install,
-            MinecraftVersionListTile,
-        };
-    },
-    components: { Hint, RefreshingTile }
+  components: { Hint, RefreshingTile },
+  props: {
+    select: required<(v: MinecraftVersion) => void>(Function),
+    filterText: required<string>(String),
+    version: required<string>(String),
+  },
+  setup(props) {
+    const { versions: vers, statuses, refreshing, refresh, install } = useMinecraftVersions()
+    const { filter, showAlpha, acceptingRange } = useMinecraftVersionFilter(computed(() => props.filterText))
+    const versions = computed(() => vers.value.filter(filter))
+    return {
+      showAlpha,
+      acceptingRange,
+      versions,
+      refreshing,
+      statuses,
+      refresh,
+      install,
+      MinecraftVersionListTile,
+    }
+  },
 })
 </script>
 

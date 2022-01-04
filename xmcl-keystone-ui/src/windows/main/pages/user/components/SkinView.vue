@@ -1,5 +1,5 @@
 <template>
-  <v-flex style="z-index: 1">
+  <v-flex style="z-index: 1; display: block;">
     <skin-view
       :href="url"
       :slim="slim"
@@ -14,7 +14,6 @@
       :save="exportSkin"
       :load="loadSkin"
     />
-
     <v-fab-transition>
       <v-btn
         v-show="modified"
@@ -22,7 +21,7 @@
         fab
         small
         absolute
-        style="bottom: 100px; z-index: 2;"
+        style="bottom: 95px; right: 146px; z-index: 3;"
         :disabled="pending"
         @click="reset"
       >
@@ -36,7 +35,7 @@
         fab
         small
         absolute
-        style="bottom: 100px; right: 177px; z-index: 2;"
+        style="bottom: 95px; right: 33px; z-index: 3;"
         :disabled="pending"
         @click="save"
       >

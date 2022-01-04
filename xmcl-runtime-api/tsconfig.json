@@ -12,12 +12,7 @@
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "importHelpers": true,
-    "paths": {
-      "/@shared/*": [
-        "./src/*"
-      ]
-    },
+    "importHelpers": true
   },
   "include": [
     "."

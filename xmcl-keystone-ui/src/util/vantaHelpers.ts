@@ -1,12 +1,15 @@
-import { Color, Vector3 } from 'three';
+// @ts-nocheck
+/* eslint-disable */
+
+import { Color, Vector3 } from 'three'
 
 Number.prototype.clamp = function (min, max) { return Math.min(Math.max(this, min), max) }
 
 export function extend(a, b) {
-  for (let key in b) {
+  for (const key in b) {
     if (b.hasOwnProperty(key)) { a[key] = b[key] }
   }
-  return a;
+  return a
 }
 
 export function toVector3(color: Color) {
@@ -44,14 +47,16 @@ export const color2Hex = (color: number | string) => {
 export const color2Rgb = (color: number | string, alpha = 1) => {
   const hex = color2Hex(color)
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  const obj = result ? {
-    r: parseInt(result[1], 16),
-    g: parseInt(result[2], 16),
-    b: parseInt(result[3], 16)
-  } : null
+  const obj = result
+    ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16),
+    }
+    : null
   return 'rgba(' + obj.r + ',' + obj.g + ',' + obj.b + ',' + alpha + ')'
 }
 
 export const getBrightness = (threeColor) => {
-  return (0.299 * threeColor.r) + (0.587 * threeColor.g) + (0.114 * threeColor.b);
+  return (0.299 * threeColor.r) + (0.587 * threeColor.g) + (0.114 * threeColor.b)
 }

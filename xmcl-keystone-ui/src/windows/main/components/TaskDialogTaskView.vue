@@ -37,10 +37,14 @@
             <span style="max-width: 100px;">{{ item.title }}</span>
             <div
               style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
-            >{{ item.time.toLocaleString() }}</div>
+            >
+              {{ item.time.toLocaleString() }}
+            </div>
             <div
               style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
-            >{{ item.message || item.from || item.to }}</div>
+            >
+              {{ item.message || item.from || item.to }}
+            </div>
           </div>
         </template>
       </v-treeview>

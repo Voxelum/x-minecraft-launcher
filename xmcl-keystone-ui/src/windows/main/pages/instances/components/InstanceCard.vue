@@ -11,27 +11,54 @@
     @click="$emit('click', $event)"
     @dragstart="onDragStart"
   >
-    <div v-if="isBusy" class="absolute w-full h-full flex items-center justify-center">
-      <v-progress-circular class="z-10" :size="100" :width="4" indeterminate></v-progress-circular>
+    <div
+      v-if="isBusy"
+      class="absolute w-full h-full flex items-center justify-center"
+    >
+      <v-progress-circular
+        class="z-10"
+        :size="100"
+        :width="4"
+        indeterminate
+      />
     </div>
-    <v-img class="white--text favicon grey darken-2 max-h-50" :src="image">
-      <v-layout fill-height class="justify-center flex-col relative">
-        <v-flex flexbox class="justify-center items-center">
-          <v-icon left>{{ instance.server ? 'storage' : 'layers' }}</v-icon>
+    <v-img
+      class="white--text favicon grey darken-2 max-h-50"
+      :src="image"
+    >
+      <v-layout
+        fill-height
+        class="justify-center flex-col relative"
+      >
+        <v-flex
+          flexbox
+          class="justify-center items-center"
+        >
+          <v-icon left>
+            {{ instance.server ? 'storage' : 'layers' }}
+          </v-icon>
           <span class="headline">{{ instance.name || `Minecraft ${instance.runtime.minecraft}` }}</span>
         </v-flex>
-        <v-flex v-if="instance.server" class="justify-center absolute bottom-0 w-full">
+        <v-flex
+          v-if="instance.server"
+          class="justify-center absolute bottom-0 w-full"
+        >
           <v-chip
             color="green"
             label
             small
             style
-          >{{ instance.server.host }}:{{ instance.server.port }}</v-chip>
+          >
+            {{ instance.server.host }}:{{ instance.server.port }}
+          </v-chip>
         </v-flex>
       </v-layout>
     </v-img>
 
-    <v-card-text v-if="description" class="font-weight-bold">
+    <v-card-text
+      v-if="description"
+      class="font-weight-bold"
+    >
       <text-component
         :source="typeof description === 'object' ? description : { text: description }"
       />
@@ -39,26 +66,54 @@
 
     <v-card-actions>
       <div class="flex flex-wrap flex-row justify-center">
-        <v-chip v-if="instance.server" small label :selected="false" @click.stop>
+        <v-chip
+          v-if="instance.server"
+          small
+          label
+          :selected="false"
+          @click.stop
+        >
           <text-component :source="status.version.name" />
         </v-chip>
-        <v-chip v-if="instance.server" small label :selected="false" @click.stop>
+        <v-chip
+          v-if="instance.server"
+          small
+          label
+          :selected="false"
+          @click.stop
+        >
           <v-avatar>
             <v-icon
               :style="{ color: status.ping < 0 ? 'grey' : status.ping < 100 ? 'green' : status.ping < 300 ? 'orange' : 'red' }"
-            >signal_cellular_alt</v-icon>
+            >
+              signal_cellular_alt
+            </v-icon>
           </v-avatar>
           {{ status.ping }} ms
         </v-chip>
-        <v-chip v-if="instance.server" small label :selected="false" @click.stop>
+        <v-chip
+          v-if="instance.server"
+          small
+          label
+          :selected="false"
+          @click.stop
+        >
           <v-avatar>
             <v-icon>people</v-icon>
           </v-avatar>
           {{ status.players.online }} / {{ status.players.max }}
         </v-chip>
-        <v-chip label small :selected="false" @click.stop>
+        <v-chip
+          label
+          small
+          :selected="false"
+          @click.stop
+        >
           <v-avatar>
-            <img :src="minecraftPng" alt="minecraft">
+            <img
+              :src="minecraftPng"
+              alt="minecraft"
+            >
             <!-- <v-icon>power</v-icon> -->
           </v-avatar>
           {{ instance.runtime.minecraft }}
@@ -75,15 +130,29 @@
           </v-avatar>
           {{ instance.author }}
         </v-chip>
-        <v-chip small label v-if="instance.runtime.forge">
+        <v-chip
+          v-if="instance.runtime.forge"
+          small
+          label
+        >
           <v-avatar>
-            <img :src="forgePng" alt="forge" />
+            <img
+              :src="forgePng"
+              alt="forge"
+            >
           </v-avatar>
           {{ instance.runtime.forge }}
         </v-chip>
-        <v-chip small label v-if="instance.runtime.fabricLoader">
+        <v-chip
+          v-if="instance.runtime.fabricLoader"
+          small
+          label
+        >
           <v-avatar>
-            <img :src="fabricPng" alt="fabric"   />
+            <img
+              :src="fabricPng"
+              alt="fabric"
+            >
           </v-avatar>
           {{ instance.runtime.fabricLoader }}
         </v-chip>
@@ -92,7 +161,7 @@
   </v-card>
 </template>
 <script lang=ts>
-import { defineComponent, reactive, toRefs, computed } from '@vue/composition-api'
+import { defineComponent, computed } from '@vue/composition-api'
 import unknownServer from '/@/assets/unknown_server.png'
 import { useBusy, useInstanceServerStatus } from '/@/hooks'
 import { Instance } from '@xmcl/runtime-api'
@@ -123,7 +192,6 @@ export default defineComponent({
       }
       return unknownServer
     })
-    console.log(props.instance.name)
     return {
       isBusy,
       image,

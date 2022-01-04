@@ -9,19 +9,27 @@
     ripple
     @click="select(source)"
   >
-    <v-list-tile-avatar>
+    <div class="v-list__tile__avatar w-100">
       <v-chip
         v-if="source.type !== 'common'"
         label
         :color="source.type === 'recommended' ? 'green' : ''"
-      >{{ type }}</v-chip>
-    </v-list-tile-avatar>
+      >
+        {{ type }}
+      </v-chip>
+    </div>
 
-    <v-list-tile-title class="pl-3">{{ source.version }}</v-list-tile-title>
+    <v-list-tile-title class="pl-3">
+      {{ source.version }}
+    </v-list-tile-title>
     <v-list-tile-sub-title>{{ source.date ? new Date(source.date).toLocaleString() : source.date }}</v-list-tile-sub-title>
 
     <v-list-tile-action style="justify-content: flex-end;">
-      <v-btn :loading="installing" icon @click="onClick">
+      <v-btn
+        :loading="installing"
+        icon
+        @click="onClick"
+      >
         <v-icon>
           {{
             statuses[source.version] === "remote" ? "file_download" : "folder"
@@ -55,7 +63,7 @@ export default defineComponent({
     const { $t } = useI18n()
     const type = computed(() => props.source.type === 'recommended' ? $t('forge.versions.recommended') : props.source.type === 'latest' ? $t('forge.versions.latest') : '')
     const onClick = () => {
-      if (props.statuses[props.source.version] === "remote") {
+      if (props.statuses[props.source.version] === 'remote') {
         props.install(props.source)
       }
     }

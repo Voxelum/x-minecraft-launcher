@@ -16,7 +16,12 @@
   >
     <v-tooltip top>
       <template #activator="{ on }">
-        <v-layout justify-center align-center fill-height v-on="on">
+        <v-layout
+          justify-center
+          align-center
+          fill-height
+          v-on="on"
+        >
           <v-flex class="p-0">
             <img
               ref="iconImage"
@@ -24,17 +29,22 @@
               class="select-none h-[125px]"
               :src="pack.icon"
               contain
-            />
+            >
           </v-flex>
-          <v-flex xs7 md8 lg9 class="flex-col">
+          <v-flex
+            xs7
+            md8
+            lg9
+            class="flex-col"
+          >
             <div class="py-2 flex flex-col gap-2">
               <text-component
                 v-once
                 style="white-space: normal; word-break: break-word"
                 :source="pack.name"
                 editable
-                @edit="onEditPackName(pack, $event)"
                 class="title"
+                @edit="onEditPackName(pack, $event)"
               />
               <text-component
                 style="white-space: normal; word-break: break-word"
@@ -43,15 +53,18 @@
             </div>
           </v-flex>
         </v-layout>
-        <v-divider v-show="pack.tags.length > 0" class="mt-1"></v-divider>
+        <v-divider
+          v-show="pack.tags.length > 0"
+          class="mt-1"
+        />
         <v-card-actions v-show="pack.tags.length > 0">
           <div>
             <v-chip
               v-for="(tag, index) in pack.tags"
+              :key="`${tag}-${index}`"
               :color="getColor(tag)"
               label
               outline
-              :key="`${tag}-${index}`"
               close
               @input="onDeleteTag(tag)"
             >
@@ -112,7 +125,7 @@ export default defineComponent({
     const { colors } = useTagColors()
     const { editTag, createTag, removeTag } = useTags(computed({
       get: () => props.pack.tags,
-      set: (v) => { props.pack.tags = v }
+      set: (v) => { context.emit('tags', v) },
     }))
 
     useDragTransferItem(computed(() => card.value?.$el as HTMLElement), props.pack.id, props.isSelected ? 'right' : 'left')
@@ -130,7 +143,7 @@ export default defineComponent({
         context.emit('dragend', e)
       }
     }
-    function onEditTag(event: InputEvent, index: number) {
+    function onEditTag(event: Event, index: number) {
       if (event.target && event.target instanceof HTMLElement) {
         editTag(event.target.innerText, index)
       }
@@ -158,7 +171,7 @@ export default defineComponent({
         onClick() {
           createTag()
         },
-        icon: 'add'
+        icon: 'add',
       }]
       if (props.pack.resource && props.pack.resource.curseforge) {
         menuItems.push({

@@ -1,10 +1,18 @@
 <template>
-  <v-container grid-list-md fill-height class="h-full overflow-auto">
+  <v-container
+    grid-list-md
+    fill-height
+    class="h-full overflow-auto"
+  >
     <div class="flex flex-col h-full w-full max-w-full gap-5 overflow-auto">
       <div class="flex white--text flex-shrink flex-grow-0">
         <span class="headline">{{ name || id }}</span>
         <v-spacer />
-        <dest-menu v-model="destination" style="flex-grow: 1" :from="from" />
+        <dest-menu
+          v-model="destination"
+          style="flex-grow: 1"
+          :from="from"
+        />
       </div>
       <div class="flex lg:flex-row md:flex-col flex-grow gap-5 h-full max-h-full overflow-auto">
         <v-tabs
@@ -32,15 +40,42 @@
           </v-tab-item>
           <v-tab-item class="overflow-auto">
             <v-card class="overflow-auto">
-              <v-container v-if="false" fill-height style="min-height: 65vh">
-                <v-layout justify-center align-center fill-height>
-                  <v-progress-circular indeterminate :size="100" />
+              <v-container
+                v-if="false"
+                fill-height
+                style="min-height: 65vh"
+              >
+                <v-layout
+                  justify-center
+                  align-center
+                  fill-height
+                >
+                  <v-progress-circular
+                    indeterminate
+                    :size="100"
+                  />
                 </v-layout>
               </v-container>
-              <v-container v-else fill-height grid-list-md>
-                <v-layout row wrap>
-                  <v-flex v-for="(img, index) in attachments" :key="index" d-flex>
-                    <v-card flat hover style="min-width: 100px" @click="viewImage(img)">
+              <v-container
+                v-else
+                fill-height
+                grid-list-md
+              >
+                <v-layout
+                  row
+                  wrap
+                >
+                  <v-flex
+                    v-for="(img, index) in attachments"
+                    :key="index"
+                    d-flex
+                  >
+                    <v-card
+                      flat
+                      hover
+                      style="min-width: 100px"
+                      @click="viewImage(img)"
+                    >
                       <v-img :src="img.url" />
                       <v-card-title>{{ img.title }}</v-card-title>
                     </v-card>
@@ -50,32 +85,54 @@
             </v-card>
           </v-tab-item>
         </v-tabs>
-        <div xs4 fill-height class="flex lg:flex-col md:hidden lg:flex gap-5 flex-shrink">
+        <div
+          xs4
+          fill-height
+          class="flex lg:flex-col md:hidden lg:flex gap-5 flex-shrink"
+        >
           <v-card class="min-w-25">
             <v-card-title class="flex-col items-start gap-1">
-              <div style="font-weight: 500">{{ $t("curseforge.createdDate") }}</div>
+              <div style="font-weight: 500">
+                {{ $t("curseforge.createdDate") }}
+              </div>
               <div
                 style="color: grey; padding-left: 5px"
-              >{{ new Date(createdDate).toLocaleString() }}</div>
+              >
+                {{ new Date(createdDate).toLocaleString() }}
+              </div>
               <div style="font-weight: 500">
-                <v-icon small>event</v-icon>
+                <v-icon small>
+                  event
+                </v-icon>
                 {{ $t("curseforge.lastUpdate") }}
               </div>
               <div
                 style="color: grey; padding-left: 5px"
-              >{{ new Date(lastUpdate).toLocaleString() }}</div>
+              >
+                {{ new Date(lastUpdate).toLocaleString() }}
+              </div>
               <div style="font-weight: 500">
-                <v-icon small>file_download</v-icon>
+                <v-icon small>
+                  file_download
+                </v-icon>
                 {{ $t("curseforge.totalDownloads") }}
               </div>
-              <div style="color: grey; padding-left: 5px">{{ totalDownload }}</div>
+              <div style="color: grey; padding-left: 5px">
+                {{ totalDownload }}
+              </div>
             </v-card-title>
           </v-card>
           <v-card class="max-h-full overflow-auto flex flex-col">
-            <v-card-title class="text-md font-bold">{{ $t("curseforge.recentFiles") }}</v-card-title>
+            <v-card-title class="text-md font-bold">
+              {{ $t("curseforge.recentFiles") }}
+            </v-card-title>
             <v-divider />
             <v-list class="overflow-auto">
-              <v-tooltip v-for="file in recentFiles" :key="file.id" top>
+              <v-tooltip
+                v-for="file in recentFiles"
+                :key="file.id"
+                top
+              >
                 <template #activator="{ on }">
                   <v-list-tile
                     :v-ripple="getFileStatus(file) === 'remote'"
@@ -102,7 +159,12 @@
                             : "cloud_download"
                         }}
                       </v-icon>
-                      <v-progress-circular v-else indeterminate :size="24" :width="2" />
+                      <v-progress-circular
+                        v-else
+                        indeterminate
+                        :size="24"
+                        :width="2"
+                      />
                     </v-list-tile-action>
                   </v-list-tile>
                 </template>
@@ -131,10 +193,9 @@ import DestMenu from './DestMenu.vue'
 import ProjectFiles from './Files.vue'
 import { withDefault } from '/@/util/props'
 import { ProjectType } from '@xmcl/runtime-api'
-import FilterCombobox from '/@/components/FilterCombobox.vue'
 
 export default defineComponent({
-  components: { ProjectDescription, ProjectFiles, DestMenu, FilterCombobox },
+  components: { ProjectDescription, ProjectFiles, DestMenu },
   props: {
     type: withDefault<ProjectType>((String as any), () => 'mc-mods'),
     id: withDefault(String, () => ''),

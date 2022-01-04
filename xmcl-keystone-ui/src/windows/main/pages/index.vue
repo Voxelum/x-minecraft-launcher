@@ -1,6 +1,17 @@
 <template>
-  <v-layout class="home-page" row wrap>
-    <v-icon v-ripple class="exit-button" dark @click="quit()">close</v-icon>
+  <v-layout
+    class="home-page"
+    row
+    wrap
+  >
+    <v-icon
+      v-ripple
+      class="exit-button"
+      dark
+      @click="quit()"
+    >
+      close
+    </v-icon>
     <v-icon
       v-ripple
       style="
@@ -16,7 +27,9 @@
       "
       dark
       @click="minimize()"
-    >minimize</v-icon>
+    >
+      minimize
+    </v-icon>
     <v-icon
       v-ripple
       style="
@@ -32,7 +45,9 @@
       "
       dark
       @click="showFeedbackDialog"
-    >help_outline</v-icon>
+    >
+      help_outline
+    </v-icon>
     <v-icon
       v-ripple
       style="
@@ -48,19 +63,33 @@
       "
       dark
       @click="showInstanceFolder"
-    >folder</v-icon>
+    >
+      folder
+    </v-icon>
 
-    <v-flex d-flex xs12 style="z-index: 1; padding-top: 50px; padding-left: 50px">
+    <v-flex
+      d-flex
+      xs12
+      style="z-index: 1; padding-top: 50px; padding-left: 50px"
+    >
       <home-header />
     </v-flex>
 
-    <v-flex v-if="isServer" d-flex xs12 style="margin: 40px">
+    <v-flex
+      v-if="isServer"
+      d-flex
+      xs12
+      style="margin: 40px"
+    >
       <server-status-bar />
     </v-flex>
 
     <settings-speed-dial :refreshing="refreshing" />
 
-    <export-speed-dial :refreshing="refreshing" @show="showExport" />
+    <export-speed-dial
+      :refreshing="refreshing"
+      @show="showExport"
+    />
 
     <v-tooltip top>
       <template #activator="{ on }">
@@ -72,7 +101,9 @@
           v-on="on"
           @click="showLogDialog"
         >
-          <v-icon dark>subtitles</v-icon>
+          <v-icon dark>
+            subtitles
+          </v-icon>
         </v-btn>
       </template>
       {{ $t("profile.logsCrashes.title") }}
@@ -123,20 +154,41 @@
       </v-btn>
     </v-speed-dial>-->
 
-    <v-btn color="primary" dark large :disabled="refreshing" class="launch-button" @click="launch">
+    <v-btn
+      color="primary"
+      dark
+      large
+      :disabled="refreshing"
+      class="launch-button"
+      @click="launch"
+    >
       {{ $t("launch.launch") }}
-      <v-icon v-if="launchStatus === 'ready'" right>play_arrow</v-icon>
-      <v-progress-circular v-else class="v-icon--right" indeterminate :size="20" :width="2" />
+      <v-icon
+        v-if="launchStatus === 'ready'"
+        right
+      >
+        play_arrow
+      </v-icon>
+      <v-progress-circular
+        v-else
+        class="v-icon--right"
+        indeterminate
+        :size="20"
+        :width="2"
+      />
     </v-btn>
-    <log-dialog v-model="isLogDialogShown" :hide="hideLogDialog" />
+    <log-dialog
+      v-model="isLogDialogShown"
+      :hide="hideLogDialog"
+    />
     <game-exit-dialog />
     <feedback-dialog />
     <export-dialog
       :value="isExportingCurseforge || isExportingModpack"
       :is-curseforge="isExportingCurseforge"
       @input="
-      isExportingModpack = false;
-      isExportingCurseforge = false;
+        isExportingModpack = false;
+        isExportingCurseforge = false;
       "
     />
     <launch-blocked-dialog />
@@ -157,11 +209,10 @@ import ServerStatusBar from './ServerStatusBar.vue'
 import SettingsSpeedDial from './SettingsSpeedDial.vue'
 import {
   useInstance, useInstanceServerStatus, useJava, useLaunch, useQuit,
-  useService, useWindowController
+  useService, useWindowController,
 } from '/@/hooks'
 import { useDialog, useJavaWizardDialog } from '/@/windows/main/composables'
-import { LaunchException } from '@xmcl/runtime-api'
-import { BaseServiceKey } from '@xmcl/runtime-api'
+import { LaunchException, BaseServiceKey } from '@xmcl/runtime-api'
 
 function setupLaunch() {
   const { launch, status: launchStatus } = useLaunch()

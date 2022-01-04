@@ -1,11 +1,25 @@
 <template>
   <v-card class="h-full overflow-auto">
-    <v-container v-if="loading" fill-height style="min-height: 65vh;">
-      <v-layout justify-center align-center fill-height>
-        <v-progress-circular indeterminate :size="100" />
+    <v-container
+      v-if="loading"
+      fill-height
+      style="min-height: 65vh;"
+    >
+      <v-layout
+        justify-center
+        align-center
+        fill-height
+      >
+        <v-progress-circular
+          indeterminate
+          :size="100"
+        />
       </v-layout>
     </v-container>
-    <div class="flex flex-col h-full overflow-auto" v-else>
+    <div
+      v-else
+      class="flex flex-col h-full overflow-auto"
+    >
       <div class="flex gap-5 mx-5 mt-3">
         <v-select
           v-model="gameVersion"
@@ -17,7 +31,7 @@
           dense
           :items="gameVersions"
           :label="$t('curseforge.file.gameVersion')"
-        ></v-select>
+        />
         <v-select
           v-model="releaseType"
           clearable
@@ -28,7 +42,7 @@
           dense
           :items="releaseTypes"
           :label="$t('curseforge.file.releaseType')"
-        ></v-select>
+        />
       </div>
       <virtual-list
         class="v-list max-h-[100vh] h-full overflow-auto transition-none"
@@ -73,7 +87,7 @@ export default defineComponent({
       initialTemplate: '',
     })
     const { $t } = useI18n()
-    const releaseMappper = computed(() => [,
+    const releaseMappper = computed(() => [
       { text: $t('curseforge.fileReleaseType.release'), value: 1 },
       { text: $t('curseforge.fileReleaseType.alpha'), value: 2 },
       { text: $t('curseforge.fileReleaseType.beta'), value: 3 },
@@ -129,7 +143,7 @@ export default defineComponent({
       const releaseTypeVal = releaseType.value
       return files.value.filter(v =>
         (!releaseTypeVal || (v.releaseType === releaseTypeVal)) &&
-        (!gameVersionVal || v.gameVersion.indexOf(gameVersionVal) !== -1)
+        (!gameVersionVal || v.gameVersion.indexOf(gameVersionVal) !== -1),
       )
     })
     return {

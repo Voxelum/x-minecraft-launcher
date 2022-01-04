@@ -20,7 +20,7 @@ export default class SemaphoreManager extends Manager {
   }
 
   /**
-   * Acquire and boradcast the key is in used.
+   * Acquire and broadcast the key is in used.
    * @param key The key or keys to acquire
    */
   acquire(key: string) {
@@ -33,7 +33,7 @@ export default class SemaphoreManager extends Manager {
   }
 
   /**
-   * Release and boradcast the key is not used.
+   * Release and broadcast the key is not used.
    * @param key The key or keys to release
    */
   release(key: string) {

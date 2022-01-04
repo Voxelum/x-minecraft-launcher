@@ -31,6 +31,7 @@ class Halo extends ShaderBase {
     this.bufferTarget = new WebGLRenderTarget(ww, hh, pars)
     this.bufferFeedback = new WebGLRenderTarget(ww, hh, pars)
   }
+
   initBasicShader(fragmentShader, vertexShader) {
     super.initBasicShader(fragmentShader, vertexShader)
     this.uniforms.iBuffer = {
@@ -38,6 +39,7 @@ class Halo extends ShaderBase {
       value: this.bufferTarget.texture,
     }
   }
+
   onUpdate() {
     this.uniforms.iBuffer.value = this.bufferFeedback.texture
 
@@ -49,10 +51,11 @@ class Halo extends ShaderBase {
     renderer.clear()
 
     // Swap, to prevent shader using the same input as output
-    let temp = this.bufferTarget
+    const temp = this.bufferTarget
     this.bufferTarget = this.bufferFeedback
     this.bufferFeedback = temp
   }
+
   onResize() {
     if (this.bufferTarget) {
       const ww = this.width * window.devicePixelRatio / this.scale
@@ -61,6 +64,7 @@ class Halo extends ShaderBase {
       this.bufferFeedback.setSize(ww, hh)
     }
   }
+
   onDestroy() {
     this.bufferTarget = null
     this.bufferFeedback = null
