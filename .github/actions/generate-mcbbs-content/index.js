@@ -2,7 +2,7 @@ const { readdirSync, readFileSync, writeFileSync } = require('fs')
 const core = require('@actions/core');
 
 function main(output) {
-    const { version } = JSON.parse(readFileSync(`package.json`).toString());
+    const { version } = JSON.parse(readFileSync(`xmcl-electron-app/package.json`).toString());
     const files = readdirSync('build').filter((f) => f.endsWith('.sha1') || f.endsWith('.sha256'));
 
     let fileInfo = {};

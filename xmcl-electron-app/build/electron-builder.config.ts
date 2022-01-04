@@ -1,4 +1,5 @@
 import { Configuration } from 'electron-builder'
+import { version } from '../package.json'
 
 export const config: Configuration = {
   productName: 'xmcl',
@@ -33,6 +34,19 @@ export const config: Configuration = {
     publisher: 'CN=332B67A8-09AC-4926-8B9A-A15D372F41AE',
     publisherDisplayName: 'xmcl',
     setBuildNumber: true,
+  },
+  nsis: {
+    // eslint-disable-next-line no-template-curly-in-string
+    artifactName: '${productName}-Setup-${version}.${ext}',
+    oneClick: false,
+    allowToChangeInstallationDirectory: true,
+    perMachine: false,
+    differentialPackage: true,
+  },
+  nsisWeb: {
+    // eslint-disable-next-line no-template-curly-in-string
+    artifactName: '${productName}-Web-Setup-${version}.${ext}',
+    appPackageUrl: `https://xmcl-release.azureedge.net/releases/x-minecraft-launcher-${version}-x64.nsis.7z`,
   },
   dmg: {
     contents: [
@@ -71,7 +85,13 @@ export const config: Configuration = {
       '**/*.worker.js',
     ],
     target: [
-      'appx',
+      'nsis:x64',
+      {
+        target: 'nsis-web',
+        arch: [
+          'x64',
+        ],
+      },
       {
         target: 'zip',
         arch: [

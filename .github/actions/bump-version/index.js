@@ -71,8 +71,7 @@ function writeFile(name, content) {
 
 async function main(output) {
     const suggesstion = await getBumpSuggestion();
-    const package = JSON.parse(fs.readFileSync(`package.json`).toString());
-    const packageLock = JSON.parse(fs.readFileSync(`package-lock.json`).toString());
+    const package = JSON.parse(fs.readFileSync(`xmcl-electron-app/package.json`).toString());
 
     console.log(`Release type ${suggesstion.releaseType}`)
     if (suggesstion.releaseType) {
@@ -81,8 +80,7 @@ async function main(output) {
         const newChangelog = await generateChangelog(newVersion, package.version);
         console.log(newChangelog);
 
-        writeFile('package.json', JSON.stringify(Object.assign(package, { version: newVersion }), null, 4));
-        writeFile('package-lock.json', JSON.stringify(Object.assign(packageLock, { version: newVersion }), null, 4));
+        writeFile('xmcl-electron-app/package.json', JSON.stringify(Object.assign(package, { version: newVersion }), null, 4));
 
         const changelog = fs.readFileSync('CHANGELOG.md').toString();
         const changelogLines = changelog.split('\n')

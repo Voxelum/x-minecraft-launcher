@@ -16,7 +16,7 @@ function commitMessage(version) {
 }
 
 async function main(output) {
-    const { version } = JSON.parse(fs.readFileSync(`package.json`).toString());
+    const { version } = JSON.parse(fs.readFileSync(`xmcl-electron-app/package.json`).toString());
     const changelog = fs.readFileSync('CHANGELOG.md').toString();
     const changelogLines = changelog.split('\n')
 

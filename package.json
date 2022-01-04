@@ -1,17 +1,6 @@
 {
-    "name": "x-minecraft-launcher",
     "private": true,
-    "version": "0.14.0",
-    "author": "ci010 <cijhn@hotmail.com>",
-    "description": "A great minecraft launcher in the future",
     "license": "MIT",
-    "engines": {
-        "node": ">=15.0.0"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/voxelum/x-minecraft-launcher"
-    },
     "scripts": {
         "build": "pnpm run --prefix=xmcl-electron-app build",
         "build:production": "pnpm run --prefix=xmcl-electron-app build:production",
