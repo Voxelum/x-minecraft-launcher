@@ -54,10 +54,9 @@
 import {
   defineComponent,
 } from '@vue/composition-api'
-import { JavaRecord } from '@xmcl/runtime-api'
+import { JavaRecord, BaseServiceKey } from '@xmcl/runtime-api'
 import { useService } from '/@/hooks'
 import { required } from '/@/util/props'
-import { BaseServiceKey } from '@xmcl/runtime-api'
 
 export default defineComponent({
   props: {

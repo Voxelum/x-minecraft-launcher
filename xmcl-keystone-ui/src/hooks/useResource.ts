@@ -1,7 +1,6 @@
 import { computed } from '@vue/composition-api'
 import { useService, useServiceOnly } from './useService'
-import { InstanceCurseforgeIOServiceKey } from '@xmcl/runtime-api'
-import { ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceCurseforgeIOServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
 
 export function useResourceOperation() {
   const { importFile, removeResource } = useServiceOnly(ResourceServiceKey, 'importFile', 'removeResource')

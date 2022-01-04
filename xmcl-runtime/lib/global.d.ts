@@ -31,7 +31,9 @@ declare module 'nat-type-identifier' {
 declare module 'nat-api' {
   class NatAPI {
     map(publicPort: number, callback: (err?: Error) => void): void
+    // eslint-disable-next-line no-dupe-class-members
     map(publicPort: number, privatePort: number, callback: (err?: Error) => void): void
+    // eslint-disable-next-line no-dupe-class-members
     map(mapOptions: MapOptions, callback: (err?: Error) => void): void
 
     unmap(publicPort: number, callback: (err?: Error) => void): void

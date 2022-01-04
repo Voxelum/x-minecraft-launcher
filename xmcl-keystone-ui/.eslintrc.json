@@ -20,8 +20,7 @@
         "sourceType": "module"
     },
     "env": {
-        "browser": true,
-        "es2021": true
+        "browser": true
     },
     "overrides": [
         {
@@ -29,7 +28,9 @@
                 "**/*.ts"
             ],
             "parserOptions": {
-                "tsconfigRootDir": "./xmcl-keystone-ui",
+                "parser": "@typescript-eslint/parser",
+                "ecmaVersion": 2020,
+                "sourceType": "module",
                 "project": [
                     "tsconfig.json"
                 ]

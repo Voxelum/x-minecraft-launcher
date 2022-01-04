@@ -1,6 +1,9 @@
 <template>
   <v-card>
-    <v-card-title primary-title class="block">
+    <v-card-title
+      primary-title
+      class="block"
+    >
       <div class="mb-3">
         <h3 class="headline mb-0 text-left">
           {{ $t('shaderpack.deletion') }}

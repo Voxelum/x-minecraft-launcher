@@ -1,13 +1,12 @@
 import { useService } from './useService'
-import { ImportServiceKey } from '@xmcl/runtime-api'
-import { ResourceServiceKey } from '@xmcl/runtime-api'
+import { ImportServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
 
 export function useFileDrop() {
   const { importFile } = useService(ImportServiceKey)
-  const { resolveFiles, resolveFile } = useService(ResourceServiceKey)
+  const { resolveResource, resolveResources } = useService(ResourceServiceKey)
   return {
     importFile,
-    resolveFile,
-    resolveFiles,
+    resolveFile: resolveResource,
+    resolveFiles: resolveResources,
   } as const
 }

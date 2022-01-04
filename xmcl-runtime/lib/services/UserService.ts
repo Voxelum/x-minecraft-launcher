@@ -1,5 +1,9 @@
 import { DownloadTask } from '@xmcl/installer'
-import { Exception, GameProfileAndTexture, UserSchema } from '@xmcl/runtime-api'
+import {
+  Exception, GameProfileAndTexture, LoginMicrosoftOptions, LoginOptions,
+  RefreshSkinOptions,
+  UploadSkinOptions, UserSchema, UserService as IUserService, UserServiceKey, UserState,
+} from '@xmcl/runtime-api'
 import { AUTH_API_MOJANG, checkLocation, GameProfile, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user'
 import { readFile, readJSON } from 'fs-extra'
 import { URL } from 'url'
@@ -8,14 +12,9 @@ import LauncherApp from '../app/LauncherApp'
 import { acquireXBoxToken, checkGameOwnership, getGameProfile, loginMinecraftWithXBox } from '../entities/user'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
-import { createhDynamicThrottle as createDynamicThrottle } from '../util/trafficAgent'
+import { createDynamicThrottle } from '../util/trafficAgent'
 import { fitMinecraftLauncherProfileData } from '../util/userData'
 import { ExportService, Singleton, StatefulService } from './Service'
-import {
-  LoginMicrosoftOptions, LoginOptions,
-  RefreshSkinOptions,
-  UploadSkinOptions, UserService as IUserService, UserServiceKey, UserState,
-} from '/@shared/services/UserService'
 import { requireNonnull, requireObject, requireString } from '/@shared/util/assert'
 
 export interface LauncherProfile {
@@ -339,11 +338,12 @@ export default class UserService extends StatefulService<UserState> implements I
     const user = this.state.users[userId]
     const gameProfile = user.profiles[gameProfileId]
 
-    const { protocol } = new URL(url)
+    const normalizedUrl = url.replace('image:', 'file:')
+    const { protocol } = new URL(normalizedUrl)
     let data: Buffer | undefined
     let skinUrl = ''
     if (protocol === 'file:') {
-      data = await readFile(url)
+      data = await readFile(normalizedUrl.replace('file://', ''))
     } else if (protocol === 'https:' || protocol === 'http:') {
       skinUrl = url
     } else {

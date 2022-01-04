@@ -1,9 +1,7 @@
 import { useI18n } from '/@/hooks'
-import { PingServerException } from '@xmcl/runtime-api'
-import { BuiltinNotification, TaskNotification } from '@xmcl/runtime-api'
+import { PingServerException, BuiltinNotification, TaskNotification, TaskLifeCyclePayload } from '@xmcl/runtime-api'
 import { computed, inject, InjectionKey, onMounted, onUnmounted, provide, reactive, Ref, ref, toRefs, watch } from '@vue/composition-api'
 import { useDialog } from './useDialog'
-import { TaskLifeCyclePayload } from '@xmcl/runtime-api'
 
 export type Level = 'success' | 'info' | 'warning' | 'error'
 const NOTIFY_QUEUE_SYMBOL: InjectionKey<Ref<Array<LocalNotification>>> = Symbol('NotifierQueue')

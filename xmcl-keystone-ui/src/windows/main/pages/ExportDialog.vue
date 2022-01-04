@@ -1,18 +1,39 @@
 <template>
-  <v-dialog :value="value" width="600" @input="$emit('input', $event)">
+  <v-dialog
+    :value="value"
+    width="600"
+    @input="$emit('input', $event)"
+  >
     <v-card>
-      <v-toolbar dark tabs color="green darken">
-        <v-toolbar-title v-if="isCurseforge">{{ $t('profile.modpack.exportCurseforge') }}</v-toolbar-title>
-        <v-toolbar-title v-else>{{ $t('profile.modpack.export') }}</v-toolbar-title>
+      <v-toolbar
+        dark
+        tabs
+        color="green darken"
+      >
+        <v-toolbar-title v-if="isCurseforge">
+          {{ $t('profile.modpack.exportCurseforge') }}
+        </v-toolbar-title>
+        <v-toolbar-title v-else>
+          {{ $t('profile.modpack.export') }}
+        </v-toolbar-title>
 
         <v-spacer />
-        <v-btn icon @click="$emit('input', false)">
+        <v-btn
+          icon
+          @click="$emit('input', false)"
+        >
           <v-icon>arrow_drop_down</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-container grid-list-sm style="overflow: auto; max-height: 450px">
+      <v-container
+        grid-list-sm
+        style="overflow: auto; max-height: 450px"
+      >
         <v-subheader>{{ $t('profile.modpack.general') }}</v-subheader>
-        <v-container grid-list-md style="padding-top: 0px">
+        <v-container
+          grid-list-md
+          style="padding-top: 0px"
+        >
           <v-layout row>
             <v-flex d-flex>
               <v-text-field
@@ -46,7 +67,10 @@
                 required
               />
             </v-flex>
-            <v-flex d-flex xs6>
+            <v-flex
+              d-flex
+              xs6
+            >
               <v-select
                 v-model="gameVersion"
                 :items="localVersions"
@@ -58,7 +82,10 @@
               />
             </v-flex>
           </v-layout>
-          <v-layout v-if="!isCurseforge" row>
+          <v-layout
+            v-if="!isCurseforge"
+            row
+          >
             <v-flex d-flex>
               <v-checkbox
                 v-model="includeAssets"
@@ -66,7 +93,10 @@
                 hint="abc"
               />
             </v-flex>
-            <v-flex d-flex xs6>
+            <v-flex
+              d-flex
+              xs6
+            >
               <v-checkbox
                 v-model="includeLibraries"
                 :label="$t('profile.modpack.includeLibraries')"
@@ -77,14 +107,31 @@
         </v-container>
 
         <v-layout>
-          <v-subheader v-if="isCurseforge">{{ $t('profile.modpack.overrides') }}</v-subheader>
-          <v-subheader v-else>{{ $t('profile.modpack.includes') }}</v-subheader>
+          <v-subheader v-if="isCurseforge">
+            {{ $t('profile.modpack.overrides') }}
+          </v-subheader>
+          <v-subheader v-else>
+            {{ $t('profile.modpack.includes') }}
+          </v-subheader>
         </v-layout>
-        <v-layout row style="padding: 5px; margin-bottom: 5px">
-          <instance-files v-model="selected" :items="files" />
+        <v-layout
+          row
+          style="padding: 5px; margin-bottom: 5px"
+        >
+          <instance-files
+            v-model="selected"
+            :items="files"
+          />
         </v-layout>
         <v-layout row>
-          <v-btn flat large :disabled="exporting" @click="cancel">{{ $t('cancel') }}</v-btn>
+          <v-btn
+            flat
+            large
+            :disabled="exporting"
+            @click="cancel"
+          >
+            {{ $t('cancel') }}
+          </v-btn>
           <v-spacer />
           <v-btn
             flat
@@ -92,7 +139,9 @@
             large
             :loading="exporting"
             @click="confirm"
-          >{{ $t('profile.modpack.export') }}</v-btn>
+          >
+            {{ $t('profile.modpack.export') }}
+          </v-btn>
         </v-layout>
       </v-container>
     </v-card>
@@ -104,8 +153,7 @@ import { computed, defineComponent, nextTick, onMounted, reactive, toRefs, watch
 import { useZipFilter } from '/@/windows/main/composables'
 import InstanceFiles from './ExportDialogInstanceFiles.vue'
 import { useI18n, useInstance, useInstanceVersion, useLocalVersions, useWindowController, useService } from '/@/hooks'
-import { InstanceCurseforgeIOServiceKey } from '@xmcl/runtime-api'
-import { InstanceFile, InstanceIOServiceKey } from '@xmcl/runtime-api'
+import { InstanceCurseforgeIOServiceKey, InstanceFile, InstanceIOServiceKey } from '@xmcl/runtime-api'
 
 export default defineComponent({
   components: { InstanceFiles },
@@ -140,7 +188,7 @@ export default defineComponent({
       data.name = name.value
       data.author = author.value
       data.selected = []
-      data.gameVersion = folder.value ? folder.value : ''
+      data.gameVersion = folder.value ?? ''
     }
     function refresh() {
       if (data.refreshing) return

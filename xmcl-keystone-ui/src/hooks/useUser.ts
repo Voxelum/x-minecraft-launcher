@@ -4,10 +4,7 @@ import { useI18n } from './useI18n'
 import { useSelectedServices } from './useLoginAccounts'
 import { useBusy } from './useSemaphore'
 import { useService, useServiceOnly } from './useService'
-import { LoginException } from '@xmcl/runtime-api'
-import { EMPTY_GAME_PROFILE } from '@xmcl/runtime-api'
-import { UserProfile } from '@xmcl/runtime-api'
-import { UserServiceKey } from '@xmcl/runtime-api'
+import { LoginException, EMPTY_GAME_PROFILE, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
 
 export function useUserService() {
   return useService(UserServiceKey)
@@ -105,6 +102,7 @@ export function useUserSkin(userId: Ref<string>, gameProfileId: Ref<string>) {
   })
   const gameProfile = computed(() => state.users[userId.value]?.profiles[gameProfileId.value] || EMPTY_GAME_PROFILE)
   function reset() {
+    console.log('reset')
     data.url = gameProfile.value.textures.SKIN.url
     data.slim = gameProfile.value.textures.SKIN.metadata ? gameProfile.value.textures.SKIN.metadata.model === 'slim' : false
   }
@@ -114,6 +112,7 @@ export function useUserSkin(userId: Ref<string>, gameProfileId: Ref<string>) {
     data.loading = true
     try {
       await uploadSkin({ url: data.url, slim: data.slim })
+      await refreshSkin({ userId: userId.value, gameProfileId: gameProfileId.value }).then(() => reset())
     } finally {
       data.loading = false
     }

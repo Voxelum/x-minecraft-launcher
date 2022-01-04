@@ -1,14 +1,18 @@
 <template>
   <div class="template-content w-full">
-    <v-list style="background: transparent" class="p-0" two-line>
+    <v-list
+      style="background: transparent"
+      class="p-0"
+      two-line
+    >
       <v-list-tile class="mb-2">
         <div class="flex gap-3 w-full">
           <v-select
+            v-model="selectedVersionFilterOption"
             class="max-w-40"
             hide-details
             label="Minecraft"
             :items="versionFilterOptions"
-            v-model="selectedVersionFilterOption"
             clearable
           />
           <v-spacer />
@@ -22,10 +26,18 @@
           />
         </div>
       </v-list-tile>
-      <v-divider></v-divider>
-      <v-list-tile v-for="p in templates" :key="p.path" ripple @click="onUse(p)">
+      <v-divider />
+      <v-list-tile
+        v-for="p in templates"
+        :key="p.path"
+        ripple
+        @click="onUse(p)"
+      >
         <v-list-tile-action>
-          <v-checkbox :value="value === p" readonly />
+          <v-checkbox
+            :value="value === p"
+            readonly
+          />
         </v-list-tile-action>
         <v-list-tile-content>
           <v-list-tile-title>{{ p.title }}</v-list-tile-title>
@@ -41,17 +53,15 @@
 </template>
 
 <script lang=ts>
-import { computed, defineComponent, inject, onUnmounted, ref, watch } from '@vue/composition-api'
+import { computed, defineComponent, inject, onUnmounted, Ref, ref, watch } from '@vue/composition-api'
 import { CreateOptionKey } from './AddInstanceDialog.vue'
 import {
   useI18n,
-  useInstanceTemplates
+  useInstanceTemplates,
 } from '/@/hooks'
 import { optional, required } from '/@/util/props'
 import { useSearchToggles } from '/@/windows/main/composables'
-import { InstanceSchema } from '@xmcl/runtime-api'
-import { CurseforgeModpackResource, isCurseforgeModpackResource, ModpackResource } from '@xmcl/runtime-api'
-import { ResourceType } from '@xmcl/runtime-api'
+import { InstanceSchema, CurseforgeModpackResource, isCurseforgeModpackResource, ModpackResource, ResourceType } from '@xmcl/runtime-api'
 import { isNonnull } from '@xmcl/runtime-api/utils'
 
 export interface InstanceTemplate {
@@ -139,7 +149,7 @@ export default defineComponent({
         path: instance.path,
         source: instance,
         action: $t(`profile.templateSetting.${instance.server ? 'server' : 'profile'}`),
-        minecraft: instance.runtime.minecraft
+        minecraft: instance.runtime.minecraft,
       }) as InstanceTemplate))
       all.push(...modpacks.value.map((modpack) => ({
         type: 'modpack',
@@ -148,7 +158,7 @@ export default defineComponent({
         path: modpack.path,
         source: modpack,
         action: $t('profile.templateSetting.modpack'),
-        minecraft: isCurseforgeModpackResource(modpack) ? modpack.metadata.minecraft.version : modpack.metadata.runtime?.minecraft
+        minecraft: isCurseforgeModpackResource(modpack) ? modpack.metadata.minecraft.version : modpack.metadata.runtime?.minecraft,
       }) as ModpackTemplate))
       return all
     })
@@ -209,7 +219,7 @@ export default defineComponent({
       }
       context.emit('select', template)
     }
-    const searchTextRef = ref(null)
+    const searchTextRef: Ref<null | HTMLElement> = ref(null)
     watch([computed(() => props.preset), templates], () => {
       if (props.preset) {
         const preset = templates.value.find(t => t.path === props.preset)
@@ -221,7 +231,7 @@ export default defineComponent({
     props.onActivated(() => {
       if (props.value) {
         onUse(props.value)
-      } 
+      }
       toggles.unshift(() => {
         if (searchTextRef.value) {
           searchTextRef.value.focus()

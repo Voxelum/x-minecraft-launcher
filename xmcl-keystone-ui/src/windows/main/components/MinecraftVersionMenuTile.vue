@@ -4,9 +4,17 @@
     ripple
     @click="select(source)"
   >
-    <v-list-tile-title class="flex gap-2 pl-3">{{ source.id }}</v-list-tile-title>
+    <v-list-tile-title class="flex gap-2 pl-3">
+      {{ source.id }}
+    </v-list-tile-title>
     <v-list-tile-action class="flex justify-end">
-      <v-chip :color="source.type === 'release' ? 'primary' : ''" label dark>{{ type }}</v-chip>
+      <v-chip
+        :color="source.type === 'release' ? 'primary' : ''"
+        label
+        dark
+      >
+        {{ type }}
+      </v-chip>
     </v-list-tile-action>
   </v-list-tile>
 </template>

@@ -12,7 +12,7 @@ export enum BackgroundType {
   NONE = 'none',
   PARTICLE = 'particle',
   HALO = 'halo',
-  IMAGE = 'image'
+  IMAGE = 'image',
 }
 
 export function useBackground() {

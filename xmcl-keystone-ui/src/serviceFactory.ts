@@ -1,5 +1,4 @@
-import { ServiceCallTaskListener } from '@xmcl/runtime-api';
-import { ServiceKey, ServiceTemplate, StatefulService } from '@xmcl/runtime-api';
+import { ServiceCallTaskListener, ServiceKey, ServiceTemplate, StatefulService } from '@xmcl/runtime-api'
 
 export type StateOfService<Serv> = Serv extends StatefulService<infer State>
   ? State : void
@@ -58,8 +57,7 @@ export function createServiceFactory(options: { decoareteState?: (key: ServiceKe
         factory,
         template,
       }
-      
       getService(serviceKey)
-    }
+    },
   }
 }

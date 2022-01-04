@@ -1,7 +1,9 @@
+// @ts-nocheck
+/* eslint-disable */
+
 import { ShaderBase } from './vantaShaderBase'
 import { LinearFilter, RGBFormat, WebGLRenderTarget } from 'three'
 import frag from './vantaHalo.glsl?raw'
-
 
 export class Halo extends ShaderBase {
   bufferTarget: WebGLRenderTarget
@@ -59,7 +61,7 @@ export class Halo extends ShaderBase {
     renderer.clear()
 
     // Swap, to prevent shader using the same input as output
-    let temp = this.bufferTarget
+    const temp = this.bufferTarget
     this.bufferTarget = this.bufferFeedback
     this.bufferFeedback = temp
   }
@@ -73,6 +75,7 @@ export class Halo extends ShaderBase {
       this.bufferFeedback.setSize(ww, hh)
     }
   }
+
   onDestroy() {
     this.bufferTarget = null
     this.bufferFeedback = null

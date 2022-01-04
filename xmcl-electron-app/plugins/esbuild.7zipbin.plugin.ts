@@ -3,8 +3,6 @@ import { Plugin } from 'esbuild'
 import { readFile } from 'fs-extra'
 import { platform } from 'os'
 
-const nodeModules = new RegExp(/^.+[\\\/]node_modules[\\\/].+[\\\/]7zip-bin[\\\/]index\.js$/)
-
 /**
  * Correctly handle 7za bin import.
  */
@@ -14,7 +12,7 @@ export default function create7ZipBinPlugin(nodeModules: string): Plugin {
     setup(build) {
       if (build.initialOptions.watch) {
         build.onLoad(
-          { filter: /^.+[\\\/]node_modules[\\\/].+[\\\/]7zip-bin[\\\/]index\.js$/g },
+          { filter: /^.+[\\/]node_modules[\\/].+[\\/]7zip-bin[\\/]index\.js$/g },
           async ({ path }) => {
             const content = await readFile(path, 'utf-8')
             return {
@@ -24,7 +22,7 @@ export default function create7ZipBinPlugin(nodeModules: string): Plugin {
           },
         )
         build.onLoad(
-          { filter: /^.+[\\\/]node_modules[\\\/].+[\\\/]default-gateway[\\\/]index\.js$/g },
+          { filter: /^.+[\\/]node_modules[\\/].+[\\/]default-gateway[\\/]index\.js$/g },
           async ({ path }) => {
             const content = await readFile(path, 'utf-8')
             const plat = platform()

@@ -19,8 +19,8 @@
       </v-flex>
       <v-flex
         v-for="target in targets"
-        style="display: block;"
         :key="target"
+        style="display: block;"
         xs6
       >
         <v-card
@@ -45,7 +45,9 @@
             </v-img>
           </v-responsive>
           <v-card-title>
-            <h2 class="headline">{{ $t(`curseforge.${target}.name`) }}</h2>
+            <h2 class="headline">
+              {{ $t(`curseforge.${target}.name`) }}
+            </h2>
           </v-card-title>
           <v-card-text>{{ $t(`curseforge.${target}.description`) }}</v-card-text>
         </v-card>

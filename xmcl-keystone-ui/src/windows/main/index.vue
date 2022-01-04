@@ -1,5 +1,9 @@
 <template>
-  <v-app ref="app" dark style="background: transparent; overflow: hidden">
+  <v-app
+    ref="app"
+    dark
+    style="background: transparent; overflow: hidden"
+  >
     <universal-drop-view />
     <v-container
       v-if="loading"
@@ -9,12 +13,24 @@
       class="loading-background"
       style="position: absolute; width: 100%; height: 100%;"
     />
-    <v-layout v-else fill-height>
+    <v-layout
+      v-else
+      fill-height
+    >
       <side-bar :go-back="goBack" />
-      <v-layout style="padding: 0; background: transparent; max-height: 100vh;" fill-height>
-        <div class="main-body v-sheet" :class="{ solid: !blurMainBody }">
+      <v-layout
+        style="padding: 0; background: transparent; max-height: 100vh;"
+        fill-height
+      >
+        <div
+          class="main-body v-sheet"
+          :class="{ solid: !blurMainBody }"
+        >
           <background />
-          <transition name="fade-transition" mode="out-in">
+          <transition
+            name="fade-transition"
+            mode="out-in"
+          >
             <router-view />
           </transition>
         </div>

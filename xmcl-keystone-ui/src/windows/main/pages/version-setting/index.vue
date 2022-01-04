@@ -1,12 +1,19 @@
 <template>
-  <v-container grid-list-md fill-height>
+  <v-container
+    grid-list-md
+    fill-height
+  >
     <div class="flex flex-col h-full overflow-auto gap-3 mt-2">
-      <div tag="h1" class="mb-3 white--text select-none" xs6>
+      <div
+        tag="h1"
+        class="mb-3 white--text select-none"
+        xs6
+      >
         <span class="headline">{{ $t("profile.versionSetting") }}</span>
       </div>
       <v-tabs
-        class="flex-grow flex flex-col"
         v-model="active"
+        class="flex-grow flex flex-col"
         mandatory
         color="transparent"
         dark
@@ -15,31 +22,41 @@
         <v-tab>
           <div class="version-tab">
             {{ $t("version.locals") }}
-            <div class="subtitle">{{ id }}</div>
+            <div class="subtitle">
+              {{ id }}
+            </div>
           </div>
         </v-tab>
         <v-tab>
           <div class="version-tab">
             Minecraft
-            <div class="subtitle">{{ minecraft }}</div>
+            <div class="subtitle">
+              {{ minecraft }}
+            </div>
           </div>
         </v-tab>
         <v-tab>
           <div class="version-tab">
             Forge
-            <div class="subtitle">{{ forge || $t("version.unset") }}</div>
+            <div class="subtitle">
+              {{ forge || $t("version.unset") }}
+            </div>
           </div>
         </v-tab>
         <v-tab>
           <div class="version-tab">
             Fabric
-            <div class="subtitle">{{ fabricLoader || $t("version.unset") }}</div>
+            <div class="subtitle">
+              {{ fabricLoader || $t("version.unset") }}
+            </div>
           </div>
         </v-tab>
         <v-tab>
           <div class="version-tab">
             Optifine
-            <div class="subtitle">{{ optifine || $t("version.unset") }}</div>
+            <div class="subtitle">
+              {{ optifine || $t("version.unset") }}
+            </div>
           </div>
         </v-tab>
       </v-tabs>
@@ -51,17 +68,30 @@
         class="h-full overflow-auto"
         @mousewheel.stop
       >
-        <v-tab-item class="h-full overflow-auto" @mousewheel.stop>
+        <v-tab-item
+          class="h-full overflow-auto"
+          @mousewheel.stop
+        >
           <local-version-view
             :value="localVersion"
             :filter-text="filterText"
             @input="setLocalVersion"
           />
         </v-tab-item>
-        <v-tab-item class="h-full overflow-auto" @mousewheel.stop>
-          <minecraft-view :filter-text="filterText" :version="minecraft" :select="setMinecraft" />
+        <v-tab-item
+          class="h-full overflow-auto"
+          @mousewheel.stop
+        >
+          <minecraft-view
+            :filter-text="filterText"
+            :version="minecraft"
+            :select="setMinecraft"
+          />
         </v-tab-item>
-        <v-tab-item class="h-full overflow-auto" @mousewheel.stop>
+        <v-tab-item
+          class="h-full overflow-auto"
+          @mousewheel.stop
+        >
           <forge-view
             :filter-text="filterText"
             :version="forge"
@@ -69,7 +99,10 @@
             :minecraft="minecraft"
           />
         </v-tab-item>
-        <v-tab-item class="h-full overflow-auto" @mousewheel.stop>
+        <v-tab-item
+          class="h-full overflow-auto"
+          @mousewheel.stop
+        >
           <fabric-view
             :filter-text="filterText"
             :loader="fabricLoader"
@@ -78,7 +111,10 @@
             :minecraft="minecraft"
           />
         </v-tab-item>
-        <v-tab-item class="h-full overflow-auto" @mousewheel.stop>
+        <v-tab-item
+          class="h-full overflow-auto"
+          @mousewheel.stop
+        >
           <optifine-view
             :filter-text="filterText"
             :version="optifineVersion"
@@ -97,8 +133,8 @@
         fab
         class="right-10 bottom-10"
         color="primary"
-        @dragover.prevent
         :loading="refreshing"
+        @dragover.prevent
         @click="refresh"
       >
         <v-icon>refresh</v-icon>
@@ -122,9 +158,7 @@ import {
   useService,
   useVersionService,
 } from '/@/hooks'
-import { filterForgeVersion, filterOptfineVersion, getResolvedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary } from '@xmcl/runtime-api'
-import { OptifineVersion } from '@xmcl/runtime-api'
-import { InstallServiceKey } from '@xmcl/runtime-api'
+import { filterForgeVersion, filterOptfineVersion, getResolvedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, OptifineVersion, InstallServiceKey } from '@xmcl/runtime-api'
 import LocalVersionView from './components/LocalVersionView.vue'
 
 export default defineComponent({
@@ -133,7 +167,7 @@ export default defineComponent({
     ForgeView,
     FabricView,
     OptifineView,
-    LocalVersionView
+    LocalVersionView,
   },
   setup() {
     const filterText = ref('')
@@ -239,9 +273,7 @@ export default defineComponent({
       }
     }
     function refresh() {
-      if (data.active === 0) {
-
-      } else if (data.active === 1) {
+      if (data.active === 1) {
         refreshMinecraft(true)
       } else if (data.active === 2) {
         refreshForge({ force: true, mcversion: data.minecraft })

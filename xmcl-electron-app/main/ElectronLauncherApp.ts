@@ -1,15 +1,12 @@
+import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
+import { BaseServiceKey } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
-import { createServer } from 'http'
 import { join } from 'path'
 import { URL } from 'url'
 import Controller from './Controller'
 import { checkUpdateTask as _checkUpdateTask, DownloadAsarUpdateTask, DownloadFullUpdateTask, quitAndInstallAsar, quitAndInstallFullUpdate, setup } from './updater'
-import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
-import { IS_DEV } from '/@main/constant'
 import { isDirectory } from './utils/fs'
-import { UpdateInfo } from '/@shared/entities/update'
-import { BaseServiceKey } from '@xmcl/runtime-api'
 
 export default class ElectronLauncherApp extends LauncherApp {
   createController(): LauncherAppController {
@@ -85,11 +82,12 @@ export default class ElectronLauncherApp extends LauncherApp {
     // return false;
   }
 
-  checkUpdateTask(): Task<UpdateInfo> {
+  // TODO: fix the any type
+  checkUpdateTask(): Task<any> {
     return _checkUpdateTask.bind(this)()
   }
 
-  downloadUpdateTask(updateInfo: UpdateInfo): Task<void> {
+  downloadUpdateTask(updateInfo: any): Task<void> {
     if (updateInfo.incremental) {
       const updatePath = join(this.appDataPath, 'pending_update')
       return new DownloadAsarUpdateTask(updateInfo as any, this.networkManager.isInGFW, updatePath)
@@ -98,7 +96,7 @@ export default class ElectronLauncherApp extends LauncherApp {
     return new DownloadFullUpdateTask()
   }
 
-  async installUpdateAndQuit(updateInfo: UpdateInfo): Promise<void> {
+  async installUpdateAndQuit(updateInfo: any): Promise<void> {
     if (updateInfo.incremental) {
       await quitAndInstallAsar.bind(this)()
     } else {
@@ -126,35 +124,25 @@ export default class ElectronLauncherApp extends LauncherApp {
       app.quit()
     })
 
+    // singleton lock
     if (!app.requestSingleInstanceLock()) {
       app.quit()
       return
     }
 
+    // register xmcl protocol
     if (!app.isDefaultProtocolClient('xmcl')) {
       app.setAsDefaultProtocolClient('xmcl')
     }
 
-    if (!IS_DEV && process.platform === 'win32') {
-      if (process.argv.length > 1) {
-        const urlOrPath = process.argv[process.argv.length - 1]
-        if (!(urlOrPath.startsWith('https:') || urlOrPath.startsWith('http:')) && !await this.startFromUrl(urlOrPath).then(() => true, () => false)) {
-          this.startFromFilePath(urlOrPath).then(() => true, () => false)
-        }
-      }
-    }
-
-    if (IS_DEV) {
-      // const server = createServer((message, response) => {
-      //   this.log(`Dev server recieve ${message.url}`)
-      //   this.handleUrl(message.url!)
-      //   response.statusCode = 200
-      //   response.end()
-      // })
-      // server.listen(3000, () => {
-      //   this.log('Started development server!')
-      // })
-    }
+    // if (!IS_DEV && process.platform === 'win32') {
+    //   if (process.argv.length > 1) {
+    //     const urlOrPath = process.argv[process.argv.length - 1]
+    //     if (!(urlOrPath.startsWith('https:') || urlOrPath.startsWith('http:')) && !await this.startFromUrl(urlOrPath).then(() => true, () => false)) {
+    //       this.startFromFilePath(urlOrPath).then(() => true, () => false)
+    //     }
+    //   }
+    // }
 
     // forward window-all-closed event
     app.on('window-all-closed', () => {
@@ -186,7 +174,7 @@ export default class ElectronLauncherApp extends LauncherApp {
 
   handleUrl(url: string) {
     const parsed = new URL(url, 'xmcl://')
-    if ((parsed.host === 'launcher' || IS_DEV) && parsed.pathname === '/auth') {
+    if (parsed.host === 'launcher' && parsed.pathname === '/auth') {
       let error: Error | undefined
       if (parsed.searchParams.get('error')) {
         const err = parsed.searchParams.get('error')!

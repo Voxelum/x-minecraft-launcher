@@ -1,8 +1,13 @@
 <template>
   <v-menu>
     <template #activator="{ on }">
-      <v-btn flat v-on="on">
-        <v-icon left>keyboard_arrow_down</v-icon>
+      <v-btn
+        flat
+        v-on="on"
+      >
+        <v-icon left>
+          keyboard_arrow_down
+        </v-icon>
         {{
           selected.path
             ? $t("curseforge.installTo", { path: selected.name })
@@ -17,7 +22,11 @@
         </v-list-tile-avatar>
         <v-list-tile-title>{{ defaultItem.name }}</v-list-tile-title>
       </v-list-tile>
-      <v-list-tile v-for="(item, index) in items" :key="index" @click="onSelect(item)">
+      <v-list-tile
+        v-for="(item, index) in items"
+        :key="index"
+        @click="onSelect(item)"
+      >
         <v-list-tile-avatar>
           <v-icon>golf_course</v-icon>
         </v-list-tile-avatar>

@@ -1,8 +1,20 @@
 <template>
-  <v-dialog width="900" v-model="isShown" persistent>
-    <v-stepper v-model="step" dark>
+  <v-dialog
+    v-model="isShown"
+    width="900"
+    persistent
+  >
+    <v-stepper
+      v-model="step"
+      dark
+    >
       <v-stepper-header>
-        <v-stepper-step :rules="[() => valid]" :editable="!creating" :complete="step > 1" step="1">
+        <v-stepper-step
+          :rules="[() => valid]"
+          :editable="!creating"
+          :complete="step > 1"
+          step="1"
+        >
           {{ $t('profile.templateSetting') }}
           <small>{{ currentTemplate ? currentTemplate.title : '' }}</small>
         </v-stepper-step>
@@ -12,17 +24,24 @@
           :editable="!creating"
           :complete="step > 2"
           step="2"
-        >{{ $t('profile.baseSetting') }}</v-stepper-step>
+        >
+          {{ $t('profile.baseSetting') }}
+        </v-stepper-step>
         <v-divider />
         <v-stepper-step
           :editable="currentTemplate && currentTemplate.type === 'modpack'"
           :complete="step > 2"
           step="3"
-        >{{ $t('profile.templateSetting.preview') }}</v-stepper-step>
+        >
+          {{ $t('profile.templateSetting.preview') }}
+        </v-stepper-step>
       </v-stepper-header>
 
       <v-stepper-items>
-        <v-stepper-content step="1" style="overflow: auto; max-height: 450px;">
+        <v-stepper-content
+          step="1"
+          style="overflow: auto; max-height: 450px;"
+        >
           <template-content
             :preset="presetTemplate"
             :value="currentTemplate"
@@ -38,7 +57,10 @@
             @quit="quit"
           />
         </v-stepper-content>
-        <v-stepper-content step="2" class="overflow-auto max-h-[70vh]">
+        <v-stepper-content
+          step="2"
+          class="overflow-auto max-h-[70vh]"
+        >
           <!-- <v-list-tile-title> -->
           <!-- {{ $t('profile.baseSetting') }} -->
           <!-- </v-list-tile-title> -->
@@ -55,7 +77,10 @@
             @quit="quit"
           />
         </v-stepper-content>
-        <v-stepper-content step="3" class="overflow-auto max-h-[70vh]">
+        <v-stepper-content
+          step="3"
+          class="overflow-auto max-h-[70vh]"
+        >
           <stepper-modpack-content
             v-if="currentTemplate && currentTemplate.type === 'modpack'"
             :modpack="currentTemplate"
@@ -78,11 +103,10 @@ import {
   useCurseforgeImport,
   useInstanceCreation,
   useInstances,
-  useRouter
+  useRouter,
 } from '/@/hooks'
 import { DialogKey, useDialog } from '/@/windows/main/composables'
-import { InstanceData } from '@xmcl/runtime-api'
-import { JavaRecord } from '@xmcl/runtime-api'
+import { InstanceData, JavaRecord } from '@xmcl/runtime-api'
 
 type ToRefs<T> = {
   [K in keyof T]: Ref<T[K]>
@@ -98,7 +122,7 @@ export default defineComponent({
     BaseContent,
     AdvanceContent,
     TemplateContent,
-    StepperModpackContent
+    StepperModpackContent,
   },
   props: {
   },

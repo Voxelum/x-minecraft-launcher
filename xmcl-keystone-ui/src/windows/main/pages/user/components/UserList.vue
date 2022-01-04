@@ -38,7 +38,7 @@
                 small
                 outline
                 label
-                style="margin: 0; margin-top: 4px"
+                style="margin: 0; margin-top: 4px; margin-left: 5px;"
               >
                 {{ $t("user.profileMode") }}:
                 {{ user.profileService }}
@@ -119,14 +119,13 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
-import { UserProfile } from '@xmcl/runtime-api'
+import { UserProfile, BaseServiceKey } from '@xmcl/runtime-api'
 import { required } from '/@/util/props'
 import { useService } from '/@/hooks'
-import { BaseServiceKey } from '@xmcl/runtime-api'
 import ImageShowTextureHead from './ImageShowTextureHead.vue'
 
-
 export default defineComponent({
+  components: { ImageShowTextureHead },
   props: {
     select: required<(profileId: string, userId: string) => void>(Function),
     users: required<UserProfile[]>(Array),
@@ -143,7 +142,6 @@ export default defineComponent({
     }
     return { gotoPurchesPage, gotoFAQPage }
   },
-  components: { ImageShowTextureHead },
 })
 </script>
 

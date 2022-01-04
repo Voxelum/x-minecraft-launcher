@@ -7,8 +7,15 @@
       v-if="instancesByTime[0].length !== 0"
       class="justify-center w-full"
       style="color: grey;"
-    >{{ $t('profile.today') }}</div>
-    <v-layout v-if="instancesByTime[0].length !== 0" row wrap class="w-full items-start">
+    >
+      {{ $t('profile.today') }}
+    </div>
+    <v-layout
+      v-if="instancesByTime[0].length !== 0"
+      row
+      wrap
+      class="w-full items-start"
+    >
       <v-flex
         v-for="instance in instancesByTime[0]"
         :key="instance.path"
@@ -17,7 +24,10 @@
         @dragstart="$emit('dragstart', instance)"
         @dragend="$emit('dragend')"
       >
-        <instance-card :instance="instance" @click.stop="$emit('select', instance.path)" />
+        <instance-card
+          :instance="instance"
+          @click.stop="$emit('select', instance.path)"
+        />
       </v-flex>
     </v-layout>
 
@@ -25,15 +35,25 @@
       v-if="instancesByTime[1].length !== 0"
       class="justify-center w-full"
       style="color: grey"
-    >{{ $t('profile.threeDay') }}</div>
-    <v-layout v-if="instancesByTime[1].length !== 0" row wrap class="w-full items-start">
+    >
+      {{ $t('profile.threeDay') }}
+    </div>
+    <v-layout
+      v-if="instancesByTime[1].length !== 0"
+      row
+      wrap
+      class="w-full items-start"
+    >
       <v-flex
         v-for="instance in instancesByTime[1]"
         :key="instance.path"
         @dragstart="$emit('dragstart', instance)"
         @dragend="$emit('dragend')"
       >
-        <instance-card :instance="instance" @click.stop="$emit('select', instance.path)" />
+        <instance-card
+          :instance="instance"
+          @click.stop="$emit('select', instance.path)"
+        />
       </v-flex>
     </v-layout>
 
@@ -42,8 +62,15 @@
       class="justify-center w-full"
       style="color: grey"
       xs12
-    >{{ $t('profile.older') }}</div>
-    <v-layout v-if="instancesByTime[2].length !== 0" row wrap class="w-full items-start">
+    >
+      {{ $t('profile.older') }}
+    </div>
+    <v-layout
+      v-if="instancesByTime[2].length !== 0"
+      row
+      wrap
+      class="w-full items-start"
+    >
       <v-flex
         v-for="instance in instancesByTime[2]"
         :key="instance.path"
@@ -52,7 +79,10 @@
         @dragstart="$emit('dragstart', instance)"
         @dragend="$emit('dragend')"
       >
-        <instance-card :instance="instance" @click.stop="$emit('select', instance.path)" />
+        <instance-card
+          :instance="instance"
+          @click.stop="$emit('select', instance.path)"
+        />
       </v-flex>
     </v-layout>
   </div>

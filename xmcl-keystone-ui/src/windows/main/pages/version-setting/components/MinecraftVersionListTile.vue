@@ -10,17 +10,29 @@
     @click="select(source)"
   >
     <v-list-tile-avatar>
-      <v-chip :color="source.type === 'release' ? 'primary' : ''" label dark>{{ type }}</v-chip>
+      <v-chip
+        :color="source.type === 'release' ? 'primary' : ''"
+        label
+        dark
+      >
+        {{ type }}
+      </v-chip>
     </v-list-tile-avatar>
 
-    <v-list-tile-title class="flex gap-2 pl-3">{{ source.id }}</v-list-tile-title>
+    <v-list-tile-title class="flex gap-2 pl-3">
+      {{ source.id }}
+    </v-list-tile-title>
     <v-list-tile-sub-title v-if="showTime">
       {{
         new Date(source.releaseTime).toLocaleString()
       }}
     </v-list-tile-sub-title>
     <v-list-tile-action class="flex justify-end">
-      <v-btn icon :loading="installing" @click.stop="onClick(source)">
+      <v-btn
+        icon
+        :loading="installing"
+        @click.stop="onClick(source)"
+      >
         <v-icon>{{ statuses[source.id] === "remote" ? "file_download" : "folder" }}</v-icon>
       </v-btn>
     </v-list-tile-action>
@@ -50,7 +62,7 @@ export default defineComponent({
     const installing = useBusy(key)
     const isSelected = computed(() => props.source.id === props.selected)
     const { $t } = useI18n()
-    const type = computed(() => props.source.type === 'snapshot' ? $t('minecraft.versions.snapshot') : props.source.type === 'release' ? $t('minecraft.versions.release'): '')
+    const type = computed(() => props.source.type === 'snapshot' ? $t('minecraft.versions.snapshot') : props.source.type === 'release' ? $t('minecraft.versions.release') : '')
     const onClick = (version: MinecraftVersion) => {
       if (props.statuses[props.source.id] === 'remote') {
         props.install(version)

@@ -31,7 +31,9 @@
               style="margin: 0px; height: 48px; border-radius: 0;"
               @click="showAlpha = !showAlpha"
             >
-              <v-icon v-on="on">bug_report</v-icon>
+              <v-icon v-on="on">
+                bug_report
+              </v-icon>
             </v-chip>
           </template>
           {{ $t("version.showSnapshot") }}

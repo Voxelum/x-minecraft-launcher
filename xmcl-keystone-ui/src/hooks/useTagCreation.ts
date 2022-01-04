@@ -14,18 +14,18 @@ export function useTagCreation() {
     return dedupTag
   }
   return {
-    getNewTag
+    getNewTag,
   }
 }
 
 export function useTagColors() {
   const colors = [
-    "amber",
-    "orange lighten-1",
-    "pink lighten-3",
-    "deep-orange",
-    "purple lighten-1",
-    "lime",
+    'amber',
+    'orange lighten-1',
+    'pink lighten-3',
+    'deep-orange',
+    'purple lighten-1',
+    'lime',
   ]
 
   return { colors }

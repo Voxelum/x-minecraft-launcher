@@ -1,8 +1,8 @@
 <template>
   <v-combobox
     ref="searchElem"
-    tabindex="0"
     v-model="selectedFilterOptions"
+    tabindex="0"
     :items="filterOptions"
     :label="label"
     :search-input.sync="filteredText"
@@ -17,29 +17,50 @@
     @click:clear="clearFilterItems"
     @keydown="handleKeydown"
   >
-    <template v-slot:item="{ index, item, tile }">
+    <template #item="{ item, tile }">
       <v-list-tile-action>
-        <v-checkbox :value="tile.props.value" hide-details />
+        <v-checkbox
+          :value="tile.props.value"
+          hide-details
+        />
       </v-list-tile-action>
-      <v-chip label outline :color="item.color ? item.color : getColor(item.value)">
-        <v-icon left>{{ item.label ? item.label : 'label' }}</v-icon>
-        {{ item.value }}
-      </v-chip>
-    </template>
-    <template v-slot:selection="{ index, item, selected }">
       <v-chip
         label
         outline
+        :color="item.color ? item.color : getColor(item.value)"
+      >
+        <v-icon left>
+          {{ item.label ? item.label : 'label' }}
+        </v-icon>
+        {{ item.value }}
+      </v-chip>
+    </template>
+    <template #selection="{ index, item, selected }">
+      <v-chip
         v-if="typeof item === 'object'"
+        label
+        outline
         :color="item.color ? item.color : getColor(item.value)"
         :selected="selected"
         close
         @input="removeFilteredItem(index)"
       >
-        <v-icon left v-if="item.label">{{ item.label }}</v-icon>
+        <v-icon
+          v-if="item.label"
+          left
+        >
+          {{ item.label }}
+        </v-icon>
         {{ item.value }}
       </v-chip>
-      <v-chip v-else label outline :selected="selected" close @input="removeFilteredItem(index)">
+      <v-chip
+        v-else
+        label
+        outline
+        :selected="selected"
+        close
+        @input="removeFilteredItem(index)"
+      >
         <!-- <v-icon left v-if="item.label">{{ item.label }}</v-icon> -->
         {{ item }}
       </v-chip>

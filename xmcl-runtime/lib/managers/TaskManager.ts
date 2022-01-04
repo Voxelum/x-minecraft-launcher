@@ -71,18 +71,20 @@ export default class TaskManager extends Manager {
   /**
    * Submit a task to run
    */
-  submit<T>(task: Task<T>): Promise<T> {
+  async submit<T>(task: Task<T>): Promise<T> {
     const uid = v4()
     const listener = this.createTaskListener(uid)
     this.record[uid] = task
     task.start(listener)
     const index = this.tasks.length
     this.tasks.push(task)
-    return task.wait().finally(() => {
+    try {
+      return await task.wait()
+    } finally {
       this.log('Task done and delete record!')
       delete this.record[uid]
       this.tasks.splice(index, 1)
-    })
+    }
   }
 
   getActiveTask(): Task<any> | undefined {

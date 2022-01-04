@@ -77,7 +77,10 @@
               {{ $t('user.insecureClient') }}
             </v-alert>
           </v-flex>
-          <v-flex class="h-full overflow-auto" style="display: block;">
+          <v-flex
+            class="h-full overflow-auto"
+            style="display: block;"
+          >
             <user-list
               :user-id="userId"
               :profile-id="profileId"
@@ -203,7 +206,6 @@ import ChallengesForm from './components/ChallengesForm.vue'
 import PageSkinView from './components/SkinView.vue'
 import UserServicesCard from './components/UserServicesCard.vue'
 import GameProfileSpeedDial from './components/GameProfileSpeedDial.vue'
-import ImageShowTextureHead from './components/ImageShowTextureHead.vue'
 import UserList from './components/UserList.vue'
 
 export default defineComponent({
@@ -213,7 +215,6 @@ export default defineComponent({
     PageSkinView,
     GameProfileSpeedDial,
     UserList,
-    ImageShowTextureHead,
   },
   setup() {
     const { refreshStatus: refreshAccount, refreshSkin } = useCurrentUser()

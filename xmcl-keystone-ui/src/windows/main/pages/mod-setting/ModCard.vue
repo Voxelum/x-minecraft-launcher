@@ -26,14 +26,39 @@
           name="transition-list"
           tag="div"
         >
-          <v-flex v-if="selection" :key="0" class="flex-grow-0">
-            <v-checkbox v-model="source.selected" />
+          <v-flex
+            v-if="selection"
+            :key="0"
+            class="flex-grow-0"
+          >
+            <v-checkbox
+              :value="source.selected"
+              @input="$emit('select')"
+            />
           </v-flex>
-          <v-flex v-if="!source.subsequence" :key="1" class="avatar">
-            <img ref="iconImage" v-fallback-img="unknownPack" :src="source.icon" contain />
+          <v-flex
+            v-if="!source.subsequence"
+            :key="1"
+            class="avatar"
+          >
+            <img
+              ref="iconImage"
+              v-fallback-img="unknownPack"
+              :src="source.icon"
+              contain
+            >
           </v-flex>
-          <div :key="2" class="flex-grow py-2" v-on="on">
-            <h3 class="text-lg font-bold" v-if="!source.subsequence">{{ source.name }}</h3>
+          <div
+            :key="2"
+            class="flex-grow py-2"
+            v-on="on"
+          >
+            <h3
+              v-if="!source.subsequence"
+              class="text-lg font-bold"
+            >
+              {{ source.name }}
+            </h3>
             <v-chip
               small
               outline
@@ -41,15 +66,19 @@
               color="amber"
               style="margin-left: 1px;"
               @mousedown.stop
-            >{{ source.version }}</v-chip>
+            >
+              {{ source.version }}
+            </v-chip>
             <v-chip
               small
               outline
               color="orange darken-1"
               label
-              @mousedown.stop
               style="margin-left: 1px;"
-            >{{ source.id }}</v-chip>
+              @mousedown.stop
+            >
+              {{ source.id }}
+            </v-chip>
             <v-chip
               small
               outline
@@ -57,7 +86,9 @@
               color="lime"
               style="margin-left: 1px;"
               @mousedown.stop
-            >{{ source.type }}</v-chip>
+            >
+              {{ source.type }}
+            </v-chip>
 
             <v-chip
               v-for="(tag, index) in source.tags"
@@ -67,20 +98,29 @@
               label
               :color="getColor(tag)"
               style="margin-left: 1px;"
-              @mousedown.stop
               close
+              @mousedown.stop
               @input="onDeleteTag(tag)"
             >
               <div
                 contenteditable
                 class="max-w-50 overflow-auto"
                 @input.stop="onEditTag($event, index)"
-                @blur="source.tags = [...source.tags]"
-              >{{ tag }}</div>
+                @blur="$emit('tags', [...source.tags])"
+              >
+                {{ tag }}
+              </div>
             </v-chip>
-            <div style="color: #bdbdbd; ">{{ source.description }}</div>
+            <div style="color: #bdbdbd; ">
+              {{ source.description }}
+            </div>
           </div>
-          <v-flex :key="3" style="flex-grow: 0" @click.stop @mousedown.stop>
+          <v-flex
+            :key="3"
+            style="flex-grow: 0"
+            @click.stop
+            @mousedown.stop
+          >
             <v-switch v-model="enabled" />
           </v-flex>
         </transition-group>
@@ -99,14 +139,14 @@ import { useCompatible, useI18n, useInstanceVersionBase, useService, useTags } f
 import { getColor } from '/@/util/color'
 import { required } from '/@/util/props'
 import { ContextMenuItem, useContextMenu, useCurseforgeRoute, useMcWikiRoute } from '/@/windows/main/composables'
-import { BaseServiceKey } from '@xmcl/runtime-api'
-import { InstanceServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 
 export default defineComponent({
   props: {
     source: required<ModItem>(Object),
     selection: required<boolean>(Boolean),
   },
+  emits: ['tags'],
   setup(props, context) {
     const { minecraft, forge, fabricLoader } = useInstanceVersionBase()
     const { state: instanceState } = useService(InstanceServiceKey)
@@ -116,12 +156,12 @@ export default defineComponent({
     const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
     const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute()
     const { $t } = useI18n()
-    const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.source.tags, set(v) { props.source.tags = v } }))
+    const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.source.tags, set(v) { context.emit('tags', v) } }))
 
     const iconImage: Ref<HTMLImageElement | null> = ref(null)
     const enabled = computed({
       get() { return props.source.enabled },
-      set(v: boolean) { context.emit('enable', { item: props.source, enabled: v }) }
+      set(v: boolean) { context.emit('enable', { item: props.source, enabled: v }) },
     })
 
     const compatibleText = computed(() => {
@@ -160,7 +200,7 @@ export default defineComponent({
       e.dataTransfer!.setData('id', props.source.url)
       context.emit('dragstart', e)
     }
-    function onEditTag(event: InputEvent, index: number) {
+    function onEditTag(event: Event, index: number) {
       if (event.target instanceof HTMLDivElement) {
         editTag(event.target.innerText, index)
       }

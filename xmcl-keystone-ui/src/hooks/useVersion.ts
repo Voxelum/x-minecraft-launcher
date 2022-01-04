@@ -2,9 +2,7 @@ import { computed, onMounted, reactive, Ref, toRefs, watch } from '@vue/composit
 import { MinecraftVersion } from '@xmcl/installer'
 import { useBusy } from './useSemaphore'
 import { useService, useServiceOnly } from './useService'
-import { filterOptfineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, Status } from '@xmcl/runtime-api'
-import { InstallServiceKey } from '@xmcl/runtime-api'
-import { VersionServiceKey } from '@xmcl/runtime-api'
+import { filterOptfineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, Status, InstallServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
 import { isNonnull } from '@xmcl/runtime-api/utils'
 
 export function useVersions() {
@@ -56,7 +54,6 @@ export function useMinecraftVersions() {
   })
 
   const v = computed(() => installState.minecraft.versions.map(v => reactive({ ...v, status: computed(() => statuses.value[v.id]) })))
-
 
   onMounted(() => {
     refreshMinecraft()
@@ -159,7 +156,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
     const localForgeVersion: { [k: string]: boolean } = {}
     state.local.forEach((ver) => {
       const lib = ver.libraries.find(isForgeLibrary)
-      let version = lib?.version
+      const version = lib?.version
       if (version) {
         const parsedVersion = version.split('-')
         if (parsedVersion.length === 3) {

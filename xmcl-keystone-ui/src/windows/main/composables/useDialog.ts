@@ -5,7 +5,7 @@ import { injection } from '/@/util/inject'
 
 export const DIALOG_SYMBOL: InjectionKey<{ dialog: Ref<string>; parameter: Ref<any> }> = Symbol('ShowingDialog')
 export const DIALOG_LOGIN_SWITCH_USER: InjectionKey<Ref<boolean>> = Symbol('SwitchingUser')
-export const DIALOG_JAVA_ISSUE: InjectionKey<Ref<{ type: 'incompatible' | 'missing', version: JavaVersion }>> = Symbol('JavaIssue')
+export const DIALOG_JAVA_ISSUE: InjectionKey<Ref<{ type: 'incompatible' | 'missing'; version: JavaVersion }>> = Symbol('JavaIssue')
 
 export function useZipFilter() {
   const { $t } = useI18n()

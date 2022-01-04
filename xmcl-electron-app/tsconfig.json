@@ -11,8 +11,11 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "/@main/*": [
+      "@/*": [
         "./main/*"
+      ],
+      "/@shared/*": [
+        "../shared/*"
       ]
     },
     "esModuleInterop": true,

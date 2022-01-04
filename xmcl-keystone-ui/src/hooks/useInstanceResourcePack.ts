@@ -1,12 +1,11 @@
 import { computed, onMounted, ref, Ref, watch } from '@vue/composition-api'
 import { PackMeta } from '@xmcl/resourcepack'
-import { InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, isPersistedResource, PersistedResourcePackResource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, isPersistedResource, PersistedResourcePackResource, ResourceServiceKey, packFormatVersionRange } from '@xmcl/runtime-api'
 import { useI18n, useService } from '.'
 import { isStringArrayEquals } from '../util/equal'
 import { useBusy } from './useSemaphore'
 import unknownPack from '/@/assets/unknown_pack.png'
 import { basename } from '/@/util/basename'
-import { packFormatVersionRange } from '@xmcl/runtime-api'
 
 export interface ResourcePackItem extends PackMeta.Pack {
   /**

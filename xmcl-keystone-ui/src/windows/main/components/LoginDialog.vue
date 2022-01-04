@@ -11,6 +11,7 @@
       @drop="onDrop"
     >
       <v-flex
+        style="display: block;"
         text-xs-center
         pa-4
         class="green"
@@ -94,7 +95,7 @@
       >
         <v-flex
           text-xs-center
-          style="z-index: 1"
+          style="z-index: 1; display: block;"
         >
           <v-btn
             block
@@ -194,26 +195,23 @@ export default defineComponent({
       }
     }
 
-    onMounted(() => {
+    watch(logined, (l) => {
+      isShown.value = !l
+    })
+    watch(isShown, (s) => {
+      if (!s) { return }
       if (!logined.value) {
-        show()
+        selectProfile.value = true
       }
-      watch(logined, (l) => {
-        isShown.value = !l
-      })
-      watch(isShown, (s) => {
-        if (!s) { return }
-        if (!logined.value) {
-          selectProfile.value = true
-        }
+      if (s) {
         reset()
-      })
-      watch([authService, profileService], () => {
-        form.value.resetValidation()
-        if (authService.value !== profileService.value && profileService.value.value === '') {
-          profileService.value = profileServices.value.find(p => p === authService.value) ?? profileServices.value.find(p => p.value === 'mojang')!
-        }
-      })
+      }
+    })
+    watch([authService, profileService], () => {
+      form.value.resetValidation()
+      if (authService.value !== profileService.value && profileService.value.value === '') {
+        profileService.value = profileServices.value.find(p => p === authService.value) ?? profileServices.value.find(p => p.value === 'mojang')!
+      }
     })
 
     document.addEventListener('dragleave', (e) => {

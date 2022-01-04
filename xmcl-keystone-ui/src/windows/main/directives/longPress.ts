@@ -1,7 +1,7 @@
 import Vue from 'vue'
 
 Vue.directive('long-press', (el, binding) => {
-  let timeout: NodeJS.Timeout
+  let timeout: ReturnType<typeof setTimeout>
   el.addEventListener('mousedown', (e) => {
     timeout = setTimeout(() => {
       binding.value.call(undefined, e)

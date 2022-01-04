@@ -4,7 +4,7 @@
     :src="backgroundImage"
     class="absolute h-full w-full z-0"
     :style="{ filter: `blur(${blur}px)` }"
-  />
+  >
   <Particles
     v-else-if="backgroundType === BackgroundType.PARTICLE"
     color="#dedede"
@@ -12,7 +12,10 @@
     :style="{ filter: `blur(${blur}px)` }"
     :click-mode="particleMode"
   />
-  <Halo v-else-if="backgroundType === BackgroundType.HALO" :style="{ filter: `blur(${blur}px)` }" />
+  <Halo
+    v-else-if="backgroundType === BackgroundType.HALO"
+    :style="{ filter: `blur(${blur}px)` }"
+  />
   <!-- :style="{ 'pointer-events': onHomePage ? 'auto' : 'none' }" -->
 </template>
 <script lang="ts">
@@ -22,6 +25,7 @@ import { BackgroundType, useBackground } from '/@/hooks'
 import Particles from '/@/components/Particles.vue'
 
 export default defineComponent({
+  components: { Halo, Particles },
   setup() {
     const { blur, backgroundImage, backgroundType, particleMode } = useBackground()
     onMounted(() => {
@@ -37,16 +41,15 @@ export default defineComponent({
       //   }
       // })
       // app.value!.$el.classList.add(state.platform)
-    });
+    })
     return {
       BackgroundType,
       particleMode,
       backgroundImage,
       blur,
       backgroundType,
-    };
+    }
   },
-  components: { Halo, Particles }
 })
 
 </script>

@@ -19,7 +19,7 @@
     <v-chip
       label
       class="pointer"
-      :color="folder === 'unknown' ? 'orange' : 'green'"
+      :color="!localVersion.id ? 'orange' : 'green'"
       small
       :selected="false"
       @click="$router.push('/version-setting')"
@@ -33,7 +33,47 @@
           power
         </v-icon>
       </v-avatar>
-      {{ $tc('version.name', 2) }}: {{ folder === 'unknown' ? $t('version.notInstalled') : folder }}
+      {{ $tc('version.name', 2) }}: {{ !localVersion.id ? $t('version.notInstalled') : localVersion.id }}
+    </v-chip>
+    <v-chip
+      label
+      small
+      :selected="false"
+      @click.stop
+    >
+      <v-avatar>
+        <img
+          :src="minecraftPng"
+          alt="minecraft"
+        >
+      </v-avatar>
+      {{ version.minecraft }}
+    </v-chip>
+    <v-chip
+      v-if="version.forge"
+      small
+      label
+    >
+      <v-avatar>
+        <img
+          :src="forgePng"
+          alt="forge"
+        >
+      </v-avatar>
+      {{ version.forge }}
+    </v-chip>
+    <v-chip
+      v-if="version.fabricLoader"
+      small
+      label
+    >
+      <v-avatar>
+        <img
+          :src="fabricPng"
+          alt="fabric"
+        >
+      </v-avatar>
+      {{ version.fabricLoader }}
     </v-chip>
     <v-chip
       v-if="isServer"
@@ -71,6 +111,9 @@
 
 <script lang=ts>
 import { defineComponent } from '@vue/composition-api'
+import fabricPng from '/@/assets/fabric.png'
+import forgePng from '/@/assets/forge.png'
+import minecraftPng from '/@/assets/minecraft.png'
 import unknownServer from '/@/assets/unknown_server.png'
 import {
   useInstance,
@@ -81,17 +124,19 @@ import {
 export default defineComponent({
   setup() {
     const { runtime, name, author, isServer } = useInstance()
-    const { id, folder } = useInstanceVersion()
+    const { localVersion } = useInstanceVersion()
     const { status } = useInstanceServerStatus()
     return {
+      localVersion,
       version: runtime,
       name,
       author,
       isServer,
-      id,
-      folder,
       status,
       unknownServer,
+      forgePng,
+      minecraftPng,
+      fabricPng,
     }
   },
 })
