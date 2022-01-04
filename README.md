@@ -149,7 +149,7 @@ If you don't use VSCode to launch, it should close electron and reload automatic
 
 ### Found something wrong in launcher core
 
-The launcher core is in [seperated project](https://github.com/voxelum/minecraft-launcher-core-node) written in typescript. 
+The launcher core is in [separated project](https://github.com/voxelum/minecraft-launcher-core-node) written in typescript. 
 
 Please open issue there if you identify any issue related to it.
 

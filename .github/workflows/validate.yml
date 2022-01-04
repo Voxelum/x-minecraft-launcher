@@ -8,19 +8,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - uses: pnpm/action-setup@v2.0.1
+      with:
+        version: 6.24.4
     - name: Use Node.js 15
-      uses: actions/setup-node@v2-beta
+      uses: actions/setup-node@v2
       with:
         node-version: 15
-    - name: Use npm 7
-      run: npm install -g npm@7
+        cache: 'pnpm'
     - name: Install
       run: |
-        npm ci
-    - name: Lint
-      run: |
-        npm run lint
+        pnpm install
     - name: Build
       run: |
-        npm run build
+        pnpm run build --prefix xmcl-keystone-ui
+        pnpm run build --prefix xmcl-electron-app
 

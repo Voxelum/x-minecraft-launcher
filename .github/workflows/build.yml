@@ -5,12 +5,13 @@ on:
     branches:
       - master
     paths:
-      - 'build/**'
-      - 'scripts/*'
-      - 'src/**'
-      - 'static/**'
+      - 'xmcl-runtime/**'
+      - 'xmcl-runtime-api/**'
+      - 'xmcl-keystone-ui/**'
+      - 'xmcl-electron-app/**'
       - 'package.json'
-      - 'package-lock.json'
+      - 'pnpm-lock.yaml'
+      - '.github/**'
 
 jobs:
   build:
@@ -20,34 +21,28 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - uses: pnpm/action-setup@v2.0.1
+      with:
+        version: 6.24.4
     - name: Use Node.js 15
-      uses: actions/setup-node@v2-beta
+      uses: actions/setup-node@v2
       with:
         node-version: 15
-    - name: Use npm 7
-      run: npm install -g npm@7
-    - name: Get npm cache directory
-      id: npm-cache
-      run: |
-        echo "::set-output name=dir::$(npm config get cache)"
-    - uses: actions/cache@v1
-      with:
-        path: ${{ steps.npm-cache.outputs.dir }}
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+        cache: 'pnpm'
     - name: Install
-      run: |
-        npm ci
+      run: pnpm install
     - name: Get Build Number
       uses: ./.github/actions/get-build-number
       id: vars
-    - name: Lint
-      run: |
-        npm run lint
+    # - name: Lint
+    #   run: |
+    #     npm run lint
     - name: Build
       run: |
-        npm run build:production
+        pnpm run build --prefix xmcl-keystone-ui
+        pnpm run build:all --prefix xmcl-electron-app
       env:
         BUILD_NUMBER: ${{ steps.vars.outputs.build_number }}
         FULL_RELEASE: ${{ startsWith(github.event.commits[0].message, 'chore(release)') }}
@@ -56,16 +51,16 @@ jobs:
       with:
         name: build
         path: |
-          build/*.*
-          build/nsis-web/*.*
+          xmcl-electron-app/build/output/*.*
+          xmcl-electron-app/build/output/nsis-web/*.*
     - name: Upload Windows Asar
       if: ${{ runner.os == 'Windows' && startsWith(github.event.commits[0].message, 'chore(release)') }} 
       uses: actions/upload-artifact@v2
       with:
         name: build
         path: |
-          build/win-unpacked/resources/app.asar
-          build/win-unpacked/resources/app.asar.sha256
+          xmcl-electron-app/build/output/win-unpacked/resources/app.asar
+          xmcl-electron-app/build/output/win-unpacked/resources/app.asar.sha256
 
   repare-release:
     runs-on: ubuntu-latest
@@ -74,28 +69,27 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: recursive
     - name: Fetch All
       run: git fetch --prune --unshallow
+    - uses: pnpm/action-setup@v2.0.1
+      with:
+        version: 6.24.4
     - name: Use Node.js 15
-      uses: actions/setup-node@v2-beta
+      uses: actions/setup-node@v2
       with:
         node-version: 15
-    - name: Use npm 7
-      run: npm install -g npm@7
     - name: Install
       run: |
-        npm ci
-      env:
-        CI: true
+        pnpm install --filter ./.github/actions
     - name: Bump Version
       id: version
       uses: ./.github/actions/bump-version
-
     - name: Prepare Pull Reuqest
       if: ${{ steps.version.outputs.release == 'true' }}
       id: pr
       uses: ./.github/actions/prepare-pr
-
     - name: Create Pull Request
       if: ${{ steps.version.outputs.release == 'true' }}
       uses: peter-evans/create-pull-request@v3
@@ -114,21 +108,19 @@ jobs:
     needs: build
     steps:
     - uses: actions/checkout@v2
+      with:
+        submodules: recursive
     - name: Use Node.js 15
       uses: actions/setup-node@v2-beta
       with:
         node-version: 15
-    - name: Use npm 7
-      run: npm install -g npm@7
-    - uses: actions/cache@v1
+        cache: 'pnpm'
+    - uses: pnpm/action-setup@v2.0.1
       with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+        version: 6.24.4
     - name: Install
       run: |
-        npm ci
+        pnpm install
     - name: Download Build
       uses: actions/download-artifact@v2
       with:
@@ -157,7 +149,7 @@ jobs:
         asset_dir_path: ./build
     - name: Update the latest-version.js
       run: |
-        node --eval "console.log('const version = \"' + JSON.parse(require('fs').readFileSync('package.json').toString()).version + '\"')" > build/latest-version.js
+        node --eval "console.log('const version = \"' + JSON.parse(require('fs').readFileSync('./xmcl-electron-app/package.json').toString()).version + '\"')" > build/latest-version.js
     - name: Upload to Azure
       uses: ci010/upload-blob-to-azure@master
       env:

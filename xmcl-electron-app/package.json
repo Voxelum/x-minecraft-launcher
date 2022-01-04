@@ -15,7 +15,7 @@
     },
     "scripts": {
         "build": "cross-env NODE_ENV=development esbuild build.ts --bundle --platform=node --external:electron --external:electron-builder --external:esbuild --format=cjs | node",
-        "build:production": "cross-env BUILD_TARGET=production npm run build",
+        "build:all": "cross-env BUILD_TARGET=production npm run build",
         "build:dir": "cross-env BUILD_TARGET=dir npm run build",
         "check": "tsc --noEmit --project tsconfig.json",
         "dev": "cross-env NODE_ENV=development esbuild dev.ts --bundle --platform=node --external:electron --external:esbuild --format=cjs | node",
