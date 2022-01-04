@@ -6,7 +6,17 @@ import { Resource } from '../entities/resource.schema'
 import { parseVersion, VersionRange } from './mavenVersion'
 
 export type Compatible = 'maybe' | boolean
-export type DepsCompatible = Record<string, Compatible>
+export type DepsCompatible = Record<string, CompatibleDetail>
+
+export type CompatibleDetail = {
+  compatible: Compatible
+  /**
+   * Can be either semantic version or version range
+   */
+  requirements: string | string[]
+
+  version: string
+}
 
 function resolveCompatible(deps: Compatible[]) {
   const values = deps
@@ -21,27 +31,27 @@ function resolveCompatible(deps: Compatible[]) {
 
 export function isFabricModCompatible(resource: FabricResource, runtime: Instance['runtime']): Compatible {
   const result = getFabricModCompatibility(resource, runtime)
-  return resolveCompatible(Object.values(result))
+  return resolveCompatible(Object.values(result).map(v => v.compatible))
 }
 
 export function isForgeModCompatible(resource: ForgeResource, runtime: Instance['runtime']): Compatible {
   const result = getForgeModCompatibility(resource, runtime)
-  return resolveCompatible(Object.values(result).map(v => resolveCompatible(Object.values(v))))
+  return resolveCompatible(Object.values(result).map(v => resolveCompatible(Object.values(v).map(x => x.compatible))))
 }
 
-export function getFabricModCompatibility(resource: FabricResource, runtime: Instance['runtime']) {
+export function getFabricModCompatibility(resource: FabricResource, runtime: Instance['runtime']): Record<string, CompatibleDetail> {
   const versions: Record<string, string | undefined> = { minecraft: runtime.minecraft, fabricloader: runtime.fabricLoader }
   const compatibility: DepsCompatible = {}
   if (resource.metadata.depends) {
-    for (const [id, version] of Object.entries(resource.metadata.depends)) {
+    for (const [id, requirements] of Object.entries(resource.metadata.depends)) {
       let compatible: Compatible = 'maybe'
       const current = versions[id]
       if (current) {
-        if (typeof version === 'string') {
-          compatible = satisfies(runtime.minecraft, version)
-        } else if (version) {
-          for (const mc of version) {
-            if (satisfies(runtime.minecraft, mc)) {
+        if (typeof requirements === 'string') {
+          compatible = satisfies(current, requirements)
+        } else if (requirements) {
+          for (const v of requirements) {
+            if (satisfies(current, v)) {
               compatible = true
               break
             }
@@ -51,7 +61,11 @@ export function getFabricModCompatibility(resource: FabricResource, runtime: Ins
         // just ignore for now
         continue
       }
-      compatibility[id] = compatible
+      compatibility[id] = {
+        compatible,
+        requirements: requirements,
+        version: current,
+      }
     }
   }
   return compatibility
@@ -113,14 +127,20 @@ export function getForgeModCompatibility(resource: ForgeResource, runtime: Insta
       const current = versions[dep.modId]
       if (!current) {
         compatible = false
-      } else {
+      } else if (dep.versionRange) {
         const range = VersionRange.createFromVersionSpec(dep.versionRange)
         const currentVersion = parseVersion(current)
         if (range) {
           compatible = range.containsVersion(currentVersion)
         }
+      } else if (dep.semanticVersion) {
+        compatible = satisfies(current, dep.semanticVersion)
       }
-      compatibility[dep.modId] = compatible
+      compatibility[dep.modId] = {
+        compatible,
+        requirements: dep.versionRange || dep.semanticVersion || '',
+        version: current ?? '',
+      }
     }
     result[modid] = compatibility
   }

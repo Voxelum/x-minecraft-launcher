@@ -26,6 +26,7 @@ export class DiagnoseState {
     missingCustomSkinLoader: { fixing: false, autofix: true, optional: true, actived: [] },
     incompatibleJava: { fixing: false, autofix: false, optional: true, actived: [] },
     missingModsOnServer: { fixing: false, autofix: false, optional: false, actived: [] },
+    loaderConflict: { fixing: false, autofix: true, optional: false, actived: [] },
     badInstall: { fixing: false, autofix: true, optional: false, actived: [] },
 
     requireFabric: { fixing: false, autofix: false, optional: true, actived: [] },

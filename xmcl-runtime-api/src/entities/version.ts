@@ -135,30 +135,31 @@ export function isSameOptifineVersion(optifineVersion: string, version: string) 
 
 export function isVersionMatched(version: ResolvedVersion, runtime: RuntimeVersions) {
   // compute version
-  if (version.minecraftVersion !== runtime.minecraft) {
+  const { minecraft, forge, fabricLoader, optifine } = runtime
+  if (version.minecraftVersion !== minecraft) {
     return false
   }
-  if (runtime.forge) {
+  if (forge) {
     // require forge
     const lib = version.libraries.find(isForgeLibrary)
-    if (!lib || !isSameForgeVersion(runtime.forge, lib.version ?? '')) {
+    if (!lib || !isSameForgeVersion(forge, lib.version ?? '')) {
       // require forge but not forge
       return false
     }
   }
 
-  if (runtime.fabricLoader) {
+  if (fabricLoader) {
     // require fabric
     const lib = version.libraries.find(isFabricLoaderLibrary)
-    if (!lib || lib.version !== runtime.fabricLoader) {
+    if (!lib || lib.version !== fabricLoader) {
       return false
     }
   }
 
-  if (runtime.optifine) {
+  if (optifine) {
     // require optifine
     const lib = version.libraries.find(isOptifineLibrary)
-    if (!lib || !isSameOptifineVersion(runtime.optifine, lib.version ?? '')) {
+    if (!lib || !isSameOptifineVersion(optifine, lib.version ?? '')) {
       return false
     }
   }
@@ -167,19 +168,9 @@ export function isVersionMatched(version: ResolvedVersion, runtime: RuntimeVersi
 }
 
 export function getResolvedVersion(versions: ResolvedVersion[], runtime: RuntimeVersions, id: string): ResolvedVersion {
-  let localVersion: ResolvedVersion | undefined
-
-  localVersion = versions.find(v => v.id === id)
-  if (localVersion) {
-    return localVersion
-  }
-
-  localVersion = versions.find(ver => isVersionMatched(ver, runtime))
-  if (localVersion) {
-    return localVersion
-  }
-
-  return EMPTY_VERSION
+  const idMatched = versions.find(v => v.id === id)
+  const runtimeMatched = versions.find(ver => isVersionMatched(ver, runtime))
+  return idMatched || runtimeMatched || EMPTY_VERSION
 }
 
 export function getMinecraftVersionFormat(version: string): 'release' | 'snapshot' | 'beta' | 'alpha' | 'unknown' {
