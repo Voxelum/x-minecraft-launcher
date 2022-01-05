@@ -1,9 +1,8 @@
-import { Exceptions, ServiceKey, State } from '@xmcl/runtime-api'
+import { Exceptions, ServiceKey, State, MutationKeys } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { join } from 'path'
 import { EventEmitter } from 'stream'
 import LauncherApp from '../app/LauncherApp'
-import { MutationKeys } from '/@shared/state'
 
 export const PARAMS_SYMBOL = Symbol('service:params')
 export const KEYS_SYMBOL = Symbol('service:key')
