@@ -94,6 +94,10 @@
   "description": "简介",
   "detail": "细节",
   "diagnosis": {
+    "userNotLogined": {
+      "": "用户没有登陆",
+      "message": "点击登录 Minecraft"
+    },
     "badForge": {
       "": "Forge 安装可能失败 {minecraft}-{forge}",
       "message": "也许你应该尝试重新安装此版本 Forge"

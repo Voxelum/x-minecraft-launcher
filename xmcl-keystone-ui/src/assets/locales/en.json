@@ -92,6 +92,10 @@
   "description": "Description",
   "detail": "Detail",
   "diagnosis": {
+    "userNotLogined": {
+      "": "User is not logined",
+      "message": "Click to login."
+    },
     "badInstall": {
       "": "Bad Installation on {version}",
       "message": "Click to try to reinstall this version."

@@ -104,9 +104,6 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
       const instance = this.instanceService.state.instance
       const user = this.userService.state
       const gameProfile = user.gameProfile
-      if (user.user.accessToken === '' || gameProfile.name === '' || gameProfile.id === '') {
-        throw new Exception({ type: 'launchIllegalAuth' })
-      }
 
       const issues = this.diagnoseService.state.issues
       for (let problems = issues.filter(p => p.autofix), i = 0;
@@ -114,10 +111,6 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
         problems = issues.filter(p => p.autofix), i += 1) {
         await this.diagnoseService.fix(issues.filter(p => !p.optional && p.autofix))
       }
-
-      // if (!force && issues.some(p => !p.optional)) {
-      //   throw new Exception({ type: 'launchBlockedIssues', issues: issues.filter(p => !p.optional) })
-      // }
 
       if (this.state.status === 'ready') { // check if we have cancel (set to ready) this launch
         return false

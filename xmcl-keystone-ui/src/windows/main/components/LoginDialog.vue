@@ -129,16 +129,23 @@
 </template>
 
 <script lang=ts>
-import { reactive, computed, watch, toRefs, onMounted, ref, defineComponent, Ref, nextTick } from '@vue/composition-api'
-import { useLogin, useLoginValidation, useI18n, useService } from '/@/hooks'
+import { reactive, computed, watch, toRefs, onMounted, ref, defineComponent, Ref, nextTick, inject } from '@vue/composition-api'
+import { useLogin, useLoginValidation, useI18n, useService, IssueHandler } from '/@/hooks'
 import { useLoginDialog } from '../composables'
 import Hint from '/@/components/Hint.vue'
 import { BaseServiceKey, LoginException } from '@xmcl/runtime-api'
 
 export default defineComponent({
   components: { Hint },
-  setup(props, context) {
+  setup() {
     const { hide, isShown, show } = useLoginDialog()
+
+    // handle the not login issue
+    const issueHandler = inject(IssueHandler)
+    if (issueHandler) {
+      issueHandler.userNotLogined = show
+    }
+
     const { $te, $t } = useI18n()
     const inside = ref(false)
     const {
@@ -195,9 +202,6 @@ export default defineComponent({
       }
     }
 
-    watch(logined, (l) => {
-      isShown.value = !l
-    })
     watch(isShown, (s) => {
       if (!s) { return }
       if (!logined.value) {

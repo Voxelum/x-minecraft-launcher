@@ -14,7 +14,8 @@ import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
 import { createDynamicThrottle } from '../util/trafficAgent'
 import { fitMinecraftLauncherProfileData } from '../util/userData'
-import { ExportService, Singleton, StatefulService } from './Service'
+import DiagnoseService from './DiagnoseService'
+import { ExportService, Inject, Singleton, StatefulService } from './Service'
 import { requireNonnull, requireObject, requireString } from '/@shared/util/assert'
 
 export interface LauncherProfile {
@@ -95,7 +96,8 @@ export default class UserService extends StatefulService<UserState> implements I
 
   private userFile = new MappedFile<UserSchema>(this.getPath('user.json'), new BufferJsonSerializer(UserSchema))
 
-  constructor(app: LauncherApp) {
+  constructor(app: LauncherApp,
+    @Inject(DiagnoseService) private diagnoseService: DiagnoseService) {
     super(app)
     this.storeManager.subscribeAll([
       'userProfileAdd',
@@ -244,6 +246,10 @@ export default class UserService extends StatefulService<UserState> implements I
     } else {
       this.log(`Current user ${user.id} is not YggdrasilService. Skip to refresh credential.`)
     }
+
+    if (!this.state.isAccessTokenValid) {
+      this.diagnoseService.report({ userNotLogined: [{ authService: user.authService, account: user.username }] })
+    }
   }
 
   /**
@@ -381,7 +387,10 @@ export default class UserService extends StatefulService<UserState> implements I
    */
   @Singleton()
   async refreshUser() {
-    if (!this.state.isAccessTokenValid) return
+    if (!this.state.isAccessTokenValid) {
+      this.diagnoseService.report({ userNotLogined: [{ authService: this.state.user.authService, account: this.state.user.username }] })
+      return
+    }
     await this.refreshStatus().catch(_ => _)
   }
 
