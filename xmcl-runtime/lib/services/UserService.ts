@@ -2,7 +2,7 @@ import { DownloadTask } from '@xmcl/installer'
 import {
   Exception, GameProfileAndTexture, LoginMicrosoftOptions, LoginOptions,
   RefreshSkinOptions,
-  UploadSkinOptions, UserSchema, UserService as IUserService, UserServiceKey, UserState
+  UploadSkinOptions, UserSchema, UserService as IUserService, UserServiceKey, UserState,
 } from '@xmcl/runtime-api'
 import { requireNonnull, requireObject, requireString } from '@xmcl/runtime-api/utils'
 import { AUTH_API_MOJANG, checkLocation, GameProfile, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user'
