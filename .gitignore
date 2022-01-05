@@ -1,30 +1,17 @@
 .DS_Store
-*/dist/*
-dist/*
-dist/web/*
-dist/test/*
-dist/*.json
-dist/*.html
-build/*
-!build/icons
-!build/scripts
-!build/electron-publisher-custom.js
+*/dist/**/*
 coverage
 node_modules/
 npm-debug.log
 npm-debug.log.*
 thumbs.db
 !.gitkeep
-static/semantic
-/semantic
 *.lock
 *.log
 *.bin
 /temp
-/definitions
 
 nat-api
 p2p.network
-
 
 */build/output/*
