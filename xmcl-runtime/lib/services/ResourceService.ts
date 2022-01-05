@@ -1,5 +1,5 @@
 import { AnyPersistedResource, AnyResource, Exception, ImportResourceOptions, ImportResourcesOptions, isPersistedResource, ParseResourceOptions, ParseResourcesOptions, PersistedResource, Resource, ResourceDomain, ResourceService as IResourceService, ResourceServiceKey, ResourceState, ResourceType, UpdateResourceOptions } from '@xmcl/runtime-api'
-import { requireString } from '@xmcl/runtime-api/utils'
+import { requireString, resourceLoadSemaphore } from '@xmcl/runtime-api/utils'
 import { task } from '@xmcl/task'
 import { FSWatcher } from 'fs'
 import { readJSON, stat, unlink, writeFile } from 'fs-extra'
@@ -12,7 +12,6 @@ import { isSystemError } from '../util/error'
 import { copyPassively, ENOENT_ERROR, fileType, FileType, readdirEnsured } from '../util/fs'
 import { createPromiseSignal } from '../util/promiseSignal'
 import { ExportService, Singleton, StatefulService } from './Service'
-import { resourceLoadSemaphore } from '/@shared/util/semaphore'
 
 export interface ParseResourceContext {
   stat?: FileStat

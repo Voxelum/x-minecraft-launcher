@@ -1,4 +1,4 @@
-import { isNonnull } from '/@shared/util/assert'
+import { isNonnull } from '@xmcl/runtime-api/utils'
 
 export interface TsingHuaJreTarget {
   fileName: string

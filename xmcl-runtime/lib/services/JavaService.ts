@@ -1,6 +1,7 @@
 import { JavaVersion } from '@xmcl/core'
 import { DownloadTask, fetchJavaRuntimeManifest, installJavaRuntimesTask, parseJavaVersion, resolveJava, scanLocalJava, UnzipTask } from '@xmcl/installer'
 import { Java, JavaRecord, JavaSchema, JavaService as IJavaService, JavaServiceKey, JavaState } from '@xmcl/runtime-api'
+import { requireString } from '@xmcl/runtime-api/utils'
 import { task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { ensureFile, move, readdir, readFile, remove, unlink } from 'fs-extra'
@@ -13,7 +14,6 @@ import { BufferJsonSerializer } from '../util/serialize'
 import { unpack7z } from '../util/zip'
 import DiagnoseService from './DiagnoseService'
 import { ExportService, Inject, Singleton, StatefulService } from './Service'
-import { requireString } from '/@shared/util/assert'
 
 @ExportService(JavaServiceKey)
 export default class JavaService extends StatefulService<JavaState> implements IJavaService {
