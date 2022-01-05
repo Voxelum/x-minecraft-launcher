@@ -29,6 +29,8 @@ export class DiagnoseState {
     loaderConflict: { fixing: false, autofix: true, optional: false, actived: [] },
     badInstall: { fixing: false, autofix: true, optional: false, actived: [] },
 
+    userNotLogined: { fixing: false, autofix: false, optional: true, actived: [] },
+
     requireFabric: { fixing: false, autofix: false, optional: true, actived: [] },
     requireForge: { fixing: false, autofix: false, optional: true, actived: [] },
     requireFabricAPI: { fixing: false, autofix: false, optional: true, actived: [] },

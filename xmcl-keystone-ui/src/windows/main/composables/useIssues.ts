@@ -1,6 +1,5 @@
 import { provide } from '@vue/composition-api'
 import { useDialog } from '.'
-import { useJavaWizardDialog } from './useDialog'
 import { IssueHandler, useModResource, useRouter, useService } from '/@/hooks'
 import { Issue, IssueType, InstanceModsServiceKey, InstanceResourcePacksServiceKey } from '@xmcl/runtime-api'
 

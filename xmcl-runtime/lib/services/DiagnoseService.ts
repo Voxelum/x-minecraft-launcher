@@ -46,10 +46,6 @@ export default class DiagnoseService extends StatefulService<DiagnoseState> impl
     })
   }
 
-  registerMatchedFixRecheck(matched: string[], recheck: DiagnoseFunction = async () => { }) {
-
-  }
-
   // @Subscribe('instanceSelect')
   // async onInstanceSelect() {
   //   this.acquire('diagnose')

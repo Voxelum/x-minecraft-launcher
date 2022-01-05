@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col max-h-full select-none">
+  <div class="flex flex-col max-h-full select-none h-full">
     <div class="header-bar">
       <v-toolbar-title class="headline self-center pl-2">
         {{ $tc("mod.name", 2) }}

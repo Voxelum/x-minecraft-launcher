@@ -61,6 +61,8 @@ export interface IssueRegistries {
 
   loaderConflict: Registry<{ loaders: Array<'forge' | 'fabric' | 'liteloader'> }>
 
+  userNotLogined: Registry<{ authService: string; account: string }>
+
   badInstall: Registry<{ minecraft: string; version: string; installProfile: InstallProfile }>
 
   [id: string]: {
