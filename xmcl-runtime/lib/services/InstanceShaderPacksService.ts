@@ -1,12 +1,12 @@
-import { lstat, readdir, readlink, remove, symlink, unlink } from 'fs-extra'
+import { InstanceShaderPacksService as IInstanceShaderPacksServic, InstanceShaderPacksServiceKey, isPersistedResource, isShaderPackResource, ResourceDomain } from '@xmcl/runtime-api'
+import { lstat, readdir, readlink, remove, unlink } from 'fs-extra'
 import { join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { isSystemError } from '../util/error'
-import { ENOENT_ERROR } from '../util/fs'
+import { createSymbolicLink, ENOENT_ERROR } from '../util/fs'
 import InstanceService from './InstanceService'
 import ResourceService from './ResourceService'
 import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service'
-import { isPersistedResource, isShaderPackResource, ResourceDomain, InstanceShaderPacksService as IInstanceShaderPacksServic, InstanceShaderPacksServiceKey } from '@xmcl/runtime-api'
 
 @ExportService(InstanceShaderPacksServiceKey)
 export default class InstanceShaderPacksService extends AbstractService implements IInstanceShaderPacksServic {
@@ -74,7 +74,7 @@ export default class InstanceShaderPacksService extends AbstractService implemen
       }
     }
 
-    await symlink(srcPath, destPath, 'dir')
+    await createSymbolicLink(srcPath, destPath)
   }
 
   async showDirectory(): Promise<void> {
