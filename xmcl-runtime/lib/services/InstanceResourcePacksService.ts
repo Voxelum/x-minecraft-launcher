@@ -4,7 +4,7 @@ import { lstat, readdir, readlink, remove, symlink, unlink } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { isSystemError } from '../util/error'
-import { ENOENT_ERROR } from '../util/fs'
+import { createSymbolicLink, ENOENT_ERROR } from '../util/fs'
 import DiagnoseService from './DiagnoseService'
 import InstanceOptionsService from './InstanceOptionsService'
 import InstanceService from './InstanceService'
@@ -132,7 +132,7 @@ export default class InstanceResourcePackService extends AbstractService impleme
       }
     }
 
-    await symlink(srcPath, destPath, 'dir')
+    await createSymbolicLink(srcPath, destPath)
   }
 
   async showDirectory(): Promise<void> {

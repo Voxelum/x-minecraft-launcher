@@ -1,5 +1,5 @@
 import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder, Version } from '@xmcl/core'
-import { Exception, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
+import { EMPTY_VERSION, Exception, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
 import { ChildProcess } from 'child_process'
 import { EOL } from 'os'
 import LauncherApp from '../app/LauncherApp'
@@ -121,7 +121,7 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
       const minecraftFolder = new MinecraftFolder(instance.path)
 
       let version = this.instanceVersionService.state.instanceVersion
-      if (!version.id) {
+      if (version === EMPTY_VERSION) {
         throw new Exception({ type: 'launchNoVersionInstalled' })
       }
       version = await Version.parse(version.minecraftDirectory, version.id)
@@ -131,14 +131,20 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
       const javaPath = this.instanceJavaService.state.instanceJava.path || this.javaService.state.defaultJava.path
 
       await Promise.all([
-        this.instanceResourcePackService.link(),
-        this.instanceShaderPackService.link(),
+        this.instanceResourcePackService.link().catch((e) => {
+          this.error(`Fail to link resource pack ${instance.path}`)
+          this.error(e)
+        }),
+        this.instanceShaderPackService.link().catch((e) => {
+          this.error(`Fail to link shader pack ${instance.path}`)
+          this.error(e)
+        }),
       ])
       const useAuthLib = user.isThirdPartyAuthentication
 
       /**
-           * Build launch condition
-           */
+       * Build launch condition
+       */
       const option: LaunchOption = {
         gameProfile,
         accessToken: user.user.accessToken,
