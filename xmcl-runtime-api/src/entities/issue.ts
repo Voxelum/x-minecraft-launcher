@@ -48,7 +48,7 @@ export interface IssueRegistries {
   incompatibleResourcePack: Registry<{ name: string; actual: string; accepted: string }, false, true>
   incompatibleJava: Registry<{ java: string; type: string; version: string; targetVersion: JavaVersion }, false, true>
 
-  missingJava: Registry<{}>
+  missingJava: Registry<{ targetVersion: JavaVersion }>
   invalidJava: Registry<{ java: string }>
 
   missingAuthlibInjector: Registry<{}, true, true>
