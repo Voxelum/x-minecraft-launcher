@@ -112,6 +112,14 @@ export default class UserService extends StatefulService<UserState> implements I
     ], async () => {
       await this.userFile.write(this.state)
     })
+    this.storeManager.subscribeAll(['userProfileUpdate', 'userGameProfileSelect', 'userInvalidate'], async () => {
+      const user = this.state.user
+      if (!this.state.isAccessTokenValid) {
+        this.diagnoseService.report({ userNotLogined: [{ authService: user.authService, account: user.username }] })
+      } else {
+        this.diagnoseService.report({ userNotLogined: [] })
+      }
+    })
   }
 
   async initialize() {
@@ -194,7 +202,7 @@ export default class UserService extends StatefulService<UserState> implements I
   async submitChallenges(responses: MojangChallengeResponse[]) {
     if (!this.state.isAccessTokenValid) throw new Error('Cannot submit challenge if not logined')
     const user = this.state.user
-    if (user.authService !== 'mojang') throw new Error('Cannot sumit challenge if login mode is not mojang!')
+    if (user.authService !== 'mojang') throw new Error('Cannot submit challenge if login mode is not mojang!')
     if (!(responses instanceof Array)) throw new Error('Expect responses Array!')
     const result = await responseChallenges(user.accessToken, responses)
     this.state.userSecurity(true)
@@ -245,10 +253,6 @@ export default class UserService extends StatefulService<UserState> implements I
       }
     } else {
       this.log(`Current user ${user.id} is not YggdrasilService. Skip to refresh credential.`)
-    }
-
-    if (!this.state.isAccessTokenValid) {
-      this.diagnoseService.report({ userNotLogined: [{ authService: user.authService, account: user.username }] })
     }
   }
 
@@ -388,7 +392,6 @@ export default class UserService extends StatefulService<UserState> implements I
   @Singleton()
   async refreshUser() {
     if (!this.state.isAccessTokenValid) {
-      this.diagnoseService.report({ userNotLogined: [{ authService: this.state.user.authService, account: this.state.user.username }] })
       return
     }
     await this.refreshStatus().catch(_ => _)
