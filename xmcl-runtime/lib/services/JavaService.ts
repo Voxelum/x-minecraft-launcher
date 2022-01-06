@@ -1,7 +1,7 @@
 import { JavaVersion } from '@xmcl/core'
 import { DownloadTask, fetchJavaRuntimeManifest, installJavaRuntimesTask, parseJavaVersion, resolveJava, scanLocalJava, UnzipTask } from '@xmcl/installer'
-import { Java, JavaRecord, JavaSchema, JavaService as IJavaService, JavaServiceKey, JavaState } from '@xmcl/runtime-api'
-import { requireString } from '@xmcl/runtime-api/utils'
+import { IssueReport, Java, JavaRecord, JavaSchema, JavaService as IJavaService, JavaServiceKey, JavaState } from '@xmcl/runtime-api'
+import { requireObject, requireString } from '@xmcl/runtime-api/utils'
 import { task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { ensureFile, move, readdir, readFile, remove, unlink } from 'fs-extra'
@@ -26,8 +26,10 @@ export default class JavaService extends StatefulService<JavaState> implements I
     super(app)
 
     diagnoseService.registerMatchedFix(['missingJava'], (issue) => {
-      const version = (issue[0].parameters as any).targetVersion
-      this.installDefaultJava(version)
+      const missingJavaIssue = issue[0].parameters as any
+      if (missingJavaIssue.targetVersion) {
+        this.installDefaultJava(missingJavaIssue.targetVersion)
+      }
     })
   }
 
@@ -64,6 +66,8 @@ export default class JavaService extends StatefulService<JavaState> implements I
    */
   @Singleton()
   async installDefaultJava(target: JavaVersion) {
+    requireObject(target)
+
     const location = this.getInternalJavaLocation(target)
     this.log(`Try to install official java ${target} to ${location}`)
     // if (this.state.all.find(j => j.path === location)) {

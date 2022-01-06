@@ -79,10 +79,10 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
       }
 
       if (instanceJava === EMPTY_JAVA || this.javaService.state.missingJava) {
-        tree.missingJava.push({})
+        tree.missingJava.push({ targetVersion: resolvedVersion.javaVersion })
       } else if (!instanceJava.valid || await missing(instanceJava.path)) {
         if (this.javaService.state.all.length === 0) {
-          tree.missingJava.push({})
+          tree.missingJava.push({ targetVersion: resolvedVersion.javaVersion })
         } else {
           tree.invalidJava.push({ java: instanceJava.path })
         }
