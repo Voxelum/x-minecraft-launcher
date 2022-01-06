@@ -22,7 +22,7 @@ interface ServiceChannelEventMap {
   }
 }
 
-export type ProxyOfServcie<T> = Omit<T, 'state'> & {
+export type ProxyOfService<T> = Omit<T, 'state'> & {
   // TODO: implement the single service sync here
 }
 
@@ -38,5 +38,5 @@ export interface ServiceChannel extends GenericEventEmitter<ServiceChannelEventM
    *
    * @param serviceKey The service key
    */
-  createServiceProxy<T>(serviceKey: ServiceKey<T>, template: ServiceTemplate<T>, onTaskCreated?: ServiceCallTaskListener): ProxyOfServcie<T>
+  createServiceProxy<T>(serviceKey: ServiceKey<T>, template: ServiceTemplate<T>, onTaskCreated?: ServiceCallTaskListener): ProxyOfService<T>
 }

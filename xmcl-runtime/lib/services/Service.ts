@@ -64,7 +64,7 @@ export type MutexSerializer<T extends AbstractService> = (this: T, ...params: an
 export function ReadLock<T extends AbstractService>(key: (string | string[] | MutexSerializer<T>)) {
   return function (target: T, propertyKey: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value as Function
-    const func = function (this: T, ...args: any[]) {
+    descriptor.value = function readLockDecorator(this: T, ...args: any[]) {
       const keyOrKeys = typeof key === 'function' ? key.call(target, ...args) : key
       const keys = keyOrKeys instanceof Array ? keyOrKeys : [keyOrKeys]
       const promises: Promise<() => void>[] = []
@@ -85,13 +85,14 @@ export function ReadLock<T extends AbstractService>(key: (string | string[] | Mu
           return Promise.reject(e)
         }
       }
+      Object.defineProperty(exec, 'name', { value: `${method.name}$ReadLock$exec` })
       return Promise.all(promises).then((releases) => {
         return exec().finally(() => {
           releases.forEach(f => f())
         })
       })
     }
-    descriptor.value = func
+    Object.defineProperty(descriptor.value, 'name', { value: `${method.name}$ReadLock` })
   }
 }
 
@@ -101,7 +102,7 @@ export function ReadLock<T extends AbstractService>(key: (string | string[] | Mu
 export function Lock<T extends AbstractService>(key: (string | string[] | MutexSerializer<T>)) {
   return function (target: T, propertyKey: string, descriptor: PropertyDescriptor) {
     const method = descriptor.value as Function
-    const func = function (this: T, ...args: any[]) {
+    descriptor.value = function lockDecorated(this: T, ...args: any[]) {
       const keyOrKeys = typeof key === 'function' ? key.call(target, ...args) : key
       const keys = keyOrKeys instanceof Array ? keyOrKeys : [keyOrKeys]
       const promises: Promise<() => void>[] = []
@@ -121,13 +122,14 @@ export function Lock<T extends AbstractService>(key: (string | string[] | MutexS
           return Promise.reject(e)
         }
       }
+      Object.defineProperty(exec, 'name', { value: `${method.name}$Lock$exec` })
       return Promise.all(promises).then((releases) => {
         return exec().finally(() => {
           releases.forEach(f => f())
         })
       })
     }
-    descriptor.value = func
+    Object.defineProperty(descriptor.value, 'name', { value: `${method.name}$Lock` })
   }
 }
 
@@ -150,7 +152,7 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
     }
     const method = descriptor.value as Function
     const instances: Record<string, Promise<any> | undefined> = Reflect.get(target, InstanceSymbol)
-    const func = function (this: T, ...args: any[]) {
+    descriptor.value = function (this: T, ...args: any[]) {
       const targetKey = `${propertyKey}(${param.call(this, ...args)})`
       const exec = () => {
         try {
@@ -164,12 +166,14 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
           return Promise.reject(e)
         }
       }
+      Object.defineProperty(exec, 'name', { value: `${method.name}$Singleton$exec` })
       const last = instances[targetKey]
       if (last) {
         return last
       } else {
         this.log(`Acquire singleton ${targetKey}`)
         this.up(targetKey)
+
         instances[targetKey] = exec().finally(() => {
           this.log(`Release singleton ${targetKey}`)
           this.down(targetKey)
@@ -178,7 +182,7 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
         return instances[targetKey]
       }
     }
-    descriptor.value = func
+    Object.defineProperty(descriptor.value, 'name', { value: `${method.name}$Singleton` })
   }
 }
 
