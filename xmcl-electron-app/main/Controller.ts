@@ -15,6 +15,8 @@ import i18n from './locales'
 import { trackWindowSize } from './windowSizeTracker'
 import { IS_DEV } from '@/constant'
 import indexPreload from '/@preload/index'
+import setupPreload from '/@preload/setup'
+import loggerPreload from '/@preload/logger'
 import mainWinUrl from '/@renderer/index.html'
 import loggerWinUrl from '/@renderer/logger.html'
 import setupWinUrl from '/@renderer/setup.html'
@@ -183,7 +185,7 @@ export default class Controller implements LauncherAppController {
       maximizable: false,
       icon: iconPath,
       webPreferences: {
-        preload: indexPreload,
+        preload: loggerPreload,
         session: session.fromPartition('persist:logger'),
       },
     })
@@ -195,6 +197,13 @@ export default class Controller implements LauncherAppController {
     browser.show()
 
     this.loggerWin = browser
+  }
+
+  createCurseforgeWindow() {
+    const browser = new BrowserWindow({
+    })
+    browser.loadURL('https://www.curseforge.com/minecraft')
+    browser.show()
   }
 
   createSetupWindow() {
@@ -209,9 +218,7 @@ export default class Controller implements LauncherAppController {
       vibrancy: 'sidebar', // or popover
       icon: iconPath,
       webPreferences: {
-        // webSecurity: !IS_DEV, // disable security for loading local image
-        nodeIntegration: IS_DEV, // enable node for webpack in dev
-        preload: indexPreload,
+        preload: setupPreload,
         session: session.fromPartition('persist:setup'),
       },
     })
@@ -378,6 +385,7 @@ export default class Controller implements LauncherAppController {
 
   async engineReady() {
     await this.createMainWindow()
+    this.createCurseforgeWindow()
     // this.setupTray()
     this.setupTask()
 

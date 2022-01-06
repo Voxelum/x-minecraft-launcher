@@ -94,7 +94,9 @@
 import { defineComponent, reactive, toRefs, inject } from '@vue/composition-api'
 import { useWindowController, useI18n } from '/@/hooks'
 import { I18N_KEY } from '/@/constant'
-import { ipcRenderer } from 'electron'
+import { SetupAPI } from '@xmcl/runtime-api/setup'
+
+declare const api: SetupAPI
 
 export default defineComponent({
   setup() {
@@ -108,7 +110,7 @@ export default defineComponent({
       defaultPath: '',
       loading: false,
     })
-    ipcRenderer.invoke('preset').then(({ minecraftPath, defaultPath, locale }) => {
+    api.preset().then(({ minecraftPath, defaultPath, locale }) => {
       data.fetching = false
       i18n!.locale = locale
       data.minecraftPath = minecraftPath
@@ -116,7 +118,7 @@ export default defineComponent({
       data.defaultPath = defaultPath
     })
     function setup() {
-      ipcRenderer.invoke('setup', data.path)
+      api.setup(data.path)
       data.loading = true
     }
     async function browse() {

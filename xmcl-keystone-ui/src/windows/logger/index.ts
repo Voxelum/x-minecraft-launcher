@@ -1,30 +1,22 @@
-import VueCompositionApi, { h } from '@vue/composition-api'
-
+import VueCompositionApi, { createApp, h } from '@vue/composition-api'
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
 import colors from 'vuetify/es5/util/colors'
-// import 'vuetify/dist/vuetify.css';
+import Logger from './Logger.vue'
 import '/@/assets/google.font.css'
-
 import Vue from 'vue'
 
-import 'vuetify/dist/vuetify.min.css'
-import Vuetify from 'vuetify'
-import Logger from './Logger.vue'
-
-Vue.config.productionTip = false
-
 Vue.use(VueCompositionApi)
-Vue.use(Vuetify, {
+const app = createApp({
+  setup() {
+    return () => h(Logger)
+  },
+})
+app.use(Vuetify, {
   theme: {
     primary: colors.green,
     // secondary: colors.green,
     accent: colors.green.accent3,
   },
 })
-
-const vue = new Vue({
-  setup () {
-    return () => h(Logger)
-  },
-})
-
-vue.$mount('#app')
+app.mount('#app')
