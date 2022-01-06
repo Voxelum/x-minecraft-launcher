@@ -24,7 +24,7 @@ app.on('browser-window-created', (event, w) => {
 createServer((message, response) => {
   const url = message.url?.replace('http://localhost', 'xmcl://launcher')
   console.log(`Stub server receive open-url ${message.url} -> ${url}`)
-  app.emit('open-url', { preventDefault() {} }, url)
+  app.emit('open-url', { preventDefault() {} }, `xmcl://launcher${url}`)
   response.statusCode = 200
   response.end()
 }).listen(3001, () => {
