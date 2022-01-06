@@ -3,10 +3,12 @@ import { createHash } from 'crypto'
 import { fromFile } from 'file-type'
 import { FileExtension } from 'file-type/core'
 import filenamify from 'filenamify'
-import { access, constants, copy, copyFile, ensureDir, FSWatcher, link, readdir, stat, unlink, watch } from 'fs-extra'
+import { access, constants, copy, copyFile, ensureDir, FSWatcher, link, readdir, stat, symlink, unlink, watch } from 'fs-extra'
+import { platform } from 'os'
 import { extname, join, resolve } from 'path'
 import { pipeline } from 'stream'
 import { promisify } from 'util'
+import { isSystemError } from './error'
 
 const pip = promisify(pipeline)
 
@@ -63,6 +65,15 @@ export async function clearDirectoryNarrow(dir: string) {
       await unlink(join(dir, f))
     }
   }))
+}
+export async function createSymbolicLink(srcPath: string, destPath: string) {
+  try {
+    await symlink(srcPath, destPath, 'dir')
+  } catch (e) {
+    if (isSystemError(e) && e.code === EPERM_ERROR && platform() === 'win32') {
+      await symlink(srcPath, destPath, 'junction')
+    }
+  }
 }
 
 export class FileStateWatcher<T> {
