@@ -362,8 +362,8 @@ export default class Controller implements LauncherAppController {
   }
 
   async processFirstLaunch(): Promise<string> {
-    this.createSetupWindow()
     this.app.handle('preset', () => ({ locale: this.app.getLocale(), minecraftPath: this.app.minecraftDataPath, defaultPath: this.app.appDataPath }))
+    this.createSetupWindow()
 
     return new Promise<string>((resolve) => {
       const fallback = () => {
@@ -384,9 +384,10 @@ export default class Controller implements LauncherAppController {
   }
 
   async engineReady() {
+    await this.createSetupWindow()
     await this.createMainWindow()
-    this.createCurseforgeWindow()
-    // this.setupTray()
+    // this.createCurseforgeWindow()
+    this.setupTray()
     this.setupTask()
 
     this.app.storeManager.subscribe('localeSet', (l) => {

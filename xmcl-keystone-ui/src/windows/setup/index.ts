@@ -9,6 +9,7 @@ import colors from 'vuetify/es5/util/colors'
 import Setup from './Setup.vue'
 
 Vue.config.productionTip = false
+Vue.use(VueI18n)
 
 const i18n = new VueI18n({
   locale: 'en',
