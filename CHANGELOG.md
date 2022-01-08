@@ -8,6 +8,21 @@ All notable changes to this project will be documented in this file. See [standa
 
 
 
+
+
+## [0.15.1](https://github.com/voxelum/x-minecraft-launcher/compare/v0.15.0...v0.15.1)
+
+* chore: fix linting problem ([053d9bb](https://github.com/Voxelum/x-minecraft-launcher/commit/053d9bb))
+* fix: link resource & shader pack issue blocking launch ([0a0aac7](https://github.com/Voxelum/x-minecraft-launcher/commit/0a0aac7))
+* fix: log & setup window init ([216446c](https://github.com/Voxelum/x-minecraft-launcher/commit/216446c))
+* fix: missing java hint ([63a9c09](https://github.com/Voxelum/x-minecraft-launcher/commit/63a9c09))
+* fix: setup window setup ([f1b45b6](https://github.com/Voxelum/x-minecraft-launcher/commit/f1b45b6))
+* fix: user login status update ([6a13d3c](https://github.com/Voxelum/x-minecraft-launcher/commit/6a13d3c))
+* test: correct the dev auth url propagation ([2e12e5a](https://github.com/Voxelum/x-minecraft-launcher/commit/2e12e5a))
+* style: optimize log & lint ([6adc271](https://github.com/Voxelum/x-minecraft-launcher/commit/6adc271))
+* MERGE TO: fix shader pack ([eb276b2](https://github.com/Voxelum/x-minecraft-launcher/commit/eb276b2))
+
+
 ## [0.15.0](https://github.com/voxelum/x-minecraft-launcher/compare/v0.14.0...v0.15.0)
 
 * style: fix lint ([88db26f](https://github.com/Voxelum/x-minecraft-launcher/commit/88db26f))
