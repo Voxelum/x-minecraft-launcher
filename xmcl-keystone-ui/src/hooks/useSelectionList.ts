@@ -1,15 +1,15 @@
 import { onUnmounted, Ref, ref, watch, onMounted } from '@vue/composition-api'
 import { useResourceOperation } from './useResource'
 
-export function useProgressiveLoad () {
+export function useProgressiveLoad() {
   const buffer = ref(10)
-  function onItemVisibile (visible: boolean, index: number) {
+  function onItemVisibile(visible: boolean, index: number) {
     if (!visible) return
     if (buffer.value - index < 5) {
       buffer.value += 10
     }
   }
-  function filter (i: any, index: number) {
+  function filter(i: any, index: number) {
     return index < buffer.value
   }
   return {
@@ -21,12 +21,12 @@ export function useProgressiveLoad () {
 /**
  * Let a drop on the element import to resource
  */
-export function useDropImport (
+export function useDropImport(
   elem: Ref<HTMLElement | null | undefined>,
   importHint?: string,
 ) {
   const { importResource: importUnknownResource } = useResourceOperation()
-  function onDrop (event: DragEvent) {
+  function onDrop(event: DragEvent) {
     if (!event.dataTransfer) return
     event.preventDefault()
     const length = event.dataTransfer.files.length
@@ -52,11 +52,11 @@ export function useDropImport (
 /**
  * Let a drop on the element import to resource
  */
-export function useDropImportFile (
+export function useDropImportFile(
   elem: Ref<HTMLElement | null>,
   handler: (file: File) => void,
 ) {
-  function onDrop (event: DragEvent) {
+  function onDrop(event: DragEvent) {
     if (!event.dataTransfer) return
     event.preventDefault()
     const length = event.dataTransfer.files.length
@@ -78,14 +78,14 @@ export function useDropImportFile (
   })
 }
 
-export function useDragTransferItemMutable (elem: Ref<HTMLElement>, item: Ref<{ id: string; side: string }>) {
+export function useDragTransferItemMutable(elem: Ref<HTMLElement>, item: Ref<{ id: string; side: string }>) {
   let memo: HTMLElement
-  function onDragStart (e: DragEvent) {
+  function onDragStart(e: DragEvent) {
     e.dataTransfer!.effectAllowed = 'move'
     e.dataTransfer!.setData('side', item.value.side)
     e.dataTransfer!.setData('id', item.value.id)
   }
-  function setup () {
+  function setup() {
     const element = elem.value
     if (element) {
       memo = element
@@ -103,9 +103,9 @@ export function useDragTransferItemMutable (elem: Ref<HTMLElement>, item: Ref<{ 
   })
 }
 
-export function useDragTransferItem (elem: Ref<HTMLElement>, id: string, side: string) {
+export function useDragTransferItem(elem: Ref<HTMLElement>, id: string, side: string) {
   let memo: HTMLElement
-  function onDragStart (e: DragEvent) {
+  function onDragStart(e: DragEvent) {
     e.dataTransfer!.setData('side', side)
     e.dataTransfer!.setData('id', id)
   }
@@ -125,7 +125,8 @@ export function useDragTransferItem (elem: Ref<HTMLElement>, id: string, side: s
   })
 }
 
-function findIntersectElement (y: number, all: HTMLCollectionOf<Element>) {
+// eslint-disable-next-line no-undef
+function findIntersectElement(y: number, all: HTMLCollectionOf<Element>) {
   for (let i = 0; i < all.length; ++i) {
     const elem = all.item(i)
     if (!elem) continue
@@ -137,14 +138,14 @@ function findIntersectElement (y: number, all: HTMLCollectionOf<Element>) {
   return null
 }
 
-export function useDragTransferList (
+export function useDragTransferList(
   left: Ref<null | HTMLElement>,
   right: Ref<null | HTMLElement>,
   insert: (from: string, to: string) => void,
   add: (id: string, to?: string) => void,
   remove: (id: string) => void,
 ) {
-  function handleDrop (event: DragEvent, left: boolean) {
+  function handleDrop(event: DragEvent, left: boolean) {
     event.preventDefault()
     if (!event.dataTransfer) return
     const side = event.dataTransfer.getData('side')
@@ -169,13 +170,13 @@ export function useDragTransferList (
     }
   }
 
-  function onMouseWheel (event: Event) { event.stopPropagation(); return true }
-  function onDragOver (event: Event) {
+  function onMouseWheel(event: Event) { event.stopPropagation(); return true }
+  function onDragOver(event: Event) {
     event.preventDefault()
     return false
   }
-  function onDropLeft (event: DragEvent) { return handleDrop(event, true) }
-  function onDropRight (event: DragEvent) { return handleDrop(event, false) }
+  function onDropLeft(event: DragEvent) { return handleDrop(event, true) }
+  function onDropRight(event: DragEvent) { return handleDrop(event, false) }
 
   let leftRef: any
   let rightRef: any
