@@ -98,9 +98,9 @@
       "": "用户没有登陆",
       "message": "点击登录 Minecraft"
     },
-    "badForge": {
-      "": "Forge 安装可能失败 {minecraft}-{forge}",
-      "message": "也许你应该尝试重新安装此版本 Forge"
+    "badInstall": {
+      "": "版本安装失败 {version}",
+      "message": "也许你应该尝试重新安装此版本"
     },
     "badForgeProcessedFiles": {
       "": "Forge 需要生成文件才能启动 {jar}",
@@ -350,6 +350,10 @@
   "hotkeyChanges": "按键设置",
   "importResource": "导入资源",
   "importSave": "导入存档",
+  "installByProfile": {
+    "": "通过安装配置文件",
+    "postProcessing": "后处理，更新本地文件"
+  },
   "installAssets": {
     "": "下载游戏资源文件",
     "asset": "下载资源文件%{hash}",
