@@ -2,48 +2,54 @@
   <v-app
     ref="app"
     dark
-    style="background: transparent; overflow: hidden"
+    class="bg-[#424242] flex flex-col overflow-auto h-full"
   >
-    <universal-drop-view />
-    <v-container
-      v-if="loading"
-      color="primary"
-      align-center
-      justify-center
-      class="loading-background"
-      style="position: absolute; width: 100%; height: 100%;"
-    />
-    <v-layout
-      v-else
-      fill-height
+    <div
+      topbar
+      class="flex w-full moveable bg-[#424242] p-0 flex-grow-0"
     >
-      <side-bar :go-back="goBack" />
-      <v-layout
-        style="padding: 0; background: transparent; max-height: 100vh;"
-        fill-height
-      >
-        <div
-          class="main-body v-sheet"
-          :class="{ solid: !blurMainBody }"
+      <span class="p-0 flex flex-shrink flex-grow-0">
+        <v-icon
+          v-ripple
+          dark
+          small
+          class="flex items-center py-2 hover:bg-[rgba(255,255,255,0.2)] cursor-pointer select-none non-moveable"
+          style="width: 80px;"
+          @click="goBack"
         >
-          <background />
-          <transition
-            name="fade-transition"
-            mode="out-in"
-          >
-            <router-view />
-          </transition>
-        </div>
-      </v-layout>
-      <context-menu />
-      <search-bar />
-      <notifier />
-      <login-dialog />
-      <task-dialog />
-      <launch-status-dialog />
-      <java-fixer-dialog />
-      <add-instance-dialog />
-    </v-layout>
+          arrow_back
+        </v-icon>
+      </span>
+      <div class="flex-grow " />
+      <top-window-controls />
+    </div>
+    <div
+      class="flex flex-grow h-full overflow-auto relative"
+    >
+      <side-bar />
+      <div
+        class="flex top-0 bottom-0 right-0 overflow-auto max-h-full absolute"
+        style="left: 80px;"
+        :class="{ solid: !blurMainBody }"
+      >
+        <background />
+        <transition
+          name="fade-transition"
+          mode="out-in"
+        >
+          <router-view />
+        </transition>
+      </div>
+    </div>
+    <universal-drop-view />
+    <context-menu />
+    <search-bar />
+    <notifier />
+    <login-dialog />
+    <task-dialog />
+    <launch-status-dialog />
+    <java-fixer-dialog />
+    <add-instance-dialog />
   </v-app>
 </template>
 
@@ -62,6 +68,7 @@ import Notifier from './components/Notifier.vue'
 import SearchBar from './components/SearchBar.vue'
 import SideBar from './components/SideBar.vue'
 import TaskDialog from './components/TaskDialog.vue'
+import TopWindowControls from './components/TopWindowControls.vue'
 import UniversalDropView from './components/UniversalDropView.vue'
 import { provideContextMenu, provideDialog, provideIssueHandler, provideNotifier, provideSearch } from './composables'
 import { TASK_MANAGER, useTaskManager } from './provideTaskProxy'
@@ -75,7 +82,7 @@ import { SYNCABLE_KEY } from '/@/hooks/useSyncable'
 import { injection } from '/@/util/inject'
 
 export default defineComponent({
-  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaFixerDialog, Background, Notifier, ContextMenu, SearchBar, UniversalDropView, SideBar, AddInstanceDialog },
+  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaFixerDialog, Background, Notifier, ContextMenu, SearchBar, UniversalDropView, SideBar, AddInstanceDialog, TopWindowControls },
   setup() {
     provideDialog()
     provideNotifier()
@@ -143,9 +150,4 @@ img {
 </style>
 
 <style scoped=true>
-.main-body {
-  /* min-width: 720px; */
-  width: 100%;
-  border-radius: 0px 2px 2px 0;
-}
 </style>

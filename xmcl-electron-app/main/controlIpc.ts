@@ -13,7 +13,11 @@ ipcMain.handle('control', (event, operation: Operation) => {
     switch (operation) {
       case Operation.Maximize:
         if (window.maximizable) {
-          window.maximize()
+          if (!window.isMaximized()) {
+            window.maximize()
+          } else {
+            window.unmaximize()
+          }
           return true
         }
         return false

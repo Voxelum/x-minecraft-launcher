@@ -1,6 +1,6 @@
 <template>
   <div
-    class="display-1 white--text"
+    class="display-1 white--text flex w-full align-baseline h-auto"
   >
     <span style="margin-right: 10px;">{{ name || `Minecraft ${version.minecraft}` }}</span>
     <v-chip

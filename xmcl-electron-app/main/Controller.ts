@@ -133,11 +133,10 @@ export default class Controller implements LauncherAppController {
       minHeight: 580,
       width: config.width > 0 ? config.width : undefined,
       height: config.height > 0 ? config.height : undefined,
-      resizable: true,
       frame: false,
-      transparent: true,
-      hasShadow: false,
       maximizable: true,
+      backgroundColor: '0x424242',
+      fullscreenable: true,
       vibrancy: 'sidebar', // or popover
       icon: iconPath,
       webPreferences: {
@@ -384,7 +383,6 @@ export default class Controller implements LauncherAppController {
   }
 
   async engineReady() {
-    await this.createSetupWindow()
     await this.createMainWindow()
     // this.createCurseforgeWindow()
     this.setupTray()

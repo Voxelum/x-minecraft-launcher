@@ -8,7 +8,6 @@
   >
     <v-btn
       slot="activator"
-      style="position: absolute; left: 200px; bottom: 10px; "
       :loading="refreshing"
       :flat="issues.length !== 0"
       outline

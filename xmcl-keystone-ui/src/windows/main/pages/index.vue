@@ -1,79 +1,11 @@
 <template>
-  <v-layout
-    class="home-page"
-    row
-    wrap
+  <div
+    class="flex flex-col home-page flex-1 min-h-0"
   >
-    <v-icon
-      v-ripple
-      class="exit-button"
-      dark
-      @click="quit()"
-    >
-      close
-    </v-icon>
-    <v-icon
-      v-ripple
-      style="
-        position: absolute;
-        right: 44px;
-        top: 0;
-        z-index: 2;
-        margin: 0;
-        padding: 10px;
-        cursor: pointer;
-        border-radius: 2px;
-        user-select: none;
-      "
-      dark
-      @click="minimize()"
-    >
-      minimize
-    </v-icon>
-    <v-icon
-      v-ripple
-      style="
-        position: absolute;
-        right: 88px;
-        top: 0;
-        z-index: 2;
-        margin: 0;
-        padding: 10px;
-        cursor: pointer;
-        border-radius: 2px;
-        user-select: none;
-      "
-      dark
-      @click="showFeedbackDialog"
-    >
-      help_outline
-    </v-icon>
-    <v-icon
-      v-ripple
-      style="
-        position: absolute;
-        right: 132px;
-        top: 0;
-        z-index: 2;
-        margin: 0;
-        padding: 10px;
-        cursor: pointer;
-        border-radius: 2px;
-        user-select: none;
-      "
-      dark
-      @click="showInstanceFolder"
-    >
-      folder
-    </v-icon>
-
-    <v-flex
-      d-flex
-      xs12
-      style="z-index: 1; padding-top: 50px; padding-left: 50px"
-    >
-      <home-header />
-    </v-flex>
+    <home-header
+      header
+      class="pt-10 pl-10"
+    />
 
     <v-flex
       v-if="isServer"
@@ -84,32 +16,50 @@
       <server-status-bar />
     </v-flex>
 
-    <settings-speed-dial :refreshing="refreshing" />
+    <div class="flex absolute left-0 bottom-0 px-[20px] pb-[10px] gap-[4px]">
+      <settings-speed-dial :refreshing="refreshing" />
 
-    <export-speed-dial
-      :refreshing="refreshing"
-      @show="showExport"
-    />
+      <export-speed-dial
+        :refreshing="refreshing"
+        @show="showExport"
+      />
 
-    <v-tooltip top>
-      <template #activator="{ on }">
-        <v-btn
-          style="position: absolute; left: 140px; bottom: 10px"
-          flat
-          icon
-          dark
-          v-on="on"
-          @click="showLogDialog"
-        >
-          <v-icon dark>
-            subtitles
-          </v-icon>
-        </v-btn>
-      </template>
-      {{ $t("profile.logsCrashes.title") }}
-    </v-tooltip>
+      <v-tooltip top>
+        <template #activator="{ on }">
+          <v-btn
+            flat
+            icon
+            dark
+            v-on="on"
+            @click="showLogDialog"
+          >
+            <v-icon dark>
+              subtitles
+            </v-icon>
+          </v-btn>
+        </template>
+        {{ $t("profile.logsCrashes.title") }}
+      </v-tooltip>
 
-    <problems-bar />
+      <v-tooltip top>
+        <template #activator="{ on }">
+          <v-btn
+            flat
+            icon
+            dark
+            v-on="on"
+            @click="showInstanceFolder"
+          >
+            <v-icon dark>
+              folder
+            </v-icon>
+          </v-btn>
+        </template>
+        {{ $t("profile.showInstance") }}
+      </v-tooltip>
+
+      <problems-bar />
+    </div>
 
     <!-- <v-speed-dial
       class="launch-speed-dial"
@@ -192,7 +142,7 @@
       "
     />
     <launch-blocked-dialog />
-  </v-layout>
+  </div>
 </template>
 
 <script lang=ts>
@@ -260,11 +210,13 @@ export default defineComponent({
   setup() {
     const { showSaveDialog, minimize } = useWindowController()
     const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useDialog('log')
-    const { show: showFeedbackDialog } = useDialog('feedback')
     const { refreshing, name, isServer, path } = useInstance()
     const { refresh } = useInstanceServerStatus(path.value)
     const { openDirectory } = useService(BaseServiceKey)
     const { quit } = useQuit()
+    function showInstanceFolder() {
+      openDirectory(path.value)
+    }
     const isExportingCurseforge = ref(false)
     const isExportingModpack = ref(false)
     async function showExport(type: 'normal' | 'curseforge') {
@@ -273,9 +225,6 @@ export default defineComponent({
       } else {
         isExportingModpack.value = true
       }
-    }
-    function showInstanceFolder() {
-      openDirectory(path.value)
     }
 
     onMounted(() => {
@@ -287,12 +236,12 @@ export default defineComponent({
     return {
       isServer,
       refreshing,
-      showFeedbackDialog,
       quit,
       minimize,
 
       isExportingCurseforge,
       isExportingModpack,
+      showInstanceFolder,
 
       ...setupLaunch(),
 
@@ -301,7 +250,6 @@ export default defineComponent({
       hideLogDialog,
 
       showExport,
-      showInstanceFolder,
     }
   },
 })
@@ -378,9 +326,9 @@ export default defineComponent({
   min-width: 159px;
 }
 .home-page .more-button {
-  position: absolute;
-  left: 20px;
-  bottom: 10px;
+  /* position: absolute; */
+  /* left: 20px; */
+  /* bottom: 10px; */
   -webkit-user-drag: none;
 }
 </style>

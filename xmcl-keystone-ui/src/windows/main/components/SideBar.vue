@@ -4,31 +4,14 @@
     :mini-variant="true"
     stateless
     dark
-    style="border-radius: 2px 0 0 2px;"
+    style="border-radius: 2px 0 0 2px; height: unset;"
     class="moveable sidebar"
   >
-    <v-toolbar
-      flat
-      class="transparent"
-    >
-      <v-list class="pa-0 non-moveable">
-        <v-list-tile
-          avatar
-          @click="goBack"
-        >
-          <v-list-tile-avatar>
-            <v-icon dark>
-              arrow_back
-            </v-icon>
-          </v-list-tile-avatar>
-        </v-list-tile>
-      </v-list>
-    </v-toolbar>
-    <v-list class="non-moveable">
-      <v-divider
+    <v-list class="non-moveable p-0">
+      <!-- <v-divider
         dark
         style="display: block !important;"
-      />
+      /> -->
       <v-list-tile
         push
         to="/"
@@ -135,12 +118,8 @@ import {
   useTaskCount,
   useUpdateInfo,
 } from '/@/hooks'
-import { required } from '/@/util/props'
 
 export default defineComponent({
-  props: {
-    goBack: required<() => void>(Function),
-  },
   setup() {
     const { count } = useTaskCount()
     const { show } = useDialog('task')

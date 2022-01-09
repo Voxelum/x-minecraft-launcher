@@ -618,6 +618,7 @@
     "localVersion": "本地版本",
     "localVersionEmpty": "自动生成",
     "localVersionHint": "选择本地版本会覆盖Minecraft版本的设置",
+    "showInstance": "显示文件夹",
     "logsCrashes": {
       "crashes": "崩溃报告",
       "logs": "日志",
