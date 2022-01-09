@@ -367,6 +367,10 @@
   "hotkeyChanges": "Hotkey Changes",
   "importResource": "Import Resource",
   "importSave": "Import Save",
+  "installByProfile": {
+    "": "Install by Install Profile",
+    "postProcessing": "Post Processing"
+  },
   "installAssets": {
     "": "Install Asset Files",
     "asset": "Install Asset {hash}",
