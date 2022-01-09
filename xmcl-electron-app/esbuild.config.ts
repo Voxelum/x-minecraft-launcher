@@ -5,6 +5,7 @@ import pluginWorker from './plugins/esbuild.worker.plugin'
 import pluginVueDevtools from './plugins/esbuild.devtool.plugin'
 import pluginNode from './plugins/esbuild.node.plugin'
 import plugin7Zip from './plugins/esbuild.7zipbin.plugin'
+import pluginStatic from './plugins/esbuild.static.plugin'
 // import { external } from './package.json'
 import { BuildOptions } from 'esbuild'
 
@@ -26,6 +27,7 @@ const config: BuildOptions = {
     '.cs': 'file',
   },
   plugins: [
+    pluginStatic(),
     pluginPreload(path.resolve(__dirname, './preload')),
     pluginRenderer(),
     pluginVueDevtools(path.resolve(__dirname, '../extensions')),
