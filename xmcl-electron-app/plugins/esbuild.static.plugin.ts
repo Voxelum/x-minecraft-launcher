@@ -13,21 +13,21 @@ export default function createStaticPlugin(): Plugin {
           return ({
             path: path.substring(0, path.length - '.static'.length),
             pluginData: { resolveDir },
-            namespace: 'static'
+            namespace: 'static',
           })
         })
         build.onLoad({ filter: /^.+$/g, namespace: 'static' }, async ({ path, pluginData: { resolveDir } }) => {
           return ({
             contents: await readFile(path),
             resolveDir: resolveDir,
-            loader: 'file'
+            loader: 'file',
           })
         })
         build.onResolve({ filter: /^.+\.png$/g }, async ({ path, resolveDir }) => {
           return ({
             path: path + '?static',
             namespace: 'pre-static',
-            pluginData: { resolveDir }
+            pluginData: { resolveDir },
           })
         })
         build.onLoad({ filter: /^.+\?static$/g, namespace: 'pre-static' }, async ({ path, pluginData: { resolveDir } }) => {
