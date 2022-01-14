@@ -52,7 +52,6 @@
         "builtin-modules": "^3.2.0",
         "chalk": "^4.1.2",
         "cross-env": "^5.2.1",
-        "cypress": "^9.2.0",
         "electron": "^15.0.2",
         "electron-builder": "^22.14.5",
         "electron-devtools-installer": "^3.2.0",
