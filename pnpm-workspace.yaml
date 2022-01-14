@@ -4,4 +4,5 @@ packages:
   - 'xmcl-runtime-api'
   - 'xmcl-runtime'
   - 'xmcl-keystone-ui'
+  - 'xmcl-page'
   - '.github/actions/**'
