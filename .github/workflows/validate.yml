@@ -20,7 +20,7 @@ jobs:
         cache: 'pnpm'
     - name: Install
       run: |
-        pnpm install
+        pnpm install --filter=!./xmcl-page
     - name: Check
       run: |
         pnpm run --filter ./xmcl-electron-app lint
