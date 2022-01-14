@@ -42,7 +42,7 @@ jobs:
         pnpm run build:all --prefix xmcl-electron-app
       env:
         BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
-        FULL_RELEASE: ${{ startsWith(github.event.commits[0].message, 'chore(release)') }}
+        FULL_RELEASE: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
     - name: Upload Build
       uses: actions/upload-artifact@v2
       with:
@@ -51,7 +51,7 @@ jobs:
           xmcl-electron-app/build/output/*.*
           xmcl-electron-app/build/output/nsis-web/*.*
     - name: Upload Windows Asar
-      if: ${{ runner.os == 'Windows' && startsWith(github.event.commits[0].message, 'chore(release)') }} 
+      if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }} 
       uses: actions/upload-artifact@v2
       with:
         name: build
@@ -62,7 +62,7 @@ jobs:
   repare-release:
     runs-on: ubuntu-latest
     needs: build
-    if: ${{ !startsWith(github.event.commits[0].message, 'chore(release)') }}
+    if: ${{ !startsWith(github.event.head_commit.message, 'chore(release)') }}
 
     steps:
     - uses: actions/checkout@v2
@@ -105,7 +105,7 @@ jobs:
         branch: prepare-release
 
   release:
-    if: startsWith(github.event.commits[0].message, 'chore(release)')
+    if: startsWith(github.event.head_commit.message, 'chore(release)')
     runs-on: ubuntu-latest
     needs: build
     steps:
