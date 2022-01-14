@@ -1,5 +1,5 @@
 import { basename } from 'path'
-import { cleanUrl } from './util.js'
+import { cleanUrl } from './util'
 import { Plugin } from 'esbuild'
 
 /**

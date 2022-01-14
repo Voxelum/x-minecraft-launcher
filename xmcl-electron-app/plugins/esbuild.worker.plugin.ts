@@ -1,6 +1,6 @@
 import { build as esbuild, Plugin } from 'esbuild'
 import { join, resolve } from 'path'
-import { cleanUrl } from './util.js'
+import { cleanUrl } from './util'
 
 /**
  * Resolve ?worker import to the function creating the worker object
