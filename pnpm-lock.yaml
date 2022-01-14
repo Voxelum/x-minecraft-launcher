@@ -9,19 +9,37 @@ importers:
     specifiers:
       '@actions/core': 1.2.4
     dependencies:
-      '@actions/core': 1.2.4
+      '@actions/core': link:../prepare-release/node_modules/@actions/core
+
+  .github/actions/generate-mcbbs-content/node_modules/@actions/core:
+    specifiers:
+      '@types/node': ^12.0.2
+    devDependencies:
+      '@types/node': 12.20.41
 
   .github/actions/get-build-number:
     specifiers:
       '@actions/core': 1.2.4
     dependencies:
-      '@actions/core': 1.2.4
+      '@actions/core': link:../prepare-release/node_modules/@actions/core
+
+  .github/actions/get-build-number/node_modules/@actions/core:
+    specifiers:
+      '@types/node': ^12.0.2
+    devDependencies:
+      '@types/node': 12.20.41
 
   .github/actions/prepare-release:
     specifiers:
       '@actions/core': 1.2.4
     dependencies:
-      '@actions/core': 1.2.4
+      '@actions/core': link:node_modules/@actions/core
+
+  .github/actions/prepare-release/node_modules/@actions/core:
+    specifiers:
+      '@types/node': ^12.0.2
+    devDependencies:
+      '@types/node': 12.20.41
 
   xmcl-electron-app:
     specifiers:
@@ -714,10 +732,6 @@ packages:
     resolution: {integrity: sha512-xiK95rSNr6cXB7UXVLJdrxtNrlXBqZrMhcKlq0S5Rsg6vVhh+9OSUyQIba8bSAGgHjpETlWXAYEuVfxYGEfCWA==}
     dependencies:
       7zip-bin: 5.1.1
-    dev: false
-
-  /@actions/core/1.2.4:
-    resolution: {integrity: sha512-YJCEq8BE3CdN8+7HPZ/4DxJjk/OkZV2FFIf+DlZTC/4iBlzYCD5yjRR6eiOS5llO11zbRltIRuKAjMKaWTE6cg==}
     dev: false
 
   /@antfu/utils/0.3.0:
@@ -3903,6 +3917,7 @@ packages:
   /assert-plus/1.0.0:
     resolution: {integrity: sha1-8S4PPF13sLHN2RRpQuTpbB5N1SU=}
     engines: {node: '>=0.8'}
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -4500,6 +4515,7 @@ packages:
 
   /base64-js/1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
+    requiresBuild: true
 
   /base64id/2.0.0:
     resolution: {integrity: sha512-lGe34o6EHj9y3Kts9R4ZYs/Gr+6N7MCaMlIFA3F1R2O5/m7K06AxfSeO5530PEERE6/WyEg3lsuyw4GHlPZHog==}
@@ -4863,6 +4879,7 @@ packages:
   /cli-truncate/2.1.0:
     resolution: {integrity: sha512-n8fOixwDD6b/ObinzTrp1ZKFzbgvKZvuz/TvejnLn1aQfC6r52XEx85FmuC+3HI+JM7coBRXUvNqEU2PHVrHpg==}
     engines: {node: '>=8'}
+    requiresBuild: true
     dependencies:
       slice-ansi: 3.0.0
       string-width: 4.2.3
@@ -5080,6 +5097,7 @@ packages:
 
   /core-util-is/1.0.2:
     resolution: {integrity: sha1-tf1UIgqivFq1eqtxQMlAdUUDwac=}
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -9648,6 +9666,7 @@ packages:
   /slice-ansi/3.0.0:
     resolution: {integrity: sha512-pSyv7bSTC7ig9Dcgbw9AuRNUb5k5V6oDudjZoMBSr13qpLBG7tB+zgCkARjq7xIUgdz5P1Qe8u+rSGdouOOIyQ==}
     engines: {node: '>=8'}
+    requiresBuild: true
     dependencies:
       ansi-styles: 4.3.0
       astral-regex: 2.0.0
@@ -11437,6 +11456,7 @@ packages:
   /xmlbuilder/9.0.7:
     resolution: {integrity: sha1-Ey7mPS7FVlxVfiD0wi35rKaGsQ0=}
     engines: {node: '>=4.0'}
+    requiresBuild: true
     dev: true
 
   /xmlchars/2.2.0:
