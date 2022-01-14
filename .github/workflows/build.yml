@@ -85,19 +85,18 @@ jobs:
         pnpm install --filter ./.github/actions
     - name: Bump Version
       id: version
-      uses: ./.github/actions/bump-version
-    - name: Prepare Pull Reuqest
+      uses: Voxelum/semantic-version-bump-action
+    - name: Update Lock File
       if: ${{ steps.version.outputs.release == 'true' }}
-      id: pr
-      uses: ./.github/actions/prepare-pr
+      run: pnpm i --lockfile-only
     - name: Create Pull Request
       if: ${{ steps.version.outputs.release == 'true' }}
       uses: peter-evans/create-pull-request@v3
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: ${{ steps.pr.outputs.message }}
-        title: ${{ steps.pr.outputs.title }}
-        body: ${{ steps.pr.outputs.body }}
+        commit-message: "chore(release): version ${{ steps.version.outputs.version }}"
+        title: Prepare Release ${{ steps.version.outputs.version }}
+        body: ${{ steps.version.outputs.changelog }}
         reviewers: ci010
         assignees: ci010
         branch: prepare-release

@@ -1,4 +1,5 @@
 {
+    "version": "0.15.1",
     "private": true,
     "license": "MIT",
     "scripts": {
