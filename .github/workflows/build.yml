@@ -82,7 +82,7 @@ jobs:
         pnpm install --filter ./.github/actions
     - name: Bump Version
       id: version
-      uses: Voxelum/semantic-version-bump-action
+      uses: Voxelum/semantic-version-bump-action@master
     - name: Update Lock File
       if: ${{ steps.version.outputs.release == 'true' }}
       run: pnpm i --lockfile-only
