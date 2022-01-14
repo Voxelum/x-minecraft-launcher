@@ -33,9 +33,6 @@ jobs:
         cache: 'pnpm'
     - name: Install
       run: pnpm install --filter=!./xmcl-page
-    - name: Get Build Number
-      uses: ./.github/actions/get-build-number
-      id: vars
     # - name: Lint
     #   run: |
     #     npm run lint
@@ -44,7 +41,7 @@ jobs:
         pnpm run build --prefix xmcl-keystone-ui
         pnpm run build:all --prefix xmcl-electron-app
       env:
-        BUILD_NUMBER: ${{ steps.vars.outputs.build_number }}
+        BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
         FULL_RELEASE: ${{ startsWith(github.event.commits[0].message, 'chore(release)') }}
     - name: Upload Build
       uses: actions/upload-artifact@v2
