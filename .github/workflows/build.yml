@@ -83,6 +83,12 @@ jobs:
     - name: Bump Version
       id: version
       uses: Voxelum/semantic-version-bump-action@master
+      with:
+        packages: |
+          ./xmcl-electron-app
+          ./xmcl-keystone-ui
+          ./xmcl-runtime
+          ./xmcl-runtime-api
     - name: Update Lock File
       if: ${{ steps.version.outputs.release == 'true' }}
       run: pnpm i --lockfile-only
