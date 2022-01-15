@@ -38,6 +38,7 @@ import {
   PlaneGeometry,
   Camera,
 } from 'three'
+import ModrinthIcon from '/@/components/ModrinthIcon.vue'
 
 // TODO: fix this after refactor halo
 window.THREE = {
@@ -156,6 +157,9 @@ app.use(Vuetify, {
     },
     package: {
       component: PackageFileIcon,
+    },
+    modrinth: {
+      component: ModrinthIcon,
     },
     forge: {
       component: ForgeIcon,

@@ -6,9 +6,6 @@
             "default": 0,
             "type": "number"
         },
-        "path": {
-            "type": "string"
-        },
         "ext": {
             "description": "The resource extension name",
             "type": "string"
@@ -76,8 +73,13 @@
             "description": "The curseforge info for this source. If this is imported from curseforge, it will present.",
             "$ref": "#/definitions/CurseforgeInformation"
         },
-        "location": {
-            "description": "The resource file path relative to the .minecraft without extension",
+        "modrinth": {
+            "description": "The modrinth info for this source.",
+            "$ref": "#/definitions/ModrinthInformation"
+        },
+        "fileName": {
+            "description": "The identical file name of the resource without extension.",
+            "default": "''",
             "type": "string"
         },
         "ino": {
@@ -100,10 +102,10 @@
         "date",
         "domain",
         "ext",
+        "fileName",
         "fileType",
         "hash",
         "ino",
-        "location",
         "metadata",
         "name",
         "size",
@@ -119,9 +121,11 @@
                 "fabric",
                 "forge",
                 "liteloader",
+                "mcbbs-modpack",
                 "modpack",
                 "resourcepack",
                 "save",
+                "shaderpack",
                 "unknown"
             ],
             "type": "string"
@@ -132,6 +136,7 @@
                 "mods",
                 "resourcepacks",
                 "saves",
+                "shaderpacks",
                 "unknowns"
             ],
             "type": "string"
@@ -173,6 +178,33 @@
             "required": [
                 "fileId",
                 "projectId"
+            ]
+        },
+        "ModrinthInformation": {
+            "type": "object",
+            "properties": {
+                "modId": {
+                    "description": "The mod id of the mod",
+                    "type": "string"
+                },
+                "versionId": {
+                    "description": "The version id of the mod version",
+                    "type": "string"
+                },
+                "filename": {
+                    "description": "The file name of the file",
+                    "type": "string"
+                },
+                "url": {
+                    "description": "The download url of the file",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "filename",
+                "modId",
+                "url",
+                "versionId"
             ]
         }
     },

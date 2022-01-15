@@ -11,6 +11,8 @@ import modSetting from './pages/mod-setting'
 import resourcePackPreview from './pages/resource-pack-preview'
 import resourcePackSetting from './pages/resource-pack-setting'
 import shaderPackSetting from './pages/shader-pack-setting'
+import modrinth from './pages/modrinth'
+import modrinthProject from './pages/modrinth/[id]'
 import save from './pages/save'
 import setting from './pages/setting'
 import user from './pages/user'
@@ -80,6 +82,15 @@ export const createRouter = () => {
         path: '/curseforge/:type/:id',
         component: curseforgeTypeId,
         props: (route) => ({ type: route.path.split('/')[2], id: route.path.split('/')[3], from: route.query.from }),
+      },
+      {
+        path: '/modrinth',
+        component: modrinth,
+      },
+      {
+        path: '/modrinth/:id',
+        component: modrinthProject,
+        props: (route) => ({ id: route.path.split('/')[2] }),
       },
       {
         path: '/mcwiki',
