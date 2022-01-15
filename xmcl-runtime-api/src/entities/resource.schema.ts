@@ -30,6 +30,25 @@ export interface GithubInformation {
   artifact: string
 }
 
+export interface ModrinthInformation {
+  /**
+   * The mod id of the mod
+   */
+  modId: string
+  /**
+   * The version id of the mod version
+   */
+  versionId: string
+  /**
+   * The file name of the file
+   */
+  filename: string
+  /**
+   * The download url of the file
+   */
+  url: string
+}
+
 export enum ResourceType {
   Forge = 'forge',
   Liteloader = 'liteloader',
@@ -172,4 +191,8 @@ export interface PersistedResourceSchema extends ResourceBase<object | object[]>
    * The curseforge info for this source. If this is imported from curseforge, it will present.
    */
   curseforge?: CurseforgeInformation
+  /**
+   * The modrinth info for this source.
+   */
+  modrinth?: ModrinthInformation
 }

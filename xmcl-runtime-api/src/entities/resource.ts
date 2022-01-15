@@ -3,7 +3,7 @@ import type { PackMeta } from '@xmcl/resourcepack'
 import { CurseforgeModpackManifest } from './curseforge'
 import { ForgeModCommonMetadata } from './mod'
 import { Modpack } from './modpack'
-import { CurseforgeInformation, GithubInformation, PersistedResourceSchema, Resource, ResourceDomain, ResourceType } from './resource.schema'
+import { CurseforgeInformation, GithubInformation, ModrinthInformation, PersistedResourceSchema, Resource, ResourceDomain, ResourceType } from './resource.schema'
 import { ResourceSaveMetadata } from './save'
 
 export interface PersistedResource<T = unknown> extends Readonly<Omit<PersistedResourceSchema, 'metadata' | 'version'>> {
@@ -128,6 +128,7 @@ export const NO_RESOURCE: UnknownResource = Object.freeze({
 export interface SourceInformation {
   github?: GithubInformation
   curseforge?: CurseforgeInformation
+  modrinth?: ModrinthInformation
 }
 
 export function isPersistedResource<T>(resource: Resource<T>): resource is PersistedResource<T> {

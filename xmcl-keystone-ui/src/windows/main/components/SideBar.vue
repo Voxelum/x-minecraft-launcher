@@ -46,6 +46,16 @@
           </v-icon>
         </v-list-tile-action>
       </v-list-tile>
+      <v-list-tile
+        push
+        to="/modrinth"
+      >
+        <v-list-tile-action>
+          <v-icon>
+            $vuetify.icons.modrinth
+          </v-icon>
+        </v-list-tile-action>
+      </v-list-tile>
       <!-- <v-list-tile
         push
         to="/mcwiki"

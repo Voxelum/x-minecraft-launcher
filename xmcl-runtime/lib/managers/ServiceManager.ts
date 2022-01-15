@@ -21,6 +21,7 @@ import InstanceShaderPacksService from '../services/InstanceShaderPacksService'
 import InstanceVersionService from '../services/InstanceVersionService'
 import JavaService from '../services/JavaService'
 import LaunchService from '../services/LaunchService'
+import { ModrinthService } from '../services/ModrinthService'
 import ResourcePackPreviewService from '../services/ResourcePackPreviewService'
 import ResourceService from '../services/ResourceService'
 import ServerStatusService from '../services/ServerStatusService'
@@ -256,6 +257,7 @@ export default class ServiceManager extends Manager {
     this.addService(InstanceVersionService)
     this.addService(InstanceJavaService)
     this.addService(InstanceShaderPacksService)
+    this.addService(ModrinthService)
 
     this.setupServices()
     await this.initializeServices()
