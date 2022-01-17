@@ -149,6 +149,14 @@ jobs:
         prerelease: false
         body: ${{ steps.prepare_release.outputs.body }}
         asset_dir_path: ./build
+    - name: Update XMCL Page
+      uses: benc-uk/workflow-dispatch@v1
+      with:
+        workflow: deploy
+        token: ${{ secrets.PAT_GITHUB_TOKEN }}
+        ref: 'master'
+        repo: 'voxelum/xmcl-page'
+
     - name: Update the latest-version.js
       run: |
         node --eval "console.log('const version = \"' + JSON.parse(require('fs').readFileSync('./xmcl-electron-app/package.json').toString()).version + '\"')" > build/latest-version.js
