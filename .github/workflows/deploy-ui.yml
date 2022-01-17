@@ -1,0 +1,41 @@
+name: Deploy UI
+
+on:
+  push:
+    # branches:
+    #   - master
+    paths:
+      - 'xmcl-keystone-ui/**'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - uses: pnpm/action-setup@v2.0.1
+      with:
+        version: 6.24.4
+    - name: Use Node.js 15
+      uses: actions/setup-node@v2
+      with:
+        node-version: 15
+        cache: 'pnpm'
+    - name: Install
+      run: pnpm install --filter=!./xmcl-page
+    - name: Build
+      run: |
+        pnpm run build --prefix xmcl-keystone-ui
+      env:
+        BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
+    - name: Deploy to vercel
+      uses: amondnet/vercel-action@v20
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-args: '--prod ./dist'
+        vercel-org-id: ${{ secrets.ORG_ID }}
+        vercel-project-id: ${{ secrets.PROJECT_ID }}
