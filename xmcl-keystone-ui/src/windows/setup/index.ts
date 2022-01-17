@@ -5,6 +5,7 @@ import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import 'vuetify/dist/vuetify.min.css'
 import Vuetify from 'vuetify'
+import 'virtual:windi.css'
 import colors from 'vuetify/es5/util/colors'
 import Setup from './Setup.vue'
 

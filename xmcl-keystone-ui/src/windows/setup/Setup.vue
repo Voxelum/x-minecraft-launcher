@@ -1,17 +1,18 @@
 <template>
   <v-app
     dark
-    class="moveable"
+    class="moveable rounded"
     fill-height
   >
     <!-- <v-container> -->
     <v-card
       v-if="!fetching"
       style="height: 100%; display: flex; flex-direction: column;"
+      class="rounded"
     >
       <v-card-title
         style="background-color: black"
-        class="elevation-3;"
+        class="elevation-3"
       >
         <h2>{{ $t('title') }}</h2>
       </v-card-title>

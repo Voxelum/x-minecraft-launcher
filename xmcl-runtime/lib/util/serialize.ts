@@ -2,6 +2,7 @@ import { Schema } from '@xmcl/runtime-api'
 import { readInfo, ServerInfo, writeInfo } from '@xmcl/server-info'
 import { createContext, runInContext } from 'vm'
 import Ajv from 'ajv'
+import { Logger } from './log'
 
 export interface Serializer<D, T> {
   serialize(value: T): D | Promise<D>
@@ -19,15 +20,8 @@ export function pipe<A, B, C>(serialzerIn: Serializer<A, B>, serialzerOut: Seria
   }
 }
 
-// export function serverDatSerializer(): Serializer<Uint8Array, ServerInfo[]> {
-//   return {
-//     serialize(value) { return writeInfo(value) },
-//     async deserialize(buff) { return readInfo(buff) },
-//   }
-// }
-
 export class BufferJsonSerializer<T> implements Serializer<Buffer, T> {
-  constructor(readonly schema: Schema<T>) { }
+  constructor(readonly schema: Schema<T>, private logger?: Logger) { }
 
   serialize(data: T) {
     const deepCopy = JSON.parse(JSON.stringify(data))
@@ -38,6 +32,7 @@ export class BufferJsonSerializer<T> implements Serializer<Buffer, T> {
     if (!valid) {
       const context = createContext({ object: deepCopy })
       if (validation.errors) {
+        this.logger?.error(`Error to serialize the datatype ${typeof data}:\n`)
         console.log(JSON.stringify(validation.errors))
         // let message = `Error to serialize the datatype ${typeof data}:\n`
         // validation.errors.forEach(e => {

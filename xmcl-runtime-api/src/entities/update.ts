@@ -47,8 +47,8 @@ export interface UpdateInfo {
      */
   releaseNotes?: string | Array<ReleaseNoteInfo> | null
   /**
-     * The release date.
-     */
+    * The release date.
+    */
   releaseDate: string
   /**
      * The [staged rollout](/auto-update#staged-rollouts) percentage, 0-100.

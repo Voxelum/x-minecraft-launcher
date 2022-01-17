@@ -60,8 +60,6 @@ export class CurseforgeState {
     }
   }
 
-  async x() { }
-
   curseforgeDownloadFileStart({ fileId, taskId }: { fileId: number; taskId: string }) {
     this.downloading.push({ fileId, taskId })
   }

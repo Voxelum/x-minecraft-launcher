@@ -217,10 +217,4 @@ export function compareSnapshot(versionA: string, versionB: string) {
   return Number.parseInt(majorA, 10) - Number.parseInt(majorB, 10)
 }
 
-export const LATEST_RELEASE = {
-  id: '1.16.2',
-  type: 'release',
-  url: 'https://launchermeta.mojang.com/v1/packages/c847788ace47090745ba174a13eff17a95221c81/1.16.2.json',
-  time: '2020-08-24T14:58:49+00:00',
-  releaseTime: '2020-08-11T10:13:46+00:00',
-}
+export const LATEST_RELEASE = { id: '1.18.1', type: 'release', url: 'https://launchermeta.mojang.com/v1/packages/6ad09383ac77f75147c38be806961099c02c1ef9/1.18.1.json', time: '2022-01-19T15:56:14+00:00', releaseTime: '2021-12-10T08:23:00+00:00' }

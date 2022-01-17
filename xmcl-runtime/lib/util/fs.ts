@@ -1,4 +1,5 @@
 import { checksum } from '@xmcl/core'
+import { AbortableTask, CancelledError } from '@xmcl/task'
 import { createHash } from 'crypto'
 import { fromFile } from 'file-type'
 import { FileExtension } from 'file-type/core'
@@ -57,6 +58,62 @@ export async function copyPassively(src: string, dest: string, filter: (name: st
     await copyFile(src, dest)
   }
 }
+
+const Aborted = Symbol('Aborted')
+
+export class CopyDirectoryTask extends AbortableTask<void> {
+  constructor(readonly tasks: Array<{ src: string; dest: string }>) {
+    super()
+  }
+
+  protected async * visit(src: string, dest: string, filter: (name: string) => boolean = () => true): AsyncGenerator<[Promise<number>], void, void> {
+    const fileStat = await stat(src).catch(() => { })
+    if (!fileStat) { return }
+    if (!filter(src)) { return }
+    if (fileStat.isDirectory()) {
+      await ensureDir(dest)
+      const children = await readdir(src)
+      for (const child of children) {
+        yield * this.visit(resolve(src, child), resolve(dest, child))
+      }
+    } else if (await missing(dest)) {
+      this._total += fileStat.size
+      yield [copyFile(src, dest).then(() => fileStat.size)]
+    }
+  }
+
+  protected async processOne(src: string, dest: string, activeCopy: Promise<void>[]) {
+    const process = this.visit(src, dest)
+    for (let p = await process.next(); !p.done; p = await process.next()) {
+      const val = p.value[0].then((s) => {
+        this._progress += s
+        this.update(s)
+      })
+      activeCopy.push(val)
+      if (this.isCancelled) {
+        process.throw(new CancelledError())
+        return
+      } else if (this.isPaused) {
+        process.throw(Aborted)
+        return
+      }
+    }
+  }
+
+  protected async process(): Promise<void> {
+    const activeCopy: Promise<any>[] = []
+    await Promise.all(this.tasks.map((task) => this.processOne(task.src, task.dest, activeCopy)))
+    await Promise.all(activeCopy)
+  }
+
+  protected abort(isCancelled: boolean): void {
+  }
+
+  protected isAbortedError(e: any): boolean {
+    return e === Aborted
+  }
+}
+
 export async function clearDirectoryNarrow(dir: string) {
   const files = await readdir(dir)
   await Promise.all(files.map(async (f) => {
