@@ -25,7 +25,7 @@ export const config: Configuration = {
     '**/*.worker.js',
   ],
   // eslint-disable-next-line no-template-curly-in-string
-  artifactName: '${productName}-${version}.${ext}',
+  artifactName: '${productName}-${version}-${platform}-${arch}.${ext}',
   appx: {
     displayName: 'X Minecraft Launcher',
     applicationId: 'xmcl.XMinecraftLauncher',
@@ -96,6 +96,7 @@ export const config: Configuration = {
         target: 'zip',
         arch: [
           'x64',
+          'ia32',
         ],
       },
     ],
