@@ -1,6 +1,6 @@
 import { Task, TaskGroup } from '@xmcl/task'
 import { EventEmitter } from 'events'
-import { TaskAddedPayload, TaskBatchUpdatePayloads, TaskPayload, TaskUpdatePayload } from '@xmcl/runtime-api'
+import { TaskAddedPayload, TaskBatchUpdatePayloads, TaskPayload, TaskState, TaskUpdatePayload } from '@xmcl/runtime-api'
 
 export type TaskEventType = 'update' | 'start' | 'success' | 'fail' | 'pause' | 'cancel' | 'resume'
 
@@ -64,9 +64,6 @@ export function createTaskMonitor (
   function status (uuid: string, task: Task<any>) {
     const partial = getUpdate(uuid, task)
     partial.state = task.state
-    if (task.state === 2) {
-      console.log(`Update task status ${uuid} ${task.state}`)
-    }
     notify()
   }
   function fail (uuid: string, task: Task<any>, error: any) {

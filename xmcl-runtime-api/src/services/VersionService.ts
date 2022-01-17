@@ -36,7 +36,7 @@ export interface VersionService extends StatefulService<VersionState> {
    *
    * This will not replace the existed files
    */
-  checkLocalMinecraftFiles(): Promise<void>
+  migrateMinecraftFile(): Promise<void>
   resolveLocalVersion(versionFolder: string, root?: string): Promise<ResolvedVersion>
   /**
      * Refresh a version in the version folder.
@@ -62,7 +62,7 @@ export interface VersionService extends StatefulService<VersionState> {
 
 export const VersionServiceKey: ServiceKey<VersionService> = 'VersionService'
 export const VersionServiceMethods: ServiceTemplate<VersionService> = {
-  checkLocalMinecraftFiles: undefined,
+  migrateMinecraftFile: undefined,
   resolveLocalVersion: undefined,
   refreshVersion: undefined,
   refreshVersions: undefined,

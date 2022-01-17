@@ -108,8 +108,8 @@ async function start() {
     await buildElectron(electronBuilderConfig, dir)
   }
 
-  await copy(path.join(__dirname, './build/icons'), path.join(__dirname, './build/output/win-unpacked/icons'))
-  await copy(path.join(__dirname, './build/appxmanifest.xml'), path.join(__dirname, './build/output/win-unpacked/appxmanifest.xml'))
+  // await copy(path.join(__dirname, './build/icons'), path.join(__dirname, './build/output/win-unpacked/icons'))
+  // await copy(path.join(__dirname, './build/appxmanifest.xml'), path.join(__dirname, './build/output/win-unpacked/appxmanifest.xml'))
 }
 
 start().catch((e) => {

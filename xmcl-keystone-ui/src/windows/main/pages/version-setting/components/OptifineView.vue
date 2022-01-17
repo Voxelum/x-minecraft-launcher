@@ -43,9 +43,10 @@ import { useOptifineVersions } from '/@/hooks'
 import { required } from '/@/util/props'
 import { OptifineVersion } from '@xmcl/runtime-api'
 import Hint from '/@/components/Hint.vue'
+import RefreshingTile from '/@/components/RefreshingTile.vue'
 
 export default defineComponent({
-  components: { Hint },
+  components: { Hint, RefreshingTile },
   props: {
     select: required<(v: OptifineVersion | undefined) => void>(Function),
     filterText: required<string>(String),

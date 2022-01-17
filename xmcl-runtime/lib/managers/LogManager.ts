@@ -1,6 +1,3 @@
-import LauncherApp from '../app/LauncherApp'
-import { IS_DEV } from '../constant'
-import { gzip } from '../util/zip'
 import filenamify from 'filenamify'
 import { createWriteStream, WriteStream } from 'fs'
 import { ensureDir, readFile, writeFile } from 'fs-extra'
@@ -8,15 +5,13 @@ import { join, resolve } from 'path'
 import { PassThrough, pipeline, Transform } from 'stream'
 import { format } from 'util'
 import { Manager } from '.'
+import LauncherApp from '../app/LauncherApp'
+import { IS_DEV } from '../constant'
+import { Logger } from '../util/log'
+import { gzip } from '../util/zip'
 
 function formatMsg(message: any, options: any[]) { return options.length !== 0 ? format(message, options) : format(message) }
 function baseTransform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}\n`) } }) }
-
-export interface Logger {
-  log(message: any, ...options: any[]): void
-  warn(message: any, ...options: any[]): void
-  error(message: any, ...options: any[]): void
-}
 
 export default class LogManager extends Manager {
   private loggerEntries = { log: baseTransform('INFO'), warn: baseTransform('WARN'), error: baseTransform('ERROR') }

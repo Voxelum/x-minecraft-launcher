@@ -1,12 +1,14 @@
-import LauncherApp from '../app/LauncherApp'
 import { Agents, DownloadBaseOptions } from '@xmcl/installer'
-import got from 'got'
+import got, { Got } from 'got'
 import { Agent as HttpAgent } from 'http'
 // import NatAPI from 'nat-api'
+import { createUpnpClient, UpnpClient } from '@xmcl/nat-api'
+import { getNatInfoUDP, NatInfo, NatType } from '@xmcl/stun-client'
 import { Agent as HttpsAgent, AgentOptions } from 'https'
 import { cpus } from 'os'
 import { Manager } from '.'
-// import { MinecraftLanDiscover } from '@xmcl/client'
+import LauncherApp from '../app/LauncherApp'
+import { connect, Socket } from 'net'
 // import getNatType, { NatType } from 'nat-type-identifier'
 
 export default class NetworkManager extends Manager {
@@ -16,7 +18,15 @@ export default class NetworkManager extends Manager {
 
   private headers: Record<string, string> = {}
 
-  readonly request = got.extend({})
+  readonly request: Got
+
+  private upnp!: UpnpClient
+
+  private stunHosts: string[] = []
+
+  private activePeers: Socket[] = []
+
+  private natInfo: undefined | NatInfo
 
   // private nat = new NatAPI()
 
@@ -39,6 +49,7 @@ export default class NetworkManager extends Manager {
       http: new HttpAgent(options),
       https: new HttpsAgent(options),
     })
+    this.request = got.extend({ agent: this.agents })
   }
 
   getDownloadBaseOptions(): DownloadBaseOptions {
@@ -112,6 +123,17 @@ export default class NetworkManager extends Manager {
   //   })
   // }
 
+  async getNatInfo() {
+    const info = await Promise.all(this.stunHosts.map((s) => getNatInfoUDP({
+      stun: s,
+      retryInterval: 2000,
+    })))
+
+    this.log(info)
+
+    return info
+  }
+
   // setup code
   setup() {
     // this.updateGFW().then(() => this.updateNatType())
@@ -132,6 +154,10 @@ export default class NetworkManager extends Manager {
     //       this.error(e)
     //     })
     //   }
+    // })
+
+    // createUpnpClient().then((client) => {
+    //   this.upnp = client
     // })
 
     // @ts-ignore

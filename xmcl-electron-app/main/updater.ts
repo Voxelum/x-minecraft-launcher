@@ -199,6 +199,7 @@ export function checkUpdateTask(this: ElectronLauncherApp): Task<_UpdateInfo> {
       this.log('Update available and set status to pending')
       updateInfo.newUpdate = true
     })
+    this.log(`Check update via ${autoUpdater.getFeedURL()}`)
     const info = await autoUpdater.checkForUpdates()
 
     if (this.networkManager.isInGFW && !injectedUpdate) {

@@ -1,6 +1,14 @@
 {
     "type": "object",
     "properties": {
+        "lastAccessDate": {
+            "default": 0,
+            "type": "number"
+        },
+        "creationDate": {
+            "default": 0,
+            "type": "number"
+        },
         "name": {
             "description": "The display name of the profile. It will also be the modpack display name",
             "default": "",
@@ -101,14 +109,6 @@
         "icon": {
             "default": "",
             "type": "string"
-        },
-        "lastAccessDate": {
-            "default": 0,
-            "type": "number"
-        },
-        "creationDate": {
-            "default": 0,
-            "type": "number"
         },
         "server": {
             "description": "The option for instance to launch server directly",
