@@ -8,7 +8,7 @@
     "description": "A great minecraft launcher in the future",
     "license": "MIT",
     "engines": {
-        "node": ">=15.0.0"
+        "node": "14.x"
     },
     "repository": {
         "type": "git",
@@ -19,8 +19,7 @@
         "check": "vue-tsc --noEmit --project ./tsconfig.json",
         "dev": "vite",
         "lint": "eslint --ext .ts,.vue src",
-        "lint:fix": "eslint --ext .ts,.vue --fix src",
-        "test": "jest"
+        "lint:fix": "eslint --ext .ts,.vue --fix src"
     },
     "dependencies": {
         "@types/three": "^0.127.1",
@@ -56,7 +55,6 @@
         "vuex": "^3.6.2"
     },
     "devDependencies": {
-        "@types/jest": "^27.0.2",
         "@typescript-eslint/eslint-plugin": "^5.6.0",
         "@typescript-eslint/parser": "^5.6.0",
         "@vue/devtools": "^5.3.4",
@@ -70,7 +68,6 @@
         "eslint-plugin-node": "^11.1.0",
         "eslint-plugin-promise": "^5.2.0",
         "eslint-plugin-vue": "^7.17.0",
-        "jest": "^27.2.2",
         "tslib": "^2.3.1",
         "typescript": "^4.4.3",
         "vite": "^2.7.1",
@@ -80,30 +77,5 @@
         "vue-template-compiler": "^2.6.14",
         "vue-tsc": "^0.29.7",
         "windicss": "^3.2.1"
-    },
-    "jest": {
-        "globals": {
-            "ts-jest": {
-                "tsConfig": "tsconfig.json"
-            }
-        },
-        "moduleNameMapper": {
-            "^@universal(.*)$": "<rootDir>/src/universal$1",
-            "^@main(.*)$": "<rootDir>/src/main$1"
-        },
-        "moduleFileExtensions": [
-            "ts",
-            "js",
-            "json"
-        ],
-        "modulePaths": [
-            "src"
-        ],
-        "preset": "ts-jest",
-        "testEnvironment": "node",
-        "testRegex": "src/.*spec\\.ts",
-        "transform": {
-            "^.+(?!\\.d)\\.ts$": "ts-jest"
-        }
     }
 }
