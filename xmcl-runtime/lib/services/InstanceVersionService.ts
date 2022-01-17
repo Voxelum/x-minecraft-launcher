@@ -170,11 +170,11 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
     try {
       const id = this.instanceService.state.path
       const selected = this.instanceService.state.all[id]
-      this.log(`Diagnose version of ${selected.path}`)
       if (!selected) {
-        this.error(`No profile selected! ${id}`)
+        this.error(`Skip to diagnose version as no profile selected! ${id}`)
         return
       }
+      this.log(`Diagnose version of ${selected.path}`)
       // await this.versionService.refreshVersions()
       const runtime = selected.runtime
       const currentVersion = this.state.instanceVersion
