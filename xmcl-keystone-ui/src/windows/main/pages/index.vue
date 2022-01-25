@@ -158,8 +158,9 @@ import ProblemsBar from './ProblemsBar.vue'
 import ServerStatusBar from './ServerStatusBar.vue'
 import SettingsSpeedDial from './SettingsSpeedDial.vue'
 import {
+  useCurrentUser,
   useInstance, useInstanceServerStatus, useJava, useLaunch, useQuit,
-  useService, useWindowController,
+  useService, useUserProfileStatus, useWindowController,
 } from '/@/hooks'
 import { useDialog, useJavaWizardDialog } from '/@/windows/main/composables'
 import { LaunchException, BaseServiceKey } from '@xmcl/runtime-api'
@@ -168,7 +169,10 @@ function setupLaunch() {
   const { launch, status: launchStatus } = useLaunch()
   const { show: showLaunchStatusDialog, hide: hideLaunchStatusDialog } = useDialog('launch-status')
   const { missing: missingJava } = useJava()
+  const { userProfile } = useCurrentUser()
+  const { accessTokenValid } = useUserProfileStatus(userProfile)
   const { show: showLaunchBlockedDialog } = useDialog('launch-blocked')
+  const { show: showLoginDialog } = useDialog('login')
   const { show: showJavaDialog } = useJavaWizardDialog()
 
   return {
@@ -177,6 +181,8 @@ function setupLaunch() {
     launch() {
       if (missingJava.value) {
         showJavaDialog()
+      } if (!accessTokenValid.value) {
+        showLoginDialog()
       } else if (launchStatus.value === 'checkingProblems' || launchStatus.value === 'launching' || launchStatus.value === 'launched') {
         showLaunchStatusDialog()
       } else {
