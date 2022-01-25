@@ -10,7 +10,7 @@ export const SettingSchema: Schema<SettingSchema> = _SettingSchema
 export interface SettingSchema {
   /**
      * The display language of the launcher
-     * @default "en"
+     * @default ""
      */
   locale: string
   /**

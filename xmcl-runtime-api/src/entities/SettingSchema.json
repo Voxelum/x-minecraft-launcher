@@ -3,7 +3,7 @@
     "properties": {
         "locale": {
             "description": "The display language of the launcher",
-            "default": "en",
+            "default": "",
             "type": "string"
         },
         "autoDownload": {
