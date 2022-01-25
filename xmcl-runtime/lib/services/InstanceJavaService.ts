@@ -35,14 +35,20 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
       this.app.on('service-ready', listener)
     }).then(() => {
       this.storeManager.subscribeAll(['javaUpdate', 'javaRemove', 'instanceSelect'], async () => {
-        const defaultJava = this.javaService.state.defaultJava
-        if (!defaultJava.valid) {
-          await this.instanceService.editInstance({ java: defaultJava.path })
-        }
         await this.diagnoseJava()
       })
       this.diagnoseJava()
     })
+  }
+
+  getInstanceJava() {
+    const javaPath = this.instanceService.state.instance.java
+    if (javaPath && javaPath !== '') {
+      return this.javaService.state.all.find(j => j.path === javaPath)
+    }
+    const javaVersion = this.instanceVersionService.state.instanceVersion.javaVersion
+    const expectedJava = this.javaService.state.all.find(j => j.majorVersion === javaVersion.majorVersion)
+    return expectedJava
   }
 
   createState([instance, java]: [InstanceState, JavaState]) {
@@ -66,7 +72,7 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
       this.log('Diagnose java')
       const report: Partial<IssueReport> = {}
       const instance = this.instanceService.state.instance
-      const instanceJava = this.state.instanceJava
+      const instanceJava = this.getInstanceJava()
 
       const mcversion = instance.runtime.minecraft
       const resolvedVersion = this.instanceVersionService.state.instanceVersion
@@ -78,7 +84,7 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
         invalidJava: [],
       }
 
-      if (instanceJava === EMPTY_JAVA || this.javaService.state.missingJava) {
+      if (!instanceJava || this.javaService.state.missingJava) {
         tree.missingJava.push({ targetVersion: resolvedVersion.javaVersion })
       } else if (!instanceJava.valid || await missing(instanceJava.path)) {
         if (this.javaService.state.all.length === 0) {
@@ -97,7 +103,7 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
         }
       }
 
-      if (resolvedVersion.javaVersion.majorVersion > 8) {
+      if (resolvedVersion.javaVersion.majorVersion > 8 && instanceJava) {
         if (resolvedVersion.javaVersion.majorVersion !== instanceJava.majorVersion) {
           tree.incompatibleJava.push({ java: instanceJava.version, version: mcversion, type: 'Minecraft', targetVersion: resolvedVersion.javaVersion })
         }
