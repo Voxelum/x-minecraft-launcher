@@ -390,6 +390,7 @@ export default class Controller implements LauncherAppController {
 
     this.app.storeManager.subscribe('localeSet', (l) => {
       this.i18n.use(l)
+      this.tray?.setContextMenu(this.createMenu())
     })
 
     this.app.on('minecraft-stdout', (...args) => {
@@ -415,7 +416,6 @@ export default class Controller implements LauncherAppController {
       tray.setContextMenu(this.createMenu())
       this.app.storeManager.subscribe('localeSet', (l) => {
         tray.setToolTip($t('title'))
-        tray.setContextMenu(this.createMenu())
       })
     }
   }
