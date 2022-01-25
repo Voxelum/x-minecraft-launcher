@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col max-h-full h-full">
-    <div class="header-bar">
+    <div class="header-bar z-10">
       <div class="headline align-middle self-center pl-2">
         {{ $tc("resourcepack.name", 2) }}
       </div>
