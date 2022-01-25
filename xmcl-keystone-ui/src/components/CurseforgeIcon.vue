@@ -35,4 +35,7 @@ export default {
 #curseforge-icon .st0 {
   fill: white;
 }
+.primary--text #curseforge-icon .st0 {
+  fill: #4caf50;
+}
 </style>
