@@ -35,16 +35,19 @@
 </template>
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
+import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables'
-import { useWindowController } from '/@/hooks'
+import { useService, useWindowController } from '/@/hooks'
 
 export default defineComponent({
   setup() {
     const { maximize, minimize, hide } = useWindowController()
+    const { quit } = useService(BaseServiceKey)
     const { show: showFeedbackDialog } = useDialog('feedback')
 
     function close() {
-      hide()
+      // hide()
+      quit()
     }
     return {
       maximize,
