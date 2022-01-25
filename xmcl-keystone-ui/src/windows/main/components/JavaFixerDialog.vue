@@ -107,15 +107,12 @@ export default defineComponent({
     const downloadingJava = useBusy('installDefaultJava()')
     const handlers = inject(IssueHandler, {})
 
-    const validJava = computed(() => state.all.find(j => j.majorVersion === javaIssue.value.version.majorVersion))
-    const disableUseExistedJava = computed(() => !validJava.value || downloadingJava.value)
+    const matchedJava = computed(() => state.all.find(j => j.majorVersion === javaIssue.value.version.majorVersion))
+    const disableUseExistedJava = computed(() => !matchedJava.value || downloadingJava.value || !matchedJava.value.valid)
     const data = reactive({
       step: 0,
     })
 
-    const { refresh, refreshing } = useRefreshable(async () => {
-      await refreshLocalJava(true)
-    })
     const missing = computed(() => javaIssue.value.type === 'missing')
     const reason = computed(() => (!missing.value ? $t('java.incompatibleJava') : $t('java.missing')))
     const hint = computed(() => (!missing.value ? $t('java.incompatibleJavaHint', { version: javaIssue.value.version.majorVersion }) : $t('java.missingHint')))
@@ -133,8 +130,11 @@ export default defineComponent({
       show()
     }
 
+    const { refresh, refreshing } = useRefreshable(async () => {
+      await refreshLocalJava(true)
+    })
     async function selectLocalJava() {
-      subscribeTask(editInstance({ java: validJava.value!.path }), $t('java.modifyInstance'))
+      subscribeTask(editInstance({ java: matchedJava.value!.path }), $t('java.modifyInstance'))
       isShown.value = false
     }
     function downloadAndInstallJava() {
