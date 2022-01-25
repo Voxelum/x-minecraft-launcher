@@ -3,7 +3,7 @@ import { VersionService as IVersionService, VersionServiceKey, VersionState } fr
 import { isNonnull } from '@xmcl/runtime-api/utils'
 import { remove } from 'fs-extra'
 import { join } from 'path'
-import { copyPassively, FileStateWatcher, missing, readdirEnsured } from '../util/fs'
+import { CopyDirectoryTask, FileStateWatcher, missing, readdirEnsured } from '../util/fs'
 import { ExportService, StatefulService } from './Service'
 
 /**
@@ -20,7 +20,7 @@ export default class VersionService extends StatefulService<VersionState> implem
   async initialize() {
     await this.refreshVersions()
     if (this.state.local.length === 0) {
-      this.checkLocalMinecraftFiles()
+      this.migrateMinecraftFile()
     }
     this.versionsWatcher.watch(this.getPath('versions'))
   }
@@ -34,15 +34,18 @@ export default class VersionService extends StatefulService<VersionState> implem
    *
    * This will not replace the existed files
    */
-  async checkLocalMinecraftFiles() {
-    const mcPath = this.getMinecraftPath()
+  async migrateMinecraftFile(mcPath: string = this.getMinecraftPath()) {
     if (await missing(mcPath)) return
     const root = this.getPath()
     if (mcPath === root) return
-    this.log('Try to migrate the version from .minecraft')
-    await copyPassively(join(mcPath, 'libraries'), join(root, 'libraries'))
-    await copyPassively(join(mcPath, 'assets'), join(root, 'assets'))
-    await copyPassively(join(mcPath, 'versions'), join(root, 'versions'))
+    this.log(`Try to migrate the version from ${mcPath}`)
+    const task = new CopyDirectoryTask([
+      { src: join(mcPath, 'libraries'), dest: join(root, 'libraries') },
+      { src: join(mcPath, 'assets'), dest: join(root, 'assets') },
+      { src: join(mcPath, 'versions'), dest: join(root, 'versions') },
+    ]).setName('cloneMinecraft')
+    Reflect.set(task, '_from', mcPath)
+    await this.taskManager.submit(task)
   }
 
   public async resolveLocalVersion(versionFolder: string, root: string = this.getPath()): Promise<ResolvedVersion> {

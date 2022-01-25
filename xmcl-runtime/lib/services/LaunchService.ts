@@ -40,7 +40,11 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
     const gameProfile = user.gameProfile
 
     const minecraftFolder = new MinecraftFolder(instance.path)
-    const javaPath = this.instanceJavaService.state.instanceJava.path || this.javaService.state.defaultJava.path
+    const instanceJava = this.instanceJavaService.getInstanceJava()
+    if (!instanceJava) {
+      throw new Error('No valid java')
+    }
+    const javaPath = instanceJava.path
 
     const instanceVersion = this.instanceVersionService.state.instanceVersion
     if (!instanceVersion.id) {
@@ -128,7 +132,13 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
 
       this.log(`Will launch with ${version} version.`)
 
-      const javaPath = this.instanceJavaService.state.instanceJava.path || this.javaService.state.defaultJava.path
+      const instanceJava = this.instanceJavaService.getInstanceJava()
+
+      if (!instanceJava) {
+        throw new Exception({ type: 'launchGeneralException' }, 'Cannot launch without a valid java')
+      }
+
+      const javaPath = instanceJava.path
 
       await Promise.all([
         this.instanceResourcePackService.link().catch((e) => {
