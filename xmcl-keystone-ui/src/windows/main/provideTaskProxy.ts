@@ -6,22 +6,31 @@ import { TaskBatchUpdatePayloads, TaskPayload, TaskState } from '@xmcl/runtime-a
 export const TASK_MANAGER: InjectionKey<ReturnType<typeof useTaskManager>> = Symbol('TASK_MANAGER')
 
 class ChildrenWatcher {
-  readonly cached: Array<TaskItem> = new Array(10)
+  readonly oldChildren: Array<TaskItem> = []
 
-  readonly children: Array<TaskItem> = []
+  readonly newChildren: Array<TaskItem> = []
+
+  readonly updateChildren: Array<TaskItem> = []
+
+  readonly visited: Set<TaskItem> = new Set()
 
   public dirty = false
 
   constructor(private target: Ref<TaskItem[]>, init?: TaskItem[]) {
     if (init) {
-      this.children = init
+      this.newChildren = init
       this.dirty = true
       this.update()
     }
   }
 
   addChild(item: TaskItem) {
-    this.children.unshift(item)
+    this.newChildren.unshift(item)
+    this.dirty = true
+  }
+
+  updateChild(item: TaskItem) {
+    this.updateChildren.push(item)
     this.dirty = true
   }
 
@@ -29,29 +38,49 @@ class ChildrenWatcher {
     if (!this.dirty) {
       return
     }
-    const succeed = []
-    const others = []
-    const children = this.children
-    const cached = this.cached
+    const inactive = []
+    const active = []
+    const newChildren = this.newChildren
+    const updatedChildren = this.updateChildren
+    const oldChildren = this.oldChildren
+    const visited = this.visited
 
-    for (const item of children) {
+    for (const item of newChildren) {
       if (item.state === TaskState.Succeed) {
-        succeed.push(item)
+        inactive.push(item)
       } else {
-        others.push(item)
+        active.push(item)
       }
+      visited.add(item)
     }
-    const combined = others.concat(succeed)
-    for (let i = 0; i < this.cached.length; i++) {
-      const elem = combined.shift()
-      if (elem) {
-        cached[i] = elem
+    for (const item of updatedChildren) {
+      if (item.state === TaskState.Succeed) {
+        inactive.push(item)
       } else {
-        cached.length = i
-        break
+        active.push(item)
       }
+      visited.add(item)
     }
-    this.target.value = cached
+    for (const item of oldChildren) {
+      if (visited.has(item)) continue
+      if (item.state === TaskState.Succeed) {
+        inactive.push(item)
+      } else {
+        active.push(item)
+      }
+      visited.add(item)
+    }
+    const sorted = active.concat(inactive)
+
+    // only show 10
+    const result = sorted.slice(0, 10)
+    this.target.value = result
+
+    updatedChildren.splice(0)
+    newChildren.splice(0)
+    oldChildren.splice(0)
+    oldChildren.push(...sorted)
+    visited.clear()
   }
 }
 
@@ -128,6 +157,7 @@ export function useTaskManager() {
         parentId,
       })
       if (typeof parentId === 'number') {
+        // leave
         const parentLocalId = `${uuid}@${parentId}`
         const parentWatcher = watchers[parentLocalId]
         parentWatcher.addChild(item)
@@ -159,6 +189,11 @@ export function useTaskManager() {
         item.message = error || from || to || item.message
         if (chunkSize) {
           item.throughput += chunkSize
+        }
+        if (item.parentId !== undefined) {
+          const parentLocalId = `${uuid}@${item.parentId}`
+          const parentWatcher = watchers[parentLocalId]
+          parentWatcher.updateChild(item)
         }
       } else {
         console.log(`Cannot apply update for task ${localId} as task not found.`)
