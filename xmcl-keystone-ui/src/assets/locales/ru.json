@@ -552,6 +552,37 @@
     "showIncompatible": "Показать несовместимые моды",
     "unselected": "Невыбранные моды"
   },
+  "modrinth": {
+    "categories": {
+      "name": "Категории"
+    },
+    "description": "Описание",
+    "downloads": "Загрузки",
+    "environments": {
+      "name": "Окружающая обстановка"
+    },
+    "gameVersions": {
+      "name": "Версии игры"
+    },
+    "licenses": {
+      "name": "Лицензии"
+    },
+    "modLoaders": {
+      "name": "Загрузчики модов"
+    },
+    "searchText": "Поиск",
+    "sort": {
+      "downloads": "Количество загрузок",
+      "follows": "Следите за количеством",
+      "newest": "Недавно созданный",
+      "relevance": "Актуальность",
+      "title": "Сортировать по",
+      "updated": "Недавно обновленный"
+    },
+    "sortBy": {
+    },
+    "versions": "Версии"
+  },
   "name": "Название",
   "next": "Далее",
   "no": "Нет",

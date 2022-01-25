@@ -94,17 +94,13 @@
   "description": "简介",
   "detail": "细节",
   "diagnosis": {
-    "userNotLogined": {
-      "": "用户没有登陆",
-      "message": "点击登录 Minecraft"
+    "badForgeProcessedFiles": {
+      "": "Forge 需要生成文件才能启动 {jar}",
+      "message": "点击来让 Forge 完成安装"
     },
     "badInstall": {
       "": "版本安装失败 {version}",
       "message": "也许你应该尝试重新安装此版本"
-    },
-    "badForgeProcessedFiles": {
-      "": "Forge 需要生成文件才能启动 {jar}",
-      "message": "点击来让 Forge 完成安装"
     },
     "corruptedAssets": {
       "": "Asset 文件损坏: {name} | Asset 文件损坏: {name} | 有 {count} 个游戏资源可能损坏",
@@ -212,6 +208,10 @@
     "unknownMod": {
       "": "无法解析 {name} Mod 兼容的 Minecraft 版本",
       "message": "请务必小心使用"
+    },
+    "userNotLogined": {
+      "": "用户没有登陆",
+      "message": "点击登录 Minecraft"
     }
   },
   "downloadUpdate": "下载更新",
@@ -228,6 +228,7 @@
       "unstable": "预览版"
     }
   },
+  "cloneMinecraft": "克隆 Minecraft",
   "feedback": {
     "": "反馈",
     "description": "我找到了一个BUG/我想反馈",
@@ -350,16 +351,16 @@
   "hotkeyChanges": "按键设置",
   "importResource": "导入资源",
   "importSave": "导入存档",
-  "installByProfile": {
-    "": "通过安装配置文件",
-    "postProcessing": "后处理，更新本地文件"
-  },
   "installAssets": {
     "": "下载游戏资源文件",
     "asset": "下载资源文件%{hash}",
     "assetsJson": "下载资源文件目录"
   },
   "installAuthlibInjector": "安装 authlib-injector",
+  "installByProfile": {
+    "": "通过安装配置文件",
+    "postProcessing": "后处理，更新本地文件"
+  },
   "installCurseforgeFile": "安装 Curseforge 文件",
   "installCurseforgeModpack": {
     "": "安装 Curseforge 整合包",
@@ -576,6 +577,62 @@
     "showIncompatible": "显示不兼容 Mods",
     "unselected": "未选 Mods"
   },
+  "modrinth": {
+    "avaiableFor": "可用于",
+    "categories": {
+      "adventure": "冒险",
+      "cursed": "Cursed",
+      "decoration": "装饰",
+      "equipment": "装备",
+      "food": "食物",
+      "library": "库",
+      "magic": "魔法",
+      "misc": "杂项",
+      "name": "分类",
+      "storage": "存储",
+      "technology": "科技",
+      "utility": "工具",
+      "worldgen": "世界生成"
+    },
+    "clientSide": "客户端",
+    "createAt": "创建日期",
+    "description": "详情",
+    "downloads": "下载量",
+    "environments": {
+      "client": "客户端",
+      "name": "环境",
+      "server": "服务端"
+    },
+    "gameVersions": {
+      "name": "游戏版本"
+    },
+    "license": "协议",
+    "licenses": {
+      "name": "协议"
+    },
+    "modLoaders": {
+      "name": "Mod 加载器"
+    },
+    "perPage": "显示数量",
+    "projectId": "项目 ID",
+    "searchText": "搜素",
+    "serverSide": "服务端",
+    "sort": {
+      "downloads": "下载数量",
+      "follows": "关注数",
+      "newest": "创建时间",
+      "relevance": "相关性",
+      "title": "排序",
+      "updated": "更新时间"
+    },
+    "sortBy": {
+    },
+    "updateAt": "更新于",
+    "versionType": {
+      "name": "类型"
+    },
+    "versions": "版本"
+  },
   "name": "名称",
   "next": "下一项",
   "no": "否",
@@ -622,7 +679,6 @@
     "localVersion": "本地版本",
     "localVersionEmpty": "自动生成",
     "localVersionHint": "选择本地版本会覆盖Minecraft版本的设置",
-    "showInstance": "显示文件夹",
     "logsCrashes": {
       "crashes": "崩溃报告",
       "logs": "日志",
@@ -705,6 +761,7 @@
       "versionHint": "Ping 使用的 Minecraft 版本"
     },
     "setting": "游戏设置",
+    "showInstance": "显示文件夹",
     "templateSetting": {
       "": "模板设置",
       "importing": "模板导入",
