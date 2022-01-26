@@ -59,7 +59,7 @@ jobs:
           xmcl-electron-app/build/output/win-unpacked/resources/app.asar
           xmcl-electron-app/build/output/win-unpacked/resources/app.asar.sha256
 
-  repare-release:
+  prepare-release:
     runs-on: ubuntu-latest
     needs: build
     if: ${{ !startsWith(github.event.head_commit.message, 'chore(release)') }}
