@@ -2,7 +2,7 @@ const fs = require('fs');
 const core = require('@actions/core');
 
 async function main(output) {
-    const { version } = JSON.parse(fs.readFileSync(`xmcl-electron-app/package.json`).toString());
+    const { version } = JSON.parse(fs.readFileSync(`package.json`).toString());
     const changelog = fs.readFileSync('CHANGELOG.md').toString();
     const changelogLines = changelog.split('\n').map(s => s.trim());
 
@@ -17,7 +17,7 @@ async function main(output) {
     } else {
         console.log(`Not found this version start:`);
         let lines = changelogLines.filter(c => c.startsWith('##'));
-        for (let l of lines) console.log(`${l.start(`## [${version}]`)}: ${l}`);
+        for (let l of lines) console.log(`${l.startsWith(`## [${version}]`)}: ${l}`);
     }
 
     console.log(body);
