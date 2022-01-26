@@ -1,6 +1,7 @@
 {
+  "name": "prepare-release",
   "private": true,
   "dependencies": {
-    "@actions/core": "1.6.0"
+    "@actions/core": "^1.6.0"
   }
 }

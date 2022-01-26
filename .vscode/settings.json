@@ -13,37 +13,31 @@
         "**/node_modules": true
     },
     "typescript.preferences.quoteStyle": "single",
-    "vetur.format.defaultFormatter.js": "vscode-typescript",
-    "vetur.format.defaultFormatter.ts": "vscode-typescript",
-    "vetur.format.enable": true,
-    "vetur.validation.template": true,
-    "vetur.validation.script": true,
-    "vetur.experimental.templateInterpolationService": true,
     "editor.tabSize": 2,
-    "vetur.format.defaultFormatterOptions": {
-        "vscode-typescript": {
-            "indent_size": 2
-        },
-        "prettyhtml": {
-            "wrapAttributes": true
-        }
-    },
     "typescript.tsdk": "node_modules/typescript/lib",
-    "i18n-ally.localesPaths": [
-        "src/renderer/assets/locales",
-        "src/main/util/locales"
-    ],
+    "i18n-ally.enabledFrameworks": ["vue-sfc", "vue"],
+    "i18n-ally.editor.preferEditor": true,
     "i18n-ally.keystyle": "nested",
     "i18n-ally.sortKeys": true,
+    // "i18n-ally.keepFulfilled": true,
     "cSpell.words": [
         "Curseforge",
         "logined",
         "logining",
         "Minecraft",
+        "Modpack",
+        "modpacks",
+        "Modrinth",
         "mojang",
-        "xmcl",
-        "Modpack"
+        "resourcepack",
+        "xmcl"
     ],
     "cSpell.enabled": true,
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "yaml.schemas": {
+        "https://json.schemastore.org/github-workflow.json": "file:///.github/workflows/deploy.yml"
+    },
+    "i18n-ally.localesPaths": [
+        "xmcl-keystone-ui/src/assets/locales"
+    ]
 }
