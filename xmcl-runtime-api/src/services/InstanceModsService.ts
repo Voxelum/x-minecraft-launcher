@@ -24,11 +24,20 @@ export class InstanceModsState {
 
   instanceModUpdate(r: AnyResource[]) {
     for (const res of r) {
-      const existed = this.mods.find(m => m.hash === res.hash)
-      if (existed) {
-        Object.assign(existed, r)
+      const existed = this.mods.findIndex(m => m.hash === res.hash)
+      if (existed !== -1) {
+        this.mods[existed] = res
       } else {
         this.mods.push(res)
+      }
+    }
+  }
+
+  instanceModUpdateExisted(r: AnyResource[]) {
+    for (const res of r) {
+      const existed = this.mods.findIndex(m => m.hash === res.hash)
+      if (existed !== -1) {
+        this.mods[existed] = { ...res, path: this.mods[existed].path }
       }
     }
   }

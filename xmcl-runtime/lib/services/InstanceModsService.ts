@@ -1,5 +1,6 @@
 import { FabricModMetadata } from '@xmcl/mod-parser'
 import { AnyResource, FabricResource, ForgeModCommonMetadata, getFabricModCompatibility, getForgeModCompatibility, InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState, isFabricModCompatible, isFabricResource, isForgeModCompatible, isForgeResource, isModResource, isPersistedResource, IssueReport, parseVersion, ResourceDomain, ResourceType, VersionRange } from '@xmcl/runtime-api'
+import { existsSync } from 'fs'
 import { ensureDir, FSWatcher, stat, unlink } from 'fs-extra'
 import watch from 'node-watch'
 import { dirname, join } from 'path'
@@ -33,6 +34,12 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
   ) {
     super(app)
+    this.storeManager.subscribe('resources', (resources) => {
+      this.state.instanceModUpdateExisted(resources)
+    })
+    this.storeManager.subscribe('resource', (r) => {
+      this.state.instanceModUpdateExisted([r])
+    })
   }
 
   async showDirectory(): Promise<void> {
@@ -55,7 +62,7 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
     })
     const persisted = await Promise.all(resources
       .filter(([res]) => !(res.fileType === 'directory' && res.domain === ResourceDomain.Unknown)) // unknown directory
-      .map(([res, icon]) => !isPersistedResource(res) ? this.resourceService.importParsedResource({ path: res.path, type: res.type }, res, icon) : Promise.resolve(res)))
+      .map(async ([res, icon]) => !isPersistedResource(res) ? { ...(await this.resourceService.importParsedResource({ path: res.path, type: res.type }, res, icon)), path: res.path } : Promise.resolve(res)))
     return persisted
   }
 
@@ -171,7 +178,7 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
               return
             }
             this.resourceService.importParsedResource({ path: filePath }, resource, icon).then((res) => {
-              this.addMod.push(res)
+              this.addMod.push({ ...res, path: resource.path })
             }, (e) => {
               this.addMod.push(resource)
               this.warn(`Fail to persist resource in /mods directory! ${filePath}`)
@@ -232,13 +239,18 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
     const { mods, path = this.state.instance } = options
     this.log(`Uninstall ${mods.length} mods from ${path}`)
     const promises: Promise<void>[] = []
-    const root = join(path, ResourceDomain.Mods)
+    const instanceModsDir = join(path, ResourceDomain.Mods)
     for (const resource of mods) {
-      if (dirname(resource.path) !== root) {
+      if (dirname(resource.path) !== instanceModsDir) {
         const founded = this.state.mods.find(m => m.ino === resource.ino) ??
           this.state.mods.find(m => m.hash === resource.hash)
         if (founded) {
-          promises.push(unlink(founded.path))
+          const realPath = join(instanceModsDir, founded.fileName + founded.ext)
+          if (existsSync(realPath)) {
+            promises.push(unlink(realPath))
+          } else {
+            this.warn(`Skip to uninstall unmanaged mod file on ${resource.path}!`)
+          }
         } else {
           this.warn(`Skip to uninstall unmanaged mod file on ${resource.path}!`)
         }
