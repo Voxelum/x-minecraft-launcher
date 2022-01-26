@@ -29,6 +29,7 @@ export default function createWorkerPlugin(): Plugin {
           write: true,
           absWorkingDir: outDir,
           outdir: outDir,
+          sourcemap: build.initialOptions.watch ? 'inline' : false,
           platform: 'node',
         })
         const fileName = (Object.keys(result.metafile?.outputs || {})[0])
