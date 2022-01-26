@@ -93,7 +93,7 @@ export function useInstanceCreation() {
   const { gameProfile } = useCurrentUser()
   const { createAndMount: createAndSelect } = useService(InstanceServiceKey)
   const { release } = useMinecraftVersions()
-  const data = reactive<InstanceData & Data>({
+  const data = reactive<InstanceData>({
     name: '',
     runtime: { forge: '', minecraft: release.value?.id || '', liteloader: '', fabricLoader: '', yarn: '' } as RuntimeVersions,
     version: '',
@@ -111,10 +111,8 @@ export function useInstanceCreation() {
     icon: '',
     server: null,
   })
-  const refs = toRefs(data)
-  const required: Required<typeof refs> = toRefs(data) as any
   return {
-    ...required,
+    ...toRefs(data),
     /**
      * Commit this creation. It will create and select the instance.
      */
@@ -145,8 +143,6 @@ export function useInstanceCreation() {
       data.resolution = null
       data.url = ''
       data.icon = ''
-      data.image = ''
-      data.blur = 4
       data.server = null
     },
   }

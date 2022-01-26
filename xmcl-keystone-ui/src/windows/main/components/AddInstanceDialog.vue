@@ -171,7 +171,7 @@ export default defineComponent({
         if (currentTemplate.value && currentTemplate.value.type === 'modpack') {
           importCurseforgeModpack({
             path: currentTemplate.value.path,
-            instanceConfig: reactive(creationData),
+            instanceConfig: reactive({ ...creationData }),
           }).then((path) => mountInstance(path))
           await new Promise((resolve) => {
             setTimeout(resolve, 1000)
