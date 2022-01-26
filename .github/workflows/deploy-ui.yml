@@ -26,7 +26,7 @@ jobs:
         node-version: 15
         cache: 'pnpm'
     - name: Install
-      run: pnpm install --filter=!./xmcl-page
+      run: pnpm install --filter=!./xmcl-page --filter=!./electron-app
     - name: Build
       run: |
         pnpm run build --prefix xmcl-keystone-ui
