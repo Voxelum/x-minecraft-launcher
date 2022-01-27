@@ -104,8 +104,13 @@ async function start() {
 
   console.log()
   if (process.env.BUILD_TARGET) {
-    const dir = process.env.BUILD_TARGET === 'dir'
-    await buildElectron(electronBuilderConfig, dir)
+    if (process.env.BUILD_TARGET !== 'appx') {
+      const dir = process.env.BUILD_TARGET === 'dir'
+      await buildElectron(electronBuilderConfig, dir)
+    } else {
+      electronBuilderConfig.win!.target = 'appx'
+      await buildElectron(electronBuilderConfig, false)
+    }
   }
 
   // await copy(path.join(__dirname, './build/icons'), path.join(__dirname, './build/output/win-unpacked/icons'))

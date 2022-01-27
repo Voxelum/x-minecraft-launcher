@@ -24,6 +24,9 @@ export default defineConfig({
     outDir: resolve(__dirname, './dist'),
     assetsInlineLimit: 0,
   },
+  define: {
+    DISABLE_UPDATE: process.env.BUILD_TARGET === 'appx',
+  },
   resolve: {
     alias: {
       '/@': join(__dirname, './src'),

@@ -34,6 +34,7 @@ export const config: Configuration = {
     publisher: 'CN=DAFB9390-F5BD-4F94-828C-242F8DAA6FDE',
     publisherDisplayName: 'CI010',
     setBuildNumber: true,
+    languages: ['en-US', 'zh-CN', 'ru'],
   },
   nsis: {
     // eslint-disable-next-line no-template-curly-in-string
@@ -85,7 +86,6 @@ export const config: Configuration = {
       '**/*.worker.js',
     ],
     target: [
-      'appx',
       'nsis:x64',
       {
         target: 'nsis-web',

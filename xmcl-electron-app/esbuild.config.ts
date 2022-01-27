@@ -17,6 +17,9 @@ const config: BuildOptions = {
   format: 'cjs',
   sourcemap: process.env.NODE_ENV === 'production' ? false : 'inline',
   minify: process.env.NODE_ENV === 'production',
+  define: {
+    'process.env.BUILD_TARGET': JSON.stringify(process.env.BUILD_TARGET) ?? '""',
+  },
   platform: 'node',
   loader: {
     '.png': 'file',
