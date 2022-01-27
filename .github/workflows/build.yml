@@ -52,7 +52,6 @@ jobs:
           xmcl-electron-app/build/output/nsis-web/*.*
     - name: Upload Zip Build
       uses: actions/upload-artifact@v2
-      if: ${{ runner.os == 'Windows' }}
       with:
         name: ${{ runner.os }}-zip
         path: |
@@ -85,7 +84,7 @@ jobs:
     - name: Build
       run: |
         pnpm run build --prefix xmcl-keystone-ui
-        pnpm run build:all --prefix xmcl-electron-app
+        pnpm run build --prefix xmcl-electron-app
       env:
         BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
         FULL_RELEASE: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
