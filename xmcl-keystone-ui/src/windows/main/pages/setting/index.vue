@@ -115,8 +115,15 @@
         style="background: transparent"
         class="flex-grow"
       >
-        <v-subheader>{{ $t("setting.update") }}</v-subheader>
-        <v-list-tile avatar>
+        <v-subheader
+          v-if="!disableUpdate"
+        >
+          {{ $t("setting.update") }}
+        </v-subheader>
+        <v-list-tile
+          v-if="!disableUpdate"
+          avatar
+        >
           <v-list-tile-action>
             <v-btn
               icon
@@ -464,6 +471,7 @@ export default defineComponent({
     const { migrate, postMigrate, openDirectory, state } = useBaseService()
     const settings = useSettings()
     const { $t } = useI18n()
+    const disableUpdate = DISABLE_UPDATE
     const data = reactive({
       rootLocation: state.root,
 
@@ -536,6 +544,7 @@ export default defineComponent({
           data.migrateDialog = false
         }
       },
+      disableUpdate,
       backgroundTypes,
       ...setupImage(),
     }

@@ -79,7 +79,7 @@ export default class BaseService extends StatefulService<BaseState> implements I
     if (this.state.updateStatus === 'ready' && this.state.updateInfo) {
       await this.app.installUpdateAndQuit(this.state.updateInfo)
     } else {
-      this.warn('There is no update avaiable!')
+      this.warn('There is no update available!')
     }
   }
 
@@ -89,6 +89,7 @@ export default class BaseService extends StatefulService<BaseState> implements I
   @Singleton()
   async checkUpdate() {
     if (IS_DEV) return
+    if (process.env.BUILD_TARGET === 'appx') return
     try {
       this.log('Check update')
       const info = await this.submit(this.app.checkUpdateTask())
