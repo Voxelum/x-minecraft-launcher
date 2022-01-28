@@ -1,4 +1,25 @@
 
+## 0.17.1
+### xmcl@0.16.2
+#### Bug Fixes
+
+- auto update for nsis ([db668ca243c9f2b363f227bf35e300ce54ae980d](https://github.com/Voxelum/x-minecraft-launcher/commit/db668ca243c9f2b363f227bf35e300ce54ae980d))
+### @xmcl/runtime-api@0.1.0
+### @xmcl/keystone-ui@0.16.1
+#### Bug Fixes
+
+- **ui**: correctly detect the loading state ([8bcb1790439d7b6b4f3edb0f9b07469dd48c3717](https://github.com/Voxelum/x-minecraft-launcher/commit/8bcb1790439d7b6b4f3edb0f9b07469dd48c3717))
+- disable update if it's in appx container ([3303c05e830c43f78a1fd96e0baef80a5a2594d4](https://github.com/Voxelum/x-minecraft-launcher/commit/3303c05e830c43f78a1fd96e0baef80a5a2594d4))
+#### Dependencies Updates
+
+Dependency @xmcl/runtime-api bump ****### @xmcl/runtime@0.15.1
+#### Bug Fixes
+
+- disable update if it's in appx container ([3303c05e830c43f78a1fd96e0baef80a5a2594d4](https://github.com/Voxelum/x-minecraft-launcher/commit/3303c05e830c43f78a1fd96e0baef80a5a2594d4))
+#### Dependencies Updates
+
+Dependency @xmcl/runtime-api bump ****
+
 ## 0.17.0
 ### xmcl@0.16.1
 #### Bug Fixes
