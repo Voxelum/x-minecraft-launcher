@@ -120,6 +120,7 @@ export async function quitAndInstallAsar(this: ElectronLauncherApp) {
   this.log(`Install asar on ${this.platform.name}`)
   if (this.platform.name === 'windows') {
     const elevatePath = join(appPath, 'resources', 'elevate.exe')
+    let hasElevation = true
 
     if (!existsSync(updateAsarPath)) {
       this.error(`No update found: ${updateAsarPath}`)
@@ -127,7 +128,8 @@ export async function quitAndInstallAsar(this: ElectronLauncherApp) {
     }
     if (!existsSync(elevatePath)) {
       this.error(`No elevate.exe found: ${elevatePath}`)
-      throw new Error(`No elevate.exe found: ${elevatePath}`)
+      hasElevation = false
+      // throw new Error(`No elevate.exe found: ${elevatePath}`)
     }
     const psPath = join(this.appDataPath, 'AutoUpdate.ps1')
     let hasWriteAccess = await new Promise((resolve) => {
@@ -151,7 +153,7 @@ export async function quitAndInstallAsar(this: ElectronLauncherApp) {
     }
     startProcessCmd += ` -WorkingDirectory ${process.cwd()}`
     await writeFile(psPath, [
-      'Start-Sleep -s 3',
+      'Start-Sleep -s 5',
       `Copy-Item -Path "${updateAsarPath}" -Destination "${appAsarPath}"`,
       `Remove-Item -Path "${updateAsarPath}"`,
       startProcessCmd,
@@ -164,7 +166,7 @@ export async function quitAndInstallAsar(this: ElectronLauncherApp) {
       '-File',
       `"${psPath}"`,
     ]
-    if (!hasWriteAccess) {
+    if (!hasWriteAccess && hasElevation) {
       args.unshift(elevatePath)
     }
     this.log(`Install from windows: ${args.join(' ')}`)
@@ -195,9 +197,16 @@ let injectedUpdate = false
 
 export function checkUpdateTask(this: ElectronLauncherApp): Task<_UpdateInfo> {
   return task('checkUpdate', async () => {
+    // eslint-disable-next-line no-undef-init
+    let updateInfo: _UpdateInfo | undefined = undefined
+    let newUpdate = false
     autoUpdater.once('update-available', () => {
       this.log('Update available and set status to pending')
-      updateInfo.newUpdate = true
+      if (updateInfo) {
+        updateInfo.newUpdate = true
+      } else {
+        newUpdate = true
+      }
     })
     this.log(`Check update via ${autoUpdater.getFeedURL()}`)
     const info = await autoUpdater.checkForUpdates()
@@ -216,7 +225,10 @@ export function checkUpdateTask(this: ElectronLauncherApp): Task<_UpdateInfo> {
       }
     }
 
-    const updateInfo: _UpdateInfo = info.updateInfo as any as _UpdateInfo
+    updateInfo = info.updateInfo as any as _UpdateInfo
+    if (newUpdate) {
+      updateInfo.newUpdate = true
+    }
 
     updateInfo.incremental = false
     const currentVersion = autoUpdater.currentVersion
