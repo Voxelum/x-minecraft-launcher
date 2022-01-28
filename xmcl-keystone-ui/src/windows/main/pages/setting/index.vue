@@ -471,6 +471,7 @@ export default defineComponent({
     const { migrate, postMigrate, openDirectory, state } = useBaseService()
     const settings = useSettings()
     const { $t } = useI18n()
+    // eslint-disable-next-line no-undef
     const disableUpdate = DISABLE_UPDATE
     const data = reactive({
       rootLocation: state.root,

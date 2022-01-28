@@ -26,10 +26,10 @@ jobs:
     - uses: pnpm/action-setup@v2.0.1
       with:
         version: 6.24.4
-    - name: Use Node.js 15
+    - name: Use Node.js 16
       uses: actions/setup-node@v2
       with:
-        node-version: 15
+        node-version: 16
         cache: 'pnpm'
     - name: Install
       run: pnpm install --filter=!./xmcl-page
@@ -74,10 +74,10 @@ jobs:
     - uses: pnpm/action-setup@v2.0.1
       with:
         version: 6.24.4
-    - name: Use Node.js 15
+    - name: Use Node.js 16
       uses: actions/setup-node@v2
       with:
-        node-version: 15
+        node-version: 16
         cache: 'pnpm'
     - name: Install
       run: pnpm install --filter=!./xmcl-page
@@ -112,10 +112,10 @@ jobs:
     - uses: pnpm/action-setup@v2.0.1
       with:
         version: 6.24.4
-    - name: Use Node.js 15
+    - name: Use Node.js 16
       uses: actions/setup-node@v2
       with:
-        node-version: 15
+        node-version: 16
     - name: Install
       run: |
         pnpm install --filter ./.github/actions
@@ -124,10 +124,11 @@ jobs:
       uses: Voxelum/semantic-version-bump-action@master
       with:
         packages: |
-          ./xmcl-electron-app
           ./xmcl-keystone-ui
           ./xmcl-runtime
           ./xmcl-runtime-api
+        root: ./xmcl-electron-app
+        read-root-commits: true
     - name: Update Lock File
       if: ${{ steps.version.outputs.release == 'true' }}
       run: pnpm i --lockfile-only
@@ -156,10 +157,10 @@ jobs:
     - uses: pnpm/action-setup@v2.0.1
       with:
         version: 6.24.4
-    - name: Use Node.js 15
+    - name: Use Node.js 16
       uses: actions/setup-node@v2
       with:
-        node-version: 15
+        node-version: 16
         cache: 'pnpm'
     - name: Install
       run: |
@@ -178,6 +179,14 @@ jobs:
     - name: Prepare Release
       id: prepare_release
       uses: ./.github/actions/prepare-release
+    - name: Upload to Azure
+      uses: ci010/upload-blob-to-azure@master
+      env:
+        AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
+      with:
+        account: xmcl
+        container: releases
+        directory: ./build
     - name: Draft Release
       id: create_release
       uses: voxelum/create-release@master
@@ -193,15 +202,7 @@ jobs:
     - name: Update Web Page
       uses: benc-uk/workflow-dispatch@v1
       with:
-        workflow: deploy
+        workflow: Deploy
         token: ${{ secrets.PAT_GITHUB_TOKEN }}
         ref: 'master'
         repo: 'voxelum/xmcl-page'
-    - name: Upload to Azure
-      uses: ci010/upload-blob-to-azure@master
-      env:
-        AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
-      with:
-        account: xmcl
-        container: releases
-        directory: ./build

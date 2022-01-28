@@ -20,10 +20,10 @@ jobs:
     - uses: pnpm/action-setup@v2.0.1
       with:
         version: 6.24.4
-    - name: Use Node.js 15
+    - name: Use Node.js 16
       uses: actions/setup-node@v2
       with:
-        node-version: 15
+        node-version: 16
         cache: 'pnpm'
     - name: Install
       run: pnpm install --filter=!./xmcl-page --filter=!./electron-app
