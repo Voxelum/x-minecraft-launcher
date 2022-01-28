@@ -30,7 +30,7 @@ export function useIssues() {
     }
     return issues
   })
-  const refreshing = useBusy('diagnose')
+  const refreshing = useBusy('diagnose()')
 
   function fix(issue: Issue, issues: readonly Issue[]) {
     console.log(`Fix issue ${issue.id}`)

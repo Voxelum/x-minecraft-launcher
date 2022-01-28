@@ -132,7 +132,7 @@ export function useUserSkin(userId: Ref<string>, gameProfileId: Ref<string>) {
   })
   return {
     ...toRefs(data),
-    refreshing: useBusy('refreshSkin'),
+    refreshing: useBusy('refreshSkin()'),
     refresh,
     save,
     reset,
@@ -310,7 +310,7 @@ export function useUserSecurityStatus() {
 
   return {
     security,
-    refreshing: useBusy('checkLocation'),
+    refreshing: useBusy('checkLocation()'),
   }
 }
 

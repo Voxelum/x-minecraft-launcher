@@ -13,7 +13,7 @@ export function useJava() {
   const all = computed(() => state.all)
   const defaultJava = computed(() => state.all.find(j => j.majorVersion === 8) ?? state.all[0])
   const missing = computed(() => state.missingJava)
-  const refreshing = useBusy('java')
+  const refreshing = useBusy('java()')
   function remove(java: JavaRecord) {
     state.javaRemove(java)
   }

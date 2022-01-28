@@ -33,8 +33,8 @@ export function useSettings() {
   })
   const apiSets = computed(() => ['mojang', ...state.apiSets])
   const updateStatus = computed(() => state.updateStatus)
-  const checkingUpdate = useBusy('checkUpdate')
-  const downloadingUpdate = useBusy('downloadUpdate')
+  const checkingUpdate = useBusy('checkUpdate()')
+  const downloadingUpdate = useBusy('downloadUpdate()')
   const updateInfo: Ref<UpdateInfo> = computed(() => state.updateInfo || {}) as any
 
   return {
@@ -65,8 +65,8 @@ export function useLauncherVersion() {
 
 export function useUpdateInfo() {
   const { state, checkUpdate, downloadUpdate, quitAndInstall } = useBaseService()
-  const checkingUpdate = useBusy('checkUpdate')
-  const downloadingUpdate = useBusy('downloadUpdate')
+  const checkingUpdate = useBusy('checkUpdate()')
+  const downloadingUpdate = useBusy('downloadUpdate()')
   const updateInfo = computed(() => state.updateInfo)
   const updateStatus = computed(() => state.updateStatus)
   return {

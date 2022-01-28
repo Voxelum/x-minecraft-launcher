@@ -125,7 +125,7 @@ export function useCurseforgeProject(projectId: number) {
 export function useCurseforgeCategories() {
   const { state, loadCategories } = useService(CurseForgeServiceKey)
   const categories = computed(() => state.categories)
-  const refreshing = useBusy('loadCategories')
+  const refreshing = useBusy('loadCategories()')
   onMounted(() => {
     loadCategories()
   })
