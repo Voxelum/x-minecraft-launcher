@@ -170,7 +170,8 @@ jobs:
       with:
         name: build
         path: build
-    - uses: ./.github/actions/generate-mcbbs-content
+    - name: Generate MCBBS content
+      uses: ./.github/actions/generate-mcbbs-content
     - name: Upload Mcbbs Content
       uses: actions/upload-artifact@v2
       with:

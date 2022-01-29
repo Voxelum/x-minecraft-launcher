@@ -1,3 +1,27 @@
+## 0.17.2
+### @xmcl/runtime-api@0.1.1
+#### Bug Fixes
+
+- suppress incompatible mod warning & refactor ([2f45cdbf7f11cb04b29f03c78d411eae6b830153](https://github.com/Voxelum/x-minecraft-launcher/commit/2f45cdbf7f11cb04b29f03c78d411eae6b830153))
+### @xmcl/keystone-ui@0.16.2
+#### Bug Fixes
+
+- suppress incompatible mod warning & refactor ([2f45cdbf7f11cb04b29f03c78d411eae6b830153](https://github.com/Voxelum/x-minecraft-launcher/commit/2f45cdbf7f11cb04b29f03c78d411eae6b830153))
+- curseforge no author name error ([ce144602e508abac98b50db466b7e7f2db943d96](https://github.com/Voxelum/x-minecraft-launcher/commit/ce144602e508abac98b50db466b7e7f2db943d96))
+- **curseforge**: support curseforge import resourcepack ([eb6d9f6c2903647ea8f65b67b938ae34d8e0243d](https://github.com/Voxelum/x-minecraft-launcher/commit/eb6d9f6c2903647ea8f65b67b938ae34d8e0243d))
+- **ui**: correctly detect the loading state ([8bcb1790439d7b6b4f3edb0f9b07469dd48c3717](https://github.com/Voxelum/x-minecraft-launcher/commit/8bcb1790439d7b6b4f3edb0f9b07469dd48c3717))
+- disable update if it's in appx container ([3303c05e830c43f78a1fd96e0baef80a5a2594d4](https://github.com/Voxelum/x-minecraft-launcher/commit/3303c05e830c43f78a1fd96e0baef80a5a2594d4))
+### @xmcl/runtime@0.15.2
+#### Bug Fixes
+
+- suppress incompatible mod warning & refactor ([2f45cdbf7f11cb04b29f03c78d411eae6b830153](https://github.com/Voxelum/x-minecraft-launcher/commit/2f45cdbf7f11cb04b29f03c78d411eae6b830153))
+- **curseforge**: support curseforge import resourcepack ([eb6d9f6c2903647ea8f65b67b938ae34d8e0243d](https://github.com/Voxelum/x-minecraft-launcher/commit/eb6d9f6c2903647ea8f65b67b938ae34d8e0243d))
+- disable update if it's in appx container ([3303c05e830c43f78a1fd96e0baef80a5a2594d4](https://github.com/Voxelum/x-minecraft-launcher/commit/3303c05e830c43f78a1fd96e0baef80a5a2594d4))
+### xmcl@0.17.2
+#### Bug Fixes
+
+- auto update for nsis ([db668ca243c9f2b363f227bf35e300ce54ae980d](https://github.com/Voxelum/x-minecraft-launcher/commit/db668ca243c9f2b363f227bf35e300ce54ae980d))
+
 
 ## 0.17.1
 ### xmcl@0.16.2
