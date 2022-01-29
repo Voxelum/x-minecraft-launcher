@@ -27,9 +27,9 @@ export const config: Configuration = {
   // eslint-disable-next-line no-template-curly-in-string
   artifactName: '${productName}-${version}-${platform}-${arch}.${ext}',
   appx: {
-    displayName: 'Minecraft Launcher X',
-    applicationId: 'CI010.MinecraftLauncherX',
-    identityName: '22961CI010.MinecraftLauncherX',
+    displayName: 'XMCL',
+    applicationId: 'CI010.XMCL',
+    identityName: '22961CI010.XMCL',
     backgroundColor: 'transparent',
     publisher: 'CN=DAFB9390-F5BD-4F94-828C-242F8DAA6FDE',
     publisherDisplayName: 'CI010',

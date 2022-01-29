@@ -22,7 +22,7 @@
     },
     "dependencies": {
         "@types/three": "^0.127.1",
-        "@vue/composition-api": "^1.4.4",
+        "@vue/composition-api": "^1.4.5",
         "@xmcl/client": "2.1.2",
         "@xmcl/core": "workspace:*",
         "@xmcl/curseforge": "workspace:*",

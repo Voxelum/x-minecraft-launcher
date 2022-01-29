@@ -6,8 +6,8 @@
 		"eamodio.gitlens",
 		"dbaeumer.vscode-eslint",
 		"yzhang.markdown-all-in-one",
-		"msjsdiag.debugger-for-chrome",
-		"lokalise.i18n-ally"
+		"lokalise.i18n-ally",
+		"ms-edgedevtools.vscode-edge-devtools"
 	],
 	// List of extensions recommended by VS Code that should not be recommended for users of this workspace.
 	"unwantedRecommendations": []
