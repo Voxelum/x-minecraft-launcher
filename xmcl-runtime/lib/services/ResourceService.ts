@@ -193,7 +193,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
           if (this.pending.has(name)) {
             // just ignore pending file. It will handle once the json metadata file is updated
             this.pending.delete(name)
-            this.log(`Ignore pending imported file ${name}`)
+            this.log(`Ignore re-import a manually importing file ${name}`)
             return
           }
           try {

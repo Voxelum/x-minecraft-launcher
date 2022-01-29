@@ -1,13 +1,15 @@
 import { createDefaultCurseforgeQuery, installCurseforgeModpackTask, readManifest } from '@xmcl/installer'
-import { CurseforgeModpackManifest, EditInstanceOptions, Exception, ExportCurseforgeModpackOptions, ImportCurseforgeModpackOptions, InstanceCurseforgeIOService as IInstanceCurseforgeIOService, InstanceCurseforgeIOServiceKey, NO_RESOURCE, ResourceDomain, write } from '@xmcl/runtime-api'
+import { CurseforgeModpackManifest, EditGameSettingOptions, EditInstanceOptions, Exception, ExportCurseforgeModpackOptions, ImportCurseforgeModpackOptions, InstanceCurseforgeIOService as IInstanceCurseforgeIOService, InstanceCurseforgeIOServiceKey, isResourcePackResource, NO_RESOURCE, ResourceDomain, ResourceType, write } from '@xmcl/runtime-api'
 import { isNonnull, requireObject } from '@xmcl/runtime-api/utils'
-import { ensureDir, rename } from 'fs-extra'
+import { existsSync } from 'fs'
+import { ensureDir, rename, unlink } from 'fs-extra'
 import { basename, dirname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { getCurseforgeUrl } from '../entities/resource'
 import { isFile } from '../util/fs'
 import { ZipTask } from '../util/zip'
 import InstanceModsService from './InstanceModsService'
+import InstanceOptionsService from './InstanceOptionsService'
 import InstanceService from './InstanceService'
 import ResourceService from './ResourceService'
 import AbstractService, { ExportService, Inject } from './Service'
@@ -23,6 +25,7 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(VersionService) private versionService: VersionService,
     @Inject(InstanceModsService) private instanceModsService: InstanceModsService,
+    @Inject(InstanceOptionsService) private instanceOptionsService: InstanceOptionsService,
   ) {
     super(app)
   }
@@ -149,14 +152,25 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
     const lock = this.semaphoreManager.getLock(write(instancePath))
     return lock.write(async () => {
       // deploy existed resources
-      const filesToDeploy = manifest.files
+      const existedResources = manifest.files
         .map((f) => resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID)))
         .filter(isNonnull)
+
+      const resourcePacksMapping: Record<string, string> = existedResources
+        .filter(r => isResourcePackResource(r)).map((r) => {
+          const cfUri = r.uri.find(u => u.startsWith('https://edge.forgecdn.net'))
+          if (cfUri) {
+            return [r.fileName + r.ext, basename(cfUri)] as const
+          }
+          return [r.fileName + r.ext, r.name + r.ext] as const
+        }).reduce((o, v) => ({ ...o, [v[1]]: v[0] }), {})
+
+      const modsToDeploy = existedResources
         .filter(r => r.domain === ResourceDomain.Mods)
       await ensureDir(join(instancePath, 'mods'))
-      log(`Deploy ${filesToDeploy.length} existed resources from curseforge modpack!`)
+      log(`Deploy ${modsToDeploy.length} existed resources from curseforge modpack!`)
 
-      await instanceModsService.install({ mods: filesToDeploy, path: instancePath })
+      await instanceModsService.install({ mods: modsToDeploy, path: instancePath })
 
       // filter out existed resources
       manifest.files = manifest.files.filter((f) => !resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID)))
@@ -199,10 +213,33 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
         // rename the resource to correct name
         for (const res of resources.filter(r => r !== NO_RESOURCE)) {
           const path = mapping[`${res.curseforge!.projectId}:${res.curseforge!.fileId}`]
+          if (res.type === ResourceType.ResourcePack) {
+            this.log(`Clean the resource pack ${res.fileName} from /mods`)
+            await unlink(path)
+            const fileName = basename(path)
+            resourcePacksMapping[fileName] = res.fileName + res.ext
+            continue
+          }
           const realName = res.fileName + res.ext
           const realPath = join(dirname(path), realName)
           await rename(path, realPath)
         }
+      }
+
+      const optionsPath = join(instancePath, 'options.txt')
+      if (existsSync(optionsPath) && Object.keys(resourcePacksMapping).length > 0) {
+        this.log(`Remap options.txt resource pack name for ${Object.keys(resourcePacksMapping).length} packs`)
+        const options = await this.instanceOptionsService.getGameOptions(instancePath)
+        const editOptions: EditGameSettingOptions = {
+          instancePath,
+        }
+        if (options.resourcePacks) {
+          editOptions.resourcePacks = options.resourcePacks.map(fileName => resourcePacksMapping[fileName] ?? fileName)
+        }
+        if (options.incompatibleResourcePacks) {
+          editOptions.incompatibleResourcePacks = options.incompatibleResourcePacks.map(fileName => resourcePacksMapping[fileName] ?? fileName)
+        }
+        await this.instanceOptionsService.editGameSetting(editOptions)
       }
 
       return instancePath

@@ -48,7 +48,7 @@ export function useInstanceResourcePacks() {
   const { showDirectory } = useService(InstanceResourcePacksServiceKey)
   const { $t } = useI18n()
 
-  const loading = useBusy('editGameSetting')
+  const loading = useBusy('editGameSetting()')
   /**
    * The resource pack name array.
    * It's the REVERSED version of the resourcePacks array in options.txt (gamesetting).
