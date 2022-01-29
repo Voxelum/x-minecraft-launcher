@@ -1,22 +1,21 @@
 
+import { IS_DEV } from '@/constant'
 import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
 import { InstanceServiceKey, LaunchServiceKey, TaskNotification } from '@xmcl/runtime-api'
 import BaseService from '@xmcl/runtime/lib/services/BaseService'
-import { app, BrowserWindow, dialog, Menu, net, Notification, ProcessMemoryInfo, session, shell, Tray } from 'electron'
+import { app, BrowserWindow, dialog, Menu, Notification, ProcessMemoryInfo, session, shell, Tray } from 'electron'
 import { fromFile } from 'file-type'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
+import { acrylic } from './acrylic'
 import iconPath from './assets/apple-touch-icon.png'
 import favcon2XPath from './assets/favicon@2x.png'
-import { acrylic } from './acrylic'
 import './controlIpc'
-import './dialog'
 import i18n from './locales'
 import { trackWindowSize } from './windowSizeTracker'
-import { IS_DEV } from '@/constant'
 import indexPreload from '/@preload/index'
-import setupPreload from '/@preload/setup'
 import loggerPreload from '/@preload/logger'
+import setupPreload from '/@preload/setup'
 import mainWinUrl from '/@renderer/index.html'
 import loggerWinUrl from '/@renderer/logger.html'
 import setupWinUrl from '/@renderer/setup.html'
@@ -64,6 +63,21 @@ export default class Controller implements LauncherAppController {
         })
       }, 100)
     }
+  }
+
+  async createBrowseWindow() {
+    const browser = new BrowserWindow({
+      title: 'XMCL Launcher Browser',
+      minWidth: 800,
+      minHeight: 580,
+      frame: false,
+      transparent: true,
+      vibrancy: 'sidebar', // or popover
+      icon: iconPath,
+      webPreferences: {
+        preload: indexPreload,
+      },
+    })
   }
 
   async createMainWindow() {
@@ -384,7 +398,7 @@ export default class Controller implements LauncherAppController {
 
   async engineReady() {
     await this.createMainWindow()
-    // this.createCurseforgeWindow()
+
     this.setupTray()
     this.setupTask()
 
