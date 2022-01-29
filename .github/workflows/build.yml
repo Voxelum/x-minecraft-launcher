@@ -170,7 +170,8 @@ jobs:
       with:
         name: build
         path: build
-    - uses: ./.github/actions/generate-mcbbs-content
+    - name: Generate MCBBS content
+      uses: ./.github/actions/generate-mcbbs-content
     - name: Upload Mcbbs Content
       uses: actions/upload-artifact@v2
       with:
@@ -193,11 +194,11 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.prepare_release.outputs.tag }}
-        release_name: ${{ steps.prepare_release.outputs.release }}
+        tag_name: v${{ steps.version.outputs.version }}
+        release_name: v${{ steps.version.outputs.version }}
         draft: false
         prerelease: false
-        body: ${{ steps.prepare_release.outputs.body }}
+        body: ${{ steps.version.outputs.changelog }}
         asset_dir_path: ./build
     - name: Update Web Page
       uses: benc-uk/workflow-dispatch@v1
