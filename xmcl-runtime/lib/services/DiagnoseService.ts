@@ -112,7 +112,7 @@ export default class DiagnoseService extends StatefulService<DiagnoseState> impl
   report(report: Partial<IssueReport>) {
     for (const [key, value] of Object.entries(report)) {
       const reg = this.state.report[key]
-      if (value && reg.actived.length === 0 && value.length === 0) {
+      if (value && reg.activeIssues.length === 0 && value.length === 0) {
         delete report[key]
       }
     }

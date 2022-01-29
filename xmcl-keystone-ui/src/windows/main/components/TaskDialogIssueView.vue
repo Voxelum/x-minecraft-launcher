@@ -121,7 +121,7 @@ function useIssuesTree() {
   // let $id = 0
 
   // function collect(id: string, reg: Registry<any, any, any>) {
-  //   return reg.actived.map((a) => ({
+  //   return reg.activeIssues.map((a) => ({
   //     id,
   //     $id: $id++,
   //     fixing: reg.fixing,
@@ -135,10 +135,10 @@ function useIssuesTree() {
   //   const items: IssueLeaf[] = []
   //   const corruptedAssets = state.diagnose.corruptedAssets
   //   const missingAssets = state.diagnose.missingAssets
-  //   if (corruptedAssets.actived.length !== 0) {
+  //   if (corruptedAssets.activeIssues.length !== 0) {
   //     items.push(...collect('corruptedAssets', corruptedAssets))
   //   }
-  //   if (missingAssets.actived.length !== 0) {
+  //   if (missingAssets.activeIssues.length !== 0) {
   //     items.push(...collect('missingAssets', missingAssets))
   //   }
   //   return { name: 'assets', items, location: `${state.base.root}/assets`, $id: $id++ }
@@ -147,10 +147,10 @@ function useIssuesTree() {
   //   const items: IssueLeaf[] = []
   //   const corruptedLibraries = state.diagnose.corruptedLibraries
   //   const missingLibraries = state.diagnose.missingLibraries
-  //   if (corruptedLibraries.actived.length !== 0) {
+  //   if (corruptedLibraries.activeIssues.length !== 0) {
   //     items.push(...collect('corruptedLibraries', corruptedLibraries))
   //   }
-  //   if (missingLibraries.actived.length !== 0) {
+  //   if (missingLibraries.activeIssues.length !== 0) {
   //     items.push(...collect('missingLibraries', missingLibraries))
   //   }
   //   return { name: 'libraries', items, location: `${state.base.root}/libraries`, $id: $id++ }
@@ -160,13 +160,13 @@ function useIssuesTree() {
   //   const missingVersionJar = state.diagnose.missingVersionJar
   //   const missingVersionJson = state.diagnose.missingVersionJson
   //   const corruptedVersionJar = state.diagnose.corruptedVersionJar
-  //   if (missingVersionJar.actived.length !== 0) {
+  //   if (missingVersionJar.activeIssues.length !== 0) {
   //     items.push(...collect('missingVersionJar', missingVersionJar))
   //   }
-  //   if (missingVersionJson.actived.length !== 0) {
+  //   if (missingVersionJson.activeIssues.length !== 0) {
   //     items.push(...collect('missingVersionJson', missingVersionJson))
   //   }
-  //   if (corruptedVersionJar.actived.length !== 0) {
+  //   if (corruptedVersionJar.activeIssues.length !== 0) {
   //     items.push(...collect('corruptedVersionJar', corruptedVersionJar))
   //   }
   //   return { name: 'version', items, location: `${state.base.root}/versions`, $id: $id++ }
@@ -174,7 +174,7 @@ function useIssuesTree() {
   // const mods = computed(() => {
   //   const items: IssueLeaf[] = []
   //   const incompatibleMod = state.diagnose.incompatibleMod
-  //   if (incompatibleMod.actived.length !== 0) {
+  //   if (incompatibleMod.activeIssues.length !== 0) {
   //     items.push(...collect('incompatibleMod', incompatibleMod))
   //   }
   //   return { name: 'mod', items, location: `${state.base.root}/mods`, $id: $id++ }

@@ -10,7 +10,7 @@ export interface Issue {
 }
 
 export interface IssueRegistry<P> {
-  actived: Array<(P & { file?: string; actual?: string; expect?: string })>
+  activeIssues: Array<(P & { file?: string; actual?: string; expect?: string })>
   fixing: boolean
   autofix: boolean
   optional: boolean
@@ -20,11 +20,11 @@ export interface Registry<PARAM, AF = boolean, OP = boolean> {
   fixing: boolean
   autofix: AF
   optional: OP
-  actived: (PARAM & { file?: string; actual?: string; expect?: string })[]
+  activeIssues: (PARAM & { file?: string; actual?: string; expect?: string })[]
 }
 
 export type IssueReport = {
-  [K in keyof IssueRegistries]: IssueRegistries[K]['actived']
+  [K in keyof IssueRegistries]: IssueRegistries[K]['activeIssues']
 }
 
 export type IssueType = keyof IssueRegistries
@@ -44,7 +44,7 @@ export interface IssueRegistries {
   corruptedAssets: Registry<{ version: string; hash: string; name: string; size: number }, true, true>
 
   unknownMod: Registry<{ name: string; actual: string }, false, true>
-  incompatibleMod: Registry<{ name: string; actual: string; accepted: string }, false, true>
+  incompatibleMod: Registry<{ name: string; actual: string; accepted: string | string[]; dep: string }, false, true>
   incompatibleResourcePack: Registry<{ name: string; actual: string; accepted: string }, false, true>
   incompatibleJava: Registry<{ java: string; type: string; version: string; targetVersion: JavaVersion }, false, true>
 
@@ -69,6 +69,6 @@ export interface IssueRegistries {
     fixing: boolean
     autofix: boolean
     optional: boolean
-    actived: { [key: string]: any }[]
+    activeIssues: { [key: string]: any }[]
   }
 }

@@ -11,16 +11,16 @@ export function useIssues() {
   const issues = computed(() => {
     const issues: Issue[] = []
     for (const [id, reg] of Object.entries(state.report)) {
-      if (reg.actived.length === 0) continue
-      if (reg.actived.length >= 4) {
+      if (reg.activeIssues.length === 0) continue
+      if (reg.activeIssues.length >= 4) {
         issues.push({
           id,
-          parameters: reg.actived,
+          parameters: reg.activeIssues,
           autofix: reg.autofix,
           optional: reg.optional,
         })
       } else {
-        issues.push(...reg.actived.map(a => ({
+        issues.push(...reg.activeIssues.map(a => ({
           id,
           parameters: a,
           autofix: reg.autofix,

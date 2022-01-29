@@ -116,13 +116,16 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
           // no forge
           tree.requireForge.push({})
         } else {
-          for (const mod of forgeMods) {
-            const forgeComp = getForgeModCompatibility(mod, version)
-            if (!forgeComp.minecraft) {
-              // minecraft not compatible
-              tree.incompatibleMod.push({ name: mod.name, accepted: mod.metadata.acceptMinecraft, actual: mcversion })
-            }
-          }
+          // for (const mod of forgeMods) {
+          //   const forgeComp = getForgeModCompatibility(mod, version)
+          //   for (const [modid, comp] of Object.entries(forgeComp)) {
+          //     for (const [depName, detail] of Object.entries(comp)) {
+          //       if (!detail.compatible) {
+          //         tree.incompatibleMod.push({ name: mod.name, accepted: detail.requirements, actual: detail.version, dep: depName })
+          //       }
+          //     }
+          //   }
+          // }
         }
       } else if (fabricMods.length > 0) {
         if (!version.fabricLoader) {
@@ -131,7 +134,12 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
         } else {
           for (const mod of fabricMods) {
             const comp = getFabricModCompatibility(mod, version)
-            if (comp.fabric) {
+            // for (const [depName, detail] of Object.entries(comp)) {
+            //   if (!detail.compatible) {
+            //     tree.incompatibleMod.push({ name: mod.name, accepted: detail.requirements, actual: detail.version, dep: depName })
+            //   }
+            // }
+            if (comp.fabric && !comp.fabric.compatible) {
               // fabric api not compatible
               tree.requireFabricAPI.push({ version: comp.fabric.version, name: mod.name })
             }
