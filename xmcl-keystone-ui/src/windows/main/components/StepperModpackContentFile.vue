@@ -27,7 +27,7 @@
         <span
           v-if="project ? project.authors[0].name : ''"
           class="text--primary"
-        >{{ project ? project.authors[0].name : '' }}</span>
+        >{{ project && project.authors[0] ? project.authors[0].name : '' }}</span>
         {{ project ? project.summary : '' }}
       </v-list-tile-sub-title>
     </v-list-tile-content>

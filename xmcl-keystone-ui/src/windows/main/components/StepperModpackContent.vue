@@ -1,6 +1,9 @@
 <template>
   <div class="flex flex-col h-full overflow-auto">
-    <v-list two-line>
+    <v-list
+      v-if="!!curseforgeMetadata"
+      two-line
+    >
       <StepperModpackContentFile
         v-for="file in curseforgeMetadata.files"
         :key="file.fileID"
