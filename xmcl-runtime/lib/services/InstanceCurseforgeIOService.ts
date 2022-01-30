@@ -2,7 +2,7 @@ import { createDefaultCurseforgeQuery, installCurseforgeModpackTask, readManifes
 import { CurseforgeModpackManifest, EditGameSettingOptions, EditInstanceOptions, Exception, ExportCurseforgeModpackOptions, ImportCurseforgeModpackOptions, InstanceCurseforgeIOService as IInstanceCurseforgeIOService, InstanceCurseforgeIOServiceKey, isResourcePackResource, NO_RESOURCE, ResourceDomain, ResourceType, write } from '@xmcl/runtime-api'
 import { isNonnull, requireObject } from '@xmcl/runtime-api/utils'
 import { existsSync } from 'fs'
-import { ensureDir, rename, unlink } from 'fs-extra'
+import { ensureDir, remove, rename, unlink, writeFile } from 'fs-extra'
 import { basename, dirname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { getCurseforgeUrl } from '../entities/resource'
@@ -44,7 +44,7 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
       return
     }
 
-    const ganeVersionInstance = this.versionService.state.local.find(v => v.id === gameVersion)
+    const gameVersionInstance = this.versionService.state.local.find(v => v.id === gameVersion)
     const instance = this.instanceService.state.all[instancePath]
     const modLoaders = instance.runtime.forge
       ? [{
@@ -62,7 +62,7 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
       manifestType: 'minecraftModpack',
       manifestVersion: 1,
       minecraft: {
-        version: ganeVersionInstance?.minecraftVersion ?? instance.runtime.minecraft,
+        version: gameVersionInstance?.minecraftVersion ?? instance.runtime.minecraft,
         modLoaders,
       },
       name: options.name ?? name,
@@ -91,16 +91,67 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
         } else {
           zipTask.addFile(join(instancePath, file), `overrides/${file}`)
         }
-      } else {
+      } else if (file !== 'options.txt') {
         zipTask.addFile(join(instancePath, file), `overrides/${file}`)
       }
+    }
+
+    let tempOptions: string | undefined
+    const optionsPath = join(instancePath, 'options.txt')
+    if (existsSync(optionsPath) && overrides.find(f => f === 'options.txt')) {
+      this.log(`Remap options.txt resource pack name for export ${instancePath}`)
+      const options = await this.instanceOptionsService.getGameOptions(instancePath)
+
+      const resourcePacksMapping: Record<string, string> = this.resourceService.state.resourcepacks
+        .map((r) => {
+          const cfUri = r.uri.find(u => u.startsWith('https://edge.forgecdn.net'))
+          if (cfUri) {
+            return [r.fileName + r.ext, basename(cfUri)] as const
+          }
+          return [r.fileName + r.ext, r.name + r.ext] as const
+        }).reduce((o, v) => ({ ...o, [v[0]]: v[1] }), {})
+
+      if (options.resourcePacks) {
+        options.resourcePacks = options.resourcePacks.map(fileName => {
+          const hasPrefix = fileName.startsWith('file/')
+          const rawName = hasPrefix ? fileName.substring(5) : fileName
+          if (resourcePacksMapping[rawName]) {
+            return hasPrefix ? `file/${resourcePacksMapping[rawName]}` : resourcePacksMapping[rawName]
+          }
+          return fileName
+        })
+      }
+      if (options.incompatibleResourcePacks) {
+        options.incompatibleResourcePacks = options.incompatibleResourcePacks.map(fileName => {
+          const hasPrefix = fileName.startsWith('file/')
+          const rawName = hasPrefix ? fileName.substring(5) : fileName
+          if (resourcePacksMapping[rawName]) {
+            return hasPrefix ? `file/${resourcePacksMapping[rawName]}` : resourcePacksMapping[rawName]
+          }
+          return fileName
+        })
+      }
+
+      const optionsText = Object.entries(options)
+        .map(([k, v]) => typeof v !== 'string' ? `${k}:${JSON.stringify(v)}` : `${k}:${v}`)
+        .join('\n') + '\n'
+
+      tempOptions = this.getTempPath('options.txt')
+      await writeFile(tempOptions, optionsText)
+      zipTask.addFile(tempOptions, 'overrides/options.txt')
     }
 
     this.log(`Export instance ${instancePath} to curseforge ${JSON.stringify(curseforgeConfig, null, 4)}`)
 
     zipTask.addBuffer(Buffer.from(JSON.stringify(curseforgeConfig)), 'manifest.json')
 
-    await this.submit(zipTask)
+    try {
+      await this.submit(zipTask)
+    } finally {
+      if (tempOptions) {
+        await remove(tempOptions)
+      }
+    }
   }
 
   /**
