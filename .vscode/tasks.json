@@ -39,7 +39,7 @@
                     "background": {
                         "activeOnStart": true,
                         "beginsPattern": ".",
-                        "endsPattern": "electron main ready",
+                        "endsPattern": ".",
                     }
                 }
             ]
