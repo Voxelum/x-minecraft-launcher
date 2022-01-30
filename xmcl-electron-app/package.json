@@ -2,7 +2,7 @@
     "name": "xmcl",
     "private": true,
     "main": "./dist/index.js",
-    "version": "0.17.2",
+    "version": "0.17.3",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "A great minecraft launcher in the future",
     "license": "MIT",
