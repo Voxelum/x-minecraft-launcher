@@ -1,10 +1,10 @@
 import { JavaVersion } from '@xmcl/core'
 import { DownloadTask, fetchJavaRuntimeManifest, installJavaRuntimesTask, parseJavaVersion, resolveJava, scanLocalJava, UnzipTask } from '@xmcl/installer'
-import { IssueReport, Java, JavaRecord, JavaSchema, JavaService as IJavaService, JavaServiceKey, JavaState } from '@xmcl/runtime-api'
+import { Java, JavaRecord, JavaSchema, JavaService as IJavaService, JavaServiceKey, JavaState } from '@xmcl/runtime-api'
 import { requireObject, requireString } from '@xmcl/runtime-api/utils'
 import { task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
-import { ensureFile, move, readdir, readFile, remove, unlink } from 'fs-extra'
+import { access, chmod, constants, ensureFile, move, readdir, readFile, remove, unlink } from 'fs-extra'
 import { basename, dirname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { getTsingHuaAdpotOponJDKPageUrl, parseTsingHuaAdpotOpenJDKHotspotArchive } from '../entities/java'
@@ -35,7 +35,7 @@ export default class JavaService extends StatefulService<JavaState> implements I
 
   getInternalJavaLocation(version: JavaVersion) {
     return this.app.platform.name === 'osx'
-      ? this.getPath('jre', version.component, 'Contents', 'Home', 'bin', 'java')
+      ? this.getPath('jre', version.component, 'jre.bundle', 'Contents', 'Home', 'bin', 'java')
       : this.getPath('jre', version.component, 'bin',
         this.app.platform.name === 'windows' ? 'java.exe' : 'java')
   }
@@ -79,16 +79,18 @@ export default class JavaService extends StatefulService<JavaState> implements I
       target: target.component,
     })
     this.log(`Install jre runtime ${target.component} (${target.majorVersion}) ${manifest.version.name} ${manifest.version.released}`)
-    const dest = dirname(dirname(location))
+    const dest = this.getPath('jre', target.component)
     const task = installJavaRuntimesTask({
       manifest,
       apiHost: this.networkManager.isInGFW ? 'bmclapi2.bangbang93.com' : undefined,
       destination: dest,
-      // lzma: (src) => extractLzma(src),
       ...this.networkManager.getDownloadBaseOptions(),
     }).setName('installJre')
     await ensureFile(location)
     await this.submit(task)
+    if (this.app.platform.name !== 'windows') {
+      await chmod(location, 0o765)
+    }
     this.log(`Successfully install java internally ${location}`)
     await this.resolveJava(location)
   }
@@ -171,6 +173,14 @@ export default class JavaService extends StatefulService<JavaState> implements I
   }
 
   async validateJava(javaPath: string) {
+    if (this.app.platform.name !== 'windows') {
+      try {
+        await access(javaPath, constants.X_OK)
+      } catch (e) {
+        await chmod(javaPath, 0o765)
+      }
+    }
+
     const java = await resolveJava(javaPath)
     if (java) {
       this.log(`Resolved java ${java.version} in ${javaPath}`)
@@ -214,8 +224,18 @@ export default class JavaService extends StatefulService<JavaState> implements I
       }
       const javas = await scanLocalJava(commonLocations)
       const infos = javas.map(j => ({ ...j, valid: true }))
+
       this.log(`Found ${infos.length} java.`)
       this.state.javaUpdate(infos)
+
+      const local = this.getInternalJavaLocation({ majorVersion: 8, component: 'jre-legacy' })
+      if (!this.state.all.map(j => j.path).some(p => p === local)) {
+        this.validateJava(local)
+      }
+      const localAlpha = this.getInternalJavaLocation({ majorVersion: 16, component: 'java-runtime-alpha' })
+      if (!this.state.all.map(j => j.path).some(p => p === localAlpha)) {
+        this.validateJava(local)
+      }
     } else {
       this.log(`Re-validate cached ${this.state.all.length} java locations.`)
       const javas: JavaRecord[] = []

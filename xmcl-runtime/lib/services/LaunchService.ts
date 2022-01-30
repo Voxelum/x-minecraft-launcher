@@ -1,6 +1,8 @@
 import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder, Version } from '@xmcl/core'
 import { EMPTY_VERSION, Exception, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
 import { ChildProcess } from 'child_process'
+import { constants } from 'fs'
+import { access, chmod } from 'fs-extra'
 import { EOL } from 'os'
 import LauncherApp from '../app/LauncherApp'
 import DiagnoseService from './DiagnoseService'
@@ -189,6 +191,14 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
 
       this.log('Launching with these option...')
       this.log(JSON.stringify(option, (k, v) => (k === 'accessToken' ? '***' : v), 2))
+
+      if (this.app.platform.name !== 'windows') {
+        try {
+          await access(javaPath, constants.X_OK)
+        } catch (e) {
+          await chmod(javaPath, 0o765)
+        }
+      }
 
       // Launch
       const process = await launch(option)
