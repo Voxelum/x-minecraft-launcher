@@ -1,3 +1,11 @@
+
+## 0.17.3
+### @xmcl/runtime@0.15.3
+#### Bug Fixes
+
+- java install & permission on non-windows ([3d6c7bee0a357b38d7d4e7daf1963a8f9be4a75a](https://github.com/Voxelum/x-minecraft-launcher/commit/3d6c7bee0a357b38d7d4e7daf1963a8f9be4a75a))
+- correctly export resourcepack name ([a355d11b6e4fefedec95e822663b43a9cba13e11](https://github.com/Voxelum/x-minecraft-launcher/commit/a355d11b6e4fefedec95e822663b43a9cba13e11))
+
 ## 0.17.2
 ### @xmcl/runtime-api@0.1.1
 #### Bug Fixes
