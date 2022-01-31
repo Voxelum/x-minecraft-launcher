@@ -98,7 +98,35 @@ export default class UserService extends StatefulService<UserState> implements I
 
   constructor(app: LauncherApp,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService) {
-    super(app)
+    super(app, async () => {
+      const data = await this.userFile.read()
+      const result: UserSchema = {
+        authServices: {},
+        profileServices: {},
+        users: {},
+        selectedUser: {
+          id: '',
+          profile: '',
+        },
+        clientToken: '',
+      }
+      const mcdb = await this.getMinecraftAuthDb()
+      fitMinecraftLauncherProfileData(result, data, mcdb)
+      this.log(`Load ${Object.keys(result.users).length} users`)
+      if (!result.clientToken) {
+        result.clientToken = v4().replace(/-/g, '')
+      }
+      this.state.userSnapshot(result)
+
+      this.refreshUser()
+      if (this.state.selectedUser.id === '' && Object.keys(this.state.users).length > 0) {
+        const [userId, user] = Object.entries(this.state.users)[0]
+        this.switchUserProfile({
+          userId,
+          profileId: user.selectedProfile,
+        })
+      }
+    })
     this.storeManager.subscribeAll([
       'userProfileAdd',
       'userProfileRemove',
@@ -120,36 +148,6 @@ export default class UserService extends StatefulService<UserState> implements I
         this.diagnoseService.report({ userNotLogined: [] })
       }
     })
-  }
-
-  async initialize() {
-    const data = await this.userFile.read()
-    const result: UserSchema = {
-      authServices: {},
-      profileServices: {},
-      users: {},
-      selectedUser: {
-        id: '',
-        profile: '',
-      },
-      clientToken: '',
-    }
-    const mcdb = await this.getMinecraftAuthDb()
-    fitMinecraftLauncherProfileData(result, data, mcdb)
-    this.log(`Load ${Object.keys(result.users).length} users`)
-    if (!result.clientToken) {
-      result.clientToken = v4().replace(/-/g, '')
-    }
-    this.state.userSnapshot(result)
-
-    this.refreshUser()
-    if (this.state.selectedUser.id === '' && Object.keys(this.state.users).length > 0) {
-      const [userId, user] = Object.entries(this.state.users)[0]
-      this.switchUserProfile({
-        userId,
-        profileId: user.selectedProfile,
-      })
-    }
   }
 
   async getMinecraftAuthDb() {

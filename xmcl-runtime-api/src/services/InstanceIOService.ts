@@ -1,4 +1,4 @@
-import { ServiceKey, ServiceTemplate } from './Service'
+import { ServiceKey } from './Service'
 
 export interface InstanceFile {
   path: string
@@ -74,9 +74,3 @@ export interface InstanceIOService {
 }
 
 export const InstanceIOServiceKey: ServiceKey<InstanceIOService> = 'InstanceIOService'
-export const InstanceIOServiceMethods: ServiceTemplate<InstanceIOService> = {
-  exportInstance: undefined,
-  getInstanceFiles: undefined,
-  linkInstance: undefined,
-  importInstance: undefined,
-}

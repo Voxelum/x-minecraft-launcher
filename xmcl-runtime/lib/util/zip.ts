@@ -1,7 +1,4 @@
-import { path7za } from '7zip-bin'
-import { unpack } from '7zip-min'
 import { AbortableTask, CancelledError } from '@xmcl/task'
-import { spawn } from 'child_process'
 import { createWriteStream, promises } from 'fs'
 import { ensureFile, stat } from 'fs-extra'
 import { join } from 'path'
@@ -9,6 +6,7 @@ import { Readable, Writable } from 'stream'
 import { promisify } from 'util'
 import { DirectoryOptions, Options, ReadStreamOptions, ZipFile } from 'yazl'
 import { gunzip as _gunzip, gzip as _gzip } from 'zlib'
+import { createDecompressor } from 'lzma-native'
 import { pipeline } from './fs'
 
 export const gunzip: (data: Buffer) => Promise<Buffer> = promisify(_gunzip)
@@ -93,24 +91,24 @@ export class ZipTask extends AbortableTask<void> {
 
 export function unpack7z(archivePath: string, destinationDirectory: string) {
   return new Promise<void>((resolve, reject) => {
-    unpack(archivePath, destinationDirectory, (e) => { if (e) reject(e); else resolve() })
+    // unpack(archivePath, destinationDirectory, (e) => { if (e) reject(e); else resolve() })
   })
 }
 
 export function extractLzma(lzmaFilePath: string) {
   return new Promise<void>((resolve, reject) => {
-    const proc = spawn(path7za, ['-y', '-aoa', lzmaFilePath])
-    // let output = '';
-    proc.on('error', function (err) {
-      reject(err)
-    })
-    proc.on('exit', function (code) {
-      if (code) {
-        reject(new Error('Exited with code ' + code))
-      } else {
-        resolve()
-      }
-    })
+    // const proc = spawn(path7za, ['-y', '-aoa', lzmaFilePath])
+    // // let output = '';
+    // proc.on('error', function (err) {
+    //   reject(err)
+    // })
+    // proc.on('exit', function (code) {
+    //   if (code) {
+    //     reject(new Error('Exited with code ' + code))
+    //   } else {
+    //     resolve()
+    //   }
+    // })
     // proc.stdout.on('data', (chunk) => {
     //   output += chunk.toString();
     // });

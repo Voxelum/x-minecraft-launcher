@@ -1,8 +1,8 @@
+import { AppManifest } from '@xmcl/runtime-api'
 import { createWriteStream } from 'fs'
 import got from 'got'
 import { extname } from 'path'
 import { pipeline } from '../util/fs'
-import { WebManifest } from './WebManifest'
 
 export interface ResolvedIcon {
   src: string
@@ -14,12 +14,13 @@ export interface ResolvedIcon {
 
 export async function downloadIcon(url: string, dest: string) {
   await pipeline(got.stream(url), createWriteStream(dest))
+  return dest
 }
 
 function resolveType(url: string, type?: string) {
   if (type?.startsWith('image/')) return type.substring(6)
   if (!type) {
-    return extname(url)
+    return extname(url).substring(1)
   }
   return ''
 }
@@ -28,7 +29,7 @@ function resolvePurpose(purpose?: string) {
   return !purpose ? 'any' : purpose
 }
 
-export function resolveIcon(icon: Required<WebManifest>['icons'][number]): ResolvedIcon {
+export function resolveIcon(icon: Required<AppManifest>['icons'][number]): ResolvedIcon {
   const resolvedPurpose = resolvePurpose(icon.purpose)
   const resolvedType = resolveType(icon.src, icon.type)
   const resolvedSizes = icon.sizes ?? ''

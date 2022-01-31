@@ -12,6 +12,3 @@ export interface ServerStatusService {
 }
 
 export const ServerStatusServiceKey: ServiceKey<ServerStatusService> = 'ServerStatusService'
-export const ServerStatusServiceMethods: ServiceTemplate<ServerStatusService> = {
-  pingServer: undefined,
-}

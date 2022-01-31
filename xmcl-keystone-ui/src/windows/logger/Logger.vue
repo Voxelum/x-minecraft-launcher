@@ -52,16 +52,12 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, onMounted, onUnmounted, reactive, toRefs } from '@vue/composition-api'
+import { defineComponent, onMounted, reactive, toRefs } from '@vue/composition-api'
 import { Log, parseLog } from './log'
-import { useWindowController } from '/@/hooks'
-import { LoggerWindowAPI } from '@xmcl/runtime-api/logger'
-
-declare const logger: LoggerWindowAPI
 
 export default defineComponent({
   setup() {
-    const { hide } = useWindowController()
+    const { hide } = windowController
     const data = reactive({
       logs: [] as Log[],
     })
@@ -70,8 +66,8 @@ export default defineComponent({
     }
 
     onMounted(() => {
-      logger.on('minecraft-stderr', accept)
-      logger.on('minecraft-stdout', accept)
+      gameOutput.on('minecraft-stderr', accept)
+      gameOutput.on('minecraft-stdout', accept)
     })
     return {
       ...toRefs(data),

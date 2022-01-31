@@ -98,13 +98,13 @@ export function useTaskManager() {
   const tasks: Ref<TaskItem[]> = ref(reactive([]))
 
   const pause = (task: TaskItem) => {
-    taskChannel.pause(task.taskId)
+    taskMonitor.pause(task.taskId)
   }
   const resume = (task: TaskItem) => {
-    taskChannel.resume(task.taskId)
+    taskMonitor.resume(task.taskId)
   }
   const cancel = (task: TaskItem) => {
-    taskChannel.cancel(task.taskId)
+    taskMonitor.cancel(task.taskId)
   }
 
   let syncing: Promise<void> | undefined
@@ -205,15 +205,15 @@ export function useTaskManager() {
   onMounted(() => {
     let _resolve: () => void
     syncing = new Promise((resolve) => { _resolve = resolve })
-    taskChannel.on('task-update', taskUpdateHandler)
-    taskChannel.subscribe().then((payload) => {
+    taskMonitor.on('task-update', taskUpdateHandler)
+    taskMonitor.subscribe().then((payload) => {
       tasks.value = payload.map(mapAndRecordTaskItem)
       _resolve()
     })
   })
   onUnmounted(() => {
-    taskChannel.unsubscribe()
-    taskChannel.removeListener('task-update', taskUpdateHandler)
+    taskMonitor.unsubscribe()
+    taskMonitor.removeListener('task-update', taskUpdateHandler)
   })
 
   return {

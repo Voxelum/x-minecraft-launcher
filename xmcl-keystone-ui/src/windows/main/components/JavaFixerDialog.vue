@@ -16,7 +16,6 @@
         <v-toolbar-title>{{ reason }}</v-toolbar-title>
       </v-toolbar>
       <v-window
-        v-model="step"
         class="p-4"
       >
         <v-window-item :value="0">
@@ -90,14 +89,14 @@
 
 <script lang=ts>
 import { computed, defineComponent, inject, reactive, toRefs, watch } from '@vue/composition-api'
-import { IssueHandler, useBusy, useI18n, useInstance, useJava, useService, useWindowController } from '/@/hooks'
+import { IssueHandler, useBusy, useI18n, useInstance, useJava, useService } from '/@/hooks'
 import { useRefreshable } from '/@/hooks/useRefreshable'
 import { useJavaWizardDialog, useNotifier } from '/@/windows/main/composables'
 import { JavaServiceKey } from '@xmcl/runtime-api'
 
 export default defineComponent({
   setup() {
-    const { showOpenDialog } = useWindowController()
+    const { showOpenDialog } = windowController
     const { $t } = useI18n()
     const { show, isShown, javaIssue } = useJavaWizardDialog()
     const { add } = useJava()
@@ -109,10 +108,6 @@ export default defineComponent({
 
     const matchedJava = computed(() => state.all.find(j => j.majorVersion === javaIssue.value.version.majorVersion))
     const disableUseExistedJava = computed(() => !matchedJava.value || downloadingJava.value || !matchedJava.value.valid)
-    const data = reactive({
-      step: 0,
-    })
-
     const missing = computed(() => javaIssue.value.type === 'missing')
     const reason = computed(() => (!missing.value ? $t('java.incompatibleJava') : $t('java.missing')))
     const hint = computed(() => (!missing.value ? $t('java.incompatibleJavaHint', { version: javaIssue.value.version.majorVersion }) : $t('java.missingHint')))
@@ -162,7 +157,6 @@ export default defineComponent({
     })
 
     return {
-      ...toRefs(data),
       disableUseExistedJava,
       downloadingJava,
       isShown,

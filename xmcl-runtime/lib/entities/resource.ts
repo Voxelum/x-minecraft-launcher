@@ -4,6 +4,7 @@ import { PackMeta, readIcon, readPackMeta } from '@xmcl/resourcepack'
 import { AnyPersistedResource, AnyResource, CurseforgeModpackManifest, FileTypeHint, ForgeModCommonMetadata, normalizeForgeModMetadata, PersistedResource, PersistedResourceSchema, resolveRuntimeVersion, Resource, ResourceDomain, ResourceSaveMetadata, ResourceType, RuntimeVersions, ShaderPack, SourceInformation } from '@xmcl/runtime-api'
 import { FileSystem, openFileSystem } from '@xmcl/system'
 import filenamify from 'filenamify'
+import { existsSync } from 'fs'
 import { ensureFile, rename, stat, Stats, unlink, writeFile } from 'fs-extra'
 import { basename, dirname, extname, join } from 'path'
 import { FileType, linkOrCopy } from '../util/fs'
@@ -391,10 +392,10 @@ export function parseResource(path: string, fileType: FileType, sha1: string, st
 /**
  * Persist a resource to disk. This will try to copy or link the resource file to domain direcotry, or rename it if it's already in domain directory.
  * @param resolved The resolved resource
- * @param respository The root of the persistence repo
+ * @param repository The root of the persistence repo
  * @param source The source
  */
-export async function persistResource(resolved: Resource, respository: string, source: SourceInformation, url: string[], icon: Uint8Array | undefined, pending: Set<string>) {
+export async function persistResource(resolved: Resource, repository: string, source: SourceInformation, url: string[], icon: Uint8Array | undefined, pending: Set<string>) {
   const { domain, type, metadata, name: suggestedName, uri, hash } = resolved
 
   const builder = createPersistedResourceBuilder(source)
@@ -418,12 +419,19 @@ export async function persistResource(resolved: Resource, respository: string, s
   }
 
   const name = filenamify(suggestedName, { replacement: '-' })
-  const slice = builder.hash.slice(0, 6)
-  const fileName = `${name}.${slice}`
-  const location = join(builder.domain, fileName)
-  const filePath = join(respository, `${location}${builder.ext}`)
-  const metadataPath = join(respository, `${location}.json`)
-  const iconPath = join(respository, `${location}.png`)
+  let fileName = name
+  let location = join(builder.domain, fileName)
+  let filePath = join(repository, `${location}${builder.ext}`)
+  let metadataPath = join(repository, `${location}.json`)
+  let iconPath = join(repository, `${location}.png`)
+
+  if (existsSync(filePath)) {
+    fileName = `${name}.${builder.hash.slice(0, 6)}`
+    location = join(builder.domain, fileName)
+    filePath = join(repository, `${location}${builder.ext}`)
+    metadataPath = join(repository, `${location}.json`)
+    iconPath = join(repository, `${location}.png`)
+  }
 
   pending.add(filePath)
   await ensureFile(filePath)

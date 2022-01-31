@@ -54,8 +54,3 @@ export interface InstanceServerInfoService extends StatefulService<ServerInfoSta
 }
 
 export const InstanceServerInfoServiceKey: ServiceKey<InstanceServerInfoService> = 'InstanceServerInfoService'
-export const InstanceServerInfoServiceMethods: ServiceTemplate<InstanceServerInfoService> = {
-  refresh: undefined,
-  pingServerStatus: undefined,
-  state: undefined,
-}

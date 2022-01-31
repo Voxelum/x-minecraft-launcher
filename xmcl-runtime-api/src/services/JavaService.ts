@@ -6,9 +6,6 @@ import { JavaVersion } from '@xmcl/core'
 
 export class JavaState {
   all = [] as JavaRecord[]
-  get defaultJava() {
-    return this.all.find(j => j.valid && j.majorVersion === 8) || this.all.find(j => j.valid) || EMPTY_JAVA
-  }
 
   get missingJava() {
     return this.all.length === 0
@@ -50,7 +47,7 @@ export interface JavaService extends StatefulService<JavaState> {
   /**
    * Install a default jdk 8 or 16 to the a preserved location. It'll be installed under your launcher root location `jre` or `jre-next` folder
    */
-  installDefaultJava(version: JavaVersion): Promise<void>
+  installDefaultJava(version: JavaVersion): Promise<undefined | Java>
   /**
    * Resolve java info. If the java is not known by launcher. It will cache it into the launcher java list.
    */
@@ -62,9 +59,3 @@ export interface JavaService extends StatefulService<JavaState> {
 }
 
 export const JavaServiceKey: ServiceKey<JavaService> = 'JavaService'
-export const JavaServiceMethods: ServiceTemplate<JavaService> = {
-  installDefaultJava: undefined,
-  resolveJava: undefined,
-  refreshLocalJava: undefined,
-  state: undefined,
-}

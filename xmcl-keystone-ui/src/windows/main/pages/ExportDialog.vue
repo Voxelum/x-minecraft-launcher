@@ -152,8 +152,8 @@
 import { computed, defineComponent, nextTick, onMounted, reactive, toRefs, watch } from '@vue/composition-api'
 import { useZipFilter } from '/@/windows/main/composables'
 import InstanceFiles from './ExportDialogInstanceFiles.vue'
-import { useI18n, useInstance, useInstanceVersion, useLocalVersions, useWindowController, useService } from '/@/hooks'
-import { InstanceCurseforgeIOServiceKey, InstanceFile, InstanceIOServiceKey } from '@xmcl/runtime-api'
+import { useI18n, useInstance, useInstanceVersion, useLocalVersions, useService } from '/@/hooks'
+import { ModpackServiceKey, InstanceFile, InstanceIOServiceKey } from '@xmcl/runtime-api'
 
 export default defineComponent({
   components: { InstanceFiles },
@@ -164,8 +164,8 @@ export default defineComponent({
   setup(props, context) {
     const { name, author } = useInstance()
     const { getInstanceFiles, exportInstance } = useService(InstanceIOServiceKey)
-    const { exportCurseforgeModpack } = useService(InstanceCurseforgeIOServiceKey)
-    const { showSaveDialog } = useWindowController()
+    const { exportCurseforgeModpack } = useService(ModpackServiceKey)
+    const { showSaveDialog } = windowController
     const { localVersions } = useLocalVersions()
     const { folder } = useInstanceVersion()
     const { $t } = useI18n()

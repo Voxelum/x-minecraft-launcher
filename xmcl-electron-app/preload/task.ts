@@ -1,8 +1,8 @@
-import { ipcRenderer } from 'electron'
+import { contextBridge, ipcRenderer } from 'electron'
 import EventEmitter from 'events'
-import { TaskChannel as ITaskChannel, TaskPayload } from '@xmcl/runtime-api'
+import { TaskMonitor as ITaskChannel, TaskPayload } from '@xmcl/runtime-api'
 
-export function createTaskChannel(): ITaskChannel {
+function createTaskMonitor(): ITaskChannel {
   const emitter = new EventEmitter()
 
   ipcRenderer.on('task-update', (_, event) => {
@@ -45,3 +45,5 @@ export function createTaskChannel(): ITaskChannel {
     },
   }
 }
+
+contextBridge.exposeInMainWorld('taskMonitor', createTaskMonitor())

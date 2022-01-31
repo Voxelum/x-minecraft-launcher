@@ -1,6 +1,6 @@
 import { getPlatform } from '@xmcl/core'
 import { DownloadTask } from '@xmcl/installer'
-import { RuntimeVersions, UpdateInfo } from '@xmcl/runtime-api'
+import { InstalledAppManifest, RuntimeVersions, UpdateInfo } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { EventEmitter } from 'events'
 import { ensureDir, readFile, readJson, writeFile } from 'fs-extra'
@@ -23,6 +23,7 @@ import { exists, isDirectory } from '../util/fs'
 import { GiteeReleaseFetcher, GithubReleaseFetcher, ReleaseFetcher } from '../util/release'
 import { Constructor, LaunchAppContext } from './LaunchAppContext'
 import { LauncherAppController } from './LauncherAppController'
+import { LauncherAppManager } from './LauncherAppManager'
 
 export interface Platform {
   /**
@@ -40,6 +41,7 @@ export interface Platform {
 }
 
 export interface LauncherApp {
+  on(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
   on(channel: 'user-login', listener: (authService: string) => void): this
   on(channel: 'window-all-closed', listener: () => void): this
   on(channel: 'all-services-ready', listener: () => void): this
@@ -52,6 +54,7 @@ export interface LauncherApp {
   on(channel: 'minecraft-stderr', listener: (err: string) => void): this
   on(channel: 'microsoft-authorize-code', listener: (code: string) => void): this
 
+  once(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
   once(channel: 'user-login', listener: (authService: string) => void): this
   once(channel: 'window-all-closed', listener: () => void): this
   once(channel: 'all-services-ready', listener: () => void): this
@@ -64,6 +67,7 @@ export interface LauncherApp {
   once(channel: 'minecraft-stderr', listener: (err: string) => void): this
   once(channel: 'microsoft-authorize-code', listener: (error?: Error, code?: string) => void): this
 
+  emit(channel: 'app-booted', manifest: InstalledAppManifest): this
   emit(channel: 'user-login', authService: string): this
   emit(channel: 'microsoft-authorize-code', error?: Error, code?: string): this
   emit(channel: 'window-all-closed'): boolean
@@ -109,7 +113,7 @@ export abstract class LauncherApp extends EventEmitter {
 
   readonly serviceManager = new ServiceManager(this)
 
-  readonly storeManager = new ServiceStateManager(this)
+  readonly serviceStateManager = new ServiceStateManager(this)
 
   readonly taskManager = new TaskManager(this)
 
@@ -123,6 +127,8 @@ export abstract class LauncherApp extends EventEmitter {
 
   readonly semaphoreManager = new SemaphoreManager(this)
 
+  readonly launcherAppManager = new LauncherAppManager(this)
+
   readonly platform: Platform = getPlatform()
 
   readonly context = new LaunchAppContext()
@@ -133,7 +139,7 @@ export abstract class LauncherApp extends EventEmitter {
 
   get isParking(): boolean { return this.parking }
 
-  protected managers = [this.logManager, this.networkManager, this.taskManager, this.storeManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager, this.semaphoreManager]
+  protected managers = [this.logManager, this.networkManager, this.taskManager, this.serviceStateManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager, this.semaphoreManager, this.launcherAppManager]
 
   readonly controller: LauncherAppController
 
@@ -147,6 +153,8 @@ export abstract class LauncherApp extends EventEmitter {
     this.controller = this.createController()
     this.context.register(LauncherApp as any, this)
   }
+
+  abstract getDefaultAppManifest(): InstalledAppManifest
 
   abstract createController(): LauncherAppController
 
@@ -176,9 +184,9 @@ export abstract class LauncherApp extends EventEmitter {
 
   /**
    * Try to open a url in default browser. It will popup a message dialog to let user know.
-    * If user does not trust the url, it won't open the site.
-    * @param url The pending url
-    */
+   * If user does not trust the url, it won't open the site.
+   * @param url The pending url
+   */
   abstract openInBrowser(url: string): Promise<boolean>
 
   /**
@@ -202,13 +210,13 @@ export abstract class LauncherApp extends EventEmitter {
   }
 
   /**
-     * Quit the app gentally.
-     */
+   * Quit the app gentally.
+   */
   protected abstract quitApp(): void
 
   /**
-     * Force exit the app with exit code
-     */
+   * Force exit the app with exit code
+   */
   abstract exit(code?: number): void
 
   /**
@@ -270,38 +278,6 @@ export abstract class LauncherApp extends EventEmitter {
     }
   }
 
-  /**
-   * Launch app from url request
-   * @param url
-   */
-  protected async startFromUrl(url: string) {
-    function parseUrl(url: string): AppManifest {
-      const { host, pathname } = new URL(url)
-      if (!pathname) throw new SyntaxError()
-      if (host === 'github.com') {
-        const [owner, repo] = pathname.split('/')
-        return { type: 'github' as const, owner, repo }
-      }
-      if (host === 'gitee.com') {
-        const [owner, repo] = pathname.split('/')
-        return { type: 'gitee' as const, owner, repo }
-      }
-      throw new SyntaxError()
-    }
-
-    this.log(`Handle url request ${url}`)
-    return this.loadManifest(parseUrl(url))
-  }
-
-  protected async loadManifest(manifest: AppManifest) {
-    const { owner, repo } = manifest
-    const asarPath = join(this.appDataPath, 'apps', `${owner}-${repo}.asar`)
-    if (!await exists(asarPath)) {
-      await this.downloadApp(manifest)
-    }
-    await this.bootApp(asarPath)
-  }
-
   // phase code
 
   /**
@@ -337,27 +313,6 @@ export abstract class LauncherApp extends EventEmitter {
     // script.runInNewContext(context);
   }
 
-  protected async downloadApp(manifest: AppManifest) {
-    const { owner, repo } = manifest
-    let releaseFetcher: ReleaseFetcher
-    if (manifest.type === 'gitee') {
-      releaseFetcher = new GiteeReleaseFetcher(owner, repo)
-    } else {
-      releaseFetcher = new GithubReleaseFetcher(owner, repo)
-    }
-    const latest = await releaseFetcher.getLatestRelease()
-
-    const manifestPath = join(this.appDataPath, 'apps', `${owner}-${repo}.json`)
-    const asarPath = join(this.appDataPath, 'apps', `${owner}-${repo}.asar`)
-
-    await this.taskManager.submit(new DownloadTask({
-      ...this.networkManager.getDownloadBaseOptions(),
-      url: latest.downloadUrl,
-      destination: asarPath,
-    }).setName('downloadApp'))
-    await writeFile(manifestPath, JSON.stringify(manifest))
-  }
-
   readonly serviceReadyPromise = new Promise<void>((resolve) => {
     this.on('all-services-ready', resolve)
   })
@@ -372,6 +327,9 @@ export abstract class LauncherApp extends EventEmitter {
     await this.onStoreReady()
   }
 
+  /**
+   * Determine the root of the project. By default, it's %APPDATA%/xmcl
+   */
   protected async setup() {
     console.log(`Boot from ${this.appDataPath}`)
     try {
@@ -408,6 +366,7 @@ export abstract class LauncherApp extends EventEmitter {
   }
 
   protected async onEngineReady() {
+    this.emit('engine-ready')
     this
       .on('window-all-closed', () => {
         if (this.parking) return
@@ -416,8 +375,15 @@ export abstract class LauncherApp extends EventEmitter {
       .on('minecraft-start', () => { this.parking = true })
       .on('minecraft-exit', () => { this.parking = false })
 
-    this.emit('engine-ready')
-    await this.controller.engineReady()
+    // start the app
+    let app: InstalledAppManifest
+    try {
+      const { default: url } = await readJson(join(this.launcherAppManager.root, 'apps.json'))
+      app = await this.launcherAppManager.getInstalledApp(url)
+    } catch (e) {
+      app = this.getDefaultAppManifest()
+    }
+    await this.controller.bootApp(app)
 
     await Promise.all(this.managers.map(m => m.engineReady()))
   }

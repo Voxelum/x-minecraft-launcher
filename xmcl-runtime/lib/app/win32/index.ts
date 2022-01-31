@@ -1,13 +1,13 @@
+import { AppManifest, InstalledAppManifest } from '@xmcl/runtime-api'
 import { spawn } from 'child_process'
-import generateIcon from 'icon-gen'
+import { ensureDir } from 'fs-extra'
+import generateIco from 'icon-gen/dist/lib/ico'
 import { join } from 'path'
 import { URL } from 'url'
-import { AppManifest } from '../AppManifest'
 import { downloadIcon, resolveIcon } from '../utils'
-import { WebManifest } from '../WebManifest'
 import createShortcutScript from './createShortcut.vbs'
 
-export async function createShortcutWin32(exePath: string, outputDir: string, man: AppManifest, globalShortcut: boolean): Promise<void> {
+export async function createShortcutWin32(exePath: string, outputDir: string, man: InstalledAppManifest, globalShortcut: boolean): Promise<void> {
   const windowModes = {
     normal: 1,
     maximized: 3,
@@ -65,7 +65,7 @@ export async function createShortcutWin32(exePath: string, outputDir: string, ma
   }
 }
 
-export async function installWin32(url: string, appDir: string, man: WebManifest): Promise<AppManifest> {
+export async function installWin32(url: string, appDir: string, man: AppManifest): Promise<InstalledAppManifest> {
   const processIcons = async () => {
     if (man.icons) {
       const resolvedIcons = man.icons.map(resolveIcon)
@@ -78,33 +78,36 @@ export async function installWin32(url: string, appDir: string, man: WebManifest
         return icoPath
       }
 
-      const svg = resolvedIcons.find(i => i.type === 'svg')
-      if (svg) {
-        const svgPath = join(appDir, 'app.svg')
-        // try to use svg to generate icon
-        await downloadIcon(new URL(svg.src, url).toString(), svgPath)
-        await generateIcon(svgPath, appDir, {
-          ico: {
-            name: 'app.ico',
-          },
-          report: true,
-        })
-        return icoPath
-      }
+      // TODO: since svg use sharp which is too large. we skip svg for now
+      // const svg = resolvedIcons.find(i => i.type === 'svg')
+      // if (svg) {
+      //   const svgPath = join(appDir, 'app.svg')
+      //   // try to use svg to generate icon
+      //   await downloadIcon(new URL(svg.src, url).toString(), svgPath)
+      //   await generateIco(svgPath, appDir, {
+      //     ico: {
+      //       name: 'app.ico',
+      //     },
+      //     report: true,
+      //   })
+      //   return icoPath
+      // }
 
       const pngs = resolvedIcons.filter(i => i.type === 'png')
       if (pngs.length > 0) {
         // try to use png to generate icon
         const anyIconDir = join(appDir, 'icons')
+        await ensureDir(anyIconDir)
         // download all png
-        await Promise.all(pngs.map(f => downloadIcon(new URL(f.src, url).toString(), join(anyIconDir, `${f.allSizes[0]}.png`))))
+        const fileInfos = await Promise.all(pngs.map(async (f) => {
+          const filePath = join(anyIconDir, `${f.allSizes[0]}.png`)
+          await downloadIcon(new URL(f.src, url).toString(), join(anyIconDir, `${f.allSizes[0]}.png`))
+          return { filePath, size: f.allSizes[0] }
+        }))
 
-        const result = await generateIcon(anyIconDir, appDir, {
-          ico: {
-            name: 'app.ico',
-          },
-          report: true,
-        })
+        const result = await generateIco(fileInfos, appDir, console as any, {
+          name: 'app.ico',
+        }).catch((e) => [])
 
         if (result.length === 0) {
           const maxSizePng = pngs.sort((a, b) => b.allSizes[0] - a.allSizes[0]).map(f => join(anyIconDir, `${f.allSizes[0]}.png`))[0]
@@ -118,14 +121,17 @@ export async function installWin32(url: string, appDir: string, man: WebManifest
   const iconPath = await processIcons()
 
   return {
-    url,
     name: man.name ?? '',
-    icon: iconPath ?? '',
     description: man.description ?? '',
+    icons: man.icons ?? [],
+    screenshots: man.screenshots ?? [],
 
-    minWidth: 800,
-    minHeight: 580,
-    backgroundColor: man.background_color ?? '',
+    url,
+    iconPath: iconPath ?? '',
+    minHeight: man.minHeight ?? 600,
+    minWidth: man.minWidth ?? 800,
+    ratio: man.ratio ?? false,
+    background_color: man.background_color ?? '',
     frame: man.display !== 'frameless',
     vibrancy: false,
   }

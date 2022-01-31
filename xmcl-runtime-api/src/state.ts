@@ -3,11 +3,9 @@ import { CurseforgeState } from './services/CurseForgeService'
 import { DiagnoseState } from './services/DiagnoseService'
 import { InstallState } from './services/InstallService'
 import { InstanceOptionsState } from './services/InstanceOptionsService'
-import { InstanceJavaState } from './services/InstanceJavaService'
 import { InstanceModsState } from './services/InstanceModsService'
 import { SaveState } from './services/InstanceSavesService'
 import { InstanceState } from './services/InstanceService'
-import { InstanceVersionState } from './services/InstanceVersionService'
 import { JavaState } from './services/JavaService'
 import { LaunchState } from './services/LaunchService'
 import { ResourceState } from './services/ResourceService'
@@ -20,8 +18,6 @@ export type AllServiceMutations =
   & Mutations<DiagnoseState>
   & Mutations<InstallState>
   & Mutations<InstanceState>
-  & Mutations<InstanceJavaState>
-  & Mutations<InstanceVersionState>
   & Mutations<InstanceModsState>
   & Mutations<InstanceOptionsState>
   & Mutations<SaveState>

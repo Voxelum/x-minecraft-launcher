@@ -1,29 +1,42 @@
 import { JavaVersion } from '@xmcl/core'
-import { DownloadTask, fetchJavaRuntimeManifest, installJavaRuntimesTask, parseJavaVersion, resolveJava, scanLocalJava, UnzipTask } from '@xmcl/installer'
+import { fetchJavaRuntimeManifest, installJavaRuntimesTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
 import { Java, JavaRecord, JavaSchema, JavaService as IJavaService, JavaServiceKey, JavaState } from '@xmcl/runtime-api'
 import { requireObject, requireString } from '@xmcl/runtime-api/utils'
-import { task } from '@xmcl/task'
-import { open, readAllEntries } from '@xmcl/unzip'
-import { access, chmod, constants, ensureFile, move, readdir, readFile, remove, unlink } from 'fs-extra'
-import { basename, dirname, join } from 'path'
+import { access, chmod, constants, ensureFile, readFile } from 'fs-extra'
+import { dirname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
-import { getTsingHuaAdpotOponJDKPageUrl, parseTsingHuaAdpotOpenJDKHotspotArchive } from '../entities/java'
 import { missing, readdirIfPresent } from '../util/fs'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
-import { unpack7z } from '../util/zip'
 import DiagnoseService from './DiagnoseService'
 import { ExportService, Inject, Singleton, StatefulService } from './Service'
 
 @ExportService(JavaServiceKey)
 export default class JavaService extends StatefulService<JavaState> implements IJavaService {
-  createState() { return new JavaState() }
-
   protected readonly config = new MappedFile<JavaSchema>(this.getPath('java.json'), new BufferJsonSerializer(JavaSchema))
 
   constructor(app: LauncherApp,
     @Inject(DiagnoseService) diagnoseService: DiagnoseService) {
-    super(app)
+    super(app, async () => {
+      const data = await this.config.read()
+      const valid = data.all.filter(l => typeof l.path === 'string').map(a => ({ ...a, valid: true }))
+      this.log(`Loaded ${valid.length} java from cache.`)
+      this.state.javaUpdate(valid)
+
+      const local = this.getInternalJavaLocation({ majorVersion: 8, component: 'jre-legacy' })
+      if (!this.state.all.map(j => j.path).some(p => p === local)) {
+        this.validateJava(local)
+      }
+      const localAlpha = this.getInternalJavaLocation({ majorVersion: 16, component: 'java-runtime-alpha' })
+      if (!this.state.all.map(j => j.path).some(p => p === localAlpha)) {
+        this.validateJava(local)
+      }
+      this.refreshLocalJava()
+
+      this.storeManager.subscribeAll(['javaUpdate', 'javaRemove'], () => {
+        this.config.write(this.state)
+      })
+    })
 
     diagnoseService.registerMatchedFix(['missingJava'], (issue) => {
       const missingJavaIssue = issue[0].parameters as any
@@ -33,6 +46,8 @@ export default class JavaService extends StatefulService<JavaState> implements I
     })
   }
 
+  createState() { return new JavaState() }
+
   getInternalJavaLocation(version: JavaVersion) {
     return this.app.platform.name === 'osx'
       ? this.getPath('jre', version.component, 'jre.bundle', 'Contents', 'Home', 'bin', 'java')
@@ -40,25 +55,16 @@ export default class JavaService extends StatefulService<JavaState> implements I
         this.app.platform.name === 'windows' ? 'java.exe' : 'java')
   }
 
-  async initialize() {
-    const data = await this.config.read()
-    const valid = data.all.filter(l => typeof l.path === 'string').map(a => ({ ...a, valid: true }))
-    this.log(`Loaded ${valid.length} java from cache.`)
-    this.state.javaUpdate(valid)
+  getJavaForVersion(javaVersion: JavaVersion, validOnly = false) {
+    const expectedJava = this.state.all.find(j => j.majorVersion === javaVersion.majorVersion && (!validOnly || j.valid))
+    return expectedJava
+  }
 
-    const local = this.getInternalJavaLocation({ majorVersion: 8, component: 'jre-legacy' })
-    if (!this.state.all.map(j => j.path).some(p => p === local)) {
-      this.validateJava(local)
-    }
-    const localAlpha = this.getInternalJavaLocation({ majorVersion: 16, component: 'java-runtime-alpha' })
-    if (!this.state.all.map(j => j.path).some(p => p === localAlpha)) {
-      this.validateJava(local)
-    }
-    this.refreshLocalJava()
-
-    this.storeManager.subscribeAll(['javaUpdate', 'javaRemove'], () => {
-      this.config.write(this.state)
-    })
+  /**
+   * Get java preferred java 8 for installing forge or other purpose. (non launching Minecraft)
+   */
+  getPreferredJava() {
+    return this.state.all.find(j => j.valid && j.majorVersion === 8) || this.state.all.find(j => j.valid)
   }
 
   /**
@@ -92,62 +98,7 @@ export default class JavaService extends StatefulService<JavaState> implements I
       await chmod(location, 0o765)
     }
     this.log(`Successfully install java internally ${location}`)
-    await this.resolveJava(location)
-  }
-
-  private installFromTsingHuaTask(java: '8' | '9' | '11' | '12' | '13' | '14' | '15' | '16') {
-    const { app, networkManager, log, getTempPath, state, getPath } = this
-    return task('installJre', async function () {
-      const system = app.platform.name === 'osx' ? 'mac' as const : app.platform.name
-      const arch = app.platform.arch === 'x64' ? '64' as const : '32' as const
-
-      const baseUrl = getTsingHuaAdpotOponJDKPageUrl(system, arch, java)
-      const htmlText = await networkManager.request.get(baseUrl).text()
-      const archiveInfo = parseTsingHuaAdpotOpenJDKHotspotArchive(htmlText, baseUrl)
-
-      if (!archiveInfo) {
-        throw new Error(`Cannot find jre from tsinghua mirror for ${system} x${arch}`)
-      }
-
-      const destination = getPath('jre')
-      const archivePath = getTempPath(archiveInfo.fileName)
-      const url = archiveInfo.url
-
-      log(`Install jre for ${system} x${arch} from tsinghua mirror ${url}`)
-      await this.yield(new DownloadTask({
-        ...networkManager.getDownloadBaseOptions(),
-        destination: archivePath,
-        url,
-      }).setName('download') /* , 90 */)
-
-      if (system === 'windows') {
-        const zip = await open(archivePath)
-        const entries = await readAllEntries(zip)
-        await this.yield(new UnzipTask(zip, entries.filter(e => e.fileName.startsWith('jdk8u')), destination, (entry) => {
-          const [first] = entry.fileName.split('/')
-          return entry.fileName.substring(first.length)
-        }).setName('decompress'))
-      } else {
-        await this.yield(task('decompress', async () => {
-          const tarPath = join(dirname(destination), basename(archivePath, '.gz'))
-          // unpack gz tar to tar
-          await unpack7z(archivePath, dirname(destination))
-
-          const dirPath = join(dirname(destination), basename(archivePath, '.tar.gz'))
-          // unpack tar to dir
-          await unpack7z(tarPath, dirPath)
-
-          const files = await readdir(dirPath)
-          if (files[0] && files[0].startsWith('jdk8')) {
-            await move(join(dirPath, files[0]), destination)
-          } else {
-            await move(dirPath, destination)
-          }
-          await Promise.all([remove(dirPath), unlink(tarPath), unlink(archivePath)])
-        }))
-      }
-      log('Install jre for from tsing hua mirror success!')
-    })
+    return await this.resolveJava(location)
   }
 
   /**
@@ -173,21 +124,27 @@ export default class JavaService extends StatefulService<JavaState> implements I
   }
 
   async validateJava(javaPath: string) {
-    if (this.app.platform.name !== 'windows') {
-      try {
-        await access(javaPath, constants.X_OK)
-      } catch (e) {
-        await chmod(javaPath, 0o765)
-      }
-    }
-
     const java = await resolveJava(javaPath)
     if (java) {
       this.log(`Resolved java ${java.version} in ${javaPath}`)
+      if (this.app.platform.name !== 'windows') {
+        try {
+          await access(javaPath, constants.X_OK)
+        } catch (e) {
+          await chmod(javaPath, 0o765)
+        }
+      }
       this.state.javaUpdate({ ...java, valid: true })
     } else {
       if (await missing(javaPath)) {
         return
+      }
+      if (this.app.platform.name !== 'windows') {
+        try {
+          await access(javaPath, constants.X_OK)
+        } catch (e) {
+          await chmod(javaPath, 0o765)
+        }
       }
       const home = dirname(dirname(javaPath))
       const releaseData = await readFile(join(home, 'release'), 'utf-8')

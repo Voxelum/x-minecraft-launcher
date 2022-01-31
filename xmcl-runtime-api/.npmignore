@@ -1,0 +1,6 @@
+scripts/*
+src/*
+index.ts
+logger.ts
+setup.ts
+utils.ts

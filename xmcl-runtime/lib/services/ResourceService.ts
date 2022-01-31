@@ -79,7 +79,18 @@ export default class ResourceService extends StatefulService<ResourceState> impl
   }
 
   constructor(app: LauncherApp) {
-    super(app)
+    super(app, async () => {
+      for (const domain of [
+        ResourceDomain.Mods,
+        ResourceDomain.ResourcePacks,
+        ResourceDomain.Saves,
+        ResourceDomain.Modpacks,
+        ResourceDomain.ShaderPacks,
+        ResourceDomain.Unknown,
+      ]) {
+        this.loadPromises[domain].accept(this.loadDomain(domain))
+      }
+    })
   }
 
   /**
@@ -240,19 +251,6 @@ export default class ResourceService extends StatefulService<ResourceState> impl
       github: resourceData.github,
     })
     return resource
-  }
-
-  async initialize() {
-    for (const domain of [
-      ResourceDomain.Mods,
-      ResourceDomain.ResourcePacks,
-      ResourceDomain.Saves,
-      ResourceDomain.Modpacks,
-      ResourceDomain.ShaderPacks,
-      ResourceDomain.Unknown,
-    ]) {
-      this.loadPromises[domain].accept(this.loadDomain(domain))
-    }
   }
 
   whenReady(resourceDomain: ResourceDomain) {

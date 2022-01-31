@@ -36,52 +36,50 @@ export default class InstallService extends StatefulService<InstallState> implem
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(JavaService) private javaService: JavaService,
   ) {
-    super(app)
+    super(app, async () => {
+      const [mc, forge, liteloader, fabric, optifine] = await Promise.all([
+        this.minecraftVersionJson.read(),
+        this.forgeVersionJson.read(),
+        this.liteloaderVersionJson.read(),
+        this.fabricVersionJson.read(),
+        this.optifineVersionJson.read(),
+      ])
+
+      if (typeof mc === 'object') {
+        this.state.minecraftMetadata(mc)
+      }
+      if (typeof forge === 'object') {
+        for (const value of Object.values(forge)) {
+          this.state.forgeMetadata(value)
+        }
+      }
+      if (liteloader) {
+        this.state.liteloaderMetadata(liteloader)
+      }
+      if (fabric) {
+        this.state.fabricLoaderMetadata({ versions: fabric.loaders, timestamp: fabric.loaderTimestamp })
+        this.state.fabricYarnMetadata({ versions: fabric.yarns, timestamp: fabric.yarnTimestamp })
+      }
+      if (optifine) {
+        this.state.optifineMetadata(optifine)
+      }
+
+      this.storeManager.subscribe('minecraftMetadata', () => {
+        this.minecraftVersionJson.write(this.state.minecraft)
+      }).subscribe('forgeMetadata', () => {
+        this.forgeVersionJson.write(this.state.forge)
+      }).subscribe('liteloaderMetadata', () => {
+        this.liteloaderVersionJson.write(this.state.liteloader)
+      }).subscribeAll(['fabricLoaderMetadata', 'fabricYarnMetadata'], () => {
+        this.fabricVersionJson.write(this.state.fabric)
+      }).subscribe('optifineMetadata', () => {
+        this.optifineVersionJson.write(this.state.optifine)
+      })
+    })
   }
 
   createState() {
     return new InstallState()
-  }
-
-  async initialize() {
-    const [mc, forge, liteloader, fabric, optifine] = await Promise.all([
-      this.minecraftVersionJson.read(),
-      this.forgeVersionJson.read(),
-      this.liteloaderVersionJson.read(),
-      this.fabricVersionJson.read(),
-      this.optifineVersionJson.read(),
-    ])
-
-    if (typeof mc === 'object') {
-      this.state.minecraftMetadata(mc)
-    }
-    if (typeof forge === 'object') {
-      for (const value of Object.values(forge)) {
-        this.state.forgeMetadata(value)
-      }
-    }
-    if (liteloader) {
-      this.state.liteloaderMetadata(liteloader)
-    }
-    if (fabric) {
-      this.state.fabricLoaderMetadata({ versions: fabric.loaders, timestamp: fabric.loaderTimestamp })
-      this.state.fabricYarnMetadata({ versions: fabric.yarns, timestamp: fabric.yarnTimestamp })
-    }
-    if (optifine) {
-      this.state.optifineMetadata(optifine)
-    }
-
-    this.storeManager.subscribe('minecraftMetadata', () => {
-      this.minecraftVersionJson.write(this.state.minecraft)
-    }).subscribe('forgeMetadata', () => {
-      this.forgeVersionJson.write(this.state.forge)
-    }).subscribe('liteloaderMetadata', () => {
-      this.liteloaderVersionJson.write(this.state.liteloader)
-    }).subscribeAll(['fabricLoaderMetadata', 'fabricYarnMetadata'], () => {
-      this.fabricVersionJson.write(this.state.fabric)
-    }).subscribe('optifineMetadata', () => {
-      this.optifineVersionJson.write(this.state.optifine)
-    })
   }
 
   protected getMinecraftJsonManifestRemote() {
@@ -97,7 +95,7 @@ export default class InstallService extends StatefulService<InstallState> implem
   protected getForgeInstallOptions(): InstallForgeOptions {
     const options: InstallForgeOptions = {
       ...this.networkManager.getDownloadBaseOptions(),
-      java: this.javaService.state.defaultJava.path,
+      java: this.javaService.getPreferredJava()?.path,
     }
     if (this.networkManager.isInGFW && this.baseService.state.apiSetsPreference !== 'mojang') {
       const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference)
@@ -464,7 +462,7 @@ export default class InstallService extends StatefulService<InstallState> implem
       }
     }
 
-    const java = this.javaService.state.defaultJava.valid ? this.javaService.state.defaultJava.path : undefined
+    const java = this.javaService.getPreferredJava()?.path
     const resourceService = this.resourceService
     const error = this.error
 

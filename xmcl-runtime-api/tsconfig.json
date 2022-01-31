@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
-    "incremental": true,
     "target": "ESNext",
     "module": "ESNext",
     "downlevelIteration": true,
     "resolveJsonModule": true,
     "strict": true,
     "moduleResolution": "node",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "dist",
     "baseUrl": ".",
     "esModuleInterop": true,
     "experimentalDecorators": true,
@@ -18,6 +20,9 @@
     "."
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "client.d.ts",
+    "dist",
+    "scripts"
   ]
 }

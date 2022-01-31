@@ -9,8 +9,8 @@ import { pipeline } from 'stream'
 import { promisify } from 'util'
 import { config as electronBuilderConfig } from './build/electron-builder.config'
 import esbuildConfig from './esbuild.config'
-
-process.env.NODE_ENV = 'production'
+import { version } from './package.json'
+import { buildAppInstaller } from './build/appinstaller-builder'
 
 /**
  * @returns Hash string
@@ -104,17 +104,10 @@ async function start() {
 
   console.log()
   if (process.env.BUILD_TARGET) {
-    if (process.env.BUILD_TARGET !== 'appx') {
-      const dir = process.env.BUILD_TARGET === 'dir'
-      await buildElectron(electronBuilderConfig, dir)
-    } else {
-      electronBuilderConfig.win!.target = 'appx'
-      await buildElectron(electronBuilderConfig, false)
-    }
+    const dir = process.env.BUILD_TARGET === 'dir'
+    await buildElectron(electronBuilderConfig, dir)
+    await buildAppInstaller(version, path.join(__dirname, './build/output/xmcl.appinstaller'))
   }
-
-  // await copy(path.join(__dirname, './build/icons'), path.join(__dirname, './build/output/win-unpacked/icons'))
-  // await copy(path.join(__dirname, './build/appxmanifest.xml'), path.join(__dirname, './build/output/win-unpacked/appxmanifest.xml'))
 }
 
 start().catch((e) => {

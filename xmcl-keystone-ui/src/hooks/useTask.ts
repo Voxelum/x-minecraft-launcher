@@ -1,7 +1,7 @@
 import { requireNonnull } from '@xmcl/runtime-api/utils'
 import { computed, inject, Ref } from '@vue/composition-api'
 import { TaskState } from '@xmcl/runtime-api'
-import { getServiceCallTasks } from '../serviceProxy'
+import { getServiceCallTasks } from '../vuexServiceProxy'
 import { TASK_MANAGER } from '../windows/main/provideTaskProxy'
 
 export function useTaskCount() {

@@ -2,7 +2,6 @@ import { InjectionKey } from '@vue/composition-api'
 import VueI18n from 'vue-i18n'
 import VueRouter from 'vue-router'
 import { Store } from 'vuex'
-import { TaskProxy } from './taskProxy'
 
 export const STORE_KEY: InjectionKey<Store<any>> = Symbol('STORE_KEY')
 export const ROUTER_KEY: InjectionKey<VueRouter> = Symbol('ROUTER_KEY')

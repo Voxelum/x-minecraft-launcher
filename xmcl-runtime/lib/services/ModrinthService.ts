@@ -1,14 +1,14 @@
 import { DownloadTask } from '@xmcl/installer'
-import { getMod, getModVersion, listCategories, listGameVersion, listLicenses, listLoaders, Mod, ModVersion, SearchModOptions, SearchModResult, searchMods } from '@xmcl/modrinth'
-import { installModVersionOptions, ModrinthService as IModrinthService, ModrinthServiceKey, ModrinthState, PersistedResource, ResourceState } from '@xmcl/runtime-api'
+import { getMod, listCategories, listGameVersion, listLicenses, listLoaders, Mod, ModVersion, SearchModOptions, SearchModResult, searchMods } from '@xmcl/modrinth'
+import { installModVersionOptions, ModrinthService as IModrinthService, ModrinthServiceKey, ModrinthState, PersistedResource } from '@xmcl/runtime-api'
 import { basename, join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { CacheDictionary } from '../util/cache'
 import ResourceService from './ResourceService'
-import AbstractService, { ExportService, Inject, StatefulService } from './Service'
+import { ExportService, Inject, StatefulService } from './Service'
 
 @ExportService(ModrinthServiceKey)
-export class ModrinthService extends StatefulService<ModrinthState, [ResourceState]> implements IModrinthService {
+export class ModrinthService extends StatefulService<ModrinthState> implements IModrinthService {
   private cached: undefined | { licenses: string[]; categories: string[]; gameVersions: string[]; modLoaders: string[]; environments: string[] } = undefined
 
   private cachedVersions = new CacheDictionary<ModVersion>(60 * 1000 * 2)
@@ -20,8 +20,8 @@ export class ModrinthService extends StatefulService<ModrinthState, [ResourceSta
     super(app)
   }
 
-  createState(deps: [ResourceState]): ModrinthState {
-    return new ModrinthState(deps[0])
+  createState(): ModrinthState {
+    return new ModrinthState()
   }
 
   async searchMods(options: SearchModOptions): Promise<SearchModResult> {

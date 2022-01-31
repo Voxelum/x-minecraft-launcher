@@ -11,7 +11,6 @@ export function useJava() {
   const { state, resolveJava, installDefaultJava: installJava, refreshLocalJava } = useJavaService()
   const { openInBrowser } = useService(BaseServiceKey)
   const all = computed(() => state.all)
-  const defaultJava = computed(() => state.all.find(j => j.majorVersion === 8) ?? state.all[0])
   const missing = computed(() => state.missingJava)
   const refreshing = useBusy('java()')
   function remove(java: JavaRecord) {
@@ -21,7 +20,6 @@ export function useJava() {
   return {
     all,
     remove,
-    default: defaultJava,
     add: resolveJava,
     installDefault: installJava,
     refreshLocalJava,

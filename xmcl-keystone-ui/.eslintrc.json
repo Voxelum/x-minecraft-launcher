@@ -1,9 +1,11 @@
 {
     "globals": {
-        "taskChannel": true,
-        "semaphoreChannel": true,
-        "serviceChannel": true,
-        "controllerChannel": true
+        "taskMonitor": true,
+        "resourceMonitor": true,
+        "serviceChannels": true,
+        "windowController": true,
+        "appsHost": true,
+        "gameOutput": true
     },
     "extends": [
         "../.eslintrc.json",

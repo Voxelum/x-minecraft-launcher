@@ -8,7 +8,7 @@ import DiagnoseService from '../services/DiagnoseService'
 import ExternalAuthSkinService from '../services/ExternalAuthSkinService'
 import ImportService from '../services/ImportService'
 import InstallService from '../services/InstallService'
-import InstanceCurseforgeIOService from '../services/InstanceCurseforgeIOService'
+import ModpackService from '../services/ModpackService'
 import InstanceIOService from '../services/InstanceIOService'
 import InstanceJavaService from '../services/InstanceJavaService'
 import InstanceLogService from '../services/InstanceLogService'
@@ -50,12 +50,8 @@ export default class ServiceManager extends Manager {
 
   private sessions: { [key: number]: ServiceCallSession } = {}
 
-  getService<T>(key: ServiceKey<T>): T | undefined {
+  getService<T = AbstractService>(key: ServiceKey<T>): T | undefined {
     return this.exposedService[key as any] as any
-  }
-
-  propagateEvent(service: string, event: string, ...args: any[]) {
-    this.app.broadcast('service-event', { service, event, args })
   }
 
   protected addService<S extends AbstractService>(type: ServiceConstructor<S>) {
@@ -98,25 +94,25 @@ export default class ServiceManager extends Manager {
         }
       }
 
-      const serv = new ServiceConstructor(...params)
-      injection.register(ServiceConstructor, serv)
-      this.activeServices.push(serv)
+      const service = new ServiceConstructor(...params)
+      injection.register(ServiceConstructor, service)
+      this.activeServices.push(service)
       const key = Reflect.get(ServiceConstructor, KEYS_SYMBOL)
       if (key) {
-        serviceMap[key] = serv
+        serviceMap[key] = service
         this.log(`Expose service ${key} to remote`)
       } else {
-        this.warn(`Unexpose the service ${ServiceConstructor.name}`)
+        this.warn(`Unexposed the service ${ServiceConstructor.name}`)
       }
 
-      const subscrptions = Reflect.get(serv, SUBSCRIBE_SYMBOL)
-      if (subscrptions) {
-        for (const { mutations, handler } of subscrptions) {
-          this.app.storeManager.subscribeAll(mutations, handler.bind(serv))
+      const subscriptions = Reflect.get(service, SUBSCRIBE_SYMBOL)
+      if (subscriptions) {
+        for (const { mutations, handler } of subscriptions) {
+          this.app.serviceStateManager.subscribeAll(mutations, handler.bind(service))
         }
       }
 
-      return serv
+      return service
     }
 
     for (const ServiceConstructor of [...Object.values(this.registeredServices)]) {
@@ -175,7 +171,7 @@ export default class ServiceManager extends Manager {
    * Prepare a service call from a client. It will return the service call id.
    *
    * This will start a session in this manager.
-   * To exectute this service call session, you shoul call `handleSession`
+   * To execute this service call session, you should call `handleSession`
    *
    * @param client The client calling this service
    * @param service The service name
@@ -183,7 +179,7 @@ export default class ServiceManager extends Manager {
    * @param payload The payload
    * @returns The service call session id
    */
-  private prepareServiceCall(client: Client, service: string, name: string, payload: any): number | undefined {
+  private handleServiceCall(client: Client, service: string, name: string, payload: any): number | undefined {
     const serv = this.exposedService[service]
     if (!serv) {
       this.error(`Cannot execute service call ${name} from service ${service}. No service exposed as ${service}.`)
@@ -239,7 +235,7 @@ export default class ServiceManager extends Manager {
     this.addService(ExternalAuthSkinService)
     this.addService(ImportService)
     this.addService(InstallService)
-    this.addService(InstanceCurseforgeIOService)
+    this.addService(ModpackService)
     this.addService(InstanceOptionsService)
     this.addService(InstanceIOService)
     this.addService(InstanceLogService)
@@ -266,7 +262,7 @@ export default class ServiceManager extends Manager {
 
   async engineReady() {
     this.log('Register service manager to handle ipc')
-    this.app.handle('service-call', (e, service: string, name: string, payload: any) => this.prepareServiceCall(e.sender, service, name, payload))
+    this.app.handle('service-call', (e, service: string, name: string, payload: any) => this.handleServiceCall(e.sender, service, name, payload))
     this.app.handle('session', (_, id) => this.startServiceCall(id))
   }
 }

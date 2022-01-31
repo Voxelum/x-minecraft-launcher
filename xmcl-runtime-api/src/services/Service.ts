@@ -16,7 +16,3 @@ export type State<T> = {
 
 type Not<T> = { [P in keyof T]?: void; }
 type NotPromise = Not<Promise<any>> | number | string | any[] | boolean | bigint | object | undefined | null
-
-export type ServiceTemplate<T> = {
-  [K in keyof T]: undefined;
-} /* & { key: ServiceKey<T> } */

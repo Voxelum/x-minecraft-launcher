@@ -432,10 +432,10 @@
 import { computed, defineComponent, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
 import UpdateInfoDialog from './UpdateInfoDialog.vue'
 import localMapping from '/@/assets/locales/index.json'
-import { useBackground, useBaseService, useI18n, useLauncherVersion, useWindowController, useSettings, BackgroundType } from '/@/hooks'
+import { useBackground, useBaseService, useI18n, useLauncherVersion, useSettings, BackgroundType } from '/@/hooks'
 
 function setupImage() {
-  const { showOpenDialog } = useWindowController()
+  const { showOpenDialog } = windowController
   const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, blurMainBody } = useBackground()
   function selectImage() {
     showOpenDialog({
@@ -467,7 +467,7 @@ function setupImage() {
 export default defineComponent({
   components: { UpdateInfoDialog },
   setup() {
-    const dialog = useWindowController()
+    const dialog = windowController
     const { migrate, postMigrate, openDirectory, state } = useBaseService()
     const settings = useSettings()
     const { $t } = useI18n()

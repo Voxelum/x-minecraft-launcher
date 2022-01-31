@@ -6,6 +6,7 @@ export class LaunchState {
   status = 'ready' as LaunchStatus
   errorType = ''
   errors = [] as any[]
+
   launchStatus(status: LaunchStatus) {
     this.status = status
   }
@@ -24,17 +25,34 @@ interface LaunchServiceEventMap {
   'minecraft-stderr': string
 }
 
+export interface LaunchOptions {
+  /**
+   * Override selected version for current instance
+   */
+  version?: string
+  /**
+   * Override launching directory.
+   *
+   * By default, it will be the current selected instance directory.
+   */
+  gameDirectory?: string
+
+  maxMemory?: number
+
+  minMemory?: number
+}
+
 export interface LaunchService extends StatefulService<LaunchState>, GenericEventEmitter<LaunchServiceEventMap> {
   /**
-   * Generate useable launch arugments for current profile
+   * Generate useable launch arguments for current profile
    */
   generateArguments(): Promise<string[]>
   /**
-   * Launch the current selected instance. This will return a boolean promise indeicate whether launch is success.
-   * @param force
+   * Launch the current selected instance. This will return a boolean promise indicate whether launch is success.
+   * @param options
    * @returns Does this launch request success?
    */
-  launch(force?: boolean): Promise<boolean>
+  launch(options?: LaunchOptions): Promise<boolean>
 }
 
 export const LaunchServiceKey: ServiceKey<LaunchService> = 'LaunchService'

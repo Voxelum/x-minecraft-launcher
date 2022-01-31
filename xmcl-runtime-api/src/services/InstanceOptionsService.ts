@@ -123,13 +123,3 @@ export interface InstanceOptionsService extends StatefulService<InstanceOptionsS
 }
 
 export const InstanceOptionsServiceKey: ServiceKey<InstanceOptionsService> = 'InstanceOptionsService'
-export const InstanceOptionsServiceMethods: ServiceTemplate<InstanceOptionsService> = {
-  refresh: undefined,
-  state: undefined,
-  editGameSetting: undefined,
-  editShaderOptions: undefined,
-  showOptionsFileInFolder: undefined,
-  showShaderOptionsInFolder: undefined,
-  getShaderOptions: undefined,
-  getGameOptions: undefined,
-}

@@ -93,7 +93,7 @@
 
 <script lang=ts>
 import { defineComponent, reactive, toRefs, inject } from '@vue/composition-api'
-import { useWindowController, useI18n } from '/@/hooks'
+import { useI18n } from '/@/hooks'
 import { I18N_KEY } from '/@/constant'
 import { SetupAPI } from '@xmcl/runtime-api/setup'
 
@@ -103,7 +103,7 @@ export default defineComponent({
   setup() {
     const i18n = inject(I18N_KEY)
     const { $t } = useI18n()
-    const dialog = useWindowController()
+    const dialog = windowController
     const data = reactive({
       fetching: true,
       minecraftPath: '',

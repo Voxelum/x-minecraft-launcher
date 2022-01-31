@@ -1,37 +1,92 @@
 
 import { IS_DEV } from '@/constant'
 import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
-import { InstanceServiceKey, LaunchServiceKey, TaskNotification } from '@xmcl/runtime-api'
-import BaseService from '@xmcl/runtime/lib/services/BaseService'
-import { app, BrowserWindow, dialog, Menu, Notification, ProcessMemoryInfo, session, shell, Tray } from 'electron'
+import { InstalledAppManifest, InstanceServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
+import { BrowserWindow, dialog, session, shell, Tray } from 'electron'
 import { fromFile } from 'file-type'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 import { acrylic } from './acrylic'
 import iconPath from './assets/apple-touch-icon.png'
-import favcon2XPath from './assets/favicon@2x.png'
 import './controlIpc'
+import { taskProgressPlugin } from './controllers/taskProgress'
+import { trayPlugin } from './controllers/tray'
 import i18n from './locales'
 import { trackWindowSize } from './windowSizeTracker'
+import browsePreload from '/@preload/browse'
 import indexPreload from '/@preload/index'
 import loggerPreload from '/@preload/logger'
 import setupPreload from '/@preload/setup'
-import mainWinUrl from '/@renderer/index.html'
+import browserWinUrl from '/@renderer/browser.html'
 import loggerWinUrl from '/@renderer/logger.html'
 import setupWinUrl from '/@renderer/setup.html'
 
 export default class Controller implements LauncherAppController {
-  private mainWin: BrowserWindow | undefined = undefined
+  protected mainWin: BrowserWindow | undefined = undefined
 
-  private loggerWin: BrowserWindow | undefined = undefined
+  protected loggerWin: BrowserWindow | undefined = undefined
 
-  private setupRef: BrowserWindow | undefined = undefined
+  protected setupRef: BrowserWindow | undefined = undefined
 
-  private i18n = i18n
+  protected browserRef: BrowserWindow | undefined = undefined
 
-  private tray: Tray | undefined
+  protected i18n = i18n
 
-  constructor(protected app: LauncherApp) { }
+  protected tray: Tray | undefined
+
+  constructor(protected app: LauncherApp) {
+    app.on('minecraft-stdout', (...args) => {
+      this.app.broadcast('minecraft-stdout', ...args)
+    })
+    app.on('minecraft-stderr', (...args) => {
+      this.app.broadcast('minecraft-stderr', ...args)
+    })
+
+    app.once('engine-ready', () => {
+      app.serviceStateManager.subscribe('localeSet', (l) => {
+        this.i18n.use(l)
+      })
+      app.serviceManager.getService(LaunchServiceKey)?.on('minecraft-window-ready', () => {
+        const instance = this.app.serviceManager.getService(InstanceServiceKey)?.state.instance
+        if (!instance) {
+          this.app.warn('Cannot find active instance while Minecraft window ready! Perhaps something strange happed?')
+          return
+        }
+        if (this.mainWin && this.mainWin.isVisible()) {
+          this.mainWin.webContents.send('minecraft-window-ready')
+
+          const { hideLauncher } = instance
+          if (hideLauncher) {
+            this.mainWin.hide()
+          }
+        }
+
+        if (this.loggerWin === undefined && instance.showLog) {
+          this.createLoggerWindow()
+        }
+      }).on('minecraft-exit', (status) => {
+        const instance = this.app.serviceManager.getService(InstanceServiceKey)?.state.instance
+        if (!instance) {
+          this.app.warn('Cannot find active instance while Minecraft exit! Perhaps something strange happed?')
+          return
+        }
+        const { hideLauncher } = instance
+        if (hideLauncher) {
+          if (this.mainWin) {
+            this.mainWin.show()
+          }
+        }
+        this.app.broadcast('minecraft-exit', status)
+        if (this.loggerWin) {
+          this.loggerWin.close()
+          this.loggerWin = undefined
+        }
+      })
+    })
+
+    taskProgressPlugin.call(this)
+    trayPlugin.call(this)
+  }
 
   private setupBrowserLogger(ref: BrowserWindow, name: string) {
     const stream = this.app.logManager.openWindowLog(name)
@@ -65,24 +120,40 @@ export default class Controller implements LauncherAppController {
     }
   }
 
+  async bootApp(app: InstalledAppManifest): Promise<void> {
+    if (this.mainWin) {
+      this.mainWin.close()
+    }
+    await this.createAppWindow(this.app.launcherAppManager.getAppRoot(app.url), app)
+  }
+
   async createBrowseWindow() {
     const browser = new BrowserWindow({
       title: 'XMCL Launcher Browser',
-      minWidth: 800,
-      minHeight: 580,
       frame: false,
       transparent: true,
+      resizable: false,
+      width: 860,
+      height: 450,
+      useContentSize: true,
       vibrancy: 'sidebar', // or popover
       icon: iconPath,
       webPreferences: {
-        preload: indexPreload,
+        preload: browsePreload,
       },
     })
+
+    browser.loadURL(browserWinUrl)
+    browser.on('ready-to-show', () => {
+      this.setWindowAcrylic(browser)
+    })
+
+    this.browserRef = browser
   }
 
-  async createMainWindow() {
-    const configPath = join(this.app.appDataPath, 'main-window-config.json')
-    this.app.log(`[Controller] Creating main window by config ${configPath}`)
+  async createAppWindow(appDir: string, man: InstalledAppManifest) {
+    const configPath = man === this.app.getDefaultAppManifest() ? join(this.app.appDataPath, 'main-window-config.json') : join(appDir, 'window-config.json')
+    this.app.log(`[Controller] Creating app window by config ${configPath}`)
     const configData = await readFile(configPath, 'utf-8').then((v) => JSON.parse(v)).catch(() => ({
       width: -1,
       height: -1,
@@ -128,7 +199,6 @@ export default class Controller implements LauncherAppController {
     })
     sess.protocol.registerFileProtocol('video', (req, callback) => {
       const pathname = decodeURIComponent(req.url.replace('video://', ''))
-      console.log(pathname)
       callback(pathname)
       fromFile(pathname).then((type) => {
         if (type && type.mime.startsWith('image/')) {
@@ -141,18 +211,19 @@ export default class Controller implements LauncherAppController {
       })
     })
 
+    const minWidth = man.minWidth ?? 800
+    const minHeight = man.minHeight ?? 600
+
     const browser = new BrowserWindow({
-      title: 'KeyStone Launcher',
-      minWidth: 800,
-      minHeight: 580,
+      title: man.name,
       width: config.width > 0 ? config.width : undefined,
       height: config.height > 0 ? config.height : undefined,
-      frame: false,
-      maximizable: true,
-      backgroundColor: '0x424242',
-      fullscreenable: true,
-      vibrancy: 'sidebar', // or popover
-      icon: iconPath,
+      minWidth: man.minWidth,
+      minHeight: man.minHeight,
+      frame: man.frame,
+      backgroundColor: man.background_color,
+      vibrancy: man.vibrancy ? 'sidebar' : undefined, // or popover
+      icon: man.iconPath,
       webPreferences: {
         preload: indexPreload,
         session: sess,
@@ -160,10 +231,16 @@ export default class Controller implements LauncherAppController {
       },
     })
 
-    this.app.log(`[Controller] Created main window by config ${configPath}`)
+    if (man.ratio) {
+      browser.setAspectRatio(minWidth / minHeight)
+    }
+
+    this.app.log(`[Controller] Created app window by config ${configPath}`)
     browser.on('ready-to-show', () => {
-      this.app.log('Main Window is ready to show!')
-      this.setWindowAcrylic(browser)
+      this.app.log('App Window is ready to show!')
+      if (man.vibrancy) {
+        this.setWindowAcrylic(browser)
+      }
     })
     browser.on('close', () => { })
     browser.webContents.on('will-navigate', (event, url) => {
@@ -175,16 +252,18 @@ export default class Controller implements LauncherAppController {
       }
     })
 
-    this.setupBrowserLogger(browser, 'main')
+    this.setupBrowserLogger(browser, 'app')
 
     trackWindowSize(browser, config, configPath)
 
-    browser.loadURL(mainWinUrl)
+    browser.loadURL(man.url)
     browser.show()
 
-    this.app.log(`[Controller] Load main window url ${mainWinUrl}`)
+    this.app.log(`[Controller] Load main window url ${man.url}`)
 
     this.mainWin = browser
+
+    this.app.emit('app-booted', man)
   }
 
   createLoggerWindow() {
@@ -210,13 +289,6 @@ export default class Controller implements LauncherAppController {
     browser.show()
 
     this.loggerWin = browser
-  }
-
-  createCurseforgeWindow() {
-    const browser = new BrowserWindow({
-    })
-    browser.loadURL('https://www.curseforge.com/minecraft')
-    browser.show()
   }
 
   createSetupWindow() {
@@ -265,115 +337,6 @@ export default class Controller implements LauncherAppController {
     return result.response === 1
   }
 
-  private createMenu() {
-    const { t: $t } = this.i18n
-    const app = this.app
-    const service = this.app.getRegisteredObject(BaseService)
-    return Menu.buildFromTemplate([
-      {
-        type: 'normal',
-        label: $t('checkUpdate'),
-        click() {
-          service?.checkUpdate()
-        },
-      },
-      { type: 'separator' },
-      {
-        label: $t('showDiagnosis'),
-        type: 'normal',
-        click() {
-          const cpu = process.getCPUUsage()
-          const mem = process.getProcessMemoryInfo()
-
-          const p: Promise<ProcessMemoryInfo> = mem instanceof Promise ? mem : Promise.resolve(mem)
-          p.then((m) => {
-            const cpuPercentage = (cpu.percentCPUUsage * 100).toFixed(2)
-            const messages = [
-              `Mode: ${process.env.NODE_ENV}`,
-              `CPU: ${cpuPercentage}%`,
-              `Private Memory: ${m.private}KB`,
-              `Shared Memory: ${m.shared}KB`,
-              `Physically Memory: ${m.residentSet}KB`,
-            ]
-            dialog.showMessageBox({
-              type: 'info',
-              title: 'Diagnosis Info',
-              message: `${messages.join('\n')}`,
-            })
-          })
-        },
-      },
-      { type: 'separator' },
-      {
-        label: $t('quit'),
-        type: 'normal',
-        click() {
-          app.quit()
-        },
-      },
-    ])
-  }
-
-  private setupTray() {
-    const tray = new Tray(favcon2XPath)
-    tray.on('click', () => {
-      const window = this.mainWin
-      if (window && !window.isFocused()) {
-        window.focus()
-      }
-    }).on('double-click', () => {
-      const window = this.mainWin
-      if (window) {
-        if (window.isVisible()) window.hide()
-        else window.show()
-      }
-    })
-    if (app.dock) {
-      app.dock.setIcon(iconPath)
-    }
-    this.tray = tray
-  }
-
-  onMinecraftWindowReady() {
-    const instance = this.app.serviceManager.getService(InstanceServiceKey)?.state.instance
-    if (!instance) {
-      this.app.warn('Cannot find active instance while Minecraft window ready! Perhaps something strange happed?')
-      return
-    }
-    // const { getters } = this.store
-    if (this.mainWin && this.mainWin.isVisible()) {
-      this.mainWin.webContents.send('minecraft-window-ready')
-
-      const { hideLauncher } = instance
-      if (hideLauncher) {
-        this.mainWin.hide()
-      }
-    }
-
-    if (this.loggerWin === undefined && instance.showLog) {
-      this.createLoggerWindow()
-    }
-  }
-
-  onMinecraftExited(status: any) {
-    const instance = this.app.serviceManager.getService(InstanceServiceKey)?.state.instance
-    if (!instance) {
-      this.app.warn('Cannot find active instance while Minecraft exit! Perhaps something strange happed?')
-      return
-    }
-    const { hideLauncher } = instance
-    if (hideLauncher) {
-      if (this.mainWin) {
-        this.mainWin.show()
-      }
-    }
-    this.app.broadcast('minecraft-exit', status)
-    if (this.loggerWin) {
-      this.loggerWin.close()
-      this.loggerWin = undefined
-    }
-  }
-
   async processFirstLaunch(): Promise<string> {
     this.app.handle('preset', () => ({ locale: this.app.getLocale(), minecraftPath: this.app.minecraftDataPath, defaultPath: this.app.appDataPath }))
     this.createSetupWindow()
@@ -396,96 +359,11 @@ export default class Controller implements LauncherAppController {
     })
   }
 
-  async engineReady() {
-    await this.createMainWindow()
-
-    this.setupTray()
-    this.setupTask()
-
-    this.app.storeManager.subscribe('localeSet', (l) => {
-      this.i18n.use(l)
-      this.tray?.setContextMenu(this.createMenu())
-    })
-
-    this.app.on('minecraft-stdout', (...args) => {
-      this.app.broadcast('minecraft-stdout', ...args)
-    })
-    this.app.on('minecraft-stderr', (...args) => {
-      this.app.broadcast('minecraft-stderr', ...args)
-    })
-
-    const launchService = this.app.serviceManager.getService(LaunchServiceKey)
-    if (launchService) {
-      launchService
-        .on('minecraft-window-ready', this.onMinecraftWindowReady.bind(this))
-        .on('minecraft-exit', this.onMinecraftExited.bind(this))
-    }
-  }
-
   async dataReady(): Promise<void> {
-    this.mainWin!.show()
-    const $t = this.i18n.t
-    const tray = this.tray
-    if (tray) {
-      tray.setContextMenu(this.createMenu())
-      this.app.storeManager.subscribe('localeSet', (l) => {
-        tray.setToolTip($t('title'))
-      })
-    }
+    this.mainWin?.show()
   }
 
   get activeWindow() {
     return this.mainWin ?? this.loggerWin
-  }
-
-  private setupTask() {
-    const tasks = this.app.taskManager
-    tasks.emitter.on('update', (uid, task) => {
-      if (tasks.getActiveTask() === task) {
-        if (this.activeWindow && !this.activeWindow.isDestroyed()) {
-          this.activeWindow.setProgressBar(task.progress / task.total)
-        }
-      }
-    })
-    tasks.emitter.on('success', (_, task) => {
-      if (tasks.getActiveTask() === task) {
-        if (this.activeWindow && !this.activeWindow.isDestroyed()) {
-          this.activeWindow.setProgressBar(-1)
-        }
-        this.notify({ type: 'taskFinish', name: task.path, arguments: task.param })
-      }
-    })
-    tasks.emitter.on('fail', (_, task) => {
-      if (tasks.getActiveTask() === task) {
-        if (this.activeWindow && !this.activeWindow.isDestroyed()) {
-          this.activeWindow.setProgressBar(-1)
-        }
-        this.notify({ type: 'taskFail', name: task.path, arguments: task.param })
-      }
-    })
-  }
-
-  private notify(n: TaskNotification) {
-    const $t = this.i18n.t
-    if (this.activeWindow && this.activeWindow.isFocused()) {
-      this.activeWindow.webContents.send('notification', n)
-    } else if ((n.type === 'taskFinish' || n.type === 'taskFail')) {
-      const notification = new Notification({
-        title: n.type === 'taskFinish' ? $t('task.success') : $t('task.fail'),
-        body: $t('task.continue'),
-        icon: iconPath,
-      })
-      notification.show()
-      notification.on('click', () => {
-        if (this.activeWindow?.isVisible()) {
-          this.activeWindow.focus()
-        } else {
-          // eslint-disable-next-line no-unused-expressions
-          this.activeWindow?.show()
-        }
-      })
-    } else {
-      this.app.broadcast('notification', n)
-    }
   }
 }

@@ -61,13 +61,3 @@ export interface VersionService extends StatefulService<VersionState> {
 }
 
 export const VersionServiceKey: ServiceKey<VersionService> = 'VersionService'
-export const VersionServiceMethods: ServiceTemplate<VersionService> = {
-  migrateMinecraftFile: undefined,
-  resolveLocalVersion: undefined,
-  refreshVersion: undefined,
-  refreshVersions: undefined,
-  deleteVersion: undefined,
-  showVersionsDirectory: undefined,
-  showVersionDirectory: undefined,
-  state: undefined,
-}

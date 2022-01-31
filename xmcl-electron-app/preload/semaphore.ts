@@ -1,8 +1,8 @@
-import { ipcRenderer } from 'electron'
+import { ResourceMonitor as ISemaphoreChannel } from '@xmcl/runtime-api'
+import { contextBridge, ipcRenderer } from 'electron'
 import { EventEmitter } from 'events'
-import { SemaphoreChannel as ISemaphoreChannel } from '@xmcl/runtime-api'
 
-export function createSemaphoreChannel(): ISemaphoreChannel {
+function createResourceMonitor(): ISemaphoreChannel {
   const emitter = new EventEmitter()
   ipcRenderer.on('release', (event, semaphores) => {
     emitter.emit('release', semaphores)
@@ -31,3 +31,5 @@ export function createSemaphoreChannel(): ISemaphoreChannel {
     },
   }
 }
+
+contextBridge.exposeInMainWorld('resourceMonitor', createResourceMonitor())

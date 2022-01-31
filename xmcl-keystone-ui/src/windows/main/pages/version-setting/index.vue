@@ -158,7 +158,7 @@ import {
   useService,
   useVersionService,
 } from '/@/hooks'
-import { filterForgeVersion, filterOptfineVersion, getResolvedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, OptifineVersion, InstallServiceKey } from '@xmcl/runtime-api'
+import { filterForgeVersion, filterOptifineVersion, getResolvedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, OptifineVersion, InstallServiceKey } from '@xmcl/runtime-api'
 import LocalVersionView from './components/LocalVersionView.vue'
 
 export default defineComponent({
@@ -227,7 +227,7 @@ export default defineComponent({
       data.forge = filterForgeVersion(v.libraries.find(isForgeLibrary)?.version ?? '')
       data.liteloader = ''
       data.fabricLoader = v.libraries.find(isFabricLoaderLibrary)?.version ?? ''
-      data.optifine = filterOptfineVersion(v.libraries.find(isOptifineLibrary)?.version ?? '')
+      data.optifine = filterOptifineVersion(v.libraries.find(isOptifineLibrary)?.version ?? '')
       data.yarn = ''
       data.id = v.id ?? ''
     }

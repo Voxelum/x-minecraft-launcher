@@ -14,7 +14,3 @@ export interface InstanceResourcePacksService {
 }
 
 export const InstanceResourcePacksServiceKey: ServiceKey<InstanceResourcePacksService> = 'InstanceResourcePacksService'
-export const InstanceResourcePacksServiceMethods: ServiceTemplate<InstanceResourcePacksService> = {
-  link: undefined,
-  showDirectory: undefined,
-}
