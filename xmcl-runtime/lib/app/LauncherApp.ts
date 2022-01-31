@@ -39,12 +39,6 @@ export interface Platform {
   arch: 'x86' | 'x64' | string
 }
 
-export interface AppManifest {
-  type: 'github' | 'gitee' | ['github', 'gitee']
-  owner: string
-  repo: string
-}
-
 export interface LauncherApp {
   on(channel: 'user-login', listener: (authService: string) => void): this
   on(channel: 'window-all-closed', listener: () => void): this
@@ -223,24 +217,24 @@ export abstract class LauncherApp extends EventEmitter {
   abstract getPath(key: 'home' | 'appData' | 'userData' | 'cache' | 'temp' | 'exe' | 'module' | 'desktop' | 'documents' | 'downloads' | 'music' | 'pictures' | 'videos' | 'recent' | 'logs' | 'crashDumps'): string
 
   /**
-     * Wait the engine ready
-     */
+   * Wait the engine ready
+   */
   abstract waitEngineReady(): Promise<void>
 
   /**
-     * Get module exposed to controller
-     * @param key The module name
-     */
+   * Get module exposed to controller
+   * @param key The module name
+   */
   abstract getModule(key: string): any
 
   /**
-     * Check update for the x-minecraft-launcher-core
-     */
+   * Check update for the x-minecraft-launcher-core
+   */
   abstract checkUpdateTask(): Task<UpdateInfo>
 
   /**
-     * Download the update to the disk. You should first call `checkUpdate`
-     */
+   * Download the update to the disk. You should first call `checkUpdate`
+   */
   abstract downloadUpdateTask(updateInfo: UpdateInfo): Task<void>
 
   /**
@@ -261,9 +255,9 @@ export abstract class LauncherApp extends EventEmitter {
   }
 
   /**
-     * Start an app from file path
-     * @param path The path of json
-     */
+   * Start an app from file path
+   * @param path The path of json
+   */
   protected async startFromFilePath(path: string) {
     const ext = extname(path)
     if (ext === '.xmclm') {
