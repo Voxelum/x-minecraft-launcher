@@ -10,7 +10,7 @@ import ResourceService from './ResourceService'
 import { ExportService, Inject, Singleton, StatefulService } from './Service'
 
 @ExportService(CurseForgeServiceKey)
-export default class CurseForgeService extends StatefulService<CurseforgeState, [ResourceState]> implements ICurseForgeService {
+export default class CurseForgeService extends StatefulService<CurseforgeState> implements ICurseForgeService {
   private userAgent: Agent = new Agent({ keepAlive: true })
 
   private projectTimestamp = ''
@@ -26,10 +26,10 @@ export default class CurseForgeService extends StatefulService<CurseforgeState, 
   constructor(app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
-    super(app, [resourceService.state])
+    super(app)
   }
 
-  createState([state]: [ResourceState]) { return new CurseforgeState(state) }
+  createState() { return new CurseforgeState() }
 
   private async fetchOrGetFromCache<K extends string | number, V>(cacheName: string, cache: Record<K, V>, key: K, query: () => Promise<V>) {
     const timestamp = await getAddonDatabaseTimestamp({ userAgent: this.userAgent })

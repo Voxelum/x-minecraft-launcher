@@ -83,7 +83,7 @@ export interface SaveDialogOptions {
   securityScopedBookmarks?: boolean
 }
 
-export interface ControllerChannel {
+export interface WindowController {
   /**
    * Show current window
    */

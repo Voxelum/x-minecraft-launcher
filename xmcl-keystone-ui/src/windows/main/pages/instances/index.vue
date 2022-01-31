@@ -75,7 +75,6 @@
 import { computed, defineComponent, Ref, ref } from '@vue/composition-api'
 import {
   useI18n,
-  useWindowController,
   useRouter,
   useInstances,
   useResourceOperation,
@@ -107,7 +106,7 @@ function useRefreshInstance(notify: Notify) {
 
 function setupInstanceImport() {
   const { importInstance } = useInstances()
-  const { showOpenDialog } = useWindowController()
+  const { showOpenDialog } = windowController
   const { $t } = useI18n()
   const { importResource } = useResourceOperation()
   const { importCurseforgeModpack } = useCurseforgeImport()

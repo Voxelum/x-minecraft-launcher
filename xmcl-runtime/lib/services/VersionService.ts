@@ -3,6 +3,7 @@ import { VersionService as IVersionService, VersionServiceKey, VersionState } fr
 import { isNonnull } from '@xmcl/runtime-api/utils'
 import { remove } from 'fs-extra'
 import { join } from 'path'
+import { LauncherApp } from '..'
 import { CopyDirectoryTask, FileStateWatcher, missing, readdirEnsured } from '../util/fs'
 import { ExportService, StatefulService } from './Service'
 
@@ -11,19 +12,21 @@ import { ExportService, StatefulService } from './Service'
  */
 @ExportService(VersionServiceKey)
 export default class VersionService extends StatefulService<VersionState> implements IVersionService {
-  createState() { return new VersionState() }
-
   private versionsWatcher = new FileStateWatcher([] as string[], (state, _, f) => [...new Set([...state, f])])
 
   private versionLoaded = false
 
-  async initialize() {
-    await this.refreshVersions()
-    if (this.state.local.length === 0) {
-      this.migrateMinecraftFile()
-    }
-    this.versionsWatcher.watch(this.getPath('versions'))
+  constructor(app: LauncherApp) {
+    super(app, async () => {
+      await this.refreshVersions()
+      if (this.state.local.length === 0) {
+        this.migrateMinecraftFile()
+      }
+      this.versionsWatcher.watch(this.getPath('versions'))
+    })
   }
+
+  createState() { return new VersionState() }
 
   async dispose() {
     this.versionsWatcher.close()
@@ -51,6 +54,10 @@ export default class VersionService extends StatefulService<VersionState> implem
   public async resolveLocalVersion(versionFolder: string, root: string = this.getPath()): Promise<ResolvedVersion> {
     const resolved = await Version.parse(root, versionFolder)
     return Object.freeze(resolved)
+  }
+
+  public getLocalVersion(versionId: string) {
+    return this.state.local.find(v => v.id === versionId)
   }
 
   /**

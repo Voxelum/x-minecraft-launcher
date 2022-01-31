@@ -1,5 +1,5 @@
 import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
-import { BaseServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, InstalledAppManifest } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'path'
@@ -7,8 +7,13 @@ import { URL } from 'url'
 import Controller from './Controller'
 import { checkUpdateTask as _checkUpdateTask, DownloadAsarUpdateTask, DownloadFullUpdateTask, quitAndInstallAsar, quitAndInstallFullUpdate, setup } from './updater'
 import { isDirectory } from './utils/fs'
+import defaultApp from './defaultApp'
 
 export default class ElectronLauncherApp extends LauncherApp {
+  getDefaultAppManifest(): InstalledAppManifest {
+    return defaultApp
+  }
+
   createController(): LauncherAppController {
     return new Controller(this)
   }
@@ -165,7 +170,7 @@ export default class ElectronLauncherApp extends LauncherApp {
 
     await super.setup()
 
-    setup(this.storeManager)
+    setup(this.serviceStateManager)
   }
 
   getLocale() {

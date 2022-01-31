@@ -3,7 +3,7 @@ export class CacheDictionary<T> {
 
   constructor(readonly ttl: number) { }
 
-  get(key: string): T | undefined {
+  get(key: string | number): T | undefined {
     const entry = this.cache[key]
     if (!entry) {
       return undefined

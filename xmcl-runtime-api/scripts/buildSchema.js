@@ -38,5 +38,4 @@ for (const [sym, file] of symbols) {
   const dist = file.substring(0, file.length - basename(file).length) + sym.name + '.json'
   console.log(dist)
   fs.writeFileSync(dist, JSON.stringify(def, null, 4))
-  // fs.writeFileSync(resolve(__dirname, '..', 'src/main/utils/schema', `${sym.name}.json`), JSON.stringify(def, null, 4));
 }

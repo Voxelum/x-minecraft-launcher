@@ -16,6 +16,8 @@ import {
   ImportSaveOptions, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey, SaveState,
 } from '@xmcl/runtime-api'
 import { isNonnull, requireObject, requireString } from '@xmcl/runtime-api/utils'
+import { UnzipTask } from '@xmcl/installer'
+import { open, readAllEntries } from '@xmcl/unzip'
 
 /**
  * Provide the ability to preview saves data of an instance
@@ -214,7 +216,11 @@ export default class InstanceSavesService extends StatefulService<SaveState> imp
     if (await isFile(source)) {
       const hash = createHash('sha1').update(source).digest('hex')
       sourceDir = join(this.app.temporaryPath, hash) // save will unzip to the /saves
-      await unpack7z(source, sourceDir)
+      const zipFile = await open(source)
+      const entries = await readAllEntries(zipFile)
+      const task = new UnzipTask(zipFile, entries, sourceDir)
+      await task.startAndWait()
+      // await unpack7z(source, sourceDir)
       useTemp = true
     }
 

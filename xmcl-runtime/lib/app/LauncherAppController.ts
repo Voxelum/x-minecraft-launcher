@@ -1,3 +1,4 @@
+import { InstalledAppManifest } from '@xmcl/runtime-api'
 
 export interface LauncherAppController {
   /**
@@ -9,6 +10,10 @@ export interface LauncherAppController {
    * The api to request the launcher window focus
    */
   requireFocus(): void
-  engineReady(): Promise<void>
+  /**
+   * Boot the app manifest.
+   */
+  bootApp(app: InstalledAppManifest): Promise<void>
+
   dataReady(): Promise<void>
 }

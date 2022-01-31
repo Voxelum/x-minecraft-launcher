@@ -75,7 +75,6 @@
 import { defineComponent, computed, ref } from '@vue/composition-api'
 import {
   useInstanceSaves,
-  useWindowController,
   useI18n,
   useInstances,
   useOperation,
@@ -100,7 +99,7 @@ export default defineComponent({
   setup() {
     const { saves, deleteSave, importSave, exportSave, cloneSave: copySave } = useInstanceSaves()
     const { instances } = useInstances()
-    const { showSaveDialog, showOpenDialog } = useWindowController()
+    const { showSaveDialog, showOpenDialog } = windowController
     const { $t } = useI18n()
     const {
       data: deleting,

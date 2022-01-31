@@ -43,7 +43,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
       return
     }
 
-    const version = this.instanceVersionService.state.instanceVersion
+    const version = this.instanceVersionService.getInstanceVersion()
 
     if (version.id === '') {
       // TODO: throw

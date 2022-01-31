@@ -19,16 +19,16 @@ export interface Fix {
 export default class DiagnoseService extends StatefulService<DiagnoseState> implements IDiagnoseService {
   private fixes: Fix[] = []
 
-  createState(): DiagnoseState {
-    return new DiagnoseState()
-  }
-
   private postIssue = new AggregateExecutor<Partial<IssueReport>, Partial<IssueReport>>(r => r.reduce((prev, cur) => Object.assign(prev, cur), {}),
     (report) => this.state.issuesPost(report),
     500)
 
   constructor(app: LauncherApp) {
     super(app)
+  }
+
+  createState(): DiagnoseState {
+    return new DiagnoseState()
   }
 
   registerMatchedFix(matched: string[], fixFunc: (issues: Issue[]) => Promise<any> | void, recheck: DiagnoseFunction = async () => { }) {

@@ -1,24 +1,38 @@
-import { EMPTY_JAVA, InstanceJavaService as IInstanceJavaService, InstanceJavaState, InstanceSchema, InstanceState, IssueReport, JavaState, parseVersion } from '@xmcl/runtime-api'
+import { JavaVersion } from '@xmcl/core'
+import { InstanceJavaService as IInstanceJavaService, InstanceSchema, InstanceState, IssueReport, JavaState, parseVersion } from '@xmcl/runtime-api'
 import LauncherApp from '../app/LauncherApp'
 import { missing } from '../util/fs'
 import DiagnoseService from './DiagnoseService'
 import InstanceService from './InstanceService'
 import InstanceVersionService from './InstanceVersionService'
 import JavaService from './JavaService'
-import AbstractService, { Inject, Singleton, StatefulService, Subscribe } from './Service'
+import AbstractService, { Inject, Singleton, Subscribe } from './Service'
 import VersionService from './VersionService'
 
-export default class InstanceJavaService extends StatefulService<InstanceJavaState, [InstanceState, JavaState]> implements IInstanceJavaService {
+export default class InstanceJavaService extends AbstractService implements IInstanceJavaService {
   constructor(app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(JavaService) private javaService: JavaService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
   ) {
-    super(app, [instanceService.state, javaService.state])
+    super(app)
 
     diagnoseService.registerMatchedFix(['invalidJava'], () => {
-      this.instanceService.editInstance({ java: this.javaService.state.defaultJava.path })
+      const matchingJava = this.getInstanceJava(true)?.path
+      if (matchingJava) {
+        this.instanceService.editInstance({ java: matchingJava })
+      }
+    })
+
+    diagnoseService.registerMatchedFix(['missingJava'], async ([issue]) => {
+      const matchingJava = this.getInstanceJava(true)?.path
+      if (matchingJava) {
+        await this.instanceService.editInstance({ java: matchingJava })
+      } else {
+        const param = issue.parameters instanceof Array ? issue.parameters[0] : issue.parameters
+        await this.javaService.installDefaultJava(param.targetVersion)
+      }
     })
 
     new Promise<void>((resolve) => {
@@ -41,18 +55,18 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
     })
   }
 
-  getInstanceJava() {
+  /**
+   * Get java for current active instance.
+   * It can only return the java with the version matched with launching requirement.
+   * @param validOnly The param to determine if this will only return a valid java
+   */
+  getInstanceJava(validOnly = false) {
     const javaPath = this.instanceService.state.instance.java
     if (javaPath && javaPath !== '') {
-      return this.javaService.state.all.find(j => j.path === javaPath)
+      return this.javaService.state.all.find(j => j.path === javaPath && (!validOnly || j.valid))
     }
-    const javaVersion = this.instanceVersionService.state.instanceVersion.javaVersion
-    const expectedJava = this.javaService.state.all.find(j => j.majorVersion === javaVersion.majorVersion)
-    return expectedJava
-  }
-
-  createState([instance, java]: [InstanceState, JavaState]) {
-    return new InstanceJavaState(instance, java)
+    const javaVersion = this.instanceVersionService.getInstanceVersion().javaVersion
+    return this.javaService.getJavaForVersion(javaVersion, validOnly)
   }
 
   @Subscribe('instanceEdit')
@@ -75,7 +89,7 @@ export default class InstanceJavaService extends StatefulService<InstanceJavaSta
       const instanceJava = this.getInstanceJava()
 
       const mcversion = instance.runtime.minecraft
-      const resolvedVersion = this.instanceVersionService.state.instanceVersion
+      const resolvedVersion = this.instanceVersionService.getInstanceVersion()
       const resolvedMcVersion = parseVersion(mcversion)
 
       const tree: Pick<IssueReport, 'incompatibleJava' | 'invalidJava' | 'missingJava'> = {

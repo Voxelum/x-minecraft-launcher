@@ -20,13 +20,15 @@ export default function createNodePlugin(): Plugin {
 
       // Files in the "node-file" virtual namespace call "require()" on the
       // path from esbuild of the ".node" file in the output directory.
-      build.onLoad({ filter: /.*/, namespace: 'node-file' }, (args) => ({
-        contents: `
+      build.onLoad({ filter: /.*/, namespace: 'node-file' }, (args) => {
+        return ({
+          contents: `
           import path from ${JSON.stringify(args.path)}
-          try { module.exports = require(path) }
-          catch {}
+          try { module.exports = typeof path === 'string' ? require(path) : path }
+          catch (e) { console.error('Fail to require native node module ' + ${JSON.stringify(args.path)}); console.error(e); }
         `,
-      }))
+        })
+      })
 
       // If a ".node" file is imported within a module in the "node-file" namespace, put
       // it in the "file" namespace where esbuild's default loading behavior will handle

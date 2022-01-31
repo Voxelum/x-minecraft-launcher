@@ -20,7 +20,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "types": [
-      "vite-plugin-pwa/client"
+      "vite-plugin-pwa/client",
+      "@xmcl/runtime-api/client",
+      "@xmcl/runtime-api/loggerClient",
     ]
   },
   "vueCompilerOptions": {

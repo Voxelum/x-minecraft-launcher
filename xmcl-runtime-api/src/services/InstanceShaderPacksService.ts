@@ -11,7 +11,3 @@ export interface InstanceShaderPacksService {
 }
 
 export const InstanceShaderPacksServiceKey: ServiceKey<InstanceShaderPacksService> = 'InstanceShaderPacksService'
-export const InstanceShaderPacksServiceTemplate: ServiceTemplate<InstanceShaderPacksService> = {
-  link: undefined,
-  showDirectory: undefined,
-}

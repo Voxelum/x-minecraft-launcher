@@ -1,8 +1,7 @@
 import type { AddonInfo, Category, File, GetFeaturedAddonOptions, SearchOptions } from '@xmcl/curseforge'
-import { PersistedResource } from '../entities/resource'
-import { ResourceState } from './ResourceService'
-import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
 import { ProjectType } from '../entities/curseforge'
+import { PersistedResource } from '../entities/resource'
+import { ServiceKey, StatefulService } from './Service'
 export interface InstallFileOptions {
   /**
    * The curseforge file
@@ -16,49 +15,6 @@ export class CurseforgeState {
   downloading = [] as { fileId: number; taskId: string }[]
   categories = [] as Category[]
   categoriesTimestamp = ''
-
-  constructor(private resourceState: ResourceState) {
-  }
-
-  get isFileInstalled() {
-    return (file: { id: number; href: string }) => {
-      const find = (m: PersistedResource) => {
-        if ('curseforge' in m && typeof m.curseforge === 'object') {
-          const s = m.curseforge
-          if (s.fileId === file.id) return true
-        }
-        return false
-      }
-      if (this.resourceState.mods.find(find)) return true
-      if (this.resourceState.resourcepacks.find(find)) return true
-      if (this.resourceState.modpacks.find(find)) return true
-      if (this.resourceState.saves.find(find)) return true
-
-      return false
-    }
-  }
-
-  get findFileInstalled() {
-    return (file: { id: number; href: string }) => {
-      const find = (m: PersistedResource) => {
-        const source = m
-        if ('curseforge' in source && typeof source.curseforge === 'object') {
-          const s = source.curseforge
-          if (s.fileId === file.id) return true
-        }
-        return false
-      }
-      let result
-      /* eslint-disable no-cond-assign */
-      if (result = this.resourceState.mods.find(find)) return result
-      if (result = this.resourceState.resourcepacks.find(find)) return result
-      if (result = this.resourceState.modpacks.find(find)) return result
-      if (result = this.resourceState.saves.find(find)) return result
-      /* eslint-enable no-cond-assign */
-
-      return undefined
-    }
-  }
 
   curseforgeDownloadFileStart({ fileId, taskId }: { fileId: number; taskId: string }) {
     this.downloading.push({ fileId, taskId })
@@ -113,13 +69,3 @@ export interface CurseForgeService extends StatefulService<CurseforgeState> {
 }
 
 export const CurseForgeServiceKey: ServiceKey<CurseForgeService> = 'CurseForgeService'
-export const CurseForgeServiceMethods: ServiceTemplate<CurseForgeService> = {
-  fetchFeaturedProjects: undefined,
-  fetchProject: undefined,
-  fetchProjectDescription: undefined,
-  fetchProjectFiles: undefined,
-  loadCategories: undefined,
-  searchProjects: undefined,
-  installFile: undefined,
-  state: undefined,
-}

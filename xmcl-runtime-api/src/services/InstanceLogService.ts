@@ -45,13 +45,3 @@ export interface InstanceLogService {
 }
 
 export const InstanceLogServiceKey: ServiceKey<InstanceLogService> = 'InstanceLogService'
-export const InstanceLogServiceMethods: ServiceTemplate<InstanceLogService> = {
-  listLogs: undefined,
-  removeLog: undefined,
-  getLogContent: undefined,
-  listCrashReports: undefined,
-  removeCrashReport: undefined,
-  getCrashReportContent: undefined,
-  showLog: undefined,
-  showCrash: undefined,
-}

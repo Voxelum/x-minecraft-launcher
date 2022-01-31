@@ -20,18 +20,21 @@ export const config: Configuration = {
     'dist/**/*',
   ],
   asarUnpack: [
-    '**/*.cs',
-    'node_modules/7zip-bin/**/*',
+    '**/assets/**/*.cs',
+    '**/assets/**/*.node',
+    '**/assets/**/*.lib',
+    '**/assets/**/*.so',
+    '**/assets/**/*.dll',
     '**/*.worker.js',
   ],
   // eslint-disable-next-line no-template-curly-in-string
   artifactName: '${productName}-${version}-${platform}-${arch}.${ext}',
   appx: {
-    displayName: 'XMCL',
+    displayName: 'X Minecraft Launcher',
     applicationId: 'CI010.XMCL',
-    identityName: '22961CI010.XMCL',
+    identityName: 'XMCL',
     backgroundColor: 'transparent',
-    publisher: 'CN=DAFB9390-F5BD-4F94-828C-242F8DAA6FDE',
+    publisher: 'E=cijhn@hotmail.com, CN=&quot;Open Source Developer, Hongze Xu&quot;, O=Open Source Developer, L=Beijing, C=CN',
     publisherDisplayName: 'CI010',
     setBuildNumber: true,
     languages: ['en-US', 'zh-CN', 'ru'],
@@ -86,13 +89,7 @@ export const config: Configuration = {
       '**/*.worker.js',
     ],
     target: [
-      'nsis:x64',
-      {
-        target: 'nsis-web',
-        arch: [
-          'x64',
-        ],
-      },
+      'appx',
       {
         target: 'zip',
         arch: [

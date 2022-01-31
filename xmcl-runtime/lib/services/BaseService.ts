@@ -9,12 +9,24 @@ import { ExportService, Singleton, StatefulService } from './Service'
 
 @ExportService(BaseServiceKey)
 export default class BaseService extends StatefulService<BaseState> implements IBaseService {
-  createState() { return new BaseState() }
-
   private settingFile = new MappedFile<SettingSchema>(this.getPath('setting.json'), new BufferJsonSerializer(SettingSchema))
 
+  createState() { return new BaseState() }
+
   constructor(app: LauncherApp) {
-    super(app)
+    super(app, async () => {
+      this.state.rootSet(this.app.gameDataPath)
+      const data = await this.settingFile.read()
+      this.state.config({
+        locale: data.locale || this.app.getLocale(),
+        autoInstallOnAppQuit: data.autoInstallOnAppQuit,
+        autoDownload: data.autoDownload,
+        allowPrerelease: data.allowPrerelease,
+        apiSets: data.apiSets,
+        apiSetsPreference: data.apiSetsPreference,
+      })
+      this.checkUpdate()
+    })
     this.storeManager.subscribeAll([
       'localeSet',
       'allowPrereleaseSet',
@@ -33,20 +45,6 @@ export default class BaseService extends StatefulService<BaseState> implements I
       })
     })
     this.state.versionSet([app.version, app.build])
-  }
-
-  async initialize() {
-    this.state.rootSet(this.app.gameDataPath)
-    const data = await this.settingFile.read()
-    this.state.config({
-      locale: data.locale || this.app.getLocale(),
-      autoInstallOnAppQuit: data.autoInstallOnAppQuit,
-      autoDownload: data.autoDownload,
-      allowPrerelease: data.allowPrerelease,
-      apiSets: data.apiSets,
-      apiSetsPreference: data.apiSetsPreference,
-    })
-    this.checkUpdate()
   }
 
   async handleUrl(url: string) {

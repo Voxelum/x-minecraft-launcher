@@ -1,5 +1,5 @@
-import { createDefaultCurseforgeQuery, installCurseforgeModpackTask, readManifest } from '@xmcl/installer'
-import { CurseforgeModpackManifest, EditGameSettingOptions, EditInstanceOptions, Exception, ExportCurseforgeModpackOptions, ImportCurseforgeModpackOptions, InstanceCurseforgeIOService as IInstanceCurseforgeIOService, InstanceCurseforgeIOServiceKey, isResourcePackResource, NO_RESOURCE, ResourceDomain, ResourceType, write } from '@xmcl/runtime-api'
+import { createDefaultCurseforgeQuery, installCurseforgeModpackTask, readManifest as readCurseforgeManifest } from '@xmcl/installer'
+import { CurseforgeModpackManifest, EditGameSettingOptions, EditInstanceOptions, Exception, ExportModpackOptions, ImportModpackOptions, ModpackService as IModpackService, ModpackServiceKey, isResourcePackResource, NO_RESOURCE, ResourceDomain, ResourceType, write } from '@xmcl/runtime-api'
 import { isNonnull, requireObject } from '@xmcl/runtime-api/utils'
 import { existsSync } from 'fs'
 import { ensureDir, remove, rename, unlink, writeFile } from 'fs-extra'
@@ -18,8 +18,8 @@ import VersionService from './VersionService'
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
-@ExportService(InstanceCurseforgeIOServiceKey)
-export default class InstanceCurseforgeIOService extends AbstractService implements IInstanceCurseforgeIOService {
+@ExportService(ModpackServiceKey)
+export default class ModpackService extends AbstractService implements IModpackService {
   constructor(app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
@@ -34,7 +34,7 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
    * Export the instance as an curseforge modpack
    * @param options The curseforge modpack export options
    */
-  async exportCurseforgeModpack(options: ExportCurseforgeModpackOptions) {
+  async exportCurseforgeModpack(options: ExportModpackOptions) {
     requireObject(options)
 
     const { instancePath = this.instanceService.state.path, destinationPath, overrides, name, version, gameVersion, author } = options
@@ -158,7 +158,7 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
    * Import the curseforge modpack zip file to the instance.
    * @param options The options provide instance directory path and curseforge modpack zip path
    */
-  async importCurseforgeModpack(options: ImportCurseforgeModpackOptions) {
+  async importCurseforgeModpack(options: ImportModpackOptions) {
     const { path } = options
 
     if (!await isFile(path)) {
@@ -167,23 +167,23 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
 
     this.log(`Import curseforge modpack by path ${path}`)
     const { instanceModsService, log, resourceService, instanceService } = this
-    const manifest = await readManifest(path).catch(() => {
+
+    const config: EditInstanceOptions = {
+
+    }
+    const manifest = await readCurseforgeManifest(path).catch(() => {
       throw new Exception({ type: 'invalidCurseforgeModpack', path })
     })
 
     const forgeId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('forge'))
     const fabricId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('fabric'))
-
-    const config: EditInstanceOptions = {
-      runtime: {
-        minecraft: manifest.minecraft.version,
-        forge: forgeId ? forgeId.id.substring(6) : '',
-        liteloader: '',
-        fabricLoader: fabricId ? fabricId.id.substring(7) : '',
-        yarn: '',
-      },
+    config.runtime = {
+      minecraft: manifest.minecraft.version,
+      forge: forgeId ? forgeId.id.substring(6) : '',
+      liteloader: '',
+      fabricLoader: fabricId ? fabricId.id.substring(7) : '',
+      yarn: '',
     }
-
     let instancePath: string
     if ('instancePath' in options) {
       await instanceService.editInstance({
@@ -240,7 +240,6 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
         },
         filePathResolver(p, f, m, u) {
           const path = m.getMod(basename(u))
-          console.log(path)
           files.find(fi => fi.fileID === f)!.path = path
           return path
         },
@@ -296,4 +295,73 @@ export default class InstanceCurseforgeIOService extends AbstractService impleme
       return instancePath
     })
   }
+
+  async importMcbbsModpack(options: ImportMcbbsModpackOptions) {
+    const file = options.path
+    const zip = await open(file)
+    const entries = await readAllEntries(zip)
+    const manifestEntry = entries.find(e => e.fileName === 'mcbbs.packmeta')
+    if (!manifestEntry) {
+      // TODO: optimize the error
+      throw new Error('Mailfrom mcbbs modpack!')
+    }
+    const manifest = await readEntry(zip, manifestEntry).then(b => JSON.parse(b.toString()) as McbbsModpackManifest)
+
+    const config: EditInstanceOptions = {
+      runtime: {
+        minecraft: manifest.addons.find(a => a.id === 'game')?.version ?? '',
+        forge: manifest.addons.find(a => a.id === 'forge')?.version ?? '',
+        liteloader: '',
+        fabricLoader: manifest.addons.find(a => a.id === 'fabric')?.version ?? '',
+        yarn: '',
+      },
+      description: manifest.description,
+      author: manifest.author,
+      version: manifest.version,
+      name: manifest.name,
+      url: manifest.url,
+    }
+
+    const instancePath = await this.instanceService.createInstance(config)
+
+    const lock = this.semaphoreManager.getLock(write(instancePath))
+    await lock.write(async () => {
+      if (manifest.files && manifest.files.length > 0) {
+        const existedResources: PersistedResource[] = []
+        const missingFiles: ModpackFile[] = []
+
+        for (const file of manifest.files) {
+          const existedResource = file.type === 'curse'
+            ? this.resourceService.getResource({ url: `curseforge://id/${file.projectID}/${file.fileID}` })
+            : this.resourceService.getResource({ hash: file.hash })
+
+          if (existedResource) {
+            if (existedResource.domain === ResourceDomain.Mods) {
+              // only mod need to deploy
+              existedResources.push(existedResource)
+            } else if (existedResource.domain !== ResourceDomain.Unknown) {
+              this.log(file.type === 'curse'
+                ? `Skip to import existed resource in ${existedResource.domain} for curseforge project ${file.projectID} file ${file.fileID}`
+                : `Skip to import existed resource in ${existedResource.domain} for addon file ${file.path} ${file.hash}`,
+              )
+            } else {
+              missingFiles.push(file)
+            }
+          } else {
+            missingFiles.push(file)
+          }
+        }
+
+        // only download missing file
+        manifest.files = missingFiles
+
+        // install existed resources
+        await this.instanceModsService.install({ mods: existedResources, path: instancePath })
+      }
+
+      // install all missing files
+      await this.submit(installMcbbsModpackTask({ path: file, destination: instancePath, manifest, allowCustomFile: options.allowFileApi }))
+    })
+  }
+
 }

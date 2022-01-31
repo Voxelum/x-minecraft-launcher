@@ -55,9 +55,8 @@
 
 <script lang=ts>
 import {
-  defineComponent, provide, reactive, ref,
+  defineComponent, provide, ref,
   Ref, toRefs,
-  watch,
 } from '@vue/composition-api'
 import AddInstanceDialog from './components/AddInstanceDialog.vue'
 import Background from './components/Background.vue'
@@ -78,9 +77,6 @@ import {
   provideAsyncRoute, provideServerStatusCache,
   useBackground, useRouter,
 } from '/@/hooks'
-import { SYNCABLE_KEY } from '/@/hooks/useSyncable'
-import { injection } from '/@/util/inject'
-
 export default defineComponent({
   components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaFixerDialog, Background, Notifier, ContextMenu, SearchBar, UniversalDropView, SideBar, AddInstanceDialog, TopWindowControls },
   setup() {
@@ -98,7 +94,6 @@ export default defineComponent({
     const { text, toggle } = provideSearch()
     provideContextMenu()
 
-    const { syncing } = injection(SYNCABLE_KEY)
     const router = useRouter()
     const onHomePage = ref(router.currentRoute.path === '/')
     const app: Ref<any> = ref(null)
@@ -113,18 +108,7 @@ export default defineComponent({
       text.value = ''
     })
 
-    const data = reactive({
-      loading: false,
-    })
-
-    watch(syncing, (v) => {
-      if (!v && data.loading) {
-        data.loading = false
-      }
-    })
-
     return {
-      ...toRefs(data),
       app,
       goBack,
       blurMainBody,

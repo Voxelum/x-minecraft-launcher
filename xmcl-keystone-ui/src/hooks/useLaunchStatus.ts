@@ -1,6 +1,6 @@
 import { computed, reactive, toRefs } from '@vue/composition-api'
-import { useService, useServiceOnly } from './useService'
 import { LaunchServiceKey } from '@xmcl/runtime-api'
+import { useService } from './useService'
 
 export function useLaunchEvent() {
 

@@ -1,5 +1,5 @@
 import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder, Version } from '@xmcl/core'
-import { EMPTY_VERSION, Exception, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
+import { EMPTY_VERSION, Exception, LaunchOptions, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
 import { ChildProcess } from 'child_process'
 import { constants } from 'fs'
 import { access, chmod } from 'fs-extra'
@@ -15,6 +15,7 @@ import InstanceVersionService from './InstanceVersionService'
 import JavaService from './JavaService'
 import { ExportService, Inject, StatefulService } from './Service'
 import UserService from './UserService'
+import VersionService from './VersionService'
 
 @ExportService(LaunchServiceKey)
 export default class LaunchService extends StatefulService<LaunchState> implements ILaunchService {
@@ -30,6 +31,7 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(InstanceJavaService) private instanceJavaService: InstanceJavaService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
+    @Inject(VersionService) private versionService: VersionService,
     @Inject(JavaService) private javaService: JavaService,
     @Inject(UserService) private userService: UserService,
   ) {
@@ -48,7 +50,7 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
     }
     const javaPath = instanceJava.path
 
-    const instanceVersion = this.instanceVersionService.state.instanceVersion
+    const instanceVersion = this.instanceVersionService.getInstanceVersion()
     if (!instanceVersion.id) {
       throw new Exception({ type: 'launchNoVersionInstalled' })
     }
@@ -96,7 +98,7 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
    * @param force
    * @returns Does this launch request success?
    */
-  async launch(force?: boolean) {
+  async launch(options?: LaunchOptions) {
     try {
       if (this.state.status !== 'ready') {
         return false
@@ -124,9 +126,9 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
 
       this.state.launchStatus('launching')
 
-      const minecraftFolder = new MinecraftFolder(instance.path)
+      const minecraftFolder = new MinecraftFolder(options?.gameDirectory ?? instance.path)
 
-      let version = this.instanceVersionService.state.instanceVersion
+      let version = options?.version ? this.versionService.getLocalVersion(options.version) ?? this.instanceVersionService.getInstanceVersion() : this.instanceVersionService.getInstanceVersion()
       if (version === EMPTY_VERSION) {
         throw new Exception({ type: 'launchNoVersionInstalled' })
       }
@@ -134,7 +136,7 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
 
       this.log(`Will launch with ${version} version.`)
 
-      const instanceJava = this.instanceJavaService.getInstanceJava()
+      const instanceJava = this.javaService.getJavaForVersion(version.javaVersion)
 
       if (!instanceJava) {
         throw new Exception({ type: 'launchGeneralException' }, 'Cannot launch without a valid java')
@@ -143,11 +145,11 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
       const javaPath = instanceJava.path
 
       await Promise.all([
-        this.instanceResourcePackService.link().catch((e) => {
+        this.instanceResourcePackService.link(minecraftFolder.root).catch((e) => {
           this.error(`Fail to link resource pack ${instance.path}`)
           this.error(e)
         }),
-        this.instanceShaderPackService.link().catch((e) => {
+        this.instanceShaderPackService.link(minecraftFolder.root).catch((e) => {
           this.error(`Fail to link shader pack ${instance.path}`)
           this.error(e)
         }),

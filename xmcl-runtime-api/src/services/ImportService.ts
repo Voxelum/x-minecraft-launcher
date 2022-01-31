@@ -57,7 +57,7 @@ export interface ImportService {
    * If the target file is directory, and the `import` option is true, it will pack it into zip and import.
    *
    * - For resource packs, it method will import and save them whatever by default.
-   * - For mods, you cannot import directoy as we won't pack the jar correctly...
+   * - For mods, you cannot import directory as we won't pack the jar correctly...
    * - For save, you can override the setting in `savePolicy`
    * - For modpack, you can override the setting in `modpackPolicy`
    */
@@ -65,6 +65,3 @@ export interface ImportService {
 }
 
 export const ImportServiceKey: ServiceKey<ImportService> = 'ImportService'
-export const ImportServiceMethods: ServiceTemplate<ImportService> = {
-  importFile: undefined,
-}

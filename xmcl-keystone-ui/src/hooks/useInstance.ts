@@ -1,7 +1,6 @@
-import { computed, Data, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
-import { ResolvedVersion } from '@xmcl/core'
+import { computed, reactive, Ref, toRefs } from '@vue/composition-api'
 import { Frame as GameSetting } from '@xmcl/gamesetting'
-import { CloneSaveOptions, DeleteSaveOptions, EMPTY_VERSION, getExpectVersion, getResolvedVersion, ImportSaveOptions, InstanceData, InstanceIOServiceKey, InstanceLogServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey, InstanceServiceKey, InstanceVersionServiceKey, ResourceServiceKey, RuntimeVersions, VersionServiceKey } from '@xmcl/runtime-api'
+import { CloneSaveOptions, DeleteSaveOptions, getExpectVersion, getResolvedVersion, ImportSaveOptions, InstanceData, InstanceIOServiceKey, InstanceLogServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey, InstanceServiceKey, ResourceServiceKey, RuntimeVersions, VersionServiceKey } from '@xmcl/runtime-api'
 import { useBusy, useSemaphore } from './useSemaphore'
 import { useService, useServiceOnly } from './useService'
 import { useCurrentUser } from './useUser'
@@ -224,7 +223,6 @@ export function useInstanceSaves() {
  * Use references of all the version info of this instance
  */
 export function useInstanceVersion() {
-  const { state } = useService(InstanceVersionServiceKey)
   const { state: versionState } = useService(VersionServiceKey)
   const { state: instanceState } = useService(InstanceServiceKey)
   const { runtime, version } = useInstance()

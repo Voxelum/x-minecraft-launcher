@@ -1,19 +1,13 @@
-import { ServiceFactory } from '../serviceFactory'
-import { SERVICES_KEY } from '../serviceProxy'
-import { injection } from '../util/inject'
 import { ServiceKey } from '@xmcl/runtime-api'
-
-export function useServices(): ServiceFactory {
-  const seriv = injection(SERVICES_KEY)
-  return seriv
-}
+import { injection } from '../util/inject'
+import { SERVICES_KEY } from '../vuexServiceProxy'
 
 export function useService<T = unknown>(name: ServiceKey<T>): T {
-  return useServices().getService(name)
+  return injection(SERVICES_KEY).getService(name)
 }
 
 export function useServiceOnly<T = unknown, Keys extends keyof T = keyof void>(name: ServiceKey<T>, ...keys: Keys[]): Pick<T, Keys> {
-  const seriv = useServices().getService(name)
+  const seriv = injection(SERVICES_KEY).getService(name)
   const service = {} as any
   for (const key of keys) {
     service[key] = seriv[key]

@@ -191,7 +191,6 @@ import {
 import {
   useI18n,
   useAutoSaveLoad,
-  useWindowController,
   useInstance,
   useJava,
   useLaunchPreview,
@@ -203,7 +202,7 @@ export default defineComponent({
   components: { JavaList },
   setup() {
     const { $t } = useI18n()
-    const { showOpenDialog } = useWindowController()
+    const { showOpenDialog } = windowController
     const {
       editInstance: edit,
       maxMemory,

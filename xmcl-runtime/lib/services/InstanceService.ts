@@ -15,7 +15,7 @@ import { requireObject, requireString, assignShallow } from '@xmcl/runtime-api/u
 const INSTANCES_FOLDER = 'instances'
 
 /**
- * Provide instance spliting service. It can split the game into multiple environment and dynamiclly deploy the resource to run.
+ * Provide instance spliting service. It can split the game into multiple environment and dynamically deploy the resource to run.
  */
 @ExportService(InstanceServiceKey)
 export class InstanceService extends StatefulService<InstanceState> implements IInstanceService {
@@ -29,7 +29,63 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     @Inject(UserService) private userService: UserService,
     @Inject(InstallService) private installService: InstallService,
   ) {
-    super(app)
+    super(app, async () => {
+      const uuidExp = /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}){1}/
+
+      const { state } = this
+      const instanceConfig = await this.instancesFile.read()
+      const managed = (await readdirEnsured(this.getPathUnder())).map(p => this.getPathUnder(p)).filter(f => uuidExp.test(f))
+
+      this.log(`Found ${managed.length} managed instances and ${instanceConfig.instances.length} external instances.`)
+
+      const all = [...new Set([...instanceConfig.instances, ...managed])]
+      const staleInstances = new Set<string>()
+
+      await Promise.all(all.map(async (path) => {
+        if (!await this.loadInstance(path)) {
+          staleInstances.add(path)
+        }
+      }))
+
+      if (staleInstances.size > 0) {
+        await this.instancesFile.save({
+          selectedInstance: instanceConfig.selectedInstance,
+          instances: instanceConfig.instances.filter(p => !staleInstances.has(p)),
+        })
+      }
+
+      if (Object.keys(state.all).length === 0) {
+        this.log('Cannot find any instances, try to init one default modpack.')
+        await this.createAndMount({})
+      } else {
+        if (this.state.all[instanceConfig.selectedInstance]) {
+          await this.mountInstance(instanceConfig.selectedInstance)
+        } else {
+          await this.mountInstance(Object.keys(state.all)[0])
+        }
+      }
+
+      this.storeManager
+        .subscribe('instanceAdd', async (payload: Instance) => {
+          await this.instanceFile.saveTo(payload.path, payload)
+          await this.instancesFile.save()
+          this.log(`Saved new instance ${payload.path}`)
+        })
+        .subscribe('instanceRemove', async () => {
+          await this.instancesFile.save()
+          this.log(`Removed instance files under ${this.state.instance.path}`)
+        })
+        .subscribe('instanceEdit', async () => {
+          const inst = this.state.all[this.state.instance.path]
+          await this.instanceFile.saveTo(inst.path, inst)
+          this.log(`Saved instance ${this.state.instance.path}`)
+        })
+        .subscribe('instanceSelect', async (path) => {
+          await this.instanceFile.saveTo(path, this.state.all[path])
+          await this.instancesFile.save()
+          this.log(`Saved instance selection ${path}`)
+        })
+    })
   }
 
   createState() { return new InstanceState() }
@@ -86,64 +142,6 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     this.log(`Loaded instance ${instance.path}`)
 
     return true
-  }
-
-  async initialize() {
-    const uuidExp = /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}){1}/
-
-    const { state } = this
-    const instanceConfig = await this.instancesFile.read()
-    const managed = (await readdirEnsured(this.getPathUnder())).map(p => this.getPathUnder(p)).filter(f => uuidExp.test(f))
-
-    this.log(`Found ${managed.length} managed instances and ${instanceConfig.instances.length} external instances.`)
-
-    const all = [...new Set([...instanceConfig.instances, ...managed])]
-    const staleInstances = new Set<string>()
-
-    await Promise.all(all.map(async (path) => {
-      if (!await this.loadInstance(path)) {
-        staleInstances.add(path)
-      }
-    }))
-
-    if (staleInstances.size > 0) {
-      await this.instancesFile.save({
-        selectedInstance: instanceConfig.selectedInstance,
-        instances: instanceConfig.instances.filter(p => !staleInstances.has(p)),
-      })
-    }
-
-    if (Object.keys(state.all).length === 0) {
-      this.log('Cannot find any instances, try to init one default modpack.')
-      await this.createAndMount({})
-    } else {
-      if (this.state.all[instanceConfig.selectedInstance]) {
-        await this.mountInstance(instanceConfig.selectedInstance)
-      } else {
-        await this.mountInstance(Object.keys(state.all)[0])
-      }
-    }
-
-    this.storeManager
-      .subscribe('instanceAdd', async (payload: Instance) => {
-        await this.instanceFile.saveTo(payload.path, payload)
-        await this.instancesFile.save()
-        this.log(`Saved new instance ${payload.path}`)
-      })
-      .subscribe('instanceRemove', async () => {
-        await this.instancesFile.save()
-        this.log(`Removed instance files under ${this.state.instance.path}`)
-      })
-      .subscribe('instanceEdit', async () => {
-        const inst = this.state.all[this.state.instance.path]
-        await this.instanceFile.saveTo(inst.path, inst)
-        this.log(`Saved instance ${this.state.instance.path}`)
-      })
-      .subscribe('instanceSelect', async (path) => {
-        await this.instanceFile.saveTo(path, this.state.all[path])
-        await this.instancesFile.save()
-        this.log(`Saved instance selection ${path}`)
-      })
   }
 
   async createInstance(payload: CreateInstanceOption): Promise<string> {

@@ -3,6 +3,7 @@ import { Task } from '@xmcl/task'
 import { join } from 'path'
 import { EventEmitter } from 'stream'
 import LauncherApp from '../app/LauncherApp'
+import { createPromiseSignal, PromiseSignal } from '../util/promiseSignal'
 
 export const PARAMS_SYMBOL = Symbol('service:params')
 export const KEYS_SYMBOL = Symbol('service:key')
@@ -200,7 +201,9 @@ export class ServiceException extends Error {
 export default abstract class AbstractService extends EventEmitter {
   readonly name: string
 
-  constructor(readonly app: LauncherApp) {
+  private initializeSignal: PromiseSignal<void> | undefined
+
+  constructor(readonly app: LauncherApp, private initializer?: () => Promise<void>) {
     super()
     this.name = Object.getPrototypeOf(this).constructor.name
   }
@@ -213,7 +216,7 @@ export default abstract class AbstractService extends EventEmitter {
 
   get logManager() { return this.app.logManager }
 
-  get storeManager() { return this.app.storeManager }
+  get storeManager() { return this.app.serviceStateManager }
 
   get credentialManager() { return this.app.credentialManager }
 
@@ -222,7 +225,7 @@ export default abstract class AbstractService extends EventEmitter {
   get semaphoreManager() { return this.app.semaphoreManager }
 
   emit(event: string, ...args: any[]): boolean {
-    this.serviceManager.propagateEvent(this.name, event, ...args)
+    this.app.broadcast('service-event', { service: this.name, event, args })
     return super.emit(event, ...args)
   }
 
@@ -270,9 +273,21 @@ export default abstract class AbstractService extends EventEmitter {
   protected get minecraftPath() { return this.app.minecraftDataPath }
 
   /**
-   * The load the service. It should load the basic data of the server. You cannot access other services from here.
+   * If the service does not initialize yet, it will load and wait the service initialization.
+   *
+   * If the service already initialized or initializing, it will wait the service initialization end.
    */
-  async initialize(): Promise<void> { }
+  async initialize(): Promise<void> {
+    if (!this.initializeSignal) {
+      this.initializeSignal = createPromiseSignal()
+      if (this.initializer) {
+        this.initializeSignal.accept(this.initializer())
+      } else {
+        this.initializeSignal.resolve()
+      }
+    }
+    await this.initializeSignal.promise
+  }
 
   async dispose(): Promise<void> { }
 
@@ -297,15 +312,15 @@ export default abstract class AbstractService extends EventEmitter {
   }
 }
 
-export abstract class StatefulService<M extends State<M>, D extends any[] = []> extends AbstractService {
+export abstract class StatefulService<M extends State<M>> extends AbstractService {
   state: M
 
-  constructor(app: LauncherApp, deps: D = [] as any) {
-    super(app)
-    const s = this.createState(deps)
-    Object.defineProperty(s, STATE_SYMBOL, { value: true })
-    this.state = app.storeManager.register(this.name, s)
+  constructor(app: LauncherApp, initializer?: () => Promise<void>) {
+    super(app, initializer)
+    const state = this.createState()
+    Object.defineProperty(state, STATE_SYMBOL, { value: true })
+    this.state = app.serviceStateManager.register(this.name, state)
   }
 
-  abstract createState(deps: D): M
+  abstract createState(): M
 }

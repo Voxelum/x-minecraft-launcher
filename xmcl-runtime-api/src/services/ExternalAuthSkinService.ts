@@ -1,5 +1,5 @@
 import { AnyPersistedResource } from '../entities/resource'
-import { ServiceKey, ServiceTemplate } from './Service'
+import { ServiceKey } from './Service'
 
 export interface ExternalAuthSkinService {
   downloadCustomSkinLoader(type?: 'forge' | 'fabric'): Promise<AnyPersistedResource>
@@ -7,7 +7,3 @@ export interface ExternalAuthSkinService {
 }
 
 export const ExternalAuthSkinServiceKey: ServiceKey<ExternalAuthSkinService> = 'ExternalAuthSkinService'
-export const ExternalAuthSkinServiceMethods: ServiceTemplate<ExternalAuthSkinService> = {
-  downloadCustomSkinLoader: undefined,
-  installAuthlibInjection: undefined,
-}

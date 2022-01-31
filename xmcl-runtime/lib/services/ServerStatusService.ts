@@ -1,5 +1,6 @@
 import { queryStatus } from '@xmcl/client'
 import { createFailureServerStatus, PingServerOptions, ServerStatusService as IServerStatusService, ServerStatusServiceKey, protocolToMinecraft } from '@xmcl/runtime-api'
+import { LauncherApp } from '..'
 import { isSystemError } from '../util/error'
 import AbstractService, { ExportService } from './Service'
 
@@ -9,46 +10,48 @@ export default class ServerStatusService extends AbstractService implements ISer
 
   private versionToProtocols: Record<string, number> = {}
 
+  constructor(app: LauncherApp) {
+    super(app, async () => {
+      // const protocolFile = this.getAppDataPath('protocol.json')
+      // if (await exists(protocolFile)) {
+      //   const buf = await readFile(protocolFile)
+      //   const object = JSON.parse(buf.toString())
+      //   if (object.eTag) {
+      //     // request server for new one
+      //   }
+      //   const mcversionMapping: any = {}
+      //   for (const [mc, prot] of Object.entries(object.protocol)) {
+      //     if (!mcversionMapping[mc]) mcversionMapping[mc] = []
+      //     mcversionMapping[mc].push(prot)
+      //   }
+      //   this.commit('protocolMapping', {
+      //     protocol: object.protocol,
+      //     mcversion: mcversionMapping,
+      //   })
+      // } else {
+      //   const rev = await readJSON(protocolPath)
+      //   const forward = await readJSON(mcProtocolPath)
+
+      //   this.commit('protocolMapping', {
+      //     protocol: forward,
+      //     mcversion: rev,
+      //   })
+      // }
+
+      for (const [protocol, versions] of Object.entries(protocolToMinecraft)) {
+        for (const version of versions) {
+          this.versionToProtocols[version] = Number.parseInt(protocol)
+        }
+      }
+    })
+  }
+
   getAcceptMinecraftVersion(protocol: number): string[] {
     return this.protocolToVersions[protocol]
   }
 
   getProtocolVersion(mcversion: string): number {
     return this.versionToProtocols[mcversion]
-  }
-
-  async initialize() {
-    // const protocolFile = this.getAppDataPath('protocol.json')
-    // if (await exists(protocolFile)) {
-    //   const buf = await readFile(protocolFile)
-    //   const object = JSON.parse(buf.toString())
-    //   if (object.eTag) {
-    //     // request server for new one
-    //   }
-    //   const mcversionMapping: any = {}
-    //   for (const [mc, prot] of Object.entries(object.protocol)) {
-    //     if (!mcversionMapping[mc]) mcversionMapping[mc] = []
-    //     mcversionMapping[mc].push(prot)
-    //   }
-    //   this.commit('protocolMapping', {
-    //     protocol: object.protocol,
-    //     mcversion: mcversionMapping,
-    //   })
-    // } else {
-    //   const rev = await readJSON(protocolPath)
-    //   const forward = await readJSON(mcProtocolPath)
-
-    //   this.commit('protocolMapping', {
-    //     protocol: forward,
-    //     mcversion: rev,
-    //   })
-    // }
-
-    for (const [protocol, versions] of Object.entries(protocolToMinecraft)) {
-      for (const version of versions) {
-        this.versionToProtocols[version] = Number.parseInt(protocol)
-      }
-    }
   }
 
   async pingServer(options: PingServerOptions) {

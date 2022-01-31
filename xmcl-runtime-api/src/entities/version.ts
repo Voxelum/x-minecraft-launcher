@@ -38,7 +38,7 @@ export function filterForgeVersion(forgeVersion: string) {
   const idx = forgeVersion.indexOf('-')
   return forgeVersion.substring(idx + 1)
 }
-export function filterOptfineVersion(optifineVersion: string) {
+export function filterOptifineVersion(optifineVersion: string) {
   if (!optifineVersion) return optifineVersion
   const idx = optifineVersion.indexOf('_')
   return optifineVersion.substring(idx + 1)

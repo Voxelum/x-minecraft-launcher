@@ -64,9 +64,3 @@ export interface InstanceManagingService extends StatefulService<InstanceManagin
 }
 
 export const InstanceManagingServiceKey: ServiceKey<InstanceManagingService> = 'InstanceManagingService'
-export const InstanceManagingServiceMethods: ServiceTemplate<InstanceManagingService> = {
-  createManagedInstance: undefined,
-  refresh: undefined,
-  update: undefined,
-  state: undefined,
-}

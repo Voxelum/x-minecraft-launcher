@@ -213,13 +213,3 @@ export interface ResourceService extends StatefulService<ResourceState> {
 }
 
 export const ResourceServiceKey: ServiceKey<ResourceService> = 'ResourceService'
-export const ResourceServiceMethods: ServiceTemplate<ResourceService> = {
-  removeResource: undefined,
-  resolveResource: undefined,
-  resolveResources: undefined,
-  importResource: undefined,
-  importResources: undefined,
-  exportResource: undefined,
-  state: undefined,
-  updateResource: undefined,
-}

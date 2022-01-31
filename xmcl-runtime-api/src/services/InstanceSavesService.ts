@@ -131,13 +131,3 @@ export interface InstanceSavesService extends StatefulService<SaveState> {
 }
 
 export const InstanceSavesServiceKey: ServiceKey<InstanceSavesService> = 'InstanceSavesService'
-export const InstanceSavesServiceMethods: ServiceTemplate<InstanceSavesService> = {
-  readAllInstancesSaves: undefined,
-  getScreenshotUrls: undefined,
-  mountInstanceSaves: undefined,
-  cloneSave: undefined,
-  deleteSave: undefined,
-  importSave: undefined,
-  exportSave: undefined,
-  state: undefined,
-}

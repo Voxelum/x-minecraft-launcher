@@ -6,7 +6,6 @@ import { ZipTask } from '../util/zip'
 import InstanceIOService from './InstanceIOService'
 import InstanceModsService from './InstanceModsService'
 import InstanceOptionsService from './InstanceOptionsService'
-import InstanceResourcePackService from './InstanceResourcePacksService'
 import InstanceSavesService from './InstanceSavesService'
 import InstanceService from './InstanceService'
 import ResourceService, { ParseResourceContext } from './ResourceService'
@@ -18,7 +17,6 @@ export default class ImportService extends AbstractService implements IImportSer
     app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceIOService) private instanceIOService: InstanceIOService,
-    @Inject(InstanceResourcePackService) private instanceResourcesService: InstanceResourcePackService,
     @Inject(InstanceModsService) private instanceModsService: InstanceModsService,
     @Inject(InstanceSavesService) private instanceSaveService: InstanceSavesService,
     @Inject(InstanceOptionsService) private instanceGameSettingService: InstanceOptionsService,

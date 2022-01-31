@@ -25,15 +25,14 @@ export function useSemaphore(semaphore: string | Function) {
 export function useSemaphores() {
   const container: Record<string, number> = reactive({})
 
-  const { refresh, refreshing } = useRefreshable(() => semaphoreChannel.subscribe().then((sem) => {
+  const { refresh, refreshing } = useRefreshable(() => resourceMonitor.subscribe().then((sem) => {
     for (const [key, val] of Object.entries(sem)) {
       set(container, key, val)
     }
   }))
 
-  semaphoreChannel.on('acquire', (res) => {
+  resourceMonitor.on('acquire', (res) => {
     const sem = res instanceof Array ? res : [res]
-    // console.log(`acquire ${res}`)
     for (const s of sem) {
       if (s in container) {
         container[s] += 1
@@ -42,9 +41,8 @@ export function useSemaphores() {
       }
     }
   })
-  semaphoreChannel.on('release', (res) => {
+  resourceMonitor.on('release', (res) => {
     const sem = res instanceof Array ? res : [res]
-    // console.log(`release ${res}`)
     for (const s of sem) {
       if (s in container) {
         container[s] = Math.max(0, container[s] - 1)

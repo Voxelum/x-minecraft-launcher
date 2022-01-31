@@ -160,7 +160,7 @@ import SettingsSpeedDial from './SettingsSpeedDial.vue'
 import {
   useCurrentUser,
   useInstance, useInstanceServerStatus, useJava, useLaunch, useQuit,
-  useService, useUserProfileStatus, useWindowController,
+  useService, useUserProfileStatus,
 } from '/@/hooks'
 import { useDialog, useJavaWizardDialog } from '/@/windows/main/composables'
 import { LaunchException, BaseServiceKey } from '@xmcl/runtime-api'
@@ -214,7 +214,7 @@ export default defineComponent({
     SettingsSpeedDial,
   },
   setup() {
-    const { showSaveDialog, minimize } = useWindowController()
+    const { minimize } = windowController
     const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useDialog('log')
     const { refreshing, name, isServer, path } = useInstance()
     const { refresh } = useInstanceServerStatus(path.value)

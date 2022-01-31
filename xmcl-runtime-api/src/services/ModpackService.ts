@@ -1,7 +1,7 @@
 import { EditInstanceOptions } from './InstanceService'
-import { ServiceKey, ServiceTemplate } from './Service'
+import { ServiceKey } from './Service'
 
-export interface ExportCurseforgeModpackOptions {
+export interface ExportModpackOptions {
   /**
    * An list of files should be included in overrides
    */
@@ -20,9 +20,9 @@ export interface ExportCurseforgeModpackOptions {
   gameVersion: string
 }
 
-export type ImportCurseforgeModpackOptions = ImportCurseforgeModpackToInstanceOptions | ImportCurseforgeModpackCreateInstanceOptions
+export type ImportModpackOptions = ImportModpackToInstanceOptions | ImportModpackCreateInstanceOptions
 
-export interface ImportCurseforgeModpackToInstanceOptions {
+export interface ImportModpackToInstanceOptions {
   /**
    * The path of curseforge modpack zip file
    */
@@ -33,7 +33,7 @@ export interface ImportCurseforgeModpackToInstanceOptions {
   instancePath: string
 }
 
-export interface ImportCurseforgeModpackCreateInstanceOptions {
+export interface ImportModpackCreateInstanceOptions {
   /**
    * The path of curseforge modpack zip file
    */
@@ -45,21 +45,17 @@ export interface ImportCurseforgeModpackCreateInstanceOptions {
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
-export interface InstanceCurseforgeIOService {
+export interface ModpackService {
   /**
    * Export the instance as an curseforge modpack
    * @param options The curseforge modpack export options
    */
-  exportCurseforgeModpack(options: ExportCurseforgeModpackOptions): Promise<void>
+  exportCurseforgeModpack(options: ExportModpackOptions): Promise<void>
   /**
    * Import the curseforge modpack zip file to the instance.
    * @param options The options provide instance directory path and curseforge modpack zip path
    */
-  importCurseforgeModpack(options: ImportCurseforgeModpackOptions): Promise<string>
+  importCurseforgeModpack(options: ImportModpackOptions): Promise<string>
 }
 
-export const InstanceCurseforgeIOServiceKey: ServiceKey<InstanceCurseforgeIOService> = 'InstanceCurseforgeIOService'
-export const InstanceCurseforgeIOServiceMethods: ServiceTemplate<InstanceCurseforgeIOService> = {
-  exportCurseforgeModpack: undefined,
-  importCurseforgeModpack: undefined,
-}
+export const ModpackServiceKey: ServiceKey<ModpackService> = 'ModpackService'

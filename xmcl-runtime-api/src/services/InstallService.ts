@@ -229,22 +229,3 @@ export interface InstallService extends StatefulService<InstallState> {
 }
 
 export const InstallServiceKey: ServiceKey<InstallService> = 'InstallService'
-export const InstallServiceMethods: ServiceTemplate<InstallService> = {
-  refreshMinecraft: undefined,
-  installAssetsForVersion: undefined,
-  installDependencies: undefined,
-  reinstall: undefined,
-  installAssets: undefined,
-  installMinecraft: undefined,
-  installLibraries: undefined,
-  refreshForge: undefined,
-  installForge: undefined,
-  refreshFabric: undefined,
-  installFabric: undefined,
-  refreshOptifine: undefined,
-  installOptifine: undefined,
-  refreshLiteloader: undefined,
-  installLiteloader: undefined,
-  installByProfile: undefined,
-  state: undefined,
-}

@@ -202,12 +202,3 @@ export interface InstanceService extends StatefulService<InstanceState> {
 }
 
 export const InstanceServiceKey: ServiceKey<InstanceService> = 'InstanceService'
-export const InstanceServiceMethods: ServiceTemplate<InstanceService> = {
-  loadInstance: undefined,
-  createInstance: undefined,
-  createAndMount: undefined,
-  mountInstance: undefined,
-  deleteInstance: undefined,
-  editInstance: undefined,
-  state: undefined,
-}

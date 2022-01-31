@@ -127,7 +127,7 @@ export function useNotifyQueueConsumer() {
     }
   }
   onMounted(() => {
-    taskChannel.on('task-start', handleNotification)
+    taskMonitor.on('task-start', handleNotification)
     // ipc.on('notification', handleNotification)
   })
   onUnmounted(() => {

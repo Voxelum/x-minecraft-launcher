@@ -323,19 +323,3 @@ export interface UserService extends StatefulService<UserState> {
 }
 
 export const UserServiceKey: ServiceKey<UserService> = 'UserService'
-export const UserServiceMethods: ServiceTemplate<UserService> = {
-  checkLocation: undefined,
-  getChallenges: undefined,
-  submitChallenges: undefined,
-  refreshStatus: undefined,
-  refreshSkin: undefined,
-  uploadSkin: undefined,
-  saveSkin: undefined,
-  refreshUser: undefined,
-  switchUserProfile: undefined,
-  removeUserProfile: undefined,
-  loginMicrosoft: undefined,
-  login: undefined,
-  logout: undefined,
-  state: undefined,
-}

@@ -1,6 +1,6 @@
 import { SettingSchema } from '../entities/setting.schema'
 import { UpdateInfo } from '../entities/update'
-import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 
 export interface MigrateOptions {
   destination: string
@@ -115,7 +115,7 @@ export interface BaseService extends StatefulService<BaseState> {
    */
   openInBrowser: (url: string) => Promise<boolean>
   /**
-   * A electron provided function to show item in direcotry
+   * A electron provided function to show item in directory
    * @param path The path to the file item
    */
   showItemInDirectory: (path: string) => void
@@ -133,7 +133,7 @@ export interface BaseService extends StatefulService<BaseState> {
    */
   checkUpdate(): Promise<void>
   /**
-   * Download the update if there is avaiable update
+   * Download the update if there is available update
    */
   downloadUpdate(): Promise<void>
   /**
@@ -150,17 +150,3 @@ export interface BaseService extends StatefulService<BaseState> {
 }
 
 export const BaseServiceKey: ServiceKey<BaseService> = 'BaseService'
-export const BaseServiceMethods: ServiceTemplate<BaseService> = {
-  handleUrl: undefined,
-  openInBrowser: undefined,
-  showItemInDirectory: undefined,
-  openDirectory: undefined,
-  quitAndInstall: undefined,
-  checkUpdate: undefined,
-  downloadUpdate: undefined,
-  quit: undefined,
-  exit: undefined,
-  migrate: undefined,
-  postMigrate: undefined,
-  state: undefined,
-}

@@ -1,6 +1,6 @@
 import { computed, onMounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
 import { AddonInfo, Attachment, File } from '@xmcl/curseforge'
-import { CurseForgeServiceKey, InstanceModsServiceKey, ProjectType, ResourceServiceKey } from '@xmcl/runtime-api'
+import { CurseForgeServiceKey, InstanceModsServiceKey, PersistedResource, ProjectType, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useRouter } from './useRouter'
 import { useBusy } from './useSemaphore'
 import { useService } from './useService'
@@ -11,11 +11,26 @@ import { useService } from './useService'
  */
 export function useCurseforgeProjectFiles(projectId: number) {
   const { state, fetchProjectFiles } = useService(CurseForgeServiceKey)
+  const { state: resourceState } = useService(ResourceServiceKey)
   const data = reactive({
     files: [] as readonly File[],
     loading: false,
   })
-  const status = computed(() => data.files.map(file => state.isFileInstalled({ id: file.id, href: file.downloadUrl })))
+  const status = computed(() => data.files.map(file => {
+    const find = (m: PersistedResource) => {
+      if ('curseforge' in m && typeof m.curseforge === 'object') {
+        const s = m.curseforge
+        if (s.fileId === file.id) return true
+      }
+      return false
+    }
+    if (resourceState.mods.find(find)) return true
+    if (resourceState.resourcepacks.find(find)) return true
+    if (resourceState.modpacks.find(find)) return true
+    if (resourceState.saves.find(find)) return true
+
+    return false
+  }))
   async function refresh() {
     data.loading = true
     try {

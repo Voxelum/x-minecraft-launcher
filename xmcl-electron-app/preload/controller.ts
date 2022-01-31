@@ -1,5 +1,5 @@
-import { ControllerChannel } from '@xmcl/runtime-api'
-import { ipcRenderer } from 'electron'
+import { WindowController } from '@xmcl/runtime-api'
+import { contextBridge, ipcRenderer } from 'electron'
 
 export enum Operation {
   Minimize = 0,
@@ -8,7 +8,7 @@ export enum Operation {
   Show = 3,
 }
 
-export function createController(): ControllerChannel {
+function createController(): WindowController {
   function show() {
     return ipcRenderer.invoke('control', Operation.Show)
   }
@@ -35,3 +35,5 @@ export function createController(): ControllerChannel {
     },
   }
 }
+
+contextBridge.exposeInMainWorld('windowController', createController())

@@ -26,7 +26,7 @@ declare module '*.png' {
   export default value
 }
 
-declare const taskChannel: import('@xmcl/runtime-api').TaskChannel
-declare const semaphoreChannel: import('@xmcl/runtime-api').SemaphoreChannel
-declare const serviceChannel: import('@xmcl/runtime-api').ServiceChannel
-declare const controllerChannel: import('@xmcl/runtime-api').ControllerChannel
+// declare const taskChannel: import('@xmcl/runtime-api').TaskChannel
+// declare const semaphoreChannel: import('@xmcl/runtime-api').SemaphoreChannel
+// declare const serviceChannel: import('@xmcl/runtime-api').ServiceChannel
+// declare const controllerChannel: import('@xmcl/runtime-api').ControllerChannel

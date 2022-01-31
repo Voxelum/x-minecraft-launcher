@@ -65,3 +65,50 @@ declare module '/@preload/*' {
 declare module '7zip-bin' {
   export const path7za: string
 }
+
+declare module 'create-desktop-shortcuts' {
+  interface CreateDesktopShortcutOptions {
+    onlyCurrentOS?: boolean
+    verbose?: boolean
+
+    windows?: {
+      filePath: string
+      outputPath?: string
+      name?: string
+      comment?: string
+      /**
+       *  File must exist and be ICO, EXE, or DLL
+       */
+      icon?: string
+      arguments?: string
+      windowMode?: string
+      hotkey?: string
+    }
+
+    linux?: {
+      filePath: string
+      outputPath?: string
+      name?: string
+      description?: string
+      /**
+       * OPTIONAL: defaults to the filePath file's name (without the extension)
+       */
+      icon?: string
+      type?: 'Application' | 'Directory' | 'Link'
+      terminal?: boolean
+      chmod?: boolean
+      arguments?: string
+    }
+
+    osx?: {
+      filePath: string
+      outputPath?: string
+      name?: string
+      overwrite?: boolean
+    }
+  }
+
+  function createDesktopShortcut(options: CreateDesktopShortcutOptions): boolean
+
+  export = createDesktopShortcut
+}

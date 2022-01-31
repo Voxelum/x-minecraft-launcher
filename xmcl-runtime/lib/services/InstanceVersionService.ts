@@ -1,6 +1,6 @@
 import { diagnose, MinecraftFolder } from '@xmcl/core'
 import { diagnoseInstall, InstallProfile } from '@xmcl/installer'
-import { Asset, Exception, getExpectVersion, InstallableLibrary, InstanceState, InstanceVersionService as IInstanceVersionService, InstanceVersionState, isSameForgeVersion, IssueReport, parseOptifineVersion, RuntimeVersions, versionLockOf, VersionState } from '@xmcl/runtime-api'
+import { Asset, DEFAULT_PROFILE, Exception, getExpectVersion, getResolvedVersion, InstallableLibrary, InstanceVersionService as IInstanceVersionService, isSameForgeVersion, IssueReport, parseOptifineVersion, RuntimeVersions, versionLockOf } from '@xmcl/runtime-api'
 import { readJSON } from 'fs-extra'
 import { join, relative } from 'path'
 import LauncherApp from '../app/LauncherApp'
@@ -8,17 +8,17 @@ import { exists } from '../util/fs'
 import DiagnoseService from './DiagnoseService'
 import InstallService from './InstallService'
 import InstanceService from './InstanceService'
-import { Inject, Singleton, StatefulService, Subscribe } from './Service'
+import AbstractService, { Inject, Singleton, Subscribe } from './Service'
 import VersionService from './VersionService'
 
-export default class InstanceVersionService extends StatefulService<InstanceVersionState, [InstanceState, VersionState]> implements IInstanceVersionService {
+export default class InstanceVersionService extends AbstractService implements IInstanceVersionService {
   constructor(app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(VersionService) private versionService: VersionService,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
     @Inject(InstallService) installService: InstallService,
   ) {
-    super(app, [instanceService.state, versionService.state])
+    super(app)
 
     diagnoseService.registerMatchedFix(['missingVersionJson', 'missingVersionJar', 'corruptedVersionJson', 'corruptedVersionJar'],
       async (issues) => {
@@ -135,17 +135,13 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
       this.diagnoseVersion.bind(this))
   }
 
-  createState([instanceState, versionState]: [InstanceState, VersionState]) {
-    return new InstanceVersionState(instanceState, versionState)
-  }
-
   @Subscribe('instanceSelect')
   protected async onInstanceSelect() {
     await this.diagnoseVersion()
   }
 
   @Subscribe('localVersions')
-  protected async onLocalVersionsChanegd() {
+  protected async onLocalVersionsChanged() {
     await this.diagnoseVersion()
   }
 
@@ -163,6 +159,17 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
     this.diagnoseService.report(report)
   }
 
+  /**
+   * The selected instance mapped local version.
+   * If there is no local version matched, it will return a local version with id equal to `""`.
+   */
+  getInstanceVersion() {
+    const instance = this.instanceService.state
+    const version = this.versionService.state
+    const current = instance.all[instance.path] || DEFAULT_PROFILE
+    return getResolvedVersion(version.local, current.runtime, current.version)
+  }
+
   @Singleton()
   private async diagnoseVersion() {
     const report: Partial<IssueReport> = {}
@@ -177,7 +184,7 @@ export default class InstanceVersionService extends StatefulService<InstanceVers
       this.log(`Diagnose version of ${selected.path}`)
       // await this.versionService.refreshVersions()
       const runtime = selected.runtime
-      const currentVersion = this.state.instanceVersion
+      const currentVersion = this.getInstanceVersion()
 
       const targetVersion = currentVersion.id
       const mcversion = runtime.minecraft

@@ -13,6 +13,11 @@ declare module '*?worker' {
   export default function (options?: WorkerOptions): Worker
 }
 
+declare module '*.vbs' {
+  const path: string
+  export default path
+}
+
 declare module 'nat-type-identifier' {
   function getNatType(options: { logsEnabled?: boolean; sampleCount?: number; stunHost?: string }): Promise<NatType>
 

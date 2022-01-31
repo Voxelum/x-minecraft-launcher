@@ -2,7 +2,7 @@ import { computed, onMounted, reactive, Ref, toRefs, watch } from '@vue/composit
 import { MinecraftVersion } from '@xmcl/installer'
 import { useBusy } from './useSemaphore'
 import { useService, useServiceOnly } from './useService'
-import { filterOptfineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, Status, InstallServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
+import { filterOptifineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, Status, InstallServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
 import { isNonnull } from '@xmcl/runtime-api/utils'
 
 export function useVersions() {
@@ -239,7 +239,7 @@ export function useOptifineVersions(minecraftVersion: Ref<string>) {
     state.local.forEach((ver) => {
       const lib = ver.libraries.find(isOptifineLibrary)
       if (lib) {
-        const optifineVer = filterOptfineVersion(lib?.version)
+        const optifineVer = filterOptifineVersion(lib?.version)
         localVersions[`${ver.minecraftVersion}_${optifineVer}`] = true
       }
     })

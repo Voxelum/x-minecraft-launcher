@@ -21,7 +21,3 @@ export interface ResourcePackPreviewService {
 }
 
 export const ResourcePackPreviewServiceKey: ServiceKey<ResourcePackPreviewService> = 'ResourcePackPreviewService'
-export const ResourcePackPreviewServiceMethods: ServiceTemplate<ResourcePackPreviewService> = {
-  loadModel: undefined,
-  getBlockStates: undefined,
-}
