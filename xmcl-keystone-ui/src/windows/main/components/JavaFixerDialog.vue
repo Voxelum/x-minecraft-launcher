@@ -122,6 +122,9 @@ export default defineComponent({
 
     handlers.missingJava = (issue) => {
       javaIssue.value.type = 'missing'
+      if (!(issue.parameters instanceof Array)) {
+        javaIssue.value.version = issue.parameters.targetVersion
+      }
       show()
     }
 
