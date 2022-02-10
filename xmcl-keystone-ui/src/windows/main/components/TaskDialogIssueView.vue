@@ -5,7 +5,7 @@
     dark
     color="grey darken-4"
   >
-    <v-card-text>
+    <!-- <v-card-text>
       {{ items.length === 0 ? $t('issue.empty') : '' }}
       <v-treeview
         v-model="tree"
@@ -94,7 +94,7 @@
           </div>
         </template>
       </v-treeview>
-    </v-card-text>
+    </v-card-text> -->
   </v-card>
 </template>
 

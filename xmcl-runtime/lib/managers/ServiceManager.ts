@@ -214,7 +214,7 @@ export default class ServiceManager extends Manager {
 
         return sessionId
       }
-      this.error(`Cannot execute service call ${name} from service ${serv}. The service doesn't have such method!`)
+      this.error(`Cannot execute service call ${name} from service ${service}. The service doesn't have such method!`)
     }
     return undefined
   }

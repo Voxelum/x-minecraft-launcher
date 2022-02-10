@@ -100,7 +100,7 @@ import StepperFooter from './StepperFooter.vue'
 import StepperModpackContent from './StepperModpackContent.vue'
 import TemplateContent, { InstanceTemplate, ModpackTemplate } from './StepperTemplateContent.vue'
 import {
-  useCurseforgeImport,
+  useModpackImport,
   useInstanceCreation,
   useInstances,
   useRouter,
@@ -131,7 +131,7 @@ export default defineComponent({
     const { create, reset, ...creationData } = useInstanceCreation()
     const router = useRouter()
     const { mountInstance } = useInstances()
-    const { importCurseforgeModpack } = useCurseforgeImport()
+    const { importModpack } = useModpackImport()
 
     provide(CreateOptionKey, creationData)
 
@@ -169,7 +169,7 @@ export default defineComponent({
       data.creating = true
       try {
         if (currentTemplate.value && currentTemplate.value.type === 'modpack') {
-          importCurseforgeModpack({
+          importModpack({
             path: currentTemplate.value.path,
             instanceConfig: reactive({ ...creationData }),
           }).then((path) => mountInstance(path))

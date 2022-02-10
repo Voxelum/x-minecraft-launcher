@@ -1,7 +1,7 @@
 import { AnyResource, PersistedResource } from './resource'
 import { Issue } from './issue'
 
-export type Exceptions = InstanceNotFoundException | ResourceNotFoundException | ResourceImportDirectoryException | ResourceDomainMismatchedException | MinecraftProfileError | PingServerException | UserNoProfilesException | CurseforgeModpackImportException | IssueBlockedException | InstanceDeleteSaveException | FixVersionException | LaunchGeneralException | LaunchBlockedException | LaunchException | LoginException | InstanceImportSaveException | InstanceImportResourceException | InstanceCopySaveException | GeneralException | ResourceException
+export type Exceptions = InstanceNotFoundException | ResourceNotFoundException | ResourceImportDirectoryException | ResourceDomainMismatchedException | MinecraftProfileError | PingServerException | UserNoProfilesException | ModpackImportException | IssueBlockedException | InstanceDeleteSaveException | FixVersionException | LaunchGeneralException | LaunchBlockedException | LaunchException | LoginException | InstanceImportSaveException | InstanceImportResourceException | InstanceCopySaveException | GeneralException | ResourceException
 
 export interface ExceptionBase {
   type: string
@@ -85,8 +85,8 @@ export interface LoginException extends ExceptionBase {
   type: 'loginInternetNotConnected' | 'loginInvalidCredentials' | 'loginGeneral'
 }
 
-export interface CurseforgeModpackImportException extends ExceptionBase {
-  type: 'invalidCurseforgeModpack' | 'requireCurseforgeModpackAFile'
+export interface ModpackImportException extends ExceptionBase {
+  type: 'invalidModpack' | 'requireModpackAFile'
   path: string
 }
 

@@ -18,6 +18,10 @@ export interface ExportModpackOptions {
   version: string
   author: string
   gameVersion: string
+
+  emitCurseforge?: boolean
+
+  emitMcbbs?: boolean
 }
 
 export type ImportModpackOptions = ImportModpackToInstanceOptions | ImportModpackCreateInstanceOptions
@@ -50,12 +54,12 @@ export interface ModpackService {
    * Export the instance as an curseforge modpack
    * @param options The curseforge modpack export options
    */
-  exportCurseforgeModpack(options: ExportModpackOptions): Promise<void>
+  exportModpack(options: ExportModpackOptions): Promise<void>
   /**
    * Import the curseforge modpack zip file to the instance.
    * @param options The options provide instance directory path and curseforge modpack zip path
    */
-  importCurseforgeModpack(options: ImportModpackOptions): Promise<string>
+  importModpack(options: ImportModpackOptions): Promise<string>
 }
 
 export const ModpackServiceKey: ServiceKey<ModpackService> = 'ModpackService'

@@ -36,16 +36,6 @@ export interface ExportInstanceOptions {
    */
   files?: string[]
 }
-export interface ImportModpackOptions {
-  /**
-   * The path of modpack directory
-   */
-  path: string
-  /**
-   * The destination instance path. If this is empty, it will create a new instance.
-   */
-  instancePath?: string
-}
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
