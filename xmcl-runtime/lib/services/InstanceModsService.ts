@@ -215,7 +215,7 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
     if (!path) {
       path = this.state.instance
     }
-    this.log(`Install ${resources.length} to ${path}`)
+    this.log(`Install ${resources.length} to ${path}/mods`)
     for (const res of resources) {
       if (res.domain !== ResourceDomain.Mods) {
         this.warn(`Install non mod resource ${res.name} as it's not a mod`)

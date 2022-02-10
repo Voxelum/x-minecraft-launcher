@@ -164,7 +164,7 @@ export default defineComponent({
   setup(props, context) {
     const { name, author } = useInstance()
     const { getInstanceFiles, exportInstance } = useService(InstanceIOServiceKey)
-    const { exportCurseforgeModpack } = useService(ModpackServiceKey)
+    const { exportModpack } = useService(ModpackServiceKey)
     const { showSaveDialog } = windowController
     const { localVersions } = useLocalVersions()
     const { folder } = useInstanceVersion()
@@ -222,7 +222,7 @@ export default defineComponent({
         if (props.isCurseforge) {
           try {
             const overrides = data.selected.filter(p => !!data.files.find(f => f.path === p && !f.isDirectory))
-            await exportCurseforgeModpack({
+            await exportModpack({
               overrides,
               name: data.name,
               author: data.author,

@@ -34,13 +34,12 @@
   </v-list-tile>
 </template>
 <script lang="ts">
-import { computed, defineComponent, watch, onMounted, Ref, ref } from '@vue/composition-api'
-import { optional, required } from '/@/util/props'
-import type { InstanceTemplate, ModpackTemplate } from './StepperTemplateContent.vue'
-import { useBaseService, useService } from '/@/hooks'
-import { CurseForgeServiceKey, CurseforgeModpackManifest } from '@xmcl/runtime-api'
-import { useRefreshable } from '/@/hooks/useRefreshable'
+import { computed, defineComponent, onMounted, Ref, ref } from '@vue/composition-api'
 import type { AddonInfo } from '@xmcl/curseforge'
+import { CurseForgeServiceKey } from '@xmcl/runtime-api'
+import { useBaseService, useService } from '/@/hooks'
+import { useRefreshable } from '/@/hooks/useRefreshable'
+import { required } from '/@/util/props'
 
 export default defineComponent({
   props: {

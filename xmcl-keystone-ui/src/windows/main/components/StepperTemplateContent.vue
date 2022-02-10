@@ -61,8 +61,10 @@ import {
 } from '/@/hooks'
 import { optional, required } from '/@/util/props'
 import { useSearchToggles } from '/@/windows/main/composables'
-import { InstanceSchema, CurseforgeModpackResource, isCurseforgeModpackResource, ModpackResource, ResourceType } from '@xmcl/runtime-api'
+import { InstanceSchema, CurseforgeModpackResource, isCurseforgeModpackResource, ModpackResource, ResourceType, McbbsModpackResource } from '@xmcl/runtime-api'
 import { isNonnull } from '@xmcl/runtime-api/utils'
+
+type ModpackDomainResource = CurseforgeModpackResource | ModpackResource | McbbsModpackResource
 
 export interface InstanceTemplate {
   type: 'instance'
@@ -80,7 +82,7 @@ export interface ModpackTemplate {
   subTitle: string
   path: string
   action: string
-  source: CurseforgeModpackResource | ModpackResource
+  source: ModpackDomainResource
   minecraft: string
 }
 
@@ -101,7 +103,7 @@ export default defineComponent({
     const selectedVersionFilterOption = ref('')
     const { toggles } = useSearchToggles()
     // useSearchToggle(toggles.value[toggles.value.length - 1]!)
-    const getModpackVersion = (resource: CurseforgeModpackResource | ModpackResource) => {
+    const getModpackVersion = (resource: ModpackDomainResource) => {
       if (resource.type === 'curseforge-modpack') {
         const modpack = resource.metadata
         let version = `Minecraft: ${modpack.minecraft.version}`
@@ -109,6 +111,20 @@ export default defineComponent({
           for (const loader of modpack.minecraft.modLoaders) {
             version += ` ${loader.id}`
           }
+        }
+        return version
+      }
+
+      if (resource.type === 'mcbbs-modpack') {
+        const modpack = resource.metadata
+        let version = `Minecraft: ${modpack.addons.find(a => a.id === 'game')?.version}`
+        const forge = modpack.addons.find(a => a.id === 'forge')
+        if (forge) {
+          version += ` Forge ${forge.version}`
+        }
+        const fabric = modpack.addons.find(a => a.id === 'fabric')
+        if (fabric) {
+          version += ` Fabric ${fabric.version}`
         }
         return version
       }
@@ -209,6 +225,35 @@ export default defineComponent({
             }
           }
           data.author.value = metadata.author
+        } else if (resource.type === ResourceType.McbbsModpack) {
+          const metadata = resource.metadata
+          data.name.value = `${metadata.name} - ${metadata.version}`
+          const mcVersion = metadata.addons.find(a => a.id === 'game')?.version ?? ''
+          const forgeVersion = metadata.addons.find(a => a.id === 'forge')?.version ?? ''
+          const fabricVersion = metadata.addons.find(a => a.id === 'fabric')?.version ?? ''
+          if (mcVersion) {
+            data.runtime.value.minecraft = mcVersion
+          }
+          if (forgeVersion) {
+            data.runtime.value.forge = forgeVersion
+          }
+          if (fabricVersion) {
+            data.runtime.value.fabricLoader = fabricVersion
+          }
+          data.author.value = metadata.author
+          if (metadata.launchInfo) {
+            if (metadata.launchInfo.javaArgument) {
+              data.vmOptions.value = metadata.launchInfo.javaArgument
+            }
+            if (metadata.launchInfo.launchArgument) {
+              data.mcOptions.value = metadata.launchInfo.launchArgument
+            }
+            if (metadata.launchInfo.minMemory) {
+              data.minMemory.value = metadata.launchInfo.minMemory
+            }
+          }
+          data.description.value = metadata.description
+          data.version.value = metadata.version
         } else {
           const metadata = resource.metadata
           data.name.value = resource.name

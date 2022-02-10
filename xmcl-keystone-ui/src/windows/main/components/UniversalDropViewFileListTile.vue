@@ -15,7 +15,7 @@
         {{ value.name }}
       </v-list-tile-title>
       <v-list-tile-sub-title>
-        {{ value.size }} bytes
+        {{ (value.size / 1024 / 1024).toFixed(2) }} MB
       </v-list-tile-sub-title>
     </v-list-tile-content>
     <!-- <v-list-tile-content style="flex-grow: 1">
@@ -98,6 +98,7 @@ const iconMap: Record<string, string> = {
   shaderpack: '$vuetify.icons.zip',
   'curseforge-modpack': '$vuetify.icons.curseforge',
   modpack: '$vuetify.icons.package',
+  'mcbbs-modpack': '$vuetify.icons.package',
   save: '$vuetify.icons.zip',
 }
 
@@ -126,6 +127,7 @@ export default defineComponent({
         case 'forge': return 'Forge Mod'
         case 'fabric': return 'Fabric Mod'
         case 'resourcepack': return $tc('resourcepack.name', 0)
+        case 'mcbbs-modpack':
         case 'modpack': return $tc('profile.modpack.name', 0)
         case 'save': return $t('curseforge.worlds.name')
         case 'curseforge-modpack': return $t('curseforge.modpacks.name')

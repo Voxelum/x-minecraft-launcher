@@ -5,7 +5,7 @@
       two-line
     >
       <StepperModpackContentFile
-        v-for="file in curseforgeMetadata.files"
+        v-for="file in files"
         :key="file.fileID"
         :file-id="file.fileID"
         :project-id="file.projectID"
@@ -17,7 +17,7 @@
 import { computed, defineComponent } from '@vue/composition-api'
 import { optional, required } from '/@/util/props'
 import type { ModpackTemplate } from './StepperTemplateContent.vue'
-import { CurseforgeModpackManifest } from '@xmcl/runtime-api'
+import { ModpackFileInfoCurseforge } from '@xmcl/runtime-api'
 import StepperModpackContentFile from './StepperModpackContentFile.vue'
 
 export default defineComponent({
@@ -27,9 +27,15 @@ export default defineComponent({
     shown: required(Boolean),
   },
   setup(props) {
-    const curseforgeMetadata = computed(() => props.modpack?.source.metadata as CurseforgeModpackManifest)
+    const curseforgeMetadata = computed(() => props.modpack?.source.metadata)
+    const files = computed(() =>
+      !curseforgeMetadata.value
+        ? []
+        : 'files' in curseforgeMetadata.value ? curseforgeMetadata.value.files?.map(v => v).filter((v) : v is ModpackFileInfoCurseforge => 'fileID' in v) ?? [] : [],
+    )
     return {
       curseforgeMetadata,
+      files,
     }
   },
 })
