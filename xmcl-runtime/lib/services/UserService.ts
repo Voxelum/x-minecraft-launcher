@@ -7,10 +7,11 @@ import {
 import { requireNonnull, requireObject, requireString } from '@xmcl/runtime-api/utils'
 import { AUTH_API_MOJANG, checkLocation, GameProfile, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user'
 import { readFile, readJSON } from 'fs-extra'
+import { basename } from 'path'
 import { URL } from 'url'
 import { v4 } from 'uuid'
 import LauncherApp from '../app/LauncherApp'
-import { acquireXBoxToken, checkGameOwnership, getGameProfile, loginMinecraftWithXBox } from '../entities/user'
+import { acquireXBoxToken, changeAccountSkin, checkGameOwnership, getGameProfile, loginMinecraftWithXBox } from '../entities/user'
 import { MappedFile } from '../util/persistance'
 import { BufferJsonSerializer } from '../util/serialize'
 import { createDynamicThrottle } from '../util/trafficAgent'
@@ -284,6 +285,27 @@ export default class UserService extends StatefulService<UserState> implements I
     if (refreshed && !force) return
 
     const { id, name } = gameProfile
+    if (user.authService === 'microsoft') {
+      const profile = await getGameProfile(this.networkManager.request, user.accessToken)
+      this.state.gameProfileUpdate({
+        userId,
+        profile: {
+          ...profile,
+          textures: {
+            SKIN: {
+              url: profile.skins[0].url,
+              metadata: { model: profile.skins[0].variant === 'CLASSIC' ? 'steve' : 'slim' },
+            },
+            CAPE: profile.capes.length > 0
+              ? {
+                url: profile.capes[0].url,
+              }
+              : undefined,
+          },
+        },
+      })
+      return
+    }
     try {
       let profile: GameProfile
       const api = this.state.profileServices[user.profileService]
@@ -359,7 +381,31 @@ export default class UserService extends StatefulService<UserState> implements I
     }
 
     this.log(`Upload texture ${gameProfile.name}(${gameProfile.id})`)
-    return setTexture({
+
+    if (this.state.user.authService === 'microsoft') {
+      const dataOrUrl = skinUrl || data
+      const profile = await changeAccountSkin(this.app.networkManager.request, user.accessToken, basename(normalizedUrl.replace('file://', '')), dataOrUrl!, slim ? 'slim' : 'classic')
+      this.state.gameProfileUpdate({
+        userId,
+        profile: {
+          ...profile,
+          textures: {
+            SKIN: {
+              url: profile.skins[0].url,
+              metadata: { model: profile.skins[0].variant === 'CLASSIC' ? 'steve' : 'slim' },
+            },
+            CAPE: profile.capes.length > 0
+              ? {
+                url: profile.capes[0].url,
+              }
+              : undefined,
+          },
+        },
+      })
+      return
+    }
+
+    await setTexture({
       uuid: gameProfile.id,
       accessToken: user.accessToken,
       type: 'skin',
