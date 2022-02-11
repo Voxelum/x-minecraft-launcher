@@ -10,7 +10,7 @@
         tabs
         color="green darken"
       >
-        <v-toolbar-title v-if="isCurseforge">
+        <v-toolbar-title v-if="emitCurseforge">
           {{ $t('profile.modpack.exportCurseforge') }}
         </v-toolbar-title>
         <v-toolbar-title v-else>
@@ -83,7 +83,28 @@
             </v-flex>
           </v-layout>
           <v-layout
-            v-if="!isCurseforge"
+            row
+          >
+            <v-flex d-flex>
+              <v-checkbox
+                v-model="emitCurseforge"
+                :label="$t('profile.modpack.emitCurseforge')"
+                hide-details
+              />
+            </v-flex>
+            <v-flex
+              d-flex
+              xs6
+            >
+              <v-checkbox
+                v-model="emitMcbbs"
+                :label="$t('profile.modpack.emitMcbbs')"
+                hide-details
+              />
+            </v-flex>
+          </v-layout>
+          <v-layout
+            v-if="!(emitCurseforge || emitMcbbs)"
             row
           >
             <v-flex d-flex>
@@ -91,6 +112,7 @@
                 v-model="includeAssets"
                 :label="$t('profile.modpack.includeAssets')"
                 hint="abc"
+                hide-details
               />
             </v-flex>
             <v-flex
@@ -101,13 +123,14 @@
                 v-model="includeLibraries"
                 :label="$t('profile.modpack.includeLibraries')"
                 hint="abc"
+                hide-details
               />
             </v-flex>
           </v-layout>
         </v-container>
 
         <v-layout>
-          <v-subheader v-if="isCurseforge">
+          <v-subheader v-if="emitCurseforge || emitMcbbs">
             {{ $t('profile.modpack.overrides') }}
           </v-subheader>
           <v-subheader v-else>
@@ -159,7 +182,6 @@ export default defineComponent({
   components: { InstanceFiles },
   props: {
     value: Boolean,
-    isCurseforge: Boolean,
   },
   setup(props, context) {
     const { name, author } = useInstance()
@@ -181,6 +203,8 @@ export default defineComponent({
       files: [] as InstanceFile[],
       includeLibraries: false,
       includeAssets: false,
+      emitCurseforge: false,
+      emitMcbbs: false,
     })
     function reset() {
       data.includeAssets = false
@@ -195,15 +219,15 @@ export default defineComponent({
       data.refreshing = true
       getInstanceFiles().then((files) => {
         let selected = [] as string[]
-        if (props.isCurseforge) {
-          selected = files.filter(p => p.path.startsWith('config') || p.path.startsWith('mods')).map(p => p.path)
-        } else {
-          selected = files
-            .filter(file => !file.path.startsWith('.'))
-            .filter(file => !file.path.startsWith('logs'))
-            .filter(file => !file.path.startsWith('resourcepacks'))
-            .map(file => file.path)
-        }
+        // if (props.isCurseforge) {
+        //   selected = files.filter(p => p.path.startsWith('config') || p.path.startsWith('mods')).map(p => p.path)
+        // } else {
+        selected = files
+          .filter(file => !file.path.startsWith('.'))
+          .filter(file => !file.path.startsWith('logs'))
+          .filter(file => !file.path.startsWith('resourcepacks'))
+          .map(file => file.path)
+        // }
         nextTick().then(() => { data.selected = selected })
         data.files = files
       }).finally(() => { data.refreshing = false })
@@ -219,7 +243,7 @@ export default defineComponent({
       })
       if (filePath) {
         data.exporting = true
-        if (props.isCurseforge) {
+        if (data.emitCurseforge || data.emitMcbbs) {
           try {
             const overrides = data.selected.filter(p => !!data.files.find(f => f.path === p && !f.isDirectory))
             await exportModpack({
@@ -229,6 +253,8 @@ export default defineComponent({
               version: data.version,
               gameVersion: data.gameVersion,
               destinationPath: filePath,
+              emitCurseforge: data.emitCurseforge,
+              emitMcbbs: data.emitMcbbs,
             })
           } catch (e) {
             console.error(e)
