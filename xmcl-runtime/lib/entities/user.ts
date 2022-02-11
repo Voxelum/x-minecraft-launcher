@@ -2,7 +2,8 @@
 
 import { CLIENT_ID } from '../constant'
 import { Exception } from '@xmcl/runtime-api'
-import { Got } from 'got/dist/source'
+import { Got } from 'got'
+import FormData from 'form-data'
 
 export interface OAuthTokenResponse {
   token_type: string
@@ -232,6 +233,40 @@ export async function getGameProfile(request: Got, accessToken: string) {
   }).json()
 
   if ('error' in profileResponse) {
+    throw new Exception({ type: 'fetchMinecraftProfileFailed', ...profileResponse },
+      `Cannot login to Microsoft! ${profileResponse.errorMessage}`)
+  }
+
+  return profileResponse
+}
+
+function getSkinFormData(buf: Buffer, fileName: string, variant: 'slim' | 'classic') {
+  const form = new FormData()
+  form.append('variant', variant)
+  form.append('file', buf, { contentType: 'image/png', filename: fileName })
+  return form
+}
+
+export async function changeAccountSkin(request: Got, accessToken: string, fileName: string, skin: string | Buffer, variant: 'slim' | 'classic') {
+  const body = typeof skin === 'string' ? JSON.stringify({ url: skin, variant }) : getSkinFormData(skin, fileName, variant)
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${accessToken}`,
+  }
+
+  if (typeof body === 'string') {
+    headers['Content-Type'] = 'application/json'
+  } else {
+    Object.assign(headers, body.getHeaders())
+  }
+
+  const profileResponse: MinecraftProfileResponse | MinecraftProfileErrorResponse = await request('https://api.minecraftservices.com/minecraft/profile/skins', {
+    method: 'POST',
+    throwHttpErrors: false,
+    headers,
+    body,
+  }).json()
+
+  if ('error' in profileResponse || 'errorMessage' in profileResponse) {
     throw new Exception({ type: 'fetchMinecraftProfileFailed', ...profileResponse },
       `Cannot login to Microsoft! ${profileResponse.errorMessage}`)
   }
