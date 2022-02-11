@@ -1,4 +1,4 @@
-import { BrowserWindow, ipcMain } from 'electron'
+import { BrowserWindow, dialog, ipcMain } from 'electron'
 
 export enum Operation {
   Minimize = 0,
@@ -6,6 +6,13 @@ export enum Operation {
   Hide = 2,
   Show = 3,
 }
+
+ipcMain.handle('dialog:showOpenDialog', (event, ...args) => {
+  return dialog.showOpenDialog(BrowserWindow.fromWebContents(event.sender)!, args[0])
+})
+ipcMain.handle('dialog:showSaveDialog', (event, ...args) => {
+  return dialog.showSaveDialog(BrowserWindow.fromWebContents(event.sender)!, args[0])
+})
 
 ipcMain.handle('control', (event, operation: Operation) => {
   const window = BrowserWindow.fromWebContents(event.sender)
