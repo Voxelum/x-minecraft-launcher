@@ -19,10 +19,26 @@
     <div class="flex absolute left-0 bottom-0 px-[20px] pb-[10px] gap-[4px]">
       <settings-speed-dial :refreshing="refreshing" />
 
-      <export-speed-dial
-        :refreshing="refreshing"
-        @show="showExport"
-      />
+      <v-tooltip
+        :close-delay="0"
+        left
+      >
+        <template #activator="{ on }">
+          <v-btn
+            flat
+            icon
+            dark
+            :loading="refreshing"
+            v-on="on"
+            @click="showExport"
+          >
+            <v-icon dark>
+              share
+            </v-icon>
+          </v-btn>
+        </template>
+        {{ $t('profile.modpack.export') }}
+      </v-tooltip>
 
       <v-tooltip top>
         <template #activator="{ on }">
@@ -134,11 +150,9 @@
     <game-exit-dialog />
     <feedback-dialog />
     <export-dialog
-      :value="isExportingCurseforge || isExportingModpack"
-      :is-curseforge="isExportingCurseforge"
+      :value="isExportingModpack"
       @input="
         isExportingModpack = false;
-        isExportingCurseforge = false;
       "
     />
     <launch-blocked-dialog />
@@ -148,7 +162,6 @@
 <script lang=ts>
 import { defineComponent, onMounted, ref } from '@vue/composition-api'
 import ExportDialog from './ExportDialog.vue'
-import ExportSpeedDial from './ExportSpeedDial.vue'
 import FeedbackDialog from './FeedbackDialog.vue'
 import GameExitDialog from './GameExitDialog.vue'
 import HomeHeader from './HomeHeader.vue'
@@ -210,7 +223,6 @@ export default defineComponent({
     GameExitDialog,
     FeedbackDialog,
     ExportDialog,
-    ExportSpeedDial,
     SettingsSpeedDial,
   },
   setup() {
@@ -226,11 +238,7 @@ export default defineComponent({
     const isExportingCurseforge = ref(false)
     const isExportingModpack = ref(false)
     async function showExport(type: 'normal' | 'curseforge') {
-      if (type === 'curseforge') {
-        isExportingCurseforge.value = true
-      } else {
-        isExportingModpack.value = true
-      }
+      isExportingModpack.value = true
     }
 
     onMounted(() => {
