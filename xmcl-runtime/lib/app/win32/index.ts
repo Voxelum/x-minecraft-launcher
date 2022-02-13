@@ -15,7 +15,7 @@ export async function createShortcutWin32(exePath: string, outputDir: string, ma
   }
 
   const filePath = exePath
-  let icon = man.icon
+  let icon = man.iconPath
   let args = `--url=${man.url}`
   if (globalShortcut) {
     args += ' --global'
@@ -132,7 +132,7 @@ export async function installWin32(url: string, appDir: string, man: AppManifest
     minWidth: man.minWidth ?? 800,
     ratio: man.ratio ?? false,
     background_color: man.background_color ?? '',
-    frame: man.display !== 'frameless',
+    display: man.display ?? 'frameless',
     vibrancy: false,
   }
 }

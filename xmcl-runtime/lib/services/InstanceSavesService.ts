@@ -1,3 +1,10 @@
+import { UnzipTask } from '@xmcl/installer'
+import {
+  CloneSaveOptions, DeleteSaveOptions, Exception, ExportSaveOptions,
+  ImportSaveOptions, InstanceSave, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey, SaveState,
+} from '@xmcl/runtime-api'
+import { isNonnull, requireObject, requireString } from '@xmcl/runtime-api/utils'
+import { open, readAllEntries } from '@xmcl/unzip'
 import { createHash } from 'crypto'
 import filenamify from 'filenamify'
 import { ensureDir, ensureFile, FSWatcher, readdir, remove } from 'fs-extra'
@@ -5,19 +12,11 @@ import watch from 'node-watch'
 import { basename, extname, join, resolve } from 'path'
 import { pathToFileURL } from 'url'
 import LauncherApp from '../app/LauncherApp'
-import InstanceService from './InstanceService'
-import { ExportService, Inject, ServiceException, Singleton, StatefulService, Subscribe } from './Service'
 import { findLevelRootOnPath, getInstanceSave, readInstanceSaveMetadata } from '../entities/save'
 import { copyPassively, isFile, missing, readdirIfPresent } from '../util/fs'
-import { unpack7z, ZipTask } from '../util/zip'
-import {
-  Exception, InstanceSave,
-  CloneSaveOptions, DeleteSaveOptions, ExportSaveOptions,
-  ImportSaveOptions, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey, SaveState,
-} from '@xmcl/runtime-api'
-import { isNonnull, requireObject, requireString } from '@xmcl/runtime-api/utils'
-import { UnzipTask } from '@xmcl/installer'
-import { open, readAllEntries } from '@xmcl/unzip'
+import { ZipTask } from '../util/zip'
+import InstanceService from './InstanceService'
+import { ExportService, Inject, ServiceException, Singleton, StatefulService, Subscribe } from './Service'
 
 /**
  * Provide the ability to preview saves data of an instance
@@ -220,7 +219,6 @@ export default class InstanceSavesService extends StatefulService<SaveState> imp
       const entries = await readAllEntries(zipFile)
       const task = new UnzipTask(zipFile, entries, sourceDir)
       await task.startAndWait()
-      // await unpack7z(source, sourceDir)
       useTemp = true
     }
 

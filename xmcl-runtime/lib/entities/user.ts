@@ -22,12 +22,12 @@ export interface XBoxResponse {
     xui: [
       {
         /**
-                 * gamer tag
-                 */
+         * gamer tag
+         */
         gtg: string
         /**
-                 * user id
-                 */
+         * user id
+         */
         xid: string
         uhs: string
       },
@@ -129,7 +129,7 @@ export async function authenticateXboxLive(request: Got, oauthAccessToken: strin
       RelyingParty: 'http://auth.xboxlive.com',
       TokenType: 'JWT',
     }),
-    retry: 3,
+    retry: { limit: 3 },
     headers: {
       'Content-Type': 'application/json',
     },

@@ -1,4 +1,3 @@
-export * from './lib/app/LaunchAppContext'
 export * from './lib/app/LauncherApp'
 export * from './lib/app/LauncherAppController'
 export type { default as CredentialManager } from './lib/managers/CredentialManager'

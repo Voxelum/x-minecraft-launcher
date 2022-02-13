@@ -1,16 +1,15 @@
-import { ensureDir, remove, stat } from 'fs-extra'
-import { resolve } from 'path'
+import { CreateInstanceOption, createTemplate, EditInstanceOptions, Instance, InstanceSchema, InstanceService as IInstanceService, InstanceServiceKey, InstancesSchema, InstanceState, LATEST_RELEASE, RuntimeVersions } from '@xmcl/runtime-api'
+import { assignShallow, requireObject, requireString } from '@xmcl/runtime-api/utils'
+import { ensureDir, remove } from 'fs-extra'
+import { join, resolve } from 'path'
 import { v4 } from 'uuid'
+import LauncherApp from '../app/LauncherApp'
+import { exists, isDirectory, missing, readdirEnsured } from '../util/fs'
+import { createSafeFile, createSafeIO } from '../util/persistance'
 import InstallService from './InstallService'
 import ServerStatusService from './ServerStatusService'
 import { ExportService, Inject, Singleton, StatefulService } from './Service'
 import UserService from './UserService'
-import LauncherApp from '../app/LauncherApp'
-import { exists, isDirectory, missing, readdirEnsured } from '../util/fs'
-import { MappedFile, RelativeMappedFile } from '../util/persistance'
-import { BufferJsonSerializer } from '../util/serialize'
-import { createTemplate, Instance, InstanceSchema, InstancesSchema, RuntimeVersions, LATEST_RELEASE, CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, InstanceServiceKey, InstanceState } from '@xmcl/runtime-api'
-import { requireObject, requireString, assignShallow } from '@xmcl/runtime-api/utils'
 
 const INSTANCES_FOLDER = 'instances'
 
@@ -19,10 +18,8 @@ const INSTANCES_FOLDER = 'instances'
  */
 @ExportService(InstanceServiceKey)
 export class InstanceService extends StatefulService<InstanceState> implements IInstanceService {
-  protected readonly instancesFile = new MappedFile<InstancesSchema>(this.getPath('instances.json'), new BufferJsonSerializer(InstancesSchema))
-    .setSaveSource(() => ({ instances: Object.keys(this.state.all), selectedInstance: this.state.path }))
-
-  protected readonly instanceFile = new RelativeMappedFile<InstanceSchema>('instance.json', new BufferJsonSerializer(InstanceSchema))
+  protected readonly instancesFile = createSafeFile(this.getPath(INSTANCES_FOLDER), InstancesSchema, this)
+  protected readonly instanceFile = createSafeIO(InstanceSchema, this)
 
   constructor(app: LauncherApp,
     @Inject(ServerStatusService) protected statusService: ServerStatusService,
@@ -48,7 +45,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       }))
 
       if (staleInstances.size > 0) {
-        await this.instancesFile.save({
+        await this.instancesFile.write({
           selectedInstance: instanceConfig.selectedInstance,
           instances: instanceConfig.instances.filter(p => !staleInstances.has(p)),
         })
@@ -67,22 +64,22 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
       this.storeManager
         .subscribe('instanceAdd', async (payload: Instance) => {
-          await this.instanceFile.saveTo(payload.path, payload)
-          await this.instancesFile.save()
+          await this.instanceFile.write(join(payload.path, 'instance.json'), payload)
+          await this.instancesFile.write({ instances: Object.keys(this.state.all), selectedInstance: this.state.path })
           this.log(`Saved new instance ${payload.path}`)
         })
         .subscribe('instanceRemove', async () => {
-          await this.instancesFile.save()
+          await this.instancesFile.write({ instances: Object.keys(this.state.all), selectedInstance: this.state.path })
           this.log(`Removed instance files under ${this.state.instance.path}`)
         })
         .subscribe('instanceEdit', async () => {
           const inst = this.state.all[this.state.instance.path]
-          await this.instanceFile.saveTo(inst.path, inst)
+          await this.instanceFile.write(join(inst.path, 'instance.json'), inst)
           this.log(`Saved instance ${this.state.instance.path}`)
         })
         .subscribe('instanceSelect', async (path) => {
-          await this.instanceFile.saveTo(path, this.state.all[path])
-          await this.instancesFile.save()
+          await this.instanceFile.write(join(path, 'instance.json'), this.state.all[path])
+          await this.instancesFile.write({ instances: Object.keys(this.state.all), selectedInstance: this.state.path })
           this.log(`Saved instance selection ${path}`)
         })
     })
@@ -104,7 +101,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
     this.log(`Start load instance ${path}`)
     try {
-      option = await this.instanceFile.readTo(path)
+      option = await this.instanceFile.read(join(path, 'instance.json'))
     } catch (e) {
       this.warn(`Cannot load instance json ${path}`)
       this.warn(e)

@@ -1,9 +1,10 @@
 import { ResolvedVersion, Version } from '@xmcl/core'
 import { VersionService as IVersionService, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
 import { isNonnull } from '@xmcl/runtime-api/utils'
+import { task } from '@xmcl/task'
 import { remove } from 'fs-extra'
 import { join } from 'path'
-import { LauncherApp } from '..'
+import { LauncherApp } from '../app/LauncherApp'
 import { CopyDirectoryTask, FileStateWatcher, missing, readdirEnsured } from '../util/fs'
 import { ExportService, StatefulService } from './Service'
 
@@ -42,13 +43,20 @@ export default class VersionService extends StatefulService<VersionState> implem
     const root = this.getPath()
     if (mcPath === root) return
     this.log(`Try to migrate the version from ${mcPath}`)
-    const task = new CopyDirectoryTask([
-      { src: join(mcPath, 'libraries'), dest: join(root, 'libraries') },
-      { src: join(mcPath, 'assets'), dest: join(root, 'assets') },
-      { src: join(mcPath, 'versions'), dest: join(root, 'versions') },
-    ]).setName('cloneMinecraft')
-    Reflect.set(task, '_from', mcPath)
-    await this.taskManager.submit(task)
+    const copyTask = task('cloneMinecraft', async () => {
+      await this.worker().copyPassively([
+        { src: join(mcPath, 'libraries'), dest: join(root, 'libraries') },
+        { src: join(mcPath, 'assets'), dest: join(root, 'assets') },
+        { src: join(mcPath, 'versions'), dest: join(root, 'versions') },
+      ])
+    })
+    // const task = new CopyDirectoryTask([
+    //   { src: join(mcPath, 'libraries'), dest: join(root, 'libraries') },
+    //   { src: join(mcPath, 'assets'), dest: join(root, 'assets') },
+    //   { src: join(mcPath, 'versions'), dest: join(root, 'versions') },
+    // ]).setName('cloneMinecraft')
+    Reflect.set(copyTask, '_from', mcPath)
+    await this.taskManager.submit(copyTask)
   }
 
   public async resolveLocalVersion(versionFolder: string, root: string = this.getPath()): Promise<ResolvedVersion> {

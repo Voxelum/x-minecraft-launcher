@@ -28,6 +28,8 @@ import ServerStatusService from '../services/ServerStatusService'
 import AbstractService, { KEYS_SYMBOL, PARAMS_SYMBOL, ServiceConstructor, StatefulService, SUBSCRIBE_SYMBOL } from '../services/Service'
 import UserService from '../services/UserService'
 import VersionService from '../services/VersionService'
+import LauncherApp from '../app/LauncherApp'
+import { ObjectRegistry } from '../util/objectRegistry'
 
 interface ServiceCallSession {
   id: number
@@ -66,7 +68,9 @@ export default class ServiceManager extends Manager {
 
     // create service instance
     const serviceMap = this.exposedService
-    const injection = this.app.context
+    const injection = new ObjectRegistry()
+
+    injection.register(LauncherApp as any, this.app)
 
     const discoverService = (ServiceConstructor: ServiceConstructor) => {
       if (injection.getObject(ServiceConstructor)) {

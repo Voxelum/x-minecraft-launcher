@@ -3,7 +3,6 @@ import { AbortableTask, CancelledError } from '@xmcl/task'
 import { createHash } from 'crypto'
 import { fromFile } from 'file-type'
 import { FileExtension } from 'file-type/core'
-import filenamify from 'filenamify'
 import { access, constants, copy, copyFile, ensureDir, FSWatcher, link, readdir, stat, symlink, unlink, watch } from 'fs-extra'
 import { platform } from 'os'
 import { extname, join, resolve } from 'path'
@@ -52,8 +51,8 @@ export async function copyPassively(src: string, dest: string, filter: (name: st
   if (!filter(src)) { return }
   if (s.isDirectory()) {
     await ensureDir(dest)
-    const childs = await readdir(src)
-    await Promise.all(childs.map((p) => copyPassively(resolve(src, p), resolve(dest, p))))
+    const children = await readdir(src)
+    await Promise.all(children.map((p) => copyPassively(resolve(src, p), resolve(dest, p))))
   } else if (await missing(dest)) {
     await copyFile(src, dest)
   }
@@ -163,12 +162,6 @@ export class FileStateWatcher<T> {
   close() {
     this.watcher?.close()
   }
-}
-
-export function getSuggestedFilename(name: string) {
-  name = filenamify(name)
-  name = name.replace('§', '')
-  return name
 }
 
 export function sha1(data: Buffer) {

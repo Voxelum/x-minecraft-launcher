@@ -1,6 +1,9 @@
 import throttle from 'lodash.throttle'
 import { DebouncedFunc } from 'lodash'
 
+/**
+ * Create a simple throttle function for the specific key, which is used to generate lock/semaphore key for the service call.
+ */
 export function createDynamicThrottle<T extends (...args: any[]) => any>(f: T, keyExtractor: (...param: Parameters<T>) => string, time: number): T {
   const memos: Record<string, DebouncedFunc<T>> = {}
   const result: T = (((...params: any[]) => {

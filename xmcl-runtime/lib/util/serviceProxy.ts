@@ -1,8 +1,11 @@
 import EventEmitter from 'events'
-import { LauncherApp } from '..'
+import { LauncherApp } from '../app/LauncherApp'
 import { isState } from '../services/Service'
 import { Logger } from './log'
 
+/**
+ * The util class to hold each service state snapshot
+ */
 export class ServiceStateProxy {
   /**
   * The total order of the current store state.
@@ -21,6 +24,7 @@ export class ServiceStateProxy {
   ) {
     const stateKeys = [] as string[]
 
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this
 
     for (const [key, prop] of Object.entries(Object.getOwnPropertyDescriptors(Object.getPrototypeOf(state)))) {

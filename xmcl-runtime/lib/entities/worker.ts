@@ -1,11 +1,11 @@
 import { FileTypeHint, Resource } from '@xmcl/runtime-api'
-import { Worker } from 'worker_threads'
 import { FileType } from '../util/fs'
 import { FileStat } from './resource'
 
 export interface WorkPayload {
   type: string
   id: number
+  args: any[]
 }
 
 export interface ChecksumWorkPayload {
@@ -34,50 +34,10 @@ export interface WorkerResponse {
 /**
  * The worker for cpu busy work
  */
-export interface CPUWorker {
-  checksum(payload: ChecksumWorkPayload): Promise<string>
-  fileType(payload: FileTypePayload): Promise<FileType>
-  checksumAndFileType(payload: ChecksumWorkPayload): Promise<[string, FileType]>
+export interface WorkerInterface {
+  checksum(path: string, algorithm: string): Promise<string>
+  checksumAndFileType(path: string, algorithm: string): Promise<[string, FileType]>
+  fileType(path: string): Promise<FileType>
   parseResource(payload: ResolveResourceWorkPayload): Promise<[Resource, Uint8Array | undefined]>
-}
-
-export class WorkerAgent implements CPUWorker {
-  constructor(private worker: Worker) { }
-
-  private counter = 0
-
-  submit<T extends keyof CPUWorker>(work: T, payload: Parameters<CPUWorker[T]>[0]): ReturnType<CPUWorker[T]> {
-    const _id = this.counter++
-    return new Promise((resolve, reject) => {
-      const handler = (resp: WorkerResponse) => {
-        const { error, result, id } = resp
-        if (id === _id) {
-          this.worker.removeListener('message', handler)
-          if (error) {
-            reject(error)
-          } else {
-            resolve(result)
-          }
-        }
-      }
-      this.worker.on('message', handler)
-      this.worker.postMessage({ ...payload, type: work, id: _id })
-    }) as any
-  }
-
-  checksum(payload: ChecksumWorkPayload): Promise<string> {
-    return this.submit('checksum', payload)
-  }
-
-  fileType(payload: FileTypePayload): Promise<FileType> {
-    throw this.submit('fileType', payload)
-  }
-
-  checksumAndFileType(payload: ChecksumWorkPayload): Promise<[string, FileType]> {
-    return this.submit('checksumAndFileType', payload)
-  }
-
-  parseResource(payload: ResolveResourceWorkPayload): Promise<[Resource<unknown>, Uint8Array | undefined]> {
-    return this.submit('parseResource', payload)
-  }
+  copyPassively(files: { src: string; dest: string }[]): Promise<void>
 }

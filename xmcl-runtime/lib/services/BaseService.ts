@@ -3,15 +3,20 @@ import { copy, copyFile, ensureDir, readJson, remove, unlink, writeJson } from '
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { IS_DEV } from '../constant'
-import { MappedFile } from '../util/persistance'
-import { BufferJsonSerializer } from '../util/serialize'
+import { createSafeFile } from '../util/persistance'
 import { ExportService, Singleton, StatefulService } from './Service'
 
 @ExportService(BaseServiceKey)
 export default class BaseService extends StatefulService<BaseState> implements IBaseService {
-  private settingFile = new MappedFile<SettingSchema>(this.getPath('setting.json'), new BufferJsonSerializer(SettingSchema))
+  private settingFile = createSafeFile(this.getPath('setting.json'), SettingSchema, this)
 
-  createState() { return new BaseState() }
+  createState() {
+    const state = new BaseState()
+    if (process.env.BUILD_TARGET === 'appx') {
+      state.env = 'appx'
+    }
+    return state
+  }
 
   constructor(app: LauncherApp) {
     super(app, async () => {

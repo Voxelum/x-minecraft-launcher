@@ -1,6 +1,6 @@
 import { queryStatus } from '@xmcl/client'
 import { createFailureServerStatus, PingServerOptions, ServerStatusService as IServerStatusService, ServerStatusServiceKey, protocolToMinecraft } from '@xmcl/runtime-api'
-import { LauncherApp } from '..'
+import { LauncherApp } from '../app/LauncherApp'
 import { isSystemError } from '../util/error'
 import AbstractService, { ExportService } from './Service'
 

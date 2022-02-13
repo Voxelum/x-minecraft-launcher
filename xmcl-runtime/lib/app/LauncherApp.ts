@@ -1,11 +1,9 @@
 import { getPlatform } from '@xmcl/core'
-import { DownloadTask } from '@xmcl/installer'
 import { InstalledAppManifest, RuntimeVersions, UpdateInfo } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { EventEmitter } from 'events'
 import { ensureDir, readFile, readJson, writeFile } from 'fs-extra'
 import { extname, join } from 'path'
-import { URL } from 'url'
 import { LAUNCHER_NAME } from '../constant'
 import { Client } from '../engineBridge'
 import CredentialManager from '../managers/CredentialManager'
@@ -19,9 +17,7 @@ import TelemetryManager from '../managers/TelemetryManager'
 import WorkerManager from '../managers/WorkerManager'
 import AbstractService from '../services/Service'
 import { isSystemError } from '../util/error'
-import { exists, isDirectory } from '../util/fs'
-import { GiteeReleaseFetcher, GithubReleaseFetcher, ReleaseFetcher } from '../util/release'
-import { Constructor, LaunchAppContext } from './LaunchAppContext'
+import { isDirectory } from '../util/fs'
 import { LauncherAppController } from './LauncherAppController'
 import { LauncherAppManager } from './LauncherAppManager'
 
@@ -88,13 +84,13 @@ export abstract class LauncherApp extends EventEmitter {
   readonly appDataPath: string
 
   /**
-     * Store Minecraft data
-     */
+   * Store Minecraft data
+   */
   readonly gameDataPath: string
 
   /**
-     * The .minecraft folder in Windows or minecraft folder in linux/mac
-     */
+   * The .minecraft folder in Windows or minecraft folder in linux/mac
+   */
   readonly minecraftDataPath: string
 
   /**
@@ -131,8 +127,6 @@ export abstract class LauncherApp extends EventEmitter {
 
   readonly platform: Platform = getPlatform()
 
-  readonly context = new LaunchAppContext()
-
   abstract readonly version: string
 
   readonly build: number = Number.parseInt(process.env.BUILD_NUMBER ?? '0', 10)
@@ -151,7 +145,6 @@ export abstract class LauncherApp extends EventEmitter {
     this.minecraftDataPath = join(appData, this.platform.name === 'osx' ? 'minecraft' : '.minecraft')
     this.temporaryPath = ''
     this.controller = this.createController()
-    this.context.register(LauncherApp as any, this)
   }
 
   abstract getDefaultAppManifest(): InstalledAppManifest
@@ -172,7 +165,7 @@ export abstract class LauncherApp extends EventEmitter {
    * Handle a invoke operation from client
    *
    * @param channel The invoke channel to listen
-   * @param handler The listener callback will be called during this event recieved
+   * @param handler The listener callback will be called during this event received
    */
   abstract handle(channel: string, handler: (event: { sender: Client }, ...args: any[]) => any): void
 
@@ -202,7 +195,7 @@ export abstract class LauncherApp extends EventEmitter {
   abstract handleUrl(url: string): void
 
   /**
-   * Quit the app gentally.
+   * Quit the app gently.
    */
   quit() {
     Promise.all(this.managers.map(m => m.beforeQuit()))
@@ -210,7 +203,7 @@ export abstract class LauncherApp extends EventEmitter {
   }
 
   /**
-   * Quit the app gentally.
+   * Quit the app gently.
    */
   protected abstract quitApp(): void
 
@@ -258,60 +251,23 @@ export abstract class LauncherApp extends EventEmitter {
 
   error = (message: any, ...options: any[]) => { this.logManager.error(`[App] ${message}`, ...options) }
 
-  getRegisteredObject<T>(type: Constructor<T>): T | undefined {
-    return this.context.getObject(type)
-  }
-
   /**
    * Start an app from file path
    * @param path The path of json
    */
-  protected async startFromFilePath(path: string) {
-    const ext = extname(path)
-    if (ext === '.xmclm') {
-      const manifest: AppManifest = await readJson(path)
-      await this.loadManifest(manifest)
-    } else if (ext === '.xmclapp') {
-      await this.bootApp(path)
-    } else if (await isDirectory(path)) {
-      await this.bootApp(path)
-    }
-  }
+  // protected async startFromFilePath(path: string) {
+  //   const ext = extname(path)
+  //   if (ext === '.xmclm') {
+  //     const manifest: AppManifest = await readJson(path)
+  //     await this.loadManifest(manifest)
+  //   } else if (ext === '.xmclapp') {
+  //     await this.bootApp(path)
+  //   } else if (await isDirectory(path)) {
+  //     await this.bootApp(path)
+  //   }
+  // }
 
   // phase code
-
-  /**
-     * Boot the app on the path
-     * @param appRoot App root path
-     */
-  protected async bootApp(appRoot: string) {
-    // let indexPath = join(asarPath, 'index.js');
-    // let buf = await readFile(indexPath);
-
-    // const coreModule = {
-    //     getResource(path: string) {
-    //         return readFile(join(asarPath, path));
-    //     },
-    // };
-
-    // const script = new Script(buf.toString());
-    // const context = {
-    //     module: {
-    //         exports: {
-    //             default: undefined,
-    //         },
-    //     },
-    //     require: (name: string) => {
-    //         if (name === 'xmcl-launcher') {
-    //             return coreModule;
-    //         }
-    //         return this.getModule(name);
-    //     },
-    //     console,
-    // };
-
-    // script.runInNewContext(context);
-  }
 
   readonly serviceReadyPromise = new Promise<void>((resolve) => {
     this.on('all-services-ready', resolve)

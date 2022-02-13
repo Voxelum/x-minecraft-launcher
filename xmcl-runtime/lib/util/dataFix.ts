@@ -1,10 +1,13 @@
-import { RESOURCE_FILE_VERSION } from '../constant'
-import { RESOURCE_PARSER_FORGE } from '../entities/resource'
-import { Logger } from '../managers/LogManager'
 import { openFileSystem } from '@xmcl/system'
 import { writeJSON } from 'fs-extra'
 import { basename, extname, join, relative } from 'path'
+import { RESOURCE_FILE_VERSION } from '../constant'
+import { forgeModParser } from '../entities/resourceParsers/forgeMod'
+import { Logger } from './log'
 
+/**
+ * The helper function to fix old resource schema
+ */
 export async function fixResourceSchema({ log, warn }: Logger, filePath: string, schema: any, dataRoot: string) {
   let dirty = false
   if ('path' in schema && !schema.fileName) {
@@ -27,7 +30,7 @@ export async function fixResourceSchema({ log, warn }: Logger, filePath: string,
     // fix forge metadata
     log(`Fix ${filePath} file version: ${schema.version} -> ${RESOURCE_FILE_VERSION}`)
     const fs = await openFileSystem(join(dataRoot, schema.location + schema.ext))
-    const data = await RESOURCE_PARSER_FORGE.parseMetadata(fs)
+    const data = await forgeModParser.parseMetadata(fs)
     fs.close()
     schema.metadata = data
     schema.version = RESOURCE_FILE_VERSION
