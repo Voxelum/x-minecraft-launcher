@@ -1,8 +1,7 @@
-import { dirname, join } from 'path'
 import { Plugin } from 'esbuild'
-import { readdir, readFile } from 'fs-extra'
+import { readFile } from 'fs-extra'
 import { platform } from 'os'
-import { pathToFileURL } from 'url'
+import { dirname, join } from 'path'
 
 /**
  * Correctly handle native node import.
@@ -43,7 +42,7 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
             contents: 'module.exports = {}',
             loader: 'js',
           }
-        }
+        },
       )
       // replace sharp
       build.onLoad(
@@ -51,22 +50,22 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         async ({ path }) => {
           // sharp is only for svg
           throw new Error('This should not be reach!')
-          const content = await readFile(path, 'utf-8')
-          const modulePath = join(path, '../platform.js')
-          // eslint-disable-next-line @typescript-eslint/no-var-requires
-          const platform = require(modulePath)()
-          let contents = content.replace(/\$\{platformAndArch\}/g, platform)
-          // if (!build.initialOptions.watch) {
-          //   const allLibs = (await readdir(join(dirname(path), '../build/Release'))).filter(f => f.endsWith('.dll') || f.endsWith('.so'))
-          //     .map((f) => `require("../build/Release/${f}")`)
-          //   contents = `${allLibs.join('\n')}
-          //   ${contents}`
+          // const content = await readFile(path, 'utf-8')
+          // const modulePath = join(path, '../platform.js')
+          // // eslint-disable-next-line @typescript-eslint/no-var-requires
+          // const platform = require(modulePath)()
+          // const contents = content.replace(/\$\{platformAndArch\}/g, platform)
+          // // if (!build.initialOptions.watch) {
+          // //   const allLibs = (await readdir(join(dirname(path), '../build/Release'))).filter(f => f.endsWith('.dll') || f.endsWith('.so'))
+          // //     .map((f) => `require("../build/Release/${f}")`)
+          // //   contents = `${allLibs.join('\n')}
+          // //   ${contents}`
+          // // }
+          // return {
+          //   contents: contents,
+          //   loader: 'js',
+          //   resolveDir: dirname(path),
           // }
-          return {
-            contents: contents,
-            loader: 'js',
-            resolveDir: dirname(path),
-          }
         },
       )
 
