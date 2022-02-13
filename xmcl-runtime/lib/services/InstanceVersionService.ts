@@ -140,7 +140,7 @@ export default class InstanceVersionService extends AbstractService implements I
     await this.diagnoseVersion()
   }
 
-  @Subscribe('localVersions')
+  @Subscribe('localVersions', 'localVersionAdd', 'localVersionRemove')
   protected async onLocalVersionsChanged() {
     await this.diagnoseVersion()
   }

@@ -1,9 +1,7 @@
-
-export type Constructor<T = any> = {
-  new(...args: any[]): T
-}
-
-export class LaunchAppContext {
+/**
+ * The helper class to hold type to object map
+ */
+export class ObjectRegistry {
   private injections: Map<Constructor, any> = new Map()
 
   register<T>(type: Constructor<T>, value: T): this {
@@ -14,4 +12,8 @@ export class LaunchAppContext {
   getObject<T>(type: Constructor<T>): T | undefined {
     return this.injections.get(type)
   }
+}
+
+type Constructor<T = any> = {
+  new(...args: any[]): T
 }

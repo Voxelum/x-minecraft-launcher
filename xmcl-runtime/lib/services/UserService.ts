@@ -12,8 +12,7 @@ import { URL } from 'url'
 import { v4 } from 'uuid'
 import LauncherApp from '../app/LauncherApp'
 import { acquireXBoxToken, changeAccountSkin, checkGameOwnership, getGameProfile, loginMinecraftWithXBox } from '../entities/user'
-import { MappedFile } from '../util/persistance'
-import { BufferJsonSerializer } from '../util/serialize'
+import { createSafeFile } from '../util/persistance'
 import { createDynamicThrottle } from '../util/trafficAgent'
 import { fitMinecraftLauncherProfileData } from '../util/userData'
 import DiagnoseService from './DiagnoseService'
@@ -95,7 +94,7 @@ export default class UserService extends StatefulService<UserState> implements I
 
   private validate = createDynamicThrottle(validate, ({ accessToken }, api) => (api ?? AUTH_API_MOJANG).hostName, 2400)
 
-  private userFile = new MappedFile<UserSchema>(this.getPath('user.json'), new BufferJsonSerializer(UserSchema))
+  private userFile = createSafeFile(this.getPath('user.json'), UserSchema, this)
 
   constructor(app: LauncherApp,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService) {

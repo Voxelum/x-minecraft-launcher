@@ -6,14 +6,13 @@ import { access, chmod, constants, ensureFile, readFile } from 'fs-extra'
 import { dirname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { missing, readdirIfPresent } from '../util/fs'
-import { MappedFile } from '../util/persistance'
-import { BufferJsonSerializer } from '../util/serialize'
+import { createSafeFile } from '../util/persistance'
 import DiagnoseService from './DiagnoseService'
 import { ExportService, Inject, Singleton, StatefulService } from './Service'
 
 @ExportService(JavaServiceKey)
 export default class JavaService extends StatefulService<JavaState> implements IJavaService {
-  protected readonly config = new MappedFile<JavaSchema>(this.getPath('java.json'), new BufferJsonSerializer(JavaSchema))
+  protected readonly config = createSafeFile(this.getPath('java.json'), JavaSchema, this)
 
   constructor(app: LauncherApp,
     @Inject(DiagnoseService) diagnoseService: DiagnoseService) {

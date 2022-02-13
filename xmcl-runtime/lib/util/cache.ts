@@ -1,3 +1,6 @@
+/**
+ * The helper class to hold object with ttl, which is useful for holding web api result.
+ */
 export class CacheDictionary<T> {
   private cache: Record<string, [T, number] | undefined> = {}
 

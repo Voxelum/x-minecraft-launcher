@@ -1,17 +1,16 @@
 import { MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
 import { DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL } from '@xmcl/installer'
+import { Asset, assetsLock, ForgeVersion, ForgeVersionList, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallService as IInstallService, InstallServiceKey, InstallState, isFabricLoaderLibrary, isForgeLibrary, librariesLock, OptifineVersion, read, RefreshForgeOptions, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, versionLockOf, VersionMinecraftSchema, VersionOptifineSchema, write } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { ensureFile, readJSON, writeFile } from 'fs-extra'
 import { URL } from 'url'
-import { MappedFile } from '../util/persistance'
-import { BufferJsonSerializer } from '../util/serialize'
+import LauncherApp from '../app/LauncherApp'
+import { createSafeFile } from '../util/persistance'
 import BaseService from './BaseService'
 import JavaService from './JavaService'
 import ResourceService from './ResourceService'
 import { ExportService, Inject, Lock, Singleton, StatefulService } from './Service'
 import VersionService from './VersionService'
-import LauncherApp from '../app/LauncherApp'
-import { isFabricLoaderLibrary, isForgeLibrary, ForgeVersion, ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema, Asset, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallService as IInstallService, InstallServiceKey, InstallState, RefreshForgeOptions, assetsLock, librariesLock, read, versionLockOf, write } from '@xmcl/runtime-api'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -24,11 +23,11 @@ export default class InstallService extends StatefulService<InstallState> implem
   private refreshedOptifine = false
   private refreshedForge: Record<string, boolean> = {}
 
-  private minecraftVersionJson = new MappedFile<VersionMinecraftSchema>(this.getPath('minecraft-versions.json'), new BufferJsonSerializer(VersionMinecraftSchema))
-  private forgeVersionJson = new MappedFile<VersionForgeSchema>(this.getPath('forge-versions.json'), new BufferJsonSerializer(VersionForgeSchema))
-  private liteloaderVersionJson = new MappedFile<VersionLiteloaderSchema>(this.getPath('lite-versions.json'), new BufferJsonSerializer(VersionLiteloaderSchema))
-  private fabricVersionJson = new MappedFile<VersionFabricSchema>(this.getPath('fabric-versions.json'), new BufferJsonSerializer(VersionFabricSchema))
-  private optifineVersionJson = new MappedFile<VersionOptifineSchema>(this.getPath('optifine-versions.json'), new BufferJsonSerializer(VersionOptifineSchema))
+  private minecraftVersionJson = createSafeFile(this.getPath('minecraft-versions.json'), VersionMinecraftSchema, this)
+  private forgeVersionJson = createSafeFile(this.getPath('forge-versions.json'), VersionForgeSchema, this)
+  private liteloaderVersionJson = createSafeFile(this.getPath('lite-versions.json'), VersionLiteloaderSchema, this)
+  private fabricVersionJson = createSafeFile(this.getPath('fabric-versions.json'), VersionFabricSchema, this)
+  private optifineVersionJson = createSafeFile(this.getPath('optifine-versions.json'), VersionOptifineSchema, this)
 
   constructor(app: LauncherApp,
     @Inject(BaseService) private baseService: BaseService,
@@ -169,7 +168,9 @@ export default class InstallService extends StatefulService<InstallState> implem
         : {
           'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
         },
-      rejectUnauthorized: false,
+      https: {
+        rejectUnauthorized: false,
+      },
     })
     function convert(v: BMCLForge): ForgeVersion {
       const installer = v.files.find(f => f.category === 'installer')!
@@ -418,7 +419,9 @@ export default class InstallService extends StatefulService<InstallState> implem
 
     const response = await this.networkManager.request.get('https://bmclapi2.bangbang93.com/optifine/versionList', {
       headers,
-      rejectUnauthorized: false,
+      https: {
+        rejectUnauthorized: false,
+      },
     })
 
     if (response.statusCode === 304) {

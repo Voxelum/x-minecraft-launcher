@@ -32,10 +32,10 @@ export interface Query {
  *
  * 1. Parse resource file and get metadata, and push the pending metadata queue.
  * 2. Copy or link or rename the resource file to domain directory.
- *    1. If rename, it will emit a remove event to watcher, which will be ignore if the origianl file path is not in cache.
+ *    1. If rename, it will emit a remove event to watcher, which will be ignore if the original file path is not in cache.
  * 3. The watcher find a new resource file enter the domain
  *    1. If the new file is in pending queue, it will use the metadata in pending queue
- *    2. If the new file has no pending metadata, it will reparse the metadata, which returns step 1
+ *    2. If the new file has no pending metadata, it will re-parse the metadata, which returns step 1
  * 4. The watcher write the parsed the resource metadata
  * 5. The watcher get the metadata json update event, and validate & update the metadata cache & state
  */
@@ -192,7 +192,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
             this.log(`Update resource ${resource.path} metadata`)
           } catch (e) {
             if (isSystemError(e) && e.code === ENOENT_ERROR) {
-              // the cooresponded resource is missing... remove this resource metadata
+              // the corresponded resource is missing... remove this resource metadata
               await unlink(name)
               this.log(`Remove not found resource corresponed to ${name}`)
             } else {
@@ -345,7 +345,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
   }
 
   /**
-  * Import the resource from the same disk. This will parse the file and import it into our db by hardlink.
+  * Import the resource from the same disk. This will parse the file and import it into our db by hard link.
   * If the file already existed, it will not re-import it again
   *
   * The original file will not be modified.
@@ -437,7 +437,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
         if (context?.sha1) {
           result = this.getResourceByKey(context.sha1)
         } else {
-          const [sha1, fileType] = await this.worker().checksumAndFileType({ path, algorithm: 'sha1' })
+          const [sha1, fileType] = await this.worker().checksumAndFileType(path, 'sha1')
           if (context) {
             context.sha1 = sha1
             context.fileType = fileType
@@ -469,13 +469,13 @@ export default class ResourceService extends StatefulService<ResourceState> impl
       sha1 = ''
     } else {
       if (!sha1 && !fileType) {
-        [sha1, fileType] = await this.worker().checksumAndFileType({ algorithm: 'sha1', path })
+        [sha1, fileType] = await this.worker().checksumAndFileType(path, 'sha1')
       }
       if (!sha1) {
-        sha1 = await this.worker().checksum({ algorithm: 'sha1', path })
+        sha1 = await this.worker().checksum(path, 'sha1')
       }
       if (!fileType) {
-        fileType = await this.worker().fileType({ path })
+        fileType = await this.worker().fileType(path)
       }
     }
     const [resolved, icon] = await this.worker().parseResource({
