@@ -23,7 +23,8 @@
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "importHelpers": true
+    "importHelpers": true,
+    "types": ["@xmcl/runtime/lib/global"]
   },
   "include": [
     "./*.ts",

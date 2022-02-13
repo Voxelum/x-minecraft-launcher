@@ -82,21 +82,18 @@ export const config: Configuration = {
     icon: 'build/icons/icon.ico',
     files: [
       '**/*.cs',
-      'node_modules/7zip-bin/**/*',
-      '!node_modules/7zip-bin/win32/ia32',
-      '!node_modules/7zip-bin/linux/*',
-      '!node_modules/7zip-bin/mac/*',
       '**/*.worker.js',
     ],
     target: [
-      'appx',
-      {
-        target: 'zip',
-        arch: [
-          'x64',
-          'ia32',
-        ],
-      },
+      process.env.BUILD_TARGET === 'appx'
+        ? 'appx'
+        : {
+          target: 'zip',
+          arch: [
+            'x64',
+            'ia32',
+          ],
+        },
     ],
   },
   linux: {
