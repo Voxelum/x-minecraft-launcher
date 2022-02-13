@@ -21,7 +21,7 @@ export default defineComponent({
     path: optional(String),
   },
   setup(props) {
-    const view: Ref<WebviewTag | null> = ref(null)
+    const view: Ref<any | null> = ref(null)
     function isMcWikiHost(u: string) {
       const url = new URL(u)
       return url.host === 'www.mcmod.cn' || 'play.mcmod.cn'
@@ -45,7 +45,7 @@ export default defineComponent({
     })
     const { push } = useRouter()
     onMounted(() => {
-      const webview: WebviewTag = view.value!
+      const webview: any = view.value!
 
       webview.addEventListener('dom-ready', () => {
         webview.openDevTools()
