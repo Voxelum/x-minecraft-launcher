@@ -12,7 +12,7 @@ function getAppInstallerContent(version: string) {
           Publisher="E=cijhn@hotmail.com, CN=&quot;Open Source Developer, Hongze Xu&quot;, O=Open Source Developer, L=Beijing, C=CN"
           Version="${version}"
           ProcessorArchitecture="x64"
-          Uri="https://xmcl-release-ms.azureedge.net/releases/xmcl.appx" />
+          Uri="https://xmcl-release-ms.azureedge.net/releases/xmcl-${version}-win32-x64.appx" />
   
       <UpdateURIs>
           <UpdateURI>https://xmcl-release-ms.azureedge.net/releases/xmcl.appinstaller</UpdateURI>

@@ -106,7 +106,9 @@ async function start() {
   if (process.env.BUILD_TARGET) {
     const dir = process.env.BUILD_TARGET === 'dir'
     await buildElectron(electronBuilderConfig, dir)
-    await buildAppInstaller(version, path.join(__dirname, './build/output/xmcl.appinstaller'))
+    if (process.env.BUILD_TARGET === 'appx') {
+      await buildAppInstaller(version, path.join(__dirname, './build/output/xmcl.appinstaller'))
+    }
   }
 }
 
