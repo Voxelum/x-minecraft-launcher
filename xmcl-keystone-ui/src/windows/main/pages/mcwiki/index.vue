@@ -13,7 +13,6 @@
 
 <script lang=ts>
 import { defineComponent, computed, ref, Ref, onMounted } from '@vue/composition-api'
-import { WebviewTag } from 'electron'
 import { useRouter } from '/@/hooks'
 import { optional } from '/@/util/props'
 
@@ -168,7 +167,7 @@ export default defineComponent({
         `,
         )
       })
-      webview.addEventListener('new-window', (e) => {
+      webview.addEventListener('new-window', (e: any) => {
         if (isMcWikiHost(e.url)) {
           if (e.url.startsWith('https://www.mcmod.cn/jump/')) {
             const url = atob(e.url.substring('https://www.mcmod.cn/jump/'.length))

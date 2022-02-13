@@ -84,11 +84,11 @@
           compatible
             ? $t("resourcepack.compatible", {
               format: pack.pack_format,
-              version: mcversion,
+              version: runtime.minecraft,
             })
             : $t("resourcepack.incompatible", {
               accept: pack.acceptingRange,
-              actual: mcversion,
+              actual: runtime.minecraft,
               format: pack.pack_format,
             })
         }}
@@ -98,13 +98,13 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, ref, Ref, computed, set } from '@vue/composition-api'
-import { useInstanceVersionBase, useCompatible, useDragTransferItem, ResourcePackItem, useI18n, useService, useTagColors, useTagCreation, useTags } from '/@/hooks'
-import { required } from '/@/util/props'
-import { useContextMenu, ContextMenuItem, useCurseforgeRoute } from '/@/windows/main/composables'
-import { BaseServiceKey } from '@xmcl/runtime-api'
+import { computed, defineComponent, ref, Ref } from '@vue/composition-api'
+import { BaseServiceKey, InstanceServiceKey, NO_RESOURCE } from '@xmcl/runtime-api'
 import unknownPack from '/@/assets/unknown_pack.png'
+import { ResourcePackItem, useCompatible, useDragTransferItem, useI18n, useService, useTagColors, useTags } from '/@/hooks'
 import { getColor } from '/@/util/color'
+import { required } from '/@/util/props'
+import { ContextMenuItem, useContextMenu, useCurseforgeRoute } from '/@/windows/main/composables'
 
 export default defineComponent({
   props: {
@@ -113,8 +113,9 @@ export default defineComponent({
   },
   setup(props, context) {
     const iconImage: Ref<any> = ref(null)
-    const { minecraft } = useInstanceVersionBase()
-    const { compatible } = useCompatible(computed(() => props.pack.acceptingRange ?? ''), minecraft)
+    const { state } = useService(InstanceServiceKey)
+    const runtime = computed(() => state.instance.runtime)
+    const { compatible } = useCompatible(computed(() => props.pack.resource ?? NO_RESOURCE), runtime)
     const { open } = useContextMenu()
     const { $t } = useI18n()
     const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
@@ -200,7 +201,7 @@ export default defineComponent({
       iconImage,
       onDragStart,
       onDragEnd,
-      mcversion: minecraft,
+      runtime,
       card,
       onEditTag,
       openContextMenu,

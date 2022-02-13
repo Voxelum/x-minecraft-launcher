@@ -45,8 +45,12 @@
       clearable
       :label=" $t('modrinth.licenses.name') "
       :items="licenses"
-      :item-text="v => v.name"
-      :item-value="v => v.short"
+      :item-text="
+        // @ts-expect-error
+        v => v.name"
+      :item-value="
+        // @ts-expect-error
+        v => v.short"
       :value="license"
       hide-details
       @input="$emit('select:license', $event)"

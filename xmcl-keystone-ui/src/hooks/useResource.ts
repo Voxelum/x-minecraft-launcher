@@ -3,10 +3,10 @@ import { useService, useServiceOnly } from './useService'
 import { ModpackServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
 
 export function useResourceOperation() {
-  const { importFile, removeResource } = useServiceOnly(ResourceServiceKey, 'importFile', 'removeResource')
+  const { importResource, removeResource } = useServiceOnly(ResourceServiceKey, 'importResource', 'removeResource')
   return {
     removeResource,
-    importResource: importFile,
+    importResource,
   }
 }
 
@@ -38,6 +38,6 @@ export function useResourcePackResource() {
   }
 }
 
-export function useCurseforgeImport() {
-  return useServiceOnly(ModpackServiceKey, 'importCurseforgeModpack')
+export function useModpackImport() {
+  return useServiceOnly(ModpackServiceKey, 'importModpack')
 }

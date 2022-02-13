@@ -85,7 +85,8 @@
             <hint
               v-if="unselectedItems.length === 0"
               icon="save_alt"
-              :text="$t('resourcepack.dropHint')"
+              :text="
+                $t('resourcepack.dropHint')"
               :absolute="true"
               class="h-full"
             />

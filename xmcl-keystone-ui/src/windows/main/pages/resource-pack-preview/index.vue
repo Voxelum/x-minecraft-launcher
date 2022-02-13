@@ -22,7 +22,10 @@
         </v-list>
       </v-flex>
       <v-flex xs8>
-        <displayer :value="displayed" />
+        <displayer
+          v-if="displayed"
+          :value="displayed"
+        />
         <v-layout
           style="overflow-x: auto; max-height: 70px"
           row

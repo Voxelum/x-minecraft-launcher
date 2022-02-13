@@ -18,7 +18,9 @@
         style="width: 100%"
         :rules="nameRules"
         :label="$t('user.service.name')"
-        @update:error="value => nameError = value"
+        @update:error="
+          /* @ts-ignore */
+          value => nameError = value"
       />
       <v-text-field
         v-model="baseUrl"
@@ -27,7 +29,9 @@
         :label="$t('user.service.baseUrl')"
         :hint="$t('user.service.baseUrlHint')"
         :rules="urlRules"
-        @update:error="value => baseUrlError = value"
+        @update:error="
+          /* @ts-ignore */
+          value => baseUrlError = value"
         @keypress.enter="onKeyPress"
       />
       <v-radio-group v-model="template">
@@ -125,7 +129,9 @@
       <v-text-field
         v-for="t in Object.keys(newProfileService)"
         :key="t"
-        v-model="newProfileService[t]"
+        v-model="
+          // @ts-expect-error
+          newProfileService[t]"
         style="margin-bottom: 10px;"
         :label="$t(`user.service.${t}`)"
         :messages="[$t(`user.service.${t}Hint`)]"

@@ -30,6 +30,7 @@
   },
   "cancel": "Cancel",
   "checkUpdate": "Check Update",
+  "cloneMinecraft": "Clone Minecraft",
   "copy": {
     "success": "Copy to clipboard"
   },
@@ -223,6 +224,10 @@
       "": "User is not logined",
       "message": "Click to login."
     }
+  },
+  "disk": {
+    "available": "Available",
+    "used": "Used"
   },
   "download": "Download",
   "downloadUpdate": "Downloading Update",
@@ -723,6 +728,8 @@
       "description": "Description",
       "descriptionHint": "General description for you modpack. Might be used for exporting as curseforge modpack.",
       "edit": "Edit Modpack Info",
+      "emitCurseforge": "Emit Curseforge Modpack",
+      "emitMcbbs": "Emit MCBBS Modpack",
       "error": {
         "requirename": "Name is required! Please come up a modpack name!"
       },
@@ -1070,7 +1077,6 @@
     "skinUrlNotValid": "Skin URL is Invalid",
     "submitChallenges": "Submit Answers"
   },
-  "cloneMinecraft": "Clone Minecraft",
   "version": {
     "all": "All versions",
     "date": "Updated Date",

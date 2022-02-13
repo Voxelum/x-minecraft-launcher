@@ -20,7 +20,9 @@
         />
         <v-select
           v-model="sortBy"
-          :item-value="v => v.name"
+          :item-value="
+            // @ts-expect-error
+            v => v.name"
           class="max-w-40"
           hide-details
           flat

@@ -471,8 +471,7 @@ export default defineComponent({
     const { migrate, postMigrate, openDirectory, state } = useBaseService()
     const settings = useSettings()
     const { $t } = useI18n()
-    // eslint-disable-next-line no-undef
-    const disableUpdate = DISABLE_UPDATE
+    const disableUpdate = state.env !== 'raw'
     const data = reactive({
       rootLocation: state.root,
 
@@ -501,7 +500,7 @@ export default defineComponent({
       ...settings,
       version,
       build,
-      locales: settings.locales.value.map(l => ({ text: localMapping[l] ?? l, value: l })),
+      locales: settings.locales.value.map(l => ({ text: (localMapping as any)[l] ?? l, value: l })),
       particleModes,
       viewUpdateDetail() {
         data.viewingUpdateDetail = true

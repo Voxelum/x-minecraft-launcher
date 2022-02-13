@@ -7,7 +7,7 @@
     "description": "A great minecraft launcher in the future",
     "license": "MIT",
     "engines": {
-        "node": "14.x"
+        "node": ">=16"
     },
     "repository": {
         "type": "git",

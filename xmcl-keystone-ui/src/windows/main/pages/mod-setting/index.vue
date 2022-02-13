@@ -83,7 +83,9 @@
         <mod-card
           v-for="(item, index) in items"
           :key="item.hash"
-          v-observe-visibility="(visible) => onVisible(visible, index)"
+          v-observe-visibility="
+            // @ts-expect-error
+            (visible) => onVisible(visible, index)"
           :source="item"
           :selection="isSelectionMode"
           @enable="onEnable"

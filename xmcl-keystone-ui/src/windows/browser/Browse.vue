@@ -102,7 +102,7 @@ export default defineComponent({
     })
     const isUrl = /^https?:\/\/.+$/g
     const rules = computed(() => [
-      (v) => !v ? true : !(isUrl.test(v) || 'Invalid URL!'),
+      (v: string) => !v ? true : !(isUrl.test(v) || 'Invalid URL!'),
     ])
     const { refresh, refreshing } = useRefreshable(async () => {
       data.installed = await appsHost.getInstalledApps()
@@ -122,7 +122,7 @@ export default defineComponent({
         } else if (e === 'InvalidHTML') {
           data.error = 'The url is not targeting an valid html! Maybe manifest in html is missing!'
         } else {
-          data.error = e.toString()
+          data.error = (e as any).toString()
         }
         console.error(e)
       }
@@ -132,7 +132,7 @@ export default defineComponent({
       refresh()
     }
     const boot = async (url: string) => {
-      await appsHost.bootApp(url)
+      await appsHost.bootAppByUrl(url)
       refresh()
     }
     onMounted(() => {

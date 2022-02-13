@@ -42,7 +42,7 @@
             mode="out-in"
           >
             <span
-              :key="g.val"
+              :key="g.val.toString()"
               style="padding-left: 5px"
             >{{ $t(`gamesetting.${g.name}.${g.val}`) }}</span>
           </transition>

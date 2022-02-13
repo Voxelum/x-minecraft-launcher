@@ -118,16 +118,16 @@ export function useNotifyQueueConsumer() {
     }
   })
 
-  function handleNotification(payload: TaskLifeCyclePayload) {
-    const handler = registry[payload.type]
-    if (handler) {
-      queue.value.push({ level: handler.level, title: handler.title(payload), more: handler.more, full: handler.full })
-    } else {
-      console.warn(`Cannot handle the notification ${payload.type}`)
-    }
-  }
+  // function handleNotification(payload: TaskLifeCyclePayload) {
+  //   const handler = registry[payload.type]
+  //   if (handler) {
+  //     queue.value.push({ level: handler.level, title: handler.title(payload), more: handler.more, full: handler.full })
+  //   } else {
+  //     console.warn(`Cannot handle the notification ${payload.type}`)
+  //   }
+  // }
   onMounted(() => {
-    taskMonitor.on('task-start', handleNotification)
+    // taskMonitor.on('task-start', handleNotification)
     // ipc.on('notification', handleNotification)
   })
   onUnmounted(() => {
