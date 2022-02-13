@@ -86,6 +86,8 @@ export interface AppManifest {
   minWidth?: number
 
   minHeight?: number
+
+  display?: string
 }
 
 export interface InstalledAppManifest extends Required<AppManifest> {
@@ -106,7 +108,6 @@ export interface InstalledAppManifest extends Required<AppManifest> {
 
   minWidth: number
   minHeight: number
-  frame: boolean
   vibrancy: boolean
 }
 

@@ -1,4 +1,4 @@
-import { ServiceKey, ServiceTemplate, State, StatefulService } from './Service'
+import { ServiceKey, State, StatefulService } from './Service'
 
 export interface ImportHMCLModpackOptions {
   /**

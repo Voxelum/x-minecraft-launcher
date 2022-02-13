@@ -1,8 +1,8 @@
-import { EMPTY_JAVA, JavaRecord } from '../entities/java'
-import { requireObject, requireString } from '../util/assert'
-import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
-import { Java } from '../entities/java.schema'
 import { JavaVersion } from '@xmcl/core'
+import { JavaRecord } from '../entities/java'
+import { Java } from '../entities/java.schema'
+import { requireObject, requireString } from '../util/assert'
+import { ServiceKey, StatefulService } from './Service'
 
 export class JavaState {
   all = [] as JavaRecord[]

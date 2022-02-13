@@ -1,4 +1,4 @@
-import { ServiceKey, ServiceTemplate } from './Service'
+import { ServiceKey } from './Service'
 
 /**
  * Provide the abilities to diagnose & link resource packs files to instance

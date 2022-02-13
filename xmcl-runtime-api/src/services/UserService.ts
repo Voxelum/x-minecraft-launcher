@@ -2,7 +2,7 @@ import { GameProfile, MojangChallenge, MojangChallengeResponse, ProfileServiceAP
 import { EMPTY_GAME_PROFILE, EMPTY_USER } from '../entities/user'
 import { GameProfileAndTexture, UserProfile, UserSchema } from '../entities/user.schema'
 import { assignShallow, toObjectReducer } from '../util/object'
-import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 
 export interface LoginMicrosoftOptions {
   /**

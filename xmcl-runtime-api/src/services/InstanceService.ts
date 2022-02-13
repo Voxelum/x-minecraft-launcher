@@ -1,7 +1,7 @@
 import { DEFAULT_PROFILE, Instance } from '../entities/instance'
 import { InstanceSchema } from '../entities/instance.schema'
 import { DeepPartial } from '../util/object'
-import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 
 export type CreateInstanceOption = Partial<Omit<InstanceSchema, 'lastAccessDate' | 'creationDate'>> & {
   path?: string

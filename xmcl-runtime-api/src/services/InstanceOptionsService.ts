@@ -1,6 +1,6 @@
 import type { Frame as GameSetting } from '@xmcl/gamesetting'
 import { ShaderOptions } from '../entities/shaderpack'
-import { StatefulService, ServiceKey, State, ServiceTemplate } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 export interface EditGameSettingOptions extends GameSetting {
   /**
    * The instance to edit game setting.

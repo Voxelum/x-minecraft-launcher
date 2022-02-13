@@ -1,5 +1,5 @@
-import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
 import { InstanceSave, InstanceSaveMetadata } from '../entities/save'
+import { ServiceKey, StatefulService } from './Service'
 
 export interface ExportSaveOptions {
   /**
