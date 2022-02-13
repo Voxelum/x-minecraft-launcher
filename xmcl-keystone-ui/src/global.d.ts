@@ -25,8 +25,14 @@ declare module '*.png' {
   const value: string
   export default value
 }
+declare module '*.svg' {
+  const value: string
+  export default value
+}
 
-// declare const taskChannel: import('@xmcl/runtime-api').TaskChannel
-// declare const semaphoreChannel: import('@xmcl/runtime-api').SemaphoreChannel
-// declare const serviceChannel: import('@xmcl/runtime-api').ServiceChannel
-// declare const controllerChannel: import('@xmcl/runtime-api').ControllerChannel
+interface File {
+  /**
+   * The real path to the file on the users filesystem
+   */
+  path: string
+}

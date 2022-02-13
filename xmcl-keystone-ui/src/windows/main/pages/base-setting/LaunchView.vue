@@ -224,7 +224,7 @@ export default defineComponent({
       memoryRule: [(v: any) => Number.isInteger(v)],
 
       javaValid: true,
-      java: { path: '', version: '', majorVersion: 0 },
+      java: { path: '', version: '', majorVersion: 0, valid: false },
 
       isPreviewShown: false,
     })

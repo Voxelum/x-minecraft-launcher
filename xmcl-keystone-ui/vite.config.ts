@@ -25,7 +25,6 @@ export default defineConfig({
     assetsInlineLimit: 0,
   },
   define: {
-    DISABLE_UPDATE: process.env.BUILD_TARGET === 'appx',
   },
   resolve: {
     alias: {

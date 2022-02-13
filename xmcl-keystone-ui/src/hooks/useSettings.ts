@@ -1,8 +1,7 @@
 import { computed, Ref } from '@vue/composition-api'
-import { UpdateInfo } from 'electron-updater'
 import { useBusy } from './useSemaphore'
 import { useService } from './useService'
-import { BaseServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, UpdateInfo } from '@xmcl/runtime-api'
 
 export function useBaseService() {
   return useService(BaseServiceKey)

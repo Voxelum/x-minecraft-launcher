@@ -33,6 +33,7 @@
   },
   "cancel": "取消",
   "checkUpdate": "检查更新",
+  "cloneMinecraft": "克隆 Minecraft",
   "copy": {
     "success": "复制到剪贴板"
   },
@@ -214,6 +215,10 @@
       "message": "点击登录 Minecraft"
     }
   },
+  "disk": {
+    "available": "可用",
+    "used": "已用"
+  },
   "downloadUpdate": "下载更新",
   "dropToImport": "将文件拖到这并导入为",
   "edit": "编辑",
@@ -228,7 +233,6 @@
       "unstable": "预览版"
     }
   },
-  "cloneMinecraft": "克隆 Minecraft",
   "feedback": {
     "": "反馈",
     "description": "我找到了一个BUG/我想反馈",

@@ -78,7 +78,7 @@ import {
   useRouter,
   useInstances,
   useResourceOperation,
-  useCurseforgeImport,
+  useModpackImport,
   useOperation,
   useInstancesServerStatus,
 } from '/@/hooks'
@@ -109,7 +109,7 @@ function setupInstanceImport() {
   const { showOpenDialog } = windowController
   const { $t } = useI18n()
   const { importResource } = useResourceOperation()
-  const { importCurseforgeModpack } = useCurseforgeImport()
+  const { importModpack } = useModpackImport()
   async function onImport(type: 'zip' | 'folder' | 'curseforge') {
     const fromFolder = type === 'folder'
     const filters = fromFolder
@@ -129,7 +129,7 @@ function setupInstanceImport() {
             type: 'curseforge-modpack',
             background: true,
           })
-          await importCurseforgeModpack({ path: f, instanceConfig: {} })
+          await importModpack({ path: f, instanceConfig: {} })
         } else {
           await importInstance(f)
         }

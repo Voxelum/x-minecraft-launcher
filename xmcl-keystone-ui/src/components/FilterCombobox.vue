@@ -127,7 +127,7 @@ export function useFilterCombobox<T>(filterOptions: Ref<FilterOption[]>, getFilt
     selectedFilterOptions,
     filterOptions,
     filteredText,
-    filter,
+    filter: filter as any,
     removeFilteredItem,
     clearFilterItems,
   })

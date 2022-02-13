@@ -32,7 +32,7 @@
           {{ $t('cancel') }}
         </v-btn>
         <v-spacer />
-        <v-btn @click="launch(true)">
+        <v-btn @click="launch()">
           {{ $t('launch.blocked.ignore') }}
         </v-btn>
       </v-card-actions>
