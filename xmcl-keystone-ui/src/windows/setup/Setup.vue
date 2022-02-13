@@ -1,18 +1,18 @@
 <template>
   <v-app
     dark
-    class="moveable rounded"
+    class="moveable rounded-lg"
     fill-height
   >
     <!-- <v-container> -->
     <v-card
       v-if="!fetching"
       style="height: 100%; display: flex; flex-direction: column;"
-      class="rounded"
+      class="rounded-lg"
     >
       <v-card-title
         style="background-color: black"
-        class="elevation-3"
+        class="elevation-3 text-lg font-bold"
       >
         <h2>{{ $t('title') }}</h2>
       </v-card-title>
@@ -44,6 +44,47 @@
               {{ $t('browse') }}
             </v-btn>
           </v-list-tile-action>
+        </v-list-tile>
+        <v-list-tile
+          v-for="d of drives"
+          :key="d.mounted"
+          v-ripple
+          class="hover:bg-[rgba(123,123,123,0.5)] cursor-pointer rounded-lg m-2 mx-3"
+          @click="onSelect(d)"
+        >
+          <v-list-tile-avatar>
+            <v-icon>storage</v-icon>
+          </v-list-tile-avatar>
+
+          <v-list-tile-content>
+            <v-list-tile-title class="flex p-0 flex-grow-0 align-baseline">
+              {{ d.mounted }}
+              <div class="flex-grow" />
+
+              <span
+                class="text-[hsla(0,0%,100%,.7)] whitespace-normal"
+                style="font-size: 14px;"
+              >
+                {{ d.selectedPath }}
+              </span>
+            </v-list-tile-title>
+            <v-progress-linear
+              class="p-0 my-2"
+              :value="d.used / (d.available + d.used) * 100"
+            />
+            <v-list-tile-sub-title>
+              <span class="">
+                {{ $t('disk.available') }}:
+                {{ (d.available / 1024 / 1024 / 1024).toFixed(2) }}G
+                {{ $t('disk.used') }}:
+                {{ (d.used / 1024 / 1024 / 1024).toFixed(2) }}G
+              </span>
+              <div class="flex-grow" />
+              <span>
+                {{ d.capacity }}
+              </span>
+            </v-list-tile-sub-title>
+          </v-list-tile-content>
         </v-list-tile>
       </v-list>
       <div style="flex-grow: 1" />
@@ -95,7 +136,7 @@
 import { defineComponent, reactive, toRefs, inject } from '@vue/composition-api'
 import { useI18n } from '/@/hooks'
 import { I18N_KEY } from '/@/constant'
-import { SetupAPI } from '@xmcl/runtime-api/setup'
+import { SetupAPI, Drive } from '@xmcl/runtime-api/setup'
 
 declare const api: SetupAPI
 
@@ -110,22 +151,27 @@ export default defineComponent({
       path: '',
       defaultPath: '',
       loading: false,
+      drives: [] as Drive[],
     })
-    api.preset().then(({ minecraftPath, defaultPath, locale }) => {
+    api.preset().then(({ minecraftPath, defaultPath, locale, drives }) => {
       data.fetching = false
       i18n!.locale = locale
       data.minecraftPath = minecraftPath
       data.path = defaultPath
       data.defaultPath = defaultPath
+      data.drives = drives
     })
     function setup() {
       api.setup(data.path)
       data.loading = true
     }
+    function onSelect(drive: Drive) {
+      data.path = drive.selectedPath
+    }
     async function browse() {
       const { filePaths } = await dialog.showOpenDialog({
         title: $t('browse'),
-        defaultPath: data.defaultPath,
+        defaultPath: data.path,
         properties: ['openDirectory', 'createDirectory'],
       })
       if (filePaths && filePaths.length !== 0) {
@@ -136,6 +182,7 @@ export default defineComponent({
       ...toRefs(data),
       setup,
       browse,
+      onSelect,
     }
   },
 })

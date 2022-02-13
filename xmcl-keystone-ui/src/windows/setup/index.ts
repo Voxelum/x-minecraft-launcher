@@ -22,6 +22,10 @@ const i18n = new VueI18n({
       path: 'Current Path',
       browse: 'Browse',
       confirm: 'Start',
+      disk: {
+        available: 'Available',
+        used: 'Used',
+      },
     },
     'zh-CN': {
       title: '欢迎使用 KeyStone UI。在开始前，需要您先设置游戏数据存储目录',
@@ -29,6 +33,10 @@ const i18n = new VueI18n({
       path: '当前位置',
       browse: '浏览',
       confirm: '开始',
+      disk: {
+        available: '可用',
+        used: '已用',
+      },
     },
   },
   missing: () => {
