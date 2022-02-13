@@ -2,7 +2,7 @@ import type { ResolvedLibrary, Version } from '@xmcl/core'
 import type { FabricArtifactVersion, InstallProfile, LiteloaderVersion, LiteloaderVersionList, MinecraftVersion, MinecraftVersionList } from '@xmcl/installer'
 import { LATEST_RELEASE } from '../entities/version'
 import { ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '../entities/version.schema'
-import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 
 export class InstallState {
   /**

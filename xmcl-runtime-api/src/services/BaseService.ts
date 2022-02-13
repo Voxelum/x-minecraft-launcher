@@ -19,16 +19,23 @@ export class BaseState implements SettingSchema {
   autoDownload = false
   apiSetsPreference: 'mojang' | 'mcbbs' | 'bmcl' = 'mcbbs'
   apiSets = [{ name: 'mcbbs', url: 'https://download.mcbbs.net' }, { name: 'bmcl', url: 'https://bmclapi2.bangbang93.com' }]
+
+  /**
+   * The container of the launcher. Will be raw if the launcher is just installed on system. Will be appx if it's appx.
+   */
+  env: 'raw' | 'appx' = 'raw'
+  /**
+   * The version of the launcher
+   */
   version = ''
+  /**
+   * The current build number
+   */
   build = 0
   /**
     * launcher root data folder path
     */
   root = ''
-  /**
-   * The version of the launcher
-   */
-  launcherVersion = ''
   /**
    * Is current environment connecting to internet?
    */
@@ -94,10 +101,6 @@ export class BaseState implements SettingSchema {
     this.online = online
   }
 
-  launcherVersionSet(launcherVersion: string) {
-    this.launcherVersion = launcherVersion
-  }
-
   platformSet(platform: 'linux' | 'win32' | 'darwin') {
     this.platform = platform
   }
@@ -145,6 +148,7 @@ export interface BaseService extends StatefulService<BaseState> {
    * @param code The code number
    */
   exit(code?: number | undefined): void
+
   migrate(options: MigrateOptions): Promise<void>
   postMigrate(): Promise<void>
 }

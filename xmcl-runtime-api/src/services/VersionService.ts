@@ -1,5 +1,5 @@
 import type { ResolvedVersion } from '@xmcl/core'
-import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 
 export class VersionState {
   /**

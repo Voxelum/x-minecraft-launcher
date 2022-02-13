@@ -1,5 +1,5 @@
 import { Resource } from '../entities/resource.schema'
-import { StatefulService, ServiceKey, State, ServiceTemplate } from './Service'
+import { StatefulService, ServiceKey } from './Service'
 import { AnyResource } from '../entities/resource'
 export interface InstallModsOptions {
   mods: Resource[]

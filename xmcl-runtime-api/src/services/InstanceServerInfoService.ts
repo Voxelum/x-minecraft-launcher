@@ -1,7 +1,7 @@
 import type { Status } from '@xmcl/client'
 import type { ServerInfo } from '@xmcl/server-info'
 import { UNKNOWN_STATUS } from '../entities/serverStatus'
-import { ServiceKey, ServiceTemplate, State, StatefulService } from './Service'
+import { ServiceKey, StatefulService } from './Service'
 
 export class ServerInfoWithStatus implements ServerInfo {
   status: Status = UNKNOWN_STATUS

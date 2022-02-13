@@ -1,8 +1,7 @@
 import type { FabricModMetadata, LiteloaderModMetadata } from '@xmcl/mod-parser'
 import type { PackMeta } from '@xmcl/resourcepack'
-import { CurseforgeModpackManifest } from './curseforge'
 import { ForgeModCommonMetadata } from './mod'
-import { Modpack } from './modpack'
+import { CurseforgeModpackManifest, McbbsModpackManifest, Modpack } from './modpack'
 import { CurseforgeInformation, GithubInformation, ModrinthInformation, PersistedResourceSchema, Resource, ResourceDomain, ResourceType } from './resource.schema'
 import { ResourceSaveMetadata } from './save'
 
@@ -32,7 +31,7 @@ export type FabricResource = Resource<FabricModMetadata> & { readonly type: Reso
 export type LiteloaderResource = Resource<LiteloaderModMetadata> & { readonly type: ResourceType.Liteloader }
 export type ResourcePackResource = Resource<PackMeta.Pack> & { readonly type: ResourceType.ResourcePack }
 export type CurseforgeModpackResource = Resource<CurseforgeModpackManifest> & { readonly type: ResourceType.CurseforgeModpack }
-export type McbbsModpackResource = Resource<Modpack> & { readonly type: ResourceType.McbbsModpack }
+export type McbbsModpackResource = Resource<McbbsModpackManifest> & { readonly type: ResourceType.McbbsModpack }
 export type ModpackResource = Resource<Modpack> & { readonly type: ResourceType.Modpack }
 export type SaveResource = Resource<ResourceSaveMetadata> & { readonly type: ResourceType.Save }
 export type ShaderPackResource = Resource<ShaderPackResource> & { readonly type: ResourceType.ShaderPack }
@@ -54,7 +53,7 @@ export type PersistedFabricResource = PersistedResource<FabricModMetadata> & { r
 export type PersistedLiteloaderResource = PersistedResource<LiteloaderModMetadata> & { readonly type: ResourceType.Liteloader }
 export type PersistedResourcePackResource = PersistedResource<PackMeta.Pack> & { readonly type: ResourceType.ResourcePack }
 export type PersistedCurseforgeModpackResource = PersistedResource<CurseforgeModpackManifest> & { readonly type: ResourceType.CurseforgeModpack }
-export type PersistedMcbbsModpackResource = PersistedResource<Modpack> & { readonly type: ResourceType.McbbsModpack }
+export type PersistedMcbbsModpackResource = PersistedResource<McbbsModpackManifest> & { readonly type: ResourceType.McbbsModpack }
 export type PersistedModpackResource = PersistedResource<Modpack> & { readonly type: ResourceType.Modpack }
 export type PersistedSaveResource = PersistedResource<ResourceSaveMetadata> & { readonly type: ResourceType.Save }
 export type PersistedShaderPackResource = PersistedResource<ShaderPackResource> & { readonly type: ResourceType.ShaderPack }

@@ -1,4 +1,4 @@
-import { ServiceKey, ServiceTemplate } from './Service'
+import { ServiceKey } from './Service'
 
 /**
  * Provide the ability to list/read/remove log and crash reports of a instance.

@@ -1,5 +1,5 @@
 import type { Status } from '@xmcl/client'
-import { ServiceKey, ServiceTemplate } from './Service'
+import { ServiceKey } from './Service'
 
 export interface PingServerOptions {
   host: string

@@ -1,4 +1,4 @@
-import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
+import { ServiceKey } from './Service'
 
 export interface InstanceShaderPacksService {
   /**

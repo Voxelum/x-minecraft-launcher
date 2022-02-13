@@ -1,6 +1,6 @@
-import { GenericEventEmitter } from '../events'
 import { LaunchStatus } from '../entities/launch'
-import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
+import { GenericEventEmitter } from '../events'
+import { ServiceKey, StatefulService } from './Service'
 
 export class LaunchState {
   status = 'ready' as LaunchStatus
@@ -56,11 +56,3 @@ export interface LaunchService extends StatefulService<LaunchState>, GenericEven
 }
 
 export const LaunchServiceKey: ServiceKey<LaunchService> = 'LaunchService'
-export const LaunchServiceMethods: ServiceTemplate<LaunchService> = {
-  generateArguments: undefined,
-  launch: undefined,
-  state: undefined,
-  on: undefined,
-  once: undefined,
-  removeListener: undefined,
-}

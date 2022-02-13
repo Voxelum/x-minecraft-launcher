@@ -1,5 +1,5 @@
 import type { BlockModel } from '@xmcl/resourcepack'
-import { ServiceKey, ServiceTemplate } from './Service'
+import { ServiceKey } from './Service'
 export interface BlockStateJson {
   name: string
   variants: {

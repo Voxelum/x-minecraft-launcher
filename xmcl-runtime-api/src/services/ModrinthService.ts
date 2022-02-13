@@ -1,7 +1,6 @@
-import type { Mod, ModVersion, ModVersionFile, SearchModOptions, SearchModResult } from '@xmcl/modrinth'
-import { AnyPersistedResource, PersistedResource } from '../entities/resource'
-import { ResourceState } from './ResourceService'
-import { ServiceKey, ServiceTemplate, StatefulService } from './Service'
+import type { Mod, ModVersion, SearchModOptions, SearchModResult } from '@xmcl/modrinth'
+import { AnyPersistedResource } from '../entities/resource'
+import { ServiceKey, StatefulService } from './Service'
 
 export interface installModVersionOptions {
   version: ModVersion
