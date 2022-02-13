@@ -195,4 +195,4 @@ jobs:
     - name: Echo sign command
       run: |
         echo "Please use following script to sign the app in the PC with credential!"
-        echo "pnpm --package=https://github.com/Voxelum/xmcl-release-script dlx xmcl-release-script ${{ create_release.release_id }} ${{ create_release.appx_asset_id }}"
+        echo "pnpm --package=https://github.com/Voxelum/xmcl-release-script dlx xmcl-release-script ${{ steps.create_release.outputs.release_id }} ${{ steps.create_release.outputs.appx_asset_id }}"
