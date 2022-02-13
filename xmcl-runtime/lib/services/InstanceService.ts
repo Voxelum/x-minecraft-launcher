@@ -18,7 +18,7 @@ const INSTANCES_FOLDER = 'instances'
  */
 @ExportService(InstanceServiceKey)
 export class InstanceService extends StatefulService<InstanceState> implements IInstanceService {
-  protected readonly instancesFile = createSafeFile(this.getPath(INSTANCES_FOLDER), InstancesSchema, this)
+  protected readonly instancesFile = createSafeFile(this.getPath('instances.json'), InstancesSchema, this)
   protected readonly instanceFile = createSafeIO(InstanceSchema, this)
 
   constructor(app: LauncherApp,
