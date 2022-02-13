@@ -1,4 +1,52 @@
 
+## 0.18.0
+### @xmcl/runtime-api@0.2.0
+#### Features
+
+- support select disk on setup ([7b920cbd7fb4911b3bd22af49c422de286715fac](https://github.com/Voxelum/x-minecraft-launcher/commit/7b920cbd7fb4911b3bd22af49c422de286715fac))
+- support the mcbbs modpack ([c3b0a001cd3c72cee96a633e9d93c90d48df327f](https://github.com/Voxelum/x-minecraft-launcher/commit/c3b0a001cd3c72cee96a633e9d93c90d48df327f))
+#### Bug Fixes
+
+- remove the unused code ([bd034fb6f627cfa4b0298d034f807f76bfd4be1a](https://github.com/Voxelum/x-minecraft-launcher/commit/bd034fb6f627cfa4b0298d034f807f76bfd4be1a))
+- remove template object ([ffe5466ebc195c4b5f3367bcb5d5245d9d111328](https://github.com/Voxelum/x-minecraft-launcher/commit/ffe5466ebc195c4b5f3367bcb5d5245d9d111328))
+### @xmcl/keystone-ui@0.17.0
+#### Features
+
+- support select disk on setup ([7b920cbd7fb4911b3bd22af49c422de286715fac](https://github.com/Voxelum/x-minecraft-launcher/commit/7b920cbd7fb4911b3bd22af49c422de286715fac))
+- support the mcbbs modpack ([c3b0a001cd3c72cee96a633e9d93c90d48df327f](https://github.com/Voxelum/x-minecraft-launcher/commit/c3b0a001cd3c72cee96a633e9d93c90d48df327f))
+#### Bug Fixes
+
+- clean up some type error ([afb16c207254c463f401f912e5048fc5426aa0f3](https://github.com/Voxelum/x-minecraft-launcher/commit/afb16c207254c463f401f912e5048fc5426aa0f3))
+- **ui**: simplify the export ui ([37b881c09efe7d1e7e24cbd56ea03a285e63d2ec](https://github.com/Voxelum/x-minecraft-launcher/commit/37b881c09efe7d1e7e24cbd56ea03a285e63d2ec))
+- display correct version on fix dialog ([8705ddc4d2316ce5c0826b113351df8f1cc41b0b](https://github.com/Voxelum/x-minecraft-launcher/commit/8705ddc4d2316ce5c0826b113351df8f1cc41b0b))
+- remove template object ([ffe5466ebc195c4b5f3367bcb5d5245d9d111328](https://github.com/Voxelum/x-minecraft-launcher/commit/ffe5466ebc195c4b5f3367bcb5d5245d9d111328))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### @xmcl/runtime@0.16.0
+#### Features
+
+- support the mcbbs modpack ([c3b0a001cd3c72cee96a633e9d93c90d48df327f](https://github.com/Voxelum/x-minecraft-launcher/commit/c3b0a001cd3c72cee96a633e9d93c90d48df327f))
+#### Bug Fixes
+
+- aware the appx container & remove dead code ([f175c06ce8dbde5000f2d6290ec1c4324f969a21](https://github.com/Voxelum/x-minecraft-launcher/commit/f175c06ce8dbde5000f2d6290ec1c4324f969a21))
+- user skin upload & refersh on microsoft account ([d0bdd469a94461c5ff9d253f7a848762de56f87b](https://github.com/Voxelum/x-minecraft-launcher/commit/d0bdd469a94461c5ff9d253f7a848762de56f87b))
+- remove template object ([ffe5466ebc195c4b5f3367bcb5d5245d9d111328](https://github.com/Voxelum/x-minecraft-launcher/commit/ffe5466ebc195c4b5f3367bcb5d5245d9d111328))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### xmcl@0.18.0
+#### Features
+
+- support select disk on setup ([7b920cbd7fb4911b3bd22af49c422de286715fac](https://github.com/Voxelum/x-minecraft-launcher/commit/7b920cbd7fb4911b3bd22af49c422de286715fac))
+#### Bug Fixes
+
+- support appx env & update deps ([766aa9c0cac7498fff437a6bafb37d6627648731](https://github.com/Voxelum/x-minecraft-launcher/commit/766aa9c0cac7498fff437a6bafb37d6627648731))
+- cannot open dialog error ([d4c480e1d81616aa4c6afbabbeeb348c8f5e70a6](https://github.com/Voxelum/x-minecraft-launcher/commit/d4c480e1d81616aa4c6afbabbeeb348c8f5e70a6))
+- remove template object ([ffe5466ebc195c4b5f3367bcb5d5245d9d111328](https://github.com/Voxelum/x-minecraft-launcher/commit/ffe5466ebc195c4b5f3367bcb5d5245d9d111328))
+- cleanup ([6f7e754487e41bfadbee7d24d368aa5cac1bb1b7](https://github.com/Voxelum/x-minecraft-launcher/commit/6f7e754487e41bfadbee7d24d368aa5cac1bb1b7))
+
+
 ## 0.17.3
 ### @xmcl/runtime@0.15.3
 #### Bug Fixes
