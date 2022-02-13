@@ -1,5 +1,5 @@
 import Controller from '@/Controller'
-import BaseService from '@xmcl/runtime/lib/services/BaseService'
+import { BaseServiceKey } from '@xmcl/runtime-api'
 import { app, dialog, Menu, ProcessMemoryInfo, Tray } from 'electron'
 import iconPath from '../assets/apple-touch-icon.png'
 import favcon2XPath from '../assets/favicon@2x.png'
@@ -9,7 +9,7 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
   const { t: $t } = this.i18n
   const createMenu = () => {
     const app = this.app
-    const service = this.app.getRegisteredObject(BaseService)
+    const service = this.app.serviceManager.getService(BaseServiceKey)
     const onBrowseAppClicked = () => {
       if (this.browserRef && !this.browserRef.isDestroyed()) {
         this.browserRef.show()

@@ -1,16 +1,17 @@
 
 import { IS_DEV } from '@/constant'
 import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
-import { InstalledAppManifest, InstanceServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
+import { InstalledAppManifest } from '@xmcl/runtime-api'
 import { BrowserWindow, dialog, session, shell, Tray } from 'electron'
 import { fromFile } from 'file-type'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
 import { acrylic } from './acrylic'
 import iconPath from './assets/apple-touch-icon.png'
-import './controlIpc'
+import { plugins } from './controllers'
 import { taskProgressPlugin } from './controllers/taskProgress'
 import { trayPlugin } from './controllers/tray'
+import { windowController } from './controllers/windowController'
 import i18n from './locales'
 import { trackWindowSize } from './windowSizeTracker'
 import browsePreload from '/@preload/browse'
@@ -35,57 +36,12 @@ export default class Controller implements LauncherAppController {
   protected tray: Tray | undefined
 
   constructor(protected app: LauncherApp) {
-    app.on('minecraft-stdout', (...args) => {
-      this.app.broadcast('minecraft-stdout', ...args)
-    })
-    app.on('minecraft-stderr', (...args) => {
-      this.app.broadcast('minecraft-stderr', ...args)
-    })
-
     app.once('engine-ready', () => {
       app.serviceStateManager.subscribe('localeSet', (l) => {
         this.i18n.use(l)
       })
-      app.serviceManager.getService(LaunchServiceKey)?.on('minecraft-window-ready', () => {
-        const instance = this.app.serviceManager.getService(InstanceServiceKey)?.state.instance
-        if (!instance) {
-          this.app.warn('Cannot find active instance while Minecraft window ready! Perhaps something strange happed?')
-          return
-        }
-        if (this.mainWin && this.mainWin.isVisible()) {
-          this.mainWin.webContents.send('minecraft-window-ready')
-
-          const { hideLauncher } = instance
-          if (hideLauncher) {
-            this.mainWin.hide()
-          }
-        }
-
-        if (this.loggerWin === undefined && instance.showLog) {
-          this.createLoggerWindow()
-        }
-      }).on('minecraft-exit', (status) => {
-        const instance = this.app.serviceManager.getService(InstanceServiceKey)?.state.instance
-        if (!instance) {
-          this.app.warn('Cannot find active instance while Minecraft exit! Perhaps something strange happed?')
-          return
-        }
-        const { hideLauncher } = instance
-        if (hideLauncher) {
-          if (this.mainWin) {
-            this.mainWin.show()
-          }
-        }
-        this.app.broadcast('minecraft-exit', status)
-        if (this.loggerWin) {
-          this.loggerWin.close()
-          this.loggerWin = undefined
-        }
-      })
     })
-
-    taskProgressPlugin.call(this)
-    trayPlugin.call(this)
+    plugins.forEach(p => p.call(this))
   }
 
   private setupBrowserLogger(ref: BrowserWindow, name: string) {
@@ -220,7 +176,7 @@ export default class Controller implements LauncherAppController {
       height: config.height > 0 ? config.height : undefined,
       minWidth: man.minWidth,
       minHeight: man.minHeight,
-      frame: man.frame,
+      frame: man.display !== 'frameless',
       backgroundColor: man.background_color,
       vibrancy: man.vibrancy ? 'sidebar' : undefined, // or popover
       icon: man.iconPath,
@@ -291,11 +247,31 @@ export default class Controller implements LauncherAppController {
     this.loggerWin = browser
   }
 
+  requireFocus(): void {
+    if (this.mainWin) {
+      this.mainWin.focus()
+    } else if (this.loggerWin) {
+      this.loggerWin.focus()
+    }
+  }
+
+  async requestOpenExternalUrl(url: string) {
+    const { t: $t } = this.i18n
+    const result = await dialog.showMessageBox(this.mainWin!, {
+      type: 'question',
+      title: $t('openUrl.title', { url }),
+      message: $t('openUrl.message', { url }),
+      checkboxLabel: $t('openUrl.trust'),
+      buttons: [$t('openUrl.cancel'), $t('openUrl.yes')],
+    })
+    return result.response === 1
+  }
+
   createSetupWindow() {
     const browser = new BrowserWindow({
       title: 'Setup XMCL',
-      width: 480,
-      height: 480,
+      width: 600,
+      height: 650,
       frame: false,
       transparent: true,
       hasShadow: false,
@@ -317,35 +293,13 @@ export default class Controller implements LauncherAppController {
     this.setupRef = browser
   }
 
-  requireFocus(): void {
-    if (this.mainWin) {
-      this.mainWin.focus()
-    } else if (this.loggerWin) {
-      this.loggerWin.focus()
-    }
-  }
-
-  async requestOpenExternalUrl(url: string) {
-    const { t: $t } = this.i18n
-    const result = await dialog.showMessageBox(this.mainWin!, {
-      type: 'question',
-      title: $t('openUrl.title', { url }),
-      message: $t('openUrl.message', { url }),
-      checkboxLabel: $t('openUrl.trust'),
-      buttons: [$t('openUrl.cancel'), $t('openUrl.yes')],
-    })
-    return result.response === 1
-  }
-
   async processFirstLaunch(): Promise<string> {
-    this.app.handle('preset', () => ({ locale: this.app.getLocale(), minecraftPath: this.app.minecraftDataPath, defaultPath: this.app.appDataPath }))
     this.createSetupWindow()
 
     return new Promise<string>((resolve) => {
-      const fallback = () => {
-        resolve(this.app.appDataPath)
-      }
-      this.setupRef!.once('closed', fallback)
+      this.setupRef!.once('closed', () => {
+        this.app.exit()
+      })
 
       this.setupRef!.center()
       this.setupRef!.focus()
