@@ -42,7 +42,7 @@ jobs:
         pnpm run build:all --prefix xmcl-electron-app
       env:
         BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
-        FULL_RELEASE: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }}
+        NODE_ENV: production
     - name: Upload Build
       uses: actions/upload-artifact@v2
       with:
@@ -65,10 +65,42 @@ jobs:
           xmcl-electron-app/build/output/win-unpacked/resources/app.asar
           xmcl-electron-app/build/output/win-unpacked/resources/app.asar.sha256
 
+  build-appx:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - uses: pnpm/action-setup@v2.0.1
+      with:
+        version: 6.24.4
+    - name: Use Node.js 16
+      uses: actions/setup-node@v2
+      with:
+        node-version: 16
+        cache: 'pnpm'
+    - name: Install
+      run: pnpm install --filter=!./xmcl-page
+    - name: Build
+      run: |
+        pnpm run build --prefix xmcl-keystone-ui
+        pnpm run build --prefix xmcl-electron-app
+      env:
+        BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
+        NODE_ENV: production
+        BUILD_TARGET: appx
+    - name: Upload Build
+      uses: actions/upload-artifact@v2
+      with:
+        name: appx
+        path: |
+          xmcl-electron-app/build/output/*.*
+
   prepare-release:
     runs-on: ubuntu-latest
     needs: 
       - build
+      - build-appx
     if: ${{ !startsWith(github.event.head_commit.message, 'chore(release)') }}
 
     steps:
@@ -117,6 +149,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build
+      - build-appx
     steps:
     - uses: actions/checkout@v2
       with:
