@@ -31,6 +31,13 @@ jobs:
       with:
         node-version: 16
         cache: 'pnpm'
+    - name: Cache electron builder
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cache/electron
+          ~/.cache/electron-builder
+        key: ${{ runner.os }}
     - name: Install
       run: pnpm install --filter=!./xmcl-page
     # - name: Lint
@@ -43,6 +50,8 @@ jobs:
       env:
         BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
         NODE_ENV: production
+        ELECTRON_CACHE: ~/.cache/electron
+        ELECTRON_BUILDER_CACHE: ~/.cache/electron-builder
     - name: Upload Build
       uses: actions/upload-artifact@v2
       with:
@@ -79,6 +88,13 @@ jobs:
       with:
         node-version: 16
         cache: 'pnpm'
+    - name: Cache electron builder
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cache/electron
+          ~/.cache/electron-builder
+        key: ${{ runner.os }}
     - name: Install
       run: pnpm install --filter=!./xmcl-page
     - name: Build
@@ -89,6 +105,8 @@ jobs:
         BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
         NODE_ENV: production
         BUILD_TARGET: appx
+        ELECTRON_CACHE: ~/.cache/electron
+        ELECTRON_BUILDER_CACHE: ~/.cache/electron-builder
     - name: Upload Build
       uses: actions/upload-artifact@v2
       with:
