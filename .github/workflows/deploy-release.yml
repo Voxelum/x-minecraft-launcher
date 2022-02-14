@@ -5,24 +5,14 @@ on:
 
 jobs:
   publish:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
     - name: Download Releases
       uses: robinraju/release-downloader@v1.3
       with:
         repository: "voxelum/x-minecraft-launcher"
-        tag: ${{ release.tag_name }}
+        tag: ${{ github.event.release.tag_name }}
         out-file-path: build
-    - name: Update Web Page
-      uses: benc-uk/workflow-dispatch@v1
-      with:
-        workflow: Deploy
-        token: ${{ secrets.PAT_GITHUB_TOKEN }}
-        ref: 'master'
-        repo: 'voxelum/xmcl-page'
     - name: Upload to Azure
       uses: ci010/upload-blob-to-azure@master
       env:
@@ -31,3 +21,10 @@ jobs:
         account: xmcl
         container: releases
         directory: ./build
+    - name: Update Web Page
+      uses: benc-uk/workflow-dispatch@v1
+      with:
+        workflow: Deploy
+        token: ${{ secrets.PAT_GITHUB_TOKEN }}
+        ref: 'master'
+        repo: 'voxelum/xmcl-page'
