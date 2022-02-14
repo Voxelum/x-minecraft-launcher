@@ -386,8 +386,8 @@
     "postProcessing": "Post Processing"
   },
   "installCurseforgeFile": "Install Curseforge File",
-  "installCurseforgeModpack": {
-    "": "Install Curseforge Modpack",
+  "installModpack": {
+    "": "Install Modpack",
     "deploy": "Deploy",
     "download": {
       "": "Download",

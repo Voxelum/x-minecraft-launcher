@@ -366,8 +366,8 @@
     "postProcessing": "后处理，更新本地文件"
   },
   "installCurseforgeFile": "安装 Curseforge 文件",
-  "installCurseforgeModpack": {
-    "": "安装 Curseforge 整合包",
+  "installModpack": {
+    "": "安装整合包",
     "deploy": "部署",
     "download": {
       "": "下载",

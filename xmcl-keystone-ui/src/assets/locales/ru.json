@@ -352,8 +352,8 @@
   },
   "installAuthlibInjector": "Установить authlib-injector",
   "installCurseforgeFile": "Установить CurseForge файл",
-  "installCurseforgeModpack": {
-    "": "Установить модпак CurseForge",
+  "installModpack": {
+    "": "Установить модпак",
     "deploy": "Развернуть",
     "download": {
       "": "Скачать",
