@@ -170,6 +170,11 @@ jobs:
       with:
         name: build
         path: build
+    - name: Download Appx Build
+      uses: actions/download-artifact@v2
+      with:
+        name: appx
+        path: build
     - name: Generate MCBBS content
       uses: ./.github/actions/generate-mcbbs-content
     - name: Upload Mcbbs Content
