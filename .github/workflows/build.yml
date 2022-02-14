@@ -185,6 +185,11 @@ jobs:
     - name: Prepare Release
       id: prepare_release
       uses: ./.github/actions/prepare-release
+    - name: Create Tag
+      uses: rickstaa/action-create-tag@v1
+      with:
+        tag: ${{ steps.prepare_release.outputs.tag }}
+        message: ${{ steps.prepare_release.outputs.release }}
     - name: Draft Release
       id: create_release
       uses: voxelum/create-release@xmcl
