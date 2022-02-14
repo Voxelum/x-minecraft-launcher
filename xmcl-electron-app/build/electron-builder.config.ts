@@ -30,6 +30,8 @@ export const config: Configuration = {
   // eslint-disable-next-line no-template-curly-in-string
   artifactName: '${productName}-${version}-${platform}-${arch}.${ext}',
   appx: {
+    // eslint-disable-next-line no-template-curly-in-string
+    artifactName: '${productName}-${version}-unsigned.${ext}',
     displayName: 'X Minecraft Launcher',
     applicationId: 'CI010.XMCL',
     identityName: 'XMCL',
@@ -39,20 +41,9 @@ export const config: Configuration = {
     setBuildNumber: true,
     languages: ['en-US', 'zh-CN', 'ru'],
   },
-  nsis: {
-    // eslint-disable-next-line no-template-curly-in-string
-    artifactName: '${productName}-Setup-${version}.${ext}',
-    oneClick: false,
-    allowToChangeInstallationDirectory: true,
-    perMachine: false,
-    differentialPackage: true,
-  },
-  nsisWeb: {
-    // eslint-disable-next-line no-template-curly-in-string
-    artifactName: '${productName}-Web-Setup-${version}.${ext}',
-    appPackageUrl: `https://xmcl-release.azureedge.net/releases/x-minecraft-launcher-${version}-x64.nsis.7z`,
-  },
   dmg: {
+    // eslint-disable-next-line no-template-curly-in-string
+    artifactName: '${productName}-${version}.${ext}',
     contents: [
       {
         x: 410,
@@ -98,6 +89,8 @@ export const config: Configuration = {
   },
   linux: {
     icon: 'build/icons',
+    // eslint-disable-next-line no-template-curly-in-string
+    artifactName: '${productName}-${version}.${ext}',
     target: [
       {
         target: 'deb',
