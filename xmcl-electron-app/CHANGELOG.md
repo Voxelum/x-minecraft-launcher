@@ -1,4 +1,16 @@
 
+## 0.18.1
+### @xmcl/keystone-ui@0.17.1
+#### Bug Fixes
+
+- wrong install modpack text ([09635960ce3e8855c183c3cc4fafe22f16113ceb](https://github.com/Voxelum/x-minecraft-launcher/commit/09635960ce3e8855c183c3cc4fafe22f16113ceb))
+- not be able to detect fabric in modpack ([1b7a42a2573f798374219c75f404c5ef07248767](https://github.com/Voxelum/x-minecraft-launcher/commit/1b7a42a2573f798374219c75f404c5ef07248767))
+### @xmcl/runtime@0.16.1
+#### Bug Fixes
+
+- not saving instance select ([159f70e1005698318f32cb324f344a2df3a48023](https://github.com/Voxelum/x-minecraft-launcher/commit/159f70e1005698318f32cb324f344a2df3a48023))
+
+
 ## 0.18.0
 ### @xmcl/runtime-api@0.2.0
 #### Features
