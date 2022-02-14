@@ -222,6 +222,9 @@ export default defineComponent({
               if (loader.id.startsWith('forge-')) {
                 data.runtime.value.forge = loader.id.substring('forge-'.length)
               }
+              if (loader.id.startsWith('fabric-')) {
+                data.runtime.value.fabricLoader = loader.id.substring('fabric-'.length)
+              }
             }
           }
           data.author.value = metadata.author
