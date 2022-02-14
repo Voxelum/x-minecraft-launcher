@@ -12,6 +12,7 @@ jobs:
       with:
         repository: "voxelum/x-minecraft-launcher"
         tag: ${{ github.event.release.tag_name }}
+        fileName: "*"
         out-file-path: build
     - name: Upload to Azure
       uses: ci010/upload-blob-to-azure@master
