@@ -13,7 +13,7 @@ Visit the [official site](https://xmcl.app) to download the app!
 
 - 📥 Download & auto complete. Support download game, forge, fabric, jvm from official or third party mirror.
 - ⚡️ Download Fast. Reuse socket via http/https agents, and download the files by in parts concurrently.
-- Support all platforms. The launcher bases on electron, support Windows 10, Mac, and Linux.
+- 💻 Cross platforms. The launcher bases on electron, support 🗔 Windows 10, 🍎 Mac, and 🐧 Linux.
 - 📚 Multi-Instancing. Users can create multiple instances to isolate the different versions & mods & launch setting.
 - 🗂 Manage all resources. Use (hard/symbolic) link to install resources in instances, keep your disk size optimal. No copy of mods everywhere! 😆
 - 🔥 Built-in support of curseforge, Modrinth. You can download resources inside the launcher.

@@ -13,13 +13,13 @@
 
 - 📥 支持下载 Minecraft, Forge, Fabric 以及自动补全。在使用 BMCLAPI，MCBBS API 时，当 API 不可用的时候会自动切换回官方，减少不必要的下载失败。
 - ⚡️ 极速下载。Nodejs 天生高并发，Socket 复用让我们能够消耗最少的资源得到可观的下载速度。
-- 全平台支持。启动器基于 Electron，支持 Windows，Mac 和 Linux。
+- 💻 跨平台。启动器基于 Electron，支持 🗔 Windows，🍎 Mac 和 🐧 Linux。
 - 📚 多实例。使用多实例实现完全的版本隔离，保证不同启动配置不会互相影响。
 - 🗂 统一管理一切资源。使用多实例时 Mods 使用链接来安装，节省您大量的空间。Mod 再也不用复制的到处都是了！😆
 - 🔥 内置支持 Curseforge，Modrinth 下载。您可以在启动器内完成下载与安装！
 - 📦 支持 Curseforge 与 Mcbbs 格式整合包。
 - 🔒 支持多种账号系统。内置支持 Microsoft 和 Mojang Yggdrasil API，您统一可以添加第三方验证，如 litte skin！
-- 🔑 代码签名与现代的安装模式。在 Windows 中下载 XMCL 的 appx 与 appinstaller，您不会再看到浏览器的危险软件提示，因为 XMCL 已经获得签名证书！😎
+- 🔑 代码签名与现代的安装模式。在 Windows 中下载 XMCL 的 `appx` 与 `appinstaller`，您不会再看到浏览器的危险软件提示，因为 XMCL 已经获得签名证书！😎
 
 ## 协议 
 
