@@ -3,11 +3,12 @@
 ![Build](https://github.com/Voxelum/x-minecraft-launcher/workflows/Build/badge.svg)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 
-![](misc/home.webp)
+![home](assets/home.webp)
 
 Visit the [official site](https://xmcl.app) to download the app!
 
-[中文 README]()
+[中文 README](README.zh.md)
+
 
 ## Features
 
@@ -20,6 +21,10 @@ Visit the [official site](https://xmcl.app) to download the app!
 - 📦 Support import/export curseforge modpack.
 - 🔒 Support multiple account system. Built-in Microsoft login and Mojang Yggdrasil API. You can also add third-party authentication server, like blessing skin!
 - 🔑 Code sign & modern packaging. Under Windows, you can use `appx` and `appinstaller` to install the app. You won't receive blocking message from you browser and see smart screen anymore! 😎
+
+## Contribute
+
+See [Contribute](./CONTRIBUTING.md)
 
 ## LICENSE 
 

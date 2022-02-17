@@ -21,11 +21,15 @@
 - 🔒 支持多种账号系统。内置支持 Microsoft 和 Mojang Yggdrasil API，您统一可以添加第三方验证，如 litte skin！
 - 🔑 代码签名与现代的安装模式。在 Windows 中下载 XMCL 的 `appx` 与 `appinstaller`，您不会再看到浏览器的危险软件提示，因为 XMCL 已经获得签名证书！😎
 
+## 参与开发
+
+请看 [Contribute](./CONTRIBUTING.md)
+
 ## 协议 
 
 [MIT](LICENSE)
 
-## 感谢
+## 致谢
 
 [vanja-san](https://github.com/vanja-san), 提供给我们俄语翻译！
 [lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) 在启动核心上帮助了我
