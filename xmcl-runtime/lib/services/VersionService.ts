@@ -1,6 +1,6 @@
 import { ResolvedVersion, Version } from '@xmcl/core'
 import { VersionService as IVersionService, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
-import { isNonnull } from '@xmcl/runtime-api/utils'
+import { isNonnull } from '../util/object'
 import { task } from '@xmcl/task'
 import { remove } from 'fs-extra'
 import { join } from 'path'

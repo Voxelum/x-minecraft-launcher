@@ -1,10 +1,10 @@
 import { CreateInstanceOption, createTemplate, EditInstanceOptions, Instance, InstanceSchema, InstanceService as IInstanceService, InstanceServiceKey, InstancesSchema, InstanceState, LATEST_RELEASE, RuntimeVersions } from '@xmcl/runtime-api'
-import { assignShallow, requireObject, requireString } from '@xmcl/runtime-api/utils'
 import { ensureDir, remove } from 'fs-extra'
 import { join, resolve } from 'path'
 import { v4 } from 'uuid'
 import LauncherApp from '../app/LauncherApp'
 import { exists, isDirectory, missing, readdirEnsured } from '../util/fs'
+import { assignShallow, requireObject, requireString } from '../util/object'
 import { createSafeFile, createSafeIO } from '../util/persistance'
 import InstallService from './InstallService'
 import ServerStatusService from './ServerStatusService'
@@ -119,7 +119,9 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
     if (option.resolution) {
       if (instance.resolution) {
-        assignShallow(instance.resolution, option.resolution)
+        instance.resolution.width = option.resolution.width
+        instance.resolution.height = option.resolution.height
+        instance.resolution.fullscreen = option.resolution.fullscreen
       } else {
         instance.resolution = option.resolution
       }

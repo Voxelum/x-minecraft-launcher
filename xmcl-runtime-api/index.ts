@@ -65,3 +65,4 @@ export { default as packFormatVersionRange } from './src/util/packFormatVersionR
 export { default as protocolToMinecraft } from './src/util/protocolToMinecraft'
 export * from './src/util/modCompatible'
 export * from './src/util/mavenVersion'
+export * from './src/util/semaphore'

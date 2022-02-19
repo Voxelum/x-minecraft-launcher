@@ -1,6 +1,5 @@
 import { AnyPersistedResource, AnyResource, PersistedCurseforgeModpackResource, PersistedFabricResource, PersistedForgeResource, PersistedLiteloaderResource, PersistedModpackResource, PersistedResource, PersistedResourcePackResource, PersistedSaveResource, PersistedShaderPackResource, PersistedUnknownResource, SourceInformation } from '../entities/resource'
 import { ResourceDomain } from '../entities/resource.schema'
-import { requireString } from '../util/assert'
 import { ServiceKey, StatefulService } from './Service'
 
 export declare type FileTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save'
@@ -83,7 +82,6 @@ export class ResourceState {
   */
   get queryResource() {
     return (url: string) => {
-      requireString(url)
       for (const domain of domains) {
         const resources = this[domain]
         for (const v of resources) {

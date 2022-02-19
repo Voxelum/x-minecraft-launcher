@@ -1,5 +1,5 @@
 import { CurseforgeModpackManifest, EditGameSettingOptions, Exception, ExportModpackOptions, ImportModpackOptions, isResourcePackResource, McbbsModpackManifest, ModpackService as IModpackService, ModpackServiceKey, PersistedResource, ResourceDomain, write } from '@xmcl/runtime-api'
-import { requireObject } from '@xmcl/runtime-api/utils'
+import { requireObject } from '../util/object'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { existsSync } from 'fs'
 import { ensureDir, remove, unlink, writeFile } from 'fs-extra'

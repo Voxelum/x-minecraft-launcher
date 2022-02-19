@@ -68,7 +68,6 @@ import {
 } from '/@/hooks'
 import { optional, required } from '/@/util/props'
 import Tile from './FilesTile.vue'
-import { isNonnull } from '@xmcl/runtime-api/utils'
 import { useDialog } from '/@/windows/main/composables'
 import { AddInstanceDialogKey } from '/@/windows/main/components/AddInstanceDialog.vue'
 
@@ -103,7 +102,7 @@ export default defineComponent({
       for (const file of files.value) {
         set.add(file.releaseType)
       }
-      return [...set].map(i => releaseMappper.value[i]).filter(isNonnull)
+      return [...set].map(i => releaseMappper.value[i]).filter((v) => !!v)
     })
     const gameVersion = ref('')
     const gameVersions = computed(() => {

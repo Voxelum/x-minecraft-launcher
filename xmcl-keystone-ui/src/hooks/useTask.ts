@@ -1,27 +1,24 @@
-import { requireNonnull } from '@xmcl/runtime-api/utils'
-import { computed, inject, Ref } from '@vue/composition-api'
+import { computed, Ref } from '@vue/composition-api'
 import { TaskState } from '@xmcl/runtime-api'
+import { injection } from '../util/inject'
 import { getServiceCallTasks } from '../vuexServiceProxy'
 import { TASK_MANAGER } from '../windows/main/provideTaskProxy'
 
 export function useTaskCount() {
-  const proxy = inject(TASK_MANAGER)
-  requireNonnull(proxy)
+  const proxy = injection(TASK_MANAGER)
   const { tasks } = proxy
   const count = computed(() => tasks.value.filter(t => t.state === TaskState.Running).length)
   return { count }
 }
 
 export function useTasks() {
-  const proxy = inject(TASK_MANAGER)
-  requireNonnull(proxy)
+  const proxy = injection(TASK_MANAGER)
   const { pause, resume, cancel, tasks } = proxy
   return { tasks, pause, resume, cancel }
 }
 
 export function useTaskFromServiceCall(call: Ref<Readonly<Promise<any> | undefined>>) {
-  const proxy = inject(TASK_MANAGER)
-  requireNonnull(proxy)
+  const proxy = injection(TASK_MANAGER)
 
   const { tasks } = proxy
 

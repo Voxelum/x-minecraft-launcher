@@ -1,7 +1,6 @@
 import { GameProfile, MojangChallenge, MojangChallengeResponse, ProfileServiceAPI, YggdrasilAuthAPI } from '@xmcl/user'
 import { EMPTY_GAME_PROFILE, EMPTY_USER } from '../entities/user'
 import { GameProfileAndTexture, UserProfile, UserSchema } from '../entities/user.schema'
-import { assignShallow, toObjectReducer } from '../util/object'
 import { ServiceKey, StatefulService } from './Service'
 
 export interface LoginMicrosoftOptions {
@@ -144,7 +143,8 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
 
   userSnapshot(snapshot: UserSchema) {
     this.clientToken = snapshot.clientToken
-    assignShallow(this.selectedUser, snapshot.selectedUser)
+    this.selectedUser.id = snapshot.selectedUser.id
+    this.selectedUser.profile = snapshot.selectedUser.profile
 
     if (typeof snapshot.users === 'object') {
       this.users = snapshot.users
@@ -197,6 +197,9 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
   }
 
   userProfileAdd(profile: Omit<UserProfile, 'profiles'> & { id: string; profiles: (GameProfileAndTexture | GameProfile)[] }) {
+    function toObjectReducer<T extends { [k in K]: string }, K extends string>(key: K) {
+      return (o: { [key: string]: T }, v: T) => { o[v[key]] = v; return o }
+    }
     const value = {
       ...profile,
       profiles: profile.profiles

@@ -51,7 +51,7 @@ import { computed, defineComponent } from '@vue/composition-api'
 import { FabricArtifactVersion } from '@xmcl/installer'
 import { useBusy } from '/@/hooks'
 import { required } from '/@/util/props'
-import { versionLockOf, write } from '@xmcl/runtime-api/utils'
+import { versionLockOf, write } from '@xmcl/runtime-api'
 
 export default defineComponent({
   props: {

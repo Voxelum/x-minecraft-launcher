@@ -29,10 +29,9 @@
 
 <script lang=ts>
 import { computed, defineComponent } from '@vue/composition-api'
+import { OptifineVersion, Status, versionLockOf, write } from '@xmcl/runtime-api'
 import { useBusy } from '/@/hooks'
 import { required } from '/@/util/props'
-import { Status, OptifineVersion } from '@xmcl/runtime-api'
-import { versionLockOf, write } from '@xmcl/runtime-api/utils'
 
 export default defineComponent({
   props: {

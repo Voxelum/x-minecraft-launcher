@@ -1,7 +1,7 @@
 import { JavaVersion } from '@xmcl/core'
 import { fetchJavaRuntimeManifest, installJavaRuntimesTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
 import { Java, JavaRecord, JavaSchema, JavaService as IJavaService, JavaServiceKey, JavaState } from '@xmcl/runtime-api'
-import { requireObject, requireString } from '@xmcl/runtime-api/utils'
+import { requireObject, requireString } from '../util/object'
 import { access, chmod, constants, ensureFile, readFile } from 'fs-extra'
 import { dirname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'

@@ -1,7 +1,6 @@
 import { JavaVersion } from '@xmcl/core'
 import { JavaRecord } from '../entities/java'
 import { Java } from '../entities/java.schema'
-import { requireObject, requireString } from '../util/assert'
 import { ServiceKey, StatefulService } from './Service'
 
 export class JavaState {
@@ -36,8 +35,6 @@ export class JavaState {
   }
 
   javaRemove(java: JavaRecord) {
-    requireObject(java)
-    requireString(java.path)
     // TODO: remove in vue3
     this.all = this.all.filter(j => j.path !== java.path && j.version !== java.version)
   }

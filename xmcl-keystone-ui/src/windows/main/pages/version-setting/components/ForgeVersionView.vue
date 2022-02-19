@@ -54,7 +54,6 @@ import ForgeVersionListTile from './ForgeVersionListTile.vue'
 import { useForgeVersions } from '/@/hooks'
 import { required } from '/@/util/props'
 import { ForgeVersion } from '@xmcl/runtime-api'
-import { compareDate } from '@xmcl/runtime-api/utils'
 import Hint from '/@/components/Hint.vue'
 import RefreshingTile from '/@/components/RefreshingTile.vue'
 
@@ -81,7 +80,7 @@ export default defineComponent({
     }
     const versions = computed(() => vers.value.filter(filterForge).sort((a, b) => {
       if (a.date && b.date) {
-        return compareDate(new Date(b.date), new Date(a.date))
+        return new Date(b.date) - (new Date(a.date))
       }
       return b.version.localeCompare(a.version)
     }).map(v => ({ ...v, status: statuses.value[v.version] })))

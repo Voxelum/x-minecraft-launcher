@@ -1,7 +1,7 @@
 import { MinecraftFolder } from '@xmcl/core'
 import { UnzipTask } from '@xmcl/installer'
 import { assetsLock, createTemplate, ExportInstanceOptions, InstanceFile, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceSchema, librariesLock, RuntimeVersions, versionLockOf } from '@xmcl/runtime-api'
-import { requireObject, requireString } from '@xmcl/runtime-api/utils'
+import { requireObject, requireString } from '../util/object'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { mkdtemp, readdir, readJson, remove, stat } from 'fs-extra'
 import { tmpdir } from 'os'

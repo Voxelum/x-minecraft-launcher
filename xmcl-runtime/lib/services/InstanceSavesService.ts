@@ -3,7 +3,7 @@ import {
   CloneSaveOptions, DeleteSaveOptions, Exception, ExportSaveOptions,
   ImportSaveOptions, InstanceSave, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey, SaveState,
 } from '@xmcl/runtime-api'
-import { isNonnull, requireObject, requireString } from '@xmcl/runtime-api/utils'
+import { isNonnull, requireObject, requireString } from '../util/object'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { createHash } from 'crypto'
 import filenamify from 'filenamify'

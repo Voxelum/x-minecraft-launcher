@@ -85,8 +85,7 @@ export function resolveRuntimeVersion(partialVersion: Version, runtime: RuntimeV
 export function isCompatible(range: string, version: string) {
   if (range === '[*]') return true
   const vRange = VersionRange.createFromVersionSpec(range)
-  requireNonnull(vRange)
-  return vRange.containsVersion(parseVersion(version))
+  return vRange?.containsVersion(parseVersion(version)) || false
 }
 
 export function getExpectVersion({ minecraft, forge, liteloader, fabricLoader: fabric, optifine }: RuntimeVersions) {

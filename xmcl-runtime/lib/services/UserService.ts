@@ -2,9 +2,8 @@ import { DownloadTask } from '@xmcl/installer'
 import {
   Exception, GameProfileAndTexture, LoginMicrosoftOptions, LoginOptions,
   RefreshSkinOptions,
-  UploadSkinOptions, UserSchema, UserService as IUserService, UserServiceKey, UserState,
+  UploadSkinOptions, UserSchema, UserService as IUserService, UserServiceKey, UserState
 } from '@xmcl/runtime-api'
-import { requireNonnull, requireObject, requireString } from '@xmcl/runtime-api/utils'
 import { AUTH_API_MOJANG, checkLocation, GameProfile, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user'
 import { readFile, readJSON } from 'fs-extra'
 import { basename } from 'path'
@@ -12,6 +11,7 @@ import { URL } from 'url'
 import { v4 } from 'uuid'
 import LauncherApp from '../app/LauncherApp'
 import { acquireXBoxToken, changeAccountSkin, checkGameOwnership, getGameProfile, loginMinecraftWithXBox } from '../entities/user'
+import { requireNonnull, requireObject, requireString } from '../util/object'
 import { createSafeFile } from '../util/persistance'
 import { createDynamicThrottle } from '../util/trafficAgent'
 import { fitMinecraftLauncherProfileData } from '../util/userData'

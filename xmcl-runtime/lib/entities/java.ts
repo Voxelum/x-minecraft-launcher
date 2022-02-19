@@ -1,4 +1,4 @@
-import { isNonnull } from '@xmcl/runtime-api/utils'
+import { isNonnull } from '../util/object'
 
 export interface TsingHuaJreTarget {
   fileName: string

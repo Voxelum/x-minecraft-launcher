@@ -62,7 +62,6 @@ import {
 import { optional, required } from '/@/util/props'
 import { useSearchToggles } from '/@/windows/main/composables'
 import { InstanceSchema, CurseforgeModpackResource, isCurseforgeModpackResource, ModpackResource, ResourceType, McbbsModpackResource } from '@xmcl/runtime-api'
-import { isNonnull } from '@xmcl/runtime-api/utils'
 
 type ModpackDomainResource = CurseforgeModpackResource | ModpackResource | McbbsModpackResource
 
@@ -99,7 +98,7 @@ export default defineComponent({
     const { modpacks, instances } = useInstanceTemplates()
 
     const filterText = ref('')
-    const versionFilterOptions = computed(() => allTemplates.value.map(v => v.minecraft).filter(isNonnull))
+    const versionFilterOptions = computed(() => allTemplates.value.map(v => v.minecraft).filter((v): v is string => !!v))
     const selectedVersionFilterOption = ref('')
     const { toggles } = useSearchToggles()
     // useSearchToggle(toggles.value[toggles.value.length - 1]!)
