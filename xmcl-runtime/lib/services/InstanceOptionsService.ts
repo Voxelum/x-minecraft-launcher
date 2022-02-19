@@ -10,7 +10,7 @@ import { missing } from '../util/fs'
 import InstanceService from './InstanceService'
 import ResourceService from './ResourceService'
 import { ExportService, Inject, Singleton, StatefulService, Subscribe } from './Service'
-import { requireString } from '@xmcl/runtime-api/utils'
+import { requireString } from '../util/object'
 
 /**
  * The service to watch game setting (options.txt) and shader options (optionsshader.txt)

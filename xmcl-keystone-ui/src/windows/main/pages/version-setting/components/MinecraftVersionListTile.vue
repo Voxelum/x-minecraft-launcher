@@ -42,10 +42,9 @@
 <script lang=ts>
 import { computed, defineComponent } from '@vue/composition-api'
 import { MinecraftVersion } from '@xmcl/installer'
+import { Status, versionLockOf, write } from '@xmcl/runtime-api'
 import { useBusy, useI18n } from '/@/hooks'
 import { required, withDefault } from '/@/util/props'
-import { Status } from '@xmcl/runtime-api'
-import { versionLockOf, write } from '@xmcl/runtime-api/utils'
 
 export default defineComponent({
   components: {},

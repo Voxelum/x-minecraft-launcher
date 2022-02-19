@@ -1,5 +1,5 @@
-import { AnyPersistedResource, AnyResource, Exception, ImportResourceOptions, ImportResourcesOptions, isPersistedResource, ParseResourceOptions, ParseResourcesOptions, PersistedResource, Resource, ResourceDomain, ResourceService as IResourceService, ResourceServiceKey, ResourceState, ResourceType, UpdateResourceOptions } from '@xmcl/runtime-api'
-import { requireString, resourceLoadSemaphore } from '@xmcl/runtime-api/utils'
+import { AnyPersistedResource, AnyResource, Exception, ImportResourceOptions, ImportResourcesOptions, isPersistedResource, ParseResourceOptions, ParseResourcesOptions, PersistedResource, Resource, ResourceDomain, resourceLoadSemaphore, ResourceService as IResourceService, ResourceServiceKey, ResourceState, ResourceType, UpdateResourceOptions } from '@xmcl/runtime-api'
+import { requireString } from '../util/object'
 import { task } from '@xmcl/task'
 import { FSWatcher } from 'fs'
 import { readJSON, stat, unlink, writeFile } from 'fs-extra'

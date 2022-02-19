@@ -41,12 +41,11 @@
 </template>
 
 <script lang=ts>
-import { required } from '/@/util/props'
-import { Status } from '@xmcl/runtime-api'
 import { computed, defineComponent } from '@vue/composition-api'
 import { ForgeVersion } from '@xmcl/installer'
+import { Status, versionLockOf, write } from '@xmcl/runtime-api'
 import { useBusy, useI18n } from '/@/hooks'
-import { versionLockOf, write } from '@xmcl/runtime-api/utils'
+import { required } from '/@/util/props'
 
 export default defineComponent({
   props: {

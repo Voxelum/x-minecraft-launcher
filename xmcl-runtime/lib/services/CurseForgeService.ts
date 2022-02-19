@@ -1,7 +1,7 @@
 import { AddonInfo, File, getAddonDatabaseTimestamp, getAddonDescription, getAddonFiles, getAddonInfo, getCategories, getCategoryTimestamp, GetFeaturedAddonOptions, getFeaturedAddons, searchAddons, SearchOptions } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
 import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, CurseforgeState, InstallFileOptions, ProjectType, ResourceState } from '@xmcl/runtime-api'
-import { compareDate, requireObject, requireString } from '@xmcl/runtime-api/utils'
+import { compareDate, requireObject, requireString } from '../util/object'
 import { Agent } from 'https'
 import { basename, join } from 'path'
 import LauncherApp from '../app/LauncherApp'

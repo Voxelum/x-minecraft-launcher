@@ -1,7 +1,6 @@
 import { computed, inject, InjectionKey, provide, reactive, Ref, ref, set, watch } from '@vue/composition-api'
 import { useService } from './useService'
 import { PINGING_STATUS, ServerStatus, UNKNOWN_STATUS, InstanceServiceKey, ServerStatusServiceKey, protocolToMinecraft } from '@xmcl/runtime-api'
-import { isNonnull } from '@xmcl/runtime-api/utils'
 
 export function useProtocolAcceptVersion(protocol: Ref<number>) {
   return computed(() => `[${protocolToMinecraft[protocol.value].join(', ')}]`)
@@ -41,7 +40,7 @@ export function useInstancesServerStatus() {
   }
   function refresh() {
     pinging.value = true
-    return Promise.all(state.instances.map(i => i.server).filter(isNonnull).map(refreshOne)).finally(() => { pinging.value = false })
+    return Promise.all(state.instances.map(i => i.server).filter(<T>(v: T | null): v is T => !!v).map(refreshOne)).finally(() => { pinging.value = false })
   }
   return {
     pinging,

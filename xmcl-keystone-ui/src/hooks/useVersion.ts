@@ -3,7 +3,6 @@ import { MinecraftVersion } from '@xmcl/installer'
 import { useBusy } from './useSemaphore'
 import { useService, useServiceOnly } from './useService'
 import { filterOptifineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, Status, InstallServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
-import { isNonnull } from '@xmcl/runtime-api/utils'
 
 export function useVersions() {
   return useServiceOnly(VersionServiceKey, 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory')
@@ -206,7 +205,7 @@ export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
   const { state: installState, refreshLiteloader } = useInstallService()
   const { state } = useVersionService()
 
-  const versions = computed(() => Object.values(installState.liteloader.versions[minecraftVersion.value] || {}).filter(isNonnull))
+  const versions = computed(() => Object.values(installState.liteloader.versions[minecraftVersion.value] || {}).filter(v => !!v))
   const refreshing = useBusy('refreshLiteloader')
   onMounted(() => {
     watch(minecraftVersion, () => {
