@@ -82,7 +82,7 @@ export default class InstallService extends StatefulService<InstallState> implem
   }
 
   protected getMinecraftJsonManifestRemote() {
-    if (this.networkManager.isInGFW && this.baseService.state.apiSetsPreference !== 'mojang') {
+    if (this.baseService.state.apiSetsPreference !== 'mojang') {
       const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference)
       if (api) {
         return `${api.url}/mc/game/version_manifest.json`
@@ -91,16 +91,24 @@ export default class InstallService extends StatefulService<InstallState> implem
     return undefined
   }
 
+  private getApiSets() {
+    const apiSets = this.baseService.state.apiSets
+    const api = apiSets.find(a => a.name === this.baseService.state.apiSetsPreference)
+    const allSets = apiSets.filter(a => a.name !== this.baseService.state.apiSetsPreference)
+    if (api) {
+      allSets.unshift(api)
+    }
+    return allSets
+  }
+
   protected getForgeInstallOptions(): InstallForgeOptions {
     const options: InstallForgeOptions = {
       ...this.networkManager.getDownloadBaseOptions(),
       java: this.javaService.getPreferredJava()?.path,
     }
-    if (this.networkManager.isInGFW && this.baseService.state.apiSetsPreference !== 'mojang') {
-      const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference)
-      if (api) {
-        options.mavenHost = [`${api.url}/maven`]
-      }
+    if (this.baseService.state.apiSetsPreference !== 'mojang') {
+      const allSets = this.getApiSets()
+      options.mavenHost = allSets.map(api => `${api.url}/maven`)
     }
     return options
   }
@@ -112,38 +120,38 @@ export default class InstallService extends StatefulService<InstallState> implem
       side: 'client',
     }
 
-    if (this.networkManager.isInGFW && this.baseService.state.apiSetsPreference !== 'mojang') {
-      const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference)
-      if (api) {
-        option.assetsHost = `${api.url}/assets`
-        option.mavenHost = `${api.url}/maven`
-        option.assetsIndexUrl = (u) => {
-          const url = new URL(u.assetIndex.url)
-          const host = new URL(api.url).host
-          url.host = host
-          url.hostname = host
-          return url.toString()
-        }
-        option.json = (u) => {
-          const url = new URL(u.url)
-          const host = new URL(api.url).host
-          url.host = host
-          url.hostname = host
-          return url.toString()
-        }
-        option.client = (u) => {
-          const url = new URL(u.downloads.client.url)
-          const host = new URL(api.url).host
-          url.host = host
-          url.hostname = host
-          return url.toString()
-        }
-      }
+    if (this.baseService.state.apiSetsPreference !== 'mojang') {
+      const allSets = this.getApiSets()
+      option.assetsHost = allSets.map(api => `${api.url}/assets`)
+      option.mavenHost = allSets.map(api => `${api.url}/maven`)
+      option.assetsIndexUrl = (ver) => allSets.map(api => {
+        const url = new URL(ver.assetIndex.url)
+        const host = new URL(api.url).host
+        url.host = host
+        url.hostname = host
+        return url.toString()
+      })
+
+      option.json = (ver) => allSets.map(api => {
+        const url = new URL(ver.url)
+        const host = new URL(api.url).host
+        url.host = host
+        url.hostname = host
+        return url.toString()
+      })
+
+      option.client = (ver) => allSets.map(api => {
+        const url = new URL(ver.downloads.client.url)
+        const host = new URL(api.url).host
+        url.host = host
+        url.hostname = host
+        return url.toString()
+      })
     }
     return option
   }
 
-  private async getForgesFromBMCL(mcversion: string, currentForgeVersion: ForgeVersionList) {
+  private async getForgesFromBMCL(mcVersion: string, currentForgeVersion: ForgeVersionList) {
     interface BMCLForge {
       'branch': string // '1.9';
       'build': string // 1766;
@@ -159,7 +167,7 @@ export default class InstallService extends StatefulService<InstallState> implem
 
     const { body, statusCode, headers } = await this.networkManager.request({
       method: 'GET',
-      url: `https://bmclapi2.bangbang93.com/forge/minecraft/${mcversion}`,
+      url: `https://bmclapi2.bangbang93.com/forge/minecraft/${mcVersion}`,
       headers: currentForgeVersion && currentForgeVersion.timestamp
         ? {
           'If-Modified-Since': currentForgeVersion.timestamp,
@@ -187,7 +195,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     }
     const forges: BMCLForge[] = JSON.parse(body)
     const result: ForgeVersionList = {
-      mcversion,
+      mcversion: mcVersion,
       timestamp: headers['if-modified-since'] ?? forges[0]?.modified,
       versions: forges.map(convert),
     }

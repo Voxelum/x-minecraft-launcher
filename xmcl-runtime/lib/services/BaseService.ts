@@ -28,7 +28,7 @@ export default class BaseService extends StatefulService<BaseState> implements I
         autoDownload: data.autoDownload,
         allowPrerelease: data.allowPrerelease,
         apiSets: data.apiSets,
-        apiSetsPreference: data.apiSetsPreference,
+        apiSetsPreference: data.apiSetsPreference || 'bmcl',
       })
       this.checkUpdate()
     })
