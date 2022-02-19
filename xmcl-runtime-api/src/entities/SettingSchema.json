@@ -23,7 +23,7 @@
         },
         "apiSetsPreference": {
             "description": "The download API set preferences",
-            "default": "'mcbbs'",
+            "default": "'bmcl'",
             "enum": [
                 "bmcl",
                 "mcbbs",
