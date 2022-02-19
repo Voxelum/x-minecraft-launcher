@@ -198,7 +198,7 @@ interface ServiceItem {
 }
 
 export function useLogin() {
-  const { state, removeUserProfile } = useUserService()
+  const { state, removeUserProfile, cancelMicrosoftLogin } = useUserService()
   const { $te, $t } = useI18n()
   const authServices: Ref<ServiceItem[]> = computed(() => ['microsoft', ...Object.keys(state.authServices), 'offline']
     .map((a) => ({ value: a, text: $te(`user.${a}.name`) ? $t(`user.${a}.name`) : a })))
@@ -219,25 +219,24 @@ export function useLogin() {
     set(v) { profileService.value = v as any as string },
   })
 
+  const logining = useBusy('login()')
+
   const data = reactive({
-    logining: false,
     username: '',
     password: '',
     selectProfile: true,
   })
   async function _login() {
-    data.logining = true
     const index = history.value.indexOf(data.username)
     if (index === -1) {
       history.value.unshift(data.username)
     }
-    await login({ ...data, authService: authService.value, profileService: profileService.value }).finally(() => { data.logining = false })
+    await login({ ...data, authService: authService.value, profileService: profileService.value })
   }
   function remove(userId: string) {
     removeUserProfile(userId)
   }
   function reset() {
-    data.logining = false
     data.username = history.value[0] ?? ''
     data.password = ''
   }
@@ -246,6 +245,8 @@ export function useLogin() {
   })
   return {
     ...toRefs(data),
+    cancelMicrosoftLogin,
+    logining,
     logined,
     login: _login,
     reset,
