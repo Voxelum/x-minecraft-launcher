@@ -9,6 +9,10 @@ export default class CredentialManager extends Manager {
 
   private microsoftAccount: Record<string, AccountInfo> = {}
 
+  private timeoutThreshold = 30000
+
+  private cancelWait = () => { }
+
   constructor(app: LauncherApp) {
     super(app)
     this.scopes = ['XboxLive.signin', 'XboxLive.offline_access']
@@ -35,6 +39,10 @@ export default class CredentialManager extends Manager {
         },
       },
     })
+  }
+
+  cancelMicrosoftTokenRequest() {
+    this.cancelWait()
   }
 
   async acquireMicrosoftToken({ username, code, directRedirectToLauncher }: { username: string; code?: string; directRedirectToLauncher?: boolean }) {
@@ -70,8 +78,14 @@ export default class CredentialManager extends Manager {
       })
       await this.app.openInBrowser(url)
       code = await new Promise<string>((resolve, reject) => {
+        this.cancelWait = () => {
+          reject(new Error('Timeout to wait the auth code! Please try again later!'))
+        }
         if (!IS_DEV) {
-          setTimeout(() => { reject(new Error('Timeout to wait the auth code! Please try again later!')) }, 17000)
+          setTimeout(() => {
+            this.timeoutThreshold *= 2
+            reject(new Error('Timeout to wait the auth code! Please try again later!'))
+          }, this.timeoutThreshold)
         }
         this.app.once('microsoft-authorize-code', (err, code) => {
           if (err) {
@@ -80,6 +94,8 @@ export default class CredentialManager extends Manager {
             resolve(code!)
           }
         })
+      }).finally(() => {
+        this.cancelWait = () => { }
       })
     }
 

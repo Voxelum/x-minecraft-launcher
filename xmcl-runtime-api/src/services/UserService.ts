@@ -301,6 +301,11 @@ export interface UserService extends StatefulService<UserState> {
 
   removeUserProfile(userId: string): Promise<void>
 
+  /**
+   * The workaround to cancel the microsoft login. Preventing the login forever.
+   */
+  cancelMicrosoftLogin(): Promise<void>
+
   loginMicrosoft(options: LoginMicrosoftOptions): Promise<{
     userId: string
     accessToken: string

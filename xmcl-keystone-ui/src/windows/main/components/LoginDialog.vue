@@ -97,18 +97,29 @@
           text-xs-center
           style="z-index: 1; display: block;"
         >
-          <v-btn
-            block
-            :loading="logining"
-            color="green"
-            round
-            large
-            style="color: white"
-            dark
-            @click="login"
+          <div
+            @mouseenter="onMouseEnterLogin"
+            @mouseleave="onMouseLeaveLogin"
           >
-            {{ $t("user.login") }}
-          </v-btn>
+            <v-btn
+              block
+              :loading="logining && (!hovered || authService.value !== 'microsoft')"
+              color="green"
+              round
+              large
+              style="color: white"
+              dark
+              @click="login"
+            >
+              <span v-if="!logining">
+                {{ $t("user.login") }}
+              </span>
+              <v-icon v-else>
+                close
+              </v-icon>
+            </v-btn>
+          </div>
+
           <div style="margin-top: 25px">
             <a
               style="padding-right: 10px; z-index: 20"
@@ -153,6 +164,7 @@ export default defineComponent({
       password,
       authService,
       profileService,
+      cancelMicrosoftLogin,
 
       selectedProfile,
 
@@ -188,12 +200,17 @@ export default defineComponent({
       ? $t(`user.${authService.value.value}.password`)
       : $t(`user.${isOffline.value ? 'offline' : 'mojang'}.password`)))
     const showDropHint = computed(() => isMicrosoft.value && inside.value && logining.value)
+    const hovered = ref(false)
 
     async function _login() {
       resetError()
       accountInput.value.blur()
       await nextTick() // wait a tick to make sure username updated.
       try {
+        if (logining.value) {
+          await cancelMicrosoftLogin()
+          return
+        }
         await login()
         hide()
       } catch (e) {
@@ -237,8 +254,17 @@ export default defineComponent({
       inside.value = false
     }
 
+    const onMouseEnterLogin = () => {
+      console.log('enter')
+      hovered.value = true
+    }
+    const onMouseLeaveLogin = () => {
+      hovered.value = false
+    }
+
     return {
       ...toRefs(data),
+      hovered,
       logining,
       username,
       password,
@@ -250,6 +276,8 @@ export default defineComponent({
       isMicrosoft,
 
       selectedProfile,
+      onMouseEnterLogin,
+      onMouseLeaveLogin,
 
       isShown,
 

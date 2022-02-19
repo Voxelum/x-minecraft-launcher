@@ -485,6 +485,13 @@ export default class UserService extends StatefulService<UserState> implements I
     this.state.userProfileRemove(userId)
   }
 
+  /**
+   * Really the workaround to prevent login forever
+   */
+  async cancelMicrosoftLogin() {
+    this.credentialManager.cancelMicrosoftTokenRequest()
+  }
+
   @Singleton()
   async loginMicrosoft(options: LoginMicrosoftOptions) {
     const { oauthCode, microsoftEmailAddress } = options
@@ -578,6 +585,7 @@ export default class UserService extends StatefulService<UserState> implements I
       availableProfiles = result.availableProfiles
       selectedProfile = result.selectedProfile
     } else if (authService === 'microsoft') {
+      await this.cancelMicrosoftLogin()
       const result = await this.loginMicrosoft({ microsoftEmailAddress: username })
       userId = result.userId
       accessToken = result.accessToken
