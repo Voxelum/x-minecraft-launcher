@@ -69,7 +69,7 @@ export default class CredentialManager extends Manager {
     const scopes = this.scopes
     const redirectUri = IS_DEV
       ? 'http://localhost:3333/auth'
-      : directRedirectToLauncher ? 'xmcl://launcher/auth' : 'https://xmcl.vercel.app/auth'
+      : directRedirectToLauncher ? 'xmcl://launcher/auth' : 'https://xmcl.app/auth'
     if (!code) {
       const url = await app.getAuthCodeUrl({
         redirectUri,
