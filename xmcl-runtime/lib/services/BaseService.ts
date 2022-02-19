@@ -92,7 +92,6 @@ export default class BaseService extends StatefulService<BaseState> implements I
   @Singleton()
   async checkUpdate() {
     if (IS_DEV) return
-    if (process.env.BUILD_TARGET === 'appx') return
     try {
       this.log('Check update')
       const info = await this.submit(this.app.checkUpdateTask())
@@ -112,6 +111,10 @@ export default class BaseService extends StatefulService<BaseState> implements I
    */
   @Singleton()
   async downloadUpdate() {
+    if (process.env.BUILD_TARGET === 'appx') {
+      this.openInBrowser('https://xmcl.app')
+      return
+    }
     if (!this.state.updateInfo) {
       throw new Error('Cannot download update if we don\'t check the version update!')
     }
