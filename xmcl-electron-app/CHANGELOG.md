@@ -1,4 +1,42 @@
 
+## 0.19.0
+### @xmcl/runtime-api@0.3.0
+#### Features
+
+- support cancel of the login to microsoft ([6f21e4d5f48d22823d048ab7f7a8ca64cd82401c](https://github.com/Voxelum/x-minecraft-launcher/commit/6f21e4d5f48d22823d048ab7f7a8ca64cd82401c))
+#### Bug Fixes
+
+- correctly select api sets to download ([9030c8d88b19c1aa5e5cc0f71e3fa0298e5cd6c8](https://github.com/Voxelum/x-minecraft-launcher/commit/9030c8d88b19c1aa5e5cc0f71e3fa0298e5cd6c8))
+- clean up the api ([a6fe169b4c619c1e26268f9fcaacd29acf3f68c6](https://github.com/Voxelum/x-minecraft-launcher/commit/a6fe169b4c619c1e26268f9fcaacd29acf3f68c6))
+### @xmcl/keystone-ui@0.18.0
+#### Features
+
+- support cancel of the login to microsoft ([6f21e4d5f48d22823d048ab7f7a8ca64cd82401c](https://github.com/Voxelum/x-minecraft-launcher/commit/6f21e4d5f48d22823d048ab7f7a8ca64cd82401c))
+#### Bug Fixes
+
+- clean up the api ([a6fe169b4c619c1e26268f9fcaacd29acf3f68c6](https://github.com/Voxelum/x-minecraft-launcher/commit/a6fe169b4c619c1e26268f9fcaacd29acf3f68c6))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### @xmcl/runtime@0.17.0
+#### Features
+
+- support cancel of the login to microsoft ([6f21e4d5f48d22823d048ab7f7a8ca64cd82401c](https://github.com/Voxelum/x-minecraft-launcher/commit/6f21e4d5f48d22823d048ab7f7a8ca64cd82401c))
+#### Bug Fixes
+
+- wrong auth url ([6ee2a691c9c95fd69d84a62cd31f5f541de86319](https://github.com/Voxelum/x-minecraft-launcher/commit/6ee2a691c9c95fd69d84a62cd31f5f541de86319))
+- notify the update for appx also ([946baed97cce90bc996cbe97e70d996db1c57aaf](https://github.com/Voxelum/x-minecraft-launcher/commit/946baed97cce90bc996cbe97e70d996db1c57aaf))
+- correctly select api sets to download ([9030c8d88b19c1aa5e5cc0f71e3fa0298e5cd6c8](https://github.com/Voxelum/x-minecraft-launcher/commit/9030c8d88b19c1aa5e5cc0f71e3fa0298e5cd6c8))
+- clean up the api ([a6fe169b4c619c1e26268f9fcaacd29acf3f68c6](https://github.com/Voxelum/x-minecraft-launcher/commit/a6fe169b4c619c1e26268f9fcaacd29acf3f68c6))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### xmcl@0.18.2
+#### Bug Fixes
+
+- clean up the api ([a6fe169b4c619c1e26268f9fcaacd29acf3f68c6](https://github.com/Voxelum/x-minecraft-launcher/commit/a6fe169b4c619c1e26268f9fcaacd29acf3f68c6))
+
+
 ## 0.18.1
 ### @xmcl/keystone-ui@0.17.1
 #### Bug Fixes
