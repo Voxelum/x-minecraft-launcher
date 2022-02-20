@@ -29,3 +29,15 @@ jobs:
         token: ${{ secrets.PAT_GITHUB_TOKEN }}
         ref: 'master'
         repo: 'voxelum/xmcl-page'
+    - name: Create release version file
+      run: |
+        mkdir releases
+        echo ${{ github.event.release.tag_name }} > ./releases/VERSION
+    - name: Upload release version file to Azure
+      uses: ci010/upload-blob-to-azure@master
+      env:
+        AZURE_ACCOUNT_KEY: ${{ secrets.AZURE_ACCOUNT_KEY }}
+      with:
+        account: xmcl
+        container: releases
+        directory: ./releases
