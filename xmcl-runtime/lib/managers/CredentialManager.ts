@@ -81,12 +81,12 @@ export default class CredentialManager extends Manager {
         this.cancelWait = () => {
           reject(new Error('Timeout to wait the auth code! Please try again later!'))
         }
-        if (!IS_DEV) {
-          setTimeout(() => {
-            this.timeoutThreshold *= 2
-            reject(new Error('Timeout to wait the auth code! Please try again later!'))
-          }, this.timeoutThreshold)
-        }
+        // if (!IS_DEV) {
+        //   setTimeout(() => {
+        //     this.timeoutThreshold *= 2
+        //     reject(new Error('Timeout to wait the auth code! Please try again later!'))
+        //   }, this.timeoutThreshold)
+        // }
         this.app.once('microsoft-authorize-code', (err, code) => {
           if (err) {
             reject(err)

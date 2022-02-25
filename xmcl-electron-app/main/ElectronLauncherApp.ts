@@ -2,9 +2,9 @@ import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
 import { BaseServiceKey, InstalledAppManifest, UpdateInfo } from '@xmcl/runtime-api'
 import { Host } from '@xmcl/runtime/lib/app/Host'
 import { Task } from '@xmcl/task'
+import { execSync } from 'child_process'
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { readFileSync, writeFileSync } from 'fs'
-import { writeFile } from 'fs-extra'
 import { join } from 'path'
 import Controller from './Controller'
 import defaultApp from './defaultApp'
@@ -12,7 +12,7 @@ import { checkUpdateTask as _checkUpdateTask, DownloadAsarUpdateTask, DownloadFu
 import { isDirectory } from './utils/fs'
 
 export default class ElectronLauncherApp extends LauncherApp {
-  host: Host = this.createHost()
+  host: Host = app
 
   controller: LauncherAppController = new Controller(this)
 
@@ -39,25 +39,6 @@ export default class ElectronLauncherApp extends LauncherApp {
         }
       }
     })
-  }
-
-  private createHost(): Host {
-    if (this.platform.name === 'linux') {
-      const setAsDefaultProtocolClient: typeof app.setAsDefaultProtocolClient = (protocol) => {
-        // const homePath = app.getPath('home')
-        // const desktopFile = join(app.getPath('home'), '.local', 'share', 'applications', 'xmcl.desktop')
-        // writeFileSync(desktopFile, `[Desktop Entry]\nName=xmcl\nExec=${app.getPath('exe')} %u\nType=Application\nMimeType=x-scheme-handler/xmcl;`)
-
-        // const mimeAppsListFile = join(homePath, '.config', 'mimeapps.list')
-        // readFileSync(mimeAppsListFile)
-        return app.setAsDefaultProtocolClient(protocol)
-      }
-      return {
-        ...app,
-        setAsDefaultProtocolClient,
-      }
-    }
-    return app
   }
 
   /**
@@ -135,6 +116,38 @@ export default class ElectronLauncherApp extends LauncherApp {
         this.handleUrl(last)
       }
     })
+
+    if (this.platform.name === 'linux') {
+      const homePath = app.getPath('home')
+      const desktopFile = join(homePath, '.local', 'share', 'applications', 'xmcl.desktop')
+      try {
+        writeFileSync(desktopFile, `[Desktop Entry]\nName=xmcl\nExec=${app.getPath('exe')} %u\nType=Application\nMimeType=x-scheme-handler/xmcl;`)
+        this.log(`Try to set the linux desktop file ${desktopFile}`)
+        const result = execSync('xdg-settings set default-url-scheme-handler xmcl xmcl.desktop')
+        this.log(result)
+      } catch (e) {
+        this.error('Fail to set default protocol on linux:')
+        this.error(e)
+
+        try {
+          const mimesAppsList = join(homePath, '.config', 'mimeapps.list')
+          const content = readFileSync(mimesAppsList, 'utf-8')
+          if (content.indexOf('x-scheme-handler/xmcl=xmcl.desktop') === -1) {
+            let lines = content.split('\n')
+            const defaultAppsHeaderIndex = lines.indexOf('[Default Applications]')
+            if (defaultAppsHeaderIndex === -1) {
+              lines.push('[Default Applications]')
+              lines.push('x-scheme-handler/xmcl=xmcl.desktop')
+            } else {
+              lines = [...lines.slice(0, defaultAppsHeaderIndex + 1), 'x-scheme-handler/xmcl=xmcl.desktop', ...lines.slice(defaultAppsHeaderIndex + 1)]
+            }
+            writeFileSync(mimesAppsList, lines.join('\n'))
+          }
+        } catch (e) {
+          this.error(e)
+        }
+      }
+    }
 
     await super.setup()
 
