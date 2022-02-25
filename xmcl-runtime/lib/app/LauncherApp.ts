@@ -3,8 +3,9 @@ import { InstalledAppManifest, RuntimeVersions, UpdateInfo } from '@xmcl/runtime
 import { Task } from '@xmcl/task'
 import { EventEmitter } from 'events'
 import { ensureDir, readFile, readJson, writeFile } from 'fs-extra'
-import { extname, join } from 'path'
-import { LAUNCHER_NAME } from '../constant'
+import { join } from 'path'
+import { URL } from 'url'
+import { IS_DEV, LAUNCHER_NAME } from '../constant'
 import { Client } from '../engineBridge'
 import CredentialManager from '../managers/CredentialManager'
 import LogManager from '../managers/LogManager'
@@ -17,7 +18,7 @@ import TelemetryManager from '../managers/TelemetryManager'
 import WorkerManager from '../managers/WorkerManager'
 import AbstractService from '../services/Service'
 import { isSystemError } from '../util/error'
-import { isDirectory } from '../util/fs'
+import { Host } from './Host'
 import { LauncherAppController } from './LauncherAppController'
 import { LauncherAppManager } from './LauncherAppManager'
 
@@ -79,8 +80,8 @@ export interface LauncherApp {
 
 export abstract class LauncherApp extends EventEmitter {
   /**
-     * Launcher %APPDATA%/xmcl path
-     */
+   * Launcher %APPDATA%/xmcl path
+   */
   readonly appDataPath: string
 
   /**
@@ -94,13 +95,13 @@ export abstract class LauncherApp extends EventEmitter {
   readonly minecraftDataPath: string
 
   /**
-     * Path to temporary folder
-     */
+   * Path to temporary folder
+   */
   readonly temporaryPath: string
 
   /**
-     * ref for if the game is launching and the launcher is paused
-     */
+   * ref for if the game is launching and the launcher is paused
+   */
   protected parking = false
 
   // properties
@@ -127,31 +128,27 @@ export abstract class LauncherApp extends EventEmitter {
 
   readonly platform: Platform = getPlatform()
 
-  abstract readonly version: string
-
   readonly build: number = Number.parseInt(process.env.BUILD_NUMBER ?? '0', 10)
+
+  get version() { return this.host.getVersion() }
 
   get isParking(): boolean { return this.parking }
 
   protected managers = [this.logManager, this.networkManager, this.taskManager, this.serviceStateManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager, this.semaphoreManager, this.launcherAppManager]
 
-  readonly controller: LauncherAppController
+  abstract readonly host: Host
+
+  abstract readonly controller: LauncherAppController
+
+  abstract readonly defaultAppManifest: InstalledAppManifest
 
   constructor() {
     super()
-    const appData = this.getPath('appData')
-    this.appDataPath = join(appData, LAUNCHER_NAME)
+    this.appDataPath = ''
     this.gameDataPath = ''
-    this.minecraftDataPath = join(appData, this.platform.name === 'osx' ? 'minecraft' : '.minecraft')
+    this.minecraftDataPath = ''
     this.temporaryPath = ''
-    this.controller = this.createController()
   }
-
-  abstract getDefaultAppManifest(): InstalledAppManifest
-
-  abstract createController(): LauncherAppController
-
-  abstract getLocale(): string
 
   /**
    * Broadcast a event with payload to client.
@@ -188,45 +185,53 @@ export abstract class LauncherApp extends EventEmitter {
    */
   abstract showItemInFolder(path: string): void
 
+  getLocale(): string { return this.host.getLocale() }
+
   /**
    * Handle the url activate the app
    * @param url The url input
    */
-  abstract handleUrl(url: string): void
+  handleUrl(url: string) {
+    const parsed = new URL(url, 'xmcl://')
+    this.log(`Handle url ${url}`)
+    if (parsed.host === 'launcher' && parsed.pathname === '/auth') {
+      let error: Error | undefined
+      if (parsed.searchParams.get('error')) {
+        const err = parsed.searchParams.get('error')!
+        const errDescription = parsed.searchParams.get('error')!
+        error = new Error(unescape(errDescription));
+        (error as any).error = err
+      }
+      const code = parsed.searchParams.get('code') as string
+      this.emit('microsoft-authorize-code', error, code)
+    }
+  }
 
   /**
    * Quit the app gently.
    */
   quit() {
     Promise.all(this.managers.map(m => m.beforeQuit()))
-      .then(() => this.quitApp())
+      .then(() => this.host.quit())
   }
-
-  /**
-   * Quit the app gently.
-   */
-  protected abstract quitApp(): void
 
   /**
    * Force exit the app with exit code
    */
-  abstract exit(code?: number): void
+  exit(code?: number): void {
+    this.host.exit(code)
+  }
 
   /**
    * Get the system provided path
    */
-  abstract getPath(key: 'home' | 'appData' | 'userData' | 'cache' | 'temp' | 'exe' | 'module' | 'desktop' | 'documents' | 'downloads' | 'music' | 'pictures' | 'videos' | 'recent' | 'logs' | 'crashDumps'): string
+  getPath(key: 'home' | 'appData' | 'userData' | 'cache' | 'temp' | 'exe' | 'module' | 'desktop' | 'documents' | 'downloads' | 'music' | 'pictures' | 'videos' | 'recent' | 'logs' | 'crashDumps'): string {
+    return this.host.getPath(key)
+  }
 
-  /**
-   * Wait the engine ready
-   */
-  abstract waitEngineReady(): Promise<void>
-
-  /**
-   * Get module exposed to controller
-   * @param key The module name
-   */
-  abstract getModule(key: string): any
+  waitEngineReady(): Promise<void> {
+    return this.host.whenReady()
+  }
 
   /**
    * Check update for the x-minecraft-launcher-core
@@ -239,11 +244,11 @@ export abstract class LauncherApp extends EventEmitter {
   abstract downloadUpdateTask(updateInfo: UpdateInfo): Task<void>
 
   /**
-     * Install update and quit the app.
-     */
+   * Install update and quit the app.
+   */
   abstract installUpdateAndQuit(updateInfo: UpdateInfo): Promise<void>
 
-  abstract relaunch(): void
+  relaunch(): void { this.host.relaunch() }
 
   log = (message: any, ...options: any[]) => { this.logManager.log(`[App] ${message}`, ...options) }
 
@@ -251,42 +256,38 @@ export abstract class LauncherApp extends EventEmitter {
 
   error = (message: any, ...options: any[]) => { this.logManager.error(`[App] ${message}`, ...options) }
 
-  /**
-   * Start an app from file path
-   * @param path The path of json
-   */
-  // protected async startFromFilePath(path: string) {
-  //   const ext = extname(path)
-  //   if (ext === '.xmclm') {
-  //     const manifest: AppManifest = await readJson(path)
-  //     await this.loadManifest(manifest)
-  //   } else if (ext === '.xmclapp') {
-  //     await this.bootApp(path)
-  //   } else if (await isDirectory(path)) {
-  //     await this.bootApp(path)
-  //   }
-  // }
-
-  // phase code
-
-  readonly serviceReadyPromise = new Promise<void>((resolve) => {
-    this.on('all-services-ready', resolve)
-  })
-
   // setup code
 
   async start(): Promise<void> {
     await this.setup()
     await this.waitEngineReady()
     await this.onEngineReady()
-    await this.serviceReadyPromise
-    await this.onStoreReady()
+    await new Promise<void>((resolve) => {
+      this.once('all-services-ready', resolve)
+    })
+    await this.onServiceReady()
   }
 
   /**
    * Determine the root of the project. By default, it's %APPDATA%/xmcl
    */
   protected async setup() {
+    process.on('SIGINT', () => {
+      this.host.quit()
+    })
+
+    // singleton lock
+    if (!this.host.requestSingleInstanceLock()) {
+      this.host.quit()
+      return
+    }
+
+    const appData = this.host.getPath('appData')
+
+    const _this = this as any
+    _this.appDataPath = join(appData, LAUNCHER_NAME)
+    _this.minecraftDataPath = join(appData, this.platform.name === 'osx' ? 'minecraft' : '.minecraft')
+
     console.log(`Boot from ${this.appDataPath}`)
     try {
       await ensureDir(this.appDataPath)
@@ -312,8 +313,16 @@ export abstract class LauncherApp extends EventEmitter {
     (this.temporaryPath as any) = join(this.gameDataPath, 'temp')
     await ensureDir(this.temporaryPath)
     await Promise.all(this.managers.map(m => m.setup()))
-    this.log(process.cwd())
-    this.log(process.argv)
+
+    // register xmcl protocol
+    if (!this.host.isDefaultProtocolClient('xmcl')) {
+      const result = this.host.setAsDefaultProtocolClient('xmcl')
+      if (result) {
+        this.log('Successfully register the xmcl protocol')
+      } else {
+        this.log('Fail to register the xmcl protocol')
+      }
+    }
   }
 
   async migrateRoot(newRoot: string) {
@@ -321,12 +330,33 @@ export abstract class LauncherApp extends EventEmitter {
     await writeFile(join(this.appDataPath, 'root'), newRoot)
   }
 
+  protected async getStartupUrl() {
+    if (!IS_DEV && process.platform === 'win32') {
+      this.log(`Try to check the start up url: ${process.argv.join(' ')}`)
+      if (process.argv.length > 1) {
+        const urlOption = process.argv.find(a => a.startsWith('--url='))
+        if (urlOption) {
+          const url = urlOption.substring('--url='.length)
+          if (url) {
+            return url
+          }
+        }
+      }
+    }
+    this.log('Didn\'t find the start up url, try to load from config file.')
+    const { default: url } = await readJson(join(this.launcherAppManager.root, 'apps.json'))
+
+    this.log(`Start up url: ${url}`)
+    return url
+  }
+
   protected async onEngineReady() {
+    this.log(`cwd: ${process.cwd()}`)
     this.emit('engine-ready')
     this
       .on('window-all-closed', () => {
         if (this.parking) return
-        if (process.platform !== 'darwin') { this.quitApp() }
+        if (process.platform !== 'darwin') { this.quit() }
       })
       .on('minecraft-start', () => { this.parking = true })
       .on('minecraft-exit', () => { this.parking = false })
@@ -334,17 +364,17 @@ export abstract class LauncherApp extends EventEmitter {
     // start the app
     let app: InstalledAppManifest
     try {
-      const { default: url } = await readJson(join(this.launcherAppManager.root, 'apps.json'))
+      const url = await this.getStartupUrl()
       app = await this.launcherAppManager.getInstalledApp(url)
     } catch (e) {
-      app = this.getDefaultAppManifest()
+      app = this.defaultAppManifest
     }
     await this.controller.bootApp(app)
 
     await Promise.all(this.managers.map(m => m.engineReady()))
   }
 
-  protected async onStoreReady() {
+  protected async onServiceReady() {
     this.parking = true
     await Promise.all(this.managers.map(m => m.storeReady()))
     await this.controller.dataReady()

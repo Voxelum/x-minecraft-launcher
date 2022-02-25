@@ -105,7 +105,7 @@ export default class Controller implements LauncherAppController {
   }
 
   async createAppWindow(appDir: string, man: InstalledAppManifest) {
-    const configPath = man === this.app.getDefaultAppManifest() ? join(this.app.appDataPath, 'main-window-config.json') : join(appDir, 'window-config.json')
+    const configPath = man === this.app.defaultAppManifest ? join(this.app.appDataPath, 'main-window-config.json') : join(appDir, 'window-config.json')
     this.app.log(`[Controller] Creating app window by config ${configPath}`)
     const configData = await readFile(configPath, 'utf-8').then((v) => JSON.parse(v)).catch(() => ({
       width: -1,
