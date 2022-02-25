@@ -24,7 +24,7 @@ export async function createShortcutWin32(exePath: string, outputDir: string, ma
   const cwd = ''
   const windowMode = windowModes.normal.toString()
   const hotkey = ''
-  const outputPath = join(outputDir, `${man.name}.Ink`)
+  const outputPath = join(outputDir, `${man.name}.lnk`)
 
   if (!icon) {
     if (
@@ -39,8 +39,8 @@ export async function createShortcutWin32(exePath: string, outputDir: string, ma
 
   const wscriptArguments = [
     createShortcutScript,
-    // '/NoLogo',  // Apparently this stops it from displaying a logo in the console, even though I haven't actually ever seen one
-    // '/B',  // silent mode, but doesn't actually stop dialog alert windows from popping up on errors
+    // '/NoLogo', // Apparently this stops it from displaying a logo in the console, even though I haven't actually ever seen one
+    // '/B', // silent mode, but doesn't actually stop dialog alert windows from popping up on errors
     outputPath,
     filePath,
     args,
