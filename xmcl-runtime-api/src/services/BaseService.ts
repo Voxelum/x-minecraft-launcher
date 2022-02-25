@@ -23,7 +23,7 @@ export class BaseState implements SettingSchema {
   /**
    * The container of the launcher. Will be raw if the launcher is just installed on system. Will be appx if it's appx.
    */
-  env: 'raw' | 'appx' = 'raw'
+  env: 'raw' | 'appx' | 'appimage' = 'raw'
   /**
    * The version of the launcher
    */

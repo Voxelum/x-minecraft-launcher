@@ -14,6 +14,8 @@ export default class BaseService extends StatefulService<BaseState> implements I
     const state = new BaseState()
     if (process.env.BUILD_TARGET === 'appx') {
       state.env = 'appx'
+    } else if (process.env.BUILD_TARGET === 'appimage') {
+      state.env = 'appimage'
     }
     return state
   }

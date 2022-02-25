@@ -100,20 +100,13 @@ export const config: Configuration = {
     icon: 'build/icons',
     // eslint-disable-next-line no-template-curly-in-string
     artifactName: '${productName}-${version}.${ext}',
-    target: [
-      {
-        target: 'deb',
-      },
-      {
-        target: 'rpm',
-      },
-      {
-        target: 'AppImage',
-      },
-      {
-        target: 'snap',
-      },
-    ],
+    target: process.env.BUILD_TARGET === 'appimage'
+      ? 'AppImage'
+      : [
+        'deb',
+        'rpm',
+        'snap',
+      ],
   },
   snap: {
     publish: [
