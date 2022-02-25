@@ -9,6 +9,10 @@ export const config: Configuration = {
     buildResources: 'build',
     app: '.',
   },
+  protocols: {
+    name: 'XMCL',
+    schemes: ['xmcl'],
+  },
   // assign publish for auto-updater
   // set this to your own repo!
   publish: [{
@@ -25,6 +29,7 @@ export const config: Configuration = {
     '**/assets/**/*.lib',
     '**/assets/**/*.so',
     '**/assets/**/*.dll',
+    '**/assets/**/*.vbs',
     '**/*.worker.js',
   ],
   // eslint-disable-next-line no-template-curly-in-string
@@ -88,6 +93,10 @@ export const config: Configuration = {
     ],
   },
   linux: {
+    desktop: {
+      MimeType: 'x-scheme-handler/xmcl',
+    },
+    category: 'Game',
     icon: 'build/icons',
     // eslint-disable-next-line no-template-curly-in-string
     artifactName: '${productName}-${version}.${ext}',
