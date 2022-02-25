@@ -1,39 +1,24 @@
 import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
-import { BaseServiceKey, InstalledAppManifest } from '@xmcl/runtime-api'
+import { BaseServiceKey, InstalledAppManifest, UpdateInfo } from '@xmcl/runtime-api'
+import { Host } from '@xmcl/runtime/lib/app/Host'
 import { Task } from '@xmcl/task'
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
+import { readFileSync, writeFileSync } from 'fs'
+import { writeFile } from 'fs-extra'
 import { join } from 'path'
-import { URL } from 'url'
 import Controller from './Controller'
+import defaultApp from './defaultApp'
 import { checkUpdateTask as _checkUpdateTask, DownloadAsarUpdateTask, DownloadFullUpdateTask, quitAndInstallAsar, quitAndInstallFullUpdate, setup } from './updater'
 import { isDirectory } from './utils/fs'
-import defaultApp from './defaultApp'
 
 export default class ElectronLauncherApp extends LauncherApp {
-  getDefaultAppManifest(): InstalledAppManifest {
-    return defaultApp
-  }
+  host: Host = this.createHost()
 
-  createController(): LauncherAppController {
-    return new Controller(this)
-  }
+  controller: LauncherAppController = new Controller(this)
 
-  get version() { return app.getVersion() }
-
-  /**
-   * A map to keep running browser
-   */
-  protected windows: { [name: string]: BrowserWindow } = {}
+  defaultAppManifest: InstalledAppManifest = defaultApp
 
   showItemInFolder = shell.showItemInFolder
-
-  quitApp = app.quit
-
-  exit = app.exit
-
-  getPath(key: 'home' | 'appData' | 'userData' | 'cache' | 'temp' | 'exe' | 'module' | 'desktop' | 'documents' | 'downloads' | 'music' | 'pictures' | 'videos' | 'recent' | 'logs' | 'crashDumps') {
-    return app.getPath(key)
-  }
 
   handle = ipcMain.handle
 
@@ -54,6 +39,25 @@ export default class ElectronLauncherApp extends LauncherApp {
         }
       }
     })
+  }
+
+  private createHost(): Host {
+    if (this.platform.name === 'linux') {
+      const setAsDefaultProtocolClient: typeof app.setAsDefaultProtocolClient = (protocol) => {
+        // const homePath = app.getPath('home')
+        // const desktopFile = join(app.getPath('home'), '.local', 'share', 'applications', 'xmcl.desktop')
+        // writeFileSync(desktopFile, `[Desktop Entry]\nName=xmcl\nExec=${app.getPath('exe')} %u\nType=Application\nMimeType=x-scheme-handler/xmcl;`)
+
+        // const mimeAppsListFile = join(homePath, '.config', 'mimeapps.list')
+        // readFileSync(mimeAppsListFile)
+        return app.setAsDefaultProtocolClient(protocol)
+      }
+      return {
+        ...app,
+        setAsDefaultProtocolClient,
+      }
+    }
+    return app
   }
 
   /**
@@ -87,8 +91,7 @@ export default class ElectronLauncherApp extends LauncherApp {
     // return false;
   }
 
-  // TODO: fix the any type
-  checkUpdateTask(): Task<any> {
+  checkUpdateTask(): Task<UpdateInfo> {
     return _checkUpdateTask.bind(this)()
   }
 
@@ -113,42 +116,11 @@ export default class ElectronLauncherApp extends LauncherApp {
     return app.whenReady()
   }
 
-  getModule(module: string) {
-    if (module === 'electron') {
-      return {}
-    }
-    return undefined
-  }
-
   relaunch() {
     app.relaunch()
   }
 
   protected async setup() {
-    process.on('SIGINT', () => {
-      app.quit()
-    })
-
-    // singleton lock
-    if (!app.requestSingleInstanceLock()) {
-      app.quit()
-      return
-    }
-
-    // register xmcl protocol
-    if (!app.isDefaultProtocolClient('xmcl')) {
-      app.setAsDefaultProtocolClient('xmcl')
-    }
-
-    // if (!IS_DEV && process.platform === 'win32') {
-    //   if (process.argv.length > 1) {
-    //     const urlOrPath = process.argv[process.argv.length - 1]
-    //     if (!(urlOrPath.startsWith('https:') || urlOrPath.startsWith('http:')) && !await this.startFromUrl(urlOrPath).then(() => true, () => false)) {
-    //       this.startFromFilePath(urlOrPath).then(() => true, () => false)
-    //     }
-    //   }
-    // }
-
     // forward window-all-closed event
     app.on('window-all-closed', () => {
       this.emit('window-all-closed')
@@ -158,13 +130,9 @@ export default class ElectronLauncherApp extends LauncherApp {
       event.preventDefault()
       this.handleUrl(url)
     }).on('second-instance', (e, argv) => {
-      if (process.platform === 'win32') {
-        const last = argv[argv.length - 1]
-        if (last.startsWith('xmcl://')) {
-          this.handleUrl(last)
-        }
-        // Keep only command line / deep linked arguments
-        // this.startFromFilePath(argv[argv.length - 1]);
+      const last = argv[argv.length - 1]
+      if (last.startsWith('xmcl://')) {
+        this.handleUrl(last)
       }
     })
 
@@ -177,31 +145,12 @@ export default class ElectronLauncherApp extends LauncherApp {
     return app.getLocale()
   }
 
-  handleUrl(url: string) {
-    const parsed = new URL(url, 'xmcl://')
-    if (parsed.host === 'launcher' && parsed.pathname === '/auth') {
-      let error: Error | undefined
-      if (parsed.searchParams.get('error')) {
-        const err = parsed.searchParams.get('error')!
-        const errDescription = parsed.searchParams.get('error')!
-        error = new Error(unescape(errDescription));
-        (error as any).error = err
-      }
-      const code = parsed.searchParams.get('code') as string
-      this.emit('microsoft-authorize-code', error, code)
-    }
-  }
-
-  protected async onEngineReady() {
-    return super.onEngineReady()
-  }
-
-  protected async onStoreReady() {
+  protected async onServiceReady() {
     this.parking = true
 
     this.log(`Current launcher core version is ${this.version}.`)
 
-    await super.onStoreReady()
+    await super.onServiceReady()
 
     this.serviceManager.getService(BaseServiceKey)?.state.localesSet(['en', 'zh-CN', 'ru'])
   }

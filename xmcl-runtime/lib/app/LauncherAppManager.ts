@@ -48,12 +48,12 @@ export class LauncherAppManager extends Manager implements AppsHost {
   async getDefaultApp(): Promise<string> {
     await ensureDir(this.root)
     const config = await readJson(join(this.root, 'apps.json')).catch(() => undefined)
-    return config?.default ?? this.app.getDefaultAppManifest().url
+    return config?.default ?? this.app.defaultAppManifest.url
   }
 
   async getInstalledApp(url: string): Promise<InstalledAppManifest> {
-    if (url === this.app.getDefaultAppManifest().url) {
-      return this.app.getDefaultAppManifest()
+    if (url === this.app.defaultAppManifest.url) {
+      return this.app.defaultAppManifest
     }
     const path = this.getAppRoot(url)
     return readJson(join(path, 'app.xmclx'))
@@ -70,12 +70,12 @@ export class LauncherAppManager extends Manager implements AppsHost {
     }))
     const apps = results.filter(v => !!v)
     this.log(`Load ${apps.length} third-party apps`)
-    return [this.app.getDefaultAppManifest(), ...apps]
+    return [this.app.defaultAppManifest, ...apps]
   }
 
   async uninstallApp(url: string) {
     this.log(`Try to uninstall app ${url}`)
-    if (url === this.app.getDefaultAppManifest().url) {
+    if (url === this.app.defaultAppManifest.url) {
       this.log(`Skip to uninstall default app ${url}`)
       return
     }
@@ -84,15 +84,15 @@ export class LauncherAppManager extends Manager implements AppsHost {
     await remove(appDir)
 
     if (url === await this.getDefaultApp()) {
-      await writeJson(join(this.root, 'apps.json'), { default: this.app.getDefaultAppManifest().url })
+      await writeJson(join(this.root, 'apps.json'), { default: this.app.defaultAppManifest.url })
     }
   }
 
   async installApp(url: string, options: InstallAppOptions = {}) {
     this.log(`Try to install app ${url}`)
-    if (url === this.app.getDefaultAppManifest().url) {
+    if (url === this.app.defaultAppManifest.url) {
       this.log(`Skip to install default app ${url}`)
-      return this.app.getDefaultAppManifest()
+      return this.app.defaultAppManifest
     }
     const webMan = await this.getAppInfo(url)
     const urlObj = new URL(url)
@@ -118,8 +118,8 @@ export class LauncherAppManager extends Manager implements AppsHost {
   }
 
   async getAppInfo(url: string): Promise<AppManifest> {
-    if (url === this.app.getDefaultAppManifest().url) {
-      return this.app.getDefaultAppManifest()
+    if (url === this.app.defaultAppManifest.url) {
+      return this.app.defaultAppManifest
     }
     const msg = await got(url)
 
