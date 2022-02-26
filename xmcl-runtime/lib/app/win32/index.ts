@@ -1,11 +1,16 @@
 import { AppManifest, InstalledAppManifest } from '@xmcl/runtime-api'
 import { spawn } from 'child_process'
-import { ensureDir } from 'fs-extra'
+import { ensureDir, unlink } from 'fs-extra'
 import generateIco from 'icon-gen/dist/lib/ico'
 import { join } from 'path'
 import { URL } from 'url'
 import { downloadIcon, resolveIcon } from '../utils'
 import createShortcutScript from './createShortcut.vbs'
+
+export async function removeShortcut(outputDir: string, man: InstalledAppManifest) {
+  const outputPath = join(outputDir, `${man.name}.lnk`)
+  await unlink(outputPath).catch(() => {})
+}
 
 export async function createShortcutWin32(exePath: string, outputDir: string, man: InstalledAppManifest, globalShortcut: boolean): Promise<void> {
   const windowModes = {
@@ -52,6 +57,7 @@ export async function createShortcutWin32(exePath: string, outputDir: string, ma
   ]
 
   try {
+    await unlink(outputPath).catch(() => {})
     spawn('wscript', wscriptArguments)
   } catch (error) {
     // success = false
