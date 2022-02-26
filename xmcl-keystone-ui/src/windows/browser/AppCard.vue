@@ -14,6 +14,7 @@
     <div class="flex flex-col">
       <span class="font-bold text-lg">{{ manifest.name }}</span>
       <span class="text-gray-400">{{ manifest.description }}</span>
+      <span class="text-light-800">{{ manifest.url }}</span>
       <v-divider v-if="manifest.screenshots.length > 0" />
       <div v-if="manifest.screenshots.length > 0">
         <span
@@ -29,31 +30,56 @@
         v-if="defaultApp === manifest.url"
         color="primary"
       >
-        DEFAULT
+        {{ $t('default') }}
       </v-chip>
-      <v-btn
-        icon
-        class="v-10"
-        @click.stop.prevent="$emit('boot')"
-      >
-        <v-icon>play_arrow</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        flat
-        color="red"
-        @click.stop.prevent="$emit('uninstall')"
-      >
-        <v-icon>delete_outline</v-icon>
-      </v-btn>
+      <v-tooltip top>
+        <template #activator="{ on }">
+          <v-btn
+            icon
+            class="v-10"
+            v-on="on"
+            @click.stop.prevent="$emit('shortcut')"
+          >
+            <v-icon>shortcut</v-icon>
+          </v-btn>
+        </template>
+        {{ $t('createShortcut') }}
+      </v-tooltip>
+      <v-tooltip top>
+        <template #activator="{ on }">
+          <v-btn
+            icon
+            class="v-10"
+            v-on="on"
+            @click.stop.prevent="$emit('boot')"
+          >
+            <v-icon>play_arrow</v-icon>
+          </v-btn>
+        </template>
+        {{ $t('launch') }}
+      </v-tooltip>
+      <v-tooltip top>
+        <template #activator="{ on }">
+          <v-btn
+            icon
+            flat
+            color="red"
+            v-on="on"
+            @click.stop.prevent="$emit('uninstall')"
+          >
+            <v-icon>delete_outline</v-icon>
+          </v-btn>
+        </template>
+        {{ $t('delete') }}
+      </v-tooltip>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, reactive, toRefs } from '@vue/composition-api'
-import { AppManifest, InstalledAppManifest } from '@xmcl/runtime-api'
-import { required } from '/@/util/props'
+import { computed, defineComponent } from '@vue/composition-api'
+import { InstalledAppManifest } from '@xmcl/runtime-api'
 import favicon from '/@/assets/favicon.svg'
+import { required } from '/@/util/props'
 
 export default defineComponent({
   props: {
@@ -64,7 +90,6 @@ export default defineComponent({
     const icon = computed(() => {
       if (!props.manifest?.icons) return favicon
       const icons = props.manifest.icons
-      console.log(icons)
       const maskable = icons.find(i => i.purpose === 'maskable')
       if (maskable?.src) {
         return new URL(maskable.src, props.manifest.url).toString()

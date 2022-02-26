@@ -7,7 +7,7 @@ import { join } from 'path'
 import { URL } from 'url'
 import { LauncherApp } from '../app/LauncherApp'
 import { Manager } from '../managers'
-import { createShortcutWin32, installWin32 } from './win32'
+import { createShortcutWin32, installWin32, removeShortcut } from './win32'
 
 export interface InstallAppOptions {
   createDesktopShortcut?: boolean
@@ -36,6 +36,7 @@ export class LauncherAppManager extends Manager implements AppsHost {
     this.app.handle('get-app-info', (_, url) => this.getAppInfo(url))
     this.app.handle('get-default-app', () => this.getDefaultApp())
     this.app.handle('launch-app', (_, url) => this.bootAppByUrl(url))
+    this.app.handle('create-app-shortcut', (_, url) => this.createShortcut(url))
   }
 
   async bootAppByUrl(url: string): Promise<void> {
@@ -49,6 +50,25 @@ export class LauncherAppManager extends Manager implements AppsHost {
     await ensureDir(this.root)
     const config = await readJson(join(this.root, 'apps.json')).catch(() => undefined)
     return config?.default ?? this.app.defaultAppManifest.url
+  }
+
+  async createShortcut(url: string): Promise<void> {
+    if (this.app.platform.name === 'windows') {
+      this.log(`Try to create shortcut to app ${url}`)
+      if (url === this.app.defaultAppManifest.url) {
+        this.log(`Skip to create shortcut default app ${url}`)
+        return
+      }
+      const appMan = await this.getInstalledApp(url)
+      if (!appMan) {
+        throw new Error(`Cannot find the app with url: ${url}`)
+      }
+
+      await createShortcutWin32(this.app.getPath('exe'), this.app.getPath('desktop'), appMan, true)
+
+      const startMenuDir = join(this.app.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs')
+      await createShortcutWin32(this.app.getPath('exe'), startMenuDir, appMan, true)
+    }
   }
 
   async getInstalledApp(url: string): Promise<InstalledAppManifest> {
@@ -79,6 +99,16 @@ export class LauncherAppManager extends Manager implements AppsHost {
       this.log(`Skip to uninstall default app ${url}`)
       return
     }
+
+    if (this.app.platform.name === 'windows') {
+      const appMan = await this.getInstalledApp(url).catch(() => undefined)
+      if (appMan) {
+        await removeShortcut(this.app.getPath('desktop'), appMan)
+        const startMenuDir = join(this.app.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs')
+        await removeShortcut(startMenuDir, appMan)
+      }
+    }
+
     const urlObj = new URL(url)
     const appDir = join(this.root, filenamifyCombined(urlObj.host + urlObj.pathname, { replacement: '@' }))
     await remove(appDir)

@@ -7,9 +7,7 @@
       <v-progress-linear v-if="refreshing && installed.length === 0" />
       <div class="bg-[#303030] flex moveable flex-grow-0 flex-shrink gap-5">
         <span />
-        <span
-          class="moveable  flex-grow px-40 p-2 flex"
-        >
+        <span class="moveable flex-grow px-40 p-2 flex">
           <v-btn
             class="non-moveable"
             :loading="refreshing"
@@ -17,9 +15,7 @@
             icon
             @click="refresh"
           >
-            <v-icon>
-              refresh
-            </v-icon>
+            <v-icon>refresh</v-icon>
           </v-btn>
           <v-text-field
             v-model="url"
@@ -40,9 +36,7 @@
             icon
             @click="onEnter"
           >
-            <v-icon>
-              get_app
-            </v-icon>
+            <v-icon>get_app</v-icon>
           </v-btn>
         </span>
         <span class="p-0 flex flex-shrink flex-grow-0 align-top items-start">
@@ -59,7 +53,7 @@
             dark
             small
             @click="maximize"
-          >maximize</v-icon> -->
+          >maximize</v-icon>-->
 
           <v-icon
             v-ripple
@@ -70,13 +64,14 @@
           >close</v-icon>
         </span>
       </div>
-      <main class="p-2">
+      <main class="p-2 flex-grow">
         <AppCard
           v-for="app in installed"
           :key="app.url"
           :manifest="app"
           :default-app="defaultApp"
           @uninstall="uninstall(app.url)"
+          @shortcut="createShortcut(app.url)"
           @boot="boot(app.url)"
         />
       </main>
@@ -87,13 +82,14 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, reactive, toRefs } from '@vue/composition-api'
 import { InstalledAppManifest } from '@xmcl/runtime-api'
-import { useRefreshable } from '/@/hooks/useRefreshable'
 import AppCard from './AppCard.vue'
+import { useRefreshable } from '/@/hooks/useRefreshable'
 
 export default defineComponent({
   components: { AppCard },
   setup() {
     const { maximize, minimize, hide } = windowController
+
     const data = reactive({
       url: '',
       defaultApp: '',
@@ -108,6 +104,9 @@ export default defineComponent({
       data.installed = await appsHost.getInstalledApps()
       data.defaultApp = await appsHost.getDefaultApp()
     })
+    const createShortcut = (url: string) => {
+      appsHost.createShortcut(url)
+    }
     function close() {
       hide()
     }
@@ -140,6 +139,7 @@ export default defineComponent({
     })
     return {
       ...toRefs(data),
+      createShortcut,
       uninstall,
       boot,
       rules,

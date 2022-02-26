@@ -128,6 +128,13 @@ export interface AppsHost {
    */
   installApp(url: string): Promise<InstalledAppManifest>
 
+  /**
+   * Currently windows only.
+   * Create desktop shortcut in desktop & start-up menu
+   * @param url The
+   */
+  createShortcut(url: string): Promise<void>
+
   uninstallApp(url: string): Promise<void>
   /**
    * Get default app url

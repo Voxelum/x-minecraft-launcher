@@ -21,6 +21,9 @@ function createAppsHost(): AppsHost {
     bootAppByUrl(url) {
       return ipcRenderer.invoke('launch-app', url)
     },
+    createShortcut(url) {
+      return ipcRenderer.invoke('create-app-shortcut', url)
+    },
   }
 
   return appsHost
