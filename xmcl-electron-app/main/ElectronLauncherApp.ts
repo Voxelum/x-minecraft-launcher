@@ -1,5 +1,5 @@
 import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
-import { BaseServiceKey, InstalledAppManifest, UpdateInfo } from '@xmcl/runtime-api'
+import { InstalledAppManifest, UpdateInfo } from '@xmcl/runtime-api'
 import { Host } from '@xmcl/runtime/lib/app/Host'
 import { Task } from '@xmcl/task'
 import { execSync } from 'child_process'
@@ -156,15 +156,5 @@ export default class ElectronLauncherApp extends LauncherApp {
 
   getLocale() {
     return app.getLocale()
-  }
-
-  protected async onServiceReady() {
-    this.parking = true
-
-    this.log(`Current launcher core version is ${this.version}.`)
-
-    await super.onServiceReady()
-
-    this.serviceManager.getService(BaseServiceKey)?.state.localesSet(['en', 'zh-CN', 'ru'])
   }
 }

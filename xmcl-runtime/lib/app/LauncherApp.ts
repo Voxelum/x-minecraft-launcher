@@ -262,9 +262,6 @@ export abstract class LauncherApp extends EventEmitter {
     await this.setup()
     await this.waitEngineReady()
     await this.onEngineReady()
-    await new Promise<void>((resolve) => {
-      this.once('all-services-ready', resolve)
-    })
     await this.onServiceReady()
   }
 
@@ -376,6 +373,7 @@ export abstract class LauncherApp extends EventEmitter {
 
   protected async onServiceReady() {
     this.parking = true
+    this.log(`Current launcher core version is ${this.version}.`)
     await Promise.all(this.managers.map(m => m.storeReady()))
     await this.controller.dataReady()
     this.log('App booted')

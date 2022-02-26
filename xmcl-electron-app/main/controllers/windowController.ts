@@ -1,5 +1,5 @@
 import Controller from '@/Controller'
-import { app, BrowserWindow, dialog, ipcMain } from 'electron'
+import { BrowserWindow, dialog, ipcMain } from 'electron'
 import { ControllerPlugin } from './plugin'
 
 export enum Operation {

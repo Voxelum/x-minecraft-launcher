@@ -105,8 +105,8 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
     new Promise<void>((resolve) => {
       this.app.once('engine-ready', resolve)
     }),
-    new Promise((resolve) => {
-      this.app.once('service-ready', resolve)
+    new Promise<void>((resolve) => {
+      this.app.once('all-services-ready', resolve)
     }),
   ]).then(() => {
     const tray = this.tray
@@ -119,15 +119,4 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
       })
     }
   })
-  // this.app.once('service-ready', () => {
-  //   const tray = this.tray
-  //   if (tray) {
-  //     tray.setToolTip($t('title'))
-  //     tray.setContextMenu(createMenu())
-  //     this.app.serviceStateManager.subscribe('localeSet', (l) => {
-  //       tray.setToolTip($t('title'))
-  //       tray.setContextMenu(createMenu())
-  //     })
-  //   }
-  // })
 }
