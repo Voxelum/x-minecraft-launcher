@@ -194,8 +194,8 @@ export function useInstanceMods() {
       modItem.name = resource.metadata.name ?? resource.metadata.id
       modItem.description = resource.metadata.description ?? ''
       const fab = resource.metadata as FabricModMetadata
-      modItem.dependencies.minecraft = fab.depends?.minecraft as string ?? 'unknown'
-      modItem.dependencies.fabricLoader = fab.depends?.fabricloader as string ?? 'unknown'
+      modItem.dependencies.minecraft = fab.depends?.minecraft as string ?? '?'
+      modItem.dependencies.fabricLoader = fab.depends?.fabricloader as string ?? '?'
     } else if (resource.type === 'liteloader') {
       modItem.type = 'liteloader'
       modItem.name = resource.metadata.name

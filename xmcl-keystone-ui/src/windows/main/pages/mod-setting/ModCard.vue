@@ -168,10 +168,10 @@ export default defineComponent({
       const deps = props.source.dependencies
       let acceptVersionText = $t('mod.acceptVersion', { version: deps.minecraft })
       if (deps.forge) {
-        acceptVersionText += `, Forge ${deps.forge} (${forge.value})`
+        acceptVersionText += `, Forge ${deps.forge}` + (forge.value ? ` (${forge.value})` : '')
       }
       if (deps.fabricLoader) {
-        acceptVersionText += `, FabricLoader ${deps.fabricLoader} (${fabricLoader.value})`
+        acceptVersionText += `, FabricLoader ${deps.fabricLoader}` + (fabricLoader.value ? ` (${fabricLoader.value})` : '')
       }
       const compatibleText = compatible.value === 'maybe'
         ? $t('mod.nocompatible')

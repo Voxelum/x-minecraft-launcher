@@ -127,10 +127,11 @@ import { ModItem, useInstanceMods } from './useInstanceMod'
 import FilterCombobox, { useFilterCombobox } from '/@/components/FilterCombobox.vue'
 import {
   useDrop,
-  useInstanceBase, useInstanceVersionBase, useOperation, useResourceOperation, useRouter,
+  useService,
+  useInstanceBase, useOperation, useResourceOperation, useRouter,
 } from '/@/hooks'
 import { useLocalStorageCacheBool } from '/@/hooks/useCache'
-import { isCompatible } from '@xmcl/runtime-api'
+import { isCompatible, isModCompatible, InstanceServiceKey } from '@xmcl/runtime-api'
 import Hint from '/@/components/Hint.vue'
 import RefreshingTile from '/@/components/RefreshingTile.vue'
 
@@ -247,7 +248,7 @@ function setupSelection(items: Ref<ModItem[]>) {
   }
 }
 
-function setupFilter(items: Ref<ModItem[]>, minecraft: Ref<string>) {
+function setupFilter(items: Ref<ModItem[]>) {
   function getFilterOptions(item: ModItem) {
     return [
       { label: 'info', value: item.type, color: 'lime' },
@@ -258,6 +259,9 @@ function setupFilter(items: Ref<ModItem[]>, minecraft: Ref<string>) {
   const filterOptions = computed(() => items.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
   const { filter } = useFilterCombobox<ModItem>(filterOptions, getFilterOptions, (v) => `${v.name} ${v.version} ${v.dependencies.minecraft}`)
 
+  const { state } = useService(InstanceServiceKey)
+  const runtime = computed(() => state.instance.runtime)
+
   const visibleCount = ref(30)
   const filterInCompatible = useLocalStorageCacheBool('ModSettingPage.filterInCompatible', false)
 
@@ -266,8 +270,7 @@ function setupFilter(items: Ref<ModItem[]>, minecraft: Ref<string>) {
       return true
     }
     if (filterInCompatible.value) {
-      console.log(`${mod.id} ${mod.type} ${mod.path} ${mod.dependencies.minecraft} ${minecraft.value}`)
-      return isCompatible(mod.dependencies.minecraft, minecraft.value)
+      return isModCompatible(mod.resource, runtime) !== false
     }
     return true
   }
@@ -317,13 +320,12 @@ export default defineComponent({
     RefreshingTile: RefreshingTile as any,
   },
   setup() {
-    const { minecraft } = useInstanceVersionBase()
     const { importResource } = useResourceOperation()
     const { items: mods, commit, committing, isModified, showDirectory, loading } = useInstanceMods()
     const { path } = useInstanceBase()
     const { push } = useRouter()
 
-    const filtered = setupFilter(mods, minecraft)
+    const filtered = setupFilter(mods)
     const selection = setupSelection(filtered.items)
     const { isSelectionMode, selectedItems } = selection
 
