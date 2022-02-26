@@ -17,5 +17,6 @@
   },
   "quit": "退出",
   "showDiagnosis": "显示 Debug 信息",
-  "title": "XMCL"
+  "title": "XMCL",
+  "browseApps": "浏览第三方启动器界面"
 }
