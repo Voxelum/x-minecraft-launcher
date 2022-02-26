@@ -132,7 +132,7 @@ jobs:
     - name: Upload Build
       uses: actions/upload-artifact@v2
       with:
-        name: appx
+        name: appimage
         path: |
           xmcl-electron-app/build/output/*.*
 
@@ -141,6 +141,7 @@ jobs:
     needs: 
       - build
       - build-appx
+      - build-appimage
     if: ${{ !startsWith(github.event.head_commit.message, 'chore(release)') }}
 
     steps:
@@ -189,6 +190,7 @@ jobs:
     needs:
       - build
       - build-appx
+      - build-appimage
     steps:
     - uses: actions/checkout@v2
       with:
@@ -213,6 +215,11 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: appx
+        path: build
+    - name: Download AppImage Build
+      uses: actions/download-artifact@v2
+      with:
+        name: appimage
         path: build
     - name: Generate MCBBS content
       uses: ./.github/actions/generate-mcbbs-content
