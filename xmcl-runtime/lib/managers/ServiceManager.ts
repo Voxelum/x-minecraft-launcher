@@ -168,6 +168,8 @@ export default class ServiceManager extends Manager {
       this.warn(`Error during service call session ${id}(${this.sessions[id].name}):`)
       this.error(e)
       return { error: e }
+    } finally {
+      delete this.sessions[id]
     }
   }
 
