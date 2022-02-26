@@ -1,4 +1,25 @@
 
+## 0.19.1
+### @xmcl/runtime-api@0.3.1
+#### Bug Fixes
+
+- linux appimage container type ([6401a84cc95c7256a167a24f8a93d576ea18d55b](https://github.com/Voxelum/x-minecraft-launcher/commit/6401a84cc95c7256a167a24f8a93d576ea18d55b))
+### @xmcl/runtime@0.17.1
+#### Bug Fixes
+
+- linux appimage container type ([6401a84cc95c7256a167a24f8a93d576ea18d55b](https://github.com/Voxelum/x-minecraft-launcher/commit/6401a84cc95c7256a167a24f8a93d576ea18d55b))
+- create shortcut on windows ([d62dcbbf395fe209d1b1de4cee9f702a38a08358](https://github.com/Voxelum/x-minecraft-launcher/commit/d62dcbbf395fe209d1b1de4cee9f702a38a08358))
+- register protocol on linux ([0c8b0c29da42611ed480e7c5a85872203219812e](https://github.com/Voxelum/x-minecraft-launcher/commit/0c8b0c29da42611ed480e7c5a85872203219812e))
+- abstract the electron host & handle the url ([0684a0253ef969a37c109ce627685b2c8ff21ef3](https://github.com/Voxelum/x-minecraft-launcher/commit/0684a0253ef969a37c109ce627685b2c8ff21ef3))
+### xmcl@0.19.1
+#### Bug Fixes
+
+- linux appimage container type ([6401a84cc95c7256a167a24f8a93d576ea18d55b](https://github.com/Voxelum/x-minecraft-launcher/commit/6401a84cc95c7256a167a24f8a93d576ea18d55b))
+- create shortcut on windows ([d62dcbbf395fe209d1b1de4cee9f702a38a08358](https://github.com/Voxelum/x-minecraft-launcher/commit/d62dcbbf395fe209d1b1de4cee9f702a38a08358))
+- register protocol on linux ([0c8b0c29da42611ed480e7c5a85872203219812e](https://github.com/Voxelum/x-minecraft-launcher/commit/0c8b0c29da42611ed480e7c5a85872203219812e))
+- abstract the electron host & handle the url ([0684a0253ef969a37c109ce627685b2c8ff21ef3](https://github.com/Voxelum/x-minecraft-launcher/commit/0684a0253ef969a37c109ce627685b2c8ff21ef3))
+
+
 ## 0.19.0
 ### @xmcl/runtime-api@0.3.0
 #### Features
