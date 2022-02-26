@@ -146,9 +146,8 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        submodules: false
-    - name: Fetch All
-      run: git fetch --prune --unshallow
+        submodules: recursive
+        fetch-depth: 0
     - uses: pnpm/action-setup@v2.0.1
       with:
         version: 6.24.4
