@@ -1,4 +1,39 @@
 
+## 0.20.0
+### @xmcl/runtime-api@0.4.0
+#### Features
+
+- create shortcut on win for 3rd party app & i18n ([8f97be87c7bab12eff4462e717dd559bea947a84](https://github.com/Voxelum/x-minecraft-launcher/commit/8f97be87c7bab12eff4462e717dd559bea947a84))
+### @xmcl/keystone-ui@0.19.0
+#### Features
+
+- create shortcut on win for 3rd party app & i18n ([8f97be87c7bab12eff4462e717dd559bea947a84](https://github.com/Voxelum/x-minecraft-launcher/commit/8f97be87c7bab12eff4462e717dd559bea947a84))
+#### Bug Fixes
+
+- align the mod compatibility ux ([0f688c6706c6419ef8027250abad1755c4dba250](https://github.com/Voxelum/x-minecraft-launcher/commit/0f688c6706c6419ef8027250abad1755c4dba250))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### @xmcl/runtime@0.18.0
+#### Features
+
+- create shortcut on win for 3rd party app & i18n ([8f97be87c7bab12eff4462e717dd559bea947a84](https://github.com/Voxelum/x-minecraft-launcher/commit/8f97be87c7bab12eff4462e717dd559bea947a84))
+#### Bug Fixes
+
+- the locales are  not set in BaseState ([60a427dd5a6ce5a9c2693f44c9880dc4b8658d9c](https://github.com/Voxelum/x-minecraft-launcher/commit/60a427dd5a6ce5a9c2693f44c9880dc4b8658d9c))
+- memory leak for session call ([1de2129048ec7631ddeb4c3dde0bd35113e91f8e](https://github.com/Voxelum/x-minecraft-launcher/commit/1de2129048ec7631ddeb4c3dde0bd35113e91f8e))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### xmcl@0.20.0
+#### Features
+
+- create shortcut on win for 3rd party app & i18n ([8f97be87c7bab12eff4462e717dd559bea947a84](https://github.com/Voxelum/x-minecraft-launcher/commit/8f97be87c7bab12eff4462e717dd559bea947a84))
+#### Bug Fixes
+
+- the locales are  not set in BaseState ([60a427dd5a6ce5a9c2693f44c9880dc4b8658d9c](https://github.com/Voxelum/x-minecraft-launcher/commit/60a427dd5a6ce5a9c2693f44c9880dc4b8658d9c))
+
+
 ## 0.19.1
 ### @xmcl/runtime-api@0.3.1
 #### Bug Fixes
