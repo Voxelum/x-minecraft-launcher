@@ -9,32 +9,42 @@ export const SettingSchema: Schema<SettingSchema> = _SettingSchema
 
 export interface SettingSchema {
   /**
-     * The display language of the launcher
-     * @default ""
-     */
+   * The display language of the launcher
+   * @default ""
+   */
   locale: string
   /**
-     * Should launcher auto download new update
-     * @default false
-     */
+   * Should launcher auto download new update
+   * @default false
+   */
   autoDownload: boolean
   /**
-     * Should launcher auto install new update after app quit
-     * @default false
-     */
+   * Should launcher auto install new update after app quit
+   * @default false
+   */
   autoInstallOnAppQuit: boolean
   /**
-     * Should launcher show the pre-release
-     * @default false
-     */
+   * Should launcher show the pre-release
+   * @default false
+   */
   allowPrerelease: boolean
   /**
-     * The download API set preferences
-     * @default 'bmcl'
-     */
+   * The download API set preferences
+   * @default 'bmcl'
+   */
   apiSetsPreference: 'mojang' | 'mcbbs' | 'bmcl'
   /**
-     * The supported unofficial api sets
-     */
+   * The supported unofficial api sets
+   */
   apiSets: Array<{ name: string; url: string }>
+  /**
+   * The http proxy address
+   * @default ""
+   */
+  httpProxy: string
+  /**
+   * Is proxy setting enabled
+   * @default false
+   */
+  httpProxyEnabled: boolean
 }

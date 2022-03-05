@@ -1,4 +1,4 @@
-import { AnyPersistedResource, AnyResource, PersistedCurseforgeModpackResource, PersistedFabricResource, PersistedForgeResource, PersistedLiteloaderResource, PersistedModpackResource, PersistedResource, PersistedResourcePackResource, PersistedSaveResource, PersistedShaderPackResource, PersistedUnknownResource, SourceInformation } from '../entities/resource'
+import { AnyPersistedResource, AnyResource, PersistedCurseforgeModpackResource, PersistedFabricResource, PersistedForgeResource, PersistedLiteloaderResource, PersistedMcbbsModpackResource, PersistedModpackResource, PersistedResource, PersistedResourcePackResource, PersistedSaveResource, PersistedShaderPackResource, PersistedUnknownResource, SourceInformation } from '../entities/resource'
 import { ResourceDomain } from '../entities/resource.schema'
 import { ServiceKey, StatefulService } from './Service'
 
@@ -31,6 +31,10 @@ export interface ImportResourceOptions extends ParseResourceOptions {
    * Is import file task in background?
    */
   background?: boolean
+  /**
+   * The url of the resource icon
+   */
+  iconUrl?: string
 }
 export interface ParseResourcesOptions {
   files: Array<ParseResourceOptions>
@@ -42,14 +46,18 @@ export interface ParseResourcesOptions {
 export interface ImportResourcesOptions extends ParseResourcesOptions {
   files: Array<ParseResourceOptions & {
     restrictToDomain?: ResourceDomain
+    /**
+     * The url of the resource icon
+     */
+    iconUrl?: string
   }>
   /**
-     * Is import file task in background?
-     */
+   * Is import file task in background?
+   */
   background?: boolean
   /**
-     * Require the resource to be these specific domain
-     */
+   * Require the resource to be these specific domain
+   */
   restrictToDomain?: ResourceDomain
 }
 
@@ -72,7 +80,7 @@ export class ResourceState {
   mods = [] as Array<PersistedForgeResource | PersistedLiteloaderResource | PersistedFabricResource>
   resourcepacks = [] as Array<PersistedResourcePackResource>
   saves = [] as Array<PersistedSaveResource>
-  modpacks = [] as Array<PersistedModpackResource | PersistedCurseforgeModpackResource>
+  modpacks = [] as Array<PersistedModpackResource | PersistedCurseforgeModpackResource | PersistedMcbbsModpackResource>
   shaderpacks = [] as Array<PersistedShaderPackResource>
   unknowns = [] as Array<PersistedUnknownResource>
 

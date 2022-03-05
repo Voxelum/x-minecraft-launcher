@@ -249,6 +249,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
       ext: resourceData.ext,
       curseforge: resourceData.curseforge,
       github: resourceData.github,
+      iconUri: resourceData.iconUri ?? `dataroot://${resourceData.domain}/${resourceData.fileName}.png`,
     })
     return resource
   }
@@ -523,6 +524,9 @@ export default class ResourceService extends StatefulService<ResourceState> impl
     if (resolved.domain === ResourceDomain.Unknown && options.restrictToDomain) {
       // enforced unknown resource domain
       resolved.domain = options.restrictToDomain
+    }
+    if (!icon && options.iconUrl) {
+      icon = (await this.networkManager.request.get(options.iconUrl, { responseType: 'buffer' })).body
     }
     const result = await persistResource(resolved, this.getPath(), options.source ?? {}, options.url ?? [], icon, this.pending)
     return result as AnyPersistedResource
