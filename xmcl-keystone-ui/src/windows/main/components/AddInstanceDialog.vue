@@ -6,7 +6,6 @@
   >
     <v-stepper
       v-model="step"
-      dark
     >
       <v-stepper-header>
         <v-stepper-step
@@ -15,8 +14,10 @@
           :complete="step > 1"
           step="1"
         >
-          {{ $t('profile.templateSetting') }}
-          <small>{{ currentTemplate ? currentTemplate.title : '' }}</small>
+          <div class="flex flex-col gap-1">
+            {{ $t('profile.templateSetting') }}
+            <small>{{ currentTemplate ? currentTemplate.title : '' }}</small>
+          </div>
         </v-stepper-step>
         <v-divider />
         <v-stepper-step
@@ -61,12 +62,6 @@
           step="2"
           class="overflow-auto max-h-[70vh]"
         >
-          <!-- <v-list-tile-title> -->
-          <!-- {{ $t('profile.baseSetting') }} -->
-          <!-- </v-list-tile-title> -->
-          <!-- <v-list-tile-title> -->
-          <!-- {{ $t('profile.advancedSetting') }} -->
-          <!-- </v-list-tile-title> -->
           <base-content :valid.sync="valid" />
           <advance-content :valid.sync="valid" />
           <stepper-footer

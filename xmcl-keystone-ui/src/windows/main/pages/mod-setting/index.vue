@@ -1,22 +1,34 @@
 <template>
-  <div class="flex flex-col max-h-full select-none h-full">
-    <div class="header-bar z-10">
-      <v-toolbar-title class="headline self-center pl-2">
+  <div class="flex flex-col max-h-full select-none h-full px-8 py-4 pb-0 gap-3">
+    <v-progress-linear
+      class="absolute top-0 z-10 m-0 p-0 left-0"
+      :active="loading"
+      height="3"
+      :indeterminate="true"
+    />
+    <v-card
+      class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5"
+      outlined
+      elevation="1"
+    >
+      <!-- <v-toolbar-title class="headline self-center pl-2">
         {{ $tc("mod.name", 2) }}
-      </v-toolbar-title>
-      <v-spacer />
+      </v-toolbar-title> -->
+      <!-- <v-spacer /> -->
       <filter-combobox
         class="pr-3 max-w-200 max-h-full"
         :label="$t('mod.filter')"
       />
       <!-- <v-tooltip bottom>
       <template v-slot:activator="{ on }">-->
+      <div class="flex-grow" />
       <v-btn
         icon
         @click="showModsFolder()"
       >
         <v-icon>folder</v-icon>
       </v-btn>
+
       <!-- </template>
         {{ $t(`curseforge.mc-mods.description`) }}
       </v-tooltip>-->
@@ -27,7 +39,7 @@
             v-on="on"
             @click="goToCurseforgeMods()"
           >
-            <v-icon :size="14">
+            <v-icon>
               $vuetify.icons.curseforge
             </v-icon>
           </v-btn>
@@ -54,10 +66,10 @@
             : $t("mod.hideIncompatible")
         }}
       </v-tooltip>
-    </div>
-    <v-container
-      fill-height
-      class="flex overflow-auto h-full flex-col"
+    </v-card>
+
+    <div
+      class="flex overflow-auto h-full flex-col container py-0"
       @dragend="onDrageEnd"
       @dragover.prevent="onDragOver"
       @drop="onDropToImport"
@@ -71,7 +83,7 @@
         icon="save_alt"
         :text="$t('mod.dropHint')"
         :absolute="true"
-        class="h-full"
+        class="h-full z-0"
       />
       <transition-group
         v-else
@@ -95,13 +107,15 @@
           @click="onClick($event, index)"
         />
       </transition-group>
-      <float-button
-        :deleting="isDraggingMod"
-        :visible="isDraggingMod || isModified"
-        :loading="committing"
-        @drop="onDropDelete"
-        @click="commit"
-      />
+      <div class="absolute w-full bottom-0 flex items-center justify-center mb-5">
+        <float-button
+          :deleting="isDraggingMod"
+          :visible="isDraggingMod || isModified"
+          :loading="committing"
+          @drop="onDropDelete"
+          @click="commit"
+        />
+      </div>
       <v-dialog
         :value="deletingMods.length !== 0"
         width="400"
@@ -114,7 +128,7 @@
           :items="deletingMods"
         />
       </v-dialog>
-    </v-container>
+    </div>
   </div>
 </template>
 
@@ -131,7 +145,7 @@ import {
   useInstanceBase, useOperation, useResourceOperation, useRouter,
 } from '/@/hooks'
 import { useLocalStorageCacheBool } from '/@/hooks/useCache'
-import { isCompatible, isModCompatible, InstanceServiceKey } from '@xmcl/runtime-api'
+import { isModCompatible, InstanceServiceKey } from '@xmcl/runtime-api'
 import Hint from '/@/components/Hint.vue'
 import RefreshingTile from '/@/components/RefreshingTile.vue'
 
@@ -252,7 +266,7 @@ function setupFilter(items: Ref<ModItem[]>) {
   function getFilterOptions(item: ModItem) {
     return [
       { label: 'info', value: item.type, color: 'lime' },
-      { value: item.id, color: 'orange darken-1' },
+      { value: item.id, color: 'orange en-1' },
       ...item.tags.map(t => ({ type: 'tag', value: t, label: 'label' })),
     ]
   }
@@ -270,7 +284,7 @@ function setupFilter(items: Ref<ModItem[]>) {
       return true
     }
     if (filterInCompatible.value) {
-      return isModCompatible(mod.resource, runtime) !== false
+      return isModCompatible(mod.resource, runtime.value) !== false
     }
     return true
   }

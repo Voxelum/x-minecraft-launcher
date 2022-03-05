@@ -4,7 +4,7 @@
     :width="300"
     :persistent="status === 'launching'"
   >
-    <v-card dark>
+    <v-card>
       <v-container>
         <v-layout
           align-center

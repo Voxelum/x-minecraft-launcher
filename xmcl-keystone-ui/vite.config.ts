@@ -46,12 +46,13 @@ export default defineConfig({
       },
     }),
     WindiCSS({
-      // config: {
-      //     extract: {
-      //         include: [join(__dirname, '../src')],
-      //         exclude: ['**/node_modules/**', '.git'],
-      //     }
-      // },
+      config: {
+        important: true,
+        // extract: {
+        //     include: [join(__dirname, '../src')],
+        //     exclude: ['**/node_modules/**', '.git'],
+        // }
+      },
       scan: {
         dirs: [join(__dirname, './src')],
         fileExtensions: ['vue', 'ts'],

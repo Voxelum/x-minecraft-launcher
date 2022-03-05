@@ -1,27 +1,27 @@
 <template>
   <div class="flex flex-col overflow-auto h-full">
-    <v-list-tile>
+    <v-list-item class="flex-1 flex-grow-0 flex justify-end">
       <v-checkbox
         v-model="showStableOnly"
         :label="$t('fabric.showStableOnly')"
       />
-    </v-list-tile>
-    <v-divider dark />
+    </v-list-item>
+    <v-divider />
     <v-list
       v-if="fabricSupported"
-      dark
       class="overflow-hidden"
       style="background-color: transparent;"
     >
-      <v-list-tile
+      <v-list-item
         ripple
+        class="flex-grow-0 flex-1 justify-start"
         @click="select(undefined)"
       >
-        <v-list-tile-avatar>
+        <v-list-item-avatar>
           <v-icon>close</v-icon>
-        </v-list-tile-avatar>
+        </v-list-item-avatar>
         {{ $t('fabric.disable') }}
-      </v-list-tile>
+      </v-list-item>
       <virtual-list
         ref="list"
         style="overflow-y: auto; scrollbar-width: 0; height: 100%"

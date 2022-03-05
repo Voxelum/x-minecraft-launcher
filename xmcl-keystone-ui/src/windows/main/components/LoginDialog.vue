@@ -1,8 +1,8 @@
 <template>
   <v-dialog
     v-model="isShown"
-    width="500"
-    :persistent="persistent"
+    width="550"
+    :persistent="isPersistent"
     @dragover.prevent
   >
     <v-card
@@ -11,145 +11,68 @@
       @drop="onDrop"
     >
       <v-flex
-        style="display: block;"
-        text-xs-center
         pa-4
-        class="green"
+        class="green justify-center relative items-center"
       >
-        <v-icon style="font-size: 50px">
-          person_pin
-        </v-icon>
-      </v-flex>
-      <hint
-        v-if="showDropHint"
-        icon="save_alt"
-        :text="$t('user.dropHint').toString()"
-        style="height: 350px"
-      />
-      <v-card-text v-if="!showDropHint">
-        <v-form
-          ref="form"
-          v-model="isFormValid"
-        >
-          <v-layout>
-            <v-flex xs6>
-              <v-select
-                v-model="authService"
-                prepend-icon="vpn_key"
-                :items="authServices"
-                :label="$t('user.authMode')"
-                flat
-                dark
-              />
-            </v-flex>
-            <v-flex xs6>
-              <v-select
-                v-model="profileService"
-                prepend-icon="receipt"
-                :items="profileServices"
-                :label="$t('user.profileMode')"
-                flat
-                dark
-              />
-            </v-flex>
-          </v-layout>
-
-          <v-combobox
-            ref="accountInput"
-            v-model="username"
-            :items="history"
-            dark
-            prepend-icon="person"
-            required
-            :label="
-              $te(`user.${authService.value}.account`)
-                ? $t(`user.${authService.value}.account`)
-                : $t(`user.${isOffline ? 'offline' : 'mojang'}.account`)
-            "
-            :rules="usernameRules"
-            :error="!!usernameErrors.length"
-            :error-messages="usernameErrors"
-            @input="usernameErrors = []"
-            @keypress="resetError"
-          />
-
-          <v-text-field
-            v-model="password"
-            dark
-            prepend-icon="lock"
-            type="password"
-            required
-            :label="passwordLabel"
-            :rules="passwordRules"
-            :disabled="isOffline || isMicrosoft"
-            :error="!!passwordErrors.length"
-            :error-messages="passwordErrors"
-            @input="passwordErrors = []"
-            @keypress.enter="login"
-          />
-        </v-form>
-      </v-card-text>
-      <v-card-actions
-        v-if="!showDropHint"
-        style="padding-left: 40px; padding-right: 40px"
-      >
-        <v-flex
-          text-xs-center
-          style="z-index: 1; display: block;"
-        >
-          <div
-            @mouseenter="onMouseEnterLogin"
-            @mouseleave="onMouseLeaveLogin"
+        <div class="absolute flex justify-start w-full pl-4">
+          <v-btn
+            v-if="active !== LoginDialogLoginView"
+            icon
+            @click="route('back')"
           >
-            <v-btn
-              block
-              :loading="logining && (!hovered || authService.value !== 'microsoft')"
-              color="green"
-              round
-              large
-              style="color: white"
-              dark
-              @click="login"
+            <v-icon>arrow_back</v-icon>
+          </v-btn>
+        </div>
+        <div>
+          <transition
+            name="fade-transition"
+            mode="out-in"
+          >
+            <v-icon
+              v-if="isLoginView"
+              style="font-size: 50px"
             >
-              <span v-if="!logining">
-                {{ $t("user.login") }}
-              </span>
-              <v-icon v-else>
-                close
-              </v-icon>
-            </v-btn>
-          </div>
+              person_pin
+            </v-icon>
+            <v-card-title
+              v-else
+            >
+              {{ $t('user.service.title') }}
+            </v-card-title>
+          </transition>
+        </div>
+      </v-flex>
 
-          <div style="margin-top: 25px">
-            <a
-              style="padding-right: 10px; z-index: 20"
-              href="https://my.minecraft.net/en-us/password/forgot/"
-            >{{ $t("user.forgetPassword") }}</a>
-            <a
-              style="z-index: 20"
-              href="https://my.minecraft.net/en-us/store/minecraft/#register"
-            >
-              {{ $t("user.signupDescription") }}
-              {{ $t("user.signup") }}
-            </a>
-          </div>
-        </v-flex>
-      </v-card-actions>
+      <transition
+        name="fade-transition"
+        mode="out-in"
+      >
+        <component
+          :is="active"
+          :inside="inside"
+          @route="route"
+        />
+      </transition>
     </v-card>
   </v-dialog>
 </template>
 
 <script lang=ts>
-import { reactive, computed, watch, toRefs, onMounted, ref, defineComponent, Ref, nextTick, inject } from '@vue/composition-api'
-import { useLogin, useLoginValidation, useI18n, useService, IssueHandler } from '/@/hooks'
+import { computed, defineComponent, inject, Ref, ref, watch } from '@vue/composition-api'
+import { BaseServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
 import { useLoginDialog } from '../composables'
-import Hint from '/@/components/Hint.vue'
-import { BaseServiceKey, LoginException } from '@xmcl/runtime-api'
+import LoginDialogLoginView from './LoginDialogLoginView.vue'
+import { IssueHandler, useCurrentUser, useI18n, useService, useUserProfileStatus } from '/@/hooks'
+import { useDropLink } from '/@/hooks/useDropLink'
+import LoginDialogUserServicesCard from './LoginDialogUserServicesCard.vue'
+import StepperUserService from './LoginDialogUserServiceStepper.vue'
 
 export default defineComponent({
-  components: { Hint },
+  components: { LoginDialogLoginView, LoginDialogUserServicesCard, StepperUserService },
   setup() {
-    const { hide, isShown, show } = useLoginDialog()
+    const { hide, isShown, show, parameter } = useLoginDialog()
+    const active = ref(LoginDialogLoginView as any)
+    const { inside } = useDropLink()
 
     // handle the not login issue
     const issueHandler = inject(IssueHandler)
@@ -157,93 +80,19 @@ export default defineComponent({
       issueHandler.userNotLogined = show
     }
 
-    const { $te, $t } = useI18n()
-    const inside = ref(false)
-    const {
-      username,
-      password,
-      authService,
-      profileService,
-      cancelMicrosoftLogin,
-
-      selectedProfile,
-
-      selectProfile,
-
-      logined,
-      logining,
-      login,
-      remove,
-      reset,
-
-      history,
-      profileServices,
-      authServices,
-    } = useLogin()
-    const isOffline = computed(() => authService.value.value === 'offline')
-    const {
-      usernameRules,
-      usernameErrors,
-      passwordRules,
-      passwordErrors,
-      reset: resetError,
-      handleError,
-    } = useLoginValidation(isOffline)
-    const isMicrosoft = computed(() => authService.value.value === 'microsoft')
-    const persistent = computed(() => !logined.value)
-    const data = reactive({
-      isFormValid: true,
-    })
-    const accountInput: Ref<any> = ref(null)
-    const form: Ref<any> = ref(null)
-    const passwordLabel = computed(() => ($te(`user.${authService.value.value}.password`)
-      ? $t(`user.${authService.value.value}.password`)
-      : $t(`user.${isOffline.value ? 'offline' : 'mojang'}.password`)))
-    const showDropHint = computed(() => isMicrosoft.value && inside.value && logining.value)
-    const hovered = ref(false)
-
-    async function _login() {
-      resetError()
-      accountInput.value.blur()
-      await nextTick() // wait a tick to make sure username updated.
-      try {
-        if (logining.value) {
-          await cancelMicrosoftLogin()
-          return
+    const { state } = useService(UserServiceKey)
+    const userProfile = computed(() => state.users[state.selectedUser.id])
+    const isLoginView = computed(() => active.value === LoginDialogLoginView)
+    const isPersistent = computed(() => {
+      if (userProfile.value?.accessToken) {
+        return false
+      }
+      for (const user of Object.values(state.users)) {
+        if (user.accessToken) {
+          return false
         }
-        await login()
-        hide()
-      } catch (e) {
-        handleError(e as LoginException)
-        console.log(e)
       }
-    }
-
-    watch(isShown, (s) => {
-      if (!s) { return }
-      if (!logined.value) {
-        selectProfile.value = true
-      }
-      if (s) {
-        reset()
-      }
-    })
-    watch([authService, profileService], () => {
-      form.value.resetValidation()
-      if (authService.value !== profileService.value && profileService.value.value === '') {
-        profileService.value = profileServices.value.find(p => p === authService.value) ?? profileServices.value.find(p => p.value === 'mojang')!
-      }
-    })
-
-    document.addEventListener('dragleave', (e) => {
-      if ((e as any).fromElement === null && e.dataTransfer!.effectAllowed === 'copyLink') {
-        inside.value = false
-      }
-    })
-    document.addEventListener('dragenter', (e) => {
-      if ((e as any).fromElement === null && e.dataTransfer!.effectAllowed === 'copyLink') {
-        inside.value = true
-      }
+      return true
     })
     const { handleUrl } = useService(BaseServiceKey)
     const onDrop = (e: DragEvent) => {
@@ -253,52 +102,35 @@ export default defineComponent({
       }
       inside.value = false
     }
+    const stack = [] as any[]
+    const route = (route: string) => {
+      if (route === 'back') {
+        active.value = stack.pop() ?? LoginDialogLoginView
+      } else if (route === 'profile') {
+        stack.push(active.value)
+        active.value = LoginDialogUserServicesCard
+      } else if (route === 'edit-service') {
+        stack.push(active.value)
+        active.value = StepperUserService
+      }
+    }
 
-    const onMouseEnterLogin = () => {
-      console.log('enter')
-      hovered.value = true
-    }
-    const onMouseLeaveLogin = () => {
-      hovered.value = false
-    }
+    watch(isShown, (v) => {
+      if (!v) {
+        active.value = LoginDialogLoginView
+        stack.splice(0, stack.length)
+      }
+    })
 
     return {
-      ...toRefs(data),
-      hovered,
-      logining,
-      username,
-      password,
-      authService,
-      profileService,
-      profileServices,
-      authServices,
-      isOffline,
-      isMicrosoft,
-
-      selectedProfile,
-      onMouseEnterLogin,
-      onMouseLeaveLogin,
-
-      isShown,
-
-      resetError,
-
-      login: _login,
-      remove,
-
-      usernameRules,
-      passwordRules,
-      usernameErrors,
-      passwordErrors,
-
-      persistent,
-
-      accountInput,
-      history,
-      form,
-      showDropHint,
-      passwordLabel,
+      isPersistent,
+      LoginDialogLoginView,
+      isLoginView,
+      inside,
       onDrop,
+      active,
+      route,
+      isShown,
     }
   },
 })

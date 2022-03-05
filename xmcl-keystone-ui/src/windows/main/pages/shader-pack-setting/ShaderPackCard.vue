@@ -2,19 +2,20 @@
   <v-card
     v-draggable-card
     v-selectable-card
+    outlined
     hover
-    dark
     :draggable="!pack.enabled && pack.path"
-    class="white--text draggable-card flex duration-200 mt-2 flex-row flex-nowrap select-none"
+    class="draggable-card flex duration-200 mt-2 flex-row flex-nowrap select-none"
     :class="{ enabled: pack.enabled }"
     @contextmenu="onContextMenu"
     @click="onSelect"
     @dragstart="$emit('dragstart', pack)"
     @dragend="$emit('dragend')"
   >
-    <div class="self-center px-2">
+    <div class="self-center px-2 ">
       <img
         v-fallback-img="unknownPack"
+        class="rounded-2"
         :src="unknownPack"
         contain
         width="60"
@@ -22,39 +23,42 @@
       >
     </div>
     <div class="flex-grow">
-      <v-card-title class="flex flex-col items-start gap-2">
+      <v-card-title class="pb-2">
         <div
           v-once
-          class="text-lg font-bold text"
+          class="font-bold"
           :contenteditable="!builtin"
           @input="updateName"
         >
           {{ pack.name }}
         </div>
-        <div v-if="pack.tags.length > 0">
-          <v-chip
-            v-for="(tag, index) in pack.tags"
-            :key="`${tag}${index}`"
-            :color="getColor(tag)"
-            label
-            small
-            close
-            outline
-            @input="onRemoveTag(tag)"
-          >
-            <div
-              contenteditable
-              @input.stop="onEditTag($event, index)"
-              @blur="onEditTagEnd(pack)"
-            >
-              {{ tag }}
-            </div>
-          </v-chip>
-        </div>
-        <div style="color: #bdbdbd; ">
-          {{ pack.description }}
-        </div>
       </v-card-title>
+      <v-card-text>
+        {{ pack.description }}
+      </v-card-text>
+      <v-card-text
+        v-if="pack.tags.length > 0"
+        class="pt-0"
+      >
+        <v-chip
+          v-for="(tag, index) in pack.tags"
+          :key="`${tag}${index}`"
+          :color="getColor(tag)"
+          label
+          small
+          close
+          outlined
+          @input="onRemoveTag(tag)"
+        >
+          <div
+            contenteditable
+            @input.stop="onEditTag($event, index)"
+            @blur="onEditTagEnd(pack)"
+          >
+            {{ tag }}
+          </div>
+        </v-chip>
+      </v-card-text>
     </div>
     <div class="self-center flex-shrink pr-2">
       <v-switch

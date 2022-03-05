@@ -1,23 +1,21 @@
 <template>
-  <v-list-tile
+  <v-list-item
     :key="source.version"
+    class="flex"
     ripple
     @click="select(source)"
   >
-    <v-list-tile-title class="pl-3">
-      {{ source.version }}
-    </v-list-tile-title>
+    {{ source.version }}
+    <div class="flex-grow" />
 
-    <v-list-tile-action style="justify-content: flex-end;">
-      <v-chip
-        v-if="source.type !== 'common'"
-        label
-        :color="source.type === 'recommended' ? 'green' : ''"
-      >
-        {{ source.type }}
-      </v-chip>
-    </v-list-tile-action>
-  </v-list-tile>
+    <v-chip
+      v-if="source.type !== 'common'"
+      label
+      :color="source.type === 'recommended' ? 'green' : ''"
+    >
+      {{ source.type }}
+    </v-chip>
+  </v-list-item>
 </template>
 
 <script lang=ts>

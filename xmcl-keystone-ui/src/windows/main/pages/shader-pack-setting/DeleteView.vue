@@ -58,10 +58,3 @@ export default defineComponent({
   },
 })
 </script>
-
-<style>
-.card-list.right {
-  display: flex;
-  flex-flow: column;
-}
-</style>

@@ -1,14 +1,25 @@
 <template>
-  <div class="flex flex-col max-h-full h-full">
-    <div class="header-bar z-10">
-      <div class="headline align-middle self-center pl-2">
+  <div class="max-h-full h-full gap-3 px-8 py-4 pb-0">
+    <v-progress-linear
+      class="absolute top-0 z-10 m-0 p-0 left-0"
+      :active="loading"
+      height="3"
+      :indeterminate="true"
+    />
+    <v-card
+      outlined
+      class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2"
+      elevation="1"
+    >
+      <!-- <div class="headline align-middle self-center pl-2">
         {{ $tc("resourcepack.name", 2) }}
-      </div>
-      <v-spacer />
+      </div> -->
+      <!-- <v-spacer /> -->
       <filter-combobox
         :label="$t('resourcepack.filter')"
         class="max-w-150 mr-2"
       />
+      <div class="flex-grow" />
       <v-btn
         icon
         @click="showFolder()"
@@ -22,7 +33,7 @@
             v-on="on"
             @click="goToCurseforge()"
           >
-            <v-icon :size="14">
+            <v-icon>
               $vuetify.icons.curseforge
             </v-icon>
           </v-btn>
@@ -38,201 +49,175 @@
             preview
           </span>
       </v-btn>-->
-    </div>
+    </v-card>
 
-    <v-container
-      grid-list-xs
-      class="resource-pack-page h-full"
-      style="overflow: auto"
+    <div
+      class="h-full overflow-auto grid grid-cols-2 gap-8"
     >
-      <refreshing-tile
-        v-if="loading"
-        class="h-full"
-      />
-      <v-layout
-        v-else
-        row
+      <div
+        ref="leftList"
+        class="h-full overflow-auto flex flex-col"
+        flat
+        @drop="dragging = false"
       >
-        <v-flex
-          d-flex
-          xs6
-          class="pr-2"
+        <!-- <v-card
+          outlined
+          class="rounded-lg"
         >
-          <v-card
-            ref="leftList"
-            dark
-            class="card-list"
-            color="transparent"
-            flat
-            @drop="dragging = false"
-          >
-            <v-card-title
-              style="
-              border-color: rgba(255, 255, 255, 0.7);
-              border-style: solid;
-              border-width: 0 0 thin 0;
-            "
-            >
-              <span
-                class="text-sm-center"
-                style="width: 100%; font-size: 16px; user-select: none;"
-              >
-                {{
-                  $t("resourcepack.unselected")
-                }}
-              </span>
-            </v-card-title>
-            <hint
-              v-if="unselectedItems.length === 0"
-              icon="save_alt"
-              :text="
-                $t('resourcepack.dropHint')"
-              :absolute="true"
-              class="h-full"
-            />
-            <div
-              v-else
-              class="list"
-              style="overflow-x: hidden"
-            >
-              <transition-group
-                name="transition-list"
-                tag="div"
-              >
-                <resource-pack-card
-                  v-for="item in unselectedItems"
-                  :key="item.path"
-                  :pack="item"
-                  :is-selected="false"
-                  @tags="item.tags = $event"
-                  @dragstart="dragging = true"
-                  @dragend="dragging = false"
-                  @mouseup="dragging = false"
-                />
-              </transition-group>
-            </div>
-          </v-card>
-        </v-flex>
-        <v-flex
-          d-flex
-          xs6
-          style="padding-left: 5px"
-        >
-          <v-card
-            ref="rightList"
-            color="transparent"
-            dark
-            flat
-            class="card-list right"
-            @drop="dragging = false"
-          >
-            <v-card-title
-              style="
-              border-color: rgba(255, 255, 255, 0.7);
-              border-style: solid;
-              border-width: 0 0 thin 0;
-            "
-            >
-              <span
-                class="text-sm-center"
-                style="width: 100%; font-size: 16px; user-select: none;"
-              >
-                {{
-                  $t("resourcepack.selected")
-                }}
-              </span>
-            </v-card-title>
-            <hint
-              v-if="selectedItems.length === 0"
-              icon="save_alt"
-              :text="$t('resourcepack.dropHint')"
-              :absolute="true"
-              style="height: 100%"
-            />
-            <div
-              v-else
-              class="list"
-              style="overflow-x: hidden"
-            >
-              <transition-group
-                name="transition-list"
-                tag="div"
-              >
-                <resource-pack-card
-                  v-for="item in selectedItems"
-                  :key="item.path"
-                  :pack="item"
-                  :is-selected="true"
-                  @dragstart="dragging = true"
-                  @dragend="dragging = false"
-                  @mouseup="dragging = false"
-                />
-              </transition-group>
-            </div>
-          </v-card>
-        </v-flex>
-      </v-layout>
-      <v-fab-transition>
-        <v-btn
-          v-if="dragging"
-          style="right: 40vw; bottom: 10px"
-          large
-          absolute
-          dark
-          fab
-          bottom
-          color="red"
-          @dragover.prevent
-          @drop="onDropDelete"
-        >
-          <v-icon>delete</v-icon>
-        </v-btn>
-      </v-fab-transition>
-      <v-dialog
-        :value="!!deletingPack"
-        width="400"
-        persistance
-      >
-        <v-card>
-          <v-card-title primary-title>
-            <div>
-              <h3 class="headline mb-0">
-                {{
-                  $t("resourcepack.deletion", {
-                    pack: deletingPack ? deletingPack.name : "",
-                  })
-                }}
-              </h3>
-              <div>{{ $t("resourcepack.deletionHint") }}</div>
-            </div>
+          <v-card-title class="justify-center">
+            {{
+              $t("resourcepack.unselected")
+            }}
           </v-card-title>
 
-          <v-divider />
-          <v-card-actions>
-            <v-btn
-              flat
-              @click="
-                isDeletingPack = false;
-                deletingPack = null;
-              "
-            >
-              {{ $t("no") }}
-            </v-btn>
-            <v-spacer />
-            <v-btn
-              flat
-              color="red"
-              @click="confirmDeletingPack"
-            >
-              <v-icon left>
-                delete
-              </v-icon>
-              {{ $t("yes") }}
-            </v-btn>
-          </v-card-actions>
+        </v-card> -->
+        <div
+          class="text-center py-2"
+          style="
+              border-color: rgba(255, 255, 255, 0.7);
+              border-style: solid;
+              border-width: 0 0 thin 0;
+            "
+        >
+          <span
+            class="text-lg"
+            style="width: 100%; user-select: none;"
+          >
+            {{
+              $t("resourcepack.selected")
+            }}
+          </span>
+        </div>
+
+        <hint
+          v-if="unselectedItems.length === 0"
+          icon="save_alt"
+          :text="
+            $t('resourcepack.dropHint')"
+          class="h-full"
+        />
+        <transition-group
+          v-else
+          class="list overflow-auto flex flex-col"
+          name="transition-list"
+          tag="div"
+        >
+          <resource-pack-card
+            v-for="item in unselectedItems"
+            :key="item.path"
+            :pack="item"
+            :is-selected="false"
+            @tags="item.tags = $event"
+            @dragstart="dragging = true"
+            @dragend="dragging = false"
+            @mouseup="dragging = false"
+          />
+        </transition-group>
+      </div>
+
+      <div
+        ref="rightList"
+        color="transparent"
+        class="h-full overflow-auto flex flex-col"
+        flat
+        @drop="dragging = false"
+      >
+        <v-card
+          outlined
+          class="rounded-lg"
+        >
+          <v-card-title class="w-full justify-center">
+            {{
+              $t("resourcepack.selected")
+            }}
+          </v-card-title>
         </v-card>
-      </v-dialog>
-    </v-container>
+        <hint
+          v-if="selectedItems.length === 0"
+          icon="save_alt"
+          :text="$t('resourcepack.dropHint')"
+          :absolute="true"
+          style="height: 100%"
+        />
+        <transition-group
+          v-else
+          name="transition-list"
+          tag="div"
+          class="list overflow-auto flex flex-col"
+        >
+          <resource-pack-card
+            v-for="item in selectedItems"
+            :key="item.path"
+            :pack="item"
+            :is-selected="true"
+            @dragstart="dragging = true"
+            @dragend="dragging = false"
+            @mouseup="dragging = false"
+          />
+        </transition-group>
+      </div>
+    </div>
+
+    <v-fab-transition>
+      <v-btn
+        v-if="dragging"
+        style="right: 40vw; bottom: 10px"
+        large
+        absolute
+
+        fab
+        bottom
+        color="red"
+        @dragover.prevent
+        @drop="onDropDelete"
+      >
+        <v-icon>delete</v-icon>
+      </v-btn>
+    </v-fab-transition>
+    <v-dialog
+      :value="!!deletingPack"
+      width="400"
+      persistance
+    >
+      <v-card>
+        <v-card-title primary-title>
+          <div>
+            <h3 class="headline mb-0">
+              {{
+                $t("resourcepack.deletion", {
+                  pack: deletingPack ? deletingPack.name : "",
+                })
+              }}
+            </h3>
+            <div>{{ $t("resourcepack.deletionHint") }}</div>
+          </div>
+        </v-card-title>
+
+        <v-divider />
+        <v-card-actions>
+          <v-btn
+            text
+            @click="
+              isDeletingPack = false;
+              deletingPack = null;
+            "
+          >
+            {{ $t("no") }}
+          </v-btn>
+          <v-spacer />
+          <v-btn
+            text
+            color="red"
+            @click="confirmDeletingPack"
+          >
+            <v-icon left>
+              delete
+            </v-icon>
+            {{ $t("yes") }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -252,7 +237,6 @@ import ResourcePackCard from './ResourcePackCard.vue'
 import { useSearch } from '../../composables'
 import FilterCombobox, { useFilterCombobox } from '/@/components/FilterCombobox.vue'
 import Hint from '/@/components/Hint.vue'
-import RefreshingTile from '/@/components/RefreshingTile.vue'
 
 function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {
   function getFilterOptions(item: ResourcePackItem) {
@@ -277,7 +261,6 @@ export default defineComponent({
     ResourcePackCard,
     FilterCombobox,
     Hint,
-    RefreshingTile: RefreshingTile as any,
   },
   setup() {
     const { text: filterText } = useSearch()
@@ -293,8 +276,8 @@ export default defineComponent({
       isDeletingPack: false,
       deletingPack: null as ResourcePackItem | null,
     })
-    const leftListElem = computed(() => leftList.value?.$el) as Ref<HTMLElement>
-    const rightListElem = computed(() => rightList.value?.$el) as Ref<HTMLElement>
+    const leftListElem = computed(() => leftList.value) as Ref<HTMLElement>
+    const rightListElem = computed(() => rightList.value) as Ref<HTMLElement>
     useDragTransferList(
       leftListElem,
       rightListElem,
@@ -351,12 +334,5 @@ export default defineComponent({
 <style>
 .card-list {
   background: transparent;
-}
-.resource-pack-page .list::-webkit-scrollbar {
-  width: 0px;
-  height: 0px;
-  /* remove scrollbar space */
-  /* background: transparent; */
-  /* optional: just make scrollbar invisible */
 }
 </style>

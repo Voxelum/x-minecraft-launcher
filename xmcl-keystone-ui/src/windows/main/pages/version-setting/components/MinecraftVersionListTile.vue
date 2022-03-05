@@ -1,33 +1,38 @@
 <template>
-  <v-list-tile
+  <v-list-item
     :key="source.id"
     :class="{
       grey: isSelected,
-      'darken-1': isSelected,
+      'en-1': isSelected,
       'elevation-2': isSelected,
     }"
     ripple
     @click="select(source)"
   >
-    <v-list-tile-avatar>
+    <div class="w-20">
       <v-chip
         :color="source.type === 'release' ? 'primary' : ''"
         label
-        dark
       >
         {{ type }}
       </v-chip>
-    </v-list-tile-avatar>
+    </div>
 
-    <v-list-tile-title class="flex gap-2 pl-3">
+    <v-list-item-title
+      style="flex: 1 1 30%"
+      class="!flex-grow-0"
+    >
       {{ source.id }}
-    </v-list-tile-title>
-    <v-list-tile-sub-title v-if="showTime">
+    </v-list-item-title>
+    <v-list-item-subtitle
+      v-if="showTime"
+      class="flex-grow flex"
+    >
       {{
         new Date(source.releaseTime).toLocaleString()
       }}
-    </v-list-tile-sub-title>
-    <v-list-tile-action class="flex justify-end">
+    </v-list-item-subtitle>
+    <v-list-item-action class="flex justify-end">
       <v-btn
         icon
         :loading="installing"
@@ -35,8 +40,8 @@
       >
         <v-icon>{{ statuses[source.id] === "remote" ? "file_download" : "folder" }}</v-icon>
       </v-btn>
-    </v-list-tile-action>
-  </v-list-tile>
+    </v-list-item-action>
+  </v-list-item>
 </template>
 
 <script lang=ts>

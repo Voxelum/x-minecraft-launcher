@@ -1,10 +1,10 @@
 <template>
-  <v-list-tile @click="source.onClick">
-    <v-list-tile-content>
-      <v-list-tile-title>{{ name }}</v-list-tile-title>
-      <v-list-tile-sub-title>{{ variantsCount }} variants </v-list-tile-sub-title>
-    </v-list-tile-content>
-  </v-list-tile>
+  <v-list-item @click="source.onClick">
+    <v-list-item-content>
+      <v-list-item-title>{{ name }}</v-list-item-title>
+      <v-list-item-subtitle>{{ variantsCount }} variants </v-list-item-subtitle>
+    </v-list-item-content>
+  </v-list-item>
 </template>
 
 <script lang=ts>

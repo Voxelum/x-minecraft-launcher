@@ -366,15 +366,6 @@
     "postProcessing": "后处理，更新本地文件"
   },
   "installCurseforgeFile": "安装 Curseforge 文件",
-  "installModpack": {
-    "": "安装整合包",
-    "deploy": "部署",
-    "download": {
-      "": "下载",
-      "file": "下载文件"
-    },
-    "unpack": "解压缩"
-  },
   "installDependencies": {
     "": "检查%{version}的依赖",
     "installAssets": {
@@ -409,6 +400,18 @@
   "installLibraries": {
     "": "安装依赖运行库",
     "library": "检查库文件"
+  },
+  "installModpack": {
+    "": "安装整合包",
+    "deploy": "部署",
+    "download": {
+      "": "下载",
+      "file": "下载文件"
+    },
+    "unpack": "解压缩"
+  },
+  "installModrinthFile": {
+    "": "从 Modrinth 下载"
   },
   "installOptifine": {
     "": "安装 Optifine",
@@ -581,6 +584,12 @@
     "showIncompatible": "显示不兼容 Mods",
     "unselected": "未选 Mods"
   },
+  "modpack": {
+    "dropHint": "通过拖拽导入整合包文件",
+    "filter": "过滤整合包",
+    "showFile": "显示 {file}",
+    "showInCurseforge": "在 Curseforge 中显示 {name}"
+  },
   "modrinth": {
     "avaiableFor": "可用于",
     "categories": {
@@ -593,6 +602,7 @@
       "magic": "魔法",
       "misc": "杂项",
       "name": "分类",
+      "optimization": "优化",
       "storage": "存储",
       "technology": "科技",
       "utility": "工具",
@@ -703,6 +713,8 @@
       "description": "游戏简介",
       "descriptionHint": "通用的 modpack 简介。在导出成 curseforge 整合包或者其他格式时会使用",
       "edit": "编辑Mod包信息",
+      "emitCurseforge": "生成 Curseforge 整合包",
+      "emitMcbbs": "生成 MCBBS 整合包",
       "error": {
         "requirename": "名称不能为空！请随便编一个名字"
       },
@@ -782,6 +794,10 @@
     "versionSetting": "版本管理",
     "vmOptions": "JVM 启动选项",
     "vmOptionsHint": "额外的 JVM 的启动参数"
+  },
+  "proxy": {
+    "host": "服务器地址",
+    "port": "端口号"
   },
   "refreshResource": "刷新资源",
   "remove": "移除",
@@ -878,6 +894,8 @@
     "cleanOldDataHint": "移除所有以前的Minecraft数据，包括资源包、地图存档等",
     "copyOldToNew": "迁移数据",
     "copyOldToNewHint": "在移除旧数据之前，将所有旧数据复制到新的位置",
+    "darkTheme": "主题",
+    "darkThemeDescription": "选择深色或浅色主题",
     "general": "基本设置",
     "installAndQuit": "重启并安装更新",
     "language": "语言",
@@ -912,6 +930,8 @@
     "updateToThisVersion": "下载并安装",
     "useBmclAPI": "使用 BMCL API",
     "useBmclAPIDescription": "当你在大陆时，优先使用 BMCLAPI 来下载 Minecraft",
+    "useProxy": "HTTP 代理设置",
+    "useProxyDescription": "使用代理服务器可以某些服务的访问",
     "viewUpdate": "详细信息",
     "waitReload": "迁移数据中。请勿在此时关闭启动器，否则你将可能失去一部分数据。"
   },

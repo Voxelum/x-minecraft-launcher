@@ -1,22 +1,22 @@
 <template>
   <div class="flex h-full flex-col">
-    <v-divider dark />
+    <v-divider />
     <refreshing-tile v-if="refreshing && versions.length === 0" />
     <v-list
       v-else-if="versions.length !== 0"
-      dark
+
       class="overflow-hidden"
       style="background-color: transparent;"
     >
-      <v-list-tile
+      <v-list-item
         ripple
         @click="select(undefined)"
       >
-        <v-list-tile-avatar>
+        <v-list-item-avatar>
           <v-icon>close</v-icon>
-        </v-list-tile-avatar>
+        </v-list-item-avatar>
         {{ $t("optifine.disable") }}
-      </v-list-tile>
+      </v-list-item>
       <virtual-list
         ref="list"
         style="overflow-y: scroll; scrollbar-width: 0; height: 100%"

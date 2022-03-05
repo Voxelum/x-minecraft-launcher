@@ -1,17 +1,16 @@
 <template>
   <div
-    class="display-1 white--text flex w-full align-center max-h-20"
+    class="display-1 flex w-full align-center max-h-20 gap-3"
   >
     <span style="margin-right: 10px;">{{ name || `Minecraft ${version.minecraft}` }}</span>
     <v-chip
       v-if="!isServer && author"
       label
-      color="green"
+      color="primary"
       small
-      :selected="false"
-      style="margin-right: 5px;"
+      :input-value="false"
     >
-      <v-avatar>
+      <v-avatar left>
         <v-icon>person</v-icon>
       </v-avatar>
       {{ author }}
@@ -19,12 +18,12 @@
     <v-chip
       label
       class="pointer"
-      :color="!localVersion.id ? 'orange' : 'green'"
+      :color="!localVersion.id ? 'warning' : 'primary'"
       small
-      :selected="false"
+      :input-value="false"
       @click="$router.push('/version-setting')"
     >
-      <v-avatar>
+      <v-avatar left>
         <img
           v-if="isServer"
           :src="status.favicon || unknownServer"
@@ -38,10 +37,10 @@
     <v-chip
       label
       small
-      :selected="false"
+      :input-value="false"
       @click.stop
     >
-      <v-avatar>
+      <v-avatar left>
         <img
           :src="minecraftPng"
           alt="minecraft"
@@ -54,7 +53,7 @@
       small
       label
     >
-      <v-avatar>
+      <v-avatar left>
         <img
           :src="forgePng"
           alt="forge"
@@ -67,7 +66,7 @@
       small
       label
     >
-      <v-avatar>
+      <v-avatar left>
         <img
           :src="fabricPng"
           alt="fabric"
@@ -80,10 +79,10 @@
       label
       class="pointer"
       small
-      :selected="false"
-      outline
+      :input-value="false"
+      outlined
     >
-      <v-avatar>
+      <v-avatar left>
         <v-icon>people</v-icon>
       </v-avatar>
       {{ status.players.online }} / {{ status.players.max }}
@@ -93,11 +92,11 @@
       :style="{ color: status.ping < 100 ? 'green' : status.ping < 300 ? 'orange' : 'red' }"
       label
       class="pointer"
-      outline
+      outlined
       small
-      :selected="false"
+      :input-value="false"
     >
-      <v-avatar>
+      <v-avatar left>
         <v-icon
           :style="{ color: status.ping < 100 ? 'green' : status.ping < 300 ? 'orange' : 'red' }"
         >

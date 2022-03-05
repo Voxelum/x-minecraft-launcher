@@ -1,13 +1,16 @@
 <template>
-  <div class="flex gap-3 p-4 overflow-auto mb-1 modrinth">
+  <div class="flex gap-2 p-4 overflow-auto mb-1 modrinth w-full pb-0">
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
       :active="refreshing"
       height="3"
       :indeterminate="true"
     />
-    <div class="flex flex-col gap-3">
-      <v-card class="flex py-1 rounded-lg flex-shrink flex-grow-0">
+    <div class="flex flex-col gap-2 overflow-auto">
+      <v-card
+        class="flex py-1 flex-shrink flex-grow-0"
+        outlined
+      >
         <v-text-field
           v-model="query"
           color="green"
@@ -44,35 +47,41 @@
         />
       </v-card>
 
-      <ModCard
-        v-for="mod in mods"
-        :key="mod.mod_id"
-        v-ripple
-        :value="mod"
-        hoverable
-        class="cursor-pointer"
-        @click="push(`/modrinth/${mod.mod_id}`)"
+      <div class="flex flex-col gap-3 overflow-auto">
+        <ModCard
+          v-for="mod in mods"
+          :key="mod.mod_id"
+          v-ripple
+          :disabled="refreshing"
+          :value="mod"
+          hoverable
+          class="cursor-pointer"
+          @filter="onFiltered"
+          @click="push(`/modrinth/${mod.mod_id}`)"
+        />
+      </div>
+    </div>
+    <div class="flex flex-col overflow-auto lg:flex md:hidden">
+      <Categories
+        class="overflow-auto"
+        :loading="refreshingTag"
+        :environments="environments"
+        :categories="categories"
+        :game-versions="gameVersions"
+        :licenses="licenses"
+        :loaders="modLoaders"
+        :environment="environment"
+        :mod-loader="modLoader"
+        :game-version="gameVersion"
+        :license="license"
+        :category="category"
+        @select:modLoader="modLoader = $event"
+        @select:gameVersion="gameVersion = $event"
+        @select:license="license = $event"
+        @select:category="category = $event"
+        @select:environment="environment = $event"
       />
     </div>
-    <Categories
-      class="max-w-[20%]"
-      :loading="refreshingTag"
-      :environments="environments"
-      :categories="categories"
-      :game-versions="gameVersions"
-      :licenses="licenses"
-      :loaders="modLoaders"
-      :environment="environment"
-      :mod-loader="modLoader"
-      :game-version="gameVersion"
-      :license="license"
-      :category="category"
-      @select:modLoader="modLoader = $event"
-      @select:gameVersion="gameVersion = $event"
-      @select:license="license = $event"
-      @select:category="category = $event"
-      @select:environment="environment = $event"
-    />
   </div>
 </template>
 
@@ -88,6 +97,13 @@ export default defineComponent({
   setup() {
     const { refresh, refreshTag, ...rest } = useModrinth()
     const { push } = useRouter()
+    const onFiltered = (tag: string) => {
+      if (rest.categories.value.indexOf(tag) !== -1) {
+        rest.category.value = tag
+      } else if (rest.modLoaders.value.indexOf(tag) !== -1) {
+        rest.modLoader.value = tag
+      }
+    }
     onMounted(() => {
       refresh()
       refreshTag()
@@ -96,6 +112,7 @@ export default defineComponent({
       ...rest,
       refresh,
       push,
+      onFiltered,
     }
   },
 })
@@ -103,9 +120,14 @@ export default defineComponent({
 
 <style>
 .modrinth
-  .theme--dark.v-text-field
+  .theme--.v-text-field
   > .v-input__control
   > .v-input__slot:before {
   border: none;
+}
+
+.modrinth .v-text-field>.v-input__control>.v-input__slot:before {
+  border: none;
+  border-width: 0px;
 }
 </style>

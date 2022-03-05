@@ -2,40 +2,44 @@
   <v-menu>
     <template #activator="{ on }">
       <v-btn
-        flat
+        block
+        text
         v-on="on"
       >
         <v-icon left>
           keyboard_arrow_down
         </v-icon>
-        {{
-          selected.path
-            ? $t("curseforge.installTo", { path: selected.name })
-            : selected.name
-        }}
+        <span class="overflow-hidden whitespace-normal break-all w-full">
+
+          {{
+            selected.path
+              ? $t("curseforge.installTo", { path: selected.name })
+              : selected.name
+          }}
+        </span>
       </v-btn>
     </template>
     <v-list>
-      <v-list-tile @click="onSelect(defaultItem)">
-        <v-list-tile-avatar>
+      <v-list-item @click="onSelect(defaultItem)">
+        <v-list-item-avatar>
           <v-icon>close</v-icon>
-        </v-list-tile-avatar>
-        <v-list-tile-title>{{ defaultItem.name }}</v-list-tile-title>
-      </v-list-tile>
-      <v-list-tile
+        </v-list-item-avatar>
+        <v-list-item-title>{{ defaultItem.name }}</v-list-item-title>
+      </v-list-item>
+      <v-list-item
         v-for="(item, index) in items"
         :key="index"
         @click="onSelect(item)"
       >
-        <v-list-tile-avatar>
+        <v-list-item-avatar>
           <v-icon>golf_course</v-icon>
-        </v-list-tile-avatar>
-        <v-list-tile-title>
+        </v-list-item-avatar>
+        <v-list-item-title>
           {{
             $t("curseforge.installTo", { path: item.name })
           }}
-        </v-list-tile-title>
-      </v-list-tile>
+        </v-list-item-title>
+      </v-list-item>
     </v-list>
   </v-menu>
 </template>

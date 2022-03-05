@@ -10,15 +10,15 @@
       subheader
       style="background: transparent; width: 100%"
     >
-      <v-list-tile>
-        <div class="flex gap-4">
+      <v-list-item>
+        <div class="flex gap-4 mt-4">
           <v-flex
             d-flex
             xs3
           >
             <v-text-field
               v-model="name"
-              dark
+              outlined
               persistent-hint
               :hint="$t('profile.nameHint')"
               :label="$t('name')"
@@ -32,7 +32,7 @@
           >
             <v-text-field
               v-model="author"
-              dark
+              outlined
               persistent-hint
               :hint="$t('profile.authorHint')"
               :label="$t('author')"
@@ -42,14 +42,14 @@
           <v-flex d-flex>
             <v-text-field
               v-model="description"
-              dark
+              outlined
               persistent-hint
               :hint="$t('profile.descriptionHint')"
               :label="$t('description')"
             />
           </v-flex>
         </div>
-      </v-list-tile>
+      </v-list-item>
     </v-list>
   </v-form>
 </template>

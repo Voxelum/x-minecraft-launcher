@@ -6,9 +6,9 @@
   >
     <v-card>
       <v-toolbar
-        dark
+
         tabs
-        color="green darken"
+        color="green en"
       >
         <v-toolbar-title v-if="emitCurseforge">
           {{ $t('profile.modpack.exportCurseforge') }}
@@ -38,7 +38,7 @@
             <v-flex d-flex>
               <v-text-field
                 v-model="name"
-                dark
+
                 persistent-hint
                 :hint="$t('profile.nameHint')"
                 :label="$t('name')"
@@ -48,7 +48,7 @@
             <v-flex d-flex>
               <v-text-field
                 v-model="author"
-                dark
+
                 persistent-hint
                 :hint="$t('profile.authorHint')"
                 :label="$t('author')"
@@ -60,7 +60,7 @@
             <v-flex d-flex>
               <v-text-field
                 v-model="version"
-                dark
+
                 persistent-hint
                 :hint="$t('profile.instanceVersion')"
                 :label="$t('profile.instanceVersion')"
@@ -74,7 +74,7 @@
               <v-select
                 v-model="gameVersion"
                 :items="localVersions"
-                dark
+
                 persistent-hint
                 :hint="$tc('profile.modpack.includeVersion', 2)"
                 :label="$t('profile.gameVersion')"
@@ -148,7 +148,7 @@
         </v-layout>
         <v-layout row>
           <v-btn
-            flat
+            text
             large
             :disabled="exporting"
             @click="cancel"
@@ -157,7 +157,7 @@
           </v-btn>
           <v-spacer />
           <v-btn
-            flat
+            text
             color="primary"
             large
             :loading="exporting"

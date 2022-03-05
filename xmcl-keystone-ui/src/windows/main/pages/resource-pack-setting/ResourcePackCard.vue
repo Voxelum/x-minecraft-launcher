@@ -2,11 +2,10 @@
   <v-card
     ref="card"
     v-draggable-card
-    color="darken-1"
-    hover
+    outlined
     draggable
     :class="{ incompatible: !compatible }"
-    class="draggable-card white--text elevation-4"
+    class="draggable-card"
     style="margin-top: 10px"
     @dragstart="onDragStart"
     @dragend.prevent="onDragEnd"
@@ -16,68 +15,70 @@
   >
     <v-tooltip top>
       <template #activator="{ on }">
-        <v-layout
-          justify-center
-          align-center
-          fill-height
-          v-on="on"
-        >
-          <v-flex class="p-0">
-            <img
-              ref="iconImage"
-              v-fallback-img="unknownPack"
-              class="select-none h-[125px]"
-              :src="pack.icon"
-              contain
-            >
-          </v-flex>
-          <v-flex
-            xs7
-            md8
-            lg9
-            class="flex-col"
+        <div class="pr-2">
+          <v-layout
+            justify-center
+            align-center
+            fill-height
+            v-on="on"
           >
-            <div class="py-2 flex flex-col gap-2">
-              <text-component
-                v-once
-                style="white-space: normal; word-break: break-word"
-                :source="pack.name"
-                editable
-                class="title"
-                @edit="onEditPackName(pack, $event)"
-              />
-              <text-component
-                style="white-space: normal; word-break: break-word"
-                :source="pack.description"
-              />
-            </div>
-          </v-flex>
-        </v-layout>
-        <v-divider
-          v-show="pack.tags.length > 0"
-          class="mt-1"
-        />
-        <v-card-actions v-show="pack.tags.length > 0">
-          <div>
-            <v-chip
-              v-for="(tag, index) in pack.tags"
-              :key="`${tag}-${index}`"
-              :color="getColor(tag)"
-              label
-              outline
-              close
-              @input="onDeleteTag(tag)"
+            <v-flex class="p-0">
+              <img
+                ref="iconImage"
+                v-fallback-img="unknownPack"
+                class="select-none h-[125px]"
+                :src="pack.icon"
+                contain
+              >
+            </v-flex>
+            <v-flex
+              xs7
+              md8
+              lg9
+              class="flex-col"
             >
-              <span
-                contenteditable
-                class="max-w-90 sm:max-w-40 overflow-scroll"
-                :class="{ 'text-white': hovered }"
-                @input.stop="onEditTag($event, index)"
-                @blur="notifyTagChange(pack)"
-              >{{ tag }}</span>
-            </v-chip>
-          </div>
-        </v-card-actions>
+              <div class="py-2 flex flex-col gap-2">
+                <text-component
+                  v-once
+                  style="white-space: normal; word-break: break-word"
+                  :source="pack.name"
+                  editable
+                  class="title"
+                  @edit="onEditPackName(pack, $event)"
+                />
+                <text-component
+                  style="white-space: normal; word-break: break-word"
+                  :source="pack.description"
+                />
+              </div>
+            </v-flex>
+          </v-layout>
+          <v-divider
+            v-show="pack.tags.length > 0"
+            class="mt-1"
+          />
+          <v-card-actions v-show="pack.tags.length > 0">
+            <div>
+              <v-chip
+                v-for="(tag, index) in pack.tags"
+                :key="`${tag}-${index}`"
+                :color="getColor(tag)"
+                label
+                outlined
+                close
+                @input="onDeleteTag(tag)"
+              >
+                <span
+                  contenteditable
+                  class="max-w-90 sm:max-w-40 overflow-scroll"
+                  :class="{ 'text-white': hovered }"
+                  @input.stop="onEditTag($event, index)"
+                  @blur="notifyTagChange(pack)"
+                >{{ tag }}</span>
+              </v-chip>
+            </div>
+          </v-card-actions>
+        </div>
       </template>
       <span>
         {{

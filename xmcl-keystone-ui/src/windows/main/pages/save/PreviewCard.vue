@@ -4,7 +4,7 @@
     v-data-transfer:id="source.name"
     v-data-transfer-image="icon"
     hover
-    dark
+    outlined
     draggable
     class="white--text draggable-card"
     style="margin-top: 10px; padding: 0 10px; transition-duration: 0.2s; margin-bottom: 20px"
@@ -17,13 +17,14 @@
       fill-height
     >
       <v-flex
-        class="m-0 p-0"
+        class="m-0 p-2"
         xs3
         md2
       >
         <img
           ref="icon"
           v-fallback-img="unknownPack"
+          class="rounded-lg"
           :src="source.icon"
           style="min-height: 126px; max-height: 126px; max-width: 126px; min-width: 126px"
           contain
@@ -31,13 +32,13 @@
       </v-flex>
       <v-flex class="flex-grow py-2 flex-col gap-3">
         <h3>{{ source.name }}</h3>
-        <div style="color: grey">
+        <div class="dark:text-gray-400">
           {{ new Date(source.lastPlayed) }}
         </div>
-        <div>
+        <div class="flex gap-2">
           <v-chip
             small
-            outline
+            outlined
             label
             color="amber"
             style="margin-left: 1px;"
@@ -47,8 +48,8 @@
           <v-chip
             v-if="source.cheat"
             small
-            outline
-            color="orange darken-1"
+            outlined
+            color="orange en-1"
             label
             style="margin-left: 1px;"
           >
@@ -56,7 +57,7 @@
           </v-chip>
           <v-chip
             small
-            outline
+            outlined
             label
             color="lime"
             style="margin-left: 1px;"
@@ -68,7 +69,7 @@
       </v-flex>
       <v-flex style="flex-grow: 0">
         <v-btn
-          flat
+          text
           icon
           @click="exportSave(source.path)"
         >

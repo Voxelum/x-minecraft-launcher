@@ -2,8 +2,6 @@
   <v-card
     flat
     style="min-height: 300px; max-height: 400px; max-width: 100%; overflow: auto;"
-    dark
-    color="grey darken-4"
   >
     <v-card-text>
       {{ all.length === 0 ? $t('task.empty') : '' }}
@@ -36,12 +34,12 @@
           >
             <span style="max-width: 100px;">{{ item.title }}</span>
             <div
-              style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
+              style="color: grey; font-size: 12px; font-style: italic; max-width: 400px;"
             >
               {{ item.time.toLocaleString() }}
             </div>
             <div
-              style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
+              style="color: grey; font-size: 12px; font-style: italic; max-width: 400px; word-wrap: normal; overflow-wrap: break-word; white-space: normal;"
             >
               {{ item.message || item.from || item.to }}
             </div>

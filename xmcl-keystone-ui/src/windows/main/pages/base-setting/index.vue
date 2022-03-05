@@ -11,7 +11,7 @@
         d-flex
         xs12
         tag="h2"
-        class="white--text headline"
+        class="headline"
       >
         {{ $t("profile.setting") }}
         <!-- <span class="headline"></span> -->
@@ -28,40 +28,42 @@
           <v-subheader style="padding-right: 2px">
             {{ $t("setting.general") }}
           </v-subheader>
-          <v-list-tile>
-            <v-list-tile-content>
-              <v-list-tile-title>{{ $t("profile.name") }}</v-list-tile-title>
-              <v-list-tile-sub-title>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>{{ $t("profile.name") }}</v-list-item-title>
+              <v-list-item-subtitle>
                 {{ $t("profile.nameHint") }}
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action>
               <v-text-field
                 v-model="name"
                 small
                 hide-details
-                dark
+
                 :placeholder="`Minecraft ${version.minecraft}`"
               />
-            </v-list-tile-action>
-          </v-list-tile>
-          <v-list-tile
-            class="selected-version"
+            </v-list-item-action>
+          </v-list-item>
+          <v-list-item
             push
             to="/version-setting"
           >
-            <v-list-tile-content>
-              <v-list-tile-title>{{ $t("profile.version") }}</v-list-tile-title>
-              <v-list-tile-sub-title>
+            <v-list-item-content>
+              <v-list-item-title>{{ $t("profile.version") }}</v-list-item-title>
+              <v-list-item-subtitle>
                 {{ $t("profile.versionHint") }}
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
+              </v-list-item-subtitle>
+            </v-list-item-content>
             <!-- <v-layout > -->
-            <v-list-tile-action style="margin-right: 15px; display: flex; flex-grow: 1; flex-direction: row; justify-content: flex-end; align-items: center">
+            <v-list-item-action
+              class="gap-3"
+              style="display: flex; flex-grow: 1; flex-direction: row; justify-content: flex-end;;"
+            >
               <v-chip
                 color="green"
                 large
-                outline
+                outlined
                 label
               >
                 {{ version.minecraft }}
@@ -70,7 +72,7 @@
                 v-if="version.forge"
                 color="orange"
                 large
-                outline
+                outlined
                 label
               >
                 Forge {{ version.forge }}
@@ -78,203 +80,197 @@
               <v-chip
                 v-if="version.fabricLoader"
                 large
-                outline
+                outlined
                 label
                 color="yellow"
               >
                 Fabric {{ version.fabricLoader }}
               </v-chip>
-            </v-list-tile-action>
-            <v-list-tile-action>
+            </v-list-item-action>
+            <v-list-item-action>
               <v-btn icon>
                 <v-icon>arrow_right</v-icon>
               </v-btn>
-            </v-list-tile-action>
+            </v-list-item-action>
             <!-- </v-layout> -->
-          </v-list-tile>
+          </v-list-item>
 
-          <v-list-tile
+          <v-list-item
             push
             to="/resource-pack-setting"
-            avatar
           >
-            <v-list-tile-action>
+            <v-list-item-action>
               <v-icon>palette</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>
                 {{ $tc("resourcepack.name", 2) }}
-              </v-list-tile-title>
-              <v-list-tile-sub-title>
+              </v-list-item-title>
+              <v-list-item-subtitle>
                 {{ $t("resourcepack.hint") }}
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action>
               <v-btn icon>
                 <v-icon>arrow_right</v-icon>
               </v-btn>
-            </v-list-tile-action>
-          </v-list-tile>
+            </v-list-item-action>
+          </v-list-item>
 
-          <v-list-tile
+          <v-list-item
             push
             to="/shader-pack-setting"
-            avatar
           >
-            <v-list-tile-action>
+            <v-list-item-action>
               <v-icon>gradient</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>
                 {{ $tc("shaderpack.name", 2) }}
-              </v-list-tile-title>
-              <v-list-tile-sub-title>
+              </v-list-item-title>
+              <v-list-item-subtitle>
                 {{ $t("shaderpack.hint") }}
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action>
               <v-btn icon>
                 <v-icon>arrow_right</v-icon>
               </v-btn>
-            </v-list-tile-action>
-          </v-list-tile>
+            </v-list-item-action>
+          </v-list-item>
 
-          <v-list-tile
+          <v-list-item
             push
             to="/mod-setting"
-            avatar
           >
-            <v-list-tile-action>
-              <v-icon>extensions</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>
+            <v-list-item-action>
+              <v-icon>extension</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>
                 {{ $tc("mod.name", 2) }}
-              </v-list-tile-title>
-              <v-list-tile-sub-title>
+              </v-list-item-title>
+              <v-list-item-subtitle>
                 {{ $t("mod.hint") }}
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action>
               <v-btn icon>
                 <v-icon>arrow_right</v-icon>
               </v-btn>
-            </v-list-tile-action>
-          </v-list-tile>
+            </v-list-item-action>
+          </v-list-item>
 
-          <v-list-tile
+          <v-list-item
             push
             to="/save"
-            avatar
           >
-            <v-list-tile-action>
+            <v-list-item-action>
               <v-icon>map</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>
                 {{ $tc("save.name", 2) }}
-              </v-list-tile-title>
-              <v-list-tile-sub-title>
+              </v-list-item-title>
+              <v-list-item-subtitle>
                 {{ $t("save.hint") }}
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action>
               <v-btn icon>
                 <v-icon>arrow_right</v-icon>
               </v-btn>
-            </v-list-tile-action>
-          </v-list-tile>
+            </v-list-item-action>
+          </v-list-item>
 
-          <v-list-tile
-            avatar
+          <v-list-item
             @click="hideLauncher = !hideLauncher"
           >
-            <v-list-tile-action>
+            <v-list-item-action>
               <v-checkbox
                 v-model="hideLauncher"
                 hide-details
                 @click="hideLauncher = !hideLauncher"
               />
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>
                 {{
                   $t("launch.hideLauncher")
                 }}
-              </v-list-tile-title>
-              <!-- <v-list-tile-sub-title>
+              </v-list-item-title>
+              <!-- <v-list-item-subtitle>
                 {{ $t("launch.hideLauncher") }}
-              </v-list-tile-sub-title> -->
-            </v-list-tile-content>
-          </v-list-tile>
-          <v-list-tile
-            avatar
+              </v-list-item-subtitle> -->
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item
             @click="showLog = !showLog"
           >
-            <v-list-tile-action>
+            <v-list-item-action>
               <v-checkbox
                 v-model="showLog"
                 hide-details
                 @click="showLog = !showLog"
               />
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <v-list-tile-title>{{ $t("launch.showLog") }}</v-list-tile-title>
-              <v-list-tile-sub-title>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title>{{ $t("launch.showLog") }}</v-list-item-title>
+              <v-list-item-subtitle>
                 {{ $t("launch.showLogHint") }}
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
 
           <v-subheader style="padding-right: 2px">
             {{ $tc("profile.modpack.name", 1) }}
           </v-subheader>
-          <v-list-tile v-if="!isServer">
-            <v-list-tile-content>
-              <v-list-tile-title>
+          <v-list-item v-if="!isServer">
+            <v-list-item-content>
+              <v-list-item-title>
                 {{ $t("profile.modpack.author") }}
-              </v-list-tile-title>
-              <v-list-tile-sub-title>
+              </v-list-item-title>
+              <v-list-item-subtitle>
                 {{ $t("profile.modpack.authorHint") }}
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-            <v-list-tile-action style="flex-grow: 0">
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action style="flex-grow: 0">
               <v-text-field
                 v-model="author"
                 hide-details
-                dark
+
                 :placeholder="username"
                 required
               />
-            </v-list-tile-action>
-          </v-list-tile>
+            </v-list-item-action>
+          </v-list-item>
 
-          <!-- <v-list-tile v-if="!isServer">
-            <v-list-tile-content>
-              <v-list-tile-title>
+          <!-- <v-list-item v-if="!isServer">
+            <v-list-item-content>
+              <v-list-item-title>
                 {{ $t("profile.url") }}
-              </v-list-tile-title>
-              <v-list-tile-sub-title>
+              </v-list-item-title>
+              <v-list-item-subtitle>
                 {{ $t("profile.url") }}
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-            <v-list-tile-action style="width: 50%">
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action style="width: 50%">
               <v-text-field
                 v-model="url"
                 hide-details
                 placeholder="www.whatever.com"
               />
-            </v-list-tile-action>
-          </v-list-tile> -->
-          <v-list-tile
+            </v-list-item-action>
+          </v-list-item> -->
+          <v-list-item
             v-if="!isServer"
             style="margin-top: 5px"
           >
-            <v-list-tile-content>
-              <v-list-tile-title>
+            <v-list-item-content>
+              <v-list-item-title>
                 {{ $t("profile.modpack.description") }}
-              </v-list-tile-title>
-              <v-list-tile-sub-title style="height: 50px">
+              </v-list-item-title>
+              <v-list-item-subtitle style="height: 50px">
                 <v-text-field
                   v-model="description"
                   style="padding-top: unset; margin-top: unset; margin-bottom: 5px"
@@ -282,12 +278,12 @@
                   :placeholder="$t('profile.modpack.descriptionHint')"
                 />
                 <!-- {{ $t("profile.modpack.descriptionHint") }} -->
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-            <!-- <v-list-tile-action style="width: 50%">
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <!-- <v-list-item-action style="width: 50%">
               <v-text-field v-model="description" hide-details />
-            </v-list-tile-action> -->
-          </v-list-tile>
+            </v-list-item-action> -->
+          </v-list-item>
 
           <v-subheader
             v-if="isServer"
@@ -295,44 +291,44 @@
           >
             {{ $tc("profile.server", 1) }}
           </v-subheader>
-          <v-list-tile v-if="isServer">
-            <v-list-tile-content>
-              <v-list-tile-title>
+          <v-list-item v-if="isServer">
+            <v-list-item-content>
+              <v-list-item-title>
                 {{ $t("profile.server.host") }}
-              </v-list-tile-title>
-              <!-- <v-list-tile-sub-title>
+              </v-list-item-title>
+              <!-- <v-list-item-subtitle>
                 {{ $t("java.memoryHint") }}
-              </v-list-tile-sub-title> -->
-            </v-list-tile-content>
-            <v-list-tile-action>
+              </v-list-item-subtitle> -->
+            </v-list-item-content>
+            <v-list-item-action>
               <v-text-field
                 v-model="host"
                 hide-details
-                dark
+
                 placeholder="www.whatever.com"
                 required
               />
-            </v-list-tile-action>
-          </v-list-tile>
-          <v-list-tile v-if="isServer">
-            <v-list-tile-content>
-              <v-list-tile-title>
+            </v-list-item-action>
+          </v-list-item>
+          <v-list-item v-if="isServer">
+            <v-list-item-content>
+              <v-list-item-title>
                 {{ $t("profile.server.port") }}
-              </v-list-tile-title>
-              <!-- <v-list-tile-sub-title> -->
+              </v-list-item-title>
+              <!-- <v-list-item-subtitle> -->
               <!-- {{ $t("java.memoryHint") }} -->
-              <!-- </v-list-tile-sub-title> -->
-            </v-list-tile-content>
-            <v-list-tile-action>
+              <!-- </v-list-item-subtitle> -->
+            </v-list-item-content>
+            <v-list-item-action>
               <v-text-field
                 v-model="port"
                 hide-details
-                dark
+
                 placeholder="25565"
                 required
               />
-            </v-list-tile-action>
-          </v-list-tile>
+            </v-list-item-action>
+          </v-list-item>
         </v-list>
       </v-flex>
       <launch-view style="margin-bottom: 10px" />
@@ -462,7 +458,7 @@ export default defineComponent({
 }
 .base-settings .v-text-field--box input,
 .v-text-field--full-width input,
-.v-text-field--outline input {
+.v-text-field--outlined input {
   margin-top: 0
 }
 

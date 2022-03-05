@@ -22,6 +22,7 @@
         <v-tabs
           v-model="tab"
           align-with-title
+          color="white"
         >
           <v-tabs-slider color="yellow" />
           <v-tab

@@ -1,3 +1,5 @@
+let ids = 0
+
 export function parseLog (log: string): Log {
   const tags = [] as string[]
   let content = ''
@@ -25,11 +27,12 @@ export function parseLog (log: string): Log {
         break
       }
     }
-    return { tags, content, raw: log }
+    return { tags, content, raw: log, id: ids++ }
 }
 
 export interface Log {
   tags: string[]
   content: string
   raw: string
+  id: number
 }

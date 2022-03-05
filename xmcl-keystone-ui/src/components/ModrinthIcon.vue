@@ -25,11 +25,12 @@ export default {
 </script>
 
 <style scoped>
+
 svg path {
-  fill: white;
+  fill: currentColor;
 }
 
-.primary--text svg path {
+.v-list-item--active svg path {
   fill: #4caf50;
 }
 </style>

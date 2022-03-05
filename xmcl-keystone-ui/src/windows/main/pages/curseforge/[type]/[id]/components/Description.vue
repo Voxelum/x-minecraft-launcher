@@ -1,25 +1,21 @@
 <template>
-  <v-card>
-    <v-card-text v-if="!loading">
-      <div v-html="description" />
-    </v-card-text>
-    <v-container
-      v-else
-      fill-height
-      style="min-height: 65vh;"
+  <div class="h-full flex overflow-auto">
+    <v-card-text
+      v-if="!loading"
+      class="overflow-auto"
     >
-      <v-layout
-        justify-center
-        align-center
-        fill-height
-      >
-        <v-progress-circular
-          indeterminate
-          :size="100"
-        />
-      </v-layout>
-    </v-container>
-  </v-card>
+      <div
+        class="overflow-auto"
+        v-html="description"
+      />
+    </v-card-text>
+    <v-card-text
+      v-else
+      class="overflow-auto"
+    >
+      <v-skeleton-loader type="heading, list-item, paragraph, card, sentences, image, paragraph, paragraph" />
+    </v-card-text>
+  </div>
 </template>
 
 <script lang=ts>

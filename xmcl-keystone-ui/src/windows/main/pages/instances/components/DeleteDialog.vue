@@ -15,14 +15,14 @@
       </v-card-text>
       <v-card-actions>
         <v-btn
-          flat
+          text
           @click="cancel"
         >
           {{ $t('cancel') }}
         </v-btn>
         <v-spacer />
         <v-btn
-          flat
+          text
           color="red"
           @click="confirm"
         >

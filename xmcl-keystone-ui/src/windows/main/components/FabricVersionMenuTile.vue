@@ -1,28 +1,25 @@
 <template>
-  <v-list-tile
+  <v-list-item
     :key="source.version"
     ripple
     @click="select(source)"
   >
-    <v-list-tile-title class="pl-3">
-      {{ source.version }}
-    </v-list-tile-title>
-    <v-list-tile-action style="justify-content: flex-end;">
-      <v-chip
-        v-if="source.stable"
-        label
-        color="green"
-      >
-        {{ $t('fabric.version.stable') }}
-      </v-chip>
-      <v-chip
-        v-else
-        label
-      >
-        {{ $t('fabric.version.unstable') }}
-      </v-chip>
-    </v-list-tile-action>
-  </v-list-tile>
+    {{ source.version }}
+    <div class="flex-grow" />
+    <v-chip
+      v-if="source.stable"
+      label
+      color="green"
+    >
+      {{ $t('fabric.version.stable') }}
+    </v-chip>
+    <v-chip
+      v-else
+      label
+    >
+      {{ $t('fabric.version.unstable') }}
+    </v-chip>
+  </v-list-item>
 </template>
 
 <script lang=ts>

@@ -1,5 +1,5 @@
 <template>
-  <v-flex style="z-index: 1; display: block;">
+  <div class="flex flex-col items-center justify-center">
     <skin-view
       :href="url"
       :slim="slim"
@@ -7,48 +7,49 @@
       @drop.prevent="dropSkin"
       @dragover.prevent
     />
-    <speed-dial
-      :security="true"
-      :disabled="pending"
-      :upload="() => isImportSkinDialogShown = true"
-      :save="exportSkin"
-      :load="loadSkin"
-    />
-    <v-fab-transition>
-      <v-btn
-        v-show="modified"
-        color="secondary"
-        fab
-        small
-        absolute
-        style="bottom: 95px; right: 146px; z-index: 3;"
+    <div class="flex flex-shrink gap-4 flex-none">
+      <v-fab-transition>
+        <v-btn
+          v-show="modified"
+          color="secondary"
+          fab
+          small
+          style="z-index: 3;"
+          :disabled="pending"
+          @click="reset"
+        >
+          <v-icon>clear</v-icon>
+        </v-btn>
+      </v-fab-transition>
+      <speed-dial
+        class=""
+        :security="true"
         :disabled="pending"
-        @click="reset"
-      >
-        <v-icon>clear</v-icon>
-      </v-btn>
-    </v-fab-transition>
-    <v-fab-transition>
-      <v-btn
-        v-show="modified"
-        color="secondary"
-        fab
-        small
-        absolute
-        style="bottom: 95px; right: 33px; z-index: 3;"
-        :disabled="pending"
-        @click="save"
-      >
-        <v-icon>check</v-icon>
-      </v-btn>
-    </v-fab-transition>
+        :upload="() => isImportSkinDialogShown = true"
+        :save="exportSkin"
+        :load="loadSkin"
+      />
+      <v-fab-transition>
+        <v-btn
+          v-show="modified"
+          color="secondary"
+          fab
+          small
+          style="z-index: 3;"
+          :disabled="pending"
+          @click="save"
+        >
+          <v-icon>check</v-icon>
+        </v-btn>
+      </v-fab-transition>
+    </div>
     <v-dialog
       v-model="isImportSkinDialogShown"
       width="400"
     >
       <import-skin-url-form @input="url = $event" />
     </v-dialog>
-  </v-flex>
+  </div>
 </template>
 
 <script lang=ts>

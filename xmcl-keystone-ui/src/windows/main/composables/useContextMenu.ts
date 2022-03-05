@@ -1,5 +1,8 @@
-import { InjectionKey, provide, Ref, ref } from '@vue/composition-api'
+import Api, { InjectionKey, provide, Ref, ref } from '@vue/composition-api'
+import Vue from 'vue'
 import { injection } from '/@/util/inject'
+
+Vue.use(Api)
 
 export interface ContextMenuItem {
   text: string
@@ -13,11 +16,16 @@ export const CONTEXT_MENU_Y: InjectionKey<Ref<number>> = Symbol('CONTEXT_MENU_Y'
 export const CONTEXT_MENU_ITEMS: InjectionKey<Ref<ContextMenuItem[]>> = Symbol('CONTEXT_MENU_ITEMS')
 export const CONTEXT_MENU_SHOWN: InjectionKey<Ref<boolean>> = Symbol('CONTEXT_MENU_SHOWN')
 
+const x = ref(0)
+const y = ref(0)
+const items = ref([] as ContextMenuItem[])
+const shown = ref(false)
+
 export function useContextMenu() {
-  const cx = injection(CONTEXT_MENU_X)
-  const cy = injection(CONTEXT_MENU_Y)
-  const citems = injection(CONTEXT_MENU_ITEMS)
-  const cshown = injection(CONTEXT_MENU_SHOWN)
+  const cx = x
+  const cy = y
+  const citems = items
+  const cshown = shown
   const zx = cx
   const zy = cy
   const zitems = citems
@@ -34,10 +42,6 @@ export function useContextMenu() {
 }
 
 export function useContextMenuData() {
-  const x = injection(CONTEXT_MENU_X)
-  const y = injection(CONTEXT_MENU_Y)
-  const items = injection(CONTEXT_MENU_ITEMS)
-  const shown = injection(CONTEXT_MENU_SHOWN)
   return {
     x, y, items, shown,
   }

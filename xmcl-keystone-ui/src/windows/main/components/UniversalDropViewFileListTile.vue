@@ -1,24 +1,24 @@
 
 <template>
-  <v-list-tile
+  <v-list-item
     class="universal-drop-tile"
     color="red"
     @click="tryEnable"
   >
-    <v-list-tile-avatar>
+    <v-list-item-avatar>
       <v-icon :size="30">
         {{ icon }}
       </v-icon>
-    </v-list-tile-avatar>
-    <v-list-tile-content style="">
-      <v-list-tile-title :style="{ 'text-decoration': disabled ? 'line-through' : 'none' }">
+    </v-list-item-avatar>
+    <v-list-item-content style="">
+      <v-list-item-title :style="{ 'text-decoration': disabled ? 'line-through' : 'none' }">
         {{ value.name }}
-      </v-list-tile-title>
-      <v-list-tile-sub-title>
+      </v-list-item-title>
+      <v-list-item-subtitle>
         {{ (value.size / 1024 / 1024).toFixed(2) }} MB
-      </v-list-tile-sub-title>
-    </v-list-tile-content>
-    <!-- <v-list-tile-content style="flex-grow: 1">
+      </v-list-item-subtitle>
+    </v-list-item-content>
+    <!-- <v-list-item-content style="flex-grow: 1">
       <v-text-field
         v-if="value.type === 'modpack'"
         :label="$t('profile.name')"
@@ -28,8 +28,8 @@
         style="margin-left: 20px; max-width: 100px; background: transparent;"
         @click.stop
       />
-    </v-list-tile-content> -->
-    <v-list-tile-action>
+    </v-list-item-content> -->
+    <v-list-item-action class="flex flex-row gap-4 justify-end items-center">
       <v-chip
         v-if="'date' in value"
         label
@@ -39,23 +39,21 @@
       <v-chip
         v-else
         label
-        outline
+        outlined
         color="white"
       >
         {{ typeName }}
       </v-chip>
-    </v-list-tile-action>
+      <!-- </v-list-item-action>
 
-    <v-list-tile-action>
+    <v-list-item-action> -->
       <v-checkbox
         v-model="enabled"
         style="justify-content: flex-end"
         :disabled="disabled"
         hide-details
       />
-    </v-list-tile-action>
 
-    <v-list-tile-action>
       <v-btn
         v-if="value.status === 'idle'"
         icon
@@ -71,17 +69,23 @@
         v-else-if="value.status === 'loading'"
         indeterminate
       />
-      <v-icon
+      <v-btn
         v-else-if="value.status === 'saved'"
-        color="green"
+        readonly
+        icon
       >
-        check
-      </v-icon>
+        <v-icon
+          color="green"
+        >
+          check
+        </v-icon>
+      </v-btn>
+
       <v-icon v-else>
         error_outline
       </v-icon>
-    </v-list-tile-action>
-  </v-list-tile>
+    </v-list-item-action>
+  </v-list-item>
 </template>
 
 <script lang=ts>
@@ -93,7 +97,7 @@ import { FilePreview } from './UniversalDropView.vue'
 const iconMap: Record<string, string> = {
   forge: '$vuetify.icons.package',
   fabric: '$vuetify.icons.fabric',
-  unknown: 'device_unknown',
+  unknown: 'question_mark',
   resourcepack: '$vuetify.icons.zip',
   shaderpack: '$vuetify.icons.zip',
   'curseforge-modpack': '$vuetify.icons.curseforge',

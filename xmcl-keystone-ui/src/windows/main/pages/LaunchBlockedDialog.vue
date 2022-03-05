@@ -12,18 +12,18 @@
         {{ $t(`launch.blocked.description`) }}
         <v-list>
           <template v-for="(item, index) in issues">
-            <v-list-tile
+            <v-list-item
               :key="index"
               ripple
             >
-              <v-list-tile-content>
-                <v-list-tile-title>{{ $tc(`diagnosis.${item.id}`, item.parameters.length || 0, item.parameters) }}</v-list-tile-title>
-                <v-list-tile-sub-title>{{ $t(`diagnosis.${item.id}.message`, item.parameters || {}) }}</v-list-tile-sub-title>
-              </v-list-tile-content>
-              <!-- <v-list-tile-action>
+              <v-list-item-content>
+                <v-list-item-title>{{ $tc(`diagnosis.${item.id}`, item.parameters.length || 0, item.parameters) }}</v-list-item-title>
+                <v-list-item-subtitle>{{ $t(`diagnosis.${item.id}.message`, item.parameters || {}) }}</v-list-item-subtitle>
+              </v-list-item-content>
+              <!-- <v-list-item-action>
                 <v-icon> {{ item.autofix ? 'build' : 'arrow_right' }} </v-icon>
-              </v-list-tile-action>-->
-            </v-list-tile>
+              </v-list-item-action>-->
+            </v-list-item>
           </template>
         </v-list>
       </v-card-text>

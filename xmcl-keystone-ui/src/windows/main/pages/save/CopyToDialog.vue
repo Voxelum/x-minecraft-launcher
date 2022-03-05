@@ -30,14 +30,14 @@
         <v-spacer />
         <v-btn
           color="red"
-          flat
+          text
           @click="cancel"
         >
           {{ $t('save.copy.cancel') }}
         </v-btn>
         <v-btn
           color="primary"
-          flat
+          text
           @click="operate"
         >
           {{ $t('save.copy.confirm') }}

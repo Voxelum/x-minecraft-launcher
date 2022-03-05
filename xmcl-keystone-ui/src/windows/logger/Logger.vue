@@ -1,18 +1,11 @@
 <template>
-  <v-app
-    dark
-    style="background: transparent;"
-  >
+  <v-app>
     <v-card
-      fill-heigh
-      style="height: 100%;"
-      dark
+      class="h-full"
     >
       <v-toolbar
-        dark
         height="40"
-        width="500"
-        class="moveable"
+        class="moveable fixed w-full"
       >
         <v-toolbar-title>Logger</v-toolbar-title>
         <v-spacer />
@@ -21,32 +14,36 @@
           class="non-moveable"
           @click="close"
         >
-          <v-icon dark>
+          <v-icon>
             close
           </v-icon>
         </v-btn>
       </v-toolbar>
-      <v-list style="overflow: auto; max-height: 90vh; max-width: 100%">
-        <v-list-tile
-          v-for="(l, index) in logs"
-          :key="index"
-          avatar
-          @click="onClick(l)"
-        >
-          <v-chip
-            v-for="t in l.tags"
-            :key="t"
-            dark
-            outline
-            label
+      <v-virtual-scroll
+        class="mt-[40px]"
+        item-height="48"
+        :items="logs"
+      >
+        <template #default="{ item }">
+          <v-list-item
+            :key="item.id"
+            class="flex flex-row gap-2"
+            @click="onClick(item)"
           >
-            {{ t }}
-          </v-chip>
-          <v-list-tile-content>
-            <v-list-tile-title v-text="l.content" />
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
+            <v-chip
+              v-for="t in item.tags"
+              :key="t"
+              outlined
+              label
+            >
+              {{ t }}
+            </v-chip>
+            <v-list-item-content>
+              <v-list-item-title v-text="item.content" />
+            </v-list-item-content>
+          </v-list-item>
+        </template>
+      </v-virtual-scroll>
     </v-card>
   </v-app>
 </template>
@@ -102,7 +99,7 @@ export default defineComponent({
   margin-left: 7px;
 }
 .v-list__tile__title {
-  overflow: auto;
+  overflow-x: auto;
   text-overflow: unset;
 }
 ::-webkit-scrollbar {

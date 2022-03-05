@@ -2,12 +2,9 @@
   <v-fab-transition>
     <v-btn
       v-if="visible"
-      style="right: 40vw; bottom: 10px;"
       large
-      absolute
       dark
       fab
-      bottom
       :color="deleting ? 'red' : 'green'"
       :loading="loading"
       @dragover.prevent

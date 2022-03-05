@@ -93,7 +93,7 @@ html ::-webkit-scrollbar {
     /* background: transparent; */
 }
 
-.card-list {
+/* .card-list {
     max-width: 100%;
     padding: 0 10px 10px 10px;
     margin: 0px 0px 0px 0px;
@@ -125,6 +125,10 @@ html ::-webkit-scrollbar {
 .card-list .v-input--is-focused .v-input__control .v-input__slot {
     box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
         0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
+} */
+
+.v-list-item {
+    justify-content: center;
 }
 
 .v-menu {
@@ -236,3 +240,7 @@ a {
 .v-text-field input {
     @apply z-10;
 }
+/* 
+.v-ripple__container {
+    width: 0 !important;
+} */

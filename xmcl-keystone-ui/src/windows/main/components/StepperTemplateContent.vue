@@ -5,7 +5,7 @@
       class="p-0"
       two-line
     >
-      <v-list-tile class="mb-2">
+      <v-list-item class="mb-2">
         <div class="flex gap-3 w-full">
           <v-select
             v-model="selectedVersionFilterOption"
@@ -20,34 +20,34 @@
             ref="searchTextRef"
             v-model="filterText"
             hide-details
-            box
+            filled
             append-icon="filter_list"
             :label="$t('filter')"
           />
         </div>
-      </v-list-tile>
+      </v-list-item>
       <v-divider />
-      <v-list-tile
+      <v-list-item
         v-for="p in templates"
         :key="p.path"
         ripple
         @click="onUse(p)"
       >
-        <v-list-tile-action>
+        <v-list-item-action>
           <v-checkbox
             :value="value === p"
             readonly
           />
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <v-list-tile-title>{{ p.title }}</v-list-tile-title>
-          <v-list-tile-sub-title>{{ p.subTitle }}</v-list-tile-sub-title>
-        </v-list-tile-content>
+        </v-list-item-action>
+        <v-list-item-content>
+          <v-list-item-title>{{ p.title }}</v-list-item-title>
+          <v-list-item-subtitle>{{ p.subTitle }}</v-list-item-subtitle>
+        </v-list-item-content>
 
-        <v-list-tile-action>
-          <v-list-tile-action-text>{{ p.action }}</v-list-tile-action-text>
-        </v-list-tile-action>
-      </v-list-tile>
+        <v-list-item-action>
+          <v-list-item-action-text>{{ p.action }}</v-list-item-action-text>
+        </v-list-item-action>
+      </v-list-item>
     </v-list>
   </div>
 </template>
@@ -320,7 +320,7 @@ export default defineComponent({
 }
 
 .template-content
-  .theme--dark.v-text-field
+  .theme--.v-text-field
   > .v-input__control
   > .v-input__slot:before {
   border: none;

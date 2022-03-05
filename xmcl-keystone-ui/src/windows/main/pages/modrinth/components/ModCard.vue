@@ -1,6 +1,8 @@
 <template>
   <v-card
-    class=" rounded-lg shadow p-4"
+    outlined
+    :disabled="disabled"
+    class="rounded-lg shadow p-4"
     @click="$emit('click')"
   >
     <div class="flex">
@@ -42,11 +44,17 @@
             {{ value.versions[value.versions.length - 1] }}
           </span>
         </div>
-        <div tags>
+        <div
+          tags
+          class="flex gap-2 mt-2"
+          @click.stop.prevent
+        >
           <v-chip
             v-for="tag in value.categories"
             :key="tag"
+            label
             small
+            @click="$emit('filter', tag)"
           >
             {{ $t(`modrinth.categories.${tag}`) }}
           </v-chip>
@@ -62,6 +70,7 @@ import { required } from '/@/util/props'
 
 export default defineComponent({
   props: {
+    disabled: required(Boolean),
     value: required<ModResult>(Object),
   },
   setup() { },

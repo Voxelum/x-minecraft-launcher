@@ -1,15 +1,15 @@
 <template>
-  <v-list-tile
+  <v-list-item
     :key="source.version"
     :class="{
       grey: isSelected,
-      'darken-1': isSelected,
+      'en-1': isSelected,
       'elevation-2': isSelected,
     }"
     ripple
     @click="select(source)"
   >
-    <v-list-tile-avatar class="ml-1">
+    <div class="w-30">
       <v-chip
         v-if="source.stable"
         label
@@ -23,14 +23,14 @@
       >
         {{ $t('fabric.version.unstable') }}
       </v-chip>
-    </v-list-tile-avatar>
+    </div>
 
-    <v-list-tile-title class="pl-3">
+    <v-list-item-title class="pl-3">
       {{ source.version }}
-    </v-list-tile-title>
-    <v-list-tile-sub-title>{{ source.maven }}</v-list-tile-sub-title>
+    </v-list-item-title>
+    <v-list-item-subtitle>{{ source.maven }}</v-list-item-subtitle>
 
-    <v-list-tile-action style="justify-content: flex-end;">
+    <v-list-item-action style="justify-content: flex-end;">
       <v-btn
         :loading="installing"
         icon
@@ -42,8 +42,8 @@
           }}
         </v-icon>
       </v-btn>
-    </v-list-tile-action>
-  </v-list-tile>
+    </v-list-item-action>
+  </v-list-item>
 </template>
 
 <script lang=ts>

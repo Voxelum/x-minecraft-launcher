@@ -1,23 +1,8 @@
 <template>
-  <v-card class="h-full overflow-auto">
-    <v-container
-      v-if="loading"
-      fill-height
-      style="min-height: 65vh;"
-    >
-      <v-layout
-        justify-center
-        align-center
-        fill-height
-      >
-        <v-progress-circular
-          indeterminate
-          :size="100"
-        />
-      </v-layout>
-    </v-container>
+  <div
+    class="h-full flex overflow-auto"
+  >
     <div
-      v-else
       class="flex flex-col h-full overflow-auto"
     >
       <div class="flex gap-5 mx-5 mt-3">
@@ -27,7 +12,6 @@
           hide-details
           flat
           solo
-          dark
           dense
           :items="gameVersions"
           :label="$t('curseforge.file.gameVersion')"
@@ -38,13 +22,25 @@
           hide-details
           flat
           solo
-          dark
           dense
           :items="releaseTypes"
           :label="$t('curseforge.file.releaseType')"
         />
       </div>
+      <div
+        v-if="loading"
+        class="v-list max-h-[100vh] h-full overflow-auto"
+      >
+        <v-skeleton-loader type="list-item-avatar-three-line" />
+        <v-skeleton-loader type="list-item-avatar-three-line" />
+        <v-skeleton-loader type="list-item-avatar-three-line" />
+        <v-skeleton-loader type="list-item-avatar-three-line" />
+        <v-skeleton-loader type="list-item-avatar-three-line" />
+        <v-skeleton-loader type="list-item-avatar-three-line" />
+        <v-skeleton-loader type="list-item-avatar-three-line" />
+      </div>
       <virtual-list
+        v-else
         class="v-list max-h-[100vh] h-full overflow-auto transition-none"
         :data-component="Tile"
         :data-key="'id'"
@@ -53,7 +49,7 @@
         :extra-props="{ getFileStatus: getFileStatus, install: install, download: download, modpack: type === 'modpacks' }"
       />
     </div>
-  </v-card>
+  </div>
 </template>
 
 <script lang=ts>

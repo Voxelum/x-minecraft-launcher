@@ -10,7 +10,6 @@
       <v-spacer />
       <v-btn
         icon
-        dark
         @click="hide"
       >
         <v-icon>close</v-icon>
@@ -21,75 +20,74 @@
       subheader
     >
       <v-subheader>{{ $t('feedback.description') }}</v-subheader>
-      <v-list-tile avatar>
-        <v-list-tile-content>
-          <v-list-tile-title>{{ $t('feedback.github') }}</v-list-tile-title>
-          <v-list-tile-sub-title>{{ $t('feedback.githubDescription') }}</v-list-tile-sub-title>
-        </v-list-tile-content>
-        <v-list-tile-action>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title>{{ $t('feedback.github') }}</v-list-item-title>
+          <v-list-item-subtitle>{{ $t('feedback.githubDescription') }}</v-list-item-subtitle>
+        </v-list-item-content>
+        <v-list-item-action>
           <v-btn
-            flat
+            text
             href="https://github.com/Voxelum/x-minecraft-launcher/issues/new"
           >
             {{ $t('feedback.githubOpenIssue') }}
           </v-btn>
-        </v-list-tile-action>
-      </v-list-tile>
-      <v-list-tile avatar>
-        <v-list-tile-content>
-          <v-list-tile-title>{{ $t('feedback.qq') }}</v-list-tile-title>
-          <v-list-tile-sub-title
+        </v-list-item-action>
+      </v-list-item>
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title>{{ $t('feedback.qq') }}</v-list-item-title>
+          <v-list-item-subtitle
             style="max-width: 80%"
           >
             {{ $t('feedback.qqDescription', { number: 858391850 }) }}
-          </v-list-tile-sub-title>
-        </v-list-tile-content>
+          </v-list-item-subtitle>
+        </v-list-item-content>
 
-        <v-list-tile-action>
+        <v-list-item-action>
           <v-btn
-            flat
+            text
             href="https://jq.qq.com/?_wv=1027&k=5Py5zM1"
           >
             {{ $t('feedback.qqEnterGroup') }}
           </v-btn>
-        </v-list-tile-action>
-      </v-list-tile>
+        </v-list-item-action>
+      </v-list-item>
 
-      <v-list-tile avatar>
-        <v-list-tile-content>
-          <v-list-tile-title>{{ $t('feedback.discord') }}</v-list-tile-title>
-          <v-list-tile-sub-title
+      <v-list-item>
+        <v-list-item-content>
+          <v-list-item-title>{{ $t('feedback.discord') }}</v-list-item-title>
+          <v-list-item-subtitle
             style="max-width: 80%"
           >
             {{ $t('feedback.discordDescription') }}
-          </v-list-tile-sub-title>
-        </v-list-tile-content>
+          </v-list-item-subtitle>
+        </v-list-item-content>
 
-        <v-list-tile-action>
+        <v-list-item-action>
           <v-btn
-            flat
+            text
             href="https://discord.gg/W5XVwYY7GQ"
           >
             {{ $t('feedback.discordJoin') }}
           </v-btn>
-        </v-list-tile-action>
-      </v-list-tile>
+        </v-list-item-action>
+      </v-list-item>
     </v-list>
   </v-dialog>
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, defineComponent } from '@vue/composition-api'
+import { defineComponent, watch } from '@vue/composition-api'
 import { useDialog } from '/@/windows/main/composables'
 
 export default defineComponent({
   setup() {
-    const data = reactive({
-      hovered: {},
-    })
     const { hide, isShown } = useDialog('feedback')
+    watch(isShown, (v) => {
+      console.log('show feedback')
+    })
     return {
-      ...toRefs(data),
       hide,
       isShown,
     }

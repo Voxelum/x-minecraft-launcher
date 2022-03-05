@@ -150,30 +150,26 @@ export function useCurseforgeCategories() {
 /**
  * Hook to returen the controller of curseforge preview page. Navigating the curseforge projects.
  */
-export function useCurseforgeSearch(type: string, page: Ref<number>, keyword: Ref<string | undefined>) {
-  let sectionId: number
-  switch (type) {
-    case 'modpacks':
-      sectionId = 4471
-      break
-    case 'texture-packs':
-      sectionId = 12
-      break
-    case 'worlds':
-      sectionId = 17
-      break
-    case 'customization':
-      sectionId = 4546
-      break
-    case 'mc-mods':
-    default:
-      sectionId = 6
-      break
-  }
+export function useCurseforgeSearch(type: Ref<string>, page: Ref<number>, keyword: Ref<string | undefined>) {
+  const sectionId = computed(() => {
+    switch (type.value) {
+      case 'modpacks':
+        return 4471
+      case 'texture-packs':
+        return 12
+      case 'worlds':
+        return 17
+      case 'customization':
+        return 4546
+      case 'mc-mods':
+      default:
+        return 6
+    }
+  })
 
   const router = useRouter()
   const { searchProjects } = useService(CurseForgeServiceKey)
-  const pageSize = 5
+  const pageSize = 10
   const currentPage = computed({
     get() { return page.value },
     set(v: number) {
@@ -190,6 +186,8 @@ export function useCurseforgeSearch(type: string, page: Ref<number>, keyword: Re
 
     projects: [] as AddonInfo[],
 
+    categoryId: undefined as undefined | number,
+
     loading: false,
 
     currentKeyword: keyword.value,
@@ -199,12 +197,14 @@ export function useCurseforgeSearch(type: string, page: Ref<number>, keyword: Re
   async function refresh() {
     data.loading = true
     try {
+      console.log('refreshing')
       const projects = await searchProjects({
         pageSize,
         index: index.value,
-        sectionId,
+        sectionId: sectionId.value,
         sort: data.sort,
         gameVersion: data.gameVersion,
+        categoryId: data.categoryId,
         searchFilter: keyword.value,
       })
       if (currentPage.value > data.pages / 2) {
@@ -226,7 +226,7 @@ export function useCurseforgeSearch(type: string, page: Ref<number>, keyword: Re
       router.push({ query: { ...route.query, keyword: data.currentKeyword } })
     }
   }
-  watch([index, refs.sort, refs.gameVersion, keyword], () => refresh())
+  watch([index, refs.sort, refs.gameVersion, keyword, refs.categoryId, sectionId], () => refresh())
   onMounted(() => {
     refresh()
   })

@@ -28,18 +28,18 @@
           {{ $t('save.copyFrom.fromResource') }}
         </v-subheader>
 
-        <v-list-tile
+        <v-list-item
           v-for="(s, i) in storedSaves"
           :key="s.hash"
         >
-          <v-list-tile-action>
+          <v-list-item-action>
             <v-checkbox v-model="resourcesCopyFrom[i]" />
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title> {{ s.name }} </v-list-tile-title>
-            <v-list-tile-sub-title> {{ $t('save.copyFrom.from', { src: s.curseforge ? 'curseforge' : 'resources' }) }} </v-list-tile-sub-title>
-          </v-list-tile-content>
-        </v-list-tile>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title> {{ s.name }} </v-list-item-title>
+            <v-list-item-subtitle> {{ $t('save.copyFrom.from', { src: s.curseforge ? 'curseforge' : 'resources' }) }} </v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
 
         <v-subheader v-if="loadedProfileSaves.length !== 0">
           {{ $t('save.copyFrom.fromProfile') }}
@@ -49,18 +49,18 @@
           v-if="loadedProfileSaves.length === 0 && loadingSaves"
           indeterminate
         />
-        <v-list-tile
+        <v-list-item
           v-for="(s, i) in loadedProfileSaves"
           :key="s.path"
         >
-          <v-list-tile-action>
+          <v-list-item-action>
             <v-checkbox v-model="profilesCopyFrom[i]" />
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title> {{ s.name }} </v-list-tile-title>
-            <v-list-tile-sub-title> {{ $t('save.copyFrom.from', {src: s.instanceName}) }} </v-list-tile-sub-title>
-          </v-list-tile-content>
-        </v-list-tile>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title> {{ s.name }} </v-list-item-title>
+            <v-list-item-subtitle> {{ $t('save.copyFrom.from', {src: s.instanceName}) }} </v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
       <v-divider />
       <v-card-actions>

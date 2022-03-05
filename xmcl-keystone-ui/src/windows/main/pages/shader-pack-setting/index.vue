@@ -1,29 +1,33 @@
 <template>
-  <div class="flex flex-col max-h-full h-full">
-    <div class="header-bar">
-      <v-toolbar-title class="headline text-bold">
+  <div class="flex flex-col max-h-full h-full px-8 py-4">
+    <v-progress-linear
+      class="absolute top-0 z-10 m-0 p-0 left-0"
+      :active="loading"
+      height="3"
+      :indeterminate="true"
+    />
+    <v-card
+      class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5"
+      outlined
+      elevation="1"
+    >
+      <!-- <v-toolbar-title class="headline text-bold">
         {{ $tc('shaderpack.name', 2) }}
-      </v-toolbar-title>
-      <v-spacer />
+      </v-toolbar-title> -->
       <FilterCombobox
         class="max-w-150 mr-2"
         :label="$t('shaderpack.filter')"
       />
+      <v-spacer />
       <v-btn
         icon
         @click="showDirectory()"
       >
         <v-icon>folder</v-icon>
       </v-btn>
-    </div>
-    <RefreshingTile
-      v-if="loading"
-      class="h-full"
-    />
-    <v-container
-      v-else
-      grid-list-md
-      class="flex flex-col overflow-auto max-h-full w-full  py-1 "
+    </v-card>
+    <div
+      class="flex overflow-auto h-full flex-col"
       @dragover.prevent
     >
       <transition-group
@@ -57,7 +61,7 @@
           :deleting="deleting"
         />
       </v-dialog>
-    </v-container>
+    </div>
   </div>
 </template>
 
@@ -69,7 +73,6 @@ import ShaderPackCard from './ShaderPackCard.vue'
 import { useRefreshable } from '/@/hooks/useRefreshable'
 import { ShaderPackItem, useShaderpacks } from '/@/hooks/useShaderpacks'
 import FilterCombobox, { useFilterCombobox } from '/@/components/FilterCombobox.vue'
-import RefreshingTile from '/@/components/RefreshingTile.vue'
 
 function setupFilter(items: Ref<ShaderPackItem[]>) {
   const filterOptions = computed(() => items.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
@@ -87,7 +90,7 @@ function setupFilter(items: Ref<ShaderPackItem[]>) {
 }
 
 export default defineComponent({
-  components: { ShaderPackCard, DeleteButton, DeleteView, FilterCombobox, RefreshingTile: RefreshingTile as any },
+  components: { ShaderPackCard, DeleteButton, DeleteView, FilterCombobox },
   setup() {
     const { shaderPacks, selectedShaderPack, removeShaderPack, showDirectory, loading } = useShaderpacks()
     const draggingPack = ref(undefined as undefined | ShaderPackItem)
