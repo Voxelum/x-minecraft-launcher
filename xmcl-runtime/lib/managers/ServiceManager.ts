@@ -143,31 +143,24 @@ export default class ServiceManager extends Manager {
    * Start the specific service call from its id.
    * @param id The service call session id.
    */
-  private startServiceCall(id: number) {
+  private async startServiceCall(id: number) {
     if (!this.sessions[id]) {
       this.error(`Unknown service call session ${id}!`)
     }
     try {
-      const r = this.sessions[id].call()
-      if (r instanceof Promise) {
-        return r.then(r => ({ result: r }), (e) => {
-          this.warn(`Error during service call session ${id}(${this.sessions[id].name}):`)
-          if (e instanceof Error) {
-            this.warn(e.stack)
-          } else {
-            this.warn(JSON.stringify(e))
-          }
-          if (e.type || e instanceof Exception) {
-            return { error: e }
-          }
-          return { error: Exception.from(e, { type: 'general', error: e }) }
-        })
-      }
+      const r = await this.sessions[id].call()
       return { result: r }
     } catch (e) {
       this.warn(`Error during service call session ${id}(${this.sessions[id].name}):`)
-      this.error(e)
-      return { error: e }
+      if (e instanceof Error || typeof (e as any).stack === 'string') {
+        this.error((e as any).stack)
+      } else {
+        this.error(JSON.stringify(e))
+      }
+      if (e instanceof Exception || 'type' in (e as any)) {
+        return { error: e }
+      }
+      return { error: Exception.from(e, { type: 'general', error: e }) }
     } finally {
       delete this.sessions[id]
     }
