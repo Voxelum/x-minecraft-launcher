@@ -1,4 +1,36 @@
 
+## 0.21.0
+### @xmcl/runtime-api@0.5.0
+#### Features
+
+- support proxy ([40a3c851463df013594120031212dd313c1f75b1](https://github.com/Voxelum/x-minecraft-launcher/commit/40a3c851463df013594120031212dd313c1f75b1))
+#### Bug Fixes
+
+- add icon uri to resource schema ([a6f1a47c140a08a2dde772a9e289a509e03d1c47](https://github.com/Voxelum/x-minecraft-launcher/commit/a6f1a47c140a08a2dde772a9e289a509e03d1c47))
+### @xmcl/keystone-ui@0.20.0
+#### Features
+
+- new UX with vuetify 2 & theming ([eaa0b6c1f0a73469bd81b5ecfb6814607ea3c7a4](https://github.com/Voxelum/x-minecraft-launcher/commit/eaa0b6c1f0a73469bd81b5ecfb6814607ea3c7a4))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### @xmcl/runtime@0.19.0
+#### Features
+
+- support proxy ([40a3c851463df013594120031212dd313c1f75b1](https://github.com/Voxelum/x-minecraft-launcher/commit/40a3c851463df013594120031212dd313c1f75b1))
+#### Bug Fixes
+
+- clean up error session call ([58e312dec318607e48cc4b20b3b0e05f7362d6b0](https://github.com/Voxelum/x-minecraft-launcher/commit/58e312dec318607e48cc4b20b3b0e05f7362d6b0))
+- add icon uri to resource schema ([a6f1a47c140a08a2dde772a9e289a509e03d1c47](https://github.com/Voxelum/x-minecraft-launcher/commit/a6f1a47c140a08a2dde772a9e289a509e03d1c47))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### xmcl@0.20.1
+#### Bug Fixes
+
+- increase minHeight to 620 ([1a7886b6f321588b62c6ef7cbf4f1a421f6f9f0e](https://github.com/Voxelum/x-minecraft-launcher/commit/1a7886b6f321588b62c6ef7cbf4f1a421f6f9f0e))
+
+
 ## 0.20.0
 ### @xmcl/runtime-api@0.4.0
 #### Features
