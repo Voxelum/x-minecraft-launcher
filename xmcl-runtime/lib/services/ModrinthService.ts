@@ -26,7 +26,7 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
 
   async searchMods(options: SearchModOptions): Promise<SearchModResult> {
     this.log(`Try search mods via query=${options.query} limit=${options.limit} offset=${options.offset} facets=${options.facets} version=${options.version} query=${options.query}`)
-    const result = await searchMods(options)
+    const result = await searchMods(options, this.networkManager.agents.https)
     this.log(`Searched mods: hits=${result.hits.length} total_hits=${result.total_hits} offset=${result.offset} limit=${result.limit}`)
     return result
   }
@@ -38,7 +38,7 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
       return cached
     }
     this.log(`Try get mod for mod_id=${modId}`)
-    const mod = await getMod(modId)
+    const mod = await getMod(modId, this.networkManager.agents.https)
     this.cachedMods.set(modId, mod)
     this.log(`Got mod for mod_id=${modId}`)
     return mod
@@ -60,10 +60,10 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
       return this.cached
     }
     const [licenses, categories, gameVersions, modLoaders] = await Promise.all([
-      listLicenses(),
-      listCategories(),
-      listGameVersion(),
-      listLoaders(),
+      listLicenses(this.networkManager.agents.https),
+      listCategories(this.networkManager.agents.https),
+      listGameVersion(this.networkManager.agents.https),
+      listLoaders(this.networkManager.agents.https),
     ])
     this.cached = {
       licenses,

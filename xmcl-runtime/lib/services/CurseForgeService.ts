@@ -11,8 +11,6 @@ import { ExportService, Inject, Singleton, StatefulService } from './Service'
 
 @ExportService(CurseForgeServiceKey)
 export default class CurseForgeService extends StatefulService<CurseforgeState> implements ICurseForgeService {
-  private userAgent: Agent = new Agent({ keepAlive: true })
-
   private projectTimestamp = ''
 
   private projectCache: Record<number, AddonInfo> = {}
@@ -32,7 +30,7 @@ export default class CurseForgeService extends StatefulService<CurseforgeState> 
   createState() { return new CurseforgeState() }
 
   private async fetchOrGetFromCache<K extends string | number, V>(cacheName: string, cache: Record<K, V>, key: K, query: () => Promise<V>) {
-    const timestamp = await getAddonDatabaseTimestamp({ userAgent: this.userAgent })
+    const timestamp = await getAddonDatabaseTimestamp({ userAgent: this.networkManager.agents.https })
     if (!cache[key] || new Date(timestamp) > new Date(this.projectTimestamp)) {
       const value = await query()
       this.projectTimestamp = timestamp
@@ -46,11 +44,11 @@ export default class CurseForgeService extends StatefulService<CurseforgeState> 
 
   @Singleton()
   async loadCategories() {
-    const timestamp = await getCategoryTimestamp({ userAgent: this.userAgent })
+    const timestamp = await getCategoryTimestamp({ userAgent: this.networkManager.agents.https })
     if (this.state.categories.length === 0 ||
       new Date(timestamp) > new Date(this.state.categoriesTimestamp)) {
-      let cats = await getCategories({ userAgent: this.userAgent })
-      cats = cats.filter((c) => c.rootGameCategoryId === null && c.gameId === 432)
+      let cats = await getCategories({ userAgent: this.networkManager.agents.https })
+      cats = cats.filter((c) => c.gameId === 432)
       this.state.curseforgeCategories({ categories: cats, timestamp })
     }
   }
@@ -58,24 +56,24 @@ export default class CurseForgeService extends StatefulService<CurseforgeState> 
   @Singleton(v => v.toString())
   async fetchProject(projectId: number) {
     this.log(`Fetch project: ${projectId}`)
-    return this.fetchOrGetFromCache('project', this.projectCache, projectId, () => getAddonInfo(projectId, { userAgent: this.userAgent }))
+    return this.fetchOrGetFromCache('project', this.projectCache, projectId, () => getAddonInfo(projectId, { userAgent: this.networkManager.agents.https }))
   }
 
   @Singleton(v => v.toString())
   fetchProjectDescription(projectId: number) {
     this.log(`Fetch project description: ${projectId}`)
-    return this.fetchOrGetFromCache('project description', this.projectDescriptionCache, projectId, () => getAddonDescription(projectId, { userAgent: this.userAgent }))
+    return this.fetchOrGetFromCache('project description', this.projectDescriptionCache, projectId, () => getAddonDescription(projectId, { userAgent: this.networkManager.agents.https }))
   }
 
   @Singleton(v => v.toString())
   fetchProjectFiles(projectId: number) {
     this.log(`Fetch project files: ${projectId}`)
-    return this.fetchOrGetFromCache('project files', this.projectFilesCache, projectId, () => getAddonFiles(projectId, { userAgent: this.userAgent }).then(files => files.sort((a, b) => compareDate(new Date(b.fileDate), new Date(a.fileDate)))))
+    return this.fetchOrGetFromCache('project files', this.projectFilesCache, projectId, () => getAddonFiles(projectId, { userAgent: this.networkManager.agents.https }).then(files => files.sort((a, b) => compareDate(new Date(b.fileDate), new Date(a.fileDate)))))
   }
 
   async searchProjects(searchOptions: SearchOptions) {
     this.log(`Search project: section=${searchOptions.sectionId}, category=${searchOptions.categoryId}, keyword=${searchOptions.searchFilter}`)
-    const addons = await this.fetchOrGetFromCache('project search', this.searchProjectCache, JSON.stringify(searchOptions), () => searchAddons(searchOptions, { userAgent: this.userAgent }))
+    const addons = await this.fetchOrGetFromCache('project search', this.searchProjectCache, JSON.stringify(searchOptions), () => searchAddons(searchOptions, { userAgent: this.networkManager.agents.https }))
     for (const addon of addons) {
       this.projectCache[addon.id] = addon
     }
@@ -83,7 +81,7 @@ export default class CurseForgeService extends StatefulService<CurseforgeState> 
   }
 
   fetchFeaturedProjects(getOptions: GetFeaturedAddonOptions) {
-    return getFeaturedAddons(getOptions, { userAgent: this.userAgent })
+    return getFeaturedAddons(getOptions, { userAgent: this.networkManager.agents.https })
   }
 
   async installFile({ file, type, projectId }: InstallFileOptions) {
@@ -106,6 +104,8 @@ export default class CurseForgeService extends StatefulService<CurseforgeState> 
     const networkManager = this.networkManager
     try {
       const destination = join(this.app.temporaryPath, basename(file.downloadUrl))
+      const project = await this.fetchProject(projectId)
+      const imageUrl = project.attachments[0]?.thumbnailUrl
       const task = new DownloadTask({
         ...networkManager.getDownloadBaseOptions(),
         url: file.downloadUrl,
@@ -118,6 +118,7 @@ export default class CurseForgeService extends StatefulService<CurseforgeState> 
         path: destination,
         url: urls,
         source: getCurseforgeSourceInfo(projectId, file.id),
+        iconUrl: imageUrl || undefined,
         type: typeHints[type],
         background: true,
       })

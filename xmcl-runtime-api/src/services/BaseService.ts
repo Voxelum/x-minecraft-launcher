@@ -45,12 +45,18 @@ export class BaseState implements SettingSchema {
    */
   platform: 'linux' | 'win32' | 'darwin' = 'win32'
 
+  httpProxy = ''
+
+  httpProxyEnabled = false
+
   config(config: SettingSchema) {
     this.locale = config.locale
     this.autoDownload = config.autoDownload || false
     this.autoInstallOnAppQuit = config.autoDownload || false
     this.allowPrerelease = config.allowPrerelease || false
     this.apiSetsPreference = typeof config.apiSetsPreference === 'string' ? config.apiSetsPreference : 'mcbbs'
+    this.httpProxy = config.httpProxy
+    this.httpProxyEnabled = config.httpProxyEnabled
   }
 
   localeSet(language: string) {
@@ -59,6 +65,14 @@ export class BaseState implements SettingSchema {
 
   localesSet(languages: string[]) {
     this.locales = languages
+  }
+
+  httpProxySet(proxy: string) {
+    this.httpProxy = proxy
+  }
+
+  httpProxyEnabledSet(enabled: boolean) {
+    this.httpProxyEnabled = enabled
   }
 
   allowPrereleaseSet(allowPrerelease: boolean) {

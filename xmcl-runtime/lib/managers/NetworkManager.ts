@@ -1,20 +1,21 @@
 import { Agents, DownloadBaseOptions } from '@xmcl/installer'
-import got, { Got } from 'got'
-import { Agent as HttpAgent } from 'http'
 // import NatAPI from 'nat-api'
-import { createUpnpClient, UpnpClient } from '@xmcl/nat-api'
-import { getNatInfoUDP, NatInfo, NatType } from '@xmcl/stun-client'
-import { Agent as HttpsAgent, AgentOptions } from 'https'
+import { UpnpClient } from '@xmcl/nat-api'
+import { BaseServiceKey } from '@xmcl/runtime-api'
+import { getNatInfoUDP, NatInfo } from '@xmcl/stun-client'
+import got, { Got } from 'got'
+import { Socket } from 'net'
 import { cpus } from 'os'
+import { URL } from 'url'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
-import { connect, Socket } from 'net'
+import { HttpAgent, HttpsAgent } from '../util/agents'
 // import getNatType, { NatType } from 'nat-type-identifier'
 
 export default class NetworkManager extends Manager {
   private inGFW = false
 
-  private agents: Agents
+  readonly agents: Required<Agents>
 
   private headers: Record<string, string> = {}
 
@@ -40,14 +41,49 @@ export default class NetworkManager extends Manager {
 
   constructor(app: LauncherApp) {
     super(app)
-    const options: AgentOptions = {
+    const maxSockets = cpus().length * 4
+    const http = new HttpAgent({
       keepAlive: true,
-      maxSockets: cpus().length * 4,
+      maxSockets,
+      proxy: new URL('http://127.0.0.1:7890'),
+    })
+    Object.defineProperty(http, 'proxy', {
+      get() {
+        try {
+          return new URL(app.serviceManager.getService(BaseServiceKey)!.state.httpProxy)
+        } catch (e) {
+          return undefined
+        }
+      },
+    })
+    Object.defineProperty(http, 'enabled', {
+      get() {
+        return app.serviceManager.getService(BaseServiceKey)?.state.httpProxyEnabled ?? false
+      },
+    })
+    const https = new HttpsAgent({
+      keepAlive: true,
+      maxSockets,
       rejectUnauthorized: false,
-    }
+      proxy: new URL('http://127.0.0.1:7890'),
+    })
+    Object.defineProperty(https, 'proxy', {
+      get() {
+        try {
+          return new URL(app.serviceManager.getService(BaseServiceKey)!.state.httpProxy)
+        } catch (e) {
+          return undefined
+        }
+      },
+    })
+    Object.defineProperty(https, 'enabled', {
+      get() {
+        return app.serviceManager.getService(BaseServiceKey)?.state.httpProxyEnabled ?? false
+      },
+    })
     this.agents = ({
-      http: new HttpAgent(options),
-      https: new HttpsAgent(options),
+      http,
+      https,
     })
     this.request = got.extend({ agent: this.agents })
   }
