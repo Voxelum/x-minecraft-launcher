@@ -195,4 +195,6 @@ export interface PersistedResourceSchema extends ResourceBase<object | object[]>
    * The modrinth info for this source.
    */
   modrinth?: ModrinthInformation
+
+  iconUri?: string
 }

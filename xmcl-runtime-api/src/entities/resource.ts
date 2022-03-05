@@ -24,6 +24,10 @@ export interface PersistedResource<T = unknown> extends Readonly<Omit<PersistedR
    * The suggested ext of the resource
    */
   readonly ext: string
+  /**
+   * The uri of the icon
+   */
+  readonly iconUri: string
 }
 
 export type ForgeResource = Resource<ForgeModCommonMetadata> & { readonly type: ResourceType.Forge }
@@ -134,28 +138,3 @@ export function isPersistedResource<T>(resource: Resource<T>): resource is Persi
   const r = resource as any
   return r.tags instanceof Array && r.uri instanceof Array && typeof r.date === 'string'
 }
-
-// export function getResourceIdentifier(modObject: PersistedResource) {
-//   if (modObject.type === 'forge' && modObject.metadata instanceof Array) {
-//     const meta = modObject.metadata[0]
-//     if (meta.modid && meta.version) {
-//       return `forge://${meta.modid}/${meta.version}`
-//     }
-//   }
-//   if (modObject.type === 'liteloader') {
-//     const meta = modObject.metadata
-//     if (meta.name && meta.version) {
-//       return `liteloader://${meta.name}/${meta.version}`
-//     }
-//   }
-//   if (typeof modObject.curseforge === 'object') {
-//     const { fileId, projectId } = modObject.curseforge
-//     if (fileId && projectId) {
-//       return `curseforge://${projectId}/${fileId}`
-//     }
-//     if (fileId) {
-//       return `curseforge://${fileId}`
-//     }
-//   }
-//   return `resource://${modObject.hash}`
-// }
