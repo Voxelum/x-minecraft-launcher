@@ -31,6 +31,8 @@ export default class BaseService extends StatefulService<BaseState> implements I
         allowPrerelease: data.allowPrerelease,
         apiSets: data.apiSets,
         apiSetsPreference: data.apiSetsPreference || 'bmcl',
+        httpProxy: data.httpProxy,
+        httpProxyEnabled: data.httpProxyEnabled,
       })
       this.checkUpdate()
     })
@@ -41,6 +43,8 @@ export default class BaseService extends StatefulService<BaseState> implements I
       'autoDownloadSet',
       'apiSetsPreferenceSet',
       'apiSetsSet',
+      'httpProxySet',
+      'httpProxyEnabledSet',
     ], () => {
       this.settingFile.write({
         locale: this.state.locale,
@@ -49,6 +53,8 @@ export default class BaseService extends StatefulService<BaseState> implements I
         allowPrerelease: this.state.allowPrerelease,
         apiSets: this.state.apiSets,
         apiSetsPreference: this.state.apiSetsPreference,
+        httpProxy: this.state.httpProxy,
+        httpProxyEnabled: this.state.httpProxyEnabled,
       })
     })
     this.state.versionSet([app.version, app.build])
@@ -113,7 +119,7 @@ export default class BaseService extends StatefulService<BaseState> implements I
    */
   @Singleton()
   async downloadUpdate() {
-    if (process.env.BUILD_TARGET === 'appx') {
+    if (this.state.env !== 'raw') {
       this.openInBrowser('https://xmcl.app')
       return
     }
