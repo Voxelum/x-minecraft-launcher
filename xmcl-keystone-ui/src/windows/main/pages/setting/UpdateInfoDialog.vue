@@ -5,7 +5,7 @@
   >
     <v-card
       v-if="updateInfo"
-      dark
+
       style="overflow: auto; max-height: 500px"
     >
       <v-card-title style="display: block;">
@@ -73,7 +73,7 @@
     <v-card
       v-else
       hover
-      dark
+
       style="width: 100%"
       to="https://github.com/voxelum/x-minecraft-launcher/releases"
       push

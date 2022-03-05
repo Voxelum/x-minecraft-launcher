@@ -1,7 +1,6 @@
 import Router from 'vue-router'
 import root from './pages'
 import baseSetting from './pages/base-setting'
-import curseforge from './pages/curseforge'
 import curseforgeType from './pages/curseforge/[type]'
 import curseforgeTypeId from './pages/curseforge/[type]/[id]'
 import gameSetting from './pages/game-setting'
@@ -17,6 +16,7 @@ import save from './pages/save'
 import setting from './pages/setting'
 import user from './pages/user'
 import versionSetting from './pages/version-setting'
+import modpackSetting from './pages/modpack-setting'
 
 export const createRouter = () => {
   const router = new Router({
@@ -70,8 +70,8 @@ export const createRouter = () => {
         component: versionSetting,
       },
       {
-        path: '/curseforge',
-        component: curseforge,
+        path: '/modpack-setting',
+        component: modpackSetting,
       },
       {
         path: '/curseforge/:type',

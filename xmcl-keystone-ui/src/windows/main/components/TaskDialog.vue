@@ -8,9 +8,7 @@
     class="task-dialog"
   >
     <v-toolbar
-      dark
       tabs
-      color="grey darken-3"
     >
       <v-toolbar-title>{{ $t('task.manager') }}</v-toolbar-title>
       <v-spacer />

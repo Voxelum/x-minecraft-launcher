@@ -1,6 +1,9 @@
 <template>
-  <div class="h-full overflow-auto flex flex-col">
-    <div class="header-bar">
+  <div class="h-full overflow-auto flex flex-col px-8 py-4 gap-3">
+    <v-card
+      outlined
+      class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5"
+    >
       <v-text-field
         ref="filterElem"
         v-model="filter"
@@ -9,8 +12,8 @@
         prepend-inner-icon="filter_list"
         :label="$t('filter')"
         solo
-        dark
-        color="green darken-1"
+        flat
+        color="green en-1"
       />
       <v-flex class="flex-grow-0">
         <create-button @create="onCreate" />
@@ -18,7 +21,8 @@
       <v-flex class="flex-grow-0">
         <import-button @import="onImport" />
       </v-flex>
-    </div>
+    </v-card>
+
     <v-container
       grid-list-md
       text-xs-center
@@ -41,6 +45,7 @@
           :key="0"
           absolute
           fab
+          large
           color="primary"
           style="right: 20px; bottom: 20px; transition: all 0.15s ease;"
           :loading="pinging"
@@ -53,6 +58,7 @@
           :key="1"
           absolute
           fab
+          large
           color="red"
           style="right: 20px; bottom: 20px; transition: all 0.15s ease;"
           :loading="pinging"

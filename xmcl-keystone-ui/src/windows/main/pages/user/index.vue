@@ -1,148 +1,61 @@
 <template>
-  <v-container
-    fluid
-    grid-list-md
-    fill-height
-    style="flex-direction: column"
+  <div
+    class="flex flex-col p-4 overflow-auto w-full"
   >
-    <v-toolbar
-      dark
-      flat
-      color="transparent"
-    >
-      <v-toolbar-title>{{ $tc('user.info', 2) }}</v-toolbar-title>
-      <v-spacer />
-
-      <v-tooltip bottom>
-        <template #activator="{ on }">
-          <v-btn
-            icon
-            large
-            v-on="on"
-            @click="isUserServicesDialogShown = true"
-          >
-            <v-icon>add_location</v-icon>
-          </v-btn>
-        </template>
-        {{ $t('user.service.add') }}
-      </v-tooltip>
-      <v-tooltip bottom>
-        <template #activator="{ on }">
-          <v-btn
-            icon
-            large
-            v-on="on"
-            @click="refresh"
-          >
-            <v-icon>refresh</v-icon>
-          </v-btn>
-        </template>
-        {{ $t('user.refreshAccount') }}
-      </v-tooltip>
-      <v-tooltip bottom>
-        <template #activator="{ on }">
-          <v-btn
-            icon
-            large
-            v-on="on"
-            @click="showLoginDialog"
-          >
-            <v-icon>person_add</v-icon>
-          </v-btn>
-        </template>
-        {{ $t('user.account.add') }}
-      </v-tooltip>
-    </v-toolbar>
-    <v-layout
-      row
-      fill-height
-      style="width: 100%"
-    >
-      <v-flex xs9>
-        <v-layout
-          column
-          fill-height
-          style="position: relative"
+    <div class="grid grid-cols-5 h-full overflow-auto w-full">
+      <div
+        class="col-span-4 flex flex-col h-full overflow-auto relative"
+      >
+        <user-page-header
+          @addaccount="showLoginDialog()"
+          @refresh="refresh"
+        />
+        <div
+          v-if="!security"
+          d-flex
+          xs1
         >
-          <v-flex
-            v-if="!security"
-            d-flex
-            xs1
+          <v-alert
+            :value="!security"
+            style="cursor: pointer;"
+            @click="isChallengesDialogShown = true"
           >
-            <v-alert
-              :value="!security"
-              style="cursor: pointer;"
-              @click="isChallengesDialogShown = true"
-            >
-              {{ $t('user.insecureClient') }}
-            </v-alert>
-          </v-flex>
-          <v-flex
-            class="h-full overflow-auto"
-            style="display: block;"
-          >
-            <user-list
-              :user-id="userId"
-              :profile-id="profileId"
-              :users="users"
-              :select="select"
-              @dragstart="dragged=true"
-              @dragend="dragged=false"
-            />
-          </v-flex>
-
-          <game-profile-speed-dial
-            :visibled="userModified || dragged"
-            :deleting="dragged"
-            :loading="loading"
-            @click="confirmSelectGameProfile"
-            @dragover.prevent
-            @drop="beginRemoveProfile($event.dataTransfer.getData('id'))"
-          />
-        </v-layout>
-      </v-flex>
-      <v-flex grow />
-      <v-flex shrink>
-        <v-layout
-          style="position: relative"
-          justify-center
-          align-center
-          fill-height
+            {{ $t('user.insecureClient') }}
+          </v-alert>
+        </div>
+        <div
+          class="overflow-auto"
         >
-          <page-skin-view
+          <user-list
             :user-id="userId"
             :profile-id="profileId"
-            :name="name"
+            :users="users"
+            :select="select"
+            @dragstart="dragged=true"
+            @dragend="dragged=false"
           />
-        </v-layout>
-      </v-flex>
-      <v-flex grow />
-    </v-layout>
+        </div>
+        <game-profile-speed-dial
+          :visibled="userModified || dragged"
+          :deleting="dragged"
+          :loading="loading"
+          @click="confirmSelectGameProfile"
+          @dragover.prevent
+          @drop="beginRemoveProfile($event.dataTransfer.getData('id'))"
+        />
+      </div>
+      <page-skin-view
+        class="col-span-1 flex h-full overflow-auto relative justify-center items-center z-5"
+        :user-id="userId"
+        :profile-id="profileId"
+        :name="name"
+      />
+    </div>
     <v-dialog
       v-model="isChallengesDialogShown"
       width="500"
     >
       <challenges-form :show="isChallengesDialogShown" />
-    </v-dialog>
-    <v-dialog
-      v-model="isUserServicesDialogShown"
-      width="550"
-      persistence
-    >
-      <v-toolbar color="primary">
-        <h2>{{ $t('user.service.title') }}</h2>
-        <v-spacer />
-        <v-toolbar-items>
-          <v-btn
-            icon
-            flat
-            @click="isUserServicesDialogShown = false"
-          >
-            <v-icon>close</v-icon>
-          </v-btn>
-        </v-toolbar-items>
-      </v-toolbar>
-      <user-services-card />
     </v-dialog>
     <v-dialog
       v-model="isDeleteDialogShown"
@@ -171,14 +84,14 @@
           <v-spacer />
           <v-btn
             color="red"
-            flat
+            text
             @click="isDeleteDialogShown=false"
           >
             {{ $t('user.account.removeCancel') }}
           </v-btn>
           <v-btn
             color="primary"
-            flat
+            text
             @click="confirmRemoveProfile(); isDeleteDialogShown=false"
           >
             {{ $t('user.account.removeConfirm') }}
@@ -186,7 +99,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-container>
+  </div>
 </template>
 
 <script lang=ts>
@@ -201,26 +114,25 @@ import {
   useProfileId,
   useUserService,
 } from '/@/hooks'
-import { useLoginDialog, useDialog } from '../../composables'
+import { useLoginDialog } from '../../composables'
 import ChallengesForm from './components/ChallengesForm.vue'
 import PageSkinView from './components/SkinView.vue'
-import UserServicesCard from './components/UserServicesCard.vue'
 import GameProfileSpeedDial from './components/GameProfileSpeedDial.vue'
 import UserList from './components/UserList.vue'
+import UserPageHeader from './components/UserPageHeader.vue'
 
 export default defineComponent({
   components: {
     ChallengesForm,
-    UserServicesCard,
     PageSkinView,
     GameProfileSpeedDial,
     UserList,
+    UserPageHeader,
   },
   setup() {
     const { refreshStatus: refreshAccount, refreshSkin } = useCurrentUser()
     const { security } = useUserSecurityStatus()
     const { show: showLoginDialog } = useLoginDialog()
-    const { show: showUserServiceDialog } = useDialog('user-service')
 
     const { users } = useUsers()
     const { select, remove, modified, commit, userId, profileId } = useSwitchUser()
@@ -228,7 +140,6 @@ export default defineComponent({
     const { name } = useGameProfile(gameProfile)
     const data = reactive({
       isChallengesDialogShown: false,
-      isUserServicesDialogShown: false,
       isDeleteDialogShown: false,
 
       selecting: false,
@@ -284,8 +195,6 @@ export default defineComponent({
       name,
 
       removingUserName,
-      cancelRemoveProfile,
-      showUserServiceDialog,
 
       showLoginDialog,
     }

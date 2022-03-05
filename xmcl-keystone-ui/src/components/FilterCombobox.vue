@@ -14,36 +14,39 @@
     prepend-inner-icon="filter_list"
     multiple
     solo
+    flat
     @click:clear="clearFilterItems"
     @keydown="handleKeydown"
   >
-    <template #item="{ item, tile }">
-      <v-list-tile-action>
-        <v-checkbox
-          :value="tile.props.value"
-          hide-details
-        />
-      </v-list-tile-action>
-      <v-chip
-        label
-        outline
-        :color="item.color ? item.color : getColor(item.value)"
-      >
-        <v-icon left>
-          {{ item.label ? item.label : 'label' }}
-        </v-icon>
-        {{ item.value }}
-      </v-chip>
+    <template #item="{ item, attrs }">
+      <div class="w-full flex flex-grow-0 items-center">
+        <v-list-item-action>
+          <v-checkbox
+            :value="attrs.inputValue"
+            hide-details
+          />
+        </v-list-item-action>
+        <v-chip
+          label
+          outlined
+          :color="item.color ? item.color : getColor(item.value)"
+        >
+          <v-icon left>
+            {{ item.label ? item.label : 'label' }}
+          </v-icon>
+          {{ item.value }}
+        </v-chip>
+      </div>
     </template>
     <template #selection="{ index, item, selected }">
       <v-chip
         v-if="typeof item === 'object'"
         label
-        outline
+        outlined
         :color="item.color ? item.color : getColor(item.value)"
-        :selected="selected"
+        :input-value="selected"
         close
-        @input="removeFilteredItem(index)"
+        @click:close="removeFilteredItem(index)"
       >
         <v-icon
           v-if="item.label"
@@ -56,10 +59,10 @@
       <v-chip
         v-else
         label
-        outline
-        :selected="selected"
+        outlined
+        :input-value="selected"
         close
-        @input="removeFilteredItem(index)"
+        @click:close="removeFilteredItem(index)"
       >
         <!-- <v-icon left v-if="item.label">{{ item.label }}</v-icon> -->
         {{ item }}
@@ -117,6 +120,7 @@ export function useFilterCombobox<T>(filterOptions: Ref<FilterOption[]>, getFilt
   }
 
   function removeFilteredItem(index: number) {
+    console.log(index)
     selectedFilterOptions.value = selectedFilterOptions.value.filter((v, i) => i !== index)
   }
   function clearFilterItems() {

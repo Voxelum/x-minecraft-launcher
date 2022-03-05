@@ -4,6 +4,7 @@
     non-linear
     vertical
     style="max-height: 80vh; overflow-y: auto;"
+    class="bg-transparent shadow shadow-transparent"
   >
     <v-stepper-step
       :editable="!modify"
@@ -46,7 +47,7 @@
       </v-radio-group>
       <v-layout row>
         <v-btn
-          flat
+          text
           style
           @click="$emit('cancel')"
         >
@@ -55,7 +56,7 @@
         <v-spacer />
         <v-flex shrink>
           <v-btn
-            flat
+            text
             color="primary"
             :disabled="baseUrlError || !baseUrl || nameError"
             @click.native="step = 2"
@@ -87,7 +88,7 @@
       />
       <v-layout row>
         <v-btn
-          flat
+          text
           style
           @click="$emit('cancel')"
         >
@@ -96,7 +97,7 @@
         <v-spacer />
         <v-flex shrink>
           <v-btn
-            flat
+            text
             color="primary"
             @click.native="finish"
           >
@@ -106,7 +107,7 @@
             </v-icon>
           </v-btn>
           <v-btn
-            flat
+            text
             color="primary"
             @click.native="step = 3"
           >
@@ -138,7 +139,7 @@
       />
       <v-layout row>
         <v-btn
-          flat
+          text
           style="margin-left: 0"
           @click="$emit('cancel')"
         >
@@ -147,7 +148,7 @@
         <v-spacer />
         <v-flex shrink>
           <v-btn
-            flat
+            text
             color="primary"
             @click.native="finish"
           >
@@ -300,8 +301,7 @@ export default defineComponent({
       finish() {
         state.authServiceSet({ name: data.name, api: data.newAuth })
         state.profileServiceSet({ name: data.name, api: data.newProfileService })
-
-        context.emit('cancel')
+        context.emit('route', 'back')
       },
       onKeyPress() {
         if (!data.baseUrlError) {

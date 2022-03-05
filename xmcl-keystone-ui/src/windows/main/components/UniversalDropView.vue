@@ -5,74 +5,62 @@
     @dragover.prevent
   >
     <div
-      class="absoluted"
-      style="height: 100vh; width: 100%; display: flex"
+      style="display: flex"
+      class="h-[80vh] w-full"
       @drop="onDrop"
       @dragover.prevent
     >
-      <v-container
-        fill-height
-        style="padding: 45px"
-      >
-        <v-fade-transition>
-          <v-card
-            style="height: 100%; width: 100%"
-            :elevation="14"
+      <v-fade-transition>
+        <v-card
+          class="w-full h-full items-center justify-center flex"
+          :elevation="14"
+        >
+          <div
+            v-if="loading"
           >
-            <v-layout
-              align-center
-              justify-center
-              row
-              fill-height
+            <refreshing-tile />
+          </div>
+          <div
+            v-else-if="pending"
+            class="text-center select-none"
+          >
+            <v-icon
+              :style="{ 'font-size': `${50}px` }"
+              style="display: block"
             >
-              <div
-                v-if="loading"
-              >
-                <refreshing-tile />
-              </div>
-              <div
-                v-else-if="pending"
-                class="text-center select-none"
-              >
-                <v-icon
-                  :style="{ 'font-size': `${50}px` }"
-                  style="display: block"
-                >
-                  save_alt
-                </v-icon>
-                <v-card-text
-                  class="headline font-weight-bold"
-                  style="font-size: 100px"
-                >
-                  {{ $t("dropToImport") }}
-                </v-card-text>
+              save_alt
+            </v-icon>
+            <v-card-text
+              class="headline font-weight-bold"
+              style="font-size: 100px"
+            >
+              {{ $t("dropToImport") }}
+            </v-card-text>
 
-                <v-card-text class="font-weight-bold">
-                  <v-icon>$vuetify.icons.forge</v-icon>
-                  {{ $tc("mod.name", 0) }}
-                  <v-icon>$vuetify.icons.fabric</v-icon>
-                  Fabric
-                  {{ $tc("mod.name", 0) }}
-                  <v-icon>$vuetify.icons.zip</v-icon>
-                  {{ $tc("resourcepack.name", 0) }}
-                  <v-icon>$vuetify.icons.package</v-icon>
-                  {{ $tc("save.name", 0) }}
-                  <v-icon :size="16">
-                    $vuetify.icons.curseforge
-                  </v-icon>
-                  {{ $tc("profile.modpack.name", 0) }}
-                </v-card-text>
-              </div>
-              <preview-view
-                v-else
-                :previews="previews"
-                @remove="remove"
-                @cancel="cancel"
-              />
-            </v-layout>
-          </v-card>
-        </v-fade-transition>
-      </v-container>
+            <v-card-text class="font-weight-bold">
+              <v-icon>$vuetify.icons.forge</v-icon>
+              {{ $tc("mod.name", 0) }}
+              <v-icon>$vuetify.icons.fabric</v-icon>
+              Fabric
+              {{ $tc("mod.name", 0) }}
+              <v-icon>$vuetify.icons.zip</v-icon>
+              {{ $tc("resourcepack.name", 0) }}
+              <v-icon>$vuetify.icons.package</v-icon>
+              {{ $tc("save.name", 0) }}
+              <v-icon :size="16">
+                $vuetify.icons.curseforge
+              </v-icon>
+              {{ $tc("profile.modpack.name", 0) }}
+            </v-card-text>
+          </div>
+          <preview-view
+            v-else
+            :previews="previews"
+            @remove="remove"
+            @cancel="cancel"
+          />
+        </v-card>
+      </v-fade-transition>
     </div>
   </v-dialog>
 </template>

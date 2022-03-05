@@ -1,5 +1,8 @@
 <template>
-  <v-card class="grid grid-cols-2 p-6 gap-6 min-w-90 rounded-lg">
+  <v-card
+    outlined
+    class="grid md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 p-6 gap-6 "
+  >
     <div class="item">
       <v-icon class="material-icon-outlined">
         file_download

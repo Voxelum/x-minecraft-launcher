@@ -12,102 +12,121 @@
       >
         <template #activator>
           <v-btn
-            flat
+            text
             icon
             to="/base-setting"
-            dark
+
             :loading="refreshing"
             v-on="on"
             @click="$emit('show', 'normal')"
-            @mouseenter="enter($tc('profile.setting'))"
           >
-            <v-icon dark>
+            <v-icon>
               more_vert
             </v-icon>
           </v-btn>
         </template>
         <v-btn
-          flat
+          text
           icon
-          dark
           :loading="refreshing"
           to="/mod-setting"
-          v-on="on"
-          @mouseenter="enter($tc('mod.name', 2) )"
         >
-          <v-icon
-            dark
-            style="margin-left: 24px"
+          <v-tooltip
+            :close-delay="0"
+            right
           >
-            extensions
-          </v-icon>
+            <template #activator="{ on: tooltip }">
+              <v-icon
+                v-on="tooltip"
+              >
+                extension
+              </v-icon>
+            </template>
+            {{ $tc('mod.name', 2) }}
+          </v-tooltip>
         </v-btn>
+
         <v-btn
-          flat
+          text
           icon
-          dark
           :loading="refreshing"
           to="/resource-pack-setting"
-          v-on="on"
           @click="$emit('show', 'resourcepacks')"
-          @mouseenter="enter($tc('resourcepack.name', 2) )"
         >
-          <v-icon dark>
-            palette
-          </v-icon>
+          <v-tooltip
+            :close-delay="0"
+            right
+          >
+            <template #activator="{ on: tooltip }">
+              <v-icon
+                v-on="tooltip"
+              >
+                palette
+              </v-icon>
+            </template>
+            {{ $tc('resourcepack.name', 2) }}
+          </v-tooltip>
         </v-btn>
+
         <v-btn
-          flat
+          text
           icon
-          dark
+
           :loading="refreshing"
           to="/shader-pack-setting"
-          v-on="on"
           @click="$emit('show', 'shaderpacks')"
-          @mouseenter="enter($tc('shaderpack.name', 2) )"
         >
-          <v-icon dark>
-            gradient
-          </v-icon>
+          <v-tooltip
+            :close-delay="0"
+            right
+          >
+            <template #activator="{ on: tooltip }">
+              <v-icon
+
+                v-on="tooltip"
+              >
+                gradient
+              </v-icon>
+            </template>
+            {{ $tc('shaderpack.name', 2) }}
+          </v-tooltip>
         </v-btn>
+
         <v-btn
-          flat
+          text
           icon
-          dark
+
           :loading="refreshing"
           to="/save"
-          v-on="on"
           @click="$emit('show', 'saves')"
-          @mouseenter="enter($tc('save.name', 2) )"
         >
-          <v-icon dark>
-            map
-          </v-icon>
+          <v-tooltip
+            :close-delay="0"
+            right
+          >
+            <template #activator="{ on: tooltip }">
+              <v-icon
+
+                v-on="tooltip"
+              >
+                map
+              </v-icon>
+            </template>
+            {{ $tc('save.name', 2) }}
+          </v-tooltip>
         </v-btn>
       </v-speed-dial>
     </template>
-    {{ text }}
+    {{ $t('profile.setting') }}
   </v-tooltip>
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs } from '@vue/composition-api'
-import { useI18n } from '/@/hooks'
+import { defineComponent } from '@vue/composition-api'
 
 export default defineComponent({
   props: {
     refreshing: Boolean,
-  },
-  setup() {
-    const { $t } = useI18n()
-    const data = reactive({ text: $t('profile.setting') })
-    const enter = (text: string) => {
-      setTimeout(() => { data.text = text }, 100)
-    }
-    return {
-      ...toRefs(data),
-      enter,
-    }
   },
 })
 </script>

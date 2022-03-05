@@ -1,6 +1,6 @@
 <template>
   <div class="flex h-full flex-col overflow-auto">
-    <v-list-tile>
+    <v-list-item class="flex-grow-0 flex-shrink flex-1 flex justify-end">
       <v-checkbox
         v-model="recommendedOnly"
         :label="$t('forge.recommendedAndLatestOnly')"
@@ -10,24 +10,24 @@
         v-model="showBuggy"
         :label="$t('forge.showBuggy')"
       />
-    </v-list-tile>
-    <v-divider dark />
+    </v-list-item>
+    <v-divider />
     <refreshing-tile v-if="refreshing && versions.length === 0" />
     <v-list
       v-else-if="versions.length !== 0"
-      dark
-      class="h-full flex flex-col overflow-auto"
+      class="h-full flex flex-col overflow-auto flex-grow"
       style="background-color: transparent;"
     >
-      <v-list-tile
+      <v-list-item
         ripple
+        class="flex-grow-0 flex-1 justify-start"
         @click="select({ version: '' })"
       >
-        <v-list-tile-avatar>
+        <v-list-item-avatar>
           <v-icon>close</v-icon>
-        </v-list-tile-avatar>
+        </v-list-item-avatar>
         {{ $t('forge.disable') }}
-      </v-list-tile>
+      </v-list-item>
       <virtual-list
         class="h-full overflow-y-auto"
         :data-sources="versions"
@@ -40,7 +40,8 @@
     <Hint
       v-else
       v-ripple
-      style="flex-grow: 1; cursor: pointer"
+      style="cursor: pointer"
+      class="flex-grow"
       icon="refresh"
       :text="$t('forge.noVersion', { version: minecraft })"
       @click="refresh"

@@ -33,8 +33,8 @@
         @click="triggerGraphic(g)"
       >
         <v-btn
-          dark
-          outline
+
+          outlined
         >
           {{ $t(`gamesetting.${g.name}.name`) + ' : ' }}
           <transition

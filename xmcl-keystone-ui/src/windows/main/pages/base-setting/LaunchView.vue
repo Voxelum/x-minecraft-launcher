@@ -36,16 +36,16 @@
       </v-subheader>
       <v-list-group no-action>
         <template #activator>
-          <v-list-tile>
-            <v-list-tile-content>
-              <v-list-tile-title>{{ $t("java.location") }}</v-list-tile-title>
-              <v-list-tile-sub-title>
+          <v-list-item>
+            <v-list-item-content>
+              <v-list-item-title>{{ $t("java.location") }}</v-list-item-title>
+              <v-list-item-subtitle>
                 {{
                   java ? java.path : $t("java.locationPlaceHolder")
                 }}
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
         </template>
         <java-list
           v-model="java"
@@ -53,19 +53,19 @@
           :remove="removeJava"
         />
       </v-list-group>
-      <v-list-tile avatar>
-        <v-list-tile-action>
+      <v-list-item>
+        <v-list-item-action>
           <v-icon>memory</v-icon>
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <v-list-tile-title>{{ $t("java.memory") }}</v-list-tile-title>
-          <v-list-tile-sub-title>
+        </v-list-item-action>
+        <v-list-item-content>
+          <v-list-item-title>{{ $t("java.memory") }}</v-list-item-title>
+          <v-list-item-subtitle>
             {{
               $t("java.memoryHint")
             }}
-          </v-list-tile-sub-title>
-        </v-list-tile-content>
-        <v-list-tile-action style="width: 20%; margin-right: 10px">
+          </v-list-item-subtitle>
+        </v-list-item-content>
+        <v-list-item-action style="width: 20%; margin-right: 10px">
           <v-text-field
             v-model="minMemory"
             hide-details
@@ -75,8 +75,8 @@
             :label="$t('java.minMemory')"
             :placeholder="$t('java.noMemory')"
           />
-        </v-list-tile-action>
-        <v-list-tile-action style="width: 20%">
+        </v-list-item-action>
+        <v-list-item-action style="width: 20%">
           <v-text-field
             v-model="maxMemory"
             hide-details
@@ -86,12 +86,12 @@
             :label="$t('java.maxMemory')"
             :placeholder="$t('java.noMemory')"
           />
-        </v-list-tile-action>
-      </v-list-tile>
-      <v-list-tile style="margin-top: 5px">
-        <v-list-tile-content>
-          <v-list-tile-title>{{ $t("profile.vmOptions") }}</v-list-tile-title>
-          <v-list-tile-sub-title>
+        </v-list-item-action>
+      </v-list-item>
+      <v-list-item style="margin-top: 5px">
+        <v-list-item-content>
+          <v-list-item-title>{{ $t("profile.vmOptions") }}</v-list-item-title>
+          <v-list-item-subtitle>
             <v-text-field
               v-model="vmOptions"
               style="width: 100%; padding-top: unset; margin-top: unset; margin-bottom: 5px;"
@@ -99,16 +99,16 @@
               required
               :placeholder="$t('profile.vmOptionsHint')"
             />
-          </v-list-tile-sub-title>
-        </v-list-tile-content>
-      </v-list-tile>
+          </v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
 
       <v-subheader>Minecraft</v-subheader>
 
-      <v-list-tile>
-        <v-list-tile-content style="flex: 1">
-          <v-list-tile-title>{{ $t("profile.mcOptions") }}</v-list-tile-title>
-          <v-list-tile-sub-title>
+      <v-list-item>
+        <v-list-item-content style="flex: 1">
+          <v-list-item-title>{{ $t("profile.mcOptions") }}</v-list-item-title>
+          <v-list-item-subtitle>
             <v-text-field
               v-model="mcOptions"
               style="width: 100%; padding-top: unset; margin-top: unset; margin-bottom: 5px;"
@@ -116,46 +116,46 @@
               required
               :placeholder="$t('profile.mcOptionsHint')"
             />
-          </v-list-tile-sub-title>
-        </v-list-tile-content>
-      </v-list-tile>
+          </v-list-item-subtitle>
+        </v-list-item-content>
+      </v-list-item>
 
-      <v-list-tile avatar>
-        <v-list-tile-action>
+      <v-list-item>
+        <v-list-item-action>
           <v-icon class="material-icons-outlined icon-image-preview">
             preview
           </v-icon>
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <v-list-tile-title>
+        </v-list-item-action>
+        <v-list-item-content>
+          <v-list-item-title>
             {{
               $t("profile.launchArguments")
             }}
-          </v-list-tile-title>
-          <v-list-tile-sub-title>
+          </v-list-item-title>
+          <v-list-item-subtitle>
             {{
               java ? java.path : $t("java.locationPlaceHolder")
             }}
-          </v-list-tile-sub-title>
-        </v-list-tile-content>
+          </v-list-item-subtitle>
+        </v-list-item-content>
 
-        <v-list-tile-action>
+        <v-list-item-action>
           <v-btn
             icon
             @click="copyToClipboard"
           >
             <v-icon>content_copy</v-icon>
           </v-btn>
-        </v-list-tile-action>
-        <v-list-tile-action>
+        </v-list-item-action>
+        <v-list-item-action>
           <v-btn
             icon
             @click="showPreview"
           >
             <v-icon>print</v-icon>
           </v-btn>
-        </v-list-tile-action>
-      </v-list-tile>
+        </v-list-item-action>
+      </v-list-item>
     </v-list>
     <v-dialog
       v-model="isPreviewShown"
@@ -286,8 +286,8 @@ export default defineComponent({
 .flex {
   padding: 6px 8px !important;
 }
-.theme--dark.v-list .v-list__group--active:after,
-.theme--dark.v-list .v-list__group--active:before {
+.theme--.v-list .v-list__group--active:after,
+.theme--.v-list .v-list__group--active:before {
   background: unset;
 }
 </style>

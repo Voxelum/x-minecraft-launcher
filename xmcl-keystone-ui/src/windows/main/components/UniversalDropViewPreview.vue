@@ -6,7 +6,9 @@
       {{ $t('dropToImport') }}
     </v-card-text>
     <v-divider />
-    <v-list style="overflow: auto">
+    <v-list
+      class="w-full overflow-auto"
+    >
       <file-list-tile
         v-for="file in previews"
         :key="file.name"
@@ -17,10 +19,10 @@
     </v-list>
     <v-spacer />
     <v-divider />
-    <v-card-actions>
+    <v-card-actions class="px-10 gap-4">
       <v-btn
         large
-        flat
+        text
         @click="cancel"
       >
         {{ $t('cancel') }}
@@ -34,7 +36,7 @@
       />
       <v-btn
         large
-        flat
+        text
         style="margin-left: 10px;"
         color="primary"
         :loading="loading"

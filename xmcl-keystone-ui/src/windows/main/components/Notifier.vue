@@ -16,14 +16,14 @@
     <v-btn
       v-if="more"
       style="margin-right: -30px"
-      flat
+      text
       @click="more"
     >
       <v-icon>arrow_right</v-icon>
     </v-btn>
     <v-btn
       color="pink"
-      flat
+      text
       @click="close"
     >
       <v-icon>close</v-icon>

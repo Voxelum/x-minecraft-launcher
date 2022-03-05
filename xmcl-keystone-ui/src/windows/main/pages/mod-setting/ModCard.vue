@@ -2,17 +2,17 @@
   <v-card
     v-selectable-card
     v-long-press="emitSelect"
-    hover
+    outlined
     :draggable="!source.enabled"
-    :dark="!source.subsequence"
+    :dark="source.subsequence"
     :class="{
       incompatible: compatible === false,
       maybe: compatible === 'maybe',
       subsequence: source.subsequence === true,
       dragged: source.dragged
     }"
-    class="white--text draggable-card mod-card"
-    style="margin-top: 10px; padding: 0 10px; transition-duration: 0.2s; content-visibility: auto;"
+    class="draggable-card mod-card rounded-lg transition-all duration-200"
+    style="margin-top: 10px; padding: 0 10px; content-visibility: auto;"
     @dragstart="onDragStart"
     @dragend="$emit('dragend', $event)"
     @mouseenter="$emit('mouseenter', $event)"
@@ -27,9 +27,9 @@
           tag="div"
         >
           <v-flex
-            v-if="selection"
             :key="0"
-            class="flex-grow-0"
+            class="flex-grow-0 "
+            :style="{ display: selection ? 'flex' : 'none !important' }"
           >
             <v-checkbox
               :value="source.selected"
@@ -59,61 +59,64 @@
             >
               {{ source.name }}
             </h3>
-            <v-chip
-              small
-              outline
-              label
-              color="amber"
-              style="margin-left: 1px;"
-              @mousedown.stop
-            >
-              {{ source.version }}
-            </v-chip>
-            <v-chip
-              small
-              outline
-              color="orange darken-1"
-              label
-              style="margin-left: 1px;"
-              @mousedown.stop
-            >
-              {{ source.id }}
-            </v-chip>
-            <v-chip
-              small
-              outline
-              label
-              color="lime"
-              style="margin-left: 1px;"
-              @mousedown.stop
-            >
-              {{ source.type }}
-            </v-chip>
-
-            <v-chip
-              v-for="(tag, index) in source.tags"
-              :key="`${tag}-${index}`"
-              small
-              outline
-              label
-              :color="getColor(tag)"
-              style="margin-left: 1px;"
-              close
-              @mousedown.stop
-              @input="onDeleteTag(tag)"
-            >
-              <div
-                contenteditable
-                class="max-w-50 overflow-auto"
-                @input.stop="onEditTag($event, index)"
-                @blur="$emit('tags', [...source.tags])"
+            <div class="flex gap-1">
+              <v-chip
+                small
+                outlined
+                label
+                color="amber"
+                style="margin-left: 1px;"
+                @mousedown.stop
               >
-                {{ tag }}
-              </div>
-            </v-chip>
-            <div style="color: #bdbdbd; ">
-              {{ source.description }}
+                {{ source.version }}
+              </v-chip>
+              <v-chip
+                small
+                outlined
+                color="orange en-1"
+                label
+                style="margin-left: 1px;"
+                @mousedown.stop
+              >
+                {{ source.id }}
+              </v-chip>
+              <v-chip
+                small
+                outlined
+                label
+                color="lime"
+                style="margin-left: 1px;"
+                @mousedown.stop
+              >
+                {{ source.type }}
+              </v-chip>
+
+              <v-chip
+                v-for="(tag, index) in source.tags"
+                :key="`${tag}-${index}`"
+                small
+                outlined
+                label
+                :color="getColor(tag)"
+                style="margin-left: 1px;"
+                close
+                @mousedown.stop
+                @input="onDeleteTag(tag)"
+              >
+                <div
+                  contenteditable
+                  class="max-w-50 overflow-auto"
+                  @input.stop="onEditTag($event, index)"
+                  @blur="$emit('tags', [...source.tags])"
+                >
+                  {{ tag }}
+                </div>
+              </v-chip>
             </div>
+
+            <v-card-text class=" p-1">
+              {{ source.description }}
+            </v-card-text>
           </div>
           <v-flex
             :key="3"
@@ -285,7 +288,7 @@ export default defineComponent({
 })
 </script>
 
-<style scoped=true>
+<style scoped>
 .draggable-card:hover {
   background-color: #388e3c;
 }

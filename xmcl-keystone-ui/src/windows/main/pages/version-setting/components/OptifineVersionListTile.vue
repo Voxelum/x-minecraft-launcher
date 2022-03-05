@@ -1,21 +1,21 @@
 <template>
-  <v-list-tile
+  <v-list-item
     :key="source.type"
     :class="{
       grey: isSelected,
-      'darken-1': isSelected,
+      'en-1': isSelected,
       'elevation-2': isSelected,
     }"
     ripple
     @click="select(source)"
   >
-    <v-list-tile-avatar>
+    <v-list-item-avatar>
       <!-- <v-chip label v-if=""></v-chip> -->
-    </v-list-tile-avatar>
+    </v-list-item-avatar>
 
-    <v-list-tile-title>{{ source.mcversion }}_{{ source.type }}_{{ source.patch }}</v-list-tile-title>
-    <v-list-tile-sub-title>{{ source.patch }}</v-list-tile-sub-title>
-    <v-list-tile-action class="flex justify-end">
+    <v-list-item-title>{{ source.mcversion }}_{{ source.type }}_{{ source.patch }}</v-list-item-title>
+    <v-list-item-subtitle>{{ source.patch }}</v-list-item-subtitle>
+    <v-list-item-action class="flex justify-end">
       <v-btn
         icon
         :loading="installing"
@@ -23,8 +23,8 @@
       >
         <v-icon>{{ status === "remote" ? "file_download" : "folder" }}</v-icon>
       </v-btn>
-    </v-list-tile-action>
-  </v-list-tile>
+    </v-list-item-action>
+  </v-list-item>
 </template>
 
 <script lang=ts>

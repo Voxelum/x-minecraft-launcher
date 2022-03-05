@@ -30,14 +30,14 @@
     <v-divider />
     <v-card-actions>
       <v-btn
-        flat
+        text
         @click="cancel"
       >
         {{ $t('no') }}
       </v-btn>
       <v-spacer />
       <v-btn
-        flat
+        text
         color="red"
         @click="confirm"
       >
@@ -69,10 +69,3 @@ export default defineComponent({
   },
 })
 </script>
-
-<style>
-.card-list.right {
-  display: flex;
-  flex-flow: column;
-}
-</style>

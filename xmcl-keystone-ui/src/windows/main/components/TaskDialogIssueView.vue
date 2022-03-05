@@ -2,8 +2,8 @@
   <v-card
     flat
     style="min-height: 300px; max-height: 400px; max-width: 100%; overflow: auto;"
-    dark
-    color="grey darken-4"
+
+    color="grey en-4"
   >
     <!-- <v-card-text>
       {{ items.length === 0 ? $t('issue.empty') : '' }}
@@ -46,7 +46,7 @@
             <v-spacer />
             <v-chip
               style="margin-left: 10px"
-              outline
+              outlined
               small
               label
               color="orange"

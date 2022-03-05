@@ -2,8 +2,6 @@
   <v-menu
     v-model="opened"
     bottom
-    dark
-    full-width
     max-height="300"
     :close-on-content-click="false"
     :disabled="disabled"
@@ -17,7 +15,6 @@
       append-icon="filter_list"
       :label="$t('filter')"
       solo
-      dark
       hide-details
     >
       <template #prepend>
@@ -26,7 +23,7 @@
             <v-chip
               :color="showAlpha ? 'green' : ''"
               icon
-              dark
+
               label
               style="margin: 0px; height: 48px; border-radius: 0;"
               @click="showAlpha = !showAlpha"
@@ -104,7 +101,7 @@ export default defineComponent({
   margin-top: 0px !important;
   margin-right: 0px !important;
 }
-.v-input__slot {
+/* .v-input__slot {
   border-radius: 0 !important;
-}
+} */
 </style>

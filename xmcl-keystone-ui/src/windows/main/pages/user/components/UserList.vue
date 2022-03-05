@@ -1,8 +1,8 @@
 <template>
   <v-list
     two-line
+    color="transparent"
     class="user-list"
-    style="overflow-y: auto; background: transparent"
   >
     <v-list-group
       v-for="user in users"
@@ -15,19 +15,18 @@
       @dragend="$emit('dragend', $event)"
     >
       <template #activator>
-        <v-list-tile
+        <v-list-item
           v-data-transfer:id="user.id"
           draggable
-          avatar
           @dragstart="$emit('dragstart', $event)"
           @dragend="$emit('dragend', $event)"
         >
-          <v-list-tile-content>
-            <v-list-tile-title>{{ user.username }}</v-list-tile-title>
-            <v-list-tile-sub-title>
+          <v-list-item-content>
+            <v-list-item-title>{{ user.username }}</v-list-item-title>
+            <v-list-item-subtitle>
               <v-chip
                 small
-                outline
+                outlined
                 label
                 style="margin: 0; margin-top: 4px"
               >
@@ -36,22 +35,22 @@
               </v-chip>
               <v-chip
                 small
-                outline
+                outlined
                 label
                 style="margin: 0; margin-top: 4px; margin-left: 5px;"
               >
                 {{ $t("user.profileMode") }}:
                 {{ user.profileService }}
               </v-chip>
-            </v-list-tile-sub-title>
-          </v-list-tile-content>
-          <v-list-tile-avatar
+            </v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-avatar
             v-if="user.avatar"
             :size="48"
           >
             <v-img :src="user.avatar" />
-          </v-list-tile-avatar>
-        </v-list-tile>
+          </v-list-item-avatar>
+        </v-list-item>
       </template>
 
       <template
@@ -61,30 +60,30 @@
         "
       >
         <v-card color="orange">
-          <v-list-tile
+          <v-list-item
             v-ripple
             @click="gotoPurchesPage"
           >
-            <v-list-tile-content>
-              <v-list-tile-sub-title class="no-ownership">
+            <v-list-item-content>
+              <v-list-item-subtitle class="no-ownership">
                 要使用此账户访问完整的《Minecraft:
                 Java版》，请到我们的网站购买，然后继续您在 Minecraft
                 中的冒险之旅吧。
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
         </v-card>
         <v-card color="orange">
-          <v-list-tile
+          <v-list-item
             v-ripple
             @click="gotoFAQPage"
           >
-            <v-list-tile-content>
-              <v-list-tile-sub-title class="no-ownership">
+            <v-list-item-content>
+              <v-list-item-subtitle class="no-ownership">
                 或者您可以参照 Mojang 官方账户迁移 FAQ 来迁移账户
-              </v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
         </v-card>
       </template>
       <template
@@ -93,24 +92,25 @@
       >
         <v-card
           :key="p.id + user.id"
+          outlined
+          flat
           :class="{ green: p.id === profileId && user.id === userId }"
         >
-          <v-list-tile
-            avatar
+          <v-list-item
             :disabled="user.selectedProfile !== p.id"
             @click="select(p.id, user.id)"
           >
-            <v-list-tile-avatar>
+            <v-list-item-avatar>
               <image-show-texture-head
                 :src="p.textures.SKIN.url"
                 :dimension="50"
               />
-            </v-list-tile-avatar>
-            <v-list-tile-content>
-              <v-list-tile-title>{{ p.name }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{ p.id }}</v-list-tile-sub-title>
-            </v-list-tile-content>
-          </v-list-tile>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>{{ p.name }}</v-list-item-title>
+              <v-list-item-subtitle>{{ p.id }}</v-list-item-subtitle>
+            </v-list-item-content>
+          </v-list-item>
         </v-card>
       </template>
     </v-list-group>
@@ -122,7 +122,7 @@ import { defineComponent } from '@vue/composition-api'
 import { UserProfile, BaseServiceKey } from '@xmcl/runtime-api'
 import { required } from '/@/util/props'
 import { useService } from '/@/hooks'
-import ImageShowTextureHead from './ImageShowTextureHead.vue'
+import ImageShowTextureHead from '../../../components/ImageShowTextureHead.vue'
 
 export default defineComponent({
   components: { ImageShowTextureHead },
@@ -155,8 +155,8 @@ export default defineComponent({
   margin-bottom: 10px;
   background: #424242;
   border-radius: 2px;
-  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
-    0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+  /* box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+    0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12); */
   transition: all 0.3s;
 }
 .user-list .v-list__group__header.v-list__group__header--sub-group:hover {

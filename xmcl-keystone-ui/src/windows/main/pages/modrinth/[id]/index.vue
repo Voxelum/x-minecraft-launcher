@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="!mod"
-    class="flex gap-6 overflow-auto p-4 lg:flex-row flex-col"
+    class="flex gap-4 overflow-auto p-4 lg:flex-row flex-col w-full"
   >
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
@@ -12,7 +12,7 @@
   </div>
   <div
     v-else
-    class="flex gap-6 overflow-auto p-4 lg:flex-row flex-col"
+    class="flex gap-4 overflow-auto p-4 xl:flex-row flex-col"
   >
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
@@ -20,7 +20,7 @@
       height="3"
       :indeterminate="true"
     />
-    <div class="flex flex-col gap-4 flex-grow-0">
+    <div class="flex flex-col gap-4 flex-grow">
       <Header
         class="flex-grow-0"
         :title="mod.title"
@@ -31,23 +31,30 @@
         :wiki_url="mod.wiki_url"
         :source-url="mod.source_url"
       />
-      <v-tabs class="rounded-lg">
-        <v-tab :key="0">
-          {{ $t('modrinth.description') }}
-        </v-tab>
-        <v-tab :key="1">
-          {{ $t('modrinth.versions') }}
-        </v-tab>
-        <v-tab-item :key="0">
-          <Description :description="mod.body" />
-        </v-tab-item>
-        <v-tab-item :key="1">
-          <Versions
-            :versions="mod.versions"
-            @install="onInstall"
-          />
-        </v-tab-item>
-      </v-tabs>
+      <v-card outlined>
+        <v-tabs
+          v-model="tab"
+          class="rounded-lg flex-grow-0 flex-1"
+        >
+          <v-tab :key="0">
+            {{ $t('modrinth.description') }}
+          </v-tab>
+          <v-tab :key="1">
+            {{ $t('modrinth.versions') }}
+          </v-tab>
+        </v-tabs>
+        <v-tabs-items v-model="tab">
+          <v-tab-item :key="0">
+            <Description :description="mod.body" />
+          </v-tab-item>
+          <v-tab-item :key="1">
+            <Versions
+              :versions="mod.versions"
+              @install="onInstall"
+            />
+          </v-tab-item>
+        </v-tabs-items>
+      </v-card>
     </div>
     <div class="flex flex-col gap-4 flex-grow">
       <Tags
@@ -84,6 +91,7 @@ export default defineComponent({
     id: required(String),
   },
   setup(props) {
+    const tab = ref(0)
     const { getMod, installModVersion } = useService(ModrinthServiceKey)
     const mod: Ref<undefined | Mod> = ref(undefined)
     const { refresh, refreshing } = useRefreshable(async () => {
@@ -97,6 +105,7 @@ export default defineComponent({
       refresh()
     })
     return {
+      tab,
       onInstall,
       mod,
       refreshing,
@@ -106,10 +115,10 @@ export default defineComponent({
 </script>
 
 <style>
-.v-tabs__bar {
+/* .v-tabs__bar {
   border-top-left-radius: inherit;
   border-top-right-radius: inherit;
   border-bottom-right-radius: unset;
   border-bottom-left-radius: unset;
-}
+} */
 </style>

@@ -1,37 +1,33 @@
 <template>
   <v-list
     v-if="versions.length !== 0"
-    class="local-version-list overflow-auto h-full flex flex-col"
-    dark
-    style="background-color: transparent"
+    class="local-version-list overflow-auto h-full flex flex-col bg-transparent"
   >
-    <v-list-tile>
-      <v-spacer />
-      <!-- class="max-w-40 ml-22" -->
+    <v-list-item class="flex justify-end">
       <v-select
         v-model="filteredMinecraft"
         label="Minecraft"
-        class="max-w-40"
+        class="max-w-40 flex-shrink flex-grow-0"
+        hide-details
         flat
         :items="minecraftVersions"
         clearable
       />
-      <!-- <v-spacer /> -->
-    </v-list-tile>
-    <v-divider dark />
+    </v-list-item>
+    <v-divider />
     <div class="overflow-auto h-full flex flex-col">
       <template v-for="(item) in versions">
-        <v-list-tile
+        <v-list-item
           :key="item.id"
           ripple
           :class="{
-            grey: isSelected(item), 'darken-1': isSelected(item),
+            grey: isSelected(item), 'en-1': isSelected(item),
             'elevation-2': isSelected(item),
           }"
           style="margin: 0px 0;"
           @click="selectVersion(item)"
         >
-          <v-list-tile-avatar>
+          <v-list-item-avatar>
             <v-btn
               icon
               style="cursor: pointer"
@@ -39,33 +35,40 @@
             >
               <v-icon>folder</v-icon>
             </v-btn>
-          </v-list-tile-avatar>
-          <v-list-tile-title>{{ item.id }}</v-list-tile-title>
-          <v-list-tile-sub-title>{{ item.minecraftVersion }}</v-list-tile-sub-title>
-          <v-list-tile-action style="flex-direction: row; justify-content: flex-end;">
+          </v-list-item-avatar>
+          <v-list-item-title
+            style="flex: 1 1 50%"
+            class="!flex-grow-0"
+          >
+            {{ item.id }}
+          </v-list-item-title>
+          <v-list-item-subtitle class="!flex-grow flex">
+            {{ item.minecraftVersion }}
+          </v-list-item-subtitle>
+          <v-list-item-action style="flex-direction: row; justify-content: flex-end;">
             <v-btn
               style="cursor: pointer"
               icon
-              flat
+              text
               @mousedown.stop
               @click.stop="startReinstall(item)"
             >
               <v-icon>build</v-icon>
             </v-btn>
-          </v-list-tile-action>
-          <v-list-tile-action style="flex-direction: row; justify-content: flex-end;">
+          </v-list-item-action>
+          <v-list-item-action style="flex-direction: row; justify-content: flex-end;">
             <v-btn
               style="cursor: pointer"
               icon
               color="red"
-              flat
+              text
               @mousedown.stop
               @click.stop="startDelete(item)"
             >
               <v-icon>delete</v-icon>
             </v-btn>
-          </v-list-tile-action>
-        </v-list-tile>
+          </v-list-item-action>
+        </v-list-item>
       </template>
     </div>
 
@@ -73,7 +76,7 @@
       v-model="deletingVersion"
       max-width="290"
     >
-      <v-card dark>
+      <v-card>
         <v-card-title class="headline">
           {{ $t('version.deleteTitle') }}
         </v-card-title>
@@ -81,14 +84,14 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            flat
+            text
             @click="cancelDeleting()"
           >
             {{ $t('no') }}
           </v-btn>
           <v-btn
-            color="red darken-1"
-            flat
+            color="red en-1"
+            text
             @click="comfireDeleting()"
           >
             {{ $t('yes') }}
@@ -100,7 +103,7 @@
       v-model="reinstallVersion"
       max-width="390"
     >
-      <v-card dark>
+      <v-card>
         <v-card-title
           class="headline"
         >
@@ -110,14 +113,14 @@
         <v-card-actions>
           <v-spacer />
           <v-btn
-            flat
+            text
             @click="cancelReinstall()"
           >
             {{ $t('no') }}
           </v-btn>
           <v-btn
-            color="orange darken-1"
-            flat
+            color="orange en-1"
+            text
             @click="comfireReinstall()"
           >
             <v-icon left>
@@ -252,9 +255,7 @@ export default defineComponent({
 
 <style>
 .local-version-list
-  .theme--dark.v-text-field
-  > .v-input__control
-  > .v-input__slot:before {
+  .v-text-field>.v-input__control>.v-input__slot:before {
   border: none;
 }
 </style>

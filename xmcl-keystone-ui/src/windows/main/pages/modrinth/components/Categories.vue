@@ -1,6 +1,7 @@
 <template>
   <v-card
     v-if="!loading"
+    outlined
     class="p-4 rounded-lg flex flex-col h-[fit-content]"
   >
     <span class="list-title">{{ $t('modrinth.categories.name') }}</span>

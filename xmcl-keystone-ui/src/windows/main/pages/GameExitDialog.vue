@@ -13,7 +13,7 @@
       <v-spacer />
       <v-toolbar-items>
         <v-btn
-          flat
+          text
           @click="openFolder"
         >
           {{ isCrash ? $t('launch.openCrashReportFolder') : $t('launch.openLogFolder') }}

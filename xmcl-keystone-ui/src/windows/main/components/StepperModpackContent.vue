@@ -2,6 +2,7 @@
   <div class="flex flex-col h-full overflow-auto">
     <v-list
       v-if="!!curseforgeMetadata"
+      color="transparent"
       two-line
     >
       <StepperModpackContentFile

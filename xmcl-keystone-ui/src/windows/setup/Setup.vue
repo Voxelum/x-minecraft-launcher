@@ -1,6 +1,5 @@
 <template>
   <v-app
-    dark
     class="moveable rounded-lg"
     fill-height
   >
@@ -23,41 +22,41 @@
         subheader
         style="background: transparent; width: 100%"
       >
-        <v-list-tile>
-          <v-list-tile-content>
-            <v-list-tile-title>{{ $t('defaultPath') }}</v-list-tile-title>
-            <v-list-tile-sub-title>{{ defaultPath }}</v-list-tile-sub-title>
-          </v-list-tile-content>
-        </v-list-tile>
-        <v-list-tile>
-          <v-list-tile-content>
-            <v-list-tile-title>{{ $t('path') }}</v-list-tile-title>
-            <v-list-tile-sub-title>{{ path }}</v-list-tile-sub-title>
-          </v-list-tile-content>
-          <v-list-tile-action>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title>{{ $t('defaultPath') }}</v-list-item-title>
+            <v-list-item-subtitle>{{ defaultPath }}</v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title>{{ $t('path') }}</v-list-item-title>
+            <v-list-item-subtitle>{{ path }}</v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-action class="justify-center">
             <v-btn
-              outline
+              outlined
               flat
               style="margin-right: 10px;"
               @click="browse"
             >
               {{ $t('browse') }}
             </v-btn>
-          </v-list-tile-action>
-        </v-list-tile>
-        <v-list-tile
+          </v-list-item-action>
+        </v-list-item>
+        <v-list-item
           v-for="d of drives"
           :key="d.mounted"
           v-ripple
           class="hover:bg-[rgba(123,123,123,0.5)] cursor-pointer rounded-lg m-2 mx-3"
           @click="onSelect(d)"
         >
-          <v-list-tile-avatar>
+          <v-list-item-avatar>
             <v-icon>storage</v-icon>
-          </v-list-tile-avatar>
+          </v-list-item-avatar>
 
-          <v-list-tile-content>
-            <v-list-tile-title class="flex p-0 flex-grow-0 align-baseline">
+          <v-list-item-content>
+            <v-list-item-title class="flex p-0 flex-grow-0 align-baseline w-full">
               {{ d.mounted }}
               <div class="flex-grow" />
 
@@ -67,12 +66,12 @@
               >
                 {{ d.selectedPath }}
               </span>
-            </v-list-tile-title>
+            </v-list-item-title>
             <v-progress-linear
               class="p-0 my-2"
               :value="d.used / (d.available + d.used) * 100"
             />
-            <v-list-tile-sub-title>
+            <v-list-item-subtitle class="flex">
               <span class="">
                 {{ $t('disk.available') }}:
                 {{ (d.available / 1024 / 1024 / 1024).toFixed(2) }}G
@@ -83,9 +82,9 @@
               <span>
                 {{ d.capacity }}
               </span>
-            </v-list-tile-sub-title>
-          </v-list-tile-content>
-        </v-list-tile>
+            </v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
       <div style="flex-grow: 1" />
       <v-card-actions

@@ -5,67 +5,69 @@
     :items="mods"
     :expand="false"
   >
-    <template #items="props">
-      <tr class="cursor-pointer">
-        <td @click="props.expanded = !props.expanded">
+    <template #item="props">
+      <tr
+        class="cursor-pointer"
+        @click="props.expand( !props.isExpanded)"
+      >
+        <td>
           {{ props.item.name }}
         </td>
-        <td @click="props.expanded = !props.expanded">
+        <td>
           {{ props.item.version_number }}
         </td>
-        <td @click="props.expanded = !props.expanded">
+        <td class="">
           <v-chip
             v-for="l of props.item.loaders"
             :key="l"
             small
             label
-            outline
+            outlined
             color="white"
           >
             {{ l }}
           </v-chip>
         </td>
-        <td @click="props.expanded = !props.expanded">
-          <v-chip
-            v-for="l of props.item.game_versions"
-            :key="l"
-            small
-            label
-            outline
-            color="white"
-          >
-            {{ l }}
-          </v-chip>
+        <td class="">
+          <div class="flex gap-1 items-center">
+            <v-chip
+              v-for="l of props.item.game_versions"
+              :key="l"
+              small
+              label
+              outlined
+              color="white"
+            >
+              {{ l }}
+            </v-chip>
+          </div>
         </td>
-        <td
-          @click="props.expanded = !props.expanded"
-        >
+        <td>
           {{ $t(`modrinth.versionType.${props.item.version_type}`) }}
         </td>
-        <td @click="props.expanded = !props.expanded">
+        <td>
           {{ props.item.downloads }}
         </td>
-        <td
-          @click="props.expanded = !props.expanded"
-        >
+        <td>
           {{ new Date(props.item.date_published).toLocaleDateString() }}
         </td>
         <td>
           <v-btn
             icon
-            flat
+            text
             :loading="isDownloading(props.item)"
             :disabled="isDownloaded(props.item)"
-            @click="$emit('install', props.item)"
+            @click.stop="$emit('install', props.item)"
           >
             <v-icon>file_download</v-icon>
           </v-btn>
         </td>
       </tr>
     </template>
-    <template #expand="props">
-      <v-card flat>
-        <!-- <v-card-text
+    <template #expanded-item="props">
+      <tr span>
+        <td colspan="8">
+          <!-- <v-card-text
           v-for="file in props.item.files"
           :key="file.filename"
           class="flex"
@@ -73,10 +75,11 @@
           {{ file.filename }}
           {{ file.url }}
         </v-card-text>-->
-        <v-card-text v-if="props.item.changelog">
-          <div v-html="render(props.item.changelog)" />
-        </v-card-text>
-      </v-card>
+          <v-card-text v-if="props.item.changelog">
+            <div v-html="render(props.item.changelog)" />
+          </v-card-text>
+        </td>
+      </tr>
     </template>
   </v-data-table>
 </template>
@@ -118,9 +121,7 @@ export default defineComponent({
         }
         return false
       }
-      console.log(resourceState.mods)
-      console.log(resourceState.mods.find(find))
-      return resourceState.mods.find(find)
+      return !!resourceState.mods.find(find)
     }
     const headers = computed(() => [{
       text: $t('name'),

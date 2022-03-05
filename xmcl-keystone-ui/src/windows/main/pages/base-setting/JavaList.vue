@@ -3,33 +3,32 @@
     two-line
     style="overflow-y: auto; background: transparent;"
   >
-    <v-list-tile
+    <v-list-item
       v-for="item in items"
       :key="item.path"
-      avatar
       :class="{ green: item.path === value.path && item.valid, red: item.path === value.path && !item.valid }"
       @click="$emit('input', item)"
     >
-      <v-list-tile-avatar>
+      <v-list-item-avatar>
         <v-chip
           label
           small
           :color="item.valid ? 'orange' : 'grey'"
-          outline
+          outlined
         >
           {{ item.majorVersion }}
         </v-chip>
-      </v-list-tile-avatar>
-      <v-list-tile-content>
-        <v-list-tile-title v-if="item.valid">
+      </v-list-item-avatar>
+      <v-list-item-content>
+        <v-list-item-title v-if="item.valid">
           Java {{ item.version }}
-        </v-list-tile-title>
-        <v-list-tile-title v-else>
+        </v-list-item-title>
+        <v-list-item-title v-else>
           {{ $t('java.invalid') }}
-        </v-list-tile-title>
-        <v-list-tile-sub-title>{{ item.path }}</v-list-tile-sub-title>
-      </v-list-tile-content>
-      <v-list-tile-action>
+        </v-list-item-title>
+        <v-list-item-subtitle>{{ item.path }}</v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-action>
         <v-btn
           v-if="item.valid"
           icon
@@ -37,16 +36,16 @@
         >
           <v-icon>folder</v-icon>
         </v-btn>
-      </v-list-tile-action>
-      <v-list-tile-action>
+      </v-list-item-action>
+      <v-list-item-action>
         <v-btn
           icon
           @click.stop="remove(item)"
         >
           <v-icon>delete</v-icon>
         </v-btn>
-      </v-list-tile-action>
-    </v-list-tile>
+      </v-list-item-action>
+    </v-list-item>
   </v-list>
 </template>
 

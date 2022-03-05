@@ -1,9 +1,8 @@
 <template>
-  <v-list-tile
-    avatar
+  <v-list-item
     @click="onClick"
   >
-    <v-list-tile-avatar>
+    <v-list-item-avatar>
       <v-img :src="image">
         <template #placeholder>
           <v-layout
@@ -19,19 +18,19 @@
           </v-layout>
         </template>
       </v-img>
-    </v-list-tile-avatar>
+    </v-list-item-avatar>
 
-    <v-list-tile-content>
-      <v-list-tile-title>{{ project ? project.name : '' }}</v-list-tile-title>
-      <v-list-tile-sub-title>
+    <v-list-item-content>
+      <v-list-item-title>{{ project ? project.name : '' }}</v-list-item-title>
+      <v-list-item-subtitle>
         <span
           v-if="project ? project.authors[0].name : ''"
           class="text--primary"
         >{{ project && project.authors[0] ? project.authors[0].name : '' }}</span>
         {{ project ? project.summary : '' }}
-      </v-list-tile-sub-title>
-    </v-list-tile-content>
-  </v-list-tile>
+      </v-list-item-subtitle>
+    </v-list-item-content>
+  </v-list-item>
 </template>
 <script lang="ts">
 import { computed, defineComponent, onMounted, Ref, ref } from '@vue/composition-api'

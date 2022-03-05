@@ -77,7 +77,6 @@ export function useInstanceResourcePacks() {
     return meta ? meta.format ?? meta.pack_format : 3
   }
   function getResourcePackItem(resource: PersistedResourcePackResource): ResourcePackItem {
-    const icon = isPersistedResource(resource) ? `dataroot://${resource.domain}/${resource.fileName}.png` : ''
     return ({
       path: resource.path,
       name: resource.name,
@@ -86,7 +85,7 @@ export function useInstanceResourcePacks() {
       pack_format: resource.metadata.pack_format,
       description: resource.metadata.description,
       acceptingRange: packFormatVersionRange[getResourcepackFormat(resource.metadata)] ?? '[*]',
-      icon,
+      icon: isPersistedResource(resource) ? resource.iconUri : '',
       tags: [...resource.tags],
 
       resource: (resource) as any,
@@ -107,7 +106,7 @@ export function useInstanceResourcePacks() {
       }
     }
     return storage.value.find((p) => p.id === resourcePackName || p.id === `file/${resourcePackName}`) ?? {
-      path: '',
+      path: `file/${resourcePackName}`,
       name: resourcePackName,
       acceptingRange: 'unknown',
       icon: unknownPack,

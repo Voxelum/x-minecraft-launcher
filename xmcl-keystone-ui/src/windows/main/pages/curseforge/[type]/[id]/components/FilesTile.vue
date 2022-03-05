@@ -1,22 +1,22 @@
 <template>
-  <v-list-tile avatar>
-    <v-list-tile-avatar>
+  <v-list-item>
+    <v-list-item-avatar>
       <v-chip
         label
         :color="getColor(source.releaseType)"
       >
         {{ releases[source.releaseType] }}
       </v-chip>
-    </v-list-tile-avatar>
-    <v-list-tile-content>
-      <v-list-tile-title>{{ source.displayName }}</v-list-tile-title>
-      <v-list-tile-sub-title class>
+    </v-list-item-avatar>
+    <v-list-item-content>
+      <v-list-item-title>{{ source.displayName }}</v-list-item-title>
+      <v-list-item-subtitle class>
         <div class="text-gray-400">
           {{ new Date(source.fileDate).toLocaleString() }}
         </div>
-      </v-list-tile-sub-title>
-    </v-list-tile-content>
-    <div class="flex justify-end mr-2">
+      </v-list-item-subtitle>
+    </v-list-item-content>
+    <div class="flex justify-end mr-2 gap-2">
       <v-chip
         v-if="source.gameVersion[0]"
         small
@@ -38,36 +38,36 @@
         {{ (source.fileLength / 1024 / 1024).toFixed(2) }} MB
       </v-chip>
     </div>
-    <v-list-tile-action v-if="!modpack">
+    <v-list-item-action v-if="!modpack">
       <v-btn
-        flat
+        text
         :loading="getFileStatus(source) === 'downloading'"
         :disabled="getFileStatus(source) === 'downloaded'"
         @click="install(source)"
       >
         {{ getFileStatus(source) === 'downloaded' ? $t('curseforge.installed') : $t('curseforge.install') }}
       </v-btn>
-    </v-list-tile-action>
-    <v-list-tile-action v-else>
+    </v-list-item-action>
+    <v-list-item-action v-else>
       <v-btn
-        flat
+        text
         :loading="getFileStatus(source) === 'downloading'"
         :disabled="getFileStatus(source) === 'downloaded'"
         @click="download(source)"
       >
         {{ getFileStatus(source) === 'downloaded' ? $t('curseforge.downloaded') : $t('curseforge.downloadOnly') }}
       </v-btn>
-    </v-list-tile-action>
-    <v-list-tile-action v-if="modpack">
+    </v-list-item-action>
+    <v-list-item-action v-if="modpack">
       <v-btn
-        flat
+        text
         :loading="getFileStatus(source) === 'downloading'"
         @click="install(source)"
       >
         {{ $t('curseforge.install') }}
       </v-btn>
-    </v-list-tile-action>
-  </v-list-tile>
+    </v-list-item-action>
+  </v-list-item>
 </template>
 
 <script lang=ts>

@@ -16,23 +16,22 @@
       <server-status-bar />
     </v-flex>
 
-    <div class="flex absolute left-0 bottom-0 px-[20px] pb-[10px] gap-[4px]">
+    <div class="flex absolute left-0 bottom-0 px-8 pb-[20px] gap-6">
       <settings-speed-dial :refreshing="refreshing" />
 
       <v-tooltip
         :close-delay="0"
-        left
+        top
       >
         <template #activator="{ on }">
           <v-btn
-            flat
+            text
             icon
-            dark
             :loading="refreshing"
             v-on="on"
             @click="showExport"
           >
-            <v-icon dark>
+            <v-icon>
               share
             </v-icon>
           </v-btn>
@@ -43,13 +42,12 @@
       <v-tooltip top>
         <template #activator="{ on }">
           <v-btn
-            flat
+            text
             icon
-            dark
             v-on="on"
             @click="showLogDialog"
           >
-            <v-icon dark>
+            <v-icon>
               subtitles
             </v-icon>
           </v-btn>
@@ -60,13 +58,12 @@
       <v-tooltip top>
         <template #activator="{ on }">
           <v-btn
-            flat
+            text
             icon
-            dark
             v-on="on"
             @click="showInstanceFolder"
           >
-            <v-icon dark>
+            <v-icon>
               folder
             </v-icon>
           </v-btn>
@@ -77,55 +74,11 @@
       <problems-bar />
     </div>
 
-    <!-- <v-speed-dial
-      class="launch-speed-dial"
-      direction="top"
-      :disabled="refreshing || missingJava || launchStatus !== 'ready'"
-      :open-on-hover="false"
-    >
-      <template v-slot:activator>
-        <v-btn
-          dark
-          large
-          class="launch-side-button"
-          color="primary"
-          :disabled="refreshing || missingJava || launchStatus !== 'ready'"
-          v-on="on"
-        >
-          <v-icon>expand_less</v-icon>
-        </v-btn>
-      </template>
-      <v-btn
-        dark
-        color="orange"
-        :disabled="refreshing || missingJava || launchStatus !== 'ready'"
-        @click="selectLaunchTarget(false)"
-      >
-        <v-flex xs3>
-          <v-icon left>check</v-icon>
-        </v-flex>
-        <v-divider vertical />
-        <v-flex>{{ $t('launch.client') }}</v-flex>
-      </v-btn>
-      <v-btn
-        dark
-        color="red"
-        :disabled="refreshing || missingJava || launchStatus !== 'ready'"
-        @click="selectLaunchTarget(true)"
-      >
-        <v-flex xs3>
-        </v-flex>
-        <v-divider vertical />
-        <v-flex>{{ $t('launch.localhost') }}</v-flex>
-      </v-btn>
-    </v-speed-dial>-->
-
     <v-btn
       color="primary"
-      dark
-      large
+      x-large
       :disabled="refreshing"
-      class="launch-button"
+      class="!absolute bottom-5 right-5 !px-12 !py-6"
       @click="launch"
     >
       {{ $t("launch.launch") }}
@@ -148,7 +101,6 @@
       :hide="hideLogDialog"
     />
     <game-exit-dialog />
-    <feedback-dialog />
     <export-dialog
       :value="isExportingModpack"
       @input="
@@ -162,7 +114,6 @@
 <script lang=ts>
 import { defineComponent, onMounted, ref } from '@vue/composition-api'
 import ExportDialog from './ExportDialog.vue'
-import FeedbackDialog from './FeedbackDialog.vue'
 import GameExitDialog from './GameExitDialog.vue'
 import HomeHeader from './HomeHeader.vue'
 import LaunchBlockedDialog from './LaunchBlockedDialog.vue'
@@ -221,7 +172,6 @@ export default defineComponent({
     HomeHeader,
     ServerStatusBar,
     GameExitDialog,
-    FeedbackDialog,
     ExportDialog,
     SettingsSpeedDial,
   },
@@ -322,10 +272,7 @@ export default defineComponent({
   font-size: 22px;
 }
 .launch-button {
-  position: absolute !important;
-  border-radius: 0px 2px 2px 0px;
-  right: 10px;
-  bottom: 10px;
+  @apply p-10;
 }
 .launch-speed-dial {
   right: 147px;

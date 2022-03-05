@@ -7,49 +7,58 @@
       <v-speed-dial
         v-if="security"
         v-model="fab"
-        class="absolute-centered"
-        style="z-index: 3; bottom: 80px; display: flex; justify-content: center"
+        style="z-index: 3; display: flex; justify-content: center"
         direction="top"
         :open-on-hover="true"
       >
         <template #activator>
           <v-btn
             v-model="fab"
-            color="secondary"
             :disabled="disabled"
             fab
             v-on="on"
             @click="load"
-            @mouseenter="enterEditBtn"
           >
             <v-icon>edit</v-icon>
           </v-btn>
         </template>
-        <v-btn
-          :disabled="disabled"
-          color="secondary"
-          fab
-          small
-          v-on="on"
-          @click="upload"
-          @mouseenter="enterLinkBtn"
+        <v-tooltip
+          :close-delay="0"
+          left
         >
-          <v-icon>link</v-icon>
-        </v-btn>
-        <v-btn
-          :disabled="disabled"
-          color="secondary"
-          fab
-          small
-          v-on="on"
-          @click="save"
-          @mouseenter="enterSaveBtn"
+          <template #activator="{ on: tooltip }">
+            <v-btn
+              :disabled="disabled"
+              fab
+              small
+              v-on="tooltip"
+              @click="upload"
+            >
+              <v-icon>link</v-icon>
+            </v-btn>
+          </template>
+          {{ $t('user.skinImportLink') }}
+        </v-tooltip>
+        <v-tooltip
+          :close-delay="0"
+          left
         >
-          <v-icon>save</v-icon>
-        </v-btn>
+          <template #activator="{ on: tooltip }">
+            <v-btn
+              :disabled="disabled"
+              fab
+              small
+              v-on="tooltip"
+              @click="save"
+            >
+              <v-icon>save</v-icon>
+            </v-btn>
+          </template>
+          {{ $t('user.skinSave') }}
+        </v-tooltip>
       </v-speed-dial>
     </template>
-    {{ hoverTextOnEdit }}
+    {{ $t('user.skinImportFile') }}
   </v-tooltip>
 </template>
 
@@ -70,19 +79,9 @@ export default defineComponent({
     const { $t } = useI18n()
     const data = reactive({
       fab: false,
-      hoverTextOnEdit: '',
     })
     return {
       ...toRefs(data),
-      enterEditBtn() {
-        data.hoverTextOnEdit = $t('user.skinImportFile')
-      },
-      enterLinkBtn() {
-        data.hoverTextOnEdit = $t('user.skinImportLink')
-      },
-      enterSaveBtn() {
-        data.hoverTextOnEdit = $t('user.skinSave')
-      },
     }
   },
 })

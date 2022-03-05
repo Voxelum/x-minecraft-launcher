@@ -5,7 +5,7 @@
   >
     <i
       aria-hidden="true"
-      class="v-icon material-icons theme--dark v-alert__icon"
+      class="v-icon material-icons theme-- v-alert__icon"
     >
       <img
         :src="status.favicon || unknownServer"

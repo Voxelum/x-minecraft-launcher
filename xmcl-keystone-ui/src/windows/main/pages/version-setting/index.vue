@@ -1,22 +1,25 @@
 <template>
   <v-container
+    class="versions-setting h-full pb-0 overflow-y-hidden"
     grid-list-md
-    fill-height
   >
     <div class="flex flex-col h-full overflow-auto gap-3 mt-2">
-      <div
+      <v-card-title>
+        {{ $t("profile.versionSetting") }}
+      </v-card-title>
+      <!-- <div
         tag="h1"
-        class="mb-3 white--text select-none"
+        class="mb-3 select-none mx-4"
         xs6
       >
-        <span class="headline">{{ $t("profile.versionSetting") }}</span>
-      </div>
+        <span class="headline"></span>
+      </div> -->
       <v-tabs
         v-model="active"
-        class="flex-grow flex flex-col"
+        background-color="transparent"
+        class="flex-grow flex flex-col bg-transparent"
         mandatory
-        color="transparent"
-        dark
+        :color="barColor"
         :slider-color="barColor"
       >
         <v-tab>
@@ -62,9 +65,7 @@
       </v-tabs>
       <v-tabs-items
         v-model="active"
-        color="transparent"
-        dark
-        slider-color="primary"
+        background-color="transparent"
         class="h-full overflow-auto"
         @mousewheel.stop
       >
@@ -129,7 +130,7 @@
         v-if="active !== 0"
         large
         absolute
-        dark
+
         fab
         class="right-10 bottom-10"
         color="primary"
@@ -210,7 +211,7 @@ export default defineComponent({
     const { state } = useVersionService()
     const barColor = computed(() => {
       switch (data.active) {
-        case 0: return 'white'
+        case 0: return 'currentColor'
         case 1: return 'primary'
         case 2: return 'brown'
         case 3: return 'orange'
@@ -343,8 +344,15 @@ export default defineComponent({
   min-width: 100px;
 }
 </style>
+
 <style>
-.v-window__container {
+.versions-setting .v-window__container {
   height: 100%;
 }
+
+.versions-setting .v-tabs-items {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
 </style>

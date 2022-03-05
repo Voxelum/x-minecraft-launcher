@@ -1,36 +1,116 @@
 <template>
-  <v-container
+  <div
     grid-list-md
     fill-height
-    class="h-full overflow-auto"
+    class="h-full overflow-auto lg:p-4 p-2 lg:px-8 px-4 w-full"
   >
-    <div class="flex flex-col h-full w-full max-w-full gap-5 overflow-auto">
-      <div class="flex white--text flex-shrink flex-grow-0">
-        <span class="headline">{{ name || id }}</span>
-        <v-spacer />
-        <dest-menu
-          v-model="destination"
-          style="flex-grow: 1"
+    <div class="flex lg:flex-row md:flex-col flex-grow lg:gap-5 gap-2 h-full max-h-full overflow-auto">
+      <div
+        fill-height
+        class="flex lg:flex-col lg:flex lg:gap-5 gap-2 flex-shrink"
+      >
+        <Header
+          :destination="destination"
           :from="from"
+          :name="name"
+          :icon="attachments.length > 0 ? attachments[0].thumbnailUrl : ''"
+          :creation="createdDate"
+          :downloads="totalDownload"
+          :updated="lastUpdate"
+          :loading="refreshingProject"
+          @destination="destination = $event"
         />
+        <v-card
+          outlined
+          class="max-h-full overflow-auto flex flex-col md:hidden lg:flex"
+        >
+          <v-card-title class="text-md font-bold">
+            {{ $t("curseforge.recentFiles") }}
+          </v-card-title>
+          <v-divider />
+          <v-list class="overflow-auto">
+            <v-tooltip
+              v-for="file in recentFiles"
+              :key="file.id"
+              top
+            >
+              <template #activator="{ on }">
+                <v-list-item
+                  :v-ripple="getFileStatus(file) === 'remote'"
+                  @click="install(file)"
+                  v-on="on"
+                >
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      {{
+                        file.displayName
+                      }}
+                    </v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{
+                        new Date(file.fileDate).toLocaleDateString()
+                      }}
+                    </v-list-item-subtitle>
+                  </v-list-item-content>
+                  <v-list-item-action>
+                    <v-icon v-if="getFileStatus(file) !== 'downloading'">
+                      {{
+                        getFileStatus(file) === "downloaded"
+                          ? "dns"
+                          : "download"
+                      }}
+                    </v-icon>
+                    <v-progress-circular
+                      v-else
+                      indeterminate
+                      :size="24"
+                      :width="2"
+                    />
+                  </v-list-item-action>
+                </v-list-item>
+              </template>
+              {{ file.fileName }}
+            </v-tooltip>
+          </v-list>
+        </v-card>
       </div>
-      <div class="flex lg:flex-row md:flex-col flex-grow gap-5 h-full max-h-full overflow-auto">
+
+      <v-card
+        outlined
+        class="flex flex-col w-full h-full overflow-auto flex-grow relative"
+      >
         <v-tabs
           v-model="tab"
-          dark
           slider-color="yellow"
-          class="flex flex-col w-full h-full overflow-auto flex-grow relative"
+          class="flex-grow-0"
         >
-          <v-tab>{{ $t("curseforge.project.description") }}</v-tab>
-          <v-tab>{{ $t("curseforge.project.files") }}</v-tab>
-          <v-tab>{{ $t("curseforge.project.images") }}</v-tab>
-          <v-tab-item class="flex flex-col h-full max-h-full overflow-auto">
+          <v-tab :key="0">
+            {{ $t("curseforge.project.description") }}
+          </v-tab>
+          <v-tab :key="1">
+            {{ $t("curseforge.project.files") }}
+          </v-tab>
+          <v-tab :key="2">
+            {{ $t("curseforge.project.images") }}
+          </v-tab>
+        </v-tabs>
+        <v-tabs-items
+          v-model="tab"
+          class="h-full"
+        >
+          <v-tab-item
+            :key="0"
+            class="h-full max-h-full overflow-auto"
+          >
             <project-description
               class="flex flex-col h-full max-h-full overflow-auto"
               :project="projectId"
             />
           </v-tab-item>
-          <v-tab-item class="overflow-auto">
+          <v-tab-item
+            :key="1"
+            class="h-full max-h-full overflow-auto"
+          >
             <project-files
               class="overflow-auto"
               :project="projectId"
@@ -38,164 +118,39 @@
               :from="destination"
             />
           </v-tab-item>
-          <v-tab-item class="overflow-auto">
-            <v-card class="overflow-auto">
-              <v-container
-                v-if="false"
-                fill-height
-                style="min-height: 65vh"
-              >
-                <v-layout
-                  justify-center
-                  align-center
-                  fill-height
-                >
-                  <v-progress-circular
-                    indeterminate
-                    :size="100"
-                  />
-                </v-layout>
-              </v-container>
-              <v-container
-                v-else
-                fill-height
-                grid-list-md
-              >
-                <v-layout
-                  row
-                  wrap
-                >
-                  <v-flex
-                    v-for="(img, index) in attachments"
-                    :key="index"
-                    d-flex
-                  >
-                    <v-card
-                      flat
-                      hover
-                      style="min-width: 100px"
-                      @click="viewImage(img)"
-                    >
-                      <v-img :src="img.url" />
-                      <v-card-title>{{ img.title }}</v-card-title>
-                    </v-card>
-                  </v-flex>
-                </v-layout>
-              </v-container>
-            </v-card>
+          <v-tab-item
+            :key="2"
+            class="h-full max-h-full overflow-auto"
+          >
+            <images
+              :attachments="attachments"
+              @image="viewImage"
+            />
           </v-tab-item>
-        </v-tabs>
-        <div
-          xs4
-          fill-height
-          class="flex lg:flex-col md:hidden lg:flex gap-5 flex-shrink"
-        >
-          <v-card class="min-w-25">
-            <v-card-title class="flex-col items-start gap-1">
-              <div style="font-weight: 500">
-                {{ $t("curseforge.createdDate") }}
-              </div>
-              <div
-                style="color: grey; padding-left: 5px"
-              >
-                {{ new Date(createdDate).toLocaleString() }}
-              </div>
-              <div style="font-weight: 500">
-                <v-icon small>
-                  event
-                </v-icon>
-                {{ $t("curseforge.lastUpdate") }}
-              </div>
-              <div
-                style="color: grey; padding-left: 5px"
-              >
-                {{ new Date(lastUpdate).toLocaleString() }}
-              </div>
-              <div style="font-weight: 500">
-                <v-icon small>
-                  file_download
-                </v-icon>
-                {{ $t("curseforge.totalDownloads") }}
-              </div>
-              <div style="color: grey; padding-left: 5px">
-                {{ totalDownload }}
-              </div>
-            </v-card-title>
-          </v-card>
-          <v-card class="max-h-full overflow-auto flex flex-col">
-            <v-card-title class="text-md font-bold">
-              {{ $t("curseforge.recentFiles") }}
-            </v-card-title>
-            <v-divider />
-            <v-list class="overflow-auto">
-              <v-tooltip
-                v-for="file in recentFiles"
-                :key="file.id"
-                top
-              >
-                <template #activator="{ on }">
-                  <v-list-tile
-                    :v-ripple="getFileStatus(file) === 'remote'"
-                    @click="install(file)"
-                    v-on="on"
-                  >
-                    <v-list-tile-content>
-                      <v-list-tile-title>
-                        {{
-                          file.displayName
-                        }}
-                      </v-list-tile-title>
-                      <v-list-tile-sub-title>
-                        {{
-                          new Date(file.fileDate).toLocaleDateString()
-                        }}
-                      </v-list-tile-sub-title>
-                    </v-list-tile-content>
-                    <v-list-tile-action>
-                      <v-icon v-if="getFileStatus(file) !== 'downloading'">
-                        {{
-                          getFileStatus(file) === "downloaded"
-                            ? "dns"
-                            : "cloud_download"
-                        }}
-                      </v-icon>
-                      <v-progress-circular
-                        v-else
-                        indeterminate
-                        :size="24"
-                        :width="2"
-                      />
-                    </v-list-tile-action>
-                  </v-list-tile>
-                </template>
-                {{ file.fileName }}
-              </v-tooltip>
-            </v-list>
-          </v-card>
-        </div>
-      </div>
+        </v-tabs-items>
+      </v-card>
     </div>
     <v-dialog v-model="viewingImage">
       <v-img :src="viewedImage" />
     </v-dialog>
-  </v-container>
+  </div>
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs, watch, computed, ref } from '@vue/composition-api'
+import { computed, defineComponent, reactive, ref, toRefs, watch } from '@vue/composition-api'
 import { File } from '@xmcl/curseforge'
-import {
-  useCurseforgeProject,
-  useCurseforgeInstall,
-} from '/@/hooks'
-import ProjectDescription from './Description.vue'
-import DestMenu from './DestMenu.vue'
-import ProjectFiles from './Files.vue'
-import { withDefault } from '/@/util/props'
 import { ProjectType } from '@xmcl/runtime-api'
+import ProjectDescription from './components/Description.vue'
+import ProjectFiles from './components/Files.vue'
+import Images from './components/Images.vue'
+import Header from './components/Header.vue'
+import {
+  useCurseforgeInstall, useCurseforgeProject,
+} from '/@/hooks'
+import { withDefault } from '/@/util/props'
 
 export default defineComponent({
-  components: { ProjectDescription, ProjectFiles, DestMenu },
+  components: { ProjectDescription, ProjectFiles, Images, Header },
   props: {
     type: withDefault<ProjectType>((String as any), () => 'mc-mods'),
     id: withDefault(String, () => ''),

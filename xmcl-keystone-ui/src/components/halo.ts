@@ -8,6 +8,7 @@ class Halo extends ShaderBase {
       baseColor: 0x001a59,
       color2: 0xf2e735,
       // backgroundColor: 0x131a43,
+      // backgroundColor: 0xdc0820,
       backgroundColor: 0,
       amplitudeFactor: 1.0,
       ringFactor: 1.0,

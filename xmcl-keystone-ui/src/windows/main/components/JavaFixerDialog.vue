@@ -5,13 +5,13 @@
     width="600"
   >
     <v-card
-      dark
-      color="grey darken-4"
+
+      color="grey en-4"
     >
       <v-toolbar
-        dark
+
         tabs
-        color="grey darken-3"
+        color="grey en-3"
       >
         <v-toolbar-title>{{ reason }}</v-toolbar-title>
       </v-toolbar>
@@ -23,19 +23,18 @@
 
           <v-list
             style="width: 100%"
-            class="grey darken-4"
-            dark
+            class="grey en-4"
           >
-            <v-list-tile
+            <v-list-item
               :ripple="!disableUseExistedJava"
               :disabled="disableUseExistedJava"
               @click="selectLocalJava"
             >
-              <v-list-tile-content>
-                <v-list-tile-title>1. {{ $t('diagnosis.missingJava.switch', { version: javaIssue.version.majorVersion }) }}</v-list-tile-title>
-                <v-list-tile-sub-title>{{ disableUseExistedJava ? $t('diagnosis.missingJava.switch.disabled', { version: javaIssue.version.majorVersion }) : $t('diagnosis.missingJava.switch.message', { version: javaIssue.version.majorVersion }) }}</v-list-tile-sub-title>
-              </v-list-tile-content>
-              <v-list-tile-action>
+              <v-list-item-content>
+                <v-list-item-title>1. {{ $t('diagnosis.missingJava.switch', { version: javaIssue.version.majorVersion }) }}</v-list-item-title>
+                <v-list-item-subtitle>{{ disableUseExistedJava ? $t('diagnosis.missingJava.switch.disabled', { version: javaIssue.version.majorVersion }) : $t('diagnosis.missingJava.switch.message', { version: javaIssue.version.majorVersion }) }}</v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
                 <v-icon v-if="!refreshing">
                   build
                 </v-icon>
@@ -44,18 +43,18 @@
                   indeterminate
                   :size="24"
                 />
-              </v-list-tile-action>
-            </v-list-tile>
+              </v-list-item-action>
+            </v-list-item>
 
-            <v-list-tile
+            <v-list-item
               ripple
               @click="downloadAndInstallJava"
             >
-              <v-list-tile-content>
-                <v-list-tile-title>2. {{ $t('diagnosis.missingJava.autoDownload') }}</v-list-tile-title>
-                <v-list-tile-sub-title>{{ $t('diagnosis.missingJava.autoDownload.message', { version: javaIssue.version.majorVersion }) }}</v-list-tile-sub-title>
-              </v-list-tile-content>
-              <v-list-tile-action>
+              <v-list-item-content>
+                <v-list-item-title>2. {{ $t('diagnosis.missingJava.autoDownload') }}</v-list-item-title>
+                <v-list-item-subtitle>{{ $t('diagnosis.missingJava.autoDownload.message', { version: javaIssue.version.majorVersion }) }}</v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
                 <v-icon v-if="!downloadingJava">
                   build
                 </v-icon>
@@ -64,22 +63,22 @@
                   indeterminate
                   :size="24"
                 />
-              </v-list-tile-action>
-            </v-list-tile>
+              </v-list-item-action>
+            </v-list-item>
 
-            <v-list-tile
+            <v-list-item
               :ripple="!downloadingJava"
               :disabled="downloadingJava"
               @click="findLocalJava"
             >
-              <v-list-tile-content>
-                <v-list-tile-title>3. {{ $t('diagnosis.missingJava.selectJava') }}</v-list-tile-title>
-                <v-list-tile-sub-title>{{ $t('diagnosis.missingJava.selectJava.message') }}</v-list-tile-sub-title>
-              </v-list-tile-content>
-              <v-list-tile-action>
+              <v-list-item-content>
+                <v-list-item-title>3. {{ $t('diagnosis.missingJava.selectJava') }}</v-list-item-title>
+                <v-list-item-subtitle>{{ $t('diagnosis.missingJava.selectJava.message') }}</v-list-item-subtitle>
+              </v-list-item-content>
+              <v-list-item-action>
                 <v-icon>arrow_right</v-icon>
-              </v-list-tile-action>
-            </v-list-tile>
+              </v-list-item-action>
+            </v-list-item>
           </v-list>
         </v-window-item>
       </v-window>

@@ -1,19 +1,18 @@
 <template>
   <v-app
     ref="app"
-    dark
-    class="bg-[#424242] flex flex-col overflow-auto h-full"
+    class="overflow-auto h-full overflow-x-hidden"
   >
-    <div
+    <v-system-bar
       topbar
-      class="flex w-full moveable bg-[#424242] p-0 flex-grow-0"
+      window
+      class="flex w-full moveable p-0 flex-grow-0"
     >
       <span class="p-0 flex flex-shrink flex-grow-0">
         <v-icon
           v-ripple
-          dark
           small
-          class="flex items-center py-2 hover:bg-[rgba(255,255,255,0.2)] cursor-pointer select-none non-moveable"
+          class="flex items-center py-2 hover:bg-[rgba(255,255,255,0.2)] cursor-pointer select-none non-moveable after:hidden"
           style="width: 80px;"
           @click="goBack"
         >
@@ -22,9 +21,9 @@
       </span>
       <div class="flex-grow " />
       <top-window-controls />
-    </div>
+    </v-system-bar>
     <div
-      class="flex flex-grow h-full overflow-auto relative"
+      class="flex h-full overflow-auto relative"
     >
       <side-bar />
       <div
@@ -45,6 +44,7 @@
     <context-menu />
     <search-bar />
     <notifier />
+    <feedback-dialog />
     <login-dialog />
     <task-dialog />
     <launch-status-dialog />
@@ -77,8 +77,9 @@ import {
   provideAsyncRoute, provideServerStatusCache,
   useBackground, useRouter,
 } from '/@/hooks'
+import FeedbackDialog from './pages/FeedbackDialog.vue'
 export default defineComponent({
-  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaFixerDialog, Background, Notifier, ContextMenu, SearchBar, UniversalDropView, SideBar, AddInstanceDialog, TopWindowControls },
+  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaFixerDialog, Background, Notifier, ContextMenu, SearchBar, UniversalDropView, SideBar, AddInstanceDialog, TopWindowControls, FeedbackDialog },
   setup() {
     provideDialog()
     provideNotifier()

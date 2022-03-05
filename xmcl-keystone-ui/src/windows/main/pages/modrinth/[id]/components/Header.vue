@@ -1,5 +1,8 @@
 <template>
-  <v-card class="rounded-xl p-4 flex gap-6">
+  <v-card
+    outlined
+    class="rounded-lg p-4 flex gap-6"
+  >
     <img
       :src="icon"
       class="w-40"

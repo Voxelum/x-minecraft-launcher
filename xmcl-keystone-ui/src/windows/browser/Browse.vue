@@ -1,6 +1,5 @@
 <template>
   <v-app
-    dark
     style="background: transparent;"
   >
     <div class="flex flex-col">
@@ -11,7 +10,7 @@
           <v-btn
             class="non-moveable"
             :loading="refreshing"
-            flat
+            text
             icon
             @click="refresh"
           >
@@ -25,14 +24,14 @@
             :disabled="loading"
             class="non-moveable rounded-2xl"
             solo
-            flat
+            text
             append-icon="arrow_right"
             @keypress.enter="onEnter"
           />
           <v-btn
             class="non-moveable"
             :loading="refreshing"
-            flat
+            text
             icon
             @click="onEnter"
           >
@@ -43,14 +42,12 @@
           <v-icon
             v-ripple
             class="flex items-center px-2 py-1 xy-0 cursor-pointer select-none non-moveable hover:bg-[rgba(255,255,255,0.5)]"
-            dark
             small
             @click="minimize"
           >minimize</v-icon>
           <!-- <v-icon
             v-ripple
             class="flex items-center px-2 py-1 top-0 cursor-pointer select-none non-moveable hover:bg-[rgba(255,255,255,0.5)]"
-            dark
             small
             @click="maximize"
           >maximize</v-icon>-->
@@ -58,7 +55,6 @@
           <v-icon
             v-ripple
             class="flex items-center px-2 py-1 top-0 cursor-pointer select-none non-moveable hover:bg-[rgb(209,12,12)]"
-            dark
             small
             @click="close"
           >close</v-icon>

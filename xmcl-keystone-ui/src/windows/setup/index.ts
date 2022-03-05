@@ -3,10 +3,8 @@ import { I18N_KEY } from '/@/constant'
 import VueCompositionApi, { h, provide, createApp, defineComponent } from '@vue/composition-api'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
-import 'vuetify/dist/vuetify.min.css'
-import Vuetify from 'vuetify'
+import vuetify from './vuetify'
 import 'virtual:windi.css'
-import colors from 'vuetify/es5/util/colors'
 import Setup from './Setup.vue'
 
 Vue.config.productionTip = false
@@ -44,19 +42,14 @@ const i18n = new VueI18n({
   },
   silentTranslationWarn: true,
 })
+
 Vue.use(VueCompositionApi)
 const app = createApp(defineComponent({
+  vuetify,
   i18n,
   setup() {
     provide(I18N_KEY, i18n)
     return () => h(Setup)
   },
 }))
-app.use(Vuetify, {
-  theme: {
-    primary: colors.green,
-    // secondary: colors.green,
-    accent: colors.green.accent3,
-  },
-})
 app.mount('#app')

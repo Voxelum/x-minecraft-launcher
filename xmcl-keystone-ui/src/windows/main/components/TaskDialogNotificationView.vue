@@ -2,8 +2,8 @@
   <v-card
     flat
     style="min-height: 300px; max-height: 400px; max-width: 100%; overflow: auto;"
-    dark
-    color="grey darken-4"
+
+    color="grey en-4"
   >
     <v-card-text>
       {{ queue.length === 0 ? $t('notification.empty') : '' }}
@@ -15,23 +15,23 @@
           tag="div"
         >
           <template v-for="(item, index) in queue">
-            <v-list-tile
+            <v-list-item
               :key="item.title + index"
               @click="onClick(item)"
             >
-              <v-list-tile-avatar>
+              <v-list-item-avatar>
                 <v-icon
                   :color="colors[item.level]"
                   left
                 >
                   {{ icons[item.level] }}
                 </v-icon>
-              </v-list-tile-avatar>
-              <v-list-tile-content>
-                <v-list-tile-title v-html="item.title" />
-                <v-list-tile-sub-title v-html="item.body" />
-              </v-list-tile-content>
-            </v-list-tile>
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title v-html="item.title" />
+                <v-list-item-subtitle v-html="item.body" />
+              </v-list-item-content>
+            </v-list-item>
           </template>
         </transition-group>
       </v-list>

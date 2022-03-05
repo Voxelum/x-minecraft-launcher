@@ -1,6 +1,6 @@
 <template>
   <v-tab-item>
-    <div style="min-height: 420px; max-height: 420px; overflow: auto; background: #424242">
+    <div style="min-height: 420px; max-height: 420px; overflow: auto">
       <transition
         name="fade-transition"
         mode="out-in"
@@ -9,43 +9,42 @@
           v-if="content === '' && files.length !== 0"
           :key="0"
         >
-          <v-list-tile
+          <v-list-item
             v-for="i in files"
             :key="i"
             v-ripple
             :disabled="loading"
-            avatar
             @click="openFile(i)"
           >
-            <v-list-tile-avatar>
+            <v-list-item-avatar>
               <v-icon>
                 clear_all
               </v-icon>
-            </v-list-tile-avatar>
-            <v-list-tile-content>
-              <v-list-tile-title>{{ i }}</v-list-tile-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
+            </v-list-item-avatar>
+            <v-list-item-content>
+              <v-list-item-title>{{ i }}</v-list-item-title>
+            </v-list-item-content>
+            <v-list-item-action>
               <v-btn
                 icon
                 color="white"
-                flat
+                text
                 @click.prevent.stop="showFile(i)"
               >
                 <v-icon>folder</v-icon>
               </v-btn>
-            </v-list-tile-action>
-            <v-list-tile-action>
+            </v-list-item-action>
+            <v-list-item-action>
               <v-btn
                 icon
                 color="red"
-                flat
+                text
                 @click.prevent.stop="removeFile(i)"
               >
                 <v-icon>delete</v-icon>
               </v-btn>
-            </v-list-tile-action>
-          </v-list-tile>
+            </v-list-item-action>
+          </v-list-item>
         </v-list>
         <div
           v-else-if="content === '' && files.length === 0"
@@ -57,7 +56,7 @@
               justify-center
               align-center
             >
-              <h1 v-if="loading">
+              <h1 v-if="!loading">
                 {{ $t('profile.logsCrashes.placeholder') }}
               </h1>
               <v-progress-circular
@@ -77,7 +76,7 @@
             {{ showedFile }}
             <v-spacer />
             <v-btn
-              flat
+              text
               @click="goBack"
             >
               <v-icon left>

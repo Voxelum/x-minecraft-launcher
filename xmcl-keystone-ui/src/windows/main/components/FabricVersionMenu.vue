@@ -2,8 +2,6 @@
   <v-menu
     v-model="opened"
     bottom
-    dark
-    full-width
     :close-on-content-click="false"
     :disabled="disabled"
     style="background-color: #303030; overflow-y: hidden;"
@@ -17,7 +15,6 @@
       append-icon="filter_list"
       :label="$t('filter')"
       solo
-      dark
       hide-details
     >
       <template #prepend>
@@ -26,7 +23,6 @@
             <v-chip
               :color="showBuggy ? 'green' : ''"
               icon
-              dark
               label
               style="margin: 0px; height: 48px; border-radius: 0;"
               @click="showBuggy = !showBuggy"
@@ -41,18 +37,17 @@
       </template>
     </v-text-field>
     <v-list
-      dark
       class="h-full flex flex-col overflow-auto"
     >
-      <v-list-tile
+      <v-list-item
         ripple
         @click="select({ version: '' })"
       >
-        <v-list-tile-avatar>
+        <v-list-item-avatar>
           <v-icon>close</v-icon>
-        </v-list-tile-avatar>
+        </v-list-item-avatar>
         {{ $t('fabric.disable') }}
-      </v-list-tile>
+      </v-list-item>
       <virtual-list
         class="h-full overflow-y-auto max-h-[300px]"
         :data-sources="versions"
@@ -119,7 +114,7 @@ export default defineComponent({
   margin-top: 0px !important;
   margin-right: 0px !important;
 }
-.v-input__slot {
+/* .v-input__slot {
   border-radius: 0 !important;
-}
+} */
 </style>

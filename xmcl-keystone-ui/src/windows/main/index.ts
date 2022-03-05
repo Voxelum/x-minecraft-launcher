@@ -1,4 +1,4 @@
-import VueCompositionApi, { createApp, defineComponent, h, provide } from '@vue/composition-api'
+import VueCompositionApi, { computed, createApp, defineComponent, h, provide, watch } from '@vue/composition-api'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import {
   Camera, Color, LinearFilter, Mesh,
@@ -11,8 +11,6 @@ import VueI18n from 'vue-i18n'
 import VueObserveVisibility from 'vue-observe-visibility'
 import Router from 'vue-router'
 import Vuetify from 'vuetify'
-import 'vuetify/dist/vuetify.min.css'
-import colors from 'vuetify/es5/util/colors'
 import Vuex from 'vuex'
 import { SERVICES_KEY, VuexServiceFactory } from '../../vuexServiceProxy'
 import './directives'
@@ -22,18 +20,13 @@ import { useAllServices } from './services'
 import { createStore } from './store'
 import '/@/assets/google.font.css'
 import locales from '/@/assets/locales'
-import CurseforgeIcon from '/@/components/CurseforgeIcon.vue'
-import FabricIcon from '/@/components/FabricIcon.vue'
-import ForgeIcon from '/@/components/ForgeIcon.vue'
-import JarFileIcon from '/@/components/JarFileIcon.vue'
-import ModrinthIcon from '/@/components/ModrinthIcon.vue'
-import PackageFileIcon from '/@/components/PackageFileIcon.vue'
 import TextComponent from '/@/components/TextComponent'
-import ZipFileIcon from '/@/components/ZipFileIcon.vue'
 import { I18N_KEY, ROUTER_KEY } from '/@/constant'
 import { SERVICES_SEMAPHORES_KEY, useSemaphores } from '/@/hooks'
 import { createI18n } from '/@/i18n'
+import vuetify, { VuetifyInjectionKey } from './vuetify'
 import 'virtual:windi.css'
+import { useLocalStorageCacheBool } from '/@/hooks/useCache'
 
 // TODO: fix this after refactor halo
 window.THREE = {
@@ -73,8 +66,9 @@ const props: Record<string, any> = {
 
 const app = createApp(defineComponent({
   i18n,
+  vuetify,
   router,
-  setup() {
+  setup(_, context) {
     // semaphore
     const semaphores = useSemaphores()
     provide(SERVICES_SEMAPHORES_KEY, semaphores)
@@ -87,6 +81,12 @@ const app = createApp(defineComponent({
     const factory = new VuexServiceFactory(store)
     useAllServices(factory)
     provide(SERVICES_KEY, factory)
+    provide(VuetifyInjectionKey, context.root.$vuetify)
+
+    context.root.$vuetify.theme.dark = localStorage.getItem('darkTheme') !== 'false'
+    watch(computed(() => context.root.$vuetify.theme.dark), (theme) => {
+      localStorage.setItem('darkTheme', theme.toString())
+    })
 
     // make syncable
     // const syncable = useSyncable(store)
@@ -140,36 +140,7 @@ const app = createApp(defineComponent({
 
 app.config.productionTip = false
 app.use(Vuex)
-app.use(Vuetify, {
-  icons: {
-    curseforge: {
-      component: CurseforgeIcon,
-    },
-    zip: {
-      component: ZipFileIcon,
-    },
-    jar: {
-      component: JarFileIcon,
-    },
-    package: {
-      component: PackageFileIcon,
-    },
-    modrinth: {
-      component: ModrinthIcon,
-    },
-    forge: {
-      component: ForgeIcon,
-    },
-    fabric: {
-      component: FabricIcon,
-    },
-  },
-  theme: {
-    primary: colors.green,
-    // secondary: colors.lime,
-    accent: colors.green.accent3,
-  },
-})
+app.use(Vuetify)
 app.use(VueObserveVisibility)
 app.component('TextComponent', TextComponent)
 

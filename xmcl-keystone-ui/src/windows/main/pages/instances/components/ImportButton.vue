@@ -6,85 +6,77 @@
     <template #activator="{ on }">
       <v-speed-dial
         open-on-hover
-        style="z-index: 1"
         direction="bottom"
         transition="slide-y-reverse-transition"
       >
         <template #activator>
           <v-btn
-            flat
+            text
             fab
-            dark
+
             small
             @click="$emit('import', 'normal')"
             v-on="on"
           >
             <v-icon
-              dark
               style="font-size: 28px"
             >
               save_alt
             </v-icon>
           </v-btn>
         </template>
+
         <v-btn
-          style="z-index: 20;"
           fab
           small
-          v-on="on"
           @click="$emit('import', 'folder')"
-          @mouseenter="onMouseEnter('profile.importFolder')"
-          @mouseleave="onMouseLeave"
         >
-          <v-icon>folder</v-icon>
+          <v-tooltip
+            :close-delay="0"
+            left
+          >
+            <template #activator="{ on: tooltip }">
+              <v-icon
+                v-on="tooltip"
+              >
+                folder
+              </v-icon>
+            </template>
+            {{ $t('profile.importFolder') }}
+          </v-tooltip>
         </v-btn>
+
         <v-btn
-          style="z-index: 20;"
           fab
           small
-          v-on="on"
-          @mouseenter="onMouseEnter('profile.importCurseforge')"
-          @mouseleave="onMouseLeave"
           @click="$emit('import', 'curseforge')"
         >
-          <v-icon
-            :size="12"
-            style="padding-right: 2px;"
+          <v-tooltip
+            :close-delay="0"
+            left
           >
-            $vuetify.icons.curseforge
-          </v-icon>
+            <template #activator="{ on: tooltip }">
+              <v-icon
+                style="padding-right: 2px;"
+                v-on="tooltip"
+              >
+                $vuetify.icons.curseforge
+              </v-icon>
+            </template>
+            {{ $t('profile.importCurseforge') }}
+          </v-tooltip>
         </v-btn>
       </v-speed-dial>
     </template>
-    {{ text }}
+    {{ $t('profile.importZip') }}
   </v-tooltip>
 </template>
 
 <script lang=ts>
-import { reactive, toRefs, defineComponent } from '@vue/composition-api'
-import { useI18n } from '/@/hooks'
+import { defineComponent } from '@vue/composition-api'
 
 export default defineComponent({
   emits: ['import'],
-  setup() {
-    const { $t } = useI18n()
-    const data = reactive({
-      text: $t('profile.importZip'),
-    })
-    return {
-      ...toRefs(data),
-      onMouseEnter(text: string) {
-        setTimeout(() => {
-          data.text = $t(text)
-        }, 100)
-      },
-      onMouseLeave() {
-        setTimeout(() => {
-          data.text = $t('profile.importZip')
-        }, 100)
-      },
-    }
-  },
 })
 </script>
 

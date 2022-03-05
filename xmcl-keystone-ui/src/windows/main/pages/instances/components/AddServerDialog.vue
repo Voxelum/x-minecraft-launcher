@@ -7,7 +7,6 @@
     <v-stepper
       v-model="step"
       non-linear
-      dark
     >
       <v-stepper-header>
         <v-stepper-step
@@ -49,7 +48,7 @@
             @quit="quit"
           >
             <v-btn
-              flat
+              text
               :loading="pinging"
               :disabled="!server.host || !server.port"
               @click="refresh"

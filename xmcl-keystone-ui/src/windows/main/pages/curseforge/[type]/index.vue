@@ -1,155 +1,162 @@
 <template>
-  <v-container
-    grid-list-md
-    fill-height
-  >
-    <v-layout
-      row
-      wrap
-      justify-space-around
-    >
-      <v-flex
-        tag="h1"
-        class="white--text"
-        xs7
+  <div class="flex gap-3 p-4 overflow-auto mb-1 curseforge">
+    <v-progress-linear
+      class="absolute top-0 z-10 m-0 p-0 left-0"
+      :active="loading"
+      height="3"
+      :indeterminate="true"
+    />
+    <div class="flex flex-col gap-3 overflow-auto">
+      <v-card
+        class="flex py-1 rounded-lg flex-shrink flex-grow-0"
+        outlined
       >
-        <span class="headline">{{ $tc(`curseforge.${type}.name`, 2) }}</span>
-      </v-flex>
-      <v-flex xs5>
+        <span class="flex items-center justify-center flex-shrink flex-1 min-w-36">
+          <v-select
+            v-model="currentType"
+            flat
+            solo
+            :items="allTypes"
+            hide-details
+          />
+        </span>
         <v-text-field
           ref="searchBar"
           v-model="currentKeyword"
+          color="green"
           append-icon="search"
+          solo
+          flat
           hide-details
-          :label="$t('curseforge.search')"
-          @keydown.enter="search()"
+          :placeholder="$t('curseforge.search')"
+          @keypress.enter="search"
         />
-      </v-flex>
-      <v-flex
-        style="overflow: auto; max-height: 75vh; min-height: 75vh; display: block;"
-        xs12
-      >
-        <v-container
-          v-if="loading"
-          fill-height
-        >
-          <v-layout
-            justify-center
-            align-center
-            fill-height
-          >
-            <v-progress-circular
-              indeterminate
-              :size="100"
-            />
-          </v-layout>
-        </v-container>
-        <v-flex
+        <!-- <v-select
+          v-model="sortBy"
+          :item-value="
+            // @ts-expect-error
+            v => v.name"
+          class="max-w-40"
+          hide-details
+          flat
+          :label="$t('modrinth.sort.title')"
+          :items="sortOptions"
+        />
+        <v-select
+          v-model="pageSize"
+          class="max-w-40"
+          :items="pageSizeOptions"
+          hide-details
+          flat
+          :label="$t('modrinth.perPage')"
+        /> -->
+        <v-pagination
+          v-model="currentPage"
+          :length="pages"
+          :total-visible="5"
+        />
+      </v-card>
+      <div class="flex flex-col gap-3 overflow-auto">
+        <v-card
           v-for="proj in projects"
           :key="proj.id"
-          style="display: block;"
-          d-flex
-          xs12
+          v-ripple
+          :disabled="loading"
+          hover
+          outlined
+          exact
+          push
+          :to="`/curseforge/${currentType}/${proj.id}?from=${from || ''}`"
+          class="flex"
         >
-          <v-card
-            v-ripple
-            hover
-            exact
-            push
-            :to="`/curseforge/${type}/${proj.id}?from=${from || ''}`"
+          <div
+            class="flex items-center justify-center max-w-24"
           >
-            <v-layout
-              fill-height
-              align-center
-              justify-center
+            <v-img
+              :src="proj.attachments[0] ? proj.attachments[0].thumbnailUrl : ''"
+              max-width="100"
+              contain
+              class="rounded"
             >
-              <v-flex
-                shrink
-                style="display: block"
-              >
-                <v-img
-                  :src="proj.attachments[0] ? proj.attachments[0].thumbnailUrl : ''"
-                  :width="64"
+              <template #placeholder>
+                <v-layout
+                  fill-height
+                  align-center
+                  justify-center
+                  ma-0
                 >
-                  <template #placeholder>
-                    <v-layout
-                      fill-height
-                      align-center
-                      justify-center
-                      ma-0
-                    >
-                      <v-progress-circular
-                        indeterminate
-                        color="grey lighten-5"
-                      />
-                    </v-layout>
-                  </template>
-                </v-img>
-              </v-flex>
-              <v-divider
-                vertical
-                style="padding-left: 10px;"
-                inset
-              />
-              <v-flex
-                xs6
-                style="display: block"
-              >
-                <v-card-title>
-                  <span style="font-weight: bold;">{{ proj.name }}</span>
-                  <span style="padding-left: 3px;">by {{ proj.authors[0].name }}</span>
-                  <div style="color: grey; padding-left: 5px;">
-                    <!-- {{ proj.downloadCount }} -->
-                    {{ new Date(proj.dateModified || proj.dateCreated).toLocaleDateString() }}
-                  </div>
-                </v-card-title>
-                <v-card-text>{{ proj.summary }}</v-card-text>
-              </v-flex>
-              <v-flex
-                xs4
-                style="padding-top: 10px; display: block;"
-              >
-                <v-chip
-                  v-for="cat of dedup(proj.categories, (v) => v.categoryId)"
-                  :key="cat.categoryId"
-                >
+                  <v-progress-circular
+                    indeterminate
+                    color="grey lighten-5"
+                  />
+                </v-layout>
+              </template>
+            </v-img>
+          </div>
+          <v-divider
+            vertical
+            style="padding-left: 10px;"
+            inset
+          />
+          <div class="flex-grow">
+            <v-card-title>
+              <span style="font-weight: bold;">{{ proj.name }}</span>
+              <span style="padding-left: 3px;">by {{ proj.authors[0].name }}</span>
+              <div style="color: grey; padding-left: 5px;">
+                <!-- {{ proj.downloadCount }} -->
+                {{ new Date(proj.dateModified || proj.dateCreated).toLocaleDateString() }}
+              </div>
+            </v-card-title>
+            <v-card-text>{{ proj.summary }}</v-card-text>
+          </div>
+          <div
+            class="p-4 flex flex-wrap gap-2"
+            @click.stop.prevent
+          >
+            <v-chip
+              v-for="cat of dedup(proj.categories, (v) => v.categoryId)"
+              :key="cat.categoryId"
+              label
+              outlined
+              @click="categoryId = cat.categoryId"
+            >
+              <v-tooltip top>
+                <template #activator="{ on }">
                   <v-avatar>
                     <img
                       :src="cat.avatarUrl"
                       style="max-height:30px; max-width: 30px"
+                      v-on="on"
                     >
                   </v-avatar>
-                  {{ cat.name }}
-                </v-chip>
-              </v-flex>
-            </v-layout>
-          </v-card>
-        </v-flex>
-      </v-flex>
-      <v-flex
-        xs12
-        style="z-index: 2"
-      >
-        <v-layout justify-center>
-          <v-pagination
-            v-model="currentPage"
-            :length="pages"
-            total-visible="8"
-          />
-        </v-layout>
-      </v-flex>
-    </v-layout>
-  </v-container>
+                </template>
+                {{ cat.name }}
+              </v-tooltip>
+            </v-chip>
+          </div>
+        </v-card>
+      </div>
+    </div>
+    <div class="flex flex-col overflow-auto md:hidden lg:flex min-w-[20%]">
+      <Categories
+        :type="currentType"
+        :selected="categoryId"
+        @select="categoryId = $event"
+      />
+    </div>
+  </div>
 </template>
 
 <script lang=ts>
 import { computed, defineComponent, ref } from '@vue/composition-api'
-import { useCurseforgeSearch } from '/@/hooks'
+import { useCurseforgeSearch, useI18n, useRouter } from '/@/hooks'
 import { dedup } from '/@/util/dedup'
 import { withDefault } from '/@/util/props'
 import { onSearchToggle } from '/@/windows/main/composables'
+import Categories from './components/Categories.vue'
 
 export default defineComponent({
+  components: { Categories },
   props: {
     type: withDefault(String, () => 'mc-mods'),
     keyword: withDefault(String, () => ''),
@@ -158,12 +165,26 @@ export default defineComponent({
   },
   setup(props) {
     const searchBar = ref<HTMLElement | null>(null)
+    const selectedType = ref('')
+    const { push } = useRouter()
+    const currentType = computed({ get: () => selectedType.value || props.type, set(v) { push(`/curseforge/${v}`) } })
+    const { $t } = useI18n()
+    const allTypes = computed(() => ['mc-mods', 'texture-packs', 'worlds', 'modpacks'].map(v => ({
+      text: $t(`curseforge.${v}.name`),
+      value: v,
+    })))
     onSearchToggle(() => {
-      searchBar.value!.focus()
+      searchBar.value?.focus()
       return true
     })
-
-    return { searchBar, ...useCurseforgeSearch(props.type, computed(() => props.page), computed(() => props.keyword)), dedup }
+    return {
+      searchBar,
+      ...useCurseforgeSearch(currentType, computed(() => props.page), computed(() => props.keyword)),
+      currentType,
+      selectedType,
+      allTypes,
+      dedup,
+    }
   },
 })
 </script>

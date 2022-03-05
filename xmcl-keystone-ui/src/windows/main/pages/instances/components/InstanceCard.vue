@@ -1,12 +1,11 @@
 <template>
   <v-card
     v-draggable-card
+    outlined
     :ripple="!isBusy"
-    color="grey darken-3"
     class="draggable-card w-full flex flex-col"
     style="padding: 0;"
     hover
-    dark
     :draggable="!isBusy"
     @click="$emit('click', $event)"
     @dragstart="onDragStart"
@@ -23,7 +22,7 @@
       />
     </div>
     <v-img
-      class="white--text favicon grey darken-2 max-h-50"
+      class="white--text favicon grey en-2 max-h-50"
       :src="image"
     >
       <v-layout
@@ -65,12 +64,12 @@
     </v-card-text>
 
     <v-card-actions>
-      <div class="flex flex-wrap flex-row justify-center">
+      <div class="flex flex-wrap flex-row justify-center gap-2">
         <v-chip
           v-if="instance.server"
           small
           label
-          :selected="false"
+          :input-value="false"
           @click.stop
         >
           <text-component :source="status.version.name" />
@@ -79,10 +78,10 @@
           v-if="instance.server"
           small
           label
-          :selected="false"
+          :input-value="false"
           @click.stop
         >
-          <v-avatar>
+          <v-avatar left>
             <v-icon
               :style="{ color: status.ping < 0 ? 'grey' : status.ping < 100 ? 'green' : status.ping < 300 ? 'orange' : 'red' }"
             >
@@ -95,10 +94,10 @@
           v-if="instance.server"
           small
           label
-          :selected="false"
+          :input-value="false"
           @click.stop
         >
-          <v-avatar>
+          <v-avatar left>
             <v-icon>people</v-icon>
           </v-avatar>
           {{ status.players.online }} / {{ status.players.max }}
@@ -106,10 +105,10 @@
         <v-chip
           label
           small
-          :selected="false"
+          :input-value="false"
           @click.stop
         >
-          <v-avatar>
+          <v-avatar left>
             <img
               :src="minecraftPng"
               alt="minecraft"
@@ -122,10 +121,10 @@
           v-if="!instance.server && instance.author"
           small
           label
-          :selected="false"
+          :input-value="false"
           @click.stop
         >
-          <v-avatar>
+          <v-avatar left>
             <v-icon>person</v-icon>
           </v-avatar>
           {{ instance.author }}
@@ -135,7 +134,7 @@
           small
           label
         >
-          <v-avatar>
+          <v-avatar left>
             <img
               :src="forgePng"
               alt="forge"
@@ -148,7 +147,7 @@
           small
           label
         >
-          <v-avatar>
+          <v-avatar left>
             <img
               :src="fabricPng"
               alt="fabric"
@@ -208,5 +207,11 @@ export default defineComponent({
 <style>
 .favicon .v-image__image {
   filter: blur(2px);
+}
+</style>
+<style scoped>
+.draggable-card {
+  transition: all;
+  transition-duration: 0.2s;
 }
 </style>

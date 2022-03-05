@@ -4,14 +4,14 @@ import { useI18n } from './useI18n'
 import { useSelectedServices } from './useLoginAccounts'
 import { useBusy } from './useSemaphore'
 import { useService, useServiceOnly } from './useService'
-import { LoginException, EMPTY_GAME_PROFILE, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
+import { LoginException, EMPTY_GAME_PROFILE, UserProfile, UserServiceKey, GameProfileAndTexture } from '@xmcl/runtime-api'
 
 export function useUserService() {
   return useService(UserServiceKey)
 }
 
 export function useGameProfile(gameProfile: Ref<GameProfile>) {
-  const name = computed(() => gameProfile.value.name)
+  const name = computed(() => gameProfile.value?.name)
   const id = computed(() => gameProfile.value.id)
   return { name, id }
 }
@@ -36,11 +36,11 @@ export function useUserProfile(userProfile: Ref<UserProfile>) {
 
 export function useUserProfileStatus(userProfile: Ref<UserProfile>) {
   const accessTokenValid = computed(() => userProfile.value.accessToken !== '')
-  const offline = computed(() => userProfile.value.authService === 'offline')
+  const isOffline = computed(() => userProfile.value.authService === 'offline')
   const isServiceCompatible = computed(() => userProfile.value.authService === userProfile.value.profileService)
   return {
     accessTokenValid,
-    offline,
+    isOffline,
     isServiceCompatible,
     logined: accessTokenValid,
   }
@@ -55,9 +55,10 @@ const NO_USER_PROFILE: UserProfile = Object.freeze({
   id: '',
   username: '',
 })
-const NO_GAME_PROFILE: GameProfile = Object.freeze({
+const NO_GAME_PROFILE: GameProfileAndTexture = Object.freeze({
   id: '',
   name: '',
+  textures: { SKIN: { url: '' } },
 })
 
 export function useSelectedUser() {
@@ -78,7 +79,7 @@ export function useCurrentUser() {
   const { state } = useUserService()
   const { userId, profileId } = useSelectedUser()
   const userProfile: Ref<UserProfile> = computed(() => state.users[userId.value] ?? NO_USER_PROFILE)
-  const gameProfile: Ref<GameProfile> = computed(() => userProfile.value.profiles[profileId.value] ?? NO_GAME_PROFILE)
+  const gameProfile: Ref<GameProfileAndTexture> = computed(() => userProfile.value.profiles[profileId.value] ?? NO_GAME_PROFILE)
 
   /**
      * selected profile id
@@ -189,77 +190,6 @@ export function useSwitchUser() {
     commit,
     modified,
     ...toRefs(data),
-  }
-}
-
-interface ServiceItem {
-  text: string
-  value: string
-}
-
-export function useLogin() {
-  const { state, removeUserProfile, cancelMicrosoftLogin } = useUserService()
-  const { $te, $t } = useI18n()
-  const authServices: Ref<ServiceItem[]> = computed(() => ['microsoft', ...Object.keys(state.authServices), 'offline']
-    .map((a) => ({ value: a, text: $te(`user.${a}.name`) ? $t(`user.${a}.name`) : a })))
-  const profileServices: Ref<ServiceItem[]> = computed(() => Object.keys(state.profileServices)
-    .map((a) => ({ value: a, text: $te(`user.${a}.name`) ? $t(`user.${a}.name`) : a })))
-  const { userId, profileId, userProfile } = useCurrentUser()
-  const { username } = useUserProfile(userProfile)
-  const { logined } = useUserProfileStatus(userProfile)
-  const { login } = useServiceOnly(UserServiceKey, 'login', 'switchUserProfile')
-  const { profileService, authService, history } = useSelectedServices()
-
-  const _authService = computed<ServiceItem>({
-    get() { return authServices.value.find(a => a.value === authService.value)! },
-    set(v) { authService.value = v as any as string },
-  })
-  const _profileService = computed<ServiceItem>({
-    get() { return profileServices.value.find(a => a.value === profileService.value)! },
-    set(v) { profileService.value = v as any as string },
-  })
-
-  const logining = useBusy('login()')
-
-  const data = reactive({
-    username: '',
-    password: '',
-    selectProfile: true,
-  })
-  async function _login() {
-    const index = history.value.indexOf(data.username)
-    if (index === -1) {
-      history.value.unshift(data.username)
-    }
-    await login({ ...data, authService: authService.value, profileService: profileService.value })
-  }
-  function remove(userId: string) {
-    removeUserProfile(userId)
-  }
-  function reset() {
-    data.username = history.value[0] ?? ''
-    data.password = ''
-  }
-  onMounted(() => {
-    reset()
-  })
-  return {
-    ...toRefs(data),
-    cancelMicrosoftLogin,
-    logining,
-    logined,
-    login: _login,
-    reset,
-    remove,
-    authService: _authService,
-    profileService: _profileService,
-    history,
-
-    selectedProfile: profileId,
-    selectedUser: userId,
-
-    authServices,
-    profileServices,
   }
 }
 

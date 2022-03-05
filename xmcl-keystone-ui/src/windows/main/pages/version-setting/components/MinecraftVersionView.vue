@@ -1,12 +1,16 @@
 <template>
-  <div style="display: flex !important; height: 100%; flex-direction: column;">
-    <v-list-tile style="margin: 0px 0;">
+  <div
+    class="flex flex-col h-full"
+  >
+    <v-list-item
+      class="flex-1 justify-end"
+    >
       <v-checkbox
         v-model="showAlpha"
         :label="$t('minecraft.showAlpha')"
       />
-    </v-list-tile>
-    <v-divider dark />
+    </v-list-item>
+    <v-divider />
     <refreshing-tile v-if="refreshing && versions.length === 0" />
     <virtual-list
       v-else-if="versions.length !== 0"

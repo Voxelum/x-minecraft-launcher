@@ -39,7 +39,7 @@
             hide-details
             :label="c.question.question"
             color="primary"
-            dark
+
             style="margin-bottom: 10px;"
             @input="updateAnswer(index, $event)"
           />
@@ -83,7 +83,6 @@
               >
                 <v-icon
                   left
-                  dark
                 >
                   check
                 </v-icon>

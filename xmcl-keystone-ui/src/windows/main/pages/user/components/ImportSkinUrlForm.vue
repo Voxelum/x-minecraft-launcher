@@ -1,5 +1,5 @@
 <template>
-  <v-card dark>
+  <v-card>
     <v-container
       fluid
       grid-list-md

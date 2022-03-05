@@ -1,7 +1,7 @@
 <template>
-  <v-layout>
+  <v-layout class="gap-4">
     <v-btn
-      flat
+      text
       :disabled="creating"
       @click="$emit('quit')"
     >

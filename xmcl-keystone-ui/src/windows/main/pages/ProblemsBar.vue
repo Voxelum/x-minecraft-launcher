@@ -1,49 +1,51 @@
 <template>
   <v-menu
-    v-show="refreshing || issues.length !== 0"
     offset-y
     top
-    dark
+
     max-height="300"
   >
-    <v-btn
-      slot="activator"
-      :loading="refreshing"
-      :flat="issues.length !== 0"
-      outline
-      dark
-      :color="color"
-    >
-      <v-icon
-        left
-        dark
+    <template #activator="{ on }">
+      <v-btn
+        v-show="refreshing || issues.length !== 0"
+        slot="activator"
+        :loading="refreshing"
+        :text="issues.length !== 0"
+        outlined
         :color="color"
+        v-on="on"
       >
-        {{ issues.length !== 0 ?
-          'warning' : 'check_circle' }}
-      </v-icon>
-      {{ $tc('diagnosis.problem', issues.length, { count: issues.length }) }}
-    </v-btn>
+        <v-icon
+          left
+
+          :color="color"
+        >
+          {{ issues.length !== 0 ?
+            'warning' : 'check_circle' }}
+        </v-icon>
+        {{ $tc('diagnosis.problem', issues.length, { count: issues.length }) }}
+      </v-btn>
+    </template>
 
     <v-list>
       <template v-for="(item, index) in issues">
-        <v-list-tile
+        <v-list-item
           :key="index"
           ripple
           @click="fix(item, issues)"
         >
-          <v-list-tile-content>
-            <v-list-tile-title>
+          <v-list-item-content>
+            <v-list-item-title>
               {{ $tc(`diagnosis.${item.id}`, item.parameters.length || 0, item.parameters) }}
-            </v-list-tile-title>
-            <v-list-tile-sub-title>
+            </v-list-item-title>
+            <v-list-item-subtitle>
               {{ $t(`diagnosis.${item.id}.message`, item.parameters || {}) }}
-            </v-list-tile-sub-title>
-          </v-list-tile-content>
-          <v-list-tile-action>
+            </v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-action>
             <v-icon> {{ item.autofix ? 'build' : 'arrow_right' }} </v-icon>
-          </v-list-tile-action>
-        </v-list-tile>
+          </v-list-item-action>
+        </v-list-item>
       </template>
     </v-list>
   </v-menu>

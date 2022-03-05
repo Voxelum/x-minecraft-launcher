@@ -154,7 +154,6 @@ export function useInstanceMods() {
     return resource.uri.find(u => u.startsWith('http')) ?? ''
   }
   function getModItemFromModResource(resource: ForgeResource | FabricResource | LiteloaderResource | AnyResource): ModItem {
-    const icon = `dataroot://${resource.domain}/${resource.fileName}.png`
     const isPersisted = isPersistedResource(resource)
     const modItem: ModItem = {
       path: resource.path,
@@ -162,7 +161,7 @@ export function useInstanceMods() {
       name: resource.path,
       version: '',
       description: '',
-      icon,
+      icon: isPersisted ? resource.iconUri : '',
       type: 'forge',
       url: getUrl(resource),
       hash: resource.hash,

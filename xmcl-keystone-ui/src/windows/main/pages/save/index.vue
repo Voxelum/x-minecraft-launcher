@@ -1,10 +1,14 @@
 <template>
-  <div class="flex flex-col h-full">
-    <div class="header-bar">
-      <v-toolbar-title>{{ $tc('save.name', 2) }}</v-toolbar-title>
+  <div class="flex flex-col max-h-full h-full px-8 py-4">
+    <v-card
+      class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5 p-4"
+      outlined
+      elevation="1"
+    >
+      <v-card-title>{{ $tc('save.name', 2) }}</v-card-title>
       <v-spacer />
       <v-btn
-        flat
+        text
         @click="showCopyFromDialog"
       >
         <v-icon left>
@@ -13,7 +17,7 @@
         {{ $t('save.copyFrom.title') }}
       </v-btn>
       <v-btn
-        flat
+        text
         @click="doImport"
       >
         <v-icon left>
@@ -21,7 +25,8 @@
         </v-icon>
         {{ $t('save.import') }}
       </v-btn>
-    </div>
+    </v-card>
+
     <v-container
       grid-list-md
       fill-height
