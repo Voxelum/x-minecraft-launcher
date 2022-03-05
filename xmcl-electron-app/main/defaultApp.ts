@@ -9,7 +9,7 @@ const manifest: InstalledAppManifest = {
   background_color: '0x424242',
   display: 'frameless',
   minWidth: 800,
-  minHeight: 580,
+  minHeight: 620,
   vibrancy: true,
   iconPath,
   screenshots: [],
