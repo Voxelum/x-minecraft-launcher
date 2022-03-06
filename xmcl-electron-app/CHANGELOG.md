@@ -1,4 +1,11 @@
 
+## 0.21.1
+### @xmcl/keystone-ui@0.20.1
+#### Bug Fixes
+
+- fail to load legacy skin ([354f9c214de30667c2758b30e47f58bde0244a95](https://github.com/Voxelum/x-minecraft-launcher/commit/354f9c214de30667c2758b30e47f58bde0244a95))
+
+
 ## 0.21.0
 ### @xmcl/runtime-api@0.5.0
 #### Features
