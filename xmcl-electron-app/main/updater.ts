@@ -1,4 +1,7 @@
+import { AZURE_CDN, AZURE_CDN_HOST, IS_DEV } from '@/constant'
 import { ChecksumNotMatchError, DownloadTask } from '@xmcl/installer'
+import type { ServiceStateManager } from '@xmcl/runtime'
+import { ReleaseInfo } from '@xmcl/runtime-api'
 import { BaseTask, task, Task } from '@xmcl/task'
 import { spawn } from 'child_process'
 import { autoUpdater, CancellationToken, Provider, UpdateInfo, UpdaterSignal } from 'electron-updater'
@@ -9,11 +12,8 @@ import { basename, dirname, join } from 'path'
 import { SemVer } from 'semver'
 import { URL } from 'url'
 import { promisify } from 'util'
-import type { ServiceStateManager } from '@xmcl/runtime'
-import { checksum } from './utils/fs'
 import ElectronLauncherApp from './ElectronLauncherApp'
-import { AZURE_CDN, AZURE_CDN_HOST, IS_DEV } from '@/constant'
-import { UpdateInfo as _UpdateInfo } from '@xmcl/runtime-api'
+import { checksum } from './utils/fs'
 
 /**
  * Only download asar file update.
@@ -22,10 +22,10 @@ import { UpdateInfo as _UpdateInfo } from '@xmcl/runtime-api'
  * you can call this to download asar update
  */
 export class DownloadAsarUpdateTask extends DownloadTask {
-  constructor(private updateInfo: UpdateInfo, private isInGFW: boolean, destination: string) {
+  constructor(destination: string) {
     let sha256 = ''
     super({
-      url: '',
+      url: `${AZURE_CDN_HOST}/releases/app.asar`,
       destination,
       validator: {
         async validate(fd, file, url) {
@@ -47,28 +47,6 @@ export class DownloadAsarUpdateTask extends DownloadTask {
         },
       },
     })
-  }
-
-  protected async process() {
-    const provider: Provider<UpdateInfo> = (await (autoUpdater as any).clientPromise)
-    const files = provider.resolveFiles(this.updateInfo)
-
-    const urls: string[] = []
-    const uObject = files[0].url
-    uObject.pathname = `${uObject.pathname.substring(0, uObject.pathname.lastIndexOf('/') + 1)}app.asar`
-    urls.push(uObject.toString())
-
-    if (this.isInGFW) {
-      uObject.host = AZURE_CDN_HOST
-      uObject.hostname = AZURE_CDN_HOST
-      uObject.pathname = 'releases/app.asar'
-      urls.unshift(uObject.toString())
-    }
-
-    this.download.urls.pop()
-    this.download.urls.push(...urls)
-
-    return super.process()
   }
 }
 
@@ -108,7 +86,7 @@ export class DownloadFullUpdateTask extends BaseTask<void> {
 
 export async function quitAndInstallAsar(this: ElectronLauncherApp) {
   if (IS_DEV) {
-    this.log('Currently is development envrionment. Skip to install ASAR')
+    this.log('Currently is development environment. Skip to install ASAR')
     return
   }
   const exePath = process.argv[0]
@@ -183,7 +161,7 @@ export async function quitAndInstallAsar(this: ElectronLauncherApp) {
     await promisify(unlink)(appAsarPath)
     await promisify(rename)(updateAsarPath, appAsarPath)
   }
-  this.quitApp()
+  this.quit()
 }
 
 export function quitAndInstallFullUpdate() {
@@ -195,50 +173,69 @@ export function quitAndInstallFullUpdate() {
 
 let injectedUpdate = false
 
-export function checkUpdateTask(this: ElectronLauncherApp): Task<_UpdateInfo> {
+async function getUpdateFromSelfHost(app: ElectronLauncherApp): Promise<ReleaseInfo> {
+  const result: any = await app.networkManager.request('https://xmcl-release-ms.azureedge.net/releases/latest_version.json').json()
+  const updateInfo: ReleaseInfo = {
+    name: result.tag_name,
+    body: result.body,
+    date: result.published_at,
+    files: result.assets.map((a: any) => ({ url: a.browser_download_url, name: a.name })),
+    newUpdate: true,
+    useAutoUpdater: false,
+    incremental: true,
+  }
+  updateInfo.newUpdate = app.version !== updateInfo.name
+  updateInfo.incremental = updateInfo.files.some(f => f.name.endsWith('.asar'))
+  return updateInfo
+}
+
+export function checkUpdateTask(this: ElectronLauncherApp): Task<ReleaseInfo> {
   return task('checkUpdate', async () => {
-    // eslint-disable-next-line no-undef-init
-    let updateInfo: _UpdateInfo | undefined = undefined
-    let newUpdate = false
-    autoUpdater.once('update-available', () => {
-      this.log('Update available and set status to pending')
-      if (updateInfo) {
-        updateInfo.newUpdate = true
-      } else {
-        newUpdate = true
+    try {
+      let newUpdate = false
+      autoUpdater.once('update-available', () => {
+        this.log('Update available and set status to pending')
+        if (release) {
+          release.newUpdate = true
+        } else {
+          newUpdate = true
+        }
+      })
+      this.log(`Check update via ${autoUpdater.getFeedURL()}`)
+      const info = await autoUpdater.checkForUpdates()
+      if (this.networkManager.isInGFW && !injectedUpdate) {
+        injectedUpdate = true
+        const provider: Provider<UpdateInfo> = (await (autoUpdater as any).clientPromise)
+        const originalResolve = provider.resolveFiles
+        provider.resolveFiles = function (this: Provider<UpdateInfo>, inf: UpdateInfo) {
+          const result = originalResolve.bind(provider)(inf)
+          result.forEach((i) => {
+            const pathname = i.url.pathname;
+            (i as any).url = new URL(`${AZURE_CDN}/${basename(pathname)}`)
+          })
+          return result
+        }
       }
-    })
-    this.log(`Check update via ${autoUpdater.getFeedURL()}`)
-    const info = await autoUpdater.checkForUpdates()
 
-    if (this.networkManager.isInGFW && !injectedUpdate) {
-      injectedUpdate = true
-      const provider: Provider<UpdateInfo> = (await (autoUpdater as any).clientPromise)
-      const originalResolve = provider.resolveFiles
-      provider.resolveFiles = function (this: Provider<UpdateInfo>, inf: UpdateInfo) {
-        const result = originalResolve.bind(provider)(inf)
-        result.forEach((i) => {
-          const pathname = i.url.pathname;
-          (i as any).url = new URL(`${AZURE_CDN}/${basename(pathname)}`)
-        })
-        return result
+      const currentVersion = autoUpdater.currentVersion
+      const newVersion = new SemVer(info.updateInfo.version)
+
+      const release = {
+        name: info.updateInfo.version,
+        body: (info.updateInfo.releaseNotes ?? '') as string,
+        date: info.updateInfo.releaseDate,
+        files: info.updateInfo.files.map(f => ({ name: basename(f.url), url: f.url })),
+        useAutoUpdater: true,
+        newUpdate: newUpdate,
+        incremental: newVersion.major === currentVersion.major,
       }
+
+      release.incremental = release.files.some(f => f.name.endsWith('.asar'))
+
+      return release
+    } catch (e) {
+      return getUpdateFromSelfHost(this)
     }
-
-    updateInfo = info.updateInfo as any as _UpdateInfo
-    if (newUpdate) {
-      updateInfo.newUpdate = true
-    }
-
-    updateInfo.incremental = false
-    const currentVersion = autoUpdater.currentVersion
-    const newVersion = new SemVer(updateInfo.version)
-
-    if (newVersion.major === currentVersion.major) {
-      updateInfo.incremental = true
-    }
-
-    return updateInfo
   })
 }
 

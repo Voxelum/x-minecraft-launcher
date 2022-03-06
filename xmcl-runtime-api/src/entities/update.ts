@@ -1,60 +1,38 @@
-export interface BlockMapDataHolder {
-  /**
-     * The file size. Used to verify downloaded size (save one HTTP request to get length).
-     * Also used when block map data is embedded into the file (appimage, windows web installer package).
-     */
-  size?: number
-  /**
-     * The block map file size. Used when block map data is embedded into the file (appimage, windows web installer package).
-     * This information can be obtained from the file itself, but it requires additional HTTP request,
-     * so, to reduce request count, block map size is specified in the update metadata too.
-     */
-  blockMapSize?: number
-  /**
-     * The file checksum.
-     */
-  readonly sha512: string
-  readonly isAdminRightsRequired?: boolean
-}
+/* eslint-disable camelcase */
 
-export interface UpdateFileInfo extends BlockMapDataHolder {
+export interface ReleaseFile {
+  /**
+   * The file name
+   */
+  name: string
+  /**
+   * The file download url
+   */
   url: string
 }
 
-export interface ReleaseNoteInfo {
+export interface ReleaseInfo {
   /**
-     * The version.
-     */
-  readonly version: string
+   * The version name.
+   */
+  name: string
   /**
-     * The note.
-     */
-  readonly note: string | null
-}
+   * The version body. Might be markdown
+   */
+  body: string
+  /**
+   * The date string of the release
+   */
+  date: string
+  /**
+   * The files of the releases
+   */
+  files: Array<ReleaseFile>
 
-export interface UpdateInfo {
-  /**
-    * The version.
-    */
-  readonly version: string
-  readonly files: Array<UpdateFileInfo>
-  /**
-     * The release name.
-     */
-  releaseName?: string | null
-  /**
-     * The release notes. List if `updater.fullChangelog` is set to `true`, `string` otherwise.
-     */
-  releaseNotes?: string | Array<ReleaseNoteInfo> | null
-  /**
-    * The release date.
-    */
-  releaseDate: string
-  /**
-     * The [staged rollout](/auto-update#staged-rollouts) percentage, 0-100.
-     */
-  readonly stagingPercentage?: number
-
+  useAutoUpdater: boolean
   newUpdate: boolean
+  /**
+   * Is incremental release
+   */
   incremental: boolean
 }

@@ -72,7 +72,7 @@ export default class BaseService extends StatefulService<BaseState> implements I
   openInBrowser = this.app.openInBrowser.bind(this.app)
 
   /**
-   * A electron provided function to show item in direcotry
+   * A electron provided function to show item in directory
    * @param path The path to the file item
    */
   showItemInDirectory = this.app.showItemInFolder
@@ -115,7 +115,7 @@ export default class BaseService extends StatefulService<BaseState> implements I
   }
 
   /**
-   * Download the update if there is avaiable update
+   * Download the update if there is available update
    */
   @Singleton()
   async downloadUpdate() {
@@ -126,7 +126,7 @@ export default class BaseService extends StatefulService<BaseState> implements I
     if (!this.state.updateInfo) {
       throw new Error('Cannot download update if we don\'t check the version update!')
     }
-    this.log(`Start to download update: ${this.state.updateInfo.version} incremental=${this.state.updateInfo.incremental}`)
+    this.log(`Start to download update: ${this.state.updateInfo.name} incremental=${this.state.updateInfo.incremental}`)
     await this.submit(this.app.downloadUpdateTask(this.state.updateInfo).setName('downloadUpdate'))
     this.state.updateStatusSet('ready')
   }

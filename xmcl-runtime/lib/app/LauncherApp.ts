@@ -1,5 +1,5 @@
 import { getPlatform } from '@xmcl/core'
-import { InstalledAppManifest, RuntimeVersions, UpdateInfo } from '@xmcl/runtime-api'
+import { InstalledAppManifest, RuntimeVersions, ReleaseInfo } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { EventEmitter } from 'events'
 import { ensureDir, readFile, readJson, writeFile } from 'fs-extra'
@@ -236,17 +236,17 @@ export abstract class LauncherApp extends EventEmitter {
   /**
    * Check update for the x-minecraft-launcher-core
    */
-  abstract checkUpdateTask(): Task<UpdateInfo>
+  abstract checkUpdateTask(): Task<ReleaseInfo>
 
   /**
    * Download the update to the disk. You should first call `checkUpdate`
    */
-  abstract downloadUpdateTask(updateInfo: UpdateInfo): Task<void>
+  abstract downloadUpdateTask(updateInfo: ReleaseInfo): Task<void>
 
   /**
    * Install update and quit the app.
    */
-  abstract installUpdateAndQuit(updateInfo: UpdateInfo): Promise<void>
+  abstract installUpdateAndQuit(updateInfo: ReleaseInfo): Promise<void>
 
   relaunch(): void { this.host.relaunch() }
 

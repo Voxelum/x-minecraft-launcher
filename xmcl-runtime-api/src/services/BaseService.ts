@@ -1,5 +1,5 @@
 import { SettingSchema } from '../entities/setting.schema'
-import { UpdateInfo } from '../entities/update'
+import { ReleaseInfo } from '../entities/update'
 import { ServiceKey, StatefulService } from './Service'
 
 export interface MigrateOptions {
@@ -12,7 +12,7 @@ export class BaseState implements SettingSchema {
    * All supported languages of the launcher
    */
   locales: string[] = []
-  updateInfo: UpdateInfo | null = null
+  updateInfo: ReleaseInfo | null = null
   updateStatus: 'ready' | 'none' | 'pending' = 'none'
   allowPrerelease = false
   autoInstallOnAppQuit = false
@@ -91,7 +91,7 @@ export class BaseState implements SettingSchema {
     if (typeof autoDownload === 'boolean') this.autoDownload = autoDownload
   }
 
-  updateInfoSet(updateInfo: UpdateInfo) {
+  updateInfoSet(updateInfo: ReleaseInfo) {
     if (typeof updateInfo === 'object') this.updateInfo = updateInfo
   }
 

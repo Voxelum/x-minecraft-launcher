@@ -1,5 +1,5 @@
 import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
-import { InstalledAppManifest, UpdateInfo } from '@xmcl/runtime-api'
+import { InstalledAppManifest, ReleaseInfo, UpdateInfo } from '@xmcl/runtime-api'
 import { Host } from '@xmcl/runtime/lib/app/Host'
 import { Task } from '@xmcl/task'
 import { execSync } from 'child_process'
@@ -76,16 +76,16 @@ export default class ElectronLauncherApp extends LauncherApp {
     return _checkUpdateTask.bind(this)()
   }
 
-  downloadUpdateTask(updateInfo: any): Task<void> {
+  downloadUpdateTask(updateInfo: ReleaseInfo): Task<void> {
     if (updateInfo.incremental) {
       const updatePath = join(this.appDataPath, 'pending_update')
-      return new DownloadAsarUpdateTask(updateInfo as any, this.networkManager.isInGFW, updatePath)
+      return new DownloadAsarUpdateTask(updatePath)
         .map(() => undefined)
     }
     return new DownloadFullUpdateTask()
   }
 
-  async installUpdateAndQuit(updateInfo: any): Promise<void> {
+  async installUpdateAndQuit(updateInfo: ReleaseInfo): Promise<void> {
     if (updateInfo.incremental) {
       await quitAndInstallAsar.bind(this)()
     } else {
