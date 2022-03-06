@@ -1,4 +1,19 @@
 
+## 0.21.2
+### @xmcl/runtime-api@0.5.1
+#### Bug Fixes
+
+- rework auto update ([6aad4fd6090be2f6db9abec91242c598053c87b0](https://github.com/Voxelum/x-minecraft-launcher/commit/6aad4fd6090be2f6db9abec91242c598053c87b0))
+### @xmcl/runtime@0.19.1
+#### Bug Fixes
+
+- rework auto update ([6aad4fd6090be2f6db9abec91242c598053c87b0](https://github.com/Voxelum/x-minecraft-launcher/commit/6aad4fd6090be2f6db9abec91242c598053c87b0))
+### xmcl@0.21.2
+#### Bug Fixes
+
+- rework auto update ([6aad4fd6090be2f6db9abec91242c598053c87b0](https://github.com/Voxelum/x-minecraft-launcher/commit/6aad4fd6090be2f6db9abec91242c598053c87b0))
+
+
 ## 0.21.1
 ### @xmcl/keystone-ui@0.20.1
 #### Bug Fixes
