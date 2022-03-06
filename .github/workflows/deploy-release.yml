@@ -33,7 +33,9 @@ jobs:
       run: |
         mkdir releases
         echo ${{ github.event.release.tag_name }} > ./releases/VERSION
-        echo ${{ toJSON(github.event.release) }} > ./releases/latest_version.json
+        cat << EOF > ./releases/latest_version.json
+        ${{ toJSON(github.event.release) }}
+        EOF
     - name: Upload release version file to Azure
       uses: ci010/upload-blob-to-azure@master
       env:
