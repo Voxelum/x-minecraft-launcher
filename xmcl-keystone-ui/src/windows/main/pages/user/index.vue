@@ -4,7 +4,7 @@
   >
     <div class="grid grid-cols-5 h-full overflow-auto w-full">
       <div
-        class="col-span-4 flex flex-col h-full overflow-auto relative"
+        class="col-span-4 flex flex-col h-full overflow-auto relative flex-grow"
       >
         <user-page-header
           @addaccount="showLoginDialog()"
@@ -35,6 +35,7 @@
             @dragend="dragged=false"
           />
         </div>
+        <div class="flex-grow" />
         <game-profile-speed-dial
           :visibled="userModified || dragged"
           :deleting="dragged"

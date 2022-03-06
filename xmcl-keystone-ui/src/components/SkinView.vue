@@ -10,46 +10,22 @@
 
 <script lang=ts>
 import { computed, defineComponent, onMounted, onUnmounted, ref, Ref, watch } from '@vue/composition-api'
-import { PlayerObject3D } from '@xmcl/model'
-import { DoubleSide, NearestFilter, Texture } from 'three'
+import { PlayerModel } from '@xmcl/model'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera'
-import { MeshBasicMaterial } from 'three/src/materials/MeshBasicMaterial'
 import { Vector3 } from 'three/src/math/Vector3'
 import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer'
 import { Scene } from 'three/src/scenes/Scene'
 import steveSkin from '/@/assets/steve_skin.png'
 
 function useSkinModel(url: Ref<string>, slim: Ref<boolean>) {
-  // const model = PlayerModel.create()
-  const skinImage = new Image(64, 64)
-  skinImage.crossOrigin = 'anonymous'
-  const capeImage = new Image()
-  const texture = new Texture(skinImage, undefined, undefined, undefined, NearestFilter, NearestFilter)
-  const capeTexture = new Texture(capeImage)
-
-  skinImage.onload = () => {
-    texture.needsUpdate = true
-  }
-  capeImage.onload = () => {
-    capeTexture.needsUpdate = true
-  }
+  const created = PlayerModel.create()
+  const model = created.playerObject3d
+  created.setSkin(url.value, slim.value)
 
   watch([url, slim], () => {
-    skinImage.src = url.value
-    model.slim = slim.value
+    created.setSkin(url.value, slim.value)
   })
-
-  const model = new PlayerObject3D(
-    new MeshBasicMaterial({ map: texture }),
-    new MeshBasicMaterial({ map: capeTexture, visible: false }),
-    new MeshBasicMaterial({
-      map: texture,
-      transparent: true,
-      depthWrite: true,
-      side: DoubleSide,
-    }),
-    slim.value)
 
   model.translateY(-0.5)
 
