@@ -184,7 +184,7 @@ async function getUpdateFromSelfHost(app: ElectronLauncherApp): Promise<ReleaseI
     useAutoUpdater: false,
     incremental: true,
   }
-  updateInfo.newUpdate = app.version !== updateInfo.name
+  updateInfo.newUpdate = `v${app.version}` !== updateInfo.name
   updateInfo.incremental = updateInfo.files.some(f => f.name.endsWith('.asar'))
   return updateInfo
 }
