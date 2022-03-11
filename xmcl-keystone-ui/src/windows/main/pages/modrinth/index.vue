@@ -12,17 +12,17 @@
         outlined
       >
         <v-text-field
-          v-model="query"
+          v-model="keyword"
           color="green"
           append-icon="search"
           solo
           flat
           hide-details
           :placeholder="$t('modrinth.searchText')"
-          @keypress.enter="refresh"
+          @keypress.enter="_query = keyword"
         />
         <v-select
-          v-model="sortBy"
+          v-model="_sortBy"
           :item-value="
             // @ts-expect-error
             v => v.name"
@@ -41,13 +41,16 @@
           :label="$t('modrinth.perPage')"
         />
         <v-pagination
-          v-model="page"
+          v-model="_page"
           :length="pageCount"
           :total-visible="5"
         />
       </v-card>
 
-      <div class="flex flex-col gap-3 overflow-auto">
+      <div
+        v-if="!refreshing"
+        class="flex flex-col gap-3 overflow-auto"
+      >
         <ModCard
           v-for="mod in mods"
           :key="mod.mod_id"
@@ -60,6 +63,11 @@
           @click="push(`/modrinth/${mod.mod_id}`)"
         />
       </div>
+      <v-skeleton-loader
+        v-else
+        class="flex flex-col gap-3 overflow-auto"
+        type="list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line"
+      />
     </div>
     <div class="flex flex-col overflow-auto lg:flex md:hidden">
       <Categories
@@ -75,33 +83,46 @@
         :game-version="gameVersion"
         :license="license"
         :category="category"
-        @select:modLoader="modLoader = $event"
-        @select:gameVersion="gameVersion = $event"
-        @select:license="license = $event"
-        @select:category="category = $event"
-        @select:environment="environment = $event"
+        @select:modLoader="_modLoader = _modLoader === $event ? '' : $event"
+        @select:gameVersion="_gameVersion = _gameVersion === $event ? '' : $event"
+        @select:license="_license = _license === $event ? '' : $event"
+        @select:category="_category = _category === $event ? '' : $event"
+        @select:environment="_environment = _environment === $event ? '' : $event"
       />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from '@vue/composition-api'
+import { defineComponent, onMounted, ref } from '@vue/composition-api'
 import { useModrinth } from './modrinth'
 import ModCard from './components/ModCard.vue'
 import Categories from './components/Categories.vue'
 import { useRouter } from '/@/hooks'
+import { withDefault } from '/@/util/props'
 
 export default defineComponent({
   components: { ModCard, Categories },
-  setup() {
-    const { refresh, refreshTag, ...rest } = useModrinth()
+  props: {
+    query: withDefault(String, () => ''),
+    gameVersion: withDefault(String, () => ''),
+    license: withDefault(String, () => ''),
+    category: withDefault(String, () => ''),
+    modLoader: withDefault(String, () => ''),
+    environment: withDefault(String, () => ''),
+    sortBy: withDefault(String, () => ''),
+    page: withDefault(Number, () => 1),
+    from: withDefault(String, () => ''),
+  },
+  setup(props) {
+    const { refresh, refreshTag, query, category, gameVersion, license, modLoader, environment, sortBy, page, ...rest } = useModrinth(props)
     const { push } = useRouter()
+    const keyword = ref(props.query)
     const onFiltered = (tag: string) => {
       if (rest.categories.value.indexOf(tag) !== -1) {
-        rest.category.value = tag
+        category.value = tag
       } else if (rest.modLoaders.value.indexOf(tag) !== -1) {
-        rest.modLoader.value = tag
+        modLoader.value = tag
       }
     }
     onMounted(() => {
@@ -110,6 +131,15 @@ export default defineComponent({
     })
     return {
       ...rest,
+      keyword,
+      _query: query,
+      _category: category,
+      _gameVersion: gameVersion,
+      _license: license,
+      _modLoader: modLoader,
+      _environment: environment,
+      _sortBy: sortBy,
+      _page: page,
       refresh,
       push,
       onFiltered,

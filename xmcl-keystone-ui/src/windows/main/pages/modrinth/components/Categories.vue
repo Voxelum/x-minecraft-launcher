@@ -37,7 +37,7 @@
       :items="gameVersions"
       hide-details
       :value="gameVersion"
-      @input="$emit('select:gameVersion', $event)"
+      @input="$emit('select:gameVersion', $event == null ? '' : $event)"
     />
     <span class="list-title">{{ $t('modrinth.licenses.name') }}</span>
     <v-select
@@ -57,17 +57,22 @@
       @input="$emit('select:license', $event)"
     />
   </v-card>
-  <v-card v-else>
-    <RefreshingTile />
+  <v-card
+    v-else
+    class="p-4 rounded-lg flex flex-col h-[fit-content]"
+    outlined
+  >
+    <v-skeleton-loader
+      class="flex flex-col gap-3 overflow-auto"
+      type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
+    />
   </v-card>
 </template>
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
 import { required } from '/@/util/props'
-import RefreshingTile from '/@/components/RefreshingTile.vue'
 
 export default defineComponent({
-  components: { RefreshingTile },
   props: {
     loading: required<boolean>(Boolean),
     categories: required<string[]>(Array),

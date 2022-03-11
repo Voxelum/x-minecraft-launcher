@@ -86,6 +86,17 @@ export const createRouter = () => {
       {
         path: '/modrinth',
         component: modrinth,
+        props: (route) => ({
+          query: route.query.query,
+          gameVersion: route.query.gameVersion,
+          license: route.query.license,
+          category: route.query.category,
+          modLoader: route.query.modLoader,
+          environment: route.query.environment,
+          sortBy: route.query.sortBy,
+          page: Number.parseInt(route.query.page as any ?? '1', 10),
+          from: route.query.from,
+        }),
       },
       {
         path: '/modrinth/:id',
