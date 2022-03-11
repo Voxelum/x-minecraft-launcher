@@ -31,32 +31,17 @@
           :placeholder="$t('curseforge.search')"
           @keypress.enter="search"
         />
-        <!-- <v-select
-          v-model="sortBy"
-          :item-value="
-            // @ts-expect-error
-            v => v.name"
-          class="max-w-40"
-          hide-details
-          flat
-          :label="$t('modrinth.sort.title')"
-          :items="sortOptions"
-        />
-        <v-select
-          v-model="pageSize"
-          class="max-w-40"
-          :items="pageSizeOptions"
-          hide-details
-          flat
-          :label="$t('modrinth.perPage')"
-        /> -->
         <v-pagination
           v-model="currentPage"
+          :disabled="loading"
           :length="pages"
           :total-visible="5"
         />
       </v-card>
-      <div class="flex flex-col gap-3 overflow-auto">
+      <div
+        v-if="!loading"
+        class="flex flex-col gap-3 overflow-auto"
+      >
         <v-card
           v-for="proj in projects"
           :key="proj.id"
@@ -136,6 +121,11 @@
           </div>
         </v-card>
       </div>
+      <v-skeleton-loader
+        v-else
+        class="flex flex-col gap-3 overflow-auto"
+        type="list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line"
+      />
     </div>
     <div class="flex flex-col overflow-auto md:hidden lg:flex min-w-[20%]">
       <Categories

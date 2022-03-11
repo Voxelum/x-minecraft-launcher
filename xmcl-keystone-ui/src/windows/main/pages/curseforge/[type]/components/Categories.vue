@@ -1,5 +1,6 @@
 <template>
   <v-card
+    v-if="!refreshing"
     outlined
     class="p-2 rounded-lg flex flex-col h-[fit-content] overflow-auto"
   >
@@ -18,6 +19,16 @@
       </v-avatar>
       {{ c.name }}
     </span>
+  </v-card>
+  <v-card
+    v-else
+    outlined
+    class="p-2 rounded-lg flex flex-col h-[fit-content] overflow-auto"
+  >
+    <v-skeleton-loader
+      class="flex flex-col gap-3 overflow-auto"
+      type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
+    />
   </v-card>
 </template>
 <script lang="ts">
