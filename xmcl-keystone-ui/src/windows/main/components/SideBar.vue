@@ -54,7 +54,7 @@
           link
           @click.capture="onHomeClick"
         >
-          <v-list-item
+          <!-- <v-list-item
             link
             push
             to="/base-setting"
@@ -63,7 +63,7 @@
               <v-icon> more_vert </v-icon>
             </v-list-item-icon>
             <v-list-item-title v-text="'Text'" />
-          </v-list-item>
+          </v-list-item> -->
           <v-list-item
             link
             push
