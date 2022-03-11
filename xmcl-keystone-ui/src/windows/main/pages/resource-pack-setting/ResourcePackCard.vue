@@ -5,7 +5,7 @@
     outlined
     draggable
     :class="{ incompatible: !compatible }"
-    class="draggable-card"
+    class="draggable-card cursor-pointer"
     style="margin-top: 10px"
     @dragstart="onDragStart"
     @dragend.prevent="onDragEnd"

@@ -1,5 +1,5 @@
 <template>
-  <div class="max-h-full h-full gap-3 px-8 py-4 pb-0">
+  <div class="max-h-full h-full gap-2 px-8 py-4 pb-0 w-full flex flex-col">
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
       :active="loading"
@@ -60,7 +60,7 @@
         flat
         @drop="dragging = false"
       >
-        <!-- <v-card
+        <v-card
           outlined
           class="rounded-lg"
         >
@@ -69,26 +69,7 @@
               $t("resourcepack.unselected")
             }}
           </v-card-title>
-
-        </v-card> -->
-        <div
-          class="text-center py-2"
-          style="
-              border-color: rgba(255, 255, 255, 0.7);
-              border-style: solid;
-              border-width: 0 0 thin 0;
-            "
-        >
-          <span
-            class="text-lg"
-            style="width: 100%; user-select: none;"
-          >
-            {{
-              $t("resourcepack.selected")
-            }}
-          </span>
-        </div>
-
+        </v-card>
         <hint
           v-if="unselectedItems.length === 0"
           icon="save_alt"
