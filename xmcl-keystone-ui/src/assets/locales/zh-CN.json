@@ -578,9 +578,11 @@
     "openLink": "打开 Mod 链接 {url}",
     "searchOnCurseforge": "在 Curseforge 上搜索该 Mod",
     "searchOnMcWiki": "在 MC 百科中查找 {name}",
+    "searchOnModrinth": "在 Modrinth 中搜素 {name}",
     "selected": "已选 Mods",
     "showFile": "打开 Mod 所在位置 {file}",
     "showInCurseforge": "在 Curseforge 上显示该 Mod",
+    "showInModrinth": "在 Modrinth 中显示 {name}",
     "showIncompatible": "显示不兼容 Mods",
     "unselected": "未选 Mods"
   },

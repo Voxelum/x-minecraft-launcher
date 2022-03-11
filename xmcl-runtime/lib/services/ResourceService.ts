@@ -248,6 +248,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
       ino,
       ext: resourceData.ext,
       curseforge: resourceData.curseforge,
+      modrinth: resourceData.modrinth,
       github: resourceData.github,
       iconUri: resourceData.iconUri ?? `dataroot://${resourceData.domain}/${resourceData.fileName}.png`,
     })

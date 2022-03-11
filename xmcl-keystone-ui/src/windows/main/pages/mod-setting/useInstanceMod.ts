@@ -1,6 +1,6 @@
 import { computed, ref, Ref, watch } from '@vue/composition-api'
 import { FabricModMetadata } from '@xmcl/mod-parser'
-import { AnyResource, FabricResource, ForgeResource, InstanceModsServiceKey, isModResource, isPersistedResource, LiteloaderResource, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { AnyResource, FabricResource, ForgeResource, InstanceModsServiceKey, isModResource, isPersistedResource, LiteloaderResource, ModrinthInformation, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useBusy, useService } from '/@/hooks'
 import { useRefreshable } from '/@/hooks/useRefreshable'
 import { isStringArrayEquals } from '/@/util/equal'
@@ -64,6 +64,8 @@ export interface ModItem {
     projectId: number
     fileId: number
   }
+
+  modrinth?: ModrinthInformation
 
   resource: Resource
 }
@@ -171,6 +173,7 @@ export function useInstanceMods() {
       hide: false,
       selected: false,
       curseforge: isPersisted ? resource.curseforge : undefined,
+      modrinth: isPersisted ? resource.modrinth : undefined,
       dragged: false,
       dependencies: {
         minecraft: '',
@@ -233,6 +236,7 @@ export function useInstanceMods() {
       selected: false,
       dragged: false,
       curseforge: isPersisted ? resource.curseforge : undefined,
+      modrinth: isPersisted ? resource.modrinth : undefined,
       resource,
       dependencies: { minecraft: '[*]' },
     }

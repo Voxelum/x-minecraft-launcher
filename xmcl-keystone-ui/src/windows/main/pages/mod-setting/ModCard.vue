@@ -2,6 +2,7 @@
   <v-card
     v-selectable-card
     v-long-press="emitSelect"
+    v-context-menu="contextMenuItems"
     outlined
     :draggable="!source.enabled"
     :dark="source.subsequence"
@@ -16,7 +17,6 @@
     @dragstart="onDragStart"
     @dragend="$emit('dragend', $event)"
     @mouseenter="$emit('mouseenter', $event)"
-    @contextmenu="onContextMenu"
     @click="$emit('click', $event)"
   >
     <v-tooltip top>
@@ -138,7 +138,7 @@
 import { computed, defineComponent, ref, Ref } from '@vue/composition-api'
 import { ModItem } from './useInstanceMod'
 import unknownPack from '/@/assets/unknown_pack.png'
-import { useCompatible, useI18n, useInstanceVersionBase, useService, useTags } from '/@/hooks'
+import { useCompatible, useI18n, useInstanceVersionBase, useRouter, useService, useTags } from '/@/hooks'
 import { getColor } from '/@/util/color'
 import { required } from '/@/util/props'
 import { ContextMenuItem, useContextMenu, useCurseforgeRoute, useMcWikiRoute } from '/@/windows/main/composables'
@@ -156,6 +156,7 @@ export default defineComponent({
     const { compatible } = useCompatible(computed(() => props.source.resource), computed(() => instanceState.instance.runtime))
     const { open } = useContextMenu()
     const { openInBrowser, showItemInDirectory } = useService(BaseServiceKey)
+    const { push } = useRouter()
     const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
     const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute()
     const { $t } = useI18n()
@@ -208,7 +209,11 @@ export default defineComponent({
         editTag(event.target.innerText, index)
       }
     }
-    function onContextMenu(e: MouseEvent) {
+    function emitSelect() {
+      context.emit('select')
+    }
+
+    const contextMenuItems = computed(() => {
       const items: ContextMenuItem[] = [{
         text: $t('mod.showFile', { file: props.source.path }),
         children: [],
@@ -255,6 +260,26 @@ export default defineComponent({
           icon: 'search',
         })
       }
+      if (props.source.modrinth) {
+        const modrinth = props.source.modrinth
+        items.push({
+          text: $t('mod.showInModrinth', { name: props.source.name }),
+          children: [],
+          onClick: () => {
+            push(`/modrinth/${modrinth.modId}`)
+          },
+          icon: '$vuetify.icons.modrinth',
+        })
+      } else {
+        items.push({
+          text: $t('mod.searchOnModrinth', { name: props.source.name }),
+          children: [],
+          onClick: () => {
+            push(`/modrinth?query=${props.source.name}`)
+          },
+          icon: 'search',
+        })
+      }
       items.push({
         text: $t('mod.searchOnMcWiki', { name: props.source.name }),
         children: [],
@@ -263,18 +288,15 @@ export default defineComponent({
         },
         icon: 'search',
       })
-      open(e.clientX, e.clientY, items)
-    }
-    function emitSelect() {
-      context.emit('select')
-    }
+      return items
+    })
 
     return {
       iconImage,
       compatible,
       onDragStart,
       minecraft,
-      onContextMenu,
+      contextMenuItems,
       unknownPack,
       onDeleteTag: removeTag,
       onEditTag,
