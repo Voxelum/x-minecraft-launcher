@@ -1,53 +1,55 @@
 <template>
   <v-dialog
+    width="800"
     :value="value"
     @input="$emit('input', $event)"
   >
     <v-card
       v-if="updateInfo"
-
-      style="overflow: auto; max-height: 500px"
+      outlined
     >
-      <v-card-title style="display: block;">
-        <h1>
-          <a href="https://github.com/voxelum/x-minecraft-launcher/releases">
-            {{ updateInfo.releaseName }}
-          </a>
-        </h1>
-        <v-layout>
-          <v-flex>
-            <span class="grey--text">
-              {{ updateInfo.releaseDate }}
-            </span>
-          </v-flex>
-          <v-spacer />
-          <v-flex shrink>
-            <v-chip
-              small
-              label
-            >
-              v{{ updateInfo.version }}
-            </v-chip>
-          </v-flex>
-        </v-layout>
+      <v-card-title>
+        {{ updateInfo.name }}
       </v-card-title>
-      <v-divider />
-      <v-card-text
-        style="overflow: auto;"
-        v-html="updateInfo.releaseNotes"
-      />
+      <v-card-subtitle>
+        {{ new Date(updateInfo.date).toLocaleDateString() }}
+      </v-card-subtitle>
+      <v-card-text>
+        <div v-html="body" />
+      </v-card-text>
       <v-card-actions>
         <v-btn
+          text
+          @click="openOfficialWebsite()"
+        >
+          <v-icon
+            left
+          >
+            web
+          </v-icon>
+          {{ $t('setting.officialWebsite') }}
+        </v-btn>
+        <v-btn
+          text
+          @click="openGithub()"
+        >
+          <v-icon
+            left
+          >
+            signpost
+          </v-icon>
+          {{ $t('setting.githubRelease') }}
+        </v-btn>
+        <v-spacer />
+        <v-btn
           v-if="updateStatus === 'pending'"
-          block
           color="primary"
-          flat
+          text
           :loading="downloadingUpdate"
           :disabled="downloadingUpdate"
           @click="downloadUpdate()"
         >
           <v-icon
-            color="white"
             left
           >
             cloud_download
@@ -56,12 +58,10 @@
         </v-btn>
         <v-btn
           v-else
-          block
           color="primary"
           @click="quitAndInstall()"
         >
           <v-icon
-            color="white"
             left
           >
             refresh
@@ -98,8 +98,9 @@
 </template>
 
 <script lang=ts>
-import { defineComponent } from '@vue/composition-api'
-import { useUpdateInfo } from '/@/hooks'
+import { computed, defineComponent } from '@vue/composition-api'
+import { useBaseService, useBusy } from '/@/hooks'
+import MarkdownIt from 'markdown-it'
 
 export default defineComponent({
   props: {
@@ -109,8 +110,32 @@ export default defineComponent({
     },
   },
   setup() {
+    const renderer = new MarkdownIt()
+    const { state, openInBrowser, checkUpdate, downloadUpdate, quitAndInstall } = useBaseService()
+    const checkingUpdate = useBusy('checkUpdate()')
+    const downloadingUpdate = useBusy('downloadUpdate()')
+    const updateInfo = computed(() => state.updateInfo)
+    const updateStatus = computed(() => state.updateStatus)
+    const body = computed(() => state.updateInfo?.useAutoUpdater ? state.updateInfo.body : renderer.render(state.updateInfo?.body ?? ''))
+    const canAutoUpdate = computed(() => state.env === 'raw')
+    const openOfficialWebsite = () => {
+      openInBrowser('https://xmcl.app')
+    }
+    const openGithub = () => {
+      openInBrowser('https://github.com/voxelum/x-minecraft-launcher/releases')
+    }
     return {
-      ...useUpdateInfo(),
+      canAutoUpdate,
+      openGithub,
+      openOfficialWebsite,
+      checkingUpdate,
+      downloadingUpdate,
+      updateInfo,
+      updateStatus,
+      body,
+      checkUpdate,
+      downloadUpdate,
+      quitAndInstall,
     }
   },
 })

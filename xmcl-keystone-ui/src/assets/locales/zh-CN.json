@@ -899,6 +899,7 @@
     "darkTheme": "主题",
     "darkThemeDescription": "选择深色或浅色主题",
     "general": "基本设置",
+    "githubRelease": "Github",
     "installAndQuit": "重启并安装更新",
     "language": "语言",
     "languageDescription": "当前显示的语言",
@@ -910,6 +911,7 @@
     "migrateSuccess": "数据迁移成功",
     "name": "设置",
     "noUpdateAvailable": "目前没有可用更新",
+    "officialWebsite": "官网地址",
     "particleMode": {
       "": "粒子特效",
       "bubble": "气泡",

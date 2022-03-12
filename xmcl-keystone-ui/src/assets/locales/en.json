@@ -926,6 +926,7 @@
     "darkTheme": "Theme",
     "darkThemeDescription": "Choose the dark or light theme",
     "general": "General",
+    "githubRelease": "Github Release",
     "installAndQuit": "Restart to Install",
     "language": "Language",
     "languageDescription": "The display language",
@@ -937,6 +938,7 @@
     "migrateSuccess": "Data Migration Success",
     "name": "Global Setting | Global Settings",
     "noUpdateAvailable": "No Update Available",
+    "officialWebsite": "Official Website",
     "particleMode": {
       "": "Particle Mode",
       "bubble": "Bubble",

@@ -1,7 +1,7 @@
 import { computed, onMounted, onUnmounted, ref, Ref, watch } from '@vue/composition-api'
 import { useBusy } from './useSemaphore'
 import { useService } from './useService'
-import { BaseServiceKey, UpdateInfo } from '@xmcl/runtime-api'
+import { BaseServiceKey } from '@xmcl/runtime-api'
 
 export function useBaseService() {
   return useService(BaseServiceKey)
@@ -56,7 +56,7 @@ export function useSettings() {
   const updateStatus = computed(() => state.updateStatus)
   const checkingUpdate = useBusy('checkUpdate()')
   const downloadingUpdate = useBusy('downloadUpdate()')
-  const updateInfo: Ref<UpdateInfo> = computed(() => state.updateInfo || {}) as any
+  const updateInfo = computed(() => state.updateInfo)
 
   onMounted(() => {
     const p = getProxy()
@@ -103,22 +103,5 @@ export function useLauncherVersion() {
   return {
     version,
     build,
-  }
-}
-
-export function useUpdateInfo() {
-  const { state, checkUpdate, downloadUpdate, quitAndInstall } = useBaseService()
-  const checkingUpdate = useBusy('checkUpdate()')
-  const downloadingUpdate = useBusy('downloadUpdate()')
-  const updateInfo = computed(() => state.updateInfo)
-  const updateStatus = computed(() => state.updateStatus)
-  return {
-    checkingUpdate,
-    downloadingUpdate,
-    updateInfo,
-    updateStatus,
-    checkUpdate,
-    downloadUpdate,
-    quitAndInstall,
   }
 }

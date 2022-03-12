@@ -178,7 +178,7 @@
             <v-list-item-subtitle>
               {{ version }} build {{ build }}
               {{
-                updateInfo.version ? `-> ${updateInfo.version}` : ""
+                updateInfo && updateInfo.name ? `-> ${updateInfo.name}` : ""
               }}
             </v-list-item-subtitle>
           </v-list-item-content>

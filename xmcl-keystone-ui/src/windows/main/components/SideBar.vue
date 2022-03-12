@@ -214,10 +214,10 @@ import {
   ref,
   watch,
 } from '@vue/composition-api'
+import { BaseServiceKey } from '@xmcl/runtime-api'
 import ImageShowTextureHead from './ImageShowTextureHead.vue'
 import {
-  useCurrentUser, useRouter, useTaskCount,
-  useUpdateInfo,
+  useCurrentUser, useRouter, useService, useTaskCount,
 } from '/@/hooks'
 import { useDialog } from '/@/windows/main/composables'
 
@@ -226,7 +226,7 @@ export default defineComponent({
   setup() {
     const { count } = useTaskCount()
     const { show } = useDialog('task')
-    const { updateStatus } = useUpdateInfo()
+    const { state } = useService(BaseServiceKey)
     const { gameProfile } = useCurrentUser()
     const router = useRouter()
     const expanding = ref(false)
@@ -261,7 +261,7 @@ export default defineComponent({
 
     return {
       expanding,
-      updateStatus,
+      updateStatus: computed(() => state.updateStatus),
       onHomeClick,
       count,
       showTaskDialog: show,
