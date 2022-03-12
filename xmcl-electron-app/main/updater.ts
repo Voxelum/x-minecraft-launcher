@@ -185,7 +185,8 @@ async function getUpdateFromSelfHost(app: ElectronLauncherApp): Promise<ReleaseI
     incremental: true,
   }
   updateInfo.newUpdate = `v${app.version}` !== updateInfo.name
-  updateInfo.incremental = updateInfo.files.some(f => f.name.endsWith('.asar'))
+  const platformString = app.platform.name === 'windows' ? 'Windows' : app.platform.name === 'osx' ? 'macOS' : 'Linux'
+  updateInfo.incremental = updateInfo.files.some(f => f.name === `app-${platformString}.asar`)
   return updateInfo
 }
 
