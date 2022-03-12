@@ -1,4 +1,15 @@
 
+## 0.21.4
+### @xmcl/keystone-ui@0.20.3
+#### Bug Fixes
+
+- wrong update dialog content ([9efeb793db9fcd9909bee58a4a3a6cc90286e38d](https://github.com/Voxelum/x-minecraft-launcher/commit/9efeb793db9fcd9909bee58a4a3a6cc90286e38d))
+### xmcl@0.21.4
+#### Bug Fixes
+
+- use different asar for different platform ([a3dac2f18f29d89d9b6e412a1d0ed3921f7fb880](https://github.com/Voxelum/x-minecraft-launcher/commit/a3dac2f18f29d89d9b6e412a1d0ed3921f7fb880))
+
+
 ## 0.21.3
 ### @xmcl/keystone-ui@0.20.2
 #### Bug Fixes
