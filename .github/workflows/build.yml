@@ -65,14 +65,28 @@ jobs:
         name: ${{ runner.os }}-zip
         path: |
           xmcl-electron-app/build/output/*.zip
-    - name: Upload Windows Asar
+    - name: Prepare Windows Asar
       if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }} 
+      run: |
+        mkdir asar
+        mv xmcl-electron-app/build/output/win-unpacked/resources/app.asar asar/app-win.asar
+    - name: Prepare macOS Asar
+      if: ${{ runner.os == 'macOS' && startsWith(github.event.head_commit.message, 'chore(release)') }} 
+      run: |
+        mkdir asar
+        mv xmcl-electron-app/build/output/mac/xmcl.app/Contents/Resources/app.asar asar/app-mac.asar
+    - name: Prepare Linux Asar
+      if: ${{ runner.os == 'Linux' && startsWith(github.event.head_commit.message, 'chore(release)') }} 
+      run: |
+        mkdir asar
+        mv xmcl-electron-app/build/output/linux-unpacked/resources/app.asar asar/app-linux.asar
+    - name: Upload Asar
+      if: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }} 
       uses: actions/upload-artifact@v2
       with:
         name: build
         path: |
-          xmcl-electron-app/build/output/win-unpacked/resources/app.asar
-          xmcl-electron-app/build/output/win-unpacked/resources/app.asar.sha256
+          asar/*.*
 
   build-appx:
     runs-on: windows-latest
