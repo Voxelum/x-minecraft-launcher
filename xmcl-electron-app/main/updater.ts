@@ -1,4 +1,4 @@
-import { AZURE_CDN, AZURE_CDN_HOST, IS_DEV } from '@/constant'
+import { AZURE_CDN, IS_DEV } from '@/constant'
 import { ChecksumNotMatchError, DownloadTask } from '@xmcl/installer'
 import type { ServiceStateManager } from '@xmcl/runtime'
 import { ReleaseInfo } from '@xmcl/runtime-api'
@@ -8,6 +8,7 @@ import { autoUpdater, CancellationToken, Provider, UpdateInfo, UpdaterSignal } f
 import { stat, writeFile } from 'fs-extra'
 import got from 'got'
 import { closeSync, existsSync, open, rename, unlink } from 'original-fs'
+import { platform } from 'os'
 import { basename, dirname, join } from 'path'
 import { SemVer } from 'semver'
 import { URL } from 'url'
@@ -24,8 +25,11 @@ import { checksum } from './utils/fs'
 export class DownloadAsarUpdateTask extends DownloadTask {
   constructor(destination: string) {
     let sha256 = ''
+    const pl = platform()
+    const platformFlat = pl === 'win32' ? 'win' : pl === 'darwin' ? 'mac' : 'linux'
+    const url = `${AZURE_CDN}/releases/app-${platformFlat}.asar`
     super({
-      url: `${AZURE_CDN_HOST}/releases/app.asar`,
+      url,
       destination,
       validator: {
         async validate(fd, file, url) {
