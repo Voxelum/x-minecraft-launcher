@@ -1,4 +1,11 @@
 
+## 0.21.5
+### xmcl@0.21.5
+#### Bug Fixes
+
+- wrong asar download url ([64499b2cfdf731f4591768cfd43af3ccd7d72453](https://github.com/Voxelum/x-minecraft-launcher/commit/64499b2cfdf731f4591768cfd43af3ccd7d72453))
+
+
 ## 0.21.4
 ### @xmcl/keystone-ui@0.20.3
 #### Bug Fixes
