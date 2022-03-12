@@ -9,8 +9,17 @@ import JarFileIcon from '/@/components/JarFileIcon.vue'
 import ModrinthIcon from '/@/components/ModrinthIcon.vue'
 import PackageFileIcon from '/@/components/PackageFileIcon.vue'
 import ZipFileIcon from '/@/components/ZipFileIcon.vue'
+import zhHans from 'vuetify/src/locale/zh-Hans'
+import ru from 'vuetify/src/locale/ru'
 
 const vuetify = new Vuetify({
+  lang: {
+    locales: {
+      zhHans,
+      ru,
+    },
+    current: 'en',
+  },
   icons: {
     iconfont: 'md',
     values: {

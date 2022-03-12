@@ -99,6 +99,14 @@ const app = createApp(defineComponent({
     store.watch((state) => state[`services/${BaseServiceKey.toString()}`].locale, (newValue: string, oldValue: string) => {
       console.log(`Locale changed ${oldValue} -> ${newValue}`)
       i18n.locale = newValue
+      const lang = context.root.$vuetify.lang
+      if (newValue === 'zh-CN') {
+        lang.current = 'zhHans'
+      } else if (newValue === 'ru') {
+        lang.current = 'ru'
+      } else {
+        lang.current = 'en'
+      }
     })
 
     // router
