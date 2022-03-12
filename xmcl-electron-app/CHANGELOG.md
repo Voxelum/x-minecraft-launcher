@@ -1,4 +1,24 @@
 
+## 0.21.3
+### @xmcl/keystone-ui@0.20.2
+#### Bug Fixes
+
+- display correct locale for vuetify ([7d03b9bddd4f481abc5b42701652561707fc8346](https://github.com/Voxelum/x-minecraft-launcher/commit/7d03b9bddd4f481abc5b42701652561707fc8346))
+- more placeholder ([8fc27e54c42c799ba77e6c4736b7404824dcaeb6](https://github.com/Voxelum/x-minecraft-launcher/commit/8fc27e54c42c799ba77e6c4736b7404824dcaeb6))
+- wrong text to the unselected pack ([b596da6257d1161b78f84b81000bbdb5ed403e75](https://github.com/Voxelum/x-minecraft-launcher/commit/b596da6257d1161b78f84b81000bbdb5ed403e75))
+- record route in the modrinth ([16ee1ee5c9c00ccd9a4aa2e7a3adfeef0829e51e](https://github.com/Voxelum/x-minecraft-launcher/commit/16ee1ee5c9c00ccd9a4aa2e7a3adfeef0829e51e))
+- not display modrinth in mod context menu ([eeff5e70fd79819251818d68502bede3112314c1](https://github.com/Voxelum/x-minecraft-launcher/commit/eeff5e70fd79819251818d68502bede3112314c1))
+- remove more link on sidebar ([ade48500faa1ba78a16eb9211c54f1e858a681f6](https://github.com/Voxelum/x-minecraft-launcher/commit/ade48500faa1ba78a16eb9211c54f1e858a681f6))
+### @xmcl/runtime@0.19.2
+#### Bug Fixes
+
+- not display modrinth in mod context menu ([eeff5e70fd79819251818d68502bede3112314c1](https://github.com/Voxelum/x-minecraft-launcher/commit/eeff5e70fd79819251818d68502bede3112314c1))
+### xmcl@0.21.3
+#### Bug Fixes
+
+- should not show update when no update ([fa595a76e3eabcc78d32039ebdd5e1fb2e60f41d](https://github.com/Voxelum/x-minecraft-launcher/commit/fa595a76e3eabcc78d32039ebdd5e1fb2e60f41d))
+
+
 ## 0.21.2
 ### @xmcl/runtime-api@0.5.1
 #### Bug Fixes
