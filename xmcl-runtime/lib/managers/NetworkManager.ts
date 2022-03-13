@@ -172,7 +172,7 @@ export default class NetworkManager extends Manager {
 
   // setup code
   setup() {
-    // this.updateGFW().then(() => this.updateNatType())
+    this.updateGFW()
 
     // this.updatePublicIp()
 
