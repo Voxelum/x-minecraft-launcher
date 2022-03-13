@@ -1,4 +1,26 @@
 
+## 0.21.6
+### @xmcl/keystone-ui@0.20.4
+#### Bug Fixes
+
+- adjust update icon place ([1efe67b89e172abd5e10eea3377294dc6703db94](https://github.com/Voxelum/x-minecraft-launcher/commit/1efe67b89e172abd5e10eea3377294dc6703db94))
+- use yaml as locale files ([ed5e24de1b7c8fa984d7428757ecdcd50041728e](https://github.com/Voxelum/x-minecraft-launcher/commit/ed5e24de1b7c8fa984d7428757ecdcd50041728e))
+- align the version display on setting page ([8c0c6bd086faea393f87266580ed754e4a2c7840](https://github.com/Voxelum/x-minecraft-launcher/commit/8c0c6bd086faea393f87266580ed754e4a2c7840))
+### @xmcl/runtime@0.19.3
+#### Bug Fixes
+
+- add more logs & remove dead code ([320d2cb86f577b08899e902718344a6740dc9f34](https://github.com/Voxelum/x-minecraft-launcher/commit/320d2cb86f577b08899e902718344a6740dc9f34))
+- should detect gfw on startup ([1006aa7917a77b06ac2f4bac5865c2e041bb4159](https://github.com/Voxelum/x-minecraft-launcher/commit/1006aa7917a77b06ac2f4bac5865c2e041bb4159))
+### xmcl@0.21.6
+#### Bug Fixes
+
+- update asar pointing to a specific version ([4a6badf3d0f27c4c3486a5e26a7dc03f838f1440](https://github.com/Voxelum/x-minecraft-launcher/commit/4a6badf3d0f27c4c3486a5e26a7dc03f838f1440))
+- **build**: use direct url for updater ([2b5c74c51c5e1fc6c8f0b06433231bb41a5c7157](https://github.com/Voxelum/x-minecraft-launcher/commit/2b5c74c51c5e1fc6c8f0b06433231bb41a5c7157))
+- add more logs & remove dead code ([320d2cb86f577b08899e902718344a6740dc9f34](https://github.com/Voxelum/x-minecraft-launcher/commit/320d2cb86f577b08899e902718344a6740dc9f34))
+- use yaml as locale files ([ed5e24de1b7c8fa984d7428757ecdcd50041728e](https://github.com/Voxelum/x-minecraft-launcher/commit/ed5e24de1b7c8fa984d7428757ecdcd50041728e))
+- use cacheless url for query latest version ([e6af7fb9e66325eca0cf0c94e2a93f82757f20ab](https://github.com/Voxelum/x-minecraft-launcher/commit/e6af7fb9e66325eca0cf0c94e2a93f82757f20ab))
+
+
 ## 0.21.5
 ### xmcl@0.21.5
 #### Bug Fixes
