@@ -23,7 +23,6 @@ export const taskProgressPlugin: ControllerPlugin = function (this: Controller) 
         if (this.activeWindow?.isVisible()) {
           this.activeWindow.focus()
         } else {
-          // eslint-disable-next-line no-unused-expressions
           this.activeWindow?.show()
         }
       })

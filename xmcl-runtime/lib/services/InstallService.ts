@@ -226,7 +226,13 @@ export default class InstallService extends StatefulService<InstallState> implem
     const option = this.getInstallOptions()
     const location = this.getPath()
     const resolvedVersion = await Version.parse(location, version)
-    await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
+    try {
+      this.warn(`Install assets for ${version}:`)
+      await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
+    } catch (e) {
+      this.warn(`An error ocurred during assets for ${version}:`)
+      this.warn(e)
+    }
   }
 
   @Lock((v) => [read(versionLockOf(v)), write(assetsLock), write(librariesLock)])

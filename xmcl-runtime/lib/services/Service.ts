@@ -74,6 +74,7 @@ export function ReadLock<T extends AbstractService>(key: (string | string[] | Mu
         const lock = this.semaphoreManager.getLock(key)
         promises.push(lock.acquireRead())
       }
+      this.log(`Acquire read locks: ${keys.join(', ')}`)
       const exec = () => {
         try {
           const result = method.apply(this, args)
@@ -89,6 +90,7 @@ export function ReadLock<T extends AbstractService>(key: (string | string[] | Mu
       Object.defineProperty(exec, 'name', { value: `${method.name}$ReadLock$exec` })
       return Promise.all(promises).then((releases) => {
         return exec().finally(() => {
+          this.log(`Release read locks: ${keys.join(', ')}`)
           releases.forEach(f => f())
         })
       })
@@ -111,6 +113,7 @@ export function Lock<T extends AbstractService>(key: (string | string[] | MutexS
         const lock = this.semaphoreManager.getLock(key)
         promises.push(lock.acquireWrite())
       }
+      this.log(`Acquire locks: ${keys.join(', ')}`)
       const exec = () => {
         try {
           const result = method.apply(this, args)
@@ -126,6 +129,7 @@ export function Lock<T extends AbstractService>(key: (string | string[] | MutexS
       Object.defineProperty(exec, 'name', { value: `${method.name}$Lock$exec` })
       return Promise.all(promises).then((releases) => {
         return exec().finally(() => {
+          this.log(`Release locks: ${keys.join(', ')}`)
           releases.forEach(f => f())
         })
       })
