@@ -5,7 +5,7 @@ function getAppInstallerContent(version: string) {
   <AppInstaller
       xmlns="http://schemas.microsoft.com/appx/appinstaller/2018"
       Version="${version}.0"
-      Uri="https://xmcl-release-ms.azureedge.net/releases/xmcl.appinstaller" >
+      Uri="https://xmcl.blob.core.windows.net/releases/xmcl.appinstaller" >
   
       <MainPackage
           Name="XMCL"
