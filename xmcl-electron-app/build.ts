@@ -81,8 +81,14 @@ async function buildElectron(config: Configuration, dir: boolean) {
     }
   }
 
-  if (existsSync('build/win-unpacked/resources/app.asar')) {
-    await writeHash('sha256', 'build/win-unpacked/resources/app.asar', 'build/win-unpacked/resources/app.asar.sha256')
+  if (existsSync('build/output/win-unpacked/resources/app.asar')) {
+    await writeHash('sha256', 'build/output/win-unpacked/resources/app.asar', 'build/output/win-unpacked/resources/app.asar.sha256')
+  }
+  if (existsSync('build/output/linux-unpacked/resources/app.asar')) {
+    await writeHash('sha256', 'build/output/linux-unpacked/resources/app.asar', 'build/output/linux-unpacked/resources/app.asar.sha256')
+  }
+  if (existsSync('build/output/mac/xmcl.app/Contents/Resources/app.asar')) {
+    await writeHash('sha256', 'build/output/mac/xmcl.app/Contents/Resources/app.asar', 'build/output/mac/xmcl.app/Contents/Resources/app.asar.sha256')
   }
 
   console.log(

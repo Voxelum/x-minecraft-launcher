@@ -1,4 +1,4 @@
-import { AZURE_CDN, IS_DEV } from '@/constant'
+import { AZURE_CDN, AZURE_MS_CDN, IS_DEV } from '@/constant'
 import { ChecksumNotMatchError, DownloadTask } from '@xmcl/installer'
 import type { ServiceStateManager } from '@xmcl/runtime'
 import { ReleaseInfo } from '@xmcl/runtime-api'
@@ -23,13 +23,16 @@ import { checksum } from './utils/fs'
  * you can call this to download asar update
  */
 export class DownloadAsarUpdateTask extends DownloadTask {
-  constructor(destination: string) {
+  constructor(destination: string, version: string) {
     let sha256 = ''
+    version = version.startsWith('v') ? version.substring(1) : version
     const pl = platform()
     const platformFlat = pl === 'win32' ? 'win' : pl === 'darwin' ? 'mac' : 'linux'
-    const url = `${AZURE_CDN}/releases/app-${platformFlat}.asar`
     super({
-      url,
+      url: [
+        `${AZURE_CDN}/app-${version}-${platformFlat}.asar`,
+        `${AZURE_MS_CDN}/app-${version}-${platformFlat}.asar`,
+      ],
       destination,
       validator: {
         async validate(fd, file, url) {

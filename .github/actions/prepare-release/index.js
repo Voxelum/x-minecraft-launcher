@@ -25,6 +25,7 @@ async function main(output) {
     output('release', `v${version}`);
     output('body', body);
     output('tag', `v${version}`);
+    output('version', version);
     output('prerelease', true);
     output('draft', false);
 }

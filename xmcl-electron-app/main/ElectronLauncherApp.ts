@@ -79,7 +79,7 @@ export default class ElectronLauncherApp extends LauncherApp {
   downloadUpdateTask(updateInfo: ReleaseInfo): Task<void> {
     if (updateInfo.incremental) {
       const updatePath = join(this.appDataPath, 'pending_update')
-      return new DownloadAsarUpdateTask(updatePath)
+      return new DownloadAsarUpdateTask(updatePath, updateInfo.name)
         .map(() => undefined)
     }
     return new DownloadFullUpdateTask()

@@ -9,6 +9,8 @@ outputs:
     description: The release is prerelease
   tag:
     description: The release tag
+  version:
+    description: The release version
   release:
     description: The release name
 runs:
