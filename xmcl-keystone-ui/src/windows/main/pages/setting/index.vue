@@ -176,7 +176,7 @@
               }}
             </v-list-item-title>
             <v-list-item-subtitle>
-              {{ version }} build {{ build }}
+              v{{ version }}
               {{
                 updateInfo && updateInfo.name ? `-> ${updateInfo.name}` : ""
               }}
