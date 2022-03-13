@@ -191,6 +191,7 @@
         <v-list-item-icon>
           <v-badge
             right
+            overlap
             :value="updateStatus !== 'none'"
           >
             <template #badge>
