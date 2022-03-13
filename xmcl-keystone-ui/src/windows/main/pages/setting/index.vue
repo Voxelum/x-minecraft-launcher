@@ -482,7 +482,7 @@
 <script lang=ts>
 import { computed, defineComponent, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
 import UpdateInfoDialog from './UpdateInfoDialog.vue'
-import localMapping from '/@/assets/locales/index.json'
+import localMapping from '/@/assets/localeMapping.json'
 import { useBackground, useBaseService, useI18n, useLauncherVersion, useSettings, BackgroundType } from '/@/hooks'
 
 function setupImage() {

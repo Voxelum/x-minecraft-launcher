@@ -3,6 +3,11 @@ import { BaseService, BaseServiceKey } from '@xmcl/runtime-api'
 import { ControllerPlugin } from './plugin'
 
 export const i18n: ControllerPlugin = function (this: Controller) {
+  this.app.once('engine-ready', () => {
+    this.app.serviceStateManager.subscribe('localeSet', (l) => {
+      this.i18n.use(l)
+    })
+  })
   this.app.on('service-ready', (serv) => {
     if (serv.name === BaseServiceKey) {
       const baseService = serv as any as BaseService

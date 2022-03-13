@@ -1,0 +1,8 @@
+title: 'Welcome to KeyStone UI. Before start, we need you to setup the root directory of game data'
+defaultPath: 'Default Path'
+path: 'Current Path'
+browse: 'Browse'
+confirm: 'Start'
+disk: 
+  available: 'Available'
+  used: 'Used'

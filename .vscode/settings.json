@@ -47,6 +47,9 @@
         "https://json.schemastore.org/github-workflow.json": "file:///.github/workflows/deploy.yml"
     },
     "i18n-ally.localesPaths": [
-        "xmcl-keystone-ui/src/assets/locales"
+        "xmcl-electron-app/main/locales",
+        "xmcl-keystone-ui/src/windows/browser/locales",
+        "xmcl-keystone-ui/src/windows/main/locales",
+        "xmcl-keystone-ui/src/windows/setup/locales"
     ]
 }

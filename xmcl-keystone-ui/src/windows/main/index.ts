@@ -19,7 +19,6 @@ import { createRouter } from './router'
 import { useAllServices } from './services'
 import { createStore } from './store'
 import '/@/assets/google.font.css'
-import locales from '/@/assets/locales'
 import TextComponent from '/@/components/TextComponent'
 import { I18N_KEY, ROUTER_KEY } from '/@/constant'
 import { SERVICES_SEMAPHORES_KEY, useSemaphores } from '/@/hooks'
@@ -56,7 +55,16 @@ document.addEventListener('dragstart', (e) => {
 Vue.use(VueI18n)
 Vue.use(Router)
 
-const i18n = createI18n('en', locales)
+const messages = Object.fromEntries(
+  Object.entries(
+    import.meta.globEager('./locales/*.y(a)?ml'))
+    .map(([key, value]) => {
+      const yaml = key.endsWith('.yaml')
+      return [key.slice('./locales/'.length, yaml ? -5 : -4), value.default]
+    }),
+)
+
+const i18n = createI18n('en', messages)
 const router = createRouter()
 
 const props: Record<string, any> = {

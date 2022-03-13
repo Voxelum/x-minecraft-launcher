@@ -1,0 +1,4 @@
+createShortcut: 'Create Shortcut'
+launch: 'Launch and set as Default'
+delete: 'Delete'
+default: 'DEFAULT'

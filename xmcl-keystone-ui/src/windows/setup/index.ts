@@ -10,33 +10,19 @@ import Setup from './Setup.vue'
 Vue.config.productionTip = false
 Vue.use(VueI18n)
 
+const messages = Object.fromEntries(
+  Object.entries(
+    import.meta.globEager('./locales/*.y(a)?ml'))
+    .map(([key, value]) => {
+      const yaml = key.endsWith('.yaml')
+      return [key.slice('./locales/'.length, yaml ? -5 : -4), value.default]
+    }),
+)
+
 const i18n = new VueI18n({
   locale: 'en',
   fallbackLocale: 'en',
-  messages: {
-    en: {
-      title: 'Welcome to KeyStone UI. Before start, we need you to setup the root directory of game data',
-      defaultPath: 'Default Path',
-      path: 'Current Path',
-      browse: 'Browse',
-      confirm: 'Start',
-      disk: {
-        available: 'Available',
-        used: 'Used',
-      },
-    },
-    'zh-CN': {
-      title: '欢迎使用 KeyStone UI。在开始前，需要您先设置游戏数据存储目录',
-      defaultPath: '默认位置',
-      path: '当前位置',
-      browse: '浏览',
-      confirm: '开始',
-      disk: {
-        available: '可用',
-        used: '已用',
-      },
-    },
-  },
+  messages,
   missing: () => {
     // handle translation missing
   },

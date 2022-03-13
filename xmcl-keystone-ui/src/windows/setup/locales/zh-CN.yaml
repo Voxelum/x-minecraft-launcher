@@ -1,0 +1,8 @@
+title: '欢迎使用 KeyStone UI。在开始前，需要您先设置游戏数据存储目录'
+defaultPath: '默认位置'
+path: '当前位置'
+browse: '浏览'
+confirm: '开始'
+disk: 
+  available: '可用'
+  used: '已用'

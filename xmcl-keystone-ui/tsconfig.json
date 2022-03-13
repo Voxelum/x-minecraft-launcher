@@ -20,9 +20,11 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "types": [
+      "vite/client",
       "vite-plugin-pwa/client",
       "@xmcl/runtime-api/client",
       "@xmcl/runtime-api/loggerClient",
+      "@modyfi/vite-plugin-yaml/modules"
     ]
   },
   "vueCompilerOptions": {

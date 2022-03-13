@@ -4,6 +4,7 @@ import { createVuePlugin } from 'vite-plugin-vue2'
 import { defineConfig } from 'vite'
 import { readdirSync } from 'fs'
 import { VitePWA } from 'vite-plugin-pwa'
+import YAML from '@modyfi/vite-plugin-yaml'
 import WindiCSS from 'vite-plugin-windicss'
 
 const entries = readdirSync(join(__dirname, './src'))
@@ -58,5 +59,7 @@ export default defineConfig({
         fileExtensions: ['vue', 'ts'],
       },
     }),
+
+    YAML(),
   ],
 })

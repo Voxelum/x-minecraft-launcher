@@ -24,7 +24,10 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
-    "types": ["@xmcl/runtime/lib/global"]
+    "types": [
+      "@xmcl/runtime/lib/global",
+      "esbuild-plugin-yaml/dist/yaml"
+    ]
   },
   "include": [
     "./*.ts",

@@ -6,6 +6,7 @@ import pluginVueDevtools from './plugins/esbuild.devtool.plugin'
 import pluginNode from './plugins/esbuild.node.plugin'
 import plugin7Zip from './plugins/esbuild.native.plugin'
 import pluginStatic from './plugins/esbuild.static.plugin'
+import { yamlPlugin } from 'esbuild-plugin-yaml'
 // import { external } from './package.json'
 import { BuildOptions } from 'esbuild'
 
@@ -42,6 +43,7 @@ const config: BuildOptions = {
     pluginWorker(),
     plugin7Zip(path.resolve(__dirname, './node_modules')),
     pluginNode(),
+    yamlPlugin({}),
   ],
   external: ['electron'],
 }

@@ -9,7 +9,7 @@ import { join } from 'path'
 import { acrylic } from './acrylic'
 import iconPath from './assets/apple-touch-icon.png'
 import { plugins } from './controllers'
-import i18n from './locales'
+import { createI18n } from './utils/i18n'
 import { trackWindowSize } from './windowSizeTracker'
 import browsePreload from '/@preload/browse'
 import indexPreload from '/@preload/index'
@@ -18,6 +18,9 @@ import setupPreload from '/@preload/setup'
 import browserWinUrl from '/@renderer/browser.html'
 import loggerWinUrl from '/@renderer/logger.html'
 import setupWinUrl from '/@renderer/setup.html'
+import en from './locales/en.yaml'
+import zh from './locales/zh-CN.yaml'
+import ru from './locales/ru.yaml'
 
 export default class Controller implements LauncherAppController {
   protected mainWin: BrowserWindow | undefined = undefined
@@ -28,16 +31,11 @@ export default class Controller implements LauncherAppController {
 
   protected browserRef: BrowserWindow | undefined = undefined
 
-  protected i18n = i18n
+  protected i18n = createI18n({ en, 'zh-CN': zh, ru }, 'en')
 
   protected tray: Tray | undefined
 
   constructor(protected app: LauncherApp) {
-    app.once('engine-ready', () => {
-      app.serviceStateManager.subscribe('localeSet', (l) => {
-        this.i18n.use(l)
-      })
-    })
     plugins.forEach(p => p.call(this))
   }
 

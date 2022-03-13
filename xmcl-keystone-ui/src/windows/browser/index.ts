@@ -10,23 +10,19 @@ import '/@/assets/google.font.css'
 Vue.use(VueCompositionApi)
 Vue.use(VueI18n)
 
+const messages = Object.fromEntries(
+  Object.entries(
+    import.meta.globEager('./locales/*.y(a)?ml'))
+    .map(([key, value]) => {
+      const yaml = key.endsWith('.yaml')
+      return [key.slice('./locales/'.length, yaml ? -5 : -4), value.default]
+    }),
+)
+
 const i18n = new VueI18n({
   locale: 'en',
   fallbackLocale: 'en',
-  messages: {
-    en: {
-      createShortcut: 'Create Shortcut',
-      launch: 'Launch and set as Default',
-      delete: 'Delete',
-      default: 'DEFAULT',
-    },
-    'zh-CN': {
-      createShortcut: '创建快捷方式',
-      launch: '启动并设置为默认',
-      delete: '删除',
-      default: '默认',
-    },
-  },
+  messages,
   missing: () => {
     // handle translation missing
   },
