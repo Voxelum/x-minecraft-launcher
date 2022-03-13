@@ -178,7 +178,7 @@ export function quitAndInstallFullUpdate() {
 let injectedUpdate = false
 
 async function getUpdateFromSelfHost(app: ElectronLauncherApp): Promise<ReleaseInfo> {
-  const result: any = await app.networkManager.request('https://xmcl-release-ms.azureedge.net/releases/latest_version.json').json()
+  const result: any = await app.networkManager.request('https://xmcl.blob.core.windows.net/releases/latest_version.json').json()
   const updateInfo: ReleaseInfo = {
     name: result.tag_name,
     body: result.body,
