@@ -329,62 +329,62 @@ hello: Привет мир
 help: Справка
 home: Главная
 hotkeyChanges: Изменение горячих клавиш
-importResource: Импортировать ресурс
-importSave: Импортировать сохранение
+importResource: Импорт ресурса
+importSave: Импорт сохранения
 installAssets:
-  '': Установить файлы Asset
-  asset: Установить Asset {hash}
-  assetsJson: Проверить индексный файл Assets
-installAuthlibInjector: Установить authlib-injector
+  '': Установка файлов Asset
+  asset: Установка Asset {hash}
+  assetsJson: Проверка индексного файла Assets
+installAuthlibInjector: Установка authlib-injector
 installByProfile:
-  '': Установить по профилю установки
+  '': Установка по профилю установки
   postProcessing: Постобработка
-installCurseforgeFile: Установить файл CurseForge
+installCurseforgeFile: Установка файла CurseForge
 installDependencies:
-  '': Установить зависимости {version}
+  '': Установка зависимостей {version}
   installAssets:
-    '': Установить файлы Asset
-    assets: Установить Asset {hash}
-    assetsJson: Проверить индексный файл Assets
+    '': Установка файлов Asset
+    assets: Установка Asset {hash}
+    assetsJson: Проверка индексного файла Assets
   installLibraries:
-    '': Установить библиотеки
-    library: Установить библиотеку
+    '': Установка библиотек
+    library: Установка библиотеки
 installFabric:
-  '': Установить Fabric
+  '': Установка Fabric
 installForge:
-  '': Установить Forge
-  downloadInstaller: Скачать установщик
+  '': Установка Forge
+  downloadInstaller: Скачивание установщика
   libraries:
-    '': Скачать библиотеки
-    library: Установить библиотеку {lib}
+    '': Скачивание библиотек
+    library: Установка библиотеки {lib}
   postProcessing: Постобработка
 installJre:
-  '': Установить библиотеку Java Runtime
-  cleanup: Очистить установочный пакет
-  decompress: Распаковать файлы JRE в папку
-  download: Скачать сжатый файл JRE
-  fetchInfo: Получить информацию о JRE из Mojang
+  '': Установка библиотеки Java Runtime
+  cleanup: Очистка установочного пакета
+  decompress: Распаковка файлов JRE в папку
+  download: Скачивание сжатого файла JRE
+  fetchInfo: Получение информации о JRE из Mojang
 installLibraries:
-  '': Установить библиотеки
-  library: Установить библиотеку
+  '': Установка библиотек
+  library: Установка библиотеки
 installModpack:
-  '': Установить модпак
-  deploy: Выполнить развёртывание
+  '': Установка модпака
+  deploy: Выполняется развёртывание
   download:
-    '': Скачать
-    file: Скачать файл
-  unpack: Распаковать модпак
+    '': Скачивание
+    file: Скачивание файла
+  unpack: Распаковка модпака
 installModrinthFile:
-  '': Установить Modrinth
+  '': Установка Modrinth
 installOptifine:
-  '': Установить Optifine
-  download: Скачать Optifine Universal
-  jar: Сгенерировать Jar
-  json: Сгенерировать Json
+  '': Установка Optifine
+  download: Скачивание Optifine Universal
+  jar: Генерация Jar
+  json: Генерация Json
 installVersion:
-  '': 'Установить клиент Minecraft {version}'
-  jar: Установить версию Jar
-  json: Установить версию Json
+  '': 'Установка клиента Minecraft {version}'
+  jar: Установка версии Jar
+  json: Установка версии Json
 intro:
   struct:
     assets: Как с Vanilla. Папка assets кэширует игровые активы
