@@ -574,7 +574,7 @@ modrinth:
   clientSide: На стороне клиента
   createAt: Создан
   description: Описание
-  downloads: Загрузки
+  downloads: Скачиваний
   environments:
     client: Клиент
     name: Окружающая среда
@@ -585,7 +585,7 @@ modrinth:
   licenses:
     name: Лицензии
   modLoaders:
-    name: Загрузчики модов
+    name: Загрузчик
   perPage: На страницу
   projectId: ID проекта
   searchText: Поиск
@@ -598,7 +598,7 @@ modrinth:
     title: Сортировать по
     updated: Недавно обновленные
   sortBy: {}
-  updateAt: Обнавлён
+  updateAt: Обновлён
   versionType:
     alpha: Альфа
     beta: Бета
