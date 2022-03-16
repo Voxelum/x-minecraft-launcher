@@ -33,7 +33,7 @@ copy:
 create: Создать
 criticalGraphics: Критическая графика
 curseforge:
-  createdDate: Дата создания
+  createdDate: Создан
   description: >-
     CurseForge - это крупнейшее хранилище модов для Minecraft,
     содержащее тысячи модов, наборов текстур и миров.
@@ -53,7 +53,7 @@ curseforge:
   installTo: Установить в {path}
   installToStorage: Установить в хранилище
   installed: Установлен
-  lastUpdate: Дата последнего обновления
+  lastUpdate: Обновлён
   license: Лицензия
   mc-mods:
     description: Просматривайте и скачивайте моды с Curseforge
@@ -68,13 +68,13 @@ curseforge:
     files: Файлы
     images: Изображения
   quitSearch: Выйти из поиска
-  recentFiles: Недавние файлы
+  recentFiles: Последние файлы
   search: Поиск
   sortby: Сортировать по
   texture-packs:
     description: Просматривайте и скачивайте пакеты текстур с Curseforge
     name: Текстуры
-  totalDownloads: Всего загрузок
+  totalDownloads: Скачиваний
   worlds:
     description: Просматривайте и скачивайте миры с Curseforge
     name: Миры
