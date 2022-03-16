@@ -591,12 +591,12 @@ modrinth:
   searchText: Поиск
   serverSide: На стороне сервера
   sort:
-    downloads: Количество скачиваний
-    follows: Следите за количеством
-    newest: Недавно созданный
-    relevance: Актуальность
+    downloads: Количеству скачиваний
+    follows: Подписчикам
+    newest: Недавно созданные
+    relevance: Актуальности
     title: Сортировать по
-    updated: Недавно обновленный
+    updated: Недавно обновленные
   sortBy: {}
   updateAt: Обнавлён
   versionType:
