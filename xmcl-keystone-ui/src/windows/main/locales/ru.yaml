@@ -33,7 +33,7 @@ copy:
 create: Создать
 criticalGraphics: Критическая графика
 curseforge:
-  createdDate: Дата создания
+  createdDate: Создан
   description: >-
     CurseForge - это крупнейшее хранилище модов для Minecraft,
     содержащее тысячи модов, наборов текстур и миров.
@@ -53,7 +53,7 @@ curseforge:
   installTo: Установить в {path}
   installToStorage: Установить в хранилище
   installed: Установлен
-  lastUpdate: Дата последнего обновления
+  lastUpdate: Обновлён
   license: Лицензия
   mc-mods:
     description: Просматривайте и скачивайте моды с Curseforge
@@ -68,13 +68,13 @@ curseforge:
     files: Файлы
     images: Изображения
   quitSearch: Выйти из поиска
-  recentFiles: Недавние файлы
+  recentFiles: Последние файлы
   search: Поиск
   sortby: Сортировать по
   texture-packs:
     description: Просматривайте и скачивайте пакеты текстур с Curseforge
     name: Текстуры
-  totalDownloads: Всего загрузок
+  totalDownloads: Скачиваний
   worlds:
     description: Просматривайте и скачивайте миры с Curseforge
     name: Миры
@@ -329,62 +329,62 @@ hello: Привет мир
 help: Справка
 home: Главная
 hotkeyChanges: Изменение горячих клавиш
-importResource: Импортировать ресурс
-importSave: Импортировать сохранение
+importResource: Импорт ресурса
+importSave: Импорт сохранения
 installAssets:
-  '': Установить файлы Asset
-  asset: Установить Asset {hash}
-  assetsJson: Проверить индексный файл Assets
-installAuthlibInjector: Установить authlib-injector
+  '': Установка файлов Asset
+  asset: Установка Asset {hash}
+  assetsJson: Проверка индексного файла Assets
+installAuthlibInjector: Установка authlib-injector
 installByProfile:
-  '': Установить по профилю установки
+  '': Установка по профилю установки
   postProcessing: Постобработка
-installCurseforgeFile: Установить файл CurseForge
+installCurseforgeFile: Установка файла CurseForge
 installDependencies:
-  '': Установить зависимости {version}
+  '': Установка зависимостей {version}
   installAssets:
-    '': Установить файлы Asset
-    assets: Установить Asset {hash}
-    assetsJson: Проверить индексный файл Assets
+    '': Установка файлов Asset
+    assets: Установка Asset {hash}
+    assetsJson: Проверка индексного файла Assets
   installLibraries:
-    '': Установить библиотеки
-    library: Установить библиотеку
+    '': Установка библиотек
+    library: Установка библиотеки
 installFabric:
-  '': Установить Fabric
+  '': Установка Fabric
 installForge:
-  '': Установить Forge
-  downloadInstaller: Скачать установщик
+  '': Установка Forge
+  downloadInstaller: Скачивание установщика
   libraries:
-    '': Скачать библиотеки
-    library: Установить библиотеку {lib}
+    '': Скачивание библиотек
+    library: Установка библиотеки {lib}
   postProcessing: Постобработка
 installJre:
-  '': Установить библиотеку Java Runtime
-  cleanup: Очистить установочный пакет
-  decompress: Распаковать файлы JRE в папку
-  download: Скачать сжатый файл JRE
-  fetchInfo: Получить информацию о JRE из Mojang
+  '': Установка библиотеки Java Runtime
+  cleanup: Очистка установочного пакета
+  decompress: Распаковка файлов JRE в папку
+  download: Скачивание сжатого файла JRE
+  fetchInfo: Получение информации о JRE из Mojang
 installLibraries:
-  '': Установить библиотеки
-  library: Установить библиотеку
+  '': Установка библиотек
+  library: Установка библиотеки
 installModpack:
-  '': Установить модпак
-  deploy: Выполнить развёртывание
+  '': Установка модпака
+  deploy: Выполняется развёртывание
   download:
-    '': Скачать
-    file: Скачать файл
-  unpack: Распаковать модпак
+    '': Скачивание
+    file: Скачивание файла
+  unpack: Распаковка модпака
 installModrinthFile:
-  '': Установить Modrinth
+  '': Установка Modrinth
 installOptifine:
-  '': Установить Optifine
-  download: Скачать Optifine Universal
-  jar: Сгенерировать Jar
-  json: Сгенерировать Json
+  '': Установка Optifine
+  download: Скачивание Optifine Universal
+  jar: Генерация Jar
+  json: Генерация Json
 installVersion:
-  '': 'Установить клиент Minecraft {version}'
-  jar: Установить версию Jar
-  json: Установить версию Json
+  '': 'Установка клиента Minecraft {version}'
+  jar: Установка версии Jar
+  json: Установка версии Json
 intro:
   struct:
     assets: Как с Vanilla. Папка assets кэширует игровые активы
@@ -574,7 +574,7 @@ modrinth:
   clientSide: На стороне клиента
   createAt: Создан
   description: Описание
-  downloads: Загрузки
+  downloads: Скачиваний
   environments:
     client: Клиент
     name: Окружающая среда
@@ -585,20 +585,20 @@ modrinth:
   licenses:
     name: Лицензии
   modLoaders:
-    name: Загрузчики модов
+    name: Загрузчик
   perPage: На страницу
   projectId: ID проекта
   searchText: Поиск
   serverSide: На стороне сервера
   sort:
-    downloads: Количество скачиваний
-    follows: Следите за количеством
-    newest: Недавно созданный
-    relevance: Актуальность
+    downloads: Количеству скачиваний
+    follows: Подписчикам
+    newest: Недавно созданные
+    relevance: Актуальности
     title: Сортировать по
-    updated: Недавно обновленный
+    updated: Недавно обновленные
   sortBy: {}
-  updateAt: Обнавлён
+  updateAt: Обновлён
   versionType:
     alpha: Альфа
     beta: Бета
