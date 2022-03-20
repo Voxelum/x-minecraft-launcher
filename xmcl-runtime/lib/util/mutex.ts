@@ -1,7 +1,7 @@
 import { createPromiseSignal } from './promiseSignal'
 
 export enum LockStatus {
-  Idel,
+  Idle,
   Reading,
   Writing,
 }
@@ -17,7 +17,7 @@ export interface SemaphoreListener {
  */
 export class ReadWriteLock {
   private queue: Array<[() => Promise<void>, (() => void) | undefined]> = []
-  private status: LockStatus = LockStatus.Idel
+  private status: LockStatus = LockStatus.Idle
   /**
    * The integer representing number of worker is occuping the lock.
    * - For the read operation, it can be as many as possible.
@@ -31,15 +31,15 @@ export class ReadWriteLock {
 
   constructor(private listener?: SemaphoreListener) { }
 
-  private async processIfIdel() {
-    if (this.status === LockStatus.Idel) {
+  private async processIfIdle() {
+    if (this.status === LockStatus.Idle) {
       while (this.queue.length > 0) {
         const [operation, release] = this.queue.shift()!
         this.release = release
         this.status = release ? LockStatus.Reading : LockStatus.Writing
         await operation()
       }
-      this.status = LockStatus.Idel
+      this.status = LockStatus.Idle
     }
   }
 
@@ -86,7 +86,7 @@ export class ReadWriteLock {
         return readingPromise.promise
       }
       this.queue.push([wrapper, readingPromise.resolve])
-      this.processIfIdel()
+      this.processIfIdle()
     })
   }
 
@@ -117,7 +117,7 @@ export class ReadWriteLock {
         return this.perform(operation).then(resolve, reject)
       }
       this.queue.push([wrapper, undefined])
-      this.processIfIdel()
+      this.processIfIdle()
     })
   }
 

@@ -32,7 +32,7 @@ export default class InstanceVersionService extends AbstractService implements I
               ?.versions.find(v => v.version === forge)
             if (found) {
               const forge = found
-              const fullVersion = await installService.installForge(forge)
+              const fullVersion = await installService.installForgeUnsafe(forge)
               if (fullVersion) {
                 // await this.install.installDependencies(fullVersion);
               }
@@ -41,7 +41,7 @@ export default class InstanceVersionService extends AbstractService implements I
             }
           }
           if (fabricLoader) {
-            await installService.installFabric({ loader: fabricLoader, minecraft })
+            await installService.installFabricUnsafe({ loader: fabricLoader, minecraft })
           }
 
           // TODO: check liteloader
@@ -74,12 +74,12 @@ export default class InstanceVersionService extends AbstractService implements I
           forges = installService.state.forge.find(v => v.mcversion === minecraft)
           const forgeVer = forges?.versions.find(v => isSameForgeVersion(v.version, forge))
           if (!forgeVer) {
-            targetVersion = await installService.installForge({ mcversion: minecraft, version: forge })
+            targetVersion = await installService.installForgeUnsafe({ mcversion: minecraft, version: forge })
           } else {
-            targetVersion = await installService.installForge(forgeVer)
+            targetVersion = await installService.installForgeUnsafe(forgeVer)
           }
         } else if (fabricLoader) {
-          targetVersion = await installService.installFabric({ minecraft, loader: fabricLoader })
+          targetVersion = await installService.installFabricUnsafe({ minecraft, loader: fabricLoader })
         }
         if (optifine) {
           const { patch, type } = parseOptifineVersion(optifine)

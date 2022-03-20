@@ -46,23 +46,6 @@ export default class DiagnoseService extends StatefulService<DiagnoseState> impl
     })
   }
 
-  // @Subscribe('instanceSelect')
-  // async onInstanceSelect() {
-  //   this.acquire('diagnose')
-  //   const report: Partial<IssueReport> = {}
-  //   await this.diagnoseServer(report)
-  //   // await this.diagnoseCustomSkin(report);
-  //   this.report(report)
-  //   this.release('diagnose')
-  // }
-
-  // @Subscribe('instanceStatus')
-  // async onInstanceStatus() {
-  //   const report: Partial<IssueReport> = {}
-  //   await this.diagnoseServer(report)
-  //   this.report(report)
-  // }
-
   @Singleton()
   async diagnoseFailure(log: string) {
     const tree: Pick<IssueReport, 'badForge'> = {

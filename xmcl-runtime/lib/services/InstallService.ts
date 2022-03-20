@@ -1,4 +1,4 @@
-import { MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
+import { diagnose, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
 import { DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL } from '@xmcl/installer'
 import { Asset, assetsLock, ForgeVersion, ForgeVersionList, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallService as IInstallService, InstallServiceKey, InstallState, isFabricLoaderLibrary, isForgeLibrary, librariesLock, OptifineVersion, read, RefreshForgeOptions, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, versionLockOf, VersionMinecraftSchema, VersionOptifineSchema, write } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
@@ -350,6 +350,30 @@ export default class InstallService extends StatefulService<InstallState> implem
 
   @Lock((v: _InstallForgeOptions) => write(versionLockOf(`forge-${v.mcversion}-${v.version}`)))
   async installForge(options: _InstallForgeOptions) {
+    const minecraft = MinecraftFolder.from(this.getPath())
+    let { issues } = await diagnose(options.mcversion, minecraft)
+    const missingVersion = issues.some(r => r.role === 'versionJson' || r.role === 'minecraftJar')
+    if (missingVersion) {
+      const meta = this.state.minecraft.versions.find(f => f.id === options.mcversion)!
+      const option = this.getInstallOptions()
+      const version = await this.submit(installVersionTask(meta, minecraft, option).setName('installVersion'))
+      issues = await diagnoseLibraries(version, minecraft)
+    }
+
+    const missingLib = issues.some(r => r.role === 'library')
+    if (missingLib) {
+      await this.installLibraries(issues.filter((i): i is LibraryIssue => i.role === 'library').map(i => i.library))
+    }
+
+    return await this.installForgeInternal(options)
+  }
+
+  @Lock((v: _InstallForgeOptions) => write(versionLockOf(`forge-${v.mcversion}-${v.version}`)))
+  async installForgeUnsafe(options: _InstallForgeOptions) {
+    return await this.installForgeInternal(options)
+  }
+
+  private async installForgeInternal(options: _InstallForgeOptions) {
     const installOptions = this.getForgeInstallOptions()
 
     let version: string | undefined
@@ -401,6 +425,29 @@ export default class InstallService extends StatefulService<InstallState> implem
 
   @Lock((v: InstallFabricOptions) => write(versionLockOf(`fabric-${v.minecraft}-${v.loader}`)))
   async installFabric(options: InstallFabricOptions) {
+    const minecraft = MinecraftFolder.from(this.getPath())
+    const hasValidVersion = async () => {
+      try {
+        await Version.parse(minecraft, options.minecraft)
+        return true
+      } catch (e) {
+        return false
+      }
+    }
+    if (!await hasValidVersion()) {
+      const meta = this.state.minecraft.versions.find(f => f.id === options.minecraft)!
+      const option = this.getInstallOptions()
+      await this.submit(installVersionTask(meta, minecraft, option).setName('installVersion'))
+    }
+    return await this.installFabricInternal(options)
+  }
+
+  @Lock((v: InstallFabricOptions) => write(versionLockOf(`fabric-${v.minecraft}-${v.loader}`)))
+  async installFabricUnsafe(options: InstallFabricOptions) {
+    return await this.installFabricInternal(options)
+  }
+
+  private async installFabricInternal(options: InstallFabricOptions) {
     try {
       this.log(`Start to install fabric: yarn ${options.yarn}, loader ${options.loader}.`)
       const result = await this.submit(task('installFabric', async () => {
