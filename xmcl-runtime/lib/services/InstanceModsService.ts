@@ -110,7 +110,7 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
       const fabricMods = mods.filter(isFabricResource)
       if (forgeMods.length > 0 && fabricMods.length > 0) {
         // forge fabric conflict
-        tree.loaderConflict.push({ loaders: ['forge', 'fabric'] })
+        // tree.loaderConflict.push({ loaders: ['forge', 'fabric'] })
       } else if (forgeMods.length > 0) {
         if (!version.forge) {
           // no forge
