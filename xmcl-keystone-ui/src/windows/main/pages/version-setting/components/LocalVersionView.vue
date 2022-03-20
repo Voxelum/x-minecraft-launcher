@@ -92,7 +92,7 @@
           <v-btn
             color="red en-1"
             text
-            @click="comfireDeleting()"
+            @click="confirmDeleting()"
           >
             {{ $t('yes') }}
           </v-btn>
@@ -121,7 +121,7 @@
           <v-btn
             color="orange en-1"
             text
-            @click="comfireReinstall()"
+            @click="confirmReinstall()"
           >
             <v-icon left>
               build
@@ -145,12 +145,13 @@
       <v-flex
         shrink
         tag="h1"
-        class="white--text"
+        class="white--text gap-3"
       >
         <v-btn
           large
           color="primary"
-          @click="browseVersoinsFolder"
+          :loading="refreshing"
+          @click="browseVersionsFolder"
         >
           <v-icon left>
             folder
@@ -160,6 +161,7 @@
         <v-btn
           large
           color="primary"
+          :loading="refreshing"
           @click="refreshVersions"
         >
           {{ $t('version.refresh') }}
@@ -174,6 +176,7 @@ import { defineComponent, reactive, computed, toRefs } from '@vue/composition-ap
 import { useLocalVersions } from '/@/hooks'
 import type { ResolvedVersion } from '@xmcl/core'
 import { required, withDefault } from '/@/util/props'
+import { useRefreshable } from '/@/hooks/useRefreshable'
 
 export default defineComponent({
   props: {
@@ -200,7 +203,7 @@ export default defineComponent({
     function selectVersion(v: ResolvedVersion) {
       context.emit('input', v)
     }
-    function browseVersoinsFolder() {
+    function browseVersionsFolder() {
       showVersionsDirectory()
     }
     function openVersionDir(v: ResolvedVersion) {
@@ -214,12 +217,12 @@ export default defineComponent({
       data.reinstallVersion = true
       data.reinstallVersionId = v.id
     }
-    function comfireDeleting() {
+    function confirmDeleting() {
       deleteVersion(data.deletingVersionId)
       data.deletingVersion = false
       data.deletingVersionId = ''
     }
-    function comfireReinstall() {
+    function confirmReinstall() {
       reinstall(data.reinstallVersionId)
       data.reinstallVersion = false
       data.reinstallVersionId = ''
@@ -233,21 +236,26 @@ export default defineComponent({
       data.reinstallVersionId = ''
     }
 
+    const { refresh, refreshing } = useRefreshable(async () => {
+      await refreshVersions()
+    })
+
     return {
       ...toRefs(data),
       minecraftVersions,
       versions,
       isSelected,
       cancelDeleting,
-      comfireDeleting,
+      confirmDeleting,
       startDelete,
       openVersionDir,
-      browseVersoinsFolder,
-      refreshVersions,
+      browseVersionsFolder,
+      refreshVersions: refresh,
+      refreshing,
       selectVersion,
       startReinstall,
       cancelReinstall,
-      comfireReinstall,
+      confirmReinstall,
     }
   },
 })

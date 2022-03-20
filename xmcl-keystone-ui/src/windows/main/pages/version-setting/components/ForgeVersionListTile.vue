@@ -9,7 +9,7 @@
     ripple
     @click="select(source)"
   >
-    <div class="v-list__tile__avatar w-20">
+    <div class="v-list__tile__avatar min-w-30">
       <v-chip
         v-if="source.type !== 'common'"
         label
