@@ -1,4 +1,3 @@
----
 actionforbidden: 创建失败
 add: 添加
 advanced: 高级
@@ -93,7 +92,7 @@ diagnosis:
     '': 'Asset 文件损坏: {name} | Asset 文件损坏: {name} | 有 {count} 个游戏资源可能损坏'
     message: 启动器将重新下载游戏文件
   corruptedAssetsIndex:
-    '': "{version}游戏资源目录可能损坏."
+    '': '{version}游戏资源目录可能损坏.'
     message: 启动器将重新下载游戏资源目录
   corruptedLibraries:
     '': '库文件损坏: {name} | 库文件损坏: {name} | {count} 个库文件损坏 | {count} 个库文件损坏'
@@ -109,7 +108,7 @@ diagnosis:
     '': Minecraft {mcversion} 不支持 Java {java}!
     message: 你可以选择自己让启动器帮你下载，或者自己下载
   incompatibleMod:
-    '': "{name} 不兼容当前 Minecraft {actual}。其可用版本为 {accepted}"
+    '': '{name} 不兼容当前 Minecraft {actual}。其可用版本为 {accepted}'
     message: 该模组也有可能能在当前Minecraft下运行，若不成功请将 Mod 移出 Mod 列表
   incompatibleResourcePack:
     '': 资源包 {name} 不兼容 Minecraft {actual}. 请使用 Minecraft {accepted}
@@ -121,7 +120,7 @@ diagnosis:
     '': 'Asset 文件缺失: {name} | Asset 文件缺失: {name} | 缺少%{count}个游戏资源'
     message: 启动器将自动下载并安装游戏文件
   missingAssetsIndex:
-    '': "%{version}缺少游戏资源目录"
+    '': '%{version}缺少游戏资源目录'
     message: 启动器将自动下载并安装游戏资源目录
   missingAuthlibInjector:
     '': 需要安装 authlib-injector
@@ -152,10 +151,10 @@ diagnosis:
     '': 未安装 {version}
     message: 启动器将自动安装该版本
   missingVersionJar:
-    '': "%{version}版本JAR文件缺失"
+    '': '%{version}版本JAR文件缺失'
     message: 启动器将自动下载JAR文件
   missingVersionJson:
-    '': "%{version}版本JSON文件缺失"
+    '': '%{version}版本JSON文件缺失'
     message: 启动器将自动下载JSON文件
   problem: 1个问题待修复 | %{count}个问题待修复
   requireFabric:
@@ -526,6 +525,7 @@ modrinth:
     server: 服务端
   gameVersions:
     name: 游戏版本
+  installFrom: 从 Modrinth 安装
   license: 协议
   licenses:
     name: 协议
@@ -837,7 +837,7 @@ task:
   manager: 任务管理器
   name: 任务 | 任务
   running: 活跃任务
-  start: "{name} 开始"
+  start: '{name} 开始'
   successed: 成功
 unknownResource: 无法解析
 user:

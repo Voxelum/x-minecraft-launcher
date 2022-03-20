@@ -29,9 +29,6 @@
         <v-icon>folder</v-icon>
       </v-btn>
 
-      <!-- </template>
-        {{ $t(`curseforge.mc-mods.description`) }}
-      </v-tooltip>-->
       <v-tooltip bottom>
         <template #activator="{ on }">
           <v-btn
@@ -45,6 +42,20 @@
           </v-btn>
         </template>
         {{ $t(`curseforge.mc-mods.description`) }}
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template #activator="{ on }">
+          <v-btn
+            icon
+            v-on="on"
+            @click="goToModrinthPage()"
+          >
+            <v-icon>
+              $vuetify.icons.modrinth
+            </v-icon>
+          </v-btn>
+        </template>
+        {{ $t(`modrinth.installFrom`) }}
       </v-tooltip>
       <v-tooltip bottom>
         <template #activator="{ on }">
@@ -353,6 +364,9 @@ export default defineComponent({
     function goToCurseforgeMods() {
       push(`/curseforge/mc-mods?from=${path.value}`)
     }
+    function goToModrinthPage() {
+      push(`/modrinth?from=${path.value}`)
+    }
 
     return {
       ...setupDragMod(filtered.items, selectedItems, isSelectionMode),
@@ -361,6 +375,7 @@ export default defineComponent({
 
       showModsFolder: showDirectory,
       goToCurseforgeMods,
+      goToModrinthPage,
       onDropToImport,
       onDragOver,
       commit,

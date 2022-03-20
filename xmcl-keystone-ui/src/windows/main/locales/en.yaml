@@ -605,6 +605,7 @@ modrinth:
     name: Status
     release: Release
   versions: Versions
+  installFrom: Install from Modrinth
 name: Name
 next: Next
 'no': 'No'
