@@ -1,4 +1,23 @@
 
+## 0.21.7
+### @xmcl/keystone-ui@0.20.5
+#### Bug Fixes
+
+- ru modrinth typo ([ef6ad99a867abcb4f92366671b875907654ef504](https://github.com/Voxelum/x-minecraft-launcher/commit/ef6ad99a867abcb4f92366671b875907654ef504))
+- add missing modrinth icon to mod setting page ([6420ab9f626bd399d2a35dcea626a29855f58ba4](https://github.com/Voxelum/x-minecraft-launcher/commit/6420ab9f626bd399d2a35dcea626a29855f58ba4))
+- optimize top window control ([9f30d75167a6fdebe0cb6e074f3f242dac2cd122](https://github.com/Voxelum/x-minecraft-launcher/commit/9f30d75167a6fdebe0cb6e074f3f242dac2cd122))
+- correctly install fabric in ui ([330b8259d3279ea896ae595da9bf876c400ff1f8](https://github.com/Voxelum/x-minecraft-launcher/commit/330b8259d3279ea896ae595da9bf876c400ff1f8))
+- modrinth category name i18n ([01ec69bc92d228d6ef390f1f34cbce58414d4fac](https://github.com/Voxelum/x-minecraft-launcher/commit/01ec69bc92d228d6ef390f1f34cbce58414d4fac))
+- Update ru.yaml (#196) ([b70d65ab5903901712d6f8beb9257df68f363035](https://github.com/Voxelum/x-minecraft-launcher/commit/b70d65ab5903901712d6f8beb9257df68f363035))
+- Adjust ru.yaml (#195) ([50daf069190eae1a43e9c5a6c1a0c8ef7ed74546](https://github.com/Voxelum/x-minecraft-launcher/commit/50daf069190eae1a43e9c5a6c1a0c8ef7ed74546))
+- Merge pull request #193 from vanja-san/patch-1 ([7fd509be4a434a28733eb38f2f0e6a431e78996f](https://github.com/Voxelum/x-minecraft-launcher/commit/7fd509be4a434a28733eb38f2f0e6a431e78996f))
+### @xmcl/runtime@0.19.4
+#### Bug Fixes
+
+- install failed if minecraft not installed ([63766de131806f06a697458e9c75441cb97f3cf5](https://github.com/Voxelum/x-minecraft-launcher/commit/63766de131806f06a697458e9c75441cb97f3cf5))
+- disable loader conflict temp ([a9d341a78de5f4af8ead61672a838b8a77d9ce8e](https://github.com/Voxelum/x-minecraft-launcher/commit/a9d341a78de5f4af8ead61672a838b8a77d9ce8e))
+
+
 ## 0.21.6
 ### @xmcl/keystone-ui@0.20.4
 #### Bug Fixes
