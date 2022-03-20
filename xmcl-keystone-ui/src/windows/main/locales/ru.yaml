@@ -566,7 +566,7 @@ modrinth:
     magic: Магия
     misc: Разное
     name: Категории
-    optimizations: Оптимизации
+    optimization: Оптимизации
     storage: Хранение
     technology: Технологии
     utility: Полезное
