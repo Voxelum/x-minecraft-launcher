@@ -91,9 +91,12 @@ export default defineComponent({
         props.select(v)
       }
     }
+    const installFabric = (fab: FabricArtifactVersion) => {
+      return install({ minecraft: props.minecraft, loader: fab.version })
+    }
     return {
       ...toRefs(data),
-      install,
+      install: installFabric,
       selectLoader,
       loaderVersions,
       fabricSupported,
