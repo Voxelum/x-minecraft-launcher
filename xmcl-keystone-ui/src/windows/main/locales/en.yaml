@@ -566,7 +566,7 @@ modrinth:
     magic: Magic
     misc: Misc
     name: Categories
-    optimizations: Optimizations
+    optimization: Optimizations
     storage: Storage
     technology: Technology
     utility: Utility
