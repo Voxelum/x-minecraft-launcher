@@ -92,18 +92,15 @@ export function useFabricVersions() {
   const { state } = useVersionService()
   const loaderVersions = computed(() => installState.fabric.loaders ?? [])
   const yarnVersions = computed(() => installState.fabric.yarns ?? [])
-  const loaderStatus = computed(() => {
-    const statusMap: { [key: string]: Status } = {}
+  const localMap = computed(() => {
     const locals: { [k: string]: boolean } = {}
     state.local.forEach((ver) => {
       const lib = ver.libraries.find(isFabricLoaderLibrary)
-      if (lib) locals[lib.version] = true
+      if (lib) locals[`${ver.minecraftVersion}-${lib.version}`] = true
     })
-    installState.fabric.loaders.forEach((v) => {
-      statusMap[v.version] = locals[v.version] ? 'local' : 'remote'
-    })
-    return statusMap
+    return locals
   })
+  const getStatus = (version: string) => localMap.value[version] ? 'local' : 'remote'
   const yarnStatus = computed(() => {
     const statusMap: { [key: string]: Status } = {}
     const locals: { [k: string]: boolean } = {}
@@ -129,7 +126,7 @@ export function useFabricVersions() {
     yarnVersions,
     install: installFabric,
     refresh,
-    loaderStatus,
+    getStatus,
     yarnStatus,
   }
 }

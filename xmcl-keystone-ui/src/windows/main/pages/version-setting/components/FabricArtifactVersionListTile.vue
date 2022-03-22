@@ -38,7 +38,7 @@
       >
         <v-icon>
           {{
-            statuses[source.version] === "remote" ? "file_download" : "folder"
+            status === "remote" ? "file_download" : "folder"
           }}
         </v-icon>
       </v-btn>
@@ -55,7 +55,7 @@ import { versionLockOf, write } from '@xmcl/runtime-api'
 
 export default defineComponent({
   props: {
-    statuses: required<Record<string, 'loading' | 'remote'>>(Object),
+    statuses: required<(version: string) => 'loading' | 'remote'>(Function),
     source: required<FabricArtifactVersion>(Object),
     selected: required<string>(String),
     minecraft: required<string>(String),
@@ -66,12 +66,14 @@ export default defineComponent({
     const key = write(versionLockOf(`fabric-${props.minecraft}-${props.source.version}`))
     const installing = useBusy(key)
     const isSelected = computed(() => props.selected === props.source.version)
+    const status = computed(() => props.statuses(`${props.minecraft}-${props.source.version}`))
     const onClick = () => {
-      if (props.statuses[props.source.version] === 'remote') {
+      if (status.value === 'remote') {
         props.install(props.source)
       }
     }
     return {
+      status,
       isSelected,
       installing,
       onClick,
