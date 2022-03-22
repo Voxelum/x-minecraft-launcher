@@ -34,7 +34,7 @@ export interface ModrinthInformation {
   /**
    * The mod id of the mod
    */
-  modId: string
+  projectId: string
   /**
    * The version id of the mod version
    */

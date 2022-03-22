@@ -77,6 +77,9 @@
             "description": "The modrinth info for this source.",
             "$ref": "#/definitions/ModrinthInformation"
         },
+        "iconUri": {
+            "type": "string"
+        },
         "fileName": {
             "description": "The identical file name of the resource without extension.",
             "default": "''",
@@ -183,7 +186,7 @@
         "ModrinthInformation": {
             "type": "object",
             "properties": {
-                "modId": {
+                "projectId": {
                     "description": "The mod id of the mod",
                     "type": "string"
                 },
@@ -202,7 +205,7 @@
             },
             "required": [
                 "filename",
-                "modId",
+                "projectId",
                 "url",
                 "versionId"
             ]

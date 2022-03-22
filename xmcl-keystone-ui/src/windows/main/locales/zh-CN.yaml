@@ -526,6 +526,10 @@ modrinth:
   gameVersions:
     name: 游戏版本
   installFrom: 从 Modrinth 安装
+  projectType:
+    name: 项目类型
+    mod: Mod
+    modpack: 整合包
   license: 协议
   licenses:
     name: 协议
@@ -546,6 +550,9 @@ modrinth:
   updateAt: 更新于
   versionType:
     name: 类型
+    alpha: Alpha
+    beta: Beta
+    release: 稳定版
   versions: 版本
 name: 名称
 next: 下一项

@@ -1,7 +1,7 @@
 <template>
   <v-card
     outlined
-    class="grid md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 p-6 gap-6 "
+    class="grid md:grid-cols-2 lg:grid-cols-1 3xl:grid-cols-2 p-6 gap-6 "
   >
     <div class="item">
       <v-icon class="material-icon-outlined">
@@ -73,7 +73,7 @@
       </v-icon>
       <div>
         <span>{{ $t('modrinth.projectId') }}</span>
-        {{ modId }}
+        {{ projectId }}
       </div>
     </div>
   </v-card>
@@ -90,7 +90,7 @@ export default defineComponent({
     license: required<License>(Object),
     serverSide: required(String),
     clientSide: required(String),
-    modId: required(String),
+    projectId: required(String),
   },
   setup() {},
 })

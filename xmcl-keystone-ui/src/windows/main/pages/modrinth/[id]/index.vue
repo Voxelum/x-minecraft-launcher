@@ -1,6 +1,6 @@
 <template>
   <div
-    v-if="!mod"
+    v-if="!project"
     class="flex gap-4 overflow-auto p-4 lg:flex-row flex-col w-full"
   >
     <v-progress-linear
@@ -23,13 +23,13 @@
     <div class="flex flex-col gap-4 flex-grow">
       <Header
         class="flex-grow-0"
-        :title="mod.title"
-        :description="mod.description"
-        :icon="mod.icon_url"
-        :discord-url="mod.discord_url"
-        :issue-url="mod.issues_url"
-        :wiki_url="mod.wiki_url"
-        :source-url="mod.source_url"
+        :title="project.title"
+        :description="project.description"
+        :icon="project.icon_url"
+        :discord-url="project.discord_url"
+        :issue-url="project.issues_url"
+        :wiki_url="project.wiki_url"
+        :source-url="project.source_url"
       />
       <v-card outlined>
         <v-tabs
@@ -45,11 +45,12 @@
         </v-tabs>
         <v-tabs-items v-model="tab">
           <v-tab-item :key="0">
-            <Description :description="mod.body" />
+            <Description :description="project.body" />
           </v-tab-item>
           <v-tab-item :key="1">
             <Versions
-              :versions="mod.versions"
+              :versions="project.versions"
+              :project="project.id"
               @install="onInstall"
             />
           </v-tab-item>
@@ -58,13 +59,13 @@
     </div>
     <div class="flex flex-col gap-4 flex-grow">
       <Tags
-        :downloads="mod.downloads"
-        :license="mod.license"
-        :server-side="mod.server_side"
-        :client-side="mod.client_side"
-        :mod-id="id"
-        :create-at="mod.published"
-        :update-at="mod.updated"
+        :downloads="project.downloads"
+        :license="project.license"
+        :server-side="project.server_side"
+        :client-side="project.client_side"
+        :project-id="id"
+        :create-at="project.published"
+        :update-at="project.updated"
       />
       <Members />
       <FeaturedVersions />
@@ -83,7 +84,7 @@ import { useService } from '/@/hooks'
 import { ModrinthServiceKey } from '@xmcl/runtime-api'
 import { useRefreshable } from '/@/hooks/useRefreshable'
 import { required } from '/@/util/props'
-import { Mod, ModVersion } from '@xmcl/modrinth'
+import { Project, ProjectVersion } from '@xmcl/modrinth'
 
 export default defineComponent({
   components: { Tags, Members, FeaturedVersions, Header, Versions, Description },
@@ -92,14 +93,14 @@ export default defineComponent({
   },
   setup(props) {
     const tab = ref(0)
-    const { getMod, installModVersion } = useService(ModrinthServiceKey)
-    const mod: Ref<undefined | Mod> = ref(undefined)
+    const { getProject, installVersion } = useService(ModrinthServiceKey)
+    const project: Ref<undefined | Project> = ref(undefined)
     const { refresh, refreshing } = useRefreshable(async () => {
-      const result = await getMod(props.id)
-      mod.value = result
+      const result = await getProject(props.id)
+      project.value = result
     })
-    const onInstall = (mod: ModVersion) => {
-      installModVersion({ version: mod })
+    const onInstall = (project: ProjectVersion) => {
+      installVersion({ version: project })
     }
     onMounted(() => {
       refresh()
@@ -107,7 +108,7 @@ export default defineComponent({
     return {
       tab,
       onInstall,
-      mod,
+      project,
       refreshing,
     }
   },
