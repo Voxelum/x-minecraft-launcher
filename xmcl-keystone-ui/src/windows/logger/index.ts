@@ -1,6 +1,5 @@
 import VueCompositionApi, { createApp, h } from '@vue/composition-api'
 import Logger from './Logger.vue'
-import '/@/assets/google.font.css'
 import vuetify from './vuetify'
 import Vue from 'vue'
 import 'virtual:windi.css'

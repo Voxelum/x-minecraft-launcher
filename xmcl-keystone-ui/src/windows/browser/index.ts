@@ -5,7 +5,6 @@ import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import BrowseVue from './Browse.vue'
 import vuetify from './vuetify'
-import '/@/assets/google.font.css'
 
 Vue.use(VueCompositionApi)
 Vue.use(VueI18n)
