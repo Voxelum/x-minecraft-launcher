@@ -248,6 +248,7 @@ importers:
 
   xmcl-page:
     specifiers:
+      '@headlessui/vue': ^1.5.0
       '@intlify/vite-plugin-vue-i18n': ^3.2.1
       '@microsoft/applicationinsights-web': ^2.7.3
       '@types/node': ^17.0.4
@@ -278,6 +279,7 @@ importers:
       vue-router: ^4.0.12
       windicss: ^3.4.0
     dependencies:
+      '@headlessui/vue': 1.5.0_vue@3.2.31
       '@microsoft/applicationinsights-web': 2.7.3_tslib@2.3.1
       '@vueuse/core': 7.6.2_vue@3.2.31
       '@vueuse/head': 0.7.5_vue@3.2.31
@@ -2135,6 +2137,15 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@headlessui/vue/1.5.0_vue@3.2.31:
+    resolution: {integrity: sha512-jAp6XYpqdEv32xhszaj5ejvjaX5qhu20sCbxu7lplePEfZL+4ffabivJBBTZAiPWczqAXmnZWNWG5DOyqjRa4w==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      vue: ^3.2.0
+    dependencies:
+      vue: 3.2.31
+    dev: false
 
   /@humanwhocodes/config-array/0.5.0:
     resolution: {integrity: sha512-FagtKFz74XrTl7y6HCzQpwDfXP0yhxe9lHLD1UZxjvZIcbyRz8zTFF/yYNfSfzU414eDwZ1SrO0Qvtyf+wFMQg==}
