@@ -178,7 +178,7 @@
             <v-list-item-subtitle>
               v{{ version }}
               {{
-                updateInfo && updateInfo.name ? `-> ${updateInfo.name}` : ""
+                hasNewUpdate && updateInfo ? `-> ${updateInfo.name}` : ""
               }}
             </v-list-item-subtitle>
           </v-list-item-content>
@@ -551,9 +551,11 @@ export default defineComponent({
       { value: BackgroundType.PARTICLE, text: $t('setting.backgroundTypes.particle') },
       { value: BackgroundType.HALO, text: $t('setting.backgroundTypes.halo') },
     ])
+    const hasNewUpdate = computed(() => settings.updateInfo.value?.name !== version.value)
     return {
       ...toRefs(data),
       ...settings,
+      hasNewUpdate,
       version,
       build,
       locales: settings.locales.value.map(l => ({ text: (localMapping as any)[l] ?? l, value: l })),
