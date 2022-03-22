@@ -1,4 +1,3 @@
-import '/@/assets/google.font.css'
 import { I18N_KEY } from '/@/constant'
 import VueCompositionApi, { h, provide, createApp, defineComponent } from '@vue/composition-api'
 import Vue from 'vue'
