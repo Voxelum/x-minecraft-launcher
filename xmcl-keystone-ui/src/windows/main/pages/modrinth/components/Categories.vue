@@ -7,19 +7,27 @@
     <span class="list-title">{{ $t('modrinth.categories.name') }}</span>
     <span
       v-for="cat in categories"
-      :key="cat"
+      :key="cat.name"
       class="item"
-      :class="{ selected: cat === category }"
-      @click="$emit('select:category', cat)"
-    >{{ $t(`modrinth.categories.${cat}`) }}</span>
+      :class="{ selected: cat.name === category }"
+      @click="$emit('select:category', cat.name)"
+    >
+      <div class="w-5 max-w-5 flex justify-center" v-html="cat.icon" />
+      <div>
+        {{ $t(`modrinth.categories.${cat.name}`) }}
+      </div>
+    </span>
     <span class="list-title">{{ $t('modrinth.modLoaders.name') }}</span>
     <span
       v-for="l in loaders"
-      :key="l"
+      :key="l.name"
       class="item"
-      :class="{ selected: l === modLoader }"
-      @click="$emit('select:modLoader', l)"
-    >{{ $t(`modrinth.categories.${l}`) }}</span>
+      :class="{ selected: l.name === modLoader }"
+      @click="$emit('select:modLoader', l.name)"
+    >
+      <div class="w-5 max-w-5 flex justify-center" v-html="l.icon" />
+      {{ $t(`modrinth.categories.${l.name}`) }}
+    </span>
     <span class="list-title">{{ $t('modrinth.environments.name') }}</span>
     <span
       v-for="env in environments"
@@ -34,7 +42,7 @@
       flat
       clearable
       :label="$t('modrinth.gameVersions.name')"
-      :items="gameVersions"
+      :items="gameVersions.map(v => v.version)"
       hide-details
       :value="gameVersion"
       @input="$emit('select:gameVersion', $event == null ? '' : $event)"
@@ -71,19 +79,20 @@
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
 import { required } from '/@/util/props'
+import { Category, GameVersion, License, Loader } from '@xmcl/modrinth'
 
 export default defineComponent({
   props: {
     loading: required<boolean>(Boolean),
-    categories: required<string[]>(Array),
+    categories: required<Category[]>(Array),
     category: required(String),
-    loaders: required<string[]>(Array),
+    loaders: required<Loader[]>(Array),
     modLoader: required(String),
     environments: required<string[]>(Array),
     environment: required(String),
-    gameVersions: required<string[]>(Array),
+    gameVersions: required<GameVersion[]>(Array),
     gameVersion: required(String),
-    licenses: required<string[]>(Array),
+    licenses: required<License[]>(Array),
     license: required(String),
   },
 })
@@ -91,7 +100,7 @@ export default defineComponent({
 
 <style scoped>
 .item {
-  @apply rounded-lg ml-2 hover:bg-[rgba(255,255,255,0.2)] cursor-pointer p-1 pl-3;
+  @apply rounded-lg ml-2 hover:bg-[rgba(255,255,255,0.2)] cursor-pointer p-1 pl-3 inline-flex gap-1 transition transition-all duration-250;
 }
 
 .list-title {

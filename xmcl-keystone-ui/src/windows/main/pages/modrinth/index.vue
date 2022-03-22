@@ -11,6 +11,15 @@
         class="flex py-1 flex-shrink flex-grow-0"
         outlined
       >
+        <!-- <span class="flex items-center justify-center flex-shrink flex-1 min-w-36">
+          <v-select
+            v-model="_projectType"
+            flat
+            solo
+            :items="['mod', 'modpack']"
+            hide-details
+          />
+        </span> -->
         <v-text-field
           v-model="keyword"
           color="green"
@@ -52,15 +61,15 @@
         class="flex flex-col gap-3 overflow-auto"
       >
         <ModCard
-          v-for="mod in mods"
-          :key="mod.mod_id"
+          v-for="mod in projects"
+          :key="mod.project_id"
           v-ripple
           :disabled="refreshing"
           :value="mod"
           hoverable
           class="cursor-pointer"
           @filter="onFiltered"
-          @click="push(`/modrinth/${mod.mod_id}`)"
+          @click="push(`/modrinth/${mod.project_id}`)"
         />
       </div>
       <v-skeleton-loader
@@ -110,18 +119,19 @@ export default defineComponent({
     category: withDefault(String, () => ''),
     modLoader: withDefault(String, () => ''),
     environment: withDefault(String, () => ''),
+    projectType: withDefault(String, () => 'mod'),
     sortBy: withDefault(String, () => ''),
     page: withDefault(Number, () => 1),
     from: withDefault(String, () => ''),
   },
   setup(props) {
-    const { refresh, refreshTag, query, category, gameVersion, license, modLoader, environment, sortBy, page, ...rest } = useModrinth(props)
+    const { refresh, refreshTag, query, category, gameVersion, license, modLoader, environment, projectType, sortBy, page, ...rest } = useModrinth(props)
     const { push } = useRouter()
     const keyword = ref(props.query)
     const onFiltered = (tag: string) => {
-      if (rest.categories.value.indexOf(tag) !== -1) {
+      if (rest.categories.value.find(c => c.name === tag)) {
         category.value = tag
-      } else if (rest.modLoaders.value.indexOf(tag) !== -1) {
+      } else if (rest.modLoaders.value.find(l => l.name === tag)) {
         modLoader.value = tag
       }
     }
@@ -134,6 +144,7 @@ export default defineComponent({
       keyword,
       _query: query,
       _category: category,
+      _projectType: projectType,
       _gameVersion: gameVersion,
       _license: license,
       _modLoader: modLoader,

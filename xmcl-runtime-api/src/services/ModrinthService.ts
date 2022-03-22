@@ -1,9 +1,9 @@
-import type { Mod, ModVersion, SearchModOptions, SearchModResult } from '@xmcl/modrinth'
+import type { Category, GameVersion, License, Loader, Project, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
 import { AnyPersistedResource } from '../entities/resource'
 import { ServiceKey, StatefulService } from './Service'
 
-export interface installModVersionOptions {
-  version: ModVersion
+export interface InstallProjectVersionOptions {
+  version: ProjectVersion
 }
 
 export class ModrinthState {
@@ -19,15 +19,17 @@ export class ModrinthState {
 }
 
 export interface ModrinthService extends StatefulService<ModrinthState> {
-  searchMods(options: SearchModOptions): Promise<SearchModResult>
+  searchProjects(options: SearchProjectOptions): Promise<SearchResult>
 
-  getMod(modId: string): Promise<Mod>
+  getProject(projectId: string): Promise<Project>
 
-  getModVersion(versionId: string): Promise<ModVersion>
+  getProjectVersions(projectId: string): Promise<ProjectVersion[]>
 
-  getTags(): Promise<{ licenses: string[]; categories: string[]; gameVersions: string[]; modLoaders: string[]; environments: string[] }>
+  getProjectVersion(versionId: string): Promise<ProjectVersion>
 
-  installModVersion(options: installModVersionOptions): Promise<AnyPersistedResource>
+  getTags(): Promise<{ licenses: License[]; categories: Category[]; gameVersions: GameVersion[]; modLoaders: Loader[]; environments: string[] }>
+
+  installVersion(options: InstallProjectVersionOptions): Promise<AnyPersistedResource>
 }
 
 export const ModrinthServiceKey: ServiceKey<ModrinthService> = 'ModrinthService'

@@ -65,13 +65,13 @@
 </template>
 <script lang="ts">
 import { defineComponent } from '@vue/composition-api'
-import type { ModResult } from '@xmcl/modrinth'
+import type { SearchResultHit } from '@xmcl/modrinth'
 import { required } from '/@/util/props'
 
 export default defineComponent({
   props: {
     disabled: required(Boolean),
-    value: required<ModResult>(Object),
+    value: required<SearchResultHit>(Object),
   },
   setup() { },
 })

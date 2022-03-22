@@ -2,9 +2,44 @@
   <v-data-table
     :headers="headers"
     :loading="refreshing"
-    :items="mods"
+    :items="items"
     :expand="false"
+    :custom-filter="filter"
   >
+    <template #top>
+      <div class="flex gap-5 mx-5 mt-3">
+        <v-select
+          v-model="gameVersion"
+          clearable
+          hide-details
+          flat
+          solo
+          dense
+          :items="gameVersions"
+          :label="$t('modrinth.gameVersions.name')"
+        />
+        <v-select
+          v-model="modLoader"
+          clearable
+          hide-details
+          flat
+          solo
+          dense
+          :items="modLoaders"
+          :label="$t('modrinth.modLoaders.name')"
+        />
+        <v-select
+          v-model="releaseType"
+          clearable
+          hide-details
+          flat
+          solo
+          dense
+          :items="releaseTypes"
+          :label="$t('modrinth.versionType.name')"
+        />
+      </div>
+    </template>
     <template #item="props">
       <tr
         class="cursor-pointer"
@@ -85,7 +120,7 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, onMounted, ref, Ref } from '@vue/composition-api'
-import { ModVersion } from '@xmcl/modrinth'
+import { ProjectVersion } from '@xmcl/modrinth'
 import { ModrinthServiceKey, PersistedResource, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useI18n, useService } from '/@/hooks'
 import { useRefreshable } from '/@/hooks/useRefreshable'
@@ -95,21 +130,32 @@ import Markdown from 'markdown-it'
 export default defineComponent({
   props: {
     versions: required<string[]>(Array),
+    project: required<string>(String),
   },
   setup(props) {
     const markdown = new Markdown()
-    const { getModVersion, state } = useService(ModrinthServiceKey)
+    const { getProjectVersions, state } = useService(ModrinthServiceKey)
     const { state: resourceState } = useService(ResourceServiceKey)
     const render = (s: string) => {
       return markdown.render(s)
     }
-    const mods: Ref<ModVersion[]> = ref([])
+    const versions: Ref<ProjectVersion[]> = ref([])
     const { $t, $tc } = useI18n()
-    const isDownloading = (ver: ModVersion) => {
+    const isDownloading = (ver: ProjectVersion) => {
       const fileUrl = ver.files[0].url
       return !!state.downloading.find(v => v.url === fileUrl)
     }
-    const isDownloaded = (ver: ModVersion) => {
+    const gameVersions = computed(() => versions.value.map(v => v.game_versions).reduce((a, b) => [...a, ...b], []))
+    const gameVersion = ref('')
+    const releaseTypes = computed(() => [
+      { text: $t('modrinth.versionType.alpha'), value: 'alpha' },
+      { text: $t('modrinth.versionType.beta'), value: 'beta' },
+      { text: $t('modrinth.versionType.release'), value: 'release' },
+    ])
+    const releaseType = ref('')
+    const modLoaders = ['forge', 'fabric']
+    const modLoader = ref('')
+    const isDownloaded = (ver: ProjectVersion) => {
       const fileUrl = ver.files[0].url
       const find = (m: PersistedResource) => {
         if (m.uri.indexOf(fileUrl) !== -1) {
@@ -152,16 +198,41 @@ export default defineComponent({
       sortable: false,
     }])
     const { refresh, refreshing } = useRefreshable(async () => {
-      const result = await Promise.all(props.versions.map(v => getModVersion(v)))
-      mods.value = result
+      const result = await getProjectVersions(props.project)
+      versions.value = result
     })
     onMounted(() => {
       refresh()
     })
+    const filter = (value: any, search: string | null, item: ProjectVersion) => {
+      if (gameVersion.value) {
+        return item.game_versions.indexOf(gameVersion.value) !== -1
+      }
+      return true
+    }
+    const items = computed(() => versions.value.filter(v => {
+      if (gameVersion.value) {
+        return v.game_versions.indexOf(gameVersion.value) !== -1
+      }
+      if (releaseType.value) {
+        return v.version_type === releaseType.value
+      }
+      if (modLoader.value) {
+        return v.loaders.indexOf(modLoader.value) !== -1
+      }
+      return true
+    }))
     return {
+      filter,
+      modLoader,
+      modLoaders,
+      releaseType,
+      releaseTypes,
+      gameVersion,
+      gameVersions,
       refreshing,
       render,
-      mods,
+      items,
       headers,
       isDownloading,
       isDownloaded,

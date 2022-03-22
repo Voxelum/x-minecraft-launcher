@@ -1,12 +1,9 @@
 import { computed, reactive, toRefs, watch } from '@vue/composition-api'
-import { ModResult } from '@xmcl/modrinth'
+import { Category, GameVersion, License, Loader, SearchResultHit } from '@xmcl/modrinth'
 import { ModrinthServiceKey } from '@xmcl/runtime-api'
 import { useI18n, useRouter, useService } from '/@/hooks'
 import { useRefreshable } from '/@/hooks/useRefreshable'
 import debounce from 'lodash.debounce'
-
-export function useModrinthCategories() {
-}
 
 export interface ModrinthOptions {
   query: string
@@ -16,11 +13,12 @@ export interface ModrinthOptions {
   modLoader: string
   environment: string
   sortBy: string
+  projectType: string
   page: number
 }
 
 export function useModrinth(props: ModrinthOptions) {
-  const { searchMods, getModVersion, getTags } = useService(ModrinthServiceKey)
+  const { searchProjects, getTags } = useService(ModrinthServiceKey)
   const { $t } = useI18n()
   const { replace } = useRouter()
   const sortOptions = computed(() => [{
@@ -41,11 +39,11 @@ export function useModrinth(props: ModrinthOptions) {
   }])
 
   const data = reactive({
-    mods: [] as ModResult[],
-    gameVersions: [] as string[],
-    licenses: [] as string[],
-    categories: [] as string[],
-    modLoaders: [] as string[],
+    projects: [] as SearchResultHit[],
+    gameVersions: [] as GameVersion[],
+    licenses: [] as License[],
+    categories: [] as Category[],
+    modLoaders: [] as Loader[],
     environments: [] as string[],
     pageSize: 10,
     pageCount: 0,
@@ -63,6 +61,12 @@ export function useModrinth(props: ModrinthOptions) {
     },
   })
 
+  const projectType = computed({
+    get() { return props.projectType },
+    set(projectType: string) {
+      replace(`/modrinth?${getQueryString({ ...props, projectType, page: 1 })}`)
+    },
+  })
   const gameVersion = computed({
     get() { return props.gameVersion },
     set(gameVersion: string) {
@@ -131,6 +135,9 @@ export function useModrinth(props: ModrinthOptions) {
     if (category.value) {
       facets.push([`categories:${category.value}`])
     }
+    if (projectType.value) {
+      facets.push([`project_type:${projectType.value}`])
+    }
     if (environment.value) {
       if (environment.value === 'server') {
         facets.push(['client_side:optional', 'client_side:unsupported'], ['server_side:optional', 'server_side:required'])
@@ -142,9 +149,9 @@ export function useModrinth(props: ModrinthOptions) {
     if (facets.length > 0) {
       facetsText = '[' + facets.map(v => '[' + v.map(v => JSON.stringify(v)).join(',') + ']').join(',') + ']'
     }
-    const result = await searchMods({ query: props.query, limit: data.pageSize, offset: (props.page - 1) * data.pageSize, index: sortBy.value, facets: facetsText })
+    const result = await searchProjects({ query: props.query, limit: data.pageSize, offset: (props.page - 1) * data.pageSize, index: sortBy.value, facets: facetsText })
     data.pageCount = Math.floor(result.total_hits / data.pageSize)
-    data.mods = result.hits
+    data.projects = result.hits
   })
 
   const debouncedRefresh = debounce(refresh)
@@ -153,7 +160,7 @@ export function useModrinth(props: ModrinthOptions) {
     return debouncedRefresh()
   }
 
-  watch([query, gameVersion, license, category, environment, modLoader, refs.pageSize, page, sortBy], () => {
+  watch([query, gameVersion, license, category, environment, modLoader, refs.pageSize, page, sortBy, projectType], () => {
     wrappedRefresh()
   })
 
@@ -165,6 +172,7 @@ export function useModrinth(props: ModrinthOptions) {
     refreshTag,
     refreshingTag,
     sortOptions,
+    projectType,
     gameVersion,
     license,
     environment,

@@ -599,6 +599,10 @@ modrinth:
     updated: Recently updated
   sortBy: {}
   updateAt: Updated
+  projectType:
+    name: Project Type
+    mod: Mod
+    modpack: Modpack
   versionType:
     alpha: Alpha
     beta: Beta

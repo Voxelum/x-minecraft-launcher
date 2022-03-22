@@ -94,6 +94,7 @@ export const createRouter = () => {
           modLoader: route.query.modLoader,
           environment: route.query.environment,
           sortBy: route.query.sortBy,
+          projectType: route.query.projectType,
           page: Number.parseInt(route.query.page as any ?? '1', 10),
           from: route.query.from,
         }),
