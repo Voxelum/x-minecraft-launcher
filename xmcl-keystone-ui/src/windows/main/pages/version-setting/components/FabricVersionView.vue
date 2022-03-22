@@ -29,7 +29,7 @@
         :data-key="'version'"
         :data-component="FabricArtifactVersionListTile"
         :keep="16"
-        :extra-props="{ selected: loader, select: select, statuses: loaderStatus, install: install, minecraft }"
+        :extra-props="{ selected: loader, select: select, statuses: getStatus, install: install, minecraft }"
       />
     </v-list>
     <hint
@@ -65,7 +65,7 @@ export default defineComponent({
     const data = reactive({
       showStableOnly: false,
     })
-    const { yarnVersions: yv, loaderVersions: lv, yarnStatus, loaderStatus, install } = useFabricVersions()
+    const { yarnVersions: yv, loaderVersions: lv, yarnStatus, getStatus, install } = useFabricVersions()
     const loaderVersions = computed(() => lv.value.filter((v) => {
       if (data.showStableOnly && !v.stable) {
         return false
@@ -97,10 +97,10 @@ export default defineComponent({
     return {
       ...toRefs(data),
       install: installFabric,
+      getStatus,
       selectLoader,
       loaderVersions,
       fabricSupported,
-      loaderStatus,
       FabricArtifactVersionListTile,
     }
   },
