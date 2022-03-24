@@ -37,15 +37,7 @@
         </v-tooltip>
       </template>
     </v-text-field>
-    <!-- <minecraft-version-list
-      style="max-height: 180px; background-color: #424242"
-      value
-      :show-time="false"
-      :statuses="{}"
-      :versions="versions"
-      :select="selectVersion"
-    />-->
-    <v-list class="overflow-auto flex flex-col">
+    <v-list class="overflow-auto flex flex-col max-h-[300px]">
       <virtual-list
         ref="list"
         class="overflow-auto flex flex-col"
