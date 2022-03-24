@@ -89,6 +89,7 @@ export default class InstanceJavaService extends AbstractService implements IIns
       const instanceJava = this.getInstanceJava()
 
       const mcversion = instance.runtime.minecraft
+      const forge = instance.runtime.forge
       const resolvedVersion = this.instanceVersionService.getInstanceVersion()
       const resolvedMcVersion = parseVersion(mcversion)
 
@@ -114,6 +115,14 @@ export default class InstanceJavaService extends AbstractService implements IIns
           if (resolvedMcVersion.minorVersion < 17) {
             tree.incompatibleJava.push({ java: instanceJava.version, version: instance.runtime.forge, type: 'MinecraftForge', targetVersion: resolvedVersion.javaVersion })
           }
+        }
+      }
+
+      if (instanceJava && instanceJava?.majorVersion === 8) {
+        const [, build] = instanceJava.version.split('_')
+        const buildNumber = Number(build)
+        if (buildNumber >= 321 && forge) {
+          tree.incompatibleJava.push({ java: instanceJava.version, version: forge, type: 'MinecraftForge', targetVersion: resolvedVersion.javaVersion })
         }
       }
 
