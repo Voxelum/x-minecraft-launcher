@@ -3,7 +3,7 @@
     v-if="backgroundType === BackgroundType.IMAGE"
     :src="backgroundImage"
     class="absolute h-full w-full z-0"
-    :style="{ filter: `blur(${blur}px)` }"
+    :style="{ filter: `blur(${blur}px)`, 'object-fit': backgroundImageFit }"
   >
   <Particles
     v-else-if="backgroundType === BackgroundType.PARTICLE"
@@ -27,7 +27,7 @@ import Particles from '/@/components/Particles.vue'
 export default defineComponent({
   components: { Halo, Particles },
   setup() {
-    const { blur, backgroundImage, backgroundType, particleMode } = useBackground()
+    const { blur, backgroundImage, backgroundType, particleMode, backgroundImageFit } = useBackground()
     onMounted(() => {
       // watch(backgroundImage, () => {
       //   refreshImage()
@@ -43,6 +43,7 @@ export default defineComponent({
       // app.value!.$el.classList.add(state.platform)
     })
     return {
+      backgroundImageFit,
       BackgroundType,
       particleMode,
       backgroundImage,

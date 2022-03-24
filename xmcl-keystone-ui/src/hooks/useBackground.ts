@@ -20,6 +20,7 @@ export function useBackground() {
   const blur = useLocalStorageCacheInt('blur', 4)
   const blurMainBody = useLocalStorageCacheBool('blurMainBody', false)
   const backgroundImage = useLocalStorageCacheStringValue('background', '')
+  const backgroundImageFit = useLocalStorageCacheStringValue<'cover' | 'contain'>('imageFill', 'cover')
   const particleMode = useLocalStorageCacheStringValue<ParticleMode>('particleMode', ParticleMode.PUSH)
   async function setBackgroundImage(path: string) {
     const img = document.createElement('img')
@@ -40,6 +41,7 @@ export function useBackground() {
     particleMode,
     backgroundType,
     backgroundImage,
+    backgroundImageFit,
     setBackgroundImage,
   }
 }
