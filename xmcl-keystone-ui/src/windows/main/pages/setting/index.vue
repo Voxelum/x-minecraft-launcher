@@ -1,6 +1,5 @@
 <template>
   <v-container
-    grid-list-md
     fluid
     style="z-index: 2; overflow: auto"
     class="overflow-auto h-full"
@@ -319,6 +318,7 @@
           <v-list-item-action>
             <v-select
               v-model="particleMode"
+              filled
               :items="particleModes"
             />
           </v-list-item-action>
@@ -336,6 +336,16 @@
               }}
             </v-list-item-subtitle>
           </v-list-item-content>
+          <v-list-item-action class="mr-4">
+            <v-select
+              v-model="backgroundImageFit"
+              class="w-40 mr-4"
+              filled
+              hide-details
+              :label="$t('setting.backgroundImageFit.name')"
+              :items="backgroundImageFits"
+            />
+          </v-list-item-action>
           <v-btn
             outlined
             text
@@ -487,7 +497,7 @@ import { useBackground, useBaseService, useI18n, useLauncherVersion, useSettings
 
 function setupImage() {
   const { showOpenDialog } = windowController
-  const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, blurMainBody } = useBackground()
+  const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, blurMainBody, backgroundImageFit } = useBackground()
   function selectImage() {
     showOpenDialog({
       title: '选择图片',
@@ -507,6 +517,7 @@ function setupImage() {
   return {
     blur,
     blurMainBody,
+    backgroundImageFit,
     backgroundImage,
     selectImage,
     clearImage,
@@ -545,6 +556,10 @@ export default defineComponent({
 
     const { version, build } = useLauncherVersion()
     const particleModes = computed(() => ['push', 'remove', 'repulse', 'bubble'].map(t => ({ value: t, text: $t(`setting.particleMode.${t}`) })))
+    const backgroundImageFits = computed(() => [
+      { value: 'cover', text: $t('setting.backgroundImageFit.cover') },
+      { value: 'contain', text: $t('setting.backgroundImageFit.contain') },
+    ])
     const backgroundTypes = computed(() => [
       { value: BackgroundType.NONE, text: $t('setting.backgroundTypes.none') },
       { value: BackgroundType.IMAGE, text: $t('setting.backgroundTypes.image') },
@@ -604,6 +619,7 @@ export default defineComponent({
       },
       disableUpdate,
       backgroundTypes,
+      backgroundImageFits,
       ...setupImage(),
       darkTheme,
     }

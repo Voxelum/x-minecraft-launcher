@@ -773,6 +773,10 @@ setting:
   backgroundImageBlurDescription: 拖动以模糊背景
   backgroundImageClear: 清空
   backgroundImageDescription: 选择一张背景图片或清空当前图片
+  backgroundImageFit:
+    contain: 包含
+    cover: 覆盖
+    name: 放置方式
   backgroundImageSelect: 选择
   backgroundType: 背景效果
   backgroundTypeDescription: 背景是否显示特效（如果觉得卡就可以关掉）

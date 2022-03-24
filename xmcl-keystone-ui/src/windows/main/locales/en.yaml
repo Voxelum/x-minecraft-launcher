@@ -849,6 +849,10 @@ setting:
   backgroundImageBlurDescription: drag to blur, easy
   backgroundImageClear: clear
   backgroundImageDescription: select an image as background or clear
+  backgroundImageFit:
+    contain: Contain
+    cover: Cover
+    name: Image Fit
   backgroundImageSelect: select
   backgroundType: Background Type
   backgroundTypeDescription: Show special effect on background (This may impact performance)
