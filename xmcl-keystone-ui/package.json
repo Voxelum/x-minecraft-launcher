@@ -42,6 +42,7 @@
         "@xmcl/user": "workspace:*",
         "@xmcl/world": "workspace:*",
         "markdown-it": "^12.3.2",
+        "semver": "^7.3.5",
         "applicationinsights": "^2.1.6",
         "fuzzy": "^0.1.3",
         "three": "^0.127.0",
