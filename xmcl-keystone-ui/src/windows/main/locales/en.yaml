@@ -398,8 +398,9 @@ intro:
     mclogs: The normal Minecraft game logs
     modJar: The mod jar file
     modLite: The mod lite loader file
-    modManaged: The curseforge mod jar file
+    modManaged: The managed mod jar file
     mods: Mods folder. Containing all the enabled mods of this modpack
+    optionShadersTxt: Optifine shader setting file
     optionTxt: Minecraft Vanilla game setting file
     options: The normal Minecraft game settings
     profile: The JSON store launch profile config
@@ -581,6 +582,7 @@ modrinth:
     server: Server
   gameVersions:
     name: Game Versions
+  installFrom: Install from Modrinth
   license: License
   licenses:
     name: Licenses
@@ -588,6 +590,10 @@ modrinth:
     name: Mod Loaders
   perPage: Per Page
   projectId: Project Id
+  projectType:
+    mod: Mod
+    modpack: Modpack
+    name: Project Type
   searchText: Search
   serverSide: Server Side
   sort:
@@ -599,17 +605,12 @@ modrinth:
     updated: Recently updated
   sortBy: {}
   updateAt: Updated
-  projectType:
-    name: Project Type
-    mod: Mod
-    modpack: Modpack
   versionType:
     alpha: Alpha
     beta: Beta
     name: Status
     release: Release
   versions: Versions
-  installFrom: Install from Modrinth
 name: Name
 next: Next
 'no': 'No'
@@ -638,6 +639,8 @@ profile:
     exportingMessage: Exporting Modpack...
     message: Export this profile as a Modpack
     title: Export Profile
+  fileApi: The synchronize file server API url
+  fileApiHint: Remote synchronize files for instance, or exports as MCBBS modpack
   forceLocalVersion: Launch by Selected Local Version
   forgeSetting: Forge Settings
   gameVersion: Game Version
@@ -682,13 +685,19 @@ profile:
       requirename: Name is required! Please come up a modpack name!
     export: Export as Modpack
     exportCurseforge: Export Curseforge Modpack
+    exportFileAs:
+      curseforge: Curseforge File
+      github: Github File
+      modrinth: Modrinth File
+      name: Export File as
+      override: Override (Raw) File
     general: General Information
     includeAssets: Include Assets
     includeLibraries: Include Libraries
     includeVersion: Include Version | Include Versions
     includes: Files to includes
     name: Modpack | Modpacks
-    overrides: overrides
+    overrides: Overrides
     profile: Profile Name
   name: Profile Name
   nameHint: The name used to identify the game
