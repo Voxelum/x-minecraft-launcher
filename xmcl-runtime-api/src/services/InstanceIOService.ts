@@ -3,8 +3,12 @@ import { ServiceKey } from './Service'
 export interface InstanceFile {
   path: string
   isDirectory: boolean
-  isResource: boolean
+  size: number
+  createAt: number
+  updateAt: number
+  sources: Array<'modrinth' | 'curseforge'>
 }
+
 export interface ExportInstanceOptions {
   /**
    * The src path of the instance

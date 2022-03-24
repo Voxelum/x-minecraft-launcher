@@ -2,10 +2,18 @@ import { EditInstanceOptions } from './InstanceService'
 import { ServiceKey } from './Service'
 
 export interface ExportModpackOptions {
+  name: string
+  version: string
+  author: string
+  gameVersion: string
   /**
    * An list of files should be included in overrides
    */
   overrides: string[]
+  /**
+   * A list of files that want to export as link (curseforge or modrinth)
+   */
+  exportDirectives: { path: string; exportAs: 'modrinth' | 'curseforge' }[]
   /**
    * The instance path to be exported
    */
@@ -14,10 +22,10 @@ export interface ExportModpackOptions {
   * The dest path of the exported instance
   */
   destinationPath: string
-  name: string
-  version: string
-  author: string
-  gameVersion: string
+  /**
+   * Only available for mcbbs modpack
+   */
+  fileApi?: string
 
   emitCurseforge?: boolean
 

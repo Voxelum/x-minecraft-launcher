@@ -1,4 +1,4 @@
-import { CurseforgeModpackManifest, EditGameSettingOptions, Exception, ExportModpackOptions, ImportModpackOptions, isResourcePackResource, McbbsModpackManifest, ModpackService as IModpackService, ModpackServiceKey, PersistedResource, ResourceDomain, write } from '@xmcl/runtime-api'
+import { AnyPersistedResource, CurseforgeModpackManifest, EditGameSettingOptions, Exception, ExportModpackOptions, ImportModpackOptions, isResourcePackResource, McbbsModpackManifest, ModpackService as IModpackService, ModpackServiceKey, PersistedResource, ResourceDomain, write } from '@xmcl/runtime-api'
 import { requireObject } from '../util/object'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { existsSync } from 'fs'
@@ -38,7 +38,7 @@ export default class ModpackService extends AbstractService implements IModpackS
   async exportModpack(options: ExportModpackOptions) {
     requireObject(options)
 
-    const { instancePath = this.instanceService.state.path, destinationPath, overrides, name, version, gameVersion, author, emitCurseforge = true, emitMcbbs = true } = options
+    const { instancePath = this.instanceService.state.path, destinationPath, overrides, exportDirectives, name, version, gameVersion, author, emitCurseforge = true, emitMcbbs = true } = options
 
     const instance = this.instanceService.state.all[instancePath]
     if (!instance) {
@@ -107,11 +107,17 @@ export default class ModpackService extends AbstractService implements IModpackS
 
     zipTask.addEmptyDirectory('overrides')
 
+    const directives: Record<string, 'curseforge' | 'modrinth'> = {}
+
+    for (const dir of exportDirectives) {
+      directives[dir.path] = dir.exportAs
+    }
+
     for (const file of overrides) {
       const filePath = join(instancePath, file)
       if (file.startsWith('mods/')) {
         const mod = this.resourceService.state.mods.find((i) => (i.domain + '/' + i.fileName + i.ext) === file)
-        if (mod && mod.curseforge) {
+        if (mod && mod.curseforge && directives[file] === 'curseforge') {
           curseforgeConfig?.files.push({ projectID: mod.curseforge.projectId, fileID: mod.curseforge.fileId, required: true })
           mcbbsManifest?.files!.push({ projectID: mod.curseforge.projectId, fileID: mod.curseforge.fileId, type: 'curse', force: false })
         } else {
@@ -120,7 +126,7 @@ export default class ModpackService extends AbstractService implements IModpackS
         }
       } else if (file.startsWith('resourcepacks/')) {
         const resourcepack = this.resourceService.state.resourcepacks.find((i) => (i.domain + '/' + i.fileName + i.ext) === file)
-        if (resourcepack && resourcepack.curseforge) {
+        if (resourcepack && resourcepack.curseforge && directives[file] === 'curseforge') {
           curseforgeConfig?.files.push({ projectID: resourcepack.curseforge.projectId, fileID: resourcepack.curseforge.fileId, required: true })
           mcbbsManifest?.files!.push({ projectID: resourcepack.curseforge.projectId, fileID: resourcepack.curseforge.fileId, type: 'curse', force: false })
         } else {
@@ -190,6 +196,7 @@ export default class ModpackService extends AbstractService implements IModpackS
 
     try {
       await this.submit(zipTask)
+      this.instanceService.editInstance({ instancePath, modpackVersion: version })
     } finally {
       if (tempOptions) {
         await remove(tempOptions)

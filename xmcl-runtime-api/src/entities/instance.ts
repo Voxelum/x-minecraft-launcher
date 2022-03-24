@@ -40,6 +40,8 @@ export function createTemplate(): Instance {
 
     lastAccessDate: -1,
     creationDate: -1,
+    modpackVersion: '',
+    fileApi: '',
   }
   return base
 }

@@ -22,6 +22,8 @@ export function useInstance() {
   const name = computed(() => state.instance.name)
   const author = computed(() => state.instance.author)
   const description = computed(() => state.instance.description)
+  const modpackVersion = computed(() => state.instance.modpackVersion)
+  const fileApi = computed(() => state.instance.fileApi)
   const showLog = computed(() => state.instance.showLog)
   const hideLauncher = computed(() => state.instance.hideLauncher)
   const runtime = computed(() => state.instance.runtime)
@@ -57,6 +59,8 @@ export function useInstance() {
     lastAccessDate,
     creationDate,
     server,
+    modpackVersion,
+    fileApi,
     isServer: computed(() => state.instance.server !== null),
     refreshing: computed(() => useSemaphore('instance').value !== 0),
     editInstance,
@@ -104,6 +108,8 @@ export function useInstanceCreation() {
     maxMemory: 0,
     minMemory: 0,
     author: gameProfile.value.name,
+    fileApi: '',
+    modpackVersion: '',
     description: '',
     resolution: null,
     url: '',
@@ -143,6 +149,8 @@ export function useInstanceCreation() {
       data.url = ''
       data.icon = ''
       data.server = null
+      data.modpackVersion = ''
+      data.description = ''
     },
   }
 }

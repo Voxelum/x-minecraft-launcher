@@ -110,6 +110,15 @@
             "default": "",
             "type": "string"
         },
+        "modpackVersion": {
+            "description": "The version number of the modpack. This only available for modpack",
+            "default": "",
+            "type": "string"
+        },
+        "fileApi": {
+            "default": "",
+            "type": "string"
+        },
         "server": {
             "description": "The option for instance to launch server directly",
             "default": null,
@@ -138,6 +147,7 @@
         "author",
         "creationDate",
         "description",
+        "fileApi",
         "hideLauncher",
         "icon",
         "java",
@@ -145,6 +155,7 @@
         "maxMemory",
         "mcOptions",
         "minMemory",
+        "modpackVersion",
         "name",
         "resolution",
         "runtime",
