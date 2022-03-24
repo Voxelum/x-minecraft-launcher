@@ -138,11 +138,11 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
 
       const instanceJava = this.javaService.getJavaForVersion(version.javaVersion)
 
-      if (!instanceJava) {
+      const javaPath = instance.java || instanceJava?.path
+
+      if (!javaPath) {
         throw new Exception({ type: 'launchGeneralException' }, 'Cannot launch without a valid java')
       }
-
-      const javaPath = instanceJava.path
 
       await Promise.all([
         this.instanceResourcePackService.link(minecraftFolder.root).catch((e) => {
