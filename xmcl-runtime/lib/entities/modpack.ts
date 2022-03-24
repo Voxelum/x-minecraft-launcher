@@ -4,7 +4,9 @@ import { CurseforgeModpackManifest, EditInstanceOptions, McbbsModpackManifest, M
 import { task } from '@xmcl/task'
 import { readEntry } from '@xmcl/unzip'
 import { ensureDir } from 'fs-extra'
+import { Agent } from 'https'
 import { basename, join } from 'path'
+import { URL } from 'url'
 import { Entry, ZipFile } from 'yauzl'
 
 /**
@@ -68,18 +70,40 @@ export function resolveInstanceOptions(manifest: McbbsModpackManifest | Cursefor
   return options
 }
 
-export function installModpackTask(zip: ZipFile, entries: Entry[], manifest: CurseforgeModpackManifest | McbbsModpackManifest, root: string, allowFileApi: boolean, options: DownloadBaseOptions) {
+export function installModpackTask(zip: ZipFile, entries: Entry[], manifest: CurseforgeModpackManifest | McbbsModpackManifest, root: string, processFile: (path: string, url: string, info: ModpackFileInfoCurseforge) => void, allowFileApi: boolean, options: DownloadBaseOptions & { agents: { https: Agent } }) {
   return task('installModpack', async function () {
     const files: Array<{ path: string; url: string; projectId: number; fileId: number }> = []
+    const getCurseforgeUrl = createDefaultCurseforgeQuery(options.agents.https)
+    const isValidateUrl = (url: string) => {
+      try {
+        // eslint-disable-next-line no-new
+        new URL(url)
+        return true
+      } catch (e) {
+        return false
+      }
+    }
+    const ensureDownloadUrl = async (f: ModpackFileInfoCurseforge) => {
+      for (let i = 0; i < 3; ++i) {
+        const result = await getCurseforgeUrl(f.projectID, f.fileID)
+        if (isValidateUrl(result)) {
+          return result
+        }
+      }
+      throw new Error(`Fail to get curseforge download url project=${f.projectID} file=${f.fileID}`)
+    }
     if (manifest.files) {
-      const getCurseforgeUrl = createDefaultCurseforgeQuery()
       const allCurseforgeFiles = manifest.files.map(f => f).filter((f): f is ModpackFileInfoCurseforge => !('type' in f) || f.type === 'curse')
       const staging = join(root, '.staging')
       await ensureDir(staging)
+      const infos = [] as (ModpackFileInfoCurseforge & { url: string })[]
+      for (const f of allCurseforgeFiles) {
+        infos.push({ ...f, url: await ensureDownloadUrl(f) })
+      }
 
       // download curseforge files
-      const tasks = await Promise.all(allCurseforgeFiles.map(async (f) => {
-        const url = await getCurseforgeUrl(f.projectID, f.fileID)
+      const tasks = infos.map((f) => {
+        const url = f.url
         const destination = join(staging, basename(url))
 
         // side-effect: adding to file list
@@ -91,8 +115,11 @@ export function installModpackTask(zip: ZipFile, entries: Entry[], manifest: Cur
           agents: options.agents,
           segmentPolicy: options.segmentPolicy,
           retryHandler: options.retryHandler,
-        }).setName('download')
-      }))
+        }).setName('download').map(() => {
+          processFile(destination, url, f)
+          return undefined
+        })
+      })
 
       await this.all(tasks, {
         throwErrorImmediately: false,

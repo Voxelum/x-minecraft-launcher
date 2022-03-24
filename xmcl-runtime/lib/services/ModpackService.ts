@@ -281,21 +281,20 @@ export default class ModpackService extends AbstractService implements IModpackS
         manifest.files = files as any
       }
 
-      const files = await this.submit(installModpackTask(zip, entries, manifest, instancePath, false, this.networkManager.getDownloadBaseOptions()))
+      const resourcesPromises: Promise<AnyPersistedResource>[] = []
+
+      const files = await this.submit(installModpackTask(zip, entries, manifest, instancePath, (path, url, f) => {
+        resourcesPromises.push(resourceService.importResource({
+          path,
+          url: [url, getCurseforgeUrl(f.projectID, f.fileID)],
+          background: true,
+        }))
+      }, false, this.networkManager.getDownloadBaseOptions()))
 
       this.log(`Install ${files.length} files from modpack!`)
 
       if (files.length > 0) {
-        const resources = await resourceService.importResources({
-          files: files.map((f) => ({
-            path: f.path,
-            url: [f.url, getCurseforgeUrl(f.projectId, f.fileId)],
-            source: {
-              curseforge: { projectId: f.projectId, fileId: f.fileId },
-            },
-          })),
-          background: true,
-        })
+        const resources = await Promise.all(resourcesPromises)
 
         const mapping: Record<string, string> = {}
         for (const file of files) {
@@ -313,7 +312,7 @@ export default class ModpackService extends AbstractService implements IModpackS
         }
 
         // correctly deploy the mods
-        await instanceModsService.install({ mods: resources.filter(r => r.domain === ResourceDomain.Mods), path: instancePath })
+        await instanceModsService.install({ mods: resources.filter(r => r.domain === ResourceDomain.Mods || r.domain === ResourceDomain.Unknown), path: instancePath })
 
         // removing staging files
         await Promise.all(files.map(f => unlink(f.path)))
