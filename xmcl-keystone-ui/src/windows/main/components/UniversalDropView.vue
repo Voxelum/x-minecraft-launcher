@@ -69,7 +69,7 @@
 import { defineComponent, ref } from '@vue/composition-api'
 import PreviewView from './UniversalDropViewPreview.vue'
 import { useFileDrop, useRouter } from '/@/hooks'
-import { isPersistedResource, Resource } from '@xmcl/runtime-api'
+import { isPersistedResource, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import RefreshingTile from '/@/components/RefreshingTile.vue'
 
 export interface FilePreview extends Resource {
@@ -109,7 +109,7 @@ export default defineComponent({
           name: f.name,
           size: f.size,
           enabled: isPersistedResource(r),
-          status: isPersistedResource(r) ? 'saved' : 'idle',
+          status: isPersistedResource(r) && r.domain !== ResourceDomain.Unknown ? 'saved' : 'idle',
         })
       }
       pending.value = false

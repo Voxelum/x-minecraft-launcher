@@ -194,7 +194,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
             if (isSystemError(e) && e.code === ENOENT_ERROR) {
               // the corresponded resource is missing... remove this resource metadata
               await unlink(name)
-              this.log(`Remove not found resource corresponed to ${name}`)
+              this.log(`Remove not found resource corresponded to ${name}`)
             } else {
               this.emit('error', e)
             }
@@ -307,7 +307,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
     const { path } = options
     const context: ParseResourceContext = {}
     const existed = await this.queryExistedResourceByPath(path, context)
-    if (existed) {
+    if (existed && existed.domain !== ResourceDomain.Unknown) {
       return [mutateResource(existed, (r) => { r.path = path }), undefined]
     }
     const [resource, icon] = await this.parseResource(options, context)
