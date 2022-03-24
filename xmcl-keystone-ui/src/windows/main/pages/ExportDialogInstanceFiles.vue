@@ -1,5 +1,6 @@
 <template>
   <v-treeview
+    class="export-dialog-files"
     :value="value"
     style="width: 100%"
     :items="files"
@@ -24,6 +25,18 @@
       </v-icon>
     </template>
 
+    <template #append="{ item, selected }">
+      <v-select
+        v-if="item.sources.length > 0 && selected"
+        v-model="item.source"
+        :label="$t('profile.modpack.exportFileAs.name')"
+        class="w-50"
+        :items="(item.sources.concat([''])).map(getSourceItem)"
+        hide-details
+        flat
+      />
+    </template>
+
     <template #label="{ item }">
       <div style="padding: 5px 0px;">
         <span
@@ -33,7 +46,13 @@
         <div
           style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
         >
-          {{ item.description }}
+          {{ getDescription(item.id) }}
+        </div>
+        <div
+          v-if="item.size > 0"
+          style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
+        >
+          {{ item.size > 0 ? getExpectedSize(item.size) : '' }}
         </div>
       </div>
     </template>
@@ -41,31 +60,30 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs, watch } from '@vue/composition-api'
+import { computed, defineComponent, reactive, toRefs, watch } from '@vue/composition-api'
+import { FileNodesSymbol } from './ExportDialog.vue'
 import { useI18n } from '/@/hooks'
+import { injection } from '/@/util/inject'
 import { required } from '/@/util/props'
-import { InstanceFile } from '@xmcl/runtime-api'
-
-interface FileNode {
-  name: string
-  id: string
-  description: string
-  disabled?: boolean
-  children?: FileNode[]
-}
+import { getExpectedSize } from '/@/util/size'
 
 export default defineComponent({
   props: {
-    items: required<InstanceFile[]>(Array),
     value: required<string[]>(Array),
   },
-  setup(props, context) {
+  setup(props) {
     const { $t } = useI18n()
     const data = reactive({
       opened: [],
-      files: [] as readonly FileNode[],
     })
-    function getDescription(path: string, isResource: boolean) {
+    const getSourceItem = (source: string) => {
+      if (source === 'modrinth') return { value: source, text: $t('profile.modpack.exportFileAs.modrinth') }
+      if (source === 'curseforge') return { value: source, text: $t('profile.modpack.exportFileAs.curseforge') }
+      if (source === 'github') return { value: source, text: $t('profile.modpack.exportFileAs.github') }
+      return { value: source, text: $t('profile.modpack.exportFileAs.override') }
+    }
+    const files = injection(FileNodesSymbol)
+    function getDescription(path: string) {
       switch (path) {
         case 'mods':
           return $t('intro.struct.mods')
@@ -79,46 +97,23 @@ export default defineComponent({
           return $t('intro.struct.optionTxt')
         case 'logs':
           return $t('intro.struct.logs')
+        case 'optionsshaders.txt':
+          return $t('intro.struct.optionShadersTxt')
         default:
       }
       if (path.startsWith('mods/')) {
-        return isResource ? $t('intro.struct.modManaged') : $t('intro.struct.modJar')
+        return $t('intro.struct.modJar')
       }
       return ''
     }
-    function ensureFile(cwd: FileNode[], filePaths: string[], used: string[], isDir: boolean, isRes: boolean) {
-      const path = filePaths[0]
-      let cur = cwd.find(n => n.name === path)
-      const next = [...used, path]
-      if (!cur) {
-        cur = { name: path, id: next.join('/'), description: getDescription(next.join('/'), isRes) }
-        cwd.push(cur)
-      }
-      const remained = filePaths.slice(1)
-      if (remained.length > 0) {
-        if (!cur.children) {
-          cur.children = []
-        }
-        ensureFile(cur.children, remained, next, isDir, isRes)
-      } else if (isDir) {
-        cur.children = cur.children ?? []
-      } else {
-        cur.disabled = isRes
-      }
-    }
-    function buildTree(files: { path: string; isDirectory: boolean; isResource: boolean }[]) {
-      const result: FileNode[] = []
-      for (const file of files) {
-        ensureFile(result, file.path.split('/'), [], file.isDirectory, file.isResource)
-      }
-      return result
-    }
-    watch(() => props.items, () => {
-      console.log('rebuilt tree')
-      data.files = Object.freeze(buildTree(props.items))
+    watch(files, () => {
       data.opened = []
     })
     return {
+      files,
+      getSourceItem,
+      getDescription,
+      getExpectedSize,
       ...toRefs(data),
     }
   },
@@ -126,4 +121,8 @@ export default defineComponent({
 </script>
 
 <style>
+.export-dialog-files
+  .v-text-field>.v-input__control>.v-input__slot:before {
+  border: none;
+}
 </style>

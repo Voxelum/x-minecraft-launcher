@@ -244,24 +244,6 @@
               />
             </v-list-item-action>
           </v-list-item>
-
-          <!-- <v-list-item v-if="!isServer">
-            <v-list-item-content>
-              <v-list-item-title>
-                {{ $t("profile.url") }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{ $t("profile.url") }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action style="width: 50%">
-              <v-text-field
-                v-model="url"
-                hide-details
-                placeholder="www.whatever.com"
-              />
-            </v-list-item-action>
-          </v-list-item> -->
           <v-list-item
             v-if="!isServer"
             style="margin-top: 5px"
@@ -277,12 +259,43 @@
                   hide-details
                   :placeholder="$t('profile.modpack.descriptionHint')"
                 />
-                <!-- {{ $t("profile.modpack.descriptionHint") }} -->
               </v-list-item-subtitle>
             </v-list-item-content>
-            <!-- <v-list-item-action style="width: 50%">
-              <v-text-field v-model="description" hide-details />
-            </v-list-item-action> -->
+          </v-list-item>
+
+          <v-list-item v-if="!isServer">
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ $t("profile.url") }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ $t("profile.urlHint") }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action style="width: 50%">
+              <v-text-field
+                v-model="url"
+                hide-details
+                placeholder="www.whatever.com"
+              />
+            </v-list-item-action>
+          </v-list-item>
+          <v-list-item v-if="!isServer">
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ $t("profile.fileApi") }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ $t("profile.fileApiHint") }}
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-action style="width: 50%">
+              <v-text-field
+                v-model="fileServerApi"
+                hide-details
+                placeholder="www.myfileserver.com/root"
+              />
+            </v-list-item-action>
           </v-list-item>
 
           <v-subheader
@@ -354,24 +367,14 @@ export default defineComponent({
       url,
       description,
       server,
+      fileApi,
       editInstance: edit,
     } = useInstance()
     const router = useRouter()
     const { userId, profileId } = useSelectedUser()
     const { gameProfile } = useProfileId(userId, profileId)
     const { name: username } = useGameProfile(gameProfile)
-    const data: {
-      active: number
-      valid: boolean
-      hideLauncher: boolean
-      showLog: boolean
-      name: string
-      host: string
-      port: string
-      author: string
-      description: string
-      url: string
-    } = reactive({
+    const data = reactive({
       active: 0,
       valid: true,
       hideLauncher: false,
@@ -384,6 +387,7 @@ export default defineComponent({
       author: '',
       description: '',
       url: '',
+      fileServerApi: '',
     })
 
     function save() {
@@ -396,12 +400,14 @@ export default defineComponent({
       if (!isServer.value) {
         edit({
           ...payload,
+          fileApi: data.fileServerApi,
           author: data.author,
           description: data.description,
         })
       } else {
         edit({
           ...payload,
+          fileApi: data.fileServerApi,
           server: {
             host: data.host,
             port: Number.parseInt(data.port, 10),
@@ -415,6 +421,7 @@ export default defineComponent({
       data.url = url.value
       data.showLog = showLog.value
       data.author = author.value
+      data.fileServerApi = fileApi.value
       data.description = description?.value || ''
       if (server.value) {
         data.host = server.value.host

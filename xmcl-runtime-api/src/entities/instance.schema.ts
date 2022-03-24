@@ -112,6 +112,15 @@ export interface InstanceData {
    */
   icon: string
   /**
+   * The version number of the modpack. This only available for modpack
+   * @default ""
+   */
+  modpackVersion: string
+  /**
+   * @default ""
+   */
+  fileApi: string
+  /**
    * The option for instance to launch server directly
    * @default null
    */

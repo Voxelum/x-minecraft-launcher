@@ -120,8 +120,31 @@ export default class InstanceIOService extends AbstractService implements IInsta
       const status = await stat(p)
       const ino = status.ino
       const isDirectory = status.isDirectory()
-      const isResource = !!this.resourceService.getResourceByKey(ino)?.curseforge
-      files.push({ isDirectory, path: relative(path, p).replace(/\\/g, '/'), isResource })
+      const sources: Array<'modrinth' | 'curseforge'> = []
+      const resource = this.resourceService.getResourceByKey(ino)
+      if (resource?.curseforge) {
+        sources.push('curseforge')
+      }
+      if (resource?.modrinth) {
+        sources.push('modrinth')
+      }
+      const relativePath = relative(path, p).replace(/\\/g, '/')
+      if (relativePath.startsWith('resourcepacks') || relativePath.startsWith('shaderpacks')) {
+        if (relativePath.endsWith('.json') || relativePath.endsWith('.png')) {
+          return
+        }
+      }
+      if (relativePath === 'instance.json') {
+        return
+      }
+      files.push({
+        isDirectory,
+        path: relativePath,
+        sources,
+        size: status.size,
+        updateAt: status.mtimeMs,
+        createAt: status.ctimeMs,
+      })
       if (isDirectory) {
         const childs = await readdirIfPresent(p)
         for (const child of childs) {
@@ -216,4 +239,23 @@ export default class InstanceIOService extends AbstractService implements IInsta
 
     return instancePath
   }
+
+  async getSynchronizePreview(instancePath: string): Promise<SynchronizePreview> {
+    const preview: SynchronizePreview = {
+      files: [],
+    }
+
+    return preview
+  }
+
+  async synchronize(options: SynchronizeOptions) {}
+}
+
+export interface SynchronizeOptions {
+  instancePath: string
+  directives: { path: string; status: 'add' | 'overwrite' | 'remove' }[]
+}
+
+export interface SynchronizePreview {
+  files: { path: string; status: 'add' | 'overwrite' | 'remove' }[]
 }

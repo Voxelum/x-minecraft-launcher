@@ -152,6 +152,8 @@ export class InstanceState {
     inst.url = settings.url || inst.url
     inst.icon = settings.icon || inst.icon
     inst.java = settings.java || inst.java
+    inst.modpackVersion = settings.modpackVersion || inst.modpackVersion
+    inst.fileApi = settings.fileApi || inst.fileApi
 
     if (typeof settings.showLog === 'boolean') {
       inst.showLog = settings.showLog
