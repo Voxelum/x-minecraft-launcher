@@ -10,6 +10,7 @@
     >
       <v-list-item
         ripple
+        class="justify-start"
         @click="select(undefined)"
       >
         <v-list-item-avatar>

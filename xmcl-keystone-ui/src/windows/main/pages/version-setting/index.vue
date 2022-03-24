@@ -244,7 +244,6 @@ export default defineComponent({
       }
     }
     function setOptifine(v: OptifineVersion | undefined) {
-      console.log(v)
       if (!v) {
         data.optifine = ''
         data.id = ''

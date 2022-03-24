@@ -16,7 +16,7 @@ export const forgeModParser: ResourceParser<ForgeModCommonMetadata> = ({
   getSuggestedName: (meta) => {
     let name = `${meta.name || meta.modid}`
     if (meta.version) {
-      name += `- ${meta.version}`
+      name += `-${meta.version}`
     }
     return name
   },
