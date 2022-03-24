@@ -68,8 +68,7 @@ export default defineComponent({
     const enableMods = ref(true)
     const { importFile } = useFileDrop()
     const loading = computed(() => props.previews.some((v) => v.status === 'loading'))
-    const pendings = computed(() => props.previews.filter((v) => (v.status === 'idle' || v.status === 'failed') &&
-      (v.type !== ResourceType.Unknown) && v.enabled))
+    const pendings = computed(() => props.previews.filter((v) => (v.status === 'idle' || v.status === 'failed') && v.enabled))
     const disabled = computed(() => pendings.value.length === 0)
     function remove(file: FilePreview) {
       const previews = props.previews.filter((p) => p.path !== file.path)

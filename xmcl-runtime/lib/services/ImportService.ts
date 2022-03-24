@@ -29,8 +29,10 @@ export default class ImportService extends AbstractService implements IImportSer
     const context: ParseResourceContext = {}
     const existed = await this.resourceService.queryExistedResourceByPath(options.path, context)
     if (existed) {
-      return
-      // return existed
+      if (existed.domain !== ResourceDomain.Unknown) {
+        // return existed
+        return
+      }
     }
     const [resolved, icon] = await this.resourceService.parseResource(options, context)
     const getInstancePath = (inst: string | boolean) => typeof inst === 'boolean' ? this.instanceService.state.path : inst
