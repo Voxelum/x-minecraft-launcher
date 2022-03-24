@@ -17,7 +17,7 @@
           name="fade-transition"
           mode="out-in"
         >
-          <router-view />
+          <router-view class="z-2" />
         </transition>
       </main>
     </div>

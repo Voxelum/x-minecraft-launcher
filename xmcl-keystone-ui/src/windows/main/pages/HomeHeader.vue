@@ -2,7 +2,9 @@
   <div
     class="display-1 flex w-full align-center max-h-20 gap-3"
   >
-    <span style="margin-right: 10px;">{{ name || `Minecraft ${version.minecraft}` }}</span>
+    <span
+      style="margin-right: 10px;"
+    >{{ name || `Minecraft ${version.minecraft}` }}</span>
     <v-chip
       v-if="!isServer && author"
       label
