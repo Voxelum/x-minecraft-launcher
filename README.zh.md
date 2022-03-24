@@ -23,7 +23,7 @@
 
 ## 参与开发
 
-请看 [Contribute](./CONTRIBUTING.md)
+请看 [Contribute](./CONTRIBUTING.zh.md)
 
 ## 协议 
 
@@ -32,9 +32,9 @@
 ## 致谢
 
 [vanja-san](https://github.com/vanja-san), 提供给我们俄语翻译！
-[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) 在启动核心上帮助了我
+[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) 在启动核心上帮助了我，
 [laolarou726](https://github.com/laolarou726), 给我启动器提供了很多灵感
 
-同意以下人员致敬
+同时，向以下人员致敬
 
 [Yricky](https://github.com/Yricky), [Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/CharlesQT)
