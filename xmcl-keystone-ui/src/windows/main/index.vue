@@ -3,32 +3,13 @@
     ref="app"
     class="overflow-auto h-full overflow-x-hidden"
   >
-    <v-system-bar
-      topbar
-      window
-      class="flex w-full moveable p-0 flex-grow-0"
-    >
-      <span class="p-0 flex flex-shrink flex-grow-0">
-        <v-icon
-          v-ripple
-          small
-          class="flex items-center py-2 hover:bg-[rgba(255,255,255,0.2)] cursor-pointer select-none non-moveable after:hidden"
-          style="width: 80px;"
-          @click="goBack"
-        >
-          arrow_back
-        </v-icon>
-      </span>
-      <div class="flex-grow " />
-      <top-window-controls />
-    </v-system-bar>
+    <system-bar />
     <div
       class="flex h-full overflow-auto relative"
     >
       <side-bar />
-      <div
-        class="flex top-0 bottom-0 right-0 overflow-auto max-h-full absolute"
-        style="left: 80px;"
+      <main
+        class="flex top-0 bottom-0 right-0 overflow-auto max-h-full absolute left-[80px]"
         :class="{ solid: !blurMainBody }"
       >
         <background />
@@ -38,7 +19,7 @@
         >
           <router-view />
         </transition>
-      </div>
+      </main>
     </div>
     <universal-drop-view />
     <context-menu />
@@ -67,7 +48,6 @@ import Notifier from './components/Notifier.vue'
 import SearchBar from './components/SearchBar.vue'
 import SideBar from './components/SideBar.vue'
 import TaskDialog from './components/TaskDialog.vue'
-import TopWindowControls from './components/TopWindowControls.vue'
 import UniversalDropView from './components/UniversalDropView.vue'
 import { provideContextMenu, provideDialog, provideIssueHandler, provideNotifier, provideSearch } from './composables'
 import { TASK_MANAGER, useTaskManager } from './provideTaskProxy'
@@ -78,8 +58,10 @@ import {
   useBackground, useRouter,
 } from '/@/hooks'
 import FeedbackDialog from './pages/FeedbackDialog.vue'
+import SystemBar from './components/SystemBar.vue'
+
 export default defineComponent({
-  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaFixerDialog, Background, Notifier, ContextMenu, SearchBar, UniversalDropView, SideBar, AddInstanceDialog, TopWindowControls, FeedbackDialog },
+  components: { LoginDialog, TaskDialog, LaunchStatusDialog, JavaFixerDialog, Background, Notifier, ContextMenu, SearchBar, UniversalDropView, SideBar, AddInstanceDialog, FeedbackDialog, SystemBar },
   setup() {
     provideDialog()
     provideNotifier()
@@ -99,10 +81,6 @@ export default defineComponent({
     const onHomePage = ref(router.currentRoute.path === '/')
     const app: Ref<any> = ref(null)
 
-    function goBack() {
-      router.back()
-    }
-
     router.afterEach((to) => {
       onHomePage.value = to.path === '/'
       toggle(true)
@@ -111,7 +89,6 @@ export default defineComponent({
 
     return {
       app,
-      goBack,
       blurMainBody,
     }
   },
