@@ -61,7 +61,7 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
       type: 'mods',
     })
     const persisted = await Promise.all(resources
-      .filter(([res]) => !(res.fileType === 'directory' && res.domain === ResourceDomain.Unknown)) // unknown directory
+      .filter(([res]) => res.fileType !== 'directory') // not show dictionary
       .map(async ([res, icon]) => !isPersistedResource(res) ? { ...(await this.resourceService.importParsedResource({ path: res.path, type: res.type }, res, icon)), path: res.path } : Promise.resolve(res)))
     return persisted
   }
