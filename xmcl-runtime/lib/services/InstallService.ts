@@ -473,16 +473,13 @@ export default class InstallService extends StatefulService<InstallState> implem
     this.log('Start to refresh optifine metadata')
 
     const headers = this.state.optifine.etag === ''
-      ? undefined
+      ? {}
       : {
         'If-None-Match': this.state.optifine.etag,
       }
 
     const response = await this.networkManager.request.get('https://bmclapi2.bangbang93.com/optifine/versionList', {
       headers,
-      https: {
-        rejectUnauthorized: false,
-      },
     })
 
     if (response.statusCode === 304) {
