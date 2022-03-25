@@ -70,7 +70,22 @@ export function resolveInstanceOptions(manifest: McbbsModpackManifest | Cursefor
   return options
 }
 
-export function installModpackTask(zip: ZipFile, entries: Entry[], manifest: CurseforgeModpackManifest | McbbsModpackManifest, root: string, processFile: (path: string, url: string, info: ModpackFileInfoCurseforge) => void, allowFileApi: boolean, options: DownloadBaseOptions & { agents: { https: Agent } }) {
+export class ModpackInstallGeneralError extends Error {
+  constructor(readonly files: {
+    path: string
+    url: string
+    projectId: number
+    fileId: number
+  }[], e: Error) { super('Fail to install modpack', { cause: e }) }
+}
+
+export class ModpackInstallUrlError extends Error {
+  constructor(readonly file: ModpackFileInfoCurseforge) {
+    super(`Fail to get curseforge download url project=${file.projectID} file=${file.fileID}`)
+  }
+}
+
+export function installModpackTask(zip: ZipFile, entries: Entry[], manifest: CurseforgeModpackManifest | McbbsModpackManifest, root: string, allowFileApi: boolean, options: DownloadBaseOptions & { agents: { https: Agent } }) {
   return task('installModpack', async function () {
     const files: Array<{ path: string; url: string; projectId: number; fileId: number }> = []
     const getCurseforgeUrl = createDefaultCurseforgeQuery(options.agents.https)
@@ -90,25 +105,19 @@ export function installModpackTask(zip: ZipFile, entries: Entry[], manifest: Cur
           return result
         }
       }
-      throw new Error(`Fail to get curseforge download url project=${f.projectID} file=${f.fileID}`)
+      throw new ModpackInstallUrlError(f)
     }
     if (manifest.files) {
       const allCurseforgeFiles = manifest.files.map(f => f).filter((f): f is ModpackFileInfoCurseforge => !('type' in f) || f.type === 'curse')
-      const staging = join(root, '.staging')
+      const staging = join(root, 'mods')
       await ensureDir(staging)
       const infos = [] as (ModpackFileInfoCurseforge & { url: string })[]
-      for (const f of allCurseforgeFiles) {
-        infos.push({ ...f, url: await ensureDownloadUrl(f) })
-      }
+      infos.push(...await Promise.all(allCurseforgeFiles.map(async (f) => ({ ...f, url: await ensureDownloadUrl(f) }))))
 
       // download curseforge files
       const tasks = infos.map((f) => {
         const url = f.url
         const destination = join(staging, basename(url))
-
-        // side-effect: adding to file list
-        files.push({ path: destination, url, projectId: f.projectID, fileId: f.fileID })
-
         return new DownloadTask({
           url,
           destination,
@@ -116,39 +125,48 @@ export function installModpackTask(zip: ZipFile, entries: Entry[], manifest: Cur
           segmentPolicy: options.segmentPolicy,
           retryHandler: options.retryHandler,
         }).setName('download').map(() => {
-          processFile(destination, url, f)
+        // side-effect: adding to file list
+          files.push({ path: destination, url, projectId: f.projectID, fileId: f.fileID })
           return undefined
         })
       })
 
-      await this.all(tasks, {
-        throwErrorImmediately: false,
-        getErrorMessage: (errs) => `Fail to install modpack to ${root}: ${errs.map((e) => e.toString()).join('\n')}`,
-      })
+      try {
+        await this.all(tasks, {
+          throwErrorImmediately: false,
+          getErrorMessage: (errs) => `Fail to install modpack to ${root}: ${errs.map((e) => e.toString()).join('\n')}`,
+        })
+      } catch (e) {
+        throw new ModpackInstallGeneralError(files, e as Error)
+      }
     }
 
-    await this.yield(new UnzipTask(
-      zip,
-      entries.filter((e) => !e.fileName.endsWith('/') && e.fileName.startsWith('overrides' in manifest ? manifest.overrides : 'overrides')),
-      root,
-      (e) => e.fileName.substring('overrides' in manifest ? manifest.overrides.length : 'overrides'.length),
-    ).setName('unpack'))
+    try {
+      await this.yield(new UnzipTask(
+        zip,
+        entries.filter((e) => !e.fileName.endsWith('/') && e.fileName.startsWith('overrides' in manifest ? manifest.overrides : 'overrides')),
+        root,
+        (e) => e.fileName.substring('overrides' in manifest ? manifest.overrides.length : 'overrides'.length),
+      ).setName('unpack'))
 
-    // download custom files
-    if ('fileApi' in manifest && manifest.files && manifest.fileApi && allowFileApi) {
-      const fileApi = manifest.fileApi
-      const addonFiles = manifest.files.filter((f): f is ModpackFileInfoAddon => f.type === 'addon')
-      await this.all(addonFiles.map((f) => new DownloadTask({
-        url: joinUrl(fileApi, f.path),
-        destination: join(root, f.path),
-        validator: {
-          algorithm: 'sha1',
-          hash: f.hash,
-        },
-        agents: options.agents,
-        segmentPolicy: options.segmentPolicy,
-        retryHandler: options.retryHandler,
-      }).setName('download')))
+      // download custom files
+      if ('fileApi' in manifest && manifest.files && manifest.fileApi && allowFileApi) {
+        const fileApi = manifest.fileApi
+        const addonFiles = manifest.files.filter((f): f is ModpackFileInfoAddon => f.type === 'addon')
+        await this.all(addonFiles.map((f) => new DownloadTask({
+          url: joinUrl(fileApi, f.path),
+          destination: join(root, f.path),
+          validator: {
+            algorithm: 'sha1',
+            hash: f.hash,
+          },
+          agents: options.agents,
+          segmentPolicy: options.segmentPolicy,
+          retryHandler: options.retryHandler,
+        }).setName('download')))
+      }
+    } catch (e) {
+      throw new ModpackInstallGeneralError(files, e as Error)
     }
 
     return files

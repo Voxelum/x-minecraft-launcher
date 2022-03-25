@@ -5,9 +5,9 @@ import { existsSync } from 'fs'
 import { ensureDir, remove, unlink, writeFile } from 'fs-extra'
 import { basename, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
-import { installModpackTask, readMetadata, resolveInstanceOptions } from '../entities/modpack'
+import { installModpackTask, ModpackInstallGeneralError, ModpackInstallUrlError, readMetadata, resolveInstanceOptions } from '../entities/modpack'
 import { getCurseforgeUrl } from '../entities/resource'
-import { isFile, sha1ByPath } from '../util/fs'
+import { FileStateWatcher, isFile, sha1ByPath } from '../util/fs'
 import { ZipTask } from '../util/zip'
 import InstanceModsService from './InstanceModsService'
 import InstanceOptionsService from './InstanceOptionsService'
@@ -273,7 +273,7 @@ export default class ModpackService extends AbstractService implements IModpackS
         })
 
         // deploy the mods
-        const modResources = resources.filter(r => r.domain === ResourceDomain.Mods)
+        const modResources = resources.filter(r => r.domain === ResourceDomain.Mods || r.domain === ResourceDomain.Unknown)
         await ensureDir(join(instancePath, 'mods'))
         await instanceModsService.install({ mods: modResources, path: instancePath })
 
@@ -281,42 +281,59 @@ export default class ModpackService extends AbstractService implements IModpackS
         manifest.files = files as any
       }
 
-      const resourcesPromises: Promise<AnyPersistedResource>[] = []
+      let files: {
+        path: string
+        url: string
+        projectId: number
+        fileId: number
+      }[] = []
+      let failedError: Error | undefined
+      try {
+        files = await this.submit(installModpackTask(zip, entries, manifest, instancePath,
+          false, this.networkManager.getDownloadBaseOptions()))
+      } catch (e) {
+        failedError = e as any
+        if (e instanceof ModpackInstallGeneralError) {
+          // try to cache downloaded files
+          files = e.files
+        }
+      }
 
-      const files = await this.submit(installModpackTask(zip, entries, manifest, instancePath, (path, url, f) => {
-        resourcesPromises.push(resourceService.importResource({
-          path,
-          url: [url, getCurseforgeUrl(f.projectID, f.fileID)],
-          background: true,
-        }))
-      }, false, this.networkManager.getDownloadBaseOptions()))
+      const newResources = await this.resourceService.importResources({
+        files: files.map(f => ({
+          path: f.path,
+          source: {
+            curseforge: {
+              fileId: f.fileId,
+              projectId: f.projectId,
+            },
+          },
+          url: [f.url, getCurseforgeUrl(f.projectId, f.fileId)],
+        })),
+        background: true,
+      })
+
+      if (failedError) {
+        throw failedError
+      }
 
       this.log(`Install ${files.length} files from modpack!`)
 
       if (files.length > 0) {
-        const resources = await Promise.all(resourcesPromises)
-
         const mapping: Record<string, string> = {}
         for (const file of files) {
           mapping[`${file.projectId}:${file.fileId}`] = file.path
         }
 
-        // rename the resource to correct name
-        await ensureDir(join(instancePath, 'mods'))
-
-        for (const res of resources) {
+        for (const res of newResources) {
           if (res.domain === ResourceDomain.ResourcePacks) {
             const fileName = basename(mapping[`${res.curseforge!.projectId}:${res.curseforge!.fileId}`])
             resourcePacksMapping[fileName] = res.fileName + res.ext
           }
         }
 
-        // correctly deploy the mods
-        await instanceModsService.install({ mods: resources.filter(r => r.domain === ResourceDomain.Mods || r.domain === ResourceDomain.Unknown), path: instancePath })
-
-        // removing staging files
-        await Promise.all(files.map(f => unlink(f.path)))
-        await remove(join(instancePath, '.staging'))
+        // removing resource packs files from /mods
+        await Promise.all(newResources.filter(r => r.domain === ResourceDomain.ResourcePacks).map(f => unlink(f.path)))
       }
 
       // remap options.txt
@@ -337,6 +354,14 @@ export default class ModpackService extends AbstractService implements IModpackS
       }
 
       return instancePath
+    }).catch((e) => {
+      this.error(`Fail to install modpack: ${path}`)
+      this.error(e)
+      // remove instance
+      if (!('instancePath' in options)) {
+        instanceService.deleteInstance(instancePath)
+      }
+      throw e
     })
   }
 }

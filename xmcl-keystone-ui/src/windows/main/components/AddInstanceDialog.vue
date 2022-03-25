@@ -101,8 +101,9 @@ import {
   useInstanceCreation,
   useInstances,
   useRouter,
+  useI18n,
 } from '/@/hooks'
-import { DialogKey, useDialog } from '/@/windows/main/composables'
+import { DialogKey, useDialog, useNotifier } from '/@/windows/main/composables'
 import { InstanceData, JavaRecord } from '@xmcl/runtime-api'
 
 type ToRefs<T> = {
@@ -125,10 +126,13 @@ export default defineComponent({
   },
   setup(props, context) {
     const { isShown, parameter } = useDialog(AddInstanceDialogKey)
+    const { show } = useDialog('task')
     const { create, reset, ...creationData } = useInstanceCreation()
     const router = useRouter()
     const { mountInstance } = useInstances()
     const { importModpack } = useModpackImport()
+    const { $t } = useI18n()
+    const { notify } = useNotifier()
 
     provide(CreateOptionKey, creationData)
 
@@ -169,7 +173,26 @@ export default defineComponent({
           importModpack({
             path: currentTemplate.value.path,
             instanceConfig: reactive({ ...creationData }),
-          }).then((path) => mountInstance(path))
+          }).then((path) => {
+            mountInstance(path)
+            notify({
+              title: $t('profile.importModpack.success', { modpack: currentTemplate.value?.title }),
+              level: 'success',
+              full: true,
+              more() {
+                router.push('/')
+              },
+            })
+          }, (e) => {
+            notify({
+              title: $t('profile.importModpack.failed', { modpack: currentTemplate.value?.title }),
+              level: 'error',
+              full: true,
+              more() {
+                show()
+              },
+            })
+          })
           await new Promise((resolve) => {
             setTimeout(resolve, 1000)
           })
