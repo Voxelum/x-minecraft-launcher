@@ -15,13 +15,14 @@
       />
     </v-list-item>
     <v-divider />
-    <div class="overflow-auto h-full flex flex-col">
+    <div class="overflow-auto h-full flex flex-col flex-shrink flex-grow-0">
       <template v-for="(item) in versions">
         <v-list-item
           :key="item.id"
           ripple
           :class="{
-            grey: isSelected(item), 'en-1': isSelected(item),
+            grey: isSelected(item),
+            'en-1': isSelected(item),
             'elevation-2': isSelected(item),
           }"
           style="margin: 0px 0;"
