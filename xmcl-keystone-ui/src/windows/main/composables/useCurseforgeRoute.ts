@@ -1,5 +1,5 @@
-import { useRouter } from '/@/hooks'
-import { ProjectType } from '@xmcl/runtime-api'
+import { useRouter, useService } from '/@/hooks'
+import { BaseServiceKey, ProjectType } from '@xmcl/runtime-api'
 
 export function useCurseforgeRoute() {
   const { push } = useRouter()
@@ -17,9 +17,9 @@ export function useCurseforgeRoute() {
 }
 
 export function useMcWikiRoute() {
-  const { push } = useRouter()
+  const { openInBrowser } = useService(BaseServiceKey)
   function searchProjectAndRoute(name: string) {
-    push(`mcwiki?path=https://www.mcmod.cn/s?key=${name}`)
+    openInBrowser(`https://www.mcmod.cn/s?key=${name}`)
   }
   return {
     searchProjectAndRoute,
