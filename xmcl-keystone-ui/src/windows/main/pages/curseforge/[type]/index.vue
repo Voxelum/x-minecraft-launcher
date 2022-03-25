@@ -40,7 +40,7 @@
       </v-card>
       <div
         v-if="!loading"
-        class="flex flex-col gap-3 overflow-auto"
+        class="flex flex-col gap-3 overflow-auto flex-shrink flex-grow-0"
       >
         <v-card
           v-for="proj in projects"
