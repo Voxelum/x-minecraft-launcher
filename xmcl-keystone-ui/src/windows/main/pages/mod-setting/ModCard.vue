@@ -138,7 +138,7 @@
 import { computed, defineComponent, ref, Ref } from '@vue/composition-api'
 import { ModItem } from './useInstanceMod'
 import unknownPack from '/@/assets/unknown_pack.png'
-import { useCompatible, useI18n, useInstanceVersionBase, useRouter, useService, useTags } from '/@/hooks'
+import { useModCompatible, useI18n, useInstanceVersionBase, useRouter, useService, useTags } from '/@/hooks'
 import { getColor } from '/@/util/color'
 import { required } from '/@/util/props'
 import { ContextMenuItem, useContextMenu, useCurseforgeRoute, useMcWikiRoute } from '/@/windows/main/composables'
@@ -153,7 +153,7 @@ export default defineComponent({
   setup(props, context) {
     const { minecraft, forge, fabricLoader } = useInstanceVersionBase()
     const { state: instanceState } = useService(InstanceServiceKey)
-    const { compatible } = useCompatible(computed(() => props.source.resource), computed(() => instanceState.instance.runtime))
+    const { compatible } = useModCompatible(computed(() => props.source.resource), computed(() => instanceState.instance.runtime))
     const { open } = useContextMenu()
     const { openInBrowser, showItemInDirectory } = useService(BaseServiceKey)
     const { push } = useRouter()
@@ -170,15 +170,15 @@ export default defineComponent({
 
     const compatibleText = computed(() => {
       const deps = props.source.dependencies
-      let acceptVersionText = $t('mod.acceptVersion', { version: deps.minecraft })
+      let acceptVersionText = $t('mod.acceptVersion', { version: deps.minecraft }) + ', ' + $t('mod.currentVersion', { current: minecraft.value }) + '.'
       if (deps.forge) {
-        acceptVersionText += `, Forge ${deps.forge}` + (forge.value ? ` (${forge.value})` : '')
+        acceptVersionText += ` Forge ${deps.forge}` + (forge.value ? `, ${$t('mod.currentVersion', { current: forge.value })}.` : '')
       }
       if (deps.fabricLoader) {
-        acceptVersionText += `, FabricLoader ${deps.fabricLoader}` + (fabricLoader.value ? ` (${fabricLoader.value})` : '')
+        acceptVersionText += `, FabricLoader ${deps.fabricLoader}` + (fabricLoader.value ? `, ${$t('mod.currentVersion', { current: fabricLoader.value })}.` : '')
       }
       const compatibleText = compatible.value === 'maybe'
-        ? $t('mod.nocompatible')
+        ? $t('mod.maybeCompatible')
         : compatible.value
           ? $t('mod.compatible')
           : $t('mod.incompatible')
@@ -266,7 +266,7 @@ export default defineComponent({
           text: $t('mod.showInModrinth', { name: props.source.name }),
           children: [],
           onClick: () => {
-            push(`/modrinth/${modrinth.modId}`)
+            push(`/modrinth/${modrinth.projectId}`)
           },
           icon: '$vuetify.icons.modrinth',
         })
@@ -319,6 +319,7 @@ export default defineComponent({
   background-color: #bb724b;
 }
 .maybe:hover {
+  background-color: #679793;
 }
 .title {
   max-width: 100%;
