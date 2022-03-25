@@ -25,7 +25,9 @@
         <v-divider />
       </v-stepper-header>
 
-      <v-stepper-items>
+      <v-stepper-items
+        class="visible-scroll"
+      >
         <v-stepper-content
           step="1"
           style="overflow: auto; max-height: 550px;"
