@@ -32,7 +32,7 @@
             :style="{ display: selection ? 'flex' : 'none !important' }"
           >
             <v-checkbox
-              :value="source.selected"
+              v-model="source.selected"
               @input="$emit('select')"
             />
           </v-flex>
@@ -101,7 +101,7 @@
                 style="margin-left: 1px;"
                 close
                 @mousedown.stop
-                @input="onDeleteTag(tag)"
+                @click:close="onDeleteTag(tag)"
               >
                 <div
                   contenteditable
