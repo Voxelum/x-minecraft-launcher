@@ -624,6 +624,7 @@ optifine:
 optional: Optional
 popular: Popularity
 profile:
+  profiles: Profiles
   add: Add Local Game
   addServer: Add Server
   advancedSetting: Advanced Settings

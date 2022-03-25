@@ -568,6 +568,7 @@ optifine:
 optional: 可选的
 popular: 热度
 profile:
+  profiles: 选择实例
   add: 添加本地游戏
   addServer: 添加服务器
   advancedSetting: 高级设置
