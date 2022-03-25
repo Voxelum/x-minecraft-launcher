@@ -330,4 +330,12 @@ export default defineComponent({
 .v-navigation-drawer__content {
   @apply flex flex-col flex-grow-0 h-full;
 }
+
+.sidebar .v-list .v-list-item--active, .v-list .v-list-item--active .v-icon {
+  color: #4caf50 !important;
+}
+
+.sidebar .v-list-item--link:before {
+  color: rgb(255, 255, 255);
+}
 </style>

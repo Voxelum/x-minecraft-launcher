@@ -1,9 +1,13 @@
 <template>
   <v-card
     v-draggable-card
-    outlined
     :ripple="!isBusy"
     class="draggable-card w-full flex flex-col"
+    :dark="!isSelected"
+    :color="isSelected ? 'primary' : ''"
+    outlined
+    :shaped="isSelected"
+    :class="{ selected: isSelected }"
     style="padding: 0;"
     hover
     :draggable="!isBusy"
@@ -69,6 +73,7 @@
           v-if="instance.server"
           small
           label
+          outlined
           :input-value="false"
           @click.stop
         >
@@ -77,6 +82,7 @@
         <v-chip
           v-if="instance.server"
           small
+          outlined
           label
           :input-value="false"
           @click.stop
@@ -93,6 +99,7 @@
         <v-chip
           v-if="instance.server"
           small
+          outlined
           label
           :input-value="false"
           @click.stop
@@ -104,6 +111,7 @@
         </v-chip>
         <v-chip
           label
+          outlined
           small
           :input-value="false"
           @click.stop
@@ -119,6 +127,7 @@
         </v-chip>
         <v-chip
           v-if="!instance.server && instance.author"
+          outlined
           small
           label
           :input-value="false"
@@ -131,6 +140,7 @@
         </v-chip>
         <v-chip
           v-if="instance.runtime.forge"
+          outlined
           small
           label
         >
@@ -144,6 +154,7 @@
         </v-chip>
         <v-chip
           v-if="instance.runtime.fabricLoader"
+          outlined
           small
           label
         >
@@ -162,8 +173,8 @@
 <script lang=ts>
 import { defineComponent, computed } from '@vue/composition-api'
 import unknownServer from '/@/assets/unknown_server.png'
-import { useBusy, useInstanceServerStatus } from '/@/hooks'
-import { Instance, write } from '@xmcl/runtime-api'
+import { useBusy, useInstanceServerStatus, useService } from '/@/hooks'
+import { Instance, InstanceServiceKey, write } from '@xmcl/runtime-api'
 import { required } from '/@/util/props'
 import { getBanner } from '/@/util/banner'
 import forgePng from '/@/assets/forge.png'
@@ -176,6 +187,8 @@ export default defineComponent({
   },
   setup(props, context) {
     const isBusy = useBusy(write(props.instance.path))
+    const { state } = useService(InstanceServiceKey)
+    const isSelected = computed(() => state.path === props.instance.path)
     function onDragStart(event: DragEvent) {
       event.dataTransfer!.effectAllowed = 'move'
     }
@@ -191,6 +204,7 @@ export default defineComponent({
       return unknownServer
     })
     return {
+      isSelected,
       isBusy,
       image,
       status,
@@ -214,4 +228,7 @@ export default defineComponent({
   transition: all;
   transition-duration: 0.2s;
 }
+.selected {
+}
+
 </style>
