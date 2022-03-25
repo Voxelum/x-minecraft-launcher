@@ -11,23 +11,27 @@
       {{ icons[level] }}
     </v-icon>
 
-    {{ title }}
     <span v-if="!full">{{ $t(`log.${level}`) }}</span>
-    <v-btn
-      v-if="more"
-      style="margin-right: -30px"
-      text
-      @click="more"
-    >
-      <v-icon>arrow_right</v-icon>
-    </v-btn>
-    <v-btn
-      color="pink"
-      text
-      @click="close"
-    >
-      <v-icon>close</v-icon>
-    </v-btn>
+    {{ title }}
+
+    <template #action="{ attrs }">
+      <v-btn
+        v-if="more"
+        icon
+        text
+        @click="more"
+      >
+        <v-icon>arrow_right</v-icon>
+      </v-btn>
+      <v-btn
+        icon
+        color="pink"
+        text
+        @click="close"
+      >
+        <v-icon>close</v-icon>
+      </v-btn>
+    </template>
   </v-snackbar>
 </template>
 
