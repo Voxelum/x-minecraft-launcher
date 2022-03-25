@@ -66,7 +66,7 @@
                 label
                 outlined
                 close
-                @input="onDeleteTag(tag)"
+                @click:close="onDeleteTag(tag)"
               >
                 <span
                   contenteditable

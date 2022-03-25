@@ -118,15 +118,6 @@
           @click="onClick($event, index)"
         />
       </transition-group>
-      <div class="absolute w-full bottom-0 flex items-center justify-center mb-5">
-        <float-button
-          :deleting="isDraggingMod"
-          :visible="isDraggingMod || isModified"
-          :loading="committing"
-          @drop="onDropDelete"
-          @click="commit"
-        />
-      </div>
       <v-dialog
         :value="deletingMods.length !== 0"
         width="400"
@@ -139,6 +130,15 @@
           :items="deletingMods"
         />
       </v-dialog>
+    </div>
+    <div class="absolute w-full left-0 bottom-0 flex items-center justify-center mb-5">
+      <float-button
+        :deleting="isDraggingMod"
+        :visible="isDraggingMod || isModified"
+        :loading="committing"
+        @drop="onDropDelete"
+        @click="commit"
+      />
     </div>
   </div>
 </template>
@@ -243,6 +243,7 @@ function setupSelection(items: Ref<ModItem[]>) {
   }
   function onKeyDown(e: KeyboardEvent) {
     if ((e.key === 'a') && e.ctrlKey) {
+      console.log(`${items.value.length} select`)
       select(0, items.value.length)
       e.preventDefault()
       return false
@@ -273,6 +274,28 @@ function setupSelection(items: Ref<ModItem[]>) {
   }
 }
 
+function setupVisibleFilter(items: Ref<ModItem[]>) {
+  const visibleCount = ref(30)
+  function onVisible(visible: boolean, index: number) {
+    if (!visible) {
+      // if (visibleCount.value > index + 40) {
+      //   visibleCount.value = index + 40
+      // }
+    } else if (visibleCount.value < index + 20) {
+      visibleCount.value += 20
+    } else if (visibleCount.value > index + 50) {
+      visibleCount.value -= 20
+    }
+  }
+  const mods = computed(() => items.value
+    .filter((m, i) => i < visibleCount.value))
+  return {
+    items: mods,
+    visibleCount,
+    onVisible,
+  }
+}
+
 function setupFilter(items: Ref<ModItem[]>) {
   function getFilterOptions(item: ModItem) {
     return [
@@ -287,7 +310,6 @@ function setupFilter(items: Ref<ModItem[]>) {
   const { state } = useService(InstanceServiceKey)
   const runtime = computed(() => state.instance.runtime)
 
-  const visibleCount = ref(30)
   const filterInCompatible = useLocalStorageCacheBool('ModSettingPage.filterInCompatible', false)
 
   function isCompatibleMod(mod: ModItem) {
@@ -311,27 +333,15 @@ function setupFilter(items: Ref<ModItem[]>) {
     }
     return list
   }
-  function onVisible(visible: boolean, index: number) {
-    if (!visible) {
-      // if (visibleCount.value > index + 40) {
-      //   visibleCount.value = index + 40
-      // }
-    } else if (visibleCount.value < index + 20) {
-      visibleCount.value += 20
-    } else if (visibleCount.value > index + 50) {
-      visibleCount.value -= 20
-    }
-  }
+
   const mods = computed(() => filter(items.value)
     .filter(isCompatibleMod)
     .sort((a, b) => (a.enabled ? -1 : 1))
-    .reduce(group, [])
-    .filter((m, i) => i < visibleCount.value))
+    .reduce(group, []))
 
   return {
     items: mods,
     filterInCompatible,
-    onVisible,
   }
 }
 
@@ -351,6 +361,7 @@ export default defineComponent({
     const { push } = useRouter()
 
     const filtered = setupFilter(mods)
+    const visibleFiltered = setupVisibleFilter(filtered.items)
     const selection = setupSelection(filtered.items)
     const { isSelectionMode, selectedItems } = selection
 
@@ -371,7 +382,8 @@ export default defineComponent({
     return {
       ...setupDragMod(filtered.items, selectedItems, isSelectionMode),
       ...setupDeletion(mods),
-      ...filtered,
+      filterInCompatible: filtered.filterInCompatible,
+      ...visibleFiltered,
 
       showModsFolder: showDirectory,
       goToCurseforgeMods,

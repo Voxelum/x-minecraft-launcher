@@ -48,7 +48,7 @@
           small
           close
           outlined
-          @input="onRemoveTag(tag)"
+          @click:close="onRemoveTag(tag)"
         >
           <div
             contenteditable
