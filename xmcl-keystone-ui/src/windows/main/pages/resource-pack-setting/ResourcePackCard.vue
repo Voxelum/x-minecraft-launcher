@@ -58,7 +58,7 @@
             class="mt-1"
           />
           <v-card-actions v-show="pack.tags.length > 0">
-            <div>
+            <div class="flex gap-2 flex-wrap">
               <v-chip
                 v-for="(tag, index) in pack.tags"
                 :key="`${tag}-${index}`"

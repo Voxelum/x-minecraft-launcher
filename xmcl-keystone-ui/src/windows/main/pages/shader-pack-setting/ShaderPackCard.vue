@@ -38,7 +38,7 @@
       </v-card-text>
       <v-card-text
         v-if="pack.tags.length > 0"
-        class="pt-0"
+        class="pt-0 flex gap-2 flex-wrap"
       >
         <v-chip
           v-for="(tag, index) in pack.tags"
@@ -48,11 +48,12 @@
           small
           close
           outlined
+          @mousedown.stop
           @click:close="onRemoveTag(tag)"
         >
           <div
             contenteditable
-            @input.stop="onEditTag($event, index)"
+            @input.stop.capture="onEditTag($event, index)"
             @blur="onEditTagEnd(pack)"
           >
             {{ tag }}

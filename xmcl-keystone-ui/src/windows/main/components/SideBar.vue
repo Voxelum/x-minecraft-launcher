@@ -4,7 +4,7 @@
     permanent
     width="200"
     :mini-variant="true"
-    class="moveable sidebar z-10 rounded-r"
+    class="moveable sidebar z-10"
   >
     <v-list
       nav
@@ -17,7 +17,10 @@
         push
         to="/user"
       >
-        <v-list-item-avatar>
+        <v-list-item-avatar
+          size="48"
+          large
+        >
           <ImageShowTextureHead
             :src="gameProfile.textures.SKIN.url"
             :dimension="48"

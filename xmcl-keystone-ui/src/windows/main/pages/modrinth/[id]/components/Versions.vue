@@ -64,7 +64,7 @@
           </v-chip>
         </td>
         <td class="">
-          <div class="flex gap-1 items-center">
+          <div class="flex gap-1 items-center overflow-auto flex-wrap max-w-50 py-2">
             <v-chip
               v-for="l of props.item.game_versions"
               :key="l"
