@@ -1,7 +1,8 @@
 
 import { IS_DEV } from '@/constant'
 import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
-import { InstalledAppManifest } from '@xmcl/runtime-api'
+import { InstalledAppManifest, InstanceServiceKey } from '@xmcl/runtime-api'
+import InstanceService from '@xmcl/runtime/lib/services/InstanceService'
 import { BrowserWindow, dialog, session, shell, Tray } from 'electron'
 import { fromFile } from 'file-type'
 import { readFile } from 'fs/promises'
@@ -9,6 +10,9 @@ import { join } from 'path'
 import { acrylic } from './acrylic'
 import iconPath from './assets/apple-touch-icon.png'
 import { plugins } from './controllers'
+import en from './locales/en.yaml'
+import ru from './locales/ru.yaml'
+import zh from './locales/zh-CN.yaml'
 import { createI18n } from './utils/i18n'
 import { trackWindowSize } from './windowSizeTracker'
 import browsePreload from '/@preload/browse'
@@ -18,9 +22,6 @@ import setupPreload from '/@preload/setup'
 import browserWinUrl from '/@renderer/browser.html'
 import loggerWinUrl from '/@renderer/logger.html'
 import setupWinUrl from '/@renderer/setup.html'
-import en from './locales/en.yaml'
-import zh from './locales/zh-CN.yaml'
-import ru from './locales/ru.yaml'
 
 export default class Controller implements LauncherAppController {
   protected mainWin: BrowserWindow | undefined = undefined
@@ -75,7 +76,27 @@ export default class Controller implements LauncherAppController {
     if (this.mainWin) {
       this.mainWin.close()
     }
-    await this.createAppWindow(this.app.launcherAppManager.getAppRoot(app.url), app)
+    if (!this.setupRef) {
+      await this.createAppWindow(this.app.launcherAppManager.getAppRoot(app.url), app)
+    } else {
+      const serv = this.app.serviceManager.getService(InstanceServiceKey)
+      if (serv) {
+        await (serv as InstanceService).initialize()
+        await this.createAppWindow(this.app.launcherAppManager.getAppRoot(app.url), app)
+        this.setupRef!.removeAllListeners()
+        this.setupRef!.close()
+        this.setupRef = undefined
+      } else {
+        this.app.on('service-ready', (serv) => {
+          if (serv.name === InstanceServiceKey) {
+            this.createAppWindow(this.app.launcherAppManager.getAppRoot(app.url), app)
+            this.setupRef!.removeAllListeners()
+            this.setupRef!.close()
+            this.setupRef = undefined
+          }
+        })
+      }
+    }
   }
 
   async createBrowseWindow() {
@@ -288,10 +309,10 @@ export default class Controller implements LauncherAppController {
     this.setupRef = browser
   }
 
-  async processFirstLaunch(): Promise<string> {
+  async processFirstLaunch(): Promise<{ path: string; instancePath: string; locale: string }> {
     this.createSetupWindow()
 
-    return new Promise<string>((resolve) => {
+    return new Promise<{ path: string; instancePath: string; locale: string }>((resolve) => {
       this.setupRef!.once('closed', () => {
         this.app.exit()
       })
@@ -299,11 +320,10 @@ export default class Controller implements LauncherAppController {
       this.setupRef!.center()
       this.setupRef!.focus()
 
-      this.app.handle('setup', (_, s) => {
-        resolve(s as string)
-        this.setupRef!.removeAllListeners()
-        this.setupRef!.close()
-        this.setupRef = undefined
+      this.app.handle('setup', (_, path, instancePath, locale) => {
+        resolve({
+          path, instancePath, locale,
+        })
       })
     })
   }

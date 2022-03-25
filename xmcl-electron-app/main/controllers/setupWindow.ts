@@ -3,20 +3,24 @@ import { ControllerPlugin } from './plugin'
 import { getDiskInfo } from 'node-disk-info'
 import { ipcMain } from 'electron'
 import { join, parse } from 'path'
+import type Drive from 'node-disk-info/dist/classes/drive'
 
 /**
  * Handle setup window preset request
  */
 export const setupWindow: ControllerPlugin = function (this: Controller) {
   ipcMain.handle('preset', async () => {
-    const drives = await getDiskInfo()
+    const drives = await new Promise<Drive[]>((resolve) => {
+      getDiskInfo().then(resolve, () => resolve([]))
+      setTimeout(() => { resolve([]) }, 4000)
+    })
     const defaultPath = join(this.app.getPath('home'), '.xmcl')
     const getPath = (driveSymbol: string) => {
       const parsedHome = parse(defaultPath)
       if (parsedHome.root.toLocaleLowerCase().startsWith(driveSymbol.toLocaleLowerCase())) {
         return defaultPath
       }
-      return join(driveSymbol, '.minecraft')
+      return join(driveSymbol, '.xmcl')
     }
     return {
       locale: this.app.getLocale(),

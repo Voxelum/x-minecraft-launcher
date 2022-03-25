@@ -5,7 +5,7 @@ export interface SetupAPI {
     locale: string
     drives: Drive[]
   }>
-  setup(path: string): Promise<void>
+  setup(path: string, instancePath: string, locale: string): Promise<void>
 }
 export interface Drive {
   filesystem: string

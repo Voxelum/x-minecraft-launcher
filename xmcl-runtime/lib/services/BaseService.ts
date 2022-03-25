@@ -25,7 +25,7 @@ export default class BaseService extends StatefulService<BaseState> implements I
       this.state.rootSet(this.app.gameDataPath)
       const data = await this.settingFile.read()
       this.state.config({
-        locale: data.locale || this.app.getLocale(),
+        locale: data.locale || this.app.getPreferredLocale() || this.app.getLocale(),
         autoInstallOnAppQuit: data.autoInstallOnAppQuit,
         autoDownload: data.autoDownload,
         allowPrerelease: data.allowPrerelease,
