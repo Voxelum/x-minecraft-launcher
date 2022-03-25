@@ -267,6 +267,12 @@ export default defineComponent({
       context.emit('select', template)
     }
     const searchTextRef: Ref<null | HTMLElement> = ref(null)
+    if (props.preset) {
+      const preset = templates.value.find(t => t.path === props.preset)
+      if (preset) {
+        onUse(preset)
+      }
+    }
     watch([computed(() => props.preset), templates], () => {
       if (props.preset) {
         const preset = templates.value.find(t => t.path === props.preset)
