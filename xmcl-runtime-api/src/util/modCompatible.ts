@@ -36,7 +36,10 @@ export function isFabricModCompatible(resource: FabricResource, runtime: Instanc
 
 export function isForgeModCompatible(resource: ForgeResource, runtime: Instance['runtime']): Compatible {
   const result = getForgeModCompatibility(resource, runtime)
-  return resolveCompatible(Object.values(result).map(v => resolveCompatible(Object.values(v).map(x => x.compatible))))
+  return resolveCompatible(Object.values(result)
+    .map(v => resolveCompatible(Object.entries(v)
+      .filter(([k]) => k === 'minecraft' || k === 'forge')
+      .map(x => x[1].compatible))))
 }
 
 export function getFabricModCompatibility(resource: FabricResource, runtime: Instance['runtime']): Record<string, CompatibleDetail> {
@@ -132,6 +135,13 @@ export function getForgeModCompatibility(resource: ForgeResource, runtime: Insta
         const currentVersion = parseVersion(current)
         if (range) {
           compatible = range.containsVersion(currentVersion)
+          if (!compatible) {
+            const res = range.restrictions[0]
+            if (Math.abs(res.lowerBound?.compareTo(currentVersion) ?? 100) === 1 ||
+            Math.abs(res.upperBound?.compareTo(currentVersion) ?? 100) === 1 ) {
+              compatible = 'maybe'
+            }
+          }
         }
       } else if (dep.semanticVersion) {
         compatible = satisfies(current, dep.semanticVersion)
@@ -165,6 +175,15 @@ export function isModCompatible(resource: Resource, runtime: Instance['runtime']
   } else if (isLiteloaderResource(resource)) {
     if (!runtime.liteloader) return false
     return isLiteloaderModCompatibility(resource, runtime)
+  }
+  return 'maybe'
+}
+
+export function isRangeCompatible(range: string, version: string): Compatible {
+  const versionRange = VersionRange.createFromVersionSpec(range)
+  const currentVersion = parseVersion(version)
+  if (versionRange && currentVersion) {
+    return versionRange.containsVersion(currentVersion)
   }
   return 'maybe'
 }

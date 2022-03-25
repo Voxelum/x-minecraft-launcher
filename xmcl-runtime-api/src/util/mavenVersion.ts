@@ -186,7 +186,8 @@ class IntItem implements Item {
     switch (item.type) {
       case Type.INT:
         const itemValue = (item as IntItem).value
-        return (this.value < itemValue) ? -1 : ((this.value === itemValue) ? 0 : 1)
+        return this.value - itemValue
+        // return (this.value < itemValue) ? -1 : ((this.value === itemValue) ? 0 : 1)
 
       case Type.STRING:
         return 1 // 1.1 > 1-sp

@@ -102,7 +102,7 @@
 import { computed, defineComponent, ref, Ref } from '@vue/composition-api'
 import { BaseServiceKey, InstanceServiceKey, NO_RESOURCE } from '@xmcl/runtime-api'
 import unknownPack from '/@/assets/unknown_pack.png'
-import { ResourcePackItem, useCompatible, useDragTransferItem, useI18n, useService, useTagColors, useTags } from '/@/hooks'
+import { ResourcePackItem, useRangeCompatible, useDragTransferItem, useI18n, useService, useTagColors, useTags } from '/@/hooks'
 import { getColor } from '/@/util/color'
 import { required } from '/@/util/props'
 import { ContextMenuItem, useContextMenu, useCurseforgeRoute } from '/@/windows/main/composables'
@@ -116,7 +116,7 @@ export default defineComponent({
     const iconImage: Ref<any> = ref(null)
     const { state } = useService(InstanceServiceKey)
     const runtime = computed(() => state.instance.runtime)
-    const { compatible } = useCompatible(computed(() => props.pack.resource ?? NO_RESOURCE), runtime)
+    const { compatible } = useRangeCompatible(computed(() => props.pack.acceptingRange ?? ''), computed(() => runtime.value.minecraft))
     const { open } = useContextMenu()
     const { $t } = useI18n()
     const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()

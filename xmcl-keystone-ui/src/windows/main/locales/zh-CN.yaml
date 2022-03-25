@@ -459,9 +459,10 @@ minecraft:
     release: 正式版
     snapshot: 快照版
 mod:
-  acceptVersion: 需要 Minecraft {version}
+  acceptVersion: 推荐 Minecraft {version}
   backToAllMods: 返回所有 Mods
   compatible: 可用于当前版本。
+  currentVersion: 当前是 {current}
   deletion: 删除 Mod
   deletionHint: 你将移除这个 Mod 的文件和信息。你确定吗？| 你将移除这些 Mod 的文件和信息。你确定吗？
   deletionRestHint: 等 {rest} 个模组……
@@ -472,6 +473,7 @@ mod:
   hint: '调整此启动配置所使用的的 Mod '
   import: 导入 Mod
   incompatible: 可能不兼容当前版本。
+  maybeCompatible: 也许兼容于当前版本。
   missing:
     absent: ''
     checkAvailabilities: ''
@@ -568,7 +570,6 @@ optifine:
 optional: 可选的
 popular: 热度
 profile:
-  profiles: 选择实例
   add: 添加本地游戏
   addServer: 添加服务器
   advancedSetting: 高级设置
@@ -642,6 +643,7 @@ profile:
   nameHint: 名称便于以后识别
   noLocalVersion: 没有本地版本
   older: 三天前
+  profiles: 选择实例
   refreshServers: 刷新服务器
   requireName: 必须填写名称
   select: 选择

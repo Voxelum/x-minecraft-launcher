@@ -512,6 +512,7 @@ minecraft:
     snapshot: Snapshot
 mod:
   acceptVersion: Accept Minecraft {version}
+  currentVersion: Current {current}
   backToAllMods: Back to All Mods
   compatible: Compatible Mod.
   deletion: Deleting Mod
@@ -527,6 +528,7 @@ mod:
   hint: Enable or disable the Mods of this launch profile
   import: Import Mod
   incompatible: Incompatible Mod.
+  maybeCompatible: Maybe Compatible.
   missing:
     absent: ''
     checkAvailabilities: ''
@@ -624,7 +626,6 @@ optifine:
 optional: Optional
 popular: Popularity
 profile:
-  profiles: Profiles
   add: Add Local Game
   addServer: Add Server
   advancedSetting: Advanced Settings
@@ -704,6 +705,7 @@ profile:
   nameHint: The name used to identify the game
   noLocalVersion: No Local Version
   older: Older
+  profiles: Profiles
   refreshServers: Refresh Servers
   requireName: The name is required
   select: Select
