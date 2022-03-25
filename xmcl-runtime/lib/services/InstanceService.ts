@@ -3,7 +3,7 @@ import { ensureDir, remove } from 'fs-extra'
 import { join, resolve } from 'path'
 import { v4 } from 'uuid'
 import LauncherApp from '../app/LauncherApp'
-import { exists, isDirectory, missing, readdirEnsured } from '../util/fs'
+import { copyPassively, exists, isDirectory, missing, readdirEnsured } from '../util/fs'
 import { assignShallow, requireObject, requireString } from '../util/object'
 import { createSafeFile, createSafeIO } from '../util/persistance'
 import InstallService from './InstallService'
@@ -14,7 +14,7 @@ import UserService from './UserService'
 const INSTANCES_FOLDER = 'instances'
 
 /**
- * Provide instance spliting service. It can split the game into multiple environment and dynamically deploy the resource to run.
+ * Provide instance splitting service. It can split the game into multiple environment and dynamically deploy the resource to run.
  */
 @ExportService(InstanceServiceKey)
 export class InstanceService extends StatefulService<InstanceState> implements IInstanceService {
@@ -52,8 +52,21 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       }
 
       if (Object.keys(state.all).length === 0) {
-        this.log('Cannot find any instances, try to init one default modpack.')
-        await this.createAndMount({})
+        const initial = this.app.getInitialInstance()
+        if (initial) {
+          try {
+            await this.linkInstance(initial)
+            await this.mountInstance(initial)
+            await this.instancesFile.write({ instances: Object.keys(this.state.all), selectedInstance: initial })
+          } catch (e) {
+            this.error(`Fail to initialize to ${initial}`)
+            this.error(e)
+            await this.createAndMount({})
+          }
+        } else {
+          this.log('Cannot find any instances, try to init one default modpack.')
+          await this.createAndMount({})
+        }
       } else {
         if (this.state.all[instanceConfig.selectedInstance]) {
           await this.mountInstance(instanceConfig.selectedInstance)
@@ -332,6 +345,32 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       this.log(`Modify instance ${instancePath} (${options.name}) ${JSON.stringify(result, null, 4)}.`)
       this.state.instanceEdit({ ...result, path: instancePath })
     }
+  }
+
+  /**
+   * Link a existed instance on you disk.
+   * @param path
+   */
+  async linkInstance(path: string) {
+    if (this.state.all[path]) {
+      this.log(`Skip to link already managed instance ${path}`)
+      return false
+    }
+    const loaded = await this.loadInstance(path)
+    if (!loaded) {
+      await this.createInstance({ path })
+    } else {
+      await this.instanceFile.write(join(path, 'instance.json'), this.state.all[path])
+    }
+
+    // copy assets, library and versions
+    await this.worker().copyPassively([
+      { src: resolve(path, 'libraries'), dest: this.getPath('libraries') },
+      { src: resolve(path, 'assets'), dest: this.getPath('assets') },
+      { src: resolve(path, 'versions'), dest: this.getPath('versions') },
+    ])
+
+    return true
   }
 }
 

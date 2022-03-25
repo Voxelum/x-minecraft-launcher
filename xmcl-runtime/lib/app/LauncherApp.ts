@@ -150,6 +150,17 @@ export abstract class LauncherApp extends EventEmitter {
     this.temporaryPath = ''
   }
 
+  private initialInstance = ''
+  private preferredLocale = ''
+
+  getInitialInstance() {
+    return this.initialInstance
+  }
+
+  getPreferredLocale() {
+    return this.preferredLocale
+  }
+
   /**
    * Broadcast a event with payload to client.
    *
@@ -293,8 +304,11 @@ export abstract class LauncherApp extends EventEmitter {
     } catch (e) {
       if (isSystemError(e) && e.code === 'ENOENT') {
         // first launch
-        await this.waitEngineReady();
-        (this.gameDataPath as any) = await this.controller.processFirstLaunch()
+        await this.waitEngineReady()
+        const { path, instancePath, locale } = await this.controller.processFirstLaunch()
+        this.initialInstance = instancePath
+        this.preferredLocale = locale;
+        (this.gameDataPath as any) = path
         await writeFile(join(this.appDataPath, 'root'), this.gameDataPath)
       } else {
         (this.gameDataPath as any) = this.appDataPath

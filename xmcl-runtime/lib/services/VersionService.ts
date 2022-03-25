@@ -2,7 +2,7 @@ import { ResolvedVersion, Version } from '@xmcl/core'
 import { VersionService as IVersionService, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
 import { isNonnull } from '../util/object'
 import { task } from '@xmcl/task'
-import { remove } from 'fs-extra'
+import { ensureDir, remove } from 'fs-extra'
 import { join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { CopyDirectoryTask, FileStateWatcher, missing, readdirEnsured } from '../util/fs'
@@ -20,9 +20,8 @@ export default class VersionService extends StatefulService<VersionState> implem
   constructor(app: LauncherApp) {
     super(app, async () => {
       await this.refreshVersions()
-      if (this.state.local.length === 0) {
-        this.migrateMinecraftFile()
-      }
+      const versions = this.getPath('versions')
+      await ensureDir(versions)
       this.versionsWatcher.watch(this.getPath('versions'))
     })
   }

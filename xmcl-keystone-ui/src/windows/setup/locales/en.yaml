@@ -1,4 +1,4 @@
-title: 'Welcome to KeyStone UI. Before start, we need you to setup the root directory of game data'
+title: 'Welcome to KeyStone UI. Before start, we need you to '
 defaultPath: 'Default Path'
 path: 'Current Path'
 browse: 'Browse'
@@ -6,3 +6,19 @@ confirm: 'Start'
 disk: 
   available: 'Available'
   used: 'Used'
+
+step:
+  locale:
+    name: Set Language
+    description: Select your favor language if we have! If you don't see your native language and you want to help, you can visit our github to submit pull request to translate!
+    language: Language
+  game:
+    name: Import Existed Game
+    description: Choose existed game directory (.minecraft) to import existed resources. So you can rapidly identify the mods, resource packs, etc.
+  dataRoot:
+    name: Set Data Root
+    description: The data root is not common .minecraft directory. Since XMCL data directory structure is different from vanilla. We do not recommend to use common .minecraft directory as data root.
+
+previous: Previous
+next: Next
+

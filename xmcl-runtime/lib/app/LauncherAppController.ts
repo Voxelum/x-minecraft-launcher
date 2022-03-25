@@ -5,7 +5,7 @@ export interface LauncherAppController {
    * Should launch windows as wizard to let user select the workspace
    * @return the workspace user selected
    */
-  processFirstLaunch(): Promise<string>
+  processFirstLaunch(): Promise<{ path: string; instancePath: string; locale: string }>
   /**
    * The api to request the launcher window focus
    */

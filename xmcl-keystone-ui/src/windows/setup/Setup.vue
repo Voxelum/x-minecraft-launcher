@@ -1,107 +1,125 @@
 <template>
   <v-app
-    class="moveable rounded-lg"
-    fill-height
+    class="moveable rounded-lg overflow-auto h-full"
   >
-    <!-- <v-container> -->
     <v-card
       v-if="!fetching"
-      style="height: 100%; display: flex; flex-direction: column;"
-      class="rounded-lg"
+      class="rounded-lg flex flex-col overflow-auto h-full"
     >
       <v-card-title
-        style="background-color: black"
         class="elevation-3 text-lg font-bold"
       >
-        <h2>{{ $t('title') }}</h2>
+        <h2>{{ $t('title') }}{{ currentTitle }}</h2>
       </v-card-title>
       <v-divider />
-      <v-list
-        class="non-moveable"
-        three-line
-        subheader
-        style="background: transparent; width: 100%"
+      <v-stepper
+        v-model="step"
+        class="non-moveable flex flex-col overflow-auto h-full"
       >
-        <v-list-item>
-          <v-list-item-content>
-            <v-list-item-title>{{ $t('defaultPath') }}</v-list-item-title>
-            <v-list-item-subtitle>{{ defaultPath }}</v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-content>
-            <v-list-item-title>{{ $t('path') }}</v-list-item-title>
-            <v-list-item-subtitle>{{ path }}</v-list-item-subtitle>
-          </v-list-item-content>
-          <v-list-item-action class="justify-center">
-            <v-btn
-              outlined
-              flat
-              style="margin-right: 10px;"
-              @click="browse"
-            >
-              {{ $t('browse') }}
-            </v-btn>
-          </v-list-item-action>
-        </v-list-item>
-        <v-list-item
-          v-for="d of drives"
-          :key="d.mounted"
-          v-ripple
-          class="hover:bg-[rgba(123,123,123,0.5)] cursor-pointer rounded-lg m-2 mx-3"
-          @click="onSelect(d)"
-        >
-          <v-list-item-avatar>
-            <v-icon>storage</v-icon>
-          </v-list-item-avatar>
+        <v-stepper-header>
+          <v-stepper-step
+            :complete="step > 1"
+            :editable="step > 1"
+            step="1"
+          >
+            {{ $t('step.locale.name') }}
+          </v-stepper-step>
 
-          <v-list-item-content>
-            <v-list-item-title class="flex p-0 flex-grow-0 align-baseline w-full">
-              {{ d.mounted }}
-              <div class="flex-grow" />
+          <v-divider />
 
-              <span
-                class="text-[hsla(0,0%,100%,.7)] whitespace-normal"
-                style="font-size: 14px;"
-              >
-                {{ d.selectedPath }}
-              </span>
-            </v-list-item-title>
-            <v-progress-linear
-              class="p-0 my-2"
-              :value="d.used / (d.available + d.used) * 100"
+          <v-stepper-step
+            :complete="step > 2"
+            :editable="step > 2"
+            step="2"
+          >
+            {{ $t('step.dataRoot.name') }}
+          </v-stepper-step>
+
+          <v-divider />
+
+          <v-stepper-step step="3">
+            {{ $t('step.game.name') }}
+          </v-stepper-step>
+        </v-stepper-header>
+
+        <v-stepper-items class="h-full overflow-auto">
+          <v-stepper-content
+            class="h-full overflow-auto"
+            step="1"
+          >
+            <SetLocale
+              v-model="locale"
             />
-            <v-list-item-subtitle class="flex">
-              <span class="">
-                {{ $t('disk.available') }}:
-                {{ (d.available / 1024 / 1024 / 1024).toFixed(2) }}G
-                {{ $t('disk.used') }}:
-                {{ (d.used / 1024 / 1024 / 1024).toFixed(2) }}G
-              </span>
+            <div class="flex-grow" />
+            <div class="flex flex-1 flex-grow-0 mt-5">
               <div class="flex-grow" />
-              <span>
-                {{ d.capacity }}
-              </span>
-            </v-list-item-subtitle>
-          </v-list-item-content>
-        </v-list-item>
-      </v-list>
-      <div style="flex-grow: 1" />
-      <v-card-actions
-        class="non-moveable"
-        style="justify-content: center; display: flex;"
-      >
-        <v-btn
-          large
-          block
-          flat
-          color="green"
-          :loading="loading"
-          @click="setup"
-        >
-          {{ $t('confirm') }}
-        </v-btn>
-      </v-card-actions>
+              <v-btn
+                color="primary"
+                :disabled="loading"
+                @click="step = 2"
+              >
+                {{ $t('next') }}
+              </v-btn>
+            </div>
+          </v-stepper-content>
+          <v-stepper-content
+            class="h-full overflow-auto"
+            step="2"
+          >
+            <SetDataRoot
+              v-model="path"
+              :default-path="defaultPath"
+              :drives="drives"
+            />
+
+            <div class="flex mt-5">
+              <v-btn
+                text
+                :disabled="loading"
+                @click="step -= 1"
+              >
+                {{ $t('previous') }}
+              </v-btn>
+              <div class="flex-grow" />
+              <v-btn
+                color="primary"
+                :disabled="loading"
+                @click="step = 3"
+              >
+                {{ $t('next') }}
+              </v-btn>
+            </div>
+          </v-stepper-content>
+          <v-stepper-content
+            class="h-full overflow-auto"
+            step="3"
+          >
+            <SelectGame
+              v-model="instancePath"
+              :default-path="minecraftPath"
+            />
+
+            <div class="flex-grow" />
+            <div class="flex flex-grow-0 mt-5 ">
+              <v-btn
+                text
+                :disabled="loading"
+                @click="step -= 1"
+              >
+                {{ $t('previous') }}
+              </v-btn>
+              <div class="flex-grow" />
+              <v-btn
+                color="primary"
+                :loading="loading"
+                @click="setup"
+              >
+                {{ $t('confirm') }}
+              </v-btn>
+            </div>
+          </v-stepper-content>
+        </v-stepper-items>
+      </v-stepper>
     </v-card>
     <v-card
       v-else
@@ -127,26 +145,39 @@
         </v-layout>
       </v-container>
     </v-card>
-    <!-- </v-container> -->
   </v-app>
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, toRefs, inject } from '@vue/composition-api'
+import { defineComponent, reactive, toRefs, inject, computed } from '@vue/composition-api'
 import { useI18n } from '/@/hooks'
 import { I18N_KEY } from '/@/constant'
 import { SetupAPI, Drive } from '@xmcl/runtime-api/setup'
+import SetDataRoot from './SetDataRoot.vue'
+import SetLocale from './SetLocale.vue'
+import SelectGame from './SelectGame.vue'
 
 declare const api: SetupAPI
 
 export default defineComponent({
+  components: { SetDataRoot, SetLocale, SelectGame },
   setup() {
     const i18n = inject(I18N_KEY)
     const { $t } = useI18n()
-    const dialog = windowController
+    const locale = computed({
+      get() { return i18n!.locale },
+      set(v: string) { i18n!.locale = v },
+    })
+    const currentTitle = computed(() => {
+      if (data.step === 1) return $t('step.locale.name')
+      if (data.step === 2) return $t('step.dataRoot.name')
+      return $t('step.game.name')
+    })
     const data = reactive({
+      step: 1,
       fetching: true,
       minecraftPath: '',
+      instancePath: '',
       path: '',
       defaultPath: '',
       loading: false,
@@ -156,32 +187,20 @@ export default defineComponent({
       data.fetching = false
       i18n!.locale = locale
       data.minecraftPath = minecraftPath
+      data.instancePath = minecraftPath
       data.path = defaultPath
       data.defaultPath = defaultPath
       data.drives = drives
     })
     function setup() {
-      api.setup(data.path)
+      api.setup(data.path, data.instancePath, locale.value)
       data.loading = true
-    }
-    function onSelect(drive: Drive) {
-      data.path = drive.selectedPath
-    }
-    async function browse() {
-      const { filePaths } = await dialog.showOpenDialog({
-        title: $t('browse'),
-        defaultPath: data.path,
-        properties: ['openDirectory', 'createDirectory'],
-      })
-      if (filePaths && filePaths.length !== 0) {
-        data.path = filePaths[0]
-      }
     }
     return {
       ...toRefs(data),
+      locale,
+      currentTitle,
       setup,
-      browse,
-      onSelect,
     }
   },
 })
@@ -224,5 +243,8 @@ body {
 
 .non-moveable {
   -webkit-app-region: no-drag;
+}
+.v-stepper__wrapper {
+  @apply h-full flex flex-col overflow-auto absolute left-0 top-0 p-10;
 }
 </style>
