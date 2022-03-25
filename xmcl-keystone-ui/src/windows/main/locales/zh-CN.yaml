@@ -595,6 +595,9 @@ profile:
   importCurseforge: 从 Curseforge 模组包导入
   importFolder: 从文件夹导入
   importZip: 从压缩包导入
+  importModpack:
+    success: 成功导入 {modpack} 整合包
+    failed: 创建 {modpack} 整合包失败
   instanceVersion: 整合包版本
   launchArguments: 启动命令预览
   launchingDetail: 启动配置

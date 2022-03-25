@@ -653,6 +653,9 @@ profile:
   importCurseforge: Import from Curseforge Modpack
   importFolder: Import from Folder
   importZip: Import from Zip
+  importModpack:
+    success: Import {modpack} succeed
+    failed: Import {modpack} failed
   instanceVersion: Modpack Version
   launchArguments: Launch Arguments Preview
   launchingDetail: Launch Detail

@@ -180,6 +180,10 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
           } else {
             this.warn(`Non mod resource added in /mods directory! ${filePath}`)
           }
+          if (resource.fileType === 'directory') {
+            // ignore directory
+            return
+          }
           if (!isPersistedResource(resource)) {
             if (resource.fileType !== 'directory' && resource.type === ResourceType.Unknown) {
               this.log(`Skip to import unknown directory to /mods! ${filePath}`)
