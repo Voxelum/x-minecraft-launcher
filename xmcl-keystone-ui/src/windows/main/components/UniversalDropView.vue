@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-if="inside"
-    :value="true"
+    v-model="inside"
     @dragover.prevent
   >
     <div
@@ -66,7 +66,7 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, ref } from '@vue/composition-api'
+import { defineComponent, ref, watch } from '@vue/composition-api'
 import PreviewView from './UniversalDropViewPreview.vue'
 import { useFileDrop, useRouter } from '/@/hooks'
 import { isPersistedResource, Resource, ResourceDomain } from '@xmcl/runtime-api'
