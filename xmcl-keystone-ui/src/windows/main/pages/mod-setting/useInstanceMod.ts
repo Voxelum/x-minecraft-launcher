@@ -211,6 +211,15 @@ export function useInstanceMods() {
       modItem.type = 'unknown'
       modItem.name = resource.fileName
     }
+    if (!modItem.id) {
+      modItem.id = resource.fileName + resource.hash.slice(0, 4)
+    }
+    if (!modItem.version) {
+      modItem.version = '?'
+    }
+    if (!modItem.name) {
+      modItem.name = resource.fileName
+    }
     return modItem
   }
 
