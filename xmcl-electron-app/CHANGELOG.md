@@ -1,4 +1,34 @@
 
+## 0.21.9
+### @xmcl/runtime-api@0.5.3
+#### Bug Fixes
+
+- add more guide to setup ([dc5a612d06af0f1a998dd31be52a12e6fbee7f8d](https://github.com/Voxelum/x-minecraft-launcher/commit/dc5a612d06af0f1a998dd31be52a12e6fbee7f8d))
+- optimize compatible hint ([ae8b75d0d5a3c0d29d82dbe53b504ef97856179b](https://github.com/Voxelum/x-minecraft-launcher/commit/ae8b75d0d5a3c0d29d82dbe53b504ef97856179b))
+### @xmcl/keystone-ui@0.20.7
+#### Bug Fixes
+
+- adjust card & avatar & modrinth ui ([5db8d64a6122c7e7fa99c2aca66a05195460223a](https://github.com/Voxelum/x-minecraft-launcher/commit/5db8d64a6122c7e7fa99c2aca66a05195460223a))
+- fix the pos of notifier btn ([9b492a84a54a43f7ee34326f4db25f2d655e4cf9](https://github.com/Voxelum/x-minecraft-launcher/commit/9b492a84a54a43f7ee34326f4db25f2d655e4cf9))
+- add more guide to setup ([dc5a612d06af0f1a998dd31be52a12e6fbee7f8d](https://github.com/Voxelum/x-minecraft-launcher/commit/dc5a612d06af0f1a998dd31be52a12e6fbee7f8d))
+- assign id for unknown mod item ([d71d68dee7e384d89b876736699903f441f375ec](https://github.com/Voxelum/x-minecraft-launcher/commit/d71d68dee7e384d89b876736699903f441f375ec))
+- optimize the import cf experience ([b09d25ac6e9cca3643d0423369cb9485792dc942](https://github.com/Voxelum/x-minecraft-launcher/commit/b09d25ac6e9cca3643d0423369cb9485792dc942))
+- optimize compatible hint ([ae8b75d0d5a3c0d29d82dbe53b504ef97856179b](https://github.com/Voxelum/x-minecraft-launcher/commit/ae8b75d0d5a3c0d29d82dbe53b504ef97856179b))
+- adjust some ui ([7a8ba2114a9fe66ffa20e748ce395c3d1f7a134d](https://github.com/Voxelum/x-minecraft-launcher/commit/7a8ba2114a9fe66ffa20e748ce395c3d1f7a134d))
+- tag deletion & selection on mod/resourcepack card ([6de96547517a628ef0d8299b1eececfe89a877a1](https://github.com/Voxelum/x-minecraft-launcher/commit/6de96547517a628ef0d8299b1eececfe89a877a1))
+- first time add template won't auto fill up ([9fdc6cee0730231465254fc43d36559acc6d14e9](https://github.com/Voxelum/x-minecraft-launcher/commit/9fdc6cee0730231465254fc43d36559acc6d14e9))
+- drop view can't show if we blur it ([a7d90d078c523e27ebe38de34e4808c651e58616](https://github.com/Voxelum/x-minecraft-launcher/commit/a7d90d078c523e27ebe38de34e4808c651e58616))
+### @xmcl/runtime@0.19.6
+#### Bug Fixes
+
+- add more guide to setup ([dc5a612d06af0f1a998dd31be52a12e6fbee7f8d](https://github.com/Voxelum/x-minecraft-launcher/commit/dc5a612d06af0f1a998dd31be52a12e6fbee7f8d))
+- optimize the import cf experience ([b09d25ac6e9cca3643d0423369cb9485792dc942](https://github.com/Voxelum/x-minecraft-launcher/commit/b09d25ac6e9cca3643d0423369cb9485792dc942))
+### xmcl@0.21.9
+#### Bug Fixes
+
+- add more guide to setup ([dc5a612d06af0f1a998dd31be52a12e6fbee7f8d](https://github.com/Voxelum/x-minecraft-launcher/commit/dc5a612d06af0f1a998dd31be52a12e6fbee7f8d))
+
+
 ## 0.21.8
 ### @xmcl/runtime-api@0.5.2
 #### Bug Fixes
