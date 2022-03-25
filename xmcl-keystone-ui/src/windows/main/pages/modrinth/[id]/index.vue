@@ -20,7 +20,7 @@
       height="3"
       :indeterminate="true"
     />
-    <div class="flex flex-col gap-4 flex-grow">
+    <div class="flex flex-col gap-4 flex-grow xl:max-w-110vh max-w-full">
       <Header
         class="flex-grow-0"
         :title="project.title"
@@ -56,6 +56,7 @@
           </v-tab-item>
         </v-tabs-items>
       </v-card>
+      <div class="min-h-[10px]" />
     </div>
     <div class="flex flex-col gap-4 flex-grow">
       <Tags

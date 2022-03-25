@@ -59,7 +59,7 @@
             >
               {{ source.name }}
             </h3>
-            <div class="flex gap-1">
+            <div class="flex gap-1 flex-wrap">
               <v-chip
                 small
                 outlined
