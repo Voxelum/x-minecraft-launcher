@@ -34,17 +34,6 @@
       dense
       class="non-moveable px-2 ml-1"
     >
-      <!-- <v-list-item
-        push
-        link
-        to="/"
-      >
-        <v-list-item-icon>
-          <v-icon>home</v-icon>
-        </v-list-item-icon>
-        <v-list-item-title>Home</v-list-item-title>
-      </v-list-item> -->
-
       <div class="mb-1">
         <v-list-group
           v-model="expanding"
@@ -54,106 +43,164 @@
           link
           @click.capture="onHomeClick"
         >
-          <!-- <v-list-item
-            link
-            push
-            to="/base-setting"
+          <v-divider />
+          <v-tooltip
+            :close-delay="0"
+            right
           >
-            <v-list-item-icon>
-              <v-icon> more_vert </v-icon>
-            </v-list-item-icon>
-            <v-list-item-title v-text="'Text'" />
-          </v-list-item> -->
-          <v-list-item
-            link
-            push
-            to="/mod-setting"
+            <template #activator="{ on: tooltip }">
+              <v-list-item
+                link
+                push
+                to="/mod-setting"
+                v-on="tooltip"
+              >
+                <v-list-item-icon>
+                  <v-icon>
+                    extension
+                  </v-icon>
+                  <!-- <v-icon> extension </v-icon> -->
+                </v-list-item-icon>
+
+                <v-list-item-title v-text="'Text'" />
+              </v-list-item>
+            </template>
+            {{ $tc('mod.name', 2) }}
+          </v-tooltip>
+          <v-tooltip
+            :close-delay="0"
+            right
           >
-            <v-list-item-icon>
-              <v-icon> extension </v-icon>
-            </v-list-item-icon>
-            <v-list-item-title v-text="'Text'" />
-          </v-list-item>
-          <v-list-item
-            link
-            push
-            to="/resource-pack-setting"
+            <template #activator="{ on: tooltip }">
+              <v-list-item
+                link
+                push
+                to="/resource-pack-setting"
+                v-on="tooltip"
+              >
+                <v-list-item-icon>
+                  <v-icon> palette </v-icon>
+                </v-list-item-icon>
+                <v-list-item-title v-text="'Text'" />
+              </v-list-item>
+            </template>
+            {{ $tc('resourcepack.name', 2) }}
+          </v-tooltip>
+
+          <v-tooltip
+            :close-delay="0"
+            right
           >
-            <v-list-item-icon>
-              <v-icon> palette </v-icon>
-            </v-list-item-icon>
-            <v-list-item-title v-text="'Text'" />
-          </v-list-item>
-          <v-list-item
-            link
-            push
-            to="/shader-pack-setting"
-          >
-            <v-list-item-icon>
-              <v-icon> gradient </v-icon>
-            </v-list-item-icon>
-            <v-list-item-title v-text="'Text'" />
-          </v-list-item>
+            <template #activator="{ on: tooltip }">
+              <v-list-item
+                link
+                push
+                to="/shader-pack-setting"
+                v-on="tooltip"
+              >
+                <v-list-item-icon>
+                  <v-icon> gradient </v-icon>
+                </v-list-item-icon>
+                <v-list-item-title v-text="'Text'" />
+              </v-list-item>
+            </template>
+            {{ $tc('shaderpack.name', 2) }}
+          </v-tooltip>
+          <v-divider />
         </v-list-group>
       </div>
 
-      <v-list-item
-        push
-        link
-        to="/instances"
+      <v-tooltip
+        :close-delay="0"
+        right
       >
-        <v-list-item-icon>
-          <v-icon>apps</v-icon>
-        </v-list-item-icon>
-        <v-list-item-title>Instances</v-list-item-title>
-      </v-list-item>
-      <v-list-item
-        push
-        link
-        to="/modpack-setting"
+        <template #activator="{ on: tooltip }">
+          <v-list-item
+            push
+            link
+            to="/instances"
+            v-on="tooltip"
+          >
+            <v-list-item-icon>
+              <v-icon>apps</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Instances</v-list-item-title>
+          </v-list-item>
+        </template>
+        {{ $t('profile.profiles') }}
+      </v-tooltip>
+
+      <v-tooltip
+        :close-delay="0"
+        right
       >
-        <v-list-item-icon>
-          <v-icon>
-            inventory
-          </v-icon>
-        </v-list-item-icon>
-        <v-list-item-title>Modpack</v-list-item-title>
-      </v-list-item>
-      <v-list-item
-        push
-        link
-        to="/curseforge/mc-mods"
+        <template #activator="{ on: tooltip }">
+          <v-list-item
+            push
+            link
+            to="/modpack-setting"
+            v-on="tooltip"
+          >
+            <v-list-item-icon>
+              <v-icon>
+                inventory
+              </v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Modpack</v-list-item-title>
+          </v-list-item>
+        </template>
+        {{ $tc('profile.modpack.name', 2) }}
+      </v-tooltip>
+
+      <v-tooltip
+        :close-delay="0"
+        right
       >
-        <v-list-item-icon>
-          <v-icon>
-            $vuetify.icons.curseforge
-          </v-icon>
-        </v-list-item-icon>
-        <v-list-item-title>Curseforge</v-list-item-title>
-      </v-list-item>
-      <v-list-item
-        push
-        link
-        to="/modrinth"
+        <template #activator="{ on: tooltip }">
+          <v-list-item
+            push
+            link
+            to="/curseforge/mc-mods"
+            v-on="tooltip"
+          >
+            <v-list-item-icon>
+              <v-icon>
+                $vuetify.icons.curseforge
+              </v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Curseforge</v-list-item-title>
+          </v-list-item>
+        </template>
+        Curseforge
+      </v-tooltip>
+
+      <v-tooltip
+        :close-delay="0"
+        right
       >
-        <v-list-item-icon>
-          <v-icon>
-            $vuetify.icons.modrinth
-          </v-icon>
-        </v-list-item-icon>
-        <v-list-item-title>Modrinth</v-list-item-title>
-      </v-list-item>
-      <!-- <v-list-item
-        push
-        to="/mcwiki"
-      >
-        <v-list-item-icon style="padding-right: 2px;">
-          <v-icon>file</v-icon>
-        </v-list-item-icon>
-      </v-list-item> -->
+        <template #activator="{ on: tooltip }">
+          <v-list-item
+            push
+            link
+            to="/modrinth"
+            v-on="tooltip"
+          >
+            <v-list-item-icon>
+              <v-icon>
+                $vuetify.icons.modrinth
+              </v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Modrinth</v-list-item-title>
+          </v-list-item>
+        </template>
+        Modrinth
+      </v-tooltip>
+
       <v-spacer />
     </v-list>
+
     <div class="flex flex-grow-1" />
+
     <v-list
       nav
       dense
