@@ -38,7 +38,9 @@
         </v-stepper-step>
       </v-stepper-header>
 
-      <v-stepper-items>
+      <v-stepper-items
+        class="visible-scroll"
+      >
         <v-stepper-content
           step="1"
           style="overflow: auto; max-height: 450px;"
@@ -60,7 +62,7 @@
         </v-stepper-content>
         <v-stepper-content
           step="2"
-          class="overflow-auto max-h-[70vh]"
+          class="overflow-auto max-h-[70vh] "
         >
           <base-content :valid.sync="valid" />
           <advance-content :valid.sync="valid" />

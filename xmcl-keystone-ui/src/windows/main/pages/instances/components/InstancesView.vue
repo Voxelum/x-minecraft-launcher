@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col invisible-scroll select-none overflow-auto h-full justify-start items-start w-full gap-5"
+    class="flex flex-col select-none overflow-auto h-full justify-start items-start w-full gap-5"
     style="overflow: scroll;"
   >
     <div
