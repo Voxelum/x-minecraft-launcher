@@ -1,4 +1,45 @@
 
+## 0.21.8
+### @xmcl/runtime-api@0.5.2
+#### Bug Fixes
+
+- add instance props modpackVersion & fileApi to export factor ([a34b8ee2db7ea00c4dafd6a18940ebbd0955f95a](https://github.com/Voxelum/x-minecraft-launcher/commit/a34b8ee2db7ea00c4dafd6a18940ebbd0955f95a))
+- fix modrinth perf issue on versions page & migrate to v2 api ([fe182d85c58a1082691a33c2da711c6eac3f9ca8](https://github.com/Voxelum/x-minecraft-launcher/commit/fe182d85c58a1082691a33c2da711c6eac3f9ca8))
+### @xmcl/keystone-ui@0.20.6
+#### Bug Fixes
+
+- adjust instance card & side bar color ([dbaaa586dc80950c31e0f10c57de4d6d9e120763](https://github.com/Voxelum/x-minecraft-launcher/commit/dbaaa586dc80950c31e0f10c57de4d6d9e120763))
+- quick fix on user offline problem ([0dfc3c160d3072b46bca2793e340cfc907e356dc](https://github.com/Voxelum/x-minecraft-launcher/commit/0dfc3c160d3072b46bca2793e340cfc907e356dc))
+- add tooltip on sidebar ([ea0af7b32a548e3fdb09e558c741397d2de79edd](https://github.com/Voxelum/x-minecraft-launcher/commit/ea0af7b32a548e3fdb09e558c741397d2de79edd))
+- add scroll bar to dialogs ([f9e5882fdfd09ad7c689420fac3212a740e94859](https://github.com/Voxelum/x-minecraft-launcher/commit/f9e5882fdfd09ad7c689420fac3212a740e94859))
+- navi to browser for mcwiki ([bacf8148a878c3febae8ce92517380bf16020c55](https://github.com/Voxelum/x-minecraft-launcher/commit/bacf8148a878c3febae8ce92517380bf16020c55))
+- let user change background image fit ([41efedca011322594ee259650aff345309acb098](https://github.com/Voxelum/x-minecraft-launcher/commit/41efedca011322594ee259650aff345309acb098))
+- title is overlapped by background in home page ([daf036d0fe9a43b46f1f0e976bc6c2aca79a344c](https://github.com/Voxelum/x-minecraft-launcher/commit/daf036d0fe9a43b46f1f0e976bc6c2aca79a344c))
+- adjust resource name & optifine ui ([81b5f2e79ff683364abfd69b19d30540eee7d8bb](https://github.com/Voxelum/x-minecraft-launcher/commit/81b5f2e79ff683364abfd69b19d30540eee7d8bb))
+- adjust some i18n ([4c9c25b0137d72f20927628f77e966a35209879c](https://github.com/Voxelum/x-minecraft-launcher/commit/4c9c25b0137d72f20927628f77e966a35209879c))
+- allow re-parse unknown resource ([91dacfa429f7e48fa52fab9909b83faaabbcbb01](https://github.com/Voxelum/x-minecraft-launcher/commit/91dacfa429f7e48fa52fab9909b83faaabbcbb01))
+- move the systembar to single component ([7094764cb3424f848892e7a7e8d6c297e3293f61](https://github.com/Voxelum/x-minecraft-launcher/commit/7094764cb3424f848892e7a7e8d6c297e3293f61))
+- add instance props modpackVersion & fileApi to export factor ([a34b8ee2db7ea00c4dafd6a18940ebbd0955f95a](https://github.com/Voxelum/x-minecraft-launcher/commit/a34b8ee2db7ea00c4dafd6a18940ebbd0955f95a))
+- cannot scroll version menu ([269ddf5dd3890106c87af09b7ae60c68ecef06b9](https://github.com/Voxelum/x-minecraft-launcher/commit/269ddf5dd3890106c87af09b7ae60c68ecef06b9))
+- speed up icon load time ([f44132df0e33312722d1f64266bd75a5e5c65306](https://github.com/Voxelum/x-minecraft-launcher/commit/f44132df0e33312722d1f64266bd75a5e5c65306))
+- fix modrinth perf issue on versions page & migrate to v2 api ([fe182d85c58a1082691a33c2da711c6eac3f9ca8](https://github.com/Voxelum/x-minecraft-launcher/commit/fe182d85c58a1082691a33c2da711c6eac3f9ca8))
+- not show dup version as new version ([a833e69834bbdf45568ec91a964d76fe0aab3837](https://github.com/Voxelum/x-minecraft-launcher/commit/a833e69834bbdf45568ec91a964d76fe0aab3837))
+- fabric install does not respect mc version ([ce03b1a60cf1eeb3a07e270a06513f619befc9b6](https://github.com/Voxelum/x-minecraft-launcher/commit/ce03b1a60cf1eeb3a07e270a06513f619befc9b6))
+### @xmcl/runtime@0.19.5
+#### Bug Fixes
+
+- quick fix on user offline problem ([0dfc3c160d3072b46bca2793e340cfc907e356dc](https://github.com/Voxelum/x-minecraft-launcher/commit/0dfc3c160d3072b46bca2793e340cfc907e356dc))
+- do not show dictionary in modlist ([03c074b53de045cf3bd163f5af0ac0f105b2f61e](https://github.com/Voxelum/x-minecraft-launcher/commit/03c074b53de045cf3bd163f5af0ac0f105b2f61e))
+- adjust resource name & optifine ui ([81b5f2e79ff683364abfd69b19d30540eee7d8bb](https://github.com/Voxelum/x-minecraft-launcher/commit/81b5f2e79ff683364abfd69b19d30540eee7d8bb))
+- allow re-parse unknown resource ([91dacfa429f7e48fa52fab9909b83faaabbcbb01](https://github.com/Voxelum/x-minecraft-launcher/commit/91dacfa429f7e48fa52fab9909b83faaabbcbb01))
+- correct java launch path ([6297ad2d48de9a1d0f83a652b5f4d02e27e630b9](https://github.com/Voxelum/x-minecraft-launcher/commit/6297ad2d48de9a1d0f83a652b5f4d02e27e630b9))
+- hint user jre 8_321 if forge is enabled ([12b387619062b98d637f63a41185400ce98ec048](https://github.com/Voxelum/x-minecraft-launcher/commit/12b387619062b98d637f63a41185400ce98ec048))
+- cannot refresh optifine list ([227b0821c39eba0d88fce09ece9a47a3525e18c4](https://github.com/Voxelum/x-minecraft-launcher/commit/227b0821c39eba0d88fce09ece9a47a3525e18c4))
+- make sure modpack import cache the resource ([9e19366ecc022ee70d94d5b0fc31bb7041b3d511](https://github.com/Voxelum/x-minecraft-launcher/commit/9e19366ecc022ee70d94d5b0fc31bb7041b3d511))
+- add instance props modpackVersion & fileApi to export factor ([a34b8ee2db7ea00c4dafd6a18940ebbd0955f95a](https://github.com/Voxelum/x-minecraft-launcher/commit/a34b8ee2db7ea00c4dafd6a18940ebbd0955f95a))
+- fix modrinth perf issue on versions page & migrate to v2 api ([fe182d85c58a1082691a33c2da711c6eac3f9ca8](https://github.com/Voxelum/x-minecraft-launcher/commit/fe182d85c58a1082691a33c2da711c6eac3f9ca8))
+
+
 ## 0.21.7
 ### @xmcl/keystone-ui@0.20.5
 #### Bug Fixes
