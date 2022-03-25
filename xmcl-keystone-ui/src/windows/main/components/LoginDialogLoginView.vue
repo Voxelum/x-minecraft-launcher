@@ -48,7 +48,7 @@
           :label="
             $te(`user.${authService}.account`)
               ? $t(`user.${authService}.account`)
-              : $t(`user.${isOffline ? 'offline' : 'mojang'}.account`)
+              : $t(`user.${'offline'}.account`)
           "
           :rules="usernameRules"
           :error="!!usernameErrors.length"
@@ -59,7 +59,6 @@
 
         <v-text-field
           v-model="password"
-
           prepend-icon="lock"
           type="password"
           required
@@ -162,8 +161,16 @@ export default defineComponent({
     const profileServices: Ref<ServiceItem[]> = computed(() => Object.keys(state.profileServices)
       .map((a) => ({ value: a, text: $te(`user.${a}.name`) ? $t(`user.${a}.name`) : a })))
     const { userProfile } = useCurrentUser()
-    const { logined, isOffline } = useUserProfileStatus(userProfile)
+    const { logined } = useUserProfileStatus(userProfile)
     const { profileService, authService, history } = useSelectedServices()
+    const isOffline = computed(() => authServiceItem.value.value === 'offline')
+    const isThirdParty = computed(() => {
+      const service = authServiceItem.value.value
+      if (service !== 'mojang' && service !== 'microsoft') {
+        return true
+      }
+      return false
+    })
 
     const isLogining = useBusy('login()')
     const isMicrosoft = computed(() => authService.value === 'microsoft')
@@ -184,7 +191,7 @@ export default defineComponent({
       passwordErrors,
       reset: resetError,
       handleError,
-    } = useLoginValidation(isOffline)
+    } = useLoginValidation(isThirdParty)
 
     function reset() {
       data.username = history.value[0] ?? ''

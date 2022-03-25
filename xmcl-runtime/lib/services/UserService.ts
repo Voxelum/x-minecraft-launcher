@@ -556,6 +556,9 @@ export default class UserService extends StatefulService<UserState> implements I
       profileService = 'mojang',
     } = options
 
+    // enforce same service
+    profileService = authService === 'offline' ? 'mojang' : authService
+
     const selectedUserProfile = this.state.user
     const usingAuthService = this.state.authServices[authService]
     password = password ?? ''
