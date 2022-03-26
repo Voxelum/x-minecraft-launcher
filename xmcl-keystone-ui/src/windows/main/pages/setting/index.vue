@@ -1,13 +1,6 @@
 <template>
-  <v-container
-    fluid
-    style="z-index: 2; overflow: auto"
-    class="overflow-auto h-full"
-  >
-    <v-layout
-      wrap
-      class="overflow-auto h-full"
-    >
+  <v-container fluid style="z-index: 2; overflow: auto" class="overflow-auto h-full">
+    <v-layout wrap class="overflow-auto h-full">
       <!-- <v-flex
         d-flex
         xs12
@@ -15,19 +8,10 @@
         class="white--text"
       >
         <span class="headline">{{ $tc("setting.name", 2) }}</span>
-      </v-flex> -->
-      <v-flex
-        d-flex
-        xs12
-      >
-        <v-list
-          three-line
-          subheader
-          style="background: transparent; width: 100%"
-        >
-          <v-subheader class="">
-            {{ $t("setting.general") }}
-          </v-subheader>
+      </v-flex>-->
+      <v-flex d-flex xs12>
+        <v-list three-line subheader style="background: transparent; width: 100%">
+          <v-subheader class>{{ $t("setting.general") }}</v-subheader>
           <v-list-item>
             <v-list-item-content>
               <v-list-item-title>
@@ -46,7 +30,6 @@
                 v-model="selectedLocale"
                 filled
                 style="max-width: 185px"
-
                 hide-details
                 :items="locales"
               />
@@ -67,18 +50,10 @@
                 text
                 style="margin-right: 10px"
                 @click="browseRootDir"
-              >
-                {{ $t("setting.browseRoot") }}
-              </v-btn>
+              >{{ $t("setting.browseRoot") }}</v-btn>
             </v-list-item-action>
             <v-list-item-action class="self-center">
-              <v-btn
-                outlined
-                text
-                @click="showRootDir"
-              >
-                {{ $t("setting.showRoot") }}
-              </v-btn>
+              <v-btn outlined text @click="showRootDir">{{ $t("setting.showRoot") }}</v-btn>
             </v-list-item-action>
           </v-list-item>
           <v-list-item>
@@ -145,26 +120,11 @@
         </v-list>
       </v-flex>
       <v-divider />
-      <v-list
-        three-line
-        subheader
-        style="background: transparent"
-        class="flex-grow"
-      >
-        <v-subheader
-          v-if="!disableUpdate"
-        >
-          {{ $t("setting.update") }}
-        </v-subheader>
-        <v-list-item
-          v-if="!disableUpdate"
-        >
+      <v-list three-line subheader style="background: transparent" class="flex-grow">
+        <v-subheader v-if="!disableUpdate">{{ $t("setting.update") }}</v-subheader>
+        <v-list-item v-if="!disableUpdate">
           <v-list-item-action class="self-center">
-            <v-btn
-              icon
-              :loading="checkingUpdate"
-              @click="checkUpdate"
-            >
+            <v-btn icon :loading="checkingUpdate" @click="checkUpdate">
               <v-icon>refresh</v-icon>
             </v-btn>
           </v-list-item-action>
@@ -278,11 +238,7 @@
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
-            <v-select
-              v-model="backgroundType"
-              filled
-              :items="backgroundTypes"
-            />
+            <v-select v-model="backgroundType" filled :items="backgroundTypes" />
           </v-list-item-action>
         </v-list-item>
         <!-- <v-list-item v-if="backgroundType === 'halo'">
@@ -316,11 +272,7 @@
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
-            <v-select
-              v-model="particleMode"
-              filled
-              :items="particleModes"
-            />
+            <v-select v-model="particleMode" filled :items="particleModes" />
           </v-list-item-action>
         </v-list-item>
         <v-list-item v-if="backgroundType === 'image'">
@@ -352,19 +304,52 @@
             style="margin-right: 10px"
             :disabled="!backgroundImage"
             @click="clearImage"
-          >
-            {{ $t("setting.backgroundImageClear") }}
-          </v-btn>
+          >{{ $t("setting.backgroundImageClear") }}</v-btn>
           <v-btn
             outlined
             text
             style="margin-right: 10px"
             @click="selectImage"
-          >
-            {{ $t("setting.backgroundImageSelect") }}
-          </v-btn>
+          >{{ $t("setting.backgroundImageSelect") }}</v-btn>
         </v-list-item>
-        <v-list-item>
+        <v-list-item v-if="backgroundType === 'video'">
+          <v-list-item-content>
+            <v-list-item-title>
+              {{
+                $t("setting.backgroundVideo")
+              }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{
+                $t("setting.backgroundVideoDescription")
+              }}
+            </v-list-item-subtitle>
+          </v-list-item-content>
+          <!-- <v-list-item-action class="mr-4">
+            <v-select
+              v-model="backgroundImageFit"
+              class="w-40 mr-4"
+              filled
+              hide-details
+              :label="$t('setting.backgroundImageFit.name')"
+              :items="backgroundImageFits"
+            />
+          </v-list-item-action>-->
+          <v-btn
+            outlined
+            text
+            style="margin-right: 10px"
+            :disabled="!backgroundVideo"
+            @click="clearVideo"
+          >{{ $t("setting.backgroundImageClear") }}</v-btn>
+          <v-btn
+            outlined
+            text
+            style="margin-right: 10px"
+            @click="selectVideo"
+          >{{ $t("setting.backgroundVideoSelect") }}</v-btn>
+        </v-list-item>
+        <v-list-item v-if="backgroundType !== BackgroundType.VIDEO">
           <v-list-item-content>
             <v-list-item-title>
               {{
@@ -381,7 +366,29 @@
             v-model="blur"
             :min="0"
             :max="100"
-            :hint="$t('setting.backgroundImageBlur')"
+            :hint="$t('setting.backgroundBlur')"
+            :always-dirty="true"
+          />
+        </v-list-item>
+        <v-list-item v-if="backgroundType === BackgroundType.VIDEO">
+          <v-list-item-content>
+            <v-list-item-title>
+              {{
+                $t("setting.backgroundVideoVolume")
+              }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{
+                $t("setting.backgroundVideoVolumeDescription")
+              }}
+            </v-list-item-subtitle>
+          </v-list-item-content>
+          <v-slider
+            v-model="volume"
+            step="0.01"
+            :min="0"
+            :max="1"
+            :hint="$t('setting.VideoVolume')"
             :always-dirty="true"
           />
         </v-list-item>
@@ -389,22 +396,11 @@
     </v-layout>
 
     <update-info-dialog v-model="viewingUpdateDetail" />
-    <v-dialog
-      :value="migrateDialog"
-      persistent
-    >
-      <v-card
-        v-if="migrateState === 0"
-      >
+    <v-dialog :value="migrateDialog" persistent>
+      <v-card v-if="migrateState === 0">
         <v-card-title>
-          <h2 style="display: block; min-width: 100%">
-            {{ $t("setting.setRootTitle") }}
-          </h2>
-          <v-text-field
-            :value="rootLocation"
-            readonly
-            hide-details
-          />
+          <h2 style="display: block; min-width: 100%">{{ $t("setting.setRootTitle") }}</h2>
+          <v-text-field :value="rootLocation" readonly hide-details />
         </v-card-title>
         <v-card-text>
           <p>{{ $t("setting.setRootDescription") }}</p>
@@ -412,56 +408,28 @@
         </v-card-text>
         <v-divider />
         <v-card-actions>
-          <v-btn
-            text
-            large
-            @click="doCancelApplyRoot"
-          >
-            {{ $t("cancel") }}
-          </v-btn>
+          <v-btn text large @click="doCancelApplyRoot">{{ $t("cancel") }}</v-btn>
           <v-spacer />
-          <v-btn
-            text
-            large
-            @click="doApplyRoot()"
-          >
-            {{ $t("setting.apply") }}
-          </v-btn>
+          <v-btn text large @click="doApplyRoot()">{{ $t("setting.apply") }}</v-btn>
         </v-card-actions>
       </v-card>
-      <v-card
-        v-else-if="migrateState === 1"
-      >
+      <v-card v-else-if="migrateState === 1">
         <v-card-title>
           <h2>{{ $t("setting.waitReload") }}</h2>
         </v-card-title>
         <v-spacer />
         <div style="display: flex; width: 100; justify-content: center">
-          <v-progress-circular
-            :size="100"
-            color="white"
-            indeterminate
-          />
+          <v-progress-circular :size="100" color="white" indeterminate />
         </div>
       </v-card>
-      <v-card
-        v-else
-      >
+      <v-card v-else>
         <v-card-title>
-          <h2 v-if="migrateError">
-            {{ $t("setting.migrateFailed") }}
-          </h2>
-          <h2 v-else-if="!cleaningMigration">
-            {{ $t("setting.migrateSuccess") }}
-          </h2>
-          <h2 v-else>
-            {{ $t("setting.postMigrating") }}
-          </h2>
+          <h2 v-if="migrateError">{{ $t("setting.migrateFailed") }}</h2>
+          <h2 v-else-if="!cleaningMigration">{{ $t("setting.migrateSuccess") }}</h2>
+          <h2 v-else>{{ $t("setting.postMigrating") }}</h2>
         </v-card-title>
         <v-spacer />
-        <v-card-text v-if="migrateError">
-          {{ migrateError }}
-        </v-card-text>
+        <v-card-text v-if="migrateError">{{ migrateError }}</v-card-text>
         <v-divider />
         <v-card-actions v-if="!migrateError">
           <v-checkbox
@@ -480,9 +448,7 @@
             :loading="cleaningMigration"
             :disabled="cleaningMigration"
             @click="postMigrate"
-          >
-            {{ $t("setting.migrateDone") }}
-          </v-btn>
+          >{{ $t("setting.migrateDone") }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -495,9 +461,38 @@ import UpdateInfoDialog from './UpdateInfoDialog.vue'
 import localMapping from '/@/assets/localeMapping.json'
 import { useBackground, useBaseService, useI18n, useLauncherVersion, useSettings, BackgroundType } from '/@/hooks'
 
+function setupVideo() {
+  const { showOpenDialog } = windowController
+  const { setBackgroundVideo, backgroundVideo, backgroundType, volume } = useBackground()
+  function selectVideo() {
+    showOpenDialog({
+      title: '选择视频',
+      properties: ['openFile'],
+      filters: [{
+        name: 'video',
+        extensions: ['mp4', 'ogg', 'webm'],
+      }],
+    }).then((v) => {
+      const videoPath = 'video://' + v.filePaths[0]
+      setBackgroundVideo(videoPath)
+    })
+  }
+  function clearVideo() {
+    backgroundVideo.value = ''
+  }
+  return {
+    clearVideo,
+    selectVideo,
+    backgroundVideo,
+    backgroundType,
+    volume,
+    BackgroundType,
+  }
+}
+
 function setupImage() {
   const { showOpenDialog } = windowController
-  const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, blurMainBody, backgroundImageFit } = useBackground()
+  const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, blurMainBody, backgroundImageFit, volume } = useBackground()
   function selectImage() {
     showOpenDialog({
       title: '选择图片',
@@ -516,6 +511,7 @@ function setupImage() {
   }
   return {
     blur,
+    volume,
     blurMainBody,
     backgroundImageFit,
     backgroundImage,
@@ -565,6 +561,7 @@ export default defineComponent({
       { value: BackgroundType.IMAGE, text: $t('setting.backgroundTypes.image') },
       { value: BackgroundType.PARTICLE, text: $t('setting.backgroundTypes.particle') },
       { value: BackgroundType.HALO, text: $t('setting.backgroundTypes.halo') },
+      { value: BackgroundType.VIDEO, text: $t('setting.backgroundTypes.video') },
     ])
     const hasNewUpdate = computed(() => settings.updateInfo.value?.name !== version.value)
     return {
@@ -621,6 +618,7 @@ export default defineComponent({
       backgroundTypes,
       backgroundImageFits,
       ...setupImage(),
+      ...setupVideo(),
       darkTheme,
     }
   },

@@ -13,6 +13,7 @@ export enum BackgroundType {
   PARTICLE = 'particle',
   HALO = 'halo',
   IMAGE = 'image',
+  VIDEO = 'video',
 }
 
 export function useBackground() {
@@ -22,6 +23,11 @@ export function useBackground() {
   const backgroundImage = useLocalStorageCacheStringValue('background', '')
   const backgroundImageFit = useLocalStorageCacheStringValue<'cover' | 'contain'>('imageFill', 'cover')
   const particleMode = useLocalStorageCacheStringValue<ParticleMode>('particleMode', ParticleMode.PUSH)
+  const backgroundVideo = useLocalStorageCacheStringValue('backgroundVideo', '')
+  const volume = useLocalStorageCacheInt('volume', 0)
+  async function setBackgroundVideo(path: string) {
+    backgroundVideo.value = path
+  }
   async function setBackgroundImage(path: string) {
     const img = document.createElement('img')
     img.src = `image://${path}`
@@ -37,11 +43,14 @@ export function useBackground() {
   }
   return {
     blur,
+    volume,
     blurMainBody,
     particleMode,
     backgroundType,
     backgroundImage,
     backgroundImageFit,
     setBackgroundImage,
+    backgroundVideo,
+    setBackgroundVideo,
   }
 }
