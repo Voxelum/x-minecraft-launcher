@@ -791,6 +791,12 @@ setting:
     image: 图片
     none: 无
     particle: 粒子
+    video: 视频
+  backgroundVideo: 背景视频
+  backgroundVideoDescription: 选择一个背景视频或清空当前
+  backgroundVideoSelect: 选择
+  backgroundVideoVolume: 视频音量
+  backgroundVideoVolumeDescription: 拖动以调整音量
   blurMainBody: 模糊窗口主体
   blurMainBodyDescription: 是否将启动器窗口右侧主体模糊
   browseRoot: 更改

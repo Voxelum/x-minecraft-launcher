@@ -867,6 +867,12 @@ setting:
     image: Image
     none: None
     particle: Particle
+    video: video
+  backgroundVideo: Background Video
+  backgroundVideoDescription: select or clear video
+  backgroundVideoSelect: select
+  backgroundVideoVolume: volume
+  backgroundVideoVolumeDescription: drag to adjust volume
   blurMainBody: Blur Main Body
   blurMainBodyDescription: Should the launcher right pane be blurred
   browseRoot: Browse

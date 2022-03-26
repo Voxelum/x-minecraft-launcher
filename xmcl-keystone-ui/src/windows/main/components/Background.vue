@@ -5,6 +5,14 @@
     class="absolute h-full w-full z-0"
     :style="{ filter: `blur(${blur}px)`, 'object-fit': backgroundImageFit }"
   >
+  <video
+    v-else-if="backgroundType === BackgroundType.VIDEO"
+    ref="video"
+    class="absolute h-full w-full z-0 object-cover"
+    :src="backgroundVideo"
+    autoplay
+    loop
+  />
   <Particles
     v-else-if="backgroundType === BackgroundType.PARTICLE"
     color="#dedede"
@@ -19,7 +27,7 @@
   <!-- :style="{ 'pointer-events': onHomePage ? 'auto' : 'none' }" -->
 </template>
 <script lang="ts">
-import { defineComponent, onMounted } from '@vue/composition-api'
+import { defineComponent, onMounted, ref, watch } from '@vue/composition-api'
 import Halo from '/@/components/Halo.vue'
 import { BackgroundType, useBackground } from '/@/hooks'
 import Particles from '/@/components/Particles.vue'
@@ -27,8 +35,18 @@ import Particles from '/@/components/Particles.vue'
 export default defineComponent({
   components: { Halo, Particles },
   setup() {
-    const { blur, backgroundImage, backgroundType, particleMode, backgroundImageFit } = useBackground()
+    const { blur, backgroundImage, backgroundType, particleMode, backgroundImageFit, backgroundVideo, volume } = useBackground()
+    const video = ref(null as null | HTMLVideoElement)
+
+    watch(volume, (newVolume) => {
+      if (video.value) {
+        video.value.volume = newVolume
+      }
+    })
     onMounted(() => {
+      if (video.value) {
+        video.value.volume = volume.value
+      }
       // watch(backgroundImage, () => {
       //   refreshImage()
       // })
@@ -48,7 +66,9 @@ export default defineComponent({
       particleMode,
       backgroundImage,
       blur,
+      video,
       backgroundType,
+      backgroundVideo,
     }
   },
 })

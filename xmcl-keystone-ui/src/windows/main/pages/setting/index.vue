@@ -15,7 +15,7 @@
         class="white--text"
       >
         <span class="headline">{{ $tc("setting.name", 2) }}</span>
-      </v-flex> -->
+      </v-flex>-->
       <v-flex
         d-flex
         xs12
@@ -25,7 +25,7 @@
           subheader
           style="background: transparent; width: 100%"
         >
-          <v-subheader class="">
+          <v-subheader class>
             {{ $t("setting.general") }}
           </v-subheader>
           <v-list-item>
@@ -46,7 +46,6 @@
                 v-model="selectedLocale"
                 filled
                 style="max-width: 185px"
-
                 hide-details
                 :items="locales"
               />
@@ -151,14 +150,10 @@
         style="background: transparent"
         class="flex-grow"
       >
-        <v-subheader
-          v-if="!disableUpdate"
-        >
+        <v-subheader v-if="!disableUpdate">
           {{ $t("setting.update") }}
         </v-subheader>
-        <v-list-item
-          v-if="!disableUpdate"
-        >
+        <v-list-item v-if="!disableUpdate">
           <v-list-item-action class="self-center">
             <v-btn
               icon
@@ -364,7 +359,48 @@
             {{ $t("setting.backgroundImageSelect") }}
           </v-btn>
         </v-list-item>
-        <v-list-item>
+        <v-list-item v-if="backgroundType === 'video'">
+          <v-list-item-content>
+            <v-list-item-title>
+              {{
+                $t("setting.backgroundVideo")
+              }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{
+                $t("setting.backgroundVideoDescription")
+              }}
+            </v-list-item-subtitle>
+          </v-list-item-content>
+          <!-- <v-list-item-action class="mr-4">
+            <v-select
+              v-model="backgroundImageFit"
+              class="w-40 mr-4"
+              filled
+              hide-details
+              :label="$t('setting.backgroundImageFit.name')"
+              :items="backgroundImageFits"
+            />
+          </v-list-item-action>-->
+          <v-btn
+            outlined
+            text
+            style="margin-right: 10px"
+            :disabled="!backgroundVideo"
+            @click="clearVideo"
+          >
+            {{ $t("setting.backgroundImageClear") }}
+          </v-btn>
+          <v-btn
+            outlined
+            text
+            style="margin-right: 10px"
+            @click="selectVideo"
+          >
+            {{ $t("setting.backgroundVideoSelect") }}
+          </v-btn>
+        </v-list-item>
+        <v-list-item v-if="backgroundType !== BackgroundType.VIDEO">
           <v-list-item-content>
             <v-list-item-title>
               {{
@@ -381,7 +417,29 @@
             v-model="blur"
             :min="0"
             :max="100"
-            :hint="$t('setting.backgroundImageBlur')"
+            :hint="$t('setting.backgroundBlur')"
+            :always-dirty="true"
+          />
+        </v-list-item>
+        <v-list-item v-if="backgroundType === BackgroundType.VIDEO">
+          <v-list-item-content>
+            <v-list-item-title>
+              {{
+                $t("setting.backgroundVideoVolume")
+              }}
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{
+                $t("setting.backgroundVideoVolumeDescription")
+              }}
+            </v-list-item-subtitle>
+          </v-list-item-content>
+          <v-slider
+            v-model="volume"
+            step="0.01"
+            :min="0"
+            :max="1"
+            :hint="$t('setting.VideoVolume')"
             :always-dirty="true"
           />
         </v-list-item>
@@ -393,9 +451,7 @@
       :value="migrateDialog"
       persistent
     >
-      <v-card
-        v-if="migrateState === 0"
-      >
+      <v-card v-if="migrateState === 0">
         <v-card-title>
           <h2 style="display: block; min-width: 100%">
             {{ $t("setting.setRootTitle") }}
@@ -429,9 +485,7 @@
           </v-btn>
         </v-card-actions>
       </v-card>
-      <v-card
-        v-else-if="migrateState === 1"
-      >
+      <v-card v-else-if="migrateState === 1">
         <v-card-title>
           <h2>{{ $t("setting.waitReload") }}</h2>
         </v-card-title>
@@ -444,9 +498,7 @@
           />
         </div>
       </v-card>
-      <v-card
-        v-else
-      >
+      <v-card v-else>
         <v-card-title>
           <h2 v-if="migrateError">
             {{ $t("setting.migrateFailed") }}
@@ -495,9 +547,38 @@ import UpdateInfoDialog from './UpdateInfoDialog.vue'
 import localMapping from '/@/assets/localeMapping.json'
 import { useBackground, useBaseService, useI18n, useLauncherVersion, useSettings, BackgroundType } from '/@/hooks'
 
+function setupVideo() {
+  const { showOpenDialog } = windowController
+  const { setBackgroundVideo, backgroundVideo, backgroundType, volume } = useBackground()
+  function selectVideo() {
+    showOpenDialog({
+      title: '选择视频',
+      properties: ['openFile'],
+      filters: [{
+        name: 'video',
+        extensions: ['mp4', 'ogg', 'webm'],
+      }],
+    }).then((v) => {
+      const videoPath = 'video://' + v.filePaths[0]
+      setBackgroundVideo(videoPath)
+    })
+  }
+  function clearVideo() {
+    backgroundVideo.value = ''
+  }
+  return {
+    clearVideo,
+    selectVideo,
+    backgroundVideo,
+    backgroundType,
+    volume,
+    BackgroundType,
+  }
+}
+
 function setupImage() {
   const { showOpenDialog } = windowController
-  const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, blurMainBody, backgroundImageFit } = useBackground()
+  const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, blurMainBody, backgroundImageFit, volume } = useBackground()
   function selectImage() {
     showOpenDialog({
       title: '选择图片',
@@ -516,6 +597,7 @@ function setupImage() {
   }
   return {
     blur,
+    volume,
     blurMainBody,
     backgroundImageFit,
     backgroundImage,
@@ -565,6 +647,7 @@ export default defineComponent({
       { value: BackgroundType.IMAGE, text: $t('setting.backgroundTypes.image') },
       { value: BackgroundType.PARTICLE, text: $t('setting.backgroundTypes.particle') },
       { value: BackgroundType.HALO, text: $t('setting.backgroundTypes.halo') },
+      { value: BackgroundType.VIDEO, text: $t('setting.backgroundTypes.video') },
     ])
     const hasNewUpdate = computed(() => settings.updateInfo.value?.name !== version.value)
     return {
@@ -621,6 +704,7 @@ export default defineComponent({
       backgroundTypes,
       backgroundImageFits,
       ...setupImage(),
+      ...setupVideo(),
       darkTheme,
     }
   },

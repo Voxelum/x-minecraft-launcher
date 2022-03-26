@@ -14,7 +14,7 @@
     <span v-if="!full">{{ $t(`log.${level}`) }}</span>
     {{ title }}
 
-    <template #action="{ attrs }">
+    <template #action>
       <v-btn
         v-if="more"
         icon

@@ -138,7 +138,7 @@ export function getForgeModCompatibility(resource: ForgeResource, runtime: Insta
           if (!compatible) {
             const res = range.restrictions[0]
             if (Math.abs(res.lowerBound?.compareTo(currentVersion) ?? 100) === 1 ||
-            Math.abs(res.upperBound?.compareTo(currentVersion) ?? 100) === 1 ) {
+            Math.abs(res.upperBound?.compareTo(currentVersion) ?? 100) === 1) {
               compatible = 'maybe'
             }
           }
