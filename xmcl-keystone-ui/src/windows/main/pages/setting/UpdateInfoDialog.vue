@@ -2,13 +2,12 @@
   <v-dialog
     width="800"
     :value="value"
-    class="overflow-auto"
     @input="$emit('input', $event)"
   >
     <v-card
       v-if="updateInfo"
       outlined
-      class="overflow-auto"
+      class="overflow-auto visible-scroll max-h-90vh"
     >
       <v-card-title>
         {{ updateInfo.name }}

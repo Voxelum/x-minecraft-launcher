@@ -1,5 +1,5 @@
 import { AZURE_CDN, AZURE_MS_CDN, IS_DEV } from '@/constant'
-import { ChecksumNotMatchError, DownloadTask } from '@xmcl/installer'
+import { ChecksumNotMatchError, download, DownloadTask } from '@xmcl/installer'
 import type { ServiceStateManager } from '@xmcl/runtime'
 import { ReleaseInfo } from '@xmcl/runtime-api'
 import { BaseTask, task, Task } from '@xmcl/task'
@@ -91,6 +91,22 @@ export class DownloadFullUpdateTask extends BaseTask<void> {
   }
 }
 
+async function ensureElevateExe(app: ElectronLauncherApp) {
+  const elevate = join(app.appDataPath, 'elevate.exe')
+  await download({
+    url: [
+      `${AZURE_CDN}/elevate.exe`,
+      `${AZURE_MS_CDN}/elevate.exe`,
+    ],
+    validator: {
+      algorithm: 'sha1',
+      hash: 'd8d449b92de20a57df722df46435ba4553ecc802',
+    },
+    destination: elevate,
+  })
+  return elevate
+}
+
 export async function quitAndInstallAsar(this: ElectronLauncherApp) {
   if (IS_DEV) {
     this.log('Currently is development environment. Skip to install ASAR')
@@ -104,17 +120,11 @@ export async function quitAndInstallAsar(this: ElectronLauncherApp) {
 
   this.log(`Install asar on ${this.platform.name}`)
   if (this.platform.name === 'windows') {
-    const elevatePath = join(appPath, 'resources', 'elevate.exe')
-    let hasElevation = true
+    const elevatePath = await ensureElevateExe(this)
 
     if (!existsSync(updateAsarPath)) {
       this.error(`No update found: ${updateAsarPath}`)
       throw new Error(`No update found: ${updateAsarPath}`)
-    }
-    if (!existsSync(elevatePath)) {
-      this.error(`No elevate.exe found: ${elevatePath}`)
-      hasElevation = false
-      // throw new Error(`No elevate.exe found: ${elevatePath}`)
     }
     const psPath = join(this.appDataPath, 'AutoUpdate.ps1')
     let hasWriteAccess = await new Promise((resolve) => {
@@ -151,7 +161,7 @@ export async function quitAndInstallAsar(this: ElectronLauncherApp) {
       '-File',
       `"${psPath}"`,
     ]
-    if (!hasWriteAccess && hasElevation) {
+    if (!hasWriteAccess) {
       args.unshift(elevatePath)
     }
     this.log(`Install from windows: ${args.join(' ')}`)
@@ -193,7 +203,8 @@ async function getUpdateFromSelfHost(app: ElectronLauncherApp): Promise<ReleaseI
   }
   updateInfo.newUpdate = `v${app.version}` !== updateInfo.name
   const platformString = app.platform.name === 'windows' ? 'win' : app.platform.name === 'osx' ? 'mac' : 'linux'
-  updateInfo.incremental = updateInfo.files.some(f => f.name === `app-${platformString}.asar`)
+  const version = updateInfo.name.startsWith('v') ? updateInfo.name.substring(1) : updateInfo.name
+  updateInfo.incremental = updateInfo.files.some(f => f.name === `app-${version}-${platformString}.asar`)
   return updateInfo
 }
 
