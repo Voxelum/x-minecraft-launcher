@@ -124,7 +124,8 @@ export function useCurseforgeProject(projectId: number) {
       data.lastUpdate = dateModified
       data.totalDownload = downloadCount
       data.attachments = proj.attachments
-      recentFiles.value = latestFiles
+      // @ts-ignore
+      recentFiles.value = latestFiles.sort((a, b) => new Date(b.fileDate) - new Date(a.fileDate))
     } finally {
       data.refreshingProject = false
     }
@@ -148,9 +149,9 @@ export function useCurseforgeCategories() {
 }
 
 /**
- * Hook to returen the controller of curseforge preview page. Navigating the curseforge projects.
+ * Hook to return the controller of curseforge preview page. Navigating the curseforge projects.
  */
-export function useCurseforgeSearch(type: Ref<string>, page: Ref<number>, keyword: Ref<string | undefined>) {
+export function useCurseforgeSearch(type: Ref<string>, page: Ref<number>, keyword: Ref<string | undefined>, category: Ref<number | undefined>) {
   const sectionId = computed(() => {
     switch (type.value) {
       case 'modpacks':
@@ -173,10 +174,17 @@ export function useCurseforgeSearch(type: Ref<string>, page: Ref<number>, keywor
   const currentPage = computed({
     get() { return page.value },
     set(v: number) {
-      const route = router.currentRoute
-      router.push({ query: { ...route.query, page: v.toString() } })
+      router.push({ query: { ...router.currentRoute.query, page: v.toString() } })
     },
   })
+
+  const categoryId: Ref<number | undefined> = computed({
+    get(): number | undefined { return category.value },
+    set(categoryId: number | undefined) {
+      router.replace({ query: { ...router.currentRoute.query, category: categoryId ? categoryId.toString() : undefined } })
+    },
+  })
+
   const data = reactive({
     pages: 5,
 
@@ -185,8 +193,6 @@ export function useCurseforgeSearch(type: Ref<string>, page: Ref<number>, keywor
     sort: undefined as undefined | number,
 
     projects: [] as AddonInfo[],
-
-    categoryId: undefined as undefined | number,
 
     loading: false,
 
@@ -197,14 +203,13 @@ export function useCurseforgeSearch(type: Ref<string>, page: Ref<number>, keywor
   async function refresh() {
     data.loading = true
     try {
-      console.log('refreshing')
       const projects = await searchProjects({
         pageSize,
         index: index.value,
         sectionId: sectionId.value,
         sort: data.sort,
         gameVersion: data.gameVersion,
-        categoryId: data.categoryId,
+        categoryId: categoryId.value,
         searchFilter: keyword.value,
       })
       if (currentPage.value > data.pages / 2) {
@@ -226,13 +231,14 @@ export function useCurseforgeSearch(type: Ref<string>, page: Ref<number>, keywor
       router.push({ query: { ...route.query, keyword: data.currentKeyword } })
     }
   }
-  watch([index, refs.sort, refs.gameVersion, keyword, refs.categoryId, sectionId], () => refresh())
+  watch([index, refs.sort, refs.gameVersion, keyword, categoryId, sectionId], () => refresh())
   onMounted(() => {
     refresh()
   })
   return {
     ...refs,
     currentPage,
+    categoryId,
     search,
     refresh,
   }
