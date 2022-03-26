@@ -7,7 +7,9 @@
   >
     <v-list-item>
       <v-list-item-content>
-        <v-list-item-title class="flex-wrap whitespace-pre-wrap">{{ $t('step.locale.description') }}</v-list-item-title>
+        <v-list-item-title class="flex-wrap whitespace-pre-wrap">
+          {{ $t('step.locale.description') }}
+        </v-list-item-title>
       </v-list-item-content>
     </v-list-item>
     <v-list-item>

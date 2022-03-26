@@ -7,7 +7,9 @@
   >
     <v-list-item>
       <v-list-item-content>
-        <v-list-item-title class="whitespace-pre-wrap">{{ $t('step.dataRoot.description') }}</v-list-item-title>
+        <v-list-item-title class="whitespace-pre-wrap">
+          {{ $t('step.dataRoot.description') }}
+        </v-list-item-title>
       </v-list-item-content>
     </v-list-item>
     <v-list-item>

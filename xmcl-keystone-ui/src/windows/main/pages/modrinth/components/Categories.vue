@@ -12,7 +12,10 @@
       :class="{ selected: cat.name === category }"
       @click="$emit('select:category', cat.name)"
     >
-      <div class="w-5 max-w-5 flex justify-center" v-html="cat.icon" />
+      <div
+        class="w-5 max-w-5 flex justify-center"
+        v-html="cat.icon"
+      />
       <div>
         {{ $t(`modrinth.categories.${cat.name}`) }}
       </div>
@@ -25,7 +28,10 @@
       :class="{ selected: l.name === modLoader }"
       @click="$emit('select:modLoader', l.name)"
     >
-      <div class="w-5 max-w-5 flex justify-center" v-html="l.icon" />
+      <div
+        class="w-5 max-w-5 flex justify-center"
+        v-html="l.icon"
+      />
       {{ $t(`modrinth.categories.${l.name}`) }}
     </span>
     <span class="list-title">{{ $t('modrinth.environments.name') }}</span>

@@ -1,6 +1,13 @@
 <template>
-  <v-container fluid style="z-index: 2; overflow: auto" class="overflow-auto h-full">
-    <v-layout wrap class="overflow-auto h-full">
+  <v-container
+    fluid
+    style="z-index: 2; overflow: auto"
+    class="overflow-auto h-full"
+  >
+    <v-layout
+      wrap
+      class="overflow-auto h-full"
+    >
       <!-- <v-flex
         d-flex
         xs12
@@ -9,9 +16,18 @@
       >
         <span class="headline">{{ $tc("setting.name", 2) }}</span>
       </v-flex>-->
-      <v-flex d-flex xs12>
-        <v-list three-line subheader style="background: transparent; width: 100%">
-          <v-subheader class>{{ $t("setting.general") }}</v-subheader>
+      <v-flex
+        d-flex
+        xs12
+      >
+        <v-list
+          three-line
+          subheader
+          style="background: transparent; width: 100%"
+        >
+          <v-subheader class>
+            {{ $t("setting.general") }}
+          </v-subheader>
           <v-list-item>
             <v-list-item-content>
               <v-list-item-title>
@@ -50,10 +66,18 @@
                 text
                 style="margin-right: 10px"
                 @click="browseRootDir"
-              >{{ $t("setting.browseRoot") }}</v-btn>
+              >
+                {{ $t("setting.browseRoot") }}
+              </v-btn>
             </v-list-item-action>
             <v-list-item-action class="self-center">
-              <v-btn outlined text @click="showRootDir">{{ $t("setting.showRoot") }}</v-btn>
+              <v-btn
+                outlined
+                text
+                @click="showRootDir"
+              >
+                {{ $t("setting.showRoot") }}
+              </v-btn>
             </v-list-item-action>
           </v-list-item>
           <v-list-item>
@@ -120,11 +144,22 @@
         </v-list>
       </v-flex>
       <v-divider />
-      <v-list three-line subheader style="background: transparent" class="flex-grow">
-        <v-subheader v-if="!disableUpdate">{{ $t("setting.update") }}</v-subheader>
+      <v-list
+        three-line
+        subheader
+        style="background: transparent"
+        class="flex-grow"
+      >
+        <v-subheader v-if="!disableUpdate">
+          {{ $t("setting.update") }}
+        </v-subheader>
         <v-list-item v-if="!disableUpdate">
           <v-list-item-action class="self-center">
-            <v-btn icon :loading="checkingUpdate" @click="checkUpdate">
+            <v-btn
+              icon
+              :loading="checkingUpdate"
+              @click="checkUpdate"
+            >
               <v-icon>refresh</v-icon>
             </v-btn>
           </v-list-item-action>
@@ -238,7 +273,11 @@
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
-            <v-select v-model="backgroundType" filled :items="backgroundTypes" />
+            <v-select
+              v-model="backgroundType"
+              filled
+              :items="backgroundTypes"
+            />
           </v-list-item-action>
         </v-list-item>
         <!-- <v-list-item v-if="backgroundType === 'halo'">
@@ -272,7 +311,11 @@
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action>
-            <v-select v-model="particleMode" filled :items="particleModes" />
+            <v-select
+              v-model="particleMode"
+              filled
+              :items="particleModes"
+            />
           </v-list-item-action>
         </v-list-item>
         <v-list-item v-if="backgroundType === 'image'">
@@ -304,13 +347,17 @@
             style="margin-right: 10px"
             :disabled="!backgroundImage"
             @click="clearImage"
-          >{{ $t("setting.backgroundImageClear") }}</v-btn>
+          >
+            {{ $t("setting.backgroundImageClear") }}
+          </v-btn>
           <v-btn
             outlined
             text
             style="margin-right: 10px"
             @click="selectImage"
-          >{{ $t("setting.backgroundImageSelect") }}</v-btn>
+          >
+            {{ $t("setting.backgroundImageSelect") }}
+          </v-btn>
         </v-list-item>
         <v-list-item v-if="backgroundType === 'video'">
           <v-list-item-content>
@@ -341,13 +388,17 @@
             style="margin-right: 10px"
             :disabled="!backgroundVideo"
             @click="clearVideo"
-          >{{ $t("setting.backgroundImageClear") }}</v-btn>
+          >
+            {{ $t("setting.backgroundImageClear") }}
+          </v-btn>
           <v-btn
             outlined
             text
             style="margin-right: 10px"
             @click="selectVideo"
-          >{{ $t("setting.backgroundVideoSelect") }}</v-btn>
+          >
+            {{ $t("setting.backgroundVideoSelect") }}
+          </v-btn>
         </v-list-item>
         <v-list-item v-if="backgroundType !== BackgroundType.VIDEO">
           <v-list-item-content>
@@ -396,11 +447,20 @@
     </v-layout>
 
     <update-info-dialog v-model="viewingUpdateDetail" />
-    <v-dialog :value="migrateDialog" persistent>
+    <v-dialog
+      :value="migrateDialog"
+      persistent
+    >
       <v-card v-if="migrateState === 0">
         <v-card-title>
-          <h2 style="display: block; min-width: 100%">{{ $t("setting.setRootTitle") }}</h2>
-          <v-text-field :value="rootLocation" readonly hide-details />
+          <h2 style="display: block; min-width: 100%">
+            {{ $t("setting.setRootTitle") }}
+          </h2>
+          <v-text-field
+            :value="rootLocation"
+            readonly
+            hide-details
+          />
         </v-card-title>
         <v-card-text>
           <p>{{ $t("setting.setRootDescription") }}</p>
@@ -408,9 +468,21 @@
         </v-card-text>
         <v-divider />
         <v-card-actions>
-          <v-btn text large @click="doCancelApplyRoot">{{ $t("cancel") }}</v-btn>
+          <v-btn
+            text
+            large
+            @click="doCancelApplyRoot"
+          >
+            {{ $t("cancel") }}
+          </v-btn>
           <v-spacer />
-          <v-btn text large @click="doApplyRoot()">{{ $t("setting.apply") }}</v-btn>
+          <v-btn
+            text
+            large
+            @click="doApplyRoot()"
+          >
+            {{ $t("setting.apply") }}
+          </v-btn>
         </v-card-actions>
       </v-card>
       <v-card v-else-if="migrateState === 1">
@@ -419,17 +491,29 @@
         </v-card-title>
         <v-spacer />
         <div style="display: flex; width: 100; justify-content: center">
-          <v-progress-circular :size="100" color="white" indeterminate />
+          <v-progress-circular
+            :size="100"
+            color="white"
+            indeterminate
+          />
         </div>
       </v-card>
       <v-card v-else>
         <v-card-title>
-          <h2 v-if="migrateError">{{ $t("setting.migrateFailed") }}</h2>
-          <h2 v-else-if="!cleaningMigration">{{ $t("setting.migrateSuccess") }}</h2>
-          <h2 v-else>{{ $t("setting.postMigrating") }}</h2>
+          <h2 v-if="migrateError">
+            {{ $t("setting.migrateFailed") }}
+          </h2>
+          <h2 v-else-if="!cleaningMigration">
+            {{ $t("setting.migrateSuccess") }}
+          </h2>
+          <h2 v-else>
+            {{ $t("setting.postMigrating") }}
+          </h2>
         </v-card-title>
         <v-spacer />
-        <v-card-text v-if="migrateError">{{ migrateError }}</v-card-text>
+        <v-card-text v-if="migrateError">
+          {{ migrateError }}
+        </v-card-text>
         <v-divider />
         <v-card-actions v-if="!migrateError">
           <v-checkbox
@@ -448,7 +532,9 @@
             :loading="cleaningMigration"
             :disabled="cleaningMigration"
             @click="postMigrate"
-          >{{ $t("setting.migrateDone") }}</v-btn>
+          >
+            {{ $t("setting.migrateDone") }}
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

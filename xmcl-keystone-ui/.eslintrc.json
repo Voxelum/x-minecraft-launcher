@@ -23,5 +23,8 @@
     },
     "env": {
         "browser": true
+    },
+    "rules": {
+        "vue/no-mutating-props": "off"
     }
 }

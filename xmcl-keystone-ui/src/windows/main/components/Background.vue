@@ -1,19 +1,19 @@
 <template>
-  <!-- <img
+  <img
     v-if="backgroundType === BackgroundType.IMAGE"
     :src="backgroundImage"
     class="absolute h-full w-full z-0"
     :style="{ filter: `blur(${blur}px)`, 'object-fit': backgroundImageFit }"
-  >-->
+  >
   <video
-    v-if="backgroundType === BackgroundType.VIDEO"
+    v-else-if="backgroundType === BackgroundType.VIDEO"
+    ref="video"
     class="absolute h-full w-full z-0 object-cover"
     :src="backgroundVideo"
     autoplay
     loop
-    ref="video"
-  ></video>
-  <!-- <Particles
+  />
+  <Particles
     v-else-if="backgroundType === BackgroundType.PARTICLE"
     color="#dedede"
     class="absolute w-full h-full z-0"
@@ -23,7 +23,7 @@
   <Halo
     v-else-if="backgroundType === BackgroundType.HALO"
     :style="{ filter: `blur(${blur}px)` }"
-  />-->
+  />
   <!-- :style="{ 'pointer-events': onHomePage ? 'auto' : 'none' }" -->
 </template>
 <script lang="ts">
