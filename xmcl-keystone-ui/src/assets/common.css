@@ -64,7 +64,7 @@ html ::-webkit-scrollbar {
 }
 
 ::-webkit-scrollbar {
-    width: 12px;
+    width: 8px;
     cursor: pointer;
 }
 
@@ -77,7 +77,7 @@ html ::-webkit-scrollbar {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    width: 12px;
+    width: 8px;
     background: rgba(192, 192, 192, 0.8);
     transition: all 1s;
 }
