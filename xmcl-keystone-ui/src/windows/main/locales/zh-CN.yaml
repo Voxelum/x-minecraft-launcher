@@ -389,7 +389,7 @@ java:
   incompatibleJavaHint: 当前 Java 版本无法运已选择的 Minecraft 版本，需要 Java {version}
   invalid: 无效的 Java 路径
   location: Java 路径
-  locationPlaceHolder: 使用系统已经安装的 Java
+  locationPlaceHolder: 启动器自动选择 Java
   maxMemory: 最大内存
   memory: Java 内存
   memoryHint: 这将影响您的游戏运行性能
@@ -570,7 +570,7 @@ optifine:
 optional: 可选的
 popular: 热度
 profile:
-  add: 添加本地游戏
+  add: 新建本地游戏
   addServer: 添加服务器
   advancedSetting: 高级设置
   authorHint: 这个游戏/整合包的制作人
@@ -594,10 +594,10 @@ profile:
     title: 导入游戏
   importCurseforge: 从 Curseforge 模组包导入
   importFolder: 从文件夹导入
-  importZip: 从压缩包导入
   importModpack:
-    success: 成功导入 {modpack} 整合包
     failed: 创建 {modpack} 整合包失败
+    success: 成功导入 {modpack} 整合包
+  importZip: 从压缩包导入
   instanceVersion: 整合包版本
   launchArguments: 启动命令预览
   launchingDetail: 启动配置

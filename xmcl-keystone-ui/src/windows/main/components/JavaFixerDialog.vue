@@ -4,14 +4,10 @@
     :persistent="missing"
     width="600"
   >
-    <v-card
-
-      color="grey en-4"
-    >
+    <v-card>
       <v-toolbar
-
         tabs
-        color="grey en-3"
+        color="orange en-3"
       >
         <v-toolbar-title>{{ reason }}</v-toolbar-title>
       </v-toolbar>
@@ -23,7 +19,6 @@
 
           <v-list
             style="width: 100%"
-            class="grey en-4"
           >
             <v-list-item
               :ripple="!disableUseExistedJava"
