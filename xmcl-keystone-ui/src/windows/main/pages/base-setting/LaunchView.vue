@@ -41,7 +41,7 @@
               <v-list-item-title>{{ $t("java.location") }}</v-list-item-title>
               <v-list-item-subtitle>
                 {{
-                  java ? java.path : $t("java.locationPlaceHolder")
+                  java && java.path ? java.path : $t("java.locationPlaceHolder")
                 }}
               </v-list-item-subtitle>
             </v-list-item-content>
