@@ -4,6 +4,21 @@
     style="overflow-y: auto; background: transparent;"
   >
     <v-list-item
+      key="DEFAULT"
+      :class="{ green: value.path === '' }"
+      @click="$emit('input', { path: '', version: '', majorVersion: 0, valid: false })"
+    >
+      <v-list-item-avatar>
+        <v-icon>close</v-icon>
+      </v-list-item-avatar>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{ $t("java.locationPlaceHolder") }}
+        </v-list-item-title>
+        <v-list-item-subtitle>{{ $t("java.locationPlaceHolder") }}</v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
+    <v-list-item
       v-for="item in items"
       :key="item.path"
       :class="{ green: item.path === value.path && item.valid, red: item.path === value.path && !item.valid }"
