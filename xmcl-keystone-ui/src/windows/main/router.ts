@@ -76,12 +76,24 @@ export const createRouter = () => {
       {
         path: '/curseforge/:type',
         component: curseforgeType,
-        props: (route) => ({ keyword: route.query.keyword, page: Number.parseInt(route.query.page as any ?? '1', 10), type: route.path.split('/')[2], from: route.query.from }),
+        props: (route) => ({
+          from: route.query.from,
+          type: route.path.split('/')[2],
+          page: Number.parseInt(route.query.page as any ?? '1', 10),
+          keyword: route.query.keyword,
+          category: route.query.category,
+          sort: route.query.sort,
+          gameVersion: route.query.gameVersion ?? '',
+        }),
       },
       {
         path: '/curseforge/:type/:id',
         component: curseforgeTypeId,
-        props: (route) => ({ type: route.path.split('/')[2], id: route.path.split('/')[3], from: route.query.from }),
+        props: (route) => ({
+          type: route.path.split('/')[2],
+          id: route.path.split('/')[3],
+          from: route.query.from,
+        }),
       },
       {
         path: '/modrinth',

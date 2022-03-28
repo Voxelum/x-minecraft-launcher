@@ -22,14 +22,14 @@
         </span>
         <v-text-field
           ref="searchBar"
-          v-model="currentKeyword"
+          v-model="keywordBuffer"
           color="green"
           append-icon="search"
           solo
           flat
           hide-details
           :placeholder="$t('curseforge.search')"
-          @keypress.enter="search"
+          @keypress.enter="currentKeyword = keywordBuffer"
         />
         <v-pagination
           v-model="currentPage"
@@ -130,8 +130,8 @@
     <div class="flex flex-col overflow-auto md:hidden lg:flex min-w-[20%]">
       <Categories
         :type="currentType"
-        :selected="categoryId"
-        @select="categoryId = $event"
+        :selected="currentCategory"
+        @select="currentCategory = $event.toString()"
       />
     </div>
   </div>
@@ -139,38 +139,41 @@
 
 <script lang=ts>
 import { computed, defineComponent, ref } from '@vue/composition-api'
-import { useCurseforgeSearch, useI18n, useRouter } from '/@/hooks'
+import Categories from './components/Categories.vue'
+import { useCurseforge } from './curseforge'
+import { useI18n } from '/@/hooks'
 import { dedup } from '/@/util/dedup'
 import { withDefault } from '/@/util/props'
 import { onSearchToggle } from '/@/windows/main/composables'
-import Categories from './components/Categories.vue'
 
 export default defineComponent({
   components: { Categories },
   props: {
     type: withDefault(String, () => 'mc-mods'),
-    keyword: withDefault(String, () => ''),
     page: withDefault(Number, () => 1),
+    keyword: withDefault(String, () => ''),
+    category: withDefault(String, () => ''),
+    sort: withDefault(String, () => ''),
+    gameVersion: withDefault(String, () => ''),
     from: withDefault(String, () => ''),
   },
   setup(props) {
     const searchBar = ref<HTMLElement | null>(null)
     const selectedType = ref('')
-    const { push } = useRouter()
-    const currentType = computed({ get: () => selectedType.value || props.type, set(v) { push(`/curseforge/${v}`) } })
     const { $t } = useI18n()
     const allTypes = computed(() => ['mc-mods', 'texture-packs', 'worlds', 'modpacks'].map(v => ({
       text: $t(`curseforge.${v}.name`),
       value: v,
     })))
+    const keywordBuffer = ref(props.keyword)
     onSearchToggle(() => {
       searchBar.value?.focus()
       return true
     })
     return {
+      keywordBuffer,
+      ...useCurseforge(props),
       searchBar,
-      ...useCurseforgeSearch(currentType, computed(() => props.page), computed(() => props.keyword)),
-      currentType,
       selectedType,
       allTypes,
       dedup,
