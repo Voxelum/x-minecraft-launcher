@@ -7,7 +7,7 @@
     <span
       v-for="c of categories"
       :key="c.id"
-      :class="{ selected: c.id === selected }"
+      :class="{ selected: c.id === Number(selected) }"
       class="item"
       @click="$emit('select', c.id)"
     >
@@ -36,13 +36,14 @@ import { computed, defineComponent, onMounted } from '@vue/composition-api'
 import { CurseForgeServiceKey } from '@xmcl/runtime-api'
 import { useService } from '/@/hooks'
 import { useRefreshable } from '/@/hooks/useRefreshable'
-import { optional, required } from '/@/util/props'
+import { required } from '/@/util/props'
 
 export default defineComponent({
   props: {
     type: required(String),
-    selected: optional(Number),
+    selected: required(String),
   },
+  emits: ['select'],
   setup(props) {
     const { state, loadCategories } = useService(CurseForgeServiceKey)
     const { refresh, refreshing } = useRefreshable(async () => {
@@ -56,7 +57,6 @@ export default defineComponent({
       parentCat,
       refreshing,
       categories: computed(() => state.categories.filter(c => c.parentGameCategoryId === parentCat.value?.id)),
-      // categories: computed(() => state.categories),
     }
   },
 })
