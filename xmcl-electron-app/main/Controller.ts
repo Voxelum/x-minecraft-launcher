@@ -171,9 +171,8 @@ export default class Controller implements LauncherAppController {
     })
     sess.protocol.registerFileProtocol('video', (req, callback) => {
       const pathname = decodeURIComponent(req.url.replace('video://', ''))
-      callback(pathname)
       fromFile(pathname).then((type) => {
-        if (type && type.mime.startsWith('image/')) {
+        if (type && type.mime.startsWith('video/')) {
           callback(pathname)
         } else {
           callback({ statusCode: 404 })
