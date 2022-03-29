@@ -52,7 +52,7 @@
         "electron-devtools-installer": "^3.2.0",
         "electron-updater": "^4.3.9",
         "esbuild-plugin-yaml": "^0.0.1",
-        "esbuild": "^0.12.25",
+        "esbuild": "^0.14.27",
         "eslint": "~7",
         "eslint-config-standard": "^16.0.3",
         "eslint-plugin-import": "^2.25.3",

@@ -6,6 +6,7 @@ import { readdirSync } from 'fs'
 import { VitePWA } from 'vite-plugin-pwa'
 import YAML from '@modyfi/vite-plugin-yaml'
 import WindiCSS from 'vite-plugin-windicss'
+import ScriptSetup from 'unplugin-vue2-script-setup/vite'
 
 const entries = readdirSync(join(__dirname, './src'))
   .filter((f) => f.endsWith('.html'))
@@ -61,5 +62,6 @@ export default defineConfig({
     }),
 
     YAML(),
+    ScriptSetup({ reactivityTransform: true }),
   ],
 })
