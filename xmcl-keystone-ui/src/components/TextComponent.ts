@@ -1,6 +1,6 @@
 import { TextComponent, render, RenderNode, fromFormattedString } from '@xmcl/text-component'
 import { defineComponent, h } from '@vue/composition-api'
-import { useI18n } from '../hooks'
+import { useI18n } from '../composables'
 import { optional, required, withDefault } from '../util/props'
 
 export default defineComponent({

@@ -1,8 +1,8 @@
 import { computed, ref, Ref, watch } from '@vue/composition-api'
 import { FabricModMetadata } from '@xmcl/mod-parser'
 import { AnyResource, FabricResource, ForgeResource, InstanceModsServiceKey, isModResource, isPersistedResource, LiteloaderResource, ModrinthInformation, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
-import { useBusy, useService } from '/@/hooks'
-import { useRefreshable } from '/@/hooks/useRefreshable'
+import { useBusy, useService } from '../../../../composables'
+import { useRefreshable } from '../../../../composables/useRefreshable'
 import { isStringArrayEquals } from '/@/util/equal'
 
 /**

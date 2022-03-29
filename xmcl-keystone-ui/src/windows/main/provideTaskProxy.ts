@@ -1,6 +1,6 @@
 import { computed, InjectionKey, onMounted, onUnmounted, reactive, Ref, ref } from '@vue/composition-api'
 import { TaskItem } from '/@/entities/task'
-import { useI18n } from '/@/hooks'
+import { useI18n } from '../../composables'
 import { TaskBatchUpdatePayloads, TaskPayload, TaskState } from '@xmcl/runtime-api'
 
 export const TASK_MANAGER: InjectionKey<ReturnType<typeof useTaskManager>> = Symbol('TASK_MANAGER')

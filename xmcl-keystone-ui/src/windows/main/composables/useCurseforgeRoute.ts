@@ -1,4 +1,4 @@
-import { useRouter, useService } from '/@/hooks'
+import { useRouter, useService } from '../../../composables'
 import { BaseServiceKey, ProjectType } from '@xmcl/runtime-api'
 
 export function useCurseforgeRoute() {
