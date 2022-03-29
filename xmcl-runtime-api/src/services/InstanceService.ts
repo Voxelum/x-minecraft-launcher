@@ -168,7 +168,6 @@ export class InstanceState {
  * Provide instance spliting service. It can split the game into multiple environment and dynamiclly deploy the resource to run.
  */
 export interface InstanceService extends StatefulService<InstanceState> {
-  loadInstance(path: string): Promise<boolean>
   /**
    * Create a managed instance (either a modpack or a server) under the managed folder.
    * @param option The creation option
@@ -194,13 +193,13 @@ export interface InstanceService extends StatefulService<InstanceState> {
    * Otherwise, it will edit the instance on the provided path.
    */
   editInstance(options: EditInstanceOptions): Promise<void>
-  // /**
-  //  * Create a instance by server info and status.
-  //  * This will try to ping the server and apply the mod list if it's a forge server.
-  //  */
-  // createInstanceFromServer(info: ServerInfo & {
-  //   status: Status
-  // }): Promise<string>
+
+  /**
+   * Add a directory as managed instance folder. It will try to load the instance.json.
+   * If it's a common folder, it will try to create instance from the directory data.
+   * @param path The path of the instance
+   */
+  addExternalInstance(path: string): Promise<boolean>
 }
 
 export const InstanceServiceKey: ServiceKey<InstanceService> = 'InstanceService'

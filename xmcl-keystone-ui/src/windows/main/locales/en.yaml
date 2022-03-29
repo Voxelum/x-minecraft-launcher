@@ -634,7 +634,7 @@ profile:
   copy: Duplicate
   delete: Delete Profile
   deleteHint: >-
-    The instance {name}({id}) data will be moved from the disk forever. You sure
+    The instance data will be moved from the disk forever. You sure
     to do this?
   descriptionHint: Briefly describe the game
   export:
