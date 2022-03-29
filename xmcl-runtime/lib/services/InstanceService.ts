@@ -1,9 +1,11 @@
-import { CreateInstanceOption, createTemplate, EditInstanceOptions, Instance, InstanceSchema, InstanceService as IInstanceService, InstanceServiceKey, InstancesSchema, InstanceState, LATEST_RELEASE, RuntimeVersions } from '@xmcl/runtime-api'
-import { ensureDir, remove } from 'fs-extra'
+import { ResolvedVersion, Version } from '@xmcl/core'
+import { CreateInstanceOption, createTemplate, EditInstanceOptions, filterForgeVersion, filterOptifineVersion, Instance, InstanceSchema, InstanceService as IInstanceService, InstanceServiceKey, InstancesSchema, InstanceState, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, LATEST_RELEASE, RuntimeVersions } from '@xmcl/runtime-api'
+import { copy, ensureDir, readdir, remove } from 'fs-extra'
 import { join, resolve } from 'path'
 import { v4 } from 'uuid'
 import LauncherApp from '../app/LauncherApp'
-import { copyPassively, exists, isDirectory, missing, readdirEnsured } from '../util/fs'
+import { readLaunchProfile } from '../entities/launchProfile'
+import { exists, isDirectory, missing, readdirEnsured } from '../util/fs'
 import { assignShallow, requireObject, requireString } from '../util/object'
 import { createSafeFile, createSafeIO } from '../util/persistance'
 import InstallService from './InstallService'
@@ -55,7 +57,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         const initial = this.app.getInitialInstance()
         if (initial) {
           try {
-            await this.linkInstance(initial)
+            await this.addExternalInstance(initial)
             await this.mountInstance(initial)
             await this.instancesFile.write({ instances: Object.keys(this.state.all), selectedInstance: initial })
           } catch (e) {
@@ -347,28 +349,102 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
   }
 
-  /**
-   * Link a existed instance on you disk.
-   * @param path
-   */
-  async linkInstance(path: string) {
+  @Singleton()
+  async addExternalInstance(path: string): Promise<boolean> {
     if (this.state.all[path]) {
       this.log(`Skip to link already managed instance ${path}`)
       return false
-    }
-    const loaded = await this.loadInstance(path)
-    if (!loaded) {
-      await this.createInstance({ path })
-    } else {
-      await this.instanceFile.write(join(path, 'instance.json'), this.state.all[path])
     }
 
     // copy assets, library and versions
     await this.worker().copyPassively([
       { src: resolve(path, 'libraries'), dest: this.getPath('libraries') },
       { src: resolve(path, 'assets'), dest: this.getPath('assets') },
-      { src: resolve(path, 'versions'), dest: this.getPath('versions') },
     ])
+
+    const versions = await readdir(resolve(path, 'versions')).catch(() => [])
+    const resolveVersions = [] as ResolvedVersion[]
+    const profile = await readLaunchProfile(path).catch(() => undefined)
+    let isVersionIsolated = false
+    await Promise.all(versions.map(async (v) => {
+      try {
+        // only resolve valid version
+        const version = await Version.parse(path, v)
+        resolveVersions.push(version)
+        const versionRoot = resolve(path, 'versions', v)
+
+        const versionJson = resolve(versionRoot, `${v}.json`)
+        const versionJar = resolve(versionRoot, `${v}.jar`)
+        await Promise.all([
+          copy(versionJar, this.getPath('versions', v, `${v}.jar`), { overwrite: false, recursive: false }).catch(() => undefined),
+          copy(versionJson, this.getPath('versions', v, `${v}.json`), { overwrite: false, recursive: false }).catch(() => undefined),
+        ])
+
+        const files = (await readdir(versionRoot)).filter(f => f !== '.DS_Store' && f !== `${v}.json` && f !== `${v}.jar`)
+        if (files.some(f => f === 'saves' || f === 'mods' || f === 'options.txt' || f === 'config' || f === 'PCL')) {
+          // this is an version isolation
+          const options: CreateInstanceOption = {
+            path: versionRoot,
+            name: version.id,
+          }
+          if (profile) {
+            for (const p of Object.values(profile.profiles)) {
+              if (p.lastVersionId === version.id) {
+                options.name = p.name
+                options.java = p.javaDir
+                options.vmOptions = p.javaArgs.split(' ')
+                break
+              }
+            }
+          }
+          options.runtime = {
+            minecraft: version.minecraftVersion,
+            forge: filterForgeVersion(version.libraries.find(isForgeLibrary)?.version ?? ''),
+            fabricLoader: version.libraries.find(isFabricLoaderLibrary)?.version ?? '',
+            optifine: filterOptifineVersion(version.libraries.find(isOptifineLibrary)?.version ?? ''),
+          }
+          isVersionIsolated = true
+          await this.createInstance(options)
+        }
+      } catch (e) {
+        this.error(e)
+      }
+    }))
+
+    if (!isVersionIsolated) {
+      if (profile) {
+        const sorted = Object.values(profile.profiles).sort((a, b) =>
+          // @ts-ignore
+          new Date(b.lastUsed) - new Date(a.lastUsed))
+        let version: ResolvedVersion | undefined
+        const options: CreateInstanceOption = {
+          path,
+        }
+        for (const p of sorted) {
+          const id = p.lastVersionId
+          version = resolveVersions.find(v => v.id === id)
+          options.name = p.name
+          options.java = p.javaDir
+          options.vmOptions = p.javaArgs.split(' ')
+          if (version) {
+            break
+          }
+        }
+        if (version) {
+          options.runtime = {
+            minecraft: version.minecraftVersion,
+            forge: filterForgeVersion(version.libraries.find(isForgeLibrary)?.version ?? ''),
+            fabricLoader: version.libraries.find(isFabricLoaderLibrary)?.version ?? '',
+            optifine: filterOptifineVersion(version.libraries.find(isOptifineLibrary)?.version ?? ''),
+          }
+        } else {
+          options.runtime = {
+            minecraft: LATEST_RELEASE.id,
+          }
+        }
+        await this.createInstance(options)
+      }
+    }
 
     return true
   }

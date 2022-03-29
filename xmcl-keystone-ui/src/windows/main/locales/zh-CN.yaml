@@ -577,7 +577,7 @@ profile:
   baseSetting: 基础设置
   copy: 复制
   delete: 删除游戏
-  deleteHint: 游戏 {name}({id}) 的数据将完全被移除。你确定继续此操作吗？
+  deleteHint: 游戏的数据将完全被移除。你确定继续此操作吗？
   descriptionHint: 简单描述这个游戏/整合包的内容
   export:
     exportingMessage: 正在导出...
