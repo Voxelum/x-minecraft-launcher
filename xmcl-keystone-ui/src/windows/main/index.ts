@@ -20,11 +20,11 @@ import { useAllServices } from './services'
 import { createStore } from './store'
 import TextComponent from '/@/components/TextComponent'
 import { I18N_KEY, ROUTER_KEY } from '/@/constant'
-import { SERVICES_SEMAPHORES_KEY, useSemaphores } from '/@/hooks'
+import { SERVICES_SEMAPHORES_KEY, useSemaphores } from '../../composables'
 import { createI18n } from '/@/i18n'
 import vuetify, { VuetifyInjectionKey } from './vuetify'
 import 'virtual:windi.css'
-import { useLocalStorageCacheBool } from '/@/hooks/useCache'
+import { useLocalStorageCacheBool } from '../../composables/useCache'
 
 // TODO: fix this after refactor halo
 window.THREE = {

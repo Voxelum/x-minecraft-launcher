@@ -1,4 +1,4 @@
-import { useI18n } from '/@/hooks'
+import { useI18n } from '../../../composables'
 import { PingServerException, BuiltinNotification, TaskNotification, TaskLifeCyclePayload } from '@xmcl/runtime-api'
 import { computed, inject, InjectionKey, onMounted, onUnmounted, provide, reactive, Ref, ref, toRefs, watch } from '@vue/composition-api'
 import { useDialog } from './useDialog'

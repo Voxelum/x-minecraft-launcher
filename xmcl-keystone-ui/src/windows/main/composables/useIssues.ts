@@ -1,6 +1,6 @@
 import { provide } from '@vue/composition-api'
 import { useDialog } from '.'
-import { IssueHandler, useModResource, useRouter, useService } from '/@/hooks'
+import { IssueHandler, useModResource, useRouter, useService } from '../../../composables'
 import { Issue, IssueType, InstanceModsServiceKey, InstanceResourcePacksServiceKey } from '@xmcl/runtime-api'
 
 export function provideIssueHandler() {

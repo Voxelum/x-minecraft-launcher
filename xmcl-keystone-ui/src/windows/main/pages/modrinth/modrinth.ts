@@ -1,8 +1,8 @@
 import { computed, reactive, toRefs, watch } from '@vue/composition-api'
 import { Category, GameVersion, License, Loader, SearchResultHit } from '@xmcl/modrinth'
 import { ModrinthServiceKey } from '@xmcl/runtime-api'
-import { useI18n, useRouter, useService } from '/@/hooks'
-import { useRefreshable } from '/@/hooks/useRefreshable'
+import { useI18n, useRouter, useService } from '../../../../composables'
+import { useRefreshable } from '../../../../composables/useRefreshable'
 import debounce from 'lodash.debounce'
 
 export interface ModrinthOptions {
