@@ -2,12 +2,12 @@
   <v-card
     v-draggable-card
     v-selectable-card
+    v-context-menu="contextMenuItems"
     outlined
     hover
     :draggable="!pack.enabled && pack.path"
     class="draggable-card flex duration-200 mt-2 flex-row flex-nowrap select-none"
     :class="{ enabled: pack.enabled }"
-    @contextmenu="onContextMenu"
     @click="onSelect"
     @dragstart="$emit('dragstart', pack)"
     @dragend="$emit('dragend')"
@@ -77,7 +77,6 @@ import { useI18n, useService, useTags } from '/@/composables'
 import { getColor } from '/@/util/color'
 import { required } from '/@/util/props'
 import { BaseServiceKey } from '@xmcl/runtime-api'
-import { useContextMenu } from '../composables/contextMenu'
 import { ShaderPackItem } from '../composables/shaderpack'
 
 export default defineComponent({
@@ -86,30 +85,16 @@ export default defineComponent({
   },
   emits: ['update:name', 'enable', 'tags'],
   setup(props, context) {
-    const { open } = useContextMenu()
     const { $t } = useI18n()
     const { showItemInDirectory } = useService(BaseServiceKey)
 
     const builtin = computed(() => props.pack.value === 'OFF' || props.pack.value === '(internal)')
     const { createTag, editTag, removeTag } = useTags(computed({ get() { return props.pack.tags }, set(v) { context.emit('tags', v) } }))
-    function onEditTag(event: Event, index: number) {
-      if (event.target instanceof HTMLDivElement) {
-        editTag(event.target.innerText, index)
-      }
-    }
-    function onEditTagEnd(item: ShaderPackItem) {
-      item.tags = [...item.tags]
-    }
-    function updateName(event: Event) {
-      if (event.target instanceof HTMLDivElement) {
-        context.emit('update:name', event.target.innerText)
-      }
-    }
-    function onContextMenu(e: MouseEvent) {
+    const contextMenuItems = computed(() => {
       if (builtin.value) {
-        return
+        return []
       }
-      open(e.clientX, e.clientY, [
+      return [
         {
           text: $t('shaderpack.showFile', { file: props.pack.path }),
           children: [],
@@ -126,12 +111,36 @@ export default defineComponent({
           },
           icon: 'add',
         },
-      ])
+      ]
+    })
+
+    function onEditTag(event: Event, index: number) {
+      if (event.target instanceof HTMLDivElement) {
+        editTag(event.target.innerText, index)
+      }
+    }
+    function onEditTagEnd(item: ShaderPackItem) {
+      item.tags = [...item.tags]
+    }
+    function updateName(event: Event) {
+      if (event.target instanceof HTMLDivElement) {
+        context.emit('update:name', event.target.innerText)
+      }
     }
     function onSelect() {
       context.emit('select', props.pack)
     }
-    return { getColor, onSelect, onContextMenu, onEditTag, onRemoveTag: removeTag, updateName, builtin, unknownPack, onEditTagEnd }
+    return {
+      contextMenuItems,
+      getColor,
+      onSelect,
+      onEditTag,
+      onRemoveTag: removeTag,
+      updateName,
+      builtin,
+      unknownPack,
+      onEditTagEnd,
+    }
   },
 })
 </script>

@@ -91,7 +91,7 @@ export default defineComponent({
       }
       return true
     }
-    const { loaderStatus: statuses, loaderVersions: vers } = useFabricVersions()
+    const { loaderVersions: vers } = useFabricVersions()
     const versions = computed(() => vers.value.filter(filterVersion))
 
     function selectVersion(item: any) {
@@ -101,7 +101,6 @@ export default defineComponent({
     return {
       ...toRefs(data),
       versions,
-      status: statuses,
       select: selectVersion,
       FabricVersionMenuTile,
     }

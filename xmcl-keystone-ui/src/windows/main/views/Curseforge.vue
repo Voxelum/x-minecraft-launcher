@@ -139,7 +139,7 @@
 
 <script lang=ts>
 import { computed, defineComponent, ref } from '@vue/composition-api'
-import { useI18n, useRouter } from '/@/composables'
+import { useI18n } from '/@/composables'
 import { dedup } from '/@/util/dedup'
 import { withDefault } from '/@/util/props'
 import Categories from './CurseforgeCategories.vue'

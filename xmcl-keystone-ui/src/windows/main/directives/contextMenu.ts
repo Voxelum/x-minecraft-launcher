@@ -4,6 +4,8 @@ import { useContextMenu } from '../composables/contextMenu'
 Vue.directive('context-menu', (el, bindings) => {
   const { open } = useContextMenu()
   el.addEventListener('contextmenu', (e) => {
-    open(e.clientX, e.clientY, bindings.value)
+    if (bindings.value.length > 0) {
+      open(e.clientX, e.clientY, bindings.value)
+    }
   })
 })

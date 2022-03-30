@@ -34,7 +34,7 @@
 
 <script lang=ts>
 import { defineComponent } from '@vue/composition-api'
-import { useContextMenuData } from '../windows/main/composables/contextMenu'
+import { useContextMenuData } from '../composables/contextMenu'
 
 export default defineComponent({
   setup() {

@@ -37,7 +37,7 @@
 <script lang=ts setup>
 import { Ref } from '@vue/composition-api'
 import '/@/assets/common.css'
-import ContextMenu from '/@/components/ContextMenu.vue'
+import ContextMenu from './components/ContextMenu.vue'
 import { provideAsyncRoute, useRouter } from '/@/composables'
 import SearchBar from './components/SearchBar.vue'
 import { useBackground } from './composables/background'
