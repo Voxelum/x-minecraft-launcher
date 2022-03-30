@@ -60,7 +60,7 @@
         "lodash.debounce": "^4.0.8",
         "lodash.throttle": "^4.1.1",
         "lzma-native": "^8.0.6",
-        "node-watch": "^0.6.4",
+        "node-watch": "^0.7.3",
         "semver": "^7.3.5",
         "uuid": "^7.0.3",
         "yazl": "^2.5.1"
