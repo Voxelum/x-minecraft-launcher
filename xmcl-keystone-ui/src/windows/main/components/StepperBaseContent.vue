@@ -55,9 +55,8 @@
 </template>
 
 <script lang=ts>
-import { computed, defineComponent, inject } from '@vue/composition-api'
-import { CreateOptionKey } from './AddInstanceDialog.vue'
-import { useI18n } from '/@/hooks'
+import { CreateOptionKey } from '../composables/instanceCreation'
+import { useI18n } from '/@/composables'
 import { required } from '/@/util/props'
 
 export default defineComponent({

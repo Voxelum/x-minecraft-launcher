@@ -75,7 +75,7 @@ import { defineComponent, inject, InjectionKey, nextTick, onMounted, provide, Re
 import { filter as fuzzy } from 'fuzzy'
 import { getColor } from '../util/color'
 import { required } from '../util/props'
-import { onSearchToggle } from '/@/windows/main/composables'
+import { onSearchToggle } from '../windows/main/composables/useSearch'
 
 export interface FilterOption {
   /**

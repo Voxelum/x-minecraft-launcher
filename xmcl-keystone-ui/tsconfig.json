@@ -11,9 +11,9 @@
       "/@/*": [
         "./src/*"
       ],
-      "/@shared/*": [
-        "../xmcl-runtime-api/src/*"
-      ]
+      "~main/*": [
+        "./src/windows/main/*"
+      ],
     },
     "esModuleInterop": true,
     "experimentalDecorators": true,

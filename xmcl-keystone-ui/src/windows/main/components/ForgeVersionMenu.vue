@@ -63,8 +63,8 @@
 <script lang=ts>
 import { reactive, toRefs, defineComponent, computed } from '@vue/composition-api'
 import ForgeVersionMenuTile from './ForgeVersionMenuTile.vue'
-import { useForgeVersions } from '/@/hooks'
 import { ForgeVersion } from '@xmcl/runtime-api'
+import { useForgeVersions } from '../composables/version'
 
 export default defineComponent({
   props: {

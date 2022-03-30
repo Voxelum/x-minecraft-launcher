@@ -53,15 +53,14 @@
 </template>
 
 <script lang=ts>
-import { computed, defineComponent, inject, onUnmounted, Ref, ref, watch } from '@vue/composition-api'
-import { CreateOptionKey } from './AddInstanceDialog.vue'
-import {
-  useI18n,
-  useInstanceTemplates,
-} from '/@/hooks'
+import { Ref } from '@vue/composition-api'
+import { useI18n } from '/@/composables'
 import { optional, required } from '/@/util/props'
-import { useSearchToggles } from '/@/windows/main/composables'
 import { InstanceSchema, CurseforgeModpackResource, isCurseforgeModpackResource, ModpackResource, ResourceType, McbbsModpackResource } from '@xmcl/runtime-api'
+import { useInstanceTemplates } from '../composables/instance'
+import { CreateOptionKey } from '../composables/instanceCreation'
+import { injection } from '/@/util/inject'
+import { useSearchToggles } from '../composables/useSearch'
 
 type ModpackDomainResource = CurseforgeModpackResource | ModpackResource | McbbsModpackResource
 
@@ -151,10 +150,7 @@ export default defineComponent({
       }
       return version
     }
-    const data = inject(CreateOptionKey)
-    if (!data) {
-      throw new Error('Cannot use without providing CreateOption!')
-    }
+    const data = injection(CreateOptionKey)
     const allTemplates = computed(() => {
       const all = [] as Array<InstanceTemplate | ModpackTemplate>
       all.push(...instances.value.map((instance) => ({

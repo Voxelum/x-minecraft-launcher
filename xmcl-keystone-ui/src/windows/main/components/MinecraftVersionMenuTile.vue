@@ -18,7 +18,7 @@
 <script lang=ts>
 import { computed, defineComponent } from '@vue/composition-api'
 import { MinecraftVersion } from '@xmcl/installer'
-import { useI18n } from '/@/hooks'
+import { useI18n } from '/@/composables'
 import { required } from '/@/util/props'
 
 export default defineComponent({
