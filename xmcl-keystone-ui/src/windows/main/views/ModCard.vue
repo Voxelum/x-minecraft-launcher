@@ -144,7 +144,7 @@ import { required } from '/@/util/props'
 import { ModItem } from '../composables/mod'
 import { useInstanceVersionBase } from '../composables/instance'
 import { useModCompatible } from '../composables/compatible'
-import { ContextMenuItem, useContextMenu } from '../composables/contextMenu'
+import { ContextMenuItem } from '../composables/contextMenu'
 import { useCurseforgeRoute, useMcWikiRoute } from '../composables/curseforgeRoute'
 
 export default defineComponent({
@@ -157,7 +157,6 @@ export default defineComponent({
     const { minecraft, forge, fabricLoader } = useInstanceVersionBase()
     const { state: instanceState } = useService(InstanceServiceKey)
     const { compatible } = useModCompatible(computed(() => props.source.resource), computed(() => instanceState.instance.runtime))
-    const { open } = useContextMenu()
     const { openInBrowser, showItemInDirectory } = useService(BaseServiceKey)
     const { push } = useRouter()
     const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()

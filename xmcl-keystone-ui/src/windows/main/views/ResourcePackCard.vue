@@ -2,6 +2,7 @@
   <v-card
     ref="card"
     v-draggable-card
+    v-context-menu="contextMenuItems"
     outlined
     draggable
     :class="{ incompatible: !compatible }"
@@ -9,7 +10,6 @@
     style="margin-top: 10px"
     @dragstart="onDragStart"
     @dragend.prevent="onDragEnd"
-    @contextmenu="openContextMenu"
     @mouseenter="hovered = true"
     @mouseleave="hovered = false"
   >
@@ -102,7 +102,7 @@
 import { computed, defineComponent, ref, Ref } from '@vue/composition-api'
 import { BaseServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import { useRangeCompatible } from '../composables/compatible'
-import { useContextMenu, ContextMenuItem } from '../composables/contextMenu'
+import { ContextMenuItem } from '../composables/contextMenu'
 import { useCurseforgeRoute } from '../composables/curseforgeRoute'
 import { ResourcePackItem } from '../composables/resourcePack'
 import unknownPack from '/@/assets/unknown_pack.png'
@@ -120,7 +120,6 @@ export default defineComponent({
     const { state } = useService(InstanceServiceKey)
     const runtime = computed(() => state.instance.runtime)
     const { compatible } = useRangeCompatible(computed(() => props.pack.acceptingRange ?? ''), computed(() => runtime.value.minecraft))
-    const { open } = useContextMenu()
     const { $t } = useI18n()
     const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
     const { showItemInDirectory } = useService(BaseServiceKey)
@@ -136,32 +135,9 @@ export default defineComponent({
     useDragTransferItem(computed(() => card.value?.$el as HTMLElement), props.pack.id, props.isSelected ? 'right' : 'left')
     const tags = ref([...props.pack.tags])
 
-    function onDragStart(e: DragEvent) {
-      e.dataTransfer!.effectAllowed = 'move'
-      if (props.pack.id !== 'vanilla') {
-        context.emit('dragstart', e)
-      }
-      e.dataTransfer!.setDragImage(iconImage.value, 0, 0)
-    }
-    function onDragEnd(e: DragEvent) {
-      if (props.pack.id !== 'vanilla') {
-        context.emit('dragend', e)
-      }
-    }
-    function onEditTag(event: Event, index: number) {
-      if (event.target && event.target instanceof HTMLElement) {
-        editTag(event.target.innerText, index)
-      }
-    }
-    function notifyTagChange(item: ResourcePackItem) {
-      item.tags = [...item.tags]
-    }
-    function onEditPackName(item: ResourcePackItem, name: string) {
-      item.name = name
-    }
-    function openContextMenu(e: MouseEvent) {
+    const contextMenuItems = computed(() => {
       if (props.pack.id === 'vanilla') {
-        return
+        return []
       }
       const menuItems: ContextMenuItem[] = [{
         text: $t('resourcepack.showFile', { file: props.pack.path }),
@@ -197,9 +173,34 @@ export default defineComponent({
           icon: 'search',
         })
       }
-      open(e.clientX, e.clientY, menuItems)
+      return menuItems
+    })
+
+    function onDragStart(e: DragEvent) {
+      e.dataTransfer!.effectAllowed = 'move'
+      if (props.pack.id !== 'vanilla') {
+        context.emit('dragstart', e)
+      }
+      e.dataTransfer!.setDragImage(iconImage.value, 0, 0)
+    }
+    function onDragEnd(e: DragEvent) {
+      if (props.pack.id !== 'vanilla') {
+        context.emit('dragend', e)
+      }
+    }
+    function onEditTag(event: Event, index: number) {
+      if (event.target && event.target instanceof HTMLElement) {
+        editTag(event.target.innerText, index)
+      }
+    }
+    function notifyTagChange(item: ResourcePackItem) {
+      item.tags = [...item.tags]
+    }
+    function onEditPackName(item: ResourcePackItem, name: string) {
+      item.name = name
     }
     return {
+      contextMenuItems,
       onEditPackName,
       compatible,
       iconImage,
@@ -208,7 +209,6 @@ export default defineComponent({
       runtime,
       card,
       onEditTag,
-      openContextMenu,
       getColor,
       unknownPack,
       tags,
