@@ -143,8 +143,8 @@ import { useI18n, useRouter } from '/@/composables'
 import { dedup } from '/@/util/dedup'
 import { withDefault } from '/@/util/props'
 import Categories from './CurseforgeCategories.vue'
-import { useCurseforgeSearch } from '../composables/curseforge'
 import { onSearchToggle } from '../composables/useSearch'
+import { useCurseforge } from '../composables/curseforge'
 
 export default defineComponent({
   components: { Categories },
