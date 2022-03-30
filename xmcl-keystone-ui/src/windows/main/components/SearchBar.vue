@@ -17,8 +17,9 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, inject, ref, Ref, nextTick, watch, onMounted } from '@vue/composition-api'
-import { useSearch, onSearchToggle, useSearchToggles } from '/@/windows/main/composables'
+import { Ref } from '@vue/composition-api'
+import { useI18n } from 'vue-i18n'
+import { useSearch, useSearchToggles } from '../composables/useSearch'
 
 function setupDraggable(self: Ref<any>) {
   let initialX = 0

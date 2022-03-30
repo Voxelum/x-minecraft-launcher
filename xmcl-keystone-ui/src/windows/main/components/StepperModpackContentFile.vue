@@ -35,9 +35,9 @@
 <script lang="ts">
 import { computed, defineComponent, onMounted, Ref, ref } from '@vue/composition-api'
 import type { AddonInfo } from '@xmcl/curseforge'
-import { CurseForgeServiceKey } from '@xmcl/runtime-api'
-import { useBaseService, useService } from '/@/hooks'
-import { useRefreshable } from '/@/hooks/useRefreshable'
+import { BaseServiceKey, CurseForgeServiceKey } from '@xmcl/runtime-api'
+import { useService } from '/@/composables'
+import { useRefreshable } from '../../../composables/refreshable'
 import { required } from '/@/util/props'
 
 export default defineComponent({
@@ -47,7 +47,7 @@ export default defineComponent({
   },
   setup(props) {
     const { fetchProject } = useService(CurseForgeServiceKey)
-    const { openInBrowser } = useBaseService()
+    const { openInBrowser } = useService(BaseServiceKey)
     onMounted(() => {
       refresh()
     })

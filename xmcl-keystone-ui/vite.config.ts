@@ -7,6 +7,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import YAML from '@modyfi/vite-plugin-yaml'
 import WindiCSS from 'vite-plugin-windicss'
 import ScriptSetup from 'unplugin-vue2-script-setup/vite'
+import AutoImport from 'unplugin-auto-import/vite'
 
 const entries = readdirSync(join(__dirname, './src'))
   .filter((f) => f.endsWith('.html'))
@@ -31,7 +32,9 @@ export default defineConfig({
   resolve: {
     alias: {
       '/@': join(__dirname, './src'),
-      '/@shared': '../xmcl-runtime-api/src',
+      '~main': join(__dirname, './src/windows/main'),
+      '~logger': join(__dirname, './src/windows/logger'),
+      '~setup': join(__dirname, './src/windows/setup'),
     },
   },
   optimizeDeps: {
@@ -63,5 +66,16 @@ export default defineConfig({
 
     YAML(),
     ScriptSetup({ reactivityTransform: true }),
+    AutoImport({
+      imports: [
+        '@vue/composition-api',
+      ],
+      dts: 'auto-imports.d.ts',
+      eslintrc: {
+        enabled: true,
+        filepath: './.eslintrc-auto-import.json', // Default `./.eslintrc-auto-import.json`
+        globalsPropValue: true, // Default `true`, (true | false | 'readonly' | 'readable' | 'writable' | 'writeable')
+      },
+    }),
   ],
 })

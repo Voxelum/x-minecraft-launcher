@@ -5,10 +5,12 @@
         "serviceChannels": true,
         "windowController": true,
         "appsHost": true,
-        "gameOutput": true
+        "gameOutput": true,
+        "defineProps": true
     },
     "extends": [
         "../.eslintrc.json",
+        ".eslintrc-auto-import.json",
         "plugin:vue/recommended"
     ],
     "parser": "vue-eslint-parser",

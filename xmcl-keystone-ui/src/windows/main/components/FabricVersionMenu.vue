@@ -63,8 +63,8 @@
 <script lang=ts>
 import { reactive, toRefs, defineComponent, computed } from '@vue/composition-api'
 import { FabricArtifactVersion } from '@xmcl/installer'
+import { useFabricVersions } from '../composables/version'
 import FabricVersionMenuTile from './FabricVersionMenuTile.vue'
-import { useFabricVersions, useForgeVersions } from '/@/hooks'
 
 export default defineComponent({
   props: {

@@ -116,6 +116,7 @@ export async function dev() {
       },
     },
   })
+  console.log('electron main ready')
 
   return result
 }

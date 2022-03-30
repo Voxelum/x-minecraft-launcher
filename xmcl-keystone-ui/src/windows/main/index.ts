@@ -14,7 +14,7 @@ import Vuetify from 'vuetify'
 import Vuex from 'vuex'
 import { SERVICES_KEY, VuexServiceFactory } from '../../vuexServiceProxy'
 import './directives'
-import MainWindow from './index.vue'
+import MainWindow from './App.vue'
 import { createRouter } from './router'
 import { useAllServices } from './services'
 import { createStore } from './store'
@@ -24,7 +24,6 @@ import { SERVICES_SEMAPHORES_KEY, useSemaphores } from '../../composables'
 import { createI18n } from '/@/i18n'
 import vuetify, { VuetifyInjectionKey } from './vuetify'
 import 'virtual:windi.css'
-import { useLocalStorageCacheBool } from '../../composables/useCache'
 
 // TODO: fix this after refactor halo
 window.THREE = {

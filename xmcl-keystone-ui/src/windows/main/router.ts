@@ -1,81 +1,79 @@
 import Router from 'vue-router'
-import root from './pages'
-import baseSetting from './pages/base-setting'
-import curseforgeType from './pages/curseforge/[type]'
-import curseforgeTypeId from './pages/curseforge/[type]/[id]'
-import gameSetting from './pages/game-setting'
-import instances from './pages/instances'
-import mcwiki from './pages/mcwiki'
-import modSetting from './pages/mod-setting'
-import resourcePackPreview from './pages/resource-pack-preview'
-import resourcePackSetting from './pages/resource-pack-setting'
-import shaderPackSetting from './pages/shader-pack-setting'
-import modrinth from './pages/modrinth'
-import modrinthProject from './pages/modrinth/[id]'
-import save from './pages/save'
-import setting from './pages/setting'
-import user from './pages/user'
-import versionSetting from './pages/version-setting'
-import modpackSetting from './pages/modpack-setting'
+import Home from './views/Home.vue'
+import Instances from './views/Instances.vue'
+import Setting from './views/Setting.vue'
+import User from './views/User.vue'
+import Save from './views/Save.vue'
+import BaseSetting from './views/BaseSetting.vue'
+import Mod from './views/Mod.vue'
+import GameSetting from './views/GameSetting.vue'
+import ResourcePack from './views/ResourcePack.vue'
+import ShaderPack from './views/ShaderPack.vue'
+import Version from './views/Version.vue'
+import Modpack from './views/Modpack.vue'
+import Curseforge from './views/Curseforge.vue'
+import CurseforgeProject from './views/CurseforgeProject.vue'
+import Modrinth from './views/Modrinth.vue'
+import ModrinthProject from './views/ModrinthProject.vue'
 
 export const createRouter = () => {
   const router = new Router({
     routes: [
       {
         path: '/',
-        component: root,
+        component: Home,
       },
       {
         path: '/instances',
-        component: instances,
+        component: Instances,
       },
       {
         path: '/setting',
-        component: setting,
+        component: Setting,
       },
       {
         path: '/user',
-        component: user,
+        component: User,
       },
       {
         path: '/save',
-        component: save,
+        component: Save,
       },
       {
         path: '/base-setting',
-        component: baseSetting,
+        component: BaseSetting,
       },
       {
         path: '/mod-setting',
-        component: modSetting,
+        component: Mod,
       },
       {
         path: '/game-setting',
-        component: gameSetting,
+        component: GameSetting,
       },
       {
         path: '/resource-pack-setting',
-        component: resourcePackSetting,
+        component: ResourcePack,
       },
       {
         path: '/shader-pack-setting',
-        component: shaderPackSetting,
+        component: ShaderPack,
       },
-      {
-        path: '/resource-pack-preview',
-        component: resourcePackPreview,
-      },
+      // {
+      //   path: '/resource-pack-preview',
+      //   component: resourcePackPreview,
+      // },
       {
         path: '/version-setting',
-        component: versionSetting,
+        component: Version,
       },
       {
         path: '/modpack-setting',
-        component: modpackSetting,
+        component: Modpack,
       },
       {
         path: '/curseforge/:type',
-        component: curseforgeType,
+        component: Curseforge,
         props: (route) => ({
           from: route.query.from,
           type: route.path.split('/')[2],
@@ -88,16 +86,12 @@ export const createRouter = () => {
       },
       {
         path: '/curseforge/:type/:id',
-        component: curseforgeTypeId,
-        props: (route) => ({
-          type: route.path.split('/')[2],
-          id: route.path.split('/')[3],
-          from: route.query.from,
-        }),
+        component: CurseforgeProject,
+        props: (route) => ({ type: route.path.split('/')[2], id: route.path.split('/')[3], from: route.query.from }),
       },
       {
         path: '/modrinth',
-        component: modrinth,
+        component: Modrinth,
         props: (route) => ({
           query: route.query.query,
           gameVersion: route.query.gameVersion,
@@ -113,13 +107,8 @@ export const createRouter = () => {
       },
       {
         path: '/modrinth/:id',
-        component: modrinthProject,
+        component: ModrinthProject,
         props: (route) => ({ id: route.path.split('/')[2] }),
-      },
-      {
-        path: '/mcwiki',
-        component: mcwiki,
-        props: (route) => ({ path: route.query.path }),
       },
     ],
   })

@@ -80,7 +80,7 @@
 <script lang="ts">
 import { defineComponent, reactive, toRefs } from '@vue/composition-api'
 import { Drive } from '@xmcl/runtime-api/setup'
-import { useI18n } from '/@/hooks'
+import { useI18n } from '/@/composables'
 import { required } from '/@/util/props'
 
 export default defineComponent({

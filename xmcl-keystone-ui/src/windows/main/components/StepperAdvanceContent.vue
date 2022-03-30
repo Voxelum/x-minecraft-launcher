@@ -170,17 +170,17 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, inject } from '@vue/composition-api'
-import FabricVersionMenu from './FabricVersionMenu.vue'
-import ForgeVersionMenu from './ForgeVersionMenu.vue'
-import MinecraftVersionMenu from './MinecraftVersionMenu.vue'
-import { CreateOptionKey } from './AddInstanceDialog.vue'
-import { useJava } from '/@/hooks'
 import { required, withDefault } from '/@/util/props'
 import { JavaRecord } from '@xmcl/runtime-api'
 import forgePng from '/@/assets/forge.png'
 import minecraftPng from '/@/assets/minecraft.png'
 import fabricPng from '/@/assets/fabric.png'
+import FabricVersionMenu from './FabricVersionMenu.vue'
+import ForgeVersionMenu from './ForgeVersionMenu.vue'
+import MinecraftVersionMenu from './MinecraftVersionMenu.vue'
+import { CreateOptionKey } from '../composables/instanceCreation'
+import { useJava } from '../composables/java'
+import { injection } from '/@/util/inject'
 
 export default defineComponent({
   components: { ForgeVersionMenu, MinecraftVersionMenu, FabricVersionMenu },
@@ -193,11 +193,8 @@ export default defineComponent({
     const memoryRule = [(v: any) => Number.isInteger(v)]
     const getJavaVersion = (java: JavaRecord) => `Java ${java.majorVersion}(${java.version})`
     const getItem = (v: JavaRecord) => v.version
-    const content = inject(CreateOptionKey)
+    const content = injection(CreateOptionKey)
     const { all: javas } = useJava()
-    if (!content) {
-      throw new Error('Cannot use without providing CreateOption!')
-    }
     function onSelectForge(event: { version: string }) {
       if (content?.runtime.value) {
         const runtime = content.runtime.value

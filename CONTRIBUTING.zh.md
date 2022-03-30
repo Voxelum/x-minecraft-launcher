@@ -137,9 +137,9 @@ vite 提供热重载，它会自动更新。如果出现问题，您可以通过
 
 #### 推荐与 Vuex 交互的方式
 
-- 在 `src/renderer/hooks` 文件夹中为 hook 函数创建一个新文件，并通过 `src/renderer/hooks/index.ts`导出 hook 函数。
+- 在 `src/renderer/composables` 文件夹中为 hook 函数创建一个新文件，并通过 `src/renderer/composables/index.ts`导出 hook 函数。
   - 将 vuex 操作包装在 hook 函数中。
-- 通过 `import { yourHook } from '/@/hooks'` 在你的 vue 文件中导入你的 hook 函数，
+- 通过 `import { yourHook } from '/@/composables'` 在你的 vue 文件中导入你的 hook 函数，
 - 在 vue 文件中使用钩子访问 vuex ，而不是直接访问 vuex。
 
 ### VSCode 调试器

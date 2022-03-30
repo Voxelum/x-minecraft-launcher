@@ -1,8 +1,8 @@
-declare module '*.vue' {
-  import { ComponentOptions, Component } from 'vue'
-  const component: ComponentOptions
-  export default component
-}
+// declare module '*.vue' {
+//   import { ComponentOptions, Component } from 'vue'
+//   const component: ComponentOptions
+//   export default component
+// }
 declare module '*.webp' {
   const value: string
   export default value
