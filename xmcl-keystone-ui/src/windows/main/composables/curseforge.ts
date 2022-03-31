@@ -10,6 +10,7 @@ export interface CurseforgeProps {
   category: string
   sort: string
   gameVersion: string
+  from: string
 }
 
 /**

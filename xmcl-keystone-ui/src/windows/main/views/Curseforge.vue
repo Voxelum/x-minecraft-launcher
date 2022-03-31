@@ -21,8 +21,8 @@
           />
         </span>
         <v-text-field
-          ref="searchBar"
           v-model="keywordBuffer"
+          v-focus-on-search="() => true"
           color="green"
           append-icon="search"
           solo
@@ -137,49 +137,43 @@
   </div>
 </template>
 
-<script lang=ts>
-import { computed, defineComponent, ref } from '@vue/composition-api'
+<script lang=ts setup>
 import { useI18n } from '/@/composables'
 import { dedup } from '/@/util/dedup'
-import { withDefault } from '/@/util/props'
 import Categories from './CurseforgeCategories.vue'
-import { onSearchToggle } from '../composables/useSearch'
-import { useCurseforge } from '../composables/curseforge'
+import { CurseforgeProps, useCurseforge } from '../composables/curseforge'
+import { vFocusOnSearch } from '../directives/focusOnSearch'
 
-export default defineComponent({
-  components: { Categories },
-  props: {
-    type: withDefault(String, () => 'mc-mods'),
-    page: withDefault(Number, () => 1),
-    keyword: withDefault(String, () => ''),
-    category: withDefault(String, () => ''),
-    sort: withDefault(String, () => ''),
-    gameVersion: withDefault(String, () => ''),
-    from: withDefault(String, () => ''),
+const props = withDefaults(
+  defineProps<CurseforgeProps>(), {
+    type: 'mc-mods',
+    page: 1,
+    keyword: '',
+    category: '',
+    sort: '',
+    gameVersion: '',
+    from: '',
   },
-  setup(props) {
-    const searchBar = ref<HTMLElement | null>(null)
-    const selectedType = ref('')
-    const { $t } = useI18n()
-    const allTypes = computed(() => ['mc-mods', 'texture-packs', 'worlds', 'modpacks'].map(v => ({
-      text: $t(`curseforge.${v}.name`),
-      value: v,
-    })))
-    const keywordBuffer = ref(props.keyword)
-    onSearchToggle(() => {
-      searchBar.value?.focus()
-      return true
-    })
-    return {
-      keywordBuffer,
-      ...useCurseforge(props),
-      searchBar,
-      selectedType,
-      allTypes,
-      dedup,
-    }
-  },
-})
+)
+
+const { t } = useI18n()
+const allTypes = computed(() => ['mc-mods', 'texture-packs', 'worlds', 'modpacks'].map(v => ({
+  text: t(`curseforge.${v}.name`),
+  value: v,
+})))
+const keywordBuffer = ref(props.keyword)
+
+const {
+  currentCategory,
+  currentKeyword,
+  currentPage,
+  currentType,
+  categoryId,
+  loading,
+  pages,
+  projects,
+} = useCurseforge(props)
+
 </script>
 
 <style>

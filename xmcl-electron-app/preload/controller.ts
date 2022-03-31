@@ -33,6 +33,12 @@ function createController(): WindowController {
     showSaveDialog(...options: any[]) {
       return ipcRenderer.invoke('dialog:showSaveDialog', ...options)
     },
+    findInPage(text, options) {
+      return ipcRenderer.invoke('find-in-page', text, options)
+    },
+    stopFindInPage() {
+      return ipcRenderer.invoke('stop-find-in-page')
+    },
   }
 }
 
