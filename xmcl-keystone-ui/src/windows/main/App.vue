@@ -23,7 +23,6 @@
     </div>
     <universal-drop-view />
     <context-menu />
-    <search-bar />
     <notifier />
     <feedback-dialog />
     <login-dialog />
@@ -38,14 +37,12 @@
 import { Ref } from '@vue/composition-api'
 import '/@/assets/common.css'
 import ContextMenu from './components/ContextMenu.vue'
-import { provideAsyncRoute, useRouter } from '/@/composables'
-import SearchBar from './components/SearchBar.vue'
+import { provideAsyncRoute, useRouter, provideSearchToggle } from '/@/composables'
 import { useBackground } from './composables/background'
 import { provideDialog } from './composables/dialog'
 import { provideIssueHandler } from './composables/issueHandler'
 import { provideNotifier } from './composables/notifier'
 import { provideServerStatusCache } from './composables/serverStatus'
-import { provideSearch } from './composables/useSearch'
 import { TASK_MANAGER, useTaskManager } from './provideTaskProxy'
 import AddInstanceDialog from './views/AppAddInstanceDialog.vue'
 import AddServerDialog from './views/AppAddServerDialog.vue'
@@ -70,7 +67,7 @@ provideAsyncRoute()
 provideServerStatusCache()
 provideIssueHandler()
 
-const { text, toggle } = provideSearch()
+provideSearchToggle()
 
 const router = useRouter()
 const onHomePage = ref(router.currentRoute.path === '/')
@@ -78,8 +75,6 @@ const app: Ref<any> = ref(null)
 
 router.afterEach((to) => {
   onHomePage.value = to.path === '/'
-  toggle(true)
-  text.value = ''
 })
 </script>
 

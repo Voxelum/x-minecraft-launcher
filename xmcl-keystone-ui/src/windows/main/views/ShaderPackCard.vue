@@ -9,8 +9,8 @@
     class="draggable-card flex duration-200 mt-2 flex-row flex-nowrap select-none"
     :class="{ enabled: pack.enabled }"
     @click="onSelect"
-    @dragstart="$emit('dragstart', pack)"
-    @dragend="$emit('dragend')"
+    @dragstart="emit('dragstart', pack)"
+    @dragend="emit('dragend')"
   >
     <div class="self-center px-2 ">
       <img
@@ -65,84 +65,68 @@
       <v-switch
         readonly
         :value="pack.enabled"
-        @input="$emit('enable', $event)"
+        @input="emit('enable', $event)"
       />
     </div>
   </v-card>
 </template>
-<script lang="ts">
-import { computed, defineComponent } from '@vue/composition-api'
+<script lang="ts" setup>
+import { computed } from '@vue/composition-api'
 import unknownPack from '/@/assets/unknown_pack.png'
 import { useI18n, useService, useTags } from '/@/composables'
 import { getColor } from '/@/util/color'
-import { required } from '/@/util/props'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { ShaderPackItem } from '../composables/shaderpack'
+import { vContextMenu } from '../directives/contextMenu'
 
-export default defineComponent({
-  props: {
-    pack: required<ShaderPackItem>(Object),
-  },
-  emits: ['update:name', 'enable', 'tags'],
-  setup(props, context) {
-    const { $t } = useI18n()
-    const { showItemInDirectory } = useService(BaseServiceKey)
+const props = defineProps<{ pack: ShaderPackItem }>()
+const emit = defineEmits(['update:name', 'enable', 'tags', 'select', 'dragstart', 'dragend'])
 
-    const builtin = computed(() => props.pack.value === 'OFF' || props.pack.value === '(internal)')
-    const { createTag, editTag, removeTag } = useTags(computed({ get() { return props.pack.tags }, set(v) { context.emit('tags', v) } }))
-    const contextMenuItems = computed(() => {
-      if (builtin.value) {
-        return []
-      }
-      return [
-        {
-          text: $t('shaderpack.showFile', { file: props.pack.path }),
-          children: [],
-          onClick: () => {
-            showItemInDirectory(props.pack.path)
-          },
-          icon: 'folder',
-        },
-        {
-          text: $t('tag.create'),
-          children: [],
-          onClick() {
-            createTag()
-          },
-          icon: 'add',
-        },
-      ]
-    })
+const { t } = useI18n()
+const { showItemInDirectory } = useService(BaseServiceKey)
 
-    function onEditTag(event: Event, index: number) {
-      if (event.target instanceof HTMLDivElement) {
-        editTag(event.target.innerText, index)
-      }
-    }
-    function onEditTagEnd(item: ShaderPackItem) {
-      item.tags = [...item.tags]
-    }
-    function updateName(event: Event) {
-      if (event.target instanceof HTMLDivElement) {
-        context.emit('update:name', event.target.innerText)
-      }
-    }
-    function onSelect() {
-      context.emit('select', props.pack)
-    }
-    return {
-      contextMenuItems,
-      getColor,
-      onSelect,
-      onEditTag,
-      onRemoveTag: removeTag,
-      updateName,
-      builtin,
-      unknownPack,
-      onEditTagEnd,
-    }
-  },
+const builtin = computed(() => props.pack.value === 'OFF' || props.pack.value === '(internal)')
+const { createTag, editTag, removeTag: onRemoveTag } = useTags(computed({ get() { return props.pack.tags }, set(v) { emit('tags', v) } }))
+const contextMenuItems = computed(() => {
+  if (builtin.value) {
+    return []
+  }
+  return [
+    {
+      text: t('shaderpack.showFile', { file: props.pack.path }),
+      children: [],
+      onClick: () => {
+        showItemInDirectory(props.pack.path)
+      },
+      icon: 'folder',
+    },
+    {
+      text: t('tag.create'),
+      children: [],
+      onClick() {
+        createTag()
+      },
+      icon: 'add',
+    },
+  ]
 })
+
+function onEditTag(event: Event, index: number) {
+  if (event.target instanceof HTMLDivElement) {
+    editTag(event.target.innerText, index)
+  }
+}
+function onEditTagEnd(item: ShaderPackItem) {
+  item.tags = [...item.tags]
+}
+function updateName(event: Event) {
+  if (event.target instanceof HTMLDivElement) {
+    emit('update:name', event.target.innerText)
+  }
+}
+function onSelect() {
+  emit('select', props.pack)
+}
 </script>
 
 <style scoped>

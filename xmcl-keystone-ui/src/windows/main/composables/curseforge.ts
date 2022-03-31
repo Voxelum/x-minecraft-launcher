@@ -1,22 +1,15 @@
-import { computed, onMounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
+import { computed, ExtractPropTypes, onMounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
 import { AddonInfo, Attachment, File } from '@xmcl/curseforge'
 import { CurseForgeServiceKey, InstanceModsServiceKey, PersistedResource, ProjectType, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useBusy, useRouter, useService } from '/@/composables'
+import P from '../views/Curseforge.vue'
 
-export interface CurseforgeProps {
-  type: string
-  page: number
-  keyword: string
-  category: string
-  sort: string
-  gameVersion: string
-  from: string
-}
+type A = ExtractPropTypes<typeof P.props>
 
 /**
  * Hook to return the controller of curseforge preview page. Navigating the curseforge projects.
  */
-export function useCurseforge(props: CurseforgeProps) {
+export function useCurseforge(props: A) {
   const router = useRouter()
   const { searchProjects } = useService(CurseForgeServiceKey)
   const pageSize = 10

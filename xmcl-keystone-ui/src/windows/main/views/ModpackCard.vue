@@ -4,7 +4,7 @@
     v-context-menu="contextMenuItems"
     outlined
     draggable
-    class="draggable-card rounded-lg transition-all duration-200  cursor-pointer max-w-[30%]"
+    class="draggable-card rounded-lg transition-all duration-200 cursor-pointer max-w-[30%]"
     @dragstart="$emit('dragstart')"
     @dragend="$emit('dragend')"
   >
@@ -77,60 +77,54 @@
     </v-card-actions>
   </v-card>
 </template>
-<script lang="ts">
-import { computed, defineComponent, Ref } from '@vue/composition-api'
+<script lang="ts" setup>
+import { Ref } from '@vue/composition-api'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useI18n, useService, useTags } from '/@/composables'
-import { required } from '/@/util/props'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { useCurseforgeRoute } from '../composables/curseforgeRoute'
 import { ModpackItem } from './Modpack.vue'
+import { vContextMenu } from '../directives/contextMenu'
 
-export default defineComponent({
-  props: { item: required<ModpackItem>(Object) },
-  setup(props, context) {
-    const { $t } = useI18n()
-    const { showItemInDirectory } = useService(BaseServiceKey)
-    const { goProjectAndRoute } = useCurseforgeRoute()
-    const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.item.tags, set(v) { context.emit('tags', v) } }))
-    const contextMenuItems: Ref<ContextMenuItem[]> = computed(() => {
-      const items: ContextMenuItem[] = [{
-        text: $t('modpack.showFile', { file: props.item.resource.path }),
-        children: [],
-        onClick: () => {
-          showItemInDirectory(props.item.resource.path)
-        },
-        icon: 'folder',
-      }, {
-        text: $t('tag.create'),
-        children: [],
-        onClick: () => {
-          createTag()
-        },
-        icon: 'add',
-      }]
-      if (props.item.resource.curseforge) {
-        items.push({
-          text: $t('modpack.showInCurseforge', { name: props.item.name }),
-          children: [],
-          onClick: () => {
-            goProjectAndRoute(props.item.resource.curseforge!.projectId, 'modpacks')
-          },
-          icon: '$vuetify.icons.curseforge',
-        })
-      }
-      return items
+const props = defineProps<{ item: ModpackItem }>()
+const emit = defineEmits(['tags'])
+
+const { t } = useI18n()
+const { showItemInDirectory } = useService(BaseServiceKey)
+const { goProjectAndRoute } = useCurseforgeRoute()
+const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.item.tags, set(v) { emit('tags', v) } }))
+const onDeleteTag = removeTag
+const contextMenuItems: Ref<ContextMenuItem[]> = computed(() => {
+  const items: ContextMenuItem[] = [{
+    text: t('modpack.showFile', { file: props.item.resource.path }),
+    children: [],
+    onClick: () => {
+      showItemInDirectory(props.item.resource.path)
+    },
+    icon: 'folder',
+  }, {
+    text: t('tag.create'),
+    children: [],
+    onClick: () => {
+      createTag()
+    },
+    icon: 'add',
+  }]
+  if (props.item.resource.curseforge) {
+    items.push({
+      text: t('modpack.showInCurseforge', { name: props.item.name }),
+      children: [],
+      onClick: () => {
+        goProjectAndRoute(props.item.resource.curseforge!.projectId, 'modpacks')
+      },
+      icon: '$vuetify.icons.curseforge',
     })
-    function onEditTag(event: Event, index: number) {
-      if (event.target instanceof HTMLDivElement) {
-        editTag(event.target.innerText, index)
-      }
-    }
-    return {
-      contextMenuItems,
-      onDeleteTag: removeTag,
-      onEditTag,
-    }
-  },
+  }
+  return items
 })
+function onEditTag(event: Event, index: number) {
+  if (event.target instanceof HTMLDivElement) {
+    editTag(event.target.innerText, index)
+  }
+}
 </script>

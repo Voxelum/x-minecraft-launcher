@@ -134,181 +134,160 @@
   </v-card>
 </template>
 
-<script lang=ts>
+<script lang=ts setup>
 import { Ref } from '@vue/composition-api'
 import { BaseServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import unknownPack from '/@/assets/unknown_pack.png'
 import { useI18n, useRouter, useService, useTags } from '/@/composables'
 import { getColor } from '/@/util/color'
-import { required } from '/@/util/props'
 import { ModItem } from '../composables/mod'
 import { useInstanceVersionBase } from '../composables/instance'
 import { useModCompatible } from '../composables/compatible'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { useCurseforgeRoute, useMcWikiRoute } from '../composables/curseforgeRoute'
+import { vContextMenu } from '../directives/contextMenu'
 
-export default defineComponent({
-  props: {
-    source: required<ModItem>(Object),
-    selection: required<boolean>(Boolean),
-  },
-  emits: ['tags'],
-  setup(props, context) {
-    const { minecraft, forge, fabricLoader } = useInstanceVersionBase()
-    const { state: instanceState } = useService(InstanceServiceKey)
-    const { compatible } = useModCompatible(computed(() => props.source.resource), computed(() => instanceState.instance.runtime))
-    const { openInBrowser, showItemInDirectory } = useService(BaseServiceKey)
-    const { push } = useRouter()
-    const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
-    const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute()
-    const { $t } = useI18n()
-    const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.source.tags, set(v) { context.emit('tags', v) } }))
+const props = defineProps<{ source: ModItem; selection: boolean }>()
+const emit = defineEmits(['tags', 'enable', 'dragstart', 'select'])
 
-    const iconImage: Ref<HTMLImageElement | null> = ref(null)
-    const enabled = computed({
-      get() { return props.source.enabled },
-      set(v: boolean) { context.emit('enable', { item: props.source, enabled: v }) },
+const { minecraft, forge, fabricLoader } = useInstanceVersionBase()
+const { state: instanceState } = useService(InstanceServiceKey)
+const { compatible } = useModCompatible(computed(() => props.source.resource), computed(() => instanceState.instance.runtime))
+const { openInBrowser, showItemInDirectory } = useService(BaseServiceKey)
+const { push } = useRouter()
+const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
+const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute()
+const { $t } = useI18n()
+const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.source.tags, set(v) { emit('tags', v) } }))
+
+const onDeleteTag = removeTag
+const iconImage: Ref<HTMLImageElement | null> = ref(null)
+const enabled = computed({
+  get() { return props.source.enabled },
+  set(v: boolean) { emit('enable', { item: props.source, enabled: v }) },
+})
+
+const compatibleText = computed(() => {
+  const deps = props.source.dependencies
+  let acceptVersionText = $t('mod.acceptVersion', { version: deps.minecraft }) + ', ' + $t('mod.currentVersion', { current: minecraft.value }) + '.'
+  if (deps.forge) {
+    acceptVersionText += ` Forge ${deps.forge}` + (forge.value ? `, ${$t('mod.currentVersion', { current: forge.value })}.` : '')
+  }
+  if (deps.fabricLoader) {
+    acceptVersionText += `, FabricLoader ${deps.fabricLoader}` + (fabricLoader.value ? `, ${$t('mod.currentVersion', { current: fabricLoader.value })}.` : '')
+  }
+  const compatibleText = compatible.value === 'maybe'
+    ? $t('mod.maybeCompatible')
+    : compatible.value
+      ? $t('mod.compatible')
+      : $t('mod.incompatible')
+  return compatibleText + acceptVersionText
+})
+
+function onDragStart(e: DragEvent) {
+  if (props.source.enabled) {
+    return
+  }
+  if (iconImage.value) {
+    e.dataTransfer!.setDragImage(iconImage.value!, 0, 0)
+  } else {
+    const img = document.createElement('img')
+    img.src = props.source.icon
+    img.style.maxHeight = '126px'
+    img.style.maxWidth = '126px'
+    img.style.objectFit = 'contain'
+
+    e.dataTransfer!.setDragImage(img, 0, 0)
+  }
+  e.dataTransfer!.effectAllowed = 'move'
+  e.dataTransfer!.setData('id', props.source.url)
+  emit('dragstart', e)
+}
+function onEditTag(event: Event, index: number) {
+  if (event.target instanceof HTMLDivElement) {
+    editTag(event.target.innerText, index)
+  }
+}
+function emitSelect() {
+  emit('select')
+}
+
+const contextMenuItems = computed(() => {
+  const items: ContextMenuItem[] = [{
+    text: $t('mod.showFile', { file: props.source.path }),
+    children: [],
+    onClick: () => {
+      showItemInDirectory(props.source.path)
+    },
+    icon: 'folder',
+  }, {
+    text: $t('tag.create'),
+    children: [],
+    onClick: () => {
+      createTag()
+    },
+    icon: 'add',
+  }]
+  if (props.source.url) {
+    const url = props.source.url
+    items.push({
+      text: $t('mod.openLink', { url }),
+      children: [],
+      onClick: () => {
+        openInBrowser(url)
+      },
+      icon: 'link',
     })
-
-    const compatibleText = computed(() => {
-      const deps = props.source.dependencies
-      let acceptVersionText = $t('mod.acceptVersion', { version: deps.minecraft }) + ', ' + $t('mod.currentVersion', { current: minecraft.value }) + '.'
-      if (deps.forge) {
-        acceptVersionText += ` Forge ${deps.forge}` + (forge.value ? `, ${$t('mod.currentVersion', { current: forge.value })}.` : '')
-      }
-      if (deps.fabricLoader) {
-        acceptVersionText += `, FabricLoader ${deps.fabricLoader}` + (fabricLoader.value ? `, ${$t('mod.currentVersion', { current: fabricLoader.value })}.` : '')
-      }
-      const compatibleText = compatible.value === 'maybe'
-        ? $t('mod.maybeCompatible')
-        : compatible.value
-          ? $t('mod.compatible')
-          : $t('mod.incompatible')
-      return compatibleText + acceptVersionText
+  }
+  if (props.source.curseforge) {
+    const curseforge = props.source.curseforge
+    items.push({
+      text: $t('mod.showInCurseforge', { name: props.source.name }),
+      children: [],
+      onClick: () => {
+        goProjectAndRoute(curseforge.projectId, 'mc-mods')
+      },
+      icon: '$vuetify.icons.curseforge',
     })
-
-    function onDragStart(e: DragEvent) {
-      if (props.source.enabled) {
-        return
-      }
-      if (iconImage.value) {
-        e.dataTransfer!.setDragImage(iconImage.value!, 0, 0)
-      } else {
-        const img = document.createElement('img')
-        img.src = props.source.icon
-        img.style.maxHeight = '126px'
-        img.style.maxWidth = '126px'
-        img.style.objectFit = 'contain'
-
-        e.dataTransfer!.setDragImage(img, 0, 0)
-      }
-      e.dataTransfer!.effectAllowed = 'move'
-      e.dataTransfer!.setData('id', props.source.url)
-      context.emit('dragstart', e)
-    }
-    function onEditTag(event: Event, index: number) {
-      if (event.target instanceof HTMLDivElement) {
-        editTag(event.target.innerText, index)
-      }
-    }
-    function emitSelect() {
-      context.emit('select')
-    }
-
-    const contextMenuItems = computed(() => {
-      const items: ContextMenuItem[] = [{
-        text: $t('mod.showFile', { file: props.source.path }),
-        children: [],
-        onClick: () => {
-          showItemInDirectory(props.source.path)
-        },
-        icon: 'folder',
-      }, {
-        text: $t('tag.create'),
-        children: [],
-        onClick: () => {
-          createTag()
-        },
-        icon: 'add',
-      }]
-      if (props.source.url) {
-        const url = props.source.url
-        items.push({
-          text: $t('mod.openLink', { url }),
-          children: [],
-          onClick: () => {
-            openInBrowser(url)
-          },
-          icon: 'link',
-        })
-      }
-      if (props.source.curseforge) {
-        const curseforge = props.source.curseforge
-        items.push({
-          text: $t('mod.showInCurseforge', { name: props.source.name }),
-          children: [],
-          onClick: () => {
-            goProjectAndRoute(curseforge.projectId, 'mc-mods')
-          },
-          icon: '$vuetify.icons.curseforge',
-        })
-      } else {
-        items.push({
-          text: $t('mod.searchOnCurseforge', { name: props.source.name }),
-          children: [],
-          onClick: () => {
-            searchProjectAndRoute(props.source.name, 'mc-mods')
-          },
-          icon: 'search',
-        })
-      }
-      if (props.source.modrinth) {
-        const modrinth = props.source.modrinth
-        items.push({
-          text: $t('mod.showInModrinth', { name: props.source.name }),
-          children: [],
-          onClick: () => {
-            push(`/modrinth/${modrinth.projectId}`)
-          },
-          icon: '$vuetify.icons.modrinth',
-        })
-      } else {
-        items.push({
-          text: $t('mod.searchOnModrinth', { name: props.source.name }),
-          children: [],
-          onClick: () => {
-            push(`/modrinth?query=${props.source.name}`)
-          },
-          icon: 'search',
-        })
-      }
-      items.push({
-        text: $t('mod.searchOnMcWiki', { name: props.source.name }),
-        children: [],
-        onClick: () => {
-          searchMcWiki(props.source.name)
-        },
-        icon: 'search',
-      })
-      return items
+  } else {
+    items.push({
+      text: $t('mod.searchOnCurseforge', { name: props.source.name }),
+      children: [],
+      onClick: () => {
+        searchProjectAndRoute(props.source.name, 'mc-mods')
+      },
+      icon: 'search',
     })
-
-    return {
-      iconImage,
-      compatible,
-      onDragStart,
-      minecraft,
-      contextMenuItems,
-      unknownPack,
-      onDeleteTag: removeTag,
-      onEditTag,
-
-      enabled,
-      compatibleText,
-      emitSelect,
-      getColor,
-    }
-  },
+  }
+  if (props.source.modrinth) {
+    const modrinth = props.source.modrinth
+    items.push({
+      text: $t('mod.showInModrinth', { name: props.source.name }),
+      children: [],
+      onClick: () => {
+        push(`/modrinth/${modrinth.projectId}`)
+      },
+      icon: '$vuetify.icons.modrinth',
+    })
+  } else {
+    items.push({
+      text: $t('mod.searchOnModrinth', { name: props.source.name }),
+      children: [],
+      onClick: () => {
+        push(`/modrinth?query=${props.source.name}`)
+      },
+      icon: 'search',
+    })
+  }
+  items.push({
+    text: $t('mod.searchOnMcWiki', { name: props.source.name }),
+    children: [],
+    onClick: () => {
+      searchMcWiki(props.source.name)
+    },
+    icon: 'search',
+  })
+  return items
 })
 </script>
 

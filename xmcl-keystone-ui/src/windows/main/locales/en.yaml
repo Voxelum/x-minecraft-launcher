@@ -79,6 +79,7 @@ curseforge:
     description: View and download worlds from Curseforge
     name: Worlds
 delete:
+  name: Delete {name}
   'no': 'No'
   'yes': Delete
 deleteSave: Delete Save

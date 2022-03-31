@@ -60,7 +60,6 @@ import { InstanceSchema, CurseforgeModpackResource, isCurseforgeModpackResource,
 import { useInstanceTemplates } from '../composables/instance'
 import { CreateOptionKey } from '../composables/instanceCreation'
 import { injection } from '/@/util/inject'
-import { useSearchToggles } from '../composables/useSearch'
 
 type ModpackDomainResource = CurseforgeModpackResource | ModpackResource | McbbsModpackResource
 
@@ -99,7 +98,7 @@ export default defineComponent({
     const filterText = ref('')
     const versionFilterOptions = computed(() => allTemplates.value.map(v => v.minecraft).filter((v): v is string => !!v))
     const selectedVersionFilterOption = ref('')
-    const { toggles } = useSearchToggles()
+    // const { toggles } = useSearchToggles()
     // useSearchToggle(toggles.value[toggles.value.length - 1]!)
     const getModpackVersion = (resource: ModpackDomainResource) => {
       if (resource.type === 'curseforge-modpack') {
@@ -281,15 +280,15 @@ export default defineComponent({
       if (props.value) {
         onUse(props.value)
       }
-      toggles.unshift(() => {
-        if (searchTextRef.value) {
-          searchTextRef.value.focus()
-        }
-        return true
-      })
+      // toggles.unshift(() => {
+      //   if (searchTextRef.value) {
+      //     searchTextRef.value.focus()
+      //   }
+      //   return true
+      // })
     })
     props.onDeactivated(() => {
-      toggles.shift()
+      // toggles.shift()
     })
     onUnmounted(() => {
       filterText.value = ''

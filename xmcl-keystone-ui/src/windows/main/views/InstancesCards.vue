@@ -89,7 +89,7 @@
 </template>
 
 <script lang=ts>
-import { computed, defineComponent, Ref } from '@vue/composition-api'
+import { Ref } from '@vue/composition-api'
 import { Instance } from '@xmcl/runtime-api'
 import { required } from '/@/util/props'
 import InstanceCard from './InstancesCard.vue'

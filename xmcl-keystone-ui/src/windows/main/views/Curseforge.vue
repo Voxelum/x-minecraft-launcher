@@ -141,8 +141,18 @@
 import { useI18n } from '/@/composables'
 import { dedup } from '/@/util/dedup'
 import Categories from './CurseforgeCategories.vue'
-import { CurseforgeProps, useCurseforge } from '../composables/curseforge'
+import { useCurseforge } from '../composables/curseforge'
 import { vFocusOnSearch } from '../directives/focusOnSearch'
+
+export interface CurseforgeProps {
+  type: string
+  page: number
+  keyword: string
+  category: string
+  sort: string
+  gameVersion: string
+  from: string
+}
 
 const props = withDefaults(
   defineProps<CurseforgeProps>(), {

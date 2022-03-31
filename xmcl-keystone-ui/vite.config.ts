@@ -71,6 +71,7 @@ export default defineConfig({
         '@vue/composition-api',
       ],
       dts: 'auto-imports.d.ts',
+      exclude: ['node_modules', /xmcl\/packages.+/],
       eslintrc: {
         enabled: true,
         filepath: './.eslintrc-auto-import.json', // Default `./.eslintrc-auto-import.json`

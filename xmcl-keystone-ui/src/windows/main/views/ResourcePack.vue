@@ -98,7 +98,6 @@
 
       <div
         ref="rightList"
-        color="transparent"
         class="h-full overflow-auto flex flex-col"
         flat
         @drop="dragging = false"
@@ -117,8 +116,7 @@
           v-if="selectedItems.length === 0"
           icon="save_alt"
           :text="$t('resourcepack.dropHint')"
-          :absolute="true"
-          style="height: 100%"
+          class="h-full"
         />
         <transition-group
           v-else
@@ -155,61 +153,34 @@
         <v-icon>delete</v-icon>
       </v-btn>
     </v-fab-transition>
-    <v-dialog
-      :value="!!deletingPack"
-      width="400"
+    <delete-dialog
+      :title="$t('resourcepack.deletion', { pack: deletingPack ? deletingPack.name : '' })"
+      :width="400"
       persistance
+      @cancel="
+        isDeletingPack = false;
+        deletingPack = null;
+      "
+      @confirm="confirmDeletingPack"
     >
-      <v-card>
-        <v-card-title primary-title>
-          <div>
-            <h3 class="headline mb-0">
-              {{
-                $t("resourcepack.deletion", {
-                  pack: deletingPack ? deletingPack.name : "",
-                })
-              }}
-            </h3>
-            <div>{{ $t("resourcepack.deletionHint") }}</div>
-          </div>
-        </v-card-title>
-
-        <v-divider />
-        <v-card-actions>
-          <v-btn
-            text
-            @click="
-              isDeletingPack = false;
-              deletingPack = null;
-            "
-          >
-            {{ $t("no") }}
-          </v-btn>
-          <v-spacer />
-          <v-btn
-            text
-            color="red"
-            @click="confirmDeletingPack"
-          >
-            <v-icon left>
-              delete
-            </v-icon>
-            {{ $t("yes") }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+      <div>{{ $t("resourcepack.deletionHint") }}</div>
+      <span class="text-gray-500">
+        {{ deletingPack ? deletingPack.resource ? deletingPack.resource.path : '' : '' }}
+      </span>
+    </delete-dialog>
   </div>
 </template>
 
 <script lang=ts>
 import { defineComponent, reactive, ref, toRefs, computed, Ref, onUnmounted } from '@vue/composition-api'
-import { useResourceOperation, useDragTransferList, useDropImport, useRouter, useBusy } from '/@/composables'
-import FilterCombobox, { useFilterCombobox } from '/@/components/FilterCombobox.vue'
+import { useResourceOperation, useDragTransferList, useDropImport, useRouter, useBusy, useFilterCombobox } from '/@/composables'
+import FilterCombobox from '/@/components/FilterCombobox.vue'
 import Hint from '/@/components/Hint.vue'
 import ResourcePackCard from './ResourcePackCard.vue'
 import { ResourcePackItem, useInstanceResourcePacks } from '../composables/resourcePack'
 import { useInstanceBase } from '../composables/instance'
+import DeleteDialog from '../components/DeleteDialog.vue'
+import { useDialog } from '../composables/dialog'
 
 function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {
   function getFilterOptions(item: ResourcePackItem) {
@@ -234,6 +205,7 @@ export default defineComponent({
     ResourcePackCard,
     FilterCombobox,
     Hint,
+    DeleteDialog,
   },
   setup() {
     const filterText = ref('')
@@ -249,6 +221,7 @@ export default defineComponent({
       isDeletingPack: false,
       deletingPack: null as ResourcePackItem | null,
     })
+    const { show } = useDialog('deletion')
     const leftListElem = computed(() => leftList.value) as Ref<HTMLElement>
     const rightListElem = computed(() => rightList.value) as Ref<HTMLElement>
     useDragTransferList(
@@ -278,6 +251,7 @@ export default defineComponent({
       const url = e.dataTransfer!.getData('id')
       const target = enabled.value.find(m => m.id === url) ?? disabled.value.find(m => m.id === url) ?? null
       data.deletingPack = target
+      show()
     }
     function goPreview() {
       push('/resource-pack-preview')

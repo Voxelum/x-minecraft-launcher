@@ -1,6 +1,7 @@
 <template>
   <v-card
     v-draggable-card
+    v-context-menu="contextMenuItems"
     :ripple="!isBusy"
     class="draggable-card w-full flex flex-col"
     :dark="!isSelected"
@@ -12,7 +13,6 @@
     hover
     :draggable="!isBusy"
     @click="$emit('click', $event)"
-    @dragstart="onDragStart"
   >
     <div
       v-if="isBusy"
@@ -170,53 +170,57 @@
     </v-card-actions>
   </v-card>
 </template>
-<script lang=ts>
-import { defineComponent, computed } from '@vue/composition-api'
+<script lang=ts setup>
 import unknownServer from '/@/assets/unknown_server.png'
-import { useBusy, useService } from '/@/composables'
-import { Instance, InstanceServiceKey, write } from '@xmcl/runtime-api'
-import { required } from '/@/util/props'
+import { useBusy, useI18n, useService } from '/@/composables'
+import { BaseServiceKey, Instance, InstanceServiceKey, write } from '@xmcl/runtime-api'
 import { getBanner } from '/@/util/banner'
 import forgePng from '/@/assets/forge.png'
 import minecraftPng from '/@/assets/minecraft.png'
 import fabricPng from '/@/assets/fabric.png'
 import { useInstanceServerStatus } from '../composables/serverStatus'
+import { vContextMenu } from '../directives/contextMenu'
+import { ContextMenuItem } from '../composables/contextMenu'
 
-export default defineComponent({
-  props: {
-    instance: required<Instance>(Object),
-  },
-  setup(props, context) {
-    const isBusy = useBusy(write(props.instance.path))
-    const { state } = useService(InstanceServiceKey)
-    const isSelected = computed(() => state.path === props.instance.path)
-    function onDragStart(event: DragEvent) {
-      event.dataTransfer!.effectAllowed = 'move'
-    }
-    const { status } = useInstanceServerStatus(props.instance.path)
-    const image = computed(() => {
-      if (status.value.favicon && status.value.favicon !== unknownServer) {
-        return status.value.favicon
-      }
-      const banner = getBanner(props.instance.runtime.minecraft)
-      if (banner) {
-        return banner
-      }
-      return unknownServer
-    })
-    return {
-      isSelected,
-      isBusy,
-      image,
-      status,
-      description: computed(() => props.instance.description),
-      onDragStart,
-      minecraftPng,
-      forgePng,
-      fabricPng,
-    }
-  },
+const props = defineProps<{ instance: Instance }>()
+const isBusy = useBusy(write(props.instance.path))
+const { state } = useService(InstanceServiceKey)
+const isSelected = computed(() => state.path === props.instance.path)
+const { status } = useInstanceServerStatus(props.instance.path)
+const { showItemInDirectory } = useService(BaseServiceKey)
+
+const image = computed(() => {
+  if (status.value.favicon && status.value.favicon !== unknownServer) {
+    return status.value.favicon
+  }
+  const banner = getBanner(props.instance.runtime.minecraft)
+  if (banner) {
+    return banner
+  }
+  return unknownServer
 })
+const description = computed(() => props.instance.description)
+const { t } = useI18n()
+const contextMenuItems = computed(() => {
+  const items: ContextMenuItem[] = [{
+    text: t('profile.showInstance', { file: props.instance.path }),
+    children: [],
+    onClick: () => {
+      showItemInDirectory(props.instance.path)
+    },
+    icon: 'folder',
+  }, {
+    text: t('delete.name', { name: props.instance.path }),
+    children: [],
+    onClick: () => {
+    },
+    color: 'red',
+    icon: 'delete',
+  }]
+
+  return items
+})
+
 </script>
 
 <style>
