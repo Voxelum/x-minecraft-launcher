@@ -1,8 +1,25 @@
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useBusy, useService } from '/@/composables'
 
-export function useSettings() {
+export function useUpdateSettings() {
   const { state, checkUpdate } = useService(BaseServiceKey)
+
+  const updateStatus = computed(() => state.updateStatus)
+  const checkingUpdate = useBusy('checkUpdate()')
+  const downloadingUpdate = useBusy('downloadUpdate()')
+  const updateInfo = computed(() => state.updateInfo)
+
+  return {
+    checkUpdate,
+    updateStatus,
+    checkingUpdate,
+    downloadingUpdate,
+    updateInfo,
+  }
+}
+
+export function useSettings() {
+  const { state } = useService(BaseServiceKey)
 
   const getProxy = () => {
     const proxy = state.httpProxy
@@ -20,6 +37,7 @@ export function useSettings() {
     }
   }
 
+  const root = computed(() => state.root)
   const locales = computed(() => state.locales || [])
   const selectedLocale = computed({
     get: () => locales.value.find(l => l === state.locale) || 'en',
@@ -47,10 +65,6 @@ export function useSettings() {
     set: v => state.httpProxyEnabledSet(v),
   })
   const apiSets = computed(() => ['mojang', ...state.apiSets])
-  const updateStatus = computed(() => state.updateStatus)
-  const checkingUpdate = useBusy('checkUpdate()')
-  const downloadingUpdate = useBusy('downloadUpdate()')
-  const updateInfo = computed(() => state.updateInfo)
 
   onMounted(() => {
     const p = getProxy()
@@ -73,7 +87,7 @@ export function useSettings() {
   })
 
   return {
-    checkUpdate,
+    root,
     httpProxyEnabled,
     locales,
     proxy,
@@ -83,10 +97,6 @@ export function useSettings() {
     autoInstallOnAppQuit,
     apiSetsPreference,
     apiSets,
-    updateStatus,
-    checkingUpdate,
-    downloadingUpdate,
-    updateInfo,
   }
 }
 
