@@ -1,7 +1,7 @@
 <template>
   <v-dialog
+    v-model="isShown"
     width="800"
-    :value="value"
     @input="$emit('input', $event)"
   >
     <v-card
@@ -98,49 +98,27 @@
   </v-dialog>
 </template>
 
-<script lang=ts>
-import { computed, defineComponent } from '@vue/composition-api'
+<script lang=ts setup>
 import { useBusy, useService } from '/@/composables'
 import MarkdownIt from 'markdown-it'
 import { BaseServiceKey } from '@xmcl/runtime-api'
+import { useDialog } from '../composables/dialog'
 
-export default defineComponent({
-  props: {
-    value: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  setup() {
-    const renderer = new MarkdownIt()
-    const { state, openInBrowser, checkUpdate, downloadUpdate, quitAndInstall } = useService(BaseServiceKey)
-    const checkingUpdate = useBusy('checkUpdate()')
-    const downloadingUpdate = useBusy('downloadUpdate()')
-    const updateInfo = computed(() => state.updateInfo)
-    const updateStatus = computed(() => state.updateStatus)
-    const body = computed(() => state.updateInfo?.useAutoUpdater ? state.updateInfo.body : renderer.render(state.updateInfo?.body ?? ''))
-    const canAutoUpdate = computed(() => state.env === 'raw')
-    const openOfficialWebsite = () => {
-      openInBrowser('https://xmcl.app')
-    }
-    const openGithub = () => {
-      openInBrowser('https://github.com/voxelum/x-minecraft-launcher/releases')
-    }
-    return {
-      canAutoUpdate,
-      openGithub,
-      openOfficialWebsite,
-      checkingUpdate,
-      downloadingUpdate,
-      updateInfo,
-      updateStatus,
-      body,
-      checkUpdate,
-      downloadUpdate,
-      quitAndInstall,
-    }
-  },
-})
+const { isShown } = useDialog('update-info')
+const renderer = new MarkdownIt()
+const { state, openInBrowser, checkUpdate, downloadUpdate, quitAndInstall } = useService(BaseServiceKey)
+const checkingUpdate = useBusy('checkUpdate()')
+const downloadingUpdate = useBusy('downloadUpdate()')
+const updateInfo = computed(() => state.updateInfo)
+const updateStatus = computed(() => state.updateStatus)
+const body = computed(() => state.updateInfo?.useAutoUpdater ? state.updateInfo.body : renderer.render(state.updateInfo?.body ?? ''))
+const canAutoUpdate = computed(() => state.env === 'raw')
+const openOfficialWebsite = () => {
+  openInBrowser('https://xmcl.app')
+}
+const openGithub = () => {
+  openInBrowser('https://github.com/voxelum/x-minecraft-launcher/releases')
+}
 </script>
 
 <style>
