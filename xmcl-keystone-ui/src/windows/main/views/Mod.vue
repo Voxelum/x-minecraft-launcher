@@ -6,83 +6,13 @@
       height="3"
       :indeterminate="true"
     />
-    <v-card
-      class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5"
-      outlined
-      elevation="1"
-    >
-      <!-- <v-toolbar-title class="headline self-center pl-2">
-        {{ $tc("mod.name", 2) }}
-      </v-toolbar-title> -->
-      <!-- <v-spacer /> -->
-      <filter-combobox
-        class="pr-3 max-w-200 max-h-full"
-        :label="$t('mod.filter')"
-      />
-      <!-- <v-tooltip bottom>
-      <template v-slot:activator="{ on }">-->
-      <div class="flex-grow" />
-      <v-btn
-        icon
-        @click="showModsFolder()"
-      >
-        <v-icon>folder</v-icon>
-      </v-btn>
 
-      <v-tooltip bottom>
-        <template #activator="{ on }">
-          <v-btn
-            icon
-            v-on="on"
-            @click="goToCurseforgeMods()"
-          >
-            <v-icon>
-              $vuetify.icons.curseforge
-            </v-icon>
-          </v-btn>
-        </template>
-        {{ $t(`curseforge.mc-mods.description`) }}
-      </v-tooltip>
-      <v-tooltip bottom>
-        <template #activator="{ on }">
-          <v-btn
-            icon
-            v-on="on"
-            @click="goToModrinthPage()"
-          >
-            <v-icon>
-              $vuetify.icons.modrinth
-            </v-icon>
-          </v-btn>
-        </template>
-        {{ $t(`modrinth.installFrom`) }}
-      </v-tooltip>
-      <v-tooltip bottom>
-        <template #activator="{ on }">
-          <v-btn
-            icon
-            v-on="on"
-            @click="filterInCompatible = !filterInCompatible"
-          >
-            <v-icon>
-              {{
-                filterInCompatible ? "visibility" : "visibility_off"
-              }}
-            </v-icon>
-          </v-btn>
-        </template>
-        {{
-          filterInCompatible
-            ? $t("mod.showIncompatible")
-            : $t("mod.hideIncompatible")
-        }}
-      </v-tooltip>
-    </v-card>
+    <mod-header :show-compatible.sync="filterInCompatible" />
 
     <div
       class="flex overflow-auto h-full flex-col container py-0"
-      @dragend="onDrageEnd"
-      @dragover.prevent="onDragOver"
+      @dragend="onDragEnd"
+      @dragover.prevent
       @drop="onDropToImport"
     >
       <refreshing-tile
@@ -96,6 +26,7 @@
         :absolute="true"
         class="h-full z-0"
       />
+
       <transition-group
         v-else
         name="transition-list"
@@ -118,18 +49,15 @@
           @click="onClick($event, index)"
         />
       </transition-group>
-      <v-dialog
-        :value="deletingMods.length !== 0"
-        width="400"
+      <delete-dialog
+        :width="400"
         persistance
-        @input="cancelDelete"
+        :title="$t('mod.deletion')"
+        @cancel="cancelDelete()"
+        @confirm="confirmDelete()"
       >
-        <delete-view
-          :confirm="confirmDelete"
-          :cancel="cancelDelete"
-          :items="deletingMods"
-        />
-      </v-dialog>
+        <mod-delete-view :items="deletingMods" />
+      </delete-dialog>
     </div>
     <div class="absolute w-full left-0 bottom-0 flex items-center justify-center mb-5">
       <float-button
@@ -145,17 +73,18 @@
 
 <script lang=ts>
 import { Ref } from '@vue/composition-api'
-import FilterCombobox, { useFilterCombobox } from '/@/components/FilterCombobox.vue'
-import { useDrop, useService, useOperation, useResourceOperation, useRouter } from '/@/composables'
+import { useDrop, useService, useOperation, useResourceOperation, useFilterCombobox } from '/@/composables'
 import { useLocalStorageCacheBool } from '/@/composables/cache'
 import { isModCompatible, InstanceServiceKey } from '@xmcl/runtime-api'
 import Hint from '/@/components/Hint.vue'
 import RefreshingTile from '/@/components/RefreshingTile.vue'
 import ModCard from './ModCard.vue'
-import DeleteView from './ModDeleteView.vue'
 import FloatButton from './ModFloatButton.vue'
 import { ModItem, useInstanceMods } from '../composables/mod'
-import { useInstanceBase } from '../composables/instance'
+import DeleteDialog from '../components/DeleteDialog.vue'
+import ModHeader from './ModHeader.vue'
+import ModDeleteView from './ModDeleteView.vue'
+import { useDialog } from '../composables/dialog'
 
 function setupDragMod(items: Ref<ModItem[]>, selectedMods: Ref<ModItem[]>, isSelectionMode: Ref<boolean>) {
   const isDraggingMod = computed(() => items.value.some(i => i.dragged))
@@ -169,20 +98,21 @@ function setupDragMod(items: Ref<ModItem[]>, selectedMods: Ref<ModItem[]>, isSel
       mod.dragged = true
     }
   }
-  function onDrageEnd() {
+  function onDragEnd() {
     for (const item of items.value) {
       item.dragged = false
     }
   }
   return {
     isDraggingMod,
-    onDrageEnd,
+    onDragEnd,
     onItemDragstart,
   }
 }
 
 function setupDeletion(items: Ref<ModItem[]>) {
   const { removeResource } = useResourceOperation()
+  const { show } = useDialog('deletion')
   const { begin: beginDelete, cancel: cancelDelete, operate: confirmDelete, data: deletingMods } = useOperation<ModItem[]>([], (mods) => {
     for (const mod of mods) {
       removeResource(mod.hash)
@@ -190,6 +120,7 @@ function setupDeletion(items: Ref<ModItem[]>) {
   })
   function onDropDelete(e: DragEvent) {
     beginDelete(items.value.filter(i => i.dragged))
+    show()
   }
   return {
     deletingMods,
@@ -345,17 +276,16 @@ function setupFilter(items: Ref<ModItem[]>) {
 export default defineComponent({
   components: {
     ModCard,
-    DeleteView,
     FloatButton,
-    FilterCombobox,
     Hint,
     RefreshingTile: RefreshingTile as any,
+    DeleteDialog,
+    ModHeader,
+    ModDeleteView,
   },
   setup() {
     const { importResource } = useResourceOperation()
-    const { items: mods, commit, committing, isModified, showDirectory, loading } = useInstanceMods()
-    const { path } = useInstanceBase()
-    const { push } = useRouter()
+    const { items: mods, commit, committing, isModified, loading } = useInstanceMods()
 
     const filtered = setupFilter(mods)
     const visibleFiltered = setupVisibleFilter(filtered.items)
@@ -366,27 +296,13 @@ export default defineComponent({
       importResource({ type: 'mods', path: file.path })
     })
 
-    function onDragOver(event: DragEvent) {
-      // console.log(event);
-    }
-    function goToCurseforgeMods() {
-      push(`/curseforge/mc-mods?from=${path.value}`)
-    }
-    function goToModrinthPage() {
-      push(`/modrinth?from=${path.value}`)
-    }
-
     return {
       ...setupDragMod(filtered.items, selectedItems, isSelectionMode),
       ...setupDeletion(mods),
       filterInCompatible: filtered.filterInCompatible,
       ...visibleFiltered,
 
-      showModsFolder: showDirectory,
-      goToCurseforgeMods,
-      goToModrinthPage,
       onDropToImport,
-      onDragOver,
       commit,
       committing,
       isModified,
@@ -397,6 +313,3 @@ export default defineComponent({
   },
 })
 </script>
-
-<style>
-</style>

@@ -6,7 +6,7 @@
     outlined
     draggable
     :class="{ incompatible: !compatible }"
-    class="draggable-card cursor-pointer"
+    class="draggable-card cursor-pointer transition-all duration-150"
     style="margin-top: 10px"
     @dragstart="onDragStart"
     @dragend.prevent="onDragEnd"
@@ -98,127 +98,108 @@
   </v-card>
 </template>
 
-<script lang=ts>
-import { computed, defineComponent, ref, Ref } from '@vue/composition-api'
+<script lang=ts setup>
+import { Ref } from '@vue/composition-api'
 import { BaseServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import { useRangeCompatible } from '../composables/compatible'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { useCurseforgeRoute } from '../composables/curseforgeRoute'
 import { ResourcePackItem } from '../composables/resourcePack'
+import { vContextMenu } from '../directives/contextMenu'
 import unknownPack from '/@/assets/unknown_pack.png'
-import { useDragTransferItem, useI18n, useService, useTagColors, useTags } from '/@/composables'
+import { useDragTransferItem, useI18n, useService, useTags } from '/@/composables'
 import { getColor } from '/@/util/color'
-import { required } from '/@/util/props'
 
-export default defineComponent({
-  props: {
-    pack: required<ResourcePackItem>(Object),
-    isSelected: required<boolean>(Boolean),
-  },
-  setup(props, context) {
-    const iconImage: Ref<any> = ref(null)
-    const { state } = useService(InstanceServiceKey)
-    const runtime = computed(() => state.instance.runtime)
-    const { compatible } = useRangeCompatible(computed(() => props.pack.acceptingRange ?? ''), computed(() => runtime.value.minecraft))
-    const { $t } = useI18n()
-    const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
-    const { showItemInDirectory } = useService(BaseServiceKey)
-    const card: Ref<any> = ref(null)
+const props = defineProps<{
+  pack: ResourcePackItem
+  isSelected: boolean
+}>()
 
-    const hovered = ref(false)
-    const { colors } = useTagColors()
-    const { editTag, createTag, removeTag } = useTags(computed({
-      get: () => props.pack.tags,
-      set: (v) => { context.emit('tags', v) },
-    }))
+const emit = defineEmits(['tags', 'dragstart', 'dragend'])
 
-    useDragTransferItem(computed(() => card.value?.$el as HTMLElement), props.pack.id, props.isSelected ? 'right' : 'left')
-    const tags = ref([...props.pack.tags])
+const iconImage: Ref<any> = ref(null)
+const { state } = useService(InstanceServiceKey)
+const runtime = computed(() => state.instance.runtime)
+const { compatible } = useRangeCompatible(computed(() => props.pack.acceptingRange ?? ''), computed(() => runtime.value.minecraft))
+const { t } = useI18n()
+const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
+const { showItemInDirectory } = useService(BaseServiceKey)
+const card: Ref<any> = ref(null)
 
-    const contextMenuItems = computed(() => {
-      if (props.pack.id === 'vanilla') {
-        return []
-      }
-      const menuItems: ContextMenuItem[] = [{
-        text: $t('resourcepack.showFile', { file: props.pack.path }),
-        children: [],
-        onClick: () => {
-          showItemInDirectory(props.pack.path)
-        },
-        icon: 'folder',
-      }, {
-        text: $t('tag.create'),
-        children: [],
-        onClick() {
-          createTag()
-        },
-        icon: 'add',
-      }]
-      if (props.pack.resource && props.pack.resource.curseforge) {
-        menuItems.push({
-          text: $t('resourcepack.showInCurseforge', { name: props.pack.name }),
-          children: [],
-          onClick: () => {
-            goProjectAndRoute(props.pack.resource!.curseforge!.projectId, 'texture-packs')
-          },
-          icon: '$vuetify.icons.curseforge',
-        })
-      } else {
-        menuItems.push({
-          text: $t('resourcepack.searchOnCurseforge', { name: props.pack.name }),
-          children: [],
-          onClick: () => {
-            searchProjectAndRoute(props.pack.name, 'texture-packs')
-          },
-          icon: 'search',
-        })
-      }
-      return menuItems
+const hovered = ref(false)
+const { editTag, createTag, removeTag } = useTags(computed({
+  get: () => props.pack.tags,
+  set: (v) => { emit('tags', v) },
+}))
+const onDeleteTag = removeTag
+
+useDragTransferItem(computed(() => card.value?.$el as HTMLElement), props.pack.id, props.isSelected ? 'right' : 'left')
+const tags = ref([...props.pack.tags])
+
+const contextMenuItems = computed(() => {
+  if (props.pack.id === 'vanilla') {
+    return []
+  }
+  const menuItems: ContextMenuItem[] = [{
+    text: t('resourcepack.showFile', { file: props.pack.path }),
+    children: [],
+    onClick: () => {
+      showItemInDirectory(props.pack.path)
+    },
+    icon: 'folder',
+  }, {
+    text: t('tag.create'),
+    children: [],
+    onClick() {
+      createTag()
+    },
+    icon: 'add',
+  }]
+  if (props.pack.resource && props.pack.resource.curseforge) {
+    menuItems.push({
+      text: t('resourcepack.showInCurseforge', { name: props.pack.name }),
+      children: [],
+      onClick: () => {
+        goProjectAndRoute(props.pack.resource!.curseforge!.projectId, 'texture-packs')
+      },
+      icon: '$vuetify.icons.curseforge',
     })
-
-    function onDragStart(e: DragEvent) {
-      e.dataTransfer!.effectAllowed = 'move'
-      if (props.pack.id !== 'vanilla') {
-        context.emit('dragstart', e)
-      }
-      e.dataTransfer!.setDragImage(iconImage.value, 0, 0)
-    }
-    function onDragEnd(e: DragEvent) {
-      if (props.pack.id !== 'vanilla') {
-        context.emit('dragend', e)
-      }
-    }
-    function onEditTag(event: Event, index: number) {
-      if (event.target && event.target instanceof HTMLElement) {
-        editTag(event.target.innerText, index)
-      }
-    }
-    function notifyTagChange(item: ResourcePackItem) {
-      item.tags = [...item.tags]
-    }
-    function onEditPackName(item: ResourcePackItem, name: string) {
-      item.name = name
-    }
-    return {
-      contextMenuItems,
-      onEditPackName,
-      compatible,
-      iconImage,
-      onDragStart,
-      onDragEnd,
-      runtime,
-      card,
-      onEditTag,
-      getColor,
-      unknownPack,
-      tags,
-      colors,
-      onDeleteTag: removeTag,
-      notifyTagChange,
-      hovered,
-    }
-  },
+  } else {
+    menuItems.push({
+      text: t('resourcepack.searchOnCurseforge', { name: props.pack.name }),
+      children: [],
+      onClick: () => {
+        searchProjectAndRoute(props.pack.name, 'texture-packs')
+      },
+      icon: 'search',
+    })
+  }
+  return menuItems
 })
+
+function onDragStart(e: DragEvent) {
+  e.dataTransfer!.effectAllowed = 'move'
+  if (props.pack.id !== 'vanilla') {
+    emit('dragstart', e)
+  }
+  e.dataTransfer!.setDragImage(iconImage.value, 0, 0)
+}
+function onDragEnd(e: DragEvent) {
+  if (props.pack.id !== 'vanilla') {
+    emit('dragend', e)
+  }
+}
+function onEditTag(event: Event, index: number) {
+  if (event.target && event.target instanceof HTMLElement) {
+    editTag(event.target.innerText, index)
+  }
+}
+function notifyTagChange(item: ResourcePackItem) {
+  item.tags = [...item.tags]
+}
+function onEditPackName(item: ResourcePackItem, name: string) {
+  item.name = name
+}
 </script>
 
 <style scoped=true>

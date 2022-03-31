@@ -12,11 +12,11 @@
       elevation="1"
     >
       <!-- <v-toolbar-title class="headline text-bold">
-        {{ $tc('shaderpack.name', 2) }}
+        {{ tc('shaderpack.name', 2) }}
       </v-toolbar-title> -->
       <FilterCombobox
         class="max-w-150 mr-2"
-        :label="$t('shaderpack.filter')"
+        :label="t('shaderpack.filter')"
       />
       <v-spacer />
       <v-btn
@@ -49,100 +49,73 @@
         :visible="!!draggingPack"
         :drop="onDelete"
       />
-      <v-dialog
-        v-model="isDeleteViewShown"
-        width="400"
+      <DeleteDialog
+        :title="t('shaderpack.deletion') "
+        :width="400"
         persistance
+        @confirm="onConfirmDeleted"
+        @cancel="onCancelDelete"
       >
-        <DeleteView
-          :item="deletingPack"
-          :confirm="onConfirmDeleted"
-          :cancel="onCancelDelete"
-          :deleting="deleting"
-        />
-      </v-dialog>
+        <div
+          style="overflow: hidden; word-break: break-all;"
+        >
+          {{ t('shaderpack.deletionHint', { path: deletingPack ? deletingPack.path : '' }) }}
+        </div>
+      </DeleteDialog>
     </div>
   </div>
 </template>
 
-<script lang="ts">
-import { computed, defineComponent, Ref, ref } from '@vue/composition-api'
+<script lang="ts" setup>
 import { useRefreshable } from '/@/composables/refreshable'
-import FilterCombobox, { useFilterCombobox } from '/@/components/FilterCombobox.vue'
+import FilterCombobox from '/@/components/FilterCombobox.vue'
 import { ShaderPackItem, useShaderpacks } from '../composables/shaderpack'
 import DeleteButton from './ShaderPackDeleteButton.vue'
-import DeleteView from './ShaderPackDeleteView.vue'
 import ShaderPackCard from './ShaderPackCard.vue'
+import { useFilterCombobox, useI18n } from '/@/composables'
+import DeleteDialog from '../components/DeleteDialog.vue'
+import { useDialog } from '../composables/dialog'
 
-function setupFilter(items: Ref<ShaderPackItem[]>) {
-  const filterOptions = computed(() => items.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
-  function getFilterOptions(item: ShaderPackItem) {
-    return [
-      ...item.tags.map(t => ({ type: 'tag', value: t, label: 'label' })),
-    ]
+const { shaderPacks, selectedShaderPack, removeShaderPack, showDirectory, loading } = useShaderpacks()
+const draggingPack = ref(undefined as undefined | ShaderPackItem)
+const deletingPack = ref(undefined as undefined | ShaderPackItem)
+const { show } = useDialog('deletion')
+const { t } = useI18n()
+
+function onSelect(pack: ShaderPackItem) {
+  selectedShaderPack.value = pack.value
+}
+function onDragStart(pack: ShaderPackItem) {
+  if (pack.enabled) return
+  if (!pack.path) return
+  draggingPack.value = pack
+}
+function onDragEnd() {
+  draggingPack.value = undefined
+}
+const { refresh: onConfirmDeleted, refreshing: deleting } = useRefreshable(async () => {
+  if (deletingPack.value) {
+    await removeShaderPack(deletingPack.value)
+    deletingPack.value = undefined
   }
-  const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (i) => i.name)
-  const result = computed(() => filter(items.value))
-
-  return {
-    items: result,
+})
+function onCancelDelete() {
+  deletingPack.value = undefined
+}
+function onDelete() {
+  if (draggingPack.value !== undefined) {
+    deletingPack.value = draggingPack.value
+    show()
   }
 }
 
-export default defineComponent({
-  components: { ShaderPackCard, DeleteButton, DeleteView, FilterCombobox },
-  setup() {
-    const { shaderPacks, selectedShaderPack, removeShaderPack, showDirectory, loading } = useShaderpacks()
-    const draggingPack = ref(undefined as undefined | ShaderPackItem)
-    const deletingPack = ref(undefined as undefined | ShaderPackItem)
-    const isDeleteViewShown = ref(false)
+const filterOptions = computed(() => shaderPacks.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
+function getFilterOptions(item: ShaderPackItem) {
+  return [
+    ...item.tags.map(t => ({ type: 'tag', value: t, label: 'label' })),
+  ]
+}
+const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (i) => i.name)
+const items = computed(() => filter(shaderPacks.value))
 
-    function onSelect(pack: ShaderPackItem) {
-      selectedShaderPack.value = pack.value
-    }
-    function onDragStart(pack: ShaderPackItem) {
-      if (pack.enabled) return
-      if (!pack.path) return
-      draggingPack.value = pack
-    }
-    function onDragEnd() {
-      draggingPack.value = undefined
-    }
-    const { refresh: onConfirmDeleted, refreshing: deleting } = useRefreshable(async () => {
-      if (deletingPack.value) {
-        await removeShaderPack(deletingPack.value)
-        deletingPack.value = undefined
-        isDeleteViewShown.value = false
-      }
-    })
-    function onCancelDelete() {
-      deletingPack.value = undefined
-      isDeleteViewShown.value = false
-    }
-    function onDelete() {
-      if (draggingPack.value !== undefined) {
-        deletingPack.value = draggingPack.value
-        isDeleteViewShown.value = true
-      }
-    }
-
-    return {
-      showDirectory,
-      onSelect,
-      draggingPack,
-      deletingPack,
-      isDeleteViewShown,
-      deleting,
-      loading,
-
-      onDragStart,
-      onDragEnd,
-      onDelete,
-      onConfirmDeleted,
-      onCancelDelete,
-
-      ...setupFilter(shaderPacks),
-    }
-  },
-})
 </script>

@@ -1,70 +1,32 @@
 <template>
-  <v-card>
-    <v-card-title primary-title>
-      <div style="margin-bottom: 20px">
-        <h3 class="headline mb-0">
-          {{ $t('mod.deletion') }}
-        </h3>
-      </div>
-      <div
-        style="overflow: hidden; word-break: break-all;"
+  <div>
+    <div
+      class="overflow-hidden break-all"
+    >
+      {{ $tc('mod.deletionHint', mods.length) }}
+    </div>
+    <ol style="margin-top: 5px">
+      <li
+        v-for="mod in mods"
+        :key="mod"
       >
-        {{ $tc('mod.deletionHint', mods.length) }}
-      </div>
-      <ol style="margin-top: 5px">
-        <li
-          v-for="mod in mods"
-          :key="mod"
-        >
-          <span style="overflow: hidden; word-break: break-all; font-weight: bold; "> {{ mod }} </span>
-        </li>
-        <li
-          v-if="rest > 0"
-          style="overflow: hidden; word-break: break-all; font-style: italic; "
-        >
-          {{ $t('mod.deletionRestHint', { rest }) }}
-        </li>
-      </ol>
-    </v-card-title>
-
-    <v-divider />
-    <v-card-actions>
-      <v-btn
-        text
-        @click="cancel"
+        <span class="overflow-hidden break-all"> {{ mod }} </span>
+      </li>
+      <li
+        v-if="rest > 0"
+        class="overflow-hidden break-all font-italic font-bold"
       >
-        {{ $t('no') }}
-      </v-btn>
-      <v-spacer />
-      <v-btn
-        text
-        color="red"
-        @click="confirm"
-      >
-        <v-icon left>
-          delete
-        </v-icon>
-        {{ $t('delete.yes') }}
-      </v-btn>
-    </v-card-actions>
-  </v-card>
+        {{ $t('mod.deletionRestHint', { rest }) }}
+      </li>
+    </ol>
+  </div>
 </template>
 
-<script lang=ts>
-import { required } from '/@/util/props'
+<script lang=ts setup>
 import { ModItem } from '../composables/mod'
 
-export default defineComponent({
-  props: {
-    confirm: required<() => void>(Function),
-    cancel: required<() => void>(Function),
-    items: required<ModItem[]>(Array),
-  },
-  setup(props) {
-    return {
-      mods: computed(() => props.items.map((i) => `${i.name} v${i.version}`).filter((_, i) => i <= 4)),
-      rest: computed(() => (props.items.length > 4 ? props.items.length - 4 : 0)),
-    }
-  },
-})
+const props = defineProps<{ items: ModItem[] }>()
+
+const mods = computed(() => props.items.map((i) => `${i.name} v${i.version}`).filter((_, i) => i <= 4))
+const rest = computed(() => (props.items.length > 4 ? props.items.length - 4 : 0))
 </script>

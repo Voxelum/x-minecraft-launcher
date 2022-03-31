@@ -42,7 +42,7 @@
           :loading="loading"
           @click="confirmSelectGameProfile"
           @dragover.prevent
-          @drop="beginRemoveProfile($event.dataTransfer.getData('id'))"
+          @drop="startDelete($event.dataTransfer.getData('id'))"
         />
       </div>
       <page-skin-view
@@ -58,48 +58,20 @@
     >
       <challenges-form :show="isChallengesDialogShown" />
     </v-dialog>
-    <v-dialog
-      v-model="isDeleteDialogShown"
-      width="550"
+    <delete-dialog
+      :title=" $t('user.account.removeTitle') "
+      :width="550"
+      @confirm="confirmRemoveProfile()"
+      @cancel="removingProfile = ''"
     >
-      <v-card>
-        <v-card-title
-          class="headline"
-          primary-title
-        >
-          {{ $t('user.account.removeTitle') }}
-        </v-card-title>
-
-        <v-card-text>
-          {{ $t('user.account.removeDescription') }}
-          <div style="color: grey">
-            {{ $t('user.name') }}: {{ removingUserName }}
-          </div>
-          <div style="color: grey">
-            {{ $t('user.id') }}: {{ removingProfile }}
-          </div>
-        </v-card-text>
-
-        <v-divider />
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            color="red"
-            text
-            @click="isDeleteDialogShown=false"
-          >
-            {{ $t('user.account.removeCancel') }}
-          </v-btn>
-          <v-btn
-            color="primary"
-            text
-            @click="confirmRemoveProfile(); isDeleteDialogShown=false"
-          >
-            {{ $t('user.account.removeConfirm') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+      {{ $t('user.account.removeDescription') }}
+      <div style="color: grey">
+        {{ $t('user.name') }}: {{ removingUserName }}
+      </div>
+      <div style="color: grey">
+        {{ $t('user.id') }}: {{ removingProfile }}
+      </div>
+    </delete-dialog>
   </div>
 </template>
 
@@ -114,6 +86,7 @@ import UserList from './UserList.vue'
 import UserPageHeader from './UserHeader.vue'
 import { useDialog } from '../composables/dialog'
 import { useCurrentUser, useUserSecurityStatus, useUsers, useSwitchUser, useProfileId, useGameProfile } from '../composables/user'
+import DeleteDialog from '../components/DeleteDialog.vue'
 
 export default defineComponent({
   components: {
@@ -122,6 +95,7 @@ export default defineComponent({
     GameProfileSpeedDial,
     UserList,
     UserPageHeader,
+    DeleteDialog,
   },
   setup() {
     const { refreshStatus: refreshAccount, refreshSkin } = useCurrentUser()
@@ -132,9 +106,9 @@ export default defineComponent({
     const { select, remove, modified, commit, userId, profileId } = useSwitchUser()
     const { gameProfile } = useProfileId(userId, profileId)
     const { name } = useGameProfile(gameProfile)
+    const { show } = useDialog('deletion')
     const data = reactive({
       isChallengesDialogShown: false,
-      isDeleteDialogShown: false,
 
       selecting: false,
       deleting: false,
@@ -151,18 +125,10 @@ export default defineComponent({
       commit().finally(() => { data.selecting = false })
     }
 
-    watch(removingProfile, (n) => {
-      if (n) {
-        data.isDeleteDialogShown = true
-      }
-    })
-
-    watch(computed(() => data.isDeleteDialogShown), (s) => {
-      if (!s) {
-        removingProfile.value = ''
-      }
-    })
-
+    function startDelete(id: string) {
+      beginRemoveProfile(id)
+      show()
+    }
     function refresh() {
       refreshAccount()
       refreshSkin()
@@ -170,6 +136,7 @@ export default defineComponent({
 
     return {
       ...toRefs(data),
+      startDelete,
       security,
       refresh,
 

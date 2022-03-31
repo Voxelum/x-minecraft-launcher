@@ -79,6 +79,7 @@ curseforge:
     description: Просматривайте и скачивайте миры с Curseforge
     name: Миры
 delete:
+  name: Удалить {name}
   'no': Нет
   'yes': Удалить
 deleteSave: Удалить сохранение

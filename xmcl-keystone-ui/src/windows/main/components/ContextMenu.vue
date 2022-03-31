@@ -11,12 +11,12 @@
       <template v-for="(item, index) in items">
         <v-list-item
           :key="item.text"
-          color="green"
           @click="item.onClick"
         >
           <v-list-item-avatar>
             <v-icon
               :size="item.icon === '$vuetify.icons.curseforge' ? 22 : undefined"
+              :color="item.color || ''"
             >
               {{ item.icon }}
             </v-icon>

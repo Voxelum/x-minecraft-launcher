@@ -6,6 +6,7 @@ Vue.use(Api)
 export interface ContextMenuItem {
   text: string
   icon: string
+  color?: string
   onClick: () => void
   children: ContextMenuItem[]
 }

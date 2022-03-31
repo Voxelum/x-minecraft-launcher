@@ -1,7 +1,7 @@
 <template>
   <v-combobox
     v-model="selectedFilterOptions"
-    v-focus-on-search="() => { resetKeyword(); return true}"
+    v-focus-on-search="() => true"
     tabindex="0"
     :items="filterOptions"
     :label="label"
@@ -15,7 +15,6 @@
     multiple
     solo
     flat
-    @click.capture="resetKeyword"
     @click:clear="clearFilterItems"
   >
     <template #item="{ item, attrs }">
@@ -79,22 +78,6 @@ defineProps<{ label: String }>()
 
 const model = inject(FilterCombobox)
 if (!model) { throw new Error('Please call useFilterCombobox in upper level') }
-
-const resetKeyword = () => {
-  const keyword = model.selectedFilterOptions.value.find(v => typeof v === 'string') as string | undefined
-  model.selectedFilterOptions.value = model.selectedFilterOptions.value.filter(v => typeof v === 'object')
-  if (keyword) {
-    model.filteredText.value = keyword
-  }
-}
-// onSearchToggle(() => {
-//   if (searchElem.value) {
-//     searchElem.value.focus()
-//     resetKeyword()
-//     model.filteredText.value = ''
-//   }
-//   return true
-// })
 
 const {
   selectedFilterOptions,

@@ -76,6 +76,7 @@ curseforge:
     description: 从 Curseforge 上安装世界存档
     name: 世界存档
 delete:
+  name: 删除 {name}
   'no': 取消
   'yes': 删除
 deleteSave: 删除存档

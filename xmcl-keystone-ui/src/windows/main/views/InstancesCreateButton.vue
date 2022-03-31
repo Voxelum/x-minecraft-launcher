@@ -15,7 +15,7 @@
             text
             fab
             small
-            @click="$emit('create', 'instance')"
+            @click="showAddInstanceDialog()"
             v-on="on"
           >
             <v-icon
@@ -29,7 +29,7 @@
           style="z-index: 20;"
           fab
           small
-          @click="$emit('create', 'server')"
+          @click="showAddServerDialog()"
         >
           <v-tooltip
             :close-delay="0"
@@ -51,10 +51,11 @@
   </v-tooltip>
 </template>
 
-<script lang=ts>
-export default defineComponent({
-  emits: ['create'],
-})
+<script lang=ts setup>
+import { useDialog } from '../composables/dialog'
+
+const { show: showAddInstanceDialog } = useDialog('add-instance-dialog')
+const { show: showAddServerDialog } = useDialog('add-server-dialog')
 </script>
 
 <style>

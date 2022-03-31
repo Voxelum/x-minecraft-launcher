@@ -63,14 +63,21 @@
         :cancel="cancelCopy"
         :instances="instances"
       />
-      <save-view-page-delete-dialog
-        :value="deleting"
-        :operate="doDelete"
-        :cancel="cancelDelete"
-      />
+      <delete-dialog
+        :title="$t('save.deleteTitle')"
+        :width="500"
+        persistent
+        @confirm="doDelete"
+        @cancel="cancelDelete"
+      >
+        {{ $t('save.deleteHint') }}
+        <div style="color: grey">
+          {{ deleting }}
+        </div>
+      </delete-dialog>
       <save-view-page-float-button
         :visible="dragging"
-        @drop="deleting = $event.dataTransfer.getData('id')"
+        @drop="onStartDelete($event.dataTransfer.getData('id'))"
       />
     </v-container>
   </div>
@@ -81,20 +88,21 @@ import { useI18n, useOperation, useDrop } from '/@/composables'
 import Hint from '/@/components/Hint.vue'
 import SaveViewPageCopyFromDialog from './SaveCopyFromDialog.vue'
 import SaveViewPageCopyToDialog from './SaveCopyToDialog.vue'
-import SaveViewPageDeleteDialog from './SaveDeleteDialog.vue'
 import SaveViewPagePreviewCard from './SaveCard.vue'
 import SaveViewPageFloatButton from './SaveFloatButton.vue'
 import { useInstances } from '../composables/instance'
 import { useInstanceSaves } from '../composables/save'
+import DeleteDialog from '../components/DeleteDialog.vue'
+import { useDialog } from '../composables/dialog'
 
 export default defineComponent({
   components: {
-    SaveViewPageDeleteDialog,
     SaveViewPageCopyToDialog,
     SaveViewPageCopyFromDialog,
     SaveViewPagePreviewCard,
     SaveViewPageFloatButton,
     Hint,
+    DeleteDialog,
   },
   setup() {
     const { saves, deleteSave, importSave, exportSave, cloneSave: copySave } = useInstanceSaves()
@@ -125,9 +133,15 @@ export default defineComponent({
         importSave({ source: e.dataTransfer.files.item(i)!.path })
       }
     }
+    const { show } = useDialog('deletion')
+    function onStartDelete(id: string) {
+      deleting.value = id
+      show()
+    }
 
     return {
       saves,
+      onStartDelete,
       instances: computed(() => instances.value.map(i => i.path)),
 
       isCopyFromDialogShown,

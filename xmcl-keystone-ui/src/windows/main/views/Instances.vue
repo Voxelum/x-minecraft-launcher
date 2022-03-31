@@ -4,22 +4,15 @@
       outlined
       class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5"
     >
-      <v-text-field
-        ref="filterElem"
-        v-model="filter"
-        hide-details
+      <filter-combobox
         class="flex-grow pr-2"
-        prepend-inner-icon="filter_list"
-        :label="$t('filter')"
-        solo
-        flat
-        color="green en-1"
+        :label="t('filter')"
       />
       <v-flex class="flex-grow-0">
-        <create-button @create="onCreate" />
+        <create-button />
       </v-flex>
       <v-flex class="flex-grow-0">
-        <import-button @import="onImport" />
+        <import-button />
       </v-flex>
     </v-card>
 
@@ -30,215 +23,90 @@
       @dragover.prevent
     >
       <instances-view
-        :instances="instances"
+        :instances="filteredInstances"
         @select="selectInstance"
         @dragstart="dragStart"
         @dragend="dragEnd"
       />
 
-      <transition
-        name="scale-transition"
-        mode="out-in"
-      >
-        <v-btn
-          v-if="draggingInstance.path === ''"
-          :key="0"
-          absolute
-          fab
-          large
-          color="primary"
-          style="right: 20px; bottom: 20px; transition: all 0.15s ease;"
-          :loading="pinging"
-          @click="refresh"
-        >
-          <v-icon>refresh</v-icon>
-        </v-btn>
-        <v-btn
-          v-else
-          :key="1"
-          absolute
-          fab
-          large
-          color="red"
-          style="right: 20px; bottom: 20px; transition: all 0.15s ease;"
-          :loading="pinging"
-          @drop="drop"
-        >
-          <v-icon>delete</v-icon>
-        </v-btn>
-      </transition>
-      <delete-dialog
-        :instance="deletingInstance"
-        :confirm="doDelete"
-        :cancel="cancelDelete"
+      <instances-fab-button
+        :deleting="draggingInstance.path !== ''"
+        @drop="drop"
       />
+      <delete-dialog
+        :title="t('profile.delete')"
+        :persistent="false"
+        :width="400"
+        @confirm="doDelete"
+      >
+        {{ $t('profile.deleteHint') }}
+        <div style="color: grey">
+          {{ $t('profile.name') }}: {{ deletingInstance.name }}
+        </div>
+        <div style="color: grey">
+          {{ deletingInstance.path }}
+        </div>
+      </delete-dialog>
     </v-container>
   </div>
 </template>
 
-<script lang=ts>
-import { computed, defineComponent, Ref, ref } from '@vue/composition-api'
-import { ModpackServiceKey } from '@xmcl/runtime-api'
-import { useI18n, useOperation, useResourceOperation, useRouter, useService } from '/@/composables'
+<script lang=ts setup>
+import { useI18n, useOperation, useRouter, useFilterCombobox } from '/@/composables'
 import { useInstances } from '../composables/instance'
-import DeleteDialog from './InstancesDeleteDialog.vue'
 import ImportButton from './InstancesImportButton.vue'
 import InstancesView from './InstancesCards.vue'
 import CreateButton from './InstancesCreateButton.vue'
-import { Notify, useNotifier } from '../composables/notifier'
-import { useInstancesServerStatus } from '../composables/serverStatus'
+import DeleteDialog from '../components/DeleteDialog.vue'
+import InstancesFabButton from './InstancesFabButton.vue'
+import FilterCombobox from '/@/components/FilterCombobox.vue'
+import { Instance } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { onSearchToggle } from '../composables/useSearch'
 
-function useRefreshInstance(notify: Notify) {
-  const { $t } = useI18n()
-  const { pinging, refresh: _refresh } = useInstancesServerStatus()
-  return {
-    pinging,
-    refresh() {
-      _refresh().then(() => {
-        notify({ level: 'success', title: $t('profile.refreshServers') })
-      }, () => {
-        notify({ level: 'error', title: $t('profile.refreshServers') })
-      })
-    },
+const { mountInstance, deleteInstance, instances } = useInstances()
+const { push } = useRouter()
+const { t } = useI18n()
+
+function getFilterOptions(instance: Instance) {
+  const result = [
+    { label: 'person', value: instance.author, color: 'lime' },
+    { value: instance.runtime.minecraft, color: 'primary' },
+  ]
+  if (instance.runtime.forge) {
+    result.push({
+      value: instance.runtime.forge, color: 'orange',
+    })
   }
+  if (instance.runtime.fabricLoader) {
+    result.push({
+      value: instance.runtime.fabricLoader, color: 'amber en-1',
+    })
+  }
+  return result
+}
+const filterOptions = computed(() => instances.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
+const { filter } = useFilterCombobox<Instance>(filterOptions, getFilterOptions, (i) => `${i.name} ${i.author} ${i.version}`)
+const filteredInstances = computed(() => filter(instances.value))
+const { show } = useDialog('deletion')
+
+function selectInstance(path: string) {
+  mountInstance(path)
+  push('/')
 }
 
-function setupInstanceImport() {
-  const { importInstance } = useInstances()
-  const { showOpenDialog } = windowController
-  const { $t } = useI18n()
-  const { importResource } = useResourceOperation()
-  const { importModpack } = useService(ModpackServiceKey)
-  async function onImport(type: 'zip' | 'folder' | 'curseforge') {
-    const fromFolder = type === 'folder'
-    const filters = fromFolder
-      ? []
-      : [{ extensions: ['zip'], name: 'Zip' }]
-    const { filePaths } = await showOpenDialog({
-      title: $t('profile.import.title'),
-      message: $t('profile.import.description'),
-      filters,
-      properties: fromFolder ? ['openDirectory'] : ['openFile'],
-    })
-    if (filePaths && filePaths.length > 0) {
-      for (const f of filePaths) {
-        if (type === 'curseforge') {
-          await importResource({
-            path: f,
-            type: 'curseforge-modpack',
-            background: true,
-          })
-          await importModpack({ path: f, instanceConfig: {} })
-        } else {
-          await importInstance(f)
-        }
-      }
-    }
+const defaultInstance = { path: '', name: '' }
+const { cancel, operate: doDelete, begin: startDelete, data: deletingInstance } = useOperation(defaultInstance, async (instance) => {
+  if (instance && 'path' in instance) {
+    await deleteInstance(instance.path)
   }
-  return {
-    onImport,
-  }
-}
-
-function setupDelete(deleteInstance: (path: string) => Promise<void>) {
-  const defaultInstance = { path: '', name: '' }
-  const { cancel: cancelDelete, operate: doDelete, begin: startDelete, data: deletingInstance } = useOperation(defaultInstance, async (instance) => {
-    if (instance && 'path' in instance) {
-      await deleteInstance(instance.path).catch(() => {
-      })
-    }
-  })
-  const { begin: dragStart, cancel: dragEnd, operate: drop, data: draggingInstance } = useOperation(defaultInstance, (inst) => {
-    startDelete(inst)
-  })
-  return {
-    dragStart,
-    dragEnd,
-    drop,
-    draggingInstance,
-
-    cancelDelete: () => setTimeout(cancelDelete, 100),
-    doDelete,
-    deletingInstance,
-  }
-}
-
-export default defineComponent({
-  components: {
-    DeleteDialog,
-    ImportButton,
-    CreateButton,
-    InstancesView,
-  },
-  setup() {
-    const { mountInstance: selectInstance, deleteInstance, instances } = useInstances()
-    const { notify } = useNotifier()
-    const { push } = useRouter()
-    const filter = ref('')
-
-    const { show: showAddInstanceDialog } = useDialog('add-instance-dialog')
-    const { show: showAddServerDialog } = useDialog('add-server-dialog')
-
-    const filterElem = ref(null) as Ref<any>
-
-    const filteredInstance = computed(() => {
-      const filterString = filter.value.toLowerCase()
-      return instances.value.filter(
-        profile => filterString === '' ||
-          (profile.author
-            ? profile.author.toLowerCase().indexOf(filterString) !== -1
-            : false) ||
-          profile.name.toLowerCase().indexOf(filterString) !== -1 ||
-          (profile.description
-            ? profile.description.toLowerCase().indexOf(filterString) !== -1
-            : false),
-      )
-    })
-
-    function onCreate(type: 'server' | 'instance') {
-      if (type === 'server') {
-        showAddServerDialog()
-      } else {
-        showAddInstanceDialog()
-      }
-    }
-
-    onSearchToggle((force?: boolean) => {
-      if (force) {
-        filterElem.value.blur()
-      } else if (filterElem.value.isFocused) {
-        filterElem.value.blur()
-      } else {
-        filterElem.value.focus()
-      }
-      return false
-    })
-
-    return {
-      // drag instance to delete
-      ...setupDelete(deleteInstance),
-
-      // instances display
-      instances: filteredInstance,
-      filter,
-      onCreate,
-
-      // refresh instance operations
-      ...useRefreshInstance(notify),
-
-      ...setupInstanceImport(),
-
-      selectInstance(path: string) {
-        selectInstance(path)
-        push('/')
-      },
-      filterElem,
-    }
-  },
-  methods: {},
 })
+const { begin: dragStart, cancel: dragEnd, operate: drop, data: draggingInstance } = useOperation(defaultInstance, (inst) => {
+  startDelete(inst)
+  show()
+})
+function cancelDelete() {
+  setTimeout(cancel, 100)
+}
 </script>
 
 <style>
