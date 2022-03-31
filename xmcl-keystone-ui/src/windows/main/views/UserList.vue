@@ -121,7 +121,7 @@
 import { UserProfile, BaseServiceKey } from '@xmcl/runtime-api'
 import { required } from '/@/util/props'
 import { useService } from '/@/composables'
-import ImageShowTextureHead from '../components/ImageShowTextureHead.vue'
+import ImageShowTextureHead from '../components/PlayerAvatar.vue'
 
 export default defineComponent({
   components: { ImageShowTextureHead },

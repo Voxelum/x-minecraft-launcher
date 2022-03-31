@@ -54,7 +54,6 @@
 import { BlockStateJson } from '@xmcl/runtime-api'
 import { computed, defineComponent, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
 import { BlockModel } from '@xmcl/resourcepack'
-import { useSearch } from '../../composables'
 import Displayer from './Displayer.vue'
 import PreviewItem from './PreviewItem.vue'
 import { useBlockModelPreview, useBlockStateModels } from '/@/hooks'
@@ -63,7 +62,7 @@ export default defineComponent({
   components: { Displayer },
   props: { value: Boolean },
   setup() {
-    const { text } = useSearch()
+    const text = ref('')
     const { listBlockStates, loadModel } = useBlockModelPreview()
     const loading = ref(true)
     let current: any

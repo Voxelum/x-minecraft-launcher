@@ -18,8 +18,7 @@
 
 <script lang=ts>
 import { Ref } from '@vue/composition-api'
-import { useI18n } from 'vue-i18n'
-import { useSearch, useSearchToggles } from '../composables/useSearch'
+import { onSearchToggle, useSearchBar } from '/@/composables'
 
 function setupDraggable(self: Ref<any>) {
   let initialX = 0
@@ -59,13 +58,16 @@ function setupDraggable(self: Ref<any>) {
 
 export default defineComponent({
   setup() {
-    const show = ref(false)
-    const { text } = useSearch()
+    const { text, show } = useSearchBar()
     const top = inject('search-top', ref(30))
     const right = inject('search-right', ref(30))
     const focused = ref(false)
     const self: Ref<any> = ref(null)
-    function toggleBar(force?: boolean) {
+    setupDraggable(self)
+    watch(text, (value) => {
+      windowController.findInPage(value)
+    })
+    onSearchToggle((force) => {
       if (force) {
         if (show.value) {
           show.value = false
@@ -84,10 +86,7 @@ export default defineComponent({
         self.value?.focus()
       })
       return true
-    }
-    setupDraggable(self)
-    const { toggles } = useSearchToggles()
-    toggles.unshift(toggleBar)
+    })
     return {
       show,
       focused,

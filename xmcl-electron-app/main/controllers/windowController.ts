@@ -1,5 +1,5 @@
 import Controller from '@/Controller'
-import { BrowserWindow, dialog, ipcMain } from 'electron'
+import { BrowserWindow, dialog, FindInPageOptions, ipcMain } from 'electron'
 import { ControllerPlugin } from './plugin'
 
 export enum Operation {
@@ -15,6 +15,12 @@ export const windowController: ControllerPlugin = function (this: Controller) {
   })
   ipcMain.handle('dialog:showSaveDialog', (event, ...args) => {
     return dialog.showSaveDialog(BrowserWindow.fromWebContents(event.sender)!, args[0])
+  })
+  ipcMain.handle('find-in-page', (event, text: string, options: FindInPageOptions) => {
+    event.sender.findInPage(text, options)
+  })
+  ipcMain.handle('stop-find-in-page', (event) => {
+    event.sender.stopFindInPage('clearSelection')
   })
   ipcMain.handle('control', (event, operation: Operation) => {
     const window = BrowserWindow.fromWebContents(event.sender)

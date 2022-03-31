@@ -88,7 +88,7 @@ import CreateButton from './InstancesCreateButton.vue'
 import { Notify, useNotifier } from '../composables/notifier'
 import { useInstancesServerStatus } from '../composables/serverStatus'
 import { useDialog } from '../composables/dialog'
-import { useSearch, onSearchToggle } from '../composables/useSearch'
+import { onSearchToggle } from '../composables/useSearch'
 
 function useRefreshInstance(notify: Notify) {
   const { $t } = useI18n()
@@ -176,7 +176,7 @@ export default defineComponent({
     const { mountInstance: selectInstance, deleteInstance, instances } = useInstances()
     const { notify } = useNotifier()
     const { push } = useRouter()
-    const { text: filter } = useSearch()
+    const filter = ref('')
 
     const { show: showAddInstanceDialog } = useDialog('add-instance-dialog')
     const { show: showAddServerDialog } = useDialog('add-server-dialog')

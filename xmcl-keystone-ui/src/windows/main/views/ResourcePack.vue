@@ -210,7 +210,6 @@ import Hint from '/@/components/Hint.vue'
 import ResourcePackCard from './ResourcePackCard.vue'
 import { ResourcePackItem, useInstanceResourcePacks } from '../composables/resourcePack'
 import { useInstanceBase } from '../composables/instance'
-import { useSearch } from '../composables/useSearch'
 
 function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {
   function getFilterOptions(item: ResourcePackItem) {
@@ -237,7 +236,7 @@ export default defineComponent({
     Hint,
   },
   setup() {
-    const { text: filterText } = useSearch()
+    const filterText = ref('')
     const rightList: Ref<any> = ref(null)
     const leftList: Ref<any> = ref(null)
     const loading = useBusy('loadDomain(resourcepacks:resource)')

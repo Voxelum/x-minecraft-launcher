@@ -260,7 +260,7 @@
 
 <script lang=ts setup>
 import { BaseServiceKey } from '@xmcl/runtime-api'
-import ImageShowTextureHead from '../components/ImageShowTextureHead.vue'
+import ImageShowTextureHead from '../components/PlayerAvatar.vue'
 import { useDialog } from '../composables/dialog'
 import { useTaskCount } from '../composables/task'
 import { useCurrentUser } from '../composables/user'

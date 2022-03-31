@@ -6,7 +6,10 @@
         "windowController": true,
         "appsHost": true,
         "gameOutput": true,
-        "defineProps": true
+        "defineProps": true,
+        "withDefaults": true,
+        "defineEmits": true,
+        "defineExpose": true
     },
     "extends": [
         "../.eslintrc.json",
