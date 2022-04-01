@@ -502,6 +502,9 @@ modpack:
   filter: 过滤整合包
   showFile: 显示 {file}
   showInCurseforge: 在 Curseforge 中显示 {name}
+  delete: 
+    title: 删除整合包
+    hint: 这将删除整合包 {name} 和他的基本资料。你确定么？
 modrinth:
   avaiableFor: 可用于
   categories:

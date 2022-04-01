@@ -115,7 +115,7 @@ const props = defineProps<{
   isSelected: boolean
 }>()
 
-const emit = defineEmits(['tags', 'dragstart', 'dragend'])
+const emit = defineEmits(['tags', 'dragstart', 'dragend', 'delete'])
 
 const iconImage: Ref<any> = ref(null)
 const { state } = useService(InstanceServiceKey)
@@ -155,6 +155,17 @@ const contextMenuItems = computed(() => {
     },
     icon: 'add',
   }]
+  if (!props.isSelected) {
+    menuItems.push({
+      text: t('delete.name', { name: props.pack.name }),
+      children: [],
+      onClick() {
+        emit('delete')
+      },
+      icon: 'delete',
+      color: 'red',
+    })
+  }
   if (props.pack.resource && props.pack.resource.curseforge) {
     menuItems.push({
       text: t('resourcepack.showInCurseforge', { name: props.pack.name }),

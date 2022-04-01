@@ -148,7 +148,7 @@ import { useCurseforgeRoute, useMcWikiRoute } from '../composables/curseforgeRou
 import { vContextMenu } from '../directives/contextMenu'
 
 const props = defineProps<{ source: ModItem; selection: boolean }>()
-const emit = defineEmits(['tags', 'enable', 'dragstart', 'select'])
+const emit = defineEmits(['tags', 'enable', 'dragstart', 'select', 'delete'])
 
 const { minecraft, forge, fabricLoader } = useInstanceVersionBase()
 const { state: instanceState } = useService(InstanceServiceKey)
@@ -228,6 +228,17 @@ const contextMenuItems = computed(() => {
     },
     icon: 'add',
   }]
+  if (!props.source.selected) {
+    items.push({
+      text: $t('delete.name', { name: props.source.name }),
+      children: [],
+      onClick() {
+        emit('delete')
+      },
+      icon: 'delete',
+      color: 'red',
+    })
+  }
   if (props.source.url) {
     const url = props.source.url
     items.push({

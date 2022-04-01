@@ -13,7 +13,7 @@
     >
       <filter-combobox
         class="pr-3 max-w-200 max-h-full"
-        :label="$t('modpack.filter')"
+        :label="t('modpack.filter')"
       />
       <!-- <v-tooltip bottom>
       <template v-slot:activator="{ on }">-->
@@ -26,7 +26,7 @@
       </v-btn>
 
       <!-- </template>
-        {{ $t(`curseforge.mc-mods.description`) }}
+        {{ t(`curseforge.mc-mods.description`) }}
       </v-tooltip>-->
       <v-tooltip bottom>
         <template #activator="{ on }">
@@ -40,7 +40,7 @@
             </v-icon>
           </v-btn>
         </template>
-        {{ $t(`curseforge.modpacks.description`) }}
+        {{ t(`curseforge.modpacks.description`) }}
       </v-tooltip>
     </v-card>
 
@@ -54,7 +54,7 @@
       <!-- <hint
         v-else-if="modpacks.length === 0"
         icon="save_alt"
-        :text="$t('modpack.dropHint')"
+        :text="t('modpack.dropHint')"
         :absolute="true"
         class="h-full z-0"
       /> -->
@@ -71,6 +71,7 @@
           @dragstart="dragging = item"
           @dragend="dragging = undefined"
           @create="show(item.resource.path)"
+          @delete="startDelete(item)"
         />
       </transition-group>
     </div>
@@ -80,8 +81,10 @@
       persistent
       @confirm="confirmDelete"
     >
-      {{ t('modpack.delete.hint') }}
-      {{ }}
+      {{ t('modpack.delete.hint', { name: deleting ? deleting.resource.name : '' }) }}
+      <p style="color: grey">
+        {{ deleting ? deleting.resource.path : '' }}
+      </p>
     </delete-dialog>
     <div class="absolute w-full bottom-0 flex items-center justify-center mb-10">
       <delete-button
@@ -141,9 +144,12 @@ function getModpackItem (resource: ModpackResources): ModpackItem {
 }
 function onDrop() {
   if (dragging.value) {
-    deleting.value = dragging.value
-    showDelete()
+    startDelete(dragging.value)
   }
+}
+function startDelete(item: ModpackItem) {
+  deleting.value = item
+  showDelete()
 }
 function confirmDelete() {
   removeResource(deleting.value!.resource.path)

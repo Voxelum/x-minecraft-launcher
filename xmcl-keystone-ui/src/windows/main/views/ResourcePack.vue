@@ -12,17 +12,17 @@
       elevation="1"
     >
       <!-- <div class="headline align-middle self-center pl-2">
-        {{ $tc("resourcepack.name", 2) }}
+        {{ tc("resourcepack.name", 2) }}
       </div> -->
       <!-- <v-spacer /> -->
       <filter-combobox
-        :label="$t('resourcepack.filter')"
+        :label="t('resourcepack.filter')"
         class="max-w-150 mr-2"
       />
       <div class="flex-grow" />
       <v-btn
         icon
-        @click="showFolder()"
+        @click="showDirectory()"
       >
         <v-icon>folder</v-icon>
       </v-btn>
@@ -38,7 +38,7 @@
             </v-icon>
           </v-btn>
         </template>
-        {{ $t(`curseforge.texture-packs.description`) }}
+        {{ t(`curseforge.texture-packs.description`) }}
       </v-tooltip>
       <!-- <v-btn
           icon
@@ -58,7 +58,7 @@
         ref="leftList"
         class="h-full overflow-auto flex flex-col"
         flat
-        @drop="dragging = false"
+        @drop="stopDragging()"
       >
         <v-card
           outlined
@@ -66,7 +66,7 @@
         >
           <v-card-title class="justify-center">
             {{
-              $t("resourcepack.unselected")
+              t("resourcepack.unselected")
             }}
           </v-card-title>
         </v-card>
@@ -74,7 +74,7 @@
           v-if="unselectedItems.length === 0"
           icon="save_alt"
           :text="
-            $t('resourcepack.dropHint')"
+            t('resourcepack.dropHint')"
           class="h-full"
         />
         <transition-group
@@ -89,9 +89,9 @@
             :pack="item"
             :is-selected="false"
             @tags="item.tags = $event"
-            @dragstart="dragging = true"
-            @dragend="dragging = false"
-            @mouseup="dragging = false"
+            @dragstart="startDragging()"
+            @dragend="stopDragging()"
+            @mouseup="stopDragging()"
           />
         </transition-group>
       </div>
@@ -100,7 +100,7 @@
         ref="rightList"
         class="h-full overflow-auto flex flex-col"
         flat
-        @drop="dragging = false"
+        @drop="stopDragging()"
       >
         <v-card
           outlined
@@ -108,14 +108,14 @@
         >
           <v-card-title class="w-full justify-center">
             {{
-              $t("resourcepack.selected")
+              t("resourcepack.selected")
             }}
           </v-card-title>
         </v-card>
         <hint
           v-if="selectedItems.length === 0"
           icon="save_alt"
-          :text="$t('resourcepack.dropHint')"
+          :text="t('resourcepack.dropHint')"
           class="h-full"
         />
         <transition-group
@@ -129,9 +129,10 @@
             :key="item.path"
             :pack="item"
             :is-selected="true"
-            @dragstart="dragging = true"
-            @dragend="dragging = false"
-            @mouseup="dragging = false"
+            @delete="startDelete(item)"
+            @dragstart="startDragging()"
+            @dragend="stopDragging()"
+            @mouseup="stopDragging()"
           />
         </transition-group>
       </div>
@@ -139,7 +140,7 @@
 
     <v-fab-transition>
       <v-btn
-        v-if="dragging"
+        v-if="data.dragging"
         style="right: 40vw; bottom: 10px"
         large
         absolute
@@ -154,26 +155,23 @@
       </v-btn>
     </v-fab-transition>
     <delete-dialog
-      :title="$t('resourcepack.deletion', { pack: deletingPack ? deletingPack.name : '' })"
+      :title="t('resourcepack.deletion', { pack: data.deletingPack ? data.deletingPack.name : '' })"
       :width="400"
       persistance
-      @cancel="
-        isDeletingPack = false;
-        deletingPack = null;
-      "
+      @cancel="stopDelete()"
       @confirm="confirmDeletingPack"
     >
-      <div>{{ $t("resourcepack.deletionHint") }}</div>
+      <div>{{ t("resourcepack.deletionHint") }}</div>
       <span class="text-gray-500">
-        {{ deletingPack ? deletingPack.resource ? deletingPack.resource.path : '' : '' }}
+        {{ data.deletingPack ? data.deletingPack.resource ? data.deletingPack.resource.path : '' : '' }}
       </span>
     </delete-dialog>
   </div>
 </template>
 
-<script lang=ts>
+<script lang=ts setup>
 import { defineComponent, reactive, ref, toRefs, computed, Ref, onUnmounted } from '@vue/composition-api'
-import { useResourceOperation, useDragTransferList, useDropImport, useRouter, useBusy, useFilterCombobox } from '/@/composables'
+import { useResourceOperation, useDragTransferList, useDropImport, useRouter, useBusy, useFilterCombobox, useI18n } from '/@/composables'
 import FilterCombobox from '/@/components/FilterCombobox.vue'
 import Hint from '/@/components/Hint.vue'
 import ResourcePackCard from './ResourcePackCard.vue'
@@ -200,82 +198,76 @@ function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePac
   }
 }
 
-export default defineComponent({
-  components: {
-    ResourcePackCard,
-    FilterCombobox,
-    Hint,
-    DeleteDialog,
-  },
-  setup() {
-    const filterText = ref('')
-    const rightList: Ref<any> = ref(null)
-    const leftList: Ref<any> = ref(null)
-    const loading = useBusy('loadDomain(resourcepacks:resource)')
-    const { enabled, disabled, add, remove, commit, insert, showDirectory } = useInstanceResourcePacks()
-    const { removeResource } = useResourceOperation()
-    const { push } = useRouter()
-    const { path } = useInstanceBase()
-    const data = reactive({
-      dragging: false,
-      isDeletingPack: false,
-      deletingPack: null as ResourcePackItem | null,
-    })
-    const { show } = useDialog('deletion')
-    const leftListElem = computed(() => leftList.value) as Ref<HTMLElement>
-    const rightListElem = computed(() => rightList.value) as Ref<HTMLElement>
-    useDragTransferList(
-      leftListElem,
-      rightListElem,
-      insert,
-      add,
-      remove,
-    )
-    useDropImport(leftListElem, 'resourcepacks')
-    useDropImport(rightListElem, 'resourcepacks')
-
-    onUnmounted(commit)
-
-    function filterName(r: ResourcePackItem) {
-      if (!filterText.value) return true
-      return r.name.toLowerCase().indexOf(filterText.value.toLowerCase()) !== -1
-    }
-
-    const { unselectedItems, selectedItems, filterOptions } = setupFilter(computed(() => disabled.value), computed(() => enabled.value))
-
-    async function confirmDeletingPack() {
-      removeResource(data.deletingPack!.id)
-      data.deletingPack = null
-    }
-    function onDropDelete(e: DragEvent) {
-      const url = e.dataTransfer!.getData('id')
-      const target = enabled.value.find(m => m.id === url) ?? disabled.value.find(m => m.id === url) ?? null
-      data.deletingPack = target
-      show()
-    }
-    function goPreview() {
-      push('/resource-pack-preview')
-    }
-    function goToCurseforge() {
-      push(`/curseforge/texture-packs?from=${path.value}`)
-    }
-    return {
-      ...toRefs(data),
-      unselectedItems,
-      selectedItems,
-      leftList,
-      rightList,
-      confirmDeletingPack,
-      onDropDelete,
-      goToCurseforge,
-      showFolder: showDirectory,
-      loading,
-    }
-  },
-  // async mounted() {
-  //   await this.$repo.dispatch('loadProfileGameSettings');
-  // },
+const filterText = ref('')
+const rightList: Ref<any> = ref(null)
+const leftList: Ref<any> = ref(null)
+const loading = useBusy('loadDomain(resourcepacks:resource)')
+const { enabled, disabled, add, remove, commit, insert, showDirectory } = useInstanceResourcePacks()
+const { removeResource } = useResourceOperation()
+const { push } = useRouter()
+const { path } = useInstanceBase()
+const { t } = useI18n()
+const data = reactive({
+  dragging: false,
+  deletingPack: null as ResourcePackItem | null,
 })
+const { show } = useDialog('deletion')
+const leftListElem = computed(() => leftList.value) as Ref<HTMLElement>
+const rightListElem = computed(() => rightList.value) as Ref<HTMLElement>
+useDragTransferList(
+  leftListElem,
+  rightListElem,
+  insert,
+  add,
+  remove,
+)
+useDropImport(leftListElem, 'resourcepacks')
+useDropImport(rightListElem, 'resourcepacks')
+
+onUnmounted(commit)
+
+function stopDragging() {
+  data.dragging = false
+}
+
+function startDragging() {
+  data.dragging = true
+}
+
+function filterName(r: ResourcePackItem) {
+  if (!filterText.value) return true
+  return r.name.toLowerCase().indexOf(filterText.value.toLowerCase()) !== -1
+}
+
+const { unselectedItems, selectedItems, filterOptions } = setupFilter(computed(() => disabled.value), computed(() => enabled.value))
+
+async function confirmDeletingPack() {
+  removeResource(data.deletingPack!.id)
+  data.deletingPack = null
+}
+
+function startDelete(item: ResourcePackItem) {
+  data.deletingPack = item
+  show()
+}
+
+function stopDelete() {
+  data.deletingPack = null
+}
+
+function onDropDelete(e: DragEvent) {
+  const url = e.dataTransfer!.getData('id')
+  const target = enabled.value.find(m => m.id === url) ?? disabled.value.find(m => m.id === url) ?? null
+  if (target) {
+    startDelete(target)
+  }
+}
+function goPreview() {
+  push('/resource-pack-preview')
+}
+function goToCurseforge() {
+  push(`/curseforge/texture-packs?from=${path.value}`)
+}
 </script>
 
 <style>

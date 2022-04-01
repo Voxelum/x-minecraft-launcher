@@ -83,11 +83,11 @@ import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useI18n, useService, useTags } from '/@/composables'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { useCurseforgeRoute } from '../composables/curseforgeRoute'
-import { ModpackItem } from './Modpack.vue'
 import { vContextMenu } from '../directives/contextMenu'
+import { ModpackItem } from '../composables/modpack'
 
 const props = defineProps<{ item: ModpackItem }>()
-const emit = defineEmits(['tags'])
+const emit = defineEmits(['tags', 'delete'])
 
 const { t } = useI18n()
 const { showItemInDirectory } = useService(BaseServiceKey)
@@ -109,6 +109,14 @@ const contextMenuItems: Ref<ContextMenuItem[]> = computed(() => {
       createTag()
     },
     icon: 'add',
+  }, {
+    text: t('delete.name', { name: props.item.name }),
+    children: [],
+    onClick: () => {
+      emit('delete')
+    },
+    icon: 'delete',
+    color: 'red',
   }]
   if (props.item.resource.curseforge) {
     items.push({

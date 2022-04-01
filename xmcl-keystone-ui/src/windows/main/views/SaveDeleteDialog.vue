@@ -12,10 +12,7 @@
       </v-card-title>
 
       <v-card-text>
-        {{ $t('save.deleteHint') }}
-        <div style="color: grey">
-          {{ value }}
-        </div>
+      
       </v-card-text>
 
       <v-divider />

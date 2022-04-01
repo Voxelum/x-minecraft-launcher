@@ -47,6 +47,7 @@
           @tags="item.tags = $event"
           @select="item.selected = true"
           @click="onClick($event, index)"
+          @delete="startDelete(item)"
         />
       </transition-group>
       <delete-dialog
@@ -64,7 +65,7 @@
         :deleting="isDraggingMod"
         :visible="isDraggingMod || isModified"
         :loading="committing"
-        @drop="onDropDelete"
+        @drop="startDelete()"
         @click="commit"
       />
     </div>
@@ -118,13 +119,19 @@ function setupDeletion(items: Ref<ModItem[]>) {
       removeResource(mod.hash)
     }
   })
-  function onDropDelete(e: DragEvent) {
-    beginDelete(items.value.filter(i => i.dragged))
-    show()
+  function startDelete(item?: ModItem) {
+    const toDelete = items.value.filter(i => i.dragged)
+    if (toDelete.length > 0) {
+      beginDelete(items.value.filter(i => i.dragged))
+      show()
+    } else if (item) {
+      beginDelete([item])
+      show()
+    }
   }
   return {
     deletingMods,
-    onDropDelete,
+    startDelete,
     confirmDelete,
     cancelDelete,
   }
