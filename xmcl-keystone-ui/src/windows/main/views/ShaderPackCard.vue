@@ -80,7 +80,7 @@ import { ShaderPackItem } from '../composables/shaderpack'
 import { vContextMenu } from '../directives/contextMenu'
 
 const props = defineProps<{ pack: ShaderPackItem }>()
-const emit = defineEmits(['update:name', 'enable', 'tags', 'select', 'dragstart', 'dragend'])
+const emit = defineEmits(['update:name', 'enable', 'tags', 'select', 'dragstart', 'dragend', 'delete'])
 
 const { t } = useI18n()
 const { showItemInDirectory } = useService(BaseServiceKey)
@@ -107,6 +107,15 @@ const contextMenuItems = computed(() => {
         createTag()
       },
       icon: 'add',
+    },
+    {
+      text: t('delete.name', { name: props.pack.name }),
+      children: [],
+      onClick() {
+        emit('delete')
+      },
+      icon: 'delete',
+      color: 'red',
     },
   ]
 })

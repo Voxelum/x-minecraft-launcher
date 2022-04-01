@@ -64,4 +64,17 @@ const onCancel = () => {
   isShown.value = false
 }
 
+const onKeypress = (e: KeyboardEvent) => {
+  if (e.key === 'Escape') {
+    onCancel()
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('keydown', onKeypress)
+})
+onUnmounted(() => {
+  document.removeEventListener('keydown', onKeypress)
+})
+
 </script>

@@ -556,6 +556,9 @@ modpack:
   filter: Filter Modpacks
   showFile: Show File {file}
   showInCurseforge: Show {name} in Curseforge
+  delete:
+    title: Delete Modpack
+    hint: This will delete the modpack {name} with its metadata. Are you sure?
 modrinth:
   avaiableFor: available for
   categories:

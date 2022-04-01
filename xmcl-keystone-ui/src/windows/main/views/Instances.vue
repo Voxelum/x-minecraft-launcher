@@ -27,6 +27,7 @@
         @select="selectInstance"
         @dragstart="dragStart"
         @dragend="dragEnd"
+        @delete="startDeleteInstance"
       />
 
       <instances-fab-button
@@ -100,9 +101,14 @@ const { cancel, operate: doDelete, begin: startDelete, data: deletingInstance } 
     await deleteInstance(instance.path)
   }
 })
-const { begin: dragStart, cancel: dragEnd, operate: drop, data: draggingInstance } = useOperation(defaultInstance, (inst) => {
+
+function startDeleteInstance(inst: { name: string; path: string }) {
   startDelete(inst)
   show()
+}
+
+const { begin: dragStart, cancel: dragEnd, operate: drop, data: draggingInstance } = useOperation(defaultInstance, (inst) => {
+  startDeleteInstance(inst)
 })
 function cancelDelete() {
   setTimeout(cancel, 100)

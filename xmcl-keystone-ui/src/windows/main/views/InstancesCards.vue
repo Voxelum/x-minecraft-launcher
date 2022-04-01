@@ -21,12 +21,13 @@
         :key="instance.path"
         md4
         sm6
-        @dragstart="$emit('dragstart', instance)"
-        @dragend="$emit('dragend')"
+        @dragstart="emit('dragstart', instance)"
+        @dragend="emit('dragend')"
       >
         <instance-card
           :instance="instance"
-          @click.stop="$emit('select', instance.path)"
+          @click.stop="emit('select', instance.path)"
+          @delete="emit('delete', instance)"
         />
       </v-flex>
     </v-layout>
@@ -47,12 +48,13 @@
       <v-flex
         v-for="instance in instancesByTime[1]"
         :key="instance.path"
-        @dragstart="$emit('dragstart', instance)"
-        @dragend="$emit('dragend')"
+        @dragstart="emit('dragstart', instance)"
+        @dragend="emit('dragend')"
       >
         <instance-card
           :instance="instance"
-          @click.stop="$emit('select', instance.path)"
+          @click.stop="emit('select', instance.path)"
+          @delete="emit('delete', instance)"
         />
       </v-flex>
     </v-layout>
@@ -76,51 +78,43 @@
         :key="instance.path"
         md4
         xs6
-        @dragstart="$emit('dragstart', instance)"
-        @dragend="$emit('dragend')"
+        @dragstart="emit('dragstart', instance)"
+        @dragend="emit('dragend')"
       >
         <instance-card
           :instance="instance"
-          @click.stop="$emit('select', instance.path)"
+          @click.stop="emit('select', instance.path)"
+          @delete="emit('delete', instance)"
         />
       </v-flex>
     </v-layout>
   </div>
 </template>
 
-<script lang=ts>
+<script lang=ts setup>
 import { Ref } from '@vue/composition-api'
 import { Instance } from '@xmcl/runtime-api'
-import { required } from '/@/util/props'
 import InstanceCard from './InstancesCard.vue'
 
-export default defineComponent({
-  components: {
-    InstanceCard,
-  },
-  props: { instances: required<Instance[]>(Array) },
-  emits: ['select'],
-  setup(props) {
-    const now = Date.now()
-    const oneDay = 1000 * 60 * 60 * 24
-    const threeDays = oneDay * 3
-    const instancesByTime: Ref<Instance[][]> = computed(() => {
-      const todayR = []
-      const threeR = []
-      const other = []
-      for (const p of props.instances) {
-        const diff = now - p.lastAccessDate
-        if (diff <= oneDay) {
-          todayR.push(p)
-        } else if (diff <= threeDays) {
-          threeR.push(p)
-        } else {
-          other.push(p)
-        }
-      }
-      return [todayR, threeR, other]
-    })
-    return { instancesByTime }
-  },
+const props = defineProps<{ instances: Instance[] }>()
+const emit = defineEmits(['select', 'dragstart', 'dragend', 'delete'])
+const now = Date.now()
+const oneDay = 1000 * 60 * 60 * 24
+const threeDays = oneDay * 3
+const instancesByTime: Ref<Instance[][]> = computed(() => {
+  const todayR = []
+  const threeR = []
+  const other = []
+  for (const p of props.instances) {
+    const diff = now - p.lastAccessDate
+    if (diff <= oneDay) {
+      todayR.push(p)
+    } else if (diff <= threeDays) {
+      threeR.push(p)
+    } else {
+      other.push(p)
+    }
+  }
+  return [todayR, threeR, other]
 })
 </script>

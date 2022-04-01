@@ -189,6 +189,8 @@ const isSelected = computed(() => state.path === props.instance.path)
 const { status } = useInstanceServerStatus(props.instance.path)
 const { showItemInDirectory } = useService(BaseServiceKey)
 
+const emit = defineEmits(['delete'])
+
 const image = computed(() => {
   if (status.value.favicon && status.value.favicon !== unknownServer) {
     return status.value.favicon
@@ -213,6 +215,7 @@ const contextMenuItems = computed(() => {
     text: t('delete.name', { name: props.instance.path }),
     children: [],
     onClick: () => {
+      emit('delete')
     },
     color: 'red',
     icon: 'delete',
