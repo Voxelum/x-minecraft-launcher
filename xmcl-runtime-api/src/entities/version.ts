@@ -1,7 +1,6 @@
 import type { LibraryInfo, ResolvedVersion, Version } from '@xmcl/core'
 import { parseVersion, VersionRange } from '../util/mavenVersion'
 import { RuntimeVersions } from './instance.schema'
-import { requireNonnull } from '../util/assert'
 
 export type Status = 'remote' | 'local' | 'loading'
 export interface PartialVersionResolver {

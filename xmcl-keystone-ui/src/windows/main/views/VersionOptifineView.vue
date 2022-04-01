@@ -16,7 +16,7 @@
         <v-list-item-avatar>
           <v-icon>close</v-icon>
         </v-list-item-avatar>
-        {{ $t("optifine.disable") }}
+        {{ t("optifine.disable") }}
       </v-list-item>
       <virtual-list
         ref="list"
@@ -32,7 +32,7 @@
       v-else
       class="flex-grow"
       icon="refresh"
-      :text="$t('optifine.noVersion', { version: minecraft })"
+      :text="t('optifine.noVersion', { version: minecraft })"
     />
   </div>
 </template>
@@ -45,6 +45,7 @@ import Hint from '/@/components/Hint.vue'
 import RefreshingTile from '/@/components/RefreshingTile.vue'
 import OptifineVersionListTile from './VersionOptifineListTile.vue'
 import { useOptifineVersions } from '../composables/version'
+import { useI18n } from '/@/composables'
 
 export default defineComponent({
   components: { Hint, RefreshingTile },
@@ -59,6 +60,7 @@ export default defineComponent({
   },
   setup(props) {
     const { versions, statuses, refreshing, install } = useOptifineVersions(computed(() => props.minecraft))
+    const { t } = useI18n()
     // const loaderVersions = computed(() => lv.value.filter((v) => {
     //   if (data.showStableOnly && !v.stable) {
     //     return false;
@@ -81,6 +83,7 @@ export default defineComponent({
       refreshing,
       statuses,
       install,
+      t,
       OptifineVersionListTile,
     }
   },

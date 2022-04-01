@@ -5,12 +5,12 @@
     elevation="1"
   >
     <!-- <v-toolbar-title class="headline self-center pl-2">
-        {{ $tc("mod.name", 2) }}
+        {{ tc("mod.name", 2) }}
       </v-toolbar-title> -->
     <!-- <v-spacer /> -->
     <filter-combobox
       class="pr-3 max-w-200 max-h-full"
-      :label="$t('mod.filter')"
+      :label="t('mod.filter')"
     />
     <!-- <v-tooltip bottom>
       <template v-slot:activator="{ on }">-->
@@ -34,7 +34,7 @@
           </v-icon>
         </v-btn>
       </template>
-      {{ $t(`curseforge.mc-mods.description`) }}
+      {{ t(`curseforge.mc-mods.description`) }}
     </v-tooltip>
     <v-tooltip bottom>
       <template #activator="{ on }">
@@ -48,7 +48,7 @@
           </v-icon>
         </v-btn>
       </template>
-      {{ $t(`modrinth.installFrom`) }}
+      {{ t(`modrinth.installFrom`) }}
     </v-tooltip>
     <v-tooltip bottom>
       <template #activator="{ on }">
@@ -66,21 +66,23 @@
       </template>
       {{
         showCompatible
-          ? $t("mod.showIncompatible")
-          : $t("mod.hideIncompatible")
+          ? t("mod.showIncompatible")
+          : t("mod.hideIncompatible")
       }}
     </v-tooltip>
   </v-card>
 </template>
 <script lang="ts" setup>
 import { useInstanceBase } from '../composables/instance'
-import { useRouter, useService } from '/@/composables'
+import { useI18n, useRouter, useService } from '/@/composables'
 import FilterCombobox from '/@/components/FilterCombobox.vue'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 
 defineProps<{ showCompatible: boolean }>()
 
 const emit = defineEmits(['update:showCompatible'])
+
+const { t } = useI18n()
 
 const { showDirectory } = useService(InstanceModsServiceKey)
 

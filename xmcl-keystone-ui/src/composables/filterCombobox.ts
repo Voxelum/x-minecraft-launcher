@@ -44,7 +44,6 @@ export function useFilterCombobox<T>(filterOptions: Ref<FilterOption[]>, getFilt
   }
 
   function removeFilteredItem(index: number) {
-    console.log(index)
     selectedFilterOptions.value = selectedFilterOptions.value.filter((v, i) => i !== index)
   }
   function clearFilterItems() {

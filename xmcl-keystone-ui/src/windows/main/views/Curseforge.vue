@@ -144,7 +144,7 @@ import Categories from './CurseforgeCategories.vue'
 import { useCurseforge } from '../composables/curseforge'
 import { vFocusOnSearch } from '../directives/focusOnSearch'
 
-export interface CurseforgeProps {
+interface CurseforgeProps {
   type: string
   page: number
   keyword: string

@@ -52,7 +52,7 @@ export function useLocalStorageCacheInt(key: string, defaultValue: number): Ref<
   return useLocalStorageCache(key, () => defaultValue, (n) => n.toString(), (s) => Number.parseInt(s, 10))
 }
 
-export function useLocalStorageCacheStringValue<T extends string>(key: string, defaultValue: string): Ref<string> {
+export function useLocalStorageCacheStringValue<T extends string = string>(key: string, defaultValue: T): Ref<T> {
   return useLocalStorageCache(key, () => defaultValue, (s) => s, (s) => s as T)
 }
 

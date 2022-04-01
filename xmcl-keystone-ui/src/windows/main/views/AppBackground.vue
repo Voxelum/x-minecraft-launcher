@@ -7,8 +7,9 @@
   >
   <video
     v-else-if="backgroundType === BackgroundType.VIDEO"
-    ref="video"
+    ref="videoRef"
     class="absolute h-full w-full z-0 object-cover"
+    :style="{ filter: `blur(${blur}px)`, 'object-fit': backgroundImageFit }"
     :src="backgroundVideo"
     autoplay
     loop
@@ -26,34 +27,24 @@
   />
   <!-- :style="{ 'pointer-events': onHomePage ? 'auto' : 'none' }" -->
 </template>
-<script lang="ts">
+<script lang="ts" setup>
 import Halo from '/@/components/Halo.vue'
 import Particles from '/@/components/Particles.vue'
 import { BackgroundType, useBackground } from '../composables/background'
+import { Ref } from '@vue/composition-api'
 
-export default defineComponent({
-  components: {
-    Halo,
-    Particles,
-  },
-  setup() {
-    const { blur, backgroundImage, backgroundType, particleMode, backgroundImageFit, backgroundVideo, volume } = useBackground()
-    const video = ref(null as null | HTMLVideoElement)
+const { blur, backgroundImage, backgroundType, particleMode, backgroundImageFit, backgroundVideo, volume } = useBackground()
+const videoRef = ref(null as null | HTMLVideoElement)
 
-    watch(volume, (newVolume) => {
-      if (video.value) {
-        video.value.volume = newVolume
-      }
-    })
-    onMounted(() => {
-      if (video.value) {
-        video.value.volume = volume.value
-      }
-    })
-    return {
-      blur, backgroundImage, backgroundType, particleMode, backgroundImageFit, backgroundVideo, BackgroundType,
-    }
-  },
+watch(volume, (newVolume) => {
+  if (videoRef.value) {
+    videoRef.value.volume = newVolume
+  }
+})
+onMounted(() => {
+  if (videoRef.value) {
+    videoRef.value.volume = volume.value
+  }
 })
 
 </script>

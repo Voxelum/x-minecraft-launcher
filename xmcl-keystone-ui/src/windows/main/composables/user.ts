@@ -1,7 +1,7 @@
 import { computed, onMounted, reactive, Ref, toRefs, watch } from '@vue/composition-api'
 import { GameProfile } from '@xmcl/user'
 import { LoginException, EMPTY_GAME_PROFILE, UserProfile, UserServiceKey, GameProfileAndTexture } from '@xmcl/runtime-api'
-import { useBusy, useService, useServiceOnly } from '/@/composables'
+import { useBusy, useI18n, useService, useServiceOnly } from '/@/composables'
 
 export function useGameProfile(gameProfile: Ref<GameProfile>) {
   const name = computed(() => gameProfile.value?.name)
@@ -187,14 +187,14 @@ export function useSwitchUser() {
 }
 
 export function useLoginValidation(isOffline: Ref<boolean>) {
-  const { $t } = useI18n()
-  const nameRules = [(v: unknown) => !!v || $t('user.requireUsername')]
+  const { t } = useI18n()
+  const nameRules = [(v: unknown) => !!v || t('user.requireUsername')]
   const emailRules = [
-    (v: unknown) => !!v || $t('user.requireEmail'),
+    (v: unknown) => !!v || t('user.requireEmail'),
     (v: string) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
-      $t('user.illegalEmail'),
+      t('user.illegalEmail'),
   ]
-  const passwordRules = [(v: unknown) => !!v || $t('user.requirePassword')]
+  const passwordRules = [(v: unknown) => !!v || t('user.requirePassword')]
   const usernameRules = computed(() => (isOffline.value
     ? nameRules
     : emailRules))
@@ -210,7 +210,7 @@ export function useLoginValidation(isOffline: Ref<boolean>) {
     if (e.type === 'loginInternetNotConnected') {
       // TODO: handle this case
     } else if (e.type === 'loginInvalidCredentials') {
-      const msg = $t('user.invalidCredentials')
+      const msg = t('user.invalidCredentials')
       data.usernameErrors = [msg]
       data.passwordErrors = [msg]
     } else {

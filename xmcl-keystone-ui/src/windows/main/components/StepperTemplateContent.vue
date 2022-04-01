@@ -168,7 +168,11 @@ export default defineComponent({
         path: modpack.path,
         source: modpack,
         action: $t('profile.templateSetting.modpack'),
-        minecraft: isCurseforgeModpackResource(modpack) ? modpack.metadata.minecraft.version : modpack.metadata.runtime?.minecraft,
+        minecraft: isCurseforgeModpackResource(modpack)
+          ? modpack.metadata.minecraft.version
+          : modpack.type === ResourceType.McbbsModpack
+            ? modpack.metadata.addons.find(v => v.id === 'minecraft')?.version
+            : modpack.metadata.runtime?.minecraft,
       }) as ModpackTemplate))
       return all
     })

@@ -33,6 +33,7 @@
     "experimentalCompatMode": 2
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "../xmcl-runtime-api"
   ]
 }

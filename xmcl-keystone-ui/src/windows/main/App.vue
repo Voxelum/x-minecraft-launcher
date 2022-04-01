@@ -37,7 +37,7 @@
 import { Ref } from '@vue/composition-api'
 import '/@/assets/common.css'
 import ContextMenu from './components/ContextMenu.vue'
-import { provideAsyncRoute, useRouter, provideSearchToggle } from '/@/composables'
+import { provideAsyncRoute, useRouter /* provideSearchToggle */ } from '/@/composables'
 import { useBackground } from './composables/background'
 import { provideDialog } from './composables/dialog'
 import { provideIssueHandler } from './composables/issueHandler'
@@ -67,7 +67,7 @@ provideAsyncRoute()
 provideServerStatusCache()
 provideIssueHandler()
 
-provideSearchToggle()
+// provideSearchToggle()
 
 const router = useRouter()
 const onHomePage = ref(router.currentRoute.path === '/')
