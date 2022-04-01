@@ -29,7 +29,7 @@
       <v-select
         v-if="item.sources.length > 0 && selected"
         v-model="item.source"
-        :label="$t('profile.modpack.exportFileAs.name')"
+        :label="t('profile.modpack.exportFileAs.name')"
         class="w-50"
         :items="(item.sources.concat([''])).map(getSourceItem)"
         hide-details
@@ -59,64 +59,48 @@
   </v-treeview>
 </template>
 
-<script lang=ts>
-import { defineComponent, reactive, toRefs, watch } from '@vue/composition-api'
+<script lang=ts setup>
+import { FileNodesSymbol } from '../composables/instanceExport'
 import { useI18n } from '/@/composables'
 import { injection } from '/@/util/inject'
-import { required } from '/@/util/props'
 import { getExpectedSize } from '/@/util/size'
-import { FileNodesSymbol } from './AppExportDialog.vue'
 
-export default defineComponent({
-  props: {
-    value: required<string[]>(Array),
-  },
-  setup(props) {
-    const { $t } = useI18n()
-    const data = reactive({
-      opened: [],
-    })
-    const getSourceItem = (source: string) => {
-      if (source === 'modrinth') return { value: source, text: $t('profile.modpack.exportFileAs.modrinth') }
-      if (source === 'curseforge') return { value: source, text: $t('profile.modpack.exportFileAs.curseforge') }
-      if (source === 'github') return { value: source, text: $t('profile.modpack.exportFileAs.github') }
-      return { value: source, text: $t('profile.modpack.exportFileAs.override') }
-    }
-    const files = injection(FileNodesSymbol)
-    function getDescription(path: string) {
-      switch (path) {
-        case 'mods':
-          return $t('intro.struct.mods')
-        case 'resourcepacks':
-          return $t('intro.struct.resourcepacks')
-        case 'config':
-          return $t('intro.struct.config')
-        case 'saves':
-          return $t('intro.struct.saves')
-        case 'options.txt':
-          return $t('intro.struct.optionTxt')
-        case 'logs':
-          return $t('intro.struct.logs')
-        case 'optionsshaders.txt':
-          return $t('intro.struct.optionShadersTxt')
-        default:
-      }
-      if (path.startsWith('mods/')) {
-        return $t('intro.struct.modJar')
-      }
-      return ''
-    }
-    watch(files, () => {
-      data.opened = []
-    })
-    return {
-      files,
-      getSourceItem,
-      getDescription,
-      getExpectedSize,
-      ...toRefs(data),
-    }
-  },
+defineProps<{ value: string[] }>()
+
+const { t } = useI18n()
+const opened = ref([])
+const getSourceItem = (source: string) => {
+  if (source === 'modrinth') return { value: source, text: t('profile.modpack.exportFileAs.modrinth') }
+  if (source === 'curseforge') return { value: source, text: t('profile.modpack.exportFileAs.curseforge') }
+  if (source === 'github') return { value: source, text: t('profile.modpack.exportFileAs.github') }
+  return { value: source, text: t('profile.modpack.exportFileAs.override') }
+}
+const files = injection(FileNodesSymbol)
+function getDescription(path: string) {
+  switch (path) {
+    case 'mods':
+      return t('intro.struct.mods')
+    case 'resourcepacks':
+      return t('intro.struct.resourcepacks')
+    case 'config':
+      return t('intro.struct.config')
+    case 'saves':
+      return t('intro.struct.saves')
+    case 'options.txt':
+      return t('intro.struct.optionTxt')
+    case 'logs':
+      return t('intro.struct.logs')
+    case 'optionsshaders.txt':
+      return t('intro.struct.optionShadersTxt')
+    default:
+  }
+  if (path.startsWith('mods/')) {
+    return t('intro.struct.modJar')
+  }
+  return ''
+}
+watch(files, () => {
+  opened.value = []
 })
 </script>
 
