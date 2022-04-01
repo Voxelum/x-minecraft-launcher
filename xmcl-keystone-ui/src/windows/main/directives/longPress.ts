@@ -1,10 +1,10 @@
-import Vue from 'vue'
+import { FunctionDirective } from '@vue/composition-api'
 
-Vue.directive('long-press', (el, binding) => {
+export const vLongPress: FunctionDirective<HTMLElement, (...args: any[]) => void> = (el, bindings) => {
   let timeout: ReturnType<typeof setTimeout>
   el.addEventListener('mousedown', (e) => {
     timeout = setTimeout(() => {
-      binding.value.call(undefined, e)
+      bindings.value.call(undefined, e)
     }, 1000)
   })
   el.addEventListener('dragstart', () => {
@@ -16,4 +16,4 @@ Vue.directive('long-press', (el, binding) => {
   el.addEventListener('mouseup', () => {
     clearTimeout(timeout)
   })
-})
+}
