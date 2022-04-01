@@ -74,15 +74,16 @@
 </template>
 <script lang="ts" setup>
 import { useInstanceBase } from '../composables/instance'
-import { useInstanceMods } from '../composables/mod'
-import { useRouter } from '/@/composables'
+import { useRouter, useService } from '/@/composables'
 import FilterCombobox from '/@/components/FilterCombobox.vue'
+import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 
 defineProps<{ showCompatible: boolean }>()
 
 const emit = defineEmits(['update:showCompatible'])
 
-const { showDirectory } = useInstanceMods()
+const { showDirectory } = useService(InstanceModsServiceKey)
+
 const { push } = useRouter()
 const { path } = useInstanceBase()
 function goToCurseforgeMods() {

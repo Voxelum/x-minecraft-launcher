@@ -7,8 +7,8 @@
     :draggable="!source.enabled"
     :dark="source.subsequence"
     :class="{
-      incompatible: compatible === false,
-      maybe: compatible === 'maybe',
+      incompatible: props.source.compatible === false,
+      maybe: props.source.compatible === 'maybe',
       subsequence: source.subsequence === true,
       dragged: source.dragged
     }"
@@ -136,23 +136,21 @@
 
 <script lang=ts setup>
 import { Ref } from '@vue/composition-api'
-import { BaseServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey } from '@xmcl/runtime-api'
 import unknownPack from '/@/assets/unknown_pack.png'
 import { useI18n, useRouter, useService, useTags } from '/@/composables'
 import { getColor } from '/@/util/color'
 import { ModItem } from '../composables/mod'
 import { useInstanceVersionBase } from '../composables/instance'
-import { useModCompatible } from '../composables/compatible'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { useCurseforgeRoute, useMcWikiRoute } from '../composables/curseforgeRoute'
 import { vContextMenu } from '../directives/contextMenu'
+import { vLongPress } from '../directives/longPress'
 
 const props = defineProps<{ source: ModItem; selection: boolean }>()
 const emit = defineEmits(['tags', 'enable', 'dragstart', 'select', 'delete'])
 
 const { minecraft, forge, fabricLoader } = useInstanceVersionBase()
-const { state: instanceState } = useService(InstanceServiceKey)
-const { compatible } = useModCompatible(computed(() => props.source.resource), computed(() => instanceState.instance.runtime))
 const { openInBrowser, showItemInDirectory } = useService(BaseServiceKey)
 const { push } = useRouter()
 const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
@@ -176,9 +174,9 @@ const compatibleText = computed(() => {
   if (deps.fabricLoader) {
     acceptVersionText += `, FabricLoader ${deps.fabricLoader}` + (fabricLoader.value ? `, ${$t('mod.currentVersion', { current: fabricLoader.value })}.` : '')
   }
-  const compatibleText = compatible.value === 'maybe'
+  const compatibleText = props.source.compatible === 'maybe'
     ? $t('mod.maybeCompatible')
-    : compatible.value
+    : props.source.compatible
       ? $t('mod.compatible')
       : $t('mod.incompatible')
   return compatibleText + acceptVersionText

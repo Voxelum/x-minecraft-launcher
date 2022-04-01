@@ -45,7 +45,7 @@
           @enable="onEnable"
           @dragstart="onItemDragstart(item)"
           @tags="item.tags = $event"
-          @select="item.selected = true"
+          @select="isSelectionMode = true;"
           @click="onClick($event, index)"
           @delete="startDelete(item)"
         />
@@ -74,9 +74,8 @@
 
 <script lang=ts>
 import { Ref } from '@vue/composition-api'
-import { useDrop, useService, useOperation, useResourceOperation, useFilterCombobox } from '/@/composables'
+import { useDrop, useOperation, useResourceOperation, useFilterCombobox } from '/@/composables'
 import { useLocalStorageCacheBool } from '/@/composables/cache'
-import { isModCompatible, InstanceServiceKey } from '@xmcl/runtime-api'
 import Hint from '/@/components/Hint.vue'
 import RefreshingTile from '/@/components/RefreshingTile.vue'
 import ModCard from './ModCard.vue'
@@ -242,9 +241,6 @@ function setupFilter(items: Ref<ModItem[]>) {
   const filterOptions = computed(() => items.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
   const { filter } = useFilterCombobox<ModItem>(filterOptions, getFilterOptions, (v) => `${v.name} ${v.version} ${v.dependencies.minecraft}`)
 
-  const { state } = useService(InstanceServiceKey)
-  const runtime = computed(() => state.instance.runtime)
-
   const filterInCompatible = useLocalStorageCacheBool('ModSettingPage.filterInCompatible', false)
 
   function isCompatibleMod(mod: ModItem) {
@@ -252,7 +248,7 @@ function setupFilter(items: Ref<ModItem[]>) {
       return true
     }
     if (filterInCompatible.value) {
-      return isModCompatible(mod.resource, runtime.value) !== false
+      return mod.compatible !== false
     }
     return true
   }

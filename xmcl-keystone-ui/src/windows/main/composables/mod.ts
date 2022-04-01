@@ -1,6 +1,6 @@
 import { computed, ref, Ref, watch } from '@vue/composition-api'
 import { FabricModMetadata } from '@xmcl/mod-parser'
-import { AnyResource, FabricResource, ForgeResource, InstanceModsServiceKey, isModResource, isPersistedResource, LiteloaderResource, ModrinthInformation, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { AnyResource, Compatible, FabricResource, ForgeResource, InstanceModsServiceKey, InstanceServiceKey, isModCompatible, isModResource, isPersistedResource, LiteloaderResource, ModrinthInformation, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useBusy, useService, useRefreshable } from '/@/composables'
 import { isStringArrayEquals } from '/@/util/equal'
 
@@ -51,6 +51,8 @@ export interface ModItem {
 
   type: 'fabric' | 'forge' | 'liteloader' | 'unknown'
 
+  compatible: Compatible
+
   enabled: boolean
 
   subsequence: boolean
@@ -77,6 +79,7 @@ export function useInstanceMods() {
   const { state: resourceState, updateResource } = useService(ResourceServiceKey)
   const { install, uninstall, showDirectory } = useService(InstanceModsServiceKey)
   const loading = useBusy('loadDomain(mods:resource)')
+  const { state: instanceState } = useService(InstanceServiceKey)
   const items: Ref<ModItem[]> = ref([])
   const pendingUninstallItems = computed(() => items.value.filter(i => !i.enabled && cachedEnabledSet.has(i.hash)))
   const pendingInstallItems = computed(() => items.value.filter(i => i.enabled && !cachedEnabledSet.has(i.hash)))
@@ -152,13 +155,14 @@ export function useInstanceMods() {
   }
   function getModItemFromModResource(resource: ForgeResource | FabricResource | LiteloaderResource | AnyResource): ModItem {
     const isPersisted = isPersistedResource(resource)
-    const modItem: ModItem = {
+    const modItem: ModItem = reactive({
       path: resource.path,
       id: '',
       name: resource.path,
       version: '',
       description: '',
       icon: isPersisted ? resource.iconUri : '',
+      compatible: computed(() => isModCompatible(resource, instanceState.instance.runtime)),
       type: 'forge',
       url: getUrl(resource),
       hash: resource.hash,
@@ -174,7 +178,7 @@ export function useInstanceMods() {
         minecraft: '',
       },
       resource,
-    }
+    })
     if (resource.type === 'forge') {
       const meta = resource.metadata
       modItem.type = 'forge'
@@ -223,10 +227,11 @@ export function useInstanceMods() {
       return getModItemFromModResource(resource)
     }
     const isPersisted = isPersistedResource(resource)
-    return {
+    return markRaw({
       path: resource.path,
       id: resource.hash,
       name: resource.path,
+      compatible: 'maybe',
       version: '',
       description: '',
       icon: '',
@@ -243,10 +248,12 @@ export function useInstanceMods() {
       modrinth: isPersisted ? resource.modrinth : undefined,
       resource,
       dependencies: { minecraft: '[*]' },
-    }
+    })
   }
 
-  updateItems()
+  onMounted(() => {
+    updateItems()
+  })
 
   return {
     isModified,
