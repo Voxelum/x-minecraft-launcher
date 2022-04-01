@@ -126,6 +126,7 @@ import JavaFixerDialog, { JavaFixDialogKey } from './HomeJavaFixerDialog.vue'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import { useInstance } from '../composables/instance'
 import { useLaunch } from '../composables/launch'
+import { AppExportDialogKey } from '../composables/instanceExport'
 
 const { launch, status: launchStatus } = useLaunch()
 const { show: showLaunchStatusDialog, hide: hideLaunchStatusDialog } = useDialog(LaunchStatusDialogKey)
@@ -135,6 +136,7 @@ const { accessTokenValid } = useUserProfileStatus(userProfile)
 const { show: showLaunchBlockedDialog } = useDialog('launch-blocked')
 const { show: showLoginDialog } = useDialog('login')
 const { show: showJavaDialog } = useDialog(JavaFixDialogKey)
+const { show: showExport } = useDialog(AppExportDialogKey)
 
 function launchGame() {
   if (missingJava.value) {
@@ -156,15 +158,12 @@ function launchGame() {
   }
 }
 
-const { minimize } = windowController
 const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useDialog('log')
-const { refreshing, name, isServer, path } = useInstance()
+const { refreshing, isServer, path } = useInstance()
 const { refresh } = useInstanceServerStatus(path.value)
-const { openDirectory, quit } = useService(BaseServiceKey)
+const { openDirectory } = useService(BaseServiceKey)
 function showInstanceFolder() {
   openDirectory(path.value)
-}
-async function showExport(type: 'normal' | 'curseforge') {
 }
 
 onMounted(() => {
