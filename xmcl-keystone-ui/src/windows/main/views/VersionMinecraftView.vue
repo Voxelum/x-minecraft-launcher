@@ -7,7 +7,7 @@
     >
       <v-checkbox
         v-model="showAlpha"
-        :label="$t('minecraft.showAlpha')"
+        :label="t('minecraft.showAlpha')"
       />
     </v-list-item>
     <v-divider />
@@ -35,7 +35,7 @@
       v-ripple
       style="flex-grow: 1; cursor: pointer"
       icon="refresh"
-      :text="$t('minecraft.noVersion', { version: version })"
+      :text="t('minecraft.noVersion', { version: version })"
       @click="refresh(true)"
     />
   </div>
@@ -49,6 +49,7 @@ import MinecraftVersionListTile from './VersionMinecraftListTile.vue'
 import Hint from '/@/components/Hint.vue'
 import RefreshingTile from '/@/components/RefreshingTile.vue'
 import { useMinecraftVersionFilter, useMinecraftVersions } from '../composables/version'
+import { useI18n } from '/@/composables'
 
 export default defineComponent({
   components: { Hint, RefreshingTile },
@@ -61,7 +62,9 @@ export default defineComponent({
     const { versions: vers, statuses, refreshing, refresh, install } = useMinecraftVersions()
     const { filter, showAlpha, acceptingRange } = useMinecraftVersionFilter(computed(() => props.filterText))
     const versions = computed(() => vers.value.filter(filter))
+    const { t } = useI18n()
     return {
+      t,
       showAlpha,
       acceptingRange,
       versions,

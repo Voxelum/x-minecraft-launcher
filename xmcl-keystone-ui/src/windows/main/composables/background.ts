@@ -16,13 +16,13 @@ export enum BackgroundType {
 }
 
 export function useBackground() {
-  const backgroundType = useLocalStorageCacheStringValue('backgroundType', BackgroundType.HALO)
+  const backgroundType = useLocalStorageCacheStringValue<BackgroundType>('backgroundType', BackgroundType.HALO)
   const blur = useLocalStorageCacheInt('blur', 4)
   const blurMainBody = useLocalStorageCacheBool('blurMainBody', false)
-  const backgroundImage = useLocalStorageCacheStringValue('background', '')
+  const backgroundImage = useLocalStorageCacheStringValue('background', '' as string)
   const backgroundImageFit = useLocalStorageCacheStringValue<'cover' | 'contain'>('imageFill', 'cover')
   const particleMode = useLocalStorageCacheStringValue<ParticleMode>('particleMode', ParticleMode.PUSH)
-  const backgroundVideo = useLocalStorageCacheStringValue('backgroundVideo', '')
+  const backgroundVideo = useLocalStorageCacheStringValue('backgroundVideo', '' as string)
   const volume = useLocalStorageCacheInt('volume', 0)
   async function setBackgroundVideo(path: string) {
     backgroundVideo.value = path

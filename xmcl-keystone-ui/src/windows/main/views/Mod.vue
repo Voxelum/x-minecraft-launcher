@@ -22,7 +22,7 @@
       <hint
         v-else-if="items.length === 0"
         icon="save_alt"
-        :text="$t('mod.dropHint')"
+        :text="t('mod.dropHint')"
         :absolute="true"
         class="h-full z-0"
       />
@@ -53,7 +53,7 @@
       <delete-dialog
         :width="400"
         persistance
-        :title="$t('mod.deletion')"
+        :title="t('mod.deletion')"
         @cancel="cancelDelete()"
         @confirm="confirmDelete()"
       >
@@ -74,7 +74,7 @@
 
 <script lang=ts>
 import { Ref } from '@vue/composition-api'
-import { useDrop, useOperation, useResourceOperation, useFilterCombobox } from '/@/composables'
+import { useDrop, useOperation, useResourceOperation, useFilterCombobox, useI18n } from '/@/composables'
 import { useLocalStorageCacheBool } from '/@/composables/cache'
 import Hint from '/@/components/Hint.vue'
 import RefreshingTile from '/@/components/RefreshingTile.vue'
@@ -294,6 +294,7 @@ export default defineComponent({
     const visibleFiltered = setupVisibleFilter(filtered.items)
     const selection = setupSelection(filtered.items)
     const { isSelectionMode, selectedItems } = selection
+    const { t } = useI18n()
 
     const { onDrop: onDropToImport } = useDrop((file) => {
       importResource({ type: 'mods', path: file.path })
@@ -305,6 +306,7 @@ export default defineComponent({
       filterInCompatible: filtered.filterInCompatible,
       ...visibleFiltered,
 
+      t,
       onDropToImport,
       commit,
       committing,

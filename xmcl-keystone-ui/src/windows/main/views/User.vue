@@ -20,7 +20,7 @@
             style="cursor: pointer;"
             @click="isChallengesDialogShown = true"
           >
-            {{ $t('user.insecureClient') }}
+            {{ t('user.insecureClient') }}
           </v-alert>
         </div>
         <div
@@ -59,17 +59,17 @@
       <challenges-form :show="isChallengesDialogShown" />
     </v-dialog>
     <delete-dialog
-      :title=" $t('user.account.removeTitle') "
+      :title="t('user.account.removeTitle') "
       :width="550"
       @confirm="confirmRemoveProfile()"
       @cancel="removingProfile = ''"
     >
-      {{ $t('user.account.removeDescription') }}
+      {{ t('user.account.removeDescription') }}
       <div style="color: grey">
-        {{ $t('user.name') }}: {{ removingUserName }}
+        {{ t('user.name') }}: {{ removingUserName }}
       </div>
       <div style="color: grey">
-        {{ $t('user.id') }}: {{ removingProfile }}
+        {{ t('user.id') }}: {{ removingProfile }}
       </div>
     </delete-dialog>
   </div>
@@ -77,7 +77,7 @@
 
 <script lang=ts>
 import { reactive, toRefs, computed, defineComponent, watch } from '@vue/composition-api'
-import { useOperation, useService } from '/@/composables'
+import { useI18n, useOperation, useService } from '/@/composables'
 import { UserServiceKey } from '@xmcl/runtime-api'
 import ChallengesForm from './UserChallengesForm.vue'
 import PageSkinView from './UserSkinView.vue'
@@ -101,6 +101,7 @@ export default defineComponent({
     const { refreshStatus: refreshAccount, refreshSkin } = useCurrentUser()
     const { security } = useUserSecurityStatus()
     const { show: showLoginDialog } = useDialog('login')
+    const { t } = useI18n()
 
     const { users } = useUsers()
     const { select, remove, modified, commit, userId, profileId } = useSwitchUser()
@@ -135,6 +136,7 @@ export default defineComponent({
     }
 
     return {
+      t,
       ...toRefs(data),
       startDelete,
       security,

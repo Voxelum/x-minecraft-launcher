@@ -1,6 +1,6 @@
 import { computed, Ref, ref, watch } from '@vue/composition-api'
-import { useService } from './useService'
 import { BlockStateJson, ResourcePackPreviewServiceKey } from '@xmcl/runtime-api'
+import { useService } from '/@/composables'
 
 export function useBlockModelPreview () {
   const { getBlockStates: listBlockStates, loadModel } = useService(ResourcePackPreviewServiceKey)

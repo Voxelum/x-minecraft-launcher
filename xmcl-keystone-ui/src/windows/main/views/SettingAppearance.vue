@@ -153,16 +153,16 @@
           }}
         </v-list-item-subtitle>
       </v-list-item-content>
-      <!-- <v-list-item-action class="mr-4">
-            <v-select
-              v-model="backgroundImageFit"
-              class="w-40 mr-4"
-              filled
-              hide-details
-              :label="$t('setting.backgroundImageFit.name')"
-              :items="backgroundImageFits"
-            />
-          </v-list-item-action>-->
+      <v-list-item-action class="mr-4">
+        <v-select
+          v-model="backgroundImageFit"
+          class="w-40 mr-4"
+          filled
+          hide-details
+          :label="$t('setting.backgroundImageFit.name')"
+          :items="backgroundImageFits"
+        />
+      </v-list-item-action>
       <v-btn
         outlined
         text
@@ -180,27 +180,6 @@
       >
         {{ $t("setting.backgroundVideoSelect") }}
       </v-btn>
-    </v-list-item>
-    <v-list-item v-if="backgroundType !== BackgroundType.VIDEO">
-      <v-list-item-content>
-        <v-list-item-title>
-          {{
-            $t("setting.backgroundImageBlur")
-          }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{
-            $t("setting.backgroundImageBlurDescription")
-          }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-slider
-        v-model="blur"
-        :min="0"
-        :max="100"
-        :hint="$t('setting.backgroundBlur')"
-        :always-dirty="true"
-      />
     </v-list-item>
     <v-list-item v-if="backgroundType === BackgroundType.VIDEO">
       <v-list-item-content>
@@ -220,7 +199,28 @@
         step="0.01"
         :min="0"
         :max="1"
-        :hint="$t('setting.VideoVolume')"
+        :hint="$t('setting.backgroundVideoVolume')"
+        :always-dirty="true"
+      />
+    </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{
+            $t("setting.backgroundImageBlur")
+          }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          {{
+            $t("setting.backgroundImageBlurDescription")
+          }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-slider
+        v-model="blur"
+        :min="0"
+        :max="100"
+        :hint="$t('setting.backgroundImageBlur')"
         :always-dirty="true"
       />
     </v-list-item>
@@ -234,7 +234,7 @@ import { injection } from '/@/util/inject'
 
 const { showOpenDialog } = windowController
 const vuetify = injection(VuetifyInjectionKey)
-const { $t: t } = useI18n()
+const { t } = useI18n()
 const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, blurMainBody, backgroundImageFit, volume, setBackgroundVideo, backgroundVideo } = useBackground()
 
 const darkTheme = computed({
@@ -263,7 +263,9 @@ function selectImage() {
     }],
   }).then((v) => {
     const imagePath = v.filePaths[0]
-    setBackgroundImage(imagePath)
+    if (imagePath) {
+      setBackgroundImage(imagePath)
+    }
   })
 }
 function selectVideo() {
@@ -275,8 +277,10 @@ function selectVideo() {
       extensions: ['mp4', 'ogg', 'webm'],
     }],
   }).then((v) => {
-    const videoPath = 'video://' + v.filePaths[0]
-    setBackgroundVideo(videoPath)
+    if (v.filePaths[0]) {
+      const videoPath = 'video://' + v.filePaths[0]
+      setBackgroundVideo(videoPath)
+    }
   })
 }
 function clearVideo() {

@@ -2,14 +2,21 @@ import { computed, ExtractPropTypes, onMounted, reactive, ref, Ref, toRefs, watc
 import { AddonInfo, Attachment, File } from '@xmcl/curseforge'
 import { CurseForgeServiceKey, InstanceModsServiceKey, PersistedResource, ProjectType, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useBusy, useRouter, useService } from '/@/composables'
-import P from '../views/Curseforge.vue'
 
-type A = ExtractPropTypes<typeof P.props>
+interface CurseforgeProps {
+  type: string
+  page: number
+  keyword: string
+  category: string
+  sort: string
+  gameVersion: string
+  from: string
+}
 
 /**
  * Hook to return the controller of curseforge preview page. Navigating the curseforge projects.
  */
-export function useCurseforge(props: A) {
+export function useCurseforge(props: CurseforgeProps) {
   const router = useRouter()
   const { searchProjects } = useService(CurseForgeServiceKey)
   const pageSize = 10

@@ -3,7 +3,7 @@
     <v-list-item class="flex-1 flex-grow-0 flex justify-end">
       <v-checkbox
         v-model="showStableOnly"
-        :label="$t('fabric.showStableOnly')"
+        :label="t('fabric.showStableOnly')"
       />
     </v-list-item>
     <v-divider />
@@ -20,7 +20,7 @@
         <v-list-item-avatar>
           <v-icon>close</v-icon>
         </v-list-item-avatar>
-        {{ $t('fabric.disable') }}
+        {{ t('fabric.disable') }}
       </v-list-item>
       <virtual-list
         ref="list"
@@ -36,7 +36,7 @@
       v-else
       style="flex-grow: 1"
       icon="refresh"
-      :text="$t('fabric.noVersion', { version: minecraft })"
+      :text="t('fabric.noVersion', { version: minecraft })"
     />
   </div>
 </template>
@@ -48,6 +48,7 @@ import { FabricArtifactVersion } from '@xmcl/installer'
 import Hint from '/@/components/Hint.vue'
 import FabricArtifactVersionListTile from './VersionFabricArtifactListTile.vue'
 import { useFabricVersions } from '../composables/version'
+import { useI18n } from '/@/composables'
 
 export default defineComponent({
   components: { Hint },
@@ -63,6 +64,7 @@ export default defineComponent({
     const data = reactive({
       showStableOnly: false,
     })
+    const { t } = useI18n() 
     const { yarnVersions: yv, loaderVersions: lv, yarnStatus, getStatus, install } = useFabricVersions()
     const loaderVersions = computed(() => lv.value.filter((v) => {
       if (data.showStableOnly && !v.stable) {
@@ -93,6 +95,7 @@ export default defineComponent({
       return install({ minecraft: props.minecraft, loader: fab.version })
     }
     return {
+      t,
       ...toRefs(data),
       install: installFabric,
       getStatus,

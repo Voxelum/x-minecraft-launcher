@@ -57,7 +57,7 @@
               v-if="!source.subsequence"
               class="text-lg font-bold"
             >
-              {{ source.name }}
+              <text-component :source="source.name" />
             </h3>
             <div class="flex gap-1 flex-wrap">
               <v-chip
@@ -115,7 +115,7 @@
             </div>
 
             <v-card-text class=" p-1">
-              {{ source.description }}
+              <text-component :source="source.description" />
             </v-card-text>
           </div>
           <v-flex

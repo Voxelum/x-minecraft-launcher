@@ -5,7 +5,7 @@
       outlined
       elevation="1"
     >
-      <v-card-title>{{ $tc('save.name', 2) }}</v-card-title>
+      <v-card-title>{{ tc('save.name', 2) }}</v-card-title>
       <v-spacer />
       <v-btn
         text
@@ -14,7 +14,7 @@
         <v-icon left>
           input
         </v-icon>
-        {{ $t('save.copyFrom.title') }}
+        {{ t('save.copyFrom.title') }}
       </v-btn>
       <v-btn
         text
@@ -23,7 +23,7 @@
         <v-icon left>
           move_to_inbox
         </v-icon>
-        {{ $t('save.import') }}
+        {{ t('save.import') }}
       </v-btn>
     </v-card>
 
@@ -39,7 +39,7 @@
           v-if="saves.length === 0"
           class="h-full"
           icon="map"
-          :text="$t('save.dropHint')"
+          :text="t('save.dropHint')"
         />
         <transition-group
           tag="div"
@@ -64,20 +64,20 @@
         :instances="instances"
       />
       <delete-dialog
-        :title="$t('save.deleteTitle')"
+        :title="t('save.deleteTitle')"
         :width="500"
         persistent
         @confirm="doDelete"
         @cancel="cancelDelete"
       >
-        {{ $t('save.deleteHint') }}
+        {{ t('save.deleteHint') }}
         <div style="color: grey">
           {{ deleting }}
         </div>
       </delete-dialog>
       <save-view-page-float-button
         :visible="dragging"
-        @drop="onStartDelete($event.dataTransfer.getData('id'))"
+        @drop="$event.dataTransfer ? onStartDelete($event.dataTransfer.getData('id')) : ''"
       />
     </v-container>
   </div>
@@ -108,7 +108,7 @@ export default defineComponent({
     const { saves, deleteSave, importSave, exportSave, cloneSave: copySave } = useInstanceSaves()
     const { instances } = useInstances()
     const { showSaveDialog, showOpenDialog } = windowController
-    const { $t } = useI18n()
+    const { t, tc } = useI18n()
     const {
       data: deleting,
       operate: doDelete,
@@ -141,6 +141,8 @@ export default defineComponent({
 
     return {
       saves,
+      t,
+      tc,
       onStartDelete,
       instances: computed(() => instances.value.map(i => i.path)),
 
@@ -165,8 +167,8 @@ export default defineComponent({
 
       async doImport() {
         const { filePaths } = await showOpenDialog({
-          title: $t('save.importTitle'),
-          message: $t('save.importMessage'),
+          title: t('save.importTitle'),
+          message: t('save.importMessage'),
           filters: [{ extensions: ['zip'], name: 'zip' }],
         })
         for (const file of filePaths) {
@@ -175,8 +177,8 @@ export default defineComponent({
       },
       async doExport(name: string) {
         const { filePath } = await showSaveDialog({
-          title: $t('save.exportTitle'),
-          message: $t('save.exportMessage'),
+          title: t('save.exportTitle'),
+          message: t('save.exportMessage'),
           filters: [{ extensions: ['zip'], name: 'zip' }],
           defaultPath: `${name}.zip`,
         })
