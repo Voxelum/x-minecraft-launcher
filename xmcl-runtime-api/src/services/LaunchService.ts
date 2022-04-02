@@ -1,11 +1,18 @@
+import { Exception } from '../entities/exception'
+import { Issue } from '../entities/issue'
 import { LaunchStatus } from '../entities/launch'
 import { GenericEventEmitter } from '../events'
 import { ServiceKey, StatefulService } from './Service'
 
 export class LaunchState {
-  status = 'ready' as LaunchStatus
+  status = 'idle' as LaunchStatus
+  activeCount = 0
   errorType = ''
   errors = [] as any[]
+
+  launchCount(count: number) {
+    this.activeCount = count
+  }
 
   launchStatus(status: LaunchStatus) {
     this.status = status
@@ -18,11 +25,18 @@ export class LaunchState {
 }
 
 interface LaunchServiceEventMap {
-  'minecraft-window-ready': void
-  'minecraft-start': void
-  'minecraft-exit': { code?: number; signal?: string; crashReport?: string; crashReportLocation?: string; errorLog: string }
-  'minecraft-stdout': string
-  'minecraft-stderr': string
+  'minecraft-window-ready': { pid?: number }
+  'minecraft-start': {
+    pid?: number
+    version: string
+    minecraft: string
+    forge: string
+    fabricLoader: string
+  }
+  'minecraft-exit': { pid?: number; code?: number; signal?: string; crashReport?: string; crashReportLocation?: string; errorLog: string }
+  'minecraft-stdout': { pid?: number; stdout: string }
+  'minecraft-stderr': { pid?: number; stdout: string }
+  'error': LaunchException
 }
 
 export interface LaunchOptions {
@@ -54,5 +68,19 @@ export interface LaunchService extends StatefulService<LaunchState>, GenericEven
    */
   launch(options?: LaunchOptions): Promise<boolean>
 }
+
+export type LaunchExceptions = {
+  type: 'launchInstanceEmpty' | 'launchIllegalAuth' | 'launchNoVersionInstalled'
+} | {
+  type: 'launchGeneralException'
+  error: unknown
+} | {
+  type: 'launchBlockedIssues'
+  issues: Issue[]
+} | {
+  type: 'launchNoProperJava'
+}
+
+export class LaunchException extends Exception<LaunchExceptions> { }
 
 export const LaunchServiceKey: ServiceKey<LaunchService> = 'LaunchService'

@@ -1,3 +1,4 @@
+import { Exception } from '../entities/exception'
 import { AnyPersistedResource, AnyResource, PersistedCurseforgeModpackResource, PersistedFabricResource, PersistedForgeResource, PersistedLiteloaderResource, PersistedMcbbsModpackResource, PersistedModpackResource, PersistedResource, PersistedResourcePackResource, PersistedSaveResource, PersistedShaderPackResource, PersistedUnknownResource, SourceInformation } from '../entities/resource'
 import { ResourceDomain } from '../entities/resource.schema'
 import { ServiceKey, StatefulService } from './Service'
@@ -219,3 +220,22 @@ export interface ResourceService extends StatefulService<ResourceState> {
 }
 
 export const ResourceServiceKey: ServiceKey<ResourceService> = 'ResourceService'
+
+export type ResourceExceptions = {
+  type: 'deployLinkResourceOccupied'
+  resource: PersistedResource<any>
+} | {
+  type: 'resourceNotFoundException'
+  resource: string | AnyResource
+} | {
+  type: 'resourceDomainMismatched'
+  path: string
+  expectedDomain: string
+  actualDomain: string
+  actualType: string
+} | {
+  type: 'resourceImportDirectoryException'
+  path: string
+}
+
+export class ResourceException extends Exception<ResourceExceptions> { }

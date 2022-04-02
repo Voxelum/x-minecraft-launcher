@@ -1,9 +1,9 @@
 import { UnzipTask } from '@xmcl/installer'
 import {
-  CloneSaveOptions, DeleteSaveOptions, Exception, ExportSaveOptions,
-  ImportSaveOptions, InstanceSave, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey, SaveState,
+  CloneSaveOptions, DeleteSaveOptions, ExportSaveOptions,
+  GeneralException,
+  ImportSaveOptions, InstanceSave, InstanceSaveException, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey, SaveState,
 } from '@xmcl/runtime-api'
-import { isNonnull, requireObject, requireString } from '../util/object'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { createHash } from 'crypto'
 import filenamify from 'filenamify'
@@ -14,9 +14,10 @@ import { pathToFileURL } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { findLevelRootOnPath, getInstanceSave, readInstanceSaveMetadata } from '../entities/save'
 import { copyPassively, isFile, missing, readdirIfPresent } from '../util/fs'
+import { isNonnull, requireObject, requireString } from '../util/object'
 import { ZipTask } from '../util/zip'
 import InstanceService from './InstanceService'
-import { ExportService, Inject, ServiceException, Singleton, StatefulService, Subscribe } from './Service'
+import { ExportService, Inject, Singleton, StatefulService, Subscribe } from './Service'
 
 /**
  * Provide the ability to preview saves data of an instance
@@ -113,7 +114,7 @@ export default class InstanceSavesService extends StatefulService<SaveState> imp
       this.log(`Found ${saves.length} saves in instance ${path}`)
       this.state.instanceSaves(saves.filter(isNonnull))
     } catch (e) {
-      throw new ServiceException({ type: 'fsError', ...(e as any) }, `An error ocurred during parsing the save of ${path}`)
+      throw new GeneralException({ type: 'fsError', ...(e as any) }, `An error ocurred during parsing the save of ${path}`)
     }
 
     this.watching = savesDir
@@ -156,13 +157,21 @@ export default class InstanceSavesService extends StatefulService<SaveState> imp
     const srcSavePath = join(srcInstancePath, saveName)
 
     if (await missing(srcSavePath)) {
-      throw new ServiceException({ type: 'instanceCopySaveNotFound', src: srcSavePath, dest: destInstancePaths }, `Cancel save copying of ${saveName}`)
+      throw new InstanceSaveException({ type: 'instanceCopySaveNotFound', src: srcSavePath, dest: destInstancePaths },
+        `Cancel save copying of ${saveName}`)
     }
     if (!this.instanceService.state.all[srcInstancePath]) {
-      throw new Error(`Cannot find managed instance ${srcInstancePath}`)
+      throw new InstanceSaveException({
+        type: 'instanceNotFound',
+        instancePath: srcInstancePath,
+      }, `Cannot find managed instance ${srcInstancePath}`)
     }
     if (destInstancePaths.some(p => !this.instanceService.state.all[p])) {
-      throw new Error(`Cannot find managed instance ${srcInstancePath}`)
+      const notFound = destInstancePaths.find(p => !this.instanceService.state.all[p])!
+      throw new InstanceSaveException({
+        type: 'instanceNotFound',
+        instancePath: notFound,
+      }, `Cannot find managed instance ${notFound}`)
     }
 
     const destSavePaths = destInstancePaths.map(d => join(d, destSaveName))
@@ -187,7 +196,7 @@ export default class InstanceSavesService extends StatefulService<SaveState> imp
     const savePath = join(instancePath, 'saves', saveName)
 
     if (await missing(savePath)) {
-      throw new Exception({ type: 'instanceDeleteNoSave', name: saveName })
+      throw new InstanceSaveException({ type: 'instanceDeleteNoSave', name: saveName })
     }
 
     await remove(savePath)
@@ -225,7 +234,7 @@ export default class InstanceSavesService extends StatefulService<SaveState> imp
     // validate the source
     const levelRoot = await findLevelRootOnPath(sourceDir)
     if (!levelRoot) {
-      throw new Exception({ type: 'instanceImportIllegalSave', path: source })
+      throw new InstanceSaveException({ type: 'instanceImportIllegalSave', path: source })
     }
 
     await copyPassively(levelRoot, destinationDir)

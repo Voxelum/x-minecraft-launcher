@@ -1,3 +1,4 @@
+import { Exception } from '../entities/exception'
 import { EditInstanceOptions } from './InstanceService'
 import { ServiceKey } from './Service'
 
@@ -71,3 +72,10 @@ export interface ModpackService {
 }
 
 export const ModpackServiceKey: ServiceKey<ModpackService> = 'ModpackService'
+
+export type ModpackExceptions = {
+  type: 'invalidModpack' | 'requireModpackAFile'
+  path: string
+}
+
+export class ModpackException extends Exception<ModpackExceptions> { }

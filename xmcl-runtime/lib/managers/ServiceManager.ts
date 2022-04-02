@@ -1,4 +1,4 @@
-import { Exception, ServiceKey } from '@xmcl/runtime-api'
+import { Exception, GeneralException, ServiceKey } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { Manager } from '.'
 import { Client } from '../engineBridge'
@@ -160,7 +160,9 @@ export default class ServiceManager extends Manager {
       if (e instanceof Exception || 'type' in (e as any)) {
         return { error: e }
       }
-      return { error: Exception.from(e, { type: 'general', error: e }) }
+      if (e instanceof Error) {
+        return { error: new GeneralException({ type: 'general', error: e }) }
+      }
     } finally {
       delete this.sessions[id]
     }

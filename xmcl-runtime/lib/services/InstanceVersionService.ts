@@ -1,6 +1,6 @@
 import { diagnose, MinecraftFolder } from '@xmcl/core'
 import { diagnoseInstall, InstallProfile } from '@xmcl/installer'
-import { Asset, DEFAULT_PROFILE, Exception, getExpectVersion, getResolvedVersion, InstallableLibrary, InstanceVersionService as IInstanceVersionService, isSameForgeVersion, IssueReport, parseOptifineVersion, RuntimeVersions, versionLockOf } from '@xmcl/runtime-api'
+import { Asset, DEFAULT_PROFILE, Exception, getExpectVersion, getResolvedVersion, InstallableLibrary, InstanceVersionException, InstanceVersionService as IInstanceVersionService, isSameForgeVersion, IssueReport, parseOptifineVersion, RuntimeVersions, versionLockOf } from '@xmcl/runtime-api'
 import { readJSON } from 'fs-extra'
 import { join, relative } from 'path'
 import LauncherApp from '../app/LauncherApp'
@@ -37,7 +37,7 @@ export default class InstanceVersionService extends AbstractService implements I
                 // await this.install.installDependencies(fullVersion);
               }
             } else {
-              this.emit('error', new Exception({ type: 'fixVersionNoForgeVersionMetadata', minecraft, forge }))
+              this.emit('error', new InstanceVersionException({ type: 'fixVersionNoForgeVersionMetadata', minecraft, forge }))
             }
           }
           if (fabricLoader) {
@@ -46,7 +46,7 @@ export default class InstanceVersionService extends AbstractService implements I
 
           // TODO: check liteloader
         } else {
-          this.emit('error', new Exception({ type: 'fixVersionNoVersionMetadata', minecraft }))
+          this.emit('error', new InstanceVersionException({ type: 'fixVersionNoVersionMetadata', minecraft }))
         }
       },
       this.diagnoseVersion.bind(this))

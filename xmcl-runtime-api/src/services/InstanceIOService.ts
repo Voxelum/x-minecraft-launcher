@@ -55,11 +55,6 @@ export interface InstanceIOService {
    */
   getInstanceFiles(): Promise<InstanceFile[]>
   /**
-   * Link a existed instance on you disk.
-   * @param path
-   */
-  linkInstance(path: string): Promise<boolean>
-  /**
    * Import an instance from a game zip file or a game directory. The location root must be the game directory.
    * @param location The zip or directory path
    * @returns The newly created instance path

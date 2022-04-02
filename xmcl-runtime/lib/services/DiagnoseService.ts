@@ -1,8 +1,8 @@
+import { DiagnoseService as IDiagnoseService, DiagnoseServiceException, DiagnoseServiceKey, DiagnoseState, Issue, IssueReport } from '@xmcl/runtime-api'
 import { basename } from 'path'
+import LauncherApp from '../app/LauncherApp'
 import { AggregateExecutor } from '../util/aggregator'
 import { ExportService, Singleton, StatefulService } from './Service'
-import LauncherApp from '../app/LauncherApp'
-import { Exception, Issue, IssueReport, DiagnoseService as IDiagnoseService, DiagnoseServiceKey, DiagnoseState } from '@xmcl/runtime-api'
 
 export type DiagnoseFunction = (report: Partial<IssueReport>) => Promise<void>
 
@@ -123,7 +123,7 @@ export default class DiagnoseService extends StatefulService<DiagnoseState> impl
         for (const fix of this.fixes) {
           if (fix.match(issues)) {
             await fix.fix(issues).catch(e => {
-              this.emit('error', new Exception({ type: 'issueFix', error: e }))
+              this.emit('error', new DiagnoseServiceException({ type: 'issueFix', error: e }))
             })
             if (fix.recheck) {
               rechecks.push(fix.recheck)

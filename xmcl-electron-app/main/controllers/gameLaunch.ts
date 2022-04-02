@@ -6,13 +6,6 @@ import { ControllerPlugin } from './plugin'
  * Control the behavior of window during game launch/exit, and also redirect the minecraft stdout/stderr during game
  */
 export const gameLaunch: ControllerPlugin = function (this: Controller) {
-  this.app.on('minecraft-stdout', (...args) => {
-    this.app.broadcast('minecraft-stdout', ...args)
-  })
-  this.app.on('minecraft-stderr', (...args) => {
-    this.app.broadcast('minecraft-stderr', ...args)
-  })
-
   this.app.once('engine-ready', () => {
     this.app.serviceManager.getService(LaunchServiceKey)?.on('minecraft-window-ready', () => {
       const instance = this.app.serviceManager.getService(InstanceServiceKey)?.state.instance
@@ -30,7 +23,7 @@ export const gameLaunch: ControllerPlugin = function (this: Controller) {
       }
 
       if (this.loggerWin === undefined && instance.showLog) {
-        this.createLoggerWindow()
+        this.createMonitorWindow()
       }
     }).on('minecraft-exit', (status) => {
       const instance = this.app.serviceManager.getService(InstanceServiceKey)?.state.instance

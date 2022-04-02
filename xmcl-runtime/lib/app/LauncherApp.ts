@@ -1,5 +1,5 @@
 import { getPlatform } from '@xmcl/core'
-import { InstalledAppManifest, RuntimeVersions, ReleaseInfo } from '@xmcl/runtime-api'
+import { InstalledAppManifest, ReleaseInfo } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { EventEmitter } from 'events'
 import { ensureDir, readFile, readJson, writeFile } from 'fs-extra'
@@ -39,43 +39,25 @@ export interface Platform {
 
 export interface LauncherApp {
   on(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
-  on(channel: 'user-login', listener: (authService: string) => void): this
   on(channel: 'window-all-closed', listener: () => void): this
   on(channel: 'all-services-ready', listener: () => void): this
   on(channel: 'service-ready', listener: (service: AbstractService) => void): this
   on(channel: 'engine-ready', listener: () => void): this
-  on(channel: 'minecraft-window-ready', listener: () => void): this
-  on(channel: 'minecraft-start', listener: (launchOptions: { version: string } & RuntimeVersions) => void): this
-  on(channel: 'minecraft-exit', listener: (exitStatus: { code: number; signal: string; crashReport: string; crashReportLocation: string; errorLog: string }) => void): this
-  on(channel: 'minecraft-stdout', listener: (out: string) => void): this
-  on(channel: 'minecraft-stderr', listener: (err: string) => void): this
   on(channel: 'microsoft-authorize-code', listener: (code: string) => void): this
 
   once(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
-  once(channel: 'user-login', listener: (authService: string) => void): this
   once(channel: 'window-all-closed', listener: () => void): this
   once(channel: 'all-services-ready', listener: () => void): this
   once(channel: 'service-ready', listener: (service: AbstractService) => void): this
   once(channel: 'engine-ready', listener: () => void): this
-  once(channel: 'minecraft-window-ready', listener: () => void): this
-  once(channel: 'minecraft-start', listener: (launchOptions: { version: string } & RuntimeVersions) => void): this
-  once(channel: 'minecraft-exit', listener: (exitStatus: { code: number; signal: string; crashReport: string; crashReportLocation: string; errorLog: string }) => void): this
-  once(channel: 'minecraft-stdout', listener: (out: string) => void): this
-  once(channel: 'minecraft-stderr', listener: (err: string) => void): this
   once(channel: 'microsoft-authorize-code', listener: (error?: Error, code?: string) => void): this
 
   emit(channel: 'app-booted', manifest: InstalledAppManifest): this
-  emit(channel: 'user-login', authService: string): this
   emit(channel: 'microsoft-authorize-code', error?: Error, code?: string): this
   emit(channel: 'window-all-closed'): boolean
   emit(channel: 'engine-ready'): boolean
   emit(channel: 'all-services-ready'): boolean
   emit(channel: 'service-ready', service: AbstractService): boolean
-  emit(channel: 'minecraft-window-ready', ...args: any[]): boolean
-  emit(channel: 'minecraft-start', launchOptions: { version: string } & RuntimeVersions): boolean
-  emit(channel: 'minecraft-exit', exitStatus: { code: number; signal: string; crashReport: string; crashReportLocation: string; errorLog: string }): boolean
-  emit(channel: 'minecraft-stdout', out: string): boolean
-  emit(channel: 'minecraft-stderr', err: string): boolean
 }
 
 export abstract class LauncherApp extends EventEmitter {
@@ -98,11 +80,6 @@ export abstract class LauncherApp extends EventEmitter {
    * Path to temporary folder
    */
   readonly temporaryPath: string
-
-  /**
-   * ref for if the game is launching and the launcher is paused
-   */
-  protected parking = false
 
   // properties
 
@@ -131,8 +108,6 @@ export abstract class LauncherApp extends EventEmitter {
   readonly build: number = Number.parseInt(process.env.BUILD_NUMBER ?? '0', 10)
 
   get version() { return this.host.getVersion() }
-
-  get isParking(): boolean { return this.parking }
 
   protected managers = [this.logManager, this.networkManager, this.taskManager, this.serviceStateManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager, this.semaphoreManager, this.launcherAppManager]
 
@@ -366,11 +341,10 @@ export abstract class LauncherApp extends EventEmitter {
     this.emit('engine-ready')
     this
       .on('window-all-closed', () => {
-        if (this.parking) return
-        if (process.platform !== 'darwin') { this.quit() }
+        if (process.platform !== 'darwin') {
+          this.quit()
+        }
       })
-      .on('minecraft-start', () => { this.parking = true })
-      .on('minecraft-exit', () => { this.parking = false })
 
     // start the app
     let app: InstalledAppManifest
@@ -386,12 +360,10 @@ export abstract class LauncherApp extends EventEmitter {
   }
 
   protected async onServiceReady() {
-    this.parking = true
     this.log(`Current launcher core version is ${this.version}.`)
     await Promise.all(this.managers.map(m => m.storeReady()))
     await this.controller.dataReady()
     this.log('App booted')
-    this.parking = false
   }
 }
 

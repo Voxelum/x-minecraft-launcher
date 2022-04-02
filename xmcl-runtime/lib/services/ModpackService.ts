@@ -1,4 +1,4 @@
-import { AnyPersistedResource, CurseforgeModpackManifest, EditGameSettingOptions, Exception, ExportModpackOptions, ImportModpackOptions, isResourcePackResource, McbbsModpackManifest, ModpackService as IModpackService, ModpackServiceKey, PersistedResource, ResourceDomain, write } from '@xmcl/runtime-api'
+import { AnyPersistedResource, CurseforgeModpackManifest, EditGameSettingOptions, Exception, ExportModpackOptions, ImportModpackOptions, isResourcePackResource, McbbsModpackManifest, ModpackException, ModpackService as IModpackService, ModpackServiceKey, PersistedResource, ResourceDomain, write } from '@xmcl/runtime-api'
 import { requireObject } from '../util/object'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { existsSync } from 'fs'
@@ -212,7 +212,7 @@ export default class ModpackService extends AbstractService implements IModpackS
     const { path } = options
 
     if (!await isFile(path)) {
-      throw new Exception({ type: 'requireModpackAFile', path }, `Cannot import modpack ${path}, since it's not a file!`)
+      throw new ModpackException({ type: 'requireModpackAFile', path }, `Cannot import modpack ${path}, since it's not a file!`)
     }
 
     this.log(`Import modpack by path ${path}`)
@@ -221,7 +221,7 @@ export default class ModpackService extends AbstractService implements IModpackS
     const entries = await readAllEntries(zip)
 
     const manifest = await readMetadata(zip, entries).catch(() => {
-      throw new Exception({ type: 'invalidModpack', path })
+      throw new ModpackException({ type: 'invalidModpack', path })
     })
 
     const config = resolveInstanceOptions(manifest)

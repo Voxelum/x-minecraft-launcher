@@ -2,7 +2,7 @@ import { Frame, parse } from '@xmcl/gamesetting'
 import { FSWatcher, readFile, writeFile } from 'fs-extra'
 import watch from 'node-watch'
 import { basename, join } from 'path'
-import { EditGameSettingOptions, EditShaderOptions, InstanceOptionsService as IInstanceOptionsService, packFormatVersionRange, InstanceOptionsServiceKey, InstanceOptionsState, Exception, parseShaderOptions, stringifyShaderOptions, compareRelease, compareSnapshot, isCompatible, isReleaseVersion, isSnapshotPreview } from '@xmcl/runtime-api'
+import { EditGameSettingOptions, EditShaderOptions, InstanceOptionsService as IInstanceOptionsService, packFormatVersionRange, InstanceOptionsServiceKey, InstanceOptionsState, Exception, parseShaderOptions, stringifyShaderOptions, compareRelease, compareSnapshot, isCompatible, isReleaseVersion, isSnapshotPreview, InstanceOptionException } from '@xmcl/runtime-api'
 import LauncherApp from '../app/LauncherApp'
 import { deepClone } from '../util/clone'
 import { isSystemError } from '../util/error'
@@ -115,7 +115,7 @@ export default class InstanceOptionsService extends StatefulService<InstanceOpti
     const instancePath = options.instancePath ?? this.watchingInstance
     const instance = this.instanceService.state.all[instancePath]
     if (!instance) {
-      throw new Exception({ type: 'instanceNotFound', instancePath: options.instancePath! })
+      throw new InstanceOptionException({ type: 'instanceNotFound', instancePath: options.instancePath! })
     }
     const current = instancePath !== this.watchingInstance
       ? await this.getShaderOptions(instancePath)
@@ -131,7 +131,7 @@ export default class InstanceOptionsService extends StatefulService<InstanceOpti
     const instancePath = options.instancePath ?? this.watchingInstance
     const instance = this.instanceService.state.all[instancePath]
     if (!instance) {
-      throw new Exception({ type: 'instanceNotFound', instancePath: options.instancePath! })
+      throw new InstanceOptionException({ type: 'instanceNotFound', instancePath: options.instancePath! })
     }
     const current = instancePath !== this.watchingInstance
       ? await this.getGameOptions(instancePath)
