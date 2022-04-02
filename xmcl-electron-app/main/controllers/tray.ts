@@ -6,7 +6,7 @@ import favcon2XPath from '../assets/favicon@2x.png'
 import { ControllerPlugin } from './plugin'
 
 export const trayPlugin: ControllerPlugin = function (this: Controller) {
-  const { t: $t } = this.i18n
+  const { t } = this.i18n
   const createMenu = () => {
     const app = this.app
     const service = this.app.serviceManager.getService(BaseServiceKey)
@@ -47,24 +47,24 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
     return Menu.buildFromTemplate([
       {
         type: 'normal',
-        label: $t('checkUpdate'),
+        label: t('checkUpdate'),
         click() {
           service?.checkUpdate()
         },
       },
       {
-        label: $t('browseApps'),
+        label: t('browseApps'),
         type: 'normal',
         click: onBrowseAppClicked,
       },
       { type: 'separator' },
       {
-        label: $t('showDiagnosis'),
+        label: t('showDiagnosis'),
         type: 'normal',
         click: diagnose,
       },
       {
-        label: $t('quit'),
+        label: t('quit'),
         type: 'normal',
         click() {
           app.quit()
@@ -111,10 +111,10 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
   ]).then(() => {
     const tray = this.tray
     if (tray) {
-      tray.setToolTip($t('title'))
+      tray.setToolTip(t('title'))
       tray.setContextMenu(createMenu())
       this.app.serviceStateManager.subscribe('localeSet', (l) => {
-        tray.setToolTip($t('title'))
+        tray.setToolTip(t('title'))
         tray.setContextMenu(createMenu())
       })
     }
