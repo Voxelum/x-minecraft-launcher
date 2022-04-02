@@ -2,7 +2,7 @@ import { DownloadTask } from '@xmcl/installer'
 import {
   Exception, GameProfileAndTexture, LoginMicrosoftOptions, LoginOptions,
   RefreshSkinOptions,
-  UploadSkinOptions, UserSchema, UserService as IUserService, UserServiceKey, UserState,
+  UploadSkinOptions, UserException, UserSchema, UserService as IUserService, UserServiceKey, UserState,
 } from '@xmcl/runtime-api'
 import { AUTH_API_MOJANG, checkLocation, GameProfile, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user'
 import { readFile, readJSON } from 'fs-extra'
@@ -576,9 +576,9 @@ export default class UserService extends StatefulService<UserState> implements I
     let avatar: string | undefined
 
     if (authService !== 'offline' && authService !== 'microsoft') {
-      this.app.emit('user-login', usingAuthService.hostName)
+      this.emit('user-login', usingAuthService.hostName)
     } else {
-      this.app.emit('user-login', authService)
+      this.emit('user-login', authService)
     }
 
     if (authService === 'offline') {
@@ -603,15 +603,15 @@ export default class UserService extends StatefulService<UserState> implements I
         clientToken: this.state.clientToken,
       }, usingAuthService).catch((e) => {
         if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {
-          throw Exception.from(e, { type: 'loginInternetNotConnected' })
+          throw new UserException({ type: 'loginInternetNotConnected' }, e.message)
         } else if (e.error === 'ForbiddenOperationException' &&
           e.errorMessage === 'Invalid credentials. Invalid username or password.') {
-          throw Exception.from(e, { type: 'loginInvalidCredentials' })
+          throw new UserException({ type: 'loginInvalidCredentials' }, e.message)
         } else if (e.error === 'ForbiddenOperationException' &&
           e.errorMessage === 'Invalid credential information.') {
-          throw Exception.from(e, { type: 'loginInvalidCredentials' })
+          throw new UserException({ type: 'loginInvalidCredentials' }, e.message)
         }
-        throw Exception.from(e, { type: 'loginGeneral' })
+        throw new UserException({ type: 'loginGeneral' }, e.message)
       })
       userId = result.user!.id
       accessToken = result.accessToken

@@ -1,4 +1,4 @@
-import { AnyPersistedResource, AnyResource, Exception, ImportResourceOptions, ImportResourcesOptions, isPersistedResource, ParseResourceOptions, ParseResourcesOptions, PersistedResource, Resource, ResourceDomain, resourceLoadSemaphore, ResourceService as IResourceService, ResourceServiceKey, ResourceState, ResourceType, UpdateResourceOptions } from '@xmcl/runtime-api'
+import { AnyPersistedResource, AnyResource, Exception, ImportResourceOptions, ImportResourcesOptions, isPersistedResource, ParseResourceOptions, ParseResourcesOptions, PersistedResource, Resource, ResourceDomain, ResourceException, resourceLoadSemaphore, ResourceService as IResourceService, ResourceServiceKey, ResourceState, ResourceType, UpdateResourceOptions } from '@xmcl/runtime-api'
 import { requireString } from '../util/object'
 import { task } from '@xmcl/task'
 import { FSWatcher } from 'fs'
@@ -266,7 +266,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
   async removeResource(resourceOrKey: string | AnyPersistedResource) {
     const resource = this.normalizeResource(resourceOrKey)
     if (!resource) {
-      throw new Exception({
+      throw new ResourceException({
         type: 'resourceNotFoundException',
         resource: resourceOrKey as string,
       })
@@ -279,7 +279,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
   async updateResource(options: UpdateResourceOptions): Promise<void> {
     const resource = this.normalizeResource(options.resource)
     if (!resource) {
-      throw new Exception({
+      throw new ResourceException({
         type: 'resourceNotFoundException',
         resource: options.resource as string,
       })
@@ -409,7 +409,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
     for (const r of resources) {
       const resource = this.normalizeResource(r)
       if (!resource) {
-        throw new Exception({
+        throw new ResourceException({
           type: 'resourceNotFoundException',
           resource: r,
         })
@@ -514,7 +514,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
   */
   async importParsedResource(options: ImportResourceOptions, resolved: Resource, icon: Uint8Array | undefined) {
     if (options.restrictToDomain && resolved.domain !== options.restrictToDomain && resolved.domain !== ResourceDomain.Unknown) {
-      throw new Exception({
+      throw new ResourceException({
         type: 'resourceDomainMismatched',
         path: options.path,
         expectedDomain: options.restrictToDomain,
@@ -543,7 +543,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
         context.stat = await readFileStat(options.path)
       }
       if (context.stat.isDirectory) {
-        throw new Exception({
+        throw new ResourceException({
           type: 'resourceImportDirectoryException',
           path: options.path,
         })

@@ -1,3 +1,4 @@
+import { LaunchServiceKey, UserServiceKey } from '@xmcl/runtime-api'
 import { readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { v4 } from 'uuid'
@@ -48,58 +49,43 @@ export default class TelemetryManager extends Manager {
     tags[contract.userId] = this.sessionId
     tags[contract.applicationVersion] = `${this.app.version}#${process.env.BUILD_NUMBER}`
 
-    this.app.on('user-login', (authService) => {
-      appInsight.defaultClient.trackEvent({
-        name: 'user-login',
-        properties: {
-          authService,
-        },
-      })
-    })
-    this.app.on('minecraft-start', (options) => {
-      appInsight.defaultClient.trackEvent({
-        name: 'minecraft-start',
-        properties: options,
-      })
-    })
-    this.app.on('minecraft-exit', ({ code, signal, crashReport }) => {
-      const normalExit = code === 0
-      const crashed = crashReport.length > 0
-      if (normalExit) {
+    this.app.on('engine-ready', () => {
+      const launchService = this.app.serviceManager.getService(LaunchServiceKey)
+      launchService?.on('minecraft-start', (options) => {
         appInsight.defaultClient.trackEvent({
-          name: 'minecraft-exit',
+          name: 'minecraft-start',
+          properties: options,
         })
-      } else {
+      }).on('minecraft-exit', ({ code, signal, crashReport }) => {
+        const normalExit = code === 0
+        const crashed = crashReport && crashReport.length > 0
+        if (normalExit) {
+          appInsight.defaultClient.trackEvent({
+            name: 'minecraft-exit',
+          })
+        } else {
+          appInsight.defaultClient.trackEvent({
+            name: 'minecraft-exit',
+            properties: {
+              code,
+              signal,
+              crashed,
+            },
+          })
+        }
+      })
+
+      this.app.serviceManager.getService(UserServiceKey)!.on('user-login', (authService) => {
         appInsight.defaultClient.trackEvent({
-          name: 'minecraft-exit',
+          name: 'user-login',
           properties: {
-            code,
-            signal,
-            crashed,
+            authService,
           },
         })
-      }
+      })
     })
   }
 
   storeReady() {
-    // this.app.storeManager.store.subscribe((mutation) => {
-    //     if (this.app.isParking) {
-    //         return;
-    //     }
-    //     let resources: Resource[];
-    //     if (mutation.type === 'resource') {
-    //         resources = [mutation.payload];
-    //     } else if (mutation.type === 'resources') {
-    //         resources = mutation.payload;
-    //     } else {
-    //         return;
-    //     }
-    //     resources.filter((r) => r.type === 'forge' && r.source.curseforge)
-    //         .forEach((r) => {
-    //             r.source.curseforge
-    //         });
-    //     this.client.trackEvent
-    // });
   }
 }

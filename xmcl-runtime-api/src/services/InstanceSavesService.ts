@@ -1,3 +1,4 @@
+import { Exception, InstanceNotFoundException } from '../entities/exception'
 import { InstanceSave, InstanceSaveMetadata } from '../entities/save'
 import { ServiceKey, StatefulService } from './Service'
 
@@ -131,3 +132,23 @@ export interface InstanceSavesService extends StatefulService<SaveState> {
 }
 
 export const InstanceSavesServiceKey: ServiceKey<InstanceSavesService> = 'InstanceSavesService'
+
+export type InstanceSaveExceptions = {
+  /**
+   * - instanceDeleteNoSave -> no save match name provided
+   */
+  type: 'instanceDeleteNoSave'
+  /**
+    * The save name
+    */
+  name: string
+} | {
+  type: 'instanceImportIllegalSave'
+  path: string
+} | {
+  type: 'instanceCopySaveNotFound' | 'instanceCopySaveUnexpected'
+  src: string
+  dest: string[]
+} | InstanceNotFoundException
+
+export class InstanceSaveException extends Exception<InstanceSaveExceptions> { }

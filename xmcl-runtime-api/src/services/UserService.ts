@@ -1,4 +1,6 @@
 import { GameProfile, MojangChallenge, MojangChallengeResponse, ProfileServiceAPI, YggdrasilAuthAPI } from '@xmcl/user'
+import { GenericEventEmitter } from '../events'
+import { Exception } from '../entities/exception'
 import { EMPTY_GAME_PROFILE, EMPTY_USER } from '../entities/user'
 import { GameProfileAndTexture, UserProfile, UserSchema } from '../entities/user.schema'
 import { ServiceKey, StatefulService } from './Service'
@@ -54,6 +56,11 @@ export interface UploadSkinOptions {
    * If the skin is using slim model.
    */
   slim: boolean
+}
+
+interface UserServiceEventMap {
+  'user-login': string
+  'error': UserException
 }
 
 export class UserState implements UserSchema {
@@ -245,7 +252,7 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
   }
 }
 
-export interface UserService extends StatefulService<UserState> {
+export interface UserService extends StatefulService<UserState>, GenericEventEmitter<UserServiceEventMap> {
   /**
    * Check current ip location and determine wether we need to validate user identity by response challenge.
    *
@@ -331,3 +338,18 @@ export interface UserService extends StatefulService<UserState> {
 }
 
 export const UserServiceKey: ServiceKey<UserService> = 'UserService'
+
+export type UserExceptions = {
+  type: 'loginInternetNotConnected' | 'loginInvalidCredentials' | 'loginGeneral'
+} | {
+  type: 'loginGeneral'
+} | {
+  type: 'fetchMinecraftProfileFailed'
+  path: '/minecraft/profile'
+  errorType: 'NOT_FOUND' | string
+  error: string | 'NOT_FOUND'
+  errorMessage: string
+  developerMessage: string
+}
+
+export class UserException extends Exception<UserExceptions> { }

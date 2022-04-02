@@ -1,3 +1,4 @@
+import { Exception } from '../entities/exception'
 import { Issue, IssueRegistries, IssueReport } from '../entities/issue'
 import { ServiceKey, StatefulService } from './Service'
 
@@ -93,3 +94,10 @@ export interface DiagnoseService extends StatefulService<DiagnoseState> {
 }
 
 export const DiagnoseServiceKey: ServiceKey<DiagnoseService> = 'DiagnoseService'
+
+export type DiagnoseServiceExceptions = {
+  type: 'issueFix'
+  error: unknown
+}
+
+export class DiagnoseServiceException extends Exception<DiagnoseServiceExceptions> { }

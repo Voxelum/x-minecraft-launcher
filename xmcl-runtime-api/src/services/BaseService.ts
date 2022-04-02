@@ -8,6 +8,8 @@ export interface MigrateOptions {
 
 export class BaseState implements SettingSchema {
   locale = ''
+
+  theme = 'dark' as 'dark' | 'light' | 'system'
   /**
    * All supported languages of the launcher
    */
@@ -57,6 +59,11 @@ export class BaseState implements SettingSchema {
     this.apiSetsPreference = typeof config.apiSetsPreference === 'string' ? config.apiSetsPreference : 'mcbbs'
     this.httpProxy = config.httpProxy
     this.httpProxyEnabled = config.httpProxyEnabled
+    this.theme = config.theme
+  }
+
+  themeSet(theme: 'dark' | 'light' | 'system') {
+    this.theme = theme
   }
 
   localeSet(language: string) {

@@ -1,5 +1,5 @@
 import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder, Version } from '@xmcl/core'
-import { EMPTY_VERSION, Exception, LaunchOptions, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
+import { EMPTY_VERSION, LaunchException, LaunchOptions, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
 import { ChildProcess } from 'child_process'
 import { constants } from 'fs'
 import { access, chmod } from 'fs-extra'
@@ -19,7 +19,7 @@ import VersionService from './VersionService'
 
 @ExportService(LaunchServiceKey)
 export default class LaunchService extends StatefulService<LaunchState> implements ILaunchService {
-  private launchedProcess: ChildProcess | undefined
+  private launchedProcesses: ChildProcess[] = []
 
   createState() { return new LaunchState() }
 
@@ -52,7 +52,7 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
 
     const instanceVersion = this.instanceVersionService.getInstanceVersion()
     if (!instanceVersion.id) {
-      throw new Exception({ type: 'launchNoVersionInstalled' })
+      throw new LaunchException({ type: 'launchNoVersionInstalled' })
     }
     const version = instanceVersion.id
     const useAuthLib = this.userService.state.isThirdPartyAuthentication
@@ -88,8 +88,9 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
   }
 
   async kill() {
-    if (this.launchedProcess) {
-      this.launchedProcess.kill()
+    if (this.launchedProcesses.length > 0) {
+      const last = this.launchedProcesses.pop()
+      last!.kill()
     }
   }
 
@@ -100,7 +101,7 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
    */
   async launch(options?: LaunchOptions) {
     try {
-      if (this.state.status !== 'ready') {
+      if (this.state.status !== 'idle') {
         return false
       }
 
@@ -120,7 +121,7 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
         await this.diagnoseService.fix(issues.filter(p => !p.optional && p.autofix))
       }
 
-      if (this.state.status === 'ready') { // check if we have cancel (set to ready) this launch
+      if (this.state.status === 'idle') { // check if we have cancel (set to ready) this launch
         return false
       }
 
@@ -130,7 +131,7 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
 
       let version = options?.version ? this.versionService.getLocalVersion(options.version) ?? this.instanceVersionService.getInstanceVersion() : this.instanceVersionService.getInstanceVersion()
       if (version === EMPTY_VERSION) {
-        throw new Exception({ type: 'launchNoVersionInstalled' })
+        throw new LaunchException({ type: 'launchNoVersionInstalled' })
       }
       version = await Version.parse(version.minecraftDirectory, version.id)
 
@@ -141,7 +142,7 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
       const javaPath = instance.java || instanceJava?.path
 
       if (!javaPath) {
-        throw new Exception({ type: 'launchGeneralException' }, 'Cannot launch without a valid java')
+        throw new LaunchException({ type: 'launchNoProperJava' }, 'Cannot launch without a valid java')
       }
 
       await Promise.all([
@@ -204,10 +205,12 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
 
       // Launch
       const process = await launch(option)
-      this.launchedProcess = process
-      this.state.launchStatus('launched')
+      this.launchedProcesses.push(process)
+      this.state.launchStatus('idle')
+      this.state.launchCount(this.state.activeCount + 1)
 
-      this.app.emit('minecraft-start', {
+      this.emit('minecraft-start', {
+        pid: process.pid,
         version: version.id,
         minecraft: version.minecraftVersion,
         forge: instance.runtime.forge ?? '',
@@ -220,49 +223,42 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
         errorLogs.push(...buf.toString().split(EOL))
       })
       watcher.on('error', (err) => {
-        this.emit('error', new Exception({ type: 'launchGeneralException', error: err }))
-        this.state.launchStatus('ready')
+        this.emit('error', new LaunchException({ type: 'launchGeneralException', error: err }))
       }).on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation }) => {
         this.log(`Minecraft exit: ${code}, signal: ${signal}`)
         if (crashReportLocation) {
           crashReportLocation = crashReportLocation.substring(0, crashReportLocation.lastIndexOf('.txt') + 4)
         }
         this.emit('minecraft-exit', {
+          pid: process.pid,
           code,
           signal,
           crashReport,
           crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
           errorLog: errorLogs.join('\n'),
         })
-        // this.app.emit('minecraft-exit', {
-        //   code,
-        //   signal,
-        //   crashReport,
-        //   crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
-        //   errorLog: errorLogs.join('\n'),
-        // })
-        this.state.launchStatus('ready')
-        this.launchedProcess = undefined
+        this.state.launchCount(this.state.activeCount - 1)
+        this.launchedProcesses = this.launchedProcesses.filter(p => p !== process)
       }).on('minecraft-window-ready', () => {
-        this.emit('minecraft-window-ready')
+        this.emit('minecraft-window-ready', { pid: process.pid })
       })
       /* eslint-disable no-unused-expressions */
       process.stdout?.on('data', (s) => {
         const string = s.toString()
-        // this.app.emit('minecraft-stdout', string)
-        this.emit('minecraft-stdout', string)
+        this.emit('minecraft-stdout', { pid: process.pid, stdout: string })
       })
       process.stderr?.on('data', (s) => {
         this.warn(s.toString())
-        // this.app.emit('minecraft-stderr', s.toString())
-        this.emit('minecraft-stderr', s.toString())
+        this.emit('minecraft-stderr', { pid: process.pid, stderr: s.toString() })
       })
       process.unref()
       return true
     } catch (e) {
-      this.state.launchStatus('ready')
+      if (e instanceof LaunchException) {
+        throw e
+      }
       this.error(e)
-      throw new Exception({ type: 'launchGeneralException', error: e })
+      throw new LaunchException({ type: 'launchGeneralException', error: e })
     }
   }
 }

@@ -1,144 +1,36 @@
-import { AnyResource, PersistedResource } from './resource'
-import { Issue } from './issue'
 
-export type Exceptions = InstanceNotFoundException | ResourceNotFoundException | ResourceImportDirectoryException | ResourceDomainMismatchedException | MinecraftProfileError | PingServerException | UserNoProfilesException | ModpackImportException | IssueBlockedException | InstanceDeleteSaveException | FixVersionException | LaunchGeneralException | LaunchBlockedException | LaunchException | LoginException | InstanceImportSaveException | InstanceImportResourceException | InstanceCopySaveException | GeneralException | ResourceException
-
+export type Exceptions = InstanceNotFoundException | GeneralException
 export interface ExceptionBase {
   type: string
 }
 
-export class Exception extends Error implements ExceptionBase {
+export class Exception<T extends ExceptionBase> extends Error implements ExceptionBase {
   type: string
+  exceptionClass: string
 
-  constructor(readonly exception: Exceptions, message?: string) {
+  constructor(readonly exception: T, message?: string) {
     super(message)
     this.type = exception.type
+    this.exceptionClass = Object.getPrototypeOf(this).constructor.name
     Object.assign(this, exception)
   }
+}
 
-  static from(error: Error, exception: Exceptions): Exception {
-    return Object.assign(error, exception) as Exception
+export class GeneralException extends Exception<{
+  type: 'general' | 'fsError'
+  error: Error
+}> { }
+
+export function isException<T>(clazz: { new(): T }, error: unknown): error is T {
+  if (error && typeof error === 'object' && 'exceptionClass' in error && (error as any).exceptionClass === clazz.name) {
+    return true
   }
+  return false
 }
 
 export interface InstanceNotFoundException extends ExceptionBase {
   type: 'instanceNotFound'
   instancePath: string
-}
-
-export interface InstanceImportResourceException extends ExceptionBase {
-  type: 'instanceImportIllegalResource'
-  file: string
-}
-
-export interface ResourceDomainMismatchedException extends ExceptionBase {
-  type: 'resourceDomainMismatched'
-  path: string
-  expectedDomain: string
-  actualDomain: string
-  actualType: string
-}
-
-export interface ResourceImportDirectoryException extends ExceptionBase {
-  type: 'resourceImportDirectoryException'
-  path: string
-}
-
-export interface ResourceNotFoundException extends ExceptionBase {
-  type: 'resourceNotFoundException'
-  resource: string | AnyResource
-}
-
-export interface InstanceImportSaveException extends ExceptionBase {
-  type: 'instanceImportIllegalSave'
-  path: string
-}
-
-export interface InstanceDeleteSaveException extends ExceptionBase {
-  /**
-   * - instanceDeleteNoSave -> no save match name provided
-   */
-  type: 'instanceDeleteNoSave'
-  /**
-   * The save name
-   */
-  name: string
-}
-
-export interface InstanceCopySaveException extends ExceptionBase {
-  type: 'instanceCopySaveNotFound' | 'instanceCopySaveUnexpected'
-  src: string
-  dest: string[]
-}
-
-export interface ResourceException extends ExceptionBase {
-  type: 'deployLinkResourceOccupied'
-  resource: PersistedResource<any>
-}
-
-export interface GeneralException extends ExceptionBase {
-  type: 'fsError' | 'issueFix' | 'general'
-  error: Error
-}
-
-export interface LoginException extends ExceptionBase {
-  type: 'loginInternetNotConnected' | 'loginInvalidCredentials' | 'loginGeneral'
-}
-
-export interface ModpackImportException extends ExceptionBase {
-  type: 'invalidModpack' | 'requireModpackAFile'
-  path: string
-}
-
-export interface LaunchException extends ExceptionBase {
-  type: 'launchInstanceEmpty' | 'launchIllegalAuth' | 'launchBlockedIssues' | 'launchGeneralException' | 'launchNoVersionInstalled'
-}
-
-export interface IssueBlockedException extends ExceptionBase {
-  type: 'issueBlocked'
-  issues: Issue[]
-}
-
-export interface LaunchBlockedException extends LaunchException {
-  type: 'launchBlockedIssues'
-  issues: Issue[]
-}
-
-export interface LaunchGeneralException extends LaunchException {
-  type: 'launchGeneralException'
-  error: any
-}
-
-export interface FixVersionException extends ExceptionBase {
-  /**
-   * - fixVersionNoVersionMetadata -> no minecraft version metadata.
-   * - fixVersionNoForgeVersionMetadata -> no forge version metadata.
-   */
-  type: 'fixVersionNoVersionMetadata' | 'fixVersionNoForgeVersionMetadata'
-  minecraft: string
-  forge?: string
-}
-
-export interface UserNoProfilesException extends ExceptionBase {
-  type: 'userNoProfiles'
-  authService: string
-  profileService: string
-  username: string
-}
-
-export interface PingServerException extends ExceptionBase {
-  type: 'pingServerTimeout' | 'pingServerNotFound' | 'pingServerRefused'
-  host: string
-  port: number
-}
-
-export interface MinecraftProfileError extends ExceptionBase {
-  type: 'fetchMinecraftProfileFailed'
-  path: '/minecraft/profile'
-  errorType: 'NOT_FOUND' | string
-  error: string | 'NOT_FOUND'
-  errorMessage: string
-  developerMessage: string
 }
 
 export function isFileNoFound(e: unknown) {

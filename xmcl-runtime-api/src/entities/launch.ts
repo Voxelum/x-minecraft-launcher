@@ -1,1 +1,1 @@
-export type LaunchStatus = 'ready' | 'checkingProblems' | 'launching' | 'launched' | 'minecraftReady'
+export type LaunchStatus = 'idle' | 'checkingProblems' | 'launching'

@@ -1,4 +1,4 @@
-import { Exceptions, ServiceKey, State, MutationKeys } from '@xmcl/runtime-api'
+import { MutationKeys, ServiceKey, State } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { join } from 'path'
 import { EventEmitter } from 'stream'
@@ -188,12 +188,6 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
       }
     }
     Object.defineProperty(descriptor.value, 'name', { value: `${method.name}$Singleton` })
-  }
-}
-
-export class ServiceException extends Error {
-  constructor(readonly exception: Exceptions, message?: string) {
-    super(message)
   }
 }
 
