@@ -21,7 +21,7 @@
           size="48"
           large
         >
-          <ImageShowTextureHead
+          <PlayerAvatar
             :src="gameProfile.textures.SKIN.url"
             :dimension="48"
           />
@@ -260,7 +260,7 @@
 
 <script lang=ts setup>
 import { BaseServiceKey } from '@xmcl/runtime-api'
-import ImageShowTextureHead from '../components/PlayerAvatar.vue'
+import PlayerAvatar from '../components/PlayerAvatar.vue'
 import { useDialog } from '../composables/dialog'
 import { useTaskCount } from '../composables/task'
 import { useCurrentUser } from '../composables/user'
@@ -295,6 +295,8 @@ expanding.value = subRoutes.has(router.currentRoute.fullPath)
 router.afterEach((to) => {
   if (!subRoutes.has(to.fullPath)) {
     expanding.value = false
+  } else {
+    expanding.value = true
   }
 })
 
