@@ -841,7 +841,10 @@ setting:
   showParticle: 显示粒子
   showParticleDescription: 是否在背景显示粒子效果 (这会影响性能，觉得卡可以关了)
   showRoot: 浏览
-  theme: 外观主题
+  theme:
+    dark: 暗色主题
+    light: 亮色主题
+    system: 跟随系统
   update: 升级设置
   updateToThisVersion: 下载并安装
   useBmclAPI: 使用 BMCL API

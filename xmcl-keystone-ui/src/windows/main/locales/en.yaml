@@ -919,7 +919,10 @@ setting:
   showParticle: Show Particles
   showParticleDescription: Show particles in background (May impact performance)
   showRoot: Show
-  theme: Theme
+  theme:
+    dark: Dark Theme
+    light: Light Theme
+    system: Use System Theme
   update: Update
   updateToThisVersion: Download and Install
   useBmclAPI: Use BMCL API

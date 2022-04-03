@@ -12,18 +12,19 @@ import VueObserveVisibility from 'vue-observe-visibility'
 import Router from 'vue-router'
 import Vuetify from 'vuetify'
 import Vuex from 'vuex'
-import { SERVICES_KEY, VuexServiceFactory } from '../../vuexServiceProxy'
+import { VuexServiceFactory } from '../../vuexServiceProxy'
 import './directives'
 import MainWindow from './App.vue'
 import { createRouter } from './router'
 import { useAllServices } from './services'
 import { createStore } from './store'
 import TextComponent from '/@/components/TextComponent'
-import { I18N_KEY, ROUTER_KEY } from '/@/constant'
-import { SERVICES_SEMAPHORES_KEY, useSemaphores } from '../../composables'
+import { ROUTER_KEY } from '/@/constant'
+import { I18N_KEY, SERVICES_KEY, SERVICES_SEMAPHORES_KEY, usePreferDark, useSemaphores } from '/@/composables'
 import { createI18n } from '/@/i18n'
-import vuetify, { VuetifyInjectionKey } from './vuetify'
+import vuetify from './vuetify'
 import 'virtual:windi.css'
+import { VuetifyInjectionKey } from '/@/composables/vuetify'
 
 // TODO: fix this after refactor halo
 window.THREE = {
@@ -87,12 +88,10 @@ const app = createApp(defineComponent({
     const factory = new VuexServiceFactory(store)
     useAllServices(factory)
     provide(SERVICES_KEY, factory)
-    provide(VuetifyInjectionKey, context.root.$vuetify)
 
-    context.root.$vuetify.theme.dark = localStorage.getItem('darkTheme') !== 'false'
-    watch(computed(() => context.root.$vuetify.theme.dark), (theme) => {
-      localStorage.setItem('darkTheme', theme.toString())
-    })
+    // vuetify
+    const vuetify = context.root.$vuetify
+    provide(VuetifyInjectionKey, vuetify)
 
     // make syncable
     // const syncable = useSyncable(store)
@@ -105,7 +104,7 @@ const app = createApp(defineComponent({
     store.watch((state) => state[`services/${BaseServiceKey.toString()}`].locale, (newValue: string, oldValue: string) => {
       console.log(`Locale changed ${oldValue} -> ${newValue}`)
       i18n.locale = newValue
-      const lang = context.root.$vuetify.lang
+      const lang = vuetify.lang
       if (newValue === 'zh-CN') {
         lang.current = 'zhHans'
       } else if (newValue === 'ru') {
@@ -113,6 +112,26 @@ const app = createApp(defineComponent({
       } else {
         lang.current = 'en'
       }
+    })
+
+    const preferDark = usePreferDark()
+
+    const updateTheme = (theme: 'dark' | 'system' | 'light') => {
+      if (theme === 'system') {
+        vuetify.theme.dark = preferDark.value
+      } else if (theme === 'dark') {
+        vuetify.theme.dark = true
+      } else if (theme === 'light') {
+        vuetify.theme.dark = false
+      }
+    }
+
+    updateTheme(store.state[`services/${BaseServiceKey}`].theme)
+
+    // dynamic change theme
+    store.watch((state) => state[`services/${BaseServiceKey}`].theme, (newValue: string, oldValue: string) => {
+      console.log(`Theme changed ${oldValue} -> ${newValue}`)
+      updateTheme(newValue as any)
     })
 
     // router

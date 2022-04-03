@@ -7,9 +7,9 @@
   >
     <v-subheader>{{ $t("setting.appearance") }}</v-subheader>
     <v-list-item class="justify-center items-center">
-      <v-list-item-action class="self-center">
-        <v-checkbox v-model="darkTheme" />
-      </v-list-item-action>
+      <!-- <v-list-item-action class="self-center"> -->
+        <!-- <v-checkbox v-model="darkTheme" /> -->
+      <!-- </v-list-item-action> -->
       <v-list-item-content>
         <v-list-item-title>
           {{
@@ -22,6 +22,15 @@
           }}
         </v-list-item-subtitle>
       </v-list-item-content>
+      <v-list-item-action>
+        <v-select
+          v-model="theme"
+          filled
+          style="max-width: 185px"
+          hide-details
+          :items="themes"
+        />
+      </v-list-item-action>
     </v-list-item>
     <v-list-item>
       <v-list-item-action class="self-center">
@@ -227,20 +236,31 @@
   </v-list>
 </template>
 <script lang="ts" setup>
+import { BaseServiceKey } from '@xmcl/runtime-api'
 import { BackgroundType, useBackground } from '../composables/background'
-import { VuetifyInjectionKey } from '../vuetify'
-import { useI18n } from '/@/composables'
-import { injection } from '/@/util/inject'
+import { useI18n, useService, useTheme } from '/@/composables'
 
 const { showOpenDialog } = windowController
-const vuetify = injection(VuetifyInjectionKey)
 const { t } = useI18n()
 const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, blurMainBody, backgroundImageFit, volume, setBackgroundVideo, backgroundVideo } = useBackground()
 
-const darkTheme = computed({
-  get(): boolean { return vuetify.theme.dark },
-  set(v: boolean) { vuetify.theme.dark = v },
+const { state } = useService(BaseServiceKey)
+
+const theme = computed({
+  get: () => state.theme,
+  set: v => state.themeSet(v),
 })
+const themes = computed(() => [{
+  text: t('setting.theme.dark'),
+  value: 'dark',
+}, {
+  text: t('setting.theme.light'),
+  value: 'light',
+}, {
+  text: t('setting.theme.system'),
+  value: 'system',
+}])
+
 const particleModes = computed(() => ['push', 'remove', 'repulse', 'bubble'].map(v => ({ value: v, text: t(`setting.particleMode.${v}`) })))
 const backgroundImageFits = computed(() => [
   { value: 'cover', text: t('setting.backgroundImageFit.cover') },

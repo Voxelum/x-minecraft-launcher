@@ -880,7 +880,10 @@ setting:
   showParticle: Показывать частицы
   showParticleDescription: Показывать частицы фона (Может повлиять на производительность)
   showRoot: Показать
-  theme: Тема
+  theme:
+    dark: Dark Тема
+    light: Light Тема
+    system: Use System Тема
   update: Обновление
   updateToThisVersion: Скачать и установить
   useBmclAPI: Использовать BMCLAPI

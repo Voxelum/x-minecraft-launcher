@@ -30,7 +30,7 @@ export interface SettingSchema {
   allowPrerelease: boolean
   /**
    * The download API set preferences
-   * @default 'bmcl'
+   * @default "bmcl"
    */
   apiSetsPreference: 'mojang' | 'mcbbs' | 'bmcl'
   /**
@@ -47,4 +47,9 @@ export interface SettingSchema {
    * @default false
    */
   httpProxyEnabled: boolean
+  /**
+   * The launcher theme
+   * @default "dark"
+   */
+  theme: 'dark' | 'light' | 'system'
 }
