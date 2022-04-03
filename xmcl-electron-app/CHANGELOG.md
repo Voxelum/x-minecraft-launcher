@@ -1,4 +1,86 @@
 
+## 0.22.0
+### @xmcl/runtime-api@0.6.0
+#### Features
+
+- new log monitor view ([6d27ec738a7f02370d36ed25582695c18fed6e35](https://github.com/Voxelum/x-minecraft-launcher/commit/6d27ec738a7f02370d36ed25582695c18fed6e35))
+- dark/light/system theme ([77e5bdedb518b21a8cb355b96e65995f83ccf980](https://github.com/Voxelum/x-minecraft-launcher/commit/77e5bdedb518b21a8cb355b96e65995f83ccf980))
+- instance import with version isolation compatibility ([9ef1d0fbbebcc339d6cdc29b0d1fd04660833c44](https://github.com/Voxelum/x-minecraft-launcher/commit/9ef1d0fbbebcc339d6cdc29b0d1fd04660833c44))
+- added background video selection (#221) ([399ca13b5805a929e5ced21ea274e2933ec1c757](https://github.com/Voxelum/x-minecraft-launcher/commit/399ca13b5805a929e5ced21ea274e2933ec1c757))
+#### Bug Fixes
+
+- align exception & type & lint ([f2bfbba48f94453427c4b1d4d7b9c34ccdfceac6](https://github.com/Voxelum/x-minecraft-launcher/commit/f2bfbba48f94453427c4b1d4d7b9c34ccdfceac6))
+- normalize the exception throwing ([92f8df6163dd037151b955f2ba4b13060c4d0261](https://github.com/Voxelum/x-minecraft-launcher/commit/92f8df6163dd037151b955f2ba4b13060c4d0261))
+- correct typing ([933e6d8e10990da78760dff9c6cc24f91ac36cc1](https://github.com/Voxelum/x-minecraft-launcher/commit/933e6d8e10990da78760dff9c6cc24f91ac36cc1))
+- universal search ([e44325ec07653ac311053cf7702818174686fcf9](https://github.com/Voxelum/x-minecraft-launcher/commit/e44325ec07653ac311053cf7702818174686fcf9))
+- use setup script ([2102a4ce9faf571f6aa9aca720a88c113a3a1c03](https://github.com/Voxelum/x-minecraft-launcher/commit/2102a4ce9faf571f6aa9aca720a88c113a3a1c03))
+### @xmcl/keystone-ui@0.21.0
+#### Features
+
+- new log monitor view ([6d27ec738a7f02370d36ed25582695c18fed6e35](https://github.com/Voxelum/x-minecraft-launcher/commit/6d27ec738a7f02370d36ed25582695c18fed6e35))
+- multi instances launching ([06ec84fe422e98c4c3c32d460ae16094ce641b59](https://github.com/Voxelum/x-minecraft-launcher/commit/06ec84fe422e98c4c3c32d460ae16094ce641b59))
+- dark/light/system theme ([77e5bdedb518b21a8cb355b96e65995f83ccf980](https://github.com/Voxelum/x-minecraft-launcher/commit/77e5bdedb518b21a8cb355b96e65995f83ccf980))
+- add delete to context menu of common cards ([0f2257172706123d79143aeda3060e087be4ed5c](https://github.com/Voxelum/x-minecraft-launcher/commit/0f2257172706123d79143aeda3060e087be4ed5c))
+- instance import with version isolation compatibility ([9ef1d0fbbebcc339d6cdc29b0d1fd04660833c44](https://github.com/Voxelum/x-minecraft-launcher/commit/9ef1d0fbbebcc339d6cdc29b0d1fd04660833c44))
+- added background video selection (#221) ([399ca13b5805a929e5ced21ea274e2933ec1c757](https://github.com/Voxelum/x-minecraft-launcher/commit/399ca13b5805a929e5ced21ea274e2933ec1c757))
+#### Bug Fixes
+
+- align exception & type & lint ([f2bfbba48f94453427c4b1d4d7b9c34ccdfceac6](https://github.com/Voxelum/x-minecraft-launcher/commit/f2bfbba48f94453427c4b1d4d7b9c34ccdfceac6))
+- sidebar should expand if route match ([581e057ed67f718e4fa7005484394cbebce51d93](https://github.com/Voxelum/x-minecraft-launcher/commit/581e057ed67f718e4fa7005484394cbebce51d93))
+- correct typing ([933e6d8e10990da78760dff9c6cc24f91ac36cc1](https://github.com/Voxelum/x-minecraft-launcher/commit/933e6d8e10990da78760dff9c6cc24f91ac36cc1))
+- longpress on mod card ([b9c8321ea9707ef07d67fd8cb2760931762f7e60](https://github.com/Voxelum/x-minecraft-launcher/commit/b9c8321ea9707ef07d67fd8cb2760931762f7e60))
+- optimize the perf of mod compatible calc ([5ed366b0e5d139dafa866fad514a9be959b69b7e](https://github.com/Voxelum/x-minecraft-launcher/commit/5ed366b0e5d139dafa866fad514a9be959b69b7e))
+- export dialog setup script ([d67ce61a4a68c5f2834eb5b3b0c002512a20f1b8](https://github.com/Voxelum/x-minecraft-launcher/commit/d67ce61a4a68c5f2834eb5b3b0c002512a20f1b8))
+- search & context menu & delete dialog ([feaf45ba74e0062495bfc1769042d0138cbc165d](https://github.com/Voxelum/x-minecraft-launcher/commit/feaf45ba74e0062495bfc1769042d0138cbc165d))
+- universal search ([e44325ec07653ac311053cf7702818174686fcf9](https://github.com/Voxelum/x-minecraft-launcher/commit/e44325ec07653ac311053cf7702818174686fcf9))
+- breakup setting page ([cc1a75ced8677d4b94938ff2ef973e32165cb358](https://github.com/Voxelum/x-minecraft-launcher/commit/cc1a75ced8677d4b94938ff2ef973e32165cb358))
+- cleanup context menu & unused code ([4e57e3107b8c0cb5fc080291ba3c766b82b34cc0](https://github.com/Voxelum/x-minecraft-launcher/commit/4e57e3107b8c0cb5fc080291ba3c766b82b34cc0))
+- merge to refactor ([ee47d467218113d6062ae97ad072cb67261790e6](https://github.com/Voxelum/x-minecraft-launcher/commit/ee47d467218113d6062ae97ad072cb67261790e6))
+- align the vue recommended folder structure ([56ba9c28b562eb24a0b378d4bfb9e7b27154793d](https://github.com/Voxelum/x-minecraft-launcher/commit/56ba9c28b562eb24a0b378d4bfb9e7b27154793d))
+- use setup script ([2102a4ce9faf571f6aa9aca720a88c113a3a1c03](https://github.com/Voxelum/x-minecraft-launcher/commit/2102a4ce9faf571f6aa9aca720a88c113a3a1c03))
+- rename composable ([13a45962590eac581eec913ae8733587dab337ba](https://github.com/Voxelum/x-minecraft-launcher/commit/13a45962590eac581eec913ae8733587dab337ba))
+- adjust java fixer dialog color ([c84341fc91df2894c64794093ffd062af05984e0](https://github.com/Voxelum/x-minecraft-launcher/commit/c84341fc91df2894c64794093ffd062af05984e0))
+- add use instance java ([70720145f2bf4c7409ab349ca5f6e4e47928e63f](https://github.com/Voxelum/x-minecraft-launcher/commit/70720145f2bf4c7409ab349ca5f6e4e47928e63f))
+- routable curseforge page ([3e77373e0b602db23108a210c05cff717b5c7a29](https://github.com/Voxelum/x-minecraft-launcher/commit/3e77373e0b602db23108a210c05cff717b5c7a29))
+- sort curseforge recent files ([6222a9e00dadd25e16b6c3dd2f6886d1bc8a66e4](https://github.com/Voxelum/x-minecraft-launcher/commit/6222a9e00dadd25e16b6c3dd2f6886d1bc8a66e4))
+- ensure elevate & correct url to update ([b3b0e76833ac1b95f09d97cb5dbcba61dd3b7fc8](https://github.com/Voxelum/x-minecraft-launcher/commit/b3b0e76833ac1b95f09d97cb5dbcba61dd3b7fc8))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### @xmcl/runtime@0.20.0
+#### Features
+
+- dark/light/system theme ([77e5bdedb518b21a8cb355b96e65995f83ccf980](https://github.com/Voxelum/x-minecraft-launcher/commit/77e5bdedb518b21a8cb355b96e65995f83ccf980))
+- instance import with version isolation compatibility ([9ef1d0fbbebcc339d6cdc29b0d1fd04660833c44](https://github.com/Voxelum/x-minecraft-launcher/commit/9ef1d0fbbebcc339d6cdc29b0d1fd04660833c44))
+#### Bug Fixes
+
+- mitigate the asset index outdate issue ([29f6ecb9b177f54ca6fd33cae3fd410e139bf6ed](https://github.com/Voxelum/x-minecraft-launcher/commit/29f6ecb9b177f54ca6fd33cae3fd410e139bf6ed))
+- align exception & type & lint ([f2bfbba48f94453427c4b1d4d7b9c34ccdfceac6](https://github.com/Voxelum/x-minecraft-launcher/commit/f2bfbba48f94453427c4b1d4d7b9c34ccdfceac6))
+- normalize the exception throwing ([92f8df6163dd037151b955f2ba4b13060c4d0261](https://github.com/Voxelum/x-minecraft-launcher/commit/92f8df6163dd037151b955f2ba4b13060c4d0261))
+- use setup script ([2102a4ce9faf571f6aa9aca720a88c113a3a1c03](https://github.com/Voxelum/x-minecraft-launcher/commit/2102a4ce9faf571f6aa9aca720a88c113a3a1c03))
+- ensure elevate & correct url to update ([b3b0e76833ac1b95f09d97cb5dbcba61dd3b7fc8](https://github.com/Voxelum/x-minecraft-launcher/commit/b3b0e76833ac1b95f09d97cb5dbcba61dd3b7fc8))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### xmcl@0.22.0
+#### Features
+
+- new log monitor view ([6d27ec738a7f02370d36ed25582695c18fed6e35](https://github.com/Voxelum/x-minecraft-launcher/commit/6d27ec738a7f02370d36ed25582695c18fed6e35))
+- multi instances launching ([06ec84fe422e98c4c3c32d460ae16094ce641b59](https://github.com/Voxelum/x-minecraft-launcher/commit/06ec84fe422e98c4c3c32d460ae16094ce641b59))
+- dark/light/system theme ([77e5bdedb518b21a8cb355b96e65995f83ccf980](https://github.com/Voxelum/x-minecraft-launcher/commit/77e5bdedb518b21a8cb355b96e65995f83ccf980))
+#### Bug Fixes
+
+- align exception & type & lint ([f2bfbba48f94453427c4b1d4d7b9c34ccdfceac6](https://github.com/Voxelum/x-minecraft-launcher/commit/f2bfbba48f94453427c4b1d4d7b9c34ccdfceac6))
+- normalize the exception throwing ([92f8df6163dd037151b955f2ba4b13060c4d0261](https://github.com/Voxelum/x-minecraft-launcher/commit/92f8df6163dd037151b955f2ba4b13060c4d0261))
+- tray locale when app start ([aa31551f76c88e7c8225ce20847e3503b5905b38](https://github.com/Voxelum/x-minecraft-launcher/commit/aa31551f76c88e7c8225ce20847e3503b5905b38))
+- appx bundle icon ([6c2309f0651eaf420baf2d1848748f3ee89d2912](https://github.com/Voxelum/x-minecraft-launcher/commit/6c2309f0651eaf420baf2d1848748f3ee89d2912))
+- universal search ([e44325ec07653ac311053cf7702818174686fcf9](https://github.com/Voxelum/x-minecraft-launcher/commit/e44325ec07653ac311053cf7702818174686fcf9))
+- align the vue recommended folder structure ([56ba9c28b562eb24a0b378d4bfb9e7b27154793d](https://github.com/Voxelum/x-minecraft-launcher/commit/56ba9c28b562eb24a0b378d4bfb9e7b27154793d))
+- use setup script ([2102a4ce9faf571f6aa9aca720a88c113a3a1c03](https://github.com/Voxelum/x-minecraft-launcher/commit/2102a4ce9faf571f6aa9aca720a88c113a3a1c03))
+- guard video pick type ([30ff1327ff1a355c9f84fc67c378e1c811977ed7](https://github.com/Voxelum/x-minecraft-launcher/commit/30ff1327ff1a355c9f84fc67c378e1c811977ed7))
+- ensure elevate & correct url to update ([b3b0e76833ac1b95f09d97cb5dbcba61dd3b7fc8](https://github.com/Voxelum/x-minecraft-launcher/commit/b3b0e76833ac1b95f09d97cb5dbcba61dd3b7fc8))
+
+
 ## 0.21.9
 ### @xmcl/runtime-api@0.5.3
 #### Bug Fixes
