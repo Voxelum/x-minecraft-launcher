@@ -1,0 +1,6 @@
+log:
+  error: Error
+  info: Info
+  success: Success
+  warning: Warning
+title: Monitor

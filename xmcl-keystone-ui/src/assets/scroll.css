@@ -1,0 +1,23 @@
+
+::-webkit-scrollbar {
+  width: 8px;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar-thumb {
+  width: 8px;
+  cursor: pointer;
+  background: rgba(155, 155, 155, 0.5);
+  transition: all 1s;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  width: 8px;
+  background: rgba(192, 192, 192, 0.8);
+  transition: all 1s;
+}
+
+.visible-scroll ::-webkit-scrollbar, .visible-scroll::-webkit-scrollbar {
+  display: unset;
+}

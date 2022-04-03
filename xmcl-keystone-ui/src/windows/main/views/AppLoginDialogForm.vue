@@ -120,7 +120,7 @@
 
 <script lang=ts>
 import { computed, defineComponent, inject, nextTick, onMounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
-import { LoginException, UserServiceKey } from '@xmcl/runtime-api'
+import { UserException, UserServiceKey } from '@xmcl/runtime-api'
 import Hint from '/@/components/Hint.vue'
 import { IssueHandler, useBusy, useI18n, useService, useServiceOnly } from '/@/composables'
 import { required } from '/@/util/props'
@@ -216,7 +216,7 @@ export default defineComponent({
         await login({ ...data, authService: authService.value, profileService: profileService.value })
         hide()
       } catch (e) {
-        handleError(e as LoginException)
+        handleError(e as UserException)
         console.log(e)
       }
     }

@@ -1,0 +1,6 @@
+log:
+  error: 错误
+  info: 信息
+  success: 成功
+  warning: 警告
+title: 游戏日志检测

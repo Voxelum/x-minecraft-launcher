@@ -17,7 +17,7 @@ import { createI18n } from './utils/i18n'
 import { trackWindowSize } from './windowSizeTracker'
 import browsePreload from '/@preload/browse'
 import indexPreload from '/@preload/index'
-import loggerPreload from '/@preload/logger'
+import monitorPreload from '/@preload/monitor'
 import setupPreload from '/@preload/setup'
 import browserWinUrl from '/@renderer/browser.html'
 import loggerWinUrl from '/@renderer/logger.html'
@@ -237,9 +237,9 @@ export default class Controller implements LauncherAppController {
     this.app.emit('app-booted', man)
   }
 
-  createLoggerWindow() {
+  createMonitorWindow() {
     const browser = new BrowserWindow({
-      title: 'KeyStone Logger',
+      title: 'KeyStone Monitor',
       width: 770,
       height: 580,
       frame: false,
@@ -248,7 +248,7 @@ export default class Controller implements LauncherAppController {
       maximizable: false,
       icon: iconPath,
       webPreferences: {
-        preload: loggerPreload,
+        preload: monitorPreload,
         session: session.fromPartition('persist:logger'),
       },
     })
