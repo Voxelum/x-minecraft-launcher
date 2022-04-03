@@ -1,0 +1,6 @@
+log:
+  error: Ошибка
+  info: Информация
+  success: Успех
+  warning: Предупреждение
+title: Monitor

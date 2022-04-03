@@ -1,7 +1,7 @@
 <template>
   <v-dialog
     v-model="isShown"
-    :width="550"
+    :width="700"
   >
     <v-toolbar
       color="warning"

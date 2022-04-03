@@ -1,25 +1,25 @@
 <template>
   <v-tab-item>
-    <div style="min-height: 420px; max-height: 420px; overflow: auto">
+    <div class="min-h-[420px] max-h-[70vh] overflow-auto visible-scroll">
       <transition
         name="fade-transition"
         mode="out-in"
+        class="overflow-auto visible-scroll"
       >
         <v-list
           v-if="content === '' && files.length !== 0"
           :key="0"
+          class="visible-scroll"
         >
           <v-list-item
             v-for="i in files"
             :key="i"
             v-ripple
-            :disabled="loading"
+            :disabled="pending"
             @click="openFile(i)"
           >
             <v-list-item-avatar>
-              <v-icon>
-                clear_all
-              </v-icon>
+              <v-icon>clear_all</v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title>{{ i }}</v-list-item-title>
@@ -27,7 +27,6 @@
             <v-list-item-action>
               <v-btn
                 icon
-                color="white"
                 text
                 @click.prevent.stop="showFile(i)"
               >
@@ -56,7 +55,7 @@
               justify-center
               align-center
             >
-              <h1 v-if="!loading">
+              <h1 v-if="!pending">
                 {{ $t('profile.logsCrashes.placeholder') }}
               </h1>
               <v-progress-circular
@@ -71,6 +70,7 @@
         <div
           v-else
           :key="1"
+          class="visible-scroll overflow-y-auto overflow-x-hidden max-h-[70vh]"
         >
           <v-card-title primary-title>
             {{ showedFile }}
@@ -85,55 +85,52 @@
               {{ $t('back') }}
             </v-btn>
           </v-card-title>
-          <v-textarea
-            auto-grow
-            autofocus
-            box
-            readonly
-            hide-details
-            :value="content"
-            style="margin: 8px;"
-          />
+          <log-view :logs="logs" />
         </div>
       </transition>
     </div>
   </v-tab-item>
 </template>
 
-<script lang=ts>
-import { required } from '/@/util/props'
+<script lang=ts setup>
+import { parseLog } from '/@/util/log'
+import LogView from '/@/components/LogView.vue'
 
-export default defineComponent({
-  props: {
-    files: required<string[]>(Array),
-    getFileContent: required<(file: string) => Promise<string>>(Function),
-    removeFile: required<(file: string) => Promise<void>>(Function),
-    showFile: required<(file: string) => void>(Function),
-    refreshing: required<boolean>(Boolean),
-  },
-  setup(props) {
-    const content = ref('')
-    const loading = ref(false)
-    const showedFile = ref('')
-    const goBack = () => {
-      content.value = ''
-      showedFile.value = ''
+const props = defineProps<{
+  files: string[]
+  getFileContent(file: string): Promise<string>
+  removeFile(file: string): Promise<void>
+  showFile(file: string): void
+  refreshing: boolean
+}>()
+
+const content = ref('')
+const loading = ref(false)
+const showedFile = ref('')
+const goBack = () => {
+  content.value = ''
+  showedFile.value = ''
+}
+const openFile = async (name: string) => {
+  loading.value = true
+  showedFile.value = name
+  content.value = await props.getFileContent(name).finally(() => { loading.value = false })
+}
+const pending = computed(() => props.refreshing || loading.value)
+const logs = computed(() => {
+  const lines = content.value.split('\n').map(l => l.replace('\r', ''))
+  const logLines = [] as string[]
+  for (const line of lines) {
+    if (line.startsWith('[')) {
+      logLines.push(line)
+    } else {
+      logLines[logLines.length - 1] += '\n' + line
     }
-    const openFile = async (name: string) => {
-      loading.value = true
-      showedFile.value = name
-      content.value = await props.getFileContent(name).finally(() => { loading.value = false })
-    }
-    return {
-      content,
-      loading: computed(() => props.refreshing || loading.value),
-      goBack,
-      openFile,
-      showedFile,
-    }
-  },
+  }
+  return logLines.map(parseLog)
 })
 </script>
 
-<style>
+<style scoped>
+
 </style>
