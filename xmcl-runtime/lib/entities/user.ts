@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 
 import { CLIENT_ID } from '../constant'
-import { Exception } from '@xmcl/runtime-api'
+import { UserException } from '@xmcl/runtime-api'
 import { Got } from 'got'
 import FormData from 'form-data'
 
@@ -233,7 +233,7 @@ export async function getGameProfile(request: Got, accessToken: string) {
   }).json()
 
   if ('error' in profileResponse) {
-    throw new Exception({ type: 'fetchMinecraftProfileFailed', ...profileResponse },
+    throw new UserException({ type: 'fetchMinecraftProfileFailed', ...profileResponse },
       `Cannot login to Microsoft! ${profileResponse.errorMessage}`)
   }
 
@@ -267,7 +267,7 @@ export async function changeAccountSkin(request: Got, accessToken: string, fileN
   }).json()
 
   if ('error' in profileResponse || 'errorMessage' in profileResponse) {
-    throw new Exception({ type: 'fetchMinecraftProfileFailed', ...profileResponse },
+    throw new UserException({ type: 'fetchMinecraftProfileFailed', ...profileResponse },
       `Cannot login to Microsoft! ${profileResponse.errorMessage}`)
   }
 

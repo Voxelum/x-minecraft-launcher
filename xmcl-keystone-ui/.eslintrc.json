@@ -5,7 +5,7 @@
         "serviceChannels": true,
         "windowController": true,
         "appsHost": true,
-        "gameOutput": true,
+        "gameMonitor": true,
         "defineProps": true,
         "withDefaults": true,
         "defineEmits": true,
@@ -30,6 +30,7 @@
         "browser": true
     },
     "rules": {
-        "vue/no-mutating-props": "off"
+        "vue/no-mutating-props": "off",
+        "vue/multi-word-component-names": "off"
     }
 }

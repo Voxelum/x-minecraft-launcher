@@ -101,7 +101,7 @@ export function createPersistedResourceBuilder(source: SourceInformation = {}): 
   }
 }
 export function getResourceFromBuilder(builder: PersistedResourceBuilder): PersistedResource {
-  const res = { ...builder }
+  const res = { ...builder, iconUri: builder.iconUri ?? `dataroot://${builder.domain}/${builder.fileName}.png` }
   delete res.icon
   return Object.freeze(res)
 }

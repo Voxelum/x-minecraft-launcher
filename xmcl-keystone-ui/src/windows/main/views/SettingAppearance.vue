@@ -8,7 +8,7 @@
     <v-subheader>{{ $t("setting.appearance") }}</v-subheader>
     <v-list-item class="justify-center items-center">
       <!-- <v-list-item-action class="self-center"> -->
-        <!-- <v-checkbox v-model="darkTheme" /> -->
+      <!-- <v-checkbox v-model="darkTheme" /> -->
       <!-- </v-list-item-action> -->
       <v-list-item-content>
         <v-list-item-title>

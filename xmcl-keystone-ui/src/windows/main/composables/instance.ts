@@ -74,7 +74,7 @@ export function useInstances() {
   return {
     instances: computed(() => state.instances),
     ...useServiceOnly(InstanceServiceKey, 'mountInstance', 'deleteInstance'),
-    ...useServiceOnly(InstanceIOServiceKey, 'importInstance', 'linkInstance'),
+    ...useServiceOnly(InstanceIOServiceKey, 'importInstance'),
   }
 }
 

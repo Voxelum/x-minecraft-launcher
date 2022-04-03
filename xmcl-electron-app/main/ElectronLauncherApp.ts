@@ -1,5 +1,5 @@
 import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
-import { InstalledAppManifest, ReleaseInfo, UpdateInfo } from '@xmcl/runtime-api'
+import { InstalledAppManifest, ReleaseInfo } from '@xmcl/runtime-api'
 import { Host } from '@xmcl/runtime/lib/app/Host'
 import { Task } from '@xmcl/task'
 import { execSync } from 'child_process'
@@ -72,7 +72,7 @@ export default class ElectronLauncherApp extends LauncherApp {
     // return false;
   }
 
-  checkUpdateTask(): Task<UpdateInfo> {
+  checkUpdateTask(): Task<ReleaseInfo> {
     return _checkUpdateTask.bind(this)()
   }
 

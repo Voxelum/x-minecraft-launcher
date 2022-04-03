@@ -1,10 +1,10 @@
-import { I18N_KEY } from '/@/constant'
 import VueCompositionApi, { h, provide, createApp, defineComponent } from '@vue/composition-api'
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import vuetify from './vuetify'
 import 'virtual:windi.css'
 import Setup from './Setup.vue'
+import { I18N_KEY } from '/@/composables'
 
 Vue.config.productionTip = false
 Vue.use(VueI18n)

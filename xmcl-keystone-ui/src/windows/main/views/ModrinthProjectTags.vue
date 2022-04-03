@@ -79,7 +79,7 @@
   </v-card>
 </template>
 <script lang="ts">
-import { License } from '@xmcl/modrinth'
+import { License } from '@xmcl/modrinth/types'
 import { required } from '/@/util/props'
 
 export default defineComponent({

@@ -1,7 +1,7 @@
 import { del, set } from '@vue/composition-api'
 import { BaseServiceKey, BaseState, CurseForgeServiceKey, CurseforgeState, DiagnoseServiceKey, DiagnoseState, GameProfileAndTexture, ImportServiceKey, InstallServiceKey, InstallState, ModpackServiceKey, InstanceIOServiceKey, InstanceJavaServiceKey, InstanceLogServiceKey, InstanceModsServiceKey, InstanceModsState, InstanceOptionsServiceKey, InstanceOptionsState, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceServerInfoServiceKey, InstanceServiceKey, InstanceShaderPacksServiceKey, InstanceState, InstanceVersionServiceKey, JavaServiceKey, JavaState, LaunchServiceKey, LaunchState, ModrinthServiceKey, ModrinthState, ResourceServiceKey, ResourceState, SaveState, ServerInfoState, ServerStatusServiceKey, UserProfile, UserServiceKey, UserState, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
 import { GameProfile, ProfileServiceAPI, YggdrasilAuthAPI } from '@xmcl/user'
-import { ServiceFactory } from '/@/vuexServiceProxy'
+import { ServiceFactory } from '/@/composables'
 
 // fix vue 2 reactivity
 // TODO: remove this in vue 3

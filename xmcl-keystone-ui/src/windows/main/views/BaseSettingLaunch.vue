@@ -171,7 +171,7 @@
         <v-textarea
           hide-details
           readonly
-          box
+          filled
           :value="preview"
           no-resize
           :height="480"

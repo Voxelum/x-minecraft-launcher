@@ -64,7 +64,7 @@ export default defineComponent({
     const data = reactive({
       showStableOnly: false,
     })
-    const { t } = useI18n() 
+    const { t } = useI18n()
     const { yarnVersions: yv, loaderVersions: lv, yarnStatus, getStatus, install } = useFabricVersions()
     const loaderVersions = computed(() => lv.value.filter((v) => {
       if (data.showStableOnly && !v.stable) {

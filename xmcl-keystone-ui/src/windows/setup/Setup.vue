@@ -150,8 +150,7 @@
 
 <script lang=ts>
 import { defineComponent, reactive, toRefs, inject, computed } from '@vue/composition-api'
-import { useI18n } from '/@/composables'
-import { I18N_KEY } from '/@/constant'
+import { I18N_KEY, useI18n } from '/@/composables'
 import { SetupAPI, Drive } from '@xmcl/runtime-api/setup'
 import SetDataRoot from './SetDataRoot.vue'
 import SetLocale from './SetLocale.vue'
