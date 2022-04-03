@@ -74,28 +74,7 @@
       <problems-bar />
     </div>
 
-    <v-btn
-      color="primary"
-      x-large
-      :disabled="refreshing"
-      class="!absolute bottom-5 right-5 !px-12 !py-6"
-      @click="launchGame"
-    >
-      {{ $t("launch.launch") }}
-      <v-icon
-        v-if="launchStatus === 'ready'"
-        right
-      >
-        play_arrow
-      </v-icon>
-      <v-progress-circular
-        v-else
-        class="v-icon--right"
-        indeterminate
-        :size="20"
-        :width="2"
-      />
-    </v-btn>
+    <home-launch-button />
     <log-dialog
       v-model="isLogDialogShown"
       :hide="hideLogDialog"
@@ -117,46 +96,16 @@ import ProblemsBar from './HomeProblemsBar.vue'
 import ServerStatusBar from './HomeServerStatusBar.vue'
 import SettingsSpeedDial from './HomeSettingsSpeedDial.vue'
 import { useService } from '/@/composables'
-import { LaunchException, BaseServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import LaunchStatusDialog, { LaunchStatusDialogKey } from './HomeLaunchStatusDialog.vue'
-import { useJava } from '../composables/java'
-import { useCurrentUser, useUserProfileStatus } from '../composables/user'
-import JavaFixerDialog, { JavaFixDialogKey } from './HomeJavaFixerDialog.vue'
+import LaunchStatusDialog from './HomeLaunchStatusDialog.vue'
+import JavaFixerDialog from './HomeJavaFixerDialog.vue'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import { useInstance } from '../composables/instance'
-import { useLaunch } from '../composables/launch'
 import { AppExportDialogKey } from '../composables/instanceExport'
+import HomeLaunchButton from './HomeLaunchButton.vue'
 
-const { launch, status: launchStatus } = useLaunch()
-const { show: showLaunchStatusDialog, hide: hideLaunchStatusDialog } = useDialog(LaunchStatusDialogKey)
-const { missing: missingJava } = useJava()
-const { userProfile } = useCurrentUser()
-const { accessTokenValid } = useUserProfileStatus(userProfile)
-const { show: showLaunchBlockedDialog } = useDialog('launch-blocked')
-const { show: showLoginDialog } = useDialog('login')
-const { show: showJavaDialog } = useDialog(JavaFixDialogKey)
 const { show: showExport } = useDialog(AppExportDialogKey)
-
-function launchGame() {
-  if (missingJava.value) {
-    showJavaDialog()
-  } if (!accessTokenValid.value) {
-    showLoginDialog()
-  } else if (launchStatus.value === 'checkingProblems' || launchStatus.value === 'launching' || launchStatus.value === 'launched') {
-    showLaunchStatusDialog()
-  } else {
-    launch().catch((e: LaunchException) => {
-      if (e.type === 'launchBlockedIssues') {
-        showLaunchBlockedDialog()
-      } else if (e.type === 'launchGeneralException') {
-        // TODO: support this
-      } else if (e.type === 'launchNoVersionInstalled') {
-        // TODO: implement this
-      }
-    })
-  }
-}
 
 const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useDialog('log')
 const { refreshing, isServer, path } = useInstance()

@@ -15,7 +15,6 @@
             <v-progress-circular
               :size="70"
               :width="7"
-              color="white"
               indeterminate
             />
           </v-flex>
@@ -44,7 +43,7 @@ export default defineComponent({
     onMounted(() => {
       watch(status, (s) => {
         switch (s) {
-          case 'ready':
+          case 'idle':
             hide()
             break
           case 'checkingProblems':
@@ -55,9 +54,6 @@ export default defineComponent({
             show()
             progressText.value = $t('launch.launching')
             setTimeout(() => { progressText.value = $t('launch.launchingSlow') }, 4000)
-            break
-          case 'minecraftReady':
-            hide()
             break
           default:
         }

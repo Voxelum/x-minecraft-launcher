@@ -5,6 +5,7 @@ import { useService } from '/@/composables'
 export function useLaunch() {
   const { state, launch } = useService(LaunchServiceKey)
   const status = computed(() => state.status)
+  const launchCount = computed(() => state.activeCount)
   const errorType = computed(() => state.errorType)
   const errors = computed(() => state.errors.map((e) => {
     if (e instanceof Error) {
@@ -13,6 +14,7 @@ export function useLaunch() {
     return JSON.stringify(e)
   }).join('\n'))
   return {
+    launchCount,
     status,
     errorType,
     errors,
