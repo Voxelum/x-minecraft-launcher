@@ -2,7 +2,7 @@ import { diagnose, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedLib
 import { DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL } from '@xmcl/installer'
 import { Asset, assetsLock, ForgeVersion, ForgeVersionList, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallService as IInstallService, InstallServiceKey, InstallState, isFabricLoaderLibrary, isForgeLibrary, librariesLock, OptifineVersion, read, RefreshForgeOptions, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, versionLockOf, VersionMinecraftSchema, VersionOptifineSchema, write } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
-import { ensureFile, readJSON, writeFile } from 'fs-extra'
+import { ensureFile, readJson, readJSON, writeFile, writeJson } from 'fs-extra'
 import { URL } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { createSafeFile } from '../util/persistance'
@@ -224,9 +224,28 @@ export default class InstallService extends StatefulService<InstallState> implem
   @Lock((v) => [read(versionLockOf(v)), write(assetsLock)])
   async installAssetsForVersion(version: string) {
     const option = this.getInstallOptions()
-    const location = this.getPath()
-    const resolvedVersion = await Version.parse(location, version)
+    const location = MinecraftFolder.from(this.getPath())
     try {
+      // this special logic is handling the asset index outdate issue.
+      let resolvedVersion = await Version.parse(location, version)
+      await this.refreshMinecraft(true)
+      const versionMeta = this.state.minecraft.versions.find(v => v.id === resolvedVersion.minecraftVersion)
+      let sourceMinecraftVersion = await Version.parse(location, resolvedVersion.minecraftVersion)
+      if (versionMeta) {
+        if (new Date(versionMeta.releaseTime) > new Date(sourceMinecraftVersion.releaseTime)) {
+          // need update source version
+          await this.installMinecraft(versionMeta)
+          sourceMinecraftVersion = await Version.parse(location, resolvedVersion.minecraftVersion)
+        }
+        if (resolvedVersion.inheritances.length === 1 && resolvedVersion.inheritances[resolvedVersion.inheritances.length - 1] !== resolvedVersion.minecraftVersion) {
+          // special packed version like PCL
+          const jsonPath = location.getVersionJson(version)
+          const rawContent = await readJson(jsonPath)
+          rawContent.assetIndex = sourceMinecraftVersion.assetIndex
+          await writeJson(jsonPath, rawContent)
+          resolvedVersion = await Version.parse(location, version)
+        }
+      }
       this.warn(`Install assets for ${version}:`)
       await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
     } catch (e) {
