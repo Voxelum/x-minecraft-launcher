@@ -132,6 +132,7 @@ importers:
   xmcl-keystone-ui:
     specifiers:
       '@modyfi/vite-plugin-yaml': ^1.0.2
+      '@types/markdown-it': ^12.2.3
       '@types/three': ^0.127.1
       '@typescript-eslint/eslint-plugin': ^5.6.0
       '@typescript-eslint/parser': ^5.6.0
@@ -226,6 +227,7 @@ importers:
       vuex: 3.6.2_vue@2.6.14
     devDependencies:
       '@modyfi/vite-plugin-yaml': 1.0.2_vite@2.8.4
+      '@types/markdown-it': 12.2.3
       '@typescript-eslint/eslint-plugin': 5.9.0_c05e6fca5974c04442e7c260534af929
       '@typescript-eslint/parser': 5.9.0_eslint@7.32.0+typescript@4.5.4
       '@vue/devtools': 5.3.4
