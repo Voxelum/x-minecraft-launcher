@@ -13,9 +13,6 @@
     "paths": {
       "@/*": [
         "./main/*"
-      ],
-      "/@shared/*": [
-        "../shared/*"
       ]
     },
     "esModuleInterop": true,
@@ -37,6 +34,7 @@
     "preload"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "../xmcl-runtime"
   ]
 }

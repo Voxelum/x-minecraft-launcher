@@ -5,7 +5,7 @@
       :slim="slim"
       :rotate="false"
       @drop.prevent="dropSkin"
-      @dragover.prevent
+      @dragover.prevent="() => {}"
     />
     <div class="flex flex-shrink gap-4 flex-none">
       <v-fab-transition>

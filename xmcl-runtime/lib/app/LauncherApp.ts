@@ -330,7 +330,7 @@ export abstract class LauncherApp extends EventEmitter {
       }
     }
     this.log('Didn\'t find the start up url, try to load from config file.')
-    const { default: url } = await readJson(join(this.launcherAppManager.root, 'apps.json'))
+    const { default: url } = JSON.parse(await readFile(join(this.launcherAppManager.root, 'apps.json'), 'utf-8'))
 
     this.log(`Start up url: ${url}`)
     return url

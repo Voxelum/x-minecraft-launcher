@@ -21,12 +21,14 @@
           <v-icon
             v-if="deleting"
             :key="0"
+            color="white"
           >
             delete
           </v-icon>
           <v-icon
             v-else
             :key="1"
+            color="white"
           >
             compare_arrows
           </v-icon>

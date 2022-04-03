@@ -14,9 +14,6 @@
     "paths": {
       "/@main/*": [
         "lib/*"
-      ],
-      "/@shared/*": [
-        "../xmcl-runtime-api/src/*"
       ]
     },
     "esModuleInterop": true,

@@ -21,12 +21,18 @@ jobs:
     - name: Install
       run: |
         pnpm install --filter=!./xmcl-page
-    - name: Check
+    - name: Lint
       run: |
         pnpm run --filter ./xmcl-electron-app lint
         pnpm run --filter ./xmcl-keystone-ui lint
         pnpm run --filter ./xmcl-runtime lint
         pnpm run --filter ./xmcl-runtime-api lint
+    - name: Check
+      run: |
+        pnpm run --filter ./xmcl-electron-app check
+        pnpm run --filter ./xmcl-keystone-ui check
+        pnpm run --filter ./xmcl-runtime check
+        pnpm run --filter ./xmcl-runtime-api check
     - name: Build
       run: |
         pnpm run build --prefix xmcl-keystone-ui

@@ -4,7 +4,6 @@
     v-context-menu="contextMenuItems"
     :ripple="!isBusy"
     class="draggable-card w-full flex flex-col"
-    :dark="!isSelected"
     :color="isSelected ? 'primary' : ''"
     outlined
     :shaped="isSelected"

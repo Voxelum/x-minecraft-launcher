@@ -76,7 +76,7 @@ export class ModpackInstallGeneralError extends Error {
     url: string
     projectId: number
     fileId: number
-  }[], e: Error) { super('Fail to install modpack', { cause: e }) }
+  }[], e: Error) { super(`Fail to install modpack: ${e.message}`) }
 }
 
 export class ModpackInstallUrlError extends Error {

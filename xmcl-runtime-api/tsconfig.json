@@ -7,7 +7,6 @@
     "strict": true,
     "moduleResolution": "node",
     "declaration": true,
-    "emitDeclarationOnly": true,
     "outDir": "dist",
     "baseUrl": ".",
     "esModuleInterop": true,

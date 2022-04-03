@@ -13,7 +13,7 @@ export interface ResolvedIcon {
 }
 
 export async function downloadIcon(url: string, dest: string) {
-  await pipeline(got.stream(url), createWriteStream(dest))
+  await pipeline(got.stream(url) as any, createWriteStream(dest))
   return dest
 }
 

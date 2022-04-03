@@ -1,6 +1,6 @@
 import { computed, onMounted, reactive, Ref, toRefs, watch } from '@vue/composition-api'
 import { GameProfile } from '@xmcl/user'
-import { LoginException, EMPTY_GAME_PROFILE, UserProfile, UserServiceKey, GameProfileAndTexture } from '@xmcl/runtime-api'
+import { UserException, EMPTY_GAME_PROFILE, UserProfile, UserServiceKey, GameProfileAndTexture } from '@xmcl/runtime-api'
 import { useBusy, useI18n, useService, useServiceOnly } from '/@/composables'
 
 export function useGameProfile(gameProfile: Ref<GameProfile>) {
@@ -206,7 +206,7 @@ export function useLoginValidation(isOffline: Ref<boolean>) {
     data.usernameErrors = []
     data.passwordErrors = []
   }
-  function handleError(e: LoginException) {
+  function handleError(e: UserException) {
     if (e.type === 'loginInternetNotConnected') {
       // TODO: handle this case
     } else if (e.type === 'loginInvalidCredentials') {

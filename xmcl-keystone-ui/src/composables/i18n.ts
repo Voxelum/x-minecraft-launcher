@@ -1,5 +1,7 @@
-import { inject } from '@vue/composition-api'
-import { I18N_KEY } from '/@/constant'
+import { inject, InjectionKey } from '@vue/composition-api'
+import VueI18n from 'vue-i18n'
+
+export const I18N_KEY: InjectionKey<VueI18n> = Symbol('I18N_KEY')
 
 export function useI18n () {
   const i18n = inject(I18N_KEY)

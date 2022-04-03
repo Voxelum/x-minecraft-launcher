@@ -1,19 +1,11 @@
-import { computed, InjectionKey, reactive, ref, Ref } from '@vue/composition-api'
-import { ServiceChannel, ServiceKey, State, StatefulService } from '@xmcl/runtime-api'
+import { computed, reactive, ref, Ref } from '@vue/composition-api'
+import { ServiceChannel, ServiceKey, State } from '@xmcl/runtime-api'
 import { MutationPayload, Store } from 'vuex'
-
-export type StateOfService<Serv> = Serv extends StatefulService<infer State>
-  ? State : undefined
+import { ServiceFactory, StateOfService } from './composables'
 
 export type StateOfServiceKey<K> = K extends ServiceKey<infer Serv>
   ? StateOfService<Serv>
   : never
-
-export interface ServiceFactory {
-  getService<T>(key: ServiceKey<T>): T
-
-  register<T>(serviceKey: ServiceKey<T>, factory: () => StateOfService<T>): void
-}
 
 const TasksContainer = Symbol('TaskContainer')
 const ACCESSOR_SYMBOLS = Symbol('Accessor')
@@ -148,8 +140,6 @@ function getStoreTemplateSymbol(name: string, stateTemplate: State<any>) {
 
   return symb
 }
-
-export const SERVICES_KEY: InjectionKey<ServiceFactory> = Symbol('SERVICES_KEY')
 
 /**
  * The service factory to backed by vuex to store state

@@ -8,6 +8,7 @@ import InstanceOptionsService from './InstanceOptionsService'
 import InstanceResourcePackService from './InstanceResourcePacksService'
 import InstanceService from './InstanceService'
 import InstanceVersionService from './InstanceVersionService'
+import LaunchService from './LaunchService'
 import AbstractService, { ExportService, Inject, Subscribe } from './Service'
 
 interface NamedResourcePackWrapper extends ResourcePackWrapper {
@@ -33,9 +34,10 @@ export default class ResourcePackPreviewService extends AbstractService implemen
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(InstanceOptionsService) private instanceGameSettingService: InstanceOptionsService,
+    @Inject(LaunchService) private launchService: LaunchService,
   ) {
     super(app)
-    this.app.on('minecraft-start', () => {
+    launchService.on('minecraft-start', () => {
       if (this.active) {
         this.queue.waitUntilEmpty().then(() => {
           // deactivate once game started

@@ -41,7 +41,7 @@
           :deleting="dragged"
           :loading="loading"
           @click="confirmSelectGameProfile"
-          @dragover.prevent
+          @dragover.prevent="() => {}"
           @drop="startDelete($event.dataTransfer.getData('id'))"
         />
       </div>
