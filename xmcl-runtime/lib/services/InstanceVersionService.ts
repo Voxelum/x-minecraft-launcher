@@ -248,9 +248,9 @@ export default class InstanceVersionService extends AbstractService implements I
             }
           } else if (issue.role === 'assetIndex') {
             if (issue.type === 'corrupted') {
-              tree.corruptedAssetsIndex.push({ version: issue.version, file: relative(location, issue.file), actual: 'issue.receivedChecksum', expect: issue.expectedChecksum })
+              tree.corruptedAssetsIndex.push({ version: targetVersion, file: relative(location, issue.file), actual: 'issue.receivedChecksum', expect: issue.expectedChecksum })
             } else {
-              tree.missingAssetsIndex.push({ version: issue.version, file: relative(location, issue.file) })
+              tree.missingAssetsIndex.push({ version: targetVersion, file: relative(location, issue.file) })
             }
           } else if (issue.role === 'asset') {
             if (issue.type === 'corrupted') {
