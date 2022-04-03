@@ -23,7 +23,7 @@
         },
         "apiSetsPreference": {
             "description": "The download API set preferences",
-            "default": "'bmcl'",
+            "default": "bmcl",
             "enum": [
                 "bmcl",
                 "mcbbs",
@@ -59,6 +59,16 @@
             "description": "Is proxy setting enabled",
             "default": false,
             "type": "boolean"
+        },
+        "theme": {
+            "description": "The launcher theme",
+            "default": "dark",
+            "enum": [
+                "dark",
+                "light",
+                "system"
+            ],
+            "type": "string"
         }
     },
     "required": [
@@ -69,7 +79,8 @@
         "autoInstallOnAppQuit",
         "httpProxy",
         "httpProxyEnabled",
-        "locale"
+        "locale",
+        "theme"
     ],
     "$schema": "http://json-schema.org/draft-07/schema#",
     "additionalProperties": false

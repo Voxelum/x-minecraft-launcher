@@ -47,7 +47,6 @@ const vuetify = new Vuetify({
     },
   },
   theme: {
-    dark: true,
     themes: {
       dark: {
         primary: colors.green,
@@ -56,7 +55,5 @@ const vuetify = new Vuetify({
     },
   },
 })
-
-export const VuetifyInjectionKey: InjectionKey<Framework> = Symbol('vuetify')
 
 export default vuetify

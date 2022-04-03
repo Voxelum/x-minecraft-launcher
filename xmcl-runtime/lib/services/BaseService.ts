@@ -33,6 +33,7 @@ export default class BaseService extends StatefulService<BaseState> implements I
         apiSetsPreference: data.apiSetsPreference || 'bmcl',
         httpProxy: data.httpProxy,
         httpProxyEnabled: data.httpProxyEnabled,
+        theme: data.theme,
       })
       this.checkUpdate()
     })
@@ -45,6 +46,7 @@ export default class BaseService extends StatefulService<BaseState> implements I
       'apiSetsSet',
       'httpProxySet',
       'httpProxyEnabledSet',
+      'themeSet',
     ], () => {
       this.settingFile.write({
         locale: this.state.locale,
@@ -55,6 +57,7 @@ export default class BaseService extends StatefulService<BaseState> implements I
         apiSetsPreference: this.state.apiSetsPreference,
         httpProxy: this.state.httpProxy,
         httpProxyEnabled: this.state.httpProxyEnabled,
+        theme: this.state.theme,
       })
     })
     this.state.versionSet([app.version, app.build])
