@@ -33,7 +33,7 @@
       </v-list-item-content>
       <v-list-item-action class="self-center">
         <v-btn
-          :loading="checkingUpdate"
+          :loading="checkingUpdate || installing"
           :disabled="updateStatus === 'none'"
           :color="updateStatus !== 'none' ? 'primary' : ''"
           :text="updateStatus === 'none'"
@@ -84,11 +84,13 @@
 <script lang="ts" setup>
 import { useDialog } from '../composables/dialog'
 import { useLauncherVersion, useUpdateSettings } from '../composables/setting'
+import { useBusy } from '/@/composables'
 
 const { show: showUpdateInfo } = useDialog('update-info')
 const disableUpdate = false // state.env !== 'raw'
 const { updateInfo, updateStatus, checkUpdate, checkingUpdate, downloadingUpdate } = useUpdateSettings()
 const { version, build } = useLauncherVersion()
 const hasNewUpdate = computed(() => updateInfo.value?.name !== version.value)
+const installing = useBusy('quitAndInstall()')
 
 </script>

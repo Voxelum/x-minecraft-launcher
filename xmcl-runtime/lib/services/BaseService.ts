@@ -89,6 +89,7 @@ export default class BaseService extends StatefulService<BaseState> implements I
   /**
    * Quit and install the update once the update is ready
    */
+  @Singleton()
   async quitAndInstall() {
     if (this.state.updateStatus === 'ready' && this.state.updateInfo) {
       await this.app.installUpdateAndQuit(this.state.updateInfo)

@@ -148,7 +148,7 @@ export async function quitAndInstallAsar(this: ElectronLauncherApp) {
     }
     startProcessCmd += ` -WorkingDirectory ${process.cwd()}`
     await writeFile(psPath, [
-      'Start-Sleep -s 5',
+      'Start-Sleep -s 1',
       `Copy-Item -Path "${updateAsarPath}" -Destination "${appAsarPath}"`,
       `Remove-Item -Path "${updateAsarPath}"`,
       startProcessCmd,
@@ -174,11 +174,12 @@ export async function quitAndInstallAsar(this: ElectronLauncherApp) {
     }).on('exit', (code, s) => {
       this.log(`Update process exit ${code}`)
     }).unref()
+    this.quit()
   } else {
     await promisify(unlink)(appAsarPath)
     await promisify(rename)(updateAsarPath, appAsarPath)
+    this.relaunch()
   }
-  this.quit()
 }
 
 export function quitAndInstallFullUpdate() {

@@ -60,6 +60,7 @@
         <v-btn
           v-else
           color="primary"
+          :loading="installing"
           @click="quitAndInstall()"
         >
           <v-icon
@@ -106,6 +107,7 @@ import { useDialog } from '../composables/dialog'
 
 const { isShown } = useDialog('update-info')
 const renderer = new MarkdownIt()
+const installing = useBusy('quitAndInstall()')
 const { state, openInBrowser, checkUpdate, downloadUpdate, quitAndInstall } = useService(BaseServiceKey)
 const checkingUpdate = useBusy('checkUpdate()')
 const downloadingUpdate = useBusy('downloadUpdate()')
