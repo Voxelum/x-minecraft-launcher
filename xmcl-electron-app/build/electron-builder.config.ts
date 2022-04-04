@@ -75,6 +75,11 @@ export const config: Configuration = {
     ],
   },
   win: {
+    artifactName: process.env.BUILD_TARGET === 'appx'
+      // eslint-disable-next-line no-template-curly-in-string
+      ? '${productName}-${version}-unsigned.${ext}'
+      // eslint-disable-next-line no-template-curly-in-string
+      : '${productName}-${version}-${platform}-${arch}-unsigned.${ext}',
     icon: 'build/icons/icon.ico',
     files: [
       '**/*.cs',
