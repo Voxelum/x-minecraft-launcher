@@ -1,4 +1,20 @@
 
+## 0.22.1
+### @xmcl/keystone-ui@0.21.1
+#### Bug Fixes
+
+- optmize asar update experience ([f9a9a3c1ae4395ef1e0066077444d043b12d4cb8](https://github.com/Voxelum/x-minecraft-launcher/commit/f9a9a3c1ae4395ef1e0066077444d043b12d4cb8))
+### @xmcl/runtime@0.20.1
+#### Bug Fixes
+
+- optmize asar update experience ([f9a9a3c1ae4395ef1e0066077444d043b12d4cb8](https://github.com/Voxelum/x-minecraft-launcher/commit/f9a9a3c1ae4395ef1e0066077444d043b12d4cb8))
+- initialize instance should create instance anyway ([9d04fffb47b4d97164d393ff8d658f02f843744b](https://github.com/Voxelum/x-minecraft-launcher/commit/9d04fffb47b4d97164d393ff8d658f02f843744b))
+### xmcl@0.22.1
+#### Bug Fixes
+
+- optmize asar update experience ([f9a9a3c1ae4395ef1e0066077444d043b12d4cb8](https://github.com/Voxelum/x-minecraft-launcher/commit/f9a9a3c1ae4395ef1e0066077444d043b12d4cb8))
+
+
 ## 0.22.0
 ### @xmcl/runtime-api@0.6.0
 #### Features
