@@ -68,7 +68,7 @@ export interface LauncherProfile {
 }
 
 export async function readLaunchProfile(minecraft: string) {
-  const profilePath = join(minecraft, 'launcher_profile.json')
+  const profilePath = join(minecraft, 'launcher_profiles.json')
   const profile: LauncherProfile = await readJson(profilePath)
   return profile
 }

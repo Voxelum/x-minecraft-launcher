@@ -58,8 +58,9 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         if (initial) {
           try {
             await this.addExternalInstance(initial)
-            await this.mountInstance(initial)
-            await this.instancesFile.write({ instances: Object.keys(this.state.all), selectedInstance: initial })
+            const instance = Object.values(state.all)[0]
+            await this.mountInstance(instance.path)
+            await this.instancesFile.write({ instances: Object.keys(this.state.all), selectedInstance: instance.path })
           } catch (e) {
             this.error(`Fail to initialize to ${initial}`)
             this.error(e)
@@ -412,14 +413,14 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }))
 
     if (!isVersionIsolated) {
+      const options: CreateInstanceOption = {
+        path,
+      }
       if (profile) {
         const sorted = Object.values(profile.profiles).sort((a, b) =>
           // @ts-ignore
           new Date(b.lastUsed) - new Date(a.lastUsed))
         let version: ResolvedVersion | undefined
-        const options: CreateInstanceOption = {
-          path,
-        }
         for (const p of sorted) {
           const id = p.lastVersionId
           version = resolveVersions.find(v => v.id === id)
@@ -442,8 +443,22 @@ export class InstanceService extends StatefulService<InstanceState> implements I
             minecraft: LATEST_RELEASE.id,
           }
         }
-        await this.createInstance(options)
+      } else {
+        const version = resolveVersions[0]
+        if (version) {
+          options.runtime = {
+            minecraft: version.minecraftVersion,
+            forge: filterForgeVersion(version.libraries.find(isForgeLibrary)?.version ?? ''),
+            fabricLoader: version.libraries.find(isFabricLoaderLibrary)?.version ?? '',
+            optifine: filterOptifineVersion(version.libraries.find(isOptifineLibrary)?.version ?? ''),
+          }
+        } else {
+          options.runtime = {
+            minecraft: LATEST_RELEASE.id,
+          }
+        }
       }
+      await this.createInstance(options)
     }
 
     return true
