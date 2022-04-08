@@ -254,7 +254,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
     this.state.instanceRemove(path)
 
-    const isManaged = resolve(path).startsWith(resolve(this.getPathUnder()))
+    const isManaged = this.isUnderManaged(path)
     if (isManaged && await exists(path)) {
       await remove(path)
     }
@@ -348,6 +348,10 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       this.log(`Modify instance ${instancePath} (${options.name}) ${JSON.stringify(result, null, 4)}.`)
       this.state.instanceEdit({ ...result, path: instancePath })
     }
+  }
+
+  isUnderManaged(path: string) {
+    return resolve(path).startsWith(resolve(this.getPathUnder()))
   }
 
   @Singleton()

@@ -146,16 +146,6 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
         throw new LaunchException({ type: 'launchNoProperJava' }, 'Cannot launch without a valid java')
       }
 
-      await Promise.all([
-        this.instanceResourcePackService.link(minecraftFolder.root).catch((e) => {
-          this.error(`Fail to link resource pack ${instance.path}`)
-          this.error(e)
-        }),
-        this.instanceShaderPackService.link(minecraftFolder.root).catch((e) => {
-          this.error(`Fail to link shader pack ${instance.path}`)
-          this.error(e)
-        }),
-      ])
       const useAuthLib = user.isThirdPartyAuthentication
 
       /**
