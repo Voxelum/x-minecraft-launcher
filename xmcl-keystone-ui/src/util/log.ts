@@ -8,6 +8,17 @@ export interface LogRecord {
   raw: string
 }
 
+export function parseTags(tags: string[]) {
+  const [date, sourceAndLevel, location] = tags
+  const [source, level] = sourceAndLevel.indexOf('/') !== -1 ? sourceAndLevel.split('/') : [sourceAndLevel, 'INFO']
+  return {
+    date,
+    source,
+    level,
+    location,
+  }
+}
+
 export function parseLog(log: string): LogRecord {
   const tags = [] as string[]
   let content = ''
@@ -35,8 +46,7 @@ export function parseLog(log: string): LogRecord {
       break
     }
   }
-  const [date, sourceAndLevel, location] = tags
-  const [source, level] = sourceAndLevel.indexOf('/') !== -1 ? sourceAndLevel.split('/') : [sourceAndLevel, 'INFO']
+  const { source, date, level, location } = parseTags(tags)
   return {
     tags,
     source: location ? `${source}@${location}` : source,
