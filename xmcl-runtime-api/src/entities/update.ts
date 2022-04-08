@@ -32,7 +32,7 @@ export interface ReleaseInfo {
   useAutoUpdater: boolean
   newUpdate: boolean
   /**
-   * Is incremental release
+   * Is incremental asar release.
    */
   incremental: boolean
 }

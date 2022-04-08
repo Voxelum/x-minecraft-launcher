@@ -12,11 +12,9 @@ export default class BaseService extends StatefulService<BaseState> implements I
 
   createState() {
     const state = new BaseState()
-    if (process.env.BUILD_TARGET === 'appx') {
-      state.env = 'appx'
-    } else if (process.env.BUILD_TARGET === 'appimage') {
-      state.env = 'appimage'
-    }
+    state.version = this.app.version
+    state.build = this.app.build
+    state.env = this.app.env
     return state
   }
 
@@ -60,7 +58,6 @@ export default class BaseService extends StatefulService<BaseState> implements I
         theme: this.state.theme,
       })
     })
-    this.state.versionSet([app.version, app.build])
   }
 
   async handleUrl(url: string) {
@@ -123,7 +120,7 @@ export default class BaseService extends StatefulService<BaseState> implements I
    */
   @Singleton()
   async downloadUpdate() {
-    if (this.state.env !== 'raw') {
+    if (this.state.env === 'appimage') {
       this.openInBrowser('https://xmcl.app')
       return
     }
