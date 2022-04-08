@@ -24,15 +24,17 @@ export default function createWorkerPlugin(): Plugin {
           bundle: true,
           metafile: true,
           entryNames: '[dir]/[name].worker',
+          assetNames: 'assets/[name]',
           entryPoints: [absoltePath],
           treeShaking: true,
           write: true,
           absWorkingDir: outDir,
           outdir: outDir,
-          sourcemap: build.initialOptions.watch ? 'inline' : false,
+          sourcemap: build.initialOptions.sourcemap,
           platform: 'node',
+          plugins: build.initialOptions.plugins,
         })
-        const fileName = (Object.keys(result.metafile?.outputs || {})[0])
+        const fileName = (Object.keys(result.metafile?.outputs || {}).filter(v => v.endsWith('.js')))[0]
         return {
           errors: result.errors,
           warnings: result.warnings,
