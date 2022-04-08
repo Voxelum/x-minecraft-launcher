@@ -13,8 +13,8 @@ import { basename, dirname, join } from 'path'
 import { SemVer } from 'semver'
 import { URL } from 'url'
 import { promisify } from 'util'
-import ElectronLauncherApp from './ElectronLauncherApp'
-import { checksum } from './utils/fs'
+import ElectronLauncherApp from '../ElectronLauncherApp'
+import { checksum } from './fs'
 
 /**
  * Only download asar file update.
@@ -206,6 +206,7 @@ async function getUpdateFromSelfHost(app: ElectronLauncherApp): Promise<ReleaseI
   const platformString = app.platform.name === 'windows' ? 'win' : app.platform.name === 'osx' ? 'mac' : 'linux'
   const version = updateInfo.name.startsWith('v') ? updateInfo.name.substring(1) : updateInfo.name
   updateInfo.incremental = updateInfo.files.some(f => f.name === `app-${version}-${platformString}.asar`)
+
   return updateInfo
 }
 

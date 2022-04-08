@@ -110,10 +110,6 @@ export class BaseState implements SettingSchema {
     this.apiSets = sets
   }
 
-  versionSet([version, build]: [string, number]) {
-    this.version = version; this.build = build ?? 0
-  }
-
   rootSet(root: string) {
     this.root = root
   }
