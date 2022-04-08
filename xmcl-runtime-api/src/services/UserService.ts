@@ -210,16 +210,17 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
     const value = {
       ...profile,
       profiles: profile.profiles
-        .map(p => ({ ...p, textures: { SKIN: { url: '' } } }))
+        .map(p => ({ textures: { SKIN: { url: '' } }, ...p }))
         .reduce(toObjectReducer<GameProfileAndTexture, 'id'>('id'), {}),
       selectedProfile: profile.selectedProfile,
     }
     this.users[profile.id] = value
   }
 
-  userProfileUpdate(profile: { id: string; accessToken: string; profiles: (GameProfileAndTexture | GameProfile)[]; selectedProfile?: string }) {
+  userProfileUpdate(profile: { id: string; accessToken: string; expiredAt: number; profiles: (GameProfileAndTexture | GameProfile)[]; selectedProfile?: string }) {
     const user = this.users[profile.id]
     user.accessToken = profile.accessToken
+    user.expiredAt = profile.expiredAt
     profile.profiles.forEach((p) => {
       if (user.profiles[p.id]) {
         user.profiles[p.id] = {
