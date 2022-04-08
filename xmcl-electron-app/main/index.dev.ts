@@ -8,7 +8,6 @@
 /* eslint-disable */
 
 // Set environment for development
-// process.env.NODE_ENV = 'development';
 
 import { app } from 'electron';
 import install, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';

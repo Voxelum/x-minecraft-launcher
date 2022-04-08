@@ -47,7 +47,7 @@ export default class TelemetryManager extends Manager {
     const tags = appInsight.defaultClient.context.tags
     tags[contract.sessionId] = this.sessionId
     tags[contract.userId] = this.sessionId
-    tags[contract.applicationVersion] = `${this.app.version}#${process.env.BUILD_NUMBER}`
+    tags[contract.applicationVersion] = `${this.app.version}#${this.app.build}`
 
     this.app.on('engine-ready', () => {
       const launchService = this.app.serviceManager.getService(LaunchServiceKey)

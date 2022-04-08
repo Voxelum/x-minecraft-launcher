@@ -27,10 +27,10 @@ export default function createPreloadPlugin(preloadSrc: string): Plugin {
           platform: 'node',
           external: build.initialOptions.external,
           sourceRoot: build.initialOptions.sourceRoot,
-          sourcemap: 'inline',
+          sourcemap: build.initialOptions.sourcemap,
           format: build.initialOptions.format,
         })
-        const resultFile = Object.keys(result.metafile?.outputs || {})[0]
+        const resultFile = Object.keys(result.metafile?.outputs || {}).filter(v => v.endsWith('.js'))[0]
         const watching = Object.keys(result.metafile?.inputs || {})
         return {
           errors: result.errors,

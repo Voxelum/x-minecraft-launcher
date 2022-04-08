@@ -1,20 +1,20 @@
 
-import { IS_DEV } from '@/constant'
+import { AccentState, IS_DEV, WindowsBuild } from '@/constant'
 import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
 import { InstalledAppManifest, InstanceServiceKey } from '@xmcl/runtime-api'
 import InstanceService from '@xmcl/runtime/lib/services/InstanceService'
+import { getWindowsVersion, setMica, setWindowBlur } from '@xmcl/windows-utils'
 import { BrowserWindow, dialog, session, shell, Tray } from 'electron'
 import { fromFile } from 'file-type'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
-import { acrylic } from './acrylic'
 import iconPath from './assets/apple-touch-icon.png'
 import { plugins } from './controllers'
 import en from './locales/en.yaml'
 import ru from './locales/ru.yaml'
 import zh from './locales/zh-CN.yaml'
 import { createI18n } from './utils/i18n'
-import { trackWindowSize } from './windowSizeTracker'
+import { trackWindowSize } from './utils/windowSizeTracker'
 import browsePreload from '/@preload/browse'
 import indexPreload from '/@preload/index'
 import monitorPreload from '/@preload/monitor'
@@ -24,6 +24,8 @@ import loggerWinUrl from '/@renderer/logger.html'
 import setupWinUrl from '/@renderer/setup.html'
 
 export default class Controller implements LauncherAppController {
+  protected windowsVersion?: { major: number; minor: number; build: number }
+
   protected mainWin: BrowserWindow | undefined = undefined
 
   protected loggerWin: BrowserWindow | undefined = undefined
@@ -38,6 +40,10 @@ export default class Controller implements LauncherAppController {
 
   constructor(protected app: LauncherApp) {
     plugins.forEach(p => p.call(this))
+
+    if (app.platform.name === 'windows') {
+      this.windowsVersion = getWindowsVersion()
+    }
   }
 
   private setupBrowserLogger(ref: BrowserWindow, name: string) {
@@ -52,23 +58,33 @@ export default class Controller implements LauncherAppController {
     })
   }
 
-  private setWindowAcrylic(browser: BrowserWindow) {
+  private setWindowBlurEffect(browser: BrowserWindow) {
     const isWin = this.app.platform.name === 'windows'
     if (isWin) {
-      setTimeout(() => {
-        const id = browser.webContents.getOSProcessId()
-        this.app.log(`Set window Acrylic transparent ${id}`)
-        acrylic(id).then((e) => {
-          if (e) {
-            this.app.log('Set window Acrylic success')
+      const handle = browser.getNativeWindowHandle()
+      const windowsVersion = this.windowsVersion
+      if (windowsVersion) {
+        if (windowsVersion.build >= WindowsBuild.Windows11) {
+          setMica(handle.buffer, true)
+          this.app.log(`Set window Mica ${handle.toString('hex')}`)
+        } else {
+          let blur: AccentState
+          if (windowsVersion.build >= WindowsBuild.Windows10Build1903) {
+            blur = AccentState.ACCENT_ENABLE_BLURBEHIND
+          } else if (windowsVersion.build >= WindowsBuild.Windows10Build1809) {
+            blur = AccentState.ACCENT_ENABLE_ACRYLICBLURBEHIND
+          } else if (windowsVersion.build >= WindowsBuild.Windows10) {
+            blur = AccentState.ACCENT_ENABLE_BLURBEHIND
           } else {
-            this.app.warn('Set window Acrylic failed')
+            blur = AccentState.ACCENT_ENABLE_TRANSPARENTGRADIENT
           }
-        }, (e) => {
-          this.app.warn('Set window Acrylic failed')
-          this.app.warn(e)
-        })
-      }, 100)
+          if (setWindowBlur(handle.buffer, blur)) {
+            this.app.log(`Set window Acrylic transparent ${handle.toString('hex')}`)
+          } else {
+            this.app.warn(`Set window Acrylic failed ${handle.toString('hex')}`)
+          }
+        }
+      }
     }
   }
 
@@ -117,14 +133,14 @@ export default class Controller implements LauncherAppController {
 
     browser.loadURL(browserWinUrl)
     browser.on('ready-to-show', () => {
-      this.setWindowAcrylic(browser)
+      this.setWindowBlurEffect(browser)
     })
 
     this.browserRef = browser
   }
 
   async createAppWindow(appDir: string, man: InstalledAppManifest) {
-    const configPath = man === this.app.defaultAppManifest ? join(this.app.appDataPath, 'main-window-config.json') : join(appDir, 'window-config.json')
+    const configPath = man === this.app.builtinAppManifest ? join(this.app.appDataPath, 'main-window-config.json') : join(appDir, 'window-config.json')
     this.app.log(`[Controller] Creating app window by config ${configPath}`)
     const configData = await readFile(configPath, 'utf-8').then((v) => JSON.parse(v)).catch(() => ({
       width: -1,
@@ -209,8 +225,9 @@ export default class Controller implements LauncherAppController {
     this.app.log(`[Controller] Created app window by config ${configPath}`)
     browser.on('ready-to-show', () => {
       this.app.log('App Window is ready to show!')
+
       if (man.vibrancy) {
-        this.setWindowAcrylic(browser)
+        this.setWindowBlurEffect(browser)
       }
     })
     browser.on('close', () => { })
@@ -254,7 +271,7 @@ export default class Controller implements LauncherAppController {
     })
 
     this.setupBrowserLogger(browser, 'logger')
-    this.setWindowAcrylic(browser)
+    this.setWindowBlurEffect(browser)
 
     browser.loadURL(loggerWinUrl)
     browser.show()
@@ -300,7 +317,7 @@ export default class Controller implements LauncherAppController {
     })
 
     this.setupBrowserLogger(browser, 'setup')
-    this.setWindowAcrylic(browser)
+    this.setWindowBlurEffect(browser)
 
     browser.loadURL(setupWinUrl)
     browser.show()

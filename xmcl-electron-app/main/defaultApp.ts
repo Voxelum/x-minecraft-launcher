@@ -10,7 +10,7 @@ const manifest: InstalledAppManifest = {
   display: 'frameless',
   minWidth: 800,
   minHeight: 620,
-  vibrancy: true,
+  vibrancy: false,
   iconPath,
   screenshots: [],
   icons: [],

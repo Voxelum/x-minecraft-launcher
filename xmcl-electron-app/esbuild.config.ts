@@ -16,14 +16,14 @@ const config: BuildOptions = {
   assetNames: 'assets/[name]',
   entryNames: '[dir]/[name]',
   format: 'cjs',
-  sourcemap: process.env.NODE_ENV === 'production' ? false : 'inline',
+  sourcemap: process.env.NODE_ENV === 'production' ? false : 'linked',
   minify: process.env.NODE_ENV === 'production',
   treeShaking: true,
   keepNames: true,
-  // sourcemap: false,
-  // minify: true,
   define: {
     'process.env.BUILD_TARGET': JSON.stringify(process.env.BUILD_TARGET) ?? '""',
+    'process.env.BUILD_NUMBER': JSON.stringify(process.env.BUILD_NUMBER) ?? '10',
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV) ?? '"development"',
   },
   platform: 'node',
   loader: {
