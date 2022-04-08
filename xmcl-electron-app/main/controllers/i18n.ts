@@ -13,7 +13,7 @@ export const i18n: ControllerPlugin = function (this: Controller) {
     if (serv.name === BaseServiceKey) {
       const baseService = serv as any as BaseService
       if (baseService) {
-        baseService.state.localesSet(['en', 'zh-CN', 'ru'])
+        baseService.state.localesSet(['en', 'zh-CN', 'zh-TW', 'ru'])
         this.app.log(`Set locale for the app ${baseService.state.locales}`)
         this.i18n.use(baseService.state.locale)
       } else {

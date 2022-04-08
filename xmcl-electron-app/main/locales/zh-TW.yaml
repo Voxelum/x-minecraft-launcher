@@ -1,0 +1,18 @@
+---
+checkUpdate: 檢查更新
+fabric:
+  noVersion: 無法加載在 Minecraft {version} 下的 Fabric 版本列表
+openUrl:
+  cancel: 取消
+  message: 啟動器想打開 {url}。你是否同意此操作？
+  title: 在瀏覽器中打開
+  trust: 信任此網站，下次不再顯示
+  'yes': 允許
+task:
+  success: 有一個任務成功完成了
+  fail: 有一個任務失敗了
+  continue: 在啟動器中查看
+quit: 退出
+showDiagnosis: 顯示 Debug 信息
+title: XMCL
+browseApps: 瀏覽第三方啟動器界面
