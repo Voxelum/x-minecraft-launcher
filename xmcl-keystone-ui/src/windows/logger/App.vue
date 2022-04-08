@@ -107,22 +107,38 @@ function accept(pid: number, log: string) {
       id: logs.length,
     })
   } else {
-    const last = logs[logs.length - 1]
-    const buffer = last.raw + '\n' + log
-    logs[logs.length - 1] = {
-      ...parseLog(buffer),
-      id: logs.length,
+    const trimmed = log.trim()
+    if (trimmed.startsWith('<')) {
+      let timestamp = /timestamp="(.+?)"/g.exec(trimmed)?.[1]
+      const level = /level="(.+?)"/g.exec(trimmed)?.[1]
+      const thread = /thread="(.+?)"/g.exec(trimmed)?.[1]
+      const text = /<!\[CDATA\[(.+?)\]\]>/g.exec(trimmed)?.[1]
+      timestamp = timestamp ? new Date(Number.parseInt(timestamp)).toLocaleString() : ''
+      logs.push({
+        tags: [],
+        date: timestamp,
+        level: level || '',
+        content: text || '',
+        source: thread || '',
+        raw: trimmed,
+        id: logs.length,
+      })
+    } else {
+      const last = logs[logs.length - 1]
+      const buffer = last?.raw + '\n' + log
+      logs[logs.length - 1] = {
+        ...parseLog(buffer),
+        id: logs.length,
+      }
     }
   }
 }
 onMounted(() => {
   gameMonitor.on('minecraft-stderr', (event) => {
-    // console.log(event)
     const { stderr, pid } = event
     accept(pid, stderr)
   })
   gameMonitor.on('minecraft-stdout', (event) => {
-    // console.log(event)
     const { stdout, pid } = event
     accept(pid, stdout)
   })
