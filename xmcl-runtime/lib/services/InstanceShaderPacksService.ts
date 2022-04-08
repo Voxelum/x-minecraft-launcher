@@ -1,21 +1,35 @@
 import { InstanceShaderPacksService as IInstanceShaderPacksServic, InstanceShaderPacksServiceKey, isPersistedResource, isShaderPackResource, ResourceDomain } from '@xmcl/runtime-api'
-import { lstat, readdir, readlink, remove, unlink } from 'fs-extra'
+import { ensureDir, existsSync, lstat, move, readdir, readlink, remove, unlink } from 'fs-extra'
 import { join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { isSystemError } from '../util/error'
-import { createSymbolicLink, ENOENT_ERROR } from '../util/fs'
+import { createSymbolicLink, ENOENT_ERROR, linkWithTimeoutOrCopy } from '../util/fs'
 import InstanceService from './InstanceService'
 import ResourceService from './ResourceService'
 import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service'
 
 @ExportService(InstanceShaderPacksServiceKey)
 export default class InstanceShaderPacksService extends AbstractService implements IInstanceShaderPacksServic {
+  private active: string | undefined
+
   constructor(
     app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {
     super(app)
+    this.storeManager.subscribe('instanceShaderOptions', (payload) => {
+      if (payload.shaderPack && this.active && !this.instanceService.isUnderManaged(this.active)) {
+        const fileName = payload.shaderPack
+        const existedResource = this.resourceService.state.shaderpacks.find(f => fileName === f.fileName + f.ext)
+        const localFilePath = join(this.active!, fileName)
+        if (!existsSync(localFilePath)) {
+          if (existedResource) {
+            linkWithTimeoutOrCopy(existedResource.path, localFilePath)
+          }
+        }
+      }
+    })
   }
 
   @Subscribe('instanceSelect')
@@ -33,7 +47,27 @@ export default class InstanceShaderPacksService extends AbstractService implemen
       }
       throw e
     })
+    this.active = destPath
+    const loadAll = async () => {
+      const files = await readdir(destPath)
 
+      this.log(`Import shaderpacks directories while linking: ${instancePath}`)
+      await Promise.all(files.map(f => join(destPath, f)).map(async (filePath) => {
+        const [resource, icon] = await this.resourceService.resolveResource({ path: filePath, type: 'shaderpacks' })
+        if (isShaderPackResource(resource)) {
+          this.log(`Add shader pack ${filePath}`)
+        } else {
+          this.warn(`Non shader pack resource added in /shaderpacks directory! ${filePath}`)
+        }
+        if (!isPersistedResource(resource)) {
+          await this.resourceService.importParsedResource({ path: filePath }, resource, icon).catch((e) => {
+            this.emit('error', {})
+            this.warn(e)
+          })
+          this.log(`Found new resource in /shaderpacks directory! ${filePath}`)
+        }
+      }))
+    }
     await this.resourceService.whenReady(ResourceDomain.ShaderPacks)
     this.log(`Linking the shaderpacks at domain to ${instancePath}`)
     if (stat) {
@@ -47,31 +81,21 @@ export default class InstanceShaderPacksService extends AbstractService implemen
       } else {
         // Import all directory content
         if (stat.isDirectory()) {
-          const files = await readdir(destPath)
-
-          this.log(`Import shaderpacks directories while linking: ${instancePath}`)
-          await Promise.all(files.map(f => join(destPath, f)).map(async (filePath) => {
-            const [resource, icon] = await this.resourceService.resolveResource({ path: filePath, type: 'shaderpacks' })
-            if (isShaderPackResource(resource)) {
-              this.log(`Add shader pack ${filePath}`)
-            } else {
-              this.warn(`Non shader pack resource added in /shaderpacks directory! ${filePath}`)
-            }
-            if (!isPersistedResource(resource)) {
-              await this.resourceService.importParsedResource({ path: filePath }, resource, icon).catch((e) => {
-                this.emit('error', {})
-                this.warn(e)
-              })
-              this.log(`Found new resource in /shaderpacks directory! ${filePath}`)
-            }
-          }))
-
-          await remove(destPath)
+          await loadAll()
+          if (!this.instanceService.isUnderManaged(instancePath)) {
+            // do not link if this is not an managed instance
+            return
+          } else {
+            await remove(destPath)
+          }
         } else {
-          // TODO: handle this case
-          throw new Error()
+          await move(destPath, `${destPath}_backup`)
         }
       }
+    } else if (!this.instanceService.isUnderManaged(instancePath)) {
+      // do not link if this is not an managed instance
+      await ensureDir(destPath)
+      return
     }
 
     await createSymbolicLink(srcPath, destPath)

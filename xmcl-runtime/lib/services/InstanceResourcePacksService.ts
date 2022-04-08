@@ -1,10 +1,11 @@
 import { PackMeta } from '@xmcl/resourcepack'
 import { InstanceResourcePacksService as IInstanceResourcePacksService, InstanceResourcePacksServiceKey, isPersistedResource, isResourcePackResource, IssueReport, packFormatVersionRange, parseVersion, ResourceDomain, VersionRange } from '@xmcl/runtime-api'
-import { lstat, readdir, readlink, remove, symlink, unlink } from 'fs-extra'
+import { existsSync } from 'fs'
+import { ensureDir, lstat, move, readdir, readlink, remove, unlink } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { isSystemError } from '../util/error'
-import { createSymbolicLink, ENOENT_ERROR } from '../util/fs'
+import { createSymbolicLink, ENOENT_ERROR, linkWithTimeoutOrCopy } from '../util/fs'
 import DiagnoseService from './DiagnoseService'
 import InstanceOptionsService from './InstanceOptionsService'
 import InstanceService from './InstanceService'
@@ -12,11 +13,13 @@ import ResourceService from './ResourceService'
 import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service'
 
 /**
- * Provide the abilities to import mods and resource packs files to instance
+ * Provide the abilities to import resourcepacks and resource packs files to instance
  */
 @ExportService(InstanceResourcePacksServiceKey)
 export default class InstanceResourcePackService extends AbstractService implements IInstanceResourcePacksService {
   private packVersionToVersionRange: Record<number, string> = packFormatVersionRange
+
+  private active: string | undefined
 
   constructor(
     app: LauncherApp,
@@ -26,7 +29,53 @@ export default class InstanceResourcePackService extends AbstractService impleme
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
   ) {
     super(app)
+    this.storeManager.subscribe('instanceGameSettingsLoad', (payload) => {
+      if (payload.resourcePacks && this.active && !this.instanceService.isUnderManaged(this.active)) {
+        for (const pack of payload.resourcePacks.filter(v => v !== 'vanilla')) {
+          const fileName = pack.startsWith('file/') ? pack.substring('file/'.length) : pack
+          const existedResource = this.resourceService.state.resourcepacks.find(f => fileName === f.fileName + f.ext)
+          const localFilePath = join(this.active, fileName)
+          if (!existsSync(localFilePath)) {
+            if (existedResource) {
+              linkWithTimeoutOrCopy(existedResource.path, localFilePath)
+            }
+          }
+        }
+      }
+    })
+    // this.storeManager.subscribe('resource', (r) => {
+    //   if (!this.active) return
+    //   const existed = this.activeResourcePacks.find(p => p.hash === r.hash)
+    //   if (!existed) {
+    //     linkWithTimeoutOrCopy(r.path, join(this.active, basename(r.path)))
+    //   }
+    // })
+    // this.storeManager.subscribe('resources', (rs) => {
+    //   if (!this.active) return
+    //   for (const r of rs) {
+    //     const existed = this.activeResourcePacks.find(p => p.hash === r.hash)
+    //     if (!existed) {
+    //       linkWithTimeoutOrCopy(r.path, join(this.active, basename(r.path)))
+    //     } else {
+    //       if (basename(existed.path, r.ext) !== r.fileName) {
+    //         rename(existed.path, join(dirname(existed.path), r.fileName + r.ext))
+    //       }
+    //     }
+    //   }
+    // })
+    // this.storeManager.subscribe('resourcesRemove', (rs) => {
+    //   if (!this.active) return
+    //   for (const r of rs) {
+    //     const existed = this.activeResourcePacks.find(p => p.hash === r.hash)
+    //     if (existed) {
+    //       unlink(existed.path)
+    //     }
+    //   }
+    // })
   }
+
+  // private watcher: FSWatcher | undefined
+  // private activeResourcePacks: AnyPersistedResource[] = []
 
   @Subscribe('instanceSelect')
   protected onInstance(instancePath: string) {
@@ -80,6 +129,57 @@ export default class InstanceResourcePackService extends AbstractService impleme
     }
   }
 
+  // async dispose(): Promise<void> {
+  //   this.watcher?.close()
+  //   this.active = undefined
+  //   this.activeResourcePacks = []
+  // }
+
+  // private async watchUnmanagedInstance(path: string) {
+  //   this.watcher = watch(path, (event, name) => {
+  //     if (name.startsWith('.')) return
+  //     const filePath = name
+  //     if (event === 'update') {
+  //       this.resourceService.resolveResource({ path: filePath, type: 'resourcepack' }).then(([resource, icon]) => {
+  //         if (isResourcePackResource(resource)) {
+  //           this.log(`Instance resourcepack add ${filePath}`)
+  //         } else {
+  //           this.warn(`Non resourcepack resource added in /resourcepacks directory! ${filePath}`)
+  //         }
+  //         if (resource.fileType === 'directory') {
+  //           // ignore directory
+  //           return
+  //         }
+  //         if (!isPersistedResource(resource)) {
+  //           if (resource.fileType !== 'directory' && resource.type === ResourceType.Unknown) {
+  //             this.log(`Skip to import unknown directory to /resourcepacks! ${filePath}`)
+  //             return
+  //           }
+  //           this.resourceService.importParsedResource({ path: filePath }, resource, icon).then((res) => {
+  //             this.activeResourcePacks.push({ ...res, path: resource.path })
+  //           }, (e) => {
+  //             this.activeResourcePacks.push(resource)
+  //             this.warn(`Fail to persist resource in /resourcepacks directory! ${filePath}`)
+  //             this.warn(e)
+  //           })
+  //           this.log(`Found new resource in /resourcepacks directory! ${filePath}`)
+  //         } else {
+  //           this.activeResourcePacks.push(resource)
+  //         }
+  //       })
+  //     } else {
+  //       const target = this.activeResourcePacks.find(r => r.path === filePath)
+  //       if (target) {
+  //         this.log(`Instance resourcepack remove ${filePath}`)
+  //         const i = this.activeResourcePacks.findIndex(r => r.hash === target.hash)
+  //         this.activeResourcePacks.splice(i, 1)
+  //       } else {
+  //         this.warn(`Cannot remove the resourcepack ${filePath} as it's not found in memory cache!`)
+  //       }
+  //     }
+  //   })
+  // }
+
   @Singleton()
   async link(instancePath: string = this.instanceService.state.path): Promise<void> {
     await this.resourceService.whenReady(ResourceDomain.ResourcePacks)
@@ -91,47 +191,64 @@ export default class InstanceResourcePackService extends AbstractService impleme
       }
       throw e
     })
-
+    this.active = destPath
     await this.resourceService.whenReady(ResourceDomain.ResourcePacks)
+    await this.dispose()
+    const importAllResources = async () => {
+      const files = await readdir(destPath)
+
+      this.log(`Import resourcepacks directories while linking: ${instancePath}`)
+      await Promise.all(files.map(f => join(destPath, f)).map(async (filePath) => {
+        const [resource, icon] = await this.resourceService.resolveResource({ path: filePath, type: 'resourcepacks' })
+        if (isResourcePackResource(resource)) {
+          this.log(`Add resource pack ${filePath}`)
+        } else {
+          this.warn(`Non resource pack resource added in /resourcepacks directory! ${filePath}`)
+        }
+        if (!isPersistedResource(resource)) {
+          await this.resourceService.importParsedResource({ path: filePath }, resource, icon).catch((e) => {
+            this.emit('error', {})
+            this.warn(e)
+          })
+          this.log(`Found new resource in /resourcepacks directory! ${filePath}`)
+          // if (newRes) {
+          //   this.activeResourcePacks.push(newRes)
+          // }
+        } else {
+          // this.activeResourcePacks.push(resource)
+        }
+      }))
+    }
     this.log(`Linking the resourcepacks at domain to ${instancePath}`)
     if (stat) {
       if (stat.isSymbolicLink()) {
         if (await readlink(destPath) === srcPath) {
           this.log(`Skip linking the resourcepacks at domain as it already linked: ${instancePath}`)
-          return
+        } else {
+          this.log(`Relink the resourcepacks domain: ${instancePath}`)
+          await unlink(destPath)
         }
-        this.log(`Relink the resourcepacks domain: ${instancePath}`)
-        await unlink(destPath)
       } else {
         // Import all directory content
         if (stat.isDirectory()) {
-          const files = await readdir(destPath)
-
-          this.log(`Import resourcepacks directories while linking: ${instancePath}`)
-          await Promise.all(files.map(f => join(destPath, f)).map(async (filePath) => {
-            const [resource, icon] = await this.resourceService.resolveResource({ path: filePath, type: 'resourcepacks' })
-            if (isResourcePackResource(resource)) {
-              this.log(`Add resource pack ${filePath}`)
-            } else {
-              this.warn(`Non resource pack resource added in /resourcepacks directory! ${filePath}`)
-            }
-            if (!isPersistedResource(resource)) {
-              await this.resourceService.importParsedResource({ path: filePath }, resource, icon).catch((e) => {
-                this.emit('error', {})
-                this.warn(e)
-              })
-              this.log(`Found new resource in /resourcepacks directory! ${filePath}`)
-            }
-          }))
-
-          await remove(destPath)
+          await importAllResources()
+          if (!this.instanceService.isUnderManaged(instancePath)) {
+            // do not link if this is not an managed instance
+            // await this.watchUnmanagedInstance(destPath)
+            return
+          } else {
+            await remove(destPath)
+          }
         } else {
-          // TODO: handle this case
-          throw new Error()
+          await move(destPath, `${destPath}_backup`)
         }
       }
+    } else if (!this.instanceService.isUnderManaged(instancePath)) {
+      // do not link if this is not an managed instance
+      // await this.watchUnmanagedInstance(destPath)
+      await ensureDir(destPath)
+      return
     }
-
     await createSymbolicLink(srcPath, destPath)
   }
 
