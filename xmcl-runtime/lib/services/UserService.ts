@@ -1,3 +1,4 @@
+/* eslint-disable quotes */
 import { DownloadTask } from '@xmcl/installer'
 import {
   Exception, GameProfileAndTexture, LoginMicrosoftOptions, LoginOptions,
@@ -242,12 +243,29 @@ export default class UserService extends StatefulService<UserState> implements I
           profiles: [],
 
           selectedProfile: undefined,
+          expiredAt: Date.now() + 86400_000,
         })
         this.checkLocation()
       } catch (e) {
         this.error(e)
         this.warn(`Invalid current user ${user.id} accessToken!`)
         this.state.userInvalidate()
+      }
+    } else if (this.state.user.authService === 'microsoft') {
+      if (!user.expiredAt || user.expiredAt < Date.now()) {
+        // expired
+        this.log(`Microsoft accessToken expired. Refresh a new one.`)
+        const { userId, accessToken, expiredAt, gameProfiles, selectedProfile } = await this.loginMicrosoft({ microsoftEmailAddress: user.username })
+
+        this.state.userProfileUpdate({
+          id: user.id,
+          accessToken,
+          profiles: gameProfiles,
+          selectedProfile: selectedProfile?.id,
+          expiredAt: Date.now() + expiredAt * 1000,
+        })
+      } else {
+        this.log(`Microsoft accessToken up-to-date. Skip refresh.`)
       }
     } else {
       this.log(`Current user ${user.id} is not YggdrasilService. Skip to refresh credential.`)
@@ -434,9 +452,6 @@ export default class UserService extends StatefulService<UserState> implements I
    */
   @Singleton()
   async refreshUser() {
-    if (!this.state.isAccessTokenValid) {
-      return
-    }
     await this.refreshStatus().catch(_ => _)
   }
 
@@ -529,6 +544,7 @@ export default class UserService extends StatefulService<UserState> implements I
         gameProfiles,
         selectedProfile: gameProfiles[0],
         avatar: xboxGameProfile.profileUsers[0].settings.find(v => v.id === 'PublicGamerpic')?.value,
+        expiredAt: mcResponse.expires_in * 1000 + Date.now(),
       }
     }
 
@@ -538,6 +554,7 @@ export default class UserService extends StatefulService<UserState> implements I
       gameProfiles: [],
       selectedProfile: undefined,
       avatar: xboxGameProfile.profileUsers[0].settings.find(v => v.id === 'PublicGamerpic')?.value,
+      expiredAt: mcResponse.expires_in * 1000 + Date.now(),
     }
   }
 
@@ -571,6 +588,7 @@ export default class UserService extends StatefulService<UserState> implements I
 
     let userId: string
     let accessToken: string
+    let expiredAt = 0
     let availableProfiles: GameProfile[]
     let selectedProfile: GameProfile | undefined
     let avatar: string | undefined
@@ -595,6 +613,7 @@ export default class UserService extends StatefulService<UserState> implements I
       availableProfiles = result.gameProfiles
       selectedProfile = result.selectedProfile
       avatar = result.avatar
+      expiredAt = result.expiredAt
     } else {
       const result = await login({
         username,
@@ -617,6 +636,7 @@ export default class UserService extends StatefulService<UserState> implements I
       accessToken = result.accessToken
       availableProfiles = result.availableProfiles
       selectedProfile = result.selectedProfile
+      expiredAt = Date.now() + 86400_000
     }
 
     // this.refreshedSkin = false;
@@ -635,6 +655,7 @@ export default class UserService extends StatefulService<UserState> implements I
 
         selectedProfile: selectedProfile ? selectedProfile.id : '',
         avatar,
+        expiredAt,
       })
     } else {
       this.log(`Found existed user ${userId}. Update the profiles of it`)
@@ -643,6 +664,7 @@ export default class UserService extends StatefulService<UserState> implements I
         accessToken,
         profiles: availableProfiles,
         selectedProfile: selectedProfile ? selectedProfile.id : '',
+        expiredAt,
       })
     }
     if ((!this.state.selectedUser.id || options.selectProfile) && selectedProfile) {

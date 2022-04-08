@@ -18,37 +18,41 @@ export interface GameProfileAndTexture extends GameProfile {
 
 export interface UserProfile {
   /**
-     * User id. Also means the localId in new account_json
-     */
+    * User id. Also means the localId in new account_json
+    */
   id: string
   /**
-     * The username usually email
-     */
+    * The username usually email
+    */
   username: string
 
   /**
-     * The used profile service name
-     */
+    * The used profile service name
+    */
   profileService: string
 
   /**
-     * The used auth service name
-     */
+    * The used auth service name
+    */
   authService: string
 
   /**
-     * The access token of the user
-     */
+    * The access token of the user
+    */
   accessToken: string
+  /**
+    * The expire
+    */
+  expiredAt: number
 
   /**
-     * All avaiable game profiles
-     */
+    * All available game profiles
+    */
   profiles: { [uuid: string]: GameProfileAndTexture }
 
   /**
-     * Selected profile uuid
-     */
+    * Selected profile uuid
+    */
   selectedProfile: string
 
   /**
@@ -59,7 +63,7 @@ export interface UserProfile {
 
 export interface UserSchema {
   /**
-     * All saved user account through mutliple services
+     * All saved user account through multiple services
      * @default {}
      */
   users: { [account: string]: UserProfile }
@@ -81,7 +85,7 @@ export interface UserSchema {
     profile: string
   }
   /**
-     * All loaded auth services api. Used for yggdrisal auth
+     * All loaded auth services api. Used for yggdrasil auth
      * @default {}
      */
   authServices: {

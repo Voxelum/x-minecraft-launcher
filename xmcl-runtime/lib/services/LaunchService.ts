@@ -114,6 +114,7 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
       const user = this.userService.state
       const gameProfile = user.gameProfile
 
+      await this.userService.refreshStatus()
       const issues = this.diagnoseService.state.issues
       for (let problems = issues.filter(p => p.autofix), i = 0;
         problems.length !== 0 && i < 1;
