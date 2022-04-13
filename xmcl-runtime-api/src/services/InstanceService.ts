@@ -89,7 +89,7 @@ export class InstanceState {
   /**
    * Edit the profile content. This commit will trigger save function to store the data to the disk.
    * Don't use this directly. Use `editProfile` action
-   * @param payload The modified data
+   * @param settings The modified data
    */
   instanceEdit(settings: DeepPartial<InstanceSchema> & { path: string }) {
     const inst = this.instances.find(i => i.path === (settings.path || this.path)) /* this.all[settings.path || this.path] */
@@ -149,11 +149,11 @@ export class InstanceState {
       inst.mcOptions = Object.seal(settings.mcOptions)
     }
 
-    inst.url = settings.url || inst.url
-    inst.icon = settings.icon || inst.icon
-    inst.java = settings.java || inst.java
-    inst.modpackVersion = settings.modpackVersion || inst.modpackVersion
-    inst.fileApi = settings.fileApi || inst.fileApi
+    inst.url = settings.url ?? inst.url
+    inst.icon = settings.icon ?? inst.icon
+    inst.java = settings.java ?? inst.java
+    inst.modpackVersion = settings.modpackVersion ?? inst.modpackVersion
+    inst.fileApi = settings.fileApi ?? inst.fileApi
 
     if (typeof settings.showLog === 'boolean') {
       inst.showLog = settings.showLog
@@ -165,7 +165,7 @@ export class InstanceState {
 }
 
 /**
- * Provide instance spliting service. It can split the game into multiple environment and dynamiclly deploy the resource to run.
+ * Provide instance splitting service. It can split the game into multiple environment and dynamically deploy the resource to run.
  */
 export interface InstanceService extends StatefulService<InstanceState> {
   /**
@@ -173,7 +173,7 @@ export interface InstanceService extends StatefulService<InstanceState> {
    * @param option The creation option
    * @returns The instance path
    */
-  createInstance(payload: CreateInstanceOption): Promise<string>
+  createInstance(option: CreateInstanceOption): Promise<string>
   /**
    * Create a managed instance in storage.
    */
@@ -193,13 +193,18 @@ export interface InstanceService extends StatefulService<InstanceState> {
    * Otherwise, it will edit the instance on the provided path.
    */
   editInstance(options: EditInstanceOptions): Promise<void>
-
   /**
    * Add a directory as managed instance folder. It will try to load the instance.json.
    * If it's a common folder, it will try to create instance from the directory data.
    * @param path The path of the instance
    */
   addExternalInstance(path: string): Promise<boolean>
+  /**
+   * Get or create a MANAGED instance via your unique id
+   * @param id The unique id, can be any string, but it will convert to a string can be file name
+   * @returns The instance path
+   */
+  acquireInstanceById(id: string): Promise<string>
 }
 
 export const InstanceServiceKey: ServiceKey<InstanceService> = 'InstanceService'
