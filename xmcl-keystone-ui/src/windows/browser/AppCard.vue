@@ -14,7 +14,7 @@
     <div class="flex flex-col">
       <span class="font-bold text-lg">{{ manifest.name }}</span>
       <span class="text-gray-400">{{ manifest.description }}</span>
-      <span class="text-light-800">{{ manifest.url }}</span>
+      <span class="text-light-800 max-w-240 overflow-auto">{{ manifest.url }}</span>
       <v-divider v-if="manifest.screenshots.length > 0" />
       <div v-if="manifest.screenshots.length > 0">
         <span
@@ -25,7 +25,7 @@
         </span>
       </div>
     </div>
-    <div class="flex items-center flex-grow-0">
+    <div class="flex items-center flex-grow-0 gap-1">
       <v-chip
         v-if="defaultApp === manifest.url"
         color="primary"
