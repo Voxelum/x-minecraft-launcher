@@ -41,10 +41,8 @@ export default class NetworkManager extends Manager {
 
   constructor(app: LauncherApp) {
     super(app)
-    const maxSockets = cpus().length * 4
     const http = new HttpAgent({
       keepAlive: true,
-      maxSockets,
       proxy: new URL('http://127.0.0.1:7890'),
     })
     Object.defineProperty(http, 'proxy', {
@@ -63,7 +61,6 @@ export default class NetworkManager extends Manager {
     })
     const https = new HttpsAgent({
       keepAlive: true,
-      maxSockets,
       rejectUnauthorized: false,
       proxy: new URL('http://127.0.0.1:7890'),
     })
