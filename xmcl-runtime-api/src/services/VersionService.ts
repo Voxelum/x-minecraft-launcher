@@ -28,7 +28,7 @@ export class VersionState {
 }
 
 /**
- * The local version serivce maintains the installed versions on disk
+ * The local version service maintains the installed versions on disk
  */
 export interface VersionService extends StatefulService<VersionState> {
   /**
@@ -39,9 +39,9 @@ export interface VersionService extends StatefulService<VersionState> {
   migrateMinecraftFile(): Promise<void>
   resolveLocalVersion(versionFolder: string, root?: string): Promise<ResolvedVersion>
   /**
-     * Refresh a version in the version folder.
-     * @param versionFolder The version folder name. It must existed under the `versions` folder.
-     */
+   * Refresh a version in the version folder.
+   * @param versionFolder The version folder name. It must existed under the `versions` folder.
+   */
   refreshVersion(versionFolder: string): Promise<void>
   refreshVersions(force?: boolean): Promise<void>
   /**

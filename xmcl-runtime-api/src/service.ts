@@ -31,6 +31,7 @@ interface ServiceChannelEventMap {
  * The stateless service channel. Since the limitation of the context isolation, you need to build state by yourself.
  */
 export type ServiceChannel<T> = {
+  readonly key: ServiceKey<T>
   /**
    * Send request to the service to get the latest state of the service.
    * @param id The commit total order
@@ -55,7 +56,7 @@ export type ServiceChannel<T> = {
 
 export interface ServiceChannels {
   /**
-   * Open a channel to a specific service.
+   * The low level api to open a channel to a specific service.
    *
    * Notice you need to wrap this object to create a full stateful service!
    * This design is due the the limitation of context isolation.

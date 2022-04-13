@@ -100,7 +100,7 @@ export class InstanceOptionsState {
  */
 export interface InstanceOptionsService extends StatefulService<InstanceOptionsState> {
   /**
-   * Refersh the game setting from options.txt file
+   * Refresh the game setting from options.txt file
    */
   refresh(): Promise<void>
   getShaderOptions(instancePath: string): Promise<ShaderOptions>

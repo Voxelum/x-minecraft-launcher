@@ -131,7 +131,7 @@ export interface Resource<T = unknown> extends ResourceBase<T> {
 }
 
 /**
- * Reprensent a persisted resource
+ * Represent a persisted resource
  */
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export interface PersistedResourceSchema extends ResourceBase<object | object[]> {

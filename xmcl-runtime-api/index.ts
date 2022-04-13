@@ -59,6 +59,7 @@ export * from './src/semaphore'
 export * from './src/controller'
 export * from './src/events'
 export * from './src/state'
+export * from './src/util/service'
 export * from './src/util/mutex'
 
 export { default as packFormatVersionRange } from './src/util/packFormatVersionRange'

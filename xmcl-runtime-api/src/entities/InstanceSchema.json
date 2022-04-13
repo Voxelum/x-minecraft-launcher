@@ -141,6 +141,14 @@
                     "type": "null"
                 }
             ]
+        },
+        "tags": {
+            "description": "The custom tags on instance",
+            "default": [],
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
         }
     },
     "required": [
@@ -161,6 +169,7 @@
         "runtime",
         "server",
         "showLog",
+        "tags",
         "url",
         "version",
         "vmOptions"

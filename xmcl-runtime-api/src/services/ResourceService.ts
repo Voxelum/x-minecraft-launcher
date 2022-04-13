@@ -86,9 +86,9 @@ export class ResourceState {
   unknowns = [] as Array<PersistedUnknownResource>
 
   /**
-  * Query local resource by uri
-  * @param uri The uri
-  */
+   * Query local resource by uri
+   * @param uri The uri
+   */
   get queryResource() {
     return (url: string) => {
       for (const domain of domains) {
@@ -199,15 +199,15 @@ export interface ResourceService extends StatefulService<ResourceState> {
    */
   importResource(options: ImportResourceOptions): Promise<AnyPersistedResource>
   /**
-    * Import the resource from the same disk. This will parse the file and import it into our db by hardlink.
-    * If the file already existed, it will not re-import it again
-    *
-    * The original file will not be modified.
-    *
-    * @param options The options to import the resources
-    *
-    * @returns All import file in resource form. If the file cannot be parsed, it will be UNKNOWN_RESOURCE.
-    */
+   * Import the resource from the same disk. This will parse the file and import it into our db by hard link.
+   * If the file already existed, it will not re-import it again
+   *
+   * The original file will not be modified.
+   *
+   * @param options The options to import the resources
+   *
+   * @returns All import file in resource form. If the file cannot be parsed, it will be UNKNOWN_RESOURCE.
+   */
   importResources(options: ImportResourcesOptions): Promise<AnyPersistedResource[]>
   /**
    * Export the resources into target directory. This will simply copy the resource out.

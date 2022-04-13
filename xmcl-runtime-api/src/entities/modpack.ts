@@ -52,6 +52,7 @@ export interface ModpackFileInfoAddon extends ModpackFileInfo {
   type: 'addon'
   path: string
   hash: string
+  url?: string
 }
 
 export interface McbbsModpackManifest extends ModpackManifest {

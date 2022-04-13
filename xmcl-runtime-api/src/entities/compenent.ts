@@ -4,13 +4,13 @@ import { ForgeModCommonMetadata } from './mod'
 
 export interface Component {
   /**
-   * The identity of this compoenent.
+   * The identity of this component.
    * - For library, it will be the maven name like "org:artifactName:version"
    * - For mod, it will be the ":modid:version"
    */
   id: string
   /**
-   * The deploy method of this compoenent.
+   * The deploy method of this component.
    *
    * - `library` means it's written in <version>.json file libraries
    * - `mod` means its file is placed under mods folder

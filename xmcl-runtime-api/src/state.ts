@@ -11,6 +11,14 @@ import { LaunchState } from './services/LaunchService'
 import { ResourceState } from './services/ResourceService'
 import { UserState } from './services/UserService'
 import { VersionState } from './services/VersionService'
+import { ServiceKey, StatefulService } from './services/Service'
+
+export type StateOfService<Serv> = Serv extends StatefulService<infer State>
+  ? State : undefined
+
+export type StateOfServiceKey<K> = K extends ServiceKey<infer Serv>
+  ? StateOfService<Serv>
+  : never
 
 export type AllServiceMutations =
   Mutations<BaseState>
@@ -30,6 +38,6 @@ export type AllServiceMutations =
 export type MutationKeys = keyof AllServiceMutations
 export type MutationPayload<T extends MutationKeys> = AllServiceMutations[T]
 
-type Mutations<T> = {
+export type Mutations<T> = {
   [K in keyof T as T[K] extends Function ? K : never]: T[K] extends ((payload: infer P) => void) ? P : never
 }
