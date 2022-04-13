@@ -51,6 +51,18 @@ export interface LaunchOptions {
    */
   gameDirectory?: string
 
+  /**
+   * Override the launch to server options
+   */
+  server?: {
+    host: string
+    port?: number
+  }
+
+  launcherName?: string
+
+  launcherBrand?: string
+
   maxMemory?: number
 
   minMemory?: number
@@ -63,7 +75,6 @@ export interface LaunchService extends StatefulService<LaunchState>, GenericEven
   generateArguments(): Promise<string[]>
   /**
    * Launch the current selected instance. This will return a boolean promise indicate whether launch is success.
-   * @param options
    * @returns Does this launch request success?
    */
   launch(options?: LaunchOptions): Promise<boolean>
