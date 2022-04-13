@@ -1,18 +1,29 @@
 import { AppManifest, InstalledAppManifest } from '@xmcl/runtime-api'
-import { spawn } from 'child_process'
-import { ensureDir, unlink } from 'fs-extra'
+import { ensureDir, unlink, writeFile } from 'fs-extra'
 import generateIco from 'icon-gen/dist/lib/ico'
 import { join } from 'path'
 import { URL } from 'url'
+import LauncherApp from '../LauncherApp'
 import { downloadIcon, resolveIcon } from '../utils'
-import createShortcutScript from './createShortcut.vbs'
 
 export async function removeShortcut(outputDir: string, man: InstalledAppManifest) {
-  const outputPath = join(outputDir, `${man.name}.lnk`)
-  await unlink(outputPath).catch(() => {})
+  let outputPath = join(outputDir, `${man.name}.lnk`)
+  await unlink(outputPath).catch(() => { })
+  outputPath = join(outputDir, `${man.name}.url`)
+  await unlink(outputPath).catch(() => { })
 }
 
-export async function createShortcutWin32(exePath: string, outputDir: string, man: InstalledAppManifest, globalShortcut: boolean): Promise<void> {
+export async function createLinkWin32(app: LauncherApp, exePath: string, outputDir: string, man: InstalledAppManifest, globalShortcut: boolean): Promise<void> {
+  const urlContent =
+  `[InternetShortcut]
+  URL=xmcl://launcher/app?url=${man.url}
+  WorkingDirectory=.
+  IconIndex=0
+  IconFile=${man.iconPath}`
+  await writeFile(join(outputDir, `${man.name}.url`), urlContent)
+}
+
+export function createShortcutWin32(app: LauncherApp, exePath: string, outputDir: string, man: InstalledAppManifest, globalShortcut: boolean): boolean {
   const windowModes = {
     normal: 1,
     maximized: 3,
@@ -25,10 +36,10 @@ export async function createShortcutWin32(exePath: string, outputDir: string, ma
   if (globalShortcut) {
     args += ' --global'
   }
-  const comment = man.description
+  const description = man.description
   const cwd = ''
-  const windowMode = windowModes.normal.toString()
-  const hotkey = ''
+  // const windowMode = windowModes.normal.toString()
+  // const hotkey = ''
   const outputPath = join(outputDir, `${man.name}.lnk`)
 
   if (!icon) {
@@ -42,33 +53,16 @@ export async function createShortcutWin32(exePath: string, outputDir: string, ma
     }
   }
 
-  const wscriptArguments = [
-    createShortcutScript,
-    // '/NoLogo', // Apparently this stops it from displaying a logo in the console, even though I haven't actually ever seen one
-    // '/B', // silent mode, but doesn't actually stop dialog alert windows from popping up on errors
-    outputPath,
-    filePath,
+  const options = {
+    target: exePath,
     args,
-    comment,
+    description,
     cwd,
     icon,
-    windowMode,
-    hotkey,
-  ]
-
-  try {
-    await unlink(outputPath).catch(() => {})
-    spawn('wscript', wscriptArguments)
-  } catch (error) {
-    // success = false
-    // helpers.throwError(
-    //   options,
-    //   'ERROR: Could not create WINDOWS shortcut.\n' +
-    //   'TARGET: ' + options.filePath + '\n' +
-    //   'PATH: ' + options.outputPath + '\n',
-    //   error,
-    // )
+    iconIndex: 0,
   }
+
+  return app.createShortcut(outputPath, options)
 }
 
 export async function installWin32(url: string, appDir: string, man: AppManifest): Promise<InstalledAppManifest> {

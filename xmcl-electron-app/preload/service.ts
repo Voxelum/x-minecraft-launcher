@@ -44,6 +44,7 @@ function createServiceChannels(): ServiceChannels {
       }
       const emitter = servicesEmitter.get(serviceKey)!
       return {
+        key: serviceKey,
         sync(id?: number) {
           return ipcRenderer.invoke('sync', serviceKey, id)
         },

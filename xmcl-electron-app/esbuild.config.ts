@@ -34,6 +34,7 @@ const config: BuildOptions = {
     '.webp': 'file',
     '.cs': 'file',
     '.vbs': 'file',
+    '.ico': 'file',
   },
   plugins: [
     pluginStatic(),

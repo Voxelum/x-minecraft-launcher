@@ -2,21 +2,24 @@ import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
 import { InstalledAppManifest, ReleaseInfo } from '@xmcl/runtime-api'
 import { Host } from '@xmcl/runtime/lib/app/Host'
 import { Task } from '@xmcl/task'
+import { getAppInstallerUri, getPackageFamilyName } from '@xmcl/windows-utils'
 import { execSync } from 'child_process'
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
+import { URL } from 'url'
 import Controller from './Controller'
 import defaultApp from './defaultApp'
-import { checkUpdateTask as _checkUpdateTask, DownloadAsarUpdateTask, DownloadFullUpdateTask, quitAndInstallAsar, quitAndInstallFullUpdate, setup } from './updater'
+import { DownloadAppInstallerTask } from './utils/appinstaller'
 import { isDirectory } from './utils/fs'
+import { checkUpdateTask as _checkUpdateTask, DownloadAsarUpdateTask, DownloadFullUpdateTask, quitAndInstallAsar, quitAndInstallFullUpdate, setup } from './utils/updater'
 
 export default class ElectronLauncherApp extends LauncherApp {
   host: Host = app
 
   controller: LauncherAppController = new Controller(this)
 
-  defaultAppManifest: InstalledAppManifest = defaultApp
+  builtinAppManifest: InstalledAppManifest = defaultApp
 
   showItemInFolder = shell.showItemInFolder
 
@@ -72,11 +75,62 @@ export default class ElectronLauncherApp extends LauncherApp {
     // return false;
   }
 
+  createShortcut(path: string, details: {
+
+    // Docs: https://electronjs.org/docs/api/structures/shortcut-details
+
+    /**
+     * The Application User Model ID. Default is empty.
+     */
+    appUserModelId?: string
+    /**
+     * The arguments to be applied to `target` when launching from this shortcut.
+     * Default is empty.
+     */
+    args?: string
+    /**
+     * The working directory. Default is empty.
+     */
+    cwd?: string
+    /**
+     * The description of the shortcut. Default is empty.
+     */
+    description?: string
+    /**
+     * The path to the icon, can be a DLL or EXE. `icon` and `iconIndex` have to be set
+     * together. Default is empty, which uses the target's icon.
+     */
+    icon?: string
+    /**
+     * The resource ID of icon when `icon` is a DLL or EXE. Default is 0.
+     */
+    iconIndex?: number
+    /**
+     * The target to launch from this shortcut.
+     */
+    target: string
+    /**
+     * The Application Toast Activator CLSID. Needed for participating in Action
+     * Center.
+     */
+    toastActivatorClsid?: string
+  }): boolean {
+    // TODO: make sure this
+    // if (details.target === app.getPath('exe') && this.env === 'appx') {
+    //   details.target = 'C:\\Windows\\Explorer.exe'
+    //   details.args = `shell:AppsFolder\\${getPackageFamilyName()}!App ${details.args}`
+    // }
+    return shell.writeShortcutLink(path, details)
+  }
+
   checkUpdateTask(): Task<ReleaseInfo> {
     return _checkUpdateTask.bind(this)()
   }
 
   downloadUpdateTask(updateInfo: ReleaseInfo): Task<void> {
+    if (this.env === 'appx') {
+      return new DownloadAppInstallerTask(this)
+    }
     if (updateInfo.incremental) {
       const updatePath = join(this.appDataPath, 'pending_update')
       return new DownloadAsarUpdateTask(updatePath, updateInfo.name)
@@ -90,6 +144,17 @@ export default class ElectronLauncherApp extends LauncherApp {
       await quitAndInstallAsar.bind(this)()
     } else {
       quitAndInstallFullUpdate()
+    }
+  }
+
+  getAppInstallerStartUpUrl(): string {
+    try {
+      const uri = getAppInstallerUri()
+      const url = new URL(uri)
+      const appUrl = url.searchParams.get('app') || ''
+      return appUrl
+    } catch {
+      return ''
     }
   }
 

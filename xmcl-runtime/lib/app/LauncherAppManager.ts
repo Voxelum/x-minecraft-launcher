@@ -7,7 +7,9 @@ import { join } from 'path'
 import { URL } from 'url'
 import { LauncherApp } from '../app/LauncherApp'
 import { Manager } from '../managers'
-import { createShortcutWin32, installWin32, removeShortcut } from './win32'
+import { isSystemError } from '../util/error'
+import { ENOENT_ERROR } from '../util/fs'
+import { createLinkWin32, installWin32, removeShortcut } from './win32'
 
 export interface InstallAppOptions {
   createDesktopShortcut?: boolean
@@ -49,31 +51,44 @@ export class LauncherAppManager extends Manager implements AppsHost {
   async getDefaultApp(): Promise<string> {
     await ensureDir(this.root)
     const config = await readJson(join(this.root, 'apps.json')).catch(() => undefined)
-    return config?.default ?? this.app.defaultAppManifest.url
+    return config?.default ?? this.app.builtinAppManifest.url
   }
 
   async createShortcut(url: string): Promise<void> {
     if (this.app.platform.name === 'windows') {
       this.log(`Try to create shortcut to app ${url}`)
-      if (url === this.app.defaultAppManifest.url) {
-        this.log(`Skip to create shortcut default app ${url}`)
+      if (url === this.app.builtinAppManifest.url) {
+        this.log(`Skip to create shortcut builtin app ${url}`)
         return
       }
       const appMan = await this.getInstalledApp(url)
       if (!appMan) {
         throw new Error(`Cannot find the app with url: ${url}`)
       }
-
-      await createShortcutWin32(this.app.getPath('exe'), this.app.getPath('desktop'), appMan, true)
+      createLinkWin32(this.app, this.app.getPath('exe'), this.app.getPath('desktop'), appMan, true)
 
       const startMenuDir = join(this.app.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs')
-      await createShortcutWin32(this.app.getPath('exe'), startMenuDir, appMan, true)
+      createLinkWin32(this.app, this.app.getPath('exe'), startMenuDir, appMan, true)
     }
   }
 
+  async tryGetInstalledApp(url: string): Promise<InstalledAppManifest | undefined> {
+    if (url === this.app.builtinAppManifest.url) {
+      return this.app.builtinAppManifest
+    }
+    const path = this.getAppRoot(url)
+    const validJson = await readJson(join(path, 'app.xmclx')).catch((e) => {
+      if (isSystemError(e) && e.code === ENOENT_ERROR) {
+        return undefined
+      }
+      throw e
+    })
+    return validJson
+  }
+
   async getInstalledApp(url: string): Promise<InstalledAppManifest> {
-    if (url === this.app.defaultAppManifest.url) {
-      return this.app.defaultAppManifest
+    if (url === this.app.builtinAppManifest.url) {
+      return this.app.builtinAppManifest
     }
     const path = this.getAppRoot(url)
     return readJson(join(path, 'app.xmclx'))
@@ -90,12 +105,12 @@ export class LauncherAppManager extends Manager implements AppsHost {
     }))
     const apps = results.filter(v => !!v)
     this.log(`Load ${apps.length} third-party apps`)
-    return [this.app.defaultAppManifest, ...apps]
+    return [this.app.builtinAppManifest, ...apps]
   }
 
   async uninstallApp(url: string) {
     this.log(`Try to uninstall app ${url}`)
-    if (url === this.app.defaultAppManifest.url) {
+    if (url === this.app.builtinAppManifest.url) {
       this.log(`Skip to uninstall default app ${url}`)
       return
     }
@@ -114,15 +129,15 @@ export class LauncherAppManager extends Manager implements AppsHost {
     await remove(appDir)
 
     if (url === await this.getDefaultApp()) {
-      await writeJson(join(this.root, 'apps.json'), { default: this.app.defaultAppManifest.url })
+      await writeJson(join(this.root, 'apps.json'), { default: this.app.builtinAppManifest.url })
     }
   }
 
   async installApp(url: string, options: InstallAppOptions = {}) {
     this.log(`Try to install app ${url}`)
-    if (url === this.app.defaultAppManifest.url) {
+    if (url === this.app.builtinAppManifest.url) {
       this.log(`Skip to install default app ${url}`)
-      return this.app.defaultAppManifest
+      return this.app.builtinAppManifest
     }
     const webMan = await this.getAppInfo(url)
     const urlObj = new URL(url)
@@ -133,12 +148,12 @@ export class LauncherAppManager extends Manager implements AppsHost {
       await writeFile(join(appDir, 'app.xmclx'), JSON.stringify(appMan))
 
       if (options.createDesktopShortcut) {
-        await createShortcutWin32(this.app.getPath('exe'), this.app.getPath('desktop'), appMan, true)
+        createLinkWin32(this.app, this.app.getPath('exe'), this.app.getPath('desktop'), appMan, true)
       }
 
       if (options.createStartMenuShortcut) {
         const startMenuDir = join(this.app.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs')
-        await createShortcutWin32(this.app.getPath('exe'), startMenuDir, appMan, true)
+        createLinkWin32(this.app, this.app.getPath('exe'), startMenuDir, appMan, true)
       }
 
       return appMan
@@ -148,8 +163,8 @@ export class LauncherAppManager extends Manager implements AppsHost {
   }
 
   async getAppInfo(url: string): Promise<AppManifest> {
-    if (url === this.app.defaultAppManifest.url) {
-      return this.app.defaultAppManifest
+    if (url === this.app.builtinAppManifest.url) {
+      return this.app.builtinAppManifest
     }
     const msg = await got(url)
 

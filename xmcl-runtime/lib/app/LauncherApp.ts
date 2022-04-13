@@ -24,16 +24,16 @@ import { LauncherAppManager } from './LauncherAppManager'
 
 export interface Platform {
   /**
-     * The system name of the platform. This name is majorly used for download.
-     */
+   * The system name of the platform. This name is majorly used for download.
+   */
   name: 'osx' | 'linux' | 'windows' | 'unknown'
   /**
-     * The version of the os. It should be the value of `os.release()`.
-     */
+   * The version of the os. It should be the value of `os.release()`.
+   */
   version: string
   /**
-     * The direct output of `os.arch()`. Should look like x86 or x64.
-     */
+   * The direct output of `os.arch()`. Should look like x86 or x64.
+   */
   arch: 'x86' | 'x64' | string
 }
 
@@ -107,6 +107,8 @@ export abstract class LauncherApp extends EventEmitter {
 
   readonly build: number = Number.parseInt(process.env.BUILD_NUMBER ?? '0', 10)
 
+  readonly env = process.env.BUILD_TARGET === 'appx' ? 'appx' : process.env.BUILD_TARGET === 'appimage' ? 'appimage' : 'raw'
+
   get version() { return this.host.getVersion() }
 
   protected managers = [this.logManager, this.networkManager, this.taskManager, this.serviceStateManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager, this.semaphoreManager, this.launcherAppManager]
@@ -115,7 +117,9 @@ export abstract class LauncherApp extends EventEmitter {
 
   abstract readonly controller: LauncherAppController
 
-  abstract readonly defaultAppManifest: InstalledAppManifest
+  abstract readonly builtinAppManifest: InstalledAppManifest
+
+  abstract getAppInstallerStartUpUrl(): string
 
   constructor() {
     super()
@@ -171,6 +175,44 @@ export abstract class LauncherApp extends EventEmitter {
    */
   abstract showItemInFolder(path: string): void
 
+  abstract createShortcut(path: string, link: {
+    /**
+     * The Application User Model ID. Default is empty.
+     */
+    appUserModelId?: string
+    /**
+     * The arguments to be applied to `target` when launching from this shortcut.
+     * Default is empty.
+     */
+    args?: string
+    /**
+     * The working directory. Default is empty.
+     */
+    cwd?: string
+    /**
+     * The description of the shortcut. Default is empty.
+     */
+    description?: string
+    /**
+     * The path to the icon, can be a DLL or EXE. `icon` and `iconIndex` have to be set
+     * together. Default is empty, which uses the target's icon.
+     */
+    icon?: string
+    /**
+     * The resource ID of icon when `icon` is a DLL or EXE. Default is 0.
+     */
+    iconIndex?: number
+    /**
+     * The target to launch from this shortcut.
+     */
+    target: string
+    /**
+     * The Application Toast Activator CLSID. Needed for participating in Action
+     * Center.
+     */
+    toastActivatorClsid?: string
+  }): boolean
+
   getLocale(): string { return this.host.getLocale() }
 
   /**
@@ -190,6 +232,13 @@ export abstract class LauncherApp extends EventEmitter {
       }
       const code = parsed.searchParams.get('code') as string
       this.emit('microsoft-authorize-code', error, code)
+    } else if (parsed.host === 'launcher' && parsed.pathname === '/app') {
+      const params = parsed.searchParams
+      const appUrl = params.get('url')
+      if (appUrl) {
+        this.log(`Boot app from app url ${appUrl}!`)
+        this.launcherAppManager.bootAppByUrl(appUrl)
+      }
     }
   }
 
@@ -327,32 +376,52 @@ export abstract class LauncherApp extends EventEmitter {
             return url
           }
         }
+        this.log('Didn\'t find --url options')
+        const protocolOption = process.argv.find(a => a.startsWith('xmcl://'))
+        if (protocolOption) {
+          const u = new URL(protocolOption)
+          if (u.host === 'launcher' && u.pathname === '/app' && u.searchParams.has('url')) {
+            return u.searchParams.get('url')
+          }
+        }
+        this.log('Didn\'t find xmcl:// protocol')
       }
     }
     this.log('Didn\'t find the start up url, try to load from config file.')
     const { default: url } = JSON.parse(await readFile(join(this.launcherAppManager.root, 'apps.json'), 'utf-8'))
 
-    this.log(`Start up url: ${url}`)
     return url
   }
 
   protected async onEngineReady() {
     this.log(`cwd: ${process.cwd()}`)
     this.emit('engine-ready')
-    this
-      .on('window-all-closed', () => {
-        if (process.platform !== 'darwin') {
-          this.quit()
-        }
-      })
 
     // start the app
     let app: InstalledAppManifest
     try {
       const url = await this.getStartupUrl()
-      app = await this.launcherAppManager.getInstalledApp(url)
+      this.log(`Try to use start up url ${url}`)
+      const existedApp = await this.launcherAppManager.tryGetInstalledApp(url)
+      if (existedApp) {
+        app = existedApp
+      } else {
+        app = await this.launcherAppManager.installApp(url)
+      }
     } catch (e) {
-      app = this.defaultAppManifest
+      this.warn('Fail to use start up url:')
+      this.warn(e)
+      try {
+        const startUp = this.getAppInstallerStartUpUrl()
+        if (startUp) {
+          this.log(`Try to use appinstaller startup url: "${startUp}"`)
+          app = await this.launcherAppManager.installApp(startUp)
+        } else {
+          app = this.builtinAppManifest
+        }
+      } catch (e) {
+        app = this.builtinAppManifest
+      }
     }
     await this.controller.bootApp(app)
 
