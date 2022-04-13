@@ -5,15 +5,13 @@
  *  environment.
  */
 
-/* eslint-disable */
-
 // Set environment for development
 
-import { app } from 'electron';
-import install, { VUEJS_DEVTOOLS } from 'electron-devtools-installer';
-import { autoUpdater } from 'electron-updater';
-import { createServer } from 'http';
-import './index';
+import { app } from 'electron'
+import install, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+import { autoUpdater } from 'electron-updater'
+import { createServer } from 'http'
+import './index'
 
 app.on('browser-window-created', (event, w) => {
   w.webContents.openDevTools({ mode: 'detach' })
@@ -33,25 +31,23 @@ createServer((message, response) => {
 app.on('web-contents-created', (event, contents) => {
   contents.on('update-target-url', (event, url) => {
     if (url.startsWith('http://localhost')) {
-      contents.openDevTools({ mode: 'detach' });
+      contents.openDevTools({ mode: 'detach' })
     }
   })
-  // contents.openDevTools({ mode: 'detach' });
 })
 
 autoUpdater.setFeedURL({
   provider: 'github',
   repo: 'x-minecraft-launcher',
   owner: 'voxelum',
-});
-autoUpdater.logger = null;
+})
+autoUpdater.logger = null
 
 app.whenReady().then(() => {
   install(VUEJS_DEVTOOLS).then((v) => {
     console.log(`Installed vue devtool ${v}`)
   }, (e) => {
-    console.error(`Fail to install vue devtool`)
+    console.error('Fail to install vue devtool')
     console.error(e)
   })
 })
-

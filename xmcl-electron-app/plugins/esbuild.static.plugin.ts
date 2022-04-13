@@ -30,11 +30,11 @@ export default function createStaticPlugin(): Plugin {
             pluginData: { resolveDir },
           })
         })
-        build.onResolve({ filter: /^.+\.vbs$/g }, async ({ path, resolveDir }) => {
+        build.onResolve({ filter: /^.+\.ico$/g }, async ({ path, resolveDir }) => {
           return ({
             path: path + '?static',
             namespace: 'pre-static',
-            pluginData: { resolveDir, external: true },
+            pluginData: { resolveDir },
           })
         })
         build.onLoad({ filter: /^.+\?static$/g, namespace: 'pre-static' }, async ({ path, pluginData: { resolveDir, external } }) => {

@@ -7,6 +7,7 @@ export enum Operation {
   Maximize = 1,
   Hide = 2,
   Show = 3,
+  Close = 4,
 }
 
 export const windowController: ControllerPlugin = function (this: Controller) {
@@ -54,6 +55,9 @@ export const windowController: ControllerPlugin = function (this: Controller) {
             return true
           }
           return false
+        case Operation.Close:
+          window.close()
+          return true
       }
     }
     return false

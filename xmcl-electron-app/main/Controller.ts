@@ -38,12 +38,20 @@ export default class Controller implements LauncherAppController {
 
   protected tray: Tray | undefined
 
+  protected parking = false
+
   constructor(protected app: LauncherApp) {
     plugins.forEach(p => p.call(this))
 
     if (app.platform.name === 'windows') {
       this.windowsVersion = getWindowsVersion()
     }
+
+    this.app.on('window-all-closed', () => {
+      if (process.platform !== 'darwin' && !this.parking) {
+        this.app.quit()
+      }
+    })
   }
 
   private setupBrowserLogger(ref: BrowserWindow, name: string) {
@@ -89,16 +97,20 @@ export default class Controller implements LauncherAppController {
   }
 
   async bootApp(app: InstalledAppManifest): Promise<void> {
+    this.app.log(`Boot app ${app.name} ${app.url}`)
+    this.parking = true
     if (this.mainWin) {
       this.mainWin.close()
     }
     if (!this.setupRef) {
+      this.parking = false
       await this.createAppWindow(this.app.launcherAppManager.getAppRoot(app.url), app)
     } else {
       const serv = this.app.serviceManager.getService(InstanceServiceKey)
       if (serv) {
         await (serv as InstanceService).initialize()
         await this.createAppWindow(this.app.launcherAppManager.getAppRoot(app.url), app)
+        this.parking = false
         this.setupRef!.removeAllListeners()
         this.setupRef!.close()
         this.setupRef = undefined
@@ -106,6 +118,7 @@ export default class Controller implements LauncherAppController {
         this.app.on('service-ready', (serv) => {
           if (serv.name === InstanceServiceKey) {
             this.createAppWindow(this.app.launcherAppManager.getAppRoot(app.url), app)
+            this.parking = false
             this.setupRef!.removeAllListeners()
             this.setupRef!.close()
             this.setupRef = undefined
@@ -224,6 +237,7 @@ export default class Controller implements LauncherAppController {
 
     this.app.log(`[Controller] Created app window by config ${configPath}`)
     browser.on('ready-to-show', () => {
+      browser.setIcon(man.iconPath)
       this.app.log('App Window is ready to show!')
 
       if (man.vibrancy) {
@@ -259,6 +273,8 @@ export default class Controller implements LauncherAppController {
       title: 'KeyStone Monitor',
       width: 770,
       height: 580,
+      minWidth: 600,
+      minHeight: 400,
       frame: false,
       transparent: true,
       hasShadow: false,
@@ -304,6 +320,8 @@ export default class Controller implements LauncherAppController {
       title: 'Setup XMCL',
       width: 600,
       height: 650,
+      minWidth: 600,
+      minHeight: 600,
       frame: false,
       transparent: true,
       hasShadow: false,
