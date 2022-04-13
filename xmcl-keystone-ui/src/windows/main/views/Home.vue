@@ -72,6 +72,8 @@
       </v-tooltip>
 
       <problems-bar />
+
+      <home-sync-button />
     </div>
 
     <home-launch-button />
@@ -104,6 +106,7 @@ import { useInstanceServerStatus } from '../composables/serverStatus'
 import { useInstance } from '../composables/instance'
 import { AppExportDialogKey } from '../composables/instanceExport'
 import HomeLaunchButton from './HomeLaunchButton.vue'
+import HomeSyncButton from './HomeSyncButton.vue'
 
 const { show: showExport } = useDialog(AppExportDialogKey)
 

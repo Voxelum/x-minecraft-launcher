@@ -397,18 +397,17 @@ export default defineComponent({
         hideLauncher: data.hideLauncher,
         url: data.url,
         showLog: data.showLog,
+        fileApi: data.fileServerApi || '',
       }
       if (!isServer.value) {
         edit({
           ...payload,
-          fileApi: data.fileServerApi,
           author: data.author,
           description: data.description,
         })
       } else {
         edit({
           ...payload,
-          fileApi: data.fileServerApi,
           server: {
             host: data.host,
             port: Number.parseInt(data.port, 10),
@@ -422,7 +421,7 @@ export default defineComponent({
       data.url = url.value
       data.showLog = showLog.value
       data.author = author.value
-      data.fileServerApi = fileApi.value
+      data.fileServerApi = fileApi.value || ''
       data.description = description?.value || ''
       if (server.value) {
         data.host = server.value.host

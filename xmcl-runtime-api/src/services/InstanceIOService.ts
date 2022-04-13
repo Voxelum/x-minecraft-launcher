@@ -1,3 +1,4 @@
+import { InstanceFileCurseforge, InstanceFileModrinth, InstanceFileUrl, InstanceManifest } from '../entities/instance'
 import { ServiceKey } from './Service'
 
 export interface InstanceFile {
@@ -40,6 +41,22 @@ export interface ExportInstanceOptions {
    */
   files?: string[]
 }
+
+export interface InstanceUpdate {
+  updates: Array<{
+    /**
+     * Either or add or update the file
+     */
+    operation: 'update' | 'add'
+    /**
+     * The file need to apply update
+     */
+    file: InstanceFileCurseforge | InstanceFileUrl | InstanceFileModrinth
+  }>
+
+  manifest: InstanceManifest
+}
+
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
@@ -60,6 +77,30 @@ export interface InstanceIOService {
    * @returns The newly created instance path
    */
   importInstance(location: string): Promise<string>
+  /**
+   * Fetch the instance update and return the difference.
+   * If this instance is not a remote hooked instance, this will return
+   */
+  getInstanceUpdate(path?: string): Promise<InstanceUpdate | undefined>
+  /**
+   * Apply the instance files update.
+   *
+   * You can use this function to ensure the files in this instance matched with your files manifest,
+   *
+   * like the files under
+   * - mods
+   * - configs
+   * - resourcepacks
+   * - shaderpacks
+   * or any other files
+   */
+  applyInstanceUpdate(options: {
+    /**
+     * The instance path
+     */
+    path: string
+    updates: Array<InstanceFileCurseforge | InstanceFileUrl | InstanceFileModrinth>
+  }): Promise<void>
 }
 
 export const InstanceIOServiceKey: ServiceKey<InstanceIOService> = 'InstanceIOService'
