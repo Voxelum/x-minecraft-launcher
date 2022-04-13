@@ -1,6 +1,6 @@
 import Controller from '@/Controller'
 import { BaseServiceKey } from '@xmcl/runtime-api'
-import { app, dialog, Menu, ProcessMemoryInfo, Tray } from 'electron'
+import { app, dialog, Menu, ProcessMemoryInfo, shell, Tray } from 'electron'
 import iconPath from '../assets/apple-touch-icon.png'
 import favcon2XPath from '../assets/favicon@2x.png'
 import { ControllerPlugin } from './plugin'
@@ -18,31 +18,10 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
       }
     }
     const diagnose = () => {
-      const cpu = process.getCPUUsage()
-      const mem = process.getProcessMemoryInfo()
-
-      const p: Promise<ProcessMemoryInfo> = mem instanceof Promise ? mem : Promise.resolve(mem)
-      p.then((m) => {
-        const cpuPercentage = (cpu.percentCPUUsage * 100).toFixed(2)
-        const messages = [
-          `Mode: ${process.env.NODE_ENV}`,
-          `CPU: ${cpuPercentage}%`,
-          `Private Memory: ${m.private}KB`,
-          `Shared Memory: ${m.shared}KB`,
-          `Physically Memory: ${m.residentSet}KB`,
-        ]
-        if (this.browserRef) {
-          const runnings = this.browserRef.webContents.session.serviceWorkers.getAllRunning()
-          for (const [ver, info] of Object.entries(runnings)) {
-            messages.push(`Service Worker ${ver}: ${info.scope} ${info.renderProcessId} ${info.scriptUrl}`)
-          }
-        }
-        dialog.showMessageBox({
-          type: 'info',
-          title: 'Diagnosis Info',
-          message: `${messages.join('\n')}`,
-        })
-      })
+      this.activeWindow?.webContents.openDevTools()
+    }
+    const showLogs = () => {
+      shell.openExternal(this.app.logManager.getLogRoot())
     }
     return Menu.buildFromTemplate([
       {
@@ -58,6 +37,11 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
         click: onBrowseAppClicked,
       },
       { type: 'separator' },
+      {
+        label: t('showLogsFolder'),
+        type: 'normal',
+        click: showLogs,
+      },
       {
         label: t('showDiagnosis'),
         type: 'normal',
