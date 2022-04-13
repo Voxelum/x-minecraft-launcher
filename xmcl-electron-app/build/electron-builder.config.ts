@@ -111,6 +111,8 @@ export const config: Configuration = {
         'deb',
         'rpm',
         'snap',
+        'zip',
+        'tar.xz',
       ],
   },
   snap: {
