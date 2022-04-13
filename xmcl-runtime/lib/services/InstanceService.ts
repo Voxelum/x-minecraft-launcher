@@ -1,5 +1,6 @@
 import { ResolvedVersion, Version } from '@xmcl/core'
 import { CreateInstanceOption, createTemplate, EditInstanceOptions, filterForgeVersion, filterOptifineVersion, Instance, InstanceSchema, InstanceService as IInstanceService, InstanceServiceKey, InstancesSchema, InstanceState, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, LATEST_RELEASE, RuntimeVersions } from '@xmcl/runtime-api'
+import filenamify from 'filenamify'
 import { copy, ensureDir, readdir, remove } from 'fs-extra'
 import { join, resolve } from 'path'
 import { v4 } from 'uuid'
@@ -283,6 +284,10 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       }
     }
 
+    if (typeof options.fileApi === 'string') {
+      result.fileApi = options.fileApi
+    }
+
     if ('maxMemory' in options && options.maxMemory !== state.maxMemory) {
       if (typeof options.maxMemory === 'undefined') {
         result.maxMemory = 0
@@ -466,6 +471,21 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
 
     return true
+  }
+
+  async acquireInstanceById(id: string): Promise<string> {
+    id = filenamify(id)
+    this.log(`Acquire instance by id ${id}`)
+    const instancePath = this.getPathUnder(id)
+    if (this.state.all[instancePath]) {
+      this.log(`Acquire existed instance ${id} -> ${instancePath}`)
+      return instancePath
+    }
+    const path = await this.createInstance({
+      path: instancePath,
+    })
+    this.log(`Create new instance ${id} -> ${instancePath}`)
+    return path
   }
 }
 
