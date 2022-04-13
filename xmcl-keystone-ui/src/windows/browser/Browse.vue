@@ -1,14 +1,15 @@
 <template>
   <v-app
     style="background: transparent;"
+    class="overflow-auto max-h-[100vh] overflow-x-hidden"
   >
-    <div class="flex flex-col">
+    <div class="flex flex-col overflow-auto overflow-x-hidden">
       <v-progress-linear v-if="refreshing && installed.length === 0" />
       <div class="bg-[#303030] flex moveable flex-grow-0 flex-shrink gap-5">
         <span />
         <span class="moveable flex-grow px-40 p-2 flex">
           <v-btn
-            class="non-moveable"
+            class="non-moveable mt-1.5 mx-2"
             :loading="refreshing"
             text
             icon
@@ -29,7 +30,7 @@
             @keypress.enter="onEnter"
           />
           <v-btn
-            class="non-moveable"
+            class="non-moveable mt-1.5 mx-2"
             :loading="refreshing"
             text
             icon
@@ -45,13 +46,6 @@
             small
             @click="minimize"
           >minimize</v-icon>
-          <!-- <v-icon
-            v-ripple
-            class="flex items-center px-2 py-1 top-0 cursor-pointer select-none non-moveable hover:bg-[rgba(255,255,255,0.5)]"
-            small
-            @click="maximize"
-          >maximize</v-icon>-->
-
           <v-icon
             v-ripple
             class="flex items-center px-2 py-1 top-0 cursor-pointer select-none non-moveable hover:bg-[rgb(209,12,12)]"
@@ -60,7 +54,7 @@
           >close</v-icon>
         </span>
       </div>
-      <main class="p-2 flex-grow">
+      <main class="p-2 flex-grow overflow-auto overflow-x-hidden ">
         <AppCard
           v-for="app in installed"
           :key="app.url"
@@ -165,8 +159,23 @@ export default defineComponent({
   -webkit-app-region: no-drag;
 }
 
-html ::-webkit-scrollbar {
-  display: none;
+::-webkit-scrollbar {
+    width: 8px;
+    cursor: pointer;
+}
+
+::-webkit-scrollbar-thumb {
+    width: 8px;
+    cursor: pointer;
+    background: rgba(155, 155, 155, 0.5);
+    transition: all 1s;
+    border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    width: 8px;
+    background: rgba(192, 192, 192, 0.8);
+    transition: all 1s;
 }
 
 .v-input__control {
