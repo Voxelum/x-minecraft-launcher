@@ -167,6 +167,8 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
         },
         extraJVMArgs: instance.vmOptions,
         extraMCArgs: instance.mcOptions,
+        launcherBrand: options?.launcherBrand ?? '',
+        launcherName: options?.launcherName ?? 'XMCL',
         yggdrasilAgent: useAuthLib
           ? {
             jar: await this.externalAuthSkinService.installAuthlibInjection(),
@@ -175,7 +177,13 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
           : undefined,
       }
 
-      if ('server' in instance && instance.server?.host) {
+      if (options?.server) {
+        this.log('Launching a server')
+        option.server = {
+          ip: options.server.host,
+          port: options.server?.port,
+        }
+      } else if ('server' in instance && instance.server?.host) {
         this.log('Launching a server')
         option.server = {
           ip: instance.server?.host,
