@@ -54,6 +54,10 @@ export default class LogManager extends Manager {
 
   readonly error = (message: any, ...options: any[]) => { this.loggerEntries.error.write(formatMsg(message, options)) }
 
+  getLogRoot() {
+    return this.logRoot
+  }
+
   getLoggerFor(tag: string): Logger {
     function transform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] ${c}\n`) } }) }
     const log = transform(tag).pipe(this.loggerEntries.log)

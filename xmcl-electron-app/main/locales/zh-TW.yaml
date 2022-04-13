@@ -16,3 +16,4 @@ quit: 退出
 showDiagnosis: 顯示 Debug 信息
 title: XMCL
 browseApps: 瀏覽第三方啟動器界面
+showLogsFolder: 顯示日誌文件夾

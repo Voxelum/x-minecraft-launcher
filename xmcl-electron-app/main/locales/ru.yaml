@@ -15,3 +15,4 @@ task:
 quit: Выход
 showDiagnosis: Показать диагностику
 title: XMCL
+showLogsFolder: Show Logs Folder
