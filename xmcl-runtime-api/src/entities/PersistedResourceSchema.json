@@ -1,5 +1,5 @@
 {
-    "description": "Reprensent a persisted resource",
+    "description": "Represent a persisted resource",
     "type": "object",
     "properties": {
         "version": {

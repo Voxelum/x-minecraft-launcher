@@ -122,7 +122,7 @@ export interface InstallForgeOptions {
   /**
    * The installer info.
    *
-   * If this is not presented, it will genreate from mcversion and forge version.
+   * If this is not presented, it will generate from mc version and forge version.
    */
   installer?: {
     sha1?: string
@@ -183,7 +183,7 @@ export interface InstallService extends StatefulService<InstallState> {
    */
   installAssets(assets: Asset[]): Promise<void>
   /**
-   * Download and install a minecract version
+   * Download and install a minecraft version
    */
   installMinecraft(meta: MinecraftVersion): Promise<void>
   /**
@@ -200,7 +200,7 @@ export interface InstallService extends StatefulService<InstallState> {
   installForge(options: InstallForgeOptions): Promise<string | undefined>
   /**
    * Refresh fabric version list in the store.
-   * @param force shouls the version be refresh regardless if we have already refreshed fabric version.
+   * @param force should the version be refresh regardless if we have already refreshed fabric version.
    */
   refreshFabric(force?: boolean): Promise<void>
   /**
@@ -217,7 +217,7 @@ export interface InstallService extends StatefulService<InstallState> {
    */
   installOptifine(options: InstallOptifineOptions): Promise<string>
   /**
-   * Refresh the listloader version list from its github
+   * Refresh the liteloader version list from its github
    */
   refreshLiteloader(force?: boolean): Promise<void>
   /**

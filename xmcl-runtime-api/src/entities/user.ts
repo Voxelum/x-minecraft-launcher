@@ -13,18 +13,18 @@ export const EMPTY_GAME_PROFILE = Object.freeze({ id: '', name: '', textures: { 
  */
 export interface LauncherAccountsJsonSchema {
   /**
-     * All accounts dictionary
-     */
+   * All accounts dictionary
+   */
   accounts: {
     [localId: string]: {
       accessToken: string
       /**
-             * Date string like 2020-12-10T09:54:52Z
-             */
+       * Date string like 2020-12-10T09:54:52Z
+       */
       accessTokenExpiresAt: string
       /**
-             * Avatar url, can be data uri
-             */
+       * Avatar url, can be data uri
+       */
       avatar?: string
 
       eligibleForMigration: boolean
@@ -32,45 +32,45 @@ export interface LauncherAccountsJsonSchema {
       legacy: boolean
 
       /**
-             * uuid mapping to this from `accounts` object
-             */
+       * uuid mapping to this from `accounts` object
+       */
       localId: string
 
       /**
-             * Only present in a mojang account
-             */
+       * Only present in a mojang account
+       */
       minecraftProfile?: {
         /**
-                 * user profile id
-                 */
+         * user profile id
+         */
         id: string
         /**
-                 * user display name
-                 */
+         * user display name
+         */
         name: string
       }
 
       persistent: boolean
       /**
-             * - For legacy mojang account. This is the account uuid.
-             * - For xbox, not very sure its usage
-             */
+       * - For legacy mojang account. This is the account uuid.
+       * - For xbox, not very sure its usage
+       */
       remoteId: string
       type: 'Mojang' | 'Xbox'
       userProperites: any[]
       /**
-             * - For Xbox account, this should also be the user display name.
-             * - For legacy mojang account, this should be the email.
-             */
+       * - For Xbox account, this should also be the user display name.
+       * - For legacy mojang account, this should be the email.
+       */
       username: string
     }
   }
   /**
-     * The active account local id
-     */
+   * The active account local id
+   */
   activeAccountLocalId: string
   /**
-     * The client token
-     */
+   * The client token
+   */
   mojangClientToken: string
 }

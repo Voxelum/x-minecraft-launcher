@@ -26,7 +26,7 @@ export interface LoginOptions {
    */
   authService?: string
   /**
-   * The profile serivce name, like mojang
+   * The profile service name, like mojang
    */
   profileService?: string
   /**
@@ -278,7 +278,7 @@ export interface UserService extends StatefulService<UserState>, GenericEventEmi
    * it will use the selected user and selected profile.
    *
    * Notice that this operation might fail if the user is not authorized (accessToken is not valid).
-   * If that happened, please let user refresh it credential or relogin.
+   * If that happened, please let user refresh it credential or re-login.
    */
   uploadSkin(options: UploadSkinOptions): Promise<void>
   /**
@@ -294,8 +294,8 @@ export interface UserService extends StatefulService<UserState>, GenericEventEmi
    */
   refreshUser(): Promise<void>
   /**
-    * Switch user account.
-    */
+   * Switch user account.
+   */
   switchUserProfile(payload: {
     /**
      * The user id of the user

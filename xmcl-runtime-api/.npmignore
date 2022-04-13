@@ -1,6 +1,6 @@
 scripts/*
 src/*
 index.ts
-logger.ts
+monitor.ts
 setup.ts
 utils.ts

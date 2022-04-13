@@ -128,6 +128,11 @@ export interface InstanceData {
     host: string
     port?: number
   } | null
+  /**
+   * The custom tags on instance
+   * @default []
+   */
+  tags: string[]
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare

@@ -48,11 +48,11 @@ export interface TaskAddedPayload extends TaskPayloadBase {
     */
   to?: string
   /**
-    * The task unlocalized name
+    * The task un-localized name
     */
   path: string
   /**
-    * The task unlocalized name param
+    * The task un-localized name param
     */
   param: Record<string, any>
 

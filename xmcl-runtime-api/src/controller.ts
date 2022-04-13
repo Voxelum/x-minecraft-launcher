@@ -2,9 +2,6 @@
  * Port from electron
  */
 export interface FileFilter {
-
-  // Docs: https://electronjs.org/docs/api/structures/file-filter
-
   extensions: string[]
   name: string
 }
