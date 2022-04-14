@@ -1,22 +1,21 @@
 import { JavaVersion } from '@xmcl/core'
 import { fetchJavaRuntimeManifest, installJavaRuntimesTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
 import { Java, JavaRecord, JavaSchema, JavaService as IJavaService, JavaServiceKey, JavaState } from '@xmcl/runtime-api'
-import { requireObject, requireString } from '../util/object'
 import { access, chmod, constants, ensureFile, readFile } from 'fs-extra'
 import { dirname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { missing, readdirIfPresent } from '../util/fs'
+import { requireObject, requireString } from '../util/object'
 import { createSafeFile } from '../util/persistance'
 import DiagnoseService from './DiagnoseService'
-import { ExportService, Inject, Singleton, StatefulService } from './Service'
+import { Inject, Singleton, StatefulService } from './Service'
 
-@ExportService(JavaServiceKey)
 export default class JavaService extends StatefulService<JavaState> implements IJavaService {
   protected readonly config = createSafeFile(this.getPath('java.json'), JavaSchema, this)
 
   constructor(app: LauncherApp,
     @Inject(DiagnoseService) diagnoseService: DiagnoseService) {
-    super(app, async () => {
+    super(app, JavaServiceKey, () => new JavaState(), async () => {
       const data = await this.config.read()
       const valid = data.all.filter(l => typeof l.path === 'string').map(a => ({ ...a, valid: true }))
       this.log(`Loaded ${valid.length} java from cache.`)
@@ -44,8 +43,6 @@ export default class JavaService extends StatefulService<JavaState> implements I
       }
     })
   }
-
-  createState() { return new JavaState() }
 
   getInternalJavaLocation(version: JavaVersion) {
     return this.app.platform.name === 'osx'

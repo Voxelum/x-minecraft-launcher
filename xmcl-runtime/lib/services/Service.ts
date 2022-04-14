@@ -1,4 +1,4 @@
-import { MutationKeys, ServiceKey, State } from '@xmcl/runtime-api'
+import { getServiceSemaphoreKey, MutationKeys, ServiceKey, State } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { join } from 'path'
 import { EventEmitter } from 'stream'
@@ -6,8 +6,6 @@ import LauncherApp from '../app/LauncherApp'
 import { createPromiseSignal, PromiseSignal } from '../util/promiseSignal'
 
 export const PARAMS_SYMBOL = Symbol('service:params')
-export const KEYS_SYMBOL = Symbol('service:key')
-export const SUBSCRIBE_SYMBOL = Symbol('service:subscribe')
 
 export type ServiceConstructor<T extends AbstractService = AbstractService> = {
   new(...args: any[]): T
@@ -32,35 +30,15 @@ export function Inject<T extends AbstractService>(con: ServiceConstructor<T>) {
   }
 }
 
-/**
- * Export a service .
- * @param key The service key representing it
- */
-export function ExportService<T extends AbstractService>(key: ServiceKey<T>) {
-  return (target: ServiceConstructor<T>) => {
-    Reflect.set(target, KEYS_SYMBOL, key)
-  }
-}
-
-/**
- * Fire on certain store mutation committed.
- * @param keys The mutations name
- */
-export function Subscribe(...keys: MutationKeys[]) {
-  return function (target: AbstractService, propertyKey: string, descriptor: PropertyDescriptor) {
-    if (!keys || keys.length === 0) {
-      throw new Error('Must listen at least one mutation!')
-    } else {
-      if (!Reflect.has(target, SUBSCRIBE_SYMBOL)) {
-        Reflect.set(target, SUBSCRIBE_SYMBOL, [])
-      }
-      const sub = Reflect.get(target, SUBSCRIBE_SYMBOL) as any[]
-      sub.push({ mutations: keys, handler: descriptor.value })
-    }
-  }
-}
-
 export type MutexSerializer<T extends AbstractService> = (this: T, ...params: any[]) => string | string[]
+
+export type ParamSerializer<T extends AbstractService> = (...params: any[]) => string | undefined
+
+export const IGNORE_PARAMS: ParamSerializer<any> = () => ''
+
+export const ALL_PARAMS: ParamSerializer<any> = (...pararms) => JSON.stringify(pararms)
+
+const InstanceSymbol = Symbol('InstanceSymbol')
 
 export function ReadLock<T extends AbstractService>(key: (string | string[] | MutexSerializer<T>)) {
   return function (target: T, propertyKey: string, descriptor: PropertyDescriptor) {
@@ -138,14 +116,6 @@ export function Lock<T extends AbstractService>(key: (string | string[] | MutexS
   }
 }
 
-export type ParamSerializer<T extends AbstractService> = (...params: any[]) => string | undefined
-
-export const IGNORE_PARAMS: ParamSerializer<any> = () => ''
-
-export const ALL_PARAMS: ParamSerializer<any> = (...pararms) => JSON.stringify(pararms)
-
-const InstanceSymbol = Symbol('InstanceSymbol')
-
 /**
  * A service method decorator to make sure this service call should run in singleton -- no second call at the time.
  * The later call will wait the first call end and return the first call result.
@@ -158,7 +128,6 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
     const method = descriptor.value as Function
     const instances: Record<string, Promise<any> | undefined> = Reflect.get(target, InstanceSymbol)
     descriptor.value = function (this: T, ...args: any[]) {
-      const targetKey = `${propertyKey}(${param.call(this, ...args)})`
       const exec = () => {
         try {
           const result = method.apply(this, args)
@@ -172,6 +141,7 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
         }
       }
       Object.defineProperty(exec, 'name', { value: `${method.name}$Singleton$exec` })
+      const targetKey = getServiceSemaphoreKey(this.name, propertyKey as any, param.call(this, ...args))
       const last = instances[targetKey]
       if (last) {
         return last
@@ -192,18 +162,92 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
 }
 
 /**
+ * A service method decorator to make sure this service call should run in singleton -- no second call at the time.
+ * The later call will wait the first call end and return the first call result.
+ */
+export function Expose<T extends AbstractService>(options: {
+  serializer?: ParamSerializer<T>
+  singleton?: boolean
+  lock?: (string | string[] | MutexSerializer<T>)
+}) {
+  const { serializer = IGNORE_PARAMS, singleton = false, lock } = options
+  return function (target: T, propertyKey: string, descriptor: PropertyDescriptor) {
+    const method = descriptor.value as Function
+
+    if (!Reflect.has(target, InstanceSymbol)) {
+      Object.defineProperty(target, InstanceSymbol, { value: {} })
+    }
+    const instances: Record<string, Promise<any> | undefined> = Reflect.get(target, InstanceSymbol)
+
+    descriptor.value = function (this: T, ...args: any[]) {
+      const exec = () => {
+        try {
+          const result = method.apply(this, args)
+          if (result instanceof Promise) {
+            return result
+          } else {
+            return Promise.resolve(result)
+          }
+        } catch (e) {
+          return Promise.reject(e)
+        }
+      }
+
+      if (lock) {
+        const keyOrKeys = typeof lock === 'function' ? lock.call(target, ...args) : lock
+        const keys = keyOrKeys instanceof Array ? keyOrKeys : [keyOrKeys]
+        const promises: Promise<() => void>[] = []
+        for (const key of keys) {
+          const lock = this.semaphoreManager.getLock(key)
+          promises.push(lock.acquireWrite())
+        }
+        this.log(`Acquire locks: ${keys.join(', ')}`)
+      }
+
+      Object.defineProperty(exec, 'name', { value: `${method.name}$Singleton$exec` })
+
+      let singletonKey: undefined | string
+      if (singleton) {
+        singletonKey = getServiceSemaphoreKey(this.name, propertyKey as any, serializer.call(this, ...args))
+        const last = instances[singletonKey]
+        if (last) {
+          return last
+        }
+        this.log(`Acquire singleton ${singletonKey}`)
+        this.up(singletonKey)
+      }
+
+      const promise = exec().finally(() => {
+        if (singletonKey) {
+          this.log(`Release singleton ${singletonKey}`)
+          this.down(singletonKey)
+          delete instances[singletonKey]
+        }
+      })
+
+      if (singletonKey) {
+        instances[singletonKey] = promise
+      }
+
+      return promise
+    }
+    Object.defineProperty(descriptor.value, 'name', { value: `${method.name}$Singleton` })
+  }
+}
+
+/**
  * The base class of a service.
  *
  * The service is a stateful object has life cycle. It will be created when the launcher program start, and destroied
  */
 export default abstract class AbstractService extends EventEmitter {
-  readonly name: string
+  readonly name: ServiceKey<this>
 
   private initializeSignal: PromiseSignal<void> | undefined
 
-  constructor(readonly app: LauncherApp, private initializer?: () => Promise<void>) {
+  constructor(readonly app: LauncherApp, name: ServiceKey<AbstractService>, private initializer?: () => Promise<void>) {
     super()
-    this.name = Object.getPrototypeOf(this).constructor.name
+    this.name = name as any
   }
 
   get networkManager() { return this.app.networkManager }
@@ -313,12 +357,10 @@ export default abstract class AbstractService extends EventEmitter {
 export abstract class StatefulService<M extends State<M>> extends AbstractService {
   state: M
 
-  constructor(app: LauncherApp, initializer?: () => Promise<void>) {
-    super(app, initializer)
-    const state = this.createState()
+  constructor(app: LauncherApp, key: ServiceKey<any>, createState: () => M, initializer?: () => Promise<void>) {
+    super(app, key, initializer)
+    const state = createState()
     Object.defineProperty(state, STATE_SYMBOL, { value: true })
-    this.state = app.serviceStateManager.register(this.name, state)
+    this.state = app.serviceStateManager.register(key as string, state)
   }
-
-  abstract createState(): M
 }

@@ -5,9 +5,8 @@ import { basename, join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { CacheDictionary } from '../util/cache'
 import ResourceService from './ResourceService'
-import { ExportService, Inject, StatefulService } from './Service'
+import { Inject, StatefulService } from './Service'
 
-@ExportService(ModrinthServiceKey)
 export class ModrinthService extends StatefulService<ModrinthState> implements IModrinthService {
   private cached: undefined | { licenses: License[]; categories: Category[]; gameVersions: GameVersion[]; modLoaders: Loader[]; environments: string[] } = undefined
 
@@ -18,11 +17,7 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
   constructor(app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
-    super(app)
-  }
-
-  createState(): ModrinthState {
-    return new ModrinthState()
+    super(app, ModrinthServiceKey, () => new ModrinthState())
   }
 
   async searchProjects(options: SearchProjectOptions): Promise<SearchResult> {

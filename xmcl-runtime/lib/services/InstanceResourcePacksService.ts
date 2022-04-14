@@ -10,12 +10,11 @@ import DiagnoseService from './DiagnoseService'
 import InstanceOptionsService from './InstanceOptionsService'
 import InstanceService from './InstanceService'
 import ResourceService from './ResourceService'
-import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service'
+import AbstractService, { Inject, Singleton } from './Service'
 
 /**
- * Provide the abilities to import resourcepacks and resource packs files to instance
+ * Provide the abilities to import resource pack and resource packs files to instance
  */
-@ExportService(InstanceResourcePacksServiceKey)
 export default class InstanceResourcePackService extends AbstractService implements IInstanceResourcePacksService {
   private packVersionToVersionRange: Record<number, string> = packFormatVersionRange
 
@@ -28,7 +27,7 @@ export default class InstanceResourcePackService extends AbstractService impleme
     @Inject(InstanceOptionsService) private gameSettingService: InstanceOptionsService,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
   ) {
-    super(app)
+    super(app, InstanceResourcePacksServiceKey)
     this.storeManager.subscribe('instanceGameSettingsLoad', (payload) => {
       if (payload.resourcePacks && this.active && !this.instanceService.isUnderManaged(this.active)) {
         for (const pack of payload.resourcePacks.filter(v => v !== 'vanilla')) {
@@ -42,7 +41,17 @@ export default class InstanceResourcePackService extends AbstractService impleme
           }
         }
       }
+    }).subscribe('instanceSelect', (instancePath) => {
+      this.link(instancePath).catch((e) => [
+        // TODO: decorate error
+        this.emit('error', {}),
+      ])
+    }).subscribe('instanceGameSettingsLoad', async (payload) => {
+      if ('resourcePacks' in payload) {
+        await this.diagnoseResourcePacks()
+      }
     })
+
     // this.storeManager.subscribe('resource', (r) => {
     //   if (!this.active) return
     //   const existed = this.activeResourcePacks.find(p => p.hash === r.hash)
@@ -76,21 +85,6 @@ export default class InstanceResourcePackService extends AbstractService impleme
 
   // private watcher: FSWatcher | undefined
   // private activeResourcePacks: AnyPersistedResource[] = []
-
-  @Subscribe('instanceSelect')
-  protected onInstance(instancePath: string) {
-    this.link(instancePath).catch((e) => [
-      // TODO: decorate error
-      this.emit('error', {}),
-    ])
-  }
-
-  @Subscribe('instanceGameSettings')
-  async onInstanceResourcepacksLaod(payload: any) {
-    if ('resourcePacks' in payload) {
-      await this.diagnoseResourcePacks()
-    }
-  }
 
   @Singleton()
   async diagnoseResourcePacks() {

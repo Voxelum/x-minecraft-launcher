@@ -32,6 +32,7 @@ export function useInstanceCreation() {
     url: '',
     icon: '',
     server: null,
+    tags: [],
   })
   return {
     ...toRefs(data),

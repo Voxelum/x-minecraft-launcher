@@ -1,12 +1,12 @@
 import { BaseServiceKey } from '@xmcl/runtime-api'
-import { useBusy, useService } from '/@/composables'
+import { useServiceBusy, useService } from '/@/composables'
 
 export function useUpdateSettings() {
   const { state, checkUpdate } = useService(BaseServiceKey)
 
   const updateStatus = computed(() => state.updateStatus)
-  const checkingUpdate = useBusy('checkUpdate()')
-  const downloadingUpdate = useBusy('downloadUpdate()')
+  const checkingUpdate = useServiceBusy(BaseServiceKey, 'checkUpdate')
+  const downloadingUpdate = useServiceBusy(BaseServiceKey, 'downloadUpdate')
   const updateInfo = computed(() => state.updateInfo)
 
   return {

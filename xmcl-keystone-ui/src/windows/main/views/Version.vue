@@ -148,7 +148,7 @@
 import type { ResolvedVersion } from '@xmcl/core'
 import type { MinecraftVersion } from '@xmcl/installer'
 import { filterForgeVersion, filterOptifineVersion, getResolvedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, OptifineVersion, InstallServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
-import { useAutoSaveLoad, useBusy, useService } from '/@/composables'
+import { useAutoSaveLoad, useServiceBusy, useService } from '/@/composables'
 import FabricView from './VersionFabricView.vue'
 import ForgeView from './VersionForgeView.vue'
 import MinecraftView from './VersionMinecraftView.vue'
@@ -181,10 +181,10 @@ export default defineComponent({
       // unused
       liteloader: '',
     })
-    const refreshingForge = useBusy('refreshForge()')
-    const refreshingMinecraft = useBusy('refreshMinecraft()')
-    const refreshingFabric = useBusy('refreshFabric()')
-    const refreshingOptifine = useBusy('refreshOptifine()')
+    const refreshingForge = useServiceBusy(InstallServiceKey, 'refreshForge')
+    const refreshingMinecraft = useServiceBusy(InstallServiceKey, 'refreshMinecraft')
+    const refreshingFabric = useServiceBusy(InstallServiceKey, 'refreshFabric')
+    const refreshingOptifine = useServiceBusy(InstallServiceKey, 'refreshOptifine')
 
     const refreshing = computed(() => {
       if (data.active === 1) return refreshingMinecraft.value

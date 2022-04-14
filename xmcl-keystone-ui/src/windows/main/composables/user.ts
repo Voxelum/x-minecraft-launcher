@@ -1,7 +1,7 @@
 import { computed, onMounted, reactive, Ref, toRefs, watch } from '@vue/composition-api'
 import { GameProfile } from '@xmcl/user'
 import { UserException, EMPTY_GAME_PROFILE, UserProfile, UserServiceKey, GameProfileAndTexture } from '@xmcl/runtime-api'
-import { useBusy, useI18n, useService, useServiceOnly } from '/@/composables'
+import { useServiceBusy, useI18n, useService, useServiceOnly } from '/@/composables'
 
 export function useGameProfile(gameProfile: Ref<GameProfile>) {
   const name = computed(() => gameProfile.value?.name)
@@ -47,6 +47,7 @@ const NO_USER_PROFILE: UserProfile = Object.freeze({
   profiles: {},
   id: '',
   username: '',
+  expiredAt: -1,
 })
 const NO_GAME_PROFILE: GameProfileAndTexture = Object.freeze({
   id: '',
@@ -126,7 +127,7 @@ export function useUserSkin(userId: Ref<string>, gameProfileId: Ref<string>) {
   })
   return {
     ...toRefs(data),
-    refreshing: useBusy('refreshSkin()'),
+    refreshing: useServiceBusy(UserServiceKey, 'refreshSkin'),
     refresh,
     save,
     reset,
@@ -234,7 +235,7 @@ export function useUserSecurityStatus() {
 
   return {
     security,
-    refreshing: useBusy('checkLocation()'),
+    refreshing: useServiceBusy(UserServiceKey, 'checkLocation'),
   }
 }
 

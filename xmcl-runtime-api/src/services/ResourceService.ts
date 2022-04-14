@@ -1,3 +1,4 @@
+import { GenericEventEmitter } from '../events'
 import { Exception } from '../entities/exception'
 import { AnyPersistedResource, AnyResource, PersistedCurseforgeModpackResource, PersistedFabricResource, PersistedForgeResource, PersistedLiteloaderResource, PersistedMcbbsModpackResource, PersistedModpackResource, PersistedResource, PersistedResourcePackResource, PersistedSaveResource, PersistedShaderPackResource, PersistedUnknownResource, SourceInformation } from '../entities/resource'
 import { ResourceDomain } from '../entities/resource.schema'
@@ -162,11 +163,16 @@ export class ResourceState {
   }
 }
 
+interface ResourceServiceEventMap {
+  'error': ResourceException
+}
+
 /**
  * Resource service to manage the mod, resource pack, saves, modpack resources.
  * It maintain a preview for resources in memory
  */
-export interface ResourceService extends StatefulService<ResourceState> {
+export interface ResourceService extends StatefulService<ResourceState>, GenericEventEmitter<ResourceServiceEventMap> {
+  load(domain: ResourceDomain): Promise<void>
   /**
    * Remove a resource from the launcher
    * @param resourceOrKey

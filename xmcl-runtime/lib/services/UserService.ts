@@ -17,7 +17,7 @@ import { createSafeFile } from '../util/persistance'
 import { createDynamicThrottle } from '../util/trafficAgent'
 import { fitMinecraftLauncherProfileData } from '../util/userData'
 import DiagnoseService from './DiagnoseService'
-import { ExportService, Inject, Singleton, StatefulService } from './Service'
+import { Inject, Singleton, StatefulService } from './Service'
 
 export interface LauncherProfile {
   /**
@@ -85,10 +85,7 @@ export interface LauncherProfile {
   }
 }
 
-@ExportService(UserServiceKey)
 export default class UserService extends StatefulService<UserState> implements IUserService {
-  createState() { return new UserState() }
-
   private refreshSkinRecord: Record<string, boolean> = {}
 
   private lookup = createDynamicThrottle(lookup, (uuid, options = {}) => (options.api ?? PROFILE_API_MOJANG).profile, 2400)
@@ -99,7 +96,7 @@ export default class UserService extends StatefulService<UserState> implements I
 
   constructor(app: LauncherApp,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService) {
-    super(app, async () => {
+    super(app, UserServiceKey, () => new UserState(), async () => {
       const data = await this.userFile.read()
       const result: UserSchema = {
         authServices: {},

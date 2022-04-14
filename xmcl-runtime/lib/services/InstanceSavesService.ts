@@ -2,7 +2,7 @@ import { UnzipTask } from '@xmcl/installer'
 import {
   CloneSaveOptions, DeleteSaveOptions, ExportSaveOptions,
   GeneralException,
-  ImportSaveOptions, InstanceSave, InstanceSaveException, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey, SaveState,
+  ImportSaveOptions, InstanceSave, InstanceSaveException, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey, SaveState
 } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { createHash } from 'crypto'
@@ -17,22 +17,22 @@ import { copyPassively, isFile, missing, readdirIfPresent } from '../util/fs'
 import { isNonnull, requireObject, requireString } from '../util/object'
 import { ZipTask } from '../util/zip'
 import InstanceService from './InstanceService'
-import { ExportService, Inject, Singleton, StatefulService, Subscribe } from './Service'
+import { Inject, Singleton, StatefulService } from './Service'
 
 /**
  * Provide the ability to preview saves data of an instance
  */
-@ExportService(InstanceSavesServiceKey)
 export default class InstanceSavesService extends StatefulService<SaveState> implements IInstanceSavesService {
-  createState() { return new SaveState() }
-
   private watcher: FSWatcher | undefined
 
   private watching = ''
 
   constructor(app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService) {
-    super(app)
+    super(app, InstanceSavesServiceKey, () => new SaveState())
+    this.storeManager.subscribe('instanceSelect', (path) => {
+      this.mountInstanceSaves(path)
+    })
   }
 
   async dispose() {
@@ -72,11 +72,6 @@ export default class InstanceSavesService extends StatefulService<SaveState> imp
       all.push(...metadatas)
     }
     return all
-  }
-
-  @Subscribe('instanceSelect')
-  protected onInstance(payload: string) {
-    this.mountInstanceSaves(payload)
   }
 
   /**

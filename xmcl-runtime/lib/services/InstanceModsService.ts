@@ -1,5 +1,4 @@
-import { FabricModMetadata } from '@xmcl/mod-parser'
-import { AnyResource, FabricResource, ForgeModCommonMetadata, getFabricModCompatibility, getForgeModCompatibility, InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState, isFabricModCompatible, isFabricResource, isForgeModCompatible, isForgeResource, isModResource, isPersistedResource, IssueReport, parseVersion, ResourceDomain, ResourceType, VersionRange } from '@xmcl/runtime-api'
+import { AnyResource, getFabricModCompatibility, InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState, isFabricResource, isForgeResource, isModResource, isPersistedResource, IssueReport, ResourceDomain, ResourceType } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
 import { ensureDir, FSWatcher, stat, unlink } from 'fs-extra'
 import watch from 'node-watch'
@@ -10,12 +9,11 @@ import { linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
 import DiagnoseService from './DiagnoseService'
 import InstanceService from './InstanceService'
 import ResourceService from './ResourceService'
-import { ExportService, Inject, Singleton, StatefulService, Subscribe } from './Service'
+import { Inject, Singleton, StatefulService } from './Service'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
  */
-@ExportService(InstanceModsServiceKey)
 export default class InstanceModsService extends StatefulService<InstanceModsState> implements IInstanceModsService {
   private modsWatcher: FSWatcher | undefined
 
@@ -33,20 +31,21 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
   ) {
-    super(app)
+    super(app, InstanceModsServiceKey, () => new InstanceModsState())
     this.storeManager.subscribe('resources', (resources) => {
       this.state.instanceModUpdateExisted(resources)
-    })
-    this.storeManager.subscribe('resource', (r) => {
+    }).subscribe('resource', (r) => {
       this.state.instanceModUpdateExisted([r])
+    }).subscribeAll(['instanceMods', 'instanceModUpdate', 'instanceModRemove', 'instanceEdit', 'localVersionAdd', 'localVersionRemove', 'localVersions'], async () => {
+      await this.diagnoseMods()
+    }).subscribe('instanceSelect', () => {
+      this.refresh()
     })
   }
 
   async showDirectory(): Promise<void> {
     await this.app.openDirectory(join(this.instanceService.state.path, 'mods'))
   }
-
-  createState() { return new InstanceModsState() }
 
   private async scanMods(dir: string) {
     const files = await readdirIfPresent(dir)
@@ -64,16 +63,6 @@ export default class InstanceModsService extends StatefulService<InstanceModsSta
       .filter(([res]) => res.fileType !== 'directory') // not show dictionary
       .map(async ([res, icon]) => !isPersistedResource(res) ? { ...(await this.resourceService.importParsedResource({ path: res.path, type: res.type }, res, icon)), path: res.path } : Promise.resolve(res)))
     return persisted
-  }
-
-  @Subscribe('instanceSelect')
-  protected onInstance() {
-    this.refresh()
-  }
-
-  @Subscribe('instanceMods', 'instanceModUpdate', 'instanceModRemove', 'instanceEdit', 'localVersionAdd', 'localVersionRemove', 'localVersions')
-  async onInstanceModsLoad() {
-    await this.diagnoseMods()
   }
 
   async dispose() {

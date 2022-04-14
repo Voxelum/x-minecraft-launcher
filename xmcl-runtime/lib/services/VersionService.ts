@@ -1,32 +1,29 @@
 import { ResolvedVersion, Version } from '@xmcl/core'
 import { VersionService as IVersionService, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
-import { isNonnull } from '../util/object'
 import { task } from '@xmcl/task'
 import { ensureDir, remove } from 'fs-extra'
 import { join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
-import { CopyDirectoryTask, FileStateWatcher, missing, readdirEnsured } from '../util/fs'
-import { ExportService, StatefulService } from './Service'
+import { FileStateWatcher, missing, readdirEnsured } from '../util/fs'
+import { isNonnull } from '../util/object'
+import { StatefulService } from './Service'
 
 /**
  * The local version serivce maintains the installed versions on disk
  */
-@ExportService(VersionServiceKey)
 export default class VersionService extends StatefulService<VersionState> implements IVersionService {
   private versionsWatcher = new FileStateWatcher([] as string[], (state, _, f) => [...new Set([...state, f])])
 
   private versionLoaded = false
 
   constructor(app: LauncherApp) {
-    super(app, async () => {
+    super(app, VersionServiceKey, () => new VersionState(), async () => {
       await this.refreshVersions()
       const versions = this.getPath('versions')
       await ensureDir(versions)
       this.versionsWatcher.watch(this.getPath('versions'))
     })
   }
-
-  createState() { return new VersionState() }
 
   async dispose() {
     this.versionsWatcher.close()

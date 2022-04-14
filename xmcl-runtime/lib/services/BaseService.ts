@@ -1,26 +1,23 @@
-import { BaseService as IBaseService, BaseServiceKey, BaseState, MigrateOptions, SettingSchema } from '@xmcl/runtime-api'
+import { BaseService as IBaseService, BaseServiceKey, BaseState, MigrateOptions, ServiceKey, SettingSchema } from '@xmcl/runtime-api'
 import { copy, copyFile, ensureDir, readJson, remove, unlink, writeJson } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { IS_DEV } from '../constant'
 import { createSafeFile } from '../util/persistance'
-import { ExportService, Singleton, StatefulService } from './Service'
+import { Singleton, StatefulService } from './Service'
 
-@ExportService(BaseServiceKey)
 export default class BaseService extends StatefulService<BaseState> implements IBaseService {
   private settingFile = createSafeFile(this.getPath('setting.json'), SettingSchema, this)
 
-  createState() {
-    const state = new BaseState()
-    state.version = this.app.version
-    state.build = this.app.build
-    state.env = this.app.env
-    return state
-  }
-
   constructor(app: LauncherApp) {
-    super(app, async () => {
-      this.state.rootSet(this.app.gameDataPath)
+    super(app, BaseServiceKey, () => {
+      const state = new BaseState()
+      state.version = app.version
+      state.build = app.build
+      state.env = app.env
+      state.root = app.gameDataPath
+      return state
+    }, async () => {
       const data = await this.settingFile.read()
       this.state.config({
         locale: data.locale || this.app.getPreferredLocale() || this.app.getLocale(),

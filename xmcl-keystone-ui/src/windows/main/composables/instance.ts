@@ -1,7 +1,7 @@
 import { computed, Ref } from '@vue/composition-api'
 import { Frame as GameSetting } from '@xmcl/gamesetting'
-import { getExpectVersion, getResolvedVersion, ImportSaveOptions, InstanceData, InstanceIOServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey, InstanceServiceKey, ResourceServiceKey, RuntimeVersions, VersionServiceKey } from '@xmcl/runtime-api'
-import { useBusy, useSemaphore } from '/@/composables/semaphore'
+import { getExpectVersion, getResolvedVersion, InstanceData, InstanceIOServiceKey, InstanceOptionsServiceKey, InstanceServiceKey, ResourceServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
+import { useServiceBusy, useSemaphore } from '/@/composables/semaphore'
 import { useService, useServiceOnly } from '/@/composables/service'
 
 export function useInstanceBase() {
@@ -135,7 +135,7 @@ export function useInstanceGameSetting() {
     enableVsync,
     anaglyph3d,
     showInFolder,
-    refreshing: useBusy('loadInstanceGameSettings'),
+    refreshing: useServiceBusy(InstanceOptionsServiceKey, 'loadInstanceGameSettings'),
     refresh,
     commit(settings: GameSetting) {
       edit(settings)

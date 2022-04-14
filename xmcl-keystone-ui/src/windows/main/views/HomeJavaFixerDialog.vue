@@ -82,7 +82,7 @@
 </template>
 
 <script lang=ts>
-import { IssueHandler, useBusy, useI18n, useService, useRefreshable } from '/@/composables'
+import { IssueHandler, useServiceBusy, useI18n, useService, useRefreshable } from '/@/composables'
 import { JavaServiceKey } from '@xmcl/runtime-api'
 import { DialogKey, useDialog } from '../composables/dialog'
 import { JavaVersion } from '@xmcl/core'
@@ -101,7 +101,7 @@ export default defineComponent({
     const { editInstance } = useInstance()
     const { state, installDefaultJava, refreshLocalJava } = useService(JavaServiceKey)
     const { subscribeTask } = useNotifier()
-    const downloadingJava = useBusy('installDefaultJava()')
+    const downloadingJava = useServiceBusy(JavaServiceKey, 'installDefaultJava')
     const handlers = inject(IssueHandler, {})
     const javaIssue = ref({
       type: '' as 'incompatible' | 'missing' | '',

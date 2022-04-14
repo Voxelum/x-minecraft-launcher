@@ -6,9 +6,8 @@ import { isSystemError } from '../util/error'
 import { createSymbolicLink, ENOENT_ERROR, linkWithTimeoutOrCopy } from '../util/fs'
 import InstanceService from './InstanceService'
 import ResourceService from './ResourceService'
-import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service'
+import AbstractService, { Inject, Singleton } from './Service'
 
-@ExportService(InstanceShaderPacksServiceKey)
 export default class InstanceShaderPacksService extends AbstractService implements IInstanceShaderPacksServic {
   private active: string | undefined
 
@@ -17,7 +16,7 @@ export default class InstanceShaderPacksService extends AbstractService implemen
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {
-    super(app)
+    super(app, InstanceShaderPacksServiceKey)
     this.storeManager.subscribe('instanceShaderOptions', (payload) => {
       if (payload.shaderPack && this.active && !this.instanceService.isUnderManaged(this.active)) {
         const fileName = payload.shaderPack
@@ -30,11 +29,9 @@ export default class InstanceShaderPacksService extends AbstractService implemen
         }
       }
     })
-  }
-
-  @Subscribe('instanceSelect')
-  protected async onInstance(payload: string) {
-    this.link(payload)
+    this.storeManager.subscribe('instanceSelect', (payload) => {
+      this.link(payload)
+    })
   }
 
   @Singleton()

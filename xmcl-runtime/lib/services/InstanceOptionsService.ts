@@ -1,42 +1,37 @@
 import { Frame, parse } from '@xmcl/gamesetting'
+import { compareRelease, compareSnapshot, EditGameSettingOptions, EditShaderOptions, InstanceOptionException, InstanceOptionsService as IInstanceOptionsService, InstanceOptionsServiceKey, InstanceOptionsState, isCompatible, isReleaseVersion, isSnapshotPreview, packFormatVersionRange, parseShaderOptions, stringifyShaderOptions } from '@xmcl/runtime-api'
 import { FSWatcher, readFile, writeFile } from 'fs-extra'
 import watch from 'node-watch'
 import { basename, join } from 'path'
-import { EditGameSettingOptions, EditShaderOptions, InstanceOptionsService as IInstanceOptionsService, packFormatVersionRange, InstanceOptionsServiceKey, InstanceOptionsState, Exception, parseShaderOptions, stringifyShaderOptions, compareRelease, compareSnapshot, isCompatible, isReleaseVersion, isSnapshotPreview, InstanceOptionException } from '@xmcl/runtime-api'
 import LauncherApp from '../app/LauncherApp'
 import { deepClone } from '../util/clone'
 import { isSystemError } from '../util/error'
 import { missing } from '../util/fs'
+import { requireString } from '../util/object'
 import InstanceService from './InstanceService'
 import ResourceService from './ResourceService'
-import { ExportService, Inject, Singleton, StatefulService, Subscribe } from './Service'
-import { requireString } from '../util/object'
+import { Inject, Singleton, StatefulService } from './Service'
 
 /**
  * The service to watch game setting (options.txt) and shader options (optionsshader.txt)
  */
-@ExportService(InstanceOptionsServiceKey)
 export default class InstanceOptionsService extends StatefulService<InstanceOptionsState> implements IInstanceOptionsService {
   private watcher: FSWatcher | undefined
 
   private watchingInstance = ''
 
-  createState() { return new InstanceOptionsState() }
-
   constructor(app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
-    super(app)
+    super(app, InstanceOptionsServiceKey, () => new InstanceOptionsState())
+    this.storeManager.subscribe('instanceSelect', (payload: string) => {
+      this.mount(payload)
+    })
   }
 
   async dispose() {
     this.watcher?.close()
-  }
-
-  @Subscribe('instanceSelect')
-  protected async onInstance(payload: string) {
-    this.mount(payload)
   }
 
   @Singleton()

@@ -1,7 +1,7 @@
 import { computed, ExtractPropTypes, onMounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
 import { AddonInfo, Attachment, File } from '@xmcl/curseforge'
 import { CurseForgeServiceKey, InstanceModsServiceKey, PersistedResource, ProjectType, ResourceServiceKey } from '@xmcl/runtime-api'
-import { useBusy, useRouter, useService } from '/@/composables'
+import { useServiceBusy, useRouter, useService } from '/@/composables'
 
 interface CurseforgeProps {
   type: string
@@ -264,7 +264,7 @@ export function useCurseforgeProject(projectId: number) {
 export function useCurseforgeCategories() {
   const { state, loadCategories } = useService(CurseForgeServiceKey)
   const categories = computed(() => state.categories)
-  const refreshing = useBusy('loadCategories()')
+  const refreshing = useServiceBusy(CurseForgeServiceKey, 'loadCategories')
   onMounted(() => {
     loadCategories()
   })

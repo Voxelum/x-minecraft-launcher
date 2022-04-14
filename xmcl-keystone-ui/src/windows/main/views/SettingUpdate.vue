@@ -82,15 +82,16 @@
   </v-list>
 </template>
 <script lang="ts" setup>
+import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { useLauncherVersion, useUpdateSettings } from '../composables/setting'
-import { useBusy } from '/@/composables'
+import { useServiceBusy } from '/@/composables'
 
 const { show: showUpdateInfo } = useDialog('update-info')
 const disableUpdate = false // state.env !== 'raw'
 const { updateInfo, updateStatus, checkUpdate, checkingUpdate, downloadingUpdate } = useUpdateSettings()
 const { version, build } = useLauncherVersion()
 const hasNewUpdate = computed(() => updateInfo.value?.name !== version.value)
-const installing = useBusy('quitAndInstall()')
+const installing = useServiceBusy(BaseServiceKey, 'quitAndInstall')
 
 </script>

@@ -100,17 +100,17 @@
 </template>
 
 <script lang=ts setup>
-import { useBusy, useService } from '/@/composables'
+import { useServiceBusy, useService } from '/@/composables'
 import MarkdownIt from 'markdown-it'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 
 const { isShown } = useDialog('update-info')
 const renderer = new MarkdownIt()
-const installing = useBusy('quitAndInstall()')
+const installing = useServiceBusy(BaseServiceKey, 'quitAndInstall')
 const { state, openInBrowser, checkUpdate, downloadUpdate, quitAndInstall } = useService(BaseServiceKey)
-const checkingUpdate = useBusy('checkUpdate()')
-const downloadingUpdate = useBusy('downloadUpdate()')
+const checkingUpdate = useServiceBusy(BaseServiceKey, 'checkUpdate')
+const downloadingUpdate = useServiceBusy(BaseServiceKey, 'downloadUpdate')
 const updateInfo = computed(() => state.updateInfo)
 const updateStatus = computed(() => state.updateStatus)
 const body = computed(() => state.updateInfo?.useAutoUpdater ? state.updateInfo.body : renderer.render(state.updateInfo?.body ?? ''))

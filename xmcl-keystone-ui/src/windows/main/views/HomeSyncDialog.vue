@@ -14,7 +14,7 @@
         open-on-click
         item-children="children"
       >
-        <template #prepend="{ item, open, selected }">
+        <template #prepend="{ item, open }">
           <v-icon
             v-if="item.children"
             :color="selected ? 'accent' : ''"
@@ -46,7 +46,7 @@
           </div>
         </template>
 
-        <template #append="{ item, selected }">
+        <template #append="{ item }">
           {{ item.operation }}
           <!-- <v-select
             v-if="item.sources.length > 0 && selected"
@@ -65,7 +65,7 @@
 <script lang="ts" setup>
 import { useDialog } from '../composables/dialog'
 import { CurseForgeServiceKey, InstanceIOServiceKey, InstanceUpdate } from '@xmcl/runtime-api'
-import { useBusy, useService } from '/@/composables'
+import { useServiceBusy, useService } from '/@/composables'
 import { basename } from '/@/util/basename'
 
 export interface UpdateFileNode {
@@ -79,7 +79,7 @@ const { isShown } = useDialog('instance-sync')
 
 const { getInstanceUpdate, applyInstanceUpdate } = useService(InstanceIOServiceKey)
 const { fetchProject } = useService(CurseForgeServiceKey)
-const checkingUpdate = useBusy('getInstanceUpdate()')
+const checkingUpdate = useServiceBusy(InstanceIOServiceKey, 'getInstanceUpdate')
 
 const updates = ref([] as UpdateFileNode[])
 const tree = ref([] as UpdateFileNode[])
@@ -133,7 +133,7 @@ async function check() {
 }
 
 async function update() {
-  await applyInstanceUpdate([])
+  // await applyInstanceUpdate([])
 }
 
 onMounted(check)

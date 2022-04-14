@@ -1,7 +1,7 @@
 import { computed, ref, Ref, watch } from '@vue/composition-api'
 import { FabricModMetadata } from '@xmcl/mod-parser'
-import { AnyResource, Compatible, FabricResource, ForgeResource, InstanceModsServiceKey, InstanceServiceKey, isModCompatible, isModResource, isPersistedResource, LiteloaderResource, ModrinthInformation, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
-import { useBusy, useService, useRefreshable } from '/@/composables'
+import { AnyResource, Compatible, FabricResource, ForgeResource, InstanceModsServiceKey, InstanceServiceKey, isModCompatible, isModResource, isPersistedResource, LiteloaderResource, ModrinthInformation, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { useServiceBusy, useService, useRefreshable } from '/@/composables'
 import { isStringArrayEquals } from '/@/util/equal'
 
 /**
@@ -78,7 +78,7 @@ export function useInstanceMods() {
   const { state } = useService(InstanceModsServiceKey)
   const { state: resourceState, updateResource } = useService(ResourceServiceKey)
   const { install, uninstall, showDirectory } = useService(InstanceModsServiceKey)
-  const loading = useBusy('loadDomain(mods:resource)')
+  const loading = useServiceBusy(ResourceServiceKey, 'load', ResourceDomain.Mods)
   const { state: instanceState } = useService(InstanceServiceKey)
   const items: Ref<ModItem[]> = ref([])
   const pendingUninstallItems = computed(() => items.value.filter(i => !i.enabled && cachedEnabledSet.has(i.hash)))

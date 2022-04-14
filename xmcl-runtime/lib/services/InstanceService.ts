@@ -11,7 +11,7 @@ import { assignShallow, requireObject, requireString } from '../util/object'
 import { createSafeFile, createSafeIO } from '../util/persistance'
 import InstallService from './InstallService'
 import ServerStatusService from './ServerStatusService'
-import { ExportService, Inject, Singleton, StatefulService } from './Service'
+import { Inject, Singleton, StatefulService } from './Service'
 import UserService from './UserService'
 
 const INSTANCES_FOLDER = 'instances'
@@ -19,7 +19,6 @@ const INSTANCES_FOLDER = 'instances'
 /**
  * Provide instance splitting service. It can split the game into multiple environment and dynamically deploy the resource to run.
  */
-@ExportService(InstanceServiceKey)
 export class InstanceService extends StatefulService<InstanceState> implements IInstanceService {
   protected readonly instancesFile = createSafeFile(this.getPath('instances.json'), InstancesSchema, this)
   protected readonly instanceFile = createSafeIO(InstanceSchema, this)
@@ -29,7 +28,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     @Inject(UserService) private userService: UserService,
     @Inject(InstallService) private installService: InstallService,
   ) {
-    super(app, async () => {
+    super(app, InstanceServiceKey, () => new InstanceState(), async () => {
       const uuidExp = /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}){1}/
 
       const { state } = this
@@ -101,8 +100,6 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         })
     })
   }
-
-  createState() { return new InstanceState() }
 
   protected getPathUnder(...ps: string[]) {
     return this.getPath(INSTANCES_FOLDER, ...ps)

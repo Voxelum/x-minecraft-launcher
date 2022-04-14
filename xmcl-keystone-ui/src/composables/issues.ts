@@ -1,6 +1,6 @@
 import { computed, inject, InjectionKey } from '@vue/composition-api'
-import { DiagnoseServiceKey, Issue } from '@xmcl/runtime-api'
-import { useBusy } from './semaphore'
+import { DiagnoseSemaphoreKey, DiagnoseServiceKey, Issue } from '@xmcl/runtime-api'
+import { useBusy, useServiceBusy } from './semaphore'
 import { useService } from './service'
 
 export const IssueHandler: InjectionKey<Record<string, (issue: Issue) => void>> = Symbol('IssueHandler')
@@ -30,7 +30,7 @@ export function useIssues() {
     }
     return issues
   })
-  const refreshing = useBusy('diagnose')
+  const refreshing = useBusy(DiagnoseSemaphoreKey)
 
   function fix(issue: Issue, issues: readonly Issue[]) {
     console.log(`Fix issue ${issue.id}`)

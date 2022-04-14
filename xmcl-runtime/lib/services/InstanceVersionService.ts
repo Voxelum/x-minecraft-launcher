@@ -1,6 +1,6 @@
 import { diagnose, MinecraftFolder } from '@xmcl/core'
 import { diagnoseInstall, InstallProfile } from '@xmcl/installer'
-import { Asset, DEFAULT_PROFILE, Exception, getExpectVersion, getResolvedVersion, InstallableLibrary, InstanceVersionException, InstanceVersionService as IInstanceVersionService, isSameForgeVersion, IssueReport, parseOptifineVersion, RuntimeVersions, versionLockOf } from '@xmcl/runtime-api'
+import { Asset, DEFAULT_PROFILE, getExpectVersion, getResolvedVersion, InstallableLibrary, InstanceVersionException, InstanceVersionService as IInstanceVersionService, InstanceVersionServiceKey, isSameForgeVersion, IssueReport, parseOptifineVersion, RuntimeVersions, versionLockOf } from '@xmcl/runtime-api'
 import { readJSON } from 'fs-extra'
 import { join, relative } from 'path'
 import LauncherApp from '../app/LauncherApp'
@@ -8,7 +8,7 @@ import { exists } from '../util/fs'
 import DiagnoseService from './DiagnoseService'
 import InstallService from './InstallService'
 import InstanceService from './InstanceService'
-import AbstractService, { Inject, Singleton, Subscribe } from './Service'
+import AbstractService, { Inject, Singleton } from './Service'
 import VersionService from './VersionService'
 
 export default class InstanceVersionService extends AbstractService implements IInstanceVersionService {
@@ -18,7 +18,7 @@ export default class InstanceVersionService extends AbstractService implements I
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
     @Inject(InstallService) installService: InstallService,
   ) {
-    super(app)
+    super(app, InstanceVersionServiceKey)
 
     diagnoseService.registerMatchedFix(['missingVersionJson', 'missingVersionJar', 'corruptedVersionJson', 'corruptedVersionJar'],
       async (issues) => {
@@ -133,30 +133,23 @@ export default class InstanceVersionService extends AbstractService implements I
         await installService.installByProfile((issues[0].parameters as any).installProfile)
       },
       this.diagnoseVersion.bind(this))
-  }
 
-  @Subscribe('instanceSelect')
-  protected async onInstanceSelect() {
-    await this.diagnoseVersion()
-  }
-
-  @Subscribe('localVersions', 'localVersionAdd', 'localVersionRemove')
-  protected async onLocalVersionsChanged() {
-    await this.diagnoseVersion()
-  }
-
-  @Subscribe('instanceEdit')
-  protected async onInstance(payload: any) {
-    if (payload.path !== this.instanceService.state.path) {
-      return
-    }
-    const report: Partial<IssueReport> = {}
-    if ('runtime' in payload) {
-      await this.diagnoseVersion()
+    this.storeManager.subscribe('instanceSelect', () => {
+      this.diagnoseVersion()
+    }).subscribe('instanceEdit', async (payload) => {
+      if (payload.path !== this.instanceService.state.path) {
+        return
+      }
+      const report: Partial<IssueReport> = {}
+      if ('runtime' in payload) {
+        await this.diagnoseVersion()
+        this.diagnoseService.report(report)
+        return
+      }
       this.diagnoseService.report(report)
-      return
-    }
-    this.diagnoseService.report(report)
+    }).subscribeAll(['localVersions', 'localVersionAdd', 'localVersionRemove'], async () => {
+      await this.diagnoseVersion()
+    })
   }
 
   /**

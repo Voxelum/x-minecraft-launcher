@@ -1,6 +1,7 @@
 import { Exception, GeneralException, ServiceKey } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { Manager } from '.'
+import LauncherApp from '../app/LauncherApp'
 import { Client } from '../engineBridge'
 import BaseService from '../services/BaseService'
 import CurseForgeService from '../services/CurseForgeService'
@@ -8,7 +9,6 @@ import DiagnoseService from '../services/DiagnoseService'
 import ExternalAuthSkinService from '../services/ExternalAuthSkinService'
 import ImportService from '../services/ImportService'
 import InstallService from '../services/InstallService'
-import ModpackService from '../services/ModpackService'
 import InstanceIOService from '../services/InstanceIOService'
 import InstanceJavaService from '../services/InstanceJavaService'
 import InstanceLogService from '../services/InstanceLogService'
@@ -21,14 +21,14 @@ import InstanceShaderPacksService from '../services/InstanceShaderPacksService'
 import InstanceVersionService from '../services/InstanceVersionService'
 import JavaService from '../services/JavaService'
 import LaunchService from '../services/LaunchService'
+import ModpackService from '../services/ModpackService'
 import { ModrinthService } from '../services/ModrinthService'
 import ResourcePackPreviewService from '../services/ResourcePackPreviewService'
 import ResourceService from '../services/ResourceService'
 import ServerStatusService from '../services/ServerStatusService'
-import AbstractService, { KEYS_SYMBOL, PARAMS_SYMBOL, ServiceConstructor, StatefulService, SUBSCRIBE_SYMBOL } from '../services/Service'
+import AbstractService, { PARAMS_SYMBOL, ServiceConstructor, StatefulService } from '../services/Service'
 import UserService from '../services/UserService'
 import VersionService from '../services/VersionService'
-import LauncherApp from '../app/LauncherApp'
 import { ObjectRegistry } from '../util/objectRegistry'
 
 interface ServiceCallSession {
@@ -43,56 +43,42 @@ export default class ServiceManager extends Manager {
 
   private activeServices: AbstractService[] = []
 
-  /**
-   * The service exposed to the remote
-   */
-  private exposedService: Record<string, AbstractService> = {}
+  private servicesMap: Record<string, AbstractService> = {}
 
   private usedSession = 0
 
   private sessions: { [key: number]: ServiceCallSession } = {}
 
   getService<T = AbstractService>(key: ServiceKey<T>): T | undefined {
-    return this.exposedService[key as any] as any
+    return this.servicesMap[key as any] as any
   }
 
   protected addService<S extends AbstractService>(type: ServiceConstructor<S>) {
     this.registeredServices.push(type)
   }
 
-  /**
-   * Setup all services.
-   */
-  setupServices() {
-    this.log(`Setup service ${this.app.gameDataPath}`)
-
-    // create service instance
-    const serviceMap = this.exposedService
-    const injection = new ObjectRegistry()
-
-    injection.register(LauncherApp as any, this.app)
-
-    const discoverService = (ServiceConstructor: ServiceConstructor) => {
-      if (injection.getObject(ServiceConstructor)) {
-        return
-      }
-      const types = Reflect.get(ServiceConstructor, PARAMS_SYMBOL)
-      const params: any[] = [this.app]
-      if (types) {
-        for (let i = 0; i < types.length; i++) {
-          const type = types[i]
-          if (type) {
-            if (injection.getObject(type)) {
-              // inject object
-              params[i] = injection.getObject(type)
-            } else if (Object.getPrototypeOf(type) === AbstractService || Object.getPrototypeOf(type) === StatefulService) {
-              // injecting a service
-              params[i] = discoverService(type)
-              if (!params[i]) {
-                throw new Error(`Cannot find service ${type}`)
-              }
-            } else {
-              throw new Error(`Cannot inject type ${type} to service ${type.name}!`)
+  getOrCreateService<T extends AbstractService>(ServiceConstructor: ServiceConstructor<T>): T {
+    const existed = this.servicesInstanceMap.getObject(ServiceConstructor)
+    if (existed) {
+      return existed
+    }
+    const types = Reflect.get(ServiceConstructor, PARAMS_SYMBOL)
+    const params: any[] = new Array(types?.length || 1)
+    params[0] = this.app
+    if (types) {
+      for (let i = 0; i < types.length; i++) {
+        const type = types[i]
+        if (type) {
+          if (type instanceof LauncherApp) {
+            params[i] = this.app
+          } else if (this.servicesInstanceMap.getObject(type)) {
+            // inject object
+            params[i] = this.servicesInstanceMap.getObject(type)
+          } else if (Object.getPrototypeOf(type) === AbstractService || Object.getPrototypeOf(type) === StatefulService) {
+            // injecting a service
+            params[i] = this.getOrCreateService(type)
+            if (!params[i]) {
+              throw new Error(`Cannot find service ${type}`)
             }
           }
         }
@@ -101,20 +87,9 @@ export default class ServiceManager extends Manager {
       const service = new ServiceConstructor(...params)
       injection.register(ServiceConstructor, service)
       this.activeServices.push(service)
-      const key = Reflect.get(ServiceConstructor, KEYS_SYMBOL)
-      if (key) {
-        serviceMap[key] = service
-        this.log(`Expose service ${key} to remote`)
-      } else {
-        this.warn(`Unexposed the service ${ServiceConstructor.name}`)
-      }
-
-      const subscriptions = Reflect.get(service, SUBSCRIBE_SYMBOL)
-      if (subscriptions) {
-        for (const { mutations, handler } of subscriptions) {
-          this.app.serviceStateManager.subscribeAll(mutations, handler.bind(service))
-        }
-      }
+      const key = service.name
+      serviceMap[key as string] = service
+      this.log(`Expose service ${key} to remote`)
 
       return service
     }
@@ -181,7 +156,7 @@ export default class ServiceManager extends Manager {
    * @returns The service call session id
    */
   private handleServiceCall(client: Client, service: string, name: string, payload: any): number | undefined {
-    const serv = this.exposedService[service]
+    const serv = this.servicesMap[service]
     if (!serv) {
       this.error(`Cannot execute service call ${name} from service ${service}. No service exposed as ${service}.`)
     } else {
