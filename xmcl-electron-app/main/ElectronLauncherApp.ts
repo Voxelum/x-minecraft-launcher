@@ -12,6 +12,7 @@ import Controller from './Controller'
 import defaultApp from './defaultApp'
 import { DownloadAppInstallerTask } from './utils/appinstaller'
 import { isDirectory } from './utils/fs'
+import { setLinuxProtocol } from './utils/protocol'
 import { checkUpdateTask as _checkUpdateTask, DownloadAsarUpdateTask, DownloadFullUpdateTask, quitAndInstallAsar, quitAndInstallFullUpdate, setup } from './utils/updater'
 
 export default class ElectronLauncherApp extends LauncherApp {
@@ -183,35 +184,7 @@ export default class ElectronLauncherApp extends LauncherApp {
     })
 
     if (this.platform.name === 'linux') {
-      const homePath = app.getPath('home')
-      const desktopFile = join(homePath, '.local', 'share', 'applications', 'xmcl.desktop')
-      try {
-        writeFileSync(desktopFile, `[Desktop Entry]\nName=xmcl\nExec=${app.getPath('exe')} %u\nType=Application\nMimeType=x-scheme-handler/xmcl;`)
-        this.log(`Try to set the linux desktop file ${desktopFile}`)
-        const result = execSync('xdg-settings set default-url-scheme-handler xmcl xmcl.desktop')
-        this.log(result)
-      } catch (e) {
-        this.error('Fail to set default protocol on linux:')
-        this.error(e)
-
-        try {
-          const mimesAppsList = join(homePath, '.config', 'mimeapps.list')
-          const content = readFileSync(mimesAppsList, 'utf-8')
-          if (content.indexOf('x-scheme-handler/xmcl=xmcl.desktop') === -1) {
-            let lines = content.split('\n')
-            const defaultAppsHeaderIndex = lines.indexOf('[Default Applications]')
-            if (defaultAppsHeaderIndex === -1) {
-              lines.push('[Default Applications]')
-              lines.push('x-scheme-handler/xmcl=xmcl.desktop')
-            } else {
-              lines = [...lines.slice(0, defaultAppsHeaderIndex + 1), 'x-scheme-handler/xmcl=xmcl.desktop', ...lines.slice(defaultAppsHeaderIndex + 1)]
-            }
-            writeFileSync(mimesAppsList, lines.join('\n'))
-          }
-        } catch (e) {
-          this.error(e)
-        }
-      }
+      await setLinuxProtocol(app.getPath('home'))
     }
 
     await super.setup()
