@@ -47,7 +47,7 @@
 <script lang=ts>
 import { computed, defineComponent } from '@vue/composition-api'
 import { MinecraftVersion } from '@xmcl/installer'
-import { Status, versionLockOf, write } from '@xmcl/runtime-api'
+import { Status, LockKey } from '@xmcl/runtime-api'
 import { useBusy, useI18n } from '/@/composables'
 import { required, withDefault } from '/@/util/props'
 
@@ -62,7 +62,7 @@ export default defineComponent({
     statuses: required<Record<string, Status>>(Object),
   },
   setup(props) {
-    const key = write(versionLockOf(props.source.id))
+    const key = LockKey.version(props.source.id)
     const installing = useBusy(key)
     const isSelected = computed(() => props.source.id === props.selected)
     const { $t } = useI18n()

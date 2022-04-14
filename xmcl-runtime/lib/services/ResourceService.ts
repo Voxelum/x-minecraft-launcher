@@ -1,4 +1,4 @@
-import { AnyPersistedResource, AnyResource, Exception, ImportResourceOptions, ImportResourcesOptions, isPersistedResource, ParseResourceOptions, ParseResourcesOptions, PersistedResource, Resource, ResourceDomain, ResourceException, resourceLoadSemaphore, ResourceService as IResourceService, ResourceServiceKey, ResourceState, ResourceType, UpdateResourceOptions } from '@xmcl/runtime-api'
+import { AnyPersistedResource, AnyResource, ImportResourceOptions, ImportResourcesOptions, isPersistedResource, ParseResourceOptions, ParseResourcesOptions, PersistedResource, Resource, ResourceDomain, ResourceException, resourceLoadSemaphore, ResourceService as IResourceService, ResourceServiceKey, ResourceState, ResourceType, UpdateResourceOptions } from '@xmcl/runtime-api'
 import { requireString } from '../util/object'
 import { task } from '@xmcl/task'
 import { FSWatcher } from 'fs'
@@ -11,7 +11,7 @@ import { fixResourceSchema } from '../util/dataFix'
 import { isSystemError } from '../util/error'
 import { copyPassively, ENOENT_ERROR, fileType, FileType, readdirEnsured } from '../util/fs'
 import { createPromiseSignal } from '../util/promiseSignal'
-import { ExportService, Singleton, StatefulService } from './Service'
+import { Singleton, StatefulService } from './Service'
 
 export interface ParseResourceContext {
   stat?: FileStat
@@ -39,10 +39,7 @@ export interface Query {
  * 4. The watcher write the parsed the resource metadata
  * 5. The watcher get the metadata json update event, and validate & update the metadata cache & state
  */
-@ExportService(ResourceServiceKey)
 export default class ResourceService extends StatefulService<ResourceState> implements IResourceService {
-  createState() { return new ResourceState() }
-
   private cache = new ResourceCache()
 
   /**
@@ -79,7 +76,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
   }
 
   constructor(app: LauncherApp) {
-    super(app, async () => {
+    super(app, ResourceServiceKey, () => new ResourceState(), async () => {
       for (const domain of [
         ResourceDomain.Mods,
         ResourceDomain.ResourcePacks,
@@ -88,7 +85,7 @@ export default class ResourceService extends StatefulService<ResourceState> impl
         ResourceDomain.ShaderPacks,
         ResourceDomain.Unknown,
       ]) {
-        this.loadPromises[domain].accept(this.loadDomain(domain))
+        this.loadPromises[domain].accept(this.load(domain))
       }
     })
   }
@@ -133,8 +130,8 @@ export default class ResourceService extends StatefulService<ResourceState> impl
     return undefined
   }
 
-  @Singleton((key) => resourceLoadSemaphore(key))
-  private async loadDomain(domain: ResourceDomain) {
+  @Singleton(d => d)
+  async load(domain: ResourceDomain) {
     const path = this.getPath(domain)
     const files = await readdirEnsured(path)
     const result: PersistedResource[] = []
@@ -420,6 +417,18 @@ export default class ResourceService extends StatefulService<ResourceState> impl
   }
 
   // helper methods
+
+  getExistedCurseforgeResource(projectId: number, fileId: number) {
+    const mod = this.state.mods.find(m => m.curseforge && m.curseforge.fileId === fileId && m.curseforge.projectId === projectId)
+    if (mod) return mod
+    const res = this.state.resourcepacks.find(m => m.curseforge && m.curseforge.fileId === fileId && m.curseforge.projectId === projectId)
+    if (res) return res
+  }
+
+  getExistedModrinthResource(projId: string, verId: string) {
+    const mod = this.state.mods.find(m => m.modrinth && m.modrinth.projectId === projId && m.modrinth.versionId === verId)
+    if (mod) return mod
+  }
 
   async queryExistedResourceByPath(path: string, context: ParseResourceContext) {
     let result: AnyPersistedResource | undefined

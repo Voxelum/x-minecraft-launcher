@@ -1,6 +1,6 @@
 import { checksum, MinecraftFolder } from '@xmcl/core'
 import { createDefaultCurseforgeQuery, DownloadTask, UnzipTask } from '@xmcl/installer'
-import { AnyPersistedResource, assetsLock, createTemplate, ExportInstanceOptions, InstanceFile, InstanceFileCurseforge, InstanceFileModrinth, InstanceFileUrl, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceManifest, InstanceSchema, InstanceUpdate, librariesLock, RuntimeVersions, versionLockOf } from '@xmcl/runtime-api'
+import { AnyPersistedResource, createTemplate, ExportInstanceOptions, InstanceFile, InstanceFileCurseforge, InstanceFileModrinth, InstanceFileUrl, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceManifest, InstanceSchema, InstanceUpdate, LockKey, RuntimeVersions } from '@xmcl/runtime-api'
 import { BaseTask, task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { mkdtemp, readdir, readJson, remove, stat, unlink } from 'fs-extra'
@@ -14,13 +14,12 @@ import { ZipTask } from '../util/zip'
 import InstanceService from './InstanceService'
 import InstanceVersionService from './InstanceVersionService'
 import ResourceService from './ResourceService'
-import AbstractService, { ExportService, Inject, Singleton } from './Service'
+import AbstractService, { Inject, Lock, Singleton } from './Service'
 import VersionService from './VersionService'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
-@ExportService(InstanceIOServiceKey)
 export default class InstanceIOService extends AbstractService implements IInstanceIOService {
   constructor(app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
@@ -28,7 +27,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(VersionService) private versionService: VersionService,
   ) {
-    super(app)
+    super(app, InstanceIOServiceKey)
   }
 
   /**
@@ -65,7 +64,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
 
     // add assets
     if (includeAssets) {
-      releases.push(await this.semaphoreManager.getLock(assetsLock).acquireRead())
+      releases.push(await this.semaphoreManager.getLock(LockKey.assets).acquireRead())
       const assetsJson = resolve(root, 'assets', 'indexes', `${version.assets}.json`)
       zipTask.addFile(assetsJson, `assets/indexes/${version.assets}.json`)
       const objects = await readJson(assetsJson).then(manifest => manifest.objects)
@@ -78,7 +77,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
     const versionsChain = version.pathChain
     for (const versionPath of versionsChain) {
       const versionId = basename(versionPath)
-      releases.push(await this.semaphoreManager.getLock(versionLockOf(versionId)).acquireRead())
+      releases.push(await this.semaphoreManager.getLock(LockKey.version(versionId)).acquireRead())
       if (includeVersionJar && await exists(join(versionPath, `${versionId}.jar`))) {
         zipTask.addFile(join(versionPath, `${versionId}.jar`), `versions/${versionId}/${versionId}.jar`)
       }
@@ -87,7 +86,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
 
     // add libraries
     if (includeLibraries) {
-      releases.push(await this.semaphoreManager.getLock(librariesLock).acquireRead())
+      releases.push(await this.semaphoreManager.getLock(LockKey.libraries).acquireRead())
       for (const lib of version.libraries) {
         zipTask.addFile(resolve(root, 'libraries', lib.download.path),
           `libraries/${lib.download.path}`)
@@ -307,6 +306,7 @@ export default class InstanceIOService extends AbstractService implements IInsta
     }
   }
 
+  @Singleton((o) => o.path)
   async applyInstanceUpdate(options: {
     path: string
     updates: Array<InstanceFileCurseforge | InstanceFileUrl | InstanceFileModrinth>

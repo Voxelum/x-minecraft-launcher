@@ -1,6 +1,6 @@
 import { computed } from '@vue/composition-api'
 import { BaseServiceKey, JavaRecord, JavaServiceKey } from '@xmcl/runtime-api'
-import { useBusy, useService } from '/@/composables'
+import { useServiceBusy, useService } from '/@/composables'
 
 export function useJavaService() {
   return useService(JavaServiceKey)
@@ -11,7 +11,7 @@ export function useJava() {
   const { openInBrowser } = useService(BaseServiceKey)
   const all = computed(() => state.all)
   const missing = computed(() => state.missingJava)
-  const refreshing = useBusy('java()')
+  const refreshing = useServiceBusy(JavaServiceKey, 'refreshLocalJava')
   function remove(java: JavaRecord) {
     state.javaRemove(java)
   }

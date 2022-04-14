@@ -89,8 +89,8 @@
 
 <script lang=ts>
 import { defineComponent, reactive, computed, toRefs, onMounted, watch } from '@vue/composition-api'
-import { useBusy, useSaveResource } from '/@/composables'
-import { InstanceSave } from '@xmcl/runtime-api'
+import { useServiceBusy, useSaveResource } from '/@/composables'
+import { InstanceSave, InstanceSavesServiceKey } from '@xmcl/runtime-api'
 import { useInstanceSaves } from '../composables/save'
 
 export default defineComponent({
@@ -115,7 +115,7 @@ export default defineComponent({
     const { cloneSave, readAllInstancesSaves: loadAllPreviews, importSave } = useInstanceSaves()
     const { resources: storedSaves } = useSaveResource()
     const nothingSelected = computed(() => data.profilesCopyFrom.every(v => !v) && data.resourcesCopyFrom.every(v => !v))
-    const loadingSaves = useBusy(loadAllPreviews)
+    const loadingSaves = useServiceBusy(InstanceSavesServiceKey, 'readAllInstancesSaves')
 
     onMounted(() => {
       loadAllPreviews().then((all) => {

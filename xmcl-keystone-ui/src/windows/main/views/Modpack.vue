@@ -98,8 +98,8 @@
 <script lang=ts setup>
 import { Ref } from '@vue/composition-api'
 import FilterCombobox from '/@/components/FilterCombobox.vue'
-import { useService, useRouter, useBusy, useFilterCombobox, useI18n } from '/@/composables'
-import { ResourceServiceKey, ResourceType } from '@xmcl/runtime-api'
+import { useService, useRouter, useServiceBusy, useFilterCombobox, useI18n } from '/@/composables'
+import { ResourceServiceKey, ResourceType, ResourceDomain } from '@xmcl/runtime-api'
 import { isStringArrayEquals } from '/@/util/equal'
 import ModpackCard from './ModpackCard.vue'
 import { AddInstanceDialogKey } from './AppAddInstanceDialog.vue'
@@ -121,7 +121,7 @@ function getFilterOptions(item: ModpackItem) {
   ]
 }
 const deleting = ref(undefined as undefined | ModpackItem)
-const refreshing = useBusy('loadDomain(modpacks:resource)')
+const refreshing = useServiceBusy(ResourceServiceKey, 'load', ResourceDomain.Modpacks)
 const filterOptions = computed(() => items.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
 const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (v) => `${v.name} ${v.author} ${v.version}`)
 const { show: showDelete } = useDialog('deletion')

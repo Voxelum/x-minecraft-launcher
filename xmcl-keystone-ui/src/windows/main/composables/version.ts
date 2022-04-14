@@ -1,7 +1,7 @@
 import { computed, onMounted, reactive, Ref, toRefs, watch } from '@vue/composition-api'
 import { MinecraftVersion } from '@xmcl/installer'
 import { filterOptifineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, Status, InstallServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
-import { useBusy, useService, useServiceOnly } from '/@/composables'
+import { useServiceBusy, useService, useServiceOnly } from '/@/composables'
 
 export function useVersions() {
   return useServiceOnly(VersionServiceKey, 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory')
@@ -34,7 +34,7 @@ export function useLocalVersions() {
 export function useMinecraftVersions() {
   const { state } = useVersionService()
   const { state: installState, refreshMinecraft, installMinecraft } = useInstallService()
-  const refreshing = useBusy('refreshMinecraft()')
+  const refreshing = useServiceBusy(InstallServiceKey, 'refreshMinecraft')
   const versions = computed(() => installState.minecraft.versions)
   const release = computed(() => installState.minecraft.versions.find(v => v.id === installState.minecraft.latest.release))
   const snapshot = computed(() => installState.minecraft.versions.find(v => v.id === installState.minecraft.latest.snapshot))
@@ -134,7 +134,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
   const { state: installState, refreshForge, installForge } = useInstallService()
   const { state } = useVersionService()
   const versions = computed(() => installState.forge.find(v => v.mcversion === minecraftVersion.value)?.versions ?? [])
-  const refreshing = useBusy('refreshForge()')
+  const refreshing = useServiceBusy(InstallServiceKey, 'refreshForge')
 
   const recommended = computed(() => {
     const vers = versions.value
@@ -202,7 +202,7 @@ export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
   const { state } = useVersionService()
 
   const versions = computed(() => Object.values(installState.liteloader.versions[minecraftVersion.value] || {}).filter(v => !!v))
-  const refreshing = useBusy('refreshLiteloader')
+  const refreshing = useServiceBusy(InstallServiceKey, 'refreshLiteloader')
   onMounted(() => {
     watch(minecraftVersion, () => {
       if (!versions.value) {
@@ -227,7 +227,7 @@ export function useOptifineVersions(minecraftVersion: Ref<string>) {
   const { state } = useVersionService()
 
   const versions = computed(() => installState.optifine.versions.filter(v => v.mcversion === minecraftVersion.value))
-  const refreshing = useBusy('refreshOptifine()')
+  const refreshing = useServiceBusy(InstallServiceKey, 'refreshOptifine')
 
   const statuses = computed(() => {
     const localVersions: { [k: string]: boolean } = {}

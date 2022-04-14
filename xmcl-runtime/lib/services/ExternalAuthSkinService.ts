@@ -7,7 +7,7 @@ import LauncherApp from '../app/LauncherApp'
 import { validateSha256 } from '../util/fs'
 import DiagnoseService from './DiagnoseService'
 import ResourceService from './ResourceService'
-import AbstractService, { ExportService, Inject, Singleton, Subscribe } from './Service'
+import AbstractService, { Inject, Singleton } from './Service'
 import UserService from './UserService'
 
 const AUTHLIB_ORG_NAME = 'org.to2mbn:authlibinjector'
@@ -15,7 +15,6 @@ const AUTHLIB_ORG_NAME = 'org.to2mbn:authlibinjector'
 /**
  * Majorly support the third party skin using authlib injector
  */
-@ExportService(ExternalAuthSkinServiceKey)
 export default class ExternalAuthSkinService extends AbstractService implements IExternalAuthSkinService {
   constructor(
     app: LauncherApp,
@@ -23,10 +22,15 @@ export default class ExternalAuthSkinService extends AbstractService implements 
     @Inject(UserService) private userService: UserService,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
-    super(app)
+    super(app, ExternalAuthSkinServiceKey)
     diagnoseService.registerMatchedFix(['missingAuthlibInjector'],
       () => this.installAuthlibInjection(),
       this.diagnoseAuthlibInjector.bind(this))
+    this.storeManager.subscribeAll(['userGameProfileSelect', 'userProfileUpdate', 'userSnapshot'], async () => {
+      const report: Partial<IssueReport> = {}
+      await this.diagnoseAuthlibInjector(report)
+      this.diagnoseService.report(report)
+    })
   }
 
   async downloadCustomSkinLoader(type: 'forge' | 'fabric' = 'forge') {
@@ -91,13 +95,6 @@ export default class ExternalAuthSkinService extends AbstractService implements 
     this.diagnoseService.report(report)
 
     return path
-  }
-
-  @Subscribe('userGameProfileSelect', 'userProfileUpdate', 'userSnapshot')
-  async onUserUpdate() {
-    const report: Partial<IssueReport> = {}
-    await this.diagnoseAuthlibInjector(report)
-    this.diagnoseService.report(report)
   }
 
   @Singleton()

@@ -49,9 +49,9 @@
 <script lang=ts>
 import { computed, defineComponent } from '@vue/composition-api'
 import { FabricArtifactVersion } from '@xmcl/installer'
+import { LockKey } from '@xmcl/runtime-api'
 import { useBusy } from '/@/composables'
 import { required } from '/@/util/props'
-import { versionLockOf, write } from '@xmcl/runtime-api'
 
 export default defineComponent({
   props: {
@@ -63,7 +63,7 @@ export default defineComponent({
     install: required<(version: FabricArtifactVersion) => void>(Function),
   },
   setup(props) {
-    const key = write(versionLockOf(`fabric-${props.minecraft}-${props.source.version}`))
+    const key = LockKey.version(`fabric-${props.minecraft}-${props.source.version}`)
     const installing = useBusy(key)
     const isSelected = computed(() => props.selected === props.source.version)
     const status = computed(() => props.statuses(`${props.minecraft}-${props.source.version}`))

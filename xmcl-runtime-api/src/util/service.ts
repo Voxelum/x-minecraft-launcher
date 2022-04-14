@@ -56,7 +56,7 @@ export function createServiceProxy<T>(channel: ServiceChannel<T>, initialState?:
           console.log(payload)
           return await channel.call(key as any, payload)
         } catch (e) {
-          console.error(`Fail to call ${channel.key}.${key}`)
+          console.error(`Fail to call ${channel.key}.${key as any}`)
           throw e
         }
       }

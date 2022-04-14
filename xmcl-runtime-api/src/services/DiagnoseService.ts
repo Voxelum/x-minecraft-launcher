@@ -95,6 +95,8 @@ export interface DiagnoseService extends StatefulService<DiagnoseState> {
 
 export const DiagnoseServiceKey: ServiceKey<DiagnoseService> = 'DiagnoseService'
 
+export const DiagnoseSemaphoreKey = 'diagnose'
+
 export type DiagnoseServiceExceptions = {
   type: 'issueFix'
   error: unknown

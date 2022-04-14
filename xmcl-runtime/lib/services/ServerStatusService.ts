@@ -1,17 +1,16 @@
 import { queryStatus } from '@xmcl/client'
-import { createFailureServerStatus, PingServerOptions, ServerStatusService as IServerStatusService, ServerStatusServiceKey, protocolToMinecraft } from '@xmcl/runtime-api'
+import { createFailureServerStatus, PingServerOptions, protocolToMinecraft, ServerStatusService as IServerStatusService, ServerStatusServiceKey } from '@xmcl/runtime-api'
 import { LauncherApp } from '../app/LauncherApp'
 import { isSystemError } from '../util/error'
-import AbstractService, { ExportService } from './Service'
+import AbstractService from './Service'
 
-@ExportService(ServerStatusServiceKey)
 export default class ServerStatusService extends AbstractService implements IServerStatusService {
   private protocolToVersions: Record<number, string[]> = protocolToMinecraft
 
   private versionToProtocols: Record<string, number> = {}
 
   constructor(app: LauncherApp) {
-    super(app, async () => {
+    super(app, ServerStatusServiceKey, async () => {
       // const protocolFile = this.getAppDataPath('protocol.json')
       // if (await exists(protocolFile)) {
       //   const buf = await readFile(protocolFile)

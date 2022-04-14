@@ -1,4 +1,5 @@
 import { checksum } from '@xmcl/core'
+import { isFileNoFound } from '@xmcl/runtime-api'
 import { AbortableTask, CancelledError } from '@xmcl/task'
 import { createHash } from 'crypto'
 import { fromFile } from 'file-type'
@@ -55,6 +56,26 @@ export async function copyPassively(src: string, dest: string, filter: (name: st
     await Promise.all(children.map((p) => copyPassively(resolve(src, p), resolve(dest, p))))
   } else if (await missing(dest)) {
     await copyFile(src, dest)
+  }
+}
+
+/**
+ * This copy will not replace existed files.
+ */
+export async function linkPassively(src: string, dest: string, filter: (name: string) => boolean = () => true) {
+  const s = await stat(src).catch(() => { })
+  if (!s) { return }
+  if (!filter(src)) { return }
+  if (s.isDirectory()) {
+    await ensureDir(dest)
+    const children = await readdir(src)
+    await Promise.all(children.map((p) => linkPassively(resolve(src, p), resolve(dest, p))))
+  } else if (await missing(dest)) {
+    await link(src, dest).catch((e) => {
+      if (!isFileNoFound(e)) {
+        throw e
+      }
+    })
   }
 }
 

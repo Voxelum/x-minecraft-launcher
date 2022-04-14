@@ -1,5 +1,4 @@
-import { State } from '@xmcl/runtime-api'
-import { MutationKeys, MutationPayload } from '@xmcl/runtime-api/src/state'
+import { State, MutationKeys, MutationPayload } from '@xmcl/runtime-api'
 import { EventEmitter } from 'events'
 import { Manager } from '.'
 import { ServiceStateProxy } from '../util/serviceProxy'

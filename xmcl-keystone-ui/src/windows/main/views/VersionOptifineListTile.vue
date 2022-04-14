@@ -29,7 +29,7 @@
 
 <script lang=ts>
 import { computed, defineComponent } from '@vue/composition-api'
-import { OptifineVersion, Status, versionLockOf, write } from '@xmcl/runtime-api'
+import { OptifineVersion, Status, LockKey } from '@xmcl/runtime-api'
 import { useBusy } from '/@/composables'
 import { required } from '/@/util/props'
 
@@ -45,7 +45,7 @@ export default defineComponent({
   setup(props) {
     const key = computed(() => props.source.mcversion + '_' + props.source.type + '_' + props.source.patch)
     const status = computed(() => props.statuses[key.value])
-    const resourceKey = write(versionLockOf(`optifine-${props.minecraft}-${props.source.type}_${props.source.patch}`))
+    const resourceKey = LockKey.version(`optifine-${props.minecraft}-${props.source.type}_${props.source.patch}`)
     const installing = useBusy(resourceKey)
     const isSelected = computed(() => props.selected.type === props.source.type && props.selected.patch === props.source.patch)
     const onClick = (version: OptifineVersion) => {

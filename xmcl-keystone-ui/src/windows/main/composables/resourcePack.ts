@@ -1,7 +1,7 @@
 import { computed, onMounted, ref, Ref, watch } from '@vue/composition-api'
 import { PackMeta } from '@xmcl/resourcepack'
 import { InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, isPersistedResource, PersistedResourcePackResource, ResourceServiceKey, packFormatVersionRange } from '@xmcl/runtime-api'
-import { useBusy, useI18n, useService } from '/@/composables'
+import { useServiceBusy, useI18n, useService } from '/@/composables'
 import { isStringArrayEquals } from '/@/util/equal'
 import unknownPack from '/@/assets/unknown_pack.png'
 import { basename } from '/@/util/basename'
@@ -47,7 +47,7 @@ export function useInstanceResourcePacks() {
   const { showDirectory } = useService(InstanceResourcePacksServiceKey)
   const { $t } = useI18n()
 
-  const loading = useBusy('editGameSetting()')
+  const loading = useServiceBusy(InstanceOptionsServiceKey, 'editGameSetting')
   /**
    * The resource pack name array.
    * It's the REVERSED version of the resourcePacks array in options.txt (gamesetting).

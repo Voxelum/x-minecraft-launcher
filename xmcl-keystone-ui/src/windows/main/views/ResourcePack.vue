@@ -170,15 +170,16 @@
 </template>
 
 <script lang=ts setup>
-import { defineComponent, reactive, ref, toRefs, computed, Ref, onUnmounted } from '@vue/composition-api'
-import { useResourceOperation, useDragTransferList, useDropImport, useRouter, useBusy, useFilterCombobox, useI18n } from '/@/composables'
-import FilterCombobox from '/@/components/FilterCombobox.vue'
-import Hint from '/@/components/Hint.vue'
-import ResourcePackCard from './ResourcePackCard.vue'
-import { ResourcePackItem, useInstanceResourcePacks } from '../composables/resourcePack'
-import { useInstanceBase } from '../composables/instance'
+import { computed, onUnmounted, reactive, ref, Ref } from '@vue/composition-api'
+import { ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
+import { useInstanceBase } from '../composables/instance'
+import { ResourcePackItem, useInstanceResourcePacks } from '../composables/resourcePack'
+import ResourcePackCard from './ResourcePackCard.vue'
+import FilterCombobox from '/@/components/FilterCombobox.vue'
+import Hint from '/@/components/Hint.vue'
+import { useDragTransferList, useDropImport, useFilterCombobox, useI18n, useResourceOperation, useRouter, useServiceBusy } from '/@/composables'
 
 function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {
   function getFilterOptions(item: ResourcePackItem) {
@@ -201,7 +202,7 @@ function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePac
 const filterText = ref('')
 const rightList: Ref<any> = ref(null)
 const leftList: Ref<any> = ref(null)
-const loading = useBusy('loadDomain(resourcepacks:resource)')
+const loading = useServiceBusy(ResourceServiceKey, 'load', ResourceDomain.ResourcePacks)
 const { enabled, disabled, add, remove, commit, insert, showDirectory } = useInstanceResourcePacks()
 const { removeResource } = useResourceOperation()
 const { push } = useRouter()

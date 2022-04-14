@@ -1,28 +1,22 @@
-import { readInfo } from '@xmcl/server-info'
+import { InstanceServerInfoService as IInstanceServerInfoService, InstanceServerInfoServiceKey, PINGING_STATUS, ServerInfoState } from '@xmcl/runtime-api'
 import { readFile } from 'fs-extra'
 import { join } from 'path'
-import ServerStatusService from './ServerStatusService'
-import { ExportService, Inject, Singleton, StatefulService, Subscribe } from './Service'
 import LauncherApp from '../app/LauncherApp'
 import { exists } from '../util/fs'
-import { PINGING_STATUS, InstanceServerInfoService as IInstanceServerInfoService, InstanceServerInfoServiceKey, ServerInfoState } from '@xmcl/runtime-api'
+import ServerStatusService from './ServerStatusService'
+import { Inject, Singleton, StatefulService } from './Service'
 
-@ExportService(InstanceServerInfoServiceKey)
 export class InstanceServerInfoService extends StatefulService<ServerInfoState> implements IInstanceServerInfoService {
   private watching = ''
 
   constructor(app: LauncherApp,
     @Inject(ServerStatusService) private serverStatusService: ServerStatusService,
   ) {
-    super(app)
-  }
-
-  createState() { return new ServerInfoState() }
-
-  @Subscribe('instanceSelect')
-  async onInstanceSelect(path: string) {
-    this.watching = path
-    this.refresh()
+    super(app, InstanceServerInfoServiceKey, () => new ServerInfoState())
+    this.storeManager.subscribe('instanceSelect', (path: string) => {
+      this.watching = path
+      this.refresh()
+    })
   }
 
   @Singleton()

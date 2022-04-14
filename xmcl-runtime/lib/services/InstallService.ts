@@ -1,6 +1,6 @@
 import { diagnose, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
 import { DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL } from '@xmcl/installer'
-import { Asset, assetsLock, ForgeVersion, ForgeVersionList, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallService as IInstallService, InstallServiceKey, InstallState, isFabricLoaderLibrary, isForgeLibrary, librariesLock, OptifineVersion, read, RefreshForgeOptions, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, versionLockOf, VersionMinecraftSchema, VersionOptifineSchema, write } from '@xmcl/runtime-api'
+import { Asset, ForgeVersion, ForgeVersionList, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallService as IInstallService, InstallServiceKey, InstallState, isFabricLoaderLibrary, isForgeLibrary, OptifineVersion, RefreshForgeOptions, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, LockKey, VersionMinecraftSchema, VersionOptifineSchema } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { ensureFile, readJson, readJSON, writeFile, writeJson } from 'fs-extra'
 import { URL } from 'url'
@@ -9,13 +9,12 @@ import { createSafeFile } from '../util/persistance'
 import BaseService from './BaseService'
 import JavaService from './JavaService'
 import ResourceService from './ResourceService'
-import { ExportService, Inject, Lock, Singleton, StatefulService } from './Service'
+import { Inject, Lock, Singleton, StatefulService } from './Service'
 import VersionService from './VersionService'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
  */
-@ExportService(InstallServiceKey)
 export default class InstallService extends StatefulService<InstallState> implements IInstallService {
   private refreshedMinecraft = false
   private refreshedFabric = false
@@ -35,7 +34,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(JavaService) private javaService: JavaService,
   ) {
-    super(app, async () => {
+    super(app, InstallServiceKey, () => new InstallState(), async () => {
       const [mc, forge, liteloader, fabric, optifine] = await Promise.all([
         this.minecraftVersionJson.read(),
         this.forgeVersionJson.read(),
@@ -75,10 +74,6 @@ export default class InstallService extends StatefulService<InstallState> implem
         this.optifineVersionJson.write(this.state.optifine)
       })
     })
-  }
-
-  createState() {
-    return new InstallState()
   }
 
   protected getMinecraftJsonManifestRemote() {
@@ -221,7 +216,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     this.refreshedMinecraft = true
   }
 
-  @Lock((v) => [read(versionLockOf(v)), write(assetsLock)])
+  @Lock((v) => [LockKey.read.version(v), LockKey.write.assets])
   async installAssetsForVersion(version: string) {
     const option = this.getInstallOptions()
     const location = MinecraftFolder.from(this.getPath())
@@ -254,7 +249,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     }
   }
 
-  @Lock((v) => [read(versionLockOf(v)), write(assetsLock), write(librariesLock)])
+  @Lock((v) => [LockKey.read.version(v), LockKey.write.assets, LockKey.read.libraries])
   async installDependencies(version: string) {
     const option = this.getInstallOptions()
     const location = this.getPath()
@@ -263,7 +258,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
   }
 
-  @Lock(v => [read(versionLockOf(v))])
+  @Lock(v => [LockKey.read.version(v)])
   async reinstall(version: string) {
     const option = this.getInstallOptions()
     const location = this.getPath()
@@ -284,7 +279,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     await this.submit(installAssetsTask(local, option).setName('installAssets'))
   }
 
-  @Lock(write(assetsLock))
+  @Lock(LockKey.write.assets)
   async installAssets(assets: Asset[]) {
     const option = this.getInstallOptions()
     const location = this.getPath()
@@ -292,7 +287,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     await this.submit(task)
   }
 
-  @Lock((v: MinecraftVersion) => write(versionLockOf(v.id)))
+  @Lock((v: MinecraftVersion) => LockKey.write.version(v.id))
   async installMinecraft(meta: MinecraftVersion) {
     const id = meta.id
 
@@ -307,7 +302,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     }
   }
 
-  @Lock(write(librariesLock))
+  @Lock(LockKey.write.libraries)
   async installLibraries(libraries: InstallableLibrary[]) {
     let resolved: ResolvedLibrary[]
     if ('downloads' in libraries[0]) {
@@ -367,7 +362,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     }
   }
 
-  @Lock((v: _InstallForgeOptions) => write(versionLockOf(`forge-${v.mcversion}-${v.version}`)))
+  @Lock((v: _InstallForgeOptions) => LockKey.write.version(`forge-${v.mcversion}-${v.version}`))
   async installForge(options: _InstallForgeOptions) {
     const minecraft = MinecraftFolder.from(this.getPath())
     let { issues } = await diagnose(options.mcversion, minecraft)
@@ -387,7 +382,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     return await this.installForgeInternal(options)
   }
 
-  @Lock((v: _InstallForgeOptions) => write(versionLockOf(`forge-${v.mcversion}-${v.version}`)))
+  @Lock((v: _InstallForgeOptions) => LockKey.write.version(`forge-${v.mcversion}-${v.version}`))
   async installForgeUnsafe(options: _InstallForgeOptions) {
     return await this.installForgeInternal(options)
   }
@@ -442,7 +437,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     this.refreshedFabric = true
   }
 
-  @Lock((v: InstallFabricOptions) => write(versionLockOf(`fabric-${v.minecraft}-${v.loader}`)))
+  @Lock((v: InstallFabricOptions) => LockKey.write.version(`fabric-${v.minecraft}-${v.loader}`))
   async installFabric(options: InstallFabricOptions) {
     const minecraft = MinecraftFolder.from(this.getPath())
     const hasValidVersion = async () => {
@@ -461,7 +456,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     return await this.installFabricInternal(options)
   }
 
-  @Lock((v: InstallFabricOptions) => write(versionLockOf(`fabric-${v.minecraft}-${v.loader}`)))
+  @Lock((v: InstallFabricOptions) => LockKey.write.version(`fabric-${v.minecraft}-${v.loader}`))
   async installFabricUnsafe(options: InstallFabricOptions) {
     return await this.installFabricInternal(options)
   }
@@ -517,8 +512,7 @@ export default class InstallService extends StatefulService<InstallState> implem
     this.refreshedOptifine = true
   }
 
-  // @Lock(v => )
-  @Lock((v: InstallOptifineOptions) => write(versionLockOf(`optifine-${v.mcversion}-${v.type}_${v.patch}`)))
+  @Lock((v: InstallOptifineOptions) => LockKey.write.version(`optifine-${v.mcversion}-${v.type}_${v.patch}`))
   async installOptifine(options: InstallOptifineOptions) {
     const minecraft = new MinecraftFolder(this.getPath())
     const optifineVersion = `${options.type}_${options.patch}`

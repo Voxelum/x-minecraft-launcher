@@ -13,13 +13,12 @@ import InstanceModsService from './InstanceModsService'
 import InstanceOptionsService from './InstanceOptionsService'
 import InstanceService from './InstanceService'
 import ResourceService from './ResourceService'
-import AbstractService, { ExportService, Inject } from './Service'
+import AbstractService, { Inject } from './Service'
 import VersionService from './VersionService'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
-@ExportService(ModpackServiceKey)
 export default class ModpackService extends AbstractService implements IModpackService {
   constructor(app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
@@ -28,7 +27,7 @@ export default class ModpackService extends AbstractService implements IModpackS
     @Inject(InstanceModsService) private instanceModsService: InstanceModsService,
     @Inject(InstanceOptionsService) private instanceOptionsService: InstanceOptionsService,
   ) {
-    super(app)
+    super(app, ModpackServiceKey)
   }
 
   /**

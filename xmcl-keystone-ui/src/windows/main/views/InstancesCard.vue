@@ -170,19 +170,18 @@
   </v-card>
 </template>
 <script lang=ts setup>
-import unknownServer from '/@/assets/unknown_server.png'
-import { useBusy, useI18n, useService } from '/@/composables'
-import { BaseServiceKey, Instance, InstanceServiceKey, write } from '@xmcl/runtime-api'
-import { getBanner } from '/@/util/banner'
+import { BaseServiceKey, Instance, InstanceServiceKey, LockKey } from '@xmcl/runtime-api'
+import { ContextMenuItem } from '../composables/contextMenu'
+import { useInstanceServerStatus } from '../composables/serverStatus'
+import fabricPng from '/@/assets/fabric.png'
 import forgePng from '/@/assets/forge.png'
 import minecraftPng from '/@/assets/minecraft.png'
-import fabricPng from '/@/assets/fabric.png'
-import { useInstanceServerStatus } from '../composables/serverStatus'
-import { vContextMenu } from '../directives/contextMenu'
-import { ContextMenuItem } from '../composables/contextMenu'
+import unknownServer from '/@/assets/unknown_server.png'
+import { useBusy, useI18n, useService } from '/@/composables'
+import { getBanner } from '/@/util/banner'
 
 const props = defineProps<{ instance: Instance }>()
-const isBusy = useBusy(write(props.instance.path))
+const isBusy = useBusy(LockKey.instance(props.instance.path))
 const { state } = useService(InstanceServiceKey)
 const isSelected = computed(() => state.path === props.instance.path)
 const { status } = useInstanceServerStatus(props.instance.path)

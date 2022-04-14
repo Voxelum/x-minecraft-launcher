@@ -1,12 +1,11 @@
-import { JavaVersion } from '@xmcl/core'
-import { InstanceJavaService as IInstanceJavaService, InstanceSchema, InstanceState, IssueReport, JavaState, parseVersion } from '@xmcl/runtime-api'
+import { InstanceJavaService as IInstanceJavaService, InstanceJavaServiceKey, IssueReport, parseVersion } from '@xmcl/runtime-api'
 import LauncherApp from '../app/LauncherApp'
 import { missing } from '../util/fs'
 import DiagnoseService from './DiagnoseService'
 import InstanceService from './InstanceService'
 import InstanceVersionService from './InstanceVersionService'
 import JavaService from './JavaService'
-import AbstractService, { Inject, Singleton, Subscribe } from './Service'
+import AbstractService, { Inject, Singleton } from './Service'
 import VersionService from './VersionService'
 
 export default class InstanceJavaService extends AbstractService implements IInstanceJavaService {
@@ -16,7 +15,7 @@ export default class InstanceJavaService extends AbstractService implements IIns
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
   ) {
-    super(app)
+    super(app, InstanceJavaServiceKey)
 
     diagnoseService.registerMatchedFix(['invalidJava'], () => {
       const matchingJava = this.getInstanceJava(true)?.path
@@ -53,6 +52,14 @@ export default class InstanceJavaService extends AbstractService implements IIns
       })
       this.diagnoseJava()
     })
+    this.storeManager.subscribe('instanceEdit', async (payload) => {
+      if (payload.path !== this.instanceService.state.path) {
+        return
+      }
+      if ('java' in payload || 'runtime' in payload) {
+        await this.diagnoseJava()
+      }
+    })
   }
 
   /**
@@ -67,16 +74,6 @@ export default class InstanceJavaService extends AbstractService implements IIns
     }
     const javaVersion = this.instanceVersionService.getInstanceVersion().javaVersion
     return this.javaService.getJavaForVersion(javaVersion, validOnly)
-  }
-
-  @Subscribe('instanceEdit')
-  async onInstance(payload: InstanceSchema & { path: string }) {
-    if (payload.path !== this.instanceService.state.path) {
-      return
-    }
-    if ('java' in payload || 'runtime' in payload) {
-      await this.diagnoseJava()
-    }
   }
 
   @Singleton()

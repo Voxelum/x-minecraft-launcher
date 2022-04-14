@@ -53,12 +53,12 @@
 
 <script lang=ts setup>
 import { InstanceServiceKey } from '@xmcl/runtime-api'
-import { useBusy, useI18n, useService } from '/@/composables'
+import { useServiceBusy, useI18n, useService } from '/@/composables'
 
 const { showOpenDialog } = windowController
 const { t } = useI18n()
 const { addExternalInstance } = useService(InstanceServiceKey)
-const loading = useBusy('addExternalInstance()')
+const loading = useServiceBusy(InstanceServiceKey, 'addExternalInstance')
 
 async function onImport(type: 'zip' | 'folder') {
   const fromFolder = type === 'folder'
@@ -75,8 +75,6 @@ async function onImport(type: 'zip' | 'folder') {
     const filePath = filePaths[0]
     if (type === 'folder') {
       addExternalInstance(filePath)
-    } else {
-      // await importInstance(f)
     }
   }
 }

@@ -1,6 +1,6 @@
 import { computed, onMounted, onUnmounted, ref, watch } from '@vue/composition-api'
-import { InstanceOptionsServiceKey, PersistedShaderPackResource, InstanceShaderPacksServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
-import { useBusy, useService, useRefreshable, useI18n } from '/@/composables'
+import { InstanceOptionsServiceKey, PersistedShaderPackResource, InstanceShaderPacksServiceKey, ResourceServiceKey, ResourceDomain } from '@xmcl/runtime-api'
+import { useServiceBusy, useService, useRefreshable, useI18n } from '/@/composables'
 
 export interface ShaderPackItem {
   name: string
@@ -16,7 +16,7 @@ export function useShaderpacks() {
   const { state, updateResource, removeResource } = useService(ResourceServiceKey)
   const { state: options, editShaderOptions } = useService(InstanceOptionsServiceKey)
   const { showDirectory } = useService(InstanceShaderPacksServiceKey)
-  const loading = useBusy('loadDomain(shaderpacks:resource)')
+  const loading = useServiceBusy(ResourceServiceKey, 'load', ResourceDomain.ShaderPacks)
   const { $t } = useI18n()
 
   const shaderPacks = ref([] as ShaderPackItem[])

@@ -122,7 +122,7 @@
 import { computed, defineComponent, inject, nextTick, onMounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
 import { UserException, UserServiceKey } from '@xmcl/runtime-api'
 import Hint from '/@/components/Hint.vue'
-import { IssueHandler, useBusy, useI18n, useService, useServiceOnly } from '/@/composables'
+import { IssueHandler, useServiceBusy, useI18n, useService, useServiceOnly } from '/@/composables'
 import { required } from '/@/util/props'
 import { useDialog } from '../composables/dialog'
 import { useSelectedServices } from '../composables/login'
@@ -174,7 +174,7 @@ export default defineComponent({
       return false
     })
 
-    const isLogining = useBusy('login()')
+    const isLogining = useServiceBusy(UserServiceKey, 'login')
     const isMicrosoft = computed(() => authService.value === 'microsoft')
     const isPersistent = computed(() => !logined.value)
     const passwordLabel = computed(() => ($te(`user.${authService.value}.password`)

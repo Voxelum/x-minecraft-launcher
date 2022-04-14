@@ -13,15 +13,12 @@ import InstanceService from './InstanceService'
 import InstanceShaderPacksService from './InstanceShaderPacksService'
 import InstanceVersionService from './InstanceVersionService'
 import JavaService from './JavaService'
-import { ExportService, Inject, StatefulService } from './Service'
+import { Inject, StatefulService } from './Service'
 import UserService from './UserService'
 import VersionService from './VersionService'
 
-@ExportService(LaunchServiceKey)
 export default class LaunchService extends StatefulService<LaunchState> implements ILaunchService {
   private launchedProcesses: ChildProcess[] = []
-
-  createState() { return new LaunchState() }
 
   constructor(app: LauncherApp,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
@@ -35,7 +32,7 @@ export default class LaunchService extends StatefulService<LaunchState> implemen
     @Inject(JavaService) private javaService: JavaService,
     @Inject(UserService) private userService: UserService,
   ) {
-    super(app)
+    super(app, LaunchServiceKey, () => new LaunchState())
   }
 
   async generateArguments() {

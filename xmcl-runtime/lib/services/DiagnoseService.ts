@@ -2,7 +2,7 @@ import { DiagnoseService as IDiagnoseService, DiagnoseServiceException, Diagnose
 import { basename } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { AggregateExecutor } from '../util/aggregator'
-import { ExportService, Singleton, StatefulService } from './Service'
+import { Singleton, StatefulService } from './Service'
 
 export type DiagnoseFunction = (report: Partial<IssueReport>) => Promise<void>
 
@@ -15,7 +15,6 @@ export interface Fix {
 /**
  * This is the service provides the diagnose service for current launch profile
  */
-@ExportService(DiagnoseServiceKey)
 export default class DiagnoseService extends StatefulService<DiagnoseState> implements IDiagnoseService {
   private fixes: Fix[] = []
 
@@ -24,11 +23,7 @@ export default class DiagnoseService extends StatefulService<DiagnoseState> impl
     500)
 
   constructor(app: LauncherApp) {
-    super(app)
-  }
-
-  createState(): DiagnoseState {
-    return new DiagnoseState()
+    super(app, DiagnoseServiceKey, () => new DiagnoseState())
   }
 
   registerMatchedFix(matched: string[], fixFunc: (issues: Issue[]) => Promise<any> | void, recheck: DiagnoseFunction = async () => { }) {

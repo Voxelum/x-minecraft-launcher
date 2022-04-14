@@ -43,7 +43,7 @@
 <script lang=ts>
 import { computed, defineComponent } from '@vue/composition-api'
 import { ForgeVersion } from '@xmcl/installer'
-import { Status, versionLockOf, write } from '@xmcl/runtime-api'
+import { Status, LockKey } from '@xmcl/runtime-api'
 import { useBusy, useI18n } from '/@/composables'
 import { required } from '/@/util/props'
 
@@ -56,7 +56,7 @@ export default defineComponent({
     selected: required(String),
   },
   setup(props) {
-    const key = write(versionLockOf(`forge-${props.source.mcversion}-${props.source.version}`))
+    const key = LockKey.version(`forge-${props.source.mcversion}-${props.source.version}`)
     const installing = useBusy(key)
     const isSelected = computed(() => props.selected === props.source.version)
     const { $t } = useI18n()

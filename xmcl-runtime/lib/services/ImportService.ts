@@ -9,9 +9,8 @@ import InstanceOptionsService from './InstanceOptionsService'
 import InstanceSavesService from './InstanceSavesService'
 import InstanceService from './InstanceService'
 import ResourceService, { ParseResourceContext } from './ResourceService'
-import AbstractService, { ExportService, Inject } from './Service'
+import AbstractService, { Inject } from './Service'
 
-@ExportService(ImportServiceKey)
 export default class ImportService extends AbstractService implements IImportService {
   constructor(
     app: LauncherApp,
@@ -22,7 +21,7 @@ export default class ImportService extends AbstractService implements IImportSer
     @Inject(InstanceOptionsService) private instanceGameSettingService: InstanceOptionsService,
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {
-    super(app)
+    super(app, ImportServiceKey)
   }
 
   async importFile(options: ImportFileOptions): Promise<void> {
@@ -62,10 +61,10 @@ export default class ImportService extends AbstractService implements IImportSer
       const zipTask = new ZipTask(tempZipPath)
       await zipTask.includeAs(resolved.path, '')
       await zipTask.startAndWait()
-      const zipedContext: ParseResourceContext = {}
-      const existed = await this.resourceService.queryExistedResourceByPath(tempZipPath, zipedContext)
+      const zippedContext: ParseResourceContext = {}
+      const existed = await this.resourceService.queryExistedResourceByPath(tempZipPath, zippedContext)
       if (!existed) {
-        const [resolvedZip] = await this.resourceService.parseResource({ ...options, path: tempZipPath }, zipedContext)
+        const [resolvedZip] = await this.resourceService.parseResource({ ...options, path: tempZipPath }, zippedContext)
         await this.resourceService.importParsedResource({ ...options, path: tempZipPath }, resolvedZip, icon)
       }
       await unlink(tempZipPath)

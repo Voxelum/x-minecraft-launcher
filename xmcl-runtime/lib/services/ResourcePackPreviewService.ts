@@ -9,13 +9,12 @@ import InstanceResourcePackService from './InstanceResourcePacksService'
 import InstanceService from './InstanceService'
 import InstanceVersionService from './InstanceVersionService'
 import LaunchService from './LaunchService'
-import AbstractService, { ExportService, Inject, Subscribe } from './Service'
+import AbstractService, { Inject } from './Service'
 
 interface NamedResourcePackWrapper extends ResourcePackWrapper {
   path: string
 }
 
-@ExportService(ResourcePackPreviewServiceKey)
 export default class ResourcePackPreviewService extends AbstractService implements IResourcePackPreviewService {
   private resourceManager = new ResourceManager()
 
@@ -36,7 +35,7 @@ export default class ResourcePackPreviewService extends AbstractService implemen
     @Inject(InstanceOptionsService) private instanceGameSettingService: InstanceOptionsService,
     @Inject(LaunchService) private launchService: LaunchService,
   ) {
-    super(app)
+    super(app, ResourcePackPreviewServiceKey)
     launchService.on('minecraft-start', () => {
       if (this.active) {
         this.queue.waitUntilEmpty().then(() => {
@@ -49,16 +48,14 @@ export default class ResourcePackPreviewService extends AbstractService implemen
         })
       }
     })
-  }
-
-  @Subscribe('instanceGameSettings')
-  protected onGameSettingChanged(setting: { resourcePacks: string[] }) {
-    if (!this.active) {
-      return
-    }
-    if (setting.resourcePacks) {
-      this.updateResourcePacks(setting.resourcePacks)
-    }
+    this.storeManager.subscribe('instanceGameSettings', (setting) => {
+      if (!this.active) {
+        return
+      }
+      if (setting.resourcePacks) {
+        this.updateResourcePacks(setting.resourcePacks)
+      }
+    })
   }
 
   protected getResourcePackPath(pack: string) {
