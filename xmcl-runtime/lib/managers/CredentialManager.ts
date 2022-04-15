@@ -3,6 +3,7 @@ import { Manager } from '.'
 import { createPlugin } from '../util/credentialPlugin'
 import LauncherApp from '../app/LauncherApp'
 import { CLIENT_ID, IS_DEV } from '../constant'
+import { UserService } from '../services/UserService'
 
 export default class CredentialManager extends Manager {
   readonly scopes: string[]
@@ -75,6 +76,7 @@ export default class CredentialManager extends Manager {
         loginHint: username,
       })
       await this.app.openInBrowser(url)
+      this.app.serviceManager.getOrCreateService(UserService).emit('microsoft-authorize-url', url)
       code = await new Promise<string>((resolve, reject) => {
         this.cancelWait = () => {
           reject(new Error('Timeout to wait the auth code! Please try again later!'))
