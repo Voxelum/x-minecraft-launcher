@@ -6,10 +6,10 @@ import { Agent } from 'https'
 import { basename, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { getCurseforgeSourceInfo } from '../entities/resource'
-import ResourceService from './ResourceService'
+import { ResourceService } from './ResourceService'
 import { Inject, Singleton, StatefulService } from './Service'
 
-export default class CurseForgeService extends StatefulService<CurseforgeState> implements ICurseForgeService {
+export class CurseForgeService extends StatefulService<CurseforgeState> implements ICurseForgeService {
   private projectTimestamp = ''
 
   private projectCache: Record<number, AddonInfo> = {}

@@ -5,19 +5,19 @@ import { constants } from 'fs'
 import { access, chmod } from 'fs-extra'
 import { EOL } from 'os'
 import LauncherApp from '../app/LauncherApp'
-import DiagnoseService from './DiagnoseService'
-import ExternalAuthSkinService from './ExternalAuthSkinService'
-import InstanceJavaService from './InstanceJavaService'
-import InstanceResourcePackService from './InstanceResourcePacksService'
-import InstanceService from './InstanceService'
-import InstanceShaderPacksService from './InstanceShaderPacksService'
-import InstanceVersionService from './InstanceVersionService'
-import JavaService from './JavaService'
+import { DiagnoseService } from './DiagnoseService'
+import { ExternalAuthSkinService } from './ExternalAuthSkinService'
+import { InstanceJavaService } from './InstanceJavaService'
+import { InstanceResourcePackService } from './InstanceResourcePacksService'
+import { InstanceService } from './InstanceService'
+import { InstanceShaderPacksService } from './InstanceShaderPacksService'
+import { InstanceVersionService } from './InstanceVersionService'
+import { JavaService } from './JavaService'
 import { Inject, StatefulService } from './Service'
-import UserService from './UserService'
-import VersionService from './VersionService'
+import { UserService } from './UserService'
+import { VersionService } from './VersionService'
 
-export default class LaunchService extends StatefulService<LaunchState> implements ILaunchService {
+export class LaunchService extends StatefulService<LaunchState> implements ILaunchService {
   private launchedProcesses: ChildProcess[] = []
 
   constructor(app: LauncherApp,

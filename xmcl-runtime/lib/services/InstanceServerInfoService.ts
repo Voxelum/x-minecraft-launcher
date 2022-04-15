@@ -3,7 +3,7 @@ import { readFile } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { exists } from '../util/fs'
-import ServerStatusService from './ServerStatusService'
+import { ServerStatusService } from './ServerStatusService'
 import { Inject, Singleton, StatefulService } from './Service'
 
 export class InstanceServerInfoService extends StatefulService<ServerInfoState> implements IInstanceServerInfoService {

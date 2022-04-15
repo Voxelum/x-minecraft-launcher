@@ -1,6 +1,6 @@
 import Controller from '@/Controller'
-import { BaseServiceKey } from '@xmcl/runtime-api'
-import { app, dialog, Menu, ProcessMemoryInfo, shell, Tray } from 'electron'
+import { BaseService } from '@xmcl/runtime'
+import { app, Menu, shell, Tray } from 'electron'
 import iconPath from '../assets/apple-touch-icon.png'
 import favcon2XPath from '../assets/favicon@2x.png'
 import { ControllerPlugin } from './plugin'
@@ -9,7 +9,7 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
   const { t } = this.i18n
   const createMenu = () => {
     const app = this.app
-    const service = this.app.serviceManager.getService(BaseServiceKey)
+    const service = this.app.serviceManager.getOrCreateService(BaseService)
     const onBrowseAppClicked = () => {
       if (this.browserRef && !this.browserRef.isDestroyed()) {
         this.browserRef.show()
@@ -28,7 +28,7 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
         type: 'normal',
         label: t('checkUpdate'),
         click() {
-          service?.checkUpdate()
+          service.checkUpdate()
         },
       },
       {
@@ -88,9 +88,6 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
   Promise.all([
     new Promise<void>((resolve) => {
       this.app.once('engine-ready', resolve)
-    }),
-    new Promise<void>((resolve) => {
-      this.app.once('all-services-ready', resolve)
     }),
   ]).then(() => {
     const tray = this.tray

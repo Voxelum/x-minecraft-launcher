@@ -1,6 +1,7 @@
 import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
 import { InstalledAppManifest, ReleaseInfo } from '@xmcl/runtime-api'
 import { Host } from '@xmcl/runtime/lib/app/Host'
+import { ServiceConstructor, AbstractService } from '@xmcl/runtime/lib/services/Service'
 import { Task } from '@xmcl/task'
 import { getAppInstallerUri, getPackageFamilyName } from '@xmcl/windows-utils'
 import { execSync } from 'child_process'
@@ -10,6 +11,7 @@ import { join } from 'path'
 import { URL } from 'url'
 import Controller from './Controller'
 import defaultApp from './defaultApp'
+import { preloadServices } from './preloadServices'
 import { DownloadAppInstallerTask } from './utils/appinstaller'
 import { isDirectory } from './utils/fs'
 import { setLinuxProtocol } from './utils/protocol'
@@ -157,6 +159,10 @@ export default class ElectronLauncherApp extends LauncherApp {
     } catch {
       return ''
     }
+  }
+
+  getPreloadServices(): ServiceConstructor<AbstractService>[] {
+    return preloadServices
   }
 
   waitEngineReady(): Promise<void> {

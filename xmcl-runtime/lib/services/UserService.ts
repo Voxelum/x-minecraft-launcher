@@ -1,7 +1,7 @@
 /* eslint-disable quotes */
 import { DownloadTask } from '@xmcl/installer'
 import {
-  Exception, GameProfileAndTexture, LoginMicrosoftOptions, LoginOptions,
+  GameProfileAndTexture, LoginMicrosoftOptions, LoginOptions,
   RefreshSkinOptions,
   UploadSkinOptions, UserException, UserSchema, UserService as IUserService, UserServiceKey, UserState,
 } from '@xmcl/runtime-api'
@@ -16,7 +16,7 @@ import { requireNonnull, requireObject, requireString } from '../util/object'
 import { createSafeFile } from '../util/persistance'
 import { createDynamicThrottle } from '../util/trafficAgent'
 import { fitMinecraftLauncherProfileData } from '../util/userData'
-import DiagnoseService from './DiagnoseService'
+import { DiagnoseService } from './DiagnoseService'
 import { Inject, Singleton, StatefulService } from './Service'
 
 export interface LauncherProfile {
@@ -85,7 +85,7 @@ export interface LauncherProfile {
   }
 }
 
-export default class UserService extends StatefulService<UserState> implements IUserService {
+export class UserService extends StatefulService<UserState> implements IUserService {
   private refreshSkinRecord: Record<string, boolean> = {}
 
   private lookup = createDynamicThrottle(lookup, (uuid, options = {}) => (options.api ?? PROFILE_API_MOJANG).profile, 2400)

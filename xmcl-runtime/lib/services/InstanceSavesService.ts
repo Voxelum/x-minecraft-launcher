@@ -22,7 +22,7 @@ import { Inject, Singleton, StatefulService } from './Service'
 /**
  * Provide the ability to preview saves data of an instance
  */
-export default class InstanceSavesService extends StatefulService<SaveState> implements IInstanceSavesService {
+export class InstanceSavesService extends StatefulService<SaveState> implements IInstanceSavesService {
   private watcher: FSWatcher | undefined
 
   private watching = ''

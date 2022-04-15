@@ -9,10 +9,10 @@ import { readLaunchProfile } from '../entities/launchProfile'
 import { exists, isDirectory, missing, readdirEnsured } from '../util/fs'
 import { assignShallow, requireObject, requireString } from '../util/object'
 import { createSafeFile, createSafeIO } from '../util/persistance'
-import InstallService from './InstallService'
-import ServerStatusService from './ServerStatusService'
+import { InstallService } from './InstallService'
+import { ServerStatusService } from './ServerStatusService'
 import { Inject, Singleton, StatefulService } from './Service'
-import UserService from './UserService'
+import { UserService } from './UserService'
 
 const INSTANCES_FOLDER = 'instances'
 

@@ -3,33 +3,8 @@ import { Task } from '@xmcl/task'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
 import { Client } from '../engineBridge'
-import BaseService from '../services/BaseService'
-import CurseForgeService from '../services/CurseForgeService'
-import DiagnoseService from '../services/DiagnoseService'
-import ExternalAuthSkinService from '../services/ExternalAuthSkinService'
-import ImportService from '../services/ImportService'
-import InstallService from '../services/InstallService'
-import InstanceIOService from '../services/InstanceIOService'
-import InstanceJavaService from '../services/InstanceJavaService'
-import InstanceLogService from '../services/InstanceLogService'
-import InstanceModsService from '../services/InstanceModsService'
-import InstanceOptionsService from '../services/InstanceOptionsService'
-import InstanceResourcePackService from '../services/InstanceResourcePacksService'
-import InstanceSavesService from '../services/InstanceSavesService'
-import InstanceService from '../services/InstanceService'
-import InstanceShaderPacksService from '../services/InstanceShaderPacksService'
-import InstanceVersionService from '../services/InstanceVersionService'
-import JavaService from '../services/JavaService'
-import LaunchService from '../services/LaunchService'
-import ModpackService from '../services/ModpackService'
-import { ModrinthService } from '../services/ModrinthService'
-import ResourcePackPreviewService from '../services/ResourcePackPreviewService'
-import ResourceService from '../services/ResourceService'
-import ServerStatusService from '../services/ServerStatusService'
-import AbstractService, { PARAMS_SYMBOL, ServiceConstructor, StatefulService } from '../services/Service'
-import UserService from '../services/UserService'
-import VersionService from '../services/VersionService'
 import { ObjectRegistry } from '../util/objectRegistry'
+import { AbstractService, PARAMS_SYMBOL, ServiceConstructor, StatefulService } from '../services/Service'
 
 interface ServiceCallSession {
   id: number
@@ -39,22 +14,19 @@ interface ServiceCallSession {
 }
 
 export default class ServiceManager extends Manager {
-  private registeredServices: ServiceConstructor[] = []
-
-  private activeServices: AbstractService[] = []
-
   private servicesMap: Record<string, AbstractService> = {}
+  private servicesInstanceMap: ObjectRegistry = new ObjectRegistry()
 
   private usedSession = 0
 
   private sessions: { [key: number]: ServiceCallSession } = {}
 
-  getService<T = AbstractService>(key: ServiceKey<T>): T | undefined {
-    return this.servicesMap[key as any] as any
+  constructor(app: LauncherApp, private preloadServices: ServiceConstructor[]) {
+    super(app)
   }
 
-  protected addService<S extends AbstractService>(type: ServiceConstructor<S>) {
-    this.registeredServices.push(type)
+  getServiceByKey<T>(type: ServiceKey<T>): T | undefined {
+    return this.servicesMap[type as string] as any
   }
 
   getOrCreateService<T extends AbstractService>(ServiceConstructor: ServiceConstructor<T>): T {
@@ -80,38 +52,22 @@ export default class ServiceManager extends Manager {
             if (!params[i]) {
               throw new Error(`Cannot find service ${type}`)
             }
+          } else {
+            throw new Error(`Cannot inject type ${type} to service ${type.name}!`)
           }
         }
       }
-
-      const service = new ServiceConstructor(...params)
-      injection.register(ServiceConstructor, service)
-      this.activeServices.push(service)
-      const key = service.name
-      serviceMap[key as string] = service
-      this.log(`Expose service ${key} to remote`)
-
-      return service
     }
 
-    for (const ServiceConstructor of [...Object.values(this.registeredServices)]) {
-      discoverService(ServiceConstructor)
-    }
-  }
+    const service = new ServiceConstructor(...params)
+    this.servicesInstanceMap.register(ServiceConstructor, service)
+    const key = service.name
+    this.servicesMap[key as string] = service
+    this.log(`Expose service ${key} to remote`)
 
-  /**
-   * Load all the services
-   */
-  async initializeServices() {
-    const startingTime = Date.now()
-    await Promise.all(this.activeServices.map(s => s.initialize().catch((e) => {
-      this.error(`Error during initialize service: ${Object.getPrototypeOf(s).constructor.name}`)
-      this.error(e)
-    }).finally(() => {
-      this.app.emit('service-ready', s)
-    })))
+    service.initialize()
 
-    this.log(`Successfully initialize services. Total Time is ${Date.now() - startingTime}ms.`)
+    return service
   }
 
   /**
@@ -196,7 +152,7 @@ export default class ServiceManager extends Manager {
   }
 
   dispose() {
-    return Promise.all(this.activeServices.map((s) => s.dispose().catch((e) => {
+    return Promise.all(Object.values(this.servicesMap).map((s) => s.dispose().catch((e) => {
       this.error(`Error during dispose ${Object.getPrototypeOf(s).constructor.name}:`)
       this.error(e)
     })))
@@ -205,35 +161,11 @@ export default class ServiceManager extends Manager {
   // SETUP CODE
 
   async setup() {
-    this.addService(BaseService)
-    this.addService(CurseForgeService)
-    this.addService(DiagnoseService)
-    this.addService(ExternalAuthSkinService)
-    this.addService(ImportService)
-    this.addService(InstallService)
-    this.addService(ModpackService)
-    this.addService(InstanceOptionsService)
-    this.addService(InstanceIOService)
-    this.addService(InstanceLogService)
-    this.addService(InstanceModsService)
-    this.addService(InstanceResourcePackService)
-    this.addService(InstanceSavesService)
-    this.addService(InstanceService)
-    this.addService(JavaService)
-    this.addService(LaunchService)
-    this.addService(ResourcePackPreviewService)
-    this.addService(ResourceService)
-    this.addService(ServerStatusService)
-    this.addService(UserService)
-    this.addService(VersionService)
-    this.addService(InstanceVersionService)
-    this.addService(InstanceJavaService)
-    this.addService(InstanceShaderPacksService)
-    this.addService(ModrinthService)
+    this.log(`Setup service ${this.app.gameDataPath}`)
 
-    this.setupServices()
-    await this.initializeServices()
-    this.app.emit('all-services-ready')
+    for (const ServiceConstructor of [...Object.values(this.preloadServices)]) {
+      this.getOrCreateService(ServiceConstructor)
+    }
   }
 
   async engineReady() {

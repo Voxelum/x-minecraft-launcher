@@ -1,19 +1,11 @@
 import { ServiceKey } from '../services/Service'
 
 export const LockKey = {
-  read: {
-    versions: 'read:versions',
-    libraries: 'read:libraries',
-    assets: 'read:assets',
-    version: (v: string) => `read:versions/${v}`,
-  },
-  write: {
-    versions: 'write:versions',
-    libraries: 'write:libraries',
-    assets: 'write:assets',
-    version: (v: string) => `write:versions/${v}`,
-    instance: (p: string) => `write:instances/${p}`,
-  },
+  versions: 'versions',
+  libraries: 'libraries',
+  assets: 'assets',
+  version: (v: string) => `versions/${v}`,
+  instance: (p: string) => `instances/${p}`,
 }
 
 export function resolveLocks(lock: string): string[] {

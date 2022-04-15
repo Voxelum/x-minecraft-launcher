@@ -6,15 +6,15 @@ import { dirname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { AggregateExecutor } from '../util/aggregator'
 import { linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
-import DiagnoseService from './DiagnoseService'
-import InstanceService from './InstanceService'
-import ResourceService from './ResourceService'
+import { DiagnoseService } from './DiagnoseService'
+import { InstanceService } from './InstanceService'
+import { ResourceService } from './ResourceService'
 import { Inject, Singleton, StatefulService } from './Service'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
  */
-export default class InstanceModsService extends StatefulService<InstanceModsState> implements IInstanceModsService {
+export class InstanceModsService extends StatefulService<InstanceModsState> implements IInstanceModsService {
   private modsWatcher: FSWatcher | undefined
 
   private addMod = new AggregateExecutor<AnyResource, AnyResource[]>(v => v,

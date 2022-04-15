@@ -12,15 +12,15 @@ import { copyPassively, exists, isDirectory, isFile, linkWithTimeoutOrCopy, miss
 import { requireObject, requireString } from '../util/object'
 import { ZipTask } from '../util/zip'
 import InstanceService from './InstanceService'
-import InstanceVersionService from './InstanceVersionService'
-import ResourceService from './ResourceService'
-import AbstractService, { Inject, Lock, Singleton } from './Service'
-import VersionService from './VersionService'
+import { InstanceVersionService } from './InstanceVersionService'
+import { ResourceService } from './ResourceService'
+import { AbstractService, Inject, Lock, Singleton } from './Service'
+import { VersionService } from './VersionService'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
-export default class InstanceIOService extends AbstractService implements IInstanceIOService {
+export class InstanceIOService extends AbstractService implements IInstanceIOService {
   constructor(app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,

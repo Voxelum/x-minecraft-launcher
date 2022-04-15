@@ -1,14 +1,14 @@
 import { InstanceJavaService as IInstanceJavaService, InstanceJavaServiceKey, IssueReport, parseVersion } from '@xmcl/runtime-api'
 import LauncherApp from '../app/LauncherApp'
 import { missing } from '../util/fs'
-import DiagnoseService from './DiagnoseService'
-import InstanceService from './InstanceService'
-import InstanceVersionService from './InstanceVersionService'
-import JavaService from './JavaService'
-import AbstractService, { Inject, Singleton } from './Service'
-import VersionService from './VersionService'
+import { DiagnoseService } from './DiagnoseService'
+import { InstanceService } from './InstanceService'
+import { InstanceVersionService } from './InstanceVersionService'
+import { JavaService } from './JavaService'
+import { AbstractService, Inject, Singleton } from './Service'
+import { VersionService } from './VersionService'
 
-export default class InstanceJavaService extends AbstractService implements IInstanceJavaService {
+export class InstanceJavaService extends AbstractService implements IInstanceJavaService {
   constructor(app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(JavaService) private javaService: JavaService,

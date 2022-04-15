@@ -1,9 +1,11 @@
-import { LaunchServiceKey, UserServiceKey } from '@xmcl/runtime-api'
+import { UserServiceKey } from '@xmcl/runtime-api'
 import { readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { v4 } from 'uuid'
 import { Manager } from '.'
 import { APP_INSIGHT_KEY, IS_DEV } from '../constant'
+import { LaunchService } from '../services/LaunchService'
+import { UserService } from '../services/UserService'
 
 export default class TelemetryManager extends Manager {
   private sessionId: string = v4()
@@ -50,32 +52,33 @@ export default class TelemetryManager extends Manager {
     tags[contract.applicationVersion] = `${this.app.version}#${this.app.build}`
 
     this.app.on('engine-ready', () => {
-      const launchService = this.app.serviceManager.getService(LaunchServiceKey)
-      launchService?.on('minecraft-start', (options) => {
-        appInsight.defaultClient.trackEvent({
-          name: 'minecraft-start',
-          properties: options,
+      this.app.serviceManager.getOrCreateService(LaunchService)
+        .on('minecraft-start', (options) => {
+          appInsight.defaultClient.trackEvent({
+            name: 'minecraft-start',
+            properties: options,
+          })
         })
-      }).on('minecraft-exit', ({ code, signal, crashReport }) => {
-        const normalExit = code === 0
-        const crashed = crashReport && crashReport.length > 0
-        if (normalExit) {
-          appInsight.defaultClient.trackEvent({
-            name: 'minecraft-exit',
-          })
-        } else {
-          appInsight.defaultClient.trackEvent({
-            name: 'minecraft-exit',
-            properties: {
-              code,
-              signal,
-              crashed,
-            },
-          })
-        }
-      })
+        .on('minecraft-exit', ({ code, signal, crashReport }) => {
+          const normalExit = code === 0
+          const crashed = crashReport && crashReport.length > 0
+          if (normalExit) {
+            appInsight.defaultClient.trackEvent({
+              name: 'minecraft-exit',
+            })
+          } else {
+            appInsight.defaultClient.trackEvent({
+              name: 'minecraft-exit',
+              properties: {
+                code,
+                signal,
+                crashed,
+              },
+            })
+          }
+        })
 
-      this.app.serviceManager.getService(UserServiceKey)!.on('user-login', (authService) => {
+      this.app.serviceManager.getOrCreateService(UserService).on('user-login', (authService) => {
         appInsight.defaultClient.trackEvent({
           name: 'user-login',
           properties: {
