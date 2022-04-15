@@ -61,6 +61,7 @@ export interface UploadSkinOptions {
 interface UserServiceEventMap {
   'user-login': string
   'error': UserException
+  'microsoft-authorize-url': string
 }
 
 export class UserState implements UserSchema {

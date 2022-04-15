@@ -498,13 +498,13 @@ mod:
   showIncompatible: 顯示不兼容 Mods
   unselected: 未選 Mods
 modpack:
+  delete:
+    hint: 這將刪除整合包 {name} 和他的基本資料。你確定麽？
+    title: 刪除整合包
   dropHint: 通過拖拽導入整合包文件
   filter: 過濾整合包
   showFile: 顯示 {file}
   showInCurseforge: 在 Curseforge 中顯示 {name}
-  delete: 
-    title: 刪除整合包
-    hint: 這將刪除整合包 {name} 和他的基本資料。你確定麽？
 modrinth:
   avaiableFor: 可用於
   categories:
@@ -904,6 +904,7 @@ user:
   invalidCredentials: 無法驗證. 用戶名或密碼錯誤.
   login: 登陸
   logout: 登出
+  manualLoginUrl: 如果瀏覽器沒有自动顯示，請點擊此鏈接進行身份驗證！
   microsoft:
     account: 微軟賬號
     name: 微軟

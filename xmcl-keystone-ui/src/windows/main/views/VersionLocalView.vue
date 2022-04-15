@@ -176,7 +176,7 @@
 import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api'
 import type { ResolvedVersion } from '@xmcl/core'
 import { required, withDefault } from '/@/util/props'
-import { useRefreshable } from '/@/composables/refreshable'
+import { useRefreshable } from '/@/composables'
 import { useLocalVersions } from '../composables/version'
 
 export default defineComponent({

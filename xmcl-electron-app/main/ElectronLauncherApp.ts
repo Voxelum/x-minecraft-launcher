@@ -72,7 +72,7 @@ export default class ElectronLauncherApp extends LauncherApp {
     //         return true;
     //     }
     // } else {
-    shell.openExternal(url)
+    await shell.openExternal(url)
     return true
     // }
     // return false;

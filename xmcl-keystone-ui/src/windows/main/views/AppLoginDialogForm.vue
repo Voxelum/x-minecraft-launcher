@@ -100,7 +100,21 @@
           </v-btn>
         </div>
 
-        <div style="margin-top: 25px">
+        <div
+          v-if="microsoftUrl"
+          class="mt-6"
+        >
+          <a
+            :href="microsoftUrl"
+            class="border-b border-b-current border-dashed"
+          >
+            {{ $t('user.manualLoginUrl') }}
+          </a>
+        </div>
+
+        <div
+          class="mt-4 "
+        >
           <a
             style="padding-right: 10px; z-index: 20"
             href="https://my.minecraft.net/en-us/password/forgot/"
@@ -149,6 +163,7 @@ export default defineComponent({
       username: '',
       password: '',
       isFormValid: true,
+      microsoftUrl: '',
     })
 
     const accountInput: Ref<any> = ref(null)
@@ -156,8 +171,7 @@ export default defineComponent({
     const hovered = ref(false)
 
     const { $te, $t } = useI18n()
-    const { login } = useServiceOnly(UserServiceKey, 'login', 'switchUserProfile')
-    const { state, removeUserProfile, cancelMicrosoftLogin } = useService(UserServiceKey)
+    const { state, removeUserProfile, cancelMicrosoftLogin, login, on } = useService(UserServiceKey)
     const authServiceItems: Ref<ServiceItem[]> = computed(() => ['microsoft', ...Object.keys(state.authServices), 'offline']
       .map((a) => ({ value: a, text: $te(`user.${a}.name`) ? $t(`user.${a}.name`) : a })))
     const profileServices: Ref<ServiceItem[]> = computed(() => Object.keys(state.profileServices)
@@ -194,6 +208,9 @@ export default defineComponent({
       reset: resetError,
       handleError,
     } = useLoginValidation(isThirdParty)
+    on('microsoft-authorize-url', (url) => {
+      data.microsoftUrl = url
+    })
 
     function reset() {
       data.username = history.value[0] ?? ''
