@@ -4,7 +4,7 @@ import { InstallProjectVersionOptions, ModrinthService as IModrinthService, Modr
 import { basename, join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { CacheDictionary } from '../util/cache'
-import ResourceService from './ResourceService'
+import { ResourceService } from './ResourceService'
 import { Inject, StatefulService } from './Service'
 
 export class ModrinthService extends StatefulService<ModrinthState> implements IModrinthService {

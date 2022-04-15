@@ -23,6 +23,39 @@ importers:
     dependencies:
       '@actions/core': 1.6.0
 
+  xmcl-client-vue:
+    specifiers:
+      '@types/eslint': ^8.2.1
+      '@types/uuid': ^3.4.10
+      '@typescript-eslint/eslint-plugin': ^5.6.0
+      '@typescript-eslint/parser': ^5.6.0
+      '@vue/reactivity': ^3.2.31
+      '@xmcl/runtime-api': workspace:*
+      esbuild: ^0.14.27
+      eslint: ~7
+      eslint-config-standard: ^16.0.3
+      eslint-plugin-import: ^2.25.3
+      eslint-plugin-node: ^11.1.0
+      eslint-plugin-promise: ^5.2.0
+      tslib: ^2.3.1
+      typescript: ^4.4.3
+    dependencies:
+      '@vue/reactivity': 3.2.32
+      '@xmcl/runtime-api': link:../xmcl-runtime-api
+    devDependencies:
+      '@types/eslint': 8.2.1
+      '@types/uuid': 3.4.10
+      '@typescript-eslint/eslint-plugin': 5.9.0_c05e6fca5974c04442e7c260534af929
+      '@typescript-eslint/parser': 5.9.0_eslint@7.32.0+typescript@4.5.4
+      esbuild: 0.14.28
+      eslint: 7.32.0
+      eslint-config-standard: 16.0.3_6a48346ff31498e55146b31bc801dc94
+      eslint-plugin-import: 2.25.4_eslint@7.32.0
+      eslint-plugin-node: 11.1.0_eslint@7.32.0
+      eslint-plugin-promise: 5.2.0_eslint@7.32.0
+      tslib: 2.3.1
+      typescript: 4.5.4
+
   xmcl-electron-app:
     specifiers:
       '@types/electron-devtools-installer': ^2.2.0
@@ -44,7 +77,7 @@ importers:
       '@xmcl/runtime': workspace:*
       '@xmcl/runtime-api': workspace:*
       '@xmcl/task': workspace:*
-      '@xmcl/windows-utils': ^0.0.10
+      '@xmcl/windows-utils': ^0.0.14
       builtin-modules: ^3.2.0
       chalk: ^4.1.2
       create-desktop-shortcuts: ^1.6.0
@@ -89,13 +122,13 @@ importers:
       '@typescript-eslint/eslint-plugin': 5.9.0_c05e6fca5974c04442e7c260534af929
       '@typescript-eslint/parser': 5.9.0_eslint@7.32.0+typescript@4.5.4
       '@vue/devtools': 5.3.4
-      '@vue/runtime-dom': 3.2.31
+      '@vue/runtime-dom': 3.2.33
       '@xmcl/core': link:../xmcl/packages/core
       '@xmcl/installer': link:../xmcl/packages/installer
       '@xmcl/runtime': link:../xmcl-runtime
       '@xmcl/runtime-api': link:../xmcl-runtime-api
       '@xmcl/task': link:../xmcl/packages/task
-      '@xmcl/windows-utils': 0.0.10
+      '@xmcl/windows-utils': 0.0.14
       builtin-modules: 3.2.0
       chalk: 4.1.2
       create-desktop-shortcuts: 1.6.0
@@ -229,7 +262,7 @@ importers:
       '@typescript-eslint/eslint-plugin': 5.9.0_c05e6fca5974c04442e7c260534af929
       '@typescript-eslint/parser': 5.9.0_eslint@7.32.0+typescript@4.5.4
       '@vue/devtools': 5.3.4
-      '@vue/runtime-dom': 3.2.31
+      '@vue/runtime-dom': 3.2.33
       chalk: 4.1.2
       cross-env: 5.2.1
       eslint: 7.32.0
@@ -241,7 +274,7 @@ importers:
       tslib: 2.3.1
       typescript: 4.5.4
       unplugin-auto-import: 0.6.1_vite@2.8.4
-      unplugin-vue2-script-setup: 0.10.1_ca01d1246c4f94cb51d491cb9cebfcbd
+      unplugin-vue2-script-setup: 0.10.1_e57ff715ff5faf3f09536e098744e249
       vite: 2.8.4
       vite-plugin-vue2: 1.9.3_f79f4155fa4af4ea98842834628f5490
       vite-plugin-windicss: 1.6.1_vite@2.8.4
@@ -2149,8 +2182,8 @@ packages:
       vue-i18n:
         optional: true
     dependencies:
-      '@intlify/message-compiler': 9.2.0-beta.34
-      '@intlify/shared': 9.2.0-beta.34
+      '@intlify/message-compiler': 9.2.0-beta.35
+      '@intlify/shared': 9.2.0-beta.35
       jsonc-eslint-parser: 1.4.1
       source-map: 0.6.1
       vue-i18n: 9.1.9_vue@3.2.31
@@ -2185,11 +2218,11 @@ packages:
       source-map: 0.6.1
     dev: false
 
-  /@intlify/message-compiler/9.2.0-beta.34:
-    resolution: {integrity: sha512-l7JjkXJBW2l6cFZqPvI6oWU6QZn/i70agU6QB02W1O+6quFCFNpsiPswgYyQrmfHt4F4qYhLJUMZltIW/cqcbw==}
+  /@intlify/message-compiler/9.2.0-beta.35:
+    resolution: {integrity: sha512-wYQCgnRtyJ40HK3bJTrszHDaxqDXZH+9Ps7RsXNuNwZ9hIb1cVkLiUNIbuJS/XSJ1kATJXA6K+4if6ZLb0Ozxw==}
     engines: {node: '>= 12'}
     dependencies:
-      '@intlify/shared': 9.2.0-beta.34
+      '@intlify/shared': 9.2.0-beta.35
       source-map: 0.6.1
     dev: true
 
@@ -2212,8 +2245,8 @@ packages:
     engines: {node: '>= 10'}
     dev: false
 
-  /@intlify/shared/9.2.0-beta.34:
-    resolution: {integrity: sha512-hbUKcVbTOkLVpnlSeZE1OPgEI7FpvhuZF/gb84xECTjXEImIa3u0fIcJKUUffv3dlAx8fMOE5xKgDzngidm0tw==}
+  /@intlify/shared/9.2.0-beta.35:
+    resolution: {integrity: sha512-DXf7xrwf08GKhr93XPQ8EgaEN0CIELl+mAS6SlRhi/aLtZv5HSGSMkz4M/ICwoWzFLSgOx/ZdBSasex19MMogg==}
     engines: {node: '>= 12'}
     dev: true
 
@@ -2231,7 +2264,7 @@ packages:
         optional: true
     dependencies:
       '@intlify/bundle-utils': 3.0.0_vue-i18n@9.1.9
-      '@intlify/shared': 9.2.0-beta.34
+      '@intlify/shared': 9.2.0-beta.35
       '@rollup/pluginutils': 4.1.2
       debug: 4.3.3
       fast-glob: 3.2.7
@@ -3002,7 +3035,7 @@ packages:
       '@volar/source-map': 0.29.8
       '@vue/compiler-core': 3.2.31
       '@vue/compiler-dom': 3.2.31
-      '@vue/shared': 3.2.31
+      '@vue/shared': 3.2.32
       upath: 2.0.1
     dev: true
 
@@ -3203,12 +3236,32 @@ packages:
     resolution: {integrity: sha512-HVr0l211gbhpEKYr2hYe7hRsV91uIVGFYNHj73njbARVGHQvIojkImKMaZNDdoDZOIkMsBc9a1sMqR+WZwfSCw==}
     dependencies:
       '@vue/shared': 3.2.31
+    dev: false
+
+  /@vue/reactivity/3.2.32:
+    resolution: {integrity: sha512-4zaDumuyDqkuhbb63hRd+YHFGopW7srFIWesLUQ2su/rJfWrSq3YUvoKAJE8Eu1EhZ2Q4c1NuwnEreKj1FkDxA==}
+    dependencies:
+      '@vue/shared': 3.2.32
+
+  /@vue/reactivity/3.2.33:
+    resolution: {integrity: sha512-62Sq0mp9/0bLmDuxuLD5CIaMG2susFAGARLuZ/5jkU1FCf9EDbwUuF+BO8Ub3Rbodx0ziIecM/NsmyjardBxfQ==}
+    dependencies:
+      '@vue/shared': 3.2.33
+    dev: true
 
   /@vue/runtime-core/3.2.31:
     resolution: {integrity: sha512-Kcog5XmSY7VHFEMuk4+Gap8gUssYMZ2+w+cmGI6OpZWYOEIcbE0TPzzPHi+8XTzAgx1w/ZxDFcXhZeXN5eKWsA==}
     dependencies:
       '@vue/reactivity': 3.2.31
       '@vue/shared': 3.2.31
+    dev: false
+
+  /@vue/runtime-core/3.2.33:
+    resolution: {integrity: sha512-N2D2vfaXsBPhzCV3JsXQa2NECjxP3eXgZlFqKh4tgakp3iX6LCGv76DLlc+IfFZq+TW10Y8QUfeihXOupJ1dGw==}
+    dependencies:
+      '@vue/reactivity': 3.2.33
+      '@vue/shared': 3.2.33
+    dev: true
 
   /@vue/runtime-dom/3.2.31:
     resolution: {integrity: sha512-N+o0sICVLScUjfLG7u9u5XCjvmsexAiPt17GNnaWHJUfsKed5e85/A3SWgKxzlxx2SW/Hw7RQxzxbXez9PtY3g==}
@@ -3216,6 +3269,15 @@ packages:
       '@vue/runtime-core': 3.2.31
       '@vue/shared': 3.2.31
       csstype: 2.6.19
+    dev: false
+
+  /@vue/runtime-dom/3.2.33:
+    resolution: {integrity: sha512-LSrJ6W7CZTSUygX5s8aFkraDWlO6K4geOwA3quFF2O+hC3QuAMZt/0Xb7JKE3C4JD4pFwCSO7oCrZmZ0BIJUnw==}
+    dependencies:
+      '@vue/runtime-core': 3.2.33
+      '@vue/shared': 3.2.33
+      csstype: 2.6.19
+    dev: true
 
   /@vue/server-renderer/3.2.31_vue@3.2.31:
     resolution: {integrity: sha512-8CN3Zj2HyR2LQQBHZ61HexF5NReqngLT3oahyiVRfSSvak+oAvVmu8iNLSu6XR77Ili2AOpnAt1y8ywjjqtmkg==}
@@ -3229,6 +3291,13 @@ packages:
 
   /@vue/shared/3.2.31:
     resolution: {integrity: sha512-ymN2pj6zEjiKJZbrf98UM2pfDd6F2H7ksKw7NDt/ZZ1fh5Ei39X5tABugtT03ZRlWd9imccoK0hE8hpjpU7irQ==}
+
+  /@vue/shared/3.2.32:
+    resolution: {integrity: sha512-bjcixPErUsAnTQRQX4Z5IQnICYjIfNCyCl8p29v1M6kfVzvwOICPw+dz48nNuWlTOOx2RHhzHdazJibE8GSnsw==}
+
+  /@vue/shared/3.2.33:
+    resolution: {integrity: sha512-UBc1Pg1T3yZ97vsA2ueER0F6GbJebLHYlEi4ou1H5YL4KWvMOOWwpYo9/QpWq93wxKG6Wo13IY74Hcn/f7c7Bg==}
+    dev: true
 
   /@vueuse/core/7.6.2_vue@3.2.31:
     resolution: {integrity: sha512-bjAbXJVJO6aElMaZtDz2B70C0L6jFk/jGVqJxWZS5huffxA6dW5DN6tQQJwzOnx9B9rDhePHJIFKsix0qZIH2Q==}
@@ -3305,9 +3374,8 @@ packages:
     resolution: {integrity: sha512-OrvzFEMGC9eSNvfHiIsa4GAUpslD64fS/LtI+WaXliL9122dDn2guxiwhvw8aWuBTS0HdbCCBjRtLXS6LbecWw==}
     dev: false
 
-  /@xmcl/windows-utils/0.0.10:
-    resolution: {integrity: sha512-IL1kXB5vwYDooWHvyxr5u76rcHRKbe5y4qpLmxXpTeiOqQi669l5oTz1OjWXLqhcMiPSMMZjII/FtgXQ/fh+jg==}
-    requiresBuild: true
+  /@xmcl/windows-utils/0.0.14:
+    resolution: {integrity: sha512-qXo2NHXouEy0Zy1Np+yXndkc3yQlL5lr3mAmE8zb9QtHc2kfNFd1VAwqrcAAbD184j2d9c8gen3WmsQXi4o5Cw==}
     dev: true
 
   /abab/2.0.5:
@@ -9192,7 +9260,7 @@ packages:
       - webpack
     dev: true
 
-  /unplugin-vue2-script-setup/0.10.1_ca01d1246c4f94cb51d491cb9cebfcbd:
+  /unplugin-vue2-script-setup/0.10.1_e57ff715ff5faf3f09536e098744e249:
     resolution: {integrity: sha512-KSujmixQfAWbf/QvNF7JXxas2OMQy9t11vt0UJfXuKuP4eSDIF7CMr4PC2BS2KXSIEA9slBWThONT4itorQWDQ==}
     peerDependencies:
       '@vue/composition-api': ^1.4.3
@@ -9213,7 +9281,7 @@ packages:
       '@vue/compiler-dom': 3.2.31
       '@vue/composition-api': 1.4.5_vue@2.6.14
       '@vue/reactivity-transform': 3.2.31
-      '@vue/runtime-dom': 3.2.31
+      '@vue/runtime-dom': 3.2.33
       '@vue/shared': 3.2.31
       defu: 5.0.1
       magic-string: 0.25.7
@@ -9661,8 +9729,8 @@ packages:
       '@volar/transforms': 0.29.8
       '@volar/vue-code-gen': 0.29.8
       '@vscode/emmet-helper': 2.8.3
-      '@vue/reactivity': 3.2.31
-      '@vue/shared': 3.2.31
+      '@vue/reactivity': 3.2.32
+      '@vue/shared': 3.2.32
       request-light: 0.5.6
       upath: 2.0.1
       vscode-css-languageservice: 5.1.9

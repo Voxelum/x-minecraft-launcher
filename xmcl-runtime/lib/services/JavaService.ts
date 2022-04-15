@@ -7,10 +7,10 @@ import LauncherApp from '../app/LauncherApp'
 import { missing, readdirIfPresent } from '../util/fs'
 import { requireObject, requireString } from '../util/object'
 import { createSafeFile } from '../util/persistance'
-import DiagnoseService from './DiagnoseService'
+import { DiagnoseService } from './DiagnoseService'
 import { Inject, Singleton, StatefulService } from './Service'
 
-export default class JavaService extends StatefulService<JavaState> implements IJavaService {
+export class JavaService extends StatefulService<JavaState> implements IJavaService {
   protected readonly config = createSafeFile(this.getPath('java.json'), JavaSchema, this)
 
   constructor(app: LauncherApp,

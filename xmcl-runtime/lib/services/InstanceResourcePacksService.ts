@@ -6,16 +6,16 @@ import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { isSystemError } from '../util/error'
 import { createSymbolicLink, ENOENT_ERROR, linkWithTimeoutOrCopy } from '../util/fs'
-import DiagnoseService from './DiagnoseService'
-import InstanceOptionsService from './InstanceOptionsService'
-import InstanceService from './InstanceService'
-import ResourceService from './ResourceService'
-import AbstractService, { Inject, Singleton } from './Service'
+import { DiagnoseService } from './DiagnoseService'
+import { InstanceOptionsService } from './InstanceOptionsService'
+import { InstanceService } from './InstanceService'
+import { ResourceService } from './ResourceService'
+import { AbstractService, Inject, Singleton } from './Service'
 
 /**
  * Provide the abilities to import resource pack and resource packs files to instance
  */
-export default class InstanceResourcePackService extends AbstractService implements IInstanceResourcePacksService {
+export class InstanceResourcePackService extends AbstractService implements IInstanceResourcePacksService {
   private packVersionToVersionRange: Record<number, string> = packFormatVersionRange
 
   private active: string | undefined

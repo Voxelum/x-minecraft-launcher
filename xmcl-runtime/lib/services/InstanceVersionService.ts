@@ -1,17 +1,17 @@
 import { diagnose, MinecraftFolder } from '@xmcl/core'
 import { diagnoseInstall, InstallProfile } from '@xmcl/installer'
-import { Asset, DEFAULT_PROFILE, getExpectVersion, getResolvedVersion, InstallableLibrary, InstanceVersionException, InstanceVersionService as IInstanceVersionService, InstanceVersionServiceKey, isSameForgeVersion, IssueReport, parseOptifineVersion, RuntimeVersions, versionLockOf } from '@xmcl/runtime-api'
+import { Asset, DEFAULT_PROFILE, getExpectVersion, getResolvedVersion, InstallableLibrary, InstanceVersionException, InstanceVersionService as IInstanceVersionService, InstanceVersionServiceKey, isSameForgeVersion, IssueReport, LockKey, parseOptifineVersion, RuntimeVersions } from '@xmcl/runtime-api'
 import { readJSON } from 'fs-extra'
 import { join, relative } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { exists } from '../util/fs'
-import DiagnoseService from './DiagnoseService'
-import InstallService from './InstallService'
-import InstanceService from './InstanceService'
-import AbstractService, { Inject, Singleton } from './Service'
-import VersionService from './VersionService'
+import { DiagnoseService } from './DiagnoseService'
+import { InstallService } from './InstallService'
+import { InstanceService } from './InstanceService'
+import { AbstractService, Inject, Singleton } from './Service'
+import { VersionService } from './VersionService'
 
-export default class InstanceVersionService extends AbstractService implements IInstanceVersionService {
+export class InstanceVersionService extends AbstractService implements IInstanceVersionService {
   constructor(app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(VersionService) private versionService: VersionService,
@@ -223,7 +223,7 @@ export default class InstanceVersionService extends AbstractService implements I
         this.log(`Diagnose for version ${targetVersion}`)
 
         const location = this.getPath()
-        const gameReport = await this.semaphoreManager.getLock(versionLockOf(targetVersion))
+        const gameReport = await this.semaphoreManager.getLock(LockKey.version(targetVersion))
           .read(() => diagnose(targetVersion, location))
 
         for (const issue of gameReport.issues) {

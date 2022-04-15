@@ -5,17 +5,17 @@ import { ensureFile, readJson, writeFile } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { validateSha256 } from '../util/fs'
-import DiagnoseService from './DiagnoseService'
-import ResourceService from './ResourceService'
-import AbstractService, { Inject, Singleton } from './Service'
-import UserService from './UserService'
+import { DiagnoseService } from './DiagnoseService'
+import { ResourceService } from './ResourceService'
+import { AbstractService, Inject, Singleton } from './Service'
+import { UserService } from './UserService'
 
 const AUTHLIB_ORG_NAME = 'org.to2mbn:authlibinjector'
 
 /**
  * Majorly support the third party skin using authlib injector
  */
-export default class ExternalAuthSkinService extends AbstractService implements IExternalAuthSkinService {
+export class ExternalAuthSkinService extends AbstractService implements IExternalAuthSkinService {
   constructor(
     app: LauncherApp,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,

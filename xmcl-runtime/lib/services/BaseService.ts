@@ -6,7 +6,7 @@ import { IS_DEV } from '../constant'
 import { createSafeFile } from '../util/persistance'
 import { Singleton, StatefulService } from './Service'
 
-export default class BaseService extends StatefulService<BaseState> implements IBaseService {
+export class BaseService extends StatefulService<BaseState> implements IBaseService {
   private settingFile = createSafeFile(this.getPath('setting.json'), SettingSchema, this)
 
   constructor(app: LauncherApp) {

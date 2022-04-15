@@ -240,7 +240,7 @@ export function Expose<T extends AbstractService>(options: {
  *
  * The service is a stateful object has life cycle. It will be created when the launcher program start, and destroied
  */
-export default abstract class AbstractService extends EventEmitter {
+export abstract class AbstractService extends EventEmitter {
   readonly name: ServiceKey<this>
 
   private initializeSignal: PromiseSignal<void> | undefined
@@ -323,7 +323,15 @@ export default abstract class AbstractService extends EventEmitter {
     if (!this.initializeSignal) {
       this.initializeSignal = createPromiseSignal()
       if (this.initializer) {
-        this.initializeSignal.accept(this.initializer())
+        const startTime = Date.now()
+        this.initializeSignal.accept(this.initializer().catch((e) => {
+          this.error('Fail to initialize')
+          this.error(e)
+          throw e
+        }).finally(() => {
+          const endTime = Date.now()
+          this.log(`Initialized in ${endTime - startTime}ms.`)
+        }))
       } else {
         this.initializeSignal.resolve()
       }

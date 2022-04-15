@@ -2,7 +2,7 @@ import { readFile, remove } from 'fs-extra'
 import { isAbsolute, join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { InstanceService } from './InstanceService'
-import AbstractService, { Inject, Singleton } from './Service'
+import { AbstractService, Inject, Singleton } from './Service'
 import { decode, guessEncodingByBuffer, UTF8 } from '../util/encoding'
 import { readdirIfPresent } from '../util/fs'
 import { gunzip } from '../util/zip'
@@ -11,7 +11,7 @@ import { InstanceLogService as IInstanceLogService, InstanceLogServiceKey } from
 /**
  * Provide the ability to list/read/remove log and crash reports of a instance.
  */
-export default class InstanceLogService extends AbstractService implements IInstanceLogService {
+export class InstanceLogService extends AbstractService implements IInstanceLogService {
   constructor(app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {

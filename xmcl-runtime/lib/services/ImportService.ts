@@ -3,15 +3,15 @@ import { unlink } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { ZipTask } from '../util/zip'
-import InstanceIOService from './InstanceIOService'
-import InstanceModsService from './InstanceModsService'
-import InstanceOptionsService from './InstanceOptionsService'
-import InstanceSavesService from './InstanceSavesService'
-import InstanceService from './InstanceService'
-import ResourceService, { ParseResourceContext } from './ResourceService'
-import AbstractService, { Inject } from './Service'
+import { InstanceIOService } from './InstanceIOService'
+import { InstanceModsService } from './InstanceModsService'
+import { InstanceOptionsService } from './InstanceOptionsService'
+import { InstanceSavesService } from './InstanceSavesService'
+import { InstanceService } from './InstanceService'
+import { ParseResourceContext, ResourceService } from './ResourceService'
+import { AbstractService, Inject } from './Service'
 
-export default class ImportService extends AbstractService implements IImportService {
+export class ImportService extends AbstractService implements IImportService {
   constructor(
     app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,

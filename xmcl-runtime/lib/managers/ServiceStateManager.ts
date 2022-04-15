@@ -1,6 +1,7 @@
 import { State, MutationKeys, MutationPayload } from '@xmcl/runtime-api'
 import { EventEmitter } from 'events'
 import { Manager } from '.'
+import { AbstractService } from '../services/Service'
 import { ServiceStateProxy } from '../util/serviceProxy'
 
 export default class ServiceStateManager extends Manager {
@@ -36,9 +37,9 @@ export default class ServiceStateManager extends Manager {
 
   setup() {
     this.app.handle('sync', (_, serviceName, id) => {
-      const service = this.app.serviceManager.getService(serviceName)
+      const service = this.app.serviceManager.getServiceByKey(serviceName)
       if (service) {
-        return service.initialize().then(() => {
+        return (service as AbstractService).initialize().then(() => {
           const stateProxy = this.registeredState[serviceName]
           if (stateProxy) {
             return stateProxy.takeSnapshot(id)

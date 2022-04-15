@@ -11,7 +11,7 @@ import { StatefulService } from './Service'
 /**
  * The local version serivce maintains the installed versions on disk
  */
-export default class VersionService extends StatefulService<VersionState> implements IVersionService {
+export class VersionService extends StatefulService<VersionState> implements IVersionService {
   private versionsWatcher = new FileStateWatcher([] as string[], (state, _, f) => [...new Set([...state, f])])
 
   private versionLoaded = false

@@ -4,11 +4,11 @@ import { join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { isSystemError } from '../util/error'
 import { createSymbolicLink, ENOENT_ERROR, linkWithTimeoutOrCopy } from '../util/fs'
-import InstanceService from './InstanceService'
-import ResourceService from './ResourceService'
-import AbstractService, { Inject, Singleton } from './Service'
+import { InstanceService } from './InstanceService'
+import { ResourceService } from './ResourceService'
+import { AbstractService, Inject, Singleton } from './Service'
 
-export default class InstanceShaderPacksService extends AbstractService implements IInstanceShaderPacksServic {
+export class InstanceShaderPacksService extends AbstractService implements IInstanceShaderPacksServic {
   private active: string | undefined
 
   constructor(

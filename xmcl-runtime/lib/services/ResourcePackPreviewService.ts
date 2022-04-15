@@ -4,18 +4,18 @@ import { BlockStateJson, ResourcePackPreviewService as IResourcePackPreviewServi
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { Queue } from '../util/mutex'
-import InstanceOptionsService from './InstanceOptionsService'
-import InstanceResourcePackService from './InstanceResourcePacksService'
-import InstanceService from './InstanceService'
-import InstanceVersionService from './InstanceVersionService'
-import LaunchService from './LaunchService'
-import AbstractService, { Inject } from './Service'
+import { InstanceOptionsService } from './InstanceOptionsService'
+import { InstanceResourcePackService } from './InstanceResourcePacksService'
+import { InstanceService } from './InstanceService'
+import { InstanceVersionService } from './InstanceVersionService'
+import { LaunchService } from './LaunchService'
+import { AbstractService, Inject } from './Service'
 
 interface NamedResourcePackWrapper extends ResourcePackWrapper {
   path: string
 }
 
-export default class ResourcePackPreviewService extends AbstractService implements IResourcePackPreviewService {
+export class ResourcePackPreviewService extends AbstractService implements IResourcePackPreviewService {
   private resourceManager = new ResourceManager()
 
   private modelLoader = new ModelLoader(this.resourceManager)

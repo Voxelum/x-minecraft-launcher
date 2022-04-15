@@ -1,4 +1,4 @@
-import { AnyPersistedResource, AnyResource, ImportResourceOptions, ImportResourcesOptions, isPersistedResource, ParseResourceOptions, ParseResourcesOptions, PersistedResource, Resource, ResourceDomain, ResourceException, resourceLoadSemaphore, ResourceService as IResourceService, ResourceServiceKey, ResourceState, ResourceType, UpdateResourceOptions } from '@xmcl/runtime-api'
+import { AnyPersistedResource, AnyResource, ImportResourceOptions, ImportResourcesOptions, isPersistedResource, ParseResourceOptions, ParseResourcesOptions, PersistedResource, Resource, ResourceDomain, ResourceException, ResourceService as IResourceService, ResourceServiceKey, ResourceState, ResourceType, UpdateResourceOptions } from '@xmcl/runtime-api'
 import { requireString } from '../util/object'
 import { task } from '@xmcl/task'
 import { FSWatcher } from 'fs'
@@ -39,7 +39,7 @@ export interface Query {
  * 4. The watcher write the parsed the resource metadata
  * 5. The watcher get the metadata json update event, and validate & update the metadata cache & state
  */
-export default class ResourceService extends StatefulService<ResourceState> implements IResourceService {
+export class ResourceService extends StatefulService<ResourceState> implements IResourceService {
   private cache = new ResourceCache()
 
   /**

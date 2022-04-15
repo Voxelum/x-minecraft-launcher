@@ -8,14 +8,14 @@ import { deepClone } from '../util/clone'
 import { isSystemError } from '../util/error'
 import { missing } from '../util/fs'
 import { requireString } from '../util/object'
-import InstanceService from './InstanceService'
-import ResourceService from './ResourceService'
+import { InstanceService } from './InstanceService'
+import { ResourceService } from './ResourceService'
 import { Inject, Singleton, StatefulService } from './Service'
 
 /**
  * The service to watch game setting (options.txt) and shader options (optionsshader.txt)
  */
-export default class InstanceOptionsService extends StatefulService<InstanceOptionsState> implements IInstanceOptionsService {
+export class InstanceOptionsService extends StatefulService<InstanceOptionsState> implements IInstanceOptionsService {
   private watcher: FSWatcher | undefined
 
   private watchingInstance = ''

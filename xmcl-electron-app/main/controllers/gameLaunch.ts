@@ -1,5 +1,5 @@
 import Controller from '@/Controller'
-import { InstanceServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
+import { InstanceService, LaunchService } from '@xmcl/runtime'
 import { ControllerPlugin } from './plugin'
 
 /**
@@ -7,8 +7,8 @@ import { ControllerPlugin } from './plugin'
  */
 export const gameLaunch: ControllerPlugin = function (this: Controller) {
   this.app.once('engine-ready', () => {
-    this.app.serviceManager.getService(LaunchServiceKey)?.on('minecraft-window-ready', () => {
-      const instance = this.app.serviceManager.getService(InstanceServiceKey)?.state.instance
+    this.app.serviceManager.getOrCreateService(LaunchService).on('minecraft-window-ready', () => {
+      const instance = this.app.serviceManager.getOrCreateService(InstanceService).state.instance
       if (!instance) {
         this.app.warn('Cannot find active instance while Minecraft window ready! Perhaps something strange happed?')
         return
@@ -26,9 +26,9 @@ export const gameLaunch: ControllerPlugin = function (this: Controller) {
         this.createMonitorWindow()
       }
     }).on('minecraft-exit', (status) => {
-      const instance = this.app.serviceManager.getService(InstanceServiceKey)?.state.instance
+      const instance = this.app.serviceManager.getOrCreateService(InstanceService).state.instance
       if (!instance) {
-        this.app.warn('Cannot find active instance while Minecraft exit! Perhaps something strange happed?')
+        this.app.warn('Cannot find active instance while Minecraft exit! Perhaps something strange happened?')
         return
       }
       const { hideLauncher } = instance
@@ -39,7 +39,7 @@ export const gameLaunch: ControllerPlugin = function (this: Controller) {
       }
       this.app.broadcast('minecraft-exit', status)
       if (this.loggerWin) {
-        const launchServ = this.app.serviceManager.getService(LaunchServiceKey)!
+        const launchServ = this.app.serviceManager.getOrCreateService(LaunchService)
         if (launchServ.state.activeCount === 0) {
           this.loggerWin.close()
           this.loggerWin = undefined

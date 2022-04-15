@@ -106,25 +106,13 @@ export default class Controller implements LauncherAppController {
       this.parking = false
       await this.createAppWindow(this.app.launcherAppManager.getAppRoot(app.url), app)
     } else {
-      const serv = this.app.serviceManager.getService(InstanceServiceKey)
-      if (serv) {
-        await (serv as InstanceService).initialize()
-        await this.createAppWindow(this.app.launcherAppManager.getAppRoot(app.url), app)
-        this.parking = false
-        this.setupRef!.removeAllListeners()
-        this.setupRef!.close()
-        this.setupRef = undefined
-      } else {
-        this.app.on('service-ready', (serv) => {
-          if (serv.name === InstanceServiceKey) {
-            this.createAppWindow(this.app.launcherAppManager.getAppRoot(app.url), app)
-            this.parking = false
-            this.setupRef!.removeAllListeners()
-            this.setupRef!.close()
-            this.setupRef = undefined
-          }
-        })
-      }
+      const serv = this.app.serviceManager.getOrCreateService(InstanceService)
+      await serv.initialize()
+      await this.createAppWindow(this.app.launcherAppManager.getAppRoot(app.url), app)
+      this.parking = false
+      this.setupRef!.removeAllListeners()
+      this.setupRef!.close()
+      this.setupRef = undefined
     }
   }
 

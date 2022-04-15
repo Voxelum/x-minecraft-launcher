@@ -15,7 +15,7 @@ export interface Fix {
 /**
  * This is the service provides the diagnose service for current launch profile
  */
-export default class DiagnoseService extends StatefulService<DiagnoseState> implements IDiagnoseService {
+export class DiagnoseService extends StatefulService<DiagnoseState> implements IDiagnoseService {
   private fixes: Fix[] = []
 
   private postIssue = new AggregateExecutor<Partial<IssueReport>, Partial<IssueReport>>(r => r.reduce((prev, cur) => Object.assign(prev, cur), {}),

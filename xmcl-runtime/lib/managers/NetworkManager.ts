@@ -1,14 +1,13 @@
-import { Agents, DownloadBaseOptions } from '@xmcl/installer'
+import { Agents } from '@xmcl/installer'
 // import NatAPI from 'nat-api'
 import { UpnpClient } from '@xmcl/nat-api'
-import { BaseServiceKey } from '@xmcl/runtime-api'
 import { getNatInfoUDP, NatInfo } from '@xmcl/stun-client'
 import got, { Got } from 'got'
 import { Socket } from 'net'
-import { cpus } from 'os'
 import { URL } from 'url'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
+import { BaseService } from '../services/BaseService'
 import { HttpAgent, HttpsAgent } from '../util/agents'
 // import getNatType, { NatType } from 'nat-type-identifier'
 
@@ -48,7 +47,7 @@ export default class NetworkManager extends Manager {
     Object.defineProperty(http, 'proxy', {
       get() {
         try {
-          return new URL(app.serviceManager.getService(BaseServiceKey)!.state.httpProxy)
+          return new URL(app.serviceManager.getOrCreateService(BaseService).state.httpProxy)
         } catch (e) {
           return undefined
         }
@@ -56,7 +55,7 @@ export default class NetworkManager extends Manager {
     })
     Object.defineProperty(http, 'enabled', {
       get() {
-        return app.serviceManager.getService(BaseServiceKey)?.state.httpProxyEnabled ?? false
+        return app.serviceManager.getOrCreateService(BaseService).state.httpProxyEnabled ?? false
       },
     })
     const https = new HttpsAgent({
@@ -67,7 +66,7 @@ export default class NetworkManager extends Manager {
     Object.defineProperty(https, 'proxy', {
       get() {
         try {
-          return new URL(app.serviceManager.getService(BaseServiceKey)!.state.httpProxy)
+          return new URL(app.serviceManager.getOrCreateService(BaseService).state.httpProxy)
         } catch (e) {
           return undefined
         }
@@ -75,7 +74,7 @@ export default class NetworkManager extends Manager {
     })
     Object.defineProperty(https, 'enabled', {
       get() {
-        return app.serviceManager.getService(BaseServiceKey)?.state.httpProxyEnabled ?? false
+        return app.serviceManager.getOrCreateService(BaseService).state.httpProxyEnabled ?? false
       },
     })
     this.agents = ({

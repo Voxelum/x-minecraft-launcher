@@ -16,7 +16,7 @@ import ServiceStateManager from '../managers/ServiceStateManager'
 import TaskManager from '../managers/TaskManager'
 import TelemetryManager from '../managers/TelemetryManager'
 import WorkerManager from '../managers/WorkerManager'
-import AbstractService from '../services/Service'
+import { AbstractService, ServiceConstructor } from '../services/Service'
 import { isSystemError } from '../util/error'
 import { Host } from './Host'
 import { LauncherAppController } from './LauncherAppController'
@@ -40,14 +40,12 @@ export interface Platform {
 export interface LauncherApp {
   on(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
   on(channel: 'window-all-closed', listener: () => void): this
-  on(channel: 'all-services-ready', listener: () => void): this
   on(channel: 'service-ready', listener: (service: AbstractService) => void): this
   on(channel: 'engine-ready', listener: () => void): this
   on(channel: 'microsoft-authorize-code', listener: (code: string) => void): this
 
   once(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
   once(channel: 'window-all-closed', listener: () => void): this
-  once(channel: 'all-services-ready', listener: () => void): this
   once(channel: 'service-ready', listener: (service: AbstractService) => void): this
   once(channel: 'engine-ready', listener: () => void): this
   once(channel: 'microsoft-authorize-code', listener: (error?: Error, code?: string) => void): this
@@ -56,7 +54,6 @@ export interface LauncherApp {
   emit(channel: 'microsoft-authorize-code', error?: Error, code?: string): this
   emit(channel: 'window-all-closed'): boolean
   emit(channel: 'engine-ready'): boolean
-  emit(channel: 'all-services-ready'): boolean
   emit(channel: 'service-ready', service: AbstractService): boolean
 }
 
@@ -85,7 +82,7 @@ export abstract class LauncherApp extends EventEmitter {
 
   readonly networkManager = new NetworkManager(this)
 
-  readonly serviceManager = new ServiceManager(this)
+  readonly serviceManager = new ServiceManager(this, this.getPreloadServices())
 
   readonly serviceStateManager = new ServiceStateManager(this)
 
@@ -120,6 +117,8 @@ export abstract class LauncherApp extends EventEmitter {
   abstract readonly builtinAppManifest: InstalledAppManifest
 
   abstract getAppInstallerStartUpUrl(): string
+
+  abstract getPreloadServices(): ServiceConstructor[]
 
   constructor() {
     super()

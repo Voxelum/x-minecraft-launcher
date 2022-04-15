@@ -2,9 +2,9 @@ import { queryStatus } from '@xmcl/client'
 import { createFailureServerStatus, PingServerOptions, protocolToMinecraft, ServerStatusService as IServerStatusService, ServerStatusServiceKey } from '@xmcl/runtime-api'
 import { LauncherApp } from '../app/LauncherApp'
 import { isSystemError } from '../util/error'
-import AbstractService from './Service'
+import { AbstractService } from './Service'
 
-export default class ServerStatusService extends AbstractService implements IServerStatusService {
+export class ServerStatusService extends AbstractService implements IServerStatusService {
   private protocolToVersions: Record<number, string[]> = protocolToMinecraft
 
   private versionToProtocols: Record<string, number> = {}

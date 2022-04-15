@@ -1,25 +1,25 @@
-import { AnyPersistedResource, CurseforgeModpackManifest, EditGameSettingOptions, Exception, ExportModpackOptions, ImportModpackOptions, isResourcePackResource, McbbsModpackManifest, ModpackException, ModpackService as IModpackService, ModpackServiceKey, PersistedResource, ResourceDomain, write } from '@xmcl/runtime-api'
-import { requireObject } from '../util/object'
+import { CurseforgeModpackManifest, EditGameSettingOptions, ExportModpackOptions, ImportModpackOptions, isResourcePackResource, LockKey, McbbsModpackManifest, ModpackException, ModpackService as IModpackService, ModpackServiceKey, PersistedResource, ResourceDomain } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { existsSync } from 'fs'
 import { ensureDir, remove, unlink, writeFile } from 'fs-extra'
 import { basename, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
-import { installModpackTask, ModpackInstallGeneralError, ModpackInstallUrlError, readMetadata, resolveInstanceOptions } from '../entities/modpack'
+import { installModpackTask, ModpackInstallGeneralError, readMetadata, resolveInstanceOptions } from '../entities/modpack'
 import { getCurseforgeUrl } from '../entities/resource'
-import { FileStateWatcher, isFile, sha1ByPath } from '../util/fs'
+import { isFile, sha1ByPath } from '../util/fs'
+import { requireObject } from '../util/object'
 import { ZipTask } from '../util/zip'
-import InstanceModsService from './InstanceModsService'
-import InstanceOptionsService from './InstanceOptionsService'
-import InstanceService from './InstanceService'
-import ResourceService from './ResourceService'
-import AbstractService, { Inject } from './Service'
-import VersionService from './VersionService'
+import { InstanceModsService } from './InstanceModsService'
+import { InstanceOptionsService } from './InstanceOptionsService'
+import { InstanceService } from './InstanceService'
+import { ResourceService } from './ResourceService'
+import { AbstractService, Inject } from './Service'
+import { VersionService } from './VersionService'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
-export default class ModpackService extends AbstractService implements IModpackService {
+export class ModpackService extends AbstractService implements IModpackService {
   constructor(app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
@@ -238,7 +238,7 @@ export default class ModpackService extends AbstractService implements IModpackS
       })
     }
 
-    const lock = this.semaphoreManager.getLock(write(instancePath))
+    const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
     return lock.write(async () => {
       // the mapping from current filename to expect filename
       const resourcePacksMapping: Record<string, string> = {}
