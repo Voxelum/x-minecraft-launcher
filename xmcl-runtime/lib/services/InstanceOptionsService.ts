@@ -41,6 +41,7 @@ export class InstanceOptionsService extends StatefulService<InstanceOptionsState
     }
   }
 
+  // TODO: use lock for this
   @Singleton()
   async mount(path: string) {
     requireString(path)
@@ -56,8 +57,8 @@ export class InstanceOptionsService extends StatefulService<InstanceOptionsState
         }
       })
       this.watchingInstance = path
-      this.loadOptionsTxt(this.watchingInstance)
-      this.loadShaderOptions(this.watchingInstance)
+      await this.loadOptionsTxt(this.watchingInstance)
+      await this.loadShaderOptions(this.watchingInstance)
     }
   }
 
