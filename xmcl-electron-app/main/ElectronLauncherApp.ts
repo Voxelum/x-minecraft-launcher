@@ -190,7 +190,7 @@ export default class ElectronLauncherApp extends LauncherApp {
     })
 
     if (this.platform.name === 'linux') {
-      await setLinuxProtocol(app.getPath('home'))
+      await setLinuxProtocol(app.getPath('home'), app.getPath('exe'))
     }
 
     await super.setup()
