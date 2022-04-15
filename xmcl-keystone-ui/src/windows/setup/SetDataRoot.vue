@@ -78,7 +78,6 @@
   </v-list>
 </template>
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from '@vue/composition-api'
 import { Drive } from '@xmcl/runtime-api/setup'
 import { useI18n } from '/@/composables'
 import { required } from '/@/util/props'

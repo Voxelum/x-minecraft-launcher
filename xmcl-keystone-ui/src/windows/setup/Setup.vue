@@ -4,7 +4,7 @@
   >
     <v-card
       v-if="!fetching"
-      class="rounded-lg flex flex-col overflow-auto h-full"
+      class="rounded-lg flex flex-col overflow-auto h-100vh max-h-100vh"
     >
       <v-card-title
         class="elevation-3 text-lg font-bold"
@@ -244,6 +244,6 @@ body {
   -webkit-app-region: no-drag;
 }
 .v-stepper__wrapper {
-  @apply h-full flex flex-col overflow-auto absolute left-0 top-0 p-10;
+  @apply h-full flex flex-col overflow-auto;
 }
 </style>
