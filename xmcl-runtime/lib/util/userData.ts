@@ -48,6 +48,7 @@ export function fitMinecraftLauncherProfileData(result: UserSchema, data: UserSc
           authService: 'mojang',
           profileService: 'mojang',
           selectedProfile: '',
+          expiredAt: 0,
           profiles: Object.entries(user.profiles)
             .reduce((dict, [id, o]) => {
               dict[id] = {

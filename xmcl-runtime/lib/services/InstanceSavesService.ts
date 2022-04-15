@@ -2,7 +2,7 @@ import { UnzipTask } from '@xmcl/installer'
 import {
   CloneSaveOptions, DeleteSaveOptions, ExportSaveOptions,
   GeneralException,
-  ImportSaveOptions, InstanceSave, InstanceSaveException, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey, SaveState
+  ImportSaveOptions, InstanceSave, InstanceSaveException, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey, SaveState,
 } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { createHash } from 'crypto'
