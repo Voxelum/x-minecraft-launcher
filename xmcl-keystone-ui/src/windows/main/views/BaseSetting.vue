@@ -280,7 +280,7 @@
               />
             </v-list-item-action>
           </v-list-item>
-          <v-list-item v-if="!isServer">
+          <v-list-item v-if="!isServer && false">
             <v-list-item-content>
               <v-list-item-title>
                 {{ $t("profile.fileApi") }}
