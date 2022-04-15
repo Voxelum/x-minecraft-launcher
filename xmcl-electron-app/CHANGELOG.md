@@ -1,4 +1,75 @@
 
+## 0.23.0
+### @xmcl/runtime-api@0.7.0
+#### Features
+
+- add instance sync from server ([f81492d941cee55302e2107babffb7327a5a89dc](https://github.com/Voxelum/x-minecraft-launcher/commit/f81492d941cee55302e2107babffb7327a5a89dc))
+- add api to acquire certain instance ([937b8c0d69bd5ff7c75ecf37e689f3348929b766](https://github.com/Voxelum/x-minecraft-launcher/commit/937b8c0d69bd5ff7c75ecf37e689f3348929b766))
+- add api to set launcher name & branding ([2c2430b7b1d168f59652645baab819661dd9485d](https://github.com/Voxelum/x-minecraft-launcher/commit/2c2430b7b1d168f59652645baab819661dd9485d))
+#### Bug Fixes
+
+- expose options load ([51d9e75f9e1e662cb5de9325a3cfaafd6af465e7](https://github.com/Voxelum/x-minecraft-launcher/commit/51d9e75f9e1e662cb5de9325a3cfaafd6af465e7))
+- let user to click url if the browser not opened ([1039b3f9ce8cd380a5cc99ee55c0c9970331f62d](https://github.com/Voxelum/x-minecraft-launcher/commit/1039b3f9ce8cd380a5cc99ee55c0c9970331f62d))
+- service preload ([1c356aaba31be64dc3498d4b46e864ea6c4741d4](https://github.com/Voxelum/x-minecraft-launcher/commit/1c356aaba31be64dc3498d4b46e864ea6c4741d4))
+- service busy infra ([2c45d4a853ef1912d0a9a4369f93113e8478a078](https://github.com/Voxelum/x-minecraft-launcher/commit/2c45d4a853ef1912d0a9a4369f93113e8478a078))
+- fix many typo and add tags to instances ([0d5b7f11dba0fc246fd13051790727cb3958c6c1](https://github.com/Voxelum/x-minecraft-launcher/commit/0d5b7f11dba0fc246fd13051790727cb3958c6c1))
+- show appinstaller for appx user ([017319b1dc84048a47c3e3dcaa6082d05f409dd2](https://github.com/Voxelum/x-minecraft-launcher/commit/017319b1dc84048a47c3e3dcaa6082d05f409dd2))
+- refresh user cred before launch & refresh ms cred correctly ([7c25174fdfb6dc38d1311ae117d4217e8366fad8](https://github.com/Voxelum/x-minecraft-launcher/commit/7c25174fdfb6dc38d1311ae117d4217e8366fad8))
+### @xmcl/keystone-ui@0.22.0
+#### Features
+
+- add instance sync from server ([f81492d941cee55302e2107babffb7327a5a89dc](https://github.com/Voxelum/x-minecraft-launcher/commit/f81492d941cee55302e2107babffb7327a5a89dc))
+- support zh-TW ([e6990ee81c59173dd52519fab3a6e096915d031c](https://github.com/Voxelum/x-minecraft-launcher/commit/e6990ee81c59173dd52519fab3a6e096915d031c))
+#### Bug Fixes
+
+- expose options load ([51d9e75f9e1e662cb5de9325a3cfaafd6af465e7](https://github.com/Voxelum/x-minecraft-launcher/commit/51d9e75f9e1e662cb5de9325a3cfaafd6af465e7))
+- disable fileApi in temp ([fbd2f0e416ef450d4c0ac2570f720f05278b8e2b](https://github.com/Voxelum/x-minecraft-launcher/commit/fbd2f0e416ef450d4c0ac2570f720f05278b8e2b))
+- let user to click url if the browser not opened ([1039b3f9ce8cd380a5cc99ee55c0c9970331f62d](https://github.com/Voxelum/x-minecraft-launcher/commit/1039b3f9ce8cd380a5cc99ee55c0c9970331f62d))
+- wrong overflow in setup window ([901c2a55356347cd65356703c8db2fc48354c267](https://github.com/Voxelum/x-minecraft-launcher/commit/901c2a55356347cd65356703c8db2fc48354c267))
+- service busy infra ([2c45d4a853ef1912d0a9a4369f93113e8478a078](https://github.com/Voxelum/x-minecraft-launcher/commit/2c45d4a853ef1912d0a9a4369f93113e8478a078))
+- browse app ui overflow ([ff299320880fdccc14e0086a1bae744a9b13b3b6](https://github.com/Voxelum/x-minecraft-launcher/commit/ff299320880fdccc14e0086a1bae744a9b13b3b6))
+- parse structured log ([c7e95230812b02b5c304fe0b77fdee408544c1a7](https://github.com/Voxelum/x-minecraft-launcher/commit/c7e95230812b02b5c304fe0b77fdee408544c1a7))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### @xmcl/runtime@0.21.0
+#### Features
+
+- add more useful diagnose in tray ([1885c2b1333efcb184985f4868c0b54ef789b437](https://github.com/Voxelum/x-minecraft-launcher/commit/1885c2b1333efcb184985f4868c0b54ef789b437))
+- add instance sync from server ([f81492d941cee55302e2107babffb7327a5a89dc](https://github.com/Voxelum/x-minecraft-launcher/commit/f81492d941cee55302e2107babffb7327a5a89dc))
+- add api to acquire certain instance ([937b8c0d69bd5ff7c75ecf37e689f3348929b766](https://github.com/Voxelum/x-minecraft-launcher/commit/937b8c0d69bd5ff7c75ecf37e689f3348929b766))
+- add api to set launcher name & branding ([2c2430b7b1d168f59652645baab819661dd9485d](https://github.com/Voxelum/x-minecraft-launcher/commit/2c2430b7b1d168f59652645baab819661dd9485d))
+#### Bug Fixes
+
+- expose options load ([51d9e75f9e1e662cb5de9325a3cfaafd6af465e7](https://github.com/Voxelum/x-minecraft-launcher/commit/51d9e75f9e1e662cb5de9325a3cfaafd6af465e7))
+- let user to click url if the browser not opened ([1039b3f9ce8cd380a5cc99ee55c0c9970331f62d](https://github.com/Voxelum/x-minecraft-launcher/commit/1039b3f9ce8cd380a5cc99ee55c0c9970331f62d))
+- service preload ([1c356aaba31be64dc3498d4b46e864ea6c4741d4](https://github.com/Voxelum/x-minecraft-launcher/commit/1c356aaba31be64dc3498d4b46e864ea6c4741d4))
+- service busy infra ([2c45d4a853ef1912d0a9a4369f93113e8478a078](https://github.com/Voxelum/x-minecraft-launcher/commit/2c45d4a853ef1912d0a9a4369f93113e8478a078))
+- app loading ([eb8852795af103c9076ffe8d77047ebeeb9df93b](https://github.com/Voxelum/x-minecraft-launcher/commit/eb8852795af103c9076ffe8d77047ebeeb9df93b))
+- remove max socket limit ([834d5e29a52a00ea93c7c960f75c21d47078e5b1](https://github.com/Voxelum/x-minecraft-launcher/commit/834d5e29a52a00ea93c7c960f75c21d47078e5b1))
+- mitigate the #229 ([7e84bf8ad46f3686412f3dfc83dfb93b1cfe95d3](https://github.com/Voxelum/x-minecraft-launcher/commit/7e84bf8ad46f3686412f3dfc83dfb93b1cfe95d3))
+- use native to set acylic ([07313ab81cb59b4d4fbd6e9c7c229c1e90a07050](https://github.com/Voxelum/x-minecraft-launcher/commit/07313ab81cb59b4d4fbd6e9c7c229c1e90a07050))
+- show appinstaller for appx user ([017319b1dc84048a47c3e3dcaa6082d05f409dd2](https://github.com/Voxelum/x-minecraft-launcher/commit/017319b1dc84048a47c3e3dcaa6082d05f409dd2))
+- refresh user cred before launch & refresh ms cred correctly ([7c25174fdfb6dc38d1311ae117d4217e8366fad8](https://github.com/Voxelum/x-minecraft-launcher/commit/7c25174fdfb6dc38d1311ae117d4217e8366fad8))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### xmcl@0.23.0
+#### Features
+
+- add more useful diagnose in tray ([1885c2b1333efcb184985f4868c0b54ef789b437](https://github.com/Voxelum/x-minecraft-launcher/commit/1885c2b1333efcb184985f4868c0b54ef789b437))
+- support zh-TW ([e6990ee81c59173dd52519fab3a6e096915d031c](https://github.com/Voxelum/x-minecraft-launcher/commit/e6990ee81c59173dd52519fab3a6e096915d031c))
+#### Bug Fixes
+
+- linux desktop file name and icon ([96f246a9a68534bb50a948b36dac9d7e77f05be0](https://github.com/Voxelum/x-minecraft-launcher/commit/96f246a9a68534bb50a948b36dac9d7e77f05be0))
+- let user to click url if the browser not opened ([1039b3f9ce8cd380a5cc99ee55c0c9970331f62d](https://github.com/Voxelum/x-minecraft-launcher/commit/1039b3f9ce8cd380a5cc99ee55c0c9970331f62d))
+- service preload ([1c356aaba31be64dc3498d4b46e864ea6c4741d4](https://github.com/Voxelum/x-minecraft-launcher/commit/1c356aaba31be64dc3498d4b46e864ea6c4741d4))
+- linux default protocol registration ([edb5b75799e1bb8e28b688c88ba8eb4dadc0b3d2](https://github.com/Voxelum/x-minecraft-launcher/commit/edb5b75799e1bb8e28b688c88ba8eb4dadc0b3d2))
+- app loading ([eb8852795af103c9076ffe8d77047ebeeb9df93b](https://github.com/Voxelum/x-minecraft-launcher/commit/eb8852795af103c9076ffe8d77047ebeeb9df93b))
+- use native to set acylic ([07313ab81cb59b4d4fbd6e9c7c229c1e90a07050](https://github.com/Voxelum/x-minecraft-launcher/commit/07313ab81cb59b4d4fbd6e9c7c229c1e90a07050))
+- show appinstaller for appx user ([017319b1dc84048a47c3e3dcaa6082d05f409dd2](https://github.com/Voxelum/x-minecraft-launcher/commit/017319b1dc84048a47c3e3dcaa6082d05f409dd2))
+
+
 ## 0.22.1
 ### @xmcl/keystone-ui@0.21.1
 #### Bug Fixes

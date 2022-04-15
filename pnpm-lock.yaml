@@ -3035,7 +3035,7 @@ packages:
       '@volar/source-map': 0.29.8
       '@vue/compiler-core': 3.2.31
       '@vue/compiler-dom': 3.2.31
-      '@vue/shared': 3.2.32
+      '@vue/shared': 3.2.33
       upath: 2.0.1
     dev: true
 
