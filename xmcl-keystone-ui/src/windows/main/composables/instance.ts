@@ -135,7 +135,7 @@ export function useInstanceGameSetting() {
     enableVsync,
     anaglyph3d,
     showInFolder,
-    refreshing: useServiceBusy(InstanceOptionsServiceKey, 'loadInstanceGameSettings'),
+    refreshing: useServiceBusy(InstanceOptionsServiceKey, 'mount'),
     refresh,
     commit(settings: GameSetting) {
       edit(settings)

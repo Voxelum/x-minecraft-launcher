@@ -99,7 +99,7 @@ export class InstanceOptionsState {
  * The service for game options & shader options
  */
 export interface InstanceOptionsService extends StatefulService<InstanceOptionsState> {
-  // loadInstanceGameSettings(): Promise<void>
+  mount(path: string): Promise<void>
   /**
    * Refresh the game setting from options.txt file
    */
