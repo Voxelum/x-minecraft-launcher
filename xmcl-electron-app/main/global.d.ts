@@ -54,6 +54,14 @@ declare module '*.png' {
   export default path
 }
 
+declare module '*.ico' {
+  /**
+   * The path of the static file
+   */
+  const path: string
+  export default path
+}
+
 declare module '/@preload/*' {
   /**
    * The path of the preload file
