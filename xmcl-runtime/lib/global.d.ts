@@ -7,6 +7,8 @@
 
 declare module '*?worker' {
   import { Worker, WorkerOptions } from 'worker_threads'
+
+  export const path: string
   /**
    * The helper to create the worker
    */

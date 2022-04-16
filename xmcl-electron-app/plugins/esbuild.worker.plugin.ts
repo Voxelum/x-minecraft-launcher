@@ -41,11 +41,13 @@ export default function createWorkerPlugin(): Plugin {
           contents: build.initialOptions.watch
             ? `
           import { Worker } from 'worker_threads';
-          export default function (options) { return new Worker(${JSON.stringify(join(outDir, fileName))}, options); }`
+          export const path = ${JSON.stringify(join(outDir, fileName))};
+          export default function (options) { return new Worker(path, options); }`
             : `
           import { join, dirname } from 'path';
           import { Worker } from 'worker_threads';
-          export default function (options) { return new Worker(join(__dirname.replace("app.asar", "app.asar.unpacked"), ${JSON.stringify(fileName)}), options); }`,
+          export const path = join(__dirname.replace("app.asar", "app.asar.unpacked"), ${JSON.stringify(fileName)});
+          export default function (options) { return new Worker(path, options); }`,
           resolveDir: outDir,
         }
       })

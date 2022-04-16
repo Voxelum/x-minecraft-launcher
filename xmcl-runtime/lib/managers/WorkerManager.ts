@@ -6,7 +6,7 @@ import { Manager } from '.'
 import { LauncherApp } from '../app/LauncherApp'
 import { IS_DEV } from '../constant'
 import { WorkerInterface, WorkerResponse } from '../entities/worker'
-import createWorker from '../workers/index?worker'
+import createWorker, { path } from '../workers/index?worker'
 
 export default class WorkerManager extends Manager {
   private worker: WorkerInterface
@@ -44,10 +44,8 @@ export default class WorkerManager extends Manager {
 
   async setup() {
     if (!IS_DEV) {
-      const exe = this.app.getPath('exe')
-      const appPath = dirname(exe)
-      const workerJsPath = join(appPath, 'resources', 'app.asar.unpacked', 'dist', 'index.worker.js')
-      const asarWorkerJsPath = join(appPath, 'resources', 'app.asar', 'dist', 'index.worker.js')
+      const workerJsPath = path.replace('.unpacked', '')
+      const asarWorkerJsPath = path
       const realSha = await checksum(workerJsPath, 'sha1')
       const expectSha = await checksum(asarWorkerJsPath, 'sha1')
       if (realSha !== expectSha) {
