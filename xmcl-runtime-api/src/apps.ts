@@ -106,6 +106,8 @@ export interface InstalledAppManifest extends Required<AppManifest> {
    */
   iconPath: string
 
+  trayIconPath?: string
+
   minWidth: number
   minHeight: number
   vibrancy: boolean

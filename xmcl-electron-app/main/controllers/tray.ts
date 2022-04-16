@@ -2,7 +2,8 @@ import Controller from '@/Controller'
 import { BaseService } from '@xmcl/runtime'
 import { app, Menu, shell, Tray } from 'electron'
 import iconPath from '../assets/apple-touch-icon.png'
-import favcon2XPath from '../assets/favicon@2x.png'
+// import favcon2XPath from '../assets/favicon@2x.png'
+import favcon2XPath from '../assets/favicon.png'
 import { ControllerPlugin } from './plugin'
 
 export const trayPlugin: ControllerPlugin = function (this: Controller) {
@@ -21,7 +22,7 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
       this.activeWindow?.webContents.openDevTools()
     }
     const showLogs = () => {
-      shell.openExternal(this.app.logManager.getLogRoot())
+      shell.openPath(this.app.logManager.getLogRoot())
     }
     return Menu.buildFromTemplate([
       {
@@ -60,9 +61,11 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
   this.app.once('engine-ready', () => {
     const tray = new Tray(favcon2XPath)
     tray.on('click', () => {
-      const window = this.mainWin
-      if (window && !window.isFocused()) {
-        window.focus()
+      if (this.app.platform.name === 'windows') {
+        const window = this.mainWin
+        if (window && !window.isFocused()) {
+          window.focus()
+        }
       }
     }).on('double-click', () => {
       const window = this.mainWin
@@ -81,8 +84,8 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
   })
 
   this.app.on('app-booted', (man) => {
-    this.tray?.setTitle(man.name)
-    this.tray?.setImage(man.iconPath)
+    // this.tray?.setTitle(man.name)
+    this.tray?.setImage(man.trayIconPath || man.iconPath)
   })
 
   Promise.all([

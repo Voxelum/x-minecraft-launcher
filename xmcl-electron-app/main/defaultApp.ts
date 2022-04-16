@@ -2,6 +2,7 @@ import { InstalledAppManifest } from '@xmcl/runtime-api'
 import iconPath from './assets/apple-touch-icon.png'
 import winIcon from './assets/app.ico'
 import defaultUrl from '/@renderer/index.html'
+import trayIconPath from './assets/favicon@2x.png'
 import { platform } from 'os'
 
 const manifest: InstalledAppManifest = {
@@ -14,6 +15,7 @@ const manifest: InstalledAppManifest = {
   minHeight: 620,
   vibrancy: false,
   iconPath: platform() === 'win32' ? winIcon : iconPath,
+  trayIconPath: trayIconPath,
   screenshots: [],
   icons: [],
   ratio: false,
