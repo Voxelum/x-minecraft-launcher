@@ -2,7 +2,7 @@ import { Configuration } from 'electron-builder'
 import { version } from '../package.json'
 
 export const config: Configuration = {
-  productName: 'xmcl',
+  productName: 'X Minecraft Launcher',
   appId: 'xmcl',
   directories: {
     output: 'build/output',
@@ -33,10 +33,10 @@ export const config: Configuration = {
     '**/*.worker.js',
   ],
   // eslint-disable-next-line no-template-curly-in-string
-  artifactName: '${productName}-${version}-${platform}-${arch}.${ext}',
+  artifactName: 'xmcl-${version}-${platform}-${arch}.${ext}',
   appx: {
     // eslint-disable-next-line no-template-curly-in-string
-    artifactName: '${productName}-${version}-unsigned.${ext}',
+    artifactName: 'xmcl-${version}-unsigned.${ext}',
     displayName: 'X Minecraft Launcher',
     applicationId: 'CI010.XMCL',
     identityName: 'XMCL',
@@ -48,7 +48,7 @@ export const config: Configuration = {
   },
   dmg: {
     // eslint-disable-next-line no-template-curly-in-string
-    artifactName: '${productName}-${version}.${ext}',
+    artifactName: 'xmcl-${version}.${ext}',
     contents: [
       {
         x: 410,
@@ -65,6 +65,7 @@ export const config: Configuration = {
   },
   mac: {
     icon: 'build/icons/icon.icns',
+    darkModeSupport: true,
     target: [
       {
         target: 'zip',
@@ -77,9 +78,9 @@ export const config: Configuration = {
   win: {
     artifactName: process.env.BUILD_TARGET === 'appx'
       // eslint-disable-next-line no-template-curly-in-string
-      ? '${productName}-${version}-unsigned.${ext}'
+      ? 'xmcl-${version}-unsigned.${ext}'
       // eslint-disable-next-line no-template-curly-in-string
-      : '${productName}-${version}-${platform}-${arch}-unsigned.${ext}',
+      : 'xmcl-${version}-${platform}-${arch}-unsigned.${ext}',
     icon: 'build/icons/icon.ico',
     files: [
       '**/*.cs',
@@ -104,7 +105,7 @@ export const config: Configuration = {
     category: 'Game',
     icon: 'build/icons/256x256.png',
     // eslint-disable-next-line no-template-curly-in-string
-    artifactName: '${productName}-${version}.${ext}',
+    artifactName: 'xmcl-${version}.${ext}',
     target: process.env.BUILD_TARGET === 'appimage'
       ? 'AppImage'
       : [
