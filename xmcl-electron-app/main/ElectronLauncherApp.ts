@@ -134,7 +134,7 @@ export default class ElectronLauncherApp extends LauncherApp {
     if (this.env === 'appx') {
       return new DownloadAppInstallerTask(this)
     }
-    if (updateInfo.incremental) {
+    if (updateInfo.incremental && this.env === 'raw') {
       const updatePath = join(this.appDataPath, 'pending_update')
       return new DownloadAsarUpdateTask(updatePath, updateInfo.name)
         .map(() => undefined)
@@ -169,8 +169,10 @@ export default class ElectronLauncherApp extends LauncherApp {
     return app.whenReady()
   }
 
+  
   relaunch() {
     app.relaunch()
+    app.exit(0)
   }
 
   protected async setup() {

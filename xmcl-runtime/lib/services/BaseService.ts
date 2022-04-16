@@ -117,10 +117,6 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
    */
   @Singleton()
   async downloadUpdate() {
-    if (this.state.env === 'appimage') {
-      this.openInBrowser('https://xmcl.app')
-      return
-    }
     if (!this.state.updateInfo) {
       throw new Error('Cannot download update if we don\'t check the version update!')
     }

@@ -112,13 +112,10 @@ export async function quitAndInstallAsar(this: ElectronLauncherApp) {
     this.log('Currently is development environment. Skip to install ASAR')
     return
   }
-  const exePath = process.argv[0]
-  const appPath = dirname(exePath)
-
-  const appAsarPath = join(appPath, 'resources', 'app.asar')
+  const appAsarPath = dirname(__dirname)
   const updateAsarPath = join(this.appDataPath, 'pending_update')
 
-  this.log(`Install asar on ${this.platform.name}`)
+  this.log(`Install asar on ${this.platform.name} ${appAsarPath}`)
   if (this.platform.name === 'windows') {
     const elevatePath = await ensureElevateExe(this)
 
@@ -176,9 +173,16 @@ export async function quitAndInstallAsar(this: ElectronLauncherApp) {
     }).unref()
     this.quit()
   } else {
-    await promisify(unlink)(appAsarPath)
-    await promisify(rename)(updateAsarPath, appAsarPath)
-    this.relaunch()
+    await promisify(rename)(appAsarPath, appAsarPath + '.bk').catch(() => { })
+    try {
+      await promisify(rename)(updateAsarPath, appAsarPath)
+      await promisify(unlink)(appAsarPath + '.bk').catch(() => { })
+      this.relaunch()
+    } catch (e) {
+      this.error(`Fail to rename update the file: ${appAsarPath}`)
+      this.error(e)
+      await promisify(rename)(appAsarPath + '.bk', appAsarPath)
+    }
   }
 }
 
