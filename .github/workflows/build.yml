@@ -249,10 +249,12 @@ jobs:
       id: prepare_release
       uses: ./.github/actions/prepare-release
     - name: Create Tag
-      uses: rickstaa/action-create-tag@v1
-      with:
-        tag: ${{ steps.prepare_release.outputs.tag }}
-        message: ${{ steps.prepare_release.outputs.release }}
+      run: |
+        git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/voxelum/x-minecraft-launcher.git"
+        git config user.name ci010
+        git config user.email cijhn@hotmail.com
+        git tag -f ${{ steps.prepare_release.outputs.tag }}
+        git push origin tag ${{ steps.prepare_release.outputs.tag }} -f
     - name: Rename asar
       run: |
         mv ./build/app-win.asar ./build/app-${{ steps.prepare_release.outputs.version }}-win.asar
