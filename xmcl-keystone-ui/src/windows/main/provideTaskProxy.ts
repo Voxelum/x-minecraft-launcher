@@ -92,6 +92,7 @@ export function useTaskManager() {
   const { $t } = useI18n()
   const dictionary: Record<string, TaskItem> = {}
   const watchers: Record<string, ChildrenWatcher> = {}
+  const throughput = ref(0)
   /**
    * All the root tasks
    */
@@ -189,6 +190,7 @@ export function useTaskManager() {
         item.message = error || from || to || item.message
         if (chunkSize) {
           item.throughput += chunkSize
+          throughput.value += chunkSize
         }
         if (item.parentId !== undefined) {
           const parentLocalId = `${uuid}@${item.parentId}`
@@ -218,6 +220,7 @@ export function useTaskManager() {
 
   return {
     dictionary,
+    throughput,
     tasks,
     pause,
     resume,

@@ -13,8 +13,8 @@ export function useTaskCount() {
 
 export function useTasks() {
   const proxy = injection(TASK_MANAGER)
-  const { pause, resume, cancel, tasks } = proxy
-  return { tasks, pause, resume, cancel }
+  const { pause, resume, cancel, tasks, throughput } = proxy
+  return { tasks, pause, resume, cancel, throughput }
 }
 
 export function useTaskFromServiceCall(call: Ref<Readonly<Promise<any> | undefined>>) {
