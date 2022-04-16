@@ -22,20 +22,18 @@ async function writeMimeList(mimesAppsList: string) {
   }
 }
 
-async function ensureDesktopFile(homePath: string, exePath: string) {
-  if (existsSync('/usr/share/applications/xmcl.desktop')) {
-    return
-  }
+async function ensureDesktopFile(homePath: string, exePath: string, assignd: boolean) {
   const desktopFile = join(homePath, '.local', 'share', 'applications', 'xmcl.desktop')
-  await writeFile(desktopFile, `[Desktop Entry]\nName=X Minecraft Launcher\nExec=${exePath} %u\nIcon=${exePath}\nType=Application\nMimeType=x-scheme-handler/xmcl;`)
+  if (existsSync(desktopFile) || !assignd) {
+    await writeFile(desktopFile, `[Desktop Entry]\nName=X Minecraft Launcher\nExec=${exePath} %u\nIcon=${exePath}\nType=Application\nMimeType=x-scheme-handler/xmcl;`)
+  }
 }
 
 export async function setLinuxProtocol(homePath: string, exePath: string) {
-  await ensureDesktopFile(homePath, exePath)
-  const existed = execSync('xdg-settings get default-url-scheme-handler xmcl', { encoding: 'utf-8' })
-  if (existed.trim() === 'xmcl.desktop') {
-    return
-  }
+  const existed = execSync('xdg-settings get default-url-scheme-handler xmcl', { encoding: 'utf-8' }).trim()
+  const assigned = existed.length > 0
+  await ensureDesktopFile(homePath, exePath, assigned)
+
   const mimesAppsList = join(homePath, '.config', 'mimeapps.list')
   await writeMimeList(mimesAppsList)
     .catch(() => writeMimeList(join(homePath, '.local', 'share', 'applications', 'mimeapps.list')))
