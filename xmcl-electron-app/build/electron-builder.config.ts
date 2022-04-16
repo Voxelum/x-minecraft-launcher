@@ -102,7 +102,7 @@ export const config: Configuration = {
       MimeType: 'x-scheme-handler/xmcl',
     },
     category: 'Game',
-    icon: 'build/icons',
+    icon: 'build/icons/256x256.png',
     // eslint-disable-next-line no-template-curly-in-string
     artifactName: '${productName}-${version}.${ext}',
     target: process.env.BUILD_TARGET === 'appimage'
