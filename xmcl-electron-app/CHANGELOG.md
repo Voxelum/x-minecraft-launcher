@@ -1,4 +1,30 @@
 
+## 0.23.1
+### @xmcl/runtime-api@0.7.1
+#### Bug Fixes
+
+- macos tray icon size ([c7884881f49cf2c57dd653cccd910bfdbacb461c](https://github.com/Voxelum/x-minecraft-launcher/commit/c7884881f49cf2c57dd653cccd910bfdbacb461c))
+### @xmcl/keystone-ui@0.22.1
+#### Bug Fixes
+
+- correctly propagate task speed ([048c3b04d87bd55113047980219e800eb2d31748](https://github.com/Voxelum/x-minecraft-launcher/commit/048c3b04d87bd55113047980219e800eb2d31748))
+### @xmcl/runtime@0.21.1
+#### Bug Fixes
+
+- incremental update relaunch on macos & linux ([c32490cf54e7d854698d7f19e1413206bdfab08f](https://github.com/Voxelum/x-minecraft-launcher/commit/c32490cf54e7d854698d7f19e1413206bdfab08f))
+- wrong worker path on macos ([ea6750dcea880c2893b63ba777c927dade7fe800](https://github.com/Voxelum/x-minecraft-launcher/commit/ea6750dcea880c2893b63ba777c927dade7fe800))
+### xmcl@0.23.1
+#### Bug Fixes
+
+- optimize the protocol reg logic ([1dbb0de2311bc7e2baa381f5bfeae2890c520d46](https://github.com/Voxelum/x-minecraft-launcher/commit/1dbb0de2311bc7e2baa381f5bfeae2890c520d46))
+- incremental update relaunch on macos & linux ([c32490cf54e7d854698d7f19e1413206bdfab08f](https://github.com/Voxelum/x-minecraft-launcher/commit/c32490cf54e7d854698d7f19e1413206bdfab08f))
+- correct macos app name ([b679dfdd80fd1f3a3e409ca653f4dae7857aa443](https://github.com/Voxelum/x-minecraft-launcher/commit/b679dfdd80fd1f3a3e409ca653f4dae7857aa443))
+- wrong worker path on macos ([ea6750dcea880c2893b63ba777c927dade7fe800](https://github.com/Voxelum/x-minecraft-launcher/commit/ea6750dcea880c2893b63ba777c927dade7fe800))
+- i18n list sometime not show ([7ac6dea32c733b9ea3637de7f4a0adb4ad33b98b](https://github.com/Voxelum/x-minecraft-launcher/commit/7ac6dea32c733b9ea3637de7f4a0adb4ad33b98b))
+- macos tray icon size ([c7884881f49cf2c57dd653cccd910bfdbacb461c](https://github.com/Voxelum/x-minecraft-launcher/commit/c7884881f49cf2c57dd653cccd910bfdbacb461c))
+- do not create desktop if it existed ([ac29170bab9ccdf8861a64c214b9e7afb032b41c](https://github.com/Voxelum/x-minecraft-launcher/commit/ac29170bab9ccdf8861a64c214b9e7afb032b41c))
+
+
 ## 0.23.0
 ### @xmcl/runtime-api@0.7.0
 #### Features

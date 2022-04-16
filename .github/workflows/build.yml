@@ -75,8 +75,7 @@ jobs:
       if: ${{ runner.os == 'macOS' && startsWith(github.event.head_commit.message, 'chore(release)') }} 
       run: |
         mkdir asar
-        mv xmcl-electron-app/build/output/mac/xmcl.app/Contents/Resources/app.asar asar/app-mac.asar
-        mv xmcl-electron-app/build/output/mac/xmcl.app/Contents/Resources/app.asar.sha256 asar/app-mac.asar.sha256
+        mv "xmcl-electron-app/build/output/mac/X Minecraft Launcher.app/Contents/Resources/app.asar" asar/app-mac.asar
     - name: Prepare Linux Asar
       if: ${{ runner.os == 'Linux' && startsWith(github.event.head_commit.message, 'chore(release)') }} 
       run: |
