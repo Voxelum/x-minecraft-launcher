@@ -1,4 +1,11 @@
 
+## 0.23.2
+### xmcl@0.23.2
+#### Bug Fixes
+
+- prevent set protocol crash whole process ([0342c97c74affb57fe1e3d8d1a94c4a79f26a741](https://github.com/Voxelum/x-minecraft-launcher/commit/0342c97c74affb57fe1e3d8d1a94c4a79f26a741))
+
+
 ## 0.23.1
 ### @xmcl/runtime-api@0.7.1
 #### Bug Fixes
