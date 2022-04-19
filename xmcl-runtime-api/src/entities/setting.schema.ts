@@ -30,9 +30,9 @@ export interface SettingSchema {
   allowPrerelease: boolean
   /**
    * The download API set preferences
-   * @default "bmcl"
+   * @default ""
    */
-  apiSetsPreference: 'mojang' | 'mcbbs' | 'bmcl'
+  apiSetsPreference: 'mojang' | 'mcbbs' | 'bmcl' | ''
   /**
    * The supported unofficial api sets
    */

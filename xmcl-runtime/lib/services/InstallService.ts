@@ -77,13 +77,23 @@ export class InstallService extends StatefulService<InstallState> implements IIn
   }
 
   protected getMinecraftJsonManifestRemote() {
-    if (this.baseService.state.apiSetsPreference !== 'mojang') {
+    if (this.shouldOverrideApiSet()) {
       const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference)
       if (api) {
         return `${api.url}/mc/game/version_manifest.json`
       }
     }
     return undefined
+  }
+
+  protected shouldOverrideApiSet() {
+    if (this.baseService.state.apiSetsPreference === 'mojang') {
+      return false
+    }
+    if (this.baseService.state.apiSetsPreference === '') {
+      return this.networkManager.isInGFW
+    }
+    return true
   }
 
   private getApiSets() {
@@ -101,7 +111,7 @@ export class InstallService extends StatefulService<InstallState> implements IIn
       ...this.networkManager.getDownloadBaseOptions(),
       java: this.javaService.getPreferredJava()?.path,
     }
-    if (this.baseService.state.apiSetsPreference !== 'mojang') {
+    if (this.shouldOverrideApiSet()) {
       const allSets = this.getApiSets()
       options.mavenHost = allSets.map(api => `${api.url}/maven`)
     }
@@ -115,7 +125,7 @@ export class InstallService extends StatefulService<InstallState> implements IIn
       side: 'client',
     }
 
-    if (this.baseService.state.apiSetsPreference !== 'mojang') {
+    if (this.shouldOverrideApiSet()) {
       const allSets = this.getApiSets()
       option.assetsHost = allSets.map(api => `${api.url}/assets`)
       option.mavenHost = allSets.map(api => `${api.url}/maven`)

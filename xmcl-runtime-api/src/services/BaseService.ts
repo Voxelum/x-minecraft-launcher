@@ -19,7 +19,7 @@ export class BaseState implements SettingSchema {
   allowPrerelease = false
   autoInstallOnAppQuit = false
   autoDownload = false
-  apiSetsPreference: 'mojang' | 'mcbbs' | 'bmcl' = 'mcbbs'
+  apiSetsPreference: 'mojang' | 'mcbbs' | 'bmcl' | '' = ''
   apiSets = [{ name: 'mcbbs', url: 'https://download.mcbbs.net' }, { name: 'bmcl', url: 'https://bmclapi2.bangbang93.com' }]
 
   /**
