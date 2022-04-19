@@ -23,8 +23,9 @@
         },
         "apiSetsPreference": {
             "description": "The download API set preferences",
-            "default": "bmcl",
+            "default": "",
             "enum": [
+                "",
                 "bmcl",
                 "mcbbs",
                 "mojang"
