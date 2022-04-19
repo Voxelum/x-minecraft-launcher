@@ -295,7 +295,6 @@ export class InstallService extends StatefulService<InstallState> implements IIn
     const task = installVersionTask(meta, this.getPath(), option).setName('installVersion')
     try {
       await this.submit(task)
-      this.versionService.refreshVersions()
     } catch (e) {
       this.warn(`An error ocurred during download version ${id}`)
       this.warn(e)
@@ -394,7 +393,6 @@ export class InstallService extends StatefulService<InstallState> implements IIn
     try {
       this.log(`Start to install forge ${options.version} on ${options.mcversion}`)
       version = await this.submit(installForgeTask(options, this.getPath(), installOptions))
-      this.versionService.refreshVersions()
       this.log(`Success to install forge ${options.version} on ${options.mcversion}`)
     } catch (err) {
       this.warn(`An error ocurred during download version ${options.version}@${options.mcversion}`)
@@ -468,7 +466,6 @@ export class InstallService extends StatefulService<InstallState> implements IIn
         const artifact = await getFabricLoaderArtifact(options.minecraft, options.loader)
         return installFabric(artifact, this.getPath(), { side: 'client' })
       }))
-      this.versionService.refreshVersions()
       this.log(`Success to install fabric: yarn ${options.yarn}, loader ${options.loader}. The new version is ${result}`)
       return result
     } catch (e) {
@@ -573,7 +570,6 @@ export class InstallService extends StatefulService<InstallState> implements IIn
       return id
     }))
 
-    this.versionService.refreshVersions()
     this.log(`Succeed to install optifine ${version} on ${options.inhrenitFrom ?? options.mcversion}. ${id}`)
 
     return id
@@ -604,8 +600,6 @@ export class InstallService extends StatefulService<InstallState> implements IIn
       await this.submit(installLiteloaderTask(meta, this.getPath()))
     } catch (err) {
       this.warn(err)
-    } finally {
-      this.versionService.refreshVersions()
     }
   }
 
@@ -617,8 +611,6 @@ export class InstallService extends StatefulService<InstallState> implements IIn
       }))
     } catch (err) {
       this.warn(err)
-    } finally {
-      this.versionService.refreshVersions()
     }
   }
 }

@@ -173,6 +173,7 @@
 import { BaseServiceKey, Instance, InstanceServiceKey, LockKey } from '@xmcl/runtime-api'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { useInstanceServerStatus } from '../composables/serverStatus'
+import { vContextMenu } from '../directives/contextMenu'
 import fabricPng from '/@/assets/fabric.png'
 import forgePng from '/@/assets/forge.png'
 import minecraftPng from '/@/assets/minecraft.png'

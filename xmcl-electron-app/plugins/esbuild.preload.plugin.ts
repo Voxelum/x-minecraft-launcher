@@ -32,6 +32,7 @@ export default function createPreloadPlugin(preloadSrc: string): Plugin {
         })
         const resultFile = Object.keys(result.metafile?.outputs || {}).filter(v => v.endsWith('.js'))[0]
         const watching = Object.keys(result.metafile?.inputs || {})
+        console.log(watching)
         return {
           errors: result.errors,
           warnings: result.warnings,

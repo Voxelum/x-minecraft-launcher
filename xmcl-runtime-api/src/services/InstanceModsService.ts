@@ -1,6 +1,7 @@
 import { Resource } from '../entities/resource.schema'
 import { StatefulService, ServiceKey } from './Service'
 import { AnyResource } from '../entities/resource'
+import { IssueKey } from 'src/entities/issue'
 export interface InstallModsOptions {
   mods: Resource[]
   /**
@@ -52,6 +53,10 @@ export class InstanceModsState {
     this.mods = payload.resources
   }
 }
+
+export const RequireFabricAPIIssueKey: IssueKey<{ version: string; name: string }> = 'requireFabricAPI'
+export const RequireForgeIssueKey: IssueKey<{}> = 'requireForge'
+export const RequireFabricIssueKey: IssueKey<{}> = 'requireFabric'
 
 /**
  * Provide the abilities to import/export mods files to instance

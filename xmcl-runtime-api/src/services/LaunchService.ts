@@ -11,6 +11,7 @@ export class LaunchState {
   errors = [] as any[]
 
   launchCount(count: number) {
+    if (count < 0) count = 0
     this.activeCount = count
   }
 
@@ -90,6 +91,12 @@ export type LaunchExceptions = {
   issues: Issue[]
 } | {
   type: 'launchNoProperJava'
+} | {
+  type: 'launchInvalidJavaPath'
+  javaPath: string
+} | {
+  type: 'launchJavaNoPermission'
+  javaPath: string
 }
 
 export class LaunchException extends Exception<LaunchExceptions> { }

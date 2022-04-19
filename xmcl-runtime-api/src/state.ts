@@ -12,6 +12,8 @@ import { ResourceState } from './services/ResourceService'
 import { UserState } from './services/UserService'
 import { VersionState } from './services/VersionService'
 import { ServiceKey, StatefulService } from './services/Service'
+import { PeerState } from './services/PeerService'
+import { InstanceVersionState } from './services/InstanceVersionService'
 
 export type StateOfService<Serv> = Serv extends StatefulService<infer State>
   ? State : undefined
@@ -34,6 +36,8 @@ export type AllServiceMutations =
   & Mutations<ResourceState>
   & Mutations<UserState>
   & Mutations<VersionState>
+  & Mutations<PeerState>
+  & Mutations<InstanceVersionState>
 
 export type MutationKeys = keyof AllServiceMutations
 export type MutationPayload<T extends MutationKeys> = AllServiceMutations[T]

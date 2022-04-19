@@ -34,6 +34,7 @@ export function useDialog<T>(dialogName: DialogKey<T> = '') {
   function hide() {
     if (dialog.value === dialogName) {
       dialog.value = ''
+      parameter.value = undefined
     }
   }
   function show(param?: T) {
@@ -42,6 +43,12 @@ export function useDialog<T>(dialogName: DialogKey<T> = '') {
       dialog.value = dialogName.toString()
     }
   }
+  watch(isShown, (shown) => {
+    if (!shown) {
+      dialog.value = ''
+      parameter.value = undefined
+    }
+  })
   return {
     dialog,
     parameter: parameter as Ref<T | undefined>,

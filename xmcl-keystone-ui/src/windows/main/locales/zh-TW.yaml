@@ -84,95 +84,95 @@ description: 簡介
 detail: 細節
 diagnosis:
   badForgeProcessedFiles:
-    '': Forge 需要生成文件才能啟動 {jar}
     message: 點擊來讓 Forge 完成安裝
+    name: Forge 需要生成文件才能啟動 {jar}
   badInstall:
-    '': 版本安裝失敗 {version}
     message: 也許你應該嘗試重新安裝此版本
+    name: 版本安裝失敗 {version}
   corruptedAssets:
-    '': 'Asset 文件損壞: {name} | Asset 文件損壞: {name} | 有 {count} 個遊戲資源可能損壞'
     message: 啟動器將重新下載遊戲文件
+    name: 'Asset 文件損壞: {name} | Asset 文件損壞: {name} | 有 {count} 個遊戲資源可能損壞'
   corruptedAssetsIndex:
-    '': '{version}遊戲資源目錄可能損壞.'
     message: 啟動器將重新下載遊戲資源目錄
+    name: '{version}遊戲資源目錄可能損壞.'
   corruptedLibraries:
-    '': '庫文件損壞: {name} | 庫文件損壞: {name} | {count} 個庫文件損壞 | {count} 個庫文件損壞'
     message: 啟動器將重新下載損壞的文件
+    name: '庫文件損壞: {name} | 庫文件損壞: {name} | {count} 個庫文件損壞 | {count} 個庫文件損壞'
   corruptedVersionJar:
-    '': Minecraft %{version} 遊戲 Jar 文件損壞.
     message: 啟動器將重新下載損壞的文件
+    name: Minecraft %{version} 遊戲 Jar 文件損壞.
   corruptedVersionJson:
-    '': Minecraft %{version} 版本 Json 文件損壞.
     message: 啟動器將重新下載損壞的文件
+    name: Minecraft %{version} 版本 Json 文件損壞.
   fix: 問題修復
   incompatibleJava:
-    '': 版本 {mcversion} 可能不兼容 Java {java}!
     message: 你可以選擇自己讓啟動器幫你下載，或者自己下載
+    name: 版本 {mcversion} 可能不兼容 Java {java}!
   incompatibleMod:
-    '': '{name} 不兼容當前 Minecraft {actual}。其可用版本為 {accepted}'
     message: 該模組也有可能能在當前Minecraft下運行，若不成功請將 Mod 移出 Mod 列表
+    name: '{name} 不兼容當前 Minecraft {actual}。其可用版本為 {accepted}'
   incompatibleResourcePack:
-    '': 資源包 {name} 不兼容 Minecraft {actual}. 請使用 Minecraft {accepted}
     message: 該資源包也可能在此版本下正常工作，若不成功請將其移出資源包列表
+    name: 資源包 {name} 不兼容 Minecraft {actual}. 請使用 Minecraft {accepted}
   invalidJava:
-    '': 當前 Java 路徑已經失效
     message: 請選擇一個有效的 Java 路徑.
+    name: 當前 Java 路徑已經失效
   missingAssets:
-    '': 'Asset 文件缺失: {name} | Asset 文件缺失: {name} | 缺少%{count}個遊戲資源'
     message: 啟動器將自動下載並安裝遊戲文件
+    name: 'Asset 文件缺失: {name} | Asset 文件缺失: {name} | 缺少%{count}個遊戲資源'
   missingAssetsIndex:
-    '': '%{version}缺少遊戲資源目錄'
     message: 啟動器將自動下載並安裝遊戲資源目錄
+    name: '%{version}缺少遊戲資源目錄'
   missingAuthlibInjector:
-    '': 需要安裝 authlib-injector
     message: 必須安裝 authlib-injector, 第三方驗證服務配置才能生效！
+    name: 需要安裝 authlib-injector
   missingForgeJar:
-    '': 缺少對應 Minecraft {minecraft} 版本的 Forge {forge} 依賴文件
     message: 啟動器將自動安裝Forge文件
+    name: 缺少對應 Minecraft {minecraft} 版本的 Forge {forge} 依賴文件
   missingJava:
-    '': 沒有分配Java
     autoDownload:
-      '': 自動下載
       message: 啟動器將從 Mojang 源下載並安裝 Java {version}
+      name: 自動下載
     manualDownload:
-      '': 手動下載
       message: 啟動器將把你轉到Oracle官方JRE下載網站
+      name: 手動下載
     message: Click to resolve this problem
+    name: 沒有分配Java
     selectJava:
-      '': 手工選擇Java的位置
       message: 也許只是啟動器沒找到你電腦裏的Java,你可以手工選擇一下
+      name: 手工選擇Java的位置
     switch:
-      '': 切換到 Java {version}
       disabled: 在電腦中沒有檢測到 Java {version}，無法切換
       message: 啟動器將使用您現在安裝的 Java {version}
+      name: 切換到 Java {version}
   missingLibraries:
-    '': 缺少 {name} 依賴 | 缺少 {name} 依賴 | 缺少{count}個庫文件 | 缺少{count}個庫文件
     message: 啟動器將自動下載並安裝庫文件
-  missingVersion:
-    '': 未安裝 {version}
-    message: 啟動器將自動安裝該版本
+    name: 缺少 {name} 依賴 | 缺少 {name} 依賴 | 缺少{count}個庫文件 | 缺少{count}個庫文件
   missingVersionJar:
-    '': '%{version}版本JAR文件缺失'
     message: 啟動器將自動下載JAR文件
+    name: '%{version}版本JAR文件缺失'
   missingVersionJson:
-    '': '%{version}版本JSON文件缺失'
     message: 啟動器將自動下載JSON文件
+    name: '%{version}版本JSON文件缺失'
   problem: 1個問題待修復 | %{count}個問題待修復
   requireFabric:
-    '': 請啟用 Fabric 來運行 Fabric 的 Mod
     message: 請在版本設置頁面選擇一個合適的 Fabric 版本
+    name: 請啟用 Fabric 來運行 Fabric 的 Mod
   requireFabricAPI:
-    '': 請安裝 FabricAPI {version} 來運行 {name}
     message: 請去 Curseforge 下載，如果已經下載了可以去 Mod 設置頁面啟用 Fabric API
+    name: 請安裝 FabricAPI {version} 來運行 {name}
   requireForge:
-    '': 請啟用 Forge 來運行 Forge 的 Mod
     message: 請在版本設置頁面選擇一個合適的 Forge 版本
+    name: 請啟用 Forge 來運行 Forge 的 Mod
   unknownMod:
-    '': 無法解析 {name} Mod 兼容的 Minecraft 版本
     message: 請務必小心使用
+    name: 無法解析 {name} Mod 兼容的 Minecraft 版本
   userNotLogined:
-    '': 用戶沒有登陸
     message: 點擊登錄 Minecraft
+    name: 用戶沒有登陸
+  version:
+    message: 啟動器將自動安裝該版本
+    name: 未安裝 {version}
 disk:
   available: 可用
   used: 已用
@@ -561,6 +561,41 @@ modrinth:
     name: 類型
     release: 穩定版
   versions: 版本
+multiplayer:
+  name: 局域網聯機
+  complete: 完成
+  confirm: 確定
+  copy: 複製
+  copyLocalHint: >-
+    <span>一段令牌只能用<span style="color: red; font-weight:
+    bold;">一次</span>！你不能將一個令牌發送給很多個小夥伴！</span> <br> <span style="color:
+    rgba(255,255,255,0.7); font-style: italic;">如果有多個小夥伴要加入你需要<span
+    style="font-weight: bold; color: rgba(245, 158, 11)">多次</span>建立連接。</span>
+  createLocalToken: 創建本地令牌
+  disconnectDescription: 你確定你要斷開和 {user}({id}) 的連接麼
+  disconnected: 斷開連接
+  enterRemoteToken: 輸入對方的令牌
+  enterRemoteTokenHint: 當你的聯機夥伴輸入你的令牌後，你需要將他的令牌輸入到下面的文字框中，並點擊確定開始連接。
+  gatheringIce: >-
+    請將<span class="v-chip v-chip--label v-size--small" style="text-font: bold"
+    >本地令牌</span>發送給你的聯機夥伴，你的聯機夥伴在 <span class="v-chip v-chip--label
+    v-size--small" style="text-font: bold"> 加入連接 </span> 中輸入這段文字。<br> 期間 ICE
+    服務器可能需要時間收集足夠信息來創建<span class="v-chip v-chip--label v-size--small"
+    style="text-font: bold">本地令牌</span>。<br> 你不需要等 ICE
+    服務器完全收集完畢，當下面的令牌已經有內容並且不怎麼變化後，你可以提前將令牌複製給對方。
+  illegalTokenDescription: 非法的令牌，請確認對象給你的令牌是完整、正確的。
+  initiateConnection: 發起連接
+  joinConnection: 如果你的對象已經創建了連接，你需要選擇加入鏈接
+  localToken: 本地令牌
+  next: 下一步
+  placeholder: 和其他玩家建立連接，暢玩局域網 Minecraft！
+  previous: 上一步
+  receiveHint: 在對方輸入你的令牌後，你們之間的連接會自動創建。現在你已經可以點擊完成了。
+  receiveRemoteTokenHint: 請將聯機夥伴的令牌粘貼在此處，並點擊下一步
+  remoteToken: 對象的令牌
+  sendTokenToRemote: 將本地令牌給你的聯機夥伴
+  start: 開始
+  startNewP2PConnection: 點擊開始按鈕來新建一個新的點對點連接
 name: 名稱
 next: 下一項
 'no': 否

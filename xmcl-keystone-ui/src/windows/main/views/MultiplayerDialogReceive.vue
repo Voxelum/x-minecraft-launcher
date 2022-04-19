@@ -1,0 +1,161 @@
+<template>
+  <v-dialog
+    v-model="isShown"
+    class="mx-20"
+  >
+    <v-stepper
+      v-model="step"
+      vertical
+    >
+      <v-stepper-step
+        :complete="step > 1"
+        step="1"
+      >
+        {{ t('multiplayer.enterRemoteToken') }}
+      </v-stepper-step>
+
+      <v-stepper-content step="1">
+        <div>
+          {{ t('multiplayer.receiveRemoteTokenHint') }}
+        </div>
+        <v-textarea
+          v-model="remoteDescription"
+          class="flex-grow-0 mt-4"
+          outlined
+          :label="t('multiplayer.remoteToken')"
+          :error="error"
+          :error-messages="errorText"
+        />
+        <div class="flex w-full">
+          <div class="flex-grow" />
+          <v-btn
+            text
+            outlined
+            color="primary"
+            :loading="answering"
+            @click="answer(); "
+          >
+            {{ t('multiplayer.next') }}
+          </v-btn>
+        </div>
+      </v-stepper-content>
+      <v-stepper-step
+        step="2"
+      >
+        {{ t('multiplayer.sendTokenToRemote') }}
+      </v-stepper-step>
+
+      <v-stepper-content
+        step="2"
+      >
+        <div class="flex items-center justify-center gap-4">
+          <div
+            class="max-w-160"
+            v-html="t('multiplayer.gatheringIce')"
+          />
+          <div class="flex-grow" />
+          <div
+            v-if="gatheringState === 'gathering'"
+            class="text-gray-400"
+          >
+            {{ t('peer.iceGatheringState.gathering') }}
+            <v-progress-circular
+              class="ml-2"
+              :width="1"
+              :size="20"
+              indeterminate
+            />
+          </div>
+        </div>
+        <v-textarea
+          :value="localDescription"
+          class="mt-4"
+          outlined
+          readonly
+          :label="t('multiplayer.localToken')"
+          @mousedown="copyLocalDescription"
+        />
+        <div class="mb-4">
+          {{ t('multiplayer.receiveHint') }}
+        </div>
+        <div class="flex">
+          <v-btn
+            text
+            outlined
+            @click="copyLocalDescription"
+          >
+            <v-icon left>
+              content_copy
+            </v-icon>
+            {{ t('multiplayer.copy') }}
+          </v-btn>
+          <div class="flex-grow" />
+          <v-btn
+            color="primary"
+            @click="isShown = false"
+          >
+            {{ t('multiplayer.complete') }}
+          </v-btn>
+        </div>
+      </v-stepper-content>
+    </v-stepper>
+  </v-dialog>
+</template>
+<script lang=ts setup>
+import { createAnswerAppUrl, PeerServiceKey } from '@xmcl/runtime-api'
+import { useDialog } from '../composables/dialog'
+import { useCurrentUser } from '../composables/user'
+import { useI18n, useRefreshable, useService } from '/@/composables'
+
+const { isShown, parameter } = useDialog('peer-receive')
+const { gameProfile } = useCurrentUser()
+
+const service = useService(PeerServiceKey)
+const connection = computed(() => service.state.connections.find(c => c.id === id.value))
+const localDescription = computed(() => connection.value?.localDescriptionSDP ? (connection.value?.localDescriptionSDP) : '')
+const localSdpUrl = computed(() => createAnswerAppUrl(localDescription.value, gameProfile.value.name))
+const { t } = useI18n()
+
+const remoteDescription = ref('')
+const id = ref('')
+const gatheringState = computed(() => connection.value?.iceGatheringState)
+
+const step = ref(1)
+const done = ref(false)
+const errorText = ref('')
+const error = computed(() => !!errorText.value)
+
+watch(isShown, (v) => {
+  if (v && typeof parameter.value === 'string') {
+    id.value = parameter.value as string
+    step.value = 2
+  } else {
+    step.value = 1
+    remoteDescription.value = ''
+  }
+})
+
+function copyLocalDescription() {
+  navigator.clipboard.writeText(localDescription.value)
+}
+
+const { refresh: answer, refreshing: answering } = useRefreshable(async () => {
+  errorText.value = ''
+  try {
+    if (!remoteDescription.value) {
+      throw new SyntaxError()
+    }
+    id.value = await service.offer(remoteDescription.value)
+    done.value = true
+    step.value++
+  } catch (e) {
+    if (e instanceof SyntaxError) {
+      errorText.value = t('multiplayer.illegalTokenDescription')
+    } else {
+      errorText.value = t('multiplayer.illegalTokenDescription')
+    }
+    console.log(e)
+  }
+})
+
+</script>

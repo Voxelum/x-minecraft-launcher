@@ -1,5 +1,5 @@
 import { del, set } from '@vue/composition-api'
-import { BaseServiceKey, BaseState, CurseForgeServiceKey, CurseforgeState, DiagnoseServiceKey, DiagnoseState, GameProfileAndTexture, ImportServiceKey, InstallServiceKey, InstallState, ModpackServiceKey, InstanceIOServiceKey, InstanceJavaServiceKey, InstanceLogServiceKey, InstanceModsServiceKey, InstanceModsState, InstanceOptionsServiceKey, InstanceOptionsState, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceServerInfoServiceKey, InstanceServiceKey, InstanceShaderPacksServiceKey, InstanceState, InstanceVersionServiceKey, JavaServiceKey, JavaState, LaunchServiceKey, LaunchState, ModrinthServiceKey, ModrinthState, ResourceServiceKey, ResourceState, SaveState, ServerInfoState, ServerStatusServiceKey, UserProfile, UserServiceKey, UserState, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
+import { BaseServiceKey, BaseState, CurseForgeServiceKey, CurseforgeState, DiagnoseServiceKey, DiagnoseState, GameProfileAndTexture, ImportServiceKey, InstallServiceKey, InstallState, ModpackServiceKey, InstanceIOServiceKey, InstanceJavaServiceKey, InstanceLogServiceKey, InstanceModsServiceKey, InstanceModsState, InstanceOptionsServiceKey, InstanceOptionsState, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceServerInfoServiceKey, InstanceServiceKey, InstanceShaderPacksServiceKey, InstanceState, InstanceVersionServiceKey, JavaServiceKey, JavaState, LaunchServiceKey, LaunchState, ModrinthServiceKey, ModrinthState, ResourceServiceKey, ResourceState, SaveState, ServerInfoState, ServerStatusServiceKey, UserProfile, UserServiceKey, UserState, VersionServiceKey, VersionState, PeerServiceKey, PeerState, InstanceVersionState, InstanceJavaState } from '@xmcl/runtime-api'
 import { GameProfile, ProfileServiceAPI, YggdrasilAuthAPI } from '@xmcl/user'
 import { ServiceFactory } from '/@/composables'
 
@@ -64,9 +64,10 @@ export function useAllServices(factory: ServiceFactory) {
   factory.register(ModpackServiceKey, () => undefined)
   factory.register(InstanceResourcePacksServiceKey, () => undefined)
   factory.register(InstanceShaderPacksServiceKey, () => undefined)
-  factory.register(InstanceJavaServiceKey, () => undefined)
-  factory.register(InstanceVersionServiceKey, () => undefined)
 
+  factory.register(InstanceJavaServiceKey, () => new InstanceJavaState())
+  factory.register(InstanceVersionServiceKey, () => new InstanceVersionState())
+  factory.register(PeerServiceKey, () => new PeerState())
   factory.register(BaseServiceKey, () => new BaseState())
   factory.register(DiagnoseServiceKey, () => new DiagnoseState())
   factory.register(InstanceOptionsServiceKey, () => new InstanceOptionsState())

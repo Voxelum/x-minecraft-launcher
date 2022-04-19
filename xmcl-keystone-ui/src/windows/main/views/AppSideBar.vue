@@ -68,7 +68,7 @@
                 <v-list-item-title v-text="'Text'" />
               </v-list-item>
             </template>
-            {{ $tc('mod.name', 2) }}
+            {{ tc('mod.name', 2) }}
           </v-tooltip>
           <v-tooltip
             :close-delay="0"
@@ -87,7 +87,7 @@
                 <v-list-item-title v-text="'Text'" />
               </v-list-item>
             </template>
-            {{ $tc('resourcepack.name', 2) }}
+            {{ tc('resourcepack.name', 2) }}
           </v-tooltip>
 
           <v-tooltip
@@ -107,7 +107,7 @@
                 <v-list-item-title v-text="'Text'" />
               </v-list-item>
             </template>
-            {{ $tc('shaderpack.name', 2) }}
+            {{ tc('shaderpack.name', 2) }}
           </v-tooltip>
           <v-divider />
         </v-list-group>
@@ -130,7 +130,7 @@
             <v-list-item-title>Instances</v-list-item-title>
           </v-list-item>
         </template>
-        {{ $t('profile.profiles') }}
+        {{ t('profile.profiles') }}
       </v-tooltip>
 
       <v-tooltip
@@ -152,7 +152,7 @@
             <v-list-item-title>Modpack</v-list-item-title>
           </v-list-item>
         </template>
-        {{ $tc('profile.modpack.name', 2) }}
+        {{ tc('profile.modpack.name', 2) }}
       </v-tooltip>
 
       <v-tooltip
@@ -210,6 +210,28 @@
       class="non-moveable px-2 ml-1"
       style=""
     >
+      <v-tooltip
+        :close-delay="0"
+        right
+      >
+        <template #activator="{ on: tooltip }">
+          <v-list-item
+            push
+            link
+            to="/multiplayer"
+            v-on="tooltip"
+          >
+            <v-list-item-icon>
+              <v-icon>
+                swap_horiz
+              </v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Multiplayer</v-list-item-title>
+          </v-list-item>
+        </template>
+        {{ t('multiplayer.name') }}
+      </v-tooltip>
+
       <v-list-item
         link
         @click="show()"
@@ -265,7 +287,7 @@ import { useDialog } from '../composables/dialog'
 import { useTaskCount } from '../composables/task'
 import { useCurrentUser } from '../composables/user'
 import { TaskDialogKey } from './AppTaskDialog.vue'
-import { useRouter, useService } from '/@/composables'
+import { useI18n, useRouter, useService } from '/@/composables'
 
 const { count } = useTaskCount()
 const { show } = useDialog(TaskDialogKey)
@@ -280,6 +302,8 @@ const subRoutes = new Set([
   '/resource-pack-setting',
   '/shader-pack-setting',
 ])
+
+const { t, tc } = useI18n()
 
 const onHomeClick = (event: Event) => {
   event.stopPropagation()

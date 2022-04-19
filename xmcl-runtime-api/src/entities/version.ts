@@ -165,10 +165,10 @@ export function isVersionMatched(version: ResolvedVersion, runtime: RuntimeVersi
   return true
 }
 
-export function getResolvedVersion(versions: ResolvedVersion[], runtime: RuntimeVersions, id: string): ResolvedVersion {
+export function getResolvedVersion(versions: ResolvedVersion[], runtime: RuntimeVersions, id: string): ResolvedVersion | undefined {
   const idMatched = versions.find(v => v.id === id)
   const runtimeMatched = versions.find(ver => isVersionMatched(ver, runtime))
-  return idMatched || runtimeMatched || EMPTY_VERSION
+  return idMatched || runtimeMatched
 }
 
 export function getMinecraftVersionFormat(version: string): 'release' | 'snapshot' | 'beta' | 'alpha' | 'unknown' {

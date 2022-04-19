@@ -58,6 +58,7 @@ importers:
 
   xmcl-electron-app:
     specifiers:
+      '@microsoft/signalr': ^6.0.4
       '@types/electron-devtools-installer': ^2.2.0
       '@types/fs-extra': ^8.1.2
       '@types/lodash.debounce': ^4.0.6
@@ -65,13 +66,13 @@ importers:
       '@types/node': ~15
       '@types/pngjs': ^6.0.1
       '@types/sharp': ^0.29.4
-      '@types/uuid': ^3.4.10
       '@types/yauzl': ^2.9.2
       '@types/yazl': ^2.4.2
       '@typescript-eslint/eslint-plugin': ^5.6.0
       '@typescript-eslint/parser': ^5.6.0
       '@vue/devtools': ^5.3.4
       '@vue/runtime-dom': latest
+      '@xmcl/client': workspace:*
       '@xmcl/core': workspace:*
       '@xmcl/installer': workspace:*
       '@xmcl/runtime': workspace:*
@@ -82,7 +83,7 @@ importers:
       chalk: ^4.1.2
       create-desktop-shortcuts: ^1.6.0
       cross-env: ^5.2.1
-      electron: ^15.3.6
+      electron: ^16.2.2
       electron-builder: ^22.14.5
       electron-devtools-installer: ^3.2.0
       electron-updater: ^4.3.9
@@ -107,8 +108,8 @@ importers:
       sharp: ^0.30.0
       tslib: ^2.3.1
       typescript: ^4.4.3
-      uuid: ^7.0.3
     devDependencies:
+      '@microsoft/signalr': 6.0.4
       '@types/electron-devtools-installer': 2.2.1
       '@types/fs-extra': 8.1.2
       '@types/lodash.debounce': 4.0.6
@@ -116,13 +117,13 @@ importers:
       '@types/node': 15.14.9
       '@types/pngjs': 6.0.1
       '@types/sharp': 0.29.5
-      '@types/uuid': 3.4.10
       '@types/yauzl': 2.9.2
       '@types/yazl': 2.4.2
       '@typescript-eslint/eslint-plugin': 5.9.0_c05e6fca5974c04442e7c260534af929
       '@typescript-eslint/parser': 5.9.0_eslint@7.32.0+typescript@4.5.4
       '@vue/devtools': 5.3.4
       '@vue/runtime-dom': 3.2.33
+      '@xmcl/client': link:../xmcl/packages/client
       '@xmcl/core': link:../xmcl/packages/core
       '@xmcl/installer': link:../xmcl/packages/installer
       '@xmcl/runtime': link:../xmcl-runtime
@@ -133,7 +134,7 @@ importers:
       chalk: 4.1.2
       create-desktop-shortcuts: 1.6.0
       cross-env: 5.2.1
-      electron: 15.3.6
+      electron: 16.2.2
       electron-builder: 22.14.5
       electron-devtools-installer: 3.2.0
       electron-updater: 4.6.1
@@ -158,7 +159,6 @@ importers:
       sharp: 0.30.0
       tslib: 2.3.1
       typescript: 4.5.4
-      uuid: 7.0.3
 
   xmcl-keystone-ui:
     specifiers:
@@ -358,7 +358,6 @@ importers:
       '@types/long': ^4.0.1
       '@types/lzma-native': ^4.0.1
       '@types/node': ~15
-      '@types/uuid': ^3.4.10
       '@types/yauzl': ^2.9.2
       '@types/yazl': ^2.4.2
       '@typescript-eslint/eslint-plugin': ^5.6.0
@@ -414,7 +413,6 @@ importers:
       semver: ^7.3.5
       tslib: ^2.3.1
       typescript: ^4.4.3
-      uuid: ^7.0.3
       yazl: ^2.5.1
     dependencies:
       '@azure/msal-common': 5.2.0
@@ -460,7 +458,6 @@ importers:
       lzma-native: 8.0.6
       node-watch: 0.7.3
       semver: 7.3.5
-      uuid: 7.0.3
       yazl: 2.5.1
     devDependencies:
       '@types/fs-extra': 8.1.2
@@ -469,7 +466,6 @@ importers:
       '@types/long': 4.0.1
       '@types/lzma-native': 4.0.1
       '@types/node': 15.14.9
-      '@types/uuid': 3.4.10
       '@types/yauzl': 2.9.2
       '@types/yazl': 2.4.2
       '@typescript-eslint/eslint-plugin': 5.9.0_c05e6fca5974c04442e7c260534af929
@@ -488,7 +484,6 @@ importers:
   xmcl-runtime-api:
     specifiers:
       '@types/eslint': ^8.2.1
-      '@types/uuid': ^3.4.10
       '@typescript-eslint/eslint-plugin': ^5.6.0
       '@typescript-eslint/parser': ^5.6.0
       '@xmcl/client': workspace:*
@@ -541,7 +536,6 @@ importers:
       semver: 7.3.5
     devDependencies:
       '@types/eslint': 8.2.1
-      '@types/uuid': 3.4.10
       '@typescript-eslint/eslint-plugin': 5.9.0_c05e6fca5974c04442e7c260534af929
       '@typescript-eslint/parser': 5.9.0_eslint@7.32.0+typescript@4.5.4
       esbuild: 0.14.28
@@ -2409,6 +2403,20 @@ packages:
     resolution: {integrity: sha512-Ot53G927ykMF8cQ3/zq4foZtdk+Tt1YpX7aUTHxBU7UHNdkEiBvBfZSq+rnlUmKCJ19VatwPG4mNzvcGpBj4og==}
     dev: false
 
+  /@microsoft/signalr/6.0.4:
+    resolution: {integrity: sha512-YeWRh4LxfYnq4I5CKw17/HOq8rY+ouTv6Bq+s55122StE3pK29j8j2OpP+1PA3D1ksHPfy7dFIgC33yr/E+01A==}
+    dependencies:
+      abort-controller: 3.0.0
+      eventsource: 1.1.0
+      fetch-cookie: 0.11.0
+      node-fetch: 2.6.7
+      ws: 7.4.6
+    transitivePeerDependencies:
+      - bufferutil
+      - encoding
+      - utf-8-validate
+    dev: true
+
   /@modyfi/vite-plugin-yaml/1.0.2_vite@2.8.4:
     resolution: {integrity: sha512-lV7WvSHwZ2OmjILPxABOurjb5v0YXpCqjs+YGzdvHqJB1oQ+BD27hpjWjde7+u8eC6Ppnrl9l10e5NQaKXk0Bg==}
     peerDependencies:
@@ -3382,6 +3390,13 @@ packages:
 
   /abab/2.0.5:
     resolution: {integrity: sha512-9IK9EadsbHo6jLWIpxpR6pL0sazTXV6+SQv25ZB+F7Bj9mJNaOc4nCRabwd5M/JwmUa8idz6Eci6eKfJryPs6Q==}
+    dev: true
+
+  /abort-controller/3.0.0:
+    resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
+    engines: {node: '>=6.5'}
+    dependencies:
+      event-target-shim: 5.0.1
     dev: true
 
   /accepts/1.3.7:
@@ -4841,8 +4856,8 @@ packages:
       - supports-color
     dev: true
 
-  /electron/15.3.6:
-    resolution: {integrity: sha512-mOOTcZH/Vlq9GP3B8G3aMvZQ4eZyCjUZZpLccABqsPyLUMEixcdx750DQ7M+iHYyo0BWxj/JuHblzQXgNnPkfg==}
+  /electron/16.2.2:
+    resolution: {integrity: sha512-MOZCewpDvhiuYCw8UnJnQxU/9cni4tlHHWBdi0JWbcdBOrGsDMSt17nuPwR5wSf1e7mSfofGIUPg9iHS5KA8Eg==}
     engines: {node: '>= 8.6'}
     hasBin: true
     requiresBuild: true
@@ -5765,6 +5780,18 @@ packages:
     engines: {node: '>= 0.6'}
     dev: true
 
+  /event-target-shim/5.0.1:
+    resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
+    engines: {node: '>=6'}
+    dev: true
+
+  /eventsource/1.1.0:
+    resolution: {integrity: sha512-VSJjT5oCNrFvCS6igjzPAt5hBzQ2qPBFIbJ03zLI9SE0mxwZpMw6BfJrbFHm1a141AavMEB8JHmBhWAd66PfCg==}
+    engines: {node: '>=0.12.0'}
+    dependencies:
+      original: 1.0.2
+    dev: true
+
   /execa/5.1.1:
     resolution: {integrity: sha512-8uSpZZocAZRBAPIEINJj3Lo9HyGitllczc27Eh5YYojjMFMn8yHMDMaUHE2Jqfq05D/wucwI4JGURyXt1vchyg==}
     engines: {node: '>=10'}
@@ -5896,6 +5923,13 @@ packages:
     engines: {node: ^12.20 || >= 14.13}
     dependencies:
       web-streams-polyfill: 3.2.0
+    dev: true
+
+  /fetch-cookie/0.11.0:
+    resolution: {integrity: sha512-BQm7iZLFhMWFy5CZ/162sAGjBfdNWb7a8LEqqnzsHFhxT/X/SVj/z2t2nu3aJvjlbQkrAlTUApplPRjWyH4mhA==}
+    engines: {node: '>=8'}
+    dependencies:
+      tough-cookie: 4.0.0
     dev: true
 
   /file-entry-cache/6.0.1:
@@ -7463,6 +7497,18 @@ packages:
       whatwg-url: 5.0.0
     dev: false
 
+  /node-fetch/2.6.7:
+    resolution: {integrity: sha512-ZjMPFEfVx5j+y2yF35Kzx5sF7kDzxuDj6ziH4FFbOp87zKDZNx8yExJIb05OGF4Nlt9IHFIMBkRl41VdvcNdbQ==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+    dependencies:
+      whatwg-url: 5.0.0
+    dev: true
+
   /node-fetch/3.1.0:
     resolution: {integrity: sha512-QU0WbIfMUjd5+MUzQOYhenAazakV7Irh1SGkWCsRzBwvm4fAhzEUaHMJ6QLP7gWT6WO9/oH2zhKMMGMuIrDyKw==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
@@ -7625,6 +7671,12 @@ packages:
 
   /original-fs/1.1.0:
     resolution: {integrity: sha512-LhW6DNoXdp8oo+Wv6N/QcxNrX/lE8McIySZ1O7llfJut4qA1Sfoy8BjHHWD6lHQMEdoFL+fosGK/DJSkQ5CP2g==}
+    dev: true
+
+  /original/1.0.2:
+    resolution: {integrity: sha512-hyBVl6iqqUOJ8FqRe+l/gS8H+kKYjrEndd5Pm1MfBtsEKA038HkkdbAl/72EAXGyonD/PFsvmVG+EvcIpliMBg==}
+    dependencies:
+      url-parse: 1.5.10
     dev: true
 
   /p-cancelable/1.1.0:
@@ -8066,6 +8118,10 @@ packages:
     deprecated: The querystring API is considered Legacy. new code should use the URLSearchParams API instead.
     dev: true
 
+  /querystringify/2.2.0:
+    resolution: {integrity: sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ==}
+    dev: true
+
   /queue-microtask/1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
@@ -8225,6 +8281,10 @@ packages:
   /require-from-string/2.0.2:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
     engines: {node: '>=0.10.0'}
+
+  /requires-port/1.0.0:
+    resolution: {integrity: sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=}
+    dev: true
 
   /resolve-alpn/1.2.1:
     resolution: {integrity: sha512-0a1F4l73/ZFZOakJnQ3FvkJ2+gSTQWz/r2KE5OdDY0TxPm5h4GkqkWWfM47T7HsbnOtcJVEF4epCVy6u7Q3K+g==}
@@ -8966,7 +9026,6 @@ packages:
 
   /tr46/0.0.3:
     resolution: {integrity: sha1-gYT9NH2snNwYWZLzpmIuFLnZq2o=}
-    dev: false
 
   /tr46/1.0.1:
     resolution: {integrity: sha1-qLE/1r/SSJUZZ0zN5VujaTtwbQk=}
@@ -9391,6 +9450,13 @@ packages:
       prepend-http: 2.0.0
     dev: true
 
+  /url-parse/1.5.10:
+    resolution: {integrity: sha512-WypcfiRhfeUP9vvF0j6rw0J3hrWrw6iZv3+22h6iRMJ/8z1Tj6XfLP4DsUix5MhMPnXpiHDoKyoZ/bdCkwBCiQ==}
+    dependencies:
+      querystringify: 2.2.0
+      requires-port: 1.0.0
+    dev: true
+
   /utf8-byte-length/1.0.4:
     resolution: {integrity: sha1-9F8VDExm7uloGGUFq5P8u4rWv2E=}
     dev: true
@@ -9406,6 +9472,7 @@ packages:
   /uuid/7.0.3:
     resolution: {integrity: sha512-DPSke0pXhTZgoF/d+WSt2QaKMCFSfx7QegxEWT+JOuHF5aWrKEn0G+ztjuJg/gG8/ItK+rbPCD/yNv8yyih6Cg==}
     hasBin: true
+    dev: false
 
   /uuid/8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
@@ -9887,7 +9954,6 @@ packages:
 
   /webidl-conversions/3.0.1:
     resolution: {integrity: sha1-JFNCdeKnvGvnvIZhHMFq4KVlSHE=}
-    dev: false
 
   /webidl-conversions/4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
@@ -9926,7 +9992,6 @@ packages:
     dependencies:
       tr46: 0.0.3
       webidl-conversions: 3.0.1
-    dev: false
 
   /whatwg-url/7.1.0:
     resolution: {integrity: sha512-WUu7Rg1DroM7oQvGWfOiAK21n74Gg+T4elXEQYkOhtyLeWiJFoOGLXPKI/9gzIie9CtwVLm8wtw6YJdKyxSjeg==}

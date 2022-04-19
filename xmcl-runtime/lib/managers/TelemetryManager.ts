@@ -1,14 +1,13 @@
-import { UserServiceKey } from '@xmcl/runtime-api'
 import { readFile, writeFile } from 'fs-extra'
+import { randomUUID } from 'crypto'
 import { join } from 'path'
-import { v4 } from 'uuid'
 import { Manager } from '.'
 import { APP_INSIGHT_KEY, IS_DEV } from '../constant'
 import { LaunchService } from '../services/LaunchService'
 import { UserService } from '../services/UserService'
 
 export default class TelemetryManager extends Manager {
-  private sessionId: string = v4()
+  private sessionId: string = randomUUID()
 
   async setup() {
     if (IS_DEV) {
@@ -22,7 +21,7 @@ export default class TelemetryManager extends Manager {
       const session = await readFile(clientSessionFile).then(b => b.toString())
       this.sessionId = session
     } catch {
-      this.sessionId = v4()
+      this.sessionId = randomUUID()
       await writeFile(clientSessionFile, this.sessionId)
     }
 

@@ -134,9 +134,9 @@
 
 <script lang=ts>
 import { computed, defineComponent, inject, nextTick, onMounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
-import { UserException, UserServiceKey } from '@xmcl/runtime-api'
+import { isException, UserException, UserServiceKey } from '@xmcl/runtime-api'
 import Hint from '/@/components/Hint.vue'
-import { IssueHandler, useServiceBusy, useI18n, useService, useServiceOnly } from '/@/composables'
+import { IssueHandlerKey, useServiceBusy, useI18n, useService, useServiceOnly } from '/@/composables'
 import { required } from '/@/util/props'
 import { useDialog } from '../composables/dialog'
 import { useSelectedServices } from '../composables/login'
@@ -154,9 +154,9 @@ export default defineComponent({
     const { hide, isShown, show } = useDialog('login')
 
     // handle the not login issue
-    const issueHandler = inject(IssueHandler)
-    if (issueHandler) {
-      issueHandler.userNotLogined = show
+    const IssueHandlerKey = inject(IssueHandlerKey)
+    if (IssueHandlerKey) {
+      IssueHandlerKey.userNotLogined = show
     }
 
     const data = reactive({
@@ -233,7 +233,9 @@ export default defineComponent({
         await login({ ...data, authService: authService.value, profileService: profileService.value })
         hide()
       } catch (e) {
-        handleError(e as UserException)
+        if (isException(UserException, e)) {
+          handleError(e.exception)
+        }
         console.log(e)
       }
     }

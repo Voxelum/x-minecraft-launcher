@@ -1,10 +1,10 @@
-import { Exception, GeneralException, ServiceKey } from '@xmcl/runtime-api'
+import { Exception, ServiceKey } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
 import { Client } from '../engineBridge'
-import { ObjectRegistry } from '../util/objectRegistry'
 import { AbstractService, PARAMS_SYMBOL, ServiceConstructor, StatefulService } from '../services/Service'
+import { ObjectRegistry } from '../util/objectRegistry'
 
 interface ServiceCallSession {
   id: number
@@ -89,11 +89,13 @@ export default class ServiceManager extends Manager {
         this.error(JSON.stringify(e))
       }
       if (e instanceof Exception || 'type' in (e as any)) {
-        return { error: e }
+        const ex = e as any
+        return { error: JSON.parse(JSON.stringify(ex)) }
       }
       if (e instanceof Error) {
-        return { error: new GeneralException({ type: 'general', error: e }) }
+        return { error: JSON.parse(JSON.stringify({ ...e, exception: { type: 'general', name: 'GeneralException' } })) }
       }
+      return { error: e }
     } finally {
       delete this.sessions[id]
     }

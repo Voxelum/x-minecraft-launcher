@@ -25,6 +25,7 @@ export * from './lib/services/ResourceService'
 export * from './lib/services/ServerStatusService'
 export * from './lib/services/UserService'
 export * from './lib/services/VersionService'
+export * from './lib/services/PeerService'
 
 export type { default as CredentialManager } from './lib/managers/CredentialManager'
 export type { default as LogManager } from './lib/managers/LogManager'

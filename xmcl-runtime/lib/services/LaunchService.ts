@@ -5,6 +5,9 @@ import { constants } from 'fs'
 import { access, chmod } from 'fs-extra'
 import { EOL } from 'os'
 import LauncherApp from '../app/LauncherApp'
+import { JavaValidation } from '../entities/java'
+import { isSystemError } from '../util/error'
+import { ENOENT_ERROR, EPERM_ERROR } from '../util/fs'
 import { DiagnoseService } from './DiagnoseService'
 import { ExternalAuthSkinService } from './ExternalAuthSkinService'
 import { InstanceJavaService } from './InstanceJavaService'
@@ -41,14 +44,14 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
     const gameProfile = user.gameProfile
 
     const minecraftFolder = new MinecraftFolder(instance.path)
-    const instanceJava = this.instanceJavaService.getInstanceJava()
+    const instanceJava = this.instanceJavaService.state.java
     if (!instanceJava) {
       throw new Error('No valid java')
     }
     const javaPath = instanceJava.path
 
-    const instanceVersion = this.instanceVersionService.getInstanceVersion()
-    if (!instanceVersion.id) {
+    const instanceVersion = this.instanceVersionService.state.version
+    if (!instanceVersion) {
       throw new LaunchException({ type: 'launchNoVersionInstalled' })
     }
     const version = instanceVersion.id
@@ -75,7 +78,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       extraMCArgs: instance.mcOptions,
       yggdrasilAgent: useAuthLib
         ? {
-          jar: await this.externalAuthSkinService.installAuthlibInjection(),
+          jar: await this.externalAuthSkinService.installAuthLibInjection(),
           server: user.authService.hostName,
         }
         : undefined,
@@ -113,10 +116,10 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
 
       await this.userService.refreshStatus()
       const issues = this.diagnoseService.state.issues
-      for (let problems = issues.filter(p => p.autofix), i = 0;
+      for (let problems = issues.filter(p => p.autoFix), i = 0;
         problems.length !== 0 && i < 1;
-        problems = issues.filter(p => p.autofix), i += 1) {
-        await this.diagnoseService.fix(issues.filter(p => !p.optional && p.autofix))
+        problems = issues.filter(p => p.autoFix), i += 1) {
+        await this.diagnoseService.fix(issues.filter(p => !p.optional && p.autoFix))
       }
 
       if (this.state.status === 'idle') { // check if we have cancel (set to ready) this launch
@@ -127,8 +130,8 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
 
       const minecraftFolder = new MinecraftFolder(options?.gameDirectory ?? instance.path)
 
-      let version = options?.version ? this.versionService.getLocalVersion(options.version) ?? this.instanceVersionService.getInstanceVersion() : this.instanceVersionService.getInstanceVersion()
-      if (version === EMPTY_VERSION) {
+      let version = options?.version ? this.versionService.getLocalVersion(options.version) ?? this.instanceVersionService.state.version : this.instanceVersionService.state.version
+      if (!version) {
         throw new LaunchException({ type: 'launchNoVersionInstalled' })
       }
       version = await Version.parse(version.minecraftDirectory, version.id)
@@ -168,7 +171,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         launcherName: options?.launcherName ?? 'XMCL',
         yggdrasilAgent: useAuthLib
           ? {
-            jar: await this.externalAuthSkinService.installAuthlibInjection(),
+            jar: await this.externalAuthSkinService.installAuthLibInjection(),
             server: user.authService.hostName,
           }
           : undefined,
@@ -191,19 +194,26 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       this.log('Launching with these option...')
       this.log(JSON.stringify(option, (k, v) => (k === 'accessToken' ? '***' : v), 2))
 
-      if (this.app.platform.name !== 'windows') {
-        try {
-          await access(javaPath, constants.X_OK)
-        } catch (e) {
-          await chmod(javaPath, 0o765)
+      try {
+        const result = await this.javaService.validateJavaPath(javaPath)
+        if (result === JavaValidation.NotExisted) {
+          throw new LaunchException({ type: 'launchInvalidJavaPath', javaPath })
         }
+        if (result === JavaValidation.NoPermission) {
+          throw new LaunchException({ type: 'launchJavaNoPermission', javaPath })
+        }
+      } catch (e) {
+        throw new LaunchException({ type: 'launchGeneralException', error: e })
       }
 
       // Launch
       const process = await launch(option)
       this.launchedProcesses.push(process)
-      this.state.launchStatus('idle')
-      this.state.launchCount(this.state.activeCount + 1)
+      process.on('spawn', () => {
+        this.state.launchCount(this.state.activeCount + 1)
+      }).on('close', () => {
+        this.state.launchCount(this.state.activeCount - 1)
+      })
 
       this.emit('minecraft-start', {
         pid: process.pid,
@@ -233,9 +243,9 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
           crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
           errorLog: errorLogs.join('\n'),
         })
-        this.state.launchCount(this.state.activeCount - 1)
         this.launchedProcesses = this.launchedProcesses.filter(p => p !== process)
       }).on('minecraft-window-ready', () => {
+        this.state.launchStatus('idle')
         this.emit('minecraft-window-ready', { pid: process.pid })
       })
       /* eslint-disable no-unused-expressions */
@@ -250,6 +260,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       process.unref()
       return true
     } catch (e) {
+      this.state.launchStatus('idle')
       if (e instanceof LaunchException) {
         throw e
       }

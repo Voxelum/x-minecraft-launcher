@@ -3,13 +3,13 @@ import { DownloadTask } from '@xmcl/installer'
 import {
   GameProfileAndTexture, LoginMicrosoftOptions, LoginOptions,
   RefreshSkinOptions,
-  UploadSkinOptions, UserException, UserSchema, UserService as IUserService, UserServiceKey, UserState,
+  UploadSkinOptions, UserException, UserSchema, UserService as IUserService, UserServiceKey, UserState
 } from '@xmcl/runtime-api'
 import { AUTH_API_MOJANG, checkLocation, GameProfile, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user'
+import { randomUUID } from 'crypto'
 import { readFile, readJSON } from 'fs-extra'
 import { basename } from 'path'
 import { URL } from 'url'
-import { v4 } from 'uuid'
 import LauncherApp from '../app/LauncherApp'
 import { acquireXBoxToken, changeAccountSkin, checkGameOwnership, getGameProfile, loginMinecraftWithXBox } from '../entities/user'
 import { requireNonnull, requireObject, requireString } from '../util/object'
@@ -112,7 +112,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       fitMinecraftLauncherProfileData(result, data, mcdb)
       this.log(`Load ${Object.keys(result.users).length} users`)
       if (!result.clientToken) {
-        result.clientToken = v4().replace(/-/g, '')
+        result.clientToken = randomUUID().replace(/-/g, '')
       }
       this.state.userSnapshot(result)
 
@@ -138,13 +138,14 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     ], async () => {
       await this.userFile.write(this.state)
     })
+
     this.storeManager.subscribeAll(['userProfileUpdate', 'userGameProfileSelect', 'userInvalidate'], async () => {
-      const user = this.state.user
-      if (!this.state.isAccessTokenValid) {
-        this.diagnoseService.report({ userNotLogined: [{ authService: user.authService, account: user.username }] })
-      } else {
-        this.diagnoseService.report({ userNotLogined: [] })
-      }
+      // const user = this.state.user
+      // if (!this.state.isAccessTokenValid) {
+      //   this.diagnoseService.report({ userNotLogined: [{ authService: user.authService, account: user.username }] })
+      // } else {
+      //   this.diagnoseService.report({ userNotLogined: [] })
+      // }
     })
   }
 

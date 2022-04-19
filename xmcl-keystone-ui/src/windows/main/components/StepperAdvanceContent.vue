@@ -83,7 +83,7 @@
               persistent-hint
               hide-details
               :readonly="true"
-              @click:append="on.keydown"
+              @click:append="on.click"
               v-on="on"
             />
           </template>
@@ -122,7 +122,7 @@
               hide-details
               persistent-hint
               :readonly="true"
-              @click:append="on.keydown"
+              @click:append="on.click"
               v-on="on"
             />
           </template>
@@ -159,7 +159,7 @@
               append-icon="arrow_drop_down"
               persistent-hint
               :readonly="true"
-              @click:append="on.keydown"
+              @click:append="on.click"
               v-on="on"
             />
           </template>

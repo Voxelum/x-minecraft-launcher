@@ -36,6 +36,7 @@ const config: BuildOptions = {
     '.cs': 'file',
     '.vbs': 'file',
     '.ico': 'file',
+    '.html': 'file',
   },
   plugins: [
     pluginStatic(),

@@ -1,5 +1,5 @@
 import { getPlatform } from '@xmcl/core'
-import { InstalledAppManifest, ReleaseInfo } from '@xmcl/runtime-api'
+import { InstalledAppManifest, PeerService, ReleaseInfo } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { EventEmitter } from 'events'
 import { ensureDir, readFile, readJson, writeFile } from 'fs-extra'
@@ -38,18 +38,21 @@ export interface Platform {
 }
 
 export interface LauncherApp {
+  on(channel: 'peer-join', listener: (info: { description: string; type: 'offer' | 'answer' }) => void): this
   on(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
   on(channel: 'window-all-closed', listener: () => void): this
   on(channel: 'service-ready', listener: (service: AbstractService) => void): this
   on(channel: 'engine-ready', listener: () => void): this
   on(channel: 'microsoft-authorize-code', listener: (code: string) => void): this
 
+  once(channel: 'peer-join', listener: (info: { description: string; type: 'offer' | 'answer' }) => void): this
   once(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
   once(channel: 'window-all-closed', listener: () => void): this
   once(channel: 'service-ready', listener: (service: AbstractService) => void): this
   once(channel: 'engine-ready', listener: () => void): this
   once(channel: 'microsoft-authorize-code', listener: (error?: Error, code?: string) => void): this
 
+  emit(channel: 'peer-join', info: { description: string; type: 'offer' | 'answer' }): this
   emit(channel: 'app-booted', manifest: InstalledAppManifest): this
   emit(channel: 'microsoft-authorize-code', error?: Error, code?: string): this
   emit(channel: 'window-all-closed'): boolean
@@ -237,6 +240,15 @@ export abstract class LauncherApp extends EventEmitter {
       if (appUrl) {
         this.log(`Boot app from app url ${appUrl}!`)
         this.launcherAppManager.bootAppByUrl(appUrl)
+      }
+    } else if (parsed.host === 'launcher' && parsed.pathname === '/peer') {
+      const params = parsed.searchParams
+      const description = params.get('description')
+      const type = params.get('type')
+      if (!description || !type) {
+        this.warn(`Ignore illegal peer join for type=${type} description=${description}`)
+      } else {
+        this.emit('peer-join', { description, type: type as any })
       }
     }
   }

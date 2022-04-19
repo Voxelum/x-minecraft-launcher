@@ -1,20 +1,19 @@
 import { JavaVersion } from '@xmcl/core'
 import { fetchJavaRuntimeManifest, installJavaRuntimesTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
 import { Java, JavaRecord, JavaSchema, JavaService as IJavaService, JavaServiceKey, JavaState } from '@xmcl/runtime-api'
-import { access, chmod, constants, ensureFile, readFile } from 'fs-extra'
+import { chmod, ensureFile, readFile } from 'fs-extra'
 import { dirname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
-import { missing, readdirIfPresent } from '../util/fs'
+import { JavaValidation, validateJavaPath } from '../entities/java'
+import { readdirIfPresent } from '../util/fs'
 import { requireObject, requireString } from '../util/object'
 import { createSafeFile } from '../util/persistance'
-import { DiagnoseService } from './DiagnoseService'
-import { Inject, Singleton, StatefulService } from './Service'
+import { Singleton, StatefulService } from './Service'
 
 export class JavaService extends StatefulService<JavaState> implements IJavaService {
   protected readonly config = createSafeFile(this.getPath('java.json'), JavaSchema, this)
 
-  constructor(app: LauncherApp,
-    @Inject(DiagnoseService) diagnoseService: DiagnoseService) {
+  constructor(app: LauncherApp) {
     super(app, JavaServiceKey, () => new JavaState(), async () => {
       const data = await this.config.read()
       const valid = data.all.filter(l => typeof l.path === 'string').map(a => ({ ...a, valid: true }))
@@ -23,24 +22,17 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
 
       const local = this.getInternalJavaLocation({ majorVersion: 8, component: 'jre-legacy' })
       if (!this.state.all.map(j => j.path).some(p => p === local)) {
-        this.validateJava(local)
+        this.resolveJava(local)
       }
       const localAlpha = this.getInternalJavaLocation({ majorVersion: 16, component: 'java-runtime-alpha' })
       if (!this.state.all.map(j => j.path).some(p => p === localAlpha)) {
-        this.validateJava(local)
+        this.resolveJava(local)
       }
       this.refreshLocalJava()
 
       this.storeManager.subscribeAll(['javaUpdate', 'javaRemove'], () => {
         this.config.write(this.state)
       })
-    })
-
-    diagnoseService.registerMatchedFix(['missingJava'], (issue) => {
-      const missingJavaIssue = issue[0].parameters as any
-      if (missingJavaIssue.targetVersion) {
-        this.installDefaultJava(missingJavaIssue.targetVersion)
-      }
     })
   }
 
@@ -97,51 +89,54 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     return await this.resolveJava(location)
   }
 
+  async validateJavaPath(javaPath: string): Promise<JavaValidation> {
+    const result = await validateJavaPath(javaPath)
+
+    const found = this.state.all.find(java => java.path === javaPath)
+    if (found && result !== JavaValidation.Okay) {
+      this.state.javaUpdate({ ...found, valid: false })
+    }
+
+    return result
+  }
+
   /**
    * Resolve java info. If the java is not known by launcher. It will cache it into the launcher java list.
    */
   async resolveJava(javaPath: string): Promise<undefined | Java> {
     requireString(javaPath)
 
-    this.log(`Resolve java ${javaPath}`)
+    this.log(`Try resolve java ${javaPath}`)
+    const validation = await validateJavaPath(javaPath)
 
     const found = this.state.all.find(java => java.path === javaPath)
     if (found) {
-      this.log(`Found in memory ${found.valid ? 'valid' : 'invalid'} java ${found.version} in ${javaPath}`)
+      if (validation !== JavaValidation.Okay) {
+        // invalidate java
+        if (found.valid) {
+          this.state.javaUpdate({ ...found, valid: false })
+        }
+      } else {
+        if (!found.valid) {
+          this.state.javaUpdate({ ...found, valid: true })
+        }
+        this.log(`Found in memory ${found.valid ? 'valid' : 'invalid'} java ${found.version} in ${javaPath}`)
+      }
       return found
     }
 
-    if (await missing(javaPath)) {
-      this.log(`Skip for missing java ${javaPath}`)
+    if (validation === JavaValidation.NotExisted) {
+      // just cannot resolve java
+      this.log(`Skip resolve missing java ${javaPath}`)
       return undefined
     }
 
-    return this.validateJava(javaPath)
-  }
-
-  async validateJava(javaPath: string) {
     const java = await resolveJava(javaPath)
-    if (java) {
+    if (java && validation === JavaValidation.Okay) {
       this.log(`Resolved java ${java.version} in ${javaPath}`)
-      if (this.app.platform.name !== 'windows') {
-        try {
-          await access(javaPath, constants.X_OK)
-        } catch (e) {
-          await chmod(javaPath, 0o765)
-        }
-      }
+
       this.state.javaUpdate({ ...java, valid: true })
     } else {
-      if (await missing(javaPath)) {
-        return
-      }
-      if (this.app.platform.name !== 'windows') {
-        try {
-          await access(javaPath, constants.X_OK)
-        } catch (e) {
-          await chmod(javaPath, 0o765)
-        }
-      }
       const home = dirname(dirname(javaPath))
       const releaseData = await readFile(join(home, 'release'), 'utf-8')
       const javaVersion = releaseData.split('\n').map(l => l.split('=')).find(v => (v[0] === 'JAVA_VERSION'))?.[1]

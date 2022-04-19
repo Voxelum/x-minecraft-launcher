@@ -28,12 +28,12 @@
           >
             {{ $tc('task.name', 2) }}
           </v-tab>
-          <!-- <v-tab
+          <v-tab
             :key="1"
           >
             {{ $t('issue.name') }}
           </v-tab>
-          <v-tab
+          <!-- <v-tab
             :key="2"
           >
             {{ $t('notification.name') }}
@@ -58,12 +58,12 @@
           {{ speedText }}
         </div>
       </v-tab-item>
-      <!-- <v-tab-item
+      <v-tab-item
         :key="1"
       >
-        <issue-view />
+        <app-task-dialog-issue-view />
       </v-tab-item>
-      <v-tab-item
+      <!-- <v-tab-item
         :key="2"
       >
         <notification-view />
@@ -78,11 +78,12 @@ import TaskView from './AppTaskDialogTaskView.vue'
 import { DialogKey, useDialog } from '../composables/dialog'
 import { useTasks } from '../composables/task'
 import { getExpectedSize } from '/@/util/size'
+import AppTaskDialogIssueView from './AppTaskDialogIssueView.vue'
 
 export const TaskDialogKey: DialogKey<void> = 'task'
 
 export default defineComponent({
-  components: { TaskView },
+  components: { TaskView, AppTaskDialogIssueView },
   setup() {
     const { throughput } = useTasks()
     const speed = ref(0)

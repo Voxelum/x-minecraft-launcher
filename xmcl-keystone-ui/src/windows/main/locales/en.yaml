@@ -87,99 +87,99 @@ description: Description
 detail: Detail
 diagnosis:
   badInstall:
-    '': Bad Installation on {version}
     message: Click to try to reinstall this version.
+    name: Bad Installation on {version}
   corruptedAssets:
-    '': >-
-      Corrupted asset: {name} | Corrupted asset {name} | {count} assets
-      corrupted
     message: Launcher will install assets for you
     multi: Corrupted %{count} assets.
+    name: >-
+      Corrupted asset: {name} | Corrupted asset {name} | {count} assets
+      corrupted
   corruptedAssetsIndex:
-    '': Corrupted assets index file of {version}.
     message: Launcher will download assets index for you
+    name: Corrupted assets index file of {version}.
   corruptedAuthlibInjector:
-    '': Corrupted authlib-injector
     message: The authlib-injector is required to use third party auth server!
+    name: Corrupted authlib-injector
   corruptedForgeJar:
-    '': Corrupted forge {forge} jar for Minecraft {minecraft}
     message: Click to install forge
+    name: Corrupted forge {forge} jar for Minecraft {minecraft}
   corruptedLibraries:
-    '': >-
+    message: Launcher will install libraries for you
+    name: >-
       Corrupted library: {name} | Corrupted library: {name} | {count} libraries
       corrupted
-    message: Launcher will install libraries for you
   corruptedVersionJar:
-    '': Corrupted version jar for Minecraft %{version}.
     message: Click to install this version
+    name: Corrupted version jar for Minecraft %{version}.
   corruptedVersionJson:
-    '': Corrupted version %{version} json.
     message: Click to install this version
+    name: Corrupted version %{version} json.
   fix: Fix the Problems
   incompatibleJava:
-    '': Current {type} {version} doesn't support selected Java version {java}!
     message: You can ask Launcher to download it for you.
+    name: Current {type} {version} doesn't support selected Java version {java}!
   incompatibleMod:
-    '': >-
-      {name} mod is incompatible for current {actual} version. Accept
-      {accepted}.
     message: >-
       Either the mod actually can run in this version, or you should remove it
       from list
-  incompatibleResourcePack:
-    '': >-
-      The resource pack {name} is incompatible for {actual} version. Accept
+    name: >-
+      {name} mod is incompatible for current {actual} version. Accept
       {accepted}.
+  incompatibleResourcePack:
     message: >-
       Either the resource pack can fit-in in this version, or you should remove
       it from list
+    name: >-
+      The resource pack {name} is incompatible for {actual} version. Accept
+      {accepted}.
   invalidJava:
-    '': Invalid java location.
     message: Click to use another java to launch.
+    name: Invalid java location.
   missingAssets:
-    '': 'Missing asset: {name} | Missing asset: {name} | Missing %{count} assets.'
     message: Launcher will install assets for you
+    name: 'Missing asset: {name} | Missing asset: {name} | Missing %{count} assets.'
   missingAssetsIndex:
-    '': Missing assets index file of {version}.
     message: Launcher will download assets index for you
+    name: Missing assets index file of {version}.
   missingAuthlibInjector:
-    '': Missing authlib-injector
     message: The authlib-injector is required to use third party auth server!
+    name: Missing authlib-injector
   missingForge:
-    '': Please install Minecraft Forge to to launch
     message: Launcher will download and install Forge for you
+    name: Please install Minecraft Forge to to launch
   missingForgeJar:
-    '': Missing forge {forge} jar for Minecraft {minecraft}
     message: Click to install forge
+    name: Missing forge {forge} jar for Minecraft {minecraft}
   missingJava:
-    '': Please select a Java for this profile!
     autoDownload:
-      '': Automatically Download
       message: Launcher will download and install Java from Mojang's source for you.
+      name: Automatically Download
     manualDownload:
-      '': Manually Download
       message: Launcher will redirect you to the Orecale JRE download page.
+      name: Manually Download
     message: Click to resolve this problem
+    name: Please select a Java for this profile!
     selectJava:
-      '': Select Java in your computer
       message: >-
         Maybe the launcher doesn't found your Java. You can tell the launcher
         where it is.
+      name: Select Java in your computer
     switch:
-      '': Switch to Java {version}
       disabled: There is no Java {version} found in database now!
       message: Use existed Java {version} in you PC
+      name: Switch to Java {version}
   missingLibraries:
-    '': >-
+    message: Launcher will install libraries for you
+    name: >-
       Missing {name} Library | Missing {name} Library | Missing {count}
       Libraries | Missing {count} Libraries
-    message: Launcher will install libraries for you
   missingVersion:
-    '': The version {version} is not installed!
     message: Click to install this version
+    name: The version {version} is not installed!
   missingVersionJar:
-    '': Missing version jar for Minecraft %{version}
     message: Click to install this version
+    name: Missing version jar for Minecraft %{version}
   missingVersionJson:
     '': Missing version %{version} json.
     message: Click to install this version
@@ -617,6 +617,55 @@ modrinth:
     name: Status
     release: Release
   versions: Versions
+multiplayer:
+  name: Multiplayer on LAN
+  complete: Complete
+  confirm: Confirm
+  copy: Copy
+  copyLocalHint: >-
+    Please copy the local SDP text and send it to your object to have your
+    object enter this text in the join connection <span>A token can be only used
+    for <span style="color: red; font-weight: bold;">one peer</span>! You cannot
+    send the same token to multiple peer!</span> <br> <span style="color:
+    rgba(255,255,255,0.7); font-style: italic;">If you need to connect multiple
+    peers, you need to create <span style="font-weight: bold; color: rgba(245,
+    158, 11)">multiple</span> connections.</span>
+  createLocalToken: Create Local Token
+  disconnectDescription: Are you sure you want to disconnect with user {user}({id})?
+  disconnected: disconnected
+  enterRemoteToken: Enter Remote Token
+  enterRemoteTokenHint: >-
+    Once your peer enter your token, you need to enter his token to the text
+    area below. Click confirm to connect.
+  gatheringIce: >-
+    Please wait for the ICE server to collect enough information about your
+    network. If you are impatient and there are enough information, you can give
+    the current SDP to the other party in advance and click Next Please send the
+    <span class="v-chip v-chip--label v-size--small" style="text-font: bold"
+    >Local Token</span> to your peer, you peer enter your token in <span
+    class="v-chip v-chip--label v-size--small" style="text-font: bold"> Join
+    Connection </span> section. <br> The ICE server might need some time to
+    collect your info to create <span class="v-chip v-chip--label v-size--small"
+    style="text-font: bold">Local token</span>.<br> You do not need to wait
+    until the ICE status complete. If the token below remain unchanged, you can
+    copy it and send to you peer.
+  illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
+  initiateConnection: Initiate Connection
+  joinConnection: >-
+    If your peer has already initiated a connection, you need to Join
+    Connection.
+  localToken: Local Token
+  next: Next
+  placeholder: Connect with other user to play Minecraft on LAN!
+  previous: Previous
+  receiveHint: >-
+    After the other party enters your token, your connection will create
+    automatically. Now you can close the dialog.
+  receiveRemoteTokenHint: Please enter the token from your peer here.
+  remoteToken: Remote Token
+  sendTokenToRemote: Send Token to Remote
+  start: Start
+  startNewP2PConnection: Click the Start button to create a new peer connection
 name: Name
 next: Next
 'no': 'No'
@@ -628,6 +677,20 @@ optifine:
   disable: Disable Optifine
   noVersion: Optifine not support Minecraft {version}
 optional: Optional
+peer:
+  connectionState:
+    closed: Closed
+    connected: Connected
+    connecting: Connecting
+    disconnected: Disconnected
+    failed: Failed
+    name: Connection State
+    new: New
+  createManual: Connect
+  iceGatheringState:
+    complete: Collection Complete
+    gathering: Gathering Ice Server
+  joinManual: Join
 popular: Popularity
 profile:
   add: Add Local Game

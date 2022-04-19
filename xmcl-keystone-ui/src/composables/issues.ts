@@ -1,43 +1,38 @@
 import { computed, inject, InjectionKey } from '@vue/composition-api'
-import { DiagnoseSemaphoreKey, DiagnoseServiceKey, Issue } from '@xmcl/runtime-api'
-import { useBusy, useServiceBusy } from './semaphore'
+import { DiagnoseSemaphoreKey, DiagnoseServiceKey, Issue, IssueKey } from '@xmcl/runtime-api'
+import { injection } from '../util/inject'
+import { useBusy } from './semaphore'
 import { useService } from './service'
 
-export const IssueHandler: InjectionKey<Record<string, (issue: Issue) => void>> = Symbol('IssueHandler')
+export const IssueHandlerKey: InjectionKey<IssueHandler> = Symbol('IssueHandlerKey')
+
+export class IssueHandler {
+  handlers: Record<string, (content: any) => void > = {}
+
+  handle(issue: Issue): boolean {
+    const handler = this.handlers[issue.id]
+    if (handler) {
+      handler(issue.parameters[0])
+      return true
+    }
+    return false
+  }
+
+  register<T>(key: IssueKey<T>, handler: (content: T) => void): void {
+    this.handlers[key as string] = handler
+  }
+}
 
 export function useIssues() {
   const { state, fix: fixIssue } = useService(DiagnoseServiceKey)
-  const handlers = inject(IssueHandler, {})
-  const issues = computed(() => {
-    const issues: Issue[] = []
-    for (const [id, reg] of Object.entries(state.report)) {
-      if (reg.activeIssues.length === 0) continue
-      if (reg.activeIssues.length >= 4) {
-        issues.push({
-          id,
-          parameters: reg.activeIssues,
-          autofix: reg.autofix,
-          optional: reg.optional,
-        })
-      } else {
-        issues.push(...reg.activeIssues.map(a => ({
-          id,
-          parameters: a,
-          autofix: reg.autofix,
-          optional: reg.optional,
-        })))
-      }
-    }
-    return issues
-  })
+  const handlers = injection(IssueHandlerKey)
+  const issues = computed(() => Object.values(state.report))
   const refreshing = useBusy(DiagnoseSemaphoreKey)
 
   function fix(issue: Issue, issues: readonly Issue[]) {
     console.log(`Fix issue ${issue.id}`)
-    const handler = handlers[issue.id]
-    if (handler) {
-      handler(issue)
-    } else if (issue.autofix) {
+
+    if (!handlers.handle(issue)) {
       fixIssue(issues)
     } else {
       console.error(`Cannot fix the issue ${issue.id} as it's not implemented`)

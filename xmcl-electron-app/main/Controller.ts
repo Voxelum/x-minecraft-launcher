@@ -10,6 +10,7 @@ import { readFile } from 'fs/promises'
 import { join } from 'path'
 import iconPath from './assets/apple-touch-icon.png'
 import { plugins } from './controllers'
+import ElectronLauncherApp from './ElectronLauncherApp'
 import en from './locales/en.yaml'
 import ru from './locales/ru.yaml'
 import zh from './locales/zh-CN.yaml'
@@ -40,7 +41,7 @@ export default class Controller implements LauncherAppController {
 
   protected parking = false
 
-  constructor(protected app: LauncherApp) {
+  constructor(protected app: ElectronLauncherApp) {
     plugins.forEach(p => p.call(this))
 
     if (app.platform.name === 'windows') {
@@ -54,7 +55,7 @@ export default class Controller implements LauncherAppController {
     })
   }
 
-  private setupBrowserLogger(ref: BrowserWindow, name: string) {
+  setupBrowserLogger(ref: BrowserWindow, name: string) {
     const stream = this.app.logManager.openWindowLog(name)
     const levels = ['INFO', 'WARN', 'ERROR']
     ref.webContents.on('console-message', (e, level, message, line, id) => {

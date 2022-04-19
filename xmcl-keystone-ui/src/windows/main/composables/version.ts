@@ -20,10 +20,6 @@ export function useLocalVersions() {
   const localVersions = computed(() => state.local)
   const versions = useVersions()
 
-  onMounted(() => {
-    versions.refreshVersions()
-  })
-
   return {
     localVersions,
     ...versions,

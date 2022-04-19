@@ -1,6 +1,6 @@
 import { computed, Ref } from '@vue/composition-api'
 import { Frame as GameSetting } from '@xmcl/gamesetting'
-import { getExpectVersion, getResolvedVersion, InstanceData, InstanceIOServiceKey, InstanceOptionsServiceKey, InstanceServiceKey, ResourceServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
+import { EMPTY_VERSION, getExpectVersion, getResolvedVersion, InstanceData, InstanceIOServiceKey, InstanceOptionsServiceKey, InstanceServiceKey, ResourceServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
 import { useServiceBusy, useSemaphore } from '/@/composables/semaphore'
 import { useService, useServiceOnly } from '/@/composables/service'
 
@@ -152,8 +152,8 @@ export function useInstanceVersion() {
   const { runtime, version } = useInstance()
 
   const id = computed(() => getExpectVersion(instanceState.instance.runtime))
-  const localVersion = computed(() => getResolvedVersion(versionState.local, runtime.value, version.value))
-  const folder = computed(() => localVersion.value.id || 'unknown')
+  const localVersion = computed(() => getResolvedVersion(versionState.local, runtime.value, version.value) || EMPTY_VERSION)
+  const folder = computed(() => localVersion.value?.id || 'unknown')
 
   return {
     ...useInstanceVersionBase(),

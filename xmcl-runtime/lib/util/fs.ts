@@ -153,38 +153,6 @@ export async function createSymbolicLink(srcPath: string, destPath: string) {
   }
 }
 
-export class FileStateWatcher<T> {
-  private watcher: FSWatcher | undefined
-
-  private state: T
-
-  private watching: string | undefined
-
-  // eslint-disable-next-line no-useless-constructor
-  constructor(private defaultState: T, private handler: (state: T, event: string, file: string) => T) {
-    this.state = defaultState
-  }
-
-  public watch(file: string) {
-    if (this.watching === file) return false
-    if (this.watcher) { this.watcher.close() }
-    this.watcher = watch(file, (event, file) => {
-      this.state = this.handler(this.state, event, file)
-    })
-    return true
-  }
-
-  public getStateAndReset() {
-    const state = this.state
-    this.state = this.defaultState
-    return state
-  }
-
-  close() {
-    this.watcher?.close()
-  }
-}
-
 export function sha1(data: Buffer) {
   return createHash('sha1').update(data).digest('hex')
 }

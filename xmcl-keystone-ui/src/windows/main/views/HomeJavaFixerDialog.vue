@@ -82,13 +82,14 @@
 </template>
 
 <script lang=ts>
-import { IssueHandler, useServiceBusy, useI18n, useService, useRefreshable } from '/@/composables'
-import { JavaServiceKey } from '@xmcl/runtime-api'
+import { IssueHandlerKey, useServiceBusy, useI18n, useService, useRefreshable } from '/@/composables'
+import { IncompatibleJavaIssueKey, JavaServiceKey, MissingJavaIssueKey } from '@xmcl/runtime-api'
 import { DialogKey, useDialog } from '../composables/dialog'
 import { JavaVersion } from '@xmcl/core'
 import { useInstance } from '../composables/instance'
 import { useJava } from '../composables/java'
 import { useNotifier } from '../composables/notifier'
+import { injection } from '/@/util/inject'
 
 export const JavaFixDialogKey: DialogKey<{ type: 'incompatible' | 'missing'; version: JavaVersion }> = 'java-fix'
 
@@ -102,7 +103,7 @@ export default defineComponent({
     const { state, installDefaultJava, refreshLocalJava } = useService(JavaServiceKey)
     const { subscribeTask } = useNotifier()
     const downloadingJava = useServiceBusy(JavaServiceKey, 'installDefaultJava')
-    const handlers = inject(IssueHandler, {})
+    const handlers = injection(IssueHandlerKey)
     const javaIssue = ref({
       type: '' as 'incompatible' | 'missing' | '',
       version: { majorVersion: 8, component: 'jre-legacy' } as JavaVersion,
@@ -114,21 +115,17 @@ export default defineComponent({
     const reason = computed(() => (!missing.value ? $t('java.incompatibleJava') : $t('java.missing')))
     const hint = computed(() => (!missing.value ? $t('java.incompatibleJavaHint', { version: javaIssue.value?.version.majorVersion }) : $t('java.missingHint')))
 
-    handlers.incompatibleJava = (issue) => {
+    handlers.register(IncompatibleJavaIssueKey, (issue) => {
       javaIssue.value.type = 'incompatible'
-      if (!(issue.parameters instanceof Array)) {
-        javaIssue.value.version = issue.parameters.targetVersion
-      }
+      javaIssue.value.version = issue.targetVersion
       show()
-    }
+    })
 
-    handlers.missingJava = (issue) => {
+    handlers.register(MissingJavaIssueKey, (issue) => {
       javaIssue.value.type = 'missing'
-      if (!(issue.parameters instanceof Array)) {
-        javaIssue.value.version = issue.parameters.targetVersion
-      }
+      javaIssue.value.version = issue.targetVersion
       show()
-    }
+    })
 
     const { refresh, refreshing } = useRefreshable(async () => {
       await refreshLocalJava(true)

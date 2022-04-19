@@ -44,9 +44,9 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
       return
     }
 
-    const version = this.instanceVersionService.getInstanceVersion()
+    const version = this.instanceVersionService.state.version
 
-    if (version.id === '') {
+    if (!version) {
       // TODO: throw
       this.emit('error', {
         type: '',

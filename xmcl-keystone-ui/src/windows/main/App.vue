@@ -37,10 +37,10 @@
 import { Ref } from '@vue/composition-api'
 import '/@/assets/common.css'
 import ContextMenu from './components/ContextMenu.vue'
-import { provideAsyncRoute, useRouter /* provideSearchToggle */ } from '/@/composables'
+import { IssueHandler, IssueHandlerKey, provideAsyncRoute, useRouter /* provideSearchToggle */ } from '/@/composables'
 import { useBackground } from './composables/background'
 import { provideDialog } from './composables/dialog'
-import { provideIssueHandler } from './composables/issueHandler'
+import { provideIssueHandler } from './composables/IssueHandlerKey'
 import { provideNotifier } from './composables/notifier'
 import { provideServerStatusCache } from './composables/serverStatus'
 import { TASK_MANAGER, useTaskManager } from './provideTaskProxy'
@@ -65,7 +65,7 @@ const { blurMainBody } = useBackground()
 
 provideAsyncRoute()
 provideServerStatusCache()
-provideIssueHandler()
+provide(IssueHandlerKey, new IssueHandler())
 
 // provideSearchToggle()
 

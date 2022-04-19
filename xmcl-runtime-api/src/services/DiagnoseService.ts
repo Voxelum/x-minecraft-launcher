@@ -1,56 +1,16 @@
 import { Exception } from '../entities/exception'
-import { Issue, IssueRegistries, IssueReport } from '../entities/issue'
+import { Issue, IssueReport } from '../entities/issue'
 import { ServiceKey, StatefulService } from './Service'
 
 export class DiagnoseState {
-  report: IssueRegistries = {
-    missingVersion: { fixing: false, autofix: true, optional: false, activeIssues: [] },
-    missingVersionJar: { fixing: false, autofix: true, optional: false, activeIssues: [] },
-    missingAssetsIndex: { fixing: false, autofix: true, optional: false, activeIssues: [] },
-    missingVersionJson: { fixing: false, autofix: true, optional: false, activeIssues: [] },
-    missingLibraries: { fixing: false, autofix: true, optional: false, activeIssues: [] },
-    missingAssets: { fixing: false, autofix: true, optional: false, activeIssues: [] },
-
-    corruptedVersionJar: { fixing: false, autofix: true, optional: true, activeIssues: [] },
-    corruptedAssetsIndex: { fixing: false, autofix: true, optional: true, activeIssues: [] },
-    corruptedVersionJson: { fixing: false, autofix: true, optional: true, activeIssues: [] },
-    corruptedLibraries: { fixing: false, autofix: true, optional: true, activeIssues: [] },
-    corruptedAssets: { fixing: false, autofix: true, optional: true, activeIssues: [] },
-
-    invalidJava: { fixing: false, autofix: true, optional: true, activeIssues: [] },
-    missingJava: { fixing: false, autofix: true, optional: false, activeIssues: [] },
-
-    unknownMod: { fixing: false, autofix: false, optional: true, activeIssues: [] },
-    incompatibleMod: { fixing: false, autofix: false, optional: true, activeIssues: [] },
-    incompatibleResourcePack: { fixing: false, autofix: false, optional: true, activeIssues: [] },
-    missingAuthlibInjector: { fixing: false, autofix: true, optional: true, activeIssues: [] },
-    missingCustomSkinLoader: { fixing: false, autofix: true, optional: true, activeIssues: [] },
-    incompatibleJava: { fixing: false, autofix: false, optional: true, activeIssues: [] },
-    missingModsOnServer: { fixing: false, autofix: false, optional: false, activeIssues: [] },
-    loaderConflict: { fixing: false, autofix: true, optional: false, activeIssues: [] },
-    badInstall: { fixing: false, autofix: true, optional: false, activeIssues: [] },
-
-    userNotLogined: { fixing: false, autofix: false, optional: true, activeIssues: [] },
-
-    requireFabric: { fixing: false, autofix: false, optional: true, activeIssues: [] },
-    requireForge: { fixing: false, autofix: false, optional: true, activeIssues: [] },
-    requireFabricAPI: { fixing: false, autofix: false, optional: true, activeIssues: [] },
+  get issues(): Issue[] {
+    return Object.values(this.report)
   }
 
-  get issues() {
-    const issues: Issue[] = []
+  report: Record<string, Issue> = {}
 
-    for (const [id, reg] of Object.entries(this.report)) {
-      if (reg.activeIssues.length === 0) continue
-      issues.push(...reg.activeIssues.map(a => ({
-        id,
-        parameters: a,
-        autofix: reg.autofix,
-        optional: reg.optional,
-        multi: false,
-      })))
-    }
-    return issues
+  issueRegister(issue: Issue) {
+    this.report[issue.id] = issue
   }
 
   issuesPost(issues: Partial<IssueReport>) {
@@ -59,21 +19,21 @@ export class DiagnoseState {
         if (!this.report[id]) {
           throw new Error(`This should not happen! Missing problem registry ${id}.`)
         } else {
-          this.report[id].activeIssues = Object.freeze(value) as any
+          this.report[id].parameters = Object.freeze(value) as any
         }
       }
     }
   }
 
-  issuesStartResolve(issues: Issue[]) {
+  issuesStartResolve(issues: string[]) {
     issues.forEach((p) => {
-      this.report[p.id].fixing = true
+      this.report[p].fixing = true
     })
   }
 
-  issuesEndResolve(issues: Issue[]) {
+  issuesEndResolve(issues: string[]) {
     issues.forEach((p) => {
-      this.report[p.id].fixing = false
+      this.report[p].fixing = false
     })
   }
 }

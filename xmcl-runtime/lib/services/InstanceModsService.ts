@@ -1,4 +1,4 @@
-import { AnyResource, getFabricModCompatibility, InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState, isFabricResource, isForgeResource, isModResource, isPersistedResource, IssueReport, ResourceDomain, ResourceType } from '@xmcl/runtime-api'
+import { AnyResource, getFabricModCompatibility, InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState, isFabricResource, isForgeResource, isModResource, isPersistedResource, IssueReport, IssueReportBuilder, RequireFabricAPIIssueKey, RequireFabricIssueKey, RequireForgeIssueKey, ResourceDomain, ResourceType } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
 import { ensureDir, FSWatcher, stat, unlink } from 'fs-extra'
 import watch from 'node-watch'
@@ -37,7 +37,7 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
     }).subscribe('resource', (r) => {
       this.state.instanceModUpdateExisted([r])
     }).subscribeAll(['instanceMods', 'instanceModUpdate', 'instanceModRemove', 'instanceEdit', 'localVersionAdd', 'localVersionRemove', 'localVersions'], async () => {
-      await this.diagnoseMods()
+      // await this.diagnoseMods()
     }).subscribe('instanceSelect', () => {
       this.refresh()
     })
@@ -79,31 +79,25 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
       const { runtime: version } = this.instanceService.state.instance
       this.log(`Diagnose mods under ${version.minecraft}`)
       const mods = this.state.mods
-      if (typeof mods === 'undefined') {
-        this.warn(`The instance mods folder is undefined ${this.instanceService.state.path}!`)
-        return
-      }
 
-      const mcversion = version.minecraft
+      const mcVersion = version.minecraft
 
-      const tree: Pick<IssueReport, 'unknownMod' | 'incompatibleMod' | 'requireForge' | 'requireFabric' | 'requireFabricAPI' | 'loaderConflict'> = {
-        unknownMod: [],
-        incompatibleMod: [],
-        requireForge: [],
-        requireFabric: [],
-        requireFabricAPI: [],
-        loaderConflict: [],
-      }
+      const builder = new IssueReportBuilder()
+
+      builder.set(RequireForgeIssueKey)
+      builder.set(RequireFabricIssueKey)
+      builder.set(RequireFabricAPIIssueKey)
 
       const forgeMods = mods.filter(isForgeResource)
       const fabricMods = mods.filter(isFabricResource)
+
       if (forgeMods.length > 0 && fabricMods.length > 0) {
         // forge fabric conflict
         // tree.loaderConflict.push({ loaders: ['forge', 'fabric'] })
       } else if (forgeMods.length > 0) {
         if (!version.forge) {
           // no forge
-          tree.requireForge.push({})
+          builder.set(RequireForgeIssueKey, {})
         } else {
           // for (const mod of forgeMods) {
           //   const forgeComp = getForgeModCompatibility(mod, version)
@@ -119,7 +113,7 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
       } else if (fabricMods.length > 0) {
         if (!version.fabricLoader) {
           // no fabric
-          tree.requireFabric.push({})
+          builder.set(RequireFabricIssueKey, {})
         } else {
           for (const mod of fabricMods) {
             const comp = getFabricModCompatibility(mod, version)
@@ -130,14 +124,13 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
             // }
             if (comp.fabric && !comp.fabric.compatible) {
               // fabric api not compatible
-              tree.requireFabricAPI.push({ version: comp.fabric.version, name: mod.name })
+              builder.set(RequireFabricAPIIssueKey, { version: comp.fabric.version, name: mod.name })
             }
           }
         }
       }
 
-      Object.assign(report, tree)
-      this.diagnoseService.report(report)
+      this.diagnoseService.report(builder.build())
     } finally {
       this.down('diagnose')
     }

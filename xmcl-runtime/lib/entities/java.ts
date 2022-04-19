@@ -1,4 +1,34 @@
+import { access, chmod, constants } from 'fs-extra'
+import { isSystemError } from '../util/error'
+import { ENOENT_ERROR, EPERM_ERROR } from '../util/fs'
 import { isNonnull } from '../util/object'
+
+export enum JavaValidation {
+  Okay,
+  NotExisted,
+  NoPermission,
+}
+
+export async function validateJavaPath(javaPath: string): Promise<JavaValidation> {
+  try {
+    await access(javaPath, constants.X_OK)
+    return JavaValidation.Okay
+  } catch (e) {
+    if (isSystemError(e)) {
+      if (e.code === ENOENT_ERROR) {
+        return JavaValidation.NotExisted
+      } else if (e.code === EPERM_ERROR) {
+        try {
+          await chmod(javaPath, 0o765)
+          return JavaValidation.Okay
+        } catch {
+          return JavaValidation.NoPermission
+        }
+      }
+    }
+    throw e
+  }
+}
 
 export interface TsingHuaJreTarget {
   fileName: string
