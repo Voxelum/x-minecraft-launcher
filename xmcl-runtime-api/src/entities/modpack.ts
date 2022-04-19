@@ -15,14 +15,6 @@ export interface Modpack {
   runtime: RuntimeVersions
 }
 
-export interface ModpackManifest {
-  manifestType: string
-  manifestVersion: number
-  name: string
-  version: string
-  author: string
-}
-
 /**
  * The addon representing the runtime for the modpack, like forge
  */
@@ -53,6 +45,77 @@ export interface ModpackFileInfoAddon extends ModpackFileInfo {
   path: string
   hash: string
   url?: string
+}
+
+export interface ModpackManifest {
+  manifestType: string
+  manifestVersion: number
+  name: string
+  version: string
+  author: string
+}
+
+export interface ModrinthModpackManifest {
+  /**
+   * The version of the format, stored as a number. The current value at the time of writing is 1.
+   */
+  formatVersion: number
+  game: string
+  /**
+   * A unique identifier for this specific version of the modpack.
+   */
+  versionId: string
+  /**
+   * Human-readable name of the modpack.
+   */
+  name: string
+  /**
+   * A short description of this modpack.
+   */
+  summary?: string
+  /**
+   * The files array contains a list of files for the modpack that needs to be downloaded. Each item in this array contains the following:
+   */
+  files: Array<{
+    /**
+     * The destination path of this file, relative to the Minecraft instance directory.
+     * For example, mods/MyMod.jar resolves to .minecraft/mods/MyMod.jar.
+     */
+    path: string
+    /**
+     * The hashes of the file specified. SHA1 is required, and other hashes are optional, but will usually be ignored. This is formatted as such:
+     * ```
+     * "hashes": {
+     *   "sha1": "cc297357ff0031f805a744ca3a1378a112c2ddf4"
+     * }
+     * ```
+     */
+    hashes: Record<string, string>
+    /**
+     * For files that only exist on a specific environment, this field allows that to be specified.
+     * It's an object which contains a client and server value. This uses the Modrinth client/server type specifications. For example:
+     */
+    env?: Record<'client'| 'server', 'required' | 'optional' | 'unsupported'>
+    /**
+     * An array containing RFC 3986 compliant URIs where this file may be downloaded.
+     * URIs MUST NOT contain unencoded spaces or any other illegal characters according to RFC 3986.
+     *
+     * Only URIs from the following domains are allowed:
+     * - cdn.modrinth.com
+     * - edge.forgecdn.net (CurseForge)
+     * - github.com
+     * - raw.githubusercontent.com
+     */
+    downloads: string[]
+  }>
+  /**
+   * This object contains a list of IDs and version numbers that launchers will use in order to know what to install.
+   */
+  dependencies: {
+    minecraft: string
+    forge?: string
+    'fabric-loader'?: string
+  }
 }
 
 export interface McbbsModpackManifest extends ModpackManifest {

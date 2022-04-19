@@ -1,6 +1,6 @@
 import { LibraryInfo, MinecraftFolder, Version } from '@xmcl/core'
 import { DownloadTask, installResolvedLibrariesTask } from '@xmcl/installer'
-import { ExternalAuthSkinService as IExternalAuthSkinService, ExternalAuthSkinServiceKey, IssueReport } from '@xmcl/runtime-api'
+import { ExternalAuthSkinService as IExternalAuthSkinService, ExternalAuthSkinServiceKey, IssueReport, IssueReportBuilder, MissingAuthLibInjectorIssue } from '@xmcl/runtime-api'
 import { ensureFile, readJson, writeFile } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
@@ -23,13 +23,16 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app, ExternalAuthSkinServiceKey)
-    diagnoseService.registerMatchedFix(['missingAuthlibInjector'],
-      () => this.installAuthlibInjection(),
-      this.diagnoseAuthlibInjector.bind(this))
+    diagnoseService.register(
+      {
+        id: MissingAuthLibInjectorIssue,
+        fix: async () => { await this.installAuthLibInjection() },
+      })
+
     this.storeManager.subscribeAll(['userGameProfileSelect', 'userProfileUpdate', 'userSnapshot'], async () => {
-      const report: Partial<IssueReport> = {}
-      await this.diagnoseAuthlibInjector(report)
-      this.diagnoseService.report(report)
+      const builder = new IssueReportBuilder()
+      this.diagnoseAuthLibInjector(builder)
+      this.diagnoseService.report(builder.build())
     })
   }
 
@@ -51,7 +54,7 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
     })
   }
 
-  async installAuthlibInjection(): Promise<string> {
+  async installAuthLibInjection(): Promise<string> {
     const jsonPath = this.getPath('authlib-injection.json')
     const root = this.getPath()
     const mc = new MinecraftFolder(root)
@@ -90,17 +93,18 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
       }
     }
 
-    const report: Partial<IssueReport> = {}
-    this.diagnoseAuthlibInjector(report)
-    this.diagnoseService.report(report)
+    const builder = new IssueReportBuilder()
+    this.diagnoseAuthLibInjector(builder)
+    this.diagnoseService.report(builder.build())
 
     return path
   }
 
   @Singleton()
-  async diagnoseAuthlibInjector(report: Partial<IssueReport>) {
+  async diagnoseAuthLibInjector(builder: IssueReportBuilder) {
     this.up('diagnose')
-    const doesAuthlibInjectionExisted = async () => {
+    builder.set(MissingAuthLibInjectorIssue)
+    const doesAuthLibInjectionExisted = async () => {
       const jsonPath = this.getPath('authlib-injection.json')
       const content = await readJson(jsonPath).catch(() => undefined)
       if (!content) return false
@@ -114,16 +118,11 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
 
       if (user) {
         this.log(`Diagnose user ${user.username}`)
-        const tree: Pick<IssueReport, 'missingAuthlibInjector'> = {
-          missingAuthlibInjector: [],
-        }
-
         if (this.userService.state.isThirdPartyAuthentication) {
-          if (!await doesAuthlibInjectionExisted()) {
-            tree.missingAuthlibInjector.push({})
+          if (!await doesAuthLibInjectionExisted()) {
+            builder.set(MissingAuthLibInjectorIssue, undefined)
           }
         }
-        Object.assign(report, tree)
       }
     } finally {
       this.down('diagnose')

@@ -63,6 +63,7 @@ export default defineComponent({
     disabled: withDefault(Boolean, () => false),
     acceptRange: withDefault(String, () => '[*]'),
   },
+  emits: ['input'],
   setup(props, context) {
     const data = reactive({
       opened: false,

@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "downlevelIteration": true,
+    "resolveJsonModule": true,
+    "lib": [
+      "ESNext",
+      "DOM"
+    ],
+    "strict": true,
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "types": [
+      "@xmcl/runtime/lib/global",
+      "esbuild-plugin-yaml/dist/yaml"
+    ]
+  },
+  "include": [
+    "./**/*.ts",
+  ],
+  "exclude": [
+    "node_modules",
+    "../../xmcl-runtime"
+  ]
+}

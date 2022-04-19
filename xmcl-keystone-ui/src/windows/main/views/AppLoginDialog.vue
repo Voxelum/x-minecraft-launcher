@@ -59,12 +59,13 @@
 
 <script lang=ts>
 import { BaseServiceKey, UserServiceKey } from '@xmcl/runtime-api'
-import { IssueHandler, useService } from '/@/composables'
+import { IssueHandlerKey, useService } from '/@/composables'
 import { useDropLink } from '/@/composables/dropLink'
 import LoginDialogLoginView from './AppLoginDialogForm.vue'
 import LoginDialogUserServicesCard from './AppLoginDialogUserServicesCard.vue'
 import StepperUserService from './AppLoginDialogUserServiceStepper.vue'
 import { useDialog } from '../composables/dialog'
+import { injection } from '/@/util/inject'
 
 export default defineComponent({
   components: { LoginDialogLoginView, LoginDialogUserServicesCard, StepperUserService },
@@ -74,10 +75,9 @@ export default defineComponent({
     const { inside } = useDropLink()
 
     // handle the not login issue
-    const issueHandler = inject(IssueHandler)
-    if (issueHandler) {
-      issueHandler.userNotLogined = show
-    }
+    const handlers = injection(IssueHandlerKey)
+    // handlers.register(User)
+    // handlers.userNotLogined = show
 
     const { state } = useService(UserServiceKey)
     const userProfile = computed(() => state.users[state.selectedUser.id])

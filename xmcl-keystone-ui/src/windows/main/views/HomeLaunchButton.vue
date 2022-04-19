@@ -61,11 +61,13 @@ function launchGame() {
     showLaunchStatusDialog()
   } else {
     launch().catch((e: LaunchException) => {
-      if (e.type === 'launchBlockedIssues') {
+      console.log(e)
+      console.log(JSON.stringify(e))
+      if (e.exception.type === 'launchBlockedIssues') {
         showLaunchBlockedDialog()
-      } else if (e.type === 'launchGeneralException') {
+      } else if (e.exception.type === 'launchGeneralException') {
         // TODO: support this
-      } else if (e.type === 'launchNoVersionInstalled') {
+      } else if (e.exception.type === 'launchNoVersionInstalled') {
         // TODO: implement this
       }
     })

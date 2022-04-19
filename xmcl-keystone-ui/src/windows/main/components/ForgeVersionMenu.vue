@@ -77,6 +77,7 @@ export default defineComponent({
       default: undefined,
     },
   },
+  emits: ['input'],
   setup(props, context) {
     const data = reactive({
       opened: false,

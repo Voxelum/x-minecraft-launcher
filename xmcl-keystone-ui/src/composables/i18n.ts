@@ -11,7 +11,7 @@ export function useI18n () {
     $tc (key: string, count: number): string { return i18n.tc(key, count) },
     $te (key: string): boolean { return i18n.te(key) },
     t (key: string, values?: any[] | { [key: string]: any }): string { return i18n.t(key, values) as any },
-    tc (key: string, count: number): string { return i18n.tc(key, count) },
+    tc (key: string, count: number, args?: any): string { return i18n.tc(key, count, args) },
     te (key: string): boolean { return i18n.te(key) },
   }
 }

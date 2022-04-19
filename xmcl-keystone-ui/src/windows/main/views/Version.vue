@@ -26,7 +26,7 @@
           <div class="version-tab">
             {{ $t("version.locals") }}
             <div class="subtitle">
-              {{ id }}
+              {{ localVersion ? localVersion.id : '' }}
             </div>
           </div>
         </v-tab>

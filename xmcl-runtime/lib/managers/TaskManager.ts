@@ -1,6 +1,6 @@
 import { Task, TaskContext, TaskState } from '@xmcl/task'
 import { EventEmitter } from 'events'
-import { v4 } from 'uuid'
+import { randomUUID } from 'crypto'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
 import { Client } from '../engineBridge'
@@ -72,7 +72,7 @@ export default class TaskManager extends Manager {
    * Submit a task to run
    */
   async submit<T>(task: Task<T>): Promise<T> {
-    const uid = v4()
+    const uid = randomUUID()
     const listener = this.createTaskListener(uid)
     this.record[uid] = task
     task.start(listener)

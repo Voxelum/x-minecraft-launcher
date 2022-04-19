@@ -1,4 +1,4 @@
-import { InstanceSchema } from './instance.schema'
+import { InstanceData, InstanceSchema } from './instance.schema'
 
 export interface Instance extends InstanceSchema {
   path: string
@@ -104,4 +104,12 @@ export interface InstanceManifest {
     launchArgument?: string[]
     javaArgument?: string[]
   }
+}
+
+export interface InstanceFilePeer {
+  
+}
+
+export interface InstanceManifestPeer extends InstanceData {
+  files: Array<InstanceFileCurseforge | InstanceFilePeer | InstanceFileModrinth>
 }

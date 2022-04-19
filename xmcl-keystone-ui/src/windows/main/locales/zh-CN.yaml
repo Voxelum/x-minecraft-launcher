@@ -84,95 +84,95 @@ description: 简介
 detail: 细节
 diagnosis:
   badForgeProcessedFiles:
-    '': Forge 需要生成文件才能启动 {jar}
     message: 点击来让 Forge 完成安装
+    name: Forge 需要生成文件才能启动 {jar}
   badInstall:
-    '': 版本安装失败 {version}
     message: 也许你应该尝试重新安装此版本
+    name: 版本安装失败 {version}
   corruptedAssets:
-    '': 'Asset 文件损坏: {name} | Asset 文件损坏: {name} | 有 {count} 个游戏资源可能损坏'
     message: 启动器将重新下载游戏文件
+    name: 'Asset 文件损坏: {name} | Asset 文件损坏: {name} | 有 {count} 个游戏资源可能损坏'
   corruptedAssetsIndex:
-    '': '{version}游戏资源目录可能损坏.'
     message: 启动器将重新下载游戏资源目录
+    name: '{version}游戏资源目录可能损坏.'
   corruptedLibraries:
-    '': '库文件损坏: {name} | 库文件损坏: {name} | {count} 个库文件损坏 | {count} 个库文件损坏'
     message: 启动器将重新下载损坏的文件
+    name: '库文件损坏: {name} | 库文件损坏: {name} | {count} 个库文件损坏 | {count} 个库文件损坏'
   corruptedVersionJar:
-    '': Minecraft %{version} 游戏 Jar 文件损坏.
     message: 启动器将重新下载损坏的文件
+    name: Minecraft %{version} 游戏 Jar 文件损坏.
   corruptedVersionJson:
-    '': Minecraft %{version} 版本 Json 文件损坏.
     message: 启动器将重新下载损坏的文件
+    name: Minecraft %{version} 版本 Json 文件损坏.
   fix: 问题修复
   incompatibleJava:
-    '': 版本 {mcversion} 可能不兼容 Java {java}!
     message: 你可以选择自己让启动器帮你下载，或者自己下载
+    name: 版本 {mcversion} 可能不兼容 Java {java}!
   incompatibleMod:
-    '': '{name} 不兼容当前 Minecraft {actual}。其可用版本为 {accepted}'
     message: 该模组也有可能能在当前Minecraft下运行，若不成功请将 Mod 移出 Mod 列表
+    name: '{name} 不兼容当前 Minecraft {actual}。其可用版本为 {accepted}'
   incompatibleResourcePack:
-    '': 资源包 {name} 不兼容 Minecraft {actual}. 请使用 Minecraft {accepted}
     message: 该资源包也可能在此版本下正常工作，若不成功请将其移出资源包列表
+    name: 资源包 {name} 不兼容 Minecraft {actual}. 请使用 Minecraft {accepted}
   invalidJava:
-    '': 当前 Java 路径已经失效
     message: 请选择一个有效的 Java 路径.
+    name: 当前 Java 路径已经失效
   missingAssets:
-    '': 'Asset 文件缺失: {name} | Asset 文件缺失: {name} | 缺少%{count}个游戏资源'
     message: 启动器将自动下载并安装游戏文件
+    name: 'Asset 文件缺失: {name} | Asset 文件缺失: {name} | 缺少%{count}个游戏资源'
   missingAssetsIndex:
-    '': '%{version}缺少游戏资源目录'
     message: 启动器将自动下载并安装游戏资源目录
+    name: '%{version}缺少游戏资源目录'
   missingAuthlibInjector:
-    '': 需要安装 authlib-injector
     message: 必须安装 authlib-injector, 第三方验证服务配置才能生效！
+    name: 需要安装 authlib-injector
   missingForgeJar:
-    '': 缺少对应 Minecraft {minecraft} 版本的 Forge {forge} 依赖文件
     message: 启动器将自动安装Forge文件
+    name: 缺少对应 Minecraft {minecraft} 版本的 Forge {forge} 依赖文件
   missingJava:
-    '': 没有分配Java
     autoDownload:
-      '': 自动下载
       message: 启动器将从 Mojang 源下载并安装 Java {version}
+      name: 自动下载
     manualDownload:
-      '': 手动下载
       message: 启动器将把你转到Oracle官方JRE下载网站
+      name: 手动下载
     message: Click to resolve this problem
+    name: 没有分配Java
     selectJava:
-      '': 手工选择Java的位置
       message: 也许只是启动器没找到你电脑里的Java,你可以手工选择一下
+      name: 手工选择Java的位置
     switch:
-      '': 切换到 Java {version}
       disabled: 在电脑中没有检测到 Java {version}，无法切换
       message: 启动器将使用您现在安装的 Java {version}
+      name: 切换到 Java {version}
   missingLibraries:
-    '': 缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少{count}个库文件 | 缺少{count}个库文件
     message: 启动器将自动下载并安装库文件
-  missingVersion:
-    '': 未安装 {version}
-    message: 启动器将自动安装该版本
+    name: 缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少{count}个库文件 | 缺少{count}个库文件
   missingVersionJar:
-    '': '%{version}版本JAR文件缺失'
     message: 启动器将自动下载JAR文件
+    name: '%{version}版本JAR文件缺失'
   missingVersionJson:
-    '': '%{version}版本JSON文件缺失'
     message: 启动器将自动下载JSON文件
+    name: '%{version}版本JSON文件缺失'
   problem: 1个问题待修复 | %{count}个问题待修复
   requireFabric:
-    '': 请启用 Fabric 来运行 Fabric 的 Mod
     message: 请在版本设置页面选择一个合适的 Fabric 版本
+    name: 请启用 Fabric 来运行 Fabric 的 Mod
   requireFabricAPI:
-    '': 请安装 FabricAPI {version} 来运行 {name}
     message: 请去 Curseforge 下载，如果已经下载了可以去 Mod 设置页面启用 Fabric API
+    name: 请安装 FabricAPI {version} 来运行 {name}
   requireForge:
-    '': 请启用 Forge 来运行 Forge 的 Mod
     message: 请在版本设置页面选择一个合适的 Forge 版本
+    name: 请启用 Forge 来运行 Forge 的 Mod
   unknownMod:
-    '': 无法解析 {name} Mod 兼容的 Minecraft 版本
     message: 请务必小心使用
+    name: 无法解析 {name} Mod 兼容的 Minecraft 版本
   userNotLogined:
-    '': 用户没有登陆
     message: 点击登录 Minecraft
+    name: 用户没有登陆
+  version:
+    message: 启动器将自动安装该版本
+    name: 未安装 {version}
 disk:
   available: 可用
   used: 已用
@@ -561,6 +561,41 @@ modrinth:
     name: 类型
     release: 稳定版
   versions: 版本
+multiplayer:
+  name: 局域网联机
+  complete: 完成
+  confirm: 确定
+  copy: 复制
+  copyLocalHint: >-
+    <span>一段令牌只能用<span style="color: red; font-weight:
+    bold;">一次</span>！你不能将一个令牌发送给很多个小伙伴！</span> <br> <span style="color:
+    rgba(255,255,255,0.7); font-style: italic;">如果有多个小伙伴要加入你需要<span
+    style="font-weight: bold; color: rgba(245, 158, 11)">多次</span>建立连接。</span>
+  createLocalToken: 创建本地令牌
+  disconnectDescription: 你确定你要断开和 {user}({id}) 的连接么
+  disconnected: 断开连接
+  enterRemoteToken: 输入对方的令牌
+  enterRemoteTokenHint: 当你的联机伙伴输入你的令牌后，你需要将他的令牌输入到下面的文字框中，并点击确定开始连接。
+  gatheringIce: >-
+    请将<span class="v-chip v-chip--label v-size--small" style="text-font: bold"
+    >本地令牌</span>发送给你的联机伙伴，你的联机伙伴在 <span class="v-chip v-chip--label
+    v-size--small" style="text-font: bold"> 加入连接 </span> 中输入这段文字。<br> 期间 ICE
+    服务器可能需要时间收集足够信息来创建<span class="v-chip v-chip--label v-size--small"
+    style="text-font: bold">本地令牌</span>。<br> 你不需要等 ICE
+    服务器完全收集完毕，当下面的令牌已经有内容并且不怎么变化后，你可以提前将令牌复制给对方。
+  illegalTokenDescription: 非法的令牌，请确认对象给你的令牌是完整、正确的。
+  initiateConnection: 发起连接
+  joinConnection: 如果你的对象已经创建了连接，你需要选择加入链接
+  localToken: 本地令牌
+  next: 下一步
+  placeholder: 和其他玩家建立连接，畅玩局域网 Minecraft！
+  previous: 上一步
+  receiveHint: 在对方输入你的令牌后，你们之间的连接会自动创建。现在你已经可以点击完成了。
+  receiveRemoteTokenHint: 请将联机伙伴的令牌粘贴在此处，并点击下一步
+  remoteToken: 对象的令牌
+  sendTokenToRemote: 将本地令牌给你的联机伙伴
+  start: 开始
+  startNewP2PConnection: 点击开始按钮来新建一个新的点对点连接
 name: 名称
 next: 下一项
 'no': 否
@@ -572,6 +607,20 @@ optifine:
   disable: 不启用 Optifine
   noVersion: Optifine 不支持 Minecraft {version}
 optional: 可选的
+peer:
+  connectionState:
+    closed: 已关闭
+    connected: 已连接
+    connecting: 连接中
+    disconnected: 掉线
+    failed: 失败
+    name: 连接状态
+    new: 等待连接
+  createManual: 发起连接
+  iceGatheringState:
+    complete: 收集完毕
+    gathering: 收集本地信息中
+  joinManual: 加入连接
 popular: 热度
 profile:
   add: 新建本地游戏

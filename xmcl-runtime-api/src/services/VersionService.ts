@@ -6,6 +6,7 @@ export class VersionState {
    * All the local versions installed in the disk
    */
   local = [] as ResolvedVersion[]
+
   localVersions(local: ResolvedVersion[]) {
     local.forEach(Object.freeze)
     this.local = local
@@ -23,7 +24,7 @@ export class VersionState {
   }
 
   localVersionRemove(folder: string) {
-    this.local = this.local.filter(v => v.id === folder)
+    this.local = this.local.filter(v => v.id !== folder)
   }
 }
 

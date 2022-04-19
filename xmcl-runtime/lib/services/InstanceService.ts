@@ -1,9 +1,9 @@
 import { ResolvedVersion, Version } from '@xmcl/core'
 import { CreateInstanceOption, createTemplate, EditInstanceOptions, filterForgeVersion, filterOptifineVersion, Instance, InstanceSchema, InstanceService as IInstanceService, InstanceServiceKey, InstancesSchema, InstanceState, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, LATEST_RELEASE, RuntimeVersions } from '@xmcl/runtime-api'
+import { randomUUID } from 'crypto'
 import filenamify from 'filenamify'
 import { copy, ensureDir, readdir, remove } from 'fs-extra'
 import { join, resolve } from 'path'
-import { v4 } from 'uuid'
 import LauncherApp from '../app/LauncherApp'
 import { readLaunchProfile } from '../entities/launchProfile'
 import { exists, isDirectory, missing, readdirEnsured } from '../util/fs'
@@ -177,7 +177,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       instance.server = payload.server
     }
 
-    instance.path = payload.path || this.getPathUnder(v4())
+    instance.path = payload.path || this.getPathUnder(randomUUID())
     instance.runtime.minecraft = instance.runtime.minecraft || this.installService.state.minecraftRelease.id
     instance.author = this.userService.state.gameProfile?.name ?? ''
     instance.creationDate = Date.now()

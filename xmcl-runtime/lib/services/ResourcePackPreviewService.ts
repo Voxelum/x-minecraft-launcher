@@ -60,7 +60,7 @@ export class ResourcePackPreviewService extends AbstractService implements IReso
 
   protected getResourcePackPath(pack: string) {
     if (pack === 'vanilla') {
-      const version = this.instanceVersionService.getInstanceVersion().minecraftVersion
+      const version = this.instanceVersionService.state.version?.minecraftVersion
       const jarPath = new MinecraftFolder(this.getPath()).getVersionJar(version)
       return jarPath
     }

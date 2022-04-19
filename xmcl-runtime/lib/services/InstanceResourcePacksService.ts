@@ -88,39 +88,39 @@ export class InstanceResourcePackService extends AbstractService implements IIns
 
   @Singleton()
   async diagnoseResourcePacks() {
-    this.up('diagnose')
-    try {
-      const report: Partial<IssueReport> = {}
-      this.log('Diagnose resource packs')
-      const { runtime: version } = this.instanceService.state.instance
-      const resourcePacks = this.gameSettingService.state.options.resourcePacks
-      const resources = resourcePacks.map((name) => this.resourceService.state.resourcepacks.find((pack) => `file/${pack.name}${pack.ext}` === name))
+    // this.up('diagnose')
+    // try {
+    //   const report: Partial<IssueReport> = {}
+    //   this.log('Diagnose resource packs')
+    //   const { runtime: version } = this.instanceService.state.instance
+    //   const resourcePacks = this.gameSettingService.state.options.resourcePacks
+    //   const resources = resourcePacks.map((name) => this.resourceService.state.resourcepacks.find((pack) => `file/${pack.name}${pack.ext}` === name))
 
-      const mcversion = version.minecraft
-      const resolvedMcVersion = parseVersion(mcversion)
+    //   const mcversion = version.minecraft
+    //   const resolvedMcVersion = parseVersion(mcversion)
 
-      const tree: Pick<IssueReport, 'incompatibleResourcePack'> = {
-        incompatibleResourcePack: [],
-      }
+    //   const tree: Pick<IssueReport, 'incompatibleResourcePack'> = {
+    //     incompatibleResourcePack: [],
+    //   }
 
-      const packFormatMapping = this.packVersionToVersionRange
-      for (const pack of resources) {
-        if (!pack) continue
-        const metadata = pack.metadata as PackMeta.Pack
-        if (metadata.pack_format in packFormatMapping) {
-          const acceptVersion = packFormatMapping[metadata.pack_format]
-          const range = VersionRange.createFromVersionSpec(acceptVersion)
-          if (range && !range.containsVersion(resolvedMcVersion)) {
-            tree.incompatibleResourcePack.push({ name: pack.name, accepted: acceptVersion, actual: mcversion })
-          }
-        }
-      }
+    //   const packFormatMapping = this.packVersionToVersionRange
+    //   for (const pack of resources) {
+    //     if (!pack) continue
+    //     const metadata = pack.metadata as PackMeta.Pack
+    //     if (metadata.pack_format in packFormatMapping) {
+    //       const acceptVersion = packFormatMapping[metadata.pack_format]
+    //       const range = VersionRange.createFromVersionSpec(acceptVersion)
+    //       if (range && !range.containsVersion(resolvedMcVersion)) {
+    //         tree.incompatibleResourcePack.push({ name: pack.name, accepted: acceptVersion, actual: mcversion })
+    //       }
+    //     }
+    //   }
 
-      Object.assign(report, tree)
-      this.diagnoseService.report(report)
-    } finally {
-      this.down('diagnose')
-    }
+    //   Object.assign(report, tree)
+    //   this.diagnoseService.report(report)
+    // } finally {
+    //   this.down('diagnose')
+    // }
   }
 
   // async dispose(): Promise<void> {

@@ -1,32 +1,59 @@
 import { ResolvedVersion, Version } from '@xmcl/core'
 import { VersionService as IVersionService, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
-import { ensureDir, remove } from 'fs-extra'
-import { join } from 'path'
+import { ensureDir, FSWatcher, remove, stat } from 'fs-extra'
+import { basename, dirname, join, relative, sep } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
-import { FileStateWatcher, missing, readdirEnsured } from '../util/fs'
+import { isDirectory, missing, readdirEnsured } from '../util/fs'
+import watch from 'node-watch'
 import { isNonnull } from '../util/object'
 import { StatefulService } from './Service'
 
 /**
- * The local version serivce maintains the installed versions on disk
+ * The local version service maintains the installed versions on disk
  */
 export class VersionService extends StatefulService<VersionState> implements IVersionService {
-  private versionsWatcher = new FileStateWatcher([] as string[], (state, _, f) => [...new Set([...state, f])])
-
-  private versionLoaded = false
+  private watcher: FSWatcher | undefined
 
   constructor(app: LauncherApp) {
     super(app, VersionServiceKey, () => new VersionState(), async () => {
       await this.refreshVersions()
       const versions = this.getPath('versions')
       await ensureDir(versions)
-      this.versionsWatcher.watch(this.getPath('versions'))
+      this.watcher = watch(versions, {
+        encoding: 'utf-8',
+        recursive: true,
+        filter(file, skip) {
+          const relativePath = relative(versions, file)
+          const splitted = relativePath.split(sep)
+          if (splitted.length === 1) {
+            // watch but no update
+            return false
+          }
+          if (splitted.length > 2) {
+            // ignore depth
+            return skip
+          }
+          const versionFile = splitted[1]
+          if (versionFile.endsWith('.json')) {
+            return true
+          }
+          // skip other
+          return skip
+        },
+      })
+      this.watcher.on('change', (event, file) => {
+        if (event === 'update') {
+          this.refreshVersion(basename(dirname(file as string)))
+        } else if (event === 'remove') {
+          this.state.localVersionRemove(basename(dirname(file as string)))
+        }
+      })
     })
   }
 
   async dispose() {
-    this.versionsWatcher.close()
+    this.watcher?.close()
   }
 
   /**
@@ -75,53 +102,36 @@ export class VersionService extends StatefulService<VersionState> implements IVe
       this.state.localVersionAdd(version)
     } catch (e) {
       this.state.localVersionRemove(versionFolder)
-      this.warn(`An error occured during refresh local version ${versionFolder}`)
+      this.warn(`An error occurred during refresh local version ${versionFolder}`)
       this.warn(e)
     }
   }
 
-  async refreshVersions(force?: boolean) {
-    /**
-      * Read local folder
-      */
-    let files: string[]
-    let patch = false
-    if (force) {
-      files = await readdirEnsured(this.getPath('versions'))
-    } else if (this.versionLoaded) {
-      patch = true
-      files = this.versionsWatcher.getStateAndReset()
-    } else {
-      files = await readdirEnsured(this.getPath('versions'))
-    }
+  async refreshVersions() {
+    const dir = this.getPath('versions')
+    let files = await readdirEnsured(dir)
 
     files = files.filter(f => !f.startsWith('.'))
 
     const versions: ResolvedVersion[] = (await Promise.all(files.map(async (versionId) => {
       try {
-        const version = await this.resolveLocalVersion(versionId)
-        return version
+        const realPath = join(dir, versionId)
+        if (await isDirectory(realPath)) {
+          const version = await this.resolveLocalVersion(versionId)
+          return version
+        }
       } catch (e) {
-        this.warn(`An error occured during refresh local version ${versionId}`)
+        this.warn(`An error occurred during load local version ${versionId}`)
         this.warn(e)
       }
     }))).filter(isNonnull)
 
     if (versions.length !== 0) {
-      if (patch) {
-        for (const version of versions) {
-          this.state.localVersionAdd(version)
-        }
-      } else {
-        this.state.localVersions(versions)
-      }
+      this.state.localVersions(versions)
       this.log(`Found ${versions.length} local game versions.`)
-    } else if (patch) {
-      this.log('No new version found.')
     } else {
       this.log('No local game version found.')
     }
-    this.versionLoaded = true
   }
 
   async deleteVersion(version: string) {

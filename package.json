@@ -8,7 +8,7 @@
         "build:dir": "pnpm run --prefix=xmcl-electron-app build:dir",
         "build:main": "pnpm run --prefix=xmcl-electron-app build",
         "build:renderer": "pnpm run --prefix=xmcl-keystone-ui build",
-        "check": "vue-tsc --noEmit --project src/renderer/tsconfig.json",
+        "check": "pnpm run --prefix=xmcl-keystone-ui check && pnpm run --prefix=xmcl-runtime check && pnpm run --prefix=xmcl-runtime-api check",
         "dev:main": "pnpm run --prefix=xmcl-electron-app dev",
         "dev:renderer": "pnpm run --prefix=xmcl-keystone-ui dev",
         "lint": "eslint --ext .ts,.vue src",

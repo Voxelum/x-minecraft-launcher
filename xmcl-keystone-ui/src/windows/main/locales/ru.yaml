@@ -90,114 +90,114 @@ diagnosis:
     '': Ошибка установки на {version}
     message: Нажмите чтобы попытаться переустановить эту версию.
   corruptedAssets:
-    '': >-
+    name: >-
       Повреждённый asset: {name} | Повреждён asset: {name} | Повреждено assets:
       {count}
     message: Лаунчер установит assets за вас
     multi: Повреждено %{count} assets.
   corruptedAssetsIndex:
-    '': Индексный файл assets {version} повреждён.
+    name: Индексный файл assets {version} повреждён.
     message: Лаунчер скачает индекс assets за вас
   corruptedAuthlibInjector:
-    '': authlib-injector повреждён
+    name: authlib-injector повреждён
     message: Для авторизации через сторонний сервер, требуется authlib-injector!
   corruptedForgeJar:
-    '': jar Forge {forge} для Minecraft {minecraft} повреждён
+    name: jar Forge {forge} для Minecraft {minecraft} повреждён
     message: Нажмите чтобы установить Forge
   corruptedLibraries:
-    '': >-
+    name: >-
       Повреждённая библиотека: {name} | Повреждена библиотека: {name} |
       Повреждено библиотек: {count}
     message: Лаунчер установит библиотеки за вас
   corruptedVersionJar:
-    '': Версия jar для Minecraft %{version} повреждена.
+    name: Версия jar для Minecraft %{version} повреждена.
     message: Нажмите чтобы установить эту версию
   corruptedVersionJson:
-    '': Версия json %{version} повреждена.
+    name: Версия json %{version} повреждена.
     message: Нажмите чтобы установить эту версию
   fix: Исправить проблемы
   incompatibleJava:
-    '': Текущий {type} {version} не поддерживает выбранную версию Java {java}!
+    name: Текущий {type} {version} не поддерживает выбранную версию Java {java}!
     message: Вы можете запросить лаунчеру скачать его за вас.
   incompatibleMod:
-    '': Мод {name} несовместим с текущей {actual} версией. Принять {accepted}.
+    name: Мод {name} несовместим с текущей {actual} версией. Принять {accepted}.
     message: >-
       Либо мод действительно может работать в этой версии, либо вы должны
       удалить его из списка
   incompatibleResourcePack:
-    '': >-
+    name: >-
       Пакет текстур {name} несовместим с текущей {actual} версией. Принять
       {accepted}.
     message: >-
       Либо пакет тектсур может вписаться в эту версию, либо вы должны удалить
       его из списка
   invalidJava:
-    '': Недопустимое местоположение Java.
+    name: Недопустимое местоположение Java.
     message: Нажмите чтобы использовать для лаунчера другую Java.
   missingAssets:
-    '': >-
+    name: >-
       Отсутствует asset: {name} | Отсутствие asset: {name} | Отсутсвует assets:
       %{count}
     message: Лаунчер установит assets за вас
   missingAssetsIndex:
-    '': Индексный файл assets {version} отсутствует.
+    name: Индексный файл assets {version} отсутствует.
     message: Лаунчер скачает для вас индекс assets
   missingAuthlibInjector:
-    '': authlib-injector отсутствует
+    name: authlib-injector отсутствует
     message: Для авторизации через сторонний сервер, требуется authlib-injector!
   missingForge:
-    '': Установите Minecraft Forge, чтобы запустить
+    name: Установите Minecraft Forge, чтобы запустить
     message: Лаунчер скачает и установит Forge за вас
   missingForgeJar:
-    '': Jar Forge {forge} для Minecraft {minecraft} отсутствует
+    name: Jar Forge {forge} для Minecraft {minecraft} отсутствует
     message: Нажмите чтобы установить Forge
   missingJava:
-    '': Выберите Java для этого профиля!
+    name: Выберите Java для этого профиля!
     autoDownload:
-      '': Скачать автоматически
+      name: Скачать автоматически
       message: Лаунчер скачает и установит Java из исходного кода Mojang.
     manualDownload:
-      '': Скачать вручную
+      name: Скачать вручную
       message: Лаунчер перенаправит вас на страницу скачивания Orecale JRE.
     message: Нажмите чтобы устранить эту проблему
     selectJava:
-      '': Выберите Java на вашем компьютере
+      name: Выберите Java на вашем компьютере
       message: >-
         Видимо лаунчер не нашёл установленную Java. Вы можете указать лаунчеру
         его расположение.
     switch:
-      '': Переключить на Java {version}
+      name: Переключить на Java {version}
       disabled: Сейчас в базе данных нет Java {version}!
       message: Используйте существующую Java {version} на своём ПК
   missingLibraries:
-    '': >-
+    name: >-
       Отсутствующая библиотека: {name} | Отсутствует библиотека: {name} |
       Отсутствующих библиотек: {count} | Отсутствует библиотек: {count}
     message: Лаунчер установит библиотеки за вас
   missingVersion:
-    '': Версия {version} не установлена!
+    name: Версия {version} не установлена!
     message: Нажмите чтобы установить эту версию
   missingVersionJar:
-    '': Версия jar для Minecraft %{version} отсутствует
+    name: Версия jar для Minecraft %{version} отсутствует
     message: Нажмите чтобы установить эту версию
   missingVersionJson:
-    '': Версия json %{version} отсутствует
+    name: Версия json %{version} отсутствует
     message: Нажмите чтобы установить эту версию
   problem: '1 проблема | Проблем: %{count}'
   requireFabric:
-    '': Для запуска Fabric мода, требуется Fabric!
+    name: Для запуска Fabric мода, требуется Fabric!
     message: Укажите версию Fabric в настройке версии
   requireFabricAPI:
-    '': Для запуска {name}, требуется Fabric API {version}!
+    name: Для запуска {name}, требуется Fabric API {version}!
     message: Либо скачайте Fabric API, либо включите его в настройках модов
   requireForge:
-    '': Для запуска Forge мода, требуется Forge!
+    name: Для запуска Forge мода, требуется Forge!
     message: Укажите версию Forge в настройке версии
   unknownMod:
-    '': Не удаётся определить версию Minecraft для мода {name}
+    name: Не удаётся определить версию Minecraft для мода {name}
     message: Будьте осторожны, если это вызывает сбой
   userNotLogined:
-    '': Пользователь не авторизован
+    name: Пользователь не авторизован
     message: Нажмите чтобы войти.
 disk:
   available: Доступно

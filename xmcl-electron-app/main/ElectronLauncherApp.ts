@@ -1,12 +1,10 @@
 import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
 import { InstalledAppManifest, ReleaseInfo } from '@xmcl/runtime-api'
 import { Host } from '@xmcl/runtime/lib/app/Host'
-import { ServiceConstructor, AbstractService } from '@xmcl/runtime/lib/services/Service'
+import { AbstractService, ServiceConstructor } from '@xmcl/runtime/lib/services/Service'
 import { Task } from '@xmcl/task'
-import { getAppInstallerUri, getPackageFamilyName } from '@xmcl/windows-utils'
-import { execSync } from 'child_process'
+import { getAppInstallerUri } from '@xmcl/windows-utils'
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
-import { readFileSync, writeFileSync } from 'fs'
 import { join } from 'path'
 import { URL } from 'url'
 import Controller from './Controller'
@@ -168,7 +166,6 @@ export default class ElectronLauncherApp extends LauncherApp {
   waitEngineReady(): Promise<void> {
     return app.whenReady()
   }
-
   
   relaunch() {
     app.relaunch()

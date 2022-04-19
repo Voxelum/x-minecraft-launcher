@@ -102,7 +102,7 @@ export class BaseState implements SettingSchema {
     if (typeof updateInfo === 'object') this.updateInfo = updateInfo
   }
 
-  apiSetsPreferenceSet(apiSetsPreference: 'mojang' | 'bmcl' | 'mcbbs') {
+  apiSetsPreferenceSet(apiSetsPreference: 'mojang' | 'bmcl' | 'mcbbs' | '') {
     this.apiSetsPreference = apiSetsPreference
   }
 

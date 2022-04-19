@@ -175,15 +175,16 @@
 <script lang=ts>
 import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api'
 import type { ResolvedVersion } from '@xmcl/core'
-import { required, withDefault } from '/@/util/props'
+import { optional, required, withDefault } from '/@/util/props'
 import { useRefreshable } from '/@/composables'
 import { useLocalVersions } from '../composables/version'
 
 export default defineComponent({
   props: {
     filterText: withDefault(String, () => ''),
-    value: required<ResolvedVersion>(Object),
+    value: optional<ResolvedVersion>(Object),
   },
+  emits: ['input'],
   setup(props, context) {
     const data = reactive({
       deletingVersion: false,

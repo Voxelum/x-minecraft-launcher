@@ -14,6 +14,7 @@ import Modpack from './views/Modpack.vue'
 import Curseforge from './views/Curseforge.vue'
 import CurseforgeProject from './views/CurseforgeProject.vue'
 import Modrinth from './views/Modrinth.vue'
+import Multiplayer from './views/Multiplayer.vue'
 import ModrinthProject from './views/ModrinthProject.vue'
 
 export const createRouter = () => {
@@ -58,6 +59,10 @@ export const createRouter = () => {
       {
         path: '/shader-pack-setting',
         component: ShaderPack,
+      },
+      {
+        path: '/multiplayer',
+        component: Multiplayer,
       },
       // {
       //   path: '/resource-pack-preview',

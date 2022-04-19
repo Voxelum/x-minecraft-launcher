@@ -1,7 +1,7 @@
-import { LauncherProfile } from '../services/UserService'
 import { UserSchema } from '@xmcl/runtime-api'
 import { AUTH_API_MOJANG, PROFILE_API_MOJANG } from '@xmcl/user'
-import { v4 } from 'uuid'
+import { randomUUID } from 'crypto'
+import { LauncherProfile } from '../services/UserService'
 
 /**
  * Fit the user data from loaded user data and loaded launcher profile json
@@ -17,7 +17,7 @@ export function fitMinecraftLauncherProfileData(result: UserSchema, data: UserSc
     if (data.clientToken) {
       result.clientToken = data.clientToken
     } else {
-      result.clientToken = launchProfile?.clientToken ?? v4().replace(/-/g, '')
+      result.clientToken = launchProfile?.clientToken ?? randomUUID().replace(/-/g, '')
     }
 
     if (data.selectedUser) {
@@ -27,7 +27,7 @@ export function fitMinecraftLauncherProfileData(result: UserSchema, data: UserSc
     result.users = data.users
   } else {
     // import mojang authDB
-    result.clientToken = launchProfile?.clientToken ?? v4().replace(/-/g, '')
+    result.clientToken = launchProfile?.clientToken ?? randomUUID().replace(/-/g, '')
     result.authServices = { mojang: AUTH_API_MOJANG }
     result.profileServices = { mojang: PROFILE_API_MOJANG }
 
