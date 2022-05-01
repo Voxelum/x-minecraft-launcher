@@ -3,8 +3,8 @@ import { randomUUID } from 'crypto'
 import { defineMessage, MessageType } from './message'
 
 export const MessageMemberJoin: MessageType<{ id: string }> = 'member-join'
-export const MessageMemberJoinInitiate: MessageType<{ from: string; to: string; session: string; offer: RTCSessionDescription }> = 'member-join-offer'
-export const MessageMemberJoinAccept: MessageType<{ from: string; to: string; session: string; answer: RTCSessionDescription }> = 'member-join-answer'
+export const MessageMemberJoinInitiate: MessageType<{ from: string; to: string; session: string; offer: RTCSessionDescription; initTime: number }> = 'member-join-offer'
+export const MessageMemberJoinAccept: MessageType<{ from: string; to: string; session: string; answer: RTCSessionDescription; initTime: number; answerTime: number }> = 'member-join-answer'
 
 export const MessageMemberJoinEntry = defineMessage(MessageMemberJoin, async function ({ id }) {
   if (Object.values(this.host.connections).some(c => c.remoteId === id)) {
@@ -16,45 +16,79 @@ export const MessageMemberJoinEntry = defineMessage(MessageMemberJoin, async fun
   console.log(`initiate ${conn.id}`)
   await conn.initiate()
 
-  console.log('Wait the ice to collect for 2 seconds')
-  await new Promise((resolve) => {
-    setTimeout(resolve, 2000)
+  const start = Date.now()
+  console.log('Wait the ice to collect')
+  await new Promise<void>((resolve) => {
+    this.connection.addEventListener('icegatheringstatechange', () => {
+      if (this.connection.iceGatheringState === 'complete') {
+        resolve()
+      }
+    })
   })
   console.log(`Send MessageMemberJoinInitiate to ${this.id} (${this.remoteId})`)
+  console.log(this.connection.localDescription?.sdp)
 
-  this.send(MessageMemberJoinInitiate, { offer: { type: this.connection.localDescription!.type!, sdp: this.connection.localDescription?.sdp }, session: sessionId, to: id, from: this.host.id })
+  this.send(MessageMemberJoinInitiate, {
+    offer: { type: this.connection.localDescription!.type!, sdp: this.connection.localDescription?.sdp },
+    initTime: start,
+    session: sessionId,
+    to: id,
+    from: this.host.id,
+  })
 })
 
-export const MessageMemberJoinInitiateEntry = defineMessage(MessageMemberJoinInitiate, async function ({ to, session, from, offer }) {
+export const MessageMemberJoinInitiateEntry = defineMessage(MessageMemberJoinInitiate, async function ({ to, session, from, offer, initTime }) {
   if (to === this.host.id) {
     // i'm the target
-    console.log(`offer from ${from} to me`)
+    const initTrip = (Date.now() - initTime) / 1000
+    console.log(`offer from ${from} to me. Take ${initTrip}s`)
     const conn = this.host.create(session, from)
     await conn.offer(offer)
 
-    await new Promise((resolve) => {
-      setTimeout(resolve, 2000)
+    const start = Date.now()
+    await new Promise<void>((resolve) => {
+      this.connection.addEventListener('icegatheringstatechange', () => {
+        if (this.connection.iceGatheringState === 'complete') {
+          resolve()
+        }
+      })
     })
 
-    console.log(`Send answer to ${to}`)
+    // console.log('Wait the ice to collect for 5 seconds')
+    // await new Promise((resolve) => {
+    //   setTimeout(resolve, 5000)
+    // })
 
-    this.send(MessageMemberJoinAccept, { from: to, to: from, session, answer: { type: this.connection.localDescription!.type!, sdp: this.connection.localDescription?.sdp } })
+    console.log(`Send answer to ${to}`)
+    console.log(this.connection.localDescription?.sdp)
+
+    this.send(MessageMemberJoinAccept, {
+      from: to,
+      to: from,
+      session,
+      answer: { type: this.connection.localDescription!.type!, sdp: this.connection.localDescription?.sdp },
+      initTime: initTime,
+      answerTime: start,
+    })
   } else {
     // i'm the man in middle
     console.log(`redirect offer from ${from} to ${to}`)
     const conn = this.host.getByRemoteId(to)
     if (conn) {
-      conn.send(MessageMemberJoinInitiate, { to, from, session, offer })
+      conn.send(MessageMemberJoinInitiate, { to, from, session, offer, initTime })
     } else {
       console.error(`Cannot propagate join offer from ${from} to ${to}`)
     }
   }
 })
 
-export const MessageMemberJoinAcceptEntry = defineMessage(MessageMemberJoinAccept, function ({ to, from, session, answer }) {
+export const MessageMemberJoinAcceptEntry = defineMessage(MessageMemberJoinAccept, function ({ to, from, session, answer, initTime, answerTime }) {
   if (to === this.host.id) {
+    const answerTrip = (Date.now() - answerTime) / 1000
+    const roundTrip = (Date.now() - initTime) / 1000
     // this is the target
-    console.log(`Answer from ${from} to ${to}`)
+    console.log(`Answer from ${from} to ${to}. Take ${answerTrip}`)
+    console.log(`Round trip: ${roundTrip}`)
     const conn = this.host.getByRemoteId(from)
     if (conn) {
       conn.answer(answer)
@@ -66,7 +100,7 @@ export const MessageMemberJoinAcceptEntry = defineMessage(MessageMemberJoinAccep
     console.log(`redirect answer from ${from} to ${to}`)
     const conn = this.host.getByRemoteId(to)
     if (conn) {
-      conn.send(MessageMemberJoinAccept, { to, from, session, answer })
+      conn.send(MessageMemberJoinAccept, { to, from, session, answer, initTime, answerTime })
     } else {
       console.error(`Cannot propagate join answer from ${from} to ${to}`)
     }
