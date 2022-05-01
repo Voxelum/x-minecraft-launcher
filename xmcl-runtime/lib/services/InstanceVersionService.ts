@@ -61,12 +61,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
       },
       validator: async (builder, issue) => {
         const runtime = this.instanceService.state.instance.runtime
-        let valid = true
-        for (const key in issue) {
-          if (runtime[key] !== issue[key]) {
-            valid = false
-          }
-        }
+        const valid = runtime.minecraft === issue.minecraft && runtime.forge === issue.forge && runtime.fabricLoader == issue.fabricLoader
         if (valid) {
           await this.diagnoseAll(builder, this.state.version)
         }
@@ -105,12 +100,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
       validator: async (builder, issue) => {
         if (this.state.version) {
           const runtime = this.instanceService.state.instance.runtime
-          let valid = true
-          for (const key in issue) {
-            if (runtime[key] !== issue[key]) {
-              valid = false
-            }
-          }
+          const valid = runtime.minecraft === issue.minecraft && runtime.forge === issue.forge
           if (valid) {
             // only if re-valid if the version unchanged
             await this.diagnoseJar(builder, this.state.version, MinecraftFolder.from(this.state.version.minecraftDirectory), runtime)
@@ -184,7 +174,9 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
 
     this.storeManager
       .subscribe('instanceSelect', () => {
-        this.state.instanceVersion(this.getInstanceVersion())
+        const newVersion = this.getInstanceVersion()
+        this.log(`Update instance version: ${newVersion ? newVersion.id : undefined}`)
+        this.state.instanceVersion(newVersion)
       })
       .subscribe('instanceEdit', async (payload) => {
         if (payload.path !== this.instanceService.state.path) {
@@ -192,14 +184,14 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
         }
         if ('runtime' in payload) {
           const newVersion = this.getInstanceVersion()
-          if (newVersion !== this.state.version) {
-            this.state.instanceVersion(newVersion)
-          }
+          this.log(`Update instance version: ${newVersion ? newVersion.id : undefined}`)
+          this.state.instanceVersion(newVersion)
         }
       })
       .subscribeAll(['localVersions', 'localVersionAdd', 'localVersionRemove'], async () => {
         const newVersion = this.getInstanceVersion()
         if (newVersion !== this.state.version) {
+          this.log(`Update instance version: ${newVersion ? newVersion.id : undefined}`)
           this.state.instanceVersion(newVersion)
         }
       })

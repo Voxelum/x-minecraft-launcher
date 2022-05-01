@@ -111,7 +111,7 @@ export class DiagnoseService extends StatefulService<DiagnoseState> implements I
             })
             if (descriptor.validator) {
               const validator = descriptor.validator
-              postValidate.push(() => validator(builder, issue))
+              postValidate.push(() => validator(builder, issue.parameters[0]))
             }
           }
         }
