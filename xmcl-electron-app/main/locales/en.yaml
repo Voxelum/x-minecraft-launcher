@@ -1,20 +1,20 @@
----
+browseApps: Browse Customized Launcher UI
 checkUpdate: Check Update
-fabric:
-  noVersion: Cannot load the fabric version list for Minecraft {version}
+fabricVersion:
+  empty: Cannot load the fabric version list for Minecraft {version}
 openUrl:
   cancel: Cancel
-  message: The launcher want to open the {url} in your default browser. Do you allow
+  message: >-
+    The launcher want to open the {url} in your default browser. Do you allow
     this operation?
   title: Open in Browser
   trust: Trust this site and don't show next time
   'yes': 'Yes'
-task:
-  success: One Task Success
-  fail: One Task Failed
-  continue: View in Launcher
 quit: Quit
 showDiagnosis: Show Diagnose
-title: XMCL
-browseApps: Browse Customized Launcher UI
 showLogsFolder: Show Logs Folder
+task:
+  continue: View in Launcher
+  fail: One Task Failed
+  success: One Task Success
+title: XMCL

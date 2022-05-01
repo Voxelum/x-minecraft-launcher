@@ -96,7 +96,7 @@ function reloadElectron() {
  * Start esbuild service for main process and preload script
  */
 export async function dev() {
-  await remove(join(__dirname, './dist'))
+  // await remove(join(__dirname, './dist'))
 
   const result = await build({
     ...esbuildOptions,

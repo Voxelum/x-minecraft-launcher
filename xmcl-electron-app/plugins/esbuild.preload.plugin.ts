@@ -10,7 +10,7 @@ export default function createPreloadPlugin(preloadSrc: string): Plugin {
     setup(build) {
       build.onResolve({ filter: /@preload\/.+/g }, async ({ path }) => ({
         path:
-          path.replace('/@preload', preloadSrc) +
+          path.replace('@preload', preloadSrc) +
           '?preload',
       }))
       build.onLoad({ filter: /^.+\?preload$/g }, async ({ path }) => {
@@ -32,7 +32,6 @@ export default function createPreloadPlugin(preloadSrc: string): Plugin {
         })
         const resultFile = Object.keys(result.metafile?.outputs || {}).filter(v => v.endsWith('.js'))[0]
         const watching = Object.keys(result.metafile?.inputs || {})
-        console.log(watching)
         return {
           errors: result.errors,
           warnings: result.warnings,

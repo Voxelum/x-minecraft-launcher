@@ -18,22 +18,7 @@ declare module '*.cs' {
   export default content
 }
 
-declare module 'nat-type-identifier' {
-  function getNatType(options: { logsEnabled?: boolean; sampleCount?: number; stunHost?: string }): Promise<NatType>
-
-  export type NatType =
-    'Blocked' |
-    'Open Internet' |
-    'Full Cone' |
-    'Symmetric UDP Firewall' |
-    'Restric NAT' |
-    'Restric Port NAT' |
-    'Symmetric NAT'
-
-  export = getNatType
-}
-
-declare module '/@renderer/*.html' {
+declare module '@renderer/*.html' {
   /**
    * The url of the page
    */
@@ -41,7 +26,7 @@ declare module '/@renderer/*.html' {
   export default url
 }
 
-declare module '/@renderer/*' {
+declare module '@renderer/*' {
   const noop: never
   export default noop
 }
@@ -62,7 +47,7 @@ declare module '*.ico' {
   export default path
 }
 
-declare module '/@preload/*' {
+declare module '@renderer/*' {
   /**
    * The path of the preload file
    */

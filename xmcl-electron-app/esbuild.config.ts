@@ -39,9 +39,9 @@ const config: BuildOptions = {
     '.html': 'file',
   },
   plugins: [
+    pluginRenderer(),
     pluginStatic(),
     pluginPreload(path.resolve(__dirname, './preload')),
-    pluginRenderer(),
     pluginVueDevtools(path.resolve(__dirname, '../extensions')),
     pluginWorker(),
     plugin7Zip(path.resolve(__dirname, './node_modules')),

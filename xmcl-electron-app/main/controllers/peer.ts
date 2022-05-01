@@ -8,7 +8,7 @@ import { promisify } from 'util'
 import { brotliCompress, brotliDecompress } from 'zlib'
 import htmlUrl from '../assets/peer.html'
 import { ControllerPlugin } from './plugin'
-import peerPreload from '/@preload/peer'
+import peerPreload from '@preload/peer'
 
 const pBrotliDecompress = promisify(brotliDecompress)
 const pBrotliCompress = promisify(brotliCompress)
