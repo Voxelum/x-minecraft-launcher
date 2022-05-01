@@ -19,7 +19,7 @@ export class GeneralException extends Exception<{
 }> { }
 
 export function isException<T>(clazz: { new(...args: any[]): T }, error: unknown): error is T {
-  if (error && typeof error === 'object' && 'name' in error && (error as any).name === clazz.name) {
+  if (error && typeof error === 'object' && 'name' in error && (error as any).name === clazz.name && 'exception' in error && typeof ((error as any).exception) === 'object') {
     return true
   }
   return false

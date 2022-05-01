@@ -1,6 +1,7 @@
 import { JavaVersion } from '@xmcl/core'
 import { IssueKey } from '../entities/issue'
 import { JavaRecord } from '../entities/java'
+import { Java } from '../entities/java.schema'
 import { ServiceKey, StatefulService } from './Service'
 
 export class InstanceJavaState {
@@ -17,30 +18,61 @@ export enum JavaCompatibleState {
   VeryLikelyIncompatible,
 }
 
-interface IncompatibleJavaIssue {
+interface BaseJavaIssue {
   /**
-   * The current java
-   */
-  java: string
+    * The java version requirement string
+    */
+  requirement: string
   /**
-   * The selected game version. Might be empty if the current version is not downloaded
-   */
+    * Best matched java path to select. (Only present if there is a suitable java)
+    */
+  recommendedVersion?: Java
+  recommendedLevel?: JavaCompatibleState
+  /**
+    * Recommended to download java version automatically. (Please use this if there is no suitable java)
+    */
+  recommendedDownload?: JavaVersion
+  /**
+    * The selected game version.
+    *
+    * Might be empty if the current version is not downloaded.
+    */
   version: string
   /**
-   * The version requirement
-   */
-  requirement: string
-
+    * Current minecraft
+    */
   minecraft: string
+  /**
+    * Current forge
+    */
   forge: string
+}
 
-  targetVersion?: JavaVersion
+interface IncompatibleJavaIssue extends BaseJavaIssue {
+  /**
+   * The current java info. Can either be user assigned, or be launcher computed
+   */
+  selectedJava: Java
+}
+
+/**
+ * Only present if user assigned java path
+ */
+interface InvalidJavaIssue extends BaseJavaIssue {
+  /**
+   * The user assigned java path
+   */
+  selectedJavaPath: string
+}
+
+interface MissingJavaIssue extends BaseJavaIssue {
+
 }
 
 /**
  * Current java path is invalid. Like file not existed or java is broken.
  */
-export const InvalidJavaIssueKey: IssueKey<{ path: string }> = 'invalidJava'
+export const InvalidJavaIssueKey: IssueKey<InvalidJavaIssue> = 'invalidJava'
 /**
  * Current selected java might be incompatible with minecraft
  */
@@ -48,7 +80,7 @@ export const IncompatibleJavaIssueKey: IssueKey<IncompatibleJavaIssue> = 'incomp
 /**
  * Cannot find proper java for fulfill the requirement
  */
-export const MissingJavaIssueKey: IssueKey<{ targetVersion: JavaVersion | undefined }> = 'missingJava'
+export const MissingJavaIssueKey: IssueKey<MissingJavaIssue> = 'missingJava'
 
 /**
  * Provide the service to host the java info of the instance

@@ -87,7 +87,7 @@
                     "type": "string"
                 },
                 "expiredAt": {
-                    "description": "The expire",
+                    "description": "The expire time",
                     "type": "number"
                 },
                 "profiles": {
