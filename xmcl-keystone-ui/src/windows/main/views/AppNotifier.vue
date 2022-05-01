@@ -11,7 +11,7 @@
       {{ icons[data.level] }}
     </v-icon>
 
-    <span v-if="!data.full">{{ $t(`log.${data.level}`) }}</span>
+    <span v-if="!data.full">{{ $t(`logLevel.${data.level}`) }}</span>
 
     {{ data.title }}
     <template #action>
@@ -111,18 +111,6 @@ const colors = {
 //       show,
 //       more,
 //       full,
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //     }
 //   },
 // })
