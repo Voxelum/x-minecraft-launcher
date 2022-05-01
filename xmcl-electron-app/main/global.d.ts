@@ -26,6 +26,11 @@ declare module '@renderer/*.html' {
   export default url
 }
 
+declare module '@preload/*' {
+  const url: string
+  export default url
+}
+
 declare module '@renderer/*' {
   const noop: never
   export default noop
