@@ -60,15 +60,16 @@ import { injection } from '/@/util/inject'
 import { VuetifyInjectionKey } from '/@/composables/vuetify'
 import { ExceptionHandlersKey, useExceptionHandlers } from '/@/composables/exception'
 
-const { primaryColor, secondaryColor, accentColor, infoColor, errorColor, successColor, warningColor } = useColorTheme()
+const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = useColorTheme()
 const vuetify = injection(VuetifyInjectionKey)
 
 const cssVars = computed(() => ({
   '--primary': primaryColor.value,
+  'background-color': backgroundColor.value,
 }))
 
 if (primaryColor.value) { vuetify.theme.currentTheme.primary = primaryColor.value }
-if (secondaryColor.value) { vuetify.theme.currentTheme.secondary = secondaryColor.value }
+// if (secondaryColor.value) { vuetify.theme.currentTheme.secondary = secondaryColor.value }
 if (accentColor.value) { vuetify.theme.currentTheme.accent = accentColor.value }
 if (infoColor.value) { vuetify.theme.currentTheme.info = infoColor.value }
 if (errorColor.value) { vuetify.theme.currentTheme.error = errorColor.value }
@@ -76,7 +77,7 @@ if (successColor.value) { vuetify.theme.currentTheme.success = successColor.valu
 if (warningColor.value) { vuetify.theme.currentTheme.warning = warningColor.value }
 
 watch(primaryColor, (newColor) => { vuetify.theme.currentTheme.primary = newColor })
-watch(secondaryColor, (newColor) => { vuetify.theme.currentTheme.secondary = newColor })
+// watch(secondaryColor, (newColor) => { vuetify.theme.currentTheme.secondary = newColor })
 watch(accentColor, (newColor) => { vuetify.theme.currentTheme.accent = newColor })
 watch(infoColor, (newColor) => { vuetify.theme.currentTheme.info = newColor })
 watch(errorColor, (newColor) => { vuetify.theme.currentTheme.error = newColor })
