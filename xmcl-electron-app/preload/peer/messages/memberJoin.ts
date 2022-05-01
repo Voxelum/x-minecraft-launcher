@@ -16,9 +16,11 @@ export const MessageMemberJoinEntry = defineMessage(MessageMemberJoin, async fun
   console.log(`initiate ${conn.id}`)
   await conn.initiate()
 
+  console.log('Wait the ice to collect for 2 seconds')
   await new Promise((resolve) => {
-    setTimeout(resolve, 2)
+    setTimeout(resolve, 2000)
   })
+  console.log(`Send MessageMemberJoinInitiate to ${this.id} (${this.remoteId})`)
 
   this.send(MessageMemberJoinInitiate, { offer: { type: this.connection.localDescription!.type!, sdp: this.connection.localDescription?.sdp }, session: sessionId, to: id, from: this.host.id })
 })
@@ -31,8 +33,10 @@ export const MessageMemberJoinInitiateEntry = defineMessage(MessageMemberJoinIni
     await conn.offer(offer)
 
     await new Promise((resolve) => {
-      setTimeout(resolve, 2)
+      setTimeout(resolve, 2000)
     })
+
+    console.log(`Send answer to ${to}`)
 
     this.send(MessageMemberJoinAccept, { from: to, to: from, session, answer: { type: this.connection.localDescription!.type!, sdp: this.connection.localDescription?.sdp } })
   } else {

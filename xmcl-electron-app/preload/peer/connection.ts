@@ -101,6 +101,8 @@ export class PeerSession {
    */
   async answer(remoteAnswer: RTCSessionDescription) {
     // get offer or answer from other
+    console.log(`Set remote to ${remoteAnswer.type} as answer`)
+    console.log(remoteAnswer.sdp)
     await this.connection.setRemoteDescription(remoteAnswer)
   }
 
