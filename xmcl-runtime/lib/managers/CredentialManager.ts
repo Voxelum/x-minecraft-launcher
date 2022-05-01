@@ -1,4 +1,4 @@
-import { AccountInfo, LogLevel, PublicClientApplication } from '@azure/msal-node'
+import { AccountInfo, CryptoProvider, LogLevel, PublicClientApplication } from '@azure/msal-node'
 import { Manager } from '.'
 import { createPlugin } from '../util/credentialPlugin'
 import LauncherApp from '../app/LauncherApp'
@@ -8,7 +8,7 @@ import { UserService } from '../services/UserService'
 export default class CredentialManager extends Manager {
   readonly scopes: string[]
 
-  private microsoftAccount: Record<string, AccountInfo> = {}
+  private cryptoProvider = new CryptoProvider()
 
   private cancelWait = () => { }
 
@@ -47,15 +47,10 @@ export default class CredentialManager extends Manager {
   async acquireMicrosoftToken({ username, code, directRedirectToLauncher }: { username: string; code?: string; directRedirectToLauncher?: boolean }) {
     const app = await this.getOAuthApp(username)
     if (username && !code) {
-      let account: AccountInfo | undefined
-      if (this.microsoftAccount[username]) {
-        account = this.microsoftAccount[username]
-      } else {
-        const accounts = await app.getTokenCache().getAllAccounts().catch(() => [])
-        account = accounts.find(a => a.username === username)
-      }
+      const accounts = await app.getTokenCache().getAllAccounts().catch(() => [])
+      const account = accounts.find(a => a.username === username)
       if (account) {
-        const result = await app.acquireTokenSilent({ scopes: this.scopes, account }).catch((e) => {
+        const result = await app.acquireTokenSilent({ scopes: this.scopes, account, forceRefresh: false }).catch((e) => {
           this.warn(`Fail to acquire microsoft token silently for ${username}`)
           this.warn(e)
           return null
@@ -94,9 +89,6 @@ export default class CredentialManager extends Manager {
     }
 
     const result = await app.acquireTokenByCode({ code, scopes, redirectUri })
-    if (username && result?.account) {
-      this.microsoftAccount[username] = result?.account
-    }
     this.app.controller.requireFocus()
     return result
   }
