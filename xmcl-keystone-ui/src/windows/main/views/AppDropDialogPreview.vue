@@ -3,7 +3,7 @@
     style="display: flex; flex-direction: column; height: 100%;"
   >
     <v-card-text class="headline font-weight-bold">
-      {{ $t('dropToImport') }}
+      {{ $t('universalDrop.title') }}
     </v-card-text>
     <v-divider />
     <v-list
@@ -31,7 +31,7 @@
       <v-checkbox
         v-model="enableMods"
         style="flex-grow: 0; margin-top: 0; padding-top: 0;"
-        :label="$t('enableModsAfterImport')"
+        :label="$t('universalDrop.enableModsAfterImport')"
         hide-details
       />
       <v-btn
@@ -43,7 +43,7 @@
         :disabled="disabled"
         @click="start"
       >
-        {{ $t('profile.import.start') }}
+        {{ $t('universalDrop.start') }}
       </v-btn>
     </v-card-actions>
   </v-flex>

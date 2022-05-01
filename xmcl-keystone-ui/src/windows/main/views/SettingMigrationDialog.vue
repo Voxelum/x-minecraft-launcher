@@ -6,7 +6,7 @@
     <v-card v-if="migrateState === 0">
       <v-card-title>
         <h2 style="display: block; min-width: 100%">
-          {{ $t("setting.setRootTitle") }}
+          {{ $t("dataMigration.setRootTitle") }}
         </h2>
         <v-text-field
           :value="root"
@@ -15,8 +15,8 @@
         />
       </v-card-title>
       <v-card-text>
-        <p>{{ $t("setting.setRootDescription") }}</p>
-        <p>{{ $t("setting.setRootCause") }}</p>
+        <p>{{ $t("dataMigration.setRootDescription") }}</p>
+        <p>{{ $t("dataMigration.setRootCause") }}</p>
       </v-card-text>
       <v-divider />
       <v-card-actions>
@@ -33,13 +33,13 @@
           large
           @click="applySetting()"
         >
-          {{ $t("setting.apply") }}
+          {{ $t("dataMigration.apply") }}
         </v-btn>
       </v-card-actions>
     </v-card>
     <v-card v-else-if="migrateState === 1">
       <v-card-title>
-        <h2>{{ $t("setting.waitReload") }}</h2>
+        <h2>{{ $t("dataMigration.waitReload") }}</h2>
       </v-card-title>
       <v-spacer />
       <div style="display: flex; width: 100; justify-content: center">
@@ -53,13 +53,13 @@
     <v-card v-else>
       <v-card-title>
         <h2 v-if="error">
-          {{ $t("setting.migrateFailed") }}
+          {{ $t("dataMigration.migrateFailed") }}
         </h2>
         <h2 v-else-if="!cleaning">
-          {{ $t("setting.migrateSuccess") }}
+          {{ $t("dataMigration.migrateSuccess") }}
         </h2>
         <h2 v-else>
-          {{ $t("setting.postMigrating") }}
+          {{ $t("dataMigration.postMigrating") }}
         </h2>
       </v-card-title>
       <v-spacer />
@@ -72,8 +72,8 @@
           v-model="clearData"
           style="margin-left: 10px"
           persistent-hint
-          :hint="$t('setting.cleanOldDataHint')"
-          :label="$t('setting.cleanOldData')"
+          :hint="$t('dataMigration.cleanOldDataHint')"
+          :label="$t('dataMigration.cleanOldData')"
         />
       </v-card-actions>
       <v-card-actions>
@@ -85,7 +85,7 @@
           :disabled="cleaning"
           @click="postMigrate"
         >
-          {{ $t("setting.migrateDone") }}
+          {{ $t("dataMigration.migrateDone") }}
         </v-btn>
       </v-card-actions>
     </v-card>

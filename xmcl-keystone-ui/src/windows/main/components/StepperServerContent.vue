@@ -34,7 +34,7 @@
                 <div
                   v-else
                   style="font-size: 18px; font-weight: bold;"
-                >{{ $t('profile.server.creationHint') }}</div>
+                >{{ $t('server.creationHint') }}</div>
               </span>
               <text-component
                 v-if="status.version.name"
@@ -48,7 +48,7 @@
                   hide-details
                   :value="acceptingMinecrafts"
                   append-icon="title"
-                  :label="$t('profile.server.version')"
+                  :label="$t('server.version')"
                   :readonly="true"
                   :loading="pinging"
                 />
@@ -62,7 +62,7 @@
                   hide-details
                   :value="status.players.online + '/' + status.players.max"
                   append-icon="people"
-                  :label="$t('profile.server.players')"
+                  :label="$t('server.players')"
                   :readonly="true"
                   :loading="pinging"
                 />
@@ -76,7 +76,7 @@
                   outlined
                   hide-details
                   append-icon="signal_cellular_alt"
-                  :label="$t('profile.server.pings')"
+                  :label="$t('server.ping')"
                   :readonly="true"
                   :loading="pinging"
                 />
@@ -91,8 +91,8 @@
               v-model="serverField"
               outlined
               persistent-hint
-              :hint="$t('profile.server.hostHint')"
-              :label="$t('profile.server.host')"
+              :hint="$t('server.hostHint')"
+              :label="$t('server.host')"
               required
             />
             <minecraft-version-menu
@@ -105,8 +105,8 @@
                   outlined
                   append-icon="arrow"
                   persistent-hint
-                  :hint="$t('profile.server.versionHint')"
-                  :label="$t('minecraft.version')"
+                  :hint="$t('server.versionHint')"
+                  :label="$t('minecraftVersion.name')"
                   :readonly="true"
                   @click:append="on.keydown"
                   v-on="on"
@@ -118,8 +118,8 @@
               outlined
               :placeholder="server.host"
               persistent-hint
-              :hint="$t('profile.name')"
-              :label="$t('profile.name')"
+              :hint="$t('instance.name')"
+              :label="$t('instance.name')"
               required
             />
           </div>

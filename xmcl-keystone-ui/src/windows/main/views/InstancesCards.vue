@@ -8,7 +8,7 @@
       class="justify-center w-full flex flex-grow-0 flex-1"
       style="color: grey;"
     >
-      {{ $t('profile.today') }}
+      {{ $t('instanceAge.today') }}
     </div>
     <v-layout
       v-if="instancesByTime[0].length !== 0"
@@ -37,7 +37,7 @@
       class="justify-center w-full flex flex-grow-0 flex-1"
       style="color: grey"
     >
-      {{ $t('profile.threeDay') }}
+      {{ $t('instanceAge.threeDay') }}
     </div>
     <v-layout
       v-if="instancesByTime[1].length !== 0"
@@ -65,7 +65,7 @@
       style="color: grey"
       xs12
     >
-      {{ $t('profile.older') }}
+      {{ $t('instanceAge.older') }}
     </div>
     <v-layout
       v-if="instancesByTime[2].length !== 0"

@@ -27,19 +27,19 @@ export function useShaderpacks() {
 
   function getBuiltinItems(): ShaderPackItem[] {
     return [{
-      name: $t('shaderpack.off'),
+      name: $t('shaderPack.off'),
       value: 'OFF',
       resource: null as any,
       enabled: options.shaderoptions.shaderPack === 'OFF',
-      description: $t('shaderpack.offDescription'),
+      description: $t('shaderPack.offDescription'),
       path: '',
       tags: [],
     }, {
-      name: $t('shaderpack.internal'),
+      name: $t('shaderPack.internal'),
       value: '(internal)',
       resource: null as any,
       enabled: options.shaderoptions.shaderPack === '(internal)',
-      description: $t('shaderpack.internalDescription'),
+      description: $t('shaderPack.internalDescription'),
       path: '',
       tags: [],
     }]

@@ -54,22 +54,6 @@ export function useNotificationHandler() {
     body: (n) => $t('task.failBody', { name: $t(n.name) }),
     more: showTask,
   })
-  // register<PingServerException>('pingServerTimeout', {
-  //   level: 'error',
-  //   title: () => $t('profile.server.status.timeout'),
-  //   body: (e) => `${e.host}:${e.port}`,
-  // })
-  // register<PingServerException>('pingServerNotFound', {
-  //   level: 'error',
-  //   title: () => $t('profile.server.status.nohost'),
-  //   body: (e) => `${e.host}:${e.port}`,
-  // })
-  // register<PingServerException>('pingServerRefused', {
-  //   level: 'error',
-  //   title: () => $t('profile.server.status.refuse'),
-  //   body: (e) => `${e.host}:${e.port}`,
-  // })
-
   return registry
 }
 

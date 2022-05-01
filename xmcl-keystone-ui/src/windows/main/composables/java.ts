@@ -1,10 +1,13 @@
 import { computed } from '@vue/composition-api'
 import { BaseServiceKey, JavaRecord, JavaServiceKey } from '@xmcl/runtime-api'
+import { DialogKey } from './dialog'
 import { useServiceBusy, useService } from '/@/composables'
 
 export function useJavaService() {
   return useService(JavaServiceKey)
 }
+
+export const JavaIssueDialogKey: DialogKey<void> = 'java-issue'
 
 export function useJava() {
   const { state, resolveJava, installDefaultJava: installJava, refreshLocalJava } = useJavaService()

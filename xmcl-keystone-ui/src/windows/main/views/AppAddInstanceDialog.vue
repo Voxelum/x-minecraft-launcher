@@ -15,7 +15,7 @@
           step="1"
         >
           <div class="flex flex-col gap-1">
-            {{ $t('profile.templateSetting') }}
+            {{ $t('instanceTemplate.title') }}
             <small>{{ currentTemplate ? currentTemplate.title : '' }}</small>
           </div>
         </v-stepper-step>
@@ -26,7 +26,7 @@
           :complete="step > 2"
           step="2"
         >
-          {{ $t('profile.baseSetting') }}
+          {{ $t('baseSetting.title') }}
         </v-stepper-step>
         <v-divider />
         <v-stepper-step
@@ -34,7 +34,7 @@
           :complete="step > 2"
           step="3"
         >
-          {{ $t('profile.templateSetting.preview') }}
+          {{ $t('instanceTemplate.preview') }}
         </v-stepper-step>
       </v-stepper-header>
 
@@ -166,7 +166,7 @@ export default defineComponent({
           }).then((path) => {
             mountInstance(path)
             notify({
-              title: $t('profile.importModpack.success', { modpack: currentTemplate.value?.title }),
+              title: $t('importModpack.success', { modpack: currentTemplate.value?.title }),
               level: 'success',
               full: true,
               more() {
@@ -175,7 +175,7 @@ export default defineComponent({
             })
           }, (e) => {
             notify({
-              title: $t('profile.importModpack.failed', { modpack: currentTemplate.value?.title }),
+              title: $t('importModpack.failed', { modpack: currentTemplate.value?.title }),
               level: 'error',
               full: true,
               more() {

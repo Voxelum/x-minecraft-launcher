@@ -88,7 +88,7 @@
                 gradient
               </v-icon>
             </template>
-            {{ $tc('shaderpack.name', 2) }}
+            {{ $tc('shaderPack.name', 2) }}
           </v-tooltip>
         </v-btn>
 
@@ -117,7 +117,7 @@
         </v-btn>
       </v-speed-dial>
     </template>
-    {{ $t('profile.setting') }}
+    {{ $t('gameSetting.title') }}
   </v-tooltip>
 </template>
 

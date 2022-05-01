@@ -88,7 +88,7 @@
         >
           <v-avatar left>
             <v-icon
-              :style="{ color: status.ping < 0 ? 'grey' : status.ping < 100 ? 'green' : status.ping < 300 ? 'orange' : 'red' }"
+              :style="{ color: status.ping < 0 ? 'grey' : status.ping < 100 ? 'green' : status.ping < 300 ? 'orange' : 'error' }"
             >
               signal_cellular_alt
             </v-icon>
@@ -204,7 +204,7 @@ const description = computed(() => props.instance.description)
 const { t } = useI18n()
 const contextMenuItems = computed(() => {
   const items: ContextMenuItem[] = [{
-    text: t('profile.showInstance', { file: props.instance.path }),
+    text: t('instance.showInstance', { file: props.instance.path }),
     children: [],
     onClick: () => {
       showItemInDirectory(props.instance.path)
@@ -216,7 +216,7 @@ const contextMenuItems = computed(() => {
     onClick: () => {
       emit('delete')
     },
-    color: 'red',
+    color: 'error',
     icon: 'delete',
   }]
 

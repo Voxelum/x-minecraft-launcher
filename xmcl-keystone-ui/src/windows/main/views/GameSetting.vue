@@ -108,3 +108,206 @@ export default defineComponent({
   },
 })
 </script>
+<i18n locale="zh-CN" lang="yaml">
+anaglyph3d:
+  'false': 关闭
+  name: 3D效果
+  'true': 启用
+ao:
+  '0': 关
+  '1': 最少
+  '2': 最多
+  name: 平滑光照
+cheat: 作弊模式
+difficulty:
+  easy: 简单
+  hard: 困难
+  non: 未知难度
+  normal: 正常
+  peaseful: 和平
+enableVsync:
+  'false': 关闭
+  name: 垂直同步
+  'true': 开启
+entityShadows:
+  'false': 关闭
+  name: 实体阴影
+  'true': 开启
+fancyGraphics:
+  'false': 快速
+  name: 图像质量
+  'true': 最高
+fboEnable:
+  'false': 关闭
+  name: 使用FBO
+  'true': 启用
+gametype:
+  '0': 生存模式
+  '1': 创造模式
+  '2': 冒险模式
+  '3': 观察者模式
+  adventure: 冒险模式
+  creative: 创造模式
+  non: 未知模式
+  spectator: 观察者模式
+  survival: 生存模式
+hardcore: 极限模式
+mipmapLevels:
+  '0': '0'
+  '1': '1'
+  '2': '2'
+  '3': '3'
+  '4': '4'
+  name: Mipmap等级
+name: 游戏设置
+particles:
+  '0': 最多
+  '1': 较少
+  '2': 最少
+  name: 粒子
+renderClouds:
+  'false': 关闭
+  fast: 快速
+  name: 云
+  'true': 最佳
+useVbo:
+  'false': 关闭
+  name: 使用VBO
+  'true': 启用
+</i18n>
+
+<i18n locale="en" lang="yaml">
+anaglyph3d:
+  'false': Disabled
+  name: 3D Effect
+  'true': Enabled
+ao:
+  '0': 'Off'
+  '1': Minimum
+  '2': Maximum
+  name: Smooth Lighting
+cheat: Cheating
+difficulty:
+  easy: Easy
+  hard: Hard
+  non: Unknown difficulty
+  normal: Normal
+  peaseful: Peaseful
+enableVsync:
+  'false': Disabled
+  name: Vsync
+  'true': Enabled
+entityShadows:
+  'false': Disabled
+  name: Entity Shadows
+  'true': Enabled
+fancyGraphics:
+  'false': Fast
+  name: Graphic
+  'true': Fancy
+fboEnable:
+  'false': Disabled
+  name: Use FBO
+  'true': Enabled
+gametype:
+  '0': Survival Mode
+  '1': Creative Mode
+  '2': Adventure Mode
+  '3': Spectator Mode
+  adventure: Adventure Mode
+  creative: Creative Mode
+  non: Non mode
+  spectator: Spectator Mode
+  survival: Survival Mode
+hardcore: Hardcore mode
+mipmapLevels:
+  '0': '0'
+  '1': '1'
+  '2': '2'
+  '3': '3'
+  '4': '4'
+  name: Mipmap
+name: Game Setting | Game Settings
+particles:
+  '0': Maximum
+  '1': Decreased
+  '2': Minimum
+  name: Particle
+renderClouds:
+  'false': 'Off'
+  fast: Fast
+  name: Clouds
+  'true': Fancy
+useVbo:
+  'false': Disabled
+  name: Use VBO
+  'true': Enabled
+</i18n>
+
+<i18n locale="ru" lang="yaml">
+anaglyph3d:
+  'false': Отключен
+  name: 3D эффект
+  'true': Включен
+ao:
+  '0': Выключено
+  '1': Минимум
+  '2': Максимум
+  name: Мягкое освещение
+cheat: Читерство
+difficulty:
+  easy: Лёгкая
+  hard: Тяжёлая
+  non: Неизвестная сложность
+  normal: Нормальная
+  peaseful: Мирная
+enableVsync:
+  'false': Отключена
+  name: Верт. синхронизация
+  'true': Включена
+entityShadows:
+  'false': Отключены
+  name: Тени существ
+  'true': Включены
+fancyGraphics:
+  'false': Быстро
+  name: Графика
+  'true': Красиво
+fboEnable:
+  'false': Отключено
+  name: Использовать FBO
+  'true': Включено
+gametype:
+  '0': Режим выживания
+  '1': Творческий режим
+  '2': Режим приключения
+  '3': Режим зрителя
+  adventure: Режим приключения
+  creative: Творческий режим
+  non: Нет режима
+  spectator: Режим зрителя
+  survival: Режим выживания
+hardcore: Хардкорный режим
+mipmapLevels:
+  '0': '0'
+  '1': '1'
+  '2': '2'
+  '3': '3'
+  '4': '4'
+  name: Mipmap
+name: Настройка игры | Настройки игры
+particles:
+  '0': Максимум
+  '1': Уменьшено
+  '2': Минимум
+  name: Частицы
+renderClouds:
+  'false': Выключены
+  fast: Быстро
+  name: Облака
+  'true': Красиво
+useVbo:
+  'false': Отключено
+  name: Использовать VBO
+  'true': Включено
+</i18n>

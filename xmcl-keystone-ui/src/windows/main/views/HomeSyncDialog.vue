@@ -51,7 +51,7 @@
           <!-- <v-select
             v-if="item.sources.length > 0 && selected"
             v-model="item.source"
-            :label="t('profile.modpack.exportFileAs.name')"
+            :label="t('exportModpackTarget.name')"
             class="w-50"
             :items="(item.sources.concat([''])).map(getSourceItem)"
             hide-details

@@ -1,7 +1,8 @@
 <template>
   <v-app
     ref="app"
-    class="overflow-auto h-full overflow-x-hidden"
+    class="overflow-auto h-full overflow-x-hidden max-h-[100vh]"
+    :style="cssVars"
   >
     <system-bar />
     <div
@@ -37,10 +38,9 @@
 import { Ref } from '@vue/composition-api'
 import '/@/assets/common.css'
 import ContextMenu from './components/ContextMenu.vue'
-import { IssueHandler, IssueHandlerKey, provideAsyncRoute, useRouter /* provideSearchToggle */ } from '/@/composables'
+import { IssueHandler, IssueHandlerKey, provideAsyncRoute, useI18n, useRouter /* provideSearchToggle */ } from '/@/composables'
 import { useBackground } from './composables/background'
 import { provideDialog } from './composables/dialog'
-import { provideIssueHandler } from './composables/IssueHandlerKey'
 import { provideNotifier } from './composables/notifier'
 import { provideServerStatusCache } from './composables/serverStatus'
 import { TASK_MANAGER, useTaskManager } from './provideTaskProxy'
@@ -55,7 +55,35 @@ import SideBar from './views/AppSideBar.vue'
 import ExportDialog from './views/AppExportDialog.vue'
 import SystemBar from './views/AppSystemBar.vue'
 import TaskDialog from './views/AppTaskDialog.vue'
+import { useColorTheme } from './composables/colorTheme'
+import { injection } from '/@/util/inject'
+import { VuetifyInjectionKey } from '/@/composables/vuetify'
+import { ExceptionHandlersKey, useExceptionHandlers } from '/@/composables/exception'
 
+const { primaryColor, secondaryColor, accentColor, infoColor, errorColor, successColor, warningColor } = useColorTheme()
+const vuetify = injection(VuetifyInjectionKey)
+
+const cssVars = computed(() => ({
+  '--primary': primaryColor.value,
+}))
+
+if (primaryColor.value) { vuetify.theme.currentTheme.primary = primaryColor.value }
+if (secondaryColor.value) { vuetify.theme.currentTheme.secondary = secondaryColor.value }
+if (accentColor.value) { vuetify.theme.currentTheme.accent = accentColor.value }
+if (infoColor.value) { vuetify.theme.currentTheme.info = infoColor.value }
+if (errorColor.value) { vuetify.theme.currentTheme.error = errorColor.value }
+if (successColor.value) { vuetify.theme.currentTheme.success = successColor.value }
+if (warningColor.value) { vuetify.theme.currentTheme.warning = warningColor.value }
+
+watch(primaryColor, (newColor) => { vuetify.theme.currentTheme.primary = newColor })
+watch(secondaryColor, (newColor) => { vuetify.theme.currentTheme.secondary = newColor })
+watch(accentColor, (newColor) => { vuetify.theme.currentTheme.accent = newColor })
+watch(infoColor, (newColor) => { vuetify.theme.currentTheme.info = newColor })
+watch(errorColor, (newColor) => { vuetify.theme.currentTheme.error = newColor })
+watch(successColor, (newColor) => { vuetify.theme.currentTheme.success = newColor })
+watch(warningColor, (newColor) => { vuetify.theme.currentTheme.warning = newColor })
+
+provide(ExceptionHandlersKey, useExceptionHandlers())
 provideDialog()
 provideNotifier()
 

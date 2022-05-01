@@ -29,7 +29,7 @@ export default defineComponent({
   },
   setup(props) {
     const { $t } = useI18n()
-    const type = computed(() => props.source.type === 'snapshot' ? $t('minecraft.versions.snapshot') : props.source.type === 'release' ? $t('minecraft.versions.release') : '')
+    const type = computed(() => props.source.type === 'snapshot' ? $t('minecraftVersion.snapshot') : props.source.type === 'release' ? $t('minecraftVersion.release') : '')
     const onClick = (version: MinecraftVersion) => {
       // if (props.statuses[props.source.id] === 'remote') {
       //   props.install(version)

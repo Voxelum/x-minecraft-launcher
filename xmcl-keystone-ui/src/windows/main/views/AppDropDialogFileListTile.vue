@@ -2,7 +2,7 @@
 <template>
   <v-list-item
     class="universal-drop-tile"
-    color="red"
+    color="error"
     @click="tryEnable"
   >
     <v-list-item-avatar>
@@ -18,23 +18,12 @@
         {{ (value.size / 1024 / 1024).toFixed(2) }} MB
       </v-list-item-subtitle>
     </v-list-item-content>
-    <!-- <v-list-item-content style="flex-grow: 1">
-      <v-text-field
-        v-if="value.type === 'modpack'"
-        :label="$t('profile.name')"
-        :placeholder="value.name"
-        hide-details
-        solo
-        style="margin-left: 20px; max-width: 100px; background: transparent;"
-        @click.stop
-      />
-    </v-list-item-content> -->
     <v-list-item-action class="flex flex-row gap-4 justify-end items-center">
       <v-chip
         v-if="'date' in value"
         label
       >
-        {{ $t('existed') }} {{ typeName }}
+        {{ t('existed') }} {{ typeName }}
       </v-chip>
       <v-chip
         v-else
@@ -44,9 +33,6 @@
       >
         {{ typeName }}
       </v-chip>
-      <!-- </v-list-item-action>
-
-    <v-list-item-action> -->
       <v-checkbox
         v-model="enabled"
         style="justify-content: flex-end"
@@ -59,7 +45,7 @@
         icon
       >
         <v-icon
-          color="red"
+          color="error"
           @click="$emit('remove')"
         >
           close
@@ -111,7 +97,7 @@ export default defineComponent({
   },
   emits: ['enable', 'remove'],
   setup(props, context) {
-    const { $tc, $t } = useI18n()
+    const { tc, t } = useI18n()
     const disabled = computed(() => props.value.type === 'unknown' ||
       props.value.status !== 'idle')
     const enabled = computed({
@@ -129,15 +115,15 @@ export default defineComponent({
       switch (props.value.type) {
         case 'forge': return 'Forge Mod'
         case 'fabric': return 'Fabric Mod'
-        case 'resourcepack': return $tc('resourcepack.name', 0)
+        case 'resourcepack': return tc('resourcepack.name', 0)
         case 'mcbbs-modpack':
-        case 'modpack': return $tc('profile.modpack.name', 0)
-        case 'save': return $t('curseforge.worlds.name')
-        case 'curseforge-modpack': return $t('curseforge.modpacks.name')
-        case 'shaderpack': return $t('shaderpack.name')
+        case 'modpack': return tc('modpack.name', 0)
+        case 'save': return tc('save.name', 0)
+        case 'curseforge-modpack': return tc('modpack.name', 0)
+        case 'shaderpack': return t('shaderPack.name')
         case 'unknown':
         default:
-          return $t('unknownResource')
+          return t('universalDrop.unknownResource')
       }
     })
     return { disabled, tryEnable, icon, typeName, enabled }

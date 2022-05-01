@@ -9,7 +9,7 @@
           v-if="visibled"
           class="absolute-centered"
           style="z-index: 3; bottom: 40px"
-          :color="deleting ? 'red' : 'green'"
+          :color="deleting ? 'error' : 'green'"
           fab
           large
           v-on="on"
@@ -35,7 +35,7 @@
         </v-btn>
       </v-fab-transition>
     </template>
-    {{ $t('user.account.switch') }}
+    {{ $t('userAccount.switch') }}
   </v-tooltip>
 </template>
 
@@ -56,13 +56,13 @@ export default defineComponent({
     return {
       ...toRefs(data),
       enterEditBtn() {
-        data.hoverTextOnEdit = $t('user.skinImportFile')
+        data.hoverTextOnEdit = $t('userSkin.importFile')
       },
       enterLinkBtn() {
-        data.hoverTextOnEdit = $t('user.skinImportLink')
+        data.hoverTextOnEdit = $t('userSkin.importLink')
       },
       enterSaveBtn() {
-        data.hoverTextOnEdit = $t('user.skinSave')
+        data.hoverTextOnEdit = $t('userSkin.save')
       },
     }
   },

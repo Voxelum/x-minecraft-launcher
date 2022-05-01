@@ -42,12 +42,12 @@
                 storage
               </v-icon>
             </template>
-            {{ $t('profile.addServer') }}
+            {{ $t('instance.addServer') }}
           </v-tooltip>
         </v-btn>
       </v-speed-dial>
     </template>
-    {{ $t('profile.add') }}
+    {{ $t('instances.add') }}
   </v-tooltip>
 </template>
 

@@ -34,7 +34,7 @@
               class="headline font-weight-bold"
               style="font-size: 100px"
             >
-              {{ $t("dropToImport") }}
+              {{ $t("universalDrop.title") }}
             </v-card-text>
 
             <v-card-text class="font-weight-bold">
@@ -50,7 +50,7 @@
               <v-icon :size="16">
                 $vuetify.icons.curseforge
               </v-icon>
-              {{ $tc("profile.modpack.name", 0) }}
+              {{ $tc("modpack.name", 0) }}
             </v-card-text>
           </div>
           <preview-view

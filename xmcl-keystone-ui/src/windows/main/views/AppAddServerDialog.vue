@@ -15,13 +15,8 @@
           :complete="step > 1"
           step="1"
         >
-          {{ $t('profile.baseSetting') }}
+          {{ $t('baseSetting.title') }}
         </v-stepper-step>
-        <v-divider />
-        <!-- <v-stepper-step editable :complete="step > 2" step="2">
-          {{ $t('profile.advancedSetting') }}
-          <small>{{ $t('optional') }}</small>
-        </v-stepper-step>-->
         <v-divider />
       </v-stepper-header>
 
@@ -55,7 +50,7 @@
               :disabled="!server.host || !server.port"
               @click="refresh"
             >
-              {{ $t('profile.server.ping') }}
+              {{ $t('server.ping') }}
             </v-btn>
           </stepper-footer>
         </v-stepper-content>

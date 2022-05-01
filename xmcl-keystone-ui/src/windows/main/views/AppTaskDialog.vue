@@ -72,48 +72,30 @@
   </v-dialog>
 </template>
 
-<script lang=ts>
+<script lang=ts setup>
 import { useRouter } from '/@/composables'
 import TaskView from './AppTaskDialogTaskView.vue'
 import { DialogKey, useDialog } from '../composables/dialog'
 import { useTasks } from '../composables/task'
 import { getExpectedSize } from '/@/util/size'
-import AppTaskDialogIssueView from './AppTaskDialogIssueView.vue'
+import AppTaskDialogIssueView from './AppTaskDialogIssues.vue'
 
-export const TaskDialogKey: DialogKey<void> = 'task'
+const { throughput } = useTasks()
+const speed = ref(0)
+const speedText = computed(() => getExpectedSize(speed.value) + '/s')
+setInterval(() => {
+  speed.value = throughput.value
+  throughput.value = 0
+}, 1000)
 
-export default defineComponent({
-  components: { TaskView, AppTaskDialogIssueView },
-  setup() {
-    const { throughput } = useTasks()
-    const speed = ref(0)
-    const speedText = computed(() => getExpectedSize(speed.value) + '/s')
-    setInterval(() => {
-      speed.value = throughput.value
-      throughput.value = 0
-    }, 1000)
+const { hide, isShown } = useDialog('task')
+const router = useRouter()
+const tabs = ref(0)
 
-    const { hide, isShown } = useDialog(TaskDialogKey)
-    const router = useRouter()
-
-    const data = reactive({
-      tabs: 0,
-    })
-
-    router.afterEach((g) => {
-      if (isShown.value) {
-        hide()
-      }
-    })
-
-    return {
-      speed,
-      speedText,
-      ...toRefs(data),
-      isShown,
-      hide,
-    }
-  },
+router.afterEach((g) => {
+  if (isShown.value) {
+    hide()
+  }
 })
 </script>
 

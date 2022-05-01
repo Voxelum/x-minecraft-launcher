@@ -67,7 +67,7 @@
         <v-spacer />
         <v-btn
           :disabled="working"
-          color="red"
+          color="error"
           flat
           @click="$emit('input', false)"
         >

@@ -23,7 +23,7 @@
           <v-icon left>
             add_call
           </v-icon>
-          {{ t('peer.createManual') }}
+          {{ t('multiplayer.initiateConnection') }}
         </v-btn>
 
         <v-btn
@@ -33,7 +33,7 @@
           <v-icon left>
             login
           </v-icon>
-          {{ t('peer.joinManual') }}
+          {{ t('multiplayer.joinManual') }}
         </v-btn>
       </v-card>
 
@@ -72,8 +72,8 @@
                 <v-icon left>
                   signal_cellular_alt
                 </v-icon>
-                {{ t(`peer.connectionState.name`) }}:
-                {{ t(`peer.connectionState.${c.connectionState}`) }}
+                {{ t(`peerConnectionState.name`) }}:
+                {{ t(`peerConnectionState.${c.connectionState}`) }}
               </v-chip>
               <!-- <v-chip
                 label
@@ -94,7 +94,7 @@
                   :size="18"
                   :width="1"
                 />
-                {{ t('peer.iceGatheringState.gathering') }}
+                {{ t('peerIceGatheringState.gathering') }}
               </div>
             </v-list-item-subtitle>
           </v-list-item-action>
@@ -112,7 +112,7 @@
           </v-list-item-action>
           <v-list-item-action class="self-center">
             <v-btn
-              color="red"
+              color="error"
               icon
               @click="startDelete(c.id)"
             >

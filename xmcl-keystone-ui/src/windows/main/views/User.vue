@@ -59,12 +59,12 @@
       <challenges-form :show="isChallengesDialogShown" />
     </v-dialog>
     <delete-dialog
-      :title="t('user.account.removeTitle') "
+      :title="t('userAccount.removeTitle') "
       :width="550"
       @confirm="confirmRemoveProfile()"
       @cancel="removingProfile = ''"
     >
-      {{ t('user.account.removeDescription') }}
+      {{ t('userAccount.removeDescription') }}
       <div style="color: grey">
         {{ t('user.name') }}: {{ removingUserName }}
       </div>

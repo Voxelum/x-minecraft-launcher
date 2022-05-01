@@ -37,7 +37,7 @@
               <v-icon>link</v-icon>
             </v-btn>
           </template>
-          {{ $t('user.skinImportLink') }}
+          {{ $t('userSkin.importLink') }}
         </v-tooltip>
         <v-tooltip
           :close-delay="0"
@@ -54,11 +54,11 @@
               <v-icon>save</v-icon>
             </v-btn>
           </template>
-          {{ $t('user.skinSave') }}
+          {{ $t('userSkin.save') }}
         </v-tooltip>
       </v-speed-dial>
     </template>
-    {{ $t('user.skinImportFile') }}
+    {{ $t('userSkin.importFile') }}
   </v-tooltip>
 </template>
 

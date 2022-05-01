@@ -5,7 +5,7 @@
       large
       dark
       fab
-      :color="deleting ? 'red' : 'green'"
+      :color="deleting ? 'error' : 'success'"
       :loading="loading"
       @dragover.prevent
       @drop="$emit('drop', $event)"

@@ -52,14 +52,13 @@
 </template>
 
 <script lang=ts setup>
-import { AssetIndexIssueKey, AssetsIssueKey, isIssue, LibrariesIssueKey, VersionIssueKey, VersionJarIssueKey, VersionJsonIssueKey } from '@xmcl/runtime-api'
+import { AssetIndexIssueKey, AssetsIssueKey, IncompatibleJavaIssueKey, isIssue, LibrariesIssueKey, MissingJavaIssueKey, VersionIssueKey, VersionJarIssueKey, VersionJsonIssueKey } from '@xmcl/runtime-api'
 import { useI18n, useIssues } from '/@/composables'
 
 const { issues, refreshing, fix } = useIssues()
-const color = computed(() => (issues.value.some(p => !p.optional) ? 'red' : 'warning'))
+const color = computed(() => (issues.value.some(p => !p.optional) ? 'error' : 'warning'))
 const { t, tc } = useI18n()
 const items = computed(() => issues.value
-  .filter(v => v.parameters.length > 0)
   .map((i) => {
     if (isIssue(AssetsIssueKey, i)) {
       if (i.parameters[0].assets.some(v => v.type === 'corrupted')) {
@@ -89,10 +88,21 @@ const items = computed(() => issues.value
       return { title: t('diagnosis.corruptedVersionJson.name'), description: t('diagnosis.corruptedVersionJson.message'), ...i }
     } else if (isIssue(VersionIssueKey, i)) {
       return { title: t('diagnosis.missingVersion.name', { version: i.parameters[0].version }), description: t('diagnosis.missingVersion.message'), ...i }
+    } else if (isIssue(IncompatibleJavaIssueKey, i)) {
+      return {
+        title: t('diagnosis.incompatibleJava.name', { version: i.parameters[0].version, javaVersion: i.parameters[0].selectedJava.version || i.parameters[0].selectedJava.path }),
+        description: t('diagnosis.incompatibleJava.message'),
+        ...i,
+      }
+    } else if (isIssue(MissingJavaIssueKey, i)) {
+      return {
+        title: t('diagnosis.missingJava.name'),
+        description: t('diagnosis.missingJava.message'),
+        ...i,
+      }
     }
     return { title: tc(`diagnosis.${i.id}.name`, i.parameters.length || 0, i.parameters[0]), description: t(`diagnosis.${i.id}.description`, { }), ...i }
-  })
-  .filter(v => !!v))
+  }))
 
 </script>
 

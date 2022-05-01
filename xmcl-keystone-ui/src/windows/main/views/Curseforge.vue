@@ -28,7 +28,7 @@
           solo
           flat
           hide-details
-          :placeholder="$t('curseforge.search')"
+          :placeholder="t('curseforge.search')"
           @keypress.enter="currentKeyword = keywordBuffer"
         />
         <v-pagination
@@ -186,5 +186,72 @@ const {
 
 </script>
 
-<style>
-</style>
+<i18n locale="en" lang="yaml">
+curseforge:
+  mc-mods:
+    description: View and download mods packs from Curseforge
+    name: Mods
+  modpacks:
+    description: View and download modpacks from Curseforge
+    name: Modpacks
+  search: Search
+  texture-packs:
+    description: View and download resource packs from Curseforge
+    name: Resource Packs
+  worlds:
+    description: View and download worlds from Curseforge
+    name: Worlds
+</i18n>
+
+<i18n locale="zh-CN" lang="yaml">
+curseforge:
+  mc-mods:
+    description: 从 Curseforge 上安装 Mods
+    name: Mods
+  modpacks:
+    description: 从 Curseforge 上安装整合包
+    name: 整合包
+  name: 浏览 Curseforge
+  search: 搜索
+  texture-packs:
+    description: 从 Curseforge 上安装资源包
+    name: 资源包
+  worlds:
+    description: 从 Curseforge 上安装世界存档
+    name: 世界存档
+</i18n>
+
+<i18n locale="zh-TW" lang="yaml">
+curseforge:
+  mc-mods:
+    description: 從 Curseforge 上安裝 Mods
+    name: Mods
+  modpacks:
+    description: 從 Curseforge 上安裝整合包
+    name: 整合包
+  name: 瀏覽 Curseforge
+  search: 搜索
+  texture-packs:
+    description: 從 Curseforge 上安裝資源包
+    name: 資源包
+  worlds:
+    description: 從 Curseforge 上安裝世界存檔
+    name: 世界存檔
+</i18n>
+
+<i18n locale="ru" lang="yaml">
+curseforge:
+  mc-mods:
+    description: Просматривайте и скачивайте моды с Curseforge
+    name: Моды
+  modpacks:
+    description: Просматривайте и скачивайте модпаки с Curseforge
+    name: Модпаки
+  search: Поиск
+  texture-packs:
+    description: Просматривайте и скачивайте пакеты текстур с Curseforge
+    name: Текстуры
+  worlds:
+    description: Просматривайте и скачивайте миры с Curseforge
+    name: Миры
+</i18n>

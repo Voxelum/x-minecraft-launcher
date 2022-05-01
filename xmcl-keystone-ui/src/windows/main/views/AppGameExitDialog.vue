@@ -8,7 +8,7 @@
       <v-toolbar-title
         class="white--text"
       >
-        {{ isCrash ? $t('launch.crash') : $t('launch.failed.title') }}
+        {{ isCrash ? $t('launchFailed.crash') : $t('launchFailed.title') }}
       </v-toolbar-title>
       <v-spacer />
       <v-toolbar-items>
@@ -16,7 +16,7 @@
           text
           @click="openFolder"
         >
-          {{ isCrash ? $t('launch.openCrashReportFolder') : $t('launch.openLogFolder') }}
+          {{ isCrash ? $t('instance.openCrashReportFolder') : $t('instance.openLogFolder') }}
         </v-btn>
       </v-toolbar-items>
       <v-btn
@@ -31,7 +31,7 @@
         <div
           style="padding: 10px"
         >
-          {{ isCrash ? $t(`launch.crash`) : $t(`launch.failed.description`) }}
+          {{ isCrash ? $t(`launchFailed.crash`) : $t(`launchFailed.description`) }}
         </div>
         <pre class="rounded p-5 bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] overflow-auto">
           {{ errorLog }}
@@ -39,7 +39,7 @@
         <div
           style="padding: 10px"
         >
-          {{ $t(`launch.failed.latest`) }}
+          {{ $t(`launchFailed.latestLog`) }}
         </div>
         <pre class="rounded p-5 bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] overflow-auto">
           {{ log }}

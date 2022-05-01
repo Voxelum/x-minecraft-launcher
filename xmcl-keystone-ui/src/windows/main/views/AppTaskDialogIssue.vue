@@ -31,16 +31,17 @@
 
         <template #label="{ item }">
           <div
-            v-if="item.name"
-            style="display: flex; align-items: center;"
+            class="flex items-center"
           >
-            <span
-              style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;"
-            >{{ $t(`${item.name}`) }}</span>
-            <span
-              class="tree-minor-label"
-              style="margin-left: 5px; max-width: 320px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
-            >{{ item.location }}</span>
+            <div class="flex flex-col">
+              <span
+                style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;"
+              >{{ item.title }}</span>
+              <span
+                class="tree-minor-label"
+                style="max-width: 320px; display: inline-block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+              >{{ item.description }}</span>
+            </div>
             <v-spacer />
             <v-chip
               style="margin-left: 10px"
@@ -48,11 +49,9 @@
               small
               label
               color="orange"
-            >
-              {{ item.items.length }}
-            </v-chip>
+            />
           </div>
-          <div
+          <!-- <div
             v-else
             style="padding: 5px 0px;"
           >
@@ -89,7 +88,7 @@
             >
               {{ $t(`diagnosis.${item.id}.message`, item.arguments || {}) }}
             </span>
-          </div>
+          </div> -->
         </template>
       </v-treeview>
     </v-card-text>
@@ -97,26 +96,26 @@
 </template>
 
 <script setup lang=ts>
-import { AssetIndexIssueKey, AssetsIssueKey, isIssue, LibrariesIssueKey, VersionIssueKey, VersionJarIssueKey, VersionJsonIssueKey } from '@xmcl/runtime-api'
+import { AssetIndexIssueKey, Issue, AssetsIssueKey, isIssue, LibrariesIssueKey, VersionIssueKey, VersionJarIssueKey, VersionJsonIssueKey } from '@xmcl/runtime-api'
 import { useI18n, useIssues } from '/@/composables'
 
-interface IssueType {
-  name: string
-  $id: number
-  items: IssueLeaf[]
+const props = defineProps<{
+  issue: Issue<any>
+}>()
+
+if (isIssue(AssetIndexIssueKey, props.issue)) {
+  const content = props.issue.parameters[0]
+  content
+  h('', [
+
+  ])
 }
-interface IssueLeaf {
-  id: string
-  $id: number
-  fixing: boolean
-  autofix: boolean
-  optional: boolean
-  arguments: object
-}
+
 const { t, tc } = useI18n()
 
+const { issues } = useIssues()
+
 const items = computed(() => issues.value
-  .filter(v => v.parameters.length > 0)
   .map((i) => {
     if (isIssue(AssetsIssueKey, i)) {
       if (i.parameters[0].assets.some(v => v.type === 'corrupted')) {
@@ -148,9 +147,7 @@ const items = computed(() => issues.value
       return { title: t('diagnosis.missingVersion.name', { version: i.parameters[0].version }), description: t('diagnosis.missingVersion.message'), ...i }
     }
     return { title: tc(`diagnosis.${i.id}.name`, i.parameters.length || 0, i.parameters[0]), description: t(`diagnosis.${i.id}.description`, { }), ...i }
-  })
-  .filter(v => !!v))
-const { issues } = useIssues()
+  }))
 
 function useIssuesTree() {
   // const { state } = useStore()

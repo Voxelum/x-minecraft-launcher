@@ -5,7 +5,7 @@
   >
     <v-list-item
       key="DEFAULT"
-      :class="{ green: value.path === '' }"
+      :class="{ primary: value.path === '' }"
       @click="$emit('input', { path: '', version: '', majorVersion: 0, valid: false })"
     >
       <v-list-item-avatar>
@@ -13,22 +13,22 @@
       </v-list-item-avatar>
       <v-list-item-content>
         <v-list-item-title>
-          {{ $t("java.locationPlaceHolder") }}
+          {{ $t("java.allocatedLong") }}
         </v-list-item-title>
-        <v-list-item-subtitle>{{ $t("java.locationPlaceHolder") }}</v-list-item-subtitle>
+        <v-list-item-subtitle>{{ $t("java.allocatedLong") }}</v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
     <v-list-item
       v-for="item in items"
       :key="item.path"
-      :class="{ green: item.path === value.path && item.valid, red: item.path === value.path && !item.valid }"
+      :class="{ primary: item.path === value.path && item.valid, error: item.path === value.path && !item.valid }"
       @click="$emit('input', item)"
     >
       <v-list-item-avatar>
         <v-chip
           label
           small
-          :color="item.valid ? 'orange' : 'grey'"
+          :color="item.path === value.path && item.valid ? 'white' : item.valid ? 'orange' : 'grey'"
           outlined
         >
           {{ item.majorVersion }}

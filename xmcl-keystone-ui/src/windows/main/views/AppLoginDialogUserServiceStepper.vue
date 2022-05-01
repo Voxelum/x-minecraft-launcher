@@ -11,14 +11,14 @@
       step="1"
       :complete="step > 1"
     >
-      {{ $t('user.service.typeOfService') }}
+      {{ $t('userService.typeOfService') }}
     </v-stepper-step>
     <v-stepper-content step="1">
       <v-text-field
         v-model="name"
         style="width: 100%"
         :rules="nameRules"
-        :label="$t('user.service.name')"
+        :label="$t('userService.name')"
         @update:error="
           /* @ts-ignore */
           value => nameError = value"
@@ -27,8 +27,8 @@
         v-model="baseUrl"
         persistent-hint
         style="width: 100%"
-        :label="$t('user.service.baseUrl')"
-        :hint="$t('user.service.baseUrlHint')"
+        :label="$t('userService.baseUrl')"
+        :hint="$t('userService.baseUrlHint')"
         :rules="urlRules"
         @update:error="
           /* @ts-ignore */
@@ -37,11 +37,11 @@
       />
       <v-radio-group v-model="template">
         <v-radio
-          :label="$t('user.service.authLibInjector')"
+          :label="$t('userService.authLibInjector')"
           :value="1"
         />
         <v-radio
-          :label="$t('user.service.normal')"
+          :label="$t('userService.normal')"
           :value="0"
         />
       </v-radio-group>
@@ -74,7 +74,7 @@
       :editable="step > 2 && enableAuthService"
       :complete="step > 2"
     >
-      {{ $t('user.service.authServiceDetail') }}
+      {{ $t('userService.authServiceDetail') }}
     </v-stepper-step>
     <v-stepper-content step="2">
       <v-text-field
@@ -82,9 +82,9 @@
         :key="t"
         v-model="newAuth[t]"
         style="margin-bottom: 10px;"
-        :label="t === 'hostName' ? $t('user.service.hostName') : `API ${t}`"
+        :label="t === 'hostName' ? $t('userService.hostName') : `API ${t}`"
         :rules="t === 'hostName' ? urlRules : []"
-        :messages="[$t(`user.service.${t}Hint`)]"
+        :messages="[$t(`userService.${t}Hint`)]"
       />
       <v-layout row>
         <v-btn
@@ -124,7 +124,7 @@
       :complete="step > 3"
       :editable="step > 1 && enableProfileService"
     >
-      {{ $t('user.service.profileServiceDetail') }}
+      {{ $t('userService.profileServiceDetail') }}
     </v-stepper-step>
     <v-stepper-content step="3">
       <v-text-field
@@ -134,8 +134,8 @@
           // @ts-expect-error
           newProfileService[t]"
         style="margin-bottom: 10px;"
-        :label="$t(`user.service.${t}`)"
-        :messages="[$t(`user.service.${t}Hint`)]"
+        :label="$t(`userService.${t}`)"
+        :messages="[$t(`userService.${t}Hint`)]"
       />
       <v-layout row>
         <v-btn
@@ -179,11 +179,11 @@ export default defineComponent({
     const { $t } = useI18n()
     const { state } = useService(UserServiceKey)
     const urlRules = [
-      (value: string) => !!HTTP_EXP.test(value) || $t('user.service.invalidUrl'),
+      (value: string) => !!HTTP_EXP.test(value) || $t('userService.invalidUrl'),
     ]
     const nameRules = [
-      (value: string) => !!value || $t('user.service.requireName'),
-      (value: string) => !state.authServices[value] || $t('user.service.duplicatedName'),
+      (value: string) => !!value || $t('userService.requireName'),
+      (value: string) => !state.authServices[value] || $t('userService.duplicatedName'),
     ]
     const authOrder = ['hostName', 'authenticate', 'refresh', 'validate', 'invalidate', 'signout'] as const
     const data = reactive({

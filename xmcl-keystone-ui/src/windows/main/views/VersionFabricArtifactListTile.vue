@@ -15,13 +15,13 @@
         label
         color="green"
       >
-        {{ $t('fabric.version.stable') }}
+        {{ $t('fabricVersion.stable') }}
       </v-chip>
       <v-chip
         v-else
         label
       >
-        {{ $t('fabric.version.unstable') }}
+        {{ $t('fabricVersion.unstable') }}
       </v-chip>
     </div>
 

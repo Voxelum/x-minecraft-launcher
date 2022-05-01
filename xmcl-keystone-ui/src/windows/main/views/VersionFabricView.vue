@@ -3,7 +3,7 @@
     <v-list-item class="flex-1 flex-grow-0 flex justify-end">
       <v-checkbox
         v-model="showStableOnly"
-        :label="t('fabric.showStableOnly')"
+        :label="t('fabricVersion.showStableOnly')"
       />
     </v-list-item>
     <v-divider />
@@ -20,7 +20,7 @@
         <v-list-item-avatar>
           <v-icon>close</v-icon>
         </v-list-item-avatar>
-        {{ t('fabric.disable') }}
+        {{ t('fabricVersion.disable') }}
       </v-list-item>
       <virtual-list
         ref="list"
@@ -36,7 +36,7 @@
       v-else
       style="flex-grow: 1"
       icon="refresh"
-      :text="t('fabric.noVersion', { version: minecraft })"
+      :text="t('fabricVersion.empty', { version: minecraft })"
     />
   </div>
 </template>

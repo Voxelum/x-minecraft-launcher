@@ -16,7 +16,7 @@
         <v-list-item-avatar>
           <v-icon>close</v-icon>
         </v-list-item-avatar>
-        {{ t("optifine.disable") }}
+        {{ t("optifineVersion.disable") }}
       </v-list-item>
       <virtual-list
         ref="list"
@@ -32,7 +32,7 @@
       v-else
       class="flex-grow"
       icon="refresh"
-      :text="t('optifine.noVersion', { version: minecraft })"
+      :text="t('optifineVersion.empty', { version: minecraft })"
     />
   </div>
 </template>
@@ -61,23 +61,6 @@ export default defineComponent({
   setup(props) {
     const { versions, statuses, refreshing, install } = useOptifineVersions(computed(() => props.minecraft))
     const { t } = useI18n()
-    // const loaderVersions = computed(() => lv.value.filter((v) => {
-    //   if (data.showStableOnly && !v.stable) {
-    //     return false;
-    //   }
-    //   return true;
-    //   // return v.version.indexOf(filterText.value) !== -1;
-    // }));
-    // const yarnVersions = computed(() => yv.value.filter((v) => {
-    //   if (v.gameVersion !== props.minecraft) {
-    //     return false;
-    //   }
-    //   if (data.showStableOnly && !v.stable) {
-    //     return false;
-    //   }
-    //   return true;
-    //   // return v.version.indexOf(filterText.value) !== -1;
-    // }));
     return {
       versions,
       refreshing,

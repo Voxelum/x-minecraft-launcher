@@ -33,7 +33,7 @@
             hide-details
             type="number"
             :label="$t('java.minMemory')"
-            :placeholder="$t('java.autoAlloc')"
+            :placeholder="$t('java.allocatedShort')"
             required
           />
         </v-flex>
@@ -47,7 +47,7 @@
             hide-details
             type="number"
             :label="$t('java.maxMemory')"
-            :placeholder="$t('java.autoAlloc')"
+            :placeholder="$t('java.allocatedShort')"
             required
           />
         </v-flex>
@@ -64,12 +64,12 @@
       <v-list-item-content>
         <v-list-item-title>
           {{
-            $t('minecraft.version')
+            $t('minecraftVersion.name')
           }}
         </v-list-item-title>
         <v-list-item-subtitle>
           {{
-            $t('profile.versionHint')
+            $t('instance.versionHint')
           }}
         </v-list-item-subtitle>
       </v-list-item-content>
@@ -100,12 +100,12 @@
       <v-list-item-content>
         <v-list-item-title>
           {{
-            $t('forge.version')
+            $t('forgeVersion.name')
           }}
         </v-list-item-title>
         <v-list-item-subtitle>
           {{
-            $t('profile.versionHint')
+            $t('instance.versionHint')
           }}
         </v-list-item-subtitle>
       </v-list-item-content>
@@ -142,7 +142,7 @@
         <v-list-item-title>Fabric</v-list-item-title>
         <v-list-item-subtitle>
           {{
-            $t('profile.versionHint')
+            $t('instance.versionHint')
           }}
         </v-list-item-subtitle>
       </v-list-item-content>

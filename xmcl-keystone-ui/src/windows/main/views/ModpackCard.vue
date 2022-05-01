@@ -116,7 +116,7 @@ const contextMenuItems: Ref<ContextMenuItem[]> = computed(() => {
       emit('delete')
     },
     icon: 'delete',
-    color: 'red',
+    color: 'error',
   }]
   if (props.item.resource.curseforge) {
     items.push({

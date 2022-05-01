@@ -4,7 +4,7 @@ import VueI18n from 'vue-i18n'
 export const I18N_KEY: InjectionKey<VueI18n> = Symbol('I18N_KEY')
 
 export function useI18n () {
-  const i18n = inject(I18N_KEY)
+  const i18n = getCurrentInstance()?.proxy.$i18n ?? inject(I18N_KEY)
   if (!i18n) throw new Error('Cannot find i18n. Maybe router not loaded?')
   return {
     $t (key: string, values?: any[] | { [key: string]: any }): string { return i18n.t(key, values) as any },

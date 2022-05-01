@@ -63,7 +63,7 @@
           <v-btn
             icon
             text
-            color="red"
+            color="error"
             v-on="on"
             @click.stop.prevent="$emit('uninstall')"
           >

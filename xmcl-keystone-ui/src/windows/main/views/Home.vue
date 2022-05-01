@@ -36,7 +36,7 @@
             </v-icon>
           </v-btn>
         </template>
-        {{ $t('profile.modpack.export') }}
+        {{ $t('modpack.export') }}
       </v-tooltip>
 
       <v-tooltip top>
@@ -52,7 +52,7 @@
             </v-icon>
           </v-btn>
         </template>
-        {{ $t("profile.logsCrashes.title") }}
+        {{ $t("logsCrashes.title") }}
       </v-tooltip>
 
       <v-tooltip top>
@@ -68,7 +68,7 @@
             </v-icon>
           </v-btn>
         </template>
-        {{ $t("profile.showInstance") }}
+        {{ $t("instance.showInstance") }}
       </v-tooltip>
 
       <problems-bar />
@@ -82,7 +82,8 @@
       :hide="hideLogDialog"
     />
     <game-exit-dialog />
-    <!-- <launch-blocked-dialog /> -->
+    <app-launch-blocked-dialog />
+    <home-launch-multi-instance-dialog />
     <launch-status-dialog />
     <java-fixer-dialog />
   </div>
@@ -92,7 +93,6 @@
 // TODO: check this
 import GameExitDialog from './AppGameExitDialog.vue'
 import HomeHeader from './HomeHeader.vue'
-// import LaunchBlockedDialog from './HomeLaunchBlockedDialog.vue'
 import LogDialog from './HomeLogDialog.vue'
 import ProblemsBar from './HomeProblemsBar.vue'
 import ServerStatusBar from './HomeServerStatusBar.vue'
@@ -101,12 +101,14 @@ import { useService } from '/@/composables'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import LaunchStatusDialog from './HomeLaunchStatusDialog.vue'
-import JavaFixerDialog from './HomeJavaFixerDialog.vue'
+import JavaFixerDialog from './HomeJavaIssueDialog.vue'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import { useInstance } from '../composables/instance'
 import { AppExportDialogKey } from '../composables/instanceExport'
 import HomeLaunchButton from './HomeLaunchButton.vue'
 import HomeSyncButton from './HomeSyncButton.vue'
+import AppLaunchBlockedDialog from './AppLaunchBlockedDialog.vue'
+import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
 
 const { show: showExport } = useDialog(AppExportDialogKey)
 

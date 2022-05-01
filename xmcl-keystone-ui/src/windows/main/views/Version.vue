@@ -5,7 +5,7 @@
   >
     <div class="flex flex-col h-full overflow-auto gap-3 mt-2">
       <v-card-title>
-        {{ $t("profile.versionSetting") }}
+        {{ $t("versionSetting.title") }}
       </v-card-title>
       <!-- <div
         tag="h1"
@@ -24,7 +24,7 @@
       >
         <v-tab>
           <div class="version-tab">
-            {{ $t("version.locals") }}
+            {{ $t("localVersion.title") }}
             <div class="subtitle">
               {{ localVersion ? localVersion.id : '' }}
             </div>
@@ -42,7 +42,7 @@
           <div class="version-tab">
             Forge
             <div class="subtitle">
-              {{ forge || $t("version.unset") }}
+              {{ forge || $t("versionSetting.unset") }}
             </div>
           </div>
         </v-tab>
@@ -50,7 +50,7 @@
           <div class="version-tab">
             Fabric
             <div class="subtitle">
-              {{ fabricLoader || $t("version.unset") }}
+              {{ fabricLoader || $t("versionSetting.unset") }}
             </div>
           </div>
         </v-tab>
@@ -58,7 +58,7 @@
           <div class="version-tab">
             Optifine
             <div class="subtitle">
-              {{ optifine || $t("version.unset") }}
+              {{ optifine || $t("versionSetting.unset") }}
             </div>
           </div>
         </v-tab>

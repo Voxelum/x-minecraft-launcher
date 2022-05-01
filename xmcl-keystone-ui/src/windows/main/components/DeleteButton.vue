@@ -6,7 +6,7 @@
       absolute
       fab
       bottom
-      color="red"
+      color="error"
       @dragover.prevent
       @drop="drop"
     >

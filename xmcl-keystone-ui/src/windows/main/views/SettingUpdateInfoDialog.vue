@@ -55,7 +55,7 @@
           >
             cloud_download
           </v-icon>
-          {{ $t('setting.updateToThisVersion') }}
+          {{ $t('launcherUpdate.updateToThisVersion') }}
         </v-btn>
         <v-btn
           v-else
@@ -68,7 +68,7 @@
           >
             refresh
           </v-icon>
-          {{ $t('setting.installAndQuit') }}
+          {{ $t('launcherUpdate.installAndQuit') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -87,7 +87,7 @@
           align-center
         >
           <h3 v-if="!checkingUpdate">
-            {{ $t('setting.noUpdateAvailable') }}
+            {{ $t('launcherUpdate.noUpdateAvailable') }}
           </h3>
           <v-progress-circular
             v-else

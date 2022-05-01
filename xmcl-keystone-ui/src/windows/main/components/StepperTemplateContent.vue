@@ -126,16 +126,16 @@ export default defineComponent({
         return version
       }
 
-      const runtimes = resource.metadata.runtime ?? {}
-      let version = `Minecraft: ${runtimes.minecraft}`
-      if (runtimes.forge) {
-        version += ` Forge ${runtimes.forge}`
+      const runtime = resource.metadata.runtime ?? {}
+      let version = `Minecraft: ${runtime.minecraft}`
+      if (runtime.forge) {
+        version += ` Forge ${runtime.forge}`
       }
-      if (runtimes.liteloader) {
-        version += ` Liteloader ${runtimes.liteloader}`
+      if (runtime.liteloader) {
+        version += ` Liteloader ${runtime.liteloader}`
       }
-      if (runtimes.fabricLoader) {
-        version += ` Fabric ${runtimes.fabricLoader}`
+      if (runtime.fabricLoader) {
+        version += ` Fabric ${runtime.fabricLoader}`
       }
       return version
     }
@@ -158,7 +158,7 @@ export default defineComponent({
         subTitle: getInstanceVersion(instance),
         path: instance.path,
         source: instance,
-        action: $t(`profile.templateSetting.${instance.server ? 'server' : 'profile'}`),
+        action: instance.server ? $t('instanceTemplate.server') : $t('instanceTemplate.profile'),
         minecraft: instance.runtime.minecraft,
       }) as InstanceTemplate))
       all.push(...modpacks.value.map((modpack) => ({
@@ -167,7 +167,7 @@ export default defineComponent({
         subTitle: getModpackVersion(modpack),
         path: modpack.path,
         source: modpack,
-        action: $t('profile.templateSetting.modpack'),
+        action: $t('instanceTemplate.modpack'),
         minecraft: isCurseforgeModpackResource(modpack)
           ? modpack.metadata.minecraft.version
           : modpack.type === ResourceType.McbbsModpack

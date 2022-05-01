@@ -25,29 +25,9 @@
             </v-icon>
           </v-btn>
         </template>
-
-        <!-- <v-btn
-          fab
-          small
-          @click="onImport('zip')"
-        >
-          <v-tooltip
-            :close-delay="0"
-            left
-          >
-            <template #activator="{ on: tooltip }">
-              <v-icon
-                v-on="tooltip"
-              >
-                folder_zip
-              </v-icon>
-            </template>
-            {{ t('profile.importZip') }}
-          </v-tooltip>
-        </v-btn> -->
       </v-speed-dial>
     </template>
-    {{ t('profile.importFolder') }}
+    {{ t('instances.importFolder') }}
   </v-tooltip>
 </template>
 
@@ -66,8 +46,8 @@ async function onImport(type: 'zip' | 'folder') {
     ? []
     : [{ extensions: ['zip'], name: 'Zip' }]
   const { filePaths } = await showOpenDialog({
-    title: t('profile.import.title'),
-    message: t('profile.import.description'),
+    title: t('instances.importFolder'),
+    message: t('instances.importFolderDescription'),
     filters,
     properties: fromFolder ? ['openDirectory'] : ['openFile'],
   })
