@@ -11,7 +11,7 @@
         "check": "pnpm run --prefix=xmcl-keystone-ui check && pnpm run --prefix=xmcl-runtime check && pnpm run --prefix=xmcl-runtime-api check",
         "dev:main": "pnpm run --prefix=xmcl-electron-app dev",
         "dev:renderer": "pnpm run --prefix=xmcl-keystone-ui dev",
-        "lint": "eslint --ext .ts,.vue src",
-        "lint:fix": "eslint --ext .ts,.vue --fix src"
+        "lint": "pnpm run --prefix=xmcl-keystone-ui lint && pnpm run --prefix=xmcl-runtime lint && pnpm run --prefix=xmcl-runtime-api lint",
+        "lint:fix": "pnpm run --prefix=xmcl-keystone-ui lint:fix && pnpm run --prefix=xmcl-runtime lint:fix && pnpm run --prefix=xmcl-runtime-api lint:fix"
     }
 }

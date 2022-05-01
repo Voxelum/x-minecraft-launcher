@@ -74,8 +74,7 @@
   </v-list-item>
 </template>
 
-<script lang=ts>
-import { required } from '/@/util/props'
+<script lang=ts setup>
 import { useI18n } from '/@/composables'
 import { FilePreview } from './AppDropDialog.vue'
 
@@ -91,43 +90,37 @@ const iconMap: Record<string, string> = {
   save: '$vuetify.icons.zip',
 }
 
-export default defineComponent({
-  props: {
-    value: required<FilePreview>(Object),
-  },
-  emits: ['enable', 'remove'],
-  setup(props, context) {
-    const { tc, t } = useI18n()
-    const disabled = computed(() => props.value.type === 'unknown' ||
-      props.value.status !== 'idle')
-    const enabled = computed({
-      get() { return props.value.enabled },
-      set(v) { context.emit('enable', v) },
-    })
+const props = defineProps<{ value: FilePreview }>()
+const emit = defineEmits(['enable', 'remove'])
 
-    const icon = computed(() => iconMap[props.value.type] ?? 'device_unknown')
-    const tryEnable = () => {
-      if (!disabled.value) {
-        context.emit('enable')
-      }
-    }
-    const typeName = computed(() => {
-      switch (props.value.type) {
-        case 'forge': return 'Forge Mod'
-        case 'fabric': return 'Fabric Mod'
-        case 'resourcepack': return tc('resourcepack.name', 0)
-        case 'mcbbs-modpack':
-        case 'modpack': return tc('modpack.name', 0)
-        case 'save': return tc('save.name', 0)
-        case 'curseforge-modpack': return tc('modpack.name', 0)
-        case 'shaderpack': return t('shaderPack.name')
-        case 'unknown':
-        default:
-          return t('universalDrop.unknownResource')
-      }
-    })
-    return { disabled, tryEnable, icon, typeName, enabled }
-  },
+const { tc, t } = useI18n()
+const disabled = computed(() => props.value.type === 'unknown' ||
+      props.value.status !== 'idle')
+const enabled = computed({
+  get() { return props.value.enabled },
+  set(v) { emit('enable', v) },
+})
+
+const icon = computed(() => iconMap[props.value.type] ?? 'device_unknown')
+const tryEnable = () => {
+  if (!disabled.value) {
+    emit('enable')
+  }
+}
+const typeName = computed(() => {
+  switch (props.value.type) {
+    case 'forge': return 'Forge Mod'
+    case 'fabric': return 'Fabric Mod'
+    case 'resourcepack': return tc('resourcepack.name', 0)
+    case 'mcbbs-modpack':
+    case 'modpack': return tc('modpack.name', 0)
+    case 'save': return tc('save.name', 0)
+    case 'curseforge-modpack': return tc('modpack.name', 0)
+    case 'shaderpack': return t('shaderPack.name')
+    case 'unknown':
+    default:
+      return t('universalDrop.unknownResource')
+  }
 })
 </script>
 
