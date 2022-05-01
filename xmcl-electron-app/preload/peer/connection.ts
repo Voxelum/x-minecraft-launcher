@@ -160,10 +160,10 @@ export class PeerSession {
         console.error(`Illegal State! remote is is not set when channel is opened! ${this.id}`)
       } else {
         // propagate this new peer to other neighbor
-        for (const conn of Object.values(this.host.connections)) {
-          if (conn.id !== this.id) {
-            this.send(MessageMemberJoin, { id: this.remoteId })
-          }
+        const neighbor = Object.values(this.host.connections).filter((conn) => conn.id !== this.id)
+        console.log(`Broadcast this peer to other ${neighbor.length} neighbor`)
+        for (const conn of neighbor) {
+          conn.send(MessageMemberJoin, { id: this.remoteId })
         }
       }
     })
