@@ -11,7 +11,7 @@ export function useColorTheme() {
   const darkSideBarColor = useLocalStorageCacheStringValue<string>('darkSideBarColor', '')
 
   const darkPrimaryColor = useLocalStorageCacheStringValue<string>('darkPrimaryColor', '#4caf50')
-  const darkSecondaryColor = useLocalStorageCacheStringValue<string>('darkSecondaryColor', '#424242')
+  const darkBackground = useLocalStorageCacheStringValue<string>('darkBackground', '#121212')
   const darkInfoColor = useLocalStorageCacheStringValue<string>('darkInfoColor', '#2196F3')
   const darkErrorColor = useLocalStorageCacheStringValue<string>('darkErrorColor', '#FF5252')
   const darkWarningColor = useLocalStorageCacheStringValue<string>('darkWarningColor', '#FB8C00')
@@ -19,7 +19,7 @@ export function useColorTheme() {
   const darkAccentColor = useLocalStorageCacheStringValue<string>('darkAccentColor', '#00e676')
 
   const lightPrimaryColor = useLocalStorageCacheStringValue<string>('lightPrimaryColor', '#1976D2')
-  const lightSecondaryColor = useLocalStorageCacheStringValue<string>('lightSecondaryColor', '#424242')
+  const lightBackground = useLocalStorageCacheStringValue<string>('lightBackground', '#FFFFFF')
   const lightInfoColor = useLocalStorageCacheStringValue<string>('lightInfoColor', '#2196F3')
   const lightErrorColor = useLocalStorageCacheStringValue<string>('lightErrorColor', '#FF5252')
   const lightWarningColor = useLocalStorageCacheStringValue<string>('lightWarningColor', '#FB8C00')
@@ -57,13 +57,13 @@ export function useColorTheme() {
       }
     },
   })
-  const secondaryColor = computed({
-    get: () => darkTheme.value ? darkSecondaryColor.value : lightSecondaryColor.value,
+  const backgroundColor = computed({
+    get: () => darkTheme.value ? darkBackground.value : lightBackground.value,
     set: (v: string) => {
       if (darkTheme.value) {
-        darkSecondaryColor.value = v
+        darkBackground.value = v
       } else {
-        lightSecondaryColor.value = v
+        lightBackground.value = v
       }
     },
   })
@@ -125,7 +125,7 @@ export function useColorTheme() {
     errorColor,
     warningColor,
     accentColor,
-    secondaryColor,
+    backgroundColor,
     successColor,
     infoColor,
   }

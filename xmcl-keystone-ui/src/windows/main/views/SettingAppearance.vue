@@ -76,8 +76,8 @@
         class="ml-[16px]"
       >
         <SettingAppearanceColor
-          v-model="secondaryColor"
-          :text="t('setting.colorTheme.secondaryColor')"
+          v-model="backgroundColor"
+          :text="t('setting.colorTheme.backgroundColor')"
         />
       </v-list-item-action>
       <v-list-item-action
@@ -312,7 +312,7 @@ import SettingAppearanceColor from './SettingAppearanceColor.vue'
 const { showOpenDialog } = windowController
 const { t } = useI18n()
 const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, blurMainBody, backgroundImageFit, volume, setBackgroundVideo, backgroundVideo } = useBackground()
-const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, secondaryColor } = useColorTheme()
+const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, backgroundColor } = useColorTheme()
 const { state } = useService(BaseServiceKey)
 
 const theme = computed({
@@ -417,6 +417,7 @@ setting:
     primaryColor: Primary Color
     secondaryColor: Secondary Color
     sideBarColor: Side Bar
+    backgroundColor: Background Color
     warningColor: Warning Color
   darkTheme: Theme
   darkThemeDescription: Choose the dark or light theme
@@ -469,6 +470,7 @@ setting:
     name: 主题颜色
     primaryColor: 主要颜色
     secondaryColor: 次要颜色
+    backgroundColor: 背景颜色
     sideBarColor: 侧边栏
     warningColor: 警告颜色
   darkTheme: 主题
@@ -523,6 +525,7 @@ setting:
     name: 主題顏色
     primaryColor: 主要顏色
     secondaryColor: 次要顏色
+    backgroundColor: 背景顏色
     sideBarColor: 側邊欄
     warningColor: 警告顏色
   darkTheme: 主題
