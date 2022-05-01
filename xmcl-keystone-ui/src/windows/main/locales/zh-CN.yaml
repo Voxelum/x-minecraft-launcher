@@ -153,57 +153,57 @@ importModpack:
 importResource: 导入资源
 importSave: 导入存档
 installAssets:
-  '': 下载游戏资源文件
+  name: 下载游戏资源文件
   asset: 下载资源文件%{hash}
   assetsJson: 下载资源文件目录
 installAuthlibInjector: 安装 authlib-injector
 installByProfile:
-  '': 通过安装配置文件
+  name: 通过安装配置文件
   postProcessing: 后处理，更新本地文件
 installCurseforgeFile: 安装 Curseforge 文件
 installDependencies:
-  '': 检查%{version}的依赖
+  name: 检查%{version}的依赖
   installAssets:
-    '': 下载游戏资源文件
+    name: 下载游戏资源文件
     assets: 下载资源文件%{hash}
     assetsJson: 下载资源文件目录
   installLibraries:
-    '': 下载依赖运行库
+    name: 下载依赖运行库
     library: 检查库文件
 installFabric:
-  '': 安装 Fabric
+  name: 安装 Fabric
 installForge:
-  '': 安装 Forge
+  name: 安装 Forge
   downloadInstaller: 下载 Forge 安装器
   libraries:
-    '': 安装依赖库
+    name: 安装依赖库
     library: 检查库
   postProcessing: 处理 Minecraft Jar 文件
 installJre:
-  '': 安装Java运行库
+  name: 安装Java运行库
   cleanup: 清理安装文件
   decompress: 解压缩JRE文件到本地
   download: 下载压缩的JRE文件
   fetchInfo: 从Mojang那获取JRE信息
 installLibraries:
-  '': 安装依赖运行库
+  name: 安装依赖运行库
   library: 检查库文件
 installModpack:
-  '': 安装整合包
+  name: 安装整合包
   deploy: 部署
   download:
-    '': 下载
+    name: 下载
     file: 下载文件
   unpack: 解压缩
 installModrinthFile:
-  '': 从 Modrinth 下载
+  name: 从 Modrinth 下载
 installOptifine:
-  '': 安装 Optifine
+  name: 安装 Optifine
   download: 下载 Optifine Universal
   jar: 生成 Optifine Jar
   json: 生成 Json
 installVersion:
-  '': 安装%{version}的游戏本体
+  name: 安装%{version}的游戏本体
   jar: 安装游戏JAR文件
   json: 安装游戏JSON文件
 instance:
