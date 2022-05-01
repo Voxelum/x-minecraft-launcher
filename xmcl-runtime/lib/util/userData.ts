@@ -1,7 +1,7 @@
 import { UserSchema } from '@xmcl/runtime-api'
 import { AUTH_API_MOJANG, PROFILE_API_MOJANG } from '@xmcl/user'
 import { randomUUID } from 'crypto'
-import { LauncherProfile } from '../services/UserService'
+import { LauncherProfile } from '../entities/launchProfile'
 
 /**
  * Fit the user data from loaded user data and loaded launcher profile json
