@@ -103,14 +103,6 @@ const props = defineProps<{
   issue: Issue<any>
 }>()
 
-if (isIssue(AssetIndexIssueKey, props.issue)) {
-  const content = props.issue.parameters[0]
-  content
-  h('', [
-
-  ])
-}
-
 const { t, tc } = useI18n()
 
 const { issues } = useIssues()

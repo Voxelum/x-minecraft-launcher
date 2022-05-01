@@ -107,7 +107,7 @@ export interface InstanceManifest {
 }
 
 export interface InstanceFilePeer {
-  
+
 }
 
 export interface InstanceManifestPeer extends InstanceData {

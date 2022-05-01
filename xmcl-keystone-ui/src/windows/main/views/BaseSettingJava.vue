@@ -66,7 +66,7 @@
       </v-list-item-content>
       <v-list-item-action style="width: 20%; margin-right: 10px">
         <v-text-field
-          v-model="minMemory"
+          v-model="instance.minMemory"
           hide-details
           type="number"
           required
@@ -77,7 +77,7 @@
       </v-list-item-action>
       <v-list-item-action style="width: 20%">
         <v-text-field
-          v-model="maxMemory"
+          v-model="instance.maxMemory"
           hide-details
           type="number"
           required
@@ -92,7 +92,7 @@
         <v-list-item-title>{{ t("instance.vmOptions") }}</v-list-item-title>
         <v-list-item-subtitle>
           <v-text-field
-            v-model="vmOptions"
+            v-model="instance.vmOptions"
             style="width: 100%; padding-top: unset; margin-top: unset; margin-bottom: 5px;"
             hide-details
             required

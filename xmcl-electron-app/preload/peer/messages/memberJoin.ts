@@ -17,14 +17,11 @@ export const MessageMemberJoinEntry = defineMessage(MessageMemberJoin, async fun
   await conn.initiate()
 
   const start = Date.now()
-  console.log('Wait the ice to collect')
-  await new Promise<void>((resolve) => {
-    this.connection.addEventListener('icegatheringstatechange', () => {
-      if (this.connection.iceGatheringState === 'complete') {
-        resolve()
-      }
-    })
+  console.log('Wait the ice to collect for 5 seconds')
+  await new Promise((resolve) => {
+    setTimeout(resolve, 5000)
   })
+
   console.log(`Send MessageMemberJoinInitiate to ${this.id} (${this.remoteId})`)
   console.log(this.connection.localDescription?.sdp)
 
@@ -46,18 +43,10 @@ export const MessageMemberJoinInitiateEntry = defineMessage(MessageMemberJoinIni
     await conn.offer(offer)
 
     const start = Date.now()
-    await new Promise<void>((resolve) => {
-      this.connection.addEventListener('icegatheringstatechange', () => {
-        if (this.connection.iceGatheringState === 'complete') {
-          resolve()
-        }
-      })
+    console.log('Wait the ice to collect for 5 seconds')
+    await new Promise((resolve) => {
+      setTimeout(resolve, 5000)
     })
-
-    // console.log('Wait the ice to collect for 5 seconds')
-    // await new Promise((resolve) => {
-    //   setTimeout(resolve, 5000)
-    // })
 
     console.log(`Send answer to ${to}`)
     console.log(this.connection.localDescription?.sdp)

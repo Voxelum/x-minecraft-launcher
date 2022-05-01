@@ -61,7 +61,8 @@ export class ResourcePackPreviewService extends AbstractService implements IReso
   protected getResourcePackPath(pack: string) {
     if (pack === 'vanilla') {
       const version = this.instanceVersionService.state.version?.minecraftVersion
-      const jarPath = new MinecraftFolder(this.getPath()).getVersionJar(version)
+      // TODO: handle error
+      const jarPath = new MinecraftFolder(this.getPath()).getVersionJar(version!)
       return jarPath
     }
     pack = pack.startsWith('file/') ? pack.substring(5) : pack
@@ -139,7 +140,8 @@ export class ResourcePackPreviewService extends AbstractService implements IReso
   }
 
   async getBlockStates(): Promise<BlockStateJson[]> {
-    const gameVersion = this.instanceVersionService.getInstanceVersion().id
+    // TODO: handle error
+    const gameVersion = this.instanceVersionService.state.version!.id
     if (this.cachedJsonVersion === gameVersion && this.cachedBlocks) {
       // cache hit
       this.log(`Use cached ${this.cachedBlocks.length} blockstates from ${gameVersion}.jar`)

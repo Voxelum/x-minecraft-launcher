@@ -61,7 +61,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
       },
       validator: async (builder, issue) => {
         const runtime = this.instanceService.state.instance.runtime
-        const valid = runtime.minecraft === issue.minecraft && runtime.forge === issue.forge && runtime.fabricLoader == issue.fabricLoader
+        const valid = runtime.minecraft === issue.minecraft && runtime.forge === issue.forge && runtime.fabricLoader === issue.fabricLoader
         if (valid) {
           await this.diagnoseAll(builder, this.state.version)
         }
