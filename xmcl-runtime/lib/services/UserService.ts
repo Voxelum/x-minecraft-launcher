@@ -210,7 +210,20 @@ export class UserService extends StatefulService<UserState> implements IUserServ
           expiredAt: expiredAt,
         })
       } else {
-        this.log(`Microsoft accessToken up-to-date. Skip refresh.`)
+        const diff = Date.now() - user.expiredAt
+        if ((diff / 1000 / 3600 / 24) > 14) {
+          this.warn(`Detect buggy expireAt time. Force refresh: ${user.username}`)
+          const { userId, accessToken, expiredAt, gameProfiles, selectedProfile } = await this.loginMicrosoft({ microsoftEmailAddress: user.username })
+          this.state.userProfileUpdate({
+            id: user.id,
+            accessToken,
+            profiles: gameProfiles,
+            selectedProfile: selectedProfile?.id,
+            expiredAt: expiredAt,
+          })
+        } else {
+          this.log(`Microsoft accessToken up-to-date. Skip refresh.`)
+        }
       }
     } else {
       this.log(`Current user ${user.id} is not YggdrasilService. Skip to refresh credential.`)
