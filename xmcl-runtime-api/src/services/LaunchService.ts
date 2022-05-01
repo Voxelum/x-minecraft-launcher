@@ -1,5 +1,4 @@
 import { Exception } from '../entities/exception'
-import { Issue } from '../entities/issue'
 import { LaunchStatus } from '../entities/launch'
 import { GenericEventEmitter } from '../events'
 import { ServiceKey, StatefulService } from './Service'
@@ -67,6 +66,10 @@ export interface LaunchOptions {
   maxMemory?: number
 
   minMemory?: number
+  /**
+   * Skip the issue checker
+   */
+  force?: boolean
 }
 
 export interface LaunchService extends StatefulService<LaunchState>, GenericEventEmitter<LaunchServiceEventMap> {
@@ -82,19 +85,40 @@ export interface LaunchService extends StatefulService<LaunchState>, GenericEven
 }
 
 export type LaunchExceptions = {
-  type: 'launchInstanceEmpty' | 'launchIllegalAuth' | 'launchNoVersionInstalled'
+  type: 'launchNoVersionInstalled'
+  /**
+   * The override version in options
+   */
+  override?: string
+  /**
+   * The version in instance
+   */
+  version?: string
+  minecraft: string
+  forge?: string
+  fabric?: string
 } | {
+  /**
+   * Unknown error
+   */
   type: 'launchGeneralException'
   error: unknown
 } | {
-  type: 'launchBlockedIssues'
-  issues: Issue[]
-} | {
+  /**
+   * Unknown java error. Might be empty java path
+   */
   type: 'launchNoProperJava'
+  javaPath: string
 } | {
+  /**
+   * Java path is invalid
+   */
   type: 'launchInvalidJavaPath'
   javaPath: string
 } | {
+  /**
+   * No permission to use that java
+   */
   type: 'launchJavaNoPermission'
   javaPath: string
 }

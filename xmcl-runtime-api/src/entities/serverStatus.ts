@@ -4,28 +4,28 @@ export { ServerStatus }
 
 export const UNKNOWN_STATUS: ServerStatus = ({
   version: {
-    name: 'profile.server.unknown',
+    name: 'server.unknown',
     protocol: -1,
   },
   players: {
     max: -1,
     online: -1,
   },
-  description: 'profile.server.unknownDescription',
+  description: 'server.unknownDescription',
   favicon: '',
   ping: 0,
 })
 
 export const PINGING_STATUS: ServerStatus = ({
   version: {
-    name: 'profile.server.ping',
+    name: 'server.ping',
     protocol: -1,
   },
   players: {
     max: -1,
     online: -1,
   },
-  description: 'profile.server.pinging',
+  description: 'server.pinging',
   favicon: '',
   ping: 0,
 })
@@ -33,7 +33,7 @@ export const PINGING_STATUS: ServerStatus = ({
 export function createFailureServerStatus(description: string): ServerStatus {
   return Object.freeze({
     version: {
-      name: 'profile.server.unknown',
+      name: 'server.unknown',
       protocol: -1,
     },
     players: {

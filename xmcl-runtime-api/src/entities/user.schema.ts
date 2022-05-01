@@ -41,7 +41,7 @@ export interface UserProfile {
    */
   accessToken: string
   /**
-   * The expire
+   * The expire time
    */
   expiredAt: number
 

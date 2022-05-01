@@ -347,7 +347,6 @@ export type UserExceptions = {
   type: 'loginGeneral'
 } | {
   type: 'fetchMinecraftProfileFailed'
-  path: '/minecraft/profile'
   errorType: 'NOT_FOUND' | string
   error: string | 'NOT_FOUND'
   errorMessage: string
