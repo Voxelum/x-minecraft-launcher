@@ -237,6 +237,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     builder.set(AssetIndexIssueKey)
     if (assetIndexIssue) {
       builder.set(AssetIndexIssueKey, assetIndexIssue)
+      assetIndexIssue.version = assetIndexIssue.version || currentVersion.id
     }
     return assetIndexIssue
   }
