@@ -62,15 +62,15 @@ const items = computed(() => issues.value
   .map((i) => {
     if (isIssue(AssetsIssueKey, i)) {
       if (i.parameters[0].assets.some(v => v.type === 'corrupted')) {
-        return { title: tc('diagnosis.corruptedAssets.name', 3, { count: i.parameters[0].assets.length }), description: t('diagnosis.corruptedAssets.message'), ...i }
+        return { title: tc('diagnosis.corruptedAssets.name', 2, { count: i.parameters[0].assets.length }), description: t('diagnosis.corruptedAssets.message'), ...i }
       } else {
-        return { title: tc('diagnosis.missingAssets.name', 3, { count: i.parameters[0].assets.length }), description: t('diagnosis.missingAssets.message'), ...i }
+        return { title: tc('diagnosis.missingAssets.name', 2, { count: i.parameters[0].assets.length }), description: t('diagnosis.missingAssets.message'), ...i }
       }
     } else if (isIssue(LibrariesIssueKey, i)) {
       if (i.parameters[0].libraries.some(v => v.type === 'corrupted')) {
-        return { title: tc('diagnosis.corruptedLibraries.name', 3, { count: i.parameters[0].libraries.length }), description: t('diagnosis.corruptedLibraries.message'), ...i }
+        return { title: tc('diagnosis.corruptedLibraries.name', 2, { count: i.parameters[0].libraries.length }), description: t('diagnosis.corruptedLibraries.message'), ...i }
       } else {
-        return { title: tc('diagnosis.missingLibraries.name', 3, { count: i.parameters[0].libraries.length }), description: t('diagnosis.missingLibraries.message'), ...i }
+        return { title: tc('diagnosis.missingLibraries.name', 2, { count: i.parameters[0].libraries.length }), description: t('diagnosis.missingLibraries.message'), ...i }
       }
     } else if (isIssue(AssetIndexIssueKey, i)) {
       if (i.parameters[0].type === 'corrupted') {

@@ -22,11 +22,10 @@ export function createI18n(locale: string, messages: VueI18n.LocaleMessages) {
     // console.log(result)
     const normalize = (values: string[]) => values.length === 0 ? '' : values.join('')
     const plural = (messages: string[]) => {
-      const index = values.count % messages.length
-      const msg = messages[index]
-      // @ts-ignore
-      const result = this._formatter.interpolate(msg, values, path)
-      return result[0]
+      if (messages.length <= values.n) {
+        return messages[messages.length % values.n]
+      }
+      return messages[values.n]
     }
     const interpolate = (v: any) => {
       return v
@@ -42,8 +41,8 @@ export function createI18n(locale: string, messages: VueI18n.LocaleMessages) {
   i18n._t = function (k: string, v: any, l: any, h: any, ...args: any[]) {
     const result = _t.apply(i18n, [k, v, l, h, ...args])
     if (typeof result === 'object' && !(result instanceof Array)) {
-      const fallback = result['']
-      if (fallback) { return i18n.formatter.interpolate(fallback, args[0]).join('') }
+      const fallback = result
+      if (fallback) { return _t.apply(i18n, [`${k}.name`, v, l, h, ...args]) }
       return k
     }
     if (result instanceof Array) {

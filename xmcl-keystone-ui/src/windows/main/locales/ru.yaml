@@ -37,7 +37,7 @@ description: Описание
 detail: Подробности
 diagnosis:
   badInstall:
-    '': Ошибка установки на {version}
+    name: Ошибка установки на {version}
     message: Нажмите чтобы попытаться переустановить эту версию.
   corruptedAssets:
     message: Лаунчер установит assets за вас
@@ -183,57 +183,57 @@ home: Главная
 importResource: Импорт ресурса
 importSave: Импорт сохранения
 installAssets:
-  '': Установка файлов Asset
+  name: Установка файлов Asset
   asset: Установка Asset {hash}
   assetsJson: Проверка индексного файла Assets
 installAuthlibInjector: Установка authlib-injector
 installByProfile:
-  '': Установка по профилю установки
+  name: Установка по профилю установки
   postProcessing: Постобработка
 installCurseforgeFile: Установка файла CurseForge
 installDependencies:
-  '': Установка зависимостей {version}
+  name: Установка зависимостей {version}
   installAssets:
-    '': Установка файлов Asset
+    name: Установка файлов Asset
     assets: Установка Asset {hash}
     assetsJson: Проверка индексного файла Assets
   installLibraries:
-    '': Установка библиотек
+    name: Установка библиотек
     library: Установка библиотеки
 installFabric:
-  '': Установка Fabric
+  name: Установка Fabric
 installForge:
-  '': Установка Forge
+  name: Установка Forge
   downloadInstaller: Скачивание установщика
   libraries:
-    '': Скачивание библиотек
+    name: Скачивание библиотек
     library: Установка библиотеки {lib}
   postProcessing: Постобработка
 installJre:
-  '': Установка библиотеки Java Runtime
+  name: Установка библиотеки Java Runtime
   cleanup: Очистка установочного пакета
   decompress: Распаковка файлов JRE в папку
   download: Скачивание сжатого файла JRE
   fetchInfo: Получение информации о JRE из Mojang
 installLibraries:
-  '': Установка библиотек
+  name: Установка библиотек
   library: Установка библиотеки
 installModpack:
-  '': Установка модпака
+  name: Установка модпака
   deploy: Выполняется развёртывание
   download:
-    '': Скачивание
+    name: Скачивание
     file: Скачивание файла
   unpack: Распаковка модпака
 installModrinthFile:
-  '': Установка Modrinth
+  name: Установка Modrinth
 installOptifine:
-  '': Установка Optifine
+  name: Установка Optifine
   download: Скачивание Optifine Universal
   jar: Генерация Jar
   json: Генерация Json
 installVersion:
-  '': Установка клиента Minecraft {version}
+  name: Установка клиента Minecraft {version}
   jar: Установка версии Jar
   json: Установка версии Json
 instance:
@@ -685,7 +685,7 @@ user:
   profile: Профиль
   profileMode: Служба профиля
   profileService:
-    '': Служба профиля
+    name: Служба профиля
     description: Служба предоставляет информацию о вашем скине.
   refreshAccount: Обновить аккаунт
   refreshSkin: Обновить скин

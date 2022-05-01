@@ -115,23 +115,23 @@ diagnosis:
     message: Click to install this version
     name: Missing version jar for Minecraft %{version}
   missingVersionJson:
-    '': Missing version %{version} json.
+    name: Missing version %{version} json.
     message: Click to install this version
   problem: 1 Problem | %{count} Problems
   requireFabric:
-    '': Require fabric to run with Fabric Mod!
+    name: Require fabric to run with Fabric Mod!
     message: Please a fabric version in version setting
   requireFabricAPI:
-    '': Require fabric API {version} to run the {name}!
+    name: Require fabric API {version} to run the {name}!
     message: Either download fabric API or enable it in Mod Settings
   requireForge:
-    '': Require forge to run with Forge Mod!
+    name: Require forge to run with Forge Mod!
     message: Please a forge version in version setting
   unknownMod:
-    '': Cannot detect Mod {name}'s Minecraft Version
+    name: Cannot detect Mod {name}'s Minecraft Version
     message: Please be careful if it causes crash
   userNotLogined:
-    '': User is not logined
+    name: User is not logined
     message: Click to login.
 disk:
   available: Available
@@ -191,57 +191,57 @@ importModpack:
 importResource: Import Resource
 importSave: Import Save
 installAssets:
-  '': Install Asset Files
+  name: Install Asset Files
   asset: Install Asset {hash}
   assetsJson: Check Assets Index File
 installAuthlibInjector: Install authlib-injector
 installByProfile:
-  '': Install by Install Profile
+  name: Install by Install Profile
   postProcessing: Post Processing
 installCurseforgeFile: Install Curseforge File
 installDependencies:
-  '': Install {version}'s Dependencies
+  name: Install {version}'s Dependencies
   installAssets:
-    '': Install Asset Files
+    name: Install Asset Files
     assets: Install Asset {hash}
     assetsJson: Check Assets Index File
   installLibraries:
-    '': Install Libraries
+    name: Install Libraries
     library: Install Library
 installFabric:
-  '': Install Fabric
+  name: Install Fabric
 installForge:
-  '': Install Forge
+  name: Install Forge
   downloadInstaller: Download Installer
   libraries:
-    '': Download Libraries
+    name: Download Libraries
     library: Install Library {lib}
   postProcessing: Post Processing
 installJre:
-  '': Install Java Runtime Library
+  name: Install Java Runtime Library
   cleanup: Clean up installation package
   decompress: Decompress JRE files to folder
   download: Download compressed JRE file
   fetchInfo: Fetch JRE Info from Mojang
 installLibraries:
-  '': Install Libraries
+  name: Install Libraries
   library: Install Library
 installModpack:
-  '': Install Modpack
+  name: Install Modpack
   deploy: Deploy
   download:
-    '': Download
+    name: Download
     file: Download File
   unpack: Unpack Modpack
 installModrinthFile:
-  '': Install Modrinth
+  name: Install Modrinth
 installOptifine:
-  '': Install Optifine
+  name: Install Optifine
   download: Download Optifine Universal
   jar: Generate Jar
   json: Generate Json
 installVersion:
-  '': Install Minecraft Client {version}
+  name: Install Minecraft Client {version}
   jar: Install Version Jar
   json: Install Version Json
 instance:
