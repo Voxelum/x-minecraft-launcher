@@ -61,20 +61,20 @@ export class ServerStatusService extends AbstractService implements IServerStatu
       return status
     } catch (e) {
       if (e && e instanceof Error && e.message === 'Connection timeout.') {
-        return createFailureServerStatus('profile.server.status.timeout')
+        return createFailureServerStatus('serverStatus.timeout')
       }
       if (isSystemError(e)) {
         switch (e.code) {
           case 'ETIMEOUT':
-            return createFailureServerStatus('profile.server.status.timeout')
+            return createFailureServerStatus('serverStatus.timeout')
           case 'ENOTFOUND':
-            return createFailureServerStatus('profile.server.status.nohost')
+            return createFailureServerStatus('serverStatus.nohost')
           case 'ECONNREFUSED':
-            return createFailureServerStatus('profile.server.status.refuse')
+            return createFailureServerStatus('serverStatus.refuse')
           default:
         }
       }
-      return createFailureServerStatus('profile.server.status.ping')
+      return createFailureServerStatus('serverStatus.ping')
     }
   }
 

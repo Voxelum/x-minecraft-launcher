@@ -58,7 +58,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     const root = this.getPath()
     const from = src
 
-    const zipTask = new ZipTask(dest).setName('profile.modpack.export')
+    const zipTask = new ZipTask(dest).setName('modpack.export')
 
     const releases: Array<() => void> = []
 

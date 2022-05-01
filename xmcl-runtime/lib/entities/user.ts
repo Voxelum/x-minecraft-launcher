@@ -226,18 +226,28 @@ export async function checkGameOwnership(request: Got, accessToken: string) {
  * @param accessToken The minecraft access token
  */
 export async function getGameProfile(request: Got, accessToken: string) {
-  const profileResponse: MinecraftProfileResponse | MinecraftProfileErrorResponse = await request.get('https://api.minecraftservices.com/minecraft/profile', {
+  const profileResponse = await request.get('https://api.minecraftservices.com/minecraft/profile', {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
-  }).json()
+    throwHttpErrors: false,
+  })
 
-  if ('error' in profileResponse) {
-    throw new UserException({ type: 'fetchMinecraftProfileFailed', ...profileResponse },
-      `Cannot login to Microsoft! ${profileResponse.errorMessage}`)
+  try {
+    const result = JSON.parse(profileResponse.body)
+
+    if ('error' in result) {
+      throw new UserException({ type: 'fetchMinecraftProfileFailed', ...result },
+        `Cannot login to Microsoft! ${result.errorMessage}`)
+    }
+
+    return result
+  } catch (e) {
+    if (profileResponse.statusCode === 401) {
+      throw new UserException({ type: 'fetchMinecraftProfileFailed', error: 'ACCESS_DENY', errorType: 'ACCESS_DENY', errorMessage: '', developerMessage: '' })
+    }
+    throw new UserException({ type: 'fetchMinecraftProfileFailed', error: 'Unknown', errorType: 'Unknown', errorMessage: '', developerMessage: '' })
   }
-
-  return profileResponse
 }
 
 function getSkinFormData(buf: Buffer, fileName: string, variant: 'slim' | 'classic') {

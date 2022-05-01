@@ -1,13 +1,9 @@
-import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder, Version } from '@xmcl/core'
-import { EMPTY_VERSION, LaunchException, LaunchOptions, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
+import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder, ResolvedVersion, Version } from '@xmcl/core'
+import { LaunchException, LaunchOptions, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
 import { ChildProcess } from 'child_process'
-import { constants } from 'fs'
-import { access, chmod } from 'fs-extra'
 import { EOL } from 'os'
 import LauncherApp from '../app/LauncherApp'
 import { JavaValidation } from '../entities/java'
-import { isSystemError } from '../util/error'
-import { ENOENT_ERROR, EPERM_ERROR } from '../util/fs'
 import { DiagnoseService } from './DiagnoseService'
 import { ExternalAuthSkinService } from './ExternalAuthSkinService'
 import { InstanceJavaService } from './InstanceJavaService'
@@ -51,8 +47,15 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
     const javaPath = instanceJava.path
 
     const instanceVersion = this.instanceVersionService.state.version
+
     if (!instanceVersion) {
-      throw new LaunchException({ type: 'launchNoVersionInstalled' })
+      throw new LaunchException({
+        type: 'launchNoVersionInstalled',
+        version: instance.version,
+        minecraft: instance.runtime.minecraft,
+        forge: instance.runtime.forge,
+        fabric: instance.runtime.fabricLoader,
+      })
     }
     const version = instanceVersion.id
     const useAuthLib = this.userService.state.isThirdPartyAuthentication
@@ -105,8 +108,6 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         return false
       }
 
-      this.state.launchStatus('checkingProblems')
-
       /**
        * current selected profile
        */
@@ -115,11 +116,15 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       const gameProfile = user.gameProfile
 
       await this.userService.refreshStatus()
-      const issues = this.diagnoseService.state.issues
-      for (let problems = issues.filter(p => p.autoFix), i = 0;
-        problems.length !== 0 && i < 1;
-        problems = issues.filter(p => p.autoFix), i += 1) {
-        await this.diagnoseService.fix(issues.filter(p => !p.optional && p.autoFix))
+
+      if (!options?.force) {
+        this.state.launchStatus('checkingProblems')
+        const issues = this.diagnoseService.state.issues
+        for (let problems = issues.filter(p => p.autoFix), i = 0;
+          problems.length !== 0 && i < 1;
+          problems = issues.filter(p => p.autoFix), i += 1) {
+          await this.diagnoseService.fix(issues.filter(p => !p.optional && p.autoFix))
+        }
       }
 
       if (this.state.status === 'idle') { // check if we have cancel (set to ready) this launch
@@ -130,11 +135,32 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
 
       const minecraftFolder = new MinecraftFolder(options?.gameDirectory ?? instance.path)
 
-      let version = options?.version ? this.versionService.getLocalVersion(options.version) ?? this.instanceVersionService.state.version : this.instanceVersionService.state.version
-      if (!version) {
-        throw new LaunchException({ type: 'launchNoVersionInstalled' })
+      let version: ResolvedVersion | undefined
+
+      if (options?.version) {
+        this.log(`Override the version: ${options.version}`)
+        version = this.versionService.getLocalVersion(options.version)
+        if (!version) {
+          try {
+            version = await Version.parse(this.getPath(), options.version)
+          } catch (e) {
+            this.warn(`Cannot use override version: ${options.version}`)
+            this.warn(e)
+          }
+        }
+      } else {
+        version = this.instanceVersionService.state.version
       }
-      version = await Version.parse(version.minecraftDirectory, version.id)
+
+      if (!version) {
+        throw new LaunchException({
+          type: 'launchNoVersionInstalled',
+          override: options?.version,
+          minecraft: instance.runtime.minecraft,
+          forge: instance.runtime.forge,
+          fabric: instance.runtime.fabricLoader,
+        })
+      }
 
       this.log(`Will launch with ${version} version.`)
 
@@ -143,7 +169,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       const javaPath = instance.java || instanceJava?.path
 
       if (!javaPath) {
-        throw new LaunchException({ type: 'launchNoProperJava' }, 'Cannot launch without a valid java')
+        throw new LaunchException({ type: 'launchNoProperJava', javaPath: javaPath || '' }, 'Cannot launch without a valid java')
       }
 
       const useAuthLib = user.isThirdPartyAuthentication
@@ -203,7 +229,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
           throw new LaunchException({ type: 'launchJavaNoPermission', javaPath })
         }
       } catch (e) {
-        throw new LaunchException({ type: 'launchGeneralException', error: e })
+        throw new LaunchException({ type: 'launchNoProperJava', javaPath }, 'Cannot launch without a valid java')
       }
 
       // Launch
@@ -245,7 +271,6 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         })
         this.launchedProcesses = this.launchedProcesses.filter(p => p !== process)
       }).on('minecraft-window-ready', () => {
-        this.state.launchStatus('idle')
         this.emit('minecraft-window-ready', { pid: process.pid })
       })
       /* eslint-disable no-unused-expressions */
@@ -258,6 +283,8 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         this.emit('minecraft-stderr', { pid: process.pid, stderr: s.toString() })
       })
       process.unref()
+      this.state.launchStatus('idle')
+
       return true
     } catch (e) {
       this.state.launchStatus('idle')

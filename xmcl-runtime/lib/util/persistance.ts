@@ -11,7 +11,7 @@ import { SafeJsonSerializer } from './serialize'
  * @param logger The logger
  * @returns The mapped file
  */
-export function createSafeFile<T>(path: string, schema: Schema<T>, logger?: Logger) {
+export function createSafeFile<T>(path: string, schema: Schema<T>, logger: Logger) {
   const serializer = new SafeJsonSerializer(schema, logger)
   return {
     async write(data: T) {

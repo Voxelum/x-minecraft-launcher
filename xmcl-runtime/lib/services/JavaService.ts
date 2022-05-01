@@ -178,11 +178,11 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
 
       const local = this.getInternalJavaLocation({ majorVersion: 8, component: 'jre-legacy' })
       if (!this.state.all.map(j => j.path).some(p => p === local)) {
-        this.validateJava(local)
+        this.resolveJava(local)
       }
       const localAlpha = this.getInternalJavaLocation({ majorVersion: 16, component: 'java-runtime-alpha' })
       if (!this.state.all.map(j => j.path).some(p => p === localAlpha)) {
-        this.validateJava(local)
+        this.resolveJava(local)
       }
     } else {
       this.log(`Re-validate cached ${this.state.all.length} java locations.`)
