@@ -1,7 +1,7 @@
 import { InstalledAppManifest } from '@xmcl/runtime-api'
 import iconPath from './assets/apple-touch-icon.png'
 import winIcon from './assets/app.ico'
-import defaultUrl from '/@renderer/index.html'
+import defaultUrl from '@renderer/index.html'
 import trayIconPath from './assets/favicon@2x.png'
 import { platform } from 'os'
 
