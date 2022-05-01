@@ -26,7 +26,7 @@
                 :disabled="s.value === 'mojang'"
                 text
                 icon
-                color="red"
+                color="error"
                 @click="remove(s)"
               >
                 <v-icon>delete</v-icon>
@@ -43,7 +43,7 @@
             <v-icon>add</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>{{ $t('user.service.add') }}</v-list-item-title>
+            <v-list-item-title>{{ $t('userService.add') }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>

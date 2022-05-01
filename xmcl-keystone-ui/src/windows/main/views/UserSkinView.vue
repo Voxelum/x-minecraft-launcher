@@ -81,14 +81,14 @@ export default defineComponent({
     const isImportSkinDialogShown = ref(false)
     const pending = computed(() => refreshing.value || loading.value)
     async function loadSkin() {
-      const { filePaths } = await showOpenDialog({ title: $t('user.skinImportFile'), filters: [{ extensions: ['png'], name: 'PNG Images' }] })
+      const { filePaths } = await showOpenDialog({ title: $t('userSkin.importFile'), filters: [{ extensions: ['png'], name: 'PNG Images' }] })
       if (filePaths && filePaths[0]) {
         url.value = `image://${filePaths[0]}`
       }
     }
     async function exportSkin() {
       const { filePath } = await showSaveDialog({
-        title: $t('user.skinSaveTitle'),
+        title: $t('userSkin.saveTitle'),
         defaultPath: `${props.name}.png`,
         filters: [{ extensions: ['png'], name: 'PNG Images' }],
       })
@@ -110,7 +110,7 @@ export default defineComponent({
       modified,
       reset,
       refresh: watcherTask(async () => refresh(), $t('user.refreshSkin')),
-      save: watcherTask(save, $t('skin.upload')),
+      save: watcherTask(save, $t('userSkin.upload')),
       pending,
       security,
       loadSkin,

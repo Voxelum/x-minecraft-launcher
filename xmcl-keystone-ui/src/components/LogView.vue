@@ -26,9 +26,9 @@ const { darkTheme } = useTheme()
 
 const { t } = useI18n()
 const levelText: Record<string, string> = reactive({
-  info: computed(() => t('log.info')),
-  error: computed(() => t('log.error')),
-  warn: computed(() => t('log.warning')),
+  info: computed(() => t('logLevel.info')),
+  error: computed(() => t('logLevel.error')),
+  warn: computed(() => t('logLevel.warning')),
 })
 const levelClasses: Record<string, string> = reactive({
   info: computed(() => darkTheme.value ? 'text-gray-300' : 'text-black-500'),

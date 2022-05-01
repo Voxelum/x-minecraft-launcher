@@ -208,3 +208,39 @@ export default defineComponent({
   text-align: center;
 }
 </style>
+
+<i18n locale="en" lang="yaml">
+curseforge:
+  recentFiles: Recent Files
+  project:
+    description: Description
+    files: Files
+    images: Images
+</i18n>
+
+<i18n locale="zh-CN" lang="yaml">
+curseforge:
+  recentFiles: 近期文件
+  project:
+    description: 简介
+    files: 文件
+    images: 图片
+</i18n>
+
+<i18n locale="zh-CN" lang="yaml">
+curseforge:
+  recentFiles: 近期文件
+  project:
+    description: 簡介
+    files: 文件
+    images: 圖片
+</i18n>
+
+<i18n locale="ru" lang="yaml">
+curseforge:
+  recentFiles: Последние файлы
+  project:
+    description: Описание
+    files: Файлы
+    images: Изображения
+</i18n>

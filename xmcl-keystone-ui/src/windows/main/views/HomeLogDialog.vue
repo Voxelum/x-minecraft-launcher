@@ -8,7 +8,7 @@
       tabs
     >
       <v-toolbar-title class="white--text">
-        {{ $t('profile.logsCrashes.title') }}
+        {{ $t('logsCrashes.title') }}
       </v-toolbar-title>
       <v-spacer />
       <v-btn
@@ -30,14 +30,14 @@
             :disabled="loadingList"
             @click="goLog"
           >
-            {{ $t('profile.logsCrashes.logs') }}
+            {{ $t('logsCrashes.logs') }}
           </v-tab>
           <v-tab
             :key="1"
             :disabled="loadingList"
             @click="goCrash"
           >
-            {{ $t('profile.logsCrashes.crashes') }}
+            {{ $t('logsCrashes.crashes') }}
           </v-tab>
         </v-tabs>
       </template>

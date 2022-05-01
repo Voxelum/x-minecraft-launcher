@@ -26,7 +26,7 @@ export class IssueHandler {
 export function useIssues() {
   const { state, fix: fixIssue } = useService(DiagnoseServiceKey)
   const handlers = injection(IssueHandlerKey)
-  const issues = computed(() => Object.values(state.report))
+  const issues = computed(() => Object.values(state.report).filter(v => v.parameters.length > 0))
   const refreshing = useBusy(DiagnoseSemaphoreKey)
 
   function fix(issue: Issue, issues: readonly Issue[]) {
@@ -34,8 +34,6 @@ export function useIssues() {
 
     if (!handlers.handle(issue)) {
       fixIssue(issues)
-    } else {
-      console.error(`Cannot fix the issue ${issue.id} as it's not implemented`)
     }
   }
 

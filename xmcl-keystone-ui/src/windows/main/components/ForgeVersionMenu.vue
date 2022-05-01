@@ -32,7 +32,7 @@
               </v-icon>
             </v-chip>
           </template>
-          {{ $t('version.showSnapshot') }}
+          {{ $t('fabricVersion.showSnapshot') }}
         </v-tooltip>
       </template>
     </v-text-field>
@@ -46,7 +46,7 @@
         <v-list-item-avatar>
           <v-icon>close</v-icon>
         </v-list-item-avatar>
-        {{ $t('forge.disable') }}
+        {{ $t('forgeVersion.disable') }}
       </v-list-item>
       <virtual-list
         class="h-full overflow-y-auto max-h-[300px]"

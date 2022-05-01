@@ -17,6 +17,7 @@
     </v-card>
 
     <v-container
+      v-context-menu="contextMenuItems"
       grid-list-md
       text-xs-center
       class="pt-2 h-full overflow-scroll"
@@ -35,14 +36,14 @@
         @drop="drop"
       />
       <delete-dialog
-        :title="t('profile.delete')"
+        :title="t('instance.delete')"
         :persistent="false"
         :width="400"
         @confirm="doDelete"
       >
-        {{ $t('profile.deleteHint') }}
+        {{ $t('instance.deleteHint') }}
         <div style="color: grey">
-          {{ $t('profile.name') }}: {{ deletingInstance.name }}
+          {{ $t('instance.name') }}: {{ deletingInstance.name }}
         </div>
         <div style="color: grey">
           {{ deletingInstance.path }}
@@ -63,6 +64,31 @@ import InstancesFabButton from './InstancesFabButton.vue'
 import FilterCombobox from '/@/components/FilterCombobox.vue'
 import { Instance } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
+import { vContextMenu } from '../directives/contextMenu'
+import { ContextMenuItem } from '../composables/contextMenu'
+
+const { show: showAddInstanceDialog } = useDialog('add-instance-dialog')
+const { show: showAddServerDialog } = useDialog('add-server-dialog')
+
+const contextMenuItems = computed(() => {
+  const items: ContextMenuItem[] = [{
+    text: t('instances.add'),
+    children: [],
+    onClick: () => {
+      showAddInstanceDialog()
+    },
+    icon: 'add',
+  }, {
+    text: t('instance.addServer'),
+    children: [],
+    onClick: () => {
+      showAddServerDialog()
+    },
+    icon: 'storage',
+  }]
+
+  return items
+})
 
 const { mountInstance, deleteInstance, instances } = useInstances()
 const { push } = useRouter()

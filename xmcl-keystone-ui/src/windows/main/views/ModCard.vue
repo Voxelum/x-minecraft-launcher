@@ -155,7 +155,7 @@ const { openInBrowser, showItemInDirectory } = useService(BaseServiceKey)
 const { push } = useRouter()
 const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
 const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute()
-const { $t } = useI18n()
+const { t } = useI18n()
 const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.source.tags, set(v) { emit('tags', v) } }))
 
 const onDeleteTag = removeTag
@@ -167,18 +167,18 @@ const enabled = computed({
 
 const compatibleText = computed(() => {
   const deps = props.source.dependencies
-  let acceptVersionText = $t('mod.acceptVersion', { version: deps.minecraft }) + ', ' + $t('mod.currentVersion', { current: minecraft.value }) + '.'
+  let acceptVersionText = t('mod.acceptVersion', { version: deps.minecraft }) + ', ' + t('mod.currentVersion', { current: minecraft.value }) + '.'
   if (deps.forge) {
-    acceptVersionText += ` Forge ${deps.forge}` + (forge.value ? `, ${$t('mod.currentVersion', { current: forge.value })}.` : '')
+    acceptVersionText += ` Forge ${deps.forge}` + (forge.value ? `, ${t('mod.currentVersion', { current: forge.value })}.` : '')
   }
   if (deps.fabricLoader) {
-    acceptVersionText += `, FabricLoader ${deps.fabricLoader}` + (fabricLoader.value ? `, ${$t('mod.currentVersion', { current: fabricLoader.value })}.` : '')
+    acceptVersionText += `, FabricLoader ${deps.fabricLoader}` + (fabricLoader.value ? `, ${t('mod.currentVersion', { current: fabricLoader.value })}.` : '')
   }
   const compatibleText = props.source.compatible === 'maybe'
-    ? $t('mod.maybeCompatible')
+    ? t('mod.maybeCompatible')
     : props.source.compatible
-      ? $t('mod.compatible')
-      : $t('mod.incompatible')
+      ? t('mod.compatible')
+      : t('mod.incompatible')
   return compatibleText + acceptVersionText
 })
 
@@ -212,14 +212,14 @@ function emitSelect() {
 
 const contextMenuItems = computed(() => {
   const items: ContextMenuItem[] = [{
-    text: $t('mod.showFile', { file: props.source.path }),
+    text: t('mod.showFile', { file: props.source.path }),
     children: [],
     onClick: () => {
       showItemInDirectory(props.source.path)
     },
     icon: 'folder',
   }, {
-    text: $t('tag.create'),
+    text: t('tag.create'),
     children: [],
     onClick: () => {
       createTag()
@@ -228,19 +228,19 @@ const contextMenuItems = computed(() => {
   }]
   if (!props.source.selected) {
     items.push({
-      text: $t('delete.name', { name: props.source.name }),
+      text: t('delete.name', { name: props.source.name }),
       children: [],
       onClick() {
         emit('delete')
       },
       icon: 'delete',
-      color: 'red',
+      color: 'error',
     })
   }
   if (props.source.url) {
     const url = props.source.url
     items.push({
-      text: $t('mod.openLink', { url }),
+      text: t('mod.openLink', { url }),
       children: [],
       onClick: () => {
         openInBrowser(url)
@@ -251,7 +251,7 @@ const contextMenuItems = computed(() => {
   if (props.source.curseforge) {
     const curseforge = props.source.curseforge
     items.push({
-      text: $t('mod.showInCurseforge', { name: props.source.name }),
+      text: t('mod.showInCurseforge', { name: props.source.name }),
       children: [],
       onClick: () => {
         goProjectAndRoute(curseforge.projectId, 'mc-mods')
@@ -260,7 +260,7 @@ const contextMenuItems = computed(() => {
     })
   } else {
     items.push({
-      text: $t('mod.searchOnCurseforge', { name: props.source.name }),
+      text: t('mod.searchOnCurseforge', { name: props.source.name }),
       children: [],
       onClick: () => {
         searchProjectAndRoute(props.source.name, 'mc-mods')
@@ -271,7 +271,7 @@ const contextMenuItems = computed(() => {
   if (props.source.modrinth) {
     const modrinth = props.source.modrinth
     items.push({
-      text: $t('mod.showInModrinth', { name: props.source.name }),
+      text: t('mod.showInModrinth', { name: props.source.name }),
       children: [],
       onClick: () => {
         push(`/modrinth/${modrinth.projectId}`)
@@ -280,7 +280,7 @@ const contextMenuItems = computed(() => {
     })
   } else {
     items.push({
-      text: $t('mod.searchOnModrinth', { name: props.source.name }),
+      text: t('mod.searchOnModrinth', { name: props.source.name }),
       children: [],
       onClick: () => {
         push(`/modrinth?query=${props.source.name}`)
@@ -289,7 +289,7 @@ const contextMenuItems = computed(() => {
     })
   }
   items.push({
-    text: $t('mod.searchOnMcWiki', { name: props.source.name }),
+    text: t('mod.searchOnMcWiki', { name: props.source.name }),
     children: [],
     onClick: () => {
       searchMcWiki(props.source.name)

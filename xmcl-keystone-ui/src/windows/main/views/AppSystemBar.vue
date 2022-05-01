@@ -2,6 +2,7 @@
   <v-system-bar
     topbar
     window
+    :color="appBarColor"
     class="flex w-full moveable p-0 flex-grow-0"
   >
     <span class="p-0 flex flex-shrink flex-grow-0">
@@ -54,9 +55,11 @@
 </template>
 <script lang="ts" setup>
 import { BaseServiceKey } from '@xmcl/runtime-api'
+import { useColorTheme } from '../composables/colorTheme'
 import { useDialog } from '../composables/dialog'
 import { useRouter, useService } from '/@/composables'
 
+const { appBarColor } = useColorTheme()
 const { maximize, minimize, hide } = windowController
 const { quit } = useService(BaseServiceKey)
 const { show: showFeedbackDialog } = useDialog('feedback')

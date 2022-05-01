@@ -8,7 +8,7 @@
 
       fab
       bottom
-      :color="'red'"
+      :color="'error'"
       @dragover.prevent
       @drop="$emit('drop', $event)"
     >

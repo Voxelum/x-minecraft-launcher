@@ -34,23 +34,21 @@
   </v-badge>
 </template>
 <script lang="ts" setup>
-import { LaunchException, UserServiceKey } from '@xmcl/runtime-api'
+import { UserServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { useJava } from '../composables/java'
+import { JavaIssueDialogKey, useJava } from '../composables/java'
 import { useLaunch } from '../composables/launch'
-import { JavaFixDialogKey } from './HomeJavaFixerDialog.vue'
 import { LaunchStatusDialogKey } from './HomeLaunchStatusDialog.vue'
 import { useService } from '/@/composables'
 
 const { launch, status: launchStatus, launchCount } = useLaunch()
 const { missing: missingJava } = useJava()
 const { show: showLoginDialog } = useDialog('login')
-const { show: showJavaDialog } = useDialog(JavaFixDialogKey)
-const { show: showLaunchBlockedDialog } = useDialog('launch-blocked')
+const { show: showJavaDialog } = useDialog(JavaIssueDialogKey)
 const { show: showLaunchStatusDialog } = useDialog(LaunchStatusDialogKey)
+const { show: showMultiInstanceDialog } = useDialog('multi-instance-launch')
 
 const { state } = useService(UserServiceKey)
-const userProfiles = computed(() => Object.values(state.users))
 
 function launchGame() {
   if (missingJava.value) {
@@ -60,17 +58,11 @@ function launchGame() {
   } else if (launchStatus.value === 'checkingProblems' || launchStatus.value === 'launching') {
     showLaunchStatusDialog()
   } else {
-    launch().catch((e: LaunchException) => {
-      console.log(e)
-      console.log(JSON.stringify(e))
-      if (e.exception.type === 'launchBlockedIssues') {
-        showLaunchBlockedDialog()
-      } else if (e.exception.type === 'launchGeneralException') {
-        // TODO: support this
-      } else if (e.exception.type === 'launchNoVersionInstalled') {
-        // TODO: implement this
-      }
-    })
+    if (launchCount.value === 1) {
+      showMultiInstanceDialog()
+    } else {
+      launch()
+    }
   }
 }
 </script>

@@ -163,7 +163,7 @@ const contextMenuItems = computed(() => {
         emit('delete')
       },
       icon: 'delete',
-      color: 'red',
+      color: 'error',
     })
   }
   if (props.pack.resource && props.pack.resource.curseforge) {
@@ -218,7 +218,7 @@ function onEditPackName(item: ResourcePackItem, name: string) {
   background-color: var(--warning-color-decent);
 }
 .draggable-card:hover {
-  background-color: var(--primary-color);
+  background-color: var(--primary);
 }
 .title {
   max-width: 100%;

@@ -3,12 +3,12 @@
     <v-list-item class="flex-grow-0 flex-shrink flex-1 flex justify-end">
       <v-checkbox
         v-model="data.recommendedOnly"
-        :label="t('forge.recommendedAndLatestOnly')"
+        :label="t('forgeVersion.showRecommendedAndLatestOnly')"
       />
       <v-spacer />
       <v-checkbox
         v-model="data.showBuggy"
-        :label="t('forge.showBuggy')"
+        :label="t('forgeVersion.showBuggy')"
       />
     </v-list-item>
     <v-divider />
@@ -26,7 +26,7 @@
         <v-list-item-avatar>
           <v-icon>close</v-icon>
         </v-list-item-avatar>
-        {{ t('forge.disable') }}
+        {{ t('forgeVersion.disable') }}
       </v-list-item>
       <virtual-list
         class="h-full overflow-y-auto"
@@ -43,7 +43,7 @@
       style="cursor: pointer"
       class="flex-grow"
       icon="refresh"
-      :text="t('forge.noVersion', { version: minecraft })"
+      :text="t('forgeVersion.empty', { version: minecraft })"
       @click="refresh"
     />
   </div>

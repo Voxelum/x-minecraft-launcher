@@ -9,7 +9,7 @@
       absolute
       fab
       large
-      color="red"
+      color="error"
       style="right: 20px; bottom: 20px; transition: all 0.15s ease;"
       :loading="pinging"
       @drop="emit('drop')"
@@ -45,9 +45,9 @@ const emit = defineEmits(['drop'])
 
 function refresh() {
   _refresh().then(() => {
-    notify({ level: 'success', title: t('profile.refreshServers') })
+    notify({ level: 'success', title: t('instances.refreshServers') })
   }, () => {
-    notify({ level: 'error', title: t('profile.refreshServers') })
+    notify({ level: 'error', title: t('instances.refreshServers') })
   })
 }
 </script>

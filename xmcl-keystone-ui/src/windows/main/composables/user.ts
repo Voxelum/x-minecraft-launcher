@@ -97,7 +97,6 @@ export function useUserSkin(userId: Ref<string>, gameProfileId: Ref<string>) {
   })
   const gameProfile = computed(() => state.users[userId.value]?.profiles[gameProfileId.value] || EMPTY_GAME_PROFILE)
   function reset() {
-    console.log('reset')
     data.url = gameProfile.value.textures.SKIN.url
     data.slim = gameProfile.value.textures.SKIN.metadata ? gameProfile.value.textures.SKIN.metadata.model === 'slim' : false
   }
@@ -189,13 +188,13 @@ export function useSwitchUser() {
 
 export function useLoginValidation(isOffline: Ref<boolean>) {
   const { t } = useI18n()
-  const nameRules = [(v: unknown) => !!v || t('user.requireUsername')]
+  const nameRules = [(v: unknown) => !!v || t('loginError.requireUsername')]
   const emailRules = [
-    (v: unknown) => !!v || t('user.requireEmail'),
+    (v: unknown) => !!v || t('loginError.requireEmail'),
     (v: string) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
-      t('user.illegalEmail'),
+      t('loginError.illegalEmail'),
   ]
-  const passwordRules = [(v: unknown) => !!v || t('user.requirePassword')]
+  const passwordRules = [(v: unknown) => !!v || t('loginError.requirePassword')]
   const usernameRules = computed(() => (isOffline.value
     ? nameRules
     : emailRules))
@@ -211,7 +210,7 @@ export function useLoginValidation(isOffline: Ref<boolean>) {
     if (e.type === 'loginInternetNotConnected') {
       // TODO: handle this case
     } else if (e.type === 'loginInvalidCredentials') {
-      const msg = t('user.invalidCredentials')
+      const msg = t('loginError.invalidCredentials')
       data.usernameErrors = [msg]
       data.passwordErrors = [msg]
     } else {

@@ -27,7 +27,7 @@
         </v-btn>
         <v-spacer />
         <v-btn
-          color="red"
+          color="error"
           text
           @click="onDelete"
         >

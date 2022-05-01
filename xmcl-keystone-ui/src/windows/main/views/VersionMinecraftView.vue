@@ -7,7 +7,7 @@
     >
       <v-checkbox
         v-model="showAlpha"
-        :label="t('minecraft.showAlpha')"
+        :label="t('minecraftVersion.showAlpha')"
       />
     </v-list-item>
     <v-divider />
@@ -35,7 +35,7 @@
       v-ripple
       style="flex-grow: 1; cursor: pointer"
       icon="refresh"
-      :text="t('minecraft.noVersion', { version: version })"
+      :text="t('minecraftVersion.empty', { version: version })"
       @click="refresh(true)"
     />
   </div>

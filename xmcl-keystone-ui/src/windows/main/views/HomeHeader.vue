@@ -1,6 +1,6 @@
 <template>
   <div
-    class="display-1 flex w-full align-center max-h-20 gap-3"
+    class="display-1 flex w-full align-center max-h-20 gap-3 flex-wrap"
   >
     <span
       style="margin-right: 10px;"

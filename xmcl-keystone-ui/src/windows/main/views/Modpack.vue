@@ -40,7 +40,7 @@
             </v-icon>
           </v-btn>
         </template>
-        {{ t(`curseforge.modpacks.description`) }}
+        {{ t(`modpack.installFromCurseforge`) }}
       </v-tooltip>
     </v-card>
 

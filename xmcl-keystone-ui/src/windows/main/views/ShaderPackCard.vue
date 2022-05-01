@@ -93,7 +93,7 @@ const contextMenuItems = computed(() => {
   }
   return [
     {
-      text: t('shaderpack.showFile', { file: props.pack.path }),
+      text: t('shaderPack.showFile', { file: props.pack.path }),
       children: [],
       onClick: () => {
         showItemInDirectory(props.pack.path)
@@ -115,7 +115,7 @@ const contextMenuItems = computed(() => {
         emit('delete')
       },
       icon: 'delete',
-      color: 'red',
+      color: 'error',
     },
   ]
 })

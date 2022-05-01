@@ -10,7 +10,7 @@
         color="green en"
       >
         <v-toolbar-title>
-          {{ t('profile.modpack.export') }}
+          {{ t('modpack.export') }}
         </v-toolbar-title>
 
         <v-spacer />
@@ -26,7 +26,7 @@
         class="max-h-[70vh]"
         style="overflow: auto;"
       >
-        <v-subheader>{{ t('profile.modpack.general') }}</v-subheader>
+        <v-subheader>{{ t('modpack.general') }}</v-subheader>
         <v-container
           grid-list-md
           style="padding-top: 0px"
@@ -37,7 +37,7 @@
                 v-model="name"
 
                 persistent-hint
-                :hint="t('profile.nameHint')"
+                :hint="t('instance.nameHint')"
                 :label="t('name')"
                 required
               />
@@ -46,7 +46,7 @@
               <v-text-field
                 v-model="author"
                 persistent-hint
-                :hint="t('profile.authorHint')"
+                :hint="t('modpack.authorHint')"
                 :label="t('author')"
                 required
               />
@@ -57,8 +57,8 @@
               <v-text-field
                 v-model="data.version"
                 persistent-hint
-                :hint="t('profile.instanceVersion')"
-                :label="t('profile.instanceVersion')"
+                :hint="t('modpack.modpackVersion')"
+                :label="t('modpack.modpackVersion')"
                 required
               />
             </v-flex>
@@ -71,8 +71,8 @@
                 :items="localVersions"
 
                 persistent-hint
-                :hint="$tc('profile.modpack.includeVersion', 2)"
-                :label="t('profile.gameVersion')"
+                :hint="$tc('instance.includeVersion', 2)"
+                :label="t('instance.gameVersion')"
                 required
               />
             </v-flex>
@@ -83,7 +83,7 @@
             <v-flex d-flex>
               <v-checkbox
                 v-model="data.emitCurseforge"
-                :label="t('profile.modpack.emitCurseforge')"
+                :label="t('modpack.emitCurseforge')"
                 hide-details
               />
             </v-flex>
@@ -93,7 +93,7 @@
             >
               <v-checkbox
                 v-model="data.emitMcbbs"
-                :label="t('profile.modpack.emitMcbbs')"
+                :label="t('modpack.emitMcbbs')"
                 hide-details
               />
             </v-flex>
@@ -105,7 +105,7 @@
             <v-flex d-flex>
               <v-checkbox
                 v-model="data.includeAssets"
-                :label="t('profile.modpack.includeAssets')"
+                :label="t('modpack.includeAssets')"
                 hint="abc"
                 hide-details
               />
@@ -116,7 +116,7 @@
             >
               <v-checkbox
                 v-model="data.includeLibraries"
-                :label="t('profile.modpack.includeLibraries')"
+                :label="t('modpack.includeLibraries')"
                 hint="abc"
                 hide-details
               />
@@ -126,10 +126,10 @@
 
         <v-layout>
           <v-subheader v-if="data.emitCurseforge || data.emitMcbbs">
-            {{ t('profile.modpack.overrides') }}
+            {{ t('modpack.overrides') }}
           </v-subheader>
           <v-subheader v-else>
-            {{ t('profile.modpack.includes') }}
+            {{ t('modpack.includes') }}
           </v-subheader>
         </v-layout>
         <v-layout
@@ -160,7 +160,7 @@
             :loading="exporting || refreshing"
             @click="confirm"
           >
-            {{ t('profile.modpack.export') }}
+            {{ t('modpack.export') }}
           </v-btn>
         </v-layout>
       </v-container>
@@ -320,7 +320,7 @@ const totalSize = computed(() => {
 // export
 const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
   const { filePath } = await showSaveDialog({
-    title: t('profile.modpack.export'),
+    title: t('modpack.export'),
     defaultPath: `${data.name}-${data.version}`,
     filters: [zipFilter],
   })

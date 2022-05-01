@@ -48,12 +48,12 @@ export default defineComponent({
             break
           case 'checkingProblems':
             show()
-            progressText.value = $t('launch.checkingProblems')
+            progressText.value = $t('launchStatus.checkingProblems')
             break
           case 'launching':
             show()
-            progressText.value = $t('launch.launching')
-            setTimeout(() => { progressText.value = $t('launch.launchingSlow') }, 4000)
+            progressText.value = $t('launchStatus.launching')
+            setTimeout(() => { progressText.value = $t('launchStatus.launchingSlow') }, 4000)
             break
           default:
         }

@@ -94,7 +94,7 @@
           :key="p.id + user.id"
           outlined
           flat
-          :class="{ green: p.id === profileId && user.id === userId }"
+          :color="p.id === profileId && user.id === userId ? 'primary' : ''"
         >
           <v-list-item
             :disabled="user.selectedProfile !== p.id"

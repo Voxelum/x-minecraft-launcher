@@ -74,11 +74,11 @@ export function useServerStatus(serverRef: Ref<{ host: string; port?: number }>,
     })
     /* .catch((e) => {
             if (e.code === 'ENOTFOUND') {
-                status.value.description = $t('profile.server.status.nohost');
+                status.value.description = $t('serverStatus.nohost');
             } else if (e.code === 'ETIMEOUT') {
-                status.value.description = $t('profile.server.status.timeout');
+                status.value.description = $t('serverStatus.timeout');
             } else if (e.code === 'ECONNREFUSED') {
-                status.value.description = $t('profile.server.status.refuse');
+                status.value.description = $t('serverStatus.refuse');
             } else {
                 status.value.description = '';
             }

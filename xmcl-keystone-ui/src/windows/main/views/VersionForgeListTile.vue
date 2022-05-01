@@ -60,7 +60,7 @@ export default defineComponent({
     const installing = useBusy(key)
     const isSelected = computed(() => props.selected === props.source.version)
     const { $t } = useI18n()
-    const type = computed(() => props.source.type === 'recommended' ? $t('forge.versions.recommended') : props.source.type === 'latest' ? $t('forge.versions.latest') : '')
+    const type = computed(() => props.source.type === 'recommended' ? $t('forgeVersion.recommended') : props.source.type === 'latest' ? $t('forgeVersion.latest') : '')
     const onClick = () => {
       if (props.statuses[props.source.version] === 'remote') {
         props.install(props.source)

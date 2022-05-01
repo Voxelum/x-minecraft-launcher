@@ -3,7 +3,7 @@
     <hint
       v-if="showDropHint"
       icon="save_alt"
-      :text="$t('user.dropHint').toString()"
+      :text="$t('login.dropHint').toString()"
       style="height: 350px"
     />
     <v-card-text v-if="!showDropHint">
@@ -31,7 +31,7 @@
                       <v-icon>add</v-icon>
                     </v-btn>
                   </template>
-                  {{ $t('user.service.add') }}
+                  {{ $t('userService.add') }}
                 </v-tooltip>
               </template>
             </v-select>
@@ -46,9 +46,9 @@
           prepend-icon="person"
           required
           :label="
-            $te(`user.${authService}.account`)
-              ? $t(`user.${authService}.account`)
-              : $t(`user.${'offline'}.account`)
+            $te(`userServices.${authService}.account`)
+              ? $t(`userServices.${authService}.account`)
+              : $t(`userServices.offline.account`)
           "
           :rules="usernameRules"
           :error="!!usernameErrors.length"
@@ -84,7 +84,7 @@
           <v-btn
             block
             :loading="isLogining && (!hovered || authService !== 'microsoft')"
-            color="green"
+            color="primary"
             rounded
             large
             style="color: white"
@@ -92,7 +92,7 @@
             @click="login"
           >
             <span v-if="!isLogining">
-              {{ $t("user.login") }}
+              {{ $t("login.login") }}
             </span>
             <v-icon v-else>
               close
@@ -108,7 +108,7 @@
             :href="microsoftUrl"
             class="border-b border-b-current border-dashed"
           >
-            {{ $t('user.manualLoginUrl') }}
+            {{ $t('login.manualLoginUrl') }}
           </a>
         </div>
 
@@ -118,13 +118,13 @@
           <a
             style="padding-right: 10px; z-index: 20"
             href="https://my.minecraft.net/en-us/password/forgot/"
-          >{{ $t("user.forgetPassword") }}</a>
+          >{{ $t("login.forgetPassword") }}</a>
           <a
             style="z-index: 20"
             href="https://my.minecraft.net/en-us/store/minecraft/#register"
           >
-            {{ $t("user.signupDescription") }}
-            {{ $t("user.signup") }}
+            {{ $t("login.signupDescription") }}
+            {{ $t("login.signup") }}
           </a>
         </div>
       </div>
@@ -141,6 +141,7 @@ import { required } from '/@/util/props'
 import { useDialog } from '../composables/dialog'
 import { useSelectedServices } from '../composables/login'
 import { useCurrentUser, useLoginValidation, useUserProfileStatus } from '../composables/user'
+import { injection } from '/@/util/inject'
 
 interface ServiceItem {
   text: string
@@ -154,10 +155,8 @@ export default defineComponent({
     const { hide, isShown, show } = useDialog('login')
 
     // handle the not login issue
-    const IssueHandlerKey = inject(IssueHandlerKey)
-    if (IssueHandlerKey) {
-      IssueHandlerKey.userNotLogined = show
-    }
+    const handler = injection(IssueHandlerKey)
+    // IssueHandlerKey.userNotLogined = show
 
     const data = reactive({
       username: '',

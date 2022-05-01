@@ -29,7 +29,7 @@
           <v-icon>person_add</v-icon>
         </v-btn>
       </template>
-      {{ $t('user.account.add') }}
+      {{ $t('userAccount.add') }}
     </v-tooltip>
   </v-card>
 </template>

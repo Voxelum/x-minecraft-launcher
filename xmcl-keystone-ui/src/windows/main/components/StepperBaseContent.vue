@@ -20,8 +20,8 @@
               v-model="name"
               outlined
               persistent-hint
-              :hint="$t('profile.nameHint')"
-              :label="$t('name')"
+              :hint="t('instance.nameHint')"
+              :label="t('name')"
               :rules="nameRules"
               required
             />
@@ -34,8 +34,8 @@
               v-model="author"
               outlined
               persistent-hint
-              :hint="$t('profile.authorHint')"
-              :label="$t('author')"
+              :hint="t('modpack.authorHint')"
+              :label="t('author')"
               required
             />
           </v-flex>
@@ -44,8 +44,8 @@
               v-model="description"
               outlined
               persistent-hint
-              :hint="$t('profile.descriptionHint')"
-              :label="$t('description')"
+              :hint="t('modpack.descriptionHint')"
+              :label="t('description')"
             />
           </v-flex>
         </div>
@@ -58,23 +58,23 @@
 import { CreateOptionKey } from '../composables/instanceCreation'
 import { useI18n } from '/@/composables'
 import { required } from '/@/util/props'
-
 export default defineComponent({
   props: {
     valid: required(Boolean),
   },
   emits: ['update:valid'],
   setup() {
-    const { $t } = useI18n()
+    const { t } = useI18n()
     const content = inject(CreateOptionKey)
     if (!content) {
       throw new Error('Cannot use without providing CreateOption!')
     }
     const nameRules = computed(() => [
-      (v: any) => !!v || $t('profile.requireName'),
+      (v: any) => !!v || t('instance.requireName'),
     ])
     return {
       nameRules,
+      t,
       ...content,
     }
   },

@@ -8,10 +8,38 @@ import YAML from '@modyfi/vite-plugin-yaml'
 import WindiCSS from 'vite-plugin-windicss'
 import ScriptSetup from 'unplugin-vue2-script-setup/vite'
 import AutoImport from 'unplugin-auto-import/vite'
+import I18n from '@intlify/vite-plugin-vue-i18n'
 
 const entries = readdirSync(join(__dirname, './src'))
   .filter((f) => f.endsWith('.html'))
   .map((f) => join(__dirname, './src', f))
+
+const i18nPlugin = I18n({
+  runtimeOnly: false,
+  compositionOnly: false,
+  forceStringify: true,
+  defaultSFCLang: 'yaml',
+})
+
+const modifiedI18nPlugin = {
+  ...i18nPlugin,
+  async transform(this: any, code: string, id: string) {
+    const result: any = await i18nPlugin.transform!.call(this, code, id)
+    if (result && id.indexOf('vue') !== -1) {
+      const lines = result.code.split('\n') as string[]
+      const lang = lines[3].slice('    "locale": "'.length, lines[3].length - 2)
+      const jsonContent = lines.slice(4, lines.length - 2)
+      jsonContent[0] = jsonContent[0].replace('"resource":', `"${lang}":`)
+      result.code = `export default function (Component) {
+  Component.options.i18n = Component.options.i18n || { "messages": {} }
+  Object.assign(Component.options.i18n.messages, {
+    ${jsonContent.join('\n')}
+  })
+}`
+    }
+    return result
+  },
+}
 
 /**
  * Vite shared config, assign alias and root dir
@@ -64,7 +92,9 @@ export default defineConfig({
       },
     }),
 
-    YAML(),
+    modifiedI18nPlugin,
+
+    // YAML(),
     ScriptSetup({ reactivityTransform: true }),
     AutoImport({
       imports: [

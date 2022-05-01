@@ -67,7 +67,7 @@ export default defineComponent({
         case TaskState.Paused:
           return 'white'
         case TaskState.Failed:
-          return 'red'
+          return 'error'
         default:
           return 'white'
       }

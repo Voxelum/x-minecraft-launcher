@@ -36,7 +36,7 @@
             <v-list-item-action>
               <v-btn
                 icon
-                color="red"
+                color="error"
                 text
                 @click.prevent.stop="removeFile(i)"
               >
@@ -56,7 +56,7 @@
               align-center
             >
               <h1 v-if="!pending">
-                {{ $t('profile.logsCrashes.placeholder') }}
+                {{ $t('logsCrashes.placeholder') }}
               </h1>
               <v-progress-circular
                 v-else

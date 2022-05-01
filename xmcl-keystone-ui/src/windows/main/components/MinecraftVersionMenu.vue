@@ -33,7 +33,7 @@
               </v-icon>
             </v-chip>
           </template>
-          {{ $t("version.showSnapshot") }}
+          {{ $t("fabricVersion.showSnapshot") }}
         </v-tooltip>
       </template>
     </v-text-field>

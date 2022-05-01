@@ -113,3 +113,35 @@ export default defineComponent({
   overflow: auto;
 }
 </style>
+
+<i18n locale="en" lang="yaml">
+curseforge:
+  install: Install
+  installed: Installed
+  downloadOnly: Download
+  downloaded: Downloaded
+</i18n>
+
+<i18n locale="zh-CN" lang="yaml">
+curseforge:
+  downloadOnly: 只下载
+  downloaded: 已下载
+  install: 安装
+  installed: 已安装
+</i18n>
+
+<i18n locale="zh-CN" lang="yaml">
+curseforge:
+  downloadOnly: 只下載
+  downloaded: 已下載
+  install: 安裝
+  installed: 已安裝
+</i18n>
+
+<i18n locale="ru" lang="yaml">
+curseforge:
+  downloadOnly: Скачать
+  downloaded: Скачан
+  install: Установить
+  installed: Установлен
+</i18n>

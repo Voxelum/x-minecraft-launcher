@@ -61,7 +61,7 @@
             <v-btn
               style="cursor: pointer"
               icon
-              color="red"
+              color="error"
               text
               @mousedown.stop
               @click.stop="startDelete(item)"
@@ -79,9 +79,9 @@
     >
       <v-card>
         <v-card-title class="headline">
-          {{ $t('version.deleteTitle') }}
+          {{ $t('localVersion.delete') }}
         </v-card-title>
-        <v-card-text>{{ $t('version.deleteDescription') }}</v-card-text>
+        <v-card-text>{{ $t('localVersion.deleteDescription') }}</v-card-text>
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -91,7 +91,7 @@
             {{ $t('no') }}
           </v-btn>
           <v-btn
-            color="red en-1"
+            color="error en-1"
             text
             @click="confirmDeleting()"
           >
@@ -108,9 +108,9 @@
         <v-card-title
           class="headline"
         >
-          {{ $t('version.reinstallTitle', { version: reinstallVersionId }) }}
+          {{ $t('localVersion.reinstallTitle', { version: reinstallVersionId }) }}
         </v-card-title>
-        <v-card-text>{{ $t('version.reinstallDescription') }}</v-card-text>
+        <v-card-text>{{ $t('localVersion.reinstallDescription') }}</v-card-text>
         <v-card-actions>
           <v-spacer />
           <v-btn
@@ -157,7 +157,7 @@
           <v-icon left>
             folder
           </v-icon>
-          {{ $t('version.noLocalVersion') }}
+          {{ $t('localVersion.empty') }}
         </v-btn>
         <v-btn
           large
@@ -165,7 +165,7 @@
           :loading="refreshing"
           @click="refreshVersions"
         >
-          {{ $t('version.refresh') }}
+          {{ $t('localVersion.refresh') }}
         </v-btn>
       </v-flex>
     </v-layout>

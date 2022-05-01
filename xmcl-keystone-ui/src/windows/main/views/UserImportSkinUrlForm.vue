@@ -15,7 +15,7 @@
           <v-text-field
             v-model="url"
             :rules="rules"
-            :label="$t('user.skinPlaceUrlHere')"
+            :label="$t('userSkin.placeUrlHere')"
             validate-on-blur
             clearable
             @input="validate"
@@ -32,7 +32,7 @@
             <v-icon left>
               inbox
             </v-icon>
-            {{ $t('user.skinImport') }}
+            {{ $t('userSkin.import') }}
           </v-btn>
         </v-flex>
       </v-layout>
@@ -55,8 +55,8 @@ export default defineComponent({
   setup(props, context) {
     const { $t } = useI18n()
     const rules = [
-      (v: any) => !!v || $t('user.skinUrlNotEmpty'),
-      (v: any) => !!URL_PATTERN.test(v) || $t('user.skinUrlNotValid'),
+      (v: any) => !!v || $t('userSkin.urlNotEmpty'),
+      (v: any) => !!URL_PATTERN.test(v) || $t('userSkin.urlNotValid'),
     ]
     const data = reactive({
       error: true,

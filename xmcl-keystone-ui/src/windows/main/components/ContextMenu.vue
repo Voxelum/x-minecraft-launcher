@@ -11,6 +11,7 @@
       <template v-for="(item, index) in items">
         <v-list-item
           :key="item.text"
+          class="min-w-60"
           @click="item.onClick"
         >
           <v-list-item-avatar>

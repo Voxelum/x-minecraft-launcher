@@ -12,7 +12,6 @@
       >
         <v-progress-circular
           :size="100"
-          color="white"
           indeterminate
         />
       </v-flex>

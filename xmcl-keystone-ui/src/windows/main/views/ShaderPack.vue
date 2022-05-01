@@ -12,11 +12,11 @@
       elevation="1"
     >
       <!-- <v-toolbar-title class="headline text-bold">
-        {{ tc('shaderpack.name', 2) }}
+        {{ tc('shaderPack.name', 2) }}
       </v-toolbar-title> -->
       <FilterCombobox
         class="max-w-150 mr-2"
-        :label="t('shaderpack.filter')"
+        :label="t('shaderPack.filter')"
       />
       <v-spacer />
       <v-btn
@@ -50,7 +50,7 @@
         :drop="onDelete"
       />
       <DeleteDialog
-        :title="t('shaderpack.deletion') "
+        :title="t('shaderPack.deletion') "
         :width="400"
         persistance
         @confirm="onConfirmDeleted"
@@ -59,7 +59,7 @@
         <div
           style="overflow: hidden; word-break: break-all;"
         >
-          {{ t('shaderpack.deletionHint', { path: deletingPack ? deletingPack.path : '' }) }}
+          {{ t('shaderPack.deletionHint', { path: deletingPack ? deletingPack.path : '' }) }}
         </div>
       </DeleteDialog>
     </div>
