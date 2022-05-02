@@ -14,9 +14,16 @@ const entries = readdirSync(join(__dirname, './src'))
   .filter((f) => f.endsWith('.html'))
   .map((f) => join(__dirname, './src', f))
 
+const mainLocalPath = [
+  resolve(__dirname, 'src', 'windows', 'main', 'locales/**'),
+  resolve(__dirname, 'src', 'windows', 'browser', 'locales/**'),
+  resolve(__dirname, 'src', 'windows', 'logger', 'locales/**'),
+  resolve(__dirname, 'src', 'windows', 'setup', 'locales/**'),
+]
 const i18nPlugin = I18n({
   runtimeOnly: false,
   compositionOnly: false,
+  include: mainLocalPath,
   forceStringify: true,
   defaultSFCLang: 'yaml',
 })
@@ -72,11 +79,7 @@ export default defineConfig({
     createVuePlugin(),
     VitePWA({
       registerType: 'prompt',
-      manifest: {
-        name: 'x-minecraft-launcher',
-        short_name: 'xmcl',
-        description: 'A progressive electron based Minecraft Launcher',
-      },
+      manifest: false,
     }),
     WindiCSS({
       config: {
