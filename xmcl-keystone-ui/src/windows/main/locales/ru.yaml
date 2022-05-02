@@ -260,7 +260,7 @@ instance:
   openCrashReportFolder: Открыть папку отчёта о сбоях
   openLogFolder: Открыть папку лога
   requireName: Название обязательно
-  showInstance: Показать папку экземпляра
+  showInstance: Открыть папку экземпляра
   version: Выбранная версия
   versionHint: Версия Minecraft для этой игры
   vmOptions: Параметры JVM
@@ -414,7 +414,7 @@ mod:
   filter: Фильтр модов
   hideIncompatible: Скрыть несовместимые моды
   import: Импортировать мод
-  incompatible: Несовместимый мод.
+  incompatible: Несовместимый мод. 
   maybeCompatible: Может быть совместимым.
   name: Мод | Моды
   nocompatible: Неизвестная совместимость
@@ -422,9 +422,9 @@ mod:
   searchOnCurseforge: Искать мод на curseforge
   searchOnModrinth: Искать {name} на Modrinth
   selected: Выбранные моды
-  showFile: Показать путь к моду {file}
-  showInCurseforge: Показать мод на curseforge
-  showInModrinth: Показать {name} на Modrinth
+  showFile: Открыть расположение {file}
+  showInCurseforge: Открыть мод на Curseforge
+  showInModrinth: Открыть {name} на Modrinth
   showIncompatible: Показать несовместимые моды
   unselected: Невыбранные моды
 modpack:
