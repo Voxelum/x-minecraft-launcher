@@ -8,6 +8,7 @@ import { I18N_KEY, SERVICES_KEY, usePreferDark } from '/@/composables'
 import VueI18n from 'vue-i18n'
 import { BaseServiceKey, ServiceChannel } from '@xmcl/runtime-api'
 import { baseService } from './baseService'
+import { createI18n } from '/@/i18n'
 
 Vue.use(VueI18n)
 
@@ -25,15 +26,8 @@ const pairs = search.split('&').map((pair) => pair.split('='))
 const locale = pairs.find(p => p[0] === 'locale')?.[1] ?? 'en'
 const theme = pairs.find(p => p[0] === 'theme')?.[1] ?? 'dark'
 
-const i18n = new VueI18n({
-  locale: locale,
-  fallbackLocale: 'en',
-  messages,
-  missing: () => {
-    // handle translation missing
-  },
-  silentTranslationWarn: true,
-})
+const i18n = createI18n(locale, messages)
+
 Vue.use(VueCompositionApi)
 const app = createApp(defineComponent({
   vuetify,
