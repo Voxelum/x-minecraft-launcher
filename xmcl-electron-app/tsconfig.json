@@ -30,8 +30,7 @@
     "./*.ts",
     "build",
     "main",
-    "plugins",
-    "preload"
+    "plugins"
   ],
   "exclude": [
     "node_modules",

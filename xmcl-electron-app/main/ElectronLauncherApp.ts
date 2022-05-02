@@ -166,7 +166,7 @@ export default class ElectronLauncherApp extends LauncherApp {
   waitEngineReady(): Promise<void> {
     return app.whenReady()
   }
-  
+
   relaunch() {
     app.relaunch()
     app.exit(0)
