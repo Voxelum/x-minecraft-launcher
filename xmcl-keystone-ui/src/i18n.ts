@@ -19,13 +19,30 @@ export function createI18n(locale: string, messages: VueI18n.LocaleMessages) {
   VueI18n.prototype._createMessageContext = function _createMessageContext(values: any, formatter: any, path: any, interpolateMode: any) {
     const result = originalCreateContext.call(this, values, formatter, path, interpolateMode)
 
-    // console.log(result)
     const normalize = (values: string[]) => values.length === 0 ? '' : values.join('')
     const plural = (messages: string[]) => {
-      if (messages.length <= values.n) {
-        return messages[messages.length % values.n]
+      if (messages.length === 2) {
+        if (values.n % 2 === 0) {
+          return messages[1]
+        }
+        return messages[0]
       }
-      return messages[values.n]
+      if (messages.length === 3) {
+        if (values.n === 0) {
+          return messages[0]
+        }
+        if (values.n % 2 === 0) {
+          return messages[3]
+        }
+        return messages[1]
+      }
+      let result: any
+      if (messages.length <= values.n) {
+        result = messages[values.n % messages.length]
+      } else {
+        result = messages[values.n]
+      }
+      return result
     }
     const interpolate = (v: any) => {
       return v
