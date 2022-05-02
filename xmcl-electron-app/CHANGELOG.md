@@ -1,4 +1,56 @@
 
+## 0.24.0
+### @xmcl/runtime-api@0.8.0
+#### Features
+
+- support p2p lan connection via webRTC ([050221ca97e853f72102e0bd930d4a8b326cb237](https://github.com/Voxelum/x-minecraft-launcher/commit/050221ca97e853f72102e0bd930d4a8b326cb237))
+#### Bug Fixes
+
+- exception throwing ([e5b59bff3c5480391f24aa098799ed9e6287e38b](https://github.com/Voxelum/x-minecraft-launcher/commit/e5b59bff3c5480391f24aa098799ed9e6287e38b))
+- api preferences selection ([c74aacb8147ebcdc9dc127184ed527b6581c081a](https://github.com/Voxelum/x-minecraft-launcher/commit/c74aacb8147ebcdc9dc127184ed527b6581c081a))
+### @xmcl/keystone-ui@0.23.0
+#### Features
+
+- support background color ([c43761b4d447f71925e24330e5ee9f99012bd87e](https://github.com/Voxelum/x-minecraft-launcher/commit/c43761b4d447f71925e24330e5ee9f99012bd87e))
+- color theme && i18n refactor ([9c14ad5f9b5e5162d4b9df3d093254a69ecc92f9](https://github.com/Voxelum/x-minecraft-launcher/commit/9c14ad5f9b5e5162d4b9df3d093254a69ecc92f9))
+- support p2p lan connection via webRTC ([050221ca97e853f72102e0bd930d4a8b326cb237](https://github.com/Voxelum/x-minecraft-launcher/commit/050221ca97e853f72102e0bd930d4a8b326cb237))
+#### Bug Fixes
+
+- notifier i18n text ([73ab889357661f34cdc1f693d3d52ea9f1ff046c](https://github.com/Voxelum/x-minecraft-launcher/commit/73ab889357661f34cdc1f693d3d52ea9f1ff046c))
+- locale for task ([387dae3bf8709a975e17c7dfa95b6956d7d58fcf](https://github.com/Voxelum/x-minecraft-launcher/commit/387dae3bf8709a975e17c7dfa95b6956d7d58fcf))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### @xmcl/runtime@0.22.0
+#### Features
+
+- support p2p lan connection via webRTC ([050221ca97e853f72102e0bd930d4a8b326cb237](https://github.com/Voxelum/x-minecraft-launcher/commit/050221ca97e853f72102e0bd930d4a8b326cb237))
+#### Bug Fixes
+
+- fix wrong user expire time in config file ([1e9545d610cc2b410fd5d50978855f3a28a3282f](https://github.com/Voxelum/x-minecraft-launcher/commit/1e9545d610cc2b410fd5d50978855f3a28a3282f))
+- diagnose reactivity ([7dc55f12f43f0d8711448d51b73e80a9b3c71532](https://github.com/Voxelum/x-minecraft-launcher/commit/7dc55f12f43f0d8711448d51b73e80a9b3c71532))
+- i18n & error ([9b430406514544a51f527db4c5a28755bbd99e25](https://github.com/Voxelum/x-minecraft-launcher/commit/9b430406514544a51f527db4c5a28755bbd99e25))
+- ms account caching ([9c35ec8d4fe94e773f3bc9b6300f3c8b0792cd6e](https://github.com/Voxelum/x-minecraft-launcher/commit/9c35ec8d4fe94e773f3bc9b6300f3c8b0792cd6e))
+- java & version selection ([42927809d3c0940394916e3afd4198629f7c7276](https://github.com/Voxelum/x-minecraft-launcher/commit/42927809d3c0940394916e3afd4198629f7c7276))
+- wrong expire time ([3440d81bb06aea4feb10276f39978a689e96ad68](https://github.com/Voxelum/x-minecraft-launcher/commit/3440d81bb06aea4feb10276f39978a689e96ad68))
+- api preferences selection ([c74aacb8147ebcdc9dc127184ed527b6581c081a](https://github.com/Voxelum/x-minecraft-launcher/commit/c74aacb8147ebcdc9dc127184ed527b6581c081a))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### xmcl@0.24.0
+#### Features
+
+- support p2p lan connection via webRTC ([050221ca97e853f72102e0bd930d4a8b326cb237](https://github.com/Voxelum/x-minecraft-launcher/commit/050221ca97e853f72102e0bd930d4a8b326cb237))
+#### Bug Fixes
+
+- disable connection propagation ([a3ee684c69ffe7964c9d36c59e1860c4ca26cca7](https://github.com/Voxelum/x-minecraft-launcher/commit/a3ee684c69ffe7964c9d36c59e1860c4ca26cca7))
+- wait all ice done ([8420a62c0ed2fbdb8ccf477e200067060d092ecb](https://github.com/Voxelum/x-minecraft-launcher/commit/8420a62c0ed2fbdb8ccf477e200067060d092ecb))
+- extends wait time ([6ab81390c2ad83d251a8d3f3883d7a4c2a8dab21](https://github.com/Voxelum/x-minecraft-launcher/commit/6ab81390c2ad83d251a8d3f3883d7a4c2a8dab21))
+- correctly send neighbor once join ([cd13065329cf32cbb03bd400d2468f1ab94d6574](https://github.com/Voxelum/x-minecraft-launcher/commit/cd13065329cf32cbb03bd400d2468f1ab94d6574))
+- fix type ([b32658d94da665e179eb8c4fb26d3f120a535669](https://github.com/Voxelum/x-minecraft-launcher/commit/b32658d94da665e179eb8c4fb26d3f120a535669))
+- alias ([d49008d91e1ce51bd0b0916d1b0e3254fc73a97c](https://github.com/Voxelum/x-minecraft-launcher/commit/d49008d91e1ce51bd0b0916d1b0e3254fc73a97c))
+
+
 ## 0.23.2
 ### xmcl@0.23.2
 #### Bug Fixes
