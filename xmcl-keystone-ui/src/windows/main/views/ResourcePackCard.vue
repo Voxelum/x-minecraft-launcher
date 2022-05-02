@@ -61,6 +61,7 @@
             <div class="flex gap-2 flex-wrap">
               <v-chip
                 v-for="(tag, index) in pack.tags"
+                :outlined="darkTheme"
                 :key="`${tag}-${index}`"
                 :color="getColor(tag)"
                 label
@@ -107,7 +108,7 @@ import { useCurseforgeRoute } from '../composables/curseforgeRoute'
 import { ResourcePackItem } from '../composables/resourcePack'
 import { vContextMenu } from '../directives/contextMenu'
 import unknownPack from '/@/assets/unknown_pack.png'
-import { useDragTransferItem, useI18n, useService, useTags } from '/@/composables'
+import { useDragTransferItem, useI18n, useService, useTags, useTheme } from '/@/composables'
 import { getColor } from '/@/util/color'
 
 const props = defineProps<{
@@ -116,6 +117,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['tags', 'dragstart', 'dragend', 'delete'])
+const { darkTheme } = useTheme()
 
 const iconImage: Ref<any> = ref(null)
 const { state } = useService(InstanceServiceKey)

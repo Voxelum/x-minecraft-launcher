@@ -37,9 +37,9 @@
           flexbox
           class="justify-center items-center"
         >
-          <v-icon left>
+          <!-- <v-icon left>
             {{ instance.server ? 'storage' : 'layers' }}
-          </v-icon>
+          </v-icon> -->
           <span class="headline">{{ instance.name || `Minecraft ${instance.runtime.minecraft}` }}</span>
         </v-flex>
         <v-flex
@@ -230,13 +230,4 @@ const contextMenuItems = computed(() => {
 .favicon .v-image__image {
   filter: blur(2px);
 }
-</style>
-<style scoped>
-.draggable-card {
-  transition: all;
-  transition-duration: 0.2s;
-}
-.selected {
-}
-
 </style>

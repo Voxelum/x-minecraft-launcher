@@ -139,14 +139,11 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
 
       if (options?.version) {
         this.log(`Override the version: ${options.version}`)
-        version = this.versionService.getLocalVersion(options.version)
-        if (!version) {
-          try {
-            version = await Version.parse(this.getPath(), options.version)
-          } catch (e) {
-            this.warn(`Cannot use override version: ${options.version}`)
-            this.warn(e)
-          }
+        try {
+          version = await Version.parse(this.getPath(), options.version)
+        } catch (e) {
+          this.warn(`Cannot use override version: ${options.version}`)
+          this.warn(e)
         }
       } else {
         version = this.instanceVersionService.state.version

@@ -5,14 +5,13 @@
     v-context-menu="contextMenuItems"
     outlined
     :draggable="!source.enabled"
-    :dark="source.subsequence"
     :class="{
       incompatible: props.source.compatible === false,
       maybe: props.source.compatible === 'maybe',
       subsequence: source.subsequence === true,
-      dragged: source.dragged
+      dragged: source.dragged,
     }"
-    class="draggable-card mod-card rounded-lg transition-all duration-200"
+    class="draggable-card mod-card rounded-lg transition-all duration-200 shadow"
     style="margin-top: 10px; padding: 0 10px; content-visibility: auto;"
     @dragstart="onDragStart"
     @dragend="$emit('dragend', $event)"
@@ -43,6 +42,7 @@
           >
             <img
               ref="iconImage"
+              class="rounded"
               v-fallback-img="unknownPack"
               :src="source.icon"
               contain
@@ -62,7 +62,7 @@
             <div class="flex gap-1 flex-wrap">
               <v-chip
                 small
-                outlined
+                :outlined="darkTheme"
                 label
                 color="amber"
                 style="margin-left: 1px;"
@@ -72,7 +72,7 @@
               </v-chip>
               <v-chip
                 small
-                outlined
+                :outlined="darkTheme"
                 color="orange en-1"
                 label
                 style="margin-left: 1px;"
@@ -82,7 +82,7 @@
               </v-chip>
               <v-chip
                 small
-                outlined
+                :outlined="darkTheme"
                 label
                 color="lime"
                 style="margin-left: 1px;"
@@ -93,6 +93,7 @@
 
               <v-chip
                 v-for="(tag, index) in source.tags"
+                :outlined="darkTheme"
                 :key="`${tag}-${index}`"
                 small
                 outlined
@@ -138,7 +139,7 @@
 import { Ref } from '@vue/composition-api'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import unknownPack from '/@/assets/unknown_pack.png'
-import { useI18n, useRouter, useService, useTags } from '/@/composables'
+import { useI18n, useRouter, useService, useTags, useTheme } from '/@/composables'
 import { getColor } from '/@/util/color'
 import { ModItem } from '../composables/mod'
 import { useInstanceVersionBase } from '../composables/instance'
@@ -157,6 +158,7 @@ const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
 const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute()
 const { t } = useI18n()
 const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.source.tags, set(v) { emit('tags', v) } }))
+const { darkTheme } = useTheme()
 
 const onDeleteTag = removeTag
 const iconImage: Ref<HTMLImageElement | null> = ref(null)
@@ -302,8 +304,8 @@ const contextMenuItems = computed(() => {
 
 <style scoped>
 
-.draggable-card {
-  color: white;
+.draggable-card:hover {
+  color: rgba(255,255,255, 0.9) !important;
 }
 .draggable-card:hover {
   background-color: #388e3c;
@@ -313,7 +315,7 @@ const contextMenuItems = computed(() => {
   background-color: #bb724b;
 }
 .maybe:hover {
-  background-color: #679793;
+  background-color: #679793 !important;
 }
 .title {
   max-width: 100%;
@@ -325,10 +327,18 @@ const contextMenuItems = computed(() => {
 .incompatible.draggable-card:hover {
   background-color: #e65100;
 }
-.subsequence.draggable-card {
-  background-color: #616161;
-  border-color: #616161;
+
+.dark-theme .subsequence.draggable-card {
+  /* background-color: rgba(255, 255, 255, 0.15); */
+  border-color: rgba(255, 255, 255, 0.15);
+  background-color: #343434;
+  /* border-color: #343434; */
 }
+.subsequence.draggable-card {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
 .subsequence.draggable-card:hover {
   background-color: #388e3c;
 }

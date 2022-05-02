@@ -495,6 +495,15 @@ modrinth:
     technology: Technology
     utility: Utility
     worldgen: World Gen
+    modloader: Mod Loader
+    quilt: Quilt
+    rift: Rift
+    challenging: Challenging
+    combat: Combat
+    kitchen-sink: Kitchen Sink
+    lightweight: Lightweight
+    multiplayer: Multiplayer
+    quests: Quests
   clientSide: Client Side
   createAt: Created
   description: Description

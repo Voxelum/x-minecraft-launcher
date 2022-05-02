@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col max-h-full select-none h-full px-8 py-4 pb-0 gap-3">
+  <div class="flex flex-col max-h-full select-none h-full px-8 py-4 pb-0">
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
       :active="loading"
@@ -49,6 +49,7 @@
           @click="onClick($event, index)"
           @delete="startDelete(item)"
         />
+        <div key="dummy" class="min-h-10"></div>
       </transition-group>
       <delete-dialog
         :width="400"

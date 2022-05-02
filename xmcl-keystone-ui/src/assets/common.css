@@ -23,6 +23,7 @@ p {
 .non-moveable {
     -webkit-app-region: no-drag;
 }
+
 .absolute-centered {
     position: absolute;
     margin-left: auto;
@@ -82,7 +83,8 @@ html ::-webkit-scrollbar {
     transition: all 1s;
 }
 
-.visible-scroll ::-webkit-scrollbar, .visible-scroll::-webkit-scrollbar {
+.visible-scroll ::-webkit-scrollbar,
+.visible-scroll::-webkit-scrollbar {
     display: unset;
     /* width: 0px; */
     /* height: 0px; */
@@ -147,8 +149,7 @@ html ::-webkit-scrollbar {
     padding-right: 30px;
 }
 
-.theme--dark.v-sheet {
-}
+.theme--dark.v-sheet {}
 
 .sidebar.v-navigation-drawer .v-list {
     background: unset;
@@ -192,6 +193,12 @@ html ::-webkit-scrollbar {
 
 /* Draggable card */
 
+
+.draggable-card {
+    transition: all;
+    transition-duration: 0.2s;
+}
+
 *.selection-mode .draggable-card,
 .draggable-card.selected {
     transform: scale(0.95);
@@ -226,7 +233,7 @@ a {
 }
 
 .header-bar {
-    @apply lg:px-15 lg:pt-5 flex flex-row md:px-9 md:pt-2;
+    @apply lg: px-15 lg:pt-5 flex flex-row md:px-9 md:pt-2;
 }
 
 .header-bar * {
@@ -236,7 +243,12 @@ a {
 .v-text-field input {
     @apply z-10;
 }
-/* 
-.v-ripple__container {
-    width: 0 !important;
-} */
+
+.theme--dark.v-card .v-card__subtitle,
+.theme--dark.v-card .v-card__text {
+    color: hsla(0, 0%, 100%, .7);
+}
+
+.theme--dark .secondary-text {
+    color: hsla(0, 0%, 100%, .7);
+}

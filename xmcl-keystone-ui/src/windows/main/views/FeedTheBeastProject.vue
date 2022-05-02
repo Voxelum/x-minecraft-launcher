@@ -63,6 +63,7 @@
           <v-btn
             color="primary"
             large
+            :disabled="refreshing"
             :loading="installing"
             @click="install"
           >

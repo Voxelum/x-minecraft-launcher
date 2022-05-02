@@ -1,6 +1,6 @@
 import { diagnoseAssetIndex, diagnoseAssets, diagnoseJar, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedVersion } from '@xmcl/core'
 import { diagnoseInstall, InstallProfile } from '@xmcl/installer'
-import { Asset, AssetIndexIssueKey, AssetsIssueKey, getResolvedVersion, InstallableLibrary, InstallProfileIssueKey, InstanceVersionException, InstanceVersionService as IInstanceVersionService, InstanceVersionServiceKey, InstanceVersionState, isSameForgeVersion, LibrariesIssueKey, parseOptifineVersion, IssueReportBuilder, RuntimeVersions, VersionIssueKey, VersionJarIssueKey, getExpectVersion } from '@xmcl/runtime-api'
+import { Asset, AssetIndexIssueKey, AssetsIssueKey, getResolvedVersion, InstallableLibrary, InstallProfileIssueKey, InstanceVersionException, InstanceVersionService as IInstanceVersionService, InstanceVersionServiceKey, InstanceVersionState, isSameForgeVersion, LibrariesIssueKey, parseOptifineVersion, IssueReportBuilder, RuntimeVersions, VersionIssueKey, VersionJarIssueKey, getExpectVersion, LocalVersionHeader } from '@xmcl/runtime-api'
 import { readFile, readJSON } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
@@ -8,7 +8,7 @@ import { exists } from '../util/fs'
 import { DiagnoseService } from './DiagnoseService'
 import { InstallService } from './InstallService'
 import { InstanceService } from './InstanceService'
-import { Inject, Singleton, StatefulService } from './Service'
+import { Inject, Lock, Singleton, StatefulService } from './Service'
 import { VersionService } from './VersionService'
 
 export class InstanceVersionService extends StatefulService<InstanceVersionState> implements IInstanceVersionService {
@@ -25,23 +25,17 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
       fix: async (issue) => {
         const { minecraft, forge, fabricLoader, optifine } = issue
         let targetVersion: string | undefined
-        if (minecraft && this.versionService.state.local.every(v => v.minecraftVersion !== minecraft)) {
-          if (installService.state.minecraft.versions.length === 0) {
-            await installService.refreshMinecraft()
-          }
-          const metadata = installService.state.minecraft.versions.find(v => v.id === minecraft)
+        if (minecraft && this.versionService.state.local.every(v => v.minecraft !== minecraft)) {
+          const versions = await installService.getMinecraftVersionList()
+          const metadata = versions.versions.find(v => v.id === minecraft)
           if (metadata) {
             await installService.installMinecraft(metadata)
           }
           targetVersion = metadata?.id
         }
         if (forge) {
-          let forges = installService.state.forge.find(v => v.mcversion === minecraft)
-          if (!forges) {
-            await installService.refreshForge({ mcversion: minecraft })
-          }
-          forges = installService.state.forge.find(v => v.mcversion === minecraft)
-          const forgeVer = forges?.versions.find(v => isSameForgeVersion(v.version, forge))
+          const forges = await installService.getForgeVersionList({ minecraftVersion: minecraft })
+          const forgeVer = forges.find(v => isSameForgeVersion(v.version, forge))
           if (!forgeVer) {
             targetVersion = await installService.installForgeUnsafe({ mcversion: minecraft, version: forge })
           } else {
@@ -72,12 +66,13 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
       id: VersionJarIssueKey,
       fix: async (issue) => {
         const { minecraft, forge, fabricLoader } = issue
-        const metadata = installService.state.minecraft.versions.find(v => v.id === minecraft)
+        const mcVersions = await installService.getMinecraftVersionList()
+        const metadata = mcVersions.versions.find(v => v.id === minecraft)
         if (metadata) {
           await installService.installMinecraft(metadata)
           if (forge) {
-            const found = installService.state.forge.find(f => f.mcversion === minecraft)
-              ?.versions.find(v => v.version === forge)
+            const forgeVersions = await installService.getForgeVersionList({ minecraftVersion: minecraft })
+            const found = forgeVersions.find(v => v.version === forge)
             if (found) {
               const forge = found
               const fullVersion = await installService.installForgeUnsafe(forge)
@@ -174,44 +169,59 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
 
     this.storeManager
       .subscribe('instanceSelect', () => {
-        const newVersion = this.getInstanceVersion()
+        const newVersion = this.getInstanceVersionHeader()
         this.log(`Update instance version: ${newVersion ? newVersion.id : undefined}`)
-        this.state.instanceVersion(newVersion)
+        this.state.instanceVersionHeader(newVersion)
       })
       .subscribe('instanceEdit', async (payload) => {
         if (payload.path !== this.instanceService.state.path) {
           return
         }
         if ('runtime' in payload) {
-          const newVersion = this.getInstanceVersion()
+          const newVersion = this.getInstanceVersionHeader()
           this.log(`Update instance version: ${newVersion ? newVersion.id : undefined}`)
-          this.state.instanceVersion(newVersion)
+          this.state.instanceVersionHeader(newVersion)
         }
       })
       .subscribeAll(['localVersions', 'localVersionAdd', 'localVersionRemove'], async () => {
-        const newVersion = this.getInstanceVersion()
+        const newVersion = this.getInstanceVersionHeader()
         if (newVersion !== this.state.version) {
           this.log(`Update instance version: ${newVersion ? newVersion.id : undefined}`)
-          this.state.instanceVersion(newVersion)
+          this.state.instanceVersionHeader(newVersion)
         }
+      })
+      .subscribe('instanceVersionHeader', () => {
+        this.refresh()
       })
       .subscribe('instanceVersion', (v) => {
         this.diagnoseVersion(v)
       })
   }
 
+  @Lock('refresh')
+  async refresh() {
+    if (this.state.versionHeader) {
+      const ver = await this.versionService.resolveLocalVersion(this.state.versionHeader.id)
+      this.state.instanceVersion(ver)
+    }
+  }
+
   /**
    * The selected instance mapped local version.
    * If there is no local version matched, it will return a local version with id equal to `""`.
    */
-  getInstanceVersion(): ResolvedVersion | undefined {
+  getInstanceVersionHeader(): LocalVersionHeader | undefined {
     const instance = this.instanceService.state
     const version = this.versionService.state
     const current = instance.all[instance.path]
     if (!current) {
       return undefined
     }
-    return getResolvedVersion(version.local, current.runtime, current.version)
+    const header = getResolvedVersion(version.local, current.runtime, current.version)
+    if (header) {
+      return header
+    }
+    return undefined
   }
 
   private async diagnoseLibraries(builder: IssueReportBuilder, currentVersion: ResolvedVersion, minecraft: MinecraftFolder) {

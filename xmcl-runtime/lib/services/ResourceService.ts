@@ -1,15 +1,16 @@
 import { AnyPersistedResource, AnyResource, ImportResourceOptions, ImportResourcesOptions, isPersistedResource, ParseResourceOptions, ParseResourcesOptions, PersistedResource, Resource, ResourceDomain, ResourceException, ResourceService as IResourceService, ResourceServiceKey, ResourceState, ResourceType, SourceInformation, UpdateResourceOptions } from '@xmcl/runtime-api'
-import { requireString } from '../util/object'
 import { task } from '@xmcl/task'
 import { FSWatcher } from 'fs'
 import { readJSON, stat, unlink, writeFile } from 'fs-extra'
 import watch from 'node-watch'
 import { basename, extname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
-import { FileStat, mutateResource, persistResource, readFileStat, remove, ResourceCache } from '../entities/resource'
+import { PrismaClient } from '../database/resource.gen'
+import { FileStat, mutateResource, parseResource, persistResource, readFileStat, remove, ResourceCache } from '../entities/resource'
 import { fixResourceSchema } from '../util/dataFix'
 import { isSystemError } from '../util/error'
 import { copyPassively, ENOENT_ERROR, fileType, FileType, readdirEnsured } from '../util/fs'
+import { requireString } from '../util/object'
 import { createPromiseSignal } from '../util/promiseSignal'
 import { Singleton, StatefulService } from './Service'
 
@@ -46,6 +47,8 @@ export class ResourceService extends StatefulService<ResourceState> implements I
    * The array to store the pending to import resource file path, which is the absolute file path of the resource file under the domain directory
    */
   private pending = new Set<string>()
+
+  private client: PrismaClient
 
   private pendingSource: Record<string, SourceInformation> = {}
 
@@ -89,7 +92,62 @@ export class ResourceService extends StatefulService<ResourceState> implements I
       ]) {
         this.loadPromises[domain].accept(this.load(domain))
       }
+      const filePath = this.getAppDataPath('./resources.sqlite')
+      const filePathUrl = `file:${filePath}`
+      // process.env.DB_URL = filePathUrl
+      // this.client = new PrismaClient({ datasources: { db: { url: filePathUrl } } })
+      // await this.client.$connect()
     })
+    // this.client = new PrismaClient()
+  }
+
+  private migrate() {
+    const migrateDomain = async (domain: ResourceDomain) => {
+      for (const res of this.state[domain]) {
+        this.client.resource.create({
+          data: {
+            name: res.name,
+            ext: res.ext,
+            hash: res.hash,
+            type: res.type.toString(),
+            domain: res.domain.toString(),
+            date: res.date,
+            iconUri: res.iconUri,
+            metadata: JSON.stringify(res.metadata),
+            tags: {
+              create: res.tags.map(tag => ({ hash: res.hash, tag })),
+            },
+            uri: {
+              create: res.uri.map(uri => ({ hash: res.hash, uri })),
+            },
+          },
+        })
+        if (res.curseforge) {
+          this.client.curseforge.create({ data: { ...res.curseforge, hash: res.hash } })
+        }
+        if (res.modrinth) {
+          this.client.modrinth.create({
+            data: {
+              hash: res.hash,
+              projectId: res.modrinth.projectId,
+              fileName: res.modrinth.filename,
+              versionId: res.modrinth.versionId,
+              url: res.modrinth.url,
+            },
+          })
+        }
+      }
+    }
+    for (const domain of [
+      ResourceDomain.Mods,
+      ResourceDomain.ResourcePacks,
+      ResourceDomain.Saves,
+      ResourceDomain.Modpacks,
+      ResourceDomain.ShaderPacks,
+      ResourceDomain.Unknown,
+    ]) {
+      migrateDomain(domain)
+    }
   }
 
   /**
@@ -510,29 +568,33 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         fileType = await this.worker().fileType(path)
       }
     }
-    const [resolved, icon] = await this.worker().parseResource({
-      path,
-      sha1,
-      fileType,
-      stat,
-      hint: type ?? '*',
-    }).catch((e) => {
-      const resource: Resource<void> = {
-        hash: sha1!,
-        fileType: fileType!,
-        ino: stat.ino,
-        path,
-        fileName: '',
-        name: basename(path),
-        size: stat.size,
-        ext: extname(path),
-        type: ResourceType.Unknown,
-        domain: ResourceDomain.Unknown,
-        metadata: undefined,
-        uri: [],
-      }
-      return [resource, undefined] as const
-    })
+    // const [] = parseResource(path, fileType, sha1, stat, type ?? '*')
+    const [resolved, icon] = await
+      parseResource(path, fileType, sha1, stat, type ?? '*')
+        // this.worker().parseResource({
+        //   path,
+        //   sha1,
+        //   fileType,
+        //   stat,
+        //   hint: type ?? '*',
+        // })
+        .catch((e) => {
+          const resource: Resource<void> = {
+            hash: sha1!,
+            fileType: fileType!,
+            ino: stat.ino,
+            path,
+            fileName: '',
+            name: basename(path),
+            size: stat.size,
+            ext: extname(path),
+            type: ResourceType.Unknown,
+            domain: ResourceDomain.Unknown,
+            metadata: undefined,
+            uri: [],
+          }
+          return [resource, undefined] as const
+        })
     return [resolved, icon] as const
   }
 

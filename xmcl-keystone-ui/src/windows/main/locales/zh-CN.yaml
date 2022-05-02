@@ -431,6 +431,15 @@ modrinth:
     technology: 科技
     utility: 工具
     worldgen: 世界生成
+    modloader: Mod 加载器
+    quilt: Quilt
+    rift: Rift
+    challenging: 挑战
+    combat: 战斗
+    kitchen-sink: 厨房用具
+    lightweight: 轻量级
+    multiplayer: 多人
+    quests: 任务导向
   clientSide: 客户端
   createAt: 创建日期
   description: 详情

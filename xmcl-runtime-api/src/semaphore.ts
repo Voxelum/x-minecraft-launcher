@@ -17,4 +17,8 @@ export interface ResourceMonitor extends GenericEventEmitter<SemaphoreChannelEve
    * Stop subscribe the resource/semaphore update.
    */
   unsubscribe(): Promise<void>
+  /**
+   * Abort an semaphore, so unlock the loading state
+   */
+  abort(key: string): Promise<void>
 }

@@ -7,13 +7,12 @@ import pluginNode from './plugins/esbuild.node.plugin'
 import plugin7Zip from './plugins/esbuild.native.plugin'
 import pluginStatic from './plugins/esbuild.static.plugin'
 import { yamlPlugin } from 'esbuild-plugin-yaml'
-// import { external } from './package.json'
 import { BuildOptions } from 'esbuild'
 
 const config: BuildOptions = {
   bundle: true,
   metafile: true,
-  assetNames: 'assets/[name]',
+  assetNames: '[name]',
   entryNames: '[dir]/[name]',
   format: 'cjs',
   sourcemap: process.env.NODE_ENV === 'production' ? false : 'linked',
@@ -37,6 +36,7 @@ const config: BuildOptions = {
     '.vbs': 'file',
     '.ico': 'file',
     '.html': 'file',
+    '.prisma': 'file',
   },
   plugins: [
     pluginRenderer(),

@@ -17,6 +17,9 @@ function createResourceMonitor(): ISemaphoreChannel {
     unsubscribe(): Promise<void> {
       return Promise.resolve()
     },
+    abort(key): Promise<void> {
+      return ipcRenderer.invoke('semaphoreAbort', key)
+    },
     on(channel, listener) {
       emitter.on(channel, listener)
       return this

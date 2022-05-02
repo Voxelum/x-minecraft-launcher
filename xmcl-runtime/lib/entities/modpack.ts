@@ -1,7 +1,7 @@
 import { getAddonFileInfo, getAddonFiles } from '@xmcl/curseforge'
 import { createDefaultCurseforgeQuery, DownloadBaseOptions, DownloadTask, UnzipTask } from '@xmcl/installer'
 import { joinUrl } from '@xmcl/installer/http/utils'
-import { CurseforgeModpackManifest, EditInstanceOptions, McbbsModpackManifest, ModpackFileInfoAddon, ModpackFileInfoCurseforge } from '@xmcl/runtime-api'
+import { CurseforgeModpackManifest, EditInstanceOptions, McbbsModpackManifest, ModpackFileInfoAddon, ModpackFileInfoCurseforge, ModrinthModpackManifest } from '@xmcl/runtime-api'
 import { CancelledError, task } from '@xmcl/task'
 import { readEntry } from '@xmcl/unzip'
 import { ensureDir } from 'fs-extra'
@@ -27,7 +27,7 @@ export async function readMetadata(zip: ZipFile, entries: Entry[]) {
   throw new Error()
 }
 
-export function resolveInstanceOptions(manifest: McbbsModpackManifest | CurseforgeModpackManifest): EditInstanceOptions {
+export function resolveInstanceOptions(manifest: McbbsModpackManifest | CurseforgeModpackManifest | ModrinthModpackManifest): EditInstanceOptions {
   const options: EditInstanceOptions = {
     author: manifest.author,
     version: manifest.version,
@@ -87,7 +87,7 @@ export class ModpackInstallUrlError extends Error {
   }
 }
 
-export function installModpackTask(zip: ZipFile, entries: Entry[], manifest: CurseforgeModpackManifest | McbbsModpackManifest, root: string, allowFileApi: boolean, options: DownloadBaseOptions & { agents: { https: Agent } }) {
+export function installModpackTask(zip: ZipFile, entries: Entry[], manifest: CurseforgeModpackManifest | McbbsModpackManifest | ModrinthModpackManifest, root: string, allowFileApi: boolean, options: DownloadBaseOptions & { agents: { https: Agent } }) {
   return task('installModpack', async function () {
     const files: Array<{ path: string; url: string; projectId: number; fileId: number }> = []
     const ensureDownloadUrl = async (f: ModpackFileInfoCurseforge) => {
@@ -137,7 +137,7 @@ export function installModpackTask(zip: ZipFile, entries: Entry[], manifest: Cur
           segmentPolicy: options.segmentPolicy,
           retryHandler: options.retryHandler,
         }).setName('download').map(() => {
-        // side-effect: adding to file list
+          // side-effect: adding to file list
           files.push({ path: destination, url, projectId: f.projectID, fileId: f.fileID })
           return undefined
         })

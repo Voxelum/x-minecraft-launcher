@@ -11,7 +11,7 @@ import { createSafeFile } from '../util/persistance'
 import { Singleton, StatefulService } from './Service'
 
 export class JavaService extends StatefulService<JavaState> implements IJavaService {
-  protected readonly config = createSafeFile(this.getPath('java.json'), JavaSchema, this)
+  protected readonly config = createSafeFile(this.getAppDataPath('java.json'), JavaSchema, this, [this.getPath('java.json')])
 
   constructor(app: LauncherApp) {
     super(app, JavaServiceKey, () => new JavaState(), async () => {

@@ -1,8 +1,7 @@
 <template>
   <v-card
-    class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5"
+    class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5 shadow"
     outlined
-    elevation="1"
   >
     <!-- <v-toolbar-title class="headline self-center pl-2">
         {{ tc("mod.name", 2) }}

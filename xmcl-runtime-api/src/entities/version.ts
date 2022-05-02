@@ -1,4 +1,5 @@
 import type { LibraryInfo, ResolvedVersion, Version } from '@xmcl/core'
+import { LocalVersionHeader } from '../services/VersionService'
 import { parseVersion, VersionRange } from '../util/mavenVersion'
 import { RuntimeVersions } from './instance.schema'
 
@@ -43,23 +44,15 @@ export function filterOptifineVersion(optifineVersion: string) {
   return optifineVersion.substring(idx + 1)
 }
 
-export const EMPTY_VERSION: ResolvedVersion = Object.freeze({
-  minecraftVersion: '',
-  minimumLauncherVersion: 0,
+export const EMPTY_VERSION: LocalVersionHeader = Object.freeze({
   id: '',
-  libraries: [],
-  mainClass: '',
-  minecraftDirectory: '',
-  arguments: { game: [], jvm: [] },
-  assetIndex: { totalSize: 0, sha1: '', url: '', size: 0, id: '' },
-  assets: '',
-  downloads: { client: { sha1: '', url: '', size: 0 }, server: { sha1: '', url: '', size: 0 } },
-  releaseTime: '',
-  time: '',
-  type: '',
-  pathChain: [],
   inheritances: [],
-  javaVersion: { majorVersion: 8, component: 'jre_legacy' },
+  path: '',
+  minecraft: '',
+  forge: '',
+  fabric: '',
+  liteloader: '',
+  optifine: '',
 })
 export interface LibrariesRecord {
   org: string
@@ -131,16 +124,15 @@ export function isSameOptifineVersion(optifineVersion: string, version: string) 
   return optifineVersion === version.substring(i + 1)
 }
 
-export function isVersionMatched(version: ResolvedVersion, runtime: RuntimeVersions) {
+export function isVersionMatched(version: LocalVersionHeader, runtime: RuntimeVersions) {
   // compute version
   const { minecraft, forge, fabricLoader, optifine } = runtime
-  if (version.minecraftVersion !== minecraft) {
+  if (version.minecraft !== minecraft) {
     return false
   }
   if (forge) {
     // require forge
-    const lib = version.libraries.find(isForgeLibrary)
-    if (!lib || !isSameForgeVersion(forge, lib.version ?? '')) {
+    if (!version.forge || !isSameForgeVersion(forge, version.forge)) {
       // require forge but not forge
       return false
     }
@@ -148,16 +140,14 @@ export function isVersionMatched(version: ResolvedVersion, runtime: RuntimeVersi
 
   if (fabricLoader) {
     // require fabric
-    const lib = version.libraries.find(isFabricLoaderLibrary)
-    if (!lib || lib.version !== fabricLoader) {
+    if (!version.fabric || version.fabric !== fabricLoader) {
       return false
     }
   }
 
   if (optifine) {
     // require optifine
-    const lib = version.libraries.find(isOptifineLibrary)
-    if (!lib || !isSameOptifineVersion(optifine, lib.version ?? '')) {
+    if (!version.optifine || !isSameOptifineVersion(optifine, version.optifine)) {
       return false
     }
   }
@@ -165,7 +155,7 @@ export function isVersionMatched(version: ResolvedVersion, runtime: RuntimeVersi
   return true
 }
 
-export function getResolvedVersion(versions: ResolvedVersion[], runtime: RuntimeVersions, id: string): ResolvedVersion | undefined {
+export function getResolvedVersion(versions: LocalVersionHeader[], runtime: RuntimeVersions, id: string): LocalVersionHeader | undefined {
   const idMatched = versions.find(v => v.id === id)
   const runtimeMatched = versions.find(ver => isVersionMatched(ver, runtime))
   return idMatched || runtimeMatched

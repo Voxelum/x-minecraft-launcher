@@ -10,7 +10,7 @@ import { ZipTask } from '../util/zip'
 import { Singleton, StatefulService } from './Service'
 
 export class BaseService extends StatefulService<BaseState> implements IBaseService {
-  private settingFile = createSafeFile(this.getPath('setting.json'), SettingSchema, this)
+  private settingFile = createSafeFile(this.getAppDataPath('setting.json'), SettingSchema, this, [this.getPath('setting.json')])
 
   constructor(app: LauncherApp) {
     super(app, BaseServiceKey, () => {

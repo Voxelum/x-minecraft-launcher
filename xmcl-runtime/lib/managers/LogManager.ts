@@ -44,7 +44,15 @@ export default class LogManager extends Manager {
       this.error(reason)
     })
     if (IS_DEV) {
-      this.output.on('data', (b) => console.log(b.toString()))
+      this.loggerEntries.log.on('data', (b) => {
+        console.log(b.toString())
+      })
+      this.loggerEntries.warn.on('data', (b) => {
+        console.warn(b.toString())
+      })
+      this.loggerEntries.error.on('data', (b) => {
+        console.error(b.toString())
+      })
     }
   }
 
