@@ -6,6 +6,7 @@ import { BrowserWindow, ipcMain } from 'electron'
 import debounce from 'lodash.debounce'
 import { promisify } from 'util'
 import { brotliCompress, brotliDecompress } from 'zlib'
+// @ts-ignore
 import htmlUrl from '../assets/peer.html'
 import { ControllerPlugin } from './plugin'
 import peerPreload from '@preload/peer'
