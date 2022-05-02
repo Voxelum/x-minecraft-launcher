@@ -27,7 +27,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
 
   private validate = createDynamicThrottle(validate, ({ accessToken }, api) => (api ?? AUTH_API_MOJANG).hostName, 2400)
 
-  private userFile = createSafeFile(this.getPath('user.json'), UserSchema, this)
+  private userFile = createSafeFile(this.getAppDataPath('user.json'), UserSchema, this, [this.getPath('user.json')])
 
   constructor(app: LauncherApp,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService) {

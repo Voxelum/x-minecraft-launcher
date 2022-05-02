@@ -73,7 +73,15 @@
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
-        <minecraft-version-menu @input="onSelectMinecraft">
+        <version-menu
+          :is-clearable="false"
+          :items="minecraftItems"
+          :has-snapshot="true"
+          :snapshot.sync="showAlpha"
+          :snapshot-tooltip="t('fabricVersion.showSnapshot')"
+          :refreshing="refreshingMinecraft"
+          @select="onSelectMinecraft"
+        >
           <template #default="{ on }">
             <v-text-field
               v-model="content.runtime.minecraft"
@@ -82,11 +90,12 @@
               persistent-hint
               hide-details
               :readonly="true"
-              @click:append="on.click"
+              @click:append="on.click($event);"
+              @click="refreshMinecraft()"
               v-on="on"
             />
           </template>
-        </minecraft-version-menu>
+        </version-menu>
       </v-list-item-action>
     </v-list-item>
     <v-list-item>
@@ -109,9 +118,15 @@
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
-        <forge-version-menu
-          :minecraft="content.runtime.minecraft"
-          @input="onSelectForge"
+        <version-menu
+          :is-clearable="true"
+          :items="forgeItems"
+          :clear-text="t('forgeVersion.disable')"
+          :has-snapshot="true"
+          :snapshot.sync="canShowBuggy"
+          :snapshot-tooltip="t('fabricVersion.showSnapshot')"
+          :refreshing="refreshingForge"
+          @select="onSelectForge"
         >
           <template #default="{ on }">
             <v-text-field
@@ -121,11 +136,12 @@
               hide-details
               persistent-hint
               :readonly="true"
-              @click:append="on.click"
+              @click:append="on.click($event);"
+              @click="refreshForge()"
               v-on="on"
             />
           </template>
-        </forge-version-menu>
+        </version-menu>
       </v-list-item-action>
     </v-list-item>
     <v-list-item>
@@ -134,8 +150,6 @@
           :src="fabricPng"
           width="40"
         >
-        <!-- <forge-icon></forge-icon> -->
-        <!-- <v-checkbox /> -->
       </v-list-item-action>
       <v-list-item-content>
         <v-list-item-title>Fabric</v-list-item-title>
@@ -146,9 +160,15 @@
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
-        <fabric-version-menu
-          :minecraft="content.runtime.minecraft"
-          @input="onSelectFabric"
+        <version-menu
+          :is-clearable="true"
+          :items="fabricItems"
+          :clear-text="t('fabricVersion.disable')"
+          :has-snapshot="true"
+          :snapshot.sync="showStableOnly"
+          :snapshot-tooltip="t('fabricVersion.showSnapshot')"
+          :refreshing="refreshingFabric"
+          @select="onSelectFabric"
         >
           <template #default="{ on }">
             <v-text-field
@@ -158,11 +178,12 @@
               append-icon="arrow_drop_down"
               persistent-hint
               :readonly="true"
-              @click:append="on.click"
+              @click:append="on.click($event);"
+              @click="refreshFabric()"
               v-on="on"
             />
           </template>
-        </fabric-version-menu>
+        </version-menu>
       </v-list-item-action>
     </v-list-item>
   </v-list>
@@ -172,14 +193,14 @@
 import forgePng from '/@/assets/forge.png'
 import minecraftPng from '/@/assets/minecraft.png'
 import fabricPng from '/@/assets/fabric.png'
-import FabricVersionMenu from './FabricVersionMenu.vue'
-import ForgeVersionMenu from './ForgeVersionMenu.vue'
-import MinecraftVersionMenu from './MinecraftVersionMenu.vue'
 import { CreateOptionKey } from '../composables/instanceCreation'
 import { useJava } from '../composables/java'
 import { injection } from '/@/util/inject'
+import VersionMenu from './VersionMenu.vue'
+import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList } from '../composables/versionList'
+import { useI18n } from '/@/composables'
 
-const props = defineProps({
+defineProps({
   valid: {
     type: Boolean,
     required: true,
@@ -190,30 +211,44 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:valid'])
-const memoryRule = [(v: any) => Number.isInteger(v)]
 const content = injection(CreateOptionKey)
+const minecraft = computed(() => content.runtime.minecraft)
+const { t } = useI18n()
+const { items: minecraftItems, showAlpha, refresh: refreshMinecraft, refreshing: refreshingMinecraft, release } = useMinecraftVersionList(minecraft)
+const { items: forgeItems, canShowBuggy, recommendedOnly, refresh: refreshForge, refreshing: refreshingForge } = useForgeVersionList(minecraft, computed(() => content.runtime.forge ?? ''))
+const { items: fabricItems, showStableOnly, refresh: refreshFabric, refreshing: refreshingFabric } = useFabricVersionList(minecraft, computed(() => content.runtime.fabricLoader ?? ''))
+
+recommendedOnly.value = false
+onMounted(() => {
+  refreshMinecraft().then(() => {
+    if (!content.runtime.minecraft) {
+      content.runtime.minecraft = release.value?.id ?? ''
+    }
+  })
+})
+
 const { all: javas } = useJava()
 const javaItems = computed(() => javas.value.map(java => ({
   text: `Java ${java.majorVersion} (${java.version})`,
   value: java.path,
 })))
-function onSelectForge(event: { version: string }) {
+
+function onSelectForge(version: string) {
   if (content?.runtime) {
     const runtime = content.runtime
-    runtime.forge = event.version
-    if (event.version) {
+    runtime.forge = version
+    if (version) {
       runtime.fabricLoader = ''
     }
   }
 }
-function onSelectFabric(event: { version: string }) {
+function onSelectFabric(version: string) {
   if (content?.runtime) {
     const runtime = content.runtime
-    if (event.version) {
+    if (version) {
       runtime.forge = ''
     }
-    runtime.fabricLoader = event.version
+    runtime.fabricLoader = version
   }
 }
 function onSelectMinecraft(version: string) {

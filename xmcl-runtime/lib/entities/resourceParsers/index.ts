@@ -4,6 +4,7 @@ import { forgeModParser } from './forgeMod'
 import { liteloaderModParser } from './liteloaderMod'
 import { mcbbsModpackParser } from './mcbbsModpack'
 import { modpackParser } from './modpack'
+import { modrinthModpackParser } from './modrinthModpack'
 import { resourcePackParser } from './resourcePack'
 import { saveParser } from './save'
 import { shaderPackParser } from './shaderPack'
@@ -13,6 +14,7 @@ export default [
   forgeModParser,
   fabricModParser,
   liteloaderModParser,
+  modrinthModpackParser,
   resourcePackParser,
   saveParser,
   mcbbsModpackParser,

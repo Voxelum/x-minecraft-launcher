@@ -54,13 +54,9 @@
           :to="`/curseforge/${currentType}/${proj.id}?from=${from || ''}`"
           class="flex"
         >
-          <div
-            class="flex items-center justify-center max-w-24"
-          >
             <v-img
               :src="proj.attachments[0] ? proj.attachments[0].thumbnailUrl : ''"
-              max-width="100"
-              contain
+              max-width="120"
               class="rounded"
             >
               <template #placeholder>
@@ -77,25 +73,43 @@
                 </v-layout>
               </template>
             </v-img>
-          </div>
-          <v-divider
-            vertical
-            style="padding-left: 10px;"
-            inset
-          />
           <div class="flex-grow">
             <v-card-title>
-              <span style="font-weight: bold;">{{ proj.name }}</span>
-              <span style="padding-left: 3px;">by {{ proj.authors[0].name }}</span>
-              <div style="color: grey; padding-left: 5px;">
-                <!-- {{ proj.downloadCount }} -->
+              {{ proj.name }}
+            </v-card-title>
+            <v-card-subtitle class="flex flex-wrap gap-4">
+              <div class="text-current">
+                <v-icon
+                  left
+                  small
+                >
+                  person
+                </v-icon>
+                {{ proj.authors[0].name }}
+              </div>
+              <div>
+                <v-icon
+                  left
+                  small
+                >
+                  event
+                </v-icon>
                 {{ new Date(proj.dateModified || proj.dateCreated).toLocaleDateString() }}
               </div>
-            </v-card-title>
+               <div>
+                <v-icon
+                  left
+                  small
+                >
+                  file_download
+                </v-icon>
+                {{ getExpectedSize(proj.downloadCount, '') }}
+              </div>
+            </v-card-subtitle>
             <v-card-text>{{ proj.summary }}</v-card-text>
           </div>
           <div
-            class="p-4 flex flex-wrap gap-2"
+            class="p-4 flex flex-wrap gap-2 justify-start content-start"
             @click.stop.prevent
           >
             <v-chip
@@ -143,6 +157,7 @@ import { dedup } from '/@/util/dedup'
 import Categories from './CurseforgeCategories.vue'
 import { useCurseforge } from '../composables/curseforge'
 import { vFocusOnSearch } from '../directives/focusOnSearch'
+import { getExpectedSize } from '/@/util/size'
 
 interface CurseforgeProps {
   type: string

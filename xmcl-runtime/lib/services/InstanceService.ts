@@ -20,7 +20,7 @@ const INSTANCES_FOLDER = 'instances'
  * Provide instance splitting service. It can split the game into multiple environment and dynamically deploy the resource to run.
  */
 export class InstanceService extends StatefulService<InstanceState> implements IInstanceService {
-  protected readonly instancesFile = createSafeFile(this.getPath('instances.json'), InstancesSchema, this)
+  protected readonly instancesFile = createSafeFile(this.getAppDataPath('instances.json'), InstancesSchema, this, [this.getPath('instances.json')])
   protected readonly instanceFile = createSafeIO(InstanceSchema, this)
 
   constructor(app: LauncherApp,
@@ -192,7 +192,8 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
 
     instance.path = payload.path || this.getPathUnder(randomUUID())
-    instance.runtime.minecraft = instance.runtime.minecraft || this.installService.state.minecraftRelease.id
+    const mcVersions = await this.installService.getMinecraftVersionList()
+    instance.runtime.minecraft = instance.runtime.minecraft || mcVersions.latest.release
     instance.author = this.userService.state.gameProfile?.name ?? ''
     instance.creationDate = Date.now()
     instance.lastAccessDate = Date.now()

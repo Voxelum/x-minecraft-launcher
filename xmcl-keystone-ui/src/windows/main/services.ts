@@ -73,6 +73,7 @@ export function useAllServices(factory: ServiceFactory) {
   factory.register(ModpackServiceKey, () => undefined)
   factory.register(InstanceResourcePacksServiceKey, () => undefined)
   factory.register(InstanceShaderPacksServiceKey, () => undefined)
+  factory.register(InstallServiceKey, () => undefined)
 
   factory.register(FeedTheBeastServiceKey, () => new FeedTheBeastState())
   factory.register(InstanceJavaServiceKey, () => new InstanceJavaState())
@@ -81,7 +82,6 @@ export function useAllServices(factory: ServiceFactory) {
   factory.register(BaseServiceKey, () => new BaseState())
   factory.register(DiagnoseServiceKey, () => new DiagnoseState())
   factory.register(InstanceOptionsServiceKey, () => new InstanceOptionsState())
-  factory.register(InstallServiceKey, () => new InstallState())
   factory.register(InstanceModsServiceKey, () => new InstanceModsState())
   factory.register(InstanceSavesServiceKey, () => new SaveState())
   factory.register(InstanceServerInfoServiceKey, () => new ServerInfoState())

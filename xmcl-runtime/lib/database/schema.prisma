@@ -1,0 +1,75 @@
+generator client {
+  provider      = "prisma-client-js"
+  output        = "./resource.gen"
+  binaryTargets = ["native"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./database.sqlite"
+}
+
+model Resource {
+  ext        String
+  name       String
+  hash       String     @id @unique
+  type       String
+  domain     String
+  metadata   String
+  date       DateTime
+  iconUri    String?
+  modrinth   Modrinth   @relation(fields: [hash], references: [hash])
+  curseforge Curseforge @relation(fields: [hash], references: [hash])
+  tags       Tag[]
+  uri        Uri[]
+}
+
+model Curseforge {
+  hash      String    @id @unique
+  projectId Int
+  fileId    Int
+  Resource  Resource?
+}
+
+model Modrinth {
+  projectId String
+  versionId String
+  fileName  String
+  url       String
+  hash      String    @id @unique
+  Resource  Resource?
+}
+
+model Uri {
+  hash     String
+  uri      String
+  Resource Resource @relation(fields: [hash], references: [hash])
+
+  @@id([hash, uri])
+}
+
+model Tag {
+  hash     String
+  tag      String
+  Resource Resource @relation(fields: [hash], references: [hash])
+
+  @@id([hash, tag])
+}
+
+model ForgeMod {
+  hash    String @id @unique
+  modId   String
+  version String
+}
+
+model ChineseModIdentity {
+  mcWikiId          Int     @id @default(autoincrement())
+  name              String
+  curseforgeUrl     String?
+  modrinthUrl       String?
+  githubUrl         String?
+  mcbbsUrl          String?
+  minecraftFourmUrl String?
+  discordUrl        String?
+  redditUrl         String?
+}

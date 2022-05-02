@@ -20,6 +20,13 @@ export function useModrinth(props: ModrinthOptions) {
   const { searchProjects, getTags } = useService(ModrinthServiceKey)
   const { $t } = useI18n()
   const { replace } = useRouter()
+  const projectTypes = computed(() => [{
+    value: 'mod',
+    text: $t('modrinth.projectType.mod')
+  }, {
+    value: 'modpack',
+    text: $t('modrinth.projectType.modpack')
+  }])
   const sortOptions = computed(() => [{
     name: '',
     text: $t('modrinth.sort.relevance'),
@@ -159,12 +166,17 @@ export function useModrinth(props: ModrinthOptions) {
     return debouncedRefresh()
   }
 
+  watch(projectType, () => {
+    category.value = ''
+  })
+
   watch([query, gameVersion, license, category, environment, modLoader, refs.pageSize, page, sortBy, projectType], () => {
     wrappedRefresh()
   })
 
   return {
     ...refs,
+    projectTypes,
     query,
     refresh: wrappedRefresh,
     refreshing,

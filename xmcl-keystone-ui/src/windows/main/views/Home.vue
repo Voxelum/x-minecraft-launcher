@@ -98,7 +98,7 @@ import LogDialog from './HomeLogDialog.vue'
 import ProblemsBar from './HomeProblemsBar.vue'
 import ServerStatusBar from './HomeServerStatusBar.vue'
 import SettingsSpeedDial from './HomeSettingsSpeedDial.vue'
-import { useService } from '/@/composables'
+import { useRouter, useService } from '/@/composables'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import LaunchStatusDialog from './HomeLaunchStatusDialog.vue'
@@ -113,6 +113,11 @@ import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
 import HomeSyncDialog from './HomeSyncDialog.vue'
 
 const { show: showExport } = useDialog(AppExportDialogKey)
+const router = useRouter()
+
+router.afterEach((r) => {
+  document.title = `KeyStone UI - ${r.fullPath}`
+})
 
 const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useDialog('log')
 const { refreshing, isServer, path } = useInstance()

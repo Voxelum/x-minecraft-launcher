@@ -6,12 +6,18 @@ import { GenericEventEmitter } from '../events'
 import { Exception } from '../entities/exception'
 import { ServiceKey, StatefulService } from './Service'
 import { InstallProfile } from '@xmcl/installer'
+import { LocalVersionHeader } from './VersionService'
 
 export class InstanceVersionState {
   version: ResolvedVersion | undefined
+  versionHeader: LocalVersionHeader | undefined
 
   instanceVersion(version: ResolvedVersion | undefined) {
     this.version = version
+  }
+
+  instanceVersionHeader(version: LocalVersionHeader | undefined) {
+    this.versionHeader = version
   }
 }
 

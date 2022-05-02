@@ -1,6 +1,5 @@
 import { checksum } from '@xmcl/core'
 import { readFile, writeFile } from 'fs-extra'
-import { dirname, join } from 'path'
 import { Worker } from 'worker_threads'
 import { Manager } from '.'
 import { LauncherApp } from '../app/LauncherApp'
@@ -12,10 +11,10 @@ export default class WorkerManager extends Manager {
   private worker: WorkerInterface
   private threadWorker: Worker | undefined
   private counter = 0
+  private destroyTimer: undefined | ReturnType<typeof setTimeout>
 
   constructor(app: LauncherApp) {
     super(app)
-    this.threadWorker = createWorker()
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const _ = this
     this.worker = new Proxy({} as any, {
@@ -23,6 +22,21 @@ export default class WorkerManager extends Manager {
         return (...args: any[]) => {
           const _id = _.counter++
           return new Promise((resolve, reject) => {
+            if (!_.threadWorker) {
+              _.threadWorker = createWorker()
+              _.threadWorker.once('message', (m) => {
+                if (m === 'idle') {
+                  if (_.destroyTimer) {
+                    clearTimeout(_.destroyTimer)
+                  }
+                  _.destroyTimer = setTimeout(() => {
+                    _.threadWorker = undefined
+                    _.destroyTimer = undefined
+                  }, 1000 * 3)
+                }
+              })
+            }
+
             const handler = (resp: WorkerResponse) => {
               const { error, result, id } = resp
               if (id === _id) {
@@ -51,8 +65,6 @@ export default class WorkerManager extends Manager {
       if (realSha !== expectSha) {
         this.log('The worker js checksum not matched. Replace with the asar worker js.')
         await writeFile(workerJsPath, await readFile(asarWorkerJsPath))
-        this.threadWorker?.terminate()
-        this.threadWorker = createWorker()
       } else {
         this.log('The worker js checksum matched. Skip to replace asar worker js.')
       }

@@ -1,7 +1,7 @@
 import type { ResolvedLibrary, Version } from '@xmcl/core'
 import type { FabricArtifactVersion, InstallProfile, LiteloaderVersion, LiteloaderVersionList, MinecraftVersion, MinecraftVersionList } from '@xmcl/installer'
 import { LATEST_RELEASE } from '../entities/version'
-import { ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '../entities/version.schema'
+import { ForgeVersion, ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '../entities/version.schema'
 import { ServiceKey, StatefulService } from './Service'
 
 export class InstallState {
@@ -76,9 +76,9 @@ export class InstallState {
     const existed = this.forge.find((version) => version.mcversion === metadata.mcversion)
     if (existed) {
       existed.timestamp = metadata.timestamp
-      existed.versions = Object.freeze(metadata.versions)
+      existed.versions = Object.freeze(metadata.versions) as any
     } else {
-      const result = { ...metadata, versions: Object.freeze(metadata.versions) }
+      const result = { ...metadata, versions: Object.freeze(metadata.versions) as any }
       this.forge.push(result)
     }
   }
@@ -161,11 +161,28 @@ export type InstallableLibrary = Version.Library | ResolvedLibrary
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
  */
-export interface InstallService extends StatefulService<InstallState> {
+export interface InstallService {
   /**
+   * The minecraft version list
    * Request minecraft version list and cache in to store and disk.
    */
-  refreshMinecraft(force?: boolean): Promise<void>
+  getMinecraftVersionList(force?: boolean): Promise<VersionMinecraftSchema>
+  /**
+   * Refresh forge remote versions cache from forge websites or BMCL API
+   */
+  getForgeVersionList(options: { force?: boolean; minecraftVersion: string }): Promise<ForgeVersion[]>
+
+  getLiteloaderVersionList(): Promise<VersionLiteloaderSchema>
+
+  /**
+   * Refresh fabric version list in the store.
+   * @param force should the version be refresh regardless if we have already refreshed fabric version.
+   */
+  getFabricVersionList(force?: boolean): Promise<VersionFabricSchema>
+  /**
+   * Refresh optifine version list from BMCL API
+   */
+  getOptifineVersionList(force?: boolean): Promise<OptifineVersion[]>
   /**
    * Install assets which defined in this version asset.json. If this version is not present, this will throw error！
    * @param version The local version id
@@ -191,35 +208,18 @@ export interface InstallService extends StatefulService<InstallState> {
    */
   installLibraries(libraries: InstallableLibrary[]): Promise<void>
   /**
-   * Refresh forge remote versions cache from forge websites or BMCL API
-   */
-  refreshForge(options: RefreshForgeOptions): Promise<void>
-  /**
    * Install forge by forge version metadata
    */
   installForge(options: InstallForgeOptions): Promise<string | undefined>
-  /**
-   * Refresh fabric version list in the store.
-   * @param force should the version be refresh regardless if we have already refreshed fabric version.
-   */
-  refreshFabric(force?: boolean): Promise<void>
   /**
    * Install fabric to the minecraft
    * @param options Install options for fabric
    */
   installFabric(options: InstallFabricOptions): Promise<string | undefined>
   /**
-   * Refresh optifine version list from BMCL API
-   */
-  refreshOptifine(force?: boolean): Promise<void>
-  /**
    * Install the optifine to the minecraft
    */
   installOptifine(options: InstallOptifineOptions): Promise<string>
-  /**
-   * Refresh the liteloader version list from its github
-   */
-  refreshLiteloader(force?: boolean): Promise<void>
   /**
    * Install a specific liteloader version
    */

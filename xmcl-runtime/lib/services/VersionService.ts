@@ -1,5 +1,5 @@
 import { ResolvedVersion, Version } from '@xmcl/core'
-import { VersionService as IVersionService, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
+import { filterForgeVersion, filterOptifineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, LocalVersionHeader, VersionService as IVersionService, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { ensureDir, FSWatcher, remove, stat } from 'fs-extra'
 import { basename, dirname, join, relative, sep } from 'path'
@@ -73,13 +73,21 @@ export class VersionService extends StatefulService<VersionState> implements IVe
         { src: join(mcPath, 'versions'), dest: join(root, 'versions') },
       ])
     })
-    // const task = new CopyDirectoryTask([
-    //   { src: join(mcPath, 'libraries'), dest: join(root, 'libraries') },
-    //   { src: join(mcPath, 'assets'), dest: join(root, 'assets') },
-    //   { src: join(mcPath, 'versions'), dest: join(root, 'versions') },
-    // ]).setName('cloneMinecraft')
     Reflect.set(copyTask, '_from', mcPath)
     await this.taskManager.submit(copyTask)
+  }
+
+  private getHeader(ver: ResolvedVersion): LocalVersionHeader {
+    return {
+      id: ver.id,
+      path: ver.pathChain[0],
+      inheritances: ver.inheritances,
+      minecraft: ver.minecraftVersion,
+      forge: filterForgeVersion(ver.libraries.find(isForgeLibrary)?.version ?? ''),
+      fabric: ver.libraries.find(isFabricLoaderLibrary)?.version ?? '',
+      optifine: filterOptifineVersion(ver.libraries.find(isOptifineLibrary)?.version ?? ''),
+      liteloader: '',
+    }
   }
 
   public async resolveLocalVersion(versionFolder: string, root: string = this.getPath()): Promise<ResolvedVersion> {
@@ -99,7 +107,7 @@ export class VersionService extends StatefulService<VersionState> implements IVe
     try {
       const version = await this.resolveLocalVersion(versionFolder)
       this.log(`Refresh local version ${versionFolder}`)
-      this.state.localVersionAdd(version)
+      this.state.localVersionAdd(this.getHeader(version))
     } catch (e) {
       this.state.localVersionRemove(versionFolder)
       this.warn(`An error occurred during refresh local version ${versionFolder}`)
@@ -127,7 +135,7 @@ export class VersionService extends StatefulService<VersionState> implements IVe
     }))).filter(isNonnull)
 
     if (versions.length !== 0) {
-      this.state.localVersions(versions)
+      this.state.localVersions(versions.map(this.getHeader))
       this.log(`Found ${versions.length} local game versions.`)
     } else {
       this.log('No local game version found.')

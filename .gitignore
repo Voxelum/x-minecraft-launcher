@@ -1,5 +1,6 @@
 .DS_Store
 */dist/**/*
+*.gen
 coverage
 node_modules/
 npm-debug.log

@@ -27,7 +27,7 @@
       </v-btn>
     </v-card>
     <div
-      class="flex overflow-auto h-full flex-col"
+      class="flex overflow-auto h-full flex-col px-3"
       @dragover.prevent
     >
       <transition-group

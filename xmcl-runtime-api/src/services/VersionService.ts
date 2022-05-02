@@ -1,18 +1,29 @@
 import type { ResolvedVersion } from '@xmcl/core'
 import { ServiceKey, StatefulService } from './Service'
 
+export interface LocalVersionHeader {
+  path: string
+  id: string
+  inheritances: string[]
+  minecraft: string
+  forge: string
+  fabric: string
+  optifine: string
+  liteloader: string
+}
+
 export class VersionState {
   /**
    * All the local versions installed in the disk
    */
-  local = [] as ResolvedVersion[]
+  local = [] as LocalVersionHeader[]
 
-  localVersions(local: ResolvedVersion[]) {
+  localVersions(local: LocalVersionHeader[]) {
     local.forEach(Object.freeze)
     this.local = local
   }
 
-  localVersionAdd(local: ResolvedVersion) {
+  localVersionAdd(local: LocalVersionHeader) {
     Object.freeze(local)
     const found = this.local.findIndex(l => l.id === local.id)
     if (found !== -1) {

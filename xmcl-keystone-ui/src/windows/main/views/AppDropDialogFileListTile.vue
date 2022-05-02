@@ -88,6 +88,7 @@ const iconMap: Record<string, string> = {
   modpack: '$vuetify.icons.package',
   'mcbbs-modpack': '$vuetify.icons.package',
   save: '$vuetify.icons.zip',
+  'modrinth-modpack': '$vuetify.icons.modrinth',
 }
 
 const props = defineProps<{ value: FilePreview }>()
@@ -116,10 +117,12 @@ const typeName = computed(() => {
     case 'modpack': return tc('modpack.name', 0)
     case 'save': return tc('save.name', 0)
     case 'curseforge-modpack': return tc('modpack.name', 0)
+    case 'modrinth-modpack': return t('modrinth.projectType.modpack')
     case 'shaderpack': return t('shaderPack.name')
     case 'unknown':
-    default:
       return t('universalDrop.unknownResource')
+    default:
+      return props.value.type
   }
 })
 </script>

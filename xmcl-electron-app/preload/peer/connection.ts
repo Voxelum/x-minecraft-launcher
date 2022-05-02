@@ -33,7 +33,7 @@ export class PeerSession {
     this.connection.addEventListener('datachannel', (e) => {
       const channel = e.channel
       if (channel.protocol === 'minecraft') {
-        // this is minecraft game connection
+        // this is a minecraft game connection
         const port = Number.parseInt(channel.label)!
         console.log(`Receive minecraft game connection: ${port}`)
         const socket = createConnection(port)
@@ -43,7 +43,7 @@ export class PeerSession {
         channel.addEventListener('close', () => socket.destroy())
         console.log(`Create game channel to ${port}`)
       } else if (channel.protocol === 'metadata') {
-        // this is metadata channel
+        // this is a metadata channel
         this.setChannel(e.channel)
         console.log('Metadata channel created')
       } else if (channel.protocol === 'download') {

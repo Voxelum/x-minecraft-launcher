@@ -3,7 +3,7 @@
     lazy-validation
     style="height: 100%;"
     :value="valid"
-    @input="$emit('update:valid', $event)"
+    @input="emit('update:valid', $event)"
   >
     <div
       class="flex flex-col gap-4"
@@ -34,7 +34,7 @@
                 <div
                   v-else
                   style="font-size: 18px; font-weight: bold;"
-                >{{ $t('server.creationHint') }}</div>
+                >{{ t('server.creationHint') }}</div>
               </span>
               <text-component
                 v-if="status.version.name"
@@ -48,7 +48,7 @@
                   hide-details
                   :value="acceptingMinecrafts"
                   append-icon="title"
-                  :label="$t('server.version')"
+                  :label="t('server.version')"
                   :readonly="true"
                   :loading="pinging"
                 />
@@ -62,7 +62,7 @@
                   hide-details
                   :value="status.players.online + '/' + status.players.max"
                   append-icon="people"
-                  :label="$t('server.players')"
+                  :label="t('server.players')"
                   :readonly="true"
                   :loading="pinging"
                 />
@@ -76,7 +76,7 @@
                   outlined
                   hide-details
                   append-icon="signal_cellular_alt"
-                  :label="$t('server.ping')"
+                  :label="t('server.ping')"
                   :readonly="true"
                   :loading="pinging"
                 />
@@ -91,35 +91,41 @@
               v-model="serverField"
               outlined
               persistent-hint
-              :hint="$t('server.hostHint')"
-              :label="$t('server.host')"
+              :hint="t('server.hostHint')"
+              :label="t('server.host')"
               required
             />
-            <minecraft-version-menu
-              :accept-range="acceptingVersion"
-              @input="runtime.minecraft = $event"
+            <version-menu
+              :items="items"
+              :refreshing="refreshing"
+              @select="content.runtime.minecraft = $event"
             >
               <template #default="{ on }">
                 <v-text-field
-                  v-model="runtime.minecraft"
+                  v-model="content.runtime.minecraft"
                   outlined
                   append-icon="arrow"
                   persistent-hint
-                  :hint="$t('server.versionHint')"
-                  :label="$t('minecraftVersion.name')"
+                  :hint="t('server.versionHint')"
+                  :label="t('minecraftVersion.name')"
                   :readonly="true"
-                  @click:append="on.keydown"
+                  @click:append="on.keydown($event);"
+                  @click="refresh()"
                   v-on="on"
                 />
               </template>
-            </minecraft-version-menu>
+            </version-menu>
+            <!-- <minecraft-version-menu
+              :accept-range="acceptingVersion"
+              @input="runtime.minecraft = $event"
+            /> -->
             <v-text-field
-              v-model="name"
+              v-model="content.name"
               outlined
               :placeholder="server.host"
               persistent-hint
-              :hint="$t('instance.name')"
-              :label="$t('instance.name')"
+              :hint="t('instance.name')"
+              :label="t('instance.name')"
               required
             />
           </div>
@@ -129,44 +135,34 @@
   </v-form>
 </template>
 
-<script lang=ts>
-import { computed, defineComponent, inject, ref, watch } from '@vue/composition-api'
-import { required } from '/@/util/props'
+<script lang=ts setup>
 import { ServerStatus, protocolToMinecraft } from '@xmcl/runtime-api'
-import MinecraftVersionMenu from './MinecraftVersionMenu.vue'
 import unknownServer from '/@/assets/unknown_server.png'
 import { CreateOptionKey } from '../composables/instanceCreation'
 import { injection } from '/@/util/inject'
+import { useMinecraftVersionList } from '../composables/versionList'
+import VersionMenu from './VersionMenu.vue'
+import { useI18n } from '/@/composables'
 
-export default defineComponent({
-  components: { MinecraftVersionMenu },
-  props: {
-    status: required<ServerStatus>(Object),
-    acceptingVersion: required(String),
-    pinging: required(Boolean),
-    valid: required(Boolean),
-  },
-  emits: ['update:valid'],
-  setup(props) {
-    const content = injection(CreateOptionKey)
-    const server = computed(() => content.server ?? { host: '', port: undefined })
-    const serverField = ref('')
-    const acceptingMinecrafts = computed(() => protocolToMinecraft[props.status.version.protocol])
-    watch(serverField, (v) => {
-      const [host, port] = v.split(':')
-      content.server = {
-        host,
-        port: port ? Number.parseInt(port, 10) : 25565,
-      }
-    })
-    return {
-      ...content,
-      runtime: content.runtime,
-      serverField,
-      server,
-      unknownServer,
-      acceptingMinecrafts,
-    }
-  },
+const props = defineProps<{
+  status: ServerStatus
+  acceptingVersion: string
+  pinging: boolean
+  valid: boolean
+}>()
+
+const emit = defineEmits(['update:valid'])
+const { t } = useI18n()
+const { items, refresh, refreshing } = useMinecraftVersionList(computed(() => content.runtime.minecraft))
+const content = injection(CreateOptionKey)
+const server = computed(() => content.server ?? { host: '', port: undefined })
+const serverField = ref('')
+const acceptingMinecrafts = computed(() => protocolToMinecraft[props.status.version.protocol])
+watch(serverField, (v) => {
+  const [host, port] = v.split(':')
+  content.server = {
+    host,
+    port: port ? Number.parseInt(port, 10) : 25565,
+  }
 })
 </script>

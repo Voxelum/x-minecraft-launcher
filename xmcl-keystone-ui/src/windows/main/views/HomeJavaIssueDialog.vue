@@ -8,6 +8,7 @@
       <v-toolbar
         tabs
         color="orange en-3"
+        dark
       >
         <v-toolbar-title>{{ title }}</v-toolbar-title>
       </v-toolbar>

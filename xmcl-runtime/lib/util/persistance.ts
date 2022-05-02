@@ -1,6 +1,7 @@
 import { Schema } from '@xmcl/runtime-api'
 import { writeFile } from 'atomically'
-import { ensureFile, readFile } from 'fs-extra'
+import { copy, ensureFile, readFile } from 'fs-extra'
+import { missing } from './fs'
 import { Logger } from './log'
 import { SafeJsonSerializer } from './serialize'
 
@@ -11,7 +12,7 @@ import { SafeJsonSerializer } from './serialize'
  * @param logger The logger
  * @returns The mapped file
  */
-export function createSafeFile<T>(path: string, schema: Schema<T>, logger: Logger) {
+export function createSafeFile<T>(path: string, schema: Schema<T>, logger: Logger, legacyPaths: string[] = []) {
   const serializer = new SafeJsonSerializer(schema, logger)
   return {
     async write(data: T) {
@@ -19,6 +20,15 @@ export function createSafeFile<T>(path: string, schema: Schema<T>, logger: Logge
       await writeFile(path, await serializer.serialize(data))
     },
     async read(): Promise<T> {
+      if (await missing(path)) {
+        for (const p of legacyPaths) {
+          try {
+            await copy(p, path)
+            break
+          } catch {
+          }
+        }
+      }
       return await serializer.deserialize(await readFile(path).catch(e => Buffer.from('')))
     },
   }

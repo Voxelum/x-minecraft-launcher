@@ -11,15 +11,15 @@
         class="flex py-1 flex-shrink flex-grow-0"
         outlined
       >
-        <!-- <span class="flex items-center justify-center flex-shrink flex-1 min-w-36">
+        <span class="flex items-center justify-center flex-shrink flex-1 min-w-36">
           <v-select
             v-model="_projectType"
             flat
             solo
-            :items="['mod', 'modpack']"
+            :items="projectTypes"
             hide-details
           />
-        </span> -->
+        </span>
         <v-text-field
           v-model="keyword"
           color="green"
@@ -58,7 +58,7 @@
 
       <div
         v-if="!refreshing"
-        class="flex flex-col gap-3 overflow-auto"
+        class="flex flex-col gap-3 overflow-auto px-2.5"
       >
         <ModCard
           v-for="mod in projects"
@@ -83,7 +83,7 @@
         class="overflow-auto"
         :loading="refreshingTag"
         :environments="environments"
-        :categories="categories"
+        :categories="categories.filter(c => c.project_type === projectType)"
         :game-versions="gameVersions"
         :licenses="licenses"
         :loaders="modLoaders"
@@ -124,7 +124,7 @@ export default defineComponent({
     from: withDefault(String, () => ''),
   },
   setup(props) {
-    const { refresh, refreshTag, query, category, gameVersion, license, modLoader, environment, projectType, sortBy, page, ...rest } = useModrinth(props)
+    const { refresh, refreshTag, query, category, gameVersion, license, modLoader, environment, projectType, sortBy, page, projectTypes, ...rest } = useModrinth(props)
     const { push } = useRouter()
     const keyword = ref(props.query)
     const onFiltered = (tag: string) => {
@@ -141,6 +141,7 @@ export default defineComponent({
     return {
       ...rest,
       keyword,
+      projectTypes,
       _query: query,
       _category: category,
       _projectType: projectType,

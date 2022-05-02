@@ -3,14 +3,15 @@
     outlined
     class="rounded-lg p-4 flex gap-6"
   >
-    <img
+    <v-img
       :src="icon"
-      class="w-40"
-    >
+      width="200"
+      class="rounded-lg"
+    />
     <div class="flex flex-col gap-2">
-      <h2 class="text-2xl font-bold">
+      <a class="text-2xl font-bold" target="_blank" :href="`https://modrinth.com/modpack/${slug}`">
         {{ title }}
-      </h2>
+      </a>
       <span class="text-lg">{{ description }}</span>
       <span class="flex gap-4">
         <a
@@ -51,7 +52,9 @@ import { optional, required } from '/@/util/props'
 export default defineComponent({
   props: {
     title: required(String),
+    projectType: required(String),
     description: required(String),
+    slug: required(String),
     icon: optional(String),
     discordUrl: optional(String),
     issueUrl: optional(String),

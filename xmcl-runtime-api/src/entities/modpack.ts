@@ -107,6 +107,10 @@ export interface ModrinthModpackManifest {
      * - raw.githubusercontent.com
      */
     downloads: string[]
+    /**
+     * An integer containing the size of the file, in bytes. This is mostly provided as a utility for launchers to allow use of progress bars.
+     */
+    fileSize?: number
   }>
   /**
    * This object contains a list of IDs and version numbers that launchers will use in order to know what to install.
@@ -115,6 +119,7 @@ export interface ModrinthModpackManifest {
     minecraft: string
     forge?: string
     'fabric-loader'?: string
+    'quilt-loader'?: string
   }
 }
 

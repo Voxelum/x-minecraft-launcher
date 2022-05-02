@@ -1,5 +1,6 @@
-import { readForgeMod } from '@xmcl/mod-parser'
-import { ForgeModCommonMetadata, ResourceType, ResourceDomain, normalizeForgeModMetadata } from '@xmcl/runtime-api'
+import { ForgeModParseFailedError, readForgeMod } from '@xmcl/mod-parser'
+import { ForgeModCommonMetadata, ResourceType, ResourceDomain, normalizeForgeModMetadata, forceForgeModMetadata } from '@xmcl/runtime-api'
+import { basename } from 'path'
 import { ResourceParser } from '../resource'
 
 export const forgeModParser: ResourceParser<ForgeModCommonMetadata> = ({
@@ -12,7 +13,16 @@ export const forgeModParser: ResourceParser<ForgeModCommonMetadata> = ({
     }
     return undefined
   },
-  parseMetadata: fs => readForgeMod(fs).then(normalizeForgeModMetadata),
+  parseMetadata: async (fs, filePath) => {
+    try {
+      return await readForgeMod(fs).then(normalizeForgeModMetadata)
+    } catch (e) {
+      if (e instanceof ForgeModParseFailedError) {
+        return forceForgeModMetadata(e, basename(filePath, '.jar'))
+      }
+      throw e
+    }
+  },
   getSuggestedName: (meta) => {
     let name = `${meta.name || meta.modid}`
     if (meta.version) {

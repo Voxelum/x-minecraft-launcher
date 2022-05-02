@@ -19,9 +19,10 @@
       <template v-for="(item) in versions">
         <v-list-item
           :key="item.id"
+          class="flex-grow-0 flex-1"
           ripple
           :class="{
-            grey: isSelected(item),
+            select: isSelected(item),
             'en-1': isSelected(item),
             'elevation-2': isSelected(item),
           }"
@@ -44,7 +45,7 @@
             {{ item.id }}
           </v-list-item-title>
           <v-list-item-subtitle class="!flex-grow flex">
-            {{ item.minecraftVersion }}
+            {{ item.minecraft }}
           </v-list-item-subtitle>
           <v-list-item-action style="flex-direction: row; justify-content: flex-end;">
             <v-btn
@@ -173,16 +174,16 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, computed, toRefs } from '@vue/composition-api'
-import type { ResolvedVersion } from '@xmcl/core'
-import { optional, required, withDefault } from '/@/util/props'
-import { useRefreshable } from '/@/composables'
+import { computed, defineComponent, reactive, toRefs } from '@vue/composition-api'
+import { InstallServiceKey, LocalVersionHeader, versionCompare, VersionServiceKey } from '@xmcl/runtime-api'
 import { useLocalVersions } from '../composables/version'
+import { useRefreshable, useService } from '/@/composables'
+import { optional, withDefault } from '/@/util/props'
 
 export default defineComponent({
   props: {
     filterText: withDefault(String, () => ''),
-    value: optional<ResolvedVersion>(Object),
+    value: optional<LocalVersionHeader>(Object),
   },
   emits: ['input'],
   setup(props, context) {
@@ -195,27 +196,29 @@ export default defineComponent({
 
       filteredMinecraft: '',
     })
-    const { localVersions, deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions, reinstall } = useLocalVersions()
-    const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1).filter(v => !data.filteredMinecraft || v.minecraftVersion === data.filteredMinecraft))
-    const minecraftVersions = computed(() => [...new Set(localVersions.value.map(v => v.minecraftVersion))])
-    function isSelected(v: ResolvedVersion) {
+    const { reinstall } = useService(InstallServiceKey)
+    const { localVersions } = useLocalVersions()
+    const { deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions } = useService(VersionServiceKey)
+    const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1).filter(v => !data.filteredMinecraft || v.minecraft === data.filteredMinecraft))
+    const minecraftVersions = computed(() => [...new Set(localVersions.value.map(v => v.minecraft))].sort(versionCompare).reverse())
+    function isSelected(v: LocalVersionHeader) {
       if (!props.value) return false
       return v.id === props.value.id
     }
-    function selectVersion(v: ResolvedVersion) {
+    function selectVersion(v: LocalVersionHeader) {
       context.emit('input', v)
     }
     function browseVersionsFolder() {
       showVersionsDirectory()
     }
-    function openVersionDir(v: ResolvedVersion) {
+    function openVersionDir(v: LocalVersionHeader) {
       showVersionDirectory(v.id)
     }
-    function startDelete(v: ResolvedVersion) {
+    function startDelete(v: LocalVersionHeader) {
       data.deletingVersion = true
       data.deletingVersionId = v.id
     }
-    function startReinstall(v: ResolvedVersion) {
+    function startReinstall(v: LocalVersionHeader) {
       data.reinstallVersion = true
       data.reinstallVersionId = v.id
     }
@@ -268,4 +271,15 @@ export default defineComponent({
   .v-text-field>.v-input__control>.v-input__slot:before {
   border: none;
 }
+</style>
+
+<style scoped>
+.dark-theme .selected {
+  background: rgba(234, 233, 255, 0.2);
+}
+
+.selected {
+  background: rgba(0, 0, 0, 0.2);
+}
+
 </style>

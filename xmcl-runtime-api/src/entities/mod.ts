@@ -1,4 +1,4 @@
-import type { ForgeModMetadata } from '@xmcl/mod-parser'
+import type { ForgeModMetadata, ForgeModParseFailedError } from '@xmcl/mod-parser'
 
 export interface ForgeModCommonMetadata extends ForgeModMetadata {
   modid: string
@@ -27,6 +27,43 @@ export interface ForgeModCommonMetadata extends ForgeModMetadata {
    * Accept forge version range
    */
   acceptForge: string
+}
+
+export function forceForgeModMetadata(e: ForgeModParseFailedError, fileName: string) {
+  const asm = e.asm
+  const result: ForgeModCommonMetadata = {
+    modid: '',
+    name: '',
+    version: '',
+    acceptForge: '',
+    acceptMinecraft: '',
+    authors: [],
+    logoFile: '',
+    description: '',
+    mcmodInfo: [],
+    manifest: e.manifest,
+    modsToml: [],
+    ...asm,
+  }
+  if (asm.fmlPluginClassName) { 
+    const split = asm.fmlPluginClassName.split('/')
+    let className = split[split.length - 1]
+    className = className.endsWith('Plugin') ? className.substring(0, className.length - 'Plugin'.length) : className
+    
+    result.modid = className
+    result.name = className
+  }
+  if (asm.fmlPluginMcVersion) {
+    result.acceptMinecraft = `[${asm.fmlPluginMcVersion}]`
+  }
+  if (!result.modid && (asm.usedForgePackage || asm.usedLegacyFMLPackage)) {
+    result.modid = fileName
+    result.name = fileName
+  }
+  if (!result.modid) {
+    throw e
+  }
+  return result
 }
 
 export function normalizeForgeModMetadata(metadata: ForgeModMetadata): ForgeModCommonMetadata {

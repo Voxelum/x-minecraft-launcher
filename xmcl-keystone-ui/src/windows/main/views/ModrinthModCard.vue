@@ -1,24 +1,27 @@
 <template>
   <v-card
+    v-ripple
     outlined
     :disabled="disabled"
-    class="rounded-lg shadow p-4"
+    hover
+    class="rounded-lg p-4"
     @click="$emit('click')"
   >
     <div class="flex">
-      <img
+      <v-img
+        max-width="100"
         :src="value.icon_url"
-        class="w-[100px] rounded"
-      >
+        class="rounded-2xl"
+      />
       <div class="flex flex-col ml-3">
         <div class="flex align-baseline">
           <h2 class="text-2xl font-bold pr-2">
             {{ value.title }}
           </h2>
-          <span> by {{ value.author }}</span>
+          <span class="secondary-text"> by {{ value.author }}</span>
         </div>
         {{ value.description }}
-        <div class="flex align-baseline gap-3">
+        <div class="flex align-baseline gap-3 secondary-text">
           <span>
             <v-icon small>
               file_download

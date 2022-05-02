@@ -66,7 +66,7 @@ export class ModpackService extends AbstractService implements IModpackService {
         manifestType: 'minecraftModpack',
         manifestVersion: 1,
         minecraft: {
-          version: gameVersionInstance?.minecraftVersion ?? instance.runtime.minecraft,
+          version: gameVersionInstance?.minecraft ?? instance.runtime.minecraft,
           modLoaders,
         },
         name: name ?? instance.name,

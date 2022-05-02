@@ -4,7 +4,9 @@
     v-context-menu="contextMenuItems"
     outlined
     draggable
+    hover
     class="draggable-card rounded-lg transition-all duration-200 cursor-pointer max-w-[30%]"
+    style="transition: all; transition-duration: 200ms;"
     @dragstart="$emit('dragstart')"
     @dragend="$emit('dragend')"
   >

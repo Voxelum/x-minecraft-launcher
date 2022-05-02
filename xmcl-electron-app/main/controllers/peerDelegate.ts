@@ -9,22 +9,6 @@ import { ControllerPlugin } from './plugin'
 
 export const peerPlugin: ControllerPlugin = function (this: Controller) {
   this.app.once('engine-ready', () => {
-    const browser = new BrowserWindow({
-      title: 'Peer Helper',
-      webPreferences: {
-        preload: peerPreload,
-      },
-      show: false,
-    })
-
-    this.app.log('Create peer window')
-    browser.loadFile(htmlUrl)
-    this.setupBrowserLogger(browser, 'peer')
-
-    browser.webContents.on('console-message', (event, level, message, line, sourceId) => {
-      this.app.log(`[Peer] ${message}`)
-    })
-
     const peerService = this.app.serviceManager.getOrCreateService(PeerService)
 
     ipcMain.handle('get-user-info', () => {
@@ -33,9 +17,32 @@ export const peerPlugin: ControllerPlugin = function (this: Controller) {
       return { name: profile.name, avatar: profile.textures.SKIN.url }
     })
 
+    let browser: BrowserWindow | undefined
     let invocationId = 0
+
+    const ensureBrowser = async () => {
+      if (!browser) {
+        browser = new BrowserWindow({
+          title: 'Peer Helper',
+          webPreferences: {
+            preload: peerPreload,
+          },
+          show: false,
+        })
+
+        this.app.log('Create peer window')
+        browser.loadFile(htmlUrl)
+        this.setupBrowserLogger(browser, 'peer')
+
+        browser.webContents.on('console-message', (event, level, message, line, sourceId) => {
+          this.app.log(`[Peer] ${message}`)
+        })
+      }
+      return browser
+    }
     const invoke = <T>(method: string, ...args: any[]) => {
       const id = invocationId++
+
       return new Promise<T>((resolve, reject) => {
         const handler = (_: any, payload: any) => {
           if (payload.id === id) {
@@ -48,7 +55,9 @@ export const peerPlugin: ControllerPlugin = function (this: Controller) {
           ipcMain.removeListener(method, handler)
         }
         ipcMain.on(method, handler)
-        browser.webContents.send(method, id, ...args)
+        ensureBrowser().then((browser) => {
+          browser.webContents.send(method, id, ...args)
+        })
       })
     }
 

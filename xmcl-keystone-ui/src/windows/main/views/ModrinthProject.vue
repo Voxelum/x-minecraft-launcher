@@ -23,6 +23,8 @@
     <div class="flex flex-col gap-4 flex-grow xl:max-w-110vh max-w-full">
       <Header
         class="flex-grow-0"
+        :slug="project.slug"
+        :project-type="project.project_type"
         :title="project.title"
         :description="project.description"
         :icon="project.icon_url"

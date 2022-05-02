@@ -49,5 +49,9 @@ export default class SemaphoreManager extends Manager {
     this.app.handle('semaphore', () => {
       return this.semaphore
     })
+    this.app.handle('semaphoreAbort', (_, key) => {
+      this.log(`Force release the semaphore: ${key}`)
+      this.release(key)
+    })
   }
 }

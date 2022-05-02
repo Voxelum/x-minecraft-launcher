@@ -164,6 +164,9 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           size: this.total,
           id: this.downloadId,
         })
+        if (this.isPaused || this.isCancelled) {
+          throw new Error('Abort')
+        }
         delete callbacks[this.downloadId]
         return result
       }
@@ -173,7 +176,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       }
 
       protected isAbortedError(e: any): boolean {
-        return false
+        return e.message === 'Abort'
       }
     }
 

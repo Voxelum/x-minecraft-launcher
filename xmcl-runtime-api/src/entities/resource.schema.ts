@@ -56,6 +56,7 @@ export enum ResourceType {
   Modpack = 'modpack',
   CurseforgeModpack = 'curseforge-modpack',
   McbbsModpack = 'mcbbs-modpack',
+  ModrinthModpack = 'modrinth-modpack',
   Save = 'save',
   ResourcePack = 'resourcepack',
   ShaderPack = 'shaderpack',
