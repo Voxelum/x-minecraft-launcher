@@ -35,11 +35,14 @@ export interface UserProfile {
    * The used auth service name
    */
   authService: string
-
   /**
    * The access token of the user
    */
   accessToken: string
+  /**
+   * The microsoft access token
+   */
+  msAccessToken?: string
   /**
    * The expire time
    */

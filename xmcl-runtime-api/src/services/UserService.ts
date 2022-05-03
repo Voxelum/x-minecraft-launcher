@@ -218,10 +218,11 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
     this.users[profile.id] = value
   }
 
-  userProfileUpdate(profile: { id: string; accessToken: string; expiredAt: number; profiles: (GameProfileAndTexture | GameProfile)[]; selectedProfile?: string }) {
+  userProfileUpdate(profile: { id: string; accessToken: string; msAccessToken?: string; expiredAt: number; profiles: (GameProfileAndTexture | GameProfile)[]; selectedProfile?: string }) {
     const user = this.users[profile.id]
     user.accessToken = profile.accessToken
     user.expiredAt = profile.expiredAt
+    user.msAccessToken = profile.msAccessToken
     profile.profiles.forEach((p) => {
       if (user.profiles[p.id]) {
         user.profiles[p.id] = {

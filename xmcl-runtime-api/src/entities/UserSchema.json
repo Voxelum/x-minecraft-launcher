@@ -86,6 +86,10 @@
                     "description": "The access token of the user",
                     "type": "string"
                 },
+                "msAccessToken": {
+                    "description": "The microsoft access token",
+                    "type": "string"
+                },
                 "expiredAt": {
                     "description": "The expire time",
                     "type": "number"
