@@ -3,7 +3,6 @@ import { InstalledAppManifest, ReleaseInfo } from '@xmcl/runtime-api'
 import { Host } from '@xmcl/runtime/lib/app/Host'
 import { AbstractService, ServiceConstructor } from '@xmcl/runtime/lib/services/Service'
 import { Task } from '@xmcl/task'
-import { getAppInstallerUri } from '@xmcl/windows-utils'
 import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'path'
 import { URL } from 'url'
@@ -14,6 +13,7 @@ import { DownloadAppInstallerTask } from './utils/appinstaller'
 import { isDirectory } from './utils/fs'
 import { setLinuxProtocol } from './utils/protocol'
 import { checkUpdateTask as _checkUpdateTask, DownloadAsarUpdateTask, DownloadFullUpdateTask, quitAndInstallAsar, quitAndInstallFullUpdate, setup } from './utils/updater'
+import { getWindowsUtils } from './utils/windowsUtils'
 
 export default class ElectronLauncherApp extends LauncherApp {
   host: Host = app
@@ -25,6 +25,8 @@ export default class ElectronLauncherApp extends LauncherApp {
   showItemInFolder = shell.showItemInFolder
 
   handle = ipcMain.handle
+
+  windowsUtils = getWindowsUtils(this)
 
   /**
    * Push a event with payload to client.
@@ -149,14 +151,17 @@ export default class ElectronLauncherApp extends LauncherApp {
   }
 
   getAppInstallerStartUpUrl(): string {
-    try {
-      const uri = getAppInstallerUri()
-      const url = new URL(uri)
-      const appUrl = url.searchParams.get('app') || ''
-      return appUrl
-    } catch {
-      return ''
+    if (this.windowsUtils) {
+      try {
+        const uri = this.windowsUtils.getAppInstallerUri()
+        const url = new URL(uri)
+        const appUrl = url.searchParams.get('app') || ''
+        return appUrl
+      } catch {
+        return ''
+      }
     }
+    return ''
   }
 
   getPreloadServices(): ServiceConstructor<AbstractService>[] {
