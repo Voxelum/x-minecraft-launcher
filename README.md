@@ -20,6 +20,7 @@ Visit the [official site](https://xmcl.app) to download the app!
 - 🔥 Built-in support of curseforge, Modrinth. You can download resources inside the launcher.
 - 📦 Support import/export curseforge modpack.
 - 🔒 Support multiple account system. Built-in Microsoft login and Mojang Yggdrasil API. You can also add third-party authentication server, like blessing skin!
+- 🔗 Peer to peer connection between users. You can play multiplayer over "LAN" even you are not in same physical LAN!
 - 🔑 Code sign & modern packaging. Under Windows, you can use `appx` and `appinstaller` to install the app. You won't receive blocking message from you browser and see smart screen anymore! 😎
 
 ## Contribute

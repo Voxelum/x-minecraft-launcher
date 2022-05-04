@@ -115,7 +115,7 @@ Open another terminal
 npm run dev:main
 ```
 
-#### Code Change
+#### Code "Hot" Change
 
 You have code change, and you want to update the change to the running launcher instance.
 
@@ -183,3 +183,34 @@ Refer from [this gist](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f
 > chore: (updating grunt tasks etc; no production code change)
 
 **Your commit will be rejected if you do not follow these rules.**
+
+### How to debug Microsoft account locally
+
+You need to enter the project `xmcl-page` and run:
+
+```bash
+cd xmcl-page
+pnpm run dev
+```
+
+Now you can use dev version to login Microsoft locally. (It will redirect to local xmcl-page web)
+
+### How To Build
+
+The current launcher require to run 2 commands to build
+
+First, you need to build the frontend code:
+
+```bash
+pnpm build:renderer
+```
+
+Unless the code under `xmcl-keystone-ui` changed, you don't need to build this again.
+
+Then, you can build electron bundling with frontend you just build:
+
+```bash
+pnpm build:all
+```
+
+If you want a debug build, you can use `pnpm build:dir` which only build the directory result, and won't pack them up to different release format.

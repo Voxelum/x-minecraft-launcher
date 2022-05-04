@@ -19,6 +19,7 @@
 - 🔥 内置支持 Curseforge，Modrinth 下载。您可以在启动器内完成下载与安装！
 - 📦 支持 Curseforge 与 Mcbbs 格式整合包。
 - 🔒 支持多种账号系统。内置支持 Microsoft 和 Mojang Yggdrasil API，您统一可以添加第三方验证，如 litte skin！
+- 🔗 用户之间的 P2P 联机。两人不用担心不在一个局域网下没法 LAN 联机的问题了！
 - 🔑 代码签名与现代的安装模式。在 Windows 中下载 XMCL 的 `appx` 与 `appinstaller`，您不会再看到浏览器的危险软件提示，因为 XMCL 已经获得签名证书！😎
 
 ## 参与开发

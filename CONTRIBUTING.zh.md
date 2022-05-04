@@ -22,7 +22,7 @@
 - [windicss](https://windicss.org/). 用作css工具
 - [vue composition API](https://github.com/vuejs/composition-api). vue 2 的组合式 API 的桥梁。一旦 vuetify 升级到 vue 3，这将被删除。
 
-### Project structure
+### 项目文件结构
 
 ![diagram](/assets/diagram.svg)
 
@@ -39,7 +39,7 @@
 - xmcl-runtime
   - 启动器架构的核心实现。它只依赖 nodejs，不需要 electron 运行时。
 - xmcl-runtime-api
-  - 这是 xml 运行时的共享代码与 API。它可用于渲染器应用程序（浏览器侧）
+  - 这是 xmcl 运行时的共享代码与 API。它可用于渲染器应用程序（浏览器侧）
 
 ### 概念与结构
 
@@ -49,7 +49,7 @@
 
 渲染器只是与主进程通信的浏览器，它包含一份存储数据的副本（可以是完整的副本，也可以是只有部分内容的副本），用户的输入将触发一个 [动作 action](https://vuex.vuejs.org/guide/actions.html) 或 [提交 mutations](https://vuex.vuejs.org/guide/mutations.html)，它将自动同步到主进程。因此，不需要开发人员采取任何额外的行动。本地提交和操作将自动发送到主进程。完全可以把渲染器当作普通的 vue 应用。
 
-## 贡献
+## 开发
 
 我们强烈建议您使用 VSCode 打开项目。
 
@@ -57,7 +57,7 @@
 
 #### 克隆
 
-使用子模块标志 `--recurse-submodules` 克隆项目：
+用 git 克隆项目，需要使用 `--recurse-submodules` 选项：
 
 ```bash
 git clone --recurse-submodules https://github.com/Voxelum/x-minecraft-launcher
@@ -70,7 +70,7 @@ git submodule init
 git submodule update
 ```
 
-#### 安装
+#### 安装依赖
 
 使用 [pnpm](https://pnpm.io) 安装项目：
 
@@ -93,11 +93,11 @@ pnpm install
 
 #### 运行启动器
 
-然后你可以运行启动器
+现在你可以运行开发版启动器了
 
 #### 对于使用 VSCode 编辑器的开发者
 
-进入`Run and Debug`菜单，使用配置文件 Electron: Main (launch) 来启动electron。（热键 F5）
+进入 `Run and Debug` 菜单，使用配置文件 Electron: Main (launch) 来启动electron。（热键 F5）
 
 #### 对于不使用 VSCode 编辑器的开发者
 
@@ -115,9 +115,9 @@ npm run dev:renderer
 npm run dev:main
 ```
 
-#### 代码更新
+#### 代码"热"更新
 
-当代码更新，并且您希望将更新后的效果应用到正在运行的启动器实例。
+当你改了代码后，如何把把更新应用到正在跑的启动器中呢？
 
 ##### 对于浏览器进程
 
@@ -183,3 +183,34 @@ commit type: commit description
 > chore: (updating grunt tasks etc; no production code change)
 
 **如果您不遵守这些规则，您的提交将被拒绝。**
+
+### 如何在开发版 Debug Microsoft 账户
+
+你需要进入 `xmcl-page` 项目并启动
+
+```bash
+cd xmcl-page
+pnpm run dev
+```
+
+当 xmcl 的主页启动后你就可以在开发版登录了
+
+### 如何构建启动器成二进制
+
+现在的启动器使用 2 个命令来构建
+
+首先你需要先编译前端的代码
+
+```bash
+pnpm build:renderer
+```
+
+除非你在 `xmcl-keystone-ui` 有新的改动，你已经不需再重新跑这个命令了。
+
+然后你需要构建 electron，将你刚刚构建的前端代码和 electron 打包到一起
+
+```bash
+pnpm build:all
+```
+
+如果你需要构建一个 debug 的版本用于临时 debug，你可以使用 `pnpm build:dir`。它只会产生一个包含启动器程序文件夹输出（不用打包很多其他格式了）。
