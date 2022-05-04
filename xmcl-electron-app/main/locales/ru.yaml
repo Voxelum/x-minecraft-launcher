@@ -1,3 +1,4 @@
+browseApps: Смотреть кастомизированный интерфейс лаунчера
 checkUpdate: Проверить обновления
 fabricVersion:
   empty: Не удаётся загрузить список версий fabric для Minecraft {version}
@@ -6,10 +7,10 @@ openUrl:
   message: Лаунчер хочет открыть {url} в вашем браузере по умолчанию. Разрешить?
   title: Открыть в браузере
   trust: Доверять этому сайту и не показывать это предупреждение в следующий раз
-  'yes': Да
+  'yes': 'Да'
 quit: Выход
 showDiagnosis: Показать диагностику
-showLogsFolder: Show Logs Folder
+showLogsFolder: Открыть папку логов
 task:
   continue: Смотреть в лаунчере
   fail: Одна задача не выполнена

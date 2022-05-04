@@ -5,7 +5,6 @@ baseSetting:
   title: Базовые настройки
 cancel: Отмена
 cloneMinecraft: Клонировать Minecraft
-copy: {}
 copyClipboard:
   success: Скопировать в буфер обмена
 create: Создать
@@ -148,6 +147,12 @@ error:
   missingName: Дайте название этому профилю!
   name: Ошибка | Ошибки
 existed: Существует
+exportModpackTarget:
+  curseforge: Файл Curseforge
+  github: Файл Github
+  modrinth: Файл Modrinth
+  name: Экспортировать файл как
+  override: Переопределить (необработанный) файл
 fabricVersion:
   disable: Отключить Fabric
   empty: Нет версии Fabric для Minecraft {version}
@@ -180,6 +185,9 @@ gameSetting:
 hello: Привет мир
 help: Справка
 home: Главная
+importModpack:
+  failed: Не удалось импортировать {modpack}
+  success: {modpack} успешно импортирован
 importResource: Импорт ресурса
 importSave: Импорт сохранения
 installAssets:
@@ -240,6 +248,8 @@ instance:
   addServer: Добавить сервер
   delete: Удалить профиль
   deleteHint: Данные экземпляра будут навсегда перемещены с диска. Всё равно продолжить?
+  fileApi: URL-адрес API сервера синхронизации файлов
+  fileApiHint: Например, удалённая синхронизация файлов или экспорт в виде модпака MCBBS
   gameVersion: Версия игры
   includeVersion: Включить версию | Включить версии
   launchArguments: Предпросмотр аргументов запуска
@@ -250,7 +260,7 @@ instance:
   openCrashReportFolder: Открыть папку отчёта о сбоях
   openLogFolder: Открыть папку лога
   requireName: Название обязательно
-  showInstance: Показать папку экземпляра
+  showInstance: Открыть папку экземпляра
   version: Выбранная версия
   versionHint: Версия Minecraft для этой игры
   vmOptions: Параметры JVM
@@ -268,6 +278,7 @@ instanceTemplate:
   title: Настройка шаблона
 instances:
   add: Добавить локальную игру
+  choose: Профили
   importFolder: Импортировать из папки
   importFolderDescription: Импортировать Minecraft в лаунчер
   refreshServers: Обновить сервера
@@ -288,6 +299,7 @@ java:
   modifyInstance: Изменить путь к Java
   noMemory: Не ограничивать использование памяти
   refresh: Обновить локальную Java
+  refreshAfter: Обновите после установки java.
   switchVersion: Версия Java изменена
 javaError:
   downloadFailed: >-
@@ -296,9 +308,7 @@ javaError:
   noJavaInPath: >-
     По-прежнему не удается найти java в переменной среды PATH. Вы можете
     попробовать другой способ.
-  noLegalJava: >-
-    Не удаётся найти допустимую Java-версию для этого расположения. Попробуйте
-    снова.
+  noLegalJava: Не удаётся найти допустимой Java в этом месте. Повторите.
 launch:
   client: Клиент
   launch: Запустить
@@ -365,6 +375,7 @@ login:
   forgetPassword: Забыли пароль?
   login: Вход
   logout: Выход
+  manualLoginUrl: Если браузер не открылся, нажмите на эту ссылку для авторизации!
   signup: Зарегистрироваться
   signupDescription: Впервые тут?
 loginError:
@@ -391,6 +402,7 @@ mod:
   acceptVersion: Принять Minecraft {version}
   backToAllMods: Вернуться ко всем модам
   compatible: Совместимый мод.
+  currentVersion: Текущая {current}
   deletion: Удаление мода
   deletionHint: >-
     Вы навсегда потеряете этот мод и его метаданные. Вы уверены, что хотите
@@ -402,16 +414,17 @@ mod:
   filter: Фильтр модов
   hideIncompatible: Скрыть несовместимые моды
   import: Импортировать мод
-  incompatible: Несовместимый мод.
+  incompatible: Несовместимый мод. 
+  maybeCompatible: Может быть совместимым.
   name: Мод | Моды
   nocompatible: Неизвестная совместимость
   openLink: Открыть ссылку мода {url}
   searchOnCurseforge: Искать мод на curseforge
   searchOnModrinth: Искать {name} на Modrinth
   selected: Выбранные моды
-  showFile: Показать путь к моду {file}
-  showInCurseforge: Показать мод на curseforge
-  showInModrinth: Показать {name} на Modrinth
+  showFile: Открыть расположение {file}
+  showInCurseforge: Открыть мод на Curseforge
+  showInModrinth: Открыть {name} на Modrinth
   showIncompatible: Показать несовместимые моды
   unselected: Невыбранные моды
 modpack:
@@ -476,6 +489,7 @@ modrinth:
     server: Сервер
   gameVersions:
     name: Версии игры
+  installFrom: Установить из Modrinth
   license: Лицензия
   licenses:
     name: Лицензии
@@ -483,6 +497,10 @@ modrinth:
     name: Загрузчик
   perPage: На страницу
   projectId: ID проекта
+  projectType:
+    mod: Мод
+    modpack: Модпак
+    name: Тип проекта
   searchText: Поиск
   serverSide: На стороне сервера
   sort:
@@ -492,7 +510,6 @@ modrinth:
     relevance: Актуальности
     title: Сортировать по
     updated: Недавно обновленные
-  sortBy: {}
   updateAt: Обновлён
   versionType:
     alpha: Альфа
@@ -500,6 +517,28 @@ modrinth:
     name: Состояние
     release: Релиз
   versions: Версии
+multiplayer:
+  complete: Выполнено
+  confirm: Подтвердить
+  copy: Скопировать
+  createLocalToken: Создать локальный токен
+  disconnectDescription: Отключиться от пользователя {user}({id})?
+  disconnected: отключен
+  enterRemoteToken: Введите удалённый токен
+  illegalTokenDescription: Недопустимый токен. Убедитесь, что токен от вашего товарища правильный.
+  initiateConnection: Инициировать соединение
+  joinConnection: >-
+    Если ваш товарищ уже инициировал соединение, вам нужно к нему
+    присоединиться.
+  joinManual: Присоединиться
+  localToken: Локальный токен
+  name: Мультиплеер по локальной сети
+  next: Далее
+  placeholder: Соединяйтесь с другими пользователями, чтобы играть в Minecraft по локальной сети!
+  previous: Назад
+  remoteToken: Удалённый токен
+  start: Начать
+  startNewP2PConnection: Нажмите кнопку «Начать», чтобы создать новое одноранговое соединение
 name: Название
 next: Далее
 'no': Нет
@@ -507,11 +546,21 @@ notification:
   empty: Уведомлений нет
   'name:': Уведомления
 ok: ОК
-optifine: {}
 optifineVersion:
   disable: Отключить Optifine
   empty: Optifine не поддерживается на Minecraft {version}
 optional: По желанию
+peerConnectionState:
+  closed: Закрыто
+  connected: Соединён
+  connecting: Соединение
+  disconnected: Отсоединён
+  failed: Не удалось
+  name: Состояние соединения
+  new: Новое
+peerIceGatheringState:
+  complete: Коллекция завершена
+  gathering: Сбор ледяного сервера
 popular: Популярность
 refresh:
   hint: Обновите пользовательские данные и состояние сервера.
@@ -532,7 +581,9 @@ resourcepack:
       восстановить. Продолжить?
     title: Удалить пакет текстур
   deletion: Удаление {pack}
-  deletionHint: Вы потеряете данные и метаданные этого пакета текстур. Продолжить?
+  deletionHint: >-
+    Данные и метаданные этого пакета текстур будут потеряны. Вы точно
+    этого хотите?
   dropHint: Перетащите сюда папку/архив пакета текстур для импортирования.
   export: Экспортировать пакет текстур
   filter: Фильтр пакетов текстур
@@ -559,10 +610,13 @@ save:
     title: Импортировать сохранение из управляемого источника
   deleteCancel: Отмена
   deleteConfirm: Подтвердить удаление
-  deleteHint: Невозможно отменить операцию, вы потеряете эти данные. Удалить?
-  deleteTitle: Удалить сохранение
+  deleteHint: >-
+    Эту операцию нельзя отменить. Вы навсегда потеряете данные сохранения. Удалить
+    это сохранение?
+  deleteTitle: Удаление сохранения
   detail: Больше информации
   dropHint: Чтобы импортировать, перетащите сюда свой архив сохранения
+  export: Экспортировать сохранение
   exportMessage: Экспортировать сохранение как архив
   exportTitle: Экспортирование сохранения
   import: Импортировать сохранение
@@ -575,7 +629,9 @@ server:
   create: Создать новый сервер
   creationHint: Введите адрес сервера и проверьте связь с сервером
   delete:
-    description: Будут удалены все локальные данные этого сервера. Всё равно удалить?
+    description: >-
+      Это приведёт к удалению всех локальных данных об этом сервере. Точно
+      хотите этого?
     name: Удалить сервер
   edit: Изменить информацию сервера
   error:
@@ -588,13 +644,12 @@ server:
   hostHint: Хост (с портом) сервера
   ipAddress: IP-адрес
   motd: MOTD сервера
-  name: Название сервера
+  name: Сервер | Сервера
   ping: Пинг
   pings: Связь
   players: Игроки
   port: Порт
   recommendedMinecraftVersion: Версия Minecraft
-  title: Сервер | Сервера
   unknown: Неизвестный сервер
   unknownDescription: Неизвестный сервер. Обновите
   version: Требуется версия сервера
@@ -684,9 +739,6 @@ user:
   noNetwork: Неверные учётные данные. Неправильное имя пользователя или пароль.
   profile: Профиль
   profileMode: Служба профиля
-  profileService:
-    name: Служба профиля
-    description: Служба предоставляет информацию о вашем скине.
   refreshAccount: Обновить аккаунт
   refreshSkin: Обновить скин
   submitChallenges: Отправить ответы
