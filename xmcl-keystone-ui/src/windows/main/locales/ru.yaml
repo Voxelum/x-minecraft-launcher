@@ -187,7 +187,7 @@ help: Справка
 home: Главная
 importModpack:
   failed: Не удалось импортировать {modpack}
-  success: {modpack} успешно импортирован
+  success: "{modpack} успешно импортирован"
 importResource: Импорт ресурса
 importSave: Импорт сохранения
 installAssets:
