@@ -5,6 +5,7 @@ import vuetify from './vuetify'
 import 'virtual:windi.css'
 import Setup from './Setup.vue'
 import { I18N_KEY } from '/@/composables'
+import { createI18n } from '/@/i18n'
 
 Vue.config.productionTip = false
 Vue.use(VueI18n)
@@ -18,15 +19,7 @@ const messages = Object.fromEntries(
     }),
 )
 
-const i18n = new VueI18n({
-  locale: 'en',
-  fallbackLocale: 'en',
-  messages,
-  missing: () => {
-    // handle translation missing
-  },
-  silentTranslationWarn: true,
-})
+const i18n = createI18n('en', messages)
 
 Vue.use(VueCompositionApi)
 const app = createApp(defineComponent({

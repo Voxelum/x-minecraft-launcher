@@ -500,6 +500,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
         userId: mcResponse.username,
         accessToken: mcResponse.access_token,
         gameProfiles,
+        msAccessToken: tokenResult?.accessToken,
         selectedProfile: gameProfiles[0],
         avatar: xboxGameProfile.profileUsers[0].settings.find(v => v.id === 'PublicGamerpic')?.value,
         expiredAt: mcResponse.expires_in * 1000 + Date.now(),
@@ -510,6 +511,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       userId: mcResponse.username,
       accessToken: mcResponse.access_token,
       gameProfiles: [],
+      msAccessToken: tokenResult?.accessToken,
       selectedProfile: undefined,
       avatar: xboxGameProfile.profileUsers[0].settings.find(v => v.id === 'PublicGamerpic')?.value,
       expiredAt: mcResponse.expires_in * 1000 + Date.now(),
@@ -550,6 +552,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     let availableProfiles: GameProfile[]
     let selectedProfile: GameProfile | undefined
     let avatar: string | undefined
+    let msAccessToken: string | undefined
 
     if (authService !== 'offline' && authService !== 'microsoft') {
       this.emit('user-login', usingAuthService.hostName)
@@ -571,6 +574,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       availableProfiles = result.gameProfiles
       selectedProfile = result.selectedProfile
       avatar = result.avatar
+      msAccessToken = result.msAccessToken
       expiredAt = result.expiredAt
     } else {
       const result = await login({
@@ -611,6 +615,8 @@ export class UserService extends StatefulService<UserState> implements IUserServ
         profileService,
         authService,
 
+        msAccessToken,
+
         selectedProfile: selectedProfile ? selectedProfile.id : '',
         avatar,
         expiredAt,
@@ -621,6 +627,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
         id: userId,
         accessToken,
         profiles: availableProfiles,
+        msAccessToken,
         selectedProfile: selectedProfile ? selectedProfile.id : '',
         expiredAt,
       })

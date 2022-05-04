@@ -5,6 +5,7 @@ import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import BrowseVue from './Browse.vue'
 import vuetify from './vuetify'
+import { createI18n } from '/@/i18n'
 
 Vue.use(VueCompositionApi)
 Vue.use(VueI18n)
@@ -18,15 +19,7 @@ const messages = Object.fromEntries(
     }),
 )
 
-const i18n = new VueI18n({
-  locale: 'en',
-  fallbackLocale: 'en',
-  messages,
-  missing: () => {
-    // handle translation missing
-  },
-  silentTranslationWarn: true,
-})
+const i18n = createI18n('en', messages)
 
 const baseServiceChannel = serviceChannels.open(BaseServiceKey)
 

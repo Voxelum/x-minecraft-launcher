@@ -1,4 +1,12 @@
 
+## 0.24.1
+### @xmcl/keystone-ui@0.23.1
+#### Bug Fixes
+
+- wrong i18n for plural ([baed6986653a5eaf763e78315e7d7f7c1b2a81df](https://github.com/Voxelum/x-minecraft-launcher/commit/baed6986653a5eaf763e78315e7d7f7c1b2a81df))
+- i18n for other window ([1f7e7f868aa261b6a7bcf66815d99849e7b14c03](https://github.com/Voxelum/x-minecraft-launcher/commit/1f7e7f868aa261b6a7bcf66815d99849e7b14c03))
+
+
 ## 0.24.0
 ### @xmcl/runtime-api@0.8.0
 #### Features

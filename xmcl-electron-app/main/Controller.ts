@@ -10,7 +10,6 @@ import setupWinUrl from '@renderer/setup.html'
 import { LauncherAppController } from '@xmcl/runtime'
 import { InstalledAppManifest } from '@xmcl/runtime-api'
 import InstanceService from '@xmcl/runtime/lib/services/InstanceService'
-import { getWindowsVersion, setMica, setWindowBlur } from '@xmcl/windows-utils'
 import { BrowserWindow, dialog, session, shell, Tray } from 'electron'
 import { fromFile } from 'file-type'
 import { readFile } from 'fs/promises'
@@ -45,7 +44,7 @@ export default class Controller implements LauncherAppController {
     plugins.forEach(p => p.call(this))
 
     if (app.platform.name === 'windows') {
-      this.windowsVersion = getWindowsVersion()
+      this.windowsVersion = app.windowsUtils?.getWindowsVersion()
     }
 
     this.app.on('window-all-closed', () => {
@@ -69,12 +68,12 @@ export default class Controller implements LauncherAppController {
 
   private setWindowBlurEffect(browser: BrowserWindow) {
     const isWin = this.app.platform.name === 'windows'
-    if (isWin) {
+    if (isWin && this.app.windowsUtils) {
       const handle = browser.getNativeWindowHandle()
       const windowsVersion = this.windowsVersion
       if (windowsVersion) {
         if (windowsVersion.build >= WindowsBuild.Windows11) {
-          setMica(handle.buffer, true)
+          this.app.windowsUtils.setMica(handle.buffer, true)
           this.app.log(`Set window Mica ${handle.toString('hex')}`)
         } else {
           let blur: AccentState
@@ -87,7 +86,7 @@ export default class Controller implements LauncherAppController {
           } else {
             blur = AccentState.ACCENT_ENABLE_TRANSPARENTGRADIENT
           }
-          if (setWindowBlur(handle.buffer, blur)) {
+          if (this.app.windowsUtils.setWindowBlur(handle.buffer, blur)) {
             this.app.log(`Set window Acrylic transparent ${handle.toString('hex')}`)
           } else {
             this.app.warn(`Set window Acrylic failed ${handle.toString('hex')}`)
