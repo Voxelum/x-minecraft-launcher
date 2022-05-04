@@ -1,9 +1,9 @@
-import { AccountInfo, CryptoProvider, LogLevel, PublicClientApplication } from '@azure/msal-node'
+import { CryptoProvider, LogLevel, PublicClientApplication } from '@azure/msal-node'
 import { Manager } from '.'
-import { createPlugin } from '../util/credentialPlugin'
 import LauncherApp from '../app/LauncherApp'
 import { CLIENT_ID, IS_DEV } from '../constant'
 import { UserService } from '../services/UserService'
+import { createPlugin } from '../util/credentialPlugin'
 
 export default class CredentialManager extends Manager {
   readonly scopes: string[]
@@ -14,7 +14,7 @@ export default class CredentialManager extends Manager {
 
   constructor(app: LauncherApp) {
     super(app)
-    this.scopes = ['XboxLive.signin', 'XboxLive.offline_access']
+    this.scopes = ['XboxLive.signin', 'XboxLive.offline_access', 'user.read']
   }
 
   async setup() {
