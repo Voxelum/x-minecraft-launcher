@@ -6,7 +6,8 @@ import { UserService } from '../services/UserService'
 import { createPlugin } from '../util/credentialPlugin'
 
 export default class CredentialManager extends Manager {
-  readonly scopes: string[]
+  readonly scopes: string[] = ['XboxLive.signin', 'XboxLive.offline_access']
+  readonly extraScopes: string[] = ['user.read']
 
   private cryptoProvider = new CryptoProvider()
 
@@ -14,7 +15,6 @@ export default class CredentialManager extends Manager {
 
   constructor(app: LauncherApp) {
     super(app)
-    this.scopes = ['XboxLive.signin', 'XboxLive.offline_access', 'user.read']
   }
 
   async setup() {
@@ -50,13 +50,28 @@ export default class CredentialManager extends Manager {
       const accounts = await app.getTokenCache().getAllAccounts().catch(() => [])
       const account = accounts.find(a => a.username === username)
       if (account) {
-        const result = await app.acquireTokenSilent({ scopes: this.scopes, account, forceRefresh: false }).catch((e) => {
+        const result = await app.acquireTokenSilent({
+          scopes: this.scopes,
+          account,
+          forceRefresh: false,
+        }).catch((e) => {
+          this.warn(`Fail to acquire microsoft token silently for ${username}`)
+          this.warn(e)
+          return null
+        })
+        const userRead = await app.acquireTokenSilent({
+          scopes: this.extraScopes,
+          account,
+        }).catch((e) => {
           this.warn(`Fail to acquire microsoft token silently for ${username}`)
           this.warn(e)
           return null
         })
         if (result) {
-          return result
+          return {
+            xbox: result,
+            microsoft: userRead,
+          }
         }
       }
     }
@@ -68,6 +83,7 @@ export default class CredentialManager extends Manager {
       const url = await app.getAuthCodeUrl({
         redirectUri,
         scopes,
+        extraScopesToConsent: ['user.read'],
         loginHint: username,
       })
       await this.app.openInBrowser(url)
@@ -89,7 +105,14 @@ export default class CredentialManager extends Manager {
     }
 
     const result = await app.acquireTokenByCode({ code, scopes, redirectUri })
+    const msResult = await app.acquireTokenSilent({
+      account: result!.account!,
+      scopes: this.extraScopes,
+    })
     this.app.controller.requireFocus()
-    return result
+    return {
+      xbox: result,
+      microsoft: msResult,
+    }
   }
 }

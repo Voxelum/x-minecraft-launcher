@@ -470,8 +470,8 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     const { oauthCode, microsoftEmailAddress } = options
 
     const req = this.app.networkManager.request
-    const tokenResult = await this.credentialManager.acquireMicrosoftToken({ username: microsoftEmailAddress, code: oauthCode })
-    const oauthAccessToken = tokenResult!.accessToken
+    const { microsoft: msToken, xbox: xboxToken } = await this.credentialManager.acquireMicrosoftToken({ username: microsoftEmailAddress, code: oauthCode })
+    const oauthAccessToken = xboxToken!.accessToken
     const { xstsResponse, xboxGameProfile } = await acquireXBoxToken(req, oauthAccessToken)
 
     const mcResponse = await loginMinecraftWithXBox(req, xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token)
@@ -500,7 +500,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
         userId: mcResponse.username,
         accessToken: mcResponse.access_token,
         gameProfiles,
-        msAccessToken: tokenResult?.accessToken,
+        msAccessToken: msToken?.accessToken,
         selectedProfile: gameProfiles[0],
         avatar: xboxGameProfile.profileUsers[0].settings.find(v => v.id === 'PublicGamerpic')?.value,
         expiredAt: mcResponse.expires_in * 1000 + Date.now(),
@@ -511,7 +511,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       userId: mcResponse.username,
       accessToken: mcResponse.access_token,
       gameProfiles: [],
-      msAccessToken: tokenResult?.accessToken,
+      msAccessToken: msToken?.accessToken,
       selectedProfile: undefined,
       avatar: xboxGameProfile.profileUsers[0].settings.find(v => v.id === 'PublicGamerpic')?.value,
       expiredAt: mcResponse.expires_in * 1000 + Date.now(),
