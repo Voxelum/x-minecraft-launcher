@@ -61,8 +61,8 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
     const useAuthLib = this.userService.state.isThirdPartyAuthentication
 
     /**
-       * Build launch condition
-       */
+     * Build launch condition
+     */
     const option: LaunchOption = {
       gameProfile,
       accessToken: user.user.accessToken,

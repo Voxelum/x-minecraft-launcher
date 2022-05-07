@@ -1,12 +1,14 @@
 import { MinecraftLanBroadcaster, MinecraftLanDiscover } from '@xmcl/client'
+import { InstanceManifestSchema } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
 import { ipcRenderer } from 'electron'
 import { PeerSession } from './connection'
+import { MessageShareManifest } from './messages/download'
 import { MessageLan } from './messages/lan'
 import { MessageEntry, MessageHandler } from './messages/message'
 
 export class PeerHost {
-  readonly connections: Record<string, PeerSession> = {}
+  readonly sessions: Record<string, PeerSession> = {}
   readonly broadcaster = new MinecraftLanBroadcaster()
   readonly discover = new MinecraftLanDiscover()
   /**
@@ -15,6 +17,8 @@ export class PeerHost {
   readonly id = randomUUID()
   readonly handlers: Record<string, MessageHandler<any>> = {}
 
+  private sharedManifest: InstanceManifestSchema | undefined
+
   constructor(entries: MessageEntry<any>[]) {
     this.broadcaster.bind()
     this.discover.bind().then(() => {
@@ -22,7 +26,7 @@ export class PeerHost {
     })
 
     this.discover.on('discover', (info) => {
-      for (const conn of Object.values(this.connections)) {
+      for (const conn of Object.values(this.sessions)) {
         if (conn.connection.connectionState !== 'connected') {
           continue
         }
@@ -40,22 +44,47 @@ export class PeerHost {
   }
 
   getByRemoteId(remoteId: string) {
-    return Object.values(this.connections).find(c => c.remoteId === remoteId)
+    return Object.values(this.sessions).find(c => c.remoteId === remoteId)
   }
 
   create(sessionId: string, remote?: string) {
     const conn = new PeerSession(this, sessionId, remote)
-    this.connections[conn.id] = conn
+    this.sessions[conn.id] = conn
     console.log(`connection id ${conn.id}`)
     ipcRenderer.send('connection', { id: conn.id })
     return conn
   }
 
+  setShareInstance(manifest?: InstanceManifestSchema) {
+    this.sharedManifest = manifest
+    if (manifest) {
+      for (const sess of Object.values(this.sessions)) {
+        sess.send(MessageShareManifest, { manifest: manifest })
+      }
+    }
+  }
+
+  getSharedInstance(): InstanceManifestSchema | undefined {
+    return this.sharedManifest
+  }
+
+  isFileShared(file: string): boolean {
+    if (this.sharedManifest) {
+      const man = this.sharedManifest
+      if (man) {
+        if (man.files.some(v => v.path === file && v.downloads && v.downloads.some(u => u.startsWith('peer://')))) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
   drop(id: string) {
-    const existed = this.connections[id]
+    const existed = this.sessions[id]
     if (existed) {
       existed.close()
     }
-    delete this.connections[id]
+    delete this.sessions[id]
   }
 }

@@ -1,14 +1,6 @@
-import { InstanceFileCurseforge, InstanceFileModrinth, InstanceFileUrl, InstanceManifest } from '../entities/instance'
+import { Exception, InstanceNotFoundException } from '../entities/exception'
+import { LocalInstanceManifest, InstanceManifestSchema, InstanceFile } from '../entities/instanceManifest.schema'
 import { ServiceKey } from './Service'
-
-export interface InstanceFile {
-  path: string
-  isDirectory: boolean
-  size: number
-  createAt: number
-  updateAt: number
-  sources: Array<'modrinth' | 'curseforge'>
-}
 
 export interface ExportInstanceOptions {
   /**
@@ -43,6 +35,9 @@ export interface ExportInstanceOptions {
 }
 
 export interface InstanceUpdate {
+  /**
+   * The differences between the remote instance manifest and current instance.
+   */
   updates: Array<{
     /**
      * Either or add or update the file
@@ -51,10 +46,55 @@ export interface InstanceUpdate {
     /**
      * The file need to apply update
      */
-    file: InstanceFileCurseforge | InstanceFileUrl | InstanceFileModrinth
+    file: InstanceFile
   }>
+  /**
+   * The instance manifest return by the remote api server
+   */
+  manifest: InstanceManifestSchema
+}
 
-  manifest: InstanceManifest
+export interface SetInstanceManifestOptions {
+  /**
+   * The path of the instance
+   */
+  path?: string
+  /**
+   * The manifest to upload
+   */
+  manifest: InstanceManifestSchema
+  /**
+   * The headers used to send to the server.
+   *
+   * By default, it will add an `Authorization` header with Microsoft account access token if this is empty.
+   */
+  headers?: Record<string, string>
+  /**
+   * Should we upload the file has downloads/curseforge/modrinth info?
+   *
+   * By default, if the file has curseforge/modrinth/downloads info, it will not be uploaded to the server.
+   *
+   * @default false
+   */
+  includeFileWithDownloads?: boolean
+  /**
+   * Force to use json format to upload to server.
+   *
+   * Some servers do not accept the files without downloads/curseforge/modrinth info. So this might failed on that server.
+   * @default false
+   */
+  forceJsonFormat?: boolean
+}
+
+export interface ApplyInstanceUpdateOptions {
+  /**
+   * The instance path
+   */
+  path: string
+  /**
+   * The files to update
+   */
+  updates: Array<InstanceFile>
 }
 
 /**
@@ -67,11 +107,6 @@ export interface InstanceIOService {
    */
   exportInstance(options: ExportInstanceOptions): Promise<void>
   /**
-   * Scan all the files under the current instance.
-   * It will hint if a mod resource is in curseforge
-   */
-  getInstanceFiles(): Promise<InstanceFile[]>
-  /**
    * Import an instance from a game zip file or a game directory. The location root must be the game directory.
    * @param location The zip or directory path
    * @returns The newly created instance path
@@ -81,7 +116,23 @@ export interface InstanceIOService {
    * Fetch the instance update and return the difference.
    * If this instance is not a remote hooked instance, this will return
    */
-  getInstanceUpdate(path?: string): Promise<InstanceUpdate | undefined>
+  fetchInstanceUpdate(path?: string): Promise<InstanceUpdate | undefined>
+  /**
+   * Compute the instance manifest for current local files.
+   * @param path The instance path
+   */
+  getInstanceManifest(path?: string): Promise<LocalInstanceManifest>
+  /**
+   * Upload the instance manifest via `instance.fileApi`
+   *
+   * This will send http post request to the `instance.fileApi` URL.
+   * - If all the files manifest in options has downloads/curseforge/modrinth info, it will POST a json manifest (`content-type: application/json`) to the server.
+   * - If some files in manifest has no downloads/curseforge/modrinth info, it will POST a zip file (`content-type: application/zip`) to the server.
+   *
+   * Normally, you must have admin privilege to call this method.
+   * Set the `headers` in options to add auth info in http headers.
+   */
+  uploadInstanceManifest(options: SetInstanceManifestOptions): Promise<void>
   /**
    * Apply the instance files update.
    *
@@ -93,14 +144,34 @@ export interface InstanceIOService {
    * - resourcepacks
    * - shaderpacks
    * or any other files
+   *
+   * This will only download modified file
    */
-  applyInstanceUpdate(options: {
-    /**
-     * The instance path
-     */
-    path: string
-    updates: Array<InstanceFileCurseforge | InstanceFileUrl | InstanceFileModrinth>
-  }): Promise<void>
+  applyInstanceFilesUpdate(options: ApplyInstanceUpdateOptions): Promise<void>
+}
+
+export type InstanceIOExceptions = InstanceNotFoundException | {
+  type: 'instanceHasNoFileApi'
+  instancePath: string
+} | {
+  type: 'instanceInvalidFileApi'
+  instancePath: string
+  url: string
+} | {
+  type: 'instanceSetManifestFailed'
+  statusCode: number
+  httpBody: any
+} | {
+  /**
+   * This mean the server return 404 or error
+   */
+  type: 'instanceNotFoundInApi'
+  url: string
+  statusCode?: number
+}
+
+export class InstanceIOException extends Exception<InstanceIOExceptions> {
+
 }
 
 export const InstanceIOServiceKey: ServiceKey<InstanceIOService> = 'InstanceIOService'
