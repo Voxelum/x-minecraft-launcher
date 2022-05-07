@@ -1,4 +1,4 @@
-import { AnyPersistedResource, AnyResource, ImportResourceOptions, ImportResourcesOptions, isPersistedResource, ParseResourceOptions, ParseResourcesOptions, PersistedResource, Resource, ResourceDomain, ResourceException, ResourceService as IResourceService, ResourceServiceKey, ResourceState, ResourceType, UpdateResourceOptions } from '@xmcl/runtime-api'
+import { AnyPersistedResource, AnyResource, ImportResourceOptions, ImportResourcesOptions, isPersistedResource, ParseResourceOptions, ParseResourcesOptions, PersistedResource, Resource, ResourceDomain, ResourceException, ResourceService as IResourceService, ResourceServiceKey, ResourceState, ResourceType, SourceInformation, UpdateResourceOptions } from '@xmcl/runtime-api'
 import { requireString } from '../util/object'
 import { task } from '@xmcl/task'
 import { FSWatcher } from 'fs'
@@ -46,6 +46,8 @@ export class ResourceService extends StatefulService<ResourceState> implements I
    * The array to store the pending to import resource file path, which is the absolute file path of the resource file under the domain directory
    */
   private pending = new Set<string>()
+
+  private pendingSource: Record<string, SourceInformation> = {}
 
   private loadPromises = {
     [ResourceDomain.Mods]: createPromiseSignal(),
@@ -324,6 +326,10 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     })))
   }
 
+  markResourceSource(sha1: string, source: SourceInformation) {
+    this.pendingSource[sha1] = source
+  }
+
   /**
    * Import the resource into the launcher.
    * @returns The resource resolved. If the resource cannot be resolved, it will goes to unknown domain.
@@ -335,6 +341,15 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     if (existed) {
       this.log(`Skip to import ${options.path} as resource existed in ${existed.path}`)
       return existed
+    }
+    if (context.sha1) {
+      const source = this.pendingSource[context.sha1]
+      if (options.source) {
+        options.source = { ...source, ...options.source }
+      } else {
+        options.source = source
+      }
+      delete this.pendingSource[context.sha1]
     }
     const task = this.importFileTask(options, context)
     const resource = await (options.background ? task.startAndWait() : this.submit(task))

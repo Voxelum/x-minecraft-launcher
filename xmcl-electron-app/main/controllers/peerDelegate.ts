@@ -10,6 +10,7 @@ import { brotliCompress, brotliDecompress } from 'zlib'
 import htmlUrl from '../assets/peer.html'
 import { ControllerPlugin } from './plugin'
 import peerPreload from '@preload/peer'
+import { AbortableTask } from '@xmcl/task'
 
 const pBrotliDecompress = promisify(brotliDecompress)
 const pBrotliCompress = promisify(brotliCompress)
@@ -31,6 +32,31 @@ export const peerPlugin: ControllerPlugin = function (this: Controller) {
     browser.webContents.on('console-message', (event, level, message, line, sourceId) => {
       this.app.log(`[Peer] ${message}`)
     })
+
+    class DownloadPeerFileTask extends AbortableTask<boolean> {
+      constructor(readonly url: string, readonly destination: string, readonly sha1: string) {
+        super()
+        this._to = destination
+        this._from = url
+      }
+
+      protected async process(): Promise<boolean> {
+        const result = await invoke<boolean>('download', {
+          url: this.url,
+          destination: this.destination,
+          sha1: this.sha1,
+        })
+        return result
+      }
+
+      protected abort(isCancelled: boolean): void {
+        invoke('download-abort', { url: this.url })
+      }
+
+      protected isAbortedError(e: any): boolean {
+        return false
+      }
+    }
 
     // browser.webContents.openDevTools()
 
@@ -72,7 +98,11 @@ export const peerPlugin: ControllerPlugin = function (this: Controller) {
           localDescriptionSDP: '',
           iceGatheringState: 'new',
           connectionState: 'new',
+          sharing: undefined,
         })
+      })
+      .on('shared-instance-manifest', (event, { id, manifest }) => {
+        peerService.state.connectionShareManifest({ id, manifest })
       })
 
     ipcMain.handle('get-user-info', () => {
@@ -135,6 +165,12 @@ export const peerPlugin: ControllerPlugin = function (this: Controller) {
       async drop(id: string): Promise<void> {
         await invoke<void>('drop', id)
         peerService.state.connectionDrop(id)
+      },
+      async downloadTask(url, destination, sha1) {
+        return new DownloadPeerFileTask(url, destination, sha1)
+      },
+      async shareInstance(options) {
+        await invoke('share', options.manifest)
       },
     })
   })

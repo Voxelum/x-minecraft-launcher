@@ -1,3 +1,4 @@
+import { InstanceManifestSchema } from 'src/entities/instanceManifest.schema'
 import { ServiceKey, StatefulService } from './Service'
 
 export interface RTCSessionDescription {
@@ -27,6 +28,10 @@ export interface PeerConnection {
   connectionState: ConnectionState
   iceGatheringState: IceGatheringState
   signalingState: SignalingState
+  /**
+   * The instance that this peer is sharing
+   */
+  sharing?: InstanceManifestSchema
 }
 
 export class PeerState {
@@ -36,6 +41,13 @@ export class PeerState {
     const conn = this.connections.find(c => c.id === id)
     if (conn) {
       conn.userInfo = info
+    }
+  }
+
+  connectionShareManifest({ id, manifest } : { id: string; manifest?: InstanceManifestSchema }) {
+    const conn = this.connections.find(c => c.id === id)
+    if (conn) {
+      conn.sharing = manifest
     }
   }
 
@@ -76,6 +88,10 @@ export class PeerState {
   }
 }
 
+export interface ShareInstanceOptions {
+  manifest?: InstanceManifestSchema
+}
+
 export interface PeerService extends StatefulService<PeerState> {
   /**
    * Create a new unconnected ready-to-go peer connection.
@@ -110,6 +126,10 @@ export interface PeerService extends StatefulService<PeerState> {
    * @param id The session to drop
    */
   drop(id: string): Promise<void>
+  /**
+   * Share the instance to other peers
+   */
+  shareInstance(options: ShareInstanceOptions): Promise<void>
 }
 
 export const PeerServiceKey: ServiceKey<PeerService> = 'PeerServiceKey'

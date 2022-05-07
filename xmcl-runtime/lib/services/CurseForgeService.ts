@@ -1,11 +1,12 @@
 import { AddonInfo, File, getAddonDatabaseTimestamp, getAddonDescription, getAddonFiles, getAddonInfo, getCategories, getCategoryTimestamp, GetFeaturedAddonOptions, getFeaturedAddons, searchAddons, SearchOptions } from '@xmcl/curseforge'
-import { DownloadTask } from '@xmcl/installer'
-import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, CurseforgeState, InstallFileOptions, ProjectType, ResourceState } from '@xmcl/runtime-api'
-import { compareDate, requireObject, requireString } from '../util/object'
-import { Agent } from 'https'
+import { createDefaultCurseforgeQuery, DownloadTask } from '@xmcl/installer'
+import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, CurseforgeState, InstallFileOptions, ProjectType } from '@xmcl/runtime-api'
 import { basename, join } from 'path'
+import { URL } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { getCurseforgeSourceInfo } from '../entities/resource'
+import { compareDate, requireObject, requireString } from '../util/object'
+import { isValidateUrl } from '../util/url'
 import { ResourceService } from './ResourceService'
 import { Inject, Singleton, StatefulService } from './Service'
 
@@ -79,6 +80,20 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
 
   fetchFeaturedProjects(getOptions: GetFeaturedAddonOptions) {
     return getFeaturedAddons(getOptions, { userAgent: this.networkManager.agents.https })
+  }
+
+  async resolveCurseforgeDownloadUrl(projectId: number, fileId: number) {
+    const getCurseforgeUrl = createDefaultCurseforgeQuery(this.networkManager.agents.https)
+    const ensureDownloadUrl = async (proj: number, file: number) => {
+      for (let i = 0; i < 3; ++i) {
+        const result = await getCurseforgeUrl(proj, file)
+        if (isValidateUrl(result)) {
+          return result
+        }
+      }
+      throw new Error(`Fail to ensure curseforge url ${proj}, ${file}`)
+    }
+    return ensureDownloadUrl(projectId, fileId)
   }
 
   async installFile({ file, type, projectId }: InstallFileOptions) {

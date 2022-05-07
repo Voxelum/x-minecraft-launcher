@@ -7,7 +7,7 @@ export const MessageMemberJoinInitiate: MessageType<{ from: string; to: string; 
 export const MessageMemberJoinAccept: MessageType<{ from: string; to: string; session: string; answer: RTCSessionDescription; initTime: number; answerTime: number }> = 'member-join-answer'
 
 export const MessageMemberJoinEntry = defineMessage(MessageMemberJoin, async function ({ id }) {
-  if (Object.values(this.host.connections).some(c => c.remoteId === id)) {
+  if (Object.values(this.host.sessions).some(c => c.remoteId === id)) {
     // no duplicated join
     return
   }

@@ -5,9 +5,11 @@ import { PeerHost } from './PeerHost'
 import { MessageType } from './messages/message'
 import { ServerProxy } from './ServerProxy'
 import { iceServers } from './stun'
-import { MessageMemberJoin } from './messages/memberJoin'
 import { MessageIdentity } from './messages/identity'
+import { ensureFile, unlink } from 'fs-extra'
 import { TransferDescription } from '../peer'
+import { checksum } from '@xmcl/core'
+import { createWriteStream } from 'fs'
 
 export class PeerSession {
   readonly connection: RTCPeerConnection
@@ -44,6 +46,11 @@ export class PeerSession {
         // this is metadata channel
         this.setChannel(e.channel)
         console.log('Metadata channel created')
+      } else if (channel.protocol === 'download') {
+        if (!this.host.isFileShared(channel.label)) {
+          // reject the file
+          channel.close()
+        }
       } else {
         // TODO: emit error for unknown protocol
       }
@@ -127,10 +134,45 @@ export class PeerSession {
     return this.connection.localDescription
   }
 
+  async download(file: string, dest: string, sha1: string) {
+    const channel = this.connection.createDataChannel(`${file}@${sha1}`, {
+      protocol: 'download',
+    })
+
+    await ensureFile(dest)
+    const output = createWriteStream(dest)
+
+    ipcRenderer.on('download-abort-internal', (ev, id: string, filePath: string) => {
+      if (id === this.id && file === filePath) {
+        channel.close()
+      }
+    })
+    await new Promise((resolve, reject) => {
+      channel.addEventListener('message', (ev) => {
+        output.write(Buffer.from(ev.data))
+        ipcRenderer.send('download-progress', { session: this.id, file, chunkSize: ev.data.length })
+      })
+      channel.addEventListener('error', (e) => {
+        resolve(e)
+      })
+      channel.addEventListener('close', () => {
+        channel.close()
+      })
+    })
+    output.close()
+    const actualSha1 = await checksum(dest, 'sha1').catch(() => '')
+    if (actualSha1 !== sha1) {
+      // noop
+      await unlink(dest)
+      return false
+    }
+    return true
+  }
+
   waitIceGathering() {
     return new Promise<void>((resolve) => {
       if (this.connection.iceGatheringState !== 'complete') {
-      // wait ice collect state done
+        // wait ice collect state done
         const onStateChange = () => {
           if (this.connection.iceGatheringState === 'complete') {
             resolve()

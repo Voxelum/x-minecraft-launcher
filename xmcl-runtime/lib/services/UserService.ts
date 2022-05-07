@@ -471,16 +471,21 @@ export class UserService extends StatefulService<UserState> implements IUserServ
 
     const req = this.app.networkManager.request
     const { microsoft: msToken, xbox: xboxToken } = await this.credentialManager.acquireMicrosoftToken({ username: microsoftEmailAddress, code: oauthCode })
+    this.log('Successfully get Microsoft access token')
     const oauthAccessToken = xboxToken!.accessToken
     const { xstsResponse, xboxGameProfile } = await acquireXBoxToken(req, oauthAccessToken)
+    this.log('Successfully login Xbox')
 
     const mcResponse = await loginMinecraftWithXBox(req, xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token)
+    this.log('Successfully login Minecraft with Xbox')
 
     const ownershipResponse = await checkGameOwnership(req, mcResponse.access_token)
     const ownGame = ownershipResponse.items.length > 0
+    this.log(`Successfully check ownership: ${ownGame}`)
 
     if (ownGame) {
       const gameProfileResponse = await getGameProfile(req, mcResponse.access_token)
+      this.log('Successfully get game profile')
       const gameProfiles: GameProfileAndTexture[] = [{
         id: gameProfileResponse.id,
         name: gameProfileResponse.name,
