@@ -8,54 +8,34 @@
       {{ $tc("modpack.name", 1) }}
     </v-subheader>
     <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ $t("modpack.author") }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{ $t("modpack.authorHint") }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action style="flex-grow: 0">
-        <v-text-field
-          v-model="data.author"
+      <v-list-item-action>
+        <v-checkbox
           hide-details
-          :placeholder="username"
-          required
         />
       </v-list-item-action>
-    </v-list-item>
-    <v-list-item style="margin-top: 5px">
       <v-list-item-content>
         <v-list-item-title>
-          {{ $t("modpack.description") }}
-        </v-list-item-title>
-        <v-list-item-subtitle style="height: 50px">
-          <v-text-field
-            v-model="data.description"
-            style="padding-top: unset; margin-top: unset; margin-bottom: 5px"
-            hide-details
-            :placeholder="$t('modpack.descriptionHint')"
-          />
-        </v-list-item-subtitle>
-      </v-list-item-content>
-    </v-list-item>
-
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ $t("modpack.url") }}
+          {{ $t("instance.fileApi") }}
         </v-list-item-title>
         <v-list-item-subtitle>
-          {{ $t("modpack.urlHint") }}
+          {{ $t("instance.fileApiHint") }}
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action style="width: 50%">
         <v-text-field
-          v-model="data.url"
+          v-model="data.fileServerApi"
           hide-details
-          placeholder="www.whatever.com"
+          placeholder="Please enter the remote sync url here if you want to keep the resource sync"
         />
+      </v-list-item-action>
+      <v-list-item-action>
+        <v-btn
+          icon
+          text
+          @click="gotoHelp"
+        >
+          <v-icon>question_mark</v-icon>
+        </v-btn>
       </v-list-item-action>
     </v-list-item>
   </v-list>
@@ -64,12 +44,17 @@
 <script lang="ts" setup>
 import { useGameProfile, useProfileId, useSelectedUser } from '../composables/user'
 import { injection } from '/@/util/inject'
+import { useI18n } from '/@/composables'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 
 const { data } = injection(InstanceEditInjectionKey)
 const { userId, profileId } = useSelectedUser()
 const { gameProfile } = useProfileId(userId, profileId)
 const { name: username } = useGameProfile(gameProfile)
+const { t } = useI18n()
+const gotoHelp = () => {
+  window.location = 'https://xmcl.app/faq/'
+}
 
 </script>
 
@@ -77,7 +62,6 @@ const { name: username } = useGameProfile(gameProfile)
 .flex {
   padding: 6px 8px !important
 }
-
 .v-btn {
   margin: 0
 }

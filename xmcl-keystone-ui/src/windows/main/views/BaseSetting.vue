@@ -1,7 +1,7 @@
 <template>
   <v-container
     fill-height
-    style="overflow: auto"
+    class="overflow-auto"
   >
     <v-layout
       wrap
@@ -16,6 +16,7 @@
         {{ $t("title") }}
       </v-flex>
       <BaseSettingGeneral :version="runtime" />
+      <BaseSettingSync />
       <BaseSettingModpack v-if="!isServer" />
       <BaseSettingServer v-else />
       <BaseSettingJava />
@@ -33,6 +34,7 @@ import BaseSettingServer from './BaseSettingServer.vue'
 import { useAutoSaveLoad } from '/@/composables'
 import BaseSettingLaunch from './BaseSettingLaunch.vue'
 import BaseSettingJava from './BaseSettingJava.vue'
+import BaseSettingSync from './BaseSettingSync.vue'
 
 const {
   runtime,
