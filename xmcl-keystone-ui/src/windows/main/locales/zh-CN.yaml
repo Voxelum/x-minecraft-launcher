@@ -85,6 +85,9 @@ diagnosis:
   missingLibraries:
     message: 启动器将自动下载并安装库文件
     name: 缺少 {name} 依赖 | 缺少 {name} 依赖 | 缺少{count}个库文件 | 缺少{count}个库文件
+  missingVersion:
+    message: 启动器将自动安装该版本
+    name: 未安装 {version}
   missingVersionJar:
     message: 启动器将自动下载JAR文件
     name: '%{version}版本JAR文件缺失'
@@ -107,16 +110,17 @@ diagnosis:
   userNotLogined:
     message: 点击登录 Minecraft
     name: 用户没有登陆
-  missingVersion:
-    message: 启动器将自动安装该版本
-    name: 未安装 {version}
 disk:
   available: 可用
   used: 已用
 edit: 编辑
 existed: 已导入过的
 exportModpackTarget:
+  curseforge: Curseforge 文件
+  github: Github
+  modrinth: Modrinth 文件
   name: 文件导出为
+  override: 覆盖文件 (打包)
 fabricVersion:
   disable: 不启用 Fabric
   empty: 在 Minecraft {version} 下未找到任何 Fabric 版本
@@ -153,65 +157,65 @@ importModpack:
 importResource: 导入资源
 importSave: 导入存档
 installAssets:
-  name: 下载游戏资源文件
   asset: 下载资源文件%{hash}
   assetsJson: 下载资源文件目录
+  name: 下载游戏资源文件
 installAuthlibInjector: 安装 authlib-injector
 installByProfile:
   name: 通过安装配置文件
   postProcessing: 后处理，更新本地文件
 installCurseforgeFile: 安装 Curseforge 文件
 installDependencies:
-  name: 检查%{version}的依赖
   installAssets:
-    name: 下载游戏资源文件
     assets: 下载资源文件%{hash}
     assetsJson: 下载资源文件目录
+    name: 下载游戏资源文件
   installLibraries:
-    name: 下载依赖运行库
     library: 检查库文件
+    name: 下载依赖运行库
+  name: 检查%{version}的依赖
 installFabric:
   name: 安装 Fabric
 installForge:
-  name: 安装 Forge
   downloadInstaller: 下载 Forge 安装器
   libraries:
-    name: 安装依赖库
     library: 检查库
+    name: 安装依赖库
+  name: 安装 Forge
   postProcessing: 处理 Minecraft Jar 文件
 installJre:
-  name: 安装Java运行库
   cleanup: 清理安装文件
   decompress: 解压缩JRE文件到本地
   download: 下载压缩的JRE文件
   fetchInfo: 从Mojang那获取JRE信息
+  name: 安装Java运行库
 installLibraries:
-  name: 安装依赖运行库
   library: 检查库文件
+  name: 安装依赖运行库
 installModpack:
-  name: 安装整合包
   deploy: 部署
   download:
-    name: 下载
     file: 下载文件
+    name: 下载
+  name: 安装整合包
   unpack: 解压缩
 installModrinthFile:
   name: 从 Modrinth 下载
 installOptifine:
-  name: 安装 Optifine
   download: 下载 Optifine Universal
   jar: 生成 Optifine Jar
   json: 生成 Json
+  name: 安装 Optifine
 installVersion:
-  name: 安装%{version}的游戏本体
   jar: 安装游戏JAR文件
   json: 安装游戏JSON文件
+  name: 安装%{version}的游戏本体
 instance:
   addServer: 添加服务器
   delete: 删除游戏
   deleteHint: 游戏的数据将完全被移除。你确定继续此操作吗？
   fileApi: 远程同步文件服务器 API 地址
-  fileApiHint: 用于远程同步实例文件，或 MCBBS 整合包导出
+  fileApiHint: 用于远程同步实例文件的链接
   gameVersion: 游戏版本
   includeVersion: 包含游戏版本
   launchArguments: 启动命令预览
@@ -237,6 +241,9 @@ instanceTemplate:
   profile: 这是一个已有的启动配置
   server: 这是一个已有的服务器启动配置
   title: 模板设置
+  ftb: 这是一个 FTB 的整合包配置
+  curseforge: 这是一个 Curseforge 整合包
+  mcbbs: 这是一个 MCBBS 整合包
 instances:
   add: 新建本地游戏
   choose: 选择实例
@@ -455,11 +462,7 @@ modrinth:
     updated: 更新时间
   sortBy: {}
   updateAt: 更新于
-  versionType:
-    alpha: Alpha
-    beta: Beta
-    name: 类型
-    release: 稳定版
+  versionType: {}
   versions: 版本
 multiplayer:
   complete: 完成
@@ -479,6 +482,7 @@ multiplayer:
   placeholder: 和其他玩家建立连接，跨局域网联机 Minecraft！
   previous: 上一步
   remoteToken: 对方的令牌
+  share: 分享启动配置
   start: 开始
   startNewP2PConnection: 点击开始按钮来新建一个新的点对点连接
 name: 名称
@@ -652,6 +656,9 @@ unused:
     mc: Minecraft 参数
     name: 启动配置
   summery: 简介
+updateInstance:
+  name: 更新/安装实例
+  file: 更新/安装实例文件 {file}
 user:
   accessToken: 访问令牌
   authMode: 验证服务
@@ -726,10 +733,15 @@ userSkin:
   upload: 上传
   urlNotEmpty: 皮肤URL不能为空
   urlNotValid: 请输入有效的皮肤URL
-versionSetting:
-  title: 版本管理
-  unset: 未启用
 version:
   name: 版本 | 版本
   notInstalled: 未安装该版本
+versionSetting:
+  title: 版本管理
+  unset: 未启用
+versionType:
+  alpha: Alpha
+  beta: Beta
+  name: 类型
+  release: 稳定版
 'yes': 是
