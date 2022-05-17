@@ -22,16 +22,16 @@
             hide-details
             filled
             append-icon="filter_list"
-            :label="$t('filter')"
+            :label="t('filter')"
           />
         </div>
       </v-list-item>
       <v-divider />
       <v-list-item
-        v-for="p in templates"
-        :key="p.path"
+        v-for="p in items"
+        :key="p.id"
         ripple
-        @click="onUse(p)"
+        @click="emit('select', p)"
       >
         <v-list-item-action>
           <v-checkbox
@@ -40,272 +40,117 @@
           />
         </v-list-item-action>
         <v-list-item-content>
-          <v-list-item-title>{{ p.title }}</v-list-item-title>
-          <v-list-item-subtitle>{{ p.subTitle }}</v-list-item-subtitle>
+          <v-list-item-title>{{ p.name }}</v-list-item-title>
+          <v-list-item-subtitle class="flex gap-1">
+            <v-chip
+              v-if="p.minecraft"
+              outlined
+              small
+              label
+            >
+              <v-avatar left>
+                <img
+                  :src="minecraftPng"
+                  alt="minecraft"
+                >
+              </v-avatar>
+              {{ p.minecraft }}
+            </v-chip>
+            <v-chip
+              v-if="p.forge"
+              outlined
+              small
+              label
+            >
+              <v-avatar left>
+                <img
+                  :src="forgePng"
+                  alt="forge"
+                >
+              </v-avatar>
+              {{ p.forge }}
+            </v-chip>
+            <v-chip
+              v-if="p.fabric"
+              outlined
+              small
+              label
+            >
+              <v-avatar left>
+                <img
+                  :src="fabricPng"
+                  alt="fabric"
+                >
+              </v-avatar>
+              {{ p.fabric }}
+            </v-chip>
+          </v-list-item-subtitle>
         </v-list-item-content>
 
         <v-list-item-action>
-          <v-list-item-action-text>{{ p.action }}</v-list-item-action-text>
+          <v-list-item-action-text>{{ getActionText(p) }}</v-list-item-action-text>
         </v-list-item-action>
       </v-list-item>
     </v-list>
   </div>
 </template>
 
-<script lang=ts>
+<script lang=ts setup>
 import { Ref } from '@vue/composition-api'
+import { Template } from '../composables/instanceAdd'
+import fabricPng from '/@/assets/fabric.png'
+import forgePng from '/@/assets/forge.png'
+import minecraftPng from '/@/assets/minecraft.png'
 import { useI18n } from '/@/composables'
-import { optional, required } from '/@/util/props'
-import { InstanceSchema, CurseforgeModpackResource, isCurseforgeModpackResource, ModpackResource, ResourceType, McbbsModpackResource } from '@xmcl/runtime-api'
-import { useInstanceTemplates } from '../composables/instance'
-import { CreateOptionKey } from '../composables/instanceCreation'
-import { injection } from '/@/util/inject'
 
-type ModpackDomainResource = CurseforgeModpackResource | ModpackResource | McbbsModpackResource
+const props = defineProps<{
+  value?: Template
+  templates: Template[]
+}>()
 
-export interface InstanceTemplate {
-  type: 'instance'
-  title: string
-  subTitle: string
-  path: string
-  action: string
-  source: InstanceSchema
-  minecraft: string
+const emit = defineEmits(['select'])
+
+const filterText = ref('')
+const versionFilterOptions = computed(() => props.templates.map(v => v.minecraft).filter((v): v is string => !!v))
+const selectedVersionFilterOption = ref('')
+const searchTextRef: Ref<null | HTMLElement> = ref(null)
+const { t } = useI18n()
+
+const getActionText = (template: Template) => {
+  if (template.source.type === 'instance') {
+    return template.source.instance.server ? t('instanceTemplate.server') : t('instanceTemplate.profile')
+  }
+  if (template.source.type === 'mcbbs') return t('instanceTemplate.mcbbs')
+  if (template.source.type === 'curseforge') return t('instanceTemplate.curseforge')
+  if (template.source.type === 'ftb') return t('instanceTemplate.ftb')
+  return t('instanceTemplate.modpack')
 }
 
-export interface ModpackTemplate {
-  type: 'modpack'
-  title: string
-  subTitle: string
-  path: string
-  action: string
-  source: ModpackDomainResource
-  minecraft: string
-}
+const items = computed(() => props.templates.filter((template) => {
+  if (selectedVersionFilterOption.value) {
+    if (template.minecraft !== selectedVersionFilterOption.value) return false
+  }
+  const searching = (filterText.value ?? '').toLowerCase()
+  if (searching.length === 0) {
+    return true
+  }
+  if (template.name.toLowerCase().indexOf(searching) !== -1) {
+    return true
+  }
+  if (template.minecraft.toLowerCase().indexOf(searching) !== -1) {
+    return true
+  }
+  if (template.forge.toLowerCase().indexOf(searching) !== -1) {
+    return true
+  }
+  if (template.fabric.toLowerCase().indexOf(searching) !== -1) {
+    return true
+  }
+  return false
+}))
 
-export default defineComponent({
-  props: {
-    value: optional<InstanceTemplate | ModpackTemplate>(Object),
-    onActivated: required<(cb: () => void) => void>(Function),
-    onDeactivated: required<(cb: () => void) => void>(Function),
-    preset: optional(String),
-  },
-  emits: ['select'],
-  setup(props, context) {
-    const { $t, $tc } = useI18n()
-    const { modpacks, instances } = useInstanceTemplates()
-
-    const filterText = ref('')
-    const versionFilterOptions = computed(() => allTemplates.value.map(v => v.minecraft).filter((v): v is string => !!v))
-    const selectedVersionFilterOption = ref('')
-    // const { toggles } = useSearchToggles()
-    // useSearchToggle(toggles.value[toggles.value.length - 1]!)
-    const getModpackVersion = (resource: ModpackDomainResource) => {
-      if (resource.type === 'curseforge-modpack') {
-        const modpack = resource.metadata
-        let version = `Minecraft: ${modpack.minecraft.version}`
-        if (modpack.minecraft.modLoaders && modpack.minecraft.modLoaders.length > 0) {
-          for (const loader of modpack.minecraft.modLoaders) {
-            version += ` ${loader.id}`
-          }
-        }
-        return version
-      }
-
-      if (resource.type === 'mcbbs-modpack') {
-        const modpack = resource.metadata
-        let version = `Minecraft: ${modpack.addons.find(a => a.id === 'game')?.version}`
-        const forge = modpack.addons.find(a => a.id === 'forge')
-        if (forge) {
-          version += ` Forge ${forge.version}`
-        }
-        const fabric = modpack.addons.find(a => a.id === 'fabric')
-        if (fabric) {
-          version += ` Fabric ${fabric.version}`
-        }
-        return version
-      }
-
-      const runtime = resource.metadata.runtime ?? {}
-      let version = `Minecraft: ${runtime.minecraft}`
-      if (runtime.forge) {
-        version += ` Forge ${runtime.forge}`
-      }
-      if (runtime.liteloader) {
-        version += ` Liteloader ${runtime.liteloader}`
-      }
-      if (runtime.fabricLoader) {
-        version += ` Fabric ${runtime.fabricLoader}`
-      }
-      return version
-    }
-    const getInstanceVersion = (inst: InstanceSchema) => {
-      let version = `Minecraft: ${inst.runtime.minecraft}`
-      if (inst.runtime.forge) {
-        version += `, Forge: ${inst.runtime.forge}`
-      }
-      if (inst.runtime.fabricLoader) {
-        version += `, Fabric: ${inst.runtime.fabricLoader}`
-      }
-      return version
-    }
-    const data = injection(CreateOptionKey)
-    const allTemplates = computed(() => {
-      const all = [] as Array<InstanceTemplate | ModpackTemplate>
-      all.push(...instances.value.map((instance) => ({
-        type: 'instance',
-        title: instance.name || `Minecraft ${instance.runtime.minecraft}`,
-        subTitle: getInstanceVersion(instance),
-        path: instance.path,
-        source: instance,
-        action: instance.server ? $t('instanceTemplate.server') : $t('instanceTemplate.profile'),
-        minecraft: instance.runtime.minecraft,
-      }) as InstanceTemplate))
-      all.push(...modpacks.value.map((modpack) => ({
-        type: 'modpack',
-        title: modpack.type === 'curseforge-modpack' ? `${modpack.metadata.name}-${modpack.metadata.version}` : modpack.name,
-        subTitle: getModpackVersion(modpack),
-        path: modpack.path,
-        source: modpack,
-        action: $t('instanceTemplate.modpack'),
-        minecraft: isCurseforgeModpackResource(modpack)
-          ? modpack.metadata.minecraft.version
-          : modpack.type === ResourceType.McbbsModpack
-            ? modpack.metadata.addons.find(v => v.id === 'minecraft')?.version
-            : modpack.metadata.runtime?.minecraft,
-      }) as ModpackTemplate))
-      return all
-    })
-    const templates = computed(() => allTemplates.value.filter((instance) => {
-      if (selectedVersionFilterOption.value) {
-        if (instance.minecraft !== selectedVersionFilterOption.value) return false
-      }
-      const searching = (filterText.value ?? '').toLowerCase()
-      if (searching.length === 0) {
-        return true
-      }
-      if (instance.title.toLowerCase().indexOf(searching) !== -1) {
-        return true
-      }
-      if (instance.subTitle.toLowerCase().indexOf(searching) !== -1) {
-        return true
-      }
-      return false
-    }))
-    const onUse = (template: InstanceTemplate | ModpackTemplate) => {
-      if (template.type === 'instance') {
-        const instance = template.source
-        data.name.value = instance.name
-        data.runtime.value = { ...instance.runtime }
-        data.java.value = instance.java
-        data.showLog.value = instance.showLog
-        data.hideLauncher.value = instance.hideLauncher
-        data.vmOptions.value = [...instance.vmOptions]
-        data.mcOptions.value = [...instance.mcOptions]
-        data.maxMemory.value = instance.maxMemory
-        data.minMemory.value = instance.minMemory
-        data.author.value = instance.author
-        data.description.value = instance.description
-        data.url.value = instance.url
-        data.icon.value = instance.icon
-        data.server.value = instance.server ? { ...instance.server } : null
-      } else {
-        const resource = template.source
-        if (resource.type === ResourceType.CurseforgeModpack) {
-          const metadata = resource.metadata
-          data.name.value = `${metadata.name} - ${metadata.version}`
-          data.runtime.value.minecraft = metadata.minecraft.version
-          if (metadata.minecraft.modLoaders.length > 0) {
-            for (const loader of metadata.minecraft.modLoaders) {
-              if (loader.id.startsWith('forge-')) {
-                data.runtime.value.forge = loader.id.substring('forge-'.length)
-              }
-              if (loader.id.startsWith('fabric-')) {
-                data.runtime.value.fabricLoader = loader.id.substring('fabric-'.length)
-              }
-            }
-          }
-          data.author.value = metadata.author
-        } else if (resource.type === ResourceType.McbbsModpack) {
-          const metadata = resource.metadata
-          data.name.value = `${metadata.name} - ${metadata.version}`
-          const mcVersion = metadata.addons.find(a => a.id === 'game')?.version ?? ''
-          const forgeVersion = metadata.addons.find(a => a.id === 'forge')?.version ?? ''
-          const fabricVersion = metadata.addons.find(a => a.id === 'fabric')?.version ?? ''
-          if (mcVersion) {
-            data.runtime.value.minecraft = mcVersion
-          }
-          if (forgeVersion) {
-            data.runtime.value.forge = forgeVersion
-          }
-          if (fabricVersion) {
-            data.runtime.value.fabricLoader = fabricVersion
-          }
-          data.author.value = metadata.author
-          if (metadata.launchInfo) {
-            if (metadata.launchInfo.javaArgument) {
-              data.vmOptions.value = metadata.launchInfo.javaArgument
-            }
-            if (metadata.launchInfo.launchArgument) {
-              data.mcOptions.value = metadata.launchInfo.launchArgument
-            }
-            if (metadata.launchInfo.minMemory) {
-              data.minMemory.value = metadata.launchInfo.minMemory
-            }
-          }
-          data.description.value = metadata.description
-          data.version.value = metadata.version
-        } else {
-          const metadata = resource.metadata
-          data.name.value = resource.name
-          data.runtime.value.minecraft = metadata.runtime.minecraft
-          data.runtime.value.forge = metadata.runtime.forge
-          data.runtime.value.fabricLoader = metadata.runtime.fabricLoader
-        }
-      }
-      context.emit('select', template)
-    }
-    const searchTextRef: Ref<null | HTMLElement> = ref(null)
-    if (props.preset) {
-      const preset = templates.value.find(t => t.path === props.preset)
-      if (preset) {
-        onUse(preset)
-      }
-    }
-    watch([computed(() => props.preset), templates], () => {
-      if (props.preset) {
-        const preset = templates.value.find(t => t.path === props.preset)
-        if (preset) {
-          onUse(preset)
-        }
-      }
-    })
-    props.onActivated(() => {
-      if (props.value) {
-        onUse(props.value)
-      }
-      // toggles.unshift(() => {
-      //   if (searchTextRef.value) {
-      //     searchTextRef.value.focus()
-      //   }
-      //   return true
-      // })
-    })
-    props.onDeactivated(() => {
-      // toggles.shift()
-    })
-    onUnmounted(() => {
-      filterText.value = ''
-    })
-    return {
-      templates,
-      onUse,
-      searchTextRef,
-      filterText,
-      versionFilterOptions,
-      selectedVersionFilterOption,
-    }
-  },
+onUnmounted(() => {
+  filterText.value = ''
 })
 </script>
 

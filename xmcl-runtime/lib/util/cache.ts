@@ -2,7 +2,7 @@
  * The helper class to hold object with ttl, which is useful for holding web api result.
  */
 export class CacheDictionary<T> {
-  private cache: Record<string, [T, number] | undefined> = {}
+  protected cache: Record<string, [T, number, number?] | undefined> = {}
 
   constructor(readonly ttl: number) { }
 
@@ -11,15 +11,27 @@ export class CacheDictionary<T> {
     if (!entry) {
       return undefined
     }
-    const [cache, createAt] = entry
-    if (Date.now() - createAt > this.ttl) {
-      this.cache[key] = undefined
+    const [cache, createAt, ttl] = entry
+    if (!ttl) {
+      return cache
+    }
+    if (Date.now() - createAt > ttl) {
+      this.delete(key as any)
       return undefined
     }
     return cache
   }
 
-  set(key: string, value: T) {
-    this.cache[key] = [value, Date.now()]
+  set(key: string, value: T, ttl?: number) {
+    this.cache[key] = [value, Date.now(), ttl]
+  }
+
+  delete(key: string) {
+    delete this.cache[key]
+    return true
+  }
+
+  clear() {
+    this.cache = {}
   }
 }

@@ -100,15 +100,6 @@ export function useInstanceVersionBase() {
   }
 }
 
-export function useInstanceTemplates() {
-  const { state } = useService(InstanceServiceKey)
-  const { state: resourceState } = useService(ResourceServiceKey)
-  return {
-    instances: computed(() => state.instances),
-    modpacks: computed(() => resourceState.modpacks),
-  }
-}
-
 export function useInstanceGameSetting() {
   const { state, refresh: _refresh, editGameSetting: edit, showOptionsFileInFolder: showInFolder } = useService(InstanceOptionsServiceKey)
   const refresh = () => _refresh()

@@ -44,6 +44,10 @@ export interface ImportModpackToInstanceOptions {
    * The destination instance path. If this is empty, it will create a new instance.
    */
   instancePath: string
+  /**
+   * Mount the instance after the modpack is imported
+   */
+  mountAfterSucceed?: boolean
 }
 
 export interface ImportModpackCreateInstanceOptions {
@@ -53,10 +57,15 @@ export interface ImportModpackCreateInstanceOptions {
   path: string
 
   instanceConfig: Omit<EditInstanceOptions, 'instancePath'>
+  /**
+   * Mount the instance after the modpack is imported
+   */
+  mountAfterSucceed?: boolean
 }
 
 /**
- * Provide the abilities to import/export instance from/to modpack
+ * Provide the abilities to import/export instance from/to modpack file.
+ * For json format modpack like FTB, you can use the `InstanceIOService`
  */
 export interface ModpackService {
   /**

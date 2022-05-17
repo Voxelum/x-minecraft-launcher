@@ -59,9 +59,9 @@ import { File } from '@xmcl/curseforge'
 import { useI18n } from '/@/composables'
 import { optional, required } from '/@/util/props'
 import Tile from './CurseforgeProjectFilesTile.vue'
-import { AddInstanceDialogKey } from './AppAddInstanceDialog.vue'
 import { useDialog } from '../composables/dialog'
 import { useCurseforgeInstall, useCurseforgeProjectFiles } from '../composables/curseforge'
+import { AddInstanceDialogKey } from '../composables/instanceAdd'
 
 export default defineComponent({
   components: { VirtualList },

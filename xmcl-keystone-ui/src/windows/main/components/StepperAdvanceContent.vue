@@ -11,13 +11,12 @@
       >
         <v-flex d-flex>
           <v-select
-            v-model="java"
+            v-model="content.java"
             outlined
             class="java-select"
             :label="$t('java.location')"
-            :item-text="getJavaText"
-            :item-value="getJavaVersion"
-            :items="javas"
+            :placeholder="$t('java.allocatedLong')"
+            :items="javaItems"
             :menu-props="{ auto: true, overflowY: true }"
             hide-details
             required
@@ -28,7 +27,7 @@
           xs2
         >
           <v-text-field
-            v-model="minMemory"
+            v-model="content.minMemory"
             outlined
             hide-details
             type="number"
@@ -42,7 +41,7 @@
           xs2
         >
           <v-text-field
-            v-model="maxMemory"
+            v-model="content.maxMemory"
             outlined
             hide-details
             type="number"
@@ -77,7 +76,7 @@
         <minecraft-version-menu @input="onSelectMinecraft">
           <template #default="{ on }">
             <v-text-field
-              v-model="runtime.minecraft"
+              v-model="content.runtime.minecraft"
               outlined
               append-icon="arrow_drop_down"
               persistent-hint
@@ -111,12 +110,12 @@
       </v-list-item-content>
       <v-list-item-action>
         <forge-version-menu
-          :minecraft="runtime.minecraft"
+          :minecraft="content.runtime.minecraft"
           @input="onSelectForge"
         >
           <template #default="{ on }">
             <v-text-field
-              :value="runtime.forge"
+              :value="content.runtime.forge"
               outlined
               append-icon="arrow_drop_down"
               hide-details
@@ -148,12 +147,12 @@
       </v-list-item-content>
       <v-list-item-action>
         <fabric-version-menu
-          :minecraft="runtime.minecraft"
+          :minecraft="content.runtime.minecraft"
           @input="onSelectFabric"
         >
           <template #default="{ on }">
             <v-text-field
-              :value="runtime.fabricLoader"
+              :value="content.runtime.fabricLoader"
               outlined
               hide-details
               append-icon="arrow_drop_down"
@@ -169,9 +168,7 @@
   </v-list>
 </template>
 
-<script lang=ts>
-import { required, withDefault } from '/@/util/props'
-import { JavaRecord } from '@xmcl/runtime-api'
+<script lang=ts setup>
 import forgePng from '/@/assets/forge.png'
 import minecraftPng from '/@/assets/minecraft.png'
 import fabricPng from '/@/assets/fabric.png'
@@ -182,62 +179,51 @@ import { CreateOptionKey } from '../composables/instanceCreation'
 import { useJava } from '../composables/java'
 import { injection } from '/@/util/inject'
 
-export default defineComponent({
-  components: { ForgeVersionMenu, MinecraftVersionMenu, FabricVersionMenu },
-  props: {
-    valid: required(Boolean),
-    showMinecraft: withDefault(Boolean, () => true),
+const props = defineProps({
+  valid: {
+    type: Boolean,
+    required: true,
   },
-  emits: ['update:valid'],
-  setup() {
-    const memoryRule = [(v: any) => Number.isInteger(v)]
-    const getJavaVersion = (java: JavaRecord) => `Java ${java.majorVersion}(${java.version})`
-    const getItem = (v: JavaRecord) => v.version
-    const content = injection(CreateOptionKey)
-    const { all: javas } = useJava()
-    function onSelectForge(event: { version: string }) {
-      if (content?.runtime.value) {
-        const runtime = content.runtime.value
-        runtime.forge = event.version
-        if (event.version) {
-          runtime.fabricLoader = ''
-        }
-      }
-    }
-    function onSelectFabric(event: { version: string }) {
-      if (content?.runtime.value) {
-        const runtime = content.runtime.value
-        if (event.version) {
-          runtime.forge = ''
-        }
-        runtime.fabricLoader = event.version
-      }
-    }
-    function onSelectMinecraft(version: string) {
-      if (content?.runtime.value) {
-        const runtime = content.runtime.value
-        runtime.minecraft = version
-        runtime.forge = ''
-        runtime.fabricLoader = ''
-      }
-    }
-    return {
-      getJavaText: getJavaVersion,
-      getJavaVersion: getItem,
-      javas,
-      maxMemory: content.maxMemory,
-      minMemory: content.minMemory,
-      java: content.java,
-      runtime: content.runtime,
-      onSelectMinecraft,
-      onSelectFabric,
-      onSelectForge,
-      forgePng,
-      minecraftPng,
-      fabricPng,
-    }
+  showMinecraft: {
+    type: Boolean,
+    default: true,
   },
 })
+
+const emit = defineEmits(['update:valid'])
+const memoryRule = [(v: any) => Number.isInteger(v)]
+const content = injection(CreateOptionKey)
+const { all: javas } = useJava()
+const javaItems = computed(() => javas.value.map(java => ({
+  text: `Java ${java.majorVersion} (${java.version})`,
+  value: java.path,
+})))
+function onSelectForge(event: { version: string }) {
+  if (content?.runtime) {
+    const runtime = content.runtime
+    runtime.forge = event.version
+    if (event.version) {
+      runtime.fabricLoader = ''
+    }
+  }
+}
+function onSelectFabric(event: { version: string }) {
+  if (content?.runtime) {
+    const runtime = content.runtime
+    if (event.version) {
+      runtime.forge = ''
+    }
+    runtime.fabricLoader = event.version
+  }
+}
+function onSelectMinecraft(version: string) {
+  if (content?.runtime) {
+    const runtime = content.runtime
+    runtime.minecraft = version
+    runtime.forge = ''
+    runtime.fabricLoader = ''
+  }
+}
 </script>
 
 <style>

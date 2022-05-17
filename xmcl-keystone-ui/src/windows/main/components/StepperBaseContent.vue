@@ -17,7 +17,7 @@
             xs3
           >
             <v-text-field
-              v-model="name"
+              v-model="content.name"
               outlined
               persistent-hint
               :hint="t('instance.nameHint')"
@@ -31,7 +31,7 @@
             xs3
           >
             <v-text-field
-              v-model="author"
+              v-model="content.author"
               outlined
               persistent-hint
               :hint="t('modpack.authorHint')"
@@ -41,7 +41,7 @@
           </v-flex>
           <v-flex d-flex>
             <v-text-field
-              v-model="description"
+              v-model="content.description"
               outlined
               persistent-hint
               :hint="t('modpack.descriptionHint')"
@@ -75,7 +75,7 @@ export default defineComponent({
     return {
       nameRules,
       t,
-      ...content,
+      content,
     }
   },
 })

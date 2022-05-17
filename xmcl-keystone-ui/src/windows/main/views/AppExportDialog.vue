@@ -136,111 +136,63 @@
           row
           style="padding: 5px; margin-bottom: 5px"
         >
-          <instance-files
+          <instance-manifest-file-tree
             v-model="data.selected"
+            selectable
+            :multiple="false"
           />
         </v-layout>
-        <v-layout row>
-          <v-btn
-            text
-            large
-            :disabled="exporting || refreshing"
-            @click="cancel"
-          >
-            {{ t('cancel') }}
-          </v-btn>
-          <v-spacer />
-          <div class="flex items-center justify-center text-center text-gray-500 flex-shrink flex-grow-0 text-sm">
-            ~{{ getExpectedSize(totalSize) }}
-          </div>
-          <v-btn
-            text
-            color="primary"
-            large
-            :loading="exporting || refreshing"
-            @click="confirm"
-          >
-            {{ t('modpack.export') }}
-          </v-btn>
-        </v-layout>
       </v-container>
+      <v-card-actions class="gap-5 items-baseline">
+        <v-btn
+          text
+          large
+          :disabled="exporting || refreshing"
+          @click="cancel"
+        >
+          {{ t('cancel') }}
+        </v-btn>
+        <v-spacer />
+        <div class="flex items-center justify-center text-center text-gray-500 flex-shrink flex-grow-0 text-sm">
+          ~{{ getExpectedSize(totalSize) }}
+        </div>
+        <!-- <v-btn
+          text
+          color="primary"
+          large
+          :loading="exporting || refreshing"
+          @click="confirm"
+        >
+          {{ t('modpack.export') }}
+        </v-btn> -->
+        <v-btn
+          text
+          color="primary"
+          large
+          :loading="exporting || refreshing"
+          @click="confirm"
+        >
+          {{ t('modpack.export') }}
+        </v-btn>
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script lang=ts setup>
-import { Ref } from '@vue/composition-api'
-import { InstanceFile, InstanceIOServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
+import { InstanceIOServiceKey, LocalInstanceFile, ModpackServiceKey } from '@xmcl/runtime-api'
 import { inc } from 'semver'
 import { useDialog, useZipFilter } from '../composables/dialog'
 import { useInstance, useInstanceVersion } from '../composables/instance'
-import { AppExportDialogKey, ExportFileNode, FileNodesSymbol } from '../composables/instanceExport'
+import { AppExportDialogKey } from '../composables/instanceExport'
+import { provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
 import { useLocalVersions } from '../composables/version'
-import InstanceFiles from './AppExportDialogInstanceFiles.vue'
 import { useI18n, useRefreshable, useService } from '/@/composables'
-import { basename } from '/@/util/basename'
 import { getExpectedSize } from '/@/util/size'
-
-function provideFiles(files: Ref<InstanceFile[]>, enableCurseforge: Ref<boolean>, enableModrinth: Ref<boolean>) {
-  function buildEdges(cwd: ExportFileNode[], filePaths: string[], currentPath: string, file: ExportFileNode) {
-    const remained = filePaths.slice(1)
-    if (remained.length > 0) { // edge
-      const name = filePaths[0]
-      let edgeNode = cwd.find(n => n.name === name)
-      if (!edgeNode) {
-        edgeNode = {
-          name,
-          id: currentPath,
-          size: 0,
-          source: '',
-          sources: [],
-          children: [],
-        }
-        cwd.push(edgeNode)
-      }
-      buildEdges(edgeNode.children!, remained, currentPath ? (currentPath + '/' + name) : name, file)
-    } else { // leaf
-      cwd.push(file)
-    }
-  }
-
-  const leaves: Ref<ExportFileNode[]> = ref([])
-  const nodes: Ref<ExportFileNode[]> = ref([])
-
-  watch(files, (files) => {
-    const leavesNode: ExportFileNode[] = files.map((f) => reactive({
-      name: basename(f.path),
-      id: f.path,
-      size: f.size,
-      source: '',
-      sources: computed(() => [...f.sources].filter(s => s === 'curseforge' ? enableCurseforge.value : s === 'modrinth' ? enableModrinth.value : true)),
-      children: f.isDirectory ? [] : undefined,
-    }))
-    const result: ExportFileNode[] = []
-    for (const file of leavesNode) {
-      buildEdges(result, file.id.split('/'), '', file)
-    }
-    leaves.value = leavesNode
-    nodes.value = result
-  })
-
-  watch([enableCurseforge, enableModrinth], () => {
-    for (const node of leaves.value) {
-      if (!enableCurseforge.value && node.source === 'curseforge') {
-        node.source = node.sources[0] as any
-      } else if (!enableModrinth.value && node.source === 'modrinth') {
-        node.source = node.sources[0] as any
-      }
-    }
-  })
-
-  provide(FileNodesSymbol, nodes)
-
-  return { nodes, leaves }
-}
+import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 
 const { isShown, hide: cancel } = useDialog(AppExportDialogKey)
-const { getInstanceFiles, exportInstance } = useService(InstanceIOServiceKey)
+const { getInstanceManifest, exportInstance } = useService(InstanceIOServiceKey)
 const { exportModpack } = useService(ModpackServiceKey)
 const { showSaveDialog } = windowController
 const { t } = useI18n()
@@ -260,7 +212,7 @@ const data = reactive({
   gameVersion: folder.value,
   selected: [] as string[],
   fileApi: '',
-  files: [] as InstanceFile[],
+  files: [] as LocalInstanceFile[],
   includeLibraries: false,
   includeAssets: false,
   emitCurseforge: false,
@@ -269,7 +221,20 @@ const data = reactive({
 
 const enableCurseforge = computed(() => data.emitCurseforge || data.emitMcbbs)
 const enableModrinth = computed(() => false)
-const { leaves } = provideFiles(computed(() => data.files), enableCurseforge, enableModrinth)
+const { leaves } = provideFileNodes(useInstanceFileNodesFromLocal(computed(() => data.files), reactive({
+  curseforge: enableCurseforge,
+  modrinth: enableModrinth,
+  downloads: false,
+})))
+watch([enableCurseforge, enableModrinth], () => {
+  for (const node of leaves.value) {
+    if (!enableCurseforge.value && node.choice === 'curseforge') {
+      node.choice = node.choices[0].value
+    } else if (!enableModrinth.value && node.choice === 'modrinth') {
+      node.choice = node.choices[0].value
+    }
+  }
+})
 
 function reset() {
   data.includeAssets = false
@@ -284,7 +249,8 @@ function reset() {
 
 // loading
 const { refresh, refreshing } = useRefreshable(async () => {
-  const files = await getInstanceFiles()
+  const manifest = await getInstanceManifest()
+  const files = manifest.files
   let selected = [] as string[]
   selected = files
     .filter(file => !file.path.startsWith('.'))
@@ -304,8 +270,8 @@ const exportDirectives = computed(() => {
   const existed = selectedPaths.value
   return leaves.value
     .filter(n => existed.has(n.id))
-    .filter(l => l.source)
-    .map(l => ({ path: l.id, exportAs: l.source as 'curseforge' | 'modrinth' }))
+    .filter(l => l.choice)
+    .map(l => ({ path: l.id, exportAs: l.choice as 'curseforge' | 'modrinth' }))
 })
 
 const totalSize = computed(() => {
