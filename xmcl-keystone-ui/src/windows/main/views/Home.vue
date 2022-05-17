@@ -86,6 +86,7 @@
     <home-launch-multi-instance-dialog />
     <launch-status-dialog />
     <java-fixer-dialog />
+    <home-sync-dialog />
   </div>
 </template>
 
@@ -109,6 +110,7 @@ import HomeLaunchButton from './HomeLaunchButton.vue'
 import HomeSyncButton from './HomeSyncButton.vue'
 import AppLaunchBlockedDialog from './AppLaunchBlockedDialog.vue'
 import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
+import HomeSyncDialog from './HomeSyncDialog.vue'
 
 const { show: showExport } = useDialog(AppExportDialogKey)
 

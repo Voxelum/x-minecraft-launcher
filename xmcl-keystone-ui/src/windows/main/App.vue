@@ -31,6 +31,7 @@
     <add-instance-dialog />
     <add-server-dialog />
     <export-dialog />
+    <app-share-instance-dialog />
   </v-app>
 </template>
 
@@ -59,6 +60,7 @@ import { useColorTheme } from './composables/colorTheme'
 import { injection } from '/@/util/inject'
 import { VuetifyInjectionKey } from '/@/composables/vuetify'
 import { ExceptionHandlersKey, useExceptionHandlers } from '/@/composables/exception'
+import AppShareInstanceDialog from './views/AppShareInstanceDialog.vue'
 
 const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = useColorTheme()
 const vuetify = injection(VuetifyInjectionKey)

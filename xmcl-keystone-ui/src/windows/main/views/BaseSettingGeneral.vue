@@ -4,7 +4,7 @@
     two-line
     subheader
   >
-    <v-subheader style="padding-right: 2px">
+    <v-subheader style="">
       {{ $t("title") }}
     </v-subheader>
     <v-list-item>

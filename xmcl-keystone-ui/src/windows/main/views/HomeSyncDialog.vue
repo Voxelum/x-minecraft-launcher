@@ -1,146 +1,67 @@
 <template>
-  <v-dialog v-model="isShown">
-    <div v-if="updates.length > 0">
-      <v-treeview
-        v-model="selected"
-        class="export-dialog-files"
-        :open="opened"
-        style="width: 100%"
-        :items="tree"
-        selectable
-        hoverable
-        activatable
-        transition
-        open-on-click
-        item-children="children"
-      >
-        <template #prepend="{ item, open }">
-          <v-icon
-            v-if="item.children"
-            :color="selected ? 'accent' : ''"
+  <v-dialog
+    v-model="isShown"
+    width="800"
+  >
+    <v-card>
+      <v-toolbar color="secondary">
+        <v-toolbar-title>{{ t('title') }}</v-toolbar-title>
+
+        <template #extension>
+          <v-tabs
+            v-model="tab"
+            centered
           >
-            {{ open ? 'folder_open' : 'folder' }}
-          </v-icon>
-          <v-icon v-else>
-            insert_drive_file
-          </v-icon>
+            <v-tabs-slider color="yellow" />
+            <v-tab>
+              {{ t('pull') }}
+            </v-tab>
+            <v-tab>
+              {{ t('push') }}
+            </v-tab>
+          </v-tabs>
         </template>
-
-        <template #label="{ item }">
-          <div style="padding: 5px 0px;">
-            <span
-              style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;"
-              :style="{ color: item.disabled ? 'grey' : 'white' }"
-            >{{ item.name }}</span>
-            <!-- <div
-              style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
-            >
-              {{ getDescription(item.id) }}
-            </div>
-            <div
-              v-if="item.size > 0"
-              style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
-            >
-              {{ item.size > 0 ? getExpectedSize(item.size) : '' }}
-            </div> -->
-          </div>
-        </template>
-
-        <template #append="{ item }">
-          {{ item.operation }}
-          <!-- <v-select
-            v-if="item.sources.length > 0 && selected"
-            v-model="item.source"
-            :label="t('exportModpackTarget.name')"
-            class="w-50"
-            :items="(item.sources.concat([''])).map(getSourceItem)"
-            hide-details
-            flat
-          />-->
-        </template>
-      </v-treeview>
-    </div>
+      </v-toolbar>
+      <v-container class="max-h-[70vh]">
+        <v-tabs-items v-model="tab">
+          <v-tab-item :key="0">
+            <HomeSyncDialogPull :shown="tab === 0" />
+          </v-tab-item>
+          <v-tab-item :key="1">
+            <HomeSyncDialogPush :shown="tab === 1" />
+          </v-tab-item>
+        </v-tabs-items>
+      </v-container>
+    </v-card>
   </v-dialog>
 </template>
 <script lang="ts" setup>
 import { useDialog } from '../composables/dialog'
-import { CurseForgeServiceKey, InstanceIOServiceKey, InstanceUpdate } from '@xmcl/runtime-api'
-import { useServiceBusy, useService } from '/@/composables'
-import { basename } from '/@/util/basename'
-
-export interface UpdateFileNode {
-  name: string
-  id: string
-  operation: 'add' | 'update'
-  children?: UpdateFileNode[]
-}
+import HomeSyncDialogPull from './HomeSyncDialogPull.vue'
+import HomeSyncDialogPush from './HomeSyncDialogPush.vue'
+import { useI18n } from '/@/composables'
 
 const { isShown } = useDialog('instance-sync')
+const { t } = useI18n()
 
-const { getInstanceUpdate, applyInstanceUpdate } = useService(InstanceIOServiceKey)
-const { fetchProject } = useService(CurseForgeServiceKey)
-const checkingUpdate = useServiceBusy(InstanceIOServiceKey, 'getInstanceUpdate')
+const tab = ref(0)
 
-const updates = ref([] as UpdateFileNode[])
-const tree = ref([] as UpdateFileNode[])
-const opened = ref([])
-const selected = ref([] as string[])
-
-function buildEdges(cwd: UpdateFileNode[], filePaths: string[], currentPath: string, file: UpdateFileNode) {
-  const remained = filePaths.slice(1)
-  if (remained.length > 0) { // edge
-    const name = filePaths[0]
-    let edgeNode = cwd.find(n => n.name === name)
-    if (!edgeNode) {
-      edgeNode = {
-        name,
-        id: currentPath,
-        operation: 'update',
-        children: [],
-      }
-      cwd.push(edgeNode)
-    }
-    buildEdges(edgeNode.children!, remained, currentPath ? (currentPath + '/' + name) : name, file)
-  } else { // leaf
-    cwd.push(file)
-  }
-}
-
-async function check() {
-  const result = await getInstanceUpdate()
-  if (result) {
-    const leaves: UpdateFileNode[] = []
-    for (const update of result.updates) {
-      if (update.file.path) {
-        const node: UpdateFileNode = {
-          name: basename(update.file.path),
-          id: update.file.path,
-          operation: update.operation,
-        }
-        leaves.push(node)
-      }
-    }
-    const roots: UpdateFileNode[] = []
-    for (const file of leaves) {
-      buildEdges(roots, file.id.split('/'), '', file)
-    }
-    tree.value = roots
-    updates.value = leaves
-  } else {
-    tree.value = []
-    updates.value = []
-  }
-}
-
-async function update() {
-  // await applyInstanceUpdate([])
-}
-
-onMounted(check)
-
-watch(isShown, (opened) => {
-  if (opened) {
-    check()
+watch(isShown, (v) => {
+  if (!v) {
+    tab.value = 0
   }
 })
+
 </script>
+
+<i18n locale="en" lang="yaml">
+pull: Pull
+push: Push
+title: Instance Sync
+</i18n>
+
+<i18n locale="zh-CN" lang="yaml">
+pull: 拉取更新
+push: 上传实例
+title: 实例同步
+</i18n>

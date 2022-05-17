@@ -18,6 +18,16 @@
         <div class="flex-grow" />
         <v-btn
           text
+          @click="showShareInstance()"
+        >
+          <v-icon left>
+            share
+          </v-icon>
+          {{ t('multiplayer.share') }}
+        </v-btn>
+
+        <v-btn
+          text
           @click="show()"
         >
           <v-icon left>
@@ -146,6 +156,7 @@ import PlayerAvatar from '../components/PlayerAvatar.vue'
 import Hint from '/@/components/Hint.vue'
 
 const { show } = useDialog('peer-initiate')
+const { show: showShareInstance } = useDialog('share-instance')
 const { show: showReceive } = useDialog('peer-receive')
 const { show: showDelete } = useDialog('deletion')
 const service = useService(PeerServiceKey)
