@@ -45,6 +45,8 @@
             style="width: 100%"
           >
             <v-list-item
+              :color="data.recommendedLevel === 1 ? 'red' : data.recommendedLevel === 0 ? 'primary' : undefined"
+              :input-value="typeof data.recommendedLevel === 'number'"
               :ripple="data.recommendedVersion"
               :disabled="!data.recommendedVersion"
               @click="selectLocalJava"
@@ -67,6 +69,8 @@
 
             <v-list-item
               v-if="data.recommendedDownload"
+              :color="data.recommendedLevel !== 0 ? 'success' : undefined"
+              :input-value="data.recommendedLevel !== 0"
               :disabled="!data.recommendedDownload"
               ripple
               @click="downloadAndInstallJava"
@@ -88,6 +92,7 @@
             </v-list-item>
 
             <v-list-item
+              color="red"
               :ripple="!downloadingJava"
               :disabled="downloadingJava"
               @click="findLocalJava"
