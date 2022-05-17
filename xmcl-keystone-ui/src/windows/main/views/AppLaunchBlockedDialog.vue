@@ -12,6 +12,7 @@
     >
       <v-card
         color="transparent"
+        elevation="0"
         text
       >
         <v-card-title
@@ -49,11 +50,12 @@
 </template>
 
 <script lang=ts setup>
-import { getExpectVersion, LaunchException } from '@xmcl/runtime-api'
+import { getExpectVersion, LaunchException, LaunchExceptions, LaunchServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { useI18n } from '/@/composables'
+import { useI18n, useService } from '/@/composables'
 import { useExceptionHandler } from '/@/composables/exception'
 
+const { on } = useService(LaunchServiceKey)
 const { isShown, hide } = useDialog('launch-blocked')
 const title = ref('')
 const description = ref('')
@@ -61,7 +63,7 @@ const unexpected = ref(false)
 const extraText = ref('')
 const { t } = useI18n()
 
-useExceptionHandler(LaunchException, (e) => {
+function onException(e: LaunchExceptions) {
   console.log(e)
   if (e.type === 'launchGeneralException') {
     title.value = t('launchGeneralException.title')
@@ -88,7 +90,7 @@ useExceptionHandler(LaunchException, (e) => {
     extraText.value = ''
   } else if (e.type === 'launchNoProperJava') {
     title.value = t('launchNoProperJava.title')
-    description.value = t('launchNoProperJava.description')
+    description.value = t('launchNoProperJava.description', { javaPath: e.javaPath })
     unexpected.value = true
     extraText.value = ''
   } else if (e.type === 'launchNoVersionInstalled') {
@@ -98,6 +100,14 @@ useExceptionHandler(LaunchException, (e) => {
     extraText.value = ''
   }
   isShown.value = true
+}
+
+on('error', (e) => {
+  onException(e.exception)
+})
+
+useExceptionHandler(LaunchException, (e) => {
+  onException(e)
 })
 </script>
 
@@ -119,7 +129,7 @@ launchJavaNoPermission:
   description: The launcher don't have permission to execute the java <span class="highlight"> {javaPath} </span>. Either change the permission of the java file or raise the permission of launcher.
 launchNoProperJava:
   title: No proper java found
-  description: No proper java can be selected to launch the game.
+  description: No proper java can be selected to launch the game. ({javaPath} is invalid?)
 launchNoVersionInstalled:
   title: No version selected
   description: Cannot resolve version <span class="highlight">{version}</span> to launch.
@@ -138,7 +148,7 @@ launchJavaNoPermission:
   description: 没有权限执行 <span class="highlight"> {javaPath} </span>，请尝试给启动器更高权限，给 Java 文件增加可执行权限，或换一个 Java。
 launchNoProperJava:
   title: 没有合适的 Java
-  description: 找不到合适的 Java 来启动游戏。
+  description: 找不到合适的 Java 来启动游戏。({javaPath} 可能无效？)
 launchNoVersionInstalled:
   title: 无法找到安装的 Minecraft
   description: 找不到 Minecraft 启动。当前版本是 <span class="highlight">{version}</span>。
