@@ -9,8 +9,6 @@ export default class CredentialManager extends Manager {
   readonly scopes: string[] = ['XboxLive.signin', 'XboxLive.offline_access']
   readonly extraScopes: string[] = ['user.read']
 
-  private cryptoProvider = new CryptoProvider()
-
   private cancelWait = () => { }
 
   constructor(app: LauncherApp) {
@@ -76,9 +74,8 @@ export default class CredentialManager extends Manager {
       }
     }
     const scopes = this.scopes
-    const redirectUri = IS_DEV
-      ? 'http://localhost:3333/auth'
-      : directRedirectToLauncher ? 'xmcl://launcher/auth' : 'https://xmcl.app/auth'
+    const redirectUri = directRedirectToLauncher || IS_DEV ? 'http://localhost:25555/auth' : 'https://xmcl.app/auth'
+
     if (!code) {
       const url = await app.getAuthCodeUrl({
         redirectUri,
@@ -86,7 +83,7 @@ export default class CredentialManager extends Manager {
         extraScopesToConsent: ['user.read'],
         loginHint: username,
       })
-      await this.app.openInBrowser(url)
+      this.app.openInBrowser(url)
       this.app.serviceManager.getOrCreateService(UserService).emit('microsoft-authorize-url', url)
       code = await new Promise<string>((resolve, reject) => {
         this.cancelWait = () => {
