@@ -16,7 +16,7 @@ export enum BackgroundType {
 }
 
 export function useBackground() {
-  const backgroundType = useLocalStorageCacheStringValue<BackgroundType>('backgroundType', BackgroundType.HALO)
+  const backgroundType = useLocalStorageCacheStringValue<BackgroundType>('backgroundType', BackgroundType.NONE)
   const blur = useLocalStorageCacheInt('blur', 4)
   const blurMainBody = useLocalStorageCacheBool('blurMainBody', false)
   const backgroundImage = useLocalStorageCacheStringValue('background', '' as string)
