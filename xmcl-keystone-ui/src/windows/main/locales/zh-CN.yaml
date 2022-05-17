@@ -22,7 +22,7 @@ dataMigration:
   postMigrating: 清理老数据中
   reloadFailed: 数据迁移失败
   setRootCause: 请确保启动器在此过程中不被中断，不然您的数据可能丢失
-  setRootDescription: 这将改变启动器识别的Minecraft根目录。
+  setRootDescription: 这将改变启动器的存储根目录。
   setRootTitle: 迁移启动器到新的位置
   waitReload: 迁移数据中。请勿在此时关闭启动器，否则你将可能失去一部分数据。
 delete:

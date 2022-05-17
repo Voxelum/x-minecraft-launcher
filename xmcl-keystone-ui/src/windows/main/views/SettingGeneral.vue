@@ -129,7 +129,6 @@ import { localeMappings } from '/@/util/localeMappings'
 import { useSettings } from '../composables/setting'
 import { useI18n, useService } from '/@/composables'
 
-const dialog = windowController
 const { openDirectory } = useService(BaseServiceKey)
 
 const {
@@ -148,14 +147,7 @@ function showRootDir() {
   openDirectory(root.value)
 }
 async function browseRootDir() {
-  const { filePaths } = await dialog.showOpenDialog({
-    title: t('setting.selectRootDirectory'),
-    defaultPath: root.value,
-    properties: ['openDirectory', 'createDirectory'],
-  })
-  if (filePaths && filePaths.length !== 0) {
-    show(filePaths[0])
-  }
+  show()
 }
 
 </script>

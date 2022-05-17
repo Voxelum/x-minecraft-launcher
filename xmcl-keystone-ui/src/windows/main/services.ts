@@ -56,6 +56,15 @@ class ReactiveUserState extends UserState {
   }
 }
 
+export class ReactiveInstallState extends InstallState {
+  constructor() {
+    super()
+    markRaw(this.minecraft.versions)
+    markRaw(this.fabric.loaders)
+    markRaw(this.optifine.versions)
+  }
+}
+
 export function useAllServices(factory: ServiceFactory) {
   factory.register(ImportServiceKey, () => undefined)
   factory.register(InstanceIOServiceKey, () => undefined)

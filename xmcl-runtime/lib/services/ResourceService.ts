@@ -431,6 +431,12 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     await Promise.all(promises)
   }
 
+  async dispose(): Promise<void> {
+    for (const watcher of Object.values(this.watchers)) {
+      watcher?.close()
+    }
+  }
+
   // helper methods
 
   getExistedCurseforgeResource(projectId: number, fileId: number) {

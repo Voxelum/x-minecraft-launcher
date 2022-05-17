@@ -153,6 +153,9 @@ export default class ServiceManager extends Manager {
     return undefined
   }
 
+  /**
+   * Dispose all services
+   */
   dispose() {
     return Promise.all(Object.values(this.servicesMap).map((s) => s.dispose().catch((e) => {
       this.error(`Error during dispose ${Object.getPrototypeOf(s).constructor.name}:`)

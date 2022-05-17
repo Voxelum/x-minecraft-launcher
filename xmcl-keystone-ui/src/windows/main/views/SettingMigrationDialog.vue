@@ -1,136 +1,146 @@
 <template>
   <v-dialog
     v-model="isShown"
+    width="600"
     persistent
   >
-    <v-card v-if="migrateState === 0">
-      <v-card-title>
-        <h2 style="display: block; min-width: 100%">
-          {{ $t("dataMigration.setRootTitle") }}
-        </h2>
+    <v-card>
+      <v-toolbar color="warning">
+        <v-icon left>
+          local_shipping
+        </v-icon>
+        {{ t("dataMigration.setRootTitle") }}
+      </v-toolbar>
+      <v-progress-linear
+        color="red"
+        buffer-value="0"
+        stream
+      />
+      <v-card-text class="mt-4">
+        <p>{{ t("dataMigration.setRootDescription") }}</p>
+        <p>{{ t("dataMigration.setRootCause") }}</p>
         <v-text-field
+          outlined
           :value="root"
           readonly
-          hide-details
+          :placeholder="t('placeholder')"
+          :error="!!error"
+          :error-messages="errorText"
+          append-icon="folder"
+          class="mt-4"
+          @click="pickupFile"
         />
-      </v-card-title>
-      <v-card-text>
-        <p>{{ $t("dataMigration.setRootDescription") }}</p>
-        <p>{{ $t("dataMigration.setRootCause") }}</p>
+        <p
+          class="text-orange-400"
+          v-html="t('directoryCriteriaHint')"
+        />
+
+        <p v-if="migrating">
+          {{ t("dataMigration.waitReload") }}
+        </p>
       </v-card-text>
+      <v-progress-linear
+        color="red"
+        buffer-value="0"
+        stream
+      />
       <v-divider />
-      <v-card-actions>
+      <v-card-actions class="gap-2">
         <v-btn
           text
           large
+          :disable="migrating"
           @click="cancelApply"
         >
-          {{ $t("cancel") }}
+          {{ t("cancel") }}
         </v-btn>
         <v-spacer />
         <v-btn
           text
           large
-          @click="applySetting()"
-        >
-          {{ $t("dataMigration.apply") }}
-        </v-btn>
-      </v-card-actions>
-    </v-card>
-    <v-card v-else-if="migrateState === 1">
-      <v-card-title>
-        <h2>{{ $t("dataMigration.waitReload") }}</h2>
-      </v-card-title>
-      <v-spacer />
-      <div style="display: flex; width: 100; justify-content: center">
-        <v-progress-circular
-          :size="100"
-          color="white"
-          indeterminate
-        />
-      </div>
-    </v-card>
-    <v-card v-else>
-      <v-card-title>
-        <h2 v-if="error">
-          {{ $t("dataMigration.migrateFailed") }}
-        </h2>
-        <h2 v-else-if="!cleaning">
-          {{ $t("dataMigration.migrateSuccess") }}
-        </h2>
-        <h2 v-else>
-          {{ $t("dataMigration.postMigrating") }}
-        </h2>
-      </v-card-title>
-      <v-spacer />
-      <v-card-text v-if="error">
-        {{ error }}
-      </v-card-text>
-      <v-divider />
-      <v-card-actions v-if="!error">
-        <v-checkbox
-          v-model="clearData"
-          style="margin-left: 10px"
-          persistent-hint
-          :hint="$t('dataMigration.cleanOldDataHint')"
-          :label="$t('dataMigration.cleanOldData')"
-        />
-      </v-card-actions>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn
-          text
           color="primary"
-          :loading="cleaning"
-          :disabled="cleaning"
-          @click="postMigrate"
+          :loading="migrating"
+          @click="apply()"
         >
-          {{ $t("dataMigration.migrateDone") }}
+          <v-icon left>
+            local_shipping
+          </v-icon>
+          {{ t("dataMigration.apply") }}
         </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 <script lang="ts" setup>
-import { BaseServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceException, BaseServiceKey, isException } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { useRefreshable, useService } from '/@/composables'
+import { useI18n, useRefreshable, useService } from '/@/composables'
 
-const { migrate, postMigrate: _postMigrate, openDirectory, state } = useService(BaseServiceKey)
-const data = reactive({
-  migrateError: undefined as undefined | Error,
-})
+const { showOpenDialog } = windowController
+const { migrate, state } = useService(BaseServiceKey)
+const { t } = useI18n()
 
-const { isShown, hide, parameter } = useDialog('migration')
-const clearData = ref(false)
-const migrateState = ref(0)
+const { isShown, hide } = useDialog('migration')
+const errorText = ref('')
 const error = ref(undefined as undefined | Error)
-const root = computed(() => parameter.value as string)
+const errorDetails = computed(() => {
+  if (error.value) {
+    return `${error.value.name}\n${error.value.message ?? ''}\n${error.value.stack ?? ''}`
+  }
+  return ''
+})
+const root = ref('')
+
+async function pickupFile() {
+  const { filePaths } = await showOpenDialog({
+    title: t('selectRootDirectory'),
+    defaultPath: root.value,
+    properties: ['openDirectory', 'createDirectory'],
+  })
+  if (filePaths && filePaths.length !== 0) {
+    root.value = filePaths[0]
+  }
+}
 
 function cancelApply() {
   hide()
 }
-async function applySetting() {
-  migrateState.value = 1
+
+const { refresh: apply, refreshing: migrating } = useRefreshable(async () => {
   try {
     await migrate({ destination: root.value })
   } catch (e) {
-    error.value = e as any
-  } finally {
-    migrateState.value = 2
-  }
-}
-
-const { refresh: postMigrate, refreshing: cleaning } = useRefreshable(async () => {
-  if (clearData) {
-    try {
-      await _postMigrate()
-    } catch (e) {
-      // don't stop
-      console.error(e)
+    if (isException(BaseServiceException, e)) {
+      if (e.exception.type === 'migrationDestinationIsFile') {
+        errorText.value = t('migrationDestinationIsFile')
+      } else if (e.exception.type === 'migrationDestinationIsNotEmptyDirectory') {
+        errorText.value = t('migrationDestinationIsNotEmptyDirectory')
+      } else {
+        errorText.value = t('unknownError')
+      }
+    } else {
+      errorText.value = t('unknownError')
     }
+    error.value = e as any
   }
-  hide()
 })
 
 </script>
+
+<i18n locale="en" lang="yaml">
+directoryCriteriaHint: Please make sure your new directory location is an EMPTY directory!
+selectRootDirectory: Select Root Directory
+placeholder: Please click here to select directory
+migrationDestinationIsFile: Migration destination is a file! Please select an empty directory!
+migrationDestinationIsNotEmptyDirectory: Migration destination is not an empty directory! Please make sure you select an empty directory!
+unknownError: Unknown Error! Please retry or contact the developer!
+</i18n>
+
+<i18n locale="zh-CN" lang="yaml">
+directoryCriteriaHint: 请确保你选择的新的文件夹是一个<span class="font-bold text-lg mx-1">空</span>文件夹。
+selectRootDirectory: 选择新的根目录
+placeholder: 点击来选择新的根目录
+migrationDestinationIsFile: 迁移目标地址是个文件而不是文件夹！请重新选择一个空的文件夹！
+migrationDestinationIsNotEmptyDirectory: 迁移目标不是一个空的文件夹！请确保你选择了一个空的文件夹！
+unknownError: 未知错误，请联系作者或重试。
+</i18n>

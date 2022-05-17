@@ -1,11 +1,12 @@
-import { BaseService as IBaseService, BaseServiceKey, BaseState, MigrateOptions, ServiceKey, SettingSchema } from '@xmcl/runtime-api'
-import { copy, copyFile, ensureDir, readJson, remove, unlink, writeJson } from 'fs-extra'
+import { BaseService as IBaseService, BaseServiceException, BaseServiceKey, BaseState, MigrateOptions, SettingSchema } from '@xmcl/runtime-api'
+import { copy, copyFile, ensureDir, readdir, readJson, remove, rename, stat, unlink, writeJson } from 'fs-extra'
+import os from 'os'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { IS_DEV } from '../constant'
+import { isSystemError } from '../util/error'
 import { createSafeFile } from '../util/persistance'
 import { ZipTask } from '../util/zip'
-import os from 'os'
 import { Singleton, StatefulService } from './Service'
 
 export class BaseService extends StatefulService<BaseState> implements IBaseService {
@@ -146,94 +147,56 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
     await task.startAndWait()
   }
 
-  private oldMigratedRoot = ''
-
   async migrate(options: MigrateOptions) {
-    // TODO: not to hardcode
-
-    const source = this.app.gameDataPath
+    const source = this.getPath()
     const destination = options.destination
-    await ensureDir(destination)
-
-    function onError(e: any) {
-      if (e.code === 'ENOENT') return
-      throw e
+    const destStat = await stat(destination).catch(() => undefined)
+    if (destStat && destStat.isFile()) {
+      throw new BaseServiceException({
+        type: 'migrationDestinationIsFile',
+        destination,
+      })
+    }
+    if (destStat && destStat.isDirectory()) {
+      const files = await readdir(destination)
+      if (files.length !== 0) {
+        throw new BaseServiceException({
+          type: 'migrationDestinationIsNotEmptyDirectory',
+          destination,
+        })
+      }
+      await remove(destination)
     }
 
-    try {
-      await Promise.all([
-        copy(this.getPath('assets'), join(destination, 'assets')).catch(onError),
-        copy(this.getPath('libraries'), join(destination, 'libraries')).catch(onError),
-        copy(this.getPath('instances'), join(destination, 'instances')).catch(onError),
-        copy(this.getPath('versions'), join(destination, 'versions')).catch(onError),
-        copy(this.getPath('mods'), join(destination, 'mods')).catch(onError),
-        copy(this.getPath('resourcepacks'), join(destination, 'resourcepacks')).catch(onError),
-        copy(this.getPath('saves'), join(destination, 'saves')).catch(onError),
-        copy(this.getPath('modpacks'), join(destination, 'modpacks')).catch(onError),
-
-        copyFile(this.getPath('instances.json'), join(destination, 'instances.json')).catch(onError),
-        copyFile(this.getPath('minecraft-versions.json'), join(destination, 'minecraft-versions.json')).catch(onError),
-        copyFile(this.getPath('forge-versions.json'), join(destination, 'forge-versions.json')).catch(onError),
-        copyFile(this.getPath('lite-versions.json'), join(destination, 'lite-versions.json')).catch(onError),
-        copyFile(this.getPath('fabric-versions.json'), join(destination, 'fabric-versions.json')).catch(onError),
-        copyFile(this.getPath('authlib-injection.json'), join(destination, 'authlib-injection.json')).catch(onError),
-        copyFile(this.getPath('java.json'), join(destination, 'java.json')).catch(onError),
-        copyFile(this.getPath('setting.json'), join(destination, 'setting.json')).catch(onError),
-        copyFile(this.getPath('user.json'), join(destination, 'user.json')).catch(onError),
-      ])
-
-      const content = await readJson(join(destination, 'instances.json'))
-      content.instances = content.instances.map((p: string) => (p.startsWith(source) ? (destination + p.substring(source.length)) : p))
-      content.instance = content.selectedInstance.startsWith(source) ? (destination + content.selectedInstance.substring(source.length)) : content.selectedInstance
-      await writeJson(join(destination, 'instances.json'), content)
-    } catch (e) {
-      this.error('Fail to migrate the root! abort!')
-      this.error(e)
-      throw e
-    }
-
-    try {
-      this.oldMigratedRoot = this.app.gameDataPath
-      await this.app.migrateRoot(destination)
-      this.state.rootSet(destination)
-    } catch (e) {
-      this.oldMigratedRoot = ''
-      throw e
-    }
-  }
-
-  async postMigrate() {
-    if (!this.oldMigratedRoot) {
-      this.warn('Cannot perform post migrate as the migration is not performed or failed')
-      return
-    }
     await this.serviceManager.dispose()
 
-    function onError(e: any) {
-      if (e.code === 'ENOENT') return
+    const renameOrCopy = async () => {
+      try {
+        this.log(`Try to use rename to migrate the files: ${source} -> ${destination}`)
+        await rename(source, destination)
+      } catch (e) {
+        if (isSystemError(e)) {
+          if (e.code === 'EXDEV') {
+            // cannot move file across disk
+            this.warn(`Cannot move file across disk ${source} -> ${destination}. Use copy instead.`)
+            await copy(source, destination)
+            return
+          }
+        }
+        throw e
+      }
+    }
+    try {
+      await renameOrCopy()
+      await this.app.migrateRoot(destination)
+    } catch (e) {
+      this.error(`Fail to migrate with rename ${source} -> ${destination} with unknown error`)
+      this.error(e)
+      await this.app.migrateRoot(source).catch(() => { })
       throw e
     }
 
-    await Promise.all([
-      remove(join(this.oldMigratedRoot, 'assets')).catch(onError),
-      remove(join(this.oldMigratedRoot, 'libraries')).catch(onError),
-      remove(join(this.oldMigratedRoot, 'instances')).catch(onError),
-      remove(join(this.oldMigratedRoot, 'versions')).catch(onError),
-      remove(join(this.oldMigratedRoot, 'mods')).catch(onError),
-      remove(join(this.oldMigratedRoot, 'resourcepacks')).catch(onError),
-      remove(join(this.oldMigratedRoot, 'saves')).catch(onError),
-      remove(join(this.oldMigratedRoot, 'modpacks')).catch(onError),
-
-      unlink(join(this.oldMigratedRoot, 'instances.json')).catch(onError),
-      unlink(join(this.oldMigratedRoot, 'minecraft-versions.json')).catch(onError),
-      unlink(join(this.oldMigratedRoot, 'forge-versions.json')).catch(onError),
-      unlink(join(this.oldMigratedRoot, 'lite-versions.json')).catch(onError),
-      unlink(join(this.oldMigratedRoot, 'fabric-versions.json')).catch(onError),
-      unlink(join(this.oldMigratedRoot, 'authlib-injection.json')).catch(onError),
-      unlink(join(this.oldMigratedRoot, 'java.json')).catch(onError),
-      unlink(join(this.oldMigratedRoot, 'setting.json')).catch(onError),
-      unlink(join(this.oldMigratedRoot, 'user.json')).catch(onError),
-    ])
     this.app.relaunch()
+    this.app.quit()
   }
 }
