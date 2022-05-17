@@ -440,74 +440,76 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
         await linkWithTimeoutOrCopy(res.path, dest)
       })
     }
+    const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
 
     const updateInstanceTask = task('updateInstance', async function () {
-      const tasks: Task<any>[] = []
-      for (const file of updates) {
-        const sha1 = file.hashes.sha1
-        const filePath = join(instancePath, file.path)
-        const actualSha1 = await checksum(filePath, 'sha1').catch(() => undefined)
+      await lock.write(async () => {
+        const tasks: Task<any>[] = []
+        for (const file of updates) {
+          const sha1 = file.hashes.sha1
+          const filePath = join(instancePath, file.path)
+          const actualSha1 = await checksum(filePath, 'sha1').catch(() => undefined)
 
-        if (relative(instancePath, filePath).startsWith('..')) {
-          warn(`Skip to install the escaped file ${filePath}`)
-          continue
-        }
+          if (relative(instancePath, filePath).startsWith('..')) {
+            warn(`Skip to install the escaped file ${filePath}`)
+            continue
+          }
 
-        if (actualSha1 === sha1) {
-          // skip same file
-          log(`Skip to update the file ${file.path} as the sha1 is matched`)
-          continue
-        }
+          if (actualSha1 === sha1) {
+            // skip same file
+            log(`Skip to update the file ${file.path} as the sha1 is matched`)
+            continue
+          }
 
-        const resource = resourceService.state.mods.find(r => r.hash === sha1) || resourceService.state.resourcepacks.find(r => r.hash === sha1)
-        if (resource) {
-          log(`Link existed resource to ${filePath}`)
-          tasks.push(createFileLinkTask(filePath, resource))
-        } else {
-          const urls = [] as string[]
-          const source: SourceInformation = {}
+          const resource = resourceService.state.mods.find(r => r.hash === sha1) || resourceService.state.resourcepacks.find(r => r.hash === sha1)
+          if (resource) {
+            log(`Link existed resource to ${filePath}`)
+            tasks.push(createFileLinkTask(filePath, resource))
+          } else {
+            const urls = [] as string[]
+            const source: SourceInformation = {}
 
-          if (file.curseforge) {
-            urls.unshift(await curseForgeService.resolveCurseforgeDownloadUrl(file.curseforge.projectId, file.curseforge.fileId))
-            source.curseforge = {
-              fileId: file.curseforge.fileId,
-              projectId: file.curseforge.projectId,
+            if (file.curseforge) {
+              urls.unshift(await curseForgeService.resolveCurseforgeDownloadUrl(file.curseforge.projectId, file.curseforge.fileId))
+              source.curseforge = {
+                fileId: file.curseforge.fileId,
+                projectId: file.curseforge.projectId,
+              }
             }
-          }
 
-          if (file.modrinth) {
-            const version = await modrinthService.getProjectVersion(file.modrinth.versionId)
-            source.modrinth = {
-              filename: version.files[0].filename,
-              versionId: file.modrinth.versionId,
-              projectId: file.modrinth.projectId,
-              url: version.files[0].url,
+            if (file.modrinth) {
+              const version = await modrinthService.getProjectVersion(file.modrinth.versionId)
+              source.modrinth = {
+                filename: version.files[0].filename,
+                versionId: file.modrinth.versionId,
+                projectId: file.modrinth.projectId,
+                url: version.files[0].url,
+              }
+              urls.unshift(version.files[0].url)
             }
-            urls.unshift(version.files[0].url)
-          }
 
-          if (file.downloads) {
-            const peerUrl = file.downloads.find(u => u.startsWith('peer://'))
-            const hasHttp = file.downloads.some(u => u.startsWith('http'))
-            if (peerUrl && !hasHttp) {
-              // download from peer
-              log(`Download ${filePath} from peer ${peerUrl}`)
-              tasks.push((await peerService.downloadTask(peerUrl, filePath, sha1)).setName('file'))
-              break
+            if (file.downloads) {
+              const peerUrl = file.downloads.find(u => u.startsWith('peer://'))
+              const hasHttp = file.downloads.some(u => u.startsWith('http'))
+              if (peerUrl && !hasHttp) {
+                // download from peer
+                log(`Download ${filePath} from peer ${peerUrl}`)
+                tasks.push((await peerService.downloadTask(peerUrl, filePath, sha1)).setName('file'))
+                break
+              }
+              urls.push(...file.downloads.filter(u => u.startsWith('http')))
             }
-            urls.push(...file.downloads.filter(u => u.startsWith('http')))
-          }
 
-          if (Object.keys(source).length > 0) {
-            resourceService.markResourceSource(sha1, source)
+            if (Object.keys(source).length > 0) {
+              resourceService.markResourceSource(sha1, source)
+            }
+            log(`Download ${filePath} from urls: [${urls.join(', ')}]`)
+            const task = createDownloadTask(urls, filePath, sha1)
+            tasks.push(task)
           }
-          log(`Download ${filePath} from urls: [${urls.join(', ')}]`)
-          const task = createDownloadTask(urls, filePath, sha1)
-          tasks.push(task)
         }
-      }
-
-      await this.all(tasks)
+        await this.all(tasks)
+      })
     })
 
     await this.submit(updateInstanceTask)

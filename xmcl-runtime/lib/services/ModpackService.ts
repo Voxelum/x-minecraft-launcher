@@ -352,6 +352,10 @@ export class ModpackService extends AbstractService implements IModpackService {
         await this.instanceOptionsService.editGameSetting(editOptions)
       }
 
+      if (options.mountAfterSucceed) {
+        await this.instanceService.mountInstance(instancePath)
+      }
+
       return instancePath
     }).catch((e) => {
       this.error(`Fail to install modpack: ${path}`)

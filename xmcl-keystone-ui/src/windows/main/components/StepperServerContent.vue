@@ -149,12 +149,12 @@ export default defineComponent({
   emits: ['update:valid'],
   setup(props) {
     const content = injection(CreateOptionKey)
-    const server = computed(() => content.server.value ?? { host: '', port: undefined })
+    const server = computed(() => content.server ?? { host: '', port: undefined })
     const serverField = ref('')
     const acceptingMinecrafts = computed(() => protocolToMinecraft[props.status.version.protocol])
     watch(serverField, (v) => {
       const [host, port] = v.split(':')
-      content.server.value = {
+      content.server = {
         host,
         port: port ? Number.parseInt(port, 10) : 25565,
       }

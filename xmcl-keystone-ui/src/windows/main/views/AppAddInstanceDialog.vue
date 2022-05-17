@@ -2,7 +2,7 @@
   <v-dialog
     v-model="isShown"
     width="900"
-    persistent
+    :persistent="!creating"
   >
     <v-stepper
       v-model="step"
@@ -15,8 +15,8 @@
           step="1"
         >
           <div class="flex flex-col gap-1">
-            {{ $t('instanceTemplate.title') }}
-            <small>{{ currentTemplate ? currentTemplate.title : '' }}</small>
+            {{ t('instanceTemplate.title') }}
+            <small>{{ selectedTemplateName }}</small>
           </div>
         </v-stepper-step>
         <v-divider />
@@ -26,15 +26,15 @@
           :complete="step > 2"
           step="2"
         >
-          {{ $t('baseSetting.title') }}
+          {{ t('baseSetting.title') }}
         </v-stepper-step>
         <v-divider />
         <v-stepper-step
-          :editable="currentTemplate && currentTemplate.type === 'modpack'"
+          :editable="canPreview"
           :complete="step > 2"
           step="3"
         >
-          {{ $t('instanceTemplate.preview') }}
+          {{ t('instanceTemplate.preview') }}
         </v-stepper-step>
       </v-stepper-header>
 
@@ -43,16 +43,16 @@
       >
         <v-stepper-content
           step="1"
-          style="overflow: auto; max-height: 450px;"
+          class="p-0"
         >
           <template-content
-            :preset="presetTemplate"
-            :value="currentTemplate"
-            :on-activated="onActivated"
-            :on-deactivated="onDeactivated"
+            style="overflow: auto; max-height: 70vh; padding: 24px 24px 16px"
+            :templates="templates"
+            :value="selectedTemplate"
             @select="onSelect"
           />
           <stepper-footer
+            style="padding: 16px 24px"
             :disabled="creating"
             :creating="creating"
             next
@@ -62,12 +62,17 @@
         </v-stepper-content>
         <v-stepper-content
           step="2"
-          class="overflow-auto max-h-[70vh] "
+          class="p-0"
         >
-          <base-content :valid.sync="valid" />
-          <advance-content :valid.sync="valid" />
+          <div
+            style="overflow: auto; max-height: 70vh; padding: 24px 24px 16px"
+          >
+            <base-content :valid.sync="valid" />
+            <advance-content :valid.sync="valid" />
+          </div>
           <stepper-footer
-            :disabled="!valid || name === '' || runtime.minecraft === ''"
+            style="padding: 16px 24px"
+            :disabled="!valid || creationData.name === '' || creationData.runtime.minecraft === ''"
             :creating="creating"
             create
             @create="onCreate"
@@ -79,8 +84,8 @@
           class="overflow-auto max-h-[70vh]"
         >
           <stepper-modpack-content
-            v-if="currentTemplate && currentTemplate.type === 'modpack'"
-            :modpack="currentTemplate"
+            v-if="canPreview"
+            :modpack="selectedTemplate"
             :shown="isModpackContentShown"
           />
         </v-stepper-content>
@@ -89,144 +94,144 @@
   </v-dialog>
 </template>
 
-<script lang=ts>
+<script lang=ts setup>
 import { Ref } from '@vue/composition-api'
-import { InstanceData, InstanceServiceKey, JavaRecord, ModpackServiceKey } from '@xmcl/runtime-api'
-import { useI18n, useRouter, useService } from '/@/composables'
+import { InstanceFile, InstanceIOServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
 import AdvanceContent from '../components/StepperAdvanceContent.vue'
 import BaseContent from '../components/StepperBaseContent.vue'
 import StepperFooter from '../components/StepperFooter.vue'
 import StepperModpackContent from '../components/StepperModpackContent.vue'
-import TemplateContent, { InstanceTemplate, ModpackTemplate } from '../components/StepperTemplateContent.vue'
-import { DialogKey, useDialog } from '../composables/dialog'
-import { useInstanceCreation, CreateOptionKey } from '../composables/instanceCreation'
+import TemplateContent from '../components/StepperTemplateContent.vue'
+import { useDialog } from '../composables/dialog'
+import { AddInstanceDialogKey, Template, useAllTemplate } from '../composables/instanceAdd'
+import { CreateOptionKey, useInstanceCreation } from '../composables/instanceCreation'
 import { useNotifier } from '../composables/notifier'
+import { useI18n, useRefreshable, useRouter, useService } from '/@/composables'
 
-export const AddInstanceDialogKey: DialogKey<string> = 'add-instance-dialog'
+const { isShown, parameter } = useDialog(AddInstanceDialogKey)
+const { show } = useDialog('task')
+const { create, reset, data: creationData } = useInstanceCreation()
+const router = useRouter()
+const { importModpack } = useService(ModpackServiceKey)
+const { applyInstanceFilesUpdate } = useService(InstanceIOServiceKey)
+const { t } = useI18n()
+const { notify } = useNotifier()
+const { templates, apply, refresh, dispose } = useAllTemplate(creationData)
 
-export default defineComponent({
-  components: {
-    StepperFooter,
-    BaseContent,
-    AdvanceContent,
-    TemplateContent,
-    StepperModpackContent,
-  },
-  props: {
-  },
-  setup(props, context) {
-    const { isShown, parameter } = useDialog(AddInstanceDialogKey)
-    const { show } = useDialog('task')
-    const { create, reset, ...creationData } = useInstanceCreation()
-    const router = useRouter()
-    const { mountInstance } = useService(InstanceServiceKey)
-    const { importModpack } = useService(ModpackServiceKey)
-    const { $t } = useI18n()
-    const { notify } = useNotifier()
+provide(CreateOptionKey, creationData)
 
-    provide(CreateOptionKey, creationData)
+const valid = ref(false)
+const step = ref(2)
+const selectedTemplate: Ref<Template | undefined> = ref(undefined)
 
-    const data = reactive({
-      creating: false,
-      step: 2,
-      valid: false,
-    })
-    const java = ref(undefined as undefined | JavaRecord)
-    const currentTemplate: Ref<InstanceTemplate | ModpackTemplate | undefined> = ref(undefined)
+const isModpackContentShown = computed(() => step.value === 3)
+const selectedTemplateName = computed(() => selectedTemplate.value?.name ?? '')
+const canPreview = computed(() => selectedTemplate.value?.source.type !== 'instance')
 
-    const ready = computed(() => data.valid)
-    const isModpackContentShown = computed(() => data.step === 3)
+function quit() {
+  if (creating.value) return
+  isShown.value = false
+}
 
-    let activateRef = () => { }
-    let deactivatedRef = () => { }
-    function onActivated(cb: () => void) {
-      activateRef = cb
-    }
-    function onDeactivated(cb: () => void) {
-      deactivatedRef = cb
-    }
-    function activate() {
-      activateRef()
-    }
-    function quit() {
-      if (data.creating) return
-      isShown.value = false
-    }
-    function onSelect(template: any) {
-      data.step = 2
-      currentTemplate.value = template
-    }
-    async function onCreate() {
-      data.creating = true
+function onSelect(template: Template) {
+  selectedTemplate.value = template
+}
+
+watch(selectedTemplate, (newVal) => {
+  if (newVal) {
+    apply(newVal)
+    step.value = 2
+  }
+})
+
+const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
+  if (selectedTemplate.value) {
+    if (selectedTemplate.value.source.type === 'instance') {
+      await create()
+      router.push('/')
+    } else if (selectedTemplate.value.source.type === 'ftb') {
       try {
-        if (currentTemplate.value && currentTemplate.value.type === 'modpack') {
-          importModpack({
-            path: currentTemplate.value.path,
-            instanceConfig: reactive({ ...creationData }),
-          }).then((path) => {
-            mountInstance(path)
-            notify({
-              title: $t('importModpack.success', { modpack: currentTemplate.value?.title }),
-              level: 'success',
-              full: true,
-              more() {
-                router.push('/')
-              },
-            })
-          }, (e) => {
-            notify({
-              title: $t('importModpack.failed', { modpack: currentTemplate.value?.title }),
-              level: 'error',
-              full: true,
-              more() {
-                show()
-              },
-            })
-          })
-          await new Promise((resolve) => {
-            setTimeout(resolve, 1000)
-          })
-        } else {
-          await create()
-          router.push('/')
-        }
-        await new Promise((resolve) => {
-          setTimeout(resolve, 1000)
+        const path = await create()
+        await applyInstanceFilesUpdate({
+          path,
+          updates: selectedTemplate.value.source.manifest.files.map(f => ({
+            path: f.path + '/' + f.name,
+            hashes: {
+              sha1: f.sha1,
+            },
+            downloads: [f.url],
+          }) as InstanceFile),
         })
+        notify({
+          title: t('importModpack.success', { modpack: selectedTemplate.value?.name }),
+          level: 'success',
+          full: true,
+          more() {
+            router.push('/')
+          },
+        })
+      } catch {
+        notify({
+          title: t('importModpack.failed', { modpack: selectedTemplate.value?.name }),
+          level: 'error',
+          full: true,
+          more() {
+            show()
+          },
+        })
+      }
+    } else {
+      try {
+        await importModpack({
+          path: selectedTemplate.value.source.resource.path,
+          instanceConfig: { ...creationData },
+          mountAfterSucceed: true,
+        })
+        notify({
+          title: t('importModpack.success', { modpack: selectedTemplate.value?.name }),
+          level: 'success',
+          full: true,
+          more() {
+            router.push('/')
+          },
+        })
+      } catch {
+        notify({
+          title: t('importModpack.failed', { modpack: selectedTemplate.value?.name }),
+          level: 'error',
+          full: true,
+          more() {
+            show()
+          },
+        })
+      }
+    }
+  } else {
+    await create()
+    router.push('/')
+  }
 
-        isShown.value = false
-      } finally {
-        data.creating = false
-      }
-    }
-    watch(isShown, (v) => {
-      if (!v) {
-        deactivatedRef()
-        return
-      }
-      reset()
-      data.step = 2
-      data.creating = false
-      data.valid = true
-      activate()
+  isShown.value = false
+})
+
+watch(isShown, (shown) => {
+  if (creating.value) {
+    return
+  }
+  if (!shown) {
+    selectedTemplate.value = undefined
+    dispose()
+    reset()
+    return
+  }
+  const p = parameter.value
+  if (p) {
+    refresh().then(() => {
+      selectedTemplate.value = templates.value.find(t => t.id === p.toString())
     })
-    const presetTemplate = computed(() => isShown.value ? parameter.value : undefined)
-    return {
-      ...toRefs(data),
-      isModpackContentShown,
-      ...creationData,
-      isShown,
-      presetTemplate,
-      currentTemplate,
-      onActivated,
-      onDeactivated,
-      onSelect,
-      java,
-      quit,
-      onCreate,
-      ready,
-    }
-  },
+  }
+  step.value = 2
+  valid.value = true
 })
 </script>
 

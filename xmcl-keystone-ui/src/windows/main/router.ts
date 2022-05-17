@@ -16,6 +16,8 @@ import CurseforgeProject from './views/CurseforgeProject.vue'
 import Modrinth from './views/Modrinth.vue'
 import Multiplayer from './views/Multiplayer.vue'
 import ModrinthProject from './views/ModrinthProject.vue'
+import FeedTheBeast from './views/FeedTheBeast.vue'
+import FeedTheBeastProject from './views/FeedTheBeastProject.vue'
 
 export const createRouter = () => {
   const router = new Router({
@@ -69,8 +71,19 @@ export const createRouter = () => {
       //   component: resourcePackPreview,
       // },
       {
+        path: '/ftb',
+        component: FeedTheBeast,
+        props: (route) => ({ keyword: route.query.keyword }),
+      },
+      {
+        path: '/ftb/:id',
+        component: FeedTheBeastProject,
+        props: (route) => ({ id: Number(route.params.id) }),
+      },
+      {
         path: '/version-setting',
         component: Version,
+        props: (route) => ({ target: route.query.target }),
       },
       {
         path: '/modpack-setting',

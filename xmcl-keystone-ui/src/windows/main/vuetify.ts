@@ -11,6 +11,7 @@ import PackageFileIcon from '/@/components/PackageFileIcon.vue'
 import ZipFileIcon from '/@/components/ZipFileIcon.vue'
 import zhHans from 'vuetify/src/locale/zh-Hans'
 import ru from 'vuetify/src/locale/ru'
+import FTBIcon from '/@/components/FTBIcon.vue'
 
 const vuetify = new Vuetify({
   lang: {
@@ -23,6 +24,9 @@ const vuetify = new Vuetify({
   icons: {
     iconfont: 'md',
     values: {
+      ftb: {
+        component: FTBIcon,
+      },
       curseforge: {
         component: CurseforgeIcon,
       },

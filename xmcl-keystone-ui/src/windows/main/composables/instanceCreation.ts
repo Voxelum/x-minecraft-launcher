@@ -4,7 +4,7 @@ import { useCurrentUser } from './user'
 import { useMinecraftVersions } from './version'
 import { useService } from '/@/composables'
 
-export const CreateOptionKey: InjectionKey<ToRefs<InstanceData>> = Symbol('CreateOption')
+export const CreateOptionKey: InjectionKey<InstanceData> = Symbol('CreateOption')
 
 /**
  * Hook to create a general instance
@@ -35,7 +35,7 @@ export function useInstanceCreation() {
     tags: [],
   })
   return {
-    ...toRefs(data),
+    data,
     /**
      * Commit this creation. It will create and select the instance.
      */

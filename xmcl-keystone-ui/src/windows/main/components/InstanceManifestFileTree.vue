@@ -5,7 +5,7 @@
     style="width: 100%"
     :items="files"
     :open="opened"
-    selectable
+    :selectable="selectable"
     hoverable
     activatable
     transition
@@ -27,11 +27,12 @@
 
     <template #append="{ item, selected }">
       <v-select
-        v-if="item.sources.length > 0 && selected"
-        v-model="item.source"
+        v-if="item.choices.length > 0 && selected"
+        v-model="item.choice"
+        :multiple="multiple"
         :label="t('exportModpackTarget.name')"
         class="w-50"
-        :items="(item.sources.concat([''])).map(getSourceItem)"
+        :items="item.choices"
         hide-details
         flat
       />
@@ -60,23 +61,20 @@
 </template>
 
 <script lang=ts setup>
-import { FileNodesSymbol } from '../composables/instanceExport'
+import { FileNodesSymbol } from '../composables/instanceFiles'
 import { useI18n } from '/@/composables'
 import { injection } from '/@/util/inject'
 import { getExpectedSize } from '/@/util/size'
 
-defineProps<{ value: string[] }>()
+defineProps<{
+  value: string[]
+  multiple?: boolean
+  selectable?: boolean
+}>()
 
 const { t } = useI18n()
 
 const opened = ref([])
-
-const getSourceItem = (source: string) => {
-  if (source === 'modrinth') return { value: source, text: t('exportModpackTarget.modrinth') }
-  if (source === 'curseforge') return { value: source, text: t('exportModpackTarget.curseforge') }
-  if (source === 'github') return { value: source, text: t('exportModpackTarget.github') }
-  return { value: source, text: t('exportModpackTarget.override') }
-}
 
 const files = injection(FileNodesSymbol)
 function getDescription(path: string) {

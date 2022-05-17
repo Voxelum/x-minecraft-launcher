@@ -79,7 +79,7 @@ export default defineComponent({
     show: withDefault(Boolean, () => false),
   },
   setup(props) {
-    const { create, reset: _reset, ...creationData } = useInstanceCreation()
+    const { create, reset: _reset, data: creationData } = useInstanceCreation()
     const { isShown } = useDialog('add-server-dialog')
     provide(CreateOptionKey, creationData)
 
@@ -90,14 +90,14 @@ export default defineComponent({
       }
     }
 
-    const protocol = computed(() => minecraftToProtocol[creationData.runtime.value.minecraft] ?? 498)
+    const protocol = computed(() => minecraftToProtocol[creationData.runtime.minecraft] ?? 498)
     const data = reactive({
       step: 1,
       valid: false,
       creating: false,
       filterVersion: false,
     })
-    const server = computed(() => creationData.server.value ?? { host: '', port: undefined })
+    const server = computed(() => creationData.server ?? { host: '', port: undefined })
     const {
       status,
       acceptingVersion,
@@ -109,9 +109,9 @@ export default defineComponent({
 
     function reset() {
       _reset()
-      creationData.server.value = null
+      creationData.server = null
       resetServer()
-      creationData.name.value = ''
+      creationData.name = ''
       data.step = 1
     }
 
@@ -121,8 +121,8 @@ export default defineComponent({
     async function onCreate() {
       try {
         data.creating = true
-        creationData.name.value = creationData.name.value || server.value.host
-        creationData.server.value = server.value
+        creationData.name = creationData.name || server.value.host
+        creationData.server = server.value
         await create()
         reset()
         isShown.value = false
