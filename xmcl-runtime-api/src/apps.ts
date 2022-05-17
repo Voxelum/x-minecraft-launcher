@@ -96,17 +96,24 @@ export interface InstalledAppManifest extends Required<AppManifest> {
    */
   url: string
 
-  /**
-   * The path of the icon.
-   * - On windows, this should be an .ico file
-   * - On macOS, this should be an .icns file
-   * - On linux, this should be an .png file
-   *
-   * For windows & mac, if the icon cannot be converted into preferred file format, it will fallback to png file.
-   */
-  iconPath: string
+  iconSets: {
+    /**
+     * The path of the icon.
+     * - On windows, this should be an .ico file
+     * - On macOS, this should be an .icns file
+     * - On linux, this should be an .png file
+     *
+     * For windows & mac, if the icon cannot be converted into preferred file format, it will fallback to png file.
+     */
+    icon: string
+    darkIcon: string
 
-  trayIconPath?: string
+    trayIcon: string
+    darkTrayIcon: string
+
+    dockIcon: string
+    darkDockIcon: string
+  }
 
   minWidth: number
   minHeight: number

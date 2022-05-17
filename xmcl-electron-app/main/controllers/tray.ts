@@ -1,13 +1,18 @@
 import Controller from '@/Controller'
+import { darkIco, darkIcon, darkTray, lightIcon, lightTray } from '@/utils/icons'
 import { BaseService } from '@xmcl/runtime'
-import { app, Menu, shell, Tray } from 'electron'
-import iconPath from '../assets/apple-touch-icon.png'
-// import favcon2XPath from '../assets/favicon@2x.png'
-import favcon2XPath from '../assets/favicon.png'
+import { app, Menu, shell, Tray, nativeTheme } from 'electron'
 import { ControllerPlugin } from './plugin'
 
 export const trayPlugin: ControllerPlugin = function (this: Controller) {
   const { t } = this.i18n
+  // nativeTheme.addListener('updated', () => {
+  //   if (nativeTheme.shouldUseDarkColors) {
+
+  //   } else {
+
+  //   }
+  // })
   const createMenu = () => {
     const app = this.app
     const service = this.app.serviceManager.getOrCreateService(BaseService)
@@ -59,7 +64,7 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
   }
 
   this.app.once('engine-ready', () => {
-    const tray = new Tray(favcon2XPath)
+    const tray = new Tray(nativeTheme.shouldUseDarkColors ? darkTray : lightTray)
     tray.on('click', () => {
       if (this.app.platform.name === 'windows') {
         const window = this.mainWin
@@ -75,7 +80,7 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
       }
     })
     if (app.dock) {
-      app.dock.setIcon(iconPath)
+      app.dock.setIcon(nativeTheme.shouldUseDarkColors ? darkIcon : lightIcon)
     }
     app.on('before-quit', () => {
       this.tray?.destroy()
@@ -84,8 +89,10 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
   })
 
   this.app.on('app-booted', (man) => {
-    // this.tray?.setTitle(man.name)
-    this.tray?.setImage(man.trayIconPath || man.iconPath)
+    if (app.dock) {
+      app.dock.setIcon(nativeTheme.shouldUseDarkColors ? man.iconSets.darkDockIcon : man.iconSets.dockIcon)
+    }
+    this.tray?.setImage(nativeTheme.shouldUseDarkColors ? man.iconSets.darkDockIcon : man.iconSets.dockIcon)
   })
 
   Promise.all([

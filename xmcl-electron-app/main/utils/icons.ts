@@ -1,0 +1,6 @@
+export { default as darkIco } from '../../icons/dark.ico'
+export { default as darkIcon } from '../../icons/dark@256x256.png'
+export { default as darkTray } from '../../icons/dark@tray.png'
+export { default as lightIco } from '../../icons/light.ico'
+export { default as lightIcon } from '../../icons/light@256x256.png'
+export { default as lightTray } from '../../icons/light@tray.png'

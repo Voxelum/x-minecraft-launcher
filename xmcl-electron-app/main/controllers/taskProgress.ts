@@ -1,7 +1,7 @@
 import Controller from '@/Controller'
+import { darkIcon } from '@/utils/icons'
 import { TaskNotification } from '@xmcl/runtime-api'
 import { Notification } from 'electron'
-import iconPath from '../assets/apple-touch-icon.png'
 import { ControllerPlugin } from './plugin'
 
 /**
@@ -16,7 +16,7 @@ export const taskProgressPlugin: ControllerPlugin = function (this: Controller) 
       const notification = new Notification({
         title: n.type === 'taskFinish' ? $t('task.success') : $t('task.fail'),
         body: $t('task.continue'),
-        icon: iconPath,
+        icon: darkIcon,
       })
       notification.show()
       notification.on('click', () => {

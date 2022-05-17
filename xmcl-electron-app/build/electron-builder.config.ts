@@ -64,7 +64,7 @@ export const config: Configuration = {
     ],
   },
   mac: {
-    icon: 'build/icons/icon.icns',
+    icon: 'icons/dark@icon.icns',
     darkModeSupport: true,
     target: [
       {
@@ -81,7 +81,7 @@ export const config: Configuration = {
       ? 'xmcl-${version}-unsigned.${ext}'
       // eslint-disable-next-line no-template-curly-in-string
       : 'xmcl-${version}-${platform}-${arch}-unsigned.${ext}',
-    icon: 'build/icons/icon.ico',
+    icon: 'icons/icon.ico',
     files: [
       '**/*.cs',
       '**/*.worker.js',
@@ -103,7 +103,7 @@ export const config: Configuration = {
       MimeType: 'x-scheme-handler/xmcl',
     },
     category: 'Game',
-    icon: 'build/icons/256x256.png',
+    icon: 'icons/dark@256x256.png',
     // eslint-disable-next-line no-template-curly-in-string
     artifactName: 'xmcl-${version}.${ext}',
     target: process.env.BUILD_TARGET === 'appimage'
