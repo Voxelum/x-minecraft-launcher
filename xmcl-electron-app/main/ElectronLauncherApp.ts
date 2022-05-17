@@ -195,14 +195,14 @@ export default class ElectronLauncherApp extends LauncherApp {
 
     await super.setup()
 
-    if (this.platform.name === 'linux') {
-      try {
-        await setLinuxProtocol(app.getPath('home'), app.getPath('exe'))
-      } catch (e) {
-        this.error('Fail to set linux protocol! This might cause you cannot automatically login microsoft!')
-        this.error(e)
-      }
-    }
+    // if (this.platform.name === 'linux') {
+    //   try {
+    //     await setLinuxProtocol(app.getPath('home'), app.getPath('exe'))
+    //   } catch (e) {
+    //     this.error('Fail to set linux protocol! This might cause you cannot automatically login microsoft!')
+    //     this.error(e)
+    //   }
+    // }
 
     setup(this.serviceStateManager)
   }

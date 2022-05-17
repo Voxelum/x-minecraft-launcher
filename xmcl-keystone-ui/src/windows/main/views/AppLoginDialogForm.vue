@@ -3,13 +3,13 @@
     <hint
       v-if="showDropHint"
       icon="save_alt"
-      :text="$t('login.dropHint').toString()"
+      :text="t('login.dropHint').toString()"
       style="height: 350px"
     />
     <v-card-text v-if="!showDropHint">
       <v-form
         ref="form"
-        v-model="isFormValid"
+        v-model="data.isFormValid"
       >
         <v-layout class="pt-6">
           <v-flex xs12>
@@ -17,21 +17,21 @@
               v-model="authServiceItem"
               prepend-icon="vpn_key"
               :items="authServiceItems"
-              :label="$t('user.authMode')"
+              :label="t('user.authMode')"
               flat
             >
               <template #append-outer>
                 <v-tooltip top>
-                  <template #activator="{on}">
+                  <template #activator="{ on: onTooltip }">
                     <v-btn
                       icon
-                      v-on="on"
-                      @click="$emit('route', 'profile')"
+                      v-on="onTooltip"
+                      @click="emit('route', 'profile')"
                     >
                       <v-icon>add</v-icon>
                     </v-btn>
                   </template>
-                  {{ $t('userService.add') }}
+                  {{ t('userService.add') }}
                 </v-tooltip>
               </template>
             </v-select>
@@ -40,15 +40,14 @@
 
         <v-combobox
           ref="accountInput"
-          v-model="username"
+          v-model="data.username"
           :items="history"
-
           prepend-icon="person"
           required
           :label="
-            $te(`userServices.${authService}.account`)
-              ? $t(`userServices.${authService}.account`)
-              : $t(`userServices.offline.account`)
+            te(`userServices.${authService}.account`)
+              ? t(`userServices.${authService}.account`)
+              : t(`userServices.offline.account`)
           "
           :rules="usernameRules"
           :error="!!usernameErrors.length"
@@ -58,7 +57,7 @@
         />
 
         <v-text-field
-          v-model="password"
+          v-model="data.password"
           prepend-icon="lock"
           type="password"
           required
@@ -68,7 +67,7 @@
           :error="!!passwordErrors.length"
           :error-messages="passwordErrors"
           @input="passwordErrors = []"
-          @keypress.enter="login"
+          @keypress.enter="onLogin"
         />
       </v-form>
     </v-card-text>
@@ -87,12 +86,11 @@
             color="primary"
             rounded
             large
-            style="color: white"
-
+            class="text-white"
             @click="login"
           >
             <span v-if="!isLogining">
-              {{ $t("login.login") }}
+              {{ t("login.login") }}
             </span>
             <v-icon v-else>
               close
@@ -101,30 +99,30 @@
         </div>
 
         <div
-          v-if="microsoftUrl"
+          v-if="data.microsoftUrl"
           class="mt-6"
         >
           <a
-            :href="microsoftUrl"
+            :href="data.microsoftUrl"
             class="border-b border-b-current border-dashed"
           >
-            {{ $t('login.manualLoginUrl') }}
+            {{ t('login.manualLoginUrl') }}
           </a>
         </div>
 
-        <div
-          class="mt-4 "
-        >
+        <div class="mt-4">
           <a
             style="padding-right: 10px; z-index: 20"
             href="https://my.minecraft.net/en-us/password/forgot/"
-          >{{ $t("login.forgetPassword") }}</a>
+          >{{
+            t("login.forgetPassword")
+          }}</a>
           <a
             style="z-index: 20"
             href="https://my.minecraft.net/en-us/store/minecraft/#register"
           >
-            {{ $t("login.signupDescription") }}
-            {{ $t("login.signup") }}
+            {{ t("login.signupDescription") }}
+            {{ t("login.signup") }}
           </a>
         </div>
       </div>
@@ -132,15 +130,14 @@
   </div>
 </template>
 
-<script lang=ts>
-import { computed, defineComponent, inject, nextTick, onMounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
+<script lang=ts setup>
+import { Ref } from '@vue/composition-api'
 import { isException, UserException, UserServiceKey } from '@xmcl/runtime-api'
-import Hint from '/@/components/Hint.vue'
-import { IssueHandlerKey, useServiceBusy, useI18n, useService, useServiceOnly } from '/@/composables'
-import { required } from '/@/util/props'
 import { useDialog } from '../composables/dialog'
 import { useSelectedServices } from '../composables/login'
 import { useCurrentUser, useLoginValidation, useUserProfileStatus } from '../composables/user'
+import Hint from '/@/components/Hint.vue'
+import { IssueHandlerKey, useI18n, useService, useServiceBusy } from '/@/composables'
 import { injection } from '/@/util/inject'
 
 interface ServiceItem {
@@ -148,166 +145,192 @@ interface ServiceItem {
   value: string
 }
 
-export default defineComponent({
-  components: { Hint },
-  props: { inside: required(Boolean) },
-  setup(props) {
-    const { hide, isShown, show } = useDialog('login')
+const props = defineProps<{ inside: boolean }>()
+const emit = defineEmits(['route'])
 
-    // handle the not login issue
-    const handler = injection(IssueHandlerKey)
-    // IssueHandlerKey.userNotLogined = show
+const { hide, isShown, show } = useDialog('login')
 
-    const data = reactive({
-      username: '',
-      password: '',
-      isFormValid: true,
-      microsoftUrl: '',
-    })
+// handle the not login issue
+const handler = injection(IssueHandlerKey)
+// IssueHandlerKey.userNotLogined = show
 
-    const accountInput: Ref<any> = ref(null)
-    const form: Ref<any> = ref(null)
-    const hovered = ref(false)
-
-    const { $te, $t } = useI18n()
-    const { state, removeUserProfile, cancelMicrosoftLogin, login, on } = useService(UserServiceKey)
-    const authServiceItems: Ref<ServiceItem[]> = computed(() => ['microsoft', ...Object.keys(state.authServices), 'offline']
-      .map((a) => ({ value: a, text: $te(`user.${a}.name`) ? $t(`user.${a}.name`) : a })))
-    const profileServices: Ref<ServiceItem[]> = computed(() => Object.keys(state.profileServices)
-      .map((a) => ({ value: a, text: $te(`user.${a}.name`) ? $t(`user.${a}.name`) : a })))
-    const { userProfile } = useCurrentUser()
-    const { logined } = useUserProfileStatus(userProfile)
-    const { profileService, authService, history } = useSelectedServices()
-    const isOffline = computed(() => authServiceItem.value.value === 'offline')
-    const isThirdParty = computed(() => {
-      const service = authServiceItem.value.value
-      if (service !== 'mojang' && service !== 'microsoft') {
-        return true
-      }
-      return false
-    })
-
-    const isLogining = useServiceBusy(UserServiceKey, 'login')
-    const isMicrosoft = computed(() => authService.value === 'microsoft')
-    const isPersistent = computed(() => !logined.value)
-    const passwordLabel = computed(() => ($te(`user.${authService.value}.password`)
-      ? $t(`user.${authService.value}.password`)
-      : $t(`user.${isOffline.value ? 'offline' : 'mojang'}.password`)))
-    const showDropHint = computed(() => isMicrosoft.value && props.inside && isLogining.value)
-
-    const authServiceItem = computed<ServiceItem>({
-      get() { return authServiceItems.value.find(a => a.value === authService.value)! },
-      set(v) { authService.value = v as any as string },
-    })
-    const {
-      usernameRules,
-      usernameErrors,
-      passwordRules,
-      passwordErrors,
-      reset: resetError,
-      handleError,
-    } = useLoginValidation(isThirdParty)
-    on('microsoft-authorize-url', (url) => {
-      data.microsoftUrl = url
-    })
-
-    function reset() {
-      data.username = history.value[0] ?? ''
-      data.password = ''
-    }
-
-    async function onLogin() {
-      resetError()
-      accountInput.value.blur()
-      await nextTick() // wait a tick to make sure username updated.
-      try {
-        if (isLogining.value) {
-          await cancelMicrosoftLogin()
-          return
-        }
-        const index = history.value.indexOf(data.username)
-        if (index === -1) {
-          history.value.unshift(data.username)
-        }
-        await login({ ...data, authService: authService.value, profileService: profileService.value })
-        hide()
-      } catch (e) {
-        if (isException(UserException, e)) {
-          handleError(e.exception)
-        }
-        console.log(e)
-      }
-    }
-
-    onMounted(() => {
-      reset()
-    })
-
-    watch(isShown, (s) => {
-      if (!s) { return }
-      if (!logined.value) {
-        // data.selectProfile = true
-      }
-      if (s) {
-        reset()
-      }
-    })
-    watch([authService, profileService], () => {
-      if (authService.value !== profileService.value && profileService.value === '') {
-        profileService.value = (profileServices.value.find(p => p.value === authService.value) ?? profileServices.value.find(p => p.value === 'mojang')!).value
-      }
-    })
-
-    const onMouseEnterLogin = () => {
-      hovered.value = true
-    }
-    const onMouseLeaveLogin = () => {
-      hovered.value = false
-    }
-
-    return {
-      ...toRefs(data),
-      hovered,
-      isLogining,
-      authService,
-      authServiceItem,
-      authServiceItems,
-      isOffline,
-      isMicrosoft,
-
-      onMouseEnterLogin,
-      onMouseLeaveLogin,
-
-      isShown,
-
-      resetError,
-
-      login: onLogin,
-
-      usernameRules,
-      passwordRules,
-      usernameErrors,
-      passwordErrors,
-
-      isPersistent,
-
-      accountInput,
-      history,
-      form,
-      showDropHint,
-      passwordLabel,
-    }
-  },
+const data = reactive({
+  username: '',
+  password: '',
+  isFormValid: true,
+  microsoftUrl: '',
 })
+
+const accountInput: Ref<any> = ref(null)
+const form: Ref<any> = ref(null)
+const hovered = ref(false)
+
+const { te, t } = useI18n()
+const { state, cancelMicrosoftLogin, login, on } = useService(UserServiceKey)
+const authServiceItems: Ref<ServiceItem[]> = computed(() => ['microsoft', ...Object.keys(state.authServices), 'offline']
+  .map((a) => ({ value: a, text: te(`userServices.${a}.name`) ? t(`userServices.${a}.name`) : a })))
+
+const { userProfile } = useCurrentUser()
+const { logined } = useUserProfileStatus(userProfile)
+const { profileService, authService, history } = useSelectedServices()
+const isLogining = useServiceBusy(UserServiceKey, 'login')
+
+const isMicrosoft = computed(() => authService.value === 'microsoft')
+const isOffline = computed(() => authServiceItem.value.value === 'offline')
+const isThirdParty = computed(() => {
+  const service = authServiceItem.value.value
+  if (service !== 'mojang' && service !== 'microsoft') {
+    return true
+  }
+  return false
+})
+
+const passwordLabel = computed(() => (te(`userServices.${authService.value}.password`)
+  ? t(`userServices.${authService.value}.password`)
+  : t(`userServices.${isOffline.value ? 'offline' : 'mojang'}.password`)))
+const showDropHint = computed(() => isMicrosoft.value && props.inside && isLogining.value)
+
+const authServiceItem = computed<ServiceItem>({
+  get() { return authServiceItems.value.find(a => a.value === authService.value)! },
+  set(v) { authService.value = v as any as string },
+})
+
+const {
+  usernameRules,
+  usernameErrors,
+  passwordRules,
+  passwordErrors,
+  reset: resetError,
+} = useLoginValidation(isThirdParty)
+
+function handleError(e: unknown) {
+  if (isException(UserException, e)) {
+    if (e.exception.type === 'loginInvalidCredentials') {
+      const msg = t('loginError.invalidCredentials')
+      usernameErrors.value = [msg]
+      passwordErrors.value = [msg]
+    } else if (e.exception.type === 'loginInternetNotConnected') {
+      const msg = t('loginError.badNetworkOrServer')
+      usernameErrors.value = [msg]
+      passwordErrors.value = [msg]
+    } else if (e.exception.type === 'loginGeneral') {
+      const msg = t('loginError.requestFailed')
+      usernameErrors.value = [msg]
+      passwordErrors.value = [msg]
+    } else if (e.exception.type === 'fetchMinecraftProfileFailed') {
+      const msg = t('loginError.fetchMinecraftProfileFailed', { reason: `${e.exception.errorType}, ${e.exception.developerMessage}` })
+      usernameErrors.value = [msg]
+      passwordErrors.value = [msg]
+    } else if (e.exception.type === 'userCheckGameOwnershipFailed') {
+      const msg = t('loginError.checkOwnershipFailed')
+      usernameErrors.value = [msg]
+      passwordErrors.value = [msg]
+    } else if (e.exception.type === 'userExchangeXboxTokenFailed') {
+      const msg = t('loginError.loginXboxFailed')
+      usernameErrors.value = [msg]
+      passwordErrors.value = [msg]
+    } else if (e.exception.type === 'userLoginMinecraftByXboxFailed') {
+      const msg = t('loginError.loginMinecraftByXboxFailed')
+      usernameErrors.value = [msg]
+      passwordErrors.value = [msg]
+    }
+  } else {
+    const msg = t('loginError.requestFailed')
+    usernameErrors.value = [msg]
+    passwordErrors.value = [msg]
+  }
+  console.error(e)
+}
+
+on('microsoft-authorize-url', (url) => {
+  data.microsoftUrl = url
+})
+
+function reset() {
+  data.username = history.value[0] ?? ''
+  data.password = ''
+}
+
+async function onLogin() {
+  resetError()
+  accountInput.value.blur()
+  await nextTick() // wait a tick to make sure username updated.
+  if (isLogining.value) {
+    await cancelMicrosoftLogin()
+    return
+  }
+  const index = history.value.indexOf(data.username)
+  if (index === -1) {
+    history.value.unshift(data.username)
+  }
+  await login({ ...data, authService: authService.value }).catch(handleError)
+  hide()
+}
+
+onMounted(() => {
+  reset()
+})
+
+watch(isShown, (s) => {
+  if (!s) { return }
+  if (!logined.value) {
+    // data.selectProfile = true
+  }
+  if (s) {
+    reset()
+  }
+})
+
+const onMouseEnterLogin = () => {
+  hovered.value = true
+}
+const onMouseLeaveLogin = () => {
+  hovered.value = false
+}
+
+// return {
+//   ...toRefs(data),
+//   hovered,
+//   isLogining,
+//   authService,
+//   authServiceItem,
+//   authServiceItems,
+//   isOffline,
+//   isMicrosoft,
+
+//   onMouseEnterLogin,
+//   onMouseLeaveLogin,
+
+//   isShown,
+
+//   resetError,
+
+//   login: onLogin,
+
+//   usernameRules,
+//   passwordRules,
+//   usernameErrors,
+//   passwordErrors,
+
+//   isPersistent,
+
+//   accountInput,
+//   history,
+//   form,
+//   showDropHint,
+//   passwordLabel,
+// }
 </script>
 
 <style>
 .input-group {
   padding-top: 5px;
 }
+
 .password {
   padding-top: 5px;
 }
+
 .input-group--text-field label {
   top: 5px;
 }

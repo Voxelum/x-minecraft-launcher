@@ -10,22 +10,10 @@
 import { app } from 'electron'
 import install, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import { autoUpdater } from 'electron-updater'
-import { createServer } from 'http'
 import './index'
 
 app.on('browser-window-created', (event, w) => {
   w.webContents.openDevTools({ mode: 'detach' })
-})
-
-// dev server
-createServer((message, response) => {
-  const url = message.url?.replace('http://localhost', 'xmcl://launcher')
-  console.log(`Stub server receive open-url ${message.url} -> ${url}`)
-  app.emit('open-url', { preventDefault() {} }, `xmcl://launcher${url}`)
-  response.statusCode = 200
-  response.end()
-}).listen(3001, () => {
-  console.log('Started stub server for handle login url!')
 })
 
 app.on('web-contents-created', (event, contents) => {

@@ -247,6 +247,10 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       force,
     } = refreshSkinOptions ?? {}
     const user = this.state.users[userId]
+    if (!user) {
+      this.warn(`Skip to refresh user as not found. UserId=${userId}. All known user ids: [${Object.keys(this.state.users).join(', ')}]`)
+      return
+    }
     const gameProfile = user.profiles[gameProfileId]
     // if no game profile (maybe not logined), return
     if (gameProfile.name === '') return
@@ -473,13 +477,19 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     const { microsoft: msToken, xbox: xboxToken } = await this.credentialManager.acquireMicrosoftToken({ username: microsoftEmailAddress, code: oauthCode })
     this.log('Successfully get Microsoft access token')
     const oauthAccessToken = xboxToken!.accessToken
-    const { xstsResponse, xboxGameProfile } = await acquireXBoxToken(req, oauthAccessToken)
+    const { xstsResponse, xboxGameProfile } = await acquireXBoxToken(req, oauthAccessToken).catch((e) => {
+      throw new UserException({ type: 'userExchangeXboxTokenFailed', error: e.toString() })
+    })
     this.log('Successfully login Xbox')
 
-    const mcResponse = await loginMinecraftWithXBox(req, xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token)
+    const mcResponse = await loginMinecraftWithXBox(req, xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token).catch((e) => {
+      throw new UserException({ type: 'userLoginMinecraftByXboxFailed', error: e.toString() })
+    })
     this.log('Successfully login Minecraft with Xbox')
 
-    const ownershipResponse = await checkGameOwnership(req, mcResponse.access_token)
+    const ownershipResponse = await checkGameOwnership(req, mcResponse.access_token).catch((e) => {
+      throw new UserException({ type: 'userCheckGameOwnershipFailed', error: e.toString() })
+    })
     const ownGame = ownershipResponse.items.length > 0
     this.log(`Successfully check ownership: ${ownGame}`)
 
