@@ -347,6 +347,15 @@ export type UserExceptions = {
 } | {
   type: 'loginGeneral'
 } | {
+  type: 'userExchangeXboxTokenFailed'
+  error?: string
+} | {
+  type: 'userLoginMinecraftByXboxFailed'
+  error?: string
+} | {
+  type: 'userCheckGameOwnershipFailed'
+  error?: string
+} | {
   type: 'fetchMinecraftProfileFailed'
   errorType: 'NOT_FOUND' | string
   error: string | 'NOT_FOUND'

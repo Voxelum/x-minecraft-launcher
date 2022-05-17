@@ -206,25 +206,11 @@ export function useLoginValidation(isOffline: Ref<boolean>) {
     data.usernameErrors = []
     data.passwordErrors = []
   }
-  function handleError(e: UserExceptions) {
-    if (e.type === 'loginInternetNotConnected') {
-      // TODO: handle this case
-    } else if (e.type === 'loginInvalidCredentials') {
-      const msg = t('loginError.invalidCredentials')
-      data.usernameErrors = [msg]
-      data.passwordErrors = [msg]
-    } else {
-      const err = e as any
-      data.usernameErrors = [err.message ?? err.errorMessage]
-      console.error(e)
-    }
-  }
   return {
     ...toRefs(data),
     usernameRules,
     passwordRules,
     reset,
-    handleError,
   }
 }
 
