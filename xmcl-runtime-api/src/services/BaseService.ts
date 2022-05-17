@@ -1,3 +1,4 @@
+import { Exception } from '../entities/exception'
 import { SettingSchema } from '../entities/setting.schema'
 import { ReleaseInfo } from '../entities/update'
 import { ServiceKey, StatefulService } from './Service'
@@ -165,14 +166,31 @@ export interface BaseService extends StatefulService<BaseState> {
    * @param code The code number
    */
   exit(code?: number | undefined): void
-
   /**
    * Generate a report file
    */
   reportItNow(options: { destination: string }): Promise<void>
-
+  /**
+   * Migrate the launcher data root to another directory
+   * @param options The migration options
+   */
   migrate(options: MigrateOptions): Promise<void>
-  postMigrate(): Promise<void>
 }
+
+export type BaseServiceExceptions = {
+  /**
+   * Throw when dest is a file
+   */
+  type: 'migrationDestinationIsFile'
+  destination: string
+} | {
+  /**
+   * Throw when dest is a dir but not empty.
+   */
+  type: 'migrationDestinationIsNotEmptyDirectory'
+  destination: string
+}
+
+export class BaseServiceException extends Exception<BaseServiceExceptions> { }
 
 export const BaseServiceKey: ServiceKey<BaseService> = 'BaseService'
