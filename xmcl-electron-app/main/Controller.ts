@@ -10,17 +10,17 @@ import setupWinUrl from '@renderer/setup.html'
 import { LauncherAppController } from '@xmcl/runtime'
 import { InstalledAppManifest } from '@xmcl/runtime-api'
 import InstanceService from '@xmcl/runtime/lib/services/InstanceService'
-import { BrowserWindow, dialog, session, shell, Tray } from 'electron'
+import { BrowserWindow, dialog, nativeImage, nativeTheme, session, shell, Tray } from 'electron'
 import { fromFile } from 'file-type'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
-import iconPath from './assets/apple-touch-icon.png'
 import { plugins } from './controllers'
 import ElectronLauncherApp from './ElectronLauncherApp'
 import en from './locales/en.yaml'
 import ru from './locales/ru.yaml'
 import zh from './locales/zh-CN.yaml'
 import { createI18n } from './utils/i18n'
+import { darkIcon } from './utils/icons'
 import { trackWindowSize } from './utils/windowSizeTracker'
 
 export default class Controller implements LauncherAppController {
@@ -126,7 +126,7 @@ export default class Controller implements LauncherAppController {
       height: 450,
       useContentSize: true,
       vibrancy: 'sidebar', // or popover
-      icon: iconPath,
+      icon: darkIcon,
       webPreferences: {
         preload: browsePreload,
       },
@@ -211,7 +211,7 @@ export default class Controller implements LauncherAppController {
       frame: man.display !== 'frameless',
       backgroundColor: man.background_color,
       vibrancy: man.vibrancy ? 'sidebar' : undefined, // or popover
-      icon: man.iconPath,
+      icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
       webPreferences: {
         preload: indexPreload,
         session: sess,
@@ -225,7 +225,6 @@ export default class Controller implements LauncherAppController {
 
     this.app.log(`[Controller] Created app window by config ${configPath}`)
     browser.on('ready-to-show', () => {
-      browser.setIcon(man.iconPath)
       this.app.log('App Window is ready to show!')
 
       if (man.vibrancy) {
@@ -267,7 +266,7 @@ export default class Controller implements LauncherAppController {
       transparent: true,
       hasShadow: false,
       maximizable: false,
-      icon: iconPath,
+      icon: darkIcon,
       webPreferences: {
         preload: monitorPreload,
         session: session.fromPartition('persist:logger'),
@@ -315,7 +314,7 @@ export default class Controller implements LauncherAppController {
       hasShadow: false,
       maximizable: false,
       vibrancy: 'sidebar', // or popover
-      icon: iconPath,
+      icon: darkIcon,
       webPreferences: {
         preload: setupPreload,
         session: session.fromPartition('persist:setup'),

@@ -3,14 +3,14 @@ import { createHash } from 'crypto'
 import { build as electronBuilder, Configuration } from 'electron-builder'
 import { build as esbuild, BuildOptions, Metafile } from 'esbuild'
 import { createReadStream, createWriteStream, existsSync } from 'fs'
-import { copy, remove, stat } from 'fs-extra'
+import { copy, readdir, remove, stat } from 'fs-extra'
 import path, { resolve } from 'path'
 import { pipeline } from 'stream'
 import { promisify } from 'util'
+import { buildAppInstaller } from './build/appinstaller-builder'
 import { config as electronBuilderConfig } from './build/electron-builder.config'
 import esbuildConfig from './esbuild.config'
 import { version } from './package.json'
-import { buildAppInstaller } from './build/appinstaller-builder'
 
 /**
  * @returns Hash string
@@ -111,6 +111,17 @@ async function start() {
   console.log()
   if (process.env.BUILD_TARGET) {
     const dir = process.env.BUILD_TARGET === 'dir'
+    if (process.env.BUILD_TARGET === 'appx') {
+      const files = await readdir(path.join(__dirname, './icons'))
+      const storeFiles = files.filter(f => f.endsWith('.png') &&
+        !f.endsWith('256x256.png') &&
+        !f.endsWith('tray.png'))
+        .map((f) => [
+          path.join(__dirname, 'icons', f),
+          path.join(__dirname, 'build', 'appx', f.substring(f.indexOf('@') + 1)),
+        ] as const)
+      await Promise.all(storeFiles.map(v => copy(v[0], v[1])))
+    }
     await buildElectron(electronBuilderConfig, dir)
     if (process.env.BUILD_TARGET === 'appx') {
       await buildAppInstaller(version, path.join(__dirname, './build/output/xmcl.appinstaller'))

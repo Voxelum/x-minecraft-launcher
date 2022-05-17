@@ -1,9 +1,7 @@
-import { InstalledAppManifest } from '@xmcl/runtime-api'
-import iconPath from './assets/apple-touch-icon.png'
-import winIcon from './assets/app.ico'
 import defaultUrl from '@renderer/index.html'
-import trayIconPath from './assets/favicon@2x.png'
+import { InstalledAppManifest } from '@xmcl/runtime-api'
 import { platform } from 'os'
+import { darkIco, darkIcon, darkTray, lightIco, lightIcon, lightTray } from './utils/icons'
 
 const manifest: InstalledAppManifest = {
   name: 'KeyStone Launcher',
@@ -14,8 +12,16 @@ const manifest: InstalledAppManifest = {
   minWidth: 800,
   minHeight: 620,
   vibrancy: false,
-  iconPath: platform() === 'win32' ? winIcon : iconPath,
-  trayIconPath: trayIconPath,
+  iconSets: {
+    icon: platform() === 'win32' ? lightIco : lightIcon,
+    darkIcon: platform() === 'win32' ? darkIco : darkIcon,
+
+    trayIcon: lightTray,
+    darkTrayIcon: darkTray,
+
+    dockIcon: lightIcon,
+    darkDockIcon: darkIcon,
+  },
   screenshots: [],
   icons: [],
   ratio: false,
