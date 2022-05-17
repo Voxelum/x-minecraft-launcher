@@ -16,7 +16,7 @@ async function waitSessionEnd(sessionId: number, listener: (task: string) => voi
     }
     return result
   } finally {
-    ipcRenderer.removeListener(`session-${sessionId}`, listener)
+    ipcRenderer.removeAllListeners(`session-${sessionId}`)
   }
 }
 
