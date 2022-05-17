@@ -68,19 +68,6 @@ const data = reactive({
 })
 const block: Ref<BlockStateJson | undefined> = ref(undefined)
 const { selects, selected } = useBlockStateModels(block)
-watch(selected, (path, last) => {
-  if (path && path !== last) {
-    let model: string
-    if (path instanceof Array) {
-      model = path[0].model
-    } else {
-      model = path.model
-    }
-    loadModel(model).then((m) => {
-      data.displayed = Object.freeze(m)
-    })
-  }
-})
 loading.value = true
 listBlockStates().then((json) => {
   data.models = json.map(j => Object.freeze({
@@ -97,5 +84,19 @@ function filterItem(r: BlockStateJson) {
   return r.name.toLowerCase().indexOf(text.value.toLowerCase()) !== -1
 }
 const items = computed(() => data.models.filter(filterItem))
+
+watch(selected, (path, last) => {
+  if (path && path !== last) {
+    let model: string
+    if (path instanceof Array) {
+      model = path[0].model
+    } else {
+      model = path.model
+    }
+    loadModel(model).then((m) => {
+      data.displayed = Object.freeze(m)
+    })
+  }
+})
 
 </script>

@@ -14,14 +14,14 @@
           class="min-w-60"
           @click="item.onClick"
         >
-          <v-list-item-avatar>
+          <v-list-item-icon>
             <v-icon
               :size="item.icon === '$vuetify.icons.curseforge' ? 22 : undefined"
               :color="item.color || ''"
             >
               {{ item.icon }}
             </v-icon>
-          </v-list-item-avatar>
+          </v-list-item-icon>
           <v-list-item-title>{{ item.text }}</v-list-item-title>
         </v-list-item>
         <v-divider

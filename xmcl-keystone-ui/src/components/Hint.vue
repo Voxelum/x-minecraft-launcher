@@ -12,9 +12,10 @@
       <div
         v-if="!button"
         class="headline text-center select-none"
+        :style="{ 'color': color }"
       >
         <v-icon
-          :style="{ 'font-size' : `${size}px` }"
+          :style="{ 'font-size' : `${size}px`, 'color': color }"
           style="display: block"
         >
           {{ icon }}
@@ -39,31 +40,32 @@
   </v-container>
 </template>
 
-<script lang=ts>
-import { defineComponent } from '@vue/composition-api'
+<script lang=ts setup>
 
-export default defineComponent({
-  props: {
-    absolute: {
-      type: Boolean,
-      default: false,
-    },
-    text: {
-      type: String,
-      default: '',
-    },
-    icon: {
-      type: String,
-      default: '',
-    },
-    size: {
-      type: Number,
-      default: 50,
-    },
-    button: {
-      type: Boolean,
-      default: false,
-    },
+defineProps({
+  absolute: {
+    type: Boolean,
+    default: false,
+  },
+  color: {
+    type: String,
+    default: '',
+  },
+  text: {
+    type: String,
+    default: '',
+  },
+  icon: {
+    type: String,
+    default: '',
+  },
+  size: {
+    type: Number,
+    default: 50,
+  },
+  button: {
+    type: Boolean,
+    default: false,
   },
 })
 </script>

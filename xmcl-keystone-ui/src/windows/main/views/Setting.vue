@@ -1,16 +1,11 @@
 <template>
   <v-container
     fluid
-    style="z-index: 2; overflow: auto"
     class="overflow-auto h-full"
   >
-    <v-layout
-      class="overflow-auto h-full flex-col"
-    >
-      <setting-general />
-      <setting-update />
-      <setting-appearance />
-    </v-layout>
+    <setting-general />
+    <setting-update />
+    <setting-appearance />
     <update-info-dialog />
     <setting-migration-dialog />
   </v-container>
