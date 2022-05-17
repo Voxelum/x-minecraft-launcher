@@ -5,6 +5,7 @@
     :ripple="!isBusy"
     class="draggable-card w-full flex flex-col"
     :color="isSelected ? 'primary' : ''"
+    :dark="isSelected"
     outlined
     :shaped="isSelected"
     :class="{ selected: isSelected }"

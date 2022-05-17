@@ -60,7 +60,7 @@ l8.9,6.3l0.3,6.3h9.6v-6.4l-4.5-5.5c0,0-6.7-0.4-8.4-3.2C67.7,32.6,74.8,20.4,91.6,
     </g>
   </svg>
 </template>
-<style type="text/css">
+<style type="text/css" scoped>
 .st0 {
   fill: #dfa86a;
 }

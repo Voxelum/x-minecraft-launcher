@@ -102,11 +102,11 @@ import { useService, useRouter, useServiceBusy, useFilterCombobox, useI18n } fro
 import { ResourceServiceKey, ResourceType, ResourceDomain } from '@xmcl/runtime-api'
 import { isStringArrayEquals } from '/@/util/equal'
 import ModpackCard from './ModpackCard.vue'
-import { AddInstanceDialogKey } from './AppAddInstanceDialog.vue'
 import DeleteButton from './ModpackDeleteButton.vue'
 import { useDialog } from '../composables/dialog'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { ModpackItem, ModpackResources } from '../composables/modpack'
+import { AddInstanceDialogKey } from '../composables/instanceAdd'
 
 const { t } = useI18n()
 const { push } = useRouter()

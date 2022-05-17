@@ -79,23 +79,6 @@ export function useNotifier() {
     queue.value.push(not)
   }
 
-  // const subscribe = <T>(promise: Promise<T>, success?: (r: T) => LocalNotification, failed?: (e: any) => LocalNotification) => {
-  //     promise.then((r) => {
-  //         if (success) {
-  //             let options = success(r);
-  //         }
-  //     }, (e) => {
-  //         if (failed) {
-  //             let options = failed(e);
-  //             if (typeof options === 'string') {
-  //                 notify('error', options);
-  //             } else {
-  //                 notify('error', options[0], options[1]);
-  //             }
-  //         }
-  //     });
-  // };
-
   const subscribeTask = <T>(promise: Promise<T>, title: string, more?: () => void) => {
     promise.then(() => {
       notify({ level: 'success', title, more })

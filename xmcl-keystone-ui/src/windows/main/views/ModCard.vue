@@ -301,6 +301,10 @@ const contextMenuItems = computed(() => {
 </script>
 
 <style scoped>
+
+.draggable-card {
+  color: white;
+}
 .draggable-card:hover {
   background-color: #388e3c;
 }

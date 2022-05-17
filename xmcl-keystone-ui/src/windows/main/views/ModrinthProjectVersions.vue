@@ -36,7 +36,7 @@
           solo
           dense
           :items="releaseTypes"
-          :label="$t('modrinth.versionType.name')"
+          :label="$t('versionType.name')"
         />
       </div>
     </template>
@@ -78,7 +78,7 @@
           </div>
         </td>
         <td>
-          {{ $t(`modrinth.versionType.${props.item.version_type}`) }}
+          {{ $t(`versionType.${props.item.version_type}`) }}
         </td>
         <td>
           {{ props.item.downloads }}
@@ -147,9 +147,9 @@ export default defineComponent({
     const gameVersions = computed(() => versions.value.map(v => v.game_versions).reduce((a, b) => [...a, ...b], []))
     const gameVersion = ref('')
     const releaseTypes = computed(() => [
-      { text: $t('modrinth.versionType.alpha'), value: 'alpha' },
-      { text: $t('modrinth.versionType.beta'), value: 'beta' },
-      { text: $t('modrinth.versionType.release'), value: 'release' },
+      { text: $t('versionType.alpha'), value: 'alpha' },
+      { text: $t('versionType.beta'), value: 'beta' },
+      { text: $t('versionType.release'), value: 'release' },
     ])
     const releaseType = ref('')
     const modLoaders = ['forge', 'fabric']
@@ -183,7 +183,7 @@ export default defineComponent({
       text: $t('modrinth.avaiableFor'),
       value: 'game_versions',
     }, {
-      text: $t('modrinth.versionType.name'),
+      text: $t('versionType.name'),
       value: 'version_type',
       sortable: false,
     }, {
