@@ -166,6 +166,11 @@ export interface BaseService extends StatefulService<BaseState> {
    */
   exit(code?: number | undefined): void
 
+  /**
+   * Generate a report file
+   */
+  reportItNow(options: { destination: string }): Promise<void>
+
   migrate(options: MigrateOptions): Promise<void>
   postMigrate(): Promise<void>
 }
