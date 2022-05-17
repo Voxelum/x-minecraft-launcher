@@ -4,6 +4,8 @@ import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { IS_DEV } from '../constant'
 import { createSafeFile } from '../util/persistance'
+import { ZipTask } from '../util/zip'
+import os from 'os'
 import { Singleton, StatefulService } from './Service'
 
 export class BaseService extends StatefulService<BaseState> implements IBaseService {
@@ -128,6 +130,21 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
   quit = this.app.quit.bind(this.app)
 
   exit = this.app.exit
+
+  async reportItNow(options: { destination: string }): Promise<void> {
+    const task = new ZipTask(options.destination)
+    task.includeAs(this.logManager.getLogRoot(), 'logs')
+
+    task.addBuffer(Buffer.from(JSON.stringify({
+      sessionId: this.telemetryManager.getSessionId(),
+      platform: os.platform(),
+      arch: os.arch(),
+      version: os.version(),
+      release: os.release(),
+      type: os.type(),
+    })), 'device.json')
+    await task.startAndWait()
+  }
 
   private oldMigratedRoot = ''
 

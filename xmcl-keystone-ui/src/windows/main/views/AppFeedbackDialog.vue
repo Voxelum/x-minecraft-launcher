@@ -6,7 +6,7 @@
     width="500"
   >
     <v-toolbar color="warning">
-      <v-toolbar-title>{{ $t('feedback.name') }}</v-toolbar-title>
+      <v-toolbar-title>{{ t('feedback.name') }}</v-toolbar-title>
       <v-spacer />
       <v-btn
         icon
@@ -19,28 +19,63 @@
       three-line
       subheader
     >
-      <v-subheader>{{ $t('feedback.description') }}</v-subheader>
+      <v-subheader>{{ t('feedback.description') }}</v-subheader>
+
+      <v-alert
+        class="mx-4"
+        border="left"
+        colored-border
+        outlined
+        type="info"
+      >
+        {{ t('feedback.hint') }}
+      </v-alert>
+
+      <div class="flex w-full">
+        <v-btn
+          class="mx-4 flex-grow"
+          shaped
+          color="primary"
+          :loading="loading"
+          @click="generateReport"
+        >
+          <v-icon
+            v-if="!done"
+            left
+          >
+            bug_report
+          </v-icon>
+          <v-icon
+            v-else
+            left
+          >
+            done
+          </v-icon>
+          {{ t('feedback.generateReport') }}
+        </v-btn>
+      </div>
+      <v-subheader> {{ t('feedback.channel') }} </v-subheader>
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>{{ $t('feedback.github') }}</v-list-item-title>
-          <v-list-item-subtitle>{{ $t('feedback.githubDescription') }}</v-list-item-subtitle>
+          <v-list-item-title>{{ t('feedback.github') }}</v-list-item-title>
+          <v-list-item-subtitle>{{ t('feedback.githubDescription') }}</v-list-item-subtitle>
         </v-list-item-content>
         <v-list-item-action>
           <v-btn
             text
             href="https://github.com/Voxelum/x-minecraft-launcher/issues/new"
           >
-            {{ $t('feedback.githubOpenIssue') }}
+            {{ t('feedback.githubOpenIssue') }}
           </v-btn>
         </v-list-item-action>
       </v-list-item>
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>{{ $t('feedback.qq') }}</v-list-item-title>
+          <v-list-item-title>{{ t('feedback.qq') }}</v-list-item-title>
           <v-list-item-subtitle
             style="max-width: 80%"
           >
-            {{ $t('feedback.qqDescription', { number: 858391850 }) }}
+            {{ t('feedback.qqDescription', { number: 858391850 }) }}
           </v-list-item-subtitle>
         </v-list-item-content>
 
@@ -49,18 +84,18 @@
             text
             href="https://jq.qq.com/?_wv=1027&k=5Py5zM1"
           >
-            {{ $t('feedback.qqEnterGroup') }}
+            {{ t('feedback.qqEnterGroup') }}
           </v-btn>
         </v-list-item-action>
       </v-list-item>
 
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>{{ $t('feedback.discord') }}</v-list-item-title>
+          <v-list-item-title>{{ t('feedback.discord') }}</v-list-item-title>
           <v-list-item-subtitle
             style="max-width: 80%"
           >
-            {{ $t('feedback.discordDescription') }}
+            {{ t('feedback.discordDescription') }}
           </v-list-item-subtitle>
         </v-list-item-content>
 
@@ -69,7 +104,7 @@
             text
             href="https://discord.gg/W5XVwYY7GQ"
           >
-            {{ $t('feedback.discordJoin') }}
+            {{ t('feedback.discordJoin') }}
           </v-btn>
         </v-list-item-action>
       </v-list-item>
@@ -78,8 +113,26 @@
 </template>
 
 <script lang=ts setup>
+import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
+import { useI18n, useRefreshable, useService } from '/@/composables'
+
 const { hide, isShown } = useDialog('feedback')
+const { reportItNow } = useService(BaseServiceKey)
+const { t } = useI18n()
+const done = ref(false)
+
+const { refresh: generateReport, refreshing: loading } = useRefreshable(async () => {
+  const { filePath } = await windowController.showSaveDialog({
+    title: t('feedback.generateSaveAs'),
+    defaultPath: 'report.zip',
+  })
+  if (filePath) {
+    await reportItNow({ destination: filePath })
+    done.value = true
+  }
+})
+
 </script>
 
 <style>
@@ -93,6 +146,11 @@ const { hide, isShown } = useDialog('feedback')
 feedback:
   name: Feedback
   description: I found a Bug or I want to make a suggestion
+  hint: Click the button to create the report and contact the developer team. The report will contains your device info including operating system type, version, user name (in your os), etc.
+  generateReport: Generate Report
+  generateSaveAs: Save the report to
+
+  channel: Channels
   discord: Discord
   discordDescription: Join Discord Channel
   discordJoin: Join
@@ -110,6 +168,11 @@ feedback:
 feedback:
   name: 反馈
   description: 我找到了一个BUG/我想反馈
+  hint: 点击生成报告按钮并联系开发团队。这个报告会包含你的设备信息，如操作系统，版本，操作系统的用户名等。
+  generateReport: 生成报告
+  generateSaveAs: 将报告保存在
+  channel: 联系渠道
+
   discord: Discord
   discordDescription: 加入 Discord 讨论组
   discordJoin: 加入

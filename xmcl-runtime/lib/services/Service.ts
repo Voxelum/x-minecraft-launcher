@@ -254,6 +254,8 @@ export abstract class AbstractService extends EventEmitter {
 
   get serviceManager() { return this.app.serviceManager }
 
+  get telemetryManager() { return this.app.telemetryManager }
+
   get taskManager() { return this.app.taskManager }
 
   get logManager() { return this.app.logManager }

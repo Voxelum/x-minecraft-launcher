@@ -9,6 +9,8 @@ import { UserService } from '../services/UserService'
 export default class TelemetryManager extends Manager {
   private sessionId: string = randomUUID()
 
+  getSessionId() { return this.sessionId }
+
   async setup() {
     if (IS_DEV) {
       return
