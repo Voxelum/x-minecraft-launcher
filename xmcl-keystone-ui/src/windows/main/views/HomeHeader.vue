@@ -23,7 +23,7 @@
       :color="!localVersion.id ? 'warning' : 'primary'"
       small
       :input-value="false"
-      @click="$router.push('/version-setting')"
+      @click="push('/version-setting')"
     >
       <v-avatar left>
         <img
@@ -40,7 +40,7 @@
       label
       small
       :input-value="false"
-      @click.stop
+      @click.stop="push('/version-setting?target=minecraft')"
     >
       <v-avatar left>
         <img
@@ -54,6 +54,7 @@
       v-if="version.forge"
       small
       label
+      @click.stop="push('/version-setting?target=forge')"
     >
       <v-avatar left>
         <img
@@ -67,6 +68,7 @@
       v-if="version.fabricLoader"
       small
       label
+      @click.stop="push('/version-setting?target=fabric')"
     >
       <v-avatar left>
         <img
@@ -110,32 +112,18 @@
   </div>
 </template>
 
-<script lang=ts>
-import { defineComponent } from '@vue/composition-api'
+<script lang=ts setup>
 import fabricPng from '/@/assets/fabric.png'
 import forgePng from '/@/assets/forge.png'
 import minecraftPng from '/@/assets/minecraft.png'
 import unknownServer from '/@/assets/unknown_server.png'
 import { useInstance, useInstanceVersion } from '../composables/instance'
 import { useInstanceServerStatus } from '../composables/serverStatus'
+import { useRouter } from '/@/composables'
 
-export default defineComponent({
-  setup() {
-    const { runtime, name, author, isServer } = useInstance()
-    const { localVersion } = useInstanceVersion()
-    const { status } = useInstanceServerStatus()
-    return {
-      localVersion,
-      version: runtime,
-      name,
-      author,
-      isServer,
-      status,
-      unknownServer,
-      forgePng,
-      minecraftPng,
-      fabricPng,
-    }
-  },
-})
+const { runtime: version, name, author, isServer } = useInstance()
+const { localVersion } = useInstanceVersion()
+const { status } = useInstanceServerStatus()
+const { push } = useRouter()
+
 </script>

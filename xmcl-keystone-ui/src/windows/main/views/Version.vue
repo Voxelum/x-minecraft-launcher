@@ -34,7 +34,7 @@
           <div class="version-tab">
             Minecraft
             <div class="subtitle">
-              {{ minecraft }}
+              {{ data.minecraft }}
             </div>
           </div>
         </v-tab>
@@ -42,7 +42,7 @@
           <div class="version-tab">
             Forge
             <div class="subtitle">
-              {{ forge || $t("versionSetting.unset") }}
+              {{ data.forge || $t("versionSetting.unset") }}
             </div>
           </div>
         </v-tab>
@@ -50,7 +50,7 @@
           <div class="version-tab">
             Fabric
             <div class="subtitle">
-              {{ fabricLoader || $t("versionSetting.unset") }}
+              {{ data.fabricLoader || $t("versionSetting.unset") }}
             </div>
           </div>
         </v-tab>
@@ -58,7 +58,7 @@
           <div class="version-tab">
             Optifine
             <div class="subtitle">
-              {{ optifine || $t("versionSetting.unset") }}
+              {{ data.optifine || $t("versionSetting.unset") }}
             </div>
           </div>
         </v-tab>
@@ -85,7 +85,7 @@
         >
           <minecraft-view
             :filter-text="filterText"
-            :version="minecraft"
+            :version="data.minecraft"
             :select="setMinecraft"
           />
         </v-tab-item>
@@ -95,9 +95,9 @@
         >
           <forge-view
             :filter-text="filterText"
-            :version="forge"
+            :version="data.forge"
             :select="setForge"
-            :minecraft="minecraft"
+            :minecraft="data.minecraft"
           />
         </v-tab-item>
         <v-tab-item
@@ -106,10 +106,9 @@
         >
           <fabric-view
             :filter-text="filterText"
-            :loader="fabricLoader"
-            :yarn="yarn"
+            :loader="data.fabricLoader"
             :select="setFabric"
-            :minecraft="minecraft"
+            :minecraft="data.minecraft"
           />
         </v-tab-item>
         <v-tab-item
@@ -120,7 +119,7 @@
             :filter-text="filterText"
             :version="optifineVersion"
             :select="setOptifine"
-            :minecraft="minecraft"
+            :minecraft="data.minecraft"
           />
         </v-tab-item>
       </v-tabs-items>
@@ -144,11 +143,11 @@
   </v-container>
 </template>
 
-<script lang=ts>
+<script lang=ts setup>
 import type { ResolvedVersion } from '@xmcl/core'
 import type { MinecraftVersion } from '@xmcl/installer'
 import { filterForgeVersion, filterOptifineVersion, getResolvedVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, OptifineVersion, InstallServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
-import { useAutoSaveLoad, useServiceBusy, useService } from '/@/composables'
+import { useAutoSaveLoad, useServiceBusy, useService, useRouter } from '/@/composables'
 import FabricView from './VersionFabricView.vue'
 import ForgeView from './VersionForgeView.vue'
 import MinecraftView from './VersionMinecraftView.vue'
@@ -156,174 +155,162 @@ import OptifineView from './VersionOptifineView.vue'
 import LocalVersionView from './VersionLocalView.vue'
 import { useInstance } from '../composables/instance'
 
-export default defineComponent({
-  components: {
-    MinecraftView,
-    ForgeView,
-    FabricView,
-    OptifineView,
-    LocalVersionView,
-  },
-  setup() {
-    const filterText = ref('')
-    const { refreshForge, refreshFabric, refreshLiteloader, refreshOptifine, refreshMinecraft } = useService(InstallServiceKey)
-    const data = reactive({
-      active: 0,
+const props = defineProps<{ target?: string }>()
+const { replace } = useRouter()
 
-      minecraft: '',
-      forge: '',
-      fabricLoader: '',
-      yarn: '',
-      optifine: '',
+const targetToId: Record<string, number> = {
+  minecraft: 1,
+  forge: 2,
+  fabric: 3,
+  optifine: 4,
+}
+const idToTarget = ['minecraft', 'forge', 'fabric', 'optifine']
 
-      id: '',
-
-      // unused
-      liteloader: '',
-    })
-    const refreshingForge = useServiceBusy(InstallServiceKey, 'refreshForge')
-    const refreshingMinecraft = useServiceBusy(InstallServiceKey, 'refreshMinecraft')
-    const refreshingFabric = useServiceBusy(InstallServiceKey, 'refreshFabric')
-    const refreshingOptifine = useServiceBusy(InstallServiceKey, 'refreshOptifine')
-
-    const refreshing = computed(() => {
-      if (data.active === 1) return refreshingMinecraft.value
-      if (data.active === 2) return refreshingForge.value
-      if (data.active === 3) return refreshingFabric.value
-      if (data.active === 4) return refreshingOptifine.value
-      return false
-    })
-
-    const optifine = computed(() => {
-      const index = data.optifine.lastIndexOf('_')
-      const type = data.optifine.substring(0, index)
-      const patch = data.optifine.substring(index + 1, data.optifine.length)
-      return { type, patch }
-    })
-
-    const { editInstance: edit, runtime, version } = useInstance()
-    const { state } = useService(VersionServiceKey)
-    const barColor = computed(() => {
-      switch (data.active) {
-        case 0: return 'currentColor'
-        case 1: return 'primary'
-        case 2: return 'brown'
-        case 3: return 'orange'
-        case 4: return 'cyan'
-        default: return 'primary'
-      }
-    })
-
-    const localVersion = computed(() => {
-      return getResolvedVersion(state.local, data as any, data.id)
-    })
-    function setLocalVersion(v: ResolvedVersion) {
-      data.minecraft = v.minecraftVersion
-      data.forge = filterForgeVersion(v.libraries.find(isForgeLibrary)?.version ?? '')
-      data.liteloader = ''
-      data.fabricLoader = v.libraries.find(isFabricLoaderLibrary)?.version ?? ''
-      data.optifine = filterOptifineVersion(v.libraries.find(isOptifineLibrary)?.version ?? '')
-      data.yarn = ''
-      data.id = v.id ?? ''
-    }
-    function setMinecraft(v: MinecraftVersion) {
-      if (data.minecraft !== v.id && v.id.length > 0) {
-        data.minecraft = v.id
-        data.forge = ''
-        data.liteloader = ''
-        data.fabricLoader = ''
-        data.yarn = ''
-        data.optifine = ''
-        data.id = ''
-      }
-    }
-    function setOptifine(v: OptifineVersion | undefined) {
-      if (!v) {
-        data.optifine = ''
-        data.id = ''
-      } else {
-        data.optifine = `${v.type}_${v.patch}`
-        data.id = ''
-      }
-    }
-    function setForge(v: { version: string } | undefined) {
-      if (!v) {
-        data.forge = ''
-      } else if (v.version.length > 0) {
-        data.forge = v.version
-        data.id = ''
-        data.fabricLoader = ''
-      }
-    }
-    function setFabric(v?: { version: string }) {
-      if (v) {
-        data.fabricLoader = v.version
-        data.id = ''
-        data.forge = ''
-      } else {
-        data.fabricLoader = ''
-        data.id = ''
-        data.yarn = ''
-      }
-    }
-    function refresh() {
-      if (data.active === 1) {
-        refreshMinecraft(true)
-      } else if (data.active === 2) {
-        refreshForge({ force: true, mcversion: data.minecraft })
-      } else if (data.active === 3) {
-        refreshFabric(true)
-      } else if (data.active === 4) {
-        refreshOptifine(true)
-      }
-    }
-    function save() {
-      if (data.minecraft.length > 0) {
-        edit({
-          version: data.id,
-          runtime: {
-            minecraft: data.minecraft,
-            forge: data.forge,
-            fabricLoader: data.fabricLoader,
-            yarn: data.yarn,
-            liteloader: data.liteloader,
-            optifine: data.optifine,
-          },
-        })
-      }
-    }
-    async function load() {
-      const { forge, minecraft, liteloader, fabricLoader, yarn, optifine } = runtime.value
-      data.id = version.value
-      data.minecraft = minecraft
-      data.forge = forge ?? ''
-      data.yarn = yarn ?? ''
-      data.fabricLoader = fabricLoader ?? ''
-      data.optifine = optifine ?? ''
-      data.liteloader = liteloader ?? ''
-    }
-
-    useAutoSaveLoad(save, load)
-
-    return {
-      ...toRefs(data),
-      refreshing,
-
-      setMinecraft,
-      setForge,
-      setFabric,
-      setOptifine,
-      setLocalVersion,
-
-      localVersion,
-      filterText,
-      optifineVersion: optifine,
-
-      barColor,
-      refresh,
-    }
+const active = computed({
+  get() { return props.target ? (targetToId[props.target] ?? 0) : 0 },
+  set(v: number) {
+    replace({ query: { target: idToTarget[v - 1] ?? undefined } })
   },
 })
+
+const filterText = ref('')
+const { refreshForge, refreshFabric, refreshLiteloader, refreshOptifine, refreshMinecraft } = useService(InstallServiceKey)
+const data = reactive({
+  minecraft: '',
+  forge: '',
+  fabricLoader: '',
+  yarn: '',
+  optifine: '',
+
+  id: '',
+
+  // unused
+  liteloader: '',
+})
+const refreshingForge = useServiceBusy(InstallServiceKey, 'refreshForge')
+const refreshingMinecraft = useServiceBusy(InstallServiceKey, 'refreshMinecraft')
+const refreshingFabric = useServiceBusy(InstallServiceKey, 'refreshFabric')
+const refreshingOptifine = useServiceBusy(InstallServiceKey, 'refreshOptifine')
+
+const refreshing = computed(() => {
+  if (active.value === 1) return refreshingMinecraft.value
+  if (active.value === 2) return refreshingForge.value
+  if (active.value === 3) return refreshingFabric.value
+  if (active.value === 4) return refreshingOptifine.value
+  return false
+})
+
+const optifineVersion = computed(() => {
+  const index = data.optifine.lastIndexOf('_')
+  const type = data.optifine.substring(0, index)
+  const patch = data.optifine.substring(index + 1, data.optifine.length)
+  return { type, patch }
+})
+
+const { editInstance: edit, runtime, version } = useInstance()
+const { state } = useService(VersionServiceKey)
+const barColor = computed(() => {
+  switch (active.value) {
+    case 0: return 'currentColor'
+    case 1: return 'primary'
+    case 2: return 'brown'
+    case 3: return 'orange'
+    case 4: return 'cyan'
+    default: return 'primary'
+  }
+})
+
+const localVersion = computed(() => {
+  return getResolvedVersion(state.local, data as any, data.id)
+})
+function setLocalVersion(v: ResolvedVersion) {
+  data.minecraft = v.minecraftVersion
+  data.forge = filterForgeVersion(v.libraries.find(isForgeLibrary)?.version ?? '')
+  data.liteloader = ''
+  data.fabricLoader = v.libraries.find(isFabricLoaderLibrary)?.version ?? ''
+  data.optifine = filterOptifineVersion(v.libraries.find(isOptifineLibrary)?.version ?? '')
+  data.yarn = ''
+  data.id = v.id ?? ''
+}
+function setMinecraft(v: MinecraftVersion) {
+  if (data.minecraft !== v.id && v.id.length > 0) {
+    data.minecraft = v.id
+    data.forge = ''
+    data.liteloader = ''
+    data.fabricLoader = ''
+    data.yarn = ''
+    data.optifine = ''
+    data.id = ''
+  }
+}
+function setOptifine(v: OptifineVersion | undefined) {
+  if (!v) {
+    data.optifine = ''
+    data.id = ''
+  } else {
+    data.optifine = `${v.type}_${v.patch}`
+    data.id = ''
+  }
+}
+function setForge(v: { version: string } | undefined) {
+  if (!v) {
+    data.forge = ''
+  } else if (v.version.length > 0) {
+    data.forge = v.version
+    data.id = ''
+    data.fabricLoader = ''
+  }
+}
+function setFabric(v?: { version: string }) {
+  if (v) {
+    data.fabricLoader = v.version
+    data.id = ''
+    data.forge = ''
+  } else {
+    data.fabricLoader = ''
+    data.id = ''
+    data.yarn = ''
+  }
+}
+function refresh() {
+  if (active.value === 1) {
+    refreshMinecraft(true)
+  } else if (active.value === 2) {
+    refreshForge({ force: true, mcversion: data.minecraft })
+  } else if (active.value === 3) {
+    refreshFabric(true)
+  } else if (active.value === 4) {
+    refreshOptifine(true)
+  }
+}
+function save() {
+  if (data.minecraft.length > 0) {
+    edit({
+      version: data.id,
+      runtime: {
+        minecraft: data.minecraft,
+        forge: data.forge,
+        fabricLoader: data.fabricLoader,
+        yarn: data.yarn,
+        liteloader: data.liteloader,
+        optifine: data.optifine,
+      },
+    })
+  }
+}
+async function load() {
+  const { forge, minecraft, liteloader, fabricLoader, yarn, optifine } = runtime.value
+  data.id = version.value
+  data.minecraft = minecraft
+  data.forge = forge ?? ''
+  data.yarn = yarn ?? ''
+  data.fabricLoader = fabricLoader ?? ''
+  data.optifine = optifine ?? ''
+  data.liteloader = liteloader ?? ''
+}
+
+useAutoSaveLoad(save, load)
+
 </script>
 
 <style scoped=true>
