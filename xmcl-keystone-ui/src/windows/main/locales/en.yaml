@@ -115,24 +115,24 @@ diagnosis:
     message: Click to install this version
     name: Missing version jar for Minecraft %{version}
   missingVersionJson:
-    name: Missing version %{version} json.
     message: Click to install this version
+    name: Missing version %{version} json.
   problem: 1 Problem | %{count} Problems
   requireFabric:
-    name: Require fabric to run with Fabric Mod!
     message: Please a fabric version in version setting
+    name: Require fabric to run with Fabric Mod!
   requireFabricAPI:
-    name: Require fabric API {version} to run the {name}!
     message: Either download fabric API or enable it in Mod Settings
+    name: Require fabric API {version} to run the {name}!
   requireForge:
-    name: Require forge to run with Forge Mod!
     message: Please a forge version in version setting
+    name: Require forge to run with Forge Mod!
   unknownMod:
-    name: Cannot detect Mod {name}'s Minecraft Version
     message: Please be careful if it causes crash
+    name: Cannot detect Mod {name}'s Minecraft Version
   userNotLogined:
-    name: User is not logined
     message: Click to login.
+    name: User is not logined
 disk:
   available: Available
   used: Used
@@ -191,65 +191,65 @@ importModpack:
 importResource: Import Resource
 importSave: Import Save
 installAssets:
-  name: Install Asset Files
   asset: Install Asset {hash}
   assetsJson: Check Assets Index File
+  name: Install Asset Files
 installAuthlibInjector: Install authlib-injector
 installByProfile:
   name: Install by Install Profile
   postProcessing: Post Processing
 installCurseforgeFile: Install Curseforge File
 installDependencies:
-  name: Install {version}'s Dependencies
   installAssets:
-    name: Install Asset Files
     assets: Install Asset {hash}
     assetsJson: Check Assets Index File
+    name: Install Asset Files
   installLibraries:
-    name: Install Libraries
     library: Install Library
+    name: Install Libraries
+  name: Install {version}'s Dependencies
 installFabric:
   name: Install Fabric
 installForge:
-  name: Install Forge
   downloadInstaller: Download Installer
   libraries:
-    name: Download Libraries
     library: Install Library {lib}
+    name: Download Libraries
+  name: Install Forge
   postProcessing: Post Processing
 installJre:
-  name: Install Java Runtime Library
   cleanup: Clean up installation package
   decompress: Decompress JRE files to folder
   download: Download compressed JRE file
   fetchInfo: Fetch JRE Info from Mojang
+  name: Install Java Runtime Library
 installLibraries:
-  name: Install Libraries
   library: Install Library
+  name: Install Libraries
 installModpack:
-  name: Install Modpack
   deploy: Deploy
   download:
-    name: Download
     file: Download File
+    name: Download
+  name: Install Modpack
   unpack: Unpack Modpack
 installModrinthFile:
   name: Install Modrinth
 installOptifine:
-  name: Install Optifine
   download: Download Optifine Universal
   jar: Generate Jar
   json: Generate Json
+  name: Install Optifine
 installVersion:
-  name: Install Minecraft Client {version}
   jar: Install Version Jar
   json: Install Version Json
+  name: Install Minecraft Client {version}
 instance:
   addServer: Add Server
   delete: Delete Profile
   deleteHint: The instance data will be moved from the disk forever. You sure to do this?
   fileApi: The synchronize file server API url
-  fileApiHint: Remote synchronize files for instance, or exports as MCBBS modpack
+  fileApiHint: The url to synchronize instance files from a remote config server.
   gameVersion: Game Version
   includeVersion: Include Version | Include Versions
   launchArguments: Launch Arguments Preview
@@ -275,6 +275,9 @@ instanceTemplate:
   preview: Modpack Preview
   profile: This is a existed profile configuration
   server: This is a existed server configuration
+  ftb: This is a FTB configuration
+  curseforge: This is a Curseforge configuration
+  mcbbs: This is a MCBBS configuration
   title: Template Setting
 instances:
   add: Add Local Game
@@ -347,9 +350,9 @@ launcher:
   showDiagnosis: Show Diagnosis
   title: Minecraft Launcher
 launcherUpdate:
+  alreadyLatest: Up To Date
   installAndQuit: Restart to Install
   noUpdateAvailable: No Update Available
-  alreadyLatest: Up To Date
   updateToThisVersion: Download and Install
 liteloader:
   name: LiteLoader
@@ -379,8 +382,20 @@ login:
   signup: Sign up
   signupDescription: New to us?
 loginError:
+  badNetworkOrServer: >-
+    Please check your network connectivity! Or maybe the authentication server
+    is down!
+  checkOwnershipFailed: Fail to check game ownership. Please try again.
+  fetchMinecraftProfileFailed: 'Fail to fetch Minecraft profile: {reason}'
   illegalEmail: E-mail must be valid
   invalidCredentials: Invalid credentials. Invalid username or password.
+  loginMinecraftByXboxFailed: >-
+    Fail to exchange Minecraft token by XBox token. This is unexpected. Please
+    retry.
+  loginXboxFailed: >-
+    Fail to login Xbox by Microsoft token. Please make sure you have a linked
+    xbox account to your Microsoft account. Please try again.
+  requestFailed: Login failed, we do not know the exact reason. Please retry.
   requireEmail: E-mail is required
   requirePassword: Password is required
   requireUsername: Username is required
@@ -451,13 +466,13 @@ modpack:
   includeAssets: Include Assets
   includeLibraries: Include Libraries
   includes: Files to includes
+  installFromCurseforge: Install from Curseforge
   modpackVersion: Modpack Version
   name: Modpack | Modpacks
   overrides: Overrides
   profile: Profile Name
   showFile: Show File {file}
   showInCurseforge: Show {name} in Curseforge
-  installFromCurseforge: Install from Curseforge
   url: URL
   urlHint: The home page url of your modpack
 modrinth:
@@ -511,11 +526,6 @@ modrinth:
     title: Sort By
     updated: Recently updated
   updateAt: Updated
-  versionType:
-    alpha: Alpha
-    beta: Beta
-    name: Status
-    release: Release
   versions: Versions
 multiplayer:
   complete: Complete
@@ -537,6 +547,7 @@ multiplayer:
   placeholder: Connect with other user to play Minecraft on LAN!
   previous: Previous
   remoteToken: Remote Token
+  share: Share Instance Config
   start: Start
   startNewP2PConnection: Click the Start button to create a new peer connection
 name: Name
@@ -724,6 +735,9 @@ unused:
     mc: Minecraft Arguments
     name: Launch Settings
   summery: Summery
+updateInstance:
+  name: Update Instance
+  file: Update Instance File {file}
 user:
   accessToken: Access Token
   authMode: Auth Service
@@ -803,10 +817,15 @@ userSkin:
   urlHint: Place your skin url here
   urlNotEmpty: Skin URL cannot be empty
   urlNotValid: Skin URL is Invalid
-versionSetting:
-  title: Version Setting
-  unset: Unset
 version:
   name: Version | Versions
   notInstalled: Version is not installed
+versionSetting:
+  title: Version Setting
+  unset: Unset
+versionType:
+  alpha: Alpha
+  beta: Beta
+  name: Status
+  release: Release
 'yes': 'Yes'

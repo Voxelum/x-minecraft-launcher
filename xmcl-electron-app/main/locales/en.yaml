@@ -18,3 +18,4 @@ task:
   fail: One Task Failed
   success: One Task Success
 title: XMCL
+loginSuccess: 验证成功！现在你可以关掉这个窗口回到启动器了

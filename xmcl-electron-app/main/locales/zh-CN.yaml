@@ -16,3 +16,4 @@ task:
   fail: 有一个任务失败了
   success: 有一个任务成功完成了
 title: XMCL
+loginSuccess: Authentication succeed! Now you can close this window and return to the launcher!

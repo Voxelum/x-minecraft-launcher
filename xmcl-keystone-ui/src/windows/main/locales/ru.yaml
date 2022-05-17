@@ -36,8 +36,8 @@ description: Описание
 detail: Подробности
 diagnosis:
   badInstall:
-    name: Ошибка установки на {version}
     message: Нажмите чтобы попытаться переустановить эту версию.
+    name: Ошибка установки на {version}
   corruptedAssets:
     message: Лаунчер установит assets за вас
     multi: Повреждено %{count} assets.
@@ -187,69 +187,71 @@ help: Справка
 home: Главная
 importModpack:
   failed: Не удалось импортировать {modpack}
-  success: "{modpack} успешно импортирован"
+  success: '{modpack} успешно импортирован'
 importResource: Импорт ресурса
 importSave: Импорт сохранения
 installAssets:
-  name: Установка файлов Asset
   asset: Установка Asset {hash}
   assetsJson: Проверка индексного файла Assets
+  name: Установка файлов Asset
 installAuthlibInjector: Установка authlib-injector
 installByProfile:
   name: Установка по профилю установки
   postProcessing: Постобработка
 installCurseforgeFile: Установка файла CurseForge
 installDependencies:
-  name: Установка зависимостей {version}
   installAssets:
-    name: Установка файлов Asset
     assets: Установка Asset {hash}
     assetsJson: Проверка индексного файла Assets
+    name: Установка файлов Asset
   installLibraries:
-    name: Установка библиотек
     library: Установка библиотеки
+    name: Установка библиотек
+  name: Установка зависимостей {version}
 installFabric:
   name: Установка Fabric
 installForge:
-  name: Установка Forge
   downloadInstaller: Скачивание установщика
   libraries:
-    name: Скачивание библиотек
     library: Установка библиотеки {lib}
+    name: Скачивание библиотек
+  name: Установка Forge
   postProcessing: Постобработка
 installJre:
-  name: Установка библиотеки Java Runtime
   cleanup: Очистка установочного пакета
   decompress: Распаковка файлов JRE в папку
   download: Скачивание сжатого файла JRE
   fetchInfo: Получение информации о JRE из Mojang
+  name: Установка библиотеки Java Runtime
 installLibraries:
-  name: Установка библиотек
   library: Установка библиотеки
+  name: Установка библиотек
 installModpack:
-  name: Установка модпака
   deploy: Выполняется развёртывание
   download:
-    name: Скачивание
     file: Скачивание файла
+    name: Скачивание
+  name: Установка модпака
   unpack: Распаковка модпака
 installModrinthFile:
   name: Установка Modrinth
 installOptifine:
-  name: Установка Optifine
   download: Скачивание Optifine Universal
   jar: Генерация Jar
   json: Генерация Json
+  name: Установка Optifine
 installVersion:
-  name: Установка клиента Minecraft {version}
   jar: Установка версии Jar
   json: Установка версии Json
+  name: Установка клиента Minecraft {version}
 instance:
   addServer: Добавить сервер
   delete: Удалить профиль
   deleteHint: Данные экземпляра будут навсегда перемещены с диска. Всё равно продолжить?
   fileApi: URL-адрес API сервера синхронизации файлов
-  fileApiHint: Например, удалённая синхронизация файлов или экспорт в виде модпака MCBBS
+  fileApiHint: >-
+    URL-адрес для синхронизации файлов экземпляров с удаленного сервера
+    конфигурации.
   gameVersion: Версия игры
   includeVersion: Включить версию | Включить версии
   launchArguments: Предпросмотр аргументов запуска
@@ -414,7 +416,7 @@ mod:
   filter: Фильтр модов
   hideIncompatible: Скрыть несовместимые моды
   import: Импортировать мод
-  incompatible: Несовместимый мод. 
+  incompatible: Несовместимый мод.
   maybeCompatible: Может быть совместимым.
   name: Мод | Моды
   nocompatible: Неизвестная совместимость
@@ -511,11 +513,7 @@ modrinth:
     title: Сортировать по
     updated: Недавно обновленные
   updateAt: Обновлён
-  versionType:
-    alpha: Альфа
-    beta: Бета
-    name: Состояние
-    release: Релиз
+  versionType: {}
   versions: Версии
 multiplayer:
   complete: Выполнено
@@ -534,7 +532,9 @@ multiplayer:
   localToken: Локальный токен
   name: Мультиплеер по локальной сети
   next: Далее
-  placeholder: Соединяйтесь с другими пользователями, чтобы играть в Minecraft по локальной сети!
+  placeholder: >-
+    Соединяйтесь с другими пользователями, чтобы играть в Minecraft по локальной
+    сети!
   previous: Назад
   remoteToken: Удалённый токен
   start: Начать
@@ -582,8 +582,8 @@ resourcepack:
     title: Удалить пакет текстур
   deletion: Удаление {pack}
   deletionHint: >-
-    Данные и метаданные этого пакета текстур будут потеряны. Вы точно
-    этого хотите?
+    Данные и метаданные этого пакета текстур будут потеряны. Вы точно этого
+    хотите?
   dropHint: Перетащите сюда папку/архив пакета текстур для импортирования.
   export: Экспортировать пакет текстур
   filter: Фильтр пакетов текстур
@@ -611,8 +611,8 @@ save:
   deleteCancel: Отмена
   deleteConfirm: Подтвердить удаление
   deleteHint: >-
-    Эту операцию нельзя отменить. Вы навсегда потеряете данные сохранения. Удалить
-    это сохранение?
+    Эту операцию нельзя отменить. Вы навсегда потеряете данные сохранения.
+    Удалить это сохранение?
   deleteTitle: Удаление сохранения
   detail: Больше информации
   dropHint: Чтобы импортировать, перетащите сюда свой архив сохранения
@@ -803,10 +803,15 @@ userSkin:
   urlHint: Вставьте сюда ссылку своего скина
   urlNotEmpty: Ссылка скина не может быть пустой
   urlNotValid: Недействительная ссылка скина
-versionSetting:
-  title: Настройка версии
-  unset: Не установлена
 version:
   name: Версия | Версии
   noLocalVersion: Нет установленных версий
+versionSetting:
+  title: Настройка версии
+  unset: Не установлена
+versionType:
+  alpha: Альфа
+  beta: Бета
+  name: Состояние
+  release: Релиз
 'yes': Да

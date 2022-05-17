@@ -299,7 +299,7 @@ instance:
   delete: 刪除遊戲
   deleteHint: 遊戲的數據將完全被移除。你確定繼續此操作嗎？
   fileApi: 遠程同步文件服務器 API 地址
-  fileApiHint: 用於遠程同步實例文件，或 MCBBS 整合包導出
+  fileApiHint: 用于远程同步实例文件的链接
   gameVersion: 遊戲版本
   includeVersion: 包含遊戲版本
   launchArguments: 啓動命令預覽
@@ -563,11 +563,7 @@ modrinth:
     updated: 更新時間
   sortBy: {}
   updateAt: 更新於
-  versionType:
-    alpha: Alpha
-    beta: Beta
-    name: 類型
-    release: 穩定版
+  versionType: {}
   versions: 版本
 multiplayer:
   complete: 完成
@@ -886,4 +882,9 @@ version:
 versionSetting:
   title: 版本管理
   unset: 未啓用
+versionType:
+  alpha: Alpha
+  beta: Beta
+  name: 類型
+  release: 穩定版
 'yes': 是
