@@ -1,5 +1,5 @@
 import { Ref } from '@vue/composition-api'
-import { FTBVersion, FeedTheBeastServiceKey, FTBModpackManifest, FTBModpackVersionManifest } from '@xmcl/runtime-api'
+import { FTBVersion, FeedTheBeastServiceKey, FTBModpackManifest, FTBModpackVersionManifest, CachedFTBModpackVersionManifest } from '@xmcl/runtime-api'
 import { useRefreshable, useRouter, useService } from '/@/composables'
 
 interface FeedTheBeastProps {
@@ -68,5 +68,24 @@ export function useFeedTheBeastProjectVersion(project: Ref<number>, version: Ref
     refresh,
     refreshing,
     versionManifest,
+  }
+}
+
+export function useFeedTheBeastVersionsCache() {
+  const { getAllCachedModpackVersions } = useService(FeedTheBeastServiceKey)
+  const ftb: Ref<CachedFTBModpackVersionManifest[]> = ref([])
+
+  const { refresh, refreshing } = useRefreshable(async () => {
+    ftb.value = await getAllCachedModpackVersions()
+  })
+  function dispose() {
+    ftb.value = []
+  }
+
+  return {
+    cache: ftb,
+    refresh,
+    refreshing,
+    dispose,
   }
 }

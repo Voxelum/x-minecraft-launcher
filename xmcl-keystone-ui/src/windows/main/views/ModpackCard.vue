@@ -19,16 +19,20 @@
     </v-img>
     <v-card-title>
       {{ item.name }}
-      <span
-        v-if="item.author"
-        class="pl-2 text-sm text-gray-400"
-      >
-        by
-        {{ item.author }}
-      </span>
     </v-card-title>
     <v-card-subtitle class="flex flex-col">
+      <span
+        v-if="item.author"
+      >
+        <v-icon small>
+          person
+        </v-icon>
+        {{ item.author }}
+      </span>
       <div class="">
+        <v-icon small>
+          history
+        </v-icon>
         {{ item.version }}
       </div>
       <div>
@@ -41,7 +45,7 @@
         <v-icon small>
           event
         </v-icon>
-        {{ new Date(item.resource.date).toLocaleTimeString() }}
+        {{ time }}
       </div>
     </v-card-subtitle>
     <v-divider class="mx-4" />
@@ -80,7 +84,7 @@
 <script lang="ts" setup>
 import { Ref } from '@vue/composition-api'
 import { BaseServiceKey } from '@xmcl/runtime-api'
-import { useI18n, useService, useTags } from '/@/composables'
+import { useI18n, useRouter, useService, useTags } from '/@/composables'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { useCurseforgeRoute } from '../composables/curseforgeRoute'
 import { vContextMenu } from '../directives/contextMenu'
@@ -92,17 +96,25 @@ const emit = defineEmits(['tags', 'delete'])
 const { t } = useI18n()
 const { showItemInDirectory } = useService(BaseServiceKey)
 const { goProjectAndRoute } = useCurseforgeRoute()
+const router = useRouter()
 const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.item.tags, set(v) { emit('tags', v) } }))
 const onDeleteTag = removeTag
+const time = computed(() => props.item.resource?.date ? new Date(props.item.resource?.date).toLocaleDateString() : props.item.ftb ? new Date(props.item.ftb.updated * 1000).toLocaleDateString() : '')
 const contextMenuItems: Ref<ContextMenuItem[]> = computed(() => {
+  if (!props.item.resource) {
+    if (props.item.ftb) {
+      return [{
+        text: t('modpack.showInFtb', { name: props.item.name }),
+        children: [],
+        onClick: () => {
+          router.push(`/ftb/${props.item.ftb?.parent}`)
+        },
+        icon: '$vuetify.icons.ftb',
+      }]
+    }
+    return []
+  }
   const items: ContextMenuItem[] = [{
-    text: t('modpack.showFile', { file: props.item.resource.path }),
-    children: [],
-    onClick: () => {
-      showItemInDirectory(props.item.resource.path)
-    },
-    icon: 'folder',
-  }, {
     text: t('tag.create'),
     children: [],
     onClick: () => {
@@ -118,12 +130,22 @@ const contextMenuItems: Ref<ContextMenuItem[]> = computed(() => {
     icon: 'delete',
     color: 'error',
   }]
-  if (props.item.resource.curseforge) {
+  const res = props.item.resource
+  items.unshift({
+    text: t('modpack.showFile', { file: props.item.resource.path }),
+    children: [],
+    onClick: () => {
+      showItemInDirectory(res.path)
+    },
+    icon: 'folder',
+  })
+  if (props.item.resource?.curseforge) {
+    const curseforge = props.item.resource?.curseforge
     items.push({
       text: t('modpack.showInCurseforge', { name: props.item.name }),
       children: [],
       onClick: () => {
-        goProjectAndRoute(props.item.resource.curseforge!.projectId, 'modpacks')
+        goProjectAndRoute(curseforge.projectId, 'modpacks')
       },
       icon: '$vuetify.icons.curseforge',
     })

@@ -1,7 +1,7 @@
-import { Ref } from '@vue/composition-api'
-import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, FeedTheBeastServiceKey, FTBModpackVersionManifest, InstanceData, InstanceSchema, InstanceServiceKey, JavaServiceKey, McbbsModpackResource, ModpackResource, ResourceServiceKey, ResourceType } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, InstanceData, InstanceSchema, InstanceServiceKey, JavaServiceKey, McbbsModpackResource, ModpackResource, ResourceServiceKey, ResourceType } from '@xmcl/runtime-api'
 import { DialogKey } from './dialog'
-import { useRefreshable, useService } from '/@/composables'
+import { useFeedTheBeastVersionsCache } from './ftb'
+import { useService } from '/@/composables'
 
 export const AddInstanceDialogKey: DialogKey<string> = 'add-instance-dialog'
 
@@ -34,17 +34,9 @@ export type TemplateSource = {
 export function useAllTemplate(data: InstanceData) {
   const { state } = useService(InstanceServiceKey)
   const { state: resourceState } = useService(ResourceServiceKey)
-  const { getAllCachedModpackVersions } = useService(FeedTheBeastServiceKey)
   const { state: javaState } = useService(JavaServiceKey)
 
-  const ftb: Ref<CachedFTBModpackVersionManifest[]> = ref([])
-
-  const { refresh, refreshing } = useRefreshable(async () => {
-    ftb.value = await getAllCachedModpackVersions()
-  })
-  function dispose() {
-    ftb.value = []
-  }
+  const { refresh, refreshing, cache: ftb, dispose } = useFeedTheBeastVersionsCache()
 
   const allTemplates = computed(() => {
     const all = [] as Array<Template>

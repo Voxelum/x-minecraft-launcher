@@ -8,6 +8,7 @@ export interface FTBVersionManifestStoreSchema {
 }
 
 export interface CachedFTBModpackVersionManifest extends FTBModpackVersionManifest {
+  iconUrl: string
   projectName: string
   authors: FTBAuthor[]
 }
