@@ -3,7 +3,7 @@ import { CreateInstanceOption, createTemplate, EditInstanceOptions, filterForgeV
 import { randomUUID } from 'crypto'
 import filenamify from 'filenamify'
 import { copy, ensureDir, readdir, remove } from 'fs-extra'
-import { join, resolve } from 'path'
+import { isAbsolute, join, relative, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { readLaunchProfile } from '../entities/launchProfile'
 import { exists, isDirectory, missing, readdirEnsured } from '../util/fs'
@@ -46,10 +46,20 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         }
       }))
 
+      const normalizeInstancePath = (path: string) => {
+        if (this.isUnderManaged(path)) {
+          const relativePath = relative(this.getPathUnder(), path)
+          return relativePath
+        }
+        return path
+      }
+
+      const selectedInstance = instanceConfig.selectedInstance
+
       if (staleInstances.size > 0) {
         await this.instancesFile.write({
-          selectedInstance: instanceConfig.selectedInstance,
-          instances: instanceConfig.instances.filter(p => !staleInstances.has(p)),
+          selectedInstance: normalizeInstancePath(selectedInstance),
+          instances: instanceConfig.instances.filter(p => !staleInstances.has(p)).map(normalizeInstancePath),
         })
       }
 
@@ -60,7 +70,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
             await this.addExternalInstance(initial)
             const instance = Object.values(state.all)[0]
             await this.mountInstance(instance.path)
-            await this.instancesFile.write({ instances: Object.keys(this.state.all), selectedInstance: instance.path })
+            await this.instancesFile.write({ instances: Object.keys(this.state.all).map(normalizeInstancePath), selectedInstance: normalizeInstancePath(instance.path) })
           } catch (e) {
             this.error(`Fail to initialize to ${initial}`)
             this.error(e)
@@ -71,8 +81,8 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           await this.createAndMount({})
         }
       } else {
-        if (this.state.all[instanceConfig.selectedInstance]) {
-          await this.mountInstance(instanceConfig.selectedInstance)
+        if (this.state.all[selectedInstance]) {
+          await this.mountInstance(selectedInstance)
         } else {
           await this.mountInstance(Object.keys(state.all)[0])
         }
@@ -81,11 +91,11 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       this.storeManager
         .subscribe('instanceAdd', async (payload: Instance) => {
           await this.instanceFile.write(join(payload.path, 'instance.json'), payload)
-          await this.instancesFile.write({ instances: Object.keys(this.state.all), selectedInstance: this.state.path })
+          await this.instancesFile.write({ instances: Object.keys(this.state.all).map(normalizeInstancePath), selectedInstance: normalizeInstancePath(this.state.path) })
           this.log(`Saved new instance ${payload.path}`)
         })
         .subscribe('instanceRemove', async () => {
-          await this.instancesFile.write({ instances: Object.keys(this.state.all), selectedInstance: this.state.path })
+          await this.instancesFile.write({ instances: Object.keys(this.state.all).map(normalizeInstancePath), selectedInstance: normalizeInstancePath(this.state.path) })
           this.log(`Removed instance files under ${this.state.instance.path}`)
         })
         .subscribe('instanceEdit', async () => {
@@ -95,7 +105,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         })
         .subscribe('instanceSelect', async (path) => {
           await this.instanceFile.write(join(path, 'instance.json'), this.state.all[path])
-          await this.instancesFile.write({ instances: Object.keys(this.state.all), selectedInstance: this.state.path })
+          await this.instancesFile.write({ instances: Object.keys(this.state.all).map(normalizeInstancePath), selectedInstance: normalizeInstancePath(this.state.path) })
           this.log(`Saved instance selection ${path}`)
         })
     })
@@ -107,6 +117,10 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
   async loadInstance(path: string) {
     requireString(path)
+
+    if (!isAbsolute(path)) {
+      path = this.getPathUnder(path)
+    }
 
     let option: InstanceSchema
 
@@ -214,6 +228,10 @@ export class InstanceService extends StatefulService<InstanceState> implements I
   @Singleton()
   async mountInstance(path: string) {
     requireString(path)
+
+    if (!isAbsolute(path)) {
+      path = this.getPathUnder(path)
+    }
 
     if (path === this.state.instance.path) { return }
 
