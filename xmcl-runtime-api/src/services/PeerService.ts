@@ -1,4 +1,4 @@
-import { InstanceManifestSchema } from 'src/entities/instanceManifest.schema'
+import { InstanceManifestSchema } from '../entities/instanceManifest.schema'
 import { ServiceKey, StatefulService } from './Service'
 
 export interface RTCSessionDescription {
@@ -6,9 +6,9 @@ export interface RTCSessionDescription {
   type: 'answer' | 'offer' | 'pranswer' | 'rollback'
 }
 
-type ConnectionState = 'closed' | 'connected' | 'connecting' | 'disconnected' | 'failed' | 'new'
-type IceGatheringState = 'complete' | 'gathering' | 'new'
-type SignalingState = 'closed' | 'have-local-offer' | 'have-local-pranswer' | 'have-remote-offer' | 'have-remote-pranswer' | 'stable'
+export type ConnectionState = 'closed' | 'connected' | 'connecting' | 'disconnected' | 'failed' | 'new'
+export type IceGatheringState = 'complete' | 'gathering' | 'new'
+export type SignalingState = 'closed' | 'have-local-offer' | 'have-local-pranswer' | 'have-remote-offer' | 'have-remote-pranswer' | 'stable'
 
 export interface ConnectionUserInfo {
   /**
