@@ -1,5 +1,5 @@
 import { InjectionKey, Ref } from '@vue/composition-api'
-import { InstanceUpdate, LocalInstanceFile } from '@xmcl/runtime-api'
+import { InstanceUpdate, InstanceFile } from '@xmcl/runtime-api'
 import { useI18n } from '/@/composables'
 import { basename } from '/@/util/basename'
 
@@ -14,9 +14,9 @@ export interface InstanceFileNode {
 
 export const FileNodesSymbol: InjectionKey<Ref<InstanceFileNode[]>> = Symbol('InstanceFileNode')
 
-export function useInstanceFileNodesFromLocal(local: Ref<LocalInstanceFile[]>, options: { curseforge: boolean; modrinth: boolean; downloads: boolean }) {
+export function useInstanceFileNodesFromLocal(local: Ref<InstanceFile[]>, options: { curseforge: boolean; modrinth: boolean; downloads: boolean }) {
   const { t } = useI18n()
-  function getChoices(f: LocalInstanceFile) {
+  function getChoices(f: InstanceFile) {
     const result = [] as Array<{ value: string; text: string }>
     if (f.curseforge && options.curseforge) {
       result.push({ value: 'curseforge', text: t('exportModpackTarget.curseforge') })
@@ -32,14 +32,14 @@ export function useInstanceFileNodesFromLocal(local: Ref<LocalInstanceFile[]>, o
     }
     return result
   }
-  function getFileNode(f: LocalInstanceFile): InstanceFileNode {
+  function getFileNode(f: InstanceFile): InstanceFileNode {
     return reactive({
       name: basename(f.path),
       id: f.path,
       size: f.size,
       choice: '',
       choices: computed(() => getChoices(f)),
-      children: f.isDirectory ? [] : undefined,
+      children: undefined,
     })
   }
   return computed(() => local.value.map(getFileNode))

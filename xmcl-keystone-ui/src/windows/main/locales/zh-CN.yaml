@@ -113,6 +113,7 @@ diagnosis:
 disk:
   available: 可用
   used: 已用
+download: 下载
 edit: 编辑
 existed: 已导入过的
 exportModpackTarget:
@@ -235,15 +236,15 @@ instanceAge:
   threeDay: 三天内
   today: 今天
 instanceTemplate:
+  curseforge: 这是一个 Curseforge 整合包
+  ftb: 这是一个 FTB 的整合包配置
   importing: 模板导入
+  mcbbs: 这是一个 MCBBS 整合包
   modpack: 这是一个整合包配置
   preview: 预览
   profile: 这是一个已有的启动配置
   server: 这是一个已有的服务器启动配置
   title: 模板设置
-  ftb: 这是一个 FTB 的整合包配置
-  curseforge: 这是一个 Curseforge 整合包
-  mcbbs: 这是一个 MCBBS 整合包
 instances:
   add: 新建本地游戏
   choose: 选择实例
@@ -473,7 +474,7 @@ multiplayer:
   disconnectDescription: 你确定你要断开和 {user}({id}) 的连接么
   disconnected: 断开连接
   enterRemoteToken: 输入对方的令牌
-  illegalTokenDescription: 非法的令牌，请确认对方给你的令牌是完整、正确的。</span>
+  illegalTokenDescription: 非法的令牌，请确认对方给你的令牌是完整、正确的。
   initiateConnection: 发起连接
   joinConnection: 如果你的伙伴已经创建了连接，你需要选择加入链接
   joinManual: 加入连接
@@ -484,6 +485,7 @@ multiplayer:
   previous: 上一步
   remoteToken: 对方的令牌
   share: 分享启动配置
+  sharing: 正在共享游戏配置...
   start: 开始
   startNewP2PConnection: 点击开始按钮来新建一个新的点对点连接
 name: 名称
@@ -658,8 +660,8 @@ unused:
     name: 启动配置
   summery: 简介
 updateInstance:
-  name: 更新/安装实例
   file: 更新/安装实例文件 {file}
+  name: 更新/安装实例
 user:
   accessToken: 访问令牌
   authMode: 验证服务

@@ -1,5 +1,5 @@
 import { Exception, InstanceNotFoundException } from '../entities/exception'
-import { LocalInstanceManifest, InstanceManifestSchema, InstanceFile } from '../entities/instanceManifest.schema'
+import { InstanceManifest, InstanceManifestSchema, InstanceFile } from '../entities/instanceManifest.schema'
 import { ServiceKey } from './Service'
 
 export interface ExportInstanceOptions {
@@ -90,7 +90,7 @@ export interface ApplyInstanceUpdateOptions {
   /**
    * The instance path
    */
-  path: string
+  path?: string
   /**
    * The files to update
    */
@@ -121,7 +121,7 @@ export interface InstanceIOService {
    * Compute the instance manifest for current local files.
    * @param path The instance path
    */
-  getInstanceManifest(path?: string): Promise<LocalInstanceManifest>
+  getInstanceManifest(path?: string): Promise<InstanceManifest>
   /**
    * Upload the instance manifest via `instance.fileApi`
    *

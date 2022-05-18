@@ -1,4 +1,5 @@
-import { InstanceManifestSchema } from '../entities/instanceManifest.schema'
+import { GenericEventEmitter } from '../events'
+import { InstanceManifestSchema, InstanceManifest } from '../entities/instanceManifest.schema'
 import { ServiceKey, StatefulService } from './Service'
 
 export interface RTCSessionDescription {
@@ -89,10 +90,15 @@ export class PeerState {
 }
 
 export interface ShareInstanceOptions {
-  manifest?: InstanceManifestSchema
+  instancePath: string
+  manifest?: InstanceManifest
 }
 
-export interface PeerService extends StatefulService<PeerState> {
+interface PeerServiceEvents {
+  share: { id: string; manifest?: InstanceManifest }
+}
+
+export interface PeerService extends StatefulService<PeerState>, GenericEventEmitter<PeerServiceEvents> {
   /**
    * Create a new unconnected ready-to-go peer connection.
    *

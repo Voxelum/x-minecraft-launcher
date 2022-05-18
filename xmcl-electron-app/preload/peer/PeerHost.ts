@@ -2,6 +2,8 @@ import { MinecraftLanBroadcaster, MinecraftLanDiscover } from '@xmcl/client'
 import { InstanceManifestSchema } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
 import { ipcRenderer } from 'electron'
+import { createReadStream } from 'fs'
+import { join } from 'path'
 import { PeerSession } from './connection'
 import { MessageShareManifest } from './messages/download'
 import { MessageLan } from './messages/lan'
@@ -18,6 +20,7 @@ export class PeerHost {
   readonly handlers: Record<string, MessageHandler<any>> = {}
 
   private sharedManifest: InstanceManifestSchema | undefined
+  private shareInstancePath = ''
 
   constructor(entries: MessageEntry<any>[]) {
     this.broadcaster.bind()
@@ -55,17 +58,20 @@ export class PeerHost {
     return conn
   }
 
-  setShareInstance(manifest?: InstanceManifestSchema) {
+  setShareInstance(path: string, manifest?: InstanceManifestSchema) {
     this.sharedManifest = manifest
-    if (manifest) {
-      for (const sess of Object.values(this.sessions)) {
-        sess.send(MessageShareManifest, { manifest: manifest })
-      }
+    this.shareInstancePath = path
+    for (const sess of Object.values(this.sessions)) {
+      sess.send(MessageShareManifest, { manifest: manifest })
     }
   }
 
   getSharedInstance(): InstanceManifestSchema | undefined {
     return this.sharedManifest
+  }
+
+  createSharedFileReadStream(file: string) {
+    return createReadStream(join(this.shareInstancePath, file))
   }
 
   isFileShared(file: string): boolean {

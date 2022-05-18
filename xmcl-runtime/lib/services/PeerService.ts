@@ -19,21 +19,24 @@ export interface PeerServiceWebRTCFacade {
   on(event: 'identity', handler: (event: { id: string; info: ConnectionUserInfo }) => void): this
   on(event: 'connection', handler: (event: { id: string }) => void): this
   on(event: 'shared-instance-manifest', handler: (event: { id: string; manifest: InstanceManifestSchema }) => void): this
+  on(event: 'download-progress', handler: (event: { id: number; chunkSize: number }) => void): this
 
   create(id: string): Promise<void>
   initiate(id: string): Promise<void>
   offer(offer: object): Promise<string>
   answer(answer: object): Promise<void>
   drop(id: string): Promise<void>
-  shareInstance(manifest?: InstanceManifestSchema): Promise<void>
+  shareInstance(path: string, manifest?: InstanceManifestSchema): Promise<void>
 
-  download(options: { url: string; destination: string; sha1: string }): Promise<boolean>
-  downloadAbort(options: { url: string }): Promise<boolean>
+  download(options: { url: string; destination: string; sha1: string; size: number; id: number }): Promise<boolean>
+  downloadAbort(options: { id: number }): Promise<boolean>
 }
 
 export class PeerService extends StatefulService<PeerState> implements IPeerService {
   private delegate: PeerServiceWebRTCFacade | undefined
   private signal = createPromiseSignal()
+  private downloadId = 0
+  private downloadCallbacks: Record<number, undefined | ((chunk: number) => void)> = {}
 
   constructor(app: LauncherApp) {
     super(app, PeerServiceKey, () => new PeerState())
@@ -92,6 +95,10 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       })
       .on('shared-instance-manifest', ({ id, manifest }) => {
         this.state.connectionShareManifest({ id, manifest })
+        this.emit('share', { id, manifest })
+      })
+      .on('download-progress', ({ id, chunkSize }) => {
+        this.downloadCallbacks[id]?.(chunkSize)
       })
   }
 
@@ -133,26 +140,36 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     this.state.connectionDrop(id)
   }
 
-  async downloadTask(url: string, destination: string, sha1: string): Promise<BaseTask<boolean>> {
-    const delegate = this.delegate!
+  downloadTask(url: string, destination: string, sha1: string, size?: number): BaseTask<boolean> {
+    const callbacks = this.downloadCallbacks
     class DownloadPeerFileTask extends AbortableTask<boolean> {
-      constructor(readonly url: string, readonly destination: string, readonly sha1: string) {
+      constructor(readonly url: string, readonly destination: string, readonly sha1: string, total: number, readonly downloadId: number, readonly delegate: PeerServiceWebRTCFacade) {
         super()
         this._to = destination
         this._from = url
+        if (total !== 0) {
+          this._total = total
+        }
       }
 
       protected async process(): Promise<boolean> {
-        const result = delegate.download({
+        callbacks[this.downloadId] = (chunk) => {
+          this._progress += chunk
+          this.update(chunk)
+        }
+        const result = await this.delegate.download({
           url: this.url,
           destination: this.destination,
           sha1: this.sha1,
+          size: this.total,
+          id: this.downloadId,
         })
+        delete callbacks[this.downloadId]
         return result
       }
 
       protected abort(isCancelled: boolean): void {
-        delegate.downloadAbort({ url: this.url })
+        this.delegate.downloadAbort({ id: this.downloadId })
       }
 
       protected isAbortedError(e: any): boolean {
@@ -160,11 +177,11 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       }
     }
 
-    return new DownloadPeerFileTask(url, destination, sha1)
+    return new DownloadPeerFileTask(url, destination, sha1, size ?? 0, this.downloadId++, this.delegate!)
   }
 
   async shareInstance(options: ShareInstanceOptions): Promise<void> {
     await this.signal.promise
-    return await this.delegate!.shareInstance(options.manifest)
+    return await this.delegate!.shareInstance(options.instancePath, options.manifest)
   }
 }

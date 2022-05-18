@@ -57,12 +57,26 @@
       <v-list
         two-line
         subheader
+        class="py-2 flex flex-col gap-2 justify-start"
         style="width: 100%; background: transparent;"
       >
         <v-list-item
           v-for="c of connections"
           :key="c.id"
+          class="flex-grow-0 flex-1"
         >
+          <v-progress-linear
+            v-if="c.sharing"
+            buffer-value="0"
+            class="absolute bottom-0"
+            stream
+          />
+          <v-progress-linear
+            v-if="c.sharing"
+            buffer-value="0"
+            class="absolute top-0"
+            stream
+          />
           <v-list-item-avatar>
             <PlayerAvatar
               :dimension="40"
@@ -107,6 +121,19 @@
                 {{ t('peerIceGatheringState.gathering') }}
               </div>
             </v-list-item-subtitle>
+          </v-list-item-action>
+
+          <v-list-item-action
+            v-if="c.sharing"
+            class="self-center"
+          >
+            <v-btn
+              color="primary"
+              outlined
+              @click="showShareInstance(c.sharing)"
+            >
+              {{ t('multiplayer.sharing') }}
+            </v-btn>
           </v-list-item-action>
 
           <v-list-item-action

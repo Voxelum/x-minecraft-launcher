@@ -34,10 +34,7 @@ export interface InstanceFile {
     projectId: string
     versionId: string
   }
-}
 
-export interface LocalInstanceFile extends InstanceFile {
-  isDirectory: boolean
   size: number
   createAt: number
   updateAt: number
@@ -51,6 +48,5 @@ export interface InstanceManifestSchema extends Partial<Pick<InstanceData, 'desc
   files: Array<InstanceFile>
 }
 
-export interface LocalInstanceManifest extends InstanceManifestSchema {
-  files: Array<LocalInstanceFile>
+export interface InstanceManifest extends InstanceManifestSchema {
 }

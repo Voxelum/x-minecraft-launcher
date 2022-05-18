@@ -6,7 +6,7 @@ export const MessageShareManifest: MessageType<{ manifest: InstanceManifestSchem
 export const MessageGetSharedManifest: MessageType<void> = 'get-instance-manifest'
 
 export const MessageShareManifestEntry = defineMessage(MessageShareManifest, function (msg) {
-  ipcRenderer.send('shared-instance-manifest', { id: this.id, manifest: msg })
+  ipcRenderer.send('shared-instance-manifest', { id: this.id, manifest: msg.manifest })
 })
 
 export const MessageGetSharedManifestEntry = defineMessage(MessageGetSharedManifest, function (msg) {

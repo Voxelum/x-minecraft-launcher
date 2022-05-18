@@ -543,6 +543,7 @@ multiplayer:
     Connection.
   joinManual: Join
   localToken: Local Token
+  sharing: Sharing files...
   name: Multiplayer on LAN
   next: Next
   placeholder: Connect with other user to play Minecraft on LAN!

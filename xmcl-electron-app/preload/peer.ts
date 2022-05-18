@@ -1,5 +1,7 @@
 import { InstanceManifestSchema } from '@xmcl/runtime-api'
 import { ipcRenderer } from 'electron'
+import { URL } from 'url'
+import { MessageGetSharedManifestEntry, MessageShareManifestEntry } from './peer/messages/download'
 import { MessageIdentityEntry } from './peer/messages/identity'
 import { MessageLanEntry } from './peer/messages/lan'
 import { MessageMemberJoinAcceptEntry, MessageMemberJoinEntry, MessageMemberJoinInitiateEntry } from './peer/messages/memberJoin'
@@ -11,6 +13,8 @@ const host = new PeerHost([
   MessageMemberJoinEntry,
   MessageMemberJoinInitiateEntry,
   MessageMemberJoinAcceptEntry,
+  MessageShareManifestEntry,
+  MessageGetSharedManifestEntry,
 ])
 
 function handle<T>(method: string, func: (...args: any[]) => void) {
@@ -65,30 +69,25 @@ handle('offer', async ({ session, id, sdp }: TransferDescription) => {
   return session
 })
 
-handle('download', async ({ url, destination, sha1 }) => {
+handle('download', async ({ url, destination, sha1, size, id }) => {
   const peerUrl = new URL(url)
-  if (peerUrl.protocol !== 'peer') {
+  if (peerUrl.protocol !== 'peer:') {
     throw new Error(`Bad url: ${url}`)
   }
   const filePath = peerUrl.pathname
   const conn = host.getByRemoteId(peerUrl.host)
   if (conn) {
-    await conn.download(filePath, destination, sha1)
+    await conn.download(filePath, destination, sha1, size, id)
     return true
   }
   return false
 })
 
-handle('download-abort', async ({ url }) => {
-  const peerUrl = new URL(url)
-  if (peerUrl.protocol !== 'peer') {
-    throw new Error(`Bad url: ${url}`)
-  }
-  const filePath = peerUrl.pathname
-  ipcRenderer.emit('download-abort-internal', undefined, peerUrl.host, filePath)
+handle('download-abort', async ({ id }) => {
+  ipcRenderer.emit('download-abort-internal', undefined, id)
 })
 
-handle('share', async (manifest?: InstanceManifestSchema) => {
+handle('share', async (path: string, manifest?: InstanceManifestSchema) => {
   if (manifest) {
     for (const f of manifest.files) {
       if (f.downloads) {
@@ -98,7 +97,7 @@ handle('share', async (manifest?: InstanceManifestSchema) => {
       }
     }
   }
-  host.setShareInstance(manifest)
+  host.setShareInstance(path, manifest)
 })
 
 handle('drop', (id: string) => {

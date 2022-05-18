@@ -573,7 +573,7 @@ multiplayer:
   disconnectDescription: 你確定你要斷開和 {user}({id}) 的連接麼
   disconnected: 斷開連接
   enterRemoteToken: 輸入對方的令牌
-  illegalTokenDescription: 非法的令牌，請確認對方給你的令牌是完整、正確的。</span>
+  illegalTokenDescription: 非法的令牌，請確認對方給你的令牌是完整、正確的。
   initiateConnection: 發起連接
   joinConnection: 如果你的夥伴已經創建了連接，你需要選擇加入鏈接
   joinManual: 加入連接

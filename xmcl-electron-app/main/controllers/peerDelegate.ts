@@ -80,8 +80,8 @@ export const peerPlugin: ControllerPlugin = function (this: Controller) {
       download(options) {
         return invoke<boolean>('download', options)
       },
-      async shareInstance(man) {
-        await invoke('share', man)
+      async shareInstance(path, man) {
+        await invoke('share', path, man)
       },
     })
   })
