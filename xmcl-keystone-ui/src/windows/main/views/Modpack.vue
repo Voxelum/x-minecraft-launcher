@@ -15,8 +15,6 @@
         class="pr-3 max-w-200 max-h-full"
         :label="t('modpack.filter')"
       />
-      <!-- <v-tooltip bottom>
-      <template v-slot:activator="{ on }">-->
       <div class="flex-grow" />
       <v-btn
         icon
@@ -25,9 +23,6 @@
         <v-icon>folder</v-icon>
       </v-btn>
 
-      <!-- </template>
-        {{ t(`curseforge.mc-mods.description`) }}
-      </v-tooltip>-->
       <v-tooltip bottom>
         <template #activator="{ on }">
           <v-btn
@@ -70,7 +65,7 @@
           @tags="item.tags = $event"
           @dragstart="dragging = item"
           @dragend="dragging = undefined"
-          @create="show(item.resource.path)"
+          @create="show(item.id)"
           @delete="startDelete(item)"
         />
       </transition-group>
@@ -81,9 +76,9 @@
       persistent
       @confirm="confirmDelete"
     >
-      {{ t('modpack.delete.hint', { name: deleting ? deleting.resource.name : '' }) }}
+      {{ t('modpack.delete.hint', { name: deleting ? deleting.name : '' }) }}
       <p style="color: grey">
-        {{ deleting ? deleting.resource.path : '' }}
+        {{ deleting ? deleting.path : '' }}
       </p>
     </delete-dialog>
     <div class="absolute w-full bottom-0 flex items-center justify-center mb-10">
@@ -99,7 +94,7 @@
 import { Ref } from '@vue/composition-api'
 import FilterCombobox from '/@/components/FilterCombobox.vue'
 import { useService, useRouter, useServiceBusy, useFilterCombobox, useI18n } from '/@/composables'
-import { ResourceServiceKey, ResourceType, ResourceDomain } from '@xmcl/runtime-api'
+import { ResourceServiceKey, ResourceType, ResourceDomain, CachedFTBModpackVersionManifest } from '@xmcl/runtime-api'
 import { isStringArrayEquals } from '/@/util/equal'
 import ModpackCard from './ModpackCard.vue'
 import DeleteButton from './ModpackDeleteButton.vue'
@@ -107,6 +102,7 @@ import { useDialog } from '../composables/dialog'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { ModpackItem, ModpackResources } from '../composables/modpack'
 import { AddInstanceDialogKey } from '../composables/instanceAdd'
+import { useFeedTheBeastVersionsCache } from '../composables/ftb'
 
 const { t } = useI18n()
 const { push } = useRouter()
@@ -120,19 +116,38 @@ function getFilterOptions(item: ModpackItem) {
     ...item.tags.map(t => ({ type: 'tag', value: t, label: 'label' })),
   ]
 }
-const deleting = ref(undefined as undefined | ModpackItem)
+const deleting = ref(undefined as undefined | ModpackResources)
 const refreshing = useServiceBusy(ResourceServiceKey, 'load', ResourceDomain.Modpacks)
 const filterOptions = computed(() => items.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
 const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (v) => `${v.name} ${v.author} ${v.version}`)
-const { show: showDelete } = useDialog('deletion')
+const { refresh, refreshing: refreshingFtb, cache: ftb, dispose } = useFeedTheBeastVersionsCache()
+const modpacks = computed(() => filter(items.value))
 
 function showFolder() {
 
 }
+const { show: showDelete } = useDialog('deletion')
+function startDelete(item: ModpackItem) {
+  if (item.resource) {
+    deleting.value = item.resource
+    showDelete()
+  }
+}
+function confirmDelete() {
+  removeResource(deleting.value!.path)
+}
+function onDrop() {
+  if (dragging.value) {
+    startDelete(dragging.value)
+  }
+}
+
+const goToCurseforge = () => { push('/curseforge/modpacks') }
+
 function getModpackItem (resource: ModpackResources): ModpackItem {
   return reactive({
     resource,
-    id: resource.hash,
+    id: resource.path,
     size: resource.size,
     icon: resource.iconUri,
     name: resource.type === ResourceType.CurseforgeModpack || resource.type === ResourceType.McbbsModpack ? resource.metadata.name : '',
@@ -142,37 +157,39 @@ function getModpackItem (resource: ModpackResources): ModpackItem {
     type: resource.type === ResourceType.Modpack ? 'raw' : resource.type === ResourceType.CurseforgeModpack ? 'curseforge' : 'modrinth',
   })
 }
-function onDrop() {
-  if (dragging.value) {
-    startDelete(dragging.value)
-  }
+function getModpackItemByFtb(resource: CachedFTBModpackVersionManifest): ModpackItem {
+  return reactive({
+    ftb: resource,
+    id: `${resource.parent}-${resource.id}`,
+    size: resource.files.map(f => f.size).reduce((a, b) => a + b, 0),
+    icon: resource.iconUrl,
+    name: resource.projectName,
+    version: resource.name,
+    author: resource.authors[0].name,
+    tags: [],
+    type: 'ftb',
+  })
 }
-function startDelete(item: ModpackItem) {
-  deleting.value = item
-  showDelete()
-}
-function confirmDelete() {
-  removeResource(deleting.value!.resource.path)
-}
-
-const goToCurseforge = () => { push('/curseforge/modpacks') }
-const modpacks = computed(() => filter(items.value))
-onMounted(() => {
-  items.value = state.modpacks.map(getModpackItem)
+onMounted(async () => {
+  await refresh()
+  items.value = [...state.modpacks.map(getModpackItem), ...ftb.value.map(getModpackItemByFtb)]
 })
 onUnmounted(() => {
-  const editedResources = items.value.filter(i => !isStringArrayEquals(i.tags, i.resource.tags))
+  const editedResources = items.value
+    .filter(i => !!i.resource)
+    .filter(i => !isStringArrayEquals(i.tags, i.resource!.tags))
   const promises: Promise<any>[] = []
   for (const i of editedResources) {
     promises.push(updateResource({
-      resource: i.resource.hash,
+      resource: i.resource!.hash,
       name: i.name,
       tags: i.tags,
     }))
   }
+  dispose()
 })
 watch(computed(() => state.modpacks), () => {
-  items.value = state.modpacks.map(getModpackItem)
+  items.value = [...state.modpacks.map(getModpackItem), ...ftb.value.map(getModpackItemByFtb)]
 })
 </script>
 

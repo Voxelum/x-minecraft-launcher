@@ -108,6 +108,7 @@ export class FeedTheBeastService extends StatefulService<FeedTheBeastState> impl
     }
     this.saveManifest({
       ...result,
+      iconUrl: modpackManifest.art.find(a => a.type === 'square')?.url ?? modpackManifest.art[0].url ?? '',
       projectName: modpackManifest.name,
       authors: modpackManifest.authors,
     })
@@ -121,13 +122,5 @@ export class FeedTheBeastService extends StatefulService<FeedTheBeastState> impl
     const result: { content: string } = await this.api.get(`modpack/${modpackId}/${version.id}/changelog`).json()
     this.log(`Got modpack changelog for modpackId=${modpackId}, versionId=${version.id}`)
     return result.content
-  }
-
-  async installModpackVersion(options: InstallFTBModpackVersionOptions): Promise<string> {
-    const { instancePath = this.instanceService.state.path, version } = options
-
-    const { files, targets } = version
-
-    return ''
   }
 }

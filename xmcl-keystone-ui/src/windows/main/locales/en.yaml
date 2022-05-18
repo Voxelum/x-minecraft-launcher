@@ -473,6 +473,7 @@ modpack:
   profile: Profile Name
   showFile: Show File {file}
   showInCurseforge: Show {name} in Curseforge
+  showInFtb: Show {name} in FTB
   url: URL
   urlHint: The home page url of your modpack
 modrinth:

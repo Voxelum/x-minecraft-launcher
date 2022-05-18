@@ -15,6 +15,9 @@
         "CachedFTBModpackVersionManifest": {
             "type": "object",
             "properties": {
+                "iconUrl": {
+                    "type": "string"
+                },
                 "projectName": {
                     "type": "string"
                 },
@@ -75,6 +78,7 @@
                 "authors",
                 "changelog",
                 "files",
+                "iconUrl",
                 "id",
                 "installs",
                 "name",

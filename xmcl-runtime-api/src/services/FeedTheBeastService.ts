@@ -31,12 +31,6 @@ export interface SearchFTBModpackOptions {
   keyword?: string
 }
 
-export interface InstallFTBModpackVersionOptions {
-  version: FTBModpackVersionManifest
-
-  instancePath?: string
-}
-
 export interface FeedTheBeastService extends StatefulService<FeedTheBeastState> {
   getAllCachedModpackVersions(): Promise<CachedFTBModpackVersionManifest[]>
 
@@ -49,8 +43,6 @@ export interface FeedTheBeastService extends StatefulService<FeedTheBeastState> 
   getModpackVersionManifest(options: GetFTBModpackVersionOptions): Promise<FTBModpackVersionManifest>
 
   getModpackVersionChangelog(options: GetFTBModpackVersionOptions): Promise<string>
-
-  installModpackVersion(options: InstallFTBModpackVersionOptions): Promise<string>
 }
 
 export const FeedTheBeastServiceKey: ServiceKey<FeedTheBeastService> = 'FeedTheBeastService'
