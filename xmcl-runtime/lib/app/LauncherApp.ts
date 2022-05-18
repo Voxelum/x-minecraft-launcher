@@ -222,7 +222,7 @@ export abstract class LauncherApp extends EventEmitter {
    * @param url The url input
    */
   handleUrl(url: string) {
-    const parsed = new URL(url, 'xmcl://')
+    const parsed = new URL(url, 'xmcl://launcher')
     this.log(`Handle url ${url}`)
     if (parsed.host === 'launcher' && parsed.pathname === '/auth') {
       let error: Error | undefined
@@ -234,12 +234,16 @@ export abstract class LauncherApp extends EventEmitter {
       }
       const code = parsed.searchParams.get('code') as string
       this.emit('microsoft-authorize-code', error, code)
+      return true
     } else if (parsed.host === 'launcher' && parsed.pathname === '/app') {
       const params = parsed.searchParams
       const appUrl = params.get('url')
       if (appUrl) {
         this.log(`Boot app from app url ${appUrl}!`)
         this.launcherAppManager.bootAppByUrl(appUrl)
+        return true
+      } else {
+        return false
       }
     } else if (parsed.host === 'launcher' && parsed.pathname === '/peer') {
       const params = parsed.searchParams
@@ -247,10 +251,14 @@ export abstract class LauncherApp extends EventEmitter {
       const type = params.get('type')
       if (!description || !type) {
         this.warn(`Ignore illegal peer join for type=${type} description=${description}`)
+        return false
       } else {
         this.emit('peer-join', { description, type: type as any })
+        return true
       }
     }
+    this.warn(`Unknown url ${url}`)
+    return false
   }
 
   /**
