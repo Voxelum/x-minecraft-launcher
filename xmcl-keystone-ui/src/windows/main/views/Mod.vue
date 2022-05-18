@@ -60,8 +60,9 @@
         <mod-delete-view :items="deletingMods" />
       </delete-dialog>
     </div>
-    <div class="absolute w-full left-0 bottom-0 flex items-center justify-center mb-5">
+    <div class="absolute w-full left-0 bottom-0 flex items-center justify-center mb-5 pointer-events-none">
       <float-button
+        class="pointer-events-auto"
         :deleting="isDraggingMod"
         :visible="isDraggingMod || isModified"
         :loading="committing"
