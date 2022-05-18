@@ -82,6 +82,7 @@ export class ModpackInstallGeneralError extends Error {
 export class ModpackInstallUrlError extends Error {
   constructor(readonly file: ModpackFileInfoCurseforge) {
     super(`Fail to get curseforge download url project=${file.projectID} file=${file.fileID}`)
+    this.name = 'ModpackInstallUrlError'
   }
 }
 
@@ -99,20 +100,42 @@ export function installModpackTask(zip: ZipFile, entries: Entry[], manifest: Cur
       }
     }
     const ensureDownloadUrl = async (f: ModpackFileInfoCurseforge) => {
-      for (let i = 0; i < 3; ++i) {
-        const result = await getCurseforgeUrl(f.projectID, f.fileID)
-        if (isValidateUrl(result)) {
-          return result
-        }
+      // for (let i = 0; i < 3; ++i) {
+      const result = await getCurseforgeUrl(f.projectID, f.fileID)
+      if (isValidateUrl(result)) {
+        return result
       }
-      throw new ModpackInstallUrlError(f)
+      // }
+      // throw new ModpackInstallUrlError(f)
+      return undefined
     }
     if (manifest.files) {
-      const allCurseforgeFiles = manifest.files.map(f => f).filter((f): f is ModpackFileInfoCurseforge => !('type' in f) || f.type === 'curse')
+      const curseforgeFilesQueue = manifest.files.map(f => f).filter((f): f is ModpackFileInfoCurseforge => !('type' in f) || f.type === 'curse')
       const staging = join(root, 'mods')
       await ensureDir(staging)
       const infos = [] as (ModpackFileInfoCurseforge & { url: string })[]
-      infos.push(...await Promise.all(allCurseforgeFiles.map(async (f) => ({ ...f, url: await ensureDownloadUrl(f) }))))
+
+      let batchCount = 8
+      while (curseforgeFilesQueue.length > 0) {
+        const batch = curseforgeFilesQueue.splice(0, batchCount)
+        const result = await Promise.all(batch.map(async (f) => ensureDownloadUrl(f)))
+        let failed = false
+        for (let i = 0; i < result.length; i++) {
+          const url = result[i]
+          if (!url) {
+            failed = true
+            curseforgeFilesQueue.push(batch[i])
+          } else {
+            infos.push({ ...batch[i], url })
+          }
+        }
+        if (failed && batchCount > 2) {
+          batchCount /= 2
+        }
+        if (!failed && batchCount < 16) {
+          batchCount *= 2
+        }
+      }
 
       // download curseforge files
       const tasks = infos.map((f) => {
