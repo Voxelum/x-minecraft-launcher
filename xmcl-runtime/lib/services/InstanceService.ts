@@ -450,7 +450,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           version = resolveVersions.find(v => v.id === id)
           options.name = p.name
           options.java = p.javaDir
-          options.vmOptions = p.javaArgs.split(' ')
+          options.vmOptions = p.javaArgs?.split(' ') || []
           if (version) {
             break
           }

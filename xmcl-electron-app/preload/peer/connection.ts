@@ -1,15 +1,15 @@
 import { RTCSessionDescription } from '@xmcl/runtime-api'
+import { createHash } from 'crypto'
 import { ipcRenderer } from 'electron'
+import { createWriteStream } from 'fs'
+import { ensureFile, unlink } from 'fs-extra'
 import { createConnection } from 'net'
-import { PeerHost } from './PeerHost'
+import { TransferDescription } from '../peer'
+import { MessageIdentity } from './messages/identity'
 import { MessageType } from './messages/message'
+import { PeerHost } from './PeerHost'
 import { ServerProxy } from './ServerProxy'
 import { iceServers } from './stun'
-import { MessageIdentity } from './messages/identity'
-import { ensureFile, unlink } from 'fs-extra'
-import { TransferDescription } from '../peer'
-import { checksum } from '@xmcl/core'
-import { createWriteStream } from 'fs'
 
 export class PeerSession {
   readonly connection: RTCPeerConnection
@@ -47,9 +47,26 @@ export class PeerSession {
         this.setChannel(e.channel)
         console.log('Metadata channel created')
       } else if (channel.protocol === 'download') {
-        if (!this.host.isFileShared(channel.label)) {
+        console.log(`Receive peer file request: ${channel.label}`)
+        let fileName = unescape(channel.label)
+        if (fileName.startsWith('/')) {
+          fileName = fileName.substring(1)
+        }
+        if (!this.host.isFileShared(fileName)) {
           // reject the file
+          console.log(`Reject peer file request as it's not shared: ${fileName}`)
           channel.close()
+        } else {
+          console.log(`Process peer file request: ${fileName}`)
+          const filePath = fileName
+          this.host.createSharedFileReadStream(filePath).on('data', (data: Buffer) => {
+            channel.send(data)
+          })
+          channel.addEventListener('message', (ev) => {
+            if (ev.data === 'done') {
+              channel.close()
+            }
+          })
         }
       } else {
         // TODO: emit error for unknown protocol
@@ -134,33 +151,42 @@ export class PeerSession {
     return this.connection.localDescription
   }
 
-  async download(file: string, dest: string, sha1: string) {
-    const channel = this.connection.createDataChannel(`${file}@${sha1}`, {
+  async download(file: string, dest: string, sha1: string, total: number, downloadId: number) {
+    const channel = this.connection.createDataChannel(file, {
       protocol: 'download',
     })
 
     await ensureFile(dest)
     const output = createWriteStream(dest)
+    const hash = createHash('sha1')
+    let length = 0
 
-    ipcRenderer.on('download-abort-internal', (ev, id: string, filePath: string) => {
-      if (id === this.id && file === filePath) {
+    ipcRenderer.on('download-abort-internal', (ev, id: number) => {
+      if (id === downloadId) {
+        channel.send('done')
         channel.close()
       }
     })
-    await new Promise((resolve, reject) => {
+    await new Promise<void>((resolve, reject) => {
       channel.addEventListener('message', (ev) => {
-        output.write(Buffer.from(ev.data))
-        ipcRenderer.send('download-progress', { session: this.id, file, chunkSize: ev.data.length })
+        const buf = Buffer.from(ev.data)
+        length += buf.length
+        hash.update(buf)
+        output.write(buf)
+        if (length >= total) {
+          channel.send('done')
+          channel.close()
+        }
+        ipcRenderer.send('download-progress', { id: downloadId, chunkSize: ev.data.length })
       })
       channel.addEventListener('error', (e) => {
-        resolve(e)
+        reject(e)
       })
       channel.addEventListener('close', () => {
-        channel.close()
+        output.end(resolve)
       })
     })
-    output.close()
-    const actualSha1 = await checksum(dest, 'sha1').catch(() => '')
+    const actualSha1 = hash.digest('hex')
     if (actualSha1 !== sha1) {
       // noop
       await unlink(dest)

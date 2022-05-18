@@ -1,6 +1,6 @@
 import { checksum, MinecraftFolder } from '@xmcl/core'
 import { createDefaultCurseforgeQuery, DownloadTask, UnzipTask } from '@xmcl/installer'
-import { AnyPersistedResource, createTemplate, ExportInstanceOptions, InstanceFile, InstanceIOException, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, LocalInstanceManifest, InstanceManifestSchema, InstanceSchema, InstanceUpdate, LockKey, RuntimeVersions, SetInstanceManifestOptions, LocalInstanceFile, SourceInformation, ApplyInstanceUpdateOptions } from '@xmcl/runtime-api'
+import { AnyPersistedResource, createTemplate, ExportInstanceOptions, InstanceIOException, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceManifest, InstanceManifestSchema, InstanceSchema, InstanceUpdate, LockKey, RuntimeVersions, SetInstanceManifestOptions, InstanceFile, SourceInformation, ApplyInstanceUpdateOptions } from '@xmcl/runtime-api'
 import { BaseTask, Task, task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { randomUUID } from 'crypto'
@@ -121,28 +121,6 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     }
   }
 
-  /**
-   * Link a existed instance on you disk.
-   * @param path
-   */
-  async linkInstance(path: string) {
-    if (this.instanceService.state.all[path]) {
-      this.log(`Skip to link already managed instance ${path}`)
-      return false
-    }
-    const loaded = await this.instanceService.loadInstance(path)
-    if (!loaded) {
-      await this.instanceService.createInstance({ path })
-    }
-
-    // copy assets, library and versions
-    await copyPassively(resolve(path, 'assets'), this.getPath('assets'))
-    await copyPassively(resolve(path, 'libraries'), this.getPath('libraries'))
-    await copyPassively(resolve(path, 'versions'), this.getPath('versions'))
-
-    return true
-  }
-
   async importInstance(location: string) {
     requireString(location)
 
@@ -203,7 +181,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
   }
 
   @Singleton(p => p)
-  async getInstanceManifest(path?: string): Promise<LocalInstanceManifest> {
+  async getInstanceManifest(path?: string): Promise<InstanceManifest> {
     const instancePath = path || this.instanceService.state.path
 
     const instance = this.instanceService.state.all[instancePath]
@@ -212,7 +190,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
       throw new InstanceIOException({ instancePath, type: 'instanceNotFound' })
     }
 
-    const files = [] as Array<LocalInstanceFile>
+    const files = [] as Array<InstanceFile>
 
     const scan = async (p: string) => {
       const status = await stat(p)
@@ -228,35 +206,43 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
       if (relativePath === 'instance.json') {
         return
       }
-      const localFile: LocalInstanceFile = {
-        path: relativePath,
-        isDirectory,
-        size: status.size,
-        updateAt: status.mtimeMs,
-        createAt: status.ctimeMs,
-        hashes: {
-          sha1: resource?.hash ?? (isDirectory ? '' : await checksum(p, 'sha1')),
-        },
+      // no lib or exe
+      if (relativePath.endsWith('.dll') || relativePath.endsWith('.so') || relativePath.endsWith('.exe')) {
+        return
       }
-      if (resource?.modrinth) {
-        localFile.modrinth = {
-          projectId: resource.modrinth.projectId,
-          versionId: resource.modrinth.versionId,
-        }
-      } else if (resource?.curseforge) {
-        localFile.curseforge = {
-          projectId: resource.curseforge.projectId,
-          fileId: resource.curseforge.fileId,
-        }
-      } else {
-        localFile.downloads = resource?.uri && resource.uri.some(u => u.startsWith('http')) ? resource.uri.filter(u => u.startsWith('http')) : undefined
+      // do not share versions/libs/assets
+      if (relativePath.startsWith('versions') || relativePath.startsWith('assets') || relativePath.startsWith('libraries')) {
+        return
       }
+
       if (isDirectory) {
         const children = await readdirIfPresent(p)
         for (const child of children) {
           await scan(join(p, child))
         }
       } else {
+        const localFile: InstanceFile = {
+          path: relativePath,
+          size: status.size,
+          updateAt: status.mtimeMs,
+          createAt: status.ctimeMs,
+          hashes: {
+            sha1: resource?.hash ?? (isDirectory ? '' : await checksum(p, 'sha1')),
+          },
+        }
+        if (resource?.modrinth) {
+          localFile.modrinth = {
+            projectId: resource.modrinth.projectId,
+            versionId: resource.modrinth.versionId,
+          }
+        } else if (resource?.curseforge) {
+          localFile.curseforge = {
+            projectId: resource.curseforge.projectId,
+            fileId: resource.curseforge.fileId,
+          }
+        } else {
+          localFile.downloads = resource?.uri && resource.uri.some(u => u.startsWith('http')) ? resource.uri.filter(u => u.startsWith('http')) : undefined
+        }
         files.push(localFile)
       }
     }
@@ -494,8 +480,8 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
               if (peerUrl && !hasHttp) {
                 // download from peer
                 log(`Download ${filePath} from peer ${peerUrl}`)
-                tasks.push((await peerService.downloadTask(peerUrl, filePath, sha1)).setName('file'))
-                break
+                tasks.push(peerService.downloadTask(peerUrl, filePath, sha1, file.size).setName('file'))
+                continue
               }
               urls.push(...file.downloads.filter(u => u.startsWith('http')))
             }

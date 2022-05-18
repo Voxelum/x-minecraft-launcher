@@ -180,7 +180,7 @@
 </template>
 
 <script lang=ts setup>
-import { InstanceIOServiceKey, LocalInstanceFile, ModpackServiceKey } from '@xmcl/runtime-api'
+import { InstanceIOServiceKey, InstanceFile, ModpackServiceKey } from '@xmcl/runtime-api'
 import { inc } from 'semver'
 import { useDialog, useZipFilter } from '../composables/dialog'
 import { useInstance, useInstanceVersion } from '../composables/instance'
@@ -212,7 +212,7 @@ const data = reactive({
   gameVersion: folder.value,
   selected: [] as string[],
   fileApi: '',
-  files: [] as LocalInstanceFile[],
+  files: [] as InstanceFile[],
   includeLibraries: false,
   includeAssets: false,
   emitCurseforge: false,
