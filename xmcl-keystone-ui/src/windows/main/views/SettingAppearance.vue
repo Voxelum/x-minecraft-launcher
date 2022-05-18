@@ -99,7 +99,7 @@
         />
       </v-list-item-action>
     </v-list-item>
-    <v-list-item>
+    <!-- <v-list-item>
       <v-list-item-action class="self-center">
         <v-checkbox v-model="blurMainBody" />
       </v-list-item-action>
@@ -115,7 +115,7 @@
           }}
         </v-list-item-subtitle>
       </v-list-item-content>
-    </v-list-item>
+    </v-list-item> -->
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title>

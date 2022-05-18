@@ -28,11 +28,11 @@
           >
             {{ $tc('task.name', 2) }}
           </v-tab>
-          <v-tab
+          <!-- <v-tab
             :key="1"
           >
             {{ $t('issue.name') }}
-          </v-tab>
+          </v-tab> -->
           <!-- <v-tab
             :key="2"
           >
