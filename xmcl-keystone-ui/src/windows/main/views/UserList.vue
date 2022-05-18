@@ -8,18 +8,19 @@
       v-for="user in users"
       :key="user.id"
       v-draggable-card
+      v-context-menu="getMenuItems(user)"
       :value="user.id === userId"
       sub-group
       class="draggable-card"
-      @dragstart="$emit('dragstart', $event)"
-      @dragend="$emit('dragend', $event)"
+      @dragstart="emit('dragstart', user)"
+      @dragend="emit('dragend', user)"
     >
       <template #activator>
         <v-list-item
           v-data-transfer:id="user.id"
           draggable
-          @dragstart="$emit('dragstart', $event)"
-          @dragend="$emit('dragend', $event)"
+          @dragstart="emit('dragstart', user)"
+          @dragend="emit('dragend', user)"
         >
           <v-list-item-content>
             <v-list-item-title>{{ user.username }}</v-list-item-title>
@@ -62,7 +63,7 @@
         <v-card color="orange">
           <v-list-item
             v-ripple
-            @click="gotoPurchesPage"
+            @click="gotoPurchasePage"
           >
             <v-list-item-content>
               <v-list-item-subtitle class="no-ownership">
@@ -117,39 +118,49 @@
   </v-list>
 </template>
 
-<script lang="ts">
-import { UserProfile, BaseServiceKey } from '@xmcl/runtime-api'
-import { required } from '/@/util/props'
-import { useService } from '/@/composables'
+<script lang="ts" setup>
+import { BaseServiceKey, UserProfile } from '@xmcl/runtime-api'
 import ImageShowTextureHead from '../components/PlayerAvatar.vue'
+import { ContextMenuItem } from '../composables/contextMenu'
+import { vContextMenu } from '../directives/contextMenu'
+import { useI18n, useService } from '/@/composables'
 
-export default defineComponent({
-  components: { ImageShowTextureHead },
-  props: {
-    select: required<(profileId: string, userId: string) => void>(Function),
-    users: required<UserProfile[]>(Array),
-    userId: required<string>(String),
-    profileId: required<string>(String),
-  },
-  setup() {
-    const { openInBrowser } = useService(BaseServiceKey)
-    function gotoPurchesPage() {
-      openInBrowser('https://www.minecraft.net/store/minecraft-java-edition?ref=launcher')
-    }
-    function gotoFAQPage() {
-      openInBrowser('https://help.minecraft.net/hc/en-us/articles/360050865492-Minecraft-Java-Edition-Account-Migration-FAQ')
-    }
-    return { gotoPurchesPage, gotoFAQPage }
-  },
-})
+defineProps<{
+  select(profileId: string, userId: string): void
+  users: UserProfile[]
+  userId: string
+  profileId: string
+}>()
+const emit = defineEmits(['dragstart', 'dragend', 'delete'])
+
+const { t } = useI18n()
+
+function getMenuItems(user: UserProfile) {
+  const result: ContextMenuItem[] = []
+  result.push({
+    text: t('deleteUser', { user: user.username }),
+    icon: 'delete',
+    color: 'error',
+    children: [],
+    onClick() { emit('delete', user) },
+  })
+  return result
+}
+
+const { openInBrowser } = useService(BaseServiceKey)
+function gotoPurchasePage() {
+  openInBrowser('https://www.minecraft.net/store/minecraft-java-edition?ref=launcher')
+}
+function gotoFAQPage() {
+  openInBrowser('https://help.minecraft.net/hc/en-us/articles/360050865492-Minecraft-Java-Edition-Account-Migration-FAQ')
+}
 </script>
 
 <style>
-.user-list
-  .v-list__group__header--sub-group
-  .v-list__group__header__prepend-icon {
+.user-list .v-list__group__header--sub-group .v-list__group__header__prepend-icon {
   padding: 0 16px;
 }
+
 .user-list .v-list__group__header.v-list__group__header--sub-group {
   margin-bottom: 10px;
   background: #424242;
@@ -158,9 +169,11 @@ export default defineComponent({
     0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12); */
   transition: all 0.3s;
 }
+
 .user-list .v-list__group__header.v-list__group__header--sub-group:hover {
   background: #4caf50;
 }
+
 .user-list .v-card {
   margin-bottom: 10px;
 }
@@ -172,3 +185,11 @@ export default defineComponent({
   color: white !important;
 }
 </style>
+
+<i18n locale="en" lang="yaml">
+deleteUser: Delete User {user}
+</i18n>
+
+<i18n locale="zh-CN" lang="yaml">
+deleteUser: 删除用户 {user}
+</i18n>

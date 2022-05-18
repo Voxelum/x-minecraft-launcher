@@ -31,6 +31,7 @@
             :profile-id="profileId"
             :users="users"
             :select="select"
+            @delete="startDelete($event.id)"
             @dragstart="dragged=true"
             @dragend="dragged=false"
           />
