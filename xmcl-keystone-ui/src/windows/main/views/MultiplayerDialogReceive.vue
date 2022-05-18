@@ -84,7 +84,17 @@
             outlined
             @click="copyLocalDescription"
           >
-            <v-icon left>
+            <v-icon
+              v-if="!copied"
+              left
+            >
+              content_copy
+            </v-icon>
+            <v-icon
+              v-else
+              left
+              color="success"
+            >
               content_copy
             </v-icon>
             {{ t('multiplayer.copy') }}
@@ -105,7 +115,7 @@
 import { createAnswerAppUrl, PeerServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { useCurrentUser } from '../composables/user'
-import { useI18n, useRefreshable, useService } from '/@/composables'
+import { useI18n, useRefreshable, useService, useServiceBusy } from '/@/composables'
 
 const { isShown, parameter } = useDialog('peer-receive')
 const { gameProfile } = useCurrentUser()
@@ -124,12 +134,14 @@ const step = ref(1)
 const done = ref(false)
 const errorText = ref('')
 const error = computed(() => !!errorText.value)
+const copied = ref(false)
 
 watch(isShown, (v) => {
   if (v && typeof parameter.value === 'string') {
     id.value = parameter.value as string
     step.value = 2
   } else {
+    copied.value = false
     step.value = 1
     remoteDescription.value = ''
   }
@@ -137,13 +149,19 @@ watch(isShown, (v) => {
 
 function copyLocalDescription() {
   navigator.clipboard.writeText(localDescription.value)
+  copied.value = true
 }
 
-const { refresh: answer, refreshing: answering } = useRefreshable(async () => {
+const answering = useServiceBusy(PeerServiceKey, 'offer', id)
+
+const { refresh: answer } = useRefreshable(async () => {
   errorText.value = ''
   try {
     if (!remoteDescription.value) {
       throw new SyntaxError()
+    }
+    if (remoteDescription.value === localDescription.value) {
+      throw new Error('Cannot enter token from yourself!')
     }
     id.value = await service.offer(remoteDescription.value)
     done.value = true
