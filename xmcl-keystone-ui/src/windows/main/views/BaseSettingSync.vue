@@ -1,5 +1,6 @@
 <template>
   <v-list
+    v-if="false"
     class="base-settings"
     two-line
     subheader
@@ -53,7 +54,7 @@ const { gameProfile } = useProfileId(userId, profileId)
 const { name: username } = useGameProfile(gameProfile)
 const { t } = useI18n()
 const gotoHelp = () => {
-  window.location = 'https://xmcl.app/faq/'
+  window.location = 'https://xmcl.app/faq/' as any
 }
 
 </script>
