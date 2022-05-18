@@ -78,10 +78,20 @@
               outlined
               @click="copyLocalDescription"
             >
-              <v-icon left>
+              <v-icon
+                v-if="!copied"
+                left
+              >
                 content_copy
               </v-icon>
-              {{ t('multiplayer.copy') }}
+              <v-icon
+                v-else
+                left
+                color="success"
+              >
+                check
+              </v-icon>
+              {{ copied ? t('copied') : t('multiplayer.copy') }}
             </v-btn>
             <div class="flex-grow" />
             <v-btn
@@ -139,7 +149,7 @@
 import { createOfferAppUrl, PeerServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { useCurrentUser } from '../composables/user'
-import { useI18n, useRefreshable, useService } from '/@/composables'
+import { useI18n, useRefreshable, useService, useServiceBusy } from '/@/composables'
 
 const { gameProfile } = useCurrentUser()
 const { isShown, parameter } = useDialog('peer-initiate')
@@ -149,7 +159,7 @@ const id = ref('')
 const gatheringState = computed(() => connection.value?.iceGatheringState)
 const connection = computed(() => service.state.connections.find(c => c.id === id.value))
 const localDescription = computed(() => connection.value ? (connection.value.localDescriptionSDP) : '')
-const localSDPUrl = computed(() => createOfferAppUrl(localDescription.value, gameProfile.value.name))
+const localUrl = computed(() => createOfferAppUrl(localDescription.value, gameProfile.value.name))
 const { t } = useI18n()
 
 const remoteDescription = ref('')
@@ -169,17 +179,28 @@ watch(isShown, (v) => {
       step.value = 2
     }
   } else {
+    copied.value = false
     step.value = 1
     remoteDescription.value = ''
   }
 })
 
+const copied = ref(false)
+
 function copyLocalDescription() {
   navigator.clipboard.writeText(localDescription.value)
+  copied.value = true
 }
 
-const { refresh: connect, refreshing: connecting } = useRefreshable(async () => {
+const connecting = useServiceBusy(PeerServiceKey, 'answer', id)
+const initiating = useServiceBusy(PeerServiceKey, 'initiate', id)
+
+const { refresh: connect } = useRefreshable(async () => {
   try {
+    if (remoteDescription.value === localDescription.value) {
+      errorText.value = t('multiplayer.illegalTokenDescription')
+      return
+    }
     await service.answer(remoteDescription.value)
     id.value = ''
     done.value = true
@@ -193,13 +214,12 @@ const { refresh: connect, refreshing: connecting } = useRefreshable(async () => 
   }
 })
 
-const { refresh: initiate, refreshing: initiating } = useRefreshable(async () => {
+const { refresh: initiate } = useRefreshable(async () => {
   step.value += 1
   id.value = await service.create()
   setTimeout(() => { freeze.value = false }, 4000)
   freeze.value = true
   await service.initiate(id.value)
-  copyLocalDescription()
 })
 
 </script>
@@ -229,6 +249,8 @@ multiplayer:
     style="text-font: bold">Local token</span>.<br> You do not need to wait
     until the ICE status complete. If the token below remain unchanged, you can
     copy it and send to you peer."
+copied: Copied!
+copyUrl: Copy URL
 </i18n>
 
 <i18n locale="zh-CN" lang="yaml">
@@ -245,4 +267,6 @@ multiplayer:
     期间 ICE 服务器可能需要时间收集足够信息来创建<span class="v-chip v-chip--label v-size--small" style="text-font: bold">本地令牌</span>。
     <br>
     <span style="color: rgba(255,255,255,0.7);"> 你不需要等 ICE 服务器完全收集完毕，当下面的令牌已经有内容并且不怎么变化后，你可以提前将令牌复制给对方。 </span>
+copied: 已复制!
+copyUrl: 复制 URL
 </i18n>

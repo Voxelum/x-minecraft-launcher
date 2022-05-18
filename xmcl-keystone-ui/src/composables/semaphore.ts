@@ -1,10 +1,10 @@
-import { computed, InjectionKey, reactive, set } from '@vue/composition-api'
+import { computed, InjectionKey, reactive, Ref, set } from '@vue/composition-api'
 import { getServiceSemaphoreKey, ServiceKey } from '@xmcl/runtime-api'
 import { injection } from '../util/inject'
 import { useRefreshable } from './refreshable'
 
-export function useServiceBusy<T>(key: ServiceKey<T>, method: keyof T, params?: string) {
-  const sem = useSemaphore(getServiceSemaphoreKey(key, method, params))
+export function useServiceBusy<T>(key: ServiceKey<T>, method: keyof T, params?: string | Ref<string>) {
+  const sem = useSemaphore(computed(() => getServiceSemaphoreKey(key, method, params ? typeof params === 'string' ? params : params.value : undefined)))
   return computed(() => sem.value > 0)
 }
 
@@ -15,10 +15,10 @@ export function useBusy(key: string) {
 
 export const SERVICES_SEMAPHORES_KEY: InjectionKey<ReturnType<typeof useSemaphores>> = Symbol('SERVICES_SHEMAPHORES_KEY')
 
-export function useSemaphore(semaphore: string | Function) {
+export function useSemaphore(semaphore: string | Ref<string>) {
   const { semaphores } = injection(SERVICES_SEMAPHORES_KEY)
-  const key = typeof semaphore === 'function' ? semaphore.name : semaphore
   return computed(() => {
+    const key = typeof semaphore === 'string' ? semaphore : semaphore.value
     let value = semaphores[key]
     if (typeof value === 'undefined') {
       set(semaphores, key, 0)
