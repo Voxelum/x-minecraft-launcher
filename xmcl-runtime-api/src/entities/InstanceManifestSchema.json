@@ -134,11 +134,23 @@
                         "projectId",
                         "versionId"
                     ]
+                },
+                "size": {
+                    "type": "number"
+                },
+                "createAt": {
+                    "type": "number"
+                },
+                "updateAt": {
+                    "type": "number"
                 }
             },
             "required": [
+                "createAt",
                 "hashes",
-                "path"
+                "path",
+                "size",
+                "updateAt"
             ]
         },
         "Hashes": {
