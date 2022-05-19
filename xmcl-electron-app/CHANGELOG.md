@@ -1,4 +1,97 @@
 
+## 0.25.0
+### @xmcl/runtime-api@0.9.0
+#### Features
+
+- sharing instance across network ([5161531c7a0b1c2cfc6a8b446b58d826fca99491](https://github.com/Voxelum/x-minecraft-launcher/commit/5161531c7a0b1c2cfc6a8b446b58d826fca99491))
+- ftb modpack in modpacks with context menu ([591f6d3a10de92d0e956cfd77c1f73ec285dde7c](https://github.com/Voxelum/x-minecraft-launcher/commit/591f6d3a10de92d0e956cfd77c1f73ec285dde7c))
+- add new feedback report workflow ([aef45198e52da3c6c3e3127e69d9518514afe61a](https://github.com/Voxelum/x-minecraft-launcher/commit/aef45198e52da3c6c3e3127e69d9518514afe61a))
+- update new icon ([3ba4eda130b4bc7b10ffc3059391952ded5017cc](https://github.com/Voxelum/x-minecraft-launcher/commit/3ba4eda130b4bc7b10ffc3059391952ded5017cc))
+- support install modpack via ftb ([8a34327c055572f5151f532b2b129e6c5490f822](https://github.com/Voxelum/x-minecraft-launcher/commit/8a34327c055572f5151f532b2b129e6c5490f822))
+- support instance file manifest & updates ([23a7a5c68d3ada3262adee6fd03ee9b7233a4c2e](https://github.com/Voxelum/x-minecraft-launcher/commit/23a7a5c68d3ada3262adee6fd03ee9b7233a4c2e))
+#### Bug Fixes
+
+- fix typing & cleanup ([ffdeb17e7ebc2286417197d0a4c701cd1160e685](https://github.com/Voxelum/x-minecraft-launcher/commit/ffdeb17e7ebc2286417197d0a4c701cd1160e685))
+- peer serivce delegate & service ([113efe2efe708b2e133c3033b0ad9b3d2d14bb93](https://github.com/Voxelum/x-minecraft-launcher/commit/113efe2efe708b2e133c3033b0ad9b3d2d14bb93))
+- wrong migration process ([d5c89e7d076d473941837ef904e706e0bd7d84e2](https://github.com/Voxelum/x-minecraft-launcher/commit/d5c89e7d076d473941837ef904e706e0bd7d84e2))
+- user login exception handle ([748f9a6ccf5c93fdfee411ebf01c8647cf799aea](https://github.com/Voxelum/x-minecraft-launcher/commit/748f9a6ccf5c93fdfee411ebf01c8647cf799aea))
+- store ms accessToken ([cc46f4f943ed76e4f15f9894629a23716be164a4](https://github.com/Voxelum/x-minecraft-launcher/commit/cc46f4f943ed76e4f15f9894629a23716be164a4))
+### @xmcl/keystone-ui@0.24.0
+#### Features
+
+- sharing instance across network ([5161531c7a0b1c2cfc6a8b446b58d826fca99491](https://github.com/Voxelum/x-minecraft-launcher/commit/5161531c7a0b1c2cfc6a8b446b58d826fca99491))
+- ftb modpack in modpacks with context menu ([591f6d3a10de92d0e956cfd77c1f73ec285dde7c](https://github.com/Voxelum/x-minecraft-launcher/commit/591f6d3a10de92d0e956cfd77c1f73ec285dde7c))
+- context menu on user for deletion ([0138c970e012399208d6290b7c4e463e57c64a03](https://github.com/Voxelum/x-minecraft-launcher/commit/0138c970e012399208d6290b7c4e463e57c64a03))
+- toggle the ui of blocked dialog ([59b6a2d7aed662318357720abea632106a49cc4e](https://github.com/Voxelum/x-minecraft-launcher/commit/59b6a2d7aed662318357720abea632106a49cc4e))
+- add option to hide sidebar button ([90868436b3a73796529c3425b4f8a2cf9cfe463e](https://github.com/Voxelum/x-minecraft-launcher/commit/90868436b3a73796529c3425b4f8a2cf9cfe463e))
+- add new feedback report workflow ([aef45198e52da3c6c3e3127e69d9518514afe61a](https://github.com/Voxelum/x-minecraft-launcher/commit/aef45198e52da3c6c3e3127e69d9518514afe61a))
+- support install modpack via ftb ([8a34327c055572f5151f532b2b129e6c5490f822](https://github.com/Voxelum/x-minecraft-launcher/commit/8a34327c055572f5151f532b2b129e6c5490f822))
+#### Bug Fixes
+
+- fix typing & cleanup ([ffdeb17e7ebc2286417197d0a4c701cd1160e685](https://github.com/Voxelum/x-minecraft-launcher/commit/ffdeb17e7ebc2286417197d0a4c701cd1160e685))
+- update some i18n ([e8bf72a16822535b7e852c92c5e5497abd8597ae](https://github.com/Voxelum/x-minecraft-launcher/commit/e8bf72a16822535b7e852c92c5e5497abd8597ae))
+- curseforge page cannot select cat ([f0f1c41ae0eef9805ccc6751531e82edda6a3f55](https://github.com/Voxelum/x-minecraft-launcher/commit/f0f1c41ae0eef9805ccc6751531e82edda6a3f55))
+- prevent accept token from ourself ([dc39dc8e12f2e81f57a4fe365ea2257703ccda59](https://github.com/Voxelum/x-minecraft-launcher/commit/dc39dc8e12f2e81f57a4fe365ea2257703ccda59))
+- let mod save button area click through #255 ([931d9bf19bada395ea4bf157770967b58e6c92fe](https://github.com/Voxelum/x-minecraft-launcher/commit/931d9bf19bada395ea4bf157770967b58e6c92fe))
+- disable wip feature ([1670b19e2cddcc0981443efd0f12c33a4b00d322](https://github.com/Voxelum/x-minecraft-launcher/commit/1670b19e2cddcc0981443efd0f12c33a4b00d322))
+- wrong migration process ([d5c89e7d076d473941837ef904e706e0bd7d84e2](https://github.com/Voxelum/x-minecraft-launcher/commit/d5c89e7d076d473941837ef904e706e0bd7d84e2))
+- update locale & window title ([b6cd98bd8cf89fc54fe5d2fa82697a5b678db953](https://github.com/Voxelum/x-minecraft-launcher/commit/b6cd98bd8cf89fc54fe5d2fa82697a5b678db953))
+- adjust java issue dialog highlight ([d791b792171b0ba28163f90105fabc3c91091265](https://github.com/Voxelum/x-minecraft-launcher/commit/d791b792171b0ba28163f90105fabc3c91091265))
+- adjust some ui appearance ([f6f59cf68e276b272c60e4849964db069017adc0](https://github.com/Voxelum/x-minecraft-launcher/commit/f6f59cf68e276b272c60e4849964db069017adc0))
+- allow to click home version chip ([8ffe8f08cc6882a882dbb29f4b95b6fca9f3ebf0](https://github.com/Voxelum/x-minecraft-launcher/commit/8ffe8f08cc6882a882dbb29f4b95b6fca9f3ebf0))
+- use empty background as default ([8ed614491c4ebef8976ac954443121db89396ab6](https://github.com/Voxelum/x-minecraft-launcher/commit/8ed614491c4ebef8976ac954443121db89396ab6))
+- user login exception handle ([748f9a6ccf5c93fdfee411ebf01c8647cf799aea](https://github.com/Voxelum/x-minecraft-launcher/commit/748f9a6ccf5c93fdfee411ebf01c8647cf799aea))
+- build failed for yaml ([aee2f9588ef5a428ca44fd039e6378e904a41eb2](https://github.com/Voxelum/x-minecraft-launcher/commit/aee2f9588ef5a428ca44fd039e6378e904a41eb2))
+- Update ru.yaml ([6a3241802ea8a722b2ca6d54e576bbf5507c78ca](https://github.com/Voxelum/x-minecraft-launcher/commit/6a3241802ea8a722b2ca6d54e576bbf5507c78ca))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### @xmcl/runtime@0.23.0
+#### Features
+
+- sharing instance across network ([5161531c7a0b1c2cfc6a8b446b58d826fca99491](https://github.com/Voxelum/x-minecraft-launcher/commit/5161531c7a0b1c2cfc6a8b446b58d826fca99491))
+- ftb modpack in modpacks with context menu ([591f6d3a10de92d0e956cfd77c1f73ec285dde7c](https://github.com/Voxelum/x-minecraft-launcher/commit/591f6d3a10de92d0e956cfd77c1f73ec285dde7c))
+- add new feedback report workflow ([aef45198e52da3c6c3e3127e69d9518514afe61a](https://github.com/Voxelum/x-minecraft-launcher/commit/aef45198e52da3c6c3e3127e69d9518514afe61a))
+- support install modpack via ftb ([8a34327c055572f5151f532b2b129e6c5490f822](https://github.com/Voxelum/x-minecraft-launcher/commit/8a34327c055572f5151f532b2b129e6c5490f822))
+- support instance file manifest & updates ([23a7a5c68d3ada3262adee6fd03ee9b7233a4c2e](https://github.com/Voxelum/x-minecraft-launcher/commit/23a7a5c68d3ada3262adee6fd03ee9b7233a4c2e))
+#### Bug Fixes
+
+- fix typing & cleanup ([ffdeb17e7ebc2286417197d0a4c701cd1160e685](https://github.com/Voxelum/x-minecraft-launcher/commit/ffdeb17e7ebc2286417197d0a4c701cd1160e685))
+- curseforge download file failed ([b78afa8dea0e8e52b09e983b207e3bfb3be88ea8](https://github.com/Voxelum/x-minecraft-launcher/commit/b78afa8dea0e8e52b09e983b207e3bfb3be88ea8))
+- handle all url from localhost ([dbaaf68e3a6840ca0460f40a8b8c64e344609285](https://github.com/Voxelum/x-minecraft-launcher/commit/dbaaf68e3a6840ca0460f40a8b8c64e344609285))
+- peer serivce delegate & service ([113efe2efe708b2e133c3033b0ad9b3d2d14bb93](https://github.com/Voxelum/x-minecraft-launcher/commit/113efe2efe708b2e133c3033b0ad9b3d2d14bb93))
+- try to mitigate the cf url failure ([3a515e206eda8de6252bcde1170f8ac8c04a008b](https://github.com/Voxelum/x-minecraft-launcher/commit/3a515e206eda8de6252bcde1170f8ac8c04a008b))
+- store managed instance path as relative ([d1813a1a8b082b4873e6fd3f79c973d8d40dc5df](https://github.com/Voxelum/x-minecraft-launcher/commit/d1813a1a8b082b4873e6fd3f79c973d8d40dc5df))
+- wrong migration process ([d5c89e7d076d473941837ef904e706e0bd7d84e2](https://github.com/Voxelum/x-minecraft-launcher/commit/d5c89e7d076d473941837ef904e706e0bd7d84e2))
+- option to redirect to localhost in dev ([df8ece98e5ddb170eecc1d3f5970abff2fa27874](https://github.com/Voxelum/x-minecraft-launcher/commit/df8ece98e5ddb170eecc1d3f5970abff2fa27874))
+- user login exception handle ([748f9a6ccf5c93fdfee411ebf01c8647cf799aea](https://github.com/Voxelum/x-minecraft-launcher/commit/748f9a6ccf5c93fdfee411ebf01c8647cf799aea))
+- adjust the account access token ([f497b014522ab7870970de17d77be102f69c736f](https://github.com/Voxelum/x-minecraft-launcher/commit/f497b014522ab7870970de17d77be102f69c736f))
+- add correct scope to ms login ([b21c0613e47fe700e56897f6d7db564d3524516d](https://github.com/Voxelum/x-minecraft-launcher/commit/b21c0613e47fe700e56897f6d7db564d3524516d))
+- store ms accessToken ([cc46f4f943ed76e4f15f9894629a23716be164a4](https://github.com/Voxelum/x-minecraft-launcher/commit/cc46f4f943ed76e4f15f9894629a23716be164a4))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### xmcl@0.25.0
+#### Features
+
+- sharing instance across network ([5161531c7a0b1c2cfc6a8b446b58d826fca99491](https://github.com/Voxelum/x-minecraft-launcher/commit/5161531c7a0b1c2cfc6a8b446b58d826fca99491))
+- update new icon ([3ba4eda130b4bc7b10ffc3059391952ded5017cc](https://github.com/Voxelum/x-minecraft-launcher/commit/3ba4eda130b4bc7b10ffc3059391952ded5017cc))
+- support install modpack via ftb ([8a34327c055572f5151f532b2b129e6c5490f822](https://github.com/Voxelum/x-minecraft-launcher/commit/8a34327c055572f5151f532b2b129e6c5490f822))
+- support instance file manifest & updates ([23a7a5c68d3ada3262adee6fd03ee9b7233a4c2e](https://github.com/Voxelum/x-minecraft-launcher/commit/23a7a5c68d3ada3262adee6fd03ee9b7233a4c2e))
+#### Bug Fixes
+
+- fix typing & cleanup ([ffdeb17e7ebc2286417197d0a4c701cd1160e685](https://github.com/Voxelum/x-minecraft-launcher/commit/ffdeb17e7ebc2286417197d0a4c701cd1160e685))
+- tray locale & disable wip function ([4835904d38e8ed1b89f7b1def1d07413c66916d3](https://github.com/Voxelum/x-minecraft-launcher/commit/4835904d38e8ed1b89f7b1def1d07413c66916d3))
+- handle all url from localhost ([dbaaf68e3a6840ca0460f40a8b8c64e344609285](https://github.com/Voxelum/x-minecraft-launcher/commit/dbaaf68e3a6840ca0460f40a8b8c64e344609285))
+- peer serivce delegate & service ([113efe2efe708b2e133c3033b0ad9b3d2d14bb93](https://github.com/Voxelum/x-minecraft-launcher/commit/113efe2efe708b2e133c3033b0ad9b3d2d14bb93))
+- update locale & window title ([b6cd98bd8cf89fc54fe5d2fa82697a5b678db953](https://github.com/Voxelum/x-minecraft-launcher/commit/b6cd98bd8cf89fc54fe5d2fa82697a5b678db953))
+- memory leak of service call ([8bb5833f81ccb0ac8ac70abd53875176fa43afa9](https://github.com/Voxelum/x-minecraft-launcher/commit/8bb5833f81ccb0ac8ac70abd53875176fa43afa9))
+- user login exception handle ([748f9a6ccf5c93fdfee411ebf01c8647cf799aea](https://github.com/Voxelum/x-minecraft-launcher/commit/748f9a6ccf5c93fdfee411ebf01c8647cf799aea))
+- move the icon folder location ([bec982f0758b751c6a83be410d7405b02179fd1a](https://github.com/Voxelum/x-minecraft-launcher/commit/bec982f0758b751c6a83be410d7405b02179fd1a))
+- Update ru.yaml ([6a3241802ea8a722b2ca6d54e576bbf5507c78ca](https://github.com/Voxelum/x-minecraft-launcher/commit/6a3241802ea8a722b2ca6d54e576bbf5507c78ca))
+- prevent dll load crash app ([acaaa23445f1fa90878f3352b2dbf9c28ce6a928](https://github.com/Voxelum/x-minecraft-launcher/commit/acaaa23445f1fa90878f3352b2dbf9c28ce6a928))
+
+
 ## 0.24.1
 ### @xmcl/keystone-ui@0.23.1
 #### Bug Fixes
