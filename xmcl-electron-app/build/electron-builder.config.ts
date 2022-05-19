@@ -64,7 +64,7 @@ export const config: Configuration = {
     ],
   },
   mac: {
-    icon: 'icons/dark@icon.icns',
+    icon: 'icons/dark.icns',
     darkModeSupport: true,
     target: [
       {
@@ -81,7 +81,7 @@ export const config: Configuration = {
       ? 'xmcl-${version}-unsigned.${ext}'
       // eslint-disable-next-line no-template-curly-in-string
       : 'xmcl-${version}-${platform}-${arch}-unsigned.${ext}',
-    icon: 'icons/icon.ico',
+    icon: 'icons/dark.ico',
     files: [
       '**/*.cs',
       '**/*.worker.js',
