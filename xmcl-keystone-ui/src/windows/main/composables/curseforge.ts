@@ -73,7 +73,7 @@ export function useCurseforge(props: CurseforgeProps) {
     },
   })
   const categoryId = computed({
-    get() { return Number.isInteger(currentCategory.value) ? Number.parseInt(currentCategory.value, 10) : undefined },
+    get() { return Number.parseInt(currentCategory.value, 10) },
     set(v: number | undefined) {
       if (v) {
         currentCategory.value = v.toString()
