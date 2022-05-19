@@ -38,7 +38,7 @@
             </v-icon>
           </v-btn>
         </template>
-        {{ t(`curseforge.texture-packs.description`) }}
+        {{ t(`resourcepack.searchOnCurseforge`, { name: tc('resourcepack.name', 0) }) }}
       </v-tooltip>
       <!-- <v-btn
           icon
@@ -207,7 +207,7 @@ const { enabled, disabled, add, remove, commit, insert, showDirectory } = useIns
 const { removeResource } = useResourceOperation()
 const { push } = useRouter()
 const { path } = useInstanceBase()
-const { t } = useI18n()
+const { t, tc } = useI18n()
 const data = reactive({
   dragging: false,
   deletingPack: null as ResourcePackItem | null,

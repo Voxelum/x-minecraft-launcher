@@ -270,14 +270,14 @@ instanceAge:
   threeDay: In Three Days
   today: Today
 instanceTemplate:
+  curseforge: This is a Curseforge configuration
+  ftb: This is a FTB configuration
   importing: Template Importing
+  mcbbs: This is a MCBBS configuration
   modpack: This is a modpack configuration
   preview: Modpack Preview
   profile: This is a existed profile configuration
   server: This is a existed server configuration
-  ftb: This is a FTB configuration
-  curseforge: This is a Curseforge configuration
-  mcbbs: This is a MCBBS configuration
   title: Template Setting
 instances:
   add: Add Local Game
@@ -434,7 +434,7 @@ mod:
   name: Mod | Mods
   nocompatible: Unknown Compatibility
   openLink: Open the mod url {url}
-  searchOnCurseforge: Search the mod in curseforge
+  searchOnCurseforge: Search in curseforge
   searchOnModrinth: Search {name} in Modrinth
   selected: Selected Mods
   showFile: Show the mod path {file}
@@ -543,13 +543,13 @@ multiplayer:
     Connection.
   joinManual: Join
   localToken: Local Token
-  sharing: Sharing files...
   name: Multiplayer on LAN
   next: Next
   placeholder: Connect with other user to play Minecraft on LAN!
   previous: Previous
   remoteToken: Remote Token
   share: Share Instance Config
+  sharing: Sharing files...
   start: Start
   startNewP2PConnection: Click the Start button to create a new peer connection
 name: Name
@@ -738,8 +738,8 @@ unused:
     name: Launch Settings
   summery: Summery
 updateInstance:
-  name: Update Instance
   file: Update Instance File {file}
+  name: Update Instance
 user:
   accessToken: Access Token
   authMode: Auth Service
