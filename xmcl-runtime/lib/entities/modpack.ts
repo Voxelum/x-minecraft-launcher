@@ -1,7 +1,8 @@
+import { getAddonFileInfo, getAddonFiles } from '@xmcl/curseforge'
 import { createDefaultCurseforgeQuery, DownloadBaseOptions, DownloadTask, UnzipTask } from '@xmcl/installer'
 import { joinUrl } from '@xmcl/installer/http/utils'
 import { CurseforgeModpackManifest, EditInstanceOptions, McbbsModpackManifest, ModpackFileInfoAddon, ModpackFileInfoCurseforge } from '@xmcl/runtime-api'
-import { task } from '@xmcl/task'
+import { CancelledError, task } from '@xmcl/task'
 import { readEntry } from '@xmcl/unzip'
 import { ensureDir } from 'fs-extra'
 import { Agent } from 'https'
@@ -89,25 +90,13 @@ export class ModpackInstallUrlError extends Error {
 export function installModpackTask(zip: ZipFile, entries: Entry[], manifest: CurseforgeModpackManifest | McbbsModpackManifest, root: string, allowFileApi: boolean, options: DownloadBaseOptions & { agents: { https: Agent } }) {
   return task('installModpack', async function () {
     const files: Array<{ path: string; url: string; projectId: number; fileId: number }> = []
-    const getCurseforgeUrl = createDefaultCurseforgeQuery(options.agents.https)
-    const isValidateUrl = (url: string) => {
-      try {
-        // eslint-disable-next-line no-new
-        new URL(url)
-        return true
-      } catch (e) {
-        return false
-      }
-    }
     const ensureDownloadUrl = async (f: ModpackFileInfoCurseforge) => {
       // for (let i = 0; i < 3; ++i) {
-      const result = await getCurseforgeUrl(f.projectID, f.fileID)
-      if (isValidateUrl(result)) {
-        return result
+      if (this.isCancelled) {
+        throw new CancelledError()
       }
-      // }
-      // throw new ModpackInstallUrlError(f)
-      return undefined
+      const result = await getAddonFileInfo(f.projectID, f.fileID, { userAgent: options.agents.https })
+      return result.downloadUrl
     }
     if (manifest.files) {
       const curseforgeFilesQueue = manifest.files.map(f => f).filter((f): f is ModpackFileInfoCurseforge => !('type' in f) || f.type === 'curse')
