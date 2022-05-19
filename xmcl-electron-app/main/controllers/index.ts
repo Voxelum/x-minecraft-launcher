@@ -8,4 +8,4 @@ import { themePlugin } from './theme'
 import { peerPlugin } from './peerDelegate'
 import { auth } from './auth'
 
-export const plugins = [gameLaunch, setupWindow, taskProgressPlugin, trayPlugin, windowController, i18n, themePlugin, peerPlugin, auth]
+export const plugins = [i18n, gameLaunch, setupWindow, taskProgressPlugin, trayPlugin, windowController, themePlugin, peerPlugin, auth]

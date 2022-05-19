@@ -37,17 +37,17 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
           service.checkUpdate()
         },
       },
-      {
-        label: t('browseApps'),
-        type: 'normal',
-        click: onBrowseAppClicked,
-      },
+      // {
+      //   label: t('browseApps'),
+      //   type: 'normal',
+      //   click: onBrowseAppClicked,
+      // },
       { type: 'separator' },
-      {
-        label: t('showLogsFolder'),
-        type: 'normal',
-        click: showLogs,
-      },
+      // {
+      //   label: t('showLogsFolder'),
+      //   type: 'normal',
+      //   click: showLogs,
+      // },
       {
         label: t('showDiagnosis'),
         type: 'normal',
@@ -79,6 +79,16 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
         else window.show()
       }
     })
+    tray.setToolTip(t('title'))
+    tray.setContextMenu(createMenu())
+    this.app.serviceStateManager.subscribe('config', () => {
+      tray.setToolTip(t('title'))
+      tray.setContextMenu(createMenu())
+    })
+    this.app.serviceStateManager.subscribe('localeSet', () => {
+      tray.setToolTip(t('title'))
+      tray.setContextMenu(createMenu())
+    })
     if (app.dock) {
       app.dock.setIcon(nativeTheme.shouldUseDarkColors ? darkIcon : lightIcon)
     }
@@ -93,21 +103,5 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
       app.dock.setIcon(nativeTheme.shouldUseDarkColors ? man.iconSets.darkDockIcon : man.iconSets.dockIcon)
     }
     this.tray?.setImage(nativeTheme.shouldUseDarkColors ? man.iconSets.darkDockIcon : man.iconSets.dockIcon)
-  })
-
-  Promise.all([
-    new Promise<void>((resolve) => {
-      this.app.once('engine-ready', resolve)
-    }),
-  ]).then(() => {
-    const tray = this.tray
-    if (tray) {
-      tray.setToolTip(t('title'))
-      tray.setContextMenu(createMenu())
-      this.app.serviceStateManager.subscribe('localeSet', (l) => {
-        tray.setToolTip(t('title'))
-        tray.setContextMenu(createMenu())
-      })
-    }
   })
 }
