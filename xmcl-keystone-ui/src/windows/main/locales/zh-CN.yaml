@@ -368,7 +368,7 @@ mod:
   name: Mod | Mods
   nocompatible: 无法解析兼容性。
   openLink: 打开 Mod 链接 {url}
-  searchOnCurseforge: 在 Curseforge 上搜索该 Mod
+  searchOnCurseforge: 在 Curseforge 上搜索
   searchOnMcWiki: 在 MC 百科中查找 {name}
   searchOnModrinth: 在 Modrinth 中搜素 {name}
   selected: 已选 Mods

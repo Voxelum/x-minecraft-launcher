@@ -34,7 +34,7 @@
           </v-icon>
         </v-btn>
       </template>
-      {{ t(`curseforge.mc-mods.description`) }}
+      {{ t(`mod.searchOnCurseforge`) }}
     </v-tooltip>
     <v-tooltip bottom>
       <template #activator="{ on }">
