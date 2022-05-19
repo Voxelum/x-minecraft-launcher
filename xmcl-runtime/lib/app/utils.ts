@@ -29,17 +29,17 @@ function resolvePurpose(purpose?: string) {
   return !purpose ? 'any' : purpose
 }
 
-export function resolveIcon(icon: Required<AppManifest>['icons'][number]): ResolvedIcon {
-  const resolvedPurpose = resolvePurpose(icon.purpose)
-  const resolvedType = resolveType(icon.src, icon.type)
-  const resolvedSizes = icon.sizes ?? ''
-  const allSizes = resolvedSizes.split(' ').map(s => Number.parseInt(s.split('x')[0], 10))
+// export function resolveIcon(icon: Required<AppManifest>[''][number]): ResolvedIcon {
+//   const resolvedPurpose = resolvePurpose(icon.purpose)
+//   const resolvedType = resolveType(icon.src, icon.type)
+//   const resolvedSizes = icon.sizes ?? ''
+//   const allSizes = resolvedSizes.split(' ').map(s => Number.parseInt(s.split('x')[0], 10))
 
-  return {
-    src: icon.src,
-    purpose: resolvedPurpose,
-    type: resolvedType,
-    sizes: icon.sizes ?? '',
-    allSizes,
-  }
-}
+//   return {
+//     src: icon.src,
+//     purpose: resolvedPurpose,
+//     type: resolvedType,
+//     sizes: icon.sizes ?? '',
+//     allSizes,
+//   }
+// }

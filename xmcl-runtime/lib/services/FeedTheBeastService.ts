@@ -1,4 +1,4 @@
-import { CachedFTBModpackVersionManifest, FeedTheBeastService as IFeedTheBeastService, FeedTheBeastServiceKey, FeedTheBeastState, FTBModpackManifest, FTBModpacksResult, FTBModpackVersionManifest, FTBVersionManifestStoreSchema, GetFTBModpackVersionOptions, InstallFTBModpackVersionOptions, SearchFTBModpackOptions } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, FeedTheBeastService as IFeedTheBeastService, FeedTheBeastServiceKey, FeedTheBeastState, FTBModpackManifest, FTBModpacksResult, FTBModpackVersionManifest, FTBVersionManifestStoreSchema, GetFTBModpackVersionOptions, SearchFTBModpackOptions } from '@xmcl/runtime-api'
 import { readFile, writeFile } from 'atomically'
 import { LauncherApp } from '../app/LauncherApp'
 import { CacheDictionary } from '../util/cache'

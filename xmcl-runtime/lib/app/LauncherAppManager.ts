@@ -181,7 +181,7 @@ export class LauncherAppManager extends Manager implements AppsHost {
       const link = dom.html.head.link
       if (link) {
         const links = link instanceof Array ? link : [link]
-        const manifestNode = links.find(l => l['@_rel'] === 'manifest')
+        const manifestNode = links.find(l => l['@_rel'] === 'launcher-manifest')
         if (manifestNode) {
           const manifestUrl = manifestNode['@_href']
           if (manifestUrl) {

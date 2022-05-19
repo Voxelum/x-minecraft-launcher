@@ -208,8 +208,8 @@ export default class Controller implements LauncherAppController {
       height: config.height > 0 ? config.height : undefined,
       minWidth: man.minWidth,
       minHeight: man.minHeight,
-      frame: man.display !== 'frameless',
-      backgroundColor: man.background_color,
+      frame: false,
+      backgroundColor: man.backgroundColor,
       vibrancy: man.vibrancy ? 'sidebar' : undefined, // or popover
       icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
       webPreferences: {

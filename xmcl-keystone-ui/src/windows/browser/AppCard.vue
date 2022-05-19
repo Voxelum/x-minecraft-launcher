@@ -88,13 +88,9 @@ export default defineComponent({
   },
   setup(props) {
     const icon = computed(() => {
-      if (!props.manifest?.icons) return favicon
-      const icons = props.manifest.icons
-      const maskable = icons.find(i => i.purpose === 'maskable')
-      if (maskable?.src) {
-        return new URL(maskable.src, props.manifest.url).toString()
-      }
-      return icons[0]?.src ? new URL(icons[0].src, props.manifest.url).toJSON() : favicon
+      if (!props.manifest?.iconUrls.icon) return favicon
+      const icon = props.manifest.iconUrls.icon
+      return new URL(icon, props.manifest.url).toString()
     })
     return {
       icon,
