@@ -4,7 +4,6 @@ import generateIco from 'icon-gen/dist/lib/ico'
 import { join } from 'path'
 import { URL } from 'url'
 import LauncherApp from '../LauncherApp'
-import { downloadIcon, resolveIcon } from '../utils'
 
 export async function removeShortcut(outputDir: string, man: InstalledAppManifest) {
   let outputPath = join(outputDir, `${man.name}.lnk`)
@@ -19,7 +18,7 @@ export async function createLinkWin32(app: LauncherApp, exePath: string, outputD
   URL=xmcl://launcher/app?url=${man.url}
   WorkingDirectory=.
   IconIndex=0
-  IconFile=${man.iconPath}`
+  IconFile=${man.iconSets.icon}`
   await writeFile(join(outputDir, `${man.name}.url`), urlContent)
 }
 
@@ -31,7 +30,7 @@ export function createShortcutWin32(app: LauncherApp, exePath: string, outputDir
   }
 
   const filePath = exePath
-  let icon = man.iconPath
+  let icon = man.iconSets.icon
   let args = `--url=${man.url}`
   if (globalShortcut) {
     args += ' --global'
@@ -66,73 +65,56 @@ export function createShortcutWin32(app: LauncherApp, exePath: string, outputDir
 }
 
 export async function installWin32(url: string, appDir: string, man: AppManifest): Promise<InstalledAppManifest> {
-  const processIcons = async () => {
-    if (man.icons) {
-      const resolvedIcons = man.icons.map(resolveIcon)
-      const icoPath = join(appDir, 'app.ico')
+  // TODO: fix this
+  // const processIcons = async () => {
+  //   const resolvedIcons = man.iconUrls.map(resolveIcon)
+  //   const icoPath = join(appDir, 'app.ico')
 
-      const ico = resolvedIcons.find(i => i.type === 'ico')
-      if (ico) {
-        // if has ico, we just use it
-        await downloadIcon(new URL(ico.src, url).toString(), icoPath)
-        return icoPath
-      }
+  //   const ico = resolvedIcons.find(i => i.type === 'ico')
+  //   if (ico) {
+  //     // if has ico, we just use it
+  //     await downloadIcon(new URL(ico.src, url).toString(), icoPath)
+  //     return icoPath
+  //   }
 
-      // TODO: since svg use sharp which is too large. we skip svg for now
-      // const svg = resolvedIcons.find(i => i.type === 'svg')
-      // if (svg) {
-      //   const svgPath = join(appDir, 'app.svg')
-      //   // try to use svg to generate icon
-      //   await downloadIcon(new URL(svg.src, url).toString(), svgPath)
-      //   await generateIco(svgPath, appDir, {
-      //     ico: {
-      //       name: 'app.ico',
-      //     },
-      //     report: true,
-      //   })
-      //   return icoPath
-      // }
+  //   const pngs = resolvedIcons.filter(i => i.type === 'png')
+  //   if (pngs.length > 0) {
+  //     // try to use png to generate icon
+  //     const anyIconDir = join(appDir, 'icons')
+  //     await ensureDir(anyIconDir)
+  //     // download all png
+  //     const fileInfos = await Promise.all(pngs.map(async (f) => {
+  //       const filePath = join(anyIconDir, `${f.allSizes[0]}.png`)
+  //       await downloadIcon(new URL(f.src, url).toString(), join(anyIconDir, `${f.allSizes[0]}.png`))
+  //       return { filePath, size: f.allSizes[0] }
+  //     }))
 
-      const pngs = resolvedIcons.filter(i => i.type === 'png')
-      if (pngs.length > 0) {
-        // try to use png to generate icon
-        const anyIconDir = join(appDir, 'icons')
-        await ensureDir(anyIconDir)
-        // download all png
-        const fileInfos = await Promise.all(pngs.map(async (f) => {
-          const filePath = join(anyIconDir, `${f.allSizes[0]}.png`)
-          await downloadIcon(new URL(f.src, url).toString(), join(anyIconDir, `${f.allSizes[0]}.png`))
-          return { filePath, size: f.allSizes[0] }
-        }))
+  //     const result = await generateIco(fileInfos, appDir, console as any, {
+  //       name: 'app.ico',
+  //     }).catch((e) => [])
 
-        const result = await generateIco(fileInfos, appDir, console as any, {
-          name: 'app.ico',
-        }).catch((e) => [])
+  //     if (result.length === 0) {
+  //       const maxSizePng = pngs.sort((a, b) => b.allSizes[0] - a.allSizes[0]).map(f => join(anyIconDir, `${f.allSizes[0]}.png`))[0]
+  //       return maxSizePng
+  //     }
 
-        if (result.length === 0) {
-          const maxSizePng = pngs.sort((a, b) => b.allSizes[0] - a.allSizes[0]).map(f => join(anyIconDir, `${f.allSizes[0]}.png`))[0]
-          return maxSizePng
-        }
-
-        return icoPath
-      }
-    }
-  }
-  const iconPath = await processIcons()
+  //     return icoPath
+  //   }
+  // }
+  // const iconPath = await processIcons()
 
   return {
     name: man.name ?? '',
     description: man.description ?? '',
-    icons: man.icons ?? [],
     screenshots: man.screenshots ?? [],
 
+    iconUrls: man.iconUrls,
     url,
-    iconPath: iconPath ?? '',
+    iconSets: man.iconUrls as any,
     minHeight: man.minHeight ?? 600,
     minWidth: man.minWidth ?? 800,
     ratio: man.ratio ?? false,
-    background_color: man.background_color ?? '',
-    display: man.display ?? 'frameless',
+    backgroundColor: man.backgroundColor ?? '',
     vibrancy: false,
   }
 }

@@ -7,8 +7,7 @@ const manifest: InstalledAppManifest = {
   name: 'KeyStone Launcher',
   description: 'The default launcher UI',
   url: defaultUrl,
-  background_color: '0x424242',
-  display: 'frameless',
+  backgroundColor: '0x424242',
   minWidth: 800,
   minHeight: 620,
   vibrancy: false,
@@ -23,8 +22,17 @@ const manifest: InstalledAppManifest = {
     darkDockIcon: darkIcon,
   },
   screenshots: [],
-  icons: [],
   ratio: false,
+  iconUrls: {
+    icon: platform() === 'win32' ? lightIco : lightIcon,
+    darkIcon: platform() === 'win32' ? darkIco : darkIcon,
+
+    trayIcon: lightTray,
+    darkTrayIcon: darkTray,
+
+    dockIcon: lightIcon,
+    darkDockIcon: darkIcon,
+  },
 }
 
 export default manifest

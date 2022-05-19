@@ -293,7 +293,7 @@ const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
   if (filePath) {
     if (data.emitCurseforge || data.emitMcbbs) {
       try {
-        const overrides = data.selected.filter(p => !!data.files.find(f => f.path === p && !f.isDirectory))
+        const overrides = data.selected.filter(p => !!data.files.find(f => f.path === p))
         const directives = exportDirectives.value
         await exportModpack({
           overrides,
@@ -310,7 +310,7 @@ const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
         console.error(e)
       }
     } else {
-      const files = data.selected.filter(p => !!data.files.find(f => f.path === p && !f.isDirectory))
+      const files = data.selected.filter(p => !!data.files.find(f => f.path === p))
       await exportInstance({
         destinationPath: filePath,
         includeLibraries: data.includeLibraries,

@@ -1,4 +1,6 @@
-/* eslint-disable camelcase */
+/**
+ * The launcher app manifest
+ */
 export interface AppManifest {
   /**
    * The name of the launcher web application. This will be used in title of the window.
@@ -8,6 +10,8 @@ export interface AppManifest {
    * Description of the purpose of the launcher application
    */
   description?: string
+
+  backgroundColor?: string
   /**
    * The screenshots member is an array of image objects represent the web application in common usage scenarios.
    */
@@ -24,70 +28,40 @@ export interface AppManifest {
      * The type member of an image is a hint as to the media type of the image.
      */
     type?: string
-    purpose?:
-    | 'monochrome'
-    | 'maskable'
-    | 'any'
-    | 'monochrome maskable'
-    | 'monochrome any'
-    | 'maskable monochrome'
-    | 'maskable any'
-    | 'any monochrome'
-    | 'any maskable'
-    | 'monochrome maskable any'
-    | 'monochrome any maskable'
-    | 'maskable monochrome any'
-    | 'maskable any monochrome'
-    | 'any monochrome maskable'
-    | 'any maskable monochrome'
   }>
-
   /**
    * The icons member is an array of icon objects that can serve as iconic representations of the web application in various contexts.
    */
-  icons?: Array<{
+  iconUrls: {
     /**
-     * The sizes member is a string consisting of an unordered set of unique space-separated tokens which are ASCII case-insensitive that represents the dimensions of an image for visual media.
+     * The url of the icon. It should be in PNG format.
+     * - On windows, this could also be an .ico file
      */
-    sizes?: string | 'any'
+    icon: string
+    darkIcon?: string
+
+    trayIcon?: string
+    darkTrayIcon?: string
+
     /**
-     * The src member of an image is a URL from which a user agent can fetch the icon's data.
+     * Only used in macos
      */
-    src: string
-    /**
-     * The type member of an image is a hint as to the media type of the image.
-     */
-    type?: string
-    purpose?:
-    | 'monochrome'
-    | 'maskable'
-    | 'any'
-    | 'monochrome maskable'
-    | 'monochrome any'
-    | 'maskable monochrome'
-    | 'maskable any'
-    | 'any monochrome'
-    | 'any maskable'
-    | 'monochrome maskable any'
-    | 'monochrome any maskable'
-    | 'maskable monochrome any'
-    | 'maskable any monochrome'
-    | 'any monochrome maskable'
-    | 'any maskable monochrome'
-  }>
+    dockIcon?: string
+    darkDockIcon?: string
+  }
 
   /**
-   * The background_color member describes the expected background color of the web application.
+   * Lock the ratio of the window via minWidth & minHeight
    */
-  background_color?: string
-
   ratio?: boolean
-
+  /**
+   * The min width of the launcher
+   */
   minWidth?: number
-
+  /**
+   * The min height of the launcher
+   */
   minHeight?: number
-
-  display?: string
 }
 
 export interface InstalledAppManifest extends Required<AppManifest> {
@@ -95,7 +69,9 @@ export interface InstalledAppManifest extends Required<AppManifest> {
    * The url of the app
    */
   url: string
-
+  /**
+   * Resolved icon file paths
+   */
   iconSets: {
     /**
      * The path of the icon.
