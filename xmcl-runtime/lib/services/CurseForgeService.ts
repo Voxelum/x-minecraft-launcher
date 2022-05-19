@@ -1,4 +1,4 @@
-import { AddonInfo, File, getAddonDatabaseTimestamp, getAddonDescription, getAddonFiles, getAddonInfo, getCategories, getCategoryTimestamp, GetFeaturedAddonOptions, getFeaturedAddons, searchAddons, SearchOptions } from '@xmcl/curseforge'
+import { AddonInfo, File, getAddonDatabaseTimestamp, getAddonDescription, getAddonFileInfo, getAddonFiles, getAddonInfo, getCategories, getCategoryTimestamp, GetFeaturedAddonOptions, getFeaturedAddons, searchAddons, SearchOptions } from '@xmcl/curseforge'
 import { createDefaultCurseforgeQuery, DownloadTask } from '@xmcl/installer'
 import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, CurseforgeState, InstallFileOptions, ProjectType } from '@xmcl/runtime-api'
 import { basename, join } from 'path'
@@ -19,6 +19,8 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
 
   private projectFilesCache: Record<number, File[]> = {}
 
+  private projectFileCache: Record<string, File> = {}
+
   private searchProjectCache: Record<string, AddonInfo[]> = {}
 
   constructor(app: LauncherApp,
@@ -28,13 +30,15 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
   }
 
   private async fetchOrGetFromCache<K extends string | number, V>(cacheName: string, cache: Record<K, V>, key: K, query: () => Promise<V>) {
-    const timestamp = await getAddonDatabaseTimestamp({ userAgent: this.networkManager.agents.https })
-    if (!cache[key] || new Date(timestamp) > new Date(this.projectTimestamp)) {
-      const value = await query()
-      this.projectTimestamp = timestamp
-      cache[key] = value
-      this.log(`Cache missed for ${key} in ${cacheName}`)
-      return value
+    if (!cache[key]) {
+      const timestamp = await getAddonDatabaseTimestamp({ userAgent: this.networkManager.agents.https })
+      if (new Date(timestamp) > new Date(this.projectTimestamp)) {
+        const value = await query()
+        this.projectTimestamp = timestamp
+        cache[key] = value
+        this.log(`Cache missed for ${key} in ${cacheName}`)
+        return value
+      }
     }
     this.log(`Cache hit for ${key} in ${cacheName}`)
     return cache[key]
@@ -69,6 +73,12 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
     return this.fetchOrGetFromCache('project files', this.projectFilesCache, projectId, () => getAddonFiles(projectId, { userAgent: this.networkManager.agents.https }).then(files => files.sort((a, b) => compareDate(new Date(b.fileDate), new Date(a.fileDate)))))
   }
 
+  @Singleton((a, b) => `${a}-${b}`)
+  fetchProjectFile(projectId: number, fileId: number) {
+    this.log(`Fetch project file: ${projectId}-${fileId}`)
+    return this.fetchOrGetFromCache('project file', this.projectFileCache, `${projectId}-${fileId}`, () => getAddonFileInfo(projectId, fileId, { userAgent: this.networkManager.agents.https }))
+  }
+
   async searchProjects(searchOptions: SearchOptions) {
     this.log(`Search project: section=${searchOptions.sectionId}, category=${searchOptions.categoryId}, keyword=${searchOptions.searchFilter}`)
     const addons = await this.fetchOrGetFromCache('project search', this.searchProjectCache, JSON.stringify(searchOptions), () => searchAddons(searchOptions, { userAgent: this.networkManager.agents.https }))
@@ -80,20 +90,6 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
 
   fetchFeaturedProjects(getOptions: GetFeaturedAddonOptions) {
     return getFeaturedAddons(getOptions, { userAgent: this.networkManager.agents.https })
-  }
-
-  async resolveCurseforgeDownloadUrl(projectId: number, fileId: number) {
-    const getCurseforgeUrl = createDefaultCurseforgeQuery(this.networkManager.agents.https)
-    const ensureDownloadUrl = async (proj: number, file: number) => {
-      for (let i = 0; i < 3; ++i) {
-        const result = await getCurseforgeUrl(proj, file)
-        if (isValidateUrl(result)) {
-          return result
-        }
-      }
-      throw new Error(`Fail to ensure curseforge url ${proj}, ${file}`)
-    }
-    return ensureDownloadUrl(projectId, fileId)
   }
 
   async installFile({ file, type, projectId }: InstallFileOptions) {

@@ -456,7 +456,8 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
             const source: SourceInformation = {}
 
             if (file.curseforge) {
-              urls.unshift(await curseForgeService.resolveCurseforgeDownloadUrl(file.curseforge.projectId, file.curseforge.fileId))
+              const fileInfo = await curseForgeService.fetchProjectFile(file.curseforge.projectId, file.curseforge.fileId)
+              urls.unshift(fileInfo.downloadUrl)
               source.curseforge = {
                 fileId: file.curseforge.fileId,
                 projectId: file.curseforge.projectId,
