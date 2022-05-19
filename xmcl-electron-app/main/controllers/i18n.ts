@@ -8,6 +8,10 @@ export const i18n: ControllerPlugin = function (this: Controller) {
     baseService.state.localesSet(['en', 'zh-CN', 'zh-TW', 'ru'])
     this.app.log(`Set locale for the app ${baseService.state.locales}`)
     this.i18n.use(baseService.state.locale)
+    this.app.serviceStateManager.subscribe('config', (c) => {
+      this.i18n.use(c.locale)
+      this.app.log(`Set locale for the app ${c.locale}`)
+    })
     this.app.serviceStateManager.subscribe('localeSet', (l) => {
       this.i18n.use(l)
       this.app.log(`Set locale for the app ${l}`)
