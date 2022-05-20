@@ -1,4 +1,11 @@
 
+## 0.25.2
+### @xmcl/keystone-ui@0.24.1
+#### Bug Fixes
+
+- login button not work ([483afb9019d484a49758bee5571fb38624477380](https://github.com/Voxelum/x-minecraft-launcher/commit/483afb9019d484a49758bee5571fb38624477380))
+
+
 ## 0.25.1
 ### @xmcl/runtime@0.23.1
 #### Bug Fixes
