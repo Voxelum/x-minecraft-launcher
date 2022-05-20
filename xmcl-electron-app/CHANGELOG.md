@@ -1,4 +1,11 @@
 
+## 0.25.1
+### @xmcl/runtime@0.23.1
+#### Bug Fixes
+
+- Curseforge page cannot load ([f861aa644a835d681e82efe9b493c2c0c6946f62](https://github.com/Voxelum/x-minecraft-launcher/commit/f861aa644a835d681e82efe9b493c2c0c6946f62))
+
+
 ## 0.25.0
 ### @xmcl/runtime-api@0.9.0
 #### Features
