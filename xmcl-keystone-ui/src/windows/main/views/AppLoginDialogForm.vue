@@ -87,7 +87,7 @@
             rounded
             large
             class="text-white"
-            @click="login"
+            @click="onLogin"
           >
             <span v-if="!isLogining">
               {{ t("login.login") }}
@@ -263,7 +263,8 @@ async function onLogin() {
   if (index === -1) {
     history.value.unshift(data.username)
   }
-  await login({ ...data, authService: authService.value }).catch(handleError)
+  const payload = { ...data, authService: authService.value }
+  await login(payload).catch(handleError)
   hide()
 }
 
