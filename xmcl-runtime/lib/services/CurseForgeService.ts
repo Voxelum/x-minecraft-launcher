@@ -30,8 +30,8 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
   }
 
   private async fetchOrGetFromCache<K extends string | number, V>(cacheName: string, cache: Record<K, V>, key: K, query: () => Promise<V>) {
-    if (!cache[key]) {
-      const timestamp = await getAddonDatabaseTimestamp({ userAgent: this.networkManager.agents.https })
+    const timestamp = await getAddonDatabaseTimestamp({ userAgent: this.networkManager.agents.https })
+    if (cache[key]) {
       if (new Date(timestamp) > new Date(this.projectTimestamp)) {
         const value = await query()
         this.projectTimestamp = timestamp
@@ -39,9 +39,14 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
         this.log(`Cache missed for ${key} in ${cacheName}`)
         return value
       }
+      this.log(`Cache hit for ${key} in ${cacheName}`)
+      return cache[key]
     }
-    this.log(`Cache hit for ${key} in ${cacheName}`)
-    return cache[key]
+    const value = await query()
+    this.projectTimestamp = timestamp
+    cache[key] = value
+    this.log(`Cache missed for ${key} in ${cacheName}`)
+    return value
   }
 
   @Singleton()
