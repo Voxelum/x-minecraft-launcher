@@ -354,7 +354,7 @@ importers:
     specifiers:
       '@azure/msal-common': ^6.2.0
       '@azure/msal-node': ^1.8.0
-      '@prisma/client': ^3.13.0
+      '@prisma/client': ^3.14.0
       '@types/fs-extra': ^8.1.2
       '@types/lodash.debounce': ^4.0.6
       '@types/lodash.throttle': ^4.1.6
@@ -420,7 +420,7 @@ importers:
     dependencies:
       '@azure/msal-common': 6.2.0
       '@azure/msal-node': 1.8.0
-      '@prisma/client': 3.13.0_prisma@3.14.0
+      '@prisma/client': 3.14.0_prisma@3.14.0
       '@xmcl/client': link:../xmcl/packages/client
       '@xmcl/core': link:../xmcl/packages/core
       '@xmcl/curseforge': link:../xmcl/packages/curseforge
@@ -2637,8 +2637,8 @@ packages:
     resolution: {integrity: sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g==}
     dev: true
 
-  /@prisma/client/3.13.0_prisma@3.14.0:
-    resolution: {integrity: sha512-lnEA2tTyVbO5mS1ehmHJQKBDiKB8shaR6s3azwj3Azfi5XHIfnqmkolLCvUeFYnkDCNVzGXJpUgKwQt/UOOYVQ==}
+  /@prisma/client/3.14.0_prisma@3.14.0:
+    resolution: {integrity: sha512-atb41UpgTR1MCst0VIbiHTMw8lmXnwUvE1KyUCAkq08+wJyjRE78Due+nSf+7uwqQn+fBFYVmoojtinhlLOSaA==}
     engines: {node: '>=12.6'}
     requiresBuild: true
     peerDependencies:
@@ -2647,12 +2647,12 @@ packages:
       prisma:
         optional: true
     dependencies:
-      '@prisma/engines-version': 3.13.0-17.efdf9b1183dddfd4258cd181a72125755215ab7b
+      '@prisma/engines-version': 3.14.0-36.2b0c12756921c891fec4f68d9444e18c7d5d4a6a
       prisma: 3.14.0
     dev: false
 
-  /@prisma/engines-version/3.13.0-17.efdf9b1183dddfd4258cd181a72125755215ab7b:
-    resolution: {integrity: sha512-TGp9rvgJIKo8NgvAHSwOosbut9mTA7VC6/rpQI9gh+ySSRjdQFhbGyNUiOcQrlI9Ob2DWeO7y4HEnhdKxYiECg==}
+  /@prisma/engines-version/3.14.0-36.2b0c12756921c891fec4f68d9444e18c7d5d4a6a:
+    resolution: {integrity: sha512-D+yHzq4a2r2Rrd0ZOW/mTZbgDIkUkD8ofKgusEI1xPiZz60Daks+UM7Me2ty5FzH3p/TgyhBpRrfIHx+ha20RQ==}
     dev: false
 
   /@prisma/engines/3.14.0-36.2b0c12756921c891fec4f68d9444e18c7d5d4a6a:
