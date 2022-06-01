@@ -520,6 +520,9 @@ peerIceGatheringState:
   complete: 收集完毕
   gathering: 收集本地信息中
 popular: 热度
+quiltVersion:
+  disable: 不启用 Quilt
+  empty: Quilt 不支持 Minecraft {version}
 refreshResource: 刷新资源
 remove: 移除
 resolution:

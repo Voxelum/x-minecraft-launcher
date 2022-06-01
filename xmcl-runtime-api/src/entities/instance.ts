@@ -30,6 +30,7 @@ export function createTemplate(): Instance {
       fabricLoader: '',
       yarn: '',
       optifine: '',
+      quiltLoader: '',
     },
     java: '',
     version: '',

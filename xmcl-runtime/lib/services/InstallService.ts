@@ -1,6 +1,6 @@
 import { diagnose, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
-import { DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getVersionList, getYarnArtifactList, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, YARN_MAVEN_URL } from '@xmcl/installer'
-import { Asset, ForgeVersion, ForgeVersionList, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallService as IInstallService, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '@xmcl/runtime-api'
+import { DEFAULT_FABRIC_API, DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getQuiltVersionsList, getVersionList, getYarnArtifactList, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, QuiltArtifactVersion, YARN_MAVEN_URL } from '@xmcl/installer'
+import { Asset, ForgeVersion, ForgeVersionList, GetQuiltVersionListOptions, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallQuiltOptions, InstallService as IInstallService, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema, VersionQuiltSchema } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { ensureFile, readJson, readJSON, writeFile, writeJson } from 'fs-extra'
 import { URL } from 'url'
@@ -20,6 +20,7 @@ export class InstallService extends AbstractService implements IInstallService {
   private refreshedFabric = false
   private refreshedLiteloader = false
   private refreshedOptifine = false
+  private refreshedQuilt = false
   private refreshedForge: Record<string, boolean> = {}
 
   private minecraftVersionJson = createSafeFile(this.getAppDataPath('minecraft-versions.json'), VersionMinecraftSchema, this, [this.getPath('minecraft-versions.json')])
@@ -27,6 +28,7 @@ export class InstallService extends AbstractService implements IInstallService {
   private liteloaderVersionJson = createSafeFile(this.getAppDataPath('lite-versions.json'), VersionLiteloaderSchema, this, [this.getPath('lite-versions.json')])
   private fabricVersionJson = createSafeFile(this.getAppDataPath('fabric-versions.json'), VersionFabricSchema, this, [this.getPath('fabric-versions.json')])
   private optifineVersionJson = createSafeFile(this.getAppDataPath('optifine-versions.json'), VersionOptifineSchema, this, [this.getPath('optifine-versions.json')])
+  private quiltVersionJson = createSafeFile(this.getAppDataPath('quilt-versions.json'), VersionQuiltSchema, this, [this.getPath('quilt-versions.json')])
 
   constructor(app: LauncherApp,
     @Inject(BaseService) private baseService: BaseService,
@@ -230,8 +232,67 @@ export class InstallService extends AbstractService implements IInstallService {
     throw oldData.versions
   }
 
+  @Singleton()
+  async getQuiltVersionList(options?: GetQuiltVersionListOptions): Promise<QuiltArtifactVersion[]> {
+    const hasMinecraft = async () => {
+      if (options?.minecraftVersion) {
+        let baseUrl = DEFAULT_FABRIC_API
+        if (this.baseService.shouldOverrideApiSet()) {
+          const prefer = this.baseService.getApiSets()[0]
+          baseUrl = prefer.name === 'bmcl' ? 'https://bmclapi2.bangbang93.com/fabric-meta/v2' : 'https://download.mcbbs.net/fabric-meta/v2'
+        }
+        const url = `${baseUrl}/versions/intermediary/${options?.minecraftVersion}`
+        const request = await this.networkManager.request.get(url, { throwHttpErrors: false })
+        if (request.statusCode === 200) {
+          if (JSON.parse(request.body).length > 0) {
+            return true
+          }
+        }
+        return false
+      }
+      return true
+    }
+    if (!options?.force && this.refreshedQuilt) {
+      this.log('Skip to request quilt version list. Use file cache.')
+      const versions = (await this.quiltVersionJson.read()).versions
+      if (options?.minecraftVersion) {
+        if (await hasMinecraft().catch(() => false)) {
+          return versions
+        }
+        return []
+      }
+      return versions
+    }
+
+    this.log('Start to get quilt metadata')
+    const fileCache = await this.quiltVersionJson.read()
+    const originalTimestamp = fileCache.timestamp
+    const cache = {
+      timestamp: fileCache.timestamp,
+      value: fileCache.versions,
+    }
+    await getQuiltVersionsList({
+      cache: cache,
+    })
+    this.refreshedQuilt = true
+    if (originalTimestamp !== cache.timestamp) {
+      this.log('Found new quilt metadata')
+      await this.quiltVersionJson.write({
+        timestamp: cache.timestamp,
+        versions: cache.value,
+      })
+    } else {
+      this.log('Use existed quilt metadata')
+    }
+
+    if (await hasMinecraft()) {
+      return cache.value
+    }
+    return []
+  }
+
   protected getMinecraftJsonManifestRemote() {
-    if (this.shouldOverrideApiSet()) {
+    if (this.baseService.shouldOverrideApiSet()) {
       const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference)
       if (api) {
         return `${api.url}/mc/game/version_manifest.json`
@@ -240,33 +301,13 @@ export class InstallService extends AbstractService implements IInstallService {
     return undefined
   }
 
-  protected shouldOverrideApiSet() {
-    if (this.baseService.state.apiSetsPreference === 'mojang') {
-      return false
-    }
-    if (this.baseService.state.apiSetsPreference === '') {
-      return this.networkManager.isInGFW
-    }
-    return true
-  }
-
-  private getApiSets() {
-    const apiSets = this.baseService.state.apiSets
-    const api = apiSets.find(a => a.name === this.baseService.state.apiSetsPreference)
-    const allSets = apiSets.filter(a => a.name !== this.baseService.state.apiSetsPreference)
-    if (api) {
-      allSets.unshift(api)
-    }
-    return allSets
-  }
-
   protected getForgeInstallOptions(): InstallForgeOptions {
     const options: InstallForgeOptions = {
       ...this.networkManager.getDownloadBaseOptions(),
       java: this.javaService.getPreferredJava()?.path,
     }
-    if (this.shouldOverrideApiSet()) {
-      const allSets = this.getApiSets()
+    if (this.baseService.shouldOverrideApiSet()) {
+      const allSets = this.baseService.getApiSets()
       options.mavenHost = allSets.map(api => `${api.url}/maven`)
     }
     return options
@@ -279,8 +320,8 @@ export class InstallService extends AbstractService implements IInstallService {
       side: 'client',
     }
 
-    if (this.shouldOverrideApiSet()) {
-      const allSets = this.getApiSets()
+    if (this.baseService.shouldOverrideApiSet()) {
+      const allSets = this.baseService.getApiSets()
       option.assetsHost = allSets.map(api => `${api.url}/assets`)
       option.mavenHost = allSets.map(api => `${api.url}/maven`)
       option.assetsIndexUrl = (ver) => allSets.map(api => {
@@ -544,6 +585,40 @@ export class InstallService extends AbstractService implements IInstallService {
       this.warn(e)
     }
     return undefined
+  }
+
+  @Lock(v => LockKey.version(`quilt-${v.minecraftVersion}-${v.version}`))
+  async installQuilt(options: InstallQuiltOptions) {
+    const minecraft = MinecraftFolder.from(this.getPath())
+    const hasValidVersion = async () => {
+      try {
+        await Version.parse(minecraft, options.minecraftVersion)
+        return true
+      } catch (e) {
+        return false
+      }
+    }
+    if (!await hasValidVersion()) {
+      const meta = (await this.getMinecraftVersionList()).versions.find(f => f.id === options.minecraftVersion)!
+      const option = this.getInstallOptions()
+      await this.submit(installVersionTask(meta, minecraft, option).setName('installVersion'))
+    }
+
+    return await this.installQuiltInternal(options)
+  }
+
+  @Lock(v => LockKey.version(`quilt-${v.minecraftVersion}-${v.version}`))
+  async installQuiltUnsafe(options: InstallQuiltOptions) {
+    return await this.installQuiltInternal(options)
+  }
+
+  private async installQuiltInternal(options: InstallQuiltOptions) {
+    const version = await installQuiltVersion({
+      minecraft: this.getPath(),
+      minecraftVersion: options.minecraftVersion,
+      version: options.version,
+    })
+    return version
   }
 
   @Lock((v: InstallOptifineOptions) => LockKey.version(`optifine-${v.mcversion}-${v.type}_${v.patch}`))

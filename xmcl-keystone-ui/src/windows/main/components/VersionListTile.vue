@@ -53,7 +53,7 @@ defineProps<{
 </script>
 
 <style scoped>
-.dark-theme .selected {
+.dark .selected {
   background: rgba(234, 233, 255, 0.2);
 }
 

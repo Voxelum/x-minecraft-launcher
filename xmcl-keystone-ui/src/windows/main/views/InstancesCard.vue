@@ -153,6 +153,20 @@
           {{ instance.runtime.forge }}
         </v-chip>
         <v-chip
+          v-if="instance.runtime.quiltLoader"
+          outlined
+          small
+          label
+        >
+          <v-avatar
+            left
+            class="rounded-none"
+          >
+            <QuiltIcon />
+          </v-avatar>
+          {{ instance.runtime.quiltLoader }}
+        </v-chip>
+        <v-chip
           v-if="instance.runtime.fabricLoader"
           outlined
           small
@@ -181,6 +195,7 @@ import minecraftPng from '/@/assets/minecraft.png'
 import unknownServer from '/@/assets/unknown_server.png'
 import { useBusy, useI18n, useService } from '/@/composables'
 import { getBanner } from '/@/util/banner'
+import QuiltIcon from '/@/components/QuiltIcon.vue'
 
 const props = defineProps<{ instance: Instance }>()
 const isBusy = useBusy(LockKey.instance(props.instance.path))

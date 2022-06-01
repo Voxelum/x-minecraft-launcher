@@ -10,6 +10,7 @@ export interface LocalVersionHeader {
   fabric: string
   optifine: string
   liteloader: string
+  quilt: string
 }
 
 export class VersionState {

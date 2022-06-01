@@ -22,6 +22,9 @@ export const resolveFabricYarnVersion: PartialVersionResolver = (v) => v.librari
 
 export const resolveMinecraftVersion: PartialVersionResolver = (v) => (v.inheritsFrom ? '' : v.id)
 
+export const resolveQuiltVersion: PartialVersionResolver = (v) => v.libraries.find(l => l.name.startsWith('org.quiltmc:quilt-loader:'))
+  ?.name.split(':')[2] || ''
+
 export function isForgeLibrary(lib: LibraryInfo) {
   return lib.groupId === 'net.minecraftforge' && (lib.artifactId === 'forge' || lib.artifactId === 'fmlloader')
 }
@@ -31,6 +34,10 @@ export function isFabricLoaderLibrary(lib: LibraryInfo) {
 }
 export function isOptifineLibrary(lib: LibraryInfo) {
   return lib.groupId === 'optifine' && (lib.artifactId === 'Optifine' || lib.artifactId === 'OptiFine')
+}
+
+export function isQuiltLibrary(lib: LibraryInfo) {
+  return lib.groupId === 'org.quiltmc' && lib.artifactId === 'quilt-loader'
 }
 
 export function filterForgeVersion(forgeVersion: string) {
@@ -52,6 +59,7 @@ export const EMPTY_VERSION: LocalVersionHeader = Object.freeze({
   forge: '',
   fabric: '',
   liteloader: '',
+  quilt: '',
   optifine: '',
 })
 export interface LibrariesRecord {
@@ -66,12 +74,14 @@ export function resolveRuntimeVersion(partialVersion: Version, runtime: RuntimeV
   const liteloader = resolveLiteloaderVersion(partialVersion)
   const fabricLoader = resolveFabricLoaderVersion(partialVersion)
   const yarn = resolveFabricYarnVersion(partialVersion)
+  const quilt = resolveQuiltVersion(partialVersion)
 
   runtime.minecraft = runtime.minecraft || minecraft
   runtime.forge = forge || runtime.forge
   runtime.liteloader = liteloader || runtime.liteloader
   runtime.fabricLoader = fabricLoader || runtime.fabricLoader
   runtime.yarn = yarn || runtime.yarn
+  runtime.quiltLoader = quilt || runtime.quiltLoader
 }
 
 export function isCompatible(range: string, version: string) {
@@ -80,18 +90,19 @@ export function isCompatible(range: string, version: string) {
   return vRange?.containsVersion(parseVersion(version)) || false
 }
 
-export function getExpectVersion({ minecraft, forge, liteloader, fabricLoader: fabric, optifine }: RuntimeVersions) {
+export function getExpectVersion({ minecraft, forge, liteloader, fabricLoader: fabric, optifine, quiltLoader }: RuntimeVersions) {
   let expectedId = minecraft
   if (typeof forge === 'string' && forge.length > 0) expectedId += `-forge${forge}`
   if (typeof liteloader === 'string' && liteloader.length > 0) expectedId += `-liteloader${liteloader}`
   if (typeof fabric === 'string' && fabric.length > 0) expectedId += `-fabric${fabric}`
   if (typeof optifine === 'string' && optifine.length > 0) expectedId += `-optifine_${optifine}`
+  if (typeof quiltLoader === 'string' && quiltLoader.length > 0) expectedId += `-quilt${quiltLoader}`
   return expectedId
 }
 export function parseOptifineVersion(version: string): { type: string; patch: string } {
   const index = version.lastIndexOf('_')
   const type = version.substring(0, index)
-  const patch = version.substr(index + 1)
+  const patch = version.substring(index + 1)
   return { type, patch }
 }
 
@@ -126,7 +137,7 @@ export function isSameOptifineVersion(optifineVersion: string, version: string) 
 
 export function isVersionMatched(version: LocalVersionHeader, runtime: RuntimeVersions) {
   // compute version
-  const { minecraft, forge, fabricLoader, optifine } = runtime
+  const { minecraft, forge, fabricLoader, optifine, quiltLoader } = runtime
   if (version.minecraft !== minecraft) {
     return false
   }
@@ -148,6 +159,13 @@ export function isVersionMatched(version: LocalVersionHeader, runtime: RuntimeVe
   if (optifine) {
     // require optifine
     if (!version.optifine || !isSameOptifineVersion(optifine, version.optifine)) {
+      return false
+    }
+  }
+
+  if (quiltLoader) {
+    // require quilt
+    if (!version.quilt || version.quilt !== quiltLoader) {
       return false
     }
   }

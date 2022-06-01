@@ -1,7 +1,8 @@
 import { Ref } from '@vue/composition-api'
 import { ForgeVersion, LockKey } from '@xmcl/runtime-api'
-import { useFabricVersions, useForgeVersions, useMinecraftVersions, useOptifineVersions } from './version'
+import { useFabricVersions, useForgeVersions, useMinecraftVersions, useOptifineVersions, useQuiltVersions } from './version'
 import { SERVICES_SEMAPHORES_KEY, useI18n } from '/@/composables'
+import { getLocalDateString } from '/@/util/date'
 import { injection } from '/@/util/inject'
 
 export interface VersionItem {
@@ -83,7 +84,7 @@ export function useForgeVersionList(minecraft: Ref<string>, version: Ref<string>
             const status = semaphores[key] > 0 ? 'installing' : statuses.value[v.version]
             return status
           }),
-          description: v.date ? new Date(v.date).toLocaleDateString() : '',
+          description: v.date ? getLocalDateString(v.date) : '',
           isSelected: computed(() => version.value === v.version),
           tag: v.type === 'recommended' ? t('forgeVersion.recommended') : v.type === 'latest' ? t('forgeVersion.latest') : '',
           tagColor: v.type === 'recommended' ? 'primary' : '',
@@ -166,5 +167,40 @@ export function useFabricVersionList(minecraft: Ref<string>, version: Ref<string
     refresh,
     refreshing,
     showStableOnly,
+  }
+}
+
+export function useQuiltVersionList(minecraft: Ref<string>, version: Ref<string>) {
+  const { semaphores } = injection(SERVICES_SEMAPHORES_KEY)
+  const { t } = useI18n()
+  // const showStableOnly = ref(false)
+  const { versions, getStatus, refresh, refreshing } = useQuiltVersions(minecraft)
+  const items = computed(() => {
+    const result: VersionItem[] = versions.value
+      .map((v) => {
+        return reactive({
+          name: v.version,
+          status: computed(() => {
+            const key = LockKey.version(`quilt-${minecraft.value}-${v.version}`)
+            const status = semaphores[key] > 0 ? 'installing' : getStatus(v.version)
+            return status
+          }),
+          isSelected: computed(() => version.value === v.version),
+          description: v.maven,
+          // tag: v.stable ? t('fabricVersion.stable') : t('fabricVersion.unstable'),
+          // tagColor: v.stable ? 'primary' : undefined,
+          instance: computed(() => ({
+            minecraftVersion: minecraft.value,
+            version: v.version,
+          })),
+        })
+      })
+    return result
+  })
+
+  return {
+    items,
+    refresh,
+    refreshing,
   }
 }
