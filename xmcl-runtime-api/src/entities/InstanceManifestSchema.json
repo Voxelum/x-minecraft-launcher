@@ -69,6 +69,10 @@
                     "default": "",
                     "type": "string"
                 },
+                "quiltLoader": {
+                    "default": "",
+                    "type": "string"
+                },
                 "yarn": {
                     "description": "Fabric yarn version, e.g. 1.15.1+build.14",
                     "default": "",
@@ -158,10 +162,14 @@
             "properties": {
                 "sha1": {
                     "type": "string"
+                },
+                "sha256": {
+                    "type": "string"
                 }
             },
             "required": [
-                "sha1"
+                "sha1",
+                "sha256"
             ]
         }
     },

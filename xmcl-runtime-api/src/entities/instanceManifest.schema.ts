@@ -2,6 +2,7 @@ import { InstanceData, RuntimeVersions } from './instance.schema'
 
 interface Hashes {
   sha1: string
+  sha256: string
 }
 
 /**

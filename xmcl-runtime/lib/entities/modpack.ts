@@ -1,13 +1,11 @@
-import { getAddonFileInfo, getAddonFiles } from '@xmcl/curseforge'
-import { createDefaultCurseforgeQuery, DownloadBaseOptions, DownloadTask, UnzipTask } from '@xmcl/installer'
+import { getAddonFileInfo } from '@xmcl/curseforge'
+import { DownloadTask, UnzipTask } from '@xmcl/installer'
 import { joinUrl } from '@xmcl/installer/http/utils'
 import { CurseforgeModpackManifest, EditInstanceOptions, McbbsModpackManifest, ModpackFileInfoAddon, ModpackFileInfoCurseforge, ModrinthModpackManifest } from '@xmcl/runtime-api'
 import { CancelledError, task } from '@xmcl/task'
 import { readEntry } from '@xmcl/unzip'
 import { ensureDir } from 'fs-extra'
-import { Agent } from 'https'
 import { basename, join } from 'path'
-import { URL } from 'url'
 import { Entry, ZipFile } from 'yauzl'
 
 /**
@@ -87,11 +85,10 @@ export class ModpackInstallUrlError extends Error {
   }
 }
 
-export function installModpackTask(zip: ZipFile, entries: Entry[], manifest: CurseforgeModpackManifest | McbbsModpackManifest | ModrinthModpackManifest, root: string, allowFileApi: boolean, options: DownloadBaseOptions & { agents: { https: Agent } }) {
+export function installModpackTask(zip: ZipFile, entries: Entry[], manifest: CurseforgeModpackManifest | McbbsModpackManifest | ModrinthModpackManifest, root: string, allowFileApi: boolean) {
   return task('installModpack', async function () {
     const files: Array<{ path: string; url: string; projectId: number; fileId: number }> = []
     const ensureDownloadUrl = async (f: ModpackFileInfoCurseforge) => {
-      // for (let i = 0; i < 3; ++i) {
       if (this.isCancelled) {
         throw new CancelledError()
       }

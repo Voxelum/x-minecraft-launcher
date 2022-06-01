@@ -1,16 +1,39 @@
+import { SourceInformation } from '../entities/resource'
 import { Exception } from '../entities/exception'
 import { EditInstanceOptions } from './InstanceService'
 import { ServiceKey } from './Service'
 
 export interface ExportModpackOptions {
+  /**
+   * The name of the modpack.
+   */
   name: string
+  /**
+   * The version of the modpack.
+   */
   version: string
+  /**
+   * The author of the modpack.
+   */
   author: string
+  /**
+   * The game version id of the modpack. You can use the `id` in `LocalVersionHeader`.
+   */
   gameVersion: string
   /**
    * An list of files should be included in overrides
    */
   overrides: string[]
+  /**
+   * For modrinth modpack only.
+   * @see https://docs.modrinth.com/docs/modpacks/format_definition/#server-overrides
+   */
+  serverOverrides?: string[]
+  /**
+   * For modrinth modpack only.
+   * @see https://docs.modrinth.com/docs/modpacks/format_definition/#client-overrides
+   */
+  clientOverrides?: string[]
   /**
    * A list of files that want to export as link (curseforge or modrinth)
    */
@@ -27,10 +50,18 @@ export interface ExportModpackOptions {
    * Only available for mcbbs modpack
    */
   fileApi?: string
-
+  /**
+   * Emit the curseforge format modpack
+   */
   emitCurseforge?: boolean
-
+  /**
+   * Emit the mcbbs format modpack
+   */
   emitMcbbs?: boolean
+  /**
+   * If this is true
+   */
+  emitModrinth?: boolean
 }
 
 export type ImportModpackOptions = ImportModpackToInstanceOptions | ImportModpackCreateInstanceOptions
@@ -82,9 +113,41 @@ export interface ModpackService {
 
 export const ModpackServiceKey: ServiceKey<ModpackService> = 'ModpackService'
 
+interface ModpackDownloadableFile {
+  destination: string
+  downloads: string[]
+  hashes: Record<string, string>
+  source: SourceInformation
+}
+
 export type ModpackExceptions = {
   type: 'invalidModpack' | 'requireModpackAFile'
   path: string
+} | {
+  /**
+   * This is thrown when some files cannot be installed
+   */
+  type: 'modpackInstallFailed'
+  /**
+   * This is all the files
+   */
+  files: Array<ModpackDownloadableFile>
+} | {
+  /**
+   * This is due to some curesforge mods disabled the thirdparty download url
+   */
+  type: 'modpackInstallPartial'
+  /**
+   * This is all the files
+   */
+  files: Array<ModpackDownloadableFile>
+  /**
+   * The curseforge files need to be manually installed
+   */
+  missingFiles: Array<{
+    projectId: number
+    fileId: number
+  }>
 }
 
 export class ModpackException extends Exception<ModpackExceptions> { }
