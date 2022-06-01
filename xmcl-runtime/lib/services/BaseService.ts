@@ -199,4 +199,24 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
     this.app.relaunch()
     this.app.quit()
   }
+
+  public shouldOverrideApiSet() {
+    if (this.state.apiSetsPreference === 'mojang') {
+      return false
+    }
+    if (this.state.apiSetsPreference === '') {
+      return this.networkManager.isInGFW
+    }
+    return true
+  }
+
+  public getApiSets() {
+    const apiSets = this.state.apiSets
+    const api = apiSets.find(a => a.name === this.state.apiSetsPreference)
+    const allSets = apiSets.filter(a => a.name !== this.state.apiSetsPreference)
+    if (api) {
+      allSets.unshift(api)
+    }
+    return allSets
+  }
 }

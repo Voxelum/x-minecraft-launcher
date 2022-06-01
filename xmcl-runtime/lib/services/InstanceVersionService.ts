@@ -23,7 +23,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     diagnoseService.register({
       id: VersionIssueKey,
       fix: async (issue) => {
-        const { minecraft, forge, fabricLoader, optifine } = issue
+        const { minecraft, forge, fabricLoader, optifine, quiltLoader } = issue
         let targetVersion: string | undefined
         if (minecraft && this.versionService.state.local.every(v => v.minecraft !== minecraft)) {
           const versions = await installService.getMinecraftVersionList()
@@ -43,6 +43,8 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
           }
         } else if (fabricLoader) {
           targetVersion = await installService.installFabricUnsafe({ minecraft, loader: fabricLoader })
+        } else if (quiltLoader) {
+          targetVersion = await installService.installQuilt({ minecraftVersion: minecraft, version: quiltLoader })
         }
         if (optifine) {
           const { patch, type } = parseOptifineVersion(optifine)
@@ -65,7 +67,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     diagnoseService.register({
       id: VersionJarIssueKey,
       fix: async (issue) => {
-        const { minecraft, forge, fabricLoader } = issue
+        const { minecraft, forge, fabricLoader, quiltLoader } = issue
         const mcVersions = await installService.getMinecraftVersionList()
         const metadata = mcVersions.versions.find(v => v.id === minecraft)
         if (metadata) {
@@ -86,7 +88,9 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
           if (fabricLoader) {
             await installService.installFabricUnsafe({ loader: fabricLoader, minecraft })
           }
-
+          if (quiltLoader) {
+            await installService.installQuiltUnsafe({ version: quiltLoader, minecraftVersion: minecraft })
+          }
           // TODO: check liteloader
         } else {
           this.emit('error', new InstanceVersionException({ type: 'fixVersionNoVersionMetadata', minecraft }))
@@ -203,6 +207,8 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     if (this.state.versionHeader) {
       const ver = await this.versionService.resolveLocalVersion(this.state.versionHeader.id)
       this.state.instanceVersion(ver)
+    } else {
+      this.state.instanceVersion(undefined)
     }
   }
 

@@ -186,6 +186,42 @@
         </version-menu>
       </v-list-item-action>
     </v-list-item>
+    <v-list-item>
+      <v-list-item-action class="self-center">
+        <quilt-icon style="width: 40px" />
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title>Quilt</v-list-item-title>
+        <v-list-item-subtitle>
+          {{
+            $t('instance.versionHint')
+          }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-action>
+        <version-menu
+          :is-clearable="true"
+          :items="quiltItems"
+          :clear-text="t('quiltVersion.disable')"
+          :refreshing="refreshingQuilt"
+          @select="onSelectQuilt"
+        >
+          <template #default="{ on }">
+            <v-text-field
+              :value="content.runtime.quiltLoader"
+              outlined
+              hide-details
+              append-icon="arrow_drop_down"
+              persistent-hint
+              :readonly="true"
+              @click:append="on.click($event);"
+              @click="refreshQuilt()"
+              v-on="on"
+            />
+          </template>
+        </version-menu>
+      </v-list-item-action>
+    </v-list-item>
   </v-list>
 </template>
 
@@ -197,8 +233,9 @@ import { CreateOptionKey } from '../composables/instanceCreation'
 import { useJava } from '../composables/java'
 import { injection } from '/@/util/inject'
 import VersionMenu from './VersionMenu.vue'
-import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList } from '../composables/versionList'
+import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useQuiltVersionList } from '../composables/versionList'
 import { useI18n } from '/@/composables'
+import QuiltIcon from '/@/components/QuiltIcon.vue'
 
 defineProps({
   valid: {
@@ -217,6 +254,7 @@ const { t } = useI18n()
 const { items: minecraftItems, showAlpha, refresh: refreshMinecraft, refreshing: refreshingMinecraft, release } = useMinecraftVersionList(minecraft)
 const { items: forgeItems, canShowBuggy, recommendedOnly, refresh: refreshForge, refreshing: refreshingForge } = useForgeVersionList(minecraft, computed(() => content.runtime.forge ?? ''))
 const { items: fabricItems, showStableOnly, refresh: refreshFabric, refreshing: refreshingFabric } = useFabricVersionList(minecraft, computed(() => content.runtime.fabricLoader ?? ''))
+const { items: quiltItems, refresh: refreshQuilt, refreshing: refreshingQuilt } = useQuiltVersionList(minecraft, computed(() => content.runtime.quiltLoader ?? ''))
 
 recommendedOnly.value = false
 onMounted(() => {
@@ -239,6 +277,7 @@ function onSelectForge(version: string) {
     runtime.forge = version
     if (version) {
       runtime.fabricLoader = ''
+      runtime.quiltLoader = ''
     }
   }
 }
@@ -247,8 +286,18 @@ function onSelectFabric(version: string) {
     const runtime = content.runtime
     if (version) {
       runtime.forge = ''
+      runtime.quiltLoader = ''
     }
     runtime.fabricLoader = version
+  }
+}
+function onSelectQuilt(version: string) {
+  if (content.runtime) {
+    const runtime = content.runtime
+    if (version) {
+      runtime.forge = runtime.fabricLoader = ''
+      runtime.quiltLoader = version
+    }
   }
 }
 function onSelectMinecraft(version: string) {

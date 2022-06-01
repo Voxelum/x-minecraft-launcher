@@ -27,6 +27,10 @@ export interface RuntimeVersions {
      */
   fabricLoader?: string
   /**
+   * @default ""
+   */
+  quiltLoader?: string
+  /**
      * Fabric yarn version, e.g. 1.15.1+build.14
      * @default ""
      */

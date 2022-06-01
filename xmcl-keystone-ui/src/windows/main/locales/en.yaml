@@ -584,6 +584,9 @@ peerIceGatheringState:
   complete: Collection Complete
   gathering: Gathering Ice Server
 popular: Popularity
+quiltVersion:
+  disable: Disable Quilt
+  empty: Quilt does not support Minecraft {version}
 refresh:
   hint: Refresh user data, and server status.
 refreshResource: Refresh Resources

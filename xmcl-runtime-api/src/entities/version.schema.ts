@@ -7,12 +7,14 @@ import _VersionForgeSchema from './VersionForgeSchema.json'
 import _VersionLiteloaderSchema from './VersionLiteloaderSchema.json'
 import _VersionFabricSchema from './VersionFabricSchema.json'
 import _VersionOptifineSchema from './VersionOptifineSchema.json'
+import _VersionQuiltSchema from './VersionQuiltSchema.json'
 
 export const VersionMinecraftSchema: Schema<VersionMinecraftSchema> = _VersionMinecraftSchema
 export const VersionForgeSchema: Schema<VersionForgeSchema> = _VersionForgeSchema
 export const VersionLiteloaderSchema: Schema<VersionLiteloaderSchema> = _VersionLiteloaderSchema
 export const VersionFabricSchema: Schema<VersionFabricSchema> = _VersionFabricSchema
 export const VersionOptifineSchema: Schema<VersionOptifineSchema> = _VersionOptifineSchema
+export const VersionQuiltSchema: Schema<VersionQuiltSchema> = _VersionQuiltSchema
 
 export interface MinecraftVersion {
   id: string
@@ -187,6 +189,16 @@ export interface OptifineVersion {
   patch: string
 }
 
+export interface QuiltArtifactVersion {
+  separator: string
+  build: number
+  /**
+    * e.g. "org.quiltmc:quilt-loader:0.16.1",
+    */
+  maven: string
+  version: string
+}
+
 export interface VersionOptifineSchema {
   /**
      * @default []
@@ -196,4 +208,15 @@ export interface VersionOptifineSchema {
      * @default ""
      */
   etag: string
+}
+
+export interface VersionQuiltSchema {
+  /**
+    * @default []
+    */
+  versions: QuiltArtifactVersion[]
+  /**
+    * @default ""
+    */
+  timestamp: string
 }

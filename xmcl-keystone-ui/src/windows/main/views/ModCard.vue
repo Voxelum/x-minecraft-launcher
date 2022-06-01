@@ -42,8 +42,8 @@
           >
             <img
               ref="iconImage"
-              class="rounded"
               v-fallback-img="unknownPack"
+              class="rounded"
               :src="source.icon"
               contain
             >
@@ -93,10 +93,9 @@
 
               <v-chip
                 v-for="(tag, index) in source.tags"
-                :outlined="darkTheme"
                 :key="`${tag}-${index}`"
+                :outlined="darkTheme"
                 small
-                outlined
                 label
                 :color="getColor(tag)"
                 style="margin-left: 1px;"

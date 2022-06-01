@@ -1,0 +1,48 @@
+{
+    "type": "object",
+    "properties": {
+        "versions": {
+            "default": [],
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/QuiltArtifactVersion"
+            }
+        },
+        "timestamp": {
+            "default": "",
+            "type": "string"
+        }
+    },
+    "required": [
+        "timestamp",
+        "versions"
+    ],
+    "definitions": {
+        "QuiltArtifactVersion": {
+            "type": "object",
+            "properties": {
+                "separator": {
+                    "type": "string"
+                },
+                "build": {
+                    "type": "number"
+                },
+                "maven": {
+                    "description": "e.g. \"org.quiltmc:quilt-loader:0.16.1\",",
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "build",
+                "maven",
+                "separator",
+                "version"
+            ]
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false
+}

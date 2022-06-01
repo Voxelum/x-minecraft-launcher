@@ -1,6 +1,6 @@
 import { computed, onMounted, reactive, Ref, toRefs, watch } from '@vue/composition-api'
 import { FabricArtifactVersion, MinecraftVersion } from '@xmcl/installer'
-import { ForgeVersion, InstallServiceKey, OptifineVersion, Status, VersionServiceKey } from '@xmcl/runtime-api'
+import { ForgeVersion, InstallServiceKey, OptifineVersion, QuiltArtifactVersion, Status, VersionServiceKey } from '@xmcl/runtime-api'
 import { useService, useServiceBusy, useServiceOnly } from '/@/composables'
 
 export function useVersions() {
@@ -124,6 +124,38 @@ export function useFabricVersions(minecraftVersion: Ref<string>) {
   }
 }
 
+export function useQuiltVersions(minecraftVersion: Ref<string>) {
+  const { getQuiltVersionList } = useService(InstallServiceKey)
+  const refreshing = useServiceBusy(InstallServiceKey, 'getQuiltVersionList')
+  const { state } = useVersionService()
+  const loaderVersions = ref([] as QuiltArtifactVersion[])
+  const localMap = computed(() => {
+    const locals: { [k: string]: boolean } = {}
+    state.local.forEach((ver) => {
+      if (ver.quilt) locals[`${ver.minecraft}-${ver.quilt}`] = true
+    })
+    return locals
+  })
+  const getStatus = (version: string) => {
+    return localMap.value[`${minecraftVersion.value}-${version}`] ? 'local' : 'remote'
+  }
+  async function refresh(force = false) {
+    const result = await getQuiltVersionList({ force, minecraftVersion: minecraftVersion.value })
+    loaderVersions.value = markRaw(result)
+  }
+
+  onMounted(refresh)
+
+  watch(minecraftVersion, () => refresh())
+
+  return {
+    versions: loaderVersions,
+    refresh,
+    refreshing,
+    getStatus,
+  }
+}
+
 export function useForgeVersions(minecraftVersion: Ref<string>) {
   const { getForgeVersionList } = useInstallService()
   const { state } = useVersionService()
@@ -191,30 +223,29 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
   }
 }
 
-export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
-  const { getLiteloaderVersionList } = useInstallService()
-  const { state } = useVersionService()
+// export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
+//   const { getLiteloaderVersionList } = useInstallService()
 
-  const versions = computed(() => Object.values(installState.liteloader.versions[minecraftVersion.value] || {}).filter(v => !!v))
-  const refreshing = useServiceBusy(InstallServiceKey, 'refreshLiteloader')
-  onMounted(() => {
-    watch(minecraftVersion, () => {
-      if (!versions.value) {
-        refreshLiteloader()
-      }
-    })
-  })
+//   const versions = ref([] as VersionLiteloaderSchema)
+//   const refreshing = useServiceBusy(InstallServiceKey, 'getLiteloaderVersionList')
+//   onMounted(() => {
+//     watch(minecraftVersion, () => {
+//       if (!versions.value) {
+//         getLiteloaderVersionList()
+//       }
+//     })
+//   })
 
-  function refresh() {
-    return refreshLiteloader()
-  }
+//   async function refresh() {
+//     await getLiteloaderVersionList()
+//   }
 
-  return {
-    versions,
-    refresh,
-    refreshing,
-  }
-}
+//   return {
+//     versions,
+//     refresh,
+//     refreshing,
+//   }
+// }
 
 export function useOptifineVersions(minecraftVersion: Ref<string>) {
   const { getOptifineVersionList } = useInstallService()

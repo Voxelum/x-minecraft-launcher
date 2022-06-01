@@ -1,5 +1,5 @@
 import type { ResolvedLibrary, Version } from '@xmcl/core'
-import type { FabricArtifactVersion, InstallProfile, LiteloaderVersion, LiteloaderVersionList, MinecraftVersion, MinecraftVersionList } from '@xmcl/installer'
+import type { FabricArtifactVersion, InstallProfile, LiteloaderVersion, LiteloaderVersionList, MinecraftVersion, MinecraftVersionList, QuiltArtifactVersion } from '@xmcl/installer'
 import { LATEST_RELEASE } from '../entities/version'
 import { ForgeVersion, ForgeVersionList, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema } from '../entities/version.schema'
 import { ServiceKey, StatefulService } from './Service'
@@ -107,6 +107,15 @@ export interface InstallOptifineOptions extends OptifineVersion {
   inhrenitFrom?: string
 }
 
+export interface InstallQuiltOptions {
+  /**
+   * Quilt version
+   */
+  version: string
+
+  minecraftVersion: string
+}
+
 export interface RefreshForgeOptions {
   force?: boolean
   mcversion: string
@@ -158,6 +167,11 @@ export interface InstallFabricOptions {
 
 export type InstallableLibrary = Version.Library | ResolvedLibrary
 
+export interface GetQuiltVersionListOptions {
+  minecraftVersion?: string
+  force?: boolean
+}
+
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
  */
@@ -183,6 +197,10 @@ export interface InstallService {
    * Refresh optifine version list from BMCL API
    */
   getOptifineVersionList(force?: boolean): Promise<OptifineVersion[]>
+  /**
+   * Get the quilt version list
+   */
+  getQuiltVersionList(options?: GetQuiltVersionListOptions): Promise<QuiltArtifactVersion[]>
   /**
    * Install assets which defined in this version asset.json. If this version is not present, this will throw error！
    * @param version The local version id
@@ -224,6 +242,8 @@ export interface InstallService {
    * Install a specific liteloader version
    */
   installLiteloader(meta: LiteloaderVersion): Promise<void>
+
+  installQuilt(meta: InstallQuiltOptions): Promise<string>
 
   installByProfile(profile: InstallProfile): Promise<void>
 }

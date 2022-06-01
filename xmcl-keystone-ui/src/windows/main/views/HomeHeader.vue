@@ -79,6 +79,17 @@
       {{ version.fabricLoader }}
     </v-chip>
     <v-chip
+      v-if="version.quiltLoader"
+      small
+      label
+      @click.stop="push('/version-setting?target=quilt')"
+    >
+      <v-avatar left>
+        <QuiltIcon />
+      </v-avatar>
+      {{ version.quiltLoader }}
+    </v-chip>
+    <v-chip
       v-if="isServer"
       label
       class="pointer"
@@ -120,6 +131,7 @@ import unknownServer from '/@/assets/unknown_server.png'
 import { useInstance, useInstanceVersion } from '../composables/instance'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import { useRouter } from '/@/composables'
+import QuiltIcon from '/@/components/QuiltIcon.vue'
 
 const { runtime: version, name, author, isServer } = useInstance()
 const { localVersion } = useInstanceVersion()

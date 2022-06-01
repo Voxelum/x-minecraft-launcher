@@ -1,5 +1,5 @@
 import { ResolvedVersion, Version } from '@xmcl/core'
-import { filterForgeVersion, filterOptifineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, LocalVersionHeader, VersionService as IVersionService, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
+import { filterForgeVersion, filterOptifineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary, LocalVersionHeader, VersionService as IVersionService, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { ensureDir, FSWatcher, remove, stat } from 'fs-extra'
 import { basename, dirname, join, relative, sep } from 'path'
@@ -86,6 +86,7 @@ export class VersionService extends StatefulService<VersionState> implements IVe
       forge: filterForgeVersion(ver.libraries.find(isForgeLibrary)?.version ?? ''),
       fabric: ver.libraries.find(isFabricLoaderLibrary)?.version ?? '',
       optifine: filterOptifineVersion(ver.libraries.find(isOptifineLibrary)?.version ?? ''),
+      quilt: ver.libraries.find(isQuiltLibrary)?.version ?? '',
       liteloader: '',
     }
   }
