@@ -1,6 +1,3 @@
 [submodule "xmcl"]
 	path = xmcl
 	url = https://github.com/Voxelum/minecraft-launcher-core-node
-[submodule "xmcl-page"]
-	path = xmcl-page
-	url = https://github.com/Voxelum/xmcl-page
