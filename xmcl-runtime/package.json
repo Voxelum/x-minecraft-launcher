@@ -16,7 +16,8 @@
     "scripts": {
         "check": "tsc --project tsconfig.json --noEmit",
         "lint": "eslint --ext .ts .",
-        "lint:fix": "eslint --ext .ts --fix ."
+        "lint:fix": "eslint --ext .ts --fix .",
+        "postinstall": "prisma generate --schema=./lib/database/schema.prisma"
     },
     "dependencies": {
         "@azure/msal-common": "^6.2.0",
@@ -42,7 +43,7 @@
         "@xmcl/unzip": "workspace:*",
         "@xmcl/user": "workspace:*",
         "@xmcl/world": "workspace:*",
-        "@prisma/client": "^3.13.0",
+        "@prisma/client": "^3.14.0",
         "ajv": "^8.10.0",
         "applicationinsights": "^2.1.6",
         "atomically": "^1.7.0",

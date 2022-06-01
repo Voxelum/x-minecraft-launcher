@@ -1,6 +1,6 @@
 generator client {
   provider      = "prisma-client-js"
-  output        = "./resource.gen"
+  output        = "./client.gen"
   binaryTargets = ["native"]
 }
 
@@ -42,10 +42,8 @@ model Modrinth {
 
 model Uri {
   hash     String
-  uri      String
+  uri      String @id
   Resource Resource @relation(fields: [hash], references: [hash])
-
-  @@id([hash, uri])
 }
 
 model Tag {
