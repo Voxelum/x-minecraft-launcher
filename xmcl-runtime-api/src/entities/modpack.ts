@@ -127,11 +127,11 @@ export interface McbbsModpackManifest extends ModpackManifest {
   /**
    * The manifest type. For mcbbs should be "minecraftModpack"
    */
-  manifestType: string
+  manifestType: 'minecraftModpack'
   /**
    * The version of the "minecraftModpack", latest should be `2`
    */
-  manifestVersion: number
+  manifestVersion: 2
   /**
    * Description of the modpack
    */
@@ -225,6 +225,7 @@ export interface McbbsModpackManifest extends ModpackManifest {
  * The modpack metadata structure
  */
 export interface CurseforgeModpackManifest extends ModpackManifest {
+  manifestVersion: 1
   minecraft: {
     version: string
     libraries?: string

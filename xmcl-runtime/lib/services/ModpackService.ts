@@ -1,4 +1,5 @@
-import { CurseforgeModpackManifest, EditGameSettingOptions, ExportModpackOptions, ImportModpackOptions, isResourcePackResource, LockKey, McbbsModpackManifest, ModpackException, ModpackService as IModpackService, ModpackServiceKey, PersistedResource, ResourceDomain } from '@xmcl/runtime-api'
+import { CurseforgeModpackManifest, EditGameSettingOptions, ExportModpackOptions, ImportModpackOptions, isResourcePackResource, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoAddon, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, PersistedResource, ResourceDomain, SourceInformation } from '@xmcl/runtime-api'
+import { MultipleError, task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { existsSync } from 'fs'
 import { ensureDir, remove, unlink, writeFile } from 'fs-extra'
@@ -15,7 +16,18 @@ import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, Inject } from './Service'
 import { VersionService } from './VersionService'
+import { Entry, ZipFile } from 'yauzl'
+import { CurseForgeService } from './CurseForgeService'
+import { DownloadTask, UnzipTask } from '@xmcl/installer'
+import { joinUrl } from '../util/url'
+import { DownloadError } from '@xmcl/installer/http/error'
 
+interface ModpackDownloadableFile {
+  destination: string
+  downloads: string[]
+  hashes: Record<string, string>
+  source: SourceInformation
+}
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
@@ -24,6 +36,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(VersionService) private versionService: VersionService,
+    @Inject(CurseForgeService) private curseforgeService: CurseForgeService,
     @Inject(InstanceModsService) private instanceModsService: InstanceModsService,
     @Inject(InstanceOptionsService) private instanceOptionsService: InstanceOptionsService,
   ) {
@@ -37,7 +50,7 @@ export class ModpackService extends AbstractService implements IModpackService {
   async exportModpack(options: ExportModpackOptions) {
     requireObject(options)
 
-    const { instancePath = this.instanceService.state.path, destinationPath, overrides, exportDirectives, name, version, gameVersion, author, emitCurseforge = true, emitMcbbs = true } = options
+    const { instancePath = this.instanceService.state.path, destinationPath, overrides, exportDirectives, name, version, gameVersion, author, emitCurseforge = true, emitMcbbs = true, emitModrinth = false } = options
 
     const instance = this.instanceService.state.all[instancePath]
     if (!instance) {
@@ -47,6 +60,7 @@ export class ModpackService extends AbstractService implements IModpackService {
 
     let curseforgeConfig: CurseforgeModpackManifest | undefined
     let mcbbsManifest: McbbsModpackManifest | undefined
+    let modrinthManifest: ModrinthModpackManifest | undefined
 
     if (emitCurseforge) {
       const gameVersionInstance = this.versionService.state.local.find(v => v.id === gameVersion)
@@ -99,6 +113,22 @@ export class ModpackService extends AbstractService implements IModpackService {
       }
       if (instance.runtime.fabricLoader) {
         mcbbsManifest.addons.push({ id: 'fabric', version: instance.runtime.fabricLoader })
+      }
+    }
+    if (emitModrinth) {
+      modrinthManifest = {
+        formatVersion: 1,
+        game: 'minecraft',
+        versionId: version,
+        name: name,
+        summary: instance.description,
+        dependencies: {
+          minecraft: instance.runtime.minecraft,
+          forge: instance.runtime.forge || undefined,
+          'fabric-loader': instance.runtime.fabricLoader || undefined,
+          'quilt-loader': instance.runtime.quiltLoader || undefined,
+        },
+        files: [],
       }
     }
 
@@ -280,33 +310,24 @@ export class ModpackService extends AbstractService implements IModpackService {
         manifest.files = files as any
       }
 
-      let files: {
-        path: string
-        url: string
-        projectId: number
-        fileId: number
-      }[] = []
+      let files: ModpackDownloadableFile[] = []
       let failedError: Error | undefined
       try {
-        files = await this.submit(installModpackTask(zip, entries, manifest, instancePath,
-          false, this.networkManager.getDownloadBaseOptions()))
+        files = await this.submit(this.installModpackTask(zip, entries, manifest, instancePath))
       } catch (e) {
         failedError = e as any
-        if (e instanceof ModpackInstallGeneralError) {
+        if (e instanceof ModpackException) {
           // try to cache downloaded files
-          files = e.files
+          if (e.exception.type === 'modpackInstallFailed' || e.exception.type === 'modpackInstallPartial') {
+            files = e.exception.files
+          }
         }
       }
 
       const newResources = await this.resourceService.importResources({
         files: files.map(f => ({
-          path: f.path,
-          source: {
-            curseforge: {
-              fileId: f.fileId,
-              projectId: f.projectId,
-            },
-          },
+          path: f.destination,
+          source: f.source,
           url: [f.url, getCurseforgeUrl(f.projectId, f.fileId)],
         })),
         background: true,
@@ -365,6 +386,140 @@ export class ModpackService extends AbstractService implements IModpackService {
         instanceService.deleteInstance(instancePath)
       }
       throw e
+    })
+  }
+
+  private installModpackTask(zip: ZipFile, entries: Entry[], manifest: CurseforgeModpackManifest | McbbsModpackManifest | ModrinthModpackManifest, root: string) {
+    const allowFileApi = false
+    const options = this.networkManager.getDownloadBaseOptions()
+    const curseforgeService = this.curseforgeService
+    interface FileMetadata {
+      destination: string
+      downloads: string[]
+      hashes: Record<string, string>
+      source: SourceInformation
+    }
+
+    return task('installModpack', async function () {
+      const infos = [] as FileMetadata[]
+      const missingFiles = [] as { fileId: number; projectId: number }[]
+      if (manifest.files) {
+        if ('manifestVersion' in manifest) {
+          const curseforgeFiles = manifest.files.map(f => f).filter((f): f is ModpackFileInfoCurseforge => !('type' in f) || f.type === 'curse' || 'hashes' in f)
+          let batchCount = 8
+          while (curseforgeFiles.length > 0) {
+            const batch = curseforgeFiles.splice(0, batchCount)
+            const result = await Promise.all(batch.map(async (f) => curseforgeService.fetchProjectFile(f.projectID, f.fileID).catch(() => undefined)))
+            let failed = false
+            for (let i = 0; i < result.length; i++) {
+              const file = result[i]
+              if (!file) {
+                failed = true
+                curseforgeFiles.push(batch[i])
+              } else if (file.downloadUrl) {
+                const domain = file.modules.some(f => f.foldername === '') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
+                infos.push({
+                  downloads: [file.downloadUrl],
+                  destination: join(root, domain, file.fileName),
+                  hashes: {},
+                  source: {
+                    curseforge: {
+                      fileId: file.id,
+                      projectId: file.projectId,
+                    },
+                  },
+                })
+              } else {
+                missingFiles.push({ projectId: file.projectId, fileId: file.id })
+              }
+            }
+            if (failed && batchCount > 2) {
+              batchCount /= 2
+            }
+            if (!failed && batchCount < 16) {
+              batchCount *= 2
+            }
+          }
+        } else {
+          for (const meta of manifest.files) {
+            infos.push({
+              downloads: meta.downloads,
+              hashes: meta.hashes,
+              destination: join(root, meta.path),
+              source: {},
+            })
+          }
+        }
+
+        const tasks = infos.map((f) => {
+          const hashes = Object.entries(f.hashes)
+          const lastHash = hashes.find(v => v[0] === 'sha256') ?? hashes[hashes.length - 1]
+          return new DownloadTask({
+            url: f.downloads,
+            destination: f.destination,
+            agents: options.agents,
+            validator: lastHash ? { algorithm: lastHash[0], hash: lastHash[1] } : undefined,
+            retryHandler: { maxRetryCount: 5 },
+          }).setName('download')
+        })
+
+        try {
+          await this.all(tasks, {
+            throwErrorImmediately: false,
+            getErrorMessage: (errs) => `Fail to install modpack to ${root}: ${errs.map((e) => e.toString()).join('\n')}`,
+          })
+        } catch (e) {
+          if (e instanceof MultipleError) {
+            for (const err of e.errors) {
+              if (err instanceof DownloadError) {
+                
+              }
+            }
+          }
+          throw new ModpackException({
+            type: 'modpackInstallFailed',
+            files: infos,
+          })
+        }
+      }
+
+      try {
+        await this.yield(new UnzipTask(
+          zip,
+          entries.filter((e) => !e.fileName.endsWith('/') && e.fileName.startsWith('overrides' in manifest ? manifest.overrides : 'overrides')),
+          root,
+          (e) => e.fileName.substring('overrides' in manifest ? manifest.overrides.length : 'overrides'.length),
+        ).setName('unpack'))
+
+        // download custom files
+        if ('fileApi' in manifest && manifest.files && manifest.fileApi && allowFileApi) {
+          const fileApi = manifest.fileApi
+          const addonFiles = manifest.files.filter((f): f is ModpackFileInfoAddon => f.type === 'addon')
+          await this.all(addonFiles.map((f) => new DownloadTask({
+            url: joinUrl(fileApi, f.path),
+            destination: join(root, f.path),
+            validator: {
+              algorithm: 'sha1',
+              hash: f.hash,
+            },
+            agents: options.agents,
+            segmentPolicy: options.segmentPolicy,
+            retryHandler: options.retryHandler,
+          }).setName('download')))
+        }
+      } catch (e) {
+        throw new ModpackException(files, e as Error)
+      }
+
+      if (missingFiles.length > 0) {
+        throw new ModpackException({
+          type: 'modpackInstallPartial',
+          files: infos,
+          missingFiles,
+        })
+      }
+
+      return files
     })
   }
 }

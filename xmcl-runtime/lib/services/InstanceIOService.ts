@@ -227,7 +227,8 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
           updateAt: status.mtimeMs,
           createAt: status.ctimeMs,
           hashes: {
-            sha1: resource?.hash ?? (isDirectory ? '' : await checksum(p, 'sha1')),
+            sha1: resource?.hash ?? await checksum(p, 'sha1'),
+            sha256: await checksum(p, 'sha256'),
           },
         }
         if (resource?.modrinth) {
@@ -235,14 +236,14 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
             projectId: resource.modrinth.projectId,
             versionId: resource.modrinth.versionId,
           }
-        } else if (resource?.curseforge) {
+        } 
+        if (resource?.curseforge) {
           localFile.curseforge = {
             projectId: resource.curseforge.projectId,
             fileId: resource.curseforge.fileId,
           }
-        } else {
-          localFile.downloads = resource?.uri && resource.uri.some(u => u.startsWith('http')) ? resource.uri.filter(u => u.startsWith('http')) : undefined
-        }
+        } 
+        localFile.downloads = resource?.uri && resource.uri.some(u => u.startsWith('http')) ? resource.uri.filter(u => u.startsWith('http')) : undefined
         files.push(localFile)
       }
     }

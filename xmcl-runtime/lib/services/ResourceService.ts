@@ -5,7 +5,6 @@ import { readJSON, stat, unlink, writeFile } from 'fs-extra'
 import watch from 'node-watch'
 import { basename, extname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
-import { PrismaClient } from '../database/resource.gen'
 import { FileStat, mutateResource, parseResource, persistResource, readFileStat, remove, ResourceCache } from '../entities/resource'
 import { fixResourceSchema } from '../util/dataFix'
 import { isSystemError } from '../util/error'
@@ -47,8 +46,6 @@ export class ResourceService extends StatefulService<ResourceState> implements I
    * The array to store the pending to import resource file path, which is the absolute file path of the resource file under the domain directory
    */
   private pending = new Set<string>()
-
-  private client: PrismaClient
 
   private pendingSource: Record<string, SourceInformation> = {}
 
@@ -92,13 +89,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
       ]) {
         this.loadPromises[domain].accept(this.load(domain))
       }
-      const filePath = this.getAppDataPath('./resources.sqlite')
-      const filePathUrl = `file:${filePath}`
-      // process.env.DB_URL = filePathUrl
-      // this.client = new PrismaClient({ datasources: { db: { url: filePathUrl } } })
-      // await this.client.$connect()
     })
-    // this.client = new PrismaClient()
   }
 
   private migrate() {

@@ -173,6 +173,9 @@ interface ResourceServiceEventMap {
  */
 export interface ResourceService extends StatefulService<ResourceState>, GenericEventEmitter<ResourceServiceEventMap> {
   load(domain: ResourceDomain): Promise<void>
+  queryResources(): Promise<PersistedResource[]>
+
+  queryResourcesByTags(): Promise<PersistedResource[]>
   /**
    * Remove a resource from the launcher
    * @param resourceOrKey
