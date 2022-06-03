@@ -73,6 +73,7 @@
 <script lang=ts>
 import { required, withDefault } from '/@/util/props'
 import { File } from '@xmcl/curseforge'
+import { getColorForReleaseType } from '/@/util/color'
 
 export default defineComponent({
   props: {
@@ -84,17 +85,8 @@ export default defineComponent({
   },
   setup(props) {
     const releases = ['', 'R', 'A', 'B']
-    function getColor(type: number) {
-      switch (type) {
-        case 1: return 'primary'
-        case 2: return 'red'
-        case 3: return 'orange'
-        default:
-          return ''
-      }
-    }
     return {
-      getColor,
+      getColor: getColorForReleaseType,
       releases,
     }
   },

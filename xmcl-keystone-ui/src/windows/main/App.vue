@@ -2,7 +2,7 @@
   <v-app
     ref="app"
     class="overflow-auto h-full overflow-x-hidden max-h-[100vh]"
-    :class="{ 'dark-theme': vuetify.theme.dark }"
+    :class="{ 'dark': vuetify.theme.dark }"
     :style="cssVars"
   >
     <system-bar />

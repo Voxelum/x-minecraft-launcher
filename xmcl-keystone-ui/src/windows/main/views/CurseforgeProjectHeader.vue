@@ -27,7 +27,7 @@
         </v-icon>
         {{ $t("curseforge.createdDate") }}
         <span v-if="!loading">
-          {{ new Date(creation).toLocaleDateString() }}
+          {{ getLocalDateString(creation) }}
         </span>
         <v-skeleton-loader
           v-else
@@ -41,7 +41,7 @@
         </v-icon>
         {{ $t("curseforge.lastUpdate") }}
         <span v-if="!loading">
-          {{ new Date(updated).toLocaleDateString() }}
+          {{ getLocalDateString(updated) }}
         </span>
         <v-skeleton-loader
           v-else
@@ -67,29 +67,28 @@
         :value="destination"
         style="flex-grow: 1"
         :from="from"
-        @input="$emit('destination', $event)"
+        @input="emit('destination', $event)"
       />
     </v-card-actions>
   </v-card>
 </template>
-<script lang="ts">
-import { optional, required } from '/@/util/props'
+<script lang="ts" setup>
 import DestMenu from './CurseforgeProjectDestMenu.vue'
+import { getLocalDateString } from '/@/util/date'
 
-export default defineComponent({
-  components: { DestMenu },
-  props: {
-    icon: optional(String),
-    name: required(String),
-    destination: required(String),
-    from: required(String),
-    creation: required(String),
-    updated: required(String),
-    downloads: required(Number),
-    loading: required(Boolean),
-  },
-  emits: ['destination'],
-})
+defineProps<{
+  icon?: string
+  name: string
+  destination: string
+  from: string
+  creation: string
+  updated: string
+  downloads: number
+  loading: boolean
+}>()
+
+const emit = defineEmits(['destination'])
+
 </script>
 
 <i18n locale="en" lang="yaml">
@@ -106,7 +105,7 @@ curseforge:
   lastUpdate: 上次更新日期
 </i18n>
 
-<i18n locale="zh-CN" lang="yaml">
+<i18n locale="zh-TW" lang="yaml">
 curseforge:
   createdDate: 創建日期
   totalDownloads: 總下載量

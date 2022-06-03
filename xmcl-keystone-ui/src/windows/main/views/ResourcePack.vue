@@ -93,7 +93,10 @@
             @dragend="stopDragging()"
             @mouseup="stopDragging()"
           />
-            <div key="dummy" class="min-h-10"></div>
+          <div
+            key="dummy"
+            class="min-h-10"
+          />
         </transition-group>
       </div>
 
@@ -135,7 +138,10 @@
             @dragend="stopDragging()"
             @mouseup="stopDragging()"
           />
-          <div key="dummy" class="min-h-10"></div>
+          <div
+            key="dummy"
+            class="min-h-10"
+          />
         </transition-group>
       </div>
     </div>

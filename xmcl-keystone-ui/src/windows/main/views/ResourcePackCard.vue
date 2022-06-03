@@ -61,11 +61,10 @@
             <div class="flex gap-2 flex-wrap">
               <v-chip
                 v-for="(tag, index) in pack.tags"
-                :outlined="darkTheme"
                 :key="`${tag}-${index}`"
+                :outlined="darkTheme"
                 :color="getColor(tag)"
                 label
-                outlined
                 close
                 @click:close="onDeleteTag(tag)"
               >

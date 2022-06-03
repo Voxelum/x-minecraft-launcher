@@ -129,7 +129,7 @@ import { useDialog } from '../composables/dialog'
 import { AddInstanceDialogKey } from '../composables/instanceAdd'
 import { FeedTheBeastServiceKey } from '@xmcl/runtime-api'
 
-const parser = new MarkdownIt()
+const parser = new MarkdownIt({ html: true })
 const props = defineProps<{ id: number }>()
 
 const { refresh, refreshing, manifest } = useFeedTheBeastProject(computed(() => props.id))

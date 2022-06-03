@@ -1,7 +1,8 @@
 <template>
   <v-list
     v-if="versions.length !== 0"
-    class="local-version-list overflow-auto h-full flex flex-col bg-transparent"
+    class="local-version-list overflow-auto h-full flex flex-col"
+    style="background: transparent"
   >
     <v-list-item class="flex justify-end">
       <v-select
@@ -274,7 +275,7 @@ export default defineComponent({
 </style>
 
 <style scoped>
-.dark-theme .selected {
+.dark .selected {
   background: rgba(234, 233, 255, 0.2);
 }
 

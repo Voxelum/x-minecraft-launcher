@@ -49,7 +49,10 @@
           @click="onClick($event, index)"
           @delete="startDelete(item)"
         />
-        <div key="dummy" class="min-h-10"></div>
+        <div
+          key="dummy"
+          class="min-h-10"
+        />
       </transition-group>
       <delete-dialog
         :width="400"
