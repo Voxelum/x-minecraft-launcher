@@ -114,6 +114,7 @@ disk:
   available: 可用
   used: 已用
 download: 下载
+downloadCount: '{count} 次下载'
 edit: 编辑
 existed: 已导入过的
 exportModpackTarget:
@@ -235,9 +236,12 @@ instanceAge:
   older: 三天前
   threeDay: 三天内
   today: 今天
+quiltVersion:
+  disable: 不启用 Quilt
 instanceTemplate:
   curseforge: 这是一个 Curseforge 整合包
   ftb: 这是一个 FTB 的整合包配置
+  modrinth: 这是一个 Modrinth 的整合包
   importing: 模板导入
   mcbbs: 这是一个 MCBBS 整合包
   modpack: 这是一个整合包配置
@@ -416,30 +420,31 @@ modpack:
   urlHint: 整合包的主页 URL 地址
 modrinth:
   avaiableFor: 可用于
+  gallery: 图片展示
   categories:
     adventure: 冒险
+    challenging: 挑战
+    combat: 战斗
     cursed: Cursed
     decoration: 装饰
     equipment: 装备
     food: 食物
+    kitchen-sink: 厨房用具
     library: 库
+    lightweight: 轻量级
     magic: 魔法
     misc: 杂项
+    modloader: Mod 加载器
+    multiplayer: 多人
     name: 分类
     optimization: 优化
+    quests: 任务导向
+    quilt: Quilt
+    rift: Rift
     storage: 存储
     technology: 科技
     utility: 工具
     worldgen: 世界生成
-    modloader: Mod 加载器
-    quilt: Quilt
-    rift: Rift
-    challenging: 挑战
-    combat: 战斗
-    kitchen-sink: 厨房用具
-    lightweight: 轻量级
-    multiplayer: 多人
-    quests: 任务导向
   clientSide: 客户端
   createAt: 创建日期
   description: 详情
@@ -448,8 +453,13 @@ modrinth:
     client: 客户端
     name: 环境
     server: 服务端
+  followers: 关注者
   gameVersions:
     name: 游戏版本
+  headers:
+    status: 状态
+    support: 支持
+    version: 版本
   installFrom: 从 Modrinth 安装
   license: 协议
   licenses:
