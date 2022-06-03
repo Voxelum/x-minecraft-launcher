@@ -1,18 +1,18 @@
 import { DownloadTask } from '@xmcl/installer'
-import { getProject, listCategories, listGameVersion, listLicenses, listLoaders, Project, ProjectVersion, SearchProjectOptions, SearchResult, searchProjects, getProjectVersions, getProjectVersion, License, Category, GameVersion, Loader } from '@xmcl/modrinth'
+import { Category, GameVersion, License, Loader, Project, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
 import { InstallProjectVersionOptions, ModrinthService as IModrinthService, ModrinthServiceKey, ModrinthState, PersistedResource } from '@xmcl/runtime-api'
 import { basename, join } from 'path'
+import { URLSearchParams } from 'url'
 import { LauncherApp } from '../app/LauncherApp'
-import { CacheDictionary } from '../util/cache'
+import { PersistedInMemoryCache } from '../util/cache'
 import { ResourceService } from './ResourceService'
 import { Inject, StatefulService } from './Service'
 
 export class ModrinthService extends StatefulService<ModrinthState> implements IModrinthService {
-  private cached: undefined | { licenses: License[]; categories: Category[]; gameVersions: GameVersion[]; modLoaders: Loader[]; environments: string[] } = undefined
-
-  private cachedVersions = new CacheDictionary<ProjectVersion>(60 * 1000 * 2)
-  private cachedProjectVersions = new CacheDictionary<ProjectVersion[]>(60 * 1000 * 2)
-  private cachedProjects = new CacheDictionary<Project>(60 * 1000)
+  private client = this.networkManager.request.extend({
+    prefixUrl: 'https://api.modrinth.com/v2',
+    cache: new PersistedInMemoryCache(this.getAppDataPath('modrinth-cache.json')),
+  })
 
   constructor(app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
@@ -22,68 +22,62 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
 
   async searchProjects(options: SearchProjectOptions): Promise<SearchResult> {
     this.log(`Try search projects via query=${options.query} limit=${options.limit} offset=${options.offset} facets=${options.facets} query=${options.query}`)
-    const result = await searchProjects(options, this.networkManager.agents.https)
+    const searchParams = new URLSearchParams([
+      ['query', options.query ?? ''],
+      ['filter', options.filters ?? ''],
+      ['index', options.index || 'relevance'],
+      ['offset', options.offset?.toString() ?? '0'],
+      ['limit', options.limit?.toString() ?? '10'],
+    ])
+    if (options.facets) {
+      searchParams.append('facets', options.facets)
+    }
+    const result: SearchResult = await this.client.get('search', {
+      searchParams,
+    }).json()
     this.log(`Searched projects: hits=${result.hits.length} total_hits=${result.total_hits} offset=${result.offset} limit=${result.limit}`)
     return result
   }
 
   async getProject(projectId: string): Promise<Project> {
     if (projectId.startsWith('local-')) { projectId = projectId.slice('local-'.length) }
-    const cached = this.cachedProjects.get(projectId)
-    if (cached) {
-      return cached
-    }
     this.log(`Try get project for project_id=${projectId}`)
-    const project = await getProject(projectId, this.networkManager.agents.https)
-    this.cachedProjects.set(projectId, project)
+    const project: Project = await this.client.get(`project/${projectId}`).json()
     this.log(`Got project for project_id=${projectId}`)
     return project
   }
 
   async getProjectVersions(projectId: string): Promise<ProjectVersion[]> {
-    const cached = this.cachedProjectVersions.get(projectId)
-    if (cached) {
-      return cached
-    }
-    const versions = await getProjectVersions(projectId, this.networkManager.agents.https)
-    this.cachedProjectVersions.set(projectId, versions)
+    const versions: ProjectVersion[] = await this.client.get(`project/${projectId}/version`).json()
     this.log(`Get project version for version_id=${projectId}`)
     return versions
   }
 
   async getProjectVersion(versionId: string): Promise<ProjectVersion> {
-    const cached = this.cachedVersions.get(versionId)
-    if (cached) {
-      return cached
-    }
-    const version: ProjectVersion = await getProjectVersion(versionId, this.networkManager.agents.https)
-    this.cachedVersions.set(versionId, version)
+    const version: ProjectVersion = await this.client.get(`version/${versionId}`).json()
     this.log(`Get project version for version_id=${versionId}`)
     return version
   }
 
   async getTags(): Promise<{ licenses: License[]; categories: Category[]; gameVersions: GameVersion[]; modLoaders: Loader[]; environments: string[] }> {
-    if (this.cached) {
-      return this.cached
-    }
     const [licenses, categories, gameVersions, modLoaders] = await Promise.all([
-      listLicenses(this.networkManager.agents.https),
-      listCategories(this.networkManager.agents.https),
-      listGameVersion(this.networkManager.agents.https),
-      listLoaders(this.networkManager.agents.https),
+      this.client.get('tag/license').json<License[]>(),
+      this.client.get('tag/category').json<Category[]>(),
+      this.client.get('tag/game_version').json<GameVersion[]>(),
+      this.client.get('tag/loader').json<Loader[]>(),
     ])
-    this.cached = {
+    return {
       licenses,
       categories,
       gameVersions,
       modLoaders,
       environments: ['client', 'server'],
     }
-    return this.cached
   }
 
   async installVersion({ version }: InstallProjectVersionOptions): Promise<PersistedResource<any>> {
     const res: PersistedResource[] = []
+    const proj = await this.getProject(version.project_id)
     for (const file of version.files) {
       this.log(`Try install project version file ${file.filename} ${file.url}`)
       const destination = join(this.app.temporaryPath, basename(file.filename))
@@ -128,7 +122,7 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
             }
             : undefined,
         },
-        type: 'mods',
+        iconUrl: proj.icon_url,
         background: true,
       })
 

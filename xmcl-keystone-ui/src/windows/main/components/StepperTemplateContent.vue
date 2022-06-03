@@ -122,6 +122,7 @@ const getActionText = (template: Template) => {
   }
   if (template.source.type === 'mcbbs') return t('instanceTemplate.mcbbs')
   if (template.source.type === 'curseforge') return t('instanceTemplate.curseforge')
+  if (template.source.type === 'modrinth') return t('instanceTemplate.modrinth')
   if (template.source.type === 'ftb') return t('instanceTemplate.ftb')
   return t('instanceTemplate.modpack')
 }

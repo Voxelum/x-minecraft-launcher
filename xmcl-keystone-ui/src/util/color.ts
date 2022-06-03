@@ -15,3 +15,16 @@ export function getColor(name: string) {
 
   return colors[code % colors.length]
 }
+
+export function getColorForReleaseType(type: 'release' | 'alpha' | 'beta' | 1 | 2 | 3 | string) {
+  switch (type) {
+    case 1:
+    case 'release': return 'green'
+    case 2:
+    case 'alpha': return 'red'
+    case 3:
+    case 'beta': return 'orange'
+    default:
+      return ''
+  }
+}

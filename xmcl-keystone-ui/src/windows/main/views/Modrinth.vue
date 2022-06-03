@@ -80,7 +80,7 @@
     </div>
     <div class="flex flex-col overflow-auto lg:flex md:hidden">
       <Categories
-        class="overflow-auto"
+        class="overflow-auto min-w-40"
         :loading="refreshingTag"
         :environments="environments"
         :categories="categories.filter(c => c.project_type === projectType)"
@@ -107,7 +107,7 @@ import ModCard from './ModrinthModCard.vue'
 import Categories from './ModrinthCategories.vue'
 import { useRouter } from '/@/composables'
 import { withDefault } from '/@/util/props'
-import { useModrinth } from '../composables/modrinth'
+import { useModrinth, useModrinthTags } from '../composables/modrinth'
 
 export default defineComponent({
   components: { ModCard, Categories },
@@ -124,13 +124,14 @@ export default defineComponent({
     from: withDefault(String, () => ''),
   },
   setup(props) {
-    const { refresh, refreshTag, query, category, gameVersion, license, modLoader, environment, projectType, sortBy, page, projectTypes, ...rest } = useModrinth(props)
+    const { refresh: refreshTag, refreshing: refreshingTag, categories, modLoaders, environments, gameVersions, licenses } = useModrinthTags()
+    const { refresh, query, category, gameVersion, license, modLoader, environment, projectType, sortBy, page, projectTypes, ...rest } = useModrinth(props)
     const { push } = useRouter()
     const keyword = ref(props.query)
     const onFiltered = (tag: string) => {
-      if (rest.categories.value.find(c => c.name === tag)) {
+      if (categories.value.find(c => c.name === tag)) {
         category.value = tag
-      } else if (rest.modLoaders.value.find(l => l.name === tag)) {
+      } else if (modLoaders.value.find(l => l.name === tag)) {
         modLoader.value = tag
       }
     }
@@ -140,7 +141,13 @@ export default defineComponent({
     })
     return {
       ...rest,
+      categories,
+      refreshingTag,
+      modLoaders,
+      environments,
       keyword,
+      gameVersions,
+      licenses,
       projectTypes,
       _query: query,
       _category: category,

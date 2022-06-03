@@ -11,7 +11,11 @@
       class="item"
       @click="$emit('select:category', cat.name)"
     >
-      <v-checkbox :value="cat.name === category" hide-details class="mt-0 pt-0" />
+      <v-checkbox
+        :value="cat.name === category"
+        hide-details
+        class="mt-0 pt-0"
+      />
       <div
         class="w-5 max-w-5 flex justify-center"
         v-html="cat.icon"
@@ -27,7 +31,11 @@
       class="item"
       @click="$emit('select:modLoader', l.name)"
     >
-      <v-checkbox :value="l.name === modLoader" hide-details class="mt-0 pt-0" />
+      <v-checkbox
+        :value="l.name === modLoader"
+        hide-details
+        class="mt-0 pt-0"
+      />
       <div
         class="w-5 max-w-5 flex justify-center"
         v-html="l.icon"
@@ -41,7 +49,11 @@
       class="item"
       @click="$emit('select:environment', env)"
     >
-      <v-checkbox :value="env === environment" hide-details class="mt-0 pt-0" />
+      <v-checkbox
+        :value="env === environment"
+        hide-details
+        class="mt-0 pt-0"
+      />
       {{ $t(`modrinth.environments.${env}`) }}
     </span>
     <span class="list-title">{{ $t('modrinth.gameVersions.name') }}</span>
