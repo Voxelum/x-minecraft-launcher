@@ -37,7 +37,6 @@
               <template #activator="{ on }">
                 <v-list-item
                   :v-ripple="getFileStatus(file) === 'remote'"
-                  @click="install(file)"
                   v-on="on"
                 >
                   <v-list-item-content>
@@ -48,18 +47,26 @@
                     </v-list-item-title>
                     <v-list-item-subtitle>
                       {{
-                        new Date(file.fileDate).toLocaleDateString()
+                        getLocalDateString(file.fileDate)
                       }}
                     </v-list-item-subtitle>
                   </v-list-item-content>
                   <v-list-item-action>
-                    <v-icon v-if="getFileStatus(file) !== 'downloading'">
-                      {{
-                        getFileStatus(file) === "downloaded"
-                          ? "dns"
-                          : "download"
-                      }}
-                    </v-icon>
+                    <v-btn
+                      v-if="getFileStatus(file) !== 'downloading'"
+                      text
+                      icon
+                      :disabled="getFileStatus(file) === 'downloaded' && type !== 'modpacks'"
+                      @click="install(file)"
+                    >
+                      <v-icon>
+                        {{
+                          getFileStatus(file) === "downloaded" && type === 'modpacks'
+                            ? "add"
+                            : "download"
+                        }}
+                      </v-icon>
+                    </v-btn>
                     <v-progress-circular
                       v-else
                       indeterminate
@@ -138,13 +145,17 @@
 
 <script lang=ts>
 import { File } from '@xmcl/curseforge'
-import { ProjectType } from '@xmcl/runtime-api'
+import { ProjectType, ResourceServiceKey } from '@xmcl/runtime-api'
 import { withDefault } from '/@/util/props'
 import ProjectDescription from './CurseforgeProjectDescription.vue'
 import ProjectFiles from './CurseforgeProjectFiles.vue'
 import Images from './CurseforgeProjectImages.vue'
 import Header from './CurseforgeProjectHeader.vue'
 import { useCurseforgeInstall, useCurseforgeProject } from '../composables/curseforge'
+import { useDialog } from '../composables/dialog'
+import { AddInstanceDialogKey } from '../composables/instanceAdd'
+import { useService } from '/@/composables'
+import { getLocalDateString } from '/@/util/date'
 
 export default defineComponent({
   components: { ProjectDescription, ProjectFiles, Images, Header },
@@ -154,9 +165,11 @@ export default defineComponent({
     from: withDefault(String, () => ''),
   },
   setup(props) {
+    const { show } = useDialog(AddInstanceDialogKey)
     const projectId = computed(() => Number.parseInt(props.id, 10))
     const project = useCurseforgeProject(projectId.value)
     const { install: installFile, getFileStatus } = useCurseforgeInstall(props.type as any, projectId.value)
+    const { state: resourceState } = useService(ResourceServiceKey)
     const destination = ref(props.from || '')
 
     const data = reactive({
@@ -171,8 +184,11 @@ export default defineComponent({
       data.viewedImage = image.url
     }
     async function install(file: File) {
-      if (getFileStatus(file) === 'downloaded') return
-      await installFile(file, destination.value)
+      if (getFileStatus(file) === 'downloaded') {
+        show(resourceState.queryResource(file.downloadUrl)!.path)
+      } else {
+        await installFile(file, destination.value)
+      }
     }
     watch(dataRefs.tab, () => {
       switch (data.tab) {
@@ -189,6 +205,7 @@ export default defineComponent({
       viewImage,
       install,
       getFileStatus,
+      getLocalDateString,
       ...toRefs(data),
       ...project,
       projectId,
@@ -227,7 +244,7 @@ curseforge:
     images: 图片
 </i18n>
 
-<i18n locale="zh-CN" lang="yaml">
+<i18n locale="zh-TW" lang="yaml">
 curseforge:
   recentFiles: 近期文件
   project:

@@ -13,7 +13,7 @@
         {{ updateInfo.name }}
       </v-card-title>
       <v-card-subtitle>
-        {{ new Date(updateInfo.date).toLocaleDateString() }}
+        {{ getLocalDateString(updateInfo.date) }}
       </v-card-subtitle>
       <v-card-text>
         <div v-html="body" />
@@ -104,6 +104,7 @@ import { useServiceBusy, useService } from '/@/composables'
 import MarkdownIt from 'markdown-it'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
+import { getLocalDateString } from '/@/util/date'
 
 const { isShown } = useDialog('update-info')
 const renderer = new MarkdownIt()

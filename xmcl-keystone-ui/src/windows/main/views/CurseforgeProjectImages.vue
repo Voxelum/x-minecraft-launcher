@@ -17,27 +17,18 @@
   </v-container>
   <div
     v-else
-    class="flex h-full overflow-auto"
+    class="grid lg:grid-cols-3 sm:grid-cols-2 gap-2 p-4"
   >
-    <v-layout
-      row
-      wrap
+    <v-card
+      v-for="(img, index) in attachments"
+      :key="index"
+      hover
+      style="min-width: 100px"
+      @click="$emit('image', img)"
     >
-      <v-flex
-        v-for="(img, index) in attachments"
-        :key="index"
-        d-flex
-      >
-        <v-card
-          hover
-          style="min-width: 100px"
-          @click="$emit('image', img)"
-        >
-          <v-img :src="img.url" />
-          <v-card-title>{{ img.title }}</v-card-title>
-        </v-card>
-      </v-flex>
-    </v-layout>
+      <v-img :src="img.url" />
+      <v-card-title>{{ img.title }}</v-card-title>
+    </v-card>
   </div>
 </template>
 <script lang="ts">

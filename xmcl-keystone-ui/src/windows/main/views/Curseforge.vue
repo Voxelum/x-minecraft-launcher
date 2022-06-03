@@ -54,25 +54,25 @@
           :to="`/curseforge/${currentType}/${proj.id}?from=${from || ''}`"
           class="flex"
         >
-            <v-img
-              :src="proj.attachments[0] ? proj.attachments[0].thumbnailUrl : ''"
-              max-width="120"
-              class="rounded"
-            >
-              <template #placeholder>
-                <v-layout
-                  fill-height
-                  align-center
-                  justify-center
-                  ma-0
-                >
-                  <v-progress-circular
-                    indeterminate
-                    color="grey lighten-5"
-                  />
-                </v-layout>
-              </template>
-            </v-img>
+          <v-img
+            :src="proj.attachments[0] ? proj.attachments[0].thumbnailUrl : ''"
+            max-width="120"
+            class="rounded"
+          >
+            <template #placeholder>
+              <v-layout
+                fill-height
+                align-center
+                justify-center
+                ma-0
+              >
+                <v-progress-circular
+                  indeterminate
+                  color="grey lighten-5"
+                />
+              </v-layout>
+            </template>
+          </v-img>
           <div class="flex-grow">
             <v-card-title>
               {{ proj.name }}
@@ -94,9 +94,9 @@
                 >
                   event
                 </v-icon>
-                {{ new Date(proj.dateModified || proj.dateCreated).toLocaleDateString() }}
+                {{ getLocalDateString(proj.dateModified || proj.dateCreated) }}
               </div>
-               <div>
+              <div>
                 <v-icon
                   left
                   small
@@ -158,6 +158,7 @@ import Categories from './CurseforgeCategories.vue'
 import { useCurseforge } from '../composables/curseforge'
 import { vFocusOnSearch } from '../directives/focusOnSearch'
 import { getExpectedSize } from '/@/util/size'
+import { getLocalDateString } from '/@/util/date'
 
 interface CurseforgeProps {
   type: string

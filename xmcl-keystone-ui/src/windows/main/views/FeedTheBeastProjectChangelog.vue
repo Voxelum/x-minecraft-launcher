@@ -18,7 +18,7 @@ import { FeedTheBeastServiceKey, FTBVersion } from '@xmcl/runtime-api'
 import { useRefreshable, useService } from '/@/composables'
 import MarkdownIt from 'markdown-it'
 
-const parser = new MarkdownIt()
+const parser = new MarkdownIt({ html: true })
 
 const props = defineProps<{ id: number; version: FTBVersion }>()
 const { getModpackVersionChangelog } = useService(FeedTheBeastServiceKey)

@@ -327,7 +327,7 @@ const contextMenuItems = computed(() => {
   background-color: #e65100;
 }
 
-.dark-theme .subsequence.draggable-card {
+.dark .subsequence.draggable-card {
   /* background-color: rgba(255, 255, 255, 0.15); */
   border-color: rgba(255, 255, 255, 0.15);
   background-color: #343434;

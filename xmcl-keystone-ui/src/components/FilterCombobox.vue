@@ -5,7 +5,7 @@
     tabindex="0"
     :items="filterOptions"
     :label="label"
-    :search-input.sync="filteredText"
+    :search-input.sync="filterTextBuffer"
     item-text="value"
     chips
     clearable
@@ -73,11 +73,26 @@
 import { getColor } from '../util/color'
 import { FilterCombobox } from '../composables'
 import { vFocusOnSearch } from '../windows/main/directives/focusOnSearch'
+import debounce from 'lodash.debounce'
 
 defineProps<{ label: String }>()
 
 const model = inject(FilterCombobox)
 if (!model) { throw new Error('Please call useFilterCombobox in upper level') }
+
+const filterTextBuffer = ref(model.filteredText.value)
+
+const debounceSetText = debounce((v: string) => {
+  filteredText.value = v
+}, 450)
+
+watch(filterTextBuffer, (newVal) => {
+  debounceSetText(newVal)
+})
+
+watch(model.filteredText, (newVal) => {
+  filterTextBuffer.value = newVal
+})
 
 const {
   selectedFilterOptions,

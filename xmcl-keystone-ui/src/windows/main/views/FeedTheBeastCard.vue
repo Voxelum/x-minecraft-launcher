@@ -53,7 +53,7 @@
           v-if="date"
           style="color: grey;"
         >
-          {{ new Date(date * 1000).toLocaleDateString() }}
+          {{ getLocalDateString(date * 1000) }}
         </div>
       </v-card-subtitle>
       <v-card-text>{{ description }}</v-card-text>
@@ -81,11 +81,10 @@
 
 <script lang=ts setup>
 import { useFeedTheBeastProject } from '../composables/ftb'
-import { useI18n } from '/@/composables'
+import { getLocalDateString } from '/@/util/date'
 
 const props = defineProps<{ id: number }>()
 
-const { t } = useI18n()
 const { refresh, refreshing, manifest } = useFeedTheBeastProject(computed(() => props.id))
 const avatar = computed(() => manifest.value!.art.find(v => v.type === 'square')?.url ?? '')
 const title = computed(() => manifest.value?.name ?? '')
