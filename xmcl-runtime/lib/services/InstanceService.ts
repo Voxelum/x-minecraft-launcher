@@ -81,8 +81,9 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           await this.createAndMount({})
         }
       } else {
-        if (this.state.all[selectedInstance]) {
-          await this.mountInstance(selectedInstance)
+        const selectedInstancePath = normalizeInstancePath(selectedInstance)
+        if (this.state.all[selectedInstancePath]) {
+          await this.mountInstance(selectedInstancePath)
         } else {
           await this.mountInstance(Object.keys(state.all)[0])
         }

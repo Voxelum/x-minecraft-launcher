@@ -81,7 +81,9 @@ export default class NetworkManager extends Manager {
       http,
       https,
     })
-    this.request = got.extend({ agent: this.agents })
+    this.request = got.extend({
+      agent: this.agents,
+    })
   }
 
   getDownloadBaseOptions() {

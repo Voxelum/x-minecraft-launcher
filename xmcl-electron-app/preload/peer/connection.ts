@@ -94,6 +94,7 @@ export class PeerSession {
       sdp: d!.sdp,
     }
     ipcRenderer.send('localDescription', transfer)
+    console.log(`Update local description: ${d?.sdp}`)
   }
 
   setRemoteIdentity(remoteId: string, name: string, avatar: string) {

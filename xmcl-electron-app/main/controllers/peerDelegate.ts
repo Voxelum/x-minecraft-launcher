@@ -33,10 +33,9 @@ export const peerPlugin: ControllerPlugin = function (this: Controller) {
         this.app.log('Create peer window')
         browser.loadFile(htmlUrl)
         this.setupBrowserLogger(browser, 'peer')
-
-        browser.webContents.on('console-message', (event, level, message, line, sourceId) => {
-          this.app.log(`[Peer] ${message}`)
-        })
+        // browser.webContents.on('console-message', (event, level, message, line, sourceId) => {
+        //   this.app.log(`[Peer] ${message}`)
+        // })
       }
       return browser
     }

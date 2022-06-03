@@ -1,50 +1,22 @@
 import { CachedFTBModpackVersionManifest, FeedTheBeastService as IFeedTheBeastService, FeedTheBeastServiceKey, FeedTheBeastState, FTBModpackManifest, FTBModpacksResult, FTBModpackVersionManifest, FTBVersionManifestStoreSchema, GetFTBModpackVersionOptions, SearchFTBModpackOptions } from '@xmcl/runtime-api'
-import { readFile, writeFile } from 'atomically'
 import { LauncherApp } from '../app/LauncherApp'
-import { CacheDictionary } from '../util/cache'
+import { PersistedInMemoryCache } from '../util/cache'
 import { createSafeFile } from '../util/persistance'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
 import { Inject, StatefulService } from './Service'
 
-class PersistCache<T> extends CacheDictionary<T> {
-  constructor(private cacheFile: string) {
-    super(60 * 1000 * 10)
-    readFile(this.cacheFile, { encoding: 'utf-8' }).then((v) => {
-      this.cache = JSON.parse(v)
-    }, () => {
-      // ignore error
-    })
-  }
-
-  set(key: string, value: T, ttl?: number) {
-    super.set(key, value, ttl)
-    writeFile(this.cacheFile, JSON.stringify(this.cache))
-  }
-
-  delete(key: string) {
-    super.delete(key)
-    writeFile(this.cacheFile, JSON.stringify(this.cache))
-    return true
-  }
-
-  clear(): void {
-    super.clear()
-    writeFile(this.cacheFile, JSON.stringify(this.cache))
-  }
-}
-
 export class FeedTheBeastService extends StatefulService<FeedTheBeastState> implements IFeedTheBeastService {
   private api = this.networkManager.request.extend({
     prefixUrl: 'https://api.modpacks.ch/public/',
-    cache: new PersistCache(this.getPath('ftb-cache.json')),
+    cache: new PersistedInMemoryCache(this.getAppDataPath('ftb-cache.json')),
     headers: {
       'User-Agent': 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36 OverwolfClient/0.195.0.18',
       Origin: 'overwolf-extension://cmogmmciplgmocnhikmphehmeecmpaggknkjlbag',
     },
   })
 
-  private cache = createSafeFile(this.getPath('ftb.json'), FTBVersionManifestStoreSchema, this)
+  private cache = createSafeFile(this.getAppDataPath('ftb.json'), FTBVersionManifestStoreSchema, this)
 
   private cachedVersions: CachedFTBModpackVersionManifest[] = []
 
