@@ -264,6 +264,8 @@ export abstract class AbstractService extends EventEmitter {
 
   get credentialManager() { return this.app.credentialManager }
 
+  get databaseManager() { return this.app.databaseManager }
+
   get workerManager() { return this.app.workerManager }
 
   get semaphoreManager() { return this.app.semaphoreManager }

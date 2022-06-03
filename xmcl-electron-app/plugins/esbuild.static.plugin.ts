@@ -1,6 +1,6 @@
 import { Plugin } from 'esbuild'
 import { readFile } from 'fs/promises'
-import { join } from 'path'
+import { isAbsolute, join } from 'path'
 /**
  * Resolve the import of preload and emit it as single chunk of js file in rollup.
  */
@@ -17,6 +17,9 @@ export default function createStaticPlugin(): Plugin {
           })
         })
         build.onLoad({ filter: /^.+$/g, namespace: 'static' }, async ({ path, pluginData: { resolveDir } }) => {
+          if (!isAbsolute(path)) {
+            path = join(resolveDir, path)
+          }
           return ({
             contents: await readFile(path),
             resolveDir: resolveDir,

@@ -1,7 +1,7 @@
-import { GenericEventEmitter } from '../events'
 import { Exception } from '../entities/exception'
-import { AnyPersistedResource, AnyResource, PersistedCurseforgeModpackResource, PersistedFabricResource, PersistedForgeResource, PersistedLiteloaderResource, PersistedMcbbsModpackResource, PersistedModpackResource, PersistedResource, PersistedResourcePackResource, PersistedSaveResource, PersistedShaderPackResource, PersistedUnknownResource, SourceInformation } from '../entities/resource'
+import { AnyPersistedResource, AnyResource, PersistedCurseforgeModpackResource, PersistedFabricResource, PersistedForgeResource, PersistedLiteloaderResource, PersistedMcbbsModpackResource, PersistedModpackResource, PersistedModrinthModpackResource, PersistedResource, PersistedResourcePackResource, PersistedSaveResource, PersistedShaderPackResource, PersistedUnknownResource, SourceInformation } from '../entities/resource'
 import { ResourceDomain } from '../entities/resource.schema'
+import { GenericEventEmitter } from '../events'
 import { ServiceKey, StatefulService } from './Service'
 
 export declare type FileTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save'
@@ -82,7 +82,7 @@ export class ResourceState {
   mods = [] as Array<PersistedForgeResource | PersistedLiteloaderResource | PersistedFabricResource>
   resourcepacks = [] as Array<PersistedResourcePackResource>
   saves = [] as Array<PersistedSaveResource>
-  modpacks = [] as Array<PersistedModpackResource | PersistedCurseforgeModpackResource | PersistedMcbbsModpackResource>
+  modpacks = [] as Array<PersistedModpackResource | PersistedCurseforgeModpackResource | PersistedMcbbsModpackResource | PersistedModrinthModpackResource>
   shaderpacks = [] as Array<PersistedShaderPackResource>
   unknowns = [] as Array<PersistedUnknownResource>
 
@@ -173,9 +173,6 @@ interface ResourceServiceEventMap {
  */
 export interface ResourceService extends StatefulService<ResourceState>, GenericEventEmitter<ResourceServiceEventMap> {
   load(domain: ResourceDomain): Promise<void>
-  queryResources(): Promise<PersistedResource[]>
-
-  queryResourcesByTags(): Promise<PersistedResource[]>
   /**
    * Remove a resource from the launcher
    * @param resourceOrKey

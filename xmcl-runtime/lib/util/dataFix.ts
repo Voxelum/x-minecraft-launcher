@@ -1,7 +1,9 @@
+import { AnyPersistedResource } from '@xmcl/runtime-api'
 import { openFileSystem } from '@xmcl/system'
 import { writeJSON } from 'fs-extra'
 import { basename, extname, join, relative } from 'path'
 import { RESOURCE_FILE_VERSION } from '../constant'
+import { PrismaClient } from '../database/client.gen'
 import { forgeModParser } from '../entities/resourceParsers/forgeMod'
 import { Logger } from './log'
 
@@ -48,5 +50,42 @@ export async function fixResourceSchema({ log, warn }: Logger, filePath: string,
 
   if (dirty) {
     await writeJSON(filePath, schema)
+  }
+}
+
+export async function migrateToDatabase(resources: AnyPersistedResource[], db: PrismaClient) {
+  for (const res of resources) {
+    db.resource.create({
+      data: {
+        name: res.name,
+        ext: res.ext,
+        hash: res.hash,
+        type: res.type.toString(),
+        domain: res.domain.toString(),
+        date: res.date,
+        iconUri: res.iconUri,
+        metadata: JSON.stringify(res.metadata),
+        tags: {
+          create: res.tags.map(tag => ({ hash: res.hash, tag })),
+        },
+        uri: {
+          create: res.uri.map(uri => ({ hash: res.hash, uri })),
+        },
+      },
+    })
+    if (res.curseforge) {
+      db.curseforge.create({ data: { ...res.curseforge, hash: res.hash } })
+    }
+    if (res.modrinth) {
+      db.modrinth.create({
+        data: {
+          hash: res.hash,
+          projectId: res.modrinth.projectId,
+          fileName: res.modrinth.filename,
+          versionId: res.modrinth.versionId,
+          url: res.modrinth.url,
+        },
+      })
+    }
   }
 }
