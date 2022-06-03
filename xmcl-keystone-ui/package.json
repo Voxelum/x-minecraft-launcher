@@ -78,10 +78,10 @@
         "unplugin-vue2-script-setup": "^0.10.0",
         "vite": "^2.9.6",
         "vite-plugin-vue2": "^1.9.3",
-        "vite-plugin-windicss": "^1.5.4",
+        "vite-plugin-windicss": "^1.8.4",
         "vue-observe-visibility": "^0.4.6",
         "vue-template-compiler": "^2.6.14",
         "vue-tsc": "^0.29.7",
-        "windicss": "^3.2.1"
+        "windicss": "^3.5.4"
     }
 }
