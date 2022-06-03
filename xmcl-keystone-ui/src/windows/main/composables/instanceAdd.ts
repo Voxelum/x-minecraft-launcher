@@ -1,4 +1,4 @@
-import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, InstanceData, InstanceSchema, InstanceServiceKey, JavaServiceKey, McbbsModpackResource, ModpackResource, ResourceServiceKey, ResourceType } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, InstanceData, InstanceSchema, InstanceServiceKey, JavaServiceKey, McbbsModpackResource, ModpackResource, ModrinthModpackResource, ResourceServiceKey, ResourceType } from '@xmcl/runtime-api'
 import { DialogKey } from './dialog'
 import { useFeedTheBeastVersionsCache } from './ftb'
 import { useService } from '/@/composables'
@@ -11,6 +11,7 @@ export interface Template {
   minecraft: string
   forge: string
   fabric: string
+  quilt: string
   source: TemplateSource
 }
 
@@ -23,6 +24,9 @@ export type TemplateSource = {
 } | {
   type: 'modpack'
   resource: ModpackResource
+} | {
+  type: 'modrinth'
+  resource: ModrinthModpackResource
 } | {
   type: 'instance'
   instance: InstanceSchema
@@ -46,6 +50,7 @@ export function useAllTemplate(data: InstanceData) {
       minecraft: instance.runtime.minecraft,
       forge: instance.runtime.forge ?? '',
       fabric: instance.runtime.fabricLoader ?? '',
+      quilt: '',
       source: { type: 'instance', instance },
     }) as Template))
     all.push(...resourceState.modpacks.map((modpack) => {
@@ -53,6 +58,8 @@ export function useAllTemplate(data: InstanceData) {
         return getCurseforgeTemplate(modpack)
       } else if (modpack.type === ResourceType.McbbsModpack) {
         return getMcbbsTemplate(modpack)
+      } else if (modpack.type === ResourceType.ModrinthModpack) {
+        return getModrinthTemplate(modpack)
       } else {
         return getModpackTemplate(modpack)
       }
@@ -70,12 +77,27 @@ export function useAllTemplate(data: InstanceData) {
     return all
   })
 
+  function getModrinthTemplate(modrinth: ModrinthModpackResource): Template {
+    const result: Template = {
+      id: modrinth.path,
+      name: `${modrinth.metadata.name}-${modrinth.metadata.versionId}`,
+      minecraft: modrinth.metadata.dependencies.minecraft,
+      forge: modrinth.metadata.dependencies.forge ?? '',
+      fabric: modrinth.metadata.dependencies['fabric-loader'] ?? '',
+      quilt: modrinth.metadata.dependencies['quilt-loader'] ?? '',
+      source: { type: 'modrinth', resource: modrinth },
+    }
+
+    return result
+  }
+
   function getCurseforgeTemplate(curseforge: CurseforgeModpackResource): Template {
     const result: Template = {
       id: curseforge.path,
       name: `${curseforge.metadata.name}-${curseforge.metadata.version}`,
       minecraft: curseforge.metadata.minecraft.version,
       forge: '',
+      quilt: '',
       fabric: '',
       source: { type: 'curseforge', resource: curseforge },
     }
@@ -96,6 +118,7 @@ export function useAllTemplate(data: InstanceData) {
       minecraft: res.metadata.addons.find(a => a.id === 'minecraft')?.version ?? '',
       forge: res.metadata.addons.find(a => a.id === 'forge')?.version ?? '',
       fabric: res.metadata.addons.find(a => a.id === 'fabric')?.version ?? '',
+      quilt: '',
       source: { type: 'mcbbs', resource: res },
     }
     return result
@@ -108,6 +131,7 @@ export function useAllTemplate(data: InstanceData) {
       minecraft: modpack.metadata.runtime.minecraft,
       forge: modpack.metadata.runtime.forge ?? '',
       fabric: modpack.metadata.runtime.fabricLoader ?? '',
+      quilt: '',
       source: {
         type: 'modpack',
         resource: modpack,
@@ -220,6 +244,16 @@ export function useAllTemplate(data: InstanceData) {
     // console.log(manifest.targets.find(v => v.name === 'java'))
   }
 
+  function applyModrinth(template: Template, modrinth: ModrinthModpackResource) {
+    data.name = template.name
+    data.author = ''
+    data.description = modrinth.metadata.summary ?? ''
+    data.runtime.minecraft = template.minecraft
+    data.runtime.forge = template.forge
+    data.runtime.fabricLoader = template.fabric
+    data.runtime.quiltLoader = template.quilt
+  }
+
   function apply(template: Template) {
     if (template.source.type === 'instance') {
       applyInstanceTemplate(template.source.instance)
@@ -231,6 +265,8 @@ export function useAllTemplate(data: InstanceData) {
       applyModpack(template.source.resource)
     } else if (template.source.type === 'ftb') {
       applyFTB(template, template.source.manifest)
+    } else if (template.source.type === 'modrinth') {
+      applyModrinth(template, template.source.resource)
     }
   }
 

@@ -1,4 +1,4 @@
-import { computed, reactive, toRefs, watch } from '@vue/composition-api'
+import { computed, InjectionKey, reactive, Ref, toRefs, watch } from '@vue/composition-api'
 import { Category, GameVersion, License, Loader, SearchResultHit } from '@xmcl/modrinth'
 import { ModrinthServiceKey } from '@xmcl/runtime-api'
 import { useI18n, useRouter, useService, useRefreshable } from '/@/composables'
@@ -16,41 +16,66 @@ export interface ModrinthOptions {
   page: number
 }
 
-export function useModrinth(props: ModrinthOptions) {
-  const { searchProjects, getTags } = useService(ModrinthServiceKey)
-  const { $t } = useI18n()
-  const { replace } = useRouter()
-  const projectTypes = computed(() => [{
-    value: 'mod',
-    text: $t('modrinth.projectType.mod')
-  }, {
-    value: 'modpack',
-    text: $t('modrinth.projectType.modpack')
-  }])
-  const sortOptions = computed(() => [{
-    name: '',
-    text: $t('modrinth.sort.relevance'),
-  }, {
-    name: 'downloads',
-    text: $t('modrinth.sort.downloads'),
-  }, {
-    name: 'follows',
-    text: $t('modrinth.sort.follows'),
-  }, {
-    name: 'newest',
-    text: $t('modrinth.sort.newest'),
-  }, {
-    name: 'updated',
-    text: $t('modrinth.sort.updated'),
-  }])
+export const ModrinthCategoriesKey: InjectionKey<Ref<Category[]>> = Symbol('ModrinthCategoriesKey')
 
+export function useModrinthTags() {
+  const { getTags } = useService(ModrinthServiceKey)
   const data = reactive({
-    projects: [] as SearchResultHit[],
     gameVersions: [] as GameVersion[],
     licenses: [] as License[],
     categories: [] as Category[],
     modLoaders: [] as Loader[],
     environments: [] as string[],
+  })
+
+  const { refresh, refreshing } = useRefreshable(async () => {
+    const result = await getTags()
+    data.gameVersions = result.gameVersions
+    data.licenses = result.licenses
+    data.categories = result.categories
+    data.modLoaders = result.modLoaders
+    data.environments = result.environments
+  })
+
+  provide(ModrinthCategoriesKey, computed(() => data.categories))
+
+  return {
+    ...toRefs(data),
+    refresh,
+    refreshing,
+  }
+}
+
+export function useModrinth(props: ModrinthOptions) {
+  const { searchProjects } = useService(ModrinthServiceKey)
+  const { t } = useI18n()
+  const { replace } = useRouter()
+  const projectTypes = computed(() => [{
+    value: 'mod',
+    text: t('modrinth.projectType.mod'),
+  }, {
+    value: 'modpack',
+    text: t('modrinth.projectType.modpack'),
+  }])
+  const sortOptions = computed(() => [{
+    name: '',
+    text: t('modrinth.sort.relevance'),
+  }, {
+    name: 'downloads',
+    text: t('modrinth.sort.downloads'),
+  }, {
+    name: 'follows',
+    text: t('modrinth.sort.follows'),
+  }, {
+    name: 'newest',
+    text: t('modrinth.sort.newest'),
+  }, {
+    name: 'updated',
+    text: t('modrinth.sort.updated'),
+  }])
+
+  const data = reactive({
+    projects: [] as SearchResultHit[],
     pageSize: 10,
     pageCount: 0,
     pageSizeOptions: [5, 10, 15, 20],
@@ -116,15 +141,6 @@ export function useModrinth(props: ModrinthOptions) {
     },
   })
 
-  const { refresh: refreshTag, refreshing: refreshingTag } = useRefreshable(async () => {
-    const result = await getTags()
-    data.gameVersions = result.gameVersions
-    data.licenses = result.licenses
-    data.categories = result.categories
-    data.modLoaders = result.modLoaders
-    data.environments = result.environments
-  })
-
   const refs = toRefs(data)
 
   const { refresh, refreshing } = useRefreshable(async () => {
@@ -180,8 +196,6 @@ export function useModrinth(props: ModrinthOptions) {
     query,
     refresh: wrappedRefresh,
     refreshing,
-    refreshTag,
-    refreshingTag,
     sortOptions,
     projectType,
     gameVersion,

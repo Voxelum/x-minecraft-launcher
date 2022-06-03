@@ -91,6 +91,7 @@ import { ContextMenuItem } from '../composables/contextMenu'
 import { useCurseforgeRoute } from '../composables/curseforgeRoute'
 import { vContextMenu } from '../directives/contextMenu'
 import { ModpackItem } from '../composables/modpack'
+import { getLocalDateString } from '/@/util/date'
 
 const props = defineProps<{ item: ModpackItem }>()
 const emit = defineEmits(['tags', 'delete'])
@@ -101,7 +102,7 @@ const { goProjectAndRoute } = useCurseforgeRoute()
 const router = useRouter()
 const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.item.tags, set(v) { emit('tags', v) } }))
 const onDeleteTag = removeTag
-const time = computed(() => props.item.resource?.date ? new Date(props.item.resource?.date).toLocaleDateString() : props.item.ftb ? new Date(props.item.ftb.updated * 1000).toLocaleDateString() : '')
+const time = computed(() => props.item.resource?.date ? getLocalDateString(props.item.resource?.date) : props.item.ftb ? getLocalDateString(props.item.ftb.updated * 1000) : '')
 const contextMenuItems: Ref<ContextMenuItem[]> = computed(() => {
   if (!props.item.resource) {
     if (props.item.ftb) {

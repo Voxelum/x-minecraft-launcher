@@ -1,26 +1,26 @@
+import { DownloadTask, UnzipTask } from '@xmcl/installer'
+import { DownloadError } from '@xmcl/installer/http/error'
 import { CurseforgeModpackManifest, EditGameSettingOptions, ExportModpackOptions, ImportModpackOptions, isResourcePackResource, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoAddon, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, PersistedResource, ResourceDomain, SourceInformation } from '@xmcl/runtime-api'
 import { MultipleError, task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { existsSync } from 'fs'
 import { ensureDir, remove, unlink, writeFile } from 'fs-extra'
 import { basename, join } from 'path'
+import { Entry, ZipFile } from 'yauzl'
 import LauncherApp from '../app/LauncherApp'
-import { installModpackTask, ModpackInstallGeneralError, readMetadata, resolveInstanceOptions } from '../entities/modpack'
+import { readMetadata, resolveInstanceOptions } from '../entities/modpack'
 import { getCurseforgeUrl } from '../entities/resource'
 import { isFile, sha1ByPath } from '../util/fs'
 import { requireObject } from '../util/object'
+import { joinUrl } from '../util/url'
 import { ZipTask } from '../util/zip'
+import { CurseForgeService } from './CurseForgeService'
 import { InstanceModsService } from './InstanceModsService'
 import { InstanceOptionsService } from './InstanceOptionsService'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, Inject } from './Service'
 import { VersionService } from './VersionService'
-import { Entry, ZipFile } from 'yauzl'
-import { CurseForgeService } from './CurseForgeService'
-import { DownloadTask, UnzipTask } from '@xmcl/installer'
-import { joinUrl } from '../util/url'
-import { DownloadError } from '@xmcl/installer/http/error'
 
 interface ModpackDownloadableFile {
   destination: string
@@ -283,7 +283,9 @@ export class ModpackService extends AbstractService implements IModpackService {
             ? f.type === 'curse'
               ? resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID))
               : resourceService.getResourceByKey(f.hash)
-            : resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID))
+            : 'downloads' in f
+              ? resourceService.getResourceByKey(f.downloads[0])
+              : resourceService.getResourceByKey(getCurseforgeUrl(f.projectID, f.fileID))
           if (r) {
             resources.push(r)
           } else {
@@ -328,7 +330,7 @@ export class ModpackService extends AbstractService implements IModpackService {
         files: files.map(f => ({
           path: f.destination,
           source: f.source,
-          url: [f.url, getCurseforgeUrl(f.projectId, f.fileId)],
+          url: [...f.downloads],
         })),
         background: true,
       })
@@ -342,7 +344,9 @@ export class ModpackService extends AbstractService implements IModpackService {
       if (files.length > 0) {
         const mapping: Record<string, string> = {}
         for (const file of files) {
-          mapping[`${file.projectId}:${file.fileId}`] = file.path
+          if (file.source.curseforge) {
+            mapping[`${file.source.curseforge.fileId}:${file.source.curseforge.fileId}`] = file.destination
+          }
         }
 
         for (const res of newResources) {
@@ -472,7 +476,7 @@ export class ModpackService extends AbstractService implements IModpackService {
           if (e instanceof MultipleError) {
             for (const err of e.errors) {
               if (err instanceof DownloadError) {
-                
+
               }
             }
           }
@@ -503,12 +507,15 @@ export class ModpackService extends AbstractService implements IModpackService {
               hash: f.hash,
             },
             agents: options.agents,
-            segmentPolicy: options.segmentPolicy,
-            retryHandler: options.retryHandler,
+            // segmentPolicy: options.segmentPolicy,
+            // retryHandler: options.retryHandler,
           }).setName('download')))
         }
       } catch (e) {
-        throw new ModpackException(files, e as Error)
+        throw new ModpackException({
+          type: 'modpackInstallFailed',
+          files: infos,
+        })
       }
 
       if (missingFiles.length > 0) {

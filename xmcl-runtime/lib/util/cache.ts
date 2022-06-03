@@ -1,3 +1,7 @@
+import { readFile, writeFile } from 'atomically'
+import filenamify from 'filenamify'
+import { unlink } from 'fs-extra'
+import { join } from 'path'
 /**
  * The helper class to hold object with ttl, which is useful for holding web api result.
  */
@@ -33,5 +37,52 @@ export class CacheDictionary<T> {
 
   clear() {
     this.cache = {}
+  }
+}
+
+export class PersistedInMemoryCache<T> extends CacheDictionary<T> {
+  constructor(private cacheFile: string) {
+    super(60 * 1000 * 10)
+    readFile(this.cacheFile, { encoding: 'utf-8' }).then((v) => {
+      this.cache = JSON.parse(v)
+    }, () => {
+      // ignore error
+    })
+  }
+
+  set(key: string, value: T, ttl?: number) {
+    super.set(key, value, ttl)
+    writeFile(this.cacheFile, JSON.stringify(this.cache))
+  }
+
+  delete(key: string) {
+    super.delete(key)
+    writeFile(this.cacheFile, JSON.stringify(this.cache))
+    return true
+  }
+
+  clear(): void {
+    super.clear()
+    writeFile(this.cacheFile, JSON.stringify(this.cache))
+  }
+}
+
+export class PersistFileCache<T> {
+  constructor(private cacheDir: string) {
+  }
+
+  async get(key: string) {
+    return await readFile(join(this.cacheDir, filenamify(key)), 'utf-8')
+  }
+
+  async set(key: string, value: any, ttl?: number) {
+    await writeFile(join(this.cacheDir, filenamify(key)), value)
+  }
+
+  async delete(key: string): Promise<boolean> {
+    return await unlink(join(this.cacheDir, filenamify(key))).then(() => true, () => false)
+  }
+
+  clear(): void | Promise<void> {
   }
 }

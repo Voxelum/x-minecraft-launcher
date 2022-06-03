@@ -5,37 +5,10 @@
   >
     <div class="item">
       <v-icon class="material-icon-outlined">
-        file_download
-      </v-icon>
-      <div>
-        <span>{{ $t('modrinth.downloads') }}</span>
-        {{ downloads }}
-      </div>
-    </div>
-    <div class="item">
-      <v-icon class="material-icon-outlined">
-        event
-      </v-icon>
-      <div>
-        <span>{{ $t('modrinth.createAt') }}</span>
-        {{ new Date(createAt).toLocaleDateString() }}
-      </div>
-    </div>
-    <div class="item">
-      <v-icon class="material-icon-outlined">
         edit
       </v-icon>
       <div>
         <span>{{ $t('modrinth.avaiableFor') }}</span>
-      </div>
-    </div>
-    <div class="item">
-      <v-icon class="material-icon-outlined">
-        edit
-      </v-icon>
-      <div>
-        <span>{{ $t('modrinth.updateAt') }}</span>
-        {{ new Date(updateAt).toLocaleDateString() }}
       </div>
     </div>
     <div class="item">

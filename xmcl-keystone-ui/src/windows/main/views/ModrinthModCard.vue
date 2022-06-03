@@ -5,7 +5,7 @@
     :disabled="disabled"
     hover
     class="rounded-lg p-4"
-    @click="$emit('click')"
+    @click="emit('click')"
   >
     <div class="flex">
       <v-img
@@ -32,13 +32,13 @@
             <v-icon small>
               event
             </v-icon>
-            {{ new Date(value.date_created).toLocaleString() }}
+            {{ getLocalDateString(value.date_created) }}
           </span>
           <span>
             <v-icon small>
               edit
             </v-icon>
-            {{ new Date(value.date_modified).toLocaleDateString() }}
+            {{ getLocalDateString(value.date_modified) }}
           </span>
           <span>
             <v-icon small>
@@ -53,29 +53,41 @@
           @click.stop.prevent
         >
           <v-chip
-            v-for="tag in value.categories"
-            :key="tag"
+            v-for="tag in items"
+            :key="tag.name"
             label
             small
-            @click="$emit('filter', tag)"
+            @click="emit('filter', tag.name)"
           >
-            {{ $t(`modrinth.categories.${tag}`) }}
+            <v-avatar
+              left
+              v-html="tag.icon"
+            />
+            {{ t(`modrinth.categories.${tag.name}`) }}
           </v-chip>
         </div>
       </div>
     </div>
   </v-card>
 </template>
-<script lang="ts">
-import { defineComponent } from '@vue/composition-api'
-import type { SearchResultHit } from '@xmcl/modrinth'
-import { required } from '/@/util/props'
+<script lang="ts" setup>
+import type { Category, SearchResultHit } from '@xmcl/modrinth'
+import { ModrinthCategoriesKey } from '../composables/modrinth'
+import { useI18n } from '/@/composables'
+import { getLocalDateString } from '/@/util/date'
+import { injection } from '/@/util/inject'
 
-export default defineComponent({
-  props: {
-    disabled: required(Boolean),
-    value: required<SearchResultHit>(Object),
-  },
-  setup() { },
+const props = defineProps<{
+  disabled: boolean
+  value: SearchResultHit
+}>()
+
+const emit = defineEmits(['filter', 'click'])
+const { t } = useI18n()
+
+const cates = injection(ModrinthCategoriesKey)
+const items = computed(() => {
+  return props.value.categories.map(c => cates.value.find(cat => cat.name === c)).filter((c): c is Category => !!c)
 })
+
 </script>
