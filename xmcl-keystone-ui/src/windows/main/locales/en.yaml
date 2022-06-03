@@ -137,6 +137,7 @@ disk:
   available: Available
   used: Used
 download: Download
+downloadCount: '{count} downloads'
 edit: Edit
 error:
   empty: No error yet
@@ -270,11 +271,12 @@ instanceAge:
   threeDay: In Three Days
   today: Today
 instanceTemplate:
-  curseforge: This is a Curseforge configuration
-  ftb: This is a FTB configuration
+  curseforge: This is a Curseforge modpack
+  modrinth: This is a Modrinth modpack
+  ftb: This is a FTB modpack
   importing: Template Importing
-  mcbbs: This is a MCBBS configuration
-  modpack: This is a modpack configuration
+  mcbbs: This is a MCBBS modpack
+  modpack: This is a raw modpack
   preview: Modpack Preview
   profile: This is a existed profile configuration
   server: This is a existed server configuration
@@ -478,32 +480,33 @@ modpack:
   urlHint: The home page url of your modpack
 modrinth:
   avaiableFor: available for
+  gallery: Gallery
   categories:
     adventure: Adventure
+    challenging: Challenging
+    combat: Combat
     cursed: Cursed
     decoration: Decoration
     equipment: Equipment
     fabric: Fabric
     food: Food
     forge: Forge
+    kitchen-sink: Kitchen Sink
     library: Library
+    lightweight: Lightweight
     magic: Magic
     misc: Misc
+    modloader: Mod Loader
+    multiplayer: Multiplayer
     name: Categories
     optimization: Optimizations
+    quests: Quests
+    quilt: Quilt
+    rift: Rift
     storage: Storage
     technology: Technology
     utility: Utility
     worldgen: World Gen
-    modloader: Mod Loader
-    quilt: Quilt
-    rift: Rift
-    challenging: Challenging
-    combat: Combat
-    kitchen-sink: Kitchen Sink
-    lightweight: Lightweight
-    multiplayer: Multiplayer
-    quests: Quests
   clientSide: Client Side
   createAt: Created
   description: Description
@@ -512,8 +515,13 @@ modrinth:
     client: Client
     name: Environment
     server: Server
+  followers: Followers
   gameVersions:
     name: Game Versions
+  headers:
+    status: Stats
+    support: Supports
+    version: Version
   installFrom: Install from Modrinth
   license: License
   licenses:
@@ -537,6 +545,8 @@ modrinth:
     updated: Recently updated
   updateAt: Updated
   versions: Versions
+quiltVersion:
+  disable: Disable Quilt
 multiplayer:
   complete: Complete
   confirm: Confirm
