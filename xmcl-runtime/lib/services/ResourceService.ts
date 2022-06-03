@@ -92,53 +92,12 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     })
   }
 
-  private migrate() {
-    const migrateDomain = async (domain: ResourceDomain) => {
-      for (const res of this.state[domain]) {
-        this.client.resource.create({
-          data: {
-            name: res.name,
-            ext: res.ext,
-            hash: res.hash,
-            type: res.type.toString(),
-            domain: res.domain.toString(),
-            date: res.date,
-            iconUri: res.iconUri,
-            metadata: JSON.stringify(res.metadata),
-            tags: {
-              create: res.tags.map(tag => ({ hash: res.hash, tag })),
-            },
-            uri: {
-              create: res.uri.map(uri => ({ hash: res.hash, uri })),
-            },
-          },
-        })
-        if (res.curseforge) {
-          this.client.curseforge.create({ data: { ...res.curseforge, hash: res.hash } })
-        }
-        if (res.modrinth) {
-          this.client.modrinth.create({
-            data: {
-              hash: res.hash,
-              projectId: res.modrinth.projectId,
-              fileName: res.modrinth.filename,
-              versionId: res.modrinth.versionId,
-              url: res.modrinth.url,
-            },
-          })
-        }
-      }
-    }
-    for (const domain of [
-      ResourceDomain.Mods,
-      ResourceDomain.ResourcePacks,
-      ResourceDomain.Saves,
-      ResourceDomain.Modpacks,
-      ResourceDomain.ShaderPacks,
-      ResourceDomain.Unknown,
-    ]) {
-      migrateDomain(domain)
-    }
+  queryResources(): Promise<PersistedResource<unknown>[]> {
+    throw new Error('Method not implemented.')
+  }
+
+  queryResourcesByTags(): Promise<PersistedResource<unknown>[]> {
+    throw new Error('Method not implemented.')
   }
 
   /**
@@ -561,31 +520,31 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     }
     // const [] = parseResource(path, fileType, sha1, stat, type ?? '*')
     const [resolved, icon] = await
-      parseResource(path, fileType, sha1, stat, type ?? '*')
-        // this.worker().parseResource({
-        //   path,
-        //   sha1,
-        //   fileType,
-        //   stat,
-        //   hint: type ?? '*',
-        // })
-        .catch((e) => {
-          const resource: Resource<void> = {
-            hash: sha1!,
-            fileType: fileType!,
-            ino: stat.ino,
-            path,
-            fileName: '',
-            name: basename(path),
-            size: stat.size,
-            ext: extname(path),
-            type: ResourceType.Unknown,
-            domain: ResourceDomain.Unknown,
-            metadata: undefined,
-            uri: [],
-          }
-          return [resource, undefined] as const
-        })
+    parseResource(path, fileType, sha1, stat, type ?? '*')
+    // this.worker().parseResource({
+    //   path,
+    //   sha1,
+    //   fileType,
+    //   stat,
+    //   hint: type ?? '*',
+    // })
+      .catch((e) => {
+        const resource: Resource<void> = {
+          hash: sha1!,
+          fileType: fileType!,
+          ino: stat.ino,
+          path,
+          fileName: '',
+          name: basename(path),
+          size: stat.size,
+          ext: extname(path),
+          type: ResourceType.Unknown,
+          domain: ResourceDomain.Unknown,
+          metadata: undefined,
+          uri: [],
+        }
+        return [resource, undefined] as const
+      })
     return [resolved, icon] as const
   }
 

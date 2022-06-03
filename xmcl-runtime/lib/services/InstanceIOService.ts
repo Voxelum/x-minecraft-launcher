@@ -236,13 +236,13 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
             projectId: resource.modrinth.projectId,
             versionId: resource.modrinth.versionId,
           }
-        } 
+        }
         if (resource?.curseforge) {
           localFile.curseforge = {
             projectId: resource.curseforge.projectId,
             fileId: resource.curseforge.fileId,
           }
-        } 
+        }
         localFile.downloads = resource?.uri && resource.uri.some(u => u.startsWith('http')) ? resource.uri.filter(u => u.startsWith('http')) : undefined
         files.push(localFile)
       }

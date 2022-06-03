@@ -475,9 +475,7 @@ export class ModpackService extends AbstractService implements IModpackService {
         } catch (e) {
           if (e instanceof MultipleError) {
             for (const err of e.errors) {
-              if (err instanceof DownloadError) {
-
-              }
+              // if (err instanceof DownloadError) { }
             }
           }
           throw new ModpackException({
@@ -526,7 +524,7 @@ export class ModpackService extends AbstractService implements IModpackService {
         })
       }
 
-      return files
+      return infos
     })
   }
 }

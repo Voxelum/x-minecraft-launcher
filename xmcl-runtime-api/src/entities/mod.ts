@@ -45,11 +45,11 @@ export function forceForgeModMetadata(e: ForgeModParseFailedError, fileName: str
     modsToml: [],
     ...asm,
   }
-  if (asm.fmlPluginClassName) { 
+  if (asm.fmlPluginClassName) {
     const split = asm.fmlPluginClassName.split('/')
     let className = split[split.length - 1]
     className = className.endsWith('Plugin') ? className.substring(0, className.length - 'Plugin'.length) : className
-    
+
     result.modid = className
     result.name = className
   }
