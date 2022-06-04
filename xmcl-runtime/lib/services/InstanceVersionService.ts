@@ -84,7 +84,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
       fix: (issue) => installService.installAssetsForVersion(issue.version),
       validator: async (builder, issue) => {
         if (this.state.version) {
-          if (this.state.version.assetIndex.id === issue.version) {
+          if (this.state.version.id === issue.version) {
             // only if re-valid if the version unchanged
             await this.diagnoseAssetIndex(builder, this.state.version, MinecraftFolder.from(this.state.version.minecraftDirectory))
           }
