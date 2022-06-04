@@ -16,7 +16,7 @@
         elevation="1"
       >
         <div class="flex-grow" />
-        <v-btn
+        <!-- <v-btn
           text
           @click="showShareInstance()"
         >
@@ -24,7 +24,7 @@
             share
           </v-icon>
           {{ t('multiplayer.share') }}
-        </v-btn>
+        </v-btn> -->
 
         <v-btn
           text
@@ -87,7 +87,7 @@
             <v-list-item-title>
               {{ c.userInfo.name || c.id }}
             </v-list-item-title>
-            <v-list-item-subtitle class="flex gap-2 ">
+            <v-list-item-subtitle class="flex gap-2 items-center">
               <v-chip
                 label
                 small
@@ -98,13 +98,11 @@
                 </v-icon>
                 {{ t(`peerConnectionState.name`) }}:
                 {{ t(`peerConnectionState.${c.connectionState}`) }}
+                <template v-if="c.connectionState === 'connected'">
+                  ({{ c.ping }}ms)
+                </template>
               </v-chip>
-              <!-- <v-chip
-                label
-                small
-              >
-                {{ c.signalingState }}
-              </v-chip> -->
+              <!-- {{ c.ping }}ms -->
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action

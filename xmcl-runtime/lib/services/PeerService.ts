@@ -20,6 +20,7 @@ export interface PeerServiceWebRTCFacade {
   on(event: 'connection', handler: (event: { id: string }) => void): this
   on(event: 'shared-instance-manifest', handler: (event: { id: string; manifest: InstanceManifestSchema }) => void): this
   on(event: 'download-progress', handler: (event: { id: number; chunkSize: number }) => void): this
+  on(event: 'peer-heartbeat', handler: (event: { id: string; ping: number }) => void): this
 
   create(id: string): Promise<void>
   initiate(id: string): Promise<void>
@@ -86,6 +87,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
             name: '',
             avatar: '',
           },
+          ping: -1,
           signalingState: 'closed',
           localDescriptionSDP: '',
           iceGatheringState: 'new',
@@ -99,6 +101,9 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       })
       .on('download-progress', ({ id, chunkSize }) => {
         this.downloadCallbacks[id]?.(chunkSize)
+      })
+      .on('peer-heartbeat', ({ id, ping }) => {
+        this.state.connectionPing({ id, ping })
       })
   }
 

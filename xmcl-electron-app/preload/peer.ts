@@ -1,5 +1,6 @@
 import { InstanceManifestSchema } from '@xmcl/runtime-api'
 import { ipcRenderer } from 'electron'
+import { MessageHeartbeatPingEntry, MessageHeartbeatPongEntry } from './peer/messages/heartbeat'
 import { URL } from 'url'
 import { MessageGetSharedManifestEntry, MessageShareManifestEntry } from './peer/messages/download'
 import { MessageIdentityEntry } from './peer/messages/identity'
@@ -14,6 +15,8 @@ const host = new PeerHost([
   MessageMemberJoinInitiateEntry,
   MessageMemberJoinAcceptEntry,
   MessageShareManifestEntry,
+  MessageHeartbeatPingEntry,
+  MessageHeartbeatPongEntry,
   MessageGetSharedManifestEntry,
 ])
 
