@@ -1,7 +1,7 @@
 import { Plugin } from 'esbuild'
-import { readFile } from 'fs-extra'
+import { readdir, readFile } from 'fs-extra'
 import { platform } from 'os'
-import { dirname, join } from 'path'
+import { dirname, join, resolve } from 'path'
 
 /**
  * Correctly handle native node import.
@@ -10,6 +10,7 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
   return {
     name: 'resolve-native-module',
     setup(build) {
+      const os = platform()
       if (build.initialOptions.watch) {
         build.onLoad(
           { filter: /^.+[\\/]node_modules[\\/].+[\\/]7zip-bin[\\/]index\.js$/g },
@@ -68,6 +69,16 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
           // }
         },
       )
+
+      build.onResolve({ filter: /^virtual:prisma-native$/g }, async ({ path, resolveDir }) => {
+        const dirName = resolve('../xmcl-runtime/lib/database/client.gen')
+        const nodeFile = (await readdir(dirName)).find(f => f.endsWith('.node'))
+        return ({
+          path: join(dirName, nodeFile!),
+          namespace: 'static',
+          pluginData: { resolveDir },
+        })
+      })
 
       if (!build.initialOptions.watch) {
         const opts = build.initialOptions
