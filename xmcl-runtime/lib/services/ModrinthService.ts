@@ -1,6 +1,6 @@
 import { DownloadTask } from '@xmcl/installer'
 import { Category, GameVersion, License, Loader, Project, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
-import { InstallProjectVersionOptions, ModrinthService as IModrinthService, ModrinthServiceKey, ModrinthState, PersistedResource } from '@xmcl/runtime-api'
+import { InstallProjectVersionOptions, ModrinthService as IModrinthService, ModrinthServiceKey, ModrinthState, PersistedResource, ResourceDomain } from '@xmcl/runtime-api'
 import { basename, join } from 'path'
 import { URLSearchParams } from 'url'
 import { LauncherApp } from '../app/LauncherApp'

@@ -165,6 +165,11 @@ export class ResourceState {
 
 interface ResourceServiceEventMap {
   'error': ResourceException
+
+  'modpackImport': {
+    path: string
+    name: string
+  }
 }
 
 /**

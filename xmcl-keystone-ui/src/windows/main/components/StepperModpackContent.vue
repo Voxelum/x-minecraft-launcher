@@ -13,7 +13,7 @@
       />
     </v-list>
     <InstanceManifestFileTree
-      v-else-if="ftbFiles.length > 0"
+      v-else-if="ftbFiles.length > 0 || modrinthFiles.length > 0"
       :value="[]"
     />
   </div>
@@ -22,8 +22,9 @@
 import { FTBFile } from '@xmcl/runtime-api'
 import { Template } from '../composables/instanceAdd'
 import { InstanceFileNode, provideFileNodes } from '../composables/instanceFiles'
-import StepperModpackContentFile from './StepperModpackContentFile.vue'
 import InstanceManifestFileTree from './InstanceManifestFileTree.vue'
+import StepperModpackContentFile from './StepperModpackContentFile.vue'
+import { basename } from '/@/util/basename'
 
 const props = defineProps<{
   modpack?: Template
@@ -34,8 +35,10 @@ const curseforgeFiles = computed(() => props.modpack?.source.type === 'curseforg
 
 const ftbFiles = computed(() => props.modpack?.source.type === 'ftb' ? props.modpack.source.manifest.files : [])
 
+const modrinthFiles = computed(() => props.modpack?.source.type === 'modrinth' ? props.modpack.source.resource.metadata.files : [])
+
 provideFileNodes(computed(() => {
-  function getNode(file: FTBFile): InstanceFileNode {
+  function getFTBNode(file: FTBFile): InstanceFileNode {
     return {
       id: file.path.replace('./', '') + file.name,
       name: file.name,
@@ -44,7 +47,21 @@ provideFileNodes(computed(() => {
       choice: [],
     }
   }
-  return ftbFiles.value.map(getNode)
+  function getNode(file: { path: string; fileSize?: number; downloads: string[] }): InstanceFileNode {
+    return {
+      id: file.path,
+      name: basename(file.path),
+      size: file.fileSize ?? 0,
+      choice: [],
+      choices: [],
+    }
+  }
+
+  if (ftbFiles.value.length > 0) {
+    return ftbFiles.value.map(getFTBNode)
+  } else {
+    return modrinthFiles.value.map(getNode)
+  }
 }))
 
 </script>
