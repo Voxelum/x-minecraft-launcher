@@ -1,6 +1,7 @@
 import Controller from '@/Controller'
 import { BrowserWindow, dialog, FindInPageOptions, ipcMain } from 'electron'
 import { ControllerPlugin } from './plugin'
+import { platform } from 'os'
 
 export enum Operation {
   Minimize = 0,
@@ -11,6 +12,7 @@ export enum Operation {
 }
 
 export const windowController: ControllerPlugin = function (this: Controller) {
+  const currentPlatform = platform()
   ipcMain.handle('dialog:showOpenDialog', (event, ...args) => {
     return dialog.showOpenDialog(BrowserWindow.fromWebContents(event.sender)!, args[0])
   })
@@ -29,10 +31,14 @@ export const windowController: ControllerPlugin = function (this: Controller) {
       switch (operation) {
         case Operation.Maximize:
           if (window.maximizable) {
-            if (!window.isMaximized()) {
-              window.maximize()
+            if (currentPlatform === 'darwin') {
+              window.fullScreen = !window.fullScreen
             } else {
-              window.unmaximize()
+              if (!window.isMaximized()) {
+                window.maximize()
+              } else {
+                window.unmaximize()
+              }
             }
             return true
           }
