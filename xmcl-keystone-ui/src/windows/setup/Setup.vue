@@ -68,6 +68,7 @@
           >
             <SetDataRoot
               v-model="path"
+              class="h-full overflow-auto"
               :default-path="defaultPath"
               :drives="drives"
             />
