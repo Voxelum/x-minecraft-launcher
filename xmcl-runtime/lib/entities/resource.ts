@@ -3,7 +3,7 @@ import { FileSystem, openFileSystem } from '@xmcl/system'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { ensureFile, rename, stat, Stats, unlink, writeFile } from 'fs-extra'
-import { basename, dirname, extname, join } from 'path'
+import { basename, dirname, extname, join, resolve } from 'path'
 import { FileType, linkOrCopy } from '../util/fs'
 import resourceParsers from './resourceParsers'
 import { forgeModParser } from './resourceParsers/forgeMod'
@@ -222,7 +222,10 @@ export async function persistResource(resolved: Resource, repository: string, so
   let metadataPath = join(repository, `${location}.json`)
   let iconPath = join(repository, `${location}.png`)
 
-  if (existsSync(filePath)) {
+  const existed = existsSync(filePath)
+  const exitedResourceFile = existed ? (await stat(filePath)).ino === resolved.ino : undefined
+
+  if (existed && !exitedResourceFile) {
     fileName = `${name}.${builder.hash.slice(0, 6)}`
     location = join(builder.domain, fileName)
     filePath = join(repository, `${location}${builder.ext}`)
@@ -230,13 +233,17 @@ export async function persistResource(resolved: Resource, repository: string, so
     iconPath = join(repository, `${location}.png`)
   }
 
-  pending.add(filePath)
-  await ensureFile(filePath)
-  if (dirname(resolved.path) === dirname(filePath)) {
-    await rename(resolved.path, filePath)
-  } else {
-    await linkOrCopy(resolved.path, filePath)
+  if (!exitedResourceFile) {
+    // skip to handle the file if it's inside the resource dir
+    pending.add(filePath)
+    await ensureFile(filePath)
+    if (dirname(resolved.path) === dirname(filePath)) {
+      await rename(resolved.path, filePath)
+    } else {
+      await linkOrCopy(resolved.path, filePath)
+    }
   }
+
   if (builder.icon) {
     await writeFile(iconPath, builder.icon)
   }
