@@ -5,6 +5,7 @@ import { createWriteStream } from 'fs'
 import { ensureFile, unlink } from 'fs-extra'
 import { createConnection } from 'net'
 import { TransferDescription } from '../peer'
+import { MessageHeartbeatPing } from './messages/heartbeat'
 import { MessageIdentity } from './messages/identity'
 import { MessageType } from './messages/message'
 import { PeerHost } from './PeerHost'
@@ -239,6 +240,9 @@ export class PeerSession {
       }
     })
     this.channel = channel
+    setInterval(() => {
+      this.send(MessageHeartbeatPing, { time: Date.now() })
+    }, 1000)
   }
 
   close() {

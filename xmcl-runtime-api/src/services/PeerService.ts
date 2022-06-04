@@ -26,6 +26,7 @@ export interface PeerConnection {
   userInfo: ConnectionUserInfo
   initiator: boolean
   localDescriptionSDP: string
+  ping: number
   connectionState: ConnectionState
   iceGatheringState: IceGatheringState
   signalingState: SignalingState
@@ -71,6 +72,13 @@ export class PeerState {
     const conn = this.connections.find(c => c.id === update.id)
     if (conn) {
       conn.connectionState = update.connectionState
+    }
+  }
+
+  connectionPing(update: { id: string; ping: number }) {
+    const conn = this.connections.find(c => c.id === update.id)
+    if (conn) {
+      conn.ping = update.ping
     }
   }
 
