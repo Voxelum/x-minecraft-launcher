@@ -1,6 +1,6 @@
 import { DownloadTask, UnzipTask } from '@xmcl/installer'
 import { DownloadError } from '@xmcl/installer/http/error'
-import { CurseforgeModpackManifest, EditGameSettingOptions, ExportModpackOptions, ImportModpackOptions, isResourcePackResource, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoAddon, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, PersistedResource, ResourceDomain, SourceInformation } from '@xmcl/runtime-api'
+import { CurseforgeModpackManifest, EditGameSettingOptions, ExportModpackOptions, getResolvedVersion, ImportModpackOptions, isResourcePackResource, IssueReportBuilder, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoAddon, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, PersistedResource, ResourceDomain, SourceInformation, VersionIssueKey } from '@xmcl/runtime-api'
 import { MultipleError, task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { existsSync } from 'fs'
@@ -15,9 +15,11 @@ import { requireObject } from '../util/object'
 import { joinUrl } from '../util/url'
 import { ZipTask } from '../util/zip'
 import { CurseForgeService } from './CurseForgeService'
+import { InstallService } from './InstallService'
 import { InstanceModsService } from './InstanceModsService'
 import { InstanceOptionsService } from './InstanceOptionsService'
 import { InstanceService } from './InstanceService'
+import { InstanceVersionService } from './InstanceVersionService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, Inject } from './Service'
 import { VersionService } from './VersionService'
@@ -36,6 +38,8 @@ export class ModpackService extends AbstractService implements IModpackService {
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(VersionService) private versionService: VersionService,
+    @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
+    @Inject(InstallService) private installService: InstallService,
     @Inject(CurseForgeService) private curseforgeService: CurseForgeService,
     @Inject(InstanceModsService) private instanceModsService: InstanceModsService,
     @Inject(InstanceOptionsService) private instanceOptionsService: InstanceOptionsService,
@@ -269,7 +273,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     }
 
     const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
-    return lock.write(async () => {
+    await lock.write(async () => {
       // the mapping from current filename to expect filename
       const resourcePacksMapping: Record<string, string> = {}
       // the existed resources
@@ -380,8 +384,6 @@ export class ModpackService extends AbstractService implements IModpackService {
       if (options.mountAfterSucceed) {
         await this.instanceService.mountInstance(instancePath)
       }
-
-      return instancePath
     }).catch((e) => {
       this.error(`Fail to install modpack: ${path}`)
       this.error(e)
@@ -391,6 +393,18 @@ export class ModpackService extends AbstractService implements IModpackService {
       }
       throw e
     })
+
+    const instance = this.instanceService.state.all[instancePath]
+    const versionHeader = getResolvedVersion(this.versionService.state.local, instance.runtime, instance.version)
+    const resolvedVersion = versionHeader ? await this.versionService.resolveLocalVersion(versionHeader.id) : undefined
+    if (!resolvedVersion) {
+      const version = await this.instanceVersionService.installRuntime(instance.runtime)
+      if (version) {
+        await this.installService.installDependencies(version)
+      }
+    }
+
+    return instancePath
   }
 
   private installModpackTask(zip: ZipFile, entries: Entry[], manifest: CurseforgeModpackManifest | McbbsModpackManifest | ModrinthModpackManifest, root: string) {

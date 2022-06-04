@@ -1,8 +1,7 @@
-import { SourceInformation } from '../entities/resource'
 import { Exception } from '../entities/exception'
+import { SourceInformation } from '../entities/resource'
 import { EditInstanceOptions } from './InstanceService'
 import { ServiceKey } from './Service'
-
 export interface ExportModpackOptions {
   /**
    * The name of the modpack.

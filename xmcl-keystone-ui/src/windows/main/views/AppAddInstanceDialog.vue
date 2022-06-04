@@ -96,7 +96,7 @@
 
 <script lang=ts setup>
 import { Ref } from '@vue/composition-api'
-import { InstanceFile, InstanceIOServiceKey, ModpackServiceKey } from '@xmcl/runtime-api'
+import { InstanceFile, InstanceIOServiceKey, ModpackServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
 import AdvanceContent from '../components/StepperAdvanceContent.vue'
 import BaseContent from '../components/StepperBaseContent.vue'
 import StepperFooter from '../components/StepperFooter.vue'
@@ -108,10 +108,11 @@ import { CreateOptionKey, useInstanceCreation } from '../composables/instanceCre
 import { useNotifier } from '../composables/notifier'
 import { useI18n, useRefreshable, useRouter, useService } from '/@/composables'
 
-const { isShown, parameter } = useDialog(AddInstanceDialogKey)
+const { isShown, parameter, show: showAddInstance } = useDialog(AddInstanceDialogKey)
 const { show } = useDialog('task')
 const { create, reset, data: creationData } = useInstanceCreation()
 const router = useRouter()
+const { on } = useService(ResourceServiceKey)
 const { importModpack } = useService(ModpackServiceKey)
 const { applyInstanceFilesUpdate } = useService(InstanceIOServiceKey)
 const { t } = useI18n()
@@ -214,6 +215,17 @@ const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
   isShown.value = false
 })
 
+on('modpackImport', ({ path, name }) => {
+  notify({
+    level: 'success',
+    title: t('downloadedNotification', { name }),
+    full: true,
+    more: () => {
+      showAddInstance(path)
+    },
+  })
+})
+
 watch(isShown, (shown) => {
   if (creating.value) {
     return
@@ -243,3 +255,11 @@ watch(isShown, (shown) => {
   display: flex !important;
 }
 </style>
+
+<i18n locale="en" lang="yaml">
+downloadedNotification: The modpack {name} downloaded. Do you want to create instance for it?
+</i18n>
+
+<i18n locale="zh-CN" lang="yaml">
+downloadedNotification: 整合包 {name} 下载成功。是否现在创建整合包实例？
+</i18n>

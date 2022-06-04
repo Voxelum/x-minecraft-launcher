@@ -1,6 +1,6 @@
 import { diagnoseAssetIndex, diagnoseAssets, diagnoseJar, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedVersion } from '@xmcl/core'
 import { diagnoseInstall, InstallProfile } from '@xmcl/installer'
-import { Asset, AssetIndexIssueKey, AssetsIssueKey, getResolvedVersion, InstallableLibrary, InstallProfileIssueKey, InstanceVersionException, InstanceVersionService as IInstanceVersionService, InstanceVersionServiceKey, InstanceVersionState, isSameForgeVersion, LibrariesIssueKey, parseOptifineVersion, IssueReportBuilder, RuntimeVersions, VersionIssueKey, VersionJarIssueKey, getExpectVersion, LocalVersionHeader } from '@xmcl/runtime-api'
+import { Asset, AssetIndexIssueKey, AssetsIssueKey, getResolvedVersion, InstallableLibrary, InstallProfileIssueKey, InstanceVersionException, InstanceVersionService as IInstanceVersionService, InstanceVersionServiceKey, InstanceVersionState, isSameForgeVersion, LibrariesIssueKey, parseOptifineVersion, IssueReportBuilder, RuntimeVersions, VersionIssueKey, VersionJarIssueKey, getExpectVersion, LocalVersionHeader, Instance } from '@xmcl/runtime-api'
 import { readFile, readJSON } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
@@ -16,7 +16,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(VersionService) private versionService: VersionService,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
-    @Inject(InstallService) installService: InstallService,
+    @Inject(InstallService) private installService: InstallService,
   ) {
     super(app, InstanceVersionServiceKey, () => new InstanceVersionState())
 
@@ -24,36 +24,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
       id: VersionIssueKey,
       fix: async (issue) => {
         const { minecraft, forge, fabricLoader, optifine, quiltLoader } = issue
-        let targetVersion: string | undefined
-        if (minecraft && this.versionService.state.local.every(v => v.minecraft !== minecraft)) {
-          const versions = await installService.getMinecraftVersionList()
-          const metadata = versions.versions.find(v => v.id === minecraft)
-          if (metadata) {
-            await installService.installMinecraft(metadata)
-          }
-          targetVersion = metadata?.id
-        }
-        if (forge) {
-          const forges = await installService.getForgeVersionList({ minecraftVersion: minecraft })
-          const forgeVer = forges.find(v => isSameForgeVersion(v.version, forge))
-          if (!forgeVer) {
-            targetVersion = await installService.installForgeUnsafe({ mcversion: minecraft, version: forge })
-          } else {
-            targetVersion = await installService.installForgeUnsafe(forgeVer)
-          }
-        } else if (fabricLoader) {
-          targetVersion = await installService.installFabricUnsafe({ minecraft, loader: fabricLoader })
-        } else if (quiltLoader) {
-          targetVersion = await installService.installQuilt({ minecraftVersion: minecraft, version: quiltLoader })
-        }
-        if (optifine) {
-          const { patch, type } = parseOptifineVersion(optifine)
-          const id = await installService.installOptifine({ mcversion: minecraft, patch, type, inhrenitFrom: targetVersion })
-          targetVersion = id
-        }
-        if (targetVersion) {
-          await installService.installDependencies(targetVersion)
-        }
+        await this.installRuntime({ minecraft, forge, fabricLoader, optifine, quiltLoader })
       },
       validator: async (builder, issue) => {
         const runtime = this.instanceService.state.instance.runtime
@@ -296,7 +267,38 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     }
   }
 
-  private async diagnoseAll(builder: IssueReportBuilder, currentVersion: ResolvedVersion | undefined) {
+  async installRuntime(runtime: Instance['runtime']) {
+    const { minecraft, forge, fabricLoader, quiltLoader } = runtime
+    const mcVersions = await this.installService.getMinecraftVersionList()
+    const metadata = mcVersions.versions.find(v => v.id === minecraft)
+    if (metadata) {
+      await this.installService.installMinecraft(metadata)
+      if (forge) {
+        const forgeVersions = await this.installService.getForgeVersionList({ minecraftVersion: minecraft })
+        const found = forgeVersions.find(v => v.version === forge)
+        if (found) {
+          const forge = found
+          const fullVersion = await this.installService.installForgeUnsafe(forge)
+          return fullVersion
+        } else {
+          this.emit('error', new InstanceVersionException({ type: 'fixVersionNoForgeVersionMetadata', minecraft, forge }))
+          return undefined
+        }
+      }
+      if (fabricLoader) {
+        return await this.installService.installFabricUnsafe({ loader: fabricLoader, minecraft })
+      }
+      if (quiltLoader) {
+        return await this.installService.installQuiltUnsafe({ version: quiltLoader, minecraftVersion: minecraft })
+      }
+      return minecraft
+      // TODO: check liteloader
+    } else {
+      this.emit('error', new InstanceVersionException({ type: 'fixVersionNoVersionMetadata', minecraft }))
+    }
+  }
+
+  async diagnoseAll(builder: IssueReportBuilder, currentVersion: ResolvedVersion | undefined) {
     const id = this.instanceService.state.path
     const selected = this.instanceService.state.all[id]
     if (!selected) {

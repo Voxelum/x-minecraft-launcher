@@ -362,6 +362,10 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     const task = this.importFileTask(options, context)
     const resource = await (options.background ? task.startAndWait() : this.submit(task))
 
+    if (resource.domain === ResourceDomain.Modpacks) {
+      this.emit('modpackImport', { path: resource.path, name: resource.name })
+    }
+
     this.log(`Persist newly added resource ${resource.path} -> ${resource.domain}`)
     return resource
   }
