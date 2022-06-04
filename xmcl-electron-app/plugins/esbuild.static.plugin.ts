@@ -8,24 +8,25 @@ export default function createStaticPlugin(): Plugin {
   return {
     name: 'resolve-static',
     setup(build) {
+      build.onResolve({ filter: /^.+\?static$/g }, async ({ path, resolveDir }) => {
+        return ({
+          path: path.substring(0, path.length - '.static'.length),
+          pluginData: { resolveDir },
+          namespace: 'static',
+        })
+      })
+      build.onLoad({ filter: /^.+$/g, namespace: 'static' }, async ({ path, pluginData: { resolveDir } }) => {
+        console.log(`load static: ${path}`)
+        if (!isAbsolute(path)) {
+          path = join(resolveDir, path)
+        }
+        return ({
+          contents: await readFile(path),
+          resolveDir: resolveDir,
+          loader: 'file',
+        })
+      })
       if (!build.initialOptions.watch) {
-        build.onResolve({ filter: /^.+\?static$/g }, async ({ path, resolveDir }) => {
-          return ({
-            path: path.substring(0, path.length - '.static'.length),
-            pluginData: { resolveDir },
-            namespace: 'static',
-          })
-        })
-        build.onLoad({ filter: /^.+$/g, namespace: 'static' }, async ({ path, pluginData: { resolveDir } }) => {
-          if (!isAbsolute(path)) {
-            path = join(resolveDir, path)
-          }
-          return ({
-            contents: await readFile(path),
-            resolveDir: resolveDir,
-            loader: 'file',
-          })
-        })
         build.onResolve({ filter: /^.+\.png$/g }, async ({ path, resolveDir }) => {
           return ({
             path: path + '?static',

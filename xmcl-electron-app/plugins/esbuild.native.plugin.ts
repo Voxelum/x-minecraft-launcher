@@ -10,7 +10,6 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
   return {
     name: 'resolve-native-module',
     setup(build) {
-      const os = platform()
       if (build.initialOptions.watch) {
         build.onLoad(
           { filter: /^.+[\\/]node_modules[\\/].+[\\/]7zip-bin[\\/]index\.js$/g },
