@@ -74,6 +74,12 @@ export class InstanceJavaService extends StatefulService<InstanceJavaState> impl
               }
             } else if (j.path === this.state.java?.path) {
               this.updateJava()
+            } else if (
+              diagnoseService.state.report[InvalidJavaIssueKey as string].parameters.length > 0 ||
+              diagnoseService.state.report[IncompatibleJavaIssueKey as string]?.parameters.length > 0 ||
+              diagnoseService.state.report[MissingJavaIssueKey as string]?.parameters.length > 0
+            ) {
+              this.updateJava()
             }
           } else {
             this.updateJava()
