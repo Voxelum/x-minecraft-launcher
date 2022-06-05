@@ -196,7 +196,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
       const status = await stat(p)
       const ino = status.ino
       const isDirectory = status.isDirectory()
-      const resource = this.resourceService.getResourceByKey(ino)
+      let resource = this.resourceService.getResourceByKey(ino)
       const relativePath = relative(instancePath, p).replace(/\\/g, '/')
       if (relativePath.startsWith('resourcepacks') || relativePath.startsWith('shaderpacks')) {
         if (relativePath.endsWith('.json') || relativePath.endsWith('.png')) {
@@ -221,15 +221,19 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
           await scan(join(p, child))
         }
       } else {
+        const sha1 = resource?.hash ?? await this.worker().checksum(p, 'sha1')
         const localFile: InstanceFile = {
           path: relativePath,
           size: status.size,
           updateAt: status.mtimeMs,
           createAt: status.ctimeMs,
           hashes: {
-            sha1: resource?.hash ?? await checksum(p, 'sha1'),
-            sha256: await checksum(p, 'sha256'),
+            sha1,
+            sha256: await this.worker().checksum(p, 'sha256'),
           },
+        }
+        if (!resource) {
+          resource = this.resourceService.getResourceByKey(sha1)
         }
         if (resource?.modrinth) {
           localFile.modrinth = {
