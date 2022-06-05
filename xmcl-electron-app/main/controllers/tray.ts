@@ -102,6 +102,6 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
     if (app.dock) {
       app.dock.setIcon(nativeTheme.shouldUseDarkColors ? man.iconSets.darkDockIcon : man.iconSets.dockIcon)
     }
-    this.tray?.setImage(nativeTheme.shouldUseDarkColors ? man.iconSets.darkDockIcon : man.iconSets.dockIcon)
+    this.tray?.setImage(nativeTheme.shouldUseDarkColors ? man.iconSets.darkTrayIcon : man.iconSets.trayIcon)
   })
 }
