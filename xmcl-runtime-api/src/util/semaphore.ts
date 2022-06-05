@@ -21,5 +21,5 @@ export function resolveLocks(lock: string): string[] {
 export type ParamSerializer = (...params: any[]) => string | undefined
 
 export function getServiceSemaphoreKey<T>(key: ServiceKey<T>, method: keyof T, params?: string) {
-  return params ? `${key}.${method}(${params})` : `${key}.${method}()`
+  return params ? `${key}.${method as string}(${params})` : `${key}.${method as string}()`
 }

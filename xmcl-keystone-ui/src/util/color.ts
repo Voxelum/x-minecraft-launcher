@@ -16,7 +16,7 @@ export function getColor(name: string) {
   return colors[code % colors.length]
 }
 
-export function getColorForReleaseType(type: 'release' | 'alpha' | 'beta' | 1 | 2 | 3 | string) {
+export function getColorForReleaseType(type: 'release' | 'alpha' | 'beta' | 1 | 2 | 3 | string | number) {
   switch (type) {
     case 1:
     case 'release': return 'green'

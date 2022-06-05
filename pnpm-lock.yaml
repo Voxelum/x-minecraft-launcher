@@ -65,6 +65,7 @@ importers:
       '@types/lodash.throttle': ^4.1.6
       '@types/node': ~15
       '@types/pngjs': ^6.0.1
+      '@types/semver': ^7.3.9
       '@types/sharp': ^0.29.4
       '@types/yauzl': ^2.9.2
       '@types/yazl': ^2.4.2
@@ -116,6 +117,7 @@ importers:
       '@types/lodash.throttle': 4.1.7
       '@types/node': 15.14.9
       '@types/pngjs': 6.0.1
+      '@types/semver': 7.3.9
       '@types/sharp': 0.29.5
       '@types/yauzl': 2.10.0
       '@types/yazl': 2.4.2
@@ -164,7 +166,9 @@ importers:
     specifiers:
       '@intlify/vite-plugin-vue-i18n': ^4.0.0
       '@modyfi/vite-plugin-yaml': ^1.0.2
+      '@types/lodash.debounce': ^4.0.6
       '@types/markdown-it': ^12.2.3
+      '@types/semver': ^7.3.9
       '@types/three': ^0.127.1
       '@typescript-eslint/eslint-plugin': ^5.6.0
       '@typescript-eslint/parser': ^5.6.0
@@ -259,7 +263,9 @@ importers:
     devDependencies:
       '@intlify/vite-plugin-vue-i18n': 4.0.0_vite@2.9.9+vue-i18n@8.27.1
       '@modyfi/vite-plugin-yaml': 1.0.2_vite@2.9.9
+      '@types/lodash.debounce': 4.0.7
       '@types/markdown-it': 12.2.3
+      '@types/semver': 7.3.9
       '@typescript-eslint/eslint-plugin': 5.27.0_ooh2c75fp6fgtlhgtsiolt5b2u
       '@typescript-eslint/parser': 5.27.0_r6wgjs2cmdapk4bysm6dglulo4
       '@vue/devtools': 5.3.4
@@ -293,9 +299,9 @@ importers:
       '@types/fs-extra': ^8.1.2
       '@types/lodash.debounce': ^4.0.6
       '@types/lodash.throttle': ^4.1.6
-      '@types/long': ^4.0.1
       '@types/lzma-native': ^4.0.1
       '@types/node': ~15
+      '@types/semver': ^7.3.9
       '@types/yauzl': ^2.9.2
       '@types/yazl': ^2.4.2
       '@typescript-eslint/eslint-plugin': ^5.6.0
@@ -401,9 +407,9 @@ importers:
       '@types/fs-extra': 8.1.2
       '@types/lodash.debounce': 4.0.7
       '@types/lodash.throttle': 4.1.7
-      '@types/long': 4.0.2
       '@types/lzma-native': 4.0.1
       '@types/node': 15.14.9
+      '@types/semver': 7.3.9
       '@types/yauzl': 2.10.0
       '@types/yazl': 2.4.2
       '@typescript-eslint/eslint-plugin': 5.27.0_ooh2c75fp6fgtlhgtsiolt5b2u
@@ -423,6 +429,7 @@ importers:
   xmcl-runtime-api:
     specifiers:
       '@types/eslint': ^8.2.1
+      '@types/semver': ^7.3.9
       '@typescript-eslint/eslint-plugin': ^5.6.0
       '@typescript-eslint/parser': ^5.6.0
       '@xmcl/client': workspace:*
@@ -475,6 +482,7 @@ importers:
       semver: 7.3.7
     devDependencies:
       '@types/eslint': 8.4.2
+      '@types/semver': 7.3.9
       '@typescript-eslint/eslint-plugin': 5.27.0_ooh2c75fp6fgtlhgtsiolt5b2u
       '@typescript-eslint/parser': 5.27.0_r6wgjs2cmdapk4bysm6dglulo4
       esbuild: 0.14.42
@@ -489,9 +497,9 @@ importers:
 
   xmcl/packages/asm:
     specifiers:
-      long: ~3
+      long: ^5.2.0
     dependencies:
-      long: 3.2.0
+      long: 5.2.0
 
   xmcl/packages/client:
     specifiers:
@@ -500,14 +508,14 @@ importers:
       '@xmcl/nbt': ^2.0.3
       '@xmcl/text-component': ^2.1.1
       bytebuffer: ^5.0.1
-      long: ~3
+      long: ^5.2.0
       tslib: ^2.3.1
       uuid: ^8.3.2
     dependencies:
       '@xmcl/nbt': link:../nbt
       '@xmcl/text-component': link:../text-component
       bytebuffer: 5.0.1
-      long: 3.2.0
+      long: 5.2.0
       uuid: 8.3.2
     devDependencies:
       '@types/bytebuffer': 5.0.43
@@ -518,11 +526,9 @@ importers:
     specifiers:
       '@types/yauzl': ^2.9.2
       '@xmcl/unzip': ^2.0.0
-      uuid: ^8.3.2
       yauzl: ^2.10.0
     dependencies:
       '@xmcl/unzip': link:../unzip
-      uuid: 8.3.2
       yauzl: 2.10.0
     devDependencies:
       '@types/yauzl': 2.10.0
@@ -601,12 +607,12 @@ importers:
       '@types/pako': ^1.0.1
       bytebuffer: ^5.0.1
       file-type: ^12.4.2
-      long: ~3
+      long: ^5.2.0
       pako: ^1.0.10
     dependencies:
       bytebuffer: 5.0.1
       file-type: 12.4.2
-      long: 3.2.0
+      long: 5.2.0
     devDependencies:
       '@types/bytebuffer': 5.0.43
       '@types/pako': 1.0.4
@@ -618,12 +624,12 @@ importers:
       '@types/pako': ^1.0.1
       bytebuffer: ^5.0.1
       file-type: ^11.0.0
-      long: ^3.2.0
+      long: ^5.2.0
       pako: ^1.0.10
     dependencies:
       bytebuffer: 5.0.1
       file-type: 11.1.0
-      long: 3.2.0
+      long: 5.2.0
       pako: 1.0.11
     devDependencies:
       '@types/bytebuffer': 5.0.43
@@ -643,9 +649,11 @@ importers:
 
   xmcl/packages/system:
     specifiers:
+      '@types/yauzl': ^2.10.0
       '@xmcl/unzip': ^2.0.0
       jszip: ^3.7.1
     dependencies:
+      '@types/yauzl': 2.10.0
       '@xmcl/unzip': link:../unzip
       jszip: 3.10.0
 
@@ -657,10 +665,14 @@ importers:
 
   xmcl/packages/unzip:
     specifiers:
+      '@types/node': ^15.14.9
       '@types/uuid': ^8.3.1
+      '@types/yauzl': ^2.9.2
       yauzl: ^2.10.0
     devDependencies:
+      '@types/node': 15.14.9
       '@types/uuid': 8.3.4
+      '@types/yauzl': 2.10.0
       yauzl: 2.10.0
 
   xmcl/packages/user:
@@ -691,11 +703,11 @@ importers:
     specifiers:
       '@xmcl/nbt': ^2.0.3
       '@xmcl/system': ^2.2.3
-      long: ~3
+      long: ^5.2.0
     dependencies:
       '@xmcl/nbt': link:../nbt
       '@xmcl/system': link:../system
-      long: 3.2.0
+      long: 5.2.0
 
 packages:
 
@@ -2610,6 +2622,9 @@ packages:
   /@types/node/17.0.38:
     resolution: {integrity: sha512-5jY9RhV7c0Z4Jy09G+NIDTsCZ5G0L5n+Z+p+Y7t5VJHM30bgwzSjVtlcBxqAj+6L/swIlvtOSzr8rBk/aNyV2g==}
 
+  /@types/node/17.0.40:
+    resolution: {integrity: sha512-UXdBxNGqTMtm7hCwh9HtncFVLrXoqA3oJW30j6XWp5BH/wu3mVeaxo7cq5benFdBw34HB3XDT2TRPI7rXZ+mDg==}
+
   /@types/pako/1.0.4:
     resolution: {integrity: sha512-Z+5bJSm28EXBSUJEgx29ioWeEEHUh6TiMkZHDhLwjc9wVFH+ressbkmX6waUZc5R3Gobn4Qu5llGxaoflZ+yhA==}
     dev: true
@@ -2618,7 +2633,7 @@ packages:
     resolution: {integrity: sha512-ULqvZNGMv0zRFvqn8/4LSPtnmN4MfhlPNtJCTpKuIIxGVGZ2rYWzFXrvEBoh9CVyqSE7D6YFRJ1hydLHI6kbWw==}
     requiresBuild: true
     dependencies:
-      '@types/node': 17.0.38
+      '@types/node': 17.0.40
       xmlbuilder: 15.1.1
     dev: true
     optional: true
@@ -2691,8 +2706,7 @@ packages:
   /@types/yauzl/2.10.0:
     resolution: {integrity: sha512-Cn6WYCm0tXv8p6k+A8PvbDG763EDpBoTzHdA+Q/MF6H3sapGjCm9NzoaJncJS9tUKSuCoDs9XHxYYsQDgxR6kw==}
     dependencies:
-      '@types/node': 17.0.38
-    dev: true
+      '@types/node': 17.0.40
 
   /@types/yazl/2.4.2:
     resolution: {integrity: sha512-T+9JH8O2guEjXNxqmybzQ92mJUh2oCwDDMSSimZSe1P+pceZiFROZLYmcbqkzV5EUwz6VwcKXCO2S2yUpra6XQ==}
@@ -6949,6 +6963,10 @@ packages:
   /long/3.2.0:
     resolution: {integrity: sha512-ZYvPPOMqUwPoDsbJaR10iQJYnMuZhRTvHYl62ErLIEX7RgFlziSBUUvrt3OVfc47QlHHpzPZYP17g3Fv7oeJkg==}
     engines: {node: '>=0.6'}
+    dev: false
+
+  /long/5.2.0:
+    resolution: {integrity: sha512-9RTUNjK60eJbx3uz+TEGF7fUr29ZDxR5QzXcyDpeSfeH28S9ycINflOgOlppit5U+4kNTe83KQnMEerw7GmE8w==}
     dev: false
 
   /lowercase-keys/1.0.1:

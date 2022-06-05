@@ -66,7 +66,7 @@ function createServiceChannels(): ServiceChannels {
         call(method, payload) {
           const promise: Promise<any> = ipcRenderer.invoke('service-call', serviceKey, method, payload).then((sessionId: any) => {
             if (typeof sessionId !== 'number') {
-              throw new Error(`Cannot find service call named ${method} in ${serviceKey}`)
+              throw new Error(`Cannot find service call named ${method as string} in ${serviceKey}`)
             }
             return waitSessionEnd(sessionId, (id) => emitter.emit('task', { name: method, promise, sessionId, id }))
           })
