@@ -178,7 +178,7 @@ const render = (s: string) => {
 const vuetify = injection(VuetifyInjectionKey)
 
 const getColorCode = (code: string) => {
-  return vuetify.theme.currentTheme[code] ?? colors[code]?.base ?? ''
+  return vuetify.theme.currentTheme[code] ?? (colors as any)[code]?.base ?? ''
 }
 
 const projectVersions: Ref<ProjectVersion[]> = ref([])
