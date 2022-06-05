@@ -2,6 +2,7 @@
 
 ![Build](https://github.com/Voxelum/x-minecraft-launcher/workflows/Build/badge.svg)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
+[![爱发电](https://afdian.moeci.com/6/badge.svg)](https://afdian.net/@ci010)
 
 ![home](assets/home.webp)
 
