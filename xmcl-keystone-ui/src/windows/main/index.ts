@@ -93,11 +93,6 @@ const app = createApp(defineComponent({
     const vuetify = context.root.$vuetify
     provide(VuetifyInjectionKey, vuetify)
 
-    // make syncable
-    // const syncable = useSyncable(store)
-    // provide(SYNCABLE_KEY, syncable)
-
-    // syncable.sync()
     semaphores.refresh()
 
     // dynamic change locale

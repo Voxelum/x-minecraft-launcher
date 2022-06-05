@@ -1,15 +1,15 @@
 import { onMounted, onUnmounted, ref } from '@vue/composition-api'
 
-export function useDropLink() {
+export function useDropLink(effect = 'copyLink') {
   const inside = ref(false)
 
   function onDragLeave(e: DragEvent) {
-    if ((e as any).fromElement === null && e.dataTransfer!.effectAllowed === 'copyLink') {
+    if ((e as any).fromElement === null && e.dataTransfer!.effectAllowed === effect) {
       inside.value = false
     }
   }
   function onDragEnter(e: DragEvent) {
-    if ((e as any).fromElement === null && e.dataTransfer!.effectAllowed === 'copyLink') {
+    if ((e as any).fromElement === null && e.dataTransfer!.effectAllowed === effect) {
       inside.value = true
     }
   }

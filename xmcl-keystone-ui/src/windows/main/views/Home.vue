@@ -116,7 +116,7 @@ const { show: showExport } = useDialog(AppExportDialogKey)
 const router = useRouter()
 
 router.afterEach((r) => {
-  document.title = `KeyStone UI - ${r.fullPath}`
+  document.title = `X Minecraft Launcher - ${r.fullPath}`
 })
 
 const { isShown: isLogDialogShown, show: showLogDialog, hide: hideLogDialog } = useDialog('log')

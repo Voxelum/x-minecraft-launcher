@@ -29,8 +29,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
 
   private userFile = createSafeFile(this.getAppDataPath('user.json'), UserSchema, this, [this.getPath('user.json')])
 
-  constructor(app: LauncherApp,
-    @Inject(DiagnoseService) private diagnoseService: DiagnoseService) {
+  constructor(app: LauncherApp) {
     super(app, UserServiceKey, () => new UserState(), async () => {
       const data = await this.userFile.read()
       const result: UserSchema = {

@@ -1,4 +1,5 @@
 add: Add
+authProfileAddedNotification: Auth Profile {name} Added
 author: Author
 back: Back
 baseSetting:
@@ -272,11 +273,11 @@ instanceAge:
   today: Today
 instanceTemplate:
   curseforge: This is a Curseforge modpack
-  modrinth: This is a Modrinth modpack
   ftb: This is a FTB modpack
   importing: Template Importing
   mcbbs: This is a MCBBS modpack
   modpack: This is a raw modpack
+  modrinth: This is a Modrinth modpack
   preview: Modpack Preview
   profile: This is a existed profile configuration
   server: This is a existed server configuration
@@ -480,7 +481,6 @@ modpack:
   urlHint: The home page url of your modpack
 modrinth:
   avaiableFor: available for
-  gallery: Gallery
   categories:
     adventure: Adventure
     challenging: Challenging
@@ -516,6 +516,7 @@ modrinth:
     name: Environment
     server: Server
   followers: Followers
+  gallery: Gallery
   gameVersions:
     name: Game Versions
   headers:
@@ -545,8 +546,6 @@ modrinth:
     updated: Recently updated
   updateAt: Updated
   versions: Versions
-quiltVersion:
-  disable: Disable Quilt
 multiplayer:
   complete: Complete
   confirm: Confirm

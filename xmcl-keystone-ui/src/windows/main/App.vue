@@ -62,6 +62,7 @@ import { injection } from '/@/util/inject'
 import { VuetifyInjectionKey } from '/@/composables/vuetify'
 import { ExceptionHandlersKey, useExceptionHandlers } from '/@/composables/exception'
 import AppShareInstanceDialog from './views/AppShareInstanceDialog.vue'
+import { useAuthProfileImportNotification } from './composables/authProfileImport'
 
 const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = useColorTheme()
 const vuetify = injection(VuetifyInjectionKey)
@@ -91,6 +92,8 @@ provide(ExceptionHandlersKey, useExceptionHandlers())
 provideDialog()
 provideNotifier()
 
+useAuthProfileImportNotification()
+
 const taskManager = useTaskManager()
 provide(TASK_MANAGER, taskManager)
 const { blurMainBody } = useBackground()
@@ -98,8 +101,6 @@ const { blurMainBody } = useBackground()
 provideAsyncRoute()
 provideServerStatusCache()
 provide(IssueHandlerKey, new IssueHandler())
-
-// provideSearchToggle()
 
 const router = useRouter()
 const onHomePage = ref(router.currentRoute.path === '/')

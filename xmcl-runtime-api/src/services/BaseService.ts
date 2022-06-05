@@ -128,7 +128,7 @@ export interface BaseService extends StatefulService<BaseState> {
   /**
    * let the launcher to handle a url open. The url can be xmcl:// protocol
    */
-  handleUrl(url: string): Promise<void>
+  handleUrl(url: string): Promise<boolean>
   /**
    * Try to open a url in default browser. It will popup a message dialog to let user know.
    * If user does not trust the url, it won't open the site.

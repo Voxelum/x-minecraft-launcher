@@ -22,6 +22,7 @@ import { isSystemError } from '../util/error'
 import { Host } from './Host'
 import { LauncherAppController } from './LauncherAppController'
 import { LauncherAppManager } from './LauncherAppManager'
+import { UserService } from '../services/UserService'
 
 export interface Platform {
   /**
@@ -225,6 +226,34 @@ export abstract class LauncherApp extends EventEmitter {
    * @param url The url input
    */
   handleUrl(url: string) {
+    if (url.startsWith('authlib-injector:yggdrasil-server:')) {
+      const serverUrl = decodeURIComponent(url.substring('authlib-injector:yggdrasil-server:'.length))
+      const parsed = new URL(serverUrl)
+      const domain = parsed.host
+      const userService = this.serviceManager.getOrCreateService(UserService)
+      userService.state.authServiceSet({
+        name: domain,
+        api: {
+          hostName: serverUrl,
+          authenticate: '/authserver/authenticate',
+          refresh: '/authserver/refresh',
+          validate: '/authserver/validate',
+          invalidate: '/authserver/invalidate',
+          signout: '/authserver/signout',
+        },
+      })
+      userService.state.profileServiceSet({
+        name: domain,
+        api: {
+          profile: `${serverUrl}/sessionserver/session/minecraft/profile/\${uuid}`,
+          profileByName: `${serverUrl}/users/profiles/minecraft/\${name}`,
+          texture: `${serverUrl}/user/profile/\${uuid}/\${type}`,
+        },
+      })
+      userService.emit('auth-profile-added', domain)
+      this.log(`Import the url ${url} as authlib-injector profile ${domain}`)
+      return true
+    }
     const parsed = new URL(url, 'xmcl://launcher')
     this.log(`Handle url ${url}`)
     if (parsed.host === 'launcher' && parsed.pathname === '/auth') {

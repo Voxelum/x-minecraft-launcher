@@ -1,6 +1,8 @@
 <template>
   <div
     class="flex flex-col p-4 overflow-auto w-full"
+    @dragover.prevent
+    @drop="onDrop"
   >
     <div class="grid grid-cols-5 h-full overflow-auto w-full">
       <div
@@ -18,7 +20,7 @@
           <v-alert
             :value="!security"
             style="cursor: pointer;"
-            @click="isChallengesDialogShown = true"
+            @click="data.isChallengesDialogShown = true"
           >
             {{ t('user.insecureClient') }}
           </v-alert>
@@ -32,14 +34,14 @@
             :users="users"
             :select="select"
             @delete="startDelete($event.id)"
-            @dragstart="dragged=true"
-            @dragend="dragged=false"
+            @dragstart="data.dragged=true"
+            @dragend="data.dragged=false"
           />
         </div>
         <div class="flex-grow" />
         <game-profile-speed-dial
-          :visibled="userModified || dragged"
-          :deleting="dragged"
+          :visibled="modified || data.dragged"
+          :deleting="data.dragged"
           :loading="loading"
           @click="confirmSelectGameProfile"
           @dragover.prevent="() => {}"
@@ -54,10 +56,10 @@
       />
     </div>
     <v-dialog
-      v-model="isChallengesDialogShown"
+      v-model="data.isChallengesDialogShown"
       width="500"
     >
-      <challenges-form :show="isChallengesDialogShown" />
+      <challenges-form :show="data.isChallengesDialogShown" />
     </v-dialog>
     <delete-dialog
       :title="t('userAccount.removeTitle') "
@@ -76,10 +78,9 @@
   </div>
 </template>
 
-<script lang=ts>
-import { reactive, toRefs, computed, defineComponent, watch } from '@vue/composition-api'
+<script lang=ts setup>
 import { useI18n, useOperation, useService } from '/@/composables'
-import { UserServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, UserServiceKey } from '@xmcl/runtime-api'
 import ChallengesForm from './UserChallengesForm.vue'
 import PageSkinView from './UserSkinView.vue'
 import GameProfileSpeedDial from './UserSpeedDial.vue'
@@ -89,81 +90,59 @@ import { useDialog } from '../composables/dialog'
 import { useCurrentUser, useUserSecurityStatus, useUsers, useSwitchUser, useProfileId, useGameProfile } from '../composables/user'
 import DeleteDialog from '../components/DeleteDialog.vue'
 
-export default defineComponent({
-  components: {
-    ChallengesForm,
-    PageSkinView,
-    GameProfileSpeedDial,
-    UserList,
-    UserPageHeader,
-    DeleteDialog,
-  },
-  setup() {
-    const { refreshStatus: refreshAccount, refreshSkin } = useCurrentUser()
-    const { security } = useUserSecurityStatus()
-    const { show: showLoginDialog } = useDialog('login')
-    const { t } = useI18n()
+const { refreshStatus: refreshAccount, refreshSkin } = useCurrentUser()
+const { security } = useUserSecurityStatus()
+const { handleUrl } = useService(BaseServiceKey)
+const { show: showLoginDialog } = useDialog('login')
+const { t } = useI18n()
 
-    const { users } = useUsers()
-    const { select, remove, modified, commit, userId, profileId } = useSwitchUser()
-    const { gameProfile } = useProfileId(userId, profileId)
-    const { name } = useGameProfile(gameProfile)
-    const { show } = useDialog('deletion')
-    const data = reactive({
-      isChallengesDialogShown: false,
+const { users } = useUsers()
+const { select, remove, modified, commit, userId, profileId } = useSwitchUser()
+const { gameProfile } = useProfileId(userId, profileId)
+const { name } = useGameProfile(gameProfile)
+const { show } = useDialog('deletion')
+const data = reactive({
+  isChallengesDialogShown: false,
 
-      selecting: false,
-      deleting: false,
-      dragged: false,
-    })
-    const loading = computed(() => data.selecting || data.deleting)
-    const { begin: beginRemoveProfile, operate: confirmRemoveProfile, data: removingProfile, cancel: cancelRemoveProfile } = useOperation('', (v) => remove(v))
-
-    const { state } = useService(UserServiceKey)
-    const removingUserName = computed(() => state.users[removingProfile.value]?.username ?? '')
-
-    function confirmSelectGameProfile() {
-      data.selecting = true
-      commit().finally(() => { data.selecting = false })
-    }
-
-    function startDelete(id: string) {
-      beginRemoveProfile(id)
-      show()
-    }
-    function refresh() {
-      refreshAccount()
-      refreshSkin()
-    }
-
-    return {
-      t,
-      ...toRefs(data),
-      startDelete,
-      security,
-      refresh,
-
-      loading,
-
-      select,
-      confirmSelectGameProfile,
-
-      removingProfile,
-      beginRemoveProfile,
-      confirmRemoveProfile,
-
-      users,
-      userId,
-      profileId,
-      userModified: modified,
-      name,
-
-      removingUserName,
-
-      showLoginDialog,
-    }
-  },
+  selecting: false,
+  deleting: false,
+  dragged: false,
 })
+const loading = computed(() => data.selecting || data.deleting)
+const { begin: beginRemoveProfile, operate: confirmRemoveProfile, data: removingProfile, cancel: cancelRemoveProfile } = useOperation('', (v) => remove(v))
+
+const { state } = useService(UserServiceKey)
+const removingUserName = computed(() => state.users[removingProfile.value]?.username ?? '')
+
+function confirmSelectGameProfile() {
+  data.selecting = true
+  commit().finally(() => { data.selecting = false })
+}
+
+function startDelete(id: string) {
+  beginRemoveProfile(id)
+  show()
+}
+function refresh() {
+  refreshAccount()
+  refreshSkin()
+}
+function onDrop(e: DragEvent) {
+  const dataTransfer = e.dataTransfer!
+  if (dataTransfer.items.length > 0) {
+    for (let i = 0; i < dataTransfer.items.length; ++i) {
+      const item = dataTransfer.items[i]
+      if (item.kind === 'string') {
+        item.getAsString((content) => {
+          if (content.startsWith('authlib-injector:yggdrasil-server:')) {
+            handleUrl(content)
+          }
+        })
+        break
+      }
+    }
+  }
+}
 </script>
 
 <style>

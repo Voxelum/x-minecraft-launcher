@@ -158,7 +158,7 @@ const hasIssue = computed(() => {
 
 const isMissingJava = computed(() => data.type === 'missing')
 const title = computed(() => (!isMissingJava.value ? t('incompatibleJava', { javaVersion: data.selectedJava?.version ?? data.selectedJavaPath ?? '' }) : t('missingJava')))
-const hint = computed(() => (!isMissingJava.value ? t('incompatibleJavaHint') : t('missingJavaHint')))
+const hint = computed(() => (!isMissingJava.value ? t('incompatibleJavaHint', { javaVersion: data.selectedJava?.version }) : t('missingJavaHint')))
 
 watch(hasIssue, (newValue) => {
   if (!newValue) {
