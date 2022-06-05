@@ -27,9 +27,20 @@ Visit the [official site](https://xmcl.app) to download the app!
 
 See [Contribute](./CONTRIBUTING.md)
 
-## LICENSE 
+## LICENSE
 
 [MIT](LICENSE)
+
+## Sponsor (aifadian)
+
+| 捐赠者                                                                                                                                                                          | 时间                | 捐赠            |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- | --------------- |
+| ![水合](https://pic1.afdiancdn.com/default/avatar/avatar-orange.png?imageView2/1/w/120/h/120) <br> 水合                                                                         | 2022-06-02 21:01:52 | 基础支持 ￥5.00  |
+| ![Jisoadng](https://pic1.afdiancdn.com/user/0c5c865e08ee11ecba1352540025c377/avatar/b7ae9f15fc461e68c4b9a853ee966a27_w448_h448_s290.png?imageView2/1/w/120/h/120) <br> Jisoadng | 2022-05-22 16:25:23 | 基础支持 ￥5.00  |
+| ![圣剑](https://pic1.afdiancdn.com/user/user_upload_osl/8a1c4eb2e580b4b8b463ceb2114b6381_w132_h132_s3.jpeg?imageView2/1/w/120/h/120) <br> 圣剑                                  | 2022-05-21 22:34:02 | 加大支持 ￥30.00 |
+| ![同谋者](https://pic1.afdiancdn.com/default/avatar/avatar-blue.png?imageView2/1/w/120/h/120) <br> 同谋者                                                                       | 2022-05-19 10:51:51 | 加大支持 ￥30.00 |
+| ![DIO](https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/w/120/h/120)  <br> DIO                                                                          | 2022-05-15 20:58:56 | 基础支持 ￥5.00  |
+| ![爱发电用户_DJpu](https://pic1.afdiancdn.com/default/avatar/avatar-purple.png?imageView2/1/w/120/h/120)<br>  爱发电用户_DJpu                                                   | 2022-05-09 16:42:33 | 自选发电        |
 
 ## Credit
 
