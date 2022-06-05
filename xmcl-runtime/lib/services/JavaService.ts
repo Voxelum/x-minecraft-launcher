@@ -3,17 +3,21 @@ import { fetchJavaRuntimeManifest, installJavaRuntimesTask, parseJavaVersion, re
 import { Java, JavaRecord, JavaSchema, JavaService as IJavaService, JavaServiceKey, JavaState } from '@xmcl/runtime-api'
 import { chmod, ensureFile, readFile } from 'fs-extra'
 import { dirname, join } from 'path'
+import { URL } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { JavaValidation, validateJavaPath } from '../entities/java'
 import { readdirIfPresent } from '../util/fs'
 import { requireObject, requireString } from '../util/object'
 import { createSafeFile } from '../util/persistance'
-import { Singleton, StatefulService } from './Service'
+import { BaseService } from './BaseService'
+import { Inject, Singleton, StatefulService } from './Service'
 
 export class JavaService extends StatefulService<JavaState> implements IJavaService {
   protected readonly config = createSafeFile(this.getAppDataPath('java.json'), JavaSchema, this, [this.getPath('java.json')])
 
-  constructor(app: LauncherApp) {
+  constructor(app: LauncherApp,
+    @Inject(BaseService) private baseService: BaseService,
+  ) {
     super(app, JavaServiceKey, () => new JavaState(), async () => {
       const data = await this.config.read()
       const valid = data.all.filter(l => typeof l.path === 'string').map(a => ({ ...a, valid: true }))
@@ -64,11 +68,13 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
 
     const location = this.getInternalJavaLocation(target)
     this.log(`Try to install official java ${target} to ${location}`)
-    // if (this.state.all.find(j => j.path === location)) {
-    //   return
-    // }
+    let apiHost: string[] | undefined
+    if (this.baseService.shouldOverrideApiSet()) {
+      const apis = this.baseService.getApiSets()
+      apiHost = apis.map(a => new URL(a.url).hostname)
+    }
     const manifest = await fetchJavaRuntimeManifest({
-      apiHost: this.networkManager.isInGFW ? 'bmclapi2.bangbang93.com' : undefined,
+      apiHost,
       ...this.networkManager.getDownloadBaseOptions(),
       target: target.component,
     })
@@ -76,7 +82,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     const dest = this.getPath('jre', target.component)
     const task = installJavaRuntimesTask({
       manifest,
-      apiHost: this.networkManager.isInGFW ? 'bmclapi2.bangbang93.com' : undefined,
+      apiHost,
       destination: dest,
       ...this.networkManager.getDownloadBaseOptions(),
     }).setName('installJre')

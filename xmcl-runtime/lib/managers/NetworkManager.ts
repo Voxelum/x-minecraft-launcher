@@ -24,8 +24,6 @@ export default class NetworkManager extends Manager {
 
   private stunHosts: string[] = []
 
-  private activePeers: Socket[] = []
-
   private natInfo: undefined | NatInfo
 
   // private nat = new NatAPI()
