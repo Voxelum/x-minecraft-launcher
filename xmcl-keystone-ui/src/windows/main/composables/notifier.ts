@@ -20,7 +20,7 @@ export type SubscribeOptions = {
 }
 
 export function useNotificationHandler() {
-  const { $t } = useI18n()
+  const { t } = useI18n()
   const { show: showTask } = useDialog('task')
   interface Handler<T extends BuiltinNotification> {
     level: Level
@@ -37,21 +37,21 @@ export function useNotificationHandler() {
 
   register<TaskNotification>('taskStart', {
     level: 'info',
-    title: (n) => $t('task.start', { name: $t(n.name, n.arguments) }),
-    body: (n) => $t('task.startBody', { name: $t(n.name) }),
+    title: (n) => t('task.start', { name: t(n.name, n.arguments) }),
+    body: (n) => t('task.startBody', { name: t(n.name) }),
     more: showTask,
     full: true,
   })
   register<TaskNotification>('taskFinish', {
     level: 'success',
-    title: (n) => $t(n.name, n.arguments),
-    body: (n) => $t('task.finishBody', { name: $t(n.name) }),
+    title: (n) => t(n.name, n.arguments),
+    body: (n) => t('task.finishBody', { name: t(n.name) }),
     more: showTask,
   })
   register<TaskNotification>('taskFail', {
     level: 'error',
-    title: (n) => $t(n.name, n.arguments),
-    body: (n) => $t('task.failBody', { name: $t(n.name) }),
+    title: (n) => t(n.name, n.arguments),
+    body: (n) => t('task.failBody', { name: t(n.name) }),
     more: showTask,
   })
   return registry

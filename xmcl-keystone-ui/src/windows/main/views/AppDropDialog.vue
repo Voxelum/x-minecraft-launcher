@@ -66,10 +66,10 @@
 </template>
 
 <script lang=ts>
-import { useFileDrop, useRouter } from '/@/composables'
-import { isPersistedResource, Resource, ResourceDomain } from '@xmcl/runtime-api'
-import RefreshingTile from '/@/components/RefreshingTile.vue'
+import { BaseServiceKey, isPersistedResource, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import PreviewView from './AppDropDialogPreview.vue'
+import RefreshingTile from '/@/components/RefreshingTile.vue'
+import { useFileDrop, useRouter, useService } from '/@/composables'
 
 export interface FilePreview extends Resource {
   enabled: boolean
@@ -87,6 +87,7 @@ export default defineComponent({
     const loading = ref(false)
     const previews = ref([] as FilePreview[])
     const { resolveFiles } = useFileDrop()
+    const { handleUrl } = useService(BaseServiceKey)
     async function onDrop(event: DragEvent) {
       const files = [] as Array<File>
       const dataTransfer = event.dataTransfer!
@@ -95,6 +96,19 @@ export default defineComponent({
           const file = dataTransfer.files.item(i)!
           if (previews.value.every(p => p.path !== file.path)) {
             files.push(file)
+          }
+        }
+      }
+      if (dataTransfer.items.length > 0) {
+        for (let i = 0; i < dataTransfer.items.length; ++i) {
+          const item = dataTransfer.items[i]
+          if (item.kind === 'string') {
+            item.getAsString((content) => {
+              if (content.startsWith('authlib-injector:yggdrasil-server:')) {
+                handleUrl(content)
+              }
+            })
+            break
           }
         }
       }
@@ -112,6 +126,9 @@ export default defineComponent({
         })
       }
       pending.value = false
+      if (result.length === 0) {
+        cancel()
+      }
     }
     function remove(file: FilePreview) {
       previews.value = previews.value.filter((p) => p.path !== file.path)

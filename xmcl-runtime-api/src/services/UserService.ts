@@ -62,6 +62,7 @@ interface UserServiceEventMap {
   'user-login': string
   'error': UserException
   'microsoft-authorize-url': string
+  'auth-profile-added': string
 }
 
 export class UserState implements UserSchema {

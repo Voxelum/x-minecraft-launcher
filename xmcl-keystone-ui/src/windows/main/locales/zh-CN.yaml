@@ -1,4 +1,5 @@
 add: 添加
+authProfileAddedNotification: 已添加第三方验证 {name}
 author: 作者
 back: 返回
 baseSetting:
@@ -236,15 +237,13 @@ instanceAge:
   older: 三天前
   threeDay: 三天内
   today: 今天
-quiltVersion:
-  disable: 不启用 Quilt
 instanceTemplate:
   curseforge: 这是一个 Curseforge 整合包
   ftb: 这是一个 FTB 的整合包配置
-  modrinth: 这是一个 Modrinth 的整合包
   importing: 模板导入
   mcbbs: 这是一个 MCBBS 整合包
   modpack: 这是一个整合包配置
+  modrinth: 这是一个 Modrinth 的整合包
   preview: 预览
   profile: 这是一个已有的启动配置
   server: 这是一个已有的服务器启动配置
@@ -420,7 +419,6 @@ modpack:
   urlHint: 整合包的主页 URL 地址
 modrinth:
   avaiableFor: 可用于
-  gallery: 图片展示
   categories:
     adventure: 冒险
     challenging: 挑战
@@ -454,6 +452,7 @@ modrinth:
     name: 环境
     server: 服务端
   followers: 关注者
+  gallery: 图片展示
   gameVersions:
     name: 游戏版本
   headers:
