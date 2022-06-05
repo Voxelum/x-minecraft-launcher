@@ -156,15 +156,6 @@
         <div class="flex items-center justify-center text-center text-gray-500 flex-shrink flex-grow-0 text-sm">
           ~{{ getExpectedSize(totalSize) }}
         </div>
-        <!-- <v-btn
-          text
-          color="primary"
-          large
-          :loading="exporting || refreshing"
-          @click="confirm"
-        >
-          {{ t('modpack.export') }}
-        </v-btn> -->
         <v-btn
           text
           color="primary"
@@ -268,6 +259,8 @@ const selectedPaths = computed(() => new Set(data.selected))
 
 const exportDirectives = computed(() => {
   const existed = selectedPaths.value
+  console.log(leaves.value
+    .filter(n => existed.has(n.id)))
   return leaves.value
     .filter(n => existed.has(n.id))
     .filter(l => l.choice)

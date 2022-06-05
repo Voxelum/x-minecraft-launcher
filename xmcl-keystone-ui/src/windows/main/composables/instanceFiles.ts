@@ -42,7 +42,15 @@ export function useInstanceFileNodesFromLocal(local: Ref<InstanceFile[]>, option
       children: undefined,
     })
   }
-  return computed(() => local.value.map(getFileNode))
+  const result = ref(local.value.map(getFileNode))
+  watch(local, (newVal) => {
+    if (newVal.length > 0) {
+      result.value = local.value.map(getFileNode)
+    } else {
+      result.value = []
+    }
+  })
+  return result
 }
 
 export function provideFileNodes(files: Ref<InstanceFileNode[]>) {
