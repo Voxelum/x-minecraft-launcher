@@ -365,9 +365,15 @@ export class InstallService extends AbstractService implements IInstallService {
       }[]
     }
 
+    let apiHost = 'https://bmclapi2.bangbang93.com'
+    if (this.baseService.shouldOverrideApiSet()) {
+      const apis = this.baseService.getApiSets()
+      apiHost = apis[0].url
+    }
+
     const { body, statusCode, headers } = await this.networkManager.request({
       method: 'GET',
-      url: `https://bmclapi2.bangbang93.com/forge/minecraft/${mcVersion}`,
+      url: `${apiHost}/forge/minecraft/${mcVersion}`,
       headers: currentForgeVersion && currentForgeVersion.timestamp
         ? {
           'If-Modified-Since': currentForgeVersion.timestamp,

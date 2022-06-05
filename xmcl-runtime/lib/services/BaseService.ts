@@ -1,7 +1,6 @@
 import { BaseService as IBaseService, BaseServiceException, BaseServiceKey, BaseState, MigrateOptions, SettingSchema } from '@xmcl/runtime-api'
-import { copy, copyFile, ensureDir, readdir, readJson, remove, rename, stat, unlink, writeJson } from 'fs-extra'
+import { copy, readdir, remove, rename, stat } from 'fs-extra'
 import os from 'os'
-import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { IS_DEV } from '../constant'
 import { isSystemError } from '../util/error'
@@ -61,7 +60,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
   }
 
   async handleUrl(url: string) {
-    this.app.handleUrl(url)
+    return this.app.handleUrl(url)
   }
 
   /**

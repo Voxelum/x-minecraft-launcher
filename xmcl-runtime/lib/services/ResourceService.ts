@@ -524,14 +524,14 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     }
     // const [] = parseResource(path, fileType, sha1, stat, type ?? '*')
     const [resolved, icon] = await
-    parseResource(path, fileType, sha1, stat, type ?? '*')
-    // this.worker().parseResource({
-    //   path,
-    //   sha1,
-    //   fileType,
-    //   stat,
-    //   hint: type ?? '*',
-    // })
+    // parseResource(path, fileType, sha1, stat, type ?? '*')
+    this.worker().parseResource({
+      path,
+      sha1,
+      fileType,
+      stat,
+      hint: type ?? '*',
+    })
       .catch((e) => {
         const resource: Resource<void> = {
           hash: sha1!,
