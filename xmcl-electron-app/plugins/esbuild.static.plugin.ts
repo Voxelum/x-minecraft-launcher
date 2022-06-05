@@ -16,7 +16,6 @@ export default function createStaticPlugin(): Plugin {
         })
       })
       build.onLoad({ filter: /^.+$/g, namespace: 'static' }, async ({ path, pluginData: { resolveDir } }) => {
-        console.log(`load static: ${path}`)
         if (!isAbsolute(path)) {
           path = join(resolveDir, path)
         }
