@@ -1,4 +1,76 @@
 
+## 0.26.0
+### @xmcl/runtime-api@0.10.0
+#### Features
+
+- show ping ([f2f35abe7f88274f91a8f3bfc3e96f2f98c2ee8d](https://github.com/Voxelum/x-minecraft-launcher/commit/f2f35abe7f88274f91a8f3bfc3e96f2f98c2ee8d))
+- support modrinth modpack format ([1cf9e9dcb2078145f5d96c38c956ceda10146d51](https://github.com/Voxelum/x-minecraft-launcher/commit/1cf9e9dcb2078145f5d96c38c956ceda10146d51))
+- support quilt ([235300a70d1ca77e81b96ba6f5604809030d9f7a](https://github.com/Voxelum/x-minecraft-launcher/commit/235300a70d1ca77e81b96ba6f5604809030d9f7a))
+#### Bug Fixes
+
+- correctly handle the authlib url drag/drop import ([3b571da77c5a1cabed2e512172af85e3658c7d23](https://github.com/Voxelum/x-minecraft-launcher/commit/3b571da77c5a1cabed2e512172af85e3658c7d23))
+- optimize the import modpack experience ([414abde91ac6b2697bdd608da5602e2a9b0b78cf](https://github.com/Voxelum/x-minecraft-launcher/commit/414abde91ac6b2697bdd608da5602e2a9b0b78cf))
+- add database manager ([f415a728952c1e554c37f41b254bca1b2c728497](https://github.com/Voxelum/x-minecraft-launcher/commit/f415a728952c1e554c37f41b254bca1b2c728497))
+- lint issue & instance select ([4c8af47f43cd30b734aa0e72ff00224681bb214d](https://github.com/Voxelum/x-minecraft-launcher/commit/4c8af47f43cd30b734aa0e72ff00224681bb214d))
+- add prisma ([0e16b85cf0368944d81d48e13ff6d38f6c750325](https://github.com/Voxelum/x-minecraft-launcher/commit/0e16b85cf0368944d81d48e13ff6d38f6c750325))
+### @xmcl/keystone-ui@0.25.0
+#### Features
+
+- show ping ([f2f35abe7f88274f91a8f3bfc3e96f2f98c2ee8d](https://github.com/Voxelum/x-minecraft-launcher/commit/f2f35abe7f88274f91a8f3bfc3e96f2f98c2ee8d))
+- support modrinth modpack format ([9c15fad106b52b6f1f9ddb8e7d9f458707e322dc](https://github.com/Voxelum/x-minecraft-launcher/commit/9c15fad106b52b6f1f9ddb8e7d9f458707e322dc))
+- support quilt ([235300a70d1ca77e81b96ba6f5604809030d9f7a](https://github.com/Voxelum/x-minecraft-launcher/commit/235300a70d1ca77e81b96ba6f5604809030d9f7a))
+#### Bug Fixes
+
+- drop auth service on mac ([04ae911d5958eadd81a2b0137aba636ff08e70c9](https://github.com/Voxelum/x-minecraft-launcher/commit/04ae911d5958eadd81a2b0137aba636ff08e70c9))
+- cannot select instance export choice ([62e41df62e6189d292dc10db1eb136259e5eb828](https://github.com/Voxelum/x-minecraft-launcher/commit/62e41df62e6189d292dc10db1eb136259e5eb828))
+- adjust the welcome text ([46c936d27de2f1de08ceebd054db1dd7c6910861](https://github.com/Voxelum/x-minecraft-launcher/commit/46c936d27de2f1de08ceebd054db1dd7c6910861))
+- correctly handle the authlib url drag/drop import ([3b571da77c5a1cabed2e512172af85e3658c7d23](https://github.com/Voxelum/x-minecraft-launcher/commit/3b571da77c5a1cabed2e512172af85e3658c7d23))
+- move setup button more visible ([b2ed4697d95d046fc727e9112c539757a56719ad](https://github.com/Voxelum/x-minecraft-launcher/commit/b2ed4697d95d046fc727e9112c539757a56719ad))
+- optimize the import modpack experience ([414abde91ac6b2697bdd608da5602e2a9b0b78cf](https://github.com/Voxelum/x-minecraft-launcher/commit/414abde91ac6b2697bdd608da5602e2a9b0b78cf))
+- update i18n ([041449493579aba14a5b520f2e1dc2340668e4f2](https://github.com/Voxelum/x-minecraft-launcher/commit/041449493579aba14a5b520f2e1dc2340668e4f2))
+- optimize some ui ([464152a1da0dee69ea64533de0535e52c0a94f7a](https://github.com/Voxelum/x-minecraft-launcher/commit/464152a1da0dee69ea64533de0535e52c0a94f7a))
+- add prisma ([0e16b85cf0368944d81d48e13ff6d38f6c750325](https://github.com/Voxelum/x-minecraft-launcher/commit/0e16b85cf0368944d81d48e13ff6d38f6c750325))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### @xmcl/runtime@0.24.0
+#### Features
+
+- show ping ([f2f35abe7f88274f91a8f3bfc3e96f2f98c2ee8d](https://github.com/Voxelum/x-minecraft-launcher/commit/f2f35abe7f88274f91a8f3bfc3e96f2f98c2ee8d))
+- support modrinth modpack format ([9c15fad106b52b6f1f9ddb8e7d9f458707e322dc](https://github.com/Voxelum/x-minecraft-launcher/commit/9c15fad106b52b6f1f9ddb8e7d9f458707e322dc))
+- support modrinth modpack format ([1cf9e9dcb2078145f5d96c38c956ceda10146d51](https://github.com/Voxelum/x-minecraft-launcher/commit/1cf9e9dcb2078145f5d96c38c956ceda10146d51))
+- support quilt ([235300a70d1ca77e81b96ba6f5604809030d9f7a](https://github.com/Voxelum/x-minecraft-launcher/commit/235300a70d1ca77e81b96ba6f5604809030d9f7a))
+#### Bug Fixes
+
+- some case export manifest cannot match resource ([ecd17f27634870bccb7684c3d48d2ed3db816a5e](https://github.com/Voxelum/x-minecraft-launcher/commit/ecd17f27634870bccb7684c3d48d2ed3db816a5e))
+- adjust the bmcl api selection & resource worker ([48ccc71c22a2e1b5df05f3de268e3dacc2967211](https://github.com/Voxelum/x-minecraft-launcher/commit/48ccc71c22a2e1b5df05f3de268e3dacc2967211))
+- correctly handle the authlib url drag/drop import ([3b571da77c5a1cabed2e512172af85e3658c7d23](https://github.com/Voxelum/x-minecraft-launcher/commit/3b571da77c5a1cabed2e512172af85e3658c7d23))
+- not automatically select java ([d7aa80cbc8abf5b95d3abb256fbaeff822748fec](https://github.com/Voxelum/x-minecraft-launcher/commit/d7aa80cbc8abf5b95d3abb256fbaeff822748fec))
+- correctly handle the new file in resource dir ([0fb9bc586793c56bc99e23d35a018c1ff251abb4](https://github.com/Voxelum/x-minecraft-launcher/commit/0fb9bc586793c56bc99e23d35a018c1ff251abb4))
+- java issue not fix after install ([a19938d4d7cd118ae4b8c36e47792c71aacba12a](https://github.com/Voxelum/x-minecraft-launcher/commit/a19938d4d7cd118ae4b8c36e47792c71aacba12a))
+- diagnose state does not refresh ([8a17212595513ab28478d536ce2b40d6e92a1f51](https://github.com/Voxelum/x-minecraft-launcher/commit/8a17212595513ab28478d536ce2b40d6e92a1f51))
+- optimize the import modpack experience ([414abde91ac6b2697bdd608da5602e2a9b0b78cf](https://github.com/Voxelum/x-minecraft-launcher/commit/414abde91ac6b2697bdd608da5602e2a9b0b78cf))
+- add database manager ([f415a728952c1e554c37f41b254bca1b2c728497](https://github.com/Voxelum/x-minecraft-launcher/commit/f415a728952c1e554c37f41b254bca1b2c728497))
+- lint issue & instance select ([4c8af47f43cd30b734aa0e72ff00224681bb214d](https://github.com/Voxelum/x-minecraft-launcher/commit/4c8af47f43cd30b734aa0e72ff00224681bb214d))
+- add prisma ([0e16b85cf0368944d81d48e13ff6d38f6c750325](https://github.com/Voxelum/x-minecraft-launcher/commit/0e16b85cf0368944d81d48e13ff6d38f6c750325))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### xmcl@0.26.0
+#### Features
+
+- show ping ([f2f35abe7f88274f91a8f3bfc3e96f2f98c2ee8d](https://github.com/Voxelum/x-minecraft-launcher/commit/f2f35abe7f88274f91a8f3bfc3e96f2f98c2ee8d))
+#### Bug Fixes
+
+- tray icon on mac ([fd089d1a3c36790c6e2f146cef4719509327c054](https://github.com/Voxelum/x-minecraft-launcher/commit/fd089d1a3c36790c6e2f146cef4719509327c054))
+- disable the prisma ([198da195a3dac93a7d2c2d4b0a6b56e47def103c](https://github.com/Voxelum/x-minecraft-launcher/commit/198da195a3dac93a7d2c2d4b0a6b56e47def103c))
+- correct the behavior of maximize window on mac ([441d80f5e4a0a9d5c498e2bdad629e9038fc1b39](https://github.com/Voxelum/x-minecraft-launcher/commit/441d80f5e4a0a9d5c498e2bdad629e9038fc1b39))
+- fix native import ([1eb43d12a38b3c6e3f02dfc3e91e1a1e90fd141e](https://github.com/Voxelum/x-minecraft-launcher/commit/1eb43d12a38b3c6e3f02dfc3e91e1a1e90fd141e))
+- add database manager ([f415a728952c1e554c37f41b254bca1b2c728497](https://github.com/Voxelum/x-minecraft-launcher/commit/f415a728952c1e554c37f41b254bca1b2c728497))
+- lint issue & instance select ([4c8af47f43cd30b734aa0e72ff00224681bb214d](https://github.com/Voxelum/x-minecraft-launcher/commit/4c8af47f43cd30b734aa0e72ff00224681bb214d))
+- add prisma ([0e16b85cf0368944d81d48e13ff6d38f6c750325](https://github.com/Voxelum/x-minecraft-launcher/commit/0e16b85cf0368944d81d48e13ff6d38f6c750325))
+
+
 ## 0.25.2
 ### @xmcl/keystone-ui@0.24.1
 #### Bug Fixes
