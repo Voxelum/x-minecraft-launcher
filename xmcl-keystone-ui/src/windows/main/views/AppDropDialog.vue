@@ -99,19 +99,6 @@ export default defineComponent({
           }
         }
       }
-      if (dataTransfer.items.length > 0) {
-        for (let i = 0; i < dataTransfer.items.length; ++i) {
-          const item = dataTransfer.items[i]
-          if (item.kind === 'string') {
-            item.getAsString((content) => {
-              if (content.startsWith('authlib-injector:yggdrasil-server:')) {
-                handleUrl(content)
-              }
-            })
-            break
-          }
-        }
-      }
       loading.value = true
       const result = await resolveFiles({ files: files.map(f => ({ path: f.path })) }).finally(() => { loading.value = false })
       for (let i = 0; i < result.length; i++) {
@@ -154,6 +141,26 @@ export default defineComponent({
         }
       }
     })
+    document.addEventListener('dragover', (e) => {
+      e.dataTransfer!.dropEffect = 'copy'
+      e.preventDefault()
+    })
+    document.addEventListener('drop', (e) => {
+      const dataTransfer = e.dataTransfer!
+      if (dataTransfer.items.length > 0) {
+        for (let i = 0; i < dataTransfer.items.length; ++i) {
+          const item = dataTransfer.items[i]
+          if (item.kind === 'string') {
+            item.getAsString((content) => {
+              if (content.startsWith('authlib-injector:yggdrasil-server:')) {
+                handleUrl(content)
+              }
+            })
+            break
+          }
+        }
+      }
+    })
     document.addEventListener('dragenter', (e) => {
       if (router.currentRoute.fullPath === '/user') {
         return
@@ -162,6 +169,7 @@ export default defineComponent({
         inside.value = true
         pending.value = true
       }
+      e.dataTransfer!.dropEffect = 'copy'
     })
     return {
       loading,
