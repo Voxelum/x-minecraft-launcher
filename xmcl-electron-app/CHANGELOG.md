@@ -1,4 +1,16 @@
 
+## 0.26.1
+### @xmcl/runtime-api@0.10.1
+#### Bug Fixes
+
+- prevent false state if the config is stale ([7011b4299cfa6d6f7b006f5b4b4758b85e996e8e](https://github.com/Voxelum/x-minecraft-launcher/commit/7011b4299cfa6d6f7b006f5b4b4758b85e996e8e))
+### @xmcl/runtime@0.24.1
+#### Bug Fixes
+
+- prevent false state if the config is stale ([7011b4299cfa6d6f7b006f5b4b4758b85e996e8e](https://github.com/Voxelum/x-minecraft-launcher/commit/7011b4299cfa6d6f7b006f5b4b4758b85e996e8e))
+- Instance cannot correctly load ([26686953627d0443df6c540f3342e4b0580408c5](https://github.com/Voxelum/x-minecraft-launcher/commit/26686953627d0443df6c540f3342e4b0580408c5))
+
+
 ## 0.26.0
 ### @xmcl/runtime-api@0.10.0
 #### Features
