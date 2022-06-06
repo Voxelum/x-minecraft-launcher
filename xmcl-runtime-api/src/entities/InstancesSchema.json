@@ -2,6 +2,7 @@
     "type": "object",
     "properties": {
         "selectedInstance": {
+            "default": "",
             "type": "string"
         },
         "instances": {

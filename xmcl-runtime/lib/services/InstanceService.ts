@@ -54,7 +54,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         return path
       }
 
-      const selectedInstance = instanceConfig.selectedInstance
+      const selectedInstance = instanceConfig.selectedInstance || ''
 
       if (staleInstances.size > 0) {
         await this.instancesFile.write({

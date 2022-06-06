@@ -153,6 +153,9 @@ export interface InstanceSchema extends InstanceData {
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare
 export interface InstancesSchema {
+  /**
+   * @default ""
+   */
   selectedInstance: string
   /**
    * The extra imported instance path
