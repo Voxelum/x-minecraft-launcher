@@ -81,7 +81,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           await this.createAndMount({})
         }
       } else {
-        const selectedInstancePath = normalizeInstancePath(selectedInstance)
+        const selectedInstancePath = isAbsolute(selectedInstance) ? selectedInstance : this.getPathUnder(selectedInstance)
         if (this.state.all[selectedInstancePath]) {
           await this.mountInstance(selectedInstancePath)
         } else {
