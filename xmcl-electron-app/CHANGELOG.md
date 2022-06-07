@@ -1,4 +1,19 @@
 
+## 0.26.2
+### @xmcl/runtime-api@0.10.2
+#### Bug Fixes
+
+- type strong on serialize json ([7dbe3efa2145cefcd0821e34b0033703301f4f8e](https://github.com/Voxelum/x-minecraft-launcher/commit/7dbe3efa2145cefcd0821e34b0033703301f4f8e))
+### @xmcl/keystone-ui@0.25.1
+#### Bug Fixes
+
+- resourcepack icon bluring ([9c1dcc49034049a754e7a19241109806598458a8](https://github.com/Voxelum/x-minecraft-launcher/commit/9c1dcc49034049a754e7a19241109806598458a8))
+### @xmcl/runtime@0.24.2
+#### Bug Fixes
+
+- type strong on serialize json ([7dbe3efa2145cefcd0821e34b0033703301f4f8e](https://github.com/Voxelum/x-minecraft-launcher/commit/7dbe3efa2145cefcd0821e34b0033703301f4f8e))
+
+
 ## 0.26.1
 ### @xmcl/runtime-api@0.10.1
 #### Bug Fixes
