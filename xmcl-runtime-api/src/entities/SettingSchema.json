@@ -34,6 +34,7 @@
         },
         "apiSets": {
             "description": "The supported unofficial api sets",
+            "default": [],
             "type": "array",
             "items": {
                 "type": "object",

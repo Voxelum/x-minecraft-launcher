@@ -10,18 +10,23 @@
             "type": "object",
             "properties": {
                 "description": {
+                    "default": "",
                     "type": "string"
                 },
                 "authors": {
+                    "default": "",
                     "type": "string"
                 },
                 "url": {
+                    "default": "",
                     "type": "string"
                 },
                 "updated": {
+                    "default": "",
                     "type": "string"
                 },
                 "updatedTime": {
+                    "default": "",
                     "type": "number"
                 }
             },

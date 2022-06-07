@@ -42,11 +42,61 @@ export class SafeJsonSerializer<T> implements Serializer<Buffer, T> {
     }
     if (object) {
       const validation = this.validation
-      const valid = validation(object)
-      if (!valid) {
-        this.logger?.warn('Try to remove those invalid keys. This might cause problem.')
+
+      let retry = false
+      let lastErrorPath = ''
+      let retryCount = 0
+      let totalRetryCount = 0
+      const MAX_RETRY = 10000
+      do {
+        retry = false
+        totalRetryCount++
+        const valid = validation(object)
+        if (valid) break
+        if (!validation.errors) break
+        const err = validation.errors[0]
+        if (err.instancePath === lastErrorPath) {
+          // The error persists and cannot be fixed
+          if (retryCount++ > 3) {
+            break
+          }
+        } else {
+          retryCount = 0
+        }
+        if (err.instancePath === '' && err.keyword === 'type') {
+          // root failed
+          if (err.params.type === 'array') {
+            object = []
+          } else if (err.params.type === 'object') {
+            object = {}
+          }
+          lastErrorPath = err.instancePath
+          retry = true
+        } else if (err.keyword === 'type' || err.keyword === 'required') {
+          // just delete the value if this key is invalid
+          const instancePath = err.instancePath
+          const keyChain = instancePath.split('/').slice(1)
+          const parents = keyChain.slice(0, keyChain.length - 1)
+          const key = keyChain[keyChain.length - 1]
+
+          let current = object
+          for (const val of parents) {
+            current = current[val]
+          }
+          if (current instanceof Array && Number.isInteger(Number(key))) {
+            current.splice(Number.parseInt(key, 10), 1)
+          } else {
+            delete current[key]
+          }
+          lastErrorPath = instancePath
+          retry = true
+        }
+      } while (retry && totalRetryCount < MAX_RETRY)
+
+      if (validation.errors) {
+        this.logger?.error('Cannot fix the type error. This might cause problems!')
         if (validation.errors) {
-          this.logger?.warn(JSON.stringify(validation.errors))
+          this.logger?.error(JSON.stringify(validation.errors))
         }
       }
     }

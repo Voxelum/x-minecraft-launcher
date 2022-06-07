@@ -35,6 +35,7 @@ export interface SettingSchema {
   apiSetsPreference: 'mojang' | 'mcbbs' | 'bmcl' | ''
   /**
    * The supported unofficial api sets
+   * @default []
    */
   apiSets: Array<{ name: string; url: string }>
   /**

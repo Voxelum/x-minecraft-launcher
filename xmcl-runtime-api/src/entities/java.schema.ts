@@ -13,7 +13,7 @@ export interface Java {
 }
 export interface JavaSchema {
   /**
-     * @default []
-     */
+   * @default []
+   */
   all: Java[]
 }

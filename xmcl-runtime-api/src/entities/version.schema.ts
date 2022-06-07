@@ -27,18 +27,18 @@ export interface ForgeDownload {
   md5?: string
   sha1: string
   /**
-     * The url path to concat with forge maven
-     */
+   * The url path to concat with forge maven
+   */
   path: string
 }
 export interface ForgeVersion {
   /**
-     * The minecraft version
-     */
+   * The minecraft version
+   */
   mcversion: string
   /**
-     * The forge version (without minecraft version)
-     */
+   * The forge version (without minecraft version)
+   */
   version: string
   /**
    * @default ""
@@ -47,16 +47,16 @@ export interface ForgeVersion {
   installer?: ForgeDownload
   universal?: ForgeDownload
   /**
-     * The changelog info
-     */
+   * The changelog info
+   */
   changelog?: ForgeDownload
   mdk?: ForgeDownload
   source?: ForgeDownload
   launcher?: ForgeDownload
   /**
-     * The type of the forge release. The `common` means the normal release.
-     * @default "common"
-     */
+   * The type of the forge release. The `common` means the normal release.
+   * @default "common"
+   */
   type: 'buggy' | 'recommended' | 'common' | 'latest'
 }
 export interface ForgeVersionList {
@@ -91,50 +91,65 @@ interface LiteloaderVersionMeta {
 
 export interface VersionMinecraftSchema {
   /**
-     * @default ""
-     */
+   * @default ""
+   */
   timestamp: string
   /**
-     * @default { "snapshot": "", "release": "" }
-     */
+   * @default { "snapshot": "", "release": "" }
+   */
   latest: {
     /**
-         * Snapshot version id of the Minecraft
-         * @default ""
-         */
+     * Snapshot version id of the Minecraft
+     * @default ""
+     */
     snapshot: string
     /**
-         * Release version id of the Minecraft, like 1.14.2
-         * @default ""
-         */
+     * Release version id of the Minecraft, like 1.14.2
+     * @default ""
+     */
     release: string
   }
   /**
-     * All the vesrsion list
-     * @default []
-     */
+   * All the vesrsion list
+   * @default []
+   */
   versions: MinecraftVersion[]
 }
 
 export type VersionForgeSchema = Array<ForgeVersionList>
 export interface VersionLiteloaderSchema {
   /**
-     * @default ""
-     */
+   * @default ""
+   */
   timestamp: string
   /**
-     * @default {}
-     */
+   * @default {}
+   */
   meta: {
+    /**
+     * @default ""
+     */
     description: string
+    /**
+     * @default ""
+     */
     authors: string
+    /**
+     * @default ""
+     */
     url: string
+    /**
+     * @default ""
+     */
     updated: string
+    /**
+     * @default ""
+     */
     updatedTime: number
   }
   /**
-     * @default {}
-     */
+   * @default {}
+   */
   versions: {
     [version: string]: {
       snapshot?: LiteloaderVersionMeta
@@ -154,38 +169,38 @@ interface FabricArtifactVersion {
 
 export interface VersionFabricSchema {
   /**
-     * @default ""
-     */
+   * @default ""
+   */
   yarnTimestamp: string
 
   /**
-     * @default ""
-     */
+   * @default ""
+   */
   loaderTimestamp: string
 
   /**
-     * @default []
-     */
+   * @default []
+   */
   yarns: FabricArtifactVersion[]
 
   /**
-     * @default []
-     */
+   * @default []
+   */
   loaders: FabricArtifactVersion[]
 }
 
 export interface OptifineVersion {
   /**
-     * The minecraft version
-     */
+   * The minecraft version
+   */
   mcversion: string
   /**
-     * The type of the optifine like HD_U
-     */
+   * The type of the optifine like HD_U
+   */
   type: string
   /**
-     * The patch of the optifine
-     */
+   * The patch of the optifine
+   */
   patch: string
 }
 

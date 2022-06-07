@@ -8,9 +8,9 @@ export const InstancesSchema: Schema<InstancesSchema> = _InstancesSchema
 
 export interface RuntimeVersions {
   /**
-     * Minecraft version of this version. e.g. 1.7.10
-     * @default ""
-     */
+   * Minecraft version of this version. e.g. 1.7.10
+   * @default ""
+   */
   minecraft: string
   /**
      * Forge version of this version. e.g. 14.23.5.2838
