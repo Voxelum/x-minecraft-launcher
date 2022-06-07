@@ -26,6 +26,7 @@
               <img
                 ref="iconImage"
                 v-fallback-img="unknownPack"
+                style="image-rendering: pixelated"
                 class="select-none h-[125px]"
                 :src="pack.icon"
                 contain
