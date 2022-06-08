@@ -1,4 +1,16 @@
 
+## 0.26.3
+### @xmcl/keystone-ui@0.25.2
+#### Bug Fixes
+
+- Wrong local version highlight ([07699f12614d423432bac1c7a99ceda418f1c822](https://github.com/Voxelum/x-minecraft-launcher/commit/07699f12614d423432bac1c7a99ceda418f1c822))
+- Incorrected minecraft version list install status ([46c439226f934f6e892521f15b360dc5b45ffb33](https://github.com/Voxelum/x-minecraft-launcher/commit/46c439226f934f6e892521f15b360dc5b45ffb33))
+### @xmcl/runtime@0.24.3
+#### Bug Fixes
+
+- Cannot launch 1.19 due to json format change ([5f032a8e8281549a64bc8cfa1515a91f06367b7e](https://github.com/Voxelum/x-minecraft-launcher/commit/5f032a8e8281549a64bc8cfa1515a91f06367b7e))
+
+
 ## 0.26.2
 ### @xmcl/runtime-api@0.10.2
 #### Bug Fixes
