@@ -23,7 +23,7 @@
           class="flex-grow-0 flex-1"
           ripple
           :class="{
-            select: isSelected(item),
+            selected: isSelected(item),
             'en-1': isSelected(item),
             'elevation-2': isSelected(item),
           }"
@@ -276,11 +276,11 @@ export default defineComponent({
 
 <style scoped>
 .dark .selected {
-  background: rgba(234, 233, 255, 0.2);
+  background: rgba(234, 233, 255, 0.2) !important;
 }
 
 .selected {
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.2) !important;
 }
 
 </style>
