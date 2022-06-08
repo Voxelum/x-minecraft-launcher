@@ -289,7 +289,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         throw e
       }
       this.error(e)
-      throw new LaunchException({ type: 'launchGeneralException', error: e })
+      throw new LaunchException({ type: 'launchGeneralException', error: { ...(e as any), message: (e as any).message, stack: (e as any).stack } })
     }
   }
 }
