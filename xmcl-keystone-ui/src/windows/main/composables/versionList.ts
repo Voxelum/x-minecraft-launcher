@@ -37,7 +37,7 @@ export function useMinecraftVersionList(version: Ref<string>) {
           tag: v.type === 'snapshot' ? t('minecraftVersion.snapshot') : v.type === 'release' ? t('minecraftVersion.release') : '',
           tagColor: v.type === 'release' ? 'primary' : '',
           isSelected: computed(() => version.value === v.id),
-          status: computed(() => semaphores[key] > 0 ? 'installing' : statuses.value[key]),
+          status: computed(() => semaphores[key] > 0 ? 'installing' : statuses.value[v.id]),
           instance: markRaw(v),
         })
         return item
