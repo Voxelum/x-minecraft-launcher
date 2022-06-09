@@ -1,6 +1,6 @@
 import { checksum, MinecraftFolder } from '@xmcl/core'
 import { createDefaultCurseforgeQuery, DownloadTask, UnzipTask } from '@xmcl/installer'
-import { AnyPersistedResource, createTemplate, ExportInstanceOptions, InstanceIOException, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceManifest, InstanceManifestSchema, InstanceSchema, InstanceUpdate, LockKey, RuntimeVersions, SetInstanceManifestOptions, InstanceFile, SourceInformation, ApplyInstanceUpdateOptions } from '@xmcl/runtime-api'
+import { AnyPersistedResource, createTemplate, ExportInstanceOptions, InstanceIOException, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceManifest, InstanceManifestSchema, InstanceSchema, InstanceUpdate, LockKey, RuntimeVersions, SetInstanceManifestOptions, InstanceFile, SourceInformation, ApplyInstanceUpdateOptions, GetManifestOptions } from '@xmcl/runtime-api'
 import { BaseTask, Task, task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { randomUUID } from 'crypto'
@@ -181,22 +181,35 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
   }
 
   @Singleton(p => p)
-  async getInstanceManifest(path?: string): Promise<InstanceManifest> {
-    const instancePath = path || this.instanceService.state.path
+  async getInstanceManifest<T extends 'sha1' | 'sha256' | 'md5'>(options?: GetManifestOptions<T>): Promise<InstanceManifest<T>> {
+    const instancePath = options?.path || this.instanceService.state.path
 
     const instance = this.instanceService.state.all[instancePath]
+
+    const resolveHashes = async (file: string, sha1: string) => {
+      const result: Record<string, string> = { sha1 }
+      if (options?.hashes) {
+        for (const hash of options.hashes) {
+          if (hash === 'sha1') {
+            continue
+          } else {
+            result[hash] = await this.worker().checksum(file, hash)
+          }
+        }
+      }
+      return result as any
+    }
 
     if (!instance) {
       throw new InstanceIOException({ instancePath, type: 'instanceNotFound' })
     }
 
-    const files = [] as Array<InstanceFile>
+    const files = [] as Array<InstanceFile<T>>
 
     const scan = async (p: string) => {
       const status = await stat(p)
       const ino = status.ino
       const isDirectory = status.isDirectory()
-      let resource = this.resourceService.getResourceByKey(ino)
       const relativePath = relative(instancePath, p).replace(/\\/g, '/')
       if (relativePath.startsWith('resourcepacks') || relativePath.startsWith('shaderpacks')) {
         if (relativePath.endsWith('.json') || relativePath.endsWith('.png')) {
@@ -217,37 +230,37 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
 
       if (isDirectory) {
         const children = await readdirIfPresent(p)
-        for (const child of children) {
-          await scan(join(p, child))
-        }
+        await Promise.all(children.map(child => scan(join(p, child))))
       } else {
-        const sha1 = resource?.hash ?? await this.worker().checksum(p, 'sha1')
-        const localFile: InstanceFile = {
+        const localFile: InstanceFile<T> = {
           path: relativePath,
           size: status.size,
           updateAt: status.mtimeMs,
           createAt: status.ctimeMs,
-          hashes: {
-            sha1,
-            sha256: await this.worker().checksum(p, 'sha256'),
-          },
+          hashes: {} as any,
         }
-        if (!resource) {
-          resource = this.resourceService.getResourceByKey(sha1)
-        }
-        if (resource?.modrinth) {
-          localFile.modrinth = {
-            projectId: resource.modrinth.projectId,
-            versionId: resource.modrinth.versionId,
+        if (relativePath.startsWith('resourcepacks') || relativePath.startsWith('shaderpacks') || relativePath.startsWith('mods')) {
+          let resource = this.resourceService.getResourceByKey(ino)
+          const sha1 = resource?.hash ?? await this.worker().checksum(p, 'sha1')
+          if (!resource) {
+            resource = this.resourceService.getResourceByKey(sha1)
           }
-        }
-        if (resource?.curseforge) {
-          localFile.curseforge = {
-            projectId: resource.curseforge.projectId,
-            fileId: resource.curseforge.fileId,
+          if (resource?.modrinth) {
+            localFile.modrinth = {
+              projectId: resource.modrinth.projectId,
+              versionId: resource.modrinth.versionId,
+            }
           }
+          if (resource?.curseforge) {
+            localFile.curseforge = {
+              projectId: resource.curseforge.projectId,
+              fileId: resource.curseforge.fileId,
+            }
+          }
+          localFile.downloads = resource?.uri && resource.uri.some(u => u.startsWith('http')) ? resource.uri.filter(u => u.startsWith('http')) : undefined
+          localFile.hashes = await resolveHashes(p, sha1)
         }
-        localFile.downloads = resource?.uri && resource.uri.some(u => u.startsWith('http')) ? resource.uri.filter(u => u.startsWith('http')) : undefined
+
         files.push(localFile)
       }
     }

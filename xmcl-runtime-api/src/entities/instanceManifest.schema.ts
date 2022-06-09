@@ -1,14 +1,9 @@
 import { InstanceData, RuntimeVersions } from './instance.schema'
 
-interface Hashes {
-  sha1: string
-  sha256: string
-}
-
 /**
  * Represent an instance file
  */
-export interface InstanceFile {
+export interface InstanceFile<T extends 'sha1' | 'sha256' | 'md5' = never> {
   /**
    * The path of the file relative to the instance root
    */
@@ -16,7 +11,9 @@ export interface InstanceFile {
   /**
    * The hash of the instance file. The sha1 is required
    */
-  hashes: Hashes
+  hashes: {
+    [K in T]: string
+  }
   /**
    * The download url of the instance file
    */
@@ -41,13 +38,17 @@ export interface InstanceFile {
   updateAt: number
 }
 
+type InstanceDataFields = Pick<InstanceData, 'description' | 'minMemory' | 'maxMemory' | 'vmOptions' | 'mcOptions'>
+
 /**
  * This format of manifest is design for xmcl instance pulling/exchanging.
  */
-export interface InstanceManifestSchema extends Partial<Pick<InstanceData, 'description' | 'minMemory' | 'maxMemory' | 'vmOptions' | 'mcOptions'>> {
+export interface InstanceManifestSchema extends Partial<InstanceDataFields> {
   runtime: RuntimeVersions
   files: Array<InstanceFile>
 }
 
-export interface InstanceManifest extends InstanceManifestSchema {
+export interface InstanceManifest<T extends 'sha1' | 'sha256' | 'md5' = never> extends Partial<InstanceDataFields> {
+  runtime: RuntimeVersions
+  files: Array<InstanceFile<T>>
 }

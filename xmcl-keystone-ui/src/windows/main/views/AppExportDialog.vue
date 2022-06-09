@@ -1,30 +1,33 @@
 <template>
   <v-dialog
     v-model="isShown"
+    fullscreen
+    hide-overlay
+    transition="dialog-bottom-transition"
+    scrollable
     width="800"
   >
     <v-card>
       <v-toolbar
-
+        class="flex-1 flex-grow-0 moveable"
         tabs
         color="green en"
       >
-        <v-toolbar-title>
+        <v-toolbar-title class="text-white">
           {{ t('modpack.export') }}
         </v-toolbar-title>
 
         <v-spacer />
         <v-btn
+          class="non-moveable"
           icon
           @click="cancel"
         >
           <v-icon>arrow_drop_down</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-container
-        grid-list-sm
-        class="max-h-[70vh]"
-        style="overflow: auto;"
+      <div
+        class="max-h-[100vh] visible-scroll mx-0 justify-center items-center overflow-y-auto overflow-x-hidden px-6 py-2"
       >
         <v-subheader>{{ t('modpack.general') }}</v-subheader>
         <v-container
@@ -35,7 +38,7 @@
             <v-flex d-flex>
               <v-text-field
                 v-model="name"
-
+                prepend-inner-icon="edit"
                 persistent-hint
                 :hint="t('instance.nameHint')"
                 :label="t('name')"
@@ -45,6 +48,7 @@
             <v-flex d-flex>
               <v-text-field
                 v-model="author"
+                prepend-inner-icon="person"
                 persistent-hint
                 :hint="t('modpack.authorHint')"
                 :label="t('author')"
@@ -56,6 +60,7 @@
             <v-flex d-flex>
               <v-text-field
                 v-model="data.version"
+                prepend-inner-icon="history"
                 persistent-hint
                 :hint="t('modpack.modpackVersion')"
                 :label="t('modpack.modpackVersion')"
@@ -69,21 +74,21 @@
               <v-select
                 v-model="data.gameVersion"
                 :items="localVersions"
-
+                prepend-inner-icon="games"
                 persistent-hint
+                class="visible-scroll"
                 :hint="$tc('instance.includeVersion', 2)"
                 :label="t('instance.gameVersion')"
                 required
               />
             </v-flex>
           </v-layout>
-          <v-layout
-            row
-          >
+          <v-layout row>
             <v-flex d-flex>
               <v-checkbox
                 v-model="data.emitCurseforge"
                 :label="t('modpack.emitCurseforge')"
+                prepend-icon="$vuetify.icons.curseforge"
                 hide-details
               />
             </v-flex>
@@ -98,15 +103,71 @@
               />
             </v-flex>
           </v-layout>
+          <v-layout row>
+            <v-flex d-flex>
+              <v-checkbox
+                v-model="data.emitModrinth"
+                :label="t('modpack.emitModrinth')"
+                hide-details
+                prepend-icon="$vuetify.icons.modrinth"
+              />
+            </v-flex>
+
+            <v-flex
+              d-flex
+              xs6
+            >
+              <v-checkbox
+                v-model="data.emitModrinthStrict"
+                :label="t('modpack.emitModrinthStrict')"
+                hide-details
+                prepend-icon="$vuetify.icons.modrinth"
+              >
+                <template #append>
+                  <v-tooltip
+                    top
+                  >
+                    <template #activator="{ on }">
+                      <!-- <v-btn
+                        text
+                        icon
+                      > -->
+                      <a
+                        class="border-green-300 border border-dashed rounded pb-[2px]"
+                        href="https://docs.modrinth.com/docs/modpacks/format_definition/#downloads"
+                        v-on="on"
+                      >
+                        <v-icon
+                          color="primary"
+                          class="cursor-pointer"
+                          small
+                        >
+                          question_mark
+                        </v-icon>
+                      </a>
+                      <!-- </v-btn> -->
+                    </template>
+                    {{ t('modpack.emitModrinthStrictDescription') }}
+                    <ul class="list-disc">
+                      <li> cdn.modrinth.com </li>
+                      <li>github.com</li>
+                      <li>raw.githubusercontent.com</li>
+                      <li>gitlab.com</li>
+                    </ul>
+                  </v-tooltip>
+                </template>
+              </v-checkbox>
+            </v-flex>
+          </v-layout>
           <v-layout
-            v-if="!(data.emitCurseforge || data.emitMcbbs)"
+            v-if="!(data.emitCurseforge || data.emitMcbbs || data.emitModrinth)"
             row
           >
             <v-flex d-flex>
               <v-checkbox
                 v-model="data.includeAssets"
                 :label="t('modpack.includeAssets')"
-                hint="abc"
+                prepend-icon="texture"
                 hide-details
               />
             </v-flex>
@@ -117,32 +178,95 @@
               <v-checkbox
                 v-model="data.includeLibraries"
                 :label="t('modpack.includeLibraries')"
-                hint="abc"
+                prepend-icon="camera_roll"
                 hide-details
               />
             </v-flex>
           </v-layout>
         </v-container>
 
-        <v-layout>
+        <v-layout class="items-center">
           <v-subheader v-if="data.emitCurseforge || data.emitMcbbs">
             {{ t('modpack.overrides') }}
           </v-subheader>
           <v-subheader v-else>
             {{ t('modpack.includes') }}
           </v-subheader>
+          <div class="flex-grow" />
+          <v-text-field
+            v-model="filterText"
+            prepend-inner-icon="search"
+            class="max-w-50"
+            :label="t('filter')"
+          />
         </v-layout>
         <v-layout
           row
           style="padding: 5px; margin-bottom: 5px"
         >
+          <v-skeleton-loader
+            v-if="refreshing"
+            type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
+          />
           <instance-manifest-file-tree
             v-model="data.selected"
             selectable
+            :search="filterText"
             :multiple="false"
-          />
+          >
+            <template #default="{ item, selected }">
+              <template
+                v-if="item.data && canExport(item.data) && selected && data.emitModrinth"
+              >
+                <v-tooltip
+                  left
+                  color="green"
+                >
+                  <template #activator="{ on }">
+                    <v-chip
+                      color="green"
+                      label
+                      outlined
+                      :close="!!item.data.client"
+                      v-on="on"
+                      @click:close="item.data.client = ''"
+                      @click="item.data.client = nextEnv(item.data.client)"
+                    >
+                      <v-avatar left>
+                        C
+                      </v-avatar>
+                      {{ getEnvText(item.data.client) }}
+                    </v-chip>
+                  </template>
+                  {{ t('modrinth.environments.client') }}
+                </v-tooltip>
+                <v-tooltip
+                  top
+                  color="blue"
+                >
+                  <template #activator="{ on }">
+                    <v-chip
+                      color="blue"
+                      label
+                      outlined
+                      :close="!!item.data.server"
+                      v-on="on"
+                      @click:close="item.data.server = ''"
+                      @click="item.data.server = nextEnv(item.data.server)"
+                    >
+                      <v-avatar left>
+                        S
+                      </v-avatar>
+                      {{ getEnvText(item.data.server) }}
+                    </v-chip>
+                  </template>
+                  {{ t('modrinth.environments.server') }}
+                </v-tooltip>
+              </template>
+            </template>
+          </instance-manifest-file-tree>
         </v-layout>
-      </v-container>
+      </div>
       <v-card-actions class="gap-5 items-baseline">
         <v-btn
           text
@@ -171,12 +295,12 @@
 </template>
 
 <script lang=ts setup>
-import { InstanceIOServiceKey, InstanceFile, ModpackServiceKey } from '@xmcl/runtime-api'
+import { InstanceIOServiceKey, InstanceFile, ModpackServiceKey, ExportFileDirective, isAllowInModrinthModpack } from '@xmcl/runtime-api'
 import { inc } from 'semver'
-import { useDialog, useZipFilter } from '../composables/dialog'
+import { useDialog, useModrinthFilter, useZipFilter } from '../composables/dialog'
 import { useInstance, useInstanceVersion } from '../composables/instance'
 import { AppExportDialogKey } from '../composables/instanceExport'
-import { provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
+import { InstanceFileExportData, provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
 import { useLocalVersions } from '../composables/version'
 import { useI18n, useRefreshable, useService } from '/@/composables'
 import { getExpectedSize } from '/@/util/size'
@@ -193,9 +317,24 @@ const { folder } = useInstanceVersion()
 const { localVersions: _locals } = useLocalVersions()
 const { name, author, modpackVersion } = useInstance()
 const zipFilter = useZipFilter()
+const modrinthFilter = useModrinthFilter()
 const baseVersion = modpackVersion.value || '0.0.0'
 const localVersions = computed(() => _locals.value.map((v) => v.id))
 
+function getEnvText(env: string) {
+  if (env === 'required') return t('modrinth.environments.required')
+  if (env === 'optional') return t('modrinth.environments.optional')
+  if (env === 'unsupported') return t('modrinth.environments.unsupported')
+  return t('modrinth.environments.default')
+}
+
+function nextEnv(env: string) {
+  if (env === 'required') return 'optional'
+  if (env === 'optional') return 'unsupported'
+  return 'required'
+}
+
+const filterText = ref('')
 const data = reactive({
   name: name.value,
   author: author.value,
@@ -207,25 +346,40 @@ const data = reactive({
   includeLibraries: false,
   includeAssets: false,
   emitCurseforge: false,
+  emitModrinth: true,
+  emitModrinthStrict: true,
   emitMcbbs: false,
 })
 
 const enableCurseforge = computed(() => data.emitCurseforge || data.emitMcbbs)
-const enableModrinth = computed(() => false)
-const { leaves } = provideFileNodes(useInstanceFileNodesFromLocal(computed(() => data.files), reactive({
-  curseforge: enableCurseforge,
-  modrinth: enableModrinth,
-  downloads: false,
-})))
-watch([enableCurseforge, enableModrinth], () => {
-  for (const node of leaves.value) {
-    if (!enableCurseforge.value && node.choice === 'curseforge') {
-      node.choice = node.choices[0].value
-    } else if (!enableModrinth.value && node.choice === 'modrinth') {
-      node.choice = node.choices[0].value
-    }
+const enableModrinth = computed(() => data.emitModrinth)
+
+watch(enableModrinth, (v) => {
+  if (v) {
+    data.emitCurseforge = false
+    data.emitMcbbs = false
   }
 })
+
+watch(enableCurseforge, (v) => {
+  if (v) {
+    data.emitModrinth = false
+  }
+})
+
+const { leaves } = provideFileNodes(useInstanceFileNodesFromLocal(computed(() => data.files)))
+
+function canExport(fileData: InstanceFileExportData) {
+  if (!fileData.curseforge && !fileData.downloads) return false
+  if (enableCurseforge.value) {
+    return !!fileData.curseforge
+  }
+  if (enableModrinth.value && fileData.downloads) {
+    if (fileData.downloads.length === 0) return false
+    return fileData.downloads.some(v => isAllowInModrinthModpack(v, data.emitModrinthStrict))
+  }
+  return false
+}
 
 function reset() {
   data.includeAssets = false
@@ -257,47 +411,55 @@ const { refresh, refreshing } = useRefreshable(async () => {
 // selecting & directives
 const selectedPaths = computed(() => new Set(data.selected))
 
-const exportDirectives = computed(() => {
-  const existed = selectedPaths.value
-  console.log(leaves.value
-    .filter(n => existed.has(n.id)))
-  return leaves.value
-    .filter(n => existed.has(n.id))
-    .filter(l => l.choice)
-    .map(l => ({ path: l.id, exportAs: l.choice as 'curseforge' | 'modrinth' }))
+const exportFiles = computed(() => {
+  const selected = selectedPaths.value
+  const result: ExportFileDirective[] = leaves.value
+    .filter(n => selected.has(n.id))
+    .map(l => ({
+      path: l.id,
+      env: l.data
+        ? {
+          client: l.data.client,
+          server: l.data.server,
+        }
+        : undefined,
+    }) as ExportFileDirective)
+  return result
 })
 
 const totalSize = computed(() => {
   const existed = selectedPaths.value
-  const discount = new Set(exportDirectives.value.map(v => v.path))
   return leaves.value.filter(n => existed.has(n.id))
-    .filter(n => !discount.has(n.id))
+    .filter(n => !n.data || n.data.forceOverride || !canExport(n.data))
     .map(l => l.size)
     .reduce((a, b) => a + b, 0)
 })
 
 // export
 const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
-  const { filePath } = await showSaveDialog({
+  const { filePath, canceled } = await showSaveDialog({
     title: t('modpack.export'),
     defaultPath: `${data.name}-${data.version}`,
-    filters: [zipFilter],
+    filters: data.emitModrinth ? [modrinthFilter] : [zipFilter],
   })
+
+  if (canceled) {
+    return
+  }
   if (filePath) {
-    if (data.emitCurseforge || data.emitMcbbs) {
+    if (data.emitCurseforge || data.emitMcbbs || data.emitModrinth) {
       try {
-        const overrides = data.selected.filter(p => !!data.files.find(f => f.path === p))
-        const directives = exportDirectives.value
         await exportModpack({
-          overrides,
           name: data.name,
-          exportDirectives: directives,
+          files: exportFiles.value,
           author: data.author,
           version: data.version,
           gameVersion: data.gameVersion,
           destinationPath: filePath,
           emitCurseforge: data.emitCurseforge,
           emitMcbbs: data.emitMcbbs,
+          emitModrinth: data.emitModrinth,
+          strictModeInModrinth: data.emitModrinthStrict,
         })
       } catch (e) {
         console.error(e)
@@ -311,8 +473,8 @@ const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
         files,
       })
     }
+    cancel()
   }
-  cancel()
 })
 
 watch(isShown, (value) => {

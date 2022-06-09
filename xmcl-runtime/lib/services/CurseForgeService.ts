@@ -1,12 +1,11 @@
 import { AddonInfo, File, getAddonDatabaseTimestamp, getAddonDescription, getAddonFileInfo, getAddonFiles, getAddonInfo, getCategories, getCategoryTimestamp, GetFeaturedAddonOptions, getFeaturedAddons, searchAddons, SearchOptions } from '@xmcl/curseforge'
-import { createDefaultCurseforgeQuery, DownloadTask } from '@xmcl/installer'
+import { DownloadTask } from '@xmcl/installer'
 import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, CurseforgeState, InstallFileOptions, ProjectType } from '@xmcl/runtime-api'
-import { basename, join } from 'path'
-import { URL } from 'url'
+import { unlink } from 'fs-extra'
+import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { getCurseforgeSourceInfo } from '../entities/resource'
 import { compareDate, requireObject, requireString } from '../util/object'
-import { isValidateUrl } from '../util/url'
 import { ResourceService } from './ResourceService'
 import { Inject, Singleton, StatefulService } from './Service'
 
@@ -116,7 +115,7 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
     const resourceService = this.resourceService
     const networkManager = this.networkManager
     try {
-      const destination = join(this.app.temporaryPath, basename(file.downloadUrl))
+      const destination = join(this.app.temporaryPath, file.fileName)
       const project = await this.fetchProject(projectId)
       const imageUrl = project.attachments[0]?.thumbnailUrl
       const task = new DownloadTask({
@@ -136,6 +135,7 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
         background: true,
       })
       this.log(`Install curseforge file ${file.displayName}(${file.downloadUrl}) success!`)
+      await unlink(destination).catch(() => undefined)
       return result
     } finally {
       this.state.curseforgeDownloadFileEnd(file.id)

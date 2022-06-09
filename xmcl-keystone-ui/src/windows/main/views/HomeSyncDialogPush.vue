@@ -60,11 +60,7 @@ const { t } = useI18n()
 const selected = ref([] as string[])
 const errorText = ref('')
 
-const nodes = useInstanceFileNodesFromLocal(files, {
-  modrinth: true,
-  curseforge: true,
-  downloads: true,
-})
+const nodes = useInstanceFileNodesFromLocal(files)
 provideFileNodes(nodes)
 
 async function refresh() {

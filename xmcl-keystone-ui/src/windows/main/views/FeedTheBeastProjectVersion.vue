@@ -89,10 +89,10 @@
 </template>
 
 <script lang=ts setup>
-import { useFeedTheBeastProject, useFeedTheBeastProjectVersion } from '../composables/ftb'
 import { FTBFile, FTBVersion } from '@xmcl/runtime-api'
-import { InstanceFileNode, provideFileNodes } from '../composables/instanceFiles'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
+import { useFeedTheBeastProjectVersion } from '../composables/ftb'
+import { InstanceFileNode, provideFileNodes } from '../composables/instanceFiles'
 import fabricPng from '/@/assets/fabric.png'
 import forgePng from '/@/assets/forge.png'
 import minecraftPng from '/@/assets/minecraft.png'
@@ -122,8 +122,6 @@ provideFileNodes(computed(() => {
       id: file.path.replace('./', '') + file.name,
       name: file.name,
       size: file.size,
-      choices: [],
-      choice: [],
     }
   }
   return man.files.map(getNode)

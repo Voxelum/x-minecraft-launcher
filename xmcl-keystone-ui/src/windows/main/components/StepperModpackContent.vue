@@ -43,8 +43,6 @@ provideFileNodes(computed(() => {
       id: file.path.replace('./', '') + file.name,
       name: file.name,
       size: file.size,
-      choices: [],
-      choice: [],
     }
   }
   function getNode(file: { path: string; fileSize?: number; downloads: string[] }): InstanceFileNode {
@@ -52,8 +50,6 @@ provideFileNodes(computed(() => {
       id: file.path,
       name: basename(file.path),
       size: file.fileSize ?? 0,
-      choice: [],
-      choices: [],
     }
   }
 

@@ -67,6 +67,9 @@ export interface UpdateResourceOptions {
   resource: AnyResource | string
   name?: string
   tags?: string[]
+  source?: SourceInformation
+  uri?: string[]
+  iconUrl?: string
 }
 
 const domains = [

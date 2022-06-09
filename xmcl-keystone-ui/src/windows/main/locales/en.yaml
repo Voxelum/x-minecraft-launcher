@@ -155,6 +155,9 @@ exportModpackTarget:
   modrinth: Modrinth File
   name: Export File as
   override: Override (Raw) File
+extensions:
+  mrpack: Modrinth Modpack
+  zip: Zip File
 fabricVersion:
   disable: Disable Fabric
   empty: No Fabric Version for Minecraft {version}
@@ -460,6 +463,9 @@ modpack:
   edit: Edit Modpack Info
   emitCurseforge: Emit Curseforge Modpack
   emitMcbbs: Emit MCBBS Modpack
+  emitModrinth: Emit Modrinth Modpack
+  emitModrinthStrict: Strict Modrinth Format
+  emitModrinthStrictDescription: Only the URLs from 4 domains listed in modrinth document are allowed
   error:
     requirename: Name is required! Please come up a modpack name!
   export: Export as Modpack
@@ -513,8 +519,12 @@ modrinth:
   downloads: Downloads
   environments:
     client: Client
+    default: Default
     name: Environment
+    optional: Optional
+    required: Required
     server: Server
+    unsupported: Unsupported
   followers: Followers
   gallery: Gallery
   gameVersions:

@@ -124,6 +124,9 @@ exportModpackTarget:
   modrinth: Modrinth 文件
   name: 文件导出为
   override: 覆盖文件 (打包)
+extensions:
+  mrpack: Modrinth 整合包
+  zip: ZIP 压缩包
 fabricVersion:
   disable: 不启用 Fabric
   empty: 在 Minecraft {version} 下未找到任何 Fabric 版本
@@ -393,6 +396,9 @@ modpack:
   edit: 编辑Mod包信息
   emitCurseforge: 生成 Curseforge 整合包
   emitMcbbs: 生成 MCBBS 整合包
+  emitModrinth: 生成 Modrinth 整合包
+  emitModrinthStrict: 严格遵守 Modrinth 整合包格式
+  emitModrinthStrictDescription: 下载链接只允许包含 Modrinth 官网定义的四个域名
   error:
     requirename: 名称不能为空！请随便编一个名字
   export: 导出整合包
@@ -449,8 +455,12 @@ modrinth:
   downloads: 下载量
   environments:
     client: 客户端
+    default: 默认
     name: 环境
+    optional: 可选
+    required: 必选
     server: 服务端
+    unsupported: 不支持
   followers: 关注者
   gallery: 图片展示
   gameVersions:

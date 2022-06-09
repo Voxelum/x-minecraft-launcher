@@ -1,6 +1,7 @@
 import { DownloadTask } from '@xmcl/installer'
 import { Category, GameVersion, License, Loader, Project, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
 import { InstallProjectVersionOptions, ModrinthService as IModrinthService, ModrinthServiceKey, ModrinthState, PersistedResource, ResourceDomain } from '@xmcl/runtime-api'
+import { unlink } from 'fs-extra'
 import { basename, join } from 'path'
 import { URLSearchParams } from 'url'
 import { LauncherApp } from '../app/LauncherApp'
@@ -125,6 +126,8 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
         iconUrl: proj.icon_url,
         background: true,
       })
+
+      await unlink(destination).catch(() => undefined)
 
       this.log(`Install modrinth file ${file.filename}(${file.url}) success!`)
 

@@ -1,44 +1,38 @@
 import { InjectionKey, Ref } from '@vue/composition-api'
-import { InstanceUpdate, InstanceFile } from '@xmcl/runtime-api'
-import { useI18n } from '/@/composables'
+import { InstanceFile } from '@xmcl/runtime-api'
 import { basename } from '/@/util/basename'
 
-export interface InstanceFileNode {
+export interface InstanceFileNode<T = never> {
   name: string
   id: string
   size: number
-  choice: string | string[]
-  choices: Array<{ value: string; text: string }>
-  children?: InstanceFileNode[]
+  data?: T
+  children?: InstanceFileNode<T>[]
 }
 
-export const FileNodesSymbol: InjectionKey<Ref<InstanceFileNode[]>> = Symbol('InstanceFileNode')
+export const FileNodesSymbol: InjectionKey<Ref<InstanceFileNode<any>[]>> = Symbol('InstanceFileNode')
 
-export function useInstanceFileNodesFromLocal(local: Ref<InstanceFile[]>, options: { curseforge: boolean; modrinth: boolean; downloads: boolean }) {
-  const { t } = useI18n()
-  function getChoices(f: InstanceFile) {
-    const result = [] as Array<{ value: string; text: string }>
-    if (f.curseforge && options.curseforge) {
-      result.push({ value: 'curseforge', text: t('exportModpackTarget.curseforge') })
-    }
-    if (f.modrinth && options.modrinth) {
-      result.push({ value: 'modrinth', text: t('exportModpackTarget.modrinth') })
-    }
-    if (f.downloads && options.downloads) {
-      result.push({ value: 'downloads', text: t('exportModpackTarget.downloads') })
-    }
-    if (result.length > 0) {
-      result.unshift({ value: '', text: t('exportModpackTarget.override') })
-    }
-    return result
-  }
-  function getFileNode(f: InstanceFile): InstanceFileNode {
+export type InstanceFileExportData = {
+  forceOverride: boolean
+  client: string
+  server: string
+  downloads?: string[]
+  curseforge: boolean
+}
+
+export function useInstanceFileNodesFromLocal(local: Ref<InstanceFile[]>) {
+  function getFileNode(f: InstanceFile): InstanceFileNode<InstanceFileExportData> {
     return reactive({
       name: basename(f.path),
       id: f.path,
       size: f.size,
-      choice: '',
-      choices: computed(() => getChoices(f)),
+      data: {
+        client: '',
+        server: '',
+        forceOverride: false,
+        downloads: f.downloads,
+        curseforge: !!f.curseforge,
+      },
       children: undefined,
     })
   }
@@ -53,8 +47,8 @@ export function useInstanceFileNodesFromLocal(local: Ref<InstanceFile[]>, option
   return result
 }
 
-export function provideFileNodes(files: Ref<InstanceFileNode[]>) {
-  function buildEdges(cwd: InstanceFileNode[], filePaths: string[], parent: string, file: InstanceFileNode) {
+export function provideFileNodes<T>(files: Ref<InstanceFileNode<T>[]>) {
+  function buildEdges(cwd: InstanceFileNode<T>[], filePaths: string[], parent: string, file: InstanceFileNode<T>) {
     const remained = filePaths.slice(1)
     if (remained.length > 0) { // edge
       const name = filePaths[0]
@@ -65,8 +59,6 @@ export function provideFileNodes(files: Ref<InstanceFileNode[]>) {
           name,
           id: current,
           size: 0,
-          choice: '',
-          choices: [],
           children: [],
         }
         cwd.push(edgeNode)
@@ -77,12 +69,12 @@ export function provideFileNodes(files: Ref<InstanceFileNode[]>) {
     }
   }
 
-  const leaves: Ref<InstanceFileNode[]> = ref([])
-  const nodes: Ref<InstanceFileNode[]> = ref([])
+  const leaves: Ref<InstanceFileNode<T>[]> = ref([])
+  const nodes: Ref<InstanceFileNode<T>[]> = ref([])
 
   watch(files, (files) => {
     const leavesNodes = files
-    const result: InstanceFileNode[] = []
+    const result: InstanceFileNode<T>[] = []
     for (const file of leavesNodes) {
       buildEdges(result, file.id.split('/'), '', file)
     }
