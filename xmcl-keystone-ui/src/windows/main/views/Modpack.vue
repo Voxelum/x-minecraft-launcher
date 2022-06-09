@@ -68,6 +68,10 @@
           @create="show(item.id)"
           @delete="startDelete(item)"
         />
+        <div
+          key="dummy"
+          class="min-h-10 min-w-[100vh]"
+        />
       </transition-group>
     </div>
     <delete-dialog
