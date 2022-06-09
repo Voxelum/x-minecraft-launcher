@@ -70,7 +70,9 @@ function onException(e: LaunchExceptions) {
     description.value = t('launchGeneralException.description')
     unexpected.value = true
     if (e.error) {
-      if (typeof (e.error as any).message === 'string') {
+      if (typeof (e.error as any).stack === 'string') {
+        extraText.value += (e.error as any).stack
+      } else if (typeof (e.error as any).message === 'string') {
         extraText.value = (e.error as any).message
       } else if (typeof (e.error as any).toString === 'function') {
         extraText.value = (e.error as any).toString()

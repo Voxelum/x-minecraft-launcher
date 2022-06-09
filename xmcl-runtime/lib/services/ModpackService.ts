@@ -1,10 +1,9 @@
 import { DownloadTask, UnzipTask } from '@xmcl/installer'
-import { DownloadError } from '@xmcl/installer/http/error'
-import { CurseforgeModpackManifest, EditGameSettingOptions, ExportModpackOptions, getResolvedVersion, ImportModpackOptions, isResourcePackResource, IssueReportBuilder, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoAddon, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, PersistedResource, ResourceDomain, SourceInformation, VersionIssueKey } from '@xmcl/runtime-api'
+import { CurseforgeModpackManifest, EditGameSettingOptions, ExportModpackOptions, getResolvedVersion, ImportModpackOptions, isAllowInModrinthModpack, isResourcePackResource, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoAddon, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, PersistedResource, ResourceDomain, SourceInformation } from '@xmcl/runtime-api'
 import { MultipleError, task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { existsSync } from 'fs'
-import { ensureDir, remove, unlink, writeFile } from 'fs-extra'
+import { ensureDir, stat, unlink } from 'fs-extra'
 import { basename, join } from 'path'
 import { Entry, ZipFile } from 'yauzl'
 import LauncherApp from '../app/LauncherApp'
@@ -54,7 +53,7 @@ export class ModpackService extends AbstractService implements IModpackService {
   async exportModpack(options: ExportModpackOptions) {
     requireObject(options)
 
-    const { instancePath = this.instanceService.state.path, destinationPath, overrides, exportDirectives, name, version, gameVersion, author, emitCurseforge = true, emitMcbbs = true, emitModrinth = false } = options
+    const { instancePath = this.instanceService.state.path, destinationPath, files, name, version, gameVersion, author, emitCurseforge = true, emitMcbbs = true, emitModrinth = false } = options
 
     const instance = this.instanceService.state.all[instancePath]
     if (!instance) {
@@ -140,82 +139,112 @@ export class ModpackService extends AbstractService implements IModpackService {
 
     zipTask.addEmptyDirectory('overrides')
 
-    const directives: Record<string, 'curseforge' | 'modrinth'> = {}
-
-    for (const dir of exportDirectives) {
-      directives[dir.path] = dir.exportAs
-    }
-
-    for (const file of overrides) {
-      const filePath = join(instancePath, file)
-      if (file.startsWith('mods/')) {
-        const mod = this.resourceService.state.mods.find((i) => (i.domain + '/' + i.fileName + i.ext) === file)
-        if (mod && mod.curseforge && directives[file] === 'curseforge') {
+    for (const file of files) {
+      const filePath = join(instancePath, file.path)
+      if (file.path.startsWith('mods/')) {
+        const mod = this.resourceService.state.mods.find((i) => (i.domain + '/' + i.fileName + i.ext) === file.path)
+        if (mod && mod.curseforge && !file.override) {
           curseforgeConfig?.files.push({ projectID: mod.curseforge.projectId, fileID: mod.curseforge.fileId, required: true })
           mcbbsManifest?.files!.push({ projectID: mod.curseforge.projectId, fileID: mod.curseforge.fileId, type: 'curse', force: false })
+        } else if (mod?.modrinth && !file.override) {
+          // modrinth not allowed to include curseforge source by regulation
+          const availableDownloads = mod.uri.filter(u => isAllowInModrinthModpack(u, options.strictModeInModrinth))
+          modrinthManifest?.files.push({
+            path: file.path,
+            hashes: {
+              sha1: await this.worker().checksum(filePath, 'sha1'),
+              sha256: await this.worker().checksum(filePath, 'sha256'),
+            },
+            downloads: availableDownloads,
+            fileSize: (await stat(filePath)).size,
+            env: file.env
+              ? {
+                client: file.env.client ?? 'required',
+                server: file.env.server ?? 'required',
+              }
+              : undefined,
+          })
         } else {
           zipTask.addFile(filePath, `overrides/${file}`)
-          mcbbsManifest?.files!.push({ type: 'addon', force: false, path: file, hash: await sha1ByPath(filePath) })
+          mcbbsManifest?.files!.push({ type: 'addon', force: false, path: file.path, hash: await sha1ByPath(filePath) })
         }
-      } else if (file.startsWith('resourcepacks/')) {
-        const resourcepack = this.resourceService.state.resourcepacks.find((i) => (i.domain + '/' + i.fileName + i.ext) === file)
-        if (resourcepack && resourcepack.curseforge && directives[file] === 'curseforge') {
+      } else if (file.path.startsWith('resourcepacks/')) {
+        const resourcepack = this.resourceService.state.resourcepacks.find((i) => (i.domain + '/' + i.fileName + i.ext) === file.path)
+        if (resourcepack && resourcepack.curseforge && !file.override) {
           curseforgeConfig?.files.push({ projectID: resourcepack.curseforge.projectId, fileID: resourcepack.curseforge.fileId, required: true })
           mcbbsManifest?.files!.push({ projectID: resourcepack.curseforge.projectId, fileID: resourcepack.curseforge.fileId, type: 'curse', force: false })
+        } else if (resourcepack?.modrinth && !file.override) {
+          // modrinth not allowed to include curseforge source by regulation
+          const availableDownloads = resourcepack.uri.filter(u => isAllowInModrinthModpack(u, options.strictModeInModrinth))
+          modrinthManifest?.files.push({
+            path: file.path,
+            hashes: {
+              sha1: await this.worker().checksum(filePath, 'sha1'),
+              sha256: await this.worker().checksum(filePath, 'sha256'),
+            },
+            downloads: availableDownloads,
+            fileSize: (await stat(filePath)).size,
+            env: file.env
+              ? {
+                client: file.env.client ?? 'optional',
+                server: file.env.server ?? 'unsupported',
+              }
+              : undefined,
+          })
         } else {
           zipTask.addFile(filePath, `overrides/${file}`)
-          mcbbsManifest?.files!.push({ type: 'addon', force: false, path: file, hash: await sha1ByPath(filePath) })
+          mcbbsManifest?.files!.push({ type: 'addon', force: false, path: file.path, hash: await sha1ByPath(filePath) })
         }
-      } else if (file !== 'options.txt') {
+      } else if (file.path !== 'options.txt') {
         zipTask.addFile(filePath, `overrides/${file}`)
-        mcbbsManifest?.files!.push({ type: 'addon', force: false, path: file, hash: await sha1ByPath(filePath) })
+        mcbbsManifest?.files!.push({ type: 'addon', force: false, path: file.path, hash: await sha1ByPath(filePath) })
       }
     }
 
-    let tempOptions: string | undefined
-    const optionsPath = join(instancePath, 'options.txt')
-    if (existsSync(optionsPath) && overrides.find(f => f === 'options.txt')) {
-      this.log(`Remap options.txt resource pack name for export ${instancePath}`)
-      const options = await this.instanceOptionsService.getGameOptions(instancePath)
+    // let tempOptions: string | undefined
+    // const optionsPath = join(instancePath, 'options.txt')
+    // if (existsSync(optionsPath) && overrides.find(f => f === 'options.txt')) {
+    //   this.log(`Remap options.txt resource pack name for export ${instancePath}`)
+    //   const options = await this.instanceOptionsService.getGameOptions(instancePath)
 
-      const resourcePacksMapping: Record<string, string> = this.resourceService.state.resourcepacks
-        .map((r) => {
-          const cfUri = r.uri.find(u => u.startsWith('https://edge.forgecdn.net'))
-          if (cfUri) {
-            return [r.fileName + r.ext, basename(cfUri)] as const
-          }
-          return [r.fileName + r.ext, r.name + r.ext] as const
-        }).reduce((o, v) => ({ ...o, [v[0]]: v[1] }), {})
+    //   const resourcePacksMapping: Record<string, string> = this.resourceService.state.resourcepacks
+    //     .map((r) => {
+    //       const cfUri = r.uri.find(u => u.startsWith('https://edge.forgecdn.net'))
+    //       if (cfUri) {
+    //         return [r.fileName + r.ext, basename(cfUri)] as const
+    //       }
+    //       return [r.fileName + r.ext, r.name + r.ext] as const
+    //     }).reduce((o, v) => ({ ...o, [v[0]]: v[1] }), {})
 
-      if (options.resourcePacks) {
-        options.resourcePacks = options.resourcePacks.map(fileName => {
-          const hasPrefix = fileName.startsWith('file/')
-          const rawName = hasPrefix ? fileName.substring(5) : fileName
-          if (resourcePacksMapping[rawName]) {
-            return hasPrefix ? `file/${resourcePacksMapping[rawName]}` : resourcePacksMapping[rawName]
-          }
-          return fileName
-        })
-      }
-      if (options.incompatibleResourcePacks) {
-        options.incompatibleResourcePacks = options.incompatibleResourcePacks.map(fileName => {
-          const hasPrefix = fileName.startsWith('file/')
-          const rawName = hasPrefix ? fileName.substring(5) : fileName
-          if (resourcePacksMapping[rawName]) {
-            return hasPrefix ? `file/${resourcePacksMapping[rawName]}` : resourcePacksMapping[rawName]
-          }
-          return fileName
-        })
-      }
+    //   if (options.resourcePacks) {
+    //     options.resourcePacks = options.resourcePacks.map(fileName => {
+    //       const hasPrefix = fileName.startsWith('file/')
+    //       const rawName = hasPrefix ? fileName.substring(5) : fileName
+    //       if (resourcePacksMapping[rawName]) {
+    //         return hasPrefix ? `file/${resourcePacksMapping[rawName]}` : resourcePacksMapping[rawName]
+    //       }
+    //       return fileName
+    //     })
+    //   }
+    //   if (options.incompatibleResourcePacks) {
+    //     options.incompatibleResourcePacks = options.incompatibleResourcePacks.map(fileName => {
+    //       const hasPrefix = fileName.startsWith('file/')
+    //       const rawName = hasPrefix ? fileName.substring(5) : fileName
+    //       if (resourcePacksMapping[rawName]) {
+    //         return hasPrefix ? `file/${resourcePacksMapping[rawName]}` : resourcePacksMapping[rawName]
+    //       }
+    //       return fileName
+    //     })
+    //   }
 
-      const optionsText = Object.entries(options)
-        .map(([k, v]) => typeof v !== 'string' ? `${k}:${JSON.stringify(v)}` : `${k}:${v}`)
-        .join('\n') + '\n'
+    //   const optionsText = Object.entries(options)
+    //     .map(([k, v]) => typeof v !== 'string' ? `${k}:${JSON.stringify(v)}` : `${k}:${v}`)
+    //     .join('\n') + '\n'
 
-      tempOptions = this.getTempPath('options.txt')
-      await writeFile(tempOptions, optionsText)
-      zipTask.addFile(tempOptions, 'overrides/options.txt')
-    }
+    //   tempOptions = this.getTempPath('options.txt')
+    //   await writeFile(tempOptions, optionsText)
+    //   zipTask.addFile(tempOptions, 'overrides/options.txt')
+    // }
 
     if (curseforgeConfig) {
       this.log(`Export instance ${instancePath} to curseforge ${JSON.stringify(curseforgeConfig, null, 4)}`)
@@ -227,13 +256,18 @@ export class ModpackService extends AbstractService implements IModpackService {
       zipTask.addBuffer(Buffer.from(JSON.stringify(mcbbsManifest)), 'mcbbs.packmeta')
     }
 
+    if (modrinthManifest) {
+      this.log(`Export instance ${instancePath} to modrinth ${JSON.stringify(modrinthManifest, null, 4)}`)
+      zipTask.addBuffer(Buffer.from(JSON.stringify(modrinthManifest)), 'modrinth.index.json')
+    }
+
     try {
       await this.submit(zipTask)
       this.instanceService.editInstance({ instancePath, modpackVersion: version })
     } finally {
-      if (tempOptions) {
-        await remove(tempOptions)
-      }
+      // if (tempOptions) {
+      //   await remove(tempOptions)
+      // }
     }
   }
 

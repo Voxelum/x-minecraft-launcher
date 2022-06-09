@@ -2,6 +2,24 @@ import { Exception } from '../entities/exception'
 import { SourceInformation } from '../entities/resource'
 import { EditInstanceOptions } from './InstanceService'
 import { ServiceKey } from './Service'
+
+export interface ExportFileDirective {
+  path: string
+  /**
+   * Force this file included as override. Otherwise, it will use `downloads` in modrinth modpack and curseforge id in curseforge modpack
+   *
+   * @see https://docs.modrinth.com/docs/modpacks/format_definition/#server-overrides
+   * @see https://docs.modrinth.com/docs/modpacks/format_definition/#client-overrides
+   */
+  override?: boolean
+  /**
+   * The env info for modrinth modpack.
+   */
+  env?: {
+    client?: 'required' | 'unsupported' | 'optional'
+    server?: 'required' | 'unsupported' | 'optional'
+  }
+}
 export interface ExportModpackOptions {
   /**
    * The name of the modpack.
@@ -20,23 +38,9 @@ export interface ExportModpackOptions {
    */
   gameVersion: string
   /**
-   * An list of files should be included in overrides
+   * A list of files that want to export (curseforge or modrinth)
    */
-  overrides: string[]
-  /**
-   * For modrinth modpack only.
-   * @see https://docs.modrinth.com/docs/modpacks/format_definition/#server-overrides
-   */
-  serverOverrides?: string[]
-  /**
-   * For modrinth modpack only.
-   * @see https://docs.modrinth.com/docs/modpacks/format_definition/#client-overrides
-   */
-  clientOverrides?: string[]
-  /**
-   * A list of files that want to export as link (curseforge or modrinth)
-   */
-  exportDirectives: { path: string; exportAs: 'modrinth' | 'curseforge' }[]
+  files: ExportFileDirective[]
   /**
    * The instance path to be exported
    */
@@ -58,9 +62,14 @@ export interface ExportModpackOptions {
    */
   emitMcbbs?: boolean
   /**
-   * If this is true
+   * Emit the modrinth modpack (mrpack).
    */
   emitModrinth?: boolean
+  /**
+   * Modrinth only. This will limit the download urls from allowed domains listed in modrinth document.
+   * @see https://docs.modrinth.com/docs/modpacks/format_definition/#downloads
+   */
+  strictModeInModrinth?: boolean
 }
 
 export type ImportModpackOptions = ImportModpackToInstanceOptions | ImportModpackCreateInstanceOptions

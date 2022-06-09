@@ -252,3 +252,11 @@ a {
 .theme--dark .secondary-text {
     color: hsla(0, 0%, 100%, .7);
 }
+
+.menuable__content__active ::-webkit-scrollbar {
+    display: unset;
+}
+
+.v-menu__content::-webkit-scrollbar {
+    display: unset;
+}

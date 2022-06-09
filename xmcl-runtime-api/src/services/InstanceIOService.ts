@@ -97,6 +97,19 @@ export interface ApplyInstanceUpdateOptions {
   updates: Array<InstanceFile>
 }
 
+export interface GetManifestOptions<T extends 'sha1' | 'sha256' | 'md5'> {
+  /**
+   * The instance path
+   *
+   * If this does not present, it will be the current selected instance
+   */
+  path?: string
+  /**
+   * The hash to get for each instance files
+   */
+  hashes?: T[]
+}
+
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
@@ -119,9 +132,8 @@ export interface InstanceIOService {
   fetchInstanceUpdate(path?: string): Promise<InstanceUpdate | undefined>
   /**
    * Compute the instance manifest for current local files.
-   * @param path The instance path
    */
-  getInstanceManifest(path?: string): Promise<InstanceManifest>
+  getInstanceManifest<T extends 'sha1' | 'sha256' | 'md5' = never>(options?: GetManifestOptions<T>): Promise<InstanceManifest<T>>
   /**
    * Upload the instance manifest via `instance.fileApi`
    *

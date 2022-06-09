@@ -3,12 +3,10 @@
     class="export-dialog-files"
     :value="value"
     style="width: 100%"
+    :search="search"
     :items="files"
     :open="opened"
     :selectable="selectable"
-    hoverable
-    activatable
-    transition
     open-on-click
     item-children="children"
     @input="$emit('input', $event)"
@@ -21,28 +19,24 @@
         {{ open ? 'folder_open' : 'folder' }}
       </v-icon>
       <v-icon v-else>
-        insert_drive_file
+        {{ getIcon(item.id) }}
       </v-icon>
     </template>
 
     <template #append="{ item, selected }">
-      <v-select
-        v-if="item.choices.length > 0 && selected"
-        v-model="item.choice"
-        :multiple="multiple"
-        :label="t('exportModpackTarget.name')"
-        class="w-50"
-        :items="item.choices"
-        hide-details
-        flat
-      />
+      <div class="flex gap-1">
+        <slot
+          :item="item"
+          :selected="selected"
+        />
+      </div>
     </template>
 
     <template #label="{ item }">
       <div style="padding: 5px 0px;">
         <span
           style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;"
-          :style="{ color: item.disabled ? 'grey' : 'white' }"
+          :style="{ color: item.disabled ? 'grey' : darkTheme ? 'white' : 'black' }"
         >{{ item.name }}</span>
         <div
           style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
@@ -62,7 +56,7 @@
 
 <script lang=ts setup>
 import { FileNodesSymbol } from '../composables/instanceFiles'
-import { useI18n } from '/@/composables'
+import { useI18n, useTheme } from '/@/composables'
 import { injection } from '/@/util/inject'
 import { getExpectedSize } from '/@/util/size'
 
@@ -70,13 +64,22 @@ defineProps<{
   value: string[]
   multiple?: boolean
   selectable?: boolean
+  search?: string
 }>()
 
 const { t } = useI18n()
+const { darkTheme } = useTheme()
 
 const opened = ref([])
 
 const files = injection(FileNodesSymbol)
+
+function getIcon(file: string) {
+  if (file.endsWith('.jar') || file.endsWith('.zip')) {
+    return '$vuetify.icons.package'
+  }
+  return 'insert_drive_file'
+}
 function getDescription(path: string) {
   switch (path) {
     case 'mods':

@@ -67,6 +67,10 @@ const { t } = useI18n()
 const selected = ref([] as string[])
 const hasError = ref(false)
 
+interface UpdateData {
+
+}
+
 function useInstanceFileNodesFromUpdate(updates: Ref<InstanceUpdate['updates']>) {
   function getChoices(operation: 'update' | 'add') {
     return [{
@@ -74,14 +78,14 @@ function useInstanceFileNodesFromUpdate(updates: Ref<InstanceUpdate['updates']>)
       text: operation,
     }]
   }
-  function getFileNode({ operation, file }: InstanceUpdate['updates'][number]): InstanceFileNode {
+  function getFileNode({ operation, file }: InstanceUpdate['updates'][number]): InstanceFileNode<UpdateData> {
     return reactive({
       name: basename(file.path),
       id: file.path,
       size: 0,
-      choice: '',
-      choices: computed(() => getChoices(operation)),
-      children: undefined,
+      data: {
+        operation,
+      },
     })
   }
   return computed(() => updates.value.map(getFileNode))

@@ -171,9 +171,8 @@ export class ResourceService extends StatefulService<ResourceState> implements I
 
     this.watchers[domain] = watch(path, async (event, name) => {
       if (event === 'remove') {
-        if (name.endsWith('.json') || name.endsWith('.png')) {
+        if (name.endsWith('.json') || name.endsWith('.png') || name.endsWith('.pending')) {
           // json removed means the resource is totally removed
-
         } else {
           // this will remove
           const resource = this.cache.get(name)
@@ -187,7 +186,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
           }
         }
       } else {
-        if (name.endsWith('.png')) {
+        if (name.endsWith('.png') || name.endsWith('.pending')) {
           return
         }
         if (name.endsWith('.json')) {
@@ -291,19 +290,28 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         resource: options.resource as string,
       })
     }
-    let newResource: PersistedResource<any> | undefined
-    if (options.name) {
-      const name = options.name
-      newResource = mutateResource<PersistedResource<any>>(resource, (r) => { r.name = name })
-    }
-    if (options.tags) {
-      const tags = options.tags
-      newResource = mutateResource<PersistedResource<any>>(newResource ?? resource, (r) => { r.tags = tags })
-    }
-    if (newResource) {
-      this.state.resource(newResource)
-      await writeFile(this.getMetadataFilePath(newResource), JSON.stringify(newResource))
-    }
+    const newResource: PersistedResource<any> = mutateResource<PersistedResource<any>>(resource, (r) => {
+      if (options.name) {
+        r.name = options.name
+      }
+      if (options.tags) {
+        const tags = options.tags
+        r.tags = tags
+      }
+      if (options.uri) {
+        r.uri = options.uri
+      }
+      if (options.source) {
+        r.curseforge = options.source.curseforge ?? r.curseforge
+        r.modrinth = options.source.modrinth ?? r.modrinth
+        r.github = options.source.github ?? r.github
+      }
+      if (options.iconUrl) {
+        r.iconUri = options.iconUrl
+      }
+    })
+    this.state.resource(newResource)
+    await writeFile(this.getMetadataFilePath(newResource), JSON.stringify(newResource))
   }
 
   /**
@@ -348,6 +356,26 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     const existed = await this.queryExistedResourceByPath(options.path, context)
     if (existed) {
       this.log(`Skip to import ${options.path} as resource existed in ${existed.path}`)
+      const update: UpdateResourceOptions = {
+        resource: existed,
+      }
+      if (options.source) {
+        update.source = {
+          curseforge: options.source.curseforge ?? existed.curseforge,
+          modrinth: options.source.modrinth ?? existed.modrinth,
+        }
+      }
+      if (options.url) {
+        const urls = new Set(existed.uri)
+        for (const u of options.url) {
+          urls.add(u)
+        }
+        update.uri = [...urls]
+      }
+      if (options.iconUrl) {
+        update.iconUrl = options.iconUrl
+      }
+      await this.updateResource(update)
       return existed
     }
     if (context.sha1) {
@@ -389,6 +417,26 @@ export class ResourceService extends StatefulService<ResourceState> implements I
       const existed = await this.queryExistedResourceByPath(f.path, context)
       if (existed) {
         this.log(`Skip to import ${f.path} as resource existed in ${existed.path}`)
+        const update: UpdateResourceOptions = {
+          resource: existed,
+        }
+        if (f.source) {
+          update.source = {
+            curseforge: f.source.curseforge ?? existed.curseforge,
+            modrinth: f.source.modrinth ?? existed.modrinth,
+          }
+        }
+        if (f.url) {
+          const urls = new Set(existed.uri)
+          for (const u of f.url) {
+            urls.add(u)
+          }
+          update.uri = [...urls]
+        }
+        if (f.iconUrl) {
+          update.iconUrl = f.iconUrl
+        }
+        await this.updateResource(update)
         existedResources.push(existed)
       } else {
         try {
