@@ -45,7 +45,7 @@ type InstanceDataFields = Pick<InstanceData, 'description' | 'minMemory' | 'maxM
  */
 export interface InstanceManifestSchema extends Partial<InstanceDataFields> {
   runtime: RuntimeVersions
-  files: Array<InstanceFile>
+  files: Array<InstanceFile<'sha1'>>
 }
 
 export interface InstanceManifest<T extends 'sha1' | 'sha256' | 'md5' = never> extends Partial<InstanceDataFields> {

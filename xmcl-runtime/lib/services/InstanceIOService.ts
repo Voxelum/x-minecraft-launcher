@@ -368,7 +368,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
       })
     }
 
-    const lookupFile = async (relativePath: string, hash: string, file: InstanceFile) => {
+    const lookupFile = async (relativePath: string, hash: string, file: InstanceFile<'sha1'>) => {
       const filePath = join(instancePath, relativePath)
       if (await missing(filePath)) {
         updates.push({

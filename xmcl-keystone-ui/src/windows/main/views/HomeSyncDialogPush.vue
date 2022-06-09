@@ -53,7 +53,7 @@ const props = defineProps<{ shown: boolean }>()
 const { getInstanceManifest, uploadInstanceManifest } = useService(InstanceIOServiceKey)
 const gettingManifest = useServiceBusy(InstanceIOServiceKey, 'getInstanceManifest')
 const uploadingInstanceManifest = useServiceBusy(InstanceIOServiceKey, 'uploadInstanceManifest')
-const current = ref(undefined as undefined | InstanceManifest)
+const current = ref(undefined as undefined | InstanceManifest<'sha1'>)
 const files = computed(() => current.value ? current.value.files : [])
 const { t } = useI18n()
 
