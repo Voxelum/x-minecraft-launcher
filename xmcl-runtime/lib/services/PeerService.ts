@@ -7,6 +7,7 @@ import { Singleton, StatefulService } from './Service'
 import { brotliCompress, brotliDecompress } from 'zlib'
 import { promisify } from 'util'
 import { randomUUID } from 'crypto'
+import { rename } from 'fs-extra'
 
 const pBrotliDecompress = promisify(brotliDecompress)
 const pBrotliCompress = promisify(brotliCompress)
@@ -162,13 +163,15 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           this._progress += chunk
           this.update(chunk)
         }
+        const destination = this.destination + '.pending'
         const result = await this.delegate.download({
           url: this.url,
-          destination: this.destination,
+          destination,
           sha1: this.sha1,
           size: this.total,
           id: this.downloadId,
         })
+        await rename(destination, this.destination)
         if (this.isPaused || this.isCancelled) {
           throw new Error('Abort')
         }
