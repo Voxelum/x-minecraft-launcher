@@ -141,10 +141,6 @@ export default defineComponent({
         }
       }
     })
-    document.addEventListener('dragover', (e) => {
-      e.dataTransfer!.dropEffect = 'copy'
-      e.preventDefault()
-    })
     document.addEventListener('drop', (e) => {
       const dataTransfer = e.dataTransfer!
       if (dataTransfer.items.length > 0) {
