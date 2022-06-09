@@ -46,7 +46,7 @@ export interface InstanceUpdate {
     /**
      * The file need to apply update
      */
-    file: InstanceFile
+    file: InstanceFile<'sha1'>
   }>
   /**
    * The instance manifest return by the remote api server
@@ -94,7 +94,7 @@ export interface ApplyInstanceUpdateOptions {
   /**
    * The files to update
    */
-  updates: Array<InstanceFile>
+  updates: Array<InstanceFile<'sha1'>>
 }
 
 export interface GetManifestOptions<T extends 'sha1' | 'sha256' | 'md5'> {

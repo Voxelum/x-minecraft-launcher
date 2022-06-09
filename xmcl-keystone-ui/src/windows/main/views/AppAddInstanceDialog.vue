@@ -161,7 +161,10 @@ const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
               sha1: f.sha1,
             },
             downloads: [f.url],
-          }) as InstanceFile),
+            size: f.size,
+            createAt: f.updated,
+            updateAt: f.updated,
+          })),
         })
         notify({
           title: t('importModpack.success', { modpack: selectedTemplate.value?.name }),

@@ -99,11 +99,11 @@ export class PeerState {
 
 export interface ShareInstanceOptions {
   instancePath: string
-  manifest?: InstanceManifest
+  manifest?: InstanceManifest<'sha1'>
 }
 
 interface PeerServiceEvents {
-  share: { id: string; manifest?: InstanceManifest }
+  share: { id: string; manifest?: InstanceManifest<'sha1'> }
 }
 
 export interface PeerService extends StatefulService<PeerState>, GenericEventEmitter<PeerServiceEvents> {

@@ -233,7 +233,7 @@ const sharing = computed(() => isShown.value && !parameter.value)
  * The sharing user name. Only for sharing == false
  */
 const currentUser = ref('')
-const manifest: Ref<InstanceManifest | undefined> = ref(undefined)
+const manifest: Ref<InstanceManifest<'sha1'> | undefined> = ref(undefined)
 const selected = ref([] as string[])
 
 provideFileNodes(useInstanceFileNodesFromLocal(computed(() => manifest.value?.files || [])))
@@ -282,7 +282,7 @@ watch(isShown, async (shown) => {
       manifest.value = parameter.value as any
     } else {
       loading.value = true
-      manifest.value = await getInstanceManifest({ path: instanceState.path }).finally(() => { loading.value = false })
+      manifest.value = await getInstanceManifest({ path: instanceState.path, hashes: ['sha1'] }).finally(() => { loading.value = false })
     }
   }
 })
