@@ -1,4 +1,31 @@
 
+## 0.27.0
+### @xmcl/runtime-api@0.11.0
+#### Features
+
+- export modrinth modpack ([6cbf48b780e9b08bbd43959ddf721491b20e63af](https://github.com/Voxelum/x-minecraft-launcher/commit/6cbf48b780e9b08bbd43959ddf721491b20e63af))
+### @xmcl/keystone-ui@0.26.0
+#### Features
+
+- export modrinth modpack ([6cbf48b780e9b08bbd43959ddf721491b20e63af](https://github.com/Voxelum/x-minecraft-launcher/commit/6cbf48b780e9b08bbd43959ddf721491b20e63af))
+#### Bug Fixes
+
+- Regression introduced by drop authlib protocol. ([79cb07115a2b28f266268c2b4a328a2856ad7cde](https://github.com/Voxelum/x-minecraft-launcher/commit/79cb07115a2b28f266268c2b4a328a2856ad7cde))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### @xmcl/runtime@0.25.0
+#### Features
+
+- export modrinth modpack ([6cbf48b780e9b08bbd43959ddf721491b20e63af](https://github.com/Voxelum/x-minecraft-launcher/commit/6cbf48b780e9b08bbd43959ddf721491b20e63af))
+#### Bug Fixes
+
+- p2p download to temp location first ([9fcfd6752e5b04df6c772386e982fbdea52ffbf8](https://github.com/Voxelum/x-minecraft-launcher/commit/9fcfd6752e5b04df6c772386e982fbdea52ffbf8))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+
+
 ## 0.26.3
 ### @xmcl/keystone-ui@0.25.2
 #### Bug Fixes
