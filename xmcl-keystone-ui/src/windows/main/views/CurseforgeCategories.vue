@@ -9,7 +9,7 @@
       :key="c.id"
       :class="{ selected: c.id === Number(selected) }"
       class="item"
-      @click="$emit('select', c.id)"
+      @click="emit('select', c.id)"
     >
       <v-avatar>
         <img
@@ -17,7 +17,7 @@
           :src="c.avatarUrl"
         >
       </v-avatar>
-      {{ c.name }}
+      {{ t(c.name) }}
     </span>
   </v-card>
   <v-card
@@ -31,35 +31,29 @@
     />
   </v-card>
 </template>
-<script lang="ts">
-import { computed, defineComponent, onMounted } from '@vue/composition-api'
+<script lang="ts" setup>
 import { CurseForgeServiceKey } from '@xmcl/runtime-api'
-import { useService } from '/@/composables'
+import { useI18n, useService } from '/@/composables'
 import { useRefreshable } from '/@/composables/refreshable'
-import { optional, required } from '/@/util/props'
 
-export default defineComponent({
-  props: {
-    type: required(String),
-    selected: required(String),
-  },
-  emits: ['select'],
-  setup(props) {
-    const { state, loadCategories } = useService(CurseForgeServiceKey)
-    const { refresh, refreshing } = useRefreshable(async () => {
-      await loadCategories()
-    })
-    const parentCat = computed(() => state.categories.find(c => c.slug === props.type))
-    onMounted(() => {
-      refresh()
-    })
-    return {
-      parentCat,
-      refreshing,
-      categories: computed(() => state.categories.filter(c => c.parentGameCategoryId === parentCat.value?.id)),
-    }
-  },
+const props = defineProps<{
+  type: string
+  selected: string
+}>()
+
+const emit = defineEmits(['select'])
+
+const { t } = useI18n()
+const { state, loadCategories } = useService(CurseForgeServiceKey)
+const { refresh, refreshing } = useRefreshable(async () => {
+  await loadCategories()
 })
+const parentCat = computed(() => state.categories.find(c => c.slug === props.type))
+onMounted(() => {
+  refresh()
+})
+const categories = computed(() => state.categories.filter(c => c.parentGameCategoryId === parentCat.value?.id))
+
 </script>
 
 <style scoped>
@@ -76,3 +70,28 @@ export default defineComponent({
 }
 
 </style>
+
+<i18n locale="zh-CN" lang="yaml">
+Fabric: Fabric
+Cosmetic: 外观/装饰
+Vanilla+: 原版+
+"Armor, Tools, and Weapons": 护甲，工具和武器
+QoL: QoL
+Map and Information: 地图和信息
+Twitch Integration: Twitch 集成
+Addons: 插件
+Utility & QoL: 工具和 QoL
+World Gen: 世界生成
+Adventure and RPG: 冒险和 RPG
+Magic: 魔法
+API and Library: API 和库
+Technology: 科技
+Redstone: 红石
+Server Utility: 服务端工具
+Miscellaneous: 杂项
+Food: 食物
+Storage: 存储
+MCreator: MCreator
+FancyMenu: FancyMenu
+Education: 教育
+</i18n>
