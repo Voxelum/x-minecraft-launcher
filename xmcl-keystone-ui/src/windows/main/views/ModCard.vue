@@ -61,6 +61,7 @@
             </h3>
             <div class="flex gap-1 flex-wrap">
               <v-chip
+                v-if="source.version"
                 small
                 :outlined="darkTheme"
                 label

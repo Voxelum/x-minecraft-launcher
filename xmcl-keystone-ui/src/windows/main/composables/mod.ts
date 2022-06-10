@@ -227,10 +227,10 @@ export function useInstanceMods() {
       return getModItemFromModResource(resource)
     }
     const isPersisted = isPersistedResource(resource)
-    return markRaw({
+    return reactive({
       path: resource.path,
       id: resource.hash,
-      name: resource.path,
+      name: resource.fileName,
       compatible: 'maybe',
       version: '',
       description: '',
