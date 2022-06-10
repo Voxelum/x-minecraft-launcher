@@ -1,4 +1,23 @@
 
+## 0.27.1
+### @xmcl/keystone-ui@0.26.1
+#### Bug Fixes
+
+- parse some ill-form json & make all mod deletable ([42b909707513512ff84bba008b58e4ff5d5d1d41](https://github.com/Voxelum/x-minecraft-launcher/commit/42b909707513512ff84bba008b58e4ff5d5d1d41))
+- Add i18n for curseforge categories ([72bd810819ff9b7a54f0f18370a97132f080bd15](https://github.com/Voxelum/x-minecraft-launcher/commit/72bd810819ff9b7a54f0f18370a97132f080bd15))
+- add 1.19 banner ([69c2e498f1ddd07b71a980c23a476a0eccc8d32c](https://github.com/Voxelum/x-minecraft-launcher/commit/69c2e498f1ddd07b71a980c23a476a0eccc8d32c))
+- add version filter in curseforge page ([d6c0749f29a97a810655f253e04e08277a17c614](https://github.com/Voxelum/x-minecraft-launcher/commit/d6c0749f29a97a810655f253e04e08277a17c614))
+- add space at the end of modpack list ([1a614c15810954e34ca18b4810ca05b38c5b380f](https://github.com/Voxelum/x-minecraft-launcher/commit/1a614c15810954e34ca18b4810ca05b38c5b380f))
+### @xmcl/runtime@0.25.1
+#### Bug Fixes
+
+- The asset index issue isn't fixed even after fix action ([b60240df3d5a93ec8f4a996b767f2b523f141705](https://github.com/Voxelum/x-minecraft-launcher/commit/b60240df3d5a93ec8f4a996b767f2b523f141705))
+### xmcl@0.27.1
+#### Bug Fixes
+
+- show folder before open appinstaller to let user retry ([e1efb466458810ec263281afc5d0c232333b1d86](https://github.com/Voxelum/x-minecraft-launcher/commit/e1efb466458810ec263281afc5d0c232333b1d86))
+
+
 ## 0.27.0
 ### @xmcl/runtime-api@0.11.0
 #### Features
