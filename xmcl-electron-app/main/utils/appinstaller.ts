@@ -17,6 +17,7 @@ export class DownloadAppInstallerTask extends BaseTask<void> {
       url: 'https://xmcl.blob.core.windows.net/releases/xmcl.appinstaller',
       destination: destination,
     })
+    shell.showItemInFolder(destination)
     await shell.openPath(destination)
     this.app.exit()
   }
