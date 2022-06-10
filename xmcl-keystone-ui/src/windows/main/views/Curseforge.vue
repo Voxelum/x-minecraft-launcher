@@ -20,6 +20,18 @@
             hide-details
           />
         </span>
+        <span class="flex items-center justify-center flex-shrink flex-1 min-w-36">
+          <v-select
+            v-model="currentVersion"
+            flat
+            solo
+            clearable
+            :items="mcVersions"
+            :loading="refreshing"
+            :label="t('minecraftVersion.name')"
+            hide-details
+          />
+        </span>
         <v-text-field
           v-model="keywordBuffer"
           v-focus-on-search="() => true"
@@ -159,6 +171,7 @@ import { useCurseforge } from '../composables/curseforge'
 import { vFocusOnSearch } from '../directives/focusOnSearch'
 import { getExpectedSize } from '/@/util/size'
 import { getLocalDateString } from '/@/util/date'
+import { useMinecraftVersions } from '../composables/version'
 
 interface CurseforgeProps {
   type: string
@@ -188,12 +201,17 @@ const allTypes = computed(() => ['mc-mods', 'texture-packs', 'worlds', 'modpacks
   value: v,
 })))
 const keywordBuffer = ref(props.keyword)
+const { versions, refresh, refreshing } = useMinecraftVersions()
+const mcVersions = computed(() => versions.value.filter(v => v.type === 'release').map(v => v.id))
+
+onMounted(refresh)
 
 const {
   currentCategory,
   currentKeyword,
   currentPage,
   currentType,
+  currentVersion,
   categoryId,
   loading,
   pages,
