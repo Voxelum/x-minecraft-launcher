@@ -10,7 +10,7 @@ export const gameLaunch: ControllerPlugin = function (this: Controller) {
     this.app.serviceManager.getOrCreateService(LaunchService).on('minecraft-window-ready', () => {
       const instance = this.app.serviceManager.getOrCreateService(InstanceService).state.instance
       if (!instance) {
-        this.app.warn('Cannot find active instance while Minecraft window ready! Perhaps something strange happed?')
+        this.app.warn('Cannot find active instance while Minecraft window ready! Perhaps something strange happened?')
         return
       }
       if (this.mainWin && this.mainWin.isVisible()) {
@@ -21,7 +21,12 @@ export const gameLaunch: ControllerPlugin = function (this: Controller) {
           this.mainWin.hide()
         }
       }
-
+    }).on('minecraft-start', () => {
+      const instance = this.app.serviceManager.getOrCreateService(InstanceService).state.instance
+      if (!instance) {
+        this.app.warn('Cannot find active instance while Minecraft window ready! Perhaps something strange happened?')
+        return
+      }
       if (this.loggerWin === undefined && instance.showLog) {
         this.createMonitorWindow()
       }
