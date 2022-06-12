@@ -245,8 +245,9 @@ export function useAllTemplate(data: InstanceData) {
   }
 
   function applyModrinth(template: Template, modrinth: ModrinthModpackResource) {
-    data.name = template.name
+    data.name = modrinth.metadata.name
     data.author = ''
+    data.version = modrinth.metadata.versionId
     data.description = modrinth.metadata.summary ?? ''
     data.runtime.minecraft = template.minecraft
     data.runtime.forge = template.forge
