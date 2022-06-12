@@ -1,4 +1,21 @@
 
+## 0.27.2
+### @xmcl/keystone-ui@0.26.2
+#### Bug Fixes
+
+- Correctly use modpack version during export ([1655846147c4d7acba8ea34cefa570abc1866422](https://github.com/Voxelum/x-minecraft-launcher/commit/1655846147c4d7acba8ea34cefa570abc1866422))
+### @xmcl/runtime@0.25.2
+#### Bug Fixes
+
+- Move fabric mod parse priority higher than forge. Prevent wrongly parsed mod ([6630940be3011241081f4cf872fdd27472875bc8](https://github.com/Voxelum/x-minecraft-launcher/commit/6630940be3011241081f4cf872fdd27472875bc8))
+- modpack emit wrong overrides ([594445c86681476fd96432d568907c18793ab2aa](https://github.com/Voxelum/x-minecraft-launcher/commit/594445c86681476fd96432d568907c18793ab2aa))
+- show file after generate report ([ff2063979184663260ebd06e13a622cbc6903bcd](https://github.com/Voxelum/x-minecraft-launcher/commit/ff2063979184663260ebd06e13a622cbc6903bcd))
+### xmcl@0.27.2
+#### Bug Fixes
+
+- Show log directly after the game process start ([b05046822c7eb713924a34c9d14f5b608231d9c2](https://github.com/Voxelum/x-minecraft-launcher/commit/b05046822c7eb713924a34c9d14f5b608231d9c2))
+
+
 ## 0.27.1
 ### @xmcl/keystone-ui@0.26.1
 #### Bug Fixes
