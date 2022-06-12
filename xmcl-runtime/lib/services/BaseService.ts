@@ -144,6 +144,8 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
       type: os.type(),
     })), 'device.json')
     await task.startAndWait()
+
+    this.showItemInDirectory(options.destination)
   }
 
   async migrate(options: MigrateOptions) {
