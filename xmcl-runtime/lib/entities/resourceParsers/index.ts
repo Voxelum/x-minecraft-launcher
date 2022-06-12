@@ -11,13 +11,13 @@ import { shaderPackParser } from './shaderPack'
 
 export default [
   modpackParser,
-  forgeModParser,
   fabricModParser,
   liteloaderModParser,
+  forgeModParser,
+  shaderPackParser,
   modrinthModpackParser,
   resourcePackParser,
   saveParser,
   mcbbsModpackParser,
   curseforgeModpackParser,
-  shaderPackParser,
 ]
