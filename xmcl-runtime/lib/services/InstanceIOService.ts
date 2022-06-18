@@ -1,15 +1,13 @@
 import { checksum, MinecraftFolder } from '@xmcl/core'
-import { createDefaultCurseforgeQuery, DownloadTask, UnzipTask } from '@xmcl/installer'
-import { AnyPersistedResource, createTemplate, ExportInstanceOptions, InstanceIOException, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceManifest, InstanceManifestSchema, InstanceSchema, InstanceUpdate, LockKey, RuntimeVersions, SetInstanceManifestOptions, InstanceFile, SourceInformation, ApplyInstanceUpdateOptions, GetManifestOptions } from '@xmcl/runtime-api'
-import { BaseTask, Task, task } from '@xmcl/task'
+import { DownloadTask, UnzipTask } from '@xmcl/installer'
+import { AnyPersistedResource, ApplyInstanceUpdateOptions, createTemplate, ExportInstanceOptions, GetManifestOptions, InstanceFile, InstanceIOException, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceManifest, InstanceManifestSchema, InstanceSchema, InstanceUpdate, LockKey, ResourceDomain, RuntimeVersions, SetInstanceManifestOptions, SourceInformation } from '@xmcl/runtime-api'
+import { Task, task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { randomUUID } from 'crypto'
 import { createReadStream } from 'fs'
-import { mkdtemp, readdir, readJson, remove, stat, unlink } from 'fs-extra'
-import { Options } from 'got'
+import { mkdtemp, readdir, readJson, remove, rename, stat, unlink } from 'fs-extra'
 import { tmpdir } from 'os'
 import { basename, join, relative, resolve } from 'path'
-import { URL } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { copyPassively, exists, isDirectory, isFile, linkWithTimeoutOrCopy, missing, readdirIfPresent } from '../util/fs'
 import { requireObject, requireString } from '../util/object'
@@ -429,7 +427,10 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
         hash: sha1,
         algorithm: 'sha1',
       },
-    }).setName('file')
+    }).setName('file').map(async () => {
+      await rename(dest, dest.substring(0, dest.length - '.pending'.length))
+      return undefined
+    })
 
     const createFileLinkTask = (dest: string, res: AnyPersistedResource) => {
       return task('file', async () => {
@@ -465,7 +466,8 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
             continue
           }
 
-          const resource = resourceService.state.mods.find(r => r.hash === sha1) || resourceService.state.resourcepacks.find(r => r.hash === sha1)
+          const resource = resourceService.state.mods.find(r => r.hash === sha1) || resourceService.state.resourcepacks.find(r => r.hash === sha1) ||
+          resourceService.state.shaderpacks.find(r => r.hash === sha1)
           if (resource) {
             log(`Link existed resource to ${filePath}`)
             tasks.push(createFileLinkTask(filePath, resource))
@@ -508,8 +510,14 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
             if (Object.keys(source).length > 0) {
               resourceService.markResourceSource(sha1, source)
             }
+
+            let destination = filePath
+            if (file.path.startsWith(ResourceDomain.Mods) || file.path.startsWith(ResourceDomain.ResourcePacks) || file.path.startsWith(ResourceDomain.ShaderPacks)) {
+              destination += '.pending'
+            }
+
             log(`Download ${filePath} from urls: [${urls.join(', ')}]`)
-            const task = createDownloadTask(urls, filePath, sha1)
+            const task = createDownloadTask(urls, destination, sha1)
             tasks.push(task)
           }
         }
