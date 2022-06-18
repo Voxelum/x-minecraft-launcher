@@ -645,6 +645,7 @@ shaderPack:
   showFile: 在文件夹中显示此 shader pack
 tag:
   create: 创建标签
+  createSelected: 为所有选中的创建标签
   newTag: 新标签
 task:
   cancelled: 已取消

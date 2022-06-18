@@ -724,6 +724,7 @@ shaderPack:
   showFile: Show this shader pack in folder
 tag:
   create: Create Tag
+  createSelected: Create Tag for Selected
   newTag: New Tag
 task:
   cancelled: Cancelled

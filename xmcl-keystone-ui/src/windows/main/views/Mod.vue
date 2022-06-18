@@ -145,12 +145,12 @@ function setupSelection(items: Ref<ModItem[]>) {
   const isSelectionMode = ref(false)
   const selectedItems = computed(() => items.value.filter(i => i.selected))
 
-  function select(start: number, end: number) {
+  function select(start: number, end: number, value = true) {
     if (!isSelectionMode.value) {
       isSelectionMode.value = true
     }
     for (let i = start; i < end; ++i) {
-      items.value[i].selected = true
+      items.value[i].selected = value
     }
   }
   function selectOrUnselect(mod: ModItem) {
@@ -167,7 +167,12 @@ function setupSelection(items: Ref<ModItem[]>) {
         max = lastIndex
         min = index
       }
-      select(min + 1, max)
+      select(min + 1, max, items.value[lastIndex].selected)
+    }
+    if (event.ctrlKey) {
+      if (!isSelectionMode.value) {
+        isSelectionMode.value = true
+      }
     }
     selectOrUnselect(items.value[index])
     lastIndex = index
@@ -272,7 +277,7 @@ function setupFilter(items: Ref<ModItem[]>) {
 
   const mods = computed(() => filter(items.value)
     .filter(isCompatibleMod)
-    .sort((a, b) => (a.enabled ? -1 : 1))
+    .sort((a, b) => (a.enabledState ? -1 : 1))
     .reduce(group, []))
 
   return {
