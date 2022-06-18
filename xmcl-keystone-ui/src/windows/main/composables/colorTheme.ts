@@ -7,8 +7,8 @@ export function useColorTheme() {
   const lightAppBarColor = useLocalStorageCacheStringValue<string>('lightAppBarColor', '')
   const lightSideBarColor = useLocalStorageCacheStringValue<string>('lightSideBarColor', '')
 
-  const darkAppBarColor = useLocalStorageCacheStringValue<string>('darkAppBarColor', '')
-  const darkSideBarColor = useLocalStorageCacheStringValue<string>('darkSideBarColor', '')
+  const darkAppBarColor = useLocalStorageCacheStringValue<string>('darkAppBarColor', '#111111')
+  const darkSideBarColor = useLocalStorageCacheStringValue<string>('darkSideBarColor', '#111111')
 
   const darkPrimaryColor = useLocalStorageCacheStringValue<string>('darkPrimaryColor', '#4caf50')
   const darkBackground = useLocalStorageCacheStringValue<string>('darkBackground', '#121212')
@@ -118,7 +118,42 @@ export function useColorTheme() {
     },
   })
 
+  function resetDarkToDefault() {
+    darkAppBarColor.value = '#111111'
+    darkSideBarColor.value = '#111111'
+    darkPrimaryColor.value = '#4caf50'
+    darkBackground.value = '#121212'
+    darkInfoColor.value = '#2196F3'
+    darkErrorColor.value = '#FF5252'
+    darkWarningColor.value = '#FB8C00'
+    darkSuccessColor.value = '#4CAF50'
+    darkAccentColor.value = '#00e676'
+  }
+
+  function resetLightToDefault() {
+    lightAppBarColor.value = ''
+    lightSideBarColor.value = ''
+    lightPrimaryColor.value = '#1976D2'
+    lightBackground.value = '#FFFFFF'
+    lightInfoColor.value = '#2196F3'
+    lightErrorColor.value = '#FF5252'
+    lightWarningColor.value = '#FB8C00'
+    lightSuccessColor.value = '#4CAF50'
+    lightAccentColor.value = '#82B1FF'
+  }
+
+  function resetToDefault() {
+    if (darkTheme.value) {
+      resetDarkToDefault()
+    } else {
+      resetLightToDefault()
+    }
+  }
+
   return {
+    resetToDefault,
+    resetDarkToDefault,
+    resetLightToDefault,
     appBarColor,
     sideBarColor,
     primaryColor,

@@ -30,6 +30,27 @@
       </v-list-item-action>
     </v-list-item>
     <v-list-item class="justify-center items-center">
+      <v-list-item-action class="self-center">
+        <v-tooltip
+          color="warning"
+          outlined
+          right
+        >
+          <template #activator="{ on }">
+            <v-btn
+              text
+              icon
+              v-on="on"
+              @click="resetToDefault"
+            >
+              <v-icon>
+                restore
+              </v-icon>
+            </v-btn>
+          </template>
+          {{ t('setting.resetToDefault') }}
+        </v-tooltip>
+      </v-list-item-action>
       <v-list-item-content>
         <v-list-item-title>
           {{
@@ -312,7 +333,7 @@ import SettingAppearanceColor from './SettingAppearanceColor.vue'
 const { showOpenDialog } = windowController
 const { t } = useI18n()
 const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, blurMainBody, backgroundImageFit, volume, setBackgroundVideo, backgroundVideo } = useBackground()
-const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, backgroundColor } = useColorTheme()
+const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, backgroundColor, resetToDefault } = useColorTheme()
 const { state } = useService(BaseServiceKey)
 
 const theme = computed({
@@ -384,6 +405,7 @@ function clearImage() {
 <i18n locale="en" lang="yaml">
 setting:
   appearance: Appearance
+  resetToDefault: Reset to Default
   backgroundImage: background image
   backgroundImageBlur: image blur
   backgroundImageBlurDescription: drag to blur, easy
@@ -438,6 +460,7 @@ setting:
 <i18n locale="zh-CN" lang="yaml">
 setting:
   appearance: 外观
+  resetToDefault: 重置到默认配色
   backgroundImage: 背景图片
   backgroundImageBlur: 背景模糊
   backgroundImageBlurDescription: 拖动以模糊背景
