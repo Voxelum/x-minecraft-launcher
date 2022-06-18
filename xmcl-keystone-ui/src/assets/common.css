@@ -45,18 +45,18 @@ p {
 
 .transition-list-enter-active,
 .transition-list-leave-active {
-    transition: all 0.7s;
+    transition: all 0.7s !important;
 }
 
 .transition-list-enter,
 .transition-list-leave-to {
-    opacity: 0;
-    transition: all 0.7s;
+    opacity: 0 !important;
+    transition: all 0.7s !important;
     /* transform: translateY(30px); */
 }
 
 .transition-list-move {
-    transition: transform 0.7s;
+    transition: transform 0.7s !important;
 }
 
 
@@ -195,13 +195,8 @@ html ::-webkit-scrollbar {
 
 
 .draggable-card {
-    transition: all;
-    transition-duration: 0.2s;
-}
-
-*.selection-mode .draggable-card,
-.draggable-card.selected {
-    transform: scale(0.95);
+    transition: all !important;
+    transition-duration: 0.2s !important;
 }
 
 .draggable-card.dragged {

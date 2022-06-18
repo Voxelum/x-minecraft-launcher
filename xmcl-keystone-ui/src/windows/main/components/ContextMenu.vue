@@ -39,7 +39,15 @@ import { useContextMenuData } from '../composables/contextMenu'
 
 export default defineComponent({
   setup() {
-    return useContextMenuData()
+    const data = useContextMenuData()
+    document.addEventListener('keyup', (e) => {
+      if (e.key === 'Escape' && data.shown.value) {
+        data.shown.value = false
+        e.preventDefault()
+        e.stopPropagation()
+      }
+    }, { capture: true })
+    return data
   },
 })
 </script>

@@ -18,6 +18,20 @@
     @mouseenter="$emit('mouseenter', $event)"
     @click="$emit('click', $event)"
   >
+    <v-progress-linear
+      v-if="enabled !== source.enabledState"
+      buffer-value="0"
+      color="orange"
+      class="absolute bottom-0 left-0"
+      stream
+    />
+    <v-progress-linear
+      v-if="enabled !== source.enabledState"
+      buffer-value="0"
+      color="orange"
+      class="absolute top-0 left-0"
+      stream
+    />
     <v-tooltip top>
       <template #activator="{ on }">
         <transition-group
@@ -101,6 +115,7 @@
                 :color="getColor(tag)"
                 style="margin-left: 1px;"
                 close
+                @click.stop
                 @mousedown.stop
                 @click:close="onDeleteTag(tag)"
               >
@@ -108,7 +123,6 @@
                   contenteditable
                   class="max-w-50 overflow-auto"
                   @input.stop="onEditTag($event, index)"
-                  @blur="$emit('tags', [...source.tags])"
                 >
                   {{ tag }}
                 </div>
@@ -125,7 +139,9 @@
             @click.stop
             @mousedown.stop
           >
-            <v-switch v-model="enabled" />
+            <v-switch
+              v-model="enabled"
+            />
           </v-flex>
         </transition-group>
       </template>
@@ -149,7 +165,7 @@ import { vContextMenu } from '../directives/contextMenu'
 import { vLongPress } from '../directives/longPress'
 
 const props = defineProps<{ source: ModItem; selection: boolean }>()
-const emit = defineEmits(['tags', 'enable', 'dragstart', 'select', 'delete'])
+const emit = defineEmits(['tags', 'enable', 'dragstart', 'select', 'delete', 'editTags'])
 
 const { minecraft, forge, fabricLoader } = useInstanceVersionBase()
 const { openInBrowser, showItemInDirectory } = useService(BaseServiceKey)
@@ -157,7 +173,7 @@ const { push } = useRouter()
 const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
 const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute()
 const { t } = useI18n()
-const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.source.tags, set(v) { emit('tags', v) } }))
+const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.source.tags, set(v) { emit('tags', v) } }), computed(() => props.source.selected))
 const { darkTheme } = useTheme()
 
 const onDeleteTag = removeTag
@@ -205,7 +221,11 @@ function onDragStart(e: DragEvent) {
 }
 function onEditTag(event: Event, index: number) {
   if (event.target instanceof HTMLDivElement) {
-    editTag(event.target.innerText, index)
+    if ((event as any).inputType === 'insertParagraph' || ((event as any).inputType === 'insertText' && (event as any).data === null)) {
+      emit('tags', [...props.source.tags])
+    } else {
+      editTag(event.target.innerText, index)
+    }
   }
 }
 function emitSelect() {
@@ -228,6 +248,16 @@ const contextMenuItems = computed(() => {
     },
     icon: 'add',
   }]
+  if (props.source.selected) {
+    items.push({
+      text: t('tag.createSelected'),
+      children: [],
+      onClick: () => {
+        createTag(true)
+      },
+      icon: 'add',
+    })
+  }
   if (!props.source.selected) {
     items.push({
       text: t('delete.name', { name: props.source.name }),

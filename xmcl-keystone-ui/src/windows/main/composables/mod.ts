@@ -52,8 +52,14 @@ export interface ModItem {
   type: 'fabric' | 'forge' | 'liteloader' | 'unknown'
 
   compatible: Compatible
-
+  /**
+   * The pending enabled. Might be different from the actual enable state
+   */
   enabled: boolean
+  /**
+   * The actual state. Represent if the mod is moved to the 
+   */
+  enabledState: boolean
 
   subsequence: boolean
 
@@ -81,12 +87,11 @@ export function useInstanceMods() {
   const loading = useServiceBusy(ResourceServiceKey, 'load', ResourceDomain.Mods)
   const { state: instanceState } = useService(InstanceServiceKey)
   const items: Ref<ModItem[]> = ref([])
-  const pendingUninstallItems = computed(() => items.value.filter(i => !i.enabled && cachedEnabledSet.has(i.hash)))
-  const pendingInstallItems = computed(() => items.value.filter(i => i.enabled && !cachedEnabledSet.has(i.hash)))
+  const pendingUninstallItems = computed(() => items.value.filter(i => !i.enabled && i.enabledState))
+  const pendingInstallItems = computed(() => items.value.filter(i => i.enabled && !i.enabledState))
   const pendingEditItems = computed(() => items.value.filter(i => (isPersistedResource(i.resource) && !isStringArrayEquals(i.tags, i.resource.tags))))
   const isModified = computed(() => pendingInstallItems.value.length > 0 || pendingUninstallItems.value.length > 0 || pendingEditItems.value.length > 0)
 
-  const cachedEnabledSet = new Set<string>()
   const cachedDirectory = new Map<string, ModItem>()
 
   const { refresh: commit, refreshing: committing } = useRefreshable(async () => {
@@ -115,6 +120,7 @@ export function useInstanceMods() {
     const disabled = resourceState.mods.filter(res => !enabledItemHashes.has(res.hash)).map(getModItemFromModResource)
     for (const item of enabled) {
       item.enabled = true
+      item.enabledState = true
     }
 
     const result = [
@@ -131,11 +137,7 @@ export function useInstanceMods() {
     }
 
     cachedDirectory.clear()
-    cachedEnabledSet.clear()
     for (const item of result) {
-      if (item.enabled) {
-        cachedEnabledSet.add(item.hash)
-      }
       cachedDirectory.set(item.hash, item)
     }
 
@@ -168,6 +170,7 @@ export function useInstanceMods() {
       hash: resource.hash,
       tags: isPersisted ? [...resource.tags] : [],
       enabled: false,
+      enabledState: false,
       subsequence: false,
       hide: false,
       selected: false,
@@ -240,6 +243,7 @@ export function useInstanceMods() {
       hash: resource.hash,
       tags: isPersisted ? [...resource.tags] : [],
       enabled: false,
+      enabledState: false,
       subsequence: false,
       hide: false,
       selected: false,
