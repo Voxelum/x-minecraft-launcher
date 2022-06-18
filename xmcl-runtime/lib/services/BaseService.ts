@@ -27,7 +27,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
         autoDownload: data.autoDownload,
         allowPrerelease: data.allowPrerelease,
         apiSets: data.apiSets,
-        apiSetsPreference: data.apiSetsPreference || 'bmcl',
+        apiSetsPreference: data.apiSetsPreference,
         httpProxy: data.httpProxy,
         httpProxyEnabled: data.httpProxyEnabled,
         theme: data.theme,
@@ -60,6 +60,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
   }
 
   async handleUrl(url: string) {
+    this.emit('url-drop', url)
     return this.app.handleUrl(url)
   }
 
