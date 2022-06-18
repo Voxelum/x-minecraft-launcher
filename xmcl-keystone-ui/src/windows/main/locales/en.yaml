@@ -558,6 +558,7 @@ modrinth:
     updated: Recently updated
   updateAt: Updated
   versions: Versions
+  install: Install
 multiplayer:
   complete: Complete
   confirm: Confirm

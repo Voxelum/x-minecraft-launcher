@@ -426,6 +426,7 @@ modpack:
   urlHint: 整合包的主页 URL 地址
 modrinth:
   avaiableFor: 可用于
+  install: 安装
   categories:
     adventure: 冒险
     challenging: 挑战

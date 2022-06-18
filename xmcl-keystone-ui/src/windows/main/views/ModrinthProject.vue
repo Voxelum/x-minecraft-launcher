@@ -24,6 +24,8 @@
       <Header
         class="flex-grow-0"
         :project="project"
+        @create="onCreate"
+        @install="onInstall"
       />
       <v-card outlined>
         <v-tabs
@@ -61,6 +63,7 @@
               :versions="project.versions"
               :project="project.id"
               :modpack="project.project_type === 'modpack'"
+              @create="onCreate"
               @install="onInstall"
             />
           </v-tab-item>
@@ -89,7 +92,7 @@
 <script lang="ts"  setup>
 import { Ref } from '@vue/composition-api'
 import { useService } from '/@/composables'
-import { ModrinthServiceKey } from '@xmcl/runtime-api'
+import { ModrinthServiceKey, PersistedResource, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useRefreshable } from '/@/composables/refreshable'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
 import Tags from './ModrinthProjectTags.vue'
@@ -99,6 +102,8 @@ import Header from './ModrinthProjectHeader.vue'
 import Versions from './ModrinthProjectVersions.vue'
 import Description from './ModrinthProjectDescription.vue'
 import ModrinthProjectGallery from './ModrinthProjectGallery.vue'
+import { AddInstanceDialogKey } from '../composables/instanceAdd'
+import { useDialog } from '../composables/dialog'
 
 const props = defineProps<{ id: string }>()
 
@@ -113,6 +118,9 @@ watch(viewingImage, (v) => {
   if (!v) viewedImage.value = ''
 })
 
+const { show } = useDialog(AddInstanceDialogKey)
+const { state: resourceState } = useService(ResourceServiceKey)
+
 const { getProject, installVersion } = useService(ModrinthServiceKey)
 const project: Ref<undefined | Project> = ref(undefined)
 const { refresh, refreshing } = useRefreshable(async () => {
@@ -121,6 +129,24 @@ const { refresh, refreshing } = useRefreshable(async () => {
 })
 const onInstall = (project: ProjectVersion) => {
   installVersion({ version: project })
+}
+
+const onCreate = (v: ProjectVersion) => {
+  const fileUrl = v.files[0].url
+  const find = (m: PersistedResource) => {
+    if (m.uri.indexOf(fileUrl) !== -1) {
+      return true
+    }
+    if ('modrinth' in m && typeof m.modrinth === 'object') {
+      const s = m.modrinth
+      if (s.url === fileUrl) return true
+    }
+    return false
+  }
+  const res = resourceState.modpacks.find(find)
+  if (res) {
+    show(res.path)
+  }
 }
 
 onMounted(() => {

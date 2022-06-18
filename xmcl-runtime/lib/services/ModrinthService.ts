@@ -5,14 +5,14 @@ import { unlink } from 'fs-extra'
 import { basename, join } from 'path'
 import { URLSearchParams } from 'url'
 import { LauncherApp } from '../app/LauncherApp'
-import { PersistedInMemoryCache } from '../util/cache'
+import { PersistedInMemoryCache, PersistFileCache } from '../util/cache'
 import { ResourceService } from './ResourceService'
-import { Inject, StatefulService } from './Service'
+import { Inject, Singleton, StatefulService } from './Service'
 
 export class ModrinthService extends StatefulService<ModrinthState> implements IModrinthService {
   private client = this.networkManager.request.extend({
     prefixUrl: 'https://api.modrinth.com/v2',
-    cache: new PersistedInMemoryCache(this.getAppDataPath('modrinth-cache.json')),
+    cache: new PersistFileCache(this.getAppDataPath('modrinth-cache')),
   })
 
   constructor(app: LauncherApp,
@@ -48,6 +48,7 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
     return project
   }
 
+  @Singleton(p => p)
   async getProjectVersions(projectId: string): Promise<ProjectVersion[]> {
     const versions: ProjectVersion[] = await this.client.get(`project/${projectId}/version`).json()
     this.log(`Get project version for version_id=${projectId}`)

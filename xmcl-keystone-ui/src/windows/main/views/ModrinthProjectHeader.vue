@@ -104,21 +104,44 @@
           <v-icon>open_in_new</v-icon>Wiki
         </a>
         <div class="flex-grow" />
-        <v-btn
-          color="primary"
-          large
-        >
-          <v-icon left>download</v-icon>
-          Install
-        </v-btn>
+        <v-menu offset-y>
+          <template #activator="{ on, attrs }">
+            <v-btn
+              color="primary"
+              large
+              :loading="loading || isDownloading"
+              v-bind="attrs"
+              v-on="on"
+              @click="onInstallClicked"
+            >
+              <v-icon left>download</v-icon>
+              {{ t('modrinth.install') }}
+            </v-btn></template>
+          <v-list
+            class="max-h-100 overflow-auto"
+          >
+            <v-list-item
+              v-for="item of projectVersions"
+              :key="item.id"
+              class="border-l border-l-[3px] pl-3"
+              :style="{ borderColor: getColorCode(getColorForReleaseType(item.version_type)) }"
+              @click="onInstallItemClick(item)"
+            >
+              <v-list-item-title>{{ item.name }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </span>
     </div>
   </v-card>
 </template>
 <script lang="ts" setup>
-import { Category, Project } from '@xmcl/modrinth'
-import { ModrinthServiceKey } from '@xmcl/runtime-api'
-import { useI18n, useRefreshable, useService } from '/@/composables'
+import { Ref } from '@vue/composition-api'
+import { Category, Project, ProjectVersion } from '@xmcl/modrinth'
+import { ModrinthServiceKey, PersistedResource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { useI18n, useRefreshable, useService, useServiceBusy } from '/@/composables'
+import { useVuetifyColor } from '/@/composables/vuetify'
+import { getColorForReleaseType } from '/@/util/color'
 import { getLocalDateString } from '/@/util/date'
 import { getExpectedSize } from '/@/util/size'
 
@@ -126,6 +149,8 @@ const props = defineProps<{ project: Project }>()
 const { t } = useI18n()
 const { getTags } = useService(ModrinthServiceKey)
 const categories = ref([] as Category[])
+
+const emit = defineEmits(['install', 'create'])
 
 const categoryItems = computed(() => {
   return props.project.categories.map(id => categories.value.find(c => c.name === id)).filter((v): v is Category => !!v)
@@ -135,6 +160,48 @@ const { refresh, refreshing } = useRefreshable(async () => {
   const result = await getTags()
   categories.value = result.categories
 })
+
+const { getProjectVersions, state } = useService(ModrinthServiceKey)
+const projectVersions: Ref<ProjectVersion[]> = ref([])
+const loading = useServiceBusy(ModrinthServiceKey, 'getProjectVersion', computed(() => props.project.id))
+
+async function onInstallClicked() {
+  if (projectVersions.value.length === 0) {
+    const result = await getProjectVersions(props.project.id)
+    projectVersions.value = result
+  }
+}
+
+const { state: resourceState } = useService(ResourceServiceKey)
+const isDownloading = computed(() => {
+  for (const u of state.downloading) {
+    projectVersions.value.some(v => v.files[0].url === u.url)
+  }
+})
+const isDownloaded = (ver: ProjectVersion) => {
+  const fileUrl = ver.files[0].url
+  const find = (m: PersistedResource) => {
+    if (m.uri.indexOf(fileUrl) !== -1) {
+      return true
+    }
+    if ('modrinth' in m && typeof m.modrinth === 'object') {
+      const s = m.modrinth
+      if (s.url === fileUrl) return true
+    }
+    return false
+  }
+  return !!resourceState.mods.find(find) || !!resourceState.modpacks.find(find)
+}
+
+const { getColorCode } = useVuetifyColor()
+
+async function onInstallItemClick(version: ProjectVersion) {
+  if (isDownloaded(version)) {
+    emit('create', version)
+  } else {
+    emit('install', version)
+  }
+}
 
 onMounted(refresh)
 

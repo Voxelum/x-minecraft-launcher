@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'atomically'
 import filenamify from 'filenamify'
-import { unlink } from 'fs-extra'
+import { ensureDir, unlink } from 'fs-extra'
 import { join } from 'path'
 /**
  * The helper class to hold object with ttl, which is useful for holding web api result.
@@ -69,10 +69,11 @@ export class PersistedInMemoryCache<T> extends CacheDictionary<T> {
 
 export class PersistFileCache<T> {
   constructor(private cacheDir: string) {
+    ensureDir(cacheDir)
   }
 
   async get(key: string) {
-    return await readFile(join(this.cacheDir, filenamify(key)), 'utf-8')
+    return await readFile(join(this.cacheDir, filenamify(key)), 'utf-8').catch(() => undefined)
   }
 
   async set(key: string, value: any, ttl?: number) {
