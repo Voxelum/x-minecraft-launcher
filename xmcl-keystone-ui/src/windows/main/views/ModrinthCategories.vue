@@ -12,7 +12,7 @@
       @click="$emit('select:category', cat.name)"
     >
       <v-checkbox
-        :value="cat.name === category"
+        :input-value="cat.name === category"
         hide-details
         class="mt-0 pt-0"
       />
@@ -32,7 +32,7 @@
       @click="$emit('select:modLoader', l.name)"
     >
       <v-checkbox
-        :value="l.name === modLoader"
+        :input-value="l.name === modLoader"
         hide-details
         class="mt-0 pt-0"
       />
@@ -50,7 +50,7 @@
       @click="$emit('select:environment', env)"
     >
       <v-checkbox
-        :value="env === environment"
+        :input-value="env === environment"
         hide-details
         class="mt-0 pt-0"
       />

@@ -17,17 +17,8 @@
         {{ project.title }}
       </a>
       <span class="text-lg">{{ project.description }}</span>
-      <span class="text-gray-400">
-        <span>{{ t('modrinth.downloads') }}</span>
-        <span class="text-2xl font-bold dark:text-gray-300 text-gray-600">
-          {{ getExpectedSize(project.downloads, '') }}
-        </span>
-        <span>{{ t('modrinth.followers') }}</span>
-        <span class="text-2xl font-bold dark:text-gray-300 text-gray-600">
-          {{ project.followers }}
-        </span>
-      </span>
-      <span>
+
+      <span class="flex gap-2">
         <v-chip
           v-for="item of categoryItems"
           :key="item.name"
@@ -42,21 +33,48 @@
           {{ $t(`modrinth.categories.${item.name}`) }}
         </v-chip>
       </span>
-      <span class="flex gap-1 items-center dark:text-gray-400 text-gray-500">
+
+      <v-divider />
+
+      <span class="text-gray-400">
+        <span>{{ t('modrinth.downloads') }}</span>
+        <span class="text-2xl font-bold dark:text-gray-300 text-gray-600">
+          {{ getExpectedSize(project.downloads, '') }}
+        </span>
         <v-icon
-          small
-          class="material-icon-outlined"
+          class="material-icon-outlined text-gray-300 mb-2 mr-2"
         >
-          event
+          star_rate
         </v-icon>
-        <div>
+        <span>{{ t('modrinth.followers') }}</span>
+        <span class="text-2xl font-bold dark:text-gray-300 text-gray-600">
+          {{ project.followers }}
+        </span>
+      </span>
+      <span class="flex gap-2 items-center dark:text-gray-400 text-gray-500 w-full">
+        <span class="flex gap-1 flex-grow-0">
+          <v-icon
+            class="material-icon-outlined text-gray-300 left"
+          >
+            event
+          </v-icon>
           <span>{{ t('modrinth.createAt') }}</span>
           {{ getLocalDateString(project.published) }}
-        </div>
+        </span>
+
+        <span class="flex gap-1 flex-grow-0">
+          <v-icon
+            class="material-icon-outlined text-gray-300 left"
+          >
+            update
+          </v-icon>
+          <span>{{ t('modrinth.updateAt') }}</span>
+          {{ getLocalDateString(project.updated) }}
+        </span>
       </span>
-      <!-- <v-divider /> -->
+
       <span class="flex-grow" />
-      <span class="flex gap-4 flex-1 flex-grow-0">
+      <span class="flex gap-4 flex-1 flex-grow-0 w-full">
         <a
           v-if="project.discord_url"
           :href="project.discord_url"
@@ -85,6 +103,14 @@
         >
           <v-icon>open_in_new</v-icon>Wiki
         </a>
+        <div class="flex-grow" />
+        <v-btn
+          color="primary"
+          large
+        >
+          <v-icon left>download</v-icon>
+          Install
+        </v-btn>
       </span>
     </div>
   </v-card>

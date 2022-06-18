@@ -1,12 +1,12 @@
 <template>
-  <div class="flex gap-2 p-4 overflow-auto mb-1 modrinth w-full pb-0">
+  <div class="gap-2 p-4 overflow-auto mb-1 modrinth w-full pb-0 grid grid-cols-12">
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
       :active="refreshing"
       height="3"
       :indeterminate="true"
     />
-    <div class="flex flex-col gap-2 overflow-auto">
+    <div class="flex flex-col gap-2 overflow-auto lg:col-span-9 md:col-span-12">
       <v-card
         class="flex py-1 flex-shrink flex-grow-0"
         outlined
@@ -78,9 +78,9 @@
         type="list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line"
       />
     </div>
-    <div class="flex flex-col overflow-auto lg:flex md:hidden">
+    <div class="flex flex-col overflow-y-auto lg:col-span-3 lg:flex md:hidden">
       <Categories
-        class="overflow-auto min-w-40"
+        class="overflow-auto"
         :loading="refreshingTag"
         :environments="environments"
         :categories="categories.filter(c => c.project_type === projectType)"
