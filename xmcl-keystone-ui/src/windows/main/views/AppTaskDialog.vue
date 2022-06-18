@@ -1,7 +1,6 @@
 <template>
   <v-dialog
     v-model="isShown"
-    persistent
     hide-overlay
     width="700"
     style="max-height: 100%"
