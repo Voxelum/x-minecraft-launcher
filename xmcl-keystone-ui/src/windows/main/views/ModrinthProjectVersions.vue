@@ -146,40 +146,32 @@
 <script lang="ts" setup>
 import { ProjectVersion } from '@xmcl/modrinth'
 import { ModrinthServiceKey, PersistedResource, ResourceServiceKey } from '@xmcl/runtime-api'
-import { useI18n, useService, useRefreshable } from '/@/composables'
+import { useI18n, useService, useRefreshable, useServiceBusy } from '/@/composables'
 import Markdown from 'markdown-it'
 import { Ref } from '@vue/composition-api'
 import { getLocalDateString } from '/@/util/date'
 import { getColorForReleaseType } from '/@/util/color'
-import { injection } from '/@/util/inject'
-import { VuetifyInjectionKey } from '/@/composables/vuetify'
-import colors from 'vuetify/lib/util/colors'
+import { useVuetifyColor, VuetifyInjectionKey } from '/@/composables/vuetify'
 import { useDialog } from '../composables/dialog'
 import { AddInstanceDialogKey } from '../composables/instanceAdd'
-
 const props = defineProps<{
   versions: string[]
   project: string
   modpack: boolean
 }>()
 
-const emit = defineEmits(['install'])
+const emit = defineEmits(['install', 'create'])
 
 const markdown = new Markdown({
   html: true,
 })
-const { show } = useDialog(AddInstanceDialogKey)
 const { getProjectVersions, state } = useService(ModrinthServiceKey)
 const { state: resourceState } = useService(ResourceServiceKey)
 const render = (s: string) => {
   return markdown.render(s)
 }
 
-const vuetify = injection(VuetifyInjectionKey)
-
-const getColorCode = (code: string) => {
-  return vuetify.theme.currentTheme[code] ?? (colors as any)[code]?.base ?? ''
-}
+const { getColorCode } = useVuetifyColor()
 
 const projectVersions: Ref<ProjectVersion[]> = ref([])
 const { t, tc } = useI18n()
@@ -213,21 +205,7 @@ const isDownloaded = (ver: ProjectVersion) => {
 }
 
 const onCreate = (v: ProjectVersion) => {
-  const fileUrl = v.files[0].url
-  const find = (m: PersistedResource) => {
-    if (m.uri.indexOf(fileUrl) !== -1) {
-      return true
-    }
-    if ('modrinth' in m && typeof m.modrinth === 'object') {
-      const s = m.modrinth
-      if (s.url === fileUrl) return true
-    }
-    return false
-  }
-  const res = resourceState.modpacks.find(find)
-  if (res) {
-    show(res.path)
-  }
+  emit('create', v)
 }
 // const headers = computed(() => [{
 //   text: t('name'),
@@ -257,7 +235,8 @@ const onCreate = (v: ProjectVersion) => {
 //   text: '',
 //   sortable: false,
 // }])
-const { refresh, refreshing } = useRefreshable(async () => {
+const refreshing = useServiceBusy(ModrinthServiceKey, 'getProjectVersion', computed(() => props.project))
+const { refresh } = useRefreshable(async () => {
   const result = await getProjectVersions(props.project)
   projectVersions.value = result
 })
