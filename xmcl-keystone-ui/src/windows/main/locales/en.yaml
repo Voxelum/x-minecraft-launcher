@@ -5,6 +5,7 @@ back: Back
 baseSetting:
   title: Base Settings
 cancel: Cancel
+checkUpdate: Check Update
 cloneMinecraft: Clone Minecraft
 copyClipboard:
   success: Copy to clipboard
@@ -533,6 +534,7 @@ modrinth:
     status: Stats
     support: Supports
     version: Version
+  install: Install
   installFrom: Install from Modrinth
   license: License
   licenses:

@@ -5,6 +5,7 @@ back: 返回
 baseSetting:
   title: 基础设置
 cancel: 取消
+checkUpdate: 检查更新
 cloneMinecraft: 克隆 Minecraft
 copyClipboard:
   success: 复制到剪贴板
