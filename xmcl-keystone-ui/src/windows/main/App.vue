@@ -63,6 +63,7 @@ import { VuetifyInjectionKey } from '/@/composables/vuetify'
 import { ExceptionHandlersKey, useExceptionHandlers } from '/@/composables/exception'
 import AppShareInstanceDialog from './views/AppShareInstanceDialog.vue'
 import { useAuthProfileImportNotification } from './composables/authProfileImport'
+import { useDropService } from '/@/composables/dropService'
 
 const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = useColorTheme()
 const vuetify = injection(VuetifyInjectionKey)
@@ -89,6 +90,7 @@ watch(successColor, (newColor) => { vuetify.theme.currentTheme.success = newColo
 watch(warningColor, (newColor) => { vuetify.theme.currentTheme.warning = newColor })
 
 provide(ExceptionHandlersKey, useExceptionHandlers())
+useDropService()
 provideDialog()
 provideNotifier()
 

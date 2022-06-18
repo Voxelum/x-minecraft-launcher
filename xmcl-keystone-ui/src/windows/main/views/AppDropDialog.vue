@@ -1,13 +1,12 @@
 <template>
   <v-dialog
-    v-if="inside"
-    v-model="inside"
+    v-if="active"
+    v-model="active"
     @dragover.prevent
   >
     <div
       style="display: flex"
       class="h-[80vh] w-full"
-      @drop="onDrop"
       @dragover.prevent
     >
       <v-fade-transition>
@@ -21,7 +20,7 @@
             <refreshing-tile />
           </div>
           <div
-            v-else-if="pending"
+            v-else-if="dragover"
             class="text-center select-none"
           >
             <v-icon
@@ -65,117 +64,11 @@
   </v-dialog>
 </template>
 
-<script lang=ts>
-import { BaseServiceKey, isPersistedResource, Resource, ResourceDomain } from '@xmcl/runtime-api'
+<script lang=ts setup>
 import PreviewView from './AppDropDialogPreview.vue'
 import RefreshingTile from '/@/components/RefreshingTile.vue'
-import { useFileDrop, useRouter, useService } from '/@/composables'
+import { DropServiceInjectionKey } from '/@/composables/dropService'
+import { injection } from '/@/util/inject'
 
-export interface FilePreview extends Resource {
-  enabled: boolean
-  status: 'loading' | 'idle' | 'failed' | 'saved'
-}
-
-export default defineComponent({
-  components: {
-    PreviewView,
-    RefreshingTile,
-  },
-  setup() {
-    const pending = ref(true)
-    const inside = ref(false)
-    const loading = ref(false)
-    const previews = ref([] as FilePreview[])
-    const { resolveFiles } = useFileDrop()
-    const { handleUrl } = useService(BaseServiceKey)
-    async function onDrop(event: DragEvent) {
-      const files = [] as Array<File>
-      const dataTransfer = event.dataTransfer!
-      if (dataTransfer.files.length > 0) {
-        for (let i = 0; i < dataTransfer.files.length; i++) {
-          const file = dataTransfer.files.item(i)!
-          if (previews.value.every(p => p.path !== file.path)) {
-            files.push(file)
-          }
-        }
-      }
-      loading.value = true
-      const result = await resolveFiles({ files: files.map(f => ({ path: f.path })) }).finally(() => { loading.value = false })
-      for (let i = 0; i < result.length; i++) {
-        const r = result[i][0]
-        const f = files[i]
-        previews.value.push({
-          ...r,
-          name: f.name,
-          size: f.size,
-          enabled: isPersistedResource(r),
-          status: isPersistedResource(r) && r.domain !== ResourceDomain.Unknown ? 'saved' : 'idle',
-        })
-      }
-      pending.value = false
-      if (result.length === 0) {
-        cancel()
-      }
-    }
-    function remove(file: FilePreview) {
-      previews.value = previews.value.filter((p) => p.path !== file.path)
-      if (previews.value.length === 0) {
-        cancel()
-      }
-    }
-    function cancel() {
-      pending.value = true
-      inside.value = false
-      previews.value = []
-    }
-    const router = useRouter()
-    document.addEventListener('dragleave', (e) => {
-      if (router.currentRoute.fullPath === '/user') {
-        return
-      }
-      if ((e as any).fromElement === null && e.dataTransfer!.effectAllowed === 'all') {
-        if (!pending.value || previews.value.length > 0) {
-          pending.value = false
-        } else {
-          cancel()
-        }
-      }
-    })
-    document.addEventListener('drop', (e) => {
-      const dataTransfer = e.dataTransfer!
-      if (dataTransfer.items.length > 0) {
-        for (let i = 0; i < dataTransfer.items.length; ++i) {
-          const item = dataTransfer.items[i]
-          if (item.kind === 'string') {
-            item.getAsString((content) => {
-              if (content.startsWith('authlib-injector:yggdrasil-server:')) {
-                handleUrl(content)
-              }
-            })
-            break
-          }
-        }
-      }
-    })
-    document.addEventListener('dragenter', (e) => {
-      if (router.currentRoute.fullPath === '/user') {
-        return
-      }
-      if ((e as any).fromElement === null && e.dataTransfer!.effectAllowed === 'all') {
-        inside.value = true
-        pending.value = true
-      }
-      e.dataTransfer!.dropEffect = 'copy'
-    })
-    return {
-      loading,
-      onDrop,
-      inside,
-      pending,
-      previews,
-      remove,
-      cancel,
-    }
-  },
-})
+const { active, loading, remove, cancel, previews, dragover } = injection(DropServiceInjectionKey)
 </script>

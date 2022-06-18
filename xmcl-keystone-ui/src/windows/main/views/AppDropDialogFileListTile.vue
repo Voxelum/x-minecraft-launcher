@@ -76,7 +76,7 @@
 
 <script lang=ts setup>
 import { useI18n } from '/@/composables'
-import { FilePreview } from './AppDropDialog.vue'
+import { FilePreview } from '/@/composables/dropService'
 
 const iconMap: Record<string, string> = {
   forge: '$vuetify.icons.package',
