@@ -57,7 +57,7 @@ export class BaseState implements SettingSchema {
     this.autoDownload = config.autoDownload || false
     this.autoInstallOnAppQuit = config.autoDownload || false
     this.allowPrerelease = config.allowPrerelease || false
-    this.apiSetsPreference = typeof config.apiSetsPreference === 'string' ? config.apiSetsPreference : 'mcbbs'
+    this.apiSetsPreference = config.apiSetsPreference
     this.httpProxy = config.httpProxy
     this.httpProxyEnabled = config.httpProxyEnabled
     this.theme = config.theme

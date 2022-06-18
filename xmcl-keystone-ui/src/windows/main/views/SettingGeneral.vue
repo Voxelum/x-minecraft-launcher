@@ -78,8 +78,7 @@
           filled
           style="max-width: 185px"
           hide-details
-          :items="apiSets"
-          item-text="name"
+          :items="apiSetItems"
         />
       </v-list-item-action>
     </v-list-item>
@@ -138,9 +137,26 @@ const {
   selectedLocale,
   locales: rawLocales,
 } = useSettings()
+const { t } = useI18n()
+const apiSetItems = computed(() =>
+  [
+    {
+      text: t('setting.apiSets.auto'),
+      value: '',
+    },
+    {
+      text: t('setting.apiSets.official'),
+      value: 'mojang',
+    },
+  ].concat(
+    apiSets.value.map((v) => {
+      return {
+        text: v.name.toString().toUpperCase(),
+        value: v.name,
+      }
+    })))
 const locales = rawLocales.value.map(l => ({ text: localeMappings[l] ?? l, value: l }))
 
-const { t } = useI18n()
 const { show } = useDialog('migration')
 
 function showRootDir() {
@@ -164,6 +180,9 @@ setting:
   useBmclAPIDescription: >-
     Use BMCLAPI to download Minecraft when you are in China Mainland. (This
     won't affect if you're not in China mainland)
+  apiSets:
+    official: Official (Mojang)
+    auto: "Auto (Determine by network)"
   useProxy: HTTP Proxy
   useProxyDescription: The proxy server address for the http request
 proxy:
@@ -183,6 +202,9 @@ setting:
   useBmclAPIDescription: 当你在大陆时，优先使用 BMCLAPI 来下载 Minecraft
   useProxy: HTTP 代理设置
   useProxyDescription: 使用代理服务器可以某些服务的访问
+  apiSets:
+    official: 官方 (Mojang)
+    auto: 自动 (根据网络决定)
 proxy:
   host: 服务器地址
   port: 端口号

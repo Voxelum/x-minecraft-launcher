@@ -64,7 +64,7 @@ export function useSettings() {
     get: () => state.httpProxyEnabled,
     set: v => state.httpProxyEnabledSet(v),
   })
-  const apiSets = computed(() => ['mojang', ...state.apiSets])
+  const apiSets = computed(() => state.apiSets)
 
   onMounted(() => {
     const p = getProxy()
