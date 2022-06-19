@@ -103,21 +103,20 @@ export function useForgeVersionList(minecraft: Ref<string>, version: Ref<string>
   }
 }
 
-export function useOptifineVersionList(minecraft: Ref<string>, version: Ref<string>) {
+export function useOptifineVersionList(minecraft: Ref<string>, forge: Ref<string>, version: Ref<string>) {
   const { t } = useI18n()
   const { semaphores } = injection(SERVICES_SEMAPHORES_KEY)
-  const { versions, statuses, refreshing, refresh } = useOptifineVersions(minecraft)
+  const { versions, getStatus, refreshing, refresh } = useOptifineVersions(minecraft, forge)
 
   const items = computed(() => {
     return versions.value.map((v) => {
       const key = LockKey.version(`optifine-${minecraft.value}-${v.type}_${v.patch}`)
+      const name = v.type + '_' + v.patch
       const result: VersionItem = reactive({
-        name: minecraft.value + '_' + v.type + '_' + v.patch,
+        name: name,
         description: v.patch,
-        // tag: v.type === 'snapshot' ? t('minecraftVersion.snapshot') : v.type === 'release' ? t('minecraftVersion.release') : '',
-        // tagColor: v.type === 'release' ? 'primary' : '',
-        isSelected: computed(() => version.value === (v.type + '_' + v.patch)),
-        status: computed(() => semaphores[key] > 0 ? 'installing' : statuses.value[minecraft.value + '_' + v.type + '_' + v.patch]),
+        isSelected: computed(() => version.value === name),
+        status: computed(() => semaphores[key] > 0 ? 'installing' : getStatus(v)),
         instance: markRaw(v),
       })
 

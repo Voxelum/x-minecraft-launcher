@@ -104,7 +104,11 @@ export class InstallState {
 }
 
 export interface InstallOptifineOptions extends OptifineVersion {
-  inhrenitFrom?: string
+  /**
+   * Install over forge
+   */
+  forgeVersion?: string
+  inheritFrom?: string
 }
 
 export interface InstallQuiltOptions {

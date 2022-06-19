@@ -247,7 +247,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
 //   }
 // }
 
-export function useOptifineVersions(minecraftVersion: Ref<string>) {
+export function useOptifineVersions(minecraftVersion: Ref<string>, forgeVersion: Ref<string>) {
   const { getOptifineVersionList } = useInstallService()
   const { state } = useVersionService()
   const refreshing = useServiceBusy(InstallServiceKey, 'getOptifineVersionList')
@@ -258,16 +258,20 @@ export function useOptifineVersions(minecraftVersion: Ref<string>) {
     const localVersions: { [k: string]: boolean } = {}
     state.local.forEach((ver) => {
       if (ver.optifine) {
-        localVersions[`${ver.minecraft}_${ver.optifine}`] = true
+        localVersions[`${ver.minecraft}_${ver.forge ?? ''}_${ver.optifine}`] = true
       }
     })
-    const statusMap: { [key: string]: 'local' | 'remote' } = {}
-    for (const ver of versions.value) {
-      const optifineVersion = ver.mcversion + '_' + ver.type + '_' + ver.patch
-      statusMap[optifineVersion] = localVersions[optifineVersion] ? 'local' : 'remote'
-    }
-    return statusMap
+    // const statusMap: { [key: string]: 'local' | 'remote' } = {}
+    // for (const ver of versions.value) {
+    //   const optifineVersion = ver.mcversion + '_' + ver.type + '_' + ver.patch
+    //   statusMap[optifineVersion] = localVersions[optifineVersion] ? 'local' : 'remote'
+    // }
+    return localVersions
   })
+
+  function getStatus(ver: OptifineVersion) {
+    return statuses.value[`${ver.mcversion}_${forgeVersion.value ?? ''}_${ver.type}_${ver.patch}`] ? 'local' : 'remote'
+  }
 
   watch(minecraftVersion, () => {
     refresh()
@@ -283,7 +287,7 @@ export function useOptifineVersions(minecraftVersion: Ref<string>) {
   }
 
   return {
-    statuses,
+    getStatus,
     versions,
     refresh,
     refreshing,

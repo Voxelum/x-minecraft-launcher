@@ -184,7 +184,7 @@
             :versions="optifineVersions"
             @select="setOptifine"
             @disable="setOptifine('')"
-            @install="installOptifine"
+            @install="installOptifine({ ...$event, forgeVersion: data.forge })"
           />
         </v-tab-item>
       </v-tabs-items>
@@ -258,7 +258,7 @@ const minecraftVersion = computed(() => data.minecraft)
 const { refresh: refreshMinecraft, refreshing: refreshingMinecraft, items: minecraftVersions, showAlpha } = useMinecraftVersionList(computed(() => data.minecraft))
 const { refresh: refreshForge, refreshing: refreshingForge, items: forgeVersions, recommendedOnly, canShowBuggy } = useForgeVersionList(minecraftVersion, computed(() => data.forge))
 const { refresh: refreshFabric, refreshing: refreshingFabric, items: fabricVersions, showStableOnly } = useFabricVersionList(minecraftVersion, computed(() => data.fabricLoader))
-const { refresh: refreshOptifine, refreshing: refreshingOptifine, items: optifineVersions } = useOptifineVersionList(minecraftVersion, computed(() => data.optifine))
+const { refresh: refreshOptifine, refreshing: refreshingOptifine, items: optifineVersions } = useOptifineVersionList(minecraftVersion, computed(() => data.forge), computed(() => data.optifine))
 const { refresh: refreshQuilt, refreshing: refreshingQuilt, items: quiltVersions } = useQuiltVersionList(minecraftVersion, computed(() => data.quilt))
 
 const refreshing = computed(() => {
