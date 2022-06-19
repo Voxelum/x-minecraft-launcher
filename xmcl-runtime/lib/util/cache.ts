@@ -68,16 +68,22 @@ export class PersistedInMemoryCache<T> extends CacheDictionary<T> {
 }
 
 export class PersistFileCache<T> {
+  protected fallback: Record<string, [T, number, number?] | undefined> = {}
+
   constructor(private cacheDir: string) {
     ensureDir(cacheDir)
   }
 
   async get(key: string) {
-    return await readFile(join(this.cacheDir, filenamify(key)), 'utf-8').catch(() => undefined)
+    return await readFile(join(this.cacheDir, filenamify(key)), 'utf-8').catch(() => {
+      return this.fallback[key]
+    })
   }
 
   async set(key: string, value: any, ttl?: number) {
-    await writeFile(join(this.cacheDir, filenamify(key)), value)
+    await writeFile(join(this.cacheDir, filenamify(key)), value).catch(() => {
+      this.fallback[key] = value
+    })
   }
 
   async delete(key: string): Promise<boolean> {
