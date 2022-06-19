@@ -239,7 +239,6 @@ importModpack:
   success: 成功導入 {modpack} 整合包
 importResource: 導入資源
 importSave: 導入存檔
-instace: {}
 installAssets:
   '': 下載遊戲資源文件
   asset: 下載資源文件%{hash}
