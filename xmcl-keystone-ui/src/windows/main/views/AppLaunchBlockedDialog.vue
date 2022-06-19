@@ -34,6 +34,11 @@
             {{ t('unexpectedText') }}
           </div>
         </v-card-text>
+        <FeedbackCard
+          class="mb-3"
+          :icon="false"
+          border="bottom"
+        />
         <v-divider />
         <v-card-actions>
           <v-spacer />
@@ -54,6 +59,7 @@ import { getExpectVersion, LaunchException, LaunchExceptions, LaunchServiceKey }
 import { useDialog } from '../composables/dialog'
 import { useI18n, useService } from '/@/composables'
 import { useExceptionHandler } from '/@/composables/exception'
+import FeedbackCard from '../components/FeedbackCard.vue'
 
 const { on } = useService(LaunchServiceKey)
 const { isShown, hide } = useDialog('launch-blocked')
@@ -64,7 +70,6 @@ const extraText = ref('')
 const { t } = useI18n()
 
 function onException(e: LaunchExceptions) {
-  console.log(e)
   if (e.type === 'launchGeneralException') {
     title.value = t('launchGeneralException.title')
     description.value = t('launchGeneralException.description')
@@ -100,6 +105,18 @@ function onException(e: LaunchExceptions) {
     description.value = t('launchNoVersionInstalled.description', { version: e.override || e.version || getExpectVersion(e) })
     unexpected.value = true
     extraText.value = ''
+  } else if (e.type === 'launchUserStatusRefreshFailed') {
+    title.value = t('launchUserStatusRefreshFailed.title')
+    description.value = t('launchUserStatusRefreshFailed.description') + '<br>'
+    if (e.userException.type === 'userAcquireMinecraftTokenFailed') {
+      description.value += t('userAcquireMinecraftTokenFailed')
+    } else if (e.userException.type === 'userCheckGameOwnershipFailed') {
+      description.value += t('userCheckGameOwnershipFailed')
+    } else if (e.userException.type === 'userExchangeXboxTokenFailed') {
+      description.value += t('userExchangeXboxTokenFailed')
+    } else if (e.userException.type === 'userLoginMinecraftByXboxFailed') {
+      description.value += t('userLoginMinecraftByXboxFailed')
+    }
   }
   isShown.value = true
 }
@@ -136,6 +153,13 @@ launchNoVersionInstalled:
   title: No version selected
   description: Cannot resolve version <span class="highlight">{version}</span> to launch.
 unexpectedText: This is unexpected. You can restart the launcher to mitigate the issue. Please contact author if this issue happens again.
+launchUserStatusRefreshFailed:
+  title: Fail to validate user status
+  description: Cannot refresh current selected user status.
+userAcquireMinecraftTokenFailed: Acquire Microsoft token failed. Please check retry or check your Microsoft account.
+userCheckGameOwnershipFailed: Failed to check Minecraft ownership. Please retry or check your network.
+userExchangeXboxTokenFailed: Failed to exchange xbox token from Microsoft token. Please retry or check your network.
+userLoginMinecraftByXboxFailed: Failed to login Minecraft with xbox token. Please retry or check your network.
 </i18n>
 
 <i18n locale="zh-CN" lang="yaml">
@@ -155,4 +179,11 @@ launchNoVersionInstalled:
   title: 无法找到安装的 Minecraft
   description: 找不到 Minecraft 启动。当前版本是 <span class="highlight">{version}</span>。
 unexpectedText: 这是意料之外的错误，你可以重启启动器来尝试缓解问题，请联系作者来修复。
+launchUserStatusRefreshFailed:
+  title: 验证账户失败
+  description: 无法验证当前账户信息
+userAcquireMinecraftTokenFailed: 微软令牌获取失败。请重试或者检查你的微软账号。
+userCheckGameOwnershipFailed: 检测 Minecraft 所有权失败。请重试或检查你的网络。
+userExchangeXboxTokenFailed: 通过微软令牌交换 Xbox 令牌失败。请重试或检查你的网络。
+userLoginMinecraftByXboxFailed: 使用 Xbox 令牌登录 Minecraft 失败。请重试或者检查你的网路。
 </i18n>

@@ -1,5 +1,5 @@
 import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder, ResolvedVersion, Version } from '@xmcl/core'
-import { LaunchException, LaunchOptions, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
+import { LaunchException, LaunchOptions, LaunchService as ILaunchService, LaunchServiceKey, LaunchState, UserException } from '@xmcl/runtime-api'
 import { ChildProcess } from 'child_process'
 import { EOL } from 'os'
 import LauncherApp from '../app/LauncherApp'
@@ -285,6 +285,12 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       return true
     } catch (e) {
       this.state.launchStatus('idle')
+      if (e instanceof UserException) {
+        throw new LaunchException({
+          type: 'launchUserStatusRefreshFailed',
+          userException: e.exception,
+        })
+      }
       if (e instanceof LaunchException) {
         throw e
       }

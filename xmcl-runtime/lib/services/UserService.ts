@@ -474,19 +474,27 @@ export class UserService extends StatefulService<UserState> implements IUserServ
 
     const req = this.app.networkManager.request
     const { microsoft: msToken, xbox: xboxToken } = await this.credentialManager.acquireMicrosoftToken({ username: microsoftEmailAddress, code: oauthCode })
+      .catch((e) => {
+        this.error(e)
+        throw new UserException({ type: 'userAcquireMinecraftTokenFailed', error: e.toString() })
+      })
+
     this.log('Successfully get Microsoft access token')
     const oauthAccessToken = xboxToken!.accessToken
     const { xstsResponse, xboxGameProfile } = await acquireXBoxToken(req, oauthAccessToken).catch((e) => {
+      this.error(e)
       throw new UserException({ type: 'userExchangeXboxTokenFailed', error: e.toString() })
     })
     this.log('Successfully login Xbox')
 
     const mcResponse = await loginMinecraftWithXBox(req, xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token).catch((e) => {
+      this.error(e)
       throw new UserException({ type: 'userLoginMinecraftByXboxFailed', error: e.toString() })
     })
     this.log('Successfully login Minecraft with Xbox')
 
     const ownershipResponse = await checkGameOwnership(req, mcResponse.access_token).catch((e) => {
+      this.error(e)
       throw new UserException({ type: 'userCheckGameOwnershipFailed', error: e.toString() })
     })
     const ownGame = ownershipResponse.items.length > 0

@@ -1,4 +1,4 @@
-import { Exception, ServiceKey } from '@xmcl/runtime-api'
+import { Exception, InstallServiceKey, ServiceKey } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
@@ -78,6 +78,8 @@ export default class ServiceManager extends Manager {
     if (!this.sessions[id]) {
       this.error(`Unknown service call session ${id}!`)
     }
+    const sess = this.sessions[id]
+    const [serviceName, serviceMethod] = sess.name.split('.')
     try {
       const r = await this.sessions[id].call()
       return { result: r }
@@ -88,14 +90,25 @@ export default class ServiceManager extends Manager {
       } else {
         this.error(JSON.stringify(e))
       }
-      if (e instanceof Exception || 'type' in (e as any)) {
-        const ex = e as any
-        return { error: JSON.parse(JSON.stringify(ex)) }
+      let error: any = {
+        serviceName,
+        serviceMethod,
       }
       if (e instanceof Error) {
-        return { error: JSON.parse(JSON.stringify({ ...e, exception: { type: 'general', name: 'GeneralException' } })) }
+        error = JSON.parse(JSON.stringify(e))
+        error.message = e.message
+        error.stack = e.stack
+        error.name = e.name
+        if (e instanceof Exception) {
+          error.exception = e.exception
+        }
+      } else {
+        if (error) {
+          error.message = error.toString()
+        }
+        error.exception = { type: 'generalException' }
       }
-      return { error: e }
+      return { error }
     } finally {
       delete this.sessions[id]
     }

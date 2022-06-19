@@ -1,7 +1,6 @@
 import { UnzipTask } from '@xmcl/installer'
 import {
   CloneSaveOptions, DeleteSaveOptions, ExportSaveOptions,
-  GeneralException,
   ImportSaveOptions, InstanceSave, InstanceSaveException, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey, SaveState,
 } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
@@ -109,7 +108,7 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
       this.log(`Found ${saves.length} saves in instance ${path}`)
       this.state.instanceSaves(saves.filter(isNonnull))
     } catch (e) {
-      throw new GeneralException({ type: 'fsError', ...(e as any) }, `An error ocurred during parsing the save of ${path}`)
+      // throw new GeneralException({ type: 'fsError', ...(e as any) }, `An error ocurred during parsing the save of ${path}`)
     }
 
     this.watching = savesDir
