@@ -118,6 +118,8 @@ disk:
 download: 下载
 downloadCount: '{count} 次下载'
 edit: 编辑
+exception:
+  http: '{url} 的 HTTP 请求失败。状态码 {code}。请重试或检查你的网络。如果这个问题持续出现，请联系开发团队。'
 existed: 已导入过的
 exportModpackTarget:
   curseforge: Curseforge 文件
@@ -426,7 +428,6 @@ modpack:
   urlHint: 整合包的主页 URL 地址
 modrinth:
   avaiableFor: 可用于
-  install: 安装
   categories:
     adventure: 冒险
     challenging: 挑战
@@ -471,6 +472,7 @@ modrinth:
     status: 状态
     support: 支持
     version: 版本
+  install: 安装
   installFrom: 从 Modrinth 安装
   license: 协议
   licenses:

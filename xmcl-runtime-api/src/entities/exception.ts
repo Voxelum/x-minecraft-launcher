@@ -24,6 +24,15 @@ export interface InstanceNotFoundException extends ExceptionBase {
   instancePath: string
 }
 
+export interface HTTPExceptions extends ExceptionBase {
+  type: 'httpException'
+  url: string
+  statusCode: number
+  body: any
+}
+
+export class HTTPException extends Exception<HTTPExceptions> {}
+
 export function isFileNoFound(e: unknown) {
   return typeof e === 'object' && e !== null && ('code' in e && (e as any).code === 'ENOENT')
 }
