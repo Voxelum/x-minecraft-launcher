@@ -149,6 +149,10 @@ error:
   missingMinecraft: Please select a Minecraft version for this profile!
   missingName: Please name this profile!
   name: Error | Errors
+exception:
+  http: >-
+    HTTP request to {url} failed. Status code {code}. Please retry or check your
+    network. If this error persist, please send report to developer team.
 existed: Existed
 exportModpackTarget:
   curseforge: Curseforge File

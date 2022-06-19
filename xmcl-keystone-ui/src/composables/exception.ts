@@ -27,6 +27,7 @@ export function useExceptionHandlers() {
   const serviceErrorHandlers: Record<string, Array<(e: any, serviceName: string, serviceMethod: string) => void>> = {}
   window.addEventListener('unhandledrejection', (ev) => {
     const handler = exceptionHandlers[ev.reason.name]
+    console.log(ev.reason.serviceName)
     const errorHandler = ev.reason?.serviceName ? serviceErrorHandlers[ev.reason.serviceName] : undefined
     if (handler && isException(handler[0], ev.reason)) {
       handler[1].forEach(f => f(ev.reason.exception))

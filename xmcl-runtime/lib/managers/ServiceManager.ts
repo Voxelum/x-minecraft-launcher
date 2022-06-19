@@ -1,5 +1,6 @@
-import { Exception, InstallServiceKey, ServiceKey } from '@xmcl/runtime-api'
+import { Exception, HTTPException, InstallServiceKey, ServiceKey } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
+import { HTTPError } from 'got'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
 import { Client } from '../engineBridge'
@@ -90,12 +91,26 @@ export default class ServiceManager extends Manager {
       } else {
         this.error(JSON.stringify(e))
       }
-      let error: any = {
+      const error: any = {
         serviceName,
         serviceMethod,
       }
+
+      if (e instanceof HTTPError) {
+        const err = e
+        // eslint-disable-next-line no-ex-assign
+        e = new HTTPException({
+          type: 'httpException',
+          url: err.response.url,
+          statusCode: err.response.statusCode,
+          body: err.response.body,
+        })
+      }
+
       if (e instanceof Error) {
-        error = JSON.parse(JSON.stringify(e))
+        try {
+          Object.assign(error, JSON.parse(JSON.stringify(e)))
+        } catch (e) { }
         error.message = e.message
         error.stack = e.stack
         error.name = e.name
@@ -106,7 +121,7 @@ export default class ServiceManager extends Manager {
         if (error) {
           error.message = error.toString()
         }
-        error.exception = { type: 'generalException' }
+        error.exception = { type: 'GeneralException' }
       }
       return { error }
     } finally {
