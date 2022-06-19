@@ -1,4 +1,11 @@
 
+## 0.27.4
+### @xmcl/keystone-ui@0.26.4
+#### Bug Fixes
+
+- Cannot enter launcher since the Vue is setup incorrectly. #284 ([954a2006de51e3438b49c5698f7a6c3753bab75f](https://github.com/Voxelum/x-minecraft-launcher/commit/954a2006de51e3438b49c5698f7a6c3753bab75f))
+
+
 ## 0.27.3
 ### @xmcl/runtime-api@0.11.1
 #### Bug Fixes
