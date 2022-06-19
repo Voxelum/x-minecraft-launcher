@@ -85,6 +85,22 @@ export class UserState implements UserSchema {
       invalidate: '/invalidate',
       signout: '/signout',
     },
+    'littleskin.cn': {
+      hostName: 'https://littleskin.cn/api/yggdrasil',
+      authenticate: '/authserver/authenticate',
+      refresh: '/authserver/refresh',
+      validate: '/authserver/validate',
+      invalidate: '/authserver/invalidate',
+      signout: '/authserver/signout',
+    },
+    'ely.by': {
+      hostName: 'https://authserver.ely.by',
+      authenticate: '/auth/authenticate',
+      refresh: '/auth/refresh',
+      validate: '/auth/validate',
+      invalidate: '/auth/invalidate',
+      signout: '/auth/signout',
+    },
   }
 
   profileServices: Record<string, ProfileServiceAPI> = {
@@ -109,6 +125,22 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
       profile: 'https://sessionserver.mojang.com/session/minecraft/profile/${uuid}',
       // eslint-disable-next-line no-template-curly-in-string
       profileByName: 'https://api.mojang.com/users/profiles/minecraft/${name}',
+    },
+    'littleskin.cn': {
+      // eslint-disable-next-line no-template-curly-in-string
+      profile: 'https://littleskin.cn/api/yggdrasil/sessionserver/session/minecraft/profile/${uuid}',
+      // eslint-disable-next-line no-template-curly-in-string
+      profileByName: 'https://littleskin.cn/api/yggdrasil/users/profiles/minecraft/${name}',
+      // eslint-disable-next-line no-template-curly-in-string
+      texture: 'https://littleskin.cn/api/yggdrasil/user/profile/${uuid}/${type}',
+    },
+    'ely.by': {
+      // eslint-disable-next-line no-template-curly-in-string
+      profile: 'https://authserver.ely.by/session/profile/${uuid}',
+      // eslint-disable-next-line no-template-curly-in-string
+      profileByName: 'https://skinsystem.ely.by/textures/${name}',
+      // eslint-disable-next-line no-template-curly-in-string
+      texture: 'https://authserver.ely.by/session/profile/${uuid}/${type}',
     },
   }
 
