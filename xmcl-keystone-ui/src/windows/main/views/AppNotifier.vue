@@ -19,7 +19,7 @@
         v-if="data.more"
         icon
         text
-        @click="data.more"
+        @click="data.more(); close()"
       >
         <v-icon>arrow_right</v-icon>
       </v-btn>

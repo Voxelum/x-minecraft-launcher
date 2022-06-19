@@ -32,7 +32,8 @@
     ]
   },
   "vueCompilerOptions": {
-    "experimentalCompatMode": 2
+    "target": 2,
+    "experimentalSuppressUnknownJsxPropertyErrors": false
   },
   "exclude": [
     "node_modules",
