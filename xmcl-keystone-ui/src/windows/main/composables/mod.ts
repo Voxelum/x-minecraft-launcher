@@ -57,7 +57,7 @@ export interface ModItem {
    */
   enabled: boolean
   /**
-   * The actual state. Represent if the mod is moved to the 
+   * The actual enabled state. Represent if the mod is moved to the mods folder.
    */
   enabledState: boolean
 
