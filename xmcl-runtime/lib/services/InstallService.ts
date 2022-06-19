@@ -629,20 +629,58 @@ export class InstallService extends AbstractService implements IInstallService {
 
   @Lock((v: InstallOptifineOptions) => LockKey.version(`optifine-${v.mcversion}-${v.type}_${v.patch}`))
   async installOptifine(options: InstallOptifineOptions) {
+    const minecraft = MinecraftFolder.from(this.getPath())
+    const hasValidVersion = async (version: string) => {
+      try {
+        await Version.parse(minecraft, version)
+        return true
+      } catch (e) {
+        return false
+      }
+    }
+    if (!await hasValidVersion(options.mcversion)) {
+      const meta = (await this.getMinecraftVersionList()).versions.find(f => f.id === options.mcversion)!
+      const option = this.getInstallOptions()
+      await this.submit(installVersionTask(meta, minecraft, option).setName('installVersion'))
+    }
+
+    if (options.forgeVersion) {
+      const localForge = this.versionService.state.local.find(v => v.minecraft === options.mcversion && v.forge === options.forgeVersion)
+      if (!localForge) {
+        const list = await this.getForgeVersionList({ minecraftVersion: options.mcversion })
+        const forgeVersion = list.find(v => v.version === options.forgeVersion)
+        const forgeVersionId = forgeVersion?.version ?? options.forgeVersion
+        const installedForge = await this.installForgeUnsafe({ mcversion: options.mcversion, version: forgeVersionId })
+        options.inheritFrom = installedForge
+      } else {
+        options.inheritFrom = localForge.id
+      }
+    }
+
+    return await this.installOptifineInternal(options)
+  }
+
+  @Lock((v: InstallOptifineOptions) => LockKey.version(`optifine-${v.mcversion}-${v.type}_${v.patch}`))
+  async installOptifineUnsafe(options: InstallOptifineOptions) {
+    return await this.installOptifineInternal(options)
+  }
+
+  private async installOptifineInternal(options: InstallOptifineOptions) {
     const minecraft = new MinecraftFolder(this.getPath())
     const optifineVersion = `${options.type}_${options.patch}`
     const version = `${options.mcversion}_${optifineVersion}`
     const path = new MinecraftFolder(this.getPath()).getLibraryByPath(`/optifine/OptiFine/${version}/OptiFine-${version}-universal.jar`)
     const downloadOptions = this.networkManager.getDownloadBaseOptions()
 
-    this.log(`Install optifine ${version} on ${options.inhrenitFrom ?? options.mcversion}`)
+    this.log(`Install optifine ${version} on ${options.inheritFrom ?? options.mcversion}`)
 
     let installFromForge = false
-    if (options.inhrenitFrom === options.mcversion) {
-      options.inhrenitFrom = undefined
+    if (options.inheritFrom === options.mcversion) {
+      options.inheritFrom = undefined
     }
-    if (options.inhrenitFrom) {
-      const from = await Version.parse(minecraft, options.inhrenitFrom)
+
+    if (options.inheritFrom) {
+      const from = await Version.parse(minecraft, options.inheritFrom)
       if (from.libraries.some(isForgeLibrary)) {
         installFromForge = true
         // install over forge
@@ -655,10 +693,22 @@ export class InstallService extends AbstractService implements IInstallService {
     const resourceService = this.resourceService
     const error = this.error
 
+    const urls = [] as string[]
+    if (this.baseService.getApiSets()[0].name === 'mcbbs') {
+      urls.push(
+        `https://download.mcbbs.net/optifine/${options.mcversion}/${options.type}/${options.patch}`,
+        `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
+      )
+    } else {
+      urls.push(
+        `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
+        `https://download.mcbbs.net/optifine/${options.mcversion}/${options.type}/${options.patch}`,
+      )
+    }
     const id = await this.submit(task('installOptifine', async function () {
       await this.yield(new DownloadTask({
         ...downloadOptions,
-        url: `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
+        url: urls,
         destination: path,
       }).setName('download'))
       resourceService.importResource({
@@ -671,11 +721,11 @@ export class InstallService extends AbstractService implements IInstallService {
       })
       let id: string = await this.concat(installOptifineTask(path, minecraft, { java }))
 
-      if (options.inhrenitFrom) {
-        const parentJson: Version = await readJSON(minecraft.getVersionJson(options.inhrenitFrom))
+      if (options.inheritFrom) {
+        const parentJson: Version = await readJSON(minecraft.getVersionJson(options.inheritFrom))
         const json: Version = await readJSON(minecraft.getVersionJson(id))
-        json.inheritsFrom = options.inhrenitFrom
-        json.id = `${options.inhrenitFrom}-Optifine-${version}`
+        json.inheritsFrom = options.inheritFrom
+        json.id = `${options.inheritFrom}-Optifine-${version}`
         if (installFromForge) {
           json.arguments!.game = ['--tweakClass', 'optifine.OptiFineForgeTweaker']
           json.mainClass = parentJson.mainClass
@@ -688,7 +738,7 @@ export class InstallService extends AbstractService implements IInstallService {
       return id
     }))
 
-    this.log(`Succeed to install optifine ${version} on ${options.inhrenitFrom ?? options.mcversion}. ${id}`)
+    this.log(`Succeed to install optifine ${version} on ${options.inheritFrom ?? options.mcversion}. ${id}`)
 
     return id
   }

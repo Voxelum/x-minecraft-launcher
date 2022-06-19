@@ -13,32 +13,33 @@ export interface RuntimeVersions {
    */
   minecraft: string
   /**
-     * Forge version of this version. e.g. 14.23.5.2838
-     * @default ""
-     */
+   * Forge version of this version. e.g. 14.23.5.2838
+   * @default ""
+   */
   forge?: string
   /**
      * @default ""
      */
   liteloader?: string
   /**
-     * Fabric loader version, e.g. 0.7.2+build.175
-     * @default ""
-     */
+   * Fabric loader version, e.g. 0.7.2+build.175
+   * @default ""
+   */
   fabricLoader?: string
   /**
    * @default ""
    */
   quiltLoader?: string
   /**
-     * Fabric yarn version, e.g. 1.15.1+build.14
-     * @default ""
-     */
+   * Fabric yarn version, e.g. 1.15.1+build.14
+   * @default ""
+   * @deprecated
+   */
   yarn?: string
   /**
-     * Optifine version e.g. HD_U_F1_pre6 or HD_U_E6
-     * @default ""
-     */
+   * Optifine version e.g. HD_U_F1_pre6 or HD_U_E6
+   * @default ""
+   */
   optifine?: string
 
   [id: string]: undefined | string

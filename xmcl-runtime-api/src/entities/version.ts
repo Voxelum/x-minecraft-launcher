@@ -158,7 +158,7 @@ export function isVersionMatched(version: LocalVersionHeader, runtime: RuntimeVe
 
   if (optifine) {
     // require optifine
-    if (!version.optifine || !isSameOptifineVersion(optifine, version.optifine)) {
+    if (!version.optifine || (optifine !== version.optifine)) {
       return false
     }
   }

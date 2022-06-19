@@ -5,9 +5,25 @@ export interface LocalVersionHeader {
   path: string
   id: string
   inheritances: string[]
+  /**
+   * Minecraft version of this version. e.g. 1.7.10
+   * @default ""
+   */
   minecraft: string
+  /**
+   * Forge version of this version. e.g. 14.23.5.2838
+   * @default ""
+   */
   forge: string
+  /**
+   * Fabric loader version, e.g. 0.7.2+build.175
+   * @default ""
+   */
   fabric: string
+  /**
+   * Optifine version e.g. HD_U_F1_pre6 or HD_U_E6
+   * @default ""
+   */
   optifine: string
   liteloader: string
   quilt: string
