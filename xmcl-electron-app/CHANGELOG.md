@@ -1,4 +1,40 @@
 
+## 0.27.3
+### @xmcl/runtime-api@0.11.1
+#### Bug Fixes
+
+- Correctly handle the general http error. Hint user to report. ([5c6af13b990c785f7740342b299fccd43aa9d5c5](https://github.com/Voxelum/x-minecraft-launcher/commit/5c6af13b990c785f7740342b299fccd43aa9d5c5))
+- Add ely & little skin in default config to prevent launcher falls into wrong state when user add them wrongly ([226a83309c1bee9eb429311cba84cb4765e581a6](https://github.com/Voxelum/x-minecraft-launcher/commit/226a83309c1bee9eb429311cba84cb4765e581a6))
+- Cannot correctly install optifine with forge ([9bcdb66e75fc7fbb11c225dea147bf13a7af35fb](https://github.com/Voxelum/x-minecraft-launcher/commit/9bcdb66e75fc7fbb11c225dea147bf13a7af35fb))
+- Capture the user exception during launch. ([080827568f2480dec7b87bf82b0d05f8b0f0e2a1](https://github.com/Voxelum/x-minecraft-launcher/commit/080827568f2480dec7b87bf82b0d05f8b0f0e2a1))
+- Wrong BMCL api selection for new user ([10ca3aa113045f0888463f4702409eb17fdd38b6](https://github.com/Voxelum/x-minecraft-launcher/commit/10ca3aa113045f0888463f4702409eb17fdd38b6))
+### @xmcl/keystone-ui@0.26.3
+#### Bug Fixes
+
+- Correctly handle the general http error. Hint user to report. ([5c6af13b990c785f7740342b299fccd43aa9d5c5](https://github.com/Voxelum/x-minecraft-launcher/commit/5c6af13b990c785f7740342b299fccd43aa9d5c5))
+- Close snackbar after click more ([d9635963bfb4f0e2c6dc39e540cf9ecb55fd5e0f](https://github.com/Voxelum/x-minecraft-launcher/commit/d9635963bfb4f0e2c6dc39e540cf9ecb55fd5e0f))
+- Cannot correctly install optifine with forge ([9bcdb66e75fc7fbb11c225dea147bf13a7af35fb](https://github.com/Voxelum/x-minecraft-launcher/commit/9bcdb66e75fc7fbb11c225dea147bf13a7af35fb))
+- Capture the user exception during launch. ([080827568f2480dec7b87bf82b0d05f8b0f0e2a1](https://github.com/Voxelum/x-minecraft-launcher/commit/080827568f2480dec7b87bf82b0d05f8b0f0e2a1))
+- Allow user to install modrinth content in header button ([809bc0c19fefb38c5c595e3d8234a9fc3b121bad](https://github.com/Voxelum/x-minecraft-launcher/commit/809bc0c19fefb38c5c595e3d8234a9fc3b121bad))
+- Allow user to reset color to default ([48aee48fd8fce64fa3d4f4ea9b7321b039e85324](https://github.com/Voxelum/x-minecraft-launcher/commit/48aee48fd8fce64fa3d4f4ea9b7321b039e85324))
+- Optimize the mod select experiences. Allow create tags for selected mods in batch. ([ddfe043864d96b7bbab86e204231a187cab7719b](https://github.com/Voxelum/x-minecraft-launcher/commit/ddfe043864d96b7bbab86e204231a187cab7719b))
+- Add missing checkUpdate i18n ([55bff0b734464d39c6e9f60d14527763cdead439](https://github.com/Voxelum/x-minecraft-launcher/commit/55bff0b734464d39c6e9f60d14527763cdead439))
+- Prevent the drag/drop not work in some corner cases ([56e0855d0dc6a06ae323d98201d605d8b4d53666](https://github.com/Voxelum/x-minecraft-launcher/commit/56e0855d0dc6a06ae323d98201d605d8b4d53666))
+- Fix modrinth categories not selected after router navigate back ([2aba0e73be3f9c8e4e36ac00adb2e1ce15864aae](https://github.com/Voxelum/x-minecraft-launcher/commit/2aba0e73be3f9c8e4e36ac00adb2e1ce15864aae))
+- Don't persist the task dialog ([195a78fa62f57406e6e90dc7758ee94d9b539e24](https://github.com/Voxelum/x-minecraft-launcher/commit/195a78fa62f57406e6e90dc7758ee94d9b539e24))
+- Wrong BMCL api selection for new user ([10ca3aa113045f0888463f4702409eb17fdd38b6](https://github.com/Voxelum/x-minecraft-launcher/commit/10ca3aa113045f0888463f4702409eb17fdd38b6))
+### @xmcl/runtime@0.25.3
+#### Bug Fixes
+
+- Correctly handle the general http error. Hint user to report. ([5c6af13b990c785f7740342b299fccd43aa9d5c5](https://github.com/Voxelum/x-minecraft-launcher/commit/5c6af13b990c785f7740342b299fccd43aa9d5c5))
+- Make sure cache failed don't crash the modrinth service ([bbb895c611a48013fe91af85968bfea92b79e2c6](https://github.com/Voxelum/x-minecraft-launcher/commit/bbb895c611a48013fe91af85968bfea92b79e2c6))
+- Cannot correctly install optifine with forge ([9bcdb66e75fc7fbb11c225dea147bf13a7af35fb](https://github.com/Voxelum/x-minecraft-launcher/commit/9bcdb66e75fc7fbb11c225dea147bf13a7af35fb))
+- Capture the user exception during launch. ([080827568f2480dec7b87bf82b0d05f8b0f0e2a1](https://github.com/Voxelum/x-minecraft-launcher/commit/080827568f2480dec7b87bf82b0d05f8b0f0e2a1))
+- Allow user to install modrinth content in header button ([809bc0c19fefb38c5c595e3d8234a9fc3b121bad](https://github.com/Voxelum/x-minecraft-launcher/commit/809bc0c19fefb38c5c595e3d8234a9fc3b121bad))
+- Unfinished download file should ends with pending to prevent resource import triggered ([b6ff4ad0059bafba31ae3eb14c26c7946a4dc64c](https://github.com/Voxelum/x-minecraft-launcher/commit/b6ff4ad0059bafba31ae3eb14c26c7946a4dc64c))
+- Wrong BMCL api selection for new user ([10ca3aa113045f0888463f4702409eb17fdd38b6](https://github.com/Voxelum/x-minecraft-launcher/commit/10ca3aa113045f0888463f4702409eb17fdd38b6))
+
+
 ## 0.27.2
 ### @xmcl/keystone-ui@0.26.2
 #### Bug Fixes
