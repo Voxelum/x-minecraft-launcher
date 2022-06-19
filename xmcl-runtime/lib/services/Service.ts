@@ -1,6 +1,7 @@
 import { getServiceSemaphoreKey, MutationKeys, ServiceKey, State } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { join } from 'path'
+import { performance } from 'perf_hooks'
 import { EventEmitter } from 'stream'
 import LauncherApp from '../app/LauncherApp'
 import { createPromiseSignal, PromiseSignal } from '../util/promiseSignal'
@@ -149,8 +150,10 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
         this.log(`Acquire singleton ${targetKey}`)
         this.up(targetKey)
 
+        const startTime = Date.now()
         instances[targetKey] = exec().finally(() => {
-          this.log(`Release singleton ${targetKey}`)
+          const endTime = Date.now()
+          this.log(`Release singleton ${targetKey}. Took ${endTime - startTime}ms.`)
           this.down(targetKey)
           delete instances[targetKey]
         })

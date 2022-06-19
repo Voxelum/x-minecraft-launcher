@@ -2,6 +2,7 @@ import { Exception } from '../entities/exception'
 import { LaunchStatus } from '../entities/launch'
 import { GenericEventEmitter } from '../events'
 import { ServiceKey, StatefulService } from './Service'
+import { UserExceptions } from './UserService'
 
 export class LaunchState {
   status = 'idle' as LaunchStatus
@@ -121,6 +122,12 @@ export type LaunchExceptions = {
    */
   type: 'launchJavaNoPermission'
   javaPath: string
+} | {
+  /**
+   * Refresh user status failed
+   */
+  type: 'launchUserStatusRefreshFailed'
+  userException: UserExceptions
 }
 
 export class LaunchException extends Exception<LaunchExceptions> { }

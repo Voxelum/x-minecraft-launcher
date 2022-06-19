@@ -1,5 +1,4 @@
 
-export type Exceptions = InstanceNotFoundException | GeneralException
 export interface ExceptionBase {
   type: string
 }
@@ -12,11 +11,6 @@ export class Exception<T extends ExceptionBase> extends Error {
     this.name = Object.getPrototypeOf(this).constructor.name
   }
 }
-
-export class GeneralException extends Exception<{
-  type: 'general' | 'fsError'
-  error: Error
-}> { }
 
 export function isException<T>(clazz: { new(...args: any[]): T }, error: unknown): error is T {
   if (error && typeof error === 'object' && 'name' in error && (error as any).name === clazz.name && 'exception' in error && typeof ((error as any).exception) === 'object') {
@@ -32,9 +26,4 @@ export interface InstanceNotFoundException extends ExceptionBase {
 
 export function isFileNoFound(e: unknown) {
   return typeof e === 'object' && e !== null && ('code' in e && (e as any).code === 'ENOENT')
-}
-
-export function wrapError(e: Error, exception: Exceptions) {
-  Object.assign(e, exception)
-  return e
 }
