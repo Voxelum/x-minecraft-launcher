@@ -30,7 +30,6 @@ jobs:
     - name: Check
       run: |
         pnpm run --filter ./xmcl-electron-app check
-        pnpm run --filter ./xmcl-keystone-ui check
         pnpm run --filter ./xmcl-runtime check
         pnpm run --filter ./xmcl-runtime-api check
     - name: Build
