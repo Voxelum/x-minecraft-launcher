@@ -52,6 +52,9 @@ export function getFabricModCompatibility(resource: FabricResource, runtime: Ins
       if (current) {
         if (typeof requirements === 'string') {
           compatible = satisfies(current, requirements)
+          if (!compatible && id === 'minecraft' && runtime.minecraft.split('.').length === 2) {
+            compatible = satisfies(runtime.minecraft + '.0', requirements)
+          }
         } else if (requirements) {
           for (const v of requirements) {
             if (satisfies(current, v)) {
