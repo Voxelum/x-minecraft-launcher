@@ -33,17 +33,13 @@
         >
           {{ isCrash ? $t(`launchFailed.crash`) : $t(`launchFailed.description`) }}
         </div>
-        <pre class="rounded p-5 bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] overflow-auto">
-          {{ errorLog }}
-        </pre>
+        <pre class="rounded p-5 bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] overflow-auto">{{ errorLog }}</pre>
         <div
           style="padding: 10px"
         >
           {{ $t(`launchFailed.latestLog`) }}
         </div>
-        <pre class="rounded p-5 bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] overflow-auto">
-          {{ log }}
-        </pre>
+        <pre class="rounded p-5 bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] overflow-auto">{{ log }}</pre>
       </v-card-text>
     </v-card>
   </v-dialog>
