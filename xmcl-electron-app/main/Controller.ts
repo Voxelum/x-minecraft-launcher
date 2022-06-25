@@ -56,7 +56,7 @@ export default class Controller implements LauncherAppController {
 
   setupBrowserLogger(ref: BrowserWindow, name: string) {
     const stream = this.app.logManager.openWindowLog(name)
-    const levels = ['INFO', 'WARN', 'ERROR']
+    const levels = ['', 'INFO', 'WARN', 'ERROR']
     ref.webContents.on('console-message', (e, level, message, line, id) => {
       stream.write(`[${levels[level]}] [${new Date().toUTCString()}] [${id}]: ${message}\n`)
     })
