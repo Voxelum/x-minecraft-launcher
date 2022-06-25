@@ -1,4 +1,4 @@
-import type { AddonInfo, Category, File, GetFeaturedAddonOptions, SearchOptions } from '@xmcl/curseforge'
+import type { AddonInfo, Category, File, FileModLoaderType, GetFeaturedAddonOptions, Pagination, SearchOptions } from '@xmcl/curseforge'
 import { ProjectType } from '../entities/curseforge'
 import { PersistedResource } from '../entities/resource'
 import { ServiceKey, StatefulService } from './Service'
@@ -13,8 +13,6 @@ export interface InstallFileOptions {
 
 export class CurseforgeState {
   downloading = [] as { fileId: number; taskId: string }[]
-  categories = [] as Category[]
-  categoriesTimestamp = ''
 
   curseforgeDownloadFileStart({ fileId, taskId }: { fileId: number; taskId: string }) {
     this.downloading.push({ fileId, taskId })
@@ -23,11 +21,18 @@ export class CurseforgeState {
   curseforgeDownloadFileEnd(fileId: number) {
     this.downloading = this.downloading.filter((f) => f.fileId !== fileId)
   }
+}
 
-  curseforgeCategories({ categories, timestamp }: { categories: Category[]; timestamp: string }) {
-    this.categories = categories
-    this.categoriesTimestamp = timestamp
-  }
+export interface GetModFilesOptions {
+  modId: number
+  gameVersion?: string
+  modLoaderType?: FileModLoaderType
+  /**
+   * Filter only files that are tagged with versions of the given gameVersionTypeId
+   */
+  gameVersionTypeId?: number
+  index?: number
+  pageSize?: number
 }
 
 /**
@@ -35,7 +40,7 @@ export class CurseforgeState {
  * The launcher backend will cache the curseforge data neither in memory or in disk.
  */
 export interface CurseForgeService extends StatefulService<CurseforgeState> {
-  loadCategories(): Promise<void>
+  fetchCategories(): Promise<Category[]>
   /**
    * Fetch a curseforge project info
    * @param projectId The curseforge project id
@@ -48,19 +53,14 @@ export interface CurseForgeService extends StatefulService<CurseforgeState> {
   fetchProjectDescription(projectId: number): Promise<string>
   /**
    * Fetch all curseforge project files
-   * @param projectId The curseforge project id
+   * @param options The curseforge project id
    */
-  fetchProjectFiles(projectId: number): Promise<File[]>
+  fetchProjectFiles(options: GetModFilesOptions): Promise<{ data: File[]; pagination: Pagination }>
   /**
    * Search curseforge projects by search options
    * @param searchOptions The search options
    */
-  searchProjects(searchOptions: SearchOptions): Promise<AddonInfo[]>
-  /**
-   * Fetch featured projects
-   * @param getOptions The get feature options
-   */
-  fetchFeaturedProjects(getOptions: GetFeaturedAddonOptions): Promise<AddonInfo[]>
+  searchProjects(searchOptions: SearchOptions): Promise<{ data: AddonInfo[]; pagination: Pagination }>
   /**
    * Install a curseforge file to local storage
    * @param options The install file options

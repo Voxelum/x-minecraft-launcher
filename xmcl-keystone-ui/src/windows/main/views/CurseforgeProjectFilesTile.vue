@@ -12,24 +12,24 @@
       <v-list-item-title>{{ source.displayName }}</v-list-item-title>
       <v-list-item-subtitle class>
         <div class="text-gray-400">
-          {{ new Date(source.fileDate).toLocaleString() }}
+          {{ getLocalDateString(source.fileDate) }}
         </div>
       </v-list-item-subtitle>
     </v-list-item-content>
     <div class="flex justify-end mr-2 gap-2">
       <v-chip
-        v-if="source.gameVersion[0]"
+        v-if="source.gameVersions[0]"
         small
         label
       >
-        {{ source.gameVersion[0] }}
+        {{ source.gameVersions[0] }}
       </v-chip>
       <v-chip
-        v-if="source.gameVersion[1]"
+        v-if="source.gameVersions[1]"
         small
         label
       >
-        {{ source.gameVersion[1] }}
+        {{ source.gameVersions[1] }}
       </v-chip>
       <v-chip
         small
@@ -45,7 +45,7 @@
         :disabled="getFileStatus(source) === 'downloaded'"
         @click="install(source)"
       >
-        {{ getFileStatus(source) === 'downloaded' ? $t('curseforge.installed') : $t('curseforge.install') }}
+        {{ getFileStatus(source) === 'downloaded' ? t('curseforge.installed') : t('curseforge.install') }}
       </v-btn>
     </v-list-item-action>
     <v-list-item-action v-else>
@@ -55,7 +55,7 @@
         :disabled="getFileStatus(source) === 'downloaded'"
         @click="download(source)"
       >
-        {{ getFileStatus(source) === 'downloaded' ? $t('curseforge.downloaded') : $t('curseforge.downloadOnly') }}
+        {{ getFileStatus(source) === 'downloaded' ? t('curseforge.downloaded') : t('curseforge.downloadOnly') }}
       </v-btn>
     </v-list-item-action>
     <v-list-item-action v-if="modpack">
@@ -64,33 +64,32 @@
         :loading="getFileStatus(source) === 'downloading'"
         @click="install(source)"
       >
-        {{ $t('curseforge.install') }}
+        {{ t('curseforge.install') }}
       </v-btn>
     </v-list-item-action>
   </v-list-item>
 </template>
 
-<script lang=ts>
-import { required, withDefault } from '/@/util/props'
+<script lang=ts setup>
 import { File } from '@xmcl/curseforge'
+import { useI18n } from '/@/composables'
 import { getColorForReleaseType } from '/@/util/color'
+import { getLocalDateString } from '/@/util/date'
 
-export default defineComponent({
-  props: {
-    source: required<File>(Object),
-    getFileStatus: required<(file: File) => string>(Function),
-    install: required<(file: File) => Promise<void>>(Function),
-    download: withDefault<(file: File) => Promise<void>>(Function, () => () => Promise.resolve()),
-    modpack: required(Boolean),
-  },
-  setup(props) {
-    const releases = ['', 'R', 'A', 'B']
-    return {
-      getColor: getColorForReleaseType,
-      releases,
-    }
-  },
-})
+withDefaults(
+  defineProps<{
+    source: File
+    getFileStatus(file: File) : string
+    install(file: File): Promise<void>
+    download(file: File): Promise<void>
+    modpack: boolean
+  }>(),
+  { download: () => Promise.resolve() },
+)
+
+const { t } = useI18n()
+const releases = ['', 'R', 'A', 'B']
+const getColor = getColorForReleaseType
 </script>
 
 <style>

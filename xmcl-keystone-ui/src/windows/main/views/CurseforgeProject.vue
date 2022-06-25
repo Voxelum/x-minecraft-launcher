@@ -1,23 +1,16 @@
 <template>
   <div
-    grid-list-md
-    fill-height
     class="h-full overflow-auto lg:p-4 p-2 lg:px-8 px-4 w-full"
   >
     <div class="flex lg:flex-row md:flex-col flex-grow lg:gap-5 gap-2 h-full max-h-full overflow-auto">
       <div
-        fill-height
         class="flex lg:flex-col lg:flex lg:gap-5 gap-2 flex-shrink"
       >
         <Header
           :destination="destination"
           :from="from"
-          :name="name"
-          :icon="attachments.length > 0 ? attachments[0].thumbnailUrl : ''"
-          :creation="createdDate"
-          :downloads="totalDownload"
-          :updated="lastUpdate"
-          :loading="refreshingProject"
+          :project="project"
+          :loading="refreshing"
           @destination="destination = $event"
         />
         <v-card
@@ -25,12 +18,19 @@
           class="max-h-full overflow-auto flex flex-col md:hidden lg:flex"
         >
           <v-card-title class="text-md font-bold">
-            {{ $t("curseforge.recentFiles") }}
+            {{ t("curseforge.recentFiles") }}
           </v-card-title>
           <v-divider />
-          <v-list class="overflow-auto">
+          <v-skeleton-loader
+            v-if="!project"
+            type="list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line"
+          />
+          <v-list
+            v-else
+            class="overflow-auto"
+          >
             <v-tooltip
-              v-for="file in recentFiles"
+              v-for="file in project.latestFiles"
               :key="file.id"
               top
             >
@@ -87,22 +87,22 @@
         class="flex flex-col w-full h-full overflow-auto flex-grow relative"
       >
         <v-tabs
-          v-model="tab"
+          v-model="data.tab"
           slider-color="yellow"
           class="flex-grow-0"
         >
           <v-tab :key="0">
-            {{ $t("curseforge.project.description") }}
+            {{ t("curseforge.project.description") }}
           </v-tab>
           <v-tab :key="1">
-            {{ $t("curseforge.project.files") }}
+            {{ t("curseforge.project.files") }}
           </v-tab>
           <v-tab :key="2">
-            {{ $t("curseforge.project.images") }}
+            {{ t("curseforge.project.images") }}
           </v-tab>
         </v-tabs>
         <v-tabs-items
-          v-model="tab"
+          v-model="data.tab"
           class="h-full"
         >
           <v-tab-item
@@ -110,7 +110,6 @@
             class="h-full max-h-full overflow-auto"
           >
             <project-description
-              class="flex flex-col h-full max-h-full overflow-auto"
               :project="projectId"
             />
           </v-tab-item>
@@ -130,23 +129,26 @@
             class="h-full max-h-full overflow-auto"
           >
             <images
-              :attachments="attachments"
+              v-if="project"
+              :screenshots="project.screenshots"
               @image="viewImage"
             />
           </v-tab-item>
         </v-tabs-items>
       </v-card>
     </div>
-    <v-dialog v-model="viewingImage">
-      <v-img :src="viewedImage" />
+    <v-dialog v-model="data.viewingImage">
+      <v-img
+        contain
+        :src="data.viewedImage"
+      />
     </v-dialog>
   </div>
 </template>
 
-<script lang=ts>
+<script lang=ts setup>
 import { File } from '@xmcl/curseforge'
 import { ProjectType, ResourceServiceKey } from '@xmcl/runtime-api'
-import { withDefault } from '/@/util/props'
 import ProjectDescription from './CurseforgeProjectDescription.vue'
 import ProjectFiles from './CurseforgeProjectFiles.vue'
 import Images from './CurseforgeProjectImages.vue'
@@ -154,64 +156,55 @@ import Header from './CurseforgeProjectHeader.vue'
 import { useCurseforgeInstall, useCurseforgeProject } from '../composables/curseforge'
 import { useDialog } from '../composables/dialog'
 import { AddInstanceDialogKey } from '../composables/instanceAdd'
-import { useService } from '/@/composables'
+import { useI18n, useService } from '/@/composables'
 import { getLocalDateString } from '/@/util/date'
 
-export default defineComponent({
-  components: { ProjectDescription, ProjectFiles, Images, Header },
-  props: {
-    type: withDefault<ProjectType>((String as any), () => 'mc-mods'),
-    id: withDefault(String, () => ''),
-    from: withDefault(String, () => ''),
-  },
-  setup(props) {
-    const { show } = useDialog(AddInstanceDialogKey)
-    const projectId = computed(() => Number.parseInt(props.id, 10))
-    const project = useCurseforgeProject(projectId.value)
-    const { install: installFile, getFileStatus } = useCurseforgeInstall(props.type as any, projectId.value)
-    const { state: resourceState } = useService(ResourceServiceKey)
-    const destination = ref(props.from || '')
+const props = withDefaults(defineProps<{
+  type: ProjectType
+  id: string
+  from: string
+}>(), {
+  type: 'mc-mods',
+  id: '',
+  from: '',
+})
 
-    const data = reactive({
-      tab: 0,
-      viewingImage: false,
-      viewedImage: '',
-    })
-    const dataRefs = toRefs(data)
+const { show } = useDialog(AddInstanceDialogKey)
+const projectId = computed(() => Number.parseInt(props.id, 10))
+const { project, refreshing } = useCurseforgeProject(projectId.value)
+const { install: installFile, getFileStatus } = useCurseforgeInstall(props.type as any, projectId.value)
+const { state: resourceState } = useService(ResourceServiceKey)
+const destination = ref(props.from || '')
+const { t } = useI18n()
 
-    function viewImage(image: any) {
-      data.viewingImage = true
-      data.viewedImage = image.url
-    }
-    async function install(file: File) {
-      if (getFileStatus(file) === 'downloaded') {
-        show(resourceState.queryResource(file.downloadUrl)!.path)
-      } else {
-        await installFile(file, destination.value)
-      }
-    }
-    watch(dataRefs.tab, () => {
-      switch (data.tab) {
-        case 1:
-          // projectFiles.refreshFiles();
-          break
-        case 2:
-          // projectImages.refreshImages();
-          break
-        default:
-      }
-    })
-    return {
-      viewImage,
-      install,
-      getFileStatus,
-      getLocalDateString,
-      ...toRefs(data),
-      ...project,
-      projectId,
-      destination,
-    }
-  },
+const data = reactive({
+  tab: 0,
+  viewingImage: false,
+  viewedImage: '',
+})
+const dataRefs = toRefs(data)
+
+function viewImage(image: any) {
+  data.viewingImage = true
+  data.viewedImage = image.url
+}
+async function install(file: File) {
+  if (getFileStatus(file) === 'downloaded') {
+    show(resourceState.queryResource(file.downloadUrl)!.path)
+  } else {
+    await installFile(file, destination.value)
+  }
+}
+watch(dataRefs.tab, () => {
+  switch (data.tab) {
+    case 1:
+      // projectFiles.refreshFiles();
+      break
+    case 2:
+      // projectImages.refreshImages();
+      break
+    default:
+  }
 })
 </script>
 

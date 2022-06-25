@@ -1,26 +1,25 @@
-import { AddonInfo, File, getAddonDatabaseTimestamp, getAddonDescription, getAddonFileInfo, getAddonFiles, getAddonInfo, getCategories, getCategoryTimestamp, GetFeaturedAddonOptions, getFeaturedAddons, searchAddons, SearchOptions } from '@xmcl/curseforge'
+import { AddonInfo, Category, File, getCategories, getCategoryTimestamp, ModsSearchSortField, Pagination, SearchOptions } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
-import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, CurseforgeState, InstallFileOptions, ProjectType } from '@xmcl/runtime-api'
+import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, CurseforgeState, GetModFilesOptions, InstallFileOptions, ProjectType } from '@xmcl/runtime-api'
 import { unlink } from 'fs-extra'
 import { join } from 'path'
+import { URLSearchParams } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { getCurseforgeSourceInfo } from '../entities/resource'
-import { compareDate, requireObject, requireString } from '../util/object'
+import { PersistFileCache } from '../util/cache'
+import { requireObject, requireString } from '../util/object'
 import { ResourceService } from './ResourceService'
 import { Inject, Singleton, StatefulService } from './Service'
 
 export class CurseForgeService extends StatefulService<CurseforgeState> implements ICurseForgeService {
-  private projectTimestamp = ''
-
-  private projectCache: Record<number, AddonInfo> = {}
-
-  private projectDescriptionCache: Record<number, string> = {}
-
-  private projectFilesCache: Record<number, File[]> = {}
-
-  private projectFileCache: Record<string, File> = {}
-
-  private searchProjectCache: Record<string, AddonInfo[]> = {}
+  private client = this.networkManager.request.extend({
+    prefixUrl: 'https://api.curseforge.com',
+    headers: {
+      Accept: 'application/json',
+      'x-api-key': process.env.CURSEFORGE_API_KEY,
+    },
+    cache: new PersistFileCache(this.getAppDataPath('curseforge-caches')),
+  })
 
   constructor(app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
@@ -28,72 +27,84 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
     super(app, CurseForgeServiceKey, () => new CurseforgeState())
   }
 
-  private async fetchOrGetFromCache<K extends string | number, V>(cacheName: string, cache: Record<K, V>, key: K, query: () => Promise<V>) {
-    const timestamp = await getAddonDatabaseTimestamp({ userAgent: this.networkManager.agents.https })
-    if (cache[key]) {
-      if (new Date(timestamp) > new Date(this.projectTimestamp)) {
-        const value = await query()
-        this.projectTimestamp = timestamp
-        cache[key] = value
-        this.log(`Cache missed for ${key} in ${cacheName}`)
-        return value
-      }
-      this.log(`Cache hit for ${key} in ${cacheName}`)
-      return cache[key]
-    }
-    const value = await query()
-    this.projectTimestamp = timestamp
-    cache[key] = value
-    this.log(`Cache missed for ${key} in ${cacheName}`)
-    return value
-  }
-
   @Singleton()
-  async loadCategories() {
-    const timestamp = await getCategoryTimestamp({ userAgent: this.networkManager.agents.https })
-    if (this.state.categories.length === 0 ||
-      new Date(timestamp) > new Date(this.state.categoriesTimestamp)) {
-      let cats = await getCategories({ userAgent: this.networkManager.agents.https })
-      cats = cats.filter((c) => c.gameId === 432)
-      this.state.curseforgeCategories({ categories: cats, timestamp })
-    }
+  async fetchCategories() {
+    const categories: { data: Category[] } = await this.client.get('v1/categories', { searchParams: { gameId: 432 } }).json()
+    return categories.data
   }
 
   @Singleton(v => v.toString())
   async fetchProject(projectId: number) {
     this.log(`Fetch project: ${projectId}`)
-    return this.fetchOrGetFromCache('project', this.projectCache, projectId, () => getAddonInfo(projectId, { userAgent: this.networkManager.agents.https }))
+    const result: { data: AddonInfo } = await this.client.get(`v1/mods/${projectId}`).json()
+    return result.data
   }
 
   @Singleton(v => v.toString())
-  fetchProjectDescription(projectId: number) {
+  async fetchProjectDescription(projectId: number) {
     this.log(`Fetch project description: ${projectId}`)
-    return this.fetchOrGetFromCache('project description', this.projectDescriptionCache, projectId, () => getAddonDescription(projectId, { userAgent: this.networkManager.agents.https }))
+    const result: { data: string } = await this.client.get(`v1/mods/${projectId}/description`).json()
+    return result.data
   }
 
-  @Singleton(v => v.toString())
-  fetchProjectFiles(projectId: number) {
-    this.log(`Fetch project files: ${projectId}`)
-    return this.fetchOrGetFromCache('project files', this.projectFilesCache, projectId, () => getAddonFiles(projectId, { userAgent: this.networkManager.agents.https }).then(files => files.sort((a, b) => compareDate(new Date(b.fileDate), new Date(a.fileDate)))))
+  @Singleton(v => v.modId)
+  async fetchProjectFiles(options: GetModFilesOptions) {
+    this.log(`Fetch project files: ${options.modId}`)
+    const result: { data: File[]; pagination: Pagination } = await this.client.get(`v1/mods/${options.modId}/files`).json()
+    return result
   }
 
   @Singleton((a, b) => `${a}-${b}`)
-  fetchProjectFile(projectId: number, fileId: number) {
+  async fetchProjectFile(projectId: number, fileId: number) {
     this.log(`Fetch project file: ${projectId}-${fileId}`)
-    return this.fetchOrGetFromCache('project file', this.projectFileCache, `${projectId}-${fileId}`, () => getAddonFileInfo(projectId, fileId, { userAgent: this.networkManager.agents.https }))
+    const result: { data: File } = await this.client.get(`v1/mods/${projectId}/files/${fileId}`).json()
+    return result.data
   }
 
   async searchProjects(searchOptions: SearchOptions) {
-    this.log(`Search project: section=${searchOptions.sectionId}, category=${searchOptions.categoryId}, keyword=${searchOptions.searchFilter}`)
-    const addons = await this.fetchOrGetFromCache('project search', this.searchProjectCache, JSON.stringify(searchOptions), () => searchAddons(searchOptions, { userAgent: this.networkManager.agents.https }))
-    for (const addon of addons) {
-      this.projectCache[addon.id] = addon
+    const params = new URLSearchParams()
+    params.append('gameId', '432')
+    if (searchOptions.classId) {
+      params.append('classId', searchOptions.classId?.toString() ?? '')
     }
-    return addons
-  }
-
-  fetchFeaturedProjects(getOptions: GetFeaturedAddonOptions) {
-    return getFeaturedAddons(getOptions, { userAgent: this.networkManager.agents.https })
+    if (searchOptions.categoryId) {
+      params.append('categoryId', searchOptions.categoryId?.toString() ?? '')
+    }
+    if (searchOptions.gameVersion) {
+      params.append('gameVersion', searchOptions.gameVersion ?? '')
+    }
+    if (searchOptions.searchFilter) {
+      params.append('searchFilter', searchOptions.searchFilter ?? '')
+    }
+    if (searchOptions.sortField) {
+      params.append('sortField', searchOptions.sortField?.toString() ?? ModsSearchSortField.Featured.toString())
+    }
+    if (searchOptions.sortOrder) {
+      params.append('sortOrder', searchOptions.sortOrder ?? 'desc')
+    } else {
+      params.append('sortOrder', 'desc')
+    }
+    if (searchOptions.modLoaderType) {
+      params.append('modLoaderType', searchOptions.modLoaderType?.toString() ?? '0')
+    }
+    if (searchOptions.gameVersionTypeId) {
+      params.append('gameVersionTypeId', searchOptions.gameVersionTypeId?.toString() ?? '')
+    }
+    if (searchOptions.slug) {
+      params.append('slug', searchOptions.slug ?? '')
+    }
+    if (searchOptions.index) {
+      params.append('index', searchOptions.index?.toString() ?? '0')
+    }
+    if (searchOptions.pageSize) {
+      params.append('pageSize', searchOptions.pageSize?.toString() ?? '25')
+    }
+    const search = params.toString()
+    this.log(`Search project: ${search}`)
+    const result: { data: AddonInfo[]; pagination: Pagination } = await this.client.get('v1/mods/search', {
+      searchParams: search,
+    }).json()
+    return result
   }
 
   async installFile({ file, type, projectId }: InstallFileOptions) {
@@ -117,7 +128,7 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
     try {
       const destination = join(this.app.temporaryPath, file.fileName)
       const project = await this.fetchProject(projectId)
-      const imageUrl = project.attachments[0]?.thumbnailUrl
+      const imageUrl = project.screenshots[0]?.thumbnailUrl
       const task = new DownloadTask({
         ...networkManager.getDownloadBaseOptions(),
         url: file.downloadUrl,
