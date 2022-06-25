@@ -50,6 +50,7 @@ jobs:
       env:
         BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
         NODE_ENV: production
+        CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
         # ELECTRON_CACHE: ~/.cache/electron
         # ELECTRON_BUILDER_CACHE: ~/.cache/electron-builder
     - name: Upload Build
@@ -113,6 +114,7 @@ jobs:
       env:
         BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
         NODE_ENV: production
+        CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
         BUILD_TARGET: appx
     - name: Upload Build
       uses: actions/upload-artifact@v2
@@ -144,6 +146,7 @@ jobs:
       env:
         BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
         NODE_ENV: production
+        CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
         BUILD_TARGET: appimage
     - name: Upload Build
       uses: actions/upload-artifact@v2

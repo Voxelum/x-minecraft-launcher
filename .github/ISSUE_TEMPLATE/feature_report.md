@@ -1,12 +1,9 @@
 ---
-name: Feature report
-about: add a feature to help us make XMCL great
-title: ''''
+name: Feature Request
+about: Request a new feature or idea
+title: ''
 labels: feature
 assignees: ci010
 ---
 
-**To Reproduce**
-
-**Expected behavior**
-A clear and concise description of what you expected to feature.
+A clear and concise description of what you want to have.
