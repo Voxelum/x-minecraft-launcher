@@ -13,8 +13,8 @@
       </template>
     </v-img>
     <v-card-title>
-      <span v-if="!loading">
-        {{ name }}
+      <span v-if="!loading && project">
+        {{ project.name }}
       </span>
       <span v-else>
         <v-skeleton-loader type="heading" />
@@ -26,8 +26,8 @@
           event
         </v-icon>
         {{ $t("curseforge.createdDate") }}
-        <span v-if="!loading">
-          {{ getLocalDateString(creation) }}
+        <span v-if="!loading && project">
+          {{ getLocalDateString(project.dateCreated) }}
         </span>
         <v-skeleton-loader
           v-else
@@ -40,8 +40,8 @@
           event
         </v-icon>
         {{ $t("curseforge.lastUpdate") }}
-        <span v-if="!loading">
-          {{ getLocalDateString(updated) }}
+        <span v-if="!loading && project">
+          {{ getLocalDateString(project.dateModified) }}
         </span>
         <v-skeleton-loader
           v-else
@@ -53,8 +53,8 @@
           file_download
         </v-icon>
         {{ $t("curseforge.totalDownloads") }}
-        <span v-if="!loading">
-          {{ downloads }}
+        <span v-if="!loading && project">
+          {{ project.downloadCount }}
         </span>
         <v-skeleton-loader
           v-else
@@ -73,20 +73,18 @@
   </v-card>
 </template>
 <script lang="ts" setup>
+import { AddonInfo } from '@xmcl/curseforge'
 import DestMenu from './CurseforgeProjectDestMenu.vue'
 import { getLocalDateString } from '/@/util/date'
 
-defineProps<{
-  icon?: string
-  name: string
+const props = defineProps<{
+  project?: AddonInfo
+  loading: boolean
   destination: string
   from: string
-  creation: string
-  updated: string
-  downloads: number
-  loading: boolean
 }>()
 
+const icon = computed(() => !props.project ? '' : props.project.logo?.thumbnailUrl ?? '')
 const emit = defineEmits(['destination'])
 
 </script>

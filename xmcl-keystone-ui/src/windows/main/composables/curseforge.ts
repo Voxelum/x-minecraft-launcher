@@ -1,14 +1,16 @@
-import { computed, ExtractPropTypes, onMounted, reactive, ref, Ref, toRefs, watch } from '@vue/composition-api'
-import { AddonInfo, Attachment, File } from '@xmcl/curseforge'
+import { computed, onMounted, reactive, ref, toRefs, watch } from '@vue/composition-api'
+import { AddonInfo, File, FileModLoaderType, ModsSearchSortField } from '@xmcl/curseforge'
 import { CurseForgeServiceKey, InstanceModsServiceKey, PersistedResource, ProjectType, ResourceServiceKey } from '@xmcl/runtime-api'
-import { useServiceBusy, useRouter, useService } from '/@/composables'
+import { useRouter, useService, useServiceBusy } from '/@/composables'
 
 interface CurseforgeProps {
   type: string
   page: number
   keyword: string
   category: string
-  sort: string
+  sortField: ModsSearchSortField
+  modLoaderType: FileModLoaderType
+  sortOrder: 'asc' | 'desc'
   gameVersion: string
   from: string
 }
@@ -55,9 +57,9 @@ export function useCurseforge(props: CurseforgeProps) {
     },
   })
   const currentSort = computed({
-    get() { return props.sort },
-    set(v: string) {
-      router.replace({ query: { ...router.currentRoute.query, sort: v } })
+    get() { return props.sortField },
+    set(v: ModsSearchSortField) {
+      router.replace({ query: { ...router.currentRoute.query, sortField: v.toString() } })
     },
   })
   const currentKeyword = computed({
@@ -73,7 +75,7 @@ export function useCurseforge(props: CurseforgeProps) {
     },
   })
   const categoryId = computed({
-    get() { return Number.parseInt(currentCategory.value, 10) },
+    get() { return currentCategory.value ? Number.parseInt(currentCategory.value, 10) : undefined },
     set(v: number | undefined) {
       if (v) {
         currentCategory.value = v.toString()
@@ -85,6 +87,7 @@ export function useCurseforge(props: CurseforgeProps) {
 
   const data = reactive({
     pages: 5,
+    totalCount: 0,
     projects: [] as AddonInfo[],
     loading: false,
   })
@@ -92,21 +95,20 @@ export function useCurseforge(props: CurseforgeProps) {
   async function refresh() {
     data.loading = true
     try {
-      const projects = await searchProjects({
+      const { data: result, pagination } = await searchProjects({
         pageSize,
         index: index.value,
-        sectionId: currentSectionId.value,
-        sort: Number.isInteger(currentSort.value) ? Number.parseInt(currentSort.value, 10) : undefined,
+        classId: currentSectionId.value,
+        sortField: currentSort.value,
         gameVersion: currentVersion.value,
         categoryId: categoryId.value,
         searchFilter: currentKeyword.value,
       })
-      if (currentPage.value > data.pages / 2) {
-        data.pages += 5
-      }
-      projects.forEach(p => Object.freeze(p))
-      projects.forEach(p => Object.freeze(p.categories))
-      data.projects = Object.freeze(projects) as any
+      data.totalCount = pagination.totalCount
+      data.projects = Object.freeze(result) as any
+      data.pages = Math.floor(data.totalCount / pageSize)
+      data.projects.forEach(p => Object.freeze(p))
+      data.projects.forEach(p => Object.freeze(p.categories))
     } finally {
       data.loading = false
     }
@@ -137,6 +139,9 @@ export function useCurseforgeProjectFiles(projectId: number) {
   const { state: resourceState } = useService(ResourceServiceKey)
   const data = reactive({
     files: [] as readonly File[],
+    index: 0,
+    pageSize: 0,
+    totalCount: 0,
     loading: false,
   })
   const status = computed(() => data.files.map(file => {
@@ -157,8 +162,12 @@ export function useCurseforgeProjectFiles(projectId: number) {
   async function refresh() {
     data.loading = true
     try {
-      const f = await fetchProjectFiles(projectId)
-      data.files = Object.freeze(f)
+      const f = await fetchProjectFiles({ modId: projectId })
+      data.files = Object.freeze(f.data)
+      console.log(data.files)
+      data.index = f.pagination.index
+      data.pageSize = f.pagination.pageSize
+      data.totalCount = f.pagination.totalCount
     } finally {
       data.loading = false
     }
@@ -228,45 +237,27 @@ export function useCurseforgeProjectDescription(projectId: number) {
  */
 export function useCurseforgeProject(projectId: number) {
   const { fetchProject } = useService(CurseForgeServiceKey)
-  const recentFiles: Ref<File[]> = ref([])
-  const data = reactive({
-    name: '',
-    createdDate: '',
-    lastUpdate: '',
-    totalDownload: 0,
-    attachments: [] as Attachment[],
-    refreshingProject: false,
-  })
+  const project = ref(undefined as undefined | AddonInfo)
+  const refreshing = useServiceBusy(CurseForgeServiceKey, 'fetchProject', projectId.toString())
   async function refresh() {
-    data.refreshingProject = true
-    try {
-      const proj = await fetchProject(projectId)
-      const { name, dateCreated, dateModified, downloadCount, latestFiles } = proj
-      data.name = name
-      data.createdDate = dateCreated
-      data.lastUpdate = dateModified
-      data.totalDownload = downloadCount
-      data.attachments = proj.attachments
-      // @ts-ignore
-      recentFiles.value = latestFiles.sort((a, b) => new Date(b.fileDate) - new Date(a.fileDate))
-    } finally {
-      data.refreshingProject = false
-    }
+    project.value = await fetchProject(projectId)
   }
   onMounted(() => refresh())
   return {
-    ...toRefs(data),
-    recentFiles,
-    refresh,
+    refreshing,
+    project,
   }
 }
 
 export function useCurseforgeCategories() {
-  const { state, loadCategories } = useService(CurseForgeServiceKey)
-  const categories = computed(() => state.categories)
-  const refreshing = useServiceBusy(CurseForgeServiceKey, 'loadCategories')
+  const { fetchCategories } = useService(CurseForgeServiceKey)
+  const categories = ref([] as Category[])
+  const refreshing = useServiceBusy(CurseForgeServiceKey, 'fetchCategories')
+  async function refresh() {
+    categories.value = await fetchCategories()
+  }
   onMounted(() => {
-    loadCategories()
+    refresh()
   })
-  return { categories, refreshing }
+  return { categories, refreshing, refresh }
 }

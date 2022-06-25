@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full flex overflow-auto">
+  <div class="h-full flex overflow-auto flex-col max-h-full">
     <v-card-text
       v-if="!loading"
       class="overflow-auto"
@@ -18,17 +18,12 @@
   </div>
 </template>
 
-<script lang=ts>
-import { required } from '/@/util/props'
+<script lang=ts setup>
 import { useCurseforgeProjectDescription } from '../composables/curseforge'
 
-export default defineComponent({
-  props: { project: required(Number) },
-  setup(props) {
-    const { loading, description } = useCurseforgeProjectDescription(props.project)
-    return { loading, description }
-  },
-})
+const props = defineProps<{ project: number }>()
+const { loading, description } = useCurseforgeProjectDescription(props.project)
+
 </script>
 
 <style>

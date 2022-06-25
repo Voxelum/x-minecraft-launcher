@@ -67,7 +67,7 @@
           class="flex"
         >
           <v-img
-            :src="proj.attachments[0] ? proj.attachments[0].thumbnailUrl : ''"
+            :src="proj.logo.url"
             max-width="120"
             class="rounded"
           >
@@ -125,17 +125,17 @@
             @click.stop.prevent
           >
             <v-chip
-              v-for="cat of dedup(proj.categories, (v) => v.categoryId)"
-              :key="cat.categoryId"
+              v-for="cat of dedup(proj.categories, (v) => v.id)"
+              :key="cat.id"
               label
               outlined
-              @click="categoryId = cat.categoryId"
+              @click="categoryId = categoryId === cat.id ? undefined : cat.id"
             >
               <v-tooltip top>
                 <template #activator="{ on }">
                   <v-avatar>
                     <img
-                      :src="cat.avatarUrl"
+                      :src="cat.iconUrl"
                       style="max-height:30px; max-width: 30px"
                       v-on="on"
                     >
@@ -157,28 +157,31 @@
       <Categories
         :type="currentType"
         :selected="currentCategory"
-        @select="currentCategory = $event.toString()"
+        @select="categoryId = categoryId === $event ? undefined : $event"
       />
     </div>
   </div>
 </template>
 
 <script lang=ts setup>
-import { useI18n } from '/@/composables'
-import { dedup } from '/@/util/dedup'
-import Categories from './CurseforgeCategories.vue'
+import { FileModLoaderType, ModsSearchSortField } from '@xmcl/curseforge'
 import { useCurseforge } from '../composables/curseforge'
-import { vFocusOnSearch } from '../directives/focusOnSearch'
-import { getExpectedSize } from '/@/util/size'
-import { getLocalDateString } from '/@/util/date'
 import { useMinecraftVersions } from '../composables/version'
+import { vFocusOnSearch } from '../directives/focusOnSearch'
+import Categories from './CurseforgeCategories.vue'
+import { useI18n } from '/@/composables'
+import { getLocalDateString } from '/@/util/date'
+import { dedup } from '/@/util/dedup'
+import { getExpectedSize } from '/@/util/size'
 
 interface CurseforgeProps {
   type: string
   page: number
   keyword: string
   category: string
-  sort: string
+  sortField: ModsSearchSortField
+  modLoaderType: FileModLoaderType
+  sortOrder: 'asc' | 'desc'
   gameVersion: string
   from: string
 }
@@ -189,7 +192,9 @@ const props = withDefaults(
     page: 1,
     keyword: '',
     category: '',
-    sort: '',
+    sortField: 1,
+    modLoaderType: 0,
+    sortOrder: 'desc',
     gameVersion: '',
     from: '',
   },

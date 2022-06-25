@@ -14,7 +14,7 @@
       <v-avatar>
         <img
           contain
-          :src="c.avatarUrl"
+          :src="c.iconUrl"
         >
       </v-avatar>
       {{ t(c.name) }}
@@ -32,6 +32,7 @@
   </v-card>
 </template>
 <script lang="ts" setup>
+import { ProjectCategory } from '@xmcl/curseforge'
 import { CurseForgeServiceKey } from '@xmcl/runtime-api'
 import { useI18n, useService } from '/@/composables'
 import { useRefreshable } from '/@/composables/refreshable'
@@ -44,15 +45,22 @@ const props = defineProps<{
 const emit = defineEmits(['select'])
 
 const { t } = useI18n()
-const { state, loadCategories } = useService(CurseForgeServiceKey)
-const { refresh, refreshing } = useRefreshable(async () => {
-  await loadCategories()
+const { fetchCategories } = useService(CurseForgeServiceKey)
+const allCategories = ref([] as ProjectCategory[])
+const categories = computed(() => {
+  const result = allCategories.value
+  const parent = result.find(c => c.slug === props.type)
+  console.log(parent)
+  return result.filter(r => r.parentCategoryId === parent?.id)
 })
-const parentCat = computed(() => state.categories.find(c => c.slug === props.type))
+
+const { refresh, refreshing } = useRefreshable(async () => {
+  const result = await fetchCategories()
+  allCategories.value = result
+})
 onMounted(() => {
   refresh()
 })
-const categories = computed(() => state.categories.filter(c => c.parentGameCategoryId === parentCat.value?.id))
 
 </script>
 
