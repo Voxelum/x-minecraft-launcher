@@ -1,8 +1,8 @@
-import { HTTPException, ModrinthServiceKey } from '@xmcl/runtime-api'
+import { HTTPException } from '@xmcl/runtime-api'
 import { useDialog } from './dialog'
 import { useNotifier } from './notifier'
 import { useI18n } from '/@/composables'
-import { useExceptionHandler, useExceptionHandlerFromService } from '/@/composables/exception'
+import { useExceptionHandler } from '/@/composables/exception'
 
 export function useDefaultErrorHandler() {
   const { t } = useI18n()
@@ -10,7 +10,7 @@ export function useDefaultErrorHandler() {
   const { show } = useDialog('feedback')
   useExceptionHandler(HTTPException, (e) => {
     notify({
-      title: t('exception.http', { code: e.statusCode, url: e.url }),
+      title: t('exception.http', { statusCode: e.statusCode, url: e.url, code: e.code }),
       level: 'error',
       more() {
         show()
