@@ -159,29 +159,41 @@ export class InstallService extends AbstractService implements IInstallService {
 
     this.log('Start to refresh fabric metadata')
 
-    const getIfModified = async (url: string, timestamp: string) => {
-      const { statusCode, headers } = await this.networkManager.request.head(url, { headers: { 'if-modified-since': timestamp } })
-      return [statusCode === 200, headers['last-modified'] ?? timestamp] as const
-    }
-
     const result = await this.fabricVersionJson.read()
-    const [yarnModified, yarnDate] = await getIfModified(YARN_MAVEN_URL, result.yarnTimestamp)
-
-    if (yarnModified) {
-      const versions = await getYarnArtifactList()
-      result.yarns = versions
-      result.yarnTimestamp = yarnDate
-      this.log(`Refreshed fabric yarn metadata at ${yarnDate}.`)
+    let fabricMetaUrl = DEFAULT_FABRIC_API
+    if (this.baseService.shouldOverrideApiSet()) {
+      fabricMetaUrl = this.baseService.getApiSets()[0].url + '/fabric-meta'
     }
 
-    const [loaderModified, loaderDate] = await getIfModified(LOADER_MAVEN_URL, result.loaderTimestamp)
+    const response = await this.networkManager.request.get(`${fabricMetaUrl}/v2/versions/yarn`, {
+      headers: {
+        'if-modified-since': result.yarnTimestamp,
+      },
+    })
+    let yarnModified = false
+    if (response.statusCode < 300 && response.statusCode >= 200) {
+      result.yarns = JSON.parse(response.body)
+      result.yarnTimestamp = response.headers['last-modified'] ?? result.yarnTimestamp
+      yarnModified = true
+      this.log(`Refreshed fabric yarn metadata at ${result.yarnTimestamp}.`)
+    } else if (response.statusCode === 304) {
+      result.yarnTimestamp = response.headers['last-modified'] ?? result.yarnTimestamp
+    }
 
-    if (loaderModified) {
-      const versions = await getLoaderArtifactList()
-      result.loaders = versions
-      result.loaderTimestamp = yarnDate
-      // this.state.fabricLoaderMetadata({ versions, timestamp: loaderDate })
-      this.log(`Refreshed fabric loader metadata at ${loaderDate}.`)
+    const loaderResponse = await this.networkManager.request.get(`${fabricMetaUrl}/v2/versions/loader`, {
+      headers: {
+        'if-modified-since': result.loaderTimestamp,
+      },
+    })
+    let loaderModified = false
+
+    if (loaderResponse.statusCode < 300 && loaderResponse.statusCode >= 200) {
+      result.loaders = JSON.parse(loaderResponse.body)
+      result.loaderTimestamp = loaderResponse.headers['last-modified'] ?? result.loaderTimestamp
+      loaderModified = true
+      this.log(`Refreshed fabric loader metadata at ${result.loaderTimestamp}.`)
+    } else if (loaderResponse.statusCode === 304) {
+      result.loaderTimestamp = loaderResponse.headers['last-modified'] ?? result.loaderTimestamp
     }
 
     if (yarnModified || loaderModified) {
