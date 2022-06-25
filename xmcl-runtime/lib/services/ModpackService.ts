@@ -1,3 +1,4 @@
+import { HashAlgo } from '@xmcl/curseforge'
 import { DownloadTask, UnzipTask } from '@xmcl/installer'
 import { CurseforgeModpackManifest, EditGameSettingOptions, ExportModpackOptions, getResolvedVersion, ImportModpackOptions, isAllowInModrinthModpack, isResourcePackResource, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoAddon, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, PersistedResource, ResourceDomain, SourceInformation } from '@xmcl/runtime-api'
 import { MultipleError, task } from '@xmcl/task'
@@ -410,20 +411,25 @@ export class ModpackService extends AbstractService implements IModpackService {
                 failed = true
                 curseforgeFiles.push(batch[i])
               } else if (file.downloadUrl) {
-                const domain = file.modules.some(f => f.foldername === '') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
+                const domain = file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
+                const sha1 = file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value
                 infos.push({
                   downloads: [file.downloadUrl],
                   destination: join(root, domain, file.fileName),
-                  hashes: {},
+                  hashes: sha1
+                    ? {
+                      sha1: file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value,
+                    } as Record<string, string>
+                    : {},
                   source: {
                     curseforge: {
                       fileId: file.id,
-                      projectId: file.projectId,
+                      projectId: file.modId,
                     },
                   },
                 })
               } else {
-                missingFiles.push({ projectId: file.projectId, fileId: file.id })
+                missingFiles.push({ projectId: file.modId, fileId: file.id })
               }
             }
             if (failed && batchCount > 2) {
