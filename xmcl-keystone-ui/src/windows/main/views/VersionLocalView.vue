@@ -16,7 +16,7 @@
       />
     </v-list-item>
     <v-divider />
-    <div class="overflow-auto h-full flex flex-col flex-shrink flex-grow-0">
+    <div class="overflow-auto h-full flex flex-col flex-shrink flex-grow-0" @dblclick="router.push('/')">
       <template v-for="(item) in versions">
         <v-list-item
           :key="item.id"
@@ -29,6 +29,7 @@
           }"
           style="margin: 0px 0;"
           @click="selectVersion(item)"
+          @dblclick.native="selectVersion(item); router.push('/')"
         >
           <v-list-item-avatar>
             <v-btn
@@ -178,7 +179,7 @@
 import { computed, defineComponent, reactive, toRefs } from '@vue/composition-api'
 import { InstallServiceKey, LocalVersionHeader, versionCompare, VersionServiceKey } from '@xmcl/runtime-api'
 import { useLocalVersions } from '../composables/version'
-import { useRefreshable, useService } from '/@/composables'
+import { useRefreshable, useRouter, useService } from '/@/composables'
 import { optional, withDefault } from '/@/util/props'
 
 export default defineComponent({
@@ -202,6 +203,7 @@ export default defineComponent({
     const { deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions } = useService(VersionServiceKey)
     const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1).filter(v => !data.filteredMinecraft || v.minecraft === data.filteredMinecraft))
     const minecraftVersions = computed(() => [...new Set(localVersions.value.map(v => v.minecraft))].sort(versionCompare).reverse())
+    const router = useRouter()
     function isSelected(v: LocalVersionHeader) {
       if (!props.value) return false
       return v.id === props.value.id
@@ -247,6 +249,7 @@ export default defineComponent({
     })
 
     return {
+      router,
       ...toRefs(data),
       minecraftVersions,
       versions,
