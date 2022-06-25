@@ -71,6 +71,8 @@ export interface LaunchOptions {
    * Skip the issue checker
    */
   force?: boolean
+
+  ignoreUserStatus?: boolean
 }
 
 export interface LaunchService extends StatefulService<LaunchState>, GenericEventEmitter<LaunchServiceEventMap> {
