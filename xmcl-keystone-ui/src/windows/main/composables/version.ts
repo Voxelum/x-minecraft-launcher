@@ -201,9 +201,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
   })
 
   watch(minecraftVersion, () => {
-    if (versions.value.length === 0) {
-      refresh()
-    }
+    refresh()
   })
 
   async function refresh(force = false) {
