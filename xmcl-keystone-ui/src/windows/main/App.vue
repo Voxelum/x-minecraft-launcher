@@ -5,6 +5,7 @@
     :class="{ 'dark': vuetify.theme.dark }"
     :style="cssVars"
   >
+    <background />
     <system-bar />
     <div
       class="flex h-full overflow-auto relative"
@@ -14,7 +15,6 @@
         class="flex top-0 bottom-0 right-0 overflow-auto max-h-full absolute left-[80px]"
         :class="{ solid: !blurMainBody }"
       >
-        <background />
         <transition
           name="fade-transition"
           mode="out-in"

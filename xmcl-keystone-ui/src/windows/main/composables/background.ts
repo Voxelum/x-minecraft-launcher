@@ -15,9 +15,20 @@ export enum BackgroundType {
   VIDEO = 'video',
 }
 
+export function useBarBlur() {
+  const blurSidebar = useLocalStorageCacheInt('blurSidebar', 4)
+  const blurAppBar = useLocalStorageCacheInt('blurAppBar', 4)
+
+  return {
+    blurSidebar,
+    blurAppBar,
+  }
+}
+
 export function useBackground() {
   const backgroundType = useLocalStorageCacheStringValue<BackgroundType>('backgroundType', BackgroundType.NONE)
   const blur = useLocalStorageCacheInt('blur', 4)
+
   const blurMainBody = useLocalStorageCacheBool('blurMainBody', false)
   const backgroundImage = useLocalStorageCacheStringValue('background', '' as string)
   const backgroundImageFit = useLocalStorageCacheStringValue<'cover' | 'contain'>('imageFill', 'cover')

@@ -315,9 +315,54 @@
       </v-list-item-content>
       <v-slider
         v-model="blur"
+        :height="5"
         :min="0"
         :max="20"
         :hint="t('setting.backgroundImageBlur')"
+        :always-dirty="true"
+      />
+    </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{
+            t("setting.blurSidebar")
+          }}
+        </v-list-item-title>
+        <!-- <v-list-item-subtitle>
+          {{
+            t("setting.blurSidebarDescription")
+          }}
+        </v-list-item-subtitle> -->
+      </v-list-item-content>
+      <v-slider
+        v-model="blurSidebar"
+        :height="5"
+        :min="0"
+        :max="20"
+        :hint="t('setting.blurSidebar')"
+        :always-dirty="true"
+      />
+    </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{
+            t("setting.blurAppBar")
+          }}
+        </v-list-item-title>
+        <!-- <v-list-item-subtitle>
+          {{
+            t("setting.blurAppBarDescription")
+          }}
+        </v-list-item-subtitle> -->
+      </v-list-item-content>
+      <v-slider
+        v-model="blurAppBar"
+        :height="5"
+        :min="0"
+        :max="20"
+        :hint="t('setting.blurAppBar')"
         :always-dirty="true"
       />
     </v-list-item>
@@ -325,14 +370,15 @@
 </template>
 <script lang="ts" setup>
 import { BaseServiceKey } from '@xmcl/runtime-api'
-import { BackgroundType, useBackground } from '../composables/background'
+import { BackgroundType, useBackground, useBarBlur } from '../composables/background'
 import { useColorTheme } from '../composables/colorTheme'
 import { useI18n, useService, useTheme } from '/@/composables'
 import SettingAppearanceColor from './SettingAppearanceColor.vue'
 
 const { showOpenDialog } = windowController
 const { t } = useI18n()
-const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, blurMainBody, backgroundImageFit, volume, setBackgroundVideo, backgroundVideo } = useBackground()
+const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, setBackgroundVideo, backgroundVideo } = useBackground()
+const { blurSidebar, blurAppBar } = useBarBlur()
 const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, backgroundColor, resetToDefault } = useColorTheme()
 const { state } = useService(BaseServiceKey)
 
@@ -404,13 +450,14 @@ function clearImage() {
 
 <i18n locale="en" lang="yaml">
 setting:
+  blurAppBar: Blur app bar
   appearance: Appearance
   resetToDefault: Reset to Default
-  backgroundImage: background image
-  backgroundImageBlur: image blur
-  backgroundImageBlurDescription: drag to blur, easy
+  backgroundImage: Background image
+  backgroundImageBlur: Image blur
+  backgroundImageBlurDescription: Drag to blur, easy
   backgroundImageClear: clear
-  backgroundImageDescription: select an image as background or clear
+  backgroundImageDescription: Select an image as background or clear
   backgroundImageFit:
     contain: Contain
     cover: Cover
@@ -456,9 +503,12 @@ setting:
     dark: Dark Theme
     light: Light Theme
     system: Use System Theme
+  blurSidebar: Blur sidebar
 </i18n>
+
 <i18n locale="zh-CN" lang="yaml">
 setting:
+  blurAppBar: 顶端栏模糊
   appearance: 外观
   resetToDefault: 重置到默认配色
   backgroundImage: 背景图片
@@ -511,6 +561,7 @@ setting:
     system: 跟随系统
   showParticle: 显示粒子
   showParticleDescription: 是否在背景显示粒子效果 (这会影响性能，觉得卡可以关了)
+  blurSidebar: 侧边栏模糊
 </i18n>
 
 <i18n locale="zh-TW" lang="yaml">

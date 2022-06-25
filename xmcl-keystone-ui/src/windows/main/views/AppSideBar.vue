@@ -7,6 +7,7 @@
     :mini-variant="true"
     :color="sideBarColor"
     class="moveable sidebar z-10"
+    :style="{ 'backdrop-filter': `blur(${blurSidebar}px)` }"
   >
     <v-list
       nav
@@ -341,6 +342,7 @@
 <script lang=ts setup>
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import PlayerAvatar from '../components/PlayerAvatar.vue'
+import { useBarBlur } from '../composables/background'
 import { useColorTheme } from '../composables/colorTheme'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { useDialog } from '../composables/dialog'
@@ -357,6 +359,7 @@ const sideBarShowFtb = useLocalStorageCacheBool('sideBarShowFtb', true)
 const { show } = useDialog('task')
 const { state } = useService(BaseServiceKey)
 const { gameProfile } = useCurrentUser()
+const { blurSidebar } = useBarBlur()
 const router = useRouter()
 const expanding = ref(false)
 const subRoutes = new Set([

@@ -3,7 +3,8 @@
     topbar
     window
     :color="appBarColor"
-    class="flex w-full moveable p-0 flex-grow-0"
+    class="flex w-full moveable p-0 flex-grow-0 z-10"
+    :style="{ 'backdrop-filter': `blur(${blurAppBar}px)` }"
   >
     <span class="p-0 flex flex-shrink flex-grow-0">
       <v-icon
@@ -55,11 +56,13 @@
 </template>
 <script lang="ts" setup>
 import { BaseServiceKey } from '@xmcl/runtime-api'
+import { useBarBlur } from '../composables/background'
 import { useColorTheme } from '../composables/colorTheme'
 import { useDialog } from '../composables/dialog'
 import { useRouter, useService } from '/@/composables'
 
 const { appBarColor } = useColorTheme()
+const { blurAppBar } = useBarBlur()
 const { maximize, minimize, hide } = windowController
 const { quit } = useService(BaseServiceKey)
 const { show: showFeedbackDialog } = useDialog('feedback')
