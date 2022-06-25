@@ -27,14 +27,19 @@ export function useExceptionHandlers() {
   const serviceErrorHandlers: Record<string, Array<(e: any, serviceName: string, serviceMethod: string) => void>> = {}
   window.addEventListener('unhandledrejection', (ev) => {
     const handler = exceptionHandlers[ev.reason.name]
-    console.log(ev.reason.serviceName)
+    console.log(`Handle exception ${ev.reason.name} from ${ev.reason.serviceName}`)
     const errorHandler = ev.reason?.serviceName ? serviceErrorHandlers[ev.reason.serviceName] : undefined
     if (handler && isException(handler[0], ev.reason)) {
+      console.log(`Found exception handler for exception ${ev.reason.name}`)
       handler[1].forEach(f => f(ev.reason.exception))
       ev.preventDefault()
     } else if (errorHandler) {
+      console.log(`Found error handler for exception ${ev.reason.name}`)
       errorHandler.forEach(f => f(ev, ev.reason.serviceName, ev.reason.serviceMethod))
       ev.preventDefault()
+    } else {
+      console.log('Cannot found handler for exception:')
+      console.log(ev)
     }
   })
   return {

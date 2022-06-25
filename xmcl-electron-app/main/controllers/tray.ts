@@ -24,6 +24,7 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
       }
     }
     const diagnose = () => {
+      this.activeWindow?.webContents.closeDevTools()
       this.activeWindow?.webContents.openDevTools()
     }
     const showLogs = () => {

@@ -16,7 +16,10 @@
       />
     </v-list-item>
     <v-divider />
-    <div class="overflow-auto h-full flex flex-col flex-shrink flex-grow-0" @dblclick="router.push('/')">
+    <div
+      class="overflow-auto h-full flex flex-col flex-shrink flex-grow-0"
+      @dblclick="router.push('/')"
+    >
       <template v-for="(item) in versions">
         <v-list-item
           :key="item.id"

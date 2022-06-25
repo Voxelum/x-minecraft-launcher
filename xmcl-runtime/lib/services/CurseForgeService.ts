@@ -1,4 +1,4 @@
-import { AddonInfo, Category, File, getCategories, getCategoryTimestamp, ModsSearchSortField, Pagination, SearchOptions } from '@xmcl/curseforge'
+import { AddonInfo, File, ModsSearchSortField, Pagination, ProjectCategory, SearchOptions } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
 import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, CurseforgeState, GetModFilesOptions, InstallFileOptions, ProjectType } from '@xmcl/runtime-api'
 import { unlink } from 'fs-extra'
@@ -29,7 +29,7 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
 
   @Singleton()
   async fetchCategories() {
-    const categories: { data: Category[] } = await this.client.get('v1/categories', { searchParams: { gameId: 432 } }).json()
+    const categories: { data: ProjectCategory[] } = await this.client.get('v1/categories', { searchParams: { gameId: 432 } }).json()
     return categories.data
   }
 

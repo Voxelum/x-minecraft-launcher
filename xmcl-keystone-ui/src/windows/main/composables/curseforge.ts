@@ -1,5 +1,5 @@
 import { computed, onMounted, reactive, ref, toRefs, watch } from '@vue/composition-api'
-import { AddonInfo, File, FileModLoaderType, ModsSearchSortField } from '@xmcl/curseforge'
+import { AddonInfo, File, FileModLoaderType, ModsSearchSortField, ProjectCategory } from '@xmcl/curseforge'
 import { CurseForgeServiceKey, InstanceModsServiceKey, PersistedResource, ProjectType, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useRouter, useService, useServiceBusy } from '/@/composables'
 
@@ -251,7 +251,7 @@ export function useCurseforgeProject(projectId: number) {
 
 export function useCurseforgeCategories() {
   const { fetchCategories } = useService(CurseForgeServiceKey)
-  const categories = ref([] as Category[])
+  const categories = ref([] as ProjectCategory[])
   const refreshing = useServiceBusy(CurseForgeServiceKey, 'fetchCategories')
   async function refresh() {
     categories.value = await fetchCategories()
