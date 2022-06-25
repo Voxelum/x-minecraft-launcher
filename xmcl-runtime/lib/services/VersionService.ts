@@ -1,11 +1,11 @@
 import { ResolvedVersion, Version } from '@xmcl/core'
 import { filterForgeVersion, filterOptifineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary, LocalVersionHeader, VersionService as IVersionService, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
-import { ensureDir, FSWatcher, remove, stat } from 'fs-extra'
+import { ensureDir, FSWatcher, remove } from 'fs-extra'
+import watch from 'node-watch'
 import { basename, dirname, join, relative, sep } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { isDirectory, missing, readdirEnsured } from '../util/fs'
-import watch from 'node-watch'
 import { isNonnull } from '../util/object'
 import { StatefulService } from './Service'
 

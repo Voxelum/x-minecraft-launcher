@@ -325,12 +325,15 @@ export class InstallService extends AbstractService implements IInstallService {
       option.assetsHost = allSets.map(api => `${api.url}/assets`)
       option.mavenHost = allSets.map(api => `${api.url}/maven`)
       option.assetsIndexUrl = (ver) => allSets.map(api => {
-        const url = new URL(ver.assetIndex.url)
-        const host = new URL(api.url).host
-        url.host = host
-        url.hostname = host
-        return url.toString()
-      })
+        if (ver.assetIndex) {
+          const url = new URL(ver.assetIndex.url)
+          const host = new URL(api.url).host
+          url.host = host
+          url.hostname = host
+          return url.toString()
+        }
+        return ''
+      }).filter(v => !!v)
 
       option.json = (ver) => allSets.map(api => {
         const url = new URL(ver.url)
@@ -341,12 +344,15 @@ export class InstallService extends AbstractService implements IInstallService {
       })
 
       option.client = (ver) => allSets.map(api => {
-        const url = new URL(ver.downloads.client.url)
-        const host = new URL(api.url).host
-        url.host = host
-        url.hostname = host
-        return url.toString()
-      })
+        if (ver.downloads.client) {
+          const url = new URL(ver.downloads.client.url)
+          const host = new URL(api.url).host
+          url.host = host
+          url.hostname = host
+          return url.toString()
+        }
+        return ''
+      }).filter(v => !!v)
     }
     return option
   }
@@ -416,21 +422,36 @@ export class InstallService extends AbstractService implements IInstallService {
       // this special logic is handling the asset index outdate issue.
       let resolvedVersion = await Version.parse(location, version)
       const list = await this.getMinecraftVersionList(true)
-      const versionMeta = list.versions.find(v => v.id === resolvedVersion.minecraftVersion)
-      let sourceMinecraftVersion = await Version.parse(location, resolvedVersion.minecraftVersion)
+      let versionMeta = list.versions.find(v => v.id === resolvedVersion.minecraftVersion)
+      let unofficial = false
+      if (!versionMeta) {
+        versionMeta = list.versions.find(v => v.id === resolvedVersion.assets)
+        unofficial = true
+      }
       if (versionMeta) {
-        if (new Date(versionMeta.releaseTime) > new Date(sourceMinecraftVersion.releaseTime)) {
-          // need update source version
-          await this.installMinecraft(versionMeta)
-          sourceMinecraftVersion = await Version.parse(location, resolvedVersion.minecraftVersion)
-        }
-        if (resolvedVersion.inheritances.length === 1 && resolvedVersion.inheritances[resolvedVersion.inheritances.length - 1] !== resolvedVersion.minecraftVersion) {
-          // special packed version like PCL
-          const jsonPath = location.getVersionJson(version)
-          const rawContent = await readJson(jsonPath)
-          rawContent.assetIndex = sourceMinecraftVersion.assetIndex
-          await writeJson(jsonPath, rawContent)
-          resolvedVersion = await Version.parse(location, version)
+        let sourceMinecraftVersion = version === resolvedVersion.minecraftVersion ? resolvedVersion : await Version.parse(location, resolvedVersion.minecraftVersion)
+        if (!unofficial) {
+          if (new Date(versionMeta.releaseTime) > new Date(sourceMinecraftVersion.releaseTime)) {
+            // need update source version
+            await this.installMinecraft(versionMeta)
+            sourceMinecraftVersion = await Version.parse(location, versionMeta.id)
+          }
+          if (resolvedVersion.inheritances.length === 1 && resolvedVersion.inheritances[resolvedVersion.inheritances.length - 1] !== resolvedVersion.minecraftVersion) {
+            // special packed version like PCL
+            const jsonPath = location.getVersionJson(version)
+            const rawContent = await readJson(jsonPath)
+            rawContent.assetIndex = sourceMinecraftVersion.assetIndex
+            await writeJson(jsonPath, rawContent)
+            resolvedVersion = await Version.parse(location, version)
+          }
+        } else if (!resolvedVersion.assetIndex) {
+          // custom
+          let localVersion = await this.versionService.resolveLocalVersion(versionMeta.id).catch(() => undefined)
+          if (!localVersion) {
+            await this.installMinecraft(versionMeta)
+            localVersion = await this.versionService.resolveLocalVersion(versionMeta.id)
+          }
+          resolvedVersion.assetIndex = localVersion.assetIndex
         }
       }
       this.warn(`Install assets for ${version}:`)
