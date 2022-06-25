@@ -8,17 +8,18 @@ import {
 import { AUTH_API_MOJANG, checkLocation, GameProfile, getChallenges, getTextures, invalidate, login, lookup, lookupByName, MojangChallengeResponse, offline, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate } from '@xmcl/user'
 import { randomUUID } from 'crypto'
 import { readFile, readJSON } from 'fs-extra'
+import { Options, RequestError } from 'got'
 import { basename } from 'path'
 import { URL } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherProfile } from '../entities/launchProfile'
 import { acquireXBoxToken, changeAccountSkin, checkGameOwnership, getGameProfile, loginMinecraftWithXBox } from '../entities/user'
+import { isSystemError } from '../util/error'
 import { requireNonnull, requireObject, requireString } from '../util/object'
 import { createSafeFile } from '../util/persistance'
 import { createDynamicThrottle } from '../util/trafficAgent'
 import { fitMinecraftLauncherProfileData } from '../util/userData'
-import { DiagnoseService } from './DiagnoseService'
-import { Inject, Singleton, StatefulService } from './Service'
+import { Singleton, StatefulService } from './Service'
 
 export class UserService extends StatefulService<UserState> implements IUserService {
   private refreshSkinRecord: Record<string, boolean> = {}
@@ -590,7 +591,16 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       selectedProfile = result.selectedProfile
     } else if (authService === 'microsoft') {
       await this.cancelMicrosoftLogin()
-      const result = await this.loginMicrosoft({ microsoftEmailAddress: username })
+      const result = await this.loginMicrosoft({ microsoftEmailAddress: username }).catch(e => {
+        if (isSystemError(e)) {
+          if (e.code === 'ETIMEDOUT') {
+            throw new UserException({ type: 'loginTimeout' }, e.message)
+          } else if (e.code === 'ECONNRESET') {
+            throw new UserException({ type: 'loginReset' }, e.message)
+          }
+        }
+        throw e
+      })
       userId = result.userId
       accessToken = result.accessToken
       availableProfiles = result.gameProfiles
@@ -613,6 +623,12 @@ export class UserService extends StatefulService<UserState> implements IUserServ
         } else if (e.error === 'ForbiddenOperationException' &&
           e.errorMessage === 'Invalid credential information.') {
           throw new UserException({ type: 'loginInvalidCredentials' }, e.message)
+        } else if (isSystemError(e)) {
+          if (e.code === 'ETIMEDOUT') {
+            throw new UserException({ type: 'loginTimeout' }, e.message)
+          } else if (e.code === 'ECONNRESET') {
+            throw new UserException({ type: 'loginReset' }, e.message)
+          }
         }
         throw new UserException({ type: 'loginGeneral' }, e.message)
       })

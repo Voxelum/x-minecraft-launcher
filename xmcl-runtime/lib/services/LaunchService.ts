@@ -115,7 +115,19 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       const user = this.userService.state
       const gameProfile = user.gameProfile
 
-      await this.userService.refreshStatus()
+      if (!options?.ignoreUserStatus) {
+        try {
+          await this.userService.refreshStatus()
+        } catch (e) {
+          // if (e instanceof UserException) {
+          //   throw new LaunchException({
+          //     type: 'launchUserStatusRefreshFailed',
+          //     userException: e.exception,
+          //   })
+          // }
+          this.warn(`Fail to determine user status to launch: ${e}`)
+        }
+      }
 
       if (!options?.force) {
         this.state.launchStatus('checkingProblems')
@@ -249,7 +261,8 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       const errorLogs = [] as string[]
 
       process.stderr?.on('data', (buf: any) => {
-        errorLogs.push(...buf.toString().split(EOL))
+        const lines = buf.toString().split(EOL)
+        errorLogs.push(...lines)
       })
       watcher.on('error', (err) => {
         this.emit('error', new LaunchException({ type: 'launchGeneralException', error: err }))
@@ -285,12 +298,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       return true
     } catch (e) {
       this.state.launchStatus('idle')
-      if (e instanceof UserException) {
-        throw new LaunchException({
-          type: 'launchUserStatusRefreshFailed',
-          userException: e.exception,
-        })
-      }
+
       if (e instanceof LaunchException) {
         throw e
       }

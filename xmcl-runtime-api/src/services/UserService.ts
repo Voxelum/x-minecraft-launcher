@@ -376,7 +376,7 @@ export interface UserService extends StatefulService<UserState>, GenericEventEmi
 export const UserServiceKey: ServiceKey<UserService> = 'UserService'
 
 export type UserExceptions = {
-  type: 'loginInternetNotConnected' | 'loginInvalidCredentials' | 'loginGeneral'
+  type: 'loginInternetNotConnected' | 'loginInvalidCredentials' | 'loginGeneral' | 'loginTimeout' | 'loginReset'
 } | {
   type: 'loginGeneral'
 } | {

@@ -26,6 +26,7 @@ export interface InstanceNotFoundException extends ExceptionBase {
 
 export interface HTTPExceptions extends ExceptionBase {
   type: 'httpException'
+  code: string
   url: string
   statusCode: number
   body: any

@@ -233,6 +233,14 @@ function handleError(e: unknown) {
       const msg = t('loginError.loginMinecraftByXboxFailed')
       usernameErrors.value = [msg]
       passwordErrors.value = [msg]
+    } else if (e.exception.type === 'loginReset') {
+      const msg = t('loginError.connectionReset')
+      usernameErrors.value = [msg]
+      passwordErrors.value = [msg]
+    } else if (e.exception.type === 'loginTimeout') {
+      const msg = t('loginError.timeout')
+      usernameErrors.value = [msg]
+      passwordErrors.value = [msg]
     }
   } else {
     const msg = t('loginError.requestFailed')
