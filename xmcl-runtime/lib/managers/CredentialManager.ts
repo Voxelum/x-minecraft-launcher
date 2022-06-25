@@ -7,7 +7,7 @@ import { createPlugin } from '../util/credentialPlugin'
 
 export default class CredentialManager extends Manager {
   readonly scopes: string[] = ['XboxLive.signin', 'XboxLive.offline_access']
-  readonly extraScopes: string[] = ['user.read']
+  readonly extraScopes: string[] = ['user.email', 'user.openid', 'user.offline_access']
 
   private cancelWait = () => { }
 
