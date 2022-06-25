@@ -151,8 +151,9 @@ error:
   name: Error | Errors
 exception:
   http: >-
-    HTTP request to {url} failed. Status code {code}. Please retry or check your
-    network. If this error persist, please send report to developer team.
+    HTTP request to {url} failed. Status code {statusCode}. {code}. Please retry
+    or check your network. If this error persist, please send report to
+    developer team.
 existed: Existed
 exportModpackTarget:
   curseforge: Curseforge File
@@ -397,6 +398,7 @@ loginError:
     Please check your network connectivity! Or maybe the authentication server
     is down!
   checkOwnershipFailed: Fail to check game ownership. Please try again.
+  connectionReset: Fail to login since connection is reset by server
   fetchMinecraftProfileFailed: 'Fail to fetch Minecraft profile: {reason}'
   illegalEmail: E-mail must be valid
   invalidCredentials: Invalid credentials. Invalid username or password.
@@ -410,6 +412,7 @@ loginError:
   requireEmail: E-mail is required
   requirePassword: Password is required
   requireUsername: Username is required
+  timeout: Login timeout. Please retry or check your network.
 logsCrashes:
   crashes: Crash Reports
   logs: Logs

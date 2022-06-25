@@ -119,7 +119,7 @@ download: 下载
 downloadCount: '{count} 次下载'
 edit: 编辑
 exception:
-  http: '{url} 的 HTTP 请求失败。状态码 {code}。请重试或检查你的网络。如果这个问题持续出现，请联系开发团队。'
+  http: '{url} 的 HTTP 请求失败。状态码 {statusCode}。{code}，请重试或检查你的网络。如果这个问题持续出现，请联系开发团队。'
 existed: 已导入过的
 exportModpackTarget:
   curseforge: Curseforge 文件
@@ -340,11 +340,13 @@ login:
   signup: 注册
   signupDescription: 没有账号?
 loginError:
+  connectionReset: 因为服务端断开了连接导致登录失败，请重试或检查网络
   illegalEmail: 当前Email格式不合法
   invalidCredentials: 无法验证. 用户名或密码错误.
   requireEmail: 必须要Email才能登陆
   requirePassword: 请输入密码
   requireUsername: 用户名不能为空
+  timeout: 登录超时，请重试或检查你的网络！
 logsCrashes:
   crashes: 崩溃报告
   logs: 日志

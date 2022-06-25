@@ -664,6 +664,37 @@ setting:
   name: Глобальная настройка | Глобальные настройки
   officialWebsite: Официальный сайт
   resolution: Разрешение по умолчанию
+  appearance: Внешний вид
+  backgroundImage: Изображение фона
+  backgroundImageBlur: Размытие изображения
+  backgroundImageBlurDescription: Перетащите чтобы размыть, легко
+  backgroundImageClear: Очистить
+  backgroundImageDescription: Выберите изображение в качестве фона или очистите его
+  backgroundImageSelect: Выбрать
+  backgroundType: Тип фона
+  backgroundTypeDescription: Показывать спецэффекты на фоне (Может повлиять на производительность)
+  backgroundTypes:
+    halo: Ореол
+    image: Изображение
+    none: Ничего
+    particle: Частицы
+  blurMainBody: Размытие главного окна
+  blurMainBodyDescription: Размытие правой панели лаунчера
+  darkTheme: Тема
+  darkThemeDescription: Выберите тёмную или светлую тему
+  particleMode:
+    '': Режим частиц
+    bubble: Пузыри
+    push: Отталкивание
+    remove: Удаление
+    repulse: Отражение
+  particleModeDescription: Выберите поведение частиц при нажатии
+  theme:
+    dark: Dark Тема
+    light: Light Тема
+    system: Use System Тема
+  showParticle: Показывать частицы
+  showParticleDescription: Показывать частицы фона (Может повлиять на производительность)
 shaderPack:
   deletion: Удалить пакет шейдеров
   deletionHint: Это удалит пакет шейдеров {path}. Невозможно отменить.
