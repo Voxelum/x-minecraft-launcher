@@ -1,4 +1,49 @@
 
+## 0.28.0
+### @xmcl/runtime-api@0.12.0
+#### Features
+
+- Support github/gitlab drop link import mods ([34dc3d9045c19d314d9614a449c2a90981760674](https://github.com/Voxelum/x-minecraft-launcher/commit/34dc3d9045c19d314d9614a449c2a90981760674))
+#### Bug Fixes
+
+- Capture more user login error and prevent it to block launch ([2ea9cdce39b89520306d19fb163dde64897bbd4d](https://github.com/Voxelum/x-minecraft-launcher/commit/2ea9cdce39b89520306d19fb163dde64897bbd4d))
+- Update to new curseforge API ([c905907d24ad0e27fde8b5b741406c10d406a3fe](https://github.com/Voxelum/x-minecraft-launcher/commit/c905907d24ad0e27fde8b5b741406c10d406a3fe))
+- Wrong compatibility over Minecraft 1.19 ([558ad95446b3b73fc160daac30eaa42737007be4](https://github.com/Voxelum/x-minecraft-launcher/commit/558ad95446b3b73fc160daac30eaa42737007be4))
+### @xmcl/keystone-ui@0.27.0
+#### Features
+
+- Support github/gitlab drop link import mods ([34dc3d9045c19d314d9614a449c2a90981760674](https://github.com/Voxelum/x-minecraft-launcher/commit/34dc3d9045c19d314d9614a449c2a90981760674))
+- Allow double click local version to jump back ([c0d90f98c8ef7ef26badf3706109915b5b7c9f1f](https://github.com/Voxelum/x-minecraft-launcher/commit/c0d90f98c8ef7ef26badf3706109915b5b7c9f1f))
+- Allow to blur the sidebar and app bar ([e6540cf7e192db6b589564cff7d47d61c0cb4d14](https://github.com/Voxelum/x-minecraft-launcher/commit/e6540cf7e192db6b589564cff7d47d61c0cb4d14))
+#### Bug Fixes
+
+- Change Minecraft version won't trigger forge filter ([621f56a7760392d406cfa8b79b397e3b47383a55](https://github.com/Voxelum/x-minecraft-launcher/commit/621f56a7760392d406cfa8b79b397e3b47383a55))
+- Correct handle http error and hint user ([47a3098adff6ae48a8265381882c3044db9c5f6d](https://github.com/Voxelum/x-minecraft-launcher/commit/47a3098adff6ae48a8265381882c3044db9c5f6d))
+- Capture more user login error and prevent it to block launch ([2ea9cdce39b89520306d19fb163dde64897bbd4d](https://github.com/Voxelum/x-minecraft-launcher/commit/2ea9cdce39b89520306d19fb163dde64897bbd4d))
+- Update to new curseforge API ([c905907d24ad0e27fde8b5b741406c10d406a3fe](https://github.com/Voxelum/x-minecraft-launcher/commit/c905907d24ad0e27fde8b5b741406c10d406a3fe))
+- Remove unnecessary indent before the error log ([d883e472ab1a3248426cd4e48a8df3ec93376a71](https://github.com/Voxelum/x-minecraft-launcher/commit/d883e472ab1a3248426cd4e48a8df3ec93376a71))
+- Adjust the page title ([9d6529ae76eb96a4f4015f59d6332aaa9b2ae26f](https://github.com/Voxelum/x-minecraft-launcher/commit/9d6529ae76eb96a4f4015f59d6332aaa9b2ae26f))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+### @xmcl/runtime@0.26.0
+#### Features
+
+- Support github/gitlab drop link import mods ([34dc3d9045c19d314d9614a449c2a90981760674](https://github.com/Voxelum/x-minecraft-launcher/commit/34dc3d9045c19d314d9614a449c2a90981760674))
+#### Bug Fixes
+
+- Use BMCL API for fabric api ([96fa2686a07f8f11e91ef74e24773cbdbc03e382](https://github.com/Voxelum/x-minecraft-launcher/commit/96fa2686a07f8f11e91ef74e24773cbdbc03e382))
+- New curseforge import progress ([55fdd913ec2cac194a6918217f79add8b9adb6e9](https://github.com/Voxelum/x-minecraft-launcher/commit/55fdd913ec2cac194a6918217f79add8b9adb6e9))
+- Handle unofficial version json install ([9c259ad223fcb552df0df0ea5b164caa6c348866](https://github.com/Voxelum/x-minecraft-launcher/commit/9c259ad223fcb552df0df0ea5b164caa6c348866))
+- Correct handle http error and hint user ([47a3098adff6ae48a8265381882c3044db9c5f6d](https://github.com/Voxelum/x-minecraft-launcher/commit/47a3098adff6ae48a8265381882c3044db9c5f6d))
+- Narrow the ms oauth scope ([8e59dfdc92289a9df567ec7753d9ad1af1836b9a](https://github.com/Voxelum/x-minecraft-launcher/commit/8e59dfdc92289a9df567ec7753d9ad1af1836b9a))
+- Capture more user login error and prevent it to block launch ([2ea9cdce39b89520306d19fb163dde64897bbd4d](https://github.com/Voxelum/x-minecraft-launcher/commit/2ea9cdce39b89520306d19fb163dde64897bbd4d))
+- Update to new curseforge API ([c905907d24ad0e27fde8b5b741406c10d406a3fe](https://github.com/Voxelum/x-minecraft-launcher/commit/c905907d24ad0e27fde8b5b741406c10d406a3fe))
+#### Dependencies Updates
+
+- Dependency @xmcl/runtime-api bump **minor**
+
+
 ## 0.27.4
 ### @xmcl/keystone-ui@0.26.4
 #### Bug Fixes
