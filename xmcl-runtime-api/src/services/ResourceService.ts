@@ -8,8 +8,8 @@ export declare type FileTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 
 
 export interface ParseResourceOptions {
   /**
-     * The real file path of the resource
-     */
+   * The real file path of the resource
+   */
   path: string
   /**
     * The hint for the import file type
@@ -24,6 +24,7 @@ export interface ParseResourceOptions {
     */
   url?: string[]
 }
+
 export interface ImportResourceOptions extends ParseResourceOptions {
   /**
    * Require the resource to be these specific domain

@@ -597,6 +597,9 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         }
         return [resource, undefined] as const
       })
+    if (options.url) {
+      resolved.uri.unshift(...options.url)
+    }
     return [resolved, icon] as const
   }
 

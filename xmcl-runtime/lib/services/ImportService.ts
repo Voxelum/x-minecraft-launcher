@@ -1,7 +1,11 @@
-import { ImportFileOptions, ImportService as IImportService, ImportServiceKey, isModpackResource, isModResource, isResourcePackResource, isSaveResource, ResourceDomain } from '@xmcl/runtime-api'
-import { unlink } from 'fs-extra'
-import { join } from 'path'
+import { DownloadTask } from '@xmcl/installer'
+import { ImportFileOptions, ImportService as IImportService, ImportServiceKey, ImportUrlOptions, isModpackResource, isModResource, isResourcePackResource, isSaveResource, Resource, ResourceDomain } from '@xmcl/runtime-api'
+import { createHash } from 'crypto'
+import { ensureFile, unlink } from 'fs-extra'
+import { basename, join } from 'path'
+import { URL } from 'url'
 import LauncherApp from '../app/LauncherApp'
+import { parseSourceControlUrl } from '../util/sourceControlUrlParser'
 import { ZipTask } from '../util/zip'
 import { InstanceIOService } from './InstanceIOService'
 import { InstanceModsService } from './InstanceModsService'
@@ -127,5 +131,58 @@ export class ImportService extends AbstractService implements IImportService {
       }
     }
     // return result
+  }
+
+  async previewUrl(options: ImportUrlOptions): Promise<Resource | undefined> {
+    const result = await this.processUrl(options.url)
+
+    if (result) {
+      const [resource] = await this.resourceService.resolveResource({
+        path: result.destination,
+        url: [result.url, options.url],
+      })
+      return resource
+    }
+
+    return undefined
+  }
+
+  private async processUrl(url: string) {
+    if (url.startsWith('https://github.com') || url.startsWith('https://gitlab.com')) {
+      const resolved = new URL(url)
+      if (resolved.pathname.endsWith('.jar') || resolved.pathname.endsWith('.mrpack') || resolved.pathname.endsWith('.zip')) {
+        url = parseSourceControlUrl(url)
+        const response = await this.networkManager.request.head(url)
+        if (response.headers['content-type'] === 'application/octet-stream') {
+          const md5 = response.headers['content-md5']
+          let fileName = basename(url)
+          if (response.headers['content-disposition'] && response.headers['content-disposition'].startsWith('attachment;')) {
+            let disposition = response.headers['content-disposition']
+            const start = disposition.indexOf('filename=')
+            disposition = disposition.substring(start)
+            let end = disposition.indexOf(';')
+            if (end === -1) {
+              end = disposition.length
+            }
+            disposition = disposition.substring(0, end).trim()
+            fileName = disposition
+          }
+          const destination = this.getTempPath(createHash('sha1').update(url).digest('hex'), fileName)
+          await ensureFile(destination)
+          await this.submit(new DownloadTask({
+            ...this.networkManager.getDownloadBaseOptions(),
+            url: url,
+            validator: typeof md5 === 'string'
+              ? {
+                hash: md5,
+                algorithm: 'md5',
+              }
+              : undefined,
+            destination,
+          }))
+          return { destination, fileName, url }
+        }
+      }
+    }
   }
 }

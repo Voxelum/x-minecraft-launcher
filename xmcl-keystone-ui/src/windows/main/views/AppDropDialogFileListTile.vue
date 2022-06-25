@@ -11,11 +11,21 @@
       </v-icon>
     </v-list-item-avatar>
     <v-list-item-content style="">
-      <v-list-item-title :style="{ 'text-decoration': disabled ? 'line-through' : 'none' }">
+      <v-list-item-title
+        :class="{ 'text-gray-400': disabled }"
+      >
         {{ value.name }}
       </v-list-item-title>
       <v-list-item-subtitle>
-        {{ (value.size / 1024 / 1024).toFixed(2) }} MB
+        <template v-if="value.url && (value.status === 'loading' || value.status === 'failed')">
+          {{ value.url[0] }}
+        </template>
+        <template v-else>
+          {{ getExpectedSize(value.size, 'B') }}
+          <template v-if="value.url && value.url[0]">
+            {{ value.url.find(v => v.startsWith('http')) }}
+          </template>
+        </template>
       </v-list-item-subtitle>
     </v-list-item-content>
     <v-list-item-action class="flex flex-row gap-4 justify-end items-center">
@@ -26,7 +36,7 @@
         {{ t('existed') }} {{ typeName }}
       </v-chip>
       <v-chip
-        v-else
+        v-else-if="typeName"
         label
         outlined
         color="white"
@@ -46,7 +56,7 @@
       >
         <v-icon
           color="error"
-          @click="$emit('remove')"
+          @click="emit('remove')"
         >
           close
         </v-icon>
@@ -67,7 +77,10 @@
         </v-icon>
       </v-btn>
 
-      <v-icon v-else>
+      <v-icon
+        v-else
+        color="red"
+      >
         error_outline
       </v-icon>
     </v-list-item-action>
@@ -77,6 +90,7 @@
 <script lang=ts setup>
 import { useI18n } from '/@/composables'
 import { FilePreview } from '/@/composables/dropService'
+import { getExpectedSize } from '/@/util/size'
 
 const iconMap: Record<string, string> = {
   forge: '$vuetify.icons.package',
@@ -95,21 +109,24 @@ const props = defineProps<{ value: FilePreview }>()
 const emit = defineEmits(['enable', 'remove'])
 
 const { tc, t } = useI18n()
-const disabled = computed(() => props.value.type === 'unknown' ||
+const disabled = computed(() => props.value.result?.type === 'unknown' ||
       props.value.status !== 'idle')
 const enabled = computed({
   get() { return props.value.enabled },
   set(v) { emit('enable', v) },
 })
 
-const icon = computed(() => iconMap[props.value.type] ?? 'device_unknown')
+const icon = computed(() => props.value.result ? iconMap[props.value.result?.type] ?? 'question_mark' : 'question_mark')
 const tryEnable = () => {
   if (!disabled.value) {
     emit('enable')
   }
 }
 const typeName = computed(() => {
-  switch (props.value.type) {
+  if (!props.value.result?.type) {
+    return ''
+  }
+  switch (props.value.result.type) {
     case 'forge': return 'Forge Mod'
     case 'fabric': return 'Fabric Mod'
     case 'resourcepack': return tc('resourcepack.name', 0)
@@ -122,7 +139,7 @@ const typeName = computed(() => {
     case 'unknown':
       return t('universalDrop.unknownResource')
     default:
-      return props.value.type
+      return props.value.result.type
   }
 })
 </script>

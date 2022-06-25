@@ -1,3 +1,4 @@
+import { Resource, ResourceDomain } from '../entities/resource.schema'
 import { ImportResourceOptions as _ImportFileOptions } from './ResourceService'
 import { ServiceKey } from './Service'
 export interface ImportModpackPolicy {
@@ -48,6 +49,31 @@ export interface ImportFileOptions extends _ImportFileOptions {
    */
   installToInstance?: string | boolean
 }
+
+export interface ImportOptionsBase {
+  /**
+   * Override the setting for importing modpack
+   */
+  modpackPolicy?: ImportModpackPolicy
+  /**
+  * Override the setting for importing save
+  */
+  savePolicy?: ImportSavePolicy
+  /**
+  * Should install this mod/resource pack to an instance?
+  *
+  * - If `true`, it will apply to current selected instance.
+  * - If string, which should be a instance path, it will apply to the instance setting.
+  * @default true
+  */
+  installToInstance?: string | boolean
+}
+
+export interface ImportUrlOptions extends ImportOptionsBase {
+  url: string
+
+  domain?: ResourceDomain
+}
 /**
  * The universal import file service. Can import a modpack
  */
@@ -62,6 +88,8 @@ export interface ImportService {
    * - For modpack, you can override the setting in `modpackPolicy`
    */
   importFile(options: ImportFileOptions): Promise<void>
+
+  previewUrl(options: ImportUrlOptions): Promise<Resource | undefined>
 }
 
 export const ImportServiceKey: ServiceKey<ImportService> = 'ImportService'
