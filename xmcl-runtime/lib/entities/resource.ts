@@ -215,6 +215,8 @@ export async function persistResource(resolved: Resource, repository: string, so
     builder.github = source.github
   }
 
+  builder.uri = [...new Set(builder.uri)]
+
   const name = filenamify(suggestedName, { replacement: '-' })
   let fileName = name
   let location = join(builder.domain, fileName)

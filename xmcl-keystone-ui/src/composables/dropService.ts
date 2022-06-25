@@ -1,10 +1,16 @@
 import { InjectionKey, Ref } from '@vue/composition-api'
-import { BaseServiceKey, isPersistedResource, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, ImportServiceKey, isPersistedResource, Resource, ResourceDomain, ResourceServiceKey, ResourceType } from '@xmcl/runtime-api'
+import { basename } from '../util/basename'
 import { useService } from './service'
 
-export interface FilePreview extends Resource {
+export interface FilePreview {
   enabled: boolean
   status: 'loading' | 'idle' | 'failed' | 'saved'
+  name: string
+  path: string
+  url?: string[]
+  size: number
+  result: Resource | undefined
 }
 
 export interface DropService {
@@ -25,17 +31,58 @@ export function useDropService() {
   const previews = ref([] as FilePreview[])
   const { resolveResources } = useService(ResourceServiceKey)
   const { handleUrl } = useService(BaseServiceKey)
+  const { previewUrl } = useService(ImportServiceKey)
   async function onDrop(event: DragEvent) {
     const dataTransfer = event.dataTransfer!
+    console.log(dataTransfer.types[0])
+    console.log(dataTransfer.dropEffect)
+    console.log(dataTransfer.getData('text/html'))
+    console.log(dataTransfer.getData('text/plain'))
     if (dataTransfer.items.length > 0) {
       for (let i = 0; i < dataTransfer.items.length; ++i) {
         const item = dataTransfer.items[i]
         if (item.kind === 'string') {
-          item.getAsString((content) => {
-            if (content.startsWith('authlib-injector:yggdrasil-server:')) {
-              handleUrl(content)
-            }
+          const content = await new Promise<string>((resolve) => {
+            item.getAsString((content) => {
+              resolve(content)
+            })
           })
+          if (content.startsWith('authlib-injector:yggdrasil-server:')) {
+            handleUrl(content)
+          } else if (content.startsWith('https://github.com/') || content.startsWith('https://gitlab.com')) {
+            const existed = previews.value.find(v => v.url && v.url.some(v => v === content))
+            const object: FilePreview = existed ?? reactive({
+              url: [content],
+              size: -1,
+              path: '',
+              name: basename(new URL(content).pathname),
+              status: 'loading' as const,
+              enabled: false,
+              result: undefined,
+            })
+
+            if (!existed || existed.status === 'failed') {
+              const promise = previewUrl({ url: content })
+              promise.then((result) => {
+                object.result = result
+                if (result) {
+                  object.size = result?.size
+                  object.name = result.name
+                  object.path = result.path
+                  object.status = 'idle'
+                  object.url = result.uri
+                } else {
+                  object.status = 'failed'
+                }
+              }, () => {
+                object.status = 'failed'
+              })
+            }
+
+            if (!existed) {
+              previews.value.push(object)
+            }
+          }
           break
         }
       }
@@ -58,14 +105,14 @@ export function useDropService() {
       previews.value.push({
         ...r,
         name: f.name,
-        size: f.size,
+        size: r.size,
+        result: r,
         enabled: isPersistedResource(r),
         status: isPersistedResource(r) && r.domain !== ResourceDomain.Unknown ? 'saved' : 'idle',
       })
     }
     dragover.value = false
-    console.log(result)
-    if (result.length === 0) {
+    if (previews.value.length === 0) {
       cancel()
     }
   }
