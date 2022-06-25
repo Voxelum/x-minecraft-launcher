@@ -7,8 +7,8 @@ export function useColorTheme() {
   const lightAppBarColor = useLocalStorageCacheStringValue<string>('lightAppBarColor', '')
   const lightSideBarColor = useLocalStorageCacheStringValue<string>('lightSideBarColor', '')
 
-  const darkAppBarColor = useLocalStorageCacheStringValue<string>('darkAppBarColor', '#111111')
-  const darkSideBarColor = useLocalStorageCacheStringValue<string>('darkSideBarColor', '#111111')
+  const darkAppBarColor = useLocalStorageCacheStringValue<string>('darkAppBarColor', '#111111FF')
+  const darkSideBarColor = useLocalStorageCacheStringValue<string>('darkSideBarColor', '#111111FF')
 
   const darkPrimaryColor = useLocalStorageCacheStringValue<string>('darkPrimaryColor', '#4caf50')
   const darkBackground = useLocalStorageCacheStringValue<string>('darkBackground', '#121212')
@@ -119,8 +119,8 @@ export function useColorTheme() {
   })
 
   function resetDarkToDefault() {
-    darkAppBarColor.value = '#111111'
-    darkSideBarColor.value = '#111111'
+    darkAppBarColor.value = '#111111F'
+    darkSideBarColor.value = '#111111F'
     darkPrimaryColor.value = '#4caf50'
     darkBackground.value = '#121212'
     darkInfoColor.value = '#2196F3'
