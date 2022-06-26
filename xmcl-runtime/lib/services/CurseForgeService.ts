@@ -7,6 +7,7 @@ import { URLSearchParams } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { getCurseforgeSourceInfo } from '../entities/resource'
 import { PersistFileCache } from '../util/cache'
+import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { requireObject, requireString } from '../util/object'
 import { ResourceService } from './ResourceService'
 import { Inject, Singleton, StatefulService } from './Service'
@@ -131,7 +132,7 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
       const imageUrl = project.screenshots[0]?.thumbnailUrl
       const task = new DownloadTask({
         ...networkManager.getDownloadBaseOptions(),
-        url: file.downloadUrl,
+        url: file.downloadUrl ?? guessCurseforgeFileUrl(file.id, file.fileName),
         destination,
       }).setName('installCurseforgeFile')
       const promise = this.submit(task)

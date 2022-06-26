@@ -10,6 +10,7 @@ import { Entry, ZipFile } from 'yauzl'
 import LauncherApp from '../app/LauncherApp'
 import { readMetadata, resolveInstanceOptions } from '../entities/modpack'
 import { getCurseforgeUrl } from '../entities/resource'
+import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { isFile, sha1ByPath } from '../util/fs'
 import { requireObject } from '../util/object'
 import { joinUrl } from '../util/url'
@@ -410,11 +411,11 @@ export class ModpackService extends AbstractService implements IModpackService {
               if (!file) {
                 failed = true
                 curseforgeFiles.push(batch[i])
-              } else if (file.downloadUrl) {
+              } else {
                 const domain = file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
                 const sha1 = file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value
                 infos.push({
-                  downloads: [file.downloadUrl],
+                  downloads: [file.downloadUrl ?? guessCurseforgeFileUrl(file.id, file.fileName)],
                   destination: join(root, domain, file.fileName),
                   hashes: sha1
                     ? {
@@ -428,9 +429,9 @@ export class ModpackService extends AbstractService implements IModpackService {
                     },
                   },
                 })
-              } else {
+              }/*  else {
                 missingFiles.push({ projectId: file.modId, fileId: file.id })
-              }
+              } */
             }
             if (failed && batchCount > 2) {
               batchCount /= 2
