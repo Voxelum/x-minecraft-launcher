@@ -1,4 +1,21 @@
 
+## 0.28.1
+### @xmcl/runtime-api@0.12.1
+#### Bug Fixes
+
+- Make task message more detailed ([d543f178182db1eff86514ffa71c8a1ec3cac338](https://github.com/Voxelum/x-minecraft-launcher/commit/d543f178182db1eff86514ffa71c8a1ec3cac338))
+### @xmcl/keystone-ui@0.27.1
+#### Bug Fixes
+
+- Wrong preview modpack behavior ([a0fb18cb7746a5f929e8a3dbbcde0e7087c8ffc9](https://github.com/Voxelum/x-minecraft-launcher/commit/a0fb18cb7746a5f929e8a3dbbcde0e7087c8ffc9))
+- Make task message more detailed ([d543f178182db1eff86514ffa71c8a1ec3cac338](https://github.com/Voxelum/x-minecraft-launcher/commit/d543f178182db1eff86514ffa71c8a1ec3cac338))
+### @xmcl/runtime@0.26.1
+#### Bug Fixes
+
+- Make task message more detailed ([d543f178182db1eff86514ffa71c8a1ec3cac338](https://github.com/Voxelum/x-minecraft-launcher/commit/d543f178182db1eff86514ffa71c8a1ec3cac338))
+- Guess curseforge url if it's not presented ([3660b21c49b671c7cbd7626154cb13818af07af1](https://github.com/Voxelum/x-minecraft-launcher/commit/3660b21c49b671c7cbd7626154cb13818af07af1))
+
+
 ## 0.28.0
 ### @xmcl/runtime-api@0.12.0
 #### Features
