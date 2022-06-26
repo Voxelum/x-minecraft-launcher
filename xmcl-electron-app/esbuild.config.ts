@@ -8,6 +8,7 @@ import plugin7Zip from './plugins/esbuild.native.plugin'
 import pluginStatic from './plugins/esbuild.static.plugin'
 import { yamlPlugin } from 'esbuild-plugin-yaml'
 import { BuildOptions } from 'esbuild'
+import 'dotenv/config'
 
 const config: BuildOptions = {
   bundle: true,
