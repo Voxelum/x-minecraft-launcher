@@ -24,10 +24,9 @@
         <img
           ref="icon"
           v-fallback-img="unknownPack"
-          class="rounded-lg"
+          class="rounded-lg object-contain"
           :src="source.icon"
           style="min-height: 126px; max-height: 126px; max-width: 126px; min-width: 126px"
-          contain
         >
       </v-flex>
       <v-flex class="flex-grow py-2 flex-col gap-3">

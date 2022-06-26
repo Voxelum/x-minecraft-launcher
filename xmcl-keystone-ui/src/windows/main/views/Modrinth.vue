@@ -66,7 +66,6 @@
           v-ripple
           :disabled="refreshing"
           :value="mod"
-          hoverable
           class="cursor-pointer"
           @filter="onFiltered"
           @click="push(`/modrinth/${mod.project_id}`)"

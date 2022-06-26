@@ -3,7 +3,6 @@
     id="curseforge-icon"
     version="1.1"
     xmlns="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
     x="0px"
     y="0px"
     viewBox="-2017 853 43 23"

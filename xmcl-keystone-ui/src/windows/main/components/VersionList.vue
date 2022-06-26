@@ -61,7 +61,6 @@
     <Hint
       v-else
       v-ripple
-      style="cursor: pointer"
       class="flex-grow"
       icon="refresh"
       :text="refreshText"

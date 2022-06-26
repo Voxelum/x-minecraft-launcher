@@ -1,7 +1,6 @@
 <template>
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    xmlns:xlink="http://www.w3.org/1999/xlink"
     viewBox="0 0 32 32"
   >
     <defs>
@@ -32,7 +31,6 @@
         y1="23.756"
         x2="21.099"
         y2="23.756"
-        xlink:href="#a"
       />
       <linearGradient
         id="c"
@@ -40,7 +38,6 @@
         y1="21.456"
         x2="21.099"
         y2="21.456"
-        xlink:href="#a"
       />
       <linearGradient
         id="d"
@@ -48,7 +45,6 @@
         y1="19.156"
         x2="21.099"
         y2="19.156"
-        xlink:href="#a"
       />
       <linearGradient
         id="e"
@@ -56,7 +52,6 @@
         y1="16.857"
         x2="21.099"
         y2="16.857"
-        xlink:href="#a"
       />
       <linearGradient
         id="f"
@@ -64,7 +59,6 @@
         y1="14.557"
         x2="21.099"
         y2="14.557"
-        xlink:href="#a"
       />
       <linearGradient
         id="g"
@@ -72,7 +66,6 @@
         y1="12.257"
         x2="21.099"
         y2="12.257"
-        xlink:href="#a"
       />
       <linearGradient
         id="h"
@@ -80,7 +73,6 @@
         y1="9.957"
         x2="21.099"
         y2="9.957"
-        xlink:href="#a"
       />
       <linearGradient
         id="i"
@@ -88,7 +80,6 @@
         y1="7.657"
         x2="21.099"
         y2="7.657"
-        xlink:href="#a"
       />
       <linearGradient
         id="j"
@@ -96,7 +87,6 @@
         y1="27.217"
         x2="19.686"
         y2="27.217"
-        xlink:href="#a"
       />
       <linearGradient
         id="k"
@@ -104,7 +94,6 @@
         y1="24.918"
         x2="19.686"
         y2="24.918"
-        xlink:href="#a"
       />
       <linearGradient
         id="l"
@@ -112,7 +101,6 @@
         y1="22.618"
         x2="19.686"
         y2="22.618"
-        xlink:href="#a"
       />
       <linearGradient
         id="m"
@@ -120,7 +108,6 @@
         y1="20.318"
         x2="19.686"
         y2="20.318"
-        xlink:href="#a"
       />
       <linearGradient
         id="n"
@@ -128,7 +115,6 @@
         y1="18.018"
         x2="19.686"
         y2="18.018"
-        xlink:href="#a"
       />
       <linearGradient
         id="o"
@@ -136,7 +122,6 @@
         y1="28.356"
         x2="21.099"
         y2="28.356"
-        xlink:href="#a"
       />
       <linearGradient
         id="p"
@@ -144,7 +129,6 @@
         y1="15.718"
         x2="19.686"
         y2="15.718"
-        xlink:href="#a"
       />
       <linearGradient
         id="q"
@@ -152,7 +136,6 @@
         y1="13.419"
         x2="19.686"
         y2="13.419"
-        xlink:href="#a"
       />
       <linearGradient
         id="r"
@@ -160,7 +143,6 @@
         y1="11.119"
         x2="19.686"
         y2="11.119"
-        xlink:href="#a"
       />
       <linearGradient
         id="s"
@@ -168,7 +150,6 @@
         y1="8.819"
         x2="19.686"
         y2="8.819"
-        xlink:href="#a"
       />
       <linearGradient
         id="t"
@@ -176,7 +157,6 @@
         y1="29.514"
         x2="19.686"
         y2="29.514"
-        xlink:href="#a"
       />
       <linearGradient
         id="u"
@@ -184,7 +164,6 @@
         y1="11.196"
         x2="20.446"
         y2="11.196"
-        xlink:href="#a"
       />
       <linearGradient
         id="v"
@@ -192,7 +171,6 @@
         y1="5.329"
         x2="19.336"
         y2="5.329"
-        xlink:href="#a"
       />
       <linearGradient
         id="w"
@@ -200,7 +178,6 @@
         y1="5.591"
         x2="21.403"
         y2="5.591"
-        xlink:href="#a"
       />
     </defs>
     <title>file_type_zip</title>

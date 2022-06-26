@@ -56,7 +56,7 @@
       </transition-group>
       <delete-dialog
         :width="400"
-        persistance
+        persistent
         :title="t('mod.deletion')"
         @cancel="cancelDelete()"
         @confirm="confirmDelete()"

@@ -8,7 +8,7 @@
       class="justify-center w-full flex flex-grow-0 flex-1"
       style="color: grey;"
     >
-      {{ $t('instanceAge.today') }}
+      {{ t('instanceAge.today') }}
     </div>
     <v-layout
       v-if="instancesByTime[0].length !== 0"
@@ -37,7 +37,7 @@
       class="justify-center w-full flex flex-grow-0 flex-1"
       style="color: grey"
     >
-      {{ $t('instanceAge.threeDay') }}
+      {{ t('instanceAge.threeDay') }}
     </div>
     <v-layout
       v-if="instancesByTime[1].length !== 0"
@@ -63,9 +63,8 @@
       v-if="instancesByTime[2].length !== 0"
       class="justify-center w-full flex flex-grow-0 flex-1"
       style="color: grey"
-      xs12
     >
-      {{ $t('instanceAge.older') }}
+      {{ t('instanceAge.older') }}
     </div>
     <v-layout
       v-if="instancesByTime[2].length !== 0"
@@ -95,9 +94,11 @@
 import { Ref } from '@vue/composition-api'
 import { Instance } from '@xmcl/runtime-api'
 import InstanceCard from './InstancesCard.vue'
+import { useI18n } from '/@/composables'
 
 const props = defineProps<{ instances: Instance[] }>()
 const emit = defineEmits(['select', 'dragstart', 'dragend', 'delete'])
+const { t } = useI18n()
 const now = Date.now()
 const oneDay = 1000 * 60 * 60 * 24
 const threeDays = oneDay * 3

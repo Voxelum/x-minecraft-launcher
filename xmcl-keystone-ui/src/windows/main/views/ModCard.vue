@@ -57,9 +57,8 @@
             <img
               ref="iconImage"
               v-fallback-img="unknownPack"
-              class="rounded"
+              class="rounded object-contain"
               :src="source.icon"
-              contain
             >
           </v-flex>
           <div

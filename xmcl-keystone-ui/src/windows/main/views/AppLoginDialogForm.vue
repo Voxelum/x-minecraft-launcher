@@ -150,10 +150,6 @@ const emit = defineEmits(['route'])
 
 const { hide, isShown, show } = useDialog('login')
 
-// handle the not login issue
-const handler = injection(IssueHandlerKey)
-// IssueHandlerKey.userNotLogined = show
-
 const data = reactive({
   username: '',
   password: '',
@@ -296,39 +292,6 @@ const onMouseEnterLogin = () => {
 const onMouseLeaveLogin = () => {
   hovered.value = false
 }
-
-// return {
-//   ...toRefs(data),
-//   hovered,
-//   isLogining,
-//   authService,
-//   authServiceItem,
-//   authServiceItems,
-//   isOffline,
-//   isMicrosoft,
-
-//   onMouseEnterLogin,
-//   onMouseLeaveLogin,
-
-//   isShown,
-
-//   resetError,
-
-//   login: onLogin,
-
-//   usernameRules,
-//   passwordRules,
-//   usernameErrors,
-//   passwordErrors,
-
-//   isPersistent,
-
-//   accountInput,
-//   history,
-//   form,
-//   showDropHint,
-//   passwordLabel,
-// }
 </script>
 
 <style>

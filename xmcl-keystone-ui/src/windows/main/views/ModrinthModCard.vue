@@ -2,6 +2,7 @@
   <v-card
     v-ripple
     outlined
+    hoverable
     :disabled="disabled"
     hover
     class="rounded-lg p-4"
@@ -48,7 +49,6 @@
           </span>
         </div>
         <div
-          tags
           class="flex gap-2 mt-2"
           @click.stop.prevent
         >

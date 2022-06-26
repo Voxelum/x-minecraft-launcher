@@ -57,7 +57,6 @@
       <div
         ref="leftList"
         class="h-full overflow-auto flex flex-col"
-        flat
         @drop="stopDragging()"
       >
         <v-card
@@ -103,7 +102,6 @@
       <div
         ref="rightList"
         class="h-full overflow-auto flex flex-col"
-        flat
         @drop="stopDragging()"
       >
         <v-card
@@ -165,7 +163,7 @@
     <delete-dialog
       :title="t('resourcepack.deletion', { pack: data.deletingPack ? data.deletingPack.name : '' })"
       :width="400"
-      persistance
+      persistent
       @cancel="stopDelete()"
       @confirm="confirmDeletingPack"
     >

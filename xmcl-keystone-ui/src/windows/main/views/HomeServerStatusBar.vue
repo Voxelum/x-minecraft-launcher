@@ -4,7 +4,6 @@
     style="border-color: transparent !important"
   >
     <i
-      aria-hidden="true"
       class="v-icon material-icons theme-- v-alert__icon"
     >
       <img

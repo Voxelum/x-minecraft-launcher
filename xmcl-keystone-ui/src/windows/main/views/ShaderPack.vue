@@ -52,7 +52,7 @@
       <DeleteDialog
         :title="t('shaderPack.deletion') "
         :width="400"
-        persistance
+        persistent
         @confirm="onConfirmDeleted"
         @cancel="onCancelDelete"
       >
