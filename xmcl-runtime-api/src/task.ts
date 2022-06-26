@@ -35,7 +35,7 @@ export interface TaskPayload extends TaskPayloadBase {
   progress: number
   total: number
   state: TaskState
-  error?: string
+  error?: object
 }
 
 export interface TaskAddedPayload extends TaskPayloadBase {
@@ -69,7 +69,7 @@ export interface TaskUpdatePayload extends TaskPayloadBase {
     */
   to?: string
 
-  error?: string
+  error?: object
 
   progress?: number
 

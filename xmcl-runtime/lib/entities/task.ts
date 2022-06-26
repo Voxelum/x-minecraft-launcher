@@ -68,13 +68,7 @@ export function createTaskMonitor (
   }
   function fail (uuid: string, task: Task<any>, error: any) {
     const partial = getUpdate(uuid, task)
-    let errorMessage: string
-    if (error instanceof Error) {
-      errorMessage = error.toString()
-    } else {
-      errorMessage = JSON.stringify(error, null, 4)
-    }
-    partial.error = errorMessage
+    partial.error = error
     partial.state = task.state
     notify()
   }

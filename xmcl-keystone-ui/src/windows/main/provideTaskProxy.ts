@@ -89,7 +89,7 @@ class ChildrenWatcher {
  * @returns
  */
 export function useTaskManager() {
-  const { $t } = useI18n()
+  const { t } = useI18n()
   const dictionary: Record<string, TaskItem> = {}
   const watchers: Record<string, ChildrenWatcher> = {}
   const throughput = ref(0)
@@ -118,9 +118,9 @@ export function useTaskManager() {
     const item = reactive({
       id: localId,
       taskId: payload.uuid,
-      title: computed(() => $t(payload.path, payload.param)),
+      title: computed(() => t(payload.path, payload.param)),
       time: new Date(payload.time),
-      message: payload.error ?? payload.from ?? payload.to ?? '',
+      message: payload.error ? JSON.stringify(payload.error) : payload.from ?? payload.to ?? '',
       from: payload.from,
       to: payload.to,
       throughput: 0,
@@ -145,7 +145,7 @@ export function useTaskManager() {
       const item = reactive({
         taskId: uuid,
         id: localId,
-        title: computed(() => $t(path, param)),
+        title: computed(() => t(path, param)),
         children,
         time: new Date(time),
         message: from ?? to ?? '',
@@ -187,7 +187,7 @@ export function useTaskManager() {
           item.total = total
         }
         item.time = new Date(time)
-        item.message = error || from || to || item.message
+        item.message = error ? JSON.stringify(error) : (from || to || item.message)
         if (chunkSize) {
           item.throughput += chunkSize
           throughput.value += chunkSize

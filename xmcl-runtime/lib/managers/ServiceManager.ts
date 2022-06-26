@@ -1,10 +1,10 @@
-import { Exception, HTTPException, InstallServiceKey, ServiceKey } from '@xmcl/runtime-api'
+import { ServiceKey } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
-import { HTTPError, RequestError } from 'got'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
 import { Client } from '../engineBridge'
 import { AbstractService, PARAMS_SYMBOL, ServiceConstructor, StatefulService } from '../services/Service'
+import { serializeError } from '../util/error'
 import { ObjectRegistry } from '../util/objectRegistry'
 
 interface ServiceCallSession {
@@ -91,68 +91,9 @@ export default class ServiceManager extends Manager {
       } else {
         this.error(JSON.stringify(e))
       }
-      const error: any = {
-        serviceName,
-        serviceMethod,
-      }
-
-      if (e instanceof HTTPError) {
-        const err = e
-        // eslint-disable-next-line no-ex-assign
-        e = new HTTPException({
-          type: 'httpException',
-          code: err.code,
-          url: err.response.url,
-          statusCode: err.response.statusCode,
-          body: err.response.body,
-        })
-      }
-
-      if (e instanceof RequestError) {
-        const err = e
-        // eslint-disable-next-line no-ex-assign
-        e = new HTTPException({
-          type: 'httpException',
-          code: err.code,
-          url: err.options.url,
-          statusCode: 0,
-          body: '',
-        })
-      }
-
-      if (e instanceof Error) {
-        try {
-          Object.assign(error, JSON.parse(JSON.stringify(e, (key, val) => {
-            if (val instanceof HTTPError) {
-              return new HTTPException({
-                type: 'httpException',
-                code: val.code,
-                url: val.response.url,
-                statusCode: val.response.statusCode,
-                body: val.response.body,
-              })
-            }
-            if (val instanceof RequestError) {
-              return new HTTPException({
-                type: 'httpException',
-                code: val.code,
-                url: val.options.url,
-                statusCode: 0,
-                body: '',
-              })
-            }
-            return val
-          })))
-        } catch (e) { }
-        error.message = e.message
-        error.stack = e.stack
-        error.name = e.name
-      } else {
-        if (error) {
-          error.message = error.toString()
-        }
-        error.exception = { type: 'GeneralException' }
-      }
+      const error = serializeError(e)
+      error.serviceName = serviceName
+      error.serviceMethod = serviceMethod
       return { error }
     } finally {
       delete this.sessions[id]

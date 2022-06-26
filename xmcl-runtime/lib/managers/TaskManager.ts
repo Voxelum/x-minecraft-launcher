@@ -5,6 +5,7 @@ import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
 import { Client } from '../engineBridge'
 import { createTaskPusher, mapTaskToTaskPayload, TaskEventEmitter } from '../entities/task'
+import { serializeError } from '../util/error'
 
 export default class TaskManager extends Manager {
   readonly emitter: TaskEventEmitter = new EventEmitter()
@@ -36,14 +37,9 @@ export default class TaskManager extends Manager {
         emitter.emit('update', uid, task, chunkSize)
       },
       onFailed(task: Task<any>, error: any) {
-        emitter.emit('fail', uid, task, error)
-        let errorMessage: string
-        if (error instanceof Error) {
-          errorMessage = error.toString()
-        } else {
-          errorMessage = JSON.stringify(error, null, 4)
-        }
-        Reflect.set(task, 'error', errorMessage)
+        const e = serializeError(error)
+        emitter.emit('fail', uid, task, e)
+        Reflect.set(task, 'error', e)
       },
       onSucceed(task: Task<any>, result: any) {
         emitter.emit('success', uid, task)
