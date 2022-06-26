@@ -22,7 +22,7 @@
         <v-divider />
         <v-stepper-step
           :rules="[() => valid]"
-          :editable="!creating"
+          editable
           :complete="step > 2"
           step="2"
         >
@@ -127,7 +127,7 @@ const selectedTemplate: Ref<Template | undefined> = ref(undefined)
 
 const isModpackContentShown = computed(() => step.value === 3)
 const selectedTemplateName = computed(() => selectedTemplate.value?.name ?? '')
-const canPreview = computed(() => selectedTemplate.value?.source.type !== 'instance')
+const canPreview = computed(() => selectedTemplate.value?.source && selectedTemplate.value?.source.type !== 'instance')
 
 function quit() {
   if (creating.value) return

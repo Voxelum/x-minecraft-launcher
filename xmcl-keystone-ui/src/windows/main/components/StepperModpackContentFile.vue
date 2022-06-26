@@ -52,14 +52,19 @@ export default defineComponent({
       refresh()
     })
     const project: Ref<AddonInfo | undefined> = ref(undefined)
-    const image = computed(() => project.value?.attachments[0] ? project.value.attachments[0].thumbnailUrl : '')
+    const image = computed(() => project.value?.logo ? project.value.logo.thumbnailUrl : '')
     const { refresh, refreshing } = useRefreshable(async () => {
       const result = await fetchProject(props.projectId)
       project.value = result
+      console.log(result)
     })
     function onClick() {
-      if (project.value?.websiteUrl) {
-        openInBrowser(project.value.websiteUrl)
+      if (project.value?.slug) {
+        if (project.value.classId === 6) {
+          openInBrowser(`https://www.curseforge.com/minecraft/mc-mods/${project.value.slug}`)
+        } else if (project.value.classId === 12) {
+          openInBrowser(`https://www.curseforge.com/minecraft/texture-packs/${project.value.slug}`)
+        }
       }
     }
     return {
