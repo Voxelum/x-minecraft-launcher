@@ -49,7 +49,6 @@
             v-for="s of saves"
             :key="s.path"
             :source="s"
-            :delete-save="startDelete"
             :export-save="doExport"
             @dragstart="dragging = true"
             @dragend="dragging = false"

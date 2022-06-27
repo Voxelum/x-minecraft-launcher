@@ -1,4 +1,4 @@
-import { Resource, ResourceDomain } from '../entities/resource.schema'
+import { Resource, ResourceDomain } from '../entities/resource'
 import { ImportResourceOptions as _ImportFileOptions } from './ResourceService'
 import { ServiceKey } from './Service'
 export interface ImportModpackPolicy {

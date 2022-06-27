@@ -1,11 +1,11 @@
 import { HashAlgo } from '@xmcl/curseforge'
 import { DownloadTask, UnzipTask } from '@xmcl/installer'
-import { CurseforgeModpackManifest, EditGameSettingOptions, ExportModpackOptions, getResolvedVersion, ImportModpackOptions, isAllowInModrinthModpack, isResourcePackResource, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoAddon, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, PersistedResource, ResourceDomain, SourceInformation } from '@xmcl/runtime-api'
+import { CurseforgeModpackManifest, EditGameSettingOptions, ExportModpackOptions, getResolvedVersion, ImportModpackOptions, isAllowInModrinthModpack, isResourcePackResource, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoAddon, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, PersistedResource, ResourceDomain, ResourceSources } from '@xmcl/runtime-api'
 import { MultipleError, task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { existsSync } from 'fs'
 import { ensureDir, stat, unlink } from 'fs-extra'
-import { basename, join } from 'path'
+import { basename, extname, join } from 'path'
 import { Entry, ZipFile } from 'yauzl'
 import LauncherApp from '../app/LauncherApp'
 import { readMetadata, resolveInstanceOptions } from '../entities/modpack'
@@ -30,7 +30,7 @@ interface ModpackDownloadableFile {
   destination: string
   downloads: string[]
   hashes: Record<string, string>
-  source: SourceInformation
+  source: ResourceSources
 }
 /**
  * Provide the abilities to import/export instance from/to modpack
@@ -146,7 +146,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     for (const file of files) {
       const filePath = join(instancePath, file.path)
       if (file.path.startsWith('mods/') || file.path.startsWith('resourcepacks/') || file.path.startsWith('shaderpacks/')) {
-        let resource = this.resourceService.state.mods.find((i) => (i.domain + '/' + i.fileName + i.ext) === file.path)
+        let resource = this.resourceService.state.mods.find((i) => (i.domain + '/' + i.fileName) === file.path)
         if (!resource) {
           const ino = await stat(filePath)
           resource = this.resourceService.getResourceByKey(ino.ino) as any
@@ -277,9 +277,9 @@ export class ModpackService extends AbstractService implements IModpackService {
         resources.filter(r => isResourcePackResource(r)).map((r) => {
           const cfUri = r.uri.find(u => u.startsWith('https://edge.forgecdn.net'))
           if (cfUri) {
-            return [r.fileName + r.ext, basename(cfUri)] as const
+            return [r.fileName, basename(cfUri)] as const
           }
-          return [r.fileName + r.ext, r.name + r.ext] as const
+          return [r.fileName, r.name + extname(r.fileName)] as const
         }).forEach(([currentName, expectedName]) => {
           resourcePacksMapping[expectedName] = currentName
         })
@@ -333,7 +333,7 @@ export class ModpackService extends AbstractService implements IModpackService {
         for (const res of newResources) {
           if (res.domain === ResourceDomain.ResourcePacks) {
             const fileName = basename(mapping[`${res.curseforge!.projectId}:${res.curseforge!.fileId}`])
-            resourcePacksMapping[fileName] = res.fileName + res.ext
+            resourcePacksMapping[fileName] = res.fileName
           }
         }
 
@@ -392,7 +392,7 @@ export class ModpackService extends AbstractService implements IModpackService {
       destination: string
       downloads: string[]
       hashes: Record<string, string>
-      source: SourceInformation
+      source: ResourceSources
     }
 
     return task('installModpack', async function () {

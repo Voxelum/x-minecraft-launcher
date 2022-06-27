@@ -1,6 +1,6 @@
 import { computed, ref, Ref, watch } from '@vue/composition-api'
 import { FabricModMetadata } from '@xmcl/mod-parser'
-import { AnyResource, Compatible, FabricResource, ForgeResource, InstanceModsServiceKey, InstanceServiceKey, isModCompatible, isModResource, isPersistedResource, LiteloaderResource, ModrinthInformation, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { AnyResource, Compatible, FabricResource, ForgeResource, InstanceModsServiceKey, InstanceServiceKey, isModCompatible, isModResource, isPersistedResource, LiteloaderResource, Resource, ResourceDomain, ResourceServiceKey, ResourceSourceModrinth } from '@xmcl/runtime-api'
 import { useServiceBusy, useService, useRefreshable } from '/@/composables'
 import { isStringArrayEquals } from '/@/util/equal'
 
@@ -72,7 +72,7 @@ export interface ModItem {
     fileId: number
   }
 
-  modrinth?: ModrinthInformation
+  modrinth?: ResourceSourceModrinth
 
   resource: Resource
 }
@@ -163,7 +163,7 @@ export function useInstanceMods() {
       name: resource.path,
       version: '',
       description: '',
-      icon: isPersisted ? resource.iconUri : '',
+      icon: isPersisted ? resource.iconUrl ?? '' : '',
       compatible: computed(() => isModCompatible(resource, instanceState.instance.runtime)),
       type: 'forge',
       url: getUrl(resource),

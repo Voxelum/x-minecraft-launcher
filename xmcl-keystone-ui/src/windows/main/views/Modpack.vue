@@ -153,7 +153,7 @@ function getModpackItem (resource: ModpackResources): ModpackItem {
     resource,
     id: resource.path,
     size: resource.size,
-    icon: resource.iconUri,
+    icon: resource.iconUrl,
     name: resource.type === ResourceType.CurseforgeModpack || resource.type === ResourceType.McbbsModpack || resource.type === ResourceType.ModrinthModpack ? resource.metadata.name : '',
     version: resource.type === ResourceType.CurseforgeModpack || resource.type === ResourceType.McbbsModpack ? resource.metadata.version : resource.type === ResourceType.ModrinthModpack ? resource.metadata.versionId : '',
     author: resource.type === ResourceType.CurseforgeModpack || resource.type === ResourceType.McbbsModpack ? resource.metadata.author : '',

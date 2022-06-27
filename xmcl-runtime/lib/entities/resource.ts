@@ -1,12 +1,15 @@
-import { AnyPersistedResource, AnyResource, FileTypeHint, PersistedResource, PersistedResourceSchema, Resource, ResourceDomain, ResourceType, SourceInformation } from '@xmcl/runtime-api'
+import { AnyPersistedResource, AnyResource, FileTypeHint, PersistedResource, Resource, ResourceDomain, ResourceMetadata, ResourceType, ResourceSources } from '@xmcl/runtime-api'
 import { FileSystem, openFileSystem } from '@xmcl/system'
+import { ClassicLevel } from 'classic-level'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { ensureFile, rename, stat, Stats, unlink, writeFile } from 'fs-extra'
 import { basename, dirname, extname, join, resolve } from 'path'
-import { FileType, linkOrCopy } from '../util/fs'
+import { fileType as getFileType, FileType, linkOrCopy, checksum } from '../util/fs'
 import resourceParsers from './resourceParsers'
 import { forgeModParser } from './resourceParsers/forgeMod'
+import { AbstractLevel, AbstractSublevel } from 'abstract-level'
+import { ParseResourceContext } from '../services/ResourceService'
 
 export interface FileStat extends Omit<Stats, 'isFile' | 'isDirectory' | 'isBlockDevice' | 'isCharacterDevice' | 'isSymbolicLink' | 'isFIFO' | 'isSocket'> {
   isFile: boolean
@@ -16,6 +19,68 @@ export interface FileStat extends Omit<Stats, 'isFile' | 'isDirectory' | 'isBloc
   isSymbolicLink: boolean
   isFIFO: boolean
   isSocket: boolean
+}
+
+/**
+ * The indexer for a specific resource domain
+ */
+export class ResourceDomainIndexer<T> {
+  private hashSet: AbstractLevel<string | Buffer, string, string>
+  private uriIndex: AbstractSublevel<any, string | Buffer, string, string>
+  private keywordIndex: AbstractSublevel<any, string | Buffer, string, string[]>
+
+  constructor(readonly parent: ClassicLevel<string, ResourceMetadata<any>>, name: string) {
+    this.hashSet = parent.sublevel<string, string>(name, { keyEncoding: 'hex' })
+    this.uriIndex = this.hashSet.sublevel<string, string>('uri-index', { valueEncoding: 'hex' })
+    this.keywordIndex = this.hashSet.sublevel<string, string[]>('keyword-index', { valueEncoding: 'json' })
+  }
+
+  async put(resource: ResourceMetadata<T>) {
+    const batch = this.hashSet.batch()
+
+    batch.put(resource.hash, '')
+
+    for (const uri of resource.uri) {
+      batch.put(uri, resource.hash, { sublevel: this.uriIndex })
+    }
+
+    const existed = await this.keywordIndex.getMany(resource.tags)
+    for (let i = 0; i < existed.length; i++) {
+      const resourceHashes = existed[i]
+      if (resourceHashes) {
+        batch.put(resource.tags[i], [...resourceHashes, resource.hash], { sublevel: this.keywordIndex })
+      } else {
+        batch.put(resource.tags[i], [resource.hash], { sublevel: this.keywordIndex })
+      }
+    }
+
+    await batch.write()
+  }
+
+  async del(resource: ResourceMetadata<T> | string) {
+    const key = typeof resource === 'string' ? resource : resource.hash
+    const res = typeof resource === 'string' ? await this.hashSet.get(key) : resource
+
+    const batch = this.hashSet.batch()
+
+    batch.del(key)
+
+    for (const uri of res.uri) {
+      batch.del(uri)
+    }
+
+    for (const tag of res.tags) {
+
+    }
+
+    this.hashSet.del(key)
+  }
+
+  get() { }
+
+  getAll(size: number, offset: number) {
+
+  }
 }
 
 export async function readFileStat(path: string): Promise<FileStat> {
@@ -81,38 +146,6 @@ export const UNKNOWN_ENTRY: ResourceParser<unknown> = {
 /**
  * Create a resource builder from source.
  */
-export function createPersistedResourceBuilder(source: SourceInformation = {}): PersistedResourceBuilder {
-  return {
-    name: '',
-    fileName: '',
-    path: '',
-    hash: '',
-    ext: '',
-    domain: ResourceDomain.Unknown,
-    type: ResourceType.Unknown,
-    fileType: 'unknown',
-    metadata: {},
-    ino: 0,
-    tags: [],
-    size: 0,
-    uri: [],
-    date: new Date().toJSON(),
-    ...source,
-  }
-}
-export function getResourceFromBuilder(builder: PersistedResourceBuilder): PersistedResource {
-  const res = { ...builder, iconUri: builder.iconUri ?? `dataroot://${builder.domain}/${builder.fileName}.png` }
-  delete res.icon
-  return Object.freeze(res)
-}
-export function getBuilderFromResource(resource: PersistedResource): PersistedResourceBuilder {
-  return { ...resource }
-}
-export function mutateResource<T extends PersistedResource<any>>(resource: T, mutation: (builder: PersistedResourceBuilder) => void): T {
-  const builder = getBuilderFromResource(resource)
-  mutation(builder)
-  return getResourceFromBuilder(builder) as any
-}
 
 export function getCurseforgeUrl(project: number, file: number): string {
   return `curseforge://id/${project}/${file}`
@@ -120,7 +153,7 @@ export function getCurseforgeUrl(project: number, file: number): string {
 export function getGithubUrl(owner: string, repo: string, release: string) {
   return `https://api.github.com/repos/${owner}/${repo}/releases/assets/${release}`
 }
-export function getCurseforgeSourceInfo(project: number, file: number): SourceInformation {
+export function getCurseforgeSourceInfo(project: number, file: number): ResourceSources {
   return {
     curseforge: {
       projectId: project,
@@ -129,8 +162,26 @@ export function getCurseforgeSourceInfo(project: number, file: number): SourceIn
   }
 }
 
-export async function parseResourceWithParser(path: string, fileType: FileType, sha1: string, stat: FileStat, parsers: ResourceParser<any>[]): Promise<[AnyResource, Uint8Array | undefined]> {
-  const ext = extname(path)
+export async function parseResource(path: string, context: ParseResourceContext, typeHint?: FileTypeHint): Promise<[AnyResource, Uint8Array | undefined]> {
+  const fileType = context.fileType ?? await getFileType(path)
+  const hint = typeHint || ''
+  const sha1 = context.sha1 ?? await checksum(path, 'sha1')
+  const fstat = context.stat ?? await stat(path)
+  let ext = extname(path)
+  if (ext !== '.jar' && ext !== '.zip' && fileType === 'zip') {
+    ext = '.zip'
+  }
+
+  const filterFunc: (r: ResourceParser<any>) => boolean = (hint === '*' || hint === '')
+    ? (ext ? r => r.ext === ext : () => true)
+    : r => r.domain === hint || r.type === hint
+
+  const parsers: ResourceParser<any>[] = resourceParsers.filter(filterFunc)
+  if (ext === '.zip') {
+    parsers.push(forgeModParser)
+  }
+  parsers.push(UNKNOWN_ENTRY)
+
   let parser: ResourceParser<any> = UNKNOWN_ENTRY
   let metadata: any
   let icon: Uint8Array | undefined
@@ -147,133 +198,65 @@ export async function parseResourceWithParser(path: string, fileType: FileType, 
     }
   }
   fs.close()
-  const slice = sha1.slice(0, 6)
+  const fileName = basename(path)
   const name = parser.getSuggestedName(metadata) || basename(path, ext)
-  const fileName = `${name}.${slice}`
 
   return [{
+    version: 1,
     path,
     fileName,
     name,
-    ino: stat.ino,
-    size: stat.size,
-    ext: extname(path),
+    ino: fstat.ino,
+    size: fstat.size,
     hash: sha1,
     domain: parser.domain,
     type: parser.type,
-    fileType,
     metadata,
     uri: parser.getUri(metadata),
+    fileType,
+    tags: [],
   }, icon]
 }
 
-export function getRecommendedResourceParsers(path: string, typeHint?: FileTypeHint) {
-  const ext = extname(path)
-  const hint = typeHint || ''
-  const filterFunc: (r: ResourceParser<any>) => boolean = (hint === '*' || hint === '')
-    ? (ext ? r => r.ext === ext : () => true)
-    : r => r.domain === hint || r.type === hint
-
-  const chains: ResourceParser<any>[] = resourceParsers.filter(filterFunc)
-  if (ext === '.zip') {
-    chains.push(forgeModParser)
-  }
-  chains.push(UNKNOWN_ENTRY)
-  return chains
-}
-
-export function parseResource(path: string, fileType: FileType, sha1: string, stat: FileStat, typeHint?: FileTypeHint) {
-  return parseResourceWithParser(path, fileType, sha1, stat, getRecommendedResourceParsers(path, typeHint))
-}
-
 /**
- * Persist a resource to disk. This will try to copy or link the resource file to domain direcotry, or rename it if it's already in domain directory.
+ * Persist a resource to disk. This will try to copy or link the resource file to domain directory, or rename it if it's already in domain directory.
  * @param resolved The resolved resource
- * @param repository The root of the persistence repo
- * @param source The source
+ * @param root The root of the persistence storage
  */
-export async function persistResource(resolved: Resource, repository: string, source: SourceInformation, url: string[], icon: Uint8Array | undefined, pending: Set<string>) {
-  const { domain, type, metadata, name: suggestedName, uri, hash } = resolved
-
-  const builder = createPersistedResourceBuilder(source)
-  builder.name = suggestedName
-  builder.metadata = metadata
-  builder.domain = domain
-  builder.type = type
-  builder.icon = icon
-  builder.uri.push(...uri, ...url)
-  builder.ext = extname(resolved.path)
-  builder.hash = hash
-
-  if (source.curseforge) {
-    builder.uri.push(getCurseforgeUrl(source.curseforge.projectId, source.curseforge.fileId))
-    builder.curseforge = source.curseforge
-  }
-
-  if (source.github) {
-    builder.uri.push(getGithubUrl(source.github.owner, source.github.repo, source.github.artifact))
-    builder.github = source.github
-  }
-
-  builder.uri = [...new Set(builder.uri)]
-
-  const name = filenamify(suggestedName, { replacement: '-' })
-  let fileName = name
-  let location = join(builder.domain, fileName)
-  let filePath = join(repository, `${location}${builder.ext}`)
-  let metadataPath = join(repository, `${location}.json`)
-  let iconPath = join(repository, `${location}.png`)
+export async function persistResource<T>(resolved: Resource<T>, root: string, pending: Set<string>): Promise<PersistedResource<T>> {
+  let fileName = filenamify(resolved.fileName, { replacement: '-' })
+  let filePath = join(root, resolved.domain, fileName)
 
   const existed = existsSync(filePath)
-  const exitedResourceFile = existed ? (await stat(filePath)).ino === resolved.ino : undefined
+  const alreadyStored = existed ? (await stat(filePath)).ino === resolved.ino : false
 
-  if (existed && !exitedResourceFile) {
-    fileName = `${name}.${builder.hash.slice(0, 6)}`
-    location = join(builder.domain, fileName)
-    filePath = join(repository, `${location}${builder.ext}`)
-    metadataPath = join(repository, `${location}.json`)
-    iconPath = join(repository, `${location}.png`)
-  }
+  if (!alreadyStored) {
+    if (existed) {
+      // fileName conflict
+      fileName = filenamify(`${resolved.name}.${resolved.hash.slice(0, 6)}${extname(resolved.fileName)}`)
+      filePath = join(root, resolved.domain, fileName)
+    }
 
-  if (!exitedResourceFile) {
     // skip to handle the file if it's inside the resource dir
     pending.add(filePath)
     await ensureFile(filePath)
     if (dirname(resolved.path) === dirname(filePath)) {
+      // just rename if they are in same dir
       await rename(resolved.path, filePath)
     } else {
       await linkOrCopy(resolved.path, filePath)
     }
   }
 
-  if (builder.icon) {
-    await writeFile(iconPath, builder.icon)
-  }
-
   const fileStatus = await stat(filePath)
-
-  builder.fileName = fileName
-  builder.path = filePath
-  builder.size = fileStatus.size
-  builder.ino = fileStatus.ino
-
-  const resource = getResourceFromBuilder(builder)
-
-  await writeFile(metadataPath, JSON.stringify(resource, null, 4))
-
-  return resource
-}
-
-export async function remove(resource: Readonly<PersistedResource>, root: string) {
-  const baseName = basename(resource.path, resource.ext)
-
-  const filePath = join(root, resource.domain, `${baseName}${resource.ext}`)
-  const metadataPath = join(root, resource.domain, `${baseName}.json`)
-  const iconPath = join(root, resource.domain, `${baseName}.png`)
-
-  await unlink(filePath).catch(() => { })
-  await unlink(metadataPath).catch(() => { })
-  await unlink(iconPath).catch(() => { })
+  return {
+    ...resolved,
+    path: filePath,
+    ino: fileStatus.ino,
+    size: fileStatus.size,
+    storedDate: Date.now(),
+    storedPath: filePath,
+  }
 }
 
 // resource class

@@ -1,8 +1,7 @@
 import { ForgeModMetadata } from '@xmcl/mod-parser'
 import { satisfies } from 'semver'
 import { Instance } from '../entities/instance'
-import { FabricResource, ForgeResource, isFabricResource, isForgeResource, isLiteloaderResource, LiteloaderResource } from '../entities/resource'
-import { Resource } from '../entities/resource.schema'
+import { FabricResource, ForgeResource, isFabricResource, isForgeResource, isLiteloaderResource, LiteloaderResource, Resource } from '../entities/resource'
 import { parseVersion, VersionRange } from './mavenVersion'
 
 export type Compatible = 'maybe' | boolean

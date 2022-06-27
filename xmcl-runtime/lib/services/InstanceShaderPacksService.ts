@@ -20,7 +20,7 @@ export class InstanceShaderPacksService extends AbstractService implements IInst
     this.storeManager.subscribe('instanceShaderOptions', (payload) => {
       if (payload.shaderPack && this.active && !this.instanceService.isUnderManaged(this.active)) {
         const fileName = payload.shaderPack
-        const existedResource = this.resourceService.state.shaderpacks.find(f => fileName === f.fileName + f.ext)
+        const existedResource = this.resourceService.state.shaderpacks.find(f => fileName === f.fileName)
         const localFilePath = join(this.active!, fileName)
         if (!existsSync(localFilePath)) {
           if (existedResource) {

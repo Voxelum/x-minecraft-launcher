@@ -1,11 +1,14 @@
-import { AnyPersistedResource } from '@xmcl/runtime-api'
+import { PersistedResource, ResourceDomain } from '@xmcl/runtime-api'
 import { openFileSystem } from '@xmcl/system'
-import { writeJSON } from 'fs-extra'
+import { existsSync, readJSON, stat, unlink, writeJSON } from 'fs-extra'
 import { basename, extname, join, relative } from 'path'
 import { RESOURCE_FILE_VERSION } from '../constant'
-import { PrismaClient } from '../database/client.gen'
 import { forgeModParser } from '../entities/resourceParsers/forgeMod'
+import { ResourceService } from '../services/ResourceService'
+import { isSystemError } from './error'
+import { ENOENT_ERROR, fileType } from './fs'
 import { Logger } from './log'
+import { isNonnull } from './object'
 
 /**
  * The helper function to fix old resource schema
@@ -36,7 +39,7 @@ export async function fixResourceSchema({ log, warn }: Logger, filePath: string,
     fs.close()
     schema.metadata = data
     schema.version = RESOURCE_FILE_VERSION
-    log(`Reparsed ${filePath} as forge mod`)
+    log(`Re-parsed ${filePath} as forge mod`)
     await writeJSON(filePath, schema)
     dirty = true
   }
@@ -48,44 +51,88 @@ export async function fixResourceSchema({ log, warn }: Logger, filePath: string,
     }
   }
 
-  if (dirty) {
-    await writeJSON(filePath, schema)
+  if (schema.tags instanceof Array) {
+    schema.tags = schema.tags.map((v: string) => {
+      if (v.startsWith('fabric:///')) {
+        return v.replace('fabric:///', 'fabric:').replace('/', ':')
+      } else if (v.startsWith('forge:///')) {
+        return v.replace('forge:///', 'forge:').replace('/', ':')
+      } else if (v.startsWith('mcbbs://modpack/')) {
+        return v.replace('mcbbs://modpack/', 'mcbbs:modpack:').replace('/', ':')
+      } else if (v.startsWith('modrinth://modpack/')) {
+        return v.replace('modrinth://modpack/', 'modrinth:modpack:').replace('/', ':')
+      } else if (v.startsWith('curseforge://name/')) {
+        return v.replace('curseforge://name/', 'curseforge:modpack:').replace('/', ':')
+      }
+      return v
+    })
   }
 }
 
-export async function migrateToDatabase(resources: AnyPersistedResource[], db: PrismaClient) {
-  for (const res of resources) {
-    db.resource.create({
-      data: {
-        name: res.name,
-        ext: res.ext,
-        hash: res.hash,
-        type: res.type.toString(),
-        domain: res.domain.toString(),
-        date: res.date,
-        iconUri: res.iconUri,
-        metadata: JSON.stringify(res.metadata),
-        tags: {
-          create: res.tags.map(tag => ({ hash: res.hash, tag })),
-        },
-        uri: {
-          create: res.uri.map(uri => ({ hash: res.hash, uri })),
-        },
-      },
-    })
-    if (res.curseforge) {
-      db.curseforge.create({ data: { ...res.curseforge, hash: res.hash } })
+export async function migrateToDatabase(this: ResourceService, domain: ResourceDomain, files: string[]) {
+  const loadMetadata = async (metadataPath: string) => {
+    const resourceData = await readJSON(metadataPath) // this.resourceFile.readTo(filePath)
+    await fixResourceSchema({ log: this.log, warn: this.warn, error: this.error }, metadataPath, resourceData, this.getPath())
+
+    const ext = extname(metadataPath)
+    const imagePath = metadataPath.substring(0, metadataPath.length - ext.length) + '.png'
+    let urlPath = ''
+    if (existsSync(imagePath)) {
+      urlPath = await this.addImage(imagePath)
     }
-    if (res.modrinth) {
-      db.modrinth.create({
-        data: {
-          hash: res.hash,
-          projectId: res.modrinth.projectId,
-          fileName: res.modrinth.filename,
-          versionId: res.modrinth.versionId,
-          url: res.modrinth.url,
-        },
-      })
+
+    const resourceFilePath = this.getPath(resourceData.domain, resourceData.fileName) + resourceData.ext
+    const { size, ino } = await stat(resourceFilePath)
+    const resource: PersistedResource<any> = ({
+      version: 1,
+      fileName: resourceData.fileName + resourceData.ext,
+      name: resourceData.name,
+      domain: resourceData.domain,
+      type: resourceData.type,
+      metadata: resourceData.metadata,
+      fileType: resourceData.fileType || await fileType(resourceFilePath),
+      uri: resourceData.uri,
+      tags: resourceData.tags,
+      hash: resourceData.hash,
+      path: resourceFilePath,
+      storedPath: resourceFilePath,
+      storedDate: resourceData.date,
+      size,
+      ino,
+      curseforge: resourceData.curseforge,
+      modrinth: resourceData.modrinth,
+      github: resourceData.github,
+      iconUrl: urlPath || (resourceData.iconUri ?? ''),
+    })
+
+    await unlink(metadataPath).catch(() => { })
+    if (urlPath) {
+      await unlink(imagePath).catch(() => { })
+    }
+    return resource
+  }
+  const processFile = async (file: string) => {
+    if (!file.endsWith('.json')) return
+    try {
+      const resource = await loadMetadata(file)
+
+      await this.storage.put(resource.hash, resource)
+      return resource
+    } catch (e) {
+      if (isSystemError(e) && e.code === ENOENT_ERROR) {
+        this.warn(`The resource file ${file} cannot be found! Try remove this resource record!`)
+        unlink(file).catch(() => { })
+      } else {
+        this.error(`Cannot load resource ${file}`)
+        if (e instanceof Error && e.stack) {
+          this.error(e.stack)
+        } else {
+          this.error(e)
+        }
+      }
     }
   }
+  const result = await Promise.all(files.map(processFile).filter(isNonnull))
+  this.log(`Load ${result.length} legacy resources in domain ${domain}`);
+  (this as any).commitResources(result.filter(isNonnull))
 }

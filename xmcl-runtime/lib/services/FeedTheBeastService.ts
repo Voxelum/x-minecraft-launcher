@@ -1,6 +1,5 @@
 import { CachedFTBModpackVersionManifest, FeedTheBeastService as IFeedTheBeastService, FeedTheBeastServiceKey, FeedTheBeastState, FTBModpackManifest, FTBModpacksResult, FTBModpackVersionManifest, FTBVersionManifestStoreSchema, GetFTBModpackVersionOptions, SearchFTBModpackOptions } from '@xmcl/runtime-api'
 import { LauncherApp } from '../app/LauncherApp'
-import { PersistedInMemoryCache } from '../util/cache'
 import { createSafeFile } from '../util/persistance'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
@@ -9,7 +8,6 @@ import { Inject, StatefulService } from './Service'
 export class FeedTheBeastService extends StatefulService<FeedTheBeastState> implements IFeedTheBeastService {
   private api = this.networkManager.request.extend({
     prefixUrl: 'https://api.modpacks.ch/public/',
-    cache: new PersistedInMemoryCache(this.getAppDataPath('ftb-cache.json')),
     headers: {
       'User-Agent': 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36 OverwolfClient/0.195.0.18',
       Origin: 'overwolf-extension://cmogmmciplgmocnhikmphehmeecmpaggknkjlbag',

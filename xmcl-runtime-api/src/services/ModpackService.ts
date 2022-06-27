@@ -1,5 +1,5 @@
 import { Exception } from '../entities/exception'
-import { SourceInformation } from '../entities/resource'
+import { ResourceSources } from '../entities/resource'
 import { EditInstanceOptions } from './InstanceService'
 import { ServiceKey } from './Service'
 
@@ -125,7 +125,7 @@ interface ModpackDownloadableFile {
   destination: string
   downloads: string[]
   hashes: Record<string, string>
-  source: SourceInformation
+  source: ResourceSources
 }
 
 export type ModpackExceptions = {

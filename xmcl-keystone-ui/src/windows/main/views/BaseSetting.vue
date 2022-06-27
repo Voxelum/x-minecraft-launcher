@@ -20,7 +20,7 @@
       <BaseSettingModpack v-if="!isServer" />
       <BaseSettingServer v-else />
       <BaseSettingJava />
-      <BaseSettingLaunch :save="save" />
+      <BaseSettingLaunch />
     </v-layout>
   </v-container>
 </template>

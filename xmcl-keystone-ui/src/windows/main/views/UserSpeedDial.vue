@@ -15,8 +15,8 @@
           v-on="on"
           @dragover.prevent
           @mouseenter="enterEditBtn"
-          @drop="$emit('drop', $event)"
-          @click="$emit('click', $event)"
+          @drop="emit('drop', $event)"
+          @click="emit('click', $event)"
         >
           <v-icon
             v-if="deleting"
@@ -35,38 +35,35 @@
         </v-btn>
       </v-fab-transition>
     </template>
-    {{ $t('userAccount.switch') }}
+    {{ t('userAccount.switch') }}
   </v-tooltip>
 </template>
 
-<script lang=ts>
+<script lang=ts setup>
 import { useI18n } from '/@/composables'
 
-export default defineComponent({
-  props: {
-    visibled: Boolean,
-    deleting: Boolean,
-  },
-  setup() {
-    const { $t } = useI18n()
-    const data = reactive({
-      fab: false,
-      hoverTextOnEdit: '',
-    })
-    return {
-      ...toRefs(data),
-      enterEditBtn() {
-        data.hoverTextOnEdit = $t('userSkin.importFile')
-      },
-      enterLinkBtn() {
-        data.hoverTextOnEdit = $t('userSkin.importLink')
-      },
-      enterSaveBtn() {
-        data.hoverTextOnEdit = $t('userSkin.save')
-      },
-    }
-  },
+const emit = defineEmits(['drop', 'click'])
+
+defineProps<{
+  visible: boolean
+  deleting: boolean
+  loading: boolean
+}>()
+
+const { t } = useI18n()
+const data = reactive({
+  fab: false,
+  hoverTextOnEdit: '',
 })
+function enterEditBtn() {
+  data.hoverTextOnEdit = t('userSkin.importFile')
+}
+function enterLinkBtn() {
+  data.hoverTextOnEdit = t('userSkin.importLink')
+}
+function enterSaveBtn() {
+  data.hoverTextOnEdit = t('userSkin.save')
+}
 </script>
 
 <style>

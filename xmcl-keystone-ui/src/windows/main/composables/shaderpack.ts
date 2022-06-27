@@ -45,7 +45,7 @@ export function useShaderpacks() {
     }]
   }
   function getShaderPackItemFromResource(res: PersistedShaderPackResource): ShaderPackItem {
-    const fileName = `${res.fileName}${res.ext}`
+    const fileName = res.fileName
     return {
       name: res.name,
       value: fileName,

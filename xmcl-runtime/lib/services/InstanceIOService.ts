@@ -1,6 +1,6 @@
 import { checksum, MinecraftFolder } from '@xmcl/core'
 import { DownloadTask, UnzipTask } from '@xmcl/installer'
-import { AnyPersistedResource, ApplyInstanceUpdateOptions, createTemplate, ExportInstanceOptions, GetManifestOptions, InstanceFile, InstanceIOException, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceManifest, InstanceManifestSchema, InstanceSchema, InstanceUpdate, LockKey, ResourceDomain, RuntimeVersions, SetInstanceManifestOptions, SourceInformation } from '@xmcl/runtime-api'
+import { AnyPersistedResource, ApplyInstanceUpdateOptions, createTemplate, ExportInstanceOptions, GetManifestOptions, InstanceFile, InstanceIOException, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceManifest, InstanceManifestSchema, InstanceSchema, InstanceUpdate, LockKey, ResourceDomain, RuntimeVersions, SetInstanceManifestOptions, ResourceSources } from '@xmcl/runtime-api'
 import { Task, task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { randomUUID } from 'crypto'
@@ -473,7 +473,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
             tasks.push(createFileLinkTask(filePath, resource))
           } else {
             const urls = [] as string[]
-            const source: SourceInformation = {}
+            const source: ResourceSources = {}
 
             if (file.curseforge) {
               const fileInfo = await curseForgeService.fetchProjectFile(file.curseforge.projectId, file.curseforge.fileId)

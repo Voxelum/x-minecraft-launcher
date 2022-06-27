@@ -64,11 +64,6 @@ declare module '7zip-bin' {
   export const path7za: string
 }
 
-declare module '*.prisma' {
-  const path: string
-  export default path
-}
-
 declare module '*?static' {
   const path: string
   export default path

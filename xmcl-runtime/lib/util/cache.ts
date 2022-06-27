@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'atomically'
 import filenamify from 'filenamify'
 import { ensureDir, unlink } from 'fs-extra'
 import { join } from 'path'
+import { ClassicLevel } from 'classic-level'
 /**
  * The helper class to hold object with ttl, which is useful for holding web api result.
  */
@@ -67,27 +68,23 @@ export class PersistedInMemoryCache<T> extends CacheDictionary<T> {
   }
 }
 
-export class PersistFileCache<T> {
-  protected fallback: Record<string, [T, number, number?] | undefined> = {}
+export class LevelCache<T> {
+  private cache: ClassicLevel<string, string>
 
-  constructor(private cacheDir: string) {
-    ensureDir(cacheDir)
+  constructor(cacheDirectory: string) {
+    this.cache = new ClassicLevel(cacheDirectory)
   }
 
   async get(key: string) {
-    return await readFile(join(this.cacheDir, filenamify(key)), 'utf-8').catch(() => {
-      return this.fallback[key]
-    })
+    return await this.cache.get(key).catch(() => undefined)
   }
 
   async set(key: string, value: any, ttl?: number) {
-    await writeFile(join(this.cacheDir, filenamify(key)), value).catch(() => {
-      this.fallback[key] = value
-    })
+    await this.cache.put(key, value)
   }
 
   async delete(key: string): Promise<boolean> {
-    return await unlink(join(this.cacheDir, filenamify(key))).then(() => true, () => false)
+    return await this.cache.del(key).then(() => true, () => false)
   }
 
   clear(): void | Promise<void> {
