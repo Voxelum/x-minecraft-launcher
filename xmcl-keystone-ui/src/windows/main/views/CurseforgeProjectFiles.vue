@@ -113,7 +113,7 @@ async function install(file: File) {
       if (res) {
         filePath = res.path
       } else {
-        throw new Error(`Cannot find installed curseforge file named ${file.displayName} fileId=${file.id} projectId=${file.projectId}`)
+        throw new Error(`Cannot find installed curseforge file named ${file.displayName} fileId=${file.id} projectId=${file.modId}`)
       }
     }
     showAddInstanceDialog(filePath)

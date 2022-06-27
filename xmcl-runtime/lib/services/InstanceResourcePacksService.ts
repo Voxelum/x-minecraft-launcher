@@ -32,7 +32,7 @@ export class InstanceResourcePackService extends AbstractService implements IIns
       if (payload.resourcePacks && this.active && !this.instanceService.isUnderManaged(this.active)) {
         for (const pack of payload.resourcePacks.filter(v => v !== 'vanilla')) {
           const fileName = pack.startsWith('file/') ? pack.substring('file/'.length) : pack
-          const existedResource = this.resourceService.state.resourcepacks.find(f => fileName === f.fileName + f.ext)
+          const existedResource = this.resourceService.state.resourcepacks.find(f => fileName === f.fileName)
           const localFilePath = join(this.active, fileName)
           if (!existsSync(localFilePath)) {
             if (existedResource) {

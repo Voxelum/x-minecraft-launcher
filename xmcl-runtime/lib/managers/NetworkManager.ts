@@ -4,11 +4,13 @@ import { UpnpClient } from '@xmcl/nat-api'
 import { getNatInfoUDP, NatInfo } from '@xmcl/stun-client'
 import got, { Got } from 'got'
 import { Socket } from 'net'
+import { join } from 'path'
 import { URL } from 'url'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
 import { BaseService } from '../services/BaseService'
 import { HttpAgent, HttpsAgent } from '../util/agents'
+import { LevelCache } from '../util/cache'
 // import getNatType, { NatType } from 'nat-type-identifier'
 
 export default class NetworkManager extends Manager {
@@ -81,6 +83,7 @@ export default class NetworkManager extends Manager {
     })
     this.request = got.extend({
       agent: this.agents,
+      cache: new LevelCache(join(app.appDataPath, 'http-cache')),
     })
   }
 

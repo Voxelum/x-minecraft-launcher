@@ -23,6 +23,7 @@ import { Host } from './Host'
 import { LauncherAppController } from './LauncherAppController'
 import { LauncherAppManager } from './LauncherAppManager'
 import { UserService } from '../services/UserService'
+import { Manager } from '../managers'
 
 export interface Platform {
   /**
@@ -85,7 +86,7 @@ export abstract class LauncherApp extends EventEmitter {
 
   // properties
 
-  readonly networkManager = new NetworkManager(this)
+  readonly networkManager: NetworkManager
 
   readonly serviceManager = new ServiceManager(this, this.getPreloadServices())
 
@@ -115,7 +116,7 @@ export abstract class LauncherApp extends EventEmitter {
 
   get version() { return this.host.getVersion() }
 
-  protected managers = [this.logManager, this.networkManager, this.taskManager, this.serviceStateManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager, this.semaphoreManager, this.launcherAppManager]
+  protected managers: Manager[]
 
   abstract readonly host: Host
 
@@ -129,14 +130,22 @@ export abstract class LauncherApp extends EventEmitter {
 
   constructor() {
     super()
-    this.appDataPath = ''
     this.gameDataPath = ''
-    this.minecraftDataPath = ''
     this.temporaryPath = ''
+
+    const appData = this.getHost().getPath('appData')
+
+    this.appDataPath = join(appData, LAUNCHER_NAME)
+    this.minecraftDataPath = join(appData, this.platform.name === 'osx' ? 'minecraft' : '.minecraft')
+
+    this.networkManager = new NetworkManager(this)
+    this.managers = [this.logManager, this.networkManager, this.taskManager, this.serviceStateManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager, this.semaphoreManager, this.launcherAppManager]
   }
 
   private initialInstance = ''
   private preferredLocale = ''
+
+  abstract getHost(): Host
 
   getInitialInstance() {
     return this.initialInstance
@@ -364,12 +373,6 @@ export abstract class LauncherApp extends EventEmitter {
       this.host.quit()
       return
     }
-
-    const appData = this.host.getPath('appData')
-
-    const _this = this as any
-    _this.appDataPath = join(appData, LAUNCHER_NAME)
-    _this.minecraftDataPath = join(appData, this.platform.name === 'osx' ? 'minecraft' : '.minecraft')
 
     console.log(`Boot from ${this.appDataPath}`)
     try {

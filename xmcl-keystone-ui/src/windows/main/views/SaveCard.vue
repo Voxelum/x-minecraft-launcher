@@ -52,7 +52,7 @@
             label
             style="margin-left: 1px;"
           >
-            {{ $t('gamesetting.cheat') }}
+            {{ t('gamesetting.cheat') }}
           </v-chip>
           <v-chip
             small
@@ -73,7 +73,7 @@
           @click="exportSave(source.path)"
         >
           <v-icon>launch</v-icon>
-          <!-- {{ $t('save.export') }} -->
+          <!-- {{ t('save.export') }} -->
         </v-btn>
       </v-flex>
     </v-layout>
@@ -90,23 +90,23 @@ import { useI18n } from '/@/composables'
 export default defineComponent({
   props: {
     exportSave: required<(path: string) => void>(Function),
-    // deleteSave: required<(path: string) => void>(Function),
     source: required<InstanceSaveMetadata>(Object),
   },
   setup(props) {
-    const { $t } = useI18n()
+    const { t } = useI18n()
     const levelMode = computed(() => {
       switch (props.source.mode) {
-        case 0: return $t('gamesetting.gametype.survival')
-        case 1: return $t('gamesetting.gametype.creative')
-        case 2: return $t('gamesetting.gametype.adventure')
-        case 3: return $t('gamesetting.gametype.spectator')
+        case 0: return t('gamesetting.gametype.survival')
+        case 1: return t('gamesetting.gametype.creative')
+        case 2: return t('gamesetting.gametype.adventure')
+        case 3: return t('gamesetting.gametype.spectator')
         case -1:
         default:
-          return $t('gamesetting.gametype.non')
+          return t('gamesetting.gametype.non')
       }
     })
     return {
+      t,
       unknownPack,
       levelMode,
       icon: ref(null),

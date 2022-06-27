@@ -13,7 +13,7 @@ import InstanceService from '@xmcl/runtime/lib/services/InstanceService'
 import { BrowserWindow, dialog, nativeImage, nativeTheme, session, shell, Tray } from 'electron'
 import { fromFile } from 'file-type'
 import { readFile } from 'fs/promises'
-import { join } from 'path'
+import { isAbsolute, join } from 'path'
 import { plugins } from './controllers'
 import ElectronLauncherApp from './ElectronLauncherApp'
 import en from './locales/en.yaml'
@@ -169,22 +169,24 @@ export default class Controller implements LauncherAppController {
       }
       cb({ responseHeaders: detail.responseHeaders })
     })
-    sess.protocol.registerFileProtocol('dataroot', (req, callback) => {
-      const pathname = decodeURIComponent(req.url.replace('dataroot://', ''))
-      callback(join(this.app.gameDataPath, pathname))
-    })
     sess.protocol.registerFileProtocol('image', (req, callback) => {
       const pathname = decodeURIComponent(req.url.replace('image://', ''))
 
-      fromFile(pathname).then((type) => {
-        if (type && type.mime.startsWith('image/')) {
-          callback(pathname)
-        } else {
+      if (isAbsolute(pathname)) {
+        fromFile(pathname).then((type) => {
+          if (type && type.mime.startsWith('image/')) {
+            callback(pathname)
+          } else {
+            callback({ statusCode: 404 })
+          }
+        }).catch(() => {
           callback({ statusCode: 404 })
-        }
-      }).catch(() => {
+        })
+      } else if (pathname.length === 40) {
+        callback({ path: join(this.app.appDataPath, 'resource-images', pathname), mimeType: 'image/png' })
+      } else {
         callback({ statusCode: 404 })
-      })
+      }
     })
     sess.protocol.registerFileProtocol('video', (req, callback) => {
       const pathname = decodeURIComponent(req.url.replace('video://', ''))

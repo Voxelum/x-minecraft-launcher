@@ -1,4 +1,5 @@
 import { FileTypeHint, Resource } from '@xmcl/runtime-api'
+import { ParseResourceContext } from '../services/ResourceService'
 import { FileType } from '../util/fs'
 import { FileStat } from './resource'
 
@@ -19,9 +20,7 @@ export interface FileTypePayload {
 
 export interface ResolveResourceWorkPayload {
   path: string
-  sha1: string
-  fileType: FileType
-  stat: FileStat
+  context: ParseResourceContext
   hint: FileTypeHint
 }
 

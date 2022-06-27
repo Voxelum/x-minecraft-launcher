@@ -17,3 +17,11 @@ export function isAllowInModrinthModpack(url: string, strict = true) {
   }
   return true
 }
+
+export interface ModrinthProjectHeader {
+  id: string
+  logoUrl: string
+  type: 'mod' | 'modpack'
+  summary: string
+  websiteUrl: string
+}

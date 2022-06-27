@@ -102,7 +102,7 @@ const { goProjectAndRoute } = useCurseforgeRoute()
 const router = useRouter()
 const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.item.tags, set(v) { emit('tags', v) } }))
 const onDeleteTag = removeTag
-const time = computed(() => props.item.resource?.date ? getLocalDateString(props.item.resource?.date) : props.item.ftb ? getLocalDateString(props.item.ftb.updated * 1000) : '')
+const time = computed(() => props.item.resource?.storedDate ? getLocalDateString(props.item.resource?.storedDate) : props.item.ftb ? getLocalDateString(props.item.ftb.updated * 1000) : '')
 const contextMenuItems: Ref<ContextMenuItem[]> = computed(() => {
   if (!props.item.resource) {
     if (props.item.ftb) {

@@ -28,6 +28,10 @@ export default class ElectronLauncherApp extends LauncherApp {
 
   windowsUtils = getWindowsUtils(this)
 
+  getHost(): Host {
+    return app
+  }
+
   /**
    * Push a event with payload to client.
    *

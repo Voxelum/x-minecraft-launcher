@@ -36,7 +36,7 @@ const handlers: WorkerInterface = {
   fileType: (path) => fileType(path),
   checksum: (path, algorithm) => checksum(path, algorithm),
   checksumAndFileType: (path, algorithm) => checksumAndFileType(path, algorithm),
-  parseResource: (m: ResolveResourceWorkPayload) => parseResource(m.path, m.fileType, m.sha1, m.stat, m.hint),
+  parseResource: (m: ResolveResourceWorkPayload) => parseResource(m.path, m.context, m.hint),
   async copyPassively(files): Promise<void> {
     await Promise.all(files.map(({ src, dest }) => copyPassively(src, dest)))
   },

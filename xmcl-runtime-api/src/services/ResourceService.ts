@@ -1,6 +1,5 @@
 import { Exception } from '../entities/exception'
-import { AnyPersistedResource, AnyResource, PersistedCurseforgeModpackResource, PersistedFabricResource, PersistedForgeResource, PersistedLiteloaderResource, PersistedMcbbsModpackResource, PersistedModpackResource, PersistedModrinthModpackResource, PersistedResource, PersistedResourcePackResource, PersistedSaveResource, PersistedShaderPackResource, PersistedUnknownResource, SourceInformation } from '../entities/resource'
-import { ResourceDomain } from '../entities/resource.schema'
+import { AnyPersistedResource, AnyResource, PersistedCurseforgeModpackResource, PersistedFabricResource, PersistedForgeResource, PersistedLiteloaderResource, PersistedMcbbsModpackResource, PersistedModpackResource, PersistedModrinthModpackResource, PersistedResource, PersistedResourcePackResource, PersistedSaveResource, PersistedShaderPackResource, PersistedUnknownResource, ResourceDomain, ResourceSources } from '../entities/resource'
 import { GenericEventEmitter } from '../events'
 import { ServiceKey, StatefulService } from './Service'
 
@@ -18,7 +17,7 @@ export interface ParseResourceOptions {
   /**
     * The extra info you want to provide to the source of the resource
     */
-  source?: SourceInformation
+  source?: ResourceSources
   /**
     * The file urls
     */
@@ -68,7 +67,7 @@ export interface UpdateResourceOptions {
   resource: AnyResource | string
   name?: string
   tags?: string[]
-  source?: SourceInformation
+  source?: ResourceSources
   uri?: string[]
   iconUrl?: string
 }

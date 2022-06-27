@@ -1,11 +1,10 @@
 import { join } from 'path'
 import { Manager } from '.'
-import { PrismaClient } from '../database/client.gen'
+import { ClassicLevel } from 'classic-level'
+import { Resource } from '@xmcl/runtime-api'
 export default class DatabaseManager extends Manager {
-  private client!: PrismaClient
 
   async setup() {
-    const databasePath = join(this.app.appDataPath, 'database.sqlite')
     // this.client = new PrismaClient({
     //   datasources: {
     //     db: {
@@ -20,6 +19,5 @@ export default class DatabaseManager extends Manager {
   }
 
   getClient() {
-    return this.client
   }
 }

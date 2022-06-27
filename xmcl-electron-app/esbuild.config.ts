@@ -38,7 +38,6 @@ const config: BuildOptions = {
     '.vbs': 'file',
     '.ico': 'file',
     '.html': 'file',
-    '.prisma': 'file',
   },
   plugins: [
     pluginRenderer(),

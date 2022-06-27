@@ -6,7 +6,6 @@ import { join } from 'path'
 import { URLSearchParams } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { getCurseforgeSourceInfo } from '../entities/resource'
-import { PersistFileCache } from '../util/cache'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { requireObject, requireString } from '../util/object'
 import { ResourceService } from './ResourceService'
@@ -19,7 +18,6 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
       Accept: 'application/json',
       'x-api-key': process.env.CURSEFORGE_API_KEY,
     },
-    cache: new PersistFileCache(this.getAppDataPath('curseforge-caches')),
   })
 
   constructor(app: LauncherApp,

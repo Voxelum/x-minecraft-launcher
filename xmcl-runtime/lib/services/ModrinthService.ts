@@ -5,14 +5,12 @@ import { unlink } from 'fs-extra'
 import { basename, join } from 'path'
 import { URLSearchParams } from 'url'
 import { LauncherApp } from '../app/LauncherApp'
-import { PersistedInMemoryCache, PersistFileCache } from '../util/cache'
 import { ResourceService } from './ResourceService'
 import { Inject, Singleton, StatefulService } from './Service'
 
 export class ModrinthService extends StatefulService<ModrinthState> implements IModrinthService {
   private client = this.networkManager.request.extend({
     prefixUrl: 'https://api.modrinth.com/v2',
-    cache: new PersistFileCache(this.getAppDataPath('modrinth-cache')),
   })
 
   constructor(app: LauncherApp,

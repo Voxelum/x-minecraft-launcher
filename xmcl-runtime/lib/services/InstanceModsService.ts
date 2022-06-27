@@ -207,7 +207,7 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
         this.warn(`Install non mod resource ${res.name} as it's not a mod`)
       }
       const src = join(res.path)
-      const dest = join(path, ResourceDomain.Mods, res.fileName + res.ext)
+      const dest = join(path, ResourceDomain.Mods, res.fileName)
       const [srcStat, destStat] = await Promise.all([stat(src), stat(dest).catch(() => undefined)])
 
       let promise: Promise<void> | undefined
@@ -238,8 +238,8 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
       if (dirname(resource.path) !== instanceModsDir) {
         const founded = this.state.mods.find(m => m.ino === resource.ino) ??
           this.state.mods.find(m => m.hash === resource.hash)
-        if (founded) {
-          const realPath = join(instanceModsDir, founded.fileName + founded.ext)
+        if (founded && founded.path !== resource.path) {
+          const realPath = join(instanceModsDir, founded.fileName)
           if (existsSync(realPath)) {
             promises.push(unlink(realPath))
           } else {

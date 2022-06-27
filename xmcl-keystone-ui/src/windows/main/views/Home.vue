@@ -3,7 +3,6 @@
     class="flex flex-col home-page flex-1 min-h-0"
   >
     <home-header
-      header
       class="pt-10 pl-10"
     />
 

@@ -1,14 +1,15 @@
-import { AnyPersistedResource, AnyResource, ImportResourceOptions, ImportResourcesOptions, isPersistedResource, ParseResourceOptions, ParseResourcesOptions, PersistedResource, Resource, ResourceDomain, ResourceException, ResourceService as IResourceService, ResourceServiceKey, ResourceState, ResourceType, SourceInformation, UpdateResourceOptions } from '@xmcl/runtime-api'
+import { AnyPersistedResource, AnyResource, ImportResourceOptions, ImportResourcesOptions, isPersistedResource, ParseResourceOptions, ParseResourcesOptions, PersistedResource, Resource, ResourceDomain, ResourceException, ResourceService as IResourceService, ResourceServiceKey, ResourceSources, ResourceState, ResourceType, UpdateResourceOptions } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
-import { FSWatcher } from 'fs'
-import { readJSON, stat, unlink, writeFile } from 'fs-extra'
+import { ClassicLevel } from 'classic-level'
+import { createHash } from 'crypto'
+import { existsSync, FSWatcher } from 'fs'
+import { ensureDir, ensureFile, unlink, writeFile } from 'fs-extra'
 import watch from 'node-watch'
-import { basename, extname, join } from 'path'
+import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
-import { FileStat, mutateResource, parseResource, persistResource, readFileStat, remove, ResourceCache } from '../entities/resource'
-import { fixResourceSchema } from '../util/dataFix'
-import { isSystemError } from '../util/error'
-import { copyPassively, ENOENT_ERROR, fileType, FileType, readdirEnsured } from '../util/fs'
+import { FileStat, persistResource, readFileStat, ResourceCache } from '../entities/resource'
+import { migrateToDatabase } from '../util/dataFix'
+import { checksum, copyPassively, FileType, linkOrCopy, readdirEnsured } from '../util/fs'
 import { requireString } from '../util/object'
 import { createPromiseSignal } from '../util/promiseSignal'
 import { Singleton, StatefulService } from './Service'
@@ -42,12 +43,13 @@ export interface Query {
 export class ResourceService extends StatefulService<ResourceState> implements IResourceService {
   private cache = new ResourceCache()
 
+  readonly storage: ClassicLevel<string, PersistedResource> = new ClassicLevel(join(this.app.appDataPath, 'resources'), { keyEncoding: 'hex', valueEncoding: 'json' })
   /**
    * The array to store the pending to import resource file path, which is the absolute file path of the resource file under the domain directory
    */
   private pending = new Set<string>()
 
-  private pendingSource: Record<string, SourceInformation> = {}
+  private pendingSource: Record<string, ResourceSources> = {}
 
   private loadPromises = {
     [ResourceDomain.Mods]: createPromiseSignal(),
@@ -89,15 +91,11 @@ export class ResourceService extends StatefulService<ResourceState> implements I
       ]) {
         this.loadPromises[domain].accept(this.load(domain))
       }
+      const result = await this.storage.values().all()
+      this.log(`Load ${result.length} resources from database.`)
+      this.commitResources(result)
+      await ensureDir(this.getAppDataPath('resource-images'))
     })
-  }
-
-  queryResources(): Promise<PersistedResource<unknown>[]> {
-    throw new Error('Method not implemented.')
-  }
-
-  queryResourcesByTags(): Promise<PersistedResource<unknown>[]> {
-    throw new Error('Method not implemented.')
   }
 
   /**
@@ -144,30 +142,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
   async load(domain: ResourceDomain) {
     const path = this.getPath(domain)
     const files = await readdirEnsured(path)
-    const result: PersistedResource[] = []
-    const processFile = async (file: string) => {
-      if (!file.endsWith('.json')) return
-      const filePath = join(path, file)
-      try {
-        const resource = await this.loadMetadata(filePath)
-        result.push(resource)
-      } catch (e) {
-        if (isSystemError(e) && e.code === ENOENT_ERROR) {
-          this.warn(`The resource file ${filePath} cannot be found! Try remove this resource record!`)
-          unlink(filePath).catch(() => { })
-        } else {
-          this.error(`Cannot load resource ${file}`)
-          if (e instanceof Error && e.stack) {
-            this.error(e.stack)
-          } else {
-            this.error(e)
-          }
-        }
-      }
-    }
-    await Promise.all(files.map(processFile))
-    this.log(`Load ${result.length} resources in domain ${domain}`)
-    this.commitResources(result)
+    await migrateToDatabase.call(this, domain, files.map(f => join(path, f)))
 
     this.watchers[domain] = watch(path, async (event, name) => {
       if (event === 'remove') {
@@ -177,9 +152,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
           // this will remove
           const resource = this.cache.get(name)
           if (resource) {
-            this.state.resourcesRemove([resource])
-            this.cache.discard(resource)
-            this.unpersistResource(resource)
+            this.removeResourceInternal(resource)
             this.log(`Remove resource ${resource.path} with its metadata`)
           } else {
             this.log(`Skip to remove untracked resource ${name} & its metadata`)
@@ -189,76 +162,21 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         if (name.endsWith('.png') || name.endsWith('.pending')) {
           return
         }
-        if (name.endsWith('.json')) {
-          try {
-            const resource = await this.loadMetadata(name)
-            this.state.resources([resource])
-            this.cache.discard(resource)
-            this.cache.put(resource)
-            this.log(`Update resource ${resource.path} metadata`)
-          } catch (e) {
-            if (isSystemError(e) && e.code === ENOENT_ERROR) {
-              // the corresponded resource is missing... remove this resource metadata
-              await unlink(name)
-              this.log(`Remove not found resource corresponded to ${name}`)
-            } else {
-              this.emit('error', e)
-            }
-          }
-        } else {
-          // new file found, try to resolve & import it
-          if (this.pending.has(name)) {
-            // just ignore pending file. It will handle once the json metadata file is updated
-            this.pending.delete(name)
-            this.log(`Ignore re-import a manually importing file ${name}`)
-            return
-          }
-          try {
-            this.log(`Try to import new file ${name}`)
-            await this.importResource({ restrictToDomain: domain, path: name })
-          } catch (e) {
-            this.emit('error', e)
-          }
+        // new file found, try to resolve & import it
+        if (this.pending.has(name)) {
+          // just ignore pending file. It will handle once the json metadata file is updated
+          this.pending.delete(name)
+          this.log(`Ignore re-import a manually importing file ${name}`)
+          return
+        }
+        try {
+          this.log(`Try to import new file ${name}`)
+          await this.importResource({ restrictToDomain: domain, path: name })
+        } catch (e) {
+          this.emit('error', e)
         }
       }
     })
-  }
-
-  private getMetadataFilePath(resource: AnyResource) {
-    return this.getPath(resource.domain, resource.fileName) + '.json'
-  }
-
-  private getResourceFilePath(resource: AnyResource) {
-    return this.getPath(resource.domain, resource.fileName) + resource.ext
-  }
-
-  private async loadMetadata(metadataPath: string) {
-    const resourceData = await readJSON(metadataPath) // this.resourceFile.readTo(filePath)
-    await fixResourceSchema({ log: this.log, warn: this.warn, error: this.error }, metadataPath, resourceData, this.getPath())
-
-    const resourceFilePath = this.getResourceFilePath(resourceData)
-    const { size, ino } = await stat(resourceFilePath)
-    const resource: PersistedResource<any> = Object.freeze({
-      fileName: resourceData.fileName,
-      name: resourceData.name,
-      domain: resourceData.domain,
-      type: resourceData.type,
-      metadata: resourceData.metadata,
-      fileType: resourceData.fileType || await fileType(resourceFilePath),
-      uri: resourceData.uri,
-      date: resourceData.date,
-      tags: resourceData.tags,
-      hash: resourceData.hash,
-      path: resourceFilePath,
-      size,
-      ino,
-      ext: resourceData.ext,
-      curseforge: resourceData.curseforge,
-      modrinth: resourceData.modrinth,
-      github: resourceData.github,
-      iconUri: resourceData.iconUri ?? `dataroot://${resourceData.domain}/${resourceData.fileName}.png`,
-    })
-    return resource
   }
 
   whenReady(resourceDomain: ResourceDomain) {
@@ -277,9 +195,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         resource: resourceOrKey as string,
       })
     }
-    this.state.resourcesRemove([resource])
-    this.cache.discard(resource)
-    await this.unpersistResource(resource)
+    await this.removeResourceInternal(resource)
   }
 
   async updateResource(options: UpdateResourceOptions): Promise<void> {
@@ -290,28 +206,27 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         resource: options.resource as string,
       })
     }
-    const newResource: PersistedResource<any> = mutateResource<PersistedResource<any>>(resource, (r) => {
-      if (options.name) {
-        r.name = options.name
-      }
-      if (options.tags) {
-        const tags = options.tags
-        r.tags = tags
-      }
-      if (options.uri) {
-        r.uri = options.uri
-      }
-      if (options.source) {
-        r.curseforge = options.source.curseforge ?? r.curseforge
-        r.modrinth = options.source.modrinth ?? r.modrinth
-        r.github = options.source.github ?? r.github
-      }
-      if (options.iconUrl) {
-        r.iconUri = options.iconUrl
-      }
-    })
+    const newResource: PersistedResource<any> = { ...resource }
+    if (options.name) {
+      newResource.name = options.name
+    }
+    if (options.tags) {
+      const tags = options.tags
+      newResource.tags = tags
+    }
+    if (options.uri) {
+      newResource.uri = options.uri
+    }
+    if (options.source) {
+      newResource.curseforge = options.source.curseforge ?? newResource.curseforge
+      newResource.modrinth = options.source.modrinth ?? newResource.modrinth
+      newResource.github = options.source.github ?? newResource.github
+    }
+    if (options.iconUrl) {
+      newResource.iconUrl = options.iconUrl
+    }
     this.state.resource(newResource)
-    await writeFile(this.getMetadataFilePath(newResource), JSON.stringify(newResource))
+    await this.storage.put(newResource.hash, newResource)
   }
 
   /**
@@ -323,7 +238,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     const context: ParseResourceContext = {}
     const existed = await this.queryExistedResourceByPath(path, context)
     if (existed && existed.domain !== ResourceDomain.Unknown) {
-      return [mutateResource(existed, (r) => { r.path = path }), undefined]
+      return [{ ...existed, path }, undefined]
     }
     const [resource, icon] = await this.parseResource(options, context)
     return [resource as AnyResource, icon]
@@ -342,7 +257,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     })))
   }
 
-  markResourceSource(sha1: string, source: SourceInformation) {
+  markResourceSource(sha1: string, source: ResourceSources) {
     this.pendingSource[sha1] = source
   }
 
@@ -486,7 +401,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
           resource: r,
         })
       }
-      promises.push(copyPassively(resource.path, join(targetDirectory, resource.name + resource.ext)))
+      promises.push(copyPassively(resource.path, join(targetDirectory, resource.fileName)))
     }
     await Promise.all(promises)
   }
@@ -553,50 +468,11 @@ export class ResourceService extends StatefulService<ResourceState> implements I
    */
   async parseResource(options: ParseResourceOptions, context: ParseResourceContext) {
     const { path, type } = options
-    let sha1 = context?.sha1
-    let fileType = context?.fileType
-    const stat = context?.stat ?? await readFileStat(path)
-    if (stat.isDirectory) {
-      fileType = 'directory'
-      sha1 = ''
-    } else {
-      if (!sha1 && !fileType) {
-        [sha1, fileType] = await this.worker().checksumAndFileType(path, 'sha1')
-      }
-      if (!sha1) {
-        sha1 = await this.worker().checksum(path, 'sha1')
-      }
-      if (!fileType) {
-        fileType = await this.worker().fileType(path)
-      }
-    }
-    // const [] = parseResource(path, fileType, sha1, stat, type ?? '*')
-    const [resolved, icon] = await
-    // parseResource(path, fileType, sha1, stat, type ?? '*')
-    this.worker().parseResource({
+    const [resolved, icon] = await this.worker().parseResource({
       path,
-      sha1,
-      fileType,
-      stat,
+      context,
       hint: type ?? '*',
     })
-      .catch((e) => {
-        const resource: Resource<void> = {
-          hash: sha1!,
-          fileType: fileType!,
-          ino: stat.ino,
-          path,
-          fileName: '',
-          name: basename(path),
-          size: stat.size,
-          ext: extname(path),
-          type: ResourceType.Unknown,
-          domain: ResourceDomain.Unknown,
-          metadata: undefined,
-          uri: [],
-        }
-        return [resource, undefined] as const
-      })
     if (options.url) {
       resolved.uri.unshift(...options.url)
     }
@@ -605,8 +481,6 @@ export class ResourceService extends StatefulService<ResourceState> implements I
 
   /**
   * The internal method which should be called in-services. You should first call {@link parseResource} to get resolved resource and icon
-  * @param resource The resource to import
-  * @param context The query context
   * @see {queryExistedResourceByPath}
   */
   async importParsedResource(options: ImportResourceOptions, resolved: Resource, icon: Uint8Array | undefined) {
@@ -623,11 +497,33 @@ export class ResourceService extends StatefulService<ResourceState> implements I
       // enforced unknown resource domain
       resolved.domain = options.restrictToDomain
     }
-    if (!icon && options.iconUrl) {
-      icon = (await this.networkManager.request.get(options.iconUrl, { responseType: 'buffer' })).body
+
+    if (icon) {
+      // persist image
+      resolved.iconUrl = await this.addImage(icon)
     }
-    const result = await persistResource(resolved, this.getPath(), options.source ?? {}, options.url ?? [], icon, this.pending)
+
+    Object.assign(resolved, options.source ?? {})
+
+    const result = await persistResource(resolved, this.getPath(), this.pending)
+
+    await this.storage.put(result.hash, result)
+
     return result as AnyPersistedResource
+  }
+
+  async addImage(pathOrData: string | Uint8Array) {
+    const sha1 = typeof pathOrData === 'string' ? await checksum(pathOrData, 'sha1') : createHash('sha1').update(pathOrData).digest('hex')
+    const imagePath = join(this.app.appDataPath, 'resource-images', sha1)
+    if (!existsSync(imagePath)) {
+      await ensureFile(imagePath)
+      if (typeof pathOrData === 'string') {
+        await linkOrCopy(pathOrData, imagePath)
+      } else {
+        await writeFile(imagePath, pathOrData)
+      }
+    }
+    return `image://${sha1}`
   }
 
   /**
@@ -657,7 +553,13 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     this.state.resources(resources as any)
   }
 
-  protected unpersistResource(resource: PersistedResource) {
-    return remove(resource, this.getPath())
+  protected async removeResourceInternal(resource: PersistedResource<any>) {
+    if (resource.path !== resource.storedPath) {
+      this.warn(`Removing a stored resource from external reference: ${resource.path}. ${resource.storedPath}`)
+    }
+    this.state.resourcesRemove([resource])
+    this.cache.discard(resource)
+    this.storage.del(resource.hash)
+    await unlink(resource.storedPath).catch(() => { })
   }
 }

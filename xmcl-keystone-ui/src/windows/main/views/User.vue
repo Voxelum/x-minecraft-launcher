@@ -14,8 +14,6 @@
         />
         <div
           v-if="!security"
-          d-flex
-          xs1
         >
           <v-alert
             :value="!security"
@@ -40,7 +38,7 @@
         </div>
         <div class="flex-grow" />
         <game-profile-speed-dial
-          :visibled="modified || data.dragged"
+          :visible="modified || data.dragged"
           :deleting="data.dragged"
           :loading="loading"
           @click="confirmSelectGameProfile"

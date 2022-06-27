@@ -1,8 +1,3 @@
-// declare module '*.vue' {
-//   import { ComponentOptions, Component } from 'vue'
-//   const component: ComponentOptions
-//   export default component
-// }
 declare module '*.webp' {
   const value: string
   export default value
@@ -19,6 +14,13 @@ declare module '/@/assets/locales/index.json' {
   }
   const locale: Locale
   export = locale
+}
+
+declare namespace JSX {
+  interface IntrinsicAttributes {
+    class?: any
+    style?: any
+  }
 }
 
 declare module '*.png' {

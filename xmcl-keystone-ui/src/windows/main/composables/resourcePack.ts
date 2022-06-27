@@ -76,15 +76,16 @@ export function useInstanceResourcePacks() {
     return meta ? meta.format ?? meta.pack_format : 3
   }
   function getResourcePackItem(resource: PersistedResourcePackResource): ResourcePackItem {
+    console.log(resource.iconUrl)
     return ({
       path: resource.path,
       name: resource.name,
-      id: `file/${basename(resource.fileName)}${resource.ext}`,
+      id: `file/${basename(resource.fileName)}`,
       url: resource.uri,
       pack_format: resource.metadata.pack_format,
       description: resource.metadata.description,
       acceptingRange: packFormatVersionRange[getResourcepackFormat(resource.metadata)] ?? '[*]',
-      icon: isPersistedResource(resource) ? resource.iconUri : '',
+      icon: isPersistedResource(resource) ? resource.iconUrl ?? '' : '',
       tags: [...resource.tags],
 
       resource: (resource) as any,

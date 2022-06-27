@@ -1,13 +1,38 @@
-import { Resource } from '../entities/resource.schema'
 import { StatefulService, ServiceKey } from './Service'
-import { AnyResource } from '../entities/resource'
+import { AnyResource, Resource } from '../entities/resource'
 import { IssueKey } from '../entities/issue'
+import { Compatible } from '../util/modCompatible'
 export interface InstallModsOptions {
   mods: Resource[]
   /**
    * The instance path to deploy. This will be the current path by default.
    */
   path?: string
+}
+
+export interface InstanceMod {
+  /**
+   * Unified id
+   */
+  id: string
+  name: string
+  modId: string
+  version: string
+  description: string
+  iconUrl: string
+  dependencies: Record<string, [string, Compatible]>
+  size: number
+
+  uris: string[]
+
+  curseforge?: {
+    id: number
+    file: number
+  }
+  modrinth?: {
+    id: string
+    version: string
+  }
 }
 
 /**

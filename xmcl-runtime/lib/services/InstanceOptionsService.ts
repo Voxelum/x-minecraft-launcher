@@ -167,7 +167,7 @@ export class InstanceOptionsService extends StatefulService<InstanceOptionsState
           return false
         }
         const resourceName = path.startsWith('file/') ? path.substring('file/'.length) : path
-        const resource = this.resourceService.state.resourcepacks.find(r => `${r.fileName}${r.ext}` === resourceName)
+        const resource = this.resourceService.state.resourcepacks.find(r => `${r.fileName}` === resourceName)
         if (resource) {
           const versionRange = packFormatVersionRange[resource.metadata.pack_format]
           if (versionRange) {
