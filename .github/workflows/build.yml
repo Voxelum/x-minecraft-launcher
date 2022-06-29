@@ -20,7 +20,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
     - uses: pnpm/action-setup@v2.0.1
@@ -94,7 +94,7 @@ jobs:
   build-appx:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
     - uses: pnpm/action-setup@v2.0.1
@@ -126,7 +126,7 @@ jobs:
   build-appimage:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
     - uses: pnpm/action-setup@v2.0.1
@@ -164,7 +164,7 @@ jobs:
     if: ${{ !startsWith(github.event.head_commit.message, 'chore(release)') }}
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
         fetch-depth: 0
@@ -180,14 +180,14 @@ jobs:
         pnpm install --filter ./.github/actions
     - name: Bump Version
       id: version
-      uses: Voxelum/semantic-version-bump-action@master
+      uses: Voxelum/semantic-version-bump-action@xmcl
       with:
         packages: |
           ./xmcl-keystone-ui
           ./xmcl-runtime
           ./xmcl-runtime-api
-        root: ./xmcl-electron-app
-        read-root-commits: true
+        root: '.'
+        stage: 'prepare'
     - name: Update Lock File
       if: ${{ steps.version.outputs.release == 'true' }}
       run: pnpm i --lockfile-only
@@ -211,7 +211,7 @@ jobs:
       - build-appx
       - build-appimage
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
     - uses: pnpm/action-setup@v2.0.1
@@ -249,7 +249,14 @@ jobs:
         path: mcbbs
     - name: Prepare Release
       id: prepare_release
-      uses: ./.github/actions/prepare-release
+      uses: Voxelum/semantic-version-bump-action@xmcl
+      with:
+        packages: |
+          ./xmcl-keystone-ui
+          ./xmcl-runtime
+          ./xmcl-runtime-api
+        root: '.'
+        stage: 'release'
     - name: Create Tag
       run: |
         git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/voxelum/x-minecraft-launcher.git"
@@ -268,13 +275,34 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.prepare_release.outputs.tag }}
-        release_name: ${{ steps.prepare_release.outputs.release }}
+        tag_name: v${{ steps.prepare_release.outputs.tag }}
+        release_name: v${{ steps.prepare_release.outputs.tag }}
         draft: true
         prerelease: false
-        body: ${{ steps.prepare_release.outputs.body }}
+        body: ${{ steps.prepare_release.outputs.changelog }}
         asset_dir_path: ./build
     - name: Echo sign command
       run: |
         echo "Please use following script to sign the app in the PC with credential!"
-        echo "pnpm --package=https://github.com/Voxelum/xmcl-release-script dlx xmcl-release-script ${{ steps.create_release.outputs.release_id }} ${{ steps.create_release.outputs.appx_asset_id }}"
+        echo "pnpm --package=https://github.com/Voxelum/xmcl-release-script dlx xmcl-release-script ${{ steps.create_release.outputs.release_id }}"
+      
+    - name: Checkout Website
+      uses: actions/checkout@v3
+      with:
+        repository: Voxelum/xmcl-page
+        path: xmcl-page
+    - name: Create Release Note
+      uses: ./.github/actions/generate-release-note
+      with:
+        body: ${{ steps.prepare_release.outputs.changelog }}
+        version: ${{ steps.prepare_release.outputs.version }}
+    - name: Create Release Note PR
+      uses: peter-evans/create-pull-request@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        path: xmcl-page
+        commit-message: "docs: Update ${{ steps.prepare_release.outputs.version }} release note"
+        title: Update ${{ steps.prepare_release.outputs.version }} release note
+        reviewers: ci010
+        assignees: ci010
+        branch: release-note-${{ steps.prepare_release.outputs.version }}
