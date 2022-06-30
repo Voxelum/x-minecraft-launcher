@@ -146,7 +146,7 @@ export function useModrinth(props: ModrinthOptions) {
   const { refresh, refreshing } = useRefreshable(async () => {
     const facets: string[][] = []
     if (gameVersion.value && gameVersion.value !== 'null') {
-      facets.push([`version:${gameVersion.value}`])
+      facets.push([`versions:${gameVersion.value}`])
     }
     if (license.value) {
       facets.push([`license:${license.value}`])
