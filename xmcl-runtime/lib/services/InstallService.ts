@@ -165,7 +165,7 @@ export class InstallService extends AbstractService implements IInstallService {
       fabricMetaUrl = this.baseService.getApiSets()[0].url + '/fabric-meta'
     }
 
-    const response = await this.networkManager.request.get(`${fabricMetaUrl}/v2/versions/yarn`, {
+    const response = await this.networkManager.request.get(`${fabricMetaUrl}/versions/yarn`, {
       headers: {
         'if-modified-since': result.yarnTimestamp,
       },
@@ -180,7 +180,7 @@ export class InstallService extends AbstractService implements IInstallService {
       result.yarnTimestamp = response.headers['last-modified'] ?? result.yarnTimestamp
     }
 
-    const loaderResponse = await this.networkManager.request.get(`${fabricMetaUrl}/v2/versions/loader`, {
+    const loaderResponse = await this.networkManager.request.get(`${fabricMetaUrl}/versions/loader`, {
       headers: {
         'if-modified-since': result.loaderTimestamp,
       },
