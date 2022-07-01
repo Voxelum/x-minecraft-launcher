@@ -160,12 +160,12 @@ export class InstallService extends AbstractService implements IInstallService {
     this.log('Start to refresh fabric metadata')
 
     const result = await this.fabricVersionJson.read()
-    let fabricMetaUrl = DEFAULT_FABRIC_API
+    let fabricMetaUrl = 'https://meta.fabricmc.net'
     if (this.baseService.shouldOverrideApiSet()) {
       fabricMetaUrl = this.baseService.getApiSets()[0].url + '/fabric-meta'
     }
 
-    const response = await this.networkManager.request.get(`${fabricMetaUrl}/versions/yarn`, {
+    const response = await this.networkManager.request.get(`${fabricMetaUrl}/v2/versions/yarn`, {
       headers: {
         'if-modified-since': result.yarnTimestamp,
       },
@@ -180,7 +180,7 @@ export class InstallService extends AbstractService implements IInstallService {
       result.yarnTimestamp = response.headers['last-modified'] ?? result.yarnTimestamp
     }
 
-    const loaderResponse = await this.networkManager.request.get(`${fabricMetaUrl}/versions/loader`, {
+    const loaderResponse = await this.networkManager.request.get(`${fabricMetaUrl}/v2/versions/loader`, {
       headers: {
         'if-modified-since': result.loaderTimestamp,
       },
