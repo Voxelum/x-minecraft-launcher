@@ -160,7 +160,7 @@ export class InstallService extends AbstractService implements IInstallService {
     this.log('Start to refresh fabric metadata')
 
     const result = await this.fabricVersionJson.read()
-    let fabricMetaUrl = DEFAULT_FABRIC_API
+    let fabricMetaUrl = 'https://meta.fabricmc.net'
     if (this.baseService.shouldOverrideApiSet()) {
       fabricMetaUrl = this.baseService.getApiSets()[0].url + '/fabric-meta'
     }
