@@ -8,5 +8,5 @@ export const modrinthModpackParser: ResourceParser<ModrinthModpackManifest> = {
   parseIcon: () => Promise.resolve(undefined),
   parseMetadata: fs => fs.readFile('modrinth.index.json', 'utf-8').then(JSON.parse),
   getSuggestedName: (m) => '',
-  getUri: (man) => [`modrinth://modpack/${man.name}/${man.versionId}`],
+  getUri: (man) => [`modrinth:modpack:${man.name}:${man.versionId}`],
 }

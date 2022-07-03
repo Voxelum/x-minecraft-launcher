@@ -1,5 +1,5 @@
 import { computed, ref, Ref, watch } from '@vue/composition-api'
-import { FabricModMetadata } from '@xmcl/mod-parser'
+import { FabricModMetadata, QuiltModMetadata } from '@xmcl/mod-parser'
 import { AnyResource, Compatible, FabricResource, ForgeResource, InstanceModsServiceKey, InstanceServiceKey, isModCompatible, isModResource, isPersistedResource, LiteloaderResource, Resource, ResourceDomain, ResourceServiceKey, ResourceSourceModrinth } from '@xmcl/runtime-api'
 import { useServiceBusy, useService, useRefreshable } from '/@/composables'
 import { isStringArrayEquals } from '/@/util/equal'
@@ -39,6 +39,7 @@ export interface ModItem {
     minecraft: string
     fabricLoader?: string
     forge?: string
+    quiltLoader?: string
   }
   /**
    * The hash of the resource
@@ -49,7 +50,7 @@ export interface ModItem {
    */
   url: string
 
-  type: 'fabric' | 'forge' | 'liteloader' | 'unknown'
+  type: 'fabric' | 'forge' | 'liteloader' | 'quilt' | 'unknown'
 
   compatible: Compatible
   /**
@@ -209,6 +210,15 @@ export function useInstanceMods() {
       if (resource.metadata.mcversion) {
         modItem.dependencies.minecraft = `[${resource.metadata.mcversion}]`
       }
+    } else if (resource.type === 'quilt') {
+      modItem.type = 'quilt'
+      modItem.id = resource.metadata.quilt_loader.id
+      modItem.version = resource.metadata.quilt_loader.version
+      modItem.name = resource.metadata.quilt_loader.metadata?.name ?? resource.metadata.quilt_loader.id
+      modItem.description = resource.metadata.quilt_loader.metadata?.description ?? ''
+      const m = resource.metadata as QuiltModMetadata
+      modItem.dependencies.minecraft = '?'
+      modItem.dependencies.quiltLoader = '?'
     } else {
       modItem.type = 'unknown'
       modItem.name = resource.fileName

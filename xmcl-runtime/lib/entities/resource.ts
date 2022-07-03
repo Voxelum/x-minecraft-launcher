@@ -59,7 +59,7 @@ export class ResourceDomainIndexer<T> {
 
   async del(resource: ResourceMetadata<T> | string) {
     const key = typeof resource === 'string' ? resource : resource.hash
-    const res = typeof resource === 'string' ? await this.hashSet.get(key) : resource
+    const res = typeof resource === 'string' ? await this.parent.get(await this.hashSet.get(key)) : resource
 
     const batch = this.hashSet.batch()
 
@@ -108,25 +108,6 @@ export interface ResourceParser<T> {
    * Get ideal uri for this resource
    */
   getUri: (metadata: T) => string[]
-}
-
-export interface PersistedResourceBuilder extends Omit<PersistedResourceSchema, 'metadata' | 'version'> {
-  icon?: Uint8Array
-  path: string
-
-  metadata: unknown
-  /**
-   * The ino of the file on disk
-   */
-  ino: number
-  /**
-   * The size of the resource
-   */
-  size: number
-  /**
-   * The suggested ext of the resource
-   */
-  ext: string
 }
 
 // resource entries

@@ -27,5 +27,5 @@ export const fabricModParser: ResourceParser<FabricModMetadata> = ({
     }
     return name
   },
-  getUri: meta => [`fabric:///${meta.id}/${meta.version}`],
+  getUri: meta => [`fabric:${meta.id}:${meta.version}`],
 })
