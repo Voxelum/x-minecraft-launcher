@@ -230,7 +230,7 @@ export function isResourcePackResource(resource: Resource): resource is Resource
 }
 
 export function isModResource(resource: Resource): resource is ModResource {
-  return resource.type === 'forge' || resource.type === 'fabric' || resource.type === 'liteloader'
+  return resource.type === 'forge' || resource.type === 'fabric' || resource.type === 'liteloader' || resource.type === 'quilt'
 }
 
 export function isShaderPackResource(resource: Resource): resource is ShaderPackResource {

@@ -33,14 +33,14 @@ export const forgeModParser: ResourceParser<ForgeModCommonMetadata> = ({
   getUri: meta => {
     const urls: string[] = []
     for (const m of meta.mcmodInfo) {
-      urls.push(`forge:///${m.modid}/${m.version}`)
+      urls.push(`forge:${m.modid}:${m.version}`)
     }
     for (const m of meta.modsToml) {
-      urls.push(`forge:///${m.modid}/${m.version}`)
+      urls.push(`forge:${m.modid}:${m.version}`)
     }
     for (const m of meta.modAnnotations) {
       if (m.modid && m.version) {
-        const uri = `forge:///${m.modid}/${m.version}`
+        const uri = `forge:${m.modid}:${m.version}`
         if (urls.indexOf(uri) === -1) {
           urls.push(uri)
         }
@@ -48,7 +48,7 @@ export const forgeModParser: ResourceParser<ForgeModCommonMetadata> = ({
     }
     if (meta.manifestMetadata && meta.manifestMetadata.modid && meta.manifestMetadata.version) {
       const m = meta.manifestMetadata
-      const uri = `forge:///${m.modid}/${m.version}`
+      const uri = `forge:${m.modid}:${m.version}`
       if (urls.indexOf(uri) === -1) {
         urls.push(uri)
       }

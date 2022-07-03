@@ -8,5 +8,5 @@ export const mcbbsModpackParser: ResourceParser<McbbsModpackManifest> = {
   parseIcon: () => Promise.resolve(undefined),
   parseMetadata: fs => fs.readFile('mcbbs.packmeta', 'utf-8').then(JSON.parse),
   getSuggestedName: () => '',
-  getUri: (man) => [`mcbbs://modpack/${man.name}/${man.version}`],
+  getUri: (man) => [`mcbbs:modpack:${man.name}:${man.version}`],
 }

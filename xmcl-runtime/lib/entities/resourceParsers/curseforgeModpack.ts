@@ -8,5 +8,5 @@ export const curseforgeModpackParser: ResourceParser<CurseforgeModpackManifest> 
   parseIcon: () => Promise.resolve(undefined),
   parseMetadata: fs => fs.readFile('manifest.json', 'utf-8').then(JSON.parse),
   getSuggestedName: () => '',
-  getUri: (man) => [`curseforge://name/${man.name}/${man.version}`],
+  getUri: (man) => [`curseforge:modpack:${man.name}:${man.version}`],
 }

@@ -24,5 +24,5 @@ export const liteloaderModParser: ResourceParser<LiteloaderModMetadata> = ({
     }
     return name
   },
-  getUri: meta => [`liteloader:///${meta.name}/${meta.version}`],
+  getUri: meta => [`liteloader:${meta.name}:${meta.version}`],
 })
