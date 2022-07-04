@@ -51,5 +51,6 @@
         "xmcl-keystone-ui/src/windows/browser/locales",
         "xmcl-keystone-ui/src/windows/main/locales",
         "xmcl-keystone-ui/src/windows/setup/locales"
-    ]
+    ],
+    "npm.packageManager": "pnpm"
 }
