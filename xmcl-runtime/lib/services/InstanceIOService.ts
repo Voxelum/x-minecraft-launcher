@@ -320,7 +320,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     try {
       const start = Date.now()
       const allHeaders = headers ? { ...headers } : {}
-      if (!allHeaders.Authorization && this.userService.state.user.msAccessToken) {
+      if (!allHeaders.Authorization && this.userService.state.user?.msAccessToken) {
         allHeaders.Authorization = `Bearer ${this.userService.state.user.msAccessToken}`
       }
 

@@ -1,4 +1,4 @@
-import { ServiceKey } from '@xmcl/runtime-api'
+import { Exception, ServiceKey } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
@@ -90,6 +90,9 @@ export default class ServiceManager extends Manager {
         this.error((e as any).stack)
       } else {
         this.error(JSON.stringify(e))
+      }
+      if (e instanceof Exception) {
+        this.error(JSON.stringify(e.exception, null, 4))
       }
       const error = serializeError(e)
       error.serviceName = serviceName

@@ -7,7 +7,7 @@ import { basename, dirname, join, relative, sep } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { isDirectory, missing, readdirEnsured } from '../util/fs'
 import { isNonnull } from '../util/object'
-import { StatefulService } from './Service'
+import { Singleton, StatefulService } from './Service'
 
 /**
  * The local version service maintains the installed versions on disk
@@ -104,6 +104,7 @@ export class VersionService extends StatefulService<VersionState> implements IVe
    * Refresh a version in the version folder.
    * @param versionFolder The version folder name. It must existed under the `versions` folder.
    */
+  @Singleton(v => v)
   async refreshVersion(versionFolder: string) {
     try {
       const version = await this.resolveLocalVersion(versionFolder)
@@ -116,6 +117,7 @@ export class VersionService extends StatefulService<VersionState> implements IVe
     }
   }
 
+  @Singleton()
   async refreshVersions() {
     const dir = this.getPath('versions')
     let files = await readdirEnsured(dir)

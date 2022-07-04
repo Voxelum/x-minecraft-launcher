@@ -13,7 +13,6 @@ import NetworkManager from '../managers/NetworkManager'
 import SemaphoreManager from '../managers/SemaphoreManager'
 import ServiceManager from '../managers/ServiceManager'
 import ServiceStateManager from '../managers/ServiceStateManager'
-import DatabaseManager from '../managers/DatabaseManager'
 import TaskManager from '../managers/TaskManager'
 import TelemetryManager from '../managers/TelemetryManager'
 import WorkerManager from '../managers/WorkerManager'
@@ -97,8 +96,6 @@ export abstract class LauncherApp extends EventEmitter {
   readonly logManager = new LogManager(this)
 
   readonly telemetryManager = new TelemetryManager(this)
-
-  readonly databaseManager = new DatabaseManager(this)
 
   readonly credentialManager = new CredentialManager(this)
 
