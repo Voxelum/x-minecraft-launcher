@@ -634,6 +634,10 @@ serverStatus:
   timeout: 服务器响应超时!
 setting:
   githubRelease: Github
+  maxSockets: (每个网站)最大连接数
+  maxSocketsDescription: 控制最大的并发 HTTP 链接数量。0 代表不限制数量。
+  maxSocketsTitle: 最大 HTTP 连接数量
+  maxTotalSockets: (全启动器)最大连接数
   name: 设置
   officialWebsite: 官网地址
   resolution: Minecraft默认窗口大小

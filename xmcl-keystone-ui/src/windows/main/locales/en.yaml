@@ -714,6 +714,12 @@ serverStatus:
   timeout: §4Connect server timeout!
 setting:
   githubRelease: Github Release
+  maxSockets: Per Host
+  maxSocketsDescription: >-
+    Limit the maximum number of sockets to allow per host or for all hosts in
+    total. 0 means no limit.
+  maxSocketsTitle: Max HTTP sockets
+  maxTotalSockets: All Hosts
   name: Global Setting | Global Settings
   officialWebsite: Official Website
   resolution: Default Resolution
