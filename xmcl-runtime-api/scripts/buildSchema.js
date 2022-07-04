@@ -19,6 +19,7 @@ const compilerOptions = {
   esModuleInterop: true,
   resolveJsonModule: true,
   skipLibCheck: true,
+  downlevelIteration: true,
 }
 
 const dir = resolve(__dirname, '..', 'src/entities')
@@ -28,7 +29,7 @@ files.map(f => f.substring(0, f.length - 3).replace(/\\/g, '/')).forEach(f => co
 
 const program = TJS.getProgramFromFiles(files, compilerOptions)
 const generator = TJS.buildGenerator(program, settings)
-const symbols = generator.symbols.filter(s => s.name.endsWith('Schema') &&
+const symbols = generator.getSymbols().filter(s => s.name.endsWith('Schema') &&
   files.some(f => s.fullyQualifiedName.indexOf(f.substring(0, f.length - 6).replace(/\\/g, '/')) !== -1))
   .map(s => [s, files.find(f => s.fullyQualifiedName.indexOf(f.substring(0, f.length - 6).replace(/\\/g, '/')) !== -1)])
 

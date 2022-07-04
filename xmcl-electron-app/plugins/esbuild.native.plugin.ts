@@ -188,16 +188,6 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         },
       )
 
-      // build.onResolve({ filter: /^virtual:prisma-native$/g }, async ({ path, resolveDir }) => {
-      //   const dirName = resolve('../xmcl-runtime/lib/database/client.gen')
-      //   const nodeFile = (await readdir(dirName)).find(f => f.endsWith('.node'))
-      //   return ({
-      //     path: join(dirName, nodeFile!),
-      //     namespace: 'static',
-      //     pluginData: { resolveDir },
-      //   })
-      // })
-
       if (!build.initialOptions.watch) {
         const opts = build.initialOptions
         opts.loader = opts.loader || {}
