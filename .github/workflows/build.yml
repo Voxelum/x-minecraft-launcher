@@ -299,7 +299,7 @@ jobs:
     - name: Create Release Note PR
       uses: peter-evans/create-pull-request@v3
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.PAT_GITHUB_TOKEN }}
         path: xmcl-page
         commit-message: "docs: Update ${{ steps.prepare_release.outputs.version }} release note"
         title: Update ${{ steps.prepare_release.outputs.version }} release note
