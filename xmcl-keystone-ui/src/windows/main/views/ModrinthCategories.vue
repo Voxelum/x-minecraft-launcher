@@ -12,7 +12,7 @@
       @click="$emit('select:category', cat.name)"
     >
       <v-checkbox
-        :input-value="cat.name === category"
+        :input-value="category.indexOf(cat.name) !== -1"
         hide-details
         class="mt-0 pt-0"
       />
@@ -105,7 +105,7 @@ export default defineComponent({
   props: {
     loading: required<boolean>(Boolean),
     categories: required<Category[]>(Array),
-    category: required(String),
+    category: required<string[]>(Array),
     loaders: required<Loader[]>(Array),
     modLoader: required(String),
     environments: required<string[]>(Array),
