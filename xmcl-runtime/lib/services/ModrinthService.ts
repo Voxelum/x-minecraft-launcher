@@ -84,7 +84,7 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
       const hashes = Object.entries(file.hashes)
       const urls = [file.url]
       if (version) {
-        urls.push(`modrinth://${version.project_id}/${version.id}`)
+        urls.push(`modrinth:${version.project_id}:${version.id}`)
       }
       const resource = this.resourceService.getResource({ url: urls })
       if (resource) {

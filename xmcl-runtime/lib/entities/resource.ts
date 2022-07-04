@@ -69,9 +69,9 @@ export class ResourceDomainIndexer<T> {
       batch.del(uri)
     }
 
-    for (const tag of res.tags) {
+    // for (const tag of res.tags) {
 
-    }
+    // }
 
     this.hashSet.del(key)
   }

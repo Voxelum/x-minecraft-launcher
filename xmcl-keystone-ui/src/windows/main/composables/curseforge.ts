@@ -164,7 +164,6 @@ export function useCurseforgeProjectFiles(projectId: number) {
     try {
       const f = await fetchProjectFiles({ modId: projectId })
       data.files = Object.freeze(f.data)
-      console.log(data.files)
       data.index = f.pagination.index
       data.pageSize = f.pagination.pageSize
       data.totalCount = f.pagination.totalCount

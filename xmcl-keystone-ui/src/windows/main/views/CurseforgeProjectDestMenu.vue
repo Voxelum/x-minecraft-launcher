@@ -13,7 +13,7 @@
 
           {{
             selected.path
-              ? $t("curseforge.installTo", { path: selected.name })
+              ? t("curseforge.installTo", { path: selected.name })
               : selected.name
           }}
         </span>
@@ -36,7 +36,7 @@
         </v-list-item-avatar>
         <v-list-item-title>
           {{
-            $t("curseforge.installTo", { path: item.name })
+            t("curseforge.installTo", { path: item.name })
           }}
         </v-list-item-title>
       </v-list-item>
@@ -63,8 +63,8 @@ const props = defineProps<{
 const emit = defineEmits(['input'])
 
 const { instances } = useInstances()
-const { $t } = useI18n()
-const defaultItem = computed(() => ({ name: $t('curseforge.installToStorage'), path: '' }))
+const { t } = useI18n()
+const defaultItem = computed(() => ({ name: t('curseforge.installToStorage'), path: '' }))
 const items = computed(() => instances.value.map(i => ({ path: i.path, name: i.name ?? basename(i.path) })))
 const selected = computed({
   get() {

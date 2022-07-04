@@ -80,7 +80,7 @@ export function useInstanceResourcePacks() {
     return ({
       path: resource.path,
       name: resource.name,
-      id: `file/${basename(resource.fileName)}`,
+      id: `file/${resource.fileName.endsWith('.zip') ? resource.fileName : resource.fileName + '.zip'}`,
       url: resource.uri,
       pack_format: resource.metadata.pack_format,
       description: resource.metadata.description,

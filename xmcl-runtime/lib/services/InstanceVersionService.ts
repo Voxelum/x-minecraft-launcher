@@ -24,11 +24,14 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
       id: VersionIssueKey,
       fix: async (issue) => {
         const { minecraft, forge, fabricLoader, optifine, quiltLoader } = issue
-        await this.installRuntime({ minecraft, forge, fabricLoader, optifine, quiltLoader })
+        const version = await this.installRuntime({ minecraft, forge, fabricLoader, optifine, quiltLoader })
+        if (version) {
+          await this.versionService.refreshVersion(version)
+        }
       },
       validator: async (builder, issue) => {
         const runtime = this.instanceService.state.instance.runtime
-        const valid = runtime.minecraft === issue.minecraft && runtime.forge === issue.forge && runtime.fabricLoader === issue.fabricLoader
+        const valid = runtime.minecraft === issue.minecraft && runtime.forge === issue.forge && runtime.fabricLoader === issue.fabricLoader && runtime.quiltLoader === issue.quiltLoader
         if (valid) {
           await this.diagnoseAll(builder, this.state.version)
         }

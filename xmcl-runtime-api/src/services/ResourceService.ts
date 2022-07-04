@@ -212,6 +212,7 @@ export interface ResourceService extends StatefulService<ResourceState>, Generic
    * @returns The resource resolved. If the resource cannot be resolved, it will goes to unknown domain.
    */
   importResource(options: ImportResourceOptions): Promise<AnyPersistedResource>
+  importResource(options: ImportResourceOptions & { optional: true }): Promise<AnyPersistedResource | undefined>
   /**
    * Import the resource from the same disk. This will parse the file and import it into our db by hard link.
    * If the file already existed, it will not re-import it again
