@@ -149,37 +149,37 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
    */
   mojangSecurity = false
 
-  get user(): UserProfile {
-    return this.users[this.selectedUser.id] || EMPTY_USER
+  get user(): UserProfile | undefined {
+    return this.users[this.selectedUser.id]
   }
 
   get gameProfile() {
-    return this.user.profiles[this.selectedUser.profile] || EMPTY_GAME_PROFILE
+    return this.user?.profiles[this.selectedUser.profile]
   }
 
   get isAccessTokenValid(): boolean {
-    return this.user.accessToken !== ''
+    return this.user?.accessToken !== ''
   }
 
   get offline(): boolean {
-    return this.user.authService === 'offline'
+    return this.user?.authService === 'offline'
   }
 
   get isYggdrasilService(): boolean {
-    return this.user.authService !== 'offline' && this.user.authService !== 'microsoft'
+    return this.user?.authService !== 'offline' && this.user?.authService !== 'microsoft'
   }
 
   get isThirdPartyAuthentication(): boolean {
     const user = this.user
-    return user.authService !== 'mojang' && user.authService !== 'offline' && user.authService !== 'microsoft'
+    return user?.authService !== 'mojang' && user?.authService !== 'offline' && user?.authService !== 'microsoft'
   }
 
   get authService(): YggdrasilAuthAPI {
-    return this.authServices[this.user.authService]
+    return this.user?.authService ? this.authServices[this.user.authService] : this.authServices.mojang
   }
 
   get profileService(): ProfileServiceAPI {
-    return this.profileServices[this.user.profileService]
+    return this.user?.profileService ? this.profileServices[this.user.profileService] : this.profileServices.mojang
   }
 
   userSnapshot(snapshot: UserSchema) {
