@@ -65,7 +65,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
      */
     const option: LaunchOption = {
       gameProfile,
-      accessToken: user.user.accessToken,
+      accessToken: user.user?.accessToken,
       properties: {},
       gamePath: minecraftFolder.root,
       resourcePath: this.getPath(),
@@ -99,7 +99,6 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
 
   /**
    * Launch the current selected instance. This will return a boolean promise indeicate whether launch is success.
-   * @param force
    * @returns Does this launch request success?
    */
   async launch(options?: LaunchOptions) {
@@ -107,6 +106,8 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       if (this.state.status !== 'idle') {
         return false
       }
+
+      this.state.launchStatus('checkingProblems')
 
       /**
        * current selected profile
@@ -130,12 +131,11 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       }
 
       if (!options?.force) {
-        this.state.launchStatus('checkingProblems')
         const issues = this.diagnoseService.state.issues
-        for (let problems = issues.filter(p => p.autoFix), i = 0;
-          problems.length !== 0 && i < 1;
-          problems = issues.filter(p => p.autoFix), i += 1) {
-          await this.diagnoseService.fix(issues.filter(p => !p.optional && p.autoFix))
+        for (let problems = issues.filter(p => p.autoFix && p.parameters.length > 0), i = 0;
+          problems.length !== 0 && i <= 2;
+          problems = issues.filter(p => p.autoFix && p.parameters.length > 0), i += 1) {
+          await this.diagnoseService.fix(problems)
         }
       }
 
@@ -188,7 +188,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
        */
       const option: LaunchOption = {
         gameProfile,
-        accessToken: user.user.accessToken,
+        accessToken: user.user?.accessToken,
         properties: {},
         gamePath: minecraftFolder.root,
         resourcePath: this.getPath(),

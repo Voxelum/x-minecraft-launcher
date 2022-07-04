@@ -6,9 +6,8 @@ import { UserExceptions } from './UserService'
 
 export class LaunchState {
   status = 'idle' as LaunchStatus
+
   activeCount = 0
-  errorType = ''
-  errors = [] as any[]
 
   launchCount(count: number) {
     if (count < 0) count = 0
@@ -17,11 +16,6 @@ export class LaunchState {
 
   launchStatus(status: LaunchStatus) {
     this.status = status
-  }
-
-  launchErrors(error: { type: string; content: any[] }) {
-    this.errorType = error.type
-    this.errors = error.content
   }
 }
 
