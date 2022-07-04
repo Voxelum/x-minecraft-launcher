@@ -8,7 +8,7 @@ export interface ModrinthOptions {
   query: string
   gameVersion: string
   license: string
-  category: string
+  category: string[]
   modLoader: string
   environment: string
   sortBy: string
@@ -50,6 +50,7 @@ export function useModrinth(props: ModrinthOptions) {
   const { searchProjects } = useService(ModrinthServiceKey)
   const { t } = useI18n()
   const { replace } = useRouter()
+  const router = useRouter()
   const projectTypes = computed(() => [{
     value: 'mod',
     text: t('modrinth.projectType.mod'),
@@ -87,7 +88,7 @@ export function useModrinth(props: ModrinthOptions) {
     get() { return props.query },
     set(query: string) {
       if (query !== props.query) {
-        replace(`/modrinth?${getQueryString({ ...props, query, page: 1 })}`)
+        replace({ query: { ...router.currentRoute.query, query, page: '1' } })
       }
     },
   })
@@ -95,49 +96,49 @@ export function useModrinth(props: ModrinthOptions) {
   const projectType = computed({
     get() { return props.projectType },
     set(projectType: string) {
-      replace(`/modrinth?${getQueryString({ ...props, projectType, page: 1 })}`)
+      replace({ query: { ...router.currentRoute.query, projectType, page: '1' } })
     },
   })
   const gameVersion = computed({
     get() { return props.gameVersion },
     set(gameVersion: string) {
-      replace(`/modrinth?${getQueryString({ ...props, gameVersion, page: 1 })}`)
+      replace({ query: { ...router.currentRoute.query, gameVersion, page: '1' } })
     },
   })
   const license = computed({
     get() { return props.license },
     set(license: string) {
-      replace(`/modrinth?${getQueryString({ ...props, license, page: 1 })}`)
+      replace({ query: { ...router.currentRoute.query, license, page: '1' } })
     },
   })
   const environment = computed({
     get() { return props.environment },
     set(environment: string) {
-      replace(`/modrinth?${getQueryString({ ...props, environment, page: 1 })}`)
+      replace({ query: { ...router.currentRoute.query, environment, page: '1' } })
     },
   })
   const category = computed({
     get() { return props.category },
-    set(category: string) {
-      replace(`/modrinth?${getQueryString({ ...props, category, page: 1 })}`)
+    set(category: string[]) {
+      replace({ query: { ...router.currentRoute.query, category, page: '1' } })
     },
   })
   const modLoader = computed({
     get() { return props.modLoader },
     set(modLoader: string) {
-      replace(`/modrinth?${getQueryString({ ...props, modLoader, page: 1 })}`)
+      replace({ query: { ...router.currentRoute.query, modLoader, page: '1' } })
     },
   })
   const page = computed({
     get() { return props.page },
     set(page: number) {
-      replace(`/modrinth?${getQueryString({ ...props, page })}`)
+      replace({ query: { ...router.currentRoute.query, page: page.toString() } })
     },
   })
   const sortBy = computed({
     get() { return props.sortBy },
     set(sortBy: string) {
-      replace(`/modrinth?${getQueryString({ ...props, sortBy, page: 1 })}`)
+      replace({ query: { ...router.currentRoute.query, sortBy, page: '1' } })
     },
   })
 
@@ -155,7 +156,9 @@ export function useModrinth(props: ModrinthOptions) {
       facets.push([`categories:${modLoader.value}`])
     }
     if (category.value) {
-      facets.push([`categories:${category.value}`])
+      for (const cat of category.value) {
+        facets.push([`categories:${cat}`])
+      }
     }
     if (projectType.value) {
       facets.push([`project_type:${projectType.value}`])
@@ -183,7 +186,7 @@ export function useModrinth(props: ModrinthOptions) {
   }
 
   watch(projectType, () => {
-    category.value = ''
+    category.value = []
   })
 
   watch([query, gameVersion, license, category, environment, modLoader, refs.pageSize, page, sortBy, projectType], () => {

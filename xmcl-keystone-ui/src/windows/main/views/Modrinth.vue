@@ -94,7 +94,7 @@
         @select:modLoader="_modLoader = _modLoader === $event ? '' : $event"
         @select:gameVersion="_gameVersion = _gameVersion === $event ? '' : $event"
         @select:license="_license = _license === $event ? '' : $event"
-        @select:category="_category = _category === $event ? '' : $event"
+        @select:category="selectCategory"
         @select:environment="_environment = _environment === $event ? '' : $event"
       />
     </div>
@@ -114,7 +114,7 @@ export default defineComponent({
     query: withDefault(String, () => ''),
     gameVersion: withDefault(String, () => ''),
     license: withDefault(String, () => ''),
-    category: withDefault(String, () => ''),
+    category: withDefault<string[]>(Array, () => [] as string[]),
     modLoader: withDefault(String, () => ''),
     environment: withDefault(String, () => ''),
     projectType: withDefault(String, () => 'mod'),
@@ -129,9 +129,16 @@ export default defineComponent({
     const keyword = ref(props.query)
     const onFiltered = (tag: string) => {
       if (categories.value.find(c => c.name === tag)) {
-        category.value = tag
+        selectCategory(tag)
       } else if (modLoaders.value.find(l => l.name === tag)) {
         modLoader.value = tag
+      }
+    }
+    const selectCategory = (cat: string) => {
+      if (category.value.indexOf(cat) === -1) {
+        category.value = [...category.value, cat]
+      } else {
+        category.value = category.value.filter(v => v !== cat)
       }
     }
     onMounted(() => {
@@ -139,6 +146,7 @@ export default defineComponent({
       refreshTag()
     })
     return {
+      selectCategory,
       ...rest,
       categories,
       refreshingTag,
