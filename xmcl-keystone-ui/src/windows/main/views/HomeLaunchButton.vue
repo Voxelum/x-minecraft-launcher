@@ -37,8 +37,7 @@
 import { UserServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { JavaIssueDialogKey, useJava } from '../composables/java'
-import { useLaunch } from '../composables/launch'
-import { LaunchStatusDialogKey } from './HomeLaunchStatusDialog.vue'
+import { LaunchStatusDialogKey, useLaunch } from '../composables/launch'
 import { useService } from '/@/composables'
 
 const { launch, status: launchStatus, launchCount } = useLaunch()
@@ -53,12 +52,12 @@ const { state } = useService(UserServiceKey)
 function launchGame() {
   if (missingJava.value) {
     showJavaDialog()
-  } if (!state.users[state.selectedUser.id] || !state.user.accessToken) {
+  } if (!state.users[state.selectedUser.id] || !state.user?.accessToken) {
     showLoginDialog()
   } else if (launchStatus.value === 'checkingProblems' || launchStatus.value === 'launching') {
     showLaunchStatusDialog()
   } else {
-    if (launchCount.value === 1) {
+    if (launchCount.value === 1 || launchStatus.value !== 'idle') {
       showMultiInstanceDialog()
     } else {
       launch()
