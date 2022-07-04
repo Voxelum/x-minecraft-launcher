@@ -21,7 +21,7 @@
         "lint:fix": "eslint --ext .ts,.vue --fix src"
     },
     "dependencies": {
-        "@types/three": "^0.127.1",
+        "@types/three": "^0.141.0",
         "@vue/composition-api": "^1.4.5",
         "@xmcl/client": "workspace:*",
         "@xmcl/core": "workspace:*",
@@ -46,7 +46,7 @@
         "lodash.debounce": "^4.0.8",
         "markdown-it": "^12.3.2",
         "semver": "^7.3.5",
-        "three": "^0.127.0",
+        "three": "^0.142.0",
         "vanta": "^0.5.21",
         "vue": "2.6.14",
         "vue-i18n": "^8.27.1",
