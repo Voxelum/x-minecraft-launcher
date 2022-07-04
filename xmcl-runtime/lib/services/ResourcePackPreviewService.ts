@@ -61,7 +61,6 @@ export class ResourcePackPreviewService extends AbstractService implements IReso
   protected getResourcePackPath(pack: string) {
     if (pack === 'vanilla') {
       const version = this.instanceVersionService.state.version?.minecraftVersion
-      // TODO: handle error
       const jarPath = new MinecraftFolder(this.getPath()).getVersionJar(version!)
       return jarPath
     }
@@ -76,10 +75,10 @@ export class ResourcePackPreviewService extends AbstractService implements IReso
   }
 
   protected async updateResourcePacks(resourcePacks: string[]) {
-    const release = await this.queue.waitInline()
+    // const release = await this.queue.waitInline()
 
     try {
-      const list = this.resourceManager.list as NamedResourcePackWrapper[]
+      const loadedPacks = this.resourceManager.list as NamedResourcePackWrapper[]
 
       const resourcePacksPaths = resourcePacks.map((name) => this.getResourcePackPath(name))
       if (resourcePacks.every((p) => p !== 'vanilla')) {
@@ -88,11 +87,11 @@ export class ResourcePackPreviewService extends AbstractService implements IReso
 
       this.log(`Load resource packs to preview: [${resourcePacks.join(', ')}]`)
       // load the pack if the present
-      if (resourcePacksPaths.length !== list.length ||
-        resourcePacksPaths.some((path, i) => list[i]?.path !== path)) {
+      if (resourcePacksPaths.length !== loadedPacks.length ||
+        resourcePacksPaths.some((path, i) => loadedPacks[i]?.path !== path)) {
         for (let i = 0; i < resourcePacksPaths.length; i++) {
           const path = resourcePacksPaths[i]
-          const cached = list.find((e) => e.path === path)
+          const cached = loadedPacks.find((e) => e.path === path)
           if (!cached) {
             // if not present, load from file
             await this.loadResourcePack(path)
@@ -106,28 +105,29 @@ export class ResourcePackPreviewService extends AbstractService implements IReso
       }
 
       // re-order the list
-      const copy = [...list]
-      if (resourcePacksPaths.some((path, i) => path !== list[i].path)) {
+      const copy = [...loadedPacks]
+      if (resourcePacksPaths.some((path, i) => path !== loadedPacks[i].path)) {
         for (let i = 0; i < resourcePacksPaths.length; i++) {
-          list[i] = copy.find((w) => w.path === resourcePacksPaths[i])!
+          loadedPacks[i] = copy.find((w) => w.path === resourcePacksPaths[i])!
         }
       }
       const toRemove = copy.filter((v) => resourcePacksPaths.indexOf(v.path) === -1)
-      // close redundent
+      // close redundant
       for (const pack of toRemove) {
         pack.source.fs.close()
       }
       this.log(`Release resource pack [${toRemove.join(', ')}]`)
-      // remove redundent
-      while (list.length > resourcePacksPaths.length) {
-        list.pop()
+      // remove redundant
+      while (loadedPacks.length > resourcePacksPaths.length) {
+        loadedPacks.pop()
       }
     } finally {
-      release()
+      // release()
     }
   }
 
   async loadModel(modelPath: string) {
+    await this.updateResourcePacks(this.instanceGameSettingService.state.options.resourcePacks)
     this.log(`Load model ${modelPath}`)
 
     const model = await this.modelLoader.loadModel(modelPath)

@@ -10,13 +10,16 @@ export interface BlockStateJson {
     }>
   }
 }
-export interface ResourcePackPreviewService {
-  loadModel(modelPath: string): Promise<{
-    model: BlockModel.Resolved
-    textures: Record<string, {
-      url: string
-    }>
+
+export interface CachedBlockModel {
+  model: BlockModel.Resolved
+  textures: Record<string, {
+    url: string
   }>
+}
+
+export interface ResourcePackPreviewService {
+  loadModel(modelPath: string): Promise<CachedBlockModel>
   getBlockStates(): Promise<BlockStateJson[]>
 }
 

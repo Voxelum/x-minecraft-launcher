@@ -1,26 +1,29 @@
 <template>
   <v-container>
     <canvas
-      ref="canvas"
-      :width="400"
-      :height="400"
+      ref="canvasRef"
+      :width="240"
+      :height="240"
       @dragover="$emit('dragover', $event)"
       @drop="$emit('drop', $event)"
     />
   </v-container>
 </template>
 
-<script lang=ts>
-import { computed, defineComponent, onMounted, onUnmounted, ref, watch } from '@vue/composition-api'
+<script lang=ts setup>
+import { computed, onMounted, onUnmounted, ref, watch } from '@vue/composition-api'
 import { BlockModelFactory } from '@xmcl/model'
 import { BlockModel } from '@xmcl/resourcepack'
-import { PerspectiveCamera } from 'three/src/cameras/PerspectiveCamera'
-import { AmbientLight } from 'three/src/lights/AmbientLight'
-import { Vector3 } from 'three/src/math/Vector3'
-import { WebGLRenderer } from 'three/src/renderers/WebGLRenderer'
-import { Scene } from 'three/src/scenes/Scene'
+import { CachedBlockModel } from '@xmcl/runtime-api'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
-import { required } from '/@/util/props'
+
+import {
+  PerspectiveCamera,
+  AmbientLight,
+  Vector3,
+  WebGLRenderer,
+  Scene,
+} from 'three'
 
 function findRealTexturePath(model: BlockModel.Resolved, variantKey: string) {
   let texturePath = model.textures[variantKey] as string
@@ -36,74 +39,69 @@ function findRealTexturePath(model: BlockModel.Resolved, variantKey: string) {
   return texturePath
 }
 
-export default defineComponent({
-  props: {
-    value: required<{
-      model: BlockModel.Resolved
-      textures: Record<string, { url: string }>
-    }>(Object),
-  },
-  setup(props) {
-    const canvas = ref(null)
-    const data = {
-      disposed: false,
+const props = defineProps<{ value: CachedBlockModel }>()
+const canvasRef = ref(null)
+const data = {
+  disposed: false,
+}
+
+onMounted(() => {
+  if (canvasRef.value) {
+    const renderer = new WebGLRenderer({ canvas: canvasRef.value!, antialias: true, alpha: true })
+    const scene = new Scene()
+    const camera = new PerspectiveCamera(60, 1, 1, 1000)
+    const controls = new OrbitControls(camera, canvasRef.value!)
+
+    camera.position.x = 16 / 1.5
+    camera.position.y = 24 / 1.5
+    camera.position.z = 32 / 1.5
+
+    scene.add(new AmbientLight(0xffffff, 0.97))
+
+    camera.lookAt(new Vector3(0, 0, 0))
+
+    controls.target = new Vector3(0, 0, 0)
+    controls.enableDamping = true
+    controls.dampingFactor = 0.2
+    controls.zoomSpeed = 1.4
+    controls.rotateSpeed = 0.6
+    controls.autoRotate = true
+    controls.autoRotateSpeed = 12
+
+    function updateObject() {
+      for (const [key, value] of Object.entries(props.value.model.textures)) {
+        // eslint-disable-next-line vue/no-mutating-props
+        props.value.model.textures[key] = findRealTexturePath(props.value.model, key)
+      }
+      const obj = new BlockModelFactory(props.value.textures).getObject(props.value.model)
+
+      if (currentObj) {
+        scene.remove(currentObj)
+      }
+      scene.add(obj)
+      currentObj = obj
+      obj.position.y += 2
     }
-    onUnmounted(() => {
-      data.disposed = true
+
+    let currentObj: any
+    watch(computed(() => props.value), () => {
+      updateObject()
     })
-    onMounted(() => {
-      const renderer = new WebGLRenderer({ canvas: canvas.value!, antialias: true, alpha: true })
-      const scene = new Scene()
-      const camera = new PerspectiveCamera(60, 1, 1, 1000)
-      const controls = new OrbitControls(camera, canvas.value!)
+    updateObject()
 
-      camera.position.x = 16
-      camera.position.x = 16
-      camera.position.x = 32
-
-      scene.add(new AmbientLight(0xffffff, 0.97))
-
-      camera.lookAt(new Vector3(0, 0, 0))
-
-      controls.target = new Vector3(0, 0, 0)
-      controls.enableDamping = true
-      controls.dampingFactor = 0.2
-      controls.zoomSpeed = 1.4
-      controls.rotateSpeed = 0.6
-      controls.enableKeys = false
-      // if (props.rotate) {
-      //   controls.autoRotate = true;
-      //   controls.autoRotateSpeed = 4;
-      // } else {
-      controls.autoRotate = false
-      // }
-
-      let currentObj: any
-      watch(computed(() => props.value), () => {
-        for (const [key, value] of Object.entries(props.value.model.textures)) {
-          // eslint-disable-next-line vue/no-mutating-props
-          props.value.model.textures[key] = findRealTexturePath(props.value.model, key)
-        }
-        const obj = new BlockModelFactory(props.value.textures).getObject(props.value.model)
-
-        if (currentObj) {
-          scene.remove(currentObj)
-        }
-        scene.add(obj)
-        currentObj = obj
-      })
-
-      requestAnimationFrame(function animate(nowMsec) {
-        if (data.disposed) return
-        requestAnimationFrame(animate)
-        const result = controls.update()
-        renderer.render(scene, camera)
-      })
+    requestAnimationFrame(function animate(nowMsec) {
+      if (data.disposed) return
+      requestAnimationFrame(animate)
+      const result = controls.update()
+      renderer.render(scene, camera)
     })
-
-    return {
-      canvas,
-    }
-  },
+  } else {
+    console.error('WTF')
+  }
 })
+
+onUnmounted(() => {
+  data.disposed = true
+})
+
 </script>
