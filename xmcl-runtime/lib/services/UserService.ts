@@ -104,6 +104,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   @Singleton()
   async logout() {
     const user = this.state.user
+    if (!user) { return }
     if (this.state.isAccessTokenValid) {
       if (user.authService !== 'offline') {
         await invalidate({
@@ -118,6 +119,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   @Singleton()
   async checkLocation() {
     const user = this.state.user
+    if (!user) { return true }
     if (!this.state.isAccessTokenValid) return true
     if (user.authService !== 'mojang') return true
     function isCommonError(e: any): e is { error: string; errorMessage: string } {
@@ -139,13 +141,14 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   async getChallenges() {
     if (!this.state.isAccessTokenValid) return []
     const user = this.state.user
+    if (!user) { return [] }
     if (user.profileService !== 'mojang') return []
     return getChallenges(user.accessToken)
   }
 
   async submitChallenges(responses: MojangChallengeResponse[]) {
-    if (!this.state.isAccessTokenValid) throw new Error('Cannot submit challenge if not logined')
     const user = this.state.user
+    if (!this.state.isAccessTokenValid || !user) throw new Error('Cannot submit challenge if not logined')
     if (user.authService !== 'mojang') throw new Error('Cannot submit challenge if login mode is not mojang!')
     if (!(responses instanceof Array)) throw new Error('Expect responses Array!')
     const result = await responseChallenges(user.accessToken, responses)
@@ -159,6 +162,11 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   @Singleton()
   async refreshStatus() {
     const user = this.state.user
+
+    if (!user) {
+      this.log('Skip refresh user status as the user is empty.')
+      return
+    }
 
     if (this.state.isYggdrasilService) {
       const valid = await this.validate({
@@ -196,7 +204,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
         this.warn(`Invalid current user ${user.id} accessToken!`)
         this.state.userInvalidate()
       }
-    } else if (this.state.user.authService === 'microsoft') {
+    } else if (user.authService === 'microsoft') {
       if (!user.expiredAt || user.expiredAt < Date.now()) {
         // expired
         this.log(`Microsoft accessToken expired. Refresh a new one.`)
@@ -361,7 +369,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
 
     this.log(`Upload texture ${gameProfile.name}(${gameProfile.id})`)
 
-    if (this.state.user.authService === 'microsoft') {
+    if (this.state.user?.authService === 'microsoft') {
       const dataOrUrl = skinUrl || data
       const profile = await changeAccountSkin(this.app.networkManager.request, user.accessToken, basename(normalizedUrl.replace('file://', '')), dataOrUrl!, slim ? 'slim' : 'classic')
       this.state.gameProfileUpdate({
