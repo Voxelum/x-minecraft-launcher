@@ -52,6 +52,10 @@ export class BaseState implements SettingSchema {
 
   httpProxyEnabled = false
 
+  maxSockets = 0
+
+  maxTotalSockets = 0
+
   config(config: SettingSchema) {
     this.locale = config.locale
     this.autoDownload = config.autoDownload || false
@@ -121,6 +125,14 @@ export class BaseState implements SettingSchema {
 
   platformSet(platform: 'linux' | 'win32' | 'darwin') {
     this.platform = platform
+  }
+
+  maxSocketsSet(val: number) {
+    this.maxSockets = val
+  }
+
+  maxTotalSocketsSet(val: number) {
+    this.maxTotalSockets = val
   }
 }
 

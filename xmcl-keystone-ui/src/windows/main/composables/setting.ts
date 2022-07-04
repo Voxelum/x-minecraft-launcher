@@ -59,6 +59,14 @@ export function useSettings() {
     get: () => state.apiSetsPreference,
     set: v => state.apiSetsPreferenceSet(v),
   })
+  const maxSockets = computed({
+    get: () => state.maxSockets,
+    set: v => state.maxSocketsSet(v),
+  })
+  const maxTotalSockets = computed({
+    get: () => state.maxTotalSockets,
+    set: v => state.maxTotalSocketsSet(v),
+  })
   const proxy = ref(getProxy())
   const httpProxyEnabled = computed({
     get: () => state.httpProxyEnabled,
@@ -89,6 +97,8 @@ export function useSettings() {
   return {
     root,
     httpProxyEnabled,
+    maxSockets,
+    maxTotalSockets,
     locales,
     proxy,
     selectedLocale,

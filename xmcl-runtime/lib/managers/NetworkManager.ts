@@ -85,6 +85,25 @@ export default class NetworkManager extends Manager {
       agent: this.agents,
       cache: new LevelCache(join(app.appDataPath, 'http-cache')),
     })
+
+    app.serviceStateManager.subscribe('maxSocketsSet', (val) => {
+      if (val > 0) {
+        http.maxSockets = val
+        https.maxSockets = val
+      } else {
+        http.maxSockets = Infinity
+        https.maxSockets = Infinity
+      }
+    })
+    app.serviceStateManager.subscribe('maxTotalSocketsSet', (val) => {
+      if (val > 0) {
+        http.maxTotalSockets = val
+        https.maxTotalSockets = val
+      } else {
+        http.maxTotalSockets = Infinity
+        https.maxTotalSockets = Infinity
+      }
+    })
   }
 
   getDownloadBaseOptions() {

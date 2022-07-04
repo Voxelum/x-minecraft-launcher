@@ -31,6 +31,8 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
         httpProxy: data.httpProxy,
         httpProxyEnabled: data.httpProxyEnabled,
         theme: data.theme,
+        maxSockets: data.maxSockets,
+        maxTotalSockets: data.maxTotalSockets,
       })
       this.checkUpdate()
     })
@@ -55,6 +57,8 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
         httpProxy: this.state.httpProxy,
         httpProxyEnabled: this.state.httpProxyEnabled,
         theme: this.state.theme,
+        maxSockets: this.state.maxSockets,
+        maxTotalSockets: this.state.maxTotalSockets,
       })
     })
   }

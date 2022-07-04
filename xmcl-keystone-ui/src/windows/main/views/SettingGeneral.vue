@@ -119,6 +119,40 @@
         />
       </v-list-item-action>
     </v-list-item>
+    <v-list-item>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{
+            t("setting.maxSocketsTitle")
+          }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          {{
+            t("setting.maxSocketsDescription")
+          }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-action class="flex flex-row flex-grow-0 gap-1">
+        <v-text-field
+          v-model="maxSockets"
+          class="w-40"
+          filled
+          dense
+          hide-details
+          type="number"
+          :label="t('setting.maxSockets')"
+        />
+        <v-text-field
+          v-model="maxTotalSockets"
+          class="w-40"
+          filled
+          dense
+          hide-details
+          type="number"
+          :label="t('setting.maxTotalSockets')"
+        />
+      </v-list-item-action>
+    </v-list-item>
   </v-list>
 </template>
 <script lang="ts" setup>
@@ -135,6 +169,8 @@ const {
   proxy, httpProxyEnabled, apiSets, allowPrerelease,
   apiSetsPreference,
   selectedLocale,
+  maxSockets,
+  maxTotalSockets,
   locales: rawLocales,
 } = useSettings()
 const { t } = useI18n()
