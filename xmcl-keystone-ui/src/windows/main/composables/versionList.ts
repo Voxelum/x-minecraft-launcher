@@ -8,6 +8,7 @@ import { injection } from '/@/util/inject'
 export interface VersionItem {
   tag?: string
   tagColor?: string
+  folder: string
   name: string
   description?: string
   status: 'local' | 'remote' | 'installing'
@@ -22,7 +23,7 @@ export interface VersionMenuItem {
 }
 
 export function useMinecraftVersionList(version: Ref<string>) {
-  const { versions: vers, statuses, refreshing, refresh, release } = useMinecraftVersions()
+  const { versions: vers, installed, refreshing, refresh, release } = useMinecraftVersions()
   const { t } = useI18n()
   const showAlpha = ref(false)
   const { semaphores } = injection(SERVICES_SEMAPHORES_KEY)
@@ -37,7 +38,8 @@ export function useMinecraftVersionList(version: Ref<string>) {
           tag: v.type === 'snapshot' ? t('minecraftVersion.snapshot') : v.type === 'release' ? t('minecraftVersion.release') : '',
           tagColor: v.type === 'release' ? 'primary' : '',
           isSelected: computed(() => version.value === v.id),
-          status: computed(() => semaphores[key] > 0 ? 'installing' : statuses.value[v.id]),
+          status: computed(() => semaphores[key] > 0 ? 'installing' : installed.value[v.id] ? 'local' : 'remote'),
+          folder: computed(() => installed.value[v.id]),
           instance: markRaw(v),
         })
         return item
@@ -55,7 +57,7 @@ export function useMinecraftVersionList(version: Ref<string>) {
 }
 
 export function useForgeVersionList(minecraft: Ref<string>, version: Ref<string>) {
-  const { statuses, versions, refreshing, refresh } = useForgeVersions(minecraft)
+  const { versions, refreshing, refresh, installed } = useForgeVersions(minecraft)
   const { semaphores } = injection(SERVICES_SEMAPHORES_KEY)
   const { t } = useI18n()
 
@@ -81,8 +83,12 @@ export function useForgeVersionList(minecraft: Ref<string>, version: Ref<string>
         return reactive({
           name: v.version,
           status: computed(() => {
-            const status = semaphores[key] > 0 ? 'installing' : statuses.value[v.version]
+            const status = semaphores[key] > 0 ? 'installing' : installed.value[v.version] ? 'local' : 'remote'
             return status
+          }),
+          folder: computed(() => {
+            const folder = installed.value[v.version]
+            return folder ?? ''
           }),
           description: v.date ? getLocalDateString(v.date) : '',
           isSelected: computed(() => version.value === v.version),
@@ -106,7 +112,7 @@ export function useForgeVersionList(minecraft: Ref<string>, version: Ref<string>
 export function useOptifineVersionList(minecraft: Ref<string>, forge: Ref<string>, version: Ref<string>) {
   const { t } = useI18n()
   const { semaphores } = injection(SERVICES_SEMAPHORES_KEY)
-  const { versions, getStatus, refreshing, refresh } = useOptifineVersions(minecraft, forge)
+  const { versions, installed, refreshing, refresh } = useOptifineVersions(minecraft, forge)
 
   const items = computed(() => {
     return versions.value.map((v) => {
@@ -116,7 +122,8 @@ export function useOptifineVersionList(minecraft: Ref<string>, forge: Ref<string
         name: name,
         description: v.patch,
         isSelected: computed(() => version.value === name),
-        status: computed(() => semaphores[key] > 0 ? 'installing' : getStatus(v)),
+        folder: computed(() => installed.value[`${v.type}_${v.patch}`] ?? ''),
+        status: computed(() => semaphores[key] > 0 ? 'installing' : installed.value[`${v.type}_${v.patch}`] ? 'local' : 'remote'),
         instance: markRaw(v),
       })
 
@@ -135,7 +142,7 @@ export function useFabricVersionList(minecraft: Ref<string>, version: Ref<string
   const { semaphores } = injection(SERVICES_SEMAPHORES_KEY)
   const { t } = useI18n()
   const showStableOnly = ref(false)
-  const { yarnVersions, loaderVersions, getStatus, refresh, refreshing } = useFabricVersions(minecraft)
+  const { yarnVersions, loaderVersions, refresh, refreshing, installed } = useFabricVersions(minecraft)
   const isFabricSupported = computed(() => !!yarnVersions.value.find(v => v.gameVersion === minecraft.value))
   const items = computed(() => {
     if (!isFabricSupported.value) {
@@ -148,9 +155,10 @@ export function useFabricVersionList(minecraft: Ref<string>, version: Ref<string
         return reactive({
           name: v.version,
           status: computed(() => {
-            const status = semaphores[key] > 0 ? 'installing' : getStatus(v.version)
+            const status = semaphores[key] > 0 ? 'installing' : installed.value[v.version] ? 'local' : 'remote'
             return status
           }),
+          folder: computed(() => installed.value[v.version] ?? ''),
           isSelected: computed(() => version.value === v.version),
           description: v.maven,
           tag: v.stable ? t('fabricVersion.stable') : t('fabricVersion.unstable'),
@@ -171,9 +179,7 @@ export function useFabricVersionList(minecraft: Ref<string>, version: Ref<string
 
 export function useQuiltVersionList(minecraft: Ref<string>, version: Ref<string>) {
   const { semaphores } = injection(SERVICES_SEMAPHORES_KEY)
-  const { t } = useI18n()
-  // const showStableOnly = ref(false)
-  const { versions, getStatus, refresh, refreshing } = useQuiltVersions(minecraft)
+  const { versions, refresh, refreshing, installed } = useQuiltVersions(minecraft)
   const items = computed(() => {
     const result: VersionItem[] = versions.value
       .map((v) => {
@@ -181,9 +187,10 @@ export function useQuiltVersionList(minecraft: Ref<string>, version: Ref<string>
           name: v.version,
           status: computed(() => {
             const key = LockKey.version(`quilt-${minecraft.value}-${v.version}`)
-            const status = semaphores[key] > 0 ? 'installing' : getStatus(v.version)
+            const status = semaphores[key] > 0 ? 'installing' : installed.value[v.version] ? 'local' : 'remote'
             return status
           }),
+          folder: computed(() => installed.value[v.version] ?? ''),
           isSelected: computed(() => version.value === v.version),
           description: v.maven,
           // tag: v.stable ? t('fabricVersion.stable') : t('fabricVersion.unstable'),

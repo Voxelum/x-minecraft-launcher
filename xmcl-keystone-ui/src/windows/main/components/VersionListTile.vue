@@ -29,7 +29,7 @@
       <v-btn
         :loading="source.status === 'installing'"
         icon
-        @click="install(source)"
+        @click.stop="source.status === 'remote' ? install(source) : show(source)"
       >
         <v-icon>
           {{
@@ -47,6 +47,7 @@ import { VersionItem } from '../composables/versionList'
 defineProps<{
   source: VersionItem
   install(item: VersionItem): void
+  show(item: VersionItem): void
   select(item: VersionItem): void
 }>()
 

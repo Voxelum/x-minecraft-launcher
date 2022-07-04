@@ -91,6 +91,7 @@
             :refresh-text="t('minecraftVersion.empty')"
             :versions="minecraftVersions"
             @select="setMinecraft"
+            @show="showVersionDirectory"
             @install="installMinecraft"
           >
             <template #header>
@@ -113,6 +114,7 @@
             :versions="forgeVersions"
             @select="setForge"
             @disable="setForge('')"
+            @show="showVersionDirectory"
             @install="installForge"
           >
             <template #header>
@@ -138,6 +140,7 @@
             :disable-text="t('fabricVersion.disable')"
             :refresh-text="t('fabricVersion.empty', { version: data.minecraft })"
             :versions="fabricVersions"
+            @show="showVersionDirectory"
             @select="setFabric"
             @disable="setFabric('')"
             @install="installFabric"
@@ -160,6 +163,7 @@
             :disable-text="t('quiltVersion.disable')"
             :refresh-text="t('quiltVersion.empty', { version: data.minecraft })"
             :versions="quiltVersions"
+            @show="showVersionDirectory"
             @select="setQuilt"
             @disable="setQuilt('')"
             @install="installQuilt"
@@ -182,6 +186,7 @@
             :refreshing="refreshingOptifine"
             :refresh-text="t('optifineVersion.empty', { version: data.minecraft })"
             :versions="optifineVersions"
+            @show="showVersionDirectory"
             @select="setOptifine"
             @disable="setOptifine('')"
             @install="installOptifine({ ...$event, forgeVersion: data.forge })"
@@ -281,7 +286,7 @@ watch(active, (current) => {
 })
 
 const { editInstance: edit, runtime, version } = useInstance()
-const { state } = useService(VersionServiceKey)
+const { state, showVersionDirectory } = useService(VersionServiceKey)
 const barColor = computed(() => {
   switch (active.value) {
     case 0: return 'currentColor'

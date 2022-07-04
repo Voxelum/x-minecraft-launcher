@@ -55,7 +55,7 @@
         :data-key="'name'"
         :data-component="VersionListTile"
         :keep="16"
-        :extra-props="{ select: onSelect, install: onInstall }"
+        :extra-props="{ select: onSelect, install: onInstall, show: onShow }"
       />
     </v-list>
     <Hint
@@ -83,6 +83,7 @@ defineProps<{
 
 const onSelect = (v: VersionItem) => emit('select', v.name)
 const onInstall = (v: VersionItem) => emit('install', v.instance)
-const emit = defineEmits(['disable', 'refresh', 'select', 'install'])
+const onShow = (v: VersionItem) => emit('show', v.folder)
+const emit = defineEmits(['disable', 'refresh', 'select', 'install', 'show'])
 
 </script>
