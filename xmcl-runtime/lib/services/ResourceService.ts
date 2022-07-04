@@ -171,7 +171,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         }
         try {
           this.log(`Try to import new file ${name}`)
-          await this.importResource({ restrictToDomain: domain, path: name })
+          await this.importResource({ restrictToDomain: domain, path: name, optional: true })
         } catch (e) {
           this.emit('error', e)
         }
@@ -265,7 +265,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
    * Import the resource into the launcher.
    * @returns The resource resolved. If the resource cannot be resolved, it will goes to unknown domain.
    */
-  async importResource(options: ImportResourceOptions) {
+  async importResource(options: ImportResourceOptions & { optional?: boolean }): Promise<AnyPersistedResource> {
     requireString(options.path)
     const context: ParseResourceContext = {}
     const existed = await this.queryExistedResourceByPath(options.path, context)
@@ -302,6 +302,11 @@ export class ResourceService extends StatefulService<ResourceState> implements I
       }
       delete this.pendingSource[context.sha1]
     }
+
+    if (options.restrictToDomain && (context.fileType === 'unknown' || context.fileType === 'directory') && options.optional) {
+      return undefined as any
+    }
+
     const task = this.importFileTask(options, context)
     const resource = await (options.background ? task.startAndWait() : this.submit(task))
 
@@ -508,6 +513,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     const result = await persistResource(resolved, this.getPath(), this.pending)
 
     await this.storage.put(result.hash, result)
+    this.commitResources([result])
 
     return result as AnyPersistedResource
   }
