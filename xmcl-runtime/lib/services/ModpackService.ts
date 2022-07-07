@@ -332,8 +332,12 @@ export class ModpackService extends AbstractService implements IModpackService {
 
         for (const res of newResources) {
           if (res.domain === ResourceDomain.ResourcePacks) {
-            const fileName = basename(mapping[`${res.curseforge!.projectId}:${res.curseforge!.fileId}`])
-            resourcePacksMapping[fileName] = res.fileName
+            if (mapping[`${res.curseforge!.projectId}:${res.curseforge!.fileId}`]) {
+              const fileName = basename(mapping[`${res.curseforge!.projectId}:${res.curseforge!.fileId}`])
+              resourcePacksMapping[fileName] = res.fileName
+            } else {
+              this.warn(`Unknown resource pack name in mods: ${res.path} (${res.storedPath})`)
+            }
           }
         }
 
@@ -415,7 +419,7 @@ export class ModpackService extends AbstractService implements IModpackService {
                 const domain = file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
                 const sha1 = file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value
                 infos.push({
-                  downloads: [file.downloadUrl ?? guessCurseforgeFileUrl(file.id, file.fileName)],
+                  downloads: file.downloadUrl ? [file.downloadUrl] : guessCurseforgeFileUrl(file.id, file.fileName),
                   destination: join(root, domain, file.fileName),
                   hashes: sha1
                     ? {
@@ -460,6 +464,7 @@ export class ModpackService extends AbstractService implements IModpackService {
             agents: options.agents,
             validator: lastHash ? { algorithm: lastHash[0], hash: lastHash[1] } : undefined,
             retryHandler: { maxRetryCount: 5 },
+            ...options.headers,
           }).setName('download')
         })
 
