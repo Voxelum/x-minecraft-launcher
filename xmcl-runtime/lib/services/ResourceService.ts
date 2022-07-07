@@ -503,7 +503,9 @@ export class ResourceService extends StatefulService<ResourceState> implements I
       resolved.domain = options.restrictToDomain
     }
 
-    if (icon) {
+    if (options.iconUrl) {
+      resolved.iconUrl = options.iconUrl
+    } else if (icon) {
       // persist image
       resolved.iconUrl = await this.addImage(icon)
     }

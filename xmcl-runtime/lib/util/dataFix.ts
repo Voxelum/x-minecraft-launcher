@@ -2,6 +2,7 @@ import { PersistedResource, ResourceDomain } from '@xmcl/runtime-api'
 import { openFileSystem } from '@xmcl/system'
 import { existsSync, readJSON, stat, unlink, writeJSON } from 'fs-extra'
 import { basename, extname, join, relative } from 'path'
+import { URL } from 'url'
 import { RESOURCE_FILE_VERSION } from '../constant'
 import { forgeModParser } from '../entities/resourceParsers/forgeMod'
 import { ResourceService } from '../services/ResourceService'
@@ -75,10 +76,24 @@ export async function migrateToDatabase(this: ResourceService, domain: ResourceD
     await fixResourceSchema({ log: this.log, warn: this.warn, error: this.error }, metadataPath, resourceData, this.getPath())
 
     const ext = extname(metadataPath)
-    const imagePath = metadataPath.substring(0, metadataPath.length - ext.length) + '.png'
+    let imagePath = metadataPath.substring(0, metadataPath.length - ext.length) + '.png'
     let urlPath = ''
     if (existsSync(imagePath)) {
       urlPath = await this.addImage(imagePath)
+    }
+
+    if (resourceData.iconUri) {
+      if (resourceData.iconUri.startsWith('dataroot:')) {
+        try {
+          const u = new URL(resourceData.iconUri)
+          imagePath = this.getPath(u.pathname)
+          if (existsSync(imagePath)) {
+            urlPath = await this.addImage(imagePath)
+          }
+        } catch (e) {
+
+        }
+      }
     }
 
     const resourceFilePath = this.getPath(resourceData.domain, resourceData.fileName) + resourceData.ext
