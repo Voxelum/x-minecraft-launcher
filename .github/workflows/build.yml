@@ -257,6 +257,14 @@ jobs:
           ./xmcl-runtime-api
         root: '.'
         stage: 'release'
+    - name: Update Sponsor
+      uses: Voxelum/afdian-sponsor-action@master
+      with:
+        user-id: ${{ secrets.AFDIAN_USER_ID }}
+        token: ${{ secrets.AFDIAN_TOKEN }}
+        markdown: |
+          README.md
+          README.zh.md
     - name: Create Tag
       run: |
         git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/voxelum/x-minecraft-launcher.git"
