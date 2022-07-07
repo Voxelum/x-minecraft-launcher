@@ -1,7 +1,0 @@
-{
-  "name": "generate-mcbbs-content",
-  "private": true,
-  "dependencies": {
-    "@actions/core": "^1.6.0"
-  }
-}

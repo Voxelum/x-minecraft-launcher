@@ -188,6 +188,14 @@ jobs:
           ./xmcl-runtime-api
         root: '.'
         stage: 'prepare'
+    - name: Update Sponsor
+      uses: Voxelum/afdian-sponsor-action@master
+      with:
+        user-id: ${{ secrets.AFDIAN_USER_ID }}
+        token: ${{ secrets.AFDIAN_TOKEN }}
+        markdown: |
+          README.md
+          README.zh.md
     - name: Update Lock File
       if: ${{ steps.version.outputs.release == 'true' }}
       run: pnpm i --lockfile-only
@@ -213,6 +221,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
+        fetch-depth: 0
         submodules: recursive
     - uses: pnpm/action-setup@v2.0.1
       with:
@@ -240,13 +249,6 @@ jobs:
       with:
         name: appimage
         path: build
-    - name: Generate MCBBS content
-      uses: ./.github/actions/generate-mcbbs-content
-    - name: Upload Mcbbs Content
-      uses: actions/upload-artifact@v2
-      with:
-        name: mcbbs
-        path: mcbbs
     - name: Prepare Release
       id: prepare_release
       uses: Voxelum/semantic-version-bump-action@xmcl
@@ -257,14 +259,6 @@ jobs:
           ./xmcl-runtime-api
         root: '.'
         stage: 'release'
-    - name: Update Sponsor
-      uses: Voxelum/afdian-sponsor-action@master
-      with:
-        user-id: ${{ secrets.AFDIAN_USER_ID }}
-        token: ${{ secrets.AFDIAN_TOKEN }}
-        markdown: |
-          README.md
-          README.zh.md
     - name: Create Tag
       run: |
         git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/voxelum/x-minecraft-launcher.git"
@@ -283,8 +277,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v${{ steps.prepare_release.outputs.tag }}
-        release_name: v${{ steps.prepare_release.outputs.tag }}
+        tag_name: ${{ steps.prepare_release.outputs.tag }}
+        release_name: ${{ steps.prepare_release.outputs.tag }}
         draft: true
         prerelease: false
         body: ${{ steps.prepare_release.outputs.changelog }}
@@ -311,6 +305,7 @@ jobs:
         path: xmcl-page
         commit-message: "docs: Update ${{ steps.prepare_release.outputs.version }} release note"
         title: Update ${{ steps.prepare_release.outputs.version }} release note
+        body: Update ${{ steps.prepare_release.outputs.version }} release note
         reviewers: ci010
         assignees: ci010
         branch: release-note-${{ steps.prepare_release.outputs.version }}

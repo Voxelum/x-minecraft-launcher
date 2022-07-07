@@ -14,7 +14,7 @@ async function main(output) {
                 .replace('Dependencies Updates', '依赖更新')
         }
         try {
-            writeFileSync(`xmcl-page/src/pages/${l}/${version}.md`, content)
+            writeFileSync(`xmcl-page/src/pages/${l}/changelogs/${version}.md`, content)
         } catch (e) {
             console.error(`Fail to update ${l} release note:`)
             console.error(e)

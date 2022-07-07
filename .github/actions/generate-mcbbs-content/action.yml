@@ -1,6 +1,0 @@
-name: Generate MCBBS Content
-description: Generate MCBBS Content
-runs:
-  using: 'node12'
-  main: index.js
-  
