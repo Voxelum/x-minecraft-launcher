@@ -45,7 +45,7 @@ import { useI18n } from '/@/composables'
 const emit = defineEmits(['drop', 'click'])
 
 defineProps<{
-  visible: boolean
+  visibled: boolean
   deleting: boolean
   loading: boolean
 }>()

@@ -38,7 +38,7 @@
         </div>
         <div class="flex-grow" />
         <game-profile-speed-dial
-          :visible="modified || data.dragged"
+          :visibled="modified || data.dragged"
           :deleting="data.dragged"
           :loading="loading"
           @click="confirmSelectGameProfile"
