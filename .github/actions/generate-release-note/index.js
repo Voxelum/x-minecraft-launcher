@@ -10,8 +10,8 @@ async function main(output) {
     for (const l of locales) {
         let content = body
         if (l === 'zh') {
-            content = content.replace(/BREAKING CHANGES/g, '破坏性改动').replace(/### Features/, '### 新特性').replace('### Bug Fixes', '### 修复与补丁')
-                .replace('### Dependencies Updates', '依赖更新')
+            content = content.replace(/BREAKING CHANGES/g, '破坏性改动').replace(/Features/, '新特性').replace('Bug Fixes', '修复与补丁')
+                .replace('Dependencies Updates', '依赖更新')
         }
         try {
             writeFileSync(`xmcl-page/src/pages/${l}/${version}.md`, content)
