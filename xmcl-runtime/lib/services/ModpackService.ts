@@ -396,6 +396,7 @@ export class ModpackService extends AbstractService implements IModpackService {
       destination: string
       downloads: string[]
       hashes: Record<string, string>
+      icon?: string
       source: ResourceSources
     }
 
@@ -405,44 +406,27 @@ export class ModpackService extends AbstractService implements IModpackService {
       if (manifest.files) {
         if ('manifestVersion' in manifest) {
           const curseforgeFiles = manifest.files.map(f => f).filter((f): f is ModpackFileInfoCurseforge => !('type' in f) || f.type === 'curse' || 'hashes' in f)
-          let batchCount = 8
-          while (curseforgeFiles.length > 0) {
-            const batch = curseforgeFiles.splice(0, batchCount)
-            const result = await Promise.all(batch.map(async (f) => curseforgeService.fetchProjectFile(f.projectID, f.fileID).catch(() => undefined)))
-            let failed = false
-            for (let i = 0; i < result.length; i++) {
-              const file = result[i]
-              if (!file) {
-                failed = true
-                curseforgeFiles.push(batch[i])
-              } else {
-                const domain = file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
-                const sha1 = file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value
-                infos.push({
-                  downloads: file.downloadUrl ? [file.downloadUrl] : guessCurseforgeFileUrl(file.id, file.fileName),
-                  destination: join(root, domain, file.fileName),
-                  hashes: sha1
-                    ? {
-                      sha1: file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value,
-                    } as Record<string, string>
-                    : {},
-                  source: {
-                    curseforge: {
-                      fileId: file.id,
-                      projectId: file.modId,
-                    },
-                  },
-                })
-              }/*  else {
-                missingFiles.push({ projectId: file.modId, fileId: file.id })
-              } */
-            }
-            if (failed && batchCount > 2) {
-              batchCount /= 2
-            }
-            if (!failed && batchCount < 16) {
-              batchCount *= 2
-            }
+          const files = await curseforgeService.fetchModFiles(curseforgeFiles.map(f => f.fileID))
+
+          for (let i = 0; i < curseforgeFiles.length; i++) {
+            const file = files[i]
+            const domain = file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
+            const sha1 = file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value
+            infos.push({
+              downloads: file.downloadUrl ? [file.downloadUrl] : guessCurseforgeFileUrl(file.id, file.fileName),
+              destination: join(root, domain, file.fileName),
+              hashes: sha1
+                ? {
+                  sha1: file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value,
+                } as Record<string, string>
+                : {},
+              source: {
+                curseforge: {
+                  fileId: file.id,
+                  projectId: file.modId,
+                },
+              },
+            })
           }
         } else {
           for (const meta of manifest.files) {

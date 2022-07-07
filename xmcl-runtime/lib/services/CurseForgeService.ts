@@ -60,6 +60,17 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
     return result.data
   }
 
+  async fetchModFiles(fileIds: number[]) {
+    this.log(`Fetch profile ${fileIds.length} files.`)
+    const result: { data: File[] } = await this.client.post('v1/mods/files', {
+      body: JSON.stringify({ fileIds }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).json()
+    return result.data
+  }
+
   async searchProjects(searchOptions: SearchOptions) {
     const params = new URLSearchParams()
     params.append('gameId', '432')
