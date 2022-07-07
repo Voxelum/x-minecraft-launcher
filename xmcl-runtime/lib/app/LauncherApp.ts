@@ -111,7 +111,7 @@ export abstract class LauncherApp extends EventEmitter {
 
   readonly env = process.env.BUILD_TARGET === 'appx' ? 'appx' : process.env.BUILD_TARGET === 'appimage' ? 'appimage' : 'raw'
 
-  get version() { return this.host.getVersion() }
+  get version() { return this.getHost().getVersion() }
 
   protected managers: Manager[]
 

@@ -86,7 +86,7 @@ export default class NetworkManager extends Manager {
       cache: new LevelCache(join(app.appDataPath, 'http-cache')),
     })
 
-    app.serviceStateManager.subscribe('maxSocketsSet', (val) => {
+    const setMaxSocket = (val: number) => {
       if (val > 0) {
         http.maxSockets = val
         https.maxSockets = val
@@ -94,8 +94,8 @@ export default class NetworkManager extends Manager {
         http.maxSockets = Infinity
         https.maxSockets = Infinity
       }
-    })
-    app.serviceStateManager.subscribe('maxTotalSocketsSet', (val) => {
+    }
+    const setMaxTotalSocket = (val: number) => {
       if (val > 0) {
         http.maxTotalSockets = val
         https.maxTotalSockets = val
@@ -103,6 +103,18 @@ export default class NetworkManager extends Manager {
         http.maxTotalSockets = Infinity
         https.maxTotalSockets = Infinity
       }
+    }
+
+    app.serviceStateManager.subscribe('maxSocketsSet', (val) => {
+      setMaxSocket(val)
+    })
+    app.serviceStateManager.subscribe('maxTotalSocketsSet', (val) => {
+      setMaxTotalSocket(val)
+    })
+    const service = app.serviceManager.getOrCreateService(BaseService)
+    service.initialize().then(() => {
+      setMaxSocket(service.state.maxSockets)
+      setMaxTotalSocket(service.state.maxTotalSockets)
     })
   }
 
