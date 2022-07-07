@@ -565,7 +565,7 @@ importers:
       yauzl: ^2.10.0
     dependencies:
       '@xmcl/asm': link:../asm
-      '@xmcl/core': link:../core
+      '@xmcl/core': 2.10.1
       '@xmcl/forge-site-parser': link:../forge-site-parser
       '@xmcl/task': link:../task
       '@xmcl/unzip': link:../unzip
@@ -3069,6 +3069,14 @@ packages:
       - supports-color
     dev: true
 
+  /@xmcl/core/2.10.1:
+    resolution: {integrity: sha512-tsg5c40+VQcLSPFdY2gDE8vYtM52YWkUTNWqu89lMB4XIS1NNhj/aqyxynp2qZ9GdvzbCmlf53wQm7Z5j6Lqsw==}
+    engines: {node: '>=10.0'}
+    dependencies:
+      '@xmcl/unzip': 2.0.0_yauzl@2.10.0
+      yauzl: 2.10.0
+    dev: false
+
   /@xmcl/nat-api/0.3.2:
     resolution: {integrity: sha512-ZYV56/y9DFABcVkyqFtdRqQet6Xho+Q5G7ILk37lcDU8Y+pSmbnrA3uEDxXXAErtcvB+jmmEzd9sgb0Q7vpAmA==}
     engines: {node: '>=10.0.0'}
@@ -3079,6 +3087,15 @@ packages:
 
   /@xmcl/stun-client/1.0.0:
     resolution: {integrity: sha512-OrvzFEMGC9eSNvfHiIsa4GAUpslD64fS/LtI+WaXliL9122dDn2guxiwhvw8aWuBTS0HdbCCBjRtLXS6LbecWw==}
+    dev: false
+
+  /@xmcl/unzip/2.0.0_yauzl@2.10.0:
+    resolution: {integrity: sha512-Q9OST4o20X9kI40ZC7gjhW3hELu68iAR8APxsmqjiyX6Owsx79qP1aB7sKpcR+tizBGKBV5lzUUQiPQBBp+L4Q==}
+    engines: {node: '>=10.0'}
+    peerDependencies:
+      yauzl: ^2.10.0
+    dependencies:
+      yauzl: 2.10.0
     dev: false
 
   /@xmcl/windows-utils/0.0.14:
