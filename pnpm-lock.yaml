@@ -5,12 +5,6 @@ importers:
   .:
     specifiers: {}
 
-  .github/actions/generate-mcbbs-content:
-    specifiers:
-      '@actions/core': ^1.6.0
-    dependencies:
-      '@actions/core': 1.9.0
-
   .github/actions/generate-release-note:
     specifiers:
       '@actions/core': ^1.6.0
