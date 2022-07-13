@@ -22,7 +22,13 @@ export function isSystemError(e: any): e is SystemError {
   return false
 }
 
-export function serializeError(e: unknown) {
+export function serializeError(e: unknown): any {
+  if (e instanceof Array) {
+    if (e.length !== 1) {
+      return e.map(serializeError)
+    }
+    return serializeError(e[0])
+  }
   const error: any = {
   }
 
