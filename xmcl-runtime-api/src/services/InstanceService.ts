@@ -161,6 +161,12 @@ export class InstanceState {
     if (typeof settings.hideLauncher === 'boolean') {
       inst.hideLauncher = settings.hideLauncher
     }
+    if (typeof settings.fastLaunch === 'boolean') {
+      inst.fastLaunch = settings.fastLaunch
+    }
+    if (settings.assignMemory === 'auto' || typeof settings.assignMemory === 'boolean') {
+      inst.assignMemory = settings.assignMemory
+    }
   }
 }
 

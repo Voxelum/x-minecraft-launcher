@@ -1,6 +1,6 @@
 import { BaseService as IBaseService, BaseServiceException, BaseServiceKey, BaseState, MigrateOptions, SettingSchema } from '@xmcl/runtime-api'
 import { copy, readdir, remove, rename, stat } from 'fs-extra'
-import os from 'os'
+import os, { freemem, totalmem } from 'os'
 import LauncherApp from '../app/LauncherApp'
 import { IS_DEV } from '../constant'
 import { isSystemError } from '../util/error'
@@ -224,5 +224,12 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
       allSets.unshift(api)
     }
     return allSets
+  }
+
+  getMemoryStatus(): Promise<{ total: number; free: number }> {
+    return Promise.resolve({
+      total: totalmem(),
+      free: freemem(),
+    })
   }
 }

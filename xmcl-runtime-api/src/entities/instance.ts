@@ -44,6 +44,9 @@ export function createTemplate(): Instance {
     modpackVersion: '',
     fileApi: '',
     tags: [],
+
+    assignMemory: false,
+    fastLaunch: false,
   }
   return base
 }

@@ -272,12 +272,16 @@ java:
   location: Java 路径
   maxMemory: 最大内存
   memory: Java 内存
+  memoryAuto: 自动
   memoryHint: 这将影响您的游戏运行性能
+  memoryManual: 手动指定
+  memoryUnassigned: 不指定内存
   minMemory: 最小内存
   modifyInstance: 更改 Java 路径
   noMemory: 不设置内存限制
   refresh: 刷新本地 Java
   switchVersion: 已切换 Java 版本
+  systemMemory: 当前系统内存
 javaError:
   downloadFailed: 自动下载Java失败，请检查你的网络连接。当然你也可以点击返回尝试别的方法。
   noJavaInPath: 还是无法在PATH中找到java可执行文件。你可以尝试其他方法。

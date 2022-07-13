@@ -187,6 +187,8 @@ export interface BaseService extends StatefulService<BaseState> {
    * @param options The migration options
    */
   migrate(options: MigrateOptions): Promise<void>
+
+  getMemoryStatus(): Promise<{ total: number; free: number }>
 }
 
 export type BaseServiceExceptions = {
