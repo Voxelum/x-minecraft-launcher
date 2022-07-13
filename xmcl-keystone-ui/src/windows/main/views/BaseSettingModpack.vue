@@ -21,6 +21,7 @@
           v-model="data.author"
           hide-details
           :placeholder="username"
+          solo
           required
         />
       </v-list-item-action>
@@ -30,10 +31,11 @@
         <v-list-item-title>
           {{ $t("modpack.description") }}
         </v-list-item-title>
-        <v-list-item-subtitle style="height: 50px">
+        <v-list-item-subtitle>
           <v-text-field
             v-model="data.description"
-            style="padding-top: unset; margin-top: unset; margin-bottom: 5px"
+            class="m-1 mt-2"
+            solo
             hide-details
             :placeholder="$t('modpack.descriptionHint')"
           />
@@ -53,8 +55,10 @@
       <v-list-item-action style="width: 50%">
         <v-text-field
           v-model="data.url"
+          class="m-1 mt-2"
+          solo
           hide-details
-          placeholder="www.whatever.com"
+          :placeholder="$t('modpack.urlHint')"
         />
       </v-list-item-action>
     </v-list-item>

@@ -5,13 +5,13 @@
     subheader
   >
     <v-subheader style="">
-      {{ $t("title") }}
+      {{ t("title") }}
     </v-subheader>
     <v-list-item>
       <v-list-item-content>
-        <v-list-item-title>{{ $t("instance.name") }}</v-list-item-title>
+        <v-list-item-title>{{ t("instance.name") }}</v-list-item-title>
         <v-list-item-subtitle>
-          {{ $t("instance.nameHint") }}
+          {{ t("instance.nameHint") }}
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
@@ -19,7 +19,7 @@
           v-model="data.name"
           small
           hide-details
-
+          solo
           :placeholder="`Minecraft ${version.minecraft}`"
         />
       </v-list-item-action>
@@ -29,15 +29,15 @@
       to="/version-setting"
     >
       <v-list-item-content>
-        <v-list-item-title>{{ $t("instance.version") }}</v-list-item-title>
+        <v-list-item-title>{{ t("instance.version") }}</v-list-item-title>
         <v-list-item-subtitle>
-          {{ $t("instance.versionHint") }}
+          {{ t("instance.versionHint") }}
         </v-list-item-subtitle>
       </v-list-item-content>
       <!-- <v-layout > -->
       <v-list-item-action
-        class="gap-3"
-        style="display: flex; flex-grow: 1; flex-direction: row; justify-content: flex-end;;"
+        class="gap-3 justify-end items-baseline"
+        style="display: flex; flex-grow: 1; flex-direction: row;"
       >
         <v-chip
           color="green"
@@ -83,10 +83,10 @@
       </v-list-item-action>
       <v-list-item-content>
         <v-list-item-title>
-          {{ $tc("resourcepack.name", 2) }}
+          {{ tc("resourcepack.name", 2) }}
         </v-list-item-title>
         <v-list-item-subtitle>
-          {{ $t("resourcepackHint") }}
+          {{ t("resourcepackHint") }}
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
@@ -105,10 +105,10 @@
       </v-list-item-action>
       <v-list-item-content>
         <v-list-item-title>
-          {{ $tc("shaderPack.name", 2) }}
+          {{ tc("shaderPack.name", 2) }}
         </v-list-item-title>
         <v-list-item-subtitle>
-          {{ $t("shaderPackHint") }}
+          {{ t("shaderPackHint") }}
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
@@ -127,10 +127,10 @@
       </v-list-item-action>
       <v-list-item-content>
         <v-list-item-title>
-          {{ $tc("mod.name", 2) }}
+          {{ tc("mod.name", 2) }}
         </v-list-item-title>
         <v-list-item-subtitle>
-          {{ $t("modHint") }}
+          {{ t("modHint") }}
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
@@ -149,10 +149,10 @@
       </v-list-item-action>
       <v-list-item-content>
         <v-list-item-title>
-          {{ $tc("save.name", 2) }}
+          {{ tc("save.name", 2) }}
         </v-list-item-title>
         <v-list-item-subtitle>
-          {{ $t("saveHint") }}
+          {{ t("saveHint") }}
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
@@ -160,6 +160,26 @@
           <v-icon>arrow_right</v-icon>
         </v-btn>
       </v-list-item-action>
+    </v-list-item>
+
+    <v-list-item
+      @click="data.fastLaunch = !data.fastLaunch"
+    >
+      <v-list-item-action>
+        <v-checkbox
+          v-model="data.fastLaunch"
+          hide-details
+          @click="data.fastLaunch = !data.fastLaunch"
+        />
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{ t("fastLaunch") }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          {{ t("fastLaunchHint") }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
     </v-list-item>
 
     <v-list-item
@@ -175,11 +195,11 @@
       <v-list-item-content>
         <v-list-item-title>
           {{
-            $t("hideLauncher")
+            t("hideLauncher")
           }}
         </v-list-item-title>
         <!-- <v-list-item-subtitle>
-          {{ $t("hideLauncher") }}
+          {{ t("hideLauncher") }}
         </v-list-item-subtitle> -->
       </v-list-item-content>
     </v-list-item>
@@ -194,9 +214,9 @@
         />
       </v-list-item-action>
       <v-list-item-content>
-        <v-list-item-title>{{ $t("showLog") }}</v-list-item-title>
+        <v-list-item-title>{{ t("showLog") }}</v-list-item-title>
         <v-list-item-subtitle>
-          {{ $t("showLogHint") }}
+          {{ t("showLogHint") }}
         </v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
@@ -207,9 +227,12 @@
 import { injection } from '/@/util/inject'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import { RuntimeVersions } from '@xmcl/runtime-api'
+import { useI18n } from '/@/composables'
 
 defineProps<{ version: RuntimeVersions }>()
 const { data } = injection(InstanceEditInjectionKey)
+
+const { t, tc } = useI18n()
 
 </script>
 
@@ -227,6 +250,8 @@ title: General
 showLog: Show Minecraft Log
 showLogHint: This will popup a window to stream Minecraft log after game started
 hideLauncher: Hide the launcher after launch
+fastLaunch: Turbo Launch
+fastLaunchHint: Ignore the user status and existed unfixed problems
 shaderPackHint: Enable or disable shader packs to this launch profile
 resourcepackHint: Enable or disable resource packs to this launch profile
 modHint: Enable or disable the Mods of this launch profile
@@ -238,6 +263,8 @@ title: 常规设置
 showLog: Minecraft 启动后显示日志
 showLogHint: 游戏开启后将弹出一个显示 Minecraft 日志的窗口
 hideLauncher: Minecraft 启动后隐藏启动器
+fastLaunch: 快速启动
+fastLaunchHint: 启动时跳过刷新用户和没有修复的问题
 shaderPackHint: 调整此配置的光影包
 resourcepackHint: 调整本启动配置使用的资源包
 modHint: 调整此启动配置所使用的的 Mod
