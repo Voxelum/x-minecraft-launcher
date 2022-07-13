@@ -351,11 +351,11 @@ export abstract class AbstractService extends EventEmitter {
   }
 
   error = (m: any, ...a: any[]) => {
-    this.logManager.error(`[${this.name}] ${m}`, ...a)
+    this.logManager.error(`[${this.name}] ${m instanceof Error && m.stack ? m.stack : m}`, ...a)
   }
 
   warn = (m: any, ...a: any[]) => {
-    this.logManager.warn(`[${this.name}] ${m}`, ...a)
+    this.logManager.warn(`[${this.name}] ${m instanceof Error && m.stack ? m.stack : m}`, ...a)
   }
 
   protected up(key: string) {
