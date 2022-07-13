@@ -171,6 +171,9 @@ fabricVersion:
   showStableOnly: Show Stable Only
   stable: Stable
   unstable: Unstable
+feedback:
+  kook: Kook
+  kookDescription: Kook is an alter app for discord in China Mainland user
 filter: Filter
 finish: Finish
 forgeConfig:
