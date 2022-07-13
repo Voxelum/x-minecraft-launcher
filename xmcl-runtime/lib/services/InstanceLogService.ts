@@ -50,7 +50,7 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
       if (name.endsWith('.gz')) {
         buf = await gunzip(buf)
       }
-      const encoding = await guessEncodingByBuffer(buf)
+      const encoding = await guessEncodingByBuffer(buf).catch(e => undefined)
       const result = decode(buf, encoding || UTF8)
       return result
     } catch (e) {
