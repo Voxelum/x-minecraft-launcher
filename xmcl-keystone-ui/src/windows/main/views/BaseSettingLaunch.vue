@@ -12,7 +12,8 @@
         <v-list-item-subtitle>
           <v-text-field
             v-model="data.mcOptions"
-            style="width: 100%; padding-top: unset; margin-top: unset; margin-bottom: 5px;"
+            solo
+            class="m-1 mt-2"
             hide-details
             required
             :placeholder="t('instance.mcOptionsHint')"
