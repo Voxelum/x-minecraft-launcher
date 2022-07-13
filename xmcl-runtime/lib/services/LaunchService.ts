@@ -150,6 +150,20 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         return false
       }
 
+      const useAuthLib = user.isThirdPartyAuthentication
+      let yggOptions: {
+        jar: string
+        server: string
+      } | undefined
+
+      if (useAuthLib) {
+        this.state.launchStatus('injectingAuthLib')
+        yggOptions = {
+          jar: await this.externalAuthSkinService.installAuthLibInjection(),
+          server: user.authService.hostName,
+        }
+      }
+
       this.state.launchStatus('launching')
 
       const minecraftFolder = new MinecraftFolder(options?.gameDirectory ?? instance.path)
@@ -188,8 +202,6 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         throw new LaunchException({ type: 'launchNoProperJava', javaPath: javaPath || '' }, 'Cannot launch without a valid java')
       }
 
-      const useAuthLib = user.isThirdPartyAuthentication
-
       const minMemory = instance.assignMemory === true && instance.minMemory > 0
         ? instance.minMemory
         : instance.assignMemory === 'auto' ? Math.floor((await this.baseService.getMemoryStatus()).free / 1024 / 1024 - 256) : undefined
@@ -216,12 +228,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         extraMCArgs: instance.mcOptions,
         launcherBrand: options?.launcherBrand ?? '',
         launcherName: options?.launcherName ?? 'XMCL',
-        yggdrasilAgent: useAuthLib
-          ? {
-            jar: await this.externalAuthSkinService.installAuthLibInjection(),
-            server: user.authService.hostName,
-          }
-          : undefined,
+        yggdrasilAgent: yggOptions,
       }
 
       if (options?.server) {

@@ -312,6 +312,7 @@ launchFailed:
   unresolvableProblemsText: 启动器无法自动处理一些启动前置需求。你可以尝试在主页让启动器自动修复。如果你反复遇到此问题，请联系作者
 launchStatus:
   checkingProblems: 检测问题中
+  injectingAuthLib: 配置第三方验证中
   launching: 启动中...
   launchingSlow: 还在启动…Minecraft图形界面启动的会比较慢呢~
 launcher:

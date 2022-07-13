@@ -62,34 +62,31 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
     const download = async (content: any) => {
       const name = `${AUTHLIB_ORG_NAME}:${content.version}`
       const info = LibraryInfo.resolve(name)
-      const authlib: Version.Library = {
-        name,
-        downloads: {
-          artifact: {
-            sha1: '',
-            size: -1,
-            path: info.path,
-            url: content.download_url,
-          },
+      const path = mc.getLibraryByPath(info.path)
+
+      await this.submit(new DownloadTask({
+        url: content.download_url,
+        validator: {
+          algorithm: 'sha256',
+          hash: content.checksums.sha256,
         },
-      }
-      await this.submit(installResolvedLibrariesTask(Version.resolveLibraries([authlib]), root).setName('installAuthlibInjector'))
-      return mc.getLibraryByPath(info.path)
+        destination: path,
+      }))
+      return path
     }
 
-    const content = await readJson(jsonPath).catch(() => undefined)
     let path: string
-    if (!content) {
+
+    try {
       const body = await this.networkManager.request('https://authlib-injector.yushi.moe/artifact/latest.json').json()
       await writeFile(jsonPath, JSON.stringify(body))
       path = await download(body)
-    } else {
-      const info = LibraryInfo.resolve(`${AUTHLIB_ORG_NAME}:${content.version}`)
-      const libPath = mc.getLibraryByPath(info.path)
-      if (await validateSha256(libPath, content.checksums.sha256)) {
-        path = libPath
-      } else {
+    } catch (e) {
+      const content = await readJson(jsonPath).catch(() => undefined)
+      if (content) {
         path = await download(content)
+      } else {
+        throw e
       }
     }
 

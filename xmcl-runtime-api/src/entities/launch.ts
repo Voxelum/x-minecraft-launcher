@@ -1,1 +1,1 @@
-export type LaunchStatus = 'idle' | 'checkingProblems' | 'launching'
+export type LaunchStatus = 'idle' | 'checkingProblems' | 'injectingAuthLib' | 'launching'
