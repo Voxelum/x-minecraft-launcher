@@ -9,17 +9,23 @@
     <img src="https://github.com/Voxelum/x-minecraft-launcher/workflows/Build/badge.svg" alt="Build">
   </a>
   <a href="https://github.com/Voxelum/x-minecraft-launcher/blob/master/LICENSE">
-    <img src="https://img.shields.io/npm/l/vuetify.svg" alt="License">
+    <img src="https://img.shields.io/npm/l/@xmcl/core.svg" alt="License">
   </a>
   <a href="https://conventionalcommits.org">
     <img src="https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg" alt="Commit">
   </a>
   <br>
   <a href="https://discord.gg/W5XVwYY7GQ">
-    <img src="https://discord.com/api/guilds/405213567118213121/widget.png" alt="Chat">
+    <img src="https://discord.com/api/guilds/405213567118213121/widget.png" alt="Discord">
+  </a>
+  <a href="https://kook.top/gqjSHh">
+    <img src="https://img.shields.io/endpoint?url=https://api.xmcl.app/kook-badge" alt="Kook">
   </a>
   <a href="https://afdian.net/@ci010">
-    <img src="https://afdian.moeci.com/6/badge.svg" alt="afdian">
+    <img src="https://img.shields.io/endpoint?url=https://api.xmcl.app/afdian-badge" alt="afdian">
+  </a>
+  <a href="https://patreon.com/xmcl">
+    <img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dxmcl%26type%3Dpledges" alt="patreon">
   </a>
 </p>
 
