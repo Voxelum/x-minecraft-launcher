@@ -362,6 +362,7 @@ launchFailed:
     contact author for help!
 launchStatus:
   checkingProblems: Checking Problems
+  injectingAuthLib: Seting-up Thirdparty AuthLib
   launching: Launching...
   launchingSlow: Still launching... Starting graphic engine can be slow...
 launcher:

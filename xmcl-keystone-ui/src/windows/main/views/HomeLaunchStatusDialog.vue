@@ -49,6 +49,12 @@
             >
               {{ t('launchStatus.checkingProblems') + '...' }}
             </div>
+            <div
+              class="text-gray-500 transition-all"
+              :class="{ 'text-transparent': status !== 'injectingAuthLib' }"
+            >
+              {{ t('launchStatus.injectingAuthLib') + ` (${userProfile.authService})` + '...' }}
+            </div>
           </v-flex>
         </v-layout>
       </v-container>
@@ -62,10 +68,12 @@ import { useDialog } from '../composables/dialog'
 import { LaunchStatusDialogKey, useLaunch } from '../composables/launch'
 import { useI18n, useService } from '/@/composables'
 import VTypical from '/@/components/VTyping.vue'
+import { useCurrentUser } from '../composables/user'
 
 const { t } = useI18n()
 const { status } = useLaunch()
 const { on } = useService(LaunchServiceKey)
+const { userProfile } = useCurrentUser()
 const { isShown, show, hide } = useDialog(LaunchStatusDialogKey)
 
 const launchingSteps = computed(() => [
@@ -88,6 +96,9 @@ on('minecraft-exit', () => {
 watch(status, (s) => {
   switch (s) {
     case 'checkingProblems':
+      show()
+      break
+    case 'injectingAuthLib':
       show()
       break
     case 'launching':
