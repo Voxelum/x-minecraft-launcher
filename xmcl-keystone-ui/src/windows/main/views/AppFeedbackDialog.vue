@@ -39,18 +39,18 @@
       </v-list-item>
       <v-list-item>
         <v-list-item-content>
-          <v-list-item-title>{{ t('feedback.qq') }}</v-list-item-title>
+          <v-list-item-title>{{ t('feedback.kook') }}</v-list-item-title>
           <v-list-item-subtitle
             style="max-width: 80%"
           >
-            {{ t('feedback.qqDescription', { number: 858391850 }) }}
+            {{ t('feedback.kookDescription') }}
           </v-list-item-subtitle>
         </v-list-item-content>
 
         <v-list-item-action>
           <v-btn
             text
-            href="https://jq.qq.com/?_wv=1027&k=5Py5zM1"
+            href="https://kook.top/gqjSHh"
           >
             {{ t('feedback.qqEnterGroup') }}
           </v-btn>

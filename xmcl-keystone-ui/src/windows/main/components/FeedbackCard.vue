@@ -5,7 +5,7 @@
       :border="border"
       colored-border
       outlined
-      :type="icon ? 'info' : ''"
+      :type="icon ? 'info' : undefined"
     >
       {{ t('feedback.hint') }}
     </v-alert>

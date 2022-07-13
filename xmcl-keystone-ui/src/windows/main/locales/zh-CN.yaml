@@ -137,6 +137,9 @@ fabricVersion:
   showStableOnly: 只显示稳定版
   stable: 稳定版
   unstable: 预览版
+feedback:
+  kook: Kook
+  kookDescription: 加入 Kook (国外请选 Discord)
 filter: 检索
 finish: 完成
 forgeConfig:
