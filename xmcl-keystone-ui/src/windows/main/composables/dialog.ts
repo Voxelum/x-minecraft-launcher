@@ -38,26 +38,34 @@ export function useDialog<T>(dialogName: DialogKey<T> = '') {
   const { dialog, parameter } = injection(DIALOG_SYMBOL)
   const isShown = computed({
     get: () => dialog.value === dialogName,
-    set: (v: boolean) => { dialog.value = v ? dialogName.toString() : '' },
+    set: (v: boolean) => {
+      if (v) {
+        show()
+      } else {
+        hide()
+      }
+    },
   })
   function hide() {
     if (dialog.value === dialogName) {
+      console.log(`hide ${dialogName}`)
       dialog.value = ''
       parameter.value = undefined
     }
   }
   function show(param?: T) {
     if (dialog.value !== dialogName) {
+      console.log(`show ${dialogName}`)
       parameter.value = param
       dialog.value = dialogName.toString()
     }
   }
-  watch(isShown, (shown) => {
-    if (!shown) {
-      dialog.value = ''
-      parameter.value = undefined
-    }
-  })
+  // watch(isShown, (shown) => {
+  // if (!shown) {
+  // dialog.value = ''
+  // parameter.value = undefined
+  // }
+  // })
   return {
     dialog,
     parameter: parameter as Ref<T | undefined>,
