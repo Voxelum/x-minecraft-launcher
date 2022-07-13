@@ -308,7 +308,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     if ('maxMemory' in options && options.maxMemory !== state.maxMemory) {
       if (typeof options.maxMemory === 'undefined') {
         result.maxMemory = 0
-      } else if (typeof options.maxMemory === 'number' && options.maxMemory) {
+      } else if (typeof options.maxMemory === 'number') {
         result.maxMemory = options.maxMemory > 0 ? options.maxMemory : 0
       } else {
         throw new Error(`Invalid Argument: Expect maxMemory to be number or undefined! Got ${typeof options.maxMemory}.`)

@@ -72,6 +72,10 @@ export interface InstanceData {
    */
   hideLauncher: boolean
   /**
+   * @default false
+   */
+  fastLaunch: boolean
+  /**
    * The target version id to launch. It will be computed from "runtime"
    * @default ""
    */
@@ -100,6 +104,10 @@ export interface InstanceData {
     * @default 0
     */
   maxMemory: number
+  /**
+   * @default true
+   */
+  assignMemory: true | 'auto' | false
   /**
    * @default []
    */

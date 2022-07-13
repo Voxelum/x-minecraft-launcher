@@ -34,6 +34,10 @@
             "default": true,
             "type": "boolean"
         },
+        "fastLaunch": {
+            "default": false,
+            "type": "boolean"
+        },
         "version": {
             "description": "The target version id to launch. It will be computed from \"runtime\"",
             "default": "",
@@ -87,6 +91,14 @@
         "maxMemory": {
             "default": 0,
             "type": "number"
+        },
+        "assignMemory": {
+            "default": true,
+            "enum": [
+                "auto",
+                false,
+                true
+            ]
         },
         "vmOptions": {
             "default": [],
@@ -152,9 +164,11 @@
         }
     },
     "required": [
+        "assignMemory",
         "author",
         "creationDate",
         "description",
+        "fastLaunch",
         "fileApi",
         "hideLauncher",
         "icon",

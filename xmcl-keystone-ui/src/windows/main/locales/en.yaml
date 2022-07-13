@@ -309,13 +309,17 @@ java:
   location: Java Location
   maxMemory: Max Memory
   memory: Java Memory
+  memoryAuto: Auto
   memoryHint: This might hit your game performance
+  memoryManual: Manual
+  memoryUnassigned: Unassign
   minMemory: Min Memory
   modifyInstance: Modify Java Path
   noMemory: Do not limit memory usage
   refresh: Refresh Local Java
   refreshAfter: Please Refresh After you install the java.
   switchVersion: Java Version Changed
+  systemMemory: Current System Memory
 javaError:
   downloadFailed: >-
     Auto-download & install failed. Please check your network condition. You can

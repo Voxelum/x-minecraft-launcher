@@ -4,6 +4,7 @@ import { ChildProcess } from 'child_process'
 import { EOL } from 'os'
 import LauncherApp from '../app/LauncherApp'
 import { JavaValidation } from '../entities/java'
+import { BaseService } from './BaseService'
 import { DiagnoseService } from './DiagnoseService'
 import { ExternalAuthSkinService } from './ExternalAuthSkinService'
 import { InstanceJavaService } from './InstanceJavaService'
@@ -20,6 +21,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
   private launchedProcesses: ChildProcess[] = []
 
   constructor(app: LauncherApp,
+    @Inject(BaseService) private baseService: BaseService,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
     @Inject(ExternalAuthSkinService) private externalAuthSkinService: ExternalAuthSkinService,
     @Inject(InstanceResourcePackService) private instanceResourcePackService: InstanceResourcePackService,
@@ -60,6 +62,11 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
     const version = instanceVersion.id
     const useAuthLib = this.userService.state.isThirdPartyAuthentication
 
+    const minMemory = instance.assignMemory === true && instance.minMemory > 0
+      ? instance.minMemory
+      : instance.assignMemory === 'auto' ? Math.floor((await this.baseService.getMemoryStatus()).free / 1024 / 1024 - 256) : undefined
+    const maxMemory = instance.assignMemory === true && instance.maxMemory > 0 ? instance.maxMemory : undefined
+
     /**
      * Build launch condition
      */
@@ -70,8 +77,8 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       gamePath: minecraftFolder.root,
       resourcePath: this.getPath(),
       javaPath,
-      minMemory: instance.minMemory && instance.minMemory > 0 ? instance.minMemory : undefined,
-      maxMemory: instance.maxMemory && instance.maxMemory > 0 ? instance.maxMemory : undefined,
+      minMemory,
+      maxMemory,
       version,
       extraExecOption: {
         detached: true,
@@ -116,7 +123,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       const user = this.userService.state
       const gameProfile = user.gameProfile
 
-      if (!options?.ignoreUserStatus) {
+      if (!options?.ignoreUserStatus && !instance.fastLaunch) {
         try {
           await this.userService.refreshStatus()
         } catch (e) {
@@ -130,7 +137,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         }
       }
 
-      if (!options?.force) {
+      if (!options?.force && !instance.fastLaunch) {
         const issues = this.diagnoseService.state.issues
         for (let problems = issues.filter(p => p.autoFix && p.parameters.length > 0), i = 0;
           problems.length !== 0 && i <= 2;
@@ -183,6 +190,11 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
 
       const useAuthLib = user.isThirdPartyAuthentication
 
+      const minMemory = instance.assignMemory === true && instance.minMemory > 0
+        ? instance.minMemory
+        : instance.assignMemory === 'auto' ? Math.floor((await this.baseService.getMemoryStatus()).free / 1024 / 1024 - 256) : undefined
+      const maxMemory = instance.assignMemory === true && instance.maxMemory > 0 ? instance.maxMemory : undefined
+
       /**
        * Build launch condition
        */
@@ -193,8 +205,8 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         gamePath: minecraftFolder.root,
         resourcePath: this.getPath(),
         javaPath,
-        minMemory: instance.minMemory > 0 ? instance.minMemory : undefined,
-        maxMemory: instance.maxMemory > 0 ? instance.maxMemory : undefined,
+        minMemory,
+        maxMemory,
         version,
         extraExecOption: {
           detached: true,

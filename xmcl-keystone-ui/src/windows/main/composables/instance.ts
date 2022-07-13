@@ -37,6 +37,7 @@ export function useInstance() {
   const creationDate = computed(() => state.instance.creationDate)
   const server = computed(() => state.instance.server)
   const version = computed(() => state.instance.version)
+  const fastLaunch = computed(() => state.instance.fastLaunch)
   return {
     path,
     name,
@@ -59,6 +60,7 @@ export function useInstance() {
     server,
     modpackVersion,
     fileApi,
+    fastLaunch,
     isServer: computed(() => state.instance.server !== null),
     refreshing: computed(() => useSemaphore('instance').value !== 0),
     editInstance,
