@@ -32,20 +32,20 @@ Visit the [official site](https://xmcl.app) to download the app!
 
 ## Features
 
-- 📥 **Download & auto complete**. Support download `Minecraft`, `forge`, `fabric`, `quilt`, `optifine`, `jvm` from official or third party mirror.
-- ⚡️ **Download Fast**. Reuse socket via http/https agents, and download the files by in parts concurrently.
-- 💻 **Cross platforms**. The launcher bases on electron, support 🗔 Windows 10, 🍎 Mac, and 🐧 Linux.
-- 📚 **Multi-Instancing**. Users can create multiple instances to isolate the different versions & mods & launch setting.
-- 🗂 **Manage all resources**. Use (hard/symbolic) link to install resources in instances, keep your disk size optimal. No copy of mods everywhere! 😆
+- 📥 **Download & auto complete**. Support download `Minecraft`, `forge`, `fabric`, `quilt`, `optifine`, `jvm` from official or third party mirrors.
+- ⚡️ **Download Fast**. Reuse socket via http/https agents, and download the files in parts concurrently.
+- 💻 **Cross platform**. The launcher is based on Electron, and supports 🗔 Windows 10/11, 🍎 Mac, and 🐧 Linux.
+- 📚 **Multi-Instancing**. Users can create multiple instances to isolate the different versions, mods and launch settings.
+- 🗂 **Manage all resources**. Use (hard/symbolic) links to install resources in instances, keep your disk usage optimal. No copies of mods everywhere! 😆
 - 🔥 **Built-in support of Curseforge, Modrinth**. You can download resources inside the launcher.
-- 📦 Support import/export Curseforge & Modrinth modpack with compliance!
-- 🔒 **Support multiple account systems**. Built-in Microsoft login and Mojang Yggdrasil API. It also has builtin support of [ely.by](https://ely.by/) and [littleskin.cn](littleskin.cn). You can also add third-party authentication server!
-- 🔗 **Peer to peer connection between users**. You can play multiplayer over "LAN" even you are not in same physical LAN!
-- 🔑 **Code sign & modern packaging**. Under Windows, you can use `appx` and `appinstaller` to install the app. You won't receive blocking message from you browser and see smart screen anymore! 😎
+- 📦 **Support import/export** Curseforge & Modrinth modpacks with compliance!
+- 🔒 **Support multiple account systems**. Built-in Microsoft login and Mojang Yggdrasil API. It also has builtin support of [ely.by](https://ely.by/) and [littleskin.cn](littleskin.cn). You can also add third-party authentication servers!
+- 🔗 **Peer to peer connection between users**. You can play multiplayer over LAN even you are not in same physical LAN!
+- 🔑 **Code sign & modern packaging**. Under Windows, you can use `appx` and `appinstaller` to install the app. You won't receive blocking message from your browser or see SmartScreen errors anymore! 😎
 
 ## Contribute
 
-See [Contribute](./CONTRIBUTING.md)
+See [Contributing](./CONTRIBUTING.md)
 
 ## LICENSE
 
