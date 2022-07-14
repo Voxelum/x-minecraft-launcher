@@ -74,7 +74,7 @@ export default class CredentialManager extends Manager {
       }
     }
     const scopes = this.scopes
-    const redirectUri = directRedirectToLauncher || IS_DEV ? 'http://localhost:25555/auth' : 'https://xmcl.app/auth'
+    const redirectUri = (directRedirectToLauncher || IS_DEV ? 'http://localhost:25555/auth' : 'https://xmcl.app/auth') + `?port=${await this.app.localhostAuthServerPort.promise}`
 
     if (!code) {
       const url = await app.getAuthCodeUrl({
