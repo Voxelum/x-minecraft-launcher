@@ -23,6 +23,7 @@ import { LauncherAppController } from './LauncherAppController'
 import { LauncherAppManager } from './LauncherAppManager'
 import { UserService } from '../services/UserService'
 import { Manager } from '../managers'
+import { createPromiseSignal } from '../util/promiseSignal'
 
 export interface Platform {
   /**
@@ -141,6 +142,8 @@ export abstract class LauncherApp extends EventEmitter {
 
   private initialInstance = ''
   private preferredLocale = ''
+
+  readonly localhostAuthServerPort = createPromiseSignal<number>()
 
   abstract getHost(): Host
 
