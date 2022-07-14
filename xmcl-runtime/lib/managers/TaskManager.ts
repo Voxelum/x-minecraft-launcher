@@ -1,4 +1,4 @@
-import { Task, TaskContext, TaskState } from '@xmcl/task'
+import { CancelledError, Task, TaskContext, TaskState } from '@xmcl/task'
 import { EventEmitter } from 'events'
 import { randomUUID } from 'crypto'
 import { Manager } from '.'
@@ -37,9 +37,13 @@ export default class TaskManager extends Manager {
         emitter.emit('update', uid, task, chunkSize)
       },
       onFailed(task: Task<any>, error: any) {
-        const e = serializeError(error)
-        emitter.emit('fail', uid, task, e)
-        Reflect.set(task, 'error', e)
+        if (error instanceof CancelledError) {
+          emitter.emit('cancel', uid, task)
+        } else {
+          const e = serializeError(error)
+          emitter.emit('fail', uid, task, e)
+          Reflect.set(task, 'error', e)
+        }
       },
       onSucceed(task: Task<any>, result: any) {
         emitter.emit('success', uid, task)
