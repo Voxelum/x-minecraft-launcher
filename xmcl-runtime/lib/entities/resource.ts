@@ -166,19 +166,23 @@ export async function parseResource(path: string, context: ParseResourceContext,
   let parser: ResourceParser<any> = UNKNOWN_ENTRY
   let metadata: any
   let icon: Uint8Array | undefined
-  const fs = await openFileSystem(path)
+  const fs = await openFileSystem(path).catch(e => undefined)
 
-  for (const p of parsers) {
-    try {
-      metadata = await p.parseMetadata(fs, path)
-      icon = await p.parseIcon(metadata, fs).catch(() => undefined)
-      parser = p
-      break
-    } catch (e) {
-      // skip
+  if (fs) {
+    for (const p of parsers) {
+      try {
+        metadata = await p.parseMetadata(fs, path)
+        icon = await p.parseIcon(metadata, fs).catch(() => undefined)
+        parser = p
+        break
+      } catch (e) {
+        // skip
+      }
     }
+    fs.close()
+  } else {
+    parser = UNKNOWN_ENTRY
   }
-  fs.close()
   const fileName = basename(path)
   const name = parser.getSuggestedName(metadata) || basename(path, ext)
 
