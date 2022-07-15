@@ -139,11 +139,7 @@ export async function migrateToDatabase(this: ResourceService, domain: ResourceD
         unlink(file).catch(() => { })
       } else {
         this.error(`Cannot load resource ${file}`)
-        if (e instanceof Error && e.stack) {
-          this.error(e.stack)
-        } else {
-          this.error(e)
-        }
+        this.error(e)
       }
     }
   }

@@ -18,7 +18,11 @@
             ],
             "outFiles": ["${workspaceFolder}/xmcl-electron-app/dist/*.js"],
             "runtimeExecutable": "${workspaceFolder}/xmcl-electron-app/node_modules/.bin/electron",
-            "protocol": "inspector",
+            "skipFiles": [
+                "<node_internals>/**",
+                "${workspaceFolder}/xmcl-runtime/lib/managers/index.ts",
+                "${workspaceFolder}/xmcl-runtime/lib/managers/LogManager.ts"
+            ],
             "cwd": "${workspaceFolder}/xmcl-electron-app/dist",
             "env": {
                 "NODE_ENV": "development"
@@ -27,7 +31,7 @@
         {
             "name": "Electron: Renderer (attach)",
             // "type": "chrome",
-            "type": "pwa-chrome",
+            "type": "chrome",
             "request": "attach",
             "restart": true,
             "port": 9300,

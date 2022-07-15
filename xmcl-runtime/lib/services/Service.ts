@@ -250,7 +250,11 @@ export abstract class AbstractService extends EventEmitter {
 
   constructor(readonly app: LauncherApp, name: ServiceKey<AbstractService>, private initializer?: () => Promise<void>) {
     super()
-    this.name = name as any
+    this.name = name as string
+    const loggers = app.logManager.getLoggerFor(name as string)
+    this.log = loggers.log
+    this.warn = loggers.warn
+    this.error = loggers.error
   }
 
   get networkManager() { return this.app.networkManager }
@@ -347,15 +351,12 @@ export abstract class AbstractService extends EventEmitter {
   async dispose(): Promise<void> { }
 
   log = (m: any, ...a: any[]) => {
-    this.logManager.log(`[${this.name}] ${m}`, ...a)
   }
 
   error = (m: any, ...a: any[]) => {
-    this.logManager.error(`[${this.name}] ${m instanceof Error && m.stack ? m.stack : m}`, ...a)
   }
 
   warn = (m: any, ...a: any[]) => {
-    this.logManager.warn(`[${this.name}] ${m instanceof Error && m.stack ? m.stack : m}`, ...a)
   }
 
   protected up(key: string) {

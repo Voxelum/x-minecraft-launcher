@@ -86,8 +86,8 @@ export default class ServiceManager extends Manager {
       return { result: r }
     } catch (e) {
       this.warn(`Error during service call session ${id}(${this.sessions[id].name}):`)
-      if (e instanceof Error || typeof (e as any).stack === 'string') {
-        this.error((e as any).stack)
+      if (e instanceof Error) {
+        this.error(e)
       } else {
         this.error(JSON.stringify(e))
       }
