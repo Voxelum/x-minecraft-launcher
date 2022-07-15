@@ -21,18 +21,26 @@ export interface FileStat extends Omit<Stats, 'isFile' | 'isDirectory' | 'isBloc
   isSocket: boolean
 }
 
+export function extractKeywords<T>(resource: ResourceMetadata<T>) {
+  const result = [] as string[]
+
+  return result
+}
+
 /**
  * The indexer for a specific resource domain
  */
 export class ResourceDomainIndexer<T> {
-  private hashSet: AbstractLevel<string | Buffer, string, string>
+  private hashSet: AbstractSublevel<any, string | Buffer, string, string>
   private uriIndex: AbstractSublevel<any, string | Buffer, string, string>
   private keywordIndex: AbstractSublevel<any, string | Buffer, string, string[]>
+  private keywords: AbstractSublevel<any, string | Buffer, string, string[]>
 
   constructor(readonly parent: ClassicLevel<string, ResourceMetadata<any>>, name: string) {
     this.hashSet = parent.sublevel<string, string>(name, { keyEncoding: 'hex' })
     this.uriIndex = this.hashSet.sublevel<string, string>('uri-index', { valueEncoding: 'hex' })
     this.keywordIndex = this.hashSet.sublevel<string, string[]>('keyword-index', { valueEncoding: 'json' })
+    this.keywords = this.hashSet.sublevel<string, string[]>('keywords', { valueEncoding: 'json' })
   }
 
   async put(resource: ResourceMetadata<T>) {

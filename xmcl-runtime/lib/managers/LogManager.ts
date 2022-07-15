@@ -67,14 +67,17 @@ export default class LogManager extends Manager {
   }
 
   getLoggerFor(tag: string): Logger {
-    function transform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] ${c}\n`) } }) }
-    const log = transform(tag).pipe(this.loggerEntries.log)
-    const warn = transform(tag).pipe(this.loggerEntries.warn)
-    const error = transform(tag).pipe(this.loggerEntries.error)
+    const { log, warn, error } = this
     return {
-      log(message: any, ...options: any[]) { log.write(formatMsg(message, options)) },
-      warn(message: any, ...options: any[]) { warn.write(formatMsg(message, options)) },
-      error(message: any, ...options: any[]) { error.write(formatMsg(message, options)) },
+      log(message: any, ...options: any[]) { log(`[${tag}] ${message}`, ...options) },
+      warn(message: any, ...options: any[]) {
+        if (message instanceof Error) { message = message.stack }
+        warn(`[${tag}] ${message}`, ...options)
+      },
+      error(message: any, ...options: any[]) {
+        if (message instanceof Error) { message = message.stack }
+        error(`[${tag}] ${message}`, ...options)
+      },
     }
   }
 

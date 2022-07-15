@@ -45,7 +45,7 @@ export default class ElectronLauncherApp extends LauncherApp {
       } catch (e) {
         this.warn(`Drop message to ${channel} to ${w.getTitle()} as`)
         if (e instanceof Error) {
-          this.warn(e.stack)
+          this.warn(e)
         }
       }
     })
