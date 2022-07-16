@@ -138,6 +138,11 @@ export abstract class LauncherApp extends EventEmitter {
 
     this.networkManager = new NetworkManager(this)
     this.managers = [this.logManager, this.networkManager, this.taskManager, this.serviceStateManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager, this.semaphoreManager, this.launcherAppManager]
+
+    const logger = this.logManager.getLoggerFor('App')
+    this.log = logger.log
+    this.warn = logger.warn
+    this.error = logger.error
   }
 
   private initialInstance = ''
@@ -345,11 +350,11 @@ export abstract class LauncherApp extends EventEmitter {
 
   relaunch(): void { this.host.relaunch() }
 
-  log = (message: any, ...options: any[]) => { this.logManager.log(`[App] ${message}`, ...options) }
+  log = (message: any, ...options: any[]) => { }
 
-  warn = (message: any, ...options: any[]) => { this.logManager.warn(`[App] ${message}`, ...options) }
+  warn = (message: any, ...options: any[]) => { }
 
-  error = (message: any, ...options: any[]) => { this.logManager.error(`[App] ${message}`, ...options) }
+  error = (message: any, ...options: any[]) => { }
 
   // setup code
 
