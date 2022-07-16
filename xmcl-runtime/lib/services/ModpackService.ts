@@ -512,4 +512,8 @@ export class ModpackService extends AbstractService implements IModpackService {
       return infos
     })
   }
+
+  async showModpacksFolder(): Promise<void> {
+    this.baseService.openDirectory(this.getPath('modpacks'))
+  }
 }

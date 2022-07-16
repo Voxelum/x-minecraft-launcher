@@ -117,6 +117,8 @@ export interface ModpackService {
    * @param options The options provide instance directory path and curseforge modpack zip path
    */
   importModpack(options: ImportModpackOptions): Promise<string>
+
+  showModpacksFolder(): Promise<void>
 }
 
 export const ModpackServiceKey: ServiceKey<ModpackService> = 'ModpackService'

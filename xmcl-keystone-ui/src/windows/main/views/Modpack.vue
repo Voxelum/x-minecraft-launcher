@@ -98,7 +98,7 @@
 import { Ref } from '@vue/composition-api'
 import FilterCombobox from '/@/components/FilterCombobox.vue'
 import { useService, useRouter, useServiceBusy, useFilterCombobox, useI18n } from '/@/composables'
-import { ResourceServiceKey, ResourceType, ResourceDomain, CachedFTBModpackVersionManifest } from '@xmcl/runtime-api'
+import { ResourceServiceKey, ResourceType, ResourceDomain, CachedFTBModpackVersionManifest, ModpackServiceKey } from '@xmcl/runtime-api'
 import { isStringArrayEquals } from '/@/util/equal'
 import ModpackCard from './ModpackCard.vue'
 import DeleteButton from './ModpackDeleteButton.vue'
@@ -112,6 +112,7 @@ const { t } = useI18n()
 const { push } = useRouter()
 const dragging = ref(undefined as undefined | ModpackItem)
 const { state, removeResource, updateResource } = useService(ResourceServiceKey)
+const { showModpacksFolder } = useService(ModpackServiceKey)
 const items: Ref<ModpackItem[]> = ref([])
 const { show } = useDialog(AddInstanceDialogKey)
 function getFilterOptions(item: ModpackItem) {
@@ -128,7 +129,7 @@ const { refresh, refreshing: refreshingFtb, cache: ftb, dispose } = useFeedTheBe
 const modpacks = computed(() => filter(items.value))
 
 function showFolder() {
-
+  showModpacksFolder()
 }
 const { show: showDelete } = useDialog('deletion')
 function startDelete(item: ModpackItem) {

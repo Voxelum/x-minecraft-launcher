@@ -79,7 +79,9 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
    * A electron provided function to show item in directory
    * @param path The path to the file item
    */
-  showItemInDirectory = this.app.showItemInFolder
+  showItemInDirectory(item: string) {
+    this.app.showItemInFolder(item)
+  }
 
   /**
    * A safe method that only open directory. If the `path` is a file, it won't execute it.
