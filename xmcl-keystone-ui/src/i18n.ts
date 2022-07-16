@@ -32,7 +32,7 @@ export function createI18n(locale: string, messages: VueI18n.LocaleMessages) {
           return messages[0]
         }
         if (values.n % 2 === 0) {
-          return messages[3]
+          return messages[2]
         }
         return messages[1]
       }
