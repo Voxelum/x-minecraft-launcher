@@ -53,8 +53,8 @@
       />
     </v-list-group>
     <v-list-item>
-      <div class="flex flex-col px-[16px] py-[8px]">
-        <div class="flex flex-row items-end">
+      <div class="flex flex-col px-[16px] py-[8px] gap-2 mt-2">
+        <div class="flex flex-row items-center">
           {{ t("java.memory") }}
           <div class="flex-grow" />
           <v-btn-toggle
