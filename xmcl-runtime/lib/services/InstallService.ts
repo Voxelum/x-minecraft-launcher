@@ -1,5 +1,5 @@
 import { diagnose, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
-import { DEFAULT_FABRIC_API, DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getQuiltVersionsList, getVersionList, getYarnArtifactList, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, QuiltArtifactVersion, YARN_MAVEN_URL } from '@xmcl/installer'
+import { DEFAULT_FABRIC_API, DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getQuiltVersionsList, getVersionList, getYarnArtifactList, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, QuiltArtifactVersion, YARN_MAVEN_URL } from '@xmcl/installer'
 import { Asset, ForgeVersion, ForgeVersionList, GetQuiltVersionListOptions, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallQuiltOptions, InstallService as IInstallService, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema, VersionQuiltSchema } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { ensureFile, readJson, readJSON, writeFile, writeJson } from 'fs-extra'
@@ -318,10 +318,17 @@ export class InstallService extends AbstractService implements IInstallService {
       ...this.networkManager.getDownloadBaseOptions(),
       java: this.javaService.getPreferredJava()?.path,
     }
-    if (this.baseService.shouldOverrideApiSet()) {
-      const allSets = this.baseService.getApiSets()
-      options.mavenHost = allSets.map(api => `${api.url}/maven`)
+
+    const allSets = this.baseService.getApiSets()
+
+    if (!this.baseService.shouldOverrideApiSet()) {
+      allSets.unshift({ name: 'mojang', url: '' })
+    } else {
+      allSets.push({ name: 'mojang', url: '' })
     }
+
+    options.mavenHost = allSets.map(api => api.url ? `${api.url}/maven` : DEFAULT_FORGE_MAVEN)
+
     return options
   }
 
@@ -332,40 +339,55 @@ export class InstallService extends AbstractService implements IInstallService {
       side: 'client',
     }
 
-    if (this.baseService.shouldOverrideApiSet()) {
-      const allSets = this.baseService.getApiSets()
-      option.assetsHost = allSets.map(api => `${api.url}/assets`)
-      option.mavenHost = allSets.map(api => `${api.url}/maven`)
-      option.assetsIndexUrl = (ver) => allSets.map(api => {
-        if (ver.assetIndex) {
-          const url = new URL(ver.assetIndex.url)
-          const host = new URL(api.url).host
-          url.host = host
-          url.hostname = host
-          return url.toString()
-        }
-        return ''
-      }).filter(v => !!v)
+    const allSets = this.baseService.getApiSets()
 
-      option.json = (ver) => allSets.map(api => {
-        const url = new URL(ver.url)
+    if (!this.baseService.shouldOverrideApiSet()) {
+      allSets.unshift({ name: 'mojang', url: '' })
+    } else {
+      allSets.push({ name: 'mojang', url: '' })
+    }
+
+    option.assetsHost = allSets.map(api => api.url ? `${api.url}/assets` : DEFAULT_RESOURCE_ROOT_URL)
+    option.mavenHost = allSets.map(api => api.url ? `${api.url}/maven` : DEFAULT_FORGE_MAVEN)
+    option.assetsIndexUrl = (ver) => allSets.map(api => {
+      if (ver.assetIndex) {
+        if (api.name === 'mojang') {
+          return ver.assetIndex.url
+        }
+        const url = new URL(ver.assetIndex.url)
         const host = new URL(api.url).host
         url.host = host
         url.hostname = host
         return url.toString()
-      })
+      }
+      return ''
+    }).filter(v => !!v)
 
-      option.client = (ver) => allSets.map(api => {
-        if (ver.downloads.client) {
-          const url = new URL(ver.downloads.client.url)
-          const host = new URL(api.url).host
-          url.host = host
-          url.hostname = host
-          return url.toString()
+    option.json = (ver) => allSets.map(api => {
+      if (api.name === 'mojang') {
+        return ver.url
+      }
+      const url = new URL(ver.url)
+      const host = new URL(api.url).host
+      url.host = host
+      url.hostname = host
+      return url.toString()
+    })
+
+    option.client = (ver) => allSets.map(api => {
+      if (ver.downloads.client) {
+        if (api.name === 'mojang') {
+          return ver.downloads.client.url
         }
-        return ''
-      }).filter(v => !!v)
-    }
+        const url = new URL(ver.downloads.client.url)
+        const host = new URL(api.url).host
+        url.host = host
+        url.hostname = host
+        return url.toString()
+      }
+      return ''
+    }).filter(v => !!v)
+
     return option
   }
 
