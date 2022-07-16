@@ -351,6 +351,7 @@ loginError:
   connectionReset: 因为服务端断开了连接导致登录失败，请重试或检查网络
   illegalEmail: 当前Email格式不合法
   invalidCredentials: 无法验证. 用户名或密码错误.
+  loginXboxFailed: 请求 xbox 通证失败，请确保你的微软账号已经绑定了一个 Xbox 账号！
   requireEmail: 必须要Email才能登陆
   requirePassword: 请输入密码
   requireUsername: 用户名不能为空
@@ -775,6 +776,7 @@ userServices:
     account: 用户名
     name: 离线模式
     password: 无需密码
+    uuid: 用户的 UUID (可不写)
 userSkin:
   import: 导入皮肤
   importFile: 从文件导入
