@@ -1,4 +1,4 @@
-import type { AddonInfo, File, FileModLoaderType, Pagination, ProjectCategory, SearchOptions } from '@xmcl/curseforge'
+import type { Mod, File, FileModLoaderType, Pagination, ModCategory, SearchOptions } from '@xmcl/curseforge'
 import { ProjectType } from '../entities/curseforge'
 import { PersistedResource } from '../entities/resource'
 import { ServiceKey, StatefulService } from './Service'
@@ -40,12 +40,12 @@ export interface GetModFilesOptions {
  * The launcher backend will cache the curseforge data neither in memory or in disk.
  */
 export interface CurseForgeService extends StatefulService<CurseforgeState> {
-  fetchCategories(): Promise<ProjectCategory[]>
+  fetchCategories(): Promise<ModCategory[]>
   /**
    * Fetch a curseforge project info
    * @param projectId The curseforge project id
    */
-  fetchProject(projectId: number): Promise<AddonInfo>
+  fetchProject(projectId: number): Promise<Mod>
   /**
    * Fetch a curseforge project description string
    * @param projectId The curseforge project id
@@ -60,7 +60,7 @@ export interface CurseForgeService extends StatefulService<CurseforgeState> {
    * Search curseforge projects by search options
    * @param searchOptions The search options
    */
-  searchProjects(searchOptions: SearchOptions): Promise<{ data: AddonInfo[]; pagination: Pagination }>
+  searchProjects(searchOptions: SearchOptions): Promise<{ data: Mod[]; pagination: Pagination }>
   /**
    * Install a curseforge file to local storage
    * @param options The install file options

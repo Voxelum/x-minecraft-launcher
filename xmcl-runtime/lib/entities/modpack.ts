@@ -1,4 +1,3 @@
-import { getAddonFileInfo } from '@xmcl/curseforge'
 import { DownloadTask, UnzipTask } from '@xmcl/installer'
 import { joinUrl } from '@xmcl/installer/http/utils'
 import { CurseforgeModpackManifest, EditInstanceOptions, McbbsModpackManifest, ModpackFileInfoAddon, ModpackFileInfoCurseforge, ModrinthModpackManifest } from '@xmcl/runtime-api'
