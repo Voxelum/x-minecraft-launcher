@@ -21,10 +21,17 @@ import steveSkin from '/@/assets/steve_skin.png'
 function useSkinModel(url: Ref<string>, slim: Ref<boolean>) {
   const created = PlayerModel.create()
   const model = created.playerObject3d
-  created.setSkin(url.value, slim.value)
+
+  let last: Promise<void> | undefined
+
+  last = created.setSkin(url.value, slim.value)
 
   watch([url, slim], () => {
-    created.setSkin(url.value, slim.value)
+    if (last) {
+      last = last.then(() => created.setSkin(url.value, slim.value))
+    } else {
+      last = created.setSkin(url.value, slim.value)
+    }
   })
 
   model.translateY(-0.5)
