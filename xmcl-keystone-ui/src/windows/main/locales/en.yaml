@@ -857,6 +857,7 @@ userServices:
     account: Username
     name: Offline
     password: No Password
+    uuid: User UUID (Optional)
 userSkin:
   change: Change Skin
   export: Export Skin

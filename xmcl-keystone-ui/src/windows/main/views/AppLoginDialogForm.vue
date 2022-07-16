@@ -57,6 +57,7 @@
         />
 
         <v-text-field
+          v-if="!isOffline"
           v-model="data.password"
           prepend-icon="lock"
           type="password"
@@ -67,6 +68,13 @@
           :error="!!passwordErrors.length"
           :error-messages="passwordErrors"
           @input="passwordErrors = []"
+          @keypress.enter="onLogin"
+        />
+        <v-text-field
+          v-else
+          v-model="data.uuid"
+          prepend-icon="fingerprint"
+          :label="uuidLabel"
           @keypress.enter="onLogin"
         />
       </v-form>
@@ -153,6 +161,7 @@ const { hide, isShown, show } = useDialog('login')
 const data = reactive({
   username: '',
   password: '',
+  uuid: '',
   isFormValid: true,
   microsoftUrl: '',
 })
@@ -185,6 +194,7 @@ const passwordLabel = computed(() => (te(`userServices.${authService.value}.pass
   ? t(`userServices.${authService.value}.password`)
   : t(`userServices.${isOffline.value ? 'offline' : 'mojang'}.password`)))
 const showDropHint = computed(() => isMicrosoft.value && props.inside && isLogining.value)
+const uuidLabel = computed(() => t('userServices.offline.uuid'))
 
 const authServiceItem = computed<ServiceItem>({
   get() { return authServiceItems.value.find(a => a.value === authService.value)! },
@@ -241,7 +251,7 @@ function handleError(e: unknown) {
   } else {
     const msg = t('loginError.requestFailed')
     usernameErrors.value = [msg]
-    passwordErrors.value = [msg]
+    passwordErrors.value = [JSON.stringify(e)]
   }
   console.error(e)
 }

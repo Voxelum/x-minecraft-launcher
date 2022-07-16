@@ -592,7 +592,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     }
 
     if (authService === 'offline') {
-      const result = offline(username)
+      const result = offline(username, options.uuid)
       userId = result.user!.id
       accessToken = result.accessToken
       availableProfiles = result.availableProfiles

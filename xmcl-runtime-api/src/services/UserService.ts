@@ -1,8 +1,7 @@
 import { GameProfile, MojangChallenge, MojangChallengeResponse, ProfileServiceAPI, YggdrasilAuthAPI } from '@xmcl/user'
-import { GenericEventEmitter } from '../events'
 import { Exception } from '../entities/exception'
-import { EMPTY_GAME_PROFILE, EMPTY_USER } from '../entities/user'
 import { GameProfileAndTexture, UserProfile, UserSchema } from '../entities/user.schema'
+import { GenericEventEmitter } from '../events'
 import { ServiceKey, StatefulService } from './Service'
 
 export interface LoginMicrosoftOptions {
@@ -33,6 +32,8 @@ export interface LoginOptions {
    * Select selected profile after login
    */
   selectProfile?: boolean
+
+  uuid?: string
 }
 export interface RefreshSkinOptions {
   gameProfileId?: string
