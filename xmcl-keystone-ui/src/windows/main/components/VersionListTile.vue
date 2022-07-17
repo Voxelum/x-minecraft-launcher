@@ -27,9 +27,9 @@
 
     <v-list-item-action style="justify-content: flex-end;">
       <v-btn
-        :loading="source.status === 'installing'"
+        :loading="loading"
         icon
-        @click.stop="source.status === 'remote' ? install(source) : show(source)"
+        @click.stop="source.status === 'remote' ? refresh() : show(source)"
       >
         <v-icon>
           {{
@@ -43,13 +43,19 @@
 
 <script lang=ts setup>
 import { VersionItem } from '../composables/versionList'
+import { useRefreshable } from '/@/composables'
 
-defineProps<{
+const props = defineProps<{
   source: VersionItem
-  install(item: VersionItem): void
+  install(item: object): Promise<void>
   show(item: VersionItem): void
   select(item: VersionItem): void
 }>()
+
+const { refresh, refreshing } = useRefreshable(() => {
+  return props.install(props.source.instance)
+})
+const loading = computed(() => refreshing.value || props.source.status === 'installing')
 
 </script>
 

@@ -112,10 +112,10 @@
             :disable-text="t('forgeVersion.disable')"
             :refresh-text="t('forgeVersion.empty', { version: data.minecraft })"
             :versions="forgeVersions"
+            :install="installForge"
             @select="setForge"
             @disable="setForge('')"
             @show="showVersionDirectory"
-            @install="installForge"
           >
             <template #header>
               <v-checkbox
@@ -140,10 +140,10 @@
             :disable-text="t('fabricVersion.disable')"
             :refresh-text="t('fabricVersion.empty', { version: data.minecraft })"
             :versions="fabricVersions"
+            :install="installFabric"
             @show="showVersionDirectory"
             @select="setFabric"
             @disable="setFabric('')"
-            @install="installFabric"
           >
             <template #header>
               <v-checkbox
@@ -163,10 +163,10 @@
             :disable-text="t('quiltVersion.disable')"
             :refresh-text="t('quiltVersion.empty', { version: data.minecraft })"
             :versions="quiltVersions"
+            :install="installQuilt"
             @show="showVersionDirectory"
             @select="setQuilt"
             @disable="setQuilt('')"
-            @install="installQuilt"
           >
             <!-- <template #header>
               <v-checkbox
@@ -186,10 +186,10 @@
             :refreshing="refreshingOptifine"
             :refresh-text="t('optifineVersion.empty', { version: data.minecraft })"
             :versions="optifineVersions"
+            :install="installOptifine"
             @show="showVersionDirectory"
             @select="setOptifine"
             @disable="setOptifine('')"
-            @install="installOptifine({ ...$event, forgeVersion: data.forge })"
           />
         </v-tab-item>
       </v-tabs-items>
@@ -364,6 +364,10 @@ function setQuilt(version: string) {
     data.forge = ''
     data.quilt = version
   }
+}
+
+function installOptifine_(item: any) {
+  return installOptifine({ ...item, forgeVersion: data.forge })
 }
 
 function refresh() {

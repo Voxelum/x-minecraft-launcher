@@ -55,7 +55,7 @@
         :data-key="'name'"
         :data-component="VersionListTile"
         :keep="16"
-        :extra-props="{ select: onSelect, install: onInstall, show: onShow }"
+        :extra-props="{ select: onSelect, install, show: onShow }"
       />
     </v-list>
     <Hint
@@ -79,6 +79,7 @@ defineProps<{
   refreshing: boolean
   versions: VersionItem[]
   refreshText?: string
+  install(v: object): Promise<any>
 }>()
 
 const onSelect = (v: VersionItem) => emit('select', v.name)
