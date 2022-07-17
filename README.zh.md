@@ -61,14 +61,14 @@
 
 <!-- afdian-start -->
 <div style="display: flex; align-items: center; justify-items:center; gap: 0.2em; flex-wrap: wrap;">
-<a title="ahdg: ￥60.00" href="https://afdian.net/u/dd9058ce20df11eba5c052540025c377"> <img width="100" height="100" style="border-radius: 100%" class="avatar circle" src="https://pic1.afdiancdn.com/user/dd9058ce20df11eba5c052540025c377/avatar/0c776e6de1b1027e951c6d94919eb781_w1280_h1024_s364.jpg"> </a>
-<a title="圣剑: ￥30.00" href="https://afdian.net/u/ef50bc78b3d911ecb85352540025c377"> <img width="70" height="70" style="border-radius: 100%" class="avatar circle" src="https://pic1.afdiancdn.com/user/user_upload_osl/8a1c4eb2e580b4b8b463ceb2114b6381_w132_h132_s3.jpeg"> </a>
-<a title="同谋者: ￥30.00" href="https://afdian.net/u/7c3c65dc004a11eb9a6052540025c377"> <img width="70" height="70" style="border-radius: 100%" class="avatar circle" src="https://pic1.afdiancdn.com/default/avatar/avatar-blue.png"> </a>
-<a title="爱发电用户_CvQb: ￥5.00" href="https://afdian.net/u/177bea3cf47211ec990352540025c377"> <img width="50" height="50" style="border-radius: 100%" class="avatar circle" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png"> </a>
-<a title="水合: ￥5.00" href="https://afdian.net/u/039508f2b17d11ebad1052540025c377"> <img width="50" height="50" style="border-radius: 100%" class="avatar circle" src="https://pic1.afdiancdn.com/default/avatar/avatar-orange.png"> </a>
-<a title="Jisoadng: ￥5.00" href="https://afdian.net/u/0c5c865e08ee11ecba1352540025c377"> <img width="50" height="50" style="border-radius: 100%" class="avatar circle" src="https://pic1.afdiancdn.com/user/0c5c865e08ee11ecba1352540025c377/avatar/b7ae9f15fc461e68c4b9a853ee966a27_w448_h448_s290.png"> </a>
-<a title="DIO: ￥5.00" href="https://afdian.net/u/7ac297b4722211eab4a752540025c377"> <img width="50" height="50" style="border-radius: 100%" class="avatar circle" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png"> </a>
-<a title="爱发电用户_DJpu: ￥5.00" href="https://afdian.net/u/8c23a236cf7311ec9c3452540025c377"> <img width="50" height="50" style="border-radius: 100%" class="avatar circle" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png"> </a>
+<a title="ahdg: ￥60.00" href="https://afdian.net/u/dd9058ce20df11eba5c052540025c377"> <img width="100" height="100" style="border-radius: 100%" src="https://pic1.afdiancdn.com/user/dd9058ce20df11eba5c052540025c377/avatar/0c776e6de1b1027e951c6d94919eb781_w1280_h1024_s364.jpg"> </a>
+<a title="圣剑: ￥30.00" href="https://afdian.net/u/ef50bc78b3d911ecb85352540025c377"> <img width="70" height="70" style="border-radius: 100%" src="https://pic1.afdiancdn.com/user/user_upload_osl/8a1c4eb2e580b4b8b463ceb2114b6381_w132_h132_s3.jpeg"> </a>
+<a title="同谋者: ￥30.00" href="https://afdian.net/u/7c3c65dc004a11eb9a6052540025c377"> <img width="70" height="70" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-blue.png"> </a>
+<a title="爱发电用户_CvQb: ￥5.00" href="https://afdian.net/u/177bea3cf47211ec990352540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png"> </a>
+<a title="水合: ￥5.00" href="https://afdian.net/u/039508f2b17d11ebad1052540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-orange.png"> </a>
+<a title="Jisoadng: ￥5.00" href="https://afdian.net/u/0c5c865e08ee11ecba1352540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/user/0c5c865e08ee11ecba1352540025c377/avatar/b7ae9f15fc461e68c4b9a853ee966a27_w448_h448_s290.png"> </a>
+<a title="DIO: ￥5.00" href="https://afdian.net/u/7ac297b4722211eab4a752540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png"> </a>
+<a title="爱发电用户_DJpu: ￥5.00" href="https://afdian.net/u/8c23a236cf7311ec9c3452540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png"> </a>
 </div>
 <!-- afdian-end -->
 
