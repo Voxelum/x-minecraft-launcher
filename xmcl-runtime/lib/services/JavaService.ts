@@ -80,6 +80,16 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     })
     this.log(`Install jre runtime ${target.component} (${target.majorVersion}) ${manifest.version.name} ${manifest.version.released}`)
     const dest = this.getPath('jre', target.component)
+
+    if (!apiHost) {
+      const apis = this.baseService.getApiSets()
+      apiHost = apis.map(a => new URL(a.url).hostname)
+
+      if (!this.baseService.shouldOverrideApiSet()) {
+        apiHost.unshift('https://launcher.mojang.com')
+      }
+    }
+
     const task = installJavaRuntimesTask({
       manifest,
       apiHost,
