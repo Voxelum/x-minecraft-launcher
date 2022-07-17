@@ -156,18 +156,25 @@ export async function parseResource(path: string, context: ParseResourceContext,
   const hint = typeHint || ''
   const sha1 = context.sha1 ?? await checksum(path, 'sha1')
   const fstat = context.stat ?? await stat(path)
-  let ext = extname(path)
-  if (ext !== '.jar' && ext !== '.zip' && fileType === 'zip') {
-    ext = '.zip'
-  }
+  const ext = extname(path)
+  const inspectExt = fileType === 'zip' ? '.zip' : undefined
 
-  const filterFunc: (r: ResourceParser<any>) => boolean = (hint === '*' || hint === '')
-    ? (ext ? r => r.ext === ext : () => true)
-    : r => r.domain === hint || r.type === hint
-
-  const parsers: ResourceParser<any>[] = resourceParsers.filter(filterFunc)
-  if (ext === '.zip') {
-    parsers.push(forgeModParser)
+  let parsers: ResourceParser<any>[]
+  if (hint === '*' || hint === '') {
+    if (ext) {
+      parsers = resourceParsers.filter(r => r.ext === ext)
+      if (parsers.length === 0 && inspectExt) {
+        parsers.push(...resourceParsers.filter(r => r.ext === inspectExt), forgeModParser)
+      }
+    } else {
+      if (inspectExt) {
+        parsers = resourceParsers.filter(r => r.ext === inspectExt).concat(forgeModParser)
+      } else {
+        parsers = [...resourceParsers]
+      }
+    }
+  } else {
+    parsers = resourceParsers.filter(r => r.domain === hint || r.type === hint)
   }
   parsers.push(UNKNOWN_ENTRY)
 
