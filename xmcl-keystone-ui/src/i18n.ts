@@ -22,7 +22,7 @@ export function createI18n(locale: string, messages: VueI18n.LocaleMessages) {
     const normalize = (values: string[]) => values.length === 0 ? '' : values.join('')
     const plural = (messages: string[]) => {
       if (messages.length === 2) {
-        if (values.n % 2 === 0) {
+        if (values.n >= 2) {
           return messages[1]
         }
         return messages[0]
