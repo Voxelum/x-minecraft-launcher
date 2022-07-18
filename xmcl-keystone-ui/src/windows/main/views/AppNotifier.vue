@@ -19,7 +19,7 @@
         v-if="data.more"
         icon
         text
-        @click="data.more(); close()"
+        @click="more"
       >
         <v-icon>arrow_right</v-icon>
       </v-btn>
@@ -50,7 +50,12 @@ const registry = useNotificationHandler()
 const queue = useNotificationQueue()
 const queueLength = computed(() => queue.value.length)
 const close = () => { data.show = false }
-
+const more = () => {
+  if (data.more) {
+    data.more()
+    close()
+  }
+}
 function consume() {
   const not = queue.value.pop()
   if (not) {

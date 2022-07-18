@@ -1,5 +1,5 @@
 import { computed, onMounted, reactive, ref, toRefs, watch } from '@vue/composition-api'
-import { AddonInfo, File, FileModLoaderType, ModsSearchSortField, ProjectCategory } from '@xmcl/curseforge'
+import { Mod, File, FileModLoaderType, ModsSearchSortField, ModCategory } from '@xmcl/curseforge'
 import { CurseForgeServiceKey, InstanceModsServiceKey, PersistedResource, ProjectType, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useRouter, useService, useServiceBusy } from '/@/composables'
 
@@ -88,7 +88,7 @@ export function useCurseforge(props: CurseforgeProps) {
   const data = reactive({
     pages: 5,
     totalCount: 0,
-    projects: [] as AddonInfo[],
+    projects: [] as Mod[],
     loading: false,
   })
   const index = computed(() => (currentPage.value - 1) * pageSize)
@@ -232,11 +232,11 @@ export function useCurseforgeProjectDescription(projectId: number) {
 }
 /**
  * Hook to view the front page of the curseforge project.
- * @param id The project id
+ * @param projectId The project id
  */
 export function useCurseforgeProject(projectId: number) {
   const { fetchProject } = useService(CurseForgeServiceKey)
-  const project = ref(undefined as undefined | AddonInfo)
+  const project = ref(undefined as undefined | Mod)
   const refreshing = useServiceBusy(CurseForgeServiceKey, 'fetchProject', projectId.toString())
   async function refresh() {
     project.value = await fetchProject(projectId)
@@ -250,7 +250,7 @@ export function useCurseforgeProject(projectId: number) {
 
 export function useCurseforgeCategories() {
   const { fetchCategories } = useService(CurseForgeServiceKey)
-  const categories = ref([] as ProjectCategory[])
+  const categories = ref([] as ModCategory[])
   const refreshing = useServiceBusy(CurseForgeServiceKey, 'fetchCategories')
   async function refresh() {
     categories.value = await fetchCategories()

@@ -73,12 +73,12 @@
   </v-card>
 </template>
 <script lang="ts" setup>
-import { AddonInfo } from '@xmcl/curseforge'
+import { Mod } from '@xmcl/curseforge'
 import DestMenu from './CurseforgeProjectDestMenu.vue'
 import { getLocalDateString } from '/@/util/date'
 
 const props = defineProps<{
-  project?: AddonInfo
+  project?: Mod
   loading: boolean
   destination: string
   from: string

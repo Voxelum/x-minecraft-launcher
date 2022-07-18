@@ -1,3 +1,4 @@
+// @ts-nocheck
 export default async function typing(node, ...args) {
   for (const arg of args) {
     switch (typeof arg) {

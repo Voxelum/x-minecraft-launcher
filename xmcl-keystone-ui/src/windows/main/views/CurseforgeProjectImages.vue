@@ -32,8 +32,8 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { AddonAsset, AddonInfo } from '@xmcl/curseforge'
+import { ModAsset } from '@xmcl/curseforge'
 
-defineProps<{ screenshots: AddonAsset[] }>()
+defineProps<{ screenshots: ModAsset[] }>()
 const emit = defineEmits(['image'])
 </script>

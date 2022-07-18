@@ -34,10 +34,9 @@
 </template>
 <script lang="ts">
 import { computed, defineComponent, onMounted, Ref, ref } from '@vue/composition-api'
-import type { AddonInfo } from '@xmcl/curseforge'
+import type { Mod } from '@xmcl/curseforge'
 import { BaseServiceKey, CurseForgeServiceKey } from '@xmcl/runtime-api'
-import { useService } from '/@/composables'
-import { useRefreshable } from '../../../composables/refreshable'
+import { useService, useRefreshable } from '/@/composables'
 import { required } from '/@/util/props'
 
 export default defineComponent({
@@ -51,7 +50,7 @@ export default defineComponent({
     onMounted(() => {
       refresh()
     })
-    const project: Ref<AddonInfo | undefined> = ref(undefined)
+    const project: Ref<Mod | undefined> = ref(undefined)
     const image = computed(() => project.value?.logo ? project.value.logo.thumbnailUrl : '')
     const { refresh, refreshing } = useRefreshable(async () => {
       const result = await fetchProject(props.projectId)

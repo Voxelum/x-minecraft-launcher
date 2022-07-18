@@ -33,6 +33,8 @@ export function useInstanceCreation() {
     icon: '',
     server: null,
     tags: [],
+    assignMemory: false,
+    fastLaunch: false,
   })
   return {
     data,

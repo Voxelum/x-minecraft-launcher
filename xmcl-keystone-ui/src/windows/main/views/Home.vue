@@ -76,10 +76,7 @@
     </div>
 
     <home-launch-button />
-    <log-dialog
-      v-model="isLogDialogShown"
-      :hide="hideLogDialog"
-    />
+    <log-dialog />
     <game-exit-dialog />
     <app-launch-blocked-dialog />
     <home-launch-multi-instance-dialog />

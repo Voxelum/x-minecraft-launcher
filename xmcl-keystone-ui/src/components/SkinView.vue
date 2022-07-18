@@ -97,7 +97,7 @@ export default defineComponent({
 
       controls.target = new Vector3(0, 0, 0)
       controls.enablePan = false
-      controls.enableKeys = false
+      // controls.enableKeys = false
       controls.maxDistance = props.maxDistance
       controls.minDistance = props.minDistance
       if (props.rotate) {

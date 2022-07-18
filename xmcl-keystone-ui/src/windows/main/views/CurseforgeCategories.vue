@@ -32,7 +32,7 @@
   </v-card>
 </template>
 <script lang="ts" setup>
-import { ProjectCategory } from '@xmcl/curseforge'
+import { ModCategory } from '@xmcl/curseforge'
 import { CurseForgeServiceKey } from '@xmcl/runtime-api'
 import { useI18n, useService } from '/@/composables'
 import { useRefreshable } from '/@/composables/refreshable'
@@ -46,7 +46,7 @@ const emit = defineEmits(['select'])
 
 const { t } = useI18n()
 const { fetchCategories } = useService(CurseForgeServiceKey)
-const allCategories = ref([] as ProjectCategory[])
+const allCategories = ref([] as ModCategory[])
 const categories = computed(() => {
   const result = allCategories.value
   const parent = result.find(c => c.slug === props.type)
