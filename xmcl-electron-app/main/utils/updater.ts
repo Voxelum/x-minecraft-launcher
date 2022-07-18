@@ -1,6 +1,6 @@
 import { AZURE_CDN, AZURE_MS_CDN, IS_DEV } from '@/constant'
 import { ChecksumNotMatchError, download, DownloadTask } from '@xmcl/installer'
-import type { ServiceStateManager } from '@xmcl/runtime'
+import { BaseService, ServiceStateManager } from '@xmcl/runtime'
 import { ReleaseInfo } from '@xmcl/runtime-api'
 import { BaseTask, task, Task } from '@xmcl/task'
 import { spawn } from 'child_process'
@@ -196,7 +196,9 @@ export function quitAndInstallFullUpdate() {
 let injectedUpdate = false
 
 async function getUpdateFromSelfHost(app: ElectronLauncherApp): Promise<ReleaseInfo> {
-  const result: any = await app.networkManager.request('https://xmcl.blob.core.windows.net/releases/latest_version.json').json()
+  const allowPreRelease = app.serviceManager.getOrCreateService(BaseService).state.allowPrerelease
+  const result: any = app.networkManager.request(`https://api.xmcl.app/latest?version=v${app.version}&prerelease=${allowPreRelease || false}`).json()
+    .catch(() => app.networkManager.request('https://xmcl.blob.core.windows.net/releases/latest_version.json').json())
   const updateInfo: ReleaseInfo = {
     name: result.tag_name,
     body: result.body,
