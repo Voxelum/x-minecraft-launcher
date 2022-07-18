@@ -90,9 +90,9 @@
             :refreshing="refreshingMinecraft"
             :refresh-text="t('minecraftVersion.empty')"
             :versions="minecraftVersions"
+            :install="installMinecraft"
             @select="setMinecraft"
             @show="showVersionDirectory"
-            @install="installMinecraft"
           >
             <template #header>
               <v-checkbox
