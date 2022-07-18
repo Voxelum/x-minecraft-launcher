@@ -105,7 +105,7 @@ export interface InstanceData {
     */
   maxMemory: number
   /**
-   * @default true
+   * @default false
    */
   assignMemory: true | 'auto' | false
   /**

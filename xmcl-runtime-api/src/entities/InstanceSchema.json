@@ -93,7 +93,7 @@
             "type": "number"
         },
         "assignMemory": {
-            "default": true,
+            "default": false,
             "enum": [
                 "auto",
                 false,
