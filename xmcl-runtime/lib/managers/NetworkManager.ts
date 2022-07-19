@@ -81,9 +81,10 @@ export default class NetworkManager extends Manager {
       http,
       https,
     })
+    const cache = new LevelCache(join(app.appDataPath, 'http-cache'))
     this.request = got.extend({
       agent: this.agents,
-      cache: new LevelCache(join(app.appDataPath, 'http-cache')),
+      cache,
     })
 
     const setMaxSocket = (val: number) => {
@@ -116,6 +117,10 @@ export default class NetworkManager extends Manager {
       setMaxSocket(service.state.maxSockets)
       setMaxTotalSocket(service.state.maxTotalSockets)
     })
+
+    const gotDefault = this.request.defaults
+    gotDefault.options.agent = this.agents
+    gotDefault.options.cache = cache
   }
 
   getDownloadBaseOptions() {

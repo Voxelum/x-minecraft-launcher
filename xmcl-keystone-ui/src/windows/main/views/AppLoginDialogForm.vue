@@ -247,6 +247,10 @@ function handleError(e: unknown) {
       const msg = t('loginError.timeout')
       usernameErrors.value = [msg]
       passwordErrors.value = [msg]
+    } else if (e.exception.type === 'userAcquireMinecraftTokenFailed') {
+      const msg = t('loginError.acquireMinecraftTokenFailed')
+      usernameErrors.value = [msg]
+      passwordErrors.value = [msg]
     }
   } else {
     const msg = t('loginError.requestFailed')
