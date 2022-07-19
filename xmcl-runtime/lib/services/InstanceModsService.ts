@@ -167,11 +167,7 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
             return
           }
           if (!isPersistedResource(resource)) {
-            if (resource.fileType !== 'directory' && resource.type === ResourceType.Unknown) {
-              this.log(`Skip to import unknown directory to /mods! ${filePath}`)
-              return
-            }
-            this.resourceService.importParsedResource({ path: filePath }, resource, icon).then((res) => {
+            this.resourceService.importParsedResource({ path: filePath, restrictToDomain: ResourceDomain.Mods }, resource, icon).then((res) => {
               this.addMod.push({ ...res, path: resource.path })
             }, (e) => {
               this.addMod.push(resource)
