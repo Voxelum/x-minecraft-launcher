@@ -44,3 +44,18 @@ jobs:
         account: xmcl
         container: releases
         directory: ./releases
+  winget:
+    name: Upload To winget
+    runs-on: windows-2019
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - name: Create winget PR
+        run: |
+          iwr https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
+          .\wingetcreate.exe update CI010.XMinecraftLauncher -u $Env:URL -v $Env:VERSION -t $Env:TOKEN --submit
+        env:
+          TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
+          VERSION: ${{ github.event.release.tag_name }}
+          URL: ${{ format('https://xmcl-release-ms.azureedge.net/releases/xmcl-{0}.appx', github.event.release.tag_name) }}
