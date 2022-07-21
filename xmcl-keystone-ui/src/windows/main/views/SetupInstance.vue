@@ -8,19 +8,19 @@
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title class="whitespace-pre-wrap">
-          {{ $t('step.game.description') }}
+          {{ t('setup.game.description') }}
         </v-list-item-title>
       </v-list-item-content>
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
-        <v-list-item-title>{{ $t('defaultPath') }}</v-list-item-title>
+        <v-list-item-title>{{ t('setup.defaultPath') }}</v-list-item-title>
         <v-list-item-subtitle>{{ defaultPath }}</v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
     <v-list-item>
       <v-list-item-content>
-        <v-list-item-title>{{ $t('path') }}</v-list-item-title>
+        <v-list-item-title>{{ t('setup.path') }}</v-list-item-title>
         <v-list-item-subtitle>{{ value }}</v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action class="justify-center">
@@ -30,15 +30,14 @@
           style="margin-right: 10px;"
           @click="browse"
         >
-          {{ $t('browse') }}
+          {{ t('browse') }}
         </v-btn>
       </v-list-item-action>
     </v-list-item>
   </v-list>
 </template>
 <script lang=ts>
-import { defineComponent, reactive, toRefs } from '@vue/composition-api'
-import { Drive } from '@xmcl/runtime-api/setup'
+import { Drive } from '@xmcl/runtime-api'
 import { useI18n } from '/@/composables'
 import { required } from '/@/util/props'
 
@@ -49,10 +48,10 @@ export default defineComponent({
   },
   setup(props, context) {
     const dialog = windowController
-    const { $t } = useI18n()
+    const { t } = useI18n()
     async function browse() {
       const { filePaths } = await dialog.showOpenDialog({
-        title: $t('browse'),
+        title: t('browse'),
         defaultPath: props.value,
         properties: ['openDirectory', 'createDirectory'],
       })
@@ -64,6 +63,7 @@ export default defineComponent({
       context.emit('input', drive.selectedPath)
     }
     return {
+      t,
       browse,
       onSelect,
     }

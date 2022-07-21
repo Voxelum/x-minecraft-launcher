@@ -89,7 +89,4 @@ export default class TelemetryManager extends Manager {
       })
     })
   }
-
-  storeReady() {
-  }
 }

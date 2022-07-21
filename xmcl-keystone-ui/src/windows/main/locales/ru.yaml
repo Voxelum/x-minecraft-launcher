@@ -3,8 +3,10 @@ author: Автор
 back: Назад
 baseSetting:
   title: Базовые настройки
+browse: Обзор
 cancel: Отмена
 cloneMinecraft: Клонировать Minecraft
+confirm: Начать
 copyClipboard:
   success: Скопировать в буфер обмена
 create: Создать
@@ -562,6 +564,7 @@ peerIceGatheringState:
   complete: Коллекция завершена
   gathering: Сбор ледяного сервера
 popular: Популярность
+previous: Назад
 refresh:
   hint: Обновите пользовательские данные и состояние сервера.
 refreshResource: Обновить ресурсы
@@ -660,10 +663,6 @@ serverStatus:
   refuse: §4Отказано сервером!
   timeout: §4Вышло время подключения к серверу!
 setting:
-  githubRelease: Github Release
-  name: Глобальная настройка | Глобальные настройки
-  officialWebsite: Официальный сайт
-  resolution: Разрешение по умолчанию
   appearance: Внешний вид
   backgroundImage: Изображение фона
   backgroundImageBlur: Размытие изображения
@@ -682,6 +681,9 @@ setting:
   blurMainBodyDescription: Размытие правой панели лаунчера
   darkTheme: Тема
   darkThemeDescription: Выберите тёмную или светлую тему
+  githubRelease: Github Release
+  name: Глобальная настройка | Глобальные настройки
+  officialWebsite: Официальный сайт
   particleMode:
     '': Режим частиц
     bubble: Пузыри
@@ -689,12 +691,38 @@ setting:
     remove: Удаление
     repulse: Отражение
   particleModeDescription: Выберите поведение частиц при нажатии
+  resolution: Разрешение по умолчанию
+  showParticle: Показывать частицы
+  showParticleDescription: Показывать частицы фона (Может повлиять на производительность)
   theme:
     dark: Dark Тема
     light: Light Тема
     system: Use System Тема
-  showParticle: Показывать частицы
-  showParticleDescription: Показывать частицы фона (Может повлиять на производительность)
+setup:
+  dataRoot:
+    description: >-
+      Корень данных не является общей папкой .minecraft. Поскольку структура
+      каталога данных XMCL отличается от ванильной. Мы не рекомендуем
+      использовать общую папку .minecraft в качестве корня данных.
+    name: Установить корень данных
+  defaultPath: Путь по умолчанию
+  game:
+    description: >-
+      Выберите существующую папку игры (.minecraft) для импорта существующих
+      ресурсов. Таким образом, вы сможете быстро идентифицировать моды, пакеты
+      текстур и т.д.
+    name: Импортировать существующую игру
+  locale:
+    description: >-
+      Выберите предпочитаемый язык, если он у нас есть! Если вы не видите свой
+      родной язык и хотите помочь, вы можете посетить наш github и отправить
+      запрос на перевод!
+    language: Язык
+    name: Установить язык
+  path: Текущий путь
+  title: >-
+    Добро пожаловать в X Minecraft Launcher. Перед началом работы необходимо,
+    чтобы вы 
 shaderPack:
   deletion: Удалить пакет шейдеров
   deletionHint: Это удалит пакет шейдеров {path}. Невозможно отменить.
@@ -707,6 +735,10 @@ shaderPack:
   'off': Выключить
   offDescription: Выключить шейдер
   showFile: Показать этот пакет шейдеров в папке
+step:
+  dataRoot: {}
+  game: {}
+  locale: {}
 tag:
   create: Создать тег
   newTag: Новый тег

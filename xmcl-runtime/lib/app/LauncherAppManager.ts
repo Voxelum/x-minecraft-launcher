@@ -20,6 +20,14 @@ export interface InstallAppOptions {
 export class LauncherAppManager extends Manager implements AppsHost {
   constructor(app: LauncherApp) {
     super(app)
+
+    this.app.handle('get-installed-apps', () => this.getInstalledApps())
+    this.app.handle('install-app', (_, url) => this.installApp(url))
+    this.app.handle('uninstall-app', (_, url) => this.uninstallApp(url))
+    this.app.handle('get-app-info', (_, url) => this.getAppInfo(url))
+    this.app.handle('get-default-app', () => this.getDefaultApp())
+    this.app.handle('launch-app', (_, url) => this.bootAppByUrl(url))
+    this.app.handle('create-app-shortcut', (_, url) => this.createShortcut(url))
   }
 
   get root() {
@@ -31,21 +39,11 @@ export class LauncherAppManager extends Manager implements AppsHost {
     return join(this.root, filenamifyCombined(urlObj.host + urlObj.pathname, { replacement: '@' }))
   }
 
-  engineReady(): void | Promise<void> {
-    this.app.handle('get-installed-apps', () => this.getInstalledApps())
-    this.app.handle('install-app', (_, url) => this.installApp(url))
-    this.app.handle('uninstall-app', (_, url) => this.uninstallApp(url))
-    this.app.handle('get-app-info', (_, url) => this.getAppInfo(url))
-    this.app.handle('get-default-app', () => this.getDefaultApp())
-    this.app.handle('launch-app', (_, url) => this.bootAppByUrl(url))
-    this.app.handle('create-app-shortcut', (_, url) => this.createShortcut(url))
-  }
-
   async bootAppByUrl(url: string): Promise<void> {
     await ensureDir(this.root)
     const app = await this.installApp(url)
     await writeJson(join(this.root, 'apps.json'), { default: url })
-    await this.app.controller.bootApp(app)
+    await this.app.controller.activate(app)
   }
 
   async getDefaultApp(): Promise<string> {

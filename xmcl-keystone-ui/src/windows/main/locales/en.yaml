@@ -4,9 +4,11 @@ author: Author
 back: Back
 baseSetting:
   title: Base Settings
+browse: Browse
 cancel: Cancel
 checkUpdate: Check Update
 cloneMinecraft: Clone Minecraft
+confirm: Start
 copyClipboard:
   success: Copy to clipboard
 create: Create
@@ -620,6 +622,7 @@ peerIceGatheringState:
   complete: Collection Complete
   gathering: Gathering Ice Server
 popular: Popularity
+previous: Previous
 quiltVersion:
   disable: Disable Quilt
   empty: Quilt does not support Minecraft {version}
@@ -731,6 +734,28 @@ setting:
   name: Global Setting | Global Settings
   officialWebsite: Official Website
   resolution: Default Resolution
+setup:
+  dataRoot:
+    description: >-
+      The data root is not a common .minecraft directory. Since XMCL data
+      directory structure is different from vanilla, we do not recommend to use
+      the common .minecraft directory as a data root.
+    name: Set Data Root
+  defaultPath: Default Path
+  game:
+    description: >-
+      Choose existing game directory (.minecraft) to import existing resources.
+      So you can quickly identify the mods, resource packs, etc.
+    name: Import Existed Game
+  locale:
+    description: >-
+      Select your preferred language if we have it! If you don't see your native
+      language and you want to help, you can visit our Github to submit pull
+      requests to translate!
+    language: Language
+    name: Set Language
+  path: Current Path
+  title: 'Welcome to X Minecraft Launcher. Before start, we need you to '
 shaderPack:
   deletion: Delete Shader Pack
   deletionHint: This will delete the shader pack file {path} and cannot reverted.
@@ -743,6 +768,10 @@ shaderPack:
   'off': 'Off'
   offDescription: Turn off the shader
   showFile: Show this shader pack in folder
+step:
+  dataRoot: {}
+  game: {}
+  locale: {}
 tag:
   create: Create Tag
   createSelected: Create Tag for Selected

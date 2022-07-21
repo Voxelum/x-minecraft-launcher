@@ -251,7 +251,7 @@ export abstract class AbstractService extends EventEmitter {
   constructor(readonly app: LauncherApp, name: ServiceKey<AbstractService>, private initializer?: () => Promise<void>) {
     super()
     this.name = name as string
-    const loggers = app.logManager.getLoggerFor(name as string)
+    const loggers = app.logManager.getLogger(name as string)
     this.log = loggers.log
     this.warn = loggers.warn
     this.error = loggers.error

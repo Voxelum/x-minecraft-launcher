@@ -13,7 +13,5 @@ export interface LauncherAppController {
   /**
    * Boot the app manifest.
    */
-  bootApp(app: InstalledAppManifest): Promise<void>
-
-  dataReady(): Promise<void>
+  activate(app: InstalledAppManifest): Promise<void>
 }

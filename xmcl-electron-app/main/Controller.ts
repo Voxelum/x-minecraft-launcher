@@ -3,14 +3,13 @@ import { AccentState, IS_DEV, WindowsBuild } from '@/constant'
 import browsePreload from '@preload/browse'
 import indexPreload from '@preload/index'
 import monitorPreload from '@preload/monitor'
-import setupPreload from '@preload/setup'
 import browserWinUrl from '@renderer/browser.html'
 import loggerWinUrl from '@renderer/logger.html'
-import setupWinUrl from '@renderer/setup.html'
 import { LauncherAppController } from '@xmcl/runtime'
 import { InstalledAppManifest } from '@xmcl/runtime-api'
 import InstanceService from '@xmcl/runtime/lib/services/InstanceService'
-import { BrowserWindow, dialog, nativeImage, nativeTheme, session, shell, Tray } from 'electron'
+import { Logger } from '@xmcl/runtime/lib/util/log'
+import { BrowserWindow, dialog, ipcMain, nativeTheme, session, shell, Tray } from 'electron'
 import { fromFile } from 'file-type'
 import { readFile } from 'fs/promises'
 import { isAbsolute, join } from 'path'
@@ -30,14 +29,17 @@ export default class Controller implements LauncherAppController {
 
   protected loggerWin: BrowserWindow | undefined = undefined
 
-  protected setupRef: BrowserWindow | undefined = undefined
-
   protected browserRef: BrowserWindow | undefined = undefined
 
   protected i18n = createI18n({ en, 'zh-CN': zh, ru }, 'en')
 
+  private logger: Logger
+
   protected tray: Tray | undefined
 
+  /**
+   * During the app is parking, even if the all windows are closed, the app will keep open.
+   */
   protected parking = false
 
   constructor(protected app: ElectronLauncherApp) {
@@ -52,6 +54,8 @@ export default class Controller implements LauncherAppController {
         this.app.quit()
       }
     })
+
+    this.logger = this.app.logManager.getLogger('Controller')
   }
 
   setupBrowserLogger(ref: BrowserWindow, name: string) {
@@ -74,7 +78,7 @@ export default class Controller implements LauncherAppController {
       if (windowsVersion) {
         if (windowsVersion.build >= WindowsBuild.Windows11) {
           this.app.windowsUtils.setMica(handle.buffer, true)
-          this.app.log(`Set window Mica ${handle.toString('hex')}`)
+          this.logger.log(`Set window Mica ${handle.toString('hex')}`)
         } else {
           let blur: AccentState
           if (windowsVersion.build >= WindowsBuild.Windows10Build1903) {
@@ -87,32 +91,28 @@ export default class Controller implements LauncherAppController {
             blur = AccentState.ACCENT_ENABLE_TRANSPARENTGRADIENT
           }
           if (this.app.windowsUtils.setWindowBlur(handle.buffer, blur)) {
-            this.app.log(`Set window Acrylic transparent ${handle.toString('hex')}`)
+            this.logger.log(`Set window Acrylic transparent ${handle.toString('hex')}`)
           } else {
-            this.app.warn(`Set window Acrylic failed ${handle.toString('hex')}`)
+            this.logger.warn(`Set window Acrylic failed ${handle.toString('hex')}`)
           }
         }
       }
     }
   }
 
-  async bootApp(app: InstalledAppManifest): Promise<void> {
-    this.app.log(`Boot app ${app.name} ${app.url}`)
+  async activate(app: InstalledAppManifest): Promise<void> {
+    this.logger.log(`Activate app ${app.name} ${app.url}`)
     this.parking = true
+
+    // close the old window
     if (this.mainWin) {
       this.mainWin.close()
     }
-    if (!this.setupRef) {
-      this.parking = false
+
+    try {
       await this.createAppWindow(this.app.launcherAppManager.getAppRoot(app.url), app)
-    } else {
-      const serv = this.app.serviceManager.getOrCreateService(InstanceService)
-      await serv.initialize()
-      await this.createAppWindow(this.app.launcherAppManager.getAppRoot(app.url), app)
+    } finally {
       this.parking = false
-      this.setupRef!.removeAllListeners()
-      this.setupRef!.close()
-      this.setupRef = undefined
     }
   }
 
@@ -142,7 +142,7 @@ export default class Controller implements LauncherAppController {
 
   async createAppWindow(appDir: string, man: InstalledAppManifest) {
     const configPath = man === this.app.builtinAppManifest ? join(this.app.appDataPath, 'main-window-config.json') : join(appDir, 'window-config.json')
-    this.app.log(`[Controller] Creating app window by config ${configPath}`)
+    this.logger.log(`Creating app window by config ${configPath}`)
     const configData = await readFile(configPath, 'utf-8').then((v) => JSON.parse(v)).catch(() => ({
       width: -1,
       height: -1,
@@ -156,20 +156,20 @@ export default class Controller implements LauncherAppController {
       y: typeof configData.y === 'number' ? configData.y as number : null,
     }
 
-    const sess = session.fromPartition('persist:main')
+    const restoredSession = session.fromPartition('persist:main')
 
     for (const e of session.defaultSession.getAllExtensions()) {
-      sess.loadExtension(e.path)
+      restoredSession.loadExtension(e.path)
     }
 
-    sess.webRequest.onHeadersReceived((detail, cb) => {
+    restoredSession.webRequest.onHeadersReceived((detail, cb) => {
       if (detail.responseHeaders &&
         detail.resourceType === 'image') {
         detail.responseHeaders['Access-Control-Allow-Origin'] = ['*']
       }
       cb({ responseHeaders: detail.responseHeaders })
     })
-    sess.protocol.registerFileProtocol('image', (req, callback) => {
+    restoredSession.protocol.registerFileProtocol('image', (req, callback) => {
       const pathname = decodeURIComponent(req.url.replace('image://', ''))
 
       if (isAbsolute(pathname)) {
@@ -188,7 +188,7 @@ export default class Controller implements LauncherAppController {
         callback({ statusCode: 404 })
       }
     })
-    sess.protocol.registerFileProtocol('video', (req, callback) => {
+    restoredSession.protocol.registerFileProtocol('video', (req, callback) => {
       const pathname = decodeURIComponent(req.url.replace('video://', ''))
       fromFile(pathname).then((type) => {
         if (type && type.mime.startsWith('video/')) {
@@ -216,22 +216,26 @@ export default class Controller implements LauncherAppController {
       icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
       webPreferences: {
         preload: indexPreload,
-        session: sess,
+        session: restoredSession,
         webviewTag: true,
       },
+      show: false,
     })
 
     if (man.ratio) {
       browser.setAspectRatio(minWidth / minHeight)
     }
 
-    this.app.log(`[Controller] Created app window by config ${configPath}`)
+    this.logger.log(`Created app window by config ${configPath}`)
     browser.on('ready-to-show', () => {
-      this.app.log('App Window is ready to show!')
+      this.logger.log('App Window is ready to show!')
 
       if (man.vibrancy) {
         this.setWindowBlurEffect(browser)
       }
+
+      browser.show()
+      browser.focus()
     })
     browser.on('close', () => { })
     browser.webContents.on('will-navigate', (event, url) => {
@@ -247,10 +251,13 @@ export default class Controller implements LauncherAppController {
 
     trackWindowSize(browser, config, configPath)
 
-    browser.loadURL(man.url)
-    browser.show()
+    let url = man.url
+    if (!this.app.gameDataPath) {
+      url += '?setup'
+    }
+    browser.loadURL(url)
 
-    this.app.log(`[Controller] Load main window url ${man.url}`)
+    this.logger.log(`Load main window url ${url}`)
 
     this.mainWin = browser
 
@@ -293,66 +300,23 @@ export default class Controller implements LauncherAppController {
   }
 
   async requestOpenExternalUrl(url: string) {
-    const { t: $t } = this.i18n
+    const { t } = this.i18n
     const result = await dialog.showMessageBox(this.mainWin!, {
       type: 'question',
-      title: $t('openUrl.title', { url }),
-      message: $t('openUrl.message', { url }),
-      checkboxLabel: $t('openUrl.trust'),
-      buttons: [$t('openUrl.cancel'), $t('openUrl.yes')],
+      title: t('openUrl.title', { url }),
+      message: t('openUrl.message', { url }),
+      checkboxLabel: t('openUrl.trust'),
+      buttons: [t('openUrl.cancel'), t('openUrl.yes')],
     })
     return result.response === 1
   }
 
-  createSetupWindow() {
-    const browser = new BrowserWindow({
-      title: 'Setup XMCL',
-      width: 600,
-      height: 650,
-      minWidth: 600,
-      minHeight: 600,
-      frame: false,
-      transparent: true,
-      hasShadow: false,
-      maximizable: false,
-      vibrancy: 'sidebar', // or popover
-      icon: darkIcon,
-      webPreferences: {
-        preload: setupPreload,
-        session: session.fromPartition('persist:setup'),
-      },
-    })
-
-    this.setupBrowserLogger(browser, 'setup')
-    this.setWindowBlurEffect(browser)
-
-    browser.loadURL(setupWinUrl)
-    browser.show()
-
-    this.setupRef = browser
-  }
-
   async processFirstLaunch(): Promise<{ path: string; instancePath: string; locale: string }> {
-    this.createSetupWindow()
-
     return new Promise<{ path: string; instancePath: string; locale: string }>((resolve) => {
-      this.setupRef!.once('closed', () => {
-        this.app.exit()
-      })
-
-      this.setupRef!.center()
-      this.setupRef!.focus()
-
-      this.app.handle('setup', (_, path, instancePath, locale) => {
-        resolve({
-          path, instancePath, locale,
-        })
+      ipcMain.handleOnce('bootstrap', (_, path, instancePath, locale) => {
+        resolve({ path, instancePath, locale })
       })
     })
-  }
-
-  async dataReady(): Promise<void> {
-    this.mainWin?.show()
   }
 
   get activeWindow() {

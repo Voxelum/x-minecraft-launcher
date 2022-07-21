@@ -1,4 +1,4 @@
-import { CryptoProvider, LogLevel, PublicClientApplication } from '@azure/msal-node'
+import { LogLevel, PublicClientApplication } from '@azure/msal-node'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
 import { CLIENT_ID, IS_DEV } from '../constant'
@@ -13,9 +13,6 @@ export default class CredentialManager extends Manager {
 
   constructor(app: LauncherApp) {
     super(app)
-  }
-
-  async setup() {
   }
 
   protected async getOAuthApp(account: string) {
