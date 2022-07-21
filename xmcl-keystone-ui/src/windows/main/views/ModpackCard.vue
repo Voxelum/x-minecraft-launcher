@@ -92,6 +92,7 @@ import { useCurseforgeRoute } from '../composables/curseforgeRoute'
 import { vContextMenu } from '../directives/contextMenu'
 import { ModpackItem } from '../composables/modpack'
 import { getLocalDateString } from '/@/util/date'
+import { vDraggableCard } from '../directives/draggableCard'
 
 const props = defineProps<{ item: ModpackItem }>()
 const emit = defineEmits(['tags', 'delete'])

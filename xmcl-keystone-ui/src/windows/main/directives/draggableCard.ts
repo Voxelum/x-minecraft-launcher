@@ -1,6 +1,6 @@
-import Vue from 'vue'
+import { FunctionDirective } from '@vue/composition-api'
 
-Vue.directive('draggable-card', (el) => {
+export const vDraggableCard: FunctionDirective<HTMLElement> = (el) => {
   el.addEventListener('dragstart', (e) => {
     e.dataTransfer!.effectAllowed = 'move'
     el.classList.add('dragged')
@@ -11,9 +11,9 @@ Vue.directive('draggable-card', (el) => {
   el.addEventListener('mouseup', removeClass)
   el.addEventListener('mouseleave', removeClass)
   el.addEventListener('dragend', removeClass)
-})
+}
 
-Vue.directive('selectable-card', (el) => {
+export const vSelectableCard: FunctionDirective<HTMLElement> = (el) => {
   el.addEventListener('mousedown', (e) => {
     el.classList.add('selected')
   })
@@ -23,18 +23,18 @@ Vue.directive('selectable-card', (el) => {
   el.addEventListener('mouseup', removeClass)
   el.addEventListener('mouseleave', removeClass)
   el.addEventListener('dragend', removeClass)
-})
+}
 
-Vue.directive('data-transfer', (el, binding) => {
+export const vDataTransfer: FunctionDirective<HTMLElement> = (el, binding) => {
   el.addEventListener('dragstart', (e) => {
     e.dataTransfer!.effectAllowed = 'move'
     e.dataTransfer!.setData(binding.arg!, binding.value)
   })
-})
+}
 
-Vue.directive('data-transfer-image', (el, binding) => {
+export const vDataTransferImage: FunctionDirective<HTMLElement> = (el, binding) => {
   el.addEventListener('dragstart', (e) => {
     e.dataTransfer!.effectAllowed = 'move'
     e.dataTransfer!.setDragImage(binding.value, 0, 0)
   })
-})
+}
