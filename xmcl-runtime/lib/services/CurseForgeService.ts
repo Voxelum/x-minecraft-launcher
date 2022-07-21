@@ -126,7 +126,12 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
       worlds: 'save',
       modpacks: 'curseforge-modpack',
     }
-    const urls = [file.downloadUrl, `curseforge:${projectId}:${file.id}`]
+    const urls = [`curseforge:${projectId}:${file.id}`]
+    if (file.downloadUrl) {
+      urls.push(file.downloadUrl)
+    } else {
+      urls.push(...guessCurseforgeFileUrl(file.id, file.fileName))
+    }
     this.log(`Try install file ${file.displayName}(${file.downloadUrl}) in type ${type}`)
     const resource = this.resourceService.getResource({ url: urls })
     if (resource) {
