@@ -9,12 +9,13 @@ openUrl:
   trust: 信任此网站，下次不再显示
   'yes': 允许
 quit: 退出
+setup:
+  title: XMCL
 showDiagnosis: 显示 Debug 信息
 showLogsFolder: 显示日志文件夹
 task:
   continue: 在启动器中查看
   fail: 有一个任务失败了
   success: 有一个任务成功完成了
-title: XMCL
-urlSuccess: 验证成功！现在你可以关掉这个窗口回到启动器了
 urlFailed: 未知 URL {url}. 请检查你复制的链接或联系作者！
+urlSuccess: 验证成功！现在你可以关掉这个窗口回到启动器了
