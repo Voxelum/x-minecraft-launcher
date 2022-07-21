@@ -186,7 +186,7 @@ export function useCurseforgeInstall(type: ProjectType, projectId: number) {
   const { state: resourceState } = useService(ResourceServiceKey)
   const { install: installMod } = useService(InstanceModsServiceKey)
   function getFileStatus(file: File): 'downloading' | 'downloaded' | 'remote' {
-    const res = resourceState.queryResource(file.downloadUrl)
+    const res = getFileResource(file)
     if (res) {
       return 'downloaded'
     }
@@ -194,7 +194,11 @@ export function useCurseforgeInstall(type: ProjectType, projectId: number) {
     return downloading ? 'downloading' : 'remote'
   }
   function getFileResource(file: File) {
-    return resourceState.queryResource(file.downloadUrl)
+    if (file.downloadUrl) {
+      return resourceState.queryResource(file.downloadUrl)
+    } else {
+      return resourceState.queryResource(`curseforge:${file.modId}:${file.id}`)
+    }
   }
   async function install(file: File, toInstance?: string) {
     const resource = await installFile({ file, type, projectId })

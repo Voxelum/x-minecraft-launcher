@@ -9,6 +9,7 @@ import { mkdtemp, readdir, readJson, remove, rename, stat, unlink } from 'fs-ext
 import { tmpdir } from 'os'
 import { basename, join, relative, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
+import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { copyPassively, exists, isDirectory, isFile, linkWithTimeoutOrCopy, missing, readdirIfPresent } from '../util/fs'
 import { requireObject, requireString } from '../util/object'
 import { isValidateUrl, joinUrl } from '../util/url'
@@ -477,7 +478,13 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
 
             if (file.curseforge) {
               const fileInfo = await curseForgeService.fetchProjectFile(file.curseforge.projectId, file.curseforge.fileId)
-              urls.unshift(fileInfo.downloadUrl)
+
+              if (fileInfo.downloadUrl) {
+                urls.unshift(fileInfo.downloadUrl)
+              } else {
+                urls.push(...guessCurseforgeFileUrl(fileInfo.id, fileInfo.fileName))
+              }
+
               source.curseforge = {
                 fileId: file.curseforge.fileId,
                 projectId: file.curseforge.projectId,

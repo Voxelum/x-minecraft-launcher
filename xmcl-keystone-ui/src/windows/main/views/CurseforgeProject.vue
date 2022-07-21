@@ -190,7 +190,8 @@ function viewImage(image: any) {
 }
 async function install(file: File) {
   if (getFileStatus(file) === 'downloaded') {
-    show(resourceState.queryResource(file.downloadUrl)!.path)
+    const url = file.downloadUrl ?? `curseforge:${file.modId}:${file.id}`
+    show(resourceState.queryResource(url)!.path)
   } else {
     await installFile(file, destination.value)
   }
