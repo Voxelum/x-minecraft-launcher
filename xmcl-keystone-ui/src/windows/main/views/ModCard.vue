@@ -162,6 +162,8 @@ import { ContextMenuItem } from '../composables/contextMenu'
 import { useCurseforgeRoute, useMcWikiRoute } from '../composables/curseforgeRoute'
 import { vContextMenu } from '../directives/contextMenu'
 import { vLongPress } from '../directives/longPress'
+import { vFallbackImg } from '../directives/fallbackImage'
+import { vSelectableCard } from '../directives/draggableCard'
 
 const props = defineProps<{ source: ModItem; selection: boolean }>()
 const emit = defineEmits(['tags', 'enable', 'dragstart', 'select', 'delete', 'editTags'])
