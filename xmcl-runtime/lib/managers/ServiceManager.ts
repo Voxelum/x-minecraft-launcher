@@ -24,6 +24,9 @@ export default class ServiceManager extends Manager {
 
   constructor(app: LauncherApp, private preloadServices: ServiceConstructor[]) {
     super(app)
+
+    this.app.handle('service-call', (e, service: string, name: string, payload: any) => this.handleServiceCall(e.sender, service, name, payload))
+    this.app.handle('session', (_, id) => this.startServiceCall(id))
   }
 
   getServiceByKey<T>(type: ServiceKey<T>): T | undefined {
@@ -155,18 +158,6 @@ export default class ServiceManager extends Manager {
     return undefined
   }
 
-  /**
-   * Dispose all services
-   */
-  dispose() {
-    return Promise.all(Object.values(this.servicesMap).map((s) => s.dispose().catch((e) => {
-      this.error(`Error during dispose ${Object.getPrototypeOf(s).constructor.name}:`)
-      this.error(e)
-    })))
-  }
-
-  // SETUP CODE
-
   async setup() {
     this.log(`Setup service ${this.app.gameDataPath}`)
 
@@ -175,9 +166,13 @@ export default class ServiceManager extends Manager {
     }
   }
 
-  async engineReady() {
-    this.log('Register service manager to handle ipc')
-    this.app.handle('service-call', (e, service: string, name: string, payload: any) => this.handleServiceCall(e.sender, service, name, payload))
-    this.app.handle('session', (_, id) => this.startServiceCall(id))
+  /**
+   * Dispose all services
+   */
+  async dispose() {
+    await Promise.all(Object.values(this.servicesMap).map((s) => s.dispose().catch((e) => {
+      this.error(`Error during dispose ${Object.getPrototypeOf(s).constructor.name}:`)
+      this.error(e)
+    })))
   }
 }

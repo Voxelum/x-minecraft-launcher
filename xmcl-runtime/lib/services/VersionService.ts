@@ -121,6 +121,7 @@ export class VersionService extends StatefulService<VersionState> implements IVe
   async refreshVersions() {
     const dir = this.getPath('versions')
     let files = await readdirEnsured(dir)
+    this.log(`Scan ${dir} versions`)
 
     files = files.filter(f => !f.startsWith('.'))
 

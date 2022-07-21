@@ -66,7 +66,7 @@ export default class LogManager extends Manager {
     return this.logRoot
   }
 
-  getLoggerFor(tag: string): Logger {
+  getLogger(tag: string): Logger {
     const { log, warn, error } = this
     return {
       log(message: any, ...options: any[]) { log(`[${tag}] ${message}`, ...options) },
@@ -93,7 +93,7 @@ export default class LogManager extends Manager {
     this.openedStream[name].close()
   }
 
-  async redirectLogPipeline(root: string) {
+  async setOutputRoot(root: string) {
     this.logRoot = resolve(root, 'logs')
     await ensureDir(this.logRoot)
     const mainLog = join(this.logRoot, 'main.log')
@@ -102,13 +102,7 @@ export default class LogManager extends Manager {
     this.openedStream.MAIN_LOG = stream
   }
 
-  // SETUP CODE
-
-  setup() {
-    return this.redirectLogPipeline(this.app.appDataPath)
-  }
-
-  async beforeQuit() {
+  async dispose() {
     const mainLog = this.openedStream.MAIN_LOG
     mainLog.close()
     const mainLogPath = join(this.logRoot, 'main.log')

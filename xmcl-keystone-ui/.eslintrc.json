@@ -5,6 +5,7 @@
         "serviceChannels": true,
         "windowController": true,
         "appsHost": true,
+        "bootstrap": true,
         "gameMonitor": true,
         "defineProps": true,
         "withDefaults": true,

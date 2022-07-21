@@ -2,7 +2,7 @@ import { Agents } from '@xmcl/installer'
 // import NatAPI from 'nat-api'
 import { UpnpClient } from '@xmcl/nat-api'
 import { getNatInfoUDP, NatInfo } from '@xmcl/stun-client'
-import got, { Got } from 'got'
+import got, { Got, Options } from 'got'
 import { Socket } from 'net'
 import { join } from 'path'
 import { URL } from 'url'
@@ -11,6 +11,8 @@ import LauncherApp from '../app/LauncherApp'
 import { BaseService } from '../services/BaseService'
 import { HttpAgent, HttpsAgent } from '../util/agents'
 import { LevelCache } from '../util/cache'
+import ServiceManager from './ServiceManager'
+import ServiceStateManager from './ServiceStateManager'
 // import getNatType, { NatType } from 'nat-type-identifier'
 
 export default class NetworkManager extends Manager {
@@ -30,15 +32,13 @@ export default class NetworkManager extends Manager {
 
   // private nat = new NatAPI()
 
-  // private lanDiscover = new MinecraftLanDiscover()
-
   // private natType: NatType = 'Blocked'
 
   // private publicIp = ''
 
   // private discoveredPort: number[] = []
 
-  constructor(app: LauncherApp) {
+  constructor(app: LauncherApp, serviceManager: ServiceManager, stateManager: ServiceStateManager) {
     super(app)
     const http = new HttpAgent({
       keepAlive: true,
@@ -47,7 +47,7 @@ export default class NetworkManager extends Manager {
     Object.defineProperty(http, 'proxy', {
       get() {
         try {
-          return new URL(app.serviceManager.getOrCreateService(BaseService).state.httpProxy)
+          return new URL(serviceManager.getOrCreateService(BaseService).state.httpProxy)
         } catch (e) {
           return undefined
         }
@@ -55,7 +55,7 @@ export default class NetworkManager extends Manager {
     })
     Object.defineProperty(http, 'enabled', {
       get() {
-        return app.serviceManager.getOrCreateService(BaseService).state.httpProxyEnabled ?? false
+        return serviceManager.getOrCreateService(BaseService).state.httpProxyEnabled ?? false
       },
     })
     const https = new HttpsAgent({
@@ -66,7 +66,7 @@ export default class NetworkManager extends Manager {
     Object.defineProperty(https, 'proxy', {
       get() {
         try {
-          return new URL(app.serviceManager.getOrCreateService(BaseService).state.httpProxy)
+          return new URL(serviceManager.getOrCreateService(BaseService).state.httpProxy)
         } catch (e) {
           return undefined
         }
@@ -74,7 +74,7 @@ export default class NetworkManager extends Manager {
     })
     Object.defineProperty(https, 'enabled', {
       get() {
-        return app.serviceManager.getOrCreateService(BaseService).state.httpProxyEnabled ?? false
+        return serviceManager.getOrCreateService(BaseService).state.httpProxyEnabled ?? false
       },
     })
     this.agents = ({
@@ -106,21 +106,18 @@ export default class NetworkManager extends Manager {
       }
     }
 
-    app.serviceStateManager.subscribe('maxSocketsSet', (val) => {
+    stateManager.subscribe('maxSocketsSet', (val) => {
       setMaxSocket(val)
     })
-    app.serviceStateManager.subscribe('maxTotalSocketsSet', (val) => {
+    stateManager.subscribe('maxTotalSocketsSet', (val) => {
       setMaxTotalSocket(val)
     })
-    const service = app.serviceManager.getOrCreateService(BaseService)
+
+    const service = serviceManager.getOrCreateService(BaseService)
     service.initialize().then(() => {
       setMaxSocket(service.state.maxSockets)
       setMaxTotalSocket(service.state.maxTotalSockets)
     })
-
-    const gotDefault = this.request.defaults
-    gotDefault.options.agent = this.agents
-    gotDefault.options.cache = cache
   }
 
   getDownloadBaseOptions() {

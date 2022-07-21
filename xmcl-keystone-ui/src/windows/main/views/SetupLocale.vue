@@ -8,7 +8,7 @@
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title class="flex-wrap whitespace-pre-wrap">
-          {{ $t('step.locale.description') }}
+          {{ t('setup.locale.description') }}
         </v-list-item-title>
       </v-list-item-content>
     </v-list-item>
@@ -16,7 +16,7 @@
       <v-list-item-content>
         <v-list-item-title>
           {{
-            $t("step.locale.language")
+            t("setup.locale.language")
           }}
         </v-list-item-title>
       </v-list-item-content>
@@ -26,31 +26,25 @@
           filled
           style="max-width: 185px"
           hide-details
-
           :items="locales"
-          @input="$emit('input', $event)"
+          @input="emit('input', $event)"
         />
       </v-list-item-action>
     </v-list-item>
   </v-list>
 </template>
-<script lang=ts>
-import { defineComponent } from '@vue/composition-api'
-import { required } from '/@/util/props'
+<script lang=ts setup>
 import localMapping from '/@/assets/localeMapping.json'
+import { useI18n } from '/@/composables'
 
-export default defineComponent({
-  props: {
-    value: required(String),
-  },
-  setup() {
-    return {
-      locales: [
-        'en',
-        'zh-CN',
-        'ru',
-      ].map(l => ({ text: (localMapping as any)[l] ?? l, value: l })),
-    }
-  },
-})
+defineProps<{ value: string }>()
+
+const emit = defineEmits(['input'])
+
+const { t } = useI18n()
+const locales = [
+  'en',
+  'zh-CN',
+  'ru',
+].map(l => ({ text: (localMapping as any)[l] ?? l, value: l }))
 </script>

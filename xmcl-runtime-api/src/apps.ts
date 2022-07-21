@@ -112,7 +112,6 @@ export interface AppsHost {
    * @param url The url of the html website
    */
   installApp(url: string): Promise<InstalledAppManifest>
-
   /**
    * Currently windows only.
    * Create desktop shortcut in desktop & start-up menu

@@ -27,7 +27,6 @@
       "unplugin-vue2-script-setup/ref-macros",
       "@xmcl/runtime-api/client",
       "@xmcl/runtime-api/monitorClient",
-      "@xmcl/runtime-api/setupClient",
       "@modyfi/vite-plugin-yaml/modules"
     ]
   },

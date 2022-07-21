@@ -5,17 +5,9 @@ export abstract class Manager {
 
   private name: string = Object.getPrototypeOf(this).constructor.name
 
-  /* eslint-disable */
   setup(): Promise<void> | void { }
 
-  rootReady(root: string): Promise<void> | void { }
-
-  engineReady(): Promise<void> | void { }
-
-  storeReady(): Promise<void> | void { }
-  /* eslint-enable */
-
-  beforeQuit(): Promise<void> | void { }
+  dispose(): Promise<void> | void { }
 
   log(m: any, ...args: any[]) { this.app.logManager.log(`[${this.name}] ${m}`, ...args) }
 

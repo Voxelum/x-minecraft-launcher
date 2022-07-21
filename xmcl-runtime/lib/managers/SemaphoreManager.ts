@@ -1,10 +1,22 @@
 import { Manager } from '.'
+import LauncherApp from '../app/LauncherApp'
 import { ReadWriteLock } from '../util/mutex'
 
 export default class SemaphoreManager extends Manager {
   private locks: Record<string, ReadWriteLock> = {}
 
   private semaphore: Record<string, number> = {}
+
+  constructor(app: LauncherApp) {
+    super(app)
+    app.handle('semaphore', () => {
+      return this.semaphore
+    })
+    app.handle('semaphoreAbort', (_, key) => {
+      this.log(`Force release the semaphore: ${key}`)
+      this.release(key)
+    })
+  }
 
   getLock(resourcePath: string) {
     if (!this.locks[resourcePath]) {
@@ -43,15 +55,5 @@ export default class SemaphoreManager extends Manager {
       this.semaphore[key] = 0
     }
     this.app.broadcast('release', key)
-  }
-
-  setup() {
-    this.app.handle('semaphore', () => {
-      return this.semaphore
-    })
-    this.app.handle('semaphoreAbort', (_, key) => {
-      this.log(`Force release the semaphore: ${key}`)
-      this.release(key)
-    })
   }
 }
