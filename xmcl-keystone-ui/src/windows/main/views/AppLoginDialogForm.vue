@@ -281,7 +281,7 @@ async function onLogin() {
   if (index === -1) {
     history.value.unshift(data.username)
   }
-  const payload = { ...data, authService: authService.value }
+  const payload = { ...data, authService: authService.value, selectProfile: true }
   await login(payload).catch(handleError)
   hide()
 }
