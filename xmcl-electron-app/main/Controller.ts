@@ -252,7 +252,7 @@ export default class Controller implements LauncherAppController {
     trackWindowSize(browser, config, configPath)
 
     let url = man.url
-    if (!this.app.gameDataPath) {
+    if (await this.app.gamePathMissingSignal.promise) {
       url += '?setup'
     }
     browser.loadURL(url)

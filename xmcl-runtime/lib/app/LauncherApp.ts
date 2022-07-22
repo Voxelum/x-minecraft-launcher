@@ -372,6 +372,7 @@ export abstract class LauncherApp extends EventEmitter {
   }
 
   readonly gamePathReadySignal = createPromiseSignal()
+  readonly gamePathMissingSignal = createPromiseSignal<boolean>()
 
   /**
    * Determine the root of the project. By default, it's %APPDATA%/xmcl
@@ -405,9 +406,11 @@ export abstract class LauncherApp extends EventEmitter {
     try {
       const self = this as any
       self.gameDataPath = await readFile(join(this.appDataPath, 'root')).then((b) => b.toString().trim())
+      this.gamePathMissingSignal.resolve(false)
     } catch (e) {
       if (isSystemError(e) && e.code === 'ENOENT') {
         // first launch
+        this.gamePathMissingSignal.resolve(true)
         const { path, instancePath, locale } = await this.controller.processFirstLaunch()
         this.initialInstance = instancePath
         this.preferredLocale = locale;
