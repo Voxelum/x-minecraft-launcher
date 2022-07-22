@@ -186,7 +186,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         })
       }
 
-      this.log(`Will launch with ${version} version.`)
+      this.log(`Will launch with ${version.id} version.`)
 
       const instanceJava = this.instanceJavaService.state.java
 
