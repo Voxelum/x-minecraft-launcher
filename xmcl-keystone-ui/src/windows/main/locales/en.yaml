@@ -404,6 +404,12 @@ login:
   signup: Sign up
   signupDescription: New to us?
 loginError:
+  acquireMicrosoftTokenFailed: >-
+    Fail to acquire Microsoft token. This might be a network issue. Please
+    retry.
+  loginMinecraftByXboxFailed: >-
+    Fail to exchange Minecraft token by XBox token. Please make sure you have
+    Minecraft in Xbox, or retry.
   badNetworkOrServer: >-
     Please check your network connectivity! Or maybe the authentication server
     is down!
@@ -412,9 +418,6 @@ loginError:
   fetchMinecraftProfileFailed: 'Fail to fetch Minecraft profile: {reason}'
   illegalEmail: E-mail must be valid
   invalidCredentials: Invalid credentials. Invalid username or password.
-  loginMinecraftByXboxFailed: >-
-    Fail to exchange Minecraft token by XBox token. This is unexpected. Please
-    retry.
   loginXboxFailed: >-
     Fail to login Xbox by Microsoft token. Please make sure you have a linked
     xbox account to your Microsoft account. Please try again.
@@ -916,3 +919,4 @@ versionType:
   name: Status
   release: Release
 'yes': 'Yes'
+  

@@ -485,7 +485,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     const { microsoft: msToken, xbox: xboxToken } = await this.credentialManager.acquireMicrosoftToken({ username: microsoftEmailAddress, code: oauthCode })
       .catch((e) => {
         this.error(e)
-        throw new UserException({ type: 'userAcquireMinecraftTokenFailed', error: e.toString() })
+        throw new UserException({ type: 'userAcquireMicrosoftTokenFailed', error: e.toString() })
       })
 
     this.log('Successfully get Microsoft access token')

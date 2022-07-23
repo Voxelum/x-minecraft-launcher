@@ -60,23 +60,20 @@
 
 <script lang=ts setup>
 import { BaseServiceKey, UserServiceKey } from '@xmcl/runtime-api'
-import { IssueHandlerKey, useService } from '/@/composables'
-import { useDropLink } from '/@/composables/dropLink'
+import { useColorTheme } from '../composables/colorTheme'
+import { useDialog } from '../composables/dialog'
+import { LoginDialog } from '../composables/login'
 import LoginDialogLoginView from './AppLoginDialogForm.vue'
 import LoginDialogUserServicesCard from './AppLoginDialogUserServicesCard.vue'
 import StepperUserService from './AppLoginDialogUserServiceStepper.vue'
-import { useDialog } from '../composables/dialog'
-import { injection } from '/@/util/inject'
-import { useColorTheme } from '../composables/colorTheme'
+import { useService } from '/@/composables'
+import { useDropLink } from '/@/composables/dropLink'
 
-const { hide, isShown, show, parameter } = useDialog('login')
+const { isShown } = useDialog(LoginDialog)
 const active = ref(LoginDialogLoginView as any)
 const { inside } = useDropLink()
 
 // handle the not login issue
-const handlers = injection(IssueHandlerKey)
-// handlers.register(User)
-// handlers.userNotLogined = show
 const { primaryColor } = useColorTheme()
 
 const { state } = useService(UserServiceKey)

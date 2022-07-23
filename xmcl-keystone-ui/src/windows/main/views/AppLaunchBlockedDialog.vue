@@ -108,8 +108,8 @@ function onException(e: LaunchExceptions) {
   } else if (e.type === 'launchUserStatusRefreshFailed') {
     title.value = t('launchUserStatusRefreshFailed.title')
     description.value = t('launchUserStatusRefreshFailed.description') + '<br>'
-    if (e.userException.type === 'userAcquireMinecraftTokenFailed') {
-      description.value += t('userAcquireMinecraftTokenFailed')
+    if (e.userException.type === 'userAcquireMicrosoftTokenFailed') {
+      description.value += t('userAcquireMicrosoftTokenFailed')
     } else if (e.userException.type === 'userCheckGameOwnershipFailed') {
       description.value += t('userCheckGameOwnershipFailed')
     } else if (e.userException.type === 'userExchangeXboxTokenFailed') {
@@ -156,7 +156,7 @@ unexpectedText: This is unexpected. You can restart the launcher to mitigate the
 launchUserStatusRefreshFailed:
   title: Fail to validate user status
   description: Cannot refresh current selected user status.
-userAcquireMinecraftTokenFailed: Acquire Microsoft token failed. Please check retry or check your Microsoft account.
+userAcquireMicrosoftTokenFailed: Acquire Microsoft token failed. Please check retry or check your Microsoft account.
 userCheckGameOwnershipFailed: Failed to check Minecraft ownership. Please retry or check your network.
 userExchangeXboxTokenFailed: Failed to exchange xbox token from Microsoft token. Please retry or check your network.
 userLoginMinecraftByXboxFailed: Failed to login Minecraft with xbox token. Please retry or check your network.
@@ -182,7 +182,7 @@ unexpectedText: 这是意料之外的错误，你可以重启启动器来尝试�
 launchUserStatusRefreshFailed:
   title: 验证账户失败
   description: 无法验证当前账户信息
-userAcquireMinecraftTokenFailed: 微软令牌获取失败。请重试或者检查你的微软账号。
+userAcquireMicrosoftTokenFailed: 微软令牌获取失败。请重试或者检查你的微软账号。
 userCheckGameOwnershipFailed: 检测 Minecraft 所有权失败。请重试或检查你的网络。
 userExchangeXboxTokenFailed: 通过微软令牌交换 Xbox 令牌失败。请重试或检查你的网络。
 userLoginMinecraftByXboxFailed: 使用 Xbox 令牌登录 Minecraft 失败。请重试或者检查你的网路。
