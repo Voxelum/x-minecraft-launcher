@@ -15,7 +15,6 @@ import Multiplayer from './views/Multiplayer.vue'
 import ResourcePack from './views/ResourcePack.vue'
 import Save from './views/Save.vue'
 import Setting from './views/Setting.vue'
-import Setup from './views/Setup.vue'
 import ShaderPack from './views/ShaderPack.vue'
 import User from './views/User.vue'
 import Version from './views/Version.vue'
@@ -117,7 +116,7 @@ export const createRouter = () => {
           query: route.query.query,
           gameVersion: route.query.gameVersion,
           license: route.query.license,
-          category: route.query.category,
+          category: route.query.category ? (typeof route.query.category === 'string' ? [route.query.category] : route.query.category) : [],
           modLoader: route.query.modLoader,
           environment: route.query.environment,
           sortBy: route.query.sortBy,
