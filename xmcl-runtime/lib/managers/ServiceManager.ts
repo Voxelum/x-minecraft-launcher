@@ -17,6 +17,7 @@ interface ServiceCallSession {
 export default class ServiceManager extends Manager {
   private servicesMap: Record<string, AbstractService> = {}
   private servicesInstanceMap: ObjectRegistry = new ObjectRegistry()
+  private logger = this.app.logManager.getLogger('ServiceManager')
 
   private usedSession = 0
 
@@ -67,7 +68,7 @@ export default class ServiceManager extends Manager {
     this.servicesInstanceMap.register(ServiceConstructor, service)
     const key = service.name
     this.servicesMap[key as string] = service
-    this.log(`Expose service ${key} to remote`)
+    this.logger.log(`Expose service ${key} to remote`)
 
     service.initialize()
 
@@ -80,7 +81,7 @@ export default class ServiceManager extends Manager {
    */
   private async startServiceCall(id: number) {
     if (!this.sessions[id]) {
-      this.error(`Unknown service call session ${id}!`)
+      this.logger.error(`Unknown service call session ${id}!`)
     }
     const sess = this.sessions[id]
     const [serviceName, serviceMethod] = sess.name.split('.')
@@ -88,14 +89,14 @@ export default class ServiceManager extends Manager {
       const r = await this.sessions[id].call()
       return { result: r }
     } catch (e) {
-      this.warn(`Error during service call session ${id}(${this.sessions[id].name}):`)
+      this.logger.warn(`Error during service call session ${id}(${this.sessions[id].name}):`)
       if (e instanceof Error) {
-        this.error(e)
+        this.logger.error(e)
       } else {
-        this.error(JSON.stringify(e))
+        this.logger.error(JSON.stringify(e))
       }
       if (e instanceof Exception) {
-        this.error(JSON.stringify(e.exception, null, 4))
+        this.logger.error(JSON.stringify(e.exception, null, 4))
       }
       const error = serializeError(e)
       error.serviceName = serviceName
@@ -121,7 +122,7 @@ export default class ServiceManager extends Manager {
   private handleServiceCall(client: Client, service: string, name: string, payload: any): number | undefined {
     const serv = this.servicesMap[service]
     if (!serv) {
-      this.error(`Cannot execute service call ${name} from service ${service}. No service exposed as ${service}.`)
+      this.logger.error(`Cannot execute service call ${name} from service ${service}. No service exposed as ${service}.`)
     } else {
       if (name in serv) {
         const tasks: Task<any>[] = []
@@ -153,13 +154,13 @@ export default class ServiceManager extends Manager {
 
         return sessionId
       }
-      this.error(`Cannot execute service call ${name} from service ${service}. The service doesn't have such method!`)
+      this.logger.error(`Cannot execute service call ${name} from service ${service}. The service doesn't have such method!`)
     }
     return undefined
   }
 
   async setup() {
-    this.log(`Setup service ${this.app.gameDataPath}`)
+    this.logger.log(`Setup service ${this.app.gameDataPath}`)
 
     for (const ServiceConstructor of [...Object.values(this.preloadServices)]) {
       this.getOrCreateService(ServiceConstructor)
@@ -171,8 +172,8 @@ export default class ServiceManager extends Manager {
    */
   async dispose() {
     await Promise.all(Object.values(this.servicesMap).map((s) => s.dispose().catch((e) => {
-      this.error(`Error during dispose ${Object.getPrototypeOf(s).constructor.name}:`)
-      this.error(e)
+      this.logger.error(`Error during dispose ${Object.getPrototypeOf(s).constructor.name}:`)
+      this.logger.error(e)
     })))
   }
 }

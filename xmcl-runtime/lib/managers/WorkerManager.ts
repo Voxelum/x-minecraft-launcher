@@ -12,6 +12,7 @@ export default class WorkerManager extends Manager {
   private threadWorker: Worker | undefined
   private counter = 0
   private destroyTimer: undefined | ReturnType<typeof setTimeout>
+  private logger = this.app.logManager.getLogger('WorkerManager')
 
   constructor(app: LauncherApp) {
     super(app)
@@ -63,10 +64,10 @@ export default class WorkerManager extends Manager {
       const realSha = await checksum(workerJsPath, 'sha1')
       const expectSha = await checksum(asarWorkerJsPath, 'sha1')
       if (realSha !== expectSha) {
-        this.log('The worker js checksum not matched. Replace with the asar worker js.')
+        this.logger.log('The worker js checksum not matched. Replace with the asar worker js.')
         await writeFile(workerJsPath, await readFile(asarWorkerJsPath))
       } else {
-        this.log('The worker js checksum matched. Skip to replace asar worker js.')
+        this.logger.log('The worker js checksum matched. Skip to replace asar worker js.')
       }
     }
   }

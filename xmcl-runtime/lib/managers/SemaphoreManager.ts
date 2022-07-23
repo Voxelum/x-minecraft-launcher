@@ -1,3 +1,4 @@
+import { nextTick } from 'process'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
 import { ReadWriteLock } from '../util/mutex'
@@ -7,6 +8,7 @@ export default class SemaphoreManager extends Manager {
 
   private semaphore: Record<string, number> = {}
   private semaphoreWaiter: Record<string, Array<() => void>> = {}
+  private logger = this.app.logManager.getLogger('SemaphoreManager')
 
   constructor(app: LauncherApp) {
     super(app)
@@ -14,7 +16,7 @@ export default class SemaphoreManager extends Manager {
       return this.semaphore
     })
     app.handle('semaphoreAbort', (_, key) => {
-      this.log(`Force release the semaphore: ${key}`)
+      this.logger.log(`Force release the semaphore: ${key}`)
       this.release(key)
     })
   }
@@ -66,11 +68,15 @@ export default class SemaphoreManager extends Manager {
       this.semaphore[key] = 0
     }
     if (this.semaphore[key] === 0) {
-      const all = this.semaphoreWaiter[key]
-      for (const w of all) {
-        w()
-      }
-      this.semaphoreWaiter[key] = []
+      nextTick(() => {
+        if (this.semaphore[key] === 0) {
+          const all = this.semaphoreWaiter[key]
+          if (all) {
+            for (const w of all) w()
+            this.semaphoreWaiter[key] = []
+          }
+        }
+      })
     }
     this.app.broadcast('release', key)
   }

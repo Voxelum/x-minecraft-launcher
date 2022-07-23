@@ -11,6 +11,8 @@ export default class CredentialManager extends Manager {
 
   private cancelWait = () => { }
 
+  private logger = this.app.logManager.getLogger('CredentialManager')
+
   constructor(app: LauncherApp) {
     super(app)
   }
@@ -28,7 +30,7 @@ export default class CredentialManager extends Manager {
         loggerOptions: {
           logLevel: LogLevel.Verbose,
           loggerCallback: (level, message, ppi) => {
-            this.log(`${message}`)
+            this.logger.log(`${message}`)
           },
         },
       },
@@ -50,16 +52,16 @@ export default class CredentialManager extends Manager {
           account,
           forceRefresh: false,
         }).catch((e) => {
-          this.warn(`Fail to acquire microsoft token silently for ${username}`)
-          this.warn(e)
+          this.logger.warn(`Fail to acquire microsoft token silently for ${username}`)
+          this.logger.warn(e)
           return null
         })
         const userRead = await app.acquireTokenSilent({
           scopes: this.extraScopes,
           account,
         }).catch((e) => {
-          this.warn(`Fail to acquire microsoft token silently for ${username}`)
-          this.warn(e)
+          this.logger.warn(`Fail to acquire microsoft token silently for ${username}`)
+          this.logger.warn(e)
           return null
         })
         if (result) {

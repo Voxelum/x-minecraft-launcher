@@ -6,6 +6,7 @@ import { AbstractService } from '../services/Service'
 import { ServiceStateProxy } from '../util/serviceProxy'
 
 export default class ServiceStateManager extends Manager {
+  private logger = this.app.logManager.getLogger('ServiceStateManager')
   private eventBus = new EventEmitter()
 
   private registeredState: Record<string, ServiceStateProxy> = {}
@@ -47,7 +48,7 @@ export default class ServiceStateManager extends Manager {
       this.eventBus,
       serviceName,
       state,
-      this,
+      this.logger,
     )
     this.registeredState[serviceName] = proxy
     return state
