@@ -132,6 +132,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       }
 
       if (!options?.force && !instance.fastLaunch) {
+        await this.semaphoreManager.wait('diagnose')
         const issues = this.diagnoseService.state.issues
         for (let problems = issues.filter(p => p.autoFix && p.parameters.length > 0), i = 0;
           problems.length !== 0 && i <= 2;
