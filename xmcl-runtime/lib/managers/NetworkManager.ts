@@ -30,6 +30,8 @@ export default class NetworkManager extends Manager {
 
   private natInfo: undefined | NatInfo
 
+  private logger = this.app.logManager.getLogger('NetworkManager')
+
   // private nat = new NatAPI()
 
   // private natType: NatType = 'Blocked'
@@ -135,7 +137,7 @@ export default class NetworkManager extends Manager {
       this.request.head('https://npm.taobao.org', { throwHttpErrors: false }).then(() => true, () => false),
       this.request.head('https://www.google.com', { throwHttpErrors: false }).then(() => false, () => true),
     ])
-    this.log(this.inGFW ? 'Detected current in China mainland.' : 'Detected current NOT in China mainland.')
+    this.logger.log(this.inGFW ? 'Detected current in China mainland.' : 'Detected current NOT in China mainland.')
   }
 
   // async updateNatType() {
@@ -197,7 +199,7 @@ export default class NetworkManager extends Manager {
       retryInterval: 2000,
     })))
 
-    this.log(info)
+    this.logger.log(info)
 
     return info
   }

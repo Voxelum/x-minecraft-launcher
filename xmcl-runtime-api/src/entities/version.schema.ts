@@ -110,7 +110,7 @@ export interface VersionMinecraftSchema {
     release: string
   }
   /**
-   * All the vesrsion list
+   * All the versions in list
    * @default []
    */
   versions: MinecraftVersion[]

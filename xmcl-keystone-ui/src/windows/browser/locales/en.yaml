@@ -1,4 +1,4 @@
-createShortcut: 'Create Shortcut'
-launch: 'Launch and set as Default'
-delete: 'Delete'
-default: 'DEFAULT'
+createShortcut: Create Shortcut
+default: DEFAULT
+delete: Delete
+launch: Launch and set as Default

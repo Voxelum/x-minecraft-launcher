@@ -9,6 +9,7 @@ import { serializeError } from '../util/error'
 
 export default class TaskManager extends Manager {
   readonly emitter: TaskEventEmitter = new EventEmitter()
+  private logger = this.app.logManager.getLogger('TaskManager')
 
   private pushers: Map<Client, () => void> = new Map()
 
@@ -40,28 +41,28 @@ export default class TaskManager extends Manager {
     })
     app.handle('task-operation', (event, { type, id }) => {
       if (!this.record[id]) {
-        this.warn(`Cannot ${type} a unknown task id ${id}`)
+        this.logger.warn(`Cannot ${type} a unknown task id ${id}`)
         return
       }
       switch (type) {
         case 'pause':
-          this.log(`Request ${id} to pause`)
+          this.logger.log(`Request ${id} to pause`)
           this.record[id].pause()
           break
         case 'resume':
-          this.log(`Request ${id} to resume`)
+          this.logger.log(`Request ${id} to resume`)
           this.record[id].resume()
           break
         case 'cancel':
-          this.log(`Request ${id} to cancel`)
+          this.logger.log(`Request ${id} to cancel`)
           this.record[id].cancel()
           break
         default:
       }
     })
     this.emitter.on('fail', (uuid, task, error) => {
-      this.warn(`Task ${task.name}(${uuid}) failed!`)
-      this.warn(error)
+      this.logger.warn(`Task ${task.name}(${uuid}) failed!`)
+      this.logger.warn(error)
     })
   }
 
@@ -120,7 +121,7 @@ export default class TaskManager extends Manager {
     try {
       return await task.wait()
     } finally {
-      this.log('Task done and delete record!')
+      this.logger.log('Task done and delete record!')
       delete this.record[uid]
       this.tasks.splice(index, 1)
     }

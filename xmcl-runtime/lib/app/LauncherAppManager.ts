@@ -18,6 +18,8 @@ export interface InstallAppOptions {
 }
 
 export class LauncherAppManager extends Manager implements AppsHost {
+  private logger = this.app.logManager.getLogger('LauncherAppManager')
+
   constructor(app: LauncherApp) {
     super(app)
 
@@ -54,9 +56,9 @@ export class LauncherAppManager extends Manager implements AppsHost {
 
   async createShortcut(url: string): Promise<void> {
     if (this.app.platform.name === 'windows') {
-      this.log(`Try to create shortcut to app ${url}`)
+      this.logger.log(`Try to create shortcut to app ${url}`)
       if (url === this.app.builtinAppManifest.url) {
-        this.log(`Skip to create shortcut builtin app ${url}`)
+        this.logger.log(`Skip to create shortcut builtin app ${url}`)
         return
       }
       const appMan = await this.getInstalledApp(url)
@@ -102,14 +104,14 @@ export class LauncherAppManager extends Manager implements AppsHost {
       }
     }))
     const apps = results.filter(v => !!v)
-    this.log(`Load ${apps.length} third-party apps`)
+    this.logger.log(`Load ${apps.length} third-party apps`)
     return [this.app.builtinAppManifest, ...apps]
   }
 
   async uninstallApp(url: string) {
-    this.log(`Try to uninstall app ${url}`)
+    this.logger.log(`Try to uninstall app ${url}`)
     if (url === this.app.builtinAppManifest.url) {
-      this.log(`Skip to uninstall default app ${url}`)
+      this.logger.log(`Skip to uninstall default app ${url}`)
       return
     }
 
@@ -132,9 +134,9 @@ export class LauncherAppManager extends Manager implements AppsHost {
   }
 
   async installApp(url: string, options: InstallAppOptions = {}) {
-    this.log(`Try to install app ${url}`)
+    this.logger.log(`Try to install app ${url}`)
     if (url === this.app.builtinAppManifest.url) {
-      this.log(`Skip to install default app ${url}`)
+      this.logger.log(`Skip to install default app ${url}`)
       return this.app.builtinAppManifest
     }
     const webMan = await this.getAppInfo(url)

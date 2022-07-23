@@ -29,7 +29,7 @@
             ]
         },
         "versions": {
-            "description": "All the vesrsion list",
+            "description": "All the versions in list",
             "default": [],
             "type": "array",
             "items": {
