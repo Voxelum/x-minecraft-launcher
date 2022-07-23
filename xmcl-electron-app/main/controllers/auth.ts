@@ -6,7 +6,7 @@ import { ControllerPlugin } from './plugin'
 export const auth: ControllerPlugin = function (this: Controller) {
   const { t } = this.i18n
   const setupServer = (port: number) => {
-    this.app.warn(`Try to use ${port} as local auth server port.`)
+    this.app.log(`Try to use ${port} as local auth server port.`)
     const server = createServer((req, res) => {
       const url = new URL(req.url!, 'xmcl://launcher')
       if (this.app.handleUrl(url.toString())) {
