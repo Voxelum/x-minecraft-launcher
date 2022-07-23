@@ -24,10 +24,11 @@ export class InstanceJavaService extends StatefulService<InstanceJavaState> impl
 
     diagnoseService.register({
       id: InvalidJavaIssueKey,
-      fix: async () => {
-        const matchingJava = this.state.java?.path
-        if (matchingJava) {
-          await this.instanceService.editInstance({ java: matchingJava })
+      fix: async (issue) => {
+        if (issue.recommendedVersion) {
+          await this.instanceService.editInstance({ java: issue.recommendedVersion.path })
+        } else if (issue.recommendedDownload) {
+          await this.javaService.installDefaultJava(issue.recommendedDownload)
         }
       },
     })
@@ -35,13 +36,10 @@ export class InstanceJavaService extends StatefulService<InstanceJavaState> impl
     diagnoseService.register({
       id: IncompatibleJavaIssueKey,
       fix: async (issue) => {
-        const matchingJava = this.state.java?.path
-        if (matchingJava) {
-          await this.instanceService.editInstance({ java: matchingJava })
-        } else {
-          if (issue.recommendedDownload) {
-            await this.javaService.installDefaultJava(issue.recommendedDownload)
-          }
+        if (issue.recommendedVersion) {
+          await this.instanceService.editInstance({ java: issue.recommendedVersion.path })
+        } else if (issue.recommendedDownload) {
+          await this.javaService.installDefaultJava(issue.recommendedDownload)
         }
       },
     })
