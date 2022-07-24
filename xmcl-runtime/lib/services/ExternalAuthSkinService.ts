@@ -7,7 +7,7 @@ import LauncherApp from '../app/LauncherApp'
 import { validateSha256 } from '../util/fs'
 import { DiagnoseService } from './DiagnoseService'
 import { ResourceService } from './ResourceService'
-import { AbstractService, Inject, Singleton } from './Service'
+import { AbstractService, Inject, Lock, Singleton } from './Service'
 import { UserService } from './UserService'
 
 const AUTHLIB_ORG_NAME = 'org.to2mbn:authlibinjector'
@@ -97,7 +97,7 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
     return path
   }
 
-  @Singleton()
+  @Lock('diagnoseAuthLibInjector')
   async diagnoseAuthLibInjector(builder: IssueReportBuilder) {
     this.up('diagnose')
     builder.set(MissingAuthLibInjectorIssue)

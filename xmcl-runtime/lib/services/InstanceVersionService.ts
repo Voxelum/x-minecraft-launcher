@@ -375,7 +375,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
   /**
    * Diagnose full version
    */
-  @Singleton()
+  @Lock('diagnoseVersion')
   private async diagnoseVersion(currentVersion: ResolvedVersion | undefined) {
     this.up('diagnose')
     const builder = new IssueReportBuilder()
