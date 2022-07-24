@@ -15,7 +15,7 @@
         icon
         @click="hide"
       >
-        <v-icon>arrow_drop_down</v-icon>
+        <v-icon>close</v-icon>
       </v-btn>
       <template #extension>
         <v-tabs
