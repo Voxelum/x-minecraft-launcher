@@ -78,6 +78,8 @@ import { getColor } from '/@/util/color'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { ShaderPackItem } from '../composables/shaderpack'
 import { vContextMenu } from '../directives/contextMenu'
+import { vFallbackImg } from '../directives/fallbackImage'
+import { vDraggableCard, vSelectableCard } from '../directives/draggableCard'
 
 const props = defineProps<{ pack: ShaderPackItem }>()
 const emit = defineEmits(['update:name', 'enable', 'tags', 'select', 'dragstart', 'dragend', 'delete'])

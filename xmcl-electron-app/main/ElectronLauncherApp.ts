@@ -24,7 +24,9 @@ export default class ElectronLauncherApp extends LauncherApp {
 
   showItemInFolder = shell.showItemInFolder
 
-  handle = ipcMain.handle
+  handle(...payload: any[]) {
+    return ipcMain.handle(payload[0], payload[1])
+  }
 
   windowsUtils = getWindowsUtils(this)
 

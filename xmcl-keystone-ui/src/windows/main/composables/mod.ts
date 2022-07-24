@@ -154,7 +154,7 @@ export function useInstanceMods() {
   })
 
   function getUrl(resource: Resource) {
-    return resource.uri.find(u => u.startsWith('http')) ?? ''
+    return resource.uri.find(u => u?.startsWith('http')) ?? ''
   }
   function getModItemFromModResource(resource: ForgeResource | FabricResource | LiteloaderResource | AnyResource): ModItem {
     const isPersisted = isPersistedResource(resource)

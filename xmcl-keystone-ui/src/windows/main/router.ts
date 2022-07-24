@@ -1,23 +1,23 @@
 import Router from 'vue-router'
-import Home from './views/Home.vue'
-import Instances from './views/Instances.vue'
-import Setting from './views/Setting.vue'
-import User from './views/User.vue'
-import Save from './views/Save.vue'
 import BaseSetting from './views/BaseSetting.vue'
-import Mod from './views/Mod.vue'
-import GameSetting from './views/GameSetting.vue'
-import ResourcePack from './views/ResourcePack.vue'
-import ShaderPack from './views/ShaderPack.vue'
-import Version from './views/Version.vue'
-import Modpack from './views/Modpack.vue'
 import Curseforge from './views/Curseforge.vue'
 import CurseforgeProject from './views/CurseforgeProject.vue'
-import Modrinth from './views/Modrinth.vue'
-import Multiplayer from './views/Multiplayer.vue'
-import ModrinthProject from './views/ModrinthProject.vue'
 import FeedTheBeast from './views/FeedTheBeast.vue'
 import FeedTheBeastProject from './views/FeedTheBeastProject.vue'
+import GameSetting from './views/GameSetting.vue'
+import Home from './views/Home.vue'
+import Instances from './views/Instances.vue'
+import Mod from './views/Mod.vue'
+import Modpack from './views/Modpack.vue'
+import Modrinth from './views/Modrinth.vue'
+import ModrinthProject from './views/ModrinthProject.vue'
+import Multiplayer from './views/Multiplayer.vue'
+import ResourcePack from './views/ResourcePack.vue'
+import Save from './views/Save.vue'
+import Setting from './views/Setting.vue'
+import ShaderPack from './views/ShaderPack.vue'
+import User from './views/User.vue'
+import Version from './views/Version.vue'
 
 export const createRouter = () => {
   const router = new Router({
@@ -116,7 +116,7 @@ export const createRouter = () => {
           query: route.query.query,
           gameVersion: route.query.gameVersion,
           license: route.query.license,
-          category: route.query.category,
+          category: route.query.category ? (typeof route.query.category === 'string' ? [route.query.category] : route.query.category) : [],
           modLoader: route.query.modLoader,
           environment: route.query.environment,
           sortBy: route.query.sortBy,

@@ -76,7 +76,6 @@ export function useInstanceResourcePacks() {
     return meta ? meta.format ?? meta.pack_format : 3
   }
   function getResourcePackItem(resource: PersistedResourcePackResource): ResourcePackItem {
-    console.log(resource.iconUrl)
     return ({
       path: resource.path,
       name: resource.name,

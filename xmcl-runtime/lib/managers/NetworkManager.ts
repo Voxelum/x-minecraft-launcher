@@ -2,7 +2,7 @@ import { Agents } from '@xmcl/installer'
 // import NatAPI from 'nat-api'
 import { UpnpClient } from '@xmcl/nat-api'
 import { getNatInfoUDP, NatInfo } from '@xmcl/stun-client'
-import got, { Got } from 'got'
+import got, { Got, Options } from 'got'
 import { Socket } from 'net'
 import { join } from 'path'
 import { URL } from 'url'
@@ -11,6 +11,8 @@ import LauncherApp from '../app/LauncherApp'
 import { BaseService } from '../services/BaseService'
 import { HttpAgent, HttpsAgent } from '../util/agents'
 import { LevelCache } from '../util/cache'
+import ServiceManager from './ServiceManager'
+import ServiceStateManager from './ServiceStateManager'
 // import getNatType, { NatType } from 'nat-type-identifier'
 
 export default class NetworkManager extends Manager {
@@ -28,9 +30,9 @@ export default class NetworkManager extends Manager {
 
   private natInfo: undefined | NatInfo
 
-  // private nat = new NatAPI()
+  private logger = this.app.logManager.getLogger('NetworkManager')
 
-  // private lanDiscover = new MinecraftLanDiscover()
+  // private nat = new NatAPI()
 
   // private natType: NatType = 'Blocked'
 
@@ -38,7 +40,7 @@ export default class NetworkManager extends Manager {
 
   // private discoveredPort: number[] = []
 
-  constructor(app: LauncherApp) {
+  constructor(app: LauncherApp, serviceManager: ServiceManager, stateManager: ServiceStateManager) {
     super(app)
     const http = new HttpAgent({
       keepAlive: true,
@@ -47,7 +49,7 @@ export default class NetworkManager extends Manager {
     Object.defineProperty(http, 'proxy', {
       get() {
         try {
-          return new URL(app.serviceManager.getOrCreateService(BaseService).state.httpProxy)
+          return new URL(serviceManager.getOrCreateService(BaseService).state.httpProxy)
         } catch (e) {
           return undefined
         }
@@ -55,7 +57,7 @@ export default class NetworkManager extends Manager {
     })
     Object.defineProperty(http, 'enabled', {
       get() {
-        return app.serviceManager.getOrCreateService(BaseService).state.httpProxyEnabled ?? false
+        return serviceManager.getOrCreateService(BaseService).state.httpProxyEnabled ?? false
       },
     })
     const https = new HttpsAgent({
@@ -66,7 +68,7 @@ export default class NetworkManager extends Manager {
     Object.defineProperty(https, 'proxy', {
       get() {
         try {
-          return new URL(app.serviceManager.getOrCreateService(BaseService).state.httpProxy)
+          return new URL(serviceManager.getOrCreateService(BaseService).state.httpProxy)
         } catch (e) {
           return undefined
         }
@@ -74,16 +76,17 @@ export default class NetworkManager extends Manager {
     })
     Object.defineProperty(https, 'enabled', {
       get() {
-        return app.serviceManager.getOrCreateService(BaseService).state.httpProxyEnabled ?? false
+        return serviceManager.getOrCreateService(BaseService).state.httpProxyEnabled ?? false
       },
     })
     this.agents = ({
       http,
       https,
     })
+    const cache = new LevelCache(join(app.appDataPath, 'http-cache'))
     this.request = got.extend({
       agent: this.agents,
-      cache: new LevelCache(join(app.appDataPath, 'http-cache')),
+      cache,
     })
 
     const setMaxSocket = (val: number) => {
@@ -105,13 +108,14 @@ export default class NetworkManager extends Manager {
       }
     }
 
-    app.serviceStateManager.subscribe('maxSocketsSet', (val) => {
+    stateManager.subscribe('maxSocketsSet', (val) => {
       setMaxSocket(val)
     })
-    app.serviceStateManager.subscribe('maxTotalSocketsSet', (val) => {
+    stateManager.subscribe('maxTotalSocketsSet', (val) => {
       setMaxTotalSocket(val)
     })
-    const service = app.serviceManager.getOrCreateService(BaseService)
+
+    const service = serviceManager.getOrCreateService(BaseService)
     service.initialize().then(() => {
       setMaxSocket(service.state.maxSockets)
       setMaxTotalSocket(service.state.maxTotalSockets)
@@ -133,7 +137,7 @@ export default class NetworkManager extends Manager {
       this.request.head('https://npm.taobao.org', { throwHttpErrors: false }).then(() => true, () => false),
       this.request.head('https://www.google.com', { throwHttpErrors: false }).then(() => false, () => true),
     ])
-    this.log(this.inGFW ? 'Detected current in China mainland.' : 'Detected current NOT in China mainland.')
+    this.logger.log(this.inGFW ? 'Detected current in China mainland.' : 'Detected current NOT in China mainland.')
   }
 
   // async updateNatType() {
@@ -195,7 +199,7 @@ export default class NetworkManager extends Manager {
       retryInterval: 2000,
     })))
 
-    this.log(info)
+    this.logger.log(info)
 
     return info
   }

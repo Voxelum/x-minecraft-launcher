@@ -4,9 +4,11 @@ author: 作者
 back: 返回
 baseSetting:
   title: 基础设置
+browse: 浏览
 cancel: 取消
 checkUpdate: 检查更新
 cloneMinecraft: 克隆 Minecraft
+confirm: 开始
 copyClipboard:
   success: 复制到剪贴板
 create: 创建
@@ -224,6 +226,7 @@ installVersion:
   name: 安装%{version}的游戏本体
 instance:
   addServer: 添加服务器
+  current: 当前实例
   delete: 删除游戏
   deleteHint: 游戏的数据将完全被移除。你确定继续此操作吗？
   fileApi: 远程同步文件服务器 API 地址
@@ -348,10 +351,16 @@ login:
   signup: 注册
   signupDescription: 没有账号?
 loginError:
+  acquireMicrosoftTokenFailed: 获取 Microsoft 通证失败。这可能是一个网络问题，请重试。
+  badNetworkOrServer: 请检查你的网络连接！当然也可能是验证服务器挂了:/
+  checkOwnershipFailed: 在检查你是否拥有 Minecraft 时发生错误，请重试
   connectionReset: 因为服务端断开了连接导致登录失败，请重试或检查网络
+  fetchMinecraftProfileFailed: '获取 Minecraft 用户信息失败: {reason}'
   illegalEmail: 当前Email格式不合法
   invalidCredentials: 无法验证. 用户名或密码错误.
+  loginMinecraftByXboxFailed: 在通过  Xbox 通证交换 Minecraft 通证的过程中发生错误，请确认你的 Xbox 账号拥有 Minecraft。你可以尝试重试登录
   loginXboxFailed: 请求 xbox 通证失败，请确保你的微软账号已经绑定了一个 Xbox 账号！
+  requestFailed: 由于未知原因登录失败，请重试
   requireEmail: 必须要Email才能登陆
   requirePassword: 请输入密码
   requireUsername: 用户名不能为空
@@ -554,6 +563,7 @@ peerIceGatheringState:
   complete: 收集完毕
   gathering: 收集本地信息中
 popular: 热度
+previous: 上一步
 quiltVersion:
   disable: 不启用 Quilt
   empty: Quilt 不支持 Minecraft {version}
@@ -651,6 +661,20 @@ setting:
   officialWebsite: 官网地址
   resolution: Minecraft默认窗口大小
   viewUpdate: 详细信息
+setup:
+  dataRoot:
+    description: 数据存储目录不是常规的 .minecraft 目录。因为 XMCL 的数据目录格式特殊，不建议将常规 .minecraft 目录设置为数据目录。
+    name: 设置数据存储目录
+  defaultPath: 默认位置
+  game:
+    description: 选择已有的游戏目录 (.minecraft) 作为启动器初始的启动目标。同时让启动器能复用已有的版本文件，库，模组，资源包等。
+    name: 导入已有的游戏
+  locale:
+    description: 选择你的语言，如果你在这没看到你想要的语言，并且你有兴趣帮助我们的话，你可以去我们的 github 上发 pull request 来添加新语言！
+    language: 当前语言
+    name: 设置语言
+  path: 当前位置
+  title: 欢迎使用 X Minecraft Launcher。在开始前，需要您先
 shaderPack:
   deletion: 删除光影包
   deletionHint: 这将把光影包文件 {path} 永久删除。
@@ -661,6 +685,10 @@ shaderPack:
   'off': 无
   offDescription: 关闭 shader 引擎
   showFile: 在文件夹中显示此 shader pack
+step:
+  dataRoot: {}
+  game: {}
+  locale: {}
 tag:
   create: 创建标签
   createSelected: 为所有选中的创建标签

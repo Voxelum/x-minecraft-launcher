@@ -24,7 +24,6 @@ export class InstanceService extends StatefulService<InstanceState> implements I
   protected readonly instanceFile = createSafeIO(InstanceSchema, this)
 
   constructor(app: LauncherApp,
-    @Inject(ServerStatusService) protected statusService: ServerStatusService,
     @Inject(UserService) private userService: UserService,
     @Inject(InstallService) private installService: InstallService,
   ) {

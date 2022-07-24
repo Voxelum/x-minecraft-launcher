@@ -142,11 +142,10 @@
 import { Ref } from '@vue/composition-api'
 import { isException, UserException, UserServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { useSelectedServices } from '../composables/login'
+import { LoginDialog, useSelectedServices } from '../composables/login'
 import { useCurrentUser, useLoginValidation, useUserProfileStatus } from '../composables/user'
 import Hint from '/@/components/Hint.vue'
-import { IssueHandlerKey, useI18n, useService, useServiceBusy } from '/@/composables'
-import { injection } from '/@/util/inject'
+import { useI18n, useService, useServiceBusy } from '/@/composables'
 
 interface ServiceItem {
   text: string
@@ -156,7 +155,7 @@ interface ServiceItem {
 const props = defineProps<{ inside: boolean }>()
 const emit = defineEmits(['route'])
 
-const { hide, isShown, show } = useDialog('login')
+const { hide, isShown, parameter } = useDialog(LoginDialog)
 
 const data = reactive({
   username: '',
@@ -175,9 +174,7 @@ const { state, cancelMicrosoftLogin, login, on } = useService(UserServiceKey)
 const authServiceItems: Ref<ServiceItem[]> = computed(() => ['microsoft', ...Object.keys(state.authServices), 'offline']
   .map((a) => ({ value: a, text: te(`userServices.${a}.name`) ? t(`userServices.${a}.name`) : a })))
 
-const { userProfile } = useCurrentUser()
-const { logined } = useUserProfileStatus(userProfile)
-const { profileService, authService, history } = useSelectedServices()
+const { authService, history } = useSelectedServices()
 const isLogining = useServiceBusy(UserServiceKey, 'login')
 
 const isMicrosoft = computed(() => authService.value === 'microsoft')
@@ -226,19 +223,19 @@ function handleError(e: unknown) {
     } else if (e.exception.type === 'fetchMinecraftProfileFailed') {
       const msg = t('loginError.fetchMinecraftProfileFailed', { reason: `${e.exception.errorType}, ${e.exception.developerMessage}` })
       usernameErrors.value = [msg]
-      passwordErrors.value = [msg]
+      passwordErrors.value = [e.exception.error ?? msg]
     } else if (e.exception.type === 'userCheckGameOwnershipFailed') {
       const msg = t('loginError.checkOwnershipFailed')
       usernameErrors.value = [msg]
-      passwordErrors.value = [msg]
+      passwordErrors.value = [e.exception.error ?? msg]
     } else if (e.exception.type === 'userExchangeXboxTokenFailed') {
       const msg = t('loginError.loginXboxFailed')
       usernameErrors.value = [msg]
-      passwordErrors.value = [msg]
+      passwordErrors.value = [e.exception.error ?? msg]
     } else if (e.exception.type === 'userLoginMinecraftByXboxFailed') {
       const msg = t('loginError.loginMinecraftByXboxFailed')
       usernameErrors.value = [msg]
-      passwordErrors.value = [msg]
+      passwordErrors.value = [e.exception.error ?? msg]
     } else if (e.exception.type === 'loginReset') {
       const msg = t('loginError.connectionReset')
       usernameErrors.value = [msg]
@@ -247,6 +244,10 @@ function handleError(e: unknown) {
       const msg = t('loginError.timeout')
       usernameErrors.value = [msg]
       passwordErrors.value = [msg]
+    } else if (e.exception.type === 'userAcquireMicrosoftTokenFailed') {
+      const msg = t('loginError.acquireMicrosoftTokenFailed')
+      usernameErrors.value = [msg]
+      passwordErrors.value = [e.exception.error ?? msg]
     }
   } else {
     const msg = t('loginError.requestFailed')
@@ -277,7 +278,8 @@ async function onLogin() {
   if (index === -1) {
     history.value.unshift(data.username)
   }
-  const payload = { ...data, authService: authService.value }
+  const selectProfile = !state.user || !!parameter.value
+  const payload = { ...data, authService: authService.value, selectProfile }
   await login(payload).catch(handleError)
   hide()
 }
@@ -286,12 +288,9 @@ onMounted(() => {
   reset()
 })
 
-watch(isShown, (s) => {
-  if (!s) { return }
-  if (!logined.value) {
-    // data.selectProfile = true
-  }
-  if (s) {
+watch(isShown, (shown) => {
+  if (!shown) { return }
+  if (shown) {
     reset()
   }
 })

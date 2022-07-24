@@ -104,19 +104,37 @@
           <v-icon>open_in_new</v-icon>Wiki
         </a>
         <div class="flex-grow" />
+
+      </span>
+      <CurseforgeProjectDestMenu
+        :value="props.installTo"
+        @input="emit('destination', $event)"
+      />
+      <div class="flex items-center gap-2 mt-1 w-full">
         <v-menu offset-y>
           <template #activator="{ on, attrs }">
             <v-btn
               color="primary"
-              large
+              class="flex-grow"
               :loading="loading || isDownloading"
               v-bind="attrs"
               v-on="on"
               @click="onInstallClicked"
             >
-              <v-icon left>download</v-icon>
-              {{ t('modrinth.install') }}
-            </v-btn></template>
+              <v-icon
+                left
+                class="absolute left-0"
+              >
+                keyboard_arrow_down
+              </v-icon>
+              <span class="w-full">
+                <v-icon left>
+                  download
+                </v-icon>
+                {{ t('modrinth.install') }}
+              </span>
+            </v-btn>
+          </template>
           <v-list
             class="max-h-100 overflow-auto"
           >
@@ -131,7 +149,7 @@
             </v-list-item>
           </v-list>
         </v-menu>
-      </span>
+      </div>
     </div>
   </v-card>
 </template>
@@ -139,18 +157,22 @@
 import { Ref } from '@vue/composition-api'
 import { Category, Project, ProjectVersion } from '@xmcl/modrinth'
 import { ModrinthServiceKey, PersistedResource, ResourceServiceKey } from '@xmcl/runtime-api'
+import CurseforgeProjectDestMenu from './CurseforgeProjectDestMenu.vue'
 import { useI18n, useRefreshable, useService, useServiceBusy } from '/@/composables'
 import { useVuetifyColor } from '/@/composables/vuetify'
 import { getColorForReleaseType } from '/@/util/color'
 import { getLocalDateString } from '/@/util/date'
 import { getExpectedSize } from '/@/util/size'
 
-const props = defineProps<{ project: Project }>()
+const props = defineProps<{
+  project: Project
+  installTo: string
+}>()
 const { t } = useI18n()
 const { getTags } = useService(ModrinthServiceKey)
 const categories = ref([] as Category[])
 
-const emit = defineEmits(['install', 'create'])
+const emit = defineEmits(['install', 'create', 'destination'])
 
 const categoryItems = computed(() => {
   return props.project.categories.map(id => categories.value.find(c => c.name === id)).filter((v): v is Category => !!v)
@@ -175,8 +197,11 @@ async function onInstallClicked() {
 const { state: resourceState } = useService(ResourceServiceKey)
 const isDownloading = computed(() => {
   for (const u of state.downloading) {
-    projectVersions.value.some(v => v.files[0].url === u.url)
+    if (projectVersions.value.some(v => v.files[0].url === u.url)) {
+      return true
+    }
   }
+  return false
 })
 const isDownloaded = (ver: ProjectVersion) => {
   const fileUrl = ver.files[0].url

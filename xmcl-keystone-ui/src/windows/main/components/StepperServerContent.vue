@@ -136,13 +136,14 @@
 </template>
 
 <script lang=ts setup>
-import { ServerStatus, protocolToMinecraft } from '@xmcl/runtime-api'
-import unknownServer from '/@/assets/unknown_server.png'
+import { protocolToMinecraft, ServerStatus } from '@xmcl/runtime-api'
 import { CreateOptionKey } from '../composables/instanceCreation'
-import { injection } from '/@/util/inject'
 import { useMinecraftVersionList } from '../composables/versionList'
+import { vFallbackImg } from '../directives/fallbackImage'
 import VersionMenu from './VersionMenu.vue'
+import unknownServer from '/@/assets/unknown_server.png'
 import { useI18n } from '/@/composables'
+import { injection } from '/@/util/inject'
 
 const props = defineProps<{
   status: ServerStatus

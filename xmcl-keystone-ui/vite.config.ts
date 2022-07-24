@@ -59,6 +59,10 @@ export default defineConfig({
       input: entries,
       external: ['electron'],
     },
+    minify: 'terser',
+    terserOptions: {
+      keep_classnames: true,
+    },
     outDir: resolve(__dirname, './dist'),
     assetsInlineLimit: 0,
   },
@@ -74,6 +78,10 @@ export default defineConfig({
   },
   optimizeDeps: {
     exclude: ['electron'],
+    esbuildOptions: {
+      minify: false,
+      keepNames: true,
+    },
   },
   plugins: [
     createVuePlugin(),

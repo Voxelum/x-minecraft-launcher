@@ -42,10 +42,10 @@ export class InstanceResourcePackService extends AbstractService implements IIns
         }
       }
     }).subscribe('instanceSelect', (instancePath) => {
-      this.link(instancePath).catch((e) => [
+      this.link(instancePath).catch((e) => {
         // TODO: decorate error
-        this.emit('error', {}),
-      ])
+        this.emit('error', {})
+      })
     }).subscribe('instanceGameSettingsLoad', async (payload) => {
       if ('resourcePacks' in payload) {
         await this.diagnoseResourcePacks()

@@ -1,5 +1,5 @@
 import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder, ResolvedVersion, Version } from '@xmcl/core'
-import { LaunchException, LaunchOptions, LaunchService as ILaunchService, LaunchServiceKey, LaunchState, UserException } from '@xmcl/runtime-api'
+import { LaunchException, LaunchOptions, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
 import { ChildProcess } from 'child_process'
 import { EOL } from 'os'
 import LauncherApp from '../app/LauncherApp'
@@ -8,14 +8,11 @@ import { BaseService } from './BaseService'
 import { DiagnoseService } from './DiagnoseService'
 import { ExternalAuthSkinService } from './ExternalAuthSkinService'
 import { InstanceJavaService } from './InstanceJavaService'
-import { InstanceResourcePackService } from './InstanceResourcePacksService'
 import { InstanceService } from './InstanceService'
-import { InstanceShaderPacksService } from './InstanceShaderPacksService'
 import { InstanceVersionService } from './InstanceVersionService'
 import { JavaService } from './JavaService'
 import { Inject, StatefulService } from './Service'
 import { UserService } from './UserService'
-import { VersionService } from './VersionService'
 
 export class LaunchService extends StatefulService<LaunchState> implements ILaunchService {
   private launchedProcesses: ChildProcess[] = []
@@ -24,12 +21,9 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
     @Inject(BaseService) private baseService: BaseService,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
     @Inject(ExternalAuthSkinService) private externalAuthSkinService: ExternalAuthSkinService,
-    @Inject(InstanceResourcePackService) private instanceResourcePackService: InstanceResourcePackService,
-    @Inject(InstanceShaderPacksService) private instanceShaderPackService: InstanceShaderPacksService,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(InstanceJavaService) private instanceJavaService: InstanceJavaService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
-    @Inject(VersionService) private versionService: VersionService,
     @Inject(JavaService) private javaService: JavaService,
     @Inject(UserService) private userService: UserService,
   ) {
@@ -138,6 +132,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       }
 
       if (!options?.force && !instance.fastLaunch) {
+        await this.semaphoreManager.wait('diagnose')
         const issues = this.diagnoseService.state.issues
         for (let problems = issues.filter(p => p.autoFix && p.parameters.length > 0), i = 0;
           problems.length !== 0 && i <= 2;
@@ -192,7 +187,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         })
       }
 
-      this.log(`Will launch with ${version} version.`)
+      this.log(`Will launch with ${version.id} version.`)
 
       const instanceJava = this.instanceJavaService.state.java
 

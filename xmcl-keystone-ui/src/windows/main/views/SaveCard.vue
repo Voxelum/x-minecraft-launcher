@@ -80,39 +80,31 @@
   </v-card>
 </template>
 
-<script lang=ts>
-import { defineComponent, computed, ref } from '@vue/composition-api'
+<script lang=ts setup>
 import { InstanceSaveMetadata } from '@xmcl/runtime-api'
 import unknownPack from '/@/assets/unknown_pack.png'
-import { required } from '/@/util/props'
 import { useI18n } from '/@/composables'
+import { vFallbackImg } from '../directives/fallbackImage'
+import { vDataTransfer, vDataTransferImage, vDraggableCard } from '../directives/draggableCard'
 
-export default defineComponent({
-  props: {
-    exportSave: required<(path: string) => void>(Function),
-    source: required<InstanceSaveMetadata>(Object),
-  },
-  setup(props) {
-    const { t } = useI18n()
-    const levelMode = computed(() => {
-      switch (props.source.mode) {
-        case 0: return t('gamesetting.gametype.survival')
-        case 1: return t('gamesetting.gametype.creative')
-        case 2: return t('gamesetting.gametype.adventure')
-        case 3: return t('gamesetting.gametype.spectator')
-        case -1:
-        default:
-          return t('gamesetting.gametype.non')
-      }
-    })
-    return {
-      t,
-      unknownPack,
-      levelMode,
-      icon: ref(null),
-    }
-  },
+const props = defineProps<{
+  exportSave(path:string): void
+  source: InstanceSaveMetadata
+}>()
+
+const { t } = useI18n()
+const levelMode = computed(() => {
+  switch (props.source.mode) {
+    case 0: return t('gamesetting.gametype.survival')
+    case 1: return t('gamesetting.gametype.creative')
+    case 2: return t('gamesetting.gametype.adventure')
+    case 3: return t('gamesetting.gametype.spectator')
+    case -1:
+    default:
+      return t('gamesetting.gametype.non')
+  }
 })
+const icon = ref(null)
 </script>
 
 <style>

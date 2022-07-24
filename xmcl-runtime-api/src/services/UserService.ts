@@ -381,7 +381,7 @@ export type UserExceptions = {
 } | {
   type: 'loginGeneral'
 } | {
-  type: 'userAcquireMinecraftTokenFailed'
+  type: 'userAcquireMicrosoftTokenFailed'
   error?: string
 } | {
   type: 'userExchangeXboxTokenFailed'

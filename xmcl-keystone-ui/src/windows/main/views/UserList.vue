@@ -123,6 +123,7 @@ import { BaseServiceKey, UserProfile } from '@xmcl/runtime-api'
 import ImageShowTextureHead from '../components/PlayerAvatar.vue'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { vContextMenu } from '../directives/contextMenu'
+import { vDataTransfer, vDraggableCard } from '../directives/draggableCard'
 import { useI18n, useService } from '/@/composables'
 
 defineProps<{

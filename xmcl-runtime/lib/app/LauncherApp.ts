@@ -88,23 +88,15 @@ export abstract class LauncherApp extends EventEmitter {
 
   readonly networkManager: NetworkManager
 
-  readonly serviceManager = new ServiceManager(this, this.getPreloadServices())
-
-  readonly serviceStateManager = new ServiceStateManager(this)
-
-  readonly taskManager = new TaskManager(this)
-
-  readonly logManager = new LogManager(this)
-
-  readonly telemetryManager = new TelemetryManager(this)
-
-  readonly credentialManager = new CredentialManager(this)
-
-  readonly workerManager = new WorkerManager(this)
-
-  readonly semaphoreManager = new SemaphoreManager(this)
-
-  readonly launcherAppManager = new LauncherAppManager(this)
+  readonly logManager: LogManager
+  readonly serviceManager: ServiceManager
+  readonly serviceStateManager: ServiceStateManager
+  readonly taskManager: TaskManager
+  readonly telemetryManager: TelemetryManager
+  readonly credentialManager: CredentialManager
+  readonly workerManager: WorkerManager
+  readonly semaphoreManager: SemaphoreManager
+  readonly launcherAppManager: LauncherAppManager
 
   readonly platform: Platform = getPlatform()
 
@@ -136,10 +128,22 @@ export abstract class LauncherApp extends EventEmitter {
     this.appDataPath = join(appData, LAUNCHER_NAME)
     this.minecraftDataPath = join(appData, this.platform.name === 'osx' ? 'minecraft' : '.minecraft')
 
-    this.networkManager = new NetworkManager(this)
+    this.logManager = new LogManager(this)
+
+    this.serviceManager = new ServiceManager(this, this.getPreloadServices())
+    this.serviceStateManager = new ServiceStateManager(this)
+    this.networkManager = new NetworkManager(this, this.serviceManager, this.serviceStateManager)
+
+    this.taskManager = new TaskManager(this)
+    this.telemetryManager = new TelemetryManager(this)
+    this.credentialManager = new CredentialManager(this)
+    this.workerManager = new WorkerManager(this)
+    this.semaphoreManager = new SemaphoreManager(this)
+    this.launcherAppManager = new LauncherAppManager(this)
+
     this.managers = [this.logManager, this.networkManager, this.taskManager, this.serviceStateManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager, this.semaphoreManager, this.launcherAppManager]
 
-    const logger = this.logManager.getLoggerFor('App')
+    const logger = this.logManager.getLogger('App')
     this.log = logger.log
     this.warn = logger.warn
     this.error = logger.error
@@ -311,7 +315,7 @@ export abstract class LauncherApp extends EventEmitter {
    * Quit the app gently.
    */
   quit() {
-    Promise.all(this.managers.map(m => m.beforeQuit()))
+    Promise.all(this.managers.map(m => m.dispose()))
       .then(() => this.host.quit())
   }
 
@@ -359,11 +363,16 @@ export abstract class LauncherApp extends EventEmitter {
   // setup code
 
   async start(): Promise<void> {
-    await this.setup()
-    await this.waitEngineReady()
-    await this.onEngineReady()
-    await this.onServiceReady()
+    await Promise.all([
+      this.setup(),
+      this.waitEngineReady().then(() => {
+        this.onEngineReady()
+      })],
+    )
   }
+
+  readonly gamePathReadySignal = createPromiseSignal()
+  readonly gamePathMissingSignal = createPromiseSignal<boolean>()
 
   /**
    * Determine the root of the project. By default, it's %APPDATA%/xmcl
@@ -379,15 +388,29 @@ export abstract class LauncherApp extends EventEmitter {
       return
     }
 
-    console.log(`Boot from ${this.appDataPath}`)
+    this.log(`Boot from ${this.appDataPath}`)
+
+    // register xmcl protocol
+    if (!this.host.isDefaultProtocolClient('xmcl')) {
+      const result = this.host.setAsDefaultProtocolClient('xmcl')
+      if (result) {
+        this.log('Successfully register the xmcl protocol')
+      } else {
+        this.log('Fail to register the xmcl protocol')
+      }
+    }
+
+    await ensureDir(this.appDataPath)
+    await this.logManager.setOutputRoot(this.gameDataPath)
+
     try {
-      await ensureDir(this.appDataPath)
       const self = this as any
       self.gameDataPath = await readFile(join(this.appDataPath, 'root')).then((b) => b.toString().trim())
+      this.gamePathMissingSignal.resolve(false)
     } catch (e) {
       if (isSystemError(e) && e.code === 'ENOENT') {
         // first launch
-        await this.waitEngineReady()
+        this.gamePathMissingSignal.resolve(true)
         const { path, instancePath, locale } = await this.controller.processFirstLaunch()
         this.initialInstance = instancePath
         this.preferredLocale = locale;
@@ -402,21 +425,13 @@ export abstract class LauncherApp extends EventEmitter {
       await ensureDir(this.gameDataPath)
     } catch {
       (this.gameDataPath as any) = this.appDataPath
-      await Promise.all([ensureDir(this.gameDataPath)])
+      await ensureDir(this.gameDataPath)
     }
+    this.gamePathReadySignal.resolve();
+
     (this.temporaryPath as any) = join(this.gameDataPath, 'temp')
     await ensureDir(this.temporaryPath)
     await Promise.all(this.managers.map(m => m.setup()))
-
-    // register xmcl protocol
-    if (!this.host.isDefaultProtocolClient('xmcl')) {
-      const result = this.host.setAsDefaultProtocolClient('xmcl')
-      if (result) {
-        this.log('Successfully register the xmcl protocol')
-      } else {
-        this.log('Fail to register the xmcl protocol')
-      }
-    }
   }
 
   async migrateRoot(newRoot: string) {
@@ -454,7 +469,6 @@ export abstract class LauncherApp extends EventEmitter {
 
   protected async onEngineReady() {
     this.log(`cwd: ${process.cwd()}`)
-    this.emit('engine-ready')
 
     // start the app
     let app: InstalledAppManifest
@@ -482,16 +496,12 @@ export abstract class LauncherApp extends EventEmitter {
         app = this.builtinAppManifest
       }
     }
-    await this.controller.bootApp(app)
-
-    await Promise.all(this.managers.map(m => m.engineReady()))
-  }
-
-  protected async onServiceReady() {
+    await this.controller.activate(app)
     this.log(`Current launcher core version is ${this.version}.`)
-    await Promise.all(this.managers.map(m => m.storeReady()))
-    await this.controller.dataReady()
     this.log('App booted')
+
+    await this.gamePathReadySignal.promise
+    this.emit('engine-ready')
   }
 }
 

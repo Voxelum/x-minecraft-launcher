@@ -1,10 +1,25 @@
+import { nextTick } from 'process'
 import { Manager } from '.'
+import LauncherApp from '../app/LauncherApp'
 import { ReadWriteLock } from '../util/mutex'
 
 export default class SemaphoreManager extends Manager {
   private locks: Record<string, ReadWriteLock> = {}
 
   private semaphore: Record<string, number> = {}
+  private semaphoreWaiter: Record<string, Array<() => void>> = {}
+  private logger = this.app.logManager.getLogger('SemaphoreManager')
+
+  constructor(app: LauncherApp) {
+    super(app)
+    app.handle('semaphore', () => {
+      return this.semaphore
+    })
+    app.handle('semaphoreAbort', (_, key) => {
+      this.logger.log(`Force release the semaphore: ${key}`)
+      this.release(key)
+    })
+  }
 
   getLock(resourcePath: string) {
     if (!this.locks[resourcePath]) {
@@ -32,6 +47,16 @@ export default class SemaphoreManager extends Manager {
     this.app.broadcast('acquire', key)
   }
 
+  wait(key: string) {
+    if (this.semaphore[key] === 0) return Promise.resolve()
+    return new Promise<void>((resolve) => {
+      if (!this.semaphoreWaiter[key]) {
+        this.semaphoreWaiter[key] = []
+      }
+      this.semaphoreWaiter[key].push(resolve)
+    })
+  }
+
   /**
    * Release and broadcast the key is not used.
    * @param key The key or keys to release
@@ -42,16 +67,17 @@ export default class SemaphoreManager extends Manager {
     } else {
       this.semaphore[key] = 0
     }
+    if (this.semaphore[key] === 0) {
+      nextTick(() => {
+        if (this.semaphore[key] === 0) {
+          const all = this.semaphoreWaiter[key]
+          if (all) {
+            for (const w of all) w()
+            this.semaphoreWaiter[key] = []
+          }
+        }
+      })
+    }
     this.app.broadcast('release', key)
-  }
-
-  setup() {
-    this.app.handle('semaphore', () => {
-      return this.semaphore
-    })
-    this.app.handle('semaphoreAbort', (_, key) => {
-      this.log(`Force release the semaphore: ${key}`)
-      this.release(key)
-    })
   }
 }

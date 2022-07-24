@@ -140,7 +140,7 @@
             :disable-text="t('fabricVersion.disable')"
             :refresh-text="t('fabricVersion.empty', { version: data.minecraft })"
             :versions="fabricVersions"
-            :install="installFabric"
+            :install="installFabric_"
             @show="showVersionDirectory"
             @select="setFabric"
             @disable="setFabric('')"
@@ -186,7 +186,7 @@
             :refreshing="refreshingOptifine"
             :refresh-text="t('optifineVersion.empty', { version: data.minecraft })"
             :versions="optifineVersions"
-            :install="installOptifine"
+            :install="installOptifine_"
             @show="showVersionDirectory"
             @select="setOptifine"
             @disable="setOptifine('')"
@@ -220,6 +220,7 @@ import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, use
 import LocalVersionView from './VersionLocalView.vue'
 import { useAutoSaveLoad, useI18n, useRouter, useService } from '/@/composables'
 import VersionList from '../components/VersionList.vue'
+import { FabricArtifactVersion } from '@xmcl/installer'
 
 const props = defineProps<{ target?: string }>()
 const { replace } = useRouter()
@@ -368,6 +369,10 @@ function setQuilt(version: string) {
 
 function installOptifine_(item: any) {
   return installOptifine({ ...item, forgeVersion: data.forge })
+}
+
+function installFabric_(item: FabricArtifactVersion) {
+  return installFabric({ loader: item.version, minecraft: data.minecraft })
 }
 
 function refresh() {

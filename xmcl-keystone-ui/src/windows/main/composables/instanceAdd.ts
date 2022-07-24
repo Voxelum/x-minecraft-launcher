@@ -106,7 +106,7 @@ export function useAllTemplate(data: InstanceData) {
     const fabricId = curseforge.metadata.minecraft.modLoaders.find(l => l.id.startsWith('fabric'))
 
     result.forge = forgeId ? forgeId.id.substring(6) : result.forge
-    result.fabric = fabricId ? fabricId.id.substring(6) : result.fabric
+    result.fabric = fabricId ? fabricId.id.substring(7) : result.fabric
 
     return result
   }

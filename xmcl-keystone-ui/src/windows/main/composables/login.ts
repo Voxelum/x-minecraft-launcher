@@ -1,3 +1,4 @@
+import { DialogKey } from './dialog'
 import { useLocalStorageCacheStringValue, useLocalStorageCache } from '/@/composables/cache'
 
 export function useSelectedServices () {
@@ -11,3 +12,5 @@ export function useSelectedServices () {
     history,
   }
 }
+
+export const LoginDialog: DialogKey<boolean> = 'login'

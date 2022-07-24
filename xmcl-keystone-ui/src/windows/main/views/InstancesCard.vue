@@ -196,6 +196,7 @@ import unknownServer from '/@/assets/unknown_server.png'
 import { useBusy, useI18n, useService } from '/@/composables'
 import { getBanner } from '/@/util/banner'
 import QuiltIcon from '/@/components/QuiltIcon.vue'
+import { vDraggableCard } from '../directives/draggableCard'
 
 const props = defineProps<{ instance: Instance }>()
 const isBusy = useBusy(LockKey.instance(props.instance.path))
