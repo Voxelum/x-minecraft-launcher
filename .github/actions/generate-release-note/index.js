@@ -10,9 +10,12 @@ async function main(output) {
     for (const l of locales) {
         let content = body
         if (l === 'zh') {
-            content = content.replace(/BREAKING CHANGES/g, '破坏性改动').replace(/Features/, '新特性').replace('Bug Fixes', '修复与补丁')
+            content = content.replace(/BREAKING CHANGES/g, '破坏性改动').replace(/Features/, '新特性').replace('Bug Fixes & Patches', '修复与补丁')
+                .replace('Refactors', '重构')
                 .replace('Dependencies Updates', '依赖更新')
         }
+        const today = new Date()
+        content = `---\nversion: ${version}\ndate: ${today.getUTCFullYear()}-${today.getUTCMonth().toString().padStart(2, '0')}-${today.getUTCDate()}\nlayout: changelog\n---\n${content}`
         try {
             writeFileSync(`xmcl-page/src/pages/${l}/changelogs/${version}.md`, content)
         } catch (e) {
