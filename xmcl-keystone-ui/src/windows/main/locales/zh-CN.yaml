@@ -226,6 +226,7 @@ installVersion:
   name: 安装%{version}的游戏本体
 instance:
   addServer: 添加服务器
+  current: 当前实例
   delete: 删除游戏
   deleteHint: 游戏的数据将完全被移除。你确定继续此操作吗？
   fileApi: 远程同步文件服务器 API 地址
@@ -350,20 +351,20 @@ login:
   signup: 注册
   signupDescription: 没有账号?
 loginError:
+  acquireMicrosoftTokenFailed: 获取 Microsoft 通证失败。这可能是一个网络问题，请重试。
+  badNetworkOrServer: 请检查你的网络连接！当然也可能是验证服务器挂了:/
+  checkOwnershipFailed: 在检查你是否拥有 Minecraft 时发生错误，请重试
   connectionReset: 因为服务端断开了连接导致登录失败，请重试或检查网络
+  fetchMinecraftProfileFailed: '获取 Minecraft 用户信息失败: {reason}'
   illegalEmail: 当前Email格式不合法
   invalidCredentials: 无法验证. 用户名或密码错误.
+  loginMinecraftByXboxFailed: 在通过  Xbox 通证交换 Minecraft 通证的过程中发生错误，请确认你的 Xbox 账号拥有 Minecraft。你可以尝试重试登录
   loginXboxFailed: 请求 xbox 通证失败，请确保你的微软账号已经绑定了一个 Xbox 账号！
+  requestFailed: 由于未知原因登录失败，请重试
   requireEmail: 必须要Email才能登陆
   requirePassword: 请输入密码
   requireUsername: 用户名不能为空
   timeout: 登录超时，请重试或检查你的网络！
-  acquireMicrosoftTokenFailed: 获取 Microsoft 通证失败。这可能是一个网络问题，请重试。
-  badNetworkOrServer: 请检查你的网络连接！当然也可能是验证服务器挂了:/
-  checkOwnershipFailed: 在检查你是否拥有 Minecraft 时发生错误，请重试
-  fetchMinecraftProfileFailed: '获取 Minecraft 用户信息失败: {reason}'
-  loginMinecraftByXboxFailed: 在通过  Xbox 通证交换 Minecraft 通证的过程中发生错误，请确认你的 Xbox 账号拥有 Minecraft。你可以尝试重试登录
-  requestFailed: 由于未知原因登录失败，请重试
 logsCrashes:
   crashes: 崩溃报告
   logs: 日志
