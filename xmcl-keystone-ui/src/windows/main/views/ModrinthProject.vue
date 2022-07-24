@@ -24,6 +24,8 @@
       <Header
         class="flex-grow-0"
         :project="project"
+        :install-to="installTo"
+        @destination="installTo = $event"
         @create="onCreate"
         @install="onInstall"
       />
@@ -92,7 +94,7 @@
 <script lang="ts"  setup>
 import { Ref } from '@vue/composition-api'
 import { useService } from '/@/composables'
-import { ModrinthServiceKey, PersistedResource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, InstanceServiceKey, ModrinthServiceKey, PersistedResource, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useRefreshable } from '/@/composables/refreshable'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
 import Tags from './ModrinthProjectTags.vue'
@@ -120,15 +122,21 @@ watch(viewingImage, (v) => {
 
 const { show } = useDialog(AddInstanceDialogKey)
 const { state: resourceState } = useService(ResourceServiceKey)
+const { state: instanceState } = useService(InstanceServiceKey)
+const { install } = useService(InstanceModsServiceKey)
 
 const { getProject, installVersion } = useService(ModrinthServiceKey)
 const project: Ref<undefined | Project> = ref(undefined)
+const installTo = ref(instanceState.path)
 const { refresh, refreshing } = useRefreshable(async () => {
   const result = await getProject(props.id)
   project.value = result
 })
-const onInstall = (project: ProjectVersion) => {
-  installVersion({ version: project })
+const onInstall = async (project: ProjectVersion) => {
+  const resource = await installVersion({ version: project })
+  if (installTo.value) {
+    await install({ mods: [resource] })
+  }
 }
 
 const onCreate = (v: ProjectVersion) => {

@@ -148,7 +148,7 @@
 
 <script lang=ts setup>
 import { File } from '@xmcl/curseforge'
-import { ProjectType, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceServiceKey, ProjectType, ResourceServiceKey } from '@xmcl/runtime-api'
 import ProjectDescription from './CurseforgeProjectDescription.vue'
 import ProjectFiles from './CurseforgeProjectFiles.vue'
 import Images from './CurseforgeProjectImages.vue'
@@ -174,7 +174,8 @@ const projectId = computed(() => Number.parseInt(props.id, 10))
 const { project, refreshing } = useCurseforgeProject(projectId.value)
 const { install: installFile, getFileStatus } = useCurseforgeInstall(props.type as any, projectId.value)
 const { state: resourceState } = useService(ResourceServiceKey)
-const destination = ref(props.from || '')
+const { state: instanceState } = useService(InstanceServiceKey)
+const destination = ref(props.from || instanceState.path)
 const { t } = useI18n()
 
 const data = reactive({

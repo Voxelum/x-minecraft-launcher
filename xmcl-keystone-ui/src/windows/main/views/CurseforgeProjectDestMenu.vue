@@ -19,7 +19,7 @@
         </span>
       </v-btn>
     </template>
-    <v-list>
+    <v-list class="overflow-auto max-h-100">
       <v-list-item @click="onSelect(defaultItem)">
         <v-list-item-avatar>
           <v-icon>close</v-icon>
@@ -34,10 +34,20 @@
         <v-list-item-avatar>
           <v-icon>golf_course</v-icon>
         </v-list-item-avatar>
-        <v-list-item-title>
+        <v-list-item-title class="flex items-center">
           {{
             t("curseforge.installTo", { path: item.name })
           }}
+          <div class="flex-grow" />
+          <v-chip
+            v-if="selectedPath === item.path"
+            color="primary"
+            outlined
+            label
+            small
+          >
+            {{ t('instance.current') }}
+          </v-chip>
         </v-list-item-title>
       </v-list-item>
     </v-list>
@@ -45,10 +55,10 @@
 </template>
 
 <script lang=ts setup>
-import { useI18n } from '/@/composables'
+import { useI18n, useService } from '/@/composables'
 import { basename } from '/@/util/basename'
-import { optional } from '/@/util/props'
 import { useInstances } from '../composables/instance'
+import { InstanceServiceKey } from '@xmcl/runtime-api'
 
 interface Item {
   name: string
@@ -62,10 +72,13 @@ const props = defineProps<{
 
 const emit = defineEmits(['input'])
 
-const { instances } = useInstances()
+const { state } = useService(InstanceServiceKey)
+
+const instances = computed(() => state.instances)
+const selectedPath = computed(() => state.path)
 const { t } = useI18n()
 const defaultItem = computed(() => ({ name: t('curseforge.installToStorage'), path: '' }))
-const items = computed(() => instances.value.map(i => ({ path: i.path, name: i.name ?? basename(i.path) })))
+const items = computed(() => instances.value.map(i => ({ path: i.path, name: i.name ?? basename(i.path) })).sort((a, b) => !a.path ? -1 : a.path === selectedPath.value ? -1 : 1))
 const selected = computed({
   get() {
     const instance = instances.value.find(i => i.path === props.value)
