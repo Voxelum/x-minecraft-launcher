@@ -67,6 +67,10 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
       headers: {
         'Content-Type': 'application/json',
       },
+      retry: {
+        limit: 3,
+        calculateDelay: ({ attemptCount }) => attemptCount * 1000,
+      },
     }).json()
     return result.data
   }
