@@ -171,9 +171,11 @@ export default class ServiceManager extends Manager {
    * Dispose all services
    */
   async dispose() {
+    this.logger.log('Dispose all services')
     await Promise.all(Object.values(this.servicesMap).map((s) => s.dispose().catch((e) => {
       this.logger.error(`Error during dispose ${Object.getPrototypeOf(s).constructor.name}:`)
       this.logger.error(e)
     })))
+    this.logger.log('All services are disposed')
   }
 }

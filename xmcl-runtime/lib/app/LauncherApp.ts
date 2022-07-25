@@ -24,6 +24,7 @@ import { LauncherAppManager } from './LauncherAppManager'
 import { UserService } from '../services/UserService'
 import { Manager } from '../managers'
 import { createPromiseSignal } from '../util/promiseSignal'
+import { setTimeout } from 'timers/promises'
 
 export interface Platform {
   /**
@@ -141,7 +142,7 @@ export abstract class LauncherApp extends EventEmitter {
     this.semaphoreManager = new SemaphoreManager(this)
     this.launcherAppManager = new LauncherAppManager(this)
 
-    this.managers = [this.logManager, this.networkManager, this.taskManager, this.serviceStateManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager, this.semaphoreManager, this.launcherAppManager]
+    this.managers = [this.networkManager, this.taskManager, this.serviceStateManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager, this.semaphoreManager, this.launcherAppManager, this.logManager]
 
     const logger = this.logManager.getLogger('App')
     this.log = logger.log
@@ -314,9 +315,20 @@ export abstract class LauncherApp extends EventEmitter {
   /**
    * Quit the app gently.
    */
-  quit() {
-    Promise.all(this.managers.map(m => m.dispose()))
-      .then(() => this.host.quit())
+  async quit() {
+    this.log('Try to gently close the app')
+
+    try {
+      const gently = await Promise.race([
+        setTimeout(1000).then(() => false),
+        Promise.all(this.managers.map(m => m.dispose())).then(() => true),
+      ])
+      if (!gently) {
+        this.warn('Quit app timeout. Ignore the manager is not disposed')
+      }
+    } finally {
+      this.host.quit()
+    }
   }
 
   /**
@@ -401,7 +413,7 @@ export abstract class LauncherApp extends EventEmitter {
     }
 
     await ensureDir(this.appDataPath)
-    await this.logManager.setOutputRoot(this.gameDataPath)
+    await this.logManager.setOutputRoot(this.appDataPath)
 
     try {
       const self = this as any

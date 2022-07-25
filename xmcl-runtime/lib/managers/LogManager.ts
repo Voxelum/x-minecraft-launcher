@@ -100,6 +100,7 @@ export default class LogManager extends Manager {
     const stream = createWriteStream(mainLog, { encoding: 'utf-8', flags: 'w+' })
     this.output.pipe(stream)
     this.openedStream.MAIN_LOG = stream
+    this.log(`Set log root to ${root}`)
   }
 
   async dispose() {

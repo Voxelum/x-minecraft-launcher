@@ -73,7 +73,9 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
    * If user does not trust the url, it won't open the site.
    * @param url The pending url
    */
-  openInBrowser = this.app.openInBrowser.bind(this.app)
+  openInBrowser(url: string) {
+    return this.app.openInBrowser(url)
+  }
 
   /**
    * A electron provided function to show item in directory
@@ -87,7 +89,9 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
    * A safe method that only open directory. If the `path` is a file, it won't execute it.
    * @param path The directory path.
    */
-  openDirectory = this.app.openDirectory
+  openDirectory(path: string) {
+    return this.app.openDirectory(path)
+  }
 
   /**
    * Quit and install the update once the update is ready
@@ -134,9 +138,13 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
     this.state.updateStatusSet('ready')
   }
 
-  quit = this.app.quit.bind(this.app)
+  quit() {
+    return this.app.quit()
+  }
 
-  exit = this.app.exit
+  exit(code?: number) {
+    this.app.exit(code)
+  }
 
   async reportItNow(options: { destination: string }): Promise<void> {
     const task = new ZipTask(options.destination)
