@@ -1,7 +1,7 @@
 <template>
   <v-card
     v-if="!data.fetching"
-    class="flex flex-col overflow-auto"
+    class="flex flex-col overflow-auto setup"
   >
     <v-card-title
       class="elevation-3 text-lg font-bold"
@@ -194,44 +194,15 @@ async function setup() {
 </script>
 
 <style>
-.moveable {
-  -webkit-app-region: drag;
-  user-select: none;
-}
-
-.non-moveable {
-  -webkit-app-region: no-drag;
-}
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.01s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
-}
-.v-list__tile__content {
+.setup .v-list__tile__content {
   margin-left: 7px;
 }
-.v-list__tile__title {
+.setup .v-list__tile__title {
   overflow: auto;
   text-overflow: unset;
 }
-::-webkit-scrollbar {
-  display: none;
-}
 
-body {
-  height: 100%;
-}
-.moveable {
-  -webkit-app-region: drag;
-  user-select: none;
-}
-
-.non-moveable {
-  -webkit-app-region: no-drag;
-}
-.v-stepper__wrapper {
+.setup .v-stepper__wrapper {
   @apply h-full flex flex-col overflow-auto;
 }
 </style>

@@ -13,7 +13,7 @@
     >
       <side-bar />
       <main
-        class="flex top-0 bottom-0 right-0 overflow-auto max-h-full absolute left-[80px]"
+        class="flex top-0 bottom-0 right-0 overflow-auto max-h-full relative"
         :class="{ solid: !blurMainBody }"
       >
         <transition
