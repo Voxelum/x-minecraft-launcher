@@ -58,7 +58,6 @@
 <script lang=ts setup>
 import { useI18n, useService } from '/@/composables'
 import { basename } from '/@/util/basename'
-import { useInstances } from '../composables/instance'
 import { InstanceServiceKey } from '@xmcl/runtime-api'
 
 interface Item {
@@ -80,7 +79,7 @@ const instances = computed(() => state.instances)
 const selectedPath = computed(() => state.path)
 const { t } = useI18n()
 const defaultItem = computed(() => ({ name: t('curseforge.installToStorage'), path: '' }))
-const items = computed(() => instances.value.map(i => ({ path: i.path, name: i.name ?? basename(i.path) })).sort((a, b) => !a.path ? -1 : a.path === selectedPath.value ? -1 : 1))
+const items = computed(() => instances.value.map(i => ({ path: i.path, name: i.name || i.runtime.minecraft })).sort((a, b) => !a.path ? -1 : a.path === selectedPath.value ? -1 : 1))
 const selected = computed({
   get() {
     const instance = instances.value.find(i => i.path === props.value)
