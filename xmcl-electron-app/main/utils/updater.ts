@@ -197,7 +197,7 @@ let injectedUpdate = false
 
 async function getUpdateFromSelfHost(app: ElectronLauncherApp): Promise<ReleaseInfo> {
   const allowPreRelease = app.serviceManager.getOrCreateService(BaseService).state.allowPrerelease
-  const result: any = app.networkManager.request(`https://api.xmcl.app/latest?version=v${app.version}&prerelease=${allowPreRelease || false}`).json()
+  const result: any = await app.networkManager.request(`https://api.xmcl.app/latest?version=v${app.version}&prerelease=${allowPreRelease || false}`).json()
     .catch(() => app.networkManager.request('https://xmcl.blob.core.windows.net/releases/latest_version.json').json())
   const updateInfo: ReleaseInfo = {
     name: result.tag_name,
