@@ -1,6 +1,7 @@
 import { Task, TaskGroup } from '@xmcl/task'
 import { EventEmitter } from 'events'
 import { TaskAddedPayload, TaskBatchUpdatePayloads, TaskPayload, TaskState, TaskUpdatePayload } from '@xmcl/runtime-api'
+import { Logger } from '../util/log'
 
 export type TaskEventType = 'update' | 'start' | 'success' | 'fail' | 'pause' | 'cancel' | 'resume'
 
@@ -143,6 +144,7 @@ export function createTaskMonitor (
  * @returns The destroy function of this push. You can destroy the pusher by calling it.
  */
 export function createTaskPusher (
+  logger: Logger,
   emitter: TaskEventEmitter,
   interval: number,
   threshold: number,
@@ -161,6 +163,7 @@ export function createTaskPusher (
   }
   const handle = setInterval(flush, interval)
   return () => {
+    logger.log('Destroy task pusher')
     monitor.destroy()
     clearInterval(handle)
   }

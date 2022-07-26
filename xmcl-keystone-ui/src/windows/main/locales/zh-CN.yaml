@@ -178,6 +178,7 @@ installAuthlibInjector: 安装 authlib-injector
 installByProfile:
   name: 通过安装配置文件
   postProcessing: 后处理，更新本地文件
+  library: 安装库
 installCurseforgeFile: 安装 Curseforge 文件
 installDependencies:
   installAssets:
@@ -192,9 +193,7 @@ installFabric:
   name: 安装 Fabric
 installForge:
   downloadInstaller: 下载 Forge 安装器
-  libraries:
-    library: 检查库
-    name: 安装依赖库
+  library: 检查库
   name: 安装 Forge
   postProcessing: 处理 Minecraft Jar 文件
 installJre:

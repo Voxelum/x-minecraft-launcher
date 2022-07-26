@@ -140,7 +140,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
       },
       validator: async (builder, issue) => {
         if (this.state.version?.id === issue.version) {
-          this.diagnoseProfile(builder, issue.version, issue.minecraft, MinecraftFolder.from(this.state.version.minecraftDirectory))
+          await this.diagnoseProfile(builder, issue.version, issue.minecraft, MinecraftFolder.from(this.state.version.minecraftDirectory))
         }
       },
     })

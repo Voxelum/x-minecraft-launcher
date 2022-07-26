@@ -214,6 +214,7 @@ installAuthlibInjector: Install authlib-injector
 installByProfile:
   name: Install by Install Profile
   postProcessing: Post Processing
+  library: Install Library
 installCurseforgeFile: Install Curseforge File
 installDependencies:
   installAssets:
@@ -228,9 +229,7 @@ installFabric:
   name: Install Fabric
 installForge:
   downloadInstaller: Download Installer
-  libraries:
-    library: Install Library {lib}
-    name: Download Libraries
+  library: Install Library {lib}
   name: Install Forge
   postProcessing: Post Processing
 installJre:

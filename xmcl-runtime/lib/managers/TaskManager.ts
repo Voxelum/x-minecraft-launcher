@@ -29,7 +29,7 @@ export default class TaskManager extends Manager {
       if (this.pushers.has(event.sender)) {
         this.pushers.get(event.sender)!()
       }
-      const pusher = createTaskPusher(this.emitter, 500, 30, (payload) => {
+      const pusher = createTaskPusher(this.logger, this.emitter, 500, 30, (payload) => {
         event.sender.send('task-update', payload)
       })
       this.pushers.set(event.sender, pusher)
