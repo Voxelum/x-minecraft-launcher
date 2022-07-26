@@ -60,14 +60,11 @@ export default class TaskManager extends Manager {
         default:
       }
     })
-    this.emitter.on('fail', (uuid, task, error) => {
-      this.logger.warn(`Task ${task.name}(${uuid}) failed!`)
-      this.logger.warn(error)
-    })
   }
 
   private createTaskListener(uid: string): TaskContext {
     const emitter = this.emitter
+    const logger = this.logger
     const context = {
       uuid: uid,
       onStart(task: Task<any>) {
@@ -83,6 +80,15 @@ export default class TaskManager extends Manager {
           const e = serializeError(error)
           emitter.emit('fail', uid, task, e)
           Reflect.set(task, 'error', e)
+
+          logger.warn(`Task ${task.name}(${uid}) failed!`)
+          if (error instanceof Array) {
+            for (const e of error) {
+              logger.warn(e)
+            }
+          } else {
+            logger.warn(error)
+          }
         }
       },
       onSucceed(task: Task<any>, result: any) {
