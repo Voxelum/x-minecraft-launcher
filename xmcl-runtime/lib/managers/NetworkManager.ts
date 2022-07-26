@@ -87,6 +87,12 @@ export default class NetworkManager extends Manager {
     this.request = got.extend({
       agent: this.agents,
       cache,
+      retry: {
+        limit: 3,
+        calculateDelay({ attemptCount }) {
+          return attemptCount * 3
+        },
+      },
     })
 
     const setMaxSocket = (val: number) => {
