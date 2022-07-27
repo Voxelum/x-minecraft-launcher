@@ -74,6 +74,9 @@
 
 ## 致谢
 
+
+[GodLeaveMe](https://github.com/GodLeaveMe), 维护 AUR package registry.
+[0xc0000142](https://github.com/0xc0000142), 维护 winget.
 [vanja-san](https://github.com/vanja-san), 提供给我们俄语翻译！
 [lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) 在启动核心上帮助了我，
 [laolarou726](https://github.com/laolarou726), 给我启动器提供了很多灵感
