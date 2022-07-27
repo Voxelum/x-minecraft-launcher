@@ -26,6 +26,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
         const { minecraft, forge, fabricLoader, optifine, quiltLoader } = issue
         const version = await this.installRuntime({ minecraft, forge, fabricLoader, optifine, quiltLoader })
         if (version) {
+          await this.installService.installDependencies(version)
           await this.versionService.refreshVersion(version)
         }
       },

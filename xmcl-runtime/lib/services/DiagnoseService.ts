@@ -106,12 +106,13 @@ export class DiagnoseService extends StatefulService<DiagnoseState> implements I
         for (const issue of issues) {
           const descriptor = this.descriptors[issue.id]
           if (descriptor.fix) {
-            await descriptor.fix(issue.parameters[0]).catch(e => {
+            const current = issue.parameters[0]
+            await descriptor.fix(current).catch(e => {
               this.emit('error', new DiagnoseServiceException({ type: 'issueFix', error: e }))
             })
             if (descriptor.validator) {
               const validator = descriptor.validator
-              postValidate.push(() => validator(builder, issue.parameters[0]))
+              postValidate.push(() => validator(builder, current))
             }
           }
         }
