@@ -53,11 +53,18 @@ jobs:
       run:
         shell: powershell
     steps:
+      - uses: actions/github-script@v6
+        name: Get Release Version
+        id: version
+        with: 
+          result-encoding: string
+          script: |
+            return '${{ github.event.release.tag_name }}'.substring(1);
       - name: Create winget PR
         run: |
           iwr https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
           .\wingetcreate.exe update CI010.XMinecraftLauncher -u $Env:URL -v $Env:VERSION -t $Env:TOKEN --submit
         env:
           TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
-          VERSION: ${{ github.event.release.tag_name }}
-          URL: ${{ format('https://xmcl-release-ms.azureedge.net/releases/xmcl-{0}.appx', github.event.release.tag_name) }}
+          VERSION: ${{ steps.version.outputs.result }}
+          URL: ${{ format('https://xmcl-release-ms.azureedge.net/releases/xmcl-{0}.appx', steps.version.outputs.result) }}
