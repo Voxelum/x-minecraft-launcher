@@ -19,7 +19,7 @@ dataMigration:
   cleanOldDataHint: 移除所有以前的Minecraft数据，包括资源包、地图存档等
   copyOldToNew: 迁移数据
   copyOldToNewHint: 在移除旧数据之前，将所有旧数据复制到新的位置
-  migrateClean: Delete Old Data
+  migrateClean: 删除旧数据
   migrateDone: 结束数据迁移
   migrateFailed: 数据迁移失败
   migrateSuccess: 数据迁移成功
@@ -388,7 +388,7 @@ mod:
   deletionRestHint: 等 {rest} 个模组……
   dropHint: 将Mod的jar文件拖入此处来导入
   export: 导出 Mod
-  filter: 过滤 Mods
+  filter: 筛选 Mods
   hideIncompatible: 隐藏不兼容 Mods
   import: 导入 Mod
   incompatible: 可能不兼容当前版本。
@@ -408,14 +408,14 @@ mod:
 modpack:
   author: 署名
   authorHint: 这个游戏/整合包的制作人
-  create: 创建新Mod包
+  create: 创建新的整合包
   delete:
-    hint: 这将删除整合包 {name} 和他的基本资料。你确定么？
+    hint: 这将删除整合包 {name} 和它的基本资料。你确定么？
     title: 删除整合包
   description: 游戏简介
   descriptionHint: 通用的 modpack 简介。在导出成 curseforge 整合包或者其他格式时会使用
   dropHint: 通过拖拽导入整合包文件
-  edit: 编辑Mod包信息
+  edit: 编辑整合包信息
   emitCurseforge: 生成 Curseforge 整合包
   emitMcbbs: 生成 MCBBS 整合包
   emitModrinth: 生成 Modrinth 整合包
@@ -430,12 +430,13 @@ modpack:
     github: Github 地址
     modrinth: Modrinth 文件
     override: 普通文件
-  filter: 过滤整合包
+  filter: 筛选整合包
   general: 基本信息
   includeAssets: 是否包含游戏资源 (assets) 文件
   includeLibraries: 是否包含库文件
   includes: 打包文件
   installFromCurseforge: 从 Curseforge 安装
+  installFromModrinth: 从 Modrinth 安装
   modpackVersion: 整合包版本
   name: 整合包
   overrides: 整合包打包覆盖 (overrides)
@@ -449,19 +450,21 @@ modrinth:
   avaiableFor: 可用于
   categories:
     adventure: 冒险
-    challenging: 挑战
+    challenging: 高难度
     combat: 战斗
-    cursed: Cursed
+    cursed: 怪异
     decoration: 装饰
     equipment: 装备
+    fabric: Fabric
     food: 食物
-    kitchen-sink: 厨房用具
-    library: 库
-    lightweight: 轻量级
+    forge: Forge
+    kitchen-sink: 杂烩
+    library: 程序库
+    lightweight: 轻量
     magic: 魔法
     misc: 杂项
-    modloader: Mod 加载器
-    multiplayer: 多人
+    modloader: ModLoader
+    multiplayer: 多人游戏
     name: 分类
     optimization: 优化
     quests: 任务导向
@@ -469,7 +472,7 @@ modrinth:
     rift: Rift
     storage: 存储
     technology: 科技
-    utility: 工具
+    utility: 实用工具
     worldgen: 世界生成
   clientSide: 客户端
   createAt: 创建日期
@@ -478,12 +481,12 @@ modrinth:
   environments:
     client: 客户端
     default: 默认
-    name: 环境
+    name: 运行环境
     optional: 可选
-    required: 必选
+    required: 必装
     server: 服务端
     unsupported: 不支持
-  followers: 关注者
+  followers: 关注数
   gallery: 图片展示
   gameVersions:
     name: 游戏版本
@@ -584,7 +587,7 @@ resourcepack:
   deletionHint: 你将永远失去该资源包的数据以及相关信息，你进行此操作吗？
   dropHint: 将资源包zip或文件夹拖入此处导入
   export: 导出资源包
-  filter: 过滤材质包
+  filter: 筛选材质包
   import: 导入资源包
   incompatible: 不兼容的资源包格式({format})。适用范围 {accept}。当前版本 {actual}。
   name: 资源包 | 资源包
@@ -629,7 +632,7 @@ server:
     requirename: 缺少服务器名
     wrongVersion: 当前版本与服务器协议不匹配，可能导致连接错误
   expectedVersions: 已支持的版本
-  filterVersion: 过滤服务器相应的 Minecraft 版本
+  filterVersion: 筛选服务器相应的 Minecraft 版本
   host: 服务器地址
   hostHint: 服务器的ip地址（和端口号）
   ipAddress: IP 地址
@@ -677,7 +680,7 @@ setup:
 shaderPack:
   deletion: 删除光影包
   deletionHint: 这将把光影包文件 {path} 永久删除。
-  filter: 过滤光影包
+  filter: 筛选光影包
   internal: 内置
   internalDescription: 使用内置 shader，在此模式下你可以编辑 shader 管线选项
   name: 光影包
