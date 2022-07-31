@@ -9,10 +9,10 @@ import { ControllerPlugin } from './plugin'
 
 export const peerPlugin: ControllerPlugin = function (this: Controller) {
   this.app.once('engine-ready', () => {
-    const peerService = this.app.serviceManager.getOrCreateService(PeerService)
+    const peerService = this.app.serviceManager.get(PeerService)
 
     ipcMain.handle('get-user-info', () => {
-      const user = this.app.serviceManager.getOrCreateService(UserService).state.user
+      const user = this.app.serviceManager.get(UserService).state.user
       const profile = user?.profiles[user.selectedProfile]
       return { name: profile?.name ?? 'Player', avatar: profile?.textures.SKIN.url ?? '' }
     })

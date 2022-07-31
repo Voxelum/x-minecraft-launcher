@@ -1,13 +1,14 @@
 import { getPlatform } from '@xmcl/core'
-import { InstalledAppManifest, PeerService, ReleaseInfo } from '@xmcl/runtime-api'
+import { InstalledAppManifest, ReleaseInfo } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { EventEmitter } from 'events'
-import { ensureDir, readFile, readJson, writeFile } from 'fs-extra'
+import { ensureDir, readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
+import { setTimeout } from 'timers/promises'
 import { URL } from 'url'
 import { IS_DEV, LAUNCHER_NAME } from '../constant'
 import { Client } from '../engineBridge'
-import CredentialManager from '../managers/CredentialManager'
+import { Manager } from '../managers'
 import LogManager from '../managers/LogManager'
 import NetworkManager from '../managers/NetworkManager'
 import SemaphoreManager from '../managers/SemaphoreManager'
@@ -17,14 +18,13 @@ import TaskManager from '../managers/TaskManager'
 import TelemetryManager from '../managers/TelemetryManager'
 import WorkerManager from '../managers/WorkerManager'
 import { AbstractService, ServiceConstructor } from '../services/Service'
+import { UserService } from '../services/UserService'
+import { YggdrasilUserService } from '../services/YggdrasilUserService'
 import { isSystemError } from '../util/error'
+import { createPromiseSignal } from '../util/promiseSignal'
 import { Host } from './Host'
 import { LauncherAppController } from './LauncherAppController'
 import { LauncherAppManager } from './LauncherAppManager'
-import { UserService } from '../services/UserService'
-import { Manager } from '../managers'
-import { createPromiseSignal } from '../util/promiseSignal'
-import { setTimeout } from 'timers/promises'
 
 export interface Platform {
   /**
@@ -47,18 +47,15 @@ export interface LauncherApp {
   on(channel: 'window-all-closed', listener: () => void): this
   on(channel: 'service-ready', listener: (service: AbstractService) => void): this
   on(channel: 'engine-ready', listener: () => void): this
-  on(channel: 'microsoft-authorize-code', listener: (code: string) => void): this
 
   once(channel: 'peer-join', listener: (info: { description: string; type: 'offer' | 'answer' }) => void): this
   once(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
   once(channel: 'window-all-closed', listener: () => void): this
   once(channel: 'service-ready', listener: (service: AbstractService) => void): this
   once(channel: 'engine-ready', listener: () => void): this
-  once(channel: 'microsoft-authorize-code', listener: (error?: Error, code?: string) => void): this
 
   emit(channel: 'peer-join', info: { description: string; type: 'offer' | 'answer' }): this
   emit(channel: 'app-booted', manifest: InstalledAppManifest): this
-  emit(channel: 'microsoft-authorize-code', error?: Error, code?: string): this
   emit(channel: 'window-all-closed'): boolean
   emit(channel: 'engine-ready'): boolean
   emit(channel: 'service-ready', service: AbstractService): boolean
@@ -94,7 +91,6 @@ export abstract class LauncherApp extends EventEmitter {
   readonly serviceStateManager: ServiceStateManager
   readonly taskManager: TaskManager
   readonly telemetryManager: TelemetryManager
-  readonly credentialManager: CredentialManager
   readonly workerManager: WorkerManager
   readonly semaphoreManager: SemaphoreManager
   readonly launcherAppManager: LauncherAppManager
@@ -137,12 +133,11 @@ export abstract class LauncherApp extends EventEmitter {
 
     this.taskManager = new TaskManager(this)
     this.telemetryManager = new TelemetryManager(this)
-    this.credentialManager = new CredentialManager(this)
     this.workerManager = new WorkerManager(this)
     this.semaphoreManager = new SemaphoreManager(this)
     this.launcherAppManager = new LauncherAppManager(this)
 
-    this.managers = [this.networkManager, this.taskManager, this.serviceStateManager, this.serviceManager, this.telemetryManager, this.credentialManager, this.workerManager, this.semaphoreManager, this.launcherAppManager, this.logManager]
+    this.managers = [this.networkManager, this.taskManager, this.serviceStateManager, this.serviceManager, this.telemetryManager, this.workerManager, this.semaphoreManager, this.launcherAppManager, this.logManager]
 
     const logger = this.logManager.getLogger('App')
     this.log = logger.log
@@ -249,25 +244,18 @@ export abstract class LauncherApp extends EventEmitter {
       const serverUrl = decodeURIComponent(url.substring('authlib-injector:yggdrasil-server:'.length))
       const parsed = new URL(serverUrl)
       const domain = parsed.host
-      const userService = this.serviceManager.getOrCreateService(UserService)
-      userService.state.authServiceSet({
-        name: domain,
-        api: {
-          hostName: serverUrl,
-          authenticate: '/authserver/authenticate',
-          refresh: '/authserver/refresh',
-          validate: '/authserver/validate',
-          invalidate: '/authserver/invalidate',
-          signout: '/authserver/signout',
-        },
-      })
-      userService.state.profileServiceSet({
-        name: domain,
-        api: {
-          profile: `${serverUrl}/sessionserver/session/minecraft/profile/\${uuid}`,
-          profileByName: `${serverUrl}/users/profiles/minecraft/\${name}`,
-          texture: `${serverUrl}/user/profile/\${uuid}/\${type}`,
-        },
+      const userService = this.serviceManager.get(YggdrasilUserService)
+      userService.registerThirdPartyApi(domain, {
+        hostName: serverUrl,
+        authenticate: '/authserver/authenticate',
+        refresh: '/authserver/refresh',
+        validate: '/authserver/validate',
+        invalidate: '/authserver/invalidate',
+        signout: '/authserver/signout',
+      }, {
+        profile: `${serverUrl}/sessionserver/session/minecraft/profile/\${uuid}`,
+        profileByName: `${serverUrl}/users/profiles/minecraft/\${name}`,
+        texture: `${serverUrl}/user/profile/\${uuid}/\${type}`,
       })
       userService.emit('auth-profile-added', domain)
       this.log(`Import the url ${url} as authlib-injector profile ${domain}`)
@@ -284,7 +272,8 @@ export abstract class LauncherApp extends EventEmitter {
         (error as any).error = err
       }
       const code = parsed.searchParams.get('code') as string
-      this.emit('microsoft-authorize-code', error, code)
+      const userService = this.serviceManager.get(UserService)
+      userService.emit('microsoft-authorize-code', error, code)
       return true
     } else if (parsed.host === 'launcher' && parsed.pathname === '/app') {
       const params = parsed.searchParams
@@ -319,13 +308,10 @@ export abstract class LauncherApp extends EventEmitter {
     this.log('Try to gently close the app')
 
     try {
-      const gently = await Promise.race([
+      await Promise.race([
         setTimeout(1000).then(() => false),
         Promise.all(this.managers.map(m => m.dispose())).then(() => true),
       ])
-      if (!gently) {
-        this.warn('Quit app timeout. Ignore the manager is not disposed')
-      }
     } finally {
       this.host.quit()
     }

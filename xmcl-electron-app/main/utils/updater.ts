@@ -196,7 +196,7 @@ export function quitAndInstallFullUpdate() {
 let injectedUpdate = false
 
 async function getUpdateFromSelfHost(app: ElectronLauncherApp): Promise<ReleaseInfo> {
-  const { allowPrerelease, locale } = app.serviceManager.getOrCreateService(BaseService).state
+  const { allowPrerelease, locale } = app.serviceManager.get(BaseService).state
   const result: any = await app.networkManager.request(`https://api.xmcl.app/latest?version=v${'0.30.0'}&prerelease=${allowPrerelease || false}`, {
     headers: {
       'Accept-Language': locale,

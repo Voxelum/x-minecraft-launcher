@@ -1,16 +1,18 @@
 import { Frame, parse } from '@xmcl/gamesetting'
-import { compareRelease, compareSnapshot, EditGameSettingOptions, EditShaderOptions, InstanceOptionException, InstanceOptionsService as IInstanceOptionsService, InstanceOptionsServiceKey, InstanceOptionsState, isCompatible, isReleaseVersion, isSnapshotPreview, packFormatVersionRange, parseShaderOptions, stringifyShaderOptions } from '@xmcl/runtime-api'
+import { compareRelease, compareSnapshot, EditGameSettingOptions, EditShaderOptions, InstanceOptionException, InstanceOptionsService as IInstanceOptionsService, InstanceOptionsServiceKey, InstanceOptionsState, isCompatible, isReleaseVersion, isSnapshotPreview, packFormatVersionRange, parseShaderOptions, ResourceDomain, stringifyShaderOptions } from '@xmcl/runtime-api'
 import { FSWatcher, readFile, writeFile } from 'fs-extra'
 import watch from 'node-watch'
-import { basename, join } from 'path'
+import { basename, join, relative } from 'path'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { deepClone } from '../util/clone'
 import { isSystemError } from '../util/error'
 import { missing } from '../util/fs'
 import { requireString } from '../util/object'
+import { Inject } from '../util/objectRegistry'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
-import { Inject, Singleton, StatefulService } from './Service'
+import { Singleton, StatefulService } from './Service'
 
 /**
  * The service to watch game setting (options.txt) and shader options (optionsshader.txt)
@@ -20,13 +22,33 @@ export class InstanceOptionsService extends StatefulService<InstanceOptionsState
 
   private watchingInstance = ''
 
-  constructor(app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app, InstanceOptionsServiceKey, () => new InstanceOptionsState())
     this.storeManager.subscribe('instanceSelect', (payload: string) => {
       this.mount(payload)
+    })
+
+    resourceService.registerInstaller(ResourceDomain.ResourcePacks, async (resource, instancePath) => {
+      if (instancePath !== this.instanceService.state.path) {
+        const frame = await this.getGameOptions(instancePath)
+        await this.editGameSetting({
+          ...frame,
+          resourcePacks: [...(frame.resourcePacks || []), relative(resource.path, instancePath)],
+        })
+      } else {
+        await this.editGameSetting({
+          resourcePacks: [...this.state.options.resourcePacks, relative(resource.path, instancePath)],
+        })
+      }
+    })
+
+    resourceService.registerInstaller(ResourceDomain.ShaderPacks, async (resource, instancePath) => {
+      await this.editShaderOptions({
+        shaderPack: relative(resource.path, instancePath),
+      })
     })
   }
 
@@ -169,7 +191,7 @@ export class InstanceOptionsService extends StatefulService<InstanceOptionsState
         const resourceName = path.startsWith('file/') ? path.substring('file/'.length) : path
         const resource = this.resourceService.state.resourcepacks.find(r => `${r.fileName}` === resourceName)
         if (resource) {
-          const versionRange = packFormatVersionRange[resource.metadata.pack_format]
+          const versionRange = packFormatVersionRange[resource.metadata.resourcepack.pack_format]
           if (versionRange) {
             return !isCompatible(versionRange, instance.runtime.minecraft)
           }

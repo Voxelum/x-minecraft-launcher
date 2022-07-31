@@ -1,7 +1,7 @@
 import { computed, ref, Ref, watch } from '@vue/composition-api'
-import { FabricModMetadata, QuiltModMetadata } from '@xmcl/mod-parser'
-import { AnyResource, Compatible, FabricResource, ForgeResource, InstanceModsServiceKey, InstanceServiceKey, isModCompatible, isModResource, isPersistedResource, LiteloaderResource, Resource, ResourceDomain, ResourceServiceKey, ResourceSourceModrinth } from '@xmcl/runtime-api'
-import { useServiceBusy, useService, useRefreshable } from '/@/composables'
+import { FabricModMetadata } from '@xmcl/mod-parser'
+import { Compatible, InstanceModsServiceKey, InstanceServiceKey, isModCompatible, isModResource, isPersistedResource, Resource, ResourceDomain, ResourceServiceKey, ResourceSourceModrinth } from '@xmcl/runtime-api'
+import { useRefreshable, useService, useServiceBusy } from '/@/composables'
 import { isStringArrayEquals } from '/@/util/equal'
 
 /**
@@ -100,7 +100,7 @@ export function useInstanceMods() {
 
     for (const i of pendingEditItems.value) {
       promises.push(updateResource({
-        resource: i.resource.hash,
+        ...i.resource,
         name: i.name,
         tags: i.tags,
       }))
@@ -156,7 +156,7 @@ export function useInstanceMods() {
   function getUrl(resource: Resource) {
     return resource.uri.find(u => u?.startsWith('http')) ?? ''
   }
-  function getModItemFromModResource(resource: ForgeResource | FabricResource | LiteloaderResource | AnyResource): ModItem {
+  function getModItemFromModResource(resource: Resource): ModItem {
     const isPersisted = isPersistedResource(resource)
     const modItem: ModItem = reactive({
       path: resource.path,
@@ -164,7 +164,7 @@ export function useInstanceMods() {
       name: resource.path,
       version: '',
       description: '',
-      icon: isPersisted ? resource.iconUrl ?? '' : '',
+      icon: isPersisted ? resource.icons?.[0] ?? '' : '',
       compatible: computed(() => isModCompatible(resource, instanceState.instance.runtime)),
       type: 'forge',
       url: getUrl(resource),
@@ -175,16 +175,16 @@ export function useInstanceMods() {
       subsequence: false,
       hide: false,
       selected: false,
-      curseforge: isPersisted ? resource.curseforge : undefined,
-      modrinth: isPersisted ? resource.modrinth : undefined,
+      curseforge: isPersisted ? resource.metadata.curseforge : undefined,
+      modrinth: isPersisted ? resource.metadata.modrinth : undefined,
       dragged: false,
       dependencies: {
         minecraft: '',
       },
       resource,
     })
-    if (resource.type === 'forge') {
-      const meta = resource.metadata
+    if (resource.metadata.forge) {
+      const meta = resource.metadata.forge
       modItem.type = 'forge'
       modItem.id = meta.modid
       modItem.name = meta.name
@@ -192,31 +192,33 @@ export function useInstanceMods() {
       modItem.description = meta.description
       modItem.dependencies.minecraft = meta.acceptMinecraft
       modItem.dependencies.forge = meta.acceptForge
-    } else if (resource.type === 'fabric') {
+    } else if (resource.metadata.fabric) {
+      const meta = resource.metadata.fabric
       modItem.type = 'fabric'
-      modItem.id = resource.metadata.id
-      modItem.version = resource.metadata.version
-      modItem.name = resource.metadata.name ?? resource.metadata.id
-      modItem.description = resource.metadata.description ?? ''
-      const fab = resource.metadata as FabricModMetadata
+      modItem.id = meta.id
+      modItem.version = meta.version
+      modItem.name = meta.name ?? meta.id
+      modItem.description = meta.description ?? ''
+      const fab = meta as FabricModMetadata
       modItem.dependencies.minecraft = fab.depends?.minecraft as string ?? '?'
       modItem.dependencies.fabricLoader = fab.depends?.fabricloader as string ?? '?'
-    } else if (resource.type === 'liteloader') {
+    } else if (resource.metadata.liteloader) {
+      const meta = resource.metadata.liteloader
       modItem.type = 'liteloader'
-      modItem.name = resource.metadata.name
-      modItem.version = resource.metadata.version ?? ''
-      modItem.id = `${resource.metadata.name}`
+      modItem.name = meta.name
+      modItem.version = meta.version ?? ''
+      modItem.id = `${meta.name}`
       modItem.description = modItem.description ?? ''
-      if (resource.metadata.mcversion) {
-        modItem.dependencies.minecraft = `[${resource.metadata.mcversion}]`
+      if (meta.mcversion) {
+        modItem.dependencies.minecraft = `[${meta.mcversion}]`
       }
-    } else if (resource.type === 'quilt') {
+    } else if (resource.metadata.quilt) {
+      const meta = resource.metadata.quilt
       modItem.type = 'quilt'
-      modItem.id = resource.metadata.quilt_loader.id
-      modItem.version = resource.metadata.quilt_loader.version
-      modItem.name = resource.metadata.quilt_loader.metadata?.name ?? resource.metadata.quilt_loader.id
-      modItem.description = resource.metadata.quilt_loader.metadata?.description ?? ''
-      const m = resource.metadata as QuiltModMetadata
+      modItem.id = meta.quilt_loader.id
+      modItem.version = meta.quilt_loader.version
+      modItem.name = meta.quilt_loader.metadata?.name ?? meta.quilt_loader.id
+      modItem.description = meta.quilt_loader.metadata?.description ?? ''
       modItem.dependencies.minecraft = '?'
       modItem.dependencies.quiltLoader = '?'
     } else {
@@ -258,8 +260,8 @@ export function useInstanceMods() {
       hide: false,
       selected: false,
       dragged: false,
-      curseforge: isPersisted ? resource.curseforge : undefined,
-      modrinth: isPersisted ? resource.modrinth : undefined,
+      curseforge: isPersisted ? resource.metadata.curseforge : undefined,
+      modrinth: isPersisted ? resource.metadata.modrinth : undefined,
       resource,
       dependencies: { minecraft: '[*]' },
     })

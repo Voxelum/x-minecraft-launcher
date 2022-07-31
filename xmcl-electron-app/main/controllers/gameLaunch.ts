@@ -7,8 +7,8 @@ import { ControllerPlugin } from './plugin'
  */
 export const gameLaunch: ControllerPlugin = function (this: Controller) {
   this.app.once('engine-ready', () => {
-    this.app.serviceManager.getOrCreateService(LaunchService).on('minecraft-window-ready', () => {
-      const instance = this.app.serviceManager.getOrCreateService(InstanceService).state.instance
+    this.app.serviceManager.get(LaunchService).on('minecraft-window-ready', () => {
+      const instance = this.app.serviceManager.get(InstanceService).state.instance
       if (!instance) {
         this.app.warn('Cannot find active instance while Minecraft window ready! Perhaps something strange happened?')
         return
@@ -22,7 +22,7 @@ export const gameLaunch: ControllerPlugin = function (this: Controller) {
         }
       }
     }).on('minecraft-start', () => {
-      const instance = this.app.serviceManager.getOrCreateService(InstanceService).state.instance
+      const instance = this.app.serviceManager.get(InstanceService).state.instance
       if (!instance) {
         this.app.warn('Cannot find active instance while Minecraft window ready! Perhaps something strange happened?')
         return
@@ -31,7 +31,7 @@ export const gameLaunch: ControllerPlugin = function (this: Controller) {
         this.createMonitorWindow()
       }
     }).on('minecraft-exit', (status) => {
-      const instance = this.app.serviceManager.getOrCreateService(InstanceService).state.instance
+      const instance = this.app.serviceManager.get(InstanceService).state.instance
       if (!instance) {
         this.app.warn('Cannot find active instance while Minecraft exit! Perhaps something strange happened?')
         return
@@ -44,7 +44,7 @@ export const gameLaunch: ControllerPlugin = function (this: Controller) {
       }
       this.app.broadcast('minecraft-exit', status)
       if (this.loggerWin) {
-        const launchServ = this.app.serviceManager.getOrCreateService(LaunchService)
+        const launchServ = this.app.serviceManager.get(LaunchService)
         if (launchServ.state.activeCount === 0) {
           this.loggerWin.close()
           this.loggerWin = undefined

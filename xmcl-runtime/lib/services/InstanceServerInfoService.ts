@@ -2,14 +2,16 @@ import { InstanceServerInfoService as IInstanceServerInfoService, InstanceServer
 import { readFile } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { exists } from '../util/fs'
+import { Inject } from '../util/objectRegistry'
 import { ServerStatusService } from './ServerStatusService'
-import { Inject, Singleton, StatefulService } from './Service'
+import { Singleton, StatefulService } from './Service'
 
 export class InstanceServerInfoService extends StatefulService<ServerInfoState> implements IInstanceServerInfoService {
   private watching = ''
 
-  constructor(app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ServerStatusService) private serverStatusService: ServerStatusService,
   ) {
     super(app, InstanceServerInfoServiceKey, () => new ServerInfoState())

@@ -4,42 +4,12 @@ import { GameProfileAndTexture, UserProfile, UserSchema } from '../entities/user
 import { GenericEventEmitter } from '../events'
 import { ServiceKey, StatefulService } from './Service'
 
-export interface LoginMicrosoftOptions {
-  /**
-   * The authorization code. If not present, it will try to get the auth code.
-   */
-  oauthCode?: string
-  microsoftEmailAddress: string
-}
-export interface LoginOptions {
-  /**
-   * The user username. Can be email or other thing the auth service want.
-   */
-  username: string
-  /**
-   * The password. Maybe empty string.
-   */
-  password?: string
-  /**
-   * The auth service name, like mojang.
-   */
-  authService?: string
-  /**
-   * The profile service name, like mojang
-   */
-  profileService?: string
-  /**
-   * Select selected profile after login
-   */
-  selectProfile?: boolean
-
-  uuid?: string
-}
 export interface RefreshSkinOptions {
   gameProfileId?: string
   userId?: string
   force?: boolean
 }
+
 export interface UploadSkinOptions {
   /**
    * The game profile id of this skin
@@ -59,10 +29,27 @@ export interface UploadSkinOptions {
   slim: boolean
 }
 
+export interface SaveSkinOptions {
+  url: string
+  path: string
+}
+
+export interface SwitchProfileOptions {
+  /**
+   * The user id of the user
+   */
+  userId: string
+  /**
+   * The game profile id of the user
+   */
+  profileId: string
+}
+
 interface UserServiceEventMap {
   'user-login': string
   'error': UserException
   'microsoft-authorize-url': string
+  'microsoft-authorize-code': [any, string]
   'auth-profile-added': string
 }
 
@@ -75,80 +62,6 @@ export class UserState implements UserSchema {
   }
 
   clientToken = ''
-
-  // client data
-  authServices: Record<string, YggdrasilAuthAPI> = {
-    mojang: {
-      hostName: 'https://authserver.mojang.com',
-      authenticate: '/authenticate',
-      refresh: '/refresh',
-      validate: '/validate',
-      invalidate: '/invalidate',
-      signout: '/signout',
-    },
-    'littleskin.cn': {
-      hostName: 'https://littleskin.cn/api/yggdrasil',
-      authenticate: '/authserver/authenticate',
-      refresh: '/authserver/refresh',
-      validate: '/authserver/validate',
-      invalidate: '/authserver/invalidate',
-      signout: '/authserver/signout',
-    },
-    'ely.by': {
-      hostName: 'https://authserver.ely.by',
-      authenticate: '/auth/authenticate',
-      refresh: '/auth/refresh',
-      validate: '/auth/validate',
-      invalidate: '/auth/invalidate',
-      signout: '/auth/signout',
-    },
-  }
-
-  profileServices: Record<string, ProfileServiceAPI> = {
-    mojang: {
-      publicKey: `-----BEGIN PUBLIC KEY-----
-MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAylB4B6m5lz7jwrcFz6Fd
-/fnfUhcvlxsTSn5kIK/2aGG1C3kMy4VjhwlxF6BFUSnfxhNswPjh3ZitkBxEAFY2
-5uzkJFRwHwVA9mdwjashXILtR6OqdLXXFVyUPIURLOSWqGNBtb08EN5fMnG8iFLg
-EJIBMxs9BvF3s3/FhuHyPKiVTZmXY0WY4ZyYqvoKR+XjaTRPPvBsDa4WI2u1zxXM
-eHlodT3lnCzVvyOYBLXL6CJgByuOxccJ8hnXfF9yY4F0aeL080Jz/3+EBNG8RO4B
-yhtBf4Ny8NQ6stWsjfeUIvH7bU/4zCYcYOq4WrInXHqS8qruDmIl7P5XXGcabuzQ
-stPf/h2CRAUpP/PlHXcMlvewjmGU6MfDK+lifScNYwjPxRo4nKTGFZf/0aqHCh/E
-AsQyLKrOIYRE0lDG3bzBh8ogIMLAugsAfBb6M3mqCqKaTMAf/VAjh5FFJnjS+7bE
-+bZEV0qwax1CEoPPJL1fIQjOS8zj086gjpGRCtSy9+bTPTfTR/SJ+VUB5G2IeCIt
-kNHpJX2ygojFZ9n5Fnj7R9ZnOM+L8nyIjPu3aePvtcrXlyLhH/hvOfIOjPxOlqW+
-O5QwSFP4OEcyLAUgDdUgyW36Z5mB285uKW/ighzZsOTevVUG2QwDItObIV6i8RCx
-FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
------END PUBLIC KEY-----`,
-      // eslint-disable-next-line no-template-curly-in-string
-      texture: 'https://api.mojang.com/user/profile/${uuid}/${type}',
-      // eslint-disable-next-line no-template-curly-in-string
-      profile: 'https://sessionserver.mojang.com/session/minecraft/profile/${uuid}',
-      // eslint-disable-next-line no-template-curly-in-string
-      profileByName: 'https://api.mojang.com/users/profiles/minecraft/${name}',
-    },
-    'littleskin.cn': {
-      // eslint-disable-next-line no-template-curly-in-string
-      profile: 'https://littleskin.cn/api/yggdrasil/sessionserver/session/minecraft/profile/${uuid}',
-      // eslint-disable-next-line no-template-curly-in-string
-      profileByName: 'https://littleskin.cn/api/yggdrasil/users/profiles/minecraft/${name}',
-      // eslint-disable-next-line no-template-curly-in-string
-      texture: 'https://littleskin.cn/api/yggdrasil/user/profile/${uuid}/${type}',
-    },
-    'ely.by': {
-      // eslint-disable-next-line no-template-curly-in-string
-      profile: 'https://authserver.ely.by/session/profile/${uuid}',
-      // eslint-disable-next-line no-template-curly-in-string
-      profileByName: 'https://skinsystem.ely.by/textures/${name}',
-      // eslint-disable-next-line no-template-curly-in-string
-      texture: 'https://authserver.ely.by/session/profile/${uuid}/${type}',
-    },
-  }
-
-  /**
-   * If this is true, user can get the skin data from mojang, else user has to answer the challenge to continue.
-   */
-  mojangSecurity = false
 
   get user(): UserProfile | undefined {
     return this.users[this.selectedUser.id]
@@ -175,14 +88,6 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
     return user?.authService !== 'mojang' && user?.authService !== 'offline' && user?.authService !== 'microsoft'
   }
 
-  get authService(): YggdrasilAuthAPI {
-    return this.user?.authService ? this.authServices[this.user.authService] : this.authServices.mojang
-  }
-
-  get profileService(): ProfileServiceAPI {
-    return this.user?.profileService ? this.profileServices[this.user.profileService] : this.profileServices.mojang
-  }
-
   userSnapshot(snapshot: UserSchema) {
     this.clientToken = snapshot.clientToken
     this.selectedUser.id = snapshot.selectedUser.id
@@ -191,16 +96,12 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
     if (typeof snapshot.users === 'object') {
       this.users = snapshot.users
     }
-    if (snapshot.authServices) {
-      this.authServices = { ...this.authServices, ...snapshot.authServices }
-    }
-    if (snapshot.profileServices) {
-      this.profileServices = { ...this.profileServices, ...snapshot.profileServices }
-    }
-  }
-
-  userSecurity(sec: boolean) {
-    this.mojangSecurity = sec
+    // if (snapshot.authServices) {
+    //   this.authServices = { ...this.authServices, ...snapshot.authServices }
+    // }
+    // if (snapshot.profileServices) {
+    //   this.profileServices = { ...this.profileServices, ...snapshot.profileServices }
+    // }
   }
 
   gameProfileUpdate({ profile, userId }: { userId: string; profile: (GameProfileAndTexture | GameProfile) }) {
@@ -222,14 +123,6 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
     }
   }
 
-  authServiceRemove(name: string) {
-    delete this.authServices[name]
-  }
-
-  profileServiceRemove(name: string) {
-    delete this.profileServices[name]
-  }
-
   userProfileRemove(userId: string) {
     if (this.selectedUser.id === userId) {
       this.selectedUser.id = ''
@@ -238,73 +131,50 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
     delete this.users[userId]
   }
 
-  userProfileAdd(profile: Omit<UserProfile, 'profiles'> & { id: string; profiles: (GameProfileAndTexture | GameProfile)[] }) {
-    function toObjectReducer<T extends { [k in K]: string }, K extends string>(key: K) {
-      return (o: { [key: string]: T }, v: T) => { o[v[key]] = v; return o }
+  userProfile(user: UserProfile) {
+    if (this.users[user.id]) {
+      // const existed = this.users[user.id]
+      this.users[user.id] = user
+    } else {
+      this.users[user.id] = user
     }
-    const value = {
-      ...profile,
-      profiles: profile.profiles
-        .map(p => ({ textures: { SKIN: { url: '' } }, ...p }))
-        .reduce(toObjectReducer<GameProfileAndTexture, 'id'>('id'), {}),
-      selectedProfile: profile.selectedProfile,
-    }
-    this.users[profile.id] = value
+    // this.users[user.id] = value
   }
 
-  userProfileUpdate(profile: { id: string; accessToken: string; msAccessToken?: string; expiredAt: number; profiles: (GameProfileAndTexture | GameProfile)[]; selectedProfile?: string }) {
-    const user = this.users[profile.id]
-    user.accessToken = profile.accessToken
-    user.expiredAt = profile.expiredAt
-    user.msAccessToken = profile.msAccessToken
-    profile.profiles.forEach((p) => {
-      if (user.profiles[p.id]) {
-        user.profiles[p.id] = {
-          ...user.profiles[p.id],
-          ...p,
-        }
-      } else {
-        user.profiles[p.id] = {
-          textures: { SKIN: { url: '' } },
-          ...p,
-        }
-      }
-    })
-    if (profile.selectedProfile !== undefined) {
-      user.selectedProfile = profile.selectedProfile
-    }
-  }
+  // userProfileUpdate(profile: UserProfile) {
+  //   const user = this.users[profile.id]
+  //   user.accessToken = profile.accessToken
+  //   user.expiredAt = profile.expiredAt
+  //   user.msAccessToken = profile.msAccessToken
+  //   profile.profiles.forEach((p) => {
+  //     if (user.profiles[p.id]) {
+  //       user.profiles[p.id] = {
+  //         ...user.profiles[p.id],
+  //         ...p,
+  //       }
+  //     } else {
+  //       user.profiles[p.id] = {
+  //         textures: { SKIN: { url: '' } },
+  //         ...p,
+  //       }
+  //     }
+  //   })
+  //   if (profile.selectedProfile !== undefined) {
+  //     user.selectedProfile = profile.selectedProfile
+  //   }
+  // }
 
   userGameProfileSelect({ userId, profileId }: { userId: string; profileId: string }) {
     this.selectedUser.id = userId
     this.selectedUser.profile = profileId
   }
-
-  authServiceSet({ name, api }: { name: string; api: YggdrasilAuthAPI }) {
-    this.authServices[name] = api
-  }
-
-  profileServiceSet({ name, api }: { name: string; api: ProfileServiceAPI }) {
-    this.profileServices[name] = api
-  }
 }
 
 export interface UserService extends StatefulService<UserState>, GenericEventEmitter<UserServiceEventMap> {
   /**
-   * Check current ip location and determine wether we need to validate user identity by response challenge.
-   *
-   * See `getChallenges` and `submitChallenges`
+   * Refresh the current user login status
    */
-  checkLocation(): Promise<boolean>
-  /**
-   * Get all the user set challenges for security reasons.
-   */
-  getChallenges(): Promise<MojangChallenge[]>
-  submitChallenges(responses: MojangChallengeResponse[]): Promise<boolean>
-  /**
-   * Refresh the user auth status
-   */
-  refreshStatus(): Promise<void>
+  refreshUser(): Promise<void>
   /**
    * Refresh current skin status
    */
@@ -320,58 +190,15 @@ export interface UserService extends StatefulService<UserState>, GenericEventEmi
   /**
    * Save the skin to the disk.
    */
-  saveSkin(options: {
-    url: string
-    path: string
-  }): Promise<void>
-
-  /**
-   * Refresh the current user login status
-   */
-  refreshUser(): Promise<void>
+  saveSkin(options: SaveSkinOptions): Promise<void>
   /**
    * Switch user account.
    */
-  switchUserProfile(payload: {
-    /**
-     * The user id of the user
-     */
-    userId: string
-    /**
-     * The game profile id of the user
-     */
-    profileId: string
-  }): Promise<void>
+  switchUserProfile(options: SwitchProfileOptions): Promise<void>
 
   removeUserProfile(userId: string): Promise<void>
 
-  /**
-   * The workaround to cancel the microsoft login. Preventing the login forever.
-   */
-  cancelMicrosoftLogin(): Promise<void>
-
-  loginMicrosoft(options: LoginMicrosoftOptions): Promise<{
-    userId: string
-    accessToken: string
-    gameProfiles: GameProfileAndTexture[]
-    selectedProfile: GameProfileAndTexture
-    avatar: string | undefined
-  } | {
-    userId: string
-    accessToken: string
-    gameProfiles: never[]
-    selectedProfile: undefined
-    avatar: string | undefined
-  }>
-
-  /**
-   * Login the user by current login mode. Refresh the skin and account information.
-   */
-  login(options: LoginOptions): Promise<void>
-  /**
-   * Logout and clear current cache.
-   */
-  logout(): Promise<void>
+  setUserProfile(userProfile: UserProfile): Promise<void>
 }
 
 export const UserServiceKey: ServiceKey<UserService> = 'UserService'

@@ -2,8 +2,10 @@ import { BaseService as IBaseService, BaseServiceException, BaseServiceKey, Base
 import { copy, readdir, remove, rename, stat } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { IS_DEV } from '../constant'
 import { isSystemError } from '../util/error'
+import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
 import { ZipTask } from '../util/zip'
 import { Singleton, StatefulService } from './Service'
@@ -11,7 +13,7 @@ import { Singleton, StatefulService } from './Service'
 export class BaseService extends StatefulService<BaseState> implements IBaseService {
   private settingFile = createSafeFile(this.getAppDataPath('setting.json'), SettingSchema, this, [this.getPath('setting.json')])
 
-  constructor(app: LauncherApp) {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app, BaseServiceKey, () => {
       const state = new BaseState()
       state.version = app.version

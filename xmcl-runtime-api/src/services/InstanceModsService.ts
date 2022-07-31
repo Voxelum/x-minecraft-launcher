@@ -1,5 +1,5 @@
 import { StatefulService, ServiceKey } from './Service'
-import { AnyResource, Resource } from '../entities/resource'
+import { Resource } from '../entities/resource'
 import { IssueKey } from '../entities/issue'
 import { Compatible } from '../util/modCompatible'
 export interface InstallModsOptions {
@@ -42,13 +42,13 @@ export class InstanceModsState {
   /**
    * The mods under instance folder
    */
-  mods = [] as AnyResource[]
+  mods = [] as Resource[]
   /**
    * The mounted instance
    */
   instance = ''
 
-  instanceModUpdate(r: AnyResource[]) {
+  instanceModUpdate(r: Resource[]) {
     for (const res of r) {
       const existed = this.mods.findIndex(m => m.hash === res.hash)
       if (existed !== -1) {
@@ -59,7 +59,7 @@ export class InstanceModsState {
     }
   }
 
-  instanceModUpdateExisted(r: AnyResource[]) {
+  instanceModUpdateExisted(r: Resource[]) {
     for (const res of r) {
       const existed = this.mods.findIndex(m => m.hash === res.hash)
       if (existed !== -1) {
@@ -68,12 +68,12 @@ export class InstanceModsState {
     }
   }
 
-  instanceModRemove(mods: AnyResource[]) {
+  instanceModRemove(mods: Resource[]) {
     const toRemoved = new Set(mods.map(p => p.hash))
     this.mods = this.mods.filter(m => !toRemoved.has(m.hash))
   }
 
-  instanceMods(payload: { instance: string; resources: AnyResource[] }) {
+  instanceMods(payload: { instance: string; resources: Resource[] }) {
     this.instance = payload.instance
     this.mods = payload.resources
   }

@@ -1,7 +1,7 @@
 import { UnzipTask } from '@xmcl/installer'
 import {
   CloneSaveOptions, DeleteSaveOptions, ExportSaveOptions,
-  ImportSaveOptions, InstanceSave, InstanceSaveException, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey, SaveState,
+  ImportSaveOptions, InstanceSave, InstanceSaveException, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey, isSaveResource, ResourceDomain, SaveState,
 } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { createHash } from 'crypto'
@@ -11,12 +11,15 @@ import watch from 'node-watch'
 import { basename, extname, join, resolve } from 'path'
 import { pathToFileURL } from 'url'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { findLevelRootOnPath, getInstanceSave, readInstanceSaveMetadata } from '../entities/save'
 import { copyPassively, isFile, missing, readdirIfPresent } from '../util/fs'
 import { isNonnull, requireObject, requireString } from '../util/object'
+import { Inject } from '../util/objectRegistry'
 import { ZipTask } from '../util/zip'
-import InstanceService from './InstanceService'
-import { Inject, Singleton, StatefulService } from './Service'
+import { InstanceService } from './InstanceService'
+import { ResourceService } from './ResourceService'
+import { Singleton, StatefulService } from './Service'
 
 /**
  * Provide the ability to preview saves data of an instance
@@ -26,11 +29,22 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
 
   private watching = ''
 
-  constructor(app: LauncherApp,
-    @Inject(InstanceService) private instanceService: InstanceService) {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(ResourceService) private resourceService: ResourceService,
+    @Inject(InstanceService) private instanceService: InstanceService,
+  ) {
     super(app, InstanceSavesServiceKey, () => new SaveState())
     this.storeManager.subscribe('instanceSelect', (path) => {
       this.mountInstanceSaves(path)
+    })
+
+    this.resourceService.registerInstaller(ResourceDomain.Saves, async (resource, instancePath) => {
+      if (isSaveResource(resource)) {
+        await this.importSave({
+          instancePath,
+          source: join(resource.path, resource.metadata.save.root),
+        })
+      }
     })
   }
 

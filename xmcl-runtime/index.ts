@@ -28,7 +28,6 @@ export * from './lib/services/UserService'
 export * from './lib/services/VersionService'
 export * from './lib/services/PeerService'
 
-export type { default as CredentialManager } from './lib/managers/CredentialManager'
 export type { default as LogManager } from './lib/managers/LogManager'
 export type { default as NetworkManager } from './lib/managers/NetworkManager'
 export type { default as SemaphoreManager } from './lib/managers/SemaphoreManager'

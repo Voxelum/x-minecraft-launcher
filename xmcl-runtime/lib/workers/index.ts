@@ -1,10 +1,11 @@
 import { checksum } from '@xmcl/core'
+import { Resource } from '@xmcl/runtime-api'
 import { createHash } from 'crypto'
 import { FileExtension, stream } from 'file-type'
 import { createReadStream } from 'fs'
 import { MessagePort, parentPort } from 'worker_threads'
-import { parseResource } from '../entities/resource'
-import { ResolveResourceWorkPayload, WorkerInterface, WorkPayload } from '../entities/worker'
+import { parseResourceMetadata } from '../entities/resource'
+import { WorkerInterface, WorkPayload } from '../entities/worker'
 import { copyPassively, fileType, pipeline } from '../util/fs'
 
 if (parentPort !== null) {
@@ -36,7 +37,7 @@ const handlers: WorkerInterface = {
   fileType: (path) => fileType(path),
   checksum: (path, algorithm) => checksum(path, algorithm),
   checksumAndFileType: (path, algorithm) => checksumAndFileType(path, algorithm),
-  parseResource: (m: ResolveResourceWorkPayload) => parseResource(m.path, m.context, m.hint),
+  parseResourceMetadata: (m: Resource) => parseResourceMetadata(m),
   async copyPassively(files): Promise<void> {
     await Promise.all(files.map(({ src, dest }) => copyPassively(src, dest)))
   },

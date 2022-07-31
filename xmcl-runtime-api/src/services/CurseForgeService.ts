@@ -1,6 +1,6 @@
 import type { Mod, File, FileModLoaderType, Pagination, ModCategory, SearchOptions } from '@xmcl/curseforge'
 import { ProjectType } from '../entities/curseforge'
-import { PersistedResource } from '../entities/resource'
+import { Persisted, Resource } from '../entities/resource'
 import { ServiceKey, StatefulService } from './Service'
 export interface InstallFileOptions {
   /**
@@ -9,6 +9,10 @@ export interface InstallFileOptions {
   file: File
   projectId: number
   type: ProjectType
+  /**
+   * Install this to the specific instance
+   */
+  instancePath?: string
 }
 
 export class CurseforgeState {
@@ -33,6 +37,19 @@ export interface GetModFilesOptions {
   gameVersionTypeId?: number
   index?: number
   pageSize?: number
+}
+
+export interface InstallFileResult {
+  mod: Mod
+  file: File
+  /**
+   * All installed resource corresponding to the file
+   */
+  resource: Persisted<Resource>
+  /**
+   * All dependencies of this resource
+   */
+  dependencies: InstallFileResult[]
 }
 
 /**
@@ -62,10 +79,12 @@ export interface CurseForgeService extends StatefulService<CurseforgeState> {
    */
   searchProjects(searchOptions: SearchOptions): Promise<{ data: Mod[]; pagination: Pagination }>
   /**
-   * Install a curseforge file to local storage
+   * Install a curseforge file to local storage.
+   *
+   * If this file has dependencies, it will install all the dependencies of this file.
    * @param options The install file options
    */
-  installFile(options: InstallFileOptions): Promise<PersistedResource<unknown>>
+  installFile(options: InstallFileOptions): Promise<InstallFileResult>
 }
 
 export const CurseForgeServiceKey: ServiceKey<CurseForgeService> = 'CurseForgeService'

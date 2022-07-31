@@ -94,7 +94,7 @@
 <script lang="ts"  setup>
 import { Ref } from '@vue/composition-api'
 import { useService } from '/@/composables'
-import { InstanceModsServiceKey, InstanceServiceKey, ModrinthServiceKey, PersistedResource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, InstanceServiceKey, ModrinthServiceKey, Persisted, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useRefreshable } from '/@/composables/refreshable'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
 import Tags from './ModrinthProjectTags.vue'
@@ -134,21 +134,17 @@ const { refresh, refreshing } = useRefreshable(async () => {
   installTo.value = project.value?.project_type === 'mod' ? instanceState.path : ''
 })
 const onInstall = async (version: ProjectVersion) => {
-  const resource = await installVersion({ version: version })
-  if (installTo.value && project.value?.project_type === 'mod') {
-    await install({ mods: [resource] })
-  }
+  await installVersion({ version: version, instancePath: installTo.value })
 }
 
 const onCreate = (v: ProjectVersion) => {
   const fileUrl = v.files[0].url
-  const find = (m: PersistedResource) => {
+  const find = (m: Persisted<Resource>) => {
     if (m.uri.indexOf(fileUrl) !== -1) {
       return true
     }
-    if ('modrinth' in m && typeof m.modrinth === 'object') {
-      const s = m.modrinth
-      if (s.url === fileUrl) return true
+    if (m.metadata.modrinth) {
+      if (m.metadata.modrinth.url === fileUrl) return true
     }
     return false
   }

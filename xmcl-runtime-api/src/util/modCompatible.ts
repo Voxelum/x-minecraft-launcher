@@ -44,8 +44,8 @@ export function isForgeModCompatible(resource: ForgeResource, runtime: Instance[
 export function getFabricModCompatibility(resource: FabricResource, runtime: Instance['runtime']): Record<string, CompatibleDetail> {
   const versions: Record<string, string | undefined> = { minecraft: runtime.minecraft, fabricloader: runtime.fabricLoader }
   const compatibility: DepsCompatible = {}
-  if (resource.metadata.depends) {
-    for (const [id, requirements] of Object.entries(resource.metadata.depends)) {
+  if (resource.metadata.fabric.depends) {
+    for (const [id, requirements] of Object.entries(resource.metadata.fabric.depends)) {
       let compatible: Compatible = 'maybe'
       const current = versions[id]
       if (current) {
@@ -109,15 +109,15 @@ export function getLegacyForgeDependencies(mod: ForgeModMetadata) {
 
 export function getForgeModCompatibility(resource: ForgeResource, runtime: Instance['runtime']) {
   const deps: Record<string, ForgeCommonDependencies> = {}
-  if (resource.metadata.modsToml.length > 0) {
+  if (resource.metadata.forge.modsToml.length > 0) {
     // new mod
-    for (const mod of resource.metadata.modsToml) {
+    for (const mod of resource.metadata.forge.modsToml) {
       deps[mod.modid] = mod.dependencies
       deps[mod.modid].push({ modId: 'forge', versionRange: mod.loaderVersion })
     }
   } else {
     // legacy mod
-    for (const [modid, dependencies] of Object.entries(getLegacyForgeDependencies(resource.metadata))) {
+    for (const [modid, dependencies] of Object.entries(getLegacyForgeDependencies(resource.metadata.forge))) {
       deps[modid] = dependencies
     }
   }
@@ -160,7 +160,7 @@ export function getForgeModCompatibility(resource: ForgeResource, runtime: Insta
 }
 
 export function isLiteloaderModCompatibility(resource: LiteloaderResource, runtime: Instance['runtime']): Compatible {
-  const sem = `~${resource.metadata.mcversion}`
+  const sem = `~${resource.metadata.liteloader.mcversion}`
   if (runtime.liteloader) {
     return satisfies(runtime.liteloader, sem)
   }

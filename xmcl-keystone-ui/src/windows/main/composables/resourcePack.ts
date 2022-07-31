@@ -1,6 +1,6 @@
 import { computed, onMounted, ref, Ref, watch } from '@vue/composition-api'
 import { PackMeta } from '@xmcl/resourcepack'
-import { InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, isPersistedResource, PersistedResourcePackResource, ResourceServiceKey, packFormatVersionRange } from '@xmcl/runtime-api'
+import { InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, isPersistedResource, ResourceServiceKey, packFormatVersionRange, ResourcePackResource, Persisted } from '@xmcl/runtime-api'
 import { useServiceBusy, useI18n, useService } from '/@/composables'
 import { isStringArrayEquals } from '/@/util/equal'
 import unknownPack from '/@/assets/unknown_pack.png'
@@ -35,7 +35,7 @@ export interface ResourcePackItem extends PackMeta.Pack {
    * The resource associate with the resourcepack item.
    * If it's undefined. Then this resource cannot be found.
    */
-  resource?: PersistedResourcePackResource
+  resource?: Persisted<ResourcePackResource>
 }
 
 /**
@@ -75,16 +75,16 @@ export function useInstanceResourcePacks() {
   function getResourcepackFormat(meta: any) {
     return meta ? meta.format ?? meta.pack_format : 3
   }
-  function getResourcePackItem(resource: PersistedResourcePackResource): ResourcePackItem {
+  function getResourcePackItem(resource: Persisted<ResourcePackResource>): ResourcePackItem {
     return ({
       path: resource.path,
       name: resource.name,
       id: `file/${resource.fileName.endsWith('.zip') ? resource.fileName : resource.fileName + '.zip'}`,
       url: resource.uri,
-      pack_format: resource.metadata.pack_format,
-      description: resource.metadata.description,
+      pack_format: resource.metadata.resourcepack.pack_format,
+      description: resource.metadata.resourcepack.description,
       acceptingRange: packFormatVersionRange[getResourcepackFormat(resource.metadata)] ?? '[*]',
-      icon: isPersistedResource(resource) ? resource.iconUrl ?? '' : '',
+      icon: isPersistedResource(resource) ? resource.icons?.[0] ?? '' : '',
       tags: [...resource.tags],
 
       resource: (resource) as any,
@@ -161,7 +161,7 @@ export function useInstanceResourcePacks() {
     editGameSetting({ resourcePacks: [...enabledResourcePackNames.value].reverse() })
     const modified = storage.value.filter(v => v.resource).filter((v) => v.name !== v.resource!.name || !isStringArrayEquals(v.tags, v.resource!.tags))
     for (const res of modified) {
-      updateResource({ resource: res.resource!, name: res.name, tags: res.tags })
+      updateResource({ ...res.resource!, name: res.name, tags: res.tags })
     }
   }
 

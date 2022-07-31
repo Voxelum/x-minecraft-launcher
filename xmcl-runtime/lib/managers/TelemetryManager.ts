@@ -53,7 +53,7 @@ export default class TelemetryManager extends Manager {
     tags[contract.applicationVersion] = `${this.app.version}#${this.app.build}`
 
     this.app.on('engine-ready', () => {
-      this.app.serviceManager.getOrCreateService(LaunchService)
+      this.app.serviceManager.get(LaunchService)
         .on('minecraft-start', (options) => {
           appInsight.defaultClient.trackEvent({
             name: 'minecraft-start',
@@ -79,7 +79,7 @@ export default class TelemetryManager extends Manager {
           }
         })
 
-      this.app.serviceManager.getOrCreateService(UserService).on('user-login', (authService) => {
+      this.app.serviceManager.get(UserService).on('user-login', (authService) => {
         appInsight.defaultClient.trackEvent({
           name: 'user-login',
           properties: {

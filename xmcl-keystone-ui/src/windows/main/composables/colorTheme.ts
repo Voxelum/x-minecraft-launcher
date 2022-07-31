@@ -119,8 +119,8 @@ export function useColorTheme() {
   })
 
   function resetDarkToDefault() {
-    darkAppBarColor.value = '#111111F'
-    darkSideBarColor.value = '#111111F'
+    darkAppBarColor.value = '#111111FF'
+    darkSideBarColor.value = '#111111FF'
     darkPrimaryColor.value = '#4caf50'
     darkBackground.value = '#121212'
     darkInfoColor.value = '#2196F3'

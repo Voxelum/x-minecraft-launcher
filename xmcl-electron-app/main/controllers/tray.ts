@@ -15,7 +15,7 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
   // })
   const createMenu = () => {
     const app = this.app
-    const service = this.app.serviceManager.getOrCreateService(BaseService)
+    const service = this.app.serviceManager.get(BaseService)
     const onBrowseAppClicked = () => {
       if (this.browserRef && !this.browserRef.isDestroyed()) {
         this.browserRef.show()

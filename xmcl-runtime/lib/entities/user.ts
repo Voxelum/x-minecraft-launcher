@@ -1,9 +1,12 @@
 /* eslint-disable camelcase */
 
 import { CLIENT_ID } from '../constant'
-import { UserException } from '@xmcl/runtime-api'
+import { GameProfileAndTexture, UserException } from '@xmcl/runtime-api'
 import { Got } from 'got'
 import FormData from 'form-data'
+import { GameProfile } from '@xmcl/user'
+import { URL } from 'url'
+import { readFile } from 'fs-extra'
 
 export interface OAuthTokenResponse {
   token_type: string
@@ -282,4 +285,29 @@ export async function changeAccountSkin(request: Got, accessToken: string, fileN
   }
 
   return profileResponse
+}
+
+export function normalizeGameProfile(profile: GameProfile): GameProfileAndTexture {
+  const exitedTextures = (profile as any).textures
+  return {
+    ...profile,
+    textures: !exitedTextures
+      ? {
+        SKIN: {
+          url: '',
+        },
+      }
+      : exitedTextures,
+  }
+}
+
+export async function normalizeSkinData(url: string) {
+  const { protocol } = new URL(url)
+  if (protocol === 'file:') {
+    return await readFile(url.replace('file://', ''))
+  } else if (protocol === 'https:' || protocol === 'http:') {
+    return url
+  } else {
+    throw new Error('Unknown url protocol! Require a file or http/https protocol!')
+  }
 }

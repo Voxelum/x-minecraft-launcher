@@ -1,15 +1,14 @@
-import { AnyPersistedResource, AnyResource, FileTypeHint, PersistedResource, Resource, ResourceDomain, ResourceMetadata, ResourceType, ResourceSources } from '@xmcl/runtime-api'
+import { Persisted, Resource, ResourceData, ResourceDomain, ResourceType } from '@xmcl/runtime-api'
 import { FileSystem, openFileSystem } from '@xmcl/system'
+import { AbstractSublevel } from 'abstract-level'
 import { ClassicLevel } from 'classic-level'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
-import { ensureFile, rename, stat, Stats, unlink, writeFile } from 'fs-extra'
-import { basename, dirname, extname, join, resolve } from 'path'
-import { fileType as getFileType, FileType, linkOrCopy, checksum } from '../util/fs'
+import { ensureFile, rename, stat, Stats } from 'fs-extra'
+import { dirname, extname, join } from 'path'
+import { linkOrCopy } from '../util/fs'
 import resourceParsers from './resourceParsers'
 import { forgeModParser } from './resourceParsers/forgeMod'
-import { AbstractLevel, AbstractSublevel } from 'abstract-level'
-import { ParseResourceContext } from '../services/ResourceService'
 
 export interface FileStat extends Omit<Stats, 'isFile' | 'isDirectory' | 'isBlockDevice' | 'isCharacterDevice' | 'isSymbolicLink' | 'isFIFO' | 'isSocket'> {
   isFile: boolean
@@ -21,7 +20,7 @@ export interface FileStat extends Omit<Stats, 'isFile' | 'isDirectory' | 'isBloc
   isSocket: boolean
 }
 
-export function extractKeywords<T>(resource: ResourceMetadata<T>) {
+export function extractKeywords<T>(resource: ResourceData) {
   const result = [] as string[]
 
   return result
@@ -36,14 +35,14 @@ export class ResourceDomainIndexer<T> {
   private keywordIndex: AbstractSublevel<any, string | Buffer, string, string[]>
   private keywords: AbstractSublevel<any, string | Buffer, string, string[]>
 
-  constructor(readonly parent: ClassicLevel<string, ResourceMetadata<any>>, name: string) {
+  constructor(readonly parent: ClassicLevel<string, ResourceData>, name: string) {
     this.hashSet = parent.sublevel<string, string>(name, { keyEncoding: 'hex' })
     this.uriIndex = this.hashSet.sublevel<string, string>('uri-index', { valueEncoding: 'hex' })
     this.keywordIndex = this.hashSet.sublevel<string, string[]>('keyword-index', { valueEncoding: 'json' })
     this.keywords = this.hashSet.sublevel<string, string[]>('keywords', { valueEncoding: 'json' })
   }
 
-  async put(resource: ResourceMetadata<T>) {
+  async put(resource: ResourceData) {
     const batch = this.hashSet.batch()
 
     batch.put(resource.hash, '')
@@ -65,7 +64,7 @@ export class ResourceDomainIndexer<T> {
     await batch.write()
   }
 
-  async del(resource: ResourceMetadata<T> | string) {
+  async del(resource: ResourceData | string) {
     const key = typeof resource === 'string' ? resource : resource.hash
     const res = typeof resource === 'string' ? await this.parent.get(await this.hashSet.get(key)) : resource
 
@@ -91,20 +90,6 @@ export class ResourceDomainIndexer<T> {
   }
 }
 
-export async function readFileStat(path: string): Promise<FileStat> {
-  const result = await stat(path)
-  return {
-    ...result,
-    isFile: result.isFile(),
-    isDirectory: result.isDirectory(),
-    isBlockDevice: result.isBlockDevice(),
-    isCharacterDevice: result.isCharacterDevice(),
-    isSymbolicLink: result.isSymbolicLink(),
-    isFIFO: result.isFIFO(),
-    isSocket: result.isSocket(),
-  }
-}
-
 export interface ResourceParser<T> {
   type: ResourceType
   domain: ResourceDomain
@@ -116,18 +101,6 @@ export interface ResourceParser<T> {
    * Get ideal uri for this resource
    */
   getUri: (metadata: T) => string[]
-}
-
-// resource entries
-
-export const UNKNOWN_ENTRY: ResourceParser<unknown> = {
-  type: ResourceType.Unknown,
-  domain: ResourceDomain.Unknown,
-  ext: '*',
-  parseIcon: () => Promise.resolve(undefined),
-  parseMetadata: () => Promise.resolve({}),
-  getSuggestedName: () => '',
-  getUri: () => [],
 }
 
 // resource functions
@@ -142,25 +115,13 @@ export function getCurseforgeUrl(project: number, file: number): string {
 export function getGithubUrl(owner: string, repo: string, release: string) {
   return `https://api.github.com/repos/${owner}/${repo}/releases/assets/${release}`
 }
-export function getCurseforgeSourceInfo(project: number, file: number): ResourceSources {
-  return {
-    curseforge: {
-      projectId: project,
-      fileId: file,
-    },
-  }
-}
 
-export async function parseResource(path: string, context: ParseResourceContext, typeHint?: FileTypeHint): Promise<[AnyResource, Uint8Array | undefined]> {
-  const fileType = context.fileType ?? await getFileType(path)
-  const hint = typeHint || ''
-  const sha1 = context.sha1 ?? await checksum(path, 'sha1')
-  const fstat = context.stat ?? await stat(path)
-  const ext = extname(path)
-  const inspectExt = fileType === 'zip' ? '.zip' : undefined
+export async function parseResourceMetadata(resource: Resource): Promise<{ resource: Resource; icons: Uint8Array[] }> {
+  const inspectExt = resource.fileType === 'zip' ? '.zip' : undefined
+  const ext = extname(resource.path)
 
   let parsers: ResourceParser<any>[]
-  if (hint === '*' || hint === '') {
+  if (resource.domain === ResourceDomain.Unclassified) {
     if (ext) {
       parsers = resourceParsers.filter(r => r.ext === ext)
       if (parsers.length === 0 && inspectExt) {
@@ -174,48 +135,40 @@ export async function parseResource(path: string, context: ParseResourceContext,
       }
     }
   } else {
-    parsers = resourceParsers.filter(r => r.domain === hint || r.type === hint)
+    parsers = resourceParsers.filter(r => r.domain === resource.domain)
   }
-  parsers.push(UNKNOWN_ENTRY)
 
-  let parser: ResourceParser<any> = UNKNOWN_ENTRY
-  let metadata: any
-  let icon: Uint8Array | undefined
-  const fs = await openFileSystem(path).catch(e => undefined)
+  const icons: Uint8Array[] = []
+  const fs = await openFileSystem(resource.path).catch(e => undefined)
 
   if (fs) {
-    for (const p of parsers) {
+    for (const parser of parsers) {
+      if (resource.domain !== ResourceDomain.Unclassified) {
+        if (parser.domain !== resource.domain) {
+          continue
+        }
+      }
       try {
-        metadata = await p.parseMetadata(fs, path)
-        icon = await p.parseIcon(metadata, fs).catch(() => undefined)
-        parser = p
-        break
+        const metadata = await parser.parseMetadata(fs, resource.path)
+        const icon = await parser.parseIcon(metadata, fs).catch(() => undefined)
+        resource.domain = parser.domain
+        resource.metadata[parser.type] = metadata
+        resource.uri.push(...parser.getUri(metadata))
+        const suggested = parser.getSuggestedName(metadata)
+        if (suggested) {
+          resource.name = suggested
+        }
+        if (icon) {
+          icons.push(icon)
+        }
       } catch (e) {
         // skip
       }
     }
     fs.close()
-  } else {
-    parser = UNKNOWN_ENTRY
   }
-  const fileName = basename(path)
-  const name = parser.getSuggestedName(metadata) || basename(path, ext)
 
-  return [{
-    version: 1,
-    path,
-    fileName,
-    name,
-    ino: fstat.ino,
-    size: fstat.size,
-    hash: sha1,
-    domain: parser.domain,
-    type: parser.type,
-    metadata,
-    uri: parser.getUri(metadata),
-    fileType,
-    tags: [],
-  }, icon]
+  return { resource, icons }
 }
 
 /**
@@ -223,7 +176,7 @@ export async function parseResource(path: string, context: ParseResourceContext,
  * @param resolved The resolved resource
  * @param root The root of the persistence storage
  */
-export async function persistResource<T>(resolved: Resource<T>, root: string, pending: Set<string>): Promise<PersistedResource<T>> {
+export async function persistResource(resolved: Resource, root: string, pending: Set<string>): Promise<Persisted<Resource>> {
   let fileName = filenamify(resolved.fileName, { replacement: '-' })
   let filePath = join(root, resolved.domain, fileName)
 
@@ -262,9 +215,9 @@ export async function persistResource<T>(resolved: Resource<T>, root: string, pe
 // resource class
 
 export class ResourceCache {
-  private cache: Record<string, AnyPersistedResource | undefined> = {}
+  private cache: Record<string, Persisted<Resource> | undefined> = {}
 
-  put(resource: AnyPersistedResource) {
+  put(resource: Persisted<Resource>) {
     this.cache[resource.hash] = resource
     if (resource.uri) {
       for (const url of resource.uri) {
@@ -273,12 +226,12 @@ export class ResourceCache {
     }
     this.cache[resource.ino] = resource
     this.cache[resource.path] = resource
-    if (resource.curseforge) {
-      this.cache[getCurseforgeUrl(resource.curseforge.projectId, resource.curseforge.fileId)] = resource
+    if (resource.metadata.curseforge) {
+      this.cache[getCurseforgeUrl(resource.metadata.curseforge.projectId, resource.metadata.curseforge.fileId)] = resource
     }
   }
 
-  discard(resource: PersistedResource) {
+  discard(resource: Persisted<Resource>) {
     delete this.cache[resource.hash]
     for (const url of resource.uri) {
       delete this.cache[url]

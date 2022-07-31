@@ -1,9 +1,12 @@
 import { createMinecraftProcessWatcher, diagnoseJar, diagnoseLibraries, generateArguments, launch, LaunchOption, LaunchPrecheck, MinecraftFolder, ResolvedVersion, Version } from '@xmcl/core'
-import { LaunchException, LaunchOptions, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
+import { InstallJarTask } from '@xmcl/installer'
+import { IssueReportBuilder, LaunchException, LaunchOptions, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
 import { ChildProcess } from 'child_process'
 import { EOL } from 'os'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { JavaValidation } from '../entities/java'
+import { Inject } from '../util/objectRegistry'
 import { BaseService } from './BaseService'
 import { DiagnoseService } from './DiagnoseService'
 import { ExternalAuthSkinService } from './ExternalAuthSkinService'
@@ -12,22 +15,25 @@ import { InstanceJavaService } from './InstanceJavaService'
 import { InstanceService } from './InstanceService'
 import { InstanceVersionService } from './InstanceVersionService'
 import { JavaService } from './JavaService'
-import { Inject, StatefulService } from './Service'
+import { StatefulService } from './Service'
 import { UserService } from './UserService'
+import { YggdrasilUserService } from './YggdrasilUserService'
 
 export class LaunchService extends StatefulService<LaunchState> implements ILaunchService {
   private launchedProcesses: ChildProcess[] = []
 
-  constructor(app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(BaseService) private baseService: BaseService,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
     @Inject(ExternalAuthSkinService) private externalAuthSkinService: ExternalAuthSkinService,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(InstallService) private installService: InstallService,
     @Inject(InstanceJavaService) private instanceJavaService: InstanceJavaService,
+    @Inject(InstallService) private installService: InstallService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(JavaService) private javaService: JavaService,
     @Inject(UserService) private userService: UserService,
+    @Inject(YggdrasilUserService) private yggUserService: YggdrasilUserService,
   ) {
     super(app, LaunchServiceKey, () => new LaunchState())
   }
@@ -56,7 +62,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       })
     }
     const version = instanceVersion.id
-    const useAuthLib = this.userService.state.isThirdPartyAuthentication
+    const useAuthLib = user.isThirdPartyAuthentication
 
     const minMemory = instance.assignMemory === true && instance.minMemory > 0
       ? instance.minMemory
@@ -82,10 +88,10 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       },
       extraJVMArgs: instance.vmOptions,
       extraMCArgs: instance.mcOptions,
-      yggdrasilAgent: useAuthLib
+      yggdrasilAgent: useAuthLib && user.user
         ? {
           jar: await this.externalAuthSkinService.installAuthLibInjection(),
-          server: user.authService.hostName,
+          server: this.yggUserService.authServices[user.user.authService].hostName,
         }
         : undefined,
     }
@@ -121,7 +127,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
 
       if (!options?.ignoreUserStatus && !instance.fastLaunch) {
         try {
-          await this.userService.refreshStatus()
+          await this.userService.refreshUser()
         } catch (e) {
           // if (e instanceof UserException) {
           //   throw new LaunchException({
@@ -153,11 +159,11 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         server: string
       } | undefined
 
-      if (useAuthLib) {
+      if (useAuthLib && user.user) {
         this.state.launchStatus('injectingAuthLib')
         yggOptions = {
           jar: await this.externalAuthSkinService.installAuthLibInjection(),
-          server: user.authService.hostName,
+          server: this.yggUserService.authServices[user.user.authService].hostName,
         }
       }
 

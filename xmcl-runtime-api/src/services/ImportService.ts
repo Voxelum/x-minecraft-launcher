@@ -1,5 +1,5 @@
 import { Resource, ResourceDomain } from '../entities/resource'
-import { ImportResourceOptions as _ImportFileOptions } from './ResourceService'
+import { ImportResourceOptions as _ImportFileOptions, PartialResourcePath } from './ResourceService'
 import { ServiceKey } from './Service'
 export interface ImportModpackPolicy {
   /**
@@ -31,7 +31,8 @@ export interface ImportSavePolicy {
    */
   installToInstance?: string | boolean
 }
-export interface ImportFileOptions extends _ImportFileOptions {
+export interface ImportFileOptions {
+  resource: PartialResourcePath
   /**
    * Override the setting for importing modpack
    */
@@ -48,6 +49,14 @@ export interface ImportFileOptions extends _ImportFileOptions {
    * @default true
    */
   installToInstance?: string | boolean
+  /**
+   * Is import file task in background?
+   */
+  background?: boolean
+  /**
+    * If optional, the resource won't be import if we cannot parse it.
+    */
+  optional?: boolean
 }
 
 export interface ImportOptionsBase {

@@ -1,6 +1,6 @@
 import { checksum, MinecraftFolder } from '@xmcl/core'
 import { DownloadTask, UnzipTask } from '@xmcl/installer'
-import { AnyPersistedResource, ApplyInstanceUpdateOptions, createTemplate, ExportInstanceOptions, GetManifestOptions, InstanceFile, InstanceIOException, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceManifest, InstanceManifestSchema, InstanceSchema, InstanceUpdate, LockKey, ResourceDomain, RuntimeVersions, SetInstanceManifestOptions, ResourceSources } from '@xmcl/runtime-api'
+import { ApplyInstanceUpdateOptions, createTemplate, ExportInstanceOptions, GetManifestOptions, InstanceFile, InstanceIOException, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceManifest, InstanceManifestSchema, InstanceSchema, InstanceUpdate, LockKey, Persisted, Resource, ResourceDomain, ResourceMetadata, RuntimeVersions, SetInstanceManifestOptions } from '@xmcl/runtime-api'
 import { Task, task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { randomUUID } from 'crypto'
@@ -9,18 +9,20 @@ import { mkdtemp, readdir, readJson, remove, rename, stat, unlink } from 'fs-ext
 import { tmpdir } from 'os'
 import { basename, join, relative, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { copyPassively, exists, isDirectory, isFile, linkWithTimeoutOrCopy, missing, readdirIfPresent } from '../util/fs'
 import { requireObject, requireString } from '../util/object'
+import { Inject } from '../util/objectRegistry'
 import { isValidateUrl, joinUrl } from '../util/url'
 import { ZipTask } from '../util/zip'
 import { CurseForgeService } from './CurseForgeService'
-import InstanceService from './InstanceService'
+import { InstanceService } from './InstanceService'
 import { InstanceVersionService } from './InstanceVersionService'
 import { ModrinthService } from './ModrinthService'
 import { PeerService } from './PeerService'
 import { ResourceService } from './ResourceService'
-import { AbstractService, Inject, Singleton } from './Service'
+import { AbstractService, Singleton } from './Service'
 import { UserService } from './UserService'
 import { VersionService } from './VersionService'
 
@@ -28,7 +30,7 @@ import { VersionService } from './VersionService'
  * Provide the abilities to import/export instance from/to modpack
  */
 export class InstanceIOService extends AbstractService implements IInstanceIOService {
-  constructor(app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
@@ -244,16 +246,16 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
           if (!resource) {
             resource = this.resourceService.getResourceByKey(sha1)
           }
-          if (resource?.modrinth) {
+          if (resource?.metadata.modrinth) {
             localFile.modrinth = {
-              projectId: resource.modrinth.projectId,
-              versionId: resource.modrinth.versionId,
+              projectId: resource.metadata.modrinth.projectId,
+              versionId: resource.metadata.modrinth.versionId,
             }
           }
-          if (resource?.curseforge) {
+          if (resource?.metadata.curseforge) {
             localFile.curseforge = {
-              projectId: resource.curseforge.projectId,
-              fileId: resource.curseforge.fileId,
+              projectId: resource.metadata.curseforge.projectId,
+              fileId: resource.metadata.curseforge.fileId,
             }
           }
           localFile.downloads = resource?.uri && resource.uri.some(u => u.startsWith('http')) ? resource.uri.filter(u => u.startsWith('http')) : undefined
@@ -433,7 +435,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
       return undefined
     })
 
-    const createFileLinkTask = (dest: string, res: AnyPersistedResource) => {
+    const createFileLinkTask = (dest: string, res: Persisted<Resource>) => {
       return task('file', async () => {
         const fstat = await stat(dest).catch(() => undefined)
         if (fstat && fstat.ino === res.ino) {
@@ -468,13 +470,13 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
           }
 
           const resource = resourceService.state.mods.find(r => r.hash === sha1) || resourceService.state.resourcepacks.find(r => r.hash === sha1) ||
-          resourceService.state.shaderpacks.find(r => r.hash === sha1)
+            resourceService.state.shaderpacks.find(r => r.hash === sha1)
           if (resource) {
             log(`Link existed resource to ${filePath}`)
             tasks.push(createFileLinkTask(filePath, resource))
           } else {
             const urls = [] as string[]
-            const source: ResourceSources = {}
+            const metadata: ResourceMetadata = {}
 
             if (file.curseforge) {
               const fileInfo = await curseForgeService.fetchProjectFile(file.curseforge.projectId, file.curseforge.fileId)
@@ -485,7 +487,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
                 urls.push(...guessCurseforgeFileUrl(fileInfo.id, fileInfo.fileName))
               }
 
-              source.curseforge = {
+              metadata.curseforge = {
                 fileId: file.curseforge.fileId,
                 projectId: file.curseforge.projectId,
               }
@@ -493,7 +495,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
 
             if (file.modrinth) {
               const version = await modrinthService.getProjectVersion(file.modrinth.versionId)
-              source.modrinth = {
+              metadata.modrinth = {
                 filename: version.files[0].filename,
                 versionId: file.modrinth.versionId,
                 projectId: file.modrinth.projectId,
@@ -514,8 +516,8 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
               urls.push(...file.downloads.filter(u => u.startsWith('http')))
             }
 
-            if (Object.keys(source).length > 0) {
-              resourceService.markResourceSource(sha1, source)
+            if (Object.keys(metadata).length > 0) {
+              resourceService.markResourceMetadata(sha1, metadata)
             }
 
             let destination = filePath

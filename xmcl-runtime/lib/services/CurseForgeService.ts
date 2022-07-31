@@ -1,15 +1,16 @@
-import { Mod, File, ModsSearchSortField, Pagination, ModCategory, SearchOptions } from '@xmcl/curseforge'
+import { Mod, File, ModsSearchSortField, Pagination, ModCategory, SearchOptions, FileModLoaderType } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
-import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, CurseforgeState, GetModFilesOptions, InstallFileOptions, ProjectType } from '@xmcl/runtime-api'
+import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, CurseforgeState, GetModFilesOptions, InstallFileOptions, InstallFileResult, ProjectType, ResourceDomain } from '@xmcl/runtime-api'
 import { unlink } from 'fs-extra'
 import { join } from 'path'
 import { URLSearchParams } from 'url'
 import LauncherApp from '../app/LauncherApp'
-import { getCurseforgeSourceInfo } from '../entities/resource'
+import { LauncherAppKey } from '../app/utils'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
-import { requireObject, requireString } from '../util/object'
+import { isNonnull, requireObject, requireString } from '../util/object'
+import { Inject } from '../util/objectRegistry'
 import { ResourceService } from './ResourceService'
-import { Inject, Singleton, StatefulService } from './Service'
+import { Singleton, StatefulService } from './Service'
 
 export class CurseForgeService extends StatefulService<CurseforgeState> implements ICurseForgeService {
   private client = this.networkManager.request.extend({
@@ -20,7 +21,7 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
     },
   })
 
-  constructor(app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app, CurseForgeServiceKey, () => new CurseforgeState())
@@ -49,7 +50,23 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
   @Singleton(v => v.modId)
   async fetchProjectFiles(options: GetModFilesOptions) {
     this.log(`Fetch project files: ${options.modId}`)
-    const result: { data: File[]; pagination: Pagination } = await this.client.get(`v1/mods/${options.modId}/files`).json()
+    const param = new URLSearchParams()
+    if (options.gameVersion) {
+      param.append('gameVersion', options.gameVersion)
+    }
+    if (options.modLoaderType) {
+      param.append('modLoaderType', options.modLoaderType.toString())
+    }
+    if (options.gameVersionTypeId) {
+      param.append('gameVersionTypeId', options.gameVersionTypeId.toString())
+    }
+    if (options.index) {
+      param.append('index', options.index.toString())
+    }
+    if (options.pageSize) {
+      param.append('pageSize', options.pageSize.toString())
+    }
+    const result: { data: File[]; pagination: Pagination } = await this.client.get(`v1/mods/${options.modId}/files?${param.toString()}`).json()
     return result
   }
 
@@ -121,14 +138,14 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
     return result
   }
 
-  async installFile({ file, type, projectId }: InstallFileOptions) {
+  async installFile({ file, type, projectId, instancePath }: InstallFileOptions): Promise<InstallFileResult> {
     requireString(type)
     requireObject(file)
-    const typeHints: Record<ProjectType, string> = {
-      'mc-mods': 'mods',
-      'texture-packs': 'resourcepack',
-      worlds: 'save',
-      modpacks: 'curseforge-modpack',
+    const typeToDomain: Record<ProjectType, ResourceDomain> = {
+      'mc-mods': ResourceDomain.Mods,
+      'texture-packs': ResourceDomain.ResourcePacks,
+      worlds: ResourceDomain.Saves,
+      modpacks: ResourceDomain.Modpacks,
     }
     const urls = [`curseforge:${projectId}:${file.id}`]
     if (file.downloadUrl) {
@@ -137,36 +154,93 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
       urls.push(...guessCurseforgeFileUrl(file.id, file.fileName))
     }
     this.log(`Try install file ${file.displayName}(${file.downloadUrl}) in type ${type}`)
-    const resource = this.resourceService.getResource({ url: urls })
-    if (resource) {
-      this.log(`The curseforge file ${file.displayName}(${file.downloadUrl}) existed in cache!`)
-      return resource
-    }
     const resourceService = this.resourceService
     const networkManager = this.networkManager
     try {
       const destination = join(this.app.temporaryPath, file.fileName)
       const project = await this.fetchProject(projectId)
-      const imageUrl = project.logo?.thumbnailUrl
-      const task = new DownloadTask({
-        ...networkManager.getDownloadBaseOptions(),
-        url: file.downloadUrl ?? guessCurseforgeFileUrl(file.id, file.fileName),
-        destination,
-      }).setName('installCurseforgeFile')
-      const promise = this.submit(task)
-      this.state.curseforgeDownloadFileStart({ fileId: file.id, taskId: this.taskManager.getTaskUUID(task) })
-      await promise
-      const result = await resourceService.importResource({
-        path: destination,
-        url: urls,
-        source: getCurseforgeSourceInfo(projectId, file.id),
-        iconUrl: imageUrl || undefined,
-        type: typeHints[type],
-        background: true,
-      })
-      this.log(`Install curseforge file ${file.displayName}(${file.downloadUrl}) success!`)
-      await unlink(destination).catch(() => undefined)
-      return result
+      const dependencies = await Promise.all(file.dependencies.map(async (dep) => {
+        if (dep.relationType <= 4) {
+          let gameVersion = ''
+          let modLoaderType: FileModLoaderType = FileModLoaderType.Any
+          if (file.sortableGameVersions) {
+            for (const ver of file.sortableGameVersions) {
+              if (ver.gameVersion) {
+                gameVersion = ver.gameVersion
+              } else if (ver.gameVersionName === 'Forge') {
+                modLoaderType = FileModLoaderType.Forge
+              } else if (ver.gameVersionName === 'Fabric') {
+                modLoaderType = FileModLoaderType.Fabric
+              } else if (ver.gameVersionName === 'Quilt') {
+                modLoaderType = FileModLoaderType.Quilt
+              } else if (ver.gameVersionName === 'LiteLoader') {
+                modLoaderType = FileModLoaderType.LiteLoader
+              }
+            }
+          }
+          try {
+            const files = await this.fetchProjectFiles({
+              gameVersion,
+              modLoaderType,
+              modId: dep.modId,
+              pageSize: 1,
+            })
+            if (files.data[0]) {
+              return await this.installFile({ file: files.data[0], type: 'mc-mods', projectId: dep.modId, instancePath })
+            } else {
+              this.warn(`Skip to install project file ${projectId}:${file.id} dependency ${file.modId} as no mod files matched!`)
+            }
+          } catch (e) {
+            this.warn(`Fail to install project file ${projectId}:${file.id} dependency ${file.modId} as no mod files matched!`)
+            this.warn(e)
+          }
+        }
+        return undefined
+      }))
+
+      let resource = this.resourceService.getOneResource({ url: urls })
+      if (resource) {
+        this.log(`The curseforge file ${file.displayName}(${file.downloadUrl}) existed in cache!`)
+      } else {
+        const imageUrl = project.logo?.thumbnailUrl
+        const task = new DownloadTask({
+          ...networkManager.getDownloadBaseOptions(),
+          url: file.downloadUrl ?? guessCurseforgeFileUrl(file.id, file.fileName),
+          destination,
+        }).setName('installCurseforgeFile')
+        const promise = this.submit(task)
+        this.state.curseforgeDownloadFileStart({ fileId: file.id, taskId: this.taskManager.getTaskUUID(task) })
+        await promise
+        const imported = await resourceService.importResource({
+          resources: [{
+            path: destination,
+            uri: urls,
+            metadata: {
+              curseforge: {
+                projectId,
+                fileId: file.id,
+              },
+            },
+            domain: typeToDomain[type] ?? ResourceDomain.Unclassified,
+            icons: imageUrl ? [imageUrl] : [],
+          }],
+          background: true,
+        })
+        resource = imported[0]
+        this.log(`Install curseforge file ${file.displayName}(${file.downloadUrl}) success!`)
+        await unlink(destination).catch(() => undefined)
+      }
+
+      if (instancePath) {
+        await this.resourceService.install({ instancePath, resource })
+      }
+
+      return {
+        file,
+        mod: project,
+        resource,
+        dependencies: dependencies.filter(isNonnull),
+      }
     } finally {
       this.state.curseforgeDownloadFileEnd(file.id)
     }

@@ -31,11 +31,11 @@ const props = defineProps<{
   shown: Boolean
 }>()
 
-const curseforgeFiles = computed(() => props.modpack?.source.type === 'curseforge' ? props.modpack.source.resource.metadata.files : undefined)
+const curseforgeFiles = computed(() => props.modpack?.source.type === 'curseforge' ? props.modpack.source.resource.metadata['curseforge-modpack'].files : undefined)
 
 const ftbFiles = computed(() => props.modpack?.source.type === 'ftb' ? props.modpack.source.manifest.files : [])
 
-const modrinthFiles = computed(() => props.modpack?.source.type === 'modrinth' ? props.modpack.source.resource.metadata.files : [])
+const modrinthFiles = computed(() => props.modpack?.source.type === 'modrinth' ? props.modpack.source.resource.metadata['modrinth-modpack'].files : [])
 
 provideFileNodes(computed(() => {
   function getFTBNode(file: FTBFile): InstanceFileNode {

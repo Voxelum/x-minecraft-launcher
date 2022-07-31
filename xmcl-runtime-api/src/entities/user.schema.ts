@@ -25,12 +25,10 @@ export interface UserProfile {
    * The username usually email
    */
   username: string
-
   /**
    * The used profile service name
    */
   profileService: string
-
   /**
    * The used auth service name
    */
@@ -87,20 +85,20 @@ export interface UserSchema {
      */
     profile: string
   }
-  /**
-   * All loaded auth services api. Used for yggdrasil auth
-   * @default {}
-   */
-  authServices: {
-    [name: string]: YggdrasilAuthAPI
-  }
-  /**
-   * All loaded profile services api. Used for
-   * @default {}
-   */
-  profileServices: {
-    [name: string]: ProfileServiceAPI
-  }
+  // /**
+  //  * All loaded auth services api. Used for yggdrasil auth
+  //  * @default {}
+  //  */
+  // authServices: {
+  //   [name: string]: YggdrasilAuthAPI
+  // }
+  // /**
+  //  * All loaded profile services api. Used for
+  //  * @default {}
+  //  */
+  // profileServices: {
+  //   [name: string]: ProfileServiceAPI
+  // }
   /**
    * The client token of current client. The launcher will generate one at first launch.
    * @default ""

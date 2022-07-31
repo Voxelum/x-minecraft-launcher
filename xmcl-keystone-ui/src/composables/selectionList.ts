@@ -1,4 +1,5 @@
 import { onUnmounted, Ref, ref, watch, onMounted } from '@vue/composition-api'
+import { ResourceDomain } from '@xmcl/runtime-api'
 import { useResourceOperation } from './resource'
 
 export function useProgressiveLoad() {
@@ -23,18 +24,20 @@ export function useProgressiveLoad() {
  */
 export function useDropImport(
   elem: Ref<HTMLElement | null | undefined>,
-  importHint?: string,
+  domain?: ResourceDomain,
 ) {
-  const { importResource: importUnknownResource } = useResourceOperation()
+  const { importResource } = useResourceOperation()
   function onDrop(event: DragEvent) {
     if (!event.dataTransfer) return
     event.preventDefault()
     const length = event.dataTransfer.files.length
     if (length > 0) {
       console.log(`Detect drop import ${length} file(s).`)
+      const res = [] as Array<{ path: string; domain?: ResourceDomain }>
       for (let i = 0; i < length; ++i) {
-        importUnknownResource({ path: event.dataTransfer.files[i].path, type: importHint })
+        res.push({ path: event.dataTransfer.files[i].path, domain })
       }
+      importResource({ resources: res })
     }
   }
   onMounted(() => {

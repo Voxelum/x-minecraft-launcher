@@ -1,7 +1,5 @@
-import { FileTypeHint, Resource } from '@xmcl/runtime-api'
-import { ParseResourceContext } from '../services/ResourceService'
+import { Resource } from '@xmcl/runtime-api'
 import { FileType } from '../util/fs'
-import { FileStat } from './resource'
 
 export interface WorkPayload {
   type: string
@@ -18,12 +16,6 @@ export interface FileTypePayload {
   path: string
 }
 
-export interface ResolveResourceWorkPayload {
-  path: string
-  context: ParseResourceContext
-  hint: FileTypeHint
-}
-
 export interface WorkerResponse {
   id: number
   error?: Error
@@ -37,6 +29,6 @@ export interface WorkerInterface {
   checksum(path: string, algorithm: string): Promise<string>
   checksumAndFileType(path: string, algorithm: string): Promise<[string, FileType]>
   fileType(path: string): Promise<FileType>
-  parseResource(payload: ResolveResourceWorkPayload): Promise<[Resource, Uint8Array | undefined]>
+  parseResourceMetadata(resource: Resource): Promise<{ resource: Resource; icons: Uint8Array[] }>
   copyPassively(files: { src: string; dest: string }[]): Promise<void>
 }

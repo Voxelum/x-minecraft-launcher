@@ -1,18 +1,20 @@
 import { readFile, remove } from 'fs-extra'
 import { isAbsolute, join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { InstanceService } from './InstanceService'
-import { AbstractService, Inject, Singleton } from './Service'
+import { AbstractService, Singleton } from './Service'
 import { decode, guessEncodingByBuffer, UTF8 } from '../util/encoding'
 import { readdirIfPresent } from '../util/fs'
 import { gunzip } from '../util/zip'
 import { InstanceLogService as IInstanceLogService, InstanceLogServiceKey } from '@xmcl/runtime-api'
+import { Inject } from '../util/objectRegistry'
 
 /**
  * Provide the ability to list/read/remove log and crash reports of a instance.
  */
 export class InstanceLogService extends AbstractService implements IInstanceLogService {
-  constructor(app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {
     super(app, InstanceLogServiceKey)
@@ -95,7 +97,7 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
     if (name.endsWith('.gz')) {
       buf = await gunzip(buf)
     }
-    const encoding = await guessEncodingByBuffer(buf)
+    const encoding = await guessEncodingByBuffer(buf).catch(() => undefined)
     const result = decode(buf, encoding || UTF8)
     return result
   }

@@ -1,15 +1,17 @@
 import { diagnose, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedLibrary, ResolvedVersion, Version } from '@xmcl/core'
 import { DEFAULT_FABRIC_API, DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getQuiltVersionsList, getVersionList, getYarnArtifactList, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, QuiltArtifactVersion, YARN_MAVEN_URL } from '@xmcl/installer'
-import { Asset, ForgeVersion, ForgeVersionList, GetQuiltVersionListOptions, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallQuiltOptions, InstallService as IInstallService, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema, VersionQuiltSchema } from '@xmcl/runtime-api'
+import { Asset, ForgeVersion, ForgeVersionList, GetQuiltVersionListOptions, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallQuiltOptions, InstallService as IInstallService, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, OptifineVersion, ResourceDomain, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema, VersionQuiltSchema } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { ensureFile, readJson, readJSON, writeFile, writeJson } from 'fs-extra'
 import { URL } from 'url'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
+import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
 import { BaseService } from './BaseService'
 import { JavaService } from './JavaService'
 import { ResourceService } from './ResourceService'
-import { AbstractService, Inject, Lock, Singleton } from './Service'
+import { AbstractService, Lock, Singleton } from './Service'
 import { VersionService } from './VersionService'
 
 /**
@@ -30,7 +32,7 @@ export class InstallService extends AbstractService implements IInstallService {
   private optifineVersionJson = createSafeFile(this.getAppDataPath('optifine-versions.json'), VersionOptifineSchema, this, [this.getPath('optifine-versions.json')])
   private quiltVersionJson = createSafeFile(this.getAppDataPath('quilt-versions.json'), VersionQuiltSchema, this, [this.getPath('quilt-versions.json')])
 
-  constructor(app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(BaseService) private baseService: BaseService,
     @Inject(VersionService) private versionService: VersionService,
     @Inject(ResourceService) private resourceService: ResourceService,
@@ -789,8 +791,7 @@ export class InstallService extends AbstractService implements IInstallService {
         destination: path,
       }).setName('download'))
       resourceService.importResource({
-        path,
-        type: 'mods',
+        resources: [{ path, domain: ResourceDomain.Mods }],
         background: true,
       }).catch((e) => {
         error(`Fail to import optifine as mod! ${path}`)

@@ -1,15 +1,17 @@
-import { AnyResource, getFabricModCompatibility, InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState, isFabricResource, isForgeResource, isModResource, isPersistedResource, IssueReport, IssueReportBuilder, RequireFabricAPIIssueKey, RequireFabricIssueKey, RequireForgeIssueKey, ResourceDomain, ResourceType } from '@xmcl/runtime-api'
+import { getFabricModCompatibility, InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState, isFabricResource, isForgeResource, isModResource, isPersistedResource, IssueReport, IssueReportBuilder, RequireFabricAPIIssueKey, RequireFabricIssueKey, RequireForgeIssueKey, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
 import { ensureDir, FSWatcher, stat, unlink } from 'fs-extra'
 import watch from 'node-watch'
 import { dirname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { AggregateExecutor } from '../util/aggregator'
 import { linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
+import { Inject } from '../util/objectRegistry'
 import { DiagnoseService } from './DiagnoseService'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
-import { Inject, Singleton, StatefulService } from './Service'
+import { Singleton, StatefulService } from './Service'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
@@ -17,16 +19,15 @@ import { Inject, Singleton, StatefulService } from './Service'
 export class InstanceModsService extends StatefulService<InstanceModsState> implements IInstanceModsService {
   private modsWatcher: FSWatcher | undefined
 
-  private addMod = new AggregateExecutor<AnyResource, AnyResource[]>(v => v,
+  private addMod = new AggregateExecutor<Resource, Resource[]>(v => v,
     res => this.state.instanceModUpdate(res),
     0)
 
-  private removeMod = new AggregateExecutor<AnyResource, AnyResource[]>(v => v,
+  private removeMod = new AggregateExecutor<Resource, Resource[]>(v => v,
     res => this.state.instanceModRemove(res),
     0)
 
-  constructor(
-    app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
@@ -41,6 +42,13 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
     }).subscribe('instanceSelect', () => {
       this.refresh()
     })
+
+    this.resourceService.registerInstaller(ResourceDomain.Mods, async (resource, instancePath) => {
+      await this.install({
+        mods: [resource],
+        path: instancePath,
+      })
+    })
   }
 
   async showDirectory(): Promise<void> {
@@ -50,18 +58,11 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
   private async scanMods(dir: string) {
     const files = await readdirIfPresent(dir)
 
-    const fileArgs = files.filter((file) => !file.startsWith('.')).map((file) => ({
-      path: join(dir, file),
-      url: [] as string[],
-      source: undefined,
-    }))
-    const resources = await this.resourceService.resolveResources({
-      files: fileArgs,
-      type: 'mods',
-    })
+    const fileArgs = files.filter((file) => !file.startsWith('.')).map((file) => join(dir, file))
+    const resources = await this.resourceService.resolveResource(fileArgs.map(f => ({ path: f, domain: ResourceDomain.Mods })))
     const persisted = await Promise.all(resources
-      .filter(([res]) => res.fileType !== 'directory') // not show dictionary
-      .map(async ([res, icon]) => !isPersistedResource(res) ? { ...(await this.resourceService.importParsedResource({ path: res.path, type: res.type }, res, icon)), path: res.path } : Promise.resolve(res)))
+      .filter((res) => res.fileType !== 'directory') // not show dictionary
+      .map(async (res) => !isPersistedResource(res) ? { ...(await this.resourceService.importParsedResource(res)), path: res.path } : Promise.resolve(res)))
     return persisted
   }
 
@@ -156,7 +157,7 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
       if (name.startsWith('.')) return
       const filePath = name
       if (event === 'update') {
-        this.resourceService.resolveResource({ path: filePath, type: 'mods' }).then(([resource, icon]) => {
+        this.resourceService.resolveResource([{ path: filePath, domain: ResourceDomain.Mods }]).then(([resource]) => {
           if (isModResource(resource)) {
             this.log(`Instance mod add ${filePath}`)
           } else {
@@ -167,7 +168,7 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
             return
           }
           if (!isPersistedResource(resource)) {
-            this.resourceService.importParsedResource({ path: filePath, restrictToDomain: ResourceDomain.Mods }, resource, icon).then((res) => {
+            this.resourceService.importParsedResource(resource).then((res) => {
               this.addMod.push({ ...res, path: resource.path })
             }, (e) => {
               this.addMod.push(resource)

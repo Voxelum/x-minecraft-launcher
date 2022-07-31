@@ -22,13 +22,26 @@ export function compareDate(a: Date, b: Date) {
   return a - b
 }
 
-export function toRecord<T, K extends string | symbol | number >(array: T[], key: (v: T) => K) {
+export function toRecord<T, K extends string | symbol | number>(array: T[], key: (v: T) => K) {
   const result: Record<K, T> = {} as any
   for (const i of array) {
     result[key(i)] = i
   }
   return result
 }
+
+export function assignIfPresent<T>(a: T, b: Partial<T>, keys: Array<keyof T>) {
+  for (const key of keys) {
+    if (key in b && b[key]) {
+      a[key] = b[key]!
+    }
+  }
+}
+
+export function flat<T>(arr: T[][]): T[] {
+  return arr.reduce((a, b) => [...a, ...b])
+}
+
 export function isNonnull<T>(object: T | undefined | null): object is T {
   return object !== undefined && object !== null
 }

@@ -1,4 +1,4 @@
-import { PersistedResource, ResourceDomain } from '@xmcl/runtime-api'
+import { Persisted, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { openFileSystem } from '@xmcl/system'
 import { existsSync, readJSON, stat, unlink, writeJSON } from 'fs-extra'
 import { basename, extname, join, relative } from 'path'
@@ -9,6 +9,7 @@ import { ResourceService } from '../services/ResourceService'
 import { isSystemError } from './error'
 import { ENOENT_ERROR, fileType } from './fs'
 import { Logger } from './log'
+import { Resource as LegacyResource } from '@xmcl/runtime-api/src/entities/resource.v1'
 import { isNonnull } from './object'
 
 /**
@@ -32,7 +33,7 @@ export async function fixResourceSchema({ log, warn }: Logger, filePath: string,
     dirty = true
   }
 
-  if (schema.type === 'forge' && RESOURCE_FILE_VERSION < 1) {
+  if (schema.type === 'forge' && schema.version < 1) {
     // fix forge metadata
     log(`Fix ${filePath} file version: ${schema.version} -> ${RESOURCE_FILE_VERSION}`)
     const fs = await openFileSystem(join(dataRoot, schema.location + schema.ext))
@@ -45,7 +46,7 @@ export async function fixResourceSchema({ log, warn }: Logger, filePath: string,
     dirty = true
   }
 
-  if (RESOURCE_FILE_VERSION < 2 || !schema.fileName) {
+  if (!schema.fileName) {
     if (typeof schema.location === 'string') {
       schema.fileName = basename(schema.location)
       schema.version = RESOURCE_FILE_VERSION
@@ -70,6 +71,35 @@ export async function fixResourceSchema({ log, warn }: Logger, filePath: string,
   }
 }
 
+export function upgradeDatabaseV2(legacy: any): Persisted<Resource> {
+  if (legacy.version === 1) {
+    return {
+      version: RESOURCE_FILE_VERSION,
+      hash: legacy.hash,
+      name: legacy.name,
+      fileName: legacy.fileName,
+      fileType: legacy.fileType,
+      size: legacy.size,
+      tags: legacy.tags,
+      uri: legacy.uri,
+      domain: legacy.domain,
+      icons: legacy.iconUrl ? [legacy.iconUrl] : [],
+      storedPath: legacy.storedPath!,
+      storedDate: legacy.storedDate!,
+      metadata: {
+        [legacy.type]: legacy.metadata,
+        curseforge: (legacy as any).curseforge,
+        modrinth: (legacy as any).modrinth,
+        github: (legacy as any).github,
+        gitlab: (legacy as any).gitlab,
+      },
+      path: legacy.path,
+      ino: legacy.ino,
+    }
+  }
+  return legacy
+}
+
 export async function migrateToDatabase(this: ResourceService, domain: ResourceDomain, files: string[]) {
   const loadMetadata = async (metadataPath: string) => {
     const resourceData = await readJSON(metadataPath) // this.resourceFile.readTo(filePath)
@@ -79,7 +109,7 @@ export async function migrateToDatabase(this: ResourceService, domain: ResourceD
     let imagePath = metadataPath.substring(0, metadataPath.length - ext.length) + '.png'
     let urlPath = ''
     if (existsSync(imagePath)) {
-      urlPath = await this.addImage(imagePath)
+      urlPath = await this.imageStore.addImage(imagePath)
     }
 
     if (resourceData.iconUri) {
@@ -88,7 +118,7 @@ export async function migrateToDatabase(this: ResourceService, domain: ResourceD
           const u = new URL(resourceData.iconUri)
           imagePath = this.getPath(u.pathname)
           if (existsSync(imagePath)) {
-            urlPath = await this.addImage(imagePath)
+            urlPath = await this.imageStore.addImage(imagePath)
           }
         } catch (e) {
 
@@ -98,13 +128,11 @@ export async function migrateToDatabase(this: ResourceService, domain: ResourceD
 
     const resourceFilePath = this.getPath(resourceData.domain, resourceData.fileName) + resourceData.ext
     const { size, ino } = await stat(resourceFilePath)
-    const resource: PersistedResource<any> = ({
-      version: 1,
+    const resource: Persisted<Resource> = ({
+      version: RESOURCE_FILE_VERSION,
       fileName: resourceData.fileName + resourceData.ext,
       name: resourceData.name,
       domain: resourceData.domain,
-      type: resourceData.type,
-      metadata: resourceData.metadata,
       fileType: resourceData.fileType || await fileType(resourceFilePath),
       uri: resourceData.uri,
       tags: resourceData.tags,
@@ -114,10 +142,13 @@ export async function migrateToDatabase(this: ResourceService, domain: ResourceD
       storedDate: resourceData.date,
       size,
       ino,
-      curseforge: resourceData.curseforge,
-      modrinth: resourceData.modrinth,
-      github: resourceData.github,
-      iconUrl: urlPath || (resourceData.iconUri ?? ''),
+      metadata: {
+        [resourceData.type]: resourceData.metadata,
+        curseforge: resourceData.curseforge,
+        modrinth: resourceData.modrinth,
+        github: resourceData.github,
+      },
+      icons: [urlPath || (resourceData.iconUri ?? '')],
     })
 
     await unlink(metadataPath).catch(() => { })

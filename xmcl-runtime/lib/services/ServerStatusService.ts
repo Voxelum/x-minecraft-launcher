@@ -1,7 +1,9 @@
 import { queryStatus } from '@xmcl/client'
 import { createFailureServerStatus, PingServerOptions, protocolToMinecraft, ServerStatusService as IServerStatusService, ServerStatusServiceKey } from '@xmcl/runtime-api'
 import { LauncherApp } from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { isSystemError } from '../util/error'
+import { Inject } from '../util/objectRegistry'
 import { AbstractService } from './Service'
 
 export class ServerStatusService extends AbstractService implements IServerStatusService {
@@ -9,7 +11,7 @@ export class ServerStatusService extends AbstractService implements IServerStatu
 
   private versionToProtocols: Record<string, number> = {}
 
-  constructor(app: LauncherApp) {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app, ServerStatusServiceKey, async () => {
       // const protocolFile = this.getAppDataPath('protocol.json')
       // if (await exists(protocolFile)) {

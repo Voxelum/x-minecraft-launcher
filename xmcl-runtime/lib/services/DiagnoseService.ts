@@ -1,6 +1,8 @@
 import { DiagnoseService as IDiagnoseService, DiagnoseServiceException, DiagnoseServiceKey, DiagnoseState, Issue, IssueKey, IssueReport, IssueReportBuilder } from '@xmcl/runtime-api'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { AggregateExecutor } from '../util/aggregator'
+import { Inject } from '../util/objectRegistry'
 import { StatefulService } from './Service'
 
 export interface IssueDescriptor<I> {
@@ -28,7 +30,7 @@ export class DiagnoseService extends StatefulService<DiagnoseState> implements I
   (report) => this.state.issuesPost(report),
   500)
 
-  constructor(app: LauncherApp) {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app, DiagnoseServiceKey, () => new DiagnoseState())
   }
 
