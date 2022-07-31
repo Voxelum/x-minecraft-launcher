@@ -280,8 +280,12 @@ async function onLogin() {
   }
   const selectProfile = !state.user || !!parameter.value
   const payload = { ...data, authService: authService.value, selectProfile }
-  await login(payload).catch(handleError)
-  hide()
+  try {
+    await login(payload)
+    hide()
+  } catch (e) {
+    handleError(e)
+  }
 }
 
 onMounted(() => {
