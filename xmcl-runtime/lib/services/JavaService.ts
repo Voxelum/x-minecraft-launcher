@@ -5,17 +5,19 @@ import { chmod, ensureFile, readFile } from 'fs-extra'
 import { dirname, join } from 'path'
 import { URL } from 'url'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { JavaValidation, validateJavaPath } from '../entities/java'
 import { readdirIfPresent } from '../util/fs'
 import { requireObject, requireString } from '../util/object'
+import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
 import { BaseService } from './BaseService'
-import { Inject, Singleton, StatefulService } from './Service'
+import { Singleton, StatefulService } from './Service'
 
 export class JavaService extends StatefulService<JavaState> implements IJavaService {
   protected readonly config = createSafeFile(this.getAppDataPath('java.json'), JavaSchema, this, [this.getPath('java.json')])
 
-  constructor(app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(BaseService) private baseService: BaseService,
   ) {
     super(app, JavaServiceKey, () => new JavaState(), async () => {

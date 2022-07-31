@@ -1,9 +1,11 @@
 import { CachedFTBModpackVersionManifest, FeedTheBeastService as IFeedTheBeastService, FeedTheBeastServiceKey, FeedTheBeastState, FTBModpackManifest, FTBModpacksResult, FTBModpackVersionManifest, FTBVersionManifestStoreSchema, GetFTBModpackVersionOptions, SearchFTBModpackOptions } from '@xmcl/runtime-api'
 import { LauncherApp } from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
+import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
-import { Inject, StatefulService } from './Service'
+import { StatefulService } from './Service'
 
 export class FeedTheBeastService extends StatefulService<FeedTheBeastState> implements IFeedTheBeastService {
   private api = this.networkManager.request.extend({
@@ -18,7 +20,7 @@ export class FeedTheBeastService extends StatefulService<FeedTheBeastState> impl
 
   private cachedVersions: CachedFTBModpackVersionManifest[] = []
 
-  constructor(app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {

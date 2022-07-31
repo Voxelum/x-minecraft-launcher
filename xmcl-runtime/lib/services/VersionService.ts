@@ -5,8 +5,10 @@ import { ensureDir, FSWatcher, remove } from 'fs-extra'
 import watch from 'node-watch'
 import { basename, dirname, join, relative, sep } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { isDirectory, missing, readdirEnsured } from '../util/fs'
 import { isNonnull } from '../util/object'
+import { Inject } from '../util/objectRegistry'
 import { Singleton, StatefulService } from './Service'
 
 /**
@@ -15,7 +17,7 @@ import { Singleton, StatefulService } from './Service'
 export class VersionService extends StatefulService<VersionState> implements IVersionService {
   private watcher: FSWatcher | undefined
 
-  constructor(app: LauncherApp) {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app, VersionServiceKey, () => new VersionState(), async () => {
       await this.refreshVersions()
       const versions = this.getPath('versions')

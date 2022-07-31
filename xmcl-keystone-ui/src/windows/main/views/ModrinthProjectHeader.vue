@@ -157,7 +157,7 @@
 <script lang="ts" setup>
 import { Ref } from '@vue/composition-api'
 import { Category, Project, ProjectVersion } from '@xmcl/modrinth'
-import { ModrinthServiceKey, PersistedResource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { ModrinthServiceKey, Persisted, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import CurseforgeProjectDestMenu from './CurseforgeProjectDestMenu.vue'
 import { useI18n, useRefreshable, useService, useServiceBusy } from '/@/composables'
 import { useVuetifyColor } from '/@/composables/vuetify'
@@ -206,7 +206,7 @@ const isDownloading = computed(() => {
 })
 const isDownloaded = (ver: ProjectVersion) => {
   const fileUrl = ver.files[0].url
-  const find = (m: PersistedResource) => {
+  const find = (m: Persisted<Resource>) => {
     if (m.uri.indexOf(fileUrl) !== -1) {
       return true
     }

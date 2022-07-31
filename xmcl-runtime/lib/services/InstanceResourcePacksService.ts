@@ -4,13 +4,15 @@ import { existsSync } from 'fs'
 import { ensureDir, lstat, move, readdir, readlink, remove, unlink } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { isSystemError } from '../util/error'
 import { createSymbolicLink, ENOENT_ERROR, linkWithTimeoutOrCopy } from '../util/fs'
+import { Inject } from '../util/objectRegistry'
 import { DiagnoseService } from './DiagnoseService'
 import { InstanceOptionsService } from './InstanceOptionsService'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
-import { AbstractService, Inject, Singleton } from './Service'
+import { AbstractService, Singleton } from './Service'
 
 /**
  * Provide the abilities to import resource pack and resource packs files to instance
@@ -20,8 +22,7 @@ export class InstanceResourcePackService extends AbstractService implements IIns
 
   private active: string | undefined
 
-  constructor(
-    app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(InstanceOptionsService) private gameSettingService: InstanceOptionsService,
@@ -193,14 +194,14 @@ export class InstanceResourcePackService extends AbstractService implements IIns
 
       this.log(`Import resourcepacks directories while linking: ${instancePath}`)
       await Promise.all(files.map(f => join(destPath, f)).map(async (filePath) => {
-        const [resource, icon] = await this.resourceService.resolveResource({ path: filePath, type: 'resourcepacks' })
+        const [resource] = await this.resourceService.resolveResource([{ path: filePath, domain: ResourceDomain.ResourcePacks }])
         if (isResourcePackResource(resource)) {
           this.log(`Add resource pack ${filePath}`)
         } else {
           this.warn(`Non resource pack resource added in /resourcepacks directory! ${filePath}`)
         }
         if (!isPersistedResource(resource)) {
-          await this.resourceService.importParsedResource({ path: filePath }, resource, icon).catch((e) => {
+          await this.resourceService.importParsedResource(resource).catch((e) => {
             this.emit('error', {})
             this.warn(e)
           })

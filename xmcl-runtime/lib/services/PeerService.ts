@@ -2,12 +2,14 @@ import { ConnectionState, ConnectionUserInfo, IceGatheringState, InstanceManifes
 import { AbortableTask, BaseTask } from '@xmcl/task'
 import debounce from 'lodash.debounce'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { createPromiseSignal } from '../util/promiseSignal'
 import { Singleton, StatefulService } from './Service'
 import { brotliCompress, brotliDecompress } from 'zlib'
 import { promisify } from 'util'
 import { randomUUID } from 'crypto'
 import { rename } from 'fs-extra'
+import { Inject } from '../util/objectRegistry'
 
 const pBrotliDecompress = promisify(brotliDecompress)
 const pBrotliCompress = promisify(brotliCompress)
@@ -40,7 +42,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   private downloadId = 0
   private downloadCallbacks: Record<number, undefined | ((chunk: number) => void)> = {}
 
-  constructor(app: LauncherApp) {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app, PeerServiceKey, () => new PeerState())
   }
 

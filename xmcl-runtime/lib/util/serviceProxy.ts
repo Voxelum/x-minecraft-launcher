@@ -1,5 +1,6 @@
 import EventEmitter from 'events'
 import { LauncherApp } from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { isState } from '../services/Service'
 import { Logger } from './log'
 

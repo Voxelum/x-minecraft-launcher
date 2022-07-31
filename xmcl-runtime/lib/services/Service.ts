@@ -1,12 +1,10 @@
-import { getServiceSemaphoreKey, MutationKeys, ServiceKey, State } from '@xmcl/runtime-api'
+import { getServiceSemaphoreKey, ServiceKey, State } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { join } from 'path'
-import { performance } from 'perf_hooks'
 import { EventEmitter } from 'stream'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { createPromiseSignal, PromiseSignal } from '../util/promiseSignal'
-
-export const PARAMS_SYMBOL = Symbol('service:params')
 
 export type ServiceConstructor<T extends AbstractService = AbstractService> = {
   new(...args: any[]): T
@@ -16,19 +14,6 @@ const STATE_SYMBOL = Symbol('Injected')
 
 export function isState(o: any) {
   return o[STATE_SYMBOL]
-}
-
-export function Inject<T extends AbstractService>(con: ServiceConstructor<T>) {
-  return (target: object, key: string, index: number) => {
-    if (Reflect.has(target, PARAMS_SYMBOL)) {
-      // console.log(`Inject ${key} ${index} <- ${target}`)
-      Reflect.get(target, PARAMS_SYMBOL)[index] = con
-    } else {
-      const arr: any[] = []
-      Reflect.set(target, PARAMS_SYMBOL, arr)
-      arr[index] = con
-    }
-  }
 }
 
 export type MutexSerializer<T extends AbstractService> = (this: T, ...params: any[]) => string | string[]
@@ -268,8 +253,6 @@ export abstract class AbstractService extends EventEmitter {
   get logManager() { return this.app.logManager }
 
   get storeManager() { return this.app.serviceStateManager }
-
-  get credentialManager() { return this.app.credentialManager }
 
   get workerManager() { return this.app.workerManager }
 

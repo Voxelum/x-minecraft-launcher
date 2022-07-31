@@ -1,9 +1,7 @@
-import { CachedFTBModpackVersionManifest, PersistedCurseforgeModpackResource, PersistedMcbbsModpackResource, PersistedModpackResource, PersistedModrinthModpackResource } from '@xmcl/runtime-api'
-
-export type ModpackResources = PersistedModpackResource | PersistedCurseforgeModpackResource | PersistedMcbbsModpackResource | PersistedModrinthModpackResource
+import { CachedFTBModpackVersionManifest, ModpackResource } from '@xmcl/runtime-api'
 
 export interface ModpackItem {
-  resource?: ModpackResources
+  resource?: ModpackResource
   ftb?: CachedFTBModpackVersionManifest
   type: 'raw' | 'curseforge' | 'modrinth' | 'ftb'
   tags: string[]

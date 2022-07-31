@@ -2,17 +2,18 @@ import { InstanceShaderPacksService as IInstanceShaderPacksServic, InstanceShade
 import { ensureDir, existsSync, lstat, move, readdir, readlink, remove, unlink } from 'fs-extra'
 import { join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { isSystemError } from '../util/error'
 import { createSymbolicLink, ENOENT_ERROR, linkWithTimeoutOrCopy } from '../util/fs'
+import { Inject } from '../util/objectRegistry'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
-import { AbstractService, Inject, Singleton } from './Service'
+import { AbstractService, Singleton } from './Service'
 
 export class InstanceShaderPacksService extends AbstractService implements IInstanceShaderPacksServic {
   private active: string | undefined
 
-  constructor(
-    app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {
@@ -50,14 +51,14 @@ export class InstanceShaderPacksService extends AbstractService implements IInst
 
       this.log(`Import shaderpacks directories while linking: ${instancePath}`)
       await Promise.all(files.map(f => join(destPath, f)).map(async (filePath) => {
-        const [resource, icon] = await this.resourceService.resolveResource({ path: filePath, type: 'shaderpacks' })
+        const [resource] = await this.resourceService.resolveResource([{ path: filePath, domain: ResourceDomain.ShaderPacks }])
         if (isShaderPackResource(resource)) {
           this.log(`Add shader pack ${filePath}`)
         } else {
           this.warn(`Non shader pack resource added in /shaderpacks directory! ${filePath}`)
         }
         if (!isPersistedResource(resource)) {
-          await this.resourceService.importParsedResource({ path: filePath }, resource, icon).catch((e) => {
+          await this.resourceService.importParsedResource(resource).catch((e) => {
             this.emit('error', {})
             this.warn(e)
           })

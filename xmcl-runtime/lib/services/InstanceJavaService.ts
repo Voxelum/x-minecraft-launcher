@@ -1,11 +1,13 @@
 import { IncompatibleJavaIssueKey, InstanceJavaService as IInstanceJavaService, InstanceJavaServiceKey, InstanceJavaState, InvalidJavaIssueKey, IssueReportBuilder, Java, JavaCompatibleState, JavaRecord, MissingJavaIssueKey, parseVersion } from '@xmcl/runtime-api'
 import { relative } from 'path'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
+import { Inject } from '../util/objectRegistry'
 import { DiagnoseService } from './DiagnoseService'
 import { InstanceService } from './InstanceService'
 import { InstanceVersionService } from './InstanceVersionService'
 import { JavaService } from './JavaService'
-import { Inject, Singleton, StatefulService } from './Service'
+import { Singleton, StatefulService } from './Service'
 
 interface VersionPreference {
   match: (v: Java) => boolean
@@ -14,7 +16,7 @@ interface VersionPreference {
 }
 
 export class InstanceJavaService extends StatefulService<InstanceJavaState> implements IInstanceJavaService {
-  constructor(app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(JavaService) private javaService: JavaService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,

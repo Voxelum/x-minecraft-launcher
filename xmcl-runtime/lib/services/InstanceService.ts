@@ -5,13 +5,15 @@ import filenamify from 'filenamify'
 import { copy, ensureDir, readdir, remove } from 'fs-extra'
 import { isAbsolute, join, relative, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { readLaunchProfile } from '../entities/launchProfile'
 import { exists, isDirectory, missing, readdirEnsured } from '../util/fs'
 import { assignShallow, requireObject, requireString } from '../util/object'
+import { Inject } from '../util/objectRegistry'
 import { createSafeFile, createSafeIO } from '../util/persistance'
 import { InstallService } from './InstallService'
 import { ServerStatusService } from './ServerStatusService'
-import { Inject, Singleton, StatefulService } from './Service'
+import { Singleton, StatefulService } from './Service'
 import { UserService } from './UserService'
 
 const INSTANCES_FOLDER = 'instances'
@@ -23,7 +25,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
   protected readonly instancesFile = createSafeFile(this.getAppDataPath('instances.json'), InstancesSchema, this, [this.getPath('instances.json')])
   protected readonly instanceFile = createSafeIO(InstanceSchema, this)
 
-  constructor(app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(UserService) private userService: UserService,
     @Inject(InstallService) private installService: InstallService,
   ) {
@@ -504,5 +506,3 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     return path
   }
 }
-
-export default InstanceService

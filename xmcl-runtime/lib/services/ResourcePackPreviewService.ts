@@ -3,13 +3,15 @@ import { ModelLoader, ResourceManager, ResourcePack, ResourcePackWrapper } from 
 import { BlockStateJson, ResourcePackPreviewService as IResourcePackPreviewService, ResourcePackPreviewServiceKey } from '@xmcl/runtime-api'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { Queue } from '../util/mutex'
+import { Inject } from '../util/objectRegistry'
 import { InstanceOptionsService } from './InstanceOptionsService'
 import { InstanceResourcePackService } from './InstanceResourcePacksService'
 import { InstanceService } from './InstanceService'
 import { InstanceVersionService } from './InstanceVersionService'
 import { LaunchService } from './LaunchService'
-import { AbstractService, Inject } from './Service'
+import { AbstractService } from './Service'
 
 interface NamedResourcePackWrapper extends ResourcePackWrapper {
   path: string
@@ -28,7 +30,7 @@ export class ResourcePackPreviewService extends AbstractService implements IReso
 
   private active = false
 
-  constructor(app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceResourcePackService) private instanceResourceService: InstanceResourcePackService,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,

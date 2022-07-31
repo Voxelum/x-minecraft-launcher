@@ -1,6 +1,6 @@
 import { HashAlgo } from '@xmcl/curseforge'
 import { DownloadTask, UnzipTask } from '@xmcl/installer'
-import { CurseforgeModpackManifest, EditGameSettingOptions, ExportModpackOptions, getResolvedVersion, ImportModpackOptions, isAllowInModrinthModpack, isResourcePackResource, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoAddon, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, PersistedResource, ResourceDomain, ResourceSources } from '@xmcl/runtime-api'
+import { CurseforgeModpackManifest, EditGameSettingOptions, ExportModpackOptions, getResolvedVersion, ImportModpackOptions, isAllowInModrinthModpack, isResourcePackResource, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoAddon, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, Persisted, Resource, ResourceDomain, ModpackDownloadableFile } from '@xmcl/runtime-api'
 import { MultipleError, task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { existsSync } from 'fs'
@@ -8,11 +8,13 @@ import { ensureDir, stat, unlink } from 'fs-extra'
 import { basename, extname, join } from 'path'
 import { Entry, ZipFile } from 'yauzl'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { readMetadata, resolveInstanceOptions } from '../entities/modpack'
 import { getCurseforgeUrl } from '../entities/resource'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { isFile, sha1ByPath } from '../util/fs'
 import { requireObject } from '../util/object'
+import { Inject } from '../util/objectRegistry'
 import { joinUrl } from '../util/url'
 import { ZipTask } from '../util/zip'
 import { BaseService } from './BaseService'
@@ -23,20 +25,14 @@ import { InstanceOptionsService } from './InstanceOptionsService'
 import { InstanceService } from './InstanceService'
 import { InstanceVersionService } from './InstanceVersionService'
 import { ResourceService } from './ResourceService'
-import { AbstractService, Inject } from './Service'
+import { AbstractService } from './Service'
 import { VersionService } from './VersionService'
 
-interface ModpackDownloadableFile {
-  destination: string
-  downloads: string[]
-  hashes: Record<string, string>
-  source: ResourceSources
-}
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
 export class ModpackService extends AbstractService implements IModpackService {
-  constructor(app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(BaseService) private baseService: BaseService,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
@@ -157,10 +153,10 @@ export class ModpackService extends AbstractService implements IModpackService {
         }
 
         if (!file.override && resource) {
-          if (resource.curseforge) {
+          if (resource.metadata.curseforge) {
             // curseforge
-            curseforgeConfig?.files.push({ projectID: resource.curseforge.projectId, fileID: resource.curseforge.fileId, required: true })
-            mcbbsManifest?.files!.push({ projectID: resource.curseforge.projectId, fileID: resource.curseforge.fileId, type: 'curse', force: false })
+            curseforgeConfig?.files.push({ projectID: resource.metadata.curseforge.projectId, fileID: resource.metadata.curseforge.fileId, required: true })
+            mcbbsManifest?.files!.push({ projectID: resource.metadata.curseforge.projectId, fileID: resource.metadata.curseforge.fileId, type: 'curse', force: false })
             continue
           } else if (!file.override && resource) {
             // modrinth not allowed to include curseforge source by regulation
@@ -254,7 +250,7 @@ export class ModpackService extends AbstractService implements IModpackService {
       // the mapping from current filename to expect filename
       const resourcePacksMapping: Record<string, string> = {}
       // the existed resources
-      const resources: PersistedResource[] = []
+      const resources: Persisted<Resource>[] = []
 
       if (manifest.files && manifest.files.length > 0) {
         // the files need to process
@@ -285,7 +281,7 @@ export class ModpackService extends AbstractService implements IModpackService {
         })
 
         // deploy the mods
-        const modResources = resources.filter(r => r.domain === ResourceDomain.Mods || r.domain === ResourceDomain.Unknown)
+        const modResources = resources.filter(r => r.domain === ResourceDomain.Mods || r.domain === ResourceDomain.Unclassified)
         await ensureDir(join(instancePath, 'mods'))
         await instanceModsService.install({ mods: modResources, path: instancePath })
 
@@ -307,11 +303,11 @@ export class ModpackService extends AbstractService implements IModpackService {
         }
       }
 
-      const newResources = await this.resourceService.importResources({
-        files: files.map(f => ({
+      const newResources = await this.resourceService.importResource({
+        resources: files.map(f => ({
           path: f.destination,
-          source: f.source,
-          url: [...f.downloads],
+          metadata: f.metadata,
+          uri: f.downloads,
         })),
         background: true,
       })
@@ -325,15 +321,15 @@ export class ModpackService extends AbstractService implements IModpackService {
       if (files.length > 0) {
         const mapping: Record<string, string> = {}
         for (const file of files) {
-          if (file.source.curseforge) {
-            mapping[`${file.source.curseforge.fileId}:${file.source.curseforge.fileId}`] = file.destination
+          if (file.metadata.curseforge) {
+            mapping[`${file.metadata.curseforge.fileId}:${file.metadata.curseforge.fileId}`] = file.destination
           }
         }
 
         for (const res of newResources) {
           if (res.domain === ResourceDomain.ResourcePacks) {
-            if (mapping[`${res.curseforge!.projectId}:${res.curseforge!.fileId}`]) {
-              const fileName = basename(mapping[`${res.curseforge!.projectId}:${res.curseforge!.fileId}`])
+            if (mapping[`${res.metadata.curseforge!.projectId}:${res.metadata.curseforge!.fileId}`]) {
+              const fileName = basename(mapping[`${res.metadata.curseforge!.projectId}:${res.metadata.curseforge!.fileId}`])
               resourcePacksMapping[fileName] = res.fileName
             } else {
               this.warn(`Unknown resource pack name in mods: ${res.path} (${res.storedPath})`)
@@ -392,16 +388,9 @@ export class ModpackService extends AbstractService implements IModpackService {
     const allowFileApi = false
     const options = this.networkManager.getDownloadBaseOptions()
     const curseforgeService = this.curseforgeService
-    interface FileMetadata {
-      destination: string
-      downloads: string[]
-      hashes: Record<string, string>
-      icon?: string
-      source: ResourceSources
-    }
 
     return task('installModpack', async function () {
-      const infos = [] as FileMetadata[]
+      const infos = [] as ModpackDownloadableFile[]
       const missingFiles = [] as { fileId: number; projectId: number }[]
       if (manifest.files) {
         if ('manifestVersion' in manifest) {
@@ -420,7 +409,7 @@ export class ModpackService extends AbstractService implements IModpackService {
                   sha1: file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value,
                 } as Record<string, string>
                 : {},
-              source: {
+              metadata: {
                 curseforge: {
                   fileId: file.id,
                   projectId: file.modId,
@@ -434,7 +423,7 @@ export class ModpackService extends AbstractService implements IModpackService {
               downloads: meta.downloads,
               hashes: meta.hashes,
               destination: join(root, meta.path),
-              source: {},
+              metadata: {},
             })
           }
         }
@@ -490,8 +479,7 @@ export class ModpackService extends AbstractService implements IModpackService {
               hash: f.hash,
             },
             agents: options.agents,
-            // segmentPolicy: options.segmentPolicy,
-            // retryHandler: options.retryHandler,
+            headers: options.headers,
           }).setName('download')))
         }
       } catch (e) {

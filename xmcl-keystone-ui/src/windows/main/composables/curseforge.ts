@@ -1,6 +1,6 @@
 import { computed, onMounted, reactive, ref, toRefs, watch } from '@vue/composition-api'
 import { Mod, File, FileModLoaderType, ModsSearchSortField, ModCategory } from '@xmcl/curseforge'
-import { CurseForgeServiceKey, InstanceModsServiceKey, PersistedResource, ProjectType, ResourceServiceKey } from '@xmcl/runtime-api'
+import { CurseForgeServiceKey, InstanceModsServiceKey, Persisted, ProjectType, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useRouter, useService, useServiceBusy } from '/@/composables'
 
 interface CurseforgeProps {
@@ -145,7 +145,7 @@ export function useCurseforgeProjectFiles(projectId: number) {
     loading: false,
   })
   const status = computed(() => data.files.map(file => {
-    const find = (m: PersistedResource) => {
+    const find = (m: Persisted<Resource>) => {
       if ('curseforge' in m && typeof m.curseforge === 'object') {
         const s = m.curseforge
         if (s.fileId === file.id) return true
@@ -201,13 +201,7 @@ export function useCurseforgeInstall(type: ProjectType, projectId: number) {
     }
   }
   async function install(file: File, toInstance?: string) {
-    const resource = await installFile({ file, type, projectId })
-    if (toInstance) {
-      if (resource.domain === 'mods') {
-        console.log(`Install mod ${file.fileName} to ${toInstance}`)
-        await installMod({ mods: [resource], path: toInstance })
-      }
-    }
+    const resource = await installFile({ file, type, projectId, instancePath: toInstance })
     return resource
   }
 

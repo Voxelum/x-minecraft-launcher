@@ -8,6 +8,7 @@ import { join } from 'path'
 import { URL } from 'url'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { BaseService } from '../services/BaseService'
 import { HttpAgent, HttpsAgent } from '../util/agents'
 import { LevelCache } from '../util/cache'
@@ -49,7 +50,7 @@ export default class NetworkManager extends Manager {
     Object.defineProperty(http, 'proxy', {
       get() {
         try {
-          return new URL(serviceManager.getOrCreateService(BaseService).state.httpProxy)
+          return new URL(serviceManager.get(BaseService).state.httpProxy)
         } catch (e) {
           return undefined
         }
@@ -57,7 +58,7 @@ export default class NetworkManager extends Manager {
     })
     Object.defineProperty(http, 'enabled', {
       get() {
-        return serviceManager.getOrCreateService(BaseService).state.httpProxyEnabled ?? false
+        return serviceManager.get(BaseService).state.httpProxyEnabled ?? false
       },
     })
     const https = new HttpsAgent({
@@ -68,7 +69,7 @@ export default class NetworkManager extends Manager {
     Object.defineProperty(https, 'proxy', {
       get() {
         try {
-          return new URL(serviceManager.getOrCreateService(BaseService).state.httpProxy)
+          return new URL(serviceManager.get(BaseService).state.httpProxy)
         } catch (e) {
           return undefined
         }
@@ -76,7 +77,7 @@ export default class NetworkManager extends Manager {
     })
     Object.defineProperty(https, 'enabled', {
       get() {
-        return serviceManager.getOrCreateService(BaseService).state.httpProxyEnabled ?? false
+        return serviceManager.get(BaseService).state.httpProxyEnabled ?? false
       },
     })
     this.agents = ({
@@ -118,7 +119,7 @@ export default class NetworkManager extends Manager {
       setMaxTotalSocket(val)
     })
 
-    const service = serviceManager.getOrCreateService(BaseService)
+    const service = serviceManager.get(BaseService)
     service.initialize().then(() => {
       setMaxSocket(service.state.maxSockets)
       setMaxTotalSocket(service.state.maxTotalSockets)

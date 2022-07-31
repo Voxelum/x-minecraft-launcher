@@ -70,7 +70,11 @@ function start() {
   for (const preview of pendings.value) {
     preview.status = 'loading'
     const promise = importFile({
-      ...preview,
+      resource: {
+        name: preview.name,
+        path: preview.path,
+        uri: preview.url,
+      },
       modpackPolicy: {
         import: true,
       },

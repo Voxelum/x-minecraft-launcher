@@ -88,6 +88,7 @@
 </template>
 
 <script lang=ts setup>
+import { ResourceDomain } from '@xmcl/runtime-api'
 import { useI18n } from '/@/composables'
 import { FilePreview } from '/@/composables/dropService'
 import { getExpectedSize } from '/@/util/size'
@@ -109,14 +110,14 @@ const props = defineProps<{ value: FilePreview }>()
 const emit = defineEmits(['enable', 'remove'])
 
 const { tc, t } = useI18n()
-const disabled = computed(() => props.value.result?.type === 'unknown' ||
-      props.value.status !== 'idle')
+const disabled = computed(() => /* props.value.result?.type === 'unknown' || */
+  props.value.status !== 'idle')
 const enabled = computed({
   get() { return props.value.enabled },
   set(v) { emit('enable', v) },
 })
 
-const icon = computed(() => props.value.result ? iconMap[props.value.result?.type] ?? 'question_mark' : 'question_mark')
+const icon = computed(() => props.value.result ? iconMap[props.value.result.domain === ResourceDomain.Unclassified] ?? 'question_mark' : 'question_mark')
 const tryEnable = () => {
   if (!disabled.value) {
     emit('enable')

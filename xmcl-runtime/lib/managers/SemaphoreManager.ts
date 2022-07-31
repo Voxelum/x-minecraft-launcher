@@ -1,6 +1,7 @@
 import { nextTick } from 'process'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { ReadWriteLock } from '../util/mutex'
 
 export default class SemaphoreManager extends Manager {

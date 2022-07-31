@@ -1,18 +1,20 @@
 import { diagnoseAssetIndex, diagnoseAssets, diagnoseJar, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedVersion } from '@xmcl/core'
 import { diagnoseInstall, InstallProfile } from '@xmcl/installer'
-import { Asset, AssetIndexIssueKey, AssetsIssueKey, getResolvedVersion, InstallableLibrary, InstallProfileIssueKey, InstanceVersionException, InstanceVersionService as IInstanceVersionService, InstanceVersionServiceKey, InstanceVersionState, isSameForgeVersion, LibrariesIssueKey, parseOptifineVersion, IssueReportBuilder, RuntimeVersions, VersionIssueKey, VersionJarIssueKey, getExpectVersion, LocalVersionHeader, Instance, filterOptifineVersion } from '@xmcl/runtime-api'
+import { Asset, AssetIndexIssueKey, AssetsIssueKey, getExpectVersion, getResolvedVersion, InstallableLibrary, InstallProfileIssueKey, Instance, InstanceVersionException, InstanceVersionService as IInstanceVersionService, InstanceVersionServiceKey, InstanceVersionState, IssueReportBuilder, LibrariesIssueKey, LocalVersionHeader, RuntimeVersions, VersionIssueKey, VersionJarIssueKey } from '@xmcl/runtime-api'
 import { readFile, readJSON } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { exists } from '../util/fs'
+import { Inject } from '../util/objectRegistry'
 import { DiagnoseService } from './DiagnoseService'
 import { InstallService } from './InstallService'
 import { InstanceService } from './InstanceService'
-import { Inject, Lock, Singleton, StatefulService } from './Service'
+import { Lock, StatefulService } from './Service'
 import { VersionService } from './VersionService'
 
 export class InstanceVersionService extends StatefulService<InstanceVersionState> implements IInstanceVersionService {
-  constructor(app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(VersionService) private versionService: VersionService,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
@@ -205,7 +207,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     return undefined
   }
 
-  private async diagnoseLibraries(builder: IssueReportBuilder, currentVersion: ResolvedVersion, minecraft: MinecraftFolder) {
+  async diagnoseLibraries(builder: IssueReportBuilder, currentVersion: ResolvedVersion, minecraft: MinecraftFolder) {
     this.log(`Diagnose for version ${currentVersion.id} libraries`)
     const librariesIssues = await diagnoseLibraries(currentVersion, minecraft)
     builder.set(LibrariesIssueKey)
@@ -236,7 +238,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     }
   }
 
-  private async diagnoseJar(builder: IssueReportBuilder, currentVersion: ResolvedVersion, minecraft: MinecraftFolder, runtime: RuntimeVersions) {
+  async diagnoseJar(builder: IssueReportBuilder, currentVersion: ResolvedVersion, minecraft: MinecraftFolder, runtime: RuntimeVersions) {
     this.log(`Diagnose for version ${currentVersion.id} jar`)
     const jarIssue = await diagnoseJar(currentVersion, minecraft)
 

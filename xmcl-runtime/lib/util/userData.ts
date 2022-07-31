@@ -8,12 +8,6 @@ import { LauncherProfile } from '../entities/launchProfile'
  */
 export function fitMinecraftLauncherProfileData(result: UserSchema, data: UserSchema, launchProfile: LauncherProfile) {
   if (typeof data === 'object') {
-    result.authServices = data.authServices
-    result.authServices.mojang = AUTH_API_MOJANG
-
-    result.profileServices = data.profileServices
-    result.profileServices.mojang = PROFILE_API_MOJANG
-
     if (data.clientToken) {
       result.clientToken = data.clientToken
     } else {
@@ -28,8 +22,6 @@ export function fitMinecraftLauncherProfileData(result: UserSchema, data: UserSc
   } else {
     // import mojang authDB
     result.clientToken = launchProfile?.clientToken ?? randomUUID().replace(/-/g, '')
-    result.authServices = { mojang: AUTH_API_MOJANG }
-    result.profileServices = { mojang: PROFILE_API_MOJANG }
 
     if (launchProfile.selectedUser) {
       result.selectedUser.id = launchProfile.selectedUser.account

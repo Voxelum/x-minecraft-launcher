@@ -6,6 +6,7 @@ import { PassThrough, pipeline, Transform } from 'stream'
 import { format } from 'util'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { IS_DEV } from '../constant'
 import { Logger } from '../util/log'
 import { gzip } from '../util/zip'
@@ -110,7 +111,7 @@ export default class LogManager extends Manager {
     mainLog.close()
     const mainLogPath = join(this.logRoot, 'main.log')
     if (this.hasError) {
-      await writeFile(join(this.logRoot, filenamify(new Date().toJSON())), await gzip(await readFile(mainLogPath)))
+      await writeFile(join(this.logRoot, filenamify(new Date().toJSON()) + '.log.gz'), await gzip(await readFile(mainLogPath)))
     }
   }
 }

@@ -1,5 +1,5 @@
+import { ResourceMetadata } from '../entities/resource'
 import { Exception } from '../entities/exception'
-import { ResourceSources } from '../entities/resource'
 import { EditInstanceOptions } from './InstanceService'
 import { ServiceKey } from './Service'
 
@@ -123,11 +123,11 @@ export interface ModpackService {
 
 export const ModpackServiceKey: ServiceKey<ModpackService> = 'ModpackService'
 
-interface ModpackDownloadableFile {
+export interface ModpackDownloadableFile {
   destination: string
   downloads: string[]
   hashes: Record<string, string>
-  source: ResourceSources
+  metadata: ResourceMetadata
 }
 
 export type ModpackExceptions = {

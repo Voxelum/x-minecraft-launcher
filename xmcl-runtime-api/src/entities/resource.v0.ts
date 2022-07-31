@@ -3,7 +3,7 @@ import _ResourceSchema from './PersistedResourceSchema.json'
 import { ResourceSourceCurseforge, ResourceSourceGit, ResourceSourceModrinth, ResourceDomain, ResourceType } from './resource'
 import { Schema } from './schema'
 
-export const PersistedResourceSchemaLegacy: Schema<PersistedResourceSchemaLegacy> = _ResourceSchema
+export const PersistedResourceSchemaV0: Schema<PersistedResourceSchemaV0> = _ResourceSchema
 
 interface ResourceBase<T> {
   /**
@@ -58,7 +58,7 @@ interface ResourceBase<T> {
  * Represent a persisted resource
  */
 // eslint-disable-next-line @typescript-eslint/no-redeclare
-export interface PersistedResourceSchemaLegacy extends ResourceBase<object | object[]> {
+export interface PersistedResourceSchemaV0 extends ResourceBase<object | object[]> {
   /**
    * @default 0
    */

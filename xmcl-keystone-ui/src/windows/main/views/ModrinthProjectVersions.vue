@@ -145,7 +145,7 @@
 
 <script lang="ts" setup>
 import { ProjectVersion } from '@xmcl/modrinth'
-import { ModrinthServiceKey, PersistedResource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { ModrinthServiceKey, Resource, Persisted, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useI18n, useService, useRefreshable, useServiceBusy } from '/@/composables'
 import Markdown from 'markdown-it'
 import { Ref } from '@vue/composition-api'
@@ -191,12 +191,12 @@ const modLoaders = ['forge', 'fabric']
 const modLoader = ref('')
 const isDownloaded = (ver: ProjectVersion) => {
   const fileUrl = ver.files[0].url
-  const find = (m: PersistedResource) => {
+  const find = (m: Persisted<Resource>) => {
     if (m.uri.indexOf(fileUrl) !== -1) {
       return true
     }
-    if ('modrinth' in m && typeof m.modrinth === 'object') {
-      const s = m.modrinth
+    if (m.metadata['modrinth-modpack']) {
+      const s = m.metadata['modrinth-modpack']
       if (s.url === fileUrl) return true
     }
     return false

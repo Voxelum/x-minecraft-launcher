@@ -3,6 +3,8 @@ import { createWriteStream } from 'fs'
 import got from 'got'
 import { extname } from 'path'
 import { pipeline } from '../util/fs'
+import { InjectionKey } from '../util/objectRegistry'
+import LauncherApp from './LauncherApp'
 
 export interface ResolvedIcon {
   src: string
@@ -24,6 +26,8 @@ function resolveType(url: string, type?: string) {
   }
   return ''
 }
+
+export const LauncherAppKey: InjectionKey<LauncherApp> = Symbol('LaLauncherAppKeyunchAppKey')
 
 function resolvePurpose(purpose?: string) {
   return !purpose ? 'any' : purpose

@@ -1,13 +1,15 @@
-import { LibraryInfo, MinecraftFolder, Version } from '@xmcl/core'
-import { DownloadTask, installResolvedLibrariesTask } from '@xmcl/installer'
-import { ExternalAuthSkinService as IExternalAuthSkinService, ExternalAuthSkinServiceKey, IssueReport, IssueReportBuilder, MissingAuthLibInjectorIssue } from '@xmcl/runtime-api'
+import { LibraryInfo, MinecraftFolder } from '@xmcl/core'
+import { DownloadTask } from '@xmcl/installer'
+import { ExternalAuthSkinService as IExternalAuthSkinService, ExternalAuthSkinServiceKey, IssueReportBuilder, MissingAuthLibInjectorIssue, ResourceDomain } from '@xmcl/runtime-api'
 import { ensureFile, readJson, writeFile } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
 import { validateSha256 } from '../util/fs'
+import { Inject } from '../util/objectRegistry'
 import { DiagnoseService } from './DiagnoseService'
 import { ResourceService } from './ResourceService'
-import { AbstractService, Inject, Lock, Singleton } from './Service'
+import { AbstractService, Lock } from './Service'
 import { UserService } from './UserService'
 
 const AUTHLIB_ORG_NAME = 'org.to2mbn:authlibinjector'
@@ -16,8 +18,7 @@ const AUTHLIB_ORG_NAME = 'org.to2mbn:authlibinjector'
  * Majorly support the third party skin using authlib injector
  */
 export class ExternalAuthSkinService extends AbstractService implements IExternalAuthSkinService {
-  constructor(
-    app: LauncherApp,
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
     @Inject(UserService) private userService: UserService,
     @Inject(ResourceService) private resourceService: ResourceService,
@@ -29,7 +30,7 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
         fix: async () => { await this.installAuthLibInjection() },
       })
 
-    this.storeManager.subscribeAll(['userGameProfileSelect', 'userProfileUpdate', 'userSnapshot'], async () => {
+    this.storeManager.subscribeAll(['userGameProfileSelect', 'userProfile', 'userSnapshot'], async () => {
       const builder = new IssueReportBuilder()
       this.diagnoseAuthLibInjector(builder)
       this.diagnoseService.report(builder.build())
@@ -48,10 +49,14 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
       url,
       destination,
     }).setName('downloadCustomSkinLoader'))
-    return this.resourceService.importResource({
-      path: destination,
-      type: 'mods',
+    const [res] = await this.resourceService.importResource({
+      resources: [{
+        path: destination,
+        domain: ResourceDomain.Mods,
+      }],
+      background: true,
     })
+    return res
   }
 
   async installAuthLibInjection(): Promise<string> {

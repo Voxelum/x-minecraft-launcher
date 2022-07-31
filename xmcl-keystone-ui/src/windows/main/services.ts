@@ -19,14 +19,6 @@ class ReactiveUserState extends UserState {
     }
   }
 
-  authServiceRemove(name: string) {
-    del(this.authServices, name)
-  }
-
-  profileServiceRemove(name: string) {
-    del(this.profileService, name)
-  }
-
   userProfileRemove(userId: string) {
     if (this.selectedUser.id === userId) {
       this.selectedUser.id = ''
@@ -45,14 +37,6 @@ class ReactiveUserState extends UserState {
       selectedProfile: profile.selectedProfile,
     }
     set(this.users, profile.id, value)
-  }
-
-  authServiceSet({ name, api }: { name: string; api: YggdrasilAuthAPI }) {
-    set(this.authServices, name, api)
-  }
-
-  profileServiceSet({ name, api }: { name: string; api: ProfileServiceAPI }) {
-    set(this.profileServices, name, api)
   }
 }
 
