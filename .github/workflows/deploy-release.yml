@@ -56,4 +56,4 @@ jobs:
       - name: Create winget PR
         run: |
           iwr https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
-          .\wingetcreate.exe update CI010.XMinecraftLauncher -u https://xmcl-release-ms.azureedge.net/releases/xmcl-${{ github.event.release.tag_name }}.appx|https://xmcl-release.azureedge.net/releases/xmcl-${{ github.event.release.tag_name }}.appx -v ${{ github.event.release.tag_name }} -t ${{ secrets.PAT_GITHUB_TOKEN }} --submit
+          .\wingetcreate.exe update CI010.XMinecraftLauncher -u https://xmcl-release-ms.azureedge.net/releases/xmcl-${{ github.event.release.tag_name }}.appx -v ${{ github.event.release.tag_name }}.0 -t ${{ secrets.PAT_GITHUB_TOKEN }} --submit
