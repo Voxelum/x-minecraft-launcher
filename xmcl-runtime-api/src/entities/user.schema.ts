@@ -14,6 +14,22 @@ export interface GameProfileAndTexture extends GameProfile {
     CAPE?: GameProfile.Texture
     ELYTRA?: GameProfile.Texture
   }
+
+  uploadable?: Array<'skin' | 'cape'>
+
+  skins?: Array<{
+    id: string
+    state: 'ACTIVE' | 'INACTIVE'
+    url: string
+    variant: 'CLASSIC' | 'SLIM'
+  }>
+
+  capes?: Array<{
+    id: string
+    state: 'ACTIVE' | 'INACTIVE'
+    url: string
+    alias: string
+  }>
 }
 
 export interface UserProfile {
@@ -25,10 +41,6 @@ export interface UserProfile {
    * The username usually email
    */
   username: string
-  /**
-   * The used profile service name
-   */
-  profileService: string
   /**
    * The used auth service name
    */
@@ -45,6 +57,11 @@ export interface UserProfile {
    * The expire time
    */
   expiredAt: number
+
+  /**
+   * Custom site token
+   */
+  siteToken?: string
 
   /**
    * All available game profiles
@@ -85,20 +102,6 @@ export interface UserSchema {
      */
     profile: string
   }
-  // /**
-  //  * All loaded auth services api. Used for yggdrasil auth
-  //  * @default {}
-  //  */
-  // authServices: {
-  //   [name: string]: YggdrasilAuthAPI
-  // }
-  // /**
-  //  * All loaded profile services api. Used for
-  //  * @default {}
-  //  */
-  // profileServices: {
-  //   [name: string]: ProfileServiceAPI
-  // }
   /**
    * The client token of current client. The launcher will generate one at first launch.
    * @default ""

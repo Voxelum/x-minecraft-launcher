@@ -45,47 +45,21 @@
         :key="0"
       >
         <task-view />
-        <div
-          class="flex items-center justify-center w-full p-2 text-gray-400"
-          :class="{ 'text-gray-400': speed !== 0, 'text-transparent': speed === 0 }"
-        >
-          <v-icon
-            class="text-current mr-1"
-          >
-            downloading
-          </v-icon>
-          {{ speedText }}
-        </div>
       </v-tab-item>
       <v-tab-item
         :key="1"
       >
         <app-task-dialog-issue-view />
       </v-tab-item>
-      <!-- <v-tab-item
-        :key="2"
-      >
-        <notification-view />
-      </v-tab-item> -->
     </v-tabs-items>
   </v-dialog>
 </template>
 
 <script lang=ts setup>
-import { useRouter } from '/@/composables'
-import TaskView from './AppTaskDialogTaskView.vue'
-import { DialogKey, useDialog } from '../composables/dialog'
-import { useTasks } from '../composables/task'
-import { getExpectedSize } from '/@/util/size'
+import { useDialog } from '../composables/dialog'
 import AppTaskDialogIssueView from './AppTaskDialogIssues.vue'
-
-const { throughput } = useTasks()
-const speed = ref(0)
-const speedText = computed(() => getExpectedSize(speed.value) + '/s')
-setInterval(() => {
-  speed.value = throughput.value
-  throughput.value = 0
-}, 1000)
+import TaskView from './AppTaskDialogTaskView.vue'
+import { useRouter } from '/@/composables'
 
 const { hide, isShown } = useDialog('task')
 const router = useRouter()

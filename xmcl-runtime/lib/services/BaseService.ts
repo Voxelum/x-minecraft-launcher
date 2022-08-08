@@ -8,8 +8,9 @@ import { isSystemError } from '../util/error'
 import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
 import { ZipTask } from '../util/zip'
-import { Singleton, StatefulService } from './Service'
+import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
+@ExposeServiceKey(BaseServiceKey)
 export class BaseService extends StatefulService<BaseState> implements IBaseService {
   private settingFile = createSafeFile(this.getAppDataPath('setting.json'), SettingSchema, this, [this.getPath('setting.json')])
 

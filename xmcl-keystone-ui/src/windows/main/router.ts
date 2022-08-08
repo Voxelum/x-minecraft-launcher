@@ -17,7 +17,7 @@ import Save from './views/Save.vue'
 import Setting from './views/Setting.vue'
 import ShaderPack from './views/ShaderPack.vue'
 import User from './views/User.vue'
-import Version from './views/Version.vue'
+import Me from './views/Me.vue'
 
 export const createRouter = () => {
   const router = new Router({
@@ -35,8 +35,8 @@ export const createRouter = () => {
         component: Setting,
       },
       {
-        path: '/user',
-        component: User,
+        path: '/me',
+        component: Me,
       },
       {
         path: '/save',
@@ -66,10 +66,6 @@ export const createRouter = () => {
         path: '/multiplayer',
         component: Multiplayer,
       },
-      // {
-      //   path: '/resource-pack-preview',
-      //   component: resourcePackPreview,
-      // },
       {
         path: '/ftb',
         component: FeedTheBeast,
@@ -79,11 +75,6 @@ export const createRouter = () => {
         path: '/ftb/:id',
         component: FeedTheBeastProject,
         props: (route) => ({ id: Number(route.params.id) }),
-      },
-      {
-        path: '/version-setting',
-        component: Version,
-        props: (route) => ({ target: route.query.target }),
       },
       {
         path: '/modpack-setting',

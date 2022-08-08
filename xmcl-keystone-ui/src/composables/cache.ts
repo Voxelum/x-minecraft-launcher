@@ -33,7 +33,10 @@ export function useLocalStorageCache<T>(key: string, defaultValue: () => T, toSt
     return LOCAL_STORAGE_CACHE[key]
   }
   const result = localStorage.getItem(key)
-  const v: Ref<T> = ref(result !== null ? fromString(result) : defaultValue()) as any
+  const deserialize = (val: string) => {
+    try { return fromString(val) } catch { return defaultValue() }
+  }
+  const v: Ref<T> = ref(result !== null ? deserialize(result) : defaultValue()) as any
   if (!result) {
     localStorage.setItem(key, toString(v.value))
   }

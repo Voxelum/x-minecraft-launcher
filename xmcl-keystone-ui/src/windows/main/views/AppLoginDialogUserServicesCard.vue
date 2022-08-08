@@ -18,8 +18,8 @@
             </v-list-item-action>
             <v-list-item-content>
               <v-list-item-title>{{ s.text }}</v-list-item-title>
-              <v-list-item-subtitle>{{ $t('user.authMode') }}: {{ s.body.hostName }}</v-list-item-subtitle>
-              <v-list-item-subtitle>{{ $t('user.profileMode') }}: {{ s.body.profile }}</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ t('user.authMode') }}: {{ s.body.hostName }}</v-list-item-subtitle>
+              <v-list-item-subtitle>{{ t('user.profileMode') }}: {{ s.body.profile }}</v-list-item-subtitle>
             </v-list-item-content>
             <v-list-item-action>
               <v-btn
@@ -43,7 +43,7 @@
             <v-icon>add</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>{{ $t('userService.add') }}</v-list-item-title>
+            <v-list-item-title>{{ t('userService.add') }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -51,71 +51,55 @@
   </div>
 </template>
 
-<script lang=ts>
-import { UserServiceKey } from '@xmcl/runtime-api'
-import { useService } from '/@/composables'
+<script lang=ts setup>
+import { UserServiceKey, YggdrasilUserServiceKey } from '@xmcl/runtime-api'
+import { useI18n, useRefreshable, useService } from '/@/composables'
 
-interface Service {
+interface ServiceItem {
   text: string
   value: string
   body: any
 }
 
-export default defineComponent({
-  components: {
-  },
-  setup(props, context) {
-    const { state } = useService(UserServiceKey)
-    const data = reactive({
-      editingService: -1,
-      authOrProfile: 0,
+const emit = defineEmits(['route'])
+const { state } = useService(UserServiceKey)
+const { getThirdpartyServices, removeThirdpartyService } = useService(YggdrasilUserServiceKey)
+const { t } = useI18n()
 
-      loading: '',
+const data = reactive({
+  editingService: -1,
+  authOrProfile: 0,
 
-      newAuthServiceName: '',
-      newAuthServiceHost: '',
-    })
+  loading: '',
 
-    const services = computed(() => {
-      const keys = []
-      for (const k of Object.keys(state.authServices)) {
-        if (keys.indexOf(k) === -1) {
-          keys.push(k)
-        }
-      }
-      for (const k of Object.keys(state.profileServices)) {
-        if (keys.indexOf(k) === -1) {
-          keys.push(k)
-        }
-      }
-      return keys.map(name => ({
-        text: name,
-        value: name,
-        body: {
-          ...(state.authServices[name] || {}),
-          ...(state.profileServices[name] || {}),
-        },
-      }))
-    })
-
-    return {
-      ...toRefs(data),
-      services,
-      remove(s: Service) {
-        state.authServiceRemove(s.value)
-        state.profileServiceRemove(s.value)
-      },
-      newOrEdit(s?: Service) {
-        if (s) {
-          data.loading = s.value
-        } else {
-          data.loading = ''
-        }
-        context.emit('route', 'edit-service')
-      },
-    }
-  },
+  newAuthServiceName: '',
+  newAuthServiceHost: '',
 })
+
+const { refresh, refreshing } = useRefreshable(async () => {
+  const services = await getThirdpartyServices()
+  return services.map(({ name, authService, profileService }) => ({
+    text: name,
+    value: name,
+    body: {
+      ...authService,
+      ...profileService,
+    },
+  }))
+})
+
+function remove(s: ServiceItem) {
+  removeThirdpartyService(s.value)
+}
+
+function newOrEdit(s?: ServiceItem) {
+  if (s) {
+    data.loading = s.value
+  } else {
+    data.loading = ''
+  }
+  emit('route', 'edit-service')
+}
 </script>
 
 <style>

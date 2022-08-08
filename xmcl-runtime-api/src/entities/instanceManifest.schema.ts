@@ -3,7 +3,7 @@ import { InstanceData, RuntimeVersions } from './instance.schema'
 /**
  * Represent an instance file
  */
-export interface InstanceFile<T extends 'sha1' | 'sha256' | 'md5' = never> {
+export interface InstanceFile {
   /**
    * The path of the file relative to the instance root
    */
@@ -12,7 +12,7 @@ export interface InstanceFile<T extends 'sha1' | 'sha256' | 'md5' = never> {
    * The hash of the instance file. The sha1 is required
    */
   hashes: {
-    [K in T]: string
+    [hash: string]: string
   }
   /**
    * The download url of the instance file
@@ -34,8 +34,6 @@ export interface InstanceFile<T extends 'sha1' | 'sha256' | 'md5' = never> {
   }
 
   size: number
-  createAt: number
-  updateAt: number
 }
 
 type InstanceDataFields = Pick<InstanceData, 'description' | 'minMemory' | 'maxMemory' | 'vmOptions' | 'mcOptions'>
@@ -45,10 +43,10 @@ type InstanceDataFields = Pick<InstanceData, 'description' | 'minMemory' | 'maxM
  */
 export interface InstanceManifestSchema extends Partial<InstanceDataFields> {
   runtime: RuntimeVersions
-  files: Array<InstanceFile<'sha1'>>
+  files: Array<InstanceFile>
 }
 
-export interface InstanceManifest<T extends 'sha1' | 'sha256' | 'md5' = never> extends Partial<InstanceDataFields> {
+export interface InstanceManifest extends Partial<InstanceDataFields> {
   runtime: RuntimeVersions
-  files: Array<InstanceFile<T>>
+  files: Array<InstanceFile>
 }

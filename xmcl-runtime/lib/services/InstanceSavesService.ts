@@ -19,11 +19,12 @@ import { Inject } from '../util/objectRegistry'
 import { ZipTask } from '../util/zip'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
-import { Singleton, StatefulService } from './Service'
+import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
 /**
  * Provide the ability to preview saves data of an instance
  */
+@ExposeServiceKey(InstanceSavesServiceKey)
 export class InstanceSavesService extends StatefulService<SaveState> implements IInstanceSavesService {
   private watcher: FSWatcher | undefined
 

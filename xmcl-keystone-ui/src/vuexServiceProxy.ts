@@ -10,7 +10,7 @@ export type StateOfServiceKey<K> = K extends ServiceKey<infer Serv>
 const TasksContainer = Symbol('TaskContainer')
 const ACCESSOR_SYMBOLS = Symbol('Accessor')
 
-export function getServiceCallTasks(promise: Readonly<Promise<any>>): Ref<string[]> {
+export function getServiceCallTasks(promise: Promise<any>): Ref<string[]> {
   return Reflect.get(promise, TasksContainer)
 }
 
@@ -225,6 +225,7 @@ export class VuexServiceFactory implements ServiceFactory {
       if (!(prom)[TasksContainer]) {
         Object.defineProperty(promise, TasksContainer, { value: ref([]), enumerable: false, writable: false, configurable: false })
       }
+      debugger
       prom[TasksContainer].value.push(id)
     })
 

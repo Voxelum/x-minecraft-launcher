@@ -38,9 +38,14 @@ export interface SaveMetadata {
   gameVersion: string
   difficulty: number
   lastPlayed: number
+
+  time: number
+
+  advancements: number
 }
 
 export interface InstanceSaveMetadata extends InstanceSave, SaveMetadata {
+  advancements: number
 }
 
 export interface ResourceSaveMetadata extends SaveMetadata {

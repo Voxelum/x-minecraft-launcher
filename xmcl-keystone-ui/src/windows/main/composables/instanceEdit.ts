@@ -27,6 +27,8 @@ export function useInstanceEdit() {
     maxMemory: instance.value?.maxMemory > 0 ? instance.value.maxMemory : 0,
     minMemory: instance.value?.minMemory > 0 ? instance.value.minMemory : 0,
 
+    runtime: { ...instance.value.runtime },
+
     fastLaunch: false,
     assignMemory: true as true | 'auto' | false,
 
@@ -47,6 +49,7 @@ export function useInstanceEdit() {
       vmOptions: data.vmOptions.split(' ').filter(v => v.length !== 0),
       mcOptions: data.mcOptions.split(' ').filter(v => v.length !== 0),
       assignMemory: data.assignMemory,
+      runtime: data.runtime,
       fastLaunch: data.fastLaunch,
       java: data.javaPath,
     }
@@ -77,6 +80,7 @@ export function useInstanceEdit() {
       data.author = current.author
       data.fileServerApi = current.fileApi || ''
       data.description = current.description || ''
+      data.runtime = current.runtime
 
       if (current.server) {
         data.host = current.server.host

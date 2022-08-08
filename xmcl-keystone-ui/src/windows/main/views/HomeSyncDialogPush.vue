@@ -83,9 +83,7 @@ async function upload() {
       downloads: f.downloads,
       curseforge: f.curseforge,
       modrinth: f.modrinth,
-      updateAt: 0,
       size: 0,
-      createAt: 0,
     }))
     try {
       await uploadInstanceManifest({

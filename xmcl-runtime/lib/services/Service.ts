@@ -3,7 +3,6 @@ import { Task } from '@xmcl/task'
 import { join } from 'path'
 import { EventEmitter } from 'stream'
 import LauncherApp from '../app/LauncherApp'
-import { LauncherAppKey } from '../app/utils'
 import { createPromiseSignal, PromiseSignal } from '../util/promiseSignal'
 
 export type ServiceConstructor<T extends AbstractService = AbstractService> = {
@@ -221,6 +220,16 @@ export function Expose<T extends AbstractService>(options: {
     }
     Object.defineProperty(descriptor.value, 'name', { value: `${method.name}$Singleton` })
   }
+}
+
+export function ExposeServiceKey<T extends Function>(key: ServiceKey<T>) {
+  return function (target: T) {
+    Reflect.set(target, 'ServiceKey', key)
+  }
+}
+
+export function getServiceKey<T extends Function>(target: T) {
+  return Reflect.get(target, 'ServiceKey')
 }
 
 /**

@@ -11,12 +11,13 @@ import { InstanceResourcePackService } from './InstanceResourcePacksService'
 import { InstanceService } from './InstanceService'
 import { InstanceVersionService } from './InstanceVersionService'
 import { LaunchService } from './LaunchService'
-import { AbstractService } from './Service'
+import { AbstractService, ExposeServiceKey } from './Service'
 
 interface NamedResourcePackWrapper extends ResourcePackWrapper {
   path: string
 }
 
+@ExposeServiceKey(ResourcePackPreviewServiceKey)
 export class ResourcePackPreviewService extends AbstractService implements IResourcePackPreviewService {
   private resourceManager = new ResourceManager()
 

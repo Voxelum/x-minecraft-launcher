@@ -11,12 +11,13 @@ import { createSafeFile } from '../util/persistance'
 import { BaseService } from './BaseService'
 import { JavaService } from './JavaService'
 import { ResourceService } from './ResourceService'
-import { AbstractService, Lock, Singleton } from './Service'
+import { AbstractService, ExposeServiceKey, Lock, Singleton } from './Service'
 import { VersionService } from './VersionService'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
  */
+@ExposeServiceKey(InstallServiceKey)
 export class InstallService extends AbstractService implements IInstallService {
   private refreshedMinecraft = false
   private refreshedFabric = false
@@ -24,6 +25,8 @@ export class InstallService extends AbstractService implements IInstallService {
   private refreshedOptifine = false
   private refreshedQuilt = false
   private refreshedForge: Record<string, boolean> = {}
+
+  private latestRelease = '1.19'
 
   private minecraftVersionJson = createSafeFile(this.getAppDataPath('minecraft-versions.json'), VersionMinecraftSchema, this, [this.getPath('minecraft-versions.json')])
   private forgeVersionJson = createSafeFile(this.getAppDataPath('forge-versions.json'), VersionForgeSchema, this, [this.getPath('forge-versions.json')])
@@ -45,11 +48,17 @@ export class InstallService extends AbstractService implements IInstallService {
     })
   }
 
+  getLatestRelease() {
+    return this.latestRelease
+  }
+
   @Singleton()
   async getMinecraftVersionList(force?: boolean): Promise<VersionMinecraftSchema> {
     if (!force && this.refreshedMinecraft) {
       this.log('Skip to refresh Minecraft metadata. Use cache.')
-      return this.minecraftVersionJson.read()
+      const result = await this.minecraftVersionJson.read()
+      this.latestRelease = result.latest.release
+      return result
     }
     this.log('Start to refresh minecraft version metadata.')
     const oldMetadata = await this.minecraftVersionJson.read()
@@ -61,6 +70,8 @@ export class InstallService extends AbstractService implements IInstallService {
     } else {
       this.log('Not found new Minecraft version metadata. Use cache.')
     }
+
+    this.latestRelease = newMetadata.latest.release
 
     return newMetadata
   }
@@ -491,7 +502,7 @@ export class InstallService extends AbstractService implements IInstallService {
         }
       }
       this.warn(`Install assets for ${version}:`)
-      await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
+      await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets', { id: version }))
     } catch (e) {
       this.warn(`An error ocurred during assets for ${version}:`)
       this.warn(e)
@@ -512,8 +523,8 @@ export class InstallService extends AbstractService implements IInstallService {
 
   private async installDependenciesUnsafe(resolvedVersion: ResolvedVersion) {
     const option = this.getInstallOptions()
-    await this.submit(installLibrariesTask(resolvedVersion, option).setName('installLibraries'))
-    await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
+    await this.submit(installLibrariesTask(resolvedVersion, option).setName('installLibraries', { id: resolvedVersion.id }))
+    await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets', { id: resolvedVersion.id }))
   }
 
   @Lock(v => [LockKey.version(v)])
@@ -524,24 +535,24 @@ export class InstallService extends AbstractService implements IInstallService {
     if (!local) {
       throw new Error(`Cannot reinstall ${version} as it's not found!`)
     }
-    await this.submit(installVersionTask({ id: local.minecraftVersion, url: '' }, location).setName('installVersion'))
+    await this.submit(installVersionTask({ id: local.minecraftVersion, url: '' }, location).setName('installVersion', { id: local.minecraftVersion }))
     const forgeLib = local.libraries.find(isForgeLibrary)
     if (forgeLib) {
-      await this.submit(installForgeTask({ version: forgeLib.version, mcversion: local.minecraftVersion }, location).setName('installForge'))
+      await this.submit(installForgeTask({ version: forgeLib.version, mcversion: local.minecraftVersion }, location).setName('installForge', { id: version }))
     }
     const fabLib = local.libraries.find(isFabricLoaderLibrary)
     if (fabLib) {
       await this.installFabric({ minecraft: local.minecraftVersion, loader: fabLib.version })
     }
-    await this.submit(installLibrariesTask(local, option).setName('installLibraries'))
-    await this.submit(installAssetsTask(local, option).setName('installAssets'))
+    await this.submit(installLibrariesTask(local, option).setName('installLibraries', { id: version }))
+    await this.submit(installAssetsTask(local, option).setName('installAssets', { id: version }))
   }
 
   @Lock(LockKey.assets)
-  async installAssets(assets: Asset[]) {
+  async installAssets(assets: Asset[], version?: string) {
     const option = this.getInstallOptions()
     const location = this.getPath()
-    const task = installResolvedAssetsTask(assets, new MinecraftFolder(location), option).setName('installAssets')
+    const task = installResolvedAssetsTask(assets, new MinecraftFolder(location), option).setName('installAssets', { id: version })
     await this.submit(task)
   }
 
@@ -550,7 +561,7 @@ export class InstallService extends AbstractService implements IInstallService {
     const id = meta.id
 
     const option = this.getInstallOptions()
-    const task = installVersionTask(meta, this.getPath(), option).setName('installVersion')
+    const task = installVersionTask(meta, this.getPath(), option).setName('installVersion', { id: meta.id })
     try {
       await this.submit(task)
     } catch (e) {
@@ -563,7 +574,7 @@ export class InstallService extends AbstractService implements IInstallService {
   async installMinecraftJar(version: ResolvedVersion) {
     const option = this.getInstallOptions()
 
-    const task = new InstallJarTask(version, this.getPath(), option).setName('installVersion.jar')
+    const task = new InstallJarTask(version, this.getPath(), option).setName('installVersion.jar', { id: version.id })
     try {
       await this.submit(task)
     } catch (e) {
@@ -573,7 +584,7 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   @Lock(LockKey.libraries)
-  async installLibraries(libraries: InstallableLibrary[]) {
+  async installLibraries(libraries: InstallableLibrary[], version?: string) {
     let resolved: ResolvedLibrary[]
     if ('downloads' in libraries[0]) {
       resolved = Version.resolveLibraries(libraries)
@@ -581,7 +592,7 @@ export class InstallService extends AbstractService implements IInstallService {
       resolved = libraries as any
     }
     const option = this.getInstallOptions()
-    const task = installResolvedLibrariesTask(resolved, this.getPath(), option).setName('installLibraries')
+    const task = installResolvedLibrariesTask(resolved, this.getPath(), option).setName('installLibraries', { id: version })
     try {
       await this.submit(task)
     } catch (e) {
@@ -622,7 +633,7 @@ export class InstallService extends AbstractService implements IInstallService {
     let version: string | undefined
     try {
       this.log(`Start to install forge ${options.version} on ${options.mcversion}`)
-      version = await this.submit(installForgeTask(options, this.getPath(), installOptions))
+      version = await this.submit(installForgeTask(options, this.getPath(), installOptions).setName('installForge', { id: options.version }))
       this.log(`Success to install forge ${options.version} on ${options.mcversion}`)
     } catch (err) {
       this.warn(`An error ocurred during download version ${options.version}@${options.mcversion}`)
@@ -646,7 +657,7 @@ export class InstallService extends AbstractService implements IInstallService {
     if (!await hasValidVersion()) {
       const meta = (await this.getMinecraftVersionList()).versions.find(f => f.id === options.minecraft)!
       const option = this.getInstallOptions()
-      await this.submit(installVersionTask(meta, minecraft, option).setName('installVersion'))
+      await this.submit(installVersionTask(meta, minecraft, option).setName('installVersion', { id: options.minecraft }))
     }
     return await this.installFabricInternal(options)
   }
@@ -686,7 +697,7 @@ export class InstallService extends AbstractService implements IInstallService {
     if (!await hasValidVersion()) {
       const meta = (await this.getMinecraftVersionList()).versions.find(f => f.id === options.minecraftVersion)!
       const option = this.getInstallOptions()
-      await this.submit(installVersionTask(meta, minecraft, option).setName('installVersion'))
+      await this.submit(installVersionTask(meta, minecraft, option).setName('installVersion', { id: options.minecraftVersion }))
     }
 
     return await this.installQuiltInternal(options)
@@ -720,7 +731,7 @@ export class InstallService extends AbstractService implements IInstallService {
     if (!await hasValidVersion(options.mcversion)) {
       const meta = (await this.getMinecraftVersionList()).versions.find(f => f.id === options.mcversion)!
       const option = this.getInstallOptions()
-      await this.submit(installVersionTask(meta, minecraft, option).setName('installVersion'))
+      await this.submit(installVersionTask(meta, minecraft, option).setName('installVersion', { id: meta.id }))
     }
 
     if (options.forgeVersion) {
@@ -814,7 +825,7 @@ export class InstallService extends AbstractService implements IInstallService {
         id = json.id
       }
       return id
-    }))
+    }, { id: optifineVersion }))
 
     this.log(`Succeed to install optifine ${version} on ${options.inheritFrom ?? options.mcversion}. ${id}`)
 
@@ -831,11 +842,11 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   @Singleton()
-  async installByProfile(profile: InstallProfile) {
+  async installByProfile(profile: InstallProfile, version?: string) {
     try {
       await this.submit(installByProfileTask(profile, this.getPath(), {
         ...this.getForgeInstallOptions(),
-      }))
+      }).setName('installByProfile', { id: version ?? profile.version }))
     } catch (err) {
       this.warn(err)
     }

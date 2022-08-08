@@ -6,7 +6,7 @@ import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { Client } from '../engineBridge'
-import { AbstractService, ServiceConstructor } from '../services/Service'
+import { AbstractService, getServiceKey, ServiceConstructor } from '../services/Service'
 import { serializeError } from '../util/error'
 import { ImageStorage } from '../util/imageStore'
 import { ObjectFactory } from '../util/objectRegistry'
@@ -28,6 +28,8 @@ export default class ServiceManager extends Manager {
 
   private sessions: { [key: number]: ServiceCallSession } = {}
 
+  private serviceConstructorMap: Record<string, ServiceConstructor> = {}
+
   constructor(app: LauncherApp, private preloadServices: ServiceConstructor[]) {
     super(app)
 
@@ -37,10 +39,24 @@ export default class ServiceManager extends Manager {
 
     this.app.handle('service-call', (e, service: string, name: string, payload: any) => this.handleServiceCall(e.sender, service, name, payload))
     this.app.handle('session', (_, id) => this.startServiceCall(id))
+
+    for (const type of preloadServices) {
+      const key = getServiceKey(type)
+      if (key) {
+        this.serviceConstructorMap[key] = type
+      }
+    }
   }
 
   getServiceByKey<T>(type: ServiceKey<T>): T | undefined {
-    return this.servicesMap[type as string] as any
+    const service = this.servicesMap[type as string] as any
+    if (!service) {
+      const con = this.serviceConstructorMap[type as string]
+      if (con) {
+        return this.get(con) as any
+      }
+    }
+    return service
   }
 
   get<T extends AbstractService>(ServiceConstructor: ServiceConstructor<T>): T {
@@ -127,6 +143,7 @@ export default class ServiceManager extends Manager {
             return Reflect.get(target, key)
           },
         })
+
         const session: ServiceCallSession = {
           call: () => servProxy[name](payload),
           name: `${service}.${name}`,

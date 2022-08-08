@@ -195,8 +195,8 @@ const isDownloaded = (ver: ProjectVersion) => {
     if (m.uri.indexOf(fileUrl) !== -1) {
       return true
     }
-    if (m.metadata['modrinth-modpack']) {
-      const s = m.metadata['modrinth-modpack']
+    if (m.metadata.modrinth) {
+      const s = m.metadata.modrinth
       if (s.url === fileUrl) return true
     }
     return false

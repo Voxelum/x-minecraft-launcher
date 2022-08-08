@@ -147,6 +147,8 @@ export function isVersionMatched(version: LocalVersionHeader, runtime: RuntimeVe
       // require forge but not forge
       return false
     }
+  } else if (version.forge) {
+    return false
   }
 
   if (fabricLoader) {
@@ -154,6 +156,8 @@ export function isVersionMatched(version: LocalVersionHeader, runtime: RuntimeVe
     if (!version.fabric || version.fabric !== fabricLoader) {
       return false
     }
+  } else if (version.fabric) {
+    return false
   }
 
   if (optifine) {
@@ -161,6 +165,8 @@ export function isVersionMatched(version: LocalVersionHeader, runtime: RuntimeVe
     if (!version.optifine || (optifine !== version.optifine)) {
       return false
     }
+  } else if (version.optifine) {
+    return false
   }
 
   if (quiltLoader) {
@@ -168,6 +174,8 @@ export function isVersionMatched(version: LocalVersionHeader, runtime: RuntimeVe
     if (!version.quilt || version.quilt !== quiltLoader) {
       return false
     }
+  } else if (version.quilt) {
+    return false
   }
 
   return true

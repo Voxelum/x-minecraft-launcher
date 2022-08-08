@@ -6,7 +6,7 @@
     <template #activator="{ on }">
       <v-fab-transition>
         <v-btn
-          v-if="visibled"
+          v-if="visible"
           class="absolute-centered"
           style="z-index: 3; bottom: 40px"
           :color="deleting ? 'error' : 'green'"
@@ -45,7 +45,7 @@ import { useI18n } from '/@/composables'
 const emit = defineEmits(['drop', 'click'])
 
 defineProps<{
-  visibled: boolean
+  visible: boolean
   deleting: boolean
   loading: boolean
 }>()

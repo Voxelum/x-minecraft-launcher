@@ -12,11 +12,12 @@ import { DiagnoseService } from './DiagnoseService'
 import { InstanceOptionsService } from './InstanceOptionsService'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
-import { AbstractService, Singleton } from './Service'
+import { AbstractService, ExposeServiceKey, Singleton } from './Service'
 
 /**
  * Provide the abilities to import resource pack and resource packs files to instance
  */
+@ExposeServiceKey(InstanceResourcePacksServiceKey)
 export class InstanceResourcePackService extends AbstractService implements IInstanceResourcePacksService {
   private packVersionToVersionRange: Record<number, string> = packFormatVersionRange
 
@@ -175,7 +176,7 @@ export class InstanceResourcePackService extends AbstractService implements IIns
   //   })
   // }
 
-  @Singleton()
+  @Singleton(p => p)
   async link(instancePath: string = this.instanceService.state.path): Promise<void> {
     await this.resourceService.whenReady(ResourceDomain.ResourcePacks)
     const destPath = join(instancePath, 'resourcepacks')

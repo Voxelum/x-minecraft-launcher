@@ -44,13 +44,14 @@
 <script lang="ts" setup>
 import { useDialog } from '../composables/dialog'
 
-const { isShown } = useDialog('deletion')
-
-defineProps<{
+const props = defineProps<{
   title: string
   width?: number
   persistent?: boolean
+  dialog?: string
 }>()
+
+const { isShown } = useDialog(props.dialog ?? 'deletion')
 
 const emit = defineEmits(['confirm', 'cancel'])
 

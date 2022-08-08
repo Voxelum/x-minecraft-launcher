@@ -1,5 +1,5 @@
 import { ResolvedVersion, Version } from '@xmcl/core'
-import { CreateInstanceOption, createTemplate, EditInstanceOptions, filterForgeVersion, filterOptifineVersion, Instance, InstanceSchema, InstanceService as IInstanceService, InstanceServiceKey, InstancesSchema, InstanceState, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, LATEST_RELEASE, RuntimeVersions } from '@xmcl/runtime-api'
+import { CreateInstanceOption, createTemplate, EditInstanceOptions, filterForgeVersion, filterOptifineVersion, Instance, InstanceSchema, InstanceService as IInstanceService, InstanceServiceKey, InstancesSchema, InstanceState, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, RuntimeVersions } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
 import filenamify from 'filenamify'
 import { copy, ensureDir, readdir, remove } from 'fs-extra'
@@ -12,8 +12,7 @@ import { assignShallow, requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { createSafeFile, createSafeIO } from '../util/persistance'
 import { InstallService } from './InstallService'
-import { ServerStatusService } from './ServerStatusService'
-import { Singleton, StatefulService } from './Service'
+import { ExposeServiceKey, Lock, Singleton, StatefulService } from './Service'
 import { UserService } from './UserService'
 
 const INSTANCES_FOLDER = 'instances'
@@ -21,6 +20,7 @@ const INSTANCES_FOLDER = 'instances'
 /**
  * Provide instance splitting service. It can split the game into multiple environment and dynamically deploy the resource to run.
  */
+@ExposeServiceKey(InstanceServiceKey)
 export class InstanceService extends StatefulService<InstanceState> implements IInstanceService {
   protected readonly instancesFile = createSafeFile(this.getAppDataPath('instances.json'), InstancesSchema, this, [this.getPath('instances.json')])
   protected readonly instanceFile = createSafeIO(InstanceSchema, this)
@@ -141,7 +141,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     const instance = createTemplate()
 
     instance.author = instance.author || this.userService.state.gameProfile?.name || ''
-    instance.runtime.minecraft = LATEST_RELEASE.id
+    instance.runtime.minecraft = this.installService.getLatestRelease()
 
     assignShallow(instance, option)
     if (option.runtime) {
@@ -157,7 +157,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       }
     }
 
-    instance.runtime.minecraft = instance.runtime.minecraft || LATEST_RELEASE.id
+    instance.runtime.minecraft = instance.runtime.minecraft || this.installService.getLatestRelease()
     instance.author = instance.author || this.userService.state.gameProfile?.name || ''
 
     if (option.server) {
@@ -228,8 +228,12 @@ export class InstanceService extends StatefulService<InstanceState> implements I
    * Mount the instance as the current active instance.
    * @param path the instance path
    */
-  @Singleton()
+  @Lock('mountInstance')
   async mountInstance(path: string) {
+    if (path === this.state.path) {
+      return
+    }
+
     requireString(path)
 
     if (!isAbsolute(path)) {
@@ -467,7 +471,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           }
         } else {
           options.runtime = {
-            minecraft: LATEST_RELEASE.id,
+            minecraft: this.installService.getLatestRelease(),
           }
         }
       } else {
@@ -481,7 +485,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           }
         } else {
           options.runtime = {
-            minecraft: LATEST_RELEASE.id,
+            minecraft: this.installService.getLatestRelease(),
           }
         }
       }

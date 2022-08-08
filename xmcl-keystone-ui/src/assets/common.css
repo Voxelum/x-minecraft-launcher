@@ -149,8 +149,6 @@ html ::-webkit-scrollbar {
     padding-right: 30px;
 }
 
-.theme--dark.v-sheet {}
-
 .sidebar.v-navigation-drawer .v-list {
     background: unset;
 }
@@ -192,7 +190,6 @@ html ::-webkit-scrollbar {
 }
 
 /* Draggable card */
-
 
 .draggable-card {
     transition: all !important;

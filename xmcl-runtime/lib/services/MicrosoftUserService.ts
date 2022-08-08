@@ -9,9 +9,11 @@ import { createPlugin } from '../util/credentialPlugin'
 import { toRecord } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { BaseService } from './BaseService'
-import { AbstractService, Singleton } from './Service'
+import { AbstractService, ExposeServiceKey, Singleton } from './Service'
 import { UserService } from './UserService'
+import { request } from 'undici'
 
+@ExposeServiceKey(MicrosoftUserServiceKey)
 export class MicrosoftUserService extends AbstractService implements IMicrosoftUserService {
   readonly scopes: string[] = ['XboxLive.signin', 'XboxLive.offline_access']
   readonly extraScopes: string[] = ['user.email', 'user.openid', 'user.offline_access']
@@ -24,12 +26,15 @@ export class MicrosoftUserService extends AbstractService implements IMicrosoftU
 
     userService.registerAccountSystem({
       name: 'microsoft',
+      login: async () => {
+        throw new Error('Not implemented')
+      },
       refresh: async (user) => {
         const diff = Date.now() - user.expiredAt
         if (!user.expiredAt || user.expiredAt < Date.now() || (diff / 1000 / 3600 / 24) > 14) {
           // expired
           this.log(`Microsoft accessToken expired. Refresh a new one.`)
-          const { userId, accessToken, expiredAt, gameProfiles, selectedProfile } = await this.login({ microsoftEmailAddress: user.username })
+          const { accessToken, expiredAt, gameProfiles, selectedProfile } = await this.login({ microsoftEmailAddress: user.username })
 
           user.accessToken = accessToken
           user.expiredAt = expiredAt
@@ -108,6 +113,24 @@ export class MicrosoftUserService extends AbstractService implements IMicrosoftU
 
   cancelMicrosoftTokenRequest() {
     this.cancelWait()
+  }
+
+  async changeName(name: string) {
+    const { user } = this.userService.state
+    if (!user) {
+      throw new Error()
+    }
+    request(`https://api.minecraftservices.com/minecraft/profile/name/${name}`, {
+      headers: {
+        Authorization: `Bearer ${user.accessToken}`,
+      },
+    })
+    await this.networkManager.request.put(`https://api.minecraftservices.com/minecraft/profile/name/${name}`, {
+      headers: {
+        Authorization: `Bearer ${user.accessToken}`,
+      },
+      throwHttpErrors: false,
+    }).json()
   }
 
   protected async acquireMicrosoftToken({ username, code, directRedirectToLauncher, getPort }: { username: string; code?: string; directRedirectToLauncher?: boolean; getPort?: () => Promise<number> }) {

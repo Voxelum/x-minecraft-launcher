@@ -98,7 +98,7 @@ diagnosis:
   missingVersionJson:
     message: 启动器将自动下载JSON文件
     name: '%{version}版本JSON文件缺失'
-  problem: 1个问题待修复 | %{count}个问题待修复
+  problem: 1个潜在问题 | %{count}个潜在问题
   requireFabric:
     message: 请在版本设置页面选择一个合适的 Fabric 版本
     name: 请启用 Fabric 来运行 Fabric 的 Mod
@@ -170,15 +170,16 @@ importModpack:
   success: 成功导入 {modpack} 整合包
 importResource: 导入资源
 importSave: 导入存档
+install: 安装
 installAssets:
   asset: 下载资源文件%{hash}
   assetsJson: 下载资源文件目录
   name: 下载游戏资源文件
 installAuthlibInjector: 安装 authlib-injector
 installByProfile:
+  library: 安装库
   name: 通过安装配置文件
   postProcessing: 后处理，更新本地文件
-  library: 安装库
 installCurseforgeFile: 安装 Curseforge 文件
 installDependencies:
   installAssets:
@@ -222,7 +223,7 @@ installOptifine:
 installVersion:
   jar: 安装游戏JAR文件
   json: 安装游戏JSON文件
-  name: 安装%{version}的游戏本体
+  name: 安装%{id}的游戏本体
 instance:
   addServer: 添加服务器
   current: 当前实例
@@ -387,11 +388,13 @@ mod:
   deletionHint: 你将移除这个 Mod 的文件和信息。你确定吗？| 你将移除这些 Mod 的文件和信息。你确定吗？
   deletionRestHint: 等 {rest} 个模组……
   dropHint: 将Mod的jar文件拖入此处来导入
+  enabled: 一共启用了 {count} 个 Mods
   export: 导出 Mod
   filter: 筛选 Mods
   hideIncompatible: 隐藏不兼容 Mods
   import: 导入 Mod
   incompatible: 可能不兼容当前版本。
+  manage: 管理 Mods
   maybeCompatible: 也许兼容于当前版本。
   name: Mod | Mods
   nocompatible: 无法解析兼容性。
@@ -569,6 +572,7 @@ previous: 上一步
 quiltVersion:
   disable: 不启用 Quilt
   empty: Quilt 不支持 Minecraft {version}
+refresh: 刷新
 refreshResource: 刷新资源
 remove: 移除
 resolution:
@@ -586,10 +590,12 @@ resourcepack:
   deletion: 移除 {pack}
   deletionHint: 你将永远失去该资源包的数据以及相关信息，你进行此操作吗？
   dropHint: 将资源包zip或文件夹拖入此处导入
+  enable: 一共启用了 {count} 个资源包
   export: 导出资源包
   filter: 筛选材质包
   import: 导入资源包
   incompatible: 不兼容的资源包格式({format})。适用范围 {accept}。当前版本 {actual}。
+  manage: 管理资源包
   name: 资源包 | 资源包
   searchOnCurseforge: 在 Curseforge 中查找 {name}
   selected: 已选资源包
@@ -605,6 +611,7 @@ save:
     fromProfile: 来自其他启动配置
     fromResource: 来自已导入资源
     title: 从已有资源导入存档
+  createdWorlds: 创建了 {count} 个世界
   deleteCancel: 取消
   deleteConfirm: 确认删除
   deleteHint: 该操作不可逆，你将永远失去这个存档的记录，你确定要刪除此存档吗？
@@ -617,6 +624,7 @@ save:
   import: 从文件导入
   importMessage: 将 zip 存档导入
   importTitle: 导入存档
+  manage: 管理存档
   name: 地图存档 | 地图存档
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
@@ -643,6 +651,7 @@ server:
   players: 玩家
   port: 端口
   recommendedMinecraftVersion: Minecraft 版本
+  status: 服务器状态
   title: 服务器 | 服务器
   unknown: 未知服务器
   unknownDescription: 未知服务器，请刷新。
@@ -681,8 +690,10 @@ shaderPack:
   deletion: 删除光影包
   deletionHint: 这将把光影包文件 {path} 永久删除。
   filter: 筛选光影包
+  enable: 使用了 {name} 作为光影包
   internal: 内置
   internalDescription: 使用内置 shader，在此模式下你可以编辑 shader 管线选项
+  manage: 管理光影包
   name: 光影包
   'off': 无
   offDescription: 关闭 shader 引擎
@@ -703,6 +714,7 @@ task:
   history: 已完成任务
   manager: 任务管理器
   name: 任务 | 任务
+  pause: 暂停
   running: 活跃任务
   start: '{name} 开始'
   successed: 成功
@@ -755,6 +767,7 @@ user:
   info: 账户信息
   insecureClient: Minecraft 服务器无法验证您的身份，请回答密保问题!
   name: 用户名
+  nameHint: 游戏中显示的名字
   profile: 个人信息
   profileMode: 皮肤服务
   profileService: 皮肤服务器
@@ -766,6 +779,10 @@ userAccount:
   removeDescription: 这将抹去所有关于此账号的信息，您是否确定？
   removeTitle: 移除账号
   switch: 切换账号
+userCape:
+  changeTitle: 披风设置
+  description: 披风是玩家参与活动获得的特殊奖励，或在特定事件发生后的纪念品
+  noCape: 隐藏披风
 userService:
   add: 添加更多验证或玩家信息服务器
   authLibInjector: 按照 authlib-injector 推荐流程创建
@@ -818,6 +835,7 @@ userSkin:
   upload: 上传
   urlNotEmpty: 皮肤URL不能为空
   urlNotValid: 请输入有效的皮肤URL
+  useSlim: 使用细胳膊模型
 version:
   name: 版本 | 版本
   notInstalled: 未安装该版本

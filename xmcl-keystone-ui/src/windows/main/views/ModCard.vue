@@ -379,8 +379,8 @@ const contextMenuItems = computed(() => {
 .mod-card .avatar {
   min-height: 50px;
   max-height: 50px;
-  max-width: 50px;
-  min-width: 50px;
+  max-width:  50px;
+  min-width:  50px;
   margin: 0 10px 0 0;
 }
 </style>

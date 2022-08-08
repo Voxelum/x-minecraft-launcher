@@ -7,7 +7,7 @@ import { DiagnoseService } from './DiagnoseService'
 import { InstanceService } from './InstanceService'
 import { InstanceVersionService } from './InstanceVersionService'
 import { JavaService } from './JavaService'
-import { Singleton, StatefulService } from './Service'
+import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
 interface VersionPreference {
   match: (v: Java) => boolean
@@ -15,6 +15,7 @@ interface VersionPreference {
   requirement: string
 }
 
+@ExposeServiceKey(InstanceJavaServiceKey)
 export class InstanceJavaService extends StatefulService<InstanceJavaState> implements IInstanceJavaService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,

@@ -97,12 +97,13 @@
 </template>
 
 <script lang=ts>
-import { useUserSecurity } from '../composables/user'
+import { useCurrentUser, useMojangSecurity } from '../composables/user'
 
 export default defineComponent({
   props: { show: Boolean },
   setup(props) {
-    const { submit, challenges, error, security, refreshing, loading, check } = useUserSecurity()
+    const { userProfile } = useCurrentUser()
+    const { submit, challenges, error, security, refreshing, loading, check } = useMojangSecurity(userProfile)
     function updateAnswer(index: number, content: string) {
       challenges.value[index].answer.answer = content
       error.value = undefined

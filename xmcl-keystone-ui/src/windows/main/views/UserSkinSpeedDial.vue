@@ -5,22 +5,24 @@
   >
     <template #activator="{ on }">
       <v-speed-dial
-        v-if="security"
         v-model="fab"
         style="z-index: 3; display: flex; justify-content: center"
         direction="top"
         :open-on-hover="true"
       >
         <template #activator>
-          <v-btn
-            v-model="fab"
-            :disabled="disabled"
-            fab
-            v-on="on"
-            @click="load"
-          >
-            <v-icon>edit</v-icon>
-          </v-btn>
+          <v-fab-transition>
+            <v-btn
+              v-if="value"
+              v-model="fab"
+              :disabled="disabled"
+              fab
+              v-on="on"
+              @click="load"
+            >
+              <v-icon>edit</v-icon>
+            </v-btn>
+          </v-fab-transition>
         </template>
         <v-tooltip
           :close-delay="0"
@@ -62,26 +64,17 @@
   </v-tooltip>
 </template>
 
-<script lang=ts>
-import { required } from '/@/util/props'
+<script lang=ts setup>
 
-export default defineComponent({
-  props: {
-    load: required<() => void>(Function),
-    upload: required<() => void>(Function),
-    save: required<() => void>(Function),
-    disabled: required<boolean>(Boolean),
-    security: required<boolean>(Boolean),
-  },
-  setup() {
-    const data = reactive({
-      fab: false,
-    })
-    return {
-      ...toRefs(data),
-    }
-  },
-})
+defineProps<{
+  load():void
+  upload():void
+  save():void
+  disabled: boolean
+  value: boolean
+}>()
+
+const fab = ref(false)
 </script>
 
 <style>

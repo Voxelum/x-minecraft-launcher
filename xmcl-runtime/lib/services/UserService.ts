@@ -2,6 +2,7 @@
 import { DownloadTask } from '@xmcl/installer'
 import {
   GameProfileAndTexture,
+  LoginOptions,
   RefreshSkinOptions,
   SaveSkinOptions,
   SwitchProfileOptions,
@@ -18,21 +19,23 @@ import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
 import { fitMinecraftLauncherProfileData } from '../util/userData'
 import { BaseService } from './BaseService'
-import { Singleton, StatefulService } from './Service'
+import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
 export interface UserAccountSystem {
   name: string
+  login(username: string, password: string, authService: string): Promise<UserProfile>
   refresh(userProfile: UserProfile, clientToken: string): Promise<UserProfile>
   getSkin(userProfile: UserProfile): Promise<UserProfile>
   setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, skin: string | Buffer, slim: boolean): Promise<UserProfile>
 }
 
+@ExposeServiceKey(UserServiceKey)
 export class UserService extends StatefulService<UserState> implements IUserService {
   private userFile = createSafeFile(this.getAppDataPath('user.json'), UserSchema, this, [this.getPath('user.json')])
 
   private registeredAccountSystem: Record<string, UserAccountSystem> = {}
 
-  constructor(@Inject(LauncherAppKey) app: LauncherApp, @Inject(BaseService) baseService: BaseService) {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app, UserServiceKey, () => new UserState(), async () => {
       const data = await this.userFile.read()
       const result: UserSchema = {
@@ -81,16 +84,18 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     })
 
     this.storeManager.subscribeAll(['userGameProfileSelect', 'userInvalidate'], async () => {
-      // const user = this.state.user
-      // if (!this.state.isAccessTokenValid) {
-      //   this.diagnoseService.report({ userNotLogined: [{ authService: user.authService, account: user.username }] })
-      // } else {
-      //   this.diagnoseService.report({ userNotLogined: [] })
-      // }
     })
   }
 
+  async login(options: LoginOptions): Promise<UserProfile> {
+    const system = this.registeredAccountSystem[options.service]
+    const profile = await system.login(options.username, options.password ?? '', options.service)
+    this.state.userProfile(profile)
+    return profile
+  }
+
   async setUserProfile(userProfile: UserProfile): Promise<void> {
+    this.state.userProfile(userProfile)
   }
 
   registerAccountSystem(system: UserAccountSystem) {
@@ -233,5 +238,9 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       }
     }
     this.state.userProfileRemove(userId)
+  }
+
+  async getSupportedAccountSystems(): Promise<string[]> {
+    return Object.keys(this.registeredAccountSystem)
   }
 }

@@ -3,57 +3,26 @@
     v-model="isShown"
     width="550"
     :persistent="isPersistent"
+    fullscreen
+    transition="fade"
     @dragover.prevent
   >
+    <v-btn
+      outlined
+      icon
+      large
+      class="absolute top-20 right-20 z-20 border-2"
+      @click="isShown = false"
+    >
+      <v-icon>close</v-icon>
+    </v-btn>
     <v-card
-      class="login-card"
       @dragover.prevent
       @drop="onDrop"
     >
-      <v-flex
-        pa-4
-        class="justify-center relative items-center"
-        :style="{ 'background-color': primaryColor }"
-      >
-        <div class="absolute flex justify-start w-full pl-4">
-          <v-btn
-            v-if="active !== LoginDialogLoginView"
-            icon
-            @click="route('back')"
-          >
-            <v-icon>arrow_back</v-icon>
-          </v-btn>
-        </div>
-        <div>
-          <transition
-            name="fade-transition"
-            mode="out-in"
-          >
-            <v-icon
-              v-if="isLoginView"
-              style="font-size: 50px"
-            >
-              person_pin
-            </v-icon>
-            <v-card-title
-              v-else
-            >
-              {{ $t('userService.title') }}
-            </v-card-title>
-          </transition>
-        </div>
-      </v-flex>
-
-      <transition
-        name="fade-transition"
-        mode="out-in"
-      >
-        <component
-          :is="active"
-          :inside="inside"
-          @route="route"
-        />
-      </transition>
+      <LoginDialogLoginView
+        :inside="inside"
+      />
     </v-card>
   </v-dialog>
 </template>
@@ -64,13 +33,10 @@ import { useColorTheme } from '../composables/colorTheme'
 import { useDialog } from '../composables/dialog'
 import { LoginDialog } from '../composables/login'
 import LoginDialogLoginView from './AppLoginDialogForm.vue'
-import LoginDialogUserServicesCard from './AppLoginDialogUserServicesCard.vue'
-import StepperUserService from './AppLoginDialogUserServiceStepper.vue'
 import { useService } from '/@/composables'
 import { useDropLink } from '/@/composables/dropLink'
 
 const { isShown } = useDialog(LoginDialog)
-const active = ref(LoginDialogLoginView as any)
 const { inside } = useDropLink()
 
 // handle the not login issue
@@ -78,7 +44,6 @@ const { primaryColor } = useColorTheme()
 
 const { state } = useService(UserServiceKey)
 const userProfile = computed(() => state.users[state.selectedUser.id])
-const isLoginView = computed(() => active.value === LoginDialogLoginView)
 const isPersistent = computed(() => {
   if (userProfile.value?.accessToken) {
     return false
@@ -98,26 +63,6 @@ const onDrop = (e: DragEvent) => {
   }
   inside.value = false
 }
-const stack = [] as any[]
-const route = (route: string) => {
-  if (route === 'back') {
-    active.value = stack.pop() ?? LoginDialogLoginView
-  } else if (route === 'profile') {
-    stack.push(active.value)
-    active.value = LoginDialogUserServicesCard
-  } else if (route === 'edit-service') {
-    stack.push(active.value)
-    active.value = StepperUserService
-  }
-}
-
-watch(isShown, (v) => {
-  if (!v) {
-    active.value = LoginDialogLoginView
-    stack.splice(0, stack.length)
-  }
-})
-
 </script>
 
 <style>
@@ -129,15 +74,5 @@ watch(isShown, (v) => {
 }
 .input-group--text-field label {
   top: 5px;
-}
-
-.login-card {
-  padding-bottom: 25px;
-}
-
-.login-card .v-card__text {
-  padding-left: 50px;
-  padding-right: 50px;
-  padding-bottom: 0px;
 }
 </style>

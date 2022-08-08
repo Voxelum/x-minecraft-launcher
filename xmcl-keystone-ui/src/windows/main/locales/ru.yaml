@@ -575,8 +575,6 @@ peerIceGatheringState:
   gathering: Сбор ледяного сервера
 popular: Популярность
 previous: Назад
-refresh:
-  hint: Обновите пользовательские данные и состояние сервера.
 refreshResource: Обновить ресурсы
 remove: Удалить
 resolution:

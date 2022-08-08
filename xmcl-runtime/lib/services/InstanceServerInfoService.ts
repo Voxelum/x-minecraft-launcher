@@ -6,8 +6,9 @@ import { LauncherAppKey } from '../app/utils'
 import { exists } from '../util/fs'
 import { Inject } from '../util/objectRegistry'
 import { ServerStatusService } from './ServerStatusService'
-import { Singleton, StatefulService } from './Service'
+import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
+@ExposeServiceKey(InstanceServerInfoServiceKey)
 export class InstanceServerInfoService extends StatefulService<ServerInfoState> implements IInstanceServerInfoService {
   private watching = ''
 

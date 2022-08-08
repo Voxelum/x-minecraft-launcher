@@ -1,38 +1,75 @@
 <template>
-  <div
-    class="v-alert white--text"
-    style="border-color: transparent !important"
+  <v-card
+    class=""
   >
-    <i
-      class="v-icon material-icons theme-- v-alert__icon"
-    >
+    <v-card-title>
+      {{ t('server.status') }}
+    </v-card-title>
+    <v-card-text class="flex flex-grow-0 gap-4 items-center">
       <img
         :src="status.favicon || unknownServer"
         style="max-height: 64px;"
       >
-    </i>
-    <div>
-      <text-component :source="status.version.name" />
+      <div class="py-4">
+        <text-component :source="status.version.name" />
+        <v-spacer />
+        <text-component :source="status.description" />
+      </div>
+    </v-card-text>
+    <v-card-actions>
+      <v-chip
+        label
+        class="mr-2"
+        small
+        outlined
+        :input-value="false"
+      >
+        <v-avatar left>
+          <v-icon>people</v-icon>
+        </v-avatar>
+        {{ status.players.online }} / {{ status.players.max }}
+      </v-chip>
+      <v-chip
+        :style="{ color: status.ping < 100 ? 'green' : status.ping < 450 ? 'orange' : 'red' }"
+        label
+        outlined
+        small
+        :input-value="false"
+      >
+        <v-avatar left>
+          <v-icon
+            :style="{ color: status.ping < 100 ? 'green' : status.ping < 450 ? 'orange' : 'red' }"
+          >
+            signal_cellular_alt
+          </v-icon>
+        </v-avatar>
+        {{ status.ping }} ms
+      </v-chip>
       <v-spacer />
-      <text-component :source="status.description" />
-    </div>
-    <v-btn
-      icon
-      :loading="pinging"
-      style="align-self: center;"
-      @click="refresh"
-    >
-      <v-icon>refresh</v-icon>
-    </v-btn>
-  </div>
+      <v-btn
+        text
+        :loading="pinging"
+        @click="refresh"
+      >
+        <v-icon
+          color="primary"
+          left
+        >
+          refresh
+        </v-icon>
+        {{ t('refresh') }}
+      </v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script lang=ts setup>
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import unknownServer from '/@/assets/unknown_server.png'
+import { useI18n } from '/@/composables'
 
 const { refresh, status, pinging } = useInstanceServerStatus()
-
+const { t } = useI18n()
 onMounted(() => {
   if (status.value.ping <= 0) {
     refresh()

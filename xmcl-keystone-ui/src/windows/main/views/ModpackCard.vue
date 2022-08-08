@@ -143,8 +143,8 @@ const contextMenuItems: Ref<ContextMenuItem[]> = computed(() => {
     },
     icon: 'folder',
   })
-  if (props.item.resource?.curseforge) {
-    const curseforge = props.item.resource?.curseforge
+  if (props.item.resource?.metadata.curseforge) {
+    const curseforge = props.item.resource.metadata.curseforge
     items.push({
       text: t('modpack.showInCurseforge', { name: props.item.name }),
       children: [],

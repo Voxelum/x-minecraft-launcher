@@ -1,11 +1,11 @@
 import { computed, onMounted, onUnmounted, ref, watch } from '@vue/composition-api'
-import { InstanceOptionsServiceKey, PersistedShaderPackResource, InstanceShaderPacksServiceKey, ResourceServiceKey, ResourceDomain } from '@xmcl/runtime-api'
+import { InstanceOptionsServiceKey, Persisted, ShaderPackResource, InstanceShaderPacksServiceKey, ResourceServiceKey, ResourceDomain } from '@xmcl/runtime-api'
 import { useServiceBusy, useService, useRefreshable, useI18n } from '/@/composables'
 
 export interface ShaderPackItem {
   name: string
   value: string
-  resource: PersistedShaderPackResource
+  resource: Persisted<ShaderPackResource>
   enabled: boolean
   description: string
   path: string
@@ -44,7 +44,7 @@ export function useShaderpacks() {
       tags: [],
     }]
   }
-  function getShaderPackItemFromResource(res: PersistedShaderPackResource): ShaderPackItem {
+  function getShaderPackItemFromResource(res: Persisted<ShaderPackResource>): ShaderPackItem {
     const fileName = res.fileName
     return {
       name: res.name,
@@ -71,7 +71,7 @@ export function useShaderpacks() {
           updated.name = pack.name
         }
         if (updated.name || updated.tags) {
-          updateResource({ resource: pack.resource, ...updated })
+          updateResource({ hash: pack.resource.hash, ...updated })
         }
       }
     }

@@ -19,6 +19,7 @@
         <v-text-field
           v-model="data.host"
           hide-details
+          solo
 
           placeholder="www.whatever.com"
           required
@@ -34,6 +35,7 @@
       <v-list-item-action>
         <v-text-field
           v-model="data.port"
+          solo
           hide-details
           placeholder="25565"
           required

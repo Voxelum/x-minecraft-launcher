@@ -8,7 +8,7 @@ export function useServiceBusy<T>(key: ServiceKey<T>, method: keyof T, params?: 
   return computed(() => sem.value > 0)
 }
 
-export function useBusy(key: string) {
+export function useBusy(key: string | Ref<string>) {
   const sem = useSemaphore(key)
   return computed(() => sem.value > 0)
 }

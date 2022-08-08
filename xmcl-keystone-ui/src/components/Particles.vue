@@ -21,103 +21,131 @@
 <script lang=ts setup>
 import './particle'
 
-const props = defineProps({
-  color: {
-    type: String,
-    default: '#dedede',
-  },
-  particleOpacity: {
-    type: Number,
-    default: 0.7,
-  },
-  particlesNumber: {
-    type: Number,
-    default: 80,
-  },
-  shapeType: {
-    type: String,
-    default: 'circle',
-  },
-  particleSize: {
-    type: Number,
-    default: 4,
-  },
-  linesColor: {
-    type: String,
-    default: '#dedede',
-  },
-  linesWidth: {
-    type: Number,
-    default: 1,
-  },
-  lineLinked: {
-    type: Boolean,
-    default: true,
-  },
-  lineOpacity: {
-    type: Number,
-    default: 0.4,
-  },
-  linesDistance: {
-    type: Number,
-    default: 150,
-  },
-  moveSpeed: {
-    type: Number,
-    default: 3,
-  },
-  hoverEffect: {
-    type: Boolean,
-    default: true,
-  },
-  hoverMode: {
-    type: String,
-    default: 'grab',
-  },
-  clickEffect: {
-    type: Boolean,
-    default: true,
-  },
-  clickMode: {
-    type: String,
-    default: 'push',
-  },
+const props = withDefaults(defineProps<{
+  color: string
+  moveEnabled: boolean
+  particleOpacity: number
+  particlesNumber: number
+  shapeType: string
+  particleSize: number
+  linesColor: string
+  linesWidth: number
+  lineLinked: boolean
+  lineOpacity: number
+  linesDistance: number
+  moveSpeed: number
+  hoverEffect: boolean
+  hoverMode: string
+  opacityRandom: boolean
+  clickEffect: boolean
+  clickMode: string
+  moveDirection: string
+  moveRandom: boolean
+}>(), {
+  color: '#dedede',
+  moveEnabled: true,
+  particleOpacity: 0.7,
+  particlesNumber: 80,
+  shapeType: 'circle',
+  particleSize: 4,
+  linesColor: '#dedede',
+  linesWidth: 1,
+  lineLinked: true,
+  lineOpacity: 0.4,
+  linesDistance: 150,
+  opacityRandom: false,
+  moveSpeed: 3,
+  hoverEffect: true,
+  hoverMode: 'grab',
+  clickEffect: true,
+  clickMode: 'push',
+  moveDirection: 'none',
+  moveRandom: false,
 })
 
-function initParticleJS(
-  color: any,
-  particleOpacity: any,
-  particlesNumber: any,
-  shapeType: any,
-  particleSize: any,
-  linesColor: any,
-  linesWidth: any,
-  lineLinked: any,
-  lineOpacity: any,
-  linesDistance: any,
-  moveSpeed: any,
-  hoverEffect: any,
-  hoverMode: any,
-  clickEffect: any,
-  clickMode: any,
-) {
+watch(computed(() => props.moveEnabled), (e) => {
+  const cur = window.pJSDom[0]
+  if (!cur) {
+    return
+  }
+  const pJS = cur.pJS
+  pJS.particles.move.enable = e
+  console.log(`enabled: ${e}`)
+  if (e) {
+    console.log(window.pJSDom[0])
+    pJS.fn.vendors.start()
+  }
+})
+
+watchEffect(() => {
+  const cur = window.pJSDom[0]
+  if (cur) {
+    const pJS = cur.pJS
+
+    let delta: { x: number; y: number }
+    switch (props.moveDirection) {
+      case 'top':
+        delta = { x: 0, y: -1 }
+        break
+      case 'top-right':
+        delta = { x: 0.5, y: -0.5 }
+        break
+      case 'right':
+        delta = { x: 1, y: -0 }
+        break
+      case 'bottom-right':
+        delta = { x: 0.5, y: 0.5 }
+        break
+      case 'bottom':
+        delta = { x: 0, y: 1 }
+        break
+      case 'bottom-left':
+        delta = { x: -0.5, y: 1 }
+        break
+      case 'left':
+        delta = { x: -1, y: 0 }
+        break
+      case 'top-left':
+        delta = { x: -0.5, y: -0.5 }
+        break
+      default:
+        delta = { x: 0, y: 0 }
+        break
+    }
+
+    for (const p of pJS.particles.array) {
+      if (pJS.particles.move.straight) {
+        p.vx = delta.x
+        p.vy = delta.y
+        if (pJS.particles.move.random) {
+          p.vx = pJS.vx * (Math.random())
+          p.vy = pJS.vy * (Math.random())
+        }
+      } else {
+        p.vx = delta.x + Math.random() - 0.5
+        p.vy = delta.y + Math.random() - 0.5
+      }
+    }
+  }
+})
+function initParticleJS() {
   // eslint-disable-next-line no-undef
   // @ts-ignore
   window.particlesJS('particles-js', {
     particles: {
       number: {
-        value: particlesNumber,
+        value: props.particlesNumber,
         density: {
           enable: true,
           value_area: 800,
         },
       },
       color: {
-        value: color,
+        value: props.color,
       },
       shape: {
         // circle, edge, triangle, polygon, star, image
-        type: shapeType,
+        type: props.shapeType,
         stroke: {
           width: 0,
           color: '#192231',
@@ -127,7 +155,7 @@ function initParticleJS(
         },
       },
       opacity: {
-        value: particleOpacity,
+        value: props.particleOpacity,
         random: false,
         anim: {
           enable: false,
@@ -137,7 +165,7 @@ function initParticleJS(
         },
       },
       size: {
-        value: particleSize,
+        value: props.particleSize,
         random: true,
         anim: {
           enable: false,
@@ -147,17 +175,17 @@ function initParticleJS(
         },
       },
       line_linked: {
-        enable: lineLinked,
-        distance: linesDistance,
-        color: linesColor,
-        opacity: lineOpacity,
-        width: linesWidth,
+        enable: props.lineLinked,
+        distance: props.linesDistance,
+        color: props.linesColor,
+        opacity: props.lineOpacity,
+        width: props.linesWidth,
       },
       move: {
-        enable: true,
-        speed: moveSpeed,
-        direction: 'none',
-        random: false,
+        enable: props.moveEnabled,
+        speed: props.moveSpeed,
+        direction: props.moveDirection,
+        random: props.moveRandom,
         straight: false,
         out_mode: 'out',
         bounce: false,
@@ -172,19 +200,17 @@ function initParticleJS(
       detect_on: 'canvas',
       events: {
         onhover: {
-          enable: hoverEffect,
-          mode: hoverMode,
+          enable: props.hoverEffect,
+          mode: props.hoverMode,
         },
         onclick: {
-          enable: clickEffect,
-          mode: clickMode,
+          enable: props.clickEffect,
+          mode: props.clickMode,
         },
         onresize: {
-
           enable: true,
           density_auto: true,
           density_area: 400,
-
         },
       },
       modes: {
@@ -219,23 +245,7 @@ function initParticleJS(
 
 onMounted(() => {
   nextTick().then(() => {
-    initParticleJS(
-      props.color,
-      props.particleOpacity,
-      props.particlesNumber,
-      props.shapeType,
-      props.particleSize,
-      props.linesColor,
-      props.linesWidth,
-      props.lineLinked,
-      props.lineOpacity,
-      props.linesDistance,
-      props.moveSpeed,
-      props.hoverEffect,
-      props.hoverMode,
-      props.clickEffect,
-      props.clickMode,
-    )
+    initParticleJS()
   })
 })
 </script>

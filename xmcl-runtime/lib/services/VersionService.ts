@@ -9,11 +9,12 @@ import { LauncherAppKey } from '../app/utils'
 import { isDirectory, missing, readdirEnsured } from '../util/fs'
 import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
-import { Singleton, StatefulService } from './Service'
+import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
 /**
  * The local version service maintains the installed versions on disk
  */
+@ExposeServiceKey(VersionServiceKey)
 export class VersionService extends StatefulService<VersionState> implements IVersionService {
   private watcher: FSWatcher | undefined
 

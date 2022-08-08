@@ -146,8 +146,8 @@ export function useCurseforgeProjectFiles(projectId: number) {
   })
   const status = computed(() => data.files.map(file => {
     const find = (m: Persisted<Resource>) => {
-      if ('curseforge' in m && typeof m.curseforge === 'object') {
-        const s = m.curseforge
+      if (typeof m.metadata.curseforge === 'object') {
+        const s = m.metadata.curseforge
         if (s.fileId === file.id) return true
       }
       return false

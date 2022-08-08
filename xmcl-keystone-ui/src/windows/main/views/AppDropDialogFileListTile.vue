@@ -124,24 +124,40 @@ const tryEnable = () => {
   }
 }
 const typeName = computed(() => {
-  if (!props.value.result?.type) {
-    return ''
+  const types = [] as string[]
+  if (!props.value.result) {
+    return t('universalDrop.unknownResource')
   }
-  switch (props.value.result.type) {
-    case 'forge': return 'Forge Mod'
-    case 'fabric': return 'Fabric Mod'
-    case 'resourcepack': return tc('resourcepack.name', 0)
-    case 'mcbbs-modpack':
-    case 'modpack': return tc('modpack.name', 0)
-    case 'save': return tc('save.name', 0)
-    case 'curseforge-modpack': return tc('modpack.name', 0)
-    case 'modrinth-modpack': return t('modrinth.projectType.modpack')
-    case 'shaderpack': return t('shaderPack.name')
-    case 'unknown':
-      return t('universalDrop.unknownResource')
-    default:
-      return props.value.result.type
+  for (const key of Object.keys(props.value.result.metadata)) {
+    switch (key) {
+      case 'forge':
+        types.push('Forge Mod')
+        break
+      case 'fabric':
+        types.push('Fabric Mod')
+        break
+      case 'resourcepack':
+        types.push(tc('resourcepack.name', 0))
+        break
+      case 'mcbbs-modpack':
+      case 'modpack':
+        types.push(tc('modpack.name', 0))
+        break
+      case 'save':
+        types.push(tc('save.name', 0))
+        break
+      case 'curseforge-modpack':
+        types.push(tc('modpack.name', 0))
+        break
+      case 'modrinth-modpack':
+        types.push(t('modrinth.projectType.modpack'))
+        break
+      case 'shaderpack':
+        types.push(t('shaderPack.name'))
+        break
+    }
   }
+  return types.join(' | ')
 })
 </script>
 

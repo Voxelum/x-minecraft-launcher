@@ -15,7 +15,7 @@ import { ImageStorage } from '../util/imageStore'
 import { assignIfPresent, isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { createPromiseSignal, PromiseSignal } from '../util/promiseSignal'
-import { Singleton, StatefulService } from './Service'
+import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
 export interface Query {
   hash?: string
@@ -37,6 +37,7 @@ export interface Query {
  * 4. The watcher write the parsed the resource metadata
  * 5. The watcher get the metadata json update event, and validate & update the metadata cache & state
  */
+@ExposeServiceKey(ResourceServiceKey)
 export class ResourceService extends StatefulService<ResourceState> implements IResourceService {
   private cache = new ResourceCache()
 

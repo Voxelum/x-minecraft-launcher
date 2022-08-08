@@ -154,6 +154,7 @@ export class InstanceState {
     inst.java = settings.java ?? inst.java
     inst.modpackVersion = settings.modpackVersion ?? inst.modpackVersion
     inst.fileApi = settings.fileApi ?? inst.fileApi
+    inst.upstream = settings.upstream ?? inst.upstream
 
     if (typeof settings.showLog === 'boolean') {
       inst.showLog = settings.showLog

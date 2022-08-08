@@ -34,6 +34,7 @@ const config: BuildOptions = {
     '.jpg': 'file',
     '.svg': 'file',
     '.webp': 'file',
+    '.gif': 'file',
     '.cs': 'file',
     '.vbs': 'file',
     '.ico': 'file',

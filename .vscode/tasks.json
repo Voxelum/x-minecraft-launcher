@@ -38,8 +38,8 @@
                     ],
                     "background": {
                         "activeOnStart": true,
-                        "beginsPattern": ".",
-                        "endsPattern": "electron main ready",
+                        "beginsPattern": "pnpm run --prefix=xmcl-electron-app dev",
+                        "endsPattern": "^electron main ready",
                     }
                 }
             ]
@@ -62,8 +62,8 @@
                     ],
                     "background": {
                         "activeOnStart": true,
-                        "beginsPattern": ".",
-                        "endsPattern": ".",
+                        "beginsPattern": "[ ]+vite v.* dev server running at:.*",
+                        "endsPattern": "[ ]+ready in \\d+ms.",
                     }
                 }
             ]

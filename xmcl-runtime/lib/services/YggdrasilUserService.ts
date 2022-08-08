@@ -1,6 +1,6 @@
 /* eslint-disable quotes */
-import { GameProfileAndTexture, LoginYggdrasilOptions, UserException, UserProfile, YggdrasilUserServiceKey } from '@xmcl/runtime-api'
-import { AUTH_API_MOJANG, checkLocation, GameProfile, getChallenges, getTextures, login, lookup, lookupByName, MojangChallengeResponse, ProfileServiceAPI, PROFILE_API_MOJANG, refresh, responseChallenges, setTexture, validate, YggdrasilAuthAPI } from '@xmcl/user'
+import { GameProfileAndTexture, LoginYggdrasilOptions, UserException, UserProfile, YggdrasilUserService as IYggdrasilUserService, YggdrasilUserServiceKey } from '@xmcl/runtime-api'
+import { AUTH_API_MOJANG, checkLocation, getChallenges, getTextures, login, lookup, MojangChallengeResponse, ProfileServiceAPI, PROFILE_API_MOJANG, refresh, setTexture, validate, YggdrasilAuthAPI } from '@xmcl/user'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { normalizeGameProfile } from '../entities/user'
@@ -8,36 +8,28 @@ import { isSystemError } from '../util/error'
 import { requireObject, requireString, toRecord } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { createDynamicThrottle } from '../util/trafficAgent'
-import { AbstractService, Singleton } from './Service'
+import { AbstractService, ExposeServiceKey, Singleton } from './Service'
 import { UserService } from './UserService'
 
-export class YggdrasilUserService extends AbstractService {
+@ExposeServiceKey(YggdrasilUserServiceKey)
+export class YggdrasilUserService extends AbstractService implements IYggdrasilUserService {
   private lookup = createDynamicThrottle(lookup, (uuid, options = {}) => (options.api ?? PROFILE_API_MOJANG).profile, 2400)
 
   private validate = createDynamicThrottle(validate, ({ accessToken }, api) => (api ?? AUTH_API_MOJANG).hostName, 2400)
 
-  // client data
-  authServices: Record<string, YggdrasilAuthAPI> = {
-    mojang: {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(UserService) private userService: UserService) {
+    super(app, YggdrasilUserServiceKey)
+
+    const auth = {
       hostName: 'https://authserver.mojang.com',
       authenticate: '/authenticate',
       refresh: '/refresh',
       validate: '/validate',
       invalidate: '/invalidate',
       signout: '/signout',
-    },
-    'ely.by': {
-      hostName: 'https://authserver.ely.by',
-      authenticate: '/auth/authenticate',
-      refresh: '/auth/refresh',
-      validate: '/auth/validate',
-      invalidate: '/auth/invalidate',
-      signout: '/auth/signout',
-    },
-  }
-
-  profileServices: Record<string, ProfileServiceAPI> = {
-    mojang: {
+    }
+    const profile = {
       publicKey: `-----BEGIN PUBLIC KEY-----
 MIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEAylB4B6m5lz7jwrcFz6Fd
 /fnfUhcvlxsTSn5kIK/2aGG1C3kMy4VjhwlxF6BFUSnfxhNswPjh3ZitkBxEAFY2
@@ -58,31 +50,18 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
       profile: 'https://sessionserver.mojang.com/session/minecraft/profile/${uuid}',
       // eslint-disable-next-line no-template-curly-in-string
       profileByName: 'https://api.mojang.com/users/profiles/minecraft/${name}',
-    },
-    'ely.by': {
-      // eslint-disable-next-line no-template-curly-in-string
-      profile: 'https://authserver.ely.by/session/profile/${uuid}',
-      // eslint-disable-next-line no-template-curly-in-string
-      profileByName: 'https://skinsystem.ely.by/textures/${name}',
-      // eslint-disable-next-line no-template-curly-in-string
-      texture: 'https://authserver.ely.by/session/profile/${uuid}/${type}',
-    },
-  }
-
-  constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(UserService) private userService: UserService) {
-    super(app, YggdrasilUserServiceKey)
+    }
 
     userService.registerAccountSystem({
       name: 'mojang',
-      refresh: this.refresh.bind(this),
-      getSkin: this.getSkin.bind(this),
-      setSkin: this.setSkin.bind(this),
+      login: (u, p, a) => this.login_({ username: u, password: p }, a, auth),
+      refresh: (p, c) => this.refresh(p, c, auth),
+      getSkin: (p) => this.getSkin(p, profile),
+      setSkin: (p, g, s, slim) => this.setSkin(p, g, s, slim, profile),
     })
   }
 
-  async refresh(user: UserProfile, clientToken: string): Promise<UserProfile> {
-    const authService = this.authServices[user.authService]
+  async refresh(user: UserProfile, clientToken: string, authService: YggdrasilAuthAPI): Promise<UserProfile> {
     const valid = await this.validate({
       accessToken: user.accessToken,
       clientToken: clientToken,
@@ -116,7 +95,7 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
     return user
   }
 
-  async getSkin(user: UserProfile): Promise<UserProfile> {
+  async getSkin(user: UserProfile, api: ProfileServiceAPI): Promise<UserProfile> {
     const gameProfile = user.profiles[user.selectedProfile]
     // if no game profile (maybe not logined), return
     if (gameProfile.name === '') return user
@@ -125,29 +104,16 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
 
     const { id, name } = gameProfile
     try {
-      let profile: GameProfile
-      const api = this.profileServices[user.profileService]
-      const compatible = user.profileService === user.authService
-      this.log(`Refresh skin for user ${gameProfile.name} in ${user.profileService} service ${compatible ? 'compatible' : 'incompatible'}`)
+      this.log(`Refresh skin for user ${gameProfile.name} in ${api.profile}`)
 
-      if (!api) {
-        this.warn(`Cannot find the profile service named ${user.profileService}. Use default mojang service`)
-      }
-
-      if (compatible) {
-        profile = await this.lookup(id, { api })
-      } else {
-        // use name to look up
-        profile = await lookupByName(name, { api })
-        if (!profile) throw new Error(`Profile not found named ${name}!`)
-        profile = await this.lookup(profile.id, { api })
-      }
+      const profile = await this.lookup(id, { api })
       const textures = getTextures(profile)
       const skin = textures?.textures.SKIN
+      const uploadable = profile.properties.uploadableTextures
 
       // mark skin already refreshed
       if (skin) {
-        this.log(`Update the skin for user ${gameProfile.name} in ${user.profileService} service`)
+        this.log(`Update the skin for user ${gameProfile.name} in ${api.profile} service`)
 
         user.profiles[id] = {
           ...profile,
@@ -156,22 +122,23 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
             SKIN: skin,
           },
         }
-        return user
+
+        if (uploadable) {
+          user.profiles[id].uploadable = uploadable.split(',') as any
+        }
       } else {
-        this.log(`The user ${gameProfile.name} in ${user.profileService} does not have skin!`)
+        this.log(`The user ${gameProfile.name} in ${api.profile} does not have skin!`)
       }
     } catch (e) {
-      this.warn(`Cannot refresh the skin data for user ${name}(${id}) in ${user.profileService}`)
+      this.warn(`Cannot refresh the skin data for user ${name}(${id}) in ${api.profile}`)
       this.warn(JSON.stringify(e))
     }
 
     return user
   }
 
-  async setSkin(user: UserProfile, gameProfile: GameProfileAndTexture, skin: string | Buffer, slim: boolean): Promise<UserProfile> {
+  async setSkin(user: UserProfile, gameProfile: GameProfileAndTexture, skin: string | Buffer, slim: boolean, profileService: ProfileServiceAPI): Promise<UserProfile> {
     this.log(`Upload texture ${gameProfile.name}(${gameProfile.id})`)
-
-    const profileService = this.profileServices[user.profileService]
 
     await setTexture({
       uuid: gameProfile.id,
@@ -216,7 +183,6 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
 
   async getChallenges(user: UserProfile) {
     if (!user) { return [] }
-    if (user.profileService !== 'mojang') return []
     return getChallenges(user.accessToken)
   }
 
@@ -228,58 +194,16 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
     // const result = await responseChallenges(user.accessToken, responses)
     // this.state.userSecurity(true)
     // return result
+    return true
   }
 
-  registerThirdPartyApi(name: string, authApi: YggdrasilAuthAPI, profileApi: ProfileServiceAPI) {
-    this.profileServices[name] = profileApi
-    this.authServices[name] = authApi
-    this.userService.registerAccountSystem({
-      name,
-      refresh: this.refresh.bind(this),
-      getSkin: this.getSkin.bind(this),
-      setSkin: this.setSkin.bind(this),
-    })
-  }
-
-  /**
-   * Login the user by current login mode. Refresh the skin and account information.
-   */
-  @Singleton()
-  async login(options: LoginYggdrasilOptions) {
-    requireObject(options)
-    requireString(options.username)
-
-    let {
-      username,
-      password,
-      authService = password ? 'mojang' : 'offline',
-      profileService = 'mojang',
-    } = options
-
-    // enforce same service
-    profileService = authService === 'offline' ? 'mojang' : authService
-
-    const usingAuthService = this.authServices[authService]
-    password = password ?? ''
-
-    if (authService !== 'offline' && authService !== 'microsoft' && !usingAuthService) {
-      throw new Error(`Cannot find auth service named ${authService}`)
-    }
-
-    this.log(`Try login username: ${username} ${password ? 'with password' : 'without password'} to auth ${authService} and profile ${profileService}`)
-
-    if (authService !== 'offline' && authService !== 'microsoft') {
-      this.emit('user-login', usingAuthService.hostName)
-    } else {
-      this.emit('user-login', authService)
-    }
-
+  async login_({ username, password }: { username: string; password: string }, authService: string, api: YggdrasilAuthAPI) {
     const result = await login({
       username,
       password,
       requestUser: true,
       clientToken: this.userService.state.clientToken,
-    }, usingAuthService).catch((e) => {
+    }, api).catch((e) => {
       if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {
         throw new UserException({ type: 'loginInternetNotConnected' }, e.message)
       } else if (e.error === 'ForbiddenOperationException' &&
@@ -305,51 +229,41 @@ FbN2oDHyPaO5j1tTaBNyVt8CAwEAAQ==
       profiles: toRecord(result.availableProfiles.map(normalizeGameProfile), (v) => v.id),
       selectedProfile: result.selectedProfile?.id ?? '',
       expiredAt: Date.now() + 86400_000,
-      profileService,
       authService,
     }
 
     return userProfile
+  }
 
-    // this.refreshedSkin = false;
+  /**
+   * Login the user by current login mode. Refresh the skin and account information.
+   */
+  @Singleton()
+  async login(options: LoginYggdrasilOptions) {
+    requireObject(options)
+    requireString(options.username)
 
-    // if (!this.state.users[userId]) {
-    //   this.log(`New user added ${userId}`)
+    let {
+      username,
+      password,
+      authService = password ? 'mojang' : 'offline',
+    } = options
 
-    //   this.state.userProfileAdd({
-    //     id: userId,
-    //     accessToken,
-    //     profiles: availableProfiles,
+    const usingAuthService = this.authServices[authService]
+    password = password ?? ''
 
-    //     username,
-    //     profileService,
-    //     authService,
+    if (authService !== 'offline' && authService !== 'microsoft' && !usingAuthService) {
+      throw new Error(`Cannot find auth service named ${authService}`)
+    }
 
-    //     msAccessToken,
+    this.log(`Try login username: ${username} ${password ? 'with password' : 'without password'} to auth ${authService} and profile ${profileService}`)
 
-    //     selectedProfile: selectedProfile ? selectedProfile.id : '',
-    //     avatar,
-    //     expiredAt,
-    //   })
-    // } else {
-    //   this.log(`Found existed user ${userId}. Update the profiles of it`)
-    //   this.state.userProfileUpdate({
-    //     id: userId,
-    //     accessToken,
-    //     profiles: availableProfiles,
-    //     msAccessToken,
-    //     selectedProfile: selectedProfile ? selectedProfile.id : '',
-    //     expiredAt,
-    //   })
-    // }
-    // if ((!this.state.selectedUser.id || options.selectProfile) && selectedProfile) {
-    //   this.log(`Select the game profile ${selectedProfile.id} in user ${userId}`)
-    //   this.state.userGameProfileSelect({
-    //     profileId: selectedProfile.id,
-    //     userId,
-    //   })
-    // } else {
-    //   this.log(`No game profiles found for user ${username} in ${authService}, ${profileService} services.`)
-    // }
+    if (authService !== 'offline' && authService !== 'microsoft') {
+      this.emit('user-login', usingAuthService.hostName)
+    } else {
+      this.emit('user-login', authService)
+    }
+
+    await this.login_({ username, password }, authService, usingAuthService)
   }
 }

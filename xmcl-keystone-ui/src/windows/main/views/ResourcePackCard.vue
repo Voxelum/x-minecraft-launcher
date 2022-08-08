@@ -170,12 +170,12 @@ const contextMenuItems = computed(() => {
       color: 'error',
     })
   }
-  if (props.pack.resource && props.pack.resource.curseforge) {
+  if (props.pack.resource && props.pack.resource.metadata.curseforge) {
     menuItems.push({
       text: t('resourcepack.showInCurseforge', { name: props.pack.name }),
       children: [],
       onClick: () => {
-        goProjectAndRoute(props.pack.resource!.curseforge!.projectId, 'texture-packs')
+        goProjectAndRoute(props.pack.resource!.metadata.curseforge!.projectId, 'texture-packs')
       },
       icon: '$vuetify.icons.curseforge',
     })
