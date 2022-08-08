@@ -12,11 +12,12 @@ import { requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
-import { Singleton, StatefulService } from './Service'
+import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
 /**
  * The service to watch game setting (options.txt) and shader options (optionsshader.txt)
  */
+@ExposeServiceKey(InstanceOptionsServiceKey)
 export class InstanceOptionsService extends StatefulService<InstanceOptionsState> implements IInstanceOptionsService {
   private watcher: FSWatcher | undefined
 

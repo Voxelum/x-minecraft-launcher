@@ -20,145 +20,176 @@
           small
           hide-details
           solo
-          :placeholder="`Minecraft ${version.minecraft}`"
+          :placeholder="`Minecraft ${data.runtime.minecraft}`"
         />
       </v-list-item-action>
     </v-list-item>
-    <v-list-item
-      push
-      to="/version-setting"
-    >
-      <v-list-item-content>
-        <v-list-item-title>{{ t("instance.version") }}</v-list-item-title>
-        <v-list-item-subtitle>
-          {{ t("instance.versionHint") }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <!-- <v-layout > -->
-      <v-list-item-action
-        class="gap-3 justify-end items-baseline"
-        style="display: flex; flex-grow: 1; flex-direction: row;"
-      >
-        <v-chip
-          color="green"
-          large
-          outlined
-          label
+
+    <v-list-item>
+      <v-list-item-action class="self-center">
+        <img
+          :src="minecraftPng"
+          width="40"
         >
-          {{ version.minecraft }}
-        </v-chip>
-        <v-chip
-          v-if="version.forge"
-          color="orange"
-          large
-          outlined
-          label
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{
+            t('minecraftVersion.name')
+          }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          {{
+            t('instance.versionHint')
+          }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-action>
+        <version-menu
+          :is-clearable="false"
+          :items="minecraftItems"
+          :has-snapshot="true"
+          :snapshot.sync="showAlpha"
+          :snapshot-tooltip="t('fabricVersion.showSnapshot')"
+          :refreshing="refreshingMinecraft"
+          @select="onSelectMinecraft"
         >
-          Forge {{ version.forge }}
-        </v-chip>
-        <v-chip
-          v-if="version.fabricLoader"
-          large
-          outlined
-          label
-          color="yellow"
+          <template #default="{ on }">
+            <v-text-field
+              v-model="data.runtime.minecraft"
+              solo
+              append-icon="arrow_drop_down"
+              persistent-hint
+              hide-details
+              :readonly="true"
+              @click:append="on.click($event);"
+              @click="refreshMinecraft()"
+              v-on="on"
+            />
+          </template>
+        </version-menu>
+      </v-list-item-action>
+    </v-list-item>
+
+    <v-list-item>
+      <v-list-item-action class="self-center">
+        <img
+          :src="forgePng"
+          width="40"
         >
-          Fabric {{ version.fabricLoader }}
-        </v-chip>
-      </v-list-item-action>
-      <v-list-item-action>
-        <v-btn icon>
-          <v-icon>arrow_right</v-icon>
-        </v-btn>
-      </v-list-item-action>
-      <!-- </v-layout> -->
-    </v-list-item>
-
-    <v-list-item
-      push
-      to="/resource-pack-setting"
-    >
-      <v-list-item-action>
-        <v-icon>palette</v-icon>
       </v-list-item-action>
       <v-list-item-content>
         <v-list-item-title>
-          {{ tc("resourcepack.name", 2) }}
+          {{
+            t('forgeVersion.name')
+          }}
         </v-list-item-title>
         <v-list-item-subtitle>
-          {{ t("resourcepackHint") }}
+          <a href="https://github.com/MinecraftForge/MinecraftForge">https://github.com/MinecraftForge/MinecraftForge</a>
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
-        <v-btn icon>
-          <v-icon>arrow_right</v-icon>
-        </v-btn>
+        <version-menu
+          :is-clearable="true"
+          :items="forgeItems"
+          :clear-text="t('forgeVersion.disable')"
+          :has-snapshot="true"
+          :snapshot.sync="canShowBuggy"
+          :snapshot-tooltip="t('fabricVersion.showSnapshot')"
+          :refreshing="refreshingForge"
+          @select="onSelectForge"
+        >
+          <template #default="{ on }">
+            <v-text-field
+              :value="data.runtime.forge"
+              solo
+              append-icon="arrow_drop_down"
+              :placeholder="t('forgeVersion.disable')"
+              hide-details
+              persistent-hint
+              :readonly="true"
+              @click:append="on.click($event);"
+              @click="refreshForge()"
+              v-on="on"
+            />
+          </template>
+        </version-menu>
       </v-list-item-action>
     </v-list-item>
-
-    <v-list-item
-      push
-      to="/shader-pack-setting"
-    >
-      <v-list-item-action>
-        <v-icon>gradient</v-icon>
+    <v-list-item>
+      <v-list-item-action class="self-center">
+        <img
+          :src="fabricPng"
+          width="40"
+        >
       </v-list-item-action>
       <v-list-item-content>
-        <v-list-item-title>
-          {{ tc("shaderPack.name", 2) }}
-        </v-list-item-title>
+        <v-list-item-title>Fabric</v-list-item-title>
         <v-list-item-subtitle>
-          {{ t("shaderPackHint") }}
+          <a href="https://fabricmc.net/">https://fabricmc.net/</a>
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
-        <v-btn icon>
-          <v-icon>arrow_right</v-icon>
-        </v-btn>
+        <version-menu
+          :is-clearable="true"
+          :items="fabricItems"
+          :clear-text="t('fabricVersion.disable')"
+          :has-snapshot="true"
+          :snapshot.sync="showStableOnly"
+          :snapshot-tooltip="t('fabricVersion.showSnapshot')"
+          :refreshing="refreshingFabric"
+          @select="onSelectFabric"
+        >
+          <template #default="{ on }">
+            <v-text-field
+              :value="data.runtime.fabricLoader"
+              solo
+              :placeholder="t('fabricVersion.disable')"
+              hide-details
+              append-icon="arrow_drop_down"
+              persistent-hint
+              :readonly="true"
+              @click:append="on.click($event);"
+              @click="refreshFabric()"
+              v-on="on"
+            />
+          </template>
+        </version-menu>
       </v-list-item-action>
     </v-list-item>
-
-    <v-list-item
-      push
-      to="/mod-setting"
-    >
-      <v-list-item-action>
-        <v-icon>extension</v-icon>
+    <v-list-item>
+      <v-list-item-action class="self-center">
+        <quilt-icon style="width: 40px" />
       </v-list-item-action>
       <v-list-item-content>
-        <v-list-item-title>
-          {{ tc("mod.name", 2) }}
-        </v-list-item-title>
+        <v-list-item-title>Quilt</v-list-item-title>
         <v-list-item-subtitle>
-          {{ t("modHint") }}
+          <a href="https://quiltmc.org/">https://quiltmc.org/</a>
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
-        <v-btn icon>
-          <v-icon>arrow_right</v-icon>
-        </v-btn>
-      </v-list-item-action>
-    </v-list-item>
-
-    <v-list-item
-      push
-      to="/save"
-    >
-      <v-list-item-action>
-        <v-icon>map</v-icon>
-      </v-list-item-action>
-      <v-list-item-content>
-        <v-list-item-title>
-          {{ tc("save.name", 2) }}
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{ t("saveHint") }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-      <v-list-item-action>
-        <v-btn icon>
-          <v-icon>arrow_right</v-icon>
-        </v-btn>
+        <version-menu
+          :is-clearable="true"
+          :items="quiltItems"
+          :clear-text="t('quiltVersion.disable')"
+          :refreshing="refreshingQuilt"
+          @select="onSelectQuilt"
+        >
+          <template #default="{ on }">
+            <v-text-field
+              :value="data.runtime.quiltLoader"
+              solo
+              hide-details
+              :placeholder="t('quiltVersion.disable')"
+              append-icon="arrow_drop_down"
+              persistent-hint
+              :readonly="true"
+              @click:append="on.click($event);"
+              @click="refreshQuilt()"
+              v-on="on"
+            />
+          </template>
+        </version-menu>
       </v-list-item-action>
     </v-list-item>
 
@@ -226,11 +257,58 @@
 <script lang=ts setup>
 import { injection } from '/@/util/inject'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
-import { RuntimeVersions } from '@xmcl/runtime-api'
 import { useI18n } from '/@/composables'
+import { useMinecraftVersionList, useForgeVersionList, useFabricVersionList, useQuiltVersionList } from '../composables/versionList'
+import minecraftPng from '/@/assets/minecraft.png'
+import VersionMenu from '../components/VersionMenu.vue'
+import fabricPng from '/@/assets/fabric.png'
+import forgePng from '/@/assets/forge.png'
+import QuiltIcon from '/@/components/QuiltIcon.vue'
 
-defineProps<{ version: RuntimeVersions }>()
 const { data } = injection(InstanceEditInjectionKey)
+const minecraft = computed(() => data.runtime.minecraft)
+const { items: minecraftItems, showAlpha, refresh: refreshMinecraft, refreshing: refreshingMinecraft, release } = useMinecraftVersionList(minecraft)
+const { items: forgeItems, canShowBuggy, recommendedOnly, refresh: refreshForge, refreshing: refreshingForge } = useForgeVersionList(minecraft, computed(() => data.runtime.forge ?? ''))
+const { items: fabricItems, showStableOnly, refresh: refreshFabric, refreshing: refreshingFabric } = useFabricVersionList(minecraft, computed(() => data.runtime.fabricLoader ?? ''))
+const { items: quiltItems, refresh: refreshQuilt, refreshing: refreshingQuilt } = useQuiltVersionList(minecraft, computed(() => data.runtime.quiltLoader ?? ''))
+
+function onSelectMinecraft(version: string) {
+  if (data?.runtime) {
+    const runtime = data.runtime
+    runtime.minecraft = version
+    runtime.forge = ''
+    runtime.fabricLoader = ''
+  }
+}
+function onSelectForge(version: string) {
+  if (data?.runtime) {
+    const runtime = data?.runtime
+    runtime.forge = version
+    if (version) {
+      runtime.fabricLoader = ''
+      runtime.quiltLoader = ''
+    }
+  }
+}
+function onSelectFabric(version: string) {
+  if (data?.runtime) {
+    const runtime = data?.runtime
+    if (version) {
+      runtime.forge = ''
+      runtime.quiltLoader = ''
+    }
+    runtime.fabricLoader = version
+  }
+}
+function onSelectQuilt(version: string) {
+  if (data?.runtime) {
+    const runtime = data?.runtime
+    if (version) {
+      runtime.forge = runtime.fabricLoader = ''
+      runtime.quiltLoader = version
+    }
+  }
+}
 
 const { t, tc } = useI18n()
 

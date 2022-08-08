@@ -1,7 +1,7 @@
 <template>
   <v-list
     v-if="versions.length !== 0"
-    class="local-version-list overflow-auto h-full flex flex-col"
+    class="local-version-list overflow-auto h-full flex flex-col visible-scroll"
     style="background: transparent"
   >
     <v-list-item class="flex justify-end">
@@ -23,15 +23,12 @@
         <v-list-item
           :key="item.id"
           class="flex-grow-0 flex-1"
-          ripple
           :class="{
             selected: isSelected(item),
             'en-1': isSelected(item),
             'elevation-2': isSelected(item),
           }"
           style="margin: 0px 0;"
-          @click="selectVersion(item)"
-          @dblclick.native="selectVersion(item); router.push('/')"
         >
           <v-list-item-avatar>
             <v-btn

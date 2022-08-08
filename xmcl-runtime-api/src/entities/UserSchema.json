@@ -33,22 +33,6 @@
                 "profile"
             ]
         },
-        "authServices": {
-            "description": "All loaded auth services api. Used for yggdrasil auth",
-            "default": {},
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/YggdrasilAuthAPI"
-            }
-        },
-        "profileServices": {
-            "description": "All loaded profile services api. Used for",
-            "default": {},
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/ProfileServiceAPI"
-            }
-        },
         "clientToken": {
             "description": "The client token of current client. The launcher will generate one at first launch.",
             "default": "",
@@ -56,9 +40,7 @@
         }
     },
     "required": [
-        "authServices",
         "clientToken",
-        "profileServices",
         "selectedUser",
         "users"
     ],
@@ -72,10 +54,6 @@
                 },
                 "username": {
                     "description": "The username usually email",
-                    "type": "string"
-                },
-                "profileService": {
-                    "description": "The used profile service name",
                     "type": "string"
                 },
                 "authService": {
@@ -93,6 +71,10 @@
                 "expiredAt": {
                     "description": "The expire time",
                     "type": "number"
+                },
+                "siteToken": {
+                    "description": "Custom site token",
+                    "type": "string"
                 },
                 "profiles": {
                     "description": "All available game profiles",
@@ -115,7 +97,6 @@
                 "authService",
                 "expiredAt",
                 "id",
-                "profileService",
                 "profiles",
                 "selectedProfile",
                 "username"
@@ -142,6 +123,80 @@
                     "required": [
                         "SKIN"
                     ]
+                },
+                "uploadable": {
+                    "type": "array",
+                    "items": {
+                        "enum": [
+                            "cape",
+                            "skin"
+                        ],
+                        "type": "string"
+                    }
+                },
+                "skins": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "state": {
+                                "enum": [
+                                    "ACTIVE",
+                                    "INACTIVE"
+                                ],
+                                "type": "string"
+                            },
+                            "url": {
+                                "type": "string"
+                            },
+                            "variant": {
+                                "enum": [
+                                    "CLASSIC",
+                                    "SLIM"
+                                ],
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "state",
+                            "url",
+                            "variant"
+                        ]
+                    }
+                },
+                "capes": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "state": {
+                                "enum": [
+                                    "ACTIVE",
+                                    "INACTIVE"
+                                ],
+                                "type": "string"
+                            },
+                            "url": {
+                                "type": "string"
+                            },
+                            "alias": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "alias",
+                            "id",
+                            "state",
+                            "url"
+                        ]
+                    }
                 },
                 "id": {
                     "description": "game profile unique id",
@@ -208,69 +263,6 @@
             },
             "required": [
                 "url"
-            ]
-        },
-        "YggdrasilAuthAPI": {
-            "type": "object",
-            "properties": {
-                "hostName": {
-                    "description": "The host url, like https://xxx.xxx.com",
-                    "type": "string"
-                },
-                "authenticate": {
-                    "description": "Authenticate path, in the form of `/your-endpoint`.\nUse to login",
-                    "type": "string"
-                },
-                "refresh": {
-                    "description": "Use to refresh access token",
-                    "type": "string"
-                },
-                "validate": {
-                    "description": "Use to validate the user access token",
-                    "type": "string"
-                },
-                "invalidate": {
-                    "description": "Use to logout user (invalidate user access token)",
-                    "type": "string"
-                },
-                "signout": {
-                    "description": "Use to logout user (by username and password)",
-                    "type": "string"
-                }
-            },
-            "required": [
-                "authenticate",
-                "hostName",
-                "invalidate",
-                "refresh",
-                "signout",
-                "validate"
-            ]
-        },
-        "ProfileServiceAPI": {
-            "type": "object",
-            "properties": {
-                "publicKey": {
-                    "description": "The PEM public key",
-                    "type": "string"
-                },
-                "profile": {
-                    "description": "Full url to query profile by uuid. Place the uuid as `${uuid}` in this url",
-                    "type": "string"
-                },
-                "profileByName": {
-                    "description": "Full url to query profile by name. Place the name as `${name}` in this url",
-                    "type": "string"
-                },
-                "texture": {
-                    "description": "Full url to set texture by profile uuid and texture type. Place uuid as `${uuid}` and type as `${type}`",
-                    "type": "string"
-                }
-            },
-            "required": [
-                "profile",
-                "profileByName",
-                "texture"
             ]
         }
     },

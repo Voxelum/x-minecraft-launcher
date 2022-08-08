@@ -8,8 +8,9 @@ import { createSymbolicLink, ENOENT_ERROR, linkWithTimeoutOrCopy } from '../util
 import { Inject } from '../util/objectRegistry'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
-import { AbstractService, Singleton } from './Service'
+import { AbstractService, ExposeServiceKey, Singleton } from './Service'
 
+@ExposeServiceKey(InstanceShaderPacksServiceKey)
 export class InstanceShaderPacksService extends AbstractService implements IInstanceShaderPacksServic {
   private active: string | undefined
 
@@ -35,7 +36,7 @@ export class InstanceShaderPacksService extends AbstractService implements IInst
     })
   }
 
-  @Singleton()
+  @Singleton(p => p)
   async link(instancePath: string = this.instanceService.state.path) {
     const destPath = join(instancePath, 'shaderpacks')
     const srcPath = this.getPath('shaderpacks')

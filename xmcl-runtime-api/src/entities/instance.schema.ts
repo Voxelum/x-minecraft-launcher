@@ -1,6 +1,9 @@
 /* eslint-disable no-redeclare */
+import { FTBModpackVersionManifest } from './ftb'
+import { InstanceFile } from './instanceManifest.schema'
 import _InstanceSchema from './InstanceSchema.json'
 import _InstancesSchema from './InstancesSchema.json'
+import { CurseforgeModpackManifest, ModrinthModpackManifest } from './modpack'
 import { Schema } from './schema'
 
 export const InstanceSchema: Schema<InstanceSchema> = _InstanceSchema
@@ -146,6 +149,19 @@ export interface InstanceData {
    * @default []
    */
   tags: string[]
+
+  upstream?: {
+    type: 'curseforge-modpack'
+    modId: number
+    fileId: number
+  } | {
+    type: 'modrinth-modpack'
+    projectId: string
+    versionId: string
+  } | {
+    type: 'ftb-modpack'
+    id: number
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare

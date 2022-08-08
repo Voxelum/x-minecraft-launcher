@@ -43,7 +43,7 @@
           <v-list-item-title>{{ p.name }}</v-list-item-title>
           <v-list-item-subtitle class="flex gap-1">
             <v-chip
-              v-if="p.minecraft"
+              v-if="p.runtime.minecraft"
               outlined
               small
               label
@@ -54,10 +54,10 @@
                   alt="minecraft"
                 >
               </v-avatar>
-              {{ p.minecraft }}
+              {{ p.runtime.minecraft }}
             </v-chip>
             <v-chip
-              v-if="p.forge"
+              v-if="p.runtime.forge"
               outlined
               small
               label
@@ -68,10 +68,10 @@
                   alt="forge"
                 >
               </v-avatar>
-              {{ p.forge }}
+              {{ p.runtime.forge }}
             </v-chip>
             <v-chip
-              v-if="p.fabric"
+              v-if="p.runtime.fabricLoader"
               outlined
               small
               label
@@ -82,7 +82,7 @@
                   alt="fabric"
                 >
               </v-avatar>
-              {{ p.fabric }}
+              {{ p.runtime.fabricLoader }}
             </v-chip>
           </v-list-item-subtitle>
         </v-list-item-content>
@@ -111,7 +111,7 @@ const props = defineProps<{
 const emit = defineEmits(['select'])
 
 const filterText = ref('')
-const versionFilterOptions = computed(() => props.templates.map(v => v.minecraft).filter((v): v is string => !!v))
+const versionFilterOptions = computed(() => props.templates.map(v => v.runtime.minecraft).filter((v): v is string => !!v))
 const selectedVersionFilterOption = ref('')
 const searchTextRef: Ref<null | HTMLElement> = ref(null)
 const { t } = useI18n()
@@ -129,7 +129,7 @@ const getActionText = (template: Template) => {
 
 const items = computed(() => props.templates.filter((template) => {
   if (selectedVersionFilterOption.value) {
-    if (template.minecraft !== selectedVersionFilterOption.value) return false
+    if (template.runtime.minecraft !== selectedVersionFilterOption.value) return false
   }
   const searching = (filterText.value ?? '').toLowerCase()
   if (searching.length === 0) {
@@ -138,13 +138,13 @@ const items = computed(() => props.templates.filter((template) => {
   if (template.name.toLowerCase().indexOf(searching) !== -1) {
     return true
   }
-  if (template.minecraft.toLowerCase().indexOf(searching) !== -1) {
+  if (template.runtime.minecraft.toLowerCase().indexOf(searching) !== -1) {
     return true
   }
-  if (template.forge.toLowerCase().indexOf(searching) !== -1) {
+  if (template.runtime.forge.toLowerCase().indexOf(searching) !== -1) {
     return true
   }
-  if (template.fabric.toLowerCase().indexOf(searching) !== -1) {
+  if (template.runtime.fabricLoader.toLowerCase().indexOf(searching) !== -1) {
     return true
   }
   return false

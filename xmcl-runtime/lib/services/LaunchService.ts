@@ -15,10 +15,11 @@ import { InstanceJavaService } from './InstanceJavaService'
 import { InstanceService } from './InstanceService'
 import { InstanceVersionService } from './InstanceVersionService'
 import { JavaService } from './JavaService'
-import { StatefulService } from './Service'
+import { ExposeServiceKey, StatefulService } from './Service'
 import { UserService } from './UserService'
 import { YggdrasilUserService } from './YggdrasilUserService'
 
+@ExposeServiceKey(LaunchServiceKey)
 export class LaunchService extends StatefulService<LaunchState> implements ILaunchService {
   private launchedProcesses: ChildProcess[] = []
 

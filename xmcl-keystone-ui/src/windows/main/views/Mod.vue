@@ -90,6 +90,7 @@ import DeleteDialog from '../components/DeleteDialog.vue'
 import ModHeader from './ModHeader.vue'
 import ModDeleteView from './ModDeleteView.vue'
 import { useDialog } from '../composables/dialog'
+import { ResourceDomain } from '@xmcl/runtime-api'
 
 function setupDragMod(items: Ref<ModItem[]>, selectedMods: Ref<ModItem[]>, isSelectionMode: Ref<boolean>) {
   const isDraggingMod = computed(() => items.value.some(i => i.dragged))
@@ -307,7 +308,7 @@ export default defineComponent({
     const { t } = useI18n()
 
     const { onDrop: onDropToImport } = useDrop((file) => {
-      importResource({ type: 'mods', path: file.path })
+      importResource({ resources: [{ path: file.path, domain: ResourceDomain.Mods }] })
     })
 
     return {

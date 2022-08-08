@@ -43,15 +43,13 @@
 </template>
 
 <script lang="ts" setup>
-import { useGameProfile, useProfileId, useSelectedUser } from '../composables/user'
+import { useCurrentUser } from '../composables/user'
 import { injection } from '/@/util/inject'
 import { useI18n } from '/@/composables'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 
 const { data } = injection(InstanceEditInjectionKey)
-const { userId, profileId } = useSelectedUser()
-const { gameProfile } = useProfileId(userId, profileId)
-const { name: username } = useGameProfile(gameProfile)
+const { gameProfile } = useCurrentUser()
 const { t } = useI18n()
 const gotoHelp = () => {
   window.location = 'https://xmcl.app/faq/' as any

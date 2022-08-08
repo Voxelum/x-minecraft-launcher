@@ -1,48 +1,64 @@
 <template>
-  <div>
+  <div
+    class="flex items-center justify-center flex-col flex-grow h-100vh"
+  >
+    <particles
+      v-if="isShown"
+      class="absolute w-full h-full"
+      :move-direction="direction"
+      :move-enabled="isShown"
+      :line-linked="false"
+      :move-random="true"
+      :particle-size="3"
+      :move-speed="6"
+      :opacity-random="true"
+      :hover-effect="false"
+      :click-effect="false"
+    />
     <hint
       v-if="showDropHint"
       icon="save_alt"
       :text="t('login.dropHint').toString()"
-      style="height: 350px"
     />
-    <v-card-text v-if="!showDropHint">
+    <div
+      v-else
+      class="w-100 text-center"
+    >
       <v-form
         ref="form"
         v-model="data.isFormValid"
+        class="z-10"
       >
-        <v-layout class="pt-6">
-          <v-flex xs12>
-            <v-select
-              v-model="authServiceItem"
-              prepend-icon="vpn_key"
-              :items="authServiceItems"
-              :label="t('user.authMode')"
-              flat
-            >
-              <template #append-outer>
-                <v-tooltip top>
-                  <template #activator="{ on: onTooltip }">
-                    <v-btn
-                      icon
-                      v-on="onTooltip"
-                      @click="emit('route', 'profile')"
-                    >
-                      <v-icon>add</v-icon>
-                    </v-btn>
-                  </template>
-                  {{ t('userService.add') }}
-                </v-tooltip>
+        <v-select
+          v-model="authServiceItem"
+          outlined
+          prepend-inner-icon="vpn_key"
+          :items="accountSystemItems"
+          :label="t('user.authMode')"
+          flat
+        >
+          <!-- <template #append-outer>
+            <v-tooltip top>
+              <template #activator="{ on: onTooltip }">
+                <v-btn
+                  icon
+                  v-on="onTooltip"
+                  @click="emit('route', 'profile')"
+                >
+                  <v-icon>add</v-icon>
+                </v-btn>
               </template>
-            </v-select>
-          </v-flex>
-        </v-layout>
+              {{ t('userService.add') }}
+            </v-tooltip>
+          </template> -->
+        </v-select>
 
         <v-combobox
           ref="accountInput"
           v-model="data.username"
           :items="history"
-          prepend-icon="person"
+          prepend-inner-icon="person"
+          outlined
           required
           :label="
             te(`userServices.${authService}.account`)
@@ -59,7 +75,8 @@
         <v-text-field
           v-if="!isOffline"
           v-model="data.password"
-          prepend-icon="lock"
+          prepend-inner-icon="lock"
+          outlined
           type="password"
           required
           :label="passwordLabel"
@@ -78,63 +95,54 @@
           @keypress.enter="onLogin"
         />
       </v-form>
-    </v-card-text>
-    <v-card-actions
-      v-if="!showDropHint"
-      style="padding-left: 40px; padding-right: 40px"
-    >
-      <div class="w-full text-center">
-        <div
-          @mouseenter="onMouseEnterLogin"
-          @mouseleave="onMouseLeaveLogin"
-        >
-          <v-btn
-            block
-            :loading="isLogining && (!hovered || authService !== 'microsoft')"
-            color="primary"
-            rounded
-            large
-            class="text-white"
-            @click="onLogin"
-          >
-            <span v-if="!isLogining">
-              {{ t("login.login") }}
-            </span>
-            <v-icon v-else>
-              close
-            </v-icon>
-          </v-btn>
-        </div>
 
-        <div
-          v-if="data.microsoftUrl"
-          class="mt-6"
-        >
-          <a
-            :href="data.microsoftUrl"
-            class="border-b border-b-current border-dashed"
-          >
-            {{ t('login.manualLoginUrl') }}
-          </a>
-        </div>
+      <v-btn
+        block
+        :loading="isLogining && (!hovered || authService !== 'microsoft')"
+        color="primary"
+        rounded
+        large
+        class="text-white"
+        @mouseenter="onMouseEnterLogin"
+        @mouseleave="onMouseLeaveLogin"
+        @click="onLogin"
+      >
+        <span v-if="!isLogining">
+          {{ t("login.login") }}
+        </span>
+        <v-icon v-else>
+          close
+        </v-icon>
+      </v-btn>
 
-        <div class="mt-4">
-          <a
-            style="padding-right: 10px; z-index: 20"
-            href="https://my.minecraft.net/en-us/password/forgot/"
-          >{{
-            t("login.forgetPassword")
-          }}</a>
-          <a
-            style="z-index: 20"
-            href="https://my.minecraft.net/en-us/store/minecraft/#register"
-          >
-            {{ t("login.signupDescription") }}
-            {{ t("login.signup") }}
-          </a>
-        </div>
+      <div
+        v-if="data.microsoftUrl"
+        class="mt-6"
+      >
+        <a
+          :href="data.microsoftUrl"
+          class="border-b border-b-current border-dashed"
+        >
+          {{ t('login.manualLoginUrl') }}
+        </a>
       </div>
-    </v-card-actions>
+
+      <div class="mt-4">
+        <a
+          style="padding-right: 10px; z-index: 20"
+          href="https://my.minecraft.net/en-us/password/forgot/"
+        >{{
+          t("login.forgetPassword")
+        }}</a>
+        <a
+          style="z-index: 20"
+          href="https://my.minecraft.net/en-us/store/minecraft/#register"
+        >
+          {{ t("login.signupDescription") }}
+          {{ t("login.signup") }}
+        </a>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -143,19 +151,23 @@ import { Ref } from '@vue/composition-api'
 import { isException, UserException, UserServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { LoginDialog, useSelectedServices } from '../composables/login'
-import { useCurrentUser, useLoginValidation, useUserProfileStatus } from '../composables/user'
+import { useLoginValidation, useUserProfileStatus } from '../composables/user'
 import Hint from '/@/components/Hint.vue'
-import { useI18n, useService, useServiceBusy } from '/@/composables'
+import { useI18n, useRefreshable, useService, useServiceBusy } from '/@/composables'
+import Particles from '/@/components/Particles.vue'
 
 interface ServiceItem {
   text: string
   value: string
 }
 
-const props = defineProps<{ inside: boolean }>()
-const emit = defineEmits(['route'])
+const props = defineProps<{
+  inside: boolean
+}>()
 
 const { hide, isShown, parameter } = useDialog(LoginDialog)
+const { te, t } = useI18n()
+const { login, on, getSupportedAccountSystems } = useService(UserServiceKey)
 
 const data = reactive({
   username: '',
@@ -168,23 +180,23 @@ const data = reactive({
 const accountInput: Ref<any> = ref(null)
 const form: Ref<any> = ref(null)
 const hovered = ref(false)
-
-const { te, t } = useI18n()
-const { state, cancelMicrosoftLogin, login, on } = useService(UserServiceKey)
-const authServiceItems: Ref<ServiceItem[]> = computed(() => ['microsoft', ...Object.keys(state.authServices), 'offline']
+const accountSystems: Ref<string[]> = ref([])
+const accountSystemItems: Ref<ServiceItem[]> = computed(() => accountSystems.value
   .map((a) => ({ value: a, text: te(`userServices.${a}.name`) ? t(`userServices.${a}.name`) : a })))
+const authServiceItem = computed<ServiceItem>({
+  get() { return accountSystemItems.value.find(a => a.value === authService.value)! },
+  set(v) { authService.value = v as any as string },
+})
 
 const { authService, history } = useSelectedServices()
-const isLogining = useServiceBusy(UserServiceKey, 'login')
 
+const isLogining = useServiceBusy(UserServiceKey, 'login')
 const isMicrosoft = computed(() => authService.value === 'microsoft')
-const isOffline = computed(() => authServiceItem.value.value === 'offline')
+const isOffline = computed(() => authService.value === 'offline')
 const isThirdParty = computed(() => {
-  const service = authServiceItem.value.value
-  if (service !== 'mojang' && service !== 'microsoft') {
-    return true
-  }
-  return false
+  if (isMicrosoft.value || isOffline.value) return false
+  const service = authService.value
+  return service !== 'mojang'
 })
 
 const passwordLabel = computed(() => (te(`userServices.${authService.value}.password`)
@@ -193,10 +205,13 @@ const passwordLabel = computed(() => (te(`userServices.${authService.value}.pass
 const showDropHint = computed(() => isMicrosoft.value && props.inside && isLogining.value)
 const uuidLabel = computed(() => t('userServices.offline.uuid'))
 
-const authServiceItem = computed<ServiceItem>({
-  get() { return authServiceItems.value.find(a => a.value === authService.value)! },
-  set(v) { authService.value = v as any as string },
+const { refresh: refreshAccountSystem, refreshing: loadingAccountSystem } = useRefreshable(async () => {
+  const systems = await getSupportedAccountSystems()
+  console.log(systems)
+  accountSystems.value = systems
 })
+
+refreshAccountSystem()
 
 const {
   usernameRules,
@@ -271,22 +286,33 @@ async function onLogin() {
   accountInput.value.blur()
   await nextTick() // wait a tick to make sure username updated.
   if (isLogining.value) {
-    await cancelMicrosoftLogin()
+    // await cancelMicrosoftLogin()
     return
   }
   const index = history.value.indexOf(data.username)
   if (index === -1) {
     history.value.unshift(data.username)
   }
-  const selectProfile = !state.user || !!parameter.value
-  const payload = { ...data, authService: authService.value, selectProfile }
   try {
-    await login(payload)
+    await login({
+      username: data.username,
+      password: data.password,
+      service: authService.value,
+    })
     hide()
   } catch (e) {
     handleError(e)
   }
 }
+
+const direction = ref('top')
+function nextDirection() {
+  const dirs = ['top', 'right', 'left', 'bottom', 'top-right', 'top-left', 'bottom-left', 'bottom-right']
+  const i = Math.round(Math.random() * dirs.length)
+  direction.value = dirs[i]
+}
+
+watch(authService, () => { nextDirection() })
 
 onMounted(() => {
   reset()

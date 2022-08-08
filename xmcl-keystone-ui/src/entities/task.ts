@@ -18,6 +18,8 @@ export interface TaskItem {
 
   time: Date
 
+  path: string
+  param: object
   title: string
   from: string
   to: string

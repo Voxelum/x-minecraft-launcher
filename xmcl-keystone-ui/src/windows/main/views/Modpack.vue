@@ -92,6 +92,7 @@
       :title="t('modpack.delete.title')"
       :width="450"
       persistent
+      dialog="delete-modpack"
       @confirm="confirmDelete"
     >
       {{ t('modpack.delete.hint', { name: deleting ? deleting.name : '' }) }}
@@ -112,13 +113,13 @@
 import { Ref } from '@vue/composition-api'
 import FilterCombobox from '/@/components/FilterCombobox.vue'
 import { useService, useRouter, useServiceBusy, useFilterCombobox, useI18n } from '/@/composables'
-import { ResourceServiceKey, ResourceType, ResourceDomain, CachedFTBModpackVersionManifest, ModpackServiceKey } from '@xmcl/runtime-api'
+import { ResourceServiceKey, ResourceType, ResourceDomain, CachedFTBModpackVersionManifest, ModpackServiceKey, ModpackResource } from '@xmcl/runtime-api'
 import { isStringArrayEquals } from '/@/util/equal'
 import ModpackCard from './ModpackCard.vue'
 import DeleteButton from './ModpackDeleteButton.vue'
 import { useDialog } from '../composables/dialog'
 import DeleteDialog from '../components/DeleteDialog.vue'
-import { ModpackItem, ModpackResources } from '../composables/modpack'
+import { ModpackItem } from '../composables/modpack'
 import { AddInstanceDialogKey } from '../composables/instanceAdd'
 import { useFeedTheBeastVersionsCache } from '../composables/ftb'
 
@@ -135,7 +136,7 @@ function getFilterOptions(item: ModpackItem) {
     ...item.tags.map(t => ({ type: 'tag', value: t, label: 'label' })),
   ]
 }
-const deleting = ref(undefined as undefined | ModpackResources)
+const deleting = ref(undefined as undefined | ModpackResource)
 const refreshing = useServiceBusy(ResourceServiceKey, 'load', ResourceDomain.Modpacks)
 const filterOptions = computed(() => items.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
 const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (v) => `${v.name} ${v.author} ${v.version}`)
@@ -145,7 +146,7 @@ const modpacks = computed(() => filter(items.value))
 function showFolder() {
   showModpacksFolder()
 }
-const { show: showDelete } = useDialog('deletion')
+const { show: showDelete } = useDialog('delete-modpack')
 function startDelete(item: ModpackItem) {
   if (item.resource) {
     deleting.value = item.resource
@@ -164,17 +165,18 @@ function onDrop() {
 const goToCurseforge = () => { push('/curseforge/modpacks') }
 const goToModrinth = () => { push('/modrinth?projectType=modpack') }
 
-function getModpackItem (resource: ModpackResources): ModpackItem {
+function getModpackItem (resource: ModpackResource): ModpackItem {
+  const metadata = resource.metadata
   return reactive({
     resource,
     id: resource.path,
     size: resource.size,
-    icon: resource.iconUrl,
-    name: resource.type === ResourceType.CurseforgeModpack || resource.type === ResourceType.McbbsModpack || resource.type === ResourceType.ModrinthModpack ? resource.metadata.name : '',
-    version: resource.type === ResourceType.CurseforgeModpack || resource.type === ResourceType.McbbsModpack ? resource.metadata.version : resource.type === ResourceType.ModrinthModpack ? resource.metadata.versionId : '',
-    author: resource.type === ResourceType.CurseforgeModpack || resource.type === ResourceType.McbbsModpack ? resource.metadata.author : '',
+    icon: resource.icons ? resource.icons[0] : '',
+    name: metadata['curseforge-modpack']?.name ?? metadata['mcbbs-modpack']?.name ?? metadata['modrinth-modpack']?.name ?? '',
+    version: '', // metadata['curseforge-modpack']?.ver || resource.type === ResourceType.McbbsModpack ? resource.metadata.version : resource.type === ResourceType.ModrinthModpack ? resource.metadata.versionId : '',
+    author: metadata['curseforge-modpack']?.author ?? metadata['mcbbs-modpack']?.author ?? '',
     tags: [...resource.tags],
-    type: resource.type === ResourceType.Modpack ? 'raw' : resource.type === ResourceType.CurseforgeModpack ? 'curseforge' : 'modrinth',
+    type: metadata.modpack ? 'raw' : (metadata['curseforge-modpack'] ? 'curseforge' : 'modrinth'),
   })
 }
 function getModpackItemByFtb(resource: CachedFTBModpackVersionManifest): ModpackItem {
@@ -201,7 +203,7 @@ onUnmounted(() => {
   const promises: Promise<any>[] = []
   for (const i of editedResources) {
     promises.push(updateResource({
-      resource: i.resource!.hash,
+      hash: i.resource!.hash,
       name: i.name,
       tags: i.tags,
     }))

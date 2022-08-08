@@ -96,7 +96,7 @@
 
 <script lang=ts setup>
 import { Ref } from '@vue/composition-api'
-import { InstanceFile, InstanceIOServiceKey, ModpackServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceIOServiceKey, ModpackServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
 import AdvanceContent from '../components/StepperAdvanceContent.vue'
 import BaseContent from '../components/StepperBaseContent.vue'
 import StepperFooter from '../components/StepperFooter.vue'
@@ -114,7 +114,7 @@ const { create, reset, data: creationData } = useInstanceCreation()
 const router = useRouter()
 const { on } = useService(ResourceServiceKey)
 const { importModpack } = useService(ModpackServiceKey)
-const { applyInstanceFilesUpdate } = useService(InstanceIOServiceKey)
+const { installInstanceFiles } = useService(InstanceIOServiceKey)
 const { t } = useI18n()
 const { notify } = useNotifier()
 const { templates, apply, refresh, dispose } = useAllTemplate(creationData)
@@ -153,17 +153,15 @@ const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
     } else if (selectedTemplate.value.source.type === 'ftb') {
       try {
         const path = await create()
-        await applyInstanceFilesUpdate({
+        await installInstanceFiles({
           path,
-          updates: selectedTemplate.value.source.manifest.files.map(f => ({
+          files: selectedTemplate.value.source.manifest.files.map(f => ({
             path: f.path + '/' + f.name,
             hashes: {
               sha1: f.sha1,
             },
             downloads: [f.url],
             size: f.size,
-            createAt: f.updated,
-            updateAt: f.updated,
           })),
         })
         notify({

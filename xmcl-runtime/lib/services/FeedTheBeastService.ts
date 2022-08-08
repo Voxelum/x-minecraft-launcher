@@ -5,8 +5,9 @@ import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
-import { StatefulService } from './Service'
+import { ExposeServiceKey, StatefulService } from './Service'
 
+@ExposeServiceKey(FeedTheBeastServiceKey)
 export class FeedTheBeastService extends StatefulService<FeedTheBeastState> implements IFeedTheBeastService {
   private api = this.networkManager.request.extend({
     prefixUrl: 'https://api.modpacks.ch/public/',

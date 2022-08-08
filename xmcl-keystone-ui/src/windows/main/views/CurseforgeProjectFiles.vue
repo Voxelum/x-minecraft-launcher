@@ -107,7 +107,7 @@ async function install(file: File) {
     let filePath: string
     if (stat === 'remote') {
       const resource = await installFile(file)
-      filePath = resource.path
+      filePath = resource.resource.path
     } else {
       const res = getFileResource(file)
       if (res) {

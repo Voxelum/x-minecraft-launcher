@@ -226,16 +226,16 @@
 </template>
 
 <script lang=ts setup>
-import forgePng from '/@/assets/forge.png'
-import minecraftPng from '/@/assets/minecraft.png'
-import fabricPng from '/@/assets/fabric.png'
 import { CreateOptionKey } from '../composables/instanceCreation'
 import { useJava } from '../composables/java'
-import { injection } from '/@/util/inject'
-import VersionMenu from './VersionMenu.vue'
 import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useQuiltVersionList } from '../composables/versionList'
-import { useI18n } from '/@/composables'
+import VersionMenu from './VersionMenu.vue'
+import fabricPng from '/@/assets/fabric.png'
+import forgePng from '/@/assets/forge.png'
+import minecraftPng from '/@/assets/minecraft.png'
 import QuiltIcon from '/@/components/QuiltIcon.vue'
+import { useI18n } from '/@/composables'
+import { injection } from '/@/util/inject'
 
 defineProps({
   valid: {

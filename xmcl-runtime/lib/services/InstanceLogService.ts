@@ -3,7 +3,7 @@ import { isAbsolute, join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { InstanceService } from './InstanceService'
-import { AbstractService, Singleton } from './Service'
+import { AbstractService, ExposeServiceKey, Singleton } from './Service'
 import { decode, guessEncodingByBuffer, UTF8 } from '../util/encoding'
 import { readdirIfPresent } from '../util/fs'
 import { gunzip } from '../util/zip'
@@ -13,6 +13,7 @@ import { Inject } from '../util/objectRegistry'
 /**
  * Provide the ability to list/read/remove log and crash reports of a instance.
  */
+@ExposeServiceKey(InstanceLogServiceKey)
 export class InstanceLogService extends AbstractService implements IInstanceLogService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,

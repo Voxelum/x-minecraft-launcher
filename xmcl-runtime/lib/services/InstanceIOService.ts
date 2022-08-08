@@ -1,11 +1,11 @@
 import { checksum, MinecraftFolder } from '@xmcl/core'
 import { DownloadTask, UnzipTask } from '@xmcl/installer'
-import { ApplyInstanceUpdateOptions, createTemplate, ExportInstanceOptions, GetManifestOptions, InstanceFile, InstanceIOException, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceManifest, InstanceManifestSchema, InstanceSchema, InstanceUpdate, LockKey, Persisted, Resource, ResourceDomain, ResourceMetadata, RuntimeVersions, SetInstanceManifestOptions } from '@xmcl/runtime-api'
+import { InstallInstanceOptions, createTemplate, ExportInstanceOptions, GetManifestOptions, InstanceFile, InstanceIOException, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceManifest, InstanceManifestSchema, InstanceSchema, InstanceUpdate, LockKey, Persisted, Resource, ResourceDomain, ResourceMetadata, RuntimeVersions, SetInstanceManifestOptions } from '@xmcl/runtime-api'
 import { Task, task } from '@xmcl/task'
 import { open, readAllEntries } from '@xmcl/unzip'
 import { randomUUID } from 'crypto'
-import { createReadStream } from 'fs'
-import { mkdtemp, readdir, readJson, remove, rename, stat, unlink } from 'fs-extra'
+import { createReadStream, existsSync } from 'fs'
+import { mkdtemp, readdir, readFile, readJson, remove, rename, stat, unlink, writeFile } from 'fs-extra'
 import { tmpdir } from 'os'
 import { basename, join, relative, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
@@ -22,13 +22,14 @@ import { InstanceVersionService } from './InstanceVersionService'
 import { ModrinthService } from './ModrinthService'
 import { PeerService } from './PeerService'
 import { ResourceService } from './ResourceService'
-import { AbstractService, Singleton } from './Service'
+import { AbstractService, ExposeServiceKey, Singleton } from './Service'
 import { UserService } from './UserService'
 import { VersionService } from './VersionService'
 
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
+@ExposeServiceKey(InstanceIOServiceKey)
 export class InstanceIOService extends AbstractService implements IInstanceIOService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
@@ -182,7 +183,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
   }
 
   @Singleton(p => p)
-  async getInstanceManifest<T extends 'sha1' | 'sha256' | 'md5'>(options?: GetManifestOptions<T>): Promise<InstanceManifest<T>> {
+  async getInstanceManifest<T extends 'sha1' | 'sha256' | 'md5'>(options?: GetManifestOptions<T>): Promise<InstanceManifest> {
     const instancePath = options?.path || this.instanceService.state.path
 
     const instance = this.instanceService.state.all[instancePath]
@@ -205,7 +206,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
       throw new InstanceIOException({ instancePath, type: 'instanceNotFound' })
     }
 
-    const files = [] as Array<InstanceFile<T>>
+    const files = [] as Array<InstanceFile>
 
     const scan = async (p: string) => {
       const status = await stat(p)
@@ -233,12 +234,10 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
         const children = await readdirIfPresent(p)
         await Promise.all(children.map(child => scan(join(p, child))))
       } else {
-        const localFile: InstanceFile<T> = {
+        const localFile: InstanceFile = {
           path: relativePath,
           size: status.size,
-          updateAt: status.mtimeMs,
-          createAt: status.ctimeMs,
-          hashes: {} as any,
+          hashes: {},
         }
         if (relativePath.startsWith('resourcepacks') || relativePath.startsWith('shaderpacks') || relativePath.startsWith('mods')) {
           let resource = this.resourceService.getResourceByKey(ino)
@@ -406,10 +405,10 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
   }
 
   @Singleton((o) => o.path)
-  async applyInstanceFilesUpdate(options: ApplyInstanceUpdateOptions): Promise<void> {
+  async installInstanceFiles(options: InstallInstanceOptions): Promise<void> {
     const {
       path,
-      updates,
+      files,
     } = options
 
     const instancePath = path || this.instanceService.state.path
@@ -419,6 +418,8 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     if (!instance) {
       throw new InstanceIOException({ instancePath, type: 'instanceNotFound' })
     }
+
+    await this.writeInstallProfile(instancePath, files)
 
     const { log, warn, error, peerService, resourceService, networkManager, curseForgeService, modrinthService } = this
 
@@ -453,7 +454,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     const updateInstanceTask = task('updateInstance', async function () {
       await lock.write(async () => {
         const tasks: Task<any>[] = []
-        for (const file of updates) {
+        for (const file of files) {
           const sha1 = file.hashes.sha1
           const filePath = join(instancePath, file.path)
           const actualSha1 = await checksum(filePath, 'sha1').catch(() => undefined)
@@ -532,8 +533,37 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
         }
         await this.all(tasks)
       })
-    })
+    }, { instance: instancePath })
 
     await this.submit(updateInstanceTask)
+    await this.removeInstallProfile(instancePath)
+  }
+
+  async checkInstanceInstall() {
+    const current = this.instanceService.state.path
+    const profile = join(current, '.install-profile')
+    if (existsSync(profile)) {
+      const fileContent = JSON.parse(await readFile(profile, 'utf-8'))
+      if (fileContent.version !== 0) {
+        throw new Error(`Cannot identify lockfile version ${fileContent.version}`)
+      }
+      const files = fileContent.files as InstanceFile[]
+      return files
+    }
+    return []
+  }
+
+  private async writeInstallProfile(path: string, files: InstanceFile[]) {
+    const filePath = join(path, '.install-profile')
+    const content = {
+      lockVersion: 0,
+      files,
+    }
+    await writeFile(filePath, JSON.stringify(content, null, 4))
+  }
+
+  private async removeInstallProfile(path: string) {
+    const filePath = join(path, '.install-profile')
+    await unlink(filePath)
   }
 }

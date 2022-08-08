@@ -206,15 +206,16 @@ importModpack:
   success: Import {modpack} succeed
 importResource: Import Resource
 importSave: Import Save
+install: Install
 installAssets:
   asset: Install Asset {hash}
   assetsJson: Check Assets Index File
   name: Install Asset Files
 installAuthlibInjector: Install authlib-injector
 installByProfile:
+  library: Install Library
   name: Install by Install Profile
   postProcessing: Post Processing
-  library: Install Library
 installCurseforgeFile: Install Curseforge File
 installDependencies:
   installAssets:
@@ -452,11 +453,13 @@ mod:
     you want to do that?
   deletionRestHint: And {rest} more Mods...
   dropHint: Drop mod's .jar/.litemod here to import.
+  enabled: '{count} Mods enabled'
   export: Export Mod
   filter: Filter Mods
   hideIncompatible: Hide Incompatible Mods
   import: Import Mod
   incompatible: Incompatible Mod.
+  manage: Manage Mods
   maybeCompatible: Maybe Compatible.
   name: Mod | Mods
   nocompatible: Unknown Compatibility
@@ -630,8 +633,7 @@ previous: Previous
 quiltVersion:
   disable: Disable Quilt
   empty: Quilt does not support Minecraft {version}
-refresh:
-  hint: Refresh user data, and server status.
+refresh: Refresh
 refreshResource: Refresh Resources
 remove: Remove
 resolution:
@@ -653,12 +655,14 @@ resourcepack:
     You will lose the data and metadata of this resource pack. You are sure to
     do this?
   dropHint: Drop Resource Pack's folder/zip here to import.
+  enable: '{count} Resource Pack is enabled'
   export: Export Resource Pack
   filter: Filter Resource Packs
   import: Import Resource Pack
   incompatible: >-
     Incompatible Resource Pack format({format}). Fitin {accept}. Current
     {actual}.
+  manage: Manage Resource Packs
   name: Resource Pack | Resource Packs
   searchOnCurseforge: Search {name} in curseforge
   selected: Selected Resource Packs
@@ -676,6 +680,7 @@ save:
     fromProfile: From Other Instances
     fromResource: From Managed Resources
     title: Import Save from Managed Source
+  createdWorlds: You have {count} worlds
   deleteCancel: Cancel
   deleteConfirm: Comfirm to delete
   deleteHint: >-
@@ -690,6 +695,7 @@ save:
   import: Import Save
   importMessage: Import a Save from zip
   importTitle: Import a Save
+  manage: Manage Saves
   name: Save | Saves
 server:
   acceptingMinecraftVersion: Accepting Minecraft Version
@@ -718,6 +724,7 @@ server:
   players: Players
   port: Port
   recommendedMinecraftVersion: Minecraft Version
+  status: Server Status
   unknown: Unknown Server
   unknownDescription: Unknown Server. Please Refresh
   version: Server Requires Version
@@ -763,11 +770,13 @@ setup:
 shaderPack:
   deletion: Delete Shader Pack
   deletionHint: This will delete the shader pack file {path} and cannot reverted.
+  enable: Using {name} shader pack
   filter: Filter Shader Packs
   internal: Internal Shader
   internalDescription: >-
     Enable internal default shader pipeline (You can config shader options in
     this case)
+  manage: Manage Shader Packs
   name: Shader Pack
   'off': 'Off'
   offDescription: Turn off the shader
@@ -788,6 +797,7 @@ task:
   history: Task History
   manager: Task Manager
   name: Task | Tasks
+  pause: Pause
   running: Running Tasks
   start: Task {name} Started
   successed: Successed
@@ -840,6 +850,7 @@ user:
   info: User Information
   insecureClient: The Client is insecure! Please validate your identity to upload skin!
   name: Username
+  nameHint: The name display in game
   noNetwork: Invalid credentials. Invalid username or password.
   profile: Profile
   profileMode: Profile Service
@@ -851,6 +862,13 @@ userAccount:
   removeDescription: This will wipe out all the info of this account. Are you sure?
   removeTitle: Remove Account
   switch: Switch Account
+userCape:
+  changeTitle: Change your cape
+  description: >-
+    Capes are special rewards players can unlock through different events,
+    campaigns, and other happy happenings. Here you can choose between the capes
+    you currently own:
+  noCape: No Cape
 userService:
   add: Add More Service
   authLibInjector: Follow the auth-lib injector suggestion
@@ -908,6 +926,7 @@ userSkin:
   urlHint: Place your skin url here
   urlNotEmpty: Skin URL cannot be empty
   urlNotValid: Skin URL is Invalid
+  useSlim: Use Slim Model
 version:
   name: Version | Versions
   notInstalled: Version is not installed

@@ -10,6 +10,19 @@ export interface RefreshSkinOptions {
   force?: boolean
 }
 
+export interface LoginOptions {
+  username: string
+  password?: string
+  /**
+   * The account services
+   */
+  service: string
+  /**
+   * Custom property for special login service
+   */
+  properties?: object
+}
+
 export interface UploadSkinOptions {
   /**
    * The game profile id of this skin
@@ -96,12 +109,6 @@ export class UserState implements UserSchema {
     if (typeof snapshot.users === 'object') {
       this.users = snapshot.users
     }
-    // if (snapshot.authServices) {
-    //   this.authServices = { ...this.authServices, ...snapshot.authServices }
-    // }
-    // if (snapshot.profileServices) {
-    //   this.profileServices = { ...this.profileServices, ...snapshot.profileServices }
-    // }
   }
 
   gameProfileUpdate({ profile, userId }: { userId: string; profile: (GameProfileAndTexture | GameProfile) }) {
@@ -132,37 +139,8 @@ export class UserState implements UserSchema {
   }
 
   userProfile(user: UserProfile) {
-    if (this.users[user.id]) {
-      // const existed = this.users[user.id]
-      this.users[user.id] = user
-    } else {
-      this.users[user.id] = user
-    }
-    // this.users[user.id] = value
+    this.users[user.id] = user
   }
-
-  // userProfileUpdate(profile: UserProfile) {
-  //   const user = this.users[profile.id]
-  //   user.accessToken = profile.accessToken
-  //   user.expiredAt = profile.expiredAt
-  //   user.msAccessToken = profile.msAccessToken
-  //   profile.profiles.forEach((p) => {
-  //     if (user.profiles[p.id]) {
-  //       user.profiles[p.id] = {
-  //         ...user.profiles[p.id],
-  //         ...p,
-  //       }
-  //     } else {
-  //       user.profiles[p.id] = {
-  //         textures: { SKIN: { url: '' } },
-  //         ...p,
-  //       }
-  //     }
-  //   })
-  //   if (profile.selectedProfile !== undefined) {
-  //     user.selectedProfile = profile.selectedProfile
-  //   }
-  // }
 
   userGameProfileSelect({ userId, profileId }: { userId: string; profileId: string }) {
     this.selectedUser.id = userId
@@ -195,10 +173,16 @@ export interface UserService extends StatefulService<UserState>, GenericEventEmi
    * Switch user account.
    */
   switchUserProfile(options: SwitchProfileOptions): Promise<void>
-
+  /**
+   * Remove the user profile. This will logout to the user
+   */
   removeUserProfile(userId: string): Promise<void>
 
   setUserProfile(userProfile: UserProfile): Promise<void>
+
+  getSupportedAccountSystems(): Promise<string[]>
+
+  login(options: LoginOptions): Promise<UserProfile>
 }
 
 export const UserServiceKey: ServiceKey<UserService> = 'UserService'

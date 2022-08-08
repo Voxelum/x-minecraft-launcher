@@ -216,8 +216,6 @@ on('share', (event) => {
                 ...f,
                 size: 0,
                 isDirectory: false,
-                createAt: 0,
-                updateAt: 0,
               })),
             })
             isShown.value = true

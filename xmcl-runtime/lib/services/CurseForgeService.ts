@@ -10,8 +10,9 @@ import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { isNonnull, requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { ResourceService } from './ResourceService'
-import { Singleton, StatefulService } from './Service'
+import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
+@ExposeServiceKey(CurseForgeServiceKey)
 export class CurseForgeService extends StatefulService<CurseforgeState> implements ICurseForgeService {
   private client = this.networkManager.request.extend({
     prefixUrl: 'https://api.curseforge.com',

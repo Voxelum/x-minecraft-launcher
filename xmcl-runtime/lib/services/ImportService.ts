@@ -11,8 +11,9 @@ import { parseSourceControlUrl } from '../util/sourceControlUrlParser'
 import { ZipTask } from '../util/zip'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
-import { AbstractService } from './Service'
+import { AbstractService, ExposeServiceKey } from './Service'
 
+@ExposeServiceKey(ImportServiceKey)
 export class ImportService extends AbstractService implements IImportService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,

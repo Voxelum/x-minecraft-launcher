@@ -3,7 +3,7 @@ import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { AggregateExecutor } from '../util/aggregator'
 import { Inject } from '../util/objectRegistry'
-import { StatefulService } from './Service'
+import { ExposeServiceKey, StatefulService } from './Service'
 
 export interface IssueDescriptor<I> {
   id: IssueKey<I>
@@ -18,6 +18,7 @@ export interface IssueDescriptor<I> {
 /**
  * This is the service provides the diagnose service for current launch profile
  */
+@ExposeServiceKey(DiagnoseServiceKey)
 export class DiagnoseService extends StatefulService<DiagnoseState> implements IDiagnoseService {
   private descriptors: Record<string, IssueDescriptor<any>> = {}
 

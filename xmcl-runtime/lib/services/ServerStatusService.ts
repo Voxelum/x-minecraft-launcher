@@ -4,8 +4,9 @@ import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { isSystemError } from '../util/error'
 import { Inject } from '../util/objectRegistry'
-import { AbstractService } from './Service'
+import { AbstractService, ExposeServiceKey } from './Service'
 
+@ExposeServiceKey(ServerStatusServiceKey)
 export class ServerStatusService extends AbstractService implements IServerStatusService {
   private protocolToVersions: Record<number, string[]> = protocolToMinecraft
 

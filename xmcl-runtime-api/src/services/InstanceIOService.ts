@@ -46,7 +46,7 @@ export interface InstanceUpdate {
     /**
      * The file need to apply update
      */
-    file: InstanceFile<'sha1'>
+    file: InstanceFile
   }>
   /**
    * The instance manifest return by the remote api server
@@ -86,7 +86,7 @@ export interface SetInstanceManifestOptions {
   forceJsonFormat?: boolean
 }
 
-export interface ApplyInstanceUpdateOptions {
+export interface InstallInstanceOptions {
   /**
    * The instance path
    */
@@ -94,7 +94,7 @@ export interface ApplyInstanceUpdateOptions {
   /**
    * The files to update
    */
-  updates: Array<InstanceFile<'sha1'>>
+  files: Array<InstanceFile>
 }
 
 export interface GetManifestOptions<T extends 'sha1' | 'sha256' | 'md5'> {
@@ -133,7 +133,7 @@ export interface InstanceIOService {
   /**
    * Compute the instance manifest for current local files.
    */
-  getInstanceManifest<T extends 'sha1' | 'sha256' | 'md5' = never>(options?: GetManifestOptions<T>): Promise<InstanceManifest<T>>
+  getInstanceManifest<T extends 'sha1' | 'sha256' | 'md5' = never>(options?: GetManifestOptions<T>): Promise<InstanceManifest>
   /**
    * Upload the instance manifest via `instance.fileApi`
    *
@@ -156,10 +156,15 @@ export interface InstanceIOService {
    * - resourcepacks
    * - shaderpacks
    * or any other files
-   *
-   * This will only download modified file
    */
-  applyInstanceFilesUpdate(options: ApplyInstanceUpdateOptions): Promise<void>
+  installInstanceFiles(options: InstallInstanceOptions): Promise<void>
+
+  /**
+   * Check if this instance has any pending install
+   *
+   * @return All pending instance installation
+   */
+  checkInstanceInstall(): Promise<InstanceFile[]>
 }
 
 export type InstanceIOExceptions = InstanceNotFoundException | {

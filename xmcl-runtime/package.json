@@ -21,6 +21,8 @@
     "dependencies": {
         "@azure/msal-common": "^6.2.0",
         "@azure/msal-node": "^1.8.0",
+        "undici": "^5.10.0",
+        "@microsoft/signalr": "^6.0.8",
         "@xmcl/client": "workspace:*",
         "@xmcl/core": "workspace:*",
         "@xmcl/curseforge": "workspace:*",

@@ -10,6 +10,7 @@ import { InstalledAppManifest } from '@xmcl/runtime-api'
 import { Logger } from '@xmcl/runtime/lib/util/log'
 import { BrowserWindow, dialog, ipcMain, nativeTheme, session, shell, Tray } from 'electron'
 import { fromFile } from 'file-type'
+import { createReadStream, readFileSync } from 'fs'
 import { readFile } from 'fs/promises'
 import { isAbsolute, join } from 'path'
 import { plugins } from './controllers'
@@ -17,6 +18,7 @@ import ElectronLauncherApp from './ElectronLauncherApp'
 import en from './locales/en.yaml'
 import ru from './locales/ru.yaml'
 import zh from './locales/zh-CN.yaml'
+import { builtinIcons } from './utils/builtinIcons'
 import { createI18n } from './utils/i18n'
 import { darkIcon } from './utils/icons'
 import { trackWindowSize } from './utils/windowSizeTracker'
@@ -171,7 +173,15 @@ export default class Controller implements LauncherAppController {
     restoredSession.protocol.registerFileProtocol('image', (req, callback) => {
       const pathname = decodeURIComponent(req.url.replace('image://', ''))
 
-      if (isAbsolute(pathname)) {
+      if (pathname.startsWith('image:builtin:')) {
+        const name = pathname.substring('image:builtin:'.length)
+        if (builtinIcons[name]) {
+          // const data = createReadStream(builtinIcons[name])
+          callback({ path: builtinIcons[name] })
+        } else {
+          callback({ statusCode: 404 })
+        }
+      } else if (isAbsolute(pathname)) {
         fromFile(pathname).then((type) => {
           if (type && type.mime.startsWith('image/')) {
             callback(pathname)

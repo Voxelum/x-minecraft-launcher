@@ -20,7 +20,7 @@
         <v-text-field
           v-model="data.author"
           hide-details
-          :placeholder="username"
+          :placeholder="gameProfile.name"
           solo
           required
         />
@@ -66,14 +66,12 @@
 </template>
 
 <script lang="ts" setup>
-import { useGameProfile, useProfileId, useSelectedUser } from '../composables/user'
+import { useCurrentUser } from '../composables/user'
 import { injection } from '/@/util/inject'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 
 const { data } = injection(InstanceEditInjectionKey)
-const { userId, profileId } = useSelectedUser()
-const { gameProfile } = useProfileId(userId, profileId)
-const { name: username } = useGameProfile(gameProfile)
+const { gameProfile } = useCurrentUser()
 
 </script>
 

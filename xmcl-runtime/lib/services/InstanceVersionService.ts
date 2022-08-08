@@ -1,19 +1,23 @@
-import { diagnoseAssetIndex, diagnoseAssets, diagnoseJar, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedVersion } from '@xmcl/core'
+import { diagnoseAssetIndex, diagnoseAssets, diagnoseFile, diagnoseJar, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedVersion } from '@xmcl/core'
 import { diagnoseInstall, InstallProfile } from '@xmcl/installer'
 import { Asset, AssetIndexIssueKey, AssetsIssueKey, getExpectVersion, getResolvedVersion, InstallableLibrary, InstallProfileIssueKey, Instance, InstanceVersionException, InstanceVersionService as IInstanceVersionService, InstanceVersionServiceKey, InstanceVersionState, IssueReportBuilder, LibrariesIssueKey, LocalVersionHeader, RuntimeVersions, VersionIssueKey, VersionJarIssueKey } from '@xmcl/runtime-api'
-import { readFile, readJSON } from 'fs-extra'
+import { readFile, readJSON, stat } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { exists } from '../util/fs'
+import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { DiagnoseService } from './DiagnoseService'
 import { InstallService } from './InstallService'
 import { InstanceService } from './InstanceService'
-import { Lock, StatefulService } from './Service'
+import { ExposeServiceKey, Lock, StatefulService } from './Service'
 import { VersionService } from './VersionService'
 
+@ExposeServiceKey(InstanceVersionServiceKey)
 export class InstanceVersionService extends StatefulService<InstanceVersionState> implements IInstanceVersionService {
+  private fixingAll = false
+
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(VersionService) private versionService: VersionService,
@@ -25,11 +29,16 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     diagnoseService.register({
       id: VersionIssueKey,
       fix: async (issue) => {
-        const { minecraft, forge, fabricLoader, optifine, quiltLoader } = issue
-        const version = await this.installRuntime({ minecraft, forge, fabricLoader, optifine, quiltLoader })
-        if (version) {
-          await this.installService.installDependencies(version)
-          await this.versionService.refreshVersion(version)
+        try {
+          this.fixingAll = true
+          const { minecraft, forge, fabricLoader, optifine, quiltLoader } = issue
+          const version = await this.installRuntime({ minecraft, forge, fabricLoader, optifine, quiltLoader })
+          if (version) {
+            await this.versionService.refreshVersion(version)
+            await this.installService.installDependencies(version)
+          }
+        } finally {
+          this.fixingAll = false
         }
       },
       validator: async (builder, issue) => {
@@ -107,7 +116,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
           assets.push(i.asset)
         }
 
-        await installService.installAssets(assets)
+        await installService.installAssets(assets, issue.version)
       },
       merge: (issue) => issue.reduce((a, b) => ({ version: a.version, assets: [...a.assets, ...b.assets] })),
       validator: async (builder, issue) => {
@@ -126,7 +135,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
           libraries.push(i.library)
         }
 
-        await installService.installLibraries(libraries)
+        await installService.installLibraries(libraries, issue.version)
       },
       merge: (issue) => issue.reduce((a, b) => ({ version: a.version, libraries: [...a.libraries, ...b.libraries] })),
       validator: async (builder, issue) => {
@@ -139,7 +148,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     diagnoseService.register({
       id: InstallProfileIssueKey,
       fix: async (issue) => {
-        await installService.installByProfile(issue.installProfile)
+        await installService.installByProfile(issue.installProfile, issue.version)
       },
       validator: async (builder, issue) => {
         if (this.state.version?.id === issue.version) {
@@ -209,7 +218,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
 
   async diagnoseLibraries(builder: IssueReportBuilder, currentVersion: ResolvedVersion, minecraft: MinecraftFolder) {
     this.log(`Diagnose for version ${currentVersion.id} libraries`)
-    const librariesIssues = await diagnoseLibraries(currentVersion, minecraft)
+    const librariesIssues = await diagnoseLibraries(currentVersion, minecraft, { strict: false, checksum: this.worker().checksum })
     builder.set(LibrariesIssueKey)
     if (librariesIssues.length > 0) {
       builder.set(LibrariesIssueKey, { version: currentVersion.id, libraries: librariesIssues })
@@ -227,12 +236,13 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     return assetIndexIssue
   }
 
-  private async diagnoseAssets(builder: IssueReportBuilder, currentVersion: ResolvedVersion, minecraft: MinecraftFolder) {
+  private async diagnoseAssets(builder: IssueReportBuilder, currentVersion: ResolvedVersion, minecraft: MinecraftFolder, strict = false) {
     this.log(`Diagnose for version ${currentVersion.id} assets`)
-    const objects = (await readFile(minecraft.getAssetsIndex(currentVersion.assets), 'utf-8').then((b) => JSON.parse(b.toString()))).objects
-    const assetsIssues = await diagnoseAssets(objects, minecraft)
+    const objects: Record<string, { hash: string; size: number }> = (await readFile(minecraft.getAssetsIndex(currentVersion.assets), 'utf-8').then((b) => JSON.parse(b.toString()))).objects
 
     builder.set(AssetsIssueKey)
+    const assetsIssues = await diagnoseAssets(objects, minecraft, { strict, checksum: this.worker().checksum })
+
     if (assetsIssues.length > 0) {
       builder.set(AssetsIssueKey, { version: currentVersion.id, assets: assetsIssues })
     }
@@ -380,6 +390,8 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
    */
   @Lock('diagnoseVersion')
   private async diagnoseVersion(currentVersion: ResolvedVersion | undefined) {
+    // Skip to diagnose as the install is not finished
+    if (this.fixingAll) { return }
     this.up('diagnose')
     const builder = new IssueReportBuilder()
     try {

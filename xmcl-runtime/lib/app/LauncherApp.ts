@@ -245,7 +245,7 @@ export abstract class LauncherApp extends EventEmitter {
       const parsed = new URL(serverUrl)
       const domain = parsed.host
       const userService = this.serviceManager.get(YggdrasilUserService)
-      userService.registerThirdPartyApi(domain, {
+      userService.registerFirstPartyApi(domain, {
         hostName: serverUrl,
         authenticate: '/authserver/authenticate',
         refresh: '/authserver/refresh',

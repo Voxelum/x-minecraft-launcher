@@ -11,7 +11,7 @@
       <template v-for="(item, index) in items">
         <v-list-item
           :key="item.text"
-          class="min-w-60"
+          class="min-w-40 mx-1 rounded-lg"
           @click="item.onClick"
         >
           <v-list-item-icon>

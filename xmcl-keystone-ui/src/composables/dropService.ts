@@ -29,7 +29,7 @@ export function useDropService() {
   const active = ref(false)
   const loading = ref(false)
   const previews = ref([] as FilePreview[])
-  const { resolveResources } = useService(ResourceServiceKey)
+  const { resolveResource } = useService(ResourceServiceKey)
   const { handleUrl } = useService(BaseServiceKey)
   const { previewUrl } = useService(ImportServiceKey)
   async function onDrop(event: DragEvent) {
@@ -98,9 +98,9 @@ export function useDropService() {
       }
     }
     loading.value = true
-    const result = await resolveResources({ files: files.map(f => ({ path: f.path })) }).finally(() => { loading.value = false })
+    const result = await resolveResource(files.map(f => ({ path: f.path }))).finally(() => { loading.value = false })
     for (let i = 0; i < result.length; i++) {
-      const r = result[i][0]
+      const r = result[i]
       const f = files[i]
       previews.value.push({
         ...r,
@@ -108,7 +108,7 @@ export function useDropService() {
         size: r.size,
         result: r,
         enabled: isPersistedResource(r),
-        status: isPersistedResource(r) && r.domain !== ResourceDomain.Unknown ? 'saved' : 'idle',
+        status: isPersistedResource(r) && r.domain !== ResourceDomain.Unclassified ? 'saved' : 'idle',
       })
     }
     dragover.value = false

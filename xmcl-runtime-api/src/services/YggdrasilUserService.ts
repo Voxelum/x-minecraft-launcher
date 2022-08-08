@@ -1,4 +1,4 @@
-import { MojangChallenge, MojangChallengeResponse } from '@xmcl/user'
+import { MojangChallenge, MojangChallengeResponse, YggdrasilAuthAPI, ProfileServiceAPI } from '@xmcl/user'
 import { UserProfile } from '../entities/user.schema'
 import { ServiceKey } from './Service'
 
@@ -16,13 +16,15 @@ export interface LoginYggdrasilOptions {
    */
   authService?: string
   /**
-   * The profile service name, like mojang
-   */
-  profileService?: string
-  /**
    * Select selected profile after login
    */
   selectProfile?: boolean
+}
+
+export interface YggdrasilAPISet {
+  name: string
+  authService: YggdrasilAuthAPI
+  profileService: ProfileServiceAPI
 }
 
 export interface YggdrasilUserService {
@@ -38,6 +40,7 @@ export interface YggdrasilUserService {
   getChallenges(user: UserProfile): Promise<MojangChallenge[]>
 
   submitChallenges(responses: MojangChallengeResponse[]): Promise<boolean>
+
   /**
    * Login the user by current login mode. Refresh the skin and account information.
    */

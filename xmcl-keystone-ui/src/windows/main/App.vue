@@ -34,6 +34,7 @@
     <add-server-dialog />
     <export-dialog />
     <app-share-instance-dialog />
+    <app-instance-delete-dialog />
   </v-app>
   <v-app
     v-else
@@ -81,6 +82,7 @@ import { useDropService } from '/@/composables/dropService'
 import { ExceptionHandlersKey, useExceptionHandlers } from '/@/composables/exception'
 import { VuetifyInjectionKey } from '/@/composables/vuetify'
 import { injection } from '/@/util/inject'
+import AppInstanceDeleteDialog from './views/AppInstanceDeleteDialog.vue'
 
 const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = useColorTheme()
 const vuetify = injection(VuetifyInjectionKey)

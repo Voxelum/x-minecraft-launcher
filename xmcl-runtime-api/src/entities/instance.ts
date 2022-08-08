@@ -47,6 +47,7 @@ export function createTemplate(): Instance {
 
     assignMemory: false,
     fastLaunch: false,
+    upstream: undefined,
   }
   return base
 }

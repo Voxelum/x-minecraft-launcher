@@ -97,8 +97,11 @@
                     "type": "string"
                 },
                 "hashes": {
-                    "$ref": "#/definitions/Hashes",
-                    "description": "The hash of the instance file. The sha1 is required"
+                    "description": "The hash of the instance file. The sha1 is required",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
                 },
                 "downloads": {
                     "description": "The download url of the instance file",
@@ -141,35 +144,12 @@
                 },
                 "size": {
                     "type": "number"
-                },
-                "createAt": {
-                    "type": "number"
-                },
-                "updateAt": {
-                    "type": "number"
                 }
             },
             "required": [
-                "createAt",
                 "hashes",
                 "path",
-                "size",
-                "updateAt"
-            ]
-        },
-        "Hashes": {
-            "type": "object",
-            "properties": {
-                "sha1": {
-                    "type": "string"
-                },
-                "sha256": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "sha1",
-                "sha256"
+                "size"
             ]
         }
     },

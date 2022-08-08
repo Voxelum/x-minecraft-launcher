@@ -9,8 +9,9 @@ import { LauncherAppKey } from '../app/utils'
 import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { ResourceService } from './ResourceService'
-import { Singleton, StatefulService } from './Service'
+import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
+@ExposeServiceKey(ModrinthServiceKey)
 export class ModrinthService extends StatefulService<ModrinthState> implements IModrinthService {
   private client = this.networkManager.request.extend({
     prefixUrl: 'https://api.modrinth.com/v2',

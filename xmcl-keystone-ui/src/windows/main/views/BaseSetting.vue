@@ -15,7 +15,7 @@
       >
         {{ $t("title") }}
       </v-flex>
-      <BaseSettingGeneral :version="runtime" />
+      <BaseSettingGeneral  />
       <BaseSettingSync />
       <BaseSettingModpack v-if="!isServer" />
       <BaseSettingServer v-else />
@@ -37,7 +37,6 @@ import BaseSettingJava from './BaseSettingJava.vue'
 import BaseSettingSync from './BaseSettingSync.vue'
 
 const {
-  runtime,
   isServer,
 } = useInstance()
 const { data, save, load } = useInstanceEdit()

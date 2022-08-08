@@ -228,8 +228,8 @@ useDragTransferList(
   add,
   remove,
 )
-useDropImport(leftListElem, 'resourcepacks')
-useDropImport(rightListElem, 'resourcepacks')
+useDropImport(leftListElem, ResourceDomain.ResourcePacks)
+useDropImport(rightListElem, ResourceDomain.ResourcePacks)
 
 onUnmounted(commit)
 

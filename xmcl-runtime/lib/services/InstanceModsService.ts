@@ -11,11 +11,12 @@ import { Inject } from '../util/objectRegistry'
 import { DiagnoseService } from './DiagnoseService'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
-import { Singleton, StatefulService } from './Service'
+import { ExposeServiceKey, Lock, Singleton, StatefulService } from './Service'
 
 /**
  * Provide the abilities to import mods and resource packs files to instance
  */
+@ExposeServiceKey(InstanceModsServiceKey)
 export class InstanceModsService extends StatefulService<InstanceModsState> implements IInstanceModsService {
   private modsWatcher: FSWatcher | undefined
 
@@ -144,7 +145,7 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
     }
   }
 
-  @Singleton()
+  @Lock('instance:mods')
   async mount(instancePath: string): Promise<void> {
     const basePath = join(instancePath, 'mods')
     if (this.modsWatcher) {

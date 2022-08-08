@@ -9,7 +9,7 @@ import { validateSha256 } from '../util/fs'
 import { Inject } from '../util/objectRegistry'
 import { DiagnoseService } from './DiagnoseService'
 import { ResourceService } from './ResourceService'
-import { AbstractService, Lock } from './Service'
+import { AbstractService, ExposeServiceKey, Lock } from './Service'
 import { UserService } from './UserService'
 
 const AUTHLIB_ORG_NAME = 'org.to2mbn:authlibinjector'
@@ -17,6 +17,7 @@ const AUTHLIB_ORG_NAME = 'org.to2mbn:authlibinjector'
 /**
  * Majorly support the third party skin using authlib injector
  */
+@ExposeServiceKey(ExternalAuthSkinServiceKey)
 export class ExternalAuthSkinService extends AbstractService implements IExternalAuthSkinService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,

@@ -1,10 +1,10 @@
+import { InstanceSave, InstanceSaveMetadata, ResourceSaveMetadata, SaveMetadata } from '@xmcl/runtime-api'
 import { FileSystem } from '@xmcl/system'
 import { WorldReader } from '@xmcl/world'
 import { readdir } from 'fs-extra'
 import { basename, join } from 'path'
 import { pathToFileURL } from 'url'
 import { exists, isDirectory } from '../util/fs'
-import { InstanceSave, InstanceSaveMetadata, ResourceSaveMetadata, SaveMetadata } from '@xmcl/runtime-api'
 
 /**
  * Find the relative path of the save relative to the file system.
@@ -67,13 +67,23 @@ export async function readSaveMetadata(save: string | Uint8Array | FileSystem | 
   }
   const reader = await resolveReader()
   const level = await reader.getLevelData()
+  const adv = await reader.getAdvancementsData()
+  let advancements = 0
+  if (adv.length !== 0) {
+    advancements = adv.length
+  } else if (typeof save === 'string') {
+    const files = await readdir(join(save, 'advancements')).catch(() => [])
+    advancements = files.filter(f => f.endsWith('.json')).length
+  }
   return {
     mode: level.GameType,
     levelName: level.LevelName,
     gameVersion: level.Version.Name,
     difficulty: level.Difficulty,
     cheat: false,
+    time: level.Time.toNumber(),
     lastPlayed: level.LastPlayed.toNumber(),
+    advancements,
   }
 }
 

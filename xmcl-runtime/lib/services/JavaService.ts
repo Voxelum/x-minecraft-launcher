@@ -12,8 +12,9 @@ import { requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
 import { BaseService } from './BaseService'
-import { Singleton, StatefulService } from './Service'
+import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
+@ExposeServiceKey(JavaServiceKey)
 export class JavaService extends StatefulService<JavaState> implements IJavaService {
   protected readonly config = createSafeFile(this.getAppDataPath('java.json'), JavaSchema, this, [this.getPath('java.json')])
 
