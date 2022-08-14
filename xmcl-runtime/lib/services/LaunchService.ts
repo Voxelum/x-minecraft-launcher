@@ -1,4 +1,4 @@
-import { createMinecraftProcessWatcher, generateArguments, launch, LaunchOption, MinecraftFolder, ResolvedVersion, Version } from '@xmcl/core'
+import { createMinecraftProcessWatcher, diagnoseJar, diagnoseLibraries, generateArguments, launch, LaunchOption, LaunchPrecheck, MinecraftFolder, ResolvedVersion, Version } from '@xmcl/core'
 import { LaunchException, LaunchOptions, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
 import { ChildProcess } from 'child_process'
 import { EOL } from 'os'
@@ -7,6 +7,7 @@ import { JavaValidation } from '../entities/java'
 import { BaseService } from './BaseService'
 import { DiagnoseService } from './DiagnoseService'
 import { ExternalAuthSkinService } from './ExternalAuthSkinService'
+import { InstallService } from './InstallService'
 import { InstanceJavaService } from './InstanceJavaService'
 import { InstanceService } from './InstanceService'
 import { InstanceVersionService } from './InstanceVersionService'
@@ -22,6 +23,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
     @Inject(ExternalAuthSkinService) private externalAuthSkinService: ExternalAuthSkinService,
     @Inject(InstanceService) private instanceService: InstanceService,
+    @Inject(InstallService) private installService: InstallService,
     @Inject(InstanceJavaService) private instanceJavaService: InstanceJavaService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(JavaService) private javaService: JavaService,
@@ -159,8 +161,6 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         }
       }
 
-      this.state.launchStatus('launching')
-
       const minecraftFolder = new MinecraftFolder(options?.gameDirectory ?? instance.path)
 
       let version: ResolvedVersion | undefined
@@ -187,6 +187,24 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         })
       }
 
+      if (!options?.force && !instance.fastLaunch) {
+        const resolvedVersion = version
+        await Promise.all([
+          diagnoseJar(resolvedVersion, minecraftFolder).then((issue) => {
+            if (issue) {
+              return this.installService.installMinecraftJar(resolvedVersion)
+            }
+          }),
+          diagnoseLibraries(version, minecraftFolder).then(async (libs) => {
+            if (libs.length > 0) {
+              await this.installService.installLibraries(libs.map(l => l.library))
+            }
+          }),
+        ])
+      }
+
+      this.state.launchStatus('launching')
+
       this.log(`Will launch with ${version.id} version.`)
 
       const instanceJava = this.instanceJavaService.state.java
@@ -201,6 +219,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         ? instance.minMemory
         : instance.assignMemory === 'auto' ? Math.floor((await this.baseService.getMemoryStatus()).free / 1024 / 1024 - 256) : undefined
       const maxMemory = instance.assignMemory === true && instance.maxMemory > 0 ? instance.maxMemory : undefined
+      const prechecks = [LaunchPrecheck.checkNatives, LaunchPrecheck.linkAssets]
 
       /**
        * Build launch condition
@@ -224,6 +243,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         launcherBrand: options?.launcherBrand ?? '',
         launcherName: options?.launcherName ?? 'XMCL',
         yggdrasilAgent: yggOptions,
+        prechecks,
       }
 
       if (options?.server) {
