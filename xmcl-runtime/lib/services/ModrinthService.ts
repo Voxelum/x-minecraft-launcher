@@ -42,6 +42,7 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
     return result
   }
 
+  @Singleton(p => p)
   async getProject(projectId: string): Promise<Project> {
     if (projectId.startsWith('local-')) { projectId = projectId.slice('local-'.length) }
     this.log(`Try get project for project_id=${projectId}`)
@@ -63,6 +64,18 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
     return version
   }
 
+  @Singleton(hash => hash)
+  async getLatestProjectVersion(hash: string): Promise<ProjectVersion> {
+    const version: ProjectVersion = await this.client.post(`version_file/${hash}/update`, {
+      searchParams: { algorithm: 'sha1' },
+      json: {
+        loaders: [],
+        game_versions: [],
+      },
+    }).json()
+    return version
+  }
+
   async getTags(): Promise<{ licenses: License[]; categories: Category[]; gameVersions: GameVersion[]; modLoaders: Loader[]; environments: string[] }> {
     const [licenses, categories, gameVersions, modLoaders] = await Promise.all([
       this.client.get('tag/license').json<License[]>(),
@@ -79,17 +92,20 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
     }
   }
 
+  @Singleton((o) => o.version.id)
   async installVersion({ version, instancePath }: InstallProjectVersionOptions): Promise<InstallModrinthVersionResult> {
     const proj = await this.getProject(version.project_id)
 
-    const dependencies = await Promise.all(version.dependencies.map(async (dep) => {
-      if (dep.dependency_type === 'required') {
-        const depVersion = await this.getProjectVersion(dep.version_id)
-        const result = await this.installVersion({ version: depVersion })
-        return result
-      }
-      return undefined
-    }))
+    const dependencies = proj.project_type !== 'modpack'
+      ? await Promise.all(version.dependencies.map(async (dep) => {
+        if (dep.dependency_type === 'required') {
+          const depVersion = await this.getProjectVersion(dep.version_id)
+          const result = await this.installVersion({ version: depVersion })
+          return result
+        }
+        return undefined
+      }))
+      : []
 
     const resources = await Promise.all(version.files.map(async (file) => {
       this.log(`Try install project version file ${file.filename} ${file.url}`)
@@ -122,20 +138,22 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
           this.state.modrinthDownloadFileEnd(file.url)
         }
 
+        const metadata = {
+          modrinth: version
+            ? {
+              projectId: version.project_id,
+              versionId: version.id,
+              filename: file.filename,
+              url: file.url,
+            }
+            : undefined,
+        }
+
         const [result] = await this.resourceService.importResource({
           resources: [{
             path: destination,
             uri: urls,
-            metadata: {
-              modrinth: version
-                ? {
-                  projectId: version.project_id,
-                  versionId: version.id,
-                  filename: file.filename,
-                  url: file.url,
-                }
-                : undefined,
-            },
+            metadata,
             icons: proj.icon_url ? [proj.icon_url] : [],
           }],
           background: true,
