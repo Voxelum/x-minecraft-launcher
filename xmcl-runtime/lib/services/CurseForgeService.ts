@@ -1,4 +1,4 @@
-import { Mod, File, ModsSearchSortField, Pagination, ModCategory, SearchOptions, FileModLoaderType } from '@xmcl/curseforge'
+import { File, FileModLoaderType, Mod, ModCategory, ModsSearchSortField, Pagination, SearchOptions } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
 import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, CurseforgeState, GetModFilesOptions, InstallFileOptions, InstallFileResult, ProjectType, ResourceDomain } from '@xmcl/runtime-api'
 import { unlink } from 'fs-extra'
@@ -14,7 +14,7 @@ import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
 @ExposeServiceKey(CurseForgeServiceKey)
 export class CurseForgeService extends StatefulService<CurseforgeState> implements ICurseForgeService {
-  private client = this.networkManager.request.extend({
+  private gClient = this.networkManager.request.extend({
     prefixUrl: 'https://api.curseforge.com',
     headers: {
       Accept: 'application/json',
@@ -30,21 +30,21 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
 
   @Singleton()
   async fetchCategories() {
-    const categories: { data: ModCategory[] } = await this.client.get('v1/categories', { searchParams: { gameId: 432 } }).json()
+    const categories: { data: ModCategory[] } = await this.gClient.get('v1/categories', { searchParams: { gameId: 432 } }).json()
     return categories.data
   }
 
   @Singleton(v => v.toString())
   async fetchProject(projectId: number) {
     this.log(`Fetch project: ${projectId}`)
-    const result: { data: Mod } = await this.client.get(`v1/mods/${projectId}`).json()
+    const result: { data: Mod } = await this.gClient.get(`v1/mods/${projectId}`).json()
     return result.data
   }
 
   @Singleton(v => v.toString())
   async fetchProjectDescription(projectId: number) {
     this.log(`Fetch project description: ${projectId}`)
-    const result: { data: string } = await this.client.get(`v1/mods/${projectId}/description`).json()
+    const result: { data: string } = await this.gClient.get(`v1/mods/${projectId}/description`).json()
     return result.data
   }
 
@@ -67,20 +67,35 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
     if (options.pageSize) {
       param.append('pageSize', options.pageSize.toString())
     }
-    const result: { data: File[]; pagination: Pagination } = await this.client.get(`v1/mods/${options.modId}/files?${param.toString()}`).json()
+    const result: { data: File[]; pagination: Pagination } = await this.gClient.get(`v1/mods/${options.modId}/files?${param.toString()}`).json()
     return result
   }
 
   @Singleton((a, b) => `${a}-${b}`)
   async fetchProjectFile(projectId: number, fileId: number) {
     this.log(`Fetch project file: ${projectId}-${fileId}`)
-    const result: { data: File } = await this.client.get(`v1/mods/${projectId}/files/${fileId}`).json()
+    const result: { data: File } = await this.gClient.get(`v1/mods/${projectId}/files/${fileId}`).json()
+    return result.data
+  }
+
+  async fetchMods(modIds: number[]) {
+    this.log(`Fetch mods ${modIds.length} files.`)
+    const result: { data: Mod[] } = await this.gClient.post('v1/mods', {
+      body: JSON.stringify({ modIds }),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      retry: {
+        limit: 3,
+        calculateDelay: ({ attemptCount }) => attemptCount * 1000,
+      },
+    }).json()
     return result.data
   }
 
   async fetchModFiles(fileIds: number[]) {
     this.log(`Fetch profile ${fileIds.length} files.`)
-    const result: { data: File[] } = await this.client.post('v1/mods/files', {
+    const result: { data: File[] } = await this.gClient.post('v1/mods/files', {
       body: JSON.stringify({ fileIds }),
       headers: {
         'Content-Type': 'application/json',
@@ -133,7 +148,7 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
     }
     const search = params.toString()
     this.log(`Search project: ${search}`)
-    const result: { data: Mod[]; pagination: Pagination } = await this.client.get('v1/mods/search', {
+    const result: { data: Mod[]; pagination: Pagination } = await this.gClient.get('v1/mods/search', {
       searchParams: search,
     }).json()
     return result
