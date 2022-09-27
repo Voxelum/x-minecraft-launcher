@@ -3,6 +3,7 @@ import { DownloadTask } from '@xmcl/installer'
 import { ExternalAuthSkinService as IExternalAuthSkinService, ExternalAuthSkinServiceKey, IssueReportBuilder, MissingAuthLibInjectorIssue, ResourceDomain } from '@xmcl/runtime-api'
 import { ensureFile, readJson, writeFile } from 'fs-extra'
 import { join } from 'path'
+import { request } from 'undici'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { validateSha256 } from '../util/fs'
@@ -84,7 +85,7 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
     let path: string
 
     try {
-      const body = await this.networkManager.request('https://authlib-injector.yushi.moe/artifact/latest.json').json()
+      const body = await (await request('https://authlib-injector.yushi.moe/artifact/latest.json')).body.json()
       await writeFile(jsonPath, JSON.stringify(body))
       path = await download(body)
     } catch (e) {

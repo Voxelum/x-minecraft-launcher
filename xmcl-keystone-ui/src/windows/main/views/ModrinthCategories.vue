@@ -21,7 +21,7 @@
         v-html="cat.icon"
       />
       <div>
-        {{ $t(`modrinth.categories.${cat.name}`) }}
+        {{ $te(`modrinth.categories.${cat.name}`) ? $t(`modrinth.categories.${cat.name}`) : cat.name }}
       </div>
     </span>
     <span class="list-title">{{ $t('modrinth.modLoaders.name') }}</span>
@@ -40,7 +40,7 @@
         class="w-5 max-w-5 flex justify-center"
         v-html="l.icon"
       />
-      {{ $t(`modrinth.categories.${l.name}`) }}
+      {{ $te(`modrinth.categories.${l.name}`) ? $t(`modrinth.categories.${l.name}`) : l.name }}
     </span>
     <span class="list-title">{{ $t('modrinth.environments.name') }}</span>
     <span

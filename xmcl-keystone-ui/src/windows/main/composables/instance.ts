@@ -1,6 +1,6 @@
 import { computed, Ref } from '@vue/composition-api'
 import { Frame as GameSetting } from '@xmcl/gamesetting'
-import { EMPTY_VERSION, getExpectVersion, getResolvedVersion, InstanceData, InstanceIOServiceKey, InstanceOptionsServiceKey, InstanceServiceKey, ResourceServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
+import { EMPTY_VERSION, getExpectVersion, getResolvedVersion, Instance, InstanceData, InstanceIOServiceKey, InstanceOptionsServiceKey, InstanceServiceKey, InstanceVersionServiceKey, ResourceServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
 import { useServiceBusy, useSemaphore } from '/@/composables/semaphore'
 import { useService, useServiceOnly } from '/@/composables/service'
 
@@ -10,58 +10,21 @@ export function useInstanceBase() {
   return { path }
 }
 
+export function useInstanceIsServer(i: Ref<Instance>) {
+  return computed(() => i.value.server !== null)
+}
+
 /**
  * Use the general info of the instance
  */
 export function useInstance() {
   const { state, editInstance } = useService(InstanceServiceKey)
 
+  const instance = computed(() => state.instance)
   const path = computed(() => state.path)
-  const name = computed(() => state.instance.name)
-  const author = computed(() => state.instance.author)
-  const description = computed(() => state.instance.description)
-  const modpackVersion = computed(() => state.instance.modpackVersion)
-  const fileApi = computed(() => state.instance.fileApi)
-  const showLog = computed(() => state.instance.showLog)
-  const hideLauncher = computed(() => state.instance.hideLauncher)
-  const runtime = computed(() => state.instance.runtime)
-  const java = computed(() => state.instance.java)
-  const resolution = computed(() => state.instance.resolution)
-  const minMemory = computed(() => state.instance.minMemory)
-  const maxMemory = computed(() => state.instance.maxMemory)
-  const vmOptions = computed(() => state.instance.vmOptions)
-  const mcOptions = computed(() => state.instance.mcOptions)
-  const url = computed(() => state.instance.url)
-  const icon = computed(() => state.instance.icon)
-  const lastAccessDate = computed(() => state.instance.lastAccessDate)
-  const creationDate = computed(() => state.instance.creationDate)
-  const server = computed(() => state.instance.server)
-  const version = computed(() => state.instance.version)
-  const fastLaunch = computed(() => state.instance.fastLaunch)
   return {
     path,
-    name,
-    author,
-    description,
-    showLog,
-    hideLauncher,
-    runtime,
-    version,
-    java,
-    resolution,
-    minMemory,
-    maxMemory,
-    vmOptions,
-    mcOptions,
-    url,
-    icon,
-    lastAccessDate,
-    creationDate,
-    server,
-    modpackVersion,
-    fileApi,
-    fastLaunch,
-    isServer: computed(() => state.instance.server !== null),
+    instance,
     refreshing: computed(() => useSemaphore('instance').value !== 0),
     editInstance,
     ...useServiceOnly(InstanceIOServiceKey, 'exportInstance'),
@@ -140,12 +103,11 @@ export function useInstanceGameSetting() {
  * Use references of all the version info of this instance
  */
 export function useInstanceVersion() {
-  const { state: versionState } = useService(VersionServiceKey)
   const { state: instanceState } = useService(InstanceServiceKey)
-  const { runtime, version } = useInstance()
+  const { state: instanceVersionState } = useService(InstanceVersionServiceKey)
 
   const id = computed(() => getExpectVersion(instanceState.instance.runtime))
-  const localVersion = computed(() => getResolvedVersion(versionState.local, runtime.value, version.value) || EMPTY_VERSION)
+  const localVersion = computed(() => instanceVersionState.versionHeader || EMPTY_VERSION)
   const folder = computed(() => localVersion.value?.id || 'unknown')
 
   return {

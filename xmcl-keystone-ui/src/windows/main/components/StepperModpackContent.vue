@@ -1,17 +1,9 @@
 <template>
   <div class="flex flex-col h-full overflow-auto">
-    <v-list
+    <StepperModpackContentCurseforge
       v-if="!!curseforgeFiles"
-      color="transparent"
-      two-line
-    >
-      <StepperModpackContentFile
-        v-for="file in curseforgeFiles"
-        :key="file.fileID"
-        :file-id="file.fileID"
-        :project-id="file.projectID"
-      />
-    </v-list>
+      :files="curseforgeFiles || []"
+    />
     <InstanceManifestFileTree
       v-else-if="ftbFiles.length > 0 || modrinthFiles.length > 0"
       :value="[]"
@@ -23,7 +15,7 @@ import { FTBFile } from '@xmcl/runtime-api'
 import { Template } from '../composables/instanceAdd'
 import { InstanceFileNode, provideFileNodes } from '../composables/instanceFiles'
 import InstanceManifestFileTree from './InstanceManifestFileTree.vue'
-import StepperModpackContentFile from './StepperModpackContentFile.vue'
+import StepperModpackContentCurseforge from './StepperModpackContentCurseforge.vue'
 import { basename } from '/@/util/basename'
 
 const props = defineProps<{

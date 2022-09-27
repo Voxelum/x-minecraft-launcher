@@ -75,7 +75,7 @@ export enum ResourceDomain {
 
 export interface ResourceMetadata {
   [ResourceType.Forge]?: ForgeModCommonMetadata
-  [ResourceType.Fabric]?: FabricModMetadata
+  [ResourceType.Fabric]?: FabricModMetadata | FabricModMetadata[]
   [ResourceType.Liteloader]?: LiteloaderModMetadata
   [ResourceType.Quilt]?: QuiltModMetadata
   [ResourceType.ResourcePack]?: PackMeta.Pack
@@ -169,7 +169,7 @@ export type ForgeResource<T extends Resource = Resource> = T & {
 
 export type FabricResource<T extends Resource = Resource> = T & {
   readonly domain: ResourceDomain.Mods
-  metadata: { [ResourceType.Fabric]: FabricModMetadata }
+  metadata: { [ResourceType.Fabric]: FabricModMetadata | FabricModMetadata[] }
 }
 
 export type QuiltResource<T extends Resource = Resource> = T & {

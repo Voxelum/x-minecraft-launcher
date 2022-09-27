@@ -3,7 +3,7 @@
     <v-list-item three-line>
       <v-list-item-content>
         <div class="text-overline mb-4">
-          Current Account
+          {{ t('user.info') }}
         </div>
         <v-list-item-title class="text-h5 mb-1">
           {{ selected ? selected.username : '' }}
@@ -61,7 +61,7 @@
             text
             v-on="on"
           >
-            切换账户
+            {{ t('userAccount.switch' ) }}
             <v-icon right>
               swap_horiz
             </v-icon>

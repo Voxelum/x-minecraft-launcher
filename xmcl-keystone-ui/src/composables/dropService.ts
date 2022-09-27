@@ -18,6 +18,7 @@ export interface DropService {
   active: Ref<boolean>
   dragover: Ref<boolean>
   previews: Ref<FilePreview[]>
+  suppressed: Ref<boolean>
   remove(preview: FilePreview): void
   cancel(): void
 }
@@ -32,6 +33,7 @@ export function useDropService() {
   const { resolveResource } = useService(ResourceServiceKey)
   const { handleUrl } = useService(BaseServiceKey)
   const { previewUrl } = useService(ImportServiceKey)
+  const suppressed = ref(false)
   async function onDrop(event: DragEvent) {
     const dataTransfer = event.dataTransfer!
     console.log(dataTransfer.types[0])
@@ -149,8 +151,10 @@ export function useDropService() {
   document.addEventListener('dragenter', (e) => {
     if ((e as any).fromElement === null) {
       if (e.dataTransfer!.effectAllowed === 'all') {
-        active.value = true
-        dragover.value = true
+        if (!suppressed.value) {
+          active.value = true
+          dragover.value = true
+        }
       }
     }
     e.dataTransfer!.dropEffect = 'copy'
@@ -163,11 +167,13 @@ export function useDropService() {
     remove,
     cancel,
     dragover,
+    suppressed,
   })
   return {
     loading,
     active,
     previews,
+    suppressed,
     remove,
     cancel,
   }

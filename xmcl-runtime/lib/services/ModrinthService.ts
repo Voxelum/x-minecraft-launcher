@@ -3,9 +3,10 @@ import { Category, GameVersion, License, Loader, Project, ProjectVersion, Search
 import { InstallModrinthVersionResult, InstallProjectVersionOptions, ModrinthService as IModrinthService, ModrinthServiceKey, ModrinthState } from '@xmcl/runtime-api'
 import { unlink } from 'fs-extra'
 import { basename, join } from 'path'
-import { URLSearchParams } from 'url'
+import { Client } from 'undici'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { ModrinthClient } from '../clients/ModrinthClient'
 import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { ResourceService } from './ResourceService'
@@ -13,31 +14,24 @@ import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
 @ExposeServiceKey(ModrinthServiceKey)
 export class ModrinthService extends StatefulService<ModrinthState> implements IModrinthService {
-  private client = this.networkManager.request.extend({
-    prefixUrl: 'https://api.modrinth.com/v2',
-  })
+  private client: ModrinthClient
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app, ModrinthServiceKey, () => new ModrinthState())
+    const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, opts) => {
+      if (origin.hostname === 'api.modrinth.com') {
+        // keep alive for a long time
+        return new Client(origin, { ...opts, pipelining: 6 })
+      }
+    })
+    this.client = new ModrinthClient(dispatcher)
   }
 
   async searchProjects(options: SearchProjectOptions): Promise<SearchResult> {
     this.log(`Try search projects via query=${options.query} limit=${options.limit} offset=${options.offset} facets=${options.facets} query=${options.query}`)
-    const searchParams = new URLSearchParams([
-      ['query', options.query ?? ''],
-      ['filter', options.filters ?? ''],
-      ['index', options.index || 'relevance'],
-      ['offset', options.offset?.toString() ?? '0'],
-      ['limit', options.limit?.toString() ?? '10'],
-    ])
-    if (options.facets) {
-      searchParams.append('facets', options.facets)
-    }
-    const result: SearchResult = await this.client.get('search', {
-      searchParams,
-    }).json()
+    const result = await this.client.searchProjects(options)
     this.log(`Searched projects: hits=${result.hits.length} total_hits=${result.total_hits} offset=${result.offset} limit=${result.limit}`)
     return result
   }
@@ -46,42 +40,37 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
   async getProject(projectId: string): Promise<Project> {
     if (projectId.startsWith('local-')) { projectId = projectId.slice('local-'.length) }
     this.log(`Try get project for project_id=${projectId}`)
-    const project: Project = await this.client.get(`project/${projectId}`).json()
+    const project: Project = await this.client.getProject(projectId)
     this.log(`Got project for project_id=${projectId}`)
     return project
   }
 
   @Singleton(p => p)
   async getProjectVersions(projectId: string): Promise<ProjectVersion[]> {
-    const versions: ProjectVersion[] = await this.client.get(`project/${projectId}/version`).json()
+    const versions: ProjectVersion[] = await this.client.getProjectVersions(projectId)
     this.log(`Get project version for version_id=${projectId}`)
     return versions
   }
 
   async getProjectVersion(versionId: string): Promise<ProjectVersion> {
-    const version: ProjectVersion = await this.client.get(`version/${versionId}`).json()
+    const version: ProjectVersion = await this.client.getProjectVersion(versionId)
     this.log(`Get project version for version_id=${versionId}`)
     return version
   }
 
   @Singleton(hash => hash)
   async getLatestProjectVersion(hash: string): Promise<ProjectVersion> {
-    const version: ProjectVersion = await this.client.post(`version_file/${hash}/update`, {
-      searchParams: { algorithm: 'sha1' },
-      json: {
-        loaders: [],
-        game_versions: [],
-      },
-    }).json()
+    const version: ProjectVersion = await this.client.getLatestProjectVersion(hash)
+    this.log(`Get project version for hash=${hash}`)
     return version
   }
 
   async getTags(): Promise<{ licenses: License[]; categories: Category[]; gameVersions: GameVersion[]; modLoaders: Loader[]; environments: string[] }> {
     const [licenses, categories, gameVersions, modLoaders] = await Promise.all([
-      this.client.get('tag/license').json<License[]>(),
-      this.client.get('tag/category').json<Category[]>(),
-      this.client.get('tag/game_version').json<GameVersion[]>(),
-      this.client.get('tag/loader').json<Loader[]>(),
+      this.client.getLicenseTags(),
+      this.client.getCategoryTags(),
+      this.client.getGameVersionTags(),
+      this.client.getLoaderTags(),
     ])
     return {
       licenses,

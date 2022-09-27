@@ -11,9 +11,7 @@ export function createStore(): Store<any> {
     modules: {
     },
     mutations: {
-      setLoading(state: any, isLoading: boolean) {
-
-      },
+      syncStart(state: any, service: string) { },
     },
   }
   const store = new Vuex.Store(options)

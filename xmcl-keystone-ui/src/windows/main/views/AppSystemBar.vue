@@ -31,7 +31,7 @@
         {{ t('task.empty') }}
       </span>
       <span v-else>
-        {{ count }} tasks is running
+        {{ t('task.nTaskRunning', { count } ) }}
       </span>
     </div>
     <span class="p-0 flex flex-shrink flex-grow-0 h-full">

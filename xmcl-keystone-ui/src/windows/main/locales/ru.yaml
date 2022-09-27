@@ -403,7 +403,7 @@ minecraftVersion:
   showAlpha: Показать Snapshot'ы
   snapshot: Snapshot
 mod:
-  acceptVersion: Принять Minecraft {version}
+  acceptVersion: Принять {version}
   backToAllMods: Вернуться ко всем модам
   compatible: Совместимый мод.
   currentVersion: Текущая {current}

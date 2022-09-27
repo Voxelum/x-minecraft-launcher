@@ -1,6 +1,6 @@
 import { computed, ref, Ref, watch } from '@vue/composition-api'
 import { FabricModMetadata } from '@xmcl/mod-parser'
-import { Compatible, InstanceModsServiceKey, InstanceServiceKey, isModCompatible, isModResource, isPersistedResource, Resource, ResourceDomain, ResourceServiceKey, ResourceSourceModrinth } from '@xmcl/runtime-api'
+import { Compatible, DepsCompatible, getModCompatibility, InstanceJavaServiceKey, InstanceModsServiceKey, InstanceServiceKey, isModCompatible, isModResource, isPersistedResource, resolveDepsCompatible, Resource, ResourceDomain, ResourceServiceKey, ResourceSourceModrinth } from '@xmcl/runtime-api'
 import { useRefreshable, useService, useServiceBusy } from '/@/composables'
 import { isStringArrayEquals } from '/@/util/equal'
 
@@ -35,12 +35,7 @@ export interface ModItem {
    */
   tags: string[]
 
-  dependencies: {
-    minecraft: string
-    fabricLoader?: string
-    forge?: string
-    quiltLoader?: string
-  }
+  provideRuntime: Record<string, string>
   /**
    * The hash of the resource
    */
@@ -53,6 +48,10 @@ export interface ModItem {
   type: 'fabric' | 'forge' | 'liteloader' | 'quilt' | 'unknown'
 
   compatible: Compatible
+
+  compatibility: DepsCompatible
+
+  dependenciesIcon: Record<string, string>
   /**
    * The pending enabled. Might be different from the actual enable state
    */
@@ -85,6 +84,7 @@ export function useInstanceMods() {
   const { state } = useService(InstanceModsServiceKey)
   const { state: resourceState, updateResource } = useService(ResourceServiceKey)
   const { install, uninstall, showDirectory } = useService(InstanceModsServiceKey)
+  const { state: javaState } = useService(InstanceJavaServiceKey)
   const loading = useServiceBusy(ResourceServiceKey, 'load', ResourceDomain.Mods)
   const { state: instanceState } = useService(InstanceServiceKey)
   const items: Ref<ModItem[]> = ref([])
@@ -129,7 +129,12 @@ export function useInstanceMods() {
       ...disabled,
     ]
 
+    const iconMap: Record<string, string> = {}
     for (const item of result) {
+      // Update icon map
+      iconMap[item.id] = item.icon
+
+      // Update state
       const old = cachedDirectory.get(item.hash)
       if (old) {
         item.selected = old.selected
@@ -142,8 +147,35 @@ export function useInstanceMods() {
       cachedDirectory.set(item.hash, item)
     }
 
+    for (const item of result) {
+      for (const [id, entry] of Object.entries(item.compatibility)) {
+        item.dependenciesIcon[id] = iconMap[id]
+      }
+    }
+
     items.value = result
   }
+
+  const currentJava = computed(() => javaState.java)
+
+  const currentRuntime = computed(() => {
+    const runtime: Record<string, string> = {
+      ...(instanceState.instance.runtime as any),
+      java: currentJava.value?.version.toString() ?? '',
+    }
+    for (const i of items.value) {
+      if (i.enabled || i.enabledState) {
+        for (let [key, val] of Object.entries(i.provideRuntime)) {
+          if (key === 'fabricLoader') {
+            key = 'fabricloader'
+          }
+          runtime[key] = val
+        }
+      }
+    }
+
+    return runtime
+  })
 
   watch(computed(() => state.mods), (val) => {
     updateItems()
@@ -158,15 +190,20 @@ export function useInstanceMods() {
   }
   function getModItemFromModResource(resource: Resource): ModItem {
     const isPersisted = isPersistedResource(resource)
+    const compatibility = computed(() => getModCompatibility(resource, currentRuntime.value))
+    const isCompatible = computed(() => resolveDepsCompatible(compatibility.value))
     const modItem: ModItem = reactive({
       path: resource.path,
       id: '',
       name: resource.path,
       version: '',
       description: '',
+      provideRuntime: {},
       icon: isPersisted ? resource.icons?.[0] ?? '' : '',
-      compatible: computed(() => isModCompatible(resource, instanceState.instance.runtime)),
-      type: 'forge',
+      compatibility,
+      compatible: isCompatible,
+      dependenciesIcon: {},
+      type: 'unknown',
       url: getUrl(resource),
       hash: resource.hash,
       tags: isPersisted ? [...resource.tags] : [],
@@ -190,18 +227,22 @@ export function useInstanceMods() {
       modItem.name = meta.name
       modItem.version = meta.version
       modItem.description = meta.description
-      modItem.dependencies.minecraft = meta.acceptMinecraft
-      modItem.dependencies.forge = meta.acceptForge
+      modItem.provideRuntime[meta.modid] = meta.version
     } else if (resource.metadata.fabric) {
-      const meta = resource.metadata.fabric
+      const meta = resource.metadata.fabric instanceof Array ? resource.metadata.fabric[0] : resource.metadata.fabric
       modItem.type = 'fabric'
       modItem.id = meta.id
       modItem.version = meta.version
       modItem.name = meta.name ?? meta.id
       modItem.description = meta.description ?? ''
-      const fab = meta as FabricModMetadata
-      modItem.dependencies.minecraft = fab.depends?.minecraft as string ?? '?'
-      modItem.dependencies.fabricLoader = fab.depends?.fabricloader as string ?? '?'
+
+      if (resource.metadata.fabric instanceof Array) {
+        for (const mod of resource.metadata.fabric) {
+          modItem.provideRuntime[mod.id] = mod.version
+        }
+      } else {
+        modItem.provideRuntime[resource.metadata.fabric.id] = resource.metadata.fabric.version
+      }
     } else if (resource.metadata.liteloader) {
       const meta = resource.metadata.liteloader
       modItem.type = 'liteloader'
@@ -209,9 +250,7 @@ export function useInstanceMods() {
       modItem.version = meta.version ?? ''
       modItem.id = `${meta.name}`
       modItem.description = modItem.description ?? ''
-      if (meta.mcversion) {
-        modItem.dependencies.minecraft = `[${meta.mcversion}]`
-      }
+      modItem.provideRuntime[meta.name] = meta.version ?? ''
     } else if (resource.metadata.quilt) {
       const meta = resource.metadata.quilt
       modItem.type = 'quilt'
@@ -219,8 +258,7 @@ export function useInstanceMods() {
       modItem.version = meta.quilt_loader.version
       modItem.name = meta.quilt_loader.metadata?.name ?? meta.quilt_loader.id
       modItem.description = meta.quilt_loader.metadata?.description ?? ''
-      modItem.dependencies.minecraft = '?'
-      modItem.dependencies.quiltLoader = '?'
+      modItem.provideRuntime[meta.quilt_loader.id] = meta.quilt_loader.version
     } else {
       modItem.type = 'unknown'
       modItem.name = resource.fileName
@@ -246,10 +284,13 @@ export function useInstanceMods() {
       path: resource.path,
       id: resource.hash,
       name: resource.fileName,
+      provideRuntime: {},
       compatible: 'maybe',
+      compatibility: {},
+      dependenciesIcon: {},
       version: '',
       description: '',
-      icon: '',
+      icon: resource.icons?.[0] || '',
       type: 'unknown',
       url: getUrl(resource),
       hash: resource.hash,

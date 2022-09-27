@@ -1,10 +1,31 @@
 import { del, set } from '@vue/composition-api'
-import { BaseServiceKey, BaseState, CurseForgeServiceKey, CurseforgeState, DiagnoseServiceKey, DiagnoseState, GameProfileAndTexture, ImportServiceKey, InstallServiceKey, InstallState, ModpackServiceKey, InstanceIOServiceKey, InstanceJavaServiceKey, InstanceLogServiceKey, InstanceModsServiceKey, InstanceModsState, InstanceOptionsServiceKey, InstanceOptionsState, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceServerInfoServiceKey, InstanceServiceKey, InstanceShaderPacksServiceKey, InstanceState, InstanceVersionServiceKey, JavaServiceKey, JavaState, LaunchServiceKey, LaunchState, ModrinthServiceKey, ModrinthState, ResourceServiceKey, ResourceState, SaveState, ServerInfoState, ServerStatusServiceKey, UserProfile, UserServiceKey, UserState, VersionServiceKey, VersionState, PeerServiceKey, PeerState, InstanceVersionState, InstanceJavaState, FeedTheBeastServiceKey, FeedTheBeastState, ResourcePackPreviewServiceKey } from '@xmcl/runtime-api'
-import { GameProfile, ProfileServiceAPI, YggdrasilAuthAPI } from '@xmcl/user'
+import type { ResolvedVersion } from '@xmcl/core'
+import { BaseServiceKey, BaseState, CurseForgeServiceKey, CurseforgeState, DiagnoseServiceKey, DiagnoseState, EMPTY_JAVA, EMPTY_VERSION, FeedTheBeastServiceKey, FeedTheBeastState, GameProfileAndTexture, ImportServiceKey, InstallServiceKey, InstallState, InstanceInstallServiceKey, InstanceIOServiceKey, InstanceJavaServiceKey, InstanceJavaState, InstanceLogServiceKey, InstanceModsServiceKey, InstanceModsState, InstanceOptionsServiceKey, InstanceOptionsState, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceServerInfoServiceKey, InstanceServiceKey, InstanceShaderPacksServiceKey, InstanceState, InstanceVersionServiceKey, InstanceVersionState, JavaRecord, JavaServiceKey, JavaState, LaunchServiceKey, LaunchState, LittleSkinUserServiceKey, LocalVersionHeader, ModpackServiceKey, ModrinthServiceKey, ModrinthState, OfficialUserServiceKey, PeerServiceKey, PeerState, ResourcePackPreviewServiceKey, ResourceServiceKey, ResourceState, SaveState, ServerInfoState, ServerStatusServiceKey, UserProfile, UserServiceKey, UserState, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
+import { GameProfile } from '@xmcl/user'
 import { ServiceFactory } from '/@/composables'
 
 // fix vue 2 reactivity
 // TODO: remove this in vue 3
+
+class ReactiveInstanceJavaState extends InstanceJavaState {
+  java = EMPTY_JAVA
+
+  instanceJava(java: JavaRecord | undefined) {
+    set(this, 'java', java)
+  }
+}
+
+class ReactiveInstanceVersionState extends InstanceVersionState {
+  versionHeader = EMPTY_VERSION
+  instanceVersion(version: ResolvedVersion | undefined) {
+    set(this, 'version', version)
+  }
+
+  instanceVersionHeader(version: LocalVersionHeader | undefined) {
+    set(this, 'versionHeader', version)
+  }
+}
+
 class ReactiveUserState extends UserState {
   gameProfileUpdate({ profile, userId }: { userId: string; profile: (GameProfileAndTexture | GameProfile) }) {
     const userProfile = this.users[userId]
@@ -22,21 +43,13 @@ class ReactiveUserState extends UserState {
   userProfileRemove(userId: string) {
     if (this.selectedUser.id === userId) {
       this.selectedUser.id = ''
-      this.selectedUser.profile = ''
     }
 
     del(this.users, userId)
   }
 
-  userProfileAdd(profile: Omit<UserProfile, 'profiles'> & { id: string; profiles: (GameProfileAndTexture | GameProfile)[] }) {
-    const value = {
-      ...profile,
-      profiles: profile.profiles
-        .map(p => ({ ...p, textures: { SKIN: { url: '' } } }))
-        .reduce((o: { [key: string]: any }, v) => { o[v.id] = v; return o }, {}),
-      selectedProfile: profile.selectedProfile,
-    }
-    set(this.users, profile.id, value)
+  userProfile(user: UserProfile) {
+    set(this.users, user.id, user)
   }
 }
 
@@ -59,10 +72,13 @@ export function useAllServices(factory: ServiceFactory) {
   factory.register(InstanceShaderPacksServiceKey, () => undefined)
   factory.register(InstallServiceKey, () => undefined)
   factory.register(ResourcePackPreviewServiceKey, () => undefined)
+  factory.register(OfficialUserServiceKey, () => undefined)
+  factory.register(LittleSkinUserServiceKey, () => undefined)
+  factory.register(InstanceInstallServiceKey, () => undefined)
 
   factory.register(FeedTheBeastServiceKey, () => new FeedTheBeastState())
-  factory.register(InstanceJavaServiceKey, () => new InstanceJavaState())
-  factory.register(InstanceVersionServiceKey, () => new InstanceVersionState())
+  factory.register(InstanceJavaServiceKey, () => new ReactiveInstanceJavaState())
+  factory.register(InstanceVersionServiceKey, () => new ReactiveInstanceVersionState())
   factory.register(PeerServiceKey, () => new PeerState())
   factory.register(BaseServiceKey, () => new BaseState())
   factory.register(DiagnoseServiceKey, () => new DiagnoseState())

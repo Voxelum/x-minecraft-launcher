@@ -50,8 +50,8 @@
               {{ t('launchStatus.checkingProblems') + '...' }}
             </div>
             <div
-              class="text-gray-500 transition-all"
-              :class="{ 'text-transparent': status !== 'injectingAuthLib' }"
+              class="transition-all text-transparent"
+              :class="{ 'text-gray-500': status === 'injectingAuthLib' }"
             >
               {{ t('launchStatus.injectingAuthLib') + ` (${userProfile.authService})` + '...' }}
             </div>

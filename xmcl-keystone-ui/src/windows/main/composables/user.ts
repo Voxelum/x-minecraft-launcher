@@ -18,18 +18,6 @@ const NO_GAME_PROFILE: GameProfileAndTexture = Object.freeze({
   textures: { SKIN: { url: '' } },
 })
 
-export function useUserProfileStatus(userProfile: Ref<UserProfile>) {
-  const accessTokenValid = computed(() => userProfile.value.accessToken !== '')
-  const isOffline = computed(() => userProfile.value.authService === 'offline')
-  const isServiceCompatible = computed(() => userProfile.value.authService === userProfile.value.profileService)
-  return {
-    accessTokenValid,
-    isOffline,
-    isServiceCompatible,
-    logined: accessTokenValid,
-  }
-}
-
 export function useProfileId(userId: Ref<string>, profileId: Ref<string>) {
   const { state } = useService(UserServiceKey)
   const userProfile = computed(() => state.users[userId.value] ?? NO_USER_PROFILE)
@@ -40,63 +28,11 @@ export function useProfileId(userId: Ref<string>, profileId: Ref<string>) {
 export function useCurrentUser() {
   const { state } = useService(UserServiceKey)
   const userProfile: Ref<UserProfile> = computed(() => state.users[state.selectedUser.id] ?? NO_USER_PROFILE)
-  const gameProfile: Ref<GameProfileAndTexture> = computed(() => userProfile.value.profiles[state.selectedUser.profile] ?? NO_GAME_PROFILE)
+  const gameProfile: Ref<GameProfileAndTexture> = computed(() => userProfile.value.profiles[userProfile.value.selectedProfile] ?? NO_GAME_PROFILE)
 
   return {
     userProfile,
     gameProfile,
-  }
-}
-
-export function useUserSkin(userId: Ref<string>, gameProfileId: Ref<string>) {
-  const { state } = useService(UserServiceKey)
-  const { refreshSkin, uploadSkin, saveSkin } = useServiceOnly(UserServiceKey, 'refreshSkin', 'uploadSkin', 'saveSkin')
-  const gameProfile = computed(() => state.users[userId.value]?.profiles[gameProfileId.value] || EMPTY_GAME_PROFILE)
-  const data = reactive({
-    url: '',
-    slim: false,
-    loading: false,
-  })
-  function reset() {
-    data.url = gameProfile.value.textures.SKIN.url
-    data.slim = gameProfile.value.textures.SKIN.metadata ? gameProfile.value.textures.SKIN.metadata.model === 'slim' : false
-  }
-  const modified = computed(() => data.url !== gameProfile.value.textures.SKIN.url ||
-    data.slim !== (gameProfile.value.textures.SKIN.metadata ? gameProfile.value.textures.SKIN.metadata.model === 'slim' : false))
-
-  async function save() {
-    data.loading = true
-    try {
-      await uploadSkin({ url: data.url, slim: data.slim })
-      await refreshSkin({ userId: userId.value, gameProfileId: gameProfileId.value }).then(() => reset())
-    } finally {
-      data.loading = false
-    }
-  }
-  function refresh() {
-    refreshSkin({ userId: userId.value, gameProfileId: gameProfileId.value, force: true })
-  }
-
-  onMounted(() => {
-    refreshSkin({ userId: userId.value, gameProfileId: gameProfileId.value }).then(() => reset())
-    reset()
-  })
-  watch([userId, gameProfileId], () => {
-    if (userId.value && gameProfileId.value) {
-      refreshSkin({ userId: userId.value, gameProfileId: gameProfileId.value }).then(() => reset())
-    }
-    reset()
-  })
-
-  return {
-    ...toRefs(data),
-    refreshing: useServiceBusy(UserServiceKey, 'refreshSkin'),
-    refresh,
-    save,
-    reset,
-    modified,
-
-    exportTo: saveSkin,
   }
 }
 
@@ -107,7 +43,7 @@ export function useUsers() {
 }
 
 export function useSwitchUser() {
-  const { state, switchUserProfile, removeUserProfile } = useService(UserServiceKey)
+  const { state, selectUser, removeUserProfile } = useService(UserServiceKey)
   const userId = computed(() => state.selectedUser.id)
   const profileId = computed(() => state.selectedUser.profile)
 
@@ -117,7 +53,7 @@ export function useSwitchUser() {
   })
   const modified = computed(() => data.profileId !== profileId.value || data.userId !== userId.value)
   function commit() {
-    return switchUserProfile({ profileId: data.profileId, userId: data.userId })
+    return selectUser({ profileId: data.profileId, userId: data.userId })
   }
   function select(profileId: string, userId: string) {
     data.profileId = profileId

@@ -178,11 +178,15 @@
                         },
                         "fileId": {
                             "type": "number"
+                        },
+                        "sha1": {
+                            "type": "string"
                         }
                     },
                     "required": [
                         "fileId",
                         "modId",
+                        "sha1",
                         "type"
                     ]
                 },

@@ -1,3 +1,4 @@
+import { Exception } from '../entities/exception'
 import { DEFAULT_PROFILE, Instance } from '../entities/instance'
 import { InstanceSchema } from '../entities/instance.schema'
 import { DeepPartial } from '../util/object'
@@ -215,3 +216,14 @@ export interface InstanceService extends StatefulService<InstanceState> {
 }
 
 export const InstanceServiceKey: ServiceKey<InstanceService> = 'InstanceService'
+
+export type InstanceExceptions = {
+  type: 'instanceNameDuplicated'
+  path: string
+  name: string
+} | {
+  type: 'instanceNameRequired'
+}
+
+export class InstanceException extends Exception<InstanceExceptions> {
+}

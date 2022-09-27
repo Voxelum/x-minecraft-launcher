@@ -184,7 +184,6 @@ export function useCurseforgeProjectFiles(projectId: number) {
 export function useCurseforgeInstall(type: ProjectType, projectId: number) {
   const { state, installFile } = useService(CurseForgeServiceKey)
   const { state: resourceState } = useService(ResourceServiceKey)
-  const { install: installMod } = useService(InstanceModsServiceKey)
   function getFileStatus(file: File): 'downloading' | 'downloaded' | 'remote' {
     const res = getFileResource(file)
     if (res) {

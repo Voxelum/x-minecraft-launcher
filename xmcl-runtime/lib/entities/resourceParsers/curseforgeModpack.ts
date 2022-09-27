@@ -6,7 +6,10 @@ export const curseforgeModpackParser: ResourceParser<CurseforgeModpackManifest> 
   domain: ResourceDomain.Modpacks,
   ext: '.zip',
   parseIcon: () => Promise.resolve(undefined),
-  parseMetadata: fs => fs.readFile('manifest.json', 'utf-8').then(JSON.parse),
+  parseMetadata: async (fs) => {
+    const manifest: CurseforgeModpackManifest = await fs.readFile('manifest.json', 'utf-8').then(JSON.parse)
+    return manifest
+  },
   getSuggestedName: () => '',
   getUri: (man) => [`curseforge:modpack:${man.name}:${man.version}`],
 }

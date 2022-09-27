@@ -10,7 +10,7 @@
         "**/.hg": true,
         "**/CVS": true,
         "**/.DS_Store": true,
-        "**/node_modules": true
+        "**/node_modules": false
     },
     "typescript.preferences.quoteStyle": "single",
     "editor.tabSize": 2,

@@ -5,7 +5,7 @@
     width="200"
     :mini-variant="true"
     :color="sideBarColor"
-    class="sidebar z-10 "
+    class="sidebar z-10 moveable"
     :style="{ 'backdrop-filter': `blur(${blurSidebar}px)` }"
   >
     <v-list
@@ -42,7 +42,7 @@
             <v-list-item-title>{{ gameProfile.name }}</v-list-item-title>
           </v-list-item>
         </template>
-        My Stuff
+        {{ t('myStuff') }}
       </v-tooltip>
       <v-tooltip
         v-if="sideBarShowCurseforge"
@@ -294,10 +294,8 @@ import { useBarBlur } from '../composables/background'
 import { useColorTheme } from '../composables/colorTheme'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { useDialog } from '../composables/dialog'
-import { useInstances } from '../composables/instance'
 import { AddInstanceDialogKey } from '../composables/instanceAdd'
 import { useSortedInstance } from '../composables/instanceSort'
-import { useTaskCount } from '../composables/task'
 import { useCurrentUser } from '../composables/user'
 import { vContextMenu } from '../directives/contextMenu'
 import AppSideBarInstanceItem from './AppSideBarInstanceItem.vue'

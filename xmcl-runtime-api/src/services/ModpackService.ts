@@ -2,6 +2,7 @@ import { ResourceMetadata } from '../entities/resource'
 import { Exception } from '../entities/exception'
 import { EditInstanceOptions } from './InstanceService'
 import { ServiceKey } from './Service'
+import { InstanceFile } from '../entities/instanceManifest.schema'
 
 export interface ExportFileDirective {
   path: string
@@ -117,6 +118,13 @@ export interface ModpackService {
    * @param options The options provide instance directory path and curseforge modpack zip path
    */
   importModpack(options: ImportModpackOptions): Promise<string>
+  /**
+   * Preview the modpack content apply to the instance
+   */
+  getInstallModpackProfile(modpackPath: string): Promise<{
+    instance: EditInstanceOptions
+    files: InstanceFile[]
+  }>
 
   showModpacksFolder(): Promise<void>
 }

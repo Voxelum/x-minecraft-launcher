@@ -154,6 +154,7 @@ export interface InstanceData {
     type: 'curseforge-modpack'
     modId: number
     fileId: number
+    sha1: string
   } | {
     type: 'modrinth-modpack'
     projectId: string

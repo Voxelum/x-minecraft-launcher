@@ -91,10 +91,6 @@ interface LiteloaderVersionMeta {
 
 export interface VersionMinecraftSchema {
   /**
-   * @default ""
-   */
-  timestamp: string
-  /**
    * @default { "snapshot": "", "release": "" }
    */
   latest: {

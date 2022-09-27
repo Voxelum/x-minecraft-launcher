@@ -54,38 +54,6 @@ export interface InstanceUpdate {
   manifest: InstanceManifestSchema
 }
 
-export interface SetInstanceManifestOptions {
-  /**
-   * The path of the instance
-   */
-  path?: string
-  /**
-   * The manifest to upload
-   */
-  manifest: InstanceManifestSchema
-  /**
-   * The headers used to send to the server.
-   *
-   * By default, it will add an `Authorization` header with Microsoft account access token if this is empty.
-   */
-  headers?: Record<string, string>
-  /**
-   * Should we upload the file has downloads/curseforge/modrinth info?
-   *
-   * By default, if the file has curseforge/modrinth/downloads info, it will not be uploaded to the server.
-   *
-   * @default false
-   */
-  includeFileWithDownloads?: boolean
-  /**
-   * Force to use json format to upload to server.
-   *
-   * Some servers do not accept the files without downloads/curseforge/modrinth info. So this might failed on that server.
-   * @default false
-   */
-  forceJsonFormat?: boolean
-}
-
 export interface InstallInstanceOptions {
   /**
    * The instance path
@@ -95,9 +63,13 @@ export interface InstallInstanceOptions {
    * The files to update
    */
   files: Array<InstanceFile>
+  /**
+   * Generate the lock of the instance
+   */
+  lock?: boolean
 }
 
-export interface GetManifestOptions<T extends 'sha1' | 'sha256' | 'md5'> {
+export interface GetManifestOptions {
   /**
    * The instance path
    *
@@ -107,7 +79,7 @@ export interface GetManifestOptions<T extends 'sha1' | 'sha256' | 'md5'> {
   /**
    * The hash to get for each instance files
    */
-  hashes?: T[]
+  hashes?: string[]
 }
 
 /**
@@ -126,45 +98,9 @@ export interface InstanceIOService {
    */
   importInstance(location: string): Promise<string>
   /**
-   * Fetch the instance update and return the difference.
-   * If this instance is not a remote hooked instance, this will return
-   */
-  fetchInstanceUpdate(path?: string): Promise<InstanceUpdate | undefined>
-  /**
    * Compute the instance manifest for current local files.
    */
-  getInstanceManifest<T extends 'sha1' | 'sha256' | 'md5' = never>(options?: GetManifestOptions<T>): Promise<InstanceManifest>
-  /**
-   * Upload the instance manifest via `instance.fileApi`
-   *
-   * This will send http post request to the `instance.fileApi` URL.
-   * - If all the files manifest in options has downloads/curseforge/modrinth info, it will POST a json manifest (`content-type: application/json`) to the server.
-   * - If some files in manifest has no downloads/curseforge/modrinth info, it will POST a zip file (`content-type: application/zip`) to the server.
-   *
-   * Normally, you must have admin privilege to call this method.
-   * Set the `headers` in options to add auth info in http headers.
-   */
-  uploadInstanceManifest(options: SetInstanceManifestOptions): Promise<void>
-  /**
-   * Apply the instance files update.
-   *
-   * You can use this function to ensure the files in this instance matched with your files manifest,
-   *
-   * like the files under
-   * - mods
-   * - configs
-   * - resourcepacks
-   * - shaderpacks
-   * or any other files
-   */
-  installInstanceFiles(options: InstallInstanceOptions): Promise<void>
-
-  /**
-   * Check if this instance has any pending install
-   *
-   * @return All pending instance installation
-   */
-  checkInstanceInstall(): Promise<InstanceFile[]>
+  getInstanceManifest(options?: GetManifestOptions): Promise<InstanceManifest>
 }
 
 export type InstanceIOExceptions = InstanceNotFoundException | {

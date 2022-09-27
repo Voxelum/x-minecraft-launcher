@@ -3,7 +3,7 @@
     class="flex flex-col flex-1 flex-grow-0 gap-3 max-w-full backdrop-filter backdrop-blur-sm"
   >
     <div
-      class="flex w-full align-center max-h-20 gap-3 flex-wrap flex-grow-0 flex-1 items-baseline"
+      class="flex w-full align-center max-h-20 gap-3 flex-grow-0 flex-1 items-baseline"
     >
       <span
         class="display-2 rounded-lg py-4 text-shadow text-shadow-lg"
@@ -28,6 +28,7 @@
           class="pointer"
           :color="!localVersion.id ? 'warning' : 'primary'"
           :input-value="false"
+          @click="onShowLocalVersion"
         >
           <v-avatar left>
             <v-icon>
@@ -146,7 +147,7 @@
 </template>
 
 <script lang=ts setup>
-import { AssetIndexIssueKey, AssetsIssueKey, BaseServiceKey, InstallProfileIssueKey, isIssue, LibrariesIssueKey, VersionIssueKey, VersionJarIssueKey, VersionJsonIssueKey } from '@xmcl/runtime-api'
+import { AssetIndexIssueKey, AssetsIssueKey, BaseServiceKey, InstallProfileIssueKey, InstanceVersionServiceKey, isIssue, LibrariesIssueKey, VersionIssueKey, VersionJarIssueKey, VersionJsonIssueKey, VersionServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { useInstance, useInstanceVersion } from '../composables/instance'
 import { AppExportDialogKey } from '../composables/instanceExport'
@@ -187,12 +188,21 @@ const issue = computed(() => {
   return undefined
 })
 
-const { runtime: version, name, isServer, path, refreshing } = useInstance()
+const { path, instance, refreshing } = useInstance()
+const name = computed(() => instance.value.name)
+const version = computed(() => instance.value.runtime)
 const { localVersion } = useInstanceVersion()
 const { openDirectory } = useService(BaseServiceKey)
 const { show: showLogDialog } = useDialog('log')
 const { show: showExport } = useDialog(AppExportDialogKey)
 const { t, tc } = useI18n()
+const { showVersionDirectory } = useService(VersionServiceKey)
+
+const onShowLocalVersion = () => {
+  if (localVersion.value.id) {
+    showVersionDirectory(localVersion.value.id)
+  }
+}
 
 const { total, progress, name: taskName, pause, resume, status } = useTask((i) => {
   const p = i.param as any
@@ -215,6 +225,9 @@ const { total, progress, name: taskName, pause, resume, status } = useTask((i) =
     return true
   }
   if (i.path === 'installByProfile' && p?.id === localVersion.value) {
+    return true
+  }
+  if (i.path === 'installFabric' && p?.id === version.value.minecraft) {
     return true
   }
   if (i.path === 'updateInstance' && p.instance === path.value) {

@@ -1,11 +1,13 @@
 import { diagnose, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedLibrary, ResolvedVersion, Version } from '@xmcl/core'
-import { DEFAULT_FABRIC_API, DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getQuiltVersionsList, getVersionList, getYarnArtifactList, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, QuiltArtifactVersion, YARN_MAVEN_URL } from '@xmcl/installer'
+import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DEFAULT_VERSION_MANIFEST_URL, DownloadTask, FabricArtifactVersion, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, MinecraftVersionList, Options, QuiltArtifactVersion } from '@xmcl/installer'
 import { Asset, ForgeVersion, ForgeVersionList, GetQuiltVersionListOptions, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallQuiltOptions, InstallService as IInstallService, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, OptifineVersion, ResourceDomain, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema, VersionQuiltSchema } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { ensureFile, readJson, readJSON, writeFile, writeJson } from 'fs-extra'
+import { request } from 'undici'
 import { URL } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { assertErrorWithCache, kCacheKey } from '../dispatchers/cacheDispatcher'
 import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
 import { BaseService } from './BaseService'
@@ -19,21 +21,13 @@ import { VersionService } from './VersionService'
  */
 @ExposeServiceKey(InstallServiceKey)
 export class InstallService extends AbstractService implements IInstallService {
-  private refreshedMinecraft = false
-  private refreshedFabric = false
   private refreshedLiteloader = false
-  private refreshedOptifine = false
-  private refreshedQuilt = false
   private refreshedForge: Record<string, boolean> = {}
 
   private latestRelease = '1.19'
 
-  private minecraftVersionJson = createSafeFile(this.getAppDataPath('minecraft-versions.json'), VersionMinecraftSchema, this, [this.getPath('minecraft-versions.json')])
   private forgeVersionJson = createSafeFile(this.getAppDataPath('forge-versions.json'), VersionForgeSchema, this, [this.getPath('forge-versions.json')])
   private liteloaderVersionJson = createSafeFile(this.getAppDataPath('lite-versions.json'), VersionLiteloaderSchema, this, [this.getPath('lite-versions.json')])
-  private fabricVersionJson = createSafeFile(this.getAppDataPath('fabric-versions.json'), VersionFabricSchema, this, [this.getPath('fabric-versions.json')])
-  private optifineVersionJson = createSafeFile(this.getAppDataPath('optifine-versions.json'), VersionOptifineSchema, this, [this.getPath('optifine-versions.json')])
-  private quiltVersionJson = createSafeFile(this.getAppDataPath('quilt-versions.json'), VersionQuiltSchema, this, [this.getPath('quilt-versions.json')])
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(BaseService) private baseService: BaseService,
@@ -46,6 +40,28 @@ export class InstallService extends AbstractService implements IInstallService {
       this.getMinecraftVersionList()
       this.getOptifineVersionList()
     })
+
+    this.app.networkManager.registerDispatchInterceptor((options) => {
+      const origin = options.origin instanceof URL ? options.origin : new URL(options.origin!)
+      if (origin.host === 'meta.fabricmc.net') {
+        if (this.baseService.shouldOverrideApiSet()) {
+          const url = new URL(this.baseService.getApiSets()[0].url + '/fabric-meta' + origin.pathname)
+          options.origin = url.origin
+          options.path = url.pathname + url.search
+        }
+      } else if (origin.host === 'launchermeta.mojang.com') {
+        if (this.baseService.shouldOverrideApiSet()) {
+          const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference)
+          if (api) { options.origin = new URL(api.url).origin }
+        }
+      } else if (origin.host === 'bmclapi2.bangbang93.com' || origin.host === 'bmclapi.bangbang93.com') {
+        // bmclapi might have mirror
+        if (this.baseService.shouldOverrideApiSet()) {
+          const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference)
+          if (api) { options.origin = new URL(api.url).origin }
+        }
+      }
+    })
   }
 
   getLatestRelease() {
@@ -54,26 +70,26 @@ export class InstallService extends AbstractService implements IInstallService {
 
   @Singleton()
   async getMinecraftVersionList(force?: boolean): Promise<VersionMinecraftSchema> {
-    if (!force && this.refreshedMinecraft) {
-      this.log('Skip to refresh Minecraft metadata. Use cache.')
-      const result = await this.minecraftVersionJson.read()
-      this.latestRelease = result.latest.release
-      return result
-    }
     this.log('Start to refresh minecraft version metadata.')
-    const oldMetadata = await this.minecraftVersionJson.read()
-    const remote = this.getMinecraftJsonManifestRemote()
-    const newMetadata = await getVersionList({ original: oldMetadata, remote })
-    if (oldMetadata !== newMetadata) {
-      this.log('Found new minecraft version metadata. Update it.')
-      this.minecraftVersionJson.write(newMetadata)
-    } else {
-      this.log('Not found new Minecraft version metadata. Use cache.')
+    let metadata: MinecraftVersionList
+
+    try {
+      const response = await request(DEFAULT_VERSION_MANIFEST_URL)
+
+      if (response.statusCode === 304) {
+        this.log('Not found new Minecraft version metadata. Use cache.')
+      } else {
+        this.log('Found new minecraft version metadata. Update it.')
+      }
+
+      metadata = await response.body.json()
+    } catch (e) {
+      assertErrorWithCache(e)
+      metadata = JSON.parse(e[kCacheKey].getBody().toString())
     }
 
-    this.latestRelease = newMetadata.latest.release
-
-    return newMetadata
+    this.latestRelease = metadata.latest.release
+    return metadata
   }
 
   @Singleton()
@@ -100,11 +116,10 @@ export class InstallService extends AbstractService implements IInstallService {
       if (this.networkManager.isInGFW) {
         this.log(`Update forge version list (BMCL) for Minecraft ${minecraftVersion}`)
         newForgeVersion = await this.getForgesFromBMCL(minecraftVersion, existed)
-        getForgeVersionList({ mcversion: minecraftVersion, original: existed as any }).then((backup) => {
+        getForgeVersionList({ minecraft: minecraftVersion, dispatcher: this.networkManager.getDispatcher() }).then((backup) => {
           if (backup !== existed as any) {
             // respect the forge official source
             if (existed) {
-              existed.timestamp = backup.timestamp
               existed.versions = backup.versions as any
               this.forgeVersionJson.write(data)
             } else {
@@ -116,7 +131,7 @@ export class InstallService extends AbstractService implements IInstallService {
         })
       } else {
         this.log(`Update forge version list (ForgeOfficial) for Minecraft ${minecraftVersion}`)
-        newForgeVersion = await getForgeVersionList({ mcversion: minecraftVersion, original: existed as any }) as any
+        newForgeVersion = await getForgeVersionList({ minecraft: minecraftVersion, dispatcher: this.networkManager.getDispatcher() }) as any
       }
 
       if (newForgeVersion !== existed) {
@@ -165,165 +180,98 @@ export class InstallService extends AbstractService implements IInstallService {
 
   @Singleton()
   async getFabricVersionList(force?: boolean): Promise<VersionFabricSchema> {
-    if (!force && this.refreshedFabric) {
-      this.log('Skip to refresh fabric metadata. Use cache.')
-      return this.fabricVersionJson.read()
-    }
-
     this.log('Start to refresh fabric metadata')
 
-    const result = await this.fabricVersionJson.read()
-    let fabricMetaUrl = 'https://meta.fabricmc.net'
-    if (this.baseService.shouldOverrideApiSet()) {
-      fabricMetaUrl = this.baseService.getApiSets()[0].url + '/fabric-meta'
+    let yarns: FabricArtifactVersion[]
+    try {
+      const response = await request('https://meta.fabricmc.net/v2/versions/yarn')
+      yarns = await response.body.json()
+      if (response.statusCode === 304) {
+        this.log('Not found new fabric yarn metadata. Use cache')
+      } else {
+        this.log(`Found new fabric yarn metadata: ${response.headers['last-modified']}.`)
+      }
+    } catch (e) {
+      assertErrorWithCache(e)
+      yarns = e[kCacheKey].getBodyJson() || []
     }
 
-    const response = await this.networkManager.request.get(`${fabricMetaUrl}/v2/versions/yarn`, {
-      headers: {
-        'if-modified-since': result.yarnTimestamp,
-      },
-    })
-    let yarnModified = false
-    if (response.statusCode < 300 && response.statusCode >= 200) {
-      result.yarns = JSON.parse(response.body)
-      result.yarnTimestamp = response.headers['last-modified'] ?? result.yarnTimestamp
-      yarnModified = true
-      this.log(`Refreshed fabric yarn metadata at ${result.yarnTimestamp}.`)
-    } else if (response.statusCode === 304) {
-      result.yarnTimestamp = response.headers['last-modified'] ?? result.yarnTimestamp
+    let loaders: FabricArtifactVersion[]
+    try {
+      const response = await request('https://meta.fabricmc.net/v2/versions/loader')
+      loaders = await response.body.json()
+      if (response.statusCode === 304) {
+        this.log('Not found new fabric loader metadata. Use cache')
+      } else {
+        this.log(`Found new fabric loader metadata: ${response.headers['last-modified']}.`)
+      }
+    } catch (e) {
+      assertErrorWithCache(e)
+      loaders = e[kCacheKey].getBodyJson() || []
     }
 
-    const loaderResponse = await this.networkManager.request.get(`${fabricMetaUrl}/v2/versions/loader`, {
-      headers: {
-        'if-modified-since': result.loaderTimestamp,
-      },
-    })
-    let loaderModified = false
-
-    if (loaderResponse.statusCode < 300 && loaderResponse.statusCode >= 200) {
-      result.loaders = JSON.parse(loaderResponse.body)
-      result.loaderTimestamp = loaderResponse.headers['last-modified'] ?? result.loaderTimestamp
-      loaderModified = true
-      this.log(`Refreshed fabric loader metadata at ${result.loaderTimestamp}.`)
-    } else if (loaderResponse.statusCode === 304) {
-      result.loaderTimestamp = loaderResponse.headers['last-modified'] ?? result.loaderTimestamp
+    return {
+      loaders,
+      yarns,
+      loaderTimestamp: '',
+      yarnTimestamp: '',
     }
-
-    if (yarnModified || loaderModified) {
-      this.fabricVersionJson.write(result)
-    }
-
-    this.refreshedFabric = true
-    return result
   }
 
   @Singleton()
   async getOptifineVersionList(force?: boolean): Promise<OptifineVersion[]> {
-    if (!force && this.refreshedOptifine) {
-      return (await this.optifineVersionJson.read()).versions
-    }
-
     this.log('Start to refresh optifine metadata')
 
-    const oldData = await this.optifineVersionJson.read()
-    const headers = oldData.etag === ''
-      ? {}
-      : {
-        'If-None-Match': oldData.etag,
+    let versions: OptifineVersion[]
+    try {
+      const response = await request('https://bmclapi2.bangbang93.com/optifine/versionList')
+      if (response.statusCode === 304) {
+        this.log('Not found new optifine version metadata. Use cache.')
+      } else {
+        this.log('Found new optifine version metadata. Update it.')
       }
-
-    const response = await this.networkManager.request.get('https://bmclapi2.bangbang93.com/optifine/versionList', {
-      headers,
-    })
-
-    if (response.statusCode === 304) {
-      this.log('Not found new optifine version metadata. Use cache.')
-
-      return oldData.versions
-    } else if (response.statusCode >= 200 && response.statusCode < 300) {
-      const etag = response.headers.etag as string
-      const versions: OptifineVersion[] = JSON.parse(response.body)
-
-      this.optifineVersionJson.write({
-        etag,
-        versions,
-      })
-      this.log('Found new optifine version metadata. Update it.')
-
-      this.refreshedOptifine = true
-      return versions
+      versions = await response.body.json()
+    } catch (e) {
+      assertErrorWithCache(e)
+      versions = e[kCacheKey].getBodyJson() || []
     }
-    // TODO: format this error
-    throw oldData.versions
+
+    return versions
   }
 
   @Singleton()
   async getQuiltVersionList(options?: GetQuiltVersionListOptions): Promise<QuiltArtifactVersion[]> {
     const hasMinecraft = async () => {
       if (options?.minecraftVersion) {
-        let baseUrl = DEFAULT_FABRIC_API
-        if (this.baseService.shouldOverrideApiSet()) {
-          const prefer = this.baseService.getApiSets()[0]
-          baseUrl = prefer.name === 'bmcl' ? 'https://bmclapi2.bangbang93.com/fabric-meta/v2' : 'https://download.mcbbs.net/fabric-meta/v2'
-        }
-        const url = `${baseUrl}/versions/intermediary/${options?.minecraftVersion}`
-        const request = await this.networkManager.request.get(url, { throwHttpErrors: false })
-        if (request.statusCode === 200) {
-          if (JSON.parse(request.body).length > 0) {
-            return true
-          }
-        }
-        return false
+        const url = `https://meta.fabricmc.net/v2/versions/intermediary/${options?.minecraftVersion}`
+        const response = await request(url)
+        return response.statusCode === 200 && (await response.body.json()).length > 0
       }
       return true
     }
-    if (!options?.force && this.refreshedQuilt) {
-      this.log('Skip to request quilt version list. Use file cache.')
-      const versions = (await this.quiltVersionJson.read()).versions
-      if (options?.minecraftVersion) {
-        if (await hasMinecraft().catch(() => false)) {
-          return versions
-        }
-        return []
-      }
-      return versions
-    }
-
     this.log('Start to get quilt metadata')
-    const fileCache = await this.quiltVersionJson.read()
-    const originalTimestamp = fileCache.timestamp
-    const cache = {
-      timestamp: fileCache.timestamp,
-      value: fileCache.versions,
-    }
-    await getQuiltVersionsList({
-      cache: cache,
-    })
-    this.refreshedQuilt = true
-    if (originalTimestamp !== cache.timestamp) {
-      this.log('Found new quilt metadata')
-      await this.quiltVersionJson.write({
-        timestamp: cache.timestamp,
-        versions: cache.value,
-      })
-    } else {
-      this.log('Use existed quilt metadata')
+    let versions: QuiltArtifactVersion[]
+    try {
+      const { body, statusCode } = await request('https://meta.quiltmc.org/v3/versions/loader')
+      if (statusCode >= 400) {
+        throw new Error()
+      }
+      versions = await body.json()
+      if (statusCode === 200) {
+        this.log('Found new quilt metadata')
+      } else if (statusCode === 304) {
+        this.log('Use existed quilt metadata')
+      }
+    } catch (e) {
+      assertErrorWithCache(e)
+      versions = e[kCacheKey].getBodyJson() || []
     }
 
     if (await hasMinecraft()) {
-      return cache.value
+      return versions
     }
-    return []
-  }
 
-  protected getMinecraftJsonManifestRemote() {
-    if (this.baseService.shouldOverrideApiSet()) {
-      const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference)
-      if (api) {
-        return `${api.url}/mc/game/version_manifest.json`
-      }
-    }
-    return undefined
+    return []
   }
 
   protected getForgeInstallOptions(): InstallForgeOptions {
@@ -418,25 +366,10 @@ export class InstallService extends AbstractService implements IInstallService {
       }[]
     }
 
-    let apiHost = 'https://bmclapi2.bangbang93.com'
-    if (this.baseService.shouldOverrideApiSet()) {
-      const apis = this.baseService.getApiSets()
-      apiHost = apis[0].url
-    }
-
-    const { body, statusCode, headers } = await this.networkManager.request({
+    const { body, statusCode, headers } = await request(`https://bmclapi2.bangbang93.com/forge/minecraft/${mcVersion}`, {
       method: 'GET',
-      url: `${apiHost}/forge/minecraft/${mcVersion}`,
-      headers: currentForgeVersion && currentForgeVersion.timestamp
-        ? {
-          'If-Modified-Since': currentForgeVersion.timestamp,
-          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
-        }
-        : {
-          'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
-        },
-      https: {
-        rejectUnauthorized: false,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
       },
     })
     function convert(v: BMCLForge): ForgeVersion {
@@ -452,7 +385,7 @@ export class InstallService extends AbstractService implements IInstallService {
     if (statusCode === 304) {
       return currentForgeVersion
     }
-    const forges: BMCLForge[] = JSON.parse(body)
+    const forges: BMCLForge[] = await body.json()
     const result: ForgeVersionList = {
       mcversion: mcVersion,
       timestamp: headers['if-modified-since'] ?? forges[0]?.modified,
@@ -673,7 +606,7 @@ export class InstallService extends AbstractService implements IInstallService {
       const result = await this.submit(task('installFabric', async () => {
         const artifact = await getFabricLoaderArtifact(options.minecraft, options.loader)
         return installFabric(artifact, this.getPath(), { side: 'client' })
-      }))
+      }, { id: options.minecraft }))
       this.log(`Success to install fabric: yarn ${options.yarn}, loader ${options.loader}. The new version is ${result}`)
       return result
     } catch (e) {
@@ -841,7 +774,6 @@ export class InstallService extends AbstractService implements IInstallService {
     }
   }
 
-  @Singleton()
   async installByProfile(profile: InstallProfile, version?: string) {
     try {
       await this.submit(installByProfileTask(profile, this.getPath(), {

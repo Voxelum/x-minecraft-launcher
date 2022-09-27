@@ -1,11 +1,12 @@
-import { File, FileModLoaderType, Mod, ModCategory, ModsSearchSortField, Pagination, SearchOptions } from '@xmcl/curseforge'
+import { FileModLoaderType, SearchOptions } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
 import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, CurseforgeState, GetModFilesOptions, InstallFileOptions, InstallFileResult, ProjectType, ResourceDomain } from '@xmcl/runtime-api'
 import { unlink } from 'fs-extra'
 import { join } from 'path'
-import { URLSearchParams } from 'url'
+import { Client } from 'undici'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { CurseforgeClient } from '../clients/CurseforgeClient'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { isNonnull, requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
@@ -14,144 +15,68 @@ import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
 @ExposeServiceKey(CurseForgeServiceKey)
 export class CurseForgeService extends StatefulService<CurseforgeState> implements ICurseForgeService {
-  private gClient = this.networkManager.request.extend({
-    prefixUrl: 'https://api.curseforge.com',
-    headers: {
-      Accept: 'application/json',
-      'x-api-key': process.env.CURSEFORGE_API_KEY,
-    },
-  })
+  private client: CurseforgeClient
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app, CurseForgeServiceKey, () => new CurseforgeState())
+
+    const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
+      if (origin.host === 'api.curseforge.com') {
+        return new Client(origin, {
+          ...options,
+          pipelining: 6,
+          bodyTimeout: 7000,
+          headersTimeout: 7000,
+        })
+      }
+    })
+    this.client = new CurseforgeClient(process.env.CURSEFORGE_API_KEY || '', dispatcher)
   }
 
   @Singleton()
   async fetchCategories() {
-    const categories: { data: ModCategory[] } = await this.gClient.get('v1/categories', { searchParams: { gameId: 432 } }).json()
-    return categories.data
+    return await this.client.getCategories()
   }
 
   @Singleton(v => v.toString())
   async fetchProject(projectId: number) {
     this.log(`Fetch project: ${projectId}`)
-    const result: { data: Mod } = await this.gClient.get(`v1/mods/${projectId}`).json()
-    return result.data
+    return await this.client.getMod(projectId)
   }
 
   @Singleton(v => v.toString())
   async fetchProjectDescription(projectId: number) {
     this.log(`Fetch project description: ${projectId}`)
-    const result: { data: string } = await this.gClient.get(`v1/mods/${projectId}/description`).json()
-    return result.data
+    return await this.client.getModDescription(projectId)
   }
 
   @Singleton(v => v.modId)
   async fetchProjectFiles(options: GetModFilesOptions) {
     this.log(`Fetch project files: ${options.modId}`)
-    const param = new URLSearchParams()
-    if (options.gameVersion) {
-      param.append('gameVersion', options.gameVersion)
-    }
-    if (options.modLoaderType) {
-      param.append('modLoaderType', options.modLoaderType.toString())
-    }
-    if (options.gameVersionTypeId) {
-      param.append('gameVersionTypeId', options.gameVersionTypeId.toString())
-    }
-    if (options.index) {
-      param.append('index', options.index.toString())
-    }
-    if (options.pageSize) {
-      param.append('pageSize', options.pageSize.toString())
-    }
-    const result: { data: File[]; pagination: Pagination } = await this.gClient.get(`v1/mods/${options.modId}/files?${param.toString()}`).json()
-    return result
+    return await this.client.getModFiles(options)
   }
 
   @Singleton((a, b) => `${a}-${b}`)
   async fetchProjectFile(projectId: number, fileId: number) {
     this.log(`Fetch project file: ${projectId}-${fileId}`)
-    const result: { data: File } = await this.gClient.get(`v1/mods/${projectId}/files/${fileId}`).json()
-    return result.data
+    return await this.client.getModFile(projectId, fileId)
   }
 
   async fetchMods(modIds: number[]) {
     this.log(`Fetch mods ${modIds.length} files.`)
-    const result: { data: Mod[] } = await this.gClient.post('v1/mods', {
-      body: JSON.stringify({ modIds }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      retry: {
-        limit: 3,
-        calculateDelay: ({ attemptCount }) => attemptCount * 1000,
-      },
-    }).json()
-    return result.data
+    return await this.client.getMods(modIds)
   }
 
   async fetchModFiles(fileIds: number[]) {
     this.log(`Fetch profile ${fileIds.length} files.`)
-    const result: { data: File[] } = await this.gClient.post('v1/mods/files', {
-      body: JSON.stringify({ fileIds }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      retry: {
-        limit: 3,
-        calculateDelay: ({ attemptCount }) => attemptCount * 1000,
-      },
-    }).json()
-    return result.data
+    return await this.client.getFiles(fileIds)
   }
 
   async searchProjects(searchOptions: SearchOptions) {
-    const params = new URLSearchParams()
-    params.append('gameId', '432')
-    if (searchOptions.classId) {
-      params.append('classId', searchOptions.classId?.toString() ?? '')
-    }
-    if (searchOptions.categoryId) {
-      params.append('categoryId', searchOptions.categoryId?.toString() ?? '')
-    }
-    if (searchOptions.gameVersion) {
-      params.append('gameVersion', searchOptions.gameVersion ?? '')
-    }
-    if (searchOptions.searchFilter) {
-      params.append('searchFilter', searchOptions.searchFilter ?? '')
-    }
-    if (searchOptions.sortField) {
-      params.append('sortField', searchOptions.sortField?.toString() ?? ModsSearchSortField.Featured.toString())
-    }
-    if (searchOptions.sortOrder) {
-      params.append('sortOrder', searchOptions.sortOrder ?? 'desc')
-    } else {
-      params.append('sortOrder', 'desc')
-    }
-    if (searchOptions.modLoaderType) {
-      params.append('modLoaderType', searchOptions.modLoaderType?.toString() ?? '0')
-    }
-    if (searchOptions.gameVersionTypeId) {
-      params.append('gameVersionTypeId', searchOptions.gameVersionTypeId?.toString() ?? '')
-    }
-    if (searchOptions.slug) {
-      params.append('slug', searchOptions.slug ?? '')
-    }
-    if (searchOptions.index) {
-      params.append('index', searchOptions.index?.toString() ?? '0')
-    }
-    if (searchOptions.pageSize) {
-      params.append('pageSize', searchOptions.pageSize?.toString() ?? '25')
-    }
-    const search = params.toString()
-    this.log(`Search project: ${search}`)
-    const result: { data: Mod[]; pagination: Pagination } = await this.gClient.get('v1/mods/search', {
-      searchParams: search,
-    }).json()
-    return result
+    this.log(`Search project: ${JSON.stringify(searchOptions, null, 4)}`)
+    return await this.client.searchMods(searchOptions)
   }
 
   async installFile({ file, type, projectId, instancePath }: InstallFileOptions): Promise<InstallFileResult> {

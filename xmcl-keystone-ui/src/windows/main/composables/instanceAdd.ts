@@ -78,6 +78,7 @@ export function useAllTemplate(data: InstanceData) {
         type: 'modrinth-modpack',
         projectId: modrinth.metadata.modrinth.projectId,
         versionId: modrinth.metadata.modrinth.versionId,
+        sha1: modrinth.hash,
       }
     }
 

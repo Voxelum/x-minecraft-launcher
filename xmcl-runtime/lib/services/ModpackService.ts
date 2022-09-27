@@ -1,29 +1,25 @@
 import { HashAlgo } from '@xmcl/curseforge'
-import { DownloadTask, readManifest, UnzipTask } from '@xmcl/installer'
-import { CurseforgeModpackManifest, EditGameSettingOptions, ExportModpackOptions, getResolvedVersion, ImportModpackOptions, InstanceFile, isAllowInModrinthModpack, isResourcePackResource, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoAddon, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, Persisted, Resource, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
-import { MultipleError, task } from '@xmcl/task'
-import { open, readAllEntries } from '@xmcl/unzip'
-import { createHash, Hash } from 'crypto'
-import { existsSync } from 'fs'
-import { ensureDir, stat, unlink } from 'fs-extra'
-import { basename, extname, join, relative } from 'path'
-import { finished, pipeline } from 'stream/promises'
+import { UnzipTask } from '@xmcl/installer'
+import { CurseforgeModpackManifest, ExportModpackOptions, getResolvedVersion, ImportModpackOptions, InstanceFile, isAllowInModrinthModpack, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
+import { task } from '@xmcl/task'
+import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
+import { createHash } from 'crypto'
+import { stat } from 'fs-extra'
+import { join, relative } from 'path'
+import { pipeline } from 'stream/promises'
 import { Entry, ZipFile } from 'yauzl'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { readMetadata, resolveInstanceOptions } from '../entities/modpack'
-import { getCurseforgeUrl } from '../entities/resource'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
-import { isFile, sha1ByPath } from '../util/fs'
+import { checksumFromStream, isFile, sha1ByPath } from '../util/fs'
 import { requireObject } from '../util/object'
 import { Inject } from '../util/objectRegistry'
-import { joinUrl } from '../util/url'
 import { ZipTask } from '../util/zip'
 import { BaseService } from './BaseService'
 import { CurseForgeService } from './CurseForgeService'
 import { InstallService } from './InstallService'
 import { InstanceIOService } from './InstanceIOService'
-import { InstanceModsService } from './InstanceModsService'
 import { InstanceOptionsService } from './InstanceOptionsService'
 import { InstanceService } from './InstanceService'
 import { InstanceVersionService } from './InstanceVersionService'
@@ -221,6 +217,48 @@ export class ModpackService extends AbstractService implements IModpackService {
     }
   }
 
+  async getInstallModpackProfile(path: string) {
+    if (!await isFile(path)) {
+      throw new ModpackException({ type: 'requireModpackAFile', path }, `Cannot import modpack ${path}, since it's not a file!`)
+    }
+
+    this.log(`Import modpack by path ${path}`)
+
+    const resource = this.resourceService.getResourceByKey(path)
+
+    const zip = await open(path)
+    const entries = await readAllEntries(zip)
+
+    const manifest = await readMetadata(zip, entries).catch(() => {
+      throw new ModpackException({ type: 'invalidModpack', path })
+    })
+    const instance = resolveInstanceOptions(manifest)
+
+    const getEntryPath = (e: Entry) => e.fileName.substring('overrides' in manifest ? manifest.overrides.length : 'overrides'.length)
+
+    const files = (await Promise.all(entries
+      .filter((e) => !e.fileName.endsWith('/') && e.fileName.startsWith('overrides' in manifest ? manifest.overrides : 'overrides'))
+      .map(async (v) => {
+        const sha1 = await checksumFromStream(await openEntryReadStream(zip, v), 'sha1')
+        const file: InstanceFile = {
+          path: getEntryPath(v),
+          size: v.uncompressedSize,
+          hashes: {
+            sha1,
+            crc32: v.crc32.toString(),
+          },
+          downloads: [`zip:${join(path, getEntryPath(v))}`],
+        }
+        return file
+      })))
+      .concat(await this.convertManifest(manifest))
+
+    return {
+      instance,
+      files,
+    }
+  }
+
   /**
    * Import the modpack zip file to the instance.
    * @param options The options provide instance directory path and modpack zip path
@@ -265,7 +303,9 @@ export class ModpackService extends AbstractService implements IModpackService {
     }).catch((e) => {
       this.error(`Fail to install modpack: ${path}`)
       this.error(e)
-      this.instanceService.deleteInstance(instancePath)
+      if (!('instancePath' in options)) {
+        this.instanceService.deleteInstance(instancePath)
+      }
       throw e
     })
 

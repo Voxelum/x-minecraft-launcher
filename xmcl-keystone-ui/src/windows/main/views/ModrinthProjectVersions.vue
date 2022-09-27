@@ -144,16 +144,15 @@
 </template>
 
 <script lang="ts" setup>
-import { ProjectVersion } from '@xmcl/modrinth'
-import { ModrinthServiceKey, Resource, Persisted, ResourceServiceKey } from '@xmcl/runtime-api'
-import { useI18n, useService, useRefreshable, useServiceBusy } from '/@/composables'
-import Markdown from 'markdown-it'
 import { Ref } from '@vue/composition-api'
-import { getLocalDateString } from '/@/util/date'
+import { ProjectVersion } from '@xmcl/modrinth'
+import { ModrinthServiceKey, Persisted, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import Markdown from 'markdown-it'
+import { useI18n, useRefreshable, useService, useServiceBusy } from '/@/composables'
+import { useVuetifyColor } from '/@/composables/vuetify'
 import { getColorForReleaseType } from '/@/util/color'
-import { useVuetifyColor, VuetifyInjectionKey } from '/@/composables/vuetify'
-import { useDialog } from '../composables/dialog'
-import { AddInstanceDialogKey } from '../composables/instanceAdd'
+import { getLocalDateString } from '/@/util/date'
+
 const props = defineProps<{
   versions: string[]
   project: string

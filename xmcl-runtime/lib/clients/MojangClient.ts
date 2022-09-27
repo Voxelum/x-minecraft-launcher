@@ -1,29 +1,7 @@
+import { MicrosoftMinecraftProfile, NameAvailability, NameChangeInformation } from '@xmcl/runtime-api'
 import { MojangChallenge, MojangChallengeResponse } from '@xmcl/user'
 import { File, FormData, getGlobalDispatcher, request } from 'undici'
 import { MinecraftOwnershipResponse, MinecraftProfileErrorResponse, MinecraftProfileResponse } from '../entities/user'
-
-export interface Skin {
-  id: string
-  state: 'ACTIVE' | string
-  url: string
-  variant: 'SLIM' | 'STEVE'
-}
-export interface Cape {
-  id: string
-  state: 'ACTIVE' | string
-  url: string
-  /**
-   * Capes name
-   */
-  alias: string
-}
-
-export interface Profile {
-  id: string
-  name: string
-  skins: Skin[]
-  capes: Cape[]
-}
 
 export class SetNameError extends Error {
   public path: string
@@ -52,30 +30,16 @@ export class UnauthorizedError extends Error {
 
   constructor(err: any) {
     super(err.errorMessage)
-    this.name = 'SetNameError'
     this.path = err.path
     this.errorMessage = err.errorMessage
     this.developerMessage = err.developerMessage
   }
 }
 
-export interface NameChangeInformation {
-  changedAt: string
-  createdAt: string
-  nameChangeAllowed: boolean
-}
-
-export enum NameAvailability {
-  DUPLICATE = 'DUPLICATE',
-  AVAILABLE = 'AVAILABLE',
-  NOT_ALLOWED = 'NOT_ALLOWED',
-}
-
 export class MojangClient {
-  constructor(readonly getAccessToken: () => string, private dispatcher = getGlobalDispatcher()) { }
+  constructor(private dispatcher = getGlobalDispatcher()) { }
 
-  async setName(name: string) {
-    const token = this.getAccessToken()
+  async setName(name: string, token: string) {
     const resp = await request(`https://api.minecraftservices.com/minecraft/profile/name/${name}`, {
       method: 'PUT',
       headers: {
@@ -84,7 +48,7 @@ export class MojangClient {
       dispatcher: this.dispatcher,
     })
     switch (resp.statusCode) {
-      case 200: return await resp.body.json() as Profile
+      case 200: return await resp.body.json() as MicrosoftMinecraftProfile
       case 400: throw new SetNameError('Name is unavailable (Either taken or has not become available)', await resp.body.json())
       case 403: throw new SetNameError('Name is unavailable (Either taken or has not become available)', await resp.body.json())
       case 401: throw new SetNameError('Unauthorized (Bearer token expired or is not correct)', await resp.body.json())
@@ -94,8 +58,7 @@ export class MojangClient {
     throw new SetNameError('Unknown error', await resp.body.json())
   }
 
-  async getNameChangeInformation() {
-    const token = this.getAccessToken()
+  async getNameChangeInformation(token: string) {
     const resp = await request('https://api.minecraftservices.com/minecraft/profile/namechange', {
       method: 'GET',
       headers: {
@@ -106,8 +69,7 @@ export class MojangClient {
     return await resp.body.json() as NameChangeInformation
   }
 
-  async checkNameAvailability(name: string): Promise<NameAvailability> {
-    const token = this.getAccessToken()
+  async checkNameAvailability(name: string, token: string): Promise<NameAvailability> {
     const resp = await request(`https://api.minecraftservices.com/minecraft/profile/name/${name}/available`, {
       method: 'GET',
       headers: {
@@ -119,8 +81,7 @@ export class MojangClient {
     return result.status
   }
 
-  async getProfile(): Promise<Profile> {
-    const token = this.getAccessToken()
+  async getProfile(token: string): Promise<MicrosoftMinecraftProfile> {
     const resp = await request('https://api.minecraftservices.com/minecraft/profile', {
       method: 'GET',
       headers: {
@@ -128,12 +89,11 @@ export class MojangClient {
       },
       dispatcher: this.dispatcher,
     })
-    return await resp.body.json() as Profile
+    return await resp.body.json() as MicrosoftMinecraftProfile
   }
 
-  async setSkin(fileName: string, skin: string | Buffer, variant: 'slim' | 'classic') {
+  async setSkin(fileName: string, skin: string | Buffer, variant: 'slim' | 'classic', token: string) {
     const body = typeof skin === 'string' ? JSON.stringify({ url: skin, variant }) : getSkinFormData(skin, fileName, variant)
-    const token = this.getAccessToken()
     const headers: Record<string, string> = {
       Authorization: `Bearer ${token}`,
     }
@@ -152,6 +112,7 @@ export class MojangClient {
     const profileResponse: MinecraftProfileResponse | MinecraftProfileErrorResponse = await resp.body.json()
 
     if ('error' in profileResponse || 'errorMessage' in profileResponse) {
+      throw new Error()
       // throw new UserException({ type: 'fetchMinecraftProfileFailed', ...profileResponse },
       //   `Cannot login to Microsoft! ${profileResponse.errorMessage}`)
     }
@@ -159,8 +120,7 @@ export class MojangClient {
     return profileResponse
   }
 
-  async resetSkin() {
-    const token = this.getAccessToken()
+  async resetSkin(token: string) {
     const resp = await request('https://api.minecraftservices.com/minecraft/profile/skins/active', {
       method: 'DELETE',
       headers: {
@@ -174,8 +134,7 @@ export class MojangClient {
     }
   }
 
-  async hideCape() {
-    const token = this.getAccessToken()
+  async hideCape(token: string) {
     const resp = await request('https://api.minecraftservices.com/minecraft/profile/capes/active', {
       method: 'DELETE',
       headers: {
@@ -189,8 +148,7 @@ export class MojangClient {
     }
   }
 
-  async showCape(capeId: string) {
-    const token = this.getAccessToken()
+  async showCape(capeId: string, token: string) {
     const resp = await request('https://api.minecraftservices.com/minecraft/profile/capes/active', {
       method: 'PUT',
       headers: {
@@ -207,11 +165,11 @@ export class MojangClient {
     if (resp.statusCode === 400) {
       throw new Error()
     }
-    await resp.body.json()
+    const profile: MicrosoftMinecraftProfile = await resp.body.json()
+    return profile
   }
 
-  async verifySecurityLocation() {
-    const token = this.getAccessToken()
+  async verifySecurityLocation(token: string) {
     const resp = await request('https://api.mojang.com/user/security/location', {
       method: 'GET',
       headers: {
@@ -227,8 +185,7 @@ export class MojangClient {
     return false
   }
 
-  async getSecurityChallenges() {
-    const token = this.getAccessToken()
+  async getSecurityChallenges(token: string) {
     const resp = await request('https://api.mojang.com/user/security/challenges', {
       method: 'GET',
       headers: {
@@ -244,8 +201,7 @@ export class MojangClient {
     return await resp.body.json() as MojangChallenge[]
   }
 
-  async submitSecurityChallenges(answers: MojangChallengeResponse[]) {
-    const token = this.getAccessToken()
+  async submitSecurityChallenges(answers: MojangChallengeResponse[], token: string) {
     const resp = await request('https://api.mojang.com/user/security/location', {
       method: 'POST',
       headers: {
@@ -269,8 +225,7 @@ export class MojangClient {
   /**
    * Return the owner ship list of the player with those token.
    */
-  async checkGameOwnership() {
-    const token = this.getAccessToken()
+  async checkGameOwnership(token: string) {
     const mcResponse = await request('https://api.minecraftservices.com/entitlements/mcstore', {
       headers: {
         Authorization: `Bearer ${token}`,

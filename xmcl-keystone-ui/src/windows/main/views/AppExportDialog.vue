@@ -315,7 +315,10 @@ const { t } = useI18n()
 // base data
 const { folder } = useInstanceVersion()
 const { localVersions: _locals } = useLocalVersions()
-const { name, author, modpackVersion } = useInstance()
+const { instance } = useInstance()
+const name = computed(() => instance.value.name)
+const author = computed(() => instance.value.author)
+const modpackVersion = computed(() => instance.value.modpackVersion)
 const zipFilter = useZipFilter()
 const modrinthFilter = useModrinthFilter()
 const baseVersion = modpackVersion.value || '0.0.0'

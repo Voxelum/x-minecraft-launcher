@@ -115,7 +115,7 @@
 
 <script lang=ts setup>
 import { IssueHandlerKey, useServiceBusy, useI18n, useService, useRefreshable } from '/@/composables'
-import { DiagnoseServiceKey, IncompatibleJavaIssueKey, InvalidJavaIssueKey, Java, JavaCompatibleState, JavaServiceKey, MissingJavaIssueKey } from '@xmcl/runtime-api'
+import { DiagnoseServiceKey, IncompatibleJavaIssueKey, InstanceServiceKey, InvalidJavaIssueKey, Java, JavaCompatibleState, JavaServiceKey, MissingJavaIssueKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { JavaVersion } from '@xmcl/core'
 import { useInstance } from '../composables/instance'
@@ -127,7 +127,7 @@ const { showOpenDialog } = windowController
 const { t } = useI18n()
 const { show, isShown, hide } = useDialog(JavaIssueDialogKey)
 const { add } = useJava()
-const { editInstance } = useInstance()
+const { editInstance } = useService(InstanceServiceKey)
 const { installDefaultJava, refreshLocalJava } = useService(JavaServiceKey)
 const { subscribeTask } = useNotifier()
 const { state } = useService(DiagnoseServiceKey)

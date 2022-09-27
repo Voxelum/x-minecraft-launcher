@@ -17,22 +17,18 @@
       <user-microsoft-view
         v-if="selected && selected.authService === 'microsoft'"
         :user="selected"
-        :profile-id="profileId"
       />
       <user-mojang-view
         v-else-if="selected && selected.authService === 'mojang'"
         :user="selected"
-        :profile-id="profileId"
       />
       <user-little-skin-view
         v-else-if="selected && selected.authService === 'littleskin.cn'"
         :user="selected"
-        :profile-id="profileId"
       />
       <user-offline-view
         v-else-if="selected && selected.authService === 'offline'"
         :user="selected"
-        :profile-id="profileId"
       />
       <div class="flex-grow" />
     </div>
@@ -57,13 +53,15 @@
 import { BaseServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
-import { useProfileId, useSwitchUser, useUsers } from '../composables/user'
+import { useUsers } from '../composables/user'
 import UserPageHeader from './UserHeader.vue'
 import UserLittleSkinView from './UserLittleSkinView.vue'
 import UserMicrosoftView from './UserMicrosoftView.vue'
 import UserMojangView from './UserMojangView.vue'
-import { useBusy, useI18n, useOperation, useService, useServiceBusy } from '/@/composables'
 import UserOfflineView from './UserOfflineView.vue'
+import { useI18n, useOperation, useService, useServiceBusy } from '/@/composables'
+import { DropServiceInjectionKey } from '/@/composables/dropService'
+import { injection } from '/@/util/inject'
 
 const { refreshUser: refreshAccount, refreshSkin } = useService(UserServiceKey)
 const { handleUrl } = useService(BaseServiceKey)
@@ -71,22 +69,28 @@ const { show: showLoginDialog } = useDialog('login')
 const { t } = useI18n()
 
 const { users } = useUsers()
-const { select, remove, modified, commit, userId, profileId } = useSwitchUser()
+const { state, selectUser, removeUserProfile } = useService(UserServiceKey)
+const userId = computed(() => state.selectedUser.id)
+
 const { show } = useDialog('deletion')
-const data = reactive({
-  deleting: false,
-  dragged: false,
-})
 
-const { begin: beginRemoveProfile, operate: confirmRemoveProfile, data: removingProfile } = useOperation('', (v) => remove(v))
+const { begin: beginRemoveProfile, operate: confirmRemoveProfile, data: removingProfile } = useOperation('', (v) => removeUserProfile(v))
 
-const { state } = useService(UserServiceKey)
 const removingUserName = computed(() => state.users[removingProfile.value]?.username ?? '')
 const selected = computed(() => {
   return users.value.find(u => u.id === userId.value)
 })
 
-const refreshingSkin = useServiceBusy(UserServiceKey, 'refreshSkin', computed(() => `${userId.value}[${profileId.value}]`))
+const { suppressed } = injection(DropServiceInjectionKey)
+
+onMounted(() => {
+  suppressed.value = true
+})
+onUnmounted(() => {
+  suppressed.value = false
+})
+
+const refreshingSkin = useServiceBusy(UserServiceKey, 'refreshSkin', computed(() => `${userId.value}`))
 const refreshingAccount = useServiceBusy(UserServiceKey, 'refreshUser')
 const refreshing = computed(() => refreshingSkin.value || refreshingAccount.value)
 function startDelete(id: string) {
@@ -114,8 +118,7 @@ function onDrop(e: DragEvent) {
   }
 }
 function onSelect(user: UserProfile) {
-  select(user.selectedProfile, user.id)
-  commit()
+  selectUser(user.id)
 }
 </script>
 

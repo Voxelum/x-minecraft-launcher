@@ -1,10 +1,11 @@
 import { AppManifest } from '@xmcl/runtime-api'
 import { createWriteStream } from 'fs'
-import got from 'got'
+import { stream } from 'undici'
 import { extname } from 'path'
 import { pipeline } from '../util/fs'
 import { InjectionKey } from '../util/objectRegistry'
 import LauncherApp from './LauncherApp'
+import { Writable } from 'stream'
 
 export interface ResolvedIcon {
   src: string
@@ -15,7 +16,12 @@ export interface ResolvedIcon {
 }
 
 export async function downloadIcon(url: string, dest: string) {
-  await pipeline(got.stream(url) as any, createWriteStream(dest))
+  await stream(url, {
+    method: 'GET',
+    opaque: createWriteStream(dest),
+  }, ({ opaque }) => {
+    return opaque as Writable
+  })
   return dest
 }
 

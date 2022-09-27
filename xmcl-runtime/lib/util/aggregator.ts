@@ -25,5 +25,3 @@ export class AggregateExecutor<T, A = T> {
 export interface Aggregator<T, A = T> {
   (values: T[]): A
 }
-
-export function createArrayAggregator<T>() {}

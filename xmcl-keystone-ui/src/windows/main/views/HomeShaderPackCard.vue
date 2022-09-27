@@ -9,7 +9,7 @@
       {{ tc('shaderPack.name', 2) }}
     </v-card-title>
     <v-card-text>
-      {{ t('shaderPack.enable', { name: shaderPack }) }}
+      {{ shaderPack ? t('shaderPack.enable', { name: shaderPack }) : t('shaderPack.empty') }}
     </v-card-text>
     <v-card-actions>
       <v-btn

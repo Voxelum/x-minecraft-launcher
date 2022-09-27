@@ -1,4 +1,4 @@
-import { BaseService, CurseForgeService, YggdrasilUserService, LittleSkinUserService, DiagnoseService, ExternalAuthSkinService, FeedTheBeastService, ImportService, InstallService, InstanceIOService, InstanceJavaService, InstanceLogService, InstanceModsService, InstanceOptionsService, InstanceResourcePackService, InstanceSavesService, InstanceService, InstanceShaderPacksService, InstanceVersionService, JavaService, LaunchService, MicrosoftUserService, ModpackService, ModrinthService, PeerService, ResourcePackPreviewService, ResourceService, ServerStatusService, UserService, VersionService } from '@xmcl/runtime'
+import { BaseService, CurseForgeService, YggdrasilUserService, LittleSkinUserService, DiagnoseService, ExternalAuthSkinService, FeedTheBeastService, ImportService, InstallService, InstanceIOService, InstanceJavaService, InstanceLogService, InstanceModsService, InstanceOptionsService, InstanceResourcePackService, InstanceSavesService, InstanceService, InstanceShaderPacksService, InstanceVersionService, JavaService, LaunchService, OfficialUserService, ModpackService, ModrinthService, PeerService, ResourcePackPreviewService, ResourceService, ServerStatusService, UserService, VersionService, InstanceInstallService } from '@xmcl/runtime'
 
 export const preloadServices = [
   LittleSkinUserService,
@@ -26,9 +26,10 @@ export const preloadServices = [
   ResourceService,
   ServerStatusService,
   YggdrasilUserService,
-  MicrosoftUserService,
+  OfficialUserService,
   UserService,
   VersionService,
   FeedTheBeastService,
+  InstanceInstallService,
   PeerService,
 ]

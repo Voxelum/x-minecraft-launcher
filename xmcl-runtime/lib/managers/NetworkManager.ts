@@ -1,45 +1,36 @@
-import { Agents } from '@xmcl/installer'
-// import NatAPI from 'nat-api'
-import { UpnpClient } from '@xmcl/nat-api'
-import { getNatInfoUDP, NatInfo } from '@xmcl/stun-client'
-import got, { Got, Options } from 'got'
-import { Socket } from 'net'
+import { createInMemoryCheckpointHandler, DefaultSegmentPolicy, DownloadAgent, DownloadBaseOptions, resolveAgent } from '@xmcl/installer'
+import { ClassicLevel } from 'classic-level'
 import { join } from 'path'
+import { Agent, Client, Dispatcher, Pool, setGlobalDispatcher, DiagnosticsChannel } from 'undici'
+import { channel } from 'diagnostics_channel'
+import { DispatchOptions } from 'undici/types/agent'
 import { URL } from 'url'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
-import { LauncherAppKey } from '../app/utils'
+import { InteroperableDispatcher, ProxyDispatcher } from '../dispatchers'
+import { BiDispatcher, kUseDownload } from '../dispatchers/biDispatcher'
+import { CacheDispatcher, JsonCacheStorage } from '../dispatchers/cacheDispatcher'
 import { BaseService } from '../services/BaseService'
-import { HttpAgent, HttpsAgent } from '../util/agents'
-import { LevelCache } from '../util/cache'
+import { HttpAgent } from '../util/agents'
 import ServiceManager from './ServiceManager'
 import ServiceStateManager from './ServiceStateManager'
-// import getNatType, { NatType } from 'nat-type-identifier'
+import { buildHeaders } from '../dispatchers/utils'
 
 export default class NetworkManager extends Manager {
   private inGFW = false
 
-  readonly agents: Required<Agents>
-
   private headers: Record<string, string> = {}
-
-  readonly request: Got
-
-  private upnp!: UpnpClient
-
-  private stunHosts: string[] = []
-
-  private natInfo: undefined | NatInfo
 
   private logger = this.app.logManager.getLogger('NetworkManager')
 
-  // private nat = new NatAPI()
+  private apiDispatcher: Dispatcher
+  private downloadDispatcher: Dispatcher
+  private downloadAgent: DownloadAgent
 
-  // private natType: NatType = 'Blocked'
+  private dispatchInterceptors: Array<(opts: DispatchOptions) => void> = []
 
-  // private publicIp = ''
-
-  // private discoveredPort: number[] = []
+  private apiClientFactories: Array<(origin: URL, options: Agent.Options) => Dispatcher | undefined>
+  private downloadClientFactories: Array<(origin: URL, options: Agent.Options) => Dispatcher | undefined>
 
   constructor(app: LauncherApp, serviceManager: ServiceManager, stateManager: ServiceStateManager) {
     super(app)
@@ -47,128 +38,200 @@ export default class NetworkManager extends Manager {
       keepAlive: true,
       proxy: new URL('http://127.0.0.1:7890'),
     })
-    Object.defineProperty(http, 'proxy', {
-      get() {
-        try {
-          return new URL(serviceManager.get(BaseService).state.httpProxy)
-        } catch (e) {
-          return undefined
-        }
-      },
-    })
-    Object.defineProperty(http, 'enabled', {
-      get() {
-        return serviceManager.get(BaseService).state.httpProxyEnabled ?? false
-      },
-    })
-    const https = new HttpsAgent({
-      keepAlive: true,
-      rejectUnauthorized: false,
-      proxy: new URL('http://127.0.0.1:7890'),
-    })
-    Object.defineProperty(https, 'proxy', {
-      get() {
-        try {
-          return new URL(serviceManager.get(BaseService).state.httpProxy)
-        } catch (e) {
-          return undefined
-        }
-      },
-    })
-    Object.defineProperty(https, 'enabled', {
-      get() {
-        return serviceManager.get(BaseService).state.httpProxyEnabled ?? false
-      },
-    })
-    this.agents = ({
-      http,
-      https,
-    })
-    const cache = new LevelCache(join(app.appDataPath, 'http-cache'))
-    this.request = got.extend({
-      agent: this.agents,
-      cache,
-      retry: {
-        limit: 3,
-      },
+    const cache = new ClassicLevel(join(app.appDataPath, 'undici-cache'), {
+      valueEncoding: 'json',
     })
 
-    const setMaxSocket = (val: number) => {
-      if (val > 0) {
-        http.maxSockets = val
-        https.maxSockets = val
-      } else {
-        http.maxSockets = Infinity
-        https.maxSockets = Infinity
-      }
-    }
-    const setMaxTotalSocket = (val: number) => {
-      if (val > 0) {
-        http.maxTotalSockets = val
-        https.maxTotalSockets = val
-      } else {
-        http.maxTotalSockets = Infinity
-        https.maxTotalSockets = Infinity
-      }
-    }
-
-    stateManager.subscribe('maxSocketsSet', (val) => {
-      setMaxSocket(val)
-    })
-    stateManager.subscribe('maxTotalSocketsSet', (val) => {
-      setMaxTotalSocket(val)
-    })
+    let maxConnection = 16
 
     const service = serviceManager.get(BaseService)
     service.initialize().then(() => {
-      setMaxSocket(service.state.maxSockets)
-      setMaxTotalSocket(service.state.maxTotalSockets)
+      maxConnection = service.state.maxSockets
+    })
+    stateManager.subscribe('maxSocketsSet', (val) => {
+      maxConnection = val
+    })
+
+    const apiClientFactories = [] as Array<(origin: URL, options: Agent.Options) => Dispatcher | undefined>
+
+    this.app.serviceStateManager.subscribe('httpProxySet', (p) => {
+      proxy.setProxy(new URL(p))
+    })
+    this.app.serviceStateManager.subscribe('httpProxyEnabledSet', (e) => {
+      proxy.setProxyEnabled(e)
+    })
+
+    const proxy = new ProxyDispatcher({
+      factory(connect) {
+        const downloadAgent = new Agent({
+          bodyTimeout: 3_000,
+          headersTimeout: 5_000,
+          connect,
+          factory(origin, opts: Agent.Options) {
+            const dispatcher = new Pool(origin, opts)
+            const keys = Reflect.ownKeys(dispatcher)
+            const sym = keys.find(k => typeof k === 'symbol' && k.description === 'connections')
+            if (sym) { Object.defineProperty(dispatcher, sym, { get: () => maxConnection }) }
+            return dispatcher
+          },
+        })
+        const apiAgent = new Agent({
+          pipelining: 6,
+          bodyTimeout: 3_000,
+          headersTimeout: 7_000,
+          connect,
+          factory(origin, opts: Agent.Options) {
+            let dispatcher: Dispatcher | undefined
+            for (const factory of apiClientFactories) { dispatcher = factory(origin, opts) }
+            if (!dispatcher) { dispatcher = new Pool(origin, opts) }
+            if (dispatcher instanceof Pool) {
+              const keys = Reflect.ownKeys(dispatcher)
+              const kConnections = keys.find(k => typeof k === 'symbol' && k.description === 'connections')
+              if (kConnections) { Object.defineProperty(dispatcher, kConnections, { get: () => maxConnection }) }
+            }
+            return dispatcher
+          },
+        })
+        return new BiDispatcher(downloadAgent, apiAgent)
+      },
+    })
+
+    const downloadDispatcher =
+      new InteroperableDispatcher(
+        [
+          (options) => {
+            (options as any)[kUseDownload] = true
+            const headers = buildHeaders(options.headers || {})
+            headers['user-agent'] = `xmcl/${app.version} (xmcl.app)`
+            options.headers = headers
+          },
+        ],
+        proxy,
+      )
+
+    const apiDispatcher =
+      new InteroperableDispatcher(
+        [
+          (options) => {
+            for (const interceptor of this.dispatchInterceptors) {
+              interceptor(options)
+            }
+            (options as any)[kUseDownload] = false
+            const headers = buildHeaders(options.headers || {})
+            headers['user-agent'] = `xmcl/${app.version} (xmcl.app)`
+            options.headers = headers
+          },
+        ],
+        new CacheDispatcher(proxy, new JsonCacheStorage(cache)),
+      )
+
+    setGlobalDispatcher(apiDispatcher)
+
+    const downloadClientFactories = [] as Array<(origin: URL, options: Agent.Options) => Dispatcher | undefined>
+
+    this.downloadAgent = resolveAgent({
+      segmentPolicy: new DefaultSegmentPolicy(4 * 1024 * 1024, 4),
+      dispatcher: downloadDispatcher,
+      checkpointHandler: createInMemoryCheckpointHandler(),
+    })
+
+    this.apiClientFactories = apiClientFactories
+    this.downloadClientFactories = downloadClientFactories
+
+    this.apiDispatcher = apiDispatcher
+    this.downloadDispatcher = downloadDispatcher
+
+    const undici = this.app.logManager.getLogger('Undici')
+
+    channel('undici:request:create').subscribe((m, name) => {
+      const msg: DiagnosticsChannel.RequestCreateMessage = m as any
+      undici.log(`request:create ${msg.request.method} ${msg.request.origin}${msg.request.path} ${msg.request.headers}`)
+    })
+    channel('undici:request:bodySent').subscribe((m, name) => {
+      const msg: DiagnosticsChannel.RequestBodySentMessage = m as any
+      undici.log(`request:bodySent ${msg.request.method} ${msg.request.origin}${msg.request.path} ${msg.request.headers}`)
+    })
+    channel('undici:request:headers').subscribe((m, name) => {
+      const msg: DiagnosticsChannel.RequestHeadersMessage = m as any
+      undici.log(`request:headers ${msg.request.method} ${msg.request.origin}${msg.request.path} ${msg.request.headers} ${msg.response.statusCode} ${msg.response.headers}`)
+    })
+    channel('undici:request:trailers').subscribe((m, name) => {
+      const msg = m as DiagnosticsChannel.RequestTrailersMessage
+      undici.log(`request:trailers ${msg.request.method} ${msg.request.origin}${msg.request.path} ${msg.request.headers} ${msg.trailers}`)
+    })
+    channel('undici:request:error').subscribe((m, name) => {
+      const msg = m as DiagnosticsChannel.RequestErrorMessage
+      undici.error(`request:error ${msg.request.method} ${msg.request.origin}${msg.request.path} ${msg.request.headers}: %O`, msg.error)
+    })
+    channel('undici:client:sendHeaders').subscribe((m, name) => {
+      const msg: DiagnosticsChannel.ClientSendHeadersMessage = m as any
+      undici.log(`client:sendHeaders ${msg.request.method} ${msg.request.origin}${msg.request.path} ${msg.request.headers} ${msg.socket.remoteAddress}`)
+    })
+    channel('undici:client:beforeConnect').subscribe((msg, name) => {
+      const m = msg as DiagnosticsChannel.ClientBeforeConnectMessage
+      undici.log(`client:beforeConnect ${m.connectParams.protocol}${m.connectParams.hostname}:${m.connectParams.port} ${m.connectParams.servername}`)
+    })
+    channel('undici:client:connectError').subscribe((msg, name) => {
+      const m: DiagnosticsChannel.ClientConnectErrorMessage = msg as any
+      undici.error(`client:connectError ${m.connectParams.protocol}${m.connectParams.hostname}:${m.connectParams.port} ${m.connectParams.servername} %O`, m.error)
+    })
+    channel('undici:client:connected').subscribe((msg, name) => {
+      const m: DiagnosticsChannel.ClientConnectedMessage = msg as any
+      undici.log(`client:connected ${m.connectParams.protocol}//${m.connectParams.hostname}:${m.connectParams.port} ${m.connectParams.servername} -> ${m.socket.remoteAddress}`)
     })
   }
 
-  getDownloadBaseOptions() {
+  getDownloadBaseOptions(): DownloadBaseOptions {
     return {
-      agents: this.agents,
+      agent: this.downloadAgent,
       headers: this.headers,
-    } as const
+    }
+  }
+
+  registerAPIFactoryInterceptor(interceptor: (origin: URL, options: Agent.Options) => Dispatcher | undefined) {
+    this.apiClientFactories.unshift(interceptor)
+    return this.apiDispatcher
+  }
+
+  registerDownloadFactoryInterceptor(interceptor: (origin: URL, options: Agent.Options) => Dispatcher | undefined) {
+    this.downloadClientFactories.unshift(interceptor)
+    return this.downloadDispatcher
+  }
+
+  registerDispatchInterceptor(interceptor: (opts: DispatchOptions) => void) {
+    this.dispatchInterceptors.unshift(interceptor)
+  }
+
+  getDispatcher() {
+    return this.apiDispatcher
+  }
+
+  getDownloadDispatcher() {
+    return this.downloadDispatcher
   }
 
   /**
    * Update the status of GFW
    */
   async updateGFW() {
+    const taobao = new Client('https://npm.taobao.org')
+    const google = new Client('https://www.google.com')
     this.inGFW = await Promise.race([
-      this.request.head('https://npm.taobao.org', { throwHttpErrors: false }).then(() => true, () => false),
-      this.request.head('https://www.google.com', { throwHttpErrors: false }).then(() => false, () => true),
+      taobao.request({
+        method: 'HEAD',
+        path: '/',
+        headersTimeout: 5000,
+      }).then(() => true, () => false),
+      google.request({
+        method: 'HEAD',
+        path: '/',
+        headersTimeout: 5000,
+      }).then(() => false, () => true),
     ])
     this.logger.log(this.inGFW ? 'Detected current in China mainland.' : 'Detected current NOT in China mainland.')
+    taobao.close()
+    google.close()
   }
-
-  // async updateNatType() {
-  //   this.log('Try to get NAT type')
-  //   this.natType = await getNatType({ logsEnabled: false, stunHost: this.inGFW ? 'stun.qq.com' : undefined })
-  //   this.log(`Update NAT type: ${this.natType}`)
-  // }
-
-  // async updatePublicIp() {
-  //   this.log('Try update public ip')
-
-  //   this.publicIp = await new Promise<string>((resolve, reject) => {
-  //     this.nat.externalIp((err, ip) => {
-  //       if (err) {
-  //         reject(err)
-  //       } else {
-  //         resolve(ip)
-  //       }
-  //     })
-  //   })
-
-  //   this.log(`Current public ip is ${this.publicIp}`)
-  // }
-
-  // getNatType() {
-  //   return this.natType
-  // }
 
   /**
    * Return if current environment is in GFW.
@@ -177,66 +240,8 @@ export default class NetworkManager extends Manager {
     return this.inGFW
   }
 
-  // getPublicIp() {
-  //   return new Promise<string>((resolve, reject) => {
-  //     this.nat.externalIp((err, ip) => {
-  //       if (err) { reject(err) } else { resolve(ip) }
-  //     })
-  //   })
-  // }
-
-  // exposePort(port: number) {
-  //   return new Promise<void>((resolve, reject) => {
-  //     this.nat.map(25565, port, (err) => {
-  //       if (err) {
-  //         reject(err)
-  //       } else {
-  //         resolve()
-  //       }
-  //     })
-  //   })
-  // }
-
-  async getNatInfo() {
-    const info = await Promise.all(this.stunHosts.map((s) => getNatInfoUDP({
-      stun: s,
-      retryInterval: 2000,
-    })))
-
-    this.logger.log(info)
-
-    return info
-  }
-
   // setup code
   setup() {
     this.updateGFW()
-
-    // this.updatePublicIp()
-
-    // this.lanDiscover.bind()
-
-    // this.lanDiscover.on('discover', (event) => {
-    //   const idx = this.discoveredPort.indexOf(event.port)
-    //   if (idx === -1) {
-    //     this.discoveredPort.push(event.port)
-    //     this.log(`Discover player is opening port: ${event.port} on lan! Exposing it to public network...`)
-    //     this.exposePort(event.port).then(() => {
-    //       this.log(`Success to map port ${event.port}. Use ${this.publicIp}:${event.port}`)
-    //     }, (e) => {
-    //       this.error(`Fail to map port ${event.port}.`)
-    //       this.error(e)
-    //     })
-    //   }
-    // })
-
-    // createUpnpClient().then((client) => {
-    //   this.upnp = client
-    // })
-
-    // @ts-ignore
-    this.app.on('before-quit', () => {
-      // this.nat.destroy()
-    })
   }
 }

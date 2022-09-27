@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-redeclare */
-import { YggdrasilAuthAPI, ProfileServiceAPI, GameProfile } from '@xmcl/user'
+import { GameProfile } from '@xmcl/user'
 import { Schema } from './schema'
 import _UserSchema from './UserSchema.json'
 
@@ -50,29 +50,17 @@ export interface UserProfile {
    */
   accessToken: string
   /**
-   * The microsoft access token
-   */
-  msAccessToken?: string
-  /**
    * The expire time
    */
   expiredAt: number
-
-  /**
-   * Custom site token
-   */
-  siteToken?: string
-
   /**
    * All available game profiles
    */
   profiles: { [uuid: string]: GameProfileAndTexture }
-
   /**
    * Selected profile uuid
    */
   selectedProfile: string
-
   /**
    * The avatar uri. This can be base64 data uri.
    */
@@ -96,11 +84,6 @@ export interface UserSchema {
      * @default ""
      */
     id: string
-    /**
-     * The UUID of the currently selected player
-     * @default ""
-     */
-    profile: string
   }
   /**
    * The client token of current client. The launcher will generate one at first launch.

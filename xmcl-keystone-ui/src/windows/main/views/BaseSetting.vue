@@ -15,7 +15,7 @@
       >
         {{ $t("title") }}
       </v-flex>
-      <BaseSettingGeneral  />
+      <BaseSettingGeneral />
       <BaseSettingSync />
       <BaseSettingModpack v-if="!isServer" />
       <BaseSettingServer v-else />
@@ -26,7 +26,7 @@
 </template>
 
 <script lang=ts setup>
-import { useInstance } from '../composables/instance'
+import { useInstance, useInstanceIsServer } from '../composables/instance'
 import { InstanceEditInjectionKey, useInstanceEdit } from '../composables/instanceEdit'
 import BaseSettingGeneral from './BaseSettingGeneral.vue'
 import BaseSettingModpack from './BaseSettingModpack.vue'
@@ -36,9 +36,8 @@ import BaseSettingLaunch from './BaseSettingLaunch.vue'
 import BaseSettingJava from './BaseSettingJava.vue'
 import BaseSettingSync from './BaseSettingSync.vue'
 
-const {
-  isServer,
-} = useInstance()
+const { instance } = useInstance()
+const isServer = useInstanceIsServer(instance)
 const { data, save, load } = useInstanceEdit()
 
 provide(InstanceEditInjectionKey, { data, save, load })

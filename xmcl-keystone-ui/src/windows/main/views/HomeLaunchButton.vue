@@ -57,7 +57,7 @@
 </template>
 <script lang="ts" setup>
 import { Ref } from '@vue/composition-api'
-import { InstanceFile, InstanceIOServiceKey, Issue, TaskState, UserServiceKey } from '@xmcl/runtime-api'
+import { InstanceFile, InstanceInstallServiceKey, Issue, TaskState, UserServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { JavaIssueDialogKey, useJava } from '../composables/java'
 import { LaunchStatusDialogKey, useLaunch } from '../composables/launch'
@@ -79,12 +79,12 @@ const { show: showMultiInstanceDialog } = useDialog('multi-instance-launch')
 const { t } = useI18n()
 const { state } = useService(UserServiceKey)
 const { issues, fix } = useIssues()
-const { checkInstanceInstall, installInstanceFiles } = useService(InstanceIOServiceKey)
+const { checkInstanceInstall, installInstanceFiles } = useService(InstanceInstallServiceKey)
 
 const pendingInstallFiles: Ref<InstanceFile[]> = ref([])
 
 const diagnosingVersion = useBusy('diagnoseVersion')
-const checkingInstall = useServiceBusy(InstanceIOServiceKey, 'checkInstanceInstall')
+const checkingInstall = useServiceBusy(InstanceInstallServiceKey, 'checkInstanceInstall')
 const loading = computed(() => diagnosingVersion.value || checkingInstall.value)
 
 const needInstall = computed(() => !!props.issue || pendingInstallFiles.value.length > 0)
@@ -121,7 +121,7 @@ function onClick() {
   } else if (missingJava.value) {
     // missing java
     showJavaDialog()
-  } else if (!state.users[state.selectedUser.id] || !state.user?.accessToken) {
+  } else if (!state.users[state.selectedUser.id]) {
     // need to login
     showLoginDialog(true)
   } else if (launchStatus.value === 'checkingProblems' || launchStatus.value === 'launching') {

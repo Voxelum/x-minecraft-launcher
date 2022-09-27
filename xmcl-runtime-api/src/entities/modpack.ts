@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
-import { RuntimeVersions } from './instance.schema'
+import { InstanceData, RuntimeVersions } from './instance.schema'
+import { InstanceFile } from './instanceManifest.schema'
 
 /**
  * Represent a common modpack metadata in a zip file.
@@ -55,7 +56,13 @@ export interface ModpackManifest {
   author: string
 }
 
-export interface ModrinthModpackManifest {
+export interface ModpackManifestResolved {
+  resolved: Partial<InstanceData> & {
+    files: InstanceFile[]
+  }
+}
+
+export interface ModrinthModpackManifest extends ModpackManifestResolved {
   /**
    * The version of the format, stored as a number. The current value at the time of writing is 1.
    */
@@ -123,7 +130,7 @@ export interface ModrinthModpackManifest {
   }
 }
 
-export interface McbbsModpackManifest extends ModpackManifest {
+export interface McbbsModpackManifest extends ModpackManifest, ModpackManifestResolved {
   /**
    * The manifest type. For mcbbs should be "minecraftModpack"
    */
@@ -224,7 +231,7 @@ export interface McbbsModpackManifest extends ModpackManifest {
 /**
  * The modpack metadata structure
  */
-export interface CurseforgeModpackManifest extends ModpackManifest {
+export interface CurseforgeModpackManifest extends ModpackManifest, ModpackManifestResolved {
   manifestVersion: 1
   minecraft: {
     version: string
