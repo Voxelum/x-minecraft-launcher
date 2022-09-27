@@ -1,29 +1,20 @@
-import { checksum, MinecraftFolder } from '@xmcl/core'
-import { DownloadTask, UnzipTask } from '@xmcl/installer'
-import { InstallInstanceOptions, createTemplate, ExportInstanceOptions, GetManifestOptions, InstanceFile, InstanceIOException, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceManifest, InstanceManifestSchema, InstanceSchema, InstanceUpdate, LockKey, Persisted, Resource, ResourceDomain, ResourceMetadata, RuntimeVersions, SetInstanceManifestOptions } from '@xmcl/runtime-api'
-import { Task, task } from '@xmcl/task'
+import { MinecraftFolder } from '@xmcl/core'
+import { UnzipTask } from '@xmcl/installer'
+import { createTemplate, ExportInstanceOptions, GetManifestOptions, InstanceFile, InstanceIOException, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceManifest, InstanceSchema, LockKey, RuntimeVersions } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
-import { randomUUID } from 'crypto'
-import { createReadStream, existsSync } from 'fs'
-import { mkdtemp, readdir, readFile, readJson, remove, rename, stat, unlink, writeFile } from 'fs-extra'
+import { mkdtemp, readdir, readJson, remove, stat } from 'fs-extra'
 import { tmpdir } from 'os'
 import { basename, join, relative, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { guessCurseforgeFileUrl } from '../util/curseforge'
-import { copyPassively, exists, isDirectory, isFile, linkWithTimeoutOrCopy, missing, readdirIfPresent } from '../util/fs'
+import { copyPassively, exists, isDirectory, isFile, readdirIfPresent } from '../util/fs'
 import { requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
-import { isValidateUrl, joinUrl } from '../util/url'
 import { ZipTask } from '../util/zip'
-import { CurseForgeService } from './CurseForgeService'
 import { InstanceService } from './InstanceService'
 import { InstanceVersionService } from './InstanceVersionService'
-import { ModrinthService } from './ModrinthService'
-import { PeerService } from './PeerService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Singleton } from './Service'
-import { UserService } from './UserService'
 import { VersionService } from './VersionService'
 
 /**
@@ -36,10 +27,6 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(VersionService) private versionService: VersionService,
-    @Inject(PeerService) private peerService: PeerService,
-    @Inject(UserService) private userService: UserService,
-    @Inject(CurseForgeService) private curseForgeService: CurseForgeService,
-    @Inject(ModrinthService) private modrinthService: ModrinthService,
   ) {
     super(app, InstanceIOServiceKey)
   }
@@ -183,7 +170,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
   }
 
   @Singleton(p => p)
-  async getInstanceManifest<T extends 'sha1' | 'sha256' | 'md5'>(options?: GetManifestOptions<T>): Promise<InstanceManifest> {
+  async getInstanceManifest(options?: GetManifestOptions): Promise<InstanceManifest> {
     const instancePath = options?.path || this.instanceService.state.path
 
     const instance = this.instanceService.state.all[instancePath]
@@ -276,294 +263,5 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
       maxMemory: instance.maxMemory,
       minMemory: instance.minMemory,
     }
-  }
-
-  @Singleton((o) => o.path)
-  async uploadInstanceManifest({ path, manifest, headers, includeFileWithDownloads, forceJsonFormat }: SetInstanceManifestOptions): Promise<void> {
-    const instancePath = path || this.instanceService.state.path
-
-    const instance = this.instanceService.state.all[instancePath]
-
-    if (!instance) {
-      throw new InstanceIOException({ instancePath, type: 'instanceNotFound' })
-    }
-
-    if (!instance.fileApi) {
-      throw new InstanceIOException({ instancePath, type: 'instanceHasNoFileApi' })
-    }
-
-    const url = isValidateUrl(instance.fileApi)
-    if (!url || (url.protocol !== 'http:' && url.protocol !== 'https')) {
-      throw new InstanceIOException({ instancePath, type: 'instanceInvalidFileApi', url: instance.fileApi })
-    }
-
-    const tempZipFile = join(this.app.temporaryPath, randomUUID())
-    const useJson = forceJsonFormat || manifest.files.every(f => f.modrinth || f.curseforge || (f.downloads && f.downloads.length > 0))
-
-    if (!useJson) {
-      this.log(`Use zip to upload instance ${instancePath} to ${instance.fileApi}`)
-      const task = new ZipTask(tempZipFile)
-
-      for (const file of manifest.files) {
-        const realPath = join(instancePath, file.path)
-        const canBeDownload = file.modrinth || file.curseforge || (file.downloads && file.downloads.length > 0)
-        if (includeFileWithDownloads || !canBeDownload) {
-          task.addFile(realPath, file.path)
-        }
-      }
-
-      task.addBuffer(Buffer.from(JSON.stringify(manifest), 'utf-8'), 'manifest.json')
-
-      await task.startAndWait()
-    } else {
-      this.log(`Use json to upload instance ${instancePath} to ${instance.fileApi}`)
-    }
-
-    try {
-      const start = Date.now()
-      const allHeaders = headers ? { ...headers } : {}
-      if (!allHeaders.Authorization && this.userService.state.user?.msAccessToken) {
-        allHeaders.Authorization = `Bearer ${this.userService.state.user.msAccessToken}`
-      }
-
-      allHeaders['content-type'] = useJson ? 'application/json' : 'application/zip'
-
-      const res = await this.networkManager.request(instance.fileApi, {
-        headers: allHeaders,
-        body: useJson ? JSON.stringify(manifest) : createReadStream(tempZipFile),
-        method: 'POST',
-        throwHttpErrors: false,
-      })
-
-      if (res.statusCode !== 201) {
-        this.error(`Fail to upload ${instancePath} to ${instance.fileApi} as server rejected. Status code: ${res.statusCode}, ${res.body}`)
-        throw new InstanceIOException({ type: 'instanceSetManifestFailed', httpBody: res.body, statusCode: res.statusCode })
-      }
-
-      this.log(`Uploaded instance ${instancePath} to ${instance.fileApi}. Took ${Date.now() - start}ms.`)
-    } finally {
-      await unlink(tempZipFile).catch(() => undefined)
-    }
-  }
-
-  @Singleton(p => p)
-  async fetchInstanceUpdate(path?: string): Promise<InstanceUpdate | undefined> {
-    const instancePath = path || this.instanceService.state.path
-
-    const instance = this.instanceService.state.all[instancePath]
-
-    if (!instance.fileApi) {
-      return undefined
-    }
-
-    let manifest: InstanceManifestSchema
-    try {
-      manifest = await this.networkManager.request.get(instance.fileApi).json()
-    } catch (e) {
-      this.error(e)
-      throw new InstanceIOException({
-        type: 'instanceNotFoundInApi',
-        url: instance.fileApi,
-        statusCode: (e as any)?.response?.statusCode,
-      })
-    }
-
-    const lookupFile = async (relativePath: string, hash: string, file: InstanceFile<'sha1'>) => {
-      const filePath = join(instancePath, relativePath)
-      if (await missing(filePath)) {
-        updates.push({
-          file,
-          operation: 'add',
-        })
-      } else {
-        const sha1 = await checksum(filePath, 'sha1')
-        if (sha1 !== hash) {
-          updates.push({
-            file,
-            operation: 'update',
-          })
-        }
-      }
-    }
-
-    const updates: InstanceUpdate['updates'] = []
-    if (manifest.files) {
-      for (const file of manifest.files) {
-        await lookupFile(file.path, file.hashes.sha1, file)
-        const fileApiUrl = joinUrl(instance.fileApi, file.path)
-        if (file.downloads) {
-          file.downloads.push(fileApiUrl)
-        } else {
-          file.downloads = [fileApiUrl]
-        }
-      }
-    }
-    return {
-      updates,
-      manifest,
-    }
-  }
-
-  @Singleton((o) => o.path)
-  async installInstanceFiles(options: InstallInstanceOptions): Promise<void> {
-    const {
-      path,
-      files,
-    } = options
-
-    const instancePath = path || this.instanceService.state.path
-
-    const instance = this.instanceService.state.all[instancePath]
-
-    if (!instance) {
-      throw new InstanceIOException({ instancePath, type: 'instanceNotFound' })
-    }
-
-    await this.writeInstallProfile(instancePath, files)
-
-    const { log, warn, error, peerService, resourceService, networkManager, curseForgeService, modrinthService } = this
-
-    const createDownloadTask = (url: string[], dest: string, sha1: string) => new DownloadTask({
-      ...networkManager.getDownloadBaseOptions(),
-      url,
-      destination: dest,
-      validator: {
-        hash: sha1,
-        algorithm: 'sha1',
-      },
-    }).setName('file').map(async () => {
-      await rename(dest, dest.substring(0, dest.length - '.pending'.length))
-      return undefined
-    })
-
-    const createFileLinkTask = (dest: string, res: Persisted<Resource>) => {
-      return task('file', async () => {
-        const fstat = await stat(dest).catch(() => undefined)
-        if (fstat && fstat.ino === res.ino) {
-          return
-        }
-        if (fstat) {
-          // existed file
-          await unlink(dest)
-        }
-        await linkWithTimeoutOrCopy(res.path, dest)
-      })
-    }
-    const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
-
-    const updateInstanceTask = task('updateInstance', async function () {
-      await lock.write(async () => {
-        const tasks: Task<any>[] = []
-        for (const file of files) {
-          const sha1 = file.hashes.sha1
-          const filePath = join(instancePath, file.path)
-          const actualSha1 = await checksum(filePath, 'sha1').catch(() => undefined)
-
-          if (relative(instancePath, filePath).startsWith('..')) {
-            warn(`Skip to install the escaped file ${filePath}`)
-            continue
-          }
-
-          if (actualSha1 === sha1) {
-            // skip same file
-            log(`Skip to update the file ${file.path} as the sha1 is matched`)
-            continue
-          }
-
-          const resource = resourceService.state.mods.find(r => r.hash === sha1) || resourceService.state.resourcepacks.find(r => r.hash === sha1) ||
-            resourceService.state.shaderpacks.find(r => r.hash === sha1)
-          if (resource) {
-            log(`Link existed resource to ${filePath}`)
-            tasks.push(createFileLinkTask(filePath, resource))
-          } else {
-            const urls = [] as string[]
-            const metadata: ResourceMetadata = {}
-
-            if (file.curseforge) {
-              const fileInfo = await curseForgeService.fetchProjectFile(file.curseforge.projectId, file.curseforge.fileId)
-
-              if (fileInfo.downloadUrl) {
-                urls.unshift(fileInfo.downloadUrl)
-              } else {
-                urls.push(...guessCurseforgeFileUrl(fileInfo.id, fileInfo.fileName))
-              }
-
-              metadata.curseforge = {
-                fileId: file.curseforge.fileId,
-                projectId: file.curseforge.projectId,
-              }
-            }
-
-            if (file.modrinth) {
-              const version = await modrinthService.getProjectVersion(file.modrinth.versionId)
-              metadata.modrinth = {
-                filename: version.files[0].filename,
-                versionId: file.modrinth.versionId,
-                projectId: file.modrinth.projectId,
-                url: version.files[0].url,
-              }
-              urls.unshift(version.files[0].url)
-            }
-
-            if (file.downloads) {
-              const peerUrl = file.downloads.find(u => u.startsWith('peer://'))
-              const hasHttp = file.downloads.some(u => u.startsWith('http'))
-              if (peerUrl && !hasHttp) {
-                // download from peer
-                log(`Download ${filePath} from peer ${peerUrl}`)
-                tasks.push(peerService.downloadTask(peerUrl, filePath, sha1, file.size).setName('file'))
-                continue
-              }
-              urls.push(...file.downloads.filter(u => u.startsWith('http')))
-            }
-
-            if (Object.keys(metadata).length > 0) {
-              resourceService.markResourceMetadata(sha1, metadata)
-            }
-
-            let destination = filePath
-            if (file.path.startsWith(ResourceDomain.Mods) || file.path.startsWith(ResourceDomain.ResourcePacks) || file.path.startsWith(ResourceDomain.ShaderPacks)) {
-              destination += '.pending'
-            }
-
-            log(`Download ${filePath} from urls: [${urls.join(', ')}]`)
-            const task = createDownloadTask(urls, destination, sha1)
-            tasks.push(task)
-          }
-        }
-        await this.all(tasks)
-      })
-    }, { instance: instancePath })
-
-    await this.submit(updateInstanceTask)
-    await this.removeInstallProfile(instancePath)
-  }
-
-  async checkInstanceInstall() {
-    const current = this.instanceService.state.path
-    const profile = join(current, '.install-profile')
-    if (existsSync(profile)) {
-      const fileContent = JSON.parse(await readFile(profile, 'utf-8'))
-      if (fileContent.version !== 0) {
-        throw new Error(`Cannot identify lockfile version ${fileContent.version}`)
-      }
-      const files = fileContent.files as InstanceFile[]
-      return files
-    }
-    return []
-  }
-
-  private async writeInstallProfile(path: string, files: InstanceFile[]) {
-    const filePath = join(path, '.install-profile')
-    const content = {
-      lockVersion: 0,
-      files,
-    }
-    await writeFile(filePath, JSON.stringify(content, null, 4))
-  }
-
-  private async removeInstallProfile(path: string) {
-    const filePath = join(path, '.install-profile')
-    await unlink(filePath)
   }
 }

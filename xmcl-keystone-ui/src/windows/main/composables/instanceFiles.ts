@@ -72,7 +72,7 @@ export function provideFileNodes<T>(files: Ref<InstanceFileNode<T>[]>) {
   const leaves: Ref<InstanceFileNode<T>[]> = ref([])
   const nodes: Ref<InstanceFileNode<T>[]> = ref([])
 
-  watch(files, (files) => {
+  function update(files: InstanceFileNode<T>[]) {
     const leavesNodes = files
     const result: InstanceFileNode<T>[] = []
     for (const file of leavesNodes) {
@@ -80,7 +80,13 @@ export function provideFileNodes<T>(files: Ref<InstanceFileNode<T>[]>) {
     }
     leaves.value = leavesNodes
     nodes.value = result
+  }
+
+  watch(files, (files) => {
+    update(files)
   })
+
+  update(files.value)
 
   provide(FileNodesSymbol, nodes)
 

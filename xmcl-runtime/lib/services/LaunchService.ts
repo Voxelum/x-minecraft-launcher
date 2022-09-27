@@ -1,6 +1,5 @@
 import { createMinecraftProcessWatcher, diagnoseJar, diagnoseLibraries, generateArguments, launch, LaunchOption, LaunchPrecheck, MinecraftFolder, ResolvedVersion, Version } from '@xmcl/core'
-import { InstallJarTask } from '@xmcl/installer'
-import { IssueReportBuilder, LaunchException, LaunchOptions, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
+import { LaunchException, LaunchOptions, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
 import { ChildProcess } from 'child_process'
 import { EOL } from 'os'
 import LauncherApp from '../app/LauncherApp'
@@ -17,7 +16,6 @@ import { InstanceVersionService } from './InstanceVersionService'
 import { JavaService } from './JavaService'
 import { ExposeServiceKey, StatefulService } from './Service'
 import { UserService } from './UserService'
-import { YggdrasilUserService } from './YggdrasilUserService'
 
 @ExposeServiceKey(LaunchServiceKey)
 export class LaunchService extends StatefulService<LaunchState> implements ILaunchService {
@@ -34,7 +32,6 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(JavaService) private javaService: JavaService,
     @Inject(UserService) private userService: UserService,
-    @Inject(YggdrasilUserService) private yggUserService: YggdrasilUserService,
   ) {
     super(app, LaunchServiceKey, () => new LaunchState())
   }
@@ -63,13 +60,13 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       })
     }
     const version = instanceVersion.id
-    const useAuthLib = user.isThirdPartyAuthentication
 
     const minMemory = instance.assignMemory === true && instance.minMemory > 0
       ? instance.minMemory
       : instance.assignMemory === 'auto' ? Math.floor((await this.baseService.getMemoryStatus()).free / 1024 / 1024 - 256) : undefined
     const maxMemory = instance.assignMemory === true && instance.maxMemory > 0 ? instance.maxMemory : undefined
 
+    const yggdrasilHost = user.user ? this.userService.getAccountSystem(user.user?.authService)?.getYggdrasilHost?.() : undefined
     /**
      * Build launch condition
      */
@@ -89,10 +86,10 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       },
       extraJVMArgs: instance.vmOptions,
       extraMCArgs: instance.mcOptions,
-      yggdrasilAgent: useAuthLib && user.user
+      yggdrasilAgent: yggdrasilHost
         ? {
           jar: await this.externalAuthSkinService.installAuthLibInjection(),
-          server: this.yggUserService.authServices[user.user.authService].hostName,
+          server: yggdrasilHost,
         }
         : undefined,
     }
@@ -154,17 +151,17 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         return false
       }
 
-      const useAuthLib = user.isThirdPartyAuthentication
+      const yggdrasilHost = user.user ? this.userService.getAccountSystem(user.user?.authService)?.getYggdrasilHost?.() : undefined
       let yggOptions: {
         jar: string
         server: string
       } | undefined
 
-      if (useAuthLib && user.user) {
+      if (yggdrasilHost) {
         this.state.launchStatus('injectingAuthLib')
         yggOptions = {
           jar: await this.externalAuthSkinService.installAuthLibInjection(),
-          server: this.yggUserService.authServices[user.user.authService].hostName,
+          server: yggdrasilHost,
         }
       }
 

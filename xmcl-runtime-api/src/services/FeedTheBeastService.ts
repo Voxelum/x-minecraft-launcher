@@ -43,6 +43,8 @@ export interface FeedTheBeastService extends StatefulService<FeedTheBeastState> 
   getModpackVersionManifest(options: GetFTBModpackVersionOptions): Promise<FTBModpackVersionManifest>
 
   getModpackVersionChangelog(options: GetFTBModpackVersionOptions): Promise<string>
+
+  removeModpackCache(id: number): Promise<void>
 }
 
 export const FeedTheBeastServiceKey: ServiceKey<FeedTheBeastService> = 'FeedTheBeastService'

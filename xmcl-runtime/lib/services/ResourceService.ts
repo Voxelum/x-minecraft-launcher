@@ -94,6 +94,16 @@ export class ResourceService extends StatefulService<ResourceState> implements I
       const result = await this.storage.values().all()
       const mapped = result.map(upgradeDatabaseV2)
       this.log(`Load ${result.length} resources from database.`)
+      await Promise.all(mapped.map(async (r) => {
+        if (r.metadata.fabric) {
+          if (!(r.metadata.fabric instanceof Array) && r.metadata.fabric.id === 'fabric') {
+            const reParsed = await this.parseResourceMetadata(r)
+            await this.storage.put(reParsed.hash, reParsed)
+            return reParsed
+          }
+        }
+        return r
+      }))
       this.commitResources(mapped)
       await ensureDir(this.getAppDataPath('resource-images'))
     })
@@ -377,7 +387,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     resource.tags = resource.tags || []
     resource.uri = resource.uri || []
     resource.domain = resource.domain || ResourceDomain.Unclassified
-    resource.metadata = {}
+    resource.metadata = resource.metadata ? resource.metadata : {}
 
     return resource as Resource
   }
@@ -399,13 +409,13 @@ export class ResourceService extends StatefulService<ResourceState> implements I
    * @param resource The input resource
    * @returns The new resource object with parsed metadata.
    */
-  async parseResourceMetadata(resource: Resource) {
+  async parseResourceMetadata<T extends Resource>(resource: T): Promise<T> {
     const { resource: result, icons } = await this.worker().parseResourceMetadata(resource)
 
     const paths = await Promise.all(icons.map(async (icon) => this.imageStore.addImage(icon)))
-    result.icons = paths
+    result.icons = result.icons ? ([...resource.icons!, ...paths]) : paths
 
-    return result
+    return result as T
   }
 
   /**

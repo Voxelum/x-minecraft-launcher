@@ -225,7 +225,6 @@ export class VuexServiceFactory implements ServiceFactory {
       if (!(prom)[TasksContainer]) {
         Object.defineProperty(promise, TasksContainer, { value: ref([]), enumerable: false, writable: false, configurable: false })
       }
-      debugger
       prom[TasksContainer].value.push(id)
     })
 

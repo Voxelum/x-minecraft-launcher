@@ -1,36 +1,29 @@
+import { getGlobalDispatcher } from 'undici'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { Inject } from '../util/objectRegistry'
-import { AbstractService } from './Service'
+import { AbstractService, ExposeServiceKey } from './Service'
 import { UserService } from './UserService'
-import { YggdrasilUserService } from './YggdrasilUserService'
 
-export class ElyByUserService extends AbstractService {
-  constructor(@Inject(LauncherAppKey) app: LauncherApp, @Inject(UserService) userService: UserService, @Inject(YggdrasilUserService) yggService: YggdrasilUserService) {
-    super(app, '')
+import { ElyByService as IElyByService, ElyByServiceKey } from '@xmcl/runtime-api'
+import { YggdrasilAccountSystem } from '../accountSystems/YggdrasilAccountSystem'
+import { YggdrasilThirdPartyClient } from '../clients/YggdrasilClient'
 
-    const authService = {
-      hostName: 'https://authserver.ely.by',
-      authenticate: '/auth/authenticate',
-      refresh: '/auth/refresh',
-      validate: '/auth/validate',
-      invalidate: '/auth/invalidate',
-      signout: '/auth/signout',
-    }
-    const profileService = {
+@ExposeServiceKey(ElyByServiceKey)
+export class ElyByService extends AbstractService implements IElyByService {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(UserService) userService: UserService) {
+    super(app, ElyByServiceKey)
+
+    const system = new YggdrasilAccountSystem(this,
+      new YggdrasilThirdPartyClient('https://authserver.ely.by/auth',
       // eslint-disable-next-line no-template-curly-in-string
-      profile: 'https://authserver.ely.by/session/profile/${uuid}',
-      // eslint-disable-next-line no-template-curly-in-string
-      profileByName: 'https://skinsystem.ely.by/textures/${name}',
-      // eslint-disable-next-line no-template-curly-in-string
-      texture: 'https://authserver.ely.by/session/profile/${uuid}/${type}',
-    }
-    userService.registerAccountSystem({
-      name: 'ely.by',
-      login: (u, p, a) => yggService.login_({ username: u, password: p }, a, authService),
-      refresh: (p, c) => yggService.refresh(p, c, authService),
-      getSkin: (p) => yggService.getSkin(p, profileService),
-      setSkin: (p, g, s, slim) => yggService.setSkin(p, g, s, slim, profileService),
-    })
+        'https://authserver.ely.by/session/profile/${uuid}',
+        // eslint-disable-next-line no-template-curly-in-string
+        'https://authserver.ely.by/session/profile/${uuid}/${type}',
+        () => userService.state.clientToken,
+        getGlobalDispatcher()),
+    )
+    userService.registerAccountSystem('ely.by', system)
   }
 }

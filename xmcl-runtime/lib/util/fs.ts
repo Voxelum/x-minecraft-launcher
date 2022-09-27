@@ -7,7 +7,7 @@ import { FileExtension } from 'file-type/core'
 import { access, constants, copy, copyFile, ensureDir, FSWatcher, link, readdir, stat, symlink, unlink, watch } from 'fs-extra'
 import { platform } from 'os'
 import { extname, join, resolve } from 'path'
-import { pipeline } from 'stream'
+import { pipeline, Readable } from 'stream'
 import { promisify } from 'util'
 import { isSystemError } from './error'
 
@@ -15,6 +15,12 @@ const pip = promisify(pipeline)
 
 export { pip as pipeline }
 export { checksum }
+
+export async function checksumFromStream(s: Readable, alg: string) {
+  const hash = createHash(alg)
+  await pip(s, hash)
+  return hash.digest('hex')
+}
 
 export function missing(file: string) {
   return access(file, constants.F_OK).then(() => false, () => true)
@@ -43,6 +49,7 @@ export async function readdirEnsured(path: string) {
 export function validateSha256(path: string, sha256: string) {
   return checksum(path, 'sha256').then(s => s === sha256, () => false)
 }
+
 /**
  * This copy will not replace existed files.
  */
@@ -94,7 +101,7 @@ export class CopyDirectoryTask extends AbortableTask<void> {
       await ensureDir(dest)
       const children = await readdir(src)
       for (const child of children) {
-        yield * this.visit(resolve(src, child), resolve(dest, child))
+        yield* this.visit(resolve(src, child), resolve(dest, child))
       }
     } else if (await missing(dest)) {
       this._total += fileStat.size

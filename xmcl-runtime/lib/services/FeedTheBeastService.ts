@@ -1,6 +1,9 @@
 import { CachedFTBModpackVersionManifest, FeedTheBeastService as IFeedTheBeastService, FeedTheBeastServiceKey, FeedTheBeastState, FTBModpackManifest, FTBModpacksResult, FTBModpackVersionManifest, FTBVersionManifestStoreSchema, GetFTBModpackVersionOptions, SearchFTBModpackOptions } from '@xmcl/runtime-api'
+import { Client } from 'undici'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { FeedTheBeastClient } from '../clients/FeedTheBeastClient'
+import { InteroperableDispatcher } from '../dispatchers/dispatcher'
 import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
 import { InstanceService } from './InstanceService'
@@ -9,13 +12,7 @@ import { ExposeServiceKey, StatefulService } from './Service'
 
 @ExposeServiceKey(FeedTheBeastServiceKey)
 export class FeedTheBeastService extends StatefulService<FeedTheBeastState> implements IFeedTheBeastService {
-  private api = this.networkManager.request.extend({
-    prefixUrl: 'https://api.modpacks.ch/public/',
-    headers: {
-      'User-Agent': 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36 OverwolfClient/0.195.0.18',
-      Origin: 'overwolf-extension://cmogmmciplgmocnhikmphehmeecmpaggknkjlbag',
-    },
-  })
+  private client: FeedTheBeastClient
 
   private cache = createSafeFile(this.getAppDataPath('ftb.json'), FTBVersionManifestStoreSchema, this)
 
@@ -29,6 +26,26 @@ export class FeedTheBeastService extends StatefulService<FeedTheBeastState> impl
       const result = await this.cache.read()
       this.cachedVersions = result.caches ?? []
     })
+
+    const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
+      if (origin.host === 'api.modpacks.ch') {
+        return new InteroperableDispatcher([
+          (options) => {
+            if (!options.headers) {
+              options.headers = {
+                'User-Agent': 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.141 Safari/537.36 OverwolfClient/0.195.0.18',
+                Origin: 'overwolf-extension://cmogmmciplgmocnhikmphehmeecmpaggknkjlbag',
+              }
+            }
+          },
+        ], new Client(origin, {
+          ...options,
+          pipelining: 6,
+        }))
+      }
+    })
+
+    this.client = new FeedTheBeastClient(dispatcher)
   }
 
   async getAllCachedModpackVersions(): Promise<CachedFTBModpackVersionManifest[]> {
@@ -47,22 +64,21 @@ export class FeedTheBeastService extends StatefulService<FeedTheBeastState> impl
 
   async searchModpacks(options?: SearchFTBModpackOptions): Promise<FTBModpacksResult> {
     this.log(`Try search modpacks keyword=${options?.keyword ?? ''}`)
-    const result: FTBModpacksResult = await this.api.get(`modpack/search/8?term=${options?.keyword ?? ''}`).json()
+    const result: FTBModpacksResult = await this.client.searchModpacks(options)
     this.log(`Got ${result.total} modpacks with keyword=${options?.keyword ?? ''}`)
     return result
   }
 
   async getFeaturedModpacks(): Promise<FTBModpacksResult> {
     this.log('Try get featured modpacks')
-
-    const result: FTBModpacksResult = await this.api.get('modpack/featured/5').json()
+    const result: FTBModpacksResult = await this.client.getFeaturedModpacks()
     this.log(`Got ${result.total} featured modpacks`)
     return result
   }
 
   async getModpackManifest(id: number): Promise<FTBModpackManifest> {
     this.log(`Try get modpack for id=${id}`)
-    const result: FTBModpackManifest = await this.api.get(`modpack/${id}`).json()
+    const result: FTBModpackManifest = await this.client.getModpackManifest(id)
     this.log(`Got modpack for id=${id}`)
     return result
   }
@@ -75,7 +91,7 @@ export class FeedTheBeastService extends StatefulService<FeedTheBeastState> impl
       return existed
     }
     const modpackManifest = typeof modpack === 'number' ? await this.getModpackManifest(modpack) : modpack
-    const result: FTBModpackVersionManifest = await this.api.get(`modpack/${modpackId}/${version.id}`).json()
+    const result: FTBModpackVersionManifest = await this.client.getModpackVersionManifest({ modpack, version })
     if ((result as any).status === 'error') {
       throw new Error(`Fail to get manifest for ${modpackId} ${version.id}`)
     }
@@ -92,8 +108,13 @@ export class FeedTheBeastService extends StatefulService<FeedTheBeastState> impl
   async getModpackVersionChangelog({ modpack, version }: GetFTBModpackVersionOptions): Promise<string> {
     const modpackId = typeof modpack === 'number' ? modpack : modpack.id
     this.log(`Try get modpack changelog for modpackId=${modpackId}, versionId=${version.id}`)
-    const result: { content: string } = await this.api.get(`modpack/${modpackId}/${version.id}/changelog`).json()
+    const content = await this.client.getModpackVersionChangelog({ modpack, version })
     this.log(`Got modpack changelog for modpackId=${modpackId}, versionId=${version.id}`)
-    return result.content
+    return content
+  }
+
+  async removeModpackCache(id: number) {
+    this.cachedVersions = this.cachedVersions.filter(v => v.id !== id)
+    await this.cache.write({ caches: this.cachedVersions })
   }
 }

@@ -131,7 +131,6 @@ diagnosis:
 disk:
   available: 可用
   used: 已用
-downloadUpdate: 下載更新
 edit: 編輯
 existed: 已導入過的
 fabricVersion:
@@ -438,7 +437,7 @@ minecraftVersion:
   showAlpha: 顯示快照版
   snapshot: 快照版
 mod:
-  acceptVersion: 推薦 Minecraft {version}
+  acceptVersion: 推薦 {version}
   backToAllMods: 返回所有 Mods
   compatible: 可用於當前版本。
   currentVersion: 當前是 {current}

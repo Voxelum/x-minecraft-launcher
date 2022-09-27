@@ -3,6 +3,7 @@ import { ImportFileOptions, ImportService as IImportService, ImportServiceKey, I
 import { createHash } from 'crypto'
 import { ensureFile, unlink } from 'fs-extra'
 import { basename } from 'path'
+import { request } from 'undici'
 import { URL } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -102,7 +103,7 @@ export class ImportService extends AbstractService implements IImportService {
       const resolved = new URL(url)
       if (resolved.pathname.endsWith('.jar') || resolved.pathname.endsWith('.mrpack') || resolved.pathname.endsWith('.zip')) {
         url = parseSourceControlUrl(url)
-        const response = await this.networkManager.request.head(url)
+        const response = await request(url, { method: 'HEAD' })
         if (response.headers['content-type'] === 'application/octet-stream') {
           const md5 = response.headers['content-md5']
           let fileName = basename(url)

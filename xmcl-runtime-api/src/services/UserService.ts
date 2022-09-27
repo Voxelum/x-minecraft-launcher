@@ -1,4 +1,4 @@
-import { GameProfile, MojangChallenge, MojangChallengeResponse, ProfileServiceAPI, YggdrasilAuthAPI } from '@xmcl/user'
+import { GameProfile } from '@xmcl/user'
 import { Exception } from '../entities/exception'
 import { GameProfileAndTexture, UserProfile, UserSchema } from '../entities/user.schema'
 import { GenericEventEmitter } from '../events'
@@ -20,7 +20,7 @@ export interface LoginOptions {
   /**
    * Custom property for special login service
    */
-  properties?: object
+  properties?: Record<string, string>
 }
 
 export interface UploadSkinOptions {
@@ -71,7 +71,6 @@ export class UserState implements UserSchema {
   users: Record<string, UserProfile> = {}
   selectedUser = {
     id: '',
-    profile: '',
   }
 
   clientToken = ''
@@ -81,7 +80,8 @@ export class UserState implements UserSchema {
   }
 
   get gameProfile() {
-    return this.user?.profiles[this.selectedUser.profile]
+    const user = this.user
+    return user?.profiles[user.selectedProfile]
   }
 
   get isAccessTokenValid(): boolean {
@@ -104,7 +104,6 @@ export class UserState implements UserSchema {
   userSnapshot(snapshot: UserSchema) {
     this.clientToken = snapshot.clientToken
     this.selectedUser.id = snapshot.selectedUser.id
-    this.selectedUser.profile = snapshot.selectedUser.profile
 
     if (typeof snapshot.users === 'object') {
       this.users = snapshot.users
@@ -133,7 +132,6 @@ export class UserState implements UserSchema {
   userProfileRemove(userId: string) {
     if (this.selectedUser.id === userId) {
       this.selectedUser.id = ''
-      this.selectedUser.profile = ''
     }
     delete this.users[userId]
   }
@@ -142,9 +140,15 @@ export class UserState implements UserSchema {
     this.users[user.id] = user
   }
 
+  userSelect(id: string) {
+    this.selectedUser.id = id
+  }
+
   userGameProfileSelect({ userId, profileId }: { userId: string; profileId: string }) {
-    this.selectedUser.id = userId
-    this.selectedUser.profile = profileId
+    const user = this.users[userId]
+    if (user) {
+      user.selectedProfile = profileId
+    }
   }
 }
 
@@ -170,19 +174,37 @@ export interface UserService extends StatefulService<UserState>, GenericEventEmi
    */
   saveSkin(options: SaveSkinOptions): Promise<void>
   /**
-   * Switch user account.
+   * Select user account.
+   * @param userId User to be select
    */
-  switchUserProfile(options: SwitchProfileOptions): Promise<void>
+  selectUser(userId: string): Promise<void>
+  /**
+   * Select a profile in current user
+   * @param profileId The profile id
+   */
+  selectGameProfile(profileId: string): Promise<void>
   /**
    * Remove the user profile. This will logout to the user
    */
   removeUserProfile(userId: string): Promise<void>
-
+  /**
+   * Put a new user profile into storage
+   */
   setUserProfile(userProfile: UserProfile): Promise<void>
-
+  /**
+   * Get all supported account systems.
+   *
+   * This might be influenced by region
+   */
   getSupportedAccountSystems(): Promise<string[]>
-
+  /**
+   * Login new user account.
+   */
   login(options: LoginOptions): Promise<UserProfile>
+  /**
+   * Abort current login
+   */
+  abortLogin(): Promise<void>
 }
 
 export const UserServiceKey: ServiceKey<UserService> = 'UserService'

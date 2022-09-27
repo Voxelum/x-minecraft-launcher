@@ -2,18 +2,37 @@ import { FabricModMetadata, readFabricMod } from '@xmcl/mod-parser'
 import { ResourceType, ResourceDomain } from '@xmcl/runtime-api'
 import { ResourceParser } from '../resource'
 
-export const fabricModParser: ResourceParser<FabricModMetadata> = ({
+export const fabricModParser: ResourceParser<FabricModMetadata | FabricModMetadata[]> = ({
   type: ResourceType.Fabric,
   domain: ResourceDomain.Mods,
   ext: '.jar',
   parseIcon: async (meta, fs) => {
+    if (meta instanceof Array) {
+      meta = meta[0]
+    }
     if (meta.icon) {
       return fs.readFile(meta.icon)
     }
     return Promise.resolve(undefined)
   },
-  parseMetadata: async fs => readFabricMod(fs),
+  parseMetadata: async fs => {
+    const result = await readFabricMod(fs)
+    if (result.jars) {
+      const nested = await Promise.all(result.jars.map(async (jar) => {
+        try {
+          return await readFabricMod(await fs.readFile(jar.file))
+        } catch {
+          return undefined
+        }
+      }))
+      return [result, ...nested.filter((v): v is FabricModMetadata => !!v)]
+    }
+    return result
+  },
   getSuggestedName: (meta) => {
+    if (meta instanceof Array) {
+      meta = meta[0]
+    }
     let name = ''
     if (typeof meta.name === 'string') {
       name += meta.name
@@ -27,5 +46,10 @@ export const fabricModParser: ResourceParser<FabricModMetadata> = ({
     }
     return name
   },
-  getUri: meta => [`fabric:${meta.id}:${meta.version}`],
+  getUri: meta => {
+    if (meta instanceof Array) {
+      meta = meta[0]
+    }
+    return [`fabric:${meta.id}:${meta.version}`]
+  },
 })

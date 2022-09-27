@@ -15,10 +15,15 @@
       <home-saves-card />
       <home-problem-card />
       <server-status-bar v-if="isServer" />
+      <HomeModrinthCard
+        v-if="instance.upstream && instance.upstream.type === 'modrinth-modpack'"
+        :path="instance.path"
+        :upstream="instance.upstream"
+      />
     </span>
 
     <div class="flex absolute left-0 bottom-0 px-8 pb-[20px] gap-6">
-      <home-sync-button />
+      <!-- <home-sync-button /> -->
     </div>
 
     <log-dialog />
@@ -27,13 +32,14 @@
     <home-launch-multi-instance-dialog />
     <launch-status-dialog />
     <java-fixer-dialog />
-    <home-sync-dialog />
+    <!-- <home-sync-dialog /> -->
+    <HomeInstallInstanceDialog />
   </div>
 </template>
 
 <script lang=ts setup>
 import { BaseServiceKey } from '@xmcl/runtime-api'
-import { useInstance } from '../composables/instance'
+import { useInstance, useInstanceIsServer } from '../composables/instance'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import GameExitDialog from './AppGameExitDialog.vue'
 import AppLaunchBlockedDialog from './AppLaunchBlockedDialog.vue'
@@ -51,6 +57,8 @@ import HomeShaderPackCard from './HomeShaderPackCard.vue'
 import HomeSyncButton from './HomeSyncButton.vue'
 import HomeSyncDialog from './HomeSyncDialog.vue'
 import { useRouter, useService } from '/@/composables'
+import HomeModrinthCard from './HomeModrinthCard.vue'
+import HomeInstallInstanceDialog from './HomeInstallInstanceDialog.vue'
 
 const router = useRouter()
 
@@ -58,9 +66,9 @@ router.afterEach((r) => {
   document.title = `XMCL KeyStone - ${r.fullPath}`
 })
 
-const { refreshing, isServer, path } = useInstance()
-const { refresh } = useInstanceServerStatus(path.value)
-const { openDirectory } = useService(BaseServiceKey)
+const { instance } = useInstance()
+const isServer = useInstanceIsServer(instance)
+const { refresh } = useInstanceServerStatus(instance.value.path)
 
 onMounted(() => {
   if (isServer.value) {

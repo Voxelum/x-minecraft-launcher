@@ -95,7 +95,7 @@ export interface ResourceParser<T> {
   domain: ResourceDomain
   ext: string
   parseIcon: (metadata: T, data: FileSystem) => Promise<Uint8Array | undefined>
-  parseMetadata: (data: FileSystem, filePath: string) => Promise<T>
+  parseMetadata: (data: FileSystem, filePath: string, metadata: readonly Resource['metadata']) => Promise<T>
   getSuggestedName: (metadata: T) => string
   /**
    * Get ideal uri for this resource
@@ -149,7 +149,7 @@ export async function parseResourceMetadata(resource: Resource): Promise<{ resou
         }
       }
       try {
-        const metadata = await parser.parseMetadata(fs, resource.path)
+        const metadata = await parser.parseMetadata(fs, resource.path, resource.metadata)
         const icon = await parser.parseIcon(metadata, fs).catch(() => undefined)
         resource.domain = parser.domain
         resource.metadata[parser.type] = metadata

@@ -17,6 +17,7 @@
               v-model="fab"
               :disabled="disabled"
               fab
+              color="primary"
               v-on="on"
               @click="load"
             >
@@ -32,7 +33,9 @@
             <v-btn
               :disabled="disabled"
               fab
+              light
               small
+              color="white"
               v-on="tooltip"
               @click="upload"
             >
@@ -50,6 +53,7 @@
               :disabled="disabled"
               fab
               small
+              color="blue"
               v-on="tooltip"
               @click="save"
             >

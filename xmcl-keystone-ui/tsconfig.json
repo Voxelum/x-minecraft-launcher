@@ -23,9 +23,9 @@
     "types": [
       "vite/client",
       "vite-plugin-pwa/client",
+      "@xmcl/runtime-api/client",
       "unplugin-vue2-script-setup/types",
       "unplugin-vue2-script-setup/ref-macros",
-      "@xmcl/runtime-api/client",
       "@xmcl/runtime-api/monitorClient",
       "@modyfi/vite-plugin-yaml/modules"
     ]

@@ -28,12 +28,12 @@ function resolveCompatible(deps: Compatible[]) {
   return true
 }
 
-export function isFabricModCompatible(resource: FabricResource, runtime: Instance['runtime']): Compatible {
+export function isFabricModCompatible(resource: FabricResource, runtime: Record<string, string>): Compatible {
   const result = getFabricModCompatibility(resource, runtime)
   return resolveCompatible(Object.values(result).map(v => v.compatible))
 }
 
-export function isForgeModCompatible(resource: ForgeResource, runtime: Instance['runtime']): Compatible {
+export function isForgeModCompatible(resource: ForgeResource, runtime: Record<string, string>): Compatible {
   const result = getForgeModCompatibility(resource, runtime)
   return resolveCompatible(Object.values(result)
     .map(v => resolveCompatible(Object.entries(v)
@@ -41,11 +41,16 @@ export function isForgeModCompatible(resource: ForgeResource, runtime: Instance[
       .map(x => x[1].compatible))))
 }
 
-export function getFabricModCompatibility(resource: FabricResource, runtime: Instance['runtime']): Record<string, CompatibleDetail> {
-  const versions: Record<string, string | undefined> = { minecraft: runtime.minecraft, fabricloader: runtime.fabricLoader }
+function normalizeMinecraftVersion(v: string) {
+  return v.split('.').length === 2 ? v + '.0' : v
+}
+
+export function getFabricModCompatibility(resource: FabricResource, runtime: Record<string, string>): DepsCompatible {
+  const versions: Record<string, string | undefined> = { ...runtime }
   const compatibility: DepsCompatible = {}
-  if (resource.metadata.fabric.depends) {
-    for (const [id, requirements] of Object.entries(resource.metadata.fabric.depends)) {
+  const deps = resource.metadata.fabric instanceof Array ? resource.metadata.fabric[0].depends : resource.metadata.fabric.depends
+  if (deps) {
+    for (const [id, requirements] of Object.entries(deps)) {
       let compatible: Compatible = 'maybe'
       const current = versions[id]
       if (current) {
@@ -63,16 +68,16 @@ export function getFabricModCompatibility(resource: FabricResource, runtime: Ins
           }
         }
       } else {
-        // just ignore for now
-        continue
+        compatible = false
       }
       compatibility[id] = {
         compatible,
         requirements: requirements,
-        version: current,
+        version: current || '',
       }
     }
   }
+
   return compatibility
 }
 
@@ -107,7 +112,7 @@ export function getLegacyForgeDependencies(mod: ForgeModMetadata) {
   return result
 }
 
-export function getForgeModCompatibility(resource: ForgeResource, runtime: Instance['runtime']) {
+export function getForgeModCompatibility(resource: ForgeResource, runtime: Record<string, string>) {
   const deps: Record<string, ForgeCommonDependencies> = {}
   if (resource.metadata.forge.modsToml.length > 0) {
     // new mod
@@ -122,7 +127,7 @@ export function getForgeModCompatibility(resource: ForgeResource, runtime: Insta
     }
   }
 
-  const versions: Record<string, string | undefined> = { minecraft: runtime.minecraft, forge: runtime.forge }
+  const versions: Record<string, string | undefined> = { ...runtime }
 
   const result: Record<string, DepsCompatible> = {}
   for (const [modid, dependencies] of Object.entries(deps)) {
@@ -140,7 +145,7 @@ export function getForgeModCompatibility(resource: ForgeResource, runtime: Insta
           if (!compatible) {
             const res = range.restrictions[0]
             if (Math.abs(res.lowerBound?.compareTo(currentVersion) ?? 100) === 1 ||
-            Math.abs(res.upperBound?.compareTo(currentVersion) ?? 100) === 1) {
+              Math.abs(res.upperBound?.compareTo(currentVersion) ?? 100) === 1) {
               compatible = 'maybe'
             }
           }
@@ -154,20 +159,62 @@ export function getForgeModCompatibility(resource: ForgeResource, runtime: Insta
         version: current ?? '',
       }
     }
+
+    if (!compatibility.forge) {
+      compatibility.forge = {
+        compatible: !!runtime.forge,
+        requirements: '[*]',
+        version: runtime.forge || '',
+      }
+    }
+
     result[modid] = compatibility
   }
+
   return result
 }
 
-export function isLiteloaderModCompatibility(resource: LiteloaderResource, runtime: Instance['runtime']): Compatible {
+export function getLiteloaderModCompatibility(resource: LiteloaderResource, runtime: Record<string, string>) {
+  const deps: DepsCompatible = {}
   const sem = `~${resource.metadata.liteloader.mcversion}`
-  if (runtime.liteloader) {
-    return satisfies(runtime.liteloader, sem)
+  deps.minecraft = {
+    compatible: satisfies(normalizeMinecraftVersion(runtime.minecraft), sem),
+    requirements: resource.metadata.liteloader.mcversion,
+    version: runtime.minecraft,
   }
-  return 'maybe'
+  deps.liteloader = {
+    compatible: !!runtime.liteloader,
+    requirements: '',
+    version: runtime.liteloader || '',
+  }
+  return deps
 }
 
-export function isModCompatible(resource: Resource, runtime: Instance['runtime']): Compatible {
+export function getModCompatibility(resource: Resource, runtime: Record<string, string>): DepsCompatible {
+  if (isForgeResource(resource)) {
+    const forge = getForgeModCompatibility(resource, runtime)
+    const deps: DepsCompatible = {}
+    for (const dep of Object.values(forge)) {
+      for (const [key, val] of Object.entries(dep)) {
+        if (deps[key]) {
+          if (deps[key].compatible === true && deps[key].compatible !== true) {
+            deps[key] = val
+          }
+        } else {
+          deps[key] = val
+        }
+      }
+    }
+    return deps
+  } else if (isFabricResource(resource)) {
+    return getFabricModCompatibility(resource, runtime)
+  } else if (isLiteloaderResource(resource)) {
+    return getLiteloaderModCompatibility(resource, runtime)
+  }
+  return {}
+}
+
+export function isModCompatible(resource: Resource, runtime: Record<string, string>): Compatible {
   if (isForgeResource(resource)) {
     if (!runtime.forge) return false
     return isForgeModCompatible(resource, runtime)
@@ -175,10 +222,14 @@ export function isModCompatible(resource: Resource, runtime: Instance['runtime']
     if (!runtime.fabricLoader) return false
     return isFabricModCompatible(resource, runtime)
   } else if (isLiteloaderResource(resource)) {
-    if (!runtime.liteloader) return false
-    return isLiteloaderModCompatibility(resource, runtime)
+    const result = getLiteloaderModCompatibility(resource, runtime)
+    return resolveCompatible(Object.values(result).map(v => v.compatible))
   }
   return 'maybe'
+}
+
+export function resolveDepsCompatible(com: DepsCompatible): Compatible {
+  return resolveCompatible(Object.values(com).map(v => v.compatible))
 }
 
 export function isRangeCompatible(range: string, version: string): Compatible {

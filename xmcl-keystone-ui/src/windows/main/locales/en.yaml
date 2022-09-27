@@ -233,6 +233,9 @@ installForge:
   library: Install Library {lib}
   name: Install Forge
   postProcessing: Post Processing
+installInstance:
+  file: Update Instance File {file}
+  name: Update Instance
 installJre:
   cleanup: Clean up installation package
   decompress: Decompress JRE files to folder
@@ -442,7 +445,7 @@ minecraftVersion:
   showAlpha: Show Snapshot
   snapshot: Snapshot
 mod:
-  acceptVersion: Accept Minecraft {version}
+  acceptVersion: Accept {version}
   backToAllMods: Back to All Mods
   compatible: Compatible Mod.
   currentVersion: Current {current}
@@ -606,6 +609,7 @@ multiplayer:
   sharing: Sharing files...
   start: Start
   startNewP2PConnection: Click the Start button to create a new peer connection
+myStuff: My Stuff
 name: Name
 next: Next
 'no': 'No'
@@ -770,6 +774,7 @@ setup:
 shaderPack:
   deletion: Delete Shader Pack
   deletionHint: This will delete the shader pack file {path} and cannot reverted.
+  empty: No shader pack allocated
   enable: Using {name} shader pack
   filter: Filter Shader Packs
   internal: Internal Shader
@@ -796,11 +801,13 @@ task:
   failedDescription: A task failed with following stacktrace
   history: Task History
   manager: Task Manager
+  nTaskRunning: '{count} tasks is running'
   name: Task | Tasks
   pause: Pause
   running: Running Tasks
   start: Task {name} Started
   successed: Successed
+title: X Minecraft Launcher
 universalDrop:
   enableModsAfterImport: Enable Mods After Import
   start: Import Started
@@ -835,9 +842,6 @@ unused:
     mc: Minecraft Arguments
     name: Launch Settings
   summery: Summery
-updateInstance:
-  file: Update Instance File {file}
-  name: Update Instance
 user:
   accessToken: Access Token
   authMode: Auth Service

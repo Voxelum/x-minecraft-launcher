@@ -1,5 +1,4 @@
 import { UserSchema } from '@xmcl/runtime-api'
-import { AUTH_API_MOJANG, PROFILE_API_MOJANG } from '@xmcl/user'
 import { randomUUID } from 'crypto'
 import { LauncherProfile } from '../entities/launchProfile'
 
@@ -16,7 +15,6 @@ export function fitMinecraftLauncherProfileData(result: UserSchema, data: UserSc
 
     if (data.selectedUser) {
       result.selectedUser.id = data.selectedUser.id ?? result.selectedUser.id
-      result.selectedUser.profile = data.selectedUser.profile ?? result.selectedUser.profile
     }
     result.users = data.users
   } else {
@@ -25,7 +23,6 @@ export function fitMinecraftLauncherProfileData(result: UserSchema, data: UserSc
 
     if (launchProfile.selectedUser) {
       result.selectedUser.id = launchProfile.selectedUser.account
-      result.selectedUser.profile = launchProfile.selectedUser.profile
     }
   }
   if (launchProfile?.clientToken === result.clientToken && launchProfile.authenticationDatabase) {
@@ -33,23 +30,23 @@ export function fitMinecraftLauncherProfileData(result: UserSchema, data: UserSc
     for (const userId of Object.keys(adb)) {
       const user = adb[userId]
       if (!result.users[userId]) {
+        const profiles = Object.entries(user.profiles)
+          .reduce((dict, [id, o]) => {
+            dict[id] = {
+              id,
+              name: o.displayName,
+              textures: { SKIN: { url: '' } },
+            }
+            return dict
+          }, {} as { [key: string]: any })
         result.users[userId] = {
           id: userId,
           username: user.username,
           accessToken: user.accessToken,
           authService: 'mojang',
-          profileService: 'mojang',
-          selectedProfile: '',
+          selectedProfile: profiles[launchProfile.selectedUser.profile] ? launchProfile.selectedUser.profile : Object.values(profiles)[0].id,
           expiredAt: 0,
-          profiles: Object.entries(user.profiles)
-            .reduce((dict, [id, o]) => {
-              dict[id] = {
-                id,
-                name: o.displayName,
-                textures: { SKIN: { url: '' } },
-              }
-              return dict
-            }, {} as { [key: string]: any }),
+          profiles,
         }
       }
     }

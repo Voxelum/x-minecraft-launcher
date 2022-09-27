@@ -45,7 +45,7 @@ export interface ClosetPivot {
   item_name: string
 }
 
-export interface Character {
+export interface LittleSkinCharacter {
   pid: number
   uid: number
   name: string
@@ -106,13 +106,15 @@ export interface SkinLink {
   active: boolean
 }
 
-export interface UploadSkinOptions {
+export interface UploadTextureOptions {
 
 }
-export interface UploadSkinResult { }
+export interface UploadTextureResult { }
 
 export interface LittleSkinUserService {
-  getAllCharacters(): Promise<Character[]>
+  authenticate(): Promise<void>
+
+  getAllCharacters(): Promise<LittleSkinCharacter[]>
 
   setCharacterName(options: SetCharacterTextureOptions): Promise<void>
 
@@ -120,7 +122,7 @@ export interface LittleSkinUserService {
 
   listSkins(options: ListSkinOptions): Promise<ListSkinResult>
 
-  uploadSkin(options: UploadSkinOptions): Promise<UploadSkinResult>
+  uploadTexture(options: UploadTextureOptions): Promise<UploadTextureResult>
 }
 
 export const LittleSkinUserServiceKey: ServiceKey<LittleSkinUserService> = 'LittleSkinUserService'

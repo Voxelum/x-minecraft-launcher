@@ -1,5 +1,5 @@
 import { HTTPException } from '@xmcl/runtime-api'
-import { HTTPError, RequestError } from 'got'
+import { Dispatcher, errors } from 'undici'
 
 export interface SystemError extends Error {
   /**
@@ -29,53 +29,32 @@ export function serializeError(e: unknown): any {
     }
     return serializeError(e[0])
   }
+
   const error: any = {
   }
 
-  if (e instanceof HTTPError) {
-    const err = e
-    // eslint-disable-next-line no-ex-assign
-    e = new HTTPException({
+  const serializeUndiciError = (e: errors.UndiciError) => {
+    const options: Dispatcher.DispatchOptions = (e as any).options
+    const url = new URL(options.path, options.origin)
+    return new HTTPException({
       type: 'httpException',
-      code: err.code,
-      url: err.response.url,
-      statusCode: err.response.statusCode,
-      body: err.response.body,
+      code: (e as any).code,
+      method: options.method,
+      url: url.toString(),
+      statusCode: e instanceof errors.ResponseStatusCodeError ? e.statusCode : 0,
+      body: e instanceof errors.ResponseStatusCodeError ? e.body : '',
     })
   }
 
-  if (e instanceof RequestError) {
-    const err = e
-    // eslint-disable-next-line no-ex-assign
-    e = new HTTPException({
-      type: 'httpException',
-      code: err.code,
-      url: err.options.url,
-      statusCode: 0,
-      body: '',
-    })
+  if (e instanceof errors.UndiciError) {
+    e = serializeUndiciError(e)
   }
 
   if (e instanceof Error) {
     try {
       Object.assign(error, JSON.parse(JSON.stringify(e, (key, val) => {
-        if (val instanceof HTTPError) {
-          return new HTTPException({
-            type: 'httpException',
-            code: val.code,
-            url: val.response.url,
-            statusCode: val.response.statusCode,
-            body: val.response.body,
-          })
-        }
-        if (val instanceof RequestError) {
-          return new HTTPException({
-            type: 'httpException',
-            code: val.code,
-            url: val.options.url,
-            statusCode: 0,
-            body: '',
-          })
+        if (val instanceof errors.UndiciError) {
+          return serializeUndiciError(val)
         }
         return val
       })))

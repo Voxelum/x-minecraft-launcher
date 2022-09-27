@@ -73,6 +73,10 @@ export interface CurseForgeService extends StatefulService<CurseforgeState> {
    * @param options The curseforge project id
    */
   fetchProjectFiles(options: GetModFilesOptions): Promise<{ data: File[]; pagination: Pagination }>
+
+  fetchModFiles(ids: number[]): Promise<File[]>
+
+  fetchMods(modIds: number[]): Promise<Mod[]>
   /**
    * Search curseforge projects by search options
    * @param searchOptions The search options

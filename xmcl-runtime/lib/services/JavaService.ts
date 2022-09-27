@@ -1,5 +1,5 @@
 import { JavaVersion } from '@xmcl/core'
-import { fetchJavaRuntimeManifest, installJavaRuntimesTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
+import { fetchJavaRuntimeManifest, installJavaRuntimeTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
 import { Java, JavaRecord, JavaSchema, JavaService as IJavaService, JavaServiceKey, JavaState } from '@xmcl/runtime-api'
 import { chmod, ensureFile, readFile } from 'fs-extra'
 import { dirname, join } from 'path'
@@ -93,7 +93,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       }
     }
 
-    const task = installJavaRuntimesTask({
+    const task = installJavaRuntimeTask({
       manifest,
       apiHost,
       destination: dest,

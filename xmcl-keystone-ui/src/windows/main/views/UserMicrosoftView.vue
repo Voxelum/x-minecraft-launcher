@@ -3,10 +3,8 @@
     <div class="w-60">
       <page-skin-view
         class="flex overflow-auto relative justify-center items-center z-5"
-        :user-id="user.id"
-        :slim="slim"
-        :profile-id="profileId"
-        :name="gameProfile.name"
+        :user="user"
+        :profile="gameProfile"
       />
     </div>
     <v-card class="p-4 overflow-x-hidden flex flex-col flex-grow">
@@ -64,7 +62,7 @@
       </v-list-item>
 
       <v-slide-group
-        v-model="model"
+        v-model="capeModel"
         mandatory
         show-arrows
       >
@@ -120,7 +118,10 @@
       </v-slide-group>
       <v-card-actions>
         <v-spacer />
-        <v-btn text>
+        <v-btn
+          text
+          @click="save"
+        >
           Save
           <v-icon right>
             save
@@ -131,35 +132,83 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { UserProfile } from '@xmcl/runtime-api'
+import { NameAvailability, OfficialUserServiceKey, UserProfile } from '@xmcl/runtime-api'
 import PageSkinView from './UserSkinView.vue'
-import { useI18n } from '/@/composables'
+import { useI18n, useRefreshable, useService } from '/@/composables'
 import PlayerCape from '../components/PlayerCape.vue'
+import { PlayerCapeModel, PlayerNameModel, usePlayerCape, usePlayerName, UserSkinModel, useUserSkin } from '../composables/userSkin'
 
 const props = defineProps<{
   user: UserProfile
-  profileId: string
 }>()
 
-const gameProfile = computed(() => props.user.profiles[props.profileId])
-const slim = ref(gameProfile.value.textures.SKIN.metadata ? gameProfile.value.textures.SKIN.metadata.model === 'slim' : false)
-const name = ref(gameProfile.value.name)
-const capes = computed(() => gameProfile.value.capes ?? [])
-const currentCape = computed(() => capes.value.every(c => c.state === 'INACTIVE') ? 0 : capes.value.findIndex(c => c.state === 'ACTIVE'))
-const model = ref(currentCape)
 const { t } = useI18n()
+
+const gameProfile = computed(() => props.user.profiles[props.user.selectedProfile])
+
+const name = usePlayerName(gameProfile)
+provide(PlayerNameModel, name)
+
+const userSkinModel = useUserSkin(computed(() => props.user.id), gameProfile)
+provide(UserSkinModel, userSkinModel)
+
+const { slim } = userSkinModel
+
+const currentCape = usePlayerCape(gameProfile)
+provide(PlayerCapeModel, currentCape)
+
+const capes = computed(() => gameProfile.value.capes ?? [])
+const capeModel = computed({
+  get() {
+    if (currentCape.value) {
+      const index = capes.value.findIndex(v => v.url === currentCape.value)
+      if (index === -1) return 1
+      return index + 1
+    } else {
+      return 0
+    }
+  },
+  set(v) {
+    currentCape.value = capes.value[v - 1]?.url
+  },
+})
+
+const selectedCape = computed(() => capes.value[capeModel.value])
+const { showCape, hideCape, checkNameAvailability, setName } = useService(OfficialUserServiceKey)
+const nameError = ref('')
+
 const changed = computed(() => {
-  if (currentCape.value !== model.value) {
+  if (currentCape.value !== selectedCape.value.url) {
     return true
   }
   if (name.value !== gameProfile.value.name) {
     return true
   }
-  if (slim.value !== gameProfile.value.textures.SKIN.metadata ? gameProfile.value.textures.SKIN.metadata.model === 'slim' : false) {
-    return true
-  }
   return false
 })
+
+const { refresh: save, refreshing: saving } = useRefreshable(
+  async function save() {
+    if (name.value !== gameProfile.value.name) {
+      const result = await checkNameAvailability(name.value)
+      if (result === NameAvailability.AVAILABLE) {
+        await setName(name.value)
+      } else if (result === NameAvailability.DUPLICATE) {
+        nameError.value = t('nameError.duplicate')
+      } else if (result === NameAvailability.NOT_ALLOWED) {
+        nameError.value = t('nameError.notAllowed')
+      }
+    }
+
+    if (currentCape.value !== selectedCape.value.url) {
+      if (selectedCape.value) {
+        await showCape(selectedCape.value.id)
+      } else {
+        await hideCape()
+      }
+    }
+  },
+)
 
 watch(gameProfile, (p) => {
   name.value = p.name

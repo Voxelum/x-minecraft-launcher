@@ -17,3 +17,4 @@ task:
   continue: 在啟動器中查看
   fail: 有一個任務失敗了
   success: 有一個任務成功完成了
+title: X Minecraft Launcher

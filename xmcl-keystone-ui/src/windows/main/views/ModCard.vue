@@ -14,9 +14,9 @@
     class="draggable-card mod-card rounded-lg transition-all duration-200 shadow"
     style="margin-top: 10px; padding: 0 10px; content-visibility: auto;"
     @dragstart="onDragStart"
-    @dragend="$emit('dragend', $event)"
-    @mouseenter="$emit('mouseenter', $event)"
-    @click="$emit('click', $event)"
+    @dragend="emit('dragend', $event)"
+    @mouseenter="emit('mouseenter', $event)"
+    @click="emit('click', $event)"
   >
     <v-progress-linear
       v-if="enabled !== source.enabledState"
@@ -32,150 +32,96 @@
       class="absolute top-0 left-0"
       stream
     />
-    <v-tooltip top>
-      <template #activator="{ on }">
-        <transition-group
-          class="layout justify-center align-center fill-height select-none"
-          name="transition-list"
-          tag="div"
+    <transition-group
+      class="layout justify-center align-center fill-height select-none"
+      name="transition-list"
+      tag="div"
+    >
+      <v-flex
+        :key="0"
+        class="flex-grow-0 "
+        :style="{ display: selection ? 'flex' : 'none !important' }"
+      >
+        <v-checkbox
+          v-model="source.selected"
+          @input="emit('select')"
+        />
+      </v-flex>
+      <v-flex
+        v-if="!source.subsequence"
+        :key="1"
+        class="avatar"
+      >
+        <v-img
+          ref="iconImage"
+          :lazy-src="unknownPack"
+          class="rounded object-contain image-render-pixel"
+          :src="source.icon"
+        />
+      </v-flex>
+      <div
+        :key="2"
+        class="flex-grow py-2"
+      >
+        <h3
+          class="px-1"
         >
-          <v-flex
-            :key="0"
-            class="flex-grow-0 "
-            :style="{ display: selection ? 'flex' : 'none !important' }"
-          >
-            <v-checkbox
-              v-model="source.selected"
-              @input="$emit('select')"
-            />
-          </v-flex>
-          <v-flex
+          <text-component
             v-if="!source.subsequence"
-            :key="1"
-            class="avatar"
-          >
-            <img
-              ref="iconImage"
-              v-fallback-img="unknownPack"
-              class="rounded object-contain"
-              :src="source.icon"
-            >
-          </v-flex>
-          <div
-            :key="2"
-            class="flex-grow py-2"
-            v-on="on"
-          >
-            <h3
-              v-if="!source.subsequence"
-              class="text-lg font-bold"
-            >
-              <text-component :source="source.name" />
-            </h3>
-            <div class="flex gap-1 flex-wrap">
-              <v-chip
-                v-if="source.version"
-                small
-                :outlined="darkTheme"
-                label
-                color="amber"
-                style="margin-left: 1px;"
-                @mousedown.stop
-              >
-                {{ source.version }}
-              </v-chip>
-              <v-chip
-                small
-                :outlined="darkTheme"
-                color="orange en-1"
-                label
-                style="margin-left: 1px;"
-                @mousedown.stop
-              >
-                {{ source.id }}
-              </v-chip>
-              <v-chip
-                small
-                :outlined="darkTheme"
-                label
-                color="lime"
-                style="margin-left: 1px;"
-                @mousedown.stop
-              >
-                {{ source.type }}
-              </v-chip>
-
-              <v-chip
-                v-for="(tag, index) in source.tags"
-                :key="`${tag}-${index}`"
-                :outlined="darkTheme"
-                small
-                label
-                :color="getColor(tag)"
-                style="margin-left: 1px;"
-                close
-                @click.stop
-                @mousedown.stop
-                @click:close="onDeleteTag(tag)"
-              >
-                <div
-                  contenteditable
-                  class="max-w-50 overflow-auto"
-                  @input.stop="onEditTag($event, index)"
-                >
-                  {{ tag }}
-                </div>
-              </v-chip>
-            </div>
-
-            <v-card-text class=" p-1">
-              <text-component :source="source.description" />
-            </v-card-text>
-          </div>
-          <v-flex
-            :key="3"
-            style="flex-grow: 0"
-            @click.stop
-            @mousedown.stop
-          >
-            <v-switch
-              v-model="enabled"
-            />
-          </v-flex>
-        </transition-group>
-      </template>
-      {{ compatibleText }}
-      <v-divider />
-    </v-tooltip>
+            :source="source.name"
+          />
+          <span class="text-gray-400 text-sm">
+            {{ source.version }}
+          </span>
+        </h3>
+        <v-card-text
+          v-if="!source.subsequence"
+          class="px-1 py-0"
+        >
+          <text-component :source="source.description" />
+        </v-card-text>
+        <mod-card-labels
+          :source="source"
+          :on-edit-tag="onEditTag"
+          :on-delete-tag="onDeleteTag"
+        />
+      </div>
+      <v-flex
+        :key="3"
+        style="flex-grow: 0"
+        @click.stop
+        @mousedown.stop
+      >
+        <v-switch
+          v-model="enabled"
+        />
+      </v-flex>
+    </transition-group>
   </v-card>
 </template>
 
 <script lang=ts setup>
 import { Ref } from '@vue/composition-api'
 import { BaseServiceKey } from '@xmcl/runtime-api'
-import unknownPack from '/@/assets/unknown_pack.png'
-import { useI18n, useRouter, useService, useTags, useTheme } from '/@/composables'
-import { getColor } from '/@/util/color'
-import { ModItem } from '../composables/mod'
-import { useInstanceVersionBase } from '../composables/instance'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { useCurseforgeRoute, useMcWikiRoute } from '../composables/curseforgeRoute'
+import { ModItem } from '../composables/mod'
 import { vContextMenu } from '../directives/contextMenu'
-import { vLongPress } from '../directives/longPress'
-import { vFallbackImg } from '../directives/fallbackImage'
 import { vSelectableCard } from '../directives/draggableCard'
+import { vLongPress } from '../directives/longPress'
+import ModCardLabels from './ModCardLabels.vue'
+import unknownPack from '/@/assets/unknown_pack.png'
+import { useI18n, useRouter, useService, useTags } from '/@/composables'
 
 const props = defineProps<{ source: ModItem; selection: boolean }>()
-const emit = defineEmits(['tags', 'enable', 'dragstart', 'select', 'delete', 'editTags'])
+const emit = defineEmits(['tags', 'enable', 'dragstart', 'select', 'delete', 'editTags', 'mouseenter', 'dragend', 'click'])
 
-const { minecraft, forge, fabricLoader } = useInstanceVersionBase()
 const { openInBrowser, showItemInDirectory } = useService(BaseServiceKey)
 const { push } = useRouter()
 const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
 const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute()
 const { t } = useI18n()
 const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.source.tags, set(v) { emit('tags', v) } }), computed(() => props.source.selected))
-const { darkTheme } = useTheme()
 
 const onDeleteTag = removeTag
 const iconImage: Ref<HTMLImageElement | null> = ref(null)
@@ -184,29 +130,12 @@ const enabled = computed({
   set(v: boolean) { emit('enable', { item: props.source, enabled: v }) },
 })
 
-const compatibleText = computed(() => {
-  const deps = props.source.dependencies
-  let acceptVersionText = t('mod.acceptVersion', { version: deps.minecraft }) + ', ' + t('mod.currentVersion', { current: minecraft.value }) + '.'
-  if (deps.forge) {
-    acceptVersionText += ` Forge ${deps.forge}` + (forge.value ? `, ${t('mod.currentVersion', { current: forge.value })}.` : '')
-  }
-  if (deps.fabricLoader) {
-    acceptVersionText += `, FabricLoader ${deps.fabricLoader}` + (fabricLoader.value ? `, ${t('mod.currentVersion', { current: fabricLoader.value })}.` : '')
-  }
-  const compatibleText = props.source.compatible === 'maybe'
-    ? t('mod.maybeCompatible')
-    : props.source.compatible
-      ? t('mod.compatible')
-      : t('mod.incompatible')
-  return compatibleText + acceptVersionText
-})
-
 function onDragStart(e: DragEvent) {
   if (props.source.enabled) {
     return
   }
   if (iconImage.value) {
-    e.dataTransfer!.setDragImage(iconImage.value!, 0, 0)
+    e.dataTransfer!.setDragImage(iconImage.value.$el!, 0, 0)
   } else {
     const img = document.createElement('img')
     img.src = props.source.icon
@@ -259,7 +188,7 @@ const contextMenuItems = computed(() => {
       icon: 'add',
     })
   }
-  if (!props.source.selected) {
+  if (!props.source.enabledState || !props.source.enabled) {
     items.push({
       text: t('delete.name', { name: props.source.name }),
       children: [],
@@ -353,7 +282,7 @@ const contextMenuItems = computed(() => {
   white-space: nowrap;
 }
 .subsequence {
-  margin-left: 40px;
+  margin-left: 45px;
 }
 .incompatible.draggable-card:hover {
   background-color: #e65100;
@@ -362,7 +291,7 @@ const contextMenuItems = computed(() => {
 .dark .subsequence.draggable-card {
   /* background-color: rgba(255, 255, 255, 0.15); */
   border-color: rgba(255, 255, 255, 0.15);
-  background-color: #343434;
+  background-color: rgba(52, 52, 52, 0.15);
   /* border-color: #343434; */
 }
 .subsequence.draggable-card {

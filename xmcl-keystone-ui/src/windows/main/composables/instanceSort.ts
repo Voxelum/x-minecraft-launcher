@@ -9,7 +9,7 @@ export function useSortedInstance() {
 
   const sorted = computed(() => {
     const result = unordered.value.slice().sort((a, b) => ordered.value.indexOf(a.path) - ordered.value.indexOf(b.path))
-    console.log(result)
+    // console.log(result)
     return result
   })
 

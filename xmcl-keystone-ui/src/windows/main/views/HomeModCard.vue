@@ -7,11 +7,17 @@
       Mods
     </v-card-title>
     <v-card-text>
-      {{ t('mod.enabled', { count: modCounts }) }}
+      <template v-if="refreshing > 0">
+        <v-skeleton-loader type="paragraph" />
+      </template>
+      <template v-else>
+        {{ t('mod.enabled', { count: modCounts }) }}
+      </template>
     </v-card-text>
     <v-card-actions>
       <v-btn
         :disabled="refreshing > 0"
+        :loading="refreshing > 0"
         color="teal accent-4"
         text
         @click="push('/mod-setting')"

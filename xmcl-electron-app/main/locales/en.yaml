@@ -21,3 +21,4 @@ task:
   success: One Task Success
 urlFailed: Unknown url {url}. Please check your url or contact developer!
 urlSuccess: Succeed! Now you can close this window and return to the launcher!
+title: X Minecraft Launcher

@@ -38,6 +38,35 @@
         ],
         "description": "Create <script setup> + <script> blocks"
     },
+    "service interface": {
+        "scope": "typescript",
+        "prefix": "service interface",
+        "body": [
+            "import { ServiceKey } from './Service'",
+            "export interface $1Service {",
+            "  $2",
+            "}",
+            "",
+            "export const $1ServiceKey: ServiceKey<$1Service> = '$1Service'"
+        ]
+    },
+    "service impl": {
+        "scope": "typescript",
+        "prefix": "service impl",
+        "body": [
+            "import { $1Service as I$1Service, $1ServiceKey } from '@xmcl/runtime-api'",
+            "import { LauncherAppKey } from '../app/utils'",
+            "import { ExposeServiceKey, AbstractService } from './Service'",
+            "@ExposeServiceKey($1ServiceKey)",
+            "export class $1Service extends AbstractService implements I$1Service {",
+            "  constructor(@Inject(LauncherAppKey) app: LauncherApp) {",
+            "   super(app, $1ServiceKey)",
+            "  }",
+            "  $2",
+            "}",
+            ""
+        ]
+    }
     // "style": {
     //     "scope": "vue",
     //     "prefix": "style",

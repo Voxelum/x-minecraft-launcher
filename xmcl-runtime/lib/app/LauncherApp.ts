@@ -1,10 +1,12 @@
 import { getPlatform } from '@xmcl/core'
 import { InstalledAppManifest, ReleaseInfo } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
+import { ClassicLevel } from 'classic-level'
 import { EventEmitter } from 'events'
 import { ensureDir, readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { setTimeout } from 'timers/promises'
+import { Agent, Dispatcher, Pool, request, setGlobalDispatcher } from 'undici'
 import { URL } from 'url'
 import { IS_DEV, LAUNCHER_NAME } from '../constant'
 import { Client } from '../engineBridge'
@@ -17,10 +19,12 @@ import ServiceStateManager from '../managers/ServiceStateManager'
 import TaskManager from '../managers/TaskManager'
 import TelemetryManager from '../managers/TelemetryManager'
 import WorkerManager from '../managers/WorkerManager'
+import { OfficialUserService } from '../services/OfficialUserService'
 import { AbstractService, ServiceConstructor } from '../services/Service'
-import { UserService } from '../services/UserService'
 import { YggdrasilUserService } from '../services/YggdrasilUserService'
 import { isSystemError } from '../util/error'
+import { GlobalAgent } from '../dispatchers/proxyDispatcher'
+import { JsonCacheStorage } from '../dispatchers/cacheDispatcher'
 import { createPromiseSignal } from '../util/promiseSignal'
 import { Host } from './Host'
 import { LauncherAppController } from './LauncherAppController'
@@ -272,7 +276,7 @@ export abstract class LauncherApp extends EventEmitter {
         (error as any).error = err
       }
       const code = parsed.searchParams.get('code') as string
-      const userService = this.serviceManager.get(UserService)
+      const userService = this.serviceManager.get(OfficialUserService)
       userService.emit('microsoft-authorize-code', error, code)
       return true
     } else if (parsed.host === 'launcher' && parsed.pathname === '/app') {

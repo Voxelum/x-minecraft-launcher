@@ -1,8 +1,8 @@
 import { ResolvedVersion, Version } from '@xmcl/core'
-import { CreateInstanceOption, createTemplate, EditInstanceOptions, filterForgeVersion, filterOptifineVersion, Instance, InstanceSchema, InstanceService as IInstanceService, InstanceServiceKey, InstancesSchema, InstanceState, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, RuntimeVersions } from '@xmcl/runtime-api'
-import { randomUUID } from 'crypto'
+import { CreateInstanceOption, createTemplate, EditInstanceOptions, filterForgeVersion, filterOptifineVersion, Instance, InstanceException, InstanceSchema, InstanceService as IInstanceService, InstanceServiceKey, InstancesSchema, InstanceState, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, RuntimeVersions } from '@xmcl/runtime-api'
 import filenamify from 'filenamify'
-import { copy, ensureDir, readdir, remove } from 'fs-extra'
+import { existsSync } from 'fs'
+import { copy, ensureDir, move, readdir, remove } from 'fs-extra'
 import { isAbsolute, join, relative, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -34,7 +34,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
       const { state } = this
       const instanceConfig = await this.instancesFile.read()
-      const managed = (await readdirEnsured(this.getPathUnder())).map(p => this.getPathUnder(p)).filter(f => uuidExp.test(f))
+      const managed = (await readdirEnsured(this.getPathUnder())).map(p => this.getPathUnder(p))
 
       this.log(`Found ${managed.length} managed instances and ${instanceConfig.instances.length} external instances.`)
 
@@ -129,13 +129,29 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     if (!await isDirectory(path)) {
       return false
     }
-    this.log(`Start load instance ${path}`)
+    this.log(`Start load instance under ${path}`)
     try {
       option = await this.instanceFile.read(join(path, 'instance.json'))
     } catch (e) {
       this.warn(`Cannot load instance json ${path}`)
       this.warn(e)
       return false
+    }
+
+    const name = option.name
+
+    if (this.isUnderManaged(path)) {
+      if (name) {
+        const expectPath = this.getPathUnder(filenamify(name))
+        if (expectPath !== path) {
+          if (!existsSync(expectPath)) {
+            this.log(`Migrate instance ${path} -> ${expectPath}`)
+            await move(path, expectPath)
+
+            path = expectPath
+          }
+        }
+      }
     }
 
     const instance = createTemplate()
@@ -159,6 +175,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
     instance.runtime.minecraft = instance.runtime.minecraft || this.installService.getLatestRelease()
     instance.author = instance.author || this.userService.state.gameProfile?.name || ''
+    instance.upstream = option.upstream
 
     if (option.server) {
       instance.server = option.server
@@ -175,6 +192,12 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
   async createInstance(payload: CreateInstanceOption): Promise<string> {
     requireObject(payload)
+
+    if (!payload.name) {
+      throw new InstanceException({
+        type: 'instanceNameRequired',
+      })
+    }
 
     const instance = createTemplate()
 
@@ -193,7 +216,19 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       instance.server = payload.server
     }
 
-    instance.path = payload.path || this.getPathUnder(randomUUID())
+    if (!payload.path) {
+      const candidatePath = this.getPathUnder(filenamify(payload.name))
+      if (!existsSync(candidatePath)) {
+        instance.path = candidatePath
+      } else {
+        throw new InstanceException({
+          type: 'instanceNameDuplicated',
+          path: candidatePath,
+          name: payload.name,
+        })
+      }
+    }
+
     const mcVersions = await this.installService.getMinecraftVersionList()
     instance.runtime.minecraft = instance.runtime.minecraft || mcVersions.latest.release
     instance.author = this.userService.state.gameProfile?.name ?? ''
@@ -203,6 +238,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     instance.author = payload.author ?? instance.author
     instance.description = payload.description ?? instance.description
     instance.showLog = payload.showLog ?? instance.showLog
+    instance.upstream = payload.upstream
 
     await ensureDir(instance.path)
     this.state.instanceAdd(instance)
@@ -251,7 +287,6 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     this.log(`Try to mount instance ${path}`)
 
     // not await this to improve the performance
-
     this.state.instanceSelect(path)
   }
 
@@ -303,6 +338,16 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         if ((state as any)[key] !== (options as any)[key]) {
           result[key] = (options as any)[key]
         }
+      }
+    }
+
+    if (options.name) {
+      if (this.state.instances.some(i => i.name === options.name)) {
+        throw new InstanceException({
+          type: 'instanceNameDuplicated',
+          path: instancePath,
+          name: options.name,
+        })
       }
     }
 

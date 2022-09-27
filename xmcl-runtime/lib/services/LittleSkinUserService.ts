@@ -1,199 +1,181 @@
 /* eslint-disable camelcase */
+import { AddClosetOptions, GetClosetOptions, ListSkinResult, LittleSkinCharacter, LittleSkinUserService as ILittleSkinUserService, LittleSkinUserServiceKey, RenameClosetOptions, SetCharacterNameOptions, SetCharacterTextureOptions, UploadTextureOptions, UploadTextureResult } from '@xmcl/runtime-api'
+import { Client, FormData, request } from 'undici'
 import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
+import { LittleSkinClient } from '../clients/LittleSkinClient'
+import { YggdrasilAccountSystem } from '../accountSystems/YggdrasilAccountSystem'
+import { YggdrasilThirdPartyClient } from '../clients/YggdrasilClient'
 import { Inject } from '../util/objectRegistry'
+import { TokenCache } from '../util/TokenStorage'
+import { BaseService } from './BaseService'
 import { AbstractService, ExposeServiceKey } from './Service'
 import { UserService } from './UserService'
-import { YggdrasilUserService } from './YggdrasilUserService'
-import { AddClosetOptions, Character, ClosetResponse, GetClosetOptions, ListSkinResult, LittleSkinUserService as ILittleSkinUserService, LittleSkinUserServiceKey, RenameClosetOptions, SetCharacterNameOptions, SetCharacterTextureOptions, UploadSkinOptions, UploadSkinResult, UserProfile } from '@xmcl/runtime-api'
-import { LauncherAppKey } from '../app/utils'
-import { Got } from 'got'
+
+const LITTLE_SKIN_HOST = 'littleskin.cn'
 
 @ExposeServiceKey(LittleSkinUserServiceKey)
 export class LittleSkinUserService extends AbstractService implements ILittleSkinUserService {
-  private client: Got
+  private client: LittleSkinClient
 
-  constructor(@Inject(LauncherAppKey) app: LauncherApp, @Inject(UserService) private userService: UserService, @Inject(YggdrasilUserService) yggService: YggdrasilUserService) {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(UserService) private userService: UserService,
+    @Inject(BaseService) private baseService: BaseService,
+    @Inject(TokenCache) private cache: TokenCache) {
     super(app, LittleSkinUserServiceKey)
-    const authService = {
-      hostName: 'https://littleskin.cn/api/yggdrasil',
-      authenticate: '/authserver/authenticate',
-      refresh: '/authserver/refresh',
-      validate: '/authserver/validate',
-      invalidate: '/authserver/invalidate',
-      signout: '/authserver/signout',
-    }
-    const profileService = {
-      // eslint-disable-next-line no-template-curly-in-string
-      profile: 'https://littleskin.cn/api/yggdrasil/sessionserver/session/minecraft/profile/${uuid}',
-      // eslint-disable-next-line no-template-curly-in-string
-      profileByName: 'https://littleskin.cn/api/yggdrasil/users/profiles/minecraft/${name}',
-      // eslint-disable-next-line no-template-curly-in-string
-      texture: 'https://littleskin.cn/api/yggdrasil/user/profile/${uuid}/${type}',
-    }
-    userService.registerAccountSystem({
-      name: 'littleskin.cn',
-      login: async (u, p, a) => {
-        const result: UserProfile = await yggService.login_({ username: u, password: p }, a, authService)
 
-        try {
-          const { token } = await this.client.post('/api/auth/login', {
-            searchParams: {
-              email: u,
-              password: p,
-            },
-          }).json()
-
-          if (token) {
-            result.siteToken = token
-          }
-        } catch {
-        }
-
-        return result
-      },
-      refresh: async (p, c) => {
-        const result: UserProfile = await yggService.refresh(p, c, authService)
-        try {
-          const { token } = await this.client.post('/api/auth/refresh', {
-            headers: {
-              Authorization: `Bearer ${result.siteToken}`,
-            },
-          }).json()
-
-          if (token) {
-            result.siteToken = token
-          }
-        } catch {
-        }
-        return result
-      },
-      getSkin: (p) => yggService.getSkin(p, profileService),
-      setSkin: (p, g, s, slim) => yggService.setSkin(p, g, s, slim, profileService),
+    const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
+      if (origin.hostname === LITTLE_SKIN_HOST) {
+        return new Client(origin, { ...options, pipelining: 6, keepAliveMaxTimeout: 60_000 })
+      }
     })
+    this.client = new LittleSkinClient(dispatcher)
 
-    this.client = this.networkManager.request.extend({
-      prefixUrl: 'https://littleskin.cn',
+    const ygg = new YggdrasilAccountSystem(
+      this,
+      new YggdrasilThirdPartyClient(
+        // eslint-disable-next-line no-template-curly-in-string
+        'https://littleskin.cn/api/yggdrasil/sessionserver/session/minecraft/profile/${uuid}',
+        // eslint-disable-next-line no-template-curly-in-string
+        'https://littleskin.cn/api/yggdrasil/api/user/profile/${uuid}/${type}',
+        'https://littleskin.cn/api/yggdrasil/authserver',
+        () => userService.state.clientToken,
+        dispatcher,
+      ),
+    )
+
+    userService.registerAccountSystem(LITTLE_SKIN_HOST, {
+      getYggdrasilHost() {
+        return 'https://littleskin.cn/api/yggdrasil/authserver'
+      },
+      login: ygg.login.bind(ygg),
+      refresh: ygg.refresh.bind(ygg),
+      getSkin: ygg.getSkin.bind(ygg),
+      setSkin: ygg.setSkin.bind(ygg),
     })
   }
 
-  uploadSkin(options: UploadSkinOptions): Promise<UploadSkinResult> {
+  async authenticate(): Promise<void> {
+    const url = 'https://littleskin.cn/oauth/authorize?client_id=393&redirect_uri=http://localhost:25555/littleskin&response_type=code&scope'
+    this.emit('authorize-url', url)
+    await this.baseService.openInBrowser(url)
+    const code = await new Promise<string>((resolve, reject) => {
+      const abort = () => {
+        reject(new Error('Timeout to wait the auth code! Please try again later!'))
+      }
+      // (signal as any)?.addEventListener('abort', abort)
+      this.once('authorize-code', (err, code) => {
+        if (err) {
+          reject(err)
+        } else {
+          resolve(code!)
+        }
+      })
+    })
+    const body = new FormData()
+    body.append('grant_type', 'authorization_code')
+    body.append('client_id', '393')
+    body.append('client_secret', 'pGmFutnvu1H3eHfqJC8l80CYcCtjk3p4ykZaUzJW')
+    body.append('redirect_uri', 'http://localhost:25555/littleskin')
+    body.append('code', code)
+    const response = await request('https://littleskin.cn/oauth/authorize', {
+      method: 'POST',
+      body,
+    })
+    const responseBody = await response.body.json()
     throw new Error('Method not implemented.')
   }
 
-  async getAllCharacters(): Promise<Character[]> {
+  uploadTexture(options: UploadTextureOptions): Promise<UploadTextureResult> {
+    throw new Error('Method not implemented.')
+  }
+
+  async getAllCharacters(): Promise<LittleSkinCharacter[]> {
     const user = this.userService.state.user
-    if (user?.authService !== 'littleskin.cn') {
+    if (user?.authService !== LITTLE_SKIN_HOST || !user) {
       throw new Error()
     }
-    const result: Character[] = await this.client('/api/closet', {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${user.siteToken}`,
-      },
-    }).json()
-    return result
+    const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
+    if (!token) {
+      throw new Error()
+    }
+    return await this.client.getAllCharacters(token)
   }
 
   async setCharacterName(options: SetCharacterNameOptions): Promise<void> {
     const user = this.userService.state.user
-    if (user?.authService !== 'littleskin.cn') {
+    if (user?.authService !== LITTLE_SKIN_HOST || !user) {
       throw new Error()
     }
-    await this.client(`/api/players/${options.pid}/name`, {
-      method: 'PUT',
-      searchParams: {
-        name: options.name,
-      },
-      headers: {
-        Authorization: `Bearer ${user.siteToken}`,
-      },
-    }).json()
+    const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
+    if (!token) {
+      throw new Error()
+    }
+    await this.client.setCharacterName(options, token)
   }
 
   async setCharacterTexture(options: SetCharacterTextureOptions): Promise<void> {
     const user = this.userService.state.user
-    if (user?.authService !== 'littleskin.cn') {
+    if (user?.authService !== LITTLE_SKIN_HOST || !user) {
       throw new Error()
     }
-    await this.client(`/api/players/${options.pid}/textures`, {
-      method: 'PUT',
-      searchParams: {
-        skin: options.skin,
-        cape: options.cape,
-      },
-      headers: {
-        Authorization: `Bearer ${user.siteToken}`,
-      },
-    }).json()
+    const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
+    if (!token) {
+      throw new Error()
+    }
+    await this.client.setCharacterTexture(options, token)
   }
 
   async addCloset(options: AddClosetOptions) {
     const user = this.userService.state.user
-    if (user?.authService !== 'littleskin.cn') {
+    if (user?.authService !== LITTLE_SKIN_HOST || !user) {
       throw new Error()
     }
-    await this.client('/api/closet', {
-      method: 'POST',
-      searchParams: {
-        tid: options.tid,
-        name: options.name,
-      },
-      headers: {
-        Authorization: `Bearer ${user.siteToken}`,
-      },
-    }).json()
+    const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
+    if (!token) {
+      throw new Error()
+    }
+    await this.client.addCloset(options, token)
   }
 
   async renameCloset(options: RenameClosetOptions) {
     const user = this.userService.state.user
-    if (user?.authService !== 'littleskin.cn') {
+    if (user?.authService !== LITTLE_SKIN_HOST || !user) {
       throw new Error()
     }
-    await this.client(`/api/closet/${options.tid}`, {
-      method: 'PUT',
-      searchParams: {
-        name: options.name,
-      },
-      headers: {
-        Authorization: `Bearer ${user.siteToken}`,
-      },
-    }).json()
+    const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
+    if (!token) {
+      throw new Error()
+    }
+    await this.client.renameCloset(options, token)
   }
 
-  async deleteClose(tid: number) {
+  async deleteCloset(tid: number) {
     const user = this.userService.state.user
-    if (user?.authService !== 'littleskin.cn') {
+    if (user?.authService !== LITTLE_SKIN_HOST || !user) {
       throw new Error()
     }
-    await this.client(`/api/closet/${tid}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${user.siteToken}`,
-      },
-    }).json()
+    const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
+    if (!token) {
+      throw new Error()
+    }
+    await this.client.deleteCloset(tid, token)
   }
 
   async getCloset(options: GetClosetOptions) {
     const user = this.userService.state.user
-    if (user?.authService !== 'littleskin.cn') {
+    if (user?.authService !== LITTLE_SKIN_HOST || !user) {
       throw new Error()
     }
-    const response: ClosetResponse = await this.client('/api/closet', {
-      method: 'GET',
-      searchParams: {
-        page: options.page,
-        category: options.category,
-      },
-      headers: {
-        Authorization: `Bearer ${user.siteToken}`,
-      },
-    }).json()
-    return response
+    const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
+    if (!token) {
+      throw new Error()
+    }
+    return await this.client.getCloset(options, token)
   }
 
   async listSkins(): Promise<ListSkinResult> {
-    // https://littleskin.cn/skinlib/list
-    const result = await this.client.get('skinlib/list').json()
+    const result = await this.client.listSkins()
     return result as ListSkinResult
   }
 }

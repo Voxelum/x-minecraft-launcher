@@ -2,8 +2,8 @@ import { AppManifest, AppsHost, InstalledAppManifest } from '@xmcl/runtime-api'
 import { XMLParser } from 'fast-xml-parser'
 import filenamifyCombined from 'filenamify'
 import { ensureDir, readdir, readJson, readJSON, remove, stat, writeFile, writeJson } from 'fs-extra'
-import got from 'got'
 import { join } from 'path'
+import { request } from 'undici'
 import { URL } from 'url'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -167,7 +167,7 @@ export class LauncherAppManager extends Manager implements AppsHost {
     if (url === this.app.builtinAppManifest.url) {
       return this.app.builtinAppManifest
     }
-    const msg = await got(url)
+    const msg = await request(url)
 
     if (msg.headers['content-type']?.startsWith('text/html')) {
       const parser = new XMLParser({
@@ -178,7 +178,7 @@ export class LauncherAppManager extends Manager implements AppsHost {
         processEntities: true,
         htmlEntities: true,
       })
-      const dom = parser.parse(msg.body)
+      const dom = parser.parse(await msg.body.text())
       const link = dom.html.head.link
       if (link) {
         const links = link instanceof Array ? link : [link]
@@ -186,7 +186,7 @@ export class LauncherAppManager extends Manager implements AppsHost {
         if (manifestNode) {
           const manifestUrl = manifestNode['@_href']
           if (manifestUrl) {
-            const man: AppManifest = await got(new URL(manifestUrl, url)).json()
+            const man: AppManifest = await (await request(new URL(manifestUrl, url))).body.json()
             return man
           }
         }

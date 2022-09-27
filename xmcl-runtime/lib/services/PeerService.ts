@@ -8,7 +8,6 @@ import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 import { brotliCompress, brotliDecompress } from 'zlib'
 import { promisify } from 'util'
 import { randomUUID } from 'crypto'
-import { HubConnection, HubConnectionBuilder, HubConnectionState } from '@microsoft/signalr'
 import { rename } from 'fs-extra'
 import { Inject } from '../util/objectRegistry'
 
@@ -43,15 +42,9 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   private signal = createPromiseSignal()
   private downloadId = 0
   private downloadCallbacks: Record<number, undefined | ((chunk: number) => void)> = {}
-  // private hub: HubConnection
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app, PeerServiceKey, () => new PeerState())
-    // this.hub = new HubConnectionBuilder().withUrl('https://xmcl.app/signalr/chat', {
-    //   accessTokenFactory: () => {
-    //     return ''
-    //   },
-    // }).build()
   }
 
   setDelegate(delegate: PeerServiceWebRTCFacade) {
@@ -127,11 +120,11 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }
 
   async createConnection() {
-    if (this.hub.state === HubConnectionState.Disconnected) {
-      await this.hub.start()
-    }
+    // if (this.hub.state === HubConnectionState.Disconnected) {
+    //   await this.hub.start()
+    // }
 
-    await this.hub.start()
+    // await this.hub.start()
   }
 
   async create(): Promise<string> {

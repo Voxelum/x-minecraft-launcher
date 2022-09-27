@@ -9,6 +9,16 @@
 
     <mod-header :show-compatible.sync="filterInCompatible" />
 
+    <!-- <div class="flex gap-2 p-2 underline">
+      <a>
+        Installed
+      </a>
+      <v-divider vertical />
+      <a>
+        Store
+      </a>
+    </div> -->
+
     <div
       class="flex overflow-auto h-full flex-col container py-0"
       @dragend="onDragEnd"
@@ -26,7 +36,6 @@
         :absolute="true"
         class="h-full z-0"
       />
-
       <transition-group
         v-else
         name="transition-list"
@@ -250,7 +259,7 @@ function setupFilter(items: Ref<ModItem[]>) {
     ]
   }
   const filterOptions = computed(() => items.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
-  const { filter } = useFilterCombobox<ModItem>(filterOptions, getFilterOptions, (v) => `${v.name} ${v.version} ${v.dependencies.minecraft}`)
+  const { filter } = useFilterCombobox<ModItem>(filterOptions, getFilterOptions, (v) => `${v.name} ${v.version} ${v.compatibility.minecraft?.version || ''}`)
 
   const filterInCompatible = useLocalStorageCacheBool('ModSettingPage.filterInCompatible', false)
 

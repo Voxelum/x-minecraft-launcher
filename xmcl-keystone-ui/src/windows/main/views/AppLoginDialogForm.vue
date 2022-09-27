@@ -151,10 +151,10 @@ import { Ref } from '@vue/composition-api'
 import { isException, UserException, UserServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { LoginDialog, useSelectedServices } from '../composables/login'
-import { useLoginValidation, useUserProfileStatus } from '../composables/user'
+import { useLoginValidation } from '../composables/user'
 import Hint from '/@/components/Hint.vue'
-import { useI18n, useRefreshable, useService, useServiceBusy } from '/@/composables'
 import Particles from '/@/components/Particles.vue'
+import { useBusy, useI18n, useRefreshable, useService } from '/@/composables'
 
 interface ServiceItem {
   text: string
@@ -190,7 +190,7 @@ const authServiceItem = computed<ServiceItem>({
 
 const { authService, history } = useSelectedServices()
 
-const isLogining = useServiceBusy(UserServiceKey, 'login')
+const isLogining = useBusy('login')
 const isMicrosoft = computed(() => authService.value === 'microsoft')
 const isOffline = computed(() => authService.value === 'offline')
 const isThirdParty = computed(() => {

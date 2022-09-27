@@ -35,6 +35,8 @@ export interface ModrinthService extends StatefulService<ModrinthState> {
 
   getProjectVersion(versionId: string): Promise<ProjectVersion>
 
+  getLatestProjectVersion(projectId: string): Promise<ProjectVersion>
+
   getTags(): Promise<{ licenses: License[]; categories: Category[]; gameVersions: GameVersion[]; modLoaders: Loader[]; environments: string[] }>
 
   installVersion(options: InstallProjectVersionOptions): Promise<InstallModrinthVersionResult>

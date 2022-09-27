@@ -72,10 +72,6 @@
                     "description": "The expire time",
                     "type": "number"
                 },
-                "siteToken": {
-                    "description": "Custom site token",
-                    "type": "string"
-                },
                 "profiles": {
                     "description": "All available game profiles",
                     "type": "object",

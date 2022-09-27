@@ -18,13 +18,15 @@ import { requireNonnull, requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
 import { fitMinecraftLauncherProfileData } from '../util/userData'
-import { BaseService } from './BaseService'
-import { ExposeServiceKey, Singleton, StatefulService } from './Service'
+import { ExposeServiceKey, Lock, Singleton, StatefulService } from './Service'
 
 export interface UserAccountSystem {
-  name: string
-  login(username: string, password: string, authService: string): Promise<UserProfile>
-  refresh(userProfile: UserProfile, clientToken: string): Promise<UserProfile>
+  getYggdrasilHost?(): string
+  login(options: LoginOptions): Promise<UserProfile>
+  /**
+   * Refresh the user profile
+   */
+  refresh(userProfile: UserProfile): Promise<UserProfile>
   getSkin(userProfile: UserProfile): Promise<UserProfile>
   setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, skin: string | Buffer, slim: boolean): Promise<UserProfile>
 }
@@ -33,7 +35,7 @@ export interface UserAccountSystem {
 export class UserService extends StatefulService<UserState> implements IUserService {
   private userFile = createSafeFile(this.getAppDataPath('user.json'), UserSchema, this, [this.getPath('user.json')])
 
-  private registeredAccountSystem: Record<string, UserAccountSystem> = {}
+  private registeredAccountSystem: Record<string, UserAccountSystem | undefined> = {}
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app, UserServiceKey, () => new UserState(), async () => {
@@ -42,7 +44,6 @@ export class UserService extends StatefulService<UserState> implements IUserServ
         users: {},
         selectedUser: {
           id: '',
-          profile: '',
         },
         clientToken: '',
       }
@@ -60,12 +61,10 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       this.state.userSnapshot(result)
 
       this.refreshUser()
+      this.refreshSkin()
       if (this.state.selectedUser.id === '' && Object.keys(this.state.users).length > 0) {
         const [userId, user] = Object.entries(this.state.users)[0]
-        this.switchUserProfile({
-          userId,
-          profileId: user.selectedProfile,
-        })
+        this.selectUser(userId)
       }
     })
 
@@ -82,14 +81,15 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       }
       await this.userFile.write(userData)
     })
-
-    this.storeManager.subscribeAll(['userGameProfileSelect', 'userInvalidate'], async () => {
-    })
   }
 
+  @Lock('login')
   async login(options: LoginOptions): Promise<UserProfile> {
     const system = this.registeredAccountSystem[options.service]
-    const profile = await system.login(options.username, options.password ?? '', options.service)
+    if (!system) {
+      throw new Error()
+    }
+    const profile = await system.login(options)
     this.state.userProfile(profile)
     return profile
   }
@@ -98,8 +98,8 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     this.state.userProfile(userProfile)
   }
 
-  registerAccountSystem(system: UserAccountSystem) {
-    this.registeredAccountSystem[system.name] = system
+  registerAccountSystem(name: string, system: UserAccountSystem) {
+    this.registeredAccountSystem[name] = system
   }
 
   async getMinecraftAuthDb() {
@@ -112,16 +112,14 @@ export class UserService extends StatefulService<UserState> implements IUserServ
    */
   @Singleton<StatefulService<UserState>>(function (this: StatefulService<UserState>, o: RefreshSkinOptions = {}) {
     const {
-      gameProfileId = this.state.selectedUser.profile,
+      gameProfileId = this.state.user?.selectedProfile,
       userId = this.state.selectedUser.id,
     } = o ?? {}
     return `${userId}[${gameProfileId}]`
   })
   async refreshSkin(refreshSkinOptions: RefreshSkinOptions = {}) {
     const {
-      gameProfileId = this.state.selectedUser.profile,
       userId = this.state.selectedUser.id,
-      force,
     } = refreshSkinOptions ?? {}
     const user = this.state.users[userId]
     if (!user) {
@@ -132,6 +130,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     const sys = this.registeredAccountSystem[user.authService]
     if (sys) {
       const data = await sys.getSkin(user)
+      this.state.userProfile(data)
     } else {
       this.warn(`Fail to find the user account system ${user.authService}`)
     }
@@ -150,13 +149,13 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     if (typeof options.slim !== 'boolean') options.slim = false
 
     const {
-      gameProfileId = this.state.selectedUser.profile,
+      gameProfileId,
       userId = this.state.selectedUser.id,
       url,
       slim,
     } = options
     const user = this.state.users[userId]
-    const gameProfile = user.profiles[gameProfileId]
+    const gameProfile = user.profiles[gameProfileId || user.selectedProfile]
 
     const sys = this.registeredAccountSystem[user.authService]
     const normalizedUrl = url.replace('image:', 'file:')
@@ -195,9 +194,9 @@ export class UserService extends StatefulService<UserState> implements IUserServ
 
     const authService = user.authService
 
-    if (authService && this.registeredAccountSystem[authService]) {
-      const system = this.registeredAccountSystem[authService]
-      const newUser = await system.refresh(user, this.state.clientToken)
+    const system = this.registeredAccountSystem[authService]
+    if (authService && system) {
+      const newUser = await system.refresh(user)
       this.state.userProfile(newUser)
     } else {
       this.log(`User auth service ${authService} not found.`)
@@ -207,20 +206,30 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   /**
   * Switch user account.
   */
-  @Singleton()
-  async switchUserProfile(options: SwitchProfileOptions) {
-    requireObject(options)
-    requireString(options.userId)
-    requireString(options.profileId)
+  @Lock('selectUser')
+  async selectUser(userId: string) {
+    requireString(userId)
 
-    if (options.profileId === this.state.selectedUser.profile &&
-      options.userId === this.state.selectedUser.id) {
+    if (userId === this.state.selectedUser.id) {
       return
     }
 
-    this.log(`Switch game profile ${options.userId} ${options.profileId}`)
-    this.state.userGameProfileSelect(options)
+    this.log(`Switch game profile ${this.state.selectedUser.id}->${userId}`)
+    this.state.userSelect(userId)
     await this.refreshUser()
+  }
+
+  @Lock('selectGameProfile')
+  async selectGameProfile(profileId: string) {
+    requireString(profileId)
+
+    const user = this.state.user
+    if (!user) {
+      this.warn(`No valid user`)
+      return
+    }
+
+    this.state.userGameProfileSelect({ userId: this.state.selectedUser.id, profileId: profileId })
   }
 
   @Singleton(id => id)
@@ -240,7 +249,15 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     this.state.userProfileRemove(userId)
   }
 
+  abortLogin(): Promise<void> {
+    throw new Error('Method not implemented.')
+  }
+
   async getSupportedAccountSystems(): Promise<string[]> {
     return Object.keys(this.registeredAccountSystem)
+  }
+
+  getAccountSystem(service: string) {
+    return this.registeredAccountSystem[service]
   }
 }

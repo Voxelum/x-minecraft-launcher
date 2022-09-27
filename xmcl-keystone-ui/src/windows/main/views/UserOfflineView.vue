@@ -3,10 +3,8 @@
     <div class="w-60">
       <UserSkinView
         class="flex overflow-auto relative justify-center items-center z-5"
-        :user-id="user.id"
-        :slim="false"
-        :profile-id="profileId"
-        :name="gameProfile.name"
+        :user="user"
+        :profile="gameProfile"
       />
     </div>
   </div>
@@ -17,7 +15,6 @@ import UserSkinView from './UserSkinView.vue'
 
 const props = defineProps<{
   user: UserProfile
-  profileId: string
 }>()
-const gameProfile = computed(() => props.user.profiles[props.profileId])
+const gameProfile = computed(() => props.user.profiles[props.user.selectedProfile])
 </script>

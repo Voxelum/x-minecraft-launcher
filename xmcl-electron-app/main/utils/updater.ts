@@ -6,7 +6,7 @@ import { BaseTask, task, Task } from '@xmcl/task'
 import { spawn } from 'child_process'
 import { autoUpdater, CancellationToken, Provider, UpdateInfo, UpdaterSignal } from 'electron-updater'
 import { stat, writeFile } from 'fs-extra'
-import got from 'got'
+import { request } from 'undici'
 import { closeSync, existsSync, open, rename, unlink } from 'original-fs'
 import { platform } from 'os'
 import { basename, dirname, join } from 'path'
@@ -41,7 +41,8 @@ export class DownloadAsarUpdateTask extends DownloadTask {
             return
           }
           if (!sha256) {
-            sha256 = await got(`${url}.sha256`).text().catch(() => '')
+            const response = await request(`${url}.sha256`)
+            sha256 = await response.body.text().catch(() => '')
           }
           if (!sha256) {
             return
