@@ -193,13 +193,14 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
 
       if (!options?.force && !instance.fastLaunch) {
         const resolvedVersion = version
+        const resourceFolder = new MinecraftFolder(this.getPath())
         await Promise.all([
-          diagnoseJar(resolvedVersion, minecraftFolder).then((issue) => {
+          diagnoseJar(resolvedVersion, resourceFolder).then((issue) => {
             if (issue) {
               return this.installService.installMinecraftJar(resolvedVersion)
             }
           }),
-          diagnoseLibraries(version, minecraftFolder).then(async (libs) => {
+          diagnoseLibraries(version, resourceFolder).then(async (libs) => {
             if (libs.length > 0) {
               await this.installService.installLibraries(libs.map(l => l.library))
             }
