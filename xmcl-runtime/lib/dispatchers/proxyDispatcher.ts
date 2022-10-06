@@ -50,8 +50,8 @@ export class ProxyDispatcher extends DispatcherBase {
   }) {
     super()
 
-    this.pConnect = buildConnector({})
-    const connector = buildConnector({})
+    this.pConnect = buildConnector({ timeout: 10_000 })
+    const connector = buildConnector({ timeout: 10_000 })
 
     const connect = async (opts: any, callback: buildConnector.Callback) => {
       if (!this.isProxyEnabled || !this.proxyClient) {

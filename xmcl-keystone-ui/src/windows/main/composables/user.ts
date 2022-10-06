@@ -1,6 +1,6 @@
-import { computed, onMounted, reactive, Ref, toRefs, watch } from '@vue/composition-api'
-import { EMPTY_GAME_PROFILE, GameProfileAndTexture, UserProfile, UserServiceKey, YggdrasilUserServiceKey } from '@xmcl/runtime-api'
-import { useI18n, useService, useServiceBusy, useServiceOnly } from '/@/composables'
+import { computed, reactive, Ref, toRefs } from '@vue/composition-api'
+import { GameProfileAndTexture, OfficialUserServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
+import { useI18n, useService, useServiceBusy } from '/@/composables'
 
 const NO_USER_PROFILE: UserProfile = Object.freeze({
   selectedProfile: '',
@@ -42,41 +42,6 @@ export function useUsers() {
   return { users }
 }
 
-export function useSwitchUser() {
-  const { state, selectUser, removeUserProfile } = useService(UserServiceKey)
-  const userId = computed(() => state.selectedUser.id)
-  const profileId = computed(() => state.selectedUser.profile)
-
-  const data = reactive({
-    profileId: state.selectedUser.profile,
-    userId: state.selectedUser.id,
-  })
-  const modified = computed(() => data.profileId !== profileId.value || data.userId !== userId.value)
-  function commit() {
-    return selectUser({ profileId: data.profileId, userId: data.userId })
-  }
-  function select(profileId: string, userId: string) {
-    data.profileId = profileId
-    data.userId = userId
-  }
-  function remove(userId: string) {
-    removeUserProfile(userId)
-  }
-  watch([profileId, userId], () => {
-    data.profileId = profileId.value
-    data.userId = userId.value
-  })
-  return {
-    selectedUserId: userId,
-    selectedProfileId: profileId,
-    select,
-    remove,
-    commit,
-    modified,
-    ...toRefs(data),
-  }
-}
-
 export function useLoginValidation(isOffline: Ref<boolean>) {
   const { t } = useI18n()
   const nameRules = [(v: unknown) => !!v || t('loginError.requireUsername')]
@@ -111,7 +76,7 @@ export function useMojangSecurityStatus() {
 
   return {
     security,
-    refreshing: useServiceBusy(YggdrasilUserServiceKey, 'checkLocation'),
+    refreshing: useServiceBusy(OfficialUserServiceKey, 'verifySecurityLocation'),
   }
 }
 
@@ -128,7 +93,7 @@ export function useMojangSecurity(profile: Ref<UserProfile>) {
   }
 
   const { security, refreshing } = useMojangSecurityStatus()
-  const { getChallenges, checkLocation, submitChallenges } = useService(YggdrasilUserServiceKey)
+  const { getSecurityChallenges: getChallenges, verifySecurityLocation: checkLocation, submitSecurityChallenges: submitChallenges } = useService(OfficialUserServiceKey)
   const data = reactive({
     loading: false,
     challenges: [] as MojangChallenge[],
@@ -139,10 +104,10 @@ export function useMojangSecurity(profile: Ref<UserProfile>) {
       if (data.loading) return
       if (data.challenges.length > 0) return
       data.loading = true
-      const sec = await checkLocation(profile.value)
+      const sec = await checkLocation()
       if (sec) return
       try {
-        const challenges = await getChallenges(profile.value)
+        const challenges = await getChallenges()
         data.challenges = challenges.map(c => ({ question: c.question, answer: { id: c.answer.id, answer: '' } }))
       } catch (e) {
         data.error = e

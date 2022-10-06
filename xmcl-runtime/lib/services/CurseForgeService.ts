@@ -2,6 +2,7 @@ import { FileModLoaderType, SearchOptions } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
 import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, CurseforgeState, GetModFilesOptions, InstallFileOptions, InstallFileResult, ProjectType, ResourceDomain } from '@xmcl/runtime-api'
 import { unlink } from 'fs-extra'
+import { stat } from 'fs/promises'
 import { join } from 'path'
 import { Client } from 'undici'
 import LauncherApp from '../app/LauncherApp'
@@ -88,12 +89,14 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
       worlds: ResourceDomain.Saves,
       modpacks: ResourceDomain.Modpacks,
     }
-    const urls = [`curseforge:${projectId}:${file.id}`]
+    const uri = [`curseforge:${projectId}:${file.id}`]
+    const downloadUrls = [] as string[]
     if (file.downloadUrl) {
-      urls.push(file.downloadUrl)
+      downloadUrls.push(file.downloadUrl)
     } else {
-      urls.push(...guessCurseforgeFileUrl(file.id, file.fileName))
+      downloadUrls.push(...guessCurseforgeFileUrl(file.id, file.fileName))
     }
+    uri.push(...downloadUrls)
     this.log(`Try install file ${file.displayName}(${file.downloadUrl}) in type ${type}`)
     const resourceService = this.resourceService
     const networkManager = this.networkManager
@@ -139,14 +142,14 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
         return undefined
       }))
 
-      let resource = this.resourceService.getOneResource({ url: urls })
+      let resource = this.resourceService.getOneResource({ url: uri })
       if (resource) {
         this.log(`The curseforge file ${file.displayName}(${file.downloadUrl}) existed in cache!`)
       } else {
         const imageUrl = project.logo?.thumbnailUrl
         const task = new DownloadTask({
           ...networkManager.getDownloadBaseOptions(),
-          url: file.downloadUrl ?? guessCurseforgeFileUrl(file.id, file.fileName),
+          url: downloadUrls,
           destination,
         }).setName('installCurseforgeFile')
         const promise = this.submit(task)
@@ -155,7 +158,7 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
         const imported = await resourceService.importResource({
           resources: [{
             path: destination,
-            uri: urls,
+            uri: uri,
             metadata: {
               curseforge: {
                 projectId,
@@ -172,7 +175,7 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
         await unlink(destination).catch(() => undefined)
       }
 
-      if (instancePath) {
+      if (instancePath && resource.domain !== ResourceDomain.Modpacks) {
         await this.resourceService.install({ instancePath, resource })
       }
 

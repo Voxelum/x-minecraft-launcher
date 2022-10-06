@@ -15,7 +15,7 @@
             <v-btn
               v-if="value"
               v-model="fab"
-              :disabled="disabled"
+              :disabled="disabled || !hasSkin"
               fab
               color="primary"
               v-on="on"
@@ -26,12 +26,13 @@
           </v-fab-transition>
         </template>
         <v-tooltip
+          v-if="hasSkin"
           :close-delay="0"
           left
         >
           <template #activator="{ on: tooltip }">
             <v-btn
-              :disabled="disabled"
+              :disabled="disabled || !hasSkin"
               fab
               light
               small
@@ -60,7 +61,7 @@
               <v-icon>save</v-icon>
             </v-btn>
           </template>
-          {{ $t('userSkin.save') }}
+          {{ $t('userSkin.saveTitle') }}
         </v-tooltip>
       </v-speed-dial>
     </template>
@@ -75,6 +76,8 @@ defineProps<{
   upload():void
   save():void
   disabled: boolean
+  hasSkin: boolean
+  hasCape: boolean
   value: boolean
 }>()
 

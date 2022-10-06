@@ -36,7 +36,7 @@ import LoginDialogLoginView from './AppLoginDialogForm.vue'
 import { useService } from '/@/composables'
 import { useDropLink } from '/@/composables/dropLink'
 
-const { isShown } = useDialog(LoginDialog)
+const { isShown, parameter } = useDialog(LoginDialog)
 const { inside } = useDropLink()
 
 // handle the not login issue

@@ -78,7 +78,6 @@ export function useAllTemplate(data: InstanceData) {
         type: 'modrinth-modpack',
         projectId: modrinth.metadata.modrinth.projectId,
         versionId: modrinth.metadata.modrinth.versionId,
-        sha1: modrinth.hash,
       }
     }
 
@@ -108,6 +107,7 @@ export function useAllTemplate(data: InstanceData) {
         type: 'curseforge-modpack',
         modId: curseforge.metadata.curseforge.projectId,
         fileId: curseforge.metadata.curseforge.fileId,
+        sha1: curseforge.hash,
       }
     }
     const forgeId = curseforge.metadata['curseforge-modpack'].minecraft.modLoaders.find(l => l.id.startsWith('forge'))
@@ -205,7 +205,7 @@ export function useAllTemplate(data: InstanceData) {
       },
       upstream: {
         type: 'ftb-modpack',
-        manifest: f,
+        id: f.id,
       },
       icon: f.iconUrl,
       source: { type: 'ftb', manifest: f },
@@ -216,7 +216,7 @@ export function useAllTemplate(data: InstanceData) {
     return {
       id: modpack.path,
       name: modpack.name,
-      runtime: modpack.metadata.modpack.runtime as any,
+      runtime: modpack.metadata.modpack?.runtime || {},
       source: {
         type: 'modpack',
         resource: modpack,

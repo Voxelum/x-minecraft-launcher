@@ -139,7 +139,9 @@ export function useDropService() {
     }
   })
   document.addEventListener('drop', (e) => {
-    onDrop(e)
+    if (!suppressed.value) {
+      onDrop(e)
+    }
   })
   document.addEventListener('dragover', (e) => {
     if ((e as any).fromElement === null) {

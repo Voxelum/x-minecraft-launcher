@@ -1,8 +1,8 @@
 <template>
   <canvas
     ref="canvasRef"
-    @dragover="$emit('dragover', $event)"
-    @drop="$emit('drop', $event)"
+    @dragover="emit('dragover', $event)"
+    @drop="emit('drop', $event)"
   />
 </template>
 
@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<{
 }>(), {
   width: 210,
   height: 400,
-  slim: false,
+  slim: undefined,
   cape: undefined,
   name: 'Steve',
   skin: steveSkin,
@@ -47,14 +47,16 @@ onUnmounted(() => {
   data.disposed = true
 })
 
+const emit = defineEmits(['model', 'dragover', 'drop'])
+
 let lastLoad = Promise.resolve()
+let lastCapeLoad = Promise.resolve()
 
 onMounted(() => {
   const viewer = new SkinViewer({
     canvas: canvasRef.value!,
     width: props.width,
     height: props.height,
-    cape: props.cape,
     nameTag: props.name,
     fov: 45,
     zoom: 0.5,
@@ -65,57 +67,37 @@ onMounted(() => {
     viewer.animation = v
   })
 
-  lastLoad = viewer.loadSkin(props.skin || steveSkin)
+  lastLoad = viewer.loadSkin(props.skin || steveSkin, { model: typeof props.slim === 'undefined' ? 'auto-detect' : props.slim ? 'slim' : 'default' }).then(() => {
+    emit('model', viewer.playerObject.skin.modelType)
+  })
+  if (props.cape) {
+    lastCapeLoad = viewer.loadCape(props.cape)
+  }
 
   watch(() => props.skin, (v) => {
     lastLoad = lastLoad.then(() => {
-      return viewer.loadSkin(v || steveSkin, { model: props.slim ? 'slim' : 'default' })
+      return viewer.loadSkin(v || steveSkin, { model: typeof props.slim === 'undefined' ? 'auto-detect' : props.slim ? 'slim' : 'default' }).then(() => {
+        emit('model', viewer.playerObject.skin.modelType)
+      })
     })
   })
 
   watch(() => props.cape, (v) => {
     if (v) {
-      viewer.loadCape(v)
+      lastCapeLoad = lastCapeLoad.then(() => viewer.loadCape(v))
     } else {
       viewer.resetCape()
     }
   })
 
   watch(() => props.slim, (v) => {
-    viewer.loadSkin(props.skin || steveSkin, { model: v ? 'slim' : 'default' })
+    viewer.loadSkin(props.skin || steveSkin, { model: typeof v === 'undefined' ? 'auto-detect' : v ? 'slim' : 'default' }).then(() => {
+      emit('model', viewer.playerObject.skin.modelType)
+    })
   })
 
   watch(() => props.name, (v) => {
     viewer.nameTag = v
   })
-
-  // const renderer = new WebGLRenderer({ canvas: canvas.value!, antialias: true, alpha: true })
-  // const scene = new Scene()
-  // const camera = new PerspectiveCamera(45, props.width / props.height, 0.5, 5)
-  // const controls = new OrbitControls(camera, canvas.value!)
-
-  // camera.position.z = 3
-  // camera.lookAt(new Vector3(0, 0, 0))
-
-  // controls.target = new Vector3(0, 0, 0)
-  // controls.enablePan = false
-  // // controls.enableKeys = false
-  // controls.maxDistance = props.maxDistance
-  // controls.minDistance = props.minDistance
-  // if (props.rotate) {
-  //   controls.autoRotate = true
-  //   controls.autoRotateSpeed = 4
-  // } else {
-  //   controls.autoRotate = false
-  // }
-
-  // scene.add(model)
-
-  // requestAnimationFrame(function animate(nowMsec) {
-  //   if (data.disposed) return
-  //   requestAnimationFrame(animate)
-  //   const result = controls.update()
-  //   renderer.render(scene, camera)
-  // })
 })
 </script>

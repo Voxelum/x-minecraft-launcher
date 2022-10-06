@@ -13,4 +13,4 @@ export function useSelectedServices () {
   }
 }
 
-export const LoginDialog: DialogKey<boolean> = 'login'
+export const LoginDialog: DialogKey<{ username?: string; service?: string; error?: string }> = 'login'

@@ -158,6 +158,7 @@ export default class Controller implements LauncherAppController {
     }
 
     const restoredSession = session.fromPartition('persist:main')
+    restoredSession.setUserAgent(this.app.networkManager.getUserAgent())
 
     for (const e of session.defaultSession.getAllExtensions()) {
       restoredSession.loadExtension(e.path)

@@ -46,7 +46,7 @@
 </template>
 <script lang="ts" setup>
 import { Ref } from '@vue/composition-api'
-import type { File, Mod } from '@xmcl/curseforge'
+import type { Mod } from '@xmcl/curseforge'
 import { BaseServiceKey, CurseForgeServiceKey } from '@xmcl/runtime-api'
 import { useRefreshable, useService } from '/@/composables'
 

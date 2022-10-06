@@ -139,34 +139,32 @@ export async function parseResourceMetadata(resource: Resource): Promise<{ resou
   }
 
   const icons: Uint8Array[] = []
-  const fs = await openFileSystem(resource.path).catch(e => undefined)
+  const fs = await openFileSystem(resource.path)
 
-  if (fs) {
-    for (const parser of parsers) {
-      if (resource.domain !== ResourceDomain.Unclassified) {
-        if (parser.domain !== resource.domain) {
-          continue
-        }
-      }
-      try {
-        const metadata = await parser.parseMetadata(fs, resource.path, resource.metadata)
-        const icon = await parser.parseIcon(metadata, fs).catch(() => undefined)
-        resource.domain = parser.domain
-        resource.metadata[parser.type] = metadata
-        resource.uri.push(...parser.getUri(metadata))
-        const suggested = parser.getSuggestedName(metadata)
-        if (suggested) {
-          resource.name = suggested
-        }
-        if (icon) {
-          icons.push(icon)
-        }
-      } catch (e) {
-        // skip
+  for (const parser of parsers) {
+    if (resource.domain !== ResourceDomain.Unclassified) {
+      if (parser.domain !== resource.domain) {
+        continue
       }
     }
-    fs.close()
+    try {
+      const metadata = await parser.parseMetadata(fs, resource.path, resource.metadata)
+      const icon = await parser.parseIcon(metadata, fs).catch(() => undefined)
+      resource.domain = parser.domain
+      resource.metadata[parser.type] = metadata
+      resource.uri.push(...parser.getUri(metadata))
+      const suggested = parser.getSuggestedName(metadata)
+      if (suggested) {
+        resource.name = suggested
+      }
+      if (icon) {
+        icons.push(icon)
+      }
+    } catch (e) {
+      // skip
+    }
   }
+  fs.close()
 
   return { resource, icons }
 }

@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import { AddClosetOptions, GetClosetOptions, ListSkinResult, LittleSkinCharacter, LittleSkinUserService as ILittleSkinUserService, LittleSkinUserServiceKey, RenameClosetOptions, SetCharacterNameOptions, SetCharacterTextureOptions, UploadTextureOptions, UploadTextureResult } from '@xmcl/runtime-api'
-import { Client, FormData, request } from 'undici'
+import { Client, FormData, Pool, request } from 'undici'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { LittleSkinClient } from '../clients/LittleSkinClient'
@@ -26,7 +26,12 @@ export class LittleSkinUserService extends AbstractService implements ILittleSki
 
     const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
       if (origin.hostname === LITTLE_SKIN_HOST) {
-        return new Client(origin, { ...options, pipelining: 6, keepAliveMaxTimeout: 60_000 })
+        return new Pool(origin, {
+          ...options,
+          pipelining: 1,
+          connections: 6,
+          keepAliveMaxTimeout: 60_000,
+        })
       }
     })
     this.client = new LittleSkinClient(dispatcher)

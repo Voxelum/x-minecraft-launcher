@@ -3,7 +3,7 @@ import { Category, GameVersion, License, Loader, Project, ProjectVersion, Search
 import { InstallModrinthVersionResult, InstallProjectVersionOptions, ModrinthService as IModrinthService, ModrinthServiceKey, ModrinthState } from '@xmcl/runtime-api'
 import { unlink } from 'fs-extra'
 import { basename, join } from 'path'
-import { Client } from 'undici'
+import { Client, Pool } from 'undici'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { ModrinthClient } from '../clients/ModrinthClient'
@@ -12,9 +12,13 @@ import { Inject } from '../util/objectRegistry'
 import { ResourceService } from './ResourceService'
 import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
+interface Tags { licenses: License[]; categories: Category[]; gameVersions: GameVersion[]; modLoaders: Loader[]; environments: string[] }
+
 @ExposeServiceKey(ModrinthServiceKey)
 export class ModrinthService extends StatefulService<ModrinthState> implements IModrinthService {
   private client: ModrinthClient
+
+  private tags: Tags | undefined
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
@@ -23,7 +27,7 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
     const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, opts) => {
       if (origin.hostname === 'api.modrinth.com') {
         // keep alive for a long time
-        return new Client(origin, { ...opts, pipelining: 6 })
+        return new Pool(origin, { ...opts, pipelining: 6, connections: 2 })
       }
     })
     this.client = new ModrinthClient(dispatcher)
@@ -66,19 +70,21 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
   }
 
   async getTags(): Promise<{ licenses: License[]; categories: Category[]; gameVersions: GameVersion[]; modLoaders: Loader[]; environments: string[] }> {
+    if (this.tags) return this.tags
     const [licenses, categories, gameVersions, modLoaders] = await Promise.all([
       this.client.getLicenseTags(),
       this.client.getCategoryTags(),
       this.client.getGameVersionTags(),
       this.client.getLoaderTags(),
     ])
-    return {
+    this.tags = {
       licenses,
       categories,
       gameVersions,
       modLoaders,
       environments: ['client', 'server'],
     }
+    return this.tags
   }
 
   @Singleton((o) => o.version.id)

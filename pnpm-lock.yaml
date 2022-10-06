@@ -79,7 +79,7 @@ importers:
       create-desktop-shortcuts: ^1.6.0
       cross-env: ^5.2.1
       dotenv: 16.0.1
-      electron: ^16.2.2
+      electron: ^20.0.0
       electron-builder: ^22.14.5
       electron-devtools-installer: ^3.2.0
       electron-updater: ^4.3.9
@@ -133,7 +133,7 @@ importers:
       create-desktop-shortcuts: 1.10.1
       cross-env: 5.2.1
       dotenv: 16.0.1
-      electron: 16.2.8
+      electron: 20.3.0
       electron-builder: 22.14.13
       electron-devtools-installer: 3.2.0
       electron-updater: 4.6.5
@@ -348,7 +348,6 @@ importers:
       form-data: ^3.0.0
       fs-extra: ^10.0.0
       got: ^12.0.1
-      hpagent: ^0.1.2
       http-cache-semantics: ^4.1.0
       icon-gen: ^3.0.0
       iconv-lite: ^0.5.2
@@ -401,7 +400,6 @@ importers:
       form-data: 3.0.1
       fs-extra: 10.1.0
       got: 12.1.0
-      hpagent: 0.1.2
       http-cache-semantics: 4.1.0
       icon-gen: 3.0.1
       iconv-lite: 0.5.2
@@ -2611,10 +2609,6 @@ packages:
 
   /@types/node/12.20.55:
     resolution: {integrity: sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==}
-    dev: true
-
-  /@types/node/14.18.21:
-    resolution: {integrity: sha512-x5W9s+8P4XteaxT/jKF0PSb7XEvo5VmqEWgsMlyeY4ZlLK8I6aH6g5TPPyDlLAep+GYf4kefb7HFyc7PAO3m+Q==}
     dev: true
 
   /@types/node/15.14.9:
@@ -4880,15 +4874,15 @@ packages:
       - supports-color
     dev: true
 
-  /electron/16.2.8:
-    resolution: {integrity: sha512-KSOytY6SPLsh3iCziztqa/WgJyfDOKzCvNqku9gGIqSdT8CqtV66dTU1SOrKZQjRFLxHaF8LbyxUL1vwe4taqw==}
-    engines: {node: '>= 8.6'}
+  /electron/20.3.0:
+    resolution: {integrity: sha512-VvzoQErKXUzpPcRdDzIwRvzbrkN5E08fLA/pe2C302vlv7KlUerh5wYyGGHS6kFKRIqTWBaq+StV/KKh9ZBczA==}
+    engines: {node: '>= 10.17.0'}
     hasBin: true
     requiresBuild: true
     dependencies:
       '@electron/get': 1.14.1
-      '@types/node': 14.18.21
-      extract-zip: 1.7.0
+      '@types/node': 16.11.43
+      extract-zip: 2.0.1
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -5690,6 +5684,20 @@ packages:
       - supports-color
     dev: true
 
+  /extract-zip/2.0.1:
+    resolution: {integrity: sha512-GDhU9ntwuKyGXdZBUgTIe+vXnWj0fppUEtMDL0+idd5Sta8TGpHssn/eusA9mrPr9qNDym6SxAYZjNvCn/9RBg==}
+    engines: {node: '>= 10.17.0'}
+    hasBin: true
+    dependencies:
+      debug: 4.3.4
+      get-stream: 5.2.0
+      yauzl: 2.10.0
+    optionalDependencies:
+      '@types/yauzl': 2.10.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: true
+
   /extsprintf/1.4.1:
     resolution: {integrity: sha512-Wrk35e8ydCKDj/ArClo1VrPVmN8zph5V4AtHwIuHhvMXsKf73UT3BOD+azBIW+3wOJ4FhEH7zyaJCFvChjYvMA==}
     engines: {'0': node >=0.6.0}
@@ -6177,10 +6185,6 @@ packages:
     dependencies:
       lru-cache: 6.0.0
     dev: true
-
-  /hpagent/0.1.2:
-    resolution: {integrity: sha512-ePqFXHtSQWAFXYmj+JtOTHr84iNrII4/QRlAAPPE+zqnKy4xJo7Ie1Y4kC7AdB+LxLxSTTzBMASsEcy0q8YyvQ==}
-    dev: false
 
   /html-tags/2.0.0:
     resolution: {integrity: sha512-+Il6N8cCo2wB/Vd3gqy/8TZhTD3QvcVeQLCnZiGkGCH3JP28IgGAY41giccp2W4R3jfyJPAP318FQTa1yU7K7g==}

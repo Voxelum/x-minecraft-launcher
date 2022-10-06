@@ -6,8 +6,9 @@
   >
     <user-page-header
       :users="users"
-      :selected="selected"
+      :selected="selectedUser"
       :refreshing="refreshing"
+      :expired="isExpired"
       @addaccount="showLoginDialog()"
       @refresh="refresh"
       @select="onSelect"
@@ -15,20 +16,20 @@
     />
     <div class="h-full w-full">
       <user-microsoft-view
-        v-if="selected && selected.authService === 'microsoft'"
-        :user="selected"
+        v-if="selectedUser && selectedUser.authService === 'microsoft'"
+        :user="selectedUser"
       />
       <user-mojang-view
-        v-else-if="selected && selected.authService === 'mojang'"
-        :user="selected"
-      />
-      <user-little-skin-view
-        v-else-if="selected && selected.authService === 'littleskin.cn'"
-        :user="selected"
+        v-else-if="selectedUser && selectedUser.authService === 'mojang'"
+        :user="selectedUser"
       />
       <user-offline-view
-        v-else-if="selected && selected.authService === 'offline'"
-        :user="selected"
+        v-else-if="selectedUser && selectedUser.authService === 'offline'"
+        :user="selectedUser"
+      />
+      <user-yggdrasil-view
+        v-else
+        :user="selectedUser"
       />
       <div class="flex-grow" />
     </div>
@@ -53,9 +54,10 @@
 import { BaseServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
+import { LoginDialog } from '../composables/login'
 import { useUsers } from '../composables/user'
 import UserPageHeader from './UserHeader.vue'
-import UserLittleSkinView from './UserLittleSkinView.vue'
+import UserYggdrasilView from './UserYggdrasilView.vue'
 import UserMicrosoftView from './UserMicrosoftView.vue'
 import UserMojangView from './UserMojangView.vue'
 import UserOfflineView from './UserOfflineView.vue'
@@ -65,21 +67,22 @@ import { injection } from '/@/util/inject'
 
 const { refreshUser: refreshAccount, refreshSkin } = useService(UserServiceKey)
 const { handleUrl } = useService(BaseServiceKey)
-const { show: showLoginDialog } = useDialog('login')
+const { show: showLoginDialog } = useDialog(LoginDialog)
+const { show } = useDialog('deletion')
 const { t } = useI18n()
 
 const { users } = useUsers()
 const { state, selectUser, removeUserProfile } = useService(UserServiceKey)
 const userId = computed(() => state.selectedUser.id)
+const selectedUser = computed(() => users.value.find(u => u.id === userId.value))
 
-const { show } = useDialog('deletion')
+const isExpired = computed(() => !selectedUser.value?.accessToken || selectedUser.value.expiredAt < Date.now())
+
+console.log(selectedUser)
 
 const { begin: beginRemoveProfile, operate: confirmRemoveProfile, data: removingProfile } = useOperation('', (v) => removeUserProfile(v))
 
 const removingUserName = computed(() => state.users[removingProfile.value]?.username ?? '')
-const selected = computed(() => {
-  return users.value.find(u => u.id === userId.value)
-})
 
 const { suppressed } = injection(DropServiceInjectionKey)
 
@@ -98,8 +101,12 @@ function startDelete(id: string) {
   show()
 }
 function refresh() {
-  refreshAccount()
-  refreshSkin()
+  if (!isExpired.value) {
+    refreshAccount()
+    refreshSkin()
+  } else {
+    showLoginDialog({ username: selectedUser.value?.username, service: selectedUser.value?.authService, error: t('login.userRelogin') })
+  }
 }
 function onDrop(e: DragEvent) {
   const dataTransfer = e.dataTransfer!

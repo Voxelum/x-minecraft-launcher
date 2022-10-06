@@ -11,10 +11,10 @@ import { InteroperableDispatcher, ProxyDispatcher } from '../dispatchers'
 import { BiDispatcher, kUseDownload } from '../dispatchers/biDispatcher'
 import { CacheDispatcher, JsonCacheStorage } from '../dispatchers/cacheDispatcher'
 import { BaseService } from '../services/BaseService'
-import { HttpAgent } from '../util/agents'
 import ServiceManager from './ServiceManager'
 import ServiceStateManager from './ServiceStateManager'
 import { buildHeaders } from '../dispatchers/utils'
+import { IS_DEV } from '../constant'
 
 export default class NetworkManager extends Manager {
   private inGFW = false
@@ -32,12 +32,10 @@ export default class NetworkManager extends Manager {
   private apiClientFactories: Array<(origin: URL, options: Agent.Options) => Dispatcher | undefined>
   private downloadClientFactories: Array<(origin: URL, options: Agent.Options) => Dispatcher | undefined>
 
+  private userAgent: string
+
   constructor(app: LauncherApp, serviceManager: ServiceManager, stateManager: ServiceStateManager) {
     super(app)
-    const http = new HttpAgent({
-      keepAlive: true,
-      proxy: new URL('http://127.0.0.1:7890'),
-    })
     const cache = new ClassicLevel(join(app.appDataPath, 'undici-cache'), {
       valueEncoding: 'json',
     })
@@ -46,10 +44,10 @@ export default class NetworkManager extends Manager {
 
     const service = serviceManager.get(BaseService)
     service.initialize().then(() => {
-      maxConnection = service.state.maxSockets
+      maxConnection = service.state.maxSockets > 0 ? service.state.maxSockets : Number.POSITIVE_INFINITY
     })
     stateManager.subscribe('maxSocketsSet', (val) => {
-      maxConnection = val
+      maxConnection = val > 0 ? val : Number.POSITIVE_INFINITY
     })
 
     const apiClientFactories = [] as Array<(origin: URL, options: Agent.Options) => Dispatcher | undefined>
@@ -64,8 +62,9 @@ export default class NetworkManager extends Manager {
     const proxy = new ProxyDispatcher({
       factory(connect) {
         const downloadAgent = new Agent({
-          bodyTimeout: 3_000,
-          headersTimeout: 5_000,
+          bodyTimeout: 15_000,
+          headersTimeout: 10_000,
+          connectTimeout: 10_000,
           connect,
           factory(origin, opts: Agent.Options) {
             const dispatcher = new Pool(origin, opts)
@@ -76,9 +75,10 @@ export default class NetworkManager extends Manager {
           },
         })
         const apiAgent = new Agent({
-          pipelining: 6,
-          bodyTimeout: 3_000,
-          headersTimeout: 7_000,
+          pipelining: 1,
+          bodyTimeout: 10_000,
+          headersTimeout: 10_000,
+          connectTimeout: 10_000,
           connect,
           factory(origin, opts: Agent.Options) {
             let dispatcher: Dispatcher | undefined
@@ -96,13 +96,19 @@ export default class NetworkManager extends Manager {
       },
     })
 
+    const version = IS_DEV ? '0.0.0' : app.version
+    const userAgent = `voxelum/x_minecraft_launcher/${version} (xmcl.app)`
+    this.userAgent = userAgent
+
     const downloadDispatcher =
       new InteroperableDispatcher(
         [
           (options) => {
             (options as any)[kUseDownload] = true
             const headers = buildHeaders(options.headers || {})
-            headers['user-agent'] = `xmcl/${app.version} (xmcl.app)`
+            if (!headers['user-agent']) {
+              headers['user-agent'] = userAgent
+            }
             options.headers = headers
           },
         ],
@@ -118,7 +124,9 @@ export default class NetworkManager extends Manager {
             }
             (options as any)[kUseDownload] = false
             const headers = buildHeaders(options.headers || {})
-            headers['user-agent'] = `xmcl/${app.version} (xmcl.app)`
+            if (!headers['user-agent']) {
+              headers['user-agent'] = userAgent
+            }
             options.headers = headers
           },
         ],
@@ -179,6 +187,10 @@ export default class NetworkManager extends Manager {
       const m: DiagnosticsChannel.ClientConnectedMessage = msg as any
       undici.log(`client:connected ${m.connectParams.protocol}//${m.connectParams.hostname}:${m.connectParams.port} ${m.connectParams.servername} -> ${m.socket.remoteAddress}`)
     })
+  }
+
+  getUserAgent() {
+    return this.userAgent
   }
 
   getDownloadBaseOptions(): DownloadBaseOptions {

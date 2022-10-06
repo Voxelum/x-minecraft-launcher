@@ -55,7 +55,6 @@
         "form-data": "^3.0.0",
         "fs-extra": "^10.0.0",
         "got": "^12.0.1",
-        "hpagent": "^0.1.2",
         "icon-gen": "^3.0.0",
         "iconv-lite": "^0.5.2",
         "jschardet": "^2.3.0",

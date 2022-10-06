@@ -11,7 +11,7 @@
       subsequence: source.subsequence === true,
       dragged: source.dragged,
     }"
-    class="draggable-card mod-card rounded-lg transition-all duration-200 shadow"
+    class="draggable-card mod-card rounded-lg transition-all duration-200 shadow min-w-200"
     style="margin-top: 10px; padding: 0 10px; content-visibility: auto;"
     @dragstart="onDragStart"
     @dragend="emit('dragend', $event)"

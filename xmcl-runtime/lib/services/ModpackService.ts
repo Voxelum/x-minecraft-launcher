@@ -19,6 +19,7 @@ import { ZipTask } from '../util/zip'
 import { BaseService } from './BaseService'
 import { CurseForgeService } from './CurseForgeService'
 import { InstallService } from './InstallService'
+import { InstanceInstallService } from './InstanceInstallService'
 import { InstanceIOService } from './InstanceIOService'
 import { InstanceOptionsService } from './InstanceOptionsService'
 import { InstanceService } from './InstanceService'
@@ -48,6 +49,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     @Inject(InstallService) private installService: InstallService,
     @Inject(CurseForgeService) private curseforgeService: CurseForgeService,
     @Inject(InstanceIOService) private instanceIOService: InstanceIOService,
+    @Inject(InstanceInstallService) private instanceInstallService: InstanceInstallService,
     @Inject(InstanceOptionsService) private instanceOptionsService: InstanceOptionsService,
   ) {
     super(app, ModpackServiceKey)
@@ -313,7 +315,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     const files = await this.convertManifest(manifest)
 
     // Try to install
-    await this.instanceIOService.installInstanceFiles({
+    await this.instanceInstallService.installInstanceFiles({
       path: instancePath,
       files: files,
     })

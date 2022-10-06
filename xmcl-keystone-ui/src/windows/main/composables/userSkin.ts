@@ -8,34 +8,50 @@ export function usePlayerName(gameProfile: Ref<GameProfileAndTexture>) {
   return name
 }
 
-export function usePlayerCape(gameProfile: Ref<GameProfileAndTexture>) {
-  const capeVal = computed(() => gameProfile.value.capes?.find(c => c.state === 'ACTIVE')?.url || gameProfile.value.textures.CAPE?.url)
-  const cape = ref(capeVal.value)
-  watch(capeVal, (v) => { cape.value = v })
-  return cape
-}
-
 export function useUserSkin(userId: Ref<string>, gameProfile: Ref<GameProfileAndTexture>) {
   const { refreshSkin, uploadSkin, saveSkin } = useServiceOnly(UserServiceKey, 'refreshSkin', 'uploadSkin', 'saveSkin')
   const data = reactive({
+    /**
+     * The skin url
+     */
     skin: '',
+    /**
+     * The cape url
+     */
+    cape: '' as string | undefined,
     slim: false,
     loading: false,
+    inferModelType: false,
   })
+
+  const currentSkin = computed(() => gameProfile.value?.textures.SKIN.url)
+  const currentSlim = computed(() => gameProfile.value.textures.SKIN.metadata ? gameProfile.value?.textures.SKIN.metadata.model === 'slim' : false)
+  const currentCape = computed(() => gameProfile.value.capes ? gameProfile.value.capes?.find(c => c.state === 'ACTIVE')?.url : gameProfile.value.textures.CAPE?.url)
+  const uploadable = computed(() => gameProfile.value.uploadable ? gameProfile.value.uploadable : ['skin', 'cape'])
+  const canUploadSkin = computed(() => uploadable.value.indexOf('skin') !== -1)
+  const canUploadCape = computed(() => uploadable.value.indexOf('cape') !== -1)
 
   function reset() {
     const prof = gameProfile.value
     if (!prof) return
+    data.cape = currentCape.value
     data.skin = prof.textures.SKIN.url
     data.slim = prof.textures.SKIN.metadata ? prof.textures.SKIN.metadata.model === 'slim' : false
   }
-  const modified = computed(() => data.skin !== gameProfile.value?.textures.SKIN.url ||
-    data.slim !== (gameProfile.value.textures.SKIN.metadata ? gameProfile.value?.textures.SKIN.metadata.model === 'slim' : false))
+  const skinModified = computed(() => data.skin !== currentSkin.value || data.slim !== currentSlim.value)
+  const capeModified = computed(() => data.cape !== currentCape.value)
+  const modified = computed(() => skinModified.value || capeModified.value)
 
   async function save() {
     data.loading = true
     try {
-      await uploadSkin({ url: data.skin, slim: data.slim, userId: userId.value, gameProfileId: gameProfile.value.id })
+      if (!modified.value) return
+      await uploadSkin({
+        skin: skinModified.value ? { url: data.skin, slim: data.slim } : undefined,
+        cape: capeModified.value ? (data.cape ?? '') : undefined,
+        userId: userId.value,
+        gameProfileId: gameProfile.value.id,
+      })
       await refreshSkin({ userId: userId.value, gameProfileId: gameProfile.value.id }).then(() => reset())
     } finally {
       data.loading = false
@@ -51,6 +67,8 @@ export function useUserSkin(userId: Ref<string>, gameProfile: Ref<GameProfileAnd
 
   return {
     ...toRefs(data),
+    canUploadCape,
+    canUploadSkin,
     refreshing: useServiceBusy(UserServiceKey, 'refreshSkin'),
     save,
     reset,

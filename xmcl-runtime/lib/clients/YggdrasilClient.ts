@@ -33,6 +33,8 @@ export class YggdrasilClient {
       headers: {
         'content-type': 'application/json; charset=utf-8',
       },
+      headersTimeout: 10_000,
+      bodyTimeout: 10_000,
       throwOnError: true,
       dispatcher: this.dispatcher,
     }).then(() => true, () => false)

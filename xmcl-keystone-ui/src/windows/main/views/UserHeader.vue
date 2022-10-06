@@ -9,7 +9,26 @@
           {{ selected ? selected.username : '' }}
         </v-list-item-title>
         <v-list-item-subtitle v-if="selected">
-          {{ selected.authService }} {{ getLocalDateString(selected.expiredAt) }}
+          <div class="flex gap-2 items-baseline mt-2">
+            <v-chip
+              label
+              color="deep orange"
+              small
+            >
+              {{ t('user.authService') }}
+            </v-chip>
+            {{ selected.authService.toUpperCase() }}
+          </div>
+          <div class="flex gap-2 items-baseline mt-2">
+            <v-chip
+              :color="expired ? 'red': 'primary'"
+              label
+              small
+            >
+              {{ expired ? t('user.tokenExpired'): t('user.tokenValidUntil') }}
+            </v-chip>
+            {{ new Date(selected.expiredAt).toLocaleString() }}
+          </div>
         </v-list-item-subtitle>
       </v-list-item-content>
 
@@ -96,7 +115,6 @@
 <script lang="ts" setup>
 import { UserProfile } from '@xmcl/runtime-api'
 import { useI18n } from '/@/composables'
-import { getLocalDateString } from '/@/util/date'
 
 const emit = defineEmits(['addaccount', 'refresh', 'addservice', 'select', 'remove'])
 const { t } = useI18n()
@@ -104,6 +122,7 @@ defineProps<{
   selected: UserProfile | undefined
   users: UserProfile[]
   refreshing: boolean
+  expired: boolean
 }>()
 
 </script>

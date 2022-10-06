@@ -54,21 +54,6 @@ export interface InstanceUpdate {
   manifest: InstanceManifestSchema
 }
 
-export interface InstallInstanceOptions {
-  /**
-   * The instance path
-   */
-  path?: string
-  /**
-   * The files to update
-   */
-  files: Array<InstanceFile>
-  /**
-   * Generate the lock of the instance
-   */
-  lock?: boolean
-}
-
 export interface GetManifestOptions {
   /**
    * The instance path

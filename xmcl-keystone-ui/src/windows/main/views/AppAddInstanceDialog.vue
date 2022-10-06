@@ -217,14 +217,18 @@ const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
 })
 
 on('modpackImport', ({ path, name }) => {
-  notify({
-    level: 'success',
-    title: t('downloadedNotification', { name }),
-    full: true,
-    more: () => {
-      showAddInstance(path)
-    },
-  })
+  setTimeout(() => {
+    if (!isShown.value) {
+      notify({
+        level: 'success',
+        title: t('downloadedNotification', { name }),
+        full: true,
+        more: () => {
+          showAddInstance(path)
+        },
+      })
+    }
+  }, 100)
 })
 
 watch(isShown, (shown) => {

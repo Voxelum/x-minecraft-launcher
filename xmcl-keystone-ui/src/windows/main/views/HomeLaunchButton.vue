@@ -9,50 +9,58 @@
     <template #badge>
       <span>{{ launchCount }}</span>
     </template>
-    <v-btn
-      :color="color"
-      x-large
-      class="!px-12 !py-6 text-lg"
-      :loading="loading"
-      @click="onClick()"
-    >
-      <template v-if="!!issue">
-        <template
-          v-if="status !== 1"
+    <v-menu offset-y>
+      <template #activator="{ on, attrs }">
+        <v-btn
+          :color="color"
+          x-large
+          v-bind="attrs"
+          class="!px-12 !py-6 text-lg"
+          :loading="loading"
+          @mouseenter="on.click"
+          @mouseleave="on.click"
+          @click="onClick(); on.click($event)"
         >
-          <v-icon
-            class="text-2xl -ml-1 pr-2"
-          >
-            get_app
-          </v-icon>
-          {{ t('install' ) }}
-        </template>
-        <template v-else>
-          <v-icon
-            class="text-2xl -ml-1 pr-2"
-          >
-            pause
-          </v-icon>
-          {{ t('task.pause') }}
-        </template>
+          <template v-if="!!issue">
+            <template
+              v-if="status !== 1"
+            >
+              <v-icon
+                class="text-2xl -ml-1 pr-2"
+              >
+                get_app
+              </v-icon>
+              {{ t('install' ) }}
+            </template>
+            <template v-else>
+              <v-icon
+                class="text-2xl -ml-1 pr-2"
+              >
+                pause
+              </v-icon>
+              {{ t('task.pause') }}
+            </template>
+          </template>
+          <template v-else>
+            {{ t("launch.launch") }}
+            <v-icon
+              v-if="launchStatus === 'idle'"
+              class="text-2xl pl-3"
+            >
+              play_arrow
+            </v-icon>
+            <v-progress-circular
+              v-else
+              class="v-icon--right"
+              indeterminate
+              :size="20"
+              :width="2"
+            />
+          </template>
+        </v-btn>
       </template>
-      <template v-else>
-        {{ t("launch.launch") }}
-        <v-icon
-          v-if="launchStatus === 'idle'"
-          class="text-2xl pl-3"
-        >
-          play_arrow
-        </v-icon>
-        <v-progress-circular
-          v-else
-          class="v-icon--right"
-          indeterminate
-          :size="20"
-          :width="2"
-        />
-      </template>
-    </v-btn>
+      <HomeProblemCard />
+    </v-menu>
   </v-badge>
 </template>
 <script lang="ts" setup>
@@ -63,6 +71,7 @@ import { JavaIssueDialogKey, useJava } from '../composables/java'
 import { LaunchStatusDialogKey, useLaunch } from '../composables/launch'
 import { LoginDialog } from '../composables/login'
 import { useBusy, useI18n, useIssues, useRefreshable, useService, useServiceBusy } from '/@/composables'
+import HomeProblemCard from './HomeProblemCard.vue'
 
 const emit = defineEmits(['pause', 'resume'])
 const props = defineProps<{

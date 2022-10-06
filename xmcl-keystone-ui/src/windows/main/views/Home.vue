@@ -13,7 +13,6 @@
       <home-resource-packs-card />
       <home-shader-pack-card />
       <home-saves-card />
-      <home-problem-card />
       <server-status-bar v-if="isServer" />
       <HomeModrinthCard
         v-if="instance.upstream && instance.upstream.type === 'modrinth-modpack'"
