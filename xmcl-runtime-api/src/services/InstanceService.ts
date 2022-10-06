@@ -6,6 +6,7 @@ import { ServiceKey, StatefulService } from './Service'
 
 export type CreateInstanceOption = Partial<Omit<InstanceSchema, 'lastAccessDate' | 'creationDate'>> & {
   path?: string
+  name: string
   resolution?: InstanceSchema['resolution']
   runtime?: InstanceSchema['runtime']
   server?: InstanceSchema['server']
