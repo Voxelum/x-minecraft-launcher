@@ -1,9 +1,9 @@
 import { ResolvedVersion, Version } from '@xmcl/core'
-import { CreateInstanceOption, createTemplate, EditInstanceOptions, filterForgeVersion, filterOptifineVersion, Instance, InstanceException, InstanceSchema, InstanceService as IInstanceService, InstanceServiceKey, InstancesSchema, InstanceState, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, RuntimeVersions } from '@xmcl/runtime-api'
+import { CreateInstanceOption, createTemplate, EditInstanceOptions, filterForgeVersion, filterOptifineVersion, getExpectVersion, Instance, InstanceException, InstanceSchema, InstanceService as IInstanceService, InstanceServiceKey, InstancesSchema, InstanceState, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, RuntimeVersions } from '@xmcl/runtime-api'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { copy, ensureDir, move, readdir, remove } from 'fs-extra'
-import { isAbsolute, join, relative, resolve } from 'path'
+import { dirname, isAbsolute, join, relative, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { readLaunchProfile } from '../entities/launchProfile'
@@ -30,8 +30,6 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     @Inject(InstallService) private installService: InstallService,
   ) {
     super(app, InstanceServiceKey, () => new InstanceState(), async () => {
-      const uuidExp = /([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}){1}/
-
       const { state } = this
       const instanceConfig = await this.instancesFile.read()
       const managed = (await readdirEnsured(this.getPathUnder())).map(p => this.getPathUnder(p))
@@ -75,11 +73,11 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           } catch (e) {
             this.error(`Fail to initialize to ${initial}`)
             this.error(e)
-            await this.createAndMount({})
+            await this.createAndMount({ name: 'Minecraft' })
           }
         } else {
           this.log('Cannot find any instances, try to init one default modpack.')
-          await this.createAndMount({})
+          await this.createAndMount({ name: 'Minecraft' })
         }
       } else {
         const selectedInstancePath = isAbsolute(selectedInstance) ? selectedInstance : this.getPathUnder(selectedInstance)
@@ -303,7 +301,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       // if only one instance left
       if (restPath.length === 0) {
         // then create and select a new one
-        await this.createAndMount({})
+        await this.createAndMount({ name: 'Minecraft' })
       } else {
         // else select the first instance
         await this.mountInstance(restPath[0])
@@ -342,12 +340,15 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
 
     if (options.name) {
-      if (this.state.instances.some(i => i.name === options.name && i.path !== instancePath)) {
-        throw new InstanceException({
-          type: 'instanceNameDuplicated',
-          path: instancePath,
-          name: options.name,
-        })
+      if (this.isUnderManaged(instancePath)) {
+        const newPath = join(dirname(instancePath), options.name)
+        if (this.state.instances.some(i => i.path === newPath)) {
+          throw new InstanceException({
+            type: 'instanceNameDuplicated',
+            path: instancePath,
+            name: options.name,
+          })
+        }
       }
     }
 
@@ -491,6 +492,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     if (!isVersionIsolated) {
       const options: CreateInstanceOption = {
         path,
+        name: dirname(path),
       }
       if (profile) {
         const sorted = Object.values(profile.profiles).sort((a, b) =>
@@ -534,6 +536,15 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           }
         }
       }
+
+      const folderName = dirname(path)
+      if (folderName === 'minecraft' || folderName === '.minecraft') {
+        const name = getExpectVersion(options.runtime)
+        options.name = name
+      } else {
+        options.name = folderName
+      }
+
       await this.createInstance(options)
     }
 
@@ -550,6 +561,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
     const path = await this.createInstance({
       path: instancePath,
+      name: id,
     })
     this.log(`Create new instance ${id} -> ${instancePath}`)
     return path
