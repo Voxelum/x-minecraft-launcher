@@ -54,7 +54,7 @@ export class BaseState implements SettingSchema {
 
   maxSockets = 0
 
-  maxTotalSockets = 0
+  maxAPISockets = 0
 
   config(config: SettingSchema) {
     this.locale = config.locale
@@ -65,7 +65,7 @@ export class BaseState implements SettingSchema {
     this.httpProxy = config.httpProxy
     this.httpProxyEnabled = config.httpProxyEnabled
     this.maxSockets = config.maxSockets
-    this.maxTotalSockets = config.maxTotalSockets || 0
+    this.maxAPISockets = config.maxAPISockets || 0
     this.theme = config.theme
   }
 
@@ -130,11 +130,11 @@ export class BaseState implements SettingSchema {
   }
 
   maxSocketsSet(val: number) {
-    this.maxSockets = val
+    this.maxSockets = Number(val)
   }
 
-  maxTotalSocketsSet(val: number) {
-    this.maxTotalSockets = val
+  maxAPISocketsSet(val: number) {
+    this.maxAPISockets = val
   }
 }
 

@@ -59,8 +59,8 @@ export interface SettingSchema {
    */
   maxSockets: number
   /**
-   * Maximum number of sockets allowed for all hosts in total. Each request will use a new socket until the maximum is reached. Default: Infinity.
-   * @default 0
+   * Maximum number of sockets allowed for requesting API. Each request will use a new socket until the maximum is reached. Default: 16.
+   * @default 16
    */
-  maxTotalSockets?: number
+  maxAPISockets?: number
 }

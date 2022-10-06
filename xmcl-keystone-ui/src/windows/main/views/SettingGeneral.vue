@@ -142,15 +142,6 @@
           type="number"
           :label="t('setting.maxSockets')"
         />
-        <v-text-field
-          v-model="maxTotalSockets"
-          class="w-40"
-          filled
-          dense
-          hide-details
-          type="number"
-          :label="t('setting.maxTotalSockets')"
-        />
       </v-list-item-action>
     </v-list-item>
   </v-list>
@@ -170,7 +161,6 @@ const {
   apiSetsPreference,
   selectedLocale,
   maxSockets,
-  maxTotalSockets,
   locales: rawLocales,
 } = useSettings()
 const { t } = useI18n()
