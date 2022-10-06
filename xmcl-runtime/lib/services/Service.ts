@@ -321,6 +321,7 @@ export abstract class AbstractService extends EventEmitter {
    * If the service already initialized or initializing, it will wait the service initialization end.
    */
   async initialize(): Promise<void> {
+    await this.app.gamePathReadySignal.promise
     if (!this.initializeSignal) {
       this.initializeSignal = createPromiseSignal()
       if (this.initializer) {
