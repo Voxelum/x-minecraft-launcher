@@ -30,8 +30,6 @@ export function useIssues() {
   const refreshing = useBusy(DiagnoseSemaphoreKey)
 
   function fix(issue: Issue, issues: readonly Issue[]) {
-    console.log(`Fix issue ${issue.id}`)
-
     if (!handlers.handle(issue)) {
       return fixIssue(issues)
     }

@@ -1,10 +1,11 @@
-import { GameProfileAndTexture, LoginOptions, UserException, UserProfile } from '@xmcl/runtime-api'
+import { GameProfileAndTexture, LoginOptions, SkinPayload, UserException, UserProfile } from '@xmcl/runtime-api'
 import { UserAccountSystem } from '../services/UserService'
 import { Logger } from '../util/log'
 import { toRecord } from '../util/object'
 import { MicrosoftAuthenticator } from '../clients/MicrosoftAuthenticator'
 import { MojangClient } from '../clients/MojangClient'
 import { MicrosoftOAuthClient } from '../clients/MicrosoftOAuthClient'
+import { normalizeSkinData } from '../entities/user'
 
 export class MicrosoftAccountSystem implements UserAccountSystem {
   constructor(
@@ -38,12 +39,18 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     if (!user.expiredAt || user.expiredAt < Date.now() || (diff / 1000 / 3600 / 24) > 14) {
       // expired
       this.logger.log('Microsoft accessToken expired. Refresh a new one.')
-      const { accessToken, expiredAt, gameProfiles, selectedProfile } = await this.loginMicrosoft(user.username, undefined, false, true)
+      try {
+        const { accessToken, expiredAt, gameProfiles, selectedProfile } = await this.loginMicrosoft(user.username, undefined, false, true)
 
-      user.accessToken = accessToken
-      user.expiredAt = expiredAt
-      user.selectedProfile = selectedProfile?.id ?? ''
-      user.profiles = toRecord(gameProfiles, v => v.id)
+        user.accessToken = accessToken
+        user.expiredAt = expiredAt
+        user.selectedProfile = selectedProfile?.id ?? ''
+        user.profiles = toRecord(gameProfiles, v => v.id)
+      } catch (e) {
+        this.logger.error(`Fail to refresh ${user.username}`)
+        this.logger.error(e)
+        user.accessToken = ''
+      }
     }
 
     return user
@@ -69,27 +76,47 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     return userProfile
   }
 
-  async setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, skin: string | Buffer, slim: boolean): Promise<UserProfile> {
-    const profile = await this.mojangClient.setSkin(
-      typeof skin === 'string' ? skin : 'skin.png',
-      skin,
-      slim ? 'slim' : 'classic',
-      userProfile.accessToken,
-    )
-    userProfile.profiles[gameProfile.id] = {
-      ...gameProfile,
-      ...profile,
-      textures: {
-        SKIN: {
-          url: profile.skins[0].url,
-          metadata: { model: profile.skins[0].variant === 'CLASSIC' ? 'steve' : 'slim' },
-        },
-        CAPE: profile.capes.length > 0
-          ? {
-            url: profile.capes[0].url,
-          }
-          : undefined,
-      },
+  async setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, options: SkinPayload): Promise<UserProfile> {
+    if (typeof options.cape !== 'undefined') {
+      if (options.cape === '') {
+        await this.mojangClient.hideCape(userProfile.accessToken)
+      } else {
+        const target = gameProfile.capes?.find(c => c.url === options.cape)
+        if (target) {
+          await this.mojangClient.showCape(target.id, userProfile.accessToken)
+        } else {
+          throw new Error(`Cannot upload new cape for Microsoft account: ${gameProfile.name}(${userProfile.username})`)
+        }
+      }
+    }
+    if (typeof options.skin === 'object') {
+      if (options.skin === null) {
+        await this.mojangClient.resetSkin(userProfile.accessToken)
+      } else {
+        const profile = await this.mojangClient.setSkin(
+          `${gameProfile.name}.png`,
+          await normalizeSkinData(options.skin?.url),
+          options.skin?.slim ? 'slim' : 'classic',
+          userProfile.accessToken,
+        )
+        // @ts-ignore
+        userProfile.profiles[gameProfile.id] = {
+          ...gameProfile,
+          ...profile,
+          uploadable: ['skin', 'cape'],
+          textures: {
+            SKIN: {
+              url: profile.skins[0].url,
+              metadata: { model: profile.skins[0].variant === 'CLASSIC' ? 'steve' : 'slim' },
+            },
+            CAPE: profile.capes.length > 0
+              ? {
+                url: profile.capes[0].url,
+              }
+              : undefined,
+          },
+        }
+      }
     }
     return userProfile
   }
@@ -130,6 +157,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       const gameProfileResponse = await this.mojangClient.getProfile(mcResponse.access_token)
       this.logger.log('Successfully get game profile')
       const gameProfiles: GameProfileAndTexture[] = [{
+        ...gameProfileResponse,
         id: gameProfileResponse.id,
         name: gameProfileResponse.name,
         textures: {

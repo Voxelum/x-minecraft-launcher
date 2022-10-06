@@ -113,9 +113,10 @@ export function normalizeGameProfile(profile: GameProfile): GameProfileAndTextur
 }
 
 export async function normalizeSkinData(url: string) {
+  url = url.replace('image:', 'file:')
   const { protocol } = new URL(url)
-  if (protocol === 'file:') {
-    return await readFile(url.replace('file://', ''))
+  if (protocol === 'file:' || protocol === 'image:') {
+    return await readFile(url.replace('file://', '').replace('image://', ''))
   } else if (protocol === 'https:' || protocol === 'http:') {
     return url
   } else {

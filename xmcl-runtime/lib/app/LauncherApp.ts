@@ -1,14 +1,15 @@
 import { getPlatform } from '@xmcl/core'
 import { InstalledAppManifest, ReleaseInfo } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
-import { ClassicLevel } from 'classic-level'
 import { EventEmitter } from 'events'
-import { ensureDir, readFile, writeFile } from 'fs-extra'
+import FormData from 'form-data'
+import { ensureDir, readFile, readFileSync, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { setTimeout } from 'timers/promises'
-import { Agent, Dispatcher, Pool, request, setGlobalDispatcher } from 'undici'
+import { Agent, Dispatcher, Pool, request } from 'undici'
 import { URL } from 'url'
 import { IS_DEV, LAUNCHER_NAME } from '../constant'
+import { BiDispatcher, CacheDispatcher, JsonCacheStorage, ProxyDispatcher } from '../dispatchers'
 import { Client } from '../engineBridge'
 import { Manager } from '../managers'
 import LogManager from '../managers/LogManager'
@@ -21,10 +22,7 @@ import TelemetryManager from '../managers/TelemetryManager'
 import WorkerManager from '../managers/WorkerManager'
 import { OfficialUserService } from '../services/OfficialUserService'
 import { AbstractService, ServiceConstructor } from '../services/Service'
-import { YggdrasilUserService } from '../services/YggdrasilUserService'
 import { isSystemError } from '../util/error'
-import { GlobalAgent } from '../dispatchers/proxyDispatcher'
-import { JsonCacheStorage } from '../dispatchers/cacheDispatcher'
 import { createPromiseSignal } from '../util/promiseSignal'
 import { Host } from './Host'
 import { LauncherAppController } from './LauncherAppController'
@@ -248,20 +246,20 @@ export abstract class LauncherApp extends EventEmitter {
       const serverUrl = decodeURIComponent(url.substring('authlib-injector:yggdrasil-server:'.length))
       const parsed = new URL(serverUrl)
       const domain = parsed.host
-      const userService = this.serviceManager.get(YggdrasilUserService)
-      userService.registerFirstPartyApi(domain, {
-        hostName: serverUrl,
-        authenticate: '/authserver/authenticate',
-        refresh: '/authserver/refresh',
-        validate: '/authserver/validate',
-        invalidate: '/authserver/invalidate',
-        signout: '/authserver/signout',
-      }, {
-        profile: `${serverUrl}/sessionserver/session/minecraft/profile/\${uuid}`,
-        profileByName: `${serverUrl}/users/profiles/minecraft/\${name}`,
-        texture: `${serverUrl}/user/profile/\${uuid}/\${type}`,
-      })
-      userService.emit('auth-profile-added', domain)
+      // const userService = this.serviceManager.get(YggdrasilUserService)
+      // userService.registerFirstPartyApi(domain, {
+      //   hostName: serverUrl,
+      //   authenticate: '/authserver/authenticate',
+      //   refresh: '/authserver/refresh',
+      //   validate: '/authserver/validate',
+      //   invalidate: '/authserver/invalidate',
+      //   signout: '/authserver/signout',
+      // }, {
+      //   profile: `${serverUrl}/sessionserver/session/minecraft/profile/\${uuid}`,
+      //   profileByName: `${serverUrl}/users/profiles/minecraft/\${name}`,
+      //   texture: `${serverUrl}/user/profile/\${uuid}/\${type}`,
+      // })
+      // userService.emit('auth-profile-added', domain)
       this.log(`Import the url ${url} as authlib-injector profile ${domain}`)
       return true
     }
@@ -365,6 +363,77 @@ export abstract class LauncherApp extends EventEmitter {
   // setup code
 
   async start(): Promise<void> {
+    // const proxy = new ProxyDispatcher({
+    //   factory(connect) {
+    //     const downloadAgent = new Agent({
+    //       bodyTimeout: 15_000,
+    //       headersTimeout: 10_000,
+    //       connectTimeout: 10_000,
+    //       connect,
+    //       factory(origin, opts: Agent.Options) {
+    //         const dispatcher = new Pool(origin, opts)
+    //         const keys = Reflect.ownKeys(dispatcher)
+    //         const sym = keys.find(k => typeof k === 'symbol' && k.description === 'connections')
+    //         if (sym) { Object.defineProperty(dispatcher, sym, { get: () => 16 }) }
+    //         return dispatcher
+    //       },
+    //     })
+    //     const apiAgent = new Agent({
+    //       pipelining: 6,
+    //       bodyTimeout: 10_000,
+    //       headersTimeout: 10_000,
+    //       connectTimeout: 10_000,
+    //       connect,
+    //       factory(origin, opts: Agent.Options) {
+    //         let dispatcher: Dispatcher | undefined
+    //         // for (const factory of apiClientFactories) { dispatcher = factory(origin, opts) }
+    //         if (!dispatcher) { dispatcher = new Pool(origin, opts) }
+    //         if (dispatcher instanceof Pool) {
+    //           const keys = Reflect.ownKeys(dispatcher)
+    //           const kConnections = keys.find(k => typeof k === 'symbol' && k.description === 'connections')
+    //           if (kConnections) { Object.defineProperty(dispatcher, kConnections, { get: () => 16 }) }
+    //         }
+    //         return dispatcher
+    //       },
+    //     })
+    //     return new BiDispatcher(downloadAgent, apiAgent)
+    //   },
+    // })
+
+    // const dispatcher = new CacheDispatcher(proxy, new JsonCacheStorage({
+    //   get(k) { return store[k] },
+    //   async put(k, v) { store[k] = v },
+    // }))
+    // {
+    //   const res = request('https://authserver.ely.by/api/authlib-injector/sessionserver/session/minecraft/profile/42a0074dea15474cb7933bf0ad55fd75?unsigned=true', {
+    //     method: 'GET',
+    //     dispatcher,
+    //   })
+    // }
+    // {
+    //   const res = request('https://authserver.ely.by/api/authlib-injector/sessionserver/session/minecraft/profile/42a0074dea15474cb7933bf0ad55fd75?unsigned=true', {
+    //     method: 'GET',
+    //     dispatcher,
+    //   })
+    // }
+
+    // const store: Record<string, any> = {}
+    // const form = new FormData()
+    // form.append('file', readFileSync('C:\\Users\\CIJhn\\Documents\\CI010.png'), { contentType: 'image/png', filename: 'CI010.png' })
+    // form.append('model', 'steve')
+    // const response = await request('https://authserver.ely.by/api/authlib-injector/api/user/profile/42a0074dea15474cb7933bf0ad55fd75/skin', {
+    //   method: 'PUT',
+    //   body: form.getBuffer(),
+    //   headers: {
+    //     ...form.getHeaders(),
+    //     authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpYXQiOjE2NjQ5ODEwNDUsImV4cCI6MTY2NTE1Mzg0NSwic2NvcGUiOiJtaW5lY3JhZnRfc2VydmVyX3Nlc3Npb24iLCJlbHktY2xpZW50LXRva2VuIjoiYV9wb0l5aWxwaDBYaHpvY1kweUt6VHlkcm5wSTUwMzM0SUJILS1VM3pveU91OTlyY2UwenlMTm1DMXNOODlLTnFIZERSaU5ZQUZXcklXSHA3NTBvSlZtT1hIdXRVczFJIiwic3ViIjoiZWx5fDQwODMzOTMifQ.JkKj5RIcLodvFHTPnTWYcas3y4sBFziwv8ptgRj3fXSlWdLzwOPswi775u3Sh_RRnlL5yCWYIFH9AlPA3iSOZQ',
+    //   },
+    //   dispatcher: dispatcher,
+    // })
+
+    // const text = await response.body.text()
+    // console.log(text)
+
     await Promise.all([
       this.setup(),
       this.waitEngineReady().then(() => {

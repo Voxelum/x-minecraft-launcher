@@ -7,7 +7,7 @@
     <div class="flex flex-shrink gap-4 flex-none absolute top-4">
       <v-fab-transition>
         <v-btn
-          v-if="modified"
+          v-if="inspect && modified"
           color="secondary"
           fab
           small
@@ -22,17 +22,18 @@
     <skin-view
       class="border rounded"
       :skin="skin"
-      :slim="slim"
+      :slim="inferModelType ? undefined : slim"
       :cape="cape"
       :name="name"
       :animation="hover ? 'running' : selected ? 'walking' : 'idle'"
+      @model="onModelChange"
       @drop.prevent="dropSkin"
       @dragover.prevent="() => { }"
     />
     <div class="flex flex-shrink gap-4 flex-none absolute bottom-4">
       <v-fab-transition>
         <v-btn
-          v-show="hover && modified"
+          v-show="!inspect && modified"
           color="secondary"
           fab
           small
@@ -44,7 +45,9 @@
         </v-btn>
       </v-fab-transition>
       <speed-dial
-        :value="hover"
+        :value="hover || modified"
+        :has-skin="canUploadSkin"
+        :has-cape="canUploadCape"
         :disabled="pending"
         :upload="() => isImportSkinDialogShown = true"
         :save="exportSkin"
@@ -52,7 +55,7 @@
       />
       <v-fab-transition>
         <v-btn
-          v-show="hover && modified"
+          v-show="!inspect && modified"
           color="secondary"
           fab
           small
@@ -76,16 +79,17 @@
 <script lang=ts setup>
 import { GameProfileAndTexture, UserProfile } from '@xmcl/runtime-api'
 import { useNotifier } from '../composables/notifier'
-import { PlayerCapeModel, PlayerNameModel, usePlayerCape, usePlayerName, UserSkinModel, useUserSkin } from '../composables/userSkin'
+import { PlayerNameModel, usePlayerName, UserSkinModel, useUserSkin } from '../composables/userSkin'
 import ImportSkinUrlForm from './UserImportSkinUrlForm.vue'
 import SpeedDial from './UserSkinSpeedDial.vue'
 import SkinView from '/@/components/SkinView.vue'
 import { useI18n } from '/@/composables'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   user: UserProfile
   profile: GameProfileAndTexture
-}>()
+  inspect: boolean
+}>(), { inspect: false })
 const { t } = useI18n()
 const hover = ref(false)
 const { watcherTask } = useNotifier()
@@ -93,17 +97,25 @@ const { watcherTask } = useNotifier()
 const gameProfile = computed(() => props.profile)
 const selected = computed(() => props.user.selectedProfile === props.profile.id)
 const name = inject(PlayerNameModel, () => usePlayerName(gameProfile), true)
-const cape = inject(PlayerCapeModel, () => usePlayerCape(gameProfile), true)
-const { skin, refreshing, slim, save, exportTo, loading, modified, reset } = inject(UserSkinModel, () => useUserSkin(computed(() => props.user.id), gameProfile), true)
+const { skin, refreshing, slim, save, exportTo, loading, modified, reset, inferModelType, cape, canUploadCape, canUploadSkin } = inject(UserSkinModel, () => useUserSkin(computed(() => props.user.id), gameProfile), true)
 const pending = computed(() => refreshing.value || loading.value)
 const { showOpenDialog, showSaveDialog } = windowController
 const isImportSkinDialogShown = ref(false)
-const inspect = ref(false)
+
+const onModelChange = (modelType: 'default' | 'slim') => {
+  if (inferModelType.value) {
+    console.log('infer model ' + modelType)
+    slim.value = modelType !== 'default'
+    inferModelType.value = false
+  }
+}
 
 async function loadSkin() {
+  if (!canUploadSkin.value) return
   const { filePaths } = await showOpenDialog({ title: t('userSkin.importFile'), filters: [{ extensions: ['png'], name: 'PNG Images' }] })
   if (filePaths && filePaths[0]) {
     skin.value = `image://${filePaths[0]}`
+    inferModelType.value = true
   }
 }
 async function exportSkin() {
@@ -117,10 +129,12 @@ async function exportSkin() {
   }
 }
 async function dropSkin(e: DragEvent) {
+  if (!canUploadSkin.value) return
   if (e.dataTransfer) {
     const length = e.dataTransfer.files.length
     if (length > 0) {
       skin.value = `image://${e.dataTransfer!.files[0].path}`
+      inferModelType.value = true
     }
   }
 }

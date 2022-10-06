@@ -21,7 +21,7 @@
         v-html="cat.icon"
       />
       <div>
-        {{ $te(`modrinth.categories.${cat.name}`) ? $t(`modrinth.categories.${cat.name}`) : cat.name }}
+        {{ $te(`modrinth.categories.${cat.name}`) ? $t(`modrinth.categories.${cat.name}`) : cat.name.substring(1) }}
       </div>
     </span>
     <span class="list-title">{{ $t('modrinth.modLoaders.name') }}</span>
@@ -40,7 +40,7 @@
         class="w-5 max-w-5 flex justify-center"
         v-html="l.icon"
       />
-      {{ $te(`modrinth.categories.${l.name}`) ? $t(`modrinth.categories.${l.name}`) : l.name }}
+      {{ $te(`modrinth.categories.${l.name}`) ? $t(`modrinth.categories.${l.name}`) : (l.name[0].toUpperCase() + l.name.substring(1)) }}
     </span>
     <span class="list-title">{{ $t('modrinth.environments.name') }}</span>
     <span

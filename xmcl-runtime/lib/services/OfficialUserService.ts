@@ -132,8 +132,8 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
         }
         return user
       },
-      getSkin: system.getSkin,
-      setSkin: system.setSkin,
+      getSkin: system.getSkin.bind(system),
+      setSkin: system.setSkin.bind(system),
     })
   }
 

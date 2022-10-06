@@ -353,6 +353,7 @@ login:
   manualLoginUrl: 如果浏览器没有自动打开，请点击此链接来验证!
   signup: 注册
   signupDescription: 没有账号?
+  userRelogin: 用户信息过期了，请重新登陆！
 loginError:
   acquireMicrosoftTokenFailed: 获取 Microsoft 通证失败。这可能是一个网络问题，请重试。
   badNetworkOrServer: 请检查你的网络连接！当然也可能是验证服务器挂了:/
@@ -460,6 +461,7 @@ modrinth:
     combat: 战斗
     cursed: 怪异
     decoration: 装饰
+    economy: 经济
     equipment: 装备
     fabric: Fabric
     food: 食物
@@ -467,18 +469,24 @@ modrinth:
     kitchen-sink: 杂烩
     library: 程序库
     lightweight: 轻量
+    game-mechanics: 游戏机制
     magic: 魔法
+    management: 管理
+    minigame: 小游戏
     misc: 杂项
-    modloader: ModLoader
     multiplayer: 多人游戏
+    mobs: 怪物
+    modloader: Mod 加载器
     name: 分类
     optimization: 优化
     quests: 任务导向
     quilt: Quilt
     rift: Rift
+    social: 社交
     storage: 存储
     technology: 科技
     utility: 实用工具
+    transportation: 交通
     worldgen: 世界生成
   clientSide: 客户端
   createAt: 创建日期
@@ -777,6 +785,8 @@ user:
   refreshAccount: 刷新账号
   refreshSkin: 刷新皮肤
   submitChallenges: 提交答案
+  tokenExpired: 已过期
+  tokenValidUntil: 有效期至
 userAccount:
   add: 添加账号
   removeDescription: 这将抹去所有关于此账号的信息，您是否确定？
@@ -832,7 +842,7 @@ userSkin:
   importFile: 从文件导入
   importLink: 从链接导入
   placeUrlHere: 填写待导入皮肤URL
-  save: 保存当前皮肤
+  save: 保存
   saveTitle: 保存皮肤到本地
   skinType: 皮肤类型
   upload: 上传

@@ -146,9 +146,9 @@
 <script lang="ts" setup>
 import { Ref } from '@vue/composition-api'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { ModrinthServiceKey, Persisted, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { getServiceSemaphoreKey, ModrinthServiceKey, Persisted, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import Markdown from 'markdown-it'
-import { useI18n, useRefreshable, useService, useServiceBusy } from '/@/composables'
+import { useI18n, useRefreshable, useSemaphores, useService, useServiceBusy } from '/@/composables'
 import { useVuetifyColor } from '/@/composables/vuetify'
 import { getColorForReleaseType } from '/@/util/color'
 import { getLocalDateString } from '/@/util/date'
@@ -174,9 +174,10 @@ const { getColorCode } = useVuetifyColor()
 
 const projectVersions: Ref<ProjectVersion[]> = ref([])
 const { t, tc } = useI18n()
+const { semaphores } = useSemaphores()
 const isDownloading = (ver: ProjectVersion) => {
   const fileUrl = ver.files[0].url
-  return !!state.downloading.find(v => v.url === fileUrl)
+  return semaphores[getServiceSemaphoreKey(ModrinthServiceKey, 'installVersion', ver.id)] > 0 || !!state.downloading.find(v => v.url === fileUrl)
 }
 const gameVersions = computed(() => projectVersions.value.map(v => v.game_versions).reduce((a, b) => [...a, ...b], []))
 const gameVersion = ref('')

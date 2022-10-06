@@ -7,12 +7,12 @@ export interface DispatchInterceptor {
 }
 
 export class DispatchHandler implements Dispatcher.DispatchHandlers {
-  constructor(private handler: Dispatcher.DispatchHandlers) {
+  constructor(protected handler: Dispatcher.DispatchHandlers) {
   }
 
   /** Invoked before request is dispatched on socket. May be invoked multiple times when a request is retried when the request at the head of the pipeline fails. */
-  onConnect(abort: () => void): void {
-    this.handler.onConnect?.(abort)
+  onConnect(abort: () => void, context?: object): void {
+    (this.handler.onConnect)?.(abort, context)
   }
 
   /** Invoked when an error has occurred. */
@@ -26,7 +26,7 @@ export class DispatchHandler implements Dispatcher.DispatchHandlers {
   }
 
   /** Invoked when statusCode and headers have been received. May be invoked multiple times due to 1xx informational headers. */
-  onHeaders(statusCode: number, headers: string[] | null, resume: () => void): boolean {
+  onHeaders(statusCode: number, headers: string[] | null, resume: () => void, statusMessage?: any): boolean {
     return this.handler.onHeaders?.(statusCode, headers, resume) ?? false
   }
 
@@ -41,9 +41,7 @@ export class DispatchHandler implements Dispatcher.DispatchHandlers {
   }
 
   onBodySent(chunkSize: number, totalBytesSent: number) {
-    if (this.handler.onBodySent) {
-      this.handler.onBodySent(chunkSize, totalBytesSent)
-    }
+    this.handler.onBodySent?.(chunkSize, totalBytesSent)
   }
 }
 

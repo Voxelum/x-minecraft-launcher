@@ -76,6 +76,7 @@ export class CurseforgeClient {
 
   async getMods(modIds: number[]) {
     const response = await request('https://api.curseforge.com/v1/mods', {
+      method: 'POST',
       body: JSON.stringify({ modIds }),
       dispatcher: this.dispatcher,
       headers: {
@@ -90,6 +91,7 @@ export class CurseforgeClient {
 
   async getFiles(fileIds: number[]) {
     const response = await request('https://api.curseforge.com/v1/mods/files', {
+      method: 'POST',
       body: JSON.stringify({ fileIds }),
       headers: {
         'content-type': 'application/json',

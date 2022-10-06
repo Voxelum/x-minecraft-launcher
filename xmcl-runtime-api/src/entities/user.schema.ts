@@ -46,7 +46,10 @@ export interface UserProfile {
    */
   authService: string
   /**
-   * The access token of the user
+   * The access token of the user. The token is invalid either in
+   *
+   * - This access token value is set to empty string
+   * - The `expiredAt` is larger than `Date.now()`
    */
   accessToken: string
   /**

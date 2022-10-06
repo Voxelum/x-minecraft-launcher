@@ -23,6 +23,8 @@ export interface LoginOptions {
   properties?: Record<string, string>
 }
 
+export type SkinPayload = Pick<UploadSkinOptions, 'skin' | 'cape'>
+
 export interface UploadSkinOptions {
   /**
    * The game profile id of this skin
@@ -33,13 +35,26 @@ export interface UploadSkinOptions {
    */
   userId?: string
   /**
-   * The skin url. Can be either a http/https url or a file: protocol url.
+   * The player skin data.
+   * - `undefined` means we don't want to change skin
+   * - `null` means we want to reset texture
    */
-  url: string
+  skin?: {
+    /**
+     * The skin url. Can be either a http/https url or a file: protocol url.
+     */
+    url: string
+    /**
+     * If the skin is using slim model.
+     */
+    slim: boolean
+  } | null
   /**
-   * If the skin is using slim model.
+   * The cape url.
+   * - `undefined` means we don't want to set cape texture
+   * - empty string means we want to reset cape texture
    */
-  slim: boolean
+  cape?: string
 }
 
 export interface SaveSkinOptions {
@@ -137,7 +152,16 @@ export class UserState implements UserSchema {
   }
 
   userProfile(user: UserProfile) {
-    this.users[user.id] = user
+    if (this.users[user.id]) {
+      const current = this.users[user.id]
+      current.accessToken = user.accessToken
+      current.avatar = user.avatar
+      current.expiredAt = user.expiredAt
+      current.profiles = user.profiles
+      current.username = user.username
+    } else {
+      this.users[user.id] = user
+    }
   }
 
   userSelect(id: string) {
@@ -154,7 +178,11 @@ export class UserState implements UserSchema {
 
 export interface UserService extends StatefulService<UserState>, GenericEventEmitter<UserServiceEventMap> {
   /**
-   * Refresh the current user login status
+   * Refresh the current user login status.
+   *
+   * This will failed if user need to re-login the user.
+   *
+   * @throw 'userAccessTokenExpired'
    */
   refreshUser(): Promise<void>
   /**
@@ -231,6 +259,8 @@ export type UserExceptions = {
   error: string | 'NOT_FOUND'
   errorMessage: string
   developerMessage: string
+} | {
+  type: 'userAccessTokenExpired'
 }
 
 export class UserException extends Exception<UserExceptions> { }

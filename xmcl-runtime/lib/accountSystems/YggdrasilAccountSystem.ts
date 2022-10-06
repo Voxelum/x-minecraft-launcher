@@ -1,11 +1,12 @@
-import { GameProfileAndTexture, LoginOptions, UserException, UserProfile } from '@xmcl/runtime-api'
+import { GameProfileAndTexture, LoginOptions, SkinPayload, UserException, UserProfile } from '@xmcl/runtime-api'
 import { getTextures } from '@xmcl/user'
 import { UserAccountSystem } from '../services/UserService'
 import { isSystemError } from '../util/error'
 import { Logger } from '../util/log'
 import { toRecord } from '../util/object'
 import { YggdrasilThirdPartyClient } from '../clients/YggdrasilClient'
-import { normalizeGameProfile } from '../entities/user'
+import { normalizeGameProfile, normalizeSkinData } from '../entities/user'
+import { errors } from 'undici'
 
 export class YggdrasilAccountSystem implements UserAccountSystem {
   constructor(private logger: Logger,
@@ -74,6 +75,8 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     } catch (e) {
       this.logger.error(e)
       this.logger.warn(`Invalid current user ${userProfile.id} accessToken!`)
+
+      userProfile.accessToken = ''
     }
 
     return userProfile
@@ -121,27 +124,56 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     return userProfile
   }
 
-  async setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, skin: string | Buffer, slim: boolean): Promise<UserProfile> {
+  async setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, { cape, skin }: SkinPayload): Promise<UserProfile> {
     this.logger.log(`Upload texture ${gameProfile.name}(${gameProfile.id})`)
 
-    await this.client.setTexture({
-      uuid: gameProfile.id,
-      accessToken: userProfile.accessToken,
-      type: 'skin',
-      texture: typeof skin === 'string'
-        ? {
-          metadata: {
-            model: slim ? 'slim' : 'steve',
-          },
-          url: skin,
-        }
-        : {
-          metadata: {
-            model: slim ? 'slim' : 'steve',
-          },
-          data: skin,
-        },
-    })
+    if (typeof cape === 'string' && gameProfile.uploadable?.indexOf('cape') !== -1) {
+      if (cape === '') {
+        await this.client.setTexture({
+          uuid: gameProfile.id,
+          accessToken: userProfile.accessToken,
+          type: 'cape',
+        })
+      } else {
+        const data = await normalizeSkinData(cape)
+        await this.client.setTexture({
+          uuid: gameProfile.id,
+          accessToken: userProfile.accessToken,
+          type: 'cape',
+          texture: typeof data === 'string' ? { url: data } : { data: data },
+        })
+      }
+    }
+
+    if (gameProfile.uploadable?.indexOf('skin') !== -1 && typeof skin === 'object') {
+      if (skin === null) {
+        await this.client.setTexture({
+          uuid: gameProfile.id,
+          accessToken: userProfile.accessToken,
+          type: 'skin',
+        })
+      } else {
+        const data = await normalizeSkinData(skin.url)
+        await this.client.setTexture({
+          uuid: gameProfile.id,
+          accessToken: userProfile.accessToken,
+          type: 'skin',
+          texture: typeof data === 'string'
+            ? {
+              metadata: {
+                model: skin.slim ? 'slim' : 'steve',
+              },
+              url: data,
+            }
+            : {
+              metadata: {
+                model: skin.slim ? 'slim' : 'steve',
+              },
+              data: data,
+            },
+        })
+      }
+    }
 
     return userProfile
   }

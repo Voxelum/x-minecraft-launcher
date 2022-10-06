@@ -1,4 +1,4 @@
-import { getGlobalDispatcher } from 'undici'
+import { Client, getGlobalDispatcher, Pool } from 'undici'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { Inject } from '../util/objectRegistry'
@@ -15,14 +15,26 @@ export class ElyByService extends AbstractService implements IElyByService {
     @Inject(UserService) userService: UserService) {
     super(app, ElyByServiceKey)
 
+    const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
+      if (origin.host === 'authserver.ely.by') {
+        return new Pool(origin, {
+          ...options,
+          keepAliveMaxTimeout: 60_000,
+          connections: 6,
+          pipelining: 1,
+        })
+      }
+    })
+
     const system = new YggdrasilAccountSystem(this,
-      new YggdrasilThirdPartyClient('https://authserver.ely.by/auth',
+      new YggdrasilThirdPartyClient(
       // eslint-disable-next-line no-template-curly-in-string
-        'https://authserver.ely.by/session/profile/${uuid}',
+        'https://authserver.ely.by/api/authlib-injector/sessionserver/session/minecraft/profile/${uuid}',
         // eslint-disable-next-line no-template-curly-in-string
-        'https://authserver.ely.by/session/profile/${uuid}/${type}',
+        'https://authserver.ely.by/api/authlib-injector/api/user/profile/${uuid}/${type}',
+        'https://authserver.ely.by/api/authlib-injector/authserver',
         () => userService.state.clientToken,
-        getGlobalDispatcher()),
+        dispatcher),
     )
     userService.registerAccountSystem('ely.by', system)
   }

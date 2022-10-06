@@ -277,8 +277,17 @@ on('microsoft-authorize-url', (url) => {
 })
 
 function reset() {
-  data.username = history.value[0] ?? ''
-  data.password = ''
+  if (!parameter.value) {
+    data.username = history.value[0] ?? ''
+    data.password = ''
+    usernameErrors.value = []
+    passwordErrors.value = []
+  } else {
+    data.username = parameter.value?.username ?? data.username
+    authService.value = parameter.value?.service ?? authService.value
+    usernameErrors.value = parameter.value.error ? [parameter.value.error] : []
+    passwordErrors.value = parameter.value.error ? [parameter.value.error] : []
+  }
 }
 
 async function onLogin() {

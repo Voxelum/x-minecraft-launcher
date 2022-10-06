@@ -93,6 +93,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
       }
       const result = await this.storage.values().all()
       const mapped = result.map(upgradeDatabaseV2)
+        .filter(v => v.size !== 0 && !v.path.endsWith('.pending'))
       this.log(`Load ${result.length} resources from database.`)
       await Promise.all(mapped.map(async (r) => {
         if (r.metadata.fabric) {

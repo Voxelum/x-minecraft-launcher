@@ -5,16 +5,14 @@ import {
   LoginOptions,
   RefreshSkinOptions,
   SaveSkinOptions,
-  SwitchProfileOptions,
-  UploadSkinOptions, UserProfile, UserSchema, UserService as IUserService, UserServiceKey, UserState,
+  SkinPayload, UploadSkinOptions, UserProfile, UserSchema, UserService as IUserService, UserServiceKey, UserState,
 } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
 import { readJSON } from 'fs-extra'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { LauncherProfile } from '../entities/launchProfile'
-import { normalizeSkinData } from '../entities/user'
-import { requireNonnull, requireObject, requireString } from '../util/object'
+import { requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
 import { fitMinecraftLauncherProfileData } from '../util/userData'
@@ -28,7 +26,7 @@ export interface UserAccountSystem {
    */
   refresh(userProfile: UserProfile): Promise<UserProfile>
   getSkin(userProfile: UserProfile): Promise<UserProfile>
-  setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, skin: string | Buffer, slim: boolean): Promise<UserProfile>
+  setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, payload: SkinPayload): Promise<UserProfile>
 }
 
 @ExposeServiceKey(UserServiceKey)
@@ -145,25 +143,26 @@ export class UserService extends StatefulService<UserState> implements IUserServ
    */
   async uploadSkin(options: UploadSkinOptions) {
     requireObject(options)
-    requireNonnull(options.url)
-    if (typeof options.slim !== 'boolean') options.slim = false
 
     const {
       gameProfileId,
       userId = this.state.selectedUser.id,
-      url,
-      slim,
+      skin,
+      cape,
     } = options
     const user = this.state.users[userId]
     const gameProfile = user.profiles[gameProfileId || user.selectedProfile]
 
     const sys = this.registeredAccountSystem[user.authService]
-    const normalizedUrl = url.replace('image:', 'file:')
-    const dataOrUrl = await normalizeSkinData(normalizedUrl)
+
+    if (skin) {
+      if (typeof skin.slim !== 'boolean') skin.slim = false
+    }
 
     if (sys) {
       this.log(`Upload texture ${gameProfile.name}(${gameProfile.id})`)
-      await sys.setSkin(user, gameProfile, dataOrUrl, slim)
+
+      await sys.setSkin(user, gameProfile, options)
     } else {
       this.warn(`Does not found system named ${user.authService}. Skip to set skin.`)
     }
@@ -254,7 +253,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   }
 
   async getSupportedAccountSystems(): Promise<string[]> {
-    return Object.keys(this.registeredAccountSystem)
+    return Object.keys(this.registeredAccountSystem).sort((a, b) => a === 'microsoft' ? -1 : b === 'microsoft' ? 1 : 0)
   }
 
   getAccountSystem(service: string) {

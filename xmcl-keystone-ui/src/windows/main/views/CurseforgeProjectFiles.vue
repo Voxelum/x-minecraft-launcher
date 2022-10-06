@@ -71,7 +71,6 @@ const props = defineProps<{
 const { show: showAddInstanceDialog } = useDialog(AddInstanceDialogKey)
 const { files, loading, refresh } = useCurseforgeProjectFiles(props.project)
 const { install: installFile, getFileStatus, getFileResource } = useCurseforgeInstall(props.type, props.project)
-const initialTemplate = ref('')
 const { t } = useI18n()
 const releaseMappper = computed(() => [
   { text: t('curseforge.fileReleaseType.release'), value: 1 },

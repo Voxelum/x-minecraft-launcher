@@ -407,6 +407,7 @@ login:
   manualLoginUrl: If the browser doesn't show up, please click this link to auth!
   signup: Sign up
   signupDescription: New to us?
+  userRelogin: User access token is expired. Please re-login!
 loginError:
   acquireMicrosoftTokenFailed: >-
     Fail to acquire Microsoft token. This might be a network issue. Please
@@ -521,15 +522,20 @@ modrinth:
     combat: Combat
     cursed: Cursed
     decoration: Decoration
+    economy: Economy
     equipment: Equipment
     fabric: Fabric
     food: Food
     forge: Forge
+    game-mechanics: Game Mechanics
     kitchen-sink: Kitchen Sink
     library: Library
     lightweight: Lightweight
     magic: Magic
+    management: Management
+    minigame: Mini Games
     misc: Misc
+    mobs: Mobs
     modloader: Mod Loader
     multiplayer: Multiplayer
     name: Categories
@@ -537,8 +543,10 @@ modrinth:
     quests: Quests
     quilt: Quilt
     rift: Rift
+    social: Social
     storage: Storage
     technology: Technology
+    transportation: Transportation
     utility: Utility
     worldgen: World Gen
   clientSide: Client Side
@@ -861,6 +869,8 @@ user:
   refreshAccount: Refresh Account
   refreshSkin: Refresh Skin
   submitChallenges: Submit Answers
+  tokenExpired: Expired
+  tokenValidUntil: Token Valid Until
 userAccount:
   add: Add Account
   removeDescription: This will wipe out all the info of this account. Are you sure?
@@ -922,8 +932,8 @@ userSkin:
   importLocal: Import Local Skin
   loadURL: Load URL Skin
   placeUrlHere: Place Skin URL here to import
-  reset: Reset Skin
-  save: Save Skin
+  reset: Reset
+  save: Save
   saveTitle: Save Skin To Disk
   skinType: Skin Type
   upload: Upload Skin

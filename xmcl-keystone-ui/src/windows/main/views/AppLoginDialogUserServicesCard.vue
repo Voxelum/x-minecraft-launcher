@@ -52,7 +52,7 @@
 </template>
 
 <script lang=ts setup>
-import { UserServiceKey, YggdrasilUserServiceKey } from '@xmcl/runtime-api'
+import { UserServiceKey } from '@xmcl/runtime-api'
 import { useI18n, useRefreshable, useService } from '/@/composables'
 
 interface ServiceItem {
@@ -63,7 +63,6 @@ interface ServiceItem {
 
 const emit = defineEmits(['route'])
 const { state } = useService(UserServiceKey)
-const { getThirdpartyServices, removeThirdpartyService } = useService(YggdrasilUserServiceKey)
 const { t } = useI18n()
 
 const data = reactive({
@@ -76,20 +75,22 @@ const data = reactive({
   newAuthServiceHost: '',
 })
 
+const services = [] as any[]
+
 const { refresh, refreshing } = useRefreshable(async () => {
-  const services = await getThirdpartyServices()
-  return services.map(({ name, authService, profileService }) => ({
-    text: name,
-    value: name,
-    body: {
-      ...authService,
-      ...profileService,
-    },
-  }))
+  // const services = await getThirdpartyServices()
+  // return services.map(({ name, authService, profileService }) => ({
+  //   text: name,
+  //   value: name,
+  //   body: {
+  //     ...authService,
+  //     ...profileService,
+  //   },
+  // }))
 })
 
 function remove(s: ServiceItem) {
-  removeThirdpartyService(s.value)
+  // removeThirdpartyService(s.value)
 }
 
 function newOrEdit(s?: ServiceItem) {

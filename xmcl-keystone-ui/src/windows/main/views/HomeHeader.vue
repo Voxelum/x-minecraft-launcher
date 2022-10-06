@@ -147,7 +147,7 @@
 </template>
 
 <script lang=ts setup>
-import { AssetIndexIssueKey, AssetsIssueKey, BaseServiceKey, InstallProfileIssueKey, InstanceVersionServiceKey, isIssue, LibrariesIssueKey, VersionIssueKey, VersionJarIssueKey, VersionJsonIssueKey, VersionServiceKey } from '@xmcl/runtime-api'
+import { AssetIndexIssueKey, AssetsIssueKey, BaseServiceKey, InstallProfileIssueKey, isIssue, LibrariesIssueKey, VersionIssueKey, VersionJarIssueKey, VersionJsonIssueKey, VersionServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { useInstance, useInstanceVersion } from '../composables/instance'
 import { AppExportDialogKey } from '../composables/instanceExport'
@@ -209,13 +209,13 @@ const { total, progress, name: taskName, pause, resume, status } = useTask((i) =
   if (i.path === 'installVersion' && p?.id === version.value.minecraft) {
     return true
   }
-  if (i.path === 'installVersion.jar' && (p?.id === localVersion.value || p?.id === version.value.minecraft)) {
+  if (i.path === 'installVersion.jar' && (p?.id === localVersion.value.id || p?.id === version.value.minecraft)) {
     return true
   }
-  if (i.path === 'installLibraries' && (p?.id === localVersion.value || p?.id === version.value.minecraft)) {
+  if (i.path === 'installLibraries' && (p?.id === localVersion.value.id || p?.id === version.value.minecraft)) {
     return true
   }
-  if (i.path === 'installAssets' && (p?.id === localVersion.value || p?.id === version.value.minecraft)) {
+  if (i.path === 'installAssets' && (p?.id === localVersion.value.id || p?.id === version.value.minecraft)) {
     return true
   }
   if (i.path === 'installForge' && p?.id === version.value.forge) {
@@ -224,7 +224,7 @@ const { total, progress, name: taskName, pause, resume, status } = useTask((i) =
   if (i.path === 'installOptifine' && p?.id === version.value.optifine) {
     return true
   }
-  if (i.path === 'installByProfile' && p?.id === localVersion.value) {
+  if (i.path === 'installByProfile' && p?.id === localVersion.value.id) {
     return true
   }
   if (i.path === 'installFabric' && p?.id === version.value.minecraft) {

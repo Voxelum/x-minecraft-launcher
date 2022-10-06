@@ -3,6 +3,7 @@
     <div class="w-60">
       <page-skin-view
         class="flex overflow-auto relative justify-center items-center z-5"
+        inspect
         :user="user"
         :profile="gameProfile"
       />
@@ -89,8 +90,8 @@
           </v-card>
         </v-slide-item>
         <v-slide-item
-          v-for="cape of capes"
-          :key="cape.id"
+          v-for="c of capes"
+          :key="c.id"
           v-slot="{ active, toggle }"
         >
           <v-card
@@ -107,10 +108,10 @@
             >
               <player-cape
                 class=" mt-4"
-                :src="cape.url"
+                :src="c.url"
               />
               <div class="text-sm font-bold text-white">
-                {{ cape.alias }}
+                {{ c.alias }}
               </div>
             </v-row>
           </v-card>
@@ -119,10 +120,12 @@
       <v-card-actions>
         <v-spacer />
         <v-btn
+          :disabled="!changed"
+          :loading="saving"
           text
           @click="save"
         >
-          Save
+          {{ t('userSkin.save') }}
           <v-icon right>
             save
           </v-icon>
@@ -133,10 +136,10 @@
 </template>
 <script lang="ts" setup>
 import { NameAvailability, OfficialUserServiceKey, UserProfile } from '@xmcl/runtime-api'
+import PlayerCape from '../components/PlayerCape.vue'
+import { PlayerNameModel, usePlayerName, UserSkinModel, useUserSkin } from '../composables/userSkin'
 import PageSkinView from './UserSkinView.vue'
 import { useI18n, useRefreshable, useService } from '/@/composables'
-import PlayerCape from '../components/PlayerCape.vue'
-import { PlayerCapeModel, PlayerNameModel, usePlayerCape, usePlayerName, UserSkinModel, useUserSkin } from '../composables/userSkin'
 
 const props = defineProps<{
   user: UserProfile
@@ -152,36 +155,40 @@ provide(PlayerNameModel, name)
 const userSkinModel = useUserSkin(computed(() => props.user.id), gameProfile)
 provide(UserSkinModel, userSkinModel)
 
-const { slim } = userSkinModel
-
-const currentCape = usePlayerCape(gameProfile)
-provide(PlayerCapeModel, currentCape)
+const { slim, modified, save: saveSkin, cape } = userSkinModel
 
 const capes = computed(() => gameProfile.value.capes ?? [])
 const capeModel = computed({
   get() {
-    if (currentCape.value) {
-      const index = capes.value.findIndex(v => v.url === currentCape.value)
-      if (index === -1) return 1
+    if (cape.value) {
+      const index = capes.value.findIndex(v => v.url === cape.value)
+      if (index === -1) return 0
       return index + 1
     } else {
       return 0
     }
   },
   set(v) {
-    currentCape.value = capes.value[v - 1]?.url
+    if (v === 0) {
+      cape.value = undefined
+    } else {
+      cape.value = capes.value[v - 1]?.url
+    }
   },
 })
 
-const selectedCape = computed(() => capes.value[capeModel.value])
-const { showCape, hideCape, checkNameAvailability, setName } = useService(OfficialUserServiceKey)
+const currentCape = computed(() => capes.value.find(v => v.state === 'ACTIVE'))
+const { checkNameAvailability, setName } = useService(OfficialUserServiceKey)
 const nameError = ref('')
 
 const changed = computed(() => {
-  if (currentCape.value !== selectedCape.value.url) {
+  if (cape.value !== currentCape.value?.url) {
     return true
   }
   if (name.value !== gameProfile.value.name) {
+    return true
+  }
+  if (modified.value) {
     return true
   }
   return false
@@ -200,12 +207,8 @@ const { refresh: save, refreshing: saving } = useRefreshable(
       }
     }
 
-    if (currentCape.value !== selectedCape.value.url) {
-      if (selectedCape.value) {
-        await showCape(selectedCape.value.id)
-      } else {
-        await hideCape()
-      }
+    if (modified.value) {
+      await saveSkin()
     }
   },
 )

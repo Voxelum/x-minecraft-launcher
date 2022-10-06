@@ -342,7 +342,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
 
     if (options.name) {
-      if (this.state.instances.some(i => i.name === options.name)) {
+      if (this.state.instances.some(i => i.name === options.name && i.path !== instancePath)) {
         throw new InstanceException({
           type: 'instanceNameDuplicated',
           path: instancePath,

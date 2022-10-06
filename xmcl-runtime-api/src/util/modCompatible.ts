@@ -1,6 +1,5 @@
 import { ForgeModMetadata } from '@xmcl/mod-parser'
 import { satisfies } from 'semver'
-import { Instance } from '../entities/instance'
 import { FabricResource, ForgeResource, isFabricResource, isForgeResource, isLiteloaderResource, LiteloaderResource, Resource } from '../entities/resource'
 import { parseVersion, VersionRange } from './mavenVersion'
 
@@ -206,9 +205,12 @@ export function getModCompatibility(resource: Resource, runtime: Record<string, 
       }
     }
     return deps
-  } else if (isFabricResource(resource)) {
+  }
+
+  if (isFabricResource(resource)) {
     return getFabricModCompatibility(resource, runtime)
-  } else if (isLiteloaderResource(resource)) {
+  }
+  if (isLiteloaderResource(resource)) {
     return getLiteloaderModCompatibility(resource, runtime)
   }
   return {}
