@@ -21,16 +21,10 @@
                     "description": "The UUID-hashed key of the currently selected user",
                     "default": "",
                     "type": "string"
-                },
-                "profile": {
-                    "description": "The UUID of the currently selected player",
-                    "default": "",
-                    "type": "string"
                 }
             },
             "required": [
-                "id",
-                "profile"
+                "id"
             ]
         },
         "clientToken": {
@@ -61,11 +55,7 @@
                     "type": "string"
                 },
                 "accessToken": {
-                    "description": "The access token of the user",
-                    "type": "string"
-                },
-                "msAccessToken": {
-                    "description": "The microsoft access token",
+                    "description": "The access token of the user. The token is invalid either in\n\n- This access token value is set to empty string\n- The `expiredAt` is larger than `Date.now()`",
                     "type": "string"
                 },
                 "expiredAt": {
