@@ -1,10 +1,6 @@
 {
     "type": "object",
     "properties": {
-        "timestamp": {
-            "default": "",
-            "type": "string"
-        },
         "latest": {
             "default": {
                 "snapshot": "",
@@ -39,7 +35,6 @@
     },
     "required": [
         "latest",
-        "timestamp",
         "versions"
     ],
     "definitions": {

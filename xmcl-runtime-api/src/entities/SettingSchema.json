@@ -74,7 +74,7 @@
         },
         "maxSockets": {
             "description": "Maximum number of sockets to allow per host. Default for Node 0.10 is 5, default for Node 0.12 is Infinity",
-            "default": 256,
+            "default": 128,
             "type": "number"
         },
         "maxTotalSockets": {

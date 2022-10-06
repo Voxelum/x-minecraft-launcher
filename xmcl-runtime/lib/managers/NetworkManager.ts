@@ -70,7 +70,13 @@ export default class NetworkManager extends Manager {
             const dispatcher = new Pool(origin, opts)
             const keys = Reflect.ownKeys(dispatcher)
             const sym = keys.find(k => typeof k === 'symbol' && k.description === 'connections')
-            if (sym) { Object.defineProperty(dispatcher, sym, { get: () => maxConnection }) }
+            if (sym) {
+              Object.defineProperty(dispatcher, sym, {
+                get: () => {
+                  return maxConnection
+                },
+              })
+            }
             return dispatcher
           },
         })
