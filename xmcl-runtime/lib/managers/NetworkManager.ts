@@ -1,7 +1,7 @@
 import { createInMemoryCheckpointHandler, DefaultSegmentPolicy, DownloadAgent, DownloadBaseOptions, resolveAgent } from '@xmcl/installer'
 import { ClassicLevel } from 'classic-level'
 import { join } from 'path'
-import { Agent, Client, Dispatcher, Pool, setGlobalDispatcher, DiagnosticsChannel } from 'undici'
+import { Agent, Client, Dispatcher, Pool, setGlobalDispatcher, DiagnosticsChannel, BalancedPool } from 'undici'
 import { channel } from 'diagnostics_channel'
 import { DispatchOptions } from 'undici/types/agent'
 import { URL } from 'url'

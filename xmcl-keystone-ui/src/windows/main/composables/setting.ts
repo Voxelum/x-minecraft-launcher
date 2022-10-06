@@ -60,7 +60,7 @@ export function useSettings() {
     set: v => state.apiSetsPreferenceSet(v),
   })
   const maxSockets = ref(state.maxSockets)
-  const maxTotalSockets = ref(state.maxTotalSockets)
+  const maxAPISockets = ref(state.maxAPISockets)
   const proxy = ref(getProxy())
   const httpProxyEnabled = computed({
     get: () => state.httpProxyEnabled,
@@ -89,8 +89,8 @@ export function useSettings() {
     if (state.maxSockets !== maxSockets.value) {
       state.maxSocketsSet(Number(maxSockets.value))
     }
-    if (state.maxTotalSockets !== maxTotalSockets.value) {
-      state.maxTotalSocketsSet(Number(maxTotalSockets.value))
+    if (state.maxAPISockets !== maxAPISockets.value) {
+      state.maxAPISocketsSet(Number(maxAPISockets.value))
     }
   })
 
@@ -98,7 +98,7 @@ export function useSettings() {
     root,
     httpProxyEnabled,
     maxSockets,
-    maxTotalSockets,
+    maxAPISockets,
     locales,
     proxy,
     selectedLocale,

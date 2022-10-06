@@ -9,7 +9,7 @@
     <template #badge>
       <span>{{ launchCount }}</span>
     </template>
-    <v-menu offset-y>
+    <v-menu v-model="showProblems" offset-y>
       <template #activator="{ on, attrs }">
         <v-btn
           :color="color"
@@ -19,7 +19,7 @@
           :loading="loading"
           @mouseenter="on.click"
           @mouseleave="on.click"
-          @click="onClick(); on.click($event)"
+          @click="onClick()"
         >
           <template v-if="!!issue">
             <template
@@ -89,6 +89,7 @@ const { t } = useI18n()
 const { state } = useService(UserServiceKey)
 const { issues, fix } = useIssues()
 const { checkInstanceInstall, installInstanceFiles } = useService(InstanceInstallServiceKey)
+const showProblems = ref(false)
 
 const pendingInstallFiles: Ref<InstanceFile[]> = ref([])
 
@@ -116,6 +117,9 @@ function onClick() {
     } else if (props.status === TaskState.Paused) {
       emit('resume')
     } else {
+      if (showProblems.value) {
+        showProblems.value = false
+      }
       if (props.issue) {
         // has issue
         fix(props.issue, issues.value)
@@ -132,7 +136,7 @@ function onClick() {
     showJavaDialog()
   } else if (!state.users[state.selectedUser.id]) {
     // need to login
-    showLoginDialog(true)
+    showLoginDialog()
   } else if (launchStatus.value === 'checkingProblems' || launchStatus.value === 'launching') {
     // during launching
     showLaunchStatusDialog()
