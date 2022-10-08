@@ -72,6 +72,8 @@ export interface Host {
 
   getLocale(): string
 
+  getLocaleCountryCode(): string
+
   /**
    * Quit the app gently.
    */

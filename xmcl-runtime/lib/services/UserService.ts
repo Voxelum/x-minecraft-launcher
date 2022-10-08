@@ -5,7 +5,13 @@ import {
   LoginOptions,
   RefreshSkinOptions,
   SaveSkinOptions,
-  SkinPayload, UploadSkinOptions, UserProfile, UserSchema, UserService as IUserService, UserServiceKey, UserState,
+  SkinPayload,
+  UploadSkinOptions,
+  UserProfile,
+  UserSchema,
+  UserService as IUserService,
+  UserServiceKey,
+  UserState,
 } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
 import { readJSON } from 'fs-extra'

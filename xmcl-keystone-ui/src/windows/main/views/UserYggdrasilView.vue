@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-2 items-center justify-center">
+  <div class="flex gap-2 items-center justify-center flex-wrap max-w-full">
     <div
       v-for="profile of user.profiles"
       :key="profile.id"
