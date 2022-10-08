@@ -23,10 +23,10 @@
         v-else-if="selectedUser && selectedUser.authService === 'mojang'"
         :user="selectedUser"
       />
-      <user-offline-view
+      <!-- <user-offline-view
         v-else-if="selectedUser && selectedUser.authService === 'offline'"
         :user="selectedUser"
-      />
+      /> -->
       <user-yggdrasil-view
         v-else
         :user="selectedUser"

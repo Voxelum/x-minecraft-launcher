@@ -237,6 +237,8 @@ export abstract class LauncherApp extends EventEmitter {
 
   getLocale(): string { return this.host.getLocale() }
 
+  getLocaleCountryCode(): string { return this.host.getLocaleCountryCode() }
+
   /**
    * Handle the url activate the app
    * @param url The url input
