@@ -94,9 +94,15 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
     const dependencies = proj.project_type !== 'modpack'
       ? await Promise.all(version.dependencies.map(async (dep) => {
         if (dep.dependency_type === 'required') {
-          const depVersion = await this.getProjectVersion(dep.version_id)
-          const result = await this.installVersion({ version: depVersion })
-          return result
+          if (dep.version_id) {
+            const depVersion = await this.getProjectVersion(dep.version_id)
+            const result = await this.installVersion({ version: depVersion, instancePath })
+            return result
+          } else {
+            const versions = await this.client.getProjectVersions(dep.project_id, version.loaders, version.game_versions, undefined)
+            const result = await this.installVersion({ version: versions[0], instancePath })
+            return result
+          }
         }
         return undefined
       }))

@@ -14,11 +14,11 @@
       <home-shader-pack-card />
       <home-saves-card />
       <server-status-bar v-if="isServer" />
-      <HomeModrinthCard
+      <!-- <HomeModrinthCard
         v-if="instance.upstream && instance.upstream.type === 'modrinth-modpack'"
         :path="instance.path"
         :upstream="instance.upstream"
-      />
+      /> -->
     </span>
 
     <div class="flex absolute left-0 bottom-0 px-8 pb-[20px] gap-6">

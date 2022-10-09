@@ -7,6 +7,7 @@
     >
       <span
         class="display-2 rounded-lg py-4 text-shadow text-shadow-lg"
+        :class="{ 'display-1': name && name.length > 30 }"
       >{{ name || `Minecraft ${version.minecraft}` }}</span>
 
       <div class="flex-grow" />

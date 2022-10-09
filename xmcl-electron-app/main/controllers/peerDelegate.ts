@@ -14,7 +14,7 @@ export const peerPlugin: ControllerPlugin = function (this: Controller) {
     ipcMain.handle('get-user-info', () => {
       const user = this.app.serviceManager.get(UserService).state.user
       const profile = user?.profiles[user.selectedProfile]
-      return { name: profile?.name ?? 'Player', avatar: profile?.textures.SKIN.url ?? '' }
+      return { name: profile?.name ?? 'Player', avatar: profile?.textures.SKIN.url ?? '', ...profile }
     })
 
     let browser: BrowserWindow | undefined

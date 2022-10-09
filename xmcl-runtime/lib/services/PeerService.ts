@@ -93,6 +93,10 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           initiator: true,
           userInfo: {
             name: '',
+            id: '',
+            textures: {
+              SKIN: { url: '' },
+            },
             avatar: '',
           },
           ping: -1,

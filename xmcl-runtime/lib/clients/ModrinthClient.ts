@@ -32,10 +32,19 @@ export class ModrinthClient {
     return project
   }
 
-  async getProjectVersions(projectId: string): Promise<ProjectVersion[]> {
+  async getProjectVersions(projectId: string, loaders?: string[], gameVersions?: string[], featured?: boolean): Promise<ProjectVersion[]> {
+    const query: Record<string, any> = {}
+    if (loaders) query.loaders = JSON.stringify(loaders)
+    if (gameVersions) query.game_versions = JSON.stringify(gameVersions)
+    if (featured !== undefined) query.featured = featured
     const response = await request(`https://api.modrinth.com/v2/project/${projectId}/version`, {
+      query,
       dispatcher: this.dispatcher,
     })
+    if (response.statusCode !== 200) {
+      const text = await response.body.text()
+      throw new Error(text)
+    }
     const versions: ProjectVersion[] = await response.body.json()
     return versions
   }

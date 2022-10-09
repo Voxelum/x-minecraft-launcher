@@ -140,9 +140,10 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       this.log(`Upload texture ${gameProfile.name}(${gameProfile.id})`)
 
       this.setSkinController = new AbortController()
-      await sys.setSkin(user, gameProfile, options, this.setSkinController.signal).finally(() => {
+      const data = await sys.setSkin(user, gameProfile, options, this.setSkinController.signal).finally(() => {
         this.setSkinController = undefined
       })
+      this.state.userProfile(data)
     } else {
       this.warn(`Does not found system named ${user.authService}. Skip to set skin.`)
     }

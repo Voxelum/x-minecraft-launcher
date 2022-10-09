@@ -308,6 +308,10 @@ export class CacheDispatcher extends Dispatcher {
       )
     }
 
+    if (opts.cacheStrategy === 'network-only') {
+      return this.dispatcher.dispatch(opts, handler)
+    }
+
     this.cache.get(opts).then((cachedRequest) => {
       if (!cachedRequest) {
         dispatch()

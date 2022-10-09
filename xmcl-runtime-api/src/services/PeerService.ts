@@ -1,6 +1,7 @@
 import { GenericEventEmitter } from '../events'
 import { InstanceManifestSchema, InstanceManifest } from '../entities/instanceManifest.schema'
 import { ServiceKey, StatefulService } from './Service'
+import { GameProfileAndTexture } from '../entities/user.schema'
 
 export interface RTCSessionDescription {
   sdp?: string
@@ -11,7 +12,7 @@ export type ConnectionState = 'closed' | 'connected' | 'connecting' | 'disconnec
 export type IceGatheringState = 'complete' | 'gathering' | 'new'
 export type SignalingState = 'closed' | 'have-local-offer' | 'have-local-pranswer' | 'have-remote-offer' | 'have-remote-pranswer' | 'stable'
 
-export interface ConnectionUserInfo {
+export interface ConnectionUserInfo extends GameProfileAndTexture {
   /**
    * The readable text
    */
@@ -99,11 +100,11 @@ export class PeerState {
 
 export interface ShareInstanceOptions {
   instancePath: string
-  manifest?: InstanceManifest<'sha1'>
+  manifest?: InstanceManifest
 }
 
 interface PeerServiceEvents {
-  share: { id: string; manifest?: InstanceManifest<'sha1'> }
+  share: { id: string; manifest?: InstanceManifest }
 }
 
 export interface PeerService extends StatefulService<PeerState>, GenericEventEmitter<PeerServiceEvents> {

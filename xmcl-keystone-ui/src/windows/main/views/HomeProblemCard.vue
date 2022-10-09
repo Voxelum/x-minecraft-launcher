@@ -1,5 +1,9 @@
 <template>
-  <v-card v-show="items.length > 0">
+  <div
+    v-show="items.length > 0"
+    @mouseenter="$emit('mouseenter', $event)"
+    @mouseleave="$emit('mouseleave', $event)"
+  >
     <!-- <v-card-title>
       <v-icon
         left
@@ -18,6 +22,11 @@
           ripple
           @click="fix(item, issues)"
         >
+          <v-list-item-avatar>
+            <v-icon color="warning darken-1">
+              info
+            </v-icon>
+          </v-list-item-avatar>
           <v-list-item-content>
             <v-list-item-title>
               {{ item.title }}
@@ -33,7 +42,7 @@
       </template>
     </v-list>
     <!-- </v-card-text> -->
-  </v-card>
+  </div>
 </template>
 <script lang="ts" setup>
 import { useProblemItems } from '../composables/problems'

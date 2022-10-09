@@ -67,7 +67,7 @@ onMounted(() => {
     viewer.animation = v
   })
 
-  lastLoad = viewer.loadSkin(props.skin || steveSkin, { model: typeof props.slim === 'undefined' ? 'auto-detect' : props.slim ? 'slim' : 'default' }).then(() => {
+  lastLoad = viewer.loadSkin(props.skin || steveSkin, { model: typeof props.slim === 'undefined' ? 'auto-detect' : props.slim ? 'slim' : 'default' }).finally(() => {
     emit('model', viewer.playerObject.skin.modelType)
   })
   if (props.cape) {
@@ -75,8 +75,8 @@ onMounted(() => {
   }
 
   watch(() => props.skin, (v) => {
-    lastLoad = lastLoad.then(() => {
-      return viewer.loadSkin(v || steveSkin, { model: typeof props.slim === 'undefined' ? 'auto-detect' : props.slim ? 'slim' : 'default' }).then(() => {
+    lastLoad = lastLoad.finally(() => {
+      return viewer.loadSkin(v || steveSkin, { model: typeof props.slim === 'undefined' ? 'auto-detect' : props.slim ? 'slim' : 'default' }).finally(() => {
         emit('model', viewer.playerObject.skin.modelType)
       })
     })
@@ -84,14 +84,14 @@ onMounted(() => {
 
   watch(() => props.cape, (v) => {
     if (v) {
-      lastCapeLoad = lastCapeLoad.then(() => viewer.loadCape(v))
+      lastCapeLoad = lastCapeLoad.finally(() => viewer.loadCape(v))
     } else {
       viewer.resetCape()
     }
   })
 
   watch(() => props.slim, (v) => {
-    viewer.loadSkin(props.skin || steveSkin, { model: typeof v === 'undefined' ? 'auto-detect' : v ? 'slim' : 'default' }).then(() => {
+    viewer.loadSkin(props.skin || steveSkin, { model: typeof v === 'undefined' ? 'auto-detect' : v ? 'slim' : 'default' }).finally(() => {
       emit('model', viewer.playerObject.skin.modelType)
     })
   })

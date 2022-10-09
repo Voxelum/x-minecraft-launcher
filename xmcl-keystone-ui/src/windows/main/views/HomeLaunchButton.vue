@@ -9,7 +9,10 @@
     <template #badge>
       <span>{{ launchCount }}</span>
     </template>
-    <v-menu v-model="showProblems" offset-y>
+    <v-menu
+      v-model="showProblems"
+      offset-y
+    >
       <template #activator="{ on, attrs }">
         <v-btn
           :color="color"
@@ -17,8 +20,8 @@
           v-bind="attrs"
           class="!px-12 !py-6 text-lg"
           :loading="loading"
-          @mouseenter="on.click"
-          @mouseleave="on.click"
+          @mouseenter="onMouseEnter"
+          @mouseleave="onMouseLeave"
           @click="onClick()"
         >
           <template v-if="!!issue">
@@ -59,7 +62,10 @@
           </template>
         </v-btn>
       </template>
-      <HomeProblemCard />
+      <HomeProblemCard
+        @mouseenter="onMouseEnter"
+        @mouseleave="onMouseLeave"
+      />
     </v-menu>
   </v-badge>
 </template>
@@ -104,6 +110,20 @@ const { refresh: refreshInstanceInstall } = useRefreshable(async () => {
   const files = await checkInstanceInstall()
   pendingInstallFiles.value = files
 })
+
+let handle: any
+
+function onMouseEnter() {
+  if (handle) clearTimeout(handle)
+  showProblems.value = true
+}
+
+function onMouseLeave() {
+  if (handle) clearTimeout(handle)
+  handle = setTimeout(() => {
+    showProblems.value = false
+  }, 100)
+}
 
 onMounted(() => {
   refreshInstanceInstall()

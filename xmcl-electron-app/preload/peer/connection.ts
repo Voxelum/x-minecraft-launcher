@@ -1,4 +1,4 @@
-import { RTCSessionDescription } from '@xmcl/runtime-api'
+import { ConnectionUserInfo, RTCSessionDescription } from '@xmcl/runtime-api'
 import { createHash } from 'crypto'
 import { ipcRenderer } from 'electron'
 import { createWriteStream } from 'fs'
@@ -98,9 +98,9 @@ export class PeerSession {
     console.log(`Update local description: ${d?.sdp}`)
   }
 
-  setRemoteIdentity(remoteId: string, name: string, avatar: string) {
-    console.log(`Set remote identity: ${remoteId}, ${name}`)
-    ipcRenderer.send('identity', { id: this.id, info: { name, avatar } })
+  setRemoteIdentity(remoteId: string, info: ConnectionUserInfo) {
+    console.log(`Set remote identity: ${remoteId}, ${info.name}`)
+    ipcRenderer.send('identity', { id: this.id, info: info })
     this.remoteId = remoteId
   }
 
@@ -226,7 +226,7 @@ export class PeerSession {
     })
     channel.addEventListener('open', () => {
       ipcRenderer.invoke('get-user-info').then((info) => {
-        this.send(MessageIdentity, { remoteId: this.host.id, name: info.name, avatar: info.avatar })
+        this.send(MessageIdentity, { remoteId: this.host.id, ...info })
       })
       if (!this.remoteId) {
         console.error(`Illegal State! remote is is not set when channel is opened! ${this.id}`)
