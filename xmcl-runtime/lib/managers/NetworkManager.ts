@@ -1,20 +1,21 @@
 import { createInMemoryCheckpointHandler, DefaultSegmentPolicy, DownloadAgent, DownloadBaseOptions, resolveAgent } from '@xmcl/installer'
 import { ClassicLevel } from 'classic-level'
-import { join } from 'path'
-import { Agent, Client, Dispatcher, Pool, setGlobalDispatcher, DiagnosticsChannel, BalancedPool } from 'undici'
 import { channel } from 'diagnostics_channel'
+import { join } from 'path'
+import { Agent, Client, DiagnosticsChannel, Dispatcher, Pool, setGlobalDispatcher } from 'undici'
 import { DispatchOptions } from 'undici/types/agent'
 import { URL } from 'url'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
+import { IS_DEV } from '../constant'
 import { InteroperableDispatcher, ProxyDispatcher } from '../dispatchers'
 import { BiDispatcher, kUseDownload } from '../dispatchers/biDispatcher'
 import { CacheDispatcher, JsonCacheStorage } from '../dispatchers/cacheDispatcher'
+import { buildHeaders } from '../dispatchers/utils'
 import { BaseService } from '../services/BaseService'
+import { createPromiseSignal } from '../util/promiseSignal'
 import ServiceManager from './ServiceManager'
 import ServiceStateManager from './ServiceStateManager'
-import { buildHeaders } from '../dispatchers/utils'
-import { IS_DEV } from '../constant'
 
 export default class NetworkManager extends Manager {
   private inGFW = false
@@ -238,18 +239,23 @@ export default class NetworkManager extends Manager {
       taobao.request({
         method: 'HEAD',
         path: '/',
+        connectTimeout: 5000,
         headersTimeout: 5000,
       }).then(() => true, () => false),
       google.request({
         method: 'HEAD',
         path: '/',
+        connectTimeout: 5000,
         headersTimeout: 5000,
       }).then(() => false, () => true),
     ])
+    this.gfwReady.resolve()
     this.logger.log(this.inGFW ? 'Detected current in China mainland.' : 'Detected current NOT in China mainland.')
     taobao.close()
     google.close()
   }
+
+  readonly gfwReady = createPromiseSignal()
 
   /**
    * Return if current environment is in GFW.
