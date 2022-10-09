@@ -15,12 +15,12 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     private oauthClient: MicrosoftOAuthClient,
   ) { }
 
-  async login(options: LoginOptions): Promise<UserProfile> {
+  async login(options: LoginOptions, signal: AbortSignal): Promise<UserProfile> {
     const properties = options.properties || {}
     const useDeviceCode = properties.mode === 'device'
     const directToLauncher = properties.mode === 'fast'
     const code = properties.code || ''
-    const authentication = await this.loginMicrosoft(options.username, code, useDeviceCode, directToLauncher)
+    const authentication = await this.loginMicrosoft(options.username, code, useDeviceCode, directToLauncher, signal)
 
     return {
       id: authentication.userId,
@@ -34,13 +34,13 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     }
   }
 
-  async refresh(user: UserProfile): Promise<UserProfile> {
+  async refresh(user: UserProfile, signal: AbortSignal): Promise<UserProfile> {
     const diff = Date.now() - user.expiredAt
     if (!user.expiredAt || user.expiredAt < Date.now() || (diff / 1000 / 3600 / 24) > 14) {
       // expired
       this.logger.log('Microsoft accessToken expired. Refresh a new one.')
       try {
-        const { accessToken, expiredAt, gameProfiles, selectedProfile } = await this.loginMicrosoft(user.username, undefined, false, true)
+        const { accessToken, expiredAt, gameProfiles, selectedProfile } = await this.loginMicrosoft(user.username, undefined, false, true, signal)
 
         user.accessToken = accessToken
         user.expiredAt = expiredAt
@@ -56,34 +56,14 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     return user
   }
 
-  async getSkin(userProfile: UserProfile): Promise<UserProfile> {
-    const profile = await this.mojangClient.getProfile(userProfile.accessToken)
-
-    userProfile.profiles[profile.id] = {
-      ...profile,
-      textures: {
-        SKIN: {
-          url: profile.skins[0].url,
-          metadata: { model: profile.skins[0].variant === 'CLASSIC' ? 'steve' : 'slim' },
-        },
-        CAPE: profile.capes.length > 0
-          ? {
-            url: profile.capes[0].url,
-          }
-          : undefined,
-      },
-    }
-    return userProfile
-  }
-
-  async setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, options: SkinPayload): Promise<UserProfile> {
+  async setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, options: SkinPayload, signal: AbortSignal): Promise<UserProfile> {
     if (typeof options.cape !== 'undefined') {
       if (options.cape === '') {
-        await this.mojangClient.hideCape(userProfile.accessToken)
+        await this.mojangClient.hideCape(userProfile.accessToken, signal)
       } else {
         const target = gameProfile.capes?.find(c => c.url === options.cape)
         if (target) {
-          await this.mojangClient.showCape(target.id, userProfile.accessToken)
+          await this.mojangClient.showCape(target.id, userProfile.accessToken, signal)
         } else {
           throw new Error(`Cannot upload new cape for Microsoft account: ${gameProfile.name}(${userProfile.username})`)
         }
@@ -91,13 +71,14 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     }
     if (typeof options.skin === 'object') {
       if (options.skin === null) {
-        await this.mojangClient.resetSkin(userProfile.accessToken)
+        await this.mojangClient.resetSkin(userProfile.accessToken, signal)
       } else {
         const profile = await this.mojangClient.setSkin(
           `${gameProfile.name}.png`,
           await normalizeSkinData(options.skin?.url),
           options.skin?.slim ? 'slim' : 'classic',
           userProfile.accessToken,
+          signal,
         )
         // @ts-ignore
         userProfile.profiles[gameProfile.id] = {
@@ -121,12 +102,13 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     return userProfile
   }
 
-  protected async loginMicrosoft(microsoftEmailAddress: string, oauthCode: string | undefined, useDeviceCode: boolean, directRedirectToLauncher: boolean) {
+  protected async loginMicrosoft(microsoftEmailAddress: string, oauthCode: string | undefined, useDeviceCode: boolean, directRedirectToLauncher: boolean, signal: AbortSignal) {
     const { result, extra } = await this.oauthClient.authenticate(microsoftEmailAddress, ['XboxLive.signin', 'XboxLive.offline_access'], {
       code: oauthCode,
       extraScopes: ['email', 'openid', 'offline_access'],
       useDeviceCode,
       directRedirectToLauncher,
+      signal,
     }).catch((e) => {
       this.logger.error(e)
       throw new UserException({ type: 'userAcquireMicrosoftTokenFailed', error: e.toString() })
@@ -134,19 +116,19 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
 
     this.logger.log('Successfully get Microsoft access token')
     const oauthAccessToken = result!.accessToken
-    const { xstsResponse, xboxGameProfile } = await this.authenticator.acquireXBoxToken(oauthAccessToken).catch((e) => {
+    const { xstsResponse, xboxGameProfile } = await this.authenticator.acquireXBoxToken(oauthAccessToken, signal).catch((e) => {
       this.logger.error(e)
       throw new UserException({ type: 'userExchangeXboxTokenFailed', error: e.toString() })
     })
     this.logger.log('Successfully login Xbox')
 
-    const mcResponse = await this.authenticator.loginMinecraftWithXBox(xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token).catch((e) => {
+    const mcResponse = await this.authenticator.loginMinecraftWithXBox(xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token, signal).catch((e) => {
       this.logger.error(e)
       throw new UserException({ type: 'userLoginMinecraftByXboxFailed', error: e.toString() })
     })
     this.logger.log('Successfully login Minecraft with Xbox')
 
-    const ownershipResponse = await this.mojangClient.checkGameOwnership(mcResponse.access_token).catch((e) => {
+    const ownershipResponse = await this.mojangClient.checkGameOwnership(mcResponse.access_token, signal).catch((e) => {
       this.logger.error(e)
       throw new UserException({ type: 'userCheckGameOwnershipFailed', error: e.toString() })
     })
@@ -154,7 +136,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     this.logger.log(`Successfully check ownership: ${ownGame}`)
 
     if (ownGame) {
-      const gameProfileResponse = await this.mojangClient.getProfile(mcResponse.access_token)
+      const gameProfileResponse = await this.mojangClient.getProfile(mcResponse.access_token, signal)
       this.logger.log('Successfully get game profile')
       const gameProfiles: GameProfileAndTexture[] = [{
         ...gameProfileResponse,

@@ -25,7 +25,7 @@ export class YggdrasilClient {
     return typeof this.clientToken === 'string' ? this.clientToken : this.clientToken()
   }
 
-  async validate(accessToken: string) {
+  async validate(accessToken: string, signal?: AbortSignal) {
     const clientToken = this.getClientToken()
     return await request(this.api + '/validate', {
       method: 'POST',
@@ -37,10 +37,11 @@ export class YggdrasilClient {
       bodyTimeout: 10_000,
       throwOnError: true,
       dispatcher: this.dispatcher,
+      signal,
     }).then(() => true, () => false)
   }
 
-  async invalidate(accessToken: string) {
+  async invalidate(accessToken: string, signal?: AbortSignal) {
     const clientToken = this.getClientToken()
     return await request(this.api + '/invalidate', {
       method: 'POST',
@@ -50,10 +51,11 @@ export class YggdrasilClient {
       },
       throwOnError: true,
       dispatcher: this.dispatcher,
+      signal,
     }).then(() => true, () => false)
   }
 
-  async login({ username, password, requestUser }: { username: string; password: string; requestUser?: boolean }) {
+  async login({ username, password, requestUser }: { username: string; password: string; requestUser?: boolean }, signal?: AbortSignal) {
     const clientToken = this.getClientToken()
     const response = await request(this.api + '/authenticate', {
       method: 'POST',
@@ -69,6 +71,7 @@ export class YggdrasilClient {
       },
       throwOnError: false,
       dispatcher: this.dispatcher,
+      signal,
     })
 
     if (response.statusCode >= 400) {
@@ -79,7 +82,7 @@ export class YggdrasilClient {
     return authentication
   }
 
-  async refresh({ accessToken, requestUser }: { accessToken: string; requestUser?: boolean }) {
+  async refresh({ accessToken, requestUser }: { accessToken: string; requestUser?: boolean }, signal?: AbortSignal) {
     const clientToken = this.getClientToken()
     const response = await request(this.api + '/refresh', {
       method: 'POST',
@@ -93,6 +96,7 @@ export class YggdrasilClient {
       },
       throwOnError: true,
       dispatcher: this.dispatcher,
+      signal,
     })
 
     const authentication: Authentication = await response.body.json()
@@ -111,12 +115,13 @@ export class YggdrasilThirdPartyClient extends YggdrasilClient {
     super(api, clientToken, dispatcher)
   }
 
-  async lookup(uuid: string, unsigned = true) {
+  async lookup(uuid: string, unsigned = true, signal?: AbortSignal) {
     // eslint-disable-next-line no-template-curly-in-string
     const response = await request(this.profileApi.replace('${uuid}', uuid), {
       method: 'GET',
       query: { unsigned },
       dispatcher: this.dispatcher,
+      signal,
     })
     if (response.statusCode !== 200) {
       throw new YggdrasilError(await response.body.json())
@@ -137,7 +142,7 @@ export class YggdrasilThirdPartyClient extends YggdrasilClient {
     return o as GameProfileWithProperties
   }
 
-  async setTexture(options: SetTextureOption) {
+  async setTexture(options: SetTextureOption, signal?: AbortSignal) {
     type RequestOptions = Parameters<typeof request>[1]
     const requestOptions: RequestOptions = {
       headers: {
@@ -145,6 +150,7 @@ export class YggdrasilThirdPartyClient extends YggdrasilClient {
       },
       dispatcher: this.dispatcher,
       headersTimeout: 5_000,
+      signal,
     }
     if (!options.texture) {
       // delete texture

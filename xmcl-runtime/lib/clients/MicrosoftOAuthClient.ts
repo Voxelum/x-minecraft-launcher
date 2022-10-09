@@ -15,7 +15,7 @@ export class MicrosoftOAuthClient {
   ) {
   }
 
-  protected async getOAuthApp(account: string) {
+  protected async getOAuthApp(account: string, signal?: AbortSignal) {
     const dispatcher = this.dispatcher
     return new PublicClientApplication({
       auth: {
@@ -40,6 +40,7 @@ export class MicrosoftOAuthClient {
               body: options?.body,
               bodyTimeout: token,
               headersTimeout: token,
+              signal,
               dispatcher: dispatcher,
             })
 
@@ -62,6 +63,7 @@ export class MicrosoftOAuthClient {
               headers: options?.headers,
               body: options?.body,
               dispatcher: dispatcher,
+              signal,
             })
 
             const body = await response.body.json()
@@ -89,7 +91,7 @@ export class MicrosoftOAuthClient {
     extraScopes?: string[]
     directRedirectToLauncher?: boolean
   } = {}) {
-    const app = await this.getOAuthApp(username)
+    const app = await this.getOAuthApp(username, options.signal)
     if (username && !options?.code) {
       const accounts = await app.getTokenCache().getAllAccounts().catch(() => [])
       const account = accounts.find(a => a.username === username)

@@ -6,7 +6,6 @@ import { Logger } from '../util/log'
 import { toRecord } from '../util/object'
 import { YggdrasilThirdPartyClient } from '../clients/YggdrasilClient'
 import { normalizeGameProfile, normalizeSkinData } from '../entities/user'
-import { errors } from 'undici'
 
 export class YggdrasilAccountSystem implements UserAccountSystem {
   constructor(private logger: Logger,
@@ -14,13 +13,13 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
   ) {
   }
 
-  async login({ username, password, service }: LoginOptions): Promise<UserProfile> {
+  async login({ username, password, service }: LoginOptions, signal?: AbortSignal): Promise<UserProfile> {
     try {
       const auth = await this.client.login({
         username,
         password: password ?? '',
         requestUser: true,
-      })
+      }, signal)
       const userProfile: UserProfile = {
         id: auth.user!.id,
         accessToken: auth.accessToken,
@@ -54,77 +53,54 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     }
   }
 
-  async refresh(userProfile: UserProfile): Promise<UserProfile> {
-    const valid = await this.client.validate(userProfile.accessToken)
+  async refresh(userProfile: UserProfile, signal?: AbortSignal): Promise<UserProfile> {
+    const valid = await this.client.validate(userProfile.accessToken, signal)
 
     this.logger.log(`Validate ${userProfile.authService} user access token: ${valid ? 'valid' : 'invalid'}`)
 
-    if (valid) {
-      return userProfile
+    if (!valid) {
+      try {
+        const result = await this.client.refresh({
+          accessToken: userProfile.accessToken,
+          requestUser: true,
+        }, signal)
+        this.logger.log(`Refreshed user access token for user: ${userProfile.id}`)
+
+        userProfile.accessToken = result.accessToken
+        userProfile.expiredAt = Date.now() + 86400_000
+      } catch (e) {
+        this.logger.error(e)
+        this.logger.warn(`Invalid current user ${userProfile.id} accessToken!`)
+
+        userProfile.accessToken = ''
+      }
     }
 
-    try {
-      const result = await this.client.refresh({
-        accessToken: userProfile.accessToken,
-        requestUser: true,
-      })
-      this.logger.log(`Refreshed user access token for user: ${userProfile.id}`)
-
-      userProfile.accessToken = result.accessToken
-      userProfile.expiredAt = Date.now() + 86400_000
-    } catch (e) {
-      this.logger.error(e)
-      this.logger.warn(`Invalid current user ${userProfile.id} accessToken!`)
-
-      userProfile.accessToken = ''
-    }
-
-    return userProfile
-  }
-
-  async getSkin(userProfile: UserProfile): Promise<UserProfile> {
-    const gameProfile = userProfile.profiles[userProfile.selectedProfile]
-    // if no game profile (maybe not logined), return
-    if (gameProfile.name === '') return userProfile
-    // if user doesn't have a valid access token, return
-    if (!userProfile.accessToken) return userProfile
-
-    const { id, name } = gameProfile
-    try {
-      this.logger.log(`Refresh skin for user ${gameProfile.name}`)
-
-      const profile = await this.client.lookup(id)
+    for (const p of Object.values(userProfile.profiles)) {
+      const profile = await this.client.lookup(p.id, true, signal)
       const textures = getTextures(profile)
       const skin = textures?.textures.SKIN
       const uploadable = profile.properties.uploadableTextures
 
       // mark skin already refreshed
       if (skin) {
-        this.logger.log(`Update the skin for user ${gameProfile.name}`)
+        this.logger.log(`Update the skin for profile ${p.name}`)
 
-        userProfile.profiles[id] = {
+        userProfile.profiles[p.id] = {
           ...profile,
           textures: {
             ...textures.textures,
             SKIN: skin,
           },
+          uploadable: uploadable ? uploadable.split(',') as any : undefined,
         }
-
-        if (uploadable) {
-          userProfile.profiles[id].uploadable = uploadable.split(',') as any
-        }
-      } else {
-        this.logger.log(`The user ${gameProfile.name} does not have skin!`)
       }
-    } catch (e) {
-      this.logger.warn(`Cannot refresh the skin data for user ${name}(${id})`)
-      this.logger.warn(JSON.stringify(e))
     }
 
     return userProfile
   }
 
-  async setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, { cape, skin }: SkinPayload): Promise<UserProfile> {
+  async setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, { cape, skin }: SkinPayload, signal?: AbortSignal): Promise<UserProfile> {
     this.logger.log(`Upload texture ${gameProfile.name}(${gameProfile.id})`)
 
     if (typeof cape === 'string' && gameProfile.uploadable?.indexOf('cape') !== -1) {
@@ -133,7 +109,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
           uuid: gameProfile.id,
           accessToken: userProfile.accessToken,
           type: 'cape',
-        })
+        }, signal)
       } else {
         const data = await normalizeSkinData(cape)
         await this.client.setTexture({
@@ -141,7 +117,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
           accessToken: userProfile.accessToken,
           type: 'cape',
           texture: typeof data === 'string' ? { url: data } : { data: data },
-        })
+        }, signal)
       }
     }
 
@@ -151,7 +127,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
           uuid: gameProfile.id,
           accessToken: userProfile.accessToken,
           type: 'skin',
-        })
+        }, signal)
       } else {
         const data = await normalizeSkinData(skin.url)
         await this.client.setTexture({
@@ -171,7 +147,25 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
               },
               data: data,
             },
-        })
+        }, signal)
+      }
+    }
+
+    // Update the game profile
+    const newGameProfile = await this.client.lookup(gameProfile.id, true, signal)
+    const textures = getTextures(newGameProfile)
+    const uploadable = newGameProfile.properties.uploadableTextures
+
+    if (textures?.textures.SKIN) {
+      this.logger.log(`Update the skin for profile ${newGameProfile.name}`)
+
+      userProfile.profiles[newGameProfile.id] = {
+        ...newGameProfile,
+        textures: {
+          ...textures.textures,
+          SKIN: textures?.textures.SKIN,
+        },
+        uploadable: uploadable ? uploadable.split(',') as any : undefined,
       }
     }
 

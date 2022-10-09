@@ -7,7 +7,9 @@ import { createOfflineYggdrasilServer } from '../servers/YggdrasilServer'
 import { Inject } from '../util/objectRegistry'
 import { offlineModeDenylist } from '../util/offlineModeDenylist'
 import { AbstractService, ExposeServiceKey } from './Service'
+import { PeerService } from './PeerService'
 import { UserService } from './UserService'
+import { ImageStorage } from '../util/imageStore'
 
 const OFFLINE_USER_ID = 'OFFLINE'
 
@@ -17,6 +19,8 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
   private server: Server | undefined
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(ImageStorage) readonly imageStore: ImageStorage,
+    @Inject(PeerService) private peerService: PeerService,
     @Inject(UserService) private userService: UserService,
   ) {
     super(app, OfflineUserServiceKey, async () => {
@@ -27,7 +31,7 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
       this._isAllowed = offlineModeDenylist.indexOf(code.toUpperCase()) === -1
       this._isAllowed = true
       if (this._isAllowed) {
-        const server = await createOfflineYggdrasilServer((name) => {
+        const server = createOfflineYggdrasilServer(async (name) => {
           const offline = userService.state.users[OFFLINE_USER_ID]
           if (offline) {
             const profiles = Object.values(offline.profiles)
@@ -36,8 +40,12 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
               return founded
             }
           }
+          const founded = peerService.state.connections.map(c => c.userInfo).find(c => c.id === name || c.name === name)
+          if (founded) {
+            return founded
+          }
           return undefined
-        })
+        }, imageStore.root)
 
         await new Promise<void>((resolve) => {
           server.listen(undefined, () => { resolve() })
@@ -69,7 +77,7 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
               accessToken: existed?.accessToken ?? auth.accessToken,
               selectedProfile: auth.selectedProfile.id,
               profiles: profiles,
-              expiredAt: 0,
+              expiredAt: Number.MAX_SAFE_INTEGER / 100 * 95,
               authService: 'offline',
               username: OFFLINE_USER_ID,
             }
@@ -78,7 +86,12 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
           async setSkin(p, gameProfile, { skin, cape }) {
             if (skin !== undefined) {
               if (skin) {
-                gameProfile.textures.SKIN.url = skin.url
+                let url = skin.url
+                console.log(url)
+                if (!url.startsWith('http')) {
+                  url = await imageStore.addImage(url)
+                }
+                gameProfile.textures.SKIN.url = url
                 gameProfile.textures.SKIN.metadata = { model: skin.slim ? 'slim' : 'steve' }
               } else {
                 gameProfile.textures.SKIN.url = ''
@@ -87,14 +100,17 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
             }
             if (cape !== undefined) {
               if (cape) {
-                gameProfile.textures.CAPE = { url: cape }
+                let url = cape
+                if (!url.startsWith('http')) {
+                  url = await imageStore.addImage(url)
+                }
+                gameProfile.textures.CAPE = { url }
               } else {
                 gameProfile.textures.CAPE = undefined
               }
             }
             return p
           },
-          async getSkin(p) { return p },
           async refresh(p) { return p },
         })
         this.server = server
@@ -109,9 +125,12 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
   async removeGameProfile(name: string): Promise<void> {
     const builtin = this.userService.state.users[OFFLINE_USER_ID]
     if (builtin) {
-      const profileId = Object.values(builtin.profiles).find(v => v.name === name || v.id === name)?.id
-      if (profileId) {
-        delete builtin.profiles[profileId]
+      const profile = Object.values(builtin.profiles).find(v => v.name === name || v.id === name)
+      if (profile) {
+        delete builtin.profiles[profile.id]
+        if (profile?.id === builtin.selectedProfile) {
+          builtin.selectedProfile = Object.values(builtin.profiles)[0].id
+        }
       }
     }
     this.userService.state.userProfile(builtin)

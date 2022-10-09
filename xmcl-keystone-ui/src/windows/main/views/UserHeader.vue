@@ -43,15 +43,25 @@
     <v-card-actions>
       <v-btn
         text
-        :loading="refreshing"
-        @click="emit('refresh')"
+        :loading="refreshing && !hoverRefresh"
+        @mouseenter="hoverRefresh = true"
+        @mouseleave="hoverRefresh = false"
+        @click="refreshing ? emit('refresh') : emit('abort-refresh')"
       >
-        <v-icon left>
-          refresh
-        </v-icon>
-        {{ t('user.refreshAccount') }}
+        <template v-if="hoverRefresh && refreshing">
+          <v-icon color="red">
+            close
+          </v-icon>
+        </template>
+        <template v-else>
+          <v-icon left>
+            refresh
+          </v-icon>
+          {{ t('user.refreshAccount') }}
+        </template>
       </v-btn>
       <v-btn
+        v-if="selected"
         text
         color="red"
         @click="emit('remove', selected.id)"
@@ -67,7 +77,7 @@
         color="primary"
         class="mr-2"
         text
-        @click="emit('addaccount')"
+        @click="emit('login')"
       >
         <v-icon left>
           person_add
@@ -116,8 +126,9 @@
 import { UserProfile } from '@xmcl/runtime-api'
 import { useI18n } from '/@/composables'
 
-const emit = defineEmits(['addaccount', 'refresh', 'addservice', 'select', 'remove'])
+const emit = defineEmits(['login', 'refresh', 'abort-refresh', 'addservice', 'select', 'remove'])
 const { t } = useI18n()
+const hoverRefresh = ref(false)
 defineProps<{
   selected: UserProfile | undefined
   users: UserProfile[]
