@@ -165,16 +165,6 @@ interface FabricArtifactVersion {
 
 export interface VersionFabricSchema {
   /**
-   * @default ""
-   */
-  yarnTimestamp: string
-
-  /**
-   * @default ""
-   */
-  loaderTimestamp: string
-
-  /**
    * @default []
    */
   yarns: FabricArtifactVersion[]

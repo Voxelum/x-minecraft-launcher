@@ -9,25 +9,19 @@ import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { assertErrorWithCache, kCacheKey } from '../dispatchers/cacheDispatcher'
 import { Inject } from '../util/objectRegistry'
-import { createSafeFile } from '../util/persistance'
 import { BaseService } from './BaseService'
 import { JavaService } from './JavaService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Lock, Singleton } from './Service'
 import { VersionService } from './VersionService'
+import { parse as parseForge } from '@xmcl/forge-site-parser'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
  */
 @ExposeServiceKey(InstallServiceKey)
 export class InstallService extends AbstractService implements IInstallService {
-  private refreshedLiteloader = false
-  private refreshedForge: Record<string, boolean> = {}
-
-  private latestRelease = '1.19'
-
-  private forgeVersionJson = createSafeFile(this.getAppDataPath('forge-versions.json'), VersionForgeSchema, this, [this.getPath('forge-versions.json')])
-  private liteloaderVersionJson = createSafeFile(this.getAppDataPath('lite-versions.json'), VersionLiteloaderSchema, this, [this.getPath('lite-versions.json')])
+  private latestRelease = '1.19.2'
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(BaseService) private baseService: BaseService,
@@ -36,6 +30,7 @@ export class InstallService extends AbstractService implements IInstallService {
     @Inject(JavaService) private javaService: JavaService,
   ) {
     super(app, InstallServiceKey, async () => {
+      await this.networkManager.gfwReady.promise
       this.getFabricVersionList()
       this.getMinecraftVersionList()
       this.getOptifineVersionList()
@@ -45,20 +40,29 @@ export class InstallService extends AbstractService implements IInstallService {
       const origin = options.origin instanceof URL ? options.origin : new URL(options.origin!)
       if (origin.host === 'meta.fabricmc.net') {
         if (this.baseService.shouldOverrideApiSet()) {
-          const url = new URL(this.baseService.getApiSets()[0].url + '/fabric-meta' + origin.pathname)
+          const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference) || this.baseService.state.apiSets[0]
+          const url = new URL(api.url + '/fabric-meta' + options.path)
           options.origin = url.origin
           options.path = url.pathname + url.search
         }
       } else if (origin.host === 'launchermeta.mojang.com') {
         if (this.baseService.shouldOverrideApiSet()) {
-          const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference)
-          if (api) { options.origin = new URL(api.url).origin }
+          const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference) || this.baseService.state.apiSets[0]
+          options.origin = new URL(api.url).origin
         }
       } else if (origin.host === 'bmclapi2.bangbang93.com' || origin.host === 'bmclapi.bangbang93.com') {
         // bmclapi might have mirror
         if (this.baseService.shouldOverrideApiSet()) {
-          const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference)
-          if (api) { options.origin = new URL(api.url).origin }
+          const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference) || this.baseService.state.apiSets[0]
+          options.origin = new URL(api.url).origin
+        }
+      } else if (origin.host === 'files.minecraftforge.net' && options.path.startsWith('/maven/net/minecraftforge/forge/') && options.path.endsWith('.html')) {
+        const mcVersion = options.path.substring(options.path.lastIndexOf('_') + 1, options.path.lastIndexOf('.'))
+        if (this.baseService.shouldOverrideApiSet()) {
+          const api = this.baseService.state.apiSets.find(a => a.name === this.baseService.state.apiSetsPreference) || this.baseService.state.apiSets[0]
+          // Override to BCMLAPI
+          options.origin = new URL(api.url).origin
+          options.path = `/forge/minecraft/${mcVersion}`
         }
       }
     })
@@ -100,82 +104,79 @@ export class InstallService extends AbstractService implements IInstallService {
       throw new Error('Empty Minecraft Version')
     }
 
-    const data = await this.forgeVersionJson.read()
-    if (!force && this.refreshedForge[minecraftVersion]) {
-      const found = data.find(v => v.mcversion === options.minecraftVersion)
-      if (found) {
-        this.log(`Skip to refresh forge metadata from ${minecraftVersion}. Use cache.`)
-        return found.versions
-      }
-    }
-
     try {
-      const existed = data.find(f => f.mcversion === minecraftVersion)!
-
-      let newForgeVersion = existed
-      if (this.networkManager.isInGFW) {
-        this.log(`Update forge version list (BMCL) for Minecraft ${minecraftVersion}`)
-        newForgeVersion = await this.getForgesFromBMCL(minecraftVersion, existed)
-        getForgeVersionList({ minecraft: minecraftVersion, dispatcher: this.networkManager.getDispatcher() }).then((backup) => {
-          if (backup !== existed as any) {
-            // respect the forge official source
-            if (existed) {
-              existed.versions = backup.versions as any
-              this.forgeVersionJson.write(data)
-            } else {
-              this.forgeVersionJson.write([...data, backup as any])
-            }
-          }
-        }, (e) => {
-          this.error(e)
-        })
-      } else {
-        this.log(`Update forge version list (ForgeOfficial) for Minecraft ${minecraftVersion}`)
-        newForgeVersion = await getForgeVersionList({ minecraft: minecraftVersion, dispatcher: this.networkManager.getDispatcher() }) as any
-      }
-
-      if (newForgeVersion !== existed) {
-        this.log('Found new forge versions list. Update it')
-        if (existed) {
-          existed.timestamp = newForgeVersion.timestamp
-          existed.versions = newForgeVersion.versions
-          this.forgeVersionJson.write(data)
-        } else {
-          this.forgeVersionJson.write([...data, newForgeVersion])
+      let versions: ForgeVersion[]
+      const response = await request(`http://files.minecraftforge.net/net/minecraftforge/forge/index_${minecraftVersion}.html`, {
+        maxRedirections: 2,
+      })
+      if (response.headers['content-type']?.startsWith('application/json')) {
+        interface BMCLForge {
+          'branch': string // '1.9';
+          'build': string // 1766;
+          'mcversion': string // '1.9';
+          'modified': string // '2016-03-18T07:44:28.000Z';
+          'version': string // '12.16.0.1766';
+          files: {
+            format: 'zip' | 'jar' // zip
+            category: 'universal' | 'mdk' | 'installer'
+            hash: string
+          }[]
         }
-        this.refreshedForge[minecraftVersion] = true
+        const bmclVersions: BMCLForge[] = await response.body.json()
+        versions = bmclVersions.map(v => ({
+          mcversion: v.mcversion,
+          version: v.version,
+          type: 'common',
+          date: v.modified,
+        }))
       } else {
-        this.log('No new forge version metadata found. Skip.')
+        const text = await response.body.text()
+        const htmlVersions = parseForge(text)
+        versions = htmlVersions.versions.map(v => {
+          return {
+            mcversion: minecraftVersion,
+            version: v.version,
+            date: v.date,
+            type: v.type,
+            changelog: v.changelog,
+            installer: v.installer,
+            mdk: v.mdk,
+            universal: v.universal,
+            source: v.source,
+            launcher: v.launcher,
+            'installer-win': v['installer-win'],
+          }
+        })
       }
 
-      return newForgeVersion.versions
+      return versions
     } catch (e) {
       this.error(`Fail to fetch forge info of ${minecraftVersion}`)
       this.error(e)
-      // TODO: format this error
       throw e
     }
   }
 
   @Singleton()
   async getLiteloaderVersionList(force?: boolean): Promise<VersionLiteloaderSchema> {
-    if (!force && this.refreshedLiteloader) {
-      return this.liteloaderVersionJson.read()
-    }
+    throw new Error()
+    // if (!force && this.refreshedLiteloader) {
+    //   return this.liteloaderVersionJson.read()
+    // }
 
-    const oldData = await this.liteloaderVersionJson.read()
-    const option = oldData.timestamp === ''
-      ? undefined
-      : {
-        original: oldData,
-      }
-    const remoteList = await getLiteloaderVersionList(option)
-    if (remoteList !== oldData) {
-      this.liteloaderVersionJson.write(remoteList)
-    }
+    // const oldData = await this.liteloaderVersionJson.read()
+    // const option = oldData.timestamp === ''
+    //   ? undefined
+    //   : {
+    //     original: oldData,
+    //   }
+    // const remoteList = await getLiteloaderVersionList(option)
+    // if (remoteList !== oldData) {
+    //   this.liteloaderVersionJson.write(remoteList)
+    // }
 
-    this.refreshedLiteloader = true
-    return remoteList
+    // this.refreshedLiteloader = true
+    // return remoteList
   }
 
   @Singleton()
@@ -213,8 +214,6 @@ export class InstallService extends AbstractService implements IInstallService {
     return {
       loaders,
       yarns,
-      loaderTimestamp: '',
-      yarnTimestamp: '',
     }
   }
 
@@ -350,48 +349,6 @@ export class InstallService extends AbstractService implements IInstallService {
     }).filter(v => !!v)
 
     return option
-  }
-
-  private async getForgesFromBMCL(mcVersion: string, currentForgeVersion: ForgeVersionList) {
-    interface BMCLForge {
-      'branch': string // '1.9';
-      'build': string // 1766;
-      'mcversion': string // '1.9';
-      'modified': string // '2016-03-18T07:44:28.000Z';
-      'version': string // '12.16.0.1766';
-      files: {
-        format: 'zip' | 'jar' // zip
-        category: 'universal' | 'mdk' | 'installer'
-        hash: string
-      }[]
-    }
-
-    const { body, statusCode, headers } = await request(`https://bmclapi2.bangbang93.com/forge/minecraft/${mcVersion}`, {
-      method: 'GET',
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
-      },
-    })
-    function convert(v: BMCLForge): ForgeVersion {
-      const installer = v.files.find(f => f.category === 'installer')!
-      const universal = v.files.find(f => f.category === 'universal')!
-      return {
-        mcversion: v.mcversion,
-        version: v.version,
-        type: 'common',
-        date: v.modified,
-      } as any
-    }
-    if (statusCode === 304) {
-      return currentForgeVersion
-    }
-    const forges: BMCLForge[] = await body.json()
-    const result: ForgeVersionList = {
-      mcversion: mcVersion,
-      timestamp: headers['if-modified-since'] ?? forges[0]?.modified,
-      versions: forges.map(convert),
-    }
-    return result
   }
 
   @Lock((v) => [LockKey.version(v), LockKey.assets])
