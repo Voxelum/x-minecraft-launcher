@@ -1,6 +1,6 @@
 import { computed, InjectionKey, onMounted, reactive, Ref, toRefs, watch } from '@vue/composition-api'
 import { GameProfileAndTexture, UserServiceKey } from '@xmcl/runtime-api'
-import { useServiceBusy, useServiceOnly } from '/@/composables'
+import { useService } from '/@/composables'
 
 export function usePlayerName(gameProfile: Ref<GameProfileAndTexture>) {
   const name = ref(gameProfile.value.name)
@@ -9,7 +9,7 @@ export function usePlayerName(gameProfile: Ref<GameProfileAndTexture>) {
 }
 
 export function useUserSkin(userId: Ref<string>, gameProfile: Ref<GameProfileAndTexture>) {
-  const { refreshSkin, uploadSkin, saveSkin } = useServiceOnly(UserServiceKey, 'refreshSkin', 'uploadSkin', 'saveSkin')
+  const { uploadSkin, saveSkin } = useService(UserServiceKey)
   const data = reactive({
     /**
      * The skin url
@@ -52,7 +52,6 @@ export function useUserSkin(userId: Ref<string>, gameProfile: Ref<GameProfileAnd
         userId: userId.value,
         gameProfileId: gameProfile.value.id,
       })
-      await refreshSkin({ userId: userId.value, gameProfileId: gameProfile.value.id }).then(() => reset())
     } finally {
       data.loading = false
     }
@@ -69,7 +68,6 @@ export function useUserSkin(userId: Ref<string>, gameProfile: Ref<GameProfileAnd
     ...toRefs(data),
     canUploadCape,
     canUploadSkin,
-    refreshing: useServiceBusy(UserServiceKey, 'refreshSkin'),
     save,
     reset,
     modified,

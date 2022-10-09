@@ -26,18 +26,23 @@ import { ExposeServiceKey, Lock, Singleton, StatefulService } from './Service'
 
 export interface UserAccountSystem {
   getYggdrasilHost?(): string
-  login(options: LoginOptions): Promise<UserProfile>
+  login(options: LoginOptions, abortSignal: AbortSignal): Promise<UserProfile>
   /**
    * Refresh the user profile
    */
-  refresh(userProfile: UserProfile): Promise<UserProfile>
-  getSkin(userProfile: UserProfile): Promise<UserProfile>
-  setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, payload: SkinPayload): Promise<UserProfile>
+  refresh(userProfile: UserProfile, signal: AbortSignal): Promise<UserProfile>
+  /**
+   * Set skin to the game profile. This should also update the game profile skin data and return the new user profile.
+   */
+  setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, payload: SkinPayload, signal: AbortSignal): Promise<UserProfile>
 }
 
 @ExposeServiceKey(UserServiceKey)
 export class UserService extends StatefulService<UserState> implements IUserService {
   private userFile = createSafeFile(this.getAppDataPath('user.json'), UserSchema, this, [this.getPath('user.json')])
+  private loginController: AbortController | undefined
+  private refreshController: AbortController | undefined
+  private setSkinController: AbortController | undefined
 
   private registeredAccountSystem: Record<string, UserAccountSystem | undefined> = {}
 
@@ -65,7 +70,6 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       this.state.userSnapshot(result)
 
       this.refreshUser()
-      this.refreshSkin()
       if (this.state.selectedUser.id === '' && Object.keys(this.state.users).length > 0) {
         const [userId, user] = Object.entries(this.state.users)[0]
         this.selectUser(userId)
@@ -93,8 +97,11 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     if (!system) {
       throw new Error()
     }
-    const profile = await system.login(options)
+    this.loginController = new AbortController()
+    const profile = await system.login(options, this.loginController.signal)
+      .finally(() => { this.loginController = undefined })
     this.state.userProfile(profile)
+    this.state.userSelect(profile.id)
     return profile
   }
 
@@ -111,42 +118,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     return data
   }
 
-  /**
-   * Refresh current skin status
-   */
-  @Singleton<StatefulService<UserState>>(function (this: StatefulService<UserState>, o: RefreshSkinOptions = {}) {
-    const {
-      gameProfileId = this.state.user?.selectedProfile,
-      userId = this.state.selectedUser.id,
-    } = o ?? {}
-    return `${userId}[${gameProfileId}]`
-  })
-  async refreshSkin(refreshSkinOptions: RefreshSkinOptions = {}) {
-    const {
-      userId = this.state.selectedUser.id,
-    } = refreshSkinOptions ?? {}
-    const user = this.state.users[userId]
-    if (!user) {
-      this.warn(`Skip to refresh user as not found. UserId=${userId}. All known user ids: [${Object.keys(this.state.users).join(', ')}]`)
-      return
-    }
-
-    const sys = this.registeredAccountSystem[user.authService]
-    if (sys) {
-      const data = await sys.getSkin(user)
-      this.state.userProfile(data)
-    } else {
-      this.warn(`Fail to find the user account system ${user.authService}`)
-    }
-  }
-
-  /**
-   * Upload the skin to server. If the userId and profileId is not assigned,
-   * it will use the selected user and selected profile.
-   *
-   * Notice that this operation might fail if the user is not authorized (accessToken is not valid).
-   * If that happened, please let user refresh it credential or relogin.
-   */
+  @Lock('uploadSkin')
   async uploadSkin(options: UploadSkinOptions) {
     requireObject(options)
 
@@ -154,7 +126,6 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       gameProfileId,
       userId = this.state.selectedUser.id,
       skin,
-      cape,
     } = options
     const user = this.state.users[userId]
     const gameProfile = user.profiles[gameProfileId || user.selectedProfile]
@@ -168,7 +139,10 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     if (sys) {
       this.log(`Upload texture ${gameProfile.name}(${gameProfile.id})`)
 
-      await sys.setSkin(user, gameProfile, options)
+      this.setSkinController = new AbortController()
+      await sys.setSkin(user, gameProfile, options, this.setSkinController.signal).finally(() => {
+        this.setSkinController = undefined
+      })
     } else {
       this.warn(`Does not found system named ${user.authService}. Skip to set skin.`)
     }
@@ -188,7 +162,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   /**
    * Refresh the current user login status
    */
-  @Singleton()
+  @Lock('refreshUser')
   async refreshUser() {
     const user = this.state.user
 
@@ -201,7 +175,10 @@ export class UserService extends StatefulService<UserState> implements IUserServ
 
     const system = this.registeredAccountSystem[authService]
     if (authService && system) {
-      const newUser = await system.refresh(user)
+      this.refreshController = new AbortController()
+      const newUser = await system.refresh(user, this.refreshController.signal).finally(() => {
+        this.refreshController = undefined
+      })
       this.state.userProfile(newUser)
     } else {
       this.log(`User auth service ${authService} not found.`)
@@ -246,16 +223,19 @@ export class UserService extends StatefulService<UserState> implements IUserServ
         this.warn(`No valid user after remove user profile ${userId}!`)
       } else {
         const userId = user.id
-        const profileId = user.selectedProfile
-        this.log(`Switch game profile ${userId} ${profileId}`)
-        this.state.userGameProfileSelect({ userId, profileId })
+        this.log(`Switch game profile ${userId}`)
+        this.state.userSelect(userId)
       }
     }
     this.state.userProfileRemove(userId)
   }
 
-  abortLogin(): Promise<void> {
-    throw new Error('Method not implemented.')
+  async abortLogin(): Promise<void> {
+    this.loginController?.abort()
+  }
+
+  async abortRefresh() {
+    this.refreshController?.abort()
   }
 
   async getSupportedAccountSystems(): Promise<string[]> {

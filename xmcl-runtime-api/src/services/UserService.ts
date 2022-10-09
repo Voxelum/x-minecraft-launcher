@@ -76,8 +76,6 @@ export interface SwitchProfileOptions {
 interface UserServiceEventMap {
   'user-login': string
   'error': UserException
-  'microsoft-authorize-url': string
-  'microsoft-authorize-code': [any, string]
   'auth-profile-added': string
 }
 
@@ -180,18 +178,18 @@ export interface UserService extends StatefulService<UserState>, GenericEventEmi
   /**
    * Refresh the current user login status.
    *
+   * This will also refresh the game profiles with skins.
+   *
    * This will failed if user need to re-login the user.
    *
    * @throw 'userAccessTokenExpired'
    */
   refreshUser(): Promise<void>
   /**
-   * Refresh current skin status
-   */
-  refreshSkin(refreshSkinOptions?: RefreshSkinOptions): Promise<void>
-  /**
    * Upload the skin to server. If the userId and profileId is not assigned,
    * it will use the selected user and selected profile.
+   *
+   * This will update the user profile state.
    *
    * Notice that this operation might fail if the user is not authorized (accessToken is not valid).
    * If that happened, please let user refresh it credential or re-login.
@@ -222,7 +220,7 @@ export interface UserService extends StatefulService<UserState>, GenericEventEmi
   /**
    * Get all supported account systems.
    *
-   * This might be influenced by region
+   * This might be influenced by locale regions .
    */
   getSupportedAccountSystems(): Promise<string[]>
   /**
@@ -233,6 +231,7 @@ export interface UserService extends StatefulService<UserState>, GenericEventEmi
    * Abort current login
    */
   abortLogin(): Promise<void>
+  abortRefresh(): Promise<void>
 }
 
 export const UserServiceKey: ServiceKey<UserService> = 'UserService'

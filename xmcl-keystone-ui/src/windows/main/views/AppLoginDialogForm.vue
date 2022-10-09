@@ -22,22 +22,17 @@
     />
     <div
       v-else
-      class="w-100 text-center"
+      class="w-100 text-center z-10"
     >
-      <v-form
-        ref="form"
-        v-model="data.isFormValid"
-        class="z-10"
+      <v-select
+        v-model="accountSystemItem"
+        outlined
+        prepend-inner-icon="vpn_key"
+        :items="accountSystemItems"
+        :label="t('user.authMode')"
+        flat
       >
-        <v-select
-          v-model="authServiceItem"
-          outlined
-          prepend-inner-icon="vpn_key"
-          :items="accountSystemItems"
-          :label="t('user.authMode')"
-          flat
-        >
-          <!-- <template #append-outer>
+        <!-- <template #append-outer>
             <v-tooltip top>
               <template #activator="{ on: onTooltip }">
                 <v-btn
@@ -51,50 +46,51 @@
               {{ t('userService.add') }}
             </v-tooltip>
           </template> -->
-        </v-select>
+      </v-select>
 
-        <v-combobox
-          ref="accountInput"
-          v-model="data.username"
-          :items="history"
-          prepend-inner-icon="person"
-          outlined
-          required
-          :label="
-            te(`userServices.${authService}.account`)
-              ? t(`userServices.${authService}.account`)
-              : t(`userServices.offline.account`)
-          "
-          :rules="usernameRules"
-          :error="!!usernameErrors.length"
-          :error-messages="usernameErrors"
-          @input="usernameErrors = []"
-          @keypress="resetError"
-        />
+      <v-combobox
+        ref="accountInput"
+        v-model="data.username"
+        :items="history"
+        prepend-inner-icon="person"
+        outlined
+        required
+        :label="
+          te(`userServices.${authService}.account`)
+            ? t(`userServices.${authService}.account`)
+            : t(`userServices.offline.account`)
+        "
+        :rules="usernameRules"
+        :error="!!usernameErrors.length"
+        :error-messages="usernameErrors"
+        @input="usernameErrors = []"
+        @keypress="resetError"
+      />
 
-        <v-text-field
-          v-if="!isOffline"
-          v-model="data.password"
-          prepend-inner-icon="lock"
-          outlined
-          type="password"
-          required
-          :label="passwordLabel"
-          :rules="passwordRules"
-          :disabled="isOffline || isMicrosoft"
-          :error="!!passwordErrors.length"
-          :error-messages="passwordErrors"
-          @input="passwordErrors = []"
-          @keypress.enter="onLogin"
-        />
-        <v-text-field
-          v-else
-          v-model="data.uuid"
-          prepend-icon="fingerprint"
-          :label="uuidLabel"
-          @keypress.enter="onLogin"
-        />
-      </v-form>
+      <v-text-field
+        v-if="!isOffline"
+        v-model="data.password"
+        prepend-inner-icon="lock"
+        outlined
+        type="password"
+        required
+        :label="passwordLabel"
+        :rules="passwordRules"
+        :disabled="isOffline || isMicrosoft"
+        :error="!!passwordErrors.length"
+        :error-messages="passwordErrors"
+        @input="passwordErrors = []"
+        @keypress.enter="onLogin"
+      />
+      <v-text-field
+        v-else
+        v-model="data.uuid"
+        outlined
+        prepend-inner-icon="fingerprint"
+        :placeholder="uuidLabel"
+        :label="uuidLabel"
+        @keypress.enter="onLogin"
+      />
 
       <v-btn
         block
@@ -148,7 +144,7 @@
 
 <script lang=ts setup>
 import { Ref } from '@vue/composition-api'
-import { isException, UserException, UserServiceKey } from '@xmcl/runtime-api'
+import { isException, OfficialUserServiceKey, UserException, UserServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { LoginDialog, useSelectedServices } from '../composables/login'
 import { useLoginValidation } from '../composables/user'
@@ -167,23 +163,22 @@ const props = defineProps<{
 
 const { hide, isShown, parameter } = useDialog(LoginDialog)
 const { te, t } = useI18n()
-const { login, on, getSupportedAccountSystems } = useService(UserServiceKey)
+const { login, abortLogin, getSupportedAccountSystems } = useService(UserServiceKey)
+const { on } = useService(OfficialUserServiceKey)
 
 const data = reactive({
   username: '',
   password: '',
   uuid: '',
-  isFormValid: true,
   microsoftUrl: '',
 })
 
 const accountInput: Ref<any> = ref(null)
-const form: Ref<any> = ref(null)
 const hovered = ref(false)
 const accountSystems: Ref<string[]> = ref([])
 const accountSystemItems: Ref<ServiceItem[]> = computed(() => accountSystems.value
   .map((a) => ({ value: a, text: te(`userServices.${a}.name`) ? t(`userServices.${a}.name`) : a })))
-const authServiceItem = computed<ServiceItem>({
+const accountSystemItem = computed<ServiceItem>({
   get() { return accountSystemItems.value.find(a => a.value === authService.value)! },
   set(v) { authService.value = v as any as string },
 })
@@ -193,11 +188,6 @@ const { authService, history } = useSelectedServices()
 const isLogining = useBusy('login')
 const isMicrosoft = computed(() => authService.value === 'microsoft')
 const isOffline = computed(() => authService.value === 'offline')
-const isThirdParty = computed(() => {
-  if (isMicrosoft.value || isOffline.value) return false
-  const service = authService.value
-  return service !== 'mojang'
-})
 
 const passwordLabel = computed(() => (te(`userServices.${authService.value}.password`)
   ? t(`userServices.${authService.value}.password`)
@@ -207,7 +197,6 @@ const uuidLabel = computed(() => t('userServices.offline.uuid'))
 
 const { refresh: refreshAccountSystem, refreshing: loadingAccountSystem } = useRefreshable(async () => {
   const systems = await getSupportedAccountSystems()
-  console.log(systems)
   accountSystems.value = systems
 })
 
@@ -219,7 +208,7 @@ const {
   passwordRules,
   passwordErrors,
   reset: resetError,
-} = useLoginValidation(isThirdParty)
+} = useLoginValidation(isOffline)
 
 function handleError(e: unknown) {
   if (isException(UserException, e)) {
@@ -295,7 +284,7 @@ async function onLogin() {
   accountInput.value.blur()
   await nextTick() // wait a tick to make sure username updated.
   if (isLogining.value) {
-    // await cancelMicrosoftLogin()
+    await abortLogin()
     return
   }
   const index = history.value.indexOf(data.username)
@@ -320,7 +309,6 @@ function nextDirection() {
   const i = Math.round(Math.random() * dirs.length)
   direction.value = dirs[i]
 }
-
 watch(authService, () => { nextDirection() })
 
 onMounted(() => {

@@ -55,7 +55,6 @@ export class LittleSkinUserService extends AbstractService implements ILittleSki
       },
       login: ygg.login.bind(ygg),
       refresh: ygg.refresh.bind(ygg),
-      getSkin: ygg.getSkin.bind(ygg),
       setSkin: ygg.setSkin.bind(ygg),
     })
   }

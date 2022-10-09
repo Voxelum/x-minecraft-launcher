@@ -53,7 +53,7 @@ export class MicrosoftAuthenticator {
    * authenticate with xbox live by ms oauth access token
    * @param oauthAccessToken The oauth access token
    */
-  async authenticateXboxLive(oauthAccessToken: string) {
+  async authenticateXboxLive(oauthAccessToken: string, signal?: AbortSignal) {
     const xblResponse = await request('https://user.auth.xboxlive.com/user/authenticate', {
       method: 'POST',
       body: JSON.stringify({
@@ -69,6 +69,7 @@ export class MicrosoftAuthenticator {
         'Content-Type': 'application/json',
       },
       dispatcher: this.dispatcher,
+      signal,
     })
 
     const result = await xblResponse.body.json() as XBoxResponse
@@ -80,7 +81,7 @@ export class MicrosoftAuthenticator {
    * Authorize the xbox live. It will get the xsts token in response.
    * @param xblResponseToken
    */
-  async authorizeXboxLive(xblResponseToken: string, relyingParty: 'rp://api.minecraftservices.com/' | 'http://xboxlive.com' = 'rp://api.minecraftservices.com/') {
+  async authorizeXboxLive(xblResponseToken: string, relyingParty: 'rp://api.minecraftservices.com/' | 'http://xboxlive.com' = 'rp://api.minecraftservices.com/', signal?: AbortSignal) {
     const xstsResponse = await request('https://xsts.auth.xboxlive.com/xsts/authorize', {
       method: 'POST',
       headers: {
@@ -95,6 +96,7 @@ export class MicrosoftAuthenticator {
         TokenType: 'JWT',
       }),
       dispatcher: this.dispatcher,
+      signal,
     })
 
     const result: XBoxResponse = await xstsResponse.body.json()
@@ -102,7 +104,7 @@ export class MicrosoftAuthenticator {
     return result
   }
 
-  async getXboxGameProfile(xuid: string, uhs: string, xstsToken: string) {
+  async getXboxGameProfile(xuid: string, uhs: string, xstsToken: string, signal?: AbortSignal) {
     const response = await request(`https://profile.xboxlive.com/users/xuid(${xuid})/profile/settings`, {
       query: {
         settings: ['PublicGamerpic', 'Gamertag'].join(','),
@@ -113,22 +115,18 @@ export class MicrosoftAuthenticator {
         Authorization: `XBL3.0 x=${uhs};${xstsToken}`,
       },
       dispatcher: this.dispatcher,
+      signal,
     })
 
     const result: XBoxGameProfileResponse = await response.body.json()
     return result
   }
 
-  async acquireXBoxToken(oauthAccessToken: string) {
-    // const req = request.extend({
-    //   headers: {
-    //     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.27 Safari/537.36 Edg/88.0.705.18',
-    //   },
-    // })
-    const xblResponse: XBoxResponse = await this.authenticateXboxLive(oauthAccessToken)
-    const minecraftXstsResponse: XBoxResponse = await this.authorizeXboxLive(xblResponse.Token, 'rp://api.minecraftservices.com/')
-    const xstsResponse: XBoxResponse = await this.authorizeXboxLive(xblResponse.Token, 'http://xboxlive.com')
-    const xboxGameProfile = await this.getXboxGameProfile(xstsResponse.DisplayClaims.xui[0].xid, xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token)
+  async acquireXBoxToken(oauthAccessToken: string, signal?: AbortSignal) {
+    const xblResponse: XBoxResponse = await this.authenticateXboxLive(oauthAccessToken, signal)
+    const minecraftXstsResponse: XBoxResponse = await this.authorizeXboxLive(xblResponse.Token, 'rp://api.minecraftservices.com/', signal)
+    const xstsResponse: XBoxResponse = await this.authorizeXboxLive(xblResponse.Token, 'http://xboxlive.com', signal)
+    const xboxGameProfile = await this.getXboxGameProfile(xstsResponse.DisplayClaims.xui[0].xid, xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token, signal)
 
     return { xstsResponse: minecraftXstsResponse, xboxGameProfile }
   }
@@ -141,7 +139,7 @@ export class MicrosoftAuthenticator {
    * @param uhs uhs from {@link XBoxResponse}
    * @param xstsToken
    */
-  async loginMinecraftWithXBox(uhs: string, xstsToken: string) {
+  async loginMinecraftWithXBox(uhs: string, xstsToken: string, signal?: AbortSignal) {
     const mcResponse = await request('https://api.minecraftservices.com/authentication/login_with_xbox', {
       method: 'POST',
       body: JSON.stringify({
@@ -151,6 +149,7 @@ export class MicrosoftAuthenticator {
         'content-type': 'application/json',
       },
       dispatcher: this.dispatcher,
+      signal,
     })
 
     const result: MinecraftAuthResponse = await mcResponse.body.json()

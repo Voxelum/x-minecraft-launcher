@@ -9,8 +9,9 @@
       :selected="selectedUser"
       :refreshing="refreshing"
       :expired="isExpired"
-      @addaccount="showLoginDialog()"
+      @login="showLoginDialog()"
       @refresh="refresh"
+      @abort-refresh="abortRefresh()"
       @select="onSelect"
       @remove="startDelete"
     />
@@ -23,10 +24,6 @@
         v-else-if="selectedUser && selectedUser.authService === 'mojang'"
         :user="selectedUser"
       />
-      <!-- <user-offline-view
-        v-else-if="selectedUser && selectedUser.authService === 'offline'"
-        :user="selectedUser"
-      /> -->
       <user-yggdrasil-view
         v-else
         :user="selectedUser"
@@ -60,25 +57,22 @@ import UserPageHeader from './UserHeader.vue'
 import UserYggdrasilView from './UserYggdrasilView.vue'
 import UserMicrosoftView from './UserMicrosoftView.vue'
 import UserMojangView from './UserMojangView.vue'
-import UserOfflineView from './UserOfflineView.vue'
 import { useI18n, useOperation, useService, useServiceBusy } from '/@/composables'
 import { DropServiceInjectionKey } from '/@/composables/dropService'
 import { injection } from '/@/util/inject'
 
-const { refreshUser: refreshAccount, refreshSkin } = useService(UserServiceKey)
+const { refreshUser: refreshAccount } = useService(UserServiceKey)
 const { handleUrl } = useService(BaseServiceKey)
 const { show: showLoginDialog } = useDialog(LoginDialog)
-const { show } = useDialog('deletion')
+const { show: showDeleteDialog } = useDialog('deletion')
 const { t } = useI18n()
 
 const { users } = useUsers()
-const { state, selectUser, removeUserProfile } = useService(UserServiceKey)
+const { state, selectUser, removeUserProfile, abortRefresh } = useService(UserServiceKey)
 const userId = computed(() => state.selectedUser.id)
 const selectedUser = computed(() => users.value.find(u => u.id === userId.value))
 
 const isExpired = computed(() => !selectedUser.value?.accessToken || selectedUser.value.expiredAt < Date.now())
-
-console.log(selectedUser)
 
 const { begin: beginRemoveProfile, operate: confirmRemoveProfile, data: removingProfile } = useOperation('', (v) => removeUserProfile(v))
 
@@ -93,17 +87,14 @@ onUnmounted(() => {
   suppressed.value = false
 })
 
-const refreshingSkin = useServiceBusy(UserServiceKey, 'refreshSkin', computed(() => `${userId.value}`))
-const refreshingAccount = useServiceBusy(UserServiceKey, 'refreshUser')
-const refreshing = computed(() => refreshingSkin.value || refreshingAccount.value)
+const refreshing = useServiceBusy(UserServiceKey, 'refreshUser')
 function startDelete(id: string) {
   beginRemoveProfile(id)
-  show()
+  showDeleteDialog()
 }
 function refresh() {
   if (!isExpired.value) {
     refreshAccount()
-    refreshSkin()
   } else {
     showLoginDialog({ username: selectedUser.value?.username, service: selectedUser.value?.authService, error: t('login.userRelogin') })
   }

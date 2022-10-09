@@ -20,7 +20,7 @@
       </v-fab-transition>
     </div>
     <skin-view
-      class="border rounded"
+      class="border rounded shadow-md"
       :skin="skin"
       :slim="inferModelType ? undefined : slim"
       :cape="cape"
@@ -97,8 +97,8 @@ const { watcherTask } = useNotifier()
 const gameProfile = computed(() => props.profile)
 const selected = computed(() => props.user.selectedProfile === props.profile.id)
 const name = inject(PlayerNameModel, () => usePlayerName(gameProfile), true)
-const { skin, refreshing, slim, save, exportTo, loading, modified, reset, inferModelType, cape, canUploadCape, canUploadSkin } = inject(UserSkinModel, () => useUserSkin(computed(() => props.user.id), gameProfile), true)
-const pending = computed(() => refreshing.value || loading.value)
+const { skin, slim, save, exportTo, loading, modified, reset, inferModelType, cape, canUploadCape, canUploadSkin } = inject(UserSkinModel, () => useUserSkin(computed(() => props.user.id), gameProfile), true)
+const pending = computed(() => loading.value)
 const { showOpenDialog, showSaveDialog } = windowController
 const isImportSkinDialogShown = ref(false)
 

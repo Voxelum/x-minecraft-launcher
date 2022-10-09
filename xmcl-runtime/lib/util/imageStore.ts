@@ -8,6 +8,9 @@ export class ImageStorage {
   }
 
   async addImage(pathOrData: string | Uint8Array) {
+    if (typeof pathOrData === 'string' && pathOrData.startsWith('image://')) {
+      pathOrData = pathOrData.substring('image://'.length)
+    }
     const sha1 = typeof pathOrData === 'string' ? await checksum(pathOrData, 'sha1') : createHash('sha1').update(pathOrData).digest('hex')
     const imagePath = join(this.root, sha1)
     if (!existsSync(imagePath)) {

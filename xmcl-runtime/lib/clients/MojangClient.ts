@@ -39,13 +39,14 @@ export class UnauthorizedError extends Error {
 export class MojangClient {
   constructor(private dispatcher = getGlobalDispatcher()) { }
 
-  async setName(name: string, token: string) {
+  async setName(name: string, token: string, signal?: AbortSignal) {
     const resp = await request(`https://api.minecraftservices.com/minecraft/profile/name/${name}`, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${token}`,
       },
       dispatcher: this.dispatcher,
+      signal,
     })
     switch (resp.statusCode) {
       case 200: return await resp.body.json() as MicrosoftMinecraftProfile
@@ -69,30 +70,32 @@ export class MojangClient {
     return await resp.body.json() as NameChangeInformation
   }
 
-  async checkNameAvailability(name: string, token: string): Promise<NameAvailability> {
+  async checkNameAvailability(name: string, token: string, signal?: AbortSignal): Promise<NameAvailability> {
     const resp = await request(`https://api.minecraftservices.com/minecraft/profile/name/${name}/available`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
       },
       dispatcher: this.dispatcher,
+      signal,
     })
     const result = await resp.body.json()
     return result.status
   }
 
-  async getProfile(token: string): Promise<MicrosoftMinecraftProfile> {
+  async getProfile(token: string, signal?: AbortSignal): Promise<MicrosoftMinecraftProfile> {
     const resp = await request('https://api.minecraftservices.com/minecraft/profile', {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${token}`,
       },
       dispatcher: this.dispatcher,
+      signal,
     })
     return await resp.body.json() as MicrosoftMinecraftProfile
   }
 
-  async setSkin(fileName: string, skin: string | Buffer, variant: 'slim' | 'classic', token: string) {
+  async setSkin(fileName: string, skin: string | Buffer, variant: 'slim' | 'classic', token: string, signal?: AbortSignal) {
     const body = typeof skin === 'string' ? JSON.stringify({ url: skin, variant }) : getSkinFormData(skin, fileName, variant)
     const headers: Record<string, string> = {
       Authorization: `Bearer ${token}`,
@@ -107,6 +110,7 @@ export class MojangClient {
       headers,
       body,
       throwOnError: false,
+      signal,
     })
 
     const profileResponse: MinecraftProfileResponse | MinecraftProfileErrorResponse = await resp.body.json()
@@ -120,7 +124,7 @@ export class MojangClient {
     return profileResponse
   }
 
-  async resetSkin(token: string) {
+  async resetSkin(token: string, signal?: AbortSignal) {
     const resp = await request('https://api.minecraftservices.com/minecraft/profile/skins/active', {
       method: 'DELETE',
       headers: {
@@ -128,13 +132,14 @@ export class MojangClient {
       },
       throwOnError: false,
       dispatcher: this.dispatcher,
+      signal,
     })
     if (resp.statusCode === 401) {
       throw new UnauthorizedError(await resp.body.json())
     }
   }
 
-  async hideCape(token: string) {
+  async hideCape(token: string, signal?: AbortSignal) {
     const resp = await request('https://api.minecraftservices.com/minecraft/profile/capes/active', {
       method: 'DELETE',
       headers: {
@@ -148,7 +153,7 @@ export class MojangClient {
     }
   }
 
-  async showCape(capeId: string, token: string) {
+  async showCape(capeId: string, token: string, signal?: AbortSignal) {
     const resp = await request('https://api.minecraftservices.com/minecraft/profile/capes/active', {
       method: 'PUT',
       headers: {
@@ -158,6 +163,7 @@ export class MojangClient {
       body: JSON.stringify({ capeId }),
       throwOnError: false,
       dispatcher: this.dispatcher,
+      signal,
     })
     if (resp.statusCode === 401) {
       throw new UnauthorizedError(await resp.body.json())
@@ -169,7 +175,7 @@ export class MojangClient {
     return profile
   }
 
-  async verifySecurityLocation(token: string) {
+  async verifySecurityLocation(token: string, signal?: AbortSignal) {
     const resp = await request('https://api.mojang.com/user/security/location', {
       method: 'GET',
       headers: {
@@ -177,6 +183,7 @@ export class MojangClient {
       },
       throwOnError: false,
       dispatcher: this.dispatcher,
+      signal,
     })
 
     if (resp.statusCode === 204) {
@@ -225,12 +232,13 @@ export class MojangClient {
   /**
    * Return the owner ship list of the player with those token.
    */
-  async checkGameOwnership(token: string) {
+  async checkGameOwnership(token: string, signal?: AbortSignal) {
     const mcResponse = await request('https://api.minecraftservices.com/entitlements/mcstore', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
       dispatcher: this.dispatcher,
+      signal,
     })
 
     if (mcResponse.statusCode === 401) {
