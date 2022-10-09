@@ -163,12 +163,10 @@ export function useInstanceMods() {
       ...(instanceState.instance.runtime as any),
       java: currentJava.value?.version.toString() ?? '',
     }
+    runtime.fabricloader = runtime.fabricLoader
     for (const i of items.value) {
       if (i.enabled || i.enabledState) {
-        for (let [key, val] of Object.entries(i.provideRuntime)) {
-          if (key === 'fabricLoader') {
-            key = 'fabricloader'
-          }
+        for (const [key, val] of Object.entries(i.provideRuntime)) {
           runtime[key] = val
         }
       }

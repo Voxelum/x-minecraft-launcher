@@ -393,4 +393,9 @@ router.afterEach((to) => {
 .sidebar .theme--dark.v-list-item--active:hover:before {
   opacity: .5;
 }
+
+.sidebar .theme--light.v-list-item--active:before {
+  opacity: .25;
+  background-color: gray;
+}
 </style>

@@ -197,7 +197,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         }
         try {
           this.log(`Try to import new file ${name}`)
-          await this.importResource({ resources: [{ path, domain }], optional: true })
+          await this.importResource({ resources: [{ path: name, domain }], optional: true })
         } catch (e) {
           this.emit('error', e)
         }

@@ -79,7 +79,7 @@ importers:
       create-desktop-shortcuts: ^1.6.0
       cross-env: ^5.2.1
       dotenv: 16.0.1
-      electron: ^20.0.0
+      electron: ^21.0.1
       electron-builder: ^22.14.5
       electron-devtools-installer: ^3.2.0
       electron-updater: ^4.3.9
@@ -133,7 +133,7 @@ importers:
       create-desktop-shortcuts: 1.10.1
       cross-env: 5.2.1
       dotenv: 16.0.1
-      electron: 20.3.0
+      electron: 21.1.0
       electron-builder: 22.14.13
       electron-devtools-installer: 3.2.0
       electron-updater: 4.6.5
@@ -255,8 +255,8 @@ importers:
       three: 0.142.0
       vanta: 0.5.22
       vue: 2.6.14
-      vue-i18n: 8.27.2
-      vue-router: 3.5.4
+      vue-i18n: 8.27.2_vue@2.6.14
+      vue-router: 3.5.4_vue@2.6.14
       vue-virtual-scroll-list: 2.3.3
       vuetify: 2.6.7_vue@2.6.14
       vuex: 3.6.2_vue@2.6.14
@@ -2147,7 +2147,7 @@ packages:
       '@intlify/shared': 9.3.0-beta.6
       jsonc-eslint-parser: 1.4.1
       source-map: 0.6.1
-      vue-i18n: 8.27.2
+      vue-i18n: 8.27.2_vue@2.6.14
       yaml-eslint-parser: 0.3.2
     dev: true
 
@@ -2184,7 +2184,7 @@ packages:
       fast-glob: 3.2.11
       source-map: 0.6.1
       vite: 2.9.13
-      vue-i18n: 8.27.2
+      vue-i18n: 8.27.2_vue@2.6.14
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -2880,7 +2880,7 @@ packages:
       '@volar/source-map': 0.38.8
       '@volar/vue-code-gen': 0.38.8
       '@vue/compiler-sfc': 3.2.37
-      '@vue/reactivity': 3.2.37
+      '@vue/reactivity': 3.2.40
     dev: true
 
   /@vue/babel-helper-vue-jsx-merge-props/1.2.1:
@@ -3121,6 +3121,7 @@ packages:
     resolution: {integrity: sha512-/7WRafBOshOc6m3F7plwzPeCu/RCVv9uMpOwa/5PiY1Zz+WLVRWiy0MYKwmg19KBdGtFWsmZ4cD+LOdVPcs52A==}
     dependencies:
       '@vue/shared': 3.2.37
+    dev: false
 
   /@vue/reactivity/3.2.40:
     resolution: {integrity: sha512-N9qgGLlZmtUBMHF9xDT4EkD9RdXde1Xbveb+niWMXuHVWQP5BzgRmE3SFyUBBcyayG4y1lhoz+lphGRRxxK4RA==}
@@ -4874,8 +4875,8 @@ packages:
       - supports-color
     dev: true
 
-  /electron/20.3.0:
-    resolution: {integrity: sha512-VvzoQErKXUzpPcRdDzIwRvzbrkN5E08fLA/pe2C302vlv7KlUerh5wYyGGHS6kFKRIqTWBaq+StV/KKh9ZBczA==}
+  /electron/21.1.0:
+    resolution: {integrity: sha512-CM5VZpZPtAoPgTPcmEbRaZWXlxGuD5a5DTeAwm0F0F6/k6R3HZAi8vZnE77gwuHK/Qqcinw4/MAbiCwAKh2W+g==}
     engines: {node: '>= 10.17.0'}
     hasBin: true
     requiresBuild: true
@@ -9001,15 +9002,23 @@ packages:
       - supports-color
     dev: true
 
-  /vue-i18n/8.27.2:
+  /vue-i18n/8.27.2_vue@2.6.14:
     resolution: {integrity: sha512-QVzn7u2WVH8F7eSKIM00lujC7x1mnuGPaTnDTmB01Hd709jDtB9kYtBqM+MWmp5AJRx3gnqAdZbee9MelqwFBg==}
+    peerDependencies:
+      vue: ^2
+    dependencies:
+      vue: 2.6.14
 
   /vue-observe-visibility/0.4.6:
     resolution: {integrity: sha512-xo0CEVdkjSjhJoDdLSvoZoQrw/H2BlzB5jrCBKGZNXN2zdZgMuZ9BKrxXDjNP2AxlcCoKc8OahI3F3r3JGLv2Q==}
     dev: true
 
-  /vue-router/3.5.4:
+  /vue-router/3.5.4_vue@2.6.14:
     resolution: {integrity: sha512-x+/DLAJZv2mcQ7glH2oV9ze8uPwcI+H+GgTgTmb5I55bCgY3+vXWIsqbYUzbBSZnwFHEJku4eoaH/x98veyymQ==}
+    peerDependencies:
+      vue: ^2
+    dependencies:
+      vue: 2.6.14
     dev: false
 
   /vue-template-compiler/2.6.14:

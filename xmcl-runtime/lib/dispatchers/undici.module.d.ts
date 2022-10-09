@@ -11,6 +11,9 @@ declare module 'undici' {
       cacheStrategy?: 'stale-while-revalidate' | 'cache-first' | 'network-only'
       connectTimeout?: number
     }
+    export interface RequestOptions {
+      connectTimeout?: number
+    }
   }
 
   namespace Client {

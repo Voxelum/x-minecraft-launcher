@@ -35,7 +35,6 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
         httpProxyEnabled: data.httpProxyEnabled,
         theme: data.theme,
         maxSockets: data.maxSockets || 16,
-        maxTotalSockets: data.maxTotalSockets,
       })
       this.checkUpdate()
     })
@@ -50,7 +49,6 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
       'httpProxyEnabledSet',
       'themeSet',
       'maxSocketsSet',
-      'maxTotalSocketsSet',
     ], () => {
       this.settingFile.write({
         locale: this.state.locale,
@@ -63,7 +61,6 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
         httpProxyEnabled: this.state.httpProxyEnabled,
         theme: this.state.theme,
         maxSockets: this.state.maxSockets,
-        maxTotalSockets: this.state.maxTotalSockets,
       })
     })
   }

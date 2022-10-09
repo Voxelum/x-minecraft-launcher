@@ -77,7 +77,7 @@ watch(computed(() => props.moveEnabled), (e) => {
   }
 })
 
-watchEffect(() => {
+watch(() => props.moveDirection, () => {
   const cur = window.pJSDom[0]
   if (cur) {
     const pJS = cur.pJS
@@ -128,6 +128,7 @@ watchEffect(() => {
     }
   }
 })
+
 function initParticleJS() {
   // eslint-disable-next-line no-undef
   // @ts-ignore

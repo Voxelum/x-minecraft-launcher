@@ -628,7 +628,6 @@ profile:
   localVersionHint: 選擇本地版本會覆蓋Minecraft版本的設置
   nameHint: 名稱便於以後識別
   noLocalVersion: 沒有本地版本
-  select: 選擇
   server:
     '': 服務器 | 服務器
     acceptingMinecraftVersion: 接受 Minecraft 版本
