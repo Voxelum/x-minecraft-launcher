@@ -27,12 +27,12 @@
   </v-tooltip>
 </template>
 <script lang="ts" setup>
-import { InstanceIOServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
+import { InstanceServiceKey, XUpdateServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { useServiceBusy, useService, useI18n } from '/@/composables'
+import { useI18n, useService, useServiceBusy } from '/@/composables'
 
 const { show } = useDialog('instance-sync')
-const checkingUpdate = useServiceBusy(InstanceIOServiceKey, 'fetchInstanceUpdate')
+const checkingUpdate = useServiceBusy(XUpdateServiceKey, 'fetchInstanceUpdate')
 const { state } = useService(InstanceServiceKey)
 const { t } = useI18n()
 

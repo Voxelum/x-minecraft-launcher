@@ -45,7 +45,7 @@
 </template>
 <script lang="ts" setup>
 import { Ref } from '@vue/composition-api'
-import { InstanceIOServiceKey, InstanceUpdate } from '@xmcl/runtime-api'
+import { InstanceInstallServiceKey, InstanceIOServiceKey, InstanceUpdate, XUpdateServiceKey } from '@xmcl/runtime-api'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { useColorTheme } from '../composables/colorTheme'
 import { InstanceFileNode, provideFileNodes } from '../composables/instanceFiles'
@@ -55,9 +55,10 @@ import { basename } from '/@/util/basename'
 
 const props = defineProps<{ shown: boolean }>()
 
-const { fetchInstanceUpdate, applyInstanceFilesUpdate } = useService(InstanceIOServiceKey)
-const checkingUpdate = useServiceBusy(InstanceIOServiceKey, 'fetchInstanceUpdate')
-const applyingUpdate = useServiceBusy(InstanceIOServiceKey, 'applyInstanceFilesUpdate')
+const { fetchInstanceUpdate } = useService(XUpdateServiceKey)
+const { installInstanceFiles } = useService(InstanceInstallServiceKey)
+const checkingUpdate = useServiceBusy(XUpdateServiceKey, 'fetchInstanceUpdate')
+const applyingUpdate = useServiceBusy(InstanceInstallServiceKey, 'installInstanceFiles')
 const currentUpdate = ref(undefined as undefined | InstanceUpdate)
 const updateFiles = computed(() => currentUpdate.value ? currentUpdate.value.updates : [])
 const { errorColor } = useColorTheme()
@@ -106,7 +107,7 @@ async function check() {
 async function update() {
   const enabled = new Set(...selected.value)
   const result = updateFiles.value.filter(f => enabled.has(f.file.path)).map(f => f.file)
-  await applyInstanceFilesUpdate({ path: '', updates: result })
+  await installInstanceFiles({ files: result })
 }
 
 onMounted(check)

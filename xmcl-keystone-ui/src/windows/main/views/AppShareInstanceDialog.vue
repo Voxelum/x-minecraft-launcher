@@ -179,7 +179,7 @@
 <script lang="ts" setup>
 import { useDialog } from '../composables/dialog'
 import { useI18n, useRouter, useService } from '/@/composables'
-import { InstanceIOServiceKey, InstanceManifest, PeerServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
+import { InstanceIOServiceKey, InstanceManifest, PeerServiceKey, InstanceServiceKey, InstanceInstallServiceKey } from '@xmcl/runtime-api'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { Ref } from '@vue/composition-api'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
@@ -190,7 +190,8 @@ import { useNotifier } from '../composables/notifier'
 
 const { isShown, show, parameter } = useDialog('share-instance')
 
-const { getInstanceManifest, applyInstanceFilesUpdate } = useService(InstanceIOServiceKey)
+const { installInstanceFiles } = useService(InstanceInstallServiceKey)
+const { getInstanceManifest } = useService(InstanceIOServiceKey)
 const { shareInstance, state, on } = useService(PeerServiceKey)
 const { state: instanceState } = useService(InstanceServiceKey)
 const { t } = useI18n()
@@ -231,7 +232,7 @@ const sharing = computed(() => isShown.value && !parameter.value)
  * The sharing user name. Only for sharing == false
  */
 const currentUser = ref('')
-const manifest: Ref<InstanceManifest<'sha1'> | undefined> = ref(undefined)
+const manifest: Ref<InstanceManifest | undefined> = ref(undefined)
 const selected = ref([] as string[])
 
 provideFileNodes(useInstanceFileNodesFromLocal(computed(() => manifest.value?.files || [])))
@@ -266,8 +267,8 @@ const onDownloadInstance = () => {
     const allow = new Set(selected.value)
     files = files.filter(f => allow.has(f.path))
 
-    subscribeTask(applyInstanceFilesUpdate({
-      updates: files,
+    subscribeTask(installInstanceFiles({
+      files,
     }), t('downloadNotifyTitle', { user: currentUser.value }))
 
     isShown.value = false

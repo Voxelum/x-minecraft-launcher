@@ -25,7 +25,7 @@
         :user="selectedUser"
       />
       <user-yggdrasil-view
-        v-else
+        v-else-if="!!selectedUser"
         :user="selectedUser"
       />
       <div class="flex-grow" />

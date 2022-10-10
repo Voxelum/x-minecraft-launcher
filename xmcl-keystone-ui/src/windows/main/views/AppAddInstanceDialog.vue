@@ -96,7 +96,7 @@
 
 <script lang=ts setup>
 import { Ref } from '@vue/composition-api'
-import { InstanceIOServiceKey, ModpackServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceInstallServiceKey, ModpackServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
 import AdvanceContent from '../components/StepperAdvanceContent.vue'
 import BaseContent from '../components/StepperBaseContent.vue'
 import StepperFooter from '../components/StepperFooter.vue'
@@ -114,7 +114,7 @@ const { create, reset, data: creationData } = useInstanceCreation()
 const router = useRouter()
 const { on } = useService(ResourceServiceKey)
 const { importModpack } = useService(ModpackServiceKey)
-const { installInstanceFiles } = useService(InstanceIOServiceKey)
+const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 const { t } = useI18n()
 const { notify } = useNotifier()
 const { templates, apply, refresh, dispose } = useAllTemplate(creationData)

@@ -183,7 +183,7 @@ export default defineComponent({
     ]
     const nameRules = [
       (value: string) => !!value || $t('userService.requireName'),
-      (value: string) => !state.authServices[value] || $t('userService.duplicatedName'),
+      // (value: string) => !state.authServices[value] || $t('userService.duplicatedName'),
     ]
     const authOrder = ['hostName', 'authenticate', 'refresh', 'validate', 'invalidate', 'signout'] as const
     const data = reactive({
@@ -255,17 +255,17 @@ export default defineComponent({
         }
       })
       if (props.modify !== '') {
-        const authSeriv = state.authServices[props.modify]
-        if (authSeriv) {
-          data.newAuth = { ...authSeriv }
-        }
-        const profSeriv = state.profileServices[props.modify]
-        if (profSeriv) {
-          data.newProfileService = { ...profSeriv }
-          delete (data.newProfileService as any).publicKey
-        }
-        data.enableProfileService = !!profSeriv
-        data.enableAuthService = !!authSeriv
+        // const authSeriv = state.authServices[props.modify]
+        // if (authSeriv) {
+        //   data.newAuth = { ...authSeriv }
+        // }
+        // const profSeriv = state.profileServices[props.modify]
+        // if (profSeriv) {
+        //   data.newProfileService = { ...profSeriv }
+        //   delete (data.newProfileService as any).publicKey
+        // }
+        // data.enableProfileService = !!profSeriv
+        // data.enableAuthService = !!authSeriv
 
         data.name = props.modify
 
@@ -299,8 +299,8 @@ export default defineComponent({
       urlRules,
       nameRules,
       finish() {
-        state.authServiceSet({ name: data.name, api: data.newAuth })
-        state.profileServiceSet({ name: data.name, api: data.newProfileService })
+        // state.authServiceSet({ name: data.name, api: data.newAuth })
+        // state.profileServiceSet({ name: data.name, api: data.newProfileService })
         context.emit('route', 'back')
       },
       onKeyPress() {

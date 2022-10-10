@@ -43,17 +43,18 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { InstanceIOException, InstanceIOServiceKey, InstanceManifestSchema, isException, InstanceManifest } from '@xmcl/runtime-api'
+import { InstanceIOException, InstanceIOServiceKey, InstanceManifestSchema, isException, InstanceManifest, XUpdateServiceKey } from '@xmcl/runtime-api'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
 import { useI18n, useService, useServiceBusy } from '/@/composables'
 
 const props = defineProps<{ shown: boolean }>()
 
-const { getInstanceManifest, uploadInstanceManifest } = useService(InstanceIOServiceKey)
+const { getInstanceManifest } = useService(InstanceIOServiceKey)
+const { uploadInstanceManifest } = useService(XUpdateServiceKey)
 const gettingManifest = useServiceBusy(InstanceIOServiceKey, 'getInstanceManifest')
-const uploadingInstanceManifest = useServiceBusy(InstanceIOServiceKey, 'uploadInstanceManifest')
-const current = ref(undefined as undefined | InstanceManifest<'sha1'>)
+const uploadingInstanceManifest = useServiceBusy(XUpdateServiceKey, 'uploadInstanceManifest')
+const current = ref(undefined as undefined | InstanceManifest)
 const files = computed(() => current.value ? current.value.files : [])
 const { t } = useI18n()
 
