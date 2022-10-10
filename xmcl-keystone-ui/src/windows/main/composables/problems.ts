@@ -48,7 +48,7 @@ export function useProblemItems(issues: Ref<Issue[]>) {
           ...i,
         }
       }
-      return { title: tc(`diagnosis.${i.id}.name`, i.parameters.length || 0, i.parameters[0]), description: t(`diagnosis.${i.id}.description`, { }), ...i }
+      return { title: tc(`diagnosis.${i.id}.name`, i.parameters.length || 0, i.parameters[0]), description: t(`diagnosis.${i.id}.message`, { }), ...i }
     }))
   return items
 }
