@@ -11,7 +11,7 @@
       :expired="isExpired"
       @login="showLoginDialog()"
       @refresh="refresh"
-      @abort-refresh="abortRefresh()"
+      @abort-refresh="onRefreshAbort()"
       @select="onSelect"
       @remove="startDelete"
     />
@@ -54,10 +54,10 @@ import { useDialog } from '../composables/dialog'
 import { LoginDialog } from '../composables/login'
 import { useUsers } from '../composables/user'
 import UserPageHeader from './UserHeader.vue'
-import UserYggdrasilView from './UserYggdrasilView.vue'
 import UserMicrosoftView from './UserMicrosoftView.vue'
 import UserMojangView from './UserMojangView.vue'
-import { useI18n, useOperation, useService, useServiceBusy } from '/@/composables'
+import UserYggdrasilView from './UserYggdrasilView.vue'
+import { useBusy, useI18n, useOperation, useService } from '/@/composables'
 import { DropServiceInjectionKey } from '/@/composables/dropService'
 import { injection } from '/@/util/inject'
 
@@ -80,6 +80,10 @@ const removingUserName = computed(() => state.users[removingProfile.value]?.user
 
 const { suppressed } = injection(DropServiceInjectionKey)
 
+const onRefreshAbort = () => {
+  abortRefresh()
+}
+
 onMounted(() => {
   suppressed.value = true
 })
@@ -87,17 +91,16 @@ onUnmounted(() => {
   suppressed.value = false
 })
 
-const refreshing = useServiceBusy(UserServiceKey, 'refreshUser')
+const refreshing = useBusy('refreshUser')
+
 function startDelete(id: string) {
   beginRemoveProfile(id)
   showDeleteDialog()
 }
 function refresh() {
-  if (!isExpired.value) {
-    refreshAccount()
-  } else {
+  refreshAccount().catch(() => {
     showLoginDialog({ username: selectedUser.value?.username, service: selectedUser.value?.authService, error: t('login.userRelogin') })
-  }
+  })
 }
 function onDrop(e: DragEvent) {
   const dataTransfer = e.dataTransfer!

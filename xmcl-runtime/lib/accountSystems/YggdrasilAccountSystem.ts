@@ -74,6 +74,8 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
 
         userProfile.accessToken = ''
       }
+    } else {
+      userProfile.expiredAt = Date.now() + 86400_000
     }
 
     for (const p of Object.values(userProfile.profiles)) {

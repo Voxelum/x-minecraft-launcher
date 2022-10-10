@@ -1,5 +1,6 @@
 import { HTTPException } from '@xmcl/runtime-api'
-import { Dispatcher, errors } from 'undici'
+import { Readable } from 'stream'
+import { BodyMixin, Dispatcher, errors, Response } from 'undici'
 
 export interface SystemError extends Error {
   /**
@@ -22,10 +23,10 @@ export function isSystemError(e: any): e is SystemError {
   return false
 }
 
-export function serializeError(e: unknown): any {
+export async function serializeError(e: unknown): Promise<any> {
   if (e instanceof Array) {
     if (e.length !== 1) {
-      return e.map(serializeError)
+      return Promise.all(e.map(serializeError))
     }
     return serializeError(e[0])
   }
@@ -33,29 +34,31 @@ export function serializeError(e: unknown): any {
   const error: any = {
   }
 
-  const serializeUndiciError = (e: errors.UndiciError) => {
+  const serializeUndiciError = async (e: errors.UndiciError) => {
     const options: Dispatcher.DispatchOptions = (e as any).options
     const url = new URL(options.path, options.origin)
+    let body = ''
+    if (e instanceof errors.ResponseStatusCodeError) {
+      const b = e.body as BodyMixin
+      body = await b.text()
+    }
     return new HTTPException({
       type: 'httpException',
       code: (e as any).code,
       method: options.method,
       url: url.toString(),
       statusCode: e instanceof errors.ResponseStatusCodeError ? e.statusCode : 0,
-      body: e instanceof errors.ResponseStatusCodeError ? e.body : '',
+      body,
     })
   }
 
   if (e instanceof errors.UndiciError) {
-    e = serializeUndiciError(e)
+    e = await serializeUndiciError(e)
   }
 
   if (e instanceof Error) {
     try {
       Object.assign(error, JSON.parse(JSON.stringify(e, (key, val) => {
-        if (val instanceof errors.UndiciError) {
-          return serializeUndiciError(val)
-        }
         return val
       })))
     } catch (e) { }

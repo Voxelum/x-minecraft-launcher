@@ -112,9 +112,7 @@
           }}
         </v-list-item-title>
         <v-list-item-subtitle>
-          {{
-            $t('instance.versionHint')
-          }}
+          <a href="https://github.com/MinecraftForge/MinecraftForge">https://github.com/MinecraftForge/MinecraftForge</a>
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
@@ -154,9 +152,7 @@
       <v-list-item-content>
         <v-list-item-title>Fabric</v-list-item-title>
         <v-list-item-subtitle>
-          {{
-            $t('instance.versionHint')
-          }}
+          <a href="https://fabricmc.net/">https://fabricmc.net/</a>
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
@@ -193,9 +189,7 @@
       <v-list-item-content>
         <v-list-item-title>Quilt</v-list-item-title>
         <v-list-item-subtitle>
-          {{
-            $t('instance.versionHint')
-          }}
+          <a href="https://quiltmc.org/">https://quiltmc.org/</a>
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
@@ -222,13 +216,50 @@
         </version-menu>
       </v-list-item-action>
     </v-list-item>
+    <v-list-item>
+      <v-list-item-action class="self-center">
+        <img
+          :src="'image:builtin:optifine'"
+          width="40px"
+        >
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title>Optifine</v-list-item-title>
+        <v-list-item-subtitle>
+          <a href="https://www.optifine.net/home">https://www.optifine.net/home</a>
+        </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-action>
+        <version-menu
+          :is-clearable="true"
+          :items="optifineItems"
+          :clear-text="t('optifineVersion.disable')"
+          :refreshing="refreshingOptifine"
+          @select="onSelectOptifine"
+        >
+          <template #default="{ on }">
+            <v-text-field
+              :value="content.runtime.optifine"
+              outlined
+              hide-details
+              append-icon="arrow_drop_down"
+              persistent-hint
+              :readonly="true"
+              @click:append="on.click($event);"
+              @click="refreshOptifine()"
+              v-on="on"
+            />
+          </template>
+        </version-menu>
+      </v-list-item-action>
+    </v-list-item>
   </v-list>
 </template>
 
 <script lang=ts setup>
 import { CreateOptionKey } from '../composables/instanceCreation'
 import { useJava } from '../composables/java'
-import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useQuiltVersionList } from '../composables/versionList'
+import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useOptifineVersionList, useQuiltVersionList } from '../composables/versionList'
 import VersionMenu from './VersionMenu.vue'
 import fabricPng from '/@/assets/fabric.png'
 import forgePng from '/@/assets/forge.png'
@@ -255,6 +286,7 @@ const { items: minecraftItems, showAlpha, refresh: refreshMinecraft, refreshing:
 const { items: forgeItems, canShowBuggy, recommendedOnly, refresh: refreshForge, refreshing: refreshingForge } = useForgeVersionList(minecraft, computed(() => content.runtime.forge ?? ''))
 const { items: fabricItems, showStableOnly, refresh: refreshFabric, refreshing: refreshingFabric } = useFabricVersionList(minecraft, computed(() => content.runtime.fabricLoader ?? ''))
 const { items: quiltItems, refresh: refreshQuilt, refreshing: refreshingQuilt } = useQuiltVersionList(minecraft, computed(() => content.runtime.quiltLoader ?? ''))
+const { items: optifineItems, refresh: refreshOptifine, refreshing: refreshingOptifine } = useOptifineVersionList(minecraft, computed(() => content.runtime.forge ?? ''), computed(() => content.runtime.optifine ?? ''))
 
 recommendedOnly.value = false
 onMounted(() => {
@@ -278,6 +310,7 @@ function onSelectForge(version: string) {
     if (version) {
       runtime.fabricLoader = ''
       runtime.quiltLoader = ''
+      runtime.optifine = ''
     }
   }
 }
@@ -287,6 +320,7 @@ function onSelectFabric(version: string) {
     if (version) {
       runtime.forge = ''
       runtime.quiltLoader = ''
+      runtime.optifine = ''
     }
     runtime.fabricLoader = version
   }
@@ -297,6 +331,16 @@ function onSelectQuilt(version: string) {
     if (version) {
       runtime.forge = runtime.fabricLoader = ''
       runtime.quiltLoader = version
+      runtime.optifine = ''
+    }
+  }
+}
+function onSelectOptifine(version: string) {
+  if (content.runtime) {
+    const runtime = content.runtime
+    if (version) {
+      runtime.quiltLoader = runtime.fabricLoader = ''
+      runtime.optifine = version
     }
   }
 }
