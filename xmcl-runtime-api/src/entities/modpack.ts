@@ -56,13 +56,13 @@ export interface ModpackManifest {
   author: string
 }
 
-export interface ModpackManifestResolved {
+export type ModpackManifestResolved<T> = T & {
   resolved: Partial<InstanceData> & {
     files: InstanceFile[]
   }
 }
 
-export interface ModrinthModpackManifest extends ModpackManifestResolved {
+export interface ModrinthModpackManifest {
   /**
    * The version of the format, stored as a number. The current value at the time of writing is 1.
    */
@@ -130,7 +130,7 @@ export interface ModrinthModpackManifest extends ModpackManifestResolved {
   }
 }
 
-export interface McbbsModpackManifest extends ModpackManifest, ModpackManifestResolved {
+export interface McbbsModpackManifest extends ModpackManifest {
   /**
    * The manifest type. For mcbbs should be "minecraftModpack"
    */
@@ -231,7 +231,7 @@ export interface McbbsModpackManifest extends ModpackManifest, ModpackManifestRe
 /**
  * The modpack metadata structure
  */
-export interface CurseforgeModpackManifest extends ModpackManifest, ModpackManifestResolved {
+export interface CurseforgeModpackManifest extends ModpackManifest {
   manifestVersion: 1
   minecraft: {
     version: string

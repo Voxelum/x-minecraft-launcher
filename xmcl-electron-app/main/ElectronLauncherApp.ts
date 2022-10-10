@@ -11,7 +11,6 @@ import defaultApp from './defaultApp'
 import { preloadServices } from './preloadServices'
 import { DownloadAppInstallerTask } from './utils/appinstaller'
 import { isDirectory } from './utils/fs'
-import { setLinuxProtocol } from './utils/protocol'
 import { checkUpdateTask as _checkUpdateTask, DownloadAsarUpdateTask, DownloadFullUpdateTask, quitAndInstallAsar, quitAndInstallFullUpdate, setup } from './utils/updater'
 import { getWindowsUtils } from './utils/windowsUtils'
 

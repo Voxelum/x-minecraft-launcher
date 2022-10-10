@@ -148,7 +148,7 @@
 </template>
 
 <script lang=ts setup>
-import { AssetIndexIssueKey, AssetsIssueKey, BaseServiceKey, InstallProfileIssueKey, isIssue, LibrariesIssueKey, VersionIssueKey, VersionJarIssueKey, VersionJsonIssueKey, VersionServiceKey } from '@xmcl/runtime-api'
+import { AssetIndexIssueKey, AssetsIssueKey, BaseServiceKey, InstallProfileIssueKey, isIssue, LibrariesIssueKey, TaskState, VersionIssueKey, VersionJarIssueKey, VersionJsonIssueKey, VersionServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { useInstance, useInstanceVersion } from '../composables/instance'
 import { AppExportDialogKey } from '../composables/instanceExport'
@@ -207,6 +207,9 @@ const onShowLocalVersion = () => {
 
 const { total, progress, name: taskName, pause, resume, status } = useTask((i) => {
   const p = i.param as any
+  if (i.state === TaskState.Cancelled || i.state === TaskState.Succeed || i.state === TaskState.Failed) {
+    return false
+  }
   if (i.path === 'installVersion' && p?.id === version.value.minecraft) {
     return true
   }
@@ -231,7 +234,7 @@ const { total, progress, name: taskName, pause, resume, status } = useTask((i) =
   if (i.path === 'installFabric' && p?.id === version.value.minecraft) {
     return true
   }
-  if (i.path === 'updateInstance' && p.instance === path.value) {
+  if (i.path === 'installInstance' && p.instance === path.value) {
     // installing this instance
     return true
   }

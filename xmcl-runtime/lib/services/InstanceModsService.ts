@@ -75,67 +75,6 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
 
   @Singleton()
   async diagnoseMods() {
-    this.up('diagnose')
-    try {
-      const report: Partial<IssueReport> = {}
-      const { runtime: version } = this.instanceService.state.instance
-      this.log(`Diagnose mods under ${version.minecraft}`)
-      const mods = this.state.mods
-
-      const mcVersion = version.minecraft
-
-      const builder = new IssueReportBuilder()
-
-      builder.set(RequireForgeIssueKey)
-      builder.set(RequireFabricIssueKey)
-      builder.set(RequireFabricAPIIssueKey)
-
-      const forgeMods = mods.filter(isForgeResource)
-      const fabricMods = mods.filter(isFabricResource)
-
-      if (forgeMods.length > 0 && fabricMods.length > 0) {
-        // forge fabric conflict
-        // tree.loaderConflict.push({ loaders: ['forge', 'fabric'] })
-      } else if (forgeMods.length > 0) {
-        if (!version.forge) {
-          // no forge
-          builder.set(RequireForgeIssueKey, {})
-        } else {
-          // for (const mod of forgeMods) {
-          //   const forgeComp = getForgeModCompatibility(mod, version)
-          //   for (const [modid, comp] of Object.entries(forgeComp)) {
-          //     for (const [depName, detail] of Object.entries(comp)) {
-          //       if (!detail.compatible) {
-          //         tree.incompatibleMod.push({ name: mod.name, accepted: detail.requirements, actual: detail.version, dep: depName })
-          //       }
-          //     }
-          //   }
-          // }
-        }
-      } else if (fabricMods.length > 0) {
-        if (!version.fabricLoader) {
-          // no fabric
-          builder.set(RequireFabricIssueKey, {})
-        } else {
-          for (const mod of fabricMods) {
-            const comp = getFabricModCompatibility(mod, version)
-            // for (const [depName, detail] of Object.entries(comp)) {
-            //   if (!detail.compatible) {
-            //     tree.incompatibleMod.push({ name: mod.name, accepted: detail.requirements, actual: detail.version, dep: depName })
-            //   }
-            // }
-            if (comp.fabric && !comp.fabric.compatible) {
-              // fabric api not compatible
-              builder.set(RequireFabricAPIIssueKey, { version: comp.fabric.version, name: mod.name })
-            }
-          }
-        }
-      }
-
-      this.diagnoseService.report(builder.build())
-    } finally {
-      this.down('diagnose')
-    }
   }
 
   async refresh(force?: boolean): Promise<void> {

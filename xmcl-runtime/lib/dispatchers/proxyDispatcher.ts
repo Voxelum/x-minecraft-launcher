@@ -24,7 +24,7 @@ export class ProxyDispatcher extends DispatcherBase {
   private proxyClient?: Client
   private proxyHeader?: Record<string, string>
 
-  private pConnect: typeof buildConnector.connector
+  private pConnect: buildConnector.connector
 
   async setProxy(uri: URL, auth?: string) {
     const oldClient = this.proxyClient
@@ -44,7 +44,7 @@ export class ProxyDispatcher extends DispatcherBase {
   }
 
   constructor(opts: {
-    factory: (connect: typeof buildConnector.connector) => Dispatcher
+    factory: (connect: buildConnector.connector) => Dispatcher
     requestTls?: TlsOptions & { servername?: string }
     proxyTls?: TlsOptions & { servername?: string }
   }) {

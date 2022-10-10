@@ -213,8 +213,8 @@ export class InstanceInstallService extends AbstractService implements IInstance
     const profile = join(current, '.install-profile')
     if (existsSync(profile)) {
       const fileContent = JSON.parse(await readFile(profile, 'utf-8'))
-      if (fileContent.version !== 0) {
-        throw new Error(`Cannot identify lockfile version ${fileContent.version}`)
+      if (fileContent.lockVersion !== 0) {
+        throw new Error(`Cannot identify lockfile version ${fileContent.lockVersion}`)
       }
       const files = fileContent.files as InstanceFile[]
       return files

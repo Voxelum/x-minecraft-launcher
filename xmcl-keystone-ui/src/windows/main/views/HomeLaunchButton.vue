@@ -148,7 +148,11 @@ function onClick() {
         // has unfinished files
         installInstanceFiles({
           files: pendingInstallFiles.value,
+        }).finally(() => {
+          refreshInstanceInstall()
         })
+      } else {
+        refreshInstanceInstall()
       }
     }
   } else if (missingJava.value) {

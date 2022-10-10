@@ -198,12 +198,12 @@ let injectedUpdate = false
 
 async function getUpdateFromSelfHost(app: ElectronLauncherApp): Promise<ReleaseInfo> {
   const { allowPrerelease, locale } = app.serviceManager.get(BaseService).state
-  const result: any = await app.networkManager.request(`https://api.xmcl.app/latest?version=v${'0.30.0'}&prerelease=${allowPrerelease || false}`, {
+  const response = await request(`https://api.xmcl.app/latest?version=v${app.version}&prerelease=${allowPrerelease || false}`, {
     headers: {
       'Accept-Language': locale,
     },
-  }).json()
-    .catch(() => app.networkManager.request('https://xmcl.blob.core.windows.net/releases/latest_version.json').json())
+  }).catch(() => request('https://xmcl.blob.core.windows.net/releases/latest_version.json'))
+  const result = await response.body.json()
   const updateInfo: ReleaseInfo = {
     name: result.tag_name,
     body: result.body,

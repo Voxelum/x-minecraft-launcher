@@ -1,4 +1,4 @@
-import { InstanceManifestSchema } from 'src/entities/instanceManifest.schema'
+import { InstanceManifestSchema } from '../entities/instanceManifest.schema'
 import { InstanceUpdate } from './InstanceIOService'
 import { ServiceKey } from './Service'
 

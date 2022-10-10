@@ -120,7 +120,9 @@ export function isBetaVersion(version: string) {
 export function isAlphaVersion(version: string) {
   return version.match(/^a[0-9]+\.[0-9]+(\.[0-9])?(_[0-9]+)?$/g)
 }
-export function isSameForgeVersion(forgeVersion: string, version: string) {
+export function isSameForgeVersion(forgeVersion: string, version: string, minecraft: string) {
+  if (version.startsWith(`${minecraft}-`)) version = version.substring(`${minecraft}-`.length)
+  if (version.endsWith(`-${minecraft}`)) version = version.substring(0, version.length - `-${minecraft}`.length)
   const i = version.indexOf('-')
   if (i === -1) {
     return forgeVersion === version
@@ -143,7 +145,7 @@ export function isVersionMatched(version: LocalVersionHeader, runtime: RuntimeVe
   }
   if (forge) {
     // require forge
-    if (!version.forge || !isSameForgeVersion(forge, version.forge)) {
+    if (!version.forge || !isSameForgeVersion(forge, version.forge, minecraft)) {
       // require forge but not forge
       return false
     }

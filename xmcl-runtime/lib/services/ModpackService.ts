@@ -5,7 +5,7 @@ import { task } from '@xmcl/task'
 import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
 import { createHash } from 'crypto'
 import { stat } from 'fs-extra'
-import { join, relative } from 'path'
+import { basename, join, relative } from 'path'
 import { pipeline } from 'stream/promises'
 import { Entry, ZipFile } from 'yauzl'
 import LauncherApp from '../app/LauncherApp'
@@ -291,6 +291,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     } else {
       instancePath = await this.instanceService.createInstance({
         ...config,
+        name: config.name || basename(options.path),
         ...options.instanceConfig,
       })
     }

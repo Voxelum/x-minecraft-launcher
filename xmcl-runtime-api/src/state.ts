@@ -1,7 +1,6 @@
 import { BaseState } from './services/BaseService'
 import { CurseforgeState } from './services/CurseForgeService'
 import { DiagnoseState } from './services/DiagnoseService'
-import { InstallState } from './services/InstallService'
 import { InstanceOptionsState } from './services/InstanceOptionsService'
 import { InstanceModsState } from './services/InstanceModsService'
 import { SaveState } from './services/InstanceSavesService'
@@ -26,7 +25,6 @@ export type AllServiceMutations =
   Mutations<BaseState>
   & Mutations<CurseforgeState>
   & Mutations<DiagnoseState>
-  & Mutations<InstallState>
   & Mutations<InstanceState>
   & Mutations<InstanceModsState>
   & Mutations<InstanceOptionsState>
