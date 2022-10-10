@@ -96,7 +96,7 @@ import { getExpectedSize } from '/@/util/size'
 const iconMap: Record<string, string> = {
   forge: '$vuetify.icons.package',
   fabric: '$vuetify.icons.fabric',
-  unknown: 'question_mark',
+  unclassified: 'question_mark',
   resourcepack: '$vuetify.icons.zip',
   shaderpack: '$vuetify.icons.zip',
   'curseforge-modpack': '$vuetify.icons.curseforge',
@@ -117,7 +117,7 @@ const enabled = computed({
   set(v) { emit('enable', v) },
 })
 
-const icon = computed(() => props.value.result ? iconMap[props.value.result.domain === ResourceDomain.Unclassified] ?? 'question_mark' : 'question_mark')
+const icon = computed(() => props.value.result ? iconMap[props.value.result.domain] ?? 'question_mark' : 'question_mark')
 const tryEnable = () => {
   if (!disabled.value) {
     emit('enable')

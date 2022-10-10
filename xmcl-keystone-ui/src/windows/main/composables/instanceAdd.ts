@@ -216,7 +216,15 @@ export function useAllTemplate(data: InstanceData) {
     return {
       id: modpack.path,
       name: modpack.name,
-      runtime: modpack.metadata.modpack?.runtime || {},
+      runtime: {
+        minecraft: modpack.metadata.modpack.runtime.minecraft || '',
+        forge: modpack.metadata.modpack.runtime.forge || '',
+        fabricLoader: modpack.metadata.modpack.runtime.fabricLoader || '',
+        quiltLoader: modpack.metadata.modpack.runtime.quiltLoader || '',
+        optifine: modpack.metadata.modpack.runtime.optifine || '',
+        liteloader: modpack.metadata.modpack.runtime.liteloader || '',
+        yarn: modpack.metadata.modpack.runtime.yarn || '',
+      },
       source: {
         type: 'modpack',
         resource: modpack,

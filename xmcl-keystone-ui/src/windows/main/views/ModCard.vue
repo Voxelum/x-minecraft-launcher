@@ -103,6 +103,7 @@
 <script lang=ts setup>
 import { Ref } from '@vue/composition-api'
 import { BaseServiceKey } from '@xmcl/runtime-api'
+import type Vue from 'vue'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { useCurseforgeRoute, useMcWikiRoute } from '../composables/curseforgeRoute'
 import { ModItem } from '../composables/mod'
@@ -124,7 +125,7 @@ const { t } = useI18n()
 const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.source.tags, set(v) { emit('tags', v) } }), computed(() => props.source.selected))
 
 const onDeleteTag = removeTag
-const iconImage: Ref<HTMLImageElement | null> = ref(null)
+const iconImage: Ref<Vue | null> = ref(null)
 const enabled = computed({
   get() { return props.source.enabled },
   set(v: boolean) { emit('enable', { item: props.source, enabled: v }) },

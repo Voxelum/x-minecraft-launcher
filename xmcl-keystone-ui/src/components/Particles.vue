@@ -63,8 +63,10 @@ const props = withDefaults(defineProps<{
   moveRandom: false,
 })
 
+const current = () => (window as any).pJSDom[0]
+
 watch(computed(() => props.moveEnabled), (e) => {
-  const cur = window.pJSDom[0]
+  const cur = current()
   if (!cur) {
     return
   }
@@ -72,13 +74,13 @@ watch(computed(() => props.moveEnabled), (e) => {
   pJS.particles.move.enable = e
   console.log(`enabled: ${e}`)
   if (e) {
-    console.log(window.pJSDom[0])
+    console.log(current())
     pJS.fn.vendors.start()
   }
 })
 
 watch(() => props.moveDirection, () => {
-  const cur = window.pJSDom[0]
+  const cur = current()
   if (cur) {
     const pJS = cur.pJS
 

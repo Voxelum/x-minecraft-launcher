@@ -64,7 +64,7 @@
         v-if="selected"
         text
         color="red"
-        @click="emit('remove', selected.id)"
+        @click="emit('remove', selected ? selected.id : '')"
       >
         <v-icon left>
           delete
