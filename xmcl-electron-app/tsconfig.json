@@ -23,6 +23,7 @@
     "importHelpers": true,
     "types": [
       "@xmcl/runtime/lib/global",
+      "@xmcl/runtime/lib/global.module",
       "esbuild-plugin-yaml/dist/yaml"
     ]
   },

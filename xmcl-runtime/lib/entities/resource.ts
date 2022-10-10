@@ -95,7 +95,7 @@ export interface ResourceParser<T> {
   domain: ResourceDomain
   ext: string
   parseIcon: (metadata: T, data: FileSystem) => Promise<Uint8Array | undefined>
-  parseMetadata: (data: FileSystem, filePath: string, metadata: readonly Resource['metadata']) => Promise<T>
+  parseMetadata: (data: FileSystem, filePath: string, metadata: Resource['metadata']) => Promise<T>
   getSuggestedName: (metadata: T) => string
   /**
    * Get ideal uri for this resource

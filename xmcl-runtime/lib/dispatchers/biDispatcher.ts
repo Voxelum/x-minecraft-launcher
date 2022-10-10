@@ -14,37 +14,6 @@ class ErrorDecorateHandler extends DispatchHandler {
   }
 }
 
-/**
- * Control the e2e time, should not be exceed a value
- */
-class TimeoutHandler extends DispatchHandler {
-  private handle: ReturnType<(typeof setTimeout)>
-  private abort = () => {}
-
-  constructor(handler: Dispatcher.DispatchHandlers, private timeout: number) {
-    super(handler)
-    // this.handle = setTimeout(() => {
-    //   this.abort()
-    //   super.onError(new errors.HeadersTimeoutError(`End to end timeout exceed ${timeout}`, {}))
-    // }, timeout)
-  }
-
-  onConnect(abort: () => void, context?: any): void {
-    // this.abort = abort
-    super.onConnect(abort, context)
-  }
-
-  onError(err: Error): void {
-    // clearTimeout(this.handle)
-    return super.onError(err)
-  }
-
-  onComplete(trailers: string[] | null): void {
-    // clearTimeout(this.handle)
-    return super.onComplete(trailers)
-  }
-}
-
 export class BiDispatcher extends Dispatcher {
   constructor(private download: Dispatcher, private api: Dispatcher) {
     super()

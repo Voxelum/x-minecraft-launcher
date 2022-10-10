@@ -12,7 +12,7 @@ export class DispatchHandler implements Dispatcher.DispatchHandlers {
 
   /** Invoked before request is dispatched on socket. May be invoked multiple times when a request is retried when the request at the head of the pipeline fails. */
   onConnect(abort: () => void, context?: object): void {
-    (this.handler.onConnect)?.(abort, context)
+    (this.handler.onConnect as any)?.(abort, context)
   }
 
   /** Invoked when an error has occurred. */

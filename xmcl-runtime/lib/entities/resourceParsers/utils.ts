@@ -15,27 +15,27 @@ export async function getInstallModpackProfile(fs: FileSystem, manifest: Cursefo
 
   const getEntryPath = (e: Entry) => e.fileName.substring('overrides' in manifest ? manifest.overrides.length : 'overrides'.length)
 
-  const files = (await Promise.all(entries
-    .filter((e) => !e.fileName.endsWith('/') && e.fileName.startsWith('overrides' in manifest ? manifest.overrides : 'overrides'))
-    .map(async (v) => {
-      const sha1 = await checksumFromStream(await openEntryReadStream(zip, v), 'sha1')
-      const file: InstanceFile = {
-        path: getEntryPath(v),
-        size: v.uncompressedSize,
-        hashes: {
-          sha1,
-          crc32: v.crc32.toString(),
-        },
-        downloads: [`zip:${join(path, getEntryPath(v))}`],
-      }
-      return file
-    })))
-    .concat(await convertManifest(manifest))
+  // const resultFiles = (await Promise.all(files
+  //   .filter((e) => !e.endsWith('/') && e.startsWith('overrides' in manifest ? manifest.overrides : 'overrides'))
+  //   .map(async (v) => {
+  //     const sha1 = await checksumFromStream(await openEntryReadStream(zip, v), 'sha1')
+  //     const file: InstanceFile = {
+  //       path: getEntryPath(v),
+  //       size: v.uncompressedSize,
+  //       hashes: {
+  //         sha1,
+  //         crc32: v.crc32.toString(),
+  //       },
+  //       downloads: [`zip:${join(path, getEntryPath(v))}`],
+  //     }
+  //     return file
+  //   })))
+  //   .concat(await convertManifest(manifest))
 
-  return {
-    instance,
-    files,
-  }
+  // return {
+  //   instance,
+  //   files: resultFiles,
+  // }
 }
 
 export async function convertManifest(manifest: CurseforgeModpackManifest | McbbsModpackManifest | ModrinthModpackManifest) {
