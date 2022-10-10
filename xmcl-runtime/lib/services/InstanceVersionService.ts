@@ -321,7 +321,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
       if (localOptifine) {
         return localOptifine.id
       }
-      const index = optifineVersion.indexOf('_')
+      const index = optifineVersion.lastIndexOf('_')
       const type = optifineVersion.substring(0, index)
       const patch = optifineVersion.substring(index + 1)
       return await this.installService.installOptifineUnsafe({ type, patch, mcversion: minecraft, inheritFrom: forgeVersion })

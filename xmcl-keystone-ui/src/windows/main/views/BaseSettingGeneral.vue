@@ -193,6 +193,45 @@
       </v-list-item-action>
     </v-list-item>
 
+    <v-list-item>
+      <v-list-item-action class="self-center">
+        <img
+          :src="'image:builtin:optifine'"
+          width="40px"
+        >
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title>Optifine</v-list-item-title>
+        <v-list-item-subtitle>
+          <a href="https://www.optifine.net/home">https://www.optifine.net/home</a>
+        </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-action>
+        <version-menu
+          :is-clearable="true"
+          :items="optifineItems"
+          :clear-text="t('optifineVersion.disable')"
+          :refreshing="refreshingOptifine"
+          @select="onSelectOptifine"
+        >
+          <template #default="{ on }">
+            <v-text-field
+              :value="data.runtime.optifine"
+              solo
+              hide-details
+              :placeholder="t('optifineVersion.disable')"
+              append-icon="arrow_drop_down"
+              persistent-hint
+              :readonly="true"
+              @click:append="on.click($event);"
+              @click="refreshOptifine()"
+              v-on="on"
+            />
+          </template>
+        </version-menu>
+      </v-list-item-action>
+    </v-list-item>
+
     <v-list-item
       @click="data.fastLaunch = !data.fastLaunch"
     >
@@ -255,15 +294,15 @@
 </template>
 
 <script lang=ts setup>
-import { injection } from '/@/util/inject'
-import { InstanceEditInjectionKey } from '../composables/instanceEdit'
-import { useI18n } from '/@/composables'
-import { useMinecraftVersionList, useForgeVersionList, useFabricVersionList, useQuiltVersionList } from '../composables/versionList'
-import minecraftPng from '/@/assets/minecraft.png'
 import VersionMenu from '../components/VersionMenu.vue'
+import { InstanceEditInjectionKey } from '../composables/instanceEdit'
+import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useOptifineVersionList, useQuiltVersionList } from '../composables/versionList'
 import fabricPng from '/@/assets/fabric.png'
 import forgePng from '/@/assets/forge.png'
+import minecraftPng from '/@/assets/minecraft.png'
 import QuiltIcon from '/@/components/QuiltIcon.vue'
+import { useI18n } from '/@/composables'
+import { injection } from '/@/util/inject'
 
 const { data } = injection(InstanceEditInjectionKey)
 const minecraft = computed(() => data.runtime.minecraft)
@@ -271,6 +310,7 @@ const { items: minecraftItems, showAlpha, refresh: refreshMinecraft, refreshing:
 const { items: forgeItems, canShowBuggy, recommendedOnly, refresh: refreshForge, refreshing: refreshingForge } = useForgeVersionList(minecraft, computed(() => data.runtime.forge ?? ''))
 const { items: fabricItems, showStableOnly, refresh: refreshFabric, refreshing: refreshingFabric } = useFabricVersionList(minecraft, computed(() => data.runtime.fabricLoader ?? ''))
 const { items: quiltItems, refresh: refreshQuilt, refreshing: refreshingQuilt } = useQuiltVersionList(minecraft, computed(() => data.runtime.quiltLoader ?? ''))
+const { items: optifineItems, refresh: refreshOptifine, refreshing: refreshingOptifine } = useOptifineVersionList(minecraft, computed(() => data.runtime.forge ?? ''), computed(() => data.runtime.optifine ?? ''))
 
 function onSelectMinecraft(version: string) {
   if (data?.runtime) {
@@ -296,6 +336,7 @@ function onSelectFabric(version: string) {
     if (version) {
       runtime.forge = ''
       runtime.quiltLoader = ''
+      runtime.optifine = ''
     }
     runtime.fabricLoader = version
   }
@@ -306,6 +347,16 @@ function onSelectQuilt(version: string) {
     if (version) {
       runtime.forge = runtime.fabricLoader = ''
       runtime.quiltLoader = version
+      runtime.optifine = ''
+    }
+  }
+}
+function onSelectOptifine(version: string) {
+  if (data.runtime) {
+    const runtime = data.runtime
+    if (version) {
+      runtime.quiltLoader = runtime.fabricLoader = ''
+      runtime.optifine = version
     }
   }
 }

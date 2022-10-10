@@ -98,7 +98,7 @@ export default class ServiceManager extends Manager {
       if (e instanceof Exception) {
         this.logger.error(JSON.stringify(e.exception, null, 4))
       }
-      const error = serializeError(e)
+      const error = await serializeError(e)
       error.serviceName = serviceName
       error.serviceMethod = serviceMethod
       return { error }

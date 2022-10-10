@@ -110,7 +110,6 @@ export function useForgeVersionList(minecraft: Ref<string>, version: Ref<string>
 }
 
 export function useOptifineVersionList(minecraft: Ref<string>, forge: Ref<string>, version: Ref<string>) {
-  const { t } = useI18n()
   const { semaphores } = injection(SERVICES_SEMAPHORES_KEY)
   const { versions, installed, refreshing, refresh } = useOptifineVersions(minecraft, forge)
 

@@ -54,10 +54,12 @@ export function useMinecraftVersions() {
   })
 
   const refresh = async (force = false) => {
-    const result = await getMinecraftVersionList(force)
-    versions.value = markRaw(result.versions)
-    release.value = result.versions.find(v => v.id === result.latest.release)
-    snapshot.value = result.versions.find(v => v.id === result.latest.snapshot)
+    if (force || versions.value.length === 0) {
+      const result = await getMinecraftVersionList(force)
+      versions.value = markRaw(result.versions)
+      release.value = result.versions.find(v => v.id === result.latest.release)
+      snapshot.value = result.versions.find(v => v.id === result.latest.snapshot)
+    }
   }
 
   return {
@@ -115,9 +117,11 @@ export function useFabricVersions(minecraftVersion: Ref<string>) {
   })
 
   async function refresh(force = false) {
-    const result = await getFabricVersionList(force)
-    loaderVersions.value = markRaw(result.loaders)
-    yarnVersions.value = markRaw(result.yarns)
+    if (force || loaderVersions.value.length === 0) {
+      const result = await getFabricVersionList(force)
+      loaderVersions.value = markRaw(result.loaders)
+      yarnVersions.value = markRaw(result.yarns)
+    }
   }
 
   onMounted(() => {
@@ -148,8 +152,10 @@ export function useQuiltVersions(minecraftVersion: Ref<string>) {
     return locals
   })
   async function refresh(force = false) {
-    const result = await getQuiltVersionList({ force, minecraftVersion: minecraftVersion.value })
-    loaderVersions.value = markRaw(result)
+    if (force || loaderVersions.value.length === 0) {
+      const result = await getQuiltVersionList({ force, minecraftVersion: minecraftVersion.value })
+      loaderVersions.value = markRaw(result)
+    }
   }
 
   onMounted(refresh)
@@ -211,8 +217,10 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
 
   async function refresh(force = false) {
     if (minecraftVersion.value) {
-      const result = await getForgeVersionList({ minecraftVersion: minecraftVersion.value, force })
-      versions.value = markRaw(result)
+      if (force || versions.value.length === 0) {
+        const result = await getForgeVersionList({ minecraftVersion: minecraftVersion.value, force })
+        versions.value = markRaw(result)
+      }
     }
   }
 
@@ -276,8 +284,10 @@ export function useOptifineVersions(minecraftVersion: Ref<string>, forgeVersion:
   })
 
   async function refresh(force = false) {
-    const result = await getOptifineVersionList(force)
-    versions.value = result.filter(v => v.mcversion === minecraftVersion.value)
+    if (force || versions.value.length === 0) {
+      const result = await getOptifineVersionList(force)
+      versions.value = result.filter(v => v.mcversion === minecraftVersion.value)
+    }
   }
 
   return {

@@ -46,7 +46,7 @@
         :loading="refreshing && !hoverRefresh"
         @mouseenter="hoverRefresh = true"
         @mouseleave="hoverRefresh = false"
-        @click="refreshing ? emit('refresh') : emit('abort-refresh')"
+        @click="refreshing ? emit('abort-refresh') : emit('refresh')"
       >
         <template v-if="hoverRefresh && refreshing">
           <v-icon color="red">
