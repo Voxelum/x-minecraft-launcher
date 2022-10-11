@@ -23,7 +23,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
     @Inject(InstallService) private installService: InstallService,
   ) {
-    super(app,  () => new InstanceVersionState(), async () => {
+    super(app, () => new InstanceVersionState(), async () => {
       await instanceService.initialize()
       const newVersion = this.getInstanceVersionHeader()
       this.log(`Update instance version: ${newVersion ? newVersion.id : undefined}`)
@@ -301,7 +301,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
 
     let forgeVersion = undefined as undefined | string
     if (forge) {
-      const localForge = local.find(v => v.forge === forge)
+      const localForge = local.find(v => v.forge === forge && v.minecraft === minecraft)
       if (!localForge) {
         const forgeVersions = await this.installService.getForgeVersionList({ minecraftVersion: minecraft })
         const found = forgeVersions.find(v => v.version === forge)
@@ -330,7 +330,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     }
 
     if (fabricLoader) {
-      const localFabric = local.find(v => v.fabric === fabricLoader)
+      const localFabric = local.find(v => v.fabric === fabricLoader && v.minecraft === runtime.minecraft)
       if (localFabric) {
         return localFabric.id
       }
