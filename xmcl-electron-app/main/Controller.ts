@@ -256,7 +256,10 @@ export default class Controller implements LauncherAppController {
         shell.openExternal(url)
       }
     })
-
+    browser.webContents.setWindowOpenHandler((detail) => {
+      shell.openExternal(detail.url)
+      return { action: 'deny' }
+    })
     this.setupBrowserLogger(browser, 'app')
 
     trackWindowSize(browser, config, configPath)

@@ -115,21 +115,22 @@ export class CurseforgeClient {
   }
 
   async searchMods(options: SearchOptions, signal?: AbortSignal) {
+    const query: Record<string, string | number | boolean> = {
+      gameId: 432,
+    }
+    if (options.classId) query.classId = options.classId
+    if (options.categoryId) query.categoryId = options.categoryId
+    if (options.gameVersion) query.gameVersion = options.gameVersion
+    if (options.searchFilter) query.searchFilter = options.searchFilter
+    query.sortField = options.sortField ?? ModsSearchSortField.Popularity
+    query.sortOrder = options.sortOrder ?? 'desc'
+    if (options.modLoaderType) query.modLoaderType = options.modLoaderType
+    if (options.gameVersionTypeId) query.gameVersionTypeId = options.gameVersionTypeId
+    query.index = options.index ?? '0'
+    query.pageSize = options.pageSize ?? '25'
+    if (options.slug) query.slug = options.slug
     const response = await request('https://api.curseforge.com/v1/mods/search', {
-      query: {
-        gameId: 432,
-        classId: options.classId,
-        categoryId: options.categoryId,
-        gameVersion: options.gameVersion,
-        searchFilter: options.searchFilter,
-        sortField: options.searchFilter ?? ModsSearchSortField.Featured,
-        sortOrder: options.sortOrder ?? 'desc',
-        modLoaderType: options.modLoaderType ?? '0',
-        gameVersionTypeId: options.gameVersionTypeId,
-        index: options.index ?? '0',
-        pageSize: options.pageSize ?? '25',
-        slug: options.slug,
-      },
+      query,
       headers: {
         'x-api-key': this.apiKey,
         accept: 'application/json',

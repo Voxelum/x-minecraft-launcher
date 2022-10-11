@@ -197,7 +197,6 @@ const isDownloaded = (ver: ProjectVersion) => {
     }
     if (m.metadata.modrinth) {
       const s = m.metadata.modrinth
-      if (s.url === fileUrl) return true
     }
     return false
   }
@@ -235,7 +234,7 @@ const onCreate = (v: ProjectVersion) => {
 //   text: '',
 //   sortable: false,
 // }])
-const refreshing = useServiceBusy(ModrinthServiceKey, 'getProjectVersion', computed(() => props.project))
+const refreshing = useServiceBusy(ModrinthServiceKey, 'getProjectVersions', computed(() => props.project))
 const { refresh } = useRefreshable(async () => {
   const result = await getProjectVersions(props.project)
   projectVersions.value = result
