@@ -21,7 +21,7 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
-    super(app, CurseForgeServiceKey, () => new CurseforgeState())
+    super(app, () => new CurseforgeState())
 
     const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
       if (origin.host === 'api.curseforge.com') {

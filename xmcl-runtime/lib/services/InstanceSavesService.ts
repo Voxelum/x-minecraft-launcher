@@ -34,7 +34,7 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {
-    super(app, InstanceSavesServiceKey, () => new SaveState())
+    super(app,   () => new SaveState())
     this.storeManager.subscribe('instanceSelect', (path) => {
       this.mountInstanceSaves(path)
     })

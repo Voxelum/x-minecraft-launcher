@@ -22,7 +22,7 @@ export class LittleSkinUserService extends AbstractService implements ILittleSki
     @Inject(UserService) private userService: UserService,
     @Inject(BaseService) private baseService: BaseService,
     @Inject(TokenCache) private cache: TokenCache) {
-    super(app, LittleSkinUserServiceKey)
+    super(app)
 
     const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
       if (origin.hostname === LITTLE_SKIN_HOST) {

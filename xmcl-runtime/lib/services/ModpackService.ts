@@ -1,6 +1,6 @@
 import { HashAlgo } from '@xmcl/curseforge'
 import { UnzipTask } from '@xmcl/installer'
-import { CurseforgeModpackManifest, ExportModpackOptions, getResolvedVersion, ImportModpackOptions, InstanceFile, isAllowInModrinthModpack, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
+import { CurseforgeModpackManifest, EditInstanceOptions, ExportModpackOptions, getResolvedVersion, ImportModpackOptions, InstanceFile, isAllowInModrinthModpack, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
 import { createHash } from 'crypto'
@@ -35,11 +35,21 @@ export interface ModpackDownloadableFile {
   metadata: ResourceMetadata
 }
 
+export interface ModpackHandler<M = any> {
+  shouldUnpackAsOverride(manifest: M, e: Entry): boolean
+
+  readMetadata(zipFile: ZipFile, entries: Entry[]): Promise<M | undefined>
+  resolveInstanceOptions(manifest: M): EditInstanceOptions
+  resolveInstanceFiles(manifest: M): Promise<InstanceFile[]>
+}
+
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
 @ExposeServiceKey(ModpackServiceKey)
 export class ModpackService extends AbstractService implements IModpackService {
+  private handlers: Record<string, ModpackHandler> = {}
+
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(BaseService) private baseService: BaseService,
     @Inject(ResourceService) private resourceService: ResourceService,
@@ -48,11 +58,13 @@ export class ModpackService extends AbstractService implements IModpackService {
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(InstallService) private installService: InstallService,
     @Inject(CurseForgeService) private curseforgeService: CurseForgeService,
-    @Inject(InstanceIOService) private instanceIOService: InstanceIOService,
     @Inject(InstanceInstallService) private instanceInstallService: InstanceInstallService,
-    @Inject(InstanceOptionsService) private instanceOptionsService: InstanceOptionsService,
   ) {
-    super(app, ModpackServiceKey)
+    super(app)
+  }
+
+  registerHandler<M>(type: string, handler: ModpackHandler<M>) {
+    this.handlers[type] = handler
   }
 
   /**
@@ -349,7 +361,7 @@ export class ModpackService extends AbstractService implements IModpackService {
 
         for (let i = 0; i < files.length; i++) {
           const file = files[i]
-          const domain = file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
+          const domain = file.fileName.endsWith('.jar') ? ResourceDomain.Mods : file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
           const sha1 = file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value
           infos.push({
             downloads: file.downloadUrl ? [file.downloadUrl] : guessCurseforgeFileUrl(file.id, file.fileName),

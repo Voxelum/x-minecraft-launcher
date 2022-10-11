@@ -24,7 +24,7 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(BaseService) baseService: BaseService,
     @Inject(UserService) private userService: UserService) {
-    super(app, OfficialUserServiceKey)
+    super(app)
 
     const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, opts) => {
       if (origin.hostname === 'api.minecraftservices.com' || origin.hostname === 'api.mojang.com') {

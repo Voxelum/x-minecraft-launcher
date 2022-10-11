@@ -20,7 +20,7 @@ export class ImportService extends AbstractService implements IImportService {
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {
-    super(app, ImportServiceKey)
+    super(app)
   }
 
   async importFile(options: ImportFileOptions): Promise<void> {

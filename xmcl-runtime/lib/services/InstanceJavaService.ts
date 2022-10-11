@@ -23,7 +23,7 @@ export class InstanceJavaService extends StatefulService<InstanceJavaState> impl
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
   ) {
-    super(app, InstanceJavaServiceKey, () => new InstanceJavaState())
+    super(app, () => new InstanceJavaState())
 
     diagnoseService.register({
       id: InvalidJavaIssueKey,

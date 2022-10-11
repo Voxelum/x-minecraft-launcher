@@ -47,7 +47,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   private registeredAccountSystem: Record<string, UserAccountSystem | undefined> = {}
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
-    super(app, UserServiceKey, () => new UserState(), async () => {
+    super(app, () => new UserState(), async () => {
       const data = await this.userFile.read()
       const result: UserSchema = {
         users: {},

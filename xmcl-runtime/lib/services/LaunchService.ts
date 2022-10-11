@@ -33,7 +33,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
     @Inject(JavaService) private javaService: JavaService,
     @Inject(UserService) private userService: UserService,
   ) {
-    super(app, LaunchServiceKey, () => new LaunchState())
+    super(app, () => new LaunchState())
   }
 
   async generateArguments() {

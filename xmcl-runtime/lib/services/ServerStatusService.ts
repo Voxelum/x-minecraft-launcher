@@ -13,7 +13,7 @@ export class ServerStatusService extends AbstractService implements IServerStatu
   private versionToProtocols: Record<string, number> = {}
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
-    super(app, ServerStatusServiceKey, async () => {
+    super(app, async () => {
       // const protocolFile = this.getAppDataPath('protocol.json')
       // if (await exists(protocolFile)) {
       //   const buf = await readFile(protocolFile)

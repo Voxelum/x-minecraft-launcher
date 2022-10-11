@@ -25,7 +25,7 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
     @Inject(UserService) private userService: UserService,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
-    super(app, ExternalAuthSkinServiceKey)
+    super(app)
     diagnoseService.register(
       {
         id: MissingAuthLibInjectorIssue,

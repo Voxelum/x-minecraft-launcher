@@ -20,7 +20,7 @@ export class XUpdateService extends AbstractService implements IXUpdateService {
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(UserService) private userService: UserService,
   ) {
-    super(app, XUpdateServiceKey)
+    super(app)
   }
 
   private async getAccessToken(userId: string): Promise<string> {

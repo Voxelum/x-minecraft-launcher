@@ -19,7 +19,7 @@ export class VersionService extends StatefulService<VersionState> implements IVe
   private watcher: FSWatcher | undefined
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
-    super(app, VersionServiceKey, () => new VersionState(), async () => {
+    super(app, () => new VersionState(), async () => {
       await this.refreshVersions()
       const versions = this.getPath('versions')
       await ensureDir(versions)

@@ -29,7 +29,7 @@ export class InstanceResourcePackService extends AbstractService implements IIns
     @Inject(InstanceOptionsService) private gameSettingService: InstanceOptionsService,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
   ) {
-    super(app, InstanceResourcePacksServiceKey)
+    super(app)
     this.storeManager.subscribe('instanceGameSettingsLoad', (payload) => {
       if (payload.resourcePacks && this.active && !this.instanceService.isUnderManaged(this.active)) {
         for (const pack of payload.resourcePacks.filter(v => v !== 'vanilla')) {
@@ -52,6 +52,12 @@ export class InstanceResourcePackService extends AbstractService implements IIns
       if ('resourcePacks' in payload) {
         await this.diagnoseResourcePacks()
       }
+    })
+
+    this.resourceService.registerInstaller(ResourceDomain.ResourcePacks, async (resource, path) => {
+      gameSettingService.editGameSetting({
+
+      })
     })
 
     // this.storeManager.subscribe('resource', (r) => {

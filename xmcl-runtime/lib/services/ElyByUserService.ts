@@ -13,7 +13,7 @@ import { YggdrasilThirdPartyClient } from '../clients/YggdrasilClient'
 export class ElyByService extends AbstractService implements IElyByService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(UserService) userService: UserService) {
-    super(app, ElyByServiceKey)
+    super(app)
 
     const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
       if (origin.host === 'authserver.ely.by') {

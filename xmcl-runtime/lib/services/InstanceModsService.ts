@@ -33,7 +33,7 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
   ) {
-    super(app, InstanceModsServiceKey, () => new InstanceModsState())
+    super(app, () => new InstanceModsState())
     this.storeManager.subscribe('resources', (resources) => {
       this.state.instanceModUpdateExisted(resources)
     }).subscribe('resource', (r) => {

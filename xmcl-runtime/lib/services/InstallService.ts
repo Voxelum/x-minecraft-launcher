@@ -29,7 +29,7 @@ export class InstallService extends AbstractService implements IInstallService {
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(JavaService) private javaService: JavaService,
   ) {
-    super(app, InstallServiceKey, async () => {
+    super(app, async () => {
       await this.networkManager.gfwReady.promise
       this.getFabricVersionList()
       this.getMinecraftVersionList()
