@@ -488,6 +488,39 @@ modrinth:
     utility: 实用工具
     transportation: 交通
     worldgen: 世界生成
+    audio: 音效
+    blocks: 方块
+    environment: 环境
+    fonts: 字体
+    128x: 128x
+    16x: 16x
+    256x: 256x
+    32x: 32x
+    512x+: 512x+
+    64x: 64x
+    8x-: 8x-
+    core-shaders: 光影
+    entities: 实体
+    gui: 界面
+    items: 物品
+    locale: 本地化
+    modded: 兼容 Mod
+    models: 模型
+    realistic: 真实风格
+    simplistic: 简约
+    themed: 主体化
+    tweaks: Tweaks
+    vanilla-like: 原版风格
+    bukkit: Bukkit
+    bungeecord: Bungeecord
+    liteloader: Liteloader
+    minecraft: Minecraft
+    paper: Paper
+    purpur: Purpur
+    spigot: Spigot
+    sponge: Sponge
+    velocity: Velocity
+    waterfall: Waterfall
   clientSide: 客户端
   createAt: 创建日期
   description: 详情
@@ -520,6 +553,7 @@ modrinth:
   projectType:
     mod: Mod
     modpack: 整合包
+    resourcepack: 资源包
     name: 项目类型
   searchText: 搜素
   serverSide: 服务端

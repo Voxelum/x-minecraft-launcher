@@ -22,26 +22,26 @@
           <span class="secondary-text"> by {{ value.author }}</span>
         </div>
         {{ value.description }}
-        <div class="flex align-baseline gap-3 secondary-text">
-          <span>
+        <div class="flex align-baseline gap-3 secondary-text mt-1">
+          <span class="text-sm">
             <v-icon small>
               file_download
             </v-icon>
             {{ value.downloads }}
           </span>
-          <span>
+          <span class="text-sm">
             <v-icon small>
               event
             </v-icon>
             {{ getLocalDateString(value.date_created) }}
           </span>
-          <span>
+          <span class="text-sm">
             <v-icon small>
               edit
             </v-icon>
             {{ getLocalDateString(value.date_modified) }}
           </span>
-          <span>
+          <span class="text-sm">
             <v-icon small>
               local_offer
             </v-icon>
@@ -49,7 +49,7 @@
           </span>
         </div>
         <div
-          class="flex gap-2 mt-2"
+          class="flex gap-2 mt-2 flex-wrap"
           @click.stop.prevent
         >
           <v-chip
@@ -63,7 +63,7 @@
               left
               v-html="tag.icon"
             />
-            {{ t(`modrinth.categories.${tag.name}`) }}
+            {{ ts(`modrinth.categories.${tag.name}`, tag.name) }}
           </v-chip>
         </div>
       </div>
@@ -83,7 +83,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['filter', 'click'])
-const { t } = useI18n()
+const { ts } = useI18n()
 
 const cates = injection(ModrinthCategoriesKey)
 const items = computed(() => {

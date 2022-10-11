@@ -16,7 +16,7 @@ interface Tags { licenses: License[]; categories: Category[]; gameVersions: Game
 
 @ExposeServiceKey(ModrinthServiceKey)
 export class ModrinthService extends StatefulService<ModrinthState> implements IModrinthService {
-  private client: ModrinthClient
+  readonly client: ModrinthClient
 
   private tags: Tags | undefined
 
@@ -54,6 +54,16 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
     const versions: ProjectVersion[] = await this.client.getProjectVersions(projectId)
     this.log(`Get project version for version_id=${projectId}`)
     return versions
+  }
+
+  async getProjectVersionsByHash(hashes: string[]): Promise<Record<string, ProjectVersion>> {
+    const result = await this.client.getProjectVersionsByHash(hashes)
+    return result
+  }
+
+  async getProjectVersionsByIds(ids: string[]) {
+    const result = await this.client.getProjectVersionsById(ids)
+    return result
   }
 
   async getProjectVersion(versionId: string): Promise<ProjectVersion> {

@@ -57,6 +57,9 @@ export function useModrinth(props: ModrinthOptions) {
   }, {
     value: 'modpack',
     text: t('modrinth.projectType.modpack'),
+  }, {
+    value: 'resourcepack',
+    text: t('modrinth.projectType.resourcePack'),
   }])
   const sortOptions = computed(() => [{
     name: '',

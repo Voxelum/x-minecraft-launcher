@@ -24,7 +24,7 @@
           @mouseleave="onMouseLeave"
           @click="onClick()"
         >
-          <template v-if="!!issue">
+          <template v-if="!!needInstall">
             <template
               v-if="status !== 1"
             >

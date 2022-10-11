@@ -4,7 +4,20 @@ import { ServiceKey, StatefulService } from './Service'
 
 export interface InstallProjectVersionOptions {
   version: ProjectVersion
-
+  /**
+   * Ignore the dependencies of the version.
+   *
+   * This option will be ignore if this is a modpack.
+   *
+   * @default false
+   */
+  ignoreDependencies?: boolean
+  /**
+   * The instance to install to.
+   *
+   * - If this is a mod, it will enable it.
+   * - If this is a modpack, this option will be ignored.
+   */
   instancePath?: string
 }
 

@@ -5,7 +5,7 @@ import { UpnpClient } from '@xmcl/nat-api'
 
 export class NatService {
   // private nat = new NatAPI()
-  
+
   // private upnp!: UpnpClient
 
   // private stunHosts: string[] = []

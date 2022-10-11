@@ -16,7 +16,7 @@ import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
 @ExposeServiceKey(CurseForgeServiceKey)
 export class CurseForgeService extends StatefulService<CurseforgeState> implements ICurseForgeService {
-  private client: CurseforgeClient
+  readonly client: CurseforgeClient
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
@@ -80,7 +80,7 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
     return await this.client.searchMods(searchOptions)
   }
 
-  async installFile({ file, type, projectId, instancePath }: InstallFileOptions): Promise<InstallFileResult> {
+  async installFile({ file, type, projectId, instancePath, ignoreDependencies }: InstallFileOptions): Promise<InstallFileResult> {
     requireString(type)
     requireObject(file)
     const typeToDomain: Record<ProjectType, ResourceDomain> = {
@@ -103,44 +103,46 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
     try {
       const destination = join(this.app.temporaryPath, file.fileName)
       const project = await this.fetchProject(projectId)
-      const dependencies = await Promise.all(file.dependencies.map(async (dep) => {
-        if (dep.relationType <= 4) {
-          let gameVersion = ''
-          let modLoaderType: FileModLoaderType = FileModLoaderType.Any
-          if (file.sortableGameVersions) {
-            for (const ver of file.sortableGameVersions) {
-              if (ver.gameVersion) {
-                gameVersion = ver.gameVersion
-              } else if (ver.gameVersionName === 'Forge') {
-                modLoaderType = FileModLoaderType.Forge
-              } else if (ver.gameVersionName === 'Fabric') {
-                modLoaderType = FileModLoaderType.Fabric
-              } else if (ver.gameVersionName === 'Quilt') {
-                modLoaderType = FileModLoaderType.Quilt
-              } else if (ver.gameVersionName === 'LiteLoader') {
-                modLoaderType = FileModLoaderType.LiteLoader
+      const dependencies = type !== 'modpacks' && !ignoreDependencies
+        ? await Promise.all(file.dependencies.map(async (dep) => {
+          if (dep.relationType <= 4) {
+            let gameVersion = ''
+            let modLoaderType: FileModLoaderType = FileModLoaderType.Any
+            if (file.sortableGameVersions) {
+              for (const ver of file.sortableGameVersions) {
+                if (ver.gameVersion) {
+                  gameVersion = ver.gameVersion
+                } else if (ver.gameVersionName === 'Forge') {
+                  modLoaderType = FileModLoaderType.Forge
+                } else if (ver.gameVersionName === 'Fabric') {
+                  modLoaderType = FileModLoaderType.Fabric
+                } else if (ver.gameVersionName === 'Quilt') {
+                  modLoaderType = FileModLoaderType.Quilt
+                } else if (ver.gameVersionName === 'LiteLoader') {
+                  modLoaderType = FileModLoaderType.LiteLoader
+                }
               }
             }
-          }
-          try {
-            const files = await this.fetchProjectFiles({
-              gameVersion,
-              modLoaderType,
-              modId: dep.modId,
-              pageSize: 1,
-            })
-            if (files.data[0]) {
-              return await this.installFile({ file: files.data[0], type: 'mc-mods', projectId: dep.modId, instancePath })
-            } else {
-              this.warn(`Skip to install project file ${projectId}:${file.id} dependency ${file.modId} as no mod files matched!`)
+            try {
+              const files = await this.fetchProjectFiles({
+                gameVersion,
+                modLoaderType,
+                modId: dep.modId,
+                pageSize: 1,
+              })
+              if (files.data[0]) {
+                return await this.installFile({ file: files.data[0], type: 'mc-mods', projectId: dep.modId, instancePath })
+              } else {
+                this.warn(`Skip to install project file ${projectId}:${file.id} dependency ${file.modId} as no mod files matched!`)
+              }
+            } catch (e) {
+              this.warn(`Fail to install project file ${projectId}:${file.id} dependency ${file.modId} as no mod files matched!`)
+              this.warn(e)
             }
-          } catch (e) {
-            this.warn(`Fail to install project file ${projectId}:${file.id} dependency ${file.modId} as no mod files matched!`)
-            this.warn(e)
           }
-        }
-        return undefined
-      }))
+          return undefined
+        }))
+        : []
 
       let resource = this.resourceService.getOneResource({ url: uri })
       if (resource) {

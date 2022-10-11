@@ -4,7 +4,7 @@ import { Dispatcher, request } from 'undici'
 export class ModrinthClient {
   constructor(private dispatcher?: Dispatcher) { }
 
-  async searchProjects(options: SearchProjectOptions): Promise<SearchResult> {
+  async searchProjects(options: SearchProjectOptions, signal?: AbortSignal): Promise<SearchResult> {
     const query: Record<string, string | number> = {
       query: options.query ?? '',
       filter: options.filters ?? '',
@@ -18,21 +18,23 @@ export class ModrinthClient {
     const response = await request('https://api.modrinth.com/v2/search', {
       query,
       dispatcher: this.dispatcher,
+      signal,
     })
     const result: SearchResult = await response.body.json()
     return result
   }
 
-  async getProject(projectId: string): Promise<Project> {
+  async getProject(projectId: string, signal?: AbortSignal): Promise<Project> {
     if (projectId.startsWith('local-')) { projectId = projectId.slice('local-'.length) }
     const response = await request(`https://api.modrinth.com/v2/project/${projectId}`, {
       dispatcher: this.dispatcher,
+      signal,
     })
     const project: Project = await response.body.json()
     return project
   }
 
-  async getProjectVersions(projectId: string, loaders?: string[], gameVersions?: string[], featured?: boolean): Promise<ProjectVersion[]> {
+  async getProjectVersions(projectId: string, loaders?: string[], gameVersions?: string[], featured?: boolean, signal?: AbortSignal): Promise<ProjectVersion[]> {
     const query: Record<string, any> = {}
     if (loaders) query.loaders = JSON.stringify(loaders)
     if (gameVersions) query.game_versions = JSON.stringify(gameVersions)
@@ -40,6 +42,7 @@ export class ModrinthClient {
     const response = await request(`https://api.modrinth.com/v2/project/${projectId}/version`, {
       query,
       dispatcher: this.dispatcher,
+      signal,
     })
     if (response.statusCode !== 200) {
       const text = await response.body.text()
@@ -49,15 +52,45 @@ export class ModrinthClient {
     return versions
   }
 
-  async getProjectVersion(versionId: string): Promise<ProjectVersion> {
+  async getProjectVersion(versionId: string, signal?: AbortSignal): Promise<ProjectVersion> {
     const response = await request(`https://api.modrinth.com/v2/version/${versionId}`, {
       dispatcher: this.dispatcher,
+      signal,
     })
     const version: ProjectVersion = await response.body.json()
     return version
   }
 
-  async getLatestProjectVersion(hash: string): Promise<ProjectVersion> {
+  async getProjectVersionsById(ids: string[], signal?: AbortSignal) {
+    const response = await request('https://api.modrinth.com/v2/version', {
+      query: {
+        ids: JSON.stringify(ids),
+      },
+      dispatcher: this.dispatcher,
+      signal,
+    })
+    const versions: ProjectVersion[] = await response.body.json()
+    return versions
+  }
+
+  async getProjectVersionsByHash(hashes: string[], signal?: AbortSignal) {
+    const response = await request('https://api.modrinth.com/v2/version_file', {
+      method: 'POST',
+      dispatcher: this.dispatcher,
+      body: JSON.stringify({
+        hashes,
+        algorithm: 'sha1',
+      }),
+      headers: {
+        'content-type': 'application/json',
+      },
+      signal,
+    })
+    const versions: Record<string, ProjectVersion> = await response.body.json()
+    return versions
+  }
+
+  async getLatestProjectVersion(hash: string, signal?: AbortSignal): Promise<ProjectVersion> {
     const response = await request(`https://api.modrinth.com/v2/version_file/${hash}/update`, {
       method: 'POST',
       query: {
@@ -69,31 +102,44 @@ export class ModrinthClient {
       }),
       headers: { 'content-type': 'application/json' },
       dispatcher: this.dispatcher,
+      signal,
     })
     const version: ProjectVersion = await response.body.json()
     return version
   }
 
-  async getLicenseTags() {
-    const response = await request('https://api.modrinth.com/v2/tag/license')
+  async getLicenseTags(signal?: AbortSignal) {
+    const response = await request('https://api.modrinth.com/v2/tag/license', {
+      dispatcher: this.dispatcher,
+      signal,
+    })
     const result: License[] = await response.body.json()
     return result
   }
 
-  async getCategoryTags() {
-    const response = await request('https://api.modrinth.com/v2/tag/category')
+  async getCategoryTags(signal?: AbortSignal) {
+    const response = await request('https://api.modrinth.com/v2/tag/category', {
+      dispatcher: this.dispatcher,
+      signal,
+    })
     const result: Category[] = await response.body.json()
     return result
   }
 
-  async getGameVersionTags() {
-    const response = await request('https://api.modrinth.com/v2/tag/game_version')
+  async getGameVersionTags(signal?: AbortSignal) {
+    const response = await request('https://api.modrinth.com/v2/tag/game_version', {
+      dispatcher: this.dispatcher,
+      signal,
+    })
     const result: GameVersion[] = await response.body.json()
     return result
   }
 
-  async getLoaderTags() {
-    const response = await request('https://api.modrinth.com/v2/tag/loader')
+  async getLoaderTags(signal?: AbortSignal) {
+    const response = await request('https://api.modrinth.com/v2/tag/loader', {
+      dispatcher: this.dispatcher,
+      signal,
+    })
     const result: Loader[] = await response.body.json()
     return result
   }

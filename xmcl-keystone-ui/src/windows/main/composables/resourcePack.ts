@@ -45,7 +45,7 @@ export function useInstanceResourcePacks() {
   const { state: gameSettingState, editGameSetting } = useService(InstanceOptionsServiceKey)
   const { state: resourceState, updateResource } = useService(ResourceServiceKey)
   const { showDirectory } = useService(InstanceResourcePacksServiceKey)
-  const { $t } = useI18n()
+  const { t } = useI18n()
 
   const loading = useServiceBusy(InstanceOptionsServiceKey, 'editGameSetting')
   /**
@@ -76,19 +76,37 @@ export function useInstanceResourcePacks() {
     return meta ? meta.format ?? meta.pack_format : 3
   }
   function getResourcePackItem(resource: Persisted<ResourcePackResource>): ResourcePackItem {
-    return ({
-      path: resource.path,
-      name: resource.name,
-      id: `file/${resource.fileName.endsWith('.zip') ? resource.fileName : resource.fileName + '.zip'}`,
-      url: resource.uri,
-      pack_format: resource.metadata.resourcepack.pack_format,
-      description: resource.metadata.resourcepack.description,
-      acceptingRange: packFormatVersionRange[getResourcepackFormat(resource.metadata)] ?? '[*]',
-      icon: isPersistedResource(resource) ? resource.icons?.[0] ?? '' : '',
-      tags: [...resource.tags],
+    if (resource.metadata.resourcepack) {
+      return ({
+        path: resource.path,
+        name: resource.name,
+        id: `file/${resource.fileName.endsWith('.zip') ? resource.fileName : resource.fileName + '.zip'}`,
+        url: resource.uri,
+        pack_format: resource.metadata.resourcepack.pack_format,
+        description: resource.metadata.resourcepack.description,
+        acceptingRange: packFormatVersionRange[getResourcepackFormat(resource.metadata)] ?? '[*]',
+        icon: isPersistedResource(resource) ? resource.icons?.[0] ?? '' : '',
+        tags: [...resource.tags],
 
-      resource: (resource) as any,
-    })
+        resource: (resource) as any,
+      })
+    } else {
+      console.log('bad resource')
+      console.log(resource)
+      return {
+        path: resource.path,
+        name: resource.name,
+        id: `file/${resource.fileName.endsWith('.zip') ? resource.fileName : resource.fileName + '.zip'}`,
+        url: resource.uri,
+        pack_format: 0,
+        description: '',
+        acceptingRange: packFormatVersionRange[getResourcepackFormat(resource.metadata)] ?? '[*]',
+        icon: isPersistedResource(resource) ? resource.icons?.[0] ?? '' : '',
+        tags: [...resource.tags],
+
+        resource: (resource) as any,
+      }
+    }
   }
   function getResourcePackItemFromGameSettingName(resourcePackName: string): ResourcePackItem {
     if (resourcePackName === 'vanilla') {
@@ -96,8 +114,8 @@ export function useInstanceResourcePacks() {
         path: '',
         acceptingRange: '[*]',
         icon: unknownPack,
-        name: $t('resourcepack.defaultName'),
-        description: $t('resourcepack.defaultDescription'),
+        name: t('resourcepack.defaultName'),
+        description: t('resourcepack.defaultDescription'),
         pack_format: 0,
         id: 'vanilla',
         url: [],
