@@ -28,7 +28,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(VersionService) private versionService: VersionService,
   ) {
-    super(app, InstanceIOServiceKey)
+    super(app)
   }
 
   /**

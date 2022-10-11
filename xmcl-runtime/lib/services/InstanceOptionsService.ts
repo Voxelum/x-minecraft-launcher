@@ -27,7 +27,7 @@ export class InstanceOptionsService extends StatefulService<InstanceOptionsState
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
-    super(app, InstanceOptionsServiceKey, () => new InstanceOptionsState())
+    super(app, () => new InstanceOptionsState())
     this.storeManager.subscribe('instanceSelect', (payload: string) => {
       this.mount(payload)
     })

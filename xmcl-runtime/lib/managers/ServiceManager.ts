@@ -65,9 +65,9 @@ export default class ServiceManager extends Manager {
       throw new Error(`Fail construct service ${ServiceConstructor.name}!`)
     }
 
-    const key = service.name
-    if (!this.servicesMap[key as string]) {
-      this.servicesMap[key as string] = service
+    const key = getServiceKey(ServiceConstructor)
+    if (!this.servicesMap[key]) {
+      this.servicesMap[key] = service
       this.logger.log(`Expose service ${key} to remote`)
       service.initialize()
     }

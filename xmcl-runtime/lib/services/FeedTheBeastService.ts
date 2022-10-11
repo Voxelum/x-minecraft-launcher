@@ -22,7 +22,7 @@ export class FeedTheBeastService extends StatefulService<FeedTheBeastState> impl
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {
-    super(app, FeedTheBeastServiceKey, () => new FeedTheBeastState(), async () => {
+    super(app, () => new FeedTheBeastState(), async () => {
       const result = await this.cache.read()
       this.cachedVersions = result.caches ?? []
     })

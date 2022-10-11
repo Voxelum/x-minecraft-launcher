@@ -18,7 +18,7 @@ export class InstanceShaderPacksService extends AbstractService implements IInst
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {
-    super(app, InstanceShaderPacksServiceKey)
+    super(app)
     this.storeManager.subscribe('instanceShaderOptions', (payload) => {
       if (payload.shaderPack && this.active && !this.instanceService.isUnderManaged(this.active)) {
         const fileName = payload.shaderPack

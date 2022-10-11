@@ -80,7 +80,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ImageStorage) readonly imageStore: ImageStorage,
     @Inject(ClassicLevel) database: ClassicLevel) {
-    super(app, ResourceServiceKey, () => new ResourceState(), async () => {
+    super(app, () => new ResourceState(), async () => {
       for (const domain of [
         ResourceDomain.Mods,
         ResourceDomain.ResourcePacks,

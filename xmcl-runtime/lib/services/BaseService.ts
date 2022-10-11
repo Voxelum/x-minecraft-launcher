@@ -15,7 +15,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
   private settingFile = createSafeFile(this.getAppDataPath('setting.json'), SettingSchema, this, [this.getPath('setting.json')])
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
-    super(app, BaseServiceKey, () => {
+    super(app, () => {
       const state = new BaseState()
       state.version = app.version
       state.build = app.build

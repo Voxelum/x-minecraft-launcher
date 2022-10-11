@@ -18,7 +18,7 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {
-    super(app, InstanceLogServiceKey)
+    super(app)
   }
 
   /**

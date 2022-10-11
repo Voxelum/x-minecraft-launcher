@@ -44,7 +44,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   private downloadCallbacks: Record<number, undefined | ((chunk: number) => void)> = {}
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
-    super(app, PeerServiceKey, () => new PeerState())
+    super(app, () => new PeerState())
   }
 
   setDelegate(delegate: PeerServiceWebRTCFacade) {

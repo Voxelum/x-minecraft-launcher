@@ -7,7 +7,7 @@ import { ExposeServiceKey, AbstractService } from './Service'
 @ExposeServiceKey(InstanceUpdateServiceKey)
 export class InstanceUpdateService extends AbstractService implements IInstanceUpdateService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
-    super(app, InstanceUpdateServiceKey)
+    super(app)
   }
 
   updateInstance(options: UpdateInstanceOptions): Promise<void> {

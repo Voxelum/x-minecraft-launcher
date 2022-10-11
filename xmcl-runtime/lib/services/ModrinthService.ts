@@ -23,7 +23,7 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
-    super(app, ModrinthServiceKey, () => new ModrinthState())
+    super(app, () => new ModrinthState())
     const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, opts) => {
       if (origin.hostname === 'api.modrinth.com') {
         // keep alive for a long time
@@ -88,10 +88,10 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
   }
 
   @Singleton((o) => o.version.id)
-  async installVersion({ version, instancePath }: InstallProjectVersionOptions): Promise<InstallModrinthVersionResult> {
+  async installVersion({ version, instancePath, ignoreDependencies }: InstallProjectVersionOptions): Promise<InstallModrinthVersionResult> {
     const proj = await this.getProject(version.project_id)
 
-    const dependencies = proj.project_type !== 'modpack'
+    const dependencies = proj.project_type !== 'modpack' || !ignoreDependencies
       ? await Promise.all(version.dependencies.map(async (dep) => {
         if (dep.dependency_type === 'required') {
           if (dep.version_id) {

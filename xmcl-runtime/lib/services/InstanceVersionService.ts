@@ -23,7 +23,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
     @Inject(InstallService) private installService: InstallService,
   ) {
-    super(app, InstanceVersionServiceKey, () => new InstanceVersionState(), async () => {
+    super(app,  () => new InstanceVersionState(), async () => {
       await instanceService.initialize()
       const newVersion = this.getInstanceVersionHeader()
       this.log(`Update instance version: ${newVersion ? newVersion.id : undefined}`)

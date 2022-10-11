@@ -125,8 +125,9 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
           return Promise.reject(e)
         }
       }
+      const serviceKey = getServiceKey(Object.getPrototypeOf(this).constructor)
       Object.defineProperty(exec, 'name', { value: `${method.name}$Singleton$exec` })
-      const targetKey = getServiceSemaphoreKey(this.name, propertyKey as any, param.call(this, ...args))
+      const targetKey = getServiceSemaphoreKey(serviceKey, propertyKey, param.call(this, ...args))
       const last = instances[targetKey]
       if (last) {
         return last
@@ -195,7 +196,8 @@ export function Expose<T extends AbstractService>(options: {
 
       let singletonKey: undefined | string
       if (singleton) {
-        singletonKey = getServiceSemaphoreKey(this.name, propertyKey as any, serializer.call(this, ...args))
+        const serviceKey = getServiceKey(Object.getPrototypeOf(this).constructor)
+        singletonKey = getServiceSemaphoreKey(serviceKey, propertyKey, serializer.call(this, ...args))
         const last = instances[singletonKey]
         if (last) {
           return last
@@ -228,7 +230,7 @@ export function ExposeServiceKey<T extends Function>(key: ServiceKey<T>) {
   }
 }
 
-export function getServiceKey<T extends Function>(target: T) {
+export function getServiceKey<T extends Function>(target: T): ServiceKey<T> & string {
   return Reflect.get(target, 'ServiceKey')
 }
 
@@ -238,14 +240,11 @@ export function getServiceKey<T extends Function>(target: T) {
  * The service is a stateful object has life cycle. It will be created when the launcher program start, and destroied
  */
 export abstract class AbstractService extends EventEmitter {
-  readonly name: ServiceKey<this>
-
   private initializeSignal: PromiseSignal<void> | undefined
 
-  constructor(readonly app: LauncherApp, name: ServiceKey<AbstractService>, private initializer?: () => Promise<void>) {
+  constructor(readonly app: LauncherApp, private initializer?: () => Promise<void>) {
     super()
-    this.name = name as string
-    const loggers = app.logManager.getLogger(name as string)
+    const loggers = app.logManager.getLogger(getServiceKey(Object.getPrototypeOf(this).constructor))
     this.log = loggers.log
     this.warn = loggers.warn
     this.error = loggers.error
@@ -268,7 +267,7 @@ export abstract class AbstractService extends EventEmitter {
   get semaphoreManager() { return this.app.semaphoreManager }
 
   emit(event: string, ...args: any[]): boolean {
-    this.app.broadcast('service-event', { service: this.name, event, args })
+    this.app.broadcast('service-event', { service: getServiceKey(Object.getPrototypeOf(this).constructor), event, args })
     return super.emit(event, ...args)
   }
 
@@ -364,10 +363,10 @@ export abstract class AbstractService extends EventEmitter {
 export abstract class StatefulService<M extends State<M>> extends AbstractService {
   state: M
 
-  constructor(app: LauncherApp, key: ServiceKey<any>, createState: () => M, initializer?: () => Promise<void>) {
-    super(app, key, initializer)
+  constructor(app: LauncherApp, createState: () => M, initializer?: () => Promise<void>) {
+    super(app, initializer)
     const state = createState()
     Object.defineProperty(state, STATE_SYMBOL, { value: true })
-    this.state = app.serviceStateManager.register(key as string, state)
+    this.state = app.serviceStateManager.register(getServiceKey(Object.getPrototypeOf(this).constructor), state)
   }
 }

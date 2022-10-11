@@ -32,7 +32,7 @@ export class DiagnoseService extends StatefulService<DiagnoseState> implements I
   500)
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
-    super(app, DiagnoseServiceKey, () => new DiagnoseState())
+    super(app, () => new DiagnoseState())
   }
 
   register<T>(descriptor: IssueDescriptor<T>) {

@@ -29,7 +29,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     @Inject(UserService) private userService: UserService,
     @Inject(InstallService) private installService: InstallService,
   ) {
-    super(app, InstanceServiceKey, () => new InstanceState(), async () => {
+    super(app,   () => new InstanceState(), async () => {
       const { state } = this
       const instanceConfig = await this.instancesFile.read()
       const managed = (await readdirEnsured(this.getPathUnder())).map(p => this.getPathUnder(p))

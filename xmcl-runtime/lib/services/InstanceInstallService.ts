@@ -33,7 +33,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
     @Inject(CurseForgeService) private curseForgeService: CurseForgeService,
     @Inject(ModrinthService) private modrinthService: ModrinthService,
   ) {
-    super(app, InstanceInstallServiceKey)
+    super(app)
   }
 
   async getInstanceDiff() {

@@ -23,7 +23,7 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
     @Inject(PeerService) private peerService: PeerService,
     @Inject(UserService) private userService: UserService,
   ) {
-    super(app, OfflineUserServiceKey, async () => {
+    super(app, async () => {
       await userService.initialize()
 
       const code = app.getLocaleCountryCode()

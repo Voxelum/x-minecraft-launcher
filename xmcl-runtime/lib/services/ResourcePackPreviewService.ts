@@ -38,7 +38,7 @@ export class ResourcePackPreviewService extends AbstractService implements IReso
     @Inject(InstanceOptionsService) private instanceGameSettingService: InstanceOptionsService,
     @Inject(LaunchService) private launchService: LaunchService,
   ) {
-    super(app, ResourcePackPreviewServiceKey)
+    super(app)
     launchService.on('minecraft-start', () => {
       if (this.active) {
         this.queue.waitUntilEmpty().then(() => {
