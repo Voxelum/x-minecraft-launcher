@@ -192,7 +192,7 @@ const props = withDefaults(
     page: 1,
     keyword: '',
     category: '',
-    sortField: 1,
+    sortField: 2,
     modLoaderType: 0,
     sortOrder: 'desc',
     gameVersion: '',
