@@ -94,24 +94,30 @@ export function useCurseforge(props: CurseforgeProps) {
   const index = computed(() => (currentPage.value - 1) * pageSize)
   async function refresh() {
     data.loading = true
-    try {
-      const { data: result, pagination } = await searchProjects({
-        pageSize,
-        index: index.value,
-        classId: currentSectionId.value,
-        sortField: currentSort.value,
-        gameVersion: currentVersion.value,
-        categoryId: categoryId.value,
-        searchFilter: currentKeyword.value,
-      })
-      data.totalCount = pagination.totalCount
-      data.projects = Object.freeze(result) as any
-      data.pages = Math.floor(data.totalCount / pageSize)
-      data.projects.forEach(p => Object.freeze(p))
-      data.projects.forEach(p => Object.freeze(p.categories))
-    } finally {
-      data.loading = false
+
+    for (let i = 0; i < 3; i++) {
+      try {
+        const { data: result, pagination } = await searchProjects({
+          pageSize,
+          index: index.value,
+          classId: currentSectionId.value,
+          sortField: currentSort.value,
+          gameVersion: currentVersion.value,
+          categoryId: categoryId.value,
+          searchFilter: currentKeyword.value,
+        })
+        data.totalCount = pagination.totalCount
+        data.projects = Object.freeze(result) as any
+        data.pages = Math.floor(data.totalCount / pageSize)
+        data.projects.forEach(p => Object.freeze(p))
+        data.projects.forEach(p => Object.freeze(p.categories))
+        break
+      } catch {
+        await new Promise((resolve) => setTimeout(resolve, 1500))
+      }
     }
+
+    data.loading = false
   }
   watch([currentPage, currentSort, currentVersion, currentKeyword, currentCategory, currentType], () => {
     refresh()

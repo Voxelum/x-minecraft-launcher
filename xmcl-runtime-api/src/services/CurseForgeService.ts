@@ -13,6 +13,12 @@ export interface InstallFileOptions {
    * Install this to the specific instance
    */
   instancePath?: string
+  /**
+   * Should we ignore the dependencies
+   *
+   * @default false
+   */
+  ignoreDependencies?: boolean
 }
 
 export class CurseforgeState {

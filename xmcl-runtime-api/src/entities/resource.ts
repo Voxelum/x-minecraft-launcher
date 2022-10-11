@@ -40,14 +40,6 @@ export interface ResourceSourceModrinth {
    * The version id of the mod version
    */
   versionId: string
-  /**
-   * The file name of the file
-   */
-  filename: string
-  /**
-   * The download url of the file
-   */
-  url: string
 }
 
 export enum ResourceType {

@@ -309,12 +309,13 @@ export class ModpackService extends AbstractService implements IModpackService {
     }
 
     const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
-    await lock.write(async () => {
+    const downloadable = await lock.write(async () => {
       // If this failed, it will be the unzip failed. Then it should be safe to just fully retry.
       // No partial info should be caught.
-      const unzippedFiles: InstanceFile[] = await this.submit(this.installModpackTask(zip, entries, manifest, instancePath))
+      const [unzippedFiles, files] = await this.submit(this.installModpackTask(zip, entries, manifest, instancePath))
 
       this.log(`Install ${unzippedFiles.length} files from modpack!`)
+      return files
     }).catch((e) => {
       this.error(`Fail to install modpack: ${path}`)
       this.error(e)
@@ -324,13 +325,10 @@ export class ModpackService extends AbstractService implements IModpackService {
       throw e
     })
 
-    // Downloadable files
-    const files = await this.convertManifest(manifest)
-
     // Try to install
     await this.instanceInstallService.installInstanceFiles({
       path: instancePath,
-      files: files,
+      files: downloadable,
     })
 
     if (options.mountAfterSucceed) {
@@ -394,6 +392,7 @@ export class ModpackService extends AbstractService implements IModpackService {
   }
 
   private installModpackTask(zip: ZipFile, entries: Entry[], manifest: CurseforgeModpackManifest | McbbsModpackManifest | ModrinthModpackManifest, root: string) {
+    const convertManifest = this.convertManifest.bind(this)
     return task('installModpack', async function () {
       // unzip
       const promises: Promise<InstanceFile>[] = []
@@ -421,7 +420,12 @@ export class ModpackService extends AbstractService implements IModpackService {
         },
       ).setName('unpack'))
 
-      return await Promise.all(promises)
+      const files = await this.yield(task('deploy', async () => {
+        // Downloadable files
+        return await convertManifest(manifest)
+      }))
+
+      return [await Promise.all(promises), files] as const
     })
   }
 

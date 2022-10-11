@@ -549,6 +549,39 @@ modrinth:
     transportation: Transportation
     utility: Utility
     worldgen: World Gen
+    audio: Audio
+    blocks: Blocks
+    environment: Environment
+    fonts: Fonts
+    128x: 128x
+    16x: 16x
+    256x: 256x
+    32x: 32x
+    512x+: 512x+
+    64x: 64x
+    8x-: 8x-
+    core-shaders: Core-shaders
+    entities: Entities
+    gui: Gui
+    items: Items
+    locale: Locale
+    modded: Modded
+    models: Models
+    realistic: Realistic
+    simplistic: Simplistic
+    themed: Themed
+    tweaks: Tweaks
+    vanilla-like: Vanilla-like
+    bukkit: Bukkit
+    bungeecord: Bungeecord
+    liteloader: Liteloader
+    minecraft: Minecraft
+    paper: Paper
+    purpur: Purpur
+    spigot: Spigot
+    sponge: Sponge
+    velocity: Velocity
+    waterfall: Waterfall
   clientSide: Client Side
   createAt: Created
   description: Description
@@ -581,6 +614,7 @@ modrinth:
   projectType:
     mod: Mod
     modpack: Modpack
+    resourcepack: Resource Pack
     name: Project Type
   searchText: Search
   serverSide: Server Side

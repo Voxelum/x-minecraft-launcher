@@ -12,13 +12,13 @@ export default defineComponent({
     editable: withDefault(Boolean, () => false),
   },
   setup(props, context) {
-    const { $t } = useI18n()
+    const { t } = useI18n()
     return () => {
       if (!props.source) return h('div')
 
-      let src = typeof props.source === 'string' ? fromFormattedString($t(props.source)) : props.source
+      let src = typeof props.source === 'string' ? fromFormattedString(t(props.source)) : props.source
       if (props.source && typeof props.source === 'object' && props.source.text && Object.keys(props.source).length === 1) {
-        src = fromFormattedString($t(props.source.text))
+        src = fromFormattedString(t(props.source.text))
       }
       const hint = render(src)
       const simpleText = hint.children.length === 0
@@ -33,7 +33,7 @@ export default defineComponent({
               }
             },
           },
-        }, [$t(node.component.text), node.children.map(generate)])
+        }, [t(node.component.text), node.children.map(generate)])
       }
       return generate(hint)
     }
