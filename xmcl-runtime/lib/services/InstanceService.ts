@@ -29,7 +29,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     @Inject(UserService) private userService: UserService,
     @Inject(InstallService) private installService: InstallService,
   ) {
-    super(app,   () => new InstanceState(), async () => {
+    super(app, () => new InstanceState(), async () => {
       const { state } = this
       const instanceConfig = await this.instancesFile.read()
       const managed = (await readdirEnsured(this.getPathUnder())).map(p => this.getPathUnder(p))
@@ -342,12 +342,14 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     if (options.name) {
       if (this.isUnderManaged(instancePath)) {
         const newPath = join(dirname(instancePath), options.name)
-        if (this.state.instances.some(i => i.path === newPath)) {
-          throw new InstanceException({
-            type: 'instanceNameDuplicated',
-            path: instancePath,
-            name: options.name,
-          })
+        if (newPath !== instancePath) {
+          if (this.state.instances.some(i => i.path === newPath)) {
+            throw new InstanceException({
+              type: 'instanceNameDuplicated',
+              path: instancePath,
+              name: options.name,
+            })
+          }
         }
       }
     }
@@ -360,7 +362,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       if (typeof options.maxMemory === 'undefined') {
         result.maxMemory = 0
       } else if (typeof options.maxMemory === 'number') {
-        result.maxMemory = options.maxMemory > 0 ? options.maxMemory : 0
+        result.maxMemory = Math.floor(options.maxMemory > 0 ? options.maxMemory : 0)
       } else {
         throw new Error(`Invalid Argument: Expect maxMemory to be number or undefined! Got ${typeof options.maxMemory}.`)
       }
@@ -369,7 +371,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       if (typeof options.minMemory === 'undefined') {
         result.minMemory = 0
       } else if (typeof options.minMemory === 'number') {
-        result.minMemory = options.minMemory > 0 ? options.minMemory : 0
+        result.minMemory = Math.floor(options.minMemory > 0 ? options.minMemory : 0)
       } else {
         throw new Error(`Invalid Argument: Expect minMemory to be number or undefined! Got ${typeof options.maxMemory}.`)
       }
