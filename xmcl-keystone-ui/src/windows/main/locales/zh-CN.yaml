@@ -232,6 +232,7 @@ instance:
   current: 当前实例
   delete: 删除游戏
   deleteHint: 游戏的数据将完全被移除。你确定继续此操作吗？
+  duplicatedName: 名字重复了！
   fileApi: 远程同步文件服务器 API 地址
   fileApiHint: 用于远程同步实例文件的链接
   gameVersion: 游戏版本
@@ -457,7 +458,6 @@ modrinth:
   avaiableFor: 可用于
   categories:
     adventure: 冒险
-    challenging: 高难度
     combat: 战斗
     cursed: 怪异
     decoration: 装饰
@@ -499,26 +499,27 @@ modrinth:
     512x+: 512x+
     64x: 64x
     8x-: 8x-
+    bukkit: Bukkit
+    bungeecord: Bungeecord
+    challenging: 挑战
     core-shaders: 光影
     entities: 实体
     gui: 界面
     items: 物品
+    liteloader: Liteloader
     locale: 本地化
+    minecraft: Minecraft
     modded: 兼容 Mod
     models: 模型
+    paper: Paper
+    purpur: Purpur
     realistic: 真实风格
     simplistic: 简约
+    spigot: Spigot
+    sponge: Sponge
     themed: 主体化
     tweaks: Tweaks
     vanilla-like: 原版风格
-    bukkit: Bukkit
-    bungeecord: Bungeecord
-    liteloader: Liteloader
-    minecraft: Minecraft
-    paper: Paper
-    purpur: Purpur
-    spigot: Spigot
-    sponge: Sponge
     velocity: Velocity
     waterfall: Waterfall
   clientSide: 客户端
@@ -553,8 +554,8 @@ modrinth:
   projectType:
     mod: Mod
     modpack: 整合包
-    resourcepack: 资源包
     name: 项目类型
+    resourcePack: 资源包
   searchText: 搜素
   serverSide: 服务端
   sort:

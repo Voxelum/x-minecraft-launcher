@@ -46,7 +46,9 @@ export class InstanceResourcePackService extends AbstractService implements IIns
     }).subscribe('instanceSelect', (instancePath) => {
       this.link(instancePath).catch((e) => {
         // TODO: decorate error
-        this.emit('error', {})
+        this.error(`Fail to link instance ${instancePath} resource pack!`)
+        this.error(e)
+        this.emit('error', new Error(`Fail to link instance ${instancePath} resource pack!`))
       })
     }).subscribe('instanceGameSettingsLoad', async (payload) => {
       if ('resourcePacks' in payload) {
@@ -209,7 +211,6 @@ export class InstanceResourcePackService extends AbstractService implements IIns
         }
         if (!isPersistedResource(resource)) {
           await this.resourceService.importParsedResource(resource).catch((e) => {
-            this.emit('error', {})
             this.warn(e)
           })
           this.log(`Found new resource in /resourcepacks directory! ${filePath}`)

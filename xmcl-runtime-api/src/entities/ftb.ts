@@ -80,7 +80,7 @@ export interface FTBFile {
   /**
    * Download url
    */
-  url: string
+  url?: string
   sha1: string
   size: number
   tags: string[]
@@ -88,6 +88,7 @@ export interface FTBFile {
   serveronly: boolean
   optional: boolean
   id: number
+  curseforge?: {project: number; file: number}
   /**
    * The file name
    */

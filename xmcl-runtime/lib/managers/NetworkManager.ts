@@ -156,7 +156,7 @@ export default class NetworkManager extends Manager {
     this.apiDispatcher = apiDispatcher
     this.downloadDispatcher = downloadDispatcher
 
-    const undici = this.app.logManager.getLogger('Undici')
+    const undici = this.app.logManager.openLogger('undici')
 
     channel('undici:request:create').subscribe((m, name) => {
       const msg: DiagnosticsChannel.RequestCreateMessage = m as any

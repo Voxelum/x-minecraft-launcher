@@ -268,6 +268,7 @@ instance:
   current: Current Instance
   delete: Delete Profile
   deleteHint: The instance data will be moved from the disk forever. You sure to do this?
+  duplicatedName: Duplicated Name
   fileApi: The synchronize file server API url
   fileApiHint: The url to synchronize instance files from a remote config server.
   gameVersion: Game Version
@@ -517,42 +518,6 @@ modpack:
 modrinth:
   avaiableFor: available for
   categories:
-    adventure: Adventure
-    challenging: Challenging
-    combat: Combat
-    cursed: Cursed
-    decoration: Decoration
-    economy: Economy
-    equipment: Equipment
-    fabric: Fabric
-    food: Food
-    forge: Forge
-    game-mechanics: Game Mechanics
-    kitchen-sink: Kitchen Sink
-    library: Library
-    lightweight: Lightweight
-    magic: Magic
-    management: Management
-    minigame: Mini Games
-    misc: Misc
-    mobs: Mobs
-    modloader: Mod Loader
-    multiplayer: Multiplayer
-    name: Categories
-    optimization: Optimizations
-    quests: Quests
-    quilt: Quilt
-    rift: Rift
-    social: Social
-    storage: Storage
-    technology: Technology
-    transportation: Transportation
-    utility: Utility
-    worldgen: World Gen
-    audio: Audio
-    blocks: Blocks
-    environment: Environment
-    fonts: Fonts
     128x: 128x
     16x: 16x
     256x: 256x
@@ -560,28 +525,64 @@ modrinth:
     512x+: 512x+
     64x: 64x
     8x-: 8x-
-    core-shaders: Core-shaders
-    entities: Entities
-    gui: Gui
-    items: Items
-    locale: Locale
-    modded: Modded
-    models: Models
-    realistic: Realistic
-    simplistic: Simplistic
-    themed: Themed
-    tweaks: Tweaks
-    vanilla-like: Vanilla-like
+    adventure: Adventure
+    audio: Audio
+    blocks: Blocks
     bukkit: Bukkit
     bungeecord: Bungeecord
+    challenging: Challenging
+    combat: Combat
+    core-shaders: Core-shaders
+    cursed: Cursed
+    decoration: Decoration
+    economy: Economy
+    entities: Entities
+    environment: Environment
+    equipment: Equipment
+    fabric: Fabric
+    fonts: Fonts
+    food: Food
+    forge: Forge
+    game-mechanics: Game Mechanics
+    gui: Gui
+    items: Items
+    kitchen-sink: Kitchen Sink
+    library: Library
+    lightweight: Lightweight
     liteloader: Liteloader
+    locale: Locale
+    magic: Magic
+    management: Management
     minecraft: Minecraft
+    minigame: Mini Games
+    misc: Misc
+    mobs: Mobs
+    modded: Modded
+    models: Models
+    modloader: Mod Loader
+    multiplayer: Multiplayer
+    name: Categories
+    optimization: Optimizations
     paper: Paper
     purpur: Purpur
+    quests: Quests
+    quilt: Quilt
+    realistic: Realistic
+    rift: Rift
+    simplistic: Simplistic
+    social: Social
     spigot: Spigot
     sponge: Sponge
+    storage: Storage
+    technology: Technology
+    themed: Themed
+    transportation: Transportation
+    tweaks: Tweaks
+    utility: Utility
+    vanilla-like: Vanilla-like
     velocity: Velocity
     waterfall: Waterfall
+    worldgen: World Gen
   clientSide: Client Side
   createAt: Created
   description: Description
@@ -614,8 +615,8 @@ modrinth:
   projectType:
     mod: Mod
     modpack: Modpack
-    resourcepack: Resource Pack
     name: Project Type
+    resourcePack: Resource Pack
   searchText: Search
   serverSide: Server Side
   sort:

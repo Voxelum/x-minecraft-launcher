@@ -3,7 +3,6 @@ import { EventEmitter } from 'events'
 import { randomUUID } from 'crypto'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
-import { LauncherAppKey } from '../app/utils'
 import { Client } from '../engineBridge'
 import { createTaskPusher, mapTaskToTaskPayload, TaskEventEmitter } from '../entities/task'
 import { serializeError } from '../util/error'
@@ -74,11 +73,11 @@ export default class TaskManager extends Manager {
       onUpdate(task: Task<any>, chunkSize: number) {
         emitter.emit('update', uid, task, chunkSize)
       },
-      onFailed(task: Task<any>, error: any) {
+      async onFailed(task: Task<any>, error: any) {
         if (error instanceof CancelledError) {
           emitter.emit('cancel', uid, task)
         } else {
-          const e = serializeError(error)
+          const e = await serializeError(error)
           emitter.emit('fail', uid, task, e)
           Reflect.set(task, 'error', e)
 
