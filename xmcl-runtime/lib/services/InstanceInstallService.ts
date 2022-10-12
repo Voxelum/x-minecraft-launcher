@@ -190,7 +190,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
           zipInstances[zip] = [zipInstance, await readAllEntries(zipInstance)]
         }
         zipBarrier.resolve()
-        await this.all(tasks)
+        await this.all(tasks, { throwErrorImmediately: false })
         Object.values(zipInstances).map(v => v[0].close())
       })
     }, { instance: instancePath })

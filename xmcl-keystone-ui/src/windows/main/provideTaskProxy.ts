@@ -120,7 +120,7 @@ export function useTaskManager() {
       taskId: payload.uuid,
       title: computed(() => t(payload.path, payload.param)),
       time: new Date(payload.time),
-      message: payload.error ? JSON.stringify(payload.error) : payload.from ?? payload.to ?? '',
+      message: payload.error ? Object.freeze(payload.error) : payload.from ?? payload.to ?? '',
       from: payload.from,
       path: payload.path,
       param: payload.param,
@@ -191,7 +191,7 @@ export function useTaskManager() {
           item.total = total
         }
         item.time = new Date(time)
-        item.message = error ? JSON.stringify(error) : (from || to || item.message)
+        item.message = Object.freeze(error) || item.message
         if (chunkSize) {
           item.throughput += chunkSize
           throughput.value += chunkSize

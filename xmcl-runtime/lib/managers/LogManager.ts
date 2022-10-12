@@ -6,10 +6,9 @@ import { PassThrough, pipeline, Transform } from 'stream'
 import { format } from 'util'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
-import { LauncherAppKey } from '../app/utils'
 import { IS_DEV } from '../constant'
 import { Logger } from '../util/log'
-import { gzip } from '../util/zip'
+import { gzip, ZipTask } from '../util/zip'
 
 function formatMsg(message: any, options: any[]) { return options.length !== 0 ? format(message, ...options) : format(message) }
 function baseTransform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}`) } }) }
@@ -17,7 +16,7 @@ function baseTransform(tag: string) { return new Transform({ transform(c, e, cb)
 export default class LogManager extends Manager {
   private loggerEntries = { log: baseTransform('INFO'), warn: baseTransform('WARN'), error: baseTransform('ERROR') }
 
-  private output = new PassThrough()
+  private outputs: PassThrough[] = []
 
   private logRoot = ''
 
@@ -28,9 +27,12 @@ export default class LogManager extends Manager {
   constructor(app: LauncherApp) {
     super(app)
 
-    pipeline(this.loggerEntries.log, this.output, () => { })
-    pipeline(this.loggerEntries.warn, this.output, () => { })
-    pipeline(this.loggerEntries.error, this.output, () => { })
+    const output = new PassThrough()
+    pipeline(this.loggerEntries.log, output, () => { })
+    pipeline(this.loggerEntries.warn, output, () => { })
+    pipeline(this.loggerEntries.error, output, () => { })
+    this.outputs.push(output)
+    Reflect.set(output, 'name', 'MAIN')
 
     this.loggerEntries.error.once('data', () => {
       this.hasError = true
@@ -92,26 +94,58 @@ export default class LogManager extends Manager {
     return stream
   }
 
+  openLogger(name: string) {
+    const output = new PassThrough()
+
+    const log = baseTransform('INFO')
+    const warn = baseTransform('WARN')
+    const error = baseTransform('ERROR')
+
+    pipeline(log, output, () => { })
+    pipeline(warn, output, () => { })
+    pipeline(error, output, () => { })
+
+    this.outputs.push(output)
+    Reflect.set(output, 'name', name)
+
+    return {
+      log(message: any, ...options: any[]) {
+        log.write(`${formatMsg(message, options)}`)
+      },
+      warn(message: any, ...options: any[]) {
+        if (message instanceof Error) { message = message.stack }
+        warn.write(`${formatMsg(message, options)}`)
+      },
+      error(message: any, ...options: any[]) {
+        if (message instanceof Error) { message = message.stack }
+        error.write(`${formatMsg(message, options)}`)
+      },
+    }
+  }
+
   closeWindowLog(name: string) {
     this.openedStream[name].close()
   }
 
   async setOutputRoot(root: string) {
     this.logRoot = resolve(root, 'logs')
-    await ensureDir(this.logRoot)
-    const mainLog = join(this.logRoot, 'main.log')
-    const stream = createWriteStream(mainLog, { encoding: 'utf-8', flags: 'w+' })
-    this.output.pipe(stream)
-    this.openedStream.MAIN_LOG = stream
+    for (const output of this.outputs) {
+      await ensureDir(this.logRoot)
+      const name = Reflect.get(output, 'name')
+      const logPath = join(this.logRoot, `${name}.log`)
+      const stream = createWriteStream(logPath, { encoding: 'utf-8', flags: 'w+' })
+      output.pipe(stream)
+    }
     this.log(`Set log root to ${root}`)
   }
 
   async dispose() {
-    const mainLog = this.openedStream.MAIN_LOG
-    mainLog.close()
     const mainLogPath = join(this.logRoot, 'main.log')
     if (this.hasError) {
-      await writeFile(join(this.logRoot, filenamify(new Date().toJSON()) + '.log.gz'), await gzip(await readFile(mainLogPath)))
+      const zip = new ZipTask(join(this.logRoot, filenamify(new Date().toJSON()) + '.zip'))
+      zip.addFile(mainLogPath, 'main.log')
+      zip.addFile(mainLogPath, 'main.log')
+      await zip.startAndWait()
     }
   }
 }

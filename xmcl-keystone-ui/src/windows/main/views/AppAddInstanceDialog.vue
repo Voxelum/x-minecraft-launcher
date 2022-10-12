@@ -67,7 +67,10 @@
           <div
             style="overflow: auto; max-height: 70vh; padding: 24px 24px 16px"
           >
-            <base-content :valid.sync="valid" />
+            <base-content
+              :valid.sync="valid"
+              @update:valid="valid = $event"
+            />
             <advance-content :valid.sync="valid" />
           </div>
           <stepper-footer
@@ -160,7 +163,13 @@ const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
             hashes: {
               sha1: f.sha1,
             },
-            downloads: [f.url],
+            curseforge: f.curseforge
+              ? {
+                projectId: f.curseforge.project,
+                fileId: f.curseforge.file,
+              }
+              : undefined,
+            downloads: f.url ? [f.url] : undefined,
             size: f.size,
           })),
         })

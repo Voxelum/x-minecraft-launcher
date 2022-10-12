@@ -41,7 +41,7 @@
             <div
               style="color: grey; font-size: 12px; font-style: italic; max-width: 400px; word-wrap: normal; overflow-wrap: break-word; white-space: normal;"
             >
-              {{ item.message || item.from || item.to }}
+              <AppTaskDialogTaskViewMessage :value="item.message ? item.message : item.from || item.to || ''" />
             </div>
           </div>
         </template>
@@ -54,10 +54,11 @@
 import { defineComponent, reactive, toRefs } from '@vue/composition-api'
 import { useTasks } from '../composables/task'
 import TaskDialogNodeStatus from './AppTaskDialogNodeStatus.vue'
+import AppTaskDialogTaskViewMessage from './AppTaskDialogTaskViewMessage'
 import { TaskItem } from '/@/entities/task'
 
 export default defineComponent({
-  components: { TaskDialogNodeStatus },
+  components: { TaskDialogNodeStatus, AppTaskDialogTaskViewMessage },
   setup() {
     const { tasks, pause, resume, cancel } = useTasks()
 

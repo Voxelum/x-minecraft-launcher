@@ -55,8 +55,9 @@
 </template>
 
 <script lang=ts>
+import { InstanceServiceKey } from '@xmcl/runtime-api'
 import { CreateOptionKey } from '../composables/instanceCreation'
-import { useI18n } from '/@/composables'
+import { useI18n, useService } from '/@/composables'
 import { required } from '/@/util/props'
 export default defineComponent({
   props: {
@@ -66,11 +67,13 @@ export default defineComponent({
   setup() {
     const { t } = useI18n()
     const content = inject(CreateOptionKey)
+    const { state } = useService(InstanceServiceKey)
     if (!content) {
       throw new Error('Cannot use without providing CreateOption!')
     }
     const nameRules = computed(() => [
       (v: any) => !!v || t('instance.requireName'),
+      (v: any) => !state.instances.some(i => i.name === v) || t('instance.duplicatedName'),
     ])
     return {
       nameRules,

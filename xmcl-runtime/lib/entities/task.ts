@@ -75,10 +75,10 @@ export function createTaskMonitor (
   }
   function update (uuid: string, task: Task<any>, size?: number) {
     const partial = getUpdate(uuid, task)
-    partial.progress = task.progress
-    partial.total = task.total
-    partial.from = task.from
-    partial.to = task.to
+    partial.progress = Number(task.progress)
+    partial.total = Number(task.total)
+    if (typeof task.from === 'string') { partial.from = task.from }
+    if (typeof task.to === 'string') partial.to = task.to
     if (typeof size === 'number') {
       if (partial.chunkSize) {
         partial.chunkSize += size
