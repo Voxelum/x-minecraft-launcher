@@ -23,7 +23,7 @@ export interface TaskItem {
   title: string
   from: string
   to: string
-  message: string
+  message: object | string
   total: number
   progress: number
 
