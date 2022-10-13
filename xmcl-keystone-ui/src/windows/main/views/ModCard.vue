@@ -151,7 +151,11 @@ function onDragStart(e: DragEvent) {
   emit('dragstart', e)
 }
 function onEditTag(event: Event, index: number) {
-  if (event.target instanceof HTMLDivElement) {
+  if (event instanceof FocusEvent) {
+    if (event.type === 'blur') {
+      emit('tags', [...props.source.tags])
+    }
+  } else if (event.target instanceof HTMLDivElement) {
     if ((event as any).inputType === 'insertParagraph' || ((event as any).inputType === 'insertText' && (event as any).data === null)) {
       emit('tags', [...props.source.tags])
     } else {

@@ -14,8 +14,8 @@
             v-model="content.java"
             outlined
             class="java-select"
-            :label="$t('java.location')"
-            :placeholder="$t('java.allocatedLong')"
+            :label="t('java.location')"
+            :placeholder="t('java.allocatedLong')"
             :items="javaItems"
             :menu-props="{ auto: true, overflowY: true }"
             hide-details
@@ -31,8 +31,8 @@
             outlined
             hide-details
             type="number"
-            :label="$t('java.minMemory')"
-            :placeholder="$t('java.allocatedShort')"
+            :label="t('java.minMemory')"
+            :placeholder="t('java.allocatedShort')"
             required
           />
         </v-flex>
@@ -45,8 +45,8 @@
             outlined
             hide-details
             type="number"
-            :label="$t('java.maxMemory')"
-            :placeholder="$t('java.allocatedShort')"
+            :label="t('java.maxMemory')"
+            :placeholder="t('java.allocatedShort')"
             required
           />
         </v-flex>
@@ -63,12 +63,12 @@
       <v-list-item-content>
         <v-list-item-title>
           {{
-            $t('minecraftVersion.name')
+            t('minecraftVersion.name')
           }}
         </v-list-item-title>
         <v-list-item-subtitle>
           {{
-            $t('instance.versionHint')
+            t('instance.versionHint')
           }}
         </v-list-item-subtitle>
       </v-list-item-content>
@@ -108,7 +108,7 @@
       <v-list-item-content>
         <v-list-item-title>
           {{
-            $t('forgeVersion.name')
+            t('forgeVersion.name')
           }}
         </v-list-item-title>
         <v-list-item-subtitle>

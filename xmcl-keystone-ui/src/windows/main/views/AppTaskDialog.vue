@@ -9,7 +9,7 @@
     <v-toolbar
       tabs
     >
-      <v-toolbar-title>{{ $t('task.manager') }}</v-toolbar-title>
+      <v-toolbar-title>{{ t('task.manager') }}</v-toolbar-title>
       <v-spacer />
       <v-btn
         icon
@@ -17,53 +17,19 @@
       >
         <v-icon>close</v-icon>
       </v-btn>
-      <template #extension>
-        <v-tabs
-          v-model="tabs"
-          centered
-        >
-          <v-tab
-            :key="0"
-          >
-            {{ $tc('task.name', 2) }}
-          </v-tab>
-          <!-- <v-tab
-            :key="1"
-          >
-            {{ $t('issue.name') }}
-          </v-tab> -->
-          <!-- <v-tab
-            :key="2"
-          >
-            {{ $t('notification.name') }}
-          </v-tab> -->
-        </v-tabs>
-      </template>
     </v-toolbar>
-    <v-tabs-items v-model="tabs">
-      <v-tab-item
-        :key="0"
-      >
-        <task-view />
-      </v-tab-item>
-      <v-tab-item
-        :key="1"
-      >
-        <app-task-dialog-issue-view />
-      </v-tab-item>
-    </v-tabs-items>
+    <task-view />
   </v-dialog>
 </template>
 
 <script lang=ts setup>
 import { useDialog } from '../composables/dialog'
-import AppTaskDialogIssueView from './AppTaskDialogIssues.vue'
 import TaskView from './AppTaskDialogTaskView.vue'
-import { useRouter } from '/@/composables'
+import { useI18n, useRouter } from '/@/composables'
 
 const { hide, isShown } = useDialog('task')
 const router = useRouter()
-const tabs = ref(0)
+const { t } = useI18n()
 
 router.afterEach((g) => {
   if (isShown.value) {

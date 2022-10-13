@@ -5,15 +5,15 @@
     subheader
   >
     <v-subheader style="padding-right: 2px">
-      {{ $tc("modpack.name", 1) }}
+      {{ tc("modpack.name", 1) }}
     </v-subheader>
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title>
-          {{ $t("modpack.author") }}
+          {{ t("modpack.author") }}
         </v-list-item-title>
         <v-list-item-subtitle>
-          {{ $t("modpack.authorHint") }}
+          {{ t("modpack.authorHint") }}
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action style="flex-grow: 0">
@@ -29,7 +29,7 @@
     <v-list-item style="margin-top: 5px">
       <v-list-item-content>
         <v-list-item-title>
-          {{ $t("modpack.description") }}
+          {{ t("modpack.description") }}
         </v-list-item-title>
         <v-list-item-subtitle>
           <v-text-field
@@ -37,7 +37,7 @@
             class="m-1 mt-2"
             solo
             hide-details
-            :placeholder="$t('modpack.descriptionHint')"
+            :placeholder="t('modpack.descriptionHint')"
           />
         </v-list-item-subtitle>
       </v-list-item-content>
@@ -46,10 +46,10 @@
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title>
-          {{ $t("modpack.url") }}
+          {{ t("modpack.url") }}
         </v-list-item-title>
         <v-list-item-subtitle>
-          {{ $t("modpack.urlHint") }}
+          {{ t("modpack.urlHint") }}
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action style="width: 50%">
@@ -58,7 +58,7 @@
           class="m-1 mt-2"
           solo
           hide-details
-          :placeholder="$t('modpack.urlHint')"
+          :placeholder="t('modpack.urlHint')"
         />
       </v-list-item-action>
     </v-list-item>
@@ -69,10 +69,11 @@
 import { useCurrentUser } from '../composables/user'
 import { injection } from '/@/util/inject'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
+import { useI18n } from '/@/composables'
 
 const { data } = injection(InstanceEditInjectionKey)
 const { gameProfile } = useCurrentUser()
-
+const { t, tc } = useI18n()
 </script>
 
 <style scoped="true">

@@ -84,11 +84,11 @@
       <span>
         {{
           compatible
-            ? $t("resourcepack.compatible", {
+            ? t("resourcepack.compatible", {
               format: pack.pack_format,
               version: runtime.minecraft,
             })
-            : $t("resourcepack.incompatible", {
+            : t("resourcepack.incompatible", {
               accept: pack.acceptingRange,
               actual: runtime.minecraft,
               format: pack.pack_format,

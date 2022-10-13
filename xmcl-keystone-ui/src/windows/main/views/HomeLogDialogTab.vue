@@ -56,7 +56,7 @@
               align-center
             >
               <h1 v-if="!pending">
-                {{ $t('logsCrashes.placeholder') }}
+                {{ t('logsCrashes.placeholder') }}
               </h1>
               <v-progress-circular
                 v-else
@@ -82,7 +82,7 @@
               <v-icon left>
                 arrow_back
               </v-icon>
-              {{ $t('back') }}
+              {{ t('back') }}
             </v-btn>
           </v-card-title>
           <log-view :logs="logs" />
@@ -95,6 +95,7 @@
 <script lang=ts setup>
 import { parseLog } from '/@/util/log'
 import LogView from '/@/components/LogView.vue'
+import { useI18n } from '/@/composables'
 
 const props = defineProps<{
   files: string[]
@@ -104,6 +105,7 @@ const props = defineProps<{
   refreshing: boolean
 }>()
 
+const { t } = useI18n()
 const content = ref('')
 const loading = ref(false)
 const showedFile = ref('')

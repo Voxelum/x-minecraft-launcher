@@ -11,7 +11,7 @@
       {{ icons[data.level] }}
     </v-icon>
 
-    <span v-if="!data.full">{{ $t(`logLevel.${data.level}`) }}</span>
+    <span v-if="!data.full">{{ levelText }}</span>
 
     {{ data.title }}
     <template #action>
@@ -37,6 +37,7 @@
 
 <script lang=ts setup>
 import { Level, useNotificationHandler, useNotificationQueue } from '../composables/notifier'
+import { useI18n } from '/@/composables'
 
 const data = reactive({
   show: false,
@@ -72,6 +73,9 @@ watch(queueLength, (newLength, oldLength) => {
     consume()
   }
 })
+const { t } = useI18n()
+
+const levelText = computed(() => data.level === 'info' ? t('logLevel.info') : data.level === 'error' ? t('logLevel.error') : data.level === 'success' ? t('logLevel.success') : t('logLevel.warning'))
 
 // function handleNotification(payload: TaskLifeCyclePayload) {
 //   const handler = registry[payload.type]

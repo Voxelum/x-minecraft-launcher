@@ -35,16 +35,16 @@
           class="rounded-lg flex-grow-0 flex-1"
         >
           <v-tab :key="0">
-            {{ $t('modrinth.description') }}
+            {{ t('modrinth.description') }}
           </v-tab>
           <v-tab
             v-if="project.gallery.length !== 0"
             :key="1"
           >
-            {{ $t('modrinth.gallery') }}
+            {{ t('modrinth.gallery') }}
           </v-tab>
           <v-tab :key="2">
-            {{ $t('modrinth.versions') }}
+            {{ t('modrinth.versions') }}
           </v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab">
@@ -93,7 +93,7 @@
 </template>
 <script lang="ts"  setup>
 import { Ref } from '@vue/composition-api'
-import { useService } from '/@/composables'
+import { useI18n, useService } from '/@/composables'
 import { InstanceModsServiceKey, InstanceServiceKey, ModrinthServiceKey, Persisted, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useRefreshable } from '/@/composables/refreshable'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
@@ -120,6 +120,7 @@ watch(viewingImage, (v) => {
   if (!v) viewedImage.value = ''
 })
 
+const { t } = useI18n()
 const { show } = useDialog(AddInstanceDialogKey)
 const { state: resourceState } = useService(ResourceServiceKey)
 const { state: instanceState } = useService(InstanceServiceKey)
@@ -143,9 +144,9 @@ const onCreate = (v: ProjectVersion) => {
     if (m.uri.indexOf(fileUrl) !== -1) {
       return true
     }
-    if (m.metadata.modrinth) {
-      if (m.metadata.modrinth.url === fileUrl) return true
-    }
+    // if (m.metadata.modrinth) {
+    //   if (m.metadata.modrinth.url === fileUrl) return true
+    // }
     return false
   }
   const res = resourceState.modpacks.find(find)

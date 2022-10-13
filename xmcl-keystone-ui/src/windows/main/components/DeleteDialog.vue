@@ -23,7 +23,7 @@
           text
           @click="onCancel"
         >
-          {{ $t('delete.no') }}
+          {{ t('delete.no') }}
         </v-btn>
         <v-spacer />
         <v-btn
@@ -34,7 +34,7 @@
           <v-icon left>
             delete
           </v-icon>
-          {{ $t('delete.yes') }}
+          {{ t('delete.yes') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -43,6 +43,7 @@
 
 <script lang="ts" setup>
 import { useDialog } from '../composables/dialog'
+import { useI18n } from '/@/composables'
 
 const props = defineProps<{
   title: string
@@ -52,6 +53,7 @@ const props = defineProps<{
 }>()
 
 const { isShown } = useDialog(props.dialog ?? 'deletion')
+const { t } = useI18n()
 
 const emit = defineEmits(['confirm', 'cancel'])
 

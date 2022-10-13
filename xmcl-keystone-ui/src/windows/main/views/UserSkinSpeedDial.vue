@@ -43,7 +43,7 @@
               <v-icon>link</v-icon>
             </v-btn>
           </template>
-          {{ $t('userSkin.importLink') }}
+          {{ t('userSkin.importLink') }}
         </v-tooltip>
         <v-tooltip
           :close-delay="0"
@@ -61,15 +61,16 @@
               <v-icon>save</v-icon>
             </v-btn>
           </template>
-          {{ $t('userSkin.saveTitle') }}
+          {{ t('userSkin.saveTitle') }}
         </v-tooltip>
       </v-speed-dial>
     </template>
-    {{ $t('userSkin.importFile') }}
+    {{ t('userSkin.importFile') }}
   </v-tooltip>
 </template>
 
 <script lang=ts setup>
+import { useI18n } from '/@/composables'
 
 defineProps<{
   load():void
@@ -80,6 +81,8 @@ defineProps<{
   hasCape: boolean
   value: boolean
 }>()
+
+const { t } = useI18n()
 
 const fab = ref(false)
 </script>

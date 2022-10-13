@@ -3,9 +3,9 @@
     <v-btn
       text
       :disabled="creating"
-      @click="$emit('quit')"
+      @click="emit('quit')"
     >
-      {{ $t('cancel') }}
+      {{ t('cancel') }}
     </v-btn>
     <v-spacer />
     <slot />
@@ -14,32 +14,31 @@
       color="primary"
       :loading="creating"
       :disabled="disabled"
-      @click="$emit('next')"
+      @click="emit('next')"
     >
-      {{ $t('next') }}
+      {{ t('next') }}
     </v-btn>
     <v-btn
       v-if="create"
       color="primary"
       :loading="creating"
       :disabled="disabled"
-      @click="$emit('create')"
+      @click="emit('create')"
     >
-      {{ $t('create') }}
+      {{ t('create') }}
     </v-btn>
   </v-layout>
 </template>
-<script lang=ts>
-import { defineComponent } from '@vue/composition-api'
-import { required, optional } from '/@/util/props'
+<script lang=ts setup>
+import { useI18n } from '/@/composables'
 
-export default defineComponent({
-  props: {
-    disabled: required(Boolean),
-    creating: required(Boolean),
-    create: optional(Boolean),
-    next: optional(Boolean),
-  },
-  emits: ['quit', 'next', 'create'],
-})
+defineProps<{
+  disabled: boolean
+  creating: boolean
+  create?: boolean
+  next?: boolean
+}>()
+
+const emit = defineEmits(['quit', 'next', 'create'])
+const { t } = useI18n()
 </script>

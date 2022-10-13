@@ -82,13 +82,13 @@
         class="rounded-lg flex-grow-0 flex-1"
       >
         <v-tab :key="0">
-          {{ $t('overview') }}
+          {{ t('overview') }}
         </v-tab>
         <v-tab :key="1">
-          {{ $t('details') }}
+          {{ t('details') }}
         </v-tab>
         <v-tab :key="2">
-          {{ $t('changelog') }}
+          {{ t('changelog') }}
         </v-tab>
       </v-tabs>
       <v-tabs-items v-model="tab">

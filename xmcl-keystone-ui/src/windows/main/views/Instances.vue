@@ -41,9 +41,9 @@
         :width="400"
         @confirm="doDelete"
       >
-        {{ $t('instance.deleteHint') }}
+        {{ t('instance.deleteHint') }}
         <div style="color: grey">
-          {{ $t('instance.name') }}: {{ deletingInstance.name }}
+          {{ t('instance.name') }}: {{ deletingInstance.name }}
         </div>
         <div style="color: grey">
           {{ deletingInstance.path }}
@@ -69,6 +69,7 @@ import { ContextMenuItem } from '../composables/contextMenu'
 
 const { show: showAddInstanceDialog } = useDialog('add-instance-dialog')
 const { show: showAddServerDialog } = useDialog('add-server-dialog')
+const { t } = useI18n()
 
 const contextMenuItems = computed(() => {
   const items: ContextMenuItem[] = [{
@@ -92,7 +93,6 @@ const contextMenuItems = computed(() => {
 
 const { mountInstance, deleteInstance, instances } = useInstances()
 const { push } = useRouter()
-const { t } = useI18n()
 
 function getFilterOptions(instance: Instance) {
   const result = [

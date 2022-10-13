@@ -6,7 +6,7 @@
     subheader
   >
     <v-subheader style="padding-right: 2px">
-      {{ $tc("modpack.name", 1) }}
+      {{ tc("modpack.name", 1) }}
     </v-subheader>
     <v-list-item>
       <v-list-item-action>
@@ -16,10 +16,10 @@
       </v-list-item-action>
       <v-list-item-content>
         <v-list-item-title>
-          {{ $t("instance.fileApi") }}
+          {{ t("instance.fileApi") }}
         </v-list-item-title>
         <v-list-item-subtitle>
-          {{ $t("instance.fileApiHint") }}
+          {{ t("instance.fileApiHint") }}
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action style="width: 50%">
@@ -50,7 +50,7 @@ import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 
 const { data } = injection(InstanceEditInjectionKey)
 const { gameProfile } = useCurrentUser()
-const { t } = useI18n()
+const { t, tc } = useI18n()
 const gotoHelp = () => {
   window.location = 'https://xmcl.app/faq/' as any
 }

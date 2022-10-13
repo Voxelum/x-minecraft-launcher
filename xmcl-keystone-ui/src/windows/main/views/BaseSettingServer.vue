@@ -7,12 +7,12 @@
     <v-subheader
       style="padding-right: 2px"
     >
-      {{ $tc("server.name", 1) }}
+      {{ tc("server.name", 1) }}
     </v-subheader>
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title>
-          {{ $t("server.host") }}
+          {{ t("server.host") }}
         </v-list-item-title>
       </v-list-item-content>
       <v-list-item-action>
@@ -29,7 +29,7 @@
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title>
-          {{ $t("server.port") }}
+          {{ t("server.port") }}
         </v-list-item-title>
       </v-list-item-content>
       <v-list-item-action>
@@ -48,8 +48,10 @@
 <script lang=ts setup>
 import { injection } from '/@/util/inject'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
+import { useI18n } from '/@/composables'
 
 const { data } = injection(InstanceEditInjectionKey)
+const { t, tc } = useI18n()
 
 </script>
 
