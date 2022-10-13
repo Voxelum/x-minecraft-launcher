@@ -25,7 +25,7 @@
         <v-icon small>
           event
         </v-icon>
-        {{ $t("curseforge.createdDate") }}
+        {{ t("curseforge.createdDate") }}
         <span v-if="!loading && project">
           {{ getLocalDateString(project.dateCreated) }}
         </span>
@@ -39,7 +39,7 @@
         <v-icon small>
           event
         </v-icon>
-        {{ $t("curseforge.lastUpdate") }}
+        {{ t("curseforge.lastUpdate") }}
         <span v-if="!loading && project">
           {{ getLocalDateString(project.dateModified) }}
         </span>
@@ -52,7 +52,7 @@
         <v-icon small>
           file_download
         </v-icon>
-        {{ $t("curseforge.totalDownloads") }}
+        {{ t("curseforge.totalDownloads") }}
         <span v-if="!loading && project">
           {{ project.downloadCount }}
         </span>
@@ -75,6 +75,7 @@
 <script lang="ts" setup>
 import { Mod } from '@xmcl/curseforge'
 import DestMenu from './CurseforgeProjectDestMenu.vue'
+import { useI18n } from '/@/composables'
 import { getLocalDateString } from '/@/util/date'
 
 const props = defineProps<{
@@ -86,6 +87,7 @@ const props = defineProps<{
 
 const icon = computed(() => !props.project ? '' : props.project.logo?.thumbnailUrl ?? '')
 const emit = defineEmits(['destination'])
+const { t } = useI18n()
 
 </script>
 

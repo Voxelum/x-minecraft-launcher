@@ -60,6 +60,7 @@
         contenteditable
         class="max-w-50 overflow-auto"
         @input.stop="onEditTag($event, index)"
+        @blur="onEditTag($event, 0)"
       >
         {{ tag }}
       </div>
@@ -95,7 +96,9 @@ const getDepIcon = (name: string, icon?: string) => {
   if (name === 'fabricloader' || name.startsWith('fabric-')) return fabricPng
   return ''
 }
-
+const onBlur = () => {
+  console.log('blur')
+}
 const { t } = useI18n()
 const { darkTheme } = useTheme()
 

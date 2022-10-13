@@ -13,7 +13,7 @@
         tag="h2"
         class="headline"
       >
-        {{ $t("title") }}
+        {{ t("title") }}
       </v-flex>
       <BaseSettingGeneral />
       <BaseSettingSync />
@@ -31,7 +31,7 @@ import { InstanceEditInjectionKey, useInstanceEdit } from '../composables/instan
 import BaseSettingGeneral from './BaseSettingGeneral.vue'
 import BaseSettingModpack from './BaseSettingModpack.vue'
 import BaseSettingServer from './BaseSettingServer.vue'
-import { useAutoSaveLoad } from '/@/composables'
+import { useAutoSaveLoad, useI18n } from '/@/composables'
 import BaseSettingLaunch from './BaseSettingLaunch.vue'
 import BaseSettingJava from './BaseSettingJava.vue'
 import BaseSettingSync from './BaseSettingSync.vue'
@@ -39,7 +39,7 @@ import BaseSettingSync from './BaseSettingSync.vue'
 const { instance } = useInstance()
 const isServer = useInstanceIsServer(instance)
 const { data, save, load } = useInstanceEdit()
-
+const { t } = useI18n()
 provide(InstanceEditInjectionKey, { data, save, load })
 useAutoSaveLoad(save, load)
 

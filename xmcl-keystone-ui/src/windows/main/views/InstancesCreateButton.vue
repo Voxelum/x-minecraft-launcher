@@ -42,20 +42,22 @@
                 storage
               </v-icon>
             </template>
-            {{ $t('instance.addServer') }}
+            {{ t('instance.addServer') }}
           </v-tooltip>
         </v-btn>
       </v-speed-dial>
     </template>
-    {{ $t('instances.add') }}
+    {{ t('instances.add') }}
   </v-tooltip>
 </template>
 
 <script lang=ts setup>
 import { useDialog } from '../composables/dialog'
+import { useI18n } from '/@/composables'
 
 const { show: showAddInstanceDialog } = useDialog('add-instance-dialog')
 const { show: showAddServerDialog } = useDialog('add-server-dialog')
+const { t } = useI18n()
 </script>
 
 <style>

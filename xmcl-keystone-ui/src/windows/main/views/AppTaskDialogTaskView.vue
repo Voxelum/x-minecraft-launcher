@@ -27,7 +27,7 @@
 
         <template #label="{ item }">
           <div
-            style="padding: 5px 0px; max-width: 300px"
+            style="padding: 5px 0px;"
             @click="onTaskClick($event, item)"
             @mouseenter.prevent="hovered[item.id] = true"
             @mouseleave.prevent="hovered[item.id] = false"
@@ -76,7 +76,8 @@ export default defineComponent({
       resume,
       cancel,
       onTaskClick(event: MouseEvent, item: TaskItem) {
-        navigator.clipboard.writeText(item.message ?? '')
+        // TODO: fix
+        // navigator.clipboard.writeText(item.message ?? '')
       },
     }
   },

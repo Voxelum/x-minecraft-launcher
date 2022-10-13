@@ -33,23 +33,23 @@
               class="headline font-weight-bold"
               style="font-size: 100px"
             >
-              {{ $t("universalDrop.title") }}
+              {{ t("universalDrop.title") }}
             </v-card-text>
 
             <v-card-text class="font-weight-bold">
               <v-icon>$vuetify.icons.forge</v-icon>
-              {{ $tc("mod.name", 0) }}
+              {{ tc("mod.name", 0) }}
               <v-icon>$vuetify.icons.fabric</v-icon>
               Fabric
-              {{ $tc("mod.name", 0) }}
+              {{ tc("mod.name", 0) }}
               <v-icon>$vuetify.icons.zip</v-icon>
-              {{ $tc("resourcepack.name", 0) }}
+              {{ tc("resourcepack.name", 0) }}
               <v-icon>$vuetify.icons.package</v-icon>
-              {{ $tc("save.name", 0) }}
+              {{ tc("save.name", 0) }}
               <v-icon :size="16">
                 $vuetify.icons.curseforge
               </v-icon>
-              {{ $tc("modpack.name", 0) }}
+              {{ tc("modpack.name", 0) }}
             </v-card-text>
           </div>
           <preview-view
@@ -67,8 +67,10 @@
 <script lang=ts setup>
 import PreviewView from './AppDropDialogPreview.vue'
 import RefreshingTile from '/@/components/RefreshingTile.vue'
+import { useI18n } from '/@/composables'
 import { DropServiceInjectionKey } from '/@/composables/dropService'
 import { injection } from '/@/util/inject'
 
 const { active, loading, remove, cancel, previews, dragover } = injection(DropServiceInjectionKey)
+const { t, tc } = useI18n()
 </script>

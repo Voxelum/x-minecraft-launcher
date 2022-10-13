@@ -1,28 +1,28 @@
-14<template>
+<template>
   <v-list
     two-line
-    style="overflow-y: auto; background: transparent;"
+    class="overflow-y-auto bg-transparent"
   >
     <v-list-item
       key="DEFAULT"
       :class="{ primary: value.path === '' }"
-      @click="$emit('input', { path: '', version: '', majorVersion: 0, valid: false })"
+      @click="emit('input', { path: '', version: '', majorVersion: 0, valid: false })"
     >
       <v-list-item-avatar>
         <v-icon>close</v-icon>
       </v-list-item-avatar>
       <v-list-item-content>
         <v-list-item-title>
-          {{ $t("java.allocatedLong") }}
+          {{ t("java.allocatedLong") }}
         </v-list-item-title>
-        <v-list-item-subtitle>{{ $t("java.allocatedLong") }}</v-list-item-subtitle>
+        <v-list-item-subtitle>{{ t("java.allocatedLong") }}</v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
     <v-list-item
       v-for="item in items"
       :key="item.path"
       :class="{ primary: item.path === value.path && item.valid, error: item.path === value.path && !item.valid }"
-      @click="$emit('input', item)"
+      @click="emit('input', item)"
     >
       <v-list-item-avatar>
         <v-chip
@@ -39,7 +39,7 @@
           Java {{ item.version }}
         </v-list-item-title>
         <v-list-item-title v-else>
-          {{ $t('java.invalid') }}
+          {{ t('java.invalid') }}
         </v-list-item-title>
         <v-list-item-subtitle>{{ item.path }}</v-list-item-subtitle>
       </v-list-item-content>
@@ -64,20 +64,17 @@
   </v-list>
 </template>
 
-<script lang=ts>
+<script lang=ts setup>
 import { JavaRecord, BaseServiceKey } from '@xmcl/runtime-api'
-import { useService } from '/@/composables'
-import { required } from '/@/util/props'
+import { useI18n, useService } from '/@/composables'
 
-export default defineComponent({
-  props: {
-    items: required<JavaRecord[]>(Array),
-    value: required<JavaRecord>(Object),
-    remove: required<(java: JavaRecord) => void>(Function),
-  },
-  setup(props) {
-    const { showItemInDirectory } = useService(BaseServiceKey)
-    return { showItemInDirectory }
-  },
-})
+defineProps<{
+  items:JavaRecord[]
+  value:JavaRecord
+  remove(java: JavaRecord): void
+}>()
+
+const emit = defineEmits(['input'])
+const { t } = useI18n()
+const { showItemInDirectory } = useService(BaseServiceKey)
 </script>

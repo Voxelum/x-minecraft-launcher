@@ -8,7 +8,7 @@
         edit
       </v-icon>
       <div>
-        <span>{{ $t('modrinth.avaiableFor') }}</span>
+        <span>{{ t('modrinth.avaiableFor') }}</span>
       </div>
     </div>
     <div class="item">
@@ -16,7 +16,7 @@
         desktop_windows
       </v-icon>
       <div>
-        <span>{{ $t('modrinth.clientSide') }}</span>
+        <span>{{ t('modrinth.clientSide') }}</span>
         {{ clientSide }}
       </div>
     </div>
@@ -25,7 +25,7 @@
         storage
       </v-icon>
       <div>
-        <span>{{ $t('modrinth.serverSide') }}</span>
+        <span>{{ t('modrinth.serverSide') }}</span>
         {{ serverSide }}
       </div>
     </div>
@@ -34,7 +34,7 @@
         description
       </v-icon>
       <div>
-        <span>{{ $t('modrinth.license') }}</span>
+        <span>{{ t('modrinth.license') }}</span>
         <a :href="license.url">
           {{ license.name }}
         </a>
@@ -45,28 +45,27 @@
         code
       </v-icon>
       <div>
-        <span>{{ $t('modrinth.projectId') }}</span>
+        <span>{{ t('modrinth.projectId') }}</span>
         {{ projectId }}
       </div>
     </div>
   </v-card>
 </template>
-<script lang="ts">
+<script lang="ts" setup>
 import { License } from '@xmcl/modrinth/types'
-import { required } from '/@/util/props'
+import { useI18n } from '/@/composables'
 
-export default defineComponent({
-  props: {
-    downloads: required(Number),
-    createAt: required(String),
-    updateAt: required(String),
-    license: required<License>(Object),
-    serverSide: required(String),
-    clientSide: required(String),
-    projectId: required(String),
-  },
-  setup() {},
-})
+defineProps<{
+  downloads: number
+  createAt: string
+  updateAt: string
+  license: License
+  serverSide: string
+  clientSide: string
+  projectId: string
+}>()
+const { t } = useI18n()
+
 </script>
 
 <style scoped>

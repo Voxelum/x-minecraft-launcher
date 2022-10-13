@@ -13,9 +13,9 @@
           xs12
         >
           <v-text-field
-            v-model="url"
+            v-model="data.url"
             :rules="rules"
-            :label="$t('userSkin.placeUrlHere')"
+            :label="t('userSkin.placeUrlHere')"
             validate-on-blur
             clearable
             @input="validate"
@@ -26,13 +26,13 @@
           xs12
         >
           <v-btn
-            :disabled="error"
+            :disabled="data.error"
             @click="submit"
           >
             <v-icon left>
               inbox
             </v-icon>
-            {{ $t('userSkin.import') }}
+            {{ t('userSkin.import') }}
           </v-btn>
         </v-flex>
       </v-layout>
@@ -40,7 +40,7 @@
   </v-card>
 </template>
 
-<script lang=ts>
+<script lang=ts setup>
 import { useI18n } from '/@/composables'
 
 // https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
@@ -51,31 +51,22 @@ const URL_PATTERN = new RegExp('^(https?:\\/\\/)?' + // protocol
   '(\\?[;&a-z\\d%_.~+=-]*)?' + // query string
   '(\\#[-a-z\\d_]*)?$', 'i') // fragment locator
 
-export default defineComponent({
-  setup(props, context) {
-    const { $t } = useI18n()
-    const rules = [
-      (v: any) => !!v || $t('userSkin.urlNotEmpty'),
-      (v: any) => !!URL_PATTERN.test(v) || $t('userSkin.urlNotValid'),
-    ]
-    const data = reactive({
-      error: true,
-      url: '',
-    })
-    function validate() {
-      data.error = rules.some(r => typeof r(data.url) === 'string')
-    }
-    function submit() {
-      context.emit('input', data.url)
-    }
-    return {
-      ...toRefs(data),
-      rules,
-      validate,
-      submit,
-    }
-  },
+const { t } = useI18n()
+const emit = defineEmits(['input'])
+const rules = [
+  (v: any) => !!v || t('userSkin.urlNotEmpty'),
+  (v: any) => !!URL_PATTERN.test(v) || t('userSkin.urlNotValid'),
+]
+const data = reactive({
+  error: true,
+  url: '',
 })
+function validate() {
+  data.error = rules.some(r => typeof r(data.url) === 'string')
+}
+function submit() {
+  emit('input', data.url)
+}
 </script>
 
 <style>

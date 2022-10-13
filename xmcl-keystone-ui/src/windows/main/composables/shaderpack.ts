@@ -17,7 +17,7 @@ export function useShaderpacks() {
   const { state: options, editShaderOptions } = useService(InstanceOptionsServiceKey)
   const { showDirectory } = useService(InstanceShaderPacksServiceKey)
   const loading = useServiceBusy(ResourceServiceKey, 'load', ResourceDomain.ShaderPacks)
-  const { $t } = useI18n()
+  const { t } = useI18n()
 
   const shaderPacks = ref([] as ShaderPackItem[])
   const shaderPacksResources = computed(() => state.shaderpacks)
@@ -27,19 +27,19 @@ export function useShaderpacks() {
 
   function getBuiltinItems(): ShaderPackItem[] {
     return [{
-      name: $t('shaderPack.off'),
+      name: t('shaderPack.off'),
       value: 'OFF',
       resource: null as any,
       enabled: options.shaderoptions.shaderPack === 'OFF',
-      description: $t('shaderPack.offDescription'),
+      description: t('shaderPack.offDescription'),
       path: '',
       tags: [],
     }, {
-      name: $t('shaderPack.internal'),
+      name: t('shaderPack.internal'),
       value: '(internal)',
       resource: null as any,
       enabled: options.shaderoptions.shaderPack === '(internal)',
-      description: $t('shaderPack.internalDescription'),
+      description: t('shaderPack.internalDescription'),
       path: '',
       tags: [],
     }]

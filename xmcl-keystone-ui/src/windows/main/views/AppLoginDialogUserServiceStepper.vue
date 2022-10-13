@@ -11,14 +11,14 @@
       step="1"
       :complete="step > 1"
     >
-      {{ $t('userService.typeOfService') }}
+      {{ t('userService.typeOfService') }}
     </v-stepper-step>
     <v-stepper-content step="1">
       <v-text-field
         v-model="name"
         style="width: 100%"
         :rules="nameRules"
-        :label="$t('userService.name')"
+        :label="t('userService.name')"
         @update:error="
           /* @ts-ignore */
           value => nameError = value"
@@ -27,8 +27,8 @@
         v-model="baseUrl"
         persistent-hint
         style="width: 100%"
-        :label="$t('userService.baseUrl')"
-        :hint="$t('userService.baseUrlHint')"
+        :label="t('userService.baseUrl')"
+        :hint="t('userService.baseUrlHint')"
         :rules="urlRules"
         @update:error="
           /* @ts-ignore */
@@ -37,11 +37,11 @@
       />
       <v-radio-group v-model="template">
         <v-radio
-          :label="$t('userService.authLibInjector')"
+          :label="t('userService.authLibInjector')"
           :value="1"
         />
         <v-radio
-          :label="$t('userService.normal')"
+          :label="t('userService.normal')"
           :value="0"
         />
       </v-radio-group>
@@ -51,7 +51,7 @@
           style
           @click="$emit('cancel')"
         >
-          {{ $t('cancel') }}
+          {{ t('cancel') }}
         </v-btn>
         <v-spacer />
         <v-flex shrink>
@@ -61,7 +61,7 @@
             :disabled="baseUrlError || !baseUrl || nameError"
             @click.native="step = 2"
           >
-            {{ $t('next') }}
+            {{ t('next') }}
             <v-icon right>
               arrow_right
             </v-icon>
@@ -74,17 +74,17 @@
       :editable="step > 2 && enableAuthService"
       :complete="step > 2"
     >
-      {{ $t('userService.authServiceDetail') }}
+      {{ t('userService.authServiceDetail') }}
     </v-stepper-step>
     <v-stepper-content step="2">
       <v-text-field
-        v-for="t in authOrder"
-        :key="t"
-        v-model="newAuth[t]"
+        v-for="a in authOrder"
+        :key="a"
+        v-model="newAuth[a]"
         style="margin-bottom: 10px;"
-        :label="t === 'hostName' ? $t('userService.hostName') : `API ${t}`"
-        :rules="t === 'hostName' ? urlRules : []"
-        :messages="[$t(`userService.${t}Hint`)]"
+        :label="a === 'hostName' ? t('userService.hostName') : `API ${a}`"
+        :rules="a === 'hostName' ? urlRules : []"
+        :messages="[t(`userService.${a}Hint`)]"
       />
       <v-layout row>
         <v-btn
@@ -92,7 +92,7 @@
           style
           @click="$emit('cancel')"
         >
-          {{ $t('cancel') }}
+          {{ t('cancel') }}
         </v-btn>
         <v-spacer />
         <v-flex shrink>
@@ -101,7 +101,7 @@
             color="primary"
             @click.native="finish"
           >
-            {{ $t('finish') }}
+            {{ t('finish') }}
             <v-icon right>
               check
             </v-icon>
@@ -111,7 +111,7 @@
             color="primary"
             @click.native="step = 3"
           >
-            {{ $t('next') }}
+            {{ t('next') }}
             <v-icon right>
               arrow_right
             </v-icon>
@@ -124,7 +124,7 @@
       :complete="step > 3"
       :editable="step > 1 && enableProfileService"
     >
-      {{ $t('userService.profileServiceDetail') }}
+      {{ t('userService.profileServiceDetail') }}
     </v-stepper-step>
     <v-stepper-content step="3">
       <v-text-field
@@ -134,8 +134,8 @@
           // @ts-expect-error
           newProfileService[t]"
         style="margin-bottom: 10px;"
-        :label="$t(`userService.${t}`)"
-        :messages="[$t(`userService.${t}Hint`)]"
+        :label="t(`userService.${t}`)"
+        :messages="[t(`userService.${t}Hint`)]"
       />
       <v-layout row>
         <v-btn
@@ -143,7 +143,7 @@
           style="margin-left: 0"
           @click="$emit('cancel')"
         >
-          {{ $t('cancel') }}
+          {{ t('cancel') }}
         </v-btn>
         <v-spacer />
         <v-flex shrink>
@@ -152,7 +152,7 @@
             color="primary"
             @click.native="finish"
           >
-            {{ $t('finish') }}
+            {{ t('finish') }}
             <v-icon right>
               check
             </v-icon>
@@ -176,14 +176,14 @@ export default defineComponent({
     },
   },
   setup(props, context) {
-    const { $t } = useI18n()
+    const { t } = useI18n()
     const { state } = useService(UserServiceKey)
     const urlRules = [
-      (value: string) => !!HTTP_EXP.test(value) || $t('userService.invalidUrl'),
+      (value: string) => !!HTTP_EXP.test(value) || t('userService.invalidUrl'),
     ]
     const nameRules = [
-      (value: string) => !!value || $t('userService.requireName'),
-      // (value: string) => !state.authServices[value] || $t('userService.duplicatedName'),
+      (value: string) => !!value || t('userService.requireName'),
+      // (value: string) => !state.authServices[value] || t('userService.duplicatedName'),
     ]
     const authOrder = ['hostName', 'authenticate', 'refresh', 'validate', 'invalidate', 'signout'] as const
     const data = reactive({
@@ -298,6 +298,7 @@ export default defineComponent({
       authOrder,
       urlRules,
       nameRules,
+      t,
       finish() {
         // state.authServiceSet({ name: data.name, api: data.newAuth })
         // state.profileServiceSet({ name: data.name, api: data.newProfileService })

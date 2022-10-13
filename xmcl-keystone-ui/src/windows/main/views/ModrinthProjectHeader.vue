@@ -210,10 +210,10 @@ const isDownloaded = (ver: ProjectVersion) => {
     if (m.uri.indexOf(fileUrl) !== -1) {
       return true
     }
-    if (typeof m.metadata.modrinth === 'object') {
-      const s = m.metadata.modrinth
-      if (s.url === fileUrl) return true
-    }
+    // if (typeof m.metadata.modrinth === 'object') {
+    //   const s = m.metadata.modrinth
+    //   if (s.url === fileUrl) return true
+    // }
     return false
   }
   return !!resourceState.mods.find(find) || !!resourceState.modpacks.find(find)

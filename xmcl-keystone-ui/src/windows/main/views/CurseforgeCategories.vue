@@ -102,4 +102,33 @@ Storage: 存储
 MCreator: MCreator
 FancyMenu: FancyMenu
 Education: 教育
+Medieval: 中世纪
+'Photo Realistic': 真实风格
+Animated: 动画
+Steampunk: 蒸汽朋克
+'Data Packs': 数据包
+Modern: 现代
+Traditional: 传统
+'Font Packs': 字体
+'Mod Support': Mod 集成
+Multiplayer: 多人联机
+'Mini Game': 小游戏
+'Combat / PvP': 竞技/PVP
+Exploration: 探索
+'FTB Official Pack': FTB 官方包
+'Small / Light': 轻量级
+Skyblock: 空岛
+Quests: 任务
+Map Based: 基于地图
+Tech: 科技
+Sci-Fi: 科幻
+'Extra Large': 超大型
+Hardcore: 硬核
+'Game Map': 游戏地图
+Creation: 创造模式
+Parkour: 跑酷
+'Modded World': Mod 集成
+Survival: 生存
+Adventure: 冒险
+Puzzle: 解密
 </i18n>

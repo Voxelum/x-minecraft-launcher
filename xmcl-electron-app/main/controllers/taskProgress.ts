@@ -9,13 +9,13 @@ import { ControllerPlugin } from './plugin'
  */
 export const taskProgressPlugin: ControllerPlugin = function (this: Controller) {
   const notify = (n: TaskNotification) => {
-    const $t = this.i18n.t
+    const t = this.i18n.t
     if (this.activeWindow && this.activeWindow.isFocused()) {
       this.activeWindow.webContents.send('notification', n)
     } else if ((n.type === 'taskFinish' || n.type === 'taskFail')) {
       const notification = new Notification({
-        title: n.type === 'taskFinish' ? $t('task.success') : $t('task.fail'),
-        body: $t('task.continue'),
+        title: n.type === 'taskFinish' ? t('task.success') : t('task.fail'),
+        body: t('task.continue'),
         icon: darkIcon,
       })
       notification.show()
