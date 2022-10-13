@@ -140,7 +140,7 @@ export default defineComponent({
           const resourcesSaves = storedSaves.value.filter((_, i) => data.resourcesCopyFrom[i])
 
           if (resourcesSaves.length !== 0) {
-            await Promise.all(resourcesSaves.map(save => importSave({ source: save.path })))
+            await Promise.all(resourcesSaves.map(save => importSave({ path: save.path, saveRoot: save.metadata.save.root })))
           }
 
           if (profilesSaves.length !== 0) {

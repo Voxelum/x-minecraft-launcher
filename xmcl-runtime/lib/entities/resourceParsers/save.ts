@@ -10,6 +10,7 @@ export const saveParser: ResourceParser<ResourceSaveMetadata> = ({
   parseMetadata: async fs => {
     const root = await findLevelRootDirectory(fs, '')
     if (!root) throw new Error()
+    fs.cd(root)
     return readResourceSaveMetadata(fs, root)
   },
   getSuggestedName: meta => meta.levelName,
