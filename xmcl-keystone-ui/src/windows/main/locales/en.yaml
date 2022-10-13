@@ -151,6 +151,13 @@ error:
   missingMinecraft: Please select a Minecraft version for this profile!
   missingName: Please name this profile!
   name: Error | Errors
+errors:
+  BodyTimeoutError: HTTP Body timeout
+  ChecksumNotMatchError: Checksum not matched! Expect {expect}. Actual {actual}.
+  ConnectTimeoutError: Connection timeout to server.
+  DownloadAggregateError: Fail to download file.
+  HeadersTimeoutError: HTTP Header timeout
+  SocketError: Server socket error
 exception:
   http: >-
     HTTP request to {url} failed. Status code {statusCode}. {code}. Please retry

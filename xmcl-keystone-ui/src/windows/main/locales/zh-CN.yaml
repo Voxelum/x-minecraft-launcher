@@ -120,6 +120,13 @@ disk:
 download: 下载
 downloadCount: '{count} 次下载'
 edit: 编辑
+errors:
+  BodyTimeoutError: 等待 HTTP 数据超时
+  ChecksumNotMatchError: 文件校验失败！期望哈希值是 {expect}，实际获取到的是 {actual}。
+  ConnectTimeoutError: 与服务器建立连接超时
+  DownloadAggregateError: 下载文件失败。
+  HeadersTimeoutError: 等待 HTTP 头信息超时
+  SocketError: 与服务器连接被断开
 exception:
   http: '{url} 的 HTTP 请求失败。状态码 {statusCode}。{code}，请重试或检查你的网络。如果这个问题持续出现，请联系开发团队。'
 existed: 已导入过的
