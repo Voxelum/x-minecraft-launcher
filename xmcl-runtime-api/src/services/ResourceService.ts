@@ -96,8 +96,9 @@ export class ResourceState {
         break
     }
     if (domain) {
-      if (domain.find((r) => r.hash === res.hash)) {
-        this[res.domain] = domain.map((r) => r.hash === res.hash ? Object.freeze(res) as any : r)
+      const index = domain.findIndex((r) => r.hash === res.hash)
+      if (index !== -1) {
+        domain[index] = Object.freeze(res)
       } else {
         domain.push(Object.freeze(res) as any)
       }
@@ -111,8 +112,9 @@ export class ResourceState {
       if (domains.indexOf(res.domain) !== -1) {
         const domain = this[res.domain] as Persisted<Resource>[]
 
-        if (domain.find((r) => r.hash === res.hash)) {
-          this[res.domain] = domain.map((r) => r.hash === res.hash ? Object.freeze(res) as any : r)
+        const index = domain.findIndex((r) => r.hash === res.hash)
+        if (index !== -1) {
+          domain[index] = Object.freeze(res)
         } else {
           domain.push(Object.freeze(res) as any)
         }
