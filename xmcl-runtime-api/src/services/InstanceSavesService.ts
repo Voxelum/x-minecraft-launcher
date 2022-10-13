@@ -23,11 +23,7 @@ export interface ExportSaveOptions {
    */
   zip?: boolean
 }
-export interface ImportSaveOptions {
-  /**
-   * The source path of the zip or folder of the save to import
-   */
-  source: string
+export interface ImportSaveOptionsBase {
   /**
    * The destination instance directory path, e.g. the path of .minecraft folder.
    *
@@ -41,6 +37,24 @@ export interface ImportSaveOptions {
    */
   saveName?: string
 }
+export interface ImportSaveFromFileOptions extends ImportSaveOptionsBase {
+  /**
+   * the save zip file path
+   */
+  path: string
+  /**
+   * The root of the save in zip
+   */
+  saveRoot?: string
+}
+
+export interface ImportSaveFromDirectoryOptions extends ImportSaveOptionsBase {
+  /**
+   * the directory of the save
+   */
+  directory: string
+}
+export type ImportSaveOptions = ImportSaveFromDirectoryOptions | ImportSaveFromFileOptions
 export interface DeleteSaveOptions {
   /**
    * The save name will be deleted

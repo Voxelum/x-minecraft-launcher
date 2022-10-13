@@ -6,6 +6,7 @@ import {
 import { open, readAllEntries } from '@xmcl/unzip'
 import { createHash } from 'crypto'
 import filenamify from 'filenamify'
+import { existsSync } from 'fs'
 import { ensureDir, ensureFile, FSWatcher, readdir, remove } from 'fs-extra'
 import watch from 'node-watch'
 import { basename, extname, join, resolve } from 'path'
@@ -34,7 +35,7 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {
-    super(app,   () => new SaveState())
+    super(app, () => new SaveState())
     this.storeManager.subscribe('instanceSelect', (path) => {
       this.mountInstanceSaves(path)
     })
@@ -43,7 +44,8 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
       if (isSaveResource(resource)) {
         await this.importSave({
           instancePath,
-          source: join(resource.path, resource.metadata.save.root),
+          path: resource.path,
+          saveRoot: resource.metadata.save.root,
         })
       }
     })
@@ -212,44 +214,39 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
   }
 
   async importSave(options: ImportSaveOptions) {
-    let { source, instancePath, saveName } = options
+    let { instancePath, saveName } = options
 
-    requireString(source)
-
-    saveName = saveName ?? basename(source)
     instancePath = instancePath ?? this.instanceService.state.path
 
     if (!this.instanceService.state.all[instancePath]) {
       throw new Error(`Cannot find managed instance ${instancePath}`)
     }
 
+    const path = 'directory' in options ? options.directory : options.path
     // normalize the save name
+    saveName = saveName ?? basename(path)
     saveName = filenamify(saveName)
-
-    let sourceDir = source
     const destinationDir = join(instancePath, 'saves', basename(saveName, extname(saveName)))
-    let useTemp = false
 
-    if (await isFile(source)) {
-      const hash = createHash('sha1').update(source).digest('hex')
-      sourceDir = join(this.app.temporaryPath, hash) // save will unzip to the /saves
-      const zipFile = await open(source)
+    if ('directory' in options) {
+      if (!existsSync(join(path, 'level.dat'))) {
+        throw new InstanceSaveException({ type: 'instanceImportIllegalSave', path: path })
+      }
+
+      await copyPassively(options.directory, destinationDir)
+    } else {
+      // validate the source
+      const levelRoot = options.saveRoot ?? await findLevelRootOnPath(path)
+      if (!levelRoot) {
+        throw new InstanceSaveException({ type: 'instanceImportIllegalSave', path: path })
+      }
+
+      const zipFile = await open(path)
       const entries = await readAllEntries(zipFile)
-      const task = new UnzipTask(zipFile, entries, sourceDir)
+      const task = new UnzipTask(zipFile, entries.filter(e => !e.fileName.endsWith('/')), destinationDir, (e) => {
+        return e.fileName.substring(levelRoot.length)
+      })
       await task.startAndWait()
-      useTemp = true
-    }
-
-    // validate the source
-    const levelRoot = await findLevelRootOnPath(sourceDir)
-    if (!levelRoot) {
-      throw new InstanceSaveException({ type: 'instanceImportIllegalSave', path: source })
-    }
-
-    await copyPassively(levelRoot, destinationDir)
-
-    if (useTemp) {
-      await remove(sourceDir)
     }
 
     return destinationDir

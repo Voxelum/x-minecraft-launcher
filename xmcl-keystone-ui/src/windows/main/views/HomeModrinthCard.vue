@@ -93,7 +93,6 @@ const refreshing = computed(() => refreshingLatestProjectVersion.value || refres
 async function checkUpdate() {
   if (currentModpack.value?.hash) {
     latestVersion.value = await getLatestProjectVersion(currentModpack.value?.hash)
-  } else {
   }
 }
 
