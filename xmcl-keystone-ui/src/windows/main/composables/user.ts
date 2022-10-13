@@ -72,7 +72,7 @@ export function useLoginValidation(isOffline: Ref<boolean>) {
 
 export function useMojangSecurityStatus() {
   const { state } = useService(UserServiceKey)
-  const security = computed(() => (state.users[state.selectedUser.id]?.authService === 'mojang' ? true : true))
+  const security = computed(() => true)
 
   return {
     security,

@@ -147,6 +147,7 @@ export class MojangClient {
       },
       throwOnError: false,
       dispatcher: this.dispatcher,
+      signal,
     })
     if (resp.statusCode === 401) {
       throw new UnauthorizedError(await resp.body.json())

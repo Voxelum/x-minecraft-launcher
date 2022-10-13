@@ -13,7 +13,7 @@
       v-model="showProblems"
       offset-y
     >
-      <template #activator="{ on, attrs }">
+      <template #activator="{ attrs }">
         <v-btn
           :color="color"
           x-large

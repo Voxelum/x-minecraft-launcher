@@ -101,7 +101,7 @@ export class CopyDirectoryTask extends AbortableTask<void> {
       await ensureDir(dest)
       const children = await readdir(src)
       for (const child of children) {
-        yield* this.visit(resolve(src, child), resolve(dest, child))
+        yield * this.visit(resolve(src, child), resolve(dest, child))
       }
     } else if (await missing(dest)) {
       this._total += fileStat.size
@@ -186,7 +186,7 @@ export function linkWithTimeout(from: string, to: string, timeout = 1500) {
 
 export function linkWithTimeoutOrCopy(from: string, to: string, timeout = 1500) {
   return linkWithTimeout(from, to, timeout).catch(() => {
-    copy(from, to)
+    return copy(from, to)
   })
 }
 

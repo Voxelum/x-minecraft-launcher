@@ -3,6 +3,7 @@ import { CreateInstanceOption, createTemplate, EditInstanceOptions, filterForgeV
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { copy, ensureDir, move, readdir, remove } from 'fs-extra'
+import { rename } from 'fs/promises'
 import { dirname, isAbsolute, join, relative, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -137,19 +138,17 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
 
     const name = option.name
+    const expectPath = this.getPathUnder(filenamify(name))
 
-    if (this.isUnderManaged(path)) {
-      if (name) {
-        const expectPath = this.getPathUnder(filenamify(name))
-        if (expectPath !== path) {
-          if (!existsSync(expectPath)) {
-            this.log(`Migrate instance ${path} -> ${expectPath}`)
-            await move(path, expectPath)
-
-            path = expectPath
-          }
-        }
+    try {
+      if (this.isUnderManaged(path) && expectPath !== path && !existsSync(expectPath)) {
+        this.log(`Migrate instance ${path} -> ${expectPath}`)
+        await rename(path, expectPath)
+        path = expectPath
       }
+    } catch (e) {
+      this.warn(`Fail to rename instance ${path} -> ${expectPath}`)
+      this.warn(e)
     }
 
     const instance = createTemplate()
@@ -282,9 +281,22 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       return
     }
 
+    const inst = this.state.all[path]
+    const expectPath = this.getPathUnder(filenamify(inst.name))
+    try {
+      if (this.isUnderManaged(path) && expectPath !== path && !existsSync(expectPath)) {
+        this.log(`Migrate instance ${path} -> ${expectPath}`)
+        await rename(path, expectPath)
+        path = expectPath
+        this.state.instanceMove({ from: path, to: expectPath })
+      }
+    } catch (e) {
+      this.warn(`Fail to rename instance ${path} -> ${expectPath}`)
+      this.warn(e)
+    }
+
     this.log(`Try to mount instance ${path}`)
 
-    // not await this to improve the performance
     this.state.instanceSelect(path)
   }
 

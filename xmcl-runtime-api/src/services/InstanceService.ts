@@ -69,8 +69,6 @@ export class InstanceState {
   }
 
   instanceRemove(path: string) {
-    // TODO: remove in vue3
-    // remove(this.all, id)
     delete this.all[path]
     this.instances = this.instances.filter(i => i.path !== path)
   }
@@ -85,6 +83,15 @@ export class InstanceState {
     inst = this.instances.find(i => i.path === (path || this.path))
     if (inst) {
       inst.lastAccessDate = Date.now()
+    }
+  }
+
+  instanceMove({ from, to }: { from: string; to: string }) {
+    const inst = this.instances.find(i => i.path === from)
+    if (inst) {
+      inst.path = to
+      delete this.all[from]
+      this.all[to] = inst
     }
   }
 

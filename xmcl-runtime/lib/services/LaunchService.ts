@@ -327,8 +327,8 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         const string = s.toString()
         this.emit('minecraft-stdout', { pid: process.pid, stdout: string })
       })
-      process.stderr?.on('data', (s) => {
-        this.warn(s.toString())
+      process.stderr?.on('data', (s: Buffer) => {
+        this.warn(s.toString('utf8'))
         this.emit('minecraft-stderr', { pid: process.pid, stderr: s.toString() })
       })
       process.unref()
