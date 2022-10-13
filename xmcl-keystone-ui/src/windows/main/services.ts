@@ -1,6 +1,6 @@
 import { del, set } from '@vue/composition-api'
 import type { ResolvedVersion } from '@xmcl/core'
-import { BaseServiceKey, BaseState, CurseForgeServiceKey, CurseforgeState, DiagnoseServiceKey, DiagnoseState, ElyByServiceKey, EMPTY_JAVA, EMPTY_VERSION, FeedTheBeastServiceKey, FeedTheBeastState, GameProfileAndTexture, ImportServiceKey, InstallServiceKey, InstanceInstallServiceKey, InstanceIOServiceKey, InstanceJavaServiceKey, InstanceJavaState, InstanceLogServiceKey, InstanceModsServiceKey, InstanceModsState, InstanceOptionsServiceKey, InstanceOptionsState, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceServerInfoServiceKey, InstanceServiceKey, InstanceShaderPacksServiceKey, InstanceState, InstanceVersionServiceKey, InstanceVersionState, JavaRecord, JavaServiceKey, JavaState, LaunchServiceKey, LaunchState, LittleSkinUserServiceKey, LocalVersionHeader, ModpackServiceKey, ModrinthServiceKey, ModrinthState, OfficialUserServiceKey, OfflineUserServiceKey, PeerServiceKey, PeerState, ResourcePackPreviewServiceKey, ResourceServiceKey, ResourceState, SaveState, ServerInfoState, ServerStatusServiceKey, UserProfile, UserServiceKey, UserState, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
+import { BaseServiceKey, BaseState, CurseForgeServiceKey, CurseforgeState, DiagnoseServiceKey, DiagnoseState, ElyByServiceKey, EMPTY_JAVA, EMPTY_VERSION, FeedTheBeastServiceKey, FeedTheBeastState, GameProfileAndTexture, ImportServiceKey, InstallServiceKey, InstanceInstallServiceKey, InstanceIOServiceKey, InstanceJavaServiceKey, InstanceJavaState, InstanceLogServiceKey, InstanceModsServiceKey, InstanceModsState, InstanceOptionsServiceKey, InstanceOptionsState, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceServerInfoServiceKey, InstanceServiceKey, InstanceShaderPacksServiceKey, InstanceState, InstanceVersionServiceKey, InstanceVersionState, JavaRecord, JavaServiceKey, JavaState, LaunchServiceKey, LaunchState, LittleSkinUserServiceKey, LocalVersionHeader, ModpackServiceKey, ModrinthServiceKey, ModrinthState, OfficialUserServiceKey, OfflineUserServiceKey, PeerServiceKey, PeerState, Persisted, Resource, ResourceDomain, ResourcePackPreviewServiceKey, ResourceServiceKey, ResourceState, SaveState, ServerInfoState, ServerStatusServiceKey, UserProfile, UserServiceKey, UserState, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
 import { GameProfile } from '@xmcl/user'
 import { ServiceFactory } from '/@/composables'
 
@@ -53,6 +53,64 @@ class ReactiveUserState extends UserState {
   }
 }
 
+class ReactiveResourceState extends ResourceState {
+  resource(res: Persisted<Resource>) {
+    let domain: Array<Resource> | undefined
+    switch (res.domain) {
+      case ResourceDomain.Mods:
+        domain = this.mods
+        break
+      case ResourceDomain.ResourcePacks:
+        domain = this.resourcepacks
+        break
+      case ResourceDomain.Saves:
+        domain = this.saves
+        break
+      case ResourceDomain.Modpacks:
+        domain = this.modpacks
+        break
+      case ResourceDomain.ShaderPacks:
+        domain = this.shaderpacks
+        break
+      case ResourceDomain.Unclassified:
+        domain = this.unclassified
+        break
+    }
+    if (domain) {
+      const index = domain.findIndex((r) => r.hash === res.hash)
+      if (index !== -1) {
+        set(domain, index, Object.freeze(res))
+      } else {
+        domain.push(Object.freeze(res) as any)
+      }
+    } else {
+      throw new Error(`Cannot accept resource for unknown domain [${res.domain}]`)
+    }
+  }
+}
+
+class ReactiveInstanceModState extends InstanceModsState {
+  instanceModUpdate(r: Resource[]) {
+    for (const res of r) {
+      const existed = this.mods.findIndex(m => m.hash === res.hash)
+      if (existed !== -1) {
+        set(this.mods, existed, res)
+      } else {
+        this.mods.push(res)
+      }
+    }
+  }
+
+  instanceModUpdateExisted(r: Resource[]) {
+    for (const res of r) {
+      const existed = this.mods.findIndex(m => m.hash === res.hash)
+      if (existed !== -1) {
+        set(this.mods, existed, { ...res, path: this.mods[existed].path })
+      }
+    }
+  }
+}
+
 export function useAllServices(factory: ServiceFactory) {
   factory.register(ImportServiceKey, () => undefined)
   factory.register(InstanceIOServiceKey, () => undefined)
@@ -76,14 +134,14 @@ export function useAllServices(factory: ServiceFactory) {
   factory.register(BaseServiceKey, () => new BaseState())
   factory.register(DiagnoseServiceKey, () => new DiagnoseState())
   factory.register(InstanceOptionsServiceKey, () => new InstanceOptionsState())
-  factory.register(InstanceModsServiceKey, () => new InstanceModsState())
+  factory.register(InstanceModsServiceKey, () => new ReactiveInstanceModState())
   factory.register(InstanceSavesServiceKey, () => new SaveState())
   factory.register(InstanceServerInfoServiceKey, () => new ServerInfoState())
   factory.register(InstanceServiceKey, () => new InstanceState())
   factory.register(JavaServiceKey, () => new JavaState())
   factory.register(VersionServiceKey, () => new VersionState())
   factory.register(LaunchServiceKey, () => new LaunchState())
-  factory.register(ResourceServiceKey, () => new ResourceState())
+  factory.register(ResourceServiceKey, () => new ReactiveResourceState())
   factory.register(CurseForgeServiceKey, () => new CurseforgeState())
   factory.register(ModrinthServiceKey, () => new ModrinthState())
   factory.register(UserServiceKey, () => new ReactiveUserState())

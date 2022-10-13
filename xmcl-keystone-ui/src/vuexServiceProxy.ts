@@ -102,8 +102,8 @@ function createStoreTemplate(symb: VuexModuleTemplateSymbols) {
 function getStoreTemplateSymbol(name: string, stateTemplate: State<any>) {
   function extractSymbol(o: object, s: VuexModuleTemplateSymbols) {
     let descriptors = Object.getOwnPropertyDescriptors(o)
-    if (name === 'UserService') {
-      descriptors = Object.assign({}, Object.getOwnPropertyDescriptors(Object.getPrototypeOf(o)), descriptors)
+    for (let prototype = Object.getPrototypeOf(o); prototype.constructor !== Object; prototype = Object.getPrototypeOf(prototype)) {
+      descriptors = Object.assign({}, Object.getOwnPropertyDescriptors(prototype), descriptors)
     }
     for (const [key, prop] of Object.entries(descriptors)) {
       if (typeof prop.value !== 'undefined') {
@@ -136,7 +136,6 @@ function getStoreTemplateSymbol(name: string, stateTemplate: State<any>) {
     accessor: [],
   }
   extractSymbol(stateTemplate, symb)
-  extractSymbol(Object.getPrototypeOf(stateTemplate), symb)
 
   return symb
 }
