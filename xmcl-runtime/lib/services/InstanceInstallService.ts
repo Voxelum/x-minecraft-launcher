@@ -291,7 +291,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
       this.resourceService.state.resourcepacks.find(r => r.hash === sha1) ||
       this.resourceService.state.shaderpacks.find(r => r.hash === sha1)
 
-    if (resource) {
+    if (resource && await this.resourceService.validateResource(resource)) {
       return createFileLinkTask(filePath, resource)
     }
 
