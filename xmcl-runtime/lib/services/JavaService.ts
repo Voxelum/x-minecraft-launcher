@@ -21,7 +21,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(BaseService) private baseService: BaseService,
   ) {
-    super(app,   () => new JavaState(), async () => {
+    super(app, () => new JavaState(), async () => {
       const data = await this.config.read()
       const valid = data.all.filter(l => typeof l.path === 'string').map(a => ({ ...a, valid: true }))
       this.log(`Loaded ${valid.length} java from cache.`)

@@ -1,5 +1,6 @@
 import { defineComponent, h } from '@vue/composition-api'
-import { useI18n } from '/@/composables'
+import { BaseServiceKey } from '@xmcl/runtime-api'
+import { useI18n, useService } from '/@/composables'
 import { required } from '/@/util/props'
 
 export default defineComponent({
@@ -8,6 +9,7 @@ export default defineComponent({
   },
   setup(props, context) {
     const { t } = useI18n()
+    const { showItemInDirectory } = useService(BaseServiceKey)
     return () => {
       const resolve = (m: any) => {
         if (m.name === 'DownloadAggregateError') {
@@ -18,7 +20,7 @@ export default defineComponent({
                 t('errors.DownloadAggregateError'),
               ]),
               '📁 ',
-              h('a', { attrs: { href: `file-link:///${m.destination}` } }, m.destination),
+              h('a', { attrs: { }, on: { click() { showItemInDirectory(m.description) } } }, m.destination),
             ]),
             ...m.errors.map(resolve),
           ])
@@ -51,7 +53,7 @@ export default defineComponent({
             t('errors.BodyTimeoutError'),
           ])
         }
-        if (m.name === 'SocketError') {
+        if (m.name === 'SocketError' || m.code === 'ECONNRESET') {
           const url = m.options ? new URL(m.options.path, m.options.origin).toString() : ''
           return h('div', [
             h('div', ['🔗 ', h('a', { attrs: { href: url } }, url)]),

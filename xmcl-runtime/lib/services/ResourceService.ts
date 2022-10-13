@@ -10,7 +10,7 @@ import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { persistResource, ResourceCache } from '../entities/resource'
 import { migrateToDatabase, upgradeDatabaseV2 } from '../util/dataFix'
-import { copyPassively, readdirEnsured } from '../util/fs'
+import { checksum, copyPassively, readdirEnsured } from '../util/fs'
 import { ImageStorage } from '../util/imageStore'
 import { assignIfPresent, isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
@@ -114,6 +114,29 @@ export class ResourceService extends StatefulService<ResourceState> implements I
 
   registerInstaller(domain: ResourceDomain, installer: (resource: Resource, path: string) => Promise<void>) {
     this.installers[domain] = installer
+  }
+
+  async isValidResource(resource: Resource, fast = true) {
+    try {
+      const s = await stat(resource.path)
+      if (s.ino === resource.ino) {
+        return true
+      }
+      if (fast) {
+        return s.size === resource.size
+      }
+      return (await checksum(resource.path, 'sha1')) === resource.hash
+    } catch (e) {
+      return false
+    }
+  }
+
+  async validateResource(resource: Resource, fast = true) {
+    const isValid = await this.isValidResource(resource, fast)
+    if (!isValid) {
+      await this.removeResourceInternal(resource)
+    }
+    return isValid
   }
 
   /**

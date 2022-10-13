@@ -20,7 +20,7 @@
 
       <template #extension>
         <v-tabs
-          v-model="tab"
+          v-model="data.tab"
           align-with-title
           color="white"
         >

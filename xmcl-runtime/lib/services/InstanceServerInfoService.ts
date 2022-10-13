@@ -15,7 +15,7 @@ export class InstanceServerInfoService extends StatefulService<ServerInfoState> 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ServerStatusService) private serverStatusService: ServerStatusService,
   ) {
-    super(app,  () => new ServerInfoState())
+    super(app, () => new ServerInfoState())
     this.storeManager.subscribe('instanceSelect', (path: string) => {
       this.watching = path
       this.refresh()
