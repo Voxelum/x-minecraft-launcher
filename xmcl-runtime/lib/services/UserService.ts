@@ -89,6 +89,31 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       }
       await this.userFile.write(userData)
     })
+
+    app.registerUrlHandler((url) => {
+      if (url.startsWith('authlib-injector:yggdrasil-server:')) {
+        const serverUrl = decodeURIComponent(url.substring('authlib-injector:yggdrasil-server:'.length))
+        const parsed = new URL(serverUrl)
+        const domain = parsed.host
+        // const userService = this.serviceManager.get(YggdrasilUserService)
+        // userService.registerFirstPartyApi(domain, {
+        //   hostName: serverUrl,
+        //   authenticate: '/authserver/authenticate',
+        //   refresh: '/authserver/refresh',
+        //   validate: '/authserver/validate',
+        //   invalidate: '/authserver/invalidate',
+        //   signout: '/authserver/signout',
+        // }, {
+        //   profile: `${serverUrl}/sessionserver/session/minecraft/profile/\${uuid}`,
+        //   profileByName: `${serverUrl}/users/profiles/minecraft/\${name}`,
+        //   texture: `${serverUrl}/user/profile/\${uuid}/\${type}`,
+        // })
+        // userService.emit('auth-profile-added', domain)
+        this.log(`Import the url ${url} as authlib-injector profile ${domain}`)
+        return true
+      }
+      return false
+    })
   }
 
   @Lock('login')

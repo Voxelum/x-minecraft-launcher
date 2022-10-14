@@ -2,7 +2,7 @@ import { getPlatform } from '@xmcl/core'
 import { InstalledAppManifest, ReleaseInfo } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { EventEmitter } from 'events'
-import { ensureDir, readFile, readFileSync, writeFile } from 'fs-extra'
+import { ensureDir, readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
 import { setTimeout } from 'timers/promises'
 import { URL } from 'url'
@@ -17,7 +17,6 @@ import ServiceStateManager from '../managers/ServiceStateManager'
 import TaskManager from '../managers/TaskManager'
 import TelemetryManager from '../managers/TelemetryManager'
 import WorkerManager from '../managers/WorkerManager'
-import { OfficialUserService } from '../services/OfficialUserService'
 import { AbstractService, ServiceConstructor } from '../services/Service'
 import { isSystemError } from '../util/error'
 import { createPromiseSignal } from '../util/promiseSignal'
@@ -114,6 +113,8 @@ export abstract class LauncherApp extends EventEmitter {
 
   abstract getPreloadServices(): ServiceConstructor[]
 
+  protected urlHandlers: Array<(url: string) => boolean> = []
+
   constructor() {
     super()
     this.gameDataPath = ''
@@ -157,6 +158,10 @@ export abstract class LauncherApp extends EventEmitter {
 
   getPreferredLocale() {
     return this.preferredLocale
+  }
+
+  registerUrlHandler(handler: (url: string) => boolean) {
+    this.urlHandlers.push(handler)
   }
 
   /**
@@ -241,62 +246,9 @@ export abstract class LauncherApp extends EventEmitter {
    * @param url The url input
    */
   handleUrl(url: string) {
-    if (url.startsWith('authlib-injector:yggdrasil-server:')) {
-      const serverUrl = decodeURIComponent(url.substring('authlib-injector:yggdrasil-server:'.length))
-      const parsed = new URL(serverUrl)
-      const domain = parsed.host
-      // const userService = this.serviceManager.get(YggdrasilUserService)
-      // userService.registerFirstPartyApi(domain, {
-      //   hostName: serverUrl,
-      //   authenticate: '/authserver/authenticate',
-      //   refresh: '/authserver/refresh',
-      //   validate: '/authserver/validate',
-      //   invalidate: '/authserver/invalidate',
-      //   signout: '/authserver/signout',
-      // }, {
-      //   profile: `${serverUrl}/sessionserver/session/minecraft/profile/\${uuid}`,
-      //   profileByName: `${serverUrl}/users/profiles/minecraft/\${name}`,
-      //   texture: `${serverUrl}/user/profile/\${uuid}/\${type}`,
-      // })
-      // userService.emit('auth-profile-added', domain)
-      this.log(`Import the url ${url} as authlib-injector profile ${domain}`)
-      return true
-    }
-    const parsed = new URL(url, 'xmcl://launcher')
     this.log(`Handle url ${url}`)
-    if (parsed.host === 'launcher' && parsed.pathname === '/auth') {
-      let error: Error | undefined
-      if (parsed.searchParams.get('error')) {
-        const err = parsed.searchParams.get('error')!
-        const errDescription = parsed.searchParams.get('error')!
-        error = new Error(unescape(errDescription));
-        (error as any).error = err
-      }
-      const code = parsed.searchParams.get('code') as string
-      const userService = this.serviceManager.get(OfficialUserService)
-      userService.emit('microsoft-authorize-code', error, code)
-      return true
-    } else if (parsed.host === 'launcher' && parsed.pathname === '/app') {
-      const params = parsed.searchParams
-      const appUrl = params.get('url')
-      if (appUrl) {
-        this.log(`Boot app from app url ${appUrl}!`)
-        this.launcherAppManager.bootAppByUrl(appUrl)
-        return true
-      } else {
-        return false
-      }
-    } else if (parsed.host === 'launcher' && parsed.pathname === '/peer') {
-      const params = parsed.searchParams
-      const description = params.get('description')
-      const type = params.get('type')
-      if (!description || !type) {
-        this.warn(`Ignore illegal peer join for type=${type} description=${description}`)
-        return false
-      } else {
-        this.emit('peer-join', { description, type: type as any })
-        return true
-      }
+    for (const handler of this.urlHandlers) {
+      handler(url)
     }
     this.warn(`Unknown url ${url}`)
     return false
