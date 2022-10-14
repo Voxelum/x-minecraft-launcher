@@ -45,6 +45,23 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app, () => new PeerState())
+
+    app.registerUrlHandler((url) => {
+      const parsed = new URL(url, 'xmcl://launcher')
+      if (parsed.host === 'launcher' && parsed.pathname === '/peer') {
+        const params = parsed.searchParams
+        const description = params.get('description')
+        const type = params.get('type')
+        if (!description || !type) {
+          this.warn(`Ignore illegal peer join for type=${type} description=${description}`)
+          return false
+        } else {
+          this.emit('peer-join', { description, type: type as any })
+          return true
+        }
+      }
+      return false
+    })
   }
 
   setDelegate(delegate: PeerServiceWebRTCFacade) {

@@ -31,6 +31,22 @@ export class LauncherAppManager extends Manager implements AppsHost {
     this.app.handle('get-default-app', () => this.getDefaultApp())
     this.app.handle('launch-app', (_, url) => this.bootAppByUrl(url))
     this.app.handle('create-app-shortcut', (_, url) => this.createShortcut(url))
+
+    app.registerUrlHandler((url) => {
+      const parsed = new URL(url, 'xmcl://launcher')
+      if (parsed.host === 'launcher' && parsed.pathname === '/app') {
+        const params = parsed.searchParams
+        const appUrl = params.get('url')
+        if (appUrl) {
+          this.logger.log(`Boot app from app url ${appUrl}!`)
+          this.bootAppByUrl(appUrl)
+          return true
+        } else {
+          return false
+        }
+      }
+      return false
+    })
   }
 
   get root() {

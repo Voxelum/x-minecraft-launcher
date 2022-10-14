@@ -134,6 +134,23 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
       },
       setSkin: system.setSkin.bind(system),
     })
+
+    app.registerUrlHandler((url) => {
+      const parsed = new URL(url, 'xmcl://launcher')
+      if (parsed.host === 'launcher' && parsed.pathname === '/auth') {
+        let error: Error | undefined
+        if (parsed.searchParams.get('error')) {
+          const err = parsed.searchParams.get('error')!
+          const errDescription = parsed.searchParams.get('error')!
+          error = new Error(unescape(errDescription));
+          (error as any).error = err
+        }
+        const code = parsed.searchParams.get('code') as string
+        this.emit('microsoft-authorize-code', error, code)
+        return true
+      }
+      return false
+    })
   }
 
   async setName(name: string) {
