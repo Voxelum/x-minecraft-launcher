@@ -212,6 +212,7 @@ installForge:
 installInstance:
   file: 更新/安装实例文件 {file}
   name: 更新/安装实例
+  resolve: 解析实例安装信息
 installJre:
   cleanup: 清理安装文件
   decompress: 解压缩JRE文件到本地
