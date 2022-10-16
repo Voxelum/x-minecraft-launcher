@@ -1,20 +1,19 @@
 import Controller from '@/Controller'
 import { darkIcon } from '@/utils/icons'
-import { TaskNotification } from '@xmcl/runtime-api'
-import { Notification } from 'electron'
+import { app, Notification } from 'electron'
 import { ControllerPlugin } from './plugin'
 
 /**
  * Setup task progress bar
  */
 export const taskProgressPlugin: ControllerPlugin = function (this: Controller) {
-  const notify = (n: TaskNotification) => {
+  const notify = (type: 'finish' | 'fail') => {
     const t = this.i18n.t
     if (this.activeWindow && this.activeWindow.isFocused()) {
-      this.activeWindow.webContents.send('notification', n)
-    } else if ((n.type === 'taskFinish' || n.type === 'taskFail')) {
+      // this.activeWindow.webContents.send('notification', n)
+    } else if ((type === 'finish' || type === 'fail')) {
       const notification = new Notification({
-        title: n.type === 'taskFinish' ? t('task.success') : t('task.fail'),
+        title: type === 'finish' ? t('task.success') : t('task.fail'),
         body: t('task.continue'),
         icon: darkIcon,
       })
@@ -27,7 +26,7 @@ export const taskProgressPlugin: ControllerPlugin = function (this: Controller) 
         }
       })
     } else {
-      this.app.broadcast('notification', n)
+      // this.app.broadcast('notification', n)
     }
   }
   this.app.once('engine-ready', () => {
@@ -44,7 +43,7 @@ export const taskProgressPlugin: ControllerPlugin = function (this: Controller) 
         if (this.activeWindow && !this.activeWindow.isDestroyed()) {
           this.activeWindow.setProgressBar(-1)
         }
-        notify({ type: 'taskFinish', name: task.path, arguments: task.param })
+        notify('finish')
       }
     })
     tasks.emitter.on('fail', (_, task) => {
@@ -52,7 +51,7 @@ export const taskProgressPlugin: ControllerPlugin = function (this: Controller) 
         if (this.activeWindow && !this.activeWindow.isDestroyed()) {
           this.activeWindow.setProgressBar(-1)
         }
-        notify({ type: 'taskFail', name: task.path, arguments: task.param })
+        notify('fail')
       }
     })
   })
