@@ -257,7 +257,9 @@ export abstract class LauncherApp extends EventEmitter {
   handleUrl(url: string) {
     this.log(`Handle url ${url}`)
     for (const handler of this.urlHandlers) {
-      handler(url)
+      if (handler(url)) {
+        return true
+      }
     }
     this.warn(`Unknown url ${url}`)
     return false
