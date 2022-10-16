@@ -62,7 +62,7 @@ export class ModrinthClient {
   }
 
   async getProjectVersionsById(ids: string[], signal?: AbortSignal) {
-    const response = await request('https://api.modrinth.com/v2/version', {
+    const response = await request('https://api.modrinth.com/v2/versions', {
       query: {
         ids: JSON.stringify(ids),
       },
@@ -74,7 +74,7 @@ export class ModrinthClient {
   }
 
   async getProjectVersionsByHash(hashes: string[], signal?: AbortSignal) {
-    const response = await request('https://api.modrinth.com/v2/version_file', {
+    const response = await request('https://api.modrinth.com/v2/version_files', {
       method: 'POST',
       dispatcher: this.dispatcher,
       body: JSON.stringify({
