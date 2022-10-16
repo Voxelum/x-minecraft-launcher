@@ -88,7 +88,7 @@
 
 <script lang=ts>
 import { Ref } from '@vue/composition-api'
-import { useDrop, useOperation, useResourceOperation, useFilterCombobox, useI18n } from '/@/composables'
+import { useDrop, useOperation, useResourceOperation, useFilterCombobox, useI18n, useService } from '/@/composables'
 import { useLocalStorageCacheBool } from '/@/composables/cache'
 import Hint from '/@/components/Hint.vue'
 import RefreshingTile from '/@/components/RefreshingTile.vue'
@@ -99,7 +99,7 @@ import DeleteDialog from '../components/DeleteDialog.vue'
 import ModHeader from './ModHeader.vue'
 import ModDeleteView from './ModDeleteView.vue'
 import { useDialog } from '../composables/dialog'
-import { ResourceDomain } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, ResourceDomain } from '@xmcl/runtime-api'
 
 function setupDragMod(items: Ref<ModItem[]>, selectedMods: Ref<ModItem[]>, isSelectionMode: Ref<boolean>) {
   const isDraggingMod = computed(() => items.value.some(i => i.dragged))
@@ -127,11 +127,15 @@ function setupDragMod(items: Ref<ModItem[]>, selectedMods: Ref<ModItem[]>, isSel
 
 function setupDeletion(items: Ref<ModItem[]>) {
   const { removeResource } = useResourceOperation()
+  const { uninstall } = useService(InstanceModsServiceKey)
   const { show } = useDialog('deletion')
   const { begin: beginDelete, cancel: cancelDelete, operate: confirmDelete, data: deletingMods } = useOperation<ModItem[]>([], (mods) => {
-    for (const mod of mods) {
-      removeResource(mod.hash)
-    }
+    const enabled = mods.filter(m => m.enabled)
+    uninstall({ mods: enabled.map(m => m.resource) }).then(() => {
+      for (const mod of mods) {
+        removeResource(mod.hash)
+      }
+    })
   })
   function startDelete(item?: ModItem) {
     const toDelete = items.value.filter(i => i.dragged)

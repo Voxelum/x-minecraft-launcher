@@ -193,17 +193,15 @@ const contextMenuItems = computed(() => {
       icon: 'add',
     })
   }
-  if (!props.source.enabledState || !props.source.enabled) {
-    items.push({
-      text: t('delete.name', { name: props.source.name }),
-      children: [],
-      onClick() {
-        emit('delete')
-      },
-      icon: 'delete',
-      color: 'error',
-    })
-  }
+  items.push({
+    text: t('delete.name', { name: props.source.name }),
+    children: [],
+    onClick() {
+      emit('delete')
+    },
+    icon: 'delete',
+    color: 'error',
+  })
   if (props.source.url) {
     const url = props.source.url
     items.push({
