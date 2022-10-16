@@ -82,7 +82,7 @@ export interface ModItem {
  */
 export function useInstanceMods() {
   const { state } = useService(InstanceModsServiceKey)
-  const { state: resourceState, updateResource } = useService(ResourceServiceKey)
+  const { state: resourceState, updateResources } = useService(ResourceServiceKey)
   const { install, uninstall, showDirectory } = useService(InstanceModsServiceKey)
   const { state: javaState } = useService(InstanceJavaServiceKey)
   const loading = useServiceBusy(ResourceServiceKey, 'load', ResourceDomain.Mods)
@@ -98,13 +98,11 @@ export function useInstanceMods() {
   const { refresh: commit, refreshing: committing } = useRefreshable(async () => {
     const promises: Promise<any>[] = []
 
-    for (const i of pendingEditItems.value) {
-      promises.push(updateResource({
-        ...i.resource,
-        name: i.name,
-        tags: i.tags,
-      }))
-    }
+    promises.push(updateResources(pendingEditItems.value.map(i => ({
+      ...i.resource,
+      name: i.name,
+      tags: i.tags,
+    }))))
     if (pendingInstallItems.value.length > 0) {
       promises.push(install({ mods: pendingInstallItems.value.map(v => v.resource) }))
     }
