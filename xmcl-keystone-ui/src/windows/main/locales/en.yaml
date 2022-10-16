@@ -248,6 +248,7 @@ installForge:
 installInstance:
   file: Update Instance File {file}
   name: Update Instance
+  resolve: Resolve Instance Config
 installJre:
   cleanup: Clean up installation package
   decompress: Decompress JRE files to folder
