@@ -43,7 +43,7 @@ export interface ResourcePackItem extends PackMeta.Pack {
  */
 export function useInstanceResourcePacks() {
   const { state: gameSettingState, editGameSetting } = useService(InstanceOptionsServiceKey)
-  const { state: resourceState, updateResource } = useService(ResourceServiceKey)
+  const { state: resourceState, updateResources } = useService(ResourceServiceKey)
   const { showDirectory } = useService(InstanceResourcePacksServiceKey)
   const { t } = useI18n()
 
@@ -178,9 +178,7 @@ export function useInstanceResourcePacks() {
   function commit() {
     editGameSetting({ resourcePacks: [...enabledResourcePackNames.value].reverse() })
     const modified = storage.value.filter(v => v.resource).filter((v) => v.name !== v.resource!.name || !isStringArrayEquals(v.tags, v.resource!.tags))
-    for (const res of modified) {
-      updateResource({ ...res.resource!, name: res.name, tags: res.tags })
-    }
+    updateResources(modified.map(res => ({ ...res.resource!, name: res.name, tags: res.tags })))
   }
 
   watch(optionsResourcePacks, (packs) => {

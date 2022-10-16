@@ -13,7 +13,7 @@ export interface ShaderPackItem {
 }
 
 export function useShaderpacks() {
-  const { state, updateResource, removeResource } = useService(ResourceServiceKey)
+  const { state, updateResources, removeResource } = useService(ResourceServiceKey)
   const { state: options, editShaderOptions } = useService(InstanceOptionsServiceKey)
   const { showDirectory } = useService(InstanceShaderPacksServiceKey)
   const loading = useServiceBusy(ResourceServiceKey, 'load', ResourceDomain.ShaderPacks)
@@ -61,20 +61,11 @@ export function useShaderpacks() {
   })
 
   function updateResourceTags() {
-    for (const pack of shaderPacks.value) {
-      if (pack.resource) {
-        const updated = { tags: undefined as undefined | string[], name: undefined as undefined | string }
-        if (pack.tags.length !== pack.resource.tags.length || pack.tags.some((t, i) => t !== pack.resource.tags[i])) {
-          updated.tags = pack.tags
-        }
-        if (pack.name) {
-          updated.name = pack.name
-        }
-        if (updated.name || updated.tags) {
-          updateResource({ hash: pack.resource.hash, ...updated })
-        }
-      }
-    }
+    updateResources(shaderPacks.value.map(pack => ({
+      tags: pack.tags,
+      name: pack.name,
+      hash: pack.resource.hash,
+    })))
   }
 
   async function removeShaderPack(item: ShaderPackItem) {
