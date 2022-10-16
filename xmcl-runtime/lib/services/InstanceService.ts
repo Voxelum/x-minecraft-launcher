@@ -287,8 +287,8 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       if (this.isUnderManaged(path) && expectPath !== path && !existsSync(expectPath)) {
         this.log(`Migrate instance ${path} -> ${expectPath}`)
         await rename(path, expectPath)
-        path = expectPath
         this.state.instanceMove({ from: path, to: expectPath })
+        path = expectPath
       }
     } catch (e) {
       this.warn(`Fail to rename instance ${path} -> ${expectPath}`)
