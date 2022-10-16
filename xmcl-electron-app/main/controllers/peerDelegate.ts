@@ -26,6 +26,7 @@ export const peerPlugin: ControllerPlugin = function (this: Controller) {
           title: 'Peer Helper',
           webPreferences: {
             preload: peerPreload,
+            sandbox: false,
           },
           show: false,
         })
