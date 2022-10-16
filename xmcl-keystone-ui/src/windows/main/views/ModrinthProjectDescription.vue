@@ -28,15 +28,3 @@ export default defineComponent({
   },
 })
 </script>
-<style>
-.markdown-body li, .markdown-body p {
-    padding: 0 !important;
-    line-height: 1.5 !important;
-    word-wrap: break-word !important;
-    word-wrap: anywhere !important;
-}
-.markdown-body blockquote, .markdown-body code, .markdown-body details, .markdown-body dl, .markdown-body ol, .markdown-body p, .markdown-body pre, .markdown-body table, .markdown-body ul {
-    margin-top: 0 !important;
-    margin-bottom: 16px !important;
-}
-</style>

@@ -15,7 +15,7 @@ async function main(output) {
                 .replace('Dependencies Updates', '依赖更新')
         }
         const today = new Date()
-        content = `---\nversion: ${version}\ndate: ${today.getUTCFullYear()}-${today.getUTCMonth().toString().padStart(2, '0')}-${today.getUTCDate()}\nlayout: changelog\n---\n${content}`
+        content = `---\nversion: ${version}\ndate: ${today.getUTCFullYear()}-${(today.getUTCMonth() + 1).toString().padStart(2, '0')}-${today.getUTCDate().toString().padStart(2, '0')}\nlayout: changelog\n---\n${content}`
         try {
             writeFileSync(`xmcl-page/src/pages/${l}/changelogs/${version}.md`, content)
         } catch (e) {

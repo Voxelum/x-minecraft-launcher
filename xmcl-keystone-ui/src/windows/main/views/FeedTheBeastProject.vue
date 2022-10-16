@@ -95,7 +95,7 @@
         <v-tab-item :key="0">
           <v-card class="rounded-b-xl">
             <div
-              class="p-4 markdown"
+              class="p-4 markdown-body"
               v-html="description"
             />
           </v-card>
@@ -169,13 +169,6 @@ const { refresh: install, refreshing: installing } = useRefreshable(async () => 
 </script>
 
 <style>
-.markdown h3 {
-  font-size: 2em;
-  font-weight: 400;
-}
-.markdown p {
-  margin: 10px 0;
-}
 </style>
 
 <i18n locale="en" lang="yaml">

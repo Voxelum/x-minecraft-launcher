@@ -672,7 +672,7 @@ setup:
     description: 选择已有的游戏目录 (.minecraft) 作为启动器初始的启动目标。同时让启动器能复用已有的版本文件，库，模组，资源包等。
     name: 导入已有的游戏
   locale:
-    description: 选择你的语言，如果你在这没看到你想要的语言，并且你有兴趣帮助我们的话，你可以去我们的 github 上发 pull request 来添加新语言！
+    description: 选择你的语言，如果你在这没看到你想要的语言，并且你有兴趣帮助我们的话，你可以去我们的 GitHub 上发 Pull Request 来添加新语言！
     language: 当前语言
     name: 设置语言
   path: 当前位置

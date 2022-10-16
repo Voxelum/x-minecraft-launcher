@@ -89,9 +89,6 @@ export default class NetworkManager extends Manager {
       cache,
       retry: {
         limit: 3,
-        calculateDelay({ attemptCount }) {
-          return attemptCount * 3
-        },
       },
     })
 

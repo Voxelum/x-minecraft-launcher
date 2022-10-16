@@ -17,7 +17,7 @@ export async function validateJavaPath(javaPath: string): Promise<JavaValidation
     if (isSystemError(e)) {
       if (e.code === ENOENT_ERROR) {
         return JavaValidation.NotExisted
-      } else if (e.code === EPERM_ERROR) {
+      } else if (e.code === EPERM_ERROR || e.code === 'EACCES') {
         try {
           await chmod(javaPath, 0o765)
           return JavaValidation.Okay

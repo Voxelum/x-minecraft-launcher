@@ -15,7 +15,7 @@
       <v-card-subtitle>
         {{ getLocalDateString(updateInfo.date) }}
       </v-card-subtitle>
-      <v-card-text>
+      <v-card-text class="markdown-body">
         <div v-html="body" />
       </v-card-text>
       <v-card-actions>

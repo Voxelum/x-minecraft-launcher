@@ -74,6 +74,8 @@ See [Contributing](./CONTRIBUTING.md)
 
 ## Credit
 
+[GodLeaveMe](https://github.com/GodLeaveMe), maintaining the AUR package registry.
+[0xc0000142](https://github.com/0xc0000142), maintaining the winget.
 [vanja-san](https://github.com/vanja-san), who provides Russian locale!
 [lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) helps me on Launcher core
 [laolarou726](https://github.com/laolarou726), who helps a lot on launcher design.

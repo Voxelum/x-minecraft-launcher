@@ -1,5 +1,5 @@
-import { diagnose, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedLibrary, Version } from '@xmcl/core'
-import { DEFAULT_FABRIC_API, DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getQuiltVersionsList, getVersionList, getYarnArtifactList, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, QuiltArtifactVersion, YARN_MAVEN_URL } from '@xmcl/installer'
+import { diagnose, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedLibrary, ResolvedVersion, Version } from '@xmcl/core'
+import { DEFAULT_FABRIC_API, DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DownloadTask, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, getLoaderArtifactList, getQuiltVersionsList, getVersionList, getYarnArtifactList, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, LOADER_MAVEN_URL, MinecraftVersion, Options, QuiltArtifactVersion, YARN_MAVEN_URL } from '@xmcl/installer'
 import { Asset, ForgeVersion, ForgeVersionList, GetQuiltVersionListOptions, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallQuiltOptions, InstallService as IInstallService, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, OptifineVersion, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema, VersionQuiltSchema } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { ensureFile, readJson, readJSON, writeFile, writeJson } from 'fs-extra'
@@ -498,9 +498,18 @@ export class InstallService extends AbstractService implements IInstallService {
 
   @Lock((v) => [LockKey.version(v), LockKey.assets, LockKey.libraries])
   async installDependencies(version: string) {
-    const option = this.getInstallOptions()
     const location = this.getPath()
     const resolvedVersion = await Version.parse(location, version)
+    await this.installDependenciesUnsafe(resolvedVersion)
+  }
+
+  @Lock((v) => [LockKey.version(v.id), LockKey.assets, LockKey.libraries])
+  async installDependenciesResolved(resolvedVersion: ResolvedVersion) {
+    await this.installDependenciesUnsafe(resolvedVersion)
+  }
+
+  private async installDependenciesUnsafe(resolvedVersion: ResolvedVersion) {
+    const option = this.getInstallOptions()
     await this.submit(installLibrariesTask(resolvedVersion, option).setName('installLibraries'))
     await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets'))
   }
@@ -544,6 +553,19 @@ export class InstallService extends AbstractService implements IInstallService {
       await this.submit(task)
     } catch (e) {
       this.warn(`An error ocurred during download version ${id}`)
+      this.warn(e)
+    }
+  }
+
+  @Lock((v: MinecraftVersion) => LockKey.version(v.id))
+  async installMinecraftJar(version: ResolvedVersion) {
+    const option = this.getInstallOptions()
+
+    const task = new InstallJarTask(version, this.getPath(), option).setName('installVersion.jar')
+    try {
+      await this.submit(task)
+    } catch (e) {
+      this.warn(`An error ocurred during download version ${version.id}`)
       this.warn(e)
     }
   }
