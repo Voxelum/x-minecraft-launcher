@@ -27,7 +27,7 @@ export default class LogManager extends Manager {
   constructor(app: LauncherApp) {
     super(app)
 
-    const output = new PassThrough()
+    const output = new PassThrough({ transform(chunk, encode, cb) { cb(undefined, chunk + '\n') } })
     pipeline(this.loggerEntries.log, output, () => { })
     pipeline(this.loggerEntries.warn, output, () => { })
     pipeline(this.loggerEntries.error, output, () => { })
