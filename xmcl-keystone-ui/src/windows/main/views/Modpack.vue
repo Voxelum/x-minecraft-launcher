@@ -37,6 +37,20 @@
         </template>
         {{ t(`modpack.installFromCurseforge`) }}
       </v-tooltip>
+      <v-tooltip bottom>
+        <template #activator="{ on }">
+          <v-btn
+            icon
+            v-on="on"
+            @click="goToModrinth()"
+          >
+            <v-icon>
+              $vuetify.icons.modrinth
+            </v-icon>
+          </v-btn>
+        </template>
+        {{ t(`modpack.installFromModrinth`) }}
+      </v-tooltip>
     </v-card>
 
     <div
@@ -148,6 +162,7 @@ function onDrop() {
 }
 
 const goToCurseforge = () => { push('/curseforge/modpacks') }
+const goToModrinth = () => { push('/modrinth?projectType=modpack') }
 
 function getModpackItem (resource: ModpackResources): ModpackItem {
   return reactive({

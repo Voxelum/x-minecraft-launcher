@@ -456,6 +456,7 @@ modpack:
   includeLibraries: Включить библиотеки
   includes: Файлы для включения
   installFromCurseforge: Установить с Curseforge
+  installFromModrinth: Установить с Modrinth
   modpackVersion: Версия модпака
   name: Модпак | Модпаки
   overrides: переопределение
@@ -467,21 +468,30 @@ modpack:
 modrinth:
   avaiableFor: доступно для
   categories:
-    adventure: Приключение
-    cursed: Проклятия
-    decoration: Декорирование
+    adventure: Приключения
+    challenging: Испытания
+    combat: Сражения
+    cursed: Странные
+    decoration: Косметика
     equipment: Снаряжение
     fabric: Fabric
     food: Еда
     forge: Forge
+    kitchen-sink: Всё подряд
     library: Библиотека
+    lightweight: Легковесные
     magic: Магия
     misc: Разное
+    modloader: ModLoader
+    multiplayer: Сетевая игра
     name: Категории
-    optimization: Оптимизации
-    storage: Хранение
+    optimization: Оптимизация
+    quests: Квесты
+    quilt: Quilt
+    rift: Rift
+    storage: Инвентарь
     technology: Технологии
-    utility: Полезное
+    utility: Утилиты
     worldgen: Генерация мира
   clientSide: На стороне клиента
   createAt: Создан
