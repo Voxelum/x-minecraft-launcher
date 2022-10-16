@@ -68,7 +68,7 @@
         <v-btn
           :disabled="working"
           color="error"
-          flat
+          text
           @click="$emit('input', false)"
         >
           {{ $t('save.copyFrom.cancel') }}
@@ -77,7 +77,7 @@
           :disabled="nothingSelected"
           :loading="working"
           color="primary"
-          flat
+          text
           @click="startImport"
         >
           {{ $t('save.copyFrom.confirm') }}

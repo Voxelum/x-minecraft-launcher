@@ -8,6 +8,7 @@ import { createHash } from 'crypto'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { ensureDir, ensureFile, FSWatcher, readdir, remove } from 'fs-extra'
+import throttle from 'lodash.throttle'
 import watch from 'node-watch'
 import { basename, extname, join, resolve } from 'path'
 import { pathToFileURL } from 'url'
@@ -30,6 +31,16 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
   private watcher: FSWatcher | undefined
 
   private watching = ''
+
+  private updateSave = throttle((filePath: string) => {
+    readInstanceSaveMetadata(filePath, this.instanceService.state.instance.name).then((save) => {
+      this.state.instanceSaveUpdate(save)
+    }).catch((e) => {
+      this.warn(`Parse save in ${filePath} failed. Skip it.`)
+      this.warn(e)
+      return undefined
+    })
+  }, 1000)
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
@@ -134,13 +145,7 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
       const filePath = filename
       if (event === 'update') {
         if (this.state.saves.every((s) => s.path !== filename)) {
-          readInstanceSaveMetadata(filePath, this.instanceService.state.instance.name).then((save) => {
-            this.state.instanceSaveAdd(save)
-          }).catch((e) => {
-            this.warn(`Parse save in ${filePath} failed. Skip it.`)
-            this.warn(e)
-            return undefined
-          })
+          this.updateSave(filePath)
         }
       } else if (this.state.saves.some((s) => s.path === filename)) {
         this.state.instanceSaveRemove(filePath)

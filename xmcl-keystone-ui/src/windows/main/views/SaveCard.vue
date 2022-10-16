@@ -3,38 +3,35 @@
     v-draggable-card
     v-data-transfer:id="source.name"
     v-data-transfer-image="icon"
+    v-context-menu="items"
     hover
     outlined
     draggable
-    class="white--text draggable-card"
-    style="margin-top: 10px; padding: 0 10px; transition-duration: 0.2s; margin-bottom: 20px"
+    class="white--text draggable-card p-2"
+    style="margin-top: 10px; transition-duration: 0.2s; margin-bottom: 20px"
     @dragstart="$emit('dragstart', $event)"
     @dragend="$emit('dragend', $event)"
   >
-    <v-layout
-      justify-center
-      align-center
-      fill-height
-    >
-      <v-flex
-        class="m-0 p-2"
-        xs3
-        md2
+    <div class="flex gap-4 items-center">
+      <img
+        ref="icon"
+        v-fallback-img="unknownPack"
+        class="rounded-lg object-contain"
+        :src="source.icon"
+        width="80px"
+        height="80px"
       >
-        <img
-          ref="icon"
-          v-fallback-img="unknownPack"
-          class="rounded-lg object-contain"
-          :src="source.icon"
-          style="min-height: 126px; max-height: 126px; max-width: 126px; min-width: 126px"
-        >
-      </v-flex>
-      <v-flex class="flex-grow py-2 flex-col gap-3">
+      <div class="flex flex-grow flex-col gap-1">
         <h3>{{ source.name }}</h3>
-        <div class="dark:text-gray-400">
-          {{ new Date(source.lastPlayed) }}
+        <div class="dark:text-gray-400 text-sm">
+          {{ new Date(source.lastPlayed).toLocaleString() }}
         </div>
         <div class="flex gap-2">
+          <HomeHeaderMinecraftLabel
+            small
+            :minecraft="source.gameVersion"
+          />
+
           <v-chip
             small
             outlined
@@ -54,54 +51,66 @@
           >
             {{ t('gamesetting.cheat') }}
           </v-chip>
-          <v-chip
-            small
-            outlined
-            label
-            color="lime"
-            style="margin-left: 1px;"
-          >
-            {{ source.gameVersion }}
-          </v-chip>
         </div>
-        <!-- <div style="color: #bdbdbd; ">{{ source.description }}</div> -->
-      </v-flex>
-      <v-flex style="flex-grow: 0">
+      </div>
+      <div style="flex-grow: 0">
+        <v-btn
+          text
+          icon
+          @click="showItemInDirectory(source.path)"
+        >
+          <v-icon>folder</v-icon>
+        </v-btn>
         <v-btn
           text
           icon
           @click="exportSave(source.path)"
         >
           <v-icon>launch</v-icon>
-          <!-- {{ t('save.export') }} -->
         </v-btn>
-      </v-flex>
-    </v-layout>
+      </div>
+    </div>
   </v-card>
 </template>
 
 <script lang=ts setup>
-import { InstanceSaveMetadata } from '@xmcl/runtime-api'
+import { BaseServiceKey, InstanceSaveMetadata } from '@xmcl/runtime-api'
 import unknownPack from '/@/assets/unknown_pack.png'
-import { useI18n } from '/@/composables'
+import { useI18n, useService } from '/@/composables'
 import { vFallbackImg } from '../directives/fallbackImage'
 import { vDataTransfer, vDataTransferImage, vDraggableCard } from '../directives/draggableCard'
+import HomeHeaderMinecraftLabel from './HomeHeaderMinecraftLabel.vue'
+import { vContextMenu } from '../directives/contextMenu'
+import { ContextMenuItem } from '../composables/contextMenu'
 
 const props = defineProps<{
   exportSave(path:string): void
   source: InstanceSaveMetadata
 }>()
 
+const emit = defineEmits(['remove'])
+const { showItemInDirectory } = useService(BaseServiceKey)
+
 const { t } = useI18n()
+const items = computed(() => {
+  const result: ContextMenuItem[] = [{
+    text: t('save.deleteTitle'),
+    icon: 'delete',
+    color: 'red',
+    onClick: () => { emit('remove') },
+    children: [],
+  }]
+  return result
+})
 const levelMode = computed(() => {
   switch (props.source.mode) {
-    case 0: return t('gamesetting.gametype.survival')
-    case 1: return t('gamesetting.gametype.creative')
-    case 2: return t('gamesetting.gametype.adventure')
-    case 3: return t('gamesetting.gametype.spectator')
+    case 0: return t('gameType.survival')
+    case 1: return t('gameType.creative')
+    case 2: return t('gameType.adventure')
+    case 3: return t('gameType.spectator')
     case -1:
     default:
-      return t('gamesetting.gametype.non')
+      return t('gameType.non')
   }
 })
 const icon = ref(null)

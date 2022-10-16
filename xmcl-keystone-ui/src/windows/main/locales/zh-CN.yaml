@@ -169,6 +169,11 @@ forgeVersion:
   version: Forge
 gameSetting:
   title: 游戏设置
+gameType:
+  adventure: 冒险模式
+  creative: 创造模式
+  spectator: 观察者模式
+  survival: 生存模式
 hello: 你好世界
 help: 帮助
 home: 主页

@@ -52,6 +52,7 @@
             :export-save="doExport"
             @dragstart="dragging = true"
             @dragend="dragging = false"
+            @remove="onStartDelete(s.path)"
           />
         </transition-group>
       </div>
