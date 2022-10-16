@@ -337,6 +337,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
       if (pending) {
         // Most be cache
         await this.resourceService.importResource({
+          background: true,
           resources: [{
             path: destination,
             domain: file.path.startsWith(ResourceDomain.Mods)
