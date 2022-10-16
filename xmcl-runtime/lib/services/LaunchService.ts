@@ -28,7 +28,6 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(InstallService) private installService: InstallService,
     @Inject(InstanceJavaService) private instanceJavaService: InstanceJavaService,
-    @Inject(InstallService) private installService: InstallService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(JavaService) private javaService: JavaService,
     @Inject(UserService) private userService: UserService,

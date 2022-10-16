@@ -124,13 +124,13 @@ export default defineComponent({
       copySave({ saveName: save, destInstancePath: instances })
     })
     const dragging = ref(false)
-    const { onDrop } = useDrop((file) => importSave({ source: file.path }))
+    const { onDrop } = useDrop((file) => importSave({ path: file.path }))
     const isCopyFromDialogShown = ref(false)
     function onDropSave(e: DragEvent) {
       if (!e.dataTransfer) return
       if (e.dataTransfer.files.length === 0) return
       for (let i = 0; i < e.dataTransfer.files.length; ++i) {
-        importSave({ source: e.dataTransfer.files.item(i)!.path })
+        importSave({ path: e.dataTransfer.files.item(i)!.path })
       }
     }
     const { show } = useDialog('deletion')
@@ -172,7 +172,7 @@ export default defineComponent({
           filters: [{ extensions: ['zip'], name: 'zip' }],
         })
         for (const file of filePaths) {
-          importSave({ source: file })
+          importSave({ path: file })
         }
       },
       async doExport(name: string) {

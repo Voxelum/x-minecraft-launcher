@@ -36,7 +36,7 @@
 </template>
 
 <script lang=ts setup>
-import { Level, useNotificationHandler, useNotificationQueue } from '../composables/notifier'
+import { Level, useNotificationQueue } from '../composables/notifier'
 import { useI18n } from '/@/composables'
 
 const data = reactive({
@@ -47,7 +47,6 @@ const data = reactive({
   more: (() => { }) as ((() => void) | undefined),
   full: false,
 })
-const registry = useNotificationHandler()
 const queue = useNotificationQueue()
 const queueLength = computed(() => queue.value.length)
 const close = () => { data.show = false }

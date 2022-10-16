@@ -1,7 +1,4 @@
-import { useI18n } from '/@/composables'
-import { BuiltinNotification, TaskNotification } from '@xmcl/runtime-api'
 import { inject, InjectionKey, provide, Ref, ref } from '@vue/composition-api'
-import { useDialog } from './dialog'
 
 export type Level = 'success' | 'info' | 'warning' | 'error'
 const NOTIFY_QUEUE_SYMBOL: InjectionKey<Ref<Array<LocalNotification>>> = Symbol('NotifierQueue')
@@ -17,44 +14,6 @@ export type Notify = (notification: LocalNotification) => void
 export type SubscribeOptions = {
   level: Level | ((err?: any, result?: any) => Level)
   title: string | ((err?: any, result?: any) => string)
-}
-
-export function useNotificationHandler() {
-  const { t } = useI18n()
-  const { show: showTask } = useDialog('task')
-  interface Handler<T extends BuiltinNotification> {
-    level: Level
-    title(notification: T): string
-    body(notification: T): string
-    more?(): void
-    full?: boolean
-  }
-  const registry: Record<string, Handler<any> | undefined> = {}
-
-  function register<T extends BuiltinNotification>(type: BuiltinNotification['type'], handler: Handler<T>) {
-    registry[type] = handler
-  }
-
-  register<TaskNotification>('taskStart', {
-    level: 'info',
-    title: (n) => t('task.start', { name: t(n.name, n.arguments) }),
-    body: (n) => t('task.startBody', { name: t(n.name) }),
-    more: showTask,
-    full: true,
-  })
-  register<TaskNotification>('taskFinish', {
-    level: 'success',
-    title: (n) => t(n.name, n.arguments),
-    body: (n) => t('task.finishBody', { name: t(n.name) }),
-    more: showTask,
-  })
-  register<TaskNotification>('taskFail', {
-    level: 'error',
-    title: (n) => t(n.name, n.arguments),
-    body: (n) => t('task.failBody', { name: t(n.name) }),
-    more: showTask,
-  })
-  return registry
 }
 
 export function useNotificationQueue() {

@@ -229,10 +229,10 @@ export class ModpackService extends AbstractService implements IModpackService {
       const filePath = join(instancePath, file.path)
       if (file.path.startsWith('mods/') || file.path.startsWith('resourcepacks/') || file.path.startsWith('shaderpacks/')) {
         const ino = await stat(filePath)
-        let resource = this.resourceService.getResourceByKey(ino.ino) as any
+        let resource = this.resourceService.getResourceByKey(ino.ino)
         if (!resource) {
           const sha1 = await this.worker().checksum(filePath, 'sha1')
-          resource = this.resourceService.getResourceByKey(sha1) as any
+          resource = this.resourceService.getResourceByKey(sha1)
         }
 
         if (!file.override && resource) {
@@ -300,34 +300,43 @@ export class ModpackService extends AbstractService implements IModpackService {
 
     this.log(`Import modpack by path ${path}`)
 
-    const resource = this.resourceService.getResourceByKey(path)
-
     const zip = await open(path)
     const entries = await readAllEntries(zip)
 
-    const manifest = await readMetadata(zip, entries).catch(() => {
-      throw new ModpackException({ type: 'invalidModpack', path })
-    })
-    const instance = resolveInstanceOptions(manifest)
+    const getManifestAndHandler = async () => {
+      for (const handler of Object.values(this.handlers)) {
+        const manifest = await handler.readMetadata(zip, entries).catch(e => undefined)
+        if (manifest) {
+          return [manifest, handler] as const
+        }
+      }
+      return [undefined, undefined]
+    }
 
-    const getEntryPath = (e: Entry) => e.fileName.substring('overrides' in manifest ? manifest.overrides.length : 'overrides'.length)
+    const [manifest, handler] = await getManifestAndHandler()
 
+    if (!manifest || !handler) throw new ModpackException({ type: 'invalidModpack', path })
+
+    const instance = handler.resolveInstanceOptions(manifest)
+
+    const instanceFiles = await handler.resolveInstanceFiles(manifest)
     const files = (await Promise.all(entries
-      .filter((e) => !e.fileName.endsWith('/') && e.fileName.startsWith('overrides' in manifest ? manifest.overrides : 'overrides'))
-      .map(async (v) => {
-        const sha1 = await checksumFromStream(await openEntryReadStream(zip, v), 'sha1')
+      .filter((e) => !!handler.resolveUnpackPath(manifest, e))
+      .map(async (e) => {
+        const sha1 = await checksumFromStream(await openEntryReadStream(zip, e), 'sha1')
+        const path = handler.resolveUnpackPath(manifest, e)!
         const file: InstanceFile = {
-          path: getEntryPath(v),
-          size: v.uncompressedSize,
+          path,
+          size: e.uncompressedSize,
           hashes: {
             sha1,
-            crc32: v.crc32.toString(),
+            crc32: e.crc32.toString(),
           },
-          downloads: [`zip:${join(path, getEntryPath(v))}`],
+          downloads: [`zip:${join(path, path)}`],
         }
         return file
       })))
-      .concat(await this.convertManifest(manifest))
+      .concat(instanceFiles)
 
     return {
       instance,
