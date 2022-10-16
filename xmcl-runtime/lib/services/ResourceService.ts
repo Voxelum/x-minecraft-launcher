@@ -2,15 +2,17 @@ import { ImportResourceOptions, isPersistedResource, PartialResourceHash, Partia
 import { task } from '@xmcl/task'
 import { AbstractLevel } from 'abstract-level'
 import { ClassicLevel } from 'classic-level'
-import { FSWatcher } from 'fs'
-import { ensureDir, stat, unlink } from 'fs-extra'
+import filenamify from 'filenamify'
+import { existsSync, FSWatcher } from 'fs'
+import { ensureDir, ensureFile, stat, unlink } from 'fs-extra'
+import { rename } from 'fs/promises'
 import watch from 'node-watch'
-import { basename, extname, join } from 'path'
+import { basename, dirname, extname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { persistResource, ResourceCache } from '../entities/resource'
-import { migrateToDatabase, upgradeDatabaseV2 } from '../util/dataFix'
-import { checksum, copyPassively, readdirEnsured } from '../util/fs'
+import { migrateToDatabase, upgradeResourceToV2 } from '../util/dataFix'
+import { checksum, copyPassively, linkOrCopy, readdirEnsured } from '../util/fs'
 import { ImageStorage } from '../util/imageStore'
 import { assignIfPresent, isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
@@ -91,11 +93,16 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         const promise = this.load(domain)
         this.loadPromises[domain]?.accept(promise)
       }
-      const result = await this.storage.values().all()
-      const mapped = result.map(upgradeDatabaseV2)
+      const stored = await this.storage.values().all()
+
+      // Transform legacy format (v1) to v2
+      const resources = stored.map(upgradeResourceToV2)
         .filter(v => v.size !== 0 && !v.path.endsWith('.pending'))
-      this.log(`Load ${result.length} resources from database.`)
-      await Promise.all(mapped.map(async (r) => {
+
+      this.log(`Load ${stored.length} resources from database.`)
+
+      // Fix fabric parsing
+      await Promise.all(resources.map(async (r) => {
         if (r.metadata.fabric) {
           if (!(r.metadata.fabric instanceof Array) && r.metadata.fabric.id === 'fabric') {
             const reParsed = await this.parseResourceMetadata(r)
@@ -105,10 +112,57 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         }
         return r
       }))
-      this.commitResources(mapped)
+
+      const promises: Promise<void>[] = []
+      const toRemove: Persisted<Resource>[] = []
+      const toAdd: Persisted<Resource>[] = []
+      const toUpdate: Persisted<Resource>[] = []
+      const fixOverlap = async (resource: Persisted<Resource>, overlapped: Persisted<Resource>) => {
+        const expectedSha1 = await checksum(resource.storedPath, 'sha1')
+        if (expectedSha1 === overlapped.hash) {
+          const temp = overlapped
+          overlapped = resource
+          resource = temp
+        } else if (expectedSha1 !== resource.hash) {
+          // Totally broken resource...
+          resource = await this.parseResourceMetadata(resource)
+        }
+        this.warn(`Found the overlapped resource ${resource.storedPath}, ${resource.hash} vs ${overlapped.hash}`)
+        Object.assign(overlapped.metadata, resource.metadata)
+        resource.metadata = overlapped.metadata
+        resource.uri = [...new Set([...overlapped.uri, ...resource.uri])]
+        toRemove.push(overlapped)
+        toUpdate.push(resource)
+        this.cache.put(resource)
+      }
+
+      // Check if the resource need to fix
+      for (const resource of resources) {
+        const existed = this.cache.get(resource.storedPath)
+        if (existed && existed.hash !== resource.hash) {
+          promises.push(fixOverlap(existed, resource))
+        } else {
+          toAdd.push(resource)
+          this.cache.put(resource as any)
+        }
+      }
+
+      // Wait all fixes are done
+      await Promise.all(promises)
+
+      // Commit all resources
+      this.state.resources(toAdd)
+
+      // Delete the stale resources and update new resource
+      if (toUpdate.length > 0 || toRemove.length > 0) {
+        const batch = this.storage.batch()
+        toUpdate.map(res => batch.put(res.hash, res))
+        toRemove.map(res => batch.del(res.hash))
+        await batch.write()
+      }
+
       await ensureDir(this.getAppDataPath('resource-images'))
     })
-    // this.storage = database.sublevel('resources', { keyEncoding: 'hex', valueEncoding: 'json' })
     this.storage = database as any
   }
 
@@ -256,25 +310,80 @@ export class ResourceService extends StatefulService<ResourceState> implements I
       })
     }
     const newResource: Persisted<Resource> = { ...resource }
+    let dirty = false
     if (options.name) {
       newResource.name = options.name
+      dirty = true
     }
     if (options.tags) {
       const tags = options.tags
       newResource.tags = tags
+      dirty = true
     }
     if (options.uri) {
       newResource.uri = [...new Set([...options.uri, ...newResource.uri])]
+      dirty = true
     }
-    if (options.metadata) {
+    if (options.metadata && Object.values(options.metadata).some(v => !!v)) {
       assignIfPresent(newResource.metadata, options.metadata, ['curseforge', 'github', 'modrinth'])
+      dirty = true
     }
     if (options.icons) {
       newResource.icons = options.icons
+      dirty = true
     }
-    this.state.resource(newResource)
-    await this.storage.put(newResource.hash, newResource)
+    if (dirty) {
+      this.state.resource(newResource)
+      await this.storage.put(newResource.hash, newResource)
+    }
     return newResource
+  }
+
+  async updateResources(resources: PartialResourceHash[]): Promise<Persisted<Resource>[]> {
+    const batch = this.storage.batch()
+    let dirty = false
+    const result = resources.map(options => {
+      const resource = this.normalizeResource(options.hash)
+      if (!resource) {
+        throw new ResourceException({
+          type: 'resourceNotFoundException',
+          resource: options.hash as string,
+        })
+      }
+      const newResource: Persisted<Resource> = { ...resource }
+      if (options.name && options.name !== newResource.name) {
+        newResource.name = options.name
+        dirty = true
+      }
+      if (options.tags) {
+        const tags = options.tags
+        newResource.tags = tags
+        dirty = true
+      }
+      if (options.uri) {
+        newResource.uri = [...new Set([...options.uri, ...newResource.uri])]
+        dirty = true
+      }
+      if (options.metadata && Object.values(options.metadata).some(v => !!v)) {
+        assignIfPresent(newResource.metadata, options.metadata, ['curseforge', 'github', 'modrinth'])
+        dirty = true
+      }
+      if (options.icons) {
+        newResource.icons = options.icons
+        dirty = true
+      }
+      if (dirty) {
+        this.state.resource(newResource)
+        batch.put(newResource.hash, newResource)
+      }
+      return newResource
+    })
+    if (dirty) {
+      await batch.write()
+    } else {
+      await batch.close()
+    }
+    return result
   }
 
   /**
@@ -288,6 +397,9 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         return { ...resolved, path: res.path }
       }
       const resource = await this.parseResourceMetadata(resolved)
+      if (this.pendingMetadata[resource.hash]) {
+        Object.assign(resource.metadata, this.pendingMetadata[resource.hash])
+      }
       return resource
     }))
     return result.filter(isNonnull)
@@ -354,6 +466,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     for (const watcher of Object.values(this.watchers)) {
       watcher?.close()
     }
+    await this.storage.close()
   }
 
   // helper methods
@@ -439,7 +552,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     const paths = await Promise.all(icons.map(async (icon) => this.imageStore.addImage(icon)))
     result.icons = result.icons ? ([...resource.icons!, ...paths]) : paths
 
-    return result as T
+    return { ...resource, ...result }
   }
 
   /**
@@ -447,22 +560,116 @@ export class ResourceService extends StatefulService<ResourceState> implements I
   * @see {resolvePartialResource}
   */
   async importParsedResource(resource: Resource): Promise<Persisted<Resource>> {
-    // if (resolved.domain !== ResourceDomain.Unknown) {
-    //   throw new ResourceException({
-    //     type: 'resourceDomainMismatched',
-    //     path: options.path,
-    //     expectedDomain: options.restrictToDomain,
-    //     actualDomain: resolved.domain,
-    //     actualType: resolved.type,
-    //   }, `Non-${options.restrictToDomain} resource at ${options.path} type=${resolved.type}`)
-    // }
+    const root = this.getPath()
+    let fileName = filenamify(resource.fileName, { replacement: '-' })
+    let filePath = join(root, resource.domain, fileName)
+    const conflicted = existsSync(filePath)
+    let persisted: Persisted<Resource>
 
-    const result = await persistResource(resource, this.getPath(), this.pending)
+    if (conflicted) {
+      // Some file have the same path. Now we more trust the real file system
+      // So we try to merge data in current database
+      const sha1 = await this.worker().checksum(filePath, 'sha1')
 
-    await this.storage.put(result.hash, result)
-    this.commitResources([result])
+      if (sha1 === resource.hash) {
+        // The file is already imported...
+        // We will try to merge the resource
+        const existedResource = this.cache.get(sha1)
+        if (existedResource) {
+          // Try to update the resource
+          const newResource = await this.updateResource(resource)
+          return newResource
+        } else {
+          // We don't have the resource in cache... which means this file is not in record even it existed...
+          // We will skip to copy again but use
+          // This case should be the system error...
+          this.warn(`Unrecognized resource file: ${filePath}. Will use the new resource metadata.`)
+          const fileStatus = await stat(filePath)
+          persisted = {
+            ...resource,
+            path: filePath,
+            ino: fileStatus.ino,
+            size: fileStatus.size,
+            storedDate: Date.now(),
+            storedPath: filePath,
+          }
+        }
+      } else {
+        // Different file, process as normal
+        persisted = await persistResource(resource, this.pending)
+      }
+    } else {
+      // No conflicted, process as normal
+      persisted = await persistResource(resource, this.pending)
+    }
 
-    return result as Persisted<Resource>
+    async function persistResource(resolved: Resource, pending: Set<string>): Promise<Persisted<Resource>> {
+      const alreadyStored = conflicted ? (await stat(filePath)).ino === resolved.ino : false
+
+      if (!alreadyStored) {
+        if (conflicted) {
+          // fileName conflict
+          fileName = filenamify(`${resolved.name}.${resolved.hash.slice(0, 6)}${extname(resolved.fileName)}`)
+          filePath = join(root, resolved.domain, fileName)
+        }
+
+        // skip to handle the file if it's inside the resource dir
+        pending.add(filePath)
+        await ensureFile(filePath)
+        if (dirname(resolved.path) === dirname(filePath)) {
+          // just rename if they are in same dir
+          await rename(resolved.path, filePath)
+        } else {
+          await linkOrCopy(resolved.path, filePath)
+        }
+      }
+
+      const fileStatus = await stat(filePath)
+      return {
+        ...resolved,
+        path: filePath,
+        ino: fileStatus.ino,
+        size: fileStatus.size,
+        storedDate: Date.now(),
+        storedPath: filePath,
+      }
+    }
+
+    if (this.pendingMetadata[resource.hash]) {
+      Object.assign(resource.metadata, this.pendingMetadata[resource.hash])
+      delete this.pendingMetadata[resource.hash]
+    }
+
+    const handleOverlap = async (overlapped: Persisted<Resource>) => {
+      this.warn(`Found the overlapped resource ${overlapped.storedPath}, ${persisted.hash} vs ${overlapped.hash}`)
+      persisted.metadata = Object.assign({}, overlapped.metadata, persisted.metadata)
+      persisted.uri = [...new Set([...overlapped.uri, ...persisted.uri])]
+      await this.storage.del(overlapped.hash)
+      this.cache.discard(overlapped)
+      this.state.resourcesRemove([overlapped])
+    }
+
+    // Check if there already file in database
+    const pathOverlapped = this.cache.get(persisted.storedPath)
+    if (pathOverlapped && pathOverlapped.hash !== persisted.hash) {
+      await handleOverlap(pathOverlapped)
+    }
+
+    const hashOverlapped = this.cache.get(persisted.hash)
+    if (hashOverlapped && hashOverlapped.storedPath !== persisted.storedPath) {
+      await handleOverlap(hashOverlapped)
+    }
+
+    const inoOverlapped = this.cache.get(persisted.ino)
+    if (inoOverlapped && inoOverlapped.ino !== persisted.ino) {
+      await handleOverlap(inoOverlapped)
+    }
+
+    await this.storage.put(persisted.hash, persisted)
+    this.cache.put(persisted)
+    this.state.resources([persisted])
+
+    return persisted
   }
 
   /**
@@ -480,13 +687,6 @@ export class ResourceService extends StatefulService<ResourceState> implements I
       const resolved = await this.parseResourceMetadata(resource)
       return this.importParsedResource(resolved)
     })
-  }
-
-  private commitResources(resources: Persisted<Resource>[]) {
-    for (const resource of resources) {
-      this.cache.put(resource as any)
-    }
-    this.state.resources(resources as any)
   }
 
   protected async removeResourceInternal(resource: Persisted<any>) {

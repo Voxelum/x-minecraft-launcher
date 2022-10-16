@@ -177,21 +177,21 @@
   </v-dialog>
 </template>
 <script lang="ts" setup>
-import { useDialog } from '../composables/dialog'
-import { useI18n, useRouter, useService } from '/@/composables'
-import { InstanceIOServiceKey, InstanceManifest, PeerServiceKey, InstanceServiceKey, InstanceInstallServiceKey } from '@xmcl/runtime-api'
-import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { Ref } from '@vue/composition-api'
+import { InstanceInstallServiceKey, InstanceManifest, InstanceManifestServiceKey, InstanceServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
+import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
+import { useDialog } from '../composables/dialog'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
+import { useNotifier } from '../composables/notifier'
 import fabricPng from '/@/assets/fabric.png'
 import forgePng from '/@/assets/forge.png'
 import minecraftPng from '/@/assets/minecraft.png'
-import { useNotifier } from '../composables/notifier'
+import { useI18n, useRouter, useService } from '/@/composables'
 
 const { isShown, show, parameter } = useDialog('share-instance')
 
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
-const { getInstanceManifest } = useService(InstanceIOServiceKey)
+const { getInstanceManifest } = useService(InstanceManifestServiceKey)
 const { shareInstance, state, on } = useService(PeerServiceKey)
 const { state: instanceState } = useService(InstanceServiceKey)
 const { t } = useI18n()

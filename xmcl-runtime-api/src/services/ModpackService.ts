@@ -73,7 +73,7 @@ export interface ExportModpackOptions {
   strictModeInModrinth?: boolean
 }
 
-export type ImportModpackOptions = ImportModpackToInstanceOptions | ImportModpackCreateInstanceOptions
+export type ImportModpackOptions = ImportModpackCreateInstanceOptions
 
 export interface ImportModpackToInstanceOptions {
   /**

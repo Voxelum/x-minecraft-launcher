@@ -22,10 +22,10 @@ export interface InstallFileOptions {
 }
 
 export class CurseforgeState {
-  downloading = [] as { fileId: number; taskId: string }[]
+  downloading = [] as { fileId: number }[]
 
-  curseforgeDownloadFileStart({ fileId, taskId }: { fileId: number; taskId: string }) {
-    this.downloading.push({ fileId, taskId })
+  curseforgeDownloadFileStart({ fileId }: { fileId: number }) {
+    this.downloading.push({ fileId })
   }
 
   curseforgeDownloadFileEnd(fileId: number) {

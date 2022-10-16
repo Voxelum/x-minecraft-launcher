@@ -1,15 +1,10 @@
 import { Exception, ServiceKey } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
-import { ClassicLevel } from 'classic-level'
-import { join } from 'path'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
-import { LauncherAppKey } from '../app/utils'
 import { Client } from '../engineBridge'
 import { AbstractService, getServiceKey, ServiceConstructor } from '../services/Service'
 import { serializeError } from '../util/error'
-import { ImageStorage } from '../util/imageStore'
-import { ObjectFactory } from '../util/objectRegistry'
 
 interface ServiceCallSession {
   id: number
@@ -19,9 +14,6 @@ interface ServiceCallSession {
 }
 
 export default class ServiceManager extends Manager {
-  private injection: ObjectFactory = new ObjectFactory()
-
-  private servicesMap: Record<string, AbstractService> = {}
   private logger = this.app.logManager.getLogger('ServiceManager')
 
   private usedSession = 0
@@ -29,13 +21,10 @@ export default class ServiceManager extends Manager {
   private sessions: { [key: number]: ServiceCallSession } = {}
 
   private serviceConstructorMap: Record<string, ServiceConstructor> = {}
+  private servicesMap: Record<string, AbstractService> = {}
 
   constructor(app: LauncherApp, private preloadServices: ServiceConstructor[]) {
     super(app)
-
-    this.injection.register(LauncherAppKey, app)
-    this.injection.register(ClassicLevel, new ClassicLevel(join(app.appDataPath, 'resources'), { keyEncoding: 'hex', valueEncoding: 'json' }))
-    this.injection.register(ImageStorage, new ImageStorage(join(app.appDataPath, 'resource-images')))
 
     this.app.handle('service-call', (e, service: string, name: string, payload: any) => this.handleServiceCall(e.sender, service, name, payload))
     this.app.handle('session', (_, id) => this.startServiceCall(id))
@@ -60,7 +49,7 @@ export default class ServiceManager extends Manager {
   }
 
   get<T extends AbstractService>(ServiceConstructor: ServiceConstructor<T>): T {
-    const service = this.injection.get(ServiceConstructor)
+    const service = this.app.registry.get(ServiceConstructor)
     if (!service) {
       throw new Error(`Fail construct service ${ServiceConstructor.name}!`)
     }

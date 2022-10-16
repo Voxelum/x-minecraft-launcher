@@ -101,6 +101,7 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
     const resourceService = this.resourceService
     const networkManager = this.networkManager
     try {
+      this.state.curseforgeDownloadFileStart({ fileId: file.id })
       const destination = join(this.app.temporaryPath, file.fileName)
       const project = await this.fetchProject(projectId)
       const dependencies = type !== 'modpacks' && !ignoreDependencies
@@ -153,9 +154,8 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
           ...networkManager.getDownloadBaseOptions(),
           url: downloadUrls,
           destination,
-        }).setName('installCurseforgeFile')
+        }).setName('installCurseforgeFile', { fileId: file.id })
         const promise = this.submit(task)
-        this.state.curseforgeDownloadFileStart({ fileId: file.id, taskId: this.taskManager.getTaskUUID(task) })
         await promise
         const imported = await resourceService.importResource({
           resources: [{

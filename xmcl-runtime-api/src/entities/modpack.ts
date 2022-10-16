@@ -102,7 +102,7 @@ export interface ModrinthModpackManifest {
      * For files that only exist on a specific environment, this field allows that to be specified.
      * It's an object which contains a client and server value. This uses the Modrinth client/server type specifications. For example:
      */
-    env?: Record<'client'| 'server', 'required' | 'optional' | 'unsupported'>
+    env?: Record<'client' | 'server', 'required' | 'optional' | 'unsupported'>
     /**
      * An array containing RFC 3986 compliant URIs where this file may be downloaded.
      * URIs MUST NOT contain unencoded spaces or any other illegal characters according to RFC 3986.
@@ -247,4 +247,121 @@ export interface CurseforgeModpackManifest extends ModpackManifest {
     required: boolean
   }[]
   overrides: string
+}
+
+export function getInstanceConfigFromMcbbsModpack(manifest: McbbsModpackManifest) {
+  return {
+    name: `${manifest.name}-${manifest.version}`,
+    author: manifest.author,
+    modpackVersion: manifest.version,
+    url: manifest.url,
+    description: manifest.description,
+    runtime: {
+      minecraft: manifest.addons.find(a => a.id === 'game')?.version ?? '',
+      forge: manifest.addons.find(a => a.id === 'forge')?.version ?? '',
+      liteloader: '',
+      fabricLoader: manifest.addons.find(a => a.id === 'fabric')?.version ?? '',
+      yarn: '',
+    },
+    mcOptions: manifest.launchInfo ? manifest.launchInfo.launchArgument : undefined,
+    vmOptions: manifest.launchInfo ? manifest.launchInfo.javaArgument : undefined,
+    minMemory: manifest.launchInfo ? Number(manifest.launchInfo.minMemory) : undefined,
+  }
+}
+export function getInstanceConfigFromCurseforgeModpack(manifest: CurseforgeModpackManifest) {
+  const forgeId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('forge'))
+  const fabricId = manifest.minecraft.modLoaders.find(l => l.id.startsWith('fabric'))
+  return {
+    name: `${manifest.name}-${manifest.version}`,
+    modpackVersion: manifest.version,
+    author: manifest.author,
+    runtime: {
+      minecraft: manifest.minecraft.version,
+      forge: forgeId ? forgeId.id.substring(6) : '',
+      liteloader: '',
+      fabricLoader: fabricId ? fabricId.id.substring(7) : '',
+      yarn: '',
+    },
+  }
+}
+export function getInstanceConfigFromModrinthModpack(manifest: ModrinthModpackManifest) {
+  return {
+    name: `${manifest.name}-${manifest.versionId}`,
+    modpackVersion: manifest.versionId,
+    description: manifest.summary,
+    runtime: {
+      minecraft: manifest.dependencies.minecraft,
+      forge: manifest.dependencies.forge,
+      fabricLoader: manifest.dependencies['fabric-loader'],
+      quiltLoader: manifest.dependencies['quilt-loader'],
+    },
+  }
+}
+export function getModrinthModpackFromInstance(instance: InstanceData): ModrinthModpackManifest {
+  return {
+    formatVersion: 1,
+    game: 'minecraft',
+    versionId: instance.modpackVersion,
+    name: instance.name,
+    summary: instance.description,
+    dependencies: {
+      minecraft: instance.runtime.minecraft,
+      forge: instance.runtime.forge || undefined,
+      'fabric-loader': instance.runtime.fabricLoader || undefined,
+      'quilt-loader': instance.runtime.quiltLoader || undefined,
+    },
+    files: [],
+  }
+}
+export function getCurseforgeModpackFromInstance(instance: InstanceData): CurseforgeModpackManifest {
+  const modLoaders = instance.runtime.forge
+    ? [{
+      id: `forge-${instance.runtime.forge}`,
+      primary: true,
+    }]
+    : (instance.runtime.fabricLoader
+      ? [{
+        id: `fabric-${instance.runtime.fabricLoader}`,
+        primary: true,
+      }]
+      : [])
+
+  return {
+    manifestType: 'minecraftModpack',
+    manifestVersion: 1,
+    minecraft: {
+      version: instance.runtime.minecraft,
+      modLoaders,
+    },
+    name: instance.name,
+    version: instance.modpackVersion,
+    author: instance.author,
+    files: [],
+    overrides: 'overrides',
+  }
+}
+export function getMcbbsModpackFromInstance(instance: InstanceData): McbbsModpackManifest {
+  const mcbbsManifest: McbbsModpackManifest = {
+    manifestType: 'minecraftModpack',
+    manifestVersion: 2,
+    description: instance.description,
+    url: instance.url,
+    name: instance.name,
+    version: instance.modpackVersion,
+    author: instance.author,
+    files: [],
+    launchInfo: {
+      minMemory: instance.minMemory <= 0 ? undefined : instance.minMemory,
+      launchArgument: instance.mcOptions,
+      javaArgument: instance.vmOptions,
+    },
+    addons: [{ id: 'game', version: instance.runtime.minecraft }],
+  }
+  if (instance.runtime.forge) {
+    mcbbsManifest.addons.push({ id: 'forge', version: instance.runtime.forge })
+  }
+  if (instance.runtime.fabricLoader) {
+    mcbbsManifest.addons.push({ id: 'fabric', version: instance.runtime.fabricLoader })
+  }
+  return mcbbsManifest
 }

@@ -126,7 +126,7 @@ import { useFeedTheBeastVersionsCache } from '../composables/ftb'
 const { t } = useI18n()
 const { push } = useRouter()
 const dragging = ref(undefined as undefined | ModpackItem)
-const { state, removeResource, updateResource } = useService(ResourceServiceKey)
+const { state, removeResource, updateResources } = useService(ResourceServiceKey)
 const { showModpacksFolder } = useService(ModpackServiceKey)
 const items: Ref<ModpackItem[]> = ref([])
 const { show } = useDialog(AddInstanceDialogKey)
@@ -173,7 +173,7 @@ function getModpackItem (resource: ModpackResource): ModpackItem {
     size: resource.size,
     icon: resource.icons ? resource.icons[0] : '',
     name: metadata['curseforge-modpack']?.name ?? metadata['mcbbs-modpack']?.name ?? metadata['modrinth-modpack']?.name ?? '',
-    version: '', // metadata['curseforge-modpack']?.ver || resource.type === ResourceType.McbbsModpack ? resource.metadata.version : resource.type === ResourceType.ModrinthModpack ? resource.metadata.versionId : '',
+    version: metadata['curseforge-modpack']?.version ?? metadata['modrinth-modpack']?.versionId ?? metadata['mcbbs-modpack']?.version ?? '',
     author: metadata['curseforge-modpack']?.author ?? metadata['mcbbs-modpack']?.author ?? '',
     tags: [...resource.tags],
     type: metadata.modpack ? 'raw' : (metadata['curseforge-modpack'] ? 'curseforge' : 'modrinth'),
@@ -194,20 +194,17 @@ function getModpackItemByFtb(resource: CachedFTBModpackVersionManifest): Modpack
 }
 onMounted(async () => {
   await refresh()
-  items.value = [...state.modpacks.map(getModpackItem), ...ftb.value.map(getModpackItemByFtb)]
+  items.value = [...state.modpacks.map(getModpackItem), ...ftb.value.map(getModpackItemByFtb)].sort((a, b) => a.name.localeCompare(b.name))
 })
 onUnmounted(() => {
   const editedResources = items.value
     .filter(i => !!i.resource)
     .filter(i => !isStringArrayEquals(i.tags, i.resource!.tags))
-  const promises: Promise<any>[] = []
-  for (const i of editedResources) {
-    promises.push(updateResource({
-      hash: i.resource!.hash,
-      name: i.name,
-      tags: i.tags,
-    }))
-  }
+  updateResources(editedResources.map(i => ({
+    hash: i.resource!.hash,
+    name: i.name,
+    tags: i.tags,
+  })))
   dispose()
 })
 watch(computed(() => state.modpacks), () => {
