@@ -1,6 +1,25 @@
-import { InstanceManifestSchema } from '../entities/instanceManifest.schema'
-import { InstanceUpdate } from './InstanceIOService'
+import { InstanceFile, InstanceManifestSchema } from '../entities/instanceManifest.schema'
 import { ServiceKey } from './Service'
+
+export interface InstanceUpdate {
+  /**
+   * The differences between the remote instance manifest and current instance.
+   */
+  updates: Array<{
+    /**
+     * Either or add or update the file
+     */
+    operation: 'update' | 'add'
+    /**
+     * The file need to apply update
+     */
+    file: InstanceFile
+  }>
+  /**
+   * The instance manifest return by the remote api server
+   */
+  manifest: InstanceManifestSchema
+}
 
 export interface SetInstanceManifestOptions {
   /**
