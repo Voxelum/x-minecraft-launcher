@@ -1,0 +1,23 @@
+browseApps: Explorar la interfaz de usuario personalizada del iniciador
+checkUpdate: Buscar Actualizaciones
+fabricVersion:
+  empty: No se puede cargar la lista de versiones de fabric para Minecraft {version}
+openUrl:
+  cancel: Cancelar
+  message: >-
+    El launcher quiere abrir {url} en tu navegador por defecto. Permites
+    esta operación?
+  title: Abrir en el navegador
+  trust: Confiar en este sitio y no volver a preguntar
+  'yes': 'Sí'
+quit: Salir
+setup:
+  title: X Minecraft Launcher 主页
+showDiagnosis: Mostrar diagnostico
+showLogsFolder: Mostrar carpeta de registros
+task:
+  continue: Ver en el launcher
+  fail: Una operación falló
+  success: Una operación funcionó
+urlFailed: Url no encontrada {url}. Por favor revisa la URL o contacta con el desarrollador
+urlSuccess: Hecho! Ya puedes cerrar la ventana y volver al launcher.
