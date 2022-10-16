@@ -1,6 +1,7 @@
 import { getPlatform } from '@xmcl/core'
 import { InstalledAppManifest, ReleaseInfo } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
+import { ClassicLevel } from 'classic-level'
 import { EventEmitter } from 'events'
 import { ensureDir, readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
@@ -19,10 +20,13 @@ import TelemetryManager from '../managers/TelemetryManager'
 import WorkerManager from '../managers/WorkerManager'
 import { AbstractService, ServiceConstructor } from '../services/Service'
 import { isSystemError } from '../util/error'
+import { ImageStorage } from '../util/imageStore'
+import { ObjectFactory } from '../util/objectRegistry'
 import { createPromiseSignal } from '../util/promiseSignal'
 import { Host } from './Host'
 import { LauncherAppController } from './LauncherAppController'
 import { LauncherAppManager } from './LauncherAppManager'
+import { LauncherAppKey } from './utils'
 
 export interface Platform {
   /**
@@ -125,6 +129,10 @@ export abstract class LauncherApp extends EventEmitter {
     this.appDataPath = join(appData, LAUNCHER_NAME)
     this.minecraftDataPath = join(appData, this.platform.name === 'osx' ? 'minecraft' : '.minecraft')
 
+    this.registry.register(LauncherAppKey, this)
+    this.registry.register(ClassicLevel, new ClassicLevel(join(this.appDataPath, 'resources'), { keyEncoding: 'hex', valueEncoding: 'json' }))
+    this.registry.register(ImageStorage, new ImageStorage(join(this.appDataPath, 'resource-images')))
+
     this.logManager = new LogManager(this)
 
     this.serviceManager = new ServiceManager(this, this.getPreloadServices())
@@ -145,6 +153,7 @@ export abstract class LauncherApp extends EventEmitter {
     this.error = logger.error
   }
 
+  readonly registry: ObjectFactory = new ObjectFactory()
   private initialInstance = ''
   private preferredLocale = ''
 

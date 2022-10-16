@@ -169,8 +169,17 @@ export async function parseResourceMetadata(resource: Resource): Promise<{ resou
   return { resource, icons }
 }
 
+export function getStoragePath(resolved: Resource, root: string) {
+  const fileName = filenamify(resolved.fileName, { replacement: '-' })
+  const filePath = join(root, resolved.domain, fileName)
+  return filePath
+}
+
 /**
  * Persist a resource to disk. This will try to copy or link the resource file to domain directory, or rename it if it's already in domain directory.
+ *
+ * Notice the return persisted resource will set `path` to the `storePath`
+ *
  * @param resolved The resolved resource
  * @param root The root of the persistence storage
  */

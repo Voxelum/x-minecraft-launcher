@@ -168,6 +168,7 @@ export interface ResourceService extends StatefulService<ResourceState>, Generic
    * @param resource The update resource payload.
    */
   updateResource(resource: PartialResourceHash): Promise<Persisted<Resource>>
+  updateResources(resources: PartialResourceHash[]): Promise<Persisted<Resource>[]>
   /**
    * Parse files as resources.
    *

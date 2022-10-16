@@ -1,4 +1,4 @@
-import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, InstanceData, InstanceSchema, InstanceServiceKey, isCurseforgeModpackResource, isModrinthModpackResource, isMcbbsModpackResource, JavaServiceKey, McbbsModpackResource, ModpackResource, ModrinthModpackResource, RawModpackResource, ResourceDomain, ResourceServiceKey, ResourceType, RuntimeVersions } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, InstanceData, InstanceSchema, InstanceServiceKey, isCurseforgeModpackResource, isModrinthModpackResource, isMcbbsModpackResource, JavaServiceKey, McbbsModpackResource, ModpackResource, ModrinthModpackResource, RawModpackResource, ResourceDomain, ResourceServiceKey, ResourceType, RuntimeVersions, getInstanceConfigFromModrinthModpack, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack } from '@xmcl/runtime-api'
 import { DialogKey } from './dialog'
 import { useFeedTheBeastVersionsCache } from './ftb'
 import { useService } from '/@/composables'
@@ -56,15 +56,17 @@ export function useAllTemplate(data: InstanceData) {
   })
 
   function getModrinthTemplate(modrinth: ModrinthModpackResource): Template {
+    const config = getInstanceConfigFromModrinthModpack(modrinth.metadata['modrinth-modpack'])
     const result: Template = {
       id: modrinth.path,
-      name: `${modrinth.metadata['modrinth-modpack'].name}-${modrinth.metadata['modrinth-modpack'].versionId}`,
-      description: modrinth.metadata['modrinth-modpack'].summary ?? '',
+      name: config.name,
+      description: config.description ?? '',
+      modpackVersion: config.modpackVersion,
       runtime: {
-        minecraft: modrinth.metadata['modrinth-modpack'].dependencies.minecraft,
-        forge: modrinth.metadata['modrinth-modpack'].dependencies.forge ?? '',
-        fabricLoader: modrinth.metadata['modrinth-modpack'].dependencies['fabric-loader'] ?? '',
-        quiltLoader: modrinth.metadata['modrinth-modpack'].dependencies['quilt-loader'] ?? '',
+        minecraft: config.runtime.minecraft,
+        forge: config.runtime.forge ?? '',
+        fabricLoader: config.runtime.fabricLoader ?? '',
+        quiltLoader: config.runtime.quiltLoader ?? '',
         optifine: '',
         yarn: '',
         liteloader: '',
@@ -85,15 +87,17 @@ export function useAllTemplate(data: InstanceData) {
   }
 
   function getCurseforgeTemplate(curseforge: CurseforgeModpackResource): Template {
+    const config = getInstanceConfigFromCurseforgeModpack(curseforge.metadata['curseforge-modpack'])
     const result: Template = {
       id: curseforge.path,
-      name: `${curseforge.metadata['curseforge-modpack'].name}-${curseforge.metadata['curseforge-modpack'].version}`,
-      author: curseforge.metadata['curseforge-modpack'].author,
+      name: config.name,
+      author: config.author,
+      modpackVersion: config.modpackVersion,
       runtime: {
-        minecraft: curseforge.metadata['curseforge-modpack'].minecraft.version,
-        forge: '',
+        minecraft: config.runtime.minecraft,
+        forge: config.runtime.forge ?? '',
         quiltLoader: '',
-        fabricLoader: '',
+        fabricLoader: config.runtime.fabricLoader ?? '',
         liteloader: '',
         yarn: '',
         optifine: '',
@@ -110,34 +114,29 @@ export function useAllTemplate(data: InstanceData) {
         sha1: curseforge.hash,
       }
     }
-    const forgeId = curseforge.metadata['curseforge-modpack'].minecraft.modLoaders.find(l => l.id.startsWith('forge'))
-    const fabricId = curseforge.metadata['curseforge-modpack'].minecraft.modLoaders.find(l => l.id.startsWith('fabric'))
-
-    result.runtime.forge = forgeId ? forgeId.id.substring(6) : result.runtime.forge
-    result.runtime.fabricLoader = fabricId ? fabricId.id.substring(7) : result.runtime.fabricLoader
 
     return result
   }
 
   function getMcbbsTemplate(res: McbbsModpackResource): Template {
-    const metadata = res.metadata['mcbbs-modpack']
+    const config = getInstanceConfigFromMcbbsModpack(res.metadata['mcbbs-modpack'])
     const result: Template = {
       id: res.path,
-      name: `${metadata.name}-${metadata.version}`,
-      author: metadata.author,
-      description: metadata.description,
+      name: config.name,
+      author: config.author,
+      description: config.description,
       runtime: {
-        minecraft: metadata.addons.find(a => a.id === 'minecraft')?.version ?? '',
-        forge: metadata.addons.find(a => a.id === 'forge')?.version ?? '',
-        fabricLoader: metadata.addons.find(a => a.id === 'fabric')?.version ?? '',
+        minecraft: config.runtime.minecraft,
+        forge: config.runtime.forge,
+        fabricLoader: config.runtime.fabricLoader,
         quiltLoader: '',
         liteloader: '',
         yarn: '',
         optifine: '',
       },
-      vmOptions: metadata.launchInfo?.javaArgument ?? [],
-      mcOptions: metadata.launchInfo?.launchArgument ?? [],
-      minMemory: metadata.launchInfo?.minMemory ?? undefined,
+      vmOptions: config.vmOptions,
+      mcOptions: config.mcOptions,
+      minMemory: config.minMemory,
       icon: res.icons?.[0],
       source: { type: 'mcbbs', resource: res },
     }
@@ -246,6 +245,7 @@ export function useAllTemplate(data: InstanceData) {
     data.description = template.description ?? ''
     data.url = template.url ?? ''
     data.icon = template.icon ?? ''
+    data.modpackVersion = template.modpackVersion || ''
     data.server = template.server ? { ...template.server } : null
     data.upstream = template.upstream
   }

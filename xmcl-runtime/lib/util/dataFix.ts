@@ -71,7 +71,7 @@ export async function fixResourceSchema({ log, warn }: Logger, filePath: string,
   }
 }
 
-export function upgradeDatabaseV2(legacy: any): Persisted<Resource> {
+export function upgradeResourceToV2(legacy: any): Persisted<Resource> {
   if (legacy.version === 1) {
     return {
       version: RESOURCE_FILE_VERSION,
@@ -174,7 +174,11 @@ export async function migrateToDatabase(this: ResourceService, domain: ResourceD
       }
     }
   }
-  const result = await Promise.all(files.map(processFile).filter(isNonnull))
+  const result = (await Promise.all(files.map(processFile).filter(isNonnull))).filter(isNonnull)
   this.log(`Load ${result.length} legacy resources in domain ${domain}`);
-  (this as any).commitResources(result.filter(isNonnull))
+  for (const resource of result) {
+    // @ts-ignore
+    this.cache.put(resource as any)
+  }
+  this.state.resources(result)
 }

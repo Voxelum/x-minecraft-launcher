@@ -26,7 +26,7 @@ import { AbstractService, ExposeServiceKey, Singleton } from './Service'
 
 type RequiredPick<T, K extends keyof T> = T & Required<Pick<T, K>>
 
-class ResolveInstanceFileTask extends AbortableTask<void> {
+export class ResolveInstanceFileTask extends AbortableTask<void> {
   private controller?: AbortController
 
   constructor(private files: InstanceFile[], private curseforgeService: CurseForgeService, private modrinthService: ModrinthService) {
@@ -47,7 +47,7 @@ class ResolveInstanceFileTask extends AbortableTask<void> {
         modrinthProjects.push(file as any)
       }
 
-      if (!file.downloads && !file.modrinth && !file.curseforge) {
+      if (!file.modrinth && !file.curseforge) {
         modrinthFileHashProjects.push(file)
       }
     }
@@ -81,7 +81,15 @@ class ResolveInstanceFileTask extends AbortableTask<void> {
       for (const r of Object.entries(result)) {
         const p = modrinthFileHashProjects.find(p => p.hashes.sha1 === r[0])!
         if (!p.downloads) { p.downloads = [] }
-        p.downloads.push(r[1].files[0].url)
+        if (p.downloads.indexOf(r[1].files[0].url) === -1) {
+          p.downloads.push(r[1].files[0].url)
+        }
+        if (!p.modrinth) {
+          p.modrinth = {
+            projectId: r[1].project_id,
+            versionId: r[1].id,
+          }
+        }
       }
     }
 
@@ -287,21 +295,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
       return undefined
     }
 
-    const resource = this.resourceService.state.mods.find(r => r.hash === sha1) ||
-      this.resourceService.state.resourcepacks.find(r => r.hash === sha1) ||
-      this.resourceService.state.shaderpacks.find(r => r.hash === sha1)
-
-    if (resource && await this.resourceService.validateResource(resource)) {
-      return createFileLinkTask(filePath, resource)
-    }
-
-    const urls = [] as string[]
     const metadata: ResourceMetadata = {}
-
-    if (file.downloads) {
-      urls.push(...file.downloads)
-    }
-
     if (file.curseforge) {
       metadata.curseforge = {
         fileId: file.curseforge.fileId,
@@ -316,8 +310,24 @@ export class InstanceInstallService extends AbstractService implements IInstance
       }
     }
 
-    if (Object.keys(metadata).length > 0) {
-      this.resourceService.markResourceMetadata(sha1, metadata)
+    const urls = [] as string[]
+
+    if (file.downloads) {
+      urls.push(...file.downloads)
+    }
+
+    const resource = this.resourceService.state.mods.find(r => r.hash === sha1) ||
+      this.resourceService.state.resourcepacks.find(r => r.hash === sha1) ||
+      this.resourceService.state.shaderpacks.find(r => r.hash === sha1)
+
+    if (resource && await this.resourceService.validateResource(resource)) {
+      if ((metadata.modrinth && !resource.metadata.modrinth) || (metadata.curseforge && resource.metadata.curseforge) || (urls.length > 0 && urls.some(u => resource.uri.indexOf(u) === -1))) {
+        await this.resourceService.updateResource({ hash: resource.hash, metadata, uri: urls }).catch((e) => {
+          this.warn(`Fail to update existed resource ${resource.name}(${resource.hash}) metadata during instance install:`)
+          this.warn(e)
+        })
+      }
+      return createFileLinkTask(filePath, resource)
     }
 
     const pending = file.path.startsWith(ResourceDomain.Mods) || file.path.startsWith(ResourceDomain.ResourcePacks) || file.path.startsWith(ResourceDomain.ShaderPacks)
@@ -325,6 +335,22 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
     return createDownloadTask(file, destination, sha1).setName('file').map(async () => {
       if (pending) {
+        // Most be cache
+        await this.resourceService.importResource({
+          resources: [{
+            path: destination,
+            domain: file.path.startsWith(ResourceDomain.Mods)
+              ? ResourceDomain.Mods
+              : file.path.startsWith(ResourceDomain.ResourcePacks)
+                ? ResourceDomain.ResourcePacks
+                : ResourceDomain.ShaderPacks,
+            metadata,
+          }],
+        }).catch(e => {
+          if (Object.keys(metadata).length > 0) {
+            this.resourceService.markResourceMetadata(sha1, metadata)
+          }
+        })
         await rename(destination, destination.substring(0, destination.length - '.pending'.length))
       }
       return undefined

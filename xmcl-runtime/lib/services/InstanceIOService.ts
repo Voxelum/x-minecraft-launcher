@@ -1,20 +1,19 @@
 import { MinecraftFolder } from '@xmcl/core'
 import { UnzipTask } from '@xmcl/installer'
-import { createTemplate, ExportInstanceOptions, GetManifestOptions, InstanceFile, InstanceIOException, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceManifest, InstanceSchema, LockKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { createTemplate, ExportInstanceOptions, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceSchema, LockKey, RuntimeVersions } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
-import { mkdtemp, readdir, readJson, remove, stat } from 'fs-extra'
+import { mkdtemp, readdir, readJson, remove } from 'fs-extra'
 import { tmpdir } from 'os'
-import { basename, join, relative, resolve } from 'path'
+import { basename, join, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { copyPassively, exists, isDirectory, isFile, readdirIfPresent } from '../util/fs'
+import { copyPassively, exists, isDirectory, isFile } from '../util/fs'
 import { requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { ZipTask } from '../util/zip'
 import { InstanceService } from './InstanceService'
 import { InstanceVersionService } from './InstanceVersionService'
-import { ResourceService } from './ResourceService'
-import { AbstractService, ExposeServiceKey, Singleton } from './Service'
+import { AbstractService, ExposeServiceKey } from './Service'
 import { VersionService } from './VersionService'
 
 /**
@@ -23,7 +22,6 @@ import { VersionService } from './VersionService'
 @ExposeServiceKey(InstanceIOServiceKey)
 export class InstanceIOService extends AbstractService implements IInstanceIOService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(VersionService) private versionService: VersionService,
@@ -167,101 +165,5 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     if (!isDir) { await remove(srcDirectory) }
 
     return instancePath
-  }
-
-  @Singleton(p => p)
-  async getInstanceManifest(options?: GetManifestOptions): Promise<InstanceManifest> {
-    const instancePath = options?.path || this.instanceService.state.path
-
-    const instance = this.instanceService.state.all[instancePath]
-
-    const resolveHashes = async (file: string, sha1: string) => {
-      const result: Record<string, string> = { sha1 }
-      if (options?.hashes) {
-        for (const hash of options.hashes) {
-          if (hash === 'sha1') {
-            continue
-          } else {
-            result[hash] = await this.worker().checksum(file, hash)
-          }
-        }
-      }
-      return result as any
-    }
-
-    if (!instance) {
-      throw new InstanceIOException({ instancePath, type: 'instanceNotFound' })
-    }
-
-    const files = [] as Array<InstanceFile>
-
-    const scan = async (p: string) => {
-      const status = await stat(p)
-      const ino = status.ino
-      const isDirectory = status.isDirectory()
-      const relativePath = relative(instancePath, p).replace(/\\/g, '/')
-      if (relativePath.startsWith('resourcepacks') || relativePath.startsWith('shaderpacks')) {
-        if (relativePath.endsWith('.json') || relativePath.endsWith('.png')) {
-          return
-        }
-      }
-      if (relativePath === 'instance.json') {
-        return
-      }
-      // no lib or exe
-      if (relativePath.endsWith('.dll') || relativePath.endsWith('.so') || relativePath.endsWith('.exe')) {
-        return
-      }
-      // do not share versions/libs/assets
-      if (relativePath.startsWith('versions') || relativePath.startsWith('assets') || relativePath.startsWith('libraries')) {
-        return
-      }
-
-      if (isDirectory) {
-        const children = await readdirIfPresent(p)
-        await Promise.all(children.map(child => scan(join(p, child))))
-      } else {
-        const localFile: InstanceFile = {
-          path: relativePath,
-          size: status.size,
-          hashes: {},
-        }
-        if (relativePath.startsWith('resourcepacks') || relativePath.startsWith('shaderpacks') || relativePath.startsWith('mods')) {
-          let resource = this.resourceService.getResourceByKey(ino)
-          const sha1 = resource?.hash ?? await this.worker().checksum(p, 'sha1')
-          if (!resource) {
-            resource = this.resourceService.getResourceByKey(sha1)
-          }
-          if (resource?.metadata.modrinth) {
-            localFile.modrinth = {
-              projectId: resource.metadata.modrinth.projectId,
-              versionId: resource.metadata.modrinth.versionId,
-            }
-          }
-          if (resource?.metadata.curseforge) {
-            localFile.curseforge = {
-              projectId: resource.metadata.curseforge.projectId,
-              fileId: resource.metadata.curseforge.fileId,
-            }
-          }
-          localFile.downloads = resource?.uri && resource.uri.some(u => u.startsWith('http')) ? resource.uri.filter(u => u.startsWith('http')) : undefined
-          localFile.hashes = await resolveHashes(p, sha1)
-        }
-
-        files.push(localFile)
-      }
-    }
-
-    await scan(instancePath)
-    files.shift()
-
-    return {
-      files,
-      mcOptions: instance.mcOptions,
-      vmOptions: instance.vmOptions,
-      runtime: instance.runtime,
-      maxMemory: instance.maxMemory,
-      minMemory: instance.minMemory,
-    }
   }
 }

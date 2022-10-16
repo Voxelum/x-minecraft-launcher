@@ -6,8 +6,6 @@ import { FeedTheBeastClient } from '../clients/FeedTheBeastClient'
 import { InteroperableDispatcher } from '../dispatchers/dispatcher'
 import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
-import { InstanceService } from './InstanceService'
-import { ResourceService } from './ResourceService'
 import { ExposeServiceKey, StatefulService } from './Service'
 
 @ExposeServiceKey(FeedTheBeastServiceKey)
@@ -18,10 +16,7 @@ export class FeedTheBeastService extends StatefulService<FeedTheBeastState> impl
 
   private cachedVersions: CachedFTBModpackVersionManifest[] = []
 
-  constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(ResourceService) private resourceService: ResourceService,
-    @Inject(InstanceService) private instanceService: InstanceService,
-  ) {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app, () => new FeedTheBeastState(), async () => {
       const result = await this.cache.read()
       this.cachedVersions = result.caches ?? []

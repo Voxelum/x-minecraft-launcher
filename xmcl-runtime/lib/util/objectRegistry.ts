@@ -17,7 +17,7 @@ export class ObjectFactory {
     if (this.injections.has(Type)) {
       return this.injections.get(Type)
     }
-    const types = Reflect.get(Type, PARAMS_SYMBOL)
+    const types = Reflect.get(Type, kParams)
     const params: any[] = new Array(types?.length ?? 0)
 
     let failed = false
@@ -51,19 +51,19 @@ export class ObjectFactory {
 }
 
 type Constructor<T = any> = (new (...args: any[]) => T) | (abstract new (...args: any[]) => T)
-
-export const PARAMS_SYMBOL = Symbol('params')
+type ConstructorParameter<T, X> = T extends (new (...args: infer P) => X) ? P : never
+const kParams = Symbol('params')
 
 export interface InjectionKey<T> extends Symbol { }
+export interface InjectionFactoryKey<T, Args> extends Symbol { }
 
-export function Inject<T>(con: Constructor<T> | InjectionKey<T>) {
-  return (target: object, key: string, index: number) => {
-    if (Reflect.has(target, PARAMS_SYMBOL)) {
-      // console.log(`Inject ${key} ${index} <- ${target}`)
-      Reflect.get(target, PARAMS_SYMBOL)[index] = con
+export function Inject<T, V extends Constructor<T> | InjectionKey<T>>(con: V/* , ...args: V extends Constructor<T> ? ConstructorParameter<V, T> : never[] */) {
+  return (target: any, key: string, index: number) => {
+    if (Reflect.has(target, kParams)) {
+      Reflect.get(target, kParams)[index] = con
     } else {
       const arr: any[] = []
-      Reflect.set(target, PARAMS_SYMBOL, arr)
+      Reflect.set(target, kParams, arr)
       arr[index] = con
     }
   }

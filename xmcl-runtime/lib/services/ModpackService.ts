@@ -1,8 +1,8 @@
 import { HashAlgo } from '@xmcl/curseforge'
 import { UnzipTask } from '@xmcl/installer'
-import { CurseforgeModpackManifest, EditInstanceOptions, ExportModpackOptions, getResolvedVersion, ImportModpackOptions, InstanceFile, isAllowInModrinthModpack, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
+import { CurseforgeModpackManifest, EditInstanceOptions, ExportModpackOptions, getCurseforgeModpackFromInstance, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromModrinthModpack, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, getResolvedVersion, ImportModpackOptions, InstanceFile, isAllowInModrinthModpack, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
-import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
+import { open, openEntryReadStream, readAllEntries, readEntry } from '@xmcl/unzip'
 import { createHash } from 'crypto'
 import { stat } from 'fs-extra'
 import { basename, join, relative } from 'path'
@@ -20,8 +20,6 @@ import { BaseService } from './BaseService'
 import { CurseForgeService } from './CurseForgeService'
 import { InstallService } from './InstallService'
 import { InstanceInstallService } from './InstanceInstallService'
-import { InstanceIOService } from './InstanceIOService'
-import { InstanceOptionsService } from './InstanceOptionsService'
 import { InstanceService } from './InstanceService'
 import { InstanceVersionService } from './InstanceVersionService'
 import { ResourceService } from './ResourceService'
@@ -36,7 +34,10 @@ export interface ModpackDownloadableFile {
 }
 
 export interface ModpackHandler<M = any> {
-  shouldUnpackAsOverride(manifest: M, e: Entry): boolean
+  /**
+   * @return The relative path of the entry after unpack to the instance root. `undefine` means not to unpack.
+   */
+  resolveUnpackPath(manifest: M, e: Entry): string | void
 
   readMetadata(zipFile: ZipFile, entries: Entry[]): Promise<M | undefined>
   resolveInstanceOptions(manifest: M): EditInstanceOptions
@@ -57,10 +58,129 @@ export class ModpackService extends AbstractService implements IModpackService {
     @Inject(VersionService) private versionService: VersionService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(InstallService) private installService: InstallService,
-    @Inject(CurseForgeService) private curseforgeService: CurseForgeService,
+    @Inject(CurseForgeService) curseforgeService: CurseForgeService,
     @Inject(InstanceInstallService) private instanceInstallService: InstanceInstallService,
   ) {
     super(app)
+
+    this.registerHandler<ModrinthModpackManifest>('modrinth', {
+      async readMetadata(zip, entries) {
+        const modrinthManifest = entries.find(e => e.fileName === 'modrinth.index.json')
+        if (modrinthManifest) {
+          const b = await readEntry(zip, modrinthManifest)
+          return JSON.parse(b.toString()) as ModrinthModpackManifest
+        }
+        return Promise.resolve(undefined)
+      },
+      resolveUnpackPath: (manifest: ModrinthModpackManifest, e: Entry) => {
+        if (e.fileName.startsWith('overrides')) {
+          return e.fileName.substring('overrides/'.length)
+        }
+        if (e.fileName.startsWith('client-overrides')) {
+          return e.fileName.substring('client-overrides/'.length)
+        }
+      },
+      resolveInstanceOptions: getInstanceConfigFromModrinthModpack,
+      resolveInstanceFiles: (manifest: ModrinthModpackManifest): Promise<InstanceFile[]> => {
+        return Promise.resolve(manifest.files.map(meta => ({
+          downloads: meta.downloads,
+          hashes: meta.hashes,
+          path: meta.path,
+          size: meta.fileSize ?? 0,
+        })))
+      },
+    })
+
+    this.registerHandler<CurseforgeModpackManifest>('curseforge', {
+      resolveUnpackPath: function (manifest: CurseforgeModpackManifest, e: Entry) {
+        let overridePrefix = manifest.overrides ?? 'overrides/'
+        if (!overridePrefix.endsWith('/')) overridePrefix += '/'
+        if (e.fileName.startsWith(overridePrefix)) {
+          return e.fileName.substring(overridePrefix.length)
+        }
+      },
+      readMetadata: async (zipFile: ZipFile, entries: Entry[]): Promise<CurseforgeModpackManifest | undefined> => {
+        const curseforgeManifest = entries.find(e => e.fileName === 'manifest.json')
+        if (curseforgeManifest) {
+          const b = await readEntry(zipFile, curseforgeManifest)
+          return JSON.parse(b.toString()) as CurseforgeModpackManifest
+        }
+      },
+      resolveInstanceOptions: getInstanceConfigFromCurseforgeModpack,
+      resolveInstanceFiles: async (manifest: CurseforgeModpackManifest): Promise<InstanceFile[]> => {
+        // curseforge or mcbbs
+        const curseforgeFiles = manifest.files
+        const files = await curseforgeService.fetchModFiles(curseforgeFiles.map(f => f.fileID))
+        const infos: InstanceFile[] = []
+
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i]
+          const domain = file.fileName.endsWith('.jar') ? ResourceDomain.Mods : file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
+          const sha1 = file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value
+          infos.push({
+            downloads: file.downloadUrl ? [file.downloadUrl] : guessCurseforgeFileUrl(file.id, file.fileName),
+            path: join(domain, file.fileName),
+            hashes: sha1
+              ? {
+                sha1: file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value,
+              } as Record<string, string>
+              : {},
+            curseforge: {
+              fileId: file.id,
+              projectId: file.modId,
+            },
+            size: file.fileLength,
+          })
+        }
+
+        return infos
+      },
+    })
+
+    this.registerHandler<McbbsModpackManifest>('mcbbs', {
+      readMetadata: async (zip, entries) => {
+        const mcbbsManifest = entries.find(e => e.fileName === 'mcbbs.packmeta')
+        if (mcbbsManifest) {
+          return readEntry(zip, mcbbsManifest).then(b => JSON.parse(b.toString()) as McbbsModpackManifest)
+        }
+      },
+      resolveInstanceOptions: getInstanceConfigFromMcbbsModpack,
+      resolveInstanceFiles: async (manifest) => {
+        const infos: InstanceFile[] = []
+        if (manifest.files) {
+          // curseforge or mcbbs
+          const curseforgeFiles = manifest.files.map(f => f).filter((f): f is ModpackFileInfoCurseforge => !('type' in f) || f.type === 'curse' || 'hashes' in f)
+          const files = await curseforgeService.fetchModFiles(curseforgeFiles.map(f => f.fileID))
+
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i]
+            const domain = file.fileName.endsWith('.jar') ? ResourceDomain.Mods : file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
+            const sha1 = file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value
+            infos.push({
+              downloads: file.downloadUrl ? [file.downloadUrl] : guessCurseforgeFileUrl(file.id, file.fileName),
+              path: join(domain, file.fileName),
+              hashes: sha1
+                ? {
+                  sha1: file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value,
+                } as Record<string, string>
+                : {},
+              curseforge: {
+                fileId: file.id,
+                projectId: file.modId,
+              },
+              size: file.fileLength,
+            })
+          }
+        }
+        return infos
+      },
+      resolveUnpackPath: function (manifest: McbbsModpackManifest, e: Entry) {
+        const overridePrefix = 'overrides/'
+        if (e.fileName.startsWith(overridePrefix)) {
+          return e.fileName.substring(overridePrefix.length)
+        }
+      },
+    })
   }
 
   registerHandler<M>(type: string, handler: ModpackHandler<M>) {
@@ -87,73 +207,18 @@ export class ModpackService extends AbstractService implements IModpackService {
     let modrinthManifest: ModrinthModpackManifest | undefined
 
     if (emitCurseforge) {
-      const gameVersionInstance = this.versionService.state.local.find(v => v.id === gameVersion)
-      const modLoaders = instance.runtime.forge
-        ? [{
-          id: `forge-${instance.runtime.forge}`,
-          primary: true,
-        }]
-        : (instance.runtime.fabricLoader
-          ? [{
-            id: `fabric-${instance.runtime.fabricLoader}`,
-            primary: true,
-          }]
-          : [])
-
-      curseforgeConfig = {
-        manifestType: 'minecraftModpack',
-        manifestVersion: 1,
-        minecraft: {
-          version: gameVersionInstance?.minecraft ?? instance.runtime.minecraft,
-          modLoaders,
-        },
-        name: name ?? instance.name,
-        version,
-        author: author ?? instance.author,
-        files: [],
-        overrides: 'overrides',
-      }
+      curseforgeConfig = getCurseforgeModpackFromInstance(instance)
+      curseforgeConfig.author = author ?? curseforgeConfig.author
+      curseforgeConfig.name = name ?? curseforgeConfig.name
     }
 
     if (emitMcbbs) {
-      mcbbsManifest = {
-        manifestType: 'minecraftModpack',
-        manifestVersion: 2,
-        description: instance.description,
-        url: instance.url,
-        name: name ?? instance.name,
-        version,
-        author: author ?? instance.author,
-        files: [],
-        launchInfo: {
-          minMemory: instance.minMemory <= 0 ? undefined : instance.minMemory,
-          launchArgument: instance.mcOptions,
-          javaArgument: instance.vmOptions,
-        },
-        addons: [{ id: 'game', version: instance.runtime.minecraft }],
-      }
-      if (instance.runtime.forge) {
-        mcbbsManifest.addons.push({ id: 'forge', version: instance.runtime.forge })
-      }
-      if (instance.runtime.fabricLoader) {
-        mcbbsManifest.addons.push({ id: 'fabric', version: instance.runtime.fabricLoader })
-      }
+      mcbbsManifest = getMcbbsModpackFromInstance(instance)
+      mcbbsManifest.author = author ?? mcbbsManifest.author
+      mcbbsManifest.name = name ?? mcbbsManifest.name
     }
     if (emitModrinth) {
-      modrinthManifest = {
-        formatVersion: 1,
-        game: 'minecraft',
-        versionId: version,
-        name: name,
-        summary: instance.description,
-        dependencies: {
-          minecraft: instance.runtime.minecraft,
-          forge: instance.runtime.forge || undefined,
-          'fabric-loader': instance.runtime.fabricLoader || undefined,
-          'quilt-loader': instance.runtime.quiltLoader || undefined,
-        },
-        files: [],
-      }
+      modrinthManifest = getModrinthModpackFromInstance(instance)
     }
 
     const zipTask = new ZipTask(destinationPath)
@@ -163,14 +228,11 @@ export class ModpackService extends AbstractService implements IModpackService {
     for (const file of files) {
       const filePath = join(instancePath, file.path)
       if (file.path.startsWith('mods/') || file.path.startsWith('resourcepacks/') || file.path.startsWith('shaderpacks/')) {
-        let resource = this.resourceService.state.mods.find((i) => (i.domain + '/' + i.fileName) === file.path)
+        const ino = await stat(filePath)
+        let resource = this.resourceService.getResourceByKey(ino.ino) as any
         if (!resource) {
-          const ino = await stat(filePath)
-          resource = this.resourceService.getResourceByKey(ino.ino) as any
-          if (!resource) {
-            const sha1 = await this.worker().checksum(filePath, 'sha1')
-            resource = this.resourceService.getResourceByKey(sha1) as any
-          }
+          const sha1 = await this.worker().checksum(filePath, 'sha1')
+          resource = this.resourceService.getResourceByKey(sha1) as any
         }
 
         if (!file.override && resource) {
@@ -288,33 +350,35 @@ export class ModpackService extends AbstractService implements IModpackService {
     const zip = await open(path)
     const entries = await readAllEntries(zip)
 
-    const manifest = await readMetadata(zip, entries).catch(() => {
-      throw new ModpackException({ type: 'invalidModpack', path })
-    })
-
-    const config = resolveInstanceOptions(manifest)
-    let instancePath: string
-    if ('instancePath' in options) {
-      await this.instanceService.editInstance({
-        instancePath: options.instancePath,
-        ...config,
-      })
-      instancePath = options.instancePath
-    } else {
-      instancePath = await this.instanceService.createInstance({
-        ...config,
-        name: config.name || basename(options.path),
-        ...options.instanceConfig,
-      })
+    const getManifestAndHandler = async () => {
+      for (const handler of Object.values(this.handlers)) {
+        const manifest = await handler.readMetadata(zip, entries).catch(e => undefined)
+        if (manifest) {
+          return [manifest, handler] as const
+        }
+      }
+      return [undefined, undefined]
     }
+
+    const [manifest, handler] = await getManifestAndHandler()
+
+    if (!manifest || !handler) throw new ModpackException({ type: 'invalidModpack', path })
+
+    const config = handler.resolveInstanceOptions(manifest)
+    const instancePath = await this.instanceService.createInstance({
+      ...config,
+      name: config.name || basename(options.path),
+      ...options.instanceConfig,
+    })
 
     const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
     const downloadable = await lock.write(async () => {
       // If this failed, it will be the unzip failed. Then it should be safe to just fully retry.
       // No partial info should be caught.
-      const [unzippedFiles, files] = await this.submit(this.installModpackTask(zip, entries, manifest, instancePath))
+      const [unzippedFiles, files] = await this.submit(this.installModpackTask(zip, entries, manifest, handler, instancePath))
 
       this.log(`Install ${unzippedFiles.length} files from modpack!`)
+
       return files
     }).catch((e) => {
       this.error(`Fail to install modpack: ${path}`)
@@ -348,59 +412,15 @@ export class ModpackService extends AbstractService implements IModpackService {
     return instancePath
   }
 
-  private async convertManifest(manifest: CurseforgeModpackManifest | McbbsModpackManifest | ModrinthModpackManifest) {
-    const infos = [] as InstanceFile[]
-    const curseforgeService = this.curseforgeService
-    if (manifest.files) {
-      if ('manifestVersion' in manifest) {
-        // curseforge or mcbbs
-        const curseforgeFiles = manifest.files.map(f => f).filter((f): f is ModpackFileInfoCurseforge => !('type' in f) || f.type === 'curse' || 'hashes' in f)
-        const files = await curseforgeService.fetchModFiles(curseforgeFiles.map(f => f.fileID))
-
-        for (let i = 0; i < files.length; i++) {
-          const file = files[i]
-          const domain = file.fileName.endsWith('.jar') ? ResourceDomain.Mods : file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
-          const sha1 = file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value
-          infos.push({
-            downloads: file.downloadUrl ? [file.downloadUrl] : guessCurseforgeFileUrl(file.id, file.fileName),
-            path: join(domain, file.fileName),
-            hashes: sha1
-              ? {
-                sha1: file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value,
-              } as Record<string, string>
-              : {},
-            curseforge: {
-              fileId: file.id,
-              projectId: file.modId,
-            },
-            size: file.fileLength,
-          })
-        }
-      } else {
-        // modrinth
-        for (const meta of manifest.files) {
-          infos.push({
-            downloads: meta.downloads,
-            hashes: meta.hashes,
-            path: meta.path,
-            size: meta.fileSize ?? 0,
-          })
-        }
-      }
-    }
-    return infos
-  }
-
-  private installModpackTask(zip: ZipFile, entries: Entry[], manifest: CurseforgeModpackManifest | McbbsModpackManifest | ModrinthModpackManifest, root: string) {
-    const convertManifest = this.convertManifest.bind(this)
+  private installModpackTask<T>(zip: ZipFile, entries: Entry[], manifest: T, handler: ModpackHandler<T>, root: string) {
     return task('installModpack', async function () {
       // unzip
       const promises: Promise<InstanceFile>[] = []
       await this.yield(new UnzipTask(
         zip,
-        entries.filter((e) => !e.fileName.endsWith('/') && e.fileName.startsWith('overrides' in manifest ? manifest.overrides : 'overrides')),
+        entries.filter(e => !e.fileName.endsWith('/') && handler.resolveUnpackPath(manifest, e)),
         root,
-        (e) => e.fileName.substring('overrides' in manifest ? manifest.overrides.length : 'overrides'.length),
+        (e) => handler.resolveUnpackPath(manifest, e)!,
         async (input, file) => {
           const hash = createHash('sha1')
           let size = 0
@@ -422,7 +442,7 @@ export class ModpackService extends AbstractService implements IModpackService {
 
       const files = await this.yield(task('deploy', async () => {
         // Downloadable files
-        return await convertManifest(manifest)
+        return await handler.resolveInstanceFiles(manifest)
       }))
 
       return [await Promise.all(promises), files] as const

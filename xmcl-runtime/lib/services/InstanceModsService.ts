@@ -1,4 +1,4 @@
-import { getFabricModCompatibility, InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState, isFabricResource, isForgeResource, isModResource, isPersistedResource, IssueReport, IssueReportBuilder, RequireFabricAPIIssueKey, RequireFabricIssueKey, RequireForgeIssueKey, Resource, ResourceDomain } from '@xmcl/runtime-api'
+import { InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState, isModResource, isPersistedResource, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
 import { ensureDir, FSWatcher, stat, unlink } from 'fs-extra'
 import watch from 'node-watch'
@@ -37,7 +37,9 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
     this.storeManager.subscribe('resources', (resources) => {
       this.state.instanceModUpdateExisted(resources)
     }).subscribe('resource', (r) => {
-      this.state.instanceModUpdateExisted([r])
+      if (r.domain === ResourceDomain.Mods) {
+        this.state.instanceModUpdateExisted([r])
+      }
     }).subscribeAll(['instanceMods', 'instanceModUpdate', 'instanceModRemove', 'instanceEdit', 'localVersionAdd', 'localVersionRemove', 'localVersions'], async () => {
       // await this.diagnoseMods()
     }).subscribe('instanceSelect', () => {

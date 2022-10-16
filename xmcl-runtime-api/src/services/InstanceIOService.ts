@@ -1,5 +1,4 @@
 import { Exception, InstanceNotFoundException } from '../entities/exception'
-import { InstanceManifest, InstanceManifestSchema, InstanceFile } from '../entities/instanceManifest.schema'
 import { ServiceKey } from './Service'
 
 export interface ExportInstanceOptions {
@@ -34,39 +33,6 @@ export interface ExportInstanceOptions {
   files?: string[]
 }
 
-export interface InstanceUpdate {
-  /**
-   * The differences between the remote instance manifest and current instance.
-   */
-  updates: Array<{
-    /**
-     * Either or add or update the file
-     */
-    operation: 'update' | 'add'
-    /**
-     * The file need to apply update
-     */
-    file: InstanceFile
-  }>
-  /**
-   * The instance manifest return by the remote api server
-   */
-  manifest: InstanceManifestSchema
-}
-
-export interface GetManifestOptions {
-  /**
-   * The instance path
-   *
-   * If this does not present, it will be the current selected instance
-   */
-  path?: string
-  /**
-   * The hash to get for each instance files
-   */
-  hashes?: string[]
-}
-
 /**
  * Provide the abilities to import/export instance from/to modpack
  */
@@ -82,10 +48,6 @@ export interface InstanceIOService {
    * @returns The newly created instance path
    */
   importInstance(location: string): Promise<string>
-  /**
-   * Compute the instance manifest for current local files.
-   */
-  getInstanceManifest(options?: GetManifestOptions): Promise<InstanceManifest>
 }
 
 export type InstanceIOExceptions = InstanceNotFoundException | {

@@ -295,7 +295,7 @@
 </template>
 
 <script lang=ts setup>
-import { InstanceIOServiceKey, InstanceFile, ModpackServiceKey, ExportFileDirective, isAllowInModrinthModpack } from '@xmcl/runtime-api'
+import { InstanceIOServiceKey, InstanceFile, ModpackServiceKey, ExportFileDirective, isAllowInModrinthModpack, InstanceManifestServiceKey } from '@xmcl/runtime-api'
 import { inc } from 'semver'
 import { useDialog, useModrinthFilter, useZipFilter } from '../composables/dialog'
 import { useInstance, useInstanceVersion } from '../composables/instance'
@@ -307,7 +307,8 @@ import { getExpectedSize } from '/@/util/size'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 
 const { isShown, hide: cancel } = useDialog(AppExportDialogKey)
-const { getInstanceManifest, exportInstance } = useService(InstanceIOServiceKey)
+const { exportInstance } = useService(InstanceIOServiceKey)
+const { getInstanceManifest } = useService(InstanceManifestServiceKey)
 const { exportModpack } = useService(ModpackServiceKey)
 const { showSaveDialog } = windowController
 const { t } = useI18n()
