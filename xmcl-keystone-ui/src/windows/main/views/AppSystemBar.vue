@@ -76,22 +76,18 @@ import { useBarBlur } from '../composables/background'
 import { useColorTheme } from '../composables/colorTheme'
 import { useDialog } from '../composables/dialog'
 import { useTaskCount } from '../composables/task'
-import { useI18n, useRouter, useService } from '/@/composables'
+import { useI18n, useRouter } from '/@/composables'
 import TaskSpeedMonitor from '../components/TaskSpeedMonitor.vue'
 
 const { appBarColor } = useColorTheme()
 const { blurAppBar } = useBarBlur()
-const { maximize, minimize, hide } = windowController
-const { quit } = useService(BaseServiceKey)
+const { maximize, minimize, close } = windowController
 const { show: showFeedbackDialog } = useDialog('feedback')
 const { show: showTaskDialog } = useDialog('task')
 const router = useRouter()
 const { t } = useI18n()
 const { count } = useTaskCount()
 
-function close() {
-  quit()
-}
 function goBack() {
   router.back()
 }

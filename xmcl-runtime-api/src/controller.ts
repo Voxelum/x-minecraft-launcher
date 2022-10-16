@@ -89,6 +89,8 @@ export interface WindowController {
    * Hide current window
    */
   hide(): void
+
+  close(): void
   /**
    * Minimize current window
    */

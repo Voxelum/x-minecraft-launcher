@@ -6,11 +6,15 @@ export enum Operation {
   Maximize = 1,
   Hide = 2,
   Show = 3,
+  Close = 4,
 }
 
 function createController(): WindowController {
   function show() {
     return ipcRenderer.invoke('control', Operation.Show)
+  }
+  function close() {
+    return ipcRenderer.invoke('control', Operation.Close)
   }
   function hide() {
     return ipcRenderer.invoke('control', Operation.Hide)
@@ -26,6 +30,7 @@ function createController(): WindowController {
     minimize,
     maximize,
     show,
+    close,
     hide,
     showOpenDialog(...options: any[]) {
       return ipcRenderer.invoke('dialog:showOpenDialog', ...options)
