@@ -2,6 +2,7 @@
   <v-chip
     label
     outlined
+    :small="small"
     @click="onClick()"
   >
     <v-avatar left>
@@ -19,6 +20,7 @@ import minecraftPng from '/@/assets/minecraft.png'
 import { useI18n } from '/@/composables'
 defineProps<{
   minecraft: string
+  small?: boolean
 }>()
 const { t } = useI18n()
 

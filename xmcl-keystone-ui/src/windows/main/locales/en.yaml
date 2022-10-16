@@ -205,6 +205,11 @@ forgeVersion:
   version: Forge Version
 gameSetting:
   title: Settings
+gameType:
+  adventure: Adventure Mode
+  creative: Creative Mode
+  spectator: Spectator Mode
+  survival: Survival Mode
 hello: Hello world
 help: Help
 home: Home

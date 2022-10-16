@@ -91,8 +91,13 @@ export class SaveState {
     this.saves = saves
   }
 
-  instanceSaveAdd(save: InstanceSaveMetadata) {
-    this.saves.push(save)
+  instanceSaveUpdate(save: InstanceSaveMetadata) {
+    const existed = this.saves.find(s => s.path === save.path)
+    if (existed) {
+      Object.assign(existed, save)
+    } else {
+      this.saves.push(save)
+    }
   }
 
   instanceSaveRemove(save: string) {
