@@ -1,6 +1,7 @@
 import { BaseService as IBaseService, BaseServiceException, BaseServiceKey, BaseState, MigrateOptions, SettingSchema } from '@xmcl/runtime-api'
 import { copy, readdir, remove, rename, stat } from 'fs-extra'
 import os, { freemem, totalmem } from 'os'
+import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { IS_DEV } from '../constant'
@@ -150,7 +151,12 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
 
   async reportItNow(options: { destination: string }): Promise<void> {
     const task = new ZipTask(options.destination)
-    task.includeAs(this.logManager.getLogRoot(), 'logs')
+    const logsDir = this.logManager.getLogRoot()
+    const files = await readdir(logsDir)
+
+    for (const file of files) {
+      task.addFile(join(logsDir, file), join('logs', file))
+    }
 
     task.addBuffer(Buffer.from(JSON.stringify({
       sessionId: this.telemetryManager.getSessionId(),
