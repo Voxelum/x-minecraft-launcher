@@ -279,7 +279,7 @@ function setupFilter(items: Ref<ModItem[]>) {
   function group(list: ModItem[], mod: ModItem): ModItem[] {
     if (list.find(v => v.hash === mod.hash)) return list
     const existed = list.findIndex(v => v.id === mod.id && v.type === mod.type)
-    if (existed !== -1) {
+    if (existed !== -1 && !list[existed].enabled && !mod.enabled) {
       list.splice(existed + 1, 0, mod)
       mod.subsequence = true
     } else {

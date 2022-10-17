@@ -80,11 +80,13 @@
         >
           <text-component :source="source.description" />
         </v-card-text>
-        <mod-card-labels
-          :source="source"
-          :on-edit-tag="onEditTag"
-          :on-delete-tag="onDeleteTag"
-        />
+        <v-lazy>
+          <mod-card-labels
+            :source="source"
+            :on-edit-tag="onEditTag"
+            :on-delete-tag="onDeleteTag"
+          />
+        </v-lazy>
       </div>
       <v-flex
         :key="3"
@@ -92,9 +94,11 @@
         @click.stop
         @mousedown.stop
       >
-        <v-switch
-          v-model="enabled"
-        />
+        <v-lazy>
+          <v-switch
+            v-model="enabled"
+          />
+        </v-lazy>
       </v-flex>
     </transition-group>
   </v-card>
