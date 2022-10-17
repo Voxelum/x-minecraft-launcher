@@ -60,6 +60,13 @@ export default defineComponent({
             t('errors.SocketError'),
           ])
         }
+        if (m.name === 'ResponseStatusCodeError') {
+          const url = m.options ? new URL(m.options.path, m.options.origin).toString() : m.url ?? ''
+          return h('div', [
+            h('div', ['🔗 ', h('a', { attrs: { href: url } }, url)]),
+            `HTTP ${m.status}`,
+          ])
+        }
         if (m.name === 'DownloadAbortError') {
           return h('div')
         }
