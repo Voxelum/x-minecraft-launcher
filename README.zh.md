@@ -61,7 +61,8 @@
 
 <!-- afdian-start -->
 <div style="display: flex; align-items: center; justify-items:center; gap: 0.2em; flex-wrap: wrap;">
-<a title="ahdg: ￥60.00" href="https://afdian.net/u/dd9058ce20df11eba5c052540025c377"> <img width="100" height="100" style="border-radius: 100%" src="https://pic1.afdiancdn.com/user/dd9058ce20df11eba5c052540025c377/avatar/0c776e6de1b1027e951c6d94919eb781_w1280_h1024_s364.jpg"> </a>
+<a title="Vulcankta: ￥390.00" href="https://afdian.net/u/9d663ec6fb6711ec9ace52540025c377"> <img width="100" height="100" style="border-radius: 100%" src="https://pic1.afdiancdn.com/user/9d663ec6fb6711ec9ace52540025c377/avatar/22b173dd893745d7a9e8431a0d91b3e3_w7680_h8128_s5344.png"> </a>
+<a title="ahdg: ￥60.00" href="https://afdian.net/u/dd9058ce20df11eba5c052540025c377"> <img width="70" height="70" style="border-radius: 100%" src="https://pic1.afdiancdn.com/user/dd9058ce20df11eba5c052540025c377/avatar/0c776e6de1b1027e951c6d94919eb781_w1280_h1024_s364.jpg"> </a>
 <a title="圣剑: ￥30.00" href="https://afdian.net/u/ef50bc78b3d911ecb85352540025c377"> <img width="70" height="70" style="border-radius: 100%" src="https://pic1.afdiancdn.com/user/user_upload_osl/8a1c4eb2e580b4b8b463ceb2114b6381_w132_h132_s3.jpeg"> </a>
 <a title="同谋者: ￥30.00" href="https://afdian.net/u/7c3c65dc004a11eb9a6052540025c377"> <img width="70" height="70" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-blue.png"> </a>
 <a title="爱发电用户_CvQb: ￥5.00" href="https://afdian.net/u/177bea3cf47211ec990352540025c377"> <img width="50" height="50" style="border-radius: 100%" src="https://pic1.afdiancdn.com/default/avatar/avatar-purple.png"> </a>
