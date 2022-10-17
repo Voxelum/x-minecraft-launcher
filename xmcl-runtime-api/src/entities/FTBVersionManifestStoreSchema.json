@@ -158,6 +158,21 @@
                 "id": {
                     "type": "number"
                 },
+                "curseforge": {
+                    "type": "object",
+                    "properties": {
+                        "project": {
+                            "type": "number"
+                        },
+                        "file": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "file",
+                        "project"
+                    ]
+                },
                 "name": {
                     "description": "The file name",
                     "type": "string"
@@ -181,7 +196,6 @@
                 "tags",
                 "type",
                 "updated",
-                "url",
                 "version"
             ]
         },

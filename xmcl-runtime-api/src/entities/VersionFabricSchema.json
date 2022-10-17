@@ -1,14 +1,6 @@
 {
     "type": "object",
     "properties": {
-        "yarnTimestamp": {
-            "default": "",
-            "type": "string"
-        },
-        "loaderTimestamp": {
-            "default": "",
-            "type": "string"
-        },
         "yarns": {
             "default": [],
             "type": "array",
@@ -25,9 +17,7 @@
         }
     },
     "required": [
-        "loaderTimestamp",
         "loaders",
-        "yarnTimestamp",
         "yarns"
     ],
     "definitions": {
