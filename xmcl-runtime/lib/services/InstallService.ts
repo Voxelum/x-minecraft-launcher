@@ -244,7 +244,12 @@ export class InstallService extends AbstractService implements IInstallService {
       if (options?.minecraftVersion) {
         const url = `https://meta.fabricmc.net/v2/versions/intermediary/${options?.minecraftVersion}`
         const response = await request(url)
-        return response.statusCode === 200 && (await response.body.json()).length > 0
+        if (response.statusCode === 200) {
+          return (await response.body.json()).length > 0
+        } else if (response.statusCode === 304) {
+          return (await response.body.json()).length > 0
+        }
+        return false
       }
       return true
     }
