@@ -33,12 +33,12 @@
         ripple
         @click="emit('select', p)"
       >
-        <v-list-item-action>
-          <v-checkbox
-            :value="value === p"
-            readonly
+        <v-list-item-avatar>
+          <v-img
+            :src="p.icon ? p.icon : ''"
           />
-        </v-list-item-action>
+        </v-list-item-avatar>
+
         <v-list-item-content>
           <v-list-item-title>{{ p.name }}</v-list-item-title>
           <v-list-item-subtitle class="flex gap-1">
@@ -89,6 +89,12 @@
 
         <v-list-item-action>
           <v-list-item-action-text>{{ getActionText(p) }}</v-list-item-action-text>
+        </v-list-item-action>
+        <v-list-item-action>
+          <v-checkbox
+            :value="value === p"
+            readonly
+          />
         </v-list-item-action>
       </v-list-item>
     </v-list>
@@ -145,7 +151,7 @@ const items = computed(() => props.templates.filter((template) => {
     return true
   }
   return false
-}))
+}).sort((a, b) => a.name.localeCompare(b.name)))
 
 onUnmounted(() => {
   filterText.value = ''
