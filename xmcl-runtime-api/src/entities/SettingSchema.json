@@ -77,9 +77,9 @@
             "default": 128,
             "type": "number"
         },
-        "maxTotalSockets": {
-            "description": "Maximum number of sockets allowed for all hosts in total. Each request will use a new socket until the maximum is reached. Default: Infinity.",
-            "default": 0,
+        "maxAPISockets": {
+            "description": "Maximum number of sockets allowed for requesting API. Each request will use a new socket until the maximum is reached. Default: 16.",
+            "default": 16,
             "type": "number"
         }
     },
