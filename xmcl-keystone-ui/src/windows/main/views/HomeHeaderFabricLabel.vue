@@ -6,7 +6,7 @@
     @click="onClick()"
   >
     <v-avatar :left="!!fabricLoader">
-      <img :src="fabricPng">
+      <img :src="'image:builtin:fabric'">
     </v-avatar>
     <div v-if="fabricLoader">
       Fabric
@@ -16,14 +16,10 @@
 </template>
 
 <script lang=ts setup>
-import fabricPng from '/@/assets/fabric.png'
-import { useI18n } from '/@/composables'
 defineProps<{
   minecraft: string
   fabricLoader: string | undefined
 }>()
-
-const { t } = useI18n()
 
 const onClick = () => {
 }

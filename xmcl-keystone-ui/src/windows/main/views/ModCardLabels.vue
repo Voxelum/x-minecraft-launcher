@@ -71,9 +71,6 @@
 <script lang=ts setup>
 import { CompatibleDetail } from '@xmcl/runtime-api'
 import { ModItem } from '../composables/mod'
-import fabricPng from '/@/assets/fabric.png'
-import forgePng from '/@/assets/forge.png'
-import minecraftPng from '/@/assets/minecraft.png'
 import { useI18n, useTheme } from '/@/composables'
 import { getColor } from '/@/util/color'
 
@@ -91,9 +88,9 @@ const getCompatibleIcon = (c?: CompatibleDetail) => {
 
 const getDepIcon = (name: string, icon?: string) => {
   if (icon) return icon
-  if (name === 'forge') return forgePng
-  if (name === 'minecraft') return minecraftPng
-  if (name === 'fabricloader' || name.startsWith('fabric-')) return fabricPng
+  if (name === 'forge') return 'image:builtin:forge'
+  if (name === 'minecraft') return 'image:builtin:minecraft'
+  if (name === 'fabricloader' || name.startsWith('fabric-')) return 'image:builtin:fabric'
   return ''
 }
 const onBlur = () => {

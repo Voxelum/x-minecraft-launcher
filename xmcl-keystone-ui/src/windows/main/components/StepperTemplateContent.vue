@@ -50,7 +50,7 @@
             >
               <v-avatar left>
                 <img
-                  :src="minecraftPng"
+                  :src="'image:builtin:minecraft'"
                   alt="minecraft"
                 >
               </v-avatar>
@@ -64,7 +64,7 @@
             >
               <v-avatar left>
                 <img
-                  :src="forgePng"
+                  :src="'image:builtin:forge'"
                   alt="forge"
                 >
               </v-avatar>
@@ -78,7 +78,7 @@
             >
               <v-avatar left>
                 <img
-                  :src="fabricPng"
+                  :src="'image:builtin:fabric'"
                   alt="fabric"
                 >
               </v-avatar>
@@ -98,9 +98,6 @@
 <script lang=ts setup>
 import { Ref } from '@vue/composition-api'
 import { Template } from '../composables/instanceAdd'
-import fabricPng from '/@/assets/fabric.png'
-import forgePng from '/@/assets/forge.png'
-import minecraftPng from '/@/assets/minecraft.png'
 import { useI18n } from '/@/composables'
 
 const props = defineProps<{

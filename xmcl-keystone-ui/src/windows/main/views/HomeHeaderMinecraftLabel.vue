@@ -7,7 +7,7 @@
   >
     <v-avatar left>
       <img
-        :src="minecraftPng"
+        :src="'image:builtin:minecraft'"
       >
     </v-avatar>
     Minecraft
@@ -16,7 +16,6 @@
 </template>
 
 <script lang=ts setup>
-import minecraftPng from '/@/assets/minecraft.png'
 import { useI18n } from '/@/composables'
 defineProps<{
   minecraft: string

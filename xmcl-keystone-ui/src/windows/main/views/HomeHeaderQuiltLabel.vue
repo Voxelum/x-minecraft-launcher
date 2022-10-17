@@ -6,7 +6,9 @@
     @click="onClick();"
   >
     <v-avatar :left="!!quiltLoader">
-      <quilt-icon />
+      <img
+        :src="'image:builtin:quilt'"
+      >
     </v-avatar>
     <div v-if="quiltLoader">
       Quilt
@@ -16,7 +18,6 @@
 </template>
 
 <script lang=ts setup>
-import QuiltIcon from '/@/components/QuiltIcon.vue'
 import { useI18n } from '/@/composables'
 defineProps<{
   minecraft: string
