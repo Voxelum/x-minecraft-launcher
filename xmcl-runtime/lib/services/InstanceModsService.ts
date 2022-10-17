@@ -22,11 +22,11 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
 
   private addMod = new AggregateExecutor<Resource, Resource[]>(v => v,
     res => this.state.instanceModUpdate(res),
-    0)
+    100)
 
   private removeMod = new AggregateExecutor<Resource, Resource[]>(v => v,
     res => this.state.instanceModRemove(res),
-    0)
+    100)
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,

@@ -138,9 +138,9 @@ function setupDeletion(items: Ref<ModItem[]>) {
     })
   })
   function startDelete(item?: ModItem) {
-    const toDelete = items.value.filter(i => i.dragged)
+    const toDelete = items.value.filter(i => i.dragged || (i.selected))
     if (toDelete.length > 0) {
-      beginDelete(items.value.filter(i => i.dragged))
+      beginDelete(toDelete)
       show()
     } else if (item) {
       beginDelete([item])
