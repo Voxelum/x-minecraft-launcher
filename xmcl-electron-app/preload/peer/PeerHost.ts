@@ -54,7 +54,7 @@ export class PeerHost {
     const conn = new PeerSession(this, sessionId, remote)
     this.sessions[conn.id] = conn
     console.log(`connection id ${conn.id}`)
-    ipcRenderer.send('connection', { id: conn.id })
+    ipcRenderer.send('connection', { id: conn.id, initiator: !remote })
     return conn
   }
 
