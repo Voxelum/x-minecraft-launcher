@@ -6,7 +6,6 @@ import FeedTheBeast from './views/FeedTheBeast.vue'
 import FeedTheBeastProject from './views/FeedTheBeastProject.vue'
 import GameSetting from './views/GameSetting.vue'
 import Home from './views/Home.vue'
-import Instances from './views/Instances.vue'
 import Mod from './views/Mod.vue'
 import Modpack from './views/Modpack.vue'
 import Modrinth from './views/Modrinth.vue'
@@ -25,10 +24,6 @@ export const createRouter = () => {
       {
         path: '/',
         component: Home,
-      },
-      {
-        path: '/instances',
-        component: Instances,
       },
       {
         path: '/setting',

@@ -7,7 +7,7 @@
   >
     <v-avatar :left="!!forge">
       <img
-        :src="forgePng"
+        :src="'image:builtin:forge'"
         alt="forge"
       >
     </v-avatar>
@@ -19,7 +19,6 @@
 </template>
 
 <script lang=ts setup>
-import forgePng from '/@/assets/forge.png'
 import { useI18n } from '/@/composables'
 defineProps<{
   minecraft: string

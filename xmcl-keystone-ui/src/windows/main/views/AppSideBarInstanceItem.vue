@@ -60,7 +60,7 @@
         size="28"
       >
         <img
-          :src="minecraftPng"
+          :src="'image:builtin:minecraft'"
         >
       </v-avatar>
       {{ instance.runtime.minecraft }}
@@ -70,7 +70,7 @@
           size="28"
         >
           <img
-            :src="forgePng"
+            :src="'image:builtin:forge'"
           >
         </v-avatar>
         {{ instance.runtime.forge }}
@@ -80,7 +80,7 @@
           size="28"
         >
           <img
-            :src="fabricPng"
+            :src="'image:builtin:fabric'"
           >
         </v-avatar>
         {{ instance.runtime.fabricLoader }}
@@ -89,7 +89,9 @@
         <v-avatar
           size="28"
         >
-          <QuiltIcon />
+          <img
+            :src="'image:builtin:quilt'"
+          >
         </v-avatar>
         {{ instance.runtime.quiltLoader }}
       </span>
@@ -110,15 +112,11 @@
 <script lang="ts" setup>
 import { Instance, InstanceServiceKey } from '@xmcl/runtime-api'
 import { ContextMenuItem } from '../composables/contextMenu'
-import minecraftPng from '/@/assets/minecraft.png'
 import { useDialog } from '../composables/dialog'
 import { vContextMenu } from '../directives/contextMenu'
 import { useI18n, useRouter, useService } from '/@/composables'
-import fabricPng from '/@/assets/fabric.png'
-import forgePng from '/@/assets/forge.png'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import unknownServer from '/@/assets/unknown_server.png'
-import QuiltIcon from '/@/components/QuiltIcon.vue'
 
 const props = defineProps<{ instance: Instance }>()
 const emit = defineEmits(['drop'])

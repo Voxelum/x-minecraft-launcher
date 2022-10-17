@@ -22,7 +22,7 @@
       >
         <template #prepend-inner>
           <img
-            :src="minecraftPng"
+            :src="'image:builtin:minecraft'"
             width="32"
           >
         </template>
@@ -39,7 +39,7 @@
       >
         <template #prepend-inner>
           <img
-            :src="forgePng"
+            :src="'image:builtin:forge'"
             width="32"
           >
         </template>
@@ -56,25 +56,11 @@
       >
         <template #prepend-inner>
           <img
-            :src="fabricPng"
+            :src="'image:builtin:fabric'"
             width="32"
           >
         </template>
       </v-text-field>
-      <!-- <v-text-field
-
-              flat
-              :value="optifine"
-              dense
-              readonly
-            >
-              <template #prepend-inner>
-                <img
-                  :src="forgePng"
-                  width="32"
-                >
-              </template>
-            </v-text-field> -->
     </div>
     <v-skeleton-loader
       v-if="refreshing"
@@ -93,9 +79,6 @@ import { FTBFile, FTBVersion } from '@xmcl/runtime-api'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { useFeedTheBeastProjectVersion } from '../composables/ftb'
 import { InstanceFileNode, provideFileNodes } from '../composables/instanceFiles'
-import fabricPng from '/@/assets/fabric.png'
-import forgePng from '/@/assets/forge.png'
-import minecraftPng from '/@/assets/minecraft.png'
 
 const props = defineProps<{ id: number; version: FTBVersion }>()
 

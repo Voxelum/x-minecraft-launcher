@@ -55,7 +55,7 @@
     <v-list-item v-if="showMinecraft">
       <v-list-item-action class="self-center">
         <img
-          :src="minecraftPng"
+          :src="'image:builtin:minecraft'"
           width="40"
         >
         <!-- <v-checkbox /> -->
@@ -101,7 +101,7 @@
     <v-list-item>
       <v-list-item-action class="self-center">
         <img
-          :src="forgePng"
+          :src="'image:builtin:forge'"
           width="40"
         >
       </v-list-item-action>
@@ -145,7 +145,7 @@
     <v-list-item>
       <v-list-item-action class="self-center">
         <img
-          :src="fabricPng"
+          :src="'image:builtin:fabric'"
           width="40"
         >
       </v-list-item-action>
@@ -184,7 +184,10 @@
     </v-list-item>
     <v-list-item>
       <v-list-item-action class="self-center">
-        <quilt-icon style="width: 40px" />
+        <img
+          :src="'image:builtin:quilt'"
+          style="width: 40px"
+        >
       </v-list-item-action>
       <v-list-item-content>
         <v-list-item-title>Quilt</v-list-item-title>
@@ -261,10 +264,6 @@ import { CreateOptionKey } from '../composables/instanceCreation'
 import { useJava } from '../composables/java'
 import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useOptifineVersionList, useQuiltVersionList } from '../composables/versionList'
 import VersionMenu from './VersionMenu.vue'
-import fabricPng from '/@/assets/fabric.png'
-import forgePng from '/@/assets/forge.png'
-import minecraftPng from '/@/assets/minecraft.png'
-import QuiltIcon from '/@/components/QuiltIcon.vue'
 import { useI18n } from '/@/composables'
 import { injection } from '/@/util/inject'
 

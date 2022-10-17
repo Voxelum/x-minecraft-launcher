@@ -42,7 +42,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="minecraftPng"
+                  :src="'image:builtin:minecraft'"
                   width="32"
                 >
               </template>
@@ -57,7 +57,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="forgePng"
+                  :src="'image:builtin:forge'"
                   width="32"
                 >
               </template>
@@ -67,30 +67,16 @@
               flat
               dense
               label="Fabric"
-              :value="fabricLoader"
+              :value="'fabricLoader'"
               readonly
             >
               <template #prepend-inner>
                 <img
-                  :src="fabricPng"
+                  :src="'image:builtin:fabric'"
                   width="32"
                 >
               </template>
             </v-text-field>
-            <!-- <v-text-field
-
-              flat
-              :value="optifine"
-              dense
-              readonly
-            >
-              <template #prepend-inner>
-                <img
-                  :src="forgePng"
-                  width="32"
-                >
-              </template>
-            </v-text-field> -->
           </div>
           <div class="flex gap-5">
             <v-text-field
@@ -183,9 +169,6 @@ import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue
 import { useDialog } from '../composables/dialog'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
 import { useNotifier } from '../composables/notifier'
-import fabricPng from '/@/assets/fabric.png'
-import forgePng from '/@/assets/forge.png'
-import minecraftPng from '/@/assets/minecraft.png'
 import { useI18n, useRouter, useService } from '/@/composables'
 
 const { isShown, show, parameter } = useDialog('share-instance')
