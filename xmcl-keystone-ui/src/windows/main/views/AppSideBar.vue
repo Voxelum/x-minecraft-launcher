@@ -211,6 +211,55 @@
 
         <v-list-item-title>Instance</v-list-item-title>
       </v-list-item>
+
+      <v-list-item
+        push
+        class="non-moveable"
+        @click="onImport('folder')"
+      >
+        <v-tooltip
+          color="black"
+          transition="scroll-x-transition"
+          :close-delay="0"
+          right
+        >
+          <template #activator="{ on: tooltip }">
+            <v-list-item-avatar
+              size="48"
+              class="hover:rounded-xl transition-all duration-300 bg-[rgba(80,80,80,0.4)] hover:bg-green-500"
+              large
+              v-on="tooltip"
+            >
+              <v-badge
+                right
+                color="transparent"
+                bottom
+                overlap
+                offset-x="13"
+                offset-y="17"
+                :value="true"
+              >
+                <template #badge>
+                  <v-icon>
+                    folder
+                  </v-icon>
+                </template>
+                <v-icon
+                  class="text-2xl"
+                  v-on="tooltip"
+                >
+                  add
+                </v-icon>
+              </v-badge>
+            </v-list-item-avatar>
+          </template>
+          {{ t('instances.importFolder') }}
+        </v-tooltip>
+
+        <v-list-item-title>
+          {{ t('instances.importFolder') }}
+        </v-list-item-title>
+      </v-list-item>
       <v-spacer />
     </v-list>
 
@@ -288,7 +337,7 @@
 </template>
 
 <script lang=ts setup>
-import { BaseServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import PlayerAvatar from '../components/PlayerAvatar.vue'
 import { useBarBlur } from '../composables/background'
 import { useColorTheme } from '../composables/colorTheme'
@@ -363,6 +412,28 @@ router.afterEach((to) => {
     expanding.value = true
   }
 })
+
+const { showOpenDialog } = windowController
+const { addExternalInstance } = useService(InstanceServiceKey)
+
+async function onImport(type: 'zip' | 'folder') {
+  const fromFolder = type === 'folder'
+  const filters = fromFolder
+    ? []
+    : [{ extensions: ['zip'], name: 'Zip' }]
+  const { filePaths } = await showOpenDialog({
+    title: t('instances.importFolder'),
+    message: t('instances.importFolderDescription'),
+    filters,
+    properties: fromFolder ? ['openDirectory'] : ['openFile'],
+  })
+  if (filePaths && filePaths.length > 0) {
+    const filePath = filePaths[0]
+    if (type === 'folder') {
+      addExternalInstance(filePath)
+    }
+  }
+}
 
 </script>
 
