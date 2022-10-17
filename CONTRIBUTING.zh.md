@@ -49,6 +49,24 @@
 
 渲染器只是与主进程通信的浏览器，它包含一份存储数据的副本（可以是完整的副本，也可以是只有部分内容的副本），用户的输入将触发一个 [动作 action](https://vuex.vuejs.org/guide/actions.html) 或 [提交 mutations](https://vuex.vuejs.org/guide/mutations.html)，它将自动同步到主进程。因此，不需要开发人员采取任何额外的行动。本地提交和操作将自动发送到主进程。完全可以把渲染器当作普通的 vue 应用。
 
+### 代码阅读指南
+
+如果你对特定的页面逻辑感兴趣，你可以看看`xmcl-keyston-ui/src/windows/main/views`。这个文件夹下的`.vue`文件是启动器中使用的主要组件。文件的前缀是用户界面的关键字。
+
+请看一些例子：
+
+1. `AppSideBar.vue`是侧边栏组件，`AppSideBarInstanceItem.vue`是`AppSideBar.vue`中使用的组件，代表一个实例。
+2. `Curseforge.vue`是curseforge页面组件，`CurseforgeCategories.vue`是`Curseforge.vue`页面中使用的类别卡。
+
+如果你对核心逻辑感兴趣，你可以看看`xmcl-runtime/services/`。它下面的每个文件都将一个特定领域/业务的逻辑封装成了“服务”。在阅读服务的过程中，你也需要看看`xmcl-runtime-api/services/`下的对应的服务声明。
+
+一些例子：
+
+1. `xmcl-runtime/services/InstanceService.ts`包含添加/删除/更新实例的API实现。`xmcl-runtime-api/services/InstanceService.ts`包含了`InstanceService`的接口。
+2. `xmcl-runtime/services/InstanceVersionService.ts`包含检查实例版本健康状况的API实现。它将确定实例将使用什么版本，以及我们是否应该安装该版本。
+3. `xmcl-runtime/services/InstallService.ts`包含安装Minecraft/Forge/Fabric等的API实现。
+4. `xmcl-runtime/services/LaunchService.ts`包含启动实例的API实现。
+
 ## 开发
 
 我们强烈建议您使用 VSCode 打开项目。
@@ -183,17 +201,6 @@ commit type: commit description
 > chore: (updating grunt tasks etc; no production code change)
 
 **如果您不遵守这些规则，您的提交将被拒绝。**
-
-### 如何在开发版 Debug Microsoft 账户
-
-你需要进入 `xmcl-page` 项目并启动
-
-```bash
-cd xmcl-page
-pnpm run dev
-```
-
-当 xmcl 的主页启动后你就可以在开发版登录了
 
 ### 如何构建启动器成二进制
 

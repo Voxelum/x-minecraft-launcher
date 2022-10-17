@@ -5,8 +5,8 @@ Here we have a overview of the toolchain & runtime of this project
 
 For the whole project, we have
 
-- [nodejs 14](https://nodejs.org/). The core libraries base environment. Some build scripts are based on node 14.
-- [electron 15](https://electron.atom.io). The actual runtime of the launcher.
+- [nodejs 16](https://nodejs.org/). The core libraries base environment. Some build scripts are based on node 14.
+- [electron 21](https://electron.atom.io). The actual runtime of the launcher.
 - [pnpm](https://pnpm.io/). Used for monorepo package management.
 - [typescript](https://www.typescriptlang.org/). The whole project uses as much typescript as possible.
 
@@ -41,6 +41,7 @@ For renderer side, which is the pure front-end
 - xmcl-runtime-api
   - This is the shared code & API for xmcl runtime. It can be used for renderer app (browser side)
 
+
 ### Concept/Structure
 
 The launcher is composed by "server/client" or "main/renderer". They communicates with each other by electron's [ipc main](https://electronjs.org/docs/api/ipc-main) and [ipc renderer](https://electronjs.org/docs/api/ipc-renderer).
@@ -48,6 +49,24 @@ The launcher is composed by "server/client" or "main/renderer". They communicate
 The main is the "backend" of the launcher. It manages the windows, and all the persistent data/state of the app. It manages the state by [vuex](https://vuex.vuejs.org/). Once the state/data has been modified by a [vuex commit](https://vuex.vuejs.org/guide/mutations.html), it will broadcast a ipc message containing the [mutation info]((https://vuex.vuejs.org/guide/mutations.html)) the all the renderer. At the same time, it will trigger the save action of the modified module to write the change on disk.
 
 The renderer is/are just (a) browsers which communicate with main. It maintains a copy of the store. (I can be a full copy, or a partial copy) User's input will trigger an [action](https://vuex.vuejs.org/guide/actions.html) or [commit](https://vuex.vuejs.org/guide/mutations.html), and it will be sync to the main. Though, it does't require any extra action for developer. The local commit and action will automatically send to main. The developer can treat the renderer as a normal vue application.
+
+### Recommended Read Code Instruction
+
+If you are interested in a specific page logic, you can go to `xmcl-keystone-ui/src/windows/main/views`. The `.vue` files under this folder are the major component used in the launcher. The prefix of the file are the domain of the UI.
+
+See some examples:
+
+1. `AppSideBar.vue` is the sidebar component, and the `AppSideBarInstanceItem.vue` is the component used in `AppSideBar.vue` representing an instance.
+2. `Curseforge.vue` is the curseforge page component, and the `CurseforgeCategories.vue` is the category card used in `Curseforge.vue` page.
+
+If you are interested in core logic, you can goto `xmcl-runtime/services/`. Each file under it are representing a service for a specific domain/aspect of the launcher logic. During this process, you should also aware about the corresponding files under the `xmcl-runtime-api/services/`, which declare the interface of the actual services.
+
+Some examples:
+
+1. `xmcl-runtime/services/InstanceService.ts` contains the API implementation of add/remove/update of instances. The `xmcl-runtime-api/services/InstanceService.ts` contains the interface of the `InstanceService`
+2. `xmcl-runtime/services/InstanceVersionService.ts` contains the API implementation of checking instance version health. It will determine what version will the instance use, and whether should we install that version.
+3. `xmcl-runtime/services/InstallService.ts` contains the API implementation of install Minecraft/Forge/Fabric and etc.
+3. `xmcl-runtime/services/LaunchService.ts` contains the API implementation of launch an instance.
 
 ## Contribute
 
@@ -183,17 +202,6 @@ Refer from [this gist](https://gist.github.com/joshbuchea/6f47e86d2510bce28f8e7f
 > chore: (updating grunt tasks etc; no production code change)
 
 **Your commit will be rejected if you do not follow these rules.**
-
-### How to debug Microsoft account locally
-
-You need to enter the project `xmcl-page` and run:
-
-```bash
-cd xmcl-page
-pnpm run dev
-```
-
-Now you can use dev version to login Microsoft locally. (It will redirect to local xmcl-page web)
 
 ### How To Build
 
