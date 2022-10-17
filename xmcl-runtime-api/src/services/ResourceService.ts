@@ -161,6 +161,11 @@ export interface ResourceService extends StatefulService<ResourceState>, Generic
    */
   removeResource(resourceOrKey: ResourceKey): Promise<void>
   /**
+   * Remove resources from the launcher
+   * @param resourceOrKey
+   */
+  removeResources(resourceOrKey: ResourceKey[]): Promise<void>
+  /**
    * Update the resource content.
    *
    * You can update `name`, `tags` in this method.

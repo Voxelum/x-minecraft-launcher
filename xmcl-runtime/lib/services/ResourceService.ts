@@ -188,7 +188,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
   async validateResource(resource: Resource, fast = true) {
     const isValid = await this.isValidResource(resource, fast)
     if (!isValid) {
-      await this.removeResourceInternal(resource)
+      await this.removeResourceInternal([resource])
     }
     return isValid
   }
@@ -255,7 +255,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
           // this will remove
           const resource = this.cache.get(name)
           if (resource) {
-            this.removeResourceInternal(resource)
+            this.removeResourceInternal([resource])
             this.log(`Remove resource ${resource.path} with its metadata`)
           } else {
             this.log(`Skip to remove untracked resource ${name} & its metadata`)
@@ -298,7 +298,16 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         resource: resourceOrKey as string,
       })
     }
-    await this.removeResourceInternal(resource)
+    await this.removeResourceInternal([resource])
+  }
+
+  /**
+   * Remove a resource from the launcher
+   * @param resourceOrKey
+   */
+  async removeResources(resourceOrKey: Array<string | Persisted<Resource>>) {
+    const resources = resourceOrKey.map(r => this.normalizeResource(r)).filter(isNonnull)
+    await this.removeResourceInternal(resources)
   }
 
   async updateResource(options: PartialResourceHash): Promise<Persisted<Resource>> {
@@ -689,13 +698,19 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     })
   }
 
-  protected async removeResourceInternal(resource: Persisted<any>) {
-    if (resource.path !== resource.storedPath) {
-      this.warn(`Removing a stored resource from external reference: ${resource.path}. ${resource.storedPath}`)
+  protected async removeResourceInternal(resources: Persisted<any>[]) {
+    for (const resource of resources) {
+      if (resource.path !== resource.storedPath) {
+        this.warn(`Removing a stored resource from external reference: ${resource.path}. ${resource.storedPath}`)
+      }
     }
-    this.state.resourcesRemove([resource])
-    this.cache.discard(resource)
-    this.storage.del(resource.hash)
-    await unlink(resource.storedPath).catch(() => { })
+    this.state.resourcesRemove(resources)
+    const batch = this.storage.batch()
+    for (const resource of resources) {
+      this.cache.discard(resource)
+      batch.del(resource.hash)
+    }
+    await batch.write()
+    await Promise.all(resources.map(resource => unlink(resource.storedPath).catch(() => { })))
   }
 }
