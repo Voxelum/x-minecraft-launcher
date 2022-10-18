@@ -3,7 +3,7 @@
     <div
       class="overflow-hidden break-all"
     >
-      {{ $tc('mod.deletionHint', mods.length) }}
+      {{ tc('mod.deletionHint', mods.length) }}
     </div>
     <ol style="margin-top: 5px">
       <li
@@ -16,7 +16,7 @@
         v-if="rest > 0"
         class="overflow-hidden break-all font-italic font-bold"
       >
-        {{ $t('mod.deletionRestHint', { rest }) }}
+        {{ t('mod.deletionRestHint', { rest }) }}
       </li>
     </ol>
   </div>
@@ -24,9 +24,11 @@
 
 <script lang=ts setup>
 import { ModItem } from '../composables/mod'
+import { useI18n } from '/@/composables'
 
 const props = defineProps<{ items: ModItem[] }>()
 
 const mods = computed(() => props.items.map((i) => `${i.name} v${i.version}`).filter((_, i) => i <= 4))
 const rest = computed(() => (props.items.length > 4 ? props.items.length - 4 : 0))
+const { t, tc } = useI18n()
 </script>

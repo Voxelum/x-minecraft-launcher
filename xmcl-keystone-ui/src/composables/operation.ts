@@ -1,4 +1,4 @@
-import { Ref, ref } from '@vue/composition-api'
+import { Ref, ref } from 'vue'
 
 export function useOperation<T, A = void> (defaultValue: T, operation: (value: T, argument: A) => void | Promise<void>) {
   const data: Ref<T> = ref<T>(defaultValue) as any

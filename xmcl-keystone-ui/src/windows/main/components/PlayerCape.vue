@@ -18,7 +18,7 @@
 </template>
 
 <script lang=ts>
-import { defineComponent, reactive, ref, toRefs, computed, Ref } from '@vue/composition-api'
+import { defineComponent, reactive, ref, toRefs, computed, Ref } from 'vue'
 import steve from '/@/assets/steve_skin.png'
 
 export default defineComponent({

@@ -1,4 +1,4 @@
-import { ObjectDirective } from '@vue/composition-api'
+import { ObjectDirective } from 'vue'
 
 const listenerMap: Map<HTMLElement, [Function, Function]> = new Map()
 

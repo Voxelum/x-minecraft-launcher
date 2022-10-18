@@ -1,4 +1,4 @@
-import { InjectionKey } from '@vue/composition-api'
+import { InjectionKey } from 'vue'
 import { ServiceKey, StatefulService } from '@xmcl/runtime-api'
 import { injection } from '../util/inject'
 

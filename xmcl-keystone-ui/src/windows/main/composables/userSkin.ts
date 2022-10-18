@@ -1,4 +1,4 @@
-import { computed, InjectionKey, onMounted, reactive, Ref, toRefs, watch } from '@vue/composition-api'
+import { computed, InjectionKey, onMounted, reactive, Ref, toRefs, watch } from 'vue'
 import { GameProfileAndTexture, UserServiceKey } from '@xmcl/runtime-api'
 import { useService } from '/@/composables'
 

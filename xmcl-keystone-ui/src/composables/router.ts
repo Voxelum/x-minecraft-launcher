@@ -1,5 +1,5 @@
 import VueRouter from 'vue-router'
-import { inject, provide, InjectionKey } from '@vue/composition-api'
+import { inject, provide, InjectionKey } from 'vue'
 import { ROUTER_KEY } from '/@/constant'
 
 export function useRouter(): VueRouter {

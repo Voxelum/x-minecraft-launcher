@@ -70,7 +70,7 @@
   </v-badge>
 </template>
 <script lang="ts" setup>
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import { InstanceFile, InstanceInstallServiceKey, Issue, TaskState, UserServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { JavaIssueDialogKey, useJava } from '../composables/java'

@@ -53,7 +53,7 @@
 </template>
 
 <script lang=ts setup>
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import ContextMenu from './components/ContextMenu.vue'
 import { useAuthProfileImportNotification } from './composables/authProfileImport'
 import { useBackground } from './composables/background'

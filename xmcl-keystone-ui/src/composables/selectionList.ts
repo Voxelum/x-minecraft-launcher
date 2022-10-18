@@ -1,4 +1,4 @@
-import { onUnmounted, Ref, ref, watch, onMounted } from '@vue/composition-api'
+import { onUnmounted, Ref, ref, watch, onMounted } from 'vue'
 import { ResourceDomain } from '@xmcl/runtime-api'
 import { useResourceOperation } from './resource'
 

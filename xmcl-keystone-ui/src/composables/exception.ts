@@ -1,4 +1,4 @@
-import { InjectionKey } from '@vue/composition-api'
+import { InjectionKey } from 'vue'
 import { Exception, ExceptionBase, isException, LaunchException, ServiceKey } from '@xmcl/runtime-api'
 import { injection } from '../util/inject'
 

@@ -1,4 +1,4 @@
-import { Ref, watch, onUnmounted, ref, onMounted } from '@vue/composition-api'
+import { Ref, watch, onUnmounted, ref, onMounted } from 'vue'
 
 export function useDraggableElem (
   elem: Ref<HTMLElement | null>,

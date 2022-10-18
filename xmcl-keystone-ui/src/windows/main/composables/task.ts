@@ -1,4 +1,4 @@
-import { computed, Ref } from '@vue/composition-api'
+import { computed, Ref } from 'vue'
 import { TaskState } from '@xmcl/runtime-api'
 import { injection } from '/@/util/inject'
 import { getServiceCallTasks } from '../../../vuexServiceProxy'

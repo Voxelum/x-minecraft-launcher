@@ -1,4 +1,4 @@
-import { computed } from '@vue/composition-api'
+import { computed } from 'vue'
 import { useService, useServiceOnly } from './service'
 import { ModpackServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
 

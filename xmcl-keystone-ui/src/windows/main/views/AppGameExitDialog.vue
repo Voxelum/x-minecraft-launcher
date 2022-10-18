@@ -1,6 +1,6 @@
 <template>
   <v-dialog
-    v-model="isShown"
+    v-model="data.isShown"
     :width="750"
     :persistent="true"
   >
@@ -8,7 +8,7 @@
       <v-toolbar-title
         class="white--text"
       >
-        {{ isCrash ? $t('launchFailed.crash') : $t('launchFailed.title') }}
+        {{ data.isCrash ? t('launchFailed.crash') : t('launchFailed.title') }}
       </v-toolbar-title>
       <v-spacer />
       <v-toolbar-items>
@@ -16,12 +16,12 @@
           text
           @click="openFolder"
         >
-          {{ isCrash ? $t('instance.openCrashReportFolder') : $t('instance.openLogFolder') }}
+          {{ data.isCrash ? t('instance.openCrashReportFolder') : t('instance.openLogFolder') }}
         </v-btn>
       </v-toolbar-items>
       <v-btn
         icon
-        @click="isShown=false"
+        @click="data.isShown=false"
       >
         <v-icon>arrow_drop_down</v-icon>
       </v-btn>
@@ -31,81 +31,74 @@
         <div
           style="padding: 10px"
         >
-          {{ isCrash ? $t(`launchFailed.crash`) : $t(`launchFailed.description`) }}
+          {{ data.isCrash ? t(`launchFailed.crash`) : t(`launchFailed.description`) }}
         </div>
-        <pre class="rounded p-5 bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] overflow-auto">{{ errorLog }}</pre>
+        <pre class="rounded p-5 bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] overflow-auto">{{ data.errorLog }}</pre>
         <div
           style="padding: 10px"
         >
-          {{ $t(`launchFailed.latestLog`) }}
+          {{ t(`launchFailed.latestLog`) }}
         </div>
-        <pre class="rounded p-5 bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] overflow-auto">{{ log }}</pre>
+        <pre class="rounded p-5 bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] overflow-auto">{{ data.log }}</pre>
       </v-card-text>
     </v-card>
   </v-dialog>
 </template>
 
-<script lang=ts>
-import { reactive, toRefs, defineComponent } from '@vue/composition-api'
-import { useService } from '/@/composables'
+<script lang=ts setup>
+import { useI18n, useService } from '/@/composables'
 import { BaseServiceKey, InstanceLogServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
 
-export default defineComponent({
-  setup() {
-    const data = reactive({
-      isShown: false,
-      log: '',
-      isCrash: false,
-      crashReportLocation: '',
-      errorLog: '',
-    })
-    const { getLogContent, getCrashReportContent, showLog } = useService(InstanceLogServiceKey)
-    const { on } = useService(LaunchServiceKey)
-    const { showItemInDirectory } = useService(BaseServiceKey)
-    function decorate(log: string) {
-      // let lines = log.split('\n');
-      // let result: string[] = [];
-      // for (let i = 0; i < lines.length; i++) {
-      //   result.push(lines[i].trim(), ' ');
-      // }
-      // return result.join('\n');
-      return log
-    }
-    async function displayLog() {
-      const log = await getLogContent('latest.log')
-      data.log = decorate(log)
-      data.isShown = true
-    }
-    async function displayCrash() {
-      const log = await getCrashReportContent(data.crashReportLocation)
-      data.log = decorate(log)
-      data.isShown = true
-    }
-    on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation, errorLog }) => {
-      if (code !== 0) {
-        console.log(errorLog)
-        data.errorLog = errorLog
-        if (crashReportLocation) {
-          data.crashReportLocation = crashReportLocation
-          data.isCrash = true
-          displayCrash()
-        } else {
-          displayLog()
-        }
-      }
-    })
-    return {
-      ...toRefs(data),
-      openFolder() {
-        if (data.isCrash) {
-          showItemInDirectory(data.crashReportLocation)
-        } else {
-          showLog('latest.log')
-        }
-      },
-    }
-  },
+const data = reactive({
+  isShown: false,
+  log: '',
+  isCrash: false,
+  crashReportLocation: '',
+  errorLog: '',
 })
+const { t } = useI18n()
+const { getLogContent, getCrashReportContent, showLog } = useService(InstanceLogServiceKey)
+const { on } = useService(LaunchServiceKey)
+const { showItemInDirectory } = useService(BaseServiceKey)
+function decorate(log: string) {
+  // let lines = log.split('\n');
+  // let result: string[] = [];
+  // for (let i = 0; i < lines.length; i++) {
+  //   result.push(lines[i].trim(), ' ');
+  // }
+  // return result.join('\n');
+  return log
+}
+async function displayLog() {
+  const log = await getLogContent('latest.log')
+  data.log = decorate(log)
+  data.isShown = true
+}
+async function displayCrash() {
+  const log = await getCrashReportContent(data.crashReportLocation)
+  data.log = decorate(log)
+  data.isShown = true
+}
+on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation, errorLog }) => {
+  if (code !== 0) {
+    console.log(errorLog)
+    data.errorLog = errorLog
+    if (crashReportLocation) {
+      data.crashReportLocation = crashReportLocation
+      data.isCrash = true
+      displayCrash()
+    } else {
+      displayLog()
+    }
+  }
+})
+function openFolder() {
+  if (data.isCrash) {
+    showItemInDirectory(data.crashReportLocation)
+  } else {
+    showLog('latest.log')
+  }
+}
 </script>
 
 <style>

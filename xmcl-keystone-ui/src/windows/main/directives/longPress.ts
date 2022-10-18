@@ -1,4 +1,4 @@
-import { FunctionDirective } from '@vue/composition-api'
+import { FunctionDirective } from 'vue'
 
 export const vLongPress: FunctionDirective<HTMLElement, (...args: any[]) => void> = (el, bindings) => {
   let timeout: ReturnType<typeof setTimeout>

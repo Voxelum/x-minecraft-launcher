@@ -1,4 +1,4 @@
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import { FTBVersion, FeedTheBeastServiceKey, FTBModpackManifest, FTBModpackVersionManifest, CachedFTBModpackVersionManifest } from '@xmcl/runtime-api'
 import { useRefreshable, useRouter, useService } from '/@/composables'
 

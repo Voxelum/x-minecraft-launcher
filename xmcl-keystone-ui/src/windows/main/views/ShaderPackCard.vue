@@ -71,7 +71,7 @@
   </v-card>
 </template>
 <script lang="ts" setup>
-import { computed } from '@vue/composition-api'
+import { computed } from 'vue'
 import unknownPack from '/@/assets/unknown_pack.png'
 import { useI18n, useService, useTags } from '/@/composables'
 import { getColor } from '/@/util/color'

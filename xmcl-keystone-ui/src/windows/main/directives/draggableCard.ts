@@ -1,4 +1,4 @@
-import { FunctionDirective } from '@vue/composition-api'
+import { FunctionDirective } from 'vue'
 
 export const vDraggableCard: FunctionDirective<HTMLElement> = (el) => {
   el.addEventListener('dragstart', (e) => {

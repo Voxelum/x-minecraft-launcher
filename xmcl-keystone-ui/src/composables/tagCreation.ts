@@ -1,8 +1,5 @@
-import Api, { Ref, set } from '@vue/composition-api'
-import Vue from 'vue'
+import { Ref, set } from 'vue'
 import { useI18n } from '.'
-
-Vue.use(Api)
 
 export function useTagCreation() {
   const { t } = useI18n()

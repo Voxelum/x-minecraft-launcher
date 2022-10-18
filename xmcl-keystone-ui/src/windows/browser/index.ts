@@ -1,25 +1,25 @@
-import VueCompositionApi, { createApp, h } from '@vue/composition-api'
+import Vue, { h } from 'vue'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import 'virtual:windi.css'
-import Vue from 'vue'
 import VueI18n from 'vue-i18n'
 import BrowseVue from './Browse.vue'
 import vuetify from './vuetify'
-import { createI18n } from '/@/i18n'
+import { castToVueI18n, createI18n } from 'vue-i18n-bridge'
 
-Vue.use(VueCompositionApi)
-Vue.use(VueI18n)
+Vue.use(VueI18n, { bridge: true })
 
-const messages = Object.fromEntries(
-  Object.entries(
-    import.meta.globEager('./locales/*.y(a)?ml'))
-    .map(([key, value]) => {
-      const yaml = key.endsWith('.yaml')
-      return [key.slice('./locales/'.length, yaml ? -5 : -4), value.default]
-    }),
-)
-
-const i18n = createI18n('en', messages)
+const i18n = castToVueI18n(
+  createI18n(
+    {
+      legacy: false,
+      locale: 'en',
+      silentTranslationWarn: true,
+      missingWarn: false,
+      // messages: messages,
+    },
+    VueI18n,
+  ),
+) // `createI18n` which is provide `vue-i18n-bridge` has second argument, you **must** pass `VueI18n` constructor which is provide `vue-i18n`
 
 const baseServiceChannel = serviceChannels.open(BaseServiceKey)
 

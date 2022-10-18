@@ -44,7 +44,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import { InstanceInstallServiceKey, InstanceIOServiceKey, InstanceUpdate, XUpdateServiceKey } from '@xmcl/runtime-api'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { useColorTheme } from '../composables/colorTheme'

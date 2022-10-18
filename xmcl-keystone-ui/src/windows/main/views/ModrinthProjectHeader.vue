@@ -30,7 +30,7 @@
             left
             v-html="item.icon"
           />
-          {{ $t(`modrinth.categories.${item.name}`) }}
+          {{ ts(`modrinth.categories.${item.name}`) }}
         </v-chip>
       </span>
 
@@ -155,7 +155,7 @@
   </v-card>
 </template>
 <script lang="ts" setup>
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import { Category, Project, ProjectVersion } from '@xmcl/modrinth'
 import { ModrinthServiceKey, Persisted, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import CurseforgeProjectDestMenu from './CurseforgeProjectDestMenu.vue'
@@ -169,7 +169,7 @@ const props = defineProps<{
   project: Project
   installTo: string
 }>()
-const { t } = useI18n()
+const { t, ts } = useI18n()
 const { getTags } = useService(ModrinthServiceKey)
 const categories = ref([] as Category[])
 

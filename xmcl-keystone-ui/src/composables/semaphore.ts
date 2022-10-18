@@ -1,4 +1,4 @@
-import { computed, InjectionKey, reactive, Ref, set } from '@vue/composition-api'
+import { computed, InjectionKey, reactive, Ref, set } from 'vue'
 import { getServiceSemaphoreKey, ServiceKey } from '@xmcl/runtime-api'
 import { injection } from '../util/inject'
 import { useRefreshable } from './refreshable'

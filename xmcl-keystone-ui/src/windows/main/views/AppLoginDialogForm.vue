@@ -143,7 +143,7 @@
 </template>
 
 <script lang=ts setup>
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import { isException, OfficialUserServiceKey, UserException, UserServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { LoginDialog, useSelectedServices } from '../composables/login'

@@ -31,7 +31,7 @@
 import Halo from '/@/components/Halo.vue'
 import Particles from '/@/components/Particles.vue'
 import { BackgroundType, useBackground } from '../composables/background'
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 
 const { blur, backgroundImage, backgroundType, particleMode, backgroundImageFit, backgroundVideo, volume } = useBackground()
 const videoRef = ref(null as null | HTMLVideoElement)

@@ -1,4 +1,4 @@
-import { computed } from '@vue/composition-api'
+import { computed } from 'vue'
 import { injection } from '/@/util/inject'
 import { VuetifyInjectionKey } from './vuetify'
 

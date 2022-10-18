@@ -52,7 +52,7 @@
 
 <script lang=ts setup>
 import { BlockStateJson } from '@xmcl/runtime-api'
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import { BlockModel } from '@xmcl/resourcepack'
 import Displayer from './ResourcePackPreviewDisplayer.vue'
 import PreviewItem from './ResourcePackPreviewItem.vue'

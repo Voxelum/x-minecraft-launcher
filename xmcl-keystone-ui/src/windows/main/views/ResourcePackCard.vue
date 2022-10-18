@@ -100,7 +100,7 @@
 </template>
 
 <script lang=ts setup>
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import { BaseServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import { useRangeCompatible } from '../composables/compatible'
 import { ContextMenuItem } from '../composables/contextMenu'

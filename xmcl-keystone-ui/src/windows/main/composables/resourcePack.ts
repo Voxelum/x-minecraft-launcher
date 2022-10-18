@@ -1,4 +1,4 @@
-import { computed, onMounted, ref, Ref, watch } from '@vue/composition-api'
+import { computed, onMounted, ref, Ref, watch } from 'vue'
 import { PackMeta } from '@xmcl/resourcepack'
 import { InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, isPersistedResource, ResourceServiceKey, packFormatVersionRange, ResourcePackResource, Persisted } from '@xmcl/runtime-api'
 import { useServiceBusy, useI18n, useService } from '/@/composables'

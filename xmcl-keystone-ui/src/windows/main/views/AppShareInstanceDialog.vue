@@ -163,7 +163,7 @@
   </v-dialog>
 </template>
 <script lang="ts" setup>
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import { InstanceInstallServiceKey, InstanceManifest, InstanceManifestServiceKey, InstanceServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { useDialog } from '../composables/dialog'

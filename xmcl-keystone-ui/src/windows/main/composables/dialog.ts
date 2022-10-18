@@ -1,4 +1,4 @@
-import { computed, inject, InjectionKey, provide, Ref, ref } from '@vue/composition-api'
+import { computed, inject, InjectionKey, provide, Ref, ref } from 'vue'
 import type { JavaVersion } from '@xmcl/core'
 import { useI18n } from '/@/composables'
 import { injection } from '/@/util/inject'

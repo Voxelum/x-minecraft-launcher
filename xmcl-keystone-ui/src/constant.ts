@@ -1,5 +1,4 @@
-import { InjectionKey } from '@vue/composition-api'
-import VueI18n from 'vue-i18n'
+import { InjectionKey } from 'vue'
 import VueRouter from 'vue-router'
 import { Store } from 'vuex'
 

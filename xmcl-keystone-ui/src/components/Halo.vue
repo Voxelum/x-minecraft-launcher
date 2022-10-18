@@ -7,7 +7,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from '@vue/composition-api'
+import { defineComponent, onMounted, ref } from 'vue'
 import initHalo from './halo'
 export default defineComponent({
   setup() {

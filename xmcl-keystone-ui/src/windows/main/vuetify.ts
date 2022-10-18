@@ -1,4 +1,4 @@
-import { InjectionKey } from '@vue/composition-api'
+import { InjectionKey } from 'vue'
 import Vuetify, { Framework } from 'vuetify'
 import 'vuetify/dist/vuetify.min.css'
 import colors from 'vuetify/es5/util/colors'

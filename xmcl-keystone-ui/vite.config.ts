@@ -1,14 +1,11 @@
 import { join, resolve } from 'path'
-// const { external } = require("../package.json");
-import { createVuePlugin } from 'vite-plugin-vue2'
+import createVuePlugin from '@vitejs/plugin-vue2'
 import { defineConfig } from 'vite'
 import { readdirSync } from 'fs'
 import { VitePWA } from 'vite-plugin-pwa'
-import YAML from '@modyfi/vite-plugin-yaml'
 import WindiCSS from 'vite-plugin-windicss'
-import ScriptSetup from 'unplugin-vue2-script-setup/vite'
 import AutoImport from 'unplugin-auto-import/vite'
-import I18n from '@intlify/vite-plugin-vue-i18n'
+import VueI18n from '@intlify/unplugin-vue-i18n/vite'
 
 const entries = readdirSync(join(__dirname, './src'))
   .filter((f) => f.endsWith('.html'))
@@ -18,40 +15,35 @@ const mainLocalPath = [
   resolve(__dirname, 'src', 'windows', 'main', 'locales/**'),
   resolve(__dirname, 'src', 'windows', 'browser', 'locales/**'),
   resolve(__dirname, 'src', 'windows', 'logger', 'locales/**'),
-  resolve(__dirname, 'src', 'windows', 'setup', 'locales/**'),
 ]
-const i18nPlugin = I18n({
-  runtimeOnly: false,
-  compositionOnly: false,
-  include: mainLocalPath,
-  forceStringify: true,
-  defaultSFCLang: 'yaml',
-})
 
-const modifiedI18nPlugin = {
-  ...i18nPlugin,
-  async transform(this: any, code: string, id: string) {
-    const result: any = await i18nPlugin.transform!.call(this, code, id)
-    if (result && id.indexOf('vue') !== -1) {
-      const lines = result.code.split('\n') as string[]
-      const lang = lines[3].slice('    "locale": "'.length, lines[3].length - 2)
-      const jsonContent = lines.slice(4, lines.length - 2)
-      jsonContent[0] = jsonContent[0].replace('"resource":', `"${lang}":`)
-      result.code = `export default function (Component) {
-  Component.options.i18n = Component.options.i18n || { "messages": {} }
-  Object.assign(Component.options.i18n.messages, {
-    ${jsonContent.join('\n')}
-  })
-}`
-    }
-    return result
-  },
-}
+// const modifiedI18nPlugin = {
+//   ...i18nPlugin,
+//   async transform(this: any, code: string, id: string) {
+//     const result: any = await i18nPlugin.transform!.call(this, code, id)
+//     if (result && id.indexOf('vue') !== -1) {
+//       const lines = result.code.split('\n') as string[]
+//       const lang = lines[3].slice('    "locale": "'.length, lines[3].length - 2)
+//       const jsonContent = lines.slice(4, lines.length - 2)
+//       jsonContent[0] = jsonContent[0].replace('"resource":', `"${lang}":`)
+//       result.code = `export default function (Component) {
+//   Component.options.i18n = Component.options.i18n || { "messages": {} }
+//   Object.assign(Component.options.i18n.messages, {
+//     ${jsonContent.join('\n')}
+//   })
+// }`
+//     }
+//     return result
+//   },
+// }
 
 /**
  * Vite shared config, assign alias and root dir
  */
 export default defineConfig({
+  server: {
+    port: 3000,
+  },
   root: join(__dirname, './src'),
   base: '', // has to set to empty string so the html assets path will be relative
   build: {
@@ -74,6 +66,9 @@ export default defineConfig({
       '~main': join(__dirname, './src/windows/main'),
       '~logger': join(__dirname, './src/windows/logger'),
       '~setup': join(__dirname, './src/windows/setup'),
+      '@vue/composition-api': 'vue',
+      'vue-i18n-bridge':
+        'vue-i18n-bridge/dist/vue-i18n-bridge.runtime.esm-bundler.js',
     },
   },
   optimizeDeps: {
@@ -92,10 +87,6 @@ export default defineConfig({
     WindiCSS({
       config: {
         important: true,
-        // extract: {
-        //     include: [join(__dirname, '../src')],
-        //     exclude: ['**/node_modules/**', '.git'],
-        // }
       },
       scan: {
         dirs: [join(__dirname, './src')],
@@ -103,13 +94,14 @@ export default defineConfig({
       },
     }),
 
-    modifiedI18nPlugin,
+    VueI18n({
+      include: mainLocalPath,
+      bridge: false,
+    }),
 
-    // YAML(),
-    ScriptSetup({ reactivityTransform: true }),
     AutoImport({
       imports: [
-        '@vue/composition-api',
+        'vue',
       ],
       dts: 'auto-imports.d.ts',
       exclude: ['node_modules', /xmcl\/packages.+/],

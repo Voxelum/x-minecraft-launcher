@@ -1,16 +1,18 @@
 {
   "globals": {
+    "EffectScope": true,
     "computed": true,
     "createApp": true,
     "customRef": true,
     "defineAsyncComponent": true,
     "defineComponent": true,
     "effectScope": true,
-    "EffectScope": true,
     "getCurrentInstance": true,
     "getCurrentScope": true,
     "h": true,
     "inject": true,
+    "isProxy": true,
+    "isReactive": true,
     "isReadonly": true,
     "isRef": true,
     "markRaw": true,
@@ -22,6 +24,8 @@
     "onDeactivated": true,
     "onErrorCaptured": true,
     "onMounted": true,
+    "onRenderTracked": true,
+    "onRenderTriggered": true,
     "onScopeDispose": true,
     "onServerPrefetch": true,
     "onUnmounted": true,
@@ -30,6 +34,7 @@
     "reactive": true,
     "readonly": true,
     "ref": true,
+    "resolveComponent": true,
     "shallowReactive": true,
     "shallowReadonly": true,
     "shallowRef": true,
@@ -40,8 +45,11 @@
     "unref": true,
     "useAttrs": true,
     "useCssModule": true,
+    "useCssVars": true,
     "useSlots": true,
     "watch": true,
-    "watchEffect": true
+    "watchEffect": true,
+    "watchPostEffect": true,
+    "watchSyncEffect": true
   }
 }

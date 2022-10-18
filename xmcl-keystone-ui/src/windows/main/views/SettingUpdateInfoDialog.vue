@@ -28,7 +28,7 @@
           >
             web
           </v-icon>
-          {{ $t('setting.officialWebsite') }}
+          {{ t('setting.officialWebsite') }}
         </v-btn>
         <v-btn
           text
@@ -39,7 +39,7 @@
           >
             signpost
           </v-icon>
-          {{ $t('setting.githubRelease') }}
+          {{ t('setting.githubRelease') }}
         </v-btn>
         <v-spacer />
         <v-btn
@@ -55,7 +55,7 @@
           >
             cloud_download
           </v-icon>
-          {{ $t('launcherUpdate.updateToThisVersion') }}
+          {{ t('launcherUpdate.updateToThisVersion') }}
         </v-btn>
         <v-btn
           v-else
@@ -68,7 +68,7 @@
           >
             refresh
           </v-icon>
-          {{ $t('launcherUpdate.installAndQuit') }}
+          {{ t('launcherUpdate.installAndQuit') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -87,7 +87,7 @@
           align-center
         >
           <h3 v-if="!checkingUpdate">
-            {{ $t('launcherUpdate.noUpdateAvailable') }}
+            {{ t('launcherUpdate.noUpdateAvailable') }}
           </h3>
           <v-progress-circular
             v-else
@@ -100,13 +100,14 @@
 </template>
 
 <script lang=ts setup>
-import { useServiceBusy, useService } from '/@/composables'
+import { useServiceBusy, useService, useI18n } from '/@/composables'
 import MarkdownIt from 'markdown-it'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { getLocalDateString } from '/@/util/date'
 
 const { isShown } = useDialog('update-info')
+const { t } = useI18n()
 const renderer = new MarkdownIt()
 const installing = useServiceBusy(BaseServiceKey, 'quitAndInstall')
 const { state, openInBrowser, checkUpdate, downloadUpdate, quitAndInstall } = useService(BaseServiceKey)

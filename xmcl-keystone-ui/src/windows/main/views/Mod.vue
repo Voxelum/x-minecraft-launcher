@@ -87,7 +87,7 @@
 </template>
 
 <script lang=ts>
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import { useDrop, useOperation, useResourceOperation, useFilterCombobox, useI18n, useService } from '/@/composables'
 import { useLocalStorageCacheBool } from '/@/composables/cache'
 import Hint from '/@/components/Hint.vue'

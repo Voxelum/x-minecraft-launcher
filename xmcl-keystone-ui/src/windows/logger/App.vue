@@ -65,7 +65,7 @@
 </template>
 
 <script lang=ts setup>
-import { set } from '@vue/composition-api'
+import { set } from 'vue'
 import { baseService } from './baseService'
 import LogView from '/@/components/LogView.vue'
 import { useI18n } from '/@/composables'

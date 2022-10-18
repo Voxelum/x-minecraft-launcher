@@ -144,7 +144,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import { ProjectVersion } from '@xmcl/modrinth'
 import { getServiceSemaphoreKey, ModrinthServiceKey, Persisted, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import Markdown from 'markdown-it'
