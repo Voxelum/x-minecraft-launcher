@@ -1,4 +1,4 @@
-import { computed, inject, InjectionKey, provide, reactive, Ref, ref, set, watch } from '@vue/composition-api'
+import { computed, inject, InjectionKey, provide, reactive, Ref, ref, set, watch } from 'vue'
 import { InstanceServiceKey, PINGING_STATUS, PingServerOptions, ServerStatus, ServerStatusServiceKey, UNKNOWN_STATUS } from '@xmcl/runtime-api'
 import { useI18n, useService, useSeverStatusAcceptVersion } from '/@/composables'
 import { useLocalStorageCache } from '/@/composables/cache'

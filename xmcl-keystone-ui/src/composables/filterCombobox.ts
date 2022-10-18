@@ -1,4 +1,4 @@
-import { InjectionKey, Ref } from '@vue/composition-api'
+import { InjectionKey, Ref } from 'vue'
 import { filter as fuzzy } from 'fuzzy'
 
 export interface FilterOption {

@@ -1,4 +1,4 @@
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import { ForgeVersion, LockKey } from '@xmcl/runtime-api'
 import { useFabricVersions, useForgeVersions, useMinecraftVersions, useOptifineVersions, useQuiltVersions } from './version'
 import { SERVICES_SEMAPHORES_KEY, useI18n } from '/@/composables'

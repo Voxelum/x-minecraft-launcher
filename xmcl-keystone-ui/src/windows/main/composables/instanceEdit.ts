@@ -1,4 +1,4 @@
-import { InjectionKey } from '@vue/composition-api'
+import { InjectionKey } from 'vue'
 import { InstanceServiceKey } from '@xmcl/runtime-api'
 import { useInstance } from './instance'
 import { useService } from '/@/composables'

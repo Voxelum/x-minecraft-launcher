@@ -1,4 +1,4 @@
-import { inject, InjectionKey, provide, Ref, ref } from '@vue/composition-api'
+import { inject, InjectionKey, provide, Ref, ref } from 'vue'
 
 export type Level = 'success' | 'info' | 'warning' | 'error'
 const NOTIFY_QUEUE_SYMBOL: InjectionKey<Ref<Array<LocalNotification>>> = Symbol('NotifierQueue')

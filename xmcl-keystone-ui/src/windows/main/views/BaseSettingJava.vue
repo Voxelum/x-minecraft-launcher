@@ -177,7 +177,7 @@
 </template>
 
 <script lang=ts setup>
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import { BaseServiceKey, JavaRecord } from '@xmcl/runtime-api'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import { useJava } from '../composables/java'

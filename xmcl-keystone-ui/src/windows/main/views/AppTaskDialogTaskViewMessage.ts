@@ -1,4 +1,4 @@
-import { defineComponent, h } from '@vue/composition-api'
+import { defineComponent, h } from 'vue'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useI18n, useService } from '/@/composables'
 import { required } from '/@/util/props'

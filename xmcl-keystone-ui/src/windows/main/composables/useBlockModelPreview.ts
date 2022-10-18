@@ -1,4 +1,4 @@
-import { computed, Ref, ref, watch } from '@vue/composition-api'
+import { computed, Ref, ref, watch } from 'vue'
 import { BlockStateJson, ResourcePackPreviewServiceKey } from '@xmcl/runtime-api'
 import { useService } from '/@/composables'
 

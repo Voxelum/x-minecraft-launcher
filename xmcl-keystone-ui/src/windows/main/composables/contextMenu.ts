@@ -1,7 +1,4 @@
-import Api, { ref } from '@vue/composition-api'
-import Vue from 'vue'
-
-Vue.use(Api)
+import { ref } from 'vue'
 
 export interface ContextMenuItem {
   text: string

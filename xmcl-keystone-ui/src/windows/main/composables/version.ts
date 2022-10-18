@@ -1,4 +1,4 @@
-import { computed, onMounted, reactive, Ref, toRefs, watch } from '@vue/composition-api'
+import { computed, onMounted, reactive, Ref, toRefs, watch } from 'vue'
 import { FabricArtifactVersion, MinecraftVersion } from '@xmcl/installer'
 import { ForgeVersion, InstallServiceKey, OptifineVersion, QuiltArtifactVersion, Status, VersionServiceKey } from '@xmcl/runtime-api'
 import { useService, useServiceBusy, useServiceOnly } from '/@/composables'

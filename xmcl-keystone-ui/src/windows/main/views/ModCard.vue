@@ -105,7 +105,7 @@
 </template>
 
 <script lang=ts setup>
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import type Vue from 'vue'
 import { ContextMenuItem } from '../composables/contextMenu'

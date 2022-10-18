@@ -102,7 +102,7 @@
 </template>
 
 <script lang=ts setup>
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import { Template } from '../composables/instanceAdd'
 import { useI18n } from '/@/composables'
 

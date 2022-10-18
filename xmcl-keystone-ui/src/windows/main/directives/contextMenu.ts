@@ -1,4 +1,4 @@
-import { FunctionDirective, Ref } from '@vue/composition-api'
+import { FunctionDirective, Ref } from 'vue'
 import { ContextMenuItem, useContextMenu } from '../composables/contextMenu'
 
 export const vContextMenu: FunctionDirective<HTMLElement, ContextMenuItem[]> = (el, bindings) => {

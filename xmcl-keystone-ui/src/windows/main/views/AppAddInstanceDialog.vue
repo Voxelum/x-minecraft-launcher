@@ -98,7 +98,7 @@
 </template>
 
 <script lang=ts setup>
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import { InstanceInstallServiceKey, ModpackServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
 import AdvanceContent from '../components/StepperAdvanceContent.vue'
 import BaseContent from '../components/StepperBaseContent.vue'

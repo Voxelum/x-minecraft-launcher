@@ -1,4 +1,4 @@
-import { FunctionDirective } from '@vue/composition-api'
+import { FunctionDirective } from 'vue'
 
 export const vFallbackImg: FunctionDirective<HTMLElement> = (el, binding) => {
   function onImageLoadFail (e: Event) {

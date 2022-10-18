@@ -4,12 +4,12 @@
     style="min-height: 300px; max-height: 400px; max-width: 100%; overflow: auto;"
   >
     <v-card-text>
-      {{ all.length === 0 ? $t('task.empty') : '' }}
+      {{ all.length === 0 ? t('task.empty') : '' }}
       <v-treeview
-        v-model="tree"
+        v-model="data.tree"
         hoverable
         transition
-        :open="opened"
+        :open="data.opened"
         :items="all"
         activatable
         item-key="id"
@@ -18,7 +18,7 @@
         <template #append="{ item }">
           <TaskDialogNodeStatus
             :item="item"
-            :show-number="hovered[item.id]"
+            :show-number="data.hovered[item.id]"
             @pause="pause(item)"
             @resume="resume(item)"
             @cancel="cancel(item)"
@@ -29,8 +29,8 @@
           <div
             style="padding: 5px 0px;"
             @click="onTaskClick($event, item)"
-            @mouseenter.prevent="hovered[item.id] = true"
-            @mouseleave.prevent="hovered[item.id] = false"
+            @mouseenter.prevent="data.hovered[item.id] = true"
+            @mouseleave.prevent="data.hovered[item.id] = false"
           >
             <span style="max-width: 100px;">{{ item.title }}</span>
             <div
@@ -50,36 +50,24 @@
   </v-card>
 </template>
 
-<script lang=ts>
-import { defineComponent, reactive, toRefs } from '@vue/composition-api'
+<script lang=ts setup>
 import { useTasks } from '../composables/task'
 import TaskDialogNodeStatus from './AppTaskDialogNodeStatus.vue'
 import AppTaskDialogTaskViewMessage from './AppTaskDialogTaskViewMessage'
+import { useI18n } from '/@/composables'
 import { TaskItem } from '/@/entities/task'
 
-export default defineComponent({
-  components: { TaskDialogNodeStatus, AppTaskDialogTaskViewMessage },
-  setup() {
-    const { tasks, pause, resume, cancel } = useTasks()
+const { tasks: all, pause, resume, cancel } = useTasks()
+const { t } = useI18n()
 
-    const data = reactive({
-      tree: [],
-      opened: [],
-      active: 0,
-      hovered: {} as Record<string, boolean>,
-    })
-
-    return {
-      ...toRefs(data),
-      all: tasks,
-      pause,
-      resume,
-      cancel,
-      onTaskClick(event: MouseEvent, item: TaskItem) {
-        // TODO: fix
-        // navigator.clipboard.writeText(item.message ?? '')
-      },
-    }
-  },
+const data = reactive({
+  tree: [],
+  opened: [],
+  hovered: {} as Record<string, boolean>,
 })
+
+function onTaskClick(event: MouseEvent, item: TaskItem) {
+  // TODO: fix
+  // navigator.clipboard.writeText(item.message ?? '')
+}
 </script>

@@ -1,4 +1,4 @@
-import { computed, onMounted, onUnmounted, ref, watch } from '@vue/composition-api'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { InstanceOptionsServiceKey, Persisted, ShaderPackResource, InstanceShaderPacksServiceKey, ResourceServiceKey, ResourceDomain } from '@xmcl/runtime-api'
 import { useServiceBusy, useService, useRefreshable, useI18n } from '/@/composables'
 

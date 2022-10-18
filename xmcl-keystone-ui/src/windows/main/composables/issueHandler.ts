@@ -1,4 +1,4 @@
-import { provide } from '@vue/composition-api'
+import { provide } from 'vue'
 import { IssueHandler, IssueHandlerKey, useModResource, useRouter, useService } from '/@/composables'
 import { Issue, InstanceModsServiceKey, IssueKey } from '@xmcl/runtime-api'
 import { useDialog } from './dialog'

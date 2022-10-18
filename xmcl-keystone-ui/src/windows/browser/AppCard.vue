@@ -76,7 +76,7 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent } from '@vue/composition-api'
+import { computed, defineComponent } from 'vue'
 import { InstalledAppManifest } from '@xmcl/runtime-api'
 import favicon from '/@/assets/favicon.svg'
 import { required } from '/@/util/props'

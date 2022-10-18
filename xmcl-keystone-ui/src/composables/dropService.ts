@@ -1,4 +1,4 @@
-import { InjectionKey, Ref } from '@vue/composition-api'
+import { InjectionKey, Ref } from 'vue'
 import { BaseServiceKey, ImportServiceKey, isPersistedResource, Resource, ResourceDomain, ResourceServiceKey, ResourceType } from '@xmcl/runtime-api'
 import { basename } from '../util/basename'
 import { useService } from './service'

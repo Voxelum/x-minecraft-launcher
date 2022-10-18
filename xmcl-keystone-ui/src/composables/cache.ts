@@ -1,4 +1,4 @@
-import { Ref, ref, watch } from '@vue/composition-api'
+import { Ref, ref, watch } from 'vue'
 
 const CACHE: Map<string, any> = new Map()
 

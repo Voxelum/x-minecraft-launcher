@@ -1,4 +1,4 @@
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import { AssetIndexIssueKey, AssetsIssueKey, IncompatibleJavaIssueKey, isIssue, Issue, LibrariesIssueKey, MissingJavaIssueKey, VersionIssueKey, VersionJarIssueKey, VersionJsonIssueKey } from '@xmcl/runtime-api'
 import { useI18n, useIssues } from '/@/composables'
 

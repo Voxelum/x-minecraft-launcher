@@ -1,4 +1,4 @@
-import { computed, inject, InjectionKey, provide, reactive, Ref, ref, set, watch } from '@vue/composition-api'
+import { computed, inject, InjectionKey, provide, reactive, Ref, ref, set, watch } from 'vue'
 import { useService } from './service'
 import { PINGING_STATUS, ServerStatus, UNKNOWN_STATUS, InstanceServiceKey, ServerStatusServiceKey, protocolToMinecraft } from '@xmcl/runtime-api'
 

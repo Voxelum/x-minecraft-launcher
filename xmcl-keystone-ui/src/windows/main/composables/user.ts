@@ -1,4 +1,4 @@
-import { computed, reactive, Ref, toRefs } from '@vue/composition-api'
+import { computed, reactive, Ref, toRefs } from 'vue'
 import { GameProfileAndTexture, OfficialUserServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
 import { useI18n, useService, useServiceBusy } from '/@/composables'
 

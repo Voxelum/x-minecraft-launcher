@@ -110,7 +110,7 @@
 </template>
 
 <script lang=ts setup>
-import { Ref } from '@vue/composition-api'
+import { Ref } from 'vue'
 import FilterCombobox from '/@/components/FilterCombobox.vue'
 import { useService, useRouter, useServiceBusy, useFilterCombobox, useI18n } from '/@/composables'
 import { ResourceServiceKey, ResourceType, ResourceDomain, CachedFTBModpackVersionManifest, ModpackServiceKey, ModpackResource } from '@xmcl/runtime-api'

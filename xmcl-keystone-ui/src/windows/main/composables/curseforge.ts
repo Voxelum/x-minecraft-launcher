@@ -1,4 +1,4 @@
-import { computed, onMounted, reactive, ref, toRefs, watch } from '@vue/composition-api'
+import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { File, FileModLoaderType, Mod, ModCategory, ModsSearchSortField } from '@xmcl/curseforge'
 import { CurseForgeServiceKey, Persisted, ProjectType, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useRouter, useService, useServiceBusy } from '/@/composables'

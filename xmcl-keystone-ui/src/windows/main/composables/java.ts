@@ -1,4 +1,4 @@
-import { computed } from '@vue/composition-api'
+import { computed } from 'vue'
 import { BaseServiceKey, JavaRecord, JavaServiceKey } from '@xmcl/runtime-api'
 import { DialogKey } from './dialog'
 import { useServiceBusy, useService } from '/@/composables'

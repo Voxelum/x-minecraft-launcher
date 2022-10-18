@@ -45,7 +45,7 @@
 <script lang=ts>
 import { TaskItem } from '/@/entities/task'
 import { required } from '/@/util/props'
-import { defineComponent, computed, ref } from '@vue/composition-api'
+import { defineComponent, computed, ref } from 'vue'
 import { TaskState } from '@xmcl/runtime-api'
 
 export default defineComponent({

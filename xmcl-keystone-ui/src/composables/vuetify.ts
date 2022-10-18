@@ -1,4 +1,4 @@
-import { InjectionKey } from '@vue/composition-api'
+import { InjectionKey } from 'vue'
 import { Framework } from 'vuetify'
 import { injection } from '../util/inject'
 import colors from 'vuetify/lib/util/colors'

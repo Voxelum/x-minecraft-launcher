@@ -1,4 +1,4 @@
-import { InjectionKey, reactive, ToRefs, toRefs } from '@vue/composition-api'
+import { InjectionKey, reactive, ToRefs, toRefs } from 'vue'
 import { InstanceData, InstanceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
 import { useCurrentUser } from './user'
 import { useMinecraftVersions } from './version'

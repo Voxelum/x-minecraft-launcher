@@ -6,7 +6,7 @@
   >
     <v-list-item class="flex justify-end">
       <v-select
-        v-model="filteredMinecraft"
+        v-model="data.filteredMinecraft"
         label="Minecraft"
         class="max-w-40 flex-shrink flex-grow-0"
         hide-details
@@ -76,50 +76,50 @@
     </div>
 
     <v-dialog
-      v-model="deletingVersion"
+      v-model="data.deletingVersion"
       max-width="290"
     >
       <v-card>
         <v-card-title class="headline">
-          {{ $t('localVersion.delete') }}
+          {{ t('localVersion.delete') }}
         </v-card-title>
-        <v-card-text>{{ $t('localVersion.deleteDescription') }}</v-card-text>
+        <v-card-text>{{ t('localVersion.deleteDescription') }}</v-card-text>
         <v-card-actions>
           <v-spacer />
           <v-btn
             text
             @click="cancelDeleting()"
           >
-            {{ $t('no') }}
+            {{ t('no') }}
           </v-btn>
           <v-btn
             color="error en-1"
             text
             @click="confirmDeleting()"
           >
-            {{ $t('yes') }}
+            {{ t('yes') }}
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
     <v-dialog
-      v-model="reinstallVersion"
+      v-model="data.reinstallVersion"
       max-width="390"
     >
       <v-card>
         <v-card-title
           class="headline"
         >
-          {{ $t('localVersion.reinstallTitle', { version: reinstallVersionId }) }}
+          {{ t('localVersion.reinstallTitle', { version: data.reinstallVersionId }) }}
         </v-card-title>
-        <v-card-text>{{ $t('localVersion.reinstallDescription') }}</v-card-text>
+        <v-card-text>{{ t('localVersion.reinstallDescription') }}</v-card-text>
         <v-card-actions>
           <v-spacer />
           <v-btn
             text
             @click="cancelReinstall()"
           >
-            {{ $t('no') }}
+            {{ t('no') }}
           </v-btn>
           <v-btn
             color="orange en-1"
@@ -129,7 +129,7 @@
             <v-icon left>
               build
             </v-icon>
-            {{ $t('yes') }}
+            {{ t('yes') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -159,114 +159,90 @@
           <v-icon left>
             folder
           </v-icon>
-          {{ $t('localVersion.empty') }}
+          {{ t('localVersion.empty') }}
         </v-btn>
         <v-btn
           large
           color="primary"
           :loading="refreshing"
-          @click="refreshVersions"
+          @click="refresh"
         >
-          {{ $t('localVersion.refresh') }}
+          {{ t('localVersion.refresh') }}
         </v-btn>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
-<script lang=ts>
-import { computed, defineComponent, reactive, toRefs } from '@vue/composition-api'
+<script lang=ts setup>
 import { InstallServiceKey, LocalVersionHeader, versionCompare, VersionServiceKey } from '@xmcl/runtime-api'
 import { useLocalVersions } from '../composables/version'
-import { useRefreshable, useRouter, useService } from '/@/composables'
-import { optional, withDefault } from '/@/util/props'
+import { useI18n, useRefreshable, useService } from '/@/composables'
 
-export default defineComponent({
-  props: {
-    filterText: withDefault(String, () => ''),
-    value: optional<LocalVersionHeader>(Object),
-  },
-  emits: ['input'],
-  setup(props, context) {
-    const data = reactive({
-      deletingVersion: false,
-      deletingVersionId: '',
-
-      reinstallVersion: false,
-      reinstallVersionId: '',
-
-      filteredMinecraft: '',
-    })
-    const { reinstall } = useService(InstallServiceKey)
-    const { localVersions } = useLocalVersions()
-    const { deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions } = useService(VersionServiceKey)
-    const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1).filter(v => !data.filteredMinecraft || v.minecraft === data.filteredMinecraft))
-    const minecraftVersions = computed(() => [...new Set(localVersions.value.map(v => v.minecraft))].sort(versionCompare).reverse())
-    const router = useRouter()
-    function isSelected(v: LocalVersionHeader) {
-      if (!props.value) return false
-      return v.id === props.value.id
-    }
-    function selectVersion(v: LocalVersionHeader) {
-      context.emit('input', v)
-    }
-    function browseVersionsFolder() {
-      showVersionsDirectory()
-    }
-    function openVersionDir(v: LocalVersionHeader) {
-      showVersionDirectory(v.id)
-    }
-    function startDelete(v: LocalVersionHeader) {
-      data.deletingVersion = true
-      data.deletingVersionId = v.id
-    }
-    function startReinstall(v: LocalVersionHeader) {
-      data.reinstallVersion = true
-      data.reinstallVersionId = v.id
-    }
-    function confirmDeleting() {
-      deleteVersion(data.deletingVersionId)
-      data.deletingVersion = false
-      data.deletingVersionId = ''
-    }
-    function confirmReinstall() {
-      reinstall(data.reinstallVersionId)
-      data.reinstallVersion = false
-      data.reinstallVersionId = ''
-    }
-    function cancelDeleting() {
-      data.deletingVersion = false
-      data.deletingVersionId = ''
-    }
-    function cancelReinstall() {
-      data.reinstallVersion = false
-      data.reinstallVersionId = ''
-    }
-
-    const { refresh, refreshing } = useRefreshable(async () => {
-      await refreshVersions()
-    })
-
-    return {
-      router,
-      ...toRefs(data),
-      minecraftVersions,
-      versions,
-      isSelected,
-      cancelDeleting,
-      confirmDeleting,
-      startDelete,
-      openVersionDir,
-      browseVersionsFolder,
-      refreshVersions: refresh,
-      refreshing,
-      selectVersion,
-      startReinstall,
-      cancelReinstall,
-      confirmReinstall,
-    }
-  },
+const props = withDefaults(defineProps<{
+  filterText: string
+  value?: LocalVersionHeader
+}>(), {
+  filterText: '',
+  value: undefined,
 })
+
+const data = reactive({
+  deletingVersion: false,
+  deletingVersionId: '',
+
+  reinstallVersion: false,
+  reinstallVersionId: '',
+
+  filteredMinecraft: '',
+})
+const { reinstall } = useService(InstallServiceKey)
+const { localVersions } = useLocalVersions()
+const { deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions } = useService(VersionServiceKey)
+const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1).filter(v => !data.filteredMinecraft || v.minecraft === data.filteredMinecraft))
+const minecraftVersions = computed(() => [...new Set(localVersions.value.map(v => v.minecraft))].sort(versionCompare).reverse())
+const { t } = useI18n()
+
+function isSelected(v: LocalVersionHeader) {
+  if (!props.value) return false
+  return v.id === props.value.id
+}
+function browseVersionsFolder() {
+  showVersionsDirectory()
+}
+function openVersionDir(v: LocalVersionHeader) {
+  showVersionDirectory(v.id)
+}
+function startDelete(v: LocalVersionHeader) {
+  data.deletingVersion = true
+  data.deletingVersionId = v.id
+}
+function startReinstall(v: LocalVersionHeader) {
+  data.reinstallVersion = true
+  data.reinstallVersionId = v.id
+}
+function confirmDeleting() {
+  deleteVersion(data.deletingVersionId)
+  data.deletingVersion = false
+  data.deletingVersionId = ''
+}
+function confirmReinstall() {
+  reinstall(data.reinstallVersionId)
+  data.reinstallVersion = false
+  data.reinstallVersionId = ''
+}
+function cancelDeleting() {
+  data.deletingVersion = false
+  data.deletingVersionId = ''
+}
+function cancelReinstall() {
+  data.reinstallVersion = false
+  data.reinstallVersionId = ''
+}
+const { refresh, refreshing } = useRefreshable(async () => {
+  await refreshVersions()
+})
+
 </script>
 
 <style>

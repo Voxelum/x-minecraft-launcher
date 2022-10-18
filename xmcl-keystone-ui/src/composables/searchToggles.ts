@@ -1,4 +1,4 @@
-import { InjectionKey, inject, onMounted, onUnmounted, provide } from '@vue/composition-api'
+import { InjectionKey, inject, onMounted, onUnmounted, provide } from 'vue'
 import { injection } from '../util/inject'
 
 // export const SEARCH_TOGGLE_SYMBOL: InjectionKey<SearchToggle> = Symbol('search-toggle')

@@ -1,34 +1,33 @@
-import VueCompositionApi, { createApp, h, InjectionKey } from '@vue/composition-api'
-import App from './App.vue'
-import vuetify from './vuetify'
-import Vue from 'vue'
 import 'virtual:windi.css'
-import { VuetifyInjectionKey } from '/@/composables/vuetify'
-import { I18N_KEY, SERVICES_KEY, usePreferDark } from '/@/composables'
+import Vue, { h } from 'vue'
 import VueI18n from 'vue-i18n'
-import { BaseServiceKey, ServiceChannel } from '@xmcl/runtime-api'
+import { castToVueI18n, createI18n } from 'vue-i18n-bridge'
+import App from './App.vue'
 import { baseService } from './baseService'
-import { createI18n } from '/@/i18n'
+import vuetify from './vuetify'
+import { I18N_KEY, usePreferDark } from '/@/composables'
+import { VuetifyInjectionKey } from '/@/composables/vuetify'
 
-Vue.use(VueI18n)
-
-const messages = Object.fromEntries(
-  Object.entries(
-    import.meta.globEager('./locales/*.y(a)?ml'))
-    .map(([key, value]) => {
-      const yaml = key.endsWith('.yaml')
-      return [key.slice('./locales/'.length, yaml ? -5 : -4), value.default]
-    }),
-)
+Vue.use(VueI18n, { bridge: true })
 
 const search = window.location.search.slice(1)
 const pairs = search.split('&').map((pair) => pair.split('='))
 const locale = pairs.find(p => p[0] === 'locale')?.[1] ?? 'en'
 const theme = pairs.find(p => p[0] === 'theme')?.[1] ?? 'dark'
 
-const i18n = createI18n(locale, messages)
+const i18n = castToVueI18n(
+  createI18n(
+    {
+      legacy: false,
+      locale: 'en',
+      silentTranslationWarn: true,
+      missingWarn: false,
+      // messages: messages,
+    },
+    VueI18n,
+  ),
+) // `createI18n` which is provide `vue-i18n-bridge` has second argument, you **must** pass `VueI18n` constructor which is provide `vue-i18n`
 
-Vue.use(VueCompositionApi)
 const app = createApp(defineComponent({
   vuetify,
   i18n,

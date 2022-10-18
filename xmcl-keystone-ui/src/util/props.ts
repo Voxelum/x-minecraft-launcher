@@ -1,4 +1,4 @@
-import { PropType } from '@vue/composition-api'
+import { PropType } from 'vue'
 
 export function required<T>(type: PropType<T>) {
   return { type, required: true } as const

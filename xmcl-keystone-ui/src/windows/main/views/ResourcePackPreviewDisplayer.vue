@@ -11,7 +11,7 @@
 </template>
 
 <script lang=ts setup>
-import { computed, onMounted, onUnmounted, ref, watch } from '@vue/composition-api'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { BlockModelFactory } from '@xmcl/model'
 import { BlockModel } from '@xmcl/resourcepack'
 import { CachedBlockModel } from '@xmcl/runtime-api'

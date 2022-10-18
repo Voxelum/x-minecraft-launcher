@@ -1,4 +1,4 @@
-import { computed, InjectionKey, onMounted, onUnmounted, reactive, Ref, ref } from '@vue/composition-api'
+import { computed, InjectionKey, onMounted, onUnmounted, reactive, Ref, ref } from 'vue'
 import { TaskItem } from '/@/entities/task'
 import { useI18n } from '../../composables'
 import { TaskBatchUpdatePayloads, TaskPayload, TaskState } from '@xmcl/runtime-api'

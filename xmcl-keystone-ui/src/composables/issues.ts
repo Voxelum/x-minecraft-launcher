@@ -1,4 +1,4 @@
-import { computed, InjectionKey } from '@vue/composition-api'
+import { computed, InjectionKey } from 'vue'
 import { DiagnoseSemaphoreKey, DiagnoseServiceKey, Issue, IssueKey } from '@xmcl/runtime-api'
 import { injection } from '../util/inject'
 import { useBusy } from './semaphore'

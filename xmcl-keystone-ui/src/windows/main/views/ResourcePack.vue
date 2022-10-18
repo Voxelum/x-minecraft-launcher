@@ -176,7 +176,7 @@
 </template>
 
 <script lang=ts setup>
-import { computed, onUnmounted, reactive, ref, Ref } from '@vue/composition-api'
+import { computed, onUnmounted, reactive, ref, Ref } from 'vue'
 import { ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'

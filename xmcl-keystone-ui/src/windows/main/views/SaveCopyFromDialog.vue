@@ -10,10 +10,10 @@
         class="headline"
         primary-title
       >
-        {{ $t('save.copyFrom.title') }}
+        {{ t('save.copyFrom.title') }}
       </v-card-title>
       <v-card-text>
-        {{ $t('save.copyFrom.description') }}
+        {{ t('save.copyFrom.description') }}
       </v-card-text>
 
       <v-alert
@@ -25,7 +25,7 @@
 
       <v-list two-line>
         <v-subheader v-if="storedSaves.length">
-          {{ $t('save.copyFrom.fromResource') }}
+          {{ t('save.copyFrom.fromResource') }}
         </v-subheader>
 
         <v-list-item
@@ -37,12 +37,12 @@
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title> {{ s.name }} </v-list-item-title>
-            <v-list-item-subtitle> {{ $t('save.copyFrom.from', { src: s.metadata.curseforge ? 'curseforge' : 'resources' }) }} </v-list-item-subtitle>
+            <v-list-item-subtitle> {{ t('save.copyFrom.from', { src: s.metadata.curseforge ? 'curseforge' : 'resources' }) }} </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
 
         <v-subheader v-if="loadedProfileSaves.length !== 0">
-          {{ $t('save.copyFrom.fromProfile') }}
+          {{ t('save.copyFrom.fromProfile') }}
         </v-subheader>
 
         <v-progress-circular
@@ -58,7 +58,7 @@
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title> {{ s.name }} </v-list-item-title>
-            <v-list-item-subtitle> {{ $t('save.copyFrom.from', {src: s.instanceName}) }} </v-list-item-subtitle>
+            <v-list-item-subtitle> {{ t('save.copyFrom.from', {src: s.instanceName}) }} </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
       </v-list>
@@ -71,7 +71,7 @@
           text
           @click="$emit('input', false)"
         >
-          {{ $t('save.copyFrom.cancel') }}
+          {{ t('save.copyFrom.cancel') }}
         </v-btn>
         <v-btn
           :disabled="nothingSelected"
@@ -80,86 +80,69 @@
           text
           @click="startImport"
         >
-          {{ $t('save.copyFrom.confirm') }}
+          {{ t('save.copyFrom.confirm') }}
         </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
-<script lang=ts>
-import { defineComponent, reactive, computed, toRefs, onMounted, watch } from '@vue/composition-api'
-import { useServiceBusy, useSaveResource } from '/@/composables'
+<script lang=ts setup>
+import { useServiceBusy, useSaveResource, useRefreshable, useI18n } from '/@/composables'
 import { InstanceSave, InstanceSavesServiceKey } from '@xmcl/runtime-api'
 import { useInstanceSaves } from '../composables/save'
 
-export default defineComponent({
-  props: {
-    value: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  setup(props, context) {
-    const data = reactive({
-      loadedProfileSaves: [] as Array<InstanceSave>,
+withDefaults(defineProps<{
+  value: boolean
+}>(), {
+  value: false,
+})
+const emit = defineEmits(['input'])
+const { t } = useI18n()
 
-      profilesCopyFrom: [] as boolean[],
-      resourcesCopyFrom: [] as boolean[],
+const loadedProfileSaves = ref([] as Array<InstanceSave>)
+const profilesCopyFrom = ref([] as boolean[])
+const resourcesCopyFrom = ref([] as boolean[])
+const error = ref(undefined as any)
 
-      working: false,
+const { cloneSave, readAllInstancesSaves: loadAllPreviews, importSave } = useInstanceSaves()
+const { resources: storedSaves } = useSaveResource()
+const nothingSelected = computed(() => profilesCopyFrom.value.every(v => !v) && resourcesCopyFrom.value.every(v => !v))
+const loadingSaves = useServiceBusy(InstanceSavesServiceKey, 'readAllInstancesSaves')
 
-      error: null as any,
-    })
+onMounted(() => {
+  loadAllPreviews().then((all) => {
+    loadedProfileSaves.value = all
+  })
+  watch(() => loadedProfileSaves.value, () => {
+    profilesCopyFrom.value = new Array(loadedProfileSaves.value.length)
+  })
+  watch(storedSaves, () => {
+    resourcesCopyFrom.value = new Array(storedSaves.value.length)
+  })
+})
 
-    const { cloneSave, readAllInstancesSaves: loadAllPreviews, importSave } = useInstanceSaves()
-    const { resources: storedSaves } = useSaveResource()
-    const nothingSelected = computed(() => data.profilesCopyFrom.every(v => !v) && data.resourcesCopyFrom.every(v => !v))
-    const loadingSaves = useServiceBusy(InstanceSavesServiceKey, 'readAllInstancesSaves')
+const { refresh: startImport, refreshing: working } = useRefreshable(async () => {
+  try {
+    const profilesSaves = loadedProfileSaves.value.filter((_, i) => profilesCopyFrom.value[i])
+    const resourcesSaves = storedSaves.value.filter((_, i) => resourcesCopyFrom.value[i])
 
-    onMounted(() => {
-      loadAllPreviews().then((all) => {
-        data.loadedProfileSaves = all
-      })
-      watch(() => data.loadedProfileSaves, () => {
-        data.profilesCopyFrom = new Array(data.loadedProfileSaves.length)
-      })
-      watch(storedSaves, () => {
-        data.resourcesCopyFrom = new Array(storedSaves.value.length)
-      })
-    })
-    return {
-      ...toRefs(data),
-      loadingSaves,
-      storedSaves,
-      nothingSelected,
-      async startImport() {
-        data.working = true
-        try {
-          const profilesSaves = data.loadedProfileSaves.filter((_, i) => data.profilesCopyFrom[i])
-          const resourcesSaves = storedSaves.value.filter((_, i) => data.resourcesCopyFrom[i])
-
-          if (resourcesSaves.length !== 0) {
-            await Promise.all(resourcesSaves.map(save => importSave({ path: save.path, saveRoot: save.metadata.save.root })))
-          }
-
-          if (profilesSaves.length !== 0) {
-            for (const s of profilesSaves) {
-              // TODO: fix
-              await cloneSave({ saveName: s.name, destInstancePath: s.instanceName })
-            }
-          }
-          context.emit('input', false)
-        } catch (e) {
-          data.error = e
-          console.error('Fail to copy saves')
-          console.error(e)
-        } finally {
-          data.working = false
-        }
-      },
+    if (resourcesSaves.length !== 0) {
+      await Promise.all(resourcesSaves.map(save => importSave({ path: save.path, saveRoot: save.metadata.save.root })))
     }
-  },
+
+    if (profilesSaves.length !== 0) {
+      for (const s of profilesSaves) {
+        // TODO: fix
+        await cloneSave({ saveName: s.name, destInstancePath: s.instanceName })
+      }
+    }
+    emit('input', false)
+  } catch (e) {
+    error.value = e
+    console.error('Fail to copy saves')
+    console.error(e)
+  }
 })
 </script>
 
