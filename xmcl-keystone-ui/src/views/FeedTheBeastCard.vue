@@ -81,7 +81,7 @@
 
 <script lang=ts setup>
 import { useFeedTheBeastProject } from '../composables/ftb'
-import { getLocalDateString } from '/@/util/date'
+import { getLocalDateString } from '@/util/date'
 
 const props = defineProps<{ id: number }>()
 

@@ -1,9 +1,8 @@
-import { computed, Ref } from 'vue'
+import { TaskItem } from '@/entities/task'
+import { injection } from '@/util/inject'
 import { TaskState } from '@xmcl/runtime-api'
-import { injection } from '/@/util/inject'
-import { getServiceCallTasks } from '../../../vuexServiceProxy'
-import { kTaskManager } from '../provideTaskProxy'
-import { TaskItem } from '/@/entities/task'
+import { computed } from 'vue'
+import { kTaskManager } from './taskManager'
 
 export function useTaskCount() {
   const proxy = injection(kTaskManager)
@@ -39,29 +38,6 @@ export function useTask(finder: (i: TaskItem) => boolean) {
     time,
     pause: pause_,
     resume: resume_,
-    progress,
-    total,
-    message,
-    status,
-  }
-}
-
-export function useTaskFromServiceCall(call: Ref<Readonly<Promise<any> | undefined>>) {
-  const proxy = injection(kTaskManager)
-
-  const { tasks } = proxy
-
-  const task = computed(() => tasks.value.find(() => (call.value ? getServiceCallTasks(call.value)?.value[0] : undefined)))
-  const name = computed(() => task.value?.title ?? '')
-  const time = computed(() => task.value?.time ?? '')
-  const status = computed(() => task.value?.state ?? TaskState.Running)
-  const progress = computed(() => task.value?.progress ?? -1)
-  const total = computed(() => task.value?.total ?? -1)
-  const message = computed(() => task.value?.message ?? '')
-
-  return {
-    name,
-    time,
     progress,
     total,
     message,

@@ -43,8 +43,8 @@
 </template>
 
 <script lang=ts>
-import { TaskItem } from '/@/entities/task'
-import { required } from '/@/util/props'
+import { TaskItem } from '@/entities/task'
+import { required } from '@/util/props'
 import { defineComponent, computed, ref } from 'vue'
 import { TaskState } from '@xmcl/runtime-api'
 

@@ -1,4 +1,4 @@
-import { useLocalStorageCacheBool, useLocalStorageCacheInt, useLocalStorageCacheStringValue } from '/@/composables/cache'
+import { useLocalStorageCacheBool, useLocalStorageCacheInt, useLocalStorageCacheStringValue } from '@/composables/cache'
 
 export enum ParticleMode {
   PUSH = 'push',

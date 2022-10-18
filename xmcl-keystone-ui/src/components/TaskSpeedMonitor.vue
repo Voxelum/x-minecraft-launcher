@@ -13,7 +13,7 @@
 </template>
 <script lang="ts" setup>
 import { useTasks } from '../composables/task'
-import { getExpectedSize } from '/@/util/size'
+import { getExpectedSize } from '@/util/size'
 
 const { throughput } = useTasks()
 const speed = ref(0)

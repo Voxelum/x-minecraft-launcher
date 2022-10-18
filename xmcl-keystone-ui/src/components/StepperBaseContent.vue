@@ -58,8 +58,8 @@
 import { InstanceServiceKey } from '@xmcl/runtime-api'
 import { CreateOptionKey } from '../composables/instanceCreation'
 
-import { useService } from '/@/composables'
-import { required } from '/@/util/props'
+import { useService } from '@/composables'
+import { required } from '@/util/props'
 export default defineComponent({
   props: {
     valid: required(Boolean),

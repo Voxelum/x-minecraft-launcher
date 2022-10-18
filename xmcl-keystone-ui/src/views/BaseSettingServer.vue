@@ -46,7 +46,7 @@
 </template>
 
 <script lang=ts setup>
-import { injection } from '/@/util/inject'
+import { injection } from '@/util/inject'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 
 const { data } = injection(InstanceEditInjectionKey)

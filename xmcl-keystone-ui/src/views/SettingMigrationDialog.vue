@@ -74,7 +74,7 @@
 <script lang="ts" setup>
 import { BaseServiceException, BaseServiceKey, isException } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { useRefreshable, useService } from '/@/composables'
+import { useRefreshable, useService } from '@/composables'
 
 const { showOpenDialog } = windowController
 const { migrate, state } = useService(BaseServiceKey)

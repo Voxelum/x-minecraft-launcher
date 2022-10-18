@@ -408,6 +408,7 @@ localVersion:
     reinstall it.
   reinstallTitle: Reinstall {version}
   title: Local Versions
+logMonitor: Log Monitor
 logLevel:
   error: Error
   info: Info
@@ -1001,3 +1002,9 @@ versionType:
   name: Status
   release: Release
 'yes': 'Yes'
+browseApp:
+  createShortcut: Create Shortcut
+  default: DEFAULT
+  delete: Delete
+  launch: Launch and set as Default
+

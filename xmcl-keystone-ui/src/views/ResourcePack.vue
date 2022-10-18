@@ -183,9 +183,9 @@ import { useDialog } from '../composables/dialog'
 import { useInstanceBase } from '../composables/instance'
 import { ResourcePackItem, useInstanceResourcePacks } from '../composables/resourcePack'
 import ResourcePackCard from './ResourcePackCard.vue'
-import FilterCombobox from '/@/components/FilterCombobox.vue'
-import Hint from '/@/components/Hint.vue'
-import { useDragTransferList, useDropImport, useFilterCombobox, useResourceOperation, useServiceBusy } from '/@/composables'
+import FilterCombobox from '@/components/FilterCombobox.vue'
+import Hint from '@/components/Hint.vue'
+import { useDragTransferList, useDropImport, useFilterCombobox, useResourceOperation, useServiceBusy } from '@/composables'
 
 function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {
   function getFilterOptions(item: ResourcePackItem) {

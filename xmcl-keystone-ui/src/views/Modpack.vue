@@ -111,10 +111,10 @@
 
 <script lang=ts setup>
 import { Ref } from 'vue'
-import FilterCombobox from '/@/components/FilterCombobox.vue'
-import { useService, useServiceBusy, useFilterCombobox } from '/@/composables'
+import FilterCombobox from '@/components/FilterCombobox.vue'
+import { useService, useServiceBusy, useFilterCombobox } from '@/composables'
 import { ResourceServiceKey, ResourceType, ResourceDomain, CachedFTBModpackVersionManifest, ModpackServiceKey, ModpackResource } from '@xmcl/runtime-api'
-import { isStringArrayEquals } from '/@/util/equal'
+import { isStringArrayEquals } from '@/util/equal'
 import ModpackCard from './ModpackCard.vue'
 import DeleteButton from './ModpackDeleteButton.vue'
 import { useDialog } from '../composables/dialog'

@@ -48,9 +48,7 @@
     },
     "i18n-ally.localesPaths": [
         "xmcl-electron-app/main/locales",
-        "xmcl-keystone-ui/src/windows/browser/locales",
-        "xmcl-keystone-ui/src/windows/main/locales",
-        "xmcl-keystone-ui/src/windows/setup/locales"
+        "xmcl-keystone-ui/locales",
     ],
     "npm.packageManager": "pnpm"
 }

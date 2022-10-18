@@ -55,7 +55,7 @@ import ServerStatusBar from './HomeServerStatusBar.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
 import HomeSyncButton from './HomeSyncButton.vue'
 import HomeSyncDialog from './HomeSyncDialog.vue'
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 import HomeModrinthCard from './HomeModrinthCard.vue'
 import HomeInstallInstanceDialog from './HomeInstallInstanceDialog.vue'
 

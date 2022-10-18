@@ -60,7 +60,7 @@
 </template>
 
 <script lang=ts>
-import { withDefault } from '/@/util/props'
+import { withDefault } from '@/util/props'
 import { protocolToMinecraft } from '@xmcl/runtime-api'
 import AdvanceContent from '../components/StepperAdvanceContent.vue'
 import StepperFooter from '../components/StepperFooter.vue'

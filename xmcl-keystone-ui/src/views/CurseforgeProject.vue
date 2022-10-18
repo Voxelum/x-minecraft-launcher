@@ -156,8 +156,8 @@ import Header from './CurseforgeProjectHeader.vue'
 import { useCurseforgeInstall, useCurseforgeProject } from '../composables/curseforge'
 import { useDialog } from '../composables/dialog'
 import { AddInstanceDialogKey } from '../composables/instanceAdd'
-import { useService } from '/@/composables'
-import { getLocalDateString } from '/@/util/date'
+import { useService } from '@/composables'
+import { getLocalDateString } from '@/util/date'
 
 const props = withDefaults(defineProps<{
   type: ProjectType

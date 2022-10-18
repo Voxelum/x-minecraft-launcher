@@ -48,7 +48,7 @@
 import { Ref } from 'vue'
 import type { Mod } from '@xmcl/curseforge'
 import { BaseServiceKey, CurseForgeServiceKey } from '@xmcl/runtime-api'
-import { useRefreshable, useService } from '/@/composables'
+import { useRefreshable, useService } from '@/composables'
 
 const props = defineProps<{
   files: Array<{ projectID: number }>

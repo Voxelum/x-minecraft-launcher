@@ -73,8 +73,8 @@
 </template>
 <script lang="ts" setup>
 import { useInstanceBase } from '../composables/instance'
-import { useService } from '/@/composables'
-import FilterCombobox from '/@/components/FilterCombobox.vue'
+import { useService } from '@/composables'
+import FilterCombobox from '@/components/FilterCombobox.vue'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 
 defineProps<{ showCompatible: boolean }>()

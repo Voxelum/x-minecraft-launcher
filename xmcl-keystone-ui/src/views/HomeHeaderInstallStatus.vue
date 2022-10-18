@@ -18,7 +18,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { getExpectedSize } from '/@/util/size'
+import { getExpectedSize } from '@/util/size'
 import { useDialog } from '../composables/dialog'
 
 const props = defineProps<{

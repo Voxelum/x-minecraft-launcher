@@ -1,5 +1,5 @@
 import { DialogKey } from './dialog'
-import { useLocalStorageCacheStringValue, useLocalStorageCache } from '/@/composables/cache'
+import { useLocalStorageCacheStringValue, useLocalStorageCache } from '@/composables/cache'
 
 export function useSelectedServices () {
   const authService = useLocalStorageCacheStringValue('last-auth-service', 'mojang' as string)

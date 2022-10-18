@@ -115,8 +115,8 @@ import { vContextMenu } from '../directives/contextMenu'
 import { vSelectableCard } from '../directives/draggableCard'
 import { vLongPress } from '../directives/longPress'
 import ModCardLabels from './ModCardLabels.vue'
-import unknownPack from '/@/assets/unknown_pack.png'
-import { useService, useTags } from '/@/composables'
+import unknownPack from '@/assets/unknown_pack.png'
+import { useService, useTags } from '@/composables'
 
 const props = defineProps<{ source: ModItem; selection: boolean }>()
 const emit = defineEmits(['tags', 'enable', 'dragstart', 'select', 'delete', 'editTags', 'mouseenter', 'dragend', 'click'])

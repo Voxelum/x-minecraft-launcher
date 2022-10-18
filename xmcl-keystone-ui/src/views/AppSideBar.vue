@@ -348,8 +348,8 @@ import { useSortedInstance } from '../composables/instanceSort'
 import { useCurrentUser } from '../composables/user'
 import { vContextMenu } from '../directives/contextMenu'
 import AppSideBarInstanceItem from './AppSideBarInstanceItem.vue'
-import { useService } from '/@/composables'
-import { useLocalStorageCacheBool } from '/@/composables/cache'
+import { useService } from '@/composables'
+import { useLocalStorageCacheBool } from '@/composables/cache'
 
 const sideBarShowCurseforge = useLocalStorageCacheBool('sideBarShowCurseforge', true)
 const sideBarShowModrinth = useLocalStorageCacheBool('sideBarShowModrinth', true)

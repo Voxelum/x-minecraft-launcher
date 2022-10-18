@@ -1,7 +1,7 @@
 import { InjectionKey } from 'vue'
 import { InstanceServiceKey } from '@xmcl/runtime-api'
 import { useInstance } from './instance'
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 
 export const InstanceEditInjectionKey: InjectionKey<ReturnType<typeof useInstanceEdit>> = Symbol('InstanceEdit')
 

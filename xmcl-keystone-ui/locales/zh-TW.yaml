@@ -402,9 +402,11 @@ localVersion:
   title: 本地版本
 log:
   success: 成功
+logMonitor: 游戏日志检测
 logLevel:
   error: 錯誤
   info: 信息
+  success: 成功
   warning: 警告
 login:
   dropHint: 將驗證鏈接拖入此處手工驗證
@@ -885,3 +887,8 @@ versionType:
   name: 類型
   release: 穩定版
 'yes': 是
+browseApp:
+  createShortcut: '創建快捷方式'
+  launch: '啟動並設置為默認'
+  delete: '刪除'
+  default: '默認'

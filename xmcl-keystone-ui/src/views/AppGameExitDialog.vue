@@ -46,7 +46,7 @@
 </template>
 
 <script lang=ts setup>
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 import { BaseServiceKey, InstanceLogServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
 
 const data = reactive({

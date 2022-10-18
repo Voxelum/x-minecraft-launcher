@@ -354,6 +354,7 @@ localVersion:
   reinstallDescription: 如果你觉得此版本安装的有问题，可以尝试重新安装该版本。
   reinstallTitle: 重新安装 {version}
   title: 本地版本
+logMonitor: 游戏日志检测
 logLevel:
   error: 错误
   info: 信息
@@ -909,3 +910,8 @@ versionType:
   name: 类型
   release: 稳定版
 'yes': 是
+browseApp:
+  createShortcut: 创建快捷方式
+  default: 默认
+  delete: 删除
+  launch: 启动并设置为默认

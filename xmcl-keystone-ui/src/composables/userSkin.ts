@@ -1,6 +1,6 @@
 import { computed, InjectionKey, onMounted, reactive, Ref, toRefs, watch } from 'vue'
 import { GameProfileAndTexture, UserServiceKey } from '@xmcl/runtime-api'
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 
 export function usePlayerName(gameProfile: Ref<GameProfileAndTexture>) {
   const name = ref(gameProfile.value.name)

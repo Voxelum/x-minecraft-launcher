@@ -148,9 +148,9 @@ import { isException, OfficialUserServiceKey, UserException, UserServiceKey } fr
 import { useDialog } from '../composables/dialog'
 import { LoginDialog, useSelectedServices } from '../composables/login'
 import { useLoginValidation } from '../composables/user'
-import Hint from '/@/components/Hint.vue'
-import Particles from '/@/components/Particles.vue'
-import { useBusy, useRefreshable, useService } from '/@/composables'
+import Hint from '@/components/Hint.vue'
+import Particles from '@/components/Particles.vue'
+import { useBusy, useRefreshable, useService } from '@/composables'
 
 interface ServiceItem {
   text: string

@@ -43,7 +43,7 @@
 
 <script lang=ts setup>
 import { VersionItem } from '../composables/versionList'
-import { useRefreshable } from '/@/composables'
+import { useRefreshable } from '@/composables'
 
 const props = defineProps<{
   source: VersionItem

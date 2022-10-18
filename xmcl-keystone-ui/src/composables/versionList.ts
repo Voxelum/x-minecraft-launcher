@@ -2,9 +2,9 @@ import { Ref } from 'vue'
 import { ForgeVersion, LockKey } from '@xmcl/runtime-api'
 import { useFabricVersions, useForgeVersions, useMinecraftVersions, useOptifineVersions, useQuiltVersions } from './version'
 
-import { kSemaphores } from '/@/composables'
-import { getLocalDateString } from '/@/util/date'
-import { injection } from '/@/util/inject'
+import { kSemaphores } from '@/composables'
+import { getLocalDateString } from '@/util/date'
+import { injection } from '@/util/inject'
 
 export interface VersionItem {
   tag?: string

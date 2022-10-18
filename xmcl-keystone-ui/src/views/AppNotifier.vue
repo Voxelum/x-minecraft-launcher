@@ -37,7 +37,7 @@
 
 <script lang=ts setup>
 import { Level, kNotificationQueue } from '../composables/notifier'
-import { injection } from '/@/util/inject'
+import { injection } from '@/util/inject'
 
 const data = reactive({
   show: false,

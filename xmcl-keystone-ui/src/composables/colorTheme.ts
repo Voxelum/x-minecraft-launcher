@@ -1,5 +1,5 @@
-import { useTheme } from '/@/composables'
-import { useLocalStorageCacheStringValue } from '/@/composables/cache'
+import { useTheme } from '@/composables'
+import { useLocalStorageCacheStringValue } from '@/composables/cache'
 
 export function useColorTheme() {
   const { darkTheme } = useTheme()

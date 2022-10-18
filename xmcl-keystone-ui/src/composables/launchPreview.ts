@@ -1,5 +1,5 @@
 import { LaunchServiceKey } from '@xmcl/runtime-api'
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 
 export function useLaunchPreview() {
   const { generateArguments } = useService(LaunchServiceKey)

@@ -53,7 +53,7 @@
 
 <script lang=ts setup>
 import { UserServiceKey } from '@xmcl/runtime-api'
-import { useRefreshable, useService } from '/@/composables'
+import { useRefreshable, useService } from '@/composables'
 
 interface ServiceItem {
   text: string

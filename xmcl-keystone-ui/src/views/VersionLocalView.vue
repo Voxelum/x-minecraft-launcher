@@ -177,7 +177,7 @@
 <script lang=ts setup>
 import { InstallServiceKey, LocalVersionHeader, versionCompare, VersionServiceKey } from '@xmcl/runtime-api'
 import { useLocalVersions } from '../composables/version'
-import { useRefreshable, useService } from '/@/composables'
+import { useRefreshable, useService } from '@/composables'
 
 const props = withDefaults(defineProps<{
   filterText: string

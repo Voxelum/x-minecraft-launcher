@@ -34,7 +34,7 @@
   </v-list>
 </template>
 <script lang=ts setup>
-import localMapping from '/@/assets/localeMapping.json'
+import localMapping from '@/assets/localeMapping.json'
 
 defineProps<{ value: string }>()
 

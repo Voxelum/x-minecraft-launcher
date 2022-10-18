@@ -37,7 +37,7 @@
 <script lang="ts" setup>
 import { OfflineUserServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
 import UserSkinView from './UserSkinView.vue'
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 
 const props = defineProps<{
   user: UserProfile

@@ -24,7 +24,7 @@
 </template>
 <script lang="ts" setup>
 import { InstanceOptionsServiceKey } from '@xmcl/runtime-api'
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 
 const { state } = useService(InstanceOptionsServiceKey)
 const resourcePackCount = computed(() => state.options.resourcePacks.length)

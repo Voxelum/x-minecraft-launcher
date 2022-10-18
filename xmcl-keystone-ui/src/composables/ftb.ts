@@ -1,6 +1,6 @@
 import { Ref } from 'vue'
 import { FTBVersion, FeedTheBeastServiceKey, FTBModpackManifest, FTBModpackVersionManifest, CachedFTBModpackVersionManifest } from '@xmcl/runtime-api'
-import { useRefreshable, useService } from '/@/composables'
+import { useRefreshable, useService } from '@/composables'
 
 interface FeedTheBeastProps {
   keyword?: string

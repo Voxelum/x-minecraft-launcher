@@ -24,7 +24,7 @@
 </template>
 <script lang="ts" setup>
 import { InstanceModsServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey } from '@xmcl/runtime-api'
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 
 const { state } = useService(InstanceSavesServiceKey)
 const savesLength = computed(() => state.saves.length)

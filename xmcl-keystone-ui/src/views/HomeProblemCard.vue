@@ -46,7 +46,7 @@
 </template>
 <script lang="ts" setup>
 import { useProblemItems } from '../composables/problems'
-import { useIssues } from '/@/composables'
+import { useIssues } from '@/composables'
 const { refreshing, fix, issues } = useIssues()
 const items = useProblemItems(issues)
 const { t } = useI18n()

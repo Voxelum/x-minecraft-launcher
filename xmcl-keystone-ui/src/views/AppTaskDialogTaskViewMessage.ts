@@ -1,7 +1,7 @@
 import { defineComponent, h } from 'vue'
 import { BaseServiceKey } from '@xmcl/runtime-api'
-import { useService } from '/@/composables'
-import { required } from '/@/util/props'
+import { useService } from '@/composables'
+import { required } from '@/util/props'
 
 export default defineComponent({
   props: {

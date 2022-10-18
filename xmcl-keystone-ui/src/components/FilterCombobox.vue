@@ -72,7 +72,7 @@
 <script lang="ts" setup>
 import { getColor } from '../util/color'
 import { FilterCombobox } from '../composables'
-import { vFocusOnSearch } from '../windows/main/directives/focusOnSearch'
+import { vFocusOnSearch } from '../directives/focusOnSearch'
 import debounce from 'lodash.debounce'
 
 defineProps<{ label: String }>()

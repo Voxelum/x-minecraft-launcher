@@ -15,7 +15,7 @@
 
 <script lang=ts setup>
 import { FeedTheBeastServiceKey, FTBVersion } from '@xmcl/runtime-api'
-import { useRefreshable, useService } from '/@/composables'
+import { useRefreshable, useService } from '@/composables'
 import MarkdownIt from 'markdown-it'
 
 const parser = new MarkdownIt({ html: true })

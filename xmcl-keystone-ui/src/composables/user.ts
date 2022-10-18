@@ -1,7 +1,7 @@
 import { computed, reactive, Ref, toRefs } from 'vue'
 import { GameProfileAndTexture, OfficialUserServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
 
-import { useService, useServiceBusy } from '/@/composables'
+import { useService, useServiceBusy } from '@/composables'
 
 const NO_USER_PROFILE: UserProfile = Object.freeze({
   selectedProfile: '',

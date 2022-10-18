@@ -1,7 +1,7 @@
 import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { File, FileModLoaderType, Mod, ModCategory, ModsSearchSortField } from '@xmcl/curseforge'
 import { CurseForgeServiceKey, Persisted, ProjectType, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
-import { useService, useServiceBusy } from '/@/composables'
+import { useService, useServiceBusy } from '@/composables'
 
 interface CurseforgeProps {
   type: string

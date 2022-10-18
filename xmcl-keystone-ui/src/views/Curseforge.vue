@@ -170,9 +170,9 @@ import { useMinecraftVersions } from '../composables/version'
 import { vFocusOnSearch } from '../directives/focusOnSearch'
 import Categories from './CurseforgeCategories.vue'
 
-import { getLocalDateString } from '/@/util/date'
-import { dedup } from '/@/util/dedup'
-import { getExpectedSize } from '/@/util/size'
+import { getLocalDateString } from '@/util/date'
+import { dedup } from '@/util/dedup'
+import { getExpectedSize } from '@/util/size'
 
 interface CurseforgeProps {
   type: string

@@ -72,9 +72,9 @@
 </template>
 <script lang="ts" setup>
 import { computed } from 'vue'
-import unknownPack from '/@/assets/unknown_pack.png'
-import { useService, useTags } from '/@/composables'
-import { getColor } from '/@/util/color'
+import unknownPack from '@/assets/unknown_pack.png'
+import { useService, useTags } from '@/composables'
+import { getColor } from '@/util/color'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { ShaderPackItem } from '../composables/shaderpack'
 import { vContextMenu } from '../directives/contextMenu'

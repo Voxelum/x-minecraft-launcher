@@ -1,5 +1,5 @@
 import { computed, InjectionKey, onMounted, onUnmounted, reactive, Ref, ref } from 'vue'
-import { TaskItem } from '/@/entities/task'
+import { TaskItem } from '@/entities/task'
 
 import { TaskBatchUpdatePayloads, TaskPayload, TaskState } from '@xmcl/runtime-api'
 
@@ -96,7 +96,7 @@ export function useTaskManager() {
   /**
    * All the root tasks
    */
-  const tasks: Ref<TaskItem[]> = ref(reactive([]))
+  const tasks: Ref<TaskItem[]> = ref([])
 
   const pause = (task: TaskItem) => {
     taskMonitor.pause(task.taskId)

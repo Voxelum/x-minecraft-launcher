@@ -6,16 +6,11 @@ import { VitePWA } from 'vite-plugin-pwa'
 import WindiCSS from 'vite-plugin-windicss'
 import AutoImport from 'unplugin-auto-import/vite'
 import VueI18n from '@intlify/unplugin-vue-i18n/vite'
+import { fileURLToPath } from 'url'
 
 const entries = readdirSync(join(__dirname, './src'))
   .filter((f) => f.endsWith('.html'))
   .map((f) => join(__dirname, './src', f))
-
-const mainLocalPath = [
-  resolve(__dirname, 'src', 'windows', 'main', 'locales/**'),
-  resolve(__dirname, 'src', 'windows', 'browser', 'locales/**'),
-  resolve(__dirname, 'src', 'windows', 'logger', 'locales/**'),
-]
 
 /**
  * Vite shared config, assign alias and root dir
@@ -42,7 +37,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      '/@': join(__dirname, './src'),
+      '@': join(__dirname, './src'),
       '~main': join(__dirname, './src/windows/main'),
       '~logger': join(__dirname, './src/windows/logger'),
       '~setup': join(__dirname, './src/windows/setup'),
@@ -75,7 +70,9 @@ export default defineConfig({
     }),
 
     VueI18n({
-      include: mainLocalPath,
+      include: [
+        resolve(__dirname, 'locales/**'),
+      ],
       bridge: false,
     }),
 

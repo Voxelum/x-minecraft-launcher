@@ -1,8 +1,8 @@
 import { computed, ref, Ref, watch } from 'vue'
 import { FabricModMetadata } from '@xmcl/mod-parser'
 import { Compatible, DepsCompatible, getModCompatibility, InstanceJavaServiceKey, InstanceModsServiceKey, InstanceServiceKey, isModCompatible, isModResource, isPersistedResource, resolveDepsCompatible, Resource, ResourceDomain, ResourceServiceKey, ResourceSourceModrinth } from '@xmcl/runtime-api'
-import { useRefreshable, useService, useServiceBusy } from '/@/composables'
-import { isStringArrayEquals } from '/@/util/equal'
+import { useRefreshable, useService, useServiceBusy } from '@/composables'
+import { isStringArrayEquals } from '@/util/equal'
 
 /**
  * Contains some basic info of mod to display in UI.

@@ -56,10 +56,10 @@
 
 <script lang=ts setup>
 import { FileNodesSymbol } from '../composables/instanceFiles'
-import { useTheme } from '/@/composables'
+import { useTheme } from '@/composables'
 
-import { injection } from '/@/util/inject'
-import { getExpectedSize } from '/@/util/size'
+import { injection } from '@/util/inject'
+import { getExpectedSize } from '@/util/size'
 
 defineProps<{
   value: string[]

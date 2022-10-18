@@ -1,7 +1,7 @@
 import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, InstanceData, InstanceSchema, InstanceServiceKey, isCurseforgeModpackResource, isModrinthModpackResource, isMcbbsModpackResource, JavaServiceKey, McbbsModpackResource, ModpackResource, ModrinthModpackResource, RawModpackResource, ResourceDomain, ResourceServiceKey, ResourceType, RuntimeVersions, getInstanceConfigFromModrinthModpack, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack } from '@xmcl/runtime-api'
 import { DialogKey } from './dialog'
 import { useFeedTheBeastVersionsCache } from './ftb'
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 
 export const AddInstanceDialogKey: DialogKey<string> = 'add-instance-dialog'
 

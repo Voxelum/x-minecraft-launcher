@@ -265,7 +265,7 @@ import { useJava } from '../composables/java'
 import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useOptifineVersionList, useQuiltVersionList } from '../composables/versionList'
 import VersionMenu from './VersionMenu.vue'
 
-import { injection } from '/@/util/inject'
+import { injection } from '@/util/inject'
 
 defineProps({
   valid: {

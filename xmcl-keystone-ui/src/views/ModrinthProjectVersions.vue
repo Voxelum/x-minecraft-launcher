@@ -148,10 +148,10 @@ import { Ref } from 'vue'
 import { ProjectVersion } from '@xmcl/modrinth'
 import { getServiceSemaphoreKey, ModrinthServiceKey, Persisted, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import Markdown from 'markdown-it'
-import { useRefreshable, useSemaphores, useService, useServiceBusy } from '/@/composables'
-import { useVuetifyColor } from '/@/composables/vuetify'
-import { getColorForReleaseType } from '/@/util/color'
-import { getLocalDateString } from '/@/util/date'
+import { useRefreshable, useSemaphores, useService, useServiceBusy } from '@/composables'
+import { useVuetifyColor } from '@/composables/vuetify'
+import { getColorForReleaseType } from '@/util/color'
+import { getLocalDateString } from '@/util/date'
 
 const props = defineProps<{
   versions: string[]

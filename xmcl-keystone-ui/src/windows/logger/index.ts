@@ -5,8 +5,9 @@ import { castToVueI18n, createI18n } from 'vue-i18n-bridge'
 import App from './App.vue'
 import { baseService } from './baseService'
 import vuetify from './vuetify'
-import { usePreferDark } from '/@/composables'
-import { kVuetify } from '/@/composables/vuetify'
+import { usePreferDark } from '@/composables'
+import { kVuetify } from '@/composables/vuetify'
+import messages from '@intlify/unplugin-vue-i18n/messages'
 
 Vue.use(VueI18n, { bridge: true })
 
@@ -22,6 +23,7 @@ const i18n = castToVueI18n(
       locale: 'en',
       silentTranslationWarn: true,
       missingWarn: false,
+      messages,
     },
     VueI18n,
   ),

@@ -105,7 +105,7 @@
 import ModCard from './ModrinthModCard.vue'
 import Categories from './ModrinthCategories.vue'
 
-import { withDefault } from '/@/util/props'
+import { withDefault } from '@/util/props'
 import { useModrinth, useModrinthTags } from '../composables/modrinth'
 
 export default defineComponent({

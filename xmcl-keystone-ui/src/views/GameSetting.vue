@@ -55,7 +55,7 @@
 <script lang=ts>
 import { Frame } from '@xmcl/gamesetting'
 import { defineComponent, reactive, toRefs } from 'vue'
-import { useAutoSaveLoad } from '/@/composables'
+import { useAutoSaveLoad } from '@/composables'
 import { useInstanceGameSetting } from '../composables/instance'
 
 export default defineComponent({

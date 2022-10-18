@@ -16,7 +16,7 @@ import { Template } from '../composables/instanceAdd'
 import { InstanceFileNode, provideFileNodes } from '../composables/instanceFiles'
 import InstanceManifestFileTree from './InstanceManifestFileTree.vue'
 import StepperModpackContentCurseforge from './StepperModpackContentCurseforge.vue'
-import { basename } from '/@/util/basename'
+import { basename } from '@/util/basename'
 
 const props = defineProps<{
   modpack?: Template

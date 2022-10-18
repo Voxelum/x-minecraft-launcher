@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { BaseServiceKey, JavaRecord, JavaServiceKey } from '@xmcl/runtime-api'
 import { DialogKey } from './dialog'
-import { useServiceBusy, useService } from '/@/composables'
+import { useServiceBusy, useService } from '@/composables'
 
 export function useJavaService() {
   return useService(JavaServiceKey)

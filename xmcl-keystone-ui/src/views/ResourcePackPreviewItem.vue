@@ -9,7 +9,7 @@
 
 <script lang=ts>
 import { BlockStateJson } from '@xmcl/runtime-api'
-import { required } from '/@/util/props'
+import { required } from '@/util/props'
 
 export default defineComponent({
   props: { source: required< BlockStateJson & { onClick(): void }>(Object) },

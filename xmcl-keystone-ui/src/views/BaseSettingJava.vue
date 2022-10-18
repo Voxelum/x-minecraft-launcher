@@ -182,9 +182,9 @@ import { BaseServiceKey, JavaRecord } from '@xmcl/runtime-api'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import { useJava } from '../composables/java'
 import JavaList from './BaseSettingJavaList.vue'
-import { useService } from '/@/composables'
-import { injection } from '/@/util/inject'
-import { getExpectedSize } from '/@/util/size'
+import { useService } from '@/composables'
+import { injection } from '@/util/inject'
+import { getExpectedSize } from '@/util/size'
 
 const { t } = useI18n()
 const { showOpenDialog } = windowController

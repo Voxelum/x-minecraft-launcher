@@ -37,7 +37,7 @@
 </template>
 <script lang="ts" setup>
 import { BaseServiceKey } from '@xmcl/runtime-api'
-import { useRefreshable, useService } from '/@/composables'
+import { useRefreshable, useService } from '@/composables'
 
 withDefaults(defineProps<{ icon: boolean; border: string }>(), { icon: true, border: 'left' })
 
