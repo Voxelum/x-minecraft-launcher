@@ -122,7 +122,7 @@
 <script lang=ts setup>
 import { useFeedTheBeastProject } from '../composables/ftb'
 import MarkdownIt from 'markdown-it'
-import { useRefreshable, useService } from '/@/composables'
+import { useRefreshable, useService } from '@/composables'
 import FeedTheBeastProjectVersion from './FeedTheBeastProjectVersion.vue'
 import FeedTheBeastProjectChangelog from './FeedTheBeastProjectChangelog.vue'
 import { useDialog } from '../composables/dialog'

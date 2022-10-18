@@ -46,7 +46,7 @@
 import { InstanceIOException, InstanceIOServiceKey, InstanceManifestSchema, isException, InstanceManifest, XUpdateServiceKey, InstanceManifestServiceKey } from '@xmcl/runtime-api'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
-import { useService, useServiceBusy } from '/@/composables'
+import { useService, useServiceBusy } from '@/composables'
 
 const props = defineProps<{ shown: boolean }>()
 

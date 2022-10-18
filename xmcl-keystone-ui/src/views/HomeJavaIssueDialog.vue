@@ -114,14 +114,14 @@
 </template>
 
 <script lang=ts setup>
-import { kIssueHandlers, useServiceBusy, useService, useRefreshable } from '/@/composables'
+import { kIssueHandlers, useServiceBusy, useService, useRefreshable } from '@/composables'
 import { DiagnoseServiceKey, IncompatibleJavaIssueKey, InstanceServiceKey, InvalidJavaIssueKey, Java, JavaCompatibleState, JavaServiceKey, MissingJavaIssueKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { JavaVersion } from '@xmcl/core'
 import { useInstance } from '../composables/instance'
 import { JavaIssueDialogKey, useJava } from '../composables/java'
 import { useNotifier } from '../composables/notifier'
-import { injection } from '/@/util/inject'
+import { injection } from '@/util/inject'
 
 const { showOpenDialog } = windowController
 const { t } = useI18n()

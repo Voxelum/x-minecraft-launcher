@@ -44,7 +44,7 @@
 
 <script lang="ts" setup>
 import { useCurrentUser } from '../composables/user'
-import { injection } from '/@/util/inject'
+import { injection } from '@/util/inject'
 
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 

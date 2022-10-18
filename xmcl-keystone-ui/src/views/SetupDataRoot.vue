@@ -80,7 +80,7 @@
 <script lang="ts">
 import { Drive } from '@xmcl/runtime-api'
 
-import { required } from '/@/util/props'
+import { required } from '@/util/props'
 
 export default defineComponent({
   props: {

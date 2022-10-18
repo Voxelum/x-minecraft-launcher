@@ -24,7 +24,7 @@
 </template>
 <script lang="ts" setup>
 import { InstanceModsServiceKey, InstanceOptionsServiceKey } from '@xmcl/runtime-api'
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 
 const { state } = useService(InstanceOptionsServiceKey)
 const shaderPack = computed(() => state.shaderoptions.shaderPack)

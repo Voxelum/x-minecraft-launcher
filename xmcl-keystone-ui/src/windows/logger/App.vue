@@ -68,8 +68,8 @@
 import { set } from 'vue'
 
 import { baseService } from './baseService'
-import LogView from '/@/components/LogView.vue'
-import { LogRecord, parseLog } from '/@/util/log'
+import LogView from '@/components/LogView.vue'
+import { LogRecord, parseLog } from '@/util/log'
 
 export interface Log extends LogRecord {
   id: number

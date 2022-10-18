@@ -141,9 +141,9 @@ import { CreateOptionKey } from '../composables/instanceCreation'
 import { useMinecraftVersionList } from '../composables/versionList'
 import { vFallbackImg } from '../directives/fallbackImage'
 import VersionMenu from './VersionMenu.vue'
-import unknownServer from '/@/assets/unknown_server.png'
+import unknownServer from '@/assets/unknown_server.png'
 
-import { injection } from '/@/util/inject'
+import { injection } from '@/util/inject'
 
 const props = defineProps<{
   status: ServerStatus

@@ -84,8 +84,8 @@
 </template>
 
 <script lang="ts">
-import { useOperation, useDrop } from '/@/composables'
-import Hint from '/@/components/Hint.vue'
+import { useOperation, useDrop } from '@/composables'
+import Hint from '@/components/Hint.vue'
 import SaveViewPageCopyFromDialog from './SaveCopyFromDialog.vue'
 import SaveViewPageCopyToDialog from './SaveCopyToDialog.vue'
 import SaveViewPagePreviewCard from './SaveCard.vue'

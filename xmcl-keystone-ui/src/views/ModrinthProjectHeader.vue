@@ -159,11 +159,11 @@ import { Ref } from 'vue'
 import { Category, Project, ProjectVersion } from '@xmcl/modrinth'
 import { ModrinthServiceKey, Persisted, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import CurseforgeProjectDestMenu from './CurseforgeProjectDestMenu.vue'
-import { useRefreshable, useService, useServiceBusy } from '/@/composables'
-import { useVuetifyColor } from '/@/composables/vuetify'
-import { getColorForReleaseType } from '/@/util/color'
-import { getLocalDateString } from '/@/util/date'
-import { getExpectedSize } from '/@/util/size'
+import { useRefreshable, useService, useServiceBusy } from '@/composables'
+import { useVuetifyColor } from '@/composables/vuetify'
+import { getColorForReleaseType } from '@/util/color'
+import { getLocalDateString } from '@/util/date'
+import { getExpectedSize } from '@/util/size'
 
 const props = defineProps<{
   project: Project

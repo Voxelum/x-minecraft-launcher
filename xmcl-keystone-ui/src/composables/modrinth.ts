@@ -2,7 +2,7 @@ import { computed, InjectionKey, reactive, Ref, toRefs, watch } from 'vue'
 import { Category, GameVersion, License, Loader, SearchResultHit } from '@xmcl/modrinth'
 import { ModrinthServiceKey } from '@xmcl/runtime-api'
 
-import { useService, useRefreshable } from '/@/composables'
+import { useService, useRefreshable } from '@/composables'
 import debounce from 'lodash.debounce'
 
 export interface ModrinthOptions {

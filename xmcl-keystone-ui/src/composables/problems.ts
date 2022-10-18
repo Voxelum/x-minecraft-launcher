@@ -1,6 +1,6 @@
 import { Ref } from 'vue'
 import { AssetIndexIssueKey, AssetsIssueKey, IncompatibleJavaIssueKey, isIssue, Issue, LibrariesIssueKey, MissingJavaIssueKey, VersionIssueKey, VersionJarIssueKey, VersionJsonIssueKey } from '@xmcl/runtime-api'
-import { useIssues } from '/@/composables'
+import { useIssues } from '@/composables'
 
 export function useProblemItems(issues: Ref<Issue[]>) {
   const { t } = useI18n()

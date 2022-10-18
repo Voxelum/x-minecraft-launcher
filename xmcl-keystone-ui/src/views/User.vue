@@ -57,9 +57,9 @@ import UserPageHeader from './UserHeader.vue'
 import UserMicrosoftView from './UserMicrosoftView.vue'
 import UserMojangView from './UserMojangView.vue'
 import UserYggdrasilView from './UserYggdrasilView.vue'
-import { useBusy, useOperation, useService } from '/@/composables'
-import { DropServiceInjectionKey } from '/@/composables/dropService'
-import { injection } from '/@/util/inject'
+import { useBusy, useOperation, useService } from '@/composables'
+import { DropServiceInjectionKey } from '@/composables/dropService'
+import { injection } from '@/util/inject'
 
 const { refreshUser: refreshAccount } = useService(UserServiceKey)
 const { handleUrl } = useService(BaseServiceKey)

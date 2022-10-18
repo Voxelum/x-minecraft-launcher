@@ -65,7 +65,7 @@
 
 <script lang=ts setup>
 import { useInstanceServerStatus } from '../composables/serverStatus'
-import unknownServer from '/@/assets/unknown_server.png'
+import unknownServer from '@/assets/unknown_server.png'
 
 const { refresh, status, pinging } = useInstanceServerStatus()
 const { t } = useI18n()

@@ -8,7 +8,7 @@ declare module 'vue-virtual-scroll-list' {
   export = component
 }
 
-declare module '/@/assets/locales/index.json' {
+declare module '@/assets/locales/index.json' {
   type Locale = {
     [range: string]: string
   }

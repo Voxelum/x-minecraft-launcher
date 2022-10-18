@@ -21,7 +21,7 @@
 </template>
 <script lang="ts" setup>
 import { ProjectGallery } from '@xmcl/modrinth'
-import { getLocalDateString } from '/@/util/date'
+import { getLocalDateString } from '@/util/date'
 
 defineProps<{
   gallery: ProjectGallery[]

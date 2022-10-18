@@ -110,7 +110,7 @@ import { AddInstanceDialogKey, Template, useAllTemplate } from '../composables/i
 import { CreateOptionKey, useInstanceCreation } from '../composables/instanceCreation'
 import { useNotifier } from '../composables/notifier'
 
-import { useRefreshable, useService } from '/@/composables'
+import { useRefreshable, useService } from '@/composables'
 
 const { isShown, parameter, show: showAddInstance } = useDialog(AddInstanceDialogKey)
 const { show } = useDialog('task')

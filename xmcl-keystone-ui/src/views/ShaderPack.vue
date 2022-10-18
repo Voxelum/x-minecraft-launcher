@@ -67,12 +67,12 @@
 </template>
 
 <script lang="ts" setup>
-import { useRefreshable } from '/@/composables/refreshable'
-import FilterCombobox from '/@/components/FilterCombobox.vue'
+import { useRefreshable } from '@/composables/refreshable'
+import FilterCombobox from '@/components/FilterCombobox.vue'
 import { ShaderPackItem, useShaderpacks } from '../composables/shaderpack'
 import DeleteButton from './ShaderPackDeleteButton.vue'
 import ShaderPackCard from './ShaderPackCard.vue'
-import { useFilterCombobox } from '/@/composables'
+import { useFilterCombobox } from '@/composables'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
 

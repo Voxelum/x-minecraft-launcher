@@ -66,7 +66,7 @@
 
 <script lang=ts setup>
 import { JavaRecord, BaseServiceKey } from '@xmcl/runtime-api'
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 
 defineProps<{
   items:JavaRecord[]

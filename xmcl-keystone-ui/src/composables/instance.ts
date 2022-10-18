@@ -1,8 +1,8 @@
 import { computed, Ref } from 'vue'
 import { Frame as GameSetting } from '@xmcl/gamesetting'
 import { EMPTY_VERSION, getExpectVersion, getResolvedVersion, Instance, InstanceData, InstanceIOServiceKey, InstanceOptionsServiceKey, InstanceServiceKey, InstanceVersionServiceKey, ResourceServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
-import { useServiceBusy, useSemaphore } from '/@/composables/semaphore'
-import { useService, useServiceOnly } from '/@/composables/service'
+import { useServiceBusy, useSemaphore } from '@/composables/semaphore'
+import { useService, useServiceOnly } from '@/composables/service'
 
 export function useInstanceBase() {
   const { state } = useService(InstanceServiceKey)

@@ -25,8 +25,8 @@ export function useAsyncRoute() {
 
 export function useExternalRoute() {
   const { openInBrowser } = useService(BaseServiceKey)
-  const { beforeEach } = useRouter()
-  beforeEach((to, from, next) => {
+  const router = useRouter()
+  router.beforeEach((to, from, next) => {
     const full = to.fullPath.substring(1)
     if (full.startsWith('https:') || full.startsWith('http:') || full.startsWith('external')) {
       next(false)

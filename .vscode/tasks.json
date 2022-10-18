@@ -63,7 +63,7 @@
                     "background": {
                         "activeOnStart": true,
                         "beginsPattern": "[ ]+vite v.* dev server running at:.*",
-                        "endsPattern": "[ ]+ready in .+ ms.",
+                        "endsPattern": "[ ]+ready in .+ ms",
                     }
                 }
             ]

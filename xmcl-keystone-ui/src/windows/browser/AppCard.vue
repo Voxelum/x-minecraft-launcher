@@ -30,7 +30,7 @@
         v-if="defaultApp === manifest.url"
         color="primary"
       >
-        {{ t('default') }}
+        {{ t('browseApp.default') }}
       </v-chip>
       <v-tooltip top>
         <template #activator="{ on }">
@@ -43,7 +43,7 @@
             <v-icon>shortcut</v-icon>
           </v-btn>
         </template>
-        {{ t('createShortcut') }}
+        {{ t('browseApp.createShortcut') }}
       </v-tooltip>
       <v-tooltip top>
         <template #activator="{ on }">
@@ -56,7 +56,7 @@
             <v-icon>play_arrow</v-icon>
           </v-btn>
         </template>
-        {{ t('launch') }}
+        {{ t('browseApp.launch') }}
       </v-tooltip>
       <v-tooltip top>
         <template #activator="{ on }">
@@ -70,7 +70,7 @@
             <v-icon>delete_outline</v-icon>
           </v-btn>
         </template>
-        {{ t('delete') }}
+        {{ t('browseApp.delete') }}
       </v-tooltip>
     </div>
   </div>
@@ -78,7 +78,7 @@
 <script lang="ts" setup>
 import { InstalledAppManifest } from '@xmcl/runtime-api'
 
-import favicon from '/@/assets/favicon.svg'
+import favicon from '@/assets/favicon.svg'
 
 const props = defineProps<{
   manifest: InstalledAppManifest

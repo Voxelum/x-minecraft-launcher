@@ -73,7 +73,7 @@
 import { computed, defineComponent, onMounted, reactive, toRefs } from 'vue'
 import { InstalledAppManifest } from '@xmcl/runtime-api'
 import AppCard from './AppCard.vue'
-import { useRefreshable } from '/@/composables'
+import { useRefreshable } from '@/composables'
 
 export default defineComponent({
   components: { AppCard },

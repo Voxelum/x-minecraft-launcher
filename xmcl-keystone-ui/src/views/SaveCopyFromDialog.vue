@@ -88,7 +88,7 @@
 </template>
 
 <script lang=ts setup>
-import { useServiceBusy, useSaveResource, useRefreshable } from '/@/composables'
+import { useServiceBusy, useSaveResource, useRefreshable } from '@/composables'
 import { InstanceSave, InstanceSavesServiceKey } from '@xmcl/runtime-api'
 import { useInstanceSaves } from '../composables/save'
 

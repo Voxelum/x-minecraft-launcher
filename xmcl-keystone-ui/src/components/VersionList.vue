@@ -71,7 +71,7 @@
 <script lang=ts setup>
 import { VersionItem } from '../composables/versionList'
 import VersionListTile from './VersionListTile.vue'
-import Hint from '/@/components/Hint.vue'
+import Hint from '@/components/Hint.vue'
 
 defineProps<{
   canDisable?: boolean

@@ -47,7 +47,7 @@
 <script lang="ts" setup>
 import { InstanceServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 
 const { t } = useI18n()
 const name = ref('')

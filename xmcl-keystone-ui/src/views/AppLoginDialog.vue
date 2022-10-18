@@ -33,8 +33,8 @@ import { useColorTheme } from '../composables/colorTheme'
 import { useDialog } from '../composables/dialog'
 import { LoginDialog } from '../composables/login'
 import LoginDialogLoginView from './AppLoginDialogForm.vue'
-import { useService } from '/@/composables'
-import { useDropLink } from '/@/composables/dropLink'
+import { useService } from '@/composables'
+import { useDropLink } from '@/composables/dropLink'
 
 const { isShown, parameter } = useDialog(LoginDialog)
 const { inside } = useDropLink()

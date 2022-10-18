@@ -2,8 +2,8 @@ import { del, set } from 'vue'
 import type { ResolvedVersion } from '@xmcl/core'
 import { BaseServiceKey, BaseState, CurseForgeServiceKey, CurseforgeState, DiagnoseServiceKey, DiagnoseState, ElyByServiceKey, EMPTY_JAVA, EMPTY_VERSION, FeedTheBeastServiceKey, FeedTheBeastState, GameProfileAndTexture, ImportServiceKey, InstallServiceKey, InstanceInstallServiceKey, InstanceIOServiceKey, InstanceJavaServiceKey, InstanceJavaState, InstanceLogServiceKey, InstanceManifestServiceKey, InstanceModsServiceKey, InstanceModsState, InstanceOptionsServiceKey, InstanceOptionsState, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceServerInfoServiceKey, InstanceServiceKey, InstanceShaderPacksServiceKey, InstanceState, InstanceVersionServiceKey, InstanceVersionState, JavaRecord, JavaServiceKey, JavaState, LaunchServiceKey, LaunchState, LittleSkinUserServiceKey, LocalVersionHeader, ModpackServiceKey, ModrinthServiceKey, ModrinthState, OfficialUserServiceKey, OfflineUserServiceKey, PeerServiceKey, PeerState, Persisted, Resource, ResourceDomain, ResourcePackPreviewServiceKey, ResourceServiceKey, ResourceState, SaveState, ServerInfoState, ServerStatusServiceKey, UserProfile, UserServiceKey, UserState, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
 import { GameProfile } from '@xmcl/user'
-import { ServiceFactory, kServiceFactory } from '/@/composables'
-import { injection } from '/@/util/inject'
+import { ServiceFactory, kServiceFactory } from '@/composables'
+import { injection } from '@/util/inject'
 
 // fix vue 2 reactivity
 // TODO: remove this in vue 3

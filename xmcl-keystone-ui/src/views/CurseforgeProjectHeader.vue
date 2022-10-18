@@ -76,7 +76,7 @@
 import { Mod } from '@xmcl/curseforge'
 import DestMenu from './CurseforgeProjectDestMenu.vue'
 
-import { getLocalDateString } from '/@/util/date'
+import { getLocalDateString } from '@/util/date'
 
 const props = defineProps<{
   project?: Mod

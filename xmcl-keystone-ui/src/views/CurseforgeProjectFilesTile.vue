@@ -73,8 +73,8 @@
 <script lang=ts setup>
 import { File } from '@xmcl/curseforge'
 
-import { getColorForReleaseType } from '/@/util/color'
-import { getLocalDateString } from '/@/util/date'
+import { getColorForReleaseType } from '@/util/color'
+import { getLocalDateString } from '@/util/date'
 
 withDefaults(
   defineProps<{

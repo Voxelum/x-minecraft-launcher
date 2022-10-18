@@ -1,6 +1,6 @@
 import { InstanceServiceKey } from '@xmcl/runtime-api'
-import { useService } from '/@/composables'
-import { useLocalStorageCache } from '/@/composables/cache'
+import { useService } from '@/composables'
+import { useLocalStorageCache } from '@/composables/cache'
 
 export function useSortedInstance() {
   const ordered = useLocalStorageCache<string[]>('instancesOrder', () => [] as string[], JSON.stringify, JSON.parse)

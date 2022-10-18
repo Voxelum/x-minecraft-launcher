@@ -159,7 +159,7 @@ import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
 import HomeHeaderMinecraftLabel from './HomeHeaderMinecraftLabel.vue'
 import HomeHeaderQuiltLabel from './HomeHeaderQuiltLabel.vue'
 import HomeLaunchButton from './HomeLaunchButton.vue'
-import { useIssues, useService } from '/@/composables'
+import { useIssues, useService } from '@/composables'
 
 const { issues } = useIssues()
 const issue = computed(() => {

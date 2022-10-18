@@ -8,7 +8,7 @@
 
 <script lang=ts setup>
 import { IdleAnimation, SkinViewer, WalkingAnimation, RunningAnimation } from 'skinview3d'
-import steveSkin from '/@/assets/steve_skin.png'
+import steveSkin from '@/assets/steve_skin.png'
 
 const props = withDefaults(defineProps<{
   width?: number

@@ -31,7 +31,7 @@ import { InstanceEditInjectionKey, useInstanceEdit } from '../composables/instan
 import BaseSettingGeneral from './BaseSettingGeneral.vue'
 import BaseSettingModpack from './BaseSettingModpack.vue'
 import BaseSettingServer from './BaseSettingServer.vue'
-import { useAutoSaveLoad } from '/@/composables'
+import { useAutoSaveLoad } from '@/composables'
 import BaseSettingLaunch from './BaseSettingLaunch.vue'
 import BaseSettingJava from './BaseSettingJava.vue'
 import BaseSettingSync from './BaseSettingSync.vue'

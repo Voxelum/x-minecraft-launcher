@@ -28,8 +28,8 @@
   <!-- :style="{ 'pointer-events': onHomePage ? 'auto' : 'none' }" -->
 </template>
 <script lang="ts" setup>
-import Halo from '/@/components/Halo.vue'
-import Particles from '/@/components/Particles.vue'
+import Halo from '@/components/Halo.vue'
+import Particles from '@/components/Particles.vue'
 import { BackgroundType, useBackground } from '../composables/background'
 import { Ref } from 'vue'
 

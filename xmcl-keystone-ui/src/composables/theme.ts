@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { injection } from '/@/util/inject'
+import { injection } from '@/util/inject'
 import { kVuetify } from './vuetify'
 import { useService } from './service'
 import { BaseServiceKey } from '@xmcl/runtime-api'

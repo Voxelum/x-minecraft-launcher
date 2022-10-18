@@ -90,8 +90,8 @@
 <script lang=ts setup>
 import { ResourceDomain } from '@xmcl/runtime-api'
 
-import { FilePreview } from '/@/composables/dropService'
-import { getExpectedSize } from '/@/util/size'
+import { FilePreview } from '@/composables/dropService'
+import { getExpectedSize } from '@/util/size'
 
 const iconMap: Record<string, string> = {
   forge: '$vuetify.icons.package',

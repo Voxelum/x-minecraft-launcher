@@ -1,6 +1,6 @@
 import { CloneSaveOptions, DeleteSaveOptions, ImportSaveOptions, InstanceSavesServiceKey } from '@xmcl/runtime-api'
 import { useInstanceBase } from './instance'
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 
 export function useInstanceSaves() {
   const { path } = useInstanceBase()

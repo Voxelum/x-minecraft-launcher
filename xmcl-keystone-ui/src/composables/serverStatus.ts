@@ -1,9 +1,9 @@
 import { InstanceServiceKey, PingServerOptions, ServerStatus, ServerStatusServiceKey, UNKNOWN_STATUS } from '@xmcl/runtime-api'
 import { computed, InjectionKey, Ref, ref, set, watch } from 'vue'
 
-import { useService, useSeverStatusAcceptVersion } from '/@/composables'
-import { useLocalStorageCache } from '/@/composables/cache'
-import { injection } from '/@/util/inject'
+import { useService, useSeverStatusAcceptVersion } from '@/composables'
+import { useLocalStorageCache } from '@/composables/cache'
+import { injection } from '@/util/inject'
 
 export const kServerStatusCache: InjectionKey<Ref<Record<string, ServerStatus>>> = Symbol('ServerStatusCache')
 

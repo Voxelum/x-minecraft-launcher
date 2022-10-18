@@ -369,6 +369,7 @@ localVersion:
     попробуйте переустановить её.
   reinstallTitle: Переустановить {version}
   title: Локальные версии
+logMonitor: Мониторинг
 logLevel:
   error: Ошибка
   info: Информация
@@ -886,3 +887,8 @@ versionType:
   name: Состояние
   release: Релиз
 'yes': Да
+browseApp:
+  createShortcut: Создать ярлык
+  default: ПО УМОЛЧАНИЮ
+  delete: Удалить
+  launch: Запустить и установить по умолчанию

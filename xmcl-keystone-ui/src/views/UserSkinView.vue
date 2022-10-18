@@ -82,7 +82,7 @@ import { useNotifier } from '../composables/notifier'
 import { PlayerNameModel, usePlayerName, UserSkinModel, useUserSkin } from '../composables/userSkin'
 import ImportSkinUrlForm from './UserImportSkinUrlForm.vue'
 import SpeedDial from './UserSkinSpeedDial.vue'
-import SkinView from '/@/components/SkinView.vue'
+import SkinView from '@/components/SkinView.vue'
 
 const props = withDefaults(defineProps<{
   user: UserProfile

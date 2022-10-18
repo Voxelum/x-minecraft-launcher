@@ -100,11 +100,11 @@
 </template>
 
 <script lang=ts setup>
-import { useServiceBusy, useService } from '/@/composables'
+import { useServiceBusy, useService } from '@/composables'
 import MarkdownIt from 'markdown-it'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { getLocalDateString } from '/@/util/date'
+import { getLocalDateString } from '@/util/date'
 
 const { isShown } = useDialog('update-info')
 const { t } = useI18n()

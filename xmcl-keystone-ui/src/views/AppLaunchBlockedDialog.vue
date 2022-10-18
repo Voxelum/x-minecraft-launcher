@@ -57,8 +57,8 @@
 <script lang=ts setup>
 import { getExpectVersion, LaunchException, LaunchExceptions, LaunchServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { useService } from '/@/composables'
-import { useExceptionHandler } from '/@/composables/exception'
+import { useService } from '@/composables'
+import { useExceptionHandler } from '@/composables/exception'
 import FeedbackCard from '../components/FeedbackCard.vue'
 
 const { on } = useService(LaunchServiceKey)

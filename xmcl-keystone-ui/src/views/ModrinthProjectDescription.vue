@@ -7,7 +7,7 @@
   </v-card>
 </template>
 <script lang="ts">
-import { required } from '/@/util/props'
+import { required } from '@/util/props'
 import Markdown from 'markdown-it'
 
 const md = Markdown({

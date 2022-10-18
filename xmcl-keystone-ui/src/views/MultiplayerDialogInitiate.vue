@@ -149,7 +149,7 @@
 import { createOfferAppUrl, PeerServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { useCurrentUser } from '../composables/user'
-import { useRefreshable, useService, useServiceBusy } from '/@/composables'
+import { useRefreshable, useService, useServiceBusy } from '@/composables'
 
 const { gameProfile } = useCurrentUser()
 const { isShown, parameter } = useDialog('peer-initiate')

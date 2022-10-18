@@ -150,7 +150,7 @@ import SetDataRoot from './SetupDataRoot.vue'
 import { Drive } from '@xmcl/runtime-api'
 import SetLocale from './SetupLocale.vue'
 import SelectGame from './SetupInstance.vue'
-import { useBootstrap } from '/@/composables/bootstrap'
+import { useBootstrap } from '@/composables/bootstrap'
 
 const emit = defineEmits(['ready'])
 

@@ -302,8 +302,8 @@ import { useInstance, useInstanceVersion } from '../composables/instance'
 import { AppExportDialogKey } from '../composables/instanceExport'
 import { InstanceFileExportData, provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
 import { useLocalVersions } from '../composables/version'
-import { useRefreshable, useService } from '/@/composables'
-import { getExpectedSize } from '/@/util/size'
+import { useRefreshable, useService } from '@/composables'
+import { getExpectedSize } from '@/util/size'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 
 const { isShown, hide: cancel } = useDialog(AppExportDialogKey)

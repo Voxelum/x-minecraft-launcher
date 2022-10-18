@@ -63,8 +63,8 @@
 import { Project, ProjectVersion } from '@xmcl/modrinth'
 import { InstanceData, ModpackServiceKey, ModrinthServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { useService, useServiceBusy } from '/@/composables'
-import { getLocalDateString } from '/@/util/date'
+import { useService, useServiceBusy } from '@/composables'
+import { getLocalDateString } from '@/util/date'
 
 const props = defineProps<{
   path: string

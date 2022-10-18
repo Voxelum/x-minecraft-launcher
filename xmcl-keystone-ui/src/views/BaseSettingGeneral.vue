@@ -301,7 +301,7 @@ import VersionMenu from '../components/VersionMenu.vue'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useOptifineVersionList, useQuiltVersionList } from '../composables/versionList'
 
-import { injection } from '/@/util/inject'
+import { injection } from '@/util/inject'
 
 const { data } = injection(InstanceEditInjectionKey)
 const minecraft = computed(() => data.runtime.minecraft)

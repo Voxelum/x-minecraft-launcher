@@ -31,7 +31,7 @@
 <script lang="ts" setup>
 import { File } from '@xmcl/curseforge'
 import { CurseForgeServiceKey, InstanceData, InstanceModsServiceKey, ModrinthServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
-import { useSemaphore, useService } from '/@/composables'
+import { useSemaphore, useService } from '@/composables'
 
 const props = defineProps<{
   upstream: InstanceData['upstream'] & { type: 'curseforge-modpack'}

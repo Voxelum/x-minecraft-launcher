@@ -29,7 +29,7 @@
 <script lang="ts" setup>
 import { InstanceServiceKey, XUpdateServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { useService, useServiceBusy } from '/@/composables'
+import { useService, useServiceBusy } from '@/composables'
 
 const { show } = useDialog('instance-sync')
 const checkingUpdate = useServiceBusy(XUpdateServiceKey, 'fetchInstanceUpdate')

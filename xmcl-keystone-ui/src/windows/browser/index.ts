@@ -5,6 +5,7 @@ import VueI18n from 'vue-i18n'
 import BrowseVue from './Browse.vue'
 import vuetify from './vuetify'
 import { castToVueI18n, createI18n } from 'vue-i18n-bridge'
+import messages from '@intlify/unplugin-vue-i18n/messages'
 
 Vue.use(VueI18n, { bridge: true })
 
@@ -15,7 +16,7 @@ const i18n = castToVueI18n(
       locale: 'en',
       silentTranslationWarn: true,
       missingWarn: false,
-      // messages: messages,
+      messages: messages,
     },
     VueI18n,
   ),
@@ -23,7 +24,7 @@ const i18n = castToVueI18n(
 
 const baseServiceChannel = serviceChannels.open(BaseServiceKey)
 
-const app = createApp({
+const app = new Vue({
   vuetify,
   i18n,
   setup() {
@@ -39,4 +40,5 @@ const app = createApp({
     return () => h(BrowseVue)
   },
 })
-app.mount('#app')
+
+app.$mount('#app')

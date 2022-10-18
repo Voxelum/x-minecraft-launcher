@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { LaunchServiceKey } from '@xmcl/runtime-api'
 import { DialogKey } from './dialog'
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 
 export const LaunchStatusDialogKey: DialogKey<void> = 'launch-status'
 

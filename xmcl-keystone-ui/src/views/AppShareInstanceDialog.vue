@@ -169,7 +169,7 @@ import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue
 import { useDialog } from '../composables/dialog'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
 import { useNotifier } from '../composables/notifier'
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 
 const { isShown, show, parameter } = useDialog('share-instance')
 

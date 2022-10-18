@@ -49,9 +49,9 @@ import { InstanceInstallServiceKey, InstanceIOServiceKey, InstanceUpdate, XUpdat
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { useColorTheme } from '../composables/colorTheme'
 import { InstanceFileNode, provideFileNodes } from '../composables/instanceFiles'
-import Hint from '/@/components/Hint.vue'
-import { useService, useServiceBusy } from '/@/composables'
-import { basename } from '/@/util/basename'
+import Hint from '@/components/Hint.vue'
+import { useService, useServiceBusy } from '@/composables'
+import { basename } from '@/util/basename'
 
 const props = defineProps<{ shown: boolean }>()
 

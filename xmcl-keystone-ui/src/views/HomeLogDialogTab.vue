@@ -93,8 +93,8 @@
 </template>
 
 <script lang=ts setup>
-import { parseLog } from '/@/util/log'
-import LogView from '/@/components/LogView.vue'
+import { parseLog } from '@/util/log'
+import LogView from '@/components/LogView.vue'
 
 const props = defineProps<{
   files: string[]

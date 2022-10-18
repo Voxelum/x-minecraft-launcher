@@ -86,12 +86,12 @@
 <script lang="ts" setup>
 import { Ref } from 'vue'
 import { BaseServiceKey } from '@xmcl/runtime-api'
-import { useService, useTags } from '/@/composables'
+import { useService, useTags } from '@/composables'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { useCurseforgeRoute } from '../composables/curseforgeRoute'
 import { vContextMenu } from '../directives/contextMenu'
 import { ModpackItem } from '../composables/modpack'
-import { getLocalDateString } from '/@/util/date'
+import { getLocalDateString } from '@/util/date'
 import { vDraggableCard } from '../directives/draggableCard'
 
 const props = defineProps<{ item: ModpackItem }>()

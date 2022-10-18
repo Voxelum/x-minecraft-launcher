@@ -30,7 +30,7 @@
   </v-menu>
 </template>
 <script lang="ts" setup>
-import { useTheme } from '/@/composables'
+import { useTheme } from '@/composables'
 
 const props = defineProps<{
   value: string

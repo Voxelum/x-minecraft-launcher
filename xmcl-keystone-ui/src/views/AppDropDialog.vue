@@ -66,10 +66,10 @@
 
 <script lang=ts setup>
 import PreviewView from './AppDropDialogPreview.vue'
-import RefreshingTile from '/@/components/RefreshingTile.vue'
+import RefreshingTile from '@/components/RefreshingTile.vue'
 
-import { DropServiceInjectionKey } from '/@/composables/dropService'
-import { injection } from '/@/util/inject'
+import { DropServiceInjectionKey } from '@/composables/dropService'
+import { injection } from '@/util/inject'
 
 const { active, loading, remove, cancel, previews, dragover } = injection(DropServiceInjectionKey)
 const { t } = useI18n()

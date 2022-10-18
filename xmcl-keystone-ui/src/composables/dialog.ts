@@ -1,6 +1,6 @@
 import { computed, InjectionKey, provide, Ref, ref } from 'vue'
 
-import { injection } from '/@/util/inject'
+import { injection } from '@/util/inject'
 
 export const kDialogModel: InjectionKey<{ dialog: Ref<string>; parameter: Ref<any> }> = Symbol('ShowingDialog')
 

@@ -2,7 +2,7 @@ import { InjectionKey, reactive, ToRefs, toRefs } from 'vue'
 import { InstanceData, InstanceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
 import { useCurrentUser } from './user'
 import { useMinecraftVersions } from './version'
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 
 export const CreateOptionKey: InjectionKey<InstanceData> = Symbol('CreateOption')
 

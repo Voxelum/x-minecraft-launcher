@@ -74,8 +74,8 @@
 import type { Category, SearchResultHit } from '@xmcl/modrinth'
 import { ModrinthCategoriesKey } from '../composables/modrinth'
 
-import { getLocalDateString } from '/@/util/date'
-import { injection } from '/@/util/inject'
+import { getLocalDateString } from '@/util/date'
+import { injection } from '@/util/inject'
 
 const props = defineProps<{
   disabled: boolean

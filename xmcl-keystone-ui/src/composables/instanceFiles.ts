@@ -1,6 +1,6 @@
 import { InjectionKey, Ref } from 'vue'
 import { InstanceFile } from '@xmcl/runtime-api'
-import { basename } from '/@/util/basename'
+import { basename } from '@/util/basename'
 
 export interface InstanceFileNode<T = never> {
   name: string

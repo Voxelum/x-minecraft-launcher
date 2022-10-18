@@ -165,7 +165,7 @@
 
 <script lang=ts>
 import { UserServiceKey } from '@xmcl/runtime-api'
-import { useService } from '/@/composables'
+import { useService } from '@/composables'
 
 const HTTP_EXP = /(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/
 export default defineComponent({

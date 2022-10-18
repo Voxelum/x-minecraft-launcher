@@ -51,9 +51,9 @@
 
 <script lang=ts setup>
 
-import { useFileDrop } from '/@/composables'
+import { useFileDrop } from '@/composables'
 import FileListTile from './AppDropDialogFileListTile.vue'
-import { FilePreview } from '/@/composables/dropService'
+import { FilePreview } from '@/composables/dropService'
 
 const props = defineProps<{ previews: FilePreview[] }>()
 const emit = defineEmits(['cancel', 'remove'])

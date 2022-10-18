@@ -16,7 +16,7 @@
 </template>
 
 <script lang=ts>
-import { required } from '/@/util/props'
+import { required } from '@/util/props'
 
 export default defineComponent({
   props: {
