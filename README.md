@@ -51,7 +51,9 @@ Visit the [official site](https://xmcl.app) to download the app!
 
 ## Contribute
 
-See [Contributing](./CONTRIBUTING.md)
+For general developer, see [Contributing](./CONTRIBUTING.md)
+
+For i18n localization developer, please follow [Getting Started with Localization](./CONTRIBUTING.i18n.md)
 
 ## LICENSE
 
