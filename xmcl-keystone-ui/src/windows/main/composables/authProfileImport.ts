@@ -1,6 +1,6 @@
 import { UserServiceKey } from '@xmcl/runtime-api'
 import { useNotifier } from './notifier'
-import { useI18n, useService } from '/@/composables'
+import { useService } from '/@/composables'
 
 export function useAuthProfileImportNotification() {
   const { t } = useI18n()

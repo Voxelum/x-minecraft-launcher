@@ -182,7 +182,7 @@ import { BaseServiceKey, JavaRecord } from '@xmcl/runtime-api'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import { useJava } from '../composables/java'
 import JavaList from './BaseSettingJavaList.vue'
-import { useI18n, useService } from '/@/composables'
+import { useService } from '/@/composables'
 import { injection } from '/@/util/inject'
 import { getExpectedSize } from '/@/util/size'
 

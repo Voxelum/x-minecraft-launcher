@@ -36,7 +36,7 @@
               folder
             </v-icon>
           </v-avatar>
-          {{ tc('version.name', 2) }}: {{ !localVersion.id ? t('version.notInstalled') : localVersion.id }}
+          {{ t('version.name', 2) }}: {{ !localVersion.id ? t('version.notInstalled') : localVersion.id }}
         </v-chip>
         <HomeHeaderMinecraftLabel
           :minecraft="version.minecraft"
@@ -132,7 +132,7 @@
               </v-icon>
             </v-btn>
           </template>
-          {{ tc('setting.name', 2) }}
+          {{ t('setting.name', 2) }}
         </v-tooltip>
 
         <HomeLaunchButton
@@ -159,7 +159,7 @@ import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
 import HomeHeaderMinecraftLabel from './HomeHeaderMinecraftLabel.vue'
 import HomeHeaderQuiltLabel from './HomeHeaderQuiltLabel.vue'
 import HomeLaunchButton from './HomeLaunchButton.vue'
-import { useI18n, useIssues, useService } from '/@/composables'
+import { useIssues, useService } from '/@/composables'
 
 const { issues } = useIssues()
 const issue = computed(() => {
@@ -196,7 +196,7 @@ const { localVersion } = useInstanceVersion()
 const { openDirectory } = useService(BaseServiceKey)
 const { show: showLogDialog } = useDialog('log')
 const { show: showExport } = useDialog(AppExportDialogKey)
-const { t, tc } = useI18n()
+const { t } = useI18n()
 const { showVersionDirectory } = useService(VersionServiceKey)
 
 const onShowLocalVersion = () => {

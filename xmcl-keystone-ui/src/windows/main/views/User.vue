@@ -57,7 +57,7 @@ import UserPageHeader from './UserHeader.vue'
 import UserMicrosoftView from './UserMicrosoftView.vue'
 import UserMojangView from './UserMojangView.vue'
 import UserYggdrasilView from './UserYggdrasilView.vue'
-import { useBusy, useI18n, useOperation, useService } from '/@/composables'
+import { useBusy, useOperation, useService } from '/@/composables'
 import { DropServiceInjectionKey } from '/@/composables/dropService'
 import { injection } from '/@/util/inject'
 

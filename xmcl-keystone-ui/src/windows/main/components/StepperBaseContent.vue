@@ -57,7 +57,8 @@
 <script lang=ts>
 import { InstanceServiceKey } from '@xmcl/runtime-api'
 import { CreateOptionKey } from '../composables/instanceCreation'
-import { useI18n, useService } from '/@/composables'
+
+import { useService } from '/@/composables'
 import { required } from '/@/util/props'
 export default defineComponent({
   props: {

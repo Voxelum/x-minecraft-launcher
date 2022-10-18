@@ -148,7 +148,7 @@ import { Ref } from 'vue'
 import { ProjectVersion } from '@xmcl/modrinth'
 import { getServiceSemaphoreKey, ModrinthServiceKey, Persisted, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import Markdown from 'markdown-it'
-import { useI18n, useRefreshable, useSemaphores, useService, useServiceBusy } from '/@/composables'
+import { useRefreshable, useSemaphores, useService, useServiceBusy } from '/@/composables'
 import { useVuetifyColor } from '/@/composables/vuetify'
 import { getColorForReleaseType } from '/@/util/color'
 import { getLocalDateString } from '/@/util/date'
@@ -173,7 +173,7 @@ const render = (s: string) => {
 const { getColorCode } = useVuetifyColor()
 
 const projectVersions: Ref<ProjectVersion[]> = ref([])
-const { t, tc } = useI18n()
+const { t } = useI18n()
 const { semaphores } = useSemaphores()
 const isDownloading = (ver: ProjectVersion) => {
   const fileUrl = ver.files[0].url
@@ -211,7 +211,7 @@ const onCreate = (v: ProjectVersion) => {
 //   value: 'name',
 //   // sortable: false,
 // }, {
-//   text: tc('version.name', 1),
+//   text: t('version.name', 1),
 //   value: 'version',
 //   // sortable: true,
 // }, {

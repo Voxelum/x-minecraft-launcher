@@ -48,7 +48,6 @@
 </template>
 
 <script lang=ts setup>
-import { useI18n } from '/@/composables'
 
 const props = defineProps<{
   cancel(): void

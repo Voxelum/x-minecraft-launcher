@@ -83,7 +83,6 @@
 <script lang=ts setup>
 import FeedbackCard from '../components/FeedbackCard.vue'
 import { useDialog } from '../composables/dialog'
-import { useI18n } from '/@/composables'
 
 const { hide, isShown } = useDialog('feedback')
 const { t } = useI18n()

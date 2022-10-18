@@ -71,7 +71,7 @@
 <script lang=ts setup>
 import { CompatibleDetail } from '@xmcl/runtime-api'
 import { ModItem } from '../composables/mod'
-import { useI18n, useTheme } from '/@/composables'
+import { useTheme } from '/@/composables'
 import { getColor } from '/@/util/color'
 
 const props = defineProps<{

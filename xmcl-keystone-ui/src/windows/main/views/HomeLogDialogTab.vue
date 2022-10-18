@@ -95,7 +95,6 @@
 <script lang=ts setup>
 import { parseLog } from '/@/util/log'
 import LogView from '/@/components/LogView.vue'
-import { useI18n } from '/@/composables'
 
 const props = defineProps<{
   files: string[]

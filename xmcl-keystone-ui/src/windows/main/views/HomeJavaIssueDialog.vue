@@ -114,7 +114,7 @@
 </template>
 
 <script lang=ts setup>
-import { IssueHandlerKey, useServiceBusy, useI18n, useService, useRefreshable } from '/@/composables'
+import { kIssueHandlers, useServiceBusy, useService, useRefreshable } from '/@/composables'
 import { DiagnoseServiceKey, IncompatibleJavaIssueKey, InstanceServiceKey, InvalidJavaIssueKey, Java, JavaCompatibleState, JavaServiceKey, MissingJavaIssueKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { JavaVersion } from '@xmcl/core'
@@ -132,7 +132,7 @@ const { installDefaultJava, refreshLocalJava } = useService(JavaServiceKey)
 const { subscribeTask } = useNotifier()
 const { state } = useService(DiagnoseServiceKey)
 const downloadingJava = useServiceBusy(JavaServiceKey, 'installDefaultJava')
-const handlers = injection(IssueHandlerKey)
+const handlers = injection(kIssueHandlers)
 
 const data = reactive({
   type: '' as 'incompatible' | 'missing' | 'invalid',

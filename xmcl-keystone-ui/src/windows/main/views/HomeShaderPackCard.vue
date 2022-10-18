@@ -6,7 +6,7 @@
       >
         gradient
       </v-icon>
-      {{ tc('shaderPack.name', 2) }}
+      {{ t('shaderPack.name', 2) }}
     </v-card-title>
     <v-card-text>
       {{ shaderPack ? t('shaderPack.enable', { name: shaderPack }) : t('shaderPack.empty') }}
@@ -24,11 +24,11 @@
 </template>
 <script lang="ts" setup>
 import { InstanceModsServiceKey, InstanceOptionsServiceKey } from '@xmcl/runtime-api'
-import { useI18n, useRouter, useService } from '/@/composables'
+import { useService } from '/@/composables'
 
 const { state } = useService(InstanceOptionsServiceKey)
 const shaderPack = computed(() => state.shaderoptions.shaderPack)
-const { tc, t } = useI18n()
+const { t } = useI18n()
 const { push } = useRouter()
 
 </script>

@@ -5,7 +5,7 @@
         $vuetify.icons.modrinth
       </v-icon>
       Modrinth
-      {{ tc('modpack.name', 1) }}
+      {{ t('modpack.name', 1) }}
       <v-spacer />
       <v-btn
         icon
@@ -63,7 +63,7 @@
 import { Project, ProjectVersion } from '@xmcl/modrinth'
 import { InstanceData, ModpackServiceKey, ModrinthServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { useI18n, useRouter, useService, useServiceBusy } from '/@/composables'
+import { useService, useServiceBusy } from '/@/composables'
 import { getLocalDateString } from '/@/util/date'
 
 const props = defineProps<{
@@ -124,5 +124,5 @@ onMounted(() => {
   checkUpdate()
 })
 
-const { t, tc } = useI18n()
+const { t } = useI18n()
 </script>

@@ -3,7 +3,7 @@ import { Exception, ExceptionBase, isException, LaunchException, ServiceKey } fr
 import { injection } from '../util/inject'
 
 export function useExceptionHandler<T extends ExceptionBase>(type: { new(...args: any[]): Exception<T> }, handler: (e: T) => void) {
-  const { exceptionHandlers } = injection(ExceptionHandlersKey)
+  const { exceptionHandlers } = injection(kExceptionHandlers)
   const key = type.name
   if (!exceptionHandlers[key]) {
     exceptionHandlers[key] = [type, [handler as any]]
@@ -13,7 +13,7 @@ export function useExceptionHandler<T extends ExceptionBase>(type: { new(...args
 }
 
 export function useExceptionHandlerFromService<T>(serviceName: ServiceKey<T>, handler: (e: any, serviceName: string, serviceMethod: string) => void) {
-  const { serviceErrorHandlers } = injection(ExceptionHandlersKey)
+  const { serviceErrorHandlers } = injection(kExceptionHandlers)
   const key = serviceName as string
   if (!serviceErrorHandlers[key]) {
     serviceErrorHandlers[key] = [handler]
@@ -48,4 +48,4 @@ export function useExceptionHandlers() {
   }
 }
 
-export const ExceptionHandlersKey: InjectionKey<ReturnType<typeof useExceptionHandlers>> = Symbol('ExceptionHandlers')
+export const kExceptionHandlers: InjectionKey<ReturnType<typeof useExceptionHandlers>> = Symbol('ExceptionHandlers')

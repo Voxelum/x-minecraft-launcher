@@ -114,7 +114,7 @@ import { Instance, InstanceServiceKey } from '@xmcl/runtime-api'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { useDialog } from '../composables/dialog'
 import { vContextMenu } from '../directives/contextMenu'
-import { useI18n, useRouter, useService } from '/@/composables'
+import { useService } from '/@/composables'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import unknownServer from '/@/assets/unknown_server.png'
 

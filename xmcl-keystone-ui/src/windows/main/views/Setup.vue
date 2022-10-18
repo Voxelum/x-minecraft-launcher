@@ -146,7 +146,6 @@
 </template>
 
 <script lang=ts setup>
-import { I18N_KEY, useI18n } from '/@/composables'
 import SetDataRoot from './SetupDataRoot.vue'
 import { Drive } from '@xmcl/runtime-api'
 import SetLocale from './SetupLocale.vue'
@@ -155,13 +154,8 @@ import { useBootstrap } from '/@/composables/bootstrap'
 
 const emit = defineEmits(['ready'])
 
-const i18n = inject(I18N_KEY)
-const { t } = useI18n()
+const { locale, t } = useI18n()
 const bootstrap = useBootstrap()
-const locale = computed({
-  get() { return i18n!.locale },
-  set(v: string) { i18n!.locale = v },
-})
 const currentTitle = computed(() => {
   if (data.step === 1) return t('setup.locale.name')
   if (data.step === 2) return t('setup.dataRoot.name')
@@ -177,9 +171,9 @@ const data = reactive({
   loading: false,
   drives: [] as Drive[],
 })
-bootstrap.preset().then(({ minecraftPath, defaultPath, locale, drives }) => {
+bootstrap.preset().then(({ minecraftPath, defaultPath, locale: locale_, drives }) => {
   data.fetching = false
-  i18n!.locale = locale
+  locale.value = locale_
   data.minecraftPath = minecraftPath
   data.instancePath = minecraftPath
   data.path = defaultPath

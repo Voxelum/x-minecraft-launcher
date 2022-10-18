@@ -4,7 +4,7 @@ import { injection } from '../util/inject'
 import { useBusy } from './semaphore'
 import { useService } from './service'
 
-export const IssueHandlerKey: InjectionKey<IssueHandler> = Symbol('IssueHandlerKey')
+export const kIssueHandlers: InjectionKey<IssueHandler> = Symbol('IssueHandlerKey')
 
 export class IssueHandler {
   handlers: Record<string, (content: any) => void > = {}
@@ -25,7 +25,7 @@ export class IssueHandler {
 
 export function useIssues() {
   const { state, fix: fixIssue } = useService(DiagnoseServiceKey)
-  const handlers = injection(IssueHandlerKey)
+  const handlers = injection(kIssueHandlers)
   const issues = computed(() => Object.values(state.report).filter(v => v.parameters.length > 0))
   const refreshing = useBusy(DiagnoseSemaphoreKey)
 

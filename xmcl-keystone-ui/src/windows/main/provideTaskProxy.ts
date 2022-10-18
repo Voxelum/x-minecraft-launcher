@@ -1,9 +1,9 @@
 import { computed, InjectionKey, onMounted, onUnmounted, reactive, Ref, ref } from 'vue'
 import { TaskItem } from '/@/entities/task'
-import { useI18n } from '../../composables'
+
 import { TaskBatchUpdatePayloads, TaskPayload, TaskState } from '@xmcl/runtime-api'
 
-export const TASK_MANAGER: InjectionKey<ReturnType<typeof useTaskManager>> = Symbol('TASK_MANAGER')
+export const kTaskManager: InjectionKey<ReturnType<typeof useTaskManager>> = Symbol('TASK_MANAGER')
 
 class ChildrenWatcher {
   readonly oldChildren: Array<TaskItem> = []
@@ -118,7 +118,7 @@ export function useTaskManager() {
     const item = reactive({
       id: localId,
       taskId: payload.uuid,
-      title: computed(() => t(payload.path, payload.param)),
+      title: computed(() => t(payload.path, { ...(payload.param || {}) })),
       time: new Date(payload.time),
       message: payload.error ? Object.freeze(payload.error) : payload.from ?? payload.to ?? '',
       from: payload.from,

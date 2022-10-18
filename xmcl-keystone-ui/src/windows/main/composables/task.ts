@@ -2,24 +2,24 @@ import { computed, Ref } from 'vue'
 import { TaskState } from '@xmcl/runtime-api'
 import { injection } from '/@/util/inject'
 import { getServiceCallTasks } from '../../../vuexServiceProxy'
-import { TASK_MANAGER } from '../provideTaskProxy'
+import { kTaskManager } from '../provideTaskProxy'
 import { TaskItem } from '/@/entities/task'
 
 export function useTaskCount() {
-  const proxy = injection(TASK_MANAGER)
+  const proxy = injection(kTaskManager)
   const { tasks } = proxy
   const count = computed(() => tasks.value.filter(t => t.state === TaskState.Running).length)
   return { count }
 }
 
 export function useTasks() {
-  const proxy = injection(TASK_MANAGER)
+  const proxy = injection(kTaskManager)
   const { pause, resume, cancel, tasks, throughput } = proxy
   return { tasks, pause, resume, cancel, throughput }
 }
 
 export function useTask(finder: (i: TaskItem) => boolean) {
-  const proxy = injection(TASK_MANAGER)
+  const proxy = injection(kTaskManager)
 
   const { tasks, pause, resume, cancel } = proxy
 
@@ -47,7 +47,7 @@ export function useTask(finder: (i: TaskItem) => boolean) {
 }
 
 export function useTaskFromServiceCall(call: Ref<Readonly<Promise<any> | undefined>>) {
-  const proxy = injection(TASK_MANAGER)
+  const proxy = injection(kTaskManager)
 
   const { tasks } = proxy
 

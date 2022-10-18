@@ -1,23 +1,21 @@
-import { computed, inject, InjectionKey, provide, reactive, Ref, ref, set, watch } from 'vue'
-import { InstanceServiceKey, PINGING_STATUS, PingServerOptions, ServerStatus, ServerStatusServiceKey, UNKNOWN_STATUS } from '@xmcl/runtime-api'
-import { useI18n, useService, useSeverStatusAcceptVersion } from '/@/composables'
+import { InstanceServiceKey, PingServerOptions, ServerStatus, ServerStatusServiceKey, UNKNOWN_STATUS } from '@xmcl/runtime-api'
+import { computed, InjectionKey, Ref, ref, set, watch } from 'vue'
+
+import { useService, useSeverStatusAcceptVersion } from '/@/composables'
 import { useLocalStorageCache } from '/@/composables/cache'
 import { injection } from '/@/util/inject'
 
-export const ServerStatusCache: InjectionKey<Ref<Record<string, ServerStatus>>> = Symbol('ServerStatusCache')
-
-export function provideServerStatusCache() {
-  // const value = reactive({})
-  const value = useLocalStorageCache('serverStatusCache', () => ({}), JSON.stringify, JSON.parse)
-  // WARN: potential memory leak
-  provide(ServerStatusCache, value)
-}
+export const kServerStatusCache: InjectionKey<Ref<Record<string, ServerStatus>>> = Symbol('ServerStatusCache')
 
 export function useInstanceServerStatus(instancePath?: string) {
   const { state } = useService(InstanceServiceKey)
   const instance = computed(() => state.all[instancePath ?? state.path])
   const serverRef = computed(() => instance.value?.server ?? { host: '' })
   return useServerStatus(serverRef, ref(25565))
+}
+
+export function useServerStatusCache() {
+  return useLocalStorageCache('serverStatusCache', () => ({}), JSON.stringify, JSON.parse)
 }
 
 function usePinging() {
@@ -71,7 +69,7 @@ function usePingServer() {
 
 export function useInstancesServerStatus() {
   const { state } = useService(InstanceServiceKey)
-  const cache = injection(ServerStatusCache)
+  const cache = injection(kServerStatusCache)
   const pingServer = usePingServer()
   const pinging = ref(false)
   const pingingStatus = usePinging()
@@ -98,7 +96,7 @@ export function useInstancesServerStatus() {
 export function useServerStatus(serverRef: Ref<{ host: string; port?: number }>, protocol: Ref<number | undefined>) {
   const pingServer = usePingServer()
   const unknownStatus = useUnknown()
-  const cache = injection(ServerStatusCache)
+  const cache = injection(kServerStatusCache)
   const serverId = computed(() => `${serverRef.value.host}:${serverRef.value.port ?? 25565}`)
   if (!cache.value[serverId.value]) {
     set(cache.value, serverId.value, unknownStatus.value)

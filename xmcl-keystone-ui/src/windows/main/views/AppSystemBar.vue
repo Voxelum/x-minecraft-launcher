@@ -76,7 +76,7 @@ import { useBarBlur } from '../composables/background'
 import { useColorTheme } from '../composables/colorTheme'
 import { useDialog } from '../composables/dialog'
 import { useTaskCount } from '../composables/task'
-import { useI18n, useRouter } from '/@/composables'
+
 import TaskSpeedMonitor from '../components/TaskSpeedMonitor.vue'
 
 const { appBarColor } = useColorTheme()

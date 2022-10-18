@@ -151,7 +151,7 @@ import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { localeMappings } from '/@/util/localeMappings'
 import { useSettings } from '../composables/setting'
-import { useI18n, useService } from '/@/composables'
+import { useService } from '/@/composables'
 
 const { openDirectory } = useService(BaseServiceKey)
 

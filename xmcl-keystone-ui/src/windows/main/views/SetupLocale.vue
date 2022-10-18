@@ -35,7 +35,6 @@
 </template>
 <script lang=ts setup>
 import localMapping from '/@/assets/localeMapping.json'
-import { useI18n } from '/@/composables'
 
 defineProps<{ value: string }>()
 

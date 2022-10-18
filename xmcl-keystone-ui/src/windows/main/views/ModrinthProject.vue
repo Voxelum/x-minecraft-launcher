@@ -93,7 +93,7 @@
 </template>
 <script lang="ts"  setup>
 import { Ref } from 'vue'
-import { useI18n, useService } from '/@/composables'
+import { useService } from '/@/composables'
 import { InstanceModsServiceKey, InstanceServiceKey, ModrinthServiceKey, Persisted, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useRefreshable } from '/@/composables/refreshable'
 import { Project, ProjectVersion } from '@xmcl/modrinth'

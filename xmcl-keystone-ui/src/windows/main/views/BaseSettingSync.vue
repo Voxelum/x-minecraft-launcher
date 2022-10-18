@@ -6,7 +6,7 @@
     subheader
   >
     <v-subheader style="padding-right: 2px">
-      {{ tc("modpack.name", 1) }}
+      {{ t("modpack.name", 1) }}
     </v-subheader>
     <v-list-item>
       <v-list-item-action>
@@ -45,12 +45,12 @@
 <script lang="ts" setup>
 import { useCurrentUser } from '../composables/user'
 import { injection } from '/@/util/inject'
-import { useI18n } from '/@/composables'
+
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 
 const { data } = injection(InstanceEditInjectionKey)
 const { gameProfile } = useCurrentUser()
-const { t, tc } = useI18n()
+const { t } = useI18n()
 const gotoHelp = () => {
   window.location = 'https://xmcl.app/faq/' as any
 }

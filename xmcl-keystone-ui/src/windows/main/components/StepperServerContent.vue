@@ -142,7 +142,7 @@ import { useMinecraftVersionList } from '../composables/versionList'
 import { vFallbackImg } from '../directives/fallbackImage'
 import VersionMenu from './VersionMenu.vue'
 import unknownServer from '/@/assets/unknown_server.png'
-import { useI18n } from '/@/composables'
+
 import { injection } from '/@/util/inject'
 
 const props = defineProps<{

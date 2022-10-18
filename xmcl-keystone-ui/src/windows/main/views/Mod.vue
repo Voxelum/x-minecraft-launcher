@@ -88,7 +88,7 @@
 
 <script lang=ts>
 import { Ref } from 'vue'
-import { useDrop, useOperation, useResourceOperation, useFilterCombobox, useI18n, useService } from '/@/composables'
+import { useDrop, useOperation, useResourceOperation, useFilterCombobox, useService } from '/@/composables'
 import { useLocalStorageCacheBool } from '/@/composables/cache'
 import Hint from '/@/components/Hint.vue'
 import RefreshingTile from '/@/components/RefreshingTile.vue'

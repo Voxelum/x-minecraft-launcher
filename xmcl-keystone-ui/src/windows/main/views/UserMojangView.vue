@@ -21,7 +21,7 @@
 </template>
 <script lang="ts" setup>
 import { useMojangSecurityStatus } from '../composables/user'
-import { useI18n } from '/@/composables'
+
 import { UserProfile } from '@xmcl/runtime-api'
 
 const props = defineProps<{ user: UserProfile }>()

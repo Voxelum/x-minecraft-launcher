@@ -1,27 +1,18 @@
-import VueRouter from 'vue-router'
+import { useRouter } from 'vue-router/composables'
 import { inject, provide, InjectionKey } from 'vue'
-import { ROUTER_KEY } from '/@/constant'
+import { useService } from './service'
+import { BaseServiceKey } from '@xmcl/runtime-api'
 
-export function useRouter(): VueRouter {
-  const router = inject(ROUTER_KEY)
-  if (!router) throw new Error('Cannot find router. Maybe router not loaded?')
-  return router
-}
-
-export const BEFORE_LEAVE: InjectionKey<Array<() => void | Promise<void>>> = Symbol('BEFORE_LEAVE')
-
-export function provideAsyncRoute() {
-  provide(BEFORE_LEAVE, [])
-}
+export const kAsyncRouteHandlers: InjectionKey<Array<() => void | Promise<void>>> = Symbol('BEFORE_LEAVE')
 
 export function useAsyncRouteBeforeLeaves() {
-  const beforeLeaves = inject(BEFORE_LEAVE)
+  const beforeLeaves = inject(kAsyncRouteHandlers)
   if (!beforeLeaves) throw new Error('MissingRouteBeforeLeave')
   return beforeLeaves
 }
 
 export function useAsyncRoute() {
-  const funcs = inject(BEFORE_LEAVE)
+  const funcs = inject(kAsyncRouteHandlers)
   if (!funcs) throw new Error('Illegal State')
   function beforeUnmount(func: () => void | Promise<void>) {
     if (!funcs) throw new Error('Illegal State')
@@ -30,4 +21,25 @@ export function useAsyncRoute() {
   return {
     beforeUnmount,
   }
+}
+
+export function useExternalRoute() {
+  const { openInBrowser } = useService(BaseServiceKey)
+  const { beforeEach } = useRouter()
+  beforeEach((to, from, next) => {
+    const full = to.fullPath.substring(1)
+    if (full.startsWith('https:') || full.startsWith('http:') || full.startsWith('external')) {
+      next(false)
+      console.log(`Prevent ${from.fullPath} -> ${to.fullPath}`)
+      if (full.startsWith('external')) {
+        console.log(full.substring('external/'.length))
+        openInBrowser(full.substring('external/'.length))
+      } else {
+        openInBrowser(full)
+      }
+    } else {
+      console.log(`Route ${from.fullPath} -> ${to.fullPath}`)
+      next()
+    }
+  })
 }

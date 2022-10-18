@@ -100,7 +100,7 @@
 </template>
 
 <script lang=ts setup>
-import { useServiceBusy, useService, useI18n } from '/@/composables'
+import { useServiceBusy, useService } from '/@/composables'
 import MarkdownIt from 'markdown-it'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'

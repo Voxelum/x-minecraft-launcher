@@ -109,7 +109,7 @@ import { ResourcePackItem } from '../composables/resourcePack'
 import { vContextMenu } from '../directives/contextMenu'
 import { vFallbackImg } from '../directives/fallbackImage'
 import unknownPack from '/@/assets/unknown_pack.png'
-import { useDragTransferItem, useI18n, useService, useTags, useTheme } from '/@/composables'
+import { useDragTransferItem, useService, useTags, useTheme } from '/@/composables'
 import { getColor } from '/@/util/color'
 import { vDraggableCard } from '../directives/draggableCard'
 

@@ -76,7 +76,7 @@
 <script lang=ts setup>
 import { BaseServiceKey, InstanceSaveMetadata } from '@xmcl/runtime-api'
 import unknownPack from '/@/assets/unknown_pack.png'
-import { useI18n, useService } from '/@/composables'
+import { useService } from '/@/composables'
 import { vFallbackImg } from '../directives/fallbackImage'
 import { vDataTransfer, vDataTransferImage, vDraggableCard } from '../directives/draggableCard'
 import HomeHeaderMinecraftLabel from './HomeHeaderMinecraftLabel.vue'

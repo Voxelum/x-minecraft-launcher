@@ -40,7 +40,6 @@
 </template>
 
 <script lang=ts setup>
-import { useI18n } from '/@/composables'
 
 const emit = defineEmits(['drop', 'click'])
 

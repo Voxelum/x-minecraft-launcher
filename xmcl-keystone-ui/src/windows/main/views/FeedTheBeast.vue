@@ -46,7 +46,6 @@
 
 <script lang=ts setup>
 import { useFeedTheBeast } from '../composables/ftb'
-import { useI18n } from '/@/composables'
 import FeedTheBeastCard from './FeedTheBeastCard.vue'
 import { vFocusOnSearch } from '../directives/focusOnSearch'
 

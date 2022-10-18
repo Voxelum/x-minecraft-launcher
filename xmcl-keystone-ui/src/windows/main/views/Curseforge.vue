@@ -169,7 +169,7 @@ import { useCurseforge } from '../composables/curseforge'
 import { useMinecraftVersions } from '../composables/version'
 import { vFocusOnSearch } from '../directives/focusOnSearch'
 import Categories from './CurseforgeCategories.vue'
-import { useI18n } from '/@/composables'
+
 import { getLocalDateString } from '/@/util/date'
 import { dedup } from '/@/util/dedup'
 import { getExpectedSize } from '/@/util/size'

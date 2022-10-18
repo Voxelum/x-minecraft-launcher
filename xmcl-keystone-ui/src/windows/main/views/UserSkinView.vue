@@ -71,7 +71,7 @@
       v-model="isImportSkinDialogShown"
       width="400"
     >
-      <import-skin-url-form @input="url = $event" />
+      <import-skin-url-form @input="skin = $event" />
     </v-dialog>
   </div>
 </template>
@@ -83,7 +83,6 @@ import { PlayerNameModel, usePlayerName, UserSkinModel, useUserSkin } from '../c
 import ImportSkinUrlForm from './UserImportSkinUrlForm.vue'
 import SpeedDial from './UserSkinSpeedDial.vue'
 import SkinView from '/@/components/SkinView.vue'
-import { useI18n } from '/@/composables'
 
 const props = withDefaults(defineProps<{
   user: UserProfile

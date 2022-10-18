@@ -55,7 +55,7 @@
 </template>
 
 <script lang=ts setup>
-import { useI18n, useService } from '/@/composables'
+import { useService } from '/@/composables'
 import { basename } from '/@/util/basename'
 import { InstanceServiceKey } from '@xmcl/runtime-api'
 

@@ -300,7 +300,7 @@
 import VersionMenu from '../components/VersionMenu.vue'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useOptifineVersionList, useQuiltVersionList } from '../composables/versionList'
-import { useI18n } from '/@/composables'
+
 import { injection } from '/@/util/inject'
 
 const { data } = injection(InstanceEditInjectionKey)
@@ -360,7 +360,7 @@ function onSelectOptifine(version: string) {
   }
 }
 
-const { t, tc } = useI18n()
+const { t } = useI18n()
 
 </script>
 

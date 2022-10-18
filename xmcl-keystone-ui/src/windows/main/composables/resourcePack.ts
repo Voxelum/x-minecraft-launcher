@@ -1,7 +1,8 @@
 import { computed, onMounted, ref, Ref, watch } from 'vue'
 import { PackMeta } from '@xmcl/resourcepack'
 import { InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, isPersistedResource, ResourceServiceKey, packFormatVersionRange, ResourcePackResource, Persisted } from '@xmcl/runtime-api'
-import { useServiceBusy, useI18n, useService } from '/@/composables'
+
+import { useServiceBusy, useService } from '/@/composables'
 import { isStringArrayEquals } from '/@/util/equal'
 import unknownPack from '/@/assets/unknown_pack.png'
 import { basename } from '/@/util/basename'

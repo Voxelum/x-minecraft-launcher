@@ -5,7 +5,7 @@
     subheader
   >
     <v-subheader style="padding-right: 2px">
-      {{ tc("modpack.name", 1) }}
+      {{ t("modpack.name", 1) }}
     </v-subheader>
     <v-list-item>
       <v-list-item-content>
@@ -69,11 +69,10 @@
 import { useCurrentUser } from '../composables/user'
 import { injection } from '/@/util/inject'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
-import { useI18n } from '/@/composables'
 
 const { data } = injection(InstanceEditInjectionKey)
 const { gameProfile } = useCurrentUser()
-const { t, tc } = useI18n()
+const { t } = useI18n()
 </script>
 
 <style scoped="true">

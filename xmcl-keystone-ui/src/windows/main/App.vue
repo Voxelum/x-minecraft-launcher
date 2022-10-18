@@ -1,7 +1,6 @@
 <template>
   <v-app
     v-if="!shouldSetup"
-    ref="app"
     class="overflow-auto h-full overflow-x-hidden max-h-[100vh]"
     :class="{ 'dark': vuetify.theme.dark }"
     :style="cssVars"
@@ -53,22 +52,19 @@
 </template>
 
 <script lang=ts setup>
-import { Ref } from 'vue'
 import ContextMenu from './components/ContextMenu.vue'
 import { useAuthProfileImportNotification } from './composables/authProfileImport'
 import { useBackground } from './composables/background'
 import { useColorTheme } from './composables/colorTheme'
-import { provideDialog } from './composables/dialog'
 import { useDefaultErrorHandler } from './composables/errorHandler'
-import { provideNotifier } from './composables/notifier'
-import { provideServerStatusCache } from './composables/serverStatus'
-import { TASK_MANAGER, useTaskManager } from './provideTaskProxy'
+import { useAllServices } from './services'
 import AddInstanceDialog from './views/AppAddInstanceDialog.vue'
 import AddServerDialog from './views/AppAddServerDialog.vue'
 import Background from './views/AppBackground.vue'
 import UniversalDropView from './views/AppDropDialog.vue'
 import ExportDialog from './views/AppExportDialog.vue'
 import FeedbackDialog from './views/AppFeedbackDialog.vue'
+import AppInstanceDeleteDialog from './views/AppInstanceDeleteDialog.vue'
 import LoginDialog from './views/AppLoginDialog.vue'
 import Notifier from './views/AppNotifier.vue'
 import AppShareInstanceDialog from './views/AppShareInstanceDialog.vue'
@@ -77,15 +73,13 @@ import SystemBar from './views/AppSystemBar.vue'
 import TaskDialog from './views/AppTaskDialog.vue'
 import Setup from './views/Setup.vue'
 import '/@/assets/common.css'
-import { IssueHandler, IssueHandlerKey, provideAsyncRoute, useRouter /* provideSearchToggle */ } from '/@/composables'
+import { useExternalRoute, useI18nSync, useThemeSync } from '/@/composables'
 import { useDropService } from '/@/composables/dropService'
-import { ExceptionHandlersKey, useExceptionHandlers } from '/@/composables/exception'
-import { VuetifyInjectionKey } from '/@/composables/vuetify'
+import { kVuetify } from '/@/composables/vuetify'
 import { injection } from '/@/util/inject'
-import AppInstanceDeleteDialog from './views/AppInstanceDeleteDialog.vue'
 
 const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = useColorTheme()
-const vuetify = injection(VuetifyInjectionKey)
+const { blurMainBody } = useBackground()
 
 const cssVars = computed(() => ({
   '--primary': primaryColor.value,
@@ -94,8 +88,9 @@ const cssVars = computed(() => ({
 
 const shouldSetup = ref(location.search.indexOf('setup') !== -1)
 
+const vuetify = injection(kVuetify)
+
 if (primaryColor.value) { vuetify.theme.currentTheme.primary = primaryColor.value }
-// if (secondaryColor.value) { vuetify.theme.currentTheme.secondary = secondaryColor.value }
 if (accentColor.value) { vuetify.theme.currentTheme.accent = accentColor.value }
 if (infoColor.value) { vuetify.theme.currentTheme.info = infoColor.value }
 if (errorColor.value) { vuetify.theme.currentTheme.error = errorColor.value }
@@ -103,36 +98,20 @@ if (successColor.value) { vuetify.theme.currentTheme.success = successColor.valu
 if (warningColor.value) { vuetify.theme.currentTheme.warning = warningColor.value }
 
 watch(primaryColor, (newColor) => { vuetify.theme.currentTheme.primary = newColor })
-// watch(secondaryColor, (newColor) => { vuetify.theme.currentTheme.secondary = newColor })
 watch(accentColor, (newColor) => { vuetify.theme.currentTheme.accent = newColor })
 watch(infoColor, (newColor) => { vuetify.theme.currentTheme.info = newColor })
 watch(errorColor, (newColor) => { vuetify.theme.currentTheme.error = newColor })
 watch(successColor, (newColor) => { vuetify.theme.currentTheme.success = newColor })
 watch(warningColor, (newColor) => { vuetify.theme.currentTheme.warning = newColor })
 
-provide(ExceptionHandlersKey, useExceptionHandlers())
+useAllServices()
 useDropService()
-provideDialog()
-provideNotifier()
 useDefaultErrorHandler()
-
 useAuthProfileImportNotification()
+useI18nSync()
+useThemeSync()
+useExternalRoute()
 
-const taskManager = useTaskManager()
-provide(TASK_MANAGER, taskManager)
-const { blurMainBody } = useBackground()
-
-provideAsyncRoute()
-provideServerStatusCache()
-provide(IssueHandlerKey, new IssueHandler())
-
-const router = useRouter()
-const onHomePage = ref(router.currentRoute.path === '/')
-const app: Ref<any> = ref(null)
-
-router.afterEach((to) => {
-  onHomePage.value = to.path === '/'
-})
 </script>
 
 <style>
@@ -149,7 +128,4 @@ img {
   max-height: 100%;
   object-fit: contain;
 }
-</style>
-
-<style scoped=true>
 </style>

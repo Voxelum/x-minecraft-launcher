@@ -18,7 +18,8 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { useI18n, useTheme } from '../composables'
+
+import { useTheme } from '../composables'
 import { LogRecord } from '../util/log'
 
 defineProps<{ logs: LogRecord[] }>()

@@ -6,7 +6,7 @@
       >
         palette
       </v-icon>
-      {{ tc('resourcepack.name', 2) }}
+      {{ t('resourcepack.name', 2) }}
     </v-card-title>
     <v-card-text>
       {{ t('resourcepack.enable', { count: resourcePackCount }) }}
@@ -24,11 +24,11 @@
 </template>
 <script lang="ts" setup>
 import { InstanceOptionsServiceKey } from '@xmcl/runtime-api'
-import { useI18n, useRouter, useService } from '/@/composables'
+import { useService } from '/@/composables'
 
 const { state } = useService(InstanceOptionsServiceKey)
 const resourcePackCount = computed(() => state.options.resourcePacks.length)
-const { tc, t } = useI18n()
+const { t } = useI18n()
 const { push } = useRouter()
 
 </script>

@@ -89,7 +89,7 @@
 
 <script lang=ts setup>
 import { ResourceDomain } from '@xmcl/runtime-api'
-import { useI18n } from '/@/composables'
+
 import { FilePreview } from '/@/composables/dropService'
 import { getExpectedSize } from '/@/util/size'
 
@@ -109,7 +109,7 @@ const iconMap: Record<string, string> = {
 const props = defineProps<{ value: FilePreview }>()
 const emit = defineEmits(['enable', 'remove'])
 
-const { tc, t } = useI18n()
+const { t } = useI18n()
 const disabled = computed(() => /* props.value.result?.type === 'unknown' || */
   props.value.status !== 'idle')
 const enabled = computed({
@@ -137,17 +137,17 @@ const typeName = computed(() => {
         types.push('Fabric Mod')
         break
       case 'resourcepack':
-        types.push(tc('resourcepack.name', 0))
+        types.push(t('resourcepack.name', 0))
         break
       case 'mcbbs-modpack':
       case 'modpack':
-        types.push(tc('modpack.name', 0))
+        types.push(t('modpack.name', 0))
         break
       case 'save':
-        types.push(tc('save.name', 0))
+        types.push(t('save.name', 0))
         break
       case 'curseforge-modpack':
-        types.push(tc('modpack.name', 0))
+        types.push(t('modpack.name', 0))
         break
       case 'modrinth-modpack':
         types.push(t('modrinth.projectType.modpack'))

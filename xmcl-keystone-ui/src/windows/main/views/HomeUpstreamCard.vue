@@ -20,7 +20,7 @@
 </template>
 <script lang="ts" setup>
 import { CurseForgeServiceKey, InstanceData, InstanceModsServiceKey, ModrinthServiceKey } from '@xmcl/runtime-api'
-import { useI18n, useRouter, useSemaphore, useService } from '/@/composables'
+import { useSemaphore, useService } from '/@/composables'
 
 const props = defineProps<{
   upstream: InstanceData['upstream']

@@ -77,7 +77,7 @@
                 prepend-inner-icon="games"
                 persistent-hint
                 class="visible-scroll"
-                :hint="$tc('instance.includeVersion', 2)"
+                :hint="t('instance.includeVersion', 2)"
                 :label="t('instance.gameVersion')"
                 required
               />
@@ -302,7 +302,7 @@ import { useInstance, useInstanceVersion } from '../composables/instance'
 import { AppExportDialogKey } from '../composables/instanceExport'
 import { InstanceFileExportData, provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
 import { useLocalVersions } from '../composables/version'
-import { useI18n, useRefreshable, useService } from '/@/composables'
+import { useRefreshable, useService } from '/@/composables'
 import { getExpectedSize } from '/@/util/size'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 

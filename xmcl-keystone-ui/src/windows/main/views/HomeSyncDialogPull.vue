@@ -50,7 +50,7 @@ import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue
 import { useColorTheme } from '../composables/colorTheme'
 import { InstanceFileNode, provideFileNodes } from '../composables/instanceFiles'
 import Hint from '/@/components/Hint.vue'
-import { useI18n, useService, useServiceBusy } from '/@/composables'
+import { useService, useServiceBusy } from '/@/composables'
 import { basename } from '/@/util/basename'
 
 const props = defineProps<{ shown: boolean }>()

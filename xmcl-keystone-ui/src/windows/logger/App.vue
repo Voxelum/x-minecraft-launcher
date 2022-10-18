@@ -66,9 +66,9 @@
 
 <script lang=ts setup>
 import { set } from 'vue'
+
 import { baseService } from './baseService'
 import LogView from '/@/components/LogView.vue'
-import { useI18n } from '/@/composables'
 import { LogRecord, parseLog } from '/@/util/log'
 
 export interface Log extends LogRecord {

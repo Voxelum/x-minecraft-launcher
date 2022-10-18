@@ -53,7 +53,6 @@
 </template>
 <script lang="ts" setup>
 import { License } from '@xmcl/modrinth/types'
-import { useI18n } from '/@/composables'
 
 defineProps<{
   downloads: number

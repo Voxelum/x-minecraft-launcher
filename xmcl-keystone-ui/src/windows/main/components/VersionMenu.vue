@@ -74,7 +74,6 @@
 <script lang=ts setup>
 import { VersionMenuItem } from '../composables/versionList'
 import VersionMenuListTile from './VersionMenuListTile.vue'
-import { useI18n } from '/@/composables'
 
 defineProps<{
   items: VersionMenuItem[]

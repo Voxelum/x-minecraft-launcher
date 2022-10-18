@@ -7,7 +7,7 @@
     <v-subheader
       style="padding-right: 2px"
     >
-      {{ tc("server.name", 1) }}
+      {{ t("server.name", 1) }}
     </v-subheader>
     <v-list-item>
       <v-list-item-content>
@@ -48,10 +48,9 @@
 <script lang=ts setup>
 import { injection } from '/@/util/inject'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
-import { useI18n } from '/@/composables'
 
 const { data } = injection(InstanceEditInjectionKey)
-const { t, tc } = useI18n()
+const { t } = useI18n()
 
 </script>
 

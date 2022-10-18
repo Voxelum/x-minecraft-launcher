@@ -41,7 +41,6 @@
 </template>
 
 <script lang=ts setup>
-import { useI18n } from '/@/composables'
 
 // https://stackoverflow.com/questions/5717093/check-if-a-javascript-string-is-a-url
 const URL_PATTERN = new RegExp('^(https?:\\/\\/)?' + // protocol
