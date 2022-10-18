@@ -75,7 +75,7 @@
 <script lang="ts" setup>
 import { Mod } from '@xmcl/curseforge'
 import DestMenu from './CurseforgeProjectDestMenu.vue'
-import { useI18n } from '/@/composables'
+
 import { getLocalDateString } from '/@/util/date'
 
 const props = defineProps<{

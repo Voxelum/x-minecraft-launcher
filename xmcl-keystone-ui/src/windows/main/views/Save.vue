@@ -5,7 +5,7 @@
       outlined
       elevation="1"
     >
-      <v-card-title>{{ tc('save.name', 2) }}</v-card-title>
+      <v-card-title>{{ t('save.name', 2) }}</v-card-title>
       <v-spacer />
       <v-btn
         text
@@ -84,7 +84,7 @@
 </template>
 
 <script lang="ts">
-import { useI18n, useOperation, useDrop } from '/@/composables'
+import { useOperation, useDrop } from '/@/composables'
 import Hint from '/@/components/Hint.vue'
 import SaveViewPageCopyFromDialog from './SaveCopyFromDialog.vue'
 import SaveViewPageCopyToDialog from './SaveCopyToDialog.vue'
@@ -108,7 +108,7 @@ export default defineComponent({
     const { saves, deleteSave, importSave, exportSave, cloneSave: copySave } = useInstanceSaves()
     const { instances } = useInstances()
     const { showSaveDialog, showOpenDialog } = windowController
-    const { t, tc } = useI18n()
+    const { t } = useI18n()
     const {
       data: deleting,
       operate: doDelete,
@@ -142,7 +142,6 @@ export default defineComponent({
     return {
       saves,
       t,
-      tc,
       onStartDelete,
       instances: computed(() => instances.value.map(i => i.path)),
 

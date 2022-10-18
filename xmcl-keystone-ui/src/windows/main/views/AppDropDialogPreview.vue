@@ -50,7 +50,8 @@
 </template>
 
 <script lang=ts setup>
-import { useFileDrop, useI18n } from '/@/composables'
+
+import { useFileDrop } from '/@/composables'
 import FileListTile from './AppDropDialogFileListTile.vue'
 import { FilePreview } from '/@/composables/dropService'
 

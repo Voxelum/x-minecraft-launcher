@@ -12,7 +12,7 @@
       elevation="1"
     >
       <!-- <v-toolbar-title class="headline text-bold">
-        {{ tc('shaderPack.name', 2) }}
+        {{ t('shaderPack.name', 2) }}
       </v-toolbar-title> -->
       <FilterCombobox
         class="max-w-150 mr-2"
@@ -72,7 +72,7 @@ import FilterCombobox from '/@/components/FilterCombobox.vue'
 import { ShaderPackItem, useShaderpacks } from '../composables/shaderpack'
 import DeleteButton from './ShaderPackDeleteButton.vue'
 import ShaderPackCard from './ShaderPackCard.vue'
-import { useFilterCombobox, useI18n } from '/@/composables'
+import { useFilterCombobox } from '/@/composables'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
 

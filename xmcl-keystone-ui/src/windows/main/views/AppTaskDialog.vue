@@ -25,7 +25,6 @@
 <script lang=ts setup>
 import { useDialog } from '../composables/dialog'
 import TaskView from './AppTaskDialogTaskView.vue'
-import { useI18n, useRouter } from '/@/composables'
 
 const { hide, isShown } = useDialog('task')
 const router = useRouter()

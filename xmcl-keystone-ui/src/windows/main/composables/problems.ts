@@ -1,23 +1,23 @@
 import { Ref } from 'vue'
 import { AssetIndexIssueKey, AssetsIssueKey, IncompatibleJavaIssueKey, isIssue, Issue, LibrariesIssueKey, MissingJavaIssueKey, VersionIssueKey, VersionJarIssueKey, VersionJsonIssueKey } from '@xmcl/runtime-api'
-import { useI18n, useIssues } from '/@/composables'
+import { useIssues } from '/@/composables'
 
 export function useProblemItems(issues: Ref<Issue[]>) {
-  const { t, tc } = useI18n()
+  const { t } = useI18n()
   const items = computed(() => issues.value
     .filter(i => !isIssue(VersionIssueKey, i))
     .map((i) => {
       if (isIssue(AssetsIssueKey, i)) {
         if (i.parameters[0].assets.some(v => v.type === 'corrupted')) {
-          return { title: tc('diagnosis.corruptedAssets.name', 2, { count: i.parameters[0].assets.length }), description: t('diagnosis.corruptedAssets.message'), ...i }
+          return { title: t('diagnosis.corruptedAssets.name', 2, { named: { count: i.parameters[0].assets.length } }), description: t('diagnosis.corruptedAssets.message'), ...i }
         } else {
-          return { title: tc('diagnosis.missingAssets.name', 2, { count: i.parameters[0].assets.length }), description: t('diagnosis.missingAssets.message'), ...i }
+          return { title: t('diagnosis.missingAssets.name', 2, { named: { count: i.parameters[0].assets.length } }), description: t('diagnosis.missingAssets.message'), ...i }
         }
       } else if (isIssue(LibrariesIssueKey, i)) {
         if (i.parameters[0].libraries.some(v => v.type === 'corrupted')) {
-          return { title: tc('diagnosis.corruptedLibraries.name', 2, { count: i.parameters[0].libraries.length }), description: t('diagnosis.corruptedLibraries.message'), ...i }
+          return { title: t('diagnosis.corruptedLibraries.name', 2, { named: { count: i.parameters[0].libraries.length } }), description: t('diagnosis.corruptedLibraries.message'), ...i }
         } else {
-          return { title: tc('diagnosis.missingLibraries.name', 2, { count: i.parameters[0].libraries.length }), description: t('diagnosis.missingLibraries.message'), ...i }
+          return { title: t('diagnosis.missingLibraries.name', 2, { named: { count: i.parameters[0].libraries.length } }), description: t('diagnosis.missingLibraries.message'), ...i }
         }
       } else if (isIssue(AssetIndexIssueKey, i)) {
         if (i.parameters[0].type === 'corrupted') {
@@ -48,7 +48,7 @@ export function useProblemItems(issues: Ref<Issue[]>) {
           ...i,
         }
       }
-      return { title: tc(`diagnosis.${i.id}.name`, i.parameters.length || 0, i.parameters[0]), description: t(`diagnosis.${i.id}.message`, { }), ...i }
+      return { title: t(`diagnosis.${i.id}.name`, i.parameters.length || 0, i.parameters[0]), description: t(`diagnosis.${i.id}.message`, { }), ...i }
     }))
   return items
 }

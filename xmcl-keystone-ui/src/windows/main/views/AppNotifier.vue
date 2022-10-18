@@ -36,8 +36,8 @@
 </template>
 
 <script lang=ts setup>
-import { Level, useNotificationQueue } from '../composables/notifier'
-import { useI18n } from '/@/composables'
+import { Level, kNotificationQueue } from '../composables/notifier'
+import { injection } from '/@/util/inject'
 
 const data = reactive({
   show: false,
@@ -47,7 +47,7 @@ const data = reactive({
   more: (() => { }) as ((() => void) | undefined),
   full: false,
 })
-const queue = useNotificationQueue()
+const queue = injection(kNotificationQueue)
 const queueLength = computed(() => queue.value.length)
 const close = () => { data.show = false }
 const more = () => {

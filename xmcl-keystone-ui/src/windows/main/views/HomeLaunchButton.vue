@@ -76,7 +76,7 @@ import { useDialog } from '../composables/dialog'
 import { JavaIssueDialogKey, useJava } from '../composables/java'
 import { LaunchStatusDialogKey, useLaunch } from '../composables/launch'
 import { LoginDialog } from '../composables/login'
-import { useBusy, useI18n, useIssues, useRefreshable, useService, useServiceBusy } from '/@/composables'
+import { useBusy, useIssues, useRefreshable, useService, useServiceBusy } from '/@/composables'
 import HomeProblemCard from './HomeProblemCard.vue'
 
 const emit = defineEmits(['pause', 'resume'])

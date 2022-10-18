@@ -1,7 +1,7 @@
 import { inject, InjectionKey, provide, Ref, ref } from 'vue'
 
 export type Level = 'success' | 'info' | 'warning' | 'error'
-const NOTIFY_QUEUE_SYMBOL: InjectionKey<Ref<Array<LocalNotification>>> = Symbol('NotifierQueue')
+export const kNotificationQueue: InjectionKey<Ref<Array<LocalNotification>>> = Symbol('NotifierQueue')
 
 export interface LocalNotification {
   level: Level
@@ -17,21 +17,11 @@ export type SubscribeOptions = {
 }
 
 export function useNotificationQueue() {
-  const queue = inject(NOTIFY_QUEUE_SYMBOL)
-  if (!queue) throw new Error()
-  return queue
-}
-
-export function provideNotifier() {
-  const queue = ref([] as LocalNotification[])
-
-  provide(NOTIFY_QUEUE_SYMBOL, queue)
-
-  return { queue }
+  return ref([] as LocalNotification[])
 }
 
 export function useNotifier() {
-  const queue = inject(NOTIFY_QUEUE_SYMBOL)
+  const queue = inject(kNotificationQueue)
   if (!queue) throw new Error('Cannot init notifier hook!')
 
   const notify: Notify = (not) => {

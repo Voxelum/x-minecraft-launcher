@@ -19,7 +19,7 @@
 </template>
 
 <script lang=ts setup>
-import { useI18n } from '/@/composables'
+
 defineProps<{
   minecraft: string
   forge: string | undefined

@@ -233,7 +233,11 @@ export class VuexServiceFactory implements ServiceFactory {
 
   getService<T>(key: ServiceKey<T>): T {
     const cached = this.cache[key.toString()]
-    if (!cached) { throw new Error(`Unregister service ${key.toString()}`) }
+    if (!cached) {
+      const proxy = this.createProxy(key, undefined)
+      this.cache[key.toString()] = proxy
+      return proxy as T
+    }
     return cached
   }
 

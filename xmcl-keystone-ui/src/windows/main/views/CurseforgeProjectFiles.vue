@@ -56,7 +56,7 @@
 import VirtualList from 'vue-virtual-scroll-list'
 import { ProjectType } from '@xmcl/runtime-api'
 import { File } from '@xmcl/curseforge'
-import { useI18n } from '/@/composables'
+
 import Tile from './CurseforgeProjectFilesTile.vue'
 import { useDialog } from '../composables/dialog'
 import { useCurseforgeInstall, useCurseforgeProjectFiles } from '../composables/curseforge'

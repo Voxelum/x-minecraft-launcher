@@ -29,7 +29,7 @@
 </template>
 <script lang="ts" setup>
 import { InstanceModsServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
-import { useI18n, useRouter, useSemaphore, useService } from '/@/composables'
+import { useSemaphore, useService } from '/@/composables'
 
 const { state } = useService(InstanceModsServiceKey)
 const modCounts = computed(() => state.mods.length)

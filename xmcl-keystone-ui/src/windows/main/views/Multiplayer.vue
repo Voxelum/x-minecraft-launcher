@@ -176,7 +176,7 @@ import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
 import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
-import { useI18n, useService } from '/@/composables'
+import { useService } from '/@/composables'
 import PlayerAvatar from '../components/PlayerAvatar.vue'
 import Hint from '/@/components/Hint.vue'
 

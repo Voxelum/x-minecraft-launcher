@@ -1,5 +1,7 @@
+import { InjectionKey } from 'vue'
 import Vuex, { Store } from 'vuex'
 
+export const kStore: InjectionKey<Store<any>> = Symbol('Store')
 /**
  * Provide vuex store for certain modules.
  */

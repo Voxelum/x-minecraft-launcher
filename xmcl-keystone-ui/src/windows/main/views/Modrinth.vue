@@ -104,7 +104,7 @@
 <script lang="ts">
 import ModCard from './ModrinthModCard.vue'
 import Categories from './ModrinthCategories.vue'
-import { useRouter } from '/@/composables'
+
 import { withDefault } from '/@/util/props'
 import { useModrinth, useModrinthTags } from '../composables/modrinth'
 

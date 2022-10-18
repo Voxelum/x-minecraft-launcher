@@ -12,7 +12,7 @@
         {{ items.length !== 0 ?
           'warning' : 'check_circle' }}
       </v-icon>
-      {{ tc('diagnosis.problem', items.length, { count: items.length }) }}
+      {{ t('diagnosis.problem', items.length, { count: items.length }) }}
     </v-card-title> -->
     <!-- <v-card-text> -->
     <v-list>
@@ -46,10 +46,10 @@
 </template>
 <script lang="ts" setup>
 import { useProblemItems } from '../composables/problems'
-import { useI18n, useIssues } from '/@/composables'
+import { useIssues } from '/@/composables'
 const { refreshing, fix, issues } = useIssues()
 const items = useProblemItems(issues)
-const { t, tc } = useI18n()
+const { t } = useI18n()
 const color = computed(() => (issues.value.some(p => !p.optional) ? 'error' : 'warning'))
 
 </script>

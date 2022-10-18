@@ -4,7 +4,7 @@
     outlined
   >
     <!-- <v-toolbar-title class="headline self-center pl-2">
-        {{ tc("mod.name", 2) }}
+        {{ t("mod.name", 2) }}
       </v-toolbar-title> -->
     <!-- <v-spacer /> -->
     <filter-combobox
@@ -73,7 +73,7 @@
 </template>
 <script lang="ts" setup>
 import { useInstanceBase } from '../composables/instance'
-import { useI18n, useRouter, useService } from '/@/composables'
+import { useService } from '/@/composables'
 import FilterCombobox from '/@/components/FilterCombobox.vue'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 

@@ -39,7 +39,6 @@
 import { useDialog } from '../composables/dialog'
 import HomeSyncDialogPull from './HomeSyncDialogPull.vue'
 import HomeSyncDialogPush from './HomeSyncDialogPush.vue'
-import { useI18n } from '/@/composables'
 
 const { isShown } = useDialog('instance-sync')
 const { t } = useI18n()

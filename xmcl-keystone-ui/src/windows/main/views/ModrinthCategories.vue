@@ -21,7 +21,7 @@
         v-html="cat.icon"
       />
       <div>
-        {{ ts(`modrinth.categories.${cat.name}`, cat.name) }}
+        {{ t(`modrinth.categories.${cat.name}`, cat.name) }}
       </div>
     </span>
     <span class="list-title">{{ t('modrinth.modLoaders.name') }}</span>
@@ -40,7 +40,7 @@
         class="w-5 max-w-5 flex justify-center"
         v-html="l.icon"
       />
-      {{ ts(`modrinth.categories.${l.name}`,l.name) }}
+      {{ t(`modrinth.categories.${l.name}`,l.name) }}
     </span>
     <span class="list-title">{{ t('modrinth.environments.name') }}</span>
     <span
@@ -54,7 +54,7 @@
         hide-details
         class="mt-0 pt-0"
       />
-      {{ ts(`modrinth.environments.${env}`, env) }}
+      {{ t(`modrinth.environments.${env}`, env) }}
     </span>
     <span class="list-title">{{ t('modrinth.gameVersions.name') }}</span>
     <v-select
@@ -98,9 +98,8 @@
 </template>
 <script lang="ts" setup>
 import { Category, GameVersion, License, Loader } from '@xmcl/modrinth'
-import { useI18n } from '/@/composables'
 
-const { ts, t } = useI18n()
+const { t } = useI18n()
 const emit = defineEmits(['select:license', 'select:gameVersion', 'select:environment', 'select:modLoader', 'select:category'])
 defineProps<{
   loading:boolean

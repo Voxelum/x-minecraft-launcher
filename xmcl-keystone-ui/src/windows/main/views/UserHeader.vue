@@ -124,7 +124,6 @@
 </template>
 <script lang="ts" setup>
 import { UserProfile } from '@xmcl/runtime-api'
-import { useI18n } from '/@/composables'
 
 const emit = defineEmits(['login', 'refresh', 'abort-refresh', 'addservice', 'select', 'remove'])
 const { t } = useI18n()

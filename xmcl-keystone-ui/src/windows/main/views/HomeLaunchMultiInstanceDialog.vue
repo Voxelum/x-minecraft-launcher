@@ -44,7 +44,7 @@
 <script lang=ts setup>
 import { useDialog } from '../composables/dialog'
 import { useLaunch } from '../composables/launch'
-import { useI18n } from '/@/composables'
+
 const { t } = useI18n()
 const { isShown } = useDialog('multi-instance-launch')
 

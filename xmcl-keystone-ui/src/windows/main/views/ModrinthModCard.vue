@@ -63,7 +63,7 @@
               left
               v-html="tag.icon"
             />
-            {{ ts(`modrinth.categories.${tag.name}`, tag.name) }}
+            {{ t(`modrinth.categories.${tag.name}`, tag.name) }}
           </v-chip>
         </div>
       </div>
@@ -73,7 +73,7 @@
 <script lang="ts" setup>
 import type { Category, SearchResultHit } from '@xmcl/modrinth'
 import { ModrinthCategoriesKey } from '../composables/modrinth'
-import { useI18n } from '/@/composables'
+
 import { getLocalDateString } from '/@/util/date'
 import { injection } from '/@/util/inject'
 
@@ -83,7 +83,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['filter', 'click'])
-const { ts } = useI18n()
+const { t } = useI18n()
 
 const cates = injection(ModrinthCategoriesKey)
 const items = computed(() => {

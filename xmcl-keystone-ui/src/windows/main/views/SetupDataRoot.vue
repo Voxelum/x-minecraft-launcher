@@ -79,7 +79,7 @@
 </template>
 <script lang="ts">
 import { Drive } from '@xmcl/runtime-api'
-import { useI18n } from '/@/composables'
+
 import { required } from '/@/util/props'
 
 export default defineComponent({

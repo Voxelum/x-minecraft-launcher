@@ -16,7 +16,7 @@
         class="white--text"
         xs12
       >
-        <span class="headline">{{ $tc('gamesetting.name', 2) }}</span>
+        <span class="headline">{{ t('gamesetting.name', 2) }}</span>
         <v-spacer />
         <v-btn
           icon
@@ -61,6 +61,7 @@ import { useInstanceGameSetting } from '../composables/instance'
 export default defineComponent({
   setup() {
     const { refreshing, refresh, commit, showInFolder, ...settings } = useInstanceGameSetting()
+    const { t } = useI18n()
     const data = reactive({
       graphics: [
         { name: 'fancyGraphics', options: [true, false], val: true },
@@ -98,6 +99,7 @@ export default defineComponent({
     return {
       ...toRefs(data),
       refreshing,
+      t,
       showInFolder,
       triggerGraphic(g: Graphic) {
         const index = g.options.indexOf(g.val as never)

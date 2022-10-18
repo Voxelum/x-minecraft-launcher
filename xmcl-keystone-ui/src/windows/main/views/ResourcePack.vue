@@ -12,7 +12,7 @@
       elevation="1"
     >
       <!-- <div class="headline align-middle self-center pl-2">
-        {{ tc("resourcepack.name", 2) }}
+        {{ t("resourcepack.name", 2) }}
       </div> -->
       <!-- <v-spacer /> -->
       <filter-combobox
@@ -38,7 +38,7 @@
             </v-icon>
           </v-btn>
         </template>
-        {{ t(`resourcepack.searchOnCurseforge`, { name: tc('resourcepack.name', 0) }) }}
+        {{ t(`resourcepack.searchOnCurseforge`, { name: t('resourcepack.name', 0) }) }}
       </v-tooltip>
       <!-- <v-btn
           icon
@@ -185,7 +185,7 @@ import { ResourcePackItem, useInstanceResourcePacks } from '../composables/resou
 import ResourcePackCard from './ResourcePackCard.vue'
 import FilterCombobox from '/@/components/FilterCombobox.vue'
 import Hint from '/@/components/Hint.vue'
-import { useDragTransferList, useDropImport, useFilterCombobox, useI18n, useResourceOperation, useRouter, useServiceBusy } from '/@/composables'
+import { useDragTransferList, useDropImport, useFilterCombobox, useResourceOperation, useServiceBusy } from '/@/composables'
 
 function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {
   function getFilterOptions(item: ResourcePackItem) {
@@ -213,7 +213,7 @@ const { enabled, disabled, add, remove, commit, insert, showDirectory } = useIns
 const { removeResource } = useResourceOperation()
 const { push } = useRouter()
 const { path } = useInstanceBase()
-const { t, tc } = useI18n()
+const { t } = useI18n()
 const data = reactive({
   dragging: false,
   deletingPack: null as ResourcePackItem | null,

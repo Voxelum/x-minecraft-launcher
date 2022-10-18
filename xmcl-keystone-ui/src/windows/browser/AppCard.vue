@@ -30,7 +30,7 @@
         v-if="defaultApp === manifest.url"
         color="primary"
       >
-        {{ $t('default') }}
+        {{ t('default') }}
       </v-chip>
       <v-tooltip top>
         <template #activator="{ on }">
@@ -43,7 +43,7 @@
             <v-icon>shortcut</v-icon>
           </v-btn>
         </template>
-        {{ $t('createShortcut') }}
+        {{ t('createShortcut') }}
       </v-tooltip>
       <v-tooltip top>
         <template #activator="{ on }">
@@ -56,7 +56,7 @@
             <v-icon>play_arrow</v-icon>
           </v-btn>
         </template>
-        {{ $t('launch') }}
+        {{ t('launch') }}
       </v-tooltip>
       <v-tooltip top>
         <template #activator="{ on }">
@@ -70,31 +70,24 @@
             <v-icon>delete_outline</v-icon>
           </v-btn>
         </template>
-        {{ $t('delete') }}
+        {{ t('delete') }}
       </v-tooltip>
     </div>
   </div>
 </template>
-<script lang="ts">
-import { computed, defineComponent } from 'vue'
+<script lang="ts" setup>
 import { InstalledAppManifest } from '@xmcl/runtime-api'
-import favicon from '/@/assets/favicon.svg'
-import { required } from '/@/util/props'
 
-export default defineComponent({
-  props: {
-    manifest: required<InstalledAppManifest>(Object),
-    defaultApp: required(String),
-  },
-  setup(props) {
-    const icon = computed(() => {
-      if (!props.manifest?.iconUrls.icon) return favicon
-      const icon = props.manifest.iconUrls.icon
-      return new URL(icon, props.manifest.url).toString()
-    })
-    return {
-      icon,
-    }
-  },
+import favicon from '/@/assets/favicon.svg'
+
+const props = defineProps<{
+  manifest: InstalledAppManifest
+  defaultApp: string
+}>()
+const { t } = useI18n()
+const icon = computed(() => {
+  if (!props.manifest?.iconUrls.icon) return favicon
+  const icon = props.manifest.iconUrls.icon
+  return new URL(icon, props.manifest.url).toString()
 })
 </script>

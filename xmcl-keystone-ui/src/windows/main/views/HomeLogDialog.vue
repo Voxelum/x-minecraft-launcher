@@ -64,7 +64,7 @@
 </template>
 
 <script lang=ts setup>
-import { useI18n, useService } from '/@/composables'
+import { useService } from '/@/composables'
 import TabItem from './HomeLogDialogTab.vue'
 import { InstanceLogServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'

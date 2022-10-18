@@ -1,7 +1,8 @@
 import { Ref } from 'vue'
 import { ForgeVersion, LockKey } from '@xmcl/runtime-api'
 import { useFabricVersions, useForgeVersions, useMinecraftVersions, useOptifineVersions, useQuiltVersions } from './version'
-import { SERVICES_SEMAPHORES_KEY, useI18n } from '/@/composables'
+
+import { kSemaphores } from '/@/composables'
 import { getLocalDateString } from '/@/util/date'
 import { injection } from '/@/util/inject'
 
@@ -26,7 +27,7 @@ export function useMinecraftVersionList(version: Ref<string>) {
   const { versions: vers, installed, refreshing, refresh, release } = useMinecraftVersions()
   const { t } = useI18n()
   const showAlpha = ref(false)
-  const { semaphores } = injection(SERVICES_SEMAPHORES_KEY)
+  const { semaphores } = injection(kSemaphores)
   const items = computed(() => {
     const result = vers.value
       .filter(v => showAlpha.value || v.type === 'release')
@@ -58,7 +59,7 @@ export function useMinecraftVersionList(version: Ref<string>) {
 
 export function useForgeVersionList(minecraft: Ref<string>, version: Ref<string>) {
   const { versions, refreshing, refresh, installed } = useForgeVersions(minecraft)
-  const { semaphores } = injection(SERVICES_SEMAPHORES_KEY)
+  const { semaphores } = injection(kSemaphores)
   const { t } = useI18n()
 
   const recommendedOnly = ref(false)
@@ -110,7 +111,7 @@ export function useForgeVersionList(minecraft: Ref<string>, version: Ref<string>
 }
 
 export function useOptifineVersionList(minecraft: Ref<string>, forge: Ref<string>, version: Ref<string>) {
-  const { semaphores } = injection(SERVICES_SEMAPHORES_KEY)
+  const { semaphores } = injection(kSemaphores)
   const { versions, installed, refreshing, refresh } = useOptifineVersions(minecraft, forge)
 
   const items = computed(() => {
@@ -138,7 +139,7 @@ export function useOptifineVersionList(minecraft: Ref<string>, forge: Ref<string
 }
 
 export function useFabricVersionList(minecraft: Ref<string>, version: Ref<string>) {
-  const { semaphores } = injection(SERVICES_SEMAPHORES_KEY)
+  const { semaphores } = injection(kSemaphores)
   const { t } = useI18n()
   const showStableOnly = ref(false)
   const { yarnVersions, loaderVersions, refresh, refreshing, installed } = useFabricVersions(minecraft)
@@ -177,7 +178,7 @@ export function useFabricVersionList(minecraft: Ref<string>, version: Ref<string
 }
 
 export function useQuiltVersionList(minecraft: Ref<string>, version: Ref<string>) {
-  const { semaphores } = injection(SERVICES_SEMAPHORES_KEY)
+  const { semaphores } = injection(kSemaphores)
   const { versions, refresh, refreshing, installed } = useQuiltVersions(minecraft)
   const items = computed(() => {
     const result: VersionItem[] = versions.value

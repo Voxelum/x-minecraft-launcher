@@ -5,8 +5,8 @@ import { castToVueI18n, createI18n } from 'vue-i18n-bridge'
 import App from './App.vue'
 import { baseService } from './baseService'
 import vuetify from './vuetify'
-import { I18N_KEY, usePreferDark } from '/@/composables'
-import { VuetifyInjectionKey } from '/@/composables/vuetify'
+import { usePreferDark } from '/@/composables'
+import { kVuetify } from '/@/composables/vuetify'
 
 Vue.use(VueI18n, { bridge: true })
 
@@ -22,18 +22,16 @@ const i18n = castToVueI18n(
       locale: 'en',
       silentTranslationWarn: true,
       missingWarn: false,
-      // messages: messages,
     },
     VueI18n,
   ),
 ) // `createI18n` which is provide `vue-i18n-bridge` has second argument, you **must** pass `VueI18n` constructor which is provide `vue-i18n`
 
-const app = createApp(defineComponent({
+const app = new Vue(defineComponent({
   vuetify,
   i18n,
   setup(props, context) {
-    provide(VuetifyInjectionKey, context.root.$vuetify)
-    provide(I18N_KEY, i18n)
+    provide(kVuetify, vuetify.framework)
 
     baseService.sync().then(({ state }) => {
       i18n.locale = state.locale
@@ -47,15 +45,14 @@ const app = createApp(defineComponent({
       }
     })
 
-    const vuetify = context.root.$vuetify
     const preferDark = usePreferDark()
     const updateTheme = (theme: string) => {
       if (theme === 'system') {
-        vuetify.theme.dark = preferDark.value
+        vuetify.framework.theme.dark = preferDark.value
       } else if (theme === 'dark') {
-        vuetify.theme.dark = true
+        vuetify.framework.theme.dark = true
       } else if (theme === 'light') {
-        vuetify.theme.dark = false
+        vuetify.framework.theme.dark = false
       }
     }
     updateTheme(theme)
@@ -63,4 +60,5 @@ const app = createApp(defineComponent({
     return () => h(App)
   },
 }))
+
 app.mount('#app')

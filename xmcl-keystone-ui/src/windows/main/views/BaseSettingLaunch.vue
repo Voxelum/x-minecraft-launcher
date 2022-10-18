@@ -78,7 +78,7 @@
 </template>
 
 <script lang=ts setup>
-import { useI18n } from '/@/composables'
+
 import { useNotifier } from '../composables/notifier'
 import { useLaunchPreview } from '../composables/launchPreview'
 import { injection } from '/@/util/inject'

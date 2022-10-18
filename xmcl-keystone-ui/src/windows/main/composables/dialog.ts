@@ -1,10 +1,8 @@
-import { computed, inject, InjectionKey, provide, Ref, ref } from 'vue'
-import type { JavaVersion } from '@xmcl/core'
-import { useI18n } from '/@/composables'
+import { computed, InjectionKey, provide, Ref, ref } from 'vue'
+
 import { injection } from '/@/util/inject'
 
-export const DIALOG_SYMBOL: InjectionKey<{ dialog: Ref<string>; parameter: Ref<any> }> = Symbol('ShowingDialog')
-export const DIALOG_JAVA_ISSUE: InjectionKey<Ref<{ type: 'incompatible' | 'missing'; version: JavaVersion }>> = Symbol('JavaIssue')
+export const kDialogModel: InjectionKey<{ dialog: Ref<string>; parameter: Ref<any> }> = Symbol('ShowingDialog')
 
 export function useZipFilter() {
   const { t } = useI18n()
@@ -24,9 +22,16 @@ export function useModrinthFilter() {
   return filter
 }
 
-export function provideDialog() {
-  provide(DIALOG_SYMBOL, { dialog: ref(''), parameter: ref(undefined) })
-  provide(DIALOG_JAVA_ISSUE, ref({ type: '', version: { majorVersion: 8, component: 'jre-legacy' } }))
+export interface DialogModel {
+  dialog: Ref<string>
+  parameter: Ref<any>
+}
+
+export function useDialogModel(): DialogModel {
+  return {
+    dialog: ref(''),
+    parameter: ref(undefined),
+  }
 }
 
 export interface DialogKey<T> extends String { }
@@ -35,7 +40,7 @@ export interface DialogKey<T> extends String { }
  * Use a shared dialog between pages
  */
 export function useDialog<T>(dialogName: DialogKey<T> = '') {
-  const { dialog, parameter } = injection(DIALOG_SYMBOL)
+  const { dialog, parameter } = injection(kDialogModel)
   const isShown = computed({
     get: () => dialog.value === dialogName,
     set: (v: boolean) => {
@@ -60,12 +65,6 @@ export function useDialog<T>(dialogName: DialogKey<T> = '') {
       dialog.value = dialogName.toString()
     }
   }
-  // watch(isShown, (shown) => {
-  // if (!shown) {
-  // dialog.value = ''
-  // parameter.value = undefined
-  // }
-  // })
   return {
     dialog,
     parameter: parameter as Ref<T | undefined>,
@@ -73,10 +72,4 @@ export function useDialog<T>(dialogName: DialogKey<T> = '') {
     hide,
     isShown,
   }
-}
-
-export function useJavaWizardDialog() {
-  const javaIssue = inject(DIALOG_JAVA_ISSUE)
-  if (!javaIssue) throw new Error('This should not happen')
-  return { javaIssue, ...useDialog('java-wizard') }
 }

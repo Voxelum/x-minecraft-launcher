@@ -13,10 +13,10 @@ export function useBusy(key: string | Ref<string>) {
   return computed(() => sem.value > 0)
 }
 
-export const SERVICES_SEMAPHORES_KEY: InjectionKey<ReturnType<typeof useSemaphores>> = Symbol('SERVICES_SHEMAPHORES_KEY')
+export const kSemaphores: InjectionKey<ReturnType<typeof useSemaphores>> = Symbol('SERVICES_SHEMAPHORES_KEY')
 
 export function useSemaphore(semaphore: string | Ref<string>) {
-  const { semaphores } = injection(SERVICES_SEMAPHORES_KEY)
+  const { semaphores } = injection(kSemaphores)
   return computed(() => {
     const key = typeof semaphore === 'string' ? semaphore : semaphore.value
     let value = semaphores[key]
@@ -57,5 +57,10 @@ export function useSemaphores() {
       }
     }
   })
+
+  onMounted(() => {
+    refresh()
+  })
+
   return { semaphores: container, refresh, refreshing }
 }

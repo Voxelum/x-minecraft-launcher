@@ -43,7 +43,6 @@
 
 <script lang="ts" setup>
 import { useDialog } from '../composables/dialog'
-import { useI18n } from '/@/composables'
 
 const props = defineProps<{
   title: string

@@ -86,7 +86,7 @@
 <script lang="ts" setup>
 import { Ref } from 'vue'
 import { BaseServiceKey } from '@xmcl/runtime-api'
-import { useI18n, useRouter, useService, useTags } from '/@/composables'
+import { useService, useTags } from '/@/composables'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { useCurseforgeRoute } from '../composables/curseforgeRoute'
 import { vContextMenu } from '../directives/contextMenu'

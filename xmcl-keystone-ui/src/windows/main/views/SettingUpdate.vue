@@ -85,7 +85,7 @@
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { useLauncherVersion, useUpdateSettings } from '../composables/setting'
-import { useI18n, useServiceBusy } from '/@/composables'
+import { useServiceBusy } from '/@/composables'
 
 const { show: showUpdateInfo } = useDialog('update-info')
 const disableUpdate = false // state.env !== 'raw'

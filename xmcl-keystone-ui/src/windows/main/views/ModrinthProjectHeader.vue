@@ -30,7 +30,7 @@
             left
             v-html="item.icon"
           />
-          {{ ts(`modrinth.categories.${item.name}`) }}
+          {{ t(`modrinth.categories.${item.name}`) }}
         </v-chip>
       </span>
 
@@ -159,7 +159,7 @@ import { Ref } from 'vue'
 import { Category, Project, ProjectVersion } from '@xmcl/modrinth'
 import { ModrinthServiceKey, Persisted, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import CurseforgeProjectDestMenu from './CurseforgeProjectDestMenu.vue'
-import { useI18n, useRefreshable, useService, useServiceBusy } from '/@/composables'
+import { useRefreshable, useService, useServiceBusy } from '/@/composables'
 import { useVuetifyColor } from '/@/composables/vuetify'
 import { getColorForReleaseType } from '/@/util/color'
 import { getLocalDateString } from '/@/util/date'
@@ -169,7 +169,7 @@ const props = defineProps<{
   project: Project
   installTo: string
 }>()
-const { t, ts } = useI18n()
+const { t } = useI18n()
 const { getTags } = useService(ModrinthServiceKey)
 const categories = ref([] as Category[])
 

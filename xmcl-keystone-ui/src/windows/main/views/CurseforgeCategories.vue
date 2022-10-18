@@ -34,7 +34,7 @@
 <script lang="ts" setup>
 import { ModCategory } from '@xmcl/curseforge'
 import { CurseForgeServiceKey } from '@xmcl/runtime-api'
-import { useI18n, useService } from '/@/composables'
+import { useService } from '/@/composables'
 import { useRefreshable } from '/@/composables/refreshable'
 
 const props = defineProps<{

@@ -1,5 +1,4 @@
 import { Ref, set } from 'vue'
-import { useI18n } from '.'
 
 export function useTagCreation() {
   const { t } = useI18n()

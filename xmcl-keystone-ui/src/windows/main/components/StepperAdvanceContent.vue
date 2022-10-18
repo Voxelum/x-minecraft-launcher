@@ -264,7 +264,7 @@ import { CreateOptionKey } from '../composables/instanceCreation'
 import { useJava } from '../composables/java'
 import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useOptifineVersionList, useQuiltVersionList } from '../composables/versionList'
 import VersionMenu from './VersionMenu.vue'
-import { useI18n } from '/@/composables'
+
 import { injection } from '/@/util/inject'
 
 defineProps({

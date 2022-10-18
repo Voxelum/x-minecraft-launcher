@@ -54,7 +54,7 @@
 import { useTasks } from '../composables/task'
 import TaskDialogNodeStatus from './AppTaskDialogNodeStatus.vue'
 import AppTaskDialogTaskViewMessage from './AppTaskDialogTaskViewMessage'
-import { useI18n } from '/@/composables'
+
 import { TaskItem } from '/@/entities/task'
 
 const { tasks: all, pause, resume, cancel } = useTasks()

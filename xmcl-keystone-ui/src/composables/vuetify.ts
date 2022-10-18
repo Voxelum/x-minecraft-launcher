@@ -3,10 +3,10 @@ import { Framework } from 'vuetify'
 import { injection } from '../util/inject'
 import colors from 'vuetify/lib/util/colors'
 
-export const VuetifyInjectionKey: InjectionKey<Framework> = Symbol('vuetify')
+export const kVuetify: InjectionKey<Framework> = Symbol('vuetify')
 
 export function useVuetifyColor() {
-  const vuetify = injection(VuetifyInjectionKey)
+  const vuetify = injection(kVuetify)
 
   const getColorCode = (code: string) => {
     return vuetify.theme.currentTheme[code] ?? (colors as any)[code]?.base ?? ''

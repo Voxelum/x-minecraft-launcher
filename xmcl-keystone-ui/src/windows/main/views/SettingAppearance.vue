@@ -372,7 +372,7 @@
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { BackgroundType, useBackground, useBarBlur } from '../composables/background'
 import { useColorTheme } from '../composables/colorTheme'
-import { useI18n, useService, useTheme } from '/@/composables'
+import { useService, useTheme } from '/@/composables'
 import SettingAppearanceColor from './SettingAppearanceColor.vue'
 
 const { showOpenDialog } = windowController

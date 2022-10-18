@@ -6,6 +6,7 @@ import FeedTheBeast from './views/FeedTheBeast.vue'
 import FeedTheBeastProject from './views/FeedTheBeastProject.vue'
 import GameSetting from './views/GameSetting.vue'
 import Home from './views/Home.vue'
+import Me from './views/Me.vue'
 import Mod from './views/Mod.vue'
 import Modpack from './views/Modpack.vue'
 import Modrinth from './views/Modrinth.vue'
@@ -15,8 +16,6 @@ import ResourcePack from './views/ResourcePack.vue'
 import Save from './views/Save.vue'
 import Setting from './views/Setting.vue'
 import ShaderPack from './views/ShaderPack.vue'
-import User from './views/User.vue'
-import Me from './views/Me.vue'
 
 export const createRouter = () => {
   const router = new Router({
@@ -119,4 +118,8 @@ export const createRouter = () => {
     ],
   })
   return router
+}
+
+export function castToRouter() {
+
 }

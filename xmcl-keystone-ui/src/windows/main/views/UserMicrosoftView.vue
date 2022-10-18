@@ -139,7 +139,7 @@ import { NameAvailability, OfficialUserServiceKey, UserProfile } from '@xmcl/run
 import PlayerCape from '../components/PlayerCape.vue'
 import { PlayerNameModel, usePlayerName, UserSkinModel, useUserSkin } from '../composables/userSkin'
 import PageSkinView from './UserSkinView.vue'
-import { useI18n, useRefreshable, useService } from '/@/composables'
+import { useRefreshable, useService } from '/@/composables'
 
 const props = defineProps<{
   user: UserProfile

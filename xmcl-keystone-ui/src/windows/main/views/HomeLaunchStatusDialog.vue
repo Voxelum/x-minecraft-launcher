@@ -66,7 +66,7 @@
 import { LaunchServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { LaunchStatusDialogKey, useLaunch } from '../composables/launch'
-import { useI18n, useService } from '/@/composables'
+import { useService } from '/@/composables'
 import VTypical from '/@/components/VTyping.vue'
 import { useCurrentUser } from '../composables/user'
 

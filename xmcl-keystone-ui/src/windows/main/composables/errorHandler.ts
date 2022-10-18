@@ -1,7 +1,7 @@
 import { HTTPException } from '@xmcl/runtime-api'
 import { useDialog } from './dialog'
 import { useNotifier } from './notifier'
-import { useI18n } from '/@/composables'
+
 import { useExceptionHandler } from '/@/composables/exception'
 
 export function useDefaultErrorHandler() {

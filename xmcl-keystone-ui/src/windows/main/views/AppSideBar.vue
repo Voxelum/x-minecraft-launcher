@@ -330,7 +330,7 @@
             <v-list-item-title>Settings</v-list-item-title>
           </v-list-item>
         </template>
-        {{ tc('setting.name', 2) }}
+        {{ t('setting.name', 2) }}
       </v-tooltip>
     </v-list>
   </v-navigation-drawer>
@@ -348,7 +348,7 @@ import { useSortedInstance } from '../composables/instanceSort'
 import { useCurrentUser } from '../composables/user'
 import { vContextMenu } from '../directives/contextMenu'
 import AppSideBarInstanceItem from './AppSideBarInstanceItem.vue'
-import { useI18n, useRouter, useService } from '/@/composables'
+import { useService } from '/@/composables'
 import { useLocalStorageCacheBool } from '/@/composables/cache'
 
 const sideBarShowCurseforge = useLocalStorageCacheBool('sideBarShowCurseforge', true)
@@ -400,7 +400,7 @@ const items = computed(() => {
   return result
 })
 
-const { t, tc } = useI18n()
+const { t } = useI18n()
 const { sideBarColor } = useColorTheme()
 
 expanding.value = subRoutes.has(router.currentRoute.fullPath)

@@ -72,7 +72,7 @@
 
 <script lang=ts setup>
 import { File } from '@xmcl/curseforge'
-import { useI18n } from '/@/composables'
+
 import { getColorForReleaseType } from '/@/util/color'
 import { getLocalDateString } from '/@/util/date'
 

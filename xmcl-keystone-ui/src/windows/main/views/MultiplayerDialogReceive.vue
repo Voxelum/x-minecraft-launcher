@@ -115,7 +115,7 @@
 import { createAnswerAppUrl, PeerServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { useCurrentUser } from '../composables/user'
-import { useI18n, useRefreshable, useService, useServiceBusy } from '/@/composables'
+import { useRefreshable, useService, useServiceBusy } from '/@/composables'
 
 const { isShown, parameter } = useDialog('peer-receive')
 const { gameProfile } = useCurrentUser()
