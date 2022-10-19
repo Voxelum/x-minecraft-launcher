@@ -45,8 +45,8 @@ jobs:
     #     npm run lint
     - name: Build
       run: |
-        pnpm run build --prefix xmcl-keystone-ui
-        pnpm run build:all --prefix xmcl-electron-app
+        pnpm run --prefix xmcl-keystone-ui build
+        pnpm run --prefix xmcl-electron-app build:all
       env:
         BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
         NODE_ENV: production
@@ -109,8 +109,8 @@ jobs:
       run: pnpm install --filter=!./xmcl-page
     - name: Build
       run: |
-        pnpm run build --prefix xmcl-keystone-ui
-        pnpm run build --prefix xmcl-electron-app
+        pnpm run --prefix xmcl-keystone-ui build
+        pnpm run --prefix xmcl-electron-app build
       env:
         BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
         NODE_ENV: production
@@ -141,8 +141,8 @@ jobs:
       run: pnpm install --filter=!./xmcl-page
     - name: Build
       run: |
-        pnpm run build --prefix xmcl-keystone-ui
-        pnpm run build --prefix xmcl-electron-app
+        pnpm run --prefix xmcl-keystone-ui build
+        pnpm run --prefix xmcl-electron-app build
       env:
         BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
         NODE_ENV: production
