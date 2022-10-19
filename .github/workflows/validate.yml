@@ -12,7 +12,7 @@ jobs:
         submodules: recursive
     - uses: pnpm/action-setup@v2.0.1
       with:
-        version: 6.24.4
+        version: 7.13.2
     - name: Use Node.js 16
       uses: actions/setup-node@v2
       with:
