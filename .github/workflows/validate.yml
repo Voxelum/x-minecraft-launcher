@@ -35,6 +35,6 @@ jobs:
         pnpm run --filter ./xmcl-runtime-api check
     - name: Build
       run: |
-        pnpm run build --prefix xmcl-keystone-ui
-        pnpm run build --prefix xmcl-electron-app
+        pnpm run --prefix xmcl-keystone-ui build
+        pnpm run --prefix xmcl-electron-app build
 
