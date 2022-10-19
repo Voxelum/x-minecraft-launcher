@@ -108,6 +108,14 @@ export function useTaskManager() {
     taskMonitor.cancel(task.taskId)
   }
 
+  const tTask = (id: string, param: Record<string, any>) => {
+    const result = tm(id)
+    if (typeof result === 'function') {
+      return t(id, param)
+    }
+    return te(id + '.name') ? t(id + '.name', param) : id
+  }
+
   let syncing: Promise<void> | undefined
 
   function mapAndRecordTaskItem(payload: TaskPayload): TaskItem {
@@ -118,7 +126,7 @@ export function useTaskManager() {
     const item = reactive({
       id: localId,
       taskId: payload.uuid,
-      title: computed(() => te(payload.path) ? t(payload.path, payload.param ? { ...payload.param } : {}) : t(payload.path + '.name', payload.param ? { ...payload.param } : {})),
+      title: computed(() => tTask(payload.path, payload.param)),
       time: new Date(payload.time),
       message: payload.error ? Object.freeze(payload.error) : payload.from ?? payload.to ?? '',
       from: payload.from,
@@ -147,9 +155,7 @@ export function useTaskManager() {
       const item = reactive({
         taskId: uuid,
         id: localId,
-        title: computed(() => {
-          return te(path) ? t(path, param) : t(path + '.name', param)
-        }),
+        title: computed(() => tTask(path, param)),
         path,
         param,
         children,
