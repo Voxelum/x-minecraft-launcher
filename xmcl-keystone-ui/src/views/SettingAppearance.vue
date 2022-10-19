@@ -397,7 +397,12 @@ const themes = computed(() => [{
   value: 'system',
 }])
 
-const particleModes = computed(() => ['push', 'remove', 'repulse', 'bubble'].map(v => ({ value: v, text: t(`setting.particleMode.${v}`) })))
+const particleModes = computed(() => Object.entries({
+  push: t('setting.particleMode.push'),
+  remove: t('setting.particleMode.remove'),
+  repulse: t('setting.particleMode.repulse'),
+  bubble: t('setting.particleMode.bubble'),
+}).map(([v, text]) => ({ value: v, text })))
 const backgroundImageFits = computed(() => [
   { value: 'cover', text: t('setting.backgroundImageFit.cover') },
   { value: 'contain', text: t('setting.backgroundImageFit.contain') },
@@ -640,7 +645,7 @@ setting:
   darkTheme: Тема
   darkThemeDescription: Выберите тёмную или светлую тему
   particleMode:
-    '': Режим частиц
+    name: Режим частиц
     bubble: Пузыри
     push: Отталкивание
     remove: Удаление

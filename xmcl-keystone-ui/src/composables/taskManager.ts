@@ -89,7 +89,7 @@ class ChildrenWatcher {
  * @returns
  */
 export function useTaskManager() {
-  const { t } = useI18n()
+  const { t, te, tm, rt } = useI18n()
   const dictionary: Record<string, TaskItem> = {}
   const watchers: Record<string, ChildrenWatcher> = {}
   const throughput = ref(0)
@@ -118,7 +118,7 @@ export function useTaskManager() {
     const item = reactive({
       id: localId,
       taskId: payload.uuid,
-      title: computed(() => t(payload.path, { ...(payload.param || {}) })),
+      title: computed(() => te(payload.path) ? t(payload.path, payload.param ? { ...payload.param } : {}) : t(payload.path + '.name', payload.param ? { ...payload.param } : {})),
       time: new Date(payload.time),
       message: payload.error ? Object.freeze(payload.error) : payload.from ?? payload.to ?? '',
       from: payload.from,
@@ -147,7 +147,9 @@ export function useTaskManager() {
       const item = reactive({
         taskId: uuid,
         id: localId,
-        title: computed(() => t(path, param)),
+        title: computed(() => {
+          return te(path) ? t(path, param) : t(path + '.name', param)
+        }),
         path,
         param,
         children,

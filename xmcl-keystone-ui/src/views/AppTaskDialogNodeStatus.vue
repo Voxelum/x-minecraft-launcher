@@ -4,6 +4,12 @@
     @mouseenter="hover = true"
     @mouseleave="hover = false"
   >
+    <div v-if="item.state === 5">
+      {{ t('task.failed') }}
+    </div>
+    <div v-else-if="item.state === 2">
+      {{ t('task.cancelled') }}
+    </div>
     <v-icon
       v-if="item.state === 1"
       v-ripple
@@ -42,78 +48,63 @@
   </div>
 </template>
 
-<script lang=ts>
+<script lang=ts setup>
 import { TaskItem } from '@/entities/task'
-import { required } from '@/util/props'
-import { defineComponent, computed, ref } from 'vue'
 import { TaskState } from '@xmcl/runtime-api'
 
-export default defineComponent({
-  props: {
-    item: required<TaskItem>(Object),
-    showNumber: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  setup(props, context) {
-    const hover = ref(false)
-    const color = computed(() => {
-      switch (props.item.state) {
-        case TaskState.Succeed:
-          return 'green'
-        case TaskState.Cancelled:
-        case TaskState.Running:
-        case TaskState.Paused:
-          return 'white'
-        case TaskState.Failed:
-          return 'error'
-        default:
-          return 'white'
-      }
-    })
-    const indeterminate = computed(() => !props.item.total || props.item.total === -1)
-    const icon = computed(() => {
-      if (hover.value) {
-        if (props.item.state === TaskState.Running) {
-          return 'close'
-        }
-      }
-      switch (props.item.state) {
-        case TaskState.Succeed:
-          return props.item.children && props.item.children.length > 0 ? 'done_all' : 'check'
-        case TaskState.Cancelled:
-          return 'stop'
-        case TaskState.Failed:
-          return 'error_outline'
-        case TaskState.Paused:
-          return 'play_arrow'
-        default:
-          return 'device_unknown'
-      }
-    })
-    const percentage = computed(() => props.item.progress! / props.item.total! * 100)
-    const onClick = () => {
-      if (props.item.state === TaskState.Running) {
-        context.emit('cancel')
-      } else if (props.item.state === TaskState.Paused) {
-        context.emit('resume')
-      }
-    }
-    const onPause = () => {
-      context.emit('pause')
-    }
-    return {
-      indeterminate,
-      color,
-      hover,
-      icon,
-      percentage,
-      onClick,
-      onPause,
-    }
-  },
+const props = defineProps<{
+  item: TaskItem
+  showNumber?: boolean
+}>()
+const emit = defineEmits(['cancel', 'resume', 'pause'])
+
+const hover = ref(false)
+const { t } = useI18n()
+const color = computed(() => {
+  switch (props.item.state) {
+    case TaskState.Succeed:
+      return 'green'
+    case TaskState.Cancelled:
+    case TaskState.Running:
+    case TaskState.Paused:
+      return 'white'
+    case TaskState.Failed:
+      return 'error'
+    default:
+      return 'white'
+  }
 })
+const indeterminate = computed(() => !props.item.total || props.item.total === -1)
+const icon = computed(() => {
+  if (hover.value) {
+    if (props.item.state === TaskState.Running) {
+      return 'close'
+    }
+  }
+  switch (props.item.state) {
+    case TaskState.Succeed:
+      return props.item.children && props.item.children.length > 0 ? 'done_all' : 'check'
+    case TaskState.Cancelled:
+      return 'stop'
+    case TaskState.Failed:
+      return 'error_outline'
+    case TaskState.Paused:
+      return 'play_arrow'
+    default:
+      return 'device_unknown'
+  }
+})
+const percentage = computed(() => props.item.progress! / props.item.total! * 100)
+const onClick = () => {
+  if (props.item.state === TaskState.Running) {
+    emit('cancel')
+  } else if (props.item.state === TaskState.Paused) {
+    emit('resume')
+  }
+}
+const onPause = () => {
+  emit('pause')
+}
 </script>
 
 <style>

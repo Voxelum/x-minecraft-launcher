@@ -59,10 +59,16 @@ function useUnknown() {
 function usePingServer() {
   const { pingServer } = useService(ServerStatusServiceKey)
   const { te, t } = useI18n()
+  const tStatus = computed(() => ({
+    'serverStatus.nohost': t('serverStatus.nohost'),
+    'serverStatus.refuse': t('serverStatus.refuse'),
+    'serverStatus.timeout': t('serverStatus.timeout'),
+    'serverStatus.ping': t('serverStatus.ping'),
+  } as Record<string, string>))
   return async function (options: PingServerOptions) {
     const result = await pingServer(options)
-    result.description = typeof result.description === 'string' && te(result.description) ? t(result.description) : result.description
-    result.version.name = typeof result.version.name === 'string' && te(result.version.name) ? t(result.version.name) : result.version.name
+    result.description = typeof result.description !== 'string' ? result.description : (tStatus.value[result.description] ?? (te(result.description) ? t(result.description) : result.description))
+    result.version.name = typeof result.version.name !== 'string' ? result.version.name : (tStatus.value[result.version.name] ?? (te(result.version.name) ? t(result.version.name) : result.version.name))
     return result
   }
 }

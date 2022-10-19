@@ -5,26 +5,19 @@ back: Back
 baseSetting:
   title: Base Settings
 browse: Browse
+browseApp:
+  createShortcut: Create Shortcut
+  default: DEFAULT
+  delete: Delete
+  launch: Launch and set as Default
 cancel: Cancel
 checkUpdate: Check Update
-cloneMinecraft: Clone Minecraft
 confirm: Start
 copyClipboard:
   success: Copy to clipboard
 create: Create
-criticalGraphics: Critical Graphics
 dataMigration:
   apply: Apply Setting
-  cleanOldData: Clear Data
-  cleanOldDataHint: Remove all old files including Maps, Resource Packs, and etc
-  copyOldToNew: Migrate Data
-  copyOldToNewHint: Before clearing data, copy all old data to new place
-  migrateClean: Delete Old Data
-  migrateDone: Migration Done
-  migrateFailed: Data Migration Failed
-  migrateSuccess: Data Migration Success
-  postMigrating: Cleaning Old Data
-  reloadFailed: Data Migrating Failed!
   setRootCause: >-
     You will loose your data (Maps, Resource Packs, Mods) if you close the
     Launcher at this process!
@@ -35,7 +28,6 @@ delete:
   name: Delete {name}
   'no': 'No'
   'yes': Delete
-deleteSave: Delete Save
 description: Description
 detail: Detail
 diagnosis:
@@ -44,19 +36,12 @@ diagnosis:
     name: Bad Installation on {version}
   corruptedAssets:
     message: Launcher will install assets for you
-    multi: Corrupted %{count} assets.
     name: >-
       Corrupted asset: {name} | Corrupted asset {name} | {count} assets
       corrupted
   corruptedAssetsIndex:
     message: Launcher will download assets index for you
     name: Corrupted assets index file of {version}.
-  corruptedAuthlibInjector:
-    message: The authlib-injector is required to use third party auth server!
-    name: Corrupted authlib-injector
-  corruptedForgeJar:
-    message: Click to install forge
-    name: Corrupted forge {forge} jar for Minecraft {minecraft}
   corruptedLibraries:
     message: Launcher will install libraries for you
     name: >-
@@ -68,24 +53,9 @@ diagnosis:
   corruptedVersionJson:
     message: Click to install this version
     name: Corrupted version %{version} json.
-  fix: Fix the Problems
   incompatibleJava:
     message: You can ask Launcher to download it for you.
     name: The java version {javaVersion} does not suitable to {version}!
-  incompatibleMod:
-    message: >-
-      Either the mod actually can run in this version, or you should remove it
-      from list
-    name: >-
-      {name} mod is incompatible for current {actual} version. Accept
-      {accepted}.
-  incompatibleResourcePack:
-    message: >-
-      Either the resource pack can fit-in in this version, or you should remove
-      it from list
-    name: >-
-      The resource pack {name} is incompatible for {actual} version. Accept
-      {accepted}.
   invalidJava:
     message: Click to use another java to launch.
     name: Invalid java location.
@@ -98,12 +68,6 @@ diagnosis:
   missingAuthlibInjector:
     message: The authlib-injector is required to use third party auth server!
     name: Missing authlib-injector
-  missingForge:
-    message: Launcher will download and install Forge for you
-    name: Please install Minecraft Forge to to launch
-  missingForgeJar:
-    message: Click to install forge
-    name: Missing forge {forge} jar for Minecraft {minecraft}
   missingJava:
     message: Click to resolve this problem
     name: Cannot find Java to launch Minecraft!
@@ -118,25 +82,7 @@ diagnosis:
   missingVersionJar:
     message: Click to install this version
     name: Missing version jar for Minecraft %{version}
-  missingVersionJson:
-    message: Click to install this version
-    name: Missing version %{version} json.
   problem: 1 Problem | %{count} Problems
-  requireFabric:
-    message: Please a fabric version in version setting
-    name: Require fabric to run with Fabric Mod!
-  requireFabricAPI:
-    message: Either download fabric API or enable it in Mod Settings
-    name: Require fabric API {version} to run the {name}!
-  requireForge:
-    message: Please a forge version in version setting
-    name: Require forge to run with Forge Mod!
-  unknownMod:
-    message: Please be careful if it causes crash
-    name: Cannot detect Mod {name}'s Minecraft Version
-  userNotLogined:
-    message: Click to login.
-    name: User is not logined
 disk:
   available: Available
   used: Used
@@ -144,12 +90,6 @@ download: Download
 downloadCount: '{count} downloads'
 edit: Edit
 error:
-  empty: No error yet
-  installJava: Cannot found any JRE. Please install at least one!
-  internetNotConnected: Please check your Internet connection!
-  missingJava: Please select a Java for this profile!
-  missingMinecraft: Please select a Minecraft version for this profile!
-  missingName: Please name this profile!
   name: Error | Errors
 errors:
   BodyTimeoutError: HTTP Body timeout
@@ -168,7 +108,6 @@ exportModpackTarget:
   curseforge: Curseforge File
   github: Github File
   modrinth: Modrinth File
-  name: Export File as
   override: Override (Raw) File
 extensions:
   mrpack: Modrinth Modpack
@@ -192,13 +131,9 @@ forgeConfig:
 forgeVersion:
   common: Common
   disable: Disable Forge
-  disabled: Disabled
   empty: Forge doesn't have any release for Minecraft {version}
-  enabled: Enable Forge
-  install: Install
   latest: Latest
   name: Forge
-  non: No Forge
   recommended: Recommended
   showBuggy: Show Buggy
   showRecommendedAndLatestOnly: Recommended and Latest Only
@@ -210,34 +145,19 @@ gameType:
   creative: Creative Mode
   spectator: Spectator Mode
   survival: Survival Mode
-hello: Hello world
 help: Help
 home: Home
 importModpack:
   failed: Import {modpack} failed
   success: Import {modpack} succeed
 importResource: Import Resource
-importSave: Import Save
 install: Install
 installAssets:
   asset: Install Asset {hash}
   assetsJson: Check Assets Index File
   name: Install Asset Files
 installAuthlibInjector: Install authlib-injector
-installByProfile:
-  library: Install Library
-  name: Install by Install Profile
-  postProcessing: Post Processing
 installCurseforgeFile: Install Curseforge File
-installDependencies:
-  installAssets:
-    assets: Install Asset {hash}
-    assetsJson: Check Assets Index File
-    name: Install Asset Files
-  installLibraries:
-    library: Install Library
-    name: Install Libraries
-  name: Install {version}'s Dependencies
 installFabric:
   name: Install Fabric
 installForge:
@@ -250,10 +170,8 @@ installInstance:
   name: Update Instance
   resolve: Resolve Instance Config
 installJre:
-  cleanup: Clean up installation package
   decompress: Decompress JRE files to folder
   download: Download compressed JRE file
-  fetchInfo: Fetch JRE Info from Mojang
   name: Install Java Runtime Library
 installLibraries:
   library: Install Library
@@ -295,7 +213,6 @@ instance:
   openLogFolder: Open Log Folder
   requireName: The name is required
   showInstance: Show instance folder
-  version: Selected Version
   versionHint: The Minecraft version of this game
   vmOptions: JVM Options
   vmOptionsHint: Extra arguments passing to JVM
@@ -316,12 +233,10 @@ instanceTemplate:
   title: Template Setting
 instances:
   add: Add Local Game
-  choose: Profiles
   importFolder: Import from Folder
   importFolderDescription: Import Minecraft to Launcher
   refreshServers: Refresh Servers
 issue:
-  empty: No issue found
   name: Issues
 java:
   allocatedLong: Use system default java
@@ -343,52 +258,22 @@ java:
   refreshAfter: Please Refresh After you install the java.
   switchVersion: Java Version Changed
   systemMemory: Current System Memory
-javaError:
-  downloadFailed: >-
-    Auto-download & install failed. Please check your network condition. You can
-    try another way.
-  noJavaInPath: >-
-    Still cannot find the java in PATH environment variable. You can try another
-    way.
-  noLegalJava: Cannot detect legal java for this location. Please try again.
 launch:
-  client: Client
   launch: Launch
-  localhost: Localhost
 launchBlocked:
-  description: >-
-    There are still some unresolvable issues existed. They might impact the
-    launch workflow, but you can still let Minecraft have a try.
   ignore: Force Launch
-  title: Launch Blocked by Issues
 launchFailed:
   crash: Game Crashed!!
   description: There is no crash report. This this the error log and latest log.
   general: General Launch Failed
   generalText: If you encounter this several times, please contact author!
-  illegalAuth: Illegal User Auth!
-  illegalAuthText: >-
-    Illegal user auth state! Please login or switch account to revalidate your
-    account!
   latestLog: Latest Log
-  selectProfileEmpty: Empty Profile
-  selectProfileEmptyText: >-
-    This is too bad. Please retry or consider recreate your launch profile. If
-    you still encounter this, please contact author!
   title: Game Exited with Abnormal Code
-  unresolvableProblems: Unresolvable Problems
-  unresolvableProblemsText: >-
-    Existed some problems cannot be resolved. If you cannot handle this, please
-    contact author for help!
 launchStatus:
   checkingProblems: Checking Problems
   injectingAuthLib: Seting-up Thirdparty AuthLib
   launching: Launching...
   launchingSlow: Still launching... Starting graphic engine can be slow...
-launcher:
-  quit: Quit Launcher
-  showDiagnosis: Show Diagnosis
-  title: Minecraft Launcher
 launcherUpdate:
   alreadyLatest: Up To Date
   installAndQuit: Restart to Install
@@ -408,17 +293,16 @@ localVersion:
     reinstall it.
   reinstallTitle: Reinstall {version}
   title: Local Versions
-logMonitor: Log Monitor
 logLevel:
   error: Error
   info: Info
   success: Success
   warning: Warning
+logMonitor: Log Monitor
 login:
   dropHint: Drop the link with authcode here to manually login
   forgetPassword: Forget Password?
   login: Login
-  logout: Logout
   manualLoginUrl: If the browser doesn't show up, please click this link to auth!
   signup: Sign up
   signupDescription: New to us?
@@ -451,9 +335,6 @@ logsCrashes:
   logs: Logs
   placeholder: No Files Found
   title: Logs or Crash Reports
-market: Market
-minecraft:
-  name: Minecraft
 minecraftVersion:
   empty: Cannot load Minecraft versions
   name: Minecraft Version
@@ -473,7 +354,6 @@ mod:
   deletionRestHint: And {rest} more Mods...
   dropHint: Drop mod's .jar/.litemod here to import.
   enabled: '{count} Mods enabled'
-  export: Export Mod
   filter: Filter Mods
   hideIncompatible: Hide Incompatible Mods
   import: Import Mod
@@ -481,7 +361,6 @@ mod:
   manage: Manage Mods
   maybeCompatible: Maybe Compatible.
   name: Mod | Mods
-  nocompatible: Unknown Compatibility
   openLink: Open the mod url {url}
   searchOnCurseforge: Search in curseforge
   searchOnModrinth: Search {name} in Modrinth
@@ -503,16 +382,12 @@ modpack:
     General description for you modpack. Might be used for exporting as
     curseforge modpack.
   dropHint: Drop modpack zip to here to import
-  edit: Edit Modpack Info
   emitCurseforge: Emit Curseforge Modpack
   emitMcbbs: Emit MCBBS Modpack
   emitModrinth: Emit Modrinth Modpack
   emitModrinthStrict: Strict Modrinth Format
   emitModrinthStrictDescription: Only the URLs from 4 domains listed in modrinth document are allowed
-  error:
-    requirename: Name is required! Please come up a modpack name!
   export: Export as Modpack
-  exportCurseforge: Export Curseforge Modpack
   filter: Filter Modpacks
   general: General Information
   includeAssets: Include Assets
@@ -523,7 +398,6 @@ modpack:
   modpackVersion: Modpack Version
   name: Modpack | Modpacks
   overrides: Overrides
-  profile: Profile Name
   showFile: Show File {file}
   showInCurseforge: Show {name} in Curseforge
   showInFtb: Show {name} in FTB
@@ -670,9 +544,6 @@ myStuff: My Stuff
 name: Name
 next: Next
 'no': 'No'
-notification:
-  empty: No Notification
-  'name:': Notification
 ok: OK
 optifineVersion:
   disable: Disable Optifine
@@ -687,7 +558,6 @@ peerConnectionState:
   name: Connection State
   new: New
 peerIceGatheringState:
-  complete: Collection Complete
   gathering: Gathering Ice Server
 popular: Popularity
 previous: Previous
@@ -697,10 +567,6 @@ quiltVersion:
 refresh: Refresh
 refreshResource: Refresh Resources
 remove: Remove
-resolution:
-  fullscreen: Full screen
-  height: Height
-  width: Width
 resourcepack:
   available: Available
   compatible: Compatible format {format} with {version}
@@ -717,7 +583,6 @@ resourcepack:
     do this?
   dropHint: Drop Resource Pack's folder/zip here to import.
   enable: '{count} Resource Pack is enabled'
-  export: Export Resource Pack
   filter: Filter Resource Packs
   import: Import Resource Pack
   incompatible: >-
@@ -742,8 +607,6 @@ save:
     fromResource: From Managed Resources
     title: Import Save from Managed Source
   createdWorlds: You have {count} worlds
-  deleteCancel: Cancel
-  deleteConfirm: Comfirm to delete
   deleteHint: >-
     This operation cannot be revert. You will lose this save data forever. Are
     you sure to delete this save?
@@ -802,10 +665,8 @@ setting:
     Limit the maximum number of sockets to allow per host or for all hosts in
     total. 0 means no limit.
   maxSocketsTitle: Max HTTP sockets
-  maxTotalSockets: All Hosts
   name: Global Setting | Global Settings
   officialWebsite: Official Website
-  resolution: Default Resolution
 setup:
   dataRoot:
     description: >-
@@ -843,10 +704,7 @@ shaderPack:
   'off': 'Off'
   offDescription: Turn off the shader
   showFile: Show this shader pack in folder
-step:
-  dataRoot: {}
-  game: {}
-  locale: {}
+summery: Summery
 tag:
   create: Create Tag
   createSelected: Create Tag for Selected
@@ -855,50 +713,17 @@ task:
   cancelled: Cancelled
   empty: No Running Tasks
   failed: Failed
-  failedDescription: A task failed with following stacktrace
-  history: Task History
   manager: Task Manager
   nTaskRunning: '{count} tasks is running'
   name: Task | Tasks
   pause: Pause
   running: Running Tasks
-  start: Task {name} Started
-  successed: Successed
 title: X Minecraft Launcher
 universalDrop:
   enableModsAfterImport: Enable Mods After Import
   start: Import Started
   title: Drop File(s) Here to Import as
   unknownResource: Unknown
-unused:
-  buttonSettings:
-    drop: Drop Items
-    jump: Jump
-    moveBackward: Move Backward
-    moveForward: Move Forward
-    moveLeft: Move Left
-    moveRight: Move Right
-    open: Open or close bag
-    shortcut1: Shortcut 1
-    shortcut2: Shortcut 2
-    shortcut3: Shortcut 3
-    shortcut4: Shortcut 4
-    shortcut5: Shortcut 5
-    shortcut6: Shortcut 6
-    shortcut7: Shortcut 7
-    shortcut8: Shortcut 8
-    shortcut9: Shortcut 9
-    stealth: Stealth
-    talk: Talk
-    view: View players
-  hotkeyChanges: Hotkey Changes
-  launch:
-    game: Local Game
-  launchsetting:
-    jvm: JVM Arguments
-    mc: Minecraft Arguments
-    name: Launch Settings
-  summery: Summery
 user:
   accessToken: Access Token
   authMode: Auth Service
@@ -912,7 +737,6 @@ user:
   insecureClient: The Client is insecure! Please validate your identity to upload skin!
   name: Username
   nameHint: The name display in game
-  noNetwork: Invalid credentials. Invalid username or password.
   profile: Profile
   profileMode: Profile Service
   refreshAccount: Refresh Account
@@ -993,18 +817,9 @@ userSkin:
 version:
   name: Version | Versions
   notInstalled: Version is not installed
-versionSetting:
-  title: Version Setting
-  unset: Unset
 versionType:
   alpha: Alpha
   beta: Beta
   name: Status
   release: Release
 'yes': 'Yes'
-browseApp:
-  createShortcut: Create Shortcut
-  default: DEFAULT
-  delete: Delete
-  launch: Launch and set as Default
-

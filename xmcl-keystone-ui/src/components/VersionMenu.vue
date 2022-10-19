@@ -67,6 +67,9 @@
         :keep="16"
         :extra-props="{ select: onSelect }"
       />
+      <v-list-item v-if="items.length === 0">
+        {{ emptyText }}
+      </v-list-item>
     </v-list>
   </v-menu>
 </template>
@@ -81,6 +84,7 @@ defineProps<{
   disabled?: boolean
   isClearable?: boolean
   clearText?: string
+  emptyText?: string
   hasSnapshot?: boolean
   snapshot?: boolean
   snapshotTooltip?: string
