@@ -17,8 +17,8 @@
     "build": "vite build --emptyOutDir",
     "check": "vue-tsc --noEmit --project ./tsconfig.json",
     "dev": "vite",
-    "lint": "eslint --ext .ts,.vue,.yaml locales",
-    "lint:fix": "eslint --ext .ts,.vue,.yaml --fix locales"
+    "lint": "eslint --ext .ts,.vue src",
+    "lint:fix": "eslint --ext .ts,.vue --fix src"
   },
   "dependencies": {
     "@types/three": "^0.141.0",
