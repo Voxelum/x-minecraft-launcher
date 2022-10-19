@@ -41,7 +41,7 @@
         <div
           style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
         >
-          {{ getDescription(item.id) }}
+          {{ getDescription(item) }}
         </div>
         <div
           v-if="item.size > 0"
@@ -55,7 +55,7 @@
 </template>
 
 <script lang=ts setup>
-import { FileNodesSymbol } from '../composables/instanceFiles'
+import { FileNodesSymbol, InstanceFileNode } from '../composables/instanceFiles'
 import { useTheme } from '@/composables'
 
 import { injection } from '@/util/inject'
@@ -83,8 +83,8 @@ function getIcon(file: string) {
   }
   return 'insert_drive_file'
 }
-function getDescription(path: string) {
-  switch (path) {
+function getDescription(item: InstanceFileNode<any>) {
+  switch (item.id) {
     case 'mods':
       return t('intro.struct.mods')
     case 'resourcepacks':
@@ -101,8 +101,20 @@ function getDescription(path: string) {
       return t('intro.struct.optionShadersTxt')
     default:
   }
-  if (path.startsWith('mods/')) {
-    return t('intro.struct.modJar')
+  if (item.id.startsWith('mods/')) {
+    let text = t('intro.struct.modJar')
+    if (item.data) {
+      if (item.data.curseforge) {
+        text += (' 🧬 ' + t('exportModpackTarget.curseforge'))
+      }
+      if (item.data.modrinth) {
+        text += (' 🧬 ' + t('exportModpackTarget.modrinth'))
+      }
+      if (!item.data.modrinth) {
+        text += (' 🧬 ' + t('exportModpackTarget.override'))
+      }
+    }
+    return text
   }
   return ''
 }

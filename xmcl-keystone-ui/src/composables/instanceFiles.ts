@@ -32,6 +32,7 @@ export function useInstanceFileNodesFromLocal(local: Ref<InstanceFile[]>) {
         forceOverride: false,
         downloads: f.downloads,
         curseforge: !!f.curseforge,
+        modrinth: !!f.modrinth,
       },
       children: undefined,
     })

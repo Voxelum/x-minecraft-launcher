@@ -97,7 +97,7 @@
                   signal_cellular_alt
                 </v-icon>
                 {{ t(`peerConnectionState.name`) }}:
-                {{ t(`peerConnectionState.${c.connectionState}`) }}
+                {{ tConnectionStates[c.connectionState] }}
                 <template v-if="c.connectionState === 'connected'">
                   ({{ c.ping }}ms)
                 </template>
@@ -197,6 +197,15 @@ const stateToColor: Record<string, string> = {
   connected: 'primary',
   closed: 'secondary',
 }
+
+const tConnectionStates = computed(() => ({
+  closed: t('peerConnectionState.closed'),
+  connected: t('peerConnectionState.connected'),
+  connecting: t('peerConnectionState.connecting'),
+  disconnected: t('peerConnectionState.disconnected'),
+  failed: t('peerConnectionState.failed'),
+  new: t('peerConnectionState.new'),
+}))
 
 const startDelete = (id: string) => {
   deleting.value = id

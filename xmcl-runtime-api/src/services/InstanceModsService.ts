@@ -79,10 +79,6 @@ export class InstanceModsState {
   }
 }
 
-export const RequireFabricAPIIssueKey: IssueKey<{ version: string; name: string }> = 'requireFabricAPI'
-export const RequireForgeIssueKey: IssueKey<{}> = 'requireForge'
-export const RequireFabricIssueKey: IssueKey<{}> = 'requireFabric'
-
 /**
  * Provide the abilities to import/export mods files to instance
  */

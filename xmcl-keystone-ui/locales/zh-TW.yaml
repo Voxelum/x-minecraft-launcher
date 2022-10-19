@@ -1,31 +1,20 @@
-ImportModpack: {}
-actionforbidden: 創建失敗
 add: 添加
-advanced: 高級
 author: 作者
 back: 返回
 baseSetting:
   title: 基礎設置
+browseApp:
+  createShortcut: 創建快捷方式
+  default: 默認
+  delete: 刪除
+  launch: 啟動並設置為默認
 cancel: 取消
 checkUpdate: 檢查更新
-cloneMinecraft: 克隆 Minecraft
-copy: {}
 copyClipboard:
   success: 複製到剪貼板
 create: 創建
-criticalGraphics: 圖像設置
 dataMigration:
   apply: 開始遷移
-  cleanOldData: 清除舊數據
-  cleanOldDataHint: 移除所有以前的Minecraft數據，包括資源包、地圖存檔等
-  copyOldToNew: 遷移數據
-  copyOldToNewHint: 在移除舊數據之前，將所有舊數據複製到新的位置
-  migrateClean: Delete Old Data
-  migrateDone: 結束數據遷移
-  migrateFailed: 數據遷移失敗
-  migrateSuccess: 數據遷移成功
-  postMigrating: 清理老數據中
-  reloadFailed: 數據遷移失敗
   setRootCause: 請確保啓動器在此過程中不被中斷，不然您的數據可能丟失
   setRootDescription: 這將改變啓動器識別的Minecraft根目錄。
   setRootTitle: 遷移啓動器到新的位置
@@ -34,13 +23,9 @@ delete:
   name: 刪除 {name}
   'no': 取消
   'yes': 刪除
-deleteSave: 刪除存檔
 description: 簡介
 detail: 細節
 diagnosis:
-  badForgeProcessedFiles:
-    message: 點擊來讓 Forge 完成安裝
-    name: Forge 需要生成文件才能啓動 {jar}
   badInstall:
     message: 也許你應該嘗試重新安裝此版本
     name: 版本安裝失敗 {version}
@@ -59,16 +44,9 @@ diagnosis:
   corruptedVersionJson:
     message: 啓動器將重新下載損壞的文件
     name: Minecraft %{version} 版本 Json 文件損壞.
-  fix: 問題修復
   incompatibleJava:
     message: 你可以選擇自己讓啓動器幫你下載，或者自己下載
     name: 版本 {mcversion} 可能不兼容 Java {java}!
-  incompatibleMod:
-    message: 該模組也有可能能在當前Minecraft下運行，若不成功請將 Mod 移出 Mod 列表
-    name: '{name} 不兼容當前 Minecraft {actual}。其可用版本為 {accepted}'
-  incompatibleResourcePack:
-    message: 該資源包也可能在此版本下正常工作，若不成功請將其移出資源包列表
-    name: 資源包 {name} 不兼容 Minecraft {actual}. 請使用 Minecraft {accepted}
   invalidJava:
     message: 請選擇一個有效的 Java 路徑.
     name: 當前 Java 路徑已經失效
@@ -81,53 +59,16 @@ diagnosis:
   missingAuthlibInjector:
     message: 必須安裝 authlib-injector, 第三方驗證服務配置才能生效！
     name: 需要安裝 authlib-injector
-  missingForgeJar:
-    message: 啓動器將自動安裝Forge文件
-    name: 缺少對應 Minecraft {minecraft} 版本的 Forge {forge} 依賴文件
   missingJava:
-    autoDownload:
-      message: 啓動器將從 Mojang 源下載並安裝 Java {version}
-      name: 自動下載
-    manualDownload:
-      message: 啓動器將把你轉到Oracle官方JRE下載網站
-      name: 手動下載
     message: Click to resolve this problem
     name: 沒有分配Java
-    selectJava:
-      message: 也許只是啓動器沒找到你電腦裏的Java,你可以手工選擇一下
-      name: 手工選擇Java的位置
-    switch:
-      disabled: 在電腦中沒有檢測到 Java {version}，無法切換
-      message: 啓動器將使用您現在安裝的 Java {version}
-      name: 切換到 Java {version}
   missingLibraries:
     message: 啓動器將自動下載並安裝庫文件
     name: 缺少 {name} 依賴 | 缺少 {name} 依賴 | 缺少{count}個庫文件 | 缺少{count}個庫文件
   missingVersionJar:
     message: 啓動器將自動下載JAR文件
     name: '%{version}版本JAR文件缺失'
-  missingVersionJson:
-    message: 啓動器將自動下載JSON文件
-    name: '%{version}版本JSON文件缺失'
   problem: 1個問題待修復 | %{count}個問題待修復
-  requireFabric:
-    message: 請在版本設置頁面選擇一個合適的 Fabric 版本
-    name: 請啓用 Fabric 來運行 Fabric 的 Mod
-  requireFabricAPI:
-    message: 請去 Curseforge 下載，如果已經下載了可以去 Mod 設置頁面啓用 Fabric API
-    name: 請安裝 FabricAPI {version} 來運行 {name}
-  requireForge:
-    message: 請在版本設置頁面選擇一個合適的 Forge 版本
-    name: 請啓用 Forge 來運行 Forge 的 Mod
-  unknownMod:
-    message: 請務必小心使用
-    name: 無法解析 {name} Mod 兼容的 Minecraft 版本
-  userNotLogined:
-    message: 點擊登錄 Minecraft
-    name: 用户沒有登陸
-  version:
-    message: 啓動器將自動安裝該版本
-    name: 未安裝 {version}
 disk:
   available: 可用
   used: 已用
@@ -140,7 +81,6 @@ fabricVersion:
   showStableOnly: 只顯示穩定版
   stable: 穩定版
   unstable: 預覽版
-  version: {}
 filter: 檢索
 finish: 完成
 forgeConfig:
@@ -148,150 +88,59 @@ forgeConfig:
 forgeVersion:
   common: 所有
   disable: 不使用Forge
-  disabled: 未啓用
   empty: Forge 不支持 Minecraft {version}
-  enabled: 啓用Forge
-  install: 安裝
   latest: 最新版
   name: Forge
-  non: 沒有選擇Forge
   recommended: 穩定版
   showBuggy: 顯示Buggy版
   showRecommendedAndLatestOnly: 只顯示最新版和穩定版
   version: Forge
-  versions:
-    latest: 最新版
-    recommended: 穩定版
 gameSetting:
   title: 遊戲設置
-gamesetting:
-  anaglyph3d:
-    'false': 關閉
-    name: 3D效果
-    'true': 啓用
-  ao:
-    '0': 關
-    '1': 最少
-    '2': 最多
-    name: 平滑光照
-  cheat: 作弊模式
-  difficulty:
-    easy: 簡單
-    hard: 困難
-    non: 未知難度
-    normal: 正常
-    peaseful: 和平
-  enableVsync:
-    'false': 關閉
-    name: 垂直同步
-    'true': 開啓
-  entityShadows:
-    'false': 關閉
-    name: 實體陰影
-    'true': 開啓
-  fancyGraphics:
-    'false': 快速
-    name: 圖像質量
-    'true': 最高
-  fboEnable:
-    'false': 關閉
-    name: 使用FBO
-    'true': 啓用
-  gametype:
-    '0': 生存模式
-    '1': 創造模式
-    '2': 冒險模式
-    '3': 觀察者模式
-    adventure: 冒險模式
-    creative: 創造模式
-    non: 未知模式
-    spectator: 觀察者模式
-    survival: 生存模式
-  hardcore: 極限模式
-  mipmapLevels:
-    '0': '0'
-    '1': '1'
-    '2': '2'
-    '3': '3'
-    '4': '4'
-    name: Mipmap等級
-  name: 遊戲設置
-  particles:
-    '0': 最多
-    '1': 較少
-    '2': 最少
-    name: 粒子
-  renderClouds:
-    'false': 關閉
-    fast: 快速
-    name: 雲
-    'true': 最佳
-  useVbo:
-    'false': 關閉
-    name: 使用VBO
-    'true': 啓用
-hello: 你好世界
 help: 幫助
 home: 主頁
 importModpack:
   failed: 創建 {modpack} 整合包失敗
   success: 成功導入 {modpack} 整合包
 importResource: 導入資源
-importSave: 導入存檔
 installAssets:
-  '': 下載遊戲資源文件
   asset: 下載資源文件%{hash}
   assetsJson: 下載資源文件目錄
+  name: 下載遊戲資源文件
 installAuthlibInjector: 安裝 authlib-injector
-installByProfile:
-  '': 通過安裝配置文件
-  postProcessing: 後處理，更新本地文件
 installCurseforgeFile: 安裝 Curseforge 文件
-installDependencies:
-  '': 檢查%{version}的依賴
-  installAssets:
-    '': 下載遊戲資源文件
-    assets: 下載資源文件%{hash}
-    assetsJson: 下載資源文件目錄
-  installLibraries:
-    '': 下載依賴運行庫
-    library: 檢查庫文件
 installFabric:
-  '': 安裝 Fabric
+  name: 安裝 Fabric
 installForge:
-  '': 安裝 Forge
   downloadInstaller: 下載 Forge 安裝器
-  libraries:
-    '': 安裝依賴庫
-    library: 檢查庫
+  library: 安裝依賴庫
+  name: 安裝 Forge
   postProcessing: 處理 Minecraft Jar 文件
 installJre:
-  '': 安裝Java運行庫
-  cleanup: 清理安裝文件
   decompress: 解壓縮JRE文件到本地
   download: 下載壓縮的JRE文件
-  fetchInfo: 從Mojang那獲取JRE信息
+  name: 安裝Java運行庫
 installLibraries:
-  '': 安裝依賴運行庫
   library: 檢查庫文件
+  name: 安裝依賴運行庫
 installModpack:
-  '': 安裝整合包
   deploy: 部署
   download:
-    '': 下載
     file: 下載文件
+    name: 下載
+  name: 安裝整合包
   unpack: 解壓縮
 installModrinthFile:
-  '': 從 Modrinth 下載
+  name: 從 Modrinth 下載
 installOptifine:
-  '': 安裝 Optifine
   download: 下載 Optifine Universal
   jar: 生成 Optifine Jar
   json: 生成 Json
+  name: 安裝 Optifine
 installVersion:
-  '': 安裝%{version}的遊戲本體
   jar: 安裝遊戲JAR文件
   json: 安裝遊戲JSON文件
+  name: 安裝%{version}的遊戲本體
 instance:
   addServer: 添加服務器
   delete: 刪除遊戲
@@ -308,7 +157,7 @@ instance:
   openLogFolder: 打開日誌文件夾
   requireName: 必須填寫名稱
   showInstance: 顯示文件夾
-  version: 遊戲版本
+  versionHint: 這個遊戲使用的Minecraft版本
   vmOptions: JVM 啓動選項
   vmOptionsHint: 額外的 JVM 的啓動參數
 instanceAge:
@@ -323,70 +172,41 @@ instanceTemplate:
   title: 模板設置
 instances:
   add: 新建本地遊戲
-  choose: 選擇實例
   importFolder: 從文件夾導入
   importFolderDescription: 導入 Minecraft 到啓動器
   refreshServers: 刷新服務器
 issue:
-  empty: 暫時沒有找到問題
   name: 已知問題
 java:
   allocatedLong: 啓動器自動選擇 Java
   allocatedShort: 自動分配
   browse: 瀏覽java可執行文件
   importFromFile: 從文件導入 Java
-  incompatibleJava: Java 版本可能不兼容
-  incompatibleJavaHint: 當前版本的 Java 可能無法運已選擇的 Minecraft 版本，推薦 Java {version}
   invalid: 無效的 Java 路徑
   location: Java 路徑
   maxMemory: 最大內存
   memory: Java 內存
   memoryHint: 這將影響您的遊戲運行性能
   minMemory: 最小內存
-  missing: 沒有找到Java
-  missingHint: 啓動器在你的電腦上沒有找到任何Java。你可以嘗試：
   modifyInstance: 更改 Java 路徑
   noMemory: 不設置內存限制
   refresh: 刷新本地 Java
   refreshAfter: 請在安裝後刷新。
   switchVersion: 已切換 Java 版本
-javaError:
-  downloadFailed: 自動下載Java失敗，請檢查你的網絡連接。當然你也可以點擊返回嘗試別的方法。
-  noJavaInPath: 還是無法在PATH中找到java可執行文件。你可以嘗試其他方法。
-  noLegalJava: 啓動器認為這個Java可執行文件是無效的。請嘗試其他的方法。
-launch:
-  blocked: {}
-  hideLauncher: Minecraft 啓動後隱藏啓動器
-  launch: 啓動
-  localhost: 本地服務器
-  showLog: Minecraft 啓動後顯示日誌
-  showLogHint: 遊戲開啓後將彈出一個顯示 Minecraft 日誌的窗口
+launch: 啓動
 launchBlocked:
-  description: 啓動器依然檢測到幾個未解決的問題，他們可能影響遊戲的啓動。但你依然可以讓啓動器嘗試啓動 Minecraft
   ignore: 強行啓動
-  title: 有幾個待解決的問題
 launchFailed:
   crash: 遊戲崩潰了！
   description: 沒有找到崩潰報告，這裏是遊戲輸出和最新的日誌文件
   general: 啓動失敗
   generalText: 如果你反覆出現同樣的問題，請聯繫作者!
-  illegalAuth: 用户數據為空
-  illegalAuthText: 無效的用户數據！請嘗試重新登陸或切換賬號
   latestLog: 最新日誌文件
-  selectProfileEmpty: 啓動配置為空
-  selectProfileEmptyText: 很奇怪，你可以嘗試重新創建當前的啓動配置。如果你老遇到這個問題請聯繫作者!
   title: 遊戲未正常退出
-  unresolvableProblems: 無法處理某些啓動問題
-  unresolvableProblemsText: 啓動器無法自動處理一些啓動前置需求。你可以嘗試在主頁讓啓動器自動修復。如果你反覆遇到此問題，請聯繫作者
 launchStatus:
   checkingProblems: 檢測問題中
   launching: 啓動中...
   launchingSlow: 還在啓動…Minecraft圖形界面啓動的會比較慢呢~
-launcher:
-  checkUpdate: 檢查更新
-  quit: 關閉啓動器
-  showDiagnosis: 顯示Debug信息
-  title: Minecraft 啓動器
 launcherUpdate:
   installAndQuit: 重啓並安裝更新
   noUpdateAvailable: 目前沒有可用更新
@@ -400,19 +220,16 @@ localVersion:
   reinstallDescription: 如果你覺得此版本安裝的有問題，可以嘗試重新安裝該版本。
   reinstallTitle: 重新安裝 {version}
   title: 本地版本
-log:
-  success: 成功
-logMonitor: 游戏日志检测
 logLevel:
   error: 錯誤
   info: 信息
   success: 成功
   warning: 警告
+logMonitor: 游戏日志检测
 login:
   dropHint: 將驗證鏈接拖入此處手工驗證
   forgetPassword: 忘記密碼?
   login: 登陸
-  logout: 登出
   manualLoginUrl: 如果瀏覽器沒有自動打開，請點擊此鏈接來驗證!
   signup: 註冊
   signupDescription: 沒有賬號?
@@ -427,11 +244,6 @@ logsCrashes:
   logs: 日誌
   placeholder: 沒有找到文件
   title: 日誌或崩潰報告
-market: 市場
-minecraft:
-  name: Minecraft
-  settings: Minecraft設置
-  versions: {}
 minecraftVersion:
   empty: 無法加載 Minecraft 版本列表
   name: Minecraft 版本
@@ -447,25 +259,12 @@ mod:
   deletionHint: 你將移除這個 Mod 的文件和信息。你確定嗎？| 你將移除這些 Mod 的文件和信息。你確定嗎？
   deletionRestHint: 等 {rest} 個模組……
   dropHint: 將Mod的jar文件拖入此處來導入
-  export: 導出 Mod
   filter: 過濾 Mods
   hideIncompatible: 隱藏不兼容 Mods
-  hint: '調整此啓動配置所使用的的 Mod '
   import: 導入 Mod
   incompatible: 可能不兼容當前版本。
   maybeCompatible: 也許兼容於當前版本。
-  missing:
-    absent: ''
-    checkAvailabilities: ''
-    downloadAll: ''
-    downloadDescription: ''
-    downloadTitle: 服務器缺失一些 Mod
-    downloading: ''
-    existed: 已存在
-    loading: ''
-    unknown: ''
   name: Mod | Mods
-  nocompatible: 無法解析兼容性。
   openLink: 打開 Mod 鏈接 {url}
   searchOnCurseforge: 在 Curseforge 上搜索
   searchOnMcWiki: 在 MC 百科中查找 {name}
@@ -477,7 +276,6 @@ mod:
   showIncompatible: 顯示不兼容 Mods
   unselected: 未選 Mods
 modpack:
-  add: 添加Mod包
   author: 署名
   authorHint: 在導出成各種整合包時使用
   create: 創建新Mod包
@@ -487,19 +285,9 @@ modpack:
   description: 遊戲簡介
   descriptionHint: 通用的 modpack 簡介。在導出成 curseforge 整合包或者其他格式時會使用
   dropHint: 通過拖拽導入整合包文件
-  edit: 編輯Mod包信息
   emitCurseforge: 生成 Curseforge 整合包
   emitMcbbs: 生成 MCBBS 整合包
-  error:
-    requirename: 名稱不能為空！請隨便編一個名字
   export: 導出整合包
-  exportCurseforge: 導出為 Curseforge 整合包
-  exportFileAs:
-    curseforge: Curseforge 文件
-    github: Github 地址
-    modrinth: Modrinth 文件
-    name: 文件導出為
-    override: 普通文件
   filter: 過濾整合包
   general: 基本信息
   includeAssets: 是否包含遊戲資源 (assets) 文件
@@ -508,7 +296,6 @@ modpack:
   modpackVersion: 整合包版本
   name: 整合包
   overrides: 整合包打包覆蓋 (overrides)
-  profile: 文件名
   showFile: 顯示 {file}
   showInCurseforge: 在 Curseforge 中顯示 {name}
   url: URL
@@ -561,9 +348,7 @@ modrinth:
     relevance: 相關性
     title: 排序
     updated: 更新時間
-  sortBy: {}
   updateAt: 更新於
-  versionType: {}
   versions: 版本
 multiplayer:
   complete: 完成
@@ -588,11 +373,7 @@ multiplayer:
 name: 名稱
 next: 下一項
 'no': 否
-notification:
-  empty: 暫時沒有通知
-  name: 通知
 ok: 好的
-optifine: {}
 optifineVersion:
   disable: 不啓用 Optifine
   empty: Optifine 不支持 Minecraft {version}
@@ -605,74 +386,10 @@ peerConnectionState:
   failed: 失敗
   new: 等待連接
 peerIceGatheringState:
-  complete: 收集完畢
   gathering: 收集本地信息中
 popular: 熱度
-profile:
-  advancedSetting: 高級設置
-  authorHint: 這個遊戲/整合包的製作人
-  copy: 複製
-  descriptionHint: 簡單描述這個遊戲/整合包的內容
-  export:
-    exportingMessage: 正在導出...
-    message: 導出為整合包
-    title: 遊戲導出
-  forceLocalVersion: 啓動指定本地版本
-  forgeSetting: Forge設置
-  import:
-    title: 導入遊戲
-  importCurseforge: 從 Curseforge 模組包導入
-  importModpack: {}
-  importZip: 從壓縮包導入
-  launchingDetail: 啓動配置
-  localVersion: 本地版本
-  localVersionEmpty: 自動生成
-  localVersionHint: 選擇本地版本會覆蓋Minecraft版本的設置
-  nameHint: 名稱便於以後識別
-  noLocalVersion: 沒有本地版本
-  server:
-    '': 服務器 | 服務器
-    acceptingMinecraftVersion: 接受 Minecraft 版本
-    add: 添加服務器
-    create: 創建一個新的服務器
-    creationHint: 請填寫服務器地址並嘗試 Ping 服務器
-    delete:
-      description: 此操作將刪除所有本地關於此服務器的信息。你確定繼續嗎？
-      name: 刪除服務器
-    edit: 編輯
-    error:
-      requirehost: 缺少主機IP地址
-      requirename: 缺少服務器名
-      wrongVersion: 當前版本與服務器協議不匹配，可能導致連接錯誤
-    expectedVersions: 已支持的版本
-    filterVersion: 過濾服務器相應的 Minecraft 版本
-    host: 服務器地址
-    hostHint: 服務器的ip地址（和端口號）
-    ipAddress: IP地址
-    motd: 服務器 MOTD
-    name: 服務器名
-    ping: Ping 服務器
-    pinging: 連接服務器中...
-    pings: 延遲
-    players: 玩家
-    port: 端口
-    recommendedMinecraftVersion: Minecraft 版本
-    status:
-      nohost: 找不到服務器!
-      ping: 延遲
-      refuse: 服務器斷開了連接!
-      timeout: 服務器響應超時!
-    unknown: 未知服務器
-    unknownDescription: 未知服務器，請刷新。
-    version: 服務器推薦版本
-    versionHint: Ping 使用的 Minecraft 版本
-  versionHint: 這個遊戲使用的Minecraft版本
 refreshResource: 刷新資源
 remove: 移除
-resolution:
-  fullscreen: 全屏
-  height: 高
-  width: 寬
 resourcepack:
   available: 可用的資源包
   compatible: 當前格式({format})可用於當前版本 {version}
@@ -684,9 +401,7 @@ resourcepack:
   deletion: 移除 {pack}
   deletionHint: 你將永遠失去該資源包的數據以及相關信息，你進行此操作嗎？
   dropHint: 將資源包zip或文件夾拖入此處導入
-  export: 導出資源包
   filter: 過濾材質包
-  hint: 調整本啓動配置使用的資源包
   import: 導入資源包
   incompatible: 不兼容的資源包格式({format})。適用範圍 {accept}。當前版本 {actual}。
   name: 資源包 | 資源包
@@ -704,8 +419,6 @@ save:
     fromProfile: 來自其他啓動配置
     fromResource: 來自已導入資源
     title: 從已有資源導入存檔
-  deleteCancel: 取消
-  deleteConfirm: 確認刪除
   deleteHint: 該操作不可逆，你將永遠失去這個存檔的記錄，你確定要刪除此存檔嗎？
   deleteTitle: 刪除該存檔
   detail: 顯示更多信息
@@ -713,28 +426,56 @@ save:
   export: 導出地圖
   exportMessage: 將存檔導出為 zip
   exportTitle: 導出存檔
-  hint: 瀏覽或修改此配置的存檔
   import: 從文件導入
   importMessage: 將 zip 存檔導入
   importTitle: 導入存檔
   name: 地圖存檔 | 地圖存檔
+server:
+  acceptingMinecraftVersion: 接受 Minecraft 版本
+  add: 添加服務器
+  create: 創建一個新的服務器
+  creationHint: 請填寫服務器地址並嘗試 Ping 服務器
+  delete:
+    description: 此操作將刪除所有本地關於此服務器的信息。你確定繼續嗎？
+    name: 刪除服務器
+  edit: 編輯
+  error:
+    wrongVersion: 當前版本與服務器協議不匹配，可能導致連接錯誤
+  expectedVersions: 已支持的版本
+  filterVersion: 過濾服務器相應的 Minecraft 版本
+  host: 服務器地址
+  hostHint: 服務器的ip地址（和端口號）
+  ipAddress: IP地址
+  motd: 服務器 MOTD
+  name: 服務器名
+  ping: Ping 服務器
+  pings: 延遲
+  players: 玩家
+  port: 端口
+  recommendedMinecraftVersion: Minecraft 版本
+  unknown: 未知服務器
+  unknownDescription: 未知服務器，請刷新。
+  version: 服務器推薦版本
+serverStatus:
+  nohost: 找不到服務器!
+  ping: 延遲
+  refuse: 服務器斷開了連接!
+  timeout: 服務器響應超時!
 setting:
   githubRelease: Github
   name: 設置
   officialWebsite: 官網地址
-  resolution: Minecraft默認窗口大小
-  viewUpdate: 詳細信息
-shaderpack:
+shaderPack:
   deletion: 刪除光影包
   deletionHint: 這將把光影包文件 {path} 永久刪除。
   filter: 過濾光影包
-  hint: 調整此配置的光影包
   internal: 內置
   internalDescription: 使用內置 shader，在此模式下你可以編輯 shader 管線選項
   name: 光影包
   'off': 無
   offDescription: 關閉 shader 引擎
   showFile: 在文件夾中顯示此 shader pack
+summery: 簡介
 tag:
   create: 創建標籤
   newTag: 新標籤
@@ -742,47 +483,14 @@ task:
   cancelled: 已取消
   empty: 目前沒有運行中的任務
   failed: 失敗
-  failedDescription: 任務執行失敗，以下是它的調用棧
-  history: 已完成任務
   manager: 任務管理器
   name: 任務 | 任務
   running: 活躍任務
-  start: '{name} 開始'
-  successed: 成功
 universalDrop:
   enableModsAfterImport: Mod 導入後自動啓用
   start: 開始導入
   title: 將文件拖到這並導入為
   unknownResource: 無法解析
-unused:
-  buttonSettings:
-    drop: 丟棄
-    jump: 跳
-    moveBackward: 向後
-    moveForward: 向前
-    moveLeft: 向左
-    moveRight: 向右
-    open: 打開關閉揹包
-    shortcut1: 快捷鍵 1
-    shortcut2: 快捷鍵 2
-    shortcut3: 快捷鍵 3
-    shortcut4: 快捷鍵 4
-    shortcut5: 快捷鍵 5
-    shortcut6: 快捷鍵 6
-    shortcut7: 快捷鍵 7
-    shortcut8: 快捷鍵 8
-    shortcut9: 快捷鍵 9
-    stealth: 潛行
-    talk: 講話
-    view: 觀察玩家
-  hotkeyChanges: 按鍵設置
-  launch:
-    game: 本地遊戲
-  launchsetting:
-    jvm: JVM 參數
-    mc: Minecraft 參數
-    name: 啓動配置
-  summery: 簡介
 user:
   accessToken: 訪問令牌
   authMode: 驗證服務
@@ -797,7 +505,6 @@ user:
   name: 用户名
   profile: 個人信息
   profileMode: 皮膚服務
-  profileService: 皮膚服務器
   refreshAccount: 刷新賬號
   refreshSkin: 刷新皮膚
   submitChallenges: 提交答案
@@ -856,39 +563,11 @@ userSkin:
   urlNotEmpty: 皮膚URL不能為空
   urlNotValid: 請輸入有效的皮膚URL
 version:
-  all: 所有版本
-  date: 更新日期
-  id: 版本號
-  latest: 最新版
-  local: 這個版本已被下載
-  missing: '缺少{version}版本的遊戲文件 '
   name: 版本 | 版本
-  noForge: Forge不支持此版本
-  noMinecraft: 無法獲取Minecraft版本列表，請檢查你的網絡
   notInstalled: 未安裝該版本
-  pending: 下載中...
-  prepare: 準備中
-  recommended: 穩定版
-  release: 穩定版
-  releaseDate: 發行日期
-  remote: 下載這個版本
-  requiredownload: 缺少{version}版本的遊戲文件. 請下載並重試.
-  selectVersion: 請選擇一個版本
-  selectversionWarn: 缺少版本無法啓動
-  snapshot: 快照
-  status: 狀態
-  unknown: 未知的版本
-versionSetting:
-  title: 版本管理
-  unset: 未啓用
 versionType:
   alpha: Alpha
   beta: Beta
   name: 類型
   release: 穩定版
 'yes': 是
-browseApp:
-  createShortcut: '創建快捷方式'
-  launch: '啟動並設置為默認'
-  delete: '刪除'
-  default: '默認'

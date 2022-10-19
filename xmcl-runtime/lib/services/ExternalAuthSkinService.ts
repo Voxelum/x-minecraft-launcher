@@ -78,7 +78,7 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
           hash: content.checksums.sha256,
         },
         destination: path,
-      }))
+      }).setName('installAuthlibInjector'))
       return path
     }
 

@@ -5,26 +5,19 @@ back: 返回
 baseSetting:
   title: 基础设置
 browse: 浏览
+browseApp:
+  createShortcut: 创建快捷方式
+  default: 默认
+  delete: 删除
+  launch: 启动并设置为默认
 cancel: 取消
 checkUpdate: 检查更新
-cloneMinecraft: 克隆 Minecraft
 confirm: 开始
 copyClipboard:
   success: 复制到剪贴板
 create: 创建
-criticalGraphics: 图像设置
 dataMigration:
   apply: 开始迁移
-  cleanOldData: 清除旧数据
-  cleanOldDataHint: 移除所有以前的Minecraft数据，包括资源包、地图存档等
-  copyOldToNew: 迁移数据
-  copyOldToNewHint: 在移除旧数据之前，将所有旧数据复制到新的位置
-  migrateClean: 删除旧数据
-  migrateDone: 结束数据迁移
-  migrateFailed: 数据迁移失败
-  migrateSuccess: 数据迁移成功
-  postMigrating: 清理老数据中
-  reloadFailed: 数据迁移失败
   setRootCause: 请确保启动器在此过程中不被中断，不然您的数据可能丢失
   setRootDescription: 这将改变启动器的存储根目录。
   setRootTitle: 迁移启动器到新的位置
@@ -33,13 +26,9 @@ delete:
   name: 删除 {name}
   'no': 取消
   'yes': 删除
-deleteSave: 删除存档
 description: 简介
 detail: 细节
 diagnosis:
-  badForgeProcessedFiles:
-    message: 点击来让 Forge 完成安装
-    name: Forge 需要生成文件才能启动 {jar}
   badInstall:
     message: 也许你应该尝试重新安装此版本
     name: 版本安装失败 {version}
@@ -58,16 +47,9 @@ diagnosis:
   corruptedVersionJson:
     message: 启动器将重新下载损坏的文件
     name: Minecraft %{version} 版本 Json 文件损坏.
-  fix: 问题修复
   incompatibleJava:
     message: 你可以选择自己让启动器帮你下载，或者自己下载
     name: 版本 {version} 可能不兼容 Java {javaVersion}!
-  incompatibleMod:
-    message: 该模组也有可能能在当前Minecraft下运行，若不成功请将 Mod 移出 Mod 列表
-    name: '{name} 不兼容当前 Minecraft {actual}。其可用版本为 {accepted}'
-  incompatibleResourcePack:
-    message: 该资源包也可能在此版本下正常工作，若不成功请将其移出资源包列表
-    name: 资源包 {name} 不兼容 Minecraft {actual}. 请使用 Minecraft {accepted}
   invalidJava:
     message: 请选择一个有效的 Java 路径.
     name: 当前 Java 路径已经失效
@@ -80,9 +62,6 @@ diagnosis:
   missingAuthlibInjector:
     message: 必须安装 authlib-injector, 第三方验证服务配置才能生效！
     name: 需要安装 authlib-injector
-  missingForgeJar:
-    message: 启动器将自动安装Forge文件
-    name: 缺少对应 Minecraft {minecraft} 版本的 Forge {forge} 依赖文件
   missingJava:
     message: 点击来解决这个问题
     name: 当前电脑上没有找到任何 Java
@@ -95,25 +74,7 @@ diagnosis:
   missingVersionJar:
     message: 启动器将自动下载JAR文件
     name: '%{version}版本JAR文件缺失'
-  missingVersionJson:
-    message: 启动器将自动下载JSON文件
-    name: '%{version}版本JSON文件缺失'
   problem: 1个潜在问题 | %{count}个潜在问题
-  requireFabric:
-    message: 请在版本设置页面选择一个合适的 Fabric 版本
-    name: 请启用 Fabric 来运行 Fabric 的 Mod
-  requireFabricAPI:
-    message: 请去 Curseforge 下载，如果已经下载了可以去 Mod 设置页面启用 Fabric API
-    name: 请安装 FabricAPI {version} 来运行 {name}
-  requireForge:
-    message: 请在版本设置页面选择一个合适的 Forge 版本
-    name: 请启用 Forge 来运行 Forge 的 Mod
-  unknownMod:
-    message: 请务必小心使用
-    name: 无法解析 {name} Mod 兼容的 Minecraft 版本
-  userNotLogined:
-    message: 点击登录 Minecraft
-    name: 用户没有登陆
 disk:
   available: 可用
   used: 已用
@@ -134,7 +95,6 @@ exportModpackTarget:
   curseforge: Curseforge 文件
   github: Github
   modrinth: Modrinth 文件
-  name: 文件导出为
   override: 覆盖文件 (打包)
 extensions:
   mrpack: Modrinth 整合包
@@ -156,13 +116,9 @@ forgeConfig:
 forgeVersion:
   common: 所有
   disable: 不使用 Forge
-  disabled: 未启用
   empty: Forge 不支持 Minecraft {version}
-  enabled: 启用 Forge
-  install: 安装 Forge
   latest: 最新版
   name: Forge
-  non: 没有选择 Forge
   recommended: 稳定版
   showBuggy: 显示 Buggy 版
   showRecommendedAndLatestOnly: 只显示最新版和稳定版
@@ -174,34 +130,19 @@ gameType:
   creative: 创造模式
   spectator: 观察者模式
   survival: 生存模式
-hello: 你好世界
 help: 帮助
 home: 主页
 importModpack:
   failed: 创建 {modpack} 整合包失败
   success: 成功导入 {modpack} 整合包
 importResource: 导入资源
-importSave: 导入存档
 install: 安装
 installAssets:
   asset: 下载资源文件%{hash}
   assetsJson: 下载资源文件目录
   name: 下载游戏资源文件
 installAuthlibInjector: 安装 authlib-injector
-installByProfile:
-  library: 安装库
-  name: 通过安装配置文件
-  postProcessing: 后处理，更新本地文件
 installCurseforgeFile: 安装 Curseforge 文件
-installDependencies:
-  installAssets:
-    assets: 下载资源文件%{hash}
-    assetsJson: 下载资源文件目录
-    name: 下载游戏资源文件
-  installLibraries:
-    library: 检查库文件
-    name: 下载依赖运行库
-  name: 检查%{version}的依赖
 installFabric:
   name: 安装 Fabric
 installForge:
@@ -214,10 +155,8 @@ installInstance:
   name: 更新/安装实例
   resolve: 解析实例安装信息
 installJre:
-  cleanup: 清理安装文件
   decompress: 解压缩JRE文件到本地
   download: 下载压缩的JRE文件
-  fetchInfo: 从Mojang那获取JRE信息
   name: 安装Java运行库
 installLibraries:
   library: 检查库文件
@@ -258,7 +197,6 @@ instance:
   openLogFolder: 打开日志文件夹
   requireName: 必须填写名称
   showInstance: 显示文件夹
-  version: 游戏版本
   versionHint: 这个游戏使用的Minecraft版本
   vmOptions: JVM 启动选项
   vmOptionsHint: 额外的 JVM 的启动参数
@@ -279,12 +217,10 @@ instanceTemplate:
   title: 模板设置
 instances:
   add: 新建本地游戏
-  choose: 选择实例
   importFolder: 从文件夹导入
   importFolderDescription: 导入 Minecraft 到启动器
   refreshServers: 刷新服务器
 issue:
-  empty: 暂时没有找到问题
   name: 已知问题
 java:
   allocatedLong: 启动器自动选择 Java
@@ -305,40 +241,22 @@ java:
   refresh: 刷新本地 Java
   switchVersion: 已切换 Java 版本
   systemMemory: 当前系统内存
-javaError:
-  downloadFailed: 自动下载Java失败，请检查你的网络连接。当然你也可以点击返回尝试别的方法。
-  noJavaInPath: 还是无法在PATH中找到java可执行文件。你可以尝试其他方法。
-  noLegalJava: 启动器认为这个Java可执行文件是无效的。请尝试其他的方法。
 launch:
   launch: 启动
-  localhost: 本地服务器
-  openCrashReportFolder: 打开崩溃日志文件夹
 launchBlocked:
-  description: 启动器依然检测到几个未解决的问题，他们可能影响游戏的启动。但你依然可以让启动器尝试启动 Minecraft
   ignore: 强行启动
-  title: 有几个待解决的问题
 launchFailed:
   crash: 游戏崩溃了！
   description: 没有找到崩溃报告，这里是游戏输出和最新的日志文件
   general: 启动失败
   generalText: 如果你反复出现同样的问题，请联系作者!
-  illegalAuth: 用户数据为空
-  illegalAuthText: 无效的用户数据！请尝试重新登陆或切换账号
   latestLog: 最新日志文件
-  selectProfileEmpty: 启动配置为空
-  selectProfileEmptyText: 很奇怪，你可以尝试重新创建当前的启动配置。如果你老遇到这个问题请联系作者!
   title: 游戏未正常退出
-  unresolvableProblems: 无法处理某些启动问题
-  unresolvableProblemsText: 启动器无法自动处理一些启动前置需求。你可以尝试在主页让启动器自动修复。如果你反复遇到此问题，请联系作者
 launchStatus:
   checkingProblems: 检测问题中
   injectingAuthLib: 配置第三方验证中
   launching: 启动中...
   launchingSlow: 还在启动…Minecraft图形界面启动的会比较慢呢~
-launcher:
-  quit: 关闭启动器
-  showDiagnosis: 显示Debug信息
-  title: Minecraft 启动器
 launcherUpdate:
   alreadyLatest: 已经是最新
   installAndQuit: 重启并安装更新
@@ -354,17 +272,16 @@ localVersion:
   reinstallDescription: 如果你觉得此版本安装的有问题，可以尝试重新安装该版本。
   reinstallTitle: 重新安装 {version}
   title: 本地版本
-logMonitor: 游戏日志检测
 logLevel:
   error: 错误
   info: 信息
   success: 成功
   warning: 警告
+logMonitor: 游戏日志检测
 login:
   dropHint: 将验证链接拖入此处手工验证
   forgetPassword: 忘记密码?
   login: 登陆
-  logout: 登出
   manualLoginUrl: 如果浏览器没有自动打开，请点击此链接来验证!
   signup: 注册
   signupDescription: 没有账号?
@@ -389,9 +306,6 @@ logsCrashes:
   logs: 日志
   placeholder: 没有找到文件
   title: 日志或崩溃报告
-market: 市场
-minecraft:
-  name: Minecraft
 minecraftVersion:
   empty: 无法加载 Minecraft 版本列表
   name: Minecraft 版本
@@ -408,7 +322,6 @@ mod:
   deletionRestHint: 等 {rest} 个模组……
   dropHint: 将Mod的jar文件拖入此处来导入
   enabled: 一共启用了 {count} 个 Mods
-  export: 导出 Mod
   filter: 筛选 Mods
   hideIncompatible: 隐藏不兼容 Mods
   import: 导入 Mod
@@ -416,7 +329,6 @@ mod:
   manage: 管理 Mods
   maybeCompatible: 也许兼容于当前版本。
   name: Mod | Mods
-  nocompatible: 无法解析兼容性。
   openLink: 打开 Mod 链接 {url}
   searchOnCurseforge: 在 Curseforge 上搜索
   searchOnMcWiki: 在 MC 百科中查找 {name}
@@ -437,21 +349,12 @@ modpack:
   description: 游戏简介
   descriptionHint: 通用的 modpack 简介。在导出成 curseforge 整合包或者其他格式时会使用
   dropHint: 通过拖拽导入整合包文件
-  edit: 编辑整合包信息
   emitCurseforge: 生成 Curseforge 整合包
   emitMcbbs: 生成 MCBBS 整合包
   emitModrinth: 生成 Modrinth 整合包
   emitModrinthStrict: 严格遵守 Modrinth 整合包格式
   emitModrinthStrictDescription: 下载链接只允许包含 Modrinth 官网定义的四个域名
-  error:
-    requirename: 名称不能为空！请随便编一个名字
   export: 导出整合包
-  exportCurseforge: 导出为 Curseforge 整合包
-  exportFileAs:
-    curseforge: Curseforge 文件
-    github: Github 地址
-    modrinth: Modrinth 文件
-    override: 普通文件
   filter: 筛选整合包
   general: 基本信息
   includeAssets: 是否包含游戏资源 (assets) 文件
@@ -462,7 +365,6 @@ modpack:
   modpackVersion: 整合包版本
   name: 整合包
   overrides: 整合包打包覆盖 (overrides)
-  profile: 文件名
   showFile: 显示 {file}
   showInCurseforge: 在 Curseforge 中显示 {name}
   showInFtb: 在 FTB 中显示 {name}
@@ -471,41 +373,6 @@ modpack:
 modrinth:
   avaiableFor: 可用于
   categories:
-    adventure: 冒险
-    combat: 战斗
-    cursed: 怪异
-    decoration: 装饰
-    economy: 经济
-    equipment: 装备
-    fabric: Fabric
-    food: 食物
-    forge: Forge
-    kitchen-sink: 杂烩
-    library: 程序库
-    lightweight: 轻量
-    game-mechanics: 游戏机制
-    magic: 魔法
-    management: 管理
-    minigame: 小游戏
-    misc: 杂项
-    multiplayer: 多人游戏
-    mobs: 怪物
-    modloader: Mod 加载器
-    name: 分类
-    optimization: 优化
-    quests: 任务导向
-    quilt: Quilt
-    rift: Rift
-    social: 社交
-    storage: 存储
-    technology: 科技
-    utility: 实用工具
-    transportation: 交通
-    worldgen: 世界生成
-    audio: 音效
-    blocks: 方块
-    environment: 环境
-    fonts: 字体
     128x: 128x
     16x: 16x
     256x: 256x
@@ -513,29 +380,64 @@ modrinth:
     512x+: 512x+
     64x: 64x
     8x-: 8x-
+    adventure: 冒险
+    audio: 音效
+    blocks: 方块
     bukkit: Bukkit
     bungeecord: Bungeecord
     challenging: 挑战
+    combat: 战斗
     core-shaders: 光影
+    cursed: 怪异
+    decoration: 装饰
+    economy: 经济
     entities: 实体
+    environment: 环境
+    equipment: 装备
+    fabric: Fabric
+    fonts: 字体
+    food: 食物
+    forge: Forge
+    game-mechanics: 游戏机制
     gui: 界面
     items: 物品
+    kitchen-sink: 杂烩
+    library: 程序库
+    lightweight: 轻量
     liteloader: Liteloader
     locale: 本地化
+    magic: 魔法
+    management: 管理
     minecraft: Minecraft
+    minigame: 小游戏
+    misc: 杂项
+    mobs: 怪物
     modded: 兼容 Mod
     models: 模型
+    modloader: Mod 加载器
+    multiplayer: 多人游戏
+    name: 分类
+    optimization: 优化
     paper: Paper
     purpur: Purpur
+    quests: 任务导向
+    quilt: Quilt
     realistic: 真实风格
+    rift: Rift
     simplistic: 简约
+    social: 社交
     spigot: Spigot
     sponge: Sponge
+    storage: 存储
+    technology: 科技
     themed: 主体化
+    transportation: 交通
     tweaks: Tweaks
+    utility: 实用工具
     vanilla-like: 原版风格
     velocity: Velocity
     waterfall: Waterfall
+    worldgen: 世界生成
   clientSide: 客户端
   createAt: 创建日期
   description: 详情
@@ -579,9 +481,7 @@ modrinth:
     relevance: 相关性
     title: 排序
     updated: 更新时间
-  sortBy: {}
   updateAt: 更新于
-  versionType: {}
   versions: 版本
 multiplayer:
   complete: 完成
@@ -609,11 +509,7 @@ myStuff: 个人中心
 name: 名称
 next: 下一项
 'no': 否
-notification:
-  empty: 暂时没有通知
-  name: 通知
 ok: 好的
-optifine: {}
 optifineVersion:
   disable: 不启用 Optifine
   empty: Optifine 不支持 Minecraft {version}
@@ -626,7 +522,6 @@ peerConnectionState:
   failed: 失败
   new: 等待连接
 peerIceGatheringState:
-  complete: 收集完毕
   gathering: 收集本地信息中
 popular: 热度
 previous: 上一步
@@ -636,10 +531,6 @@ quiltVersion:
 refresh: 刷新
 refreshResource: 刷新资源
 remove: 移除
-resolution:
-  fullscreen: 全屏
-  height: 高
-  width: 宽
 resourcepack:
   available: 可用的资源包
   compatible: 当前格式({format})可用于当前版本 {version}
@@ -652,7 +543,6 @@ resourcepack:
   deletionHint: 你将永远失去该资源包的数据以及相关信息，你进行此操作吗？
   dropHint: 将资源包zip或文件夹拖入此处导入
   enable: 一共启用了 {count} 个资源包
-  export: 导出资源包
   filter: 筛选材质包
   import: 导入资源包
   incompatible: 不兼容的资源包格式({format})。适用范围 {accept}。当前版本 {actual}。
@@ -673,8 +563,6 @@ save:
     fromResource: 来自已导入资源
     title: 从已有资源导入存档
   createdWorlds: 创建了 {count} 个世界
-  deleteCancel: 取消
-  deleteConfirm: 确认删除
   deleteHint: 该操作不可逆，你将永远失去这个存档的记录，你确定要刪除此存档吗？
   deleteTitle: 删除该存档
   detail: 显示更多信息
@@ -697,8 +585,6 @@ server:
     name: 删除服务器
   edit: 编辑
   error:
-    requirehost: 缺少主机IP地址
-    requirename: 缺少服务器名
     wrongVersion: 当前版本与服务器协议不匹配，可能导致连接错误
   expectedVersions: 已支持的版本
   filterVersion: 筛选服务器相应的 Minecraft 版本
@@ -713,7 +599,6 @@ server:
   port: 端口
   recommendedMinecraftVersion: Minecraft 版本
   status: 服务器状态
-  title: 服务器 | 服务器
   unknown: 未知服务器
   unknownDescription: 未知服务器，请刷新。
   version: 服务器推荐版本
@@ -728,11 +613,8 @@ setting:
   maxSockets: (每个网站)最大连接数
   maxSocketsDescription: 控制最大的并发 HTTP 链接数量。0 代表不限制数量。
   maxSocketsTitle: 最大 HTTP 连接数量
-  maxTotalSockets: (全启动器)最大连接数
   name: 设置
   officialWebsite: 官网地址
-  resolution: Minecraft默认窗口大小
-  viewUpdate: 详细信息
 setup:
   dataRoot:
     description: 数据存储目录不是常规的 .minecraft 目录。因为 XMCL 的数据目录格式特殊，不建议将常规 .minecraft 目录设置为数据目录。
@@ -750,9 +632,9 @@ setup:
 shaderPack:
   deletion: 删除光影包
   deletionHint: 这将把光影包文件 {path} 永久删除。
-  filter: 筛选光影包
   empty: 没有启用光影包
   enable: 使用了 {name} 作为光影包
+  filter: 筛选光影包
   internal: 内置
   internalDescription: 使用内置 shader，在此模式下你可以编辑 shader 管线选项
   manage: 管理光影包
@@ -760,10 +642,7 @@ shaderPack:
   'off': 无
   offDescription: 关闭 shader 引擎
   showFile: 在文件夹中显示此 shader pack
-step:
-  dataRoot: {}
-  game: {}
-  locale: {}
+summery: 简介
 tag:
   create: 创建标签
   createSelected: 为所有选中的创建标签
@@ -772,49 +651,16 @@ task:
   cancelled: 已取消
   empty: 目前没有运行中的任务
   failed: 失败
-  failedDescription: 任务执行失败，以下是它的调用栈
-  history: 已完成任务
   manager: 任务管理器
   nTaskRunning: '{count} 个任务运行中'
   name: 任务 | 任务
   pause: 暂停
   running: 活跃任务
-  start: '{name} 开始'
-  successed: 成功
 universalDrop:
   enableModsAfterImport: Mod 导入后自动启用
   start: 开始导入
   title: 将文件拖到这并导入为
   unknownResource: 无法解析
-unused:
-  buttonSettings:
-    drop: 丢弃
-    jump: 跳
-    moveBackward: 向后
-    moveForward: 向前
-    moveLeft: 向左
-    moveRight: 向右
-    open: 打开关闭背包
-    shortcut1: 快捷键 1
-    shortcut2: 快捷键 2
-    shortcut3: 快捷键 3
-    shortcut4: 快捷键 4
-    shortcut5: 快捷键 5
-    shortcut6: 快捷键 6
-    shortcut7: 快捷键 7
-    shortcut8: 快捷键 8
-    shortcut9: 快捷键 9
-    stealth: 潜行
-    talk: 讲话
-    view: 观察玩家
-  hotkeyChanges: 按键设置
-  launch:
-    game: 本地游戏
-  launchsetting:
-    jvm: JVM 参数
-    mc: Minecraft 参数
-    name: 启动配置
-  summery: 简介
 user:
   accessToken: 访问令牌
   authMode: 验证服务
@@ -830,7 +676,6 @@ user:
   nameHint: 游戏中显示的名字
   profile: 个人信息
   profileMode: 皮肤服务
-  profileService: 皮肤服务器
   refreshAccount: 刷新账号
   refreshSkin: 刷新皮肤
   submitChallenges: 提交答案
@@ -901,17 +746,9 @@ userSkin:
 version:
   name: 版本 | 版本
   notInstalled: 未安装该版本
-versionSetting:
-  title: 版本管理
-  unset: 未启用
 versionType:
   alpha: Alpha
   beta: Beta
   name: 类型
   release: 稳定版
 'yes': 是
-browseApp:
-  createShortcut: 创建快捷方式
-  default: 默认
-  delete: 删除
-  launch: 启动并设置为默认

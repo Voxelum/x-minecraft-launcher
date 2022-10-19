@@ -77,8 +77,9 @@
           :is-clearable="false"
           :items="minecraftItems"
           :has-snapshot="true"
+          :empty-text="t('minecraftVersion.empty')"
           :snapshot.sync="showAlpha"
-          :snapshot-tooltip="t('fabricVersion.showSnapshot')"
+          :snapshot-tooltip="t('minecraftVersion.showAlpha')"
           :refreshing="refreshingMinecraft"
           @select="onSelectMinecraft"
         >
@@ -120,6 +121,7 @@
           :is-clearable="true"
           :items="forgeItems"
           :clear-text="t('forgeVersion.disable')"
+          :empty-text="t('forgeVersion.empty')"
           :has-snapshot="true"
           :snapshot.sync="canShowBuggy"
           :snapshot-tooltip="t('fabricVersion.showSnapshot')"
@@ -160,6 +162,7 @@
           :is-clearable="true"
           :items="fabricItems"
           :clear-text="t('fabricVersion.disable')"
+          :empty-text="t('fabricVersion.empty')"
           :has-snapshot="true"
           :snapshot.sync="showStableOnly"
           :snapshot-tooltip="t('fabricVersion.showSnapshot')"
@@ -200,6 +203,7 @@
           :is-clearable="true"
           :items="quiltItems"
           :clear-text="t('quiltVersion.disable')"
+          :empty-text="t('quiltVersion.empty')"
           :refreshing="refreshingQuilt"
           @select="onSelectQuilt"
         >
@@ -237,6 +241,7 @@
           :is-clearable="true"
           :items="optifineItems"
           :clear-text="t('optifineVersion.disable')"
+          :empty-text="t('optifineVersion.empty')"
           :refreshing="refreshingOptifine"
           @select="onSelectOptifine"
         >

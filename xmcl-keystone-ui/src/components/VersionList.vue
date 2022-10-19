@@ -63,7 +63,7 @@
       v-ripple
       class="flex-grow"
       icon="refresh"
-      :text="refreshText"
+      :text="emptyText"
     />
   </div>
 </template>
@@ -76,9 +76,9 @@ import Hint from '@/components/Hint.vue'
 defineProps<{
   canDisable?: boolean
   disableText?: string
+  emptyText?: string
   refreshing: boolean
   versions: VersionItem[]
-  refreshText?: string
   install(v: object): Promise<any>
 }>()
 

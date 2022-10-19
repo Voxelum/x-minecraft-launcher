@@ -1,5 +1,5 @@
 import { Ref } from 'vue'
-import { AssetIndexIssueKey, AssetsIssueKey, IncompatibleJavaIssueKey, isIssue, Issue, LibrariesIssueKey, MissingJavaIssueKey, VersionIssueKey, VersionJarIssueKey, VersionJsonIssueKey } from '@xmcl/runtime-api'
+import { AssetIndexIssueKey, AssetsIssueKey, IncompatibleJavaIssueKey, InstallProfileIssueKey, InvalidJavaIssueKey, isIssue, Issue, LibrariesIssueKey, MissingAuthLibInjectorIssue, MissingJavaIssueKey, VersionIssueKey, VersionJarIssueKey, VersionJsonIssueKey } from '@xmcl/runtime-api'
 import { useIssues } from '@/composables'
 
 export function useProblemItems(issues: Ref<Issue[]>) {
@@ -45,6 +45,24 @@ export function useProblemItems(issues: Ref<Issue[]>) {
         return {
           title: t('diagnosis.missingJava.name'),
           description: t('diagnosis.missingJava.message'),
+          ...i,
+        }
+      } else if (isIssue(InvalidJavaIssueKey, i)) {
+        return {
+          title: t('diagnosis.invalidJava.name'),
+          description: t('diagnosis.invalidJava.message'),
+          ...i,
+        }
+      } else if (isIssue(InstallProfileIssueKey, i)) {
+        return {
+          title: t('diagnosis.badInstall.name'),
+          description: t('diagnosis.badInstall.message', { version: i.parameters[0].version }),
+          ...i,
+        }
+      } else if (isIssue(MissingAuthLibInjectorIssue, i)) {
+        return {
+          title: t('diagnosis.missingAuthlibInjector.name'),
+          description: t('diagnosis.missingAuthlibInjector.message'),
           ...i,
         }
       }

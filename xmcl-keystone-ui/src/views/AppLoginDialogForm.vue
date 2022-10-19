@@ -55,11 +55,7 @@
         prepend-inner-icon="person"
         outlined
         required
-        :label="
-          te(`userServices.${authService}.account`)
-            ? t(`userServices.${authService}.account`)
-            : t(`userServices.offline.account`)
-        "
+        :label="getUserServiceAccount(authService)"
         :rules="usernameRules"
         :error="!!usernameErrors.length"
         :error-messages="usernameErrors"
@@ -173,11 +169,30 @@ const data = reactive({
   microsoftUrl: '',
 })
 
+const getUserServiceName = (serv: string) => {
+  if (serv === 'microsoft') return t('userServices.microsoft.name')
+  if (serv === 'mojang') return t('userServices.mojang.name')
+  if (serv === 'offline') return t('userServices.offline.name')
+  return serv
+}
+const getUserServicePassword = (serv: string) => {
+  if (serv === 'microsoft') return t('userServices.microsoft.password')
+  if (serv === 'mojang') return t('userServices.mojang.password')
+  if (serv === 'offline') return t('userServices.offline.password')
+  return t('userServices.mojang.password')
+}
+const getUserServiceAccount = (serv: string) => {
+  if (serv === 'microsoft') return t('userServices.microsoft.account')
+  if (serv === 'mojang') return t('userServices.mojang.account')
+  if (serv === 'offline') return t('userServices.offline.account')
+  return t('userServices.mojang.account')
+}
+
 const accountInput: Ref<any> = ref(null)
 const hovered = ref(false)
 const accountSystems: Ref<string[]> = ref([])
 const accountSystemItems: Ref<ServiceItem[]> = computed(() => accountSystems.value
-  .map((a) => ({ value: a, text: te(`userServices.${a}.name`) ? t(`userServices.${a}.name`) : a })))
+  .map((a) => ({ value: a, text: getUserServiceName(a) })))
 const accountSystemItem = computed<ServiceItem>({
   get() { return accountSystemItems.value.find(a => a.value === authService.value)! },
   set(v) { authService.value = v as any as string },
@@ -189,9 +204,7 @@ const isLogining = useBusy('login')
 const isMicrosoft = computed(() => authService.value === 'microsoft')
 const isOffline = computed(() => authService.value === 'offline')
 
-const passwordLabel = computed(() => (te(`userServices.${authService.value}.password`)
-  ? t(`userServices.${authService.value}.password`)
-  : t(`userServices.${isOffline.value ? 'offline' : 'mojang'}.password`)))
+const passwordLabel = computed(() => getUserServicePassword(authService.value))
 const showDropHint = computed(() => isMicrosoft.value && props.inside && isLogining.value)
 const uuidLabel = computed(() => t('userServices.offline.uuid'))
 

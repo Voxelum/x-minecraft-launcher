@@ -740,7 +740,7 @@ export class InstallService extends AbstractService implements IInstallService {
     try {
       await this.submit(installByProfileTask(profile, this.getPath(), {
         ...this.getForgeInstallOptions(),
-      }).setName('installByProfile', { id: version ?? profile.version }))
+      }).setName('installForge', { id: version ?? profile.version }))
     } catch (err) {
       this.warn(err)
     }
