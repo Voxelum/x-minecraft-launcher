@@ -11,19 +11,19 @@
         <v-icon left>
           manage_accounts
         </v-icon>
-        账户信息
+        {{ t('user.info') }}
       </v-tab>
       <v-tab>
         <v-icon left>
           power
         </v-icon>
-        已安装的版本
+        {{ t('localVersion.title') }}
       </v-tab>
       <v-tab>
         <v-icon left>
           inventory
         </v-icon>
-        已下载的整合包
+        {{ t('modpack.name', 2) }}
       </v-tab>
       <v-tab-item
         class="h-full overflow-auto"
@@ -54,6 +54,7 @@ import User from './User.vue'
 import VersionLocalView from './VersionLocalView.vue'
 
 const filterText = ref('')
+const { t } = useI18n()
 </script>
 
 <style>
