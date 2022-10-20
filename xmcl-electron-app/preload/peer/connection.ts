@@ -158,6 +158,7 @@ export class PeerSession {
       protocol: 'download',
     })
 
+    console.log(`start to download ${file} to ${dest} in ${sha1}`)
     await ensureFile(dest)
     const output = createWriteStream(dest)
     const hash = createHash('sha1')
@@ -173,9 +174,11 @@ export class PeerSession {
       channel.addEventListener('message', (ev) => {
         const buf = Buffer.from(ev.data)
         length += buf.length
+        console.log(`Get download buffer ${buf.length}`)
         hash.update(buf)
         output.write(buf)
         if (length >= total) {
+          console.log(`done ${total} ${length}`)
           channel.send('done')
           channel.close()
         }
@@ -189,6 +192,7 @@ export class PeerSession {
       })
     })
     const actualSha1 = hash.digest('hex')
+    console.log(`Sha1 not match! ${actualSha1} vs ${sha1}`)
     if (actualSha1 !== sha1) {
       // noop
       await unlink(dest)
