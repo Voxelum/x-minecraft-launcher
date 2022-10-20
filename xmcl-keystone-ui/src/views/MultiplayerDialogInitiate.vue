@@ -91,7 +91,7 @@
               >
                 check
               </v-icon>
-              {{ copied ? t('copied') : t('multiplayer.copy') }}
+              {{ copied ? t('multiplayer.copied') : t('multiplayer.copy') }}
             </v-btn>
             <div class="flex-grow" />
             <v-btn
@@ -223,50 +223,3 @@ const { refresh: initiate } = useRefreshable(async () => {
 })
 
 </script>
-
-<i18n locale="en" lang="yaml">
-multiplayer:
-  enterRemoteTokenHint: >-
-    Once your peer enter your token, you need to enter his token to the text
-    area below. Click confirm to connect.
-  copyLocalHint: >
-    "Please copy the local SDP text and send it to your object to have your
-    object enter this text in the join connection <span>A token can be only used
-    for <span style="color: red; font-weight: bold;">one peer</span>! You cannot
-    send the same token to multiple peer!</span> <br> <span style="color:
-    rgba(255,255,255,0.7); font-style: italic;">If you need to connect multiple
-    peers, you need to create <span style="font-weight: bold; color: rgba(245,
-    158, 11)">multiple</span> connections.</span>"
-  gatheringIce: >
-    "Please wait for the ICE server to collect enough information about your
-    network. If you are impatient and there are enough information, you can give
-    the current SDP to the other party in advance and click Next Please send the
-    <span class="v-chip v-chip--label v-size--small" style="text-font: bold"
-    >Local Token</span> to your peer, you peer enter your token in <span
-    class="v-chip v-chip--label v-size--small" style="text-font: bold"> Join
-    Connection </span> section. <br> The ICE server might need some time to
-    collect your info to create <span class="v-chip v-chip--label v-size--small"
-    style="text-font: bold">Local token</span>.<br> You do not need to wait
-    until the ICE status complete. If the token below remain unchanged, you can
-    copy it and send to you peer."
-copied: Copied!
-copyUrl: Copy URL
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-multiplayer:
-  enterRemoteTokenHint: 当你的联机伙伴输入你的令牌后，你需要将他的令牌输入到下面的文字框中，并点击确定开始连接。
-  copyLocalHint: >
-    <span>一段令牌只能用<span style="color: red; font-weight:bold;">一次</span>！你不能将一个令牌发送给多个小伙伴！</span>
-    <br>
-    <span style="color: rgba(255,255,255,0.7); font-style: italic;">如果有多个小伙伴要加入你需要<span style="font-weight: bold; color: rgba(245, 158, 11)">多次</span>建立连接。</span>
-  gatheringIce: >
-    请将<span class="v-chip v-chip--label v-size--small" style="text-font: bold">本地令牌</span>发送给你的联机伙伴，你的联机伙伴在
-    <span class="v-chip v-chip--label v-size--small" style="text-font: bold"> 加入连接 </span> 中输入这段文字。
-    <br>
-    期间 ICE 服务器可能需要时间收集足够信息来创建<span class="v-chip v-chip--label v-size--small" style="text-font: bold">本地令牌</span>。
-    <br>
-    <span style="color: rgba(255,255,255,0.7);"> 你不需要等 ICE 服务器完全收集完毕，当下面的令牌已经有内容并且不怎么变化后，你可以提前将令牌复制给对方。 </span>
-copied: 已复制!
-copyUrl: 复制 URL
-</i18n>

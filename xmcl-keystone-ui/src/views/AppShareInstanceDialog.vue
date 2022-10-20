@@ -9,10 +9,10 @@
       >
         <v-toolbar-title>
           <template v-if="sharing">
-            {{ t('shareTitle') }}
+            {{ t('AppShareInstanceDialog.shareTitle') }}
           </template>
           <template v-else>
-            {{ t('downloadTitle') }}
+            {{ t('AppShareInstanceDialog.downloadTitle') }}
           </template>
         </v-toolbar-title>
       </v-toolbar>
@@ -24,13 +24,13 @@
       >
         <v-card-text>
           <template v-if="sharing">
-            {{ t('description') }}
+            {{ t('AppShareInstanceDialog.description') }}
           </template>
           <template v-else>
-            {{ t('downloadDescription') }}
+            {{ t('AppShareInstanceDialog.downloadDescription') }}
           </template>
         </v-card-text>
-        <v-subheader>{{ t('baseInfo') }}</v-subheader>
+        <v-subheader>{{ t('AppShareInstanceDialog.baseInfo') }}</v-subheader>
         <div class="flex flex-col p-5 ">
           <div class="flex gap-5">
             <v-text-field
@@ -97,10 +97,10 @@
         </div>
         <v-subheader>
           <template v-if="sharing">
-            {{ t('filesToShare') }}
+            {{ t('AppShareInstanceDialog.filesToShare') }}
           </template>
           <template v-else>
-            {{ t('filesToDownload') }}
+            {{ t('AppShareInstanceDialog.filesToDownload') }}
           </template>
         </v-subheader>
 
@@ -126,7 +126,7 @@
           <v-icon left>
             delete
           </v-icon>
-          {{ t('cancelShare') }}
+          {{ t('AppShareInstanceDialog.cancelShare') }}
         </v-btn>
         <v-spacer />
         <v-btn
@@ -137,7 +137,7 @@
           <v-icon left>
             share
           </v-icon>
-          {{ t('share') }}
+          {{ t('AppShareInstanceDialog.share') }}
         </v-btn>
       </v-card-actions>
       <v-card-actions v-else>
@@ -189,7 +189,7 @@ on('share', (event) => {
     if (conn) {
       notify({
         level: 'info',
-        title: t('instanceShare', { user: conn.userInfo.name }),
+        title: t('AppShareInstanceDialog.instanceShare', { user: conn.userInfo.name }),
         full: true,
         more() {
           if (!isShown.value) {
@@ -238,7 +238,7 @@ const onShareInstance = () => {
     const man = { ...manifest.value }
     const allow = new Set(selected.value)
     man.files = man.files.filter(f => allow.has(f.path))
-    subscribeTask(shareInstance({ manifest: man, instancePath: instanceState.path }), t('shareNotifyTitle'))
+    subscribeTask(shareInstance({ manifest: man, instancePath: instanceState.path }), t('AppShareInstanceDialog.shareNotifyTitle'))
     isShown.value = false
   }
 }
@@ -252,7 +252,7 @@ const onDownloadInstance = () => {
 
     subscribeTask(installInstanceFiles({
       files,
-    }), t('downloadNotifyTitle', { user: currentUser.value }))
+    }), t('AppShareInstanceDialog.downloadNotifyTitle', { user: currentUser.value }))
 
     isShown.value = false
   }
@@ -269,36 +269,3 @@ watch(isShown, async (shown) => {
   }
 })
 </script>
-
-<i18n locale="en" lang="yaml">
-shareNotifyTitle: Share Instance
-downloadNotifyTitle: Download Instance from {user}
-description: After you share the profile, other place can download these files through your PC.
-downloadDescription: Please verify the files your peer provided to you. Select the file you want to download.
-share: Share
-cancel: Cancel
-cancelShare: Cancel Share
-shareTitle: Share game files to other player
-downloadTitle: Download files from other peers
-baseInfo: Basic Setting
-filesToShare: Choose files to share
-filesToDownload: Choose files to download
-downloadToLocal: Download to current instance
-instanceShare: "{user} just shared a game files to you"
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-shareNotifyTitle: 分享配置
-description: 分享后，你的联机伙伴将会可以通过你下载你分享的游戏资源
-downloadDescription: 请选择你想从你的小伙伴那下载的文件。
-share: 分享
-cancel: 取消
-cancelShare: 取消分享
-shareTitle: 分享启动配置给其他玩家
-downloadTitle: 从其他玩家那获得游戏资源
-baseInfo: 分享的基本配置
-filesToShare: 选择分享的文件
-filesToDownload: 选择你想下载的文件
-downloadToLocal: 下载到当前实例种
-instanceShare: "{user} 给你分享了他的游戏配置"
-</i18n>

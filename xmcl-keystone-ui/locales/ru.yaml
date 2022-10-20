@@ -1,3 +1,27 @@
+BaseSetting:
+  title: Настройки
+BaseSettingGeneral:
+  title: Общие
+HomeJavaIssueDialog:
+  incompatibleJava: Несовместимая Java
+  incompatibleJavaHint: Вы можете использовать найденую Java или скачать новую!
+  missingJava: Java отсутствует
+  missingJavaHint: 'Лаунчер не может найти на вашем компьютере Java. Вы можете:'
+  optionAutoDownload:
+    message: Лаунчер скачает и установит Java из исходного кода Mojang.
+    name: Скачать автоматически
+  optionManualDownload:
+    message: Лаунчер перенаправит вас на страницу скачивания Orecale JRE.
+    name: Скачать вручную
+  optionSelectJava:
+    message: >-
+      Видимо лаунчер не нашёл установленную Java. Вы можете указать лаунчеру его
+      расположение.
+    name: Выберите Java на вашем компьютере
+  optionSwitch:
+    disabled: Сейчас в базе данных нет {version}!
+    message: Используйте существующую Java {version} на своём ПК
+    name: Переключить на Java {version}
 add: Добавить
 author: Автор
 back: Назад
@@ -14,6 +38,43 @@ confirm: Начать
 copyClipboard:
   success: Скопировать в буфер обмена
 create: Создать
+curseforge:
+  createdDate: Создан
+  downloadOnly: Скачать
+  downloaded: Скачан
+  file:
+    gameVersion: Версия игры
+    releaseType: Тип выпуска
+    sortByDate: Дата
+    sortByName: Название файла
+  fileReleaseType:
+    alpha: Альфа
+    beta: Бета
+    release: Релиз
+  install: Установить
+  installTo: Установить в {path}
+  installToStorage: Установить в хранилище
+  installed: Установлен
+  lastUpdate: Обновлён
+  mc-mods:
+    description: Просматривайте и скачивайте моды с Curseforge
+    name: Моды
+  modpacks:
+    description: Просматривайте и скачивайте модпаки с Curseforge
+    name: Модпаки
+  project:
+    description: Описание
+    files: Файлы
+    images: Изображения
+  recentFiles: Последние файлы
+  search: Поиск
+  texture-packs:
+    description: Просматривайте и скачивайте пакеты текстур с Curseforge
+    name: Текстуры
+  totalDownloads: Скачиваний
+  worlds:
+    description: Просматривайте и скачивайте миры с Curseforge
+    name: Миры
 dataMigration:
   apply: Применить настройки
   setRootCause: >-
@@ -103,6 +164,20 @@ fabricVersion:
   showStableOnly: Показывать только стабильные
   stable: Стабильные
   unstable: Нестабильные
+feedback:
+  description: Я обнаружил ошибку или хочу сделать предложение
+  discord: Discord
+  discordDescription: Присоединяйтесь к каналу в Discord
+  discordJoin: Присоединиться
+  github: Github Issue
+  githubDescription: Откройте Issue на Github, чтобы рассказать о предложении
+  githubOpenIssue: Github
+  name: Обратная связь
+  qq: Группа QQ
+  qqDescription: >-
+    Войдите в группу для отзывов на QQ и поговорите с авторами напрямую. Номер
+    группы: {number}
+  qqEnterGroup: Присоединиться
 filter: Фильтр
 finish: Завершено
 forgeConfig:
@@ -190,6 +265,10 @@ instanceAge:
   older: Старее
   threeDay: За три дня
   today: Cегодня
+instanceSetting:
+  hideLauncher: Скрыть лаунчер после запуска
+  showLog: Показать журнал Minecraft
+  showLogHint: После запуска игры появится всплывающее окно для стриминга лога Minecraft.
 instanceTemplate:
   importing: Импорт шаблона
   modpack: Это конфигурация модпака
@@ -227,8 +306,6 @@ launchBlocked:
 launchFailed:
   crash: Произошёл сбой игры!!
   description: Отчёт о сбоях отсутствует. Это лог ошибок и последний лог.
-  general: Ошибка общего запуска
-  generalText: Если вы столкнётесь с этим несколько раз, свяжитесь с автором!
   latestLog: Последний лог
   title: Игра завершена с ненормальный кодом
 launchStatus:
@@ -432,6 +509,21 @@ ok: ОК
 optifineVersion:
   disable: Отключить Optifine
   empty: Optifine не поддерживается на Minecraft {version}
+optionAutoDownload:
+  message: Лаунчер скачает и установит Java из исходного кода Mojang.
+  name: Скачать автоматически
+optionManualDownload:
+  message: Лаунчер перенаправит вас на страницу скачивания Orecale JRE.
+  name: Скачать вручную
+optionSelectJava:
+  message: >-
+    Видимо лаунчер не нашёл установленную Java. Вы можете указать лаунчеру его
+    расположение.
+  name: Выберите Java на вашем компьютере
+optionSwitch:
+  disabled: Сейчас в базе данных нет {version}!
+  message: Используйте существующую Java {version} на своём ПК
+  name: Переключить на Java {version}
 optional: По желанию
 peerConnectionState:
   closed: Закрыто
@@ -445,6 +537,9 @@ peerIceGatheringState:
   gathering: Сбор ледяного сервера
 popular: Популярность
 previous: Назад
+proxy:
+  host: Хост
+  port: Порт
 refreshResource: Обновить ресурсы
 remove: Удалить
 resourcepack:
@@ -474,6 +569,12 @@ resourcepack:
   showInCurseforge: Показать {name} на curseforge
   unselected: Невыбранные пакеты текстур
 save:
+  copy:
+    cancel: Отменить копирование
+    confirm: Начать копирование
+    description: Выберите целевые профили, которые вы хотите сохранить.
+    name: Копировать сохранение
+    title: Копировать сохранение в другой профиль
   copyFrom:
     cancel: Отмена
     confirm: Начать копирование
@@ -534,7 +635,13 @@ serverStatus:
   refuse: §4Отказано сервером!
   timeout: §4Вышло время подключения к серверу!
 setting:
+  allowPrerelease: Скачать предрелиз
+  allowPrereleaseDescription: Предрелиз может быть нестабильным
   appearance: Внешний вид
+  autoDownload: Автоскачивание
+  autoDownloadDescription: Автоматически скачивает обновление когда оно доступно
+  autoInstallOnAppQuit: Автоустановка
+  autoInstallOnAppQuitDescription: Автоматически устанавливает обновление при закрытии приложения
   backgroundImage: Изображение фона
   backgroundImageBlur: Размытие изображения
   backgroundImageBlurDescription: Перетащите чтобы размыть, легко
@@ -550,23 +657,40 @@ setting:
     particle: Частицы
   blurMainBody: Размытие главного окна
   blurMainBodyDescription: Размытие правой панели лаунчера
+  browseRoot: Обзор
+  checkUpdate: Проверить обновление
   darkTheme: Тема
   darkThemeDescription: Выберите тёмную или светлую тему
+  general: Общие
   githubRelease: Github Release
+  language: Язык
+  languageDescription: Язык программы
+  latestVersion: Последняя версия
+  location: Расположение хранилища
   name: Глобальная настройка | Глобальные настройки
   officialWebsite: Официальный сайт
   particleMode:
-    '': Режим частиц
     bubble: Пузыри
+    name: Режим частиц
     push: Отталкивание
     remove: Удаление
     repulse: Отражение
   particleModeDescription: Выберите поведение частиц при нажатии
   showParticle: Показывать частицы
+  showParticleDescription: Показывать частицы фона (Может повлиять на производительность)
+  showRoot: Показать
   theme:
     dark: Dark Тема
     light: Light Тема
     system: Use System Тема
+  update: Обновление
+  useBmclAPI: Использовать BMCLAPI
+  useBmclAPIDescription: >-
+    Используйте BMCLAPI для скачивания Minecraft, если вы находитесь на Материке
+    Китая. (Это не повлияет, если вы не на Материке Китая)
+  useProxy: HTTP-прокси
+  useProxyDescription: Адрес прокси-сервера для http-запроса
+  viewUpdate: Сведения об обновлении
 setup:
   dataRoot:
     description: >-

@@ -14,10 +14,10 @@
           >
             <v-tabs-slider color="yellow" />
             <v-tab>
-              {{ t('pull') }}
+              {{ t('HomeSyncDialog.pull') }}
             </v-tab>
             <v-tab>
-              {{ t('push') }}
+              {{ t('HomeSyncDialog.push') }}
             </v-tab>
           </v-tabs>
         </template>
@@ -52,15 +52,3 @@ watch(isShown, (v) => {
 })
 
 </script>
-
-<i18n locale="en" lang="yaml">
-pull: Pull
-push: Push
-title: Instance Sync
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-pull: 拉取更新
-push: 上传实例
-title: 实例同步
-</i18n>

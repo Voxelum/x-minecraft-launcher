@@ -1,3 +1,87 @@
+AppAddInstanceDialog:
+  downloadedNotification: The modpack {name} downloaded. Do you want to create instance for it?
+AppShareInstanceDialog:
+  baseInfo: Basic Setting
+  cancelShare: Cancel Share
+  description: >-
+    After you share the profile, other place can download these files through
+    your PC.
+  downloadDescription: >-
+    Please verify the files your peer provided to you. Select the file you want
+    to download.
+  downloadNotifyTitle: Download Instance from {user}
+  downloadTitle: Download files from other peers
+  downloadToLocal: Download to current instance
+  filesToDownload: Choose files to download
+  filesToShare: Choose files to share
+  instanceShare: '{user} just shared a game files to you'
+  share: Share
+  shareNotifyTitle: Share Instance
+  shareTitle: Share game files to other player
+BaseSetting:
+  title: Settings
+BaseSettingGeneral:
+  title: General
+FeedTheBeast:
+  search: Search In FTB
+FeedTheBeastCard: {}
+FeedTheBeastProject:
+  changelog: Changelog
+  details: Details
+  install: Install {version}
+  overview: Overview
+  versions: Versions
+HomeJavaIssueDialog:
+  incompatibleJava: Incompatible Java
+  incompatibleJavaHint: Current Java might be incompatible with selected Minecraft!
+  missingJava: Missing Java
+  missingJavaHint: 'The Launcher cannot detect any java in your computer. You can:'
+  needDownloadHint: >-
+    Cannot find proper Java version in your computed. Recommend to download a
+    new one.
+  optionAutoDownload:
+    message: Launcher will download and install Java from Mojang's source for you.
+    name: Automatically Download
+  optionManualDownload:
+    message: Launcher will redirect you to the Orecale JRE download page.
+    name: Manually Download
+  optionSelectJava:
+    message: >-
+      Maybe the launcher doesn't found your Java. You can tell the launcher
+      where it is.
+    name: Select Java in your computer
+  optionSwitch:
+    disabled: There is no Java {version} found in database now!
+    message: Use existed Java {version} in you PC
+    name: Switch to {version}
+  recommendedVersionHint: The {version} recommend to use Java with range {range}。
+  selectMatchedHint: Found proper local Java versions. You can choose these local Javas.
+  selectSecondaryHint: >-
+    Found some local Java versions, but they might not suitable to the criteria.
+    You can still use them to launch, but this issue will still appear.
+HomeLaunchMultiInstanceDialog:
+  confirm: Yes, Launch
+  description: You are launching multiple instances of Minecraft. Are you sure?
+  title: Multiple Instances
+HomeSyncButton:
+  update: Sync Instance
+HomeSyncDialog:
+  pull: Pull
+  push: Push
+  title: Instance Sync
+HomeSyncDialogPull:
+  failText: Fail to fetch update. {url}
+  refresh: Refresh
+  update: Update
+HomeSyncDialogPush:
+  authError: >-
+    Bad user authentication. Please make sure you have privilege to upload files
+    of the server!
+  refresh: Refresh
+  unknownError: Unknown Server Error. Please retry.
+  upload: Upload Instance
+SettingMigrationDialog:
+  selectRootDirectory: Select Root Directory
 add: Add
 authProfileAddedNotification: Auth Profile {name} Added
 author: Author
@@ -16,13 +100,57 @@ confirm: Start
 copyClipboard:
   success: Copy to clipboard
 create: Create
+curseforge:
+  createdDate: Created Date
+  downloadOnly: Download
+  downloaded: Downloaded
+  file:
+    gameVersion: Game Version
+    releaseType: Release Type
+    sortByDate: Date
+    sortByName: File Name
+  fileReleaseType:
+    alpha: Alpha
+    beta: Beta
+    release: Release
+  install: Install
+  installTo: Install to {path}
+  installToStorage: Install to Storage
+  installed: Installed
+  lastUpdate: Last Update Date
+  mc-mods:
+    description: View and download mods packs from Curseforge
+    name: Mods
+  modpacks:
+    description: View and download modpacks from Curseforge
+    name: Modpacks
+  project:
+    description: Description
+    files: Files
+    images: Images
+  recentFiles: Recent Files
+  search: Search
+  texture-packs:
+    description: View and download resource packs from Curseforge
+    name: Resource Packs
+  totalDownloads: Total Downloads
+  worlds:
+    description: View and download worlds from Curseforge
+    name: Worlds
 dataMigration:
   apply: Apply Setting
+  directoryCriteriaHint: Please make sure your new directory location is an EMPTY directory!
+  migrationDestinationIsFile: Migration destination is a file! Please select an empty directory!
+  migrationDestinationIsNotEmptyDirectory: >-
+    Migration destination is not an empty directory! Please make sure you select
+    an empty directory!
+  placeholder: Please click here to select directory
   setRootCause: >-
     You will loose your data (Maps, Resource Packs, Mods) if you close the
     Launcher at this process!
   setRootDescription: This will change the root data folder of this launcher and minecraft.
   setRootTitle: Set to a new storage location
+  unknownError: Unknown Error! Please retry or contact the developer!
   waitReload: Migrating data. Please don't close the Launcher or you will lose your data.
 delete:
   name: Delete {name}
@@ -120,8 +248,22 @@ fabricVersion:
   stable: Stable
   unstable: Unstable
 feedback:
+  channel: Channels
+  description: I found a Bug or I want to make a suggestion
+  discord: Discord
+  discordDescription: Join Discord Channel
+  discordJoin: Join
+  github: Github Issue
+  githubDescription: Open an Github Issue to tell your thought
+  githubOpenIssue: Github
   kook: Kook
   kookDescription: Kook is an alter app for discord in China Mainland user
+  name: Feedback
+  qq: QQ Group
+  qqDescription: >-
+    Enter the feedback QQ group and direct talk with authors. Group Number:
+    {number}
+  qqEnterGroup: Join
 filter: Filter
 finish: Finish
 forgeConfig:
@@ -220,6 +362,12 @@ instanceAge:
   older: Older
   threeDay: In Three Days
   today: Today
+instanceSetting:
+  fastLaunch: Turbo Launch
+  fastLaunchHint: Ignore the user status and existed unfixed problems
+  hideLauncher: Hide the launcher after launch
+  showLog: Show Minecraft Log
+  showLogHint: This will popup a window to stream Minecraft log after game started
 instanceTemplate:
   curseforge: This is a Curseforge modpack
   ftb: This is a FTB modpack
@@ -262,11 +410,47 @@ launch:
   launch: Launch
 launchBlocked:
   ignore: Force Launch
+  launchGeneralException:
+    description: Some errors cause the launch failed.
+    title: Launch Failed
+  launchInvalidJavaPath:
+    description: >-
+      The selected java is missing or invalid. Please select a new one. <span
+      class="highlight"> {javaPath} </span>
+    title: Invalid Java Path
+  launchJavaNoPermission:
+    description: >-
+      The launcher don't have permission to execute the java <span
+      class="highlight"> {javaPath} </span>. Either change the permission of the
+      java file or raise the permission of launcher.
+    title: No permission to launch
+  launchNoProperJava:
+    description: >-
+      No proper java can be selected to launch the game. ({javaPath} is
+      invalid?)
+    title: No proper java found
+  launchNoVersionInstalled:
+    description: Cannot resolve version <span class="highlight">{version}</span> to launch.
+    title: No version selected
+  launchUserStatusRefreshFailed:
+    description: Cannot refresh current selected user status.
+    title: Fail to validate user status
+  unexpectedText: >-
+    This is unexpected. You can restart the launcher to mitigate the issue.
+    Please contact author if this issue happens again.
+  userAcquireMicrosoftTokenFailed: >-
+    Acquire Microsoft token failed. Please check retry or check your Microsoft
+    account.
+  userCheckGameOwnershipFailed: Failed to check Minecraft ownership. Please retry or check your network.
+  userExchangeXboxTokenFailed: >-
+    Failed to exchange xbox token from Microsoft token. Please retry or check
+    your network.
+  userLoginMinecraftByXboxFailed: >-
+    Failed to login Minecraft with xbox token. Please retry or check your
+    network.
 launchFailed:
   crash: Game Crashed!!
   description: There is no crash report. This this the error log and latest log.
-  general: General Launch Failed
-  generalText: If you encounter this several times, please contact author!
   latestLog: Latest Log
   title: Game Exited with Abnormal Code
 launchStatus:
@@ -519,11 +703,35 @@ modrinth:
 multiplayer:
   complete: Complete
   confirm: Confirm
+  copied: Copied!
   copy: Copy
+  copyLocalHint: >
+    "Please copy the local SDP text and send it to your object to have your
+    object enter this text in the join connection <span>A token can be only used
+    for <span style="color: red; font-weight: bold;">one peer</span>! You cannot
+    send the same token to multiple peer!</span> <br> <span style="color:
+    rgba(255,255,255,0.7); font-style: italic;">If you need to connect multiple
+    peers, you need to create <span style="font-weight: bold; color: rgba(245,
+    158, 11)">multiple</span> connections.</span>"
   createLocalToken: Create Local Token
   disconnectDescription: Are you sure you want to disconnect with user {user}({id})?
   disconnected: disconnected
   enterRemoteToken: Enter Remote Token
+  enterRemoteTokenHint: >-
+    Once your peer enter your token, you need to enter his token to the text
+    area below. Click confirm to connect.
+  gatheringIce: >
+    "Please wait for the ICE server to collect enough information about your
+    network. If you are impatient and there are enough information, you can give
+    the current SDP to the other party in advance and click Next Please send the
+    <span class="v-chip v-chip--label v-size--small" style="text-font: bold"
+    >Local Token</span> to your peer, you peer enter your token in <span
+    class="v-chip v-chip--label v-size--small" style="text-font: bold"> Join
+    Connection </span> section. <br> The ICE server might need some time to
+    collect your info to create <span class="v-chip v-chip--label v-size--small"
+    style="text-font: bold">Local token</span>.<br> You do not need to wait
+    until the ICE status complete. If the token below remain unchanged, you can
+    copy it and send to you peer."
   illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
   initiateConnection: Initiate Connection
   joinConnection: >-
@@ -535,7 +743,12 @@ multiplayer:
   next: Next
   placeholder: Connect with other user to play Minecraft on LAN!
   previous: Previous
+  receiveHint: >-
+    After the other party enters your token, your connection will create
+    automatically. Now you can close the dialog.
+  receiveRemoteTokenHint: Please enter the token from your peer here.
   remoteToken: Remote Token
+  sendTokenToRemote: Send Token to Remote
   share: Share Instance Config
   sharing: Sharing files...
   start: Start
@@ -561,6 +774,9 @@ peerIceGatheringState:
   gathering: Gathering Ice Server
 popular: Popularity
 previous: Previous
+proxy:
+  host: Host
+  port: Port
 quiltVersion:
   disable: Disable Quilt
   empty: Quilt does not support Minecraft {version}
@@ -596,6 +812,12 @@ resourcepack:
   showInCurseforge: Show {name} in curseforge
   unselected: Unselected Resource Packs
 save:
+  copy:
+    cancel: Cancel Copy
+    confirm: Start Copy
+    description: Please select destination profile(s) you want the save to go.
+    name: Copy Save
+    title: Copy Save to Other Profile
   copyFrom:
     cancel: Cancel
     confirm: Start Copy
@@ -659,7 +881,63 @@ serverStatus:
   refuse: §4Server refused!
   timeout: §4Connect server timeout!
 setting:
+  allowPrerelease: Download Prerelease
+  allowPrereleaseDescription: Prerelease might be instable
+  apiSets:
+    auto: Auto (Determine by network)
+    official: Official (Mojang)
+  appearance: Appearance
+  autoDownload: Auto Download
+  autoDownloadDescription: Auto Download Update if it's Avaiable
+  autoInstallOnAppQuit: Autoinstall
+  autoInstallOnAppQuitDescription: Autoinstall the Update on App Quit
+  backgroundImage: Background image
+  backgroundImageBlur: Image blur
+  backgroundImageBlurDescription: Drag to blur, easy
+  backgroundImageClear: clear
+  backgroundImageDescription: Select an image as background or clear
+  backgroundImageFit:
+    contain: Contain
+    cover: Cover
+    name: Image Fit
+  backgroundImageSelect: select
+  backgroundType: Background Type
+  backgroundTypeDescription: Show special effect on background (This may impact performance)
+  backgroundTypes:
+    halo: Halo
+    image: Image
+    none: None
+    particle: Particle
+    video: video
+  backgroundVideo: Background Video
+  backgroundVideoDescription: select or clear video
+  backgroundVideoSelect: select
+  backgroundVideoVolume: volume
+  backgroundVideoVolumeDescription: drag to adjust volume
+  blurAppBar: Blur app bar
+  blurMainBody: Blur Main Body
+  blurMainBodyDescription: Should the launcher right pane be blurred
+  blurSidebar: Blur sidebar
+  browseRoot: Browse
+  checkUpdate: Check Update
+  colorTheme:
+    appBarColor: App Bar
+    backgroundColor: Background Color
+    description: Change the colors in the theme
+    errorColor: Error Color
+    name: Theme Color
+    primaryColor: Primary Color
+    secondaryColor: Secondary Color
+    sideBarColor: Side Bar
+    warningColor: Warning Color
+  darkTheme: Theme
+  darkThemeDescription: Choose the dark or light theme
+  general: General
   githubRelease: Github Release
+  language: Language
+  languageDescription: The display language
+  latestVersion: Latest Version
+  location: Store Location
   maxSockets: Per Host
   maxSocketsDescription: >-
     Limit the maximum number of sockets to allow per host or for all hosts in
@@ -667,6 +945,29 @@ setting:
   maxSocketsTitle: Max HTTP sockets
   name: Global Setting | Global Settings
   officialWebsite: Official Website
+  particleMode:
+    bubble: Bubble
+    name: Particle Mode
+    push: Push
+    remove: Remove
+    repulse: Repulse
+  particleModeDescription: Select the particle click behavior
+  resetToDefault: Reset to Default
+  showParticle: Show Particles
+  showParticleDescription: Show particles in background (May impact performance)
+  showRoot: Show
+  theme:
+    dark: Dark Theme
+    light: Light Theme
+    system: Use System Theme
+  update: Update
+  useBmclAPI: Use BMCL API
+  useBmclAPIDescription: >-
+    Use BMCLAPI to download Minecraft when you are in China Mainland. (This
+    won't affect if you're not in China mainland)
+  useProxy: HTTP Proxy
+  useProxyDescription: The proxy server address for the http request
+  viewUpdate: View Update Detail
 setup:
   dataRoot:
     description: >-

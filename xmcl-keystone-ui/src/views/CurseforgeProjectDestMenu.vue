@@ -98,27 +98,3 @@ function onSelect(item: Item) {
   selected.value = item
 }
 </script>
-
-<i18n locale="en" lang="yaml">
-curseforge:
-  installTo: Install to {path}
-  installToStorage: Install to Storage
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-curseforge:
-  installTo: 安装到 {path}
-  installToStorage: 安装到库
-</i18n>
-
-<i18n locale="zh-TW" lang="yaml">
-curseforge:
-  installTo: 安裝到 {path}
-  installToStorage: 安裝到庫
-</i18n>
-
-<i18n locale="ru" lang="yaml">
-curseforge:
-  installTo: Установить в {path}
-  installToStorage: Установить в хранилище
-</i18n>

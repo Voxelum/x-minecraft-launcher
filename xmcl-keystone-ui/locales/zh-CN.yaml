@@ -1,3 +1,83 @@
+AppAddInstanceDialog:
+  downloadedNotification: 整合包 {name} 下载成功。是否现在创建整合包实例？
+AppLaunchBlockedDialog:
+  launchGeneralException: {}
+  launchInvalidJavaPath: {}
+  launchJavaNoPermission: {}
+  launchNoProperJava: {}
+  launchNoVersionInstalled: {}
+  launchUserStatusRefreshFailed: {}
+AppShareInstanceDialog:
+  baseInfo: 分享的基本配置
+  cancelShare: 取消分享
+  description: 分享后，你的联机伙伴将会可以通过你下载你分享的游戏资源
+  downloadDescription: 请选择你想从你的小伙伴那下载的文件。
+  downloadTitle: 从其他玩家那获得游戏资源
+  downloadToLocal: 下载到当前实例种
+  filesToDownload: 选择你想下载的文件
+  filesToShare: 选择分享的文件
+  instanceShare: '{user} 给你分享了他的游戏配置'
+  share: 分享
+  shareNotifyTitle: 分享配置
+  shareTitle: 分享启动配置给其他玩家
+BaseSetting:
+  title: 游戏设置
+BaseSettingGeneral:
+  title: 常规设置
+FeedTheBeast:
+  search: 在 FTB 中搜索
+FeedTheBeastCard: {}
+FeedTheBeastProject:
+  changelog: 更变日志
+  details: 具体信息
+  install: 安装 {version}
+  overview: 总览
+  versions: 版本
+HomeJavaIssueDialog:
+  incompatibleJava: 当前的 Java 版本可能不兼容
+  incompatibleJavaHint: 当前已选择 Java {javaVersion}。此 Java 可能无法运已选择的 Minecraft 版本
+  missingJava: 没有找到 Java
+  missingJavaHint: 启动器在你的电脑上没有找到任何Java。你可以尝试：
+  needDownloadHint: 在你的电脑上没找到合适的 Java 版本，推荐下载新的 Java。
+  optionAutoDownload:
+    message: 启动器将从 Mojang 源下载并安装 Java {version}
+    name: 自动下载
+  optionManualDownload:
+    message: 启动器将把你转到Oracle官方JRE下载网站
+    name: 手动下载
+  optionSelectJava:
+    message: 也许只是启动器没找到你电脑里的Java,你可以手工选择一下
+    name: 手工选择Java的位置
+  optionSwitch:
+    disabled: 在电脑中没有检测到 Java {version}，无法切换
+    message: 启动器将使用您现在安装的 {version}
+    name: 切换到已有的 Java {version}
+  recommendedVersionHint: 版本 {version} 推荐使用 Java 版本范围 {range}。
+  selectMatchedHint: 本地找到了符合的 Java 版本，你可以选择本地 Java。
+  selectSecondaryHint: 本地找到了几个 Java 版本，但都不是完全符合要求的 Java。你仍旧可以选择这些 Java 启动，但此提示还会再次出现。
+HomeLaunchMultiInstanceDialog:
+  confirm: 是的，多实例启动
+  description: 你正在尝试启动多个 Minecraft，你确定么？
+  title: 多实例启动
+HomeSyncButton:
+  update: 更新实例
+HomeSyncDialog:
+  pull: 拉取更新
+  push: 上传实例
+  title: 实例同步
+HomeSyncDialogPull:
+  failText: 获取更新失败. {url}
+  refresh: 刷新
+  update: 更新
+HomeSyncDialogPush:
+  authError: 用户验证失败，请确定你是更新服务器的管理员！
+  refresh: 刷新
+  unknownError: 未知错误，请重试
+  upload: 上传更新
+MultiplayerDialogInitiate:
+  multiplayer: {}
+SettingMigrationDialog:
+  selectRootDirectory: 选择新的根目录
 add: 添加
 authProfileAddedNotification: 已添加第三方验证 {name}
 author: 作者
@@ -16,11 +96,104 @@ confirm: 开始
 copyClipboard:
   success: 复制到剪贴板
 create: 创建
+curseforge:
+  createdDate: 创建日期
+  downloadOnly: 只下載
+  downloaded: 已下載
+  file:
+    gameVersion: 游戏版本
+    releaseType: 类型
+    sortByDate: 日期
+    sortByName: 文件名
+  fileReleaseType:
+    release: 稳定版
+  install: 安裝
+  installTo: 安装到 {path}
+  installToStorage: 安装到库
+  installed: 已安裝
+  lastUpdate: 上次更新日期
+  mc-mods:
+    description: 从 Curseforge 上安装 Mods
+    name: Mods
+  modpacks:
+    description: 从 Curseforge 上安装整合包
+    name: 整合包
+  name: 浏览 Curseforge
+  project:
+    description: 简介
+    files: 文件
+    images: 图片
+  recentFiles: 近期文件
+  search: 搜索
+  texture-packs:
+    description: 从 Curseforge 上安装资源包
+    name: 资源包
+  totalDownloads: 总下载量
+  worlds:
+    description: 从 Curseforge 上安装世界存档
+    name: 世界存档
+curseforgeCategory:
+  API and Library: API 和库
+  Addons: 插件
+  Adventure: 冒险
+  Adventure and RPG: 冒险和 RPG
+  Animated: 动画
+  Armor, Tools, and Weapons: 护甲，工具和武器
+  Combat / PvP: 竞技/PVP
+  Cosmetic: 外观/装饰
+  Creation: 创造模式
+  Data Packs: 数据包
+  Education: 教育
+  Exploration: 探索
+  Extra Large: 超大型
+  FTB Official Pack: FTB 官方包
+  Fabric: Fabric
+  FancyMenu: FancyMenu
+  Font Packs: 字体
+  Food: 食物
+  Game Map: 游戏地图
+  Hardcore: 硬核
+  MCreator: MCreator
+  Magic: 魔法
+  Map Based: 基于地图
+  Map and Information: 地图和信息
+  Medieval: 中世纪
+  Mini Game: 小游戏
+  Miscellaneous: 杂项
+  Mod Support: Mod 集成
+  Modded World: Mod 集成
+  Modern: 现代
+  Multiplayer: 多人联机
+  Parkour: 跑酷
+  Photo Realistic: 真实风格
+  Puzzle: 解密
+  QoL: QoL
+  Quests: 任务
+  Redstone: 红石
+  Sci-Fi: 科幻
+  Server Utility: 服务端工具
+  Skyblock: 空岛
+  Small / Light: 轻量级
+  Steampunk: 蒸汽朋克
+  Storage: 存储
+  Survival: 生存
+  Tech: 科技
+  Technology: 科技
+  Traditional: 传统
+  Twitch Integration: Twitch 集成
+  Utility & QoL: 工具和 QoL
+  Vanilla+: 原版+
+  World Gen: 世界生成
 dataMigration:
   apply: 开始迁移
+  directoryCriteriaHint: 请确保你选择的新的文件夹是一个<span class="font-bold text-lg mx-1">空</span>文件夹。
+  migrationDestinationIsFile: 迁移目标地址是个文件而不是文件夹！请重新选择一个空的文件夹！
+  migrationDestinationIsNotEmptyDirectory: 迁移目标不是一个空的文件夹！请确保你选择了一个空的文件夹！
+  placeholder: 点击来选择新的根目录
   setRootCause: 请确保启动器在此过程中不被中断，不然您的数据可能丢失
   setRootDescription: 这将改变启动器的存储根目录。
   setRootTitle: 迁移启动器到新的位置
+  unknownError: 未知错误，请联系作者或重试。
   waitReload: 迁移数据中。请勿在此时关闭启动器，否则你将可能失去一部分数据。
 delete:
   name: 删除 {name}
@@ -107,8 +280,20 @@ fabricVersion:
   stable: 稳定版
   unstable: 预览版
 feedback:
+  channel: 联系渠道
+  description: 我找到了一个BUG/我想反馈
+  discord: Discord
+  discordDescription: 加入 Discord 讨论组
+  discordJoin: 加入
+  github: Github Issue
+  githubDescription: 通过 Github Issue 来反应你的想法
+  githubOpenIssue: Github
   kook: Kook
   kookDescription: 加入 Kook (国外请选 Discord)
+  name: 反馈
+  qq: QQ 群
+  qqDescription: 加入反馈群直接和作者聊聊吧，群号 {number}
+  qqEnterGroup: 加群
 filter: 检索
 finish: 完成
 forgeConfig:
@@ -204,6 +389,12 @@ instanceAge:
   older: 三天前
   threeDay: 三天内
   today: 今天
+instanceSetting:
+  fastLaunch: 快速启动
+  fastLaunchHint: 启动时跳过刷新用户和没有修复的问题
+  hideLauncher: Minecraft 启动后隐藏启动器
+  showLog: Minecraft 启动后显示日志
+  showLogHint: 游戏开启后将弹出一个显示 Minecraft 日志的窗口
 instanceTemplate:
   curseforge: 这是一个 Curseforge 整合包
   ftb: 这是一个 FTB 的整合包配置
@@ -245,18 +436,65 @@ launch:
   launch: 启动
 launchBlocked:
   ignore: 强行启动
+  launchGeneralException:
+    description: 一些未知错误导致启动失败。
+    title: 无法启动
+  launchInvalidJavaPath:
+    description: >-
+      当前 Java 路径可能无效，请检查 Java 可执行文件是否存在 <span class="highlight"> {javaPath}
+      </span>
+    title: Java 路径无效
+  launchJavaNoPermission:
+    description: >-
+      没有权限执行 <span class="highlight"> {javaPath} </span>，请尝试给启动器更高权限，给 Java
+      文件增加可执行权限，或换一个 Java。
+    title: 无权限使用 Java
+  launchNoProperJava:
+    description: 找不到合适的 Java 来启动游戏。({javaPath} 可能无效？)
+    title: 没有合适的 Java
+  launchNoVersionInstalled:
+    description: 找不到 Minecraft 启动。当前版本是 <span class="highlight">{version}</span>。
+    title: 无法找到安装的 Minecraft
+  launchUserStatusRefreshFailed:
+    description: 无法验证当前账户信息
+    title: 验证账户失败
+  unexpectedText: 这是意料之外的错误，你可以重启启动器来尝试缓解问题，请联系作者来修复。
+  userAcquireMicrosoftTokenFailed: 微软令牌获取失败。请重试或者检查你的微软账号。
+  userCheckGameOwnershipFailed: 检测 Minecraft 所有权失败。请重试或检查你的网络。
+  userExchangeXboxTokenFailed: 通过微软令牌交换 Xbox 令牌失败。请重试或检查你的网络。
+  userLoginMinecraftByXboxFailed: 使用 Xbox 令牌登录 Minecraft 失败。请重试或者检查你的网路。
 launchFailed:
   crash: 游戏崩溃了！
   description: 没有找到崩溃报告，这里是游戏输出和最新的日志文件
-  general: 启动失败
-  generalText: 如果你反复出现同样的问题，请联系作者!
   latestLog: 最新日志文件
   title: 游戏未正常退出
+launchGeneralException:
+  description: 一些未知错误导致启动失败。
+  title: 无法启动
+launchInvalidJavaPath:
+  description: >-
+    当前 Java 路径可能无效，请检查 Java 可执行文件是否存在 <span class="highlight"> {javaPath}
+    </span>
+  title: Java 路径无效
+launchJavaNoPermission:
+  description: >-
+    没有权限执行 <span class="highlight"> {javaPath} </span>，请尝试给启动器更高权限，给 Java
+    文件增加可执行权限，或换一个 Java。
+  title: 无权限使用 Java
+launchNoProperJava:
+  description: 找不到合适的 Java 来启动游戏。({javaPath} 可能无效？)
+  title: 没有合适的 Java
+launchNoVersionInstalled:
+  description: 找不到 Minecraft 启动。当前版本是 <span class="highlight">{version}</span>。
+  title: 无法找到安装的 Minecraft
 launchStatus:
   checkingProblems: 检测问题中
   injectingAuthLib: 配置第三方验证中
   launching: 启动中...
   launchingSlow: 还在启动…Minecraft图形界面启动的会比较慢呢~
+launchUserStatusRefreshFailed:
+  description: 无法验证当前账户信息
+  title: 验证账户失败
 launcherUpdate:
   alreadyLatest: 已经是最新
   installAndQuit: 重启并安装更新
@@ -486,11 +724,27 @@ modrinth:
 multiplayer:
   complete: 完成
   confirm: 确定
+  copied: 已复制!
   copy: 复制
+  copyLocalHint: >
+    <span>一段令牌只能用<span style="color: red;
+    font-weight:bold;">一次</span>！你不能将一个令牌发送给多个小伙伴！</span> <br> <span
+    style="color: rgba(255,255,255,0.7); font-style:
+    italic;">如果有多个小伙伴要加入你需要<span style="font-weight: bold; color: rgba(245, 158,
+    11)">多次</span>建立连接。</span>
   createLocalToken: 创建本地令牌
   disconnectDescription: 你确定你要断开和 {user}({id}) 的连接么
   disconnected: 断开连接
   enterRemoteToken: 输入对方的令牌
+  enterRemoteTokenHint: 当你的联机伙伴输入你的令牌后，你需要将他的令牌输入到下面的文字框中，并点击确定开始连接。
+  gatheringIce: >
+    请将<span class="v-chip v-chip--label v-size--small" style="text-font:
+    bold">本地令牌</span>发送给你的联机伙伴，你的联机伙伴在 <span class="v-chip v-chip--label
+    v-size--small" style="text-font: bold"> 加入连接 </span> 中输入这段文字。 <br> 期间 ICE
+    服务器可能需要时间收集足够信息来创建<span class="v-chip v-chip--label v-size--small"
+    style="text-font: bold">本地令牌</span>。 <br> <span style="color:
+    rgba(255,255,255,0.7);"> 你不需要等 ICE
+    服务器完全收集完毕，当下面的令牌已经有内容并且不怎么变化后，你可以提前将令牌复制给对方。 </span>
   illegalTokenDescription: 非法的令牌，请确认对方给你的令牌是完整、正确的。
   initiateConnection: 发起连接
   joinConnection: 如果你的伙伴已经创建了连接，你需要选择加入链接
@@ -500,7 +754,10 @@ multiplayer:
   next: 下一步
   placeholder: 和其他玩家建立连接，跨局域网联机 Minecraft！
   previous: 上一步
+  receiveHint: 在对方输入你的令牌后，你们之间的连接会自动创建。现在你已经可以点击完成了。
+  receiveRemoteTokenHint: 请将联机伙伴的令牌粘贴在此处，并点击下一步
   remoteToken: 对方的令牌
+  sendTokenToRemote: 将本地令牌给你的联机伙伴
   share: 分享启动配置
   sharing: 正在共享游戏配置...
   start: 开始
@@ -513,6 +770,19 @@ ok: 好的
 optifineVersion:
   disable: 不启用 Optifine
   empty: Optifine 不支持 Minecraft {version}
+optionAutoDownload:
+  message: 启动器将从 Mojang 源下载并安装 Java {version}
+  name: 自动下载
+optionManualDownload:
+  message: 启动器将把你转到Oracle官方JRE下载网站
+  name: 手动下载
+optionSelectJava:
+  message: 也许只是启动器没找到你电脑里的Java,你可以手工选择一下
+  name: 手工选择Java的位置
+optionSwitch:
+  disabled: 在电脑中没有检测到 Java {version}，无法切换
+  message: 启动器将使用您现在安装的 {version}
+  name: 切换到已有的 Java {version}
 optional: 可选的
 peerConnectionState:
   closed: 已关闭
@@ -525,6 +795,9 @@ peerIceGatheringState:
   gathering: 收集本地信息中
 popular: 热度
 previous: 上一步
+proxy:
+  host: 服务器地址
+  port: 端口号
 quiltVersion:
   disable: 不启用 Quilt
   empty: Quilt 不支持 Minecraft {version}
@@ -554,6 +827,12 @@ resourcepack:
   showInCurseforge: 在 Curseforge 中显示 {name}
   unselected: 未选资源包
 save:
+  copy:
+    cancel: 取消复制
+    confirm: 开始复制
+    description: 请勾选你想让存档复制到的启动配置（目标启动配置）
+    name: 复制存档
+    title: 复制存档到其他启动配置
   copyFrom:
     cancel: 取消
     confirm: 开始导入
@@ -609,12 +888,88 @@ serverStatus:
   refuse: 服务器断开了连接!
   timeout: 服务器响应超时!
 setting:
+  allowPrerelease: 是否下载抢先版
+  allowPrereleaseDescription: 抢先版可能不是那么稳定
+  apiSets:
+    auto: 自动 (根据网络决定)
+    official: 官方 (Mojang)
+  appearance: 外观
+  autoDownload: 自动下载
+  autoDownloadDescription: 自动下载最新的版本
+  autoInstallOnAppQuit: 自动安装
+  autoInstallOnAppQuitDescription: 每次 App 退出后自动安装更新
+  backgroundImage: 背景图片
+  backgroundImageBlur: 背景模糊
+  backgroundImageBlurDescription: 拖动以模糊背景
+  backgroundImageClear: 清空
+  backgroundImageDescription: 选择一张背景图片或清空当前图片
+  backgroundImageFit:
+    contain: 包含
+    cover: 覆盖
+    name: 放置方式
+  backgroundImageSelect: 选择
+  backgroundType: 背景效果
+  backgroundTypeDescription: 背景是否显示特效（如果觉得卡就可以关掉）
+  backgroundTypes:
+    halo: 光晕
+    image: 图片
+    none: 无
+    particle: 粒子
+    video: 视频
+  backgroundVideo: 背景视频
+  backgroundVideoDescription: 选择一个背景视频或清空当前
+  backgroundVideoSelect: 选择
+  backgroundVideoVolume: 视频音量
+  backgroundVideoVolumeDescription: 拖动以调整音量
+  blurAppBar: 顶端栏模糊
+  blurMainBody: 模糊窗口主体
+  blurMainBodyDescription: 是否将启动器窗口右侧主体模糊
+  blurSidebar: 侧边栏模糊
+  browseRoot: 更改
+  checkUpdate: 检查更新
+  colorTheme:
+    appBarColor: 顶端栏
+    backgroundColor: 背景颜色
+    description: 改变主题中的配色
+    errorColor: 错误颜色
+    name: 主题颜色
+    primaryColor: 主要颜色
+    secondaryColor: 次要颜色
+    sideBarColor: 侧边栏
+    warningColor: 警告颜色
+  darkTheme: 主题
+  darkThemeDescription: 选择深色或浅色主题
+  general: 基本设置
   githubRelease: Github
+  language: 语言
+  languageDescription: 当前显示的语言
+  latestVersion: 最新版本
+  location: 数据存储位置
   maxSockets: (每个网站)最大连接数
   maxSocketsDescription: 控制最大的并发 HTTP 链接数量。0 代表不限制数量。
   maxSocketsTitle: 最大 HTTP 连接数量
   name: 设置
   officialWebsite: 官网地址
+  particleMode:
+    bubble: 气泡
+    name: 粒子特效
+    push: 增加
+    remove: 移除
+    repulse: 击退
+  particleModeDescription: 选择当你点击粒子时的特效
+  resetToDefault: 重置到默认配色
+  showParticle: 显示粒子
+  showParticleDescription: 是否在背景显示粒子效果 (这会影响性能，觉得卡可以关了)
+  showRoot: 浏览
+  theme:
+    dark: 暗色主题
+    light: 亮色主题
+    system: 跟随系统
+  update: 升级设置
+  useBmclAPI: 使用 BMCL API
+  useBmclAPIDescription: 当你在大陆时，优先使用 BMCLAPI 来下载 Minecraft
+  useProxy: HTTP 代理设置
+  useProxyDescription: 使用代理服务器可以某些服务的访问
 setup:
   dataRoot:
     description: 数据存储目录不是常规的 .minecraft 目录。因为 XMCL 的数据目录格式特殊，不建议将常规 .minecraft 目录设置为数据目录。

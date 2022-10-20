@@ -44,10 +44,10 @@ export const createRouter = () => {
         path: '/mod-setting',
         component: Mod,
       },
-      {
-        path: '/game-setting',
-        component: GameSetting,
-      },
+      // {
+      //   path: '/game-setting',
+      //   component: GameSetting,
+      // },
       {
         path: '/resource-pack-setting',
         component: ResourcePack,

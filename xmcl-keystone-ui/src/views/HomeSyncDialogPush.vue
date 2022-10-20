@@ -29,7 +29,7 @@
         :loading="gettingManifest"
         @click="refresh"
       >
-        {{ t('refresh') }}
+        {{ t('HomeSyncDialogPush.refresh') }}
       </v-btn>
       <v-btn
         text
@@ -37,7 +37,7 @@
         color="primary"
         @click="upload"
       >
-        {{ t('upload') }}
+        {{ t('HomeSyncDialogPush.upload') }}
       </v-btn>
     </v-card-actions>
   </div>
@@ -93,11 +93,11 @@ async function upload() {
     } catch (e) {
       if (isException(InstanceIOException, e)) {
         if (e.exception.type === 'instanceSetManifestFailed' && e.exception.statusCode >= 400 && e.exception.statusCode < 500) {
-          errorText.value = t('authError')
+          errorText.value = t('HomeSyncDialogPush.authError')
           return
         }
       }
-      errorText.value = t('unknownError')
+      errorText.value = t('HomeSyncDialogPush.unknownError')
     }
   }
 }
@@ -109,17 +109,3 @@ watch(() => props.shown, (opened) => {
   }
 })
 </script>
-
-<i18n locale="en" lang="yaml">
-unknownError: Unknown Server Error. Please retry.
-authError: Bad user authentication. Please make sure you have privilege to upload files of the server!
-refresh: Refresh
-upload: Upload Instance
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-unknownError: 未知错误，请重试
-authError: 用户验证失败，请确定你是更新服务器的管理员！
-refresh: 刷新
-upload: 上传更新
-</i18n>

@@ -13,6 +13,38 @@ checkUpdate: 檢查更新
 copyClipboard:
   success: 複製到剪貼板
 create: 創建
+curseforge:
+  createdDate: 創建日期
+  file:
+    gameVersion: 遊戲版本
+    releaseType: 類型
+    sortByDate: 日期
+    sortByName: 文件名
+  fileReleaseType:
+    release: 穩定版
+  installTo: 安裝到 {path}
+  installToStorage: 安裝到庫
+  lastUpdate: 上次更新日期
+  mc-mods:
+    description: 從 Curseforge 上安裝 Mods
+    name: Mods
+  modpacks:
+    description: 從 Curseforge 上安裝整合包
+    name: 整合包
+  name: 瀏覽 Curseforge
+  project:
+    description: 簡介
+    files: 文件
+    images: 圖片
+  recentFiles: 近期文件
+  search: 搜索
+  texture-packs:
+    description: 從 Curseforge 上安裝資源包
+    name: 資源包
+  totalDownloads: 總下載量
+  worlds:
+    description: 從 Curseforge 上安裝世界存檔
+    name: 世界存檔
 dataMigration:
   apply: 開始遷移
   setRootCause: 請確保啓動器在此過程中不被中斷，不然您的數據可能丟失
@@ -199,8 +231,6 @@ launchBlocked:
 launchFailed:
   crash: 遊戲崩潰了！
   description: 沒有找到崩潰報告，這裏是遊戲輸出和最新的日誌文件
-  general: 啓動失敗
-  generalText: 如果你反覆出現同樣的問題，請聯繫作者!
   latestLog: 最新日誌文件
   title: 遊戲未正常退出
 launchStatus:
@@ -388,6 +418,9 @@ peerConnectionState:
 peerIceGatheringState:
   gathering: 收集本地信息中
 popular: 熱度
+proxy:
+  host: 服務器地址
+  port: 端口號
 refreshResource: 刷新資源
 remove: 移除
 resourcepack:
@@ -462,9 +495,80 @@ serverStatus:
   refuse: 服務器斷開了連接!
   timeout: 服務器響應超時!
 setting:
+  allowPrerelease: 是否下載搶先版
+  allowPrereleaseDescription: 搶先版可能不是那麼穩定
+  alreadyLatest: 已經是最新
+  appearance: 外觀
+  autoDownload: 自動下載
+  autoDownloadDescription: 自動下載最新的版本
+  autoInstallOnAppQuit: 自動安裝
+  autoInstallOnAppQuitDescription: 每次 App 退出後自動安裝更新
+  backgroundImage: 背景圖片
+  backgroundImageBlur: 背景模糊
+  backgroundImageBlurDescription: 拖動以模糊背景
+  backgroundImageClear: 清空
+  backgroundImageDescription: 選擇一張背景圖片或清空當前圖片
+  backgroundImageFit:
+    contain: 包含
+    cover: 覆蓋
+    name: 放置方式
+  backgroundImageSelect: 選擇
+  backgroundType: 背景效果
+  backgroundTypeDescription: 背景是否顯示特效（如果覺得卡就可以關掉）
+  backgroundTypes:
+    halo: 光暈
+    image: 圖片
+    none: 無
+    particle: 粒子
+    video: 視頻
+  backgroundVideo: 背景視頻
+  backgroundVideoDescription: 選擇一個背景視頻或清空當前
+  backgroundVideoSelect: 選擇
+  backgroundVideoVolume: 視頻音量
+  backgroundVideoVolumeDescription: 拖動以調整音量
+  blurMainBody: 模糊窗口主體
+  blurMainBodyDescription: 是否將啓動器窗口右側主體模糊
+  browseRoot: 更改
+  checkUpdate: 檢查更新
+  colorTheme:
+    appBarColor: 頂端欄
+    backgroundColor: 背景顏色
+    description: 改變主題中的配色
+    errorColor: 錯誤顏色
+    name: 主題顏色
+    primaryColor: 主要顏色
+    secondaryColor: 次要顏色
+    sideBarColor: 側邊欄
+    warningColor: 警告顏色
+  darkTheme: 主題
+  darkThemeDescription: 選擇深色或淺色主題
+  general: 基本設置
   githubRelease: Github
+  language: 語言
+  languageDescription: 當前顯示的語言
+  latestVersion: 最新版本
+  location: 數據存儲位置
   name: 設置
   officialWebsite: 官網地址
+  particleMode:
+    bubble: 氣泡
+    name: 粒子特效
+    push: 增加
+    remove: 移除
+    repulse: 擊退
+  particleModeDescription: 選擇當你點擊粒子時的特效
+  showParticle: 顯示粒子
+  showParticleDescription: 是否在背景顯示粒子效果 (這會影響性能，覺得卡可以關了)
+  showRoot: 瀏覽
+  theme:
+    dark: 暗色主題
+    light: 亮色主題
+    system: 跟隨系統
+  update: 升級設置
+  useBmclAPI: 使用 BMCL API
+  useBmclAPIDescription: 當你在大陸時，優先使用 BMCLAPI 來下載 Minecraft
+  useProxy: HTTP 代理設置
+  useProxyDescription: 使用代理服務器可以某些服務的訪問
 shaderPack:
   deletion: 刪除光影包
   deletionHint: 這將把光影包文件 {path} 永久刪除。

@@ -23,7 +23,7 @@
           outlined
           :value="root"
           readonly
-          :placeholder="t('placeholder')"
+          :placeholder="t('dataMigration.placeholder')"
           :error="!!error"
           :error-messages="errorText"
           append-icon="folder"
@@ -32,7 +32,7 @@
         />
         <p
           class="text-orange-400"
-          v-html="t('directoryCriteriaHint')"
+          v-html="t('dataMigration.directoryCriteriaHint')"
         />
 
         <p v-if="migrating">
@@ -93,7 +93,7 @@ const root = ref('')
 
 async function pickupFile() {
   const { filePaths } = await showOpenDialog({
-    title: t('selectRootDirectory'),
+    title: t('SettingMigrationDialog.selectRootDirectory'),
     defaultPath: root.value,
     properties: ['openDirectory', 'createDirectory'],
   })
@@ -112,35 +112,17 @@ const { refresh: apply, refreshing: migrating } = useRefreshable(async () => {
   } catch (e) {
     if (isException(BaseServiceException, e)) {
       if (e.exception.type === 'migrationDestinationIsFile') {
-        errorText.value = t('migrationDestinationIsFile')
+        errorText.value = t('dataMigration.migrationDestinationIsFile')
       } else if (e.exception.type === 'migrationDestinationIsNotEmptyDirectory') {
-        errorText.value = t('migrationDestinationIsNotEmptyDirectory')
+        errorText.value = t('dataMigration.migrationDestinationIsNotEmptyDirectory')
       } else {
-        errorText.value = t('unknownError')
+        errorText.value = t('dataMigration.unknownError')
       }
     } else {
-      errorText.value = t('unknownError')
+      errorText.value = t('dataMigration.unknownError')
     }
     error.value = e as any
   }
 })
 
 </script>
-
-<i18n locale="en" lang="yaml">
-directoryCriteriaHint: Please make sure your new directory location is an EMPTY directory!
-selectRootDirectory: Select Root Directory
-placeholder: Please click here to select directory
-migrationDestinationIsFile: Migration destination is a file! Please select an empty directory!
-migrationDestinationIsNotEmptyDirectory: Migration destination is not an empty directory! Please make sure you select an empty directory!
-unknownError: Unknown Error! Please retry or contact the developer!
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-directoryCriteriaHint: 请确保你选择的新的文件夹是一个<span class="font-bold text-lg mx-1">空</span>文件夹。
-selectRootDirectory: 选择新的根目录
-placeholder: 点击来选择新的根目录
-migrationDestinationIsFile: 迁移目标地址是个文件而不是文件夹！请重新选择一个空的文件夹！
-migrationDestinationIsNotEmptyDirectory: 迁移目标不是一个空的文件夹！请确保你选择了一个空的文件夹！
-unknownError: 未知错误，请联系作者或重试。
-</i18n>

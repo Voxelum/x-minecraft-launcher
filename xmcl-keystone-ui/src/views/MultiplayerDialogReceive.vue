@@ -178,37 +178,3 @@ const { refresh: answer } = useRefreshable(async () => {
 
 </script>
 
-<i18n locale="en" lang="yaml">
-multiplayer:
-  sendTokenToRemote: Send Token to Remote
-  receiveHint: >-
-    After the other party enters your token, your connection will create
-    automatically. Now you can close the dialog.
-  receiveRemoteTokenHint: Please enter the token from your peer here.
-  gatheringIce: >
-    "Please wait for the ICE server to collect enough information about your
-    network. If you are impatient and there are enough information, you can give
-    the current SDP to the other party in advance and click Next Please send the
-    <span class="v-chip v-chip--label v-size--small" style="text-font: bold"
-    >Local Token</span> to your peer, you peer enter your token in <span
-    class="v-chip v-chip--label v-size--small" style="text-font: bold"> Join
-    Connection </span> section. <br> The ICE server might need some time to
-    collect your info to create <span class="v-chip v-chip--label v-size--small"
-    style="text-font: bold">Local token</span>.<br> You do not need to wait
-    until the ICE status complete. If the token below remain unchanged, you can
-    copy it and send to you peer."
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-multiplayer:
-  sendTokenToRemote: 将本地令牌给你的联机伙伴
-  receiveHint: 在对方输入你的令牌后，你们之间的连接会自动创建。现在你已经可以点击完成了。
-  receiveRemoteTokenHint: 请将联机伙伴的令牌粘贴在此处，并点击下一步
-  gatheringIce: >
-    请将<span class="v-chip v-chip--label v-size--small" style="text-font: bold">本地令牌</span>发送给你的联机伙伴，你的联机伙伴在
-    <span class="v-chip v-chip--label v-size--small" style="text-font: bold"> 加入连接 </span> 中输入这段文字。
-    <br>
-    期间 ICE 服务器可能需要时间收集足够信息来创建<span class="v-chip v-chip--label v-size--small" style="text-font: bold">本地令牌</span>。
-    <br>
-    <span style="color: rgba(255,255,255,0.7);"> 你不需要等 ICE 服务器完全收集完毕，当下面的令牌已经有内容并且不怎么变化后，你可以提前将令牌复制给对方。 </span>
-</i18n>

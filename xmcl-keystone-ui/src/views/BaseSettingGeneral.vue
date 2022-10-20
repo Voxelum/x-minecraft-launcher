@@ -247,10 +247,10 @@
       </v-list-item-action>
       <v-list-item-content>
         <v-list-item-title>
-          {{ t("fastLaunch") }}
+          {{ t("instanceSetting.fastLaunch") }}
         </v-list-item-title>
         <v-list-item-subtitle>
-          {{ t("fastLaunchHint") }}
+          {{ t("instanceSetting.fastLaunchHint") }}
         </v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
@@ -268,12 +268,9 @@
       <v-list-item-content>
         <v-list-item-title>
           {{
-            t("hideLauncher")
+            t("instanceSetting.hideLauncher")
           }}
         </v-list-item-title>
-        <!-- <v-list-item-subtitle>
-          {{ t("hideLauncher") }}
-        </v-list-item-subtitle> -->
       </v-list-item-content>
     </v-list-item>
     <v-list-item
@@ -287,9 +284,9 @@
         />
       </v-list-item-action>
       <v-list-item-content>
-        <v-list-item-title>{{ t("showLog") }}</v-list-item-title>
+        <v-list-item-title>{{ t("instanceSetting.showLog") }}</v-list-item-title>
         <v-list-item-subtitle>
-          {{ t("showLogHint") }}
+          {{ t("instanceSetting.showLogHint") }}
         </v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
@@ -372,40 +369,3 @@ const { t } = useI18n()
   margin: 0
 }
 </style>
-
-<i18n locale="en" lang="yaml">
-title: General
-showLog: Show Minecraft Log
-showLogHint: This will popup a window to stream Minecraft log after game started
-hideLauncher: Hide the launcher after launch
-fastLaunch: Turbo Launch
-fastLaunchHint: Ignore the user status and existed unfixed problems
-shaderPackHint: Enable or disable shader packs to this launch profile
-resourcepackHint: Enable or disable resource packs to this launch profile
-modHint: Enable or disable the Mods of this launch profile
-saveHint: View and modify the saves of this launch profile
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-title: 常规设置
-showLog: Minecraft 启动后显示日志
-showLogHint: 游戏开启后将弹出一个显示 Minecraft 日志的窗口
-hideLauncher: Minecraft 启动后隐藏启动器
-fastLaunch: 快速启动
-fastLaunchHint: 启动时跳过刷新用户和没有修复的问题
-shaderPackHint: 调整此配置的光影包
-resourcepackHint: 调整本启动配置使用的资源包
-modHint: 调整此启动配置所使用的的 Mod
-saveHint: 浏览或修改此配置的存档
-</i18n>
-
-<i18n locale="ru" lang="yaml">
-title: Общие
-showLog: Показать журнал Minecraft
-showLogHint: После запуска игры появится всплывающее окно для стриминга лога Minecraft.
-hideLauncher: Скрыть лаунчер после запуска
-shaderPackHint: Включить или отключить пакеты шейдеров для данного профиля запуска
-resourcepackHint: Включение или отключение текстур для этого профиля запуска
-modHint: Включение или отключение модов этого профиля запуска
-saveHint: Просмотр и изменение сохранений этого профиля запуска
-</i18n>

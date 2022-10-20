@@ -91,30 +91,3 @@ const { t } = useI18n()
 
 </script>
 
-<i18n locale="en" lang="yaml">
-curseforge:
-  createdDate: Created Date
-  totalDownloads: Total Downloads
-  lastUpdate: Last Update Date
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-curseforge:
-  createdDate: 创建日期
-  totalDownloads: 总下载量
-  lastUpdate: 上次更新日期
-</i18n>
-
-<i18n locale="zh-TW" lang="yaml">
-curseforge:
-  createdDate: 創建日期
-  totalDownloads: 總下載量
-  lastUpdate: 上次更新日期
-</i18n>
-
-<i18n locale="ru" lang="yaml">
-curseforge:
-  createdDate: Создан
-  totalDownloads: Скачиваний
-  lastUpdate: Обновлён
-</i18n>

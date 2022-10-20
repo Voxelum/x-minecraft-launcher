@@ -43,7 +43,7 @@
             hide-details
           >
             <template #label>
-              {{ t('versions') }}
+              {{ t('FeedTheBeastProject.versions') }}
             </template>
             <template #item="{ item, on }">
               <v-list-item
@@ -70,7 +70,7 @@
             <v-icon left>
               download
             </v-icon>
-            {{ t('install', { version: selectedVersionInstance ? selectedVersionInstance.name : '' }) }}
+            {{ t('FeedTheBeastProject.install', { version: selectedVersionInstance ? selectedVersionInstance.name : '' }) }}
           </v-btn>
         </span>
       </div>
@@ -82,13 +82,13 @@
         class="rounded-lg flex-grow-0 flex-1"
       >
         <v-tab :key="0">
-          {{ t('overview') }}
+          {{ t('FeedTheBeastProject.overview') }}
         </v-tab>
         <v-tab :key="1">
-          {{ t('details') }}
+          {{ t('FeedTheBeastProject.details') }}
         </v-tab>
         <v-tab :key="2">
-          {{ t('changelog') }}
+          {{ t('FeedTheBeastProject.changelog') }}
         </v-tab>
       </v-tabs>
       <v-tabs-items v-model="tab">
@@ -170,19 +170,3 @@ const { refresh: install, refreshing: installing } = useRefreshable(async () => 
 
 <style>
 </style>
-
-<i18n locale="en" lang="yaml">
-overview: Overview
-details: Details
-changelog: Changelog
-versions: Versions
-install: Install {version}
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-overview: 总览
-details: 具体信息
-changelog: 更变日志
-versions: 版本
-install: 安装 {version}
-</i18n>

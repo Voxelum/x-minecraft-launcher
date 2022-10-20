@@ -94,11 +94,3 @@ const author = computed(() => manifest.value?.authors[0])
 const date = computed(() => manifest.value?.updated)
 
 </script>
-
-<i18n locale="en" lang="yaml">
-search: Search
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-search: 搜索
-</i18n>

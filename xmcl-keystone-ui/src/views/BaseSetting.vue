@@ -13,7 +13,7 @@
         tag="h2"
         class="headline"
       >
-        {{ t("title") }}
+        {{ t("BaseSetting.title") }}
       </v-flex>
       <BaseSettingGeneral />
       <BaseSettingSync />
@@ -78,13 +78,3 @@ useAutoSaveLoad(save, load)
   max-width: 40%
 } */
 </style>
-
-<i18n locale="en" lang="yaml">
-title: Settings
-</i18n>
-<i18n locale="zh-CN" lang="yaml">
-title: 游戏设置
-</i18n>
-<i18n locale="ru" lang="yaml">
-title: Настройки
-</i18n>

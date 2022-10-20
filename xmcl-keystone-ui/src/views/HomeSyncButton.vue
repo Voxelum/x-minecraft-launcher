@@ -38,10 +38,3 @@ const { t } = useI18n()
 
 </script>
 
-<i18n locale="en" lang="yaml">
-update: Sync Instance
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-update: 更新实例
-</i18n>

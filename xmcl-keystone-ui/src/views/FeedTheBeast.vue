@@ -20,7 +20,7 @@
           flat
           clearable
           hide-details
-          :placeholder="t('search')"
+          :placeholder="t('FeedTheBeast.search')"
           @click:clear="currentKeyword = ''"
           @keypress.enter="currentKeyword = keywordBuffer"
         />
@@ -58,11 +58,3 @@ const { refresh, refreshing, currentKeyword, modpacks } = useFeedTheBeast(props)
 onMounted(refresh)
 
 </script>
-
-<i18n locale="en" lang="yaml">
-search: Search In FTB
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-search: 在 FTB 中搜索
-</i18n>

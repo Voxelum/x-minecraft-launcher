@@ -10,7 +10,7 @@
     />
     <Hint
       v-if="hasError"
-      :text="t('failText', { url: errorUrl })"
+      :text="t('HomeSyncDialogPull.failText', { url: errorUrl })"
       :color="errorColor"
       class="h-40vh"
       :size="70"
@@ -26,7 +26,7 @@
         <v-icon left>
           refresh
         </v-icon>
-        {{ t('refresh') }}
+        {{ t('HomeSyncDialogPull.refresh') }}
       </v-btn>
       <v-btn
         text
@@ -38,7 +38,7 @@
         <v-icon left>
           download
         </v-icon>
-        {{ t('update') }}
+        {{ t('HomeSyncDialogPull.update') }}
       </v-btn>
     </v-card-actions>
   </div>
@@ -118,15 +118,3 @@ watch(() => props.shown, (opened) => {
   }
 })
 </script>
-
-<i18n locale="en" lang="yaml">
-failText: Fail to fetch update. {url}
-update: Update
-refresh: Refresh
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-failText: 获取更新失败. {url}
-update: 更新
-refresh: 刷新
-</i18n>

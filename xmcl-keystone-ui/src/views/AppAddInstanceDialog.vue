@@ -231,7 +231,7 @@ on('modpackImport', ({ path, name }) => {
     if (!isShown.value) {
       notify({
         level: 'success',
-        title: t('downloadedNotification', { name }),
+        title: t('AppAddInstanceDialog.downloadedNotification', { name }),
         full: true,
         more: () => {
           showAddInstance(path)
@@ -270,11 +270,3 @@ watch(isShown, (shown) => {
   display: flex !important;
 }
 </style>
-
-<i18n locale="en" lang="yaml">
-downloadedNotification: The modpack {name} downloaded. Do you want to create instance for it?
-</i18n>
-
-<i18n locale="zh-CN" lang="yaml">
-downloadedNotification: 整合包 {name} 下载成功。是否现在创建整合包实例？
-</i18n>

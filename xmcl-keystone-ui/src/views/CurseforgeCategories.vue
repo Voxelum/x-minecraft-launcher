@@ -17,7 +17,7 @@
           :src="c.iconUrl"
         >
       </v-avatar>
-      {{ t(c.name) }}
+      {{ tCategory(c.name) }}
     </span>
   </v-card>
   <v-card
@@ -44,15 +44,16 @@ const props = defineProps<{
 
 const emit = defineEmits(['select'])
 
-const { t } = useI18n()
+const { te, t } = useI18n()
 const { fetchCategories } = useService(CurseForgeServiceKey)
 const allCategories = ref([] as ModCategory[])
 const categories = computed(() => {
   const result = allCategories.value
   const parent = result.find(c => c.slug === props.type)
-  console.log(parent)
   return result.filter(r => r.parentCategoryId === parent?.id)
 })
+
+const tCategory = (k: string) => te(`curseforgeCategory.${k}`) ? t(k) : k
 
 const { refresh, refreshing } = useRefreshable(async () => {
   const result = await fetchCategories()
@@ -78,57 +79,3 @@ onMounted(() => {
 }
 
 </style>
-
-<i18n locale="zh-CN" lang="yaml">
-Fabric: Fabric
-Cosmetic: 外观/装饰
-Vanilla+: 原版+
-"Armor, Tools, and Weapons": 护甲，工具和武器
-QoL: QoL
-Map and Information: 地图和信息
-Twitch Integration: Twitch 集成
-Addons: 插件
-Utility & QoL: 工具和 QoL
-World Gen: 世界生成
-Adventure and RPG: 冒险和 RPG
-Magic: 魔法
-API and Library: API 和库
-Technology: 科技
-Redstone: 红石
-Server Utility: 服务端工具
-Miscellaneous: 杂项
-Food: 食物
-Storage: 存储
-MCreator: MCreator
-FancyMenu: FancyMenu
-Education: 教育
-Medieval: 中世纪
-'Photo Realistic': 真实风格
-Animated: 动画
-Steampunk: 蒸汽朋克
-'Data Packs': 数据包
-Modern: 现代
-Traditional: 传统
-'Font Packs': 字体
-'Mod Support': Mod 集成
-Multiplayer: 多人联机
-'Mini Game': 小游戏
-'Combat / PvP': 竞技/PVP
-Exploration: 探索
-'FTB Official Pack': FTB 官方包
-'Small / Light': 轻量级
-Skyblock: 空岛
-Quests: 任务
-Map Based: 基于地图
-Tech: 科技
-Sci-Fi: 科幻
-'Extra Large': 超大型
-Hardcore: 硬核
-'Game Map': 游戏地图
-Creation: 创造模式
-Parkour: 跑酷
-'Modded World': Mod 集成
-Survival: 生存
-Adventure: 冒险
-Puzzle: 解密
-</i18n>
