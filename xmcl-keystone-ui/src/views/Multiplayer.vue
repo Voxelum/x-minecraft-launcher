@@ -16,7 +16,7 @@
         elevation="1"
       >
         <div class="flex-grow" />
-        <!-- <v-btn
+        <v-btn
           text
           @click="showShareInstance()"
         >
@@ -24,7 +24,7 @@
             share
           </v-icon>
           {{ t('multiplayer.share') }}
-        </v-btn> -->
+        </v-btn>
 
         <v-btn
           text
