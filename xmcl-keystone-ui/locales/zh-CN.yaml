@@ -720,8 +720,12 @@ userService:
 userServices:
   microsoft:
     account: 微软账号
+    deviceCode: 设备码
+    deviceCodeHint: 设备码会在点击登陆后自动生成
+    fastLogin: 快速登录
     name: 微软
     password: 在浏览器中输入密码
+    useDeviceCode: 使用设备码登录
   mojang:
     account: 邮箱地址
     name: Mojang

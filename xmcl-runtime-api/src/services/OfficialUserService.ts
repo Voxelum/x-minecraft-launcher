@@ -4,6 +4,14 @@ import { ServiceKey } from './Service'
 
 interface OfficialUserServiceEventMap {
   'microsoft-authorize-url': string
+  'device-code': {
+    userCode: string
+    deviceCode: string
+    verificationUri: string
+    expiresIn: number
+    interval: number
+    message: string
+  }
   'microsoft-authorize-code': [any, string]
 }
 

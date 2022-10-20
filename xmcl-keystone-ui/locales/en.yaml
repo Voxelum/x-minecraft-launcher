@@ -785,8 +785,12 @@ userService:
 userServices:
   microsoft:
     account: Microsoft Account
+    deviceCode: Device Code
+    deviceCodeHint: Device code will be generated after you click login
+    fastLogin: Fast Login
     name: Microsoft
     password: Enter Password in Browser
+    useDeviceCode: Login by Device Code
   mojang:
     account: Email Address
     name: Mojang

@@ -68,6 +68,7 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
         },
         (response) => {
           this.emit('device-code', response)
+          baseService.openInBrowser(response.verificationUri)
         },
         dispatcher,
       ))

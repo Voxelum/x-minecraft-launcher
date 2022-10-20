@@ -22,25 +22,25 @@
 import './particle'
 
 const props = withDefaults(defineProps<{
-  color: string
-  moveEnabled: boolean
-  particleOpacity: number
-  particlesNumber: number
-  shapeType: string
-  particleSize: number
-  linesColor: string
-  linesWidth: number
-  lineLinked: boolean
-  lineOpacity: number
-  linesDistance: number
-  moveSpeed: number
-  hoverEffect: boolean
-  hoverMode: string
-  opacityRandom: boolean
-  clickEffect: boolean
-  clickMode: string
-  moveDirection: string
-  moveRandom: boolean
+  color?: string
+  moveEnabled?: boolean
+  particleOpacity?: number
+  particlesNumber?: number
+  shapeType?: string
+  particleSize?: number
+  linesColor?: string
+  linesWidth?: number
+  lineLinked?: boolean
+  lineOpacity?: number
+  linesDistance?: number
+  moveSpeed?: number
+  hoverEffect?: boolean
+  hoverMode?: string
+  opacityRandom?: boolean
+  clickEffect?: boolean
+  clickMode?: string
+  moveDirection?: string
+  moveRandom?: boolean
 }>(), {
   color: '#dedede',
   moveEnabled: true,

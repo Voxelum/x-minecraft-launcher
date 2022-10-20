@@ -62,17 +62,18 @@
         @input="usernameErrors = []"
         @keypress="resetError"
       />
-
       <v-text-field
         v-if="!isOffline"
         v-model="data.password"
         prepend-inner-icon="lock"
         outlined
-        type="password"
+        :type="passwordType"
         required
         :label="passwordLabel"
-        :rules="passwordRules"
-        :disabled="isOffline || isMicrosoft"
+        :placeholder="passwordPlaceholder"
+        :rules="!isMicrosoft ? passwordRules : []"
+        :disabled="isPasswordDisabled"
+        :readonly="isPasswordReadonly"
         :error="!!passwordErrors.length"
         :error-messages="passwordErrors"
         @input="passwordErrors = []"
@@ -88,24 +89,49 @@
         @keypress.enter="onLogin"
       />
 
-      <v-btn
-        block
-        :loading="isLogining && (!hovered || authService !== 'microsoft')"
-        color="primary"
-        rounded
-        large
-        class="text-white"
+      <div
+        v-if="isMicrosoft"
+        class="flex"
+      >
+        <v-checkbox
+          v-if="!data.useFast"
+          v-model="data.useDeviceCode"
+          :label="t('userServices.microsoft.useDeviceCode')"
+        />
+
+        <div
+          class="flex-grow"
+        />
+
+        <v-checkbox
+          v-if="!data.useDeviceCode"
+          v-model="data.useFast"
+          :label="t('userServices.microsoft.fastLogin')"
+        />
+      </div>
+
+      <div
         @mouseenter="onMouseEnterLogin"
         @mouseleave="onMouseLeaveLogin"
-        @click="onLogin"
       >
-        <span v-if="!isLogining">
-          {{ t("login.login") }}
-        </span>
-        <v-icon v-else>
-          close
-        </v-icon>
-      </v-btn>
+        <v-btn
+          block
+          :loading="isLogining && (!hovered)"
+          color="primary"
+          rounded
+          large
+          class="text-white z-10"
+
+          @click="onLogin"
+        >
+          <span v-if="!isLogining">
+            {{ t("login.login") }}
+          </span>
+          <v-icon v-else>
+            close
+          </v-icon>
+        </v-btn>
+      </div>
 
       <div
         v-if="data.microsoftUrl"
@@ -166,6 +192,8 @@ const data = reactive({
   username: '',
   password: '',
   uuid: '',
+  useDeviceCode: false,
+  useFast: false,
   microsoftUrl: '',
 })
 
@@ -176,7 +204,7 @@ const getUserServiceName = (serv: string) => {
   return serv
 }
 const getUserServicePassword = (serv: string) => {
-  if (serv === 'microsoft') return t('userServices.microsoft.password')
+  if (serv === 'microsoft') return data.useDeviceCode ? t('userServices.microsoft.deviceCode') : t('userServices.microsoft.password')
   if (serv === 'mojang') return t('userServices.mojang.password')
   if (serv === 'offline') return t('userServices.offline.password')
   return t('userServices.mojang.password')
@@ -187,6 +215,10 @@ const getUserServiceAccount = (serv: string) => {
   if (serv === 'offline') return t('userServices.offline.account')
   return t('userServices.mojang.account')
 }
+
+const isPasswordReadonly = computed(() => isOffline.value || isMicrosoft.value)
+const isPasswordDisabled = computed(() => isPasswordReadonly.value && !data.useDeviceCode)
+const passwordType = computed(() => data.useDeviceCode ? 'text' : 'password')
 
 const accountInput: Ref<any> = ref(null)
 const hovered = ref(false)
@@ -205,6 +237,7 @@ const isMicrosoft = computed(() => authService.value === 'microsoft')
 const isOffline = computed(() => authService.value === 'offline')
 
 const passwordLabel = computed(() => getUserServicePassword(authService.value))
+const passwordPlaceholder = computed(() => data.useDeviceCode ? t('userServices.microsoft.deviceCodeHint') : passwordLabel.value)
 const showDropHint = computed(() => isMicrosoft.value && props.inside && isLogining.value)
 const uuidLabel = computed(() => t('userServices.offline.uuid'))
 
@@ -277,15 +310,21 @@ function handleError(e: unknown) {
 on('microsoft-authorize-url', (url) => {
   data.microsoftUrl = url
 })
+on('device-code', (code) => {
+  data.password = code.userCode
+  data.microsoftUrl = code.verificationUri
+})
 
 function reset() {
   if (!parameter.value) {
     data.username = history.value[0] ?? ''
     data.password = ''
+    data.microsoftUrl = ''
     usernameErrors.value = []
     passwordErrors.value = []
   } else {
     data.username = parameter.value?.username ?? data.username
+    data.microsoftUrl = ''
     authService.value = parameter.value?.service ?? authService.value
     usernameErrors.value = parameter.value.error ? [parameter.value.error] : []
     passwordErrors.value = parameter.value.error ? [parameter.value.error] : []
@@ -309,6 +348,9 @@ async function onLogin() {
       username: data.username,
       password: data.password,
       service: authService.value,
+      properties: {
+        mode: data.useDeviceCode ? 'device' : data.useFast ? 'fast' : '',
+      },
     })
     hide()
   } catch (e) {
