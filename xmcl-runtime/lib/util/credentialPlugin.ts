@@ -8,6 +8,7 @@ import keytar from 'keytar'
 import { platform } from 'os'
 
 export function createPlugin(serviceName: string, accountName: string): ICachePlugin {
+  accountName = accountName || 'XMCL_MICROSOFT_ACCOUNT'
   if (platform() === 'win32') {
     return {
       async beforeCacheAccess(cacheContext: TokenCacheContext): Promise<void> {
