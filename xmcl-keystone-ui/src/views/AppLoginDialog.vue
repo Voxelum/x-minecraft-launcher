@@ -7,15 +7,6 @@
     transition="fade"
     @dragover.prevent
   >
-    <v-btn
-      outlined
-      icon
-      large
-      class="absolute top-20 right-20 z-20 border-2"
-      @click="isShown = false"
-    >
-      <v-icon>close</v-icon>
-    </v-btn>
     <v-card
       @dragover.prevent
       @drop="onDrop"
@@ -24,6 +15,15 @@
         :inside="inside"
       />
     </v-card>
+    <v-btn
+      outlined
+      icon
+      large
+      class="absolute top-20 right-20 z-20 border-2 non-moveable z-10"
+      @click="isShown = false"
+    >
+      <v-icon>close</v-icon>
+    </v-btn>
   </v-dialog>
 </template>
 

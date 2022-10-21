@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex items-center justify-center flex-col flex-grow h-100vh"
+    class="flex items-center justify-center flex-col flex-grow h-100vh moveable"
   >
     <particles
       v-if="isShown"
@@ -22,7 +22,7 @@
     />
     <div
       v-else
-      class="w-100 text-center z-10"
+      class="w-100 text-center z-10 non-moveable"
     >
       <v-select
         v-model="accountSystemItem"
