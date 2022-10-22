@@ -6,36 +6,41 @@
  */
 
 // Set environment for development
-import 'source-map-support/register'
-import { app } from 'electron'
-import install, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
-import { autoUpdater } from 'electron-updater'
-import './index'
+// import 'source-map-support/register'
+// import { DataChannel } from 'node-datachannel'
+// console.log(DataChannel)
+const {DataChannel} = require('node-datachannel')
+console.log(DataChannel)
 
-app.on('browser-window-created', (event, w) => {
-  w.webContents.openDevTools({ mode: 'detach' })
-})
+// import { app } from 'electron'
+// import install, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
+// import { autoUpdater } from 'electron-updater'
+// import './index'
 
-app.on('web-contents-created', (event, contents) => {
-  contents.on('update-target-url', (event, url) => {
-    if (url.startsWith('http://localhost')) {
-      contents.openDevTools({ mode: 'detach' })
-    }
-  })
-})
+// app.on('browser-window-created', (event, w) => {
+//   w.webContents.openDevTools({ mode: 'detach' })
+// })
 
-autoUpdater.setFeedURL({
-  provider: 'github',
-  repo: 'x-minecraft-launcher',
-  owner: 'voxelum',
-})
-autoUpdater.logger = null
+// app.on('web-contents-created', (event, contents) => {
+//   contents.on('update-target-url', (event, url) => {
+//     if (url.startsWith('http://localhost')) {
+//       contents.openDevTools({ mode: 'detach' })
+//     }
+//   })
+// })
 
-app.whenReady().then(() => {
-  install(VUEJS_DEVTOOLS).then((v) => {
-    console.log(`Installed vue devtool ${v}`)
-  }, (e) => {
-    console.error('Fail to install vue devtool')
-    console.error(e)
-  })
-})
+// autoUpdater.setFeedURL({
+//   provider: 'github',
+//   repo: 'x-minecraft-launcher',
+//   owner: 'voxelum',
+// })
+// autoUpdater.logger = null
+
+// app.whenReady().then(() => {
+//   install(VUEJS_DEVTOOLS).then((v) => {
+//     console.log(`Installed vue devtool ${v}`)
+//   }, (e) => {
+//     console.error('Fail to install vue devtool')
+//     console.error(e)
+//   })
+// })

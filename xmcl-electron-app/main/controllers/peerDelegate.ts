@@ -61,37 +61,37 @@ export const peerPlugin: ControllerPlugin = function (this: Controller) {
       })
     }
 
-    peerService.setDelegate({
-      on(event, handler: (v: any) => void) {
-        ipcMain.on(event, (e, payload) => {
-          handler(payload as any)
-        })
-        return this
-      },
-      create(id: string): Promise<void> {
-        return invoke('create', id)
-      },
-      async initiate(id: string): Promise<void> {
-        await invoke<RTCSessionDescription>('initiate', id)
-      },
-      offer(offer: object): Promise<string> {
-        return invoke<string>('offer', offer)
-      },
-      answer(answer: object): Promise<void> {
-        return invoke<void>('answer', answer)
-      },
-      drop(id: string): Promise<void> {
-        return invoke<void>('drop', id)
-      },
-      downloadAbort(options) {
-        return invoke('download-abort', options)
-      },
-      download(options) {
-        return invoke<boolean>('download', options)
-      },
-      async shareInstance(path, man) {
-        await invoke('share', path, man)
-      },
-    })
+    // peerService.setDelegate({
+    //   on(event, handler: (v: any) => void) {
+    //     ipcMain.on(event, (e, payload) => {
+    //       handler(payload as any)
+    //     })
+    //     return this
+    //   },
+    //   create(id: string): Promise<void> {
+    //     return invoke('create', id)
+    //   },
+    //   async initiate(id: string): Promise<void> {
+    //     await invoke<RTCSessionDescription>('initiate', id)
+    //   },
+    //   offer(offer: object): Promise<string> {
+    //     return invoke<string>('offer', offer)
+    //   },
+    //   answer(answer: object): Promise<void> {
+    //     return invoke<void>('answer', answer)
+    //   },
+    //   drop(id: string): Promise<void> {
+    //     return invoke<void>('drop', id)
+    //   },
+    //   downloadAbort(options) {
+    //     return invoke('download-abort', options)
+    //   },
+    //   download(options) {
+    //     return invoke<boolean>('download', options)
+    //   },
+    //   async shareInstance(path, man) {
+    //     await invoke('share', path, man)
+    //   },
+    // })
   })
 }

@@ -58,6 +58,7 @@
         "iconv-lite": "^0.5.2",
         "jschardet": "^2.3.0",
         "keytar": "^7.7.0",
+        "node-datachannel": "^0.3.6",
         "lodash.debounce": "^4.0.8",
         "lodash.throttle": "^4.1.1",
         "lzma-native": "^8.0.6",
