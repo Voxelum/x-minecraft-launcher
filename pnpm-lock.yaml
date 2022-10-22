@@ -52,7 +52,6 @@ importers:
 
   xmcl-electron-app:
     specifiers:
-      '@microsoft/signalr': ^6.0.4
       '@types/electron-devtools-installer': ^2.2.0
       '@types/fs-extra': ^8.1.2
       '@types/lodash.debounce': ^4.0.6
@@ -79,8 +78,8 @@ importers:
       create-desktop-shortcuts: ^1.6.0
       cross-env: ^5.2.1
       dotenv: 16.0.1
-      electron: ^21.1.1
-      electron-builder: ^23.0.2
+      electron: ^21.2.0
+      electron-builder: ^22.14.5
       electron-devtools-installer: ^3.2.0
       electron-updater: ^4.3.9
       esbuild: ^0.14.27
@@ -96,6 +95,7 @@ importers:
       fs-extra: ^10.0.0
       icon-gen: ^3.0.0
       lodash.debounce: ^4.0.8
+      node-datachannel: ^0.3.6
       node-disk-info: ^1.3.0
       original-fs: ^1.1.0
       pngjs: ^6.0.0
@@ -106,7 +106,6 @@ importers:
       typescript: ^4.4.3
       undici: ^5.12.0
     devDependencies:
-      '@microsoft/signalr': 6.0.6
       '@types/electron-devtools-installer': 2.2.2
       '@types/fs-extra': 8.1.2
       '@types/lodash.debounce': 4.0.7
@@ -133,8 +132,8 @@ importers:
       create-desktop-shortcuts: 1.10.1
       cross-env: 5.2.1
       dotenv: 16.0.1
-      electron: 21.1.1
-      electron-builder: 23.6.0
+      electron: 21.2.0
+      electron-builder: 22.14.13
       electron-devtools-installer: 3.2.0
       electron-updater: 4.6.5
       esbuild: 0.14.48
@@ -150,6 +149,7 @@ importers:
       fs-extra: 10.1.0
       icon-gen: 3.0.1
       lodash.debounce: 4.0.8
+      node-datachannel: 0.3.6
       node-disk-info: 1.3.0
       original-fs: 1.1.0
       pngjs: 6.0.0
@@ -353,6 +353,7 @@ importers:
       lodash.debounce: ^4.0.8
       lodash.throttle: ^4.1.1
       lzma-native: ^8.0.6
+      node-datachannel: ^0.3.6
       node-watch: ^0.7.3
       normalize-url: ^7.1.0
       semver: ^7.3.5
@@ -404,6 +405,7 @@ importers:
       lodash.debounce: 4.0.8
       lodash.throttle: 4.1.1
       lzma-native: 8.0.6
+      node-datachannel: 0.3.6
       node-watch: 0.7.3
       normalize-url: 7.1.0
       semver: 7.3.7
@@ -2344,20 +2346,6 @@ packages:
       - supports-color
     dev: true
 
-  /@microsoft/signalr/6.0.6:
-    resolution: {integrity: sha512-3dTLtgwEXUeE9R/3NZQslh1B2WbppeHVXdnpvSZc7Yz+tP5Yiw3KCVUHwKUVnYmd9/2v3DaI/pvCdihrss49zA==}
-    dependencies:
-      abort-controller: 3.0.0
-      eventsource: 1.1.2
-      fetch-cookie: 0.11.0
-      node-fetch: 2.6.7
-      ws: 7.5.8
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - utf-8-validate
-    dev: true
-
   /@nodelib/fs.scandir/2.1.5:
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
     engines: {node: '>= 8'}
@@ -3172,13 +3160,6 @@ packages:
 
   /@xmcl/windows-utils/0.0.14:
     resolution: {integrity: sha512-qXo2NHXouEy0Zy1Np+yXndkc3yQlL5lr3mAmE8zb9QtHc2kfNFd1VAwqrcAAbD184j2d9c8gen3WmsQXi4o5Cw==}
-    dev: true
-
-  /abort-controller/3.0.0:
-    resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
-    engines: {node: '>=6.5'}
-    dependencies:
-      event-target-shim: 5.0.1
     dev: true
 
   /abstract-level/1.0.3:
@@ -4500,8 +4481,8 @@ packages:
       - supports-color
     dev: true
 
-  /electron/21.1.1:
-    resolution: {integrity: sha512-EM2hvRJtiS3n54yx25Z0Qv54t3LGG+WjUHf1AOl+PKjQj+fmXnjIgVeIF9pM21kP1BTcyjrgvN6Sff0A45OB6A==}
+  /electron/21.2.0:
+    resolution: {integrity: sha512-oKV4fo8l6jlOZ1cYZ4RpZz02ZxLuBo3SO7DH+FrJ8uDyCirP+eVJ/qlzu23odtNe0P7S/mYAZbC6abZHWoqtLg==}
     engines: {node: '>= 10.17.0'}
     hasBin: true
     requiresBuild: true
@@ -5415,16 +5396,6 @@ packages:
     engines: {node: '>= 0.6'}
     dev: true
 
-  /event-target-shim/5.0.1:
-    resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
-    engines: {node: '>=6'}
-    dev: true
-
-  /eventsource/1.1.2:
-    resolution: {integrity: sha512-xAH3zWhgO2/3KIniEKYPr8plNSzlGINOUqYj0m0u7AB81iRw8b/3E73W6AuU+6klLbaSFmZnaETQ2lXPfAydrA==}
-    engines: {node: '>=0.12.0'}
-    dev: true
-
   /eventsource/2.0.2:
     resolution: {integrity: sha512-IzUmBGPR3+oUG9dUeXynyNmf91/3zUSJg1lCktzKw47OXuhco54U3r9B7O4XX+Rb1Itm9OZ2b0RkTs10bICOxA==}
     engines: {node: '>=12.0.0'}
@@ -5564,13 +5535,6 @@ packages:
     resolution: {integrity: sha512-cE1qsB/VwyQozZ+q1dGxR8LBYNZeofhEdUNGSMbQD3Gw2lAzX9Zb3uIU6Ebc/Fmyjo9AWWfnn0AUCHqtevs/8g==}
     dependencies:
       pend: 1.2.0
-
-  /fetch-cookie/0.11.0:
-    resolution: {integrity: sha512-BQm7iZLFhMWFy5CZ/162sAGjBfdNWb7a8LEqqnzsHFhxT/X/SVj/z2t2nu3aJvjlbQkrAlTUApplPRjWyH4mhA==}
-    engines: {node: '>=8'}
-    dependencies:
-      tough-cookie: 4.0.0
-    dev: true
 
   /file-entry-cache/6.0.1:
     resolution: {integrity: sha512-7Gps/XWymbLk2QLYK4NzpMOrYjMhdIxXuIvy2QBsLE6ljuodKvdkWs/cpyJJ3CVIVpH0Oi1Hvg1ovbMzLdFBBg==}
@@ -6952,6 +6916,14 @@ packages:
   /node-addon-api/5.0.0:
     resolution: {integrity: sha512-CvkDw2OEnme7ybCykJpVcKH+uAOLV2qLqiyla128dN9TkEWfrYmxG6C2boDe5KcNQqZF3orkqzGgOMvZ/JNekA==}
 
+  /node-datachannel/0.3.6:
+    resolution: {integrity: sha512-weZD9Do1sFvAxznUETWDP/XOvge85NzKeEid0kzHyYF09p8IOYcnwg+rxkgymF3WviZXRYWxHCxjyPHIZnKkLw==}
+    requiresBuild: true
+    dependencies:
+      prebuild-install: 7.1.1
+    bundledDependencies:
+      - prebuild-install
+
   /node-disk-info/1.3.0:
     resolution: {integrity: sha512-NEx858vJZ0AoBtmD/ChBIHLjFTF28xCsDIgmFl4jtGKsvlUx9DU/OrMDjvj3qp/E4hzLN0HvTg7eJx5XFQvbeg==}
     engines: {node: '>= 12'}
@@ -6969,6 +6941,7 @@ packages:
         optional: true
     dependencies:
       whatwg-url: 5.0.0
+    dev: false
 
   /node-gyp-build/4.5.0:
     resolution: {integrity: sha512-2iGbaQBV+ITgCz76ZEjmhUKAKVf7xfY1sRl4UiKQspfZMH2h06SyhNsnSVy50cwkFQDGLyif6m/6uFXHkOZ6rg==}
@@ -7377,6 +7350,7 @@ packages:
 
   /psl/1.9.0:
     resolution: {integrity: sha512-E/ZsdU4HLs/68gYzgGTkMicWTLPdAftJLfJFlLUAAKZGkStNU72sZjT66SnMDVOfOWY/YAoiD7Jxa9iHvngcag==}
+    dev: false
 
   /pump/3.0.0:
     resolution: {integrity: sha512-LwZy+p3SFs1Pytd/jYct4wpv49HiYCqd9Rlc5ZVdk0V+8Yzv6jR5Blk3TRmPL1ft69TxP0IMZGJ+WPFU2BFhww==}
@@ -8245,9 +8219,11 @@ packages:
       psl: 1.9.0
       punycode: 2.1.1
       universalify: 0.1.2
+    dev: false
 
   /tr46/0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
+    dev: false
 
   /tr46/1.0.1:
     resolution: {integrity: sha512-dTpowEjclQ7Kgx5SdBkqRzVhERQXov8/l9Ft9dVM9fmg0W0KQSVaXX9T4i6twCPNtYiZM53lpSSUAwJbFPOHxA==}
@@ -8827,6 +8803,7 @@ packages:
 
   /webidl-conversions/3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
+    dev: false
 
   /webidl-conversions/4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
@@ -8846,6 +8823,7 @@ packages:
     dependencies:
       tr46: 0.0.3
       webidl-conversions: 3.0.1
+    dev: false
 
   /whatwg-url/7.1.0:
     resolution: {integrity: sha512-WUu7Rg1DroM7oQvGWfOiAK21n74Gg+T4elXEQYkOhtyLeWiJFoOGLXPKI/9gzIie9CtwVLm8wtw6YJdKyxSjeg==}
@@ -9089,6 +9067,9 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
+  /xdg-basedir/4.0.0:
+    resolution: {integrity: sha512-PSNhEJDejZYV7h50BohL09Er9VaIefr2LMAf3OEmpCkjOi34eYyQYAXUTjEQtZJTKcF0E2UKTh+osDLsgNim9Q==}
+    engines: {node: '>=8'}
     dev: true
 
   /xml2js/0.4.23:

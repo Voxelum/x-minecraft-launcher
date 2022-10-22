@@ -77,7 +77,7 @@ export class ResolveInstanceFileTask extends AbortableTask<void> {
 
     const processModrinthLike = async () => {
       if (modrinthFileHashProjects.length === 0) return
-      const result = await this.modrinthService.client.getProjectVersionsByHash(modrinthFileHashProjects.map(v => v.hashes.sha1), controller.signal)
+      const result = await this.modrinthService.client.getProjectVersionsByHash(modrinthFileHashProjects.filter(v => !!v.hashes.sha1).map(v => v.hashes.sha1), controller.signal)
       for (const r of Object.entries(result)) {
         const p = modrinthFileHashProjects.find(p => p.hashes.sha1 === r[0])!
         if (!p.downloads) { p.downloads = [] }
@@ -254,7 +254,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
       await linkWithTimeoutOrCopy(res.path, dest)
     })
 
-    const createDownloadTask = (file: InstanceFile, destination: string, sha1: string): Task<any> => {
+    const createDownloadTask = (file: InstanceFile, destination: string, sha1?: string): Task<any> => {
       if (file.downloads) {
         const zip = file.downloads.find(u => u.startsWith('zip:'))
         const peerUrl = file.downloads.find(u => u.startsWith('peer://'))
@@ -262,17 +262,19 @@ export class InstanceInstallService extends AbstractService implements IInstance
         if (peerUrl && !hasHttp) {
           // Download from peer
           this.log(`Download ${destination} from peer ${peerUrl}`)
-          return this.peerService.downloadTask(peerUrl, destination, sha1, file.size)
+          return this.peerService.createDownloadTask(peerUrl, destination, sha1 ?? '', file.size)
         } else if (hasHttp) {
           // HTTP download
           return new DownloadTask({
             ...this.networkManager.getDownloadBaseOptions(),
             url: file.downloads.filter(u => u.startsWith('http')),
             destination,
-            validator: {
-              hash: sha1,
-              algorithm: 'sha1',
-            },
+            validator: sha1
+              ? {
+                hash: sha1,
+                algorithm: 'sha1',
+              }
+              : undefined,
           })
         } else if (zip) {
           // Unzip
@@ -296,7 +298,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
       return undefined
     }
 
-    if (actualSha1 === sha1) {
+    if (!!sha1 && actualSha1 === sha1) {
       // skip same file
       return undefined
     }

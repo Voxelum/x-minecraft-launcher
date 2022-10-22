@@ -4,8 +4,8 @@ import { ServiceKey, StatefulService } from './Service'
 import { GameProfileAndTexture } from '../entities/user.schema'
 
 export interface RTCSessionDescription {
-  sdp?: string
-  type: 'answer' | 'offer' | 'pranswer' | 'rollback'
+  sdp: string
+  type: 'unspec'| 'answer' | 'offer' | 'pranswer' | 'rollback'
 }
 
 export type ConnectionState = 'closed' | 'connected' | 'connecting' | 'disconnected' | 'failed' | 'new'
@@ -26,6 +26,7 @@ export interface PeerConnection {
   id: string
   userInfo: ConnectionUserInfo
   initiator: boolean
+
   localDescriptionSDP: string
   ping: number
   connectionState: ConnectionState
@@ -38,7 +39,12 @@ export interface PeerConnection {
 }
 
 export class PeerState {
+  group = ''
   connections = [] as PeerConnection[]
+
+  connectionGroup(group: string) {
+    this.group = group
+  }
 
   connectionUserInfo({ id, info }: { id: string; info: ConnectionUserInfo }) {
     const conn = this.connections.find(c => c.id === id)
@@ -109,25 +115,24 @@ interface PeerServiceEvents {
 
 export interface PeerService extends StatefulService<PeerState>, GenericEventEmitter<PeerServiceEvents> {
   /**
-   * Create a new unconnected ready-to-go peer connection.
-   *
-   * @returns The id of the connection.
+   * Join a group. Then the group will automatically handle your connection between peers
    */
-  create(): Promise<string>
+  joinGroup(id?: string): Promise<void>
+  /**
+    * Share the instance to other peers
+    */
+  shareInstance(options: ShareInstanceOptions): Promise<void>
   /**
    * Initiate a peer connection, and return the session description payload.
    * You need to manually send this offer payload to other user
-   *
-   * @param id The id of the peer connection. You need to call `create` to get the new one.
    */
-  initiate(id: string): Promise<void>
+  initiate(): Promise<string>
   /**
    * Receive the offer from other user, and create peer corresponding to it.
    *
    * @param offer The compressed `offer` sdp string from other user
-   * @returns The id of the connection session
    */
-  offer(offer: string): Promise<string>
+  offer(offer: string): Promise<void>
   /**
    * Receive the answer from other user. This will finally create the connection between you and other
    *
@@ -141,10 +146,6 @@ export interface PeerService extends StatefulService<PeerState>, GenericEventEmi
    * @param id The session to drop
    */
   drop(id: string): Promise<void>
-  /**
-   * Share the instance to other peers
-   */
-  shareInstance(options: ShareInstanceOptions): Promise<void>
 }
 
 export const PeerServiceKey: ServiceKey<PeerService> = 'PeerServiceKey'

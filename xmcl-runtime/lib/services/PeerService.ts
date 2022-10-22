@@ -1,191 +1,267 @@
-import { ConnectionState, ConnectionUserInfo, IceGatheringState, InstanceManifestSchema, PeerService as IPeerService, PeerServiceKey, PeerState, ShareInstanceOptions, SignalingState } from '@xmcl/runtime-api'
+import { MinecraftLanBroadcaster, MinecraftLanDiscover } from '@xmcl/client'
+import { InstanceManifestSchema, PeerService as IPeerService, PeerServiceKey, PeerState, ShareInstanceOptions } from '@xmcl/runtime-api'
 import { AbortableTask, BaseTask } from '@xmcl/task'
+import { randomFill, randomUUID } from 'crypto'
+import { createWriteStream } from 'fs'
+import { createReadStream } from 'fs-extra'
 import debounce from 'lodash.debounce'
+import { DescriptionType } from 'node-datachannel'
+import { join } from 'path'
+import { Duplex } from 'stream'
+import { pipeline } from 'stream/promises'
+import { promisify } from 'util'
+import { brotliCompress, brotliDecompress } from 'zlib'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { createPromiseSignal } from '../util/promiseSignal'
-import { ExposeServiceKey, Singleton, StatefulService } from './Service'
-import { brotliCompress, brotliDecompress } from 'zlib'
-import { promisify } from 'util'
-import { randomUUID } from 'crypto'
-import { rename } from 'fs-extra'
+import { PeerGroup, TransferDescription } from '../entities/peer'
+import { PeerSession } from '../entities/peer/connection'
+import { MessageShareManifest } from '../entities/peer/messages/download'
+import { MessageLan } from '../entities/peer/messages/lan'
 import { Inject } from '../util/objectRegistry'
+import { ExposeServiceKey, Singleton, StatefulService } from './Service'
+import { UserService } from './UserService'
 
 const pBrotliDecompress = promisify(brotliDecompress)
 const pBrotliCompress = promisify(brotliCompress)
 
-export interface PeerServiceWebRTCFacade {
-  on(event: 'localDescription', handler: (desc: object) => void): this
-  on(event: 'connectionstatechange', handler: (event: { id: string; state: ConnectionState }) => void): this
-  on(event: 'icegatheringstatechange', handler: (event: { id: string; state: IceGatheringState }) => void): this
-  on(event: 'signalingstatechange', handler: (event: { id: string; state: SignalingState }) => void): this
-  on(event: 'identity', handler: (event: { id: string; info: ConnectionUserInfo }) => void): this
-  on(event: 'connection', handler: (event: { id: string; initiator: boolean }) => void): this
-  on(event: 'shared-instance-manifest', handler: (event: { id: string; manifest: InstanceManifestSchema }) => void): this
-  on(event: 'download-progress', handler: (event: { id: number; chunkSize: number }) => void): this
-  on(event: 'peer-heartbeat', handler: (event: { id: string; ping: number }) => void): this
-
-  create(id: string): Promise<void>
-  initiate(id: string): Promise<void>
-  offer(offer: object): Promise<string>
-  answer(answer: object): Promise<void>
-  drop(id: string): Promise<void>
-  shareInstance(path: string, manifest?: InstanceManifestSchema): Promise<void>
-
-  download(options: { url: string; destination: string; sha1: string; size: number; id: number }): Promise<boolean>
-  downloadAbort(options: { id: number }): Promise<boolean>
-}
-
 @ExposeServiceKey(PeerServiceKey)
 export class PeerService extends StatefulService<PeerState> implements IPeerService {
-  private delegate: PeerServiceWebRTCFacade | undefined
-  private signal = createPromiseSignal()
-  private downloadId = 0
-  private downloadCallbacks: Record<number, undefined | ((chunk: number) => void)> = {}
+  readonly peers: Record<string, PeerSession> = {}
 
-  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
-    super(app, () => new PeerState())
+  readonly broadcaster = new MinecraftLanBroadcaster()
+  readonly discover = new MinecraftLanDiscover()
+  /**
+   * The unique id of this host
+   */
+  readonly id = randomUUID()
+
+  private sharedManifest: InstanceManifestSchema | undefined
+  private shareInstancePath = ''
+
+  private group: PeerGroup | undefined
+
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(UserService) private userService: UserService) {
+    super(app, () => new PeerState(), async () => {
+      this.log('hello peer service!')
+      try {
+        const mod = require('node-datachannel')
+        this.log(mod)
+      } catch (e) {
+        this.log('fuck my life!!')
+        this.log(e)
+      }
+      this.log('hello peer service 2!')
+    })
 
     app.registerUrlHandler((url) => {
       const parsed = new URL(url, 'xmcl://launcher')
       if (parsed.host === 'launcher' && parsed.pathname === '/peer') {
         const params = parsed.searchParams
-        const description = params.get('description')
-        const type = params.get('type')
-        if (!description || !type) {
-          this.warn(`Ignore illegal peer join for type=${type} description=${description}`)
+        const group = params.get('group')
+        if (!group) {
+          this.warn(`Ignore illegal peer join for group=${group}`)
           return false
         } else {
-          this.emit('peer-join', { description, type: type as any })
+          this.joinGroup(group)
           return true
         }
       }
       return false
     })
+
+    this.broadcaster.bind()
+    this.discover.bind().then(() => {
+      console.log('discover ready')
+    })
+
+    this.discover.on('discover', (info) => {
+      for (const conn of Object.values(this.peers)) {
+        if (conn.connection.state() !== 'connected') {
+          continue
+        }
+        const selfMessage = conn.proxies.find(p => p.actualPortValue === info.port)
+        // do not echo the proxy server you created
+        if (!selfMessage) {
+          conn.send(MessageLan, info)
+        }
+      }
+    })
   }
 
-  setDelegate(delegate: PeerServiceWebRTCFacade) {
-    this.delegate = delegate
-    this.signal.resolve()
+  async joinGroup(id?: string): Promise<void> {
+    if (this.group?.groupId === id) {
+      return
+    }
 
+    if (this.group) {
+      this.group.quit()
+    }
+
+    if (!id) {
+      const buf = Buffer.alloc(2)
+      await new Promise<Buffer>((resolve, reject) => randomFill(buf, (err, buf) => {
+        if (err) reject(err)
+        else resolve(buf)
+      }))
+      id = `${this.userService.state.user?.username ?? 'Player'}#${buf.readUint16BE()}`
+    }
+    const group = new PeerGroup(id, this.id, (sender) => {
+      // Ask sender to connect to me :)
+      group.connect(sender)
+      // Try to connect to the sender
+      this.initiate(sender)
+    }, (sender) => {
+      // Try to connect to the sender
+      this.initiate(sender)
+    }, (sender, sdp, type) => {
+      const peer = this.peers[sender]
+      peer.connection.setRemoteDescription(sdp, type)
+    }, (sender, candidate, mid) => {
+      const peer = this.peers[sender]
+      peer.connection.addRemoteCandidate(candidate, mid)
+    })
+    this.group = group
+    this.state.connectionGroup(group.id)
+  }
+
+  protected async decode(description: string): Promise<TransferDescription> {
+    return JSON.parse((await pBrotliDecompress(Buffer.from(description, 'base64'))).toString('utf-8'))
+  }
+
+  async create(): Promise<string> {
+    const id = randomUUID()
+    return id
+  }
+
+  @Singleton(id => id)
+  async initiate(expectId?: string): Promise<string> {
     const setLocalDescription = debounce((payload) => {
       pBrotliCompress(JSON.stringify(payload)).then((s) => s.toString('base64')).then((compressed) => {
         this.state.connectionLocalDescription({ id: payload.session, description: compressed })
       })
     })
 
-    this.app.on('peer-join', async ({ description, type }) => {
-      if (type === 'offer') {
-        const offer = await this.decode(description)
-        await delegate.offer(offer)
-      } else {
-        const answer = await this.decode(description)
-        await delegate.answer(answer)
-      }
-    })
+    const initiator = !expectId
+    const id = expectId || randomUUID()
 
-    // this.hub.on('member-join', () => {
-
-    // })
-
-    delegate
-      .on('localDescription', async (payload) => {
-        setLocalDescription(payload)
-      })
-      .on('connectionstatechange', ({ id, state }) => {
-        this.state.connectionStateChange({ id: id, connectionState: state })
-      })
-      .on('icegatheringstatechange', ({ id, state }) => {
-        this.state.iceGatheringStateChange({ id: id, iceGatheringState: state })
-      })
-      .on('signalingstatechange', ({ id, state }) => {
-        this.state.signalingStateChange({ id: id, signalingState: state })
-      })
-      .on('identity', ({ id, info }) => {
-        this.state.connectionUserInfo({ id, info })
-      })
-      .on('connection', ({ id, initiator }) => {
-        this.state.connectionAdd({
-          id,
-          initiator,
-          userInfo: {
-            name: '',
-            id: '',
-            textures: {
-              SKIN: { url: '' },
-            },
-            avatar: '',
-          },
-          ping: -1,
-          signalingState: 'closed',
-          localDescriptionSDP: '',
-          iceGatheringState: 'new',
-          connectionState: 'new',
-          sharing: undefined,
-        })
-      })
-      .on('shared-instance-manifest', ({ id, manifest }) => {
+    const conn = new PeerSession({
+      onHeartbeat: (id, ping) => this.state.connectionPing({ id, ping }),
+      onInstanceShared: (id, manifest) => {
         this.state.connectionShareManifest({ id, manifest })
         this.emit('share', { id, manifest })
-      })
-      .on('download-progress', ({ id, chunkSize }) => {
-        this.downloadCallbacks[id]?.(chunkSize)
-      })
-      .on('peer-heartbeat', ({ id, ping }) => {
-        this.state.connectionPing({ id, ping })
-      })
-  }
+      },
+      onIdentity: (id, info) => this.state.connectionUserInfo({ id, info }),
+      getUserInfo: () => {
+        const user = this.userService.state.user
+        const profile = user?.profiles[user.selectedProfile]
+        return {
+          name: profile?.name ?? 'Player',
+          avatar: profile?.textures.SKIN.url ?? '',
+          id: profile?.id ?? '',
+          textures: profile?.textures ?? {
+            SKIN: { url: '' },
+          },
+        }
+      },
+      getSharedInstance: () => this.sharedManifest,
+      createSharedFileReadStream: (file) => {
+        const man = this.sharedManifest
+        if (!man) {
+          return undefined
+        }
+        if (!man.files.some(v => v.path === file)) {
+          return undefined
+        }
+        return createReadStream(join(this.shareInstancePath, file))
+      },
+      broadcaster: this.broadcaster,
+    }, this, id)
+    this.peers[id] = conn
 
-  protected async decode(description: string): Promise<object> {
-    return JSON.parse((await pBrotliDecompress(Buffer.from(description, 'base64'))).toString('utf-8'))
-  }
+    conn.connection.onLocalCandidate((candidate, mid) => {
+      this.group?.sendCandidate(id, candidate, mid)
+    })
+    conn.connection.onLocalDescription((sdp, type) => {
+      this.group?.sendLocalDescription(id, sdp, type)
+      // TODO: check this
+      setLocalDescription({ sdp, id, session: id })
+    })
+    conn.connection.onStateChange((state) => {
+      this.state.connectionStateChange({ id, connectionState: state as any })
+    })
+    conn.connection.onSignalingStateChange((state) => {
+      this.state.signalingStateChange({ id, signalingState: state as any })
+    })
+    conn.connection.onGatheringStateChange((state) => {
+      this.state.iceGatheringStateChange({ id, iceGatheringState: state as any })
+    })
 
-  async createConnection() {
-    // if (this.hub.state === HubConnectionState.Disconnected) {
-    //   await this.hub.start()
-    // }
+    this.state.connectionAdd({
+      id,
+      initiator,
+      userInfo: {
+        name: '',
+        id: '',
+        textures: {
+          SKIN: { url: '' },
+        },
+        avatar: '',
+      },
+      ping: -1,
+      signalingState: 'closed',
+      localDescriptionSDP: '',
+      iceGatheringState: 'new',
+      connectionState: 'new',
+      sharing: undefined,
+    })
 
-    // await this.hub.start()
-  }
-
-  async create(): Promise<string> {
-    const id = randomUUID()
-    await this.signal.promise
-    await this.delegate!.create(id)
     return id
   }
 
-  @Singleton(id => id)
-  async initiate(id: string): Promise<void> {
-    await this.signal.promise
-    await this.delegate!.initiate(id)
+  async offer(offer: string): Promise<void> {
+    const o = await this.decode(offer) as TransferDescription
+    await this.initiate(o.id)
+    const peer = this.peers[o.id]
+    peer.connection.setRemoteDescription(o.sdp, DescriptionType.Offer)
   }
 
-  @Singleton(id => id)
-  async offer(offer: string): Promise<string> {
-    const o = await this.decode(offer)
-    await this.signal.promise
-    const id = await this.delegate!.offer(o)
-    return id
-  }
-
-  @Singleton(id => id)
   async answer(answer: string): Promise<void> {
-    const o = await this.decode(answer)
-    await this.signal.promise
-    return await this.delegate!.answer(o)
+    const o = await this.decode(answer) as TransferDescription
+    const peer = this.peers[o.id]
+    peer.connection.setRemoteDescription(o.sdp, DescriptionType.Answer)
   }
 
   async drop(id: string): Promise<void> {
-    await this.signal.promise
-    await this.delegate!.drop(id)
+    const existed = this.peers[id]
+    if (existed) {
+      existed.close()
+    }
+    delete this.peers[id]
+
     this.state.connectionDrop(id)
   }
 
-  downloadTask(url: string, destination: string, sha1: string, size?: number): BaseTask<boolean> {
-    const callbacks = this.downloadCallbacks
+  createDownloadStream(url: string) {
+    const peerUrl = new URL(url)
+    if (peerUrl.protocol !== 'peer:') {
+      throw new Error(`Bad url: ${url}`)
+    }
+    const filePath = peerUrl.pathname
+    const peer = this.peers[peerUrl.host]
+    if (!peer) {
+      throw new Error()
+    }
+    return peer.createDownloadStream(filePath)
+  }
+
+  createDownloadTask(url: string, destination: string, sha1: string, size?: number): BaseTask<boolean> {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this
     class DownloadPeerFileTask extends AbortableTask<boolean> {
-      constructor(readonly url: string, readonly destination: string, readonly sha1: string, total: number, readonly downloadId: number, readonly delegate: PeerServiceWebRTCFacade) {
+      private stream: Duplex | undefined
+
+      constructor(readonly url: string, readonly destination: string, readonly sha1: string, total: number) {
         super()
         this._to = destination
         this._from = url
@@ -195,28 +271,14 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       }
 
       protected async process(): Promise<boolean> {
-        callbacks[this.downloadId] = (chunk) => {
-          this._progress += chunk
-          this.update(chunk)
-        }
-        const destination = this.destination + '.pending'
-        const result = await this.delegate.download({
-          url: this.url,
-          destination,
-          sha1: this.sha1,
-          size: this.total,
-          id: this.downloadId,
-        })
-        await rename(destination, this.destination)
-        if (this.isPaused || this.isCancelled) {
-          throw new Error('Abort')
-        }
-        delete callbacks[this.downloadId]
-        return result
+        const stream = self.createDownloadStream(this.url)
+        this.stream = stream
+        await pipeline(stream, createWriteStream(this.destination))
+        return true
       }
 
       protected abort(isCancelled: boolean): void {
-        this.delegate.downloadAbort({ id: this.downloadId })
+        this.stream?.destroy()
       }
 
       protected isAbortedError(e: any): boolean {
@@ -224,11 +286,14 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       }
     }
 
-    return new DownloadPeerFileTask(url, destination, sha1, size ?? 0, this.downloadId++, this.delegate!)
+    return new DownloadPeerFileTask(url, destination, sha1, size ?? 0)
   }
 
   async shareInstance(options: ShareInstanceOptions): Promise<void> {
-    await this.signal.promise
-    return await this.delegate!.shareInstance(options.instancePath, options.manifest)
+    this.sharedManifest = options.manifest
+    this.shareInstancePath = options.instancePath
+    for (const sess of Object.values(this.peers)) {
+      sess.send(MessageShareManifest, { manifest: options.manifest })
+    }
   }
 }

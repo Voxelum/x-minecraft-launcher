@@ -193,10 +193,12 @@ export class PeerSession {
     })
     const actualSha1 = hash.digest('hex')
     console.log(`Sha1 not match! ${actualSha1} vs ${sha1}`)
-    if (actualSha1 !== sha1) {
-      // noop
-      await unlink(dest)
-      return false
+    if (sha1) {
+      if (actualSha1 !== sha1) {
+        // noop
+        await unlink(dest)
+        return false
+      }
     }
     return true
   }

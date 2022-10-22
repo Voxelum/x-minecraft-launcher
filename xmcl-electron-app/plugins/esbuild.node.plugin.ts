@@ -23,9 +23,8 @@ export default function createNodePlugin(): Plugin {
       build.onLoad({ filter: /.*/, namespace: 'node-file' }, (args) => {
         return ({
           contents: `
-          import path from ${JSON.stringify(args.path)}
-          try { module.exports = typeof path === 'string' ? require(path) : path }
-          catch (e) { console.error('Fail to require native node module ' + ${JSON.stringify(args.path)}); console.error(e); }
+try { const path = require(${JSON.stringify(args.path)}); module.exports = typeof path === 'string' ? require(path) : path }
+catch (e) { debugger; console.error('Fail to require native node module ' + ${JSON.stringify(args.path)}); console.error(e); }
         `,
         })
       })
@@ -38,7 +37,7 @@ export default function createNodePlugin(): Plugin {
         (args) => ({
           path: args.path,
           namespace: 'file',
-          external: !!build.initialOptions.watch,
+          external: false,
         }),
       )
 
