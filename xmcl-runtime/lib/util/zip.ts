@@ -66,6 +66,10 @@ export class ZipTask extends AbortableTask<void> {
       this.update(buffer.length)
     })
     const promise = pipeline(this.zipFile.outputStream, this.writeStream)
+    const fileClose = new Promise<void>((resolve, reject) => {
+      this.writeStream?.on('close', resolve)
+      this.writeStream?.on('error', reject)
+    })
     if (!(this.zipFile as any).ended) {
       await new Promise<void>((resolve) => {
         this.zipFile.end({ forceZip64Format: false }, (...args: any[]) => {
@@ -74,7 +78,7 @@ export class ZipTask extends AbortableTask<void> {
         })
       })
     }
-    await promise
+    await Promise.all([fileClose, promise])
   }
 
   protected isAbortedError(e: any): boolean {

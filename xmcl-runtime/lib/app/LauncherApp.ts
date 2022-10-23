@@ -273,7 +273,7 @@ export abstract class LauncherApp extends EventEmitter {
 
     try {
       await Promise.race([
-        setTimeout(1000).then(() => false),
+        setTimeout(10000).then(() => false),
         Promise.all(this.managers.map(m => m.dispose())).then(() => true),
       ])
     } finally {

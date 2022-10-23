@@ -1,14 +1,15 @@
 import filenamify from 'filenamify'
 import { createWriteStream, WriteStream } from 'fs'
-import { ensureDir, readFile, writeFile } from 'fs-extra'
-import { join, resolve } from 'path'
+import { ensureDir } from 'fs-extra'
+import { readFile } from 'fs/promises'
+import { basename, join, resolve } from 'path'
 import { PassThrough, pipeline, Transform } from 'stream'
 import { format } from 'util'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
 import { IS_DEV } from '../constant'
 import { Logger } from '../util/log'
-import { gzip, ZipTask } from '../util/zip'
+import { ZipTask } from '../util/zip'
 
 function formatMsg(message: any, options: any[]) { return options.length !== 0 ? format(message, ...options) : format(message) }
 function baseTransform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}`) } }) }
@@ -32,7 +33,7 @@ export default class LogManager extends Manager {
     pipeline(this.loggerEntries.warn, output, () => { })
     pipeline(this.loggerEntries.error, output, () => { })
     this.outputs.push(output)
-    Reflect.set(output, 'name', 'MAIN')
+    Reflect.set(output, 'name', 'main')
 
     this.loggerEntries.error.once('data', () => {
       this.hasError = true
@@ -90,7 +91,7 @@ export default class LogManager extends Manager {
     const loggerPath = resolve(this.logRoot, `renderer.${name}.log`)
     this.log(`Setup renderer logger for window ${name} to ${loggerPath}`)
     const stream = createWriteStream(loggerPath, { encoding: 'utf-8', flags: 'w+' })
-    this.openedStream[name] = stream
+    this.openedStream[loggerPath] = stream
     return stream
   }
 
@@ -124,7 +125,8 @@ export default class LogManager extends Manager {
   }
 
   closeWindowLog(name: string) {
-    this.openedStream[name].close()
+    const loggerPath = resolve(this.logRoot, `renderer.${name}.log`)
+    this.openedStream[loggerPath].close()
   }
 
   async setOutputRoot(root: string) {
@@ -135,16 +137,17 @@ export default class LogManager extends Manager {
       const logPath = join(this.logRoot, `${name}.log`)
       const stream = createWriteStream(logPath, { encoding: 'utf-8', flags: 'w+' })
       output.pipe(stream)
+      this.openedStream[logPath] = stream
     }
     this.log(`Set log root to ${root}`)
   }
 
   async dispose() {
-    const mainLogPath = join(this.logRoot, 'main.log')
     if (this.hasError) {
       const zip = new ZipTask(join(this.logRoot, filenamify(new Date().toJSON()) + '.zip'))
-      zip.addFile(mainLogPath, 'main.log')
-      zip.addFile(mainLogPath, 'main.log')
+      for (const p of Object.keys(this.openedStream)) {
+        zip.addBuffer(await readFile(p), `logs/${basename(p)}`)
+      }
       await zip.startAndWait()
     }
   }
