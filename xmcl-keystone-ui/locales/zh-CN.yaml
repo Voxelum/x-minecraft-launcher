@@ -724,12 +724,14 @@ multiplayer:
   confirm: 确定
   copied: 已复制!
   copy: 复制
+  copyGroupToFriendHint: 让你的小伙伴使用这个 ID 加入联机群组
   copyLocalHint: >
     <span>一段令牌只能用<span style="color: red;
     font-weight:bold;">一次</span>！你不能将一个令牌发送给多个小伙伴！</span> <br> <span
     style="color: rgba(255,255,255,0.7); font-style:
     italic;">如果有多个小伙伴要加入你需要<span style="font-weight: bold; color: rgba(245, 158,
     11)">多次</span>建立连接。</span>
+  createGroup: ''
   createLocalToken: 创建本地令牌
   disconnectDescription: 你确定你要断开和 {user}({id}) 的连接么
   disconnected: 断开连接
@@ -743,10 +745,15 @@ multiplayer:
     style="text-font: bold">本地令牌</span>。 <br> <span style="color:
     rgba(255,255,255,0.7);"> 你不需要等 ICE
     服务器完全收集完毕，当下面的令牌已经有内容并且不怎么变化后，你可以提前将令牌复制给对方。 </span>
+  groupId: 小组 ID
   illegalTokenDescription: 非法的令牌，请确认对方给你的令牌是完整、正确的。
   initiateConnection: 发起连接
+  inviteLink: 邀请链接
   joinConnection: 如果你的伙伴已经创建了连接，你需要选择加入链接
   joinManual: 加入连接
+  joinOrCreateGroup: 加入/创建群组
+  joinOrCreateGroupHint: 从你的小伙伴那获得群组 ID 或自己创建一个群组
+  leaveGroup: 离开群组
   localToken: 本地令牌
   name: 跨局域网联机
   next: 下一步

@@ -6,45 +6,138 @@
     @dragover.prevent
   >
     <v-layout
-      class="overflow-auto h-full flex-col"
+      class="overflow-auto h-full flex-col gap-2"
       @dragover.prevent
       @drop="onDrop"
     >
       <v-card
-        class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5"
+        class="flex py-1 pl-2 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5"
         outlined
         elevation="1"
       >
+        <v-text-field
+          v-model="groupId"
+          class="max-w-40"
+          hide-details
+          dense
+          outlined
+          filled
+          :label="t('multiplayer.groupId')"
+          @click="onCopy(groupId)"
+        />
+        <v-btn
+          :disabled="!state.group"
+          text
+          @click="onCopy(joinGroupUrl)"
+        >
+          <v-icon
+            v-if="!copied"
+            left
+          >
+            content_copy
+          </v-icon>
+          <v-icon
+            v-else
+            left
+            color="success"
+          >
+            check
+          </v-icon>
+          {{ copied ? t('multiplayer.copied') : t('multiplayer.inviteLink') }}
+        </v-btn>
+
+        <div class="text-gray-400 text-sm">
+          <template v-if="state.group">
+            {{ t('multiplayer.copyGroupToFriendHint') }}
+          </template>
+          <template v-else>
+            {{ t('multiplayer.joinOrCreateGroupHint') }}
+          </template>
+        </div>
+
         <div class="flex-grow" />
         <v-btn
           text
-          @click="showShareInstance()"
+          @click="onJoin()"
         >
-          <v-icon left>
-            share
-          </v-icon>
+          <template v-if="!state.group">
+            <v-icon left>
+              add
+            </v-icon>
+            {{ t('multiplayer.joinOrCreateGroup') }}
+          </template>
+          <template v-else>
+            <v-icon
+              color="red"
+              left
+            >
+              delete
+            </v-icon>
+            {{ t('multiplayer.leaveGroup') }}
+          </template>
+        </v-btn>
+
+        <v-tooltip
+          bottom
+          color="black"
+        >
+          <template #activator="{ on }">
+            <v-btn
+              text
+              icon
+              v-on="on"
+              @click="showShareInstance()"
+            >
+              <v-icon>
+                share
+              </v-icon>
+            </v-btn>
+          </template>
           {{ t('multiplayer.share') }}
-        </v-btn>
+        </v-tooltip>
 
-        <v-btn
-          text
-          @click="show()"
+        <v-menu
+          left
+          offset-y
         >
-          <v-icon left>
-            add_call
-          </v-icon>
-          {{ t('multiplayer.initiateConnection') }}
-        </v-btn>
-
-        <v-btn
-          text
-          @click="showReceive()"
-        >
-          <v-icon left>
-            login
-          </v-icon>
-          {{ t('multiplayer.joinManual') }}
-        </v-btn>
+          <template #activator="{ on }">
+            <v-tooltip
+              left
+              color="black"
+            >
+              <template #activator="{ on: onTooltip }">
+                <v-btn
+                  text
+                  icon
+                  v-on="{ ...on, ...onTooltip }"
+                >
+                  <v-icon>
+                    build
+                  </v-icon>
+                </v-btn>
+              </template>
+              Connect Manually
+            </v-tooltip>
+          </template>
+          <v-list>
+            <v-list-item @click="show()">
+              <v-list-item-title>
+                <v-icon left>
+                  add_call
+                </v-icon>
+                {{ t('multiplayer.initiateConnection') }}
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="showReceive()">
+              <v-list-item-title>
+                <v-icon left>
+                  login
+                </v-icon>
+                {{ t('multiplayer.joinManual') }}
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </v-card>
 
       <Hint
@@ -171,7 +264,7 @@
   </v-container>
 </template>
 <script lang=ts setup>
-import { BaseServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, PeerServiceKey, UserServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
@@ -179,17 +272,28 @@ import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
 import { useService } from '@/composables'
 import PlayerAvatar from '../components/PlayerAvatar.vue'
 import Hint from '@/components/Hint.vue'
+import { useCurrentUser } from '@/composables/user'
 
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
 const { show: showReceive } = useDialog('peer-receive')
 const { show: showDelete } = useDialog('deletion')
-const service = useService(PeerServiceKey)
-const connections = computed(() => service.state.connections)
+const { state, joinGroup, leaveGroup, drop } = useService(PeerServiceKey)
+const connections = computed(() => state.connections)
 const { t } = useI18n()
+const { handleUrl } = useService(BaseServiceKey)
+const { gameProfile } = useCurrentUser()
 
+const groupId = ref(state.group)
+const modified = computed(() => groupId.value !== state.group)
 const deleting = ref('')
-const deletingName = computed(() => service.state.connections.find(c => c.id === deleting.value)?.userInfo.name)
+const deletingName = computed(() => state.connections.find(c => c.id === deleting.value)?.userInfo.name)
+const joinGroupUrl = computed(() => `https://xmcl.app/peer?group=${state.group}&inviter=${gameProfile.value.name}`)
+const copied = ref(false)
+
+watch(computed(() => state.group), (newVal) => {
+  groupId.value = newVal
+})
 
 const stateToColor: Record<string, string> = {
   failed: 'error',
@@ -212,7 +316,7 @@ const startDelete = (id: string) => {
   showDelete()
 }
 const edit = (id: string, init: boolean) => {
-  const conn = service.state.connections.find(c => c.id === id)
+  const conn = state.connections.find(c => c.id === id)
   if (conn) {
     if (init) {
       show(id)
@@ -224,16 +328,32 @@ const edit = (id: string, init: boolean) => {
 
 const doDelete = () => {
   console.log(`drop connection ${deleting.value}`)
-  service.drop(deleting.value)
+  drop(deleting.value)
   deleting.value = ''
 }
 
-const { handleUrl } = useService(BaseServiceKey)
 const onDrop = (e: DragEvent) => {
   const url = e.dataTransfer?.getData('xmcl/url')
   if (url) {
     handleUrl(url)
   }
+}
+const onCopy = (val: string) => {
+  if (groupId.value) {
+    navigator.clipboard.writeText(val)
+    copied.value = true
+    setTimeout(() => { copied.value = false }, 3_000)
+  }
+}
+const onJoin = () => {
+  if (!state.group) {
+    joinGroup(groupId.value)
+  } else {
+    leaveGroup()
+  }
+}
+const onCreate = () => {
+  joinGroup()
 }
 
 </script>

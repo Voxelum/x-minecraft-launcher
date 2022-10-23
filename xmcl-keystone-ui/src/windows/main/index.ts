@@ -21,6 +21,8 @@ import { kServerStatusCache, useServerStatusCache } from '@/composables/serverSt
 import { kTaskManager, useTaskManager } from '@/composables/taskManager'
 import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
 import messages from '@intlify/unplugin-vue-i18n/messages'
+import '../../../locales/en.yaml'
+import '../../../locales/zh-CN.yaml'
 
 // to prevent the universal drop activated on self element dragging
 document.addEventListener('dragstart', (e) => {

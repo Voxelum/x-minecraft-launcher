@@ -26,7 +26,7 @@ export const auth: ControllerPlugin = function (this: Controller) {
     server.on('error', errorHandler)
     server.on('listening', () => {
       server.removeListener('error', errorHandler)
-      this.app.localhostAuthServerPort.resolve(port)
+      this.app.localhostServerPort.resolve(port)
       this.app.log(`Successfully bind to the port ${port} for localhost auth server.`)
     })
   }

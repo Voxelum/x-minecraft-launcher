@@ -1,5 +1,6 @@
+import debounce from 'lodash.debounce'
 import { createConnection } from 'net'
-import { DataChannel, DataChannelStream, PeerConnection } from 'node-datachannel'
+import { DataChannel, DataChannelStream, DescriptionType, PeerConnection } from 'node-datachannel'
 import { MessageGetSharedManifestEntry, MessageShareManifestEntry } from './messages/download'
 import { MessageHeartbeatPing, MessageHeartbeatPingEntry, MessageHeartbeatPongEntry } from './messages/heartbeat'
 import { MessageIdentity, MessageIdentityEntry } from './messages/identity'
@@ -9,6 +10,7 @@ import { PeerHost } from './PeerHost'
 import { ServerProxy } from './ServerProxy'
 import { iceServers } from './stun'
 import { Logger } from '/@main/util/log'
+import { createPromiseSignal } from '/@main/util/promiseSignal'
 
 const getRegistry = (entries: MessageEntry<any>[]) => {
   const reg: Record<string, MessageHandler<any>> = {}
@@ -36,6 +38,11 @@ export class PeerSession {
 
   readonly proxies: ServerProxy[] = []
 
+  readonly descriptionSignal = createPromiseSignal()
+
+  public description: { sdp: string; type: DescriptionType } | undefined
+  readonly candidates: Array<{ candidate: string; mid: string }> = []
+
   constructor(
     readonly host: PeerHost,
     readonly logger: Logger,
@@ -48,6 +55,20 @@ export class PeerSession {
     this.connection = new PeerConnection(id, {
       iceServers,
       iceTransportPolicy: 'all',
+    })
+
+    const updateDescriptor = debounce(() => {
+      const description = this.description!
+      host.onDescriptorUpdate(description.sdp, description.type, this.candidates)
+    }, 1500) // debounce for 1.5 second
+
+    this.connection.onLocalCandidate((candidate, mid) => {
+      this.candidates.push({ candidate, mid })
+      updateDescriptor()
+    })
+    this.connection.onLocalDescription((sdp, type) => {
+      this.description = { sdp, type }
+      updateDescriptor()
     })
 
     this.connection.onDataChannel((channel) => {
@@ -102,7 +123,7 @@ export class PeerSession {
   /**
    * Called in initiator
    */
-  async initiate() {
+  initiate() {
     // host
     this.logger.log('peer initialize')
     this.setChannel(this.connection.createDataChannel(this.id, { ordered: true, protocol: 'metadata' }))

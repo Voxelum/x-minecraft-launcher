@@ -711,6 +711,7 @@ multiplayer:
   confirm: Confirm
   copied: Copied!
   copy: Copy
+  copyGroupToFriendHint: Let your friends join group by this id
   copyLocalHint: >
     "Please copy the local SDP text and send it to your object to have your
     object enter this text in the join connection <span>A token can be only used
@@ -719,6 +720,7 @@ multiplayer:
     rgba(255,255,255,0.7); font-style: italic;">If you need to connect multiple
     peers, you need to create <span style="font-weight: bold; color: rgba(245,
     158, 11)">multiple</span> connections.</span>"
+  createGroup: ''
   createLocalToken: Create Local Token
   disconnectDescription: Are you sure you want to disconnect with user {user}({id})?
   disconnected: disconnected
@@ -738,12 +740,17 @@ multiplayer:
     style="text-font: bold">Local token</span>.<br> You do not need to wait
     until the ICE status complete. If the token below remain unchanged, you can
     copy it and send to you peer."
+  groupId: Group Id
   illegalTokenDescription: Illegal token, please make sure the token from your peer is correct
   initiateConnection: Initiate Connection
+  inviteLink: Invite Link
   joinConnection: >-
     If your peer has already initiated a connection, you need to Join
     Connection.
   joinManual: Join
+  joinOrCreateGroup: Join/Create Group
+  joinOrCreateGroupHint: Get group id from your friends or create a group
+  leaveGroup: Leave group
   localToken: Local Token
   name: Multiplayer on LAN
   next: Next

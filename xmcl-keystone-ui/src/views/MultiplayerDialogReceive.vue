@@ -95,7 +95,7 @@
               left
               color="success"
             >
-              content_copy
+              check
             </v-icon>
             {{ t('multiplayer.copy') }}
           </v-btn>

@@ -63,7 +63,7 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
         },
         async (directRedirectToLauncher) => {
           if (IS_DEV) directRedirectToLauncher = true
-          const port = await app.localhostAuthServerPort.promise ?? 25555
+          const port = await app.localhostServerPort.promise ?? 25555
           return (directRedirectToLauncher ? `http://localhost:${port}/auth` : `https://xmcl.app/auth?port=${port}`)
         },
         (response) => {
