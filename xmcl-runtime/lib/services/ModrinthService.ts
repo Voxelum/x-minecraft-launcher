@@ -97,25 +97,40 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
     return this.tags
   }
 
+  async resolveDependencies(version: ProjectVersion) {
+    const visited = new Set<string>()
+
+    const visit = async (version: ProjectVersion): Promise<ProjectVersion[]> => {
+      if (visited.has(version.project_id)) {
+        return []
+      }
+      visited.add(version.project_id)
+
+      const deps = await Promise.all(version.dependencies.map(async (dep) => {
+        if (dep.dependency_type === 'required') {
+          if (dep.version_id) {
+            const depVersion = await this.getProjectVersion(dep.version_id)
+            const result = await visit(depVersion)
+            return [depVersion, ...result]
+          } else {
+            const versions = await this.client.getProjectVersions(dep.project_id, version.loaders, version.game_versions, undefined)
+            const result = await visit(versions[0])
+            return [versions[0], ...result]
+          }
+        }
+      }))
+      return deps.filter(isNonnull).reduce((a, b) => a.concat(b))
+    }
+
+    return await visit(version)
+  }
+
   @Singleton((o) => o.version.id)
   async installVersion({ version, instancePath, ignoreDependencies }: InstallProjectVersionOptions): Promise<InstallModrinthVersionResult> {
     const proj = await this.getProject(version.project_id)
 
     const dependencies = proj.project_type !== 'modpack' || !ignoreDependencies
-      ? await Promise.all(version.dependencies.map(async (dep) => {
-        if (dep.dependency_type === 'required') {
-          if (dep.version_id) {
-            const depVersion = await this.getProjectVersion(dep.version_id)
-            const result = await this.installVersion({ version: depVersion, instancePath })
-            return result
-          } else {
-            const versions = await this.client.getProjectVersions(dep.project_id, version.loaders, version.game_versions, undefined)
-            const result = await this.installVersion({ version: versions[0], instancePath })
-            return result
-          }
-        }
-        return undefined
-      }))
+      ? await Promise.all((await this.resolveDependencies(version)).map(version => this.installVersion({ version, instancePath })))
       : []
 
     const resources = await Promise.all(version.files.map(async (file) => {
