@@ -119,6 +119,10 @@ export interface PeerService extends StatefulService<PeerState>, GenericEventEmi
    */
   joinGroup(id?: string): Promise<void>
   /**
+   * Leave the current group
+   */
+  leaveGroup(): Promise<void>
+  /**
     * Share the instance to other peers
     */
   shareInstance(options: ShareInstanceOptions): Promise<void>
@@ -132,7 +136,7 @@ export interface PeerService extends StatefulService<PeerState>, GenericEventEmi
    *
    * @param offer The compressed `offer` sdp string from other user
    */
-  offer(offer: string): Promise<void>
+  offer(offer: string): Promise<string>
   /**
    * Receive the answer from other user. This will finally create the connection between you and other
    *

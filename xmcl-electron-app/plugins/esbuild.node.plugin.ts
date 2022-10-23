@@ -37,7 +37,7 @@ catch (e) { debugger; console.error('Fail to require native node module ' + ${JS
         (args) => ({
           path: args.path,
           namespace: 'file',
-          external: false,
+          external: !!build.initialOptions.watch,
         }),
       )
 

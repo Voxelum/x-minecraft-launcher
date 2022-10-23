@@ -216,10 +216,9 @@ const { refresh: connect } = useRefreshable(async () => {
 
 const { refresh: initiate } = useRefreshable(async () => {
   step.value += 1
-  id.value = await service.create()
+  id.value = await service.initiate()
   setTimeout(() => { freeze.value = false }, 4000)
   freeze.value = true
-  await service.initiate(id.value)
 })
 
 </script>

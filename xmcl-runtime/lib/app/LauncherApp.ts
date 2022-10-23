@@ -157,7 +157,7 @@ export abstract class LauncherApp extends EventEmitter {
   private initialInstance = ''
   private preferredLocale = ''
 
-  readonly localhostAuthServerPort = createPromiseSignal<number>()
+  readonly localhostServerPort = createPromiseSignal<number>()
 
   abstract getHost(): Host
 
