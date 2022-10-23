@@ -84,10 +84,13 @@
         </v-icon>
         {{ t('userAccount.add') }}
       </v-btn>
-      <v-menu offset-y>
+      <v-menu
+        offset-y
+      >
         <template #activator="{ on }">
           <v-btn
             text
+            :disabled="usersToSwitch.length === 0"
             v-on="on"
           >
             {{ t('userAccount.switch' ) }}
@@ -98,7 +101,7 @@
         </template>
         <v-list>
           <v-list-item
-            v-for="(item) of users.filter(v => selected ? (v.id !== selected.id) : true)"
+            v-for="(item) of usersToSwitch"
             :key="item.id"
             @click="emit('select', item)"
           >
@@ -128,11 +131,13 @@ import { UserProfile } from '@xmcl/runtime-api'
 const emit = defineEmits(['login', 'refresh', 'abort-refresh', 'addservice', 'select', 'remove'])
 const { t } = useI18n()
 const hoverRefresh = ref(false)
-defineProps<{
+const props = defineProps<{
   selected: UserProfile | undefined
   users: UserProfile[]
   refreshing: boolean
   expired: boolean
 }>()
+
+const usersToSwitch = computed(() => props.users.filter(v => props.selected ? (v.id !== props.selected.id) : true))
 
 </script>
