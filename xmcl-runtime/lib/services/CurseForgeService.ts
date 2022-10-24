@@ -1,4 +1,4 @@
-import { FileModLoaderType, SearchOptions } from '@xmcl/curseforge'
+import { File, FileModLoaderType, SearchOptions } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
 import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, CurseforgeState, GetModFilesOptions, InstallFileOptions, InstallFileResult, ProjectType, ResourceDomain } from '@xmcl/runtime-api'
 import { unlink } from 'fs-extra'
@@ -80,6 +80,61 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
     return await this.client.searchMods(searchOptions)
   }
 
+  async resolveFileDependencies(file: File): Promise<File[]> {
+    const visited = new Set<number>()
+
+    const visit = async (file: File): Promise<File[]> => {
+      if (visited.has(file.modId)) {
+        return []
+      }
+      visited.add(file.modId)
+
+      const dependencies = await Promise.all(file.dependencies.map(async (dep) => {
+        if (dep.relationType <= 4) {
+          let gameVersion = ''
+          let modLoaderType: FileModLoaderType = FileModLoaderType.Any
+          if (file.sortableGameVersions) {
+            for (const ver of file.sortableGameVersions) {
+              if (ver.gameVersion) {
+                gameVersion = ver.gameVersion
+              } else if (ver.gameVersionName === 'Forge') {
+                modLoaderType = FileModLoaderType.Forge
+              } else if (ver.gameVersionName === 'Fabric') {
+                modLoaderType = FileModLoaderType.Fabric
+              } else if (ver.gameVersionName === 'Quilt') {
+                modLoaderType = FileModLoaderType.Quilt
+              } else if (ver.gameVersionName === 'LiteLoader') {
+                modLoaderType = FileModLoaderType.LiteLoader
+              }
+            }
+          }
+          try {
+            const files = await this.fetchProjectFiles({
+              gameVersion,
+              modLoaderType,
+              modId: dep.modId,
+              pageSize: 1,
+            })
+            if (files.data[0]) {
+              return [files.data[0], ...await visit(files.data[0])]
+            } else {
+              this.warn(`Skip to install project file ${file.modId}:${file.id} dependency ${file.modId} as no mod files matched!`)
+            }
+          } catch (e) {
+            this.warn(`Fail to install project file ${file.modId}:${file.id} dependency ${file.modId} as no mod files matched!`)
+            this.warn(e)
+          }
+        }
+        return undefined
+      }))
+      return dependencies.filter(isNonnull).reduce((a, b) => a.concat(b), [])
+    }
+
+    const deps = await visit(file)
+
+    return deps
+  }
+
   async installFile({ file, type, projectId, instancePath, ignoreDependencies }: InstallFileOptions): Promise<InstallFileResult> {
     requireString(type)
     requireObject(file)
@@ -104,46 +159,7 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
       this.state.curseforgeDownloadFileStart({ fileId: file.id })
       const destination = join(this.app.temporaryPath, file.fileName)
       const project = await this.fetchProject(projectId)
-      const dependencies = type !== 'modpacks' && !ignoreDependencies
-        ? await Promise.all(file.dependencies.map(async (dep) => {
-          if (dep.relationType <= 4) {
-            let gameVersion = ''
-            let modLoaderType: FileModLoaderType = FileModLoaderType.Any
-            if (file.sortableGameVersions) {
-              for (const ver of file.sortableGameVersions) {
-                if (ver.gameVersion) {
-                  gameVersion = ver.gameVersion
-                } else if (ver.gameVersionName === 'Forge') {
-                  modLoaderType = FileModLoaderType.Forge
-                } else if (ver.gameVersionName === 'Fabric') {
-                  modLoaderType = FileModLoaderType.Fabric
-                } else if (ver.gameVersionName === 'Quilt') {
-                  modLoaderType = FileModLoaderType.Quilt
-                } else if (ver.gameVersionName === 'LiteLoader') {
-                  modLoaderType = FileModLoaderType.LiteLoader
-                }
-              }
-            }
-            try {
-              const files = await this.fetchProjectFiles({
-                gameVersion,
-                modLoaderType,
-                modId: dep.modId,
-                pageSize: 1,
-              })
-              if (files.data[0]) {
-                return await this.installFile({ file: files.data[0], type: 'mc-mods', projectId: dep.modId, instancePath })
-              } else {
-                this.warn(`Skip to install project file ${projectId}:${file.id} dependency ${file.modId} as no mod files matched!`)
-              }
-            } catch (e) {
-              this.warn(`Fail to install project file ${projectId}:${file.id} dependency ${file.modId} as no mod files matched!`)
-              this.warn(e)
-            }
-          }
-          return undefined
-        }))
-        : []
+      const dependencies = ignoreDependencies || type !== 'modpacks' ? [] : await Promise.all((await this.resolveFileDependencies(file)).map(file => this.installFile({ file, type, projectId, instancePath })))
 
       let resource = this.resourceService.getOneResource({ url: uri })
       if (resource) {

@@ -33,6 +33,20 @@ export default function createStaticPlugin(): Plugin {
             pluginData: { resolveDir },
           })
         })
+        build.onResolve({ filter: /^.+\.gif$/g }, async ({ path, resolveDir }) => {
+          return ({
+            path: path + '?static',
+            namespace: 'pre-static',
+            pluginData: { resolveDir },
+          })
+        })
+        build.onResolve({ filter: /^.+\.svg$/g }, async ({ path, resolveDir }) => {
+          return ({
+            path: path + '?static',
+            namespace: 'pre-static',
+            pluginData: { resolveDir },
+          })
+        })
         build.onResolve({ filter: /^.+\.html$/g }, async ({ path, resolveDir }) => {
           return ({
             path: path + '?static',

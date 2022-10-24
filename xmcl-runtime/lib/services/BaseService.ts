@@ -39,6 +39,9 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
       })
       this.checkUpdate()
     })
+    app.gamePathReadySignal.promise.then(() => {
+      this.state.root = app.gameDataPath
+    })
     this.storeManager.subscribeAll([
       'localeSet',
       'allowPrereleaseSet',
