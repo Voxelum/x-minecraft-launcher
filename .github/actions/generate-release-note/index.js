@@ -8,7 +8,7 @@ async function main(output) {
 
     console.log(body)
     for (const l of locales) {
-        let content = body
+        let content = body.replace(`## ${version}`, `## [${version}](#${version})`)
         if (l === 'zh') {
             content = content.replace(/BREAKING CHANGES/g, '破坏性改动').replace(/Features/, '新特性').replace('Bug Fixes & Patches', '修复与补丁')
                 .replace('Refactors', '重构')
