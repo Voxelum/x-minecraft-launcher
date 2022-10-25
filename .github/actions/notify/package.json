@@ -1,0 +1,8 @@
+{
+  "name": "notify",
+  "private": true,
+  "dependencies": {
+    "undici": "^5.11.0",
+    "@actions/core": "^1.6.0"
+  }
+}
