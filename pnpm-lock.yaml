@@ -17,14 +17,6 @@ importers:
     dependencies:
       '@actions/core': 1.9.0
 
-  .github/actions/notify:
-    specifiers:
-      '@actions/core': ^1.6.0
-      undici: ^5.11.0
-    dependencies:
-      '@actions/core': 1.9.0
-      undici: 5.11.0
-
   xmcl-client-vue:
     specifiers:
       '@types/eslint': ^8.2.1
