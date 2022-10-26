@@ -1,6 +1,5 @@
 import { InjectionKey } from 'vue'
 import { InstanceServiceKey } from '@xmcl/runtime-api'
-import { useInstance } from './instance'
 import { useService } from '@/composables'
 
 export const InstanceEditInjectionKey: InjectionKey<ReturnType<typeof useInstanceEdit>> = Symbol('InstanceEdit')
@@ -50,6 +49,7 @@ export function useInstanceEdit() {
       vmOptions: data.vmOptions.split(' ').filter(v => v.length !== 0),
       mcOptions: data.mcOptions.split(' ').filter(v => v.length !== 0),
       assignMemory: data.assignMemory,
+      version: data.version,
       runtime: data.runtime,
       fastLaunch: data.fastLaunch,
       java: data.javaPath,
@@ -82,6 +82,7 @@ export function useInstanceEdit() {
       data.fileServerApi = current.fileApi || ''
       data.description = current.description || ''
       data.runtime = current.runtime
+      data.version = current.version
 
       if (current.server) {
         data.host = current.server.host
