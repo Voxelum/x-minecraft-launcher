@@ -87,8 +87,8 @@ async function buildElectron(config: Configuration, dir: boolean) {
   if (existsSync('build/output/linux-unpacked/resources/app.asar')) {
     await writeHash('sha256', 'build/output/linux-unpacked/resources/app.asar', 'build/output/linux-unpacked/resources/app.asar.sha256')
   }
-  if (existsSync('build/output/mac/xmcl.app/Contents/Resources/app.asar')) {
-    await writeHash('sha256', 'build/output/mac/xmcl.app/Contents/Resources/app.asar', 'build/output/mac/xmcl.app/Contents/Resources/app.asar.sha256')
+  if (existsSync('build/output/mac/X Minecraft Launcher.app/Contents/Resources/app.asar')) {
+    await writeHash('sha256', 'build/output/mac/X Minecraft Launcher.app/Contents/Resources/app.asar', 'build/output/mac/X Minecraft Launcher.app/Contents/Resources/app.asar.sha256')
   }
 
   console.log(
