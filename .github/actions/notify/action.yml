@@ -1,9 +1,0 @@
-name: Notify
-description: Notify discord and kook app about new release
-inputs:
-  version:
-    description: The new version
-runs:
-  using: 'node16'
-  main: index.js
-  

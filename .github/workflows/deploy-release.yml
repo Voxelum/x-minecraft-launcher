@@ -44,9 +44,16 @@ jobs:
         account: xmcl
         container: releases
         directory: ./releases
+  notify:
+    needs:
+      - publish
+    name: Notify Kook and discord
+    runs-on: ubuntu-latest
+    steps:
     - name: Publish Release Notification
-      uses: ./.github/actions/notify
+      uses: voxelum/discord-kook-notify-action@main
       with:
+        version: ${{ github.event.release.tag_name }}
         token: ${{ secrets.KOOK_BOT_TOKEN }}
         discord: ${{ secrets.DISCORD_WEBHOOK }}
   update-winget:
