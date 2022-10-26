@@ -1,12 +1,5 @@
 AppAddInstanceDialog:
   downloadedNotification: 整合包 {name} 下载成功。是否现在创建整合包实例？
-AppLaunchBlockedDialog:
-  launchGeneralException: {}
-  launchInvalidJavaPath: {}
-  launchJavaNoPermission: {}
-  launchNoProperJava: {}
-  launchNoVersionInstalled: {}
-  launchUserStatusRefreshFailed: {}
 AppShareInstanceDialog:
   baseInfo: 分享的基本配置
   cancelShare: 取消分享
@@ -503,9 +496,11 @@ launcherUpdate:
 liteloader:
   name: Liteloader
 localVersion:
+  auto: 自动选择
   delete: 删除本地版本
   deleteDescription: 这将删除本地版本游戏
   empty: 本地沒有安裝任何版本
+  hint: 直接启动某个本地版本
   refresh: 刷新本地版本
   reinstallDescription: 如果你觉得此版本安装的有问题，可以尝试重新安装该版本。
   reinstallTitle: 重新安装 {version}

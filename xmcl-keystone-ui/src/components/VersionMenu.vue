@@ -61,13 +61,13 @@
       </v-list-item>
       <virtual-list
         class="h-full overflow-y-auto max-h-[300px]"
-        :data-sources="items"
+        :data-sources="filteredItems"
         :data-key="'name'"
         :data-component="VersionMenuListTile"
         :keep="16"
         :extra-props="{ select: onSelect }"
       />
-      <v-list-item v-if="items.length === 0">
+      <v-list-item v-if="filteredItems.length === 0">
         {{ emptyText }}
       </v-list-item>
     </v-list>
@@ -78,7 +78,7 @@
 import { VersionMenuItem } from '../composables/versionList'
 import VersionMenuListTile from './VersionMenuListTile.vue'
 
-defineProps<{
+const props = defineProps<{
   items: VersionMenuItem[]
   refreshing?: boolean
   disabled?: boolean
@@ -98,10 +98,15 @@ const data = reactive({
   filterText: '',
 })
 
+const filteredItems = computed(() => props.items.filter(v => !data.filterText || v.name.toLowerCase().indexOf(data.filterText.toLowerCase()) !== -1 || (v.tag?.toLowerCase().indexOf(data.filterText.toLowerCase()) || -1) !== -1))
+
 const onSelect = (version: string) => {
   emit('select', version)
   data.opened = false
 }
+watch(computed(() => data.opened), (v) => {
+  data.filterText = ''
+})
 </script>
 
 <style>

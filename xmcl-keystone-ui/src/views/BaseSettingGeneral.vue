@@ -5,7 +5,7 @@
     subheader
   >
     <v-subheader style="">
-      {{ t("title") }}
+      {{ t("BaseSettingGeneral.title") }}
     </v-subheader>
     <v-list-item>
       <v-list-item-content>
@@ -105,6 +105,7 @@
               solo
               append-icon="arrow_drop_down"
               :placeholder="t('forgeVersion.disable')"
+              :empty-text="t('forgeVersion.empty', { version: data.runtime.minecraft })"
               hide-details
               persistent-hint
               :readonly="true"
@@ -135,6 +136,7 @@
           :items="fabricItems"
           :clear-text="t('fabricVersion.disable')"
           :has-snapshot="true"
+          :empty-text="t('fabricVersion.empty', { version: data.runtime.minecraft })"
           :snapshot.sync="showStableOnly"
           :snapshot-tooltip="t('fabricVersion.showSnapshot')"
           :refreshing="refreshingFabric"
@@ -174,6 +176,7 @@
         <version-menu
           :is-clearable="true"
           :items="quiltItems"
+          :empty-text="t('quiltVersion.empty', { version: data.runtime.minecraft })"
           :clear-text="t('quiltVersion.disable')"
           :refreshing="refreshingQuilt"
           @select="onSelectQuilt"
@@ -214,6 +217,7 @@
           :is-clearable="true"
           :items="optifineItems"
           :clear-text="t('optifineVersion.disable')"
+          :empty-text="t('optifineVersion.empty', { version: data.runtime.minecraft })"
           :refreshing="refreshingOptifine"
           @select="onSelectOptifine"
         >
@@ -228,6 +232,41 @@
               :readonly="true"
               @click:append="on.click($event);"
               @click="refreshOptifine()"
+              v-on="on"
+            />
+          </template>
+        </version-menu>
+      </v-list-item-action>
+    </v-list-item>
+
+    <v-list-item>
+      <!-- <v-list-item-action class="self-center">
+        <v-icon>
+          list
+        </v-icon>
+      </v-list-item-action> -->
+      <v-list-item-content>
+        <v-list-item-title>{{ t('localVersion.title', 1) }}</v-list-item-title>
+        <v-list-item-subtitle>
+          {{ t('localVersion.hint') }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-action>
+        <version-menu
+          :items="localItems"
+          :empty-text="t('localVersion.empty')"
+          @select="onSelectLocalVersion"
+        >
+          <template #default="{ on }">
+            <v-text-field
+              :value="data.version"
+              solo
+              hide-details
+              :placeholder="t('localVersion.auto')"
+              append-icon="arrow_drop_down"
+              persistent-hint
+              :readonly="true"
+              @click:append="on.click($event);"
               v-on="on"
             />
           </template>
@@ -296,9 +335,10 @@
 <script lang=ts setup>
 import VersionMenu from '../components/VersionMenu.vue'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
-import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useOptifineVersionList, useQuiltVersionList } from '../composables/versionList'
+import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useOptifineVersionList, useQuiltVersionList, VersionMenuItem } from '../composables/versionList'
 
 import { injection } from '@/util/inject'
+import { useLocalVersions } from '@/composables/version'
 
 const { data } = injection(InstanceEditInjectionKey)
 const minecraft = computed(() => data.runtime.minecraft)
@@ -307,10 +347,21 @@ const { items: forgeItems, canShowBuggy, recommendedOnly, refresh: refreshForge,
 const { items: fabricItems, showStableOnly, refresh: refreshFabric, refreshing: refreshingFabric } = useFabricVersionList(minecraft, computed(() => data.runtime.fabricLoader ?? ''))
 const { items: quiltItems, refresh: refreshQuilt, refreshing: refreshingQuilt } = useQuiltVersionList(minecraft, computed(() => data.runtime.quiltLoader ?? ''))
 const { items: optifineItems, refresh: refreshOptifine, refreshing: refreshingOptifine } = useOptifineVersionList(minecraft, computed(() => data.runtime.forge ?? ''), computed(() => data.runtime.optifine ?? ''))
+const { localVersions } = useLocalVersions()
+const localItems = computed(() => {
+  return localVersions.value.map(ver => {
+    const result: VersionMenuItem = {
+      name: ver.id,
+      tag: ver.minecraft,
+    }
+    return result
+  })
+})
 
 function onSelectMinecraft(version: string) {
   if (data?.runtime) {
     const runtime = data.runtime
+    data.version = ''
     runtime.minecraft = version
     runtime.forge = ''
     runtime.fabricLoader = ''
@@ -321,6 +372,7 @@ function onSelectForge(version: string) {
     const runtime = data?.runtime
     runtime.forge = version
     if (version) {
+      data.version = ''
       runtime.fabricLoader = ''
       runtime.quiltLoader = ''
     }
@@ -330,6 +382,7 @@ function onSelectFabric(version: string) {
   if (data?.runtime) {
     const runtime = data?.runtime
     if (version) {
+      data.version = ''
       runtime.forge = ''
       runtime.quiltLoader = ''
       runtime.optifine = ''
@@ -340,9 +393,10 @@ function onSelectFabric(version: string) {
 function onSelectQuilt(version: string) {
   if (data?.runtime) {
     const runtime = data?.runtime
+    runtime.quiltLoader = version
     if (version) {
+      data.version = ''
       runtime.forge = runtime.fabricLoader = ''
-      runtime.quiltLoader = version
       runtime.optifine = ''
     }
   }
@@ -350,11 +404,23 @@ function onSelectQuilt(version: string) {
 function onSelectOptifine(version: string) {
   if (data.runtime) {
     const runtime = data.runtime
+    runtime.optifine = version
     if (version) {
+      data.version = ''
       runtime.quiltLoader = runtime.fabricLoader = ''
-      runtime.optifine = version
     }
   }
+}
+function onSelectLocalVersion(version: string) {
+  data.version = version
+  const v = localVersions.value.find(ver => ver.id === version)!
+  data.runtime.minecraft = v.minecraft
+  data.runtime.forge = v.forge
+  data.runtime.liteloader = v.liteloader
+  data.runtime.fabricLoader = v.fabric
+  data.runtime.optifine = v.optifine
+  data.runtime.quiltLoader = v.quilt
+  console.log(v)
 }
 
 const { t } = useI18n()

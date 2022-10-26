@@ -466,17 +466,19 @@ launcherUpdate:
 liteloader:
   name: LiteLoader
 localVersion:
+  auto: Auto Computed
   delete: Delete Local Version
   deleteDescription: >-
     This operation will delete the local version json & jar. You have to
     redownload it if you want to use it again.
   empty: No Version Installed
+  hint: Launch a specific local version directly
   refresh: Refresh Versions
   reinstallDescription: >-
     If you think this version installation has some problems, you can try to
     reinstall it.
   reinstallTitle: Reinstall {version}
-  title: Local Versions
+  title: Local Version | Local Versions
 logLevel:
   error: Error
   info: Info

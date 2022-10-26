@@ -28,6 +28,7 @@ export function useInstanceEdit() {
     minMemory: instance.value?.minMemory > 0 ? instance.value.minMemory : 0,
 
     runtime: { ...instance.value.runtime },
+    version: '',
 
     fastLaunch: false,
     assignMemory: true as true | 'auto' | false,
