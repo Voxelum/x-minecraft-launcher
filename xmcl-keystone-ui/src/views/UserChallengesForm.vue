@@ -12,7 +12,7 @@
           class="white--text"
           xs1
         >
-          <span class="headline">{{ $t('user.challenges') }}</span>
+          <span class="headline">{{ t('user.challenges') }}</span>
         </v-flex>
         <v-flex
           v-if="refreshing"
@@ -69,7 +69,7 @@
               <a
                 style="z-index: 1;"
                 href="https://account.mojang.com/me/changeSecretQuestions"
-              >{{ $t('user.forgetChallenges') }}</a>
+              >{{ t('user.forgetChallenges') }}</a>
             </v-flex>
             <v-flex
               d-flex
@@ -86,7 +86,7 @@
                 >
                   check
                 </v-icon>
-                {{ $t('user.submitChallenges') }}
+                {{ t('user.submitChallenges') }}
               </v-btn>
             </v-flex>
           </v-layout>
@@ -102,6 +102,7 @@ import { useCurrentUser, useMojangSecurity } from '../composables/user'
 export default defineComponent({
   props: { show: Boolean },
   setup(props) {
+    const { t } = useI18n()
     const { userProfile } = useCurrentUser()
     const { submit, challenges, error, security, refreshing, loading, check } = useMojangSecurity(userProfile)
     function updateAnswer(index: number, content: string) {
@@ -114,6 +115,7 @@ export default defineComponent({
       }
     })
     return {
+      t,
       loading,
       updateAnswer,
       challenges,
