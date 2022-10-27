@@ -15,7 +15,7 @@
           :complete="step > 1"
           step="1"
         >
-          {{ $t('baseSetting.title') }}
+          {{ t('baseSetting.title') }}
         </v-stepper-step>
         <v-divider />
       </v-stepper-header>
@@ -50,7 +50,7 @@
               :disabled="!server.host || !server.port"
               @click="refresh"
             >
-              {{ $t('server.ping') }}
+              {{ t('server.ping') }}
             </v-btn>
           </stepper-footer>
         </v-stepper-content>
@@ -79,6 +79,7 @@ export default defineComponent({
     show: withDefault(Boolean, () => false),
   },
   setup(props) {
+    const { t } = useI18n()
     const { create, reset: _reset, data: creationData } = useInstanceCreation()
     const { isShown } = useDialog('add-server-dialog')
     provide(CreateOptionKey, creationData)
@@ -137,6 +138,7 @@ export default defineComponent({
     })
 
     return {
+      t,
       ...toRefs(data),
       ...creationData,
       acceptingVersion,
