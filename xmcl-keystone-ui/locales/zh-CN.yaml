@@ -84,7 +84,8 @@ browseApp:
   delete: 删除
   launch: 启动并设置为默认
 cancel: 取消
-checkUpdate: 检查更新
+checkUpdate:
+  name: 检查更新
 confirm: 开始
 copyClipboard:
   success: 复制到剪贴板
@@ -890,6 +891,7 @@ setting:
     auto: 自动 (根据网络决定)
     official: 官方 (Mojang)
   appearance: 外观
+  appxUpdateHint: 启动器将下载并执行安装包，如果安装包解析失败，请尝试自行打开安装文件更新。
   autoDownload: 自动下载
   autoDownloadDescription: 自动下载最新的版本
   autoInstallOnAppQuit: 自动安装
