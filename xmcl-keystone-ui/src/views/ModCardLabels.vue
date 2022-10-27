@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-1 flex-wrap mt-1">
+  <div class="flex gap-1 flex-wrap mt-1 justify-end">
     <v-chip
       small
       :outlined="darkTheme"
@@ -10,7 +10,8 @@
     >
       {{ source.id }}
     </v-chip>
-    <v-tooltip
+
+    <!-- <v-tooltip
       v-for="com of Object.entries(source.compatibility)"
       :key="com[0]"
       top
@@ -41,7 +42,30 @@
         </v-chip>
       </template>
       {{ getCompatibleTooltip(com[1]) }}
-    </v-tooltip>
+    </v-tooltip> -->
+
+    <v-chip
+      v-for="com of Object.entries(source.compatibility)"
+      :key="com[0]"
+      small
+      label
+      outlined
+    >
+      <v-avatar left>
+        <img
+          v-if="getDepIcon(com[0], source.dependenciesIcon[com[0]])"
+          :src="getDepIcon(com[0], source.dependenciesIcon[com[0]])"
+        >
+        <v-icon v-else>
+          $vuetify.icons.package
+        </v-icon>
+      </v-avatar>
+      {{ com[0] }}
+      {{ com[1].requirements || '⭕' }}
+      <v-avatar right>
+        {{ getCompatibleIcon(com[1]) }}
+      </v-avatar>
+    </v-chip>
 
     <v-chip
       v-for="(tag, index) in source.tags"

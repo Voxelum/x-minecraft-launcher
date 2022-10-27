@@ -1,5 +1,5 @@
 <template>
-  <v-card
+  <div
     v-selectable-card
     v-long-press="emitSelect"
     v-context-menu="contextMenuItems"
@@ -11,8 +11,8 @@
       subsequence: source.subsequence === true,
       dragged: source.dragged,
     }"
-    class="draggable-card mod-card rounded-lg transition-all duration-200 shadow min-w-200"
-    style="margin-top: 10px; padding: 0 10px; content-visibility: auto;"
+    class="draggable-card mod-card transition-all duration-200"
+    style="content-visibility: auto;"
     @dragstart="onDragStart"
     @dragend="emit('dragend', $event)"
     @mouseenter="emit('mouseenter', $event)"
@@ -64,29 +64,32 @@
         class="flex-grow py-2"
       >
         <h3
-          class="px-1"
+          class="px-1 flex items-center gap-2"
         >
           <text-component
             v-if="!source.subsequence"
+            class="flex-shrink whitespace-nowrap"
             :source="source.name"
           />
-          <span class="text-gray-400 text-sm">
+          <span class="text-gray-400 text-sm flex-shrink">
             {{ source.version }}
           </span>
+          <div class="flex-grow" />
+          <v-lazy>
+            <mod-card-labels
+              class="flex-grow"
+              :source="source"
+              :on-edit-tag="onEditTag"
+              :on-delete-tag="onDeleteTag"
+            />
+          </v-lazy>
         </h3>
-        <v-card-text
+        <!-- <v-card-text
           v-if="!source.subsequence"
           class="px-1 py-0"
         >
           <text-component :source="source.description" />
-        </v-card-text>
-        <v-lazy>
-          <mod-card-labels
-            :source="source"
-            :on-edit-tag="onEditTag"
-            :on-delete-tag="onDeleteTag"
-          />
-        </v-lazy>
+        </v-card-text> -->
       </div>
       <v-flex
         :key="3"
@@ -94,14 +97,17 @@
         @click.stop
         @mousedown.stop
       >
-        <v-lazy>
-          <v-switch
+        <v-icon>
+          add
+        </v-icon>
+        <!-- <v-lazy> -->
+        <!-- <v-switch
             v-model="enabled"
-          />
-        </v-lazy>
+          /> -->
+        <!-- </v-lazy> -->
       </v-flex>
     </transition-group>
-  </v-card>
+  </div>
 </template>
 
 <script lang=ts setup>

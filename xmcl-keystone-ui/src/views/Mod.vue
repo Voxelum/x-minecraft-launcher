@@ -7,7 +7,7 @@
       :indeterminate="true"
     />
 
-    <mod-header :show-compatible.sync="filterInCompatible" />
+    <ModHeader :show-compatible.sync="filterInCompatible" />
 
     <!-- <div class="flex gap-2 p-2 underline">
       <a>
@@ -25,56 +25,85 @@
       @dragover.prevent
       @drop="onDropToImport"
     >
-      <refreshing-tile
+      <RefreshingTile
         v-if="loading"
         class="h-full"
       />
-      <hint
+      <Hint
         v-else-if="items.length === 0"
         icon="save_alt"
         :text="t('mod.dropHint')"
         :absolute="true"
         class="h-full z-0"
       />
-      <transition-group
-        v-else
-        name="transition-list"
-        tag="div"
-        class="flex flex-col overflow-auto h-full w-full"
-        :class="{ 'selection-mode': isSelectionMode }"
-      >
-        <mod-card
-          v-for="(item, index) in items"
-          :key="item.hash"
-          v-observe-visibility="
-            // @ts-expect-error
-            (visible) => onVisible(visible, index)"
-          :source="item"
-          :selection="isSelectionMode"
-          @enable="onEnable"
-          @dragstart="onItemDragstart(item)"
-          @tags="item.tags = $event"
-          @select="isSelectionMode = true;"
-          @click="onClick($event, index)"
-          @delete="startDelete(item)"
-        />
-        <div
-          key="dummy"
-          class="min-h-10"
-        />
-      </transition-group>
-      <delete-dialog
+      <div class="flex gap-2 overflow-auto">
+        <TransitionGroup
+          name="transition-list"
+          tag="div"
+          class="flex flex-col overflow-auto h-full w-full pt-4"
+          :class="{ 'selection-mode': isSelectionMode }"
+        >
+          <ModCard
+            v-for="(item, index) in items"
+            :key="item.hash"
+            v-observe-visibility="
+              // @ts-expect-error
+              (visible) => onVisible(visible, index)"
+            :source="item"
+            :selection="isSelectionMode"
+            @enable="onEnable"
+            @dragstart="onItemDragstart(item)"
+            @tags="item.tags = $event"
+            @select="isSelectionMode = true;"
+            @click="onClick($event, index)"
+            @delete="startDelete(item)"
+          />
+          <div
+            key="dummy"
+            class="min-h-10"
+          />
+        </TransitionGroup>
+
+        <TransitionGroup
+          name="transition-list"
+          tag="div"
+          class="flex flex-col overflow-auto h-full w-full pt-4"
+          :class="{ 'selection-mode': isSelectionMode }"
+        >
+          <ModCard
+            v-for="(item, index) in items"
+            :key="item.hash"
+            v-observe-visibility="
+              // @ts-expect-error
+              (visible) => onVisible(visible, index)"
+            :source="item"
+            :selection="isSelectionMode"
+            @enable="onEnable"
+            @dragstart="onItemDragstart(item)"
+            @tags="item.tags = $event"
+            @select="isSelectionMode = true;"
+            @click="onClick($event, index)"
+            @delete="startDelete(item)"
+          />
+          <div
+            key="dummy"
+            class="min-h-10"
+          />
+        </TransitionGroup>
+      </div>
+
+      <DeleteDialog
         :width="400"
         persistent
         :title="t('mod.deletion')"
         @cancel="cancelDelete()"
         @confirm="confirmDelete()"
       >
-        <mod-delete-view :items="deletingMods" />
-      </delete-dialog>
+        <ModDeleteView :items="deletingMods" />
+      </DeleteDialog>
     </div>
     <div class="absolute w-full left-0 bottom-0 flex items-center justify-center mb-5 pointer-events-none">
-      <float-button
+      <FloatButton
         class="pointer-events-auto"
         :deleting="isDraggingMod"
         :visible="isDraggingMod || isModified"

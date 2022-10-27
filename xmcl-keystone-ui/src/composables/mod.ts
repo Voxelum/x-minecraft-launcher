@@ -120,6 +120,42 @@ export function useInstanceMods() {
   let enabledCache = [] as ModItem[]
 
   function updateEnabledMods() {
+  // function updateEnabledMods() {
+  //   const enabled = state.mods.map(getModItemFromResource)
+  //   const enabledItemHashes = new Set(state.mods.map(m => m.hash))
+  //   for (const item of enabled) {
+  //     item.enabled = true
+  //     item.enabledState = true
+  //   }
+
+    //   const iconMap: Record<string, string> = {}
+    //   for (const item of result) {
+    //     // Update icon map
+    //     iconMap[item.id] = item.icon
+
+    //     // Update state
+    //     const old = cachedDirectory.get(item.hash)
+    //     if (old) {
+    //       item.selected = old.selected
+    //       item.dragged = old.dragged
+    //     }
+    //   }
+
+    //   cachedDirectory.clear()
+    //   for (const item of result) {
+    //     cachedDirectory.set(item.hash, item)
+    //   }
+
+    //   for (const item of result) {
+    //     for (const [id, entry] of Object.entries(item.compatibility)) {
+    //       item.dependenciesIcon[id] = iconMap[id]
+    //     }
+    //   }
+
+    //   items.value = result
+    // }
+
+    // function updateItems() {
     const enabled = state.mods.map(getModItemFromResource)
     for (const item of enabled) {
       item.enabled = true
