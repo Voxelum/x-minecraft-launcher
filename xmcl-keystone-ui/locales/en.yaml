@@ -95,7 +95,8 @@ browseApp:
   delete: Delete
   launch: Launch and set as Default
 cancel: Cancel
-checkUpdate: Check Update
+checkUpdate:
+  name: Check Update
 confirm: Start
 copyClipboard:
   success: Copy to clipboard
@@ -890,6 +891,9 @@ setting:
     auto: Auto (Determine by network)
     official: Official (Mojang)
   appearance: Appearance
+  appxUpdateHint: >-
+    The launcher will download and execute installer. If popup installer failed,
+    please run it manually.
   autoDownload: Auto Download
   autoDownloadDescription: Auto Download Update if it's Avaiable
   autoInstallOnAppQuit: Autoinstall

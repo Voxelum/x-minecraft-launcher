@@ -38,6 +38,8 @@ confirm: Начать
 copyClipboard:
   success: Скопировать в буфер обмена
 create: Создать
+checkUpdate:
+  name: Проверить обновление
 curseforge:
   createdDate: Создан
   downloadOnly: Скачать
