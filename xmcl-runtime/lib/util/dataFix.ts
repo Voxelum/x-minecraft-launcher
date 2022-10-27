@@ -37,7 +37,7 @@ export async function fixResourceSchema({ log, warn }: Logger, filePath: string,
     // fix forge metadata
     log(`Fix ${filePath} file version: ${schema.version} -> ${RESOURCE_FILE_VERSION}`)
     const fs = await openFileSystem(join(dataRoot, schema.location + schema.ext))
-    const data = await forgeModParser.parseMetadata(fs, filePath, {})
+    const data = await forgeModParser.parseMetadata(fs, basename(filePath), {})
     fs.close()
     schema.metadata = data
     schema.version = RESOURCE_FILE_VERSION

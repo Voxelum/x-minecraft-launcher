@@ -13,12 +13,12 @@ export const forgeModParser: ResourceParser<ForgeModCommonMetadata> = ({
     }
     return undefined
   },
-  parseMetadata: async (fs, filePath) => {
+  parseMetadata: async (fs, fileName) => {
     try {
       return await readForgeMod(fs).then(normalizeForgeModMetadata)
     } catch (e) {
       if (e instanceof ForgeModParseFailedError) {
-        return forceForgeModMetadata(e, basename(filePath, '.jar'))
+        return forceForgeModMetadata(e, basename(fileName, '.jar'))
       }
       throw e
     }
