@@ -514,6 +514,7 @@ logMonitor: 游戏日志检测
 login:
   dropHint: 将验证链接拖入此处手工验证
   forgetPassword: 忘记密码?
+  hint: 请点击添加账号登录
   login: 登陆
   manualLoginUrl: 如果浏览器没有自动打开，请点击此链接来验证!
   signup: 注册

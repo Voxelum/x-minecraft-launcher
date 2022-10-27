@@ -488,6 +488,7 @@ logMonitor: Log Monitor
 login:
   dropHint: Drop the link with authcode here to manually login
   forgetPassword: Forget Password?
+  hint: Please click Add Account to login
   login: Login
   manualLoginUrl: If the browser doesn't show up, please click this link to auth!
   signup: Sign up
