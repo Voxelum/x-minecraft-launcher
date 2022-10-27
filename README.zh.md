@@ -43,9 +43,9 @@
 - 💻 **跨平台**。启动器基于 Electron，支持 🗔 Windows，🍎 Mac 和 🐧 Linux。
 - 📚 **多实例**。使用多实例实现完全的版本隔离，保证不同启动配置不会互相影响。
 - 🗂 **统一管理一切资源**。使用多实例时 Mods 使用链接来安装，节省您大量的空间。Mod 再也不用复制的到处都是了！😆
-- 🔥 **内置支持 Curseforge，Modrinth 下载**。您可以在启动器内完成下载与安装！
-- 📦 支持 Curseforge, Modrinth 与 Mcbbs 格式整合包的导入与导出。
-- 🔒 **支持多种账号系统**。内置支持 Microsoft 和 Mojang Yggdrasil API。内置支持 litte skin，您也可以自行添加新的第三方验证服务！
+- 🔥 **内置支持 CurseForge，Modrinth 下载**。您可以在启动器内完成下载与安装！
+- 📦 支持 CurseForge, Modrinth 与 MCBBS 格式整合包的导入与导出。
+- 🔒 **支持多种账号系统**。内置支持 Microsoft 和 Mojang Yggdrasil API。内置支持 LittleSkin，您也可以自行添加新的第三方验证服务！
 - 🔗 **用户之间的 P2P 联机**。两人不用担心不在一个局域网下没法 LAN 联机的问题了！
 - 🔑 **代码签名与现代的安装模式**。在 Windows 中下载 XMCL 的 `appx` 与 `appinstaller`，您不会再看到浏览器的危险软件提示，因为 XMCL 已经获得签名证书！😎
 
@@ -57,7 +57,7 @@
 
 [MIT](LICENSE)
 
-## 赞助 (aifadian)
+## 赞助 (爱发电)
 
 <!-- afdian-start -->
 <div style="display: flex; align-items: center; justify-items:center; gap: 0.2em; flex-wrap: wrap;">
