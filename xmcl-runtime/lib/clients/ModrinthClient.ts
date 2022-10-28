@@ -1,7 +1,11 @@
 import { Category, GameVersion, License, Loader, Project, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
 import { Dispatcher, request } from 'undici'
+import { InMemoryTtlCache } from '../util/cache'
 
 export class ModrinthClient {
+  private projectCache = new InMemoryTtlCache<Project>()
+  private versionCache = new InMemoryTtlCache<ProjectVersion[]>()
+
   constructor(private dispatcher?: Dispatcher) { }
 
   async searchProjects(options: SearchProjectOptions, signal?: AbortSignal): Promise<SearchResult> {
@@ -26,11 +30,14 @@ export class ModrinthClient {
 
   async getProject(projectId: string, signal?: AbortSignal): Promise<Project> {
     if (projectId.startsWith('local-')) { projectId = projectId.slice('local-'.length) }
+    const cached = this.projectCache.get(projectId)
+    if (cached) return cached
     const response = await request(`https://api.modrinth.com/v2/project/${projectId}`, {
       dispatcher: this.dispatcher,
       signal,
     })
     const project: Project = await response.body.json()
+    this.projectCache.put(projectId, project)
     return project
   }
 
@@ -39,6 +46,11 @@ export class ModrinthClient {
     if (loaders) query.loaders = JSON.stringify(loaders)
     if (gameVersions) query.game_versions = JSON.stringify(gameVersions)
     if (featured !== undefined) query.featured = featured
+    const key = projectId + JSON.stringify(query)
+    const cached = this.versionCache.get(key)
+    if (cached) {
+      return cached
+    }
     const response = await request(`https://api.modrinth.com/v2/project/${projectId}/version`, {
       query,
       dispatcher: this.dispatcher,
@@ -49,6 +61,7 @@ export class ModrinthClient {
       throw new Error(text)
     }
     const versions: ProjectVersion[] = await response.body.json()
+    this.versionCache.put(key, versions)
     return versions
   }
 

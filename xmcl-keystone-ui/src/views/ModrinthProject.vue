@@ -135,7 +135,7 @@ const { refresh, refreshing } = useRefreshable(async () => {
   installTo.value = project.value?.project_type === 'mod' ? instanceState.path : ''
 })
 const onInstall = async (version: ProjectVersion) => {
-  await installVersion({ version: version, instancePath: installTo.value })
+  await installVersion({ version: version, instancePath: installTo.value, project: project.value })
 }
 
 const onCreate = (v: ProjectVersion) => {
