@@ -5,22 +5,22 @@ Here we have a overview of the toolchain & runtime of this project
 
 For the whole project, we have
 
-- [nodejs 16](https://nodejs.org/). The core libraries base environment. Some build scripts are based on node 14.
-- [electron 21](https://electron.atom.io). The actual runtime of the launcher.
+- [Node.js 16](https://nodejs.org/). The core libraries base environment. Some build scripts are based on Node 14.
+- [Electron 21](https://electron.atom.io). The actual runtime of the launcher.
 - [pnpm](https://pnpm.io/). Used for monorepo package management.
-- [typescript](https://www.typescriptlang.org/). The whole project uses as much typescript as possible.
+- [TypeScript](https://www.typescriptlang.org/). The whole project uses as much TypeScript as possible.
 
-For main process (electron), we have
+For main process (Electron), we have
 
-- [esbuild](https://esbuild.github.io/). We use esbuild to build our main process typescript.
+- [esbuild](https://esbuild.github.io/). We use esbuild to build our main process TypeScript.
 
 For renderer side, which is the pure front-end
 
-- [vue](https://vuejs.org). Used to build user interfaces.
-- [vite](https://vitejs.dev/). Used as our build system.
-- [vuetify](https://vuetifyjs.com/). Used as a component library.
-- [windicss](https://windicss.org/). Used for css tooling.
-- [vue composition API](https://github.com/vuejs/composition-api). The bridge for compositional API for vue 2. Once the vuetify upgrade to the vue 3, the vue will be upgraded and this will be removed.
+- [Vue](https://vuejs.org). Used to build user interfaces.
+- [Vite](https://vitejs.dev/). Used as our build system.
+- [Vuetify](https://vuetifyjs.com/). Used as a component library.
+- [Windi CSS](https://windicss.org/). Used for CSS tooling.
+- [Vue Composition API](https://github.com/vuejs/composition-api). The bridge for compositional API for Vue 2. Once the Vuetify upgrade to the Vue 3, the Vue will be upgraded and this will be removed.
 
 ### Project structure
 
@@ -30,23 +30,23 @@ For renderer side, which is the pure front-end
   - The linked git repo [launcher-core](https://github.com/voxelum/minecraft-launcher-core-node) is a git submodule in this project.
   - Implements the core Minecraft install & launch logic, and expose them as a library.
 - xmcl-electron-app
-  - Use electron to implement the runtime.
+  - Use Electron to implement the runtime.
   - This directly depends on the xmcl-runtime.
   - This implicitly depends on xmcl-keystone-ui (temporally, might be removed later?)
 - xmcl-keystone-ui
   - The major default UI of the launcher.
-  - 100% browser compatible. No electron API involved in this project.
+  - 100% browser compatible. No Electron API involved in this project.
 - xmcl-runtime
-  - The core implementation of the launcher architecture. This only depends on nodejs, and does not require electron runtime.
+  - The core implementation of the launcher architecture. This only depends on Node.js, and does not require Electron runtime.
 - xmcl-runtime-api
-  - This is the shared code & API for xmcl runtime. It can be used for renderer app (browser side)
+  - This is the shared code & API for XMCL runtime. It can be used for renderer app (browser side)
 
 
 ### Concept/Structure
 
-The launcher is composed by "server/client" or "main/renderer". They communicates with each other by electron's [ipc main](https://electronjs.org/docs/api/ipc-main) and [ipc renderer](https://electronjs.org/docs/api/ipc-renderer).
+The launcher is composed by "server/client" or "main/renderer". They communicates with each other by Electron's [ipcMain](https://electronjs.org/docs/api/ipc-main) and [ipcRenderer](https://electronjs.org/docs/api/ipc-renderer).
 
-The main is the "backend" of the launcher. It manages the windows, and all the persistent data/state of the app. It manages the state by [vuex](https://vuex.vuejs.org/). Once the state/data has been modified by a [vuex commit](https://vuex.vuejs.org/guide/mutations.html), it will broadcast a ipc message containing the [mutation info]((https://vuex.vuejs.org/guide/mutations.html)) the all the renderer. At the same time, it will trigger the save action of the modified module to write the change on disk.
+The main is the "backend" of the launcher. It manages the windows, and all the persistent data/state of the app. It manages the state by [Vuex](https://vuex.vuejs.org/). Once the state/data has been modified by a [Vuex commit](https://vuex.vuejs.org/guide/mutations.html), it will broadcast a ipc message containing the [mutation info]((https://vuex.vuejs.org/guide/mutations.html)) the all the renderer. At the same time, it will trigger the save action of the modified module to write the change on disk.
 
 The renderer is/are just (a) browsers which communicate with main. It maintains a copy of the store. (I can be a full copy, or a partial copy) User's input will trigger an [action](https://vuex.vuejs.org/guide/actions.html) or [commit](https://vuex.vuejs.org/guide/mutations.html), and it will be sync to the main. Though, it does't require any extra action for developer. The local commit and action will automatically send to main. The developer can treat the renderer as a normal vue application.
 
@@ -57,7 +57,7 @@ If you are interested in a specific page logic, you can go to `xmcl-keystone-ui/
 See some examples:
 
 1. `AppSideBar.vue` is the sidebar component, and the `AppSideBarInstanceItem.vue` is the component used in `AppSideBar.vue` representing an instance.
-2. `Curseforge.vue` is the curseforge page component, and the `CurseforgeCategories.vue` is the category card used in `Curseforge.vue` page.
+2. `Curseforge.vue` is the CurseForge page component, and the `CurseforgeCategories.vue` is the category card used in `Curseforge.vue` page.
 
 If you are interested in core logic, you can goto `xmcl-runtime/services/`. Each file under it are representing a service for a specific domain/aspect of the launcher logic. During this process, you should also aware about the corresponding files under the `xmcl-runtime-api/services/`, which declare the interface of the actual services.
 
@@ -98,11 +98,11 @@ pnpm install
 ```
 
 <details>
-  <summary> 解决中国国内安装依赖（如electron）太慢的办法 </summary>
+  <summary> 解决中国国内安装依赖（如 Electron）太慢的办法 </summary>
 
-  打开你的 git bash，在`pnpm i` 前面加上 `registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/"`。使用国内阿里提供的npm以及electron的镜像。
+  打开你的 git bash，在 `pnpm i` 前面加上 `registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/"`。使用国内阿里提供的 npm 以及 Electron 的镜像。
 
-  最终输入的command也就是
+  最终输入的 command 也就是
 
   ```bash
   registry=https://registry.npm.taobao.org electron_mirror="https://npm.taobao.org/mirrors/electron/" pnpm i
@@ -123,7 +123,7 @@ Go `Run and Debug` section, use the profile `Electron: Main (launch)` to start t
 Open one terminal
 
 ```bash
-# Start a dev server for ui
+# Start a dev server for UI
 npm run dev:renderer
 ```
 
@@ -140,32 +140,32 @@ You have code change, and you want to update the change to the running launcher 
 
 ##### For Browser process
 
-The vite provide hot reload, it should update automatically. If something went wrong, you can refresh the browser by ctrl+r.
+The Vite provide hot reload, it should update automatically. If something went wrong, you can refresh the browser by `Ctrl+R`.
 
 ##### For Main process
 
-If you use VSCode to launch the launcher, after you changed the code, you can press the reload button on vscode debugger.
+If you use VSCode to launch the launcher, after you changed the code, you can press the reload button on VSCode debugger.
 
-If you don't use VSCode to launch, it should close electron and reload automatically.
+If you don't use VSCode to launch, it should close Electron and reload automatically.
 
 ### Found something wrong in launcher core
 
-The launcher core is in [separated project](https://github.com/voxelum/minecraft-launcher-core-node) written in typescript. 
+The launcher core is in [separated project](https://github.com/voxelum/minecraft-launcher-core-node) written in TypeScript. 
 
 Please open issue there if you identify any issue related to it.
 
 #### Recommended way to interact with Vuex
 
 - Create a new file for hook in `src/renderer/composables` folder, and export the hook throw `src/renderer/composables/index.ts`
-  - Wrap vuex operation in your hook
-- Import your hook by `import { yourHook } from '/@/composables'` in your vue file
-- Use hook in vue file without directly access of vuex
+  - Wrap Vuex operation in your hook
+- Import your hook by `import { yourHook } from '/@/composables'` in your Vue file
+- Use hook in Vue file without directly access of Vuex
 
 ### VSCode debugger 
 
-The project includes vscode debugger configs. You can add breakpoint on line and debug. Currently, VSCode debugger method only supports debug on main process. 
+The project includes VSCode debugger configs. You can add breakpoint on line and debug. Currently, VSCode debugger method only supports debug on main process. 
 
-(You can use chrome devtool for renderer process anyway)
+(You can use Chrome Devtools for renderer process anyway)
 
 We have two options now:
 
@@ -215,7 +215,7 @@ pnpm build:renderer
 
 Unless the code under `xmcl-keystone-ui` changed, you don't need to build this again.
 
-Then, you can build electron bundling with frontend you just build:
+Then, you can build Electron bundling with frontend you just build:
 
 ```bash
 pnpm build:all

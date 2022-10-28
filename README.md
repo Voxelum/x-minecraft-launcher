@@ -38,14 +38,14 @@ Visit the [official site](https://xmcl.app) to download the app!
 
 ## Features
 
-- 📥 **Download & auto complete**. Support download `Minecraft`, `forge`, `fabric`, `quilt`, `optifine`, `jvm` from official or third party mirrors.
-- ⚡️ **Download Fast**. Reuse socket via http/https agents, and download the files in parts concurrently.
-- 💻 **Cross platform**. The launcher is based on Electron, and supports 🗔 Windows 10/11, 🍎 Mac, and 🐧 Linux.
+- 📥 **Download & auto complete**. Support download `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` from official or third party mirrors.
+- ⚡️ **Download Fast**. Reuse socket via HTTP/HTTPS agents, and download the files in parts concurrently.
+- 💻 **Cross platform**. The launcher is based on Electron, and supports 🗔 Windows 10/11, 🍎 MacOS, and 🐧 Linux.
 - 📚 **Multi-Instancing**. Users can create multiple instances to isolate the different versions, mods and launch settings.
 - 🗂 **Manage all resources**. Use (hard/symbolic) links to install resources in instances, keep your disk usage optimal. No copies of mods everywhere! 😆
-- 🔥 **Built-in support of Curseforge, Modrinth**. You can download resources inside the launcher.
-- 📦 **Support import/export** Curseforge & Modrinth modpacks with compliance!
-- 🔒 **Support multiple account systems**. Built-in Microsoft login and Mojang Yggdrasil API. It also has builtin support of [ely.by](https://ely.by/) and [littleskin.cn](littleskin.cn). You can also add third-party authentication servers!
+- 🔥 **Built-in support of CurseForge, Modrinth**. You can download resources inside the launcher.
+- 📦 **Support import/export** CurseForge & Modrinth modpacks with compliance!
+- 🔒 **Support multiple account systems**. Built-in Microsoft login and Mojang Yggdrasil API. It also has builtin support of [ely.by](https://ely.by/) and [littleskin.cn](https://littleskin.cn). You can also add third-party authentication servers!
 - 🔗 **Peer to peer connection between users**. You can play multiplayer over LAN even you are not in same physical LAN!
 - 🔑 **Code sign & modern packaging**. Under Windows, you can use `appx` and `appinstaller` to install the app. You won't receive blocking message from your browser or see SmartScreen errors anymore! 😎
 
@@ -59,7 +59,7 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 
 [MIT](LICENSE)
 
-## Sponsor (aifadian)
+## Sponsor (AFDIAN)
 
 <!-- afdian-start -->
 <div style="display: flex; align-items: center; justify-items:center; gap: 0.2em; flex-wrap: wrap;">
@@ -78,9 +78,13 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 ## Credit
 
 [GodLeaveMe](https://github.com/GodLeaveMe), maintaining the AUR package registry.
+
 [0xc0000142](https://github.com/0xc0000142), maintaining the winget.
+
 [vanja-san](https://github.com/vanja-san), who provides Russian locale!
-[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) helps me on Launcher core
+
+[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) helps me on Launcher core.
+
 [laolarou726](https://github.com/laolarou726), who helps a lot on launcher design.
 
 Also special thanks to
