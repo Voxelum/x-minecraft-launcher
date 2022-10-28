@@ -95,4 +95,3 @@ const { t } = useI18n()
   font-style: italic;
 }
 </style>
-

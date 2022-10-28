@@ -50,4 +50,3 @@ const { isShown } = useDialog('multi-instance-launch')
 
 const { launch } = useLaunch()
 </script>
-

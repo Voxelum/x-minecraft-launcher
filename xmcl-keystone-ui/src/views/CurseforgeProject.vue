@@ -220,4 +220,3 @@ watch(dataRefs.tab, () => {
   text-align: center;
 }
 </style>
-

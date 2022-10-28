@@ -96,4 +96,3 @@ const installing = useServiceBusy(BaseServiceKey, 'quitAndInstall')
 const { t } = useI18n()
 
 </script>
-

@@ -452,4 +452,3 @@ function clearImage() {
 }
 
 </script>
-
