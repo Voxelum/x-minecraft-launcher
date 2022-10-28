@@ -203,8 +203,14 @@ export class InstanceInstallService extends AbstractService implements IInstance
       })
     }, { instance: instancePath })
 
-    await this.submit(updateInstanceTask)
-    await this.removeInstallProfile(instancePath)
+    try {
+      await this.submit(updateInstanceTask)
+      await this.removeInstallProfile(instancePath)
+    } catch (e) {
+      this.error(`Fail to install instance ${options.path} \n%o`, e)
+      await this.writeInstallProfile(instancePath, files)
+      throw e
+    }
   }
 
   async checkInstanceInstall() {
@@ -349,10 +355,16 @@ export class InstanceInstallService extends AbstractService implements IInstance
           }],
         }).catch(e => {
           if (Object.keys(metadata).length > 0) {
+            this.log(`Fallback to mark resource ${destination} ${sha1}\n%o`, e)
             this.resourceService.markResourceMetadata(sha1, metadata)
           }
         })
-        await rename(destination, destination.substring(0, destination.length - '.pending'.length))
+        try {
+          await rename(destination, destination.substring(0, destination.length - '.pending'.length))
+        } catch (e) {
+          this.error(`Fail to rename ${destination} -> ${destination.substring(0, destination.length - '.pending'.length)} \n%o`, e)
+          throw e
+        }
       }
       return undefined
     })
