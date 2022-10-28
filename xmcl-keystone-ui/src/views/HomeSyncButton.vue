@@ -37,4 +37,3 @@ const { state } = useService(InstanceServiceKey)
 const { t } = useI18n()
 
 </script>
-

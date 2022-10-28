@@ -10,7 +10,7 @@ import watch from 'node-watch'
 import { basename, dirname, extname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { persistResource, ResourceCache } from '../entities/resource'
+import { getResourceFileName, persistResource, ResourceCache } from '../entities/resource'
 import { migrateToDatabase, upgradeResourceToV2 } from '../util/dataFix'
 import { checksum, copyPassively, linkOrCopy, readdirEnsured } from '../util/fs'
 import { ImageStorage } from '../util/imageStore'
@@ -527,7 +527,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
       resource.fileType = 'directory'
     }
 
-    resource.fileName = resource.fileName || basename(resource.path)
+    resource.fileName = resource.fileName || getResourceFileName(resource.path)
     resource.name = resource.name || basename(resource.fileName, extname(resource.fileName))
     resource.version = 2
     resource.tags = resource.tags || []

@@ -5,7 +5,7 @@ import { ClassicLevel } from 'classic-level'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { ensureFile, rename, stat, Stats } from 'fs-extra'
-import { dirname, extname, join } from 'path'
+import { basename, dirname, extname, join } from 'path'
 import { linkOrCopy } from '../util/fs'
 import resourceParsers from './resourceParsers'
 import { forgeModParser } from './resourceParsers/forgeMod'
@@ -95,7 +95,7 @@ export interface ResourceParser<T> {
   domain: ResourceDomain
   ext: string
   parseIcon: (metadata: T, data: FileSystem) => Promise<Uint8Array | undefined>
-  parseMetadata: (data: FileSystem, filePath: string, metadata: Resource['metadata']) => Promise<T>
+  parseMetadata: (data: FileSystem, fileName: string, metadata: Resource['metadata']) => Promise<T>
   getSuggestedName: (metadata: T) => string
   /**
    * Get ideal uri for this resource
@@ -118,7 +118,7 @@ export function getGithubUrl(owner: string, repo: string, release: string) {
 
 export async function parseResourceMetadata(resource: Resource): Promise<{ resource: Resource; icons: Uint8Array[] }> {
   const inspectExt = resource.fileType === 'zip' ? '.zip' : undefined
-  const ext = extname(resource.path)
+  const ext = extname(resource.fileName)
 
   let parsers: ResourceParser<any>[]
   if (resource.domain === ResourceDomain.Unclassified) {
@@ -148,7 +148,7 @@ export async function parseResourceMetadata(resource: Resource): Promise<{ resou
       }
     }
     try {
-      const metadata = await parser.parseMetadata(fs, resource.path, resource.metadata)
+      const metadata = await parser.parseMetadata(fs, resource.fileName, resource.metadata)
       const icon = await parser.parseIcon(metadata, fs).catch(() => undefined)
       resource.domain = parser.domain
       resource.metadata[parser.type] = metadata
@@ -250,4 +250,12 @@ export class ResourceCache {
   get(key: string | number) {
     return this.cache[key]
   }
+}
+
+export function getResourceFileName(filePath: string) {
+  const base = basename(filePath)
+  if (base.endsWith('.pending')) {
+    return base.substring(0, base.indexOf('.pending'))
+  }
+  return base
 }

@@ -90,4 +90,3 @@ const emit = defineEmits(['destination'])
 const { t } = useI18n()
 
 </script>
-

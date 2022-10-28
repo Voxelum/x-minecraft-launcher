@@ -9,6 +9,13 @@
       outlined
       class="overflow-auto visible-scroll max-h-90vh"
     >
+      <v-alert
+        v-if="isAppX"
+        text
+        type="warning"
+      >
+        {{ t('setting.appxUpdateHint') }}
+      </v-alert>
       <v-card-title>
         {{ updateInfo.name }}
       </v-card-title>
@@ -116,7 +123,8 @@ const downloadingUpdate = useServiceBusy(BaseServiceKey, 'downloadUpdate')
 const updateInfo = computed(() => state.updateInfo)
 const updateStatus = computed(() => state.updateStatus)
 const body = computed(() => state.updateInfo?.useAutoUpdater ? state.updateInfo.body : renderer.render(state.updateInfo?.body ?? ''))
-const canAutoUpdate = computed(() => state.env === 'raw')
+const isAppX = computed(() => state.env === 'appx')
+
 const openOfficialWebsite = () => {
   openInBrowser('https://xmcl.app')
 }

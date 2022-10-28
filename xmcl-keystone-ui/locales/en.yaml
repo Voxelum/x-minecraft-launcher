@@ -95,7 +95,8 @@ browseApp:
   delete: Delete
   launch: Launch and set as Default
 cancel: Cancel
-checkUpdate: Check Update
+checkUpdate:
+  name: Check Update
 confirm: Start
 copyClipboard:
   success: Copy to clipboard
@@ -488,6 +489,7 @@ logMonitor: Log Monitor
 login:
   dropHint: Drop the link with authcode here to manually login
   forgetPassword: Forget Password?
+  hint: Please click Add Account to login
   login: Login
   manualLoginUrl: If the browser doesn't show up, please click this link to auth!
   signup: Sign up
@@ -889,6 +891,9 @@ setting:
     auto: Auto (Determine by network)
     official: Official (Mojang)
   appearance: Appearance
+  appxUpdateHint: >-
+    The launcher will download and execute installer. If popup installer failed,
+    please run it manually.
   autoDownload: Auto Download
   autoDownloadDescription: Auto Download Update if it's Avaiable
   autoInstallOnAppQuit: Autoinstall

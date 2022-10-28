@@ -53,7 +53,7 @@ const categories = computed(() => {
   return result.filter(r => r.parentCategoryId === parent?.id)
 })
 
-const tCategory = (k: string) => te(`curseforgeCategory.${k}`) ? t(k) : k
+const tCategory = (k: string) => te(`curseforgeCategory.${k}`) ? t(`curseforgeCategory.${k}`) : k
 
 const { refresh, refreshing } = useRefreshable(async () => {
   const result = await fetchCategories()

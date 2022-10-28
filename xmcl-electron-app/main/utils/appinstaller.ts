@@ -1,8 +1,9 @@
 import ElectronLauncherApp from '@/ElectronLauncherApp'
 import { download } from '@xmcl/installer'
 import { BaseTask } from '@xmcl/task'
-import { shell } from 'electron'
+import { app, shell } from 'electron'
 import { join } from 'path'
+import { setTimeout } from 'timers/promises'
 
 export type AppxUpdateType = '' | 'Unknown' | 'NoUpdates' | 'Available' | 'Required' | 'Error'
 
@@ -12,12 +13,13 @@ export class DownloadAppInstallerTask extends BaseTask<void> {
   }
 
   protected async runTask(): Promise<void> {
-    const destination = join(this.app.appDataPath, 'xmcl.appinstaller')
+    const destination = join(app.getPath('downloads'), 'X Minecraft Launcher.appinstaller')
     await download({
       url: 'https://xmcl.blob.core.windows.net/releases/xmcl.appinstaller',
       destination: destination,
     })
     shell.showItemInFolder(destination)
+    await setTimeout(1000)
     await shell.openPath(destination)
     this.app.exit()
   }

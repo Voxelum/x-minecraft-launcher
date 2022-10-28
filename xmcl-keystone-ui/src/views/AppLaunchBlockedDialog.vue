@@ -135,4 +135,3 @@ useExceptionHandler(LaunchException, (e) => {
   @apply rounded p-1 text-white font-bold;
 }
 </style>
-
