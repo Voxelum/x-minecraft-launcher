@@ -1,4 +1,4 @@
-import { File, FileModLoaderType, SearchOptions } from '@xmcl/curseforge'
+import { File, FileModLoaderType, FileRelationType, SearchOptions } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
 import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, CurseforgeState, GetModFilesOptions, InstallFileOptions, InstallFileResult, ProjectType, ResourceDomain } from '@xmcl/runtime-api'
 import { unlink } from 'fs-extra'
@@ -80,10 +80,10 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
     return await this.client.searchMods(searchOptions)
   }
 
-  async resolveFileDependencies(file: File): Promise<File[]> {
+  async resolveFileDependencies(file: File): Promise<[File, FileRelationType][]> {
     const visited = new Set<number>()
 
-    const visit = async (file: File): Promise<File[]> => {
+    const visit = async (type: FileRelationType, file: File): Promise<[File, FileRelationType][]> => {
       if (visited.has(file.modId)) {
         return []
       }
@@ -92,34 +92,38 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
       const dependencies = await Promise.all(file.dependencies.map(async (dep) => {
         if (dep.relationType <= 4) {
           let gameVersion = ''
-          let modLoaderType: FileModLoaderType = FileModLoaderType.Any
+          const modLoaderTypes: FileModLoaderType[] = []
           if (file.sortableGameVersions) {
             for (const ver of file.sortableGameVersions) {
               if (ver.gameVersion) {
                 gameVersion = ver.gameVersion
               } else if (ver.gameVersionName === 'Forge') {
-                modLoaderType = FileModLoaderType.Forge
+                modLoaderTypes.push(FileModLoaderType.Forge)
               } else if (ver.gameVersionName === 'Fabric') {
-                modLoaderType = FileModLoaderType.Fabric
+                modLoaderTypes.push(FileModLoaderType.Fabric)
               } else if (ver.gameVersionName === 'Quilt') {
-                modLoaderType = FileModLoaderType.Quilt
+                modLoaderTypes.push(FileModLoaderType.Quilt)
               } else if (ver.gameVersionName === 'LiteLoader') {
-                modLoaderType = FileModLoaderType.LiteLoader
+                modLoaderTypes.push(FileModLoaderType.LiteLoader)
               }
             }
           }
           try {
-            const files = await this.fetchProjectFiles({
-              gameVersion,
-              modLoaderType,
-              modId: dep.modId,
-              pageSize: 1,
-            })
-            if (files.data[0]) {
-              return [files.data[0], ...await visit(files.data[0])]
-            } else {
-              this.warn(`Skip to install project file ${file.modId}:${file.id} dependency ${file.modId} as no mod files matched!`)
+            if (modLoaderTypes.length === 0) {
+              modLoaderTypes.push(FileModLoaderType.Any)
             }
+            for (const modLoaderType of modLoaderTypes) {
+              const files = await this.fetchProjectFiles({
+                gameVersion,
+                modId: dep.modId,
+                modLoaderType,
+                pageSize: 1,
+              })
+              if (files.data[0]) {
+                return await visit(dep.relationType, files.data[0])
+              }
+            }
+            this.warn(`Skip to install project file ${file.modId}:${file.id} dependency ${file.modId} as no mod files matched!`)
           } catch (e) {
             this.warn(`Fail to install project file ${file.modId}:${file.id} dependency ${file.modId} as no mod files matched!`)
             this.warn(e)
@@ -127,10 +131,12 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
         }
         return undefined
       }))
-      return dependencies.filter(isNonnull).reduce((a, b) => a.concat(b), [])
+
+      return [[file, type], ...dependencies.filter(isNonnull).reduce((a, b) => a.concat(b), [])]
     }
 
-    const deps = await visit(file)
+    const deps = await visit(FileRelationType.RequiredDependency, file)
+    deps.shift()
 
     return deps
   }
@@ -159,7 +165,20 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
       this.state.curseforgeDownloadFileStart({ fileId: file.id })
       const destination = join(this.app.temporaryPath, file.fileName)
       const project = await this.fetchProject(projectId)
-      const dependencies = ignoreDependencies || type !== 'modpacks' ? [] : await Promise.all((await this.resolveFileDependencies(file)).map(file => this.installFile({ file, type, projectId, instancePath })))
+      let dependencies: InstallFileResult[] = []
+      if (ignoreDependencies || type === 'modpacks') {
+        dependencies = []
+      } else {
+        const deps = await this.resolveFileDependencies(file)
+        dependencies = await Promise.all(deps.map(async ([file, relation]) => {
+          if (relation === 3) {
+            return await this.installFile({ file, type, projectId, instancePath, ignoreDependencies: true })
+          } else {
+            // Not enable by default
+            return await this.installFile({ file, type, projectId, ignoreDependencies: true })
+          }
+        }))
+      }
 
       let resource = this.resourceService.getOneResource({ url: uri })
       if (resource) {
