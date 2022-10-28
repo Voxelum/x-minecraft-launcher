@@ -14,7 +14,7 @@ import { getResourceFileName, persistResource, ResourceCache } from '../entities
 import { migrateToDatabase, upgradeResourceToV2 } from '../util/dataFix'
 import { checksum, copyPassively, linkOrCopy, readdirEnsured } from '../util/fs'
 import { ImageStorage } from '../util/imageStore'
-import { assignIfPresent, isNonnull } from '../util/object'
+import { assignIfPresent, isArrayEqual, isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { createPromiseSignal, PromiseSignal } from '../util/promiseSignal'
 import { ExposeServiceKey, Singleton, StatefulService } from './Service'
@@ -360,14 +360,16 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         })
       }
       const newResource: Persisted<Resource> = { ...resource }
-      if (options.name && options.name !== newResource.name) {
+      if (options.name && options.name !== resource.name) {
         newResource.name = options.name
         dirty = true
       }
       if (options.tags) {
-        const tags = options.tags
-        newResource.tags = tags
-        dirty = true
+        if (!isArrayEqual(options.tags, resource.tags)) {
+          const tags = options.tags
+          newResource.tags = tags
+          dirty = true
+        }
       }
       if (options.uri) {
         newResource.uri = [...new Set([...options.uri, ...newResource.uri])]

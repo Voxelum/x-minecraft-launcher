@@ -48,3 +48,9 @@ export function isNonnull<T>(object: T | undefined | null): object is T {
 export function requireNonnull(object: unknown, message?: any): asserts object {
   if (typeof object === 'undefined' || object === null) throw new Error(message || 'Require object existed!')
 }
+
+export function isArrayEqual<T>(a: T[], b: T[]): boolean {
+  if (a.length !== b.length) return false
+  if (a.some((v, i) => v !== b[i])) return false
+  return true
+}

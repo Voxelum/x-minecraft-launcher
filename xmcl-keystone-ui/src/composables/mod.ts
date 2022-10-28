@@ -3,6 +3,8 @@ import { FabricModMetadata } from '@xmcl/mod-parser'
 import { Compatible, DepsCompatible, getModCompatibility, InstanceJavaServiceKey, InstanceModsServiceKey, InstanceServiceKey, isModCompatible, isModResource, isPersistedResource, resolveDepsCompatible, Resource, ResourceDomain, ResourceServiceKey, ResourceSourceModrinth } from '@xmcl/runtime-api'
 import { useRefreshable, useService, useServiceBusy } from '@/composables'
 import { isStringArrayEquals } from '@/util/equal'
+import { injection } from '@/util/inject'
+import { kStore } from '@/windows/main/store'
 
 /**
  * Contains some basic info of mod to display in UI.
@@ -87,6 +89,7 @@ export function useInstanceMods() {
   const { state: javaState } = useService(InstanceJavaServiceKey)
   const loading = useServiceBusy(ResourceServiceKey, 'load', ResourceDomain.Mods)
   const { state: instanceState } = useService(InstanceServiceKey)
+
   const items: Ref<ModItem[]> = ref([])
   const pendingUninstallItems = computed(() => items.value.filter(i => !i.enabled && i.enabledState))
   const pendingInstallItems = computed(() => items.value.filter(i => i.enabled && !i.enabledState))
@@ -113,14 +116,23 @@ export function useInstanceMods() {
     await Promise.all(promises)
   })
 
-  function updateItems() {
+  const enabledHashes = computed(() => new Set(state.mods.map(m => m.hash)))
+  let enabledCache = [] as ModItem[]
+
+  function updateEnabledMods() {
     const enabled = state.mods.map(getModItemFromResource)
-    const enabledItemHashes = new Set(state.mods.map(m => m.hash))
-    const disabled = resourceState.mods.filter(res => !enabledItemHashes.has(res.hash)).map(getModItemFromModResource)
     for (const item of enabled) {
       item.enabled = true
       item.enabledState = true
     }
+
+    enabledCache = enabled
+  }
+
+  function updateItems() {
+    const enabled = enabledCache
+    const enabledItemHashes = enabledHashes.value
+    const disabled = resourceState.mods.filter(res => !enabledItemHashes.has(res.hash)).map(getModItemFromModResource)
 
     const result = [
       ...enabled,
@@ -173,7 +185,19 @@ export function useInstanceMods() {
     return runtime
   })
 
+  const store = injection(kStore)
+  store.subscribe((m) => {
+    if (m.type === 'resource' || m.type === 'resources' || m.type === 'resourcesRemove') {
+      updateItems()
+    }
+    if (m.type === 'instanceModUpdateExisted') {
+      updateEnabledMods()
+      updateItems()
+    }
+  })
+
   watch(computed(() => state.mods), (val) => {
+    updateEnabledMods()
     updateItems()
   })
 
@@ -305,6 +329,7 @@ export function useInstanceMods() {
   }
 
   onMounted(() => {
+    updateEnabledMods()
     updateItems()
   })
 
