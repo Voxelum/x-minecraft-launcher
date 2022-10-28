@@ -219,7 +219,7 @@ export function useInstanceMods() {
       version: '',
       description: '',
       provideRuntime: {},
-      icon: resource.icons?.[0] ?? '',
+      icon: resource.icons?.at(-1) ?? '',
       compatibility,
       compatible: isCompatible,
       dependenciesIcon: {},

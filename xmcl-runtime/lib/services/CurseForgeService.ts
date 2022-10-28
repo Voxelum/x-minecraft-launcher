@@ -172,10 +172,10 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
         const deps = await this.resolveFileDependencies(file)
         dependencies = await Promise.all(deps.map(async ([file, relation]) => {
           if (relation === 3) {
-            return await this.installFile({ file, type, projectId, instancePath, ignoreDependencies: true })
+            return await this.installFile({ file, type, projectId: file.modId, instancePath, ignoreDependencies: true })
           } else {
             // Not enable by default
-            return await this.installFile({ file, type, projectId, ignoreDependencies: true })
+            return await this.installFile({ file, type, projectId: file.modId, ignoreDependencies: true })
           }
         }))
       }
