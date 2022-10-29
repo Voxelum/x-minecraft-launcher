@@ -4,6 +4,7 @@ import { BaseServiceKey, BaseState, CurseForgeServiceKey, CurseforgeState, Diagn
 import { GameProfile } from '@xmcl/user'
 import { ServiceFactory, kServiceFactory } from '@/composables'
 import { injection } from '@/util/inject'
+import { NatServiceKey, NatState } from '@xmcl/runtime-api/src/services/NatService'
 
 // fix vue 2 reactivity
 // TODO: remove this in vue 3
@@ -131,6 +132,7 @@ export function useAllServices() {
   factory.register(ElyByServiceKey, () => undefined)
   factory.register(OfflineUserServiceKey, () => undefined)
 
+  factory.register(NatServiceKey, () => new NatState())
   factory.register(FeedTheBeastServiceKey, () => new FeedTheBeastState())
   factory.register(InstanceJavaServiceKey, () => new ReactiveInstanceJavaState())
   factory.register(InstanceVersionServiceKey, () => new ReactiveInstanceVersionState())

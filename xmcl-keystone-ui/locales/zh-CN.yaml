@@ -733,6 +733,9 @@ multiplayer:
     11)">多次</span>建立连接。</span>
   createGroup: ''
   createLocalToken: 创建本地令牌
+  currentIpTitle: 检测到公网 IP
+  currentNatTitle: 当前网络 (NAT) 环境
+  difficultyLevelHint: 与他人联机难度由低到高
   disconnectDescription: 你确定你要断开和 {user}({id}) 的连接么
   disconnected: 断开连接
   enterRemoteToken: 输入对方的令牌
@@ -769,6 +772,15 @@ multiplayer:
   startNewP2PConnection: 点击开始按钮来新建一个新的点对点连接
 myStuff: 个人中心
 name: 名称
+natType:
+  blocked: 无法访问外网
+  fullCone: 完全锥形
+  openInternet: 公网
+  restrictNat: 地址受限锥形
+  restrictPortNat: 端口受限锥形
+  symmetricNat: 对称 NAT
+  symmetricUDPFirewall: 对称 UDP 防火墙
+  unknown: 未知
 next: 下一项
 'no': 否
 ok: 好的

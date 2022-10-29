@@ -1,77 +1,35 @@
-// import NatAPI from 'nat-api'
-import { getNatInfoUDP, NatInfo } from '@xmcl/stun-client'
-// import { UpnpClient } from '@xmcl/nat-api'
-// import getNatType, { NatType } from 'nat-type-identifier'
+import { NatService as INatService, NatServiceKey, NatState } from '@xmcl/runtime-api'
+import { getNatInfoUDP, sampleNatType } from '@xmcl/stun-client'
+import LauncherApp from '../app/LauncherApp'
+import { LauncherAppKey } from '../app/utils'
+import { Inject } from '../util/objectRegistry'
+import { ExposeServiceKey, AbstractService, StatefulService, Singleton } from './Service'
+@ExposeServiceKey(NatServiceKey)
+export class NatService extends StatefulService<NatState> implements INatService {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
+    super(app, () => new NatState(), async () => {
+      await this.refreshNatType()
+    })
+  }
 
-export class NatService {
-  // private nat = new NatAPI()
+  @Singleton()
+  async refreshNatType(): Promise<void> {
+    this.log('Start to sample the nat type')
 
-  // private upnp!: UpnpClient
+    const info = await getNatInfoUDP()
+    if (info.type !== 'Blocked') {
+      this.state.natInfoSet(info.externalIp, info.externalPort)
+    }
+    this.state.natTypeSet(info.type)
+    this.log('Fast nat detection: %o', info)
 
-  // private stunHosts: string[] = []
-
-  // private natInfo: undefined | NatInfo
-
-  // private natType: NatType = 'Blocked'
-
-  // private publicIp = ''
-
-  // private discoveredPort: number[] = []
-
-  // async updateNatType() {
-  //   // this.log('Try to get NAT type')
-  //   this.natType = await getNatType({ logsEnabled: false, stunHost: this.inGFW ? 'stun.qq.com' : undefined })
-  //   // this.log(`Update NAT type: ${this.natType}`)
-  // }
-
-  // async updatePublicIp() {
-  //   // this.log('Try update public ip')
-
-  //   this.publicIp = await new Promise<string>((resolve, reject) => {
-  //     this.nat.externalIp((err, ip) => {
-  //       if (err) {
-  //         reject(err)
-  //       } else {
-  //         resolve(ip)
-  //       }
-  //     })
-  //   })
-
-  //   // this.log(`Current public ip is ${this.publicIp}`)
-  // }
-
-  // getNatType() {
-  //   return this.natType
-  // }
-
-  // getPublicIp() {
-  //   return new Promise<string>((resolve, reject) => {
-  //     this.nat.externalIp((err, ip) => {
-  //       if (err) { reject(err) } else { resolve(ip) }
-  //     })
-  //   })
-  // }
-
-  // exposePort(port: number) {
-  //   return new Promise<void>((resolve, reject) => {
-  //     this.nat.map(25565, port, (err) => {
-  //       if (err) {
-  //         reject(err)
-  //       } else {
-  //         resolve()
-  //       }
-  //     })
-  //   })
-  // }
-
-  // async getNatInfo() {
-  //   const info = await Promise.all(this.stunHosts.map((s) => getNatInfoUDP({
-  //     stun: s,
-  //     retryInterval: 2000,
-  //   })))
-
-  //   this.logger.log(info)
-
-  //   return info
-  // }
+    const result = await sampleNatType({
+      sampleCount: 3,
+      retryInterval: 3_000,
+    })
+    if (result) {
+      this.state.natTypeSet(result)
+    }
+    this.log(`Refresh nat type ${result}`)
+  }
 }
