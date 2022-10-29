@@ -1,11 +1,11 @@
 import { GenericEventEmitter } from '../events'
-import { InstanceManifestSchema, InstanceManifest } from '../entities/instanceManifest.schema'
+import { InstanceManifest, InstanceManifest } from '../entities/instanceManifest.schema'
 import { ServiceKey, StatefulService } from './Service'
 import { GameProfileAndTexture } from '../entities/user.schema'
 
 export interface RTCSessionDescription {
   sdp: string
-  type: 'unspec'| 'answer' | 'offer' | 'pranswer' | 'rollback'
+  type: 'answer' | 'offer' | 'pranswer' | 'rollback'
 }
 
 export type ConnectionState = 'closed' | 'connected' | 'connecting' | 'disconnected' | 'failed' | 'new'
@@ -35,15 +35,20 @@ export interface PeerConnection {
   /**
    * The instance that this peer is sharing
    */
-  sharing?: InstanceManifestSchema
+  sharing?: InstanceManifest
 }
 
 export class PeerState {
   group = ''
+  groupState = 'closed' as 'connecting' | 'closing' | 'closed' | 'connected'
   connections = [] as PeerConnection[]
 
   connectionGroup(group: string) {
     this.group = group
+  }
+
+  connectionGroupState(state: 'connecting' | 'closing' | 'closed' | 'connected') {
+    this.groupState = state
   }
 
   connectionUserInfo({ id, info }: { id: string; info: ConnectionUserInfo }) {
@@ -53,7 +58,7 @@ export class PeerState {
     }
   }
 
-  connectionShareManifest({ id, manifest } : { id: string; manifest?: InstanceManifestSchema }) {
+  connectionShareManifest({ id, manifest } : { id: string; manifest?: InstanceManifest }) {
     const conn = this.connections.find(c => c.id === id)
     if (conn) {
       conn.sharing = manifest

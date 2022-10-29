@@ -34,12 +34,12 @@ browseApp:
   delete: Удалить
   launch: Запустить и установить по умолчанию
 cancel: Отмена
+checkUpdate:
+  name: Проверить обновление
 confirm: Начать
 copyClipboard:
   success: Скопировать в буфер обмена
 create: Создать
-checkUpdate:
-  name: Проверить обновление
 curseforge:
   createdDate: Создан
   downloadOnly: Скачать

@@ -5,6 +5,7 @@ import { ClassicLevel } from 'classic-level'
 import { EventEmitter } from 'events'
 import { ensureDir, readFile, writeFile } from 'fs-extra'
 import { join } from 'path'
+import type { Readable } from 'stream'
 import { setTimeout } from 'timers/promises'
 import { URL } from 'url'
 import { IS_DEV, LAUNCHER_NAME } from '../constant'
@@ -118,6 +119,7 @@ export abstract class LauncherApp extends EventEmitter {
   abstract getPreloadServices(): ServiceConstructor[]
 
   protected urlHandlers: Array<(url: string) => boolean> = []
+  protected urlResourceResolvers: Array<(url: string) => string | Buffer | Readable> = []
 
   constructor() {
     super()
@@ -169,8 +171,19 @@ export abstract class LauncherApp extends EventEmitter {
     return this.preferredLocale
   }
 
+  /**
+   * Register the handler for external url activate the app
+   * @param handler The external url
+   */
   registerUrlHandler(handler: (url: string) => boolean) {
     this.urlHandlers.push(handler)
+  }
+
+  /**
+   * Register the handler for internal resource
+   */
+  registerResourceUrlResolver(resolver: (url: string) => string | Buffer | Readable) {
+    this.urlResourceResolvers.push(resolver)
   }
 
   /**

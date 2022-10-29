@@ -1,18 +1,20 @@
+/* eslint-disable no-dupe-class-members */
 // import EventSource from 'eventsource'
-import { EventSource } from '../util/EventSource'
+import EventEmitter from 'events'
 import { DescriptionType } from 'node-datachannel'
-import { Client, request } from 'undici'
 import { setTimeout } from 'timers/promises'
+import { WebSocket } from 'ws'
 import { createPromiseSignal, PromiseSignal } from '../util/promiseSignal'
 
 export interface TransferDescription {
   session: string
   id: string
   sdp: string
+  candidates: Array<{ candidate: string; mid: string }>
 }
 
 type RelayPeerMessage = {
-  type: 'HELLO'
+  type: 'HEARTBEAT'
   id: string
 } | {
   type: 'DESCRIPTOR-ECHO'
@@ -29,79 +31,127 @@ type RelayPeerMessage = {
   id: number
 }
 
-export class PeerGroup {
-  static async join(groupId: string, id: string,
-    onHello: (sender: string) => void,
-    onDescriptor: (sender: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>) => void,
-  ) {
-    const source = new EventSource(`https://api.xmcl.app/group?id=${groupId}`, { })
+export interface PeerGroup {
+  emit(eventName: 'error', error: unknown): boolean
+  emit(eventName: 'state', state: 'connecting' | 'connected' | 'closing' | 'closed'): boolean
+  emit(eventName: 'heartbeat', sender: string): boolean
+  emit(eventName: 'descriptor', sender: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>): boolean
 
-    source.on('error', (e) => {
-      // NOOP
+  on(eventName: 'error', handler: (error: unknown) => void): this
+  on(eventName: 'state', handler: (state: 'connecting' | 'connected' | 'closing' | 'closed') => void): this
+  on(eventName: 'heartbeat', handler: (sender: string) => void): this
+  on(eventName: 'descriptor', handler: (sender: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>) => void): this
+
+  once(eventName: 'error', handler: (error: unknown) => void): this
+  once(eventName: 'state', handler: (state: 'connecting' | 'connected' | 'closing' | 'closed') => void): this
+  once(eventName: 'heartbeat', handler: (sender: string) => void): this
+  once(eventName: 'descriptor', handler: (sender: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>) => void): this
+}
+
+export class PeerGroup extends EventEmitter {
+  private messageId = 0
+  private socket: WebSocket
+  private closed = false
+  public state: 'connecting' | 'connected' | 'closing' | 'closed'
+
+  readonly signals: Record<number, PromiseSignal<void>> = {}
+
+  private messageQueue: RelayPeerMessage[] = []
+
+  #heartbeat = setInterval(() => {
+    if (this.socket.readyState === this.socket.OPEN) {
+      this.send({
+        type: 'HEARTBEAT',
+        id: this.id,
+      })
+    }
+  }, 4_000)
+
+  constructor(readonly groupId: string, readonly id: string, headers?: Record<string, string>) {
+    super()
+    this.socket = new WebSocket(`wss://api.xmcl.app/group/${groupId}`, {
+      headers: {
+        ...(headers || {}),
+        id,
+      },
     })
-    const group = new PeerGroup(source, groupId, id)
-    source.onmessage = (ev) => {
+    this.state = 'connecting'
+    this.#initiate()
+  }
+
+  #initiate() {
+    const { id, groupId, socket } = this
+
+    let controller = new AbortController()
+
+    function heartbeat() {
+      controller.abort()
+      controller = new AbortController()
+      // Use `WebSocket#terminate()`, which immediately destroys the connection,
+      // instead of `WebSocket#close()`, which waits for the close timer.
+      // Delay should be equal to the interval at which your server
+      // sends out pings plus a conservative assumption of the latency.
+      setTimeout(30000 + 1000, { signal: controller.signal }).then(() => {
+        socket.terminate()
+      })
+    }
+
+    socket.on('open', () => {
+      heartbeat()
+      this.state = 'connected'
+      this.emit('state', this.state)
+      for (let i = this.messageQueue.shift(); i; i = this.messageQueue.shift()) {
+        this.send(i)
+      }
+    })
+    socket.on('ping', heartbeat)
+    socket.on('message', (data) => {
       try {
-        const payload = JSON.parse(ev.data) as RelayPeerMessage
-        if (payload.type === 'HELLO') {
+        const payload = JSON.parse(data.toString()) as RelayPeerMessage
+        if (payload.type === 'HEARTBEAT') {
           if (payload.id !== id) {
-            onHello(payload.id)
+            this.emit('heartbeat', payload.id)
           }
         } else {
           if (payload.receiver !== id) {
             return
           }
           if (payload.type === 'DESCRIPTOR') {
-            onDescriptor(payload.sender, payload.sdp, payload.sdpType, payload.candidates)
-            group.send({
+            this.send({
               type: 'DESCRIPTOR-ECHO',
               receiver: payload.sender,
-              sender: group.id,
+              sender: id,
               id: payload.id,
             })
+            this.emit('descriptor', payload.sender, payload.sdp, payload.sdpType, payload.candidates)
           } else if (payload.type === 'DESCRIPTOR-ECHO') {
-            const signal = group.signals[payload.id]
+            const signal = this.signals[payload.id]
             if (signal) {
               signal.resolve()
-              delete group.signals[payload.id]
+              delete this.signals[payload.id]
             }
           }
         }
       } catch (e) {
-        debugger
+        console.error(e)
       }
-    }
-
-    source.onopen = () => {
-      group.send({
-        type: 'HELLO',
-        id,
-      })
-    }
-
-    await new Promise<void>((resolve, reject) => {
-      const onError = (e: any) => {
-        reject(e)
-        source.removeEventListener('open', onResolve)
-        source.removeEventListener('error', onError)
-      }
-      const onResolve = () => {
-        resolve()
-        source.removeEventListener('open', onResolve)
-        source.removeEventListener('error', onError)
-      }
-      source.addEventListener('open', onResolve)
-      source.addEventListener('error', onError)
     })
-
-    return group
-  }
-
-  private messageId = 0
-
-  readonly signals: Record<number, PromiseSignal<void>> = {}
-
-  constructor(private source: EventSource, readonly groupId: string, readonly id: string) {
+    socket.on('error', (e) => {
+      this.emit('error', e)
+    })
+    socket.on('close', () => {
+      controller.abort()
+      if (!this.closed) {
+        // Try to reconnect as this is closed unexpected
+        this.socket = new WebSocket(`wss://api.xmcl.app/group/${groupId}`, {})
+        this.state = 'connecting'
+        this.#initiate()
+        this.emit('state', this.state)
+      } else {
+        this.state = 'closed'
+        this.emit('state', this.state)
+      }
+    })
   }
 
   wait(messageId: number): Promise<void> {
@@ -112,33 +162,47 @@ export class PeerGroup {
   async sendLocalDescription(id: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>) {
     const messageId = this.messageId++
     while (true) {
-      await this.send({
-        type: 'DESCRIPTOR',
-        receiver: id,
-        sdp,
-        sdpType: type,
-        sender: this.id,
-        candidates,
-        id: messageId,
-      })
-      const responsed = await Promise.race([
-        this.wait(messageId).then(() => true, () => false),
-        setTimeout(4_000).then(() => false), // wait 4 seconds for response
-      ])
-      if (responsed) {
-        return
+      try {
+        await this.send({
+          type: 'DESCRIPTOR',
+          receiver: id,
+          sdp,
+          sdpType: type,
+          sender: this.id,
+          candidates,
+          id: messageId,
+        })
+        const responsed = await Promise.race([
+          this.wait(messageId).then(() => true, () => false),
+          setTimeout(4_000).then(() => false), // wait 4 seconds for response
+        ])
+        if (responsed) {
+          return
+        }
+      } catch (e) {
+        console.error(e)
       }
     }
   }
 
-  async send(message: RelayPeerMessage) {
-    await request(`https://api.xmcl.app/group?id=${this.groupId}`, {
-      method: 'PUT',
-      body: JSON.stringify(message),
+  send(message: RelayPeerMessage) {
+    return new Promise<void>((resolve, reject) => {
+      if (this.socket.readyState === this.socket.OPEN) {
+        this.socket.send(JSON.stringify(message), (err) => {
+          if (err) reject(err)
+          else resolve()
+        })
+      } else {
+        this.messageQueue.push(message)
+      }
     })
   }
 
   quit() {
-    this.source.close()
+    this.closed = true
+    this.socket.close()
+    this.state = 'closing'
+    clearInterval(this.#heartbeat)
+    this.emit('state', this.state)
   }
 }

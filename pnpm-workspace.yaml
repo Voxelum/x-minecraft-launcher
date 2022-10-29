@@ -6,3 +6,4 @@ packages:
   - 'xmcl-keystone-ui'
   - 'xmcl-client-vue'
   - '.github/actions/*'
+  - 'packages/**'

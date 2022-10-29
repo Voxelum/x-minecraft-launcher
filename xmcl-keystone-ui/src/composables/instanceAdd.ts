@@ -1,4 +1,4 @@
-import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, InstanceData, InstanceSchema, InstanceServiceKey, isCurseforgeModpackResource, isModrinthModpackResource, isMcbbsModpackResource, JavaServiceKey, McbbsModpackResource, ModpackResource, ModrinthModpackResource, RawModpackResource, ResourceDomain, ResourceServiceKey, ResourceType, RuntimeVersions, getInstanceConfigFromModrinthModpack, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, InstanceData, InstanceSchema, InstanceServiceKey, isCurseforgeModpackResource, isModrinthModpackResource, isMcbbsModpackResource, JavaServiceKey, McbbsModpackResource, ModpackResource, ModrinthModpackResource, RawModpackResource, ResourceDomain, ResourceServiceKey, ResourceType, RuntimeVersions, getInstanceConfigFromModrinthModpack, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, PeerServiceKey, InstanceManifest } from '@xmcl/runtime-api'
 import { DialogKey } from './dialog'
 import { useFeedTheBeastVersionsCache } from './ftb'
 import { useService } from '@/composables'
@@ -30,11 +30,18 @@ export type TemplateSource = {
 } | {
   type: 'ftb'
   manifest: CachedFTBModpackVersionManifest
+} | {
+  type: 'peer'
+  id: string
+  manifest: InstanceManifest
 }
 
 export function useAllTemplate(data: InstanceData) {
   const { state: resourceState } = useService(ResourceServiceKey)
   const { state: javaState } = useService(JavaServiceKey)
+  const { state: peerState } = useService(PeerServiceKey)
+
+  peerState.connections.find(c => c.sharing)
 
   const { refresh, refreshing, cache: ftb, dispose } = useFeedTheBeastVersionsCache()
 
@@ -52,8 +59,38 @@ export function useAllTemplate(data: InstanceData) {
       }
     }))
     all.push(...ftb.value.filter(f => f.name && f.targets).map(getFtbTemplate))
+
+    for (const c of peerState.connections) {
+      if (c.sharing) {
+        all.push(getPeerTemplate(c.id, c.userInfo.name, c.sharing))
+      }
+    }
     return all
   })
+
+  function getPeerTemplate(id: string, name: string, man: InstanceManifest) {
+    const result: Template = {
+      id,
+      name: `${man.name ?? 'Instance'}@${name}`,
+      description: man.description,
+      runtime: {
+        minecraft: man.runtime.minecraft,
+        forge: man.runtime.forge ?? '',
+        fabricLoader: man.runtime.fabricLoader ?? '',
+        quiltLoader: man.runtime.quiltLoader ?? '',
+        optifine: man.runtime.optifine ?? '',
+        yarn: '',
+        liteloader: '',
+      },
+      vmOptions: man.vmOptions,
+      mcOptions: man.mcOptions,
+      minMemory: man.minMemory,
+      maxMemory: man.maxMemory,
+      source: { type: 'peer', id, manifest: man },
+    }
+
+    return result
+  }
 
   function getModrinthTemplate(modrinth: ModrinthModpackResource): Template {
     const config = getInstanceConfigFromModrinthModpack(modrinth.metadata['modrinth-modpack'])

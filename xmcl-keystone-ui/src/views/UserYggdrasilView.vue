@@ -7,6 +7,7 @@
       <UserSkinView
         :user="user"
         :profile="profile"
+        :inspect="false"
       />
       <div class="my-2 flex items-center justify-center">
         <v-btn

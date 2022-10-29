@@ -722,6 +722,7 @@ modrinth:
 multiplayer:
   complete: 完成
   confirm: 确定
+  connections: 用户连接管理
   copied: 已复制!
   copy: 复制
   copyGroupToFriendHint: 让你的小伙伴使用这个 ID 加入联机群组
@@ -758,13 +759,17 @@ multiplayer:
   joinOrCreateGroupHint: 从你的小伙伴那获得群组 ID 或自己创建一个群组
   leaveGroup: 离开群组
   localToken: 本地令牌
+  manualConnect: 手动连接
+  mappings: Upnp 管理
   name: 跨局域网联机
+  networkInfo: 当前网络状况
   next: 下一步
   placeholder: 和其他玩家建立连接，跨局域网联机 Minecraft！
   previous: 上一步
   receiveHint: 在对方输入你的令牌后，你们之间的连接会自动创建。现在你已经可以点击完成了。
   receiveRemoteTokenHint: 请将联机伙伴的令牌粘贴在此处，并点击下一步
   remoteToken: 对方的令牌
+  routerInfo: 路由器信息
   sendTokenToRemote: 将本地令牌给你的联机伙伴
   share: 分享启动配置
   sharing: 正在共享游戏配置...
@@ -808,8 +813,15 @@ peerConnectionState:
   disconnected: 掉线
   failed: 失败
   new: 等待连接
+peerGroupState:
+  closed: 未加入小组
+  closing: 断开中
+  connected: 小组在线
+  connecting: 加入中
 peerIceGatheringState:
   gathering: 收集本地信息中
+peerSignalingState:
+  have-local-offer: 等待对方的信息中
 popular: 热度
 previous: 上一步
 proxy:

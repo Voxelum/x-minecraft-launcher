@@ -10,7 +10,7 @@ export const MessageLanEntry = defineMessage(MessageLan, async function (info) {
   let proxy = this.proxies.find(p => p.originalPort === info.port)
   if (proxy) {
     // Re-broadcast message
-    this.host.broadcaster.broadcast({ motd: info.motd, port: await proxy.actualPort })
+    this.host.onLanMessage(this.id, { motd: info.motd, port: await proxy.actualPort })
     return
   }
 
@@ -21,6 +21,7 @@ export const MessageLanEntry = defineMessage(MessageLan, async function (info) {
     this.logger.log(`Create datachannel to actual port ${info.port}`)
     const gameChannel = this.connection.createDataChannel(`${info.port}`, {
       protocol: 'minecraft', // protocol minecraft
+      ordered: true,
     })
     this.logger.log(`Data channel: ${gameChannel.getId()}`)
     // the data send before channel connected will be buffered
@@ -64,5 +65,5 @@ export const MessageLanEntry = defineMessage(MessageLan, async function (info) {
   // must first push the proxy to list to avoid race condition
   this.proxies.push(proxy)
   // find proper port
-  this.host.broadcaster.broadcast({ motd: info.motd, port: await proxy.actualPort })
+  this.host.onLanMessage(this.id, { motd: info.motd, port: await proxy.actualPort })
 })

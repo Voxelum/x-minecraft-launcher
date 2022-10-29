@@ -177,7 +177,6 @@ export default class Controller implements LauncherAppController {
       if (pathname.startsWith('image:builtin:')) {
         const name = pathname.substring('image:builtin:'.length)
         if (builtinIcons[name]) {
-          // const data = createReadStream(builtinIcons[name])
           callback({ path: builtinIcons[name] })
         } else {
           callback({ statusCode: 404 })
@@ -194,6 +193,12 @@ export default class Controller implements LauncherAppController {
         })
       } else if (pathname.length === 40) {
         callback({ path: join(this.app.appDataPath, 'resource-images', pathname), mimeType: 'image/png' })
+      } else if (pathname.startsWith('peer/')) {
+        const path = pathname.substring('peer/'.length)
+        const peer = path.substring(0, path.indexOf('/'))
+        const imagePath = path.substring(path.indexOf('/') + 1)
+
+        // callback({ data:  })
       } else {
         callback({ statusCode: 404 })
       }

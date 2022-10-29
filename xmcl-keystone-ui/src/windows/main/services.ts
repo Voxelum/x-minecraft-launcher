@@ -4,7 +4,7 @@ import { BaseServiceKey, BaseState, CurseForgeServiceKey, CurseforgeState, Diagn
 import { GameProfile } from '@xmcl/user'
 import { ServiceFactory, kServiceFactory } from '@/composables'
 import { injection } from '@/util/inject'
-import { NatServiceKey, NatState } from '@xmcl/runtime-api/src/services/NatService'
+import { NatDeviceInfo, NatServiceKey, NatState } from '@xmcl/runtime-api/src/services/NatService'
 
 // fix vue 2 reactivity
 // TODO: remove this in vue 3
@@ -113,6 +113,18 @@ class ReactiveInstanceModState extends InstanceModsState {
   }
 }
 
+class ReactiveNatState extends NatState {
+  natAddressSet(address: any): void {
+    console.log(address)
+    set(this, 'natAddress', address)
+  }
+
+  natDeviceSet(device: NatDeviceInfo): void {
+    console.log(device)
+    set(this, 'natDevice', device)
+  }
+}
+
 export function useAllServices() {
   const factory = injection(kServiceFactory)
 
@@ -132,7 +144,7 @@ export function useAllServices() {
   factory.register(ElyByServiceKey, () => undefined)
   factory.register(OfflineUserServiceKey, () => undefined)
 
-  factory.register(NatServiceKey, () => new NatState())
+  factory.register(NatServiceKey, () => new ReactiveNatState())
   factory.register(FeedTheBeastServiceKey, () => new FeedTheBeastState())
   factory.register(InstanceJavaServiceKey, () => new ReactiveInstanceJavaState())
   factory.register(InstanceVersionServiceKey, () => new ReactiveInstanceVersionState())

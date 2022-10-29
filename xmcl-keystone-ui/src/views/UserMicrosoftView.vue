@@ -1,7 +1,7 @@
 <template>
   <div class="flex gap-4">
     <div class="w-60">
-      <page-skin-view
+      <UserSkinView
         class="flex overflow-auto relative justify-center items-center z-5"
         inspect
         :user="user"
@@ -106,7 +106,7 @@
               align="center"
               justify="center"
             >
-              <player-cape
+              <PlayerCape
                 class=" mt-4"
                 :src="c.url"
               />
@@ -138,7 +138,7 @@
 import { NameAvailability, OfficialUserServiceKey, UserProfile } from '@xmcl/runtime-api'
 import PlayerCape from '../components/PlayerCape.vue'
 import { PlayerNameModel, usePlayerName, UserSkinModel, useUserSkin } from '../composables/userSkin'
-import PageSkinView from './UserSkinView.vue'
+import UserSkinView from './UserSkinView.vue'
 import { useRefreshable, useService } from '@/composables'
 
 const props = defineProps<{

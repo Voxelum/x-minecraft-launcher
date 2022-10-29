@@ -14,7 +14,7 @@ AppShareInstanceDialog:
   downloadToLocal: Download to current instance
   filesToDownload: Choose files to download
   filesToShare: Choose files to share
-  instanceShare: '{user} just shared a game files to you'
+  instanceShare: '{user} just shared the current instance to you'
   share: Share
   shareNotifyTitle: Share Instance
   shareTitle: Share game files to other player
@@ -709,6 +709,7 @@ modrinth:
 multiplayer:
   complete: Complete
   confirm: Confirm
+  connections: Connections
   copied: Copied!
   copy: Copy
   copyGroupToFriendHint: Let your friends join group by this id
@@ -755,7 +756,10 @@ multiplayer:
   joinOrCreateGroupHint: Get group id from your friends or create a group
   leaveGroup: Leave group
   localToken: Local Token
+  manualConnect: Manually Connect
+  mappings: Upnp Mappings
   name: Multiplayer on LAN
+  networkInfo: Network Info
   next: Next
   placeholder: Connect with other user to play Minecraft on LAN!
   previous: Previous
@@ -764,6 +768,7 @@ multiplayer:
     automatically. Now you can close the dialog.
   receiveRemoteTokenHint: Please enter the token from your peer here.
   remoteToken: Remote Token
+  routerInfo: Router Info
   sendTokenToRemote: Send Token to Remote
   share: Share Instance Config
   sharing: Sharing files...
@@ -795,8 +800,15 @@ peerConnectionState:
   failed: Failed
   name: Connection State
   new: New
+peerGroupState:
+  closed: Not in Group
+  closing: Closed
+  connected: Group Joined
+  connecting: Connecting
 peerIceGatheringState:
   gathering: Gathering Ice Server
+peerSignalingState:
+  have-local-offer: Waiting peer description
 popular: Popularity
 previous: Previous
 proxy:

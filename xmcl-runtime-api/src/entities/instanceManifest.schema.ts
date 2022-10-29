@@ -36,16 +36,11 @@ export interface InstanceFile {
   size: number
 }
 
-type InstanceDataFields = Pick<InstanceData, 'description' | 'minMemory' | 'maxMemory' | 'vmOptions' | 'mcOptions'>
+type InstanceDataFields = Pick<InstanceData, 'description' | 'minMemory' | 'maxMemory' | 'vmOptions' | 'mcOptions' | 'name'>
 
 /**
  * This format of manifest is design for xmcl instance pulling/exchanging.
  */
-export interface InstanceManifestSchema extends Partial<InstanceDataFields> {
-  runtime: RuntimeVersions
-  files: Array<InstanceFile>
-}
-
 export interface InstanceManifest extends Partial<InstanceDataFields> {
   runtime: RuntimeVersions
   files: Array<InstanceFile>

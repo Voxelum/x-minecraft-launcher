@@ -5,8 +5,6 @@ import { trayPlugin } from './tray'
 import { windowController } from './windowController'
 import { i18n } from './i18n'
 import { themePlugin } from './theme'
-import { peerPlugin } from './peerDelegate'
-import { auth } from './auth'
 import { notificationSetupPlugin } from './notification'
 
-export const plugins = [notificationSetupPlugin, i18n, gameLaunch, setupWindow, taskProgressPlugin, trayPlugin, windowController, themePlugin, peerPlugin, auth]
+export const plugins = [notificationSetupPlugin, i18n, gameLaunch, setupWindow, taskProgressPlugin, trayPlugin, windowController, themePlugin]

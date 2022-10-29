@@ -125,6 +125,9 @@ export function createOfflineYggdrasilServer(getProfile: (username: string) => P
           }
           rres.body.pipe(res)
         })
+      } else if (target?.startsWith('data:')) {
+        res.statusCode = 200
+        res.end(Buffer.from(target.substring('data:image/png;base64,'.length), 'base64'))
       } else {
         res.statusCode = 404
         res.end()

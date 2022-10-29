@@ -5,6 +5,7 @@
         class="flex overflow-auto relative justify-center items-center z-5"
         :user="user"
         :profile="gameProfile"
+        :inspect="false"
       />
     </div>
   </div>
