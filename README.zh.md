@@ -34,6 +34,13 @@
 
 请去 [官网](https://xmcl.app) 下载启动器！
 
+如果你有 winget，你可以使用 winget 安装
+
+```bash
+winget install CI010.XMinecraftLauncher
+```
+
+
 [English README](./README.md)
 
 ## 特性
