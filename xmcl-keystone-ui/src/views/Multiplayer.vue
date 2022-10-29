@@ -11,133 +11,199 @@
       @drop="onDrop"
     >
       <v-card
-        class="flex py-1 pl-2 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5"
+        class="py-1 pl-2 rounded-lg flex-shrink flex-grow-0 pr-2 z-5"
         outlined
         elevation="1"
       >
-        <v-text-field
-          v-model="groupId"
-          class="max-w-40"
-          hide-details
-          dense
-          outlined
-          filled
-          :label="t('multiplayer.groupId')"
-          @click="onCopy(groupId)"
-        />
-        <v-btn
-          :disabled="!state.group"
-          text
-          @click="onCopy(joinGroupUrl)"
-        >
-          <v-icon
-            v-if="!copied"
-            left
+        <div class="flex items-center gap-2">
+          <v-text-field
+            v-model="groupId"
+            class="max-w-40"
+            hide-details
+            dense
+            outlined
+            filled
+            :label="t('multiplayer.groupId')"
+            @click="onCopy(groupId)"
+          />
+          <v-btn
+            :disabled="!state.group"
+            text
+            @click="onCopy(joinGroupUrl)"
           >
-            content_copy
-          </v-icon>
-          <v-icon
-            v-else
-            left
-            color="success"
-          >
-            check
-          </v-icon>
-          {{ copied ? t('multiplayer.copied') : t('multiplayer.inviteLink') }}
-        </v-btn>
-
-        <div class="text-gray-400 text-sm">
-          <template v-if="state.group">
-            {{ t('multiplayer.copyGroupToFriendHint') }}
-          </template>
-          <template v-else>
-            {{ t('multiplayer.joinOrCreateGroupHint') }}
-          </template>
-        </div>
-
-        <div class="flex-grow" />
-        <v-btn
-          text
-          @click="onJoin()"
-        >
-          <template v-if="!state.group">
-            <v-icon left>
-              add
-            </v-icon>
-            {{ t('multiplayer.joinOrCreateGroup') }}
-          </template>
-          <template v-else>
             <v-icon
-              color="red"
+              v-if="!copied"
               left
             >
-              delete
+              content_copy
             </v-icon>
-            {{ t('multiplayer.leaveGroup') }}
-          </template>
-        </v-btn>
-
-        <v-tooltip
-          bottom
-          color="black"
-        >
-          <template #activator="{ on }">
-            <v-btn
-              text
-              icon
-              v-on="on"
-              @click="showShareInstance()"
-            >
-              <v-icon>
-                share
-              </v-icon>
-            </v-btn>
-          </template>
-          {{ t('multiplayer.share') }}
-        </v-tooltip>
-
-        <v-menu
-          left
-          offset-y
-        >
-          <template #activator="{ on }">
-            <v-tooltip
+            <v-icon
+              v-else
               left
+              color="success"
+            >
+              check
+            </v-icon>
+            {{ copied ? t('multiplayer.copied') : t('multiplayer.inviteLink') }}
+          </v-btn>
+
+          <div class="text-gray-400 text-sm">
+            <template v-if="state.group">
+              {{ t('multiplayer.copyGroupToFriendHint') }}
+            </template>
+            <template v-else>
+              {{ t('multiplayer.joinOrCreateGroupHint') }}
+            </template>
+          </div>
+
+          <div class="flex-grow" />
+          <v-btn
+            text
+            @click="onJoin()"
+          >
+            <template v-if="!state.group">
+              <v-icon left>
+                add
+              </v-icon>
+              {{ t('multiplayer.joinOrCreateGroup') }}
+            </template>
+            <template v-else>
+              <v-icon
+                color="red"
+                left
+              >
+                delete
+              </v-icon>
+              {{ t('multiplayer.leaveGroup') }}
+            </template>
+          </v-btn>
+
+          <v-tooltip
+            bottom
+            color="black"
+          >
+            <template #activator="{ on }">
+              <v-btn
+                text
+                icon
+                v-on="on"
+                @click="showShareInstance()"
+              >
+                <v-icon>
+                  share
+                </v-icon>
+              </v-btn>
+            </template>
+            {{ t('multiplayer.share') }}
+          </v-tooltip>
+
+          <v-menu
+            left
+            offset-y
+          >
+            <template #activator="{ on }">
+              <v-tooltip
+                left
+                color="black"
+              >
+                <template #activator="{ on: onTooltip }">
+                  <v-btn
+                    text
+                    icon
+                    v-on="{ ...on, ...onTooltip }"
+                  >
+                    <v-icon>
+                      build
+                    </v-icon>
+                  </v-btn>
+                </template>
+                Connect Manually
+              </v-tooltip>
+            </template>
+            <v-list>
+              <v-list-item @click="show()">
+                <v-list-item-title>
+                  <v-icon left>
+                    add_call
+                  </v-icon>
+                  {{ t('multiplayer.initiateConnection') }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="showReceive()">
+                <v-list-item-title>
+                  <v-icon left>
+                    login
+                  </v-icon>
+                  {{ t('multiplayer.joinManual') }}
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
+        <div class="mt-4 mb-2 flex items-center justify-center gap-4">
+          <div class="">
+            <v-progress-circular
+              v-if="isLoadingNetwork"
+              indeterminate
+              small
+              size="20"
+              width="2"
+              class="mr-1"
+            />
+            <v-icon v-else>
+              wifi
+            </v-icon>
+            <span
+              class="dark:text-gray-400 text-gray-600"
+            >
+              {{ t('multiplayer.currentNatTitle') }}
+            </span>
+            <span
+              class="font-bold"
+              :style="{color: natColors[natState.natType]}"
+            >
+              {{ natIcons[natState.natType] }}   {{ tNatType[natState.natType] }}
+            </span>
+            <v-tooltip
+              bottom
+              transition="scroll-y-transition"
               color="black"
             >
-              <template #activator="{ on: onTooltip }">
-                <v-btn
-                  text
-                  icon
-                  v-on="{ ...on, ...onTooltip }"
+              <template #activator="{on}">
+                <span
+                  class="p-1 rounded-full hover:bg-[rgba(123,123,123,0.5)] inline-flex transition-all"
+                  v-on="on"
                 >
-                  <v-icon>
-                    build
+                  <v-icon
+                    small
+                    color="grey"
+                  >
+                    info
                   </v-icon>
-                </v-btn>
+                </span>
               </template>
-              Connect Manually
+
+              {{ t('multiplayer.difficultyLevelHint') }}
+              <div
+                v-for="(type, key, index) of tNatType"
+                :key="key"
+              >
+                {{ index + 1 }}. {{ type }} {{ natIcons[key] }}
+              </div>
             </v-tooltip>
-          </template>
-          <v-list>
-            <v-list-item @click="show()">
-              <v-list-item-title>
-                <v-icon left>
-                  add_call
-                </v-icon>
-                {{ t('multiplayer.initiateConnection') }}
-              </v-list-item-title>
-            </v-list-item>
-            <v-list-item @click="showReceive()">
-              <v-list-item-title>
-                <v-icon left>
-                  login
-                </v-icon>
-                {{ t('multiplayer.joinManual') }}
-              </v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+          </div>
+          <div>
+            <v-icon>
+              dns
+            </v-icon>
+            <span class="dark:text-gray-400 text-gray-600">
+              {{ t('multiplayer.currentIpTitle') }}
+            </span>
+            <span class="font-bold">
+              {{ natState.externalIp }}{{ natState.externalPort ? `:${natState.externalPort}` : '' }}
+            </span>
+          </div>
+        </div>
       </v-card>
 
       <Hint
@@ -264,15 +330,16 @@
   </v-container>
 </template>
 <script lang=ts setup>
-import { BaseServiceKey, PeerServiceKey, UserServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, NatServiceKey, PeerServiceKey, UserServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
 import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
-import { useService } from '@/composables'
+import { useService, useServiceBusy } from '@/composables'
 import PlayerAvatar from '../components/PlayerAvatar.vue'
 import Hint from '@/components/Hint.vue'
 import { useCurrentUser } from '@/composables/user'
+import { useColorTheme } from '@/composables/colorTheme'
 
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
@@ -283,6 +350,41 @@ const connections = computed(() => state.connections)
 const { t } = useI18n()
 const { handleUrl } = useService(BaseServiceKey)
 const { gameProfile } = useCurrentUser()
+const isLoadingNetwork = useServiceBusy(NatServiceKey, 'refreshNatType')
+
+const { errorColor, successColor, warningColor } = useColorTheme()
+
+const natIcons = computed(() => ({
+  Blocked: '⛔',
+  'Open Internet': '🌐',
+  'Full Cone': '🍦',
+  'Restrict NAT': '⭕🍦',
+  'Restrict Port NAT': '🛑🍦',
+  'Symmetric UDP Firewall': '🧱',
+  'Symmetric NAT': '↔️',
+  Unknown: '❓',
+}))
+const natColors = computed(() => ({
+  Blocked: errorColor.value,
+  'Open Internet': successColor.value,
+  'Full Cone': successColor.value,
+  'Restrict NAT': warningColor.value,
+  'Restrict Port NAT': warningColor.value,
+  'Symmetric UDP Firewall': errorColor.value,
+  'Symmetric NAT': errorColor.value,
+  Unknown: t('natType.unknown'),
+}))
+const { state: natState } = useService(NatServiceKey)
+const tNatType = computed(() => ({
+  'Open Internet': t('natType.openInternet'),
+  'Full Cone': t('natType.fullCone'),
+  'Restrict NAT': t('natType.restrictNat'),
+  'Restrict Port NAT': t('natType.restrictPortNat'),
+  'Symmetric UDP Firewall': t('natType.symmetricUDPFirewall'),
+  'Symmetric NAT': t('natType.symmetricNat'),
+  Blocked: t('natType.blocked'),
+  Unknown: t('natType.unknown'),
+}))
 
 const groupId = ref(state.group)
 const modified = computed(() => groupId.value !== state.group)

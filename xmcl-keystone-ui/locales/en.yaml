@@ -722,6 +722,9 @@ multiplayer:
     158, 11)">multiple</span> connections.</span>"
   createGroup: ''
   createLocalToken: Create Local Token
+  currentIpTitle: Detectd Public IP
+  currentNatTitle: 'Current network (NAT):'
+  difficultyLevelHint: The level of difficulty to create a peer connection with other
   disconnectDescription: Are you sure you want to disconnect with user {user}({id})?
   disconnected: disconnected
   enterRemoteToken: Enter Remote Token
@@ -768,6 +771,15 @@ multiplayer:
   startNewP2PConnection: Click the Start button to create a new peer connection
 myStuff: My Stuff
 name: Name
+natType:
+  blocked: Blocked
+  fullCone: Full Cone
+  openInternet: Open Internet
+  restrictNat: Restrict NAT
+  restrictPortNat: Restrict Port NAT
+  symmetricNat: Symmetric NAT
+  symmetricUDPFirewall: Symmetric UDP Firewall
+  unknown: Unknown
 next: Next
 'no': 'No'
 ok: OK
