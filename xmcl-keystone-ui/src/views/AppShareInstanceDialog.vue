@@ -163,52 +163,22 @@
   </v-dialog>
 </template>
 <script lang="ts" setup>
-import { Ref } from 'vue'
+import { useService } from '@/composables'
 import { InstanceInstallServiceKey, InstanceManifest, InstanceManifestServiceKey, InstanceServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
+import { Ref } from 'vue'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { useDialog } from '../composables/dialog'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
 import { useNotifier } from '../composables/notifier'
-import { useService } from '@/composables'
 
-const { isShown, show, parameter } = useDialog('share-instance')
+const { isShown, parameter } = useDialog('share-instance')
 
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)
-const { shareInstance, state, on } = useService(PeerServiceKey)
+const { shareInstance } = useService(PeerServiceKey)
 const { state: instanceState } = useService(InstanceServiceKey)
 const { t } = useI18n()
 const { subscribeTask } = useNotifier()
-const { notify } = useNotifier()
-const router = useRouter()
-
-on('share', (event) => {
-  if (event.manifest) {
-    const man = event.manifest
-    const conn = state.connections.find(c => c.id === event.id)
-    if (conn) {
-      notify({
-        level: 'info',
-        title: t('AppShareInstanceDialog.instanceShare', { user: conn.userInfo.name }),
-        full: true,
-        more() {
-          if (!isShown.value) {
-            router.push('/multiplayer')
-            show({
-              ...man,
-              files: man.files.map(f => ({
-                ...f,
-                size: 0,
-                isDirectory: false,
-              })),
-            })
-            isShown.value = true
-          }
-        },
-      })
-    }
-  }
-})
 
 const sharing = computed(() => isShown.value && !parameter.value)
 /**

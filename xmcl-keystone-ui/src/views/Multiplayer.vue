@@ -16,6 +16,13 @@
         elevation="1"
       >
         <div class="flex items-center gap-2">
+          <v-progress-circular
+            v-if="state.groupState ==='connecting'"
+            indeterminate
+            :size="20"
+            :width="3"
+          />
+          {{ tGroupState[state.groupState] }}
           <v-text-field
             v-model="groupId"
             class="max-w-40"
@@ -47,7 +54,7 @@
             {{ copied ? t('multiplayer.copied') : t('multiplayer.inviteLink') }}
           </v-btn>
 
-          <div class="text-gray-400 text-sm">
+          <div class="text-gray-400 text-sm lg:block hidden">
             <template v-if="state.group">
               {{ t('multiplayer.copyGroupToFriendHint') }}
             </template>
@@ -117,7 +124,7 @@
                     </v-icon>
                   </v-btn>
                 </template>
-                Connect Manually
+                {{ t('multiplayer.manualConnect') }}
               </v-tooltip>
             </template>
             <v-list>
@@ -140,30 +147,92 @@
             </v-list>
           </v-menu>
         </div>
-        <div class="mt-4 mb-2 flex items-center justify-center gap-4">
-          <div class="">
-            <v-progress-circular
-              v-if="isLoadingNetwork"
-              indeterminate
-              small
-              size="20"
-              width="2"
-              class="mr-1"
-            />
-            <v-icon v-else>
+      </v-card>
+
+      <v-list
+        two-line
+        subheader
+        class="py-2 flex flex-col gap-2 justify-start"
+        style="width: 100%; background: transparent;"
+      >
+        <v-subheader class>
+          {{ t("multiplayer.networkInfo") }}
+        </v-subheader>
+
+        <v-list-item
+          v-if="device"
+          class="flex-grow-0 flex-1"
+        >
+          <v-list-item-avatar>
+            <v-icon>
+              router
+            </v-icon>
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title>
+              {{ t("multiplayer.routerInfo") }}
+            </v-list-item-title>
+            <v-list-item-subtitle class="flex gap-2 items-center">
+              {{ device.friendlyName }}
+            </v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-action
+            class="self-center"
+          >
+            <v-chip
+              label
+              outlined
+            >
+              <v-icon left>
+                precision_manufacturing
+              </v-icon>
+              <a :href="device.manufacturerURL">
+                {{ device.manufacturer }}
+              </a>
+            </v-chip>
+          </v-list-item-action>
+          <v-list-item-action
+            class="self-center"
+          >
+            <v-chip
+              label
+              outlined
+            >
+              <v-icon left>
+                devices
+              </v-icon>
+              <a :href="device.modelURL">
+                {{ device.modelName }}
+              </a>
+            </v-chip>
+          </v-list-item-action>
+        </v-list-item>
+
+        <v-list-item
+          class="flex-grow-0 flex-1"
+        >
+          <v-list-item-avatar>
+            <v-icon>
               wifi
             </v-icon>
-            <span
-              class="dark:text-gray-400 text-gray-600"
-            >
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title>
               {{ t('multiplayer.currentNatTitle') }}
-            </span>
-            <span
-              class="font-bold"
-              :style="{color: natColors[natState.natType]}"
-            >
-              {{ natIcons[natState.natType] }}   {{ tNatType[natState.natType] }}
-            </span>
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              <span v-if="natState.localIp">
+                {{ natState.localIp }}
+              </span>
+              <span>
+                {{ t('multiplayer.currentIpTitle') }}
+              </span>
+              <span class="font-bold">
+                {{ natState.externalIp }}{{ natState.externalPort ? `:${natState.externalPort}` : '' }}
+              </span>
+            </v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-action class="flex flex-shrink flex-grow-0 flex-row self-center">
             <v-tooltip
               bottom
               transition="scroll-y-transition"
@@ -171,15 +240,11 @@
             >
               <template #activator="{on}">
                 <span
-                  class="p-1 rounded-full hover:bg-[rgba(123,123,123,0.5)] inline-flex transition-all"
+                  class="font-bold"
+                  :style="{color: natColors[natState.natType]}"
                   v-on="on"
                 >
-                  <v-icon
-                    small
-                    color="grey"
-                  >
-                    info
-                  </v-icon>
+                  {{ natIcons[natState.natType] }}   {{ tNatType[natState.natType] }}
                 </span>
               </template>
 
@@ -191,34 +256,28 @@
                 {{ index + 1 }}. {{ type }} {{ natIcons[key] }}
               </div>
             </v-tooltip>
-          </div>
-          <div>
-            <v-icon>
-              dns
-            </v-icon>
-            <span class="dark:text-gray-400 text-gray-600">
-              {{ t('multiplayer.currentIpTitle') }}
-            </span>
-            <span class="font-bold">
-              {{ natState.externalIp }}{{ natState.externalPort ? `:${natState.externalPort}` : '' }}
-            </span>
-          </div>
-        </div>
-      </v-card>
+          </v-list-item-action>
+          <v-list-item-action>
+            <v-btn
+              icon
+              :loading="isLoadingNetwork"
+              @click="refreshNatType"
+            >
+              <v-icon>refresh</v-icon>
+            </v-btn>
+          </v-list-item-action>
+        </v-list-item>
 
-      <Hint
-        v-if="connections.length === 0"
-        icon="sports_kabaddi"
-        class="h-full"
-        :size="120"
-        :text="t('multiplayer.placeholder')"
-      />
-      <v-list
-        two-line
-        subheader
-        class="py-2 flex flex-col gap-2 justify-start"
-        style="width: 100%; background: transparent;"
-      >
+        <v-subheader class>
+          {{ t("multiplayer.connections") }}
+        </v-subheader>
+        <Hint
+          v-if="connections.length === 0"
+          icon="sports_kabaddi"
+          class="h-full"
+          :size="120"
+          :text="t('multiplayer.placeholder')"
+        />
         <v-list-item
           v-for="c of connections"
           :key="c.id"
@@ -264,6 +323,14 @@
               <!-- {{ c.ping }}ms -->
             </v-list-item-subtitle>
           </v-list-item-content>
+          <v-list-item-action
+            v-if="c.signalingState === 'have-local-offer'"
+            class="self-center mr-5"
+          >
+            <v-list-item-subtitle>
+              {{ t('peerSignalingState.have-local-offer') }}
+            </v-list-item-subtitle>
+          </v-list-item-action>
           <v-list-item-action
             v-if="c.iceGatheringState !== 'complete'"
             class="self-center mr-5"
@@ -330,7 +397,7 @@
   </v-container>
 </template>
 <script lang=ts setup>
-import { BaseServiceKey, NatServiceKey, PeerServiceKey, UserServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, MappingInfo, NatServiceKey, PeerServiceKey, UserServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
@@ -354,6 +421,13 @@ const isLoadingNetwork = useServiceBusy(NatServiceKey, 'refreshNatType')
 
 const { errorColor, successColor, warningColor } = useColorTheme()
 
+const tGroupState = computed(() => ({
+  connected: '✔️ ' + t('peerGroupState.connected'),
+  connecting: t('peerGroupState.connecting'),
+  closed: '🕒 ' + t('peerGroupState.closed'),
+  closing: t('peerGroupState.closing'),
+}))
+
 const natIcons = computed(() => ({
   Blocked: '⛔',
   'Open Internet': '🌐',
@@ -374,7 +448,9 @@ const natColors = computed(() => ({
   'Symmetric NAT': errorColor.value,
   Unknown: t('natType.unknown'),
 }))
-const { state: natState } = useService(NatServiceKey)
+const { state: natState, refreshNatType } = useService(NatServiceKey)
+const device = computed(() => natState.natDevice)
+
 const tNatType = computed(() => ({
   'Open Internet': t('natType.openInternet'),
   'Full Cone': t('natType.fullCone'),
@@ -416,6 +492,9 @@ const tConnectionStates = computed(() => ({
 const startDelete = (id: string) => {
   deleting.value = id
   showDelete()
+}
+const startUnmap = (m: MappingInfo) => {
+
 }
 const edit = (id: string, init: boolean) => {
   const conn = state.connections.find(c => c.id === id)

@@ -43,7 +43,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { InstanceIOException, InstanceIOServiceKey, InstanceManifestSchema, isException, InstanceManifest, XUpdateServiceKey, InstanceManifestServiceKey } from '@xmcl/runtime-api'
+import { InstanceIOException, InstanceIOServiceKey, InstanceManifest, isException, InstanceManifest, XUpdateServiceKey, InstanceManifestServiceKey } from '@xmcl/runtime-api'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
 import { useService, useServiceBusy } from '@/composables'
@@ -75,7 +75,7 @@ async function upload() {
   if (current.value) {
     const all = new Set(selected.value)
 
-    const result: InstanceManifestSchema = {
+    const result: InstanceManifest = {
       ...current.value,
     }
     result.files = result.files.filter(f => all.has(f.path)).map(f => ({

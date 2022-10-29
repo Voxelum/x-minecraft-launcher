@@ -1,6 +1,10 @@
+import { randomUUID } from 'crypto'
+import { createReadStream, existsSync } from 'fs'
 import debounce from 'lodash.debounce'
 import { createConnection } from 'net'
 import { DataChannel, DataChannelStream, DescriptionType, PeerConnection } from 'node-datachannel'
+import { join } from 'path'
+import { Readable } from 'stream'
 import { MessageGetSharedManifestEntry, MessageShareManifestEntry } from './messages/download'
 import { MessageHeartbeatPing, MessageHeartbeatPingEntry, MessageHeartbeatPongEntry } from './messages/heartbeat'
 import { MessageIdentity, MessageIdentityEntry } from './messages/identity'
@@ -38,28 +42,32 @@ export class PeerSession {
 
   readonly proxies: ServerProxy[] = []
 
-  readonly descriptionSignal = createPromiseSignal()
-
   public description: { sdp: string; type: DescriptionType } | undefined
   readonly candidates: Array<{ candidate: string; mid: string }> = []
+  private remoteId = ''
+  #isClosed = false
 
   constructor(
+    /**
+     * The session id
+     */
+    readonly id: string = randomUUID(),
     readonly host: PeerHost,
     readonly logger: Logger,
-    /**
-     * The receiver id
-     */
-    readonly id: string,
+    portBegin?: number,
   ) {
-    // TODO: see this id
-    this.connection = new PeerConnection(id, {
+    this.connection = new PeerConnection(this.id, {
       iceServers,
       iceTransportPolicy: 'all',
+      enableIceTcp: true,
+      enableIceUdpMux: true,
+      disableAutoNegotiation: false,
+      portRangeBegin: portBegin,
     })
 
     const updateDescriptor = debounce(() => {
       const description = this.description!
-      host.onDescriptorUpdate(description.sdp, description.type, this.candidates)
+      host.onDescriptorUpdate(this.id, description.sdp, description.type, this.candidates)
     }, 1500) // debounce for 1.5 second
 
     this.connection.onLocalCandidate((candidate, mid) => {
@@ -81,8 +89,14 @@ export class PeerSession {
         const socket = createConnection(port)
         socket.on('data', (buf) => channel.sendMessageBinary(buf))
         channel.onMessage((data) => socket.write(Buffer.from(data)))
-        socket.on('close', () => channel.close())
-        channel.onClosed(() => socket.destroy())
+        socket.on('close', () => {
+          this.logger.log(`Socket ${label} closed and close game channel ${channel.getId()}`)
+          channel.close()
+        })
+        channel.onClosed(() => {
+          this.logger.log(`Game connection ${channel.getId()} closed and destroy socket ${label}`)
+          socket.destroy()
+        })
         this.logger.log(`Create game channel to ${port}`)
       } else if (protocol === 'metadata') {
         // this is a metadata channel
@@ -94,30 +108,54 @@ export class PeerSession {
         if (fileName.startsWith('/')) {
           fileName = fileName.substring(1)
         }
-        const fileStream = this.host.createSharedFileReadStream(fileName)
-        if (fileStream) {
+        const sharedManifest = this.host.getSharedInstance()
+        const createStream = (file: string) => {
+          const man = sharedManifest
+          if (!man) {
+            return 'NO_PERMISSION'
+          }
+          if (!man.files.some(v => v.path === file)) {
+            return 'NO_PERMISSION'
+          }
+          const filePath = join(this.host.getShadedInstancePath(), file)
+          if (!existsSync(filePath)) {
+            return 'NOT_FOUND'
+          }
+          return createReadStream(filePath)
+        }
+        const result = createStream(fileName)
+        if (typeof result === 'string') {
+          // reject the file
+          this.logger.log(`Reject peer file request ${fileName} due to ${result}`)
+          channel.sendMessage(result)
+          channel.close()
+        } else {
           this.logger.log(`Process peer file request: ${fileName}`)
-          fileStream.on('data', (data: Buffer) => {
+          result.on('data', (data: Buffer) => {
             channel.sendMessageBinary(data)
           })
-          fileStream.on('close', () => {
+          result.on('close', () => {
             channel.close()
           })
           channel.onMessage((data) => {
             if (data === 'done') {
-              fileStream.destroy()
+              result.destroy()
               channel.close()
             }
           })
-        } else {
-          // reject the file
-          this.logger.log(`Reject peer file request as it's not shared: ${fileName}`)
-          channel.close()
         }
       } else {
         // TODO: emit error for unknown protocol
       }
     })
+  }
+
+  setRemoteId(id: string) {
+    this.remoteId = id
+  }
+
+  getRemoteId() {
+    return this.remoteId
   }
 
   /**
@@ -130,25 +168,35 @@ export class PeerSession {
   }
 
   createDownloadStream(file: string) {
-    return new DataChannelStream(this.connection.createDataChannel(file, {
-      protocol: 'download',
-    }))
-  }
+    const readable = new Readable({
+      read() {
+      },
+    })
 
-  waitIceGathering() {
-    return new Promise<void>((resolve) => {
-      if (this.connection.gatheringState() !== 'complete') {
-        // wait ice collect state done
-        const onStateChange = (state: string) => {
-          if (state === 'complete') {
-            resolve()
-          }
-        }
-        this.connection.onGatheringStateChange(onStateChange)
+    const channel = this.connection.createDataChannel(file, {
+      protocol: 'download',
+      ordered: true,
+    })
+
+    const onError = (e: Error) => {
+      channel.close()
+    }
+    channel.onMessage((msg) => {
+      if (typeof msg === 'string') {
+        readable.destroy(new Error(msg))
       } else {
-        resolve()
+        readable.push(msg)
       }
     })
+    readable.on('error', onError)
+    channel.onClosed(() => {
+      readable.push(null)
+    })
+    channel.onError((e) => {
+      readable.destroy(new Error(e))
+    })
+
+    return readable
   }
 
   /**
@@ -174,7 +222,10 @@ export class PeerSession {
     }, 1000)
   }
 
+  get isClosed() { return this.#isClosed }
+
   close() {
+    this.#isClosed = true
     this.connection.close()
     this.channel?.close()
     for (const p of this.proxies) {

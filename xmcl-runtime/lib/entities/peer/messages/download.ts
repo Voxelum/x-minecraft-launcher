@@ -1,8 +1,8 @@
-import { InstanceManifestSchema } from '@xmcl/runtime-api'
+import { InstanceManifest } from '@xmcl/runtime-api'
 // import { ipcRenderer } from 'electron'
 import { defineMessage, MessageType } from './message'
 
-export const MessageShareManifest: MessageType<{ manifest: InstanceManifestSchema }> = 'instance-manifest'
+export const MessageShareManifest: MessageType<{ manifest: InstanceManifest }> = 'instance-manifest'
 export const MessageGetSharedManifest: MessageType<void> = 'get-instance-manifest'
 
 export const MessageShareManifestEntry = defineMessage(MessageShareManifest, function (msg) {

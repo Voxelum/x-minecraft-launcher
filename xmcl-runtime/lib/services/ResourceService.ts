@@ -19,6 +19,8 @@ import { Inject } from '../util/objectRegistry'
 import { createPromiseSignal, PromiseSignal } from '../util/promiseSignal'
 import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 
+const EMPTY_RESOURCE_SHA1 = 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
+
 export interface Query {
   hash?: string
   url?: string | string[]
@@ -145,6 +147,8 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         const existed = this.cache.get(resource.storedPath)
         if (existed && existed.hash !== resource.hash) {
           promises.push(fixOverlap(existed, resource))
+        } else if (resource.hash === EMPTY_RESOURCE_SHA1) {
+          toRemove.push(resource)
         } else {
           toAdd.push(resource)
           this.cache.put(resource as any)
@@ -705,6 +709,12 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         throw new ResourceException({
           type: 'resourceImportDirectoryException',
           path: resource.path,
+        })
+      }
+      if (resource.hash === EMPTY_RESOURCE_SHA1) {
+        throw new ResourceException({
+          type: 'resourceNotFoundException',
+          resource: resource.path,
         })
       }
       const resolved = await this.parseResourceMetadata(resource)

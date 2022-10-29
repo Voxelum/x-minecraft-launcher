@@ -99,7 +99,7 @@
 
 <script lang=ts setup>
 import { Ref } from 'vue'
-import { InstanceInstallServiceKey, ModpackServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceInstallServiceKey, ModpackServiceKey, PeerServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
 import AdvanceContent from '../components/StepperAdvanceContent.vue'
 import BaseContent from '../components/StepperBaseContent.vue'
 import StepperFooter from '../components/StepperFooter.vue'
@@ -150,16 +150,17 @@ watch(selectedTemplate, (newVal) => {
 })
 
 const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
-  if (selectedTemplate.value) {
-    if (selectedTemplate.value.source.type === 'instance') {
+  const template = selectedTemplate.value
+  if (template) {
+    if (template.source.type === 'instance') {
       await create()
       router.push('/')
-    } else if (selectedTemplate.value.source.type === 'ftb') {
+    } else if (template.source.type === 'ftb') {
       try {
         const path = await create()
         await installInstanceFiles({
           path,
-          files: selectedTemplate.value.source.manifest.files.map(f => ({
+          files: template.source.manifest.files.map(f => ({
             path: f.path + '/' + f.name,
             hashes: {
               sha1: f.sha1,
@@ -175,7 +176,7 @@ const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
           })),
         })
         notify({
-          title: t('importModpack.success', { modpack: selectedTemplate.value?.name }),
+          title: t('importModpack.success', { modpack: template?.name }),
           level: 'success',
           full: true,
           more() {
@@ -184,7 +185,32 @@ const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
         })
       } catch {
         notify({
-          title: t('importModpack.failed', { modpack: selectedTemplate.value?.name }),
+          title: t('importModpack.failed', { modpack: template?.name }),
+          level: 'error',
+          full: true,
+          more() {
+            show()
+          },
+        })
+      }
+    } else if (template.source.type === 'peer') {
+      try {
+        const path = await create()
+        await installInstanceFiles({
+          path,
+          files: template.source.manifest.files,
+        })
+        notify({
+          title: t('importModpack.success', { modpack: template?.name }),
+          level: 'success',
+          full: true,
+          more() {
+            router.push('/')
+          },
+        })
+      } catch {
+        notify({
+          title: t('importModpack.failed', { modpack: template?.name }),
           level: 'error',
           full: true,
           more() {
@@ -195,12 +221,12 @@ const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
     } else {
       try {
         await importModpack({
-          path: selectedTemplate.value.source.resource.path,
+          path: template.source.resource.path,
           instanceConfig: { ...creationData },
           mountAfterSucceed: true,
         })
         notify({
-          title: t('importModpack.success', { modpack: selectedTemplate.value?.name }),
+          title: t('importModpack.success', { modpack: template?.name }),
           level: 'success',
           full: true,
           more() {
@@ -209,7 +235,7 @@ const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
         })
       } catch {
         notify({
-          title: t('importModpack.failed', { modpack: selectedTemplate.value?.name }),
+          title: t('importModpack.failed', { modpack: template?.name }),
           level: 'error',
           full: true,
           more() {
@@ -241,6 +267,26 @@ on('modpackImport', ({ path, name }) => {
   }, 100)
 })
 
+const { on: onPeerService, state: peerState } = useService(PeerServiceKey)
+
+onPeerService('share', (event) => {
+  if (event.manifest) {
+    const conn = peerState.connections.find(c => c.id === event.id)
+    if (conn) {
+      notify({
+        level: 'info',
+        title: t('AppShareInstanceDialog.instanceShare', { user: conn.userInfo.name }),
+        full: true,
+        more() {
+          if (!isShown.value) {
+            showAddInstance(event.id)
+          }
+        },
+      })
+    }
+  }
+})
+
 watch(isShown, (shown) => {
   if (creating.value) {
     return
@@ -251,10 +297,10 @@ watch(isShown, (shown) => {
     reset()
     return
   }
-  const p = parameter.value
-  if (p) {
+  const id = parameter.value
+  if (id) {
     refresh().then(() => {
-      selectedTemplate.value = templates.value.find(t => t.id === p.toString())
+      selectedTemplate.value = templates.value.find(t => t.id === id.toString())
     })
   }
   step.value = 2

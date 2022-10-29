@@ -1,13 +1,11 @@
 import { MinecraftLanBroadcaster, MinecraftLanDiscover } from '@xmcl/client'
-import { InstanceManifestSchema, PeerService as IPeerService, PeerServiceKey, PeerState, ShareInstanceOptions } from '@xmcl/runtime-api'
+import { ChecksumNotMatchError } from '@xmcl/installer'
+import { InstanceManifest, PeerService as IPeerService, PeerServiceKey, PeerState, ShareInstanceOptions } from '@xmcl/runtime-api'
 import { AbortableTask, BaseTask } from '@xmcl/task'
 import { randomFill, randomUUID } from 'crypto'
 import { createWriteStream } from 'fs'
-import { createReadStream } from 'fs-extra'
-import debounce from 'lodash.debounce'
-import { DescriptionType } from 'node-datachannel'
-import { join } from 'path'
-import { Duplex } from 'stream'
+import { ensureFile } from 'fs-extra'
+import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { promisify } from 'util'
 import { brotliCompress, brotliDecompress } from 'zlib'
@@ -35,13 +33,14 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
    */
   readonly id = randomUUID()
 
-  private sharedManifest: InstanceManifestSchema | undefined
+  private sharedManifest: InstanceManifest | undefined
   private shareInstancePath = ''
 
   private group: PeerGroup | undefined
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(UserService) private userService: UserService) {
+    @Inject(UserService) private userService: UserService,
+  ) {
     super(app, () => new PeerState(), async () => {
     })
 
@@ -84,6 +83,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     this.group?.quit()
     this.group = undefined
     this.state.connectionGroup('')
+    this.state.connectionGroupState('closed')
   }
 
   @Lock('joinGroup')
@@ -104,29 +104,55 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       }))
       id = `${this.userService.state.gameProfile?.name ?? 'Player'}@${buf.readUint16BE()}`
     }
-    const group = await PeerGroup.join(id, this.id, (sender) => {
+    const group = new PeerGroup(id, this.id)
+
+    group.on('heartbeat', (sender) => {
+      const peer = Object.values(this.peers).find(p => p.getRemoteId() === sender)
       // Ask sender to connect to me :)
-      if (!this.peers[sender]) {
-        // Try to connect to the sender
-        this.initiate(sender, true)
-      }
-    }, (sender, sdp, type, candidates) => {
-      if (!this.peers[sender]) {
-        // Try to connect to the sender
-        this.initiate(sender)
-      }
-      this.log(`Set remote description: ${sdp} ${type}`)
-      this.log(candidates)
-      const peer = this.peers[sender]
-      peer.connection.setRemoteDescription(sdp, type)
-      peer.descriptionSignal.resolve()
-      for (const { candidate, mid } of candidates) {
-        this.log(`Add remote candidate: ${candidate} ${mid}`)
-        peer.connection.addRemoteCandidate(candidate, mid)
+      if (!peer) {
+        this.log(`Not found the ${sender}. Initiate new connection`)
+        if (this.id.localeCompare(sender) > 0) {
+          // Only if my id is greater than other's id, we try to initiate the connection.
+          // This will have a total order in the UUID random space
+
+          // Try to connect to the sender
+          this.initiate({ id: sender, initiate: true })
+        }
       }
     })
+    group.on('descriptor', (sender, sdp, type, candidates) => {
+      let peer = Object.values(this.peers).find(p => p.getRemoteId() === sender)
+      this.log(`Descriptor from ${sender}`)
+      const newPeer = !peer
+      if (!peer) {
+        this.log(`Not found the ${sender}. Initiate new connection`)
+        // Try to connect to the sender
+        this.initiate({ id: sender, initiate: false })
+        peer = Object.values(this.peers).find(p => p.getRemoteId() === sender)!
+      }
+      this.log(`Set remote ${type} description: ${sdp}`)
+      this.log(candidates)
+      const state = peer.connection.signalingState()
+      if (state !== 'stable' || newPeer) {
+        peer.connection.setRemoteDescription(sdp, type)
+        for (const { candidate, mid } of candidates) {
+          this.log(`Add remote candidate: ${candidate} ${mid}`)
+          peer.connection.addRemoteCandidate(candidate, mid)
+        }
+      } else {
+        this.log('Skip to set remote description as signal state is stable')
+      }
+    })
+    group.on('state', (state) => {
+      this.state.connectionGroupState(state)
+    })
+    group.on('error', (err) => {
+      this.error(err)
+    })
+
     this.group = group
     this.state.connectionGroup(group.groupId)
+    this.state.connectionGroupState(group.state)
   }
 
   protected async decode(description: string): Promise<TransferDescription> {
@@ -134,31 +160,36 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }
 
   @Singleton(id => id)
-  async initiate(expectId?: string, initiate = false): Promise<string> {
-    const setLocalDescription = debounce((payload) => {
-      pBrotliCompress(JSON.stringify(payload)).then((s) => s.toString('base64')).then((compressed) => {
-        this.state.connectionLocalDescription({ id: payload.session, description: compressed })
-      })
-    })
+  async initiate(options?: {
+    id?: string
+    session?: string
+    initiate?: boolean
+  }): Promise<string> {
+    const initiator = !options?.id || options?.initiate || false
+    const remoteId = options?.id
+    const sessionId = options?.session || randomUUID()
 
-    const initiator = !expectId || initiate
-    const id = expectId || randomUUID()
+    this.log(`Create peer connection to ${remoteId}. Is initiator: ${initiator}`)
 
-    this.log(`Create peer connection to ${id}. Is initiator: ${initiate}`)
-
-    const conn = new PeerSession({
+    const conn = new PeerSession(sessionId, {
       onHeartbeat: (id, ping) => this.state.connectionPing({ id, ping }),
       onInstanceShared: (id, manifest) => {
         this.state.connectionShareManifest({ id, manifest })
         this.emit('share', { id, manifest })
       },
-      onDescriptorUpdate: (sdp, type, candidates) => {
-        this.log(`Send local description ${id}: ${sdp} ${type}`)
+      onDescriptorUpdate: (id, sdp, type, candidates) => {
+        this.log(`Send local description ${remoteId}: ${sdp} ${type}`)
         this.log(candidates)
-        this.group?.sendLocalDescription(id, sdp, type, candidates)
-        setLocalDescription({ sdp, id, session: id })
+        if (remoteId) {
+          this.group?.sendLocalDescription(remoteId, sdp, type, candidates)
+        }
+        const payload = { sdp, id: this.id, session: id, candidates }
+        pBrotliCompress(JSON.stringify(payload)).then((s) => s.toString('base64')).then((compressed) => {
+          this.state.connectionLocalDescription({ id: payload.session, description: compressed })
+        })
       },
       onIdentity: (id, info) => this.state.connectionUserInfo({ id, info }),
+      onLanMessage: (_, msg) => { this.broadcaster.broadcast(msg) },
       getUserInfo: () => {
         const user = this.userService.state.user
         const profile = user?.profiles[user.selectedProfile]
@@ -172,32 +203,39 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
         }
       },
       getSharedInstance: () => this.sharedManifest,
-      createSharedFileReadStream: (file) => {
-        const man = this.sharedManifest
-        if (!man) {
-          return undefined
-        }
-        if (!man.files.some(v => v.path === file)) {
-          return undefined
-        }
-        return createReadStream(join(this.shareInstancePath, file))
-      },
-      broadcaster: this.broadcaster,
-    }, this, id)
-    this.peers[id] = conn
+      getShadedInstancePath: () => this.shareInstancePath,
+    }, this)
+
+    if (remoteId) {
+      conn.setRemoteId(remoteId)
+    }
 
     conn.connection.onStateChange((state) => {
-      this.state.connectionStateChange({ id, connectionState: state as any })
+      this.state.connectionStateChange({ id: conn.id, connectionState: state as any })
+      if (state === 'closed') {
+        if (conn.isClosed) {
+          // Close by user manually
+          delete this.peers[conn.id]
+          this.state.connectionDrop(conn.id)
+        } else {
+          this.error(`Connection is closed unexpected! ${conn.id}`)
+          if (this.group) {
+            // Only delete if the group exist. Then it can re-connect automatically.
+            delete this.peers[conn.id]
+            this.state.connectionDrop(conn.id)
+          }
+        }
+      }
     })
     conn.connection.onSignalingStateChange((state) => {
-      this.state.signalingStateChange({ id, signalingState: state as any })
+      this.state.signalingStateChange({ id: conn.id, signalingState: state as any })
     })
     conn.connection.onGatheringStateChange((state) => {
-      this.state.iceGatheringStateChange({ id, iceGatheringState: state as any })
+      this.state.iceGatheringStateChange({ id: conn.id, iceGatheringState: state as any })
     })
 
     this.state.connectionAdd({
-      id,
+      id: conn.id,
       initiator,
       userInfo: {
         name: '',
@@ -215,25 +253,38 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       sharing: undefined,
     })
 
+    this.peers[conn.id] = conn
+
     if (initiator) {
       conn.initiate()
     }
 
-    return id
+    return conn.id
   }
 
   async offer(offer: string): Promise<string> {
     const o = await this.decode(offer) as TransferDescription
-    await this.initiate(o.id)
-    const peer = this.peers[o.id]
-    peer.connection.setRemoteDescription(o.sdp, DescriptionType.Offer)
-    return o.id
+    const sess = await this.initiate({
+      id: o.id,
+      session: o.session,
+      initiate: false,
+    })
+    const peer = this.peers[sess]
+    peer.connection.setRemoteDescription(o.sdp, 'offer' as any)
+    for (const c of o.candidates) {
+      peer.connection.addRemoteCandidate(c.candidate, c.mid)
+    }
+    return sess
   }
 
   async answer(answer: string): Promise<void> {
     const o = await this.decode(answer) as TransferDescription
-    const peer = this.peers[o.id]
-    peer.connection.setRemoteDescription(o.sdp, DescriptionType.Answer)
+    const peer = this.peers[o.session]
+    peer.setRemoteId(o.id)
+    peer.connection.setRemoteDescription(o.sdp, 'answer' as any)
+    for (const c of o.candidates) {
+      peer.connection.addRemoteCandidate(c.candidate, c.mid)
+    }
   }
 
   async drop(id: string): Promise<void> {
@@ -241,29 +292,13 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     if (existed) {
       existed.close()
     }
-    delete this.peers[id]
-
-    this.state.connectionDrop(id)
-  }
-
-  createDownloadStream(url: string) {
-    const peerUrl = new URL(url)
-    if (peerUrl.protocol !== 'peer:') {
-      throw new Error(`Bad url: ${url}`)
-    }
-    const filePath = peerUrl.pathname
-    const peer = this.peers[peerUrl.host]
-    if (!peer) {
-      throw new Error()
-    }
-    return peer.createDownloadStream(filePath)
   }
 
   createDownloadTask(url: string, destination: string, sha1: string, size?: number): BaseTask<boolean> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const self = this
     class DownloadPeerFileTask extends AbortableTask<boolean> {
-      private stream: Duplex | undefined
+      private stream: Readable | undefined
 
       constructor(readonly url: string, readonly destination: string, readonly sha1: string, total: number) {
         super()
@@ -275,20 +310,43 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       }
 
       protected async process(): Promise<boolean> {
+        const createDownloadStream = (url: string) => {
+          const peerUrl = new URL(url)
+          if (peerUrl.protocol !== 'peer:') {
+            throw new Error(`Bad url: ${url}`)
+          }
+          const filePath = peerUrl.pathname
+          const peer = self.peers[peerUrl.host]
+          if (!peer) {
+            throw new Error()
+          }
+          return peer.createDownloadStream(filePath)
+        }
+
         this._total = this.total
         this._progress = 0
         this.update(0)
-        const stream = self.createDownloadStream(this.url)
-        this.stream = stream
-        stream.on('data', (buf) => {
-          this.update(buf.length)
-        })
-        await pipeline(stream, createWriteStream(this.destination))
+        await ensureFile(this.destination)
+
+        let valid = (await self.worker().checksum(this.destination, 'sha1')) === this.sha1
+        let limit = 3
+        while (!valid && limit > 0) {
+          this.stream = createDownloadStream(this.url)
+          this.stream.on('data', (buf) => {
+            this.update(buf.length)
+          })
+          await pipeline(this.stream, createWriteStream(this.destination))
+          valid = (await self.worker().checksum(this.destination, 'sha1')) === this.sha1
+          limit -= 1
+        }
+        if (!valid) {
+          throw new ChecksumNotMatchError('sha1', this.sha1, await self.worker().checksum('sha1', this.destination), this.destination)
+        }
         return true
       }
 
       protected abort(isCancelled: boolean): void {
-        this.stream?.destroy()
+        this.stream?.destroy(new Error('Abort'))
       }
 
       protected isAbortedError(e: any): boolean {

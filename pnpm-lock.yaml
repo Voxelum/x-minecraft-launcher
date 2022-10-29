@@ -17,6 +17,21 @@ importers:
     dependencies:
       '@actions/core': 1.9.0
 
+  packages/nat-api:
+    specifiers:
+      '@types/node': ^17.0.8
+      default-gateway: ^6.0.3
+      fast-xml-parser: ^4.0.8
+      typescript: ^4.5.4
+      undici: ^5.12.0
+    dependencies:
+      default-gateway: 6.0.3
+      fast-xml-parser: 4.0.8
+      undici: 5.12.0
+    devDependencies:
+      '@types/node': 17.0.45
+      typescript: 4.7.4
+
   xmcl-client-vue:
     specifiers:
       '@types/eslint': ^8.2.1
@@ -78,8 +93,8 @@ importers:
       create-desktop-shortcuts: ^1.6.0
       cross-env: ^5.2.1
       dotenv: 16.0.1
-      electron: ^21.2.0
-      electron-builder: ^22.14.5
+      electron: ^21.1.1
+      electron-builder: ^23.0.2
       electron-devtools-installer: ^3.2.0
       electron-updater: ^4.3.9
       esbuild: ^0.14.27
@@ -133,7 +148,7 @@ importers:
       cross-env: 5.2.1
       dotenv: 16.0.1
       electron: 21.2.0
-      electron-builder: 22.14.13
+      electron-builder: 23.6.0
       electron-devtools-installer: 3.2.0
       electron-updater: 4.6.5
       esbuild: 0.14.48
@@ -301,6 +316,7 @@ importers:
       '@types/lzma-native': ^4.0.1
       '@types/node': ~16
       '@types/semver': ^7.3.9
+      '@types/ws': ^8.5.3
       '@types/yauzl': ^2.9.2
       '@types/yazl': ^2.4.2
       '@typescript-eslint/eslint-plugin': ^5.6.0
@@ -314,7 +330,7 @@ importers:
       '@xmcl/mod-parser': workspace:*
       '@xmcl/model': workspace:*
       '@xmcl/modrinth': workspace:*
-      '@xmcl/nat-api': 0.3.2
+      '@xmcl/nat-api': workspace:*
       '@xmcl/nbt': workspace:*
       '@xmcl/resourcepack': workspace:*
       '@xmcl/runtime-api': workspace:*
@@ -339,7 +355,6 @@ importers:
       eslint-plugin-node: ^11.1.0
       eslint-plugin-promise: ^5.2.0
       esno: ^0.14.0
-      eventsource: ^2.0.2
       fast-xml-parser: ^4.0.1
       file-type: ^16.5.3
       filenamify: ^4.3.0
@@ -361,6 +376,7 @@ importers:
       tslib: ^2.3.1
       typescript: ^4.4.3
       undici: ^5.12.0
+      ws: 8.10.0
       yazl: ^2.5.1
     dependencies:
       '@azure/msal-common': 6.4.0
@@ -374,7 +390,7 @@ importers:
       '@xmcl/mod-parser': link:../xmcl/packages/mod-parser
       '@xmcl/model': link:../xmcl/packages/model
       '@xmcl/modrinth': link:../xmcl/packages/modrinth
-      '@xmcl/nat-api': 0.3.2
+      '@xmcl/nat-api': link:../packages/nat-api
       '@xmcl/nbt': link:../xmcl/packages/nbt
       '@xmcl/resourcepack': link:../xmcl/packages/resourcepack
       '@xmcl/runtime-api': link:../xmcl-runtime-api
@@ -391,7 +407,6 @@ importers:
       applicationinsights: 2.3.3
       atomically: 1.7.0
       classic-level: 1.2.0
-      eventsource: 2.0.2
       fast-xml-parser: 4.0.8
       file-type: 16.5.3
       filenamify: 4.3.0
@@ -410,6 +425,7 @@ importers:
       normalize-url: 7.1.0
       semver: 7.3.7
       undici: 5.12.0
+      ws: 8.10.0
       yazl: 2.5.1
     devDependencies:
       '@types/eventsource': 1.1.9
@@ -420,6 +436,7 @@ importers:
       '@types/lzma-native': 4.0.1
       '@types/node': 16.11.43
       '@types/semver': 7.3.10
+      '@types/ws': 8.5.3
       '@types/yauzl': 2.10.0
       '@types/yazl': 2.4.2
       '@typescript-eslint/eslint-plugin': 5.30.4_f4d0e5a022d1907a4cfe39e162b34847
@@ -2656,6 +2673,10 @@ packages:
     resolution: {integrity: sha512-GqWykok+3uocgfAJM8imbozrqLnPyTrpFlrryURQlw1EesPUCx5XxTiucWDSFF9/NUEXDuD4bnvHm8xfVGWTpQ==}
     dev: true
 
+  /@types/node/17.0.45:
+    resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
+    dev: true
+
   /@types/node/18.0.1:
     resolution: {integrity: sha512-CmR8+Tsy95hhwtZBKJBs0/FFq4XX7sDZHlGGf+0q+BRZfMbOTkzkj0AFAuTyXbObDIoanaBBW0+KEW+m3N16Wg==}
 
@@ -2751,6 +2772,12 @@ packages:
   /@types/webxr/0.4.0:
     resolution: {integrity: sha512-LQvrACV3Pj17GpkwHwXuTd733gfY+D7b9mKdrTmLdO7vo7P/o6209Qqtk63y/FCv/lspdmi0pWz6Qe/ull9kQg==}
     dev: false
+
+  /@types/ws/8.5.3:
+    resolution: {integrity: sha512-6YOoWjruKj1uLf3INHH7D3qTXwFfEsg1kf3c0uDdSBJwfa/llkwIjrAGV7j7mVgGNbzTQ3HiHKKDXl6bJPD97w==}
+    dependencies:
+      '@types/node': 18.0.1
+    dev: true
 
   /@types/yargs-parser/21.0.0:
     resolution: {integrity: sha512-iO9ZQHkZxHn4mSakYV0vFHAVDyEOIJQrV2uZ06HxEPcx+mt8swXoZHIbaaJ2crJYFfErySgktuTZ3BeLz+XmFA==}
@@ -3146,14 +3173,6 @@ packages:
       - supports-color
     dev: true
 
-  /@xmcl/nat-api/0.3.2:
-    resolution: {integrity: sha512-ZYV56/y9DFABcVkyqFtdRqQet6Xho+Q5G7ILk37lcDU8Y+pSmbnrA3uEDxXXAErtcvB+jmmEzd9sgb0Q7vpAmA==}
-    engines: {node: '>=10.0.0'}
-    dependencies:
-      default-gateway: 6.0.3
-      fast-xml-parser: 4.0.8
-    dev: false
-
   /@xmcl/stun-client/1.0.0:
     resolution: {integrity: sha512-OrvzFEMGC9eSNvfHiIsa4GAUpslD64fS/LtI+WaXliL9122dDn2guxiwhvw8aWuBTS0HdbCCBjRtLXS6LbecWw==}
     dev: false
@@ -3302,7 +3321,7 @@ packages:
     engines: {node: '>=14.0.0'}
     dependencies:
       '@develar/schema-utils': 2.6.5
-      '@electron/universal': 1.0.5
+      '@electron/universal': 1.2.1
       '@malept/flatpak-bundler': 0.4.0
       7zip-bin: 5.1.1
       async-exit-hook: 2.0.1
@@ -5395,11 +5414,6 @@ packages:
     resolution: {integrity: sha512-aIL5Fx7mawVa300al2BnEE4iNvo1qETxLrPI/o05L7z6go7fCw1J6EQmbK4FmJ2AS7kgVF/KEZWufBfdClMcPg==}
     engines: {node: '>= 0.6'}
     dev: true
-
-  /eventsource/2.0.2:
-    resolution: {integrity: sha512-IzUmBGPR3+oUG9dUeXynyNmf91/3zUSJg1lCktzKw47OXuhco54U3r9B7O4XX+Rb1Itm9OZ2b0RkTs10bICOxA==}
-    engines: {node: '>=12.0.0'}
-    dev: false
 
   /execa/5.1.1:
     resolution: {integrity: sha512-8uSpZZocAZRBAPIEINJj3Lo9HyGitllczc27Eh5YYojjMFMn8yHMDMaUHE2Jqfq05D/wucwI4JGURyXt1vchyg==}
@@ -9056,9 +9070,9 @@ packages:
         optional: true
     dev: true
 
-  /ws/7.5.8:
-    resolution: {integrity: sha512-ri1Id1WinAX5Jqn9HejiGb8crfRio0Qgu8+MtL36rlTA6RLsMdWt1Az/19A2Qij6uSHUMphEFaTKa4WG+UNHNw==}
-    engines: {node: '>=8.3.0'}
+  /ws/8.10.0:
+    resolution: {integrity: sha512-+s49uSmZpvtAsd2h37vIPy1RBusaLawVe8of+GyEPsaJTCMpj/2v8NpeK1SHXjBlQ95lQTmQofOJnFiLoaN3yw==}
+    engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
       utf-8-validate: ^5.0.2
@@ -9067,10 +9081,7 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
-  /xdg-basedir/4.0.0:
-    resolution: {integrity: sha512-PSNhEJDejZYV7h50BohL09Er9VaIefr2LMAf3OEmpCkjOi34eYyQYAXUTjEQtZJTKcF0E2UKTh+osDLsgNim9Q==}
-    engines: {node: '>=8'}
-    dev: true
+    dev: false
 
   /xml2js/0.4.23:
     resolution: {integrity: sha512-ySPiMjM0+pLDftHgXY4By0uswI3SPKLDw/i3UXbnO8M/p28zqexCUoPmQFrYD+/1BzhGJSs2i1ERWKJAtiLrug==}

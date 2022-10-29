@@ -77,6 +77,8 @@ function createStoreTemplate(symb: VuexModuleTemplateSymbols) {
         for (const [k, v] of Object.entries(payload[symb.name])) {
           state[k] = v
         }
+        console.log(symb.name)
+        console.log(payload[symb.name])
       }
       state.syncing = false
     },
@@ -124,6 +126,8 @@ function getStoreTemplateSymbol(name: string, stateTemplate: State<any>) {
       } else if (prop.get) {
         // getters
         s.getters.push([key, prop.get])
+      } else {
+        s.state.push([key, undefined])
       }
     }
   }

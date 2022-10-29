@@ -1,16 +1,14 @@
-import { MinecraftLanBroadcaster } from '@xmcl/client'
-import { ConnectionUserInfo, InstanceManifestSchema } from '@xmcl/runtime-api'
+import { LanServerInfo } from '@xmcl/client'
+import { ConnectionUserInfo, InstanceManifest } from '@xmcl/runtime-api'
 import { DescriptionType } from 'node-datachannel'
-import { Readable } from 'stream'
 export interface PeerHost {
   getUserInfo(): ConnectionUserInfo
-  createSharedFileReadStream(file: string): Readable | undefined
-  getSharedInstance(): InstanceManifestSchema | undefined
+  getSharedInstance(): InstanceManifest | undefined
+  getShadedInstancePath(): string
 
   onIdentity(id: string, info: ConnectionUserInfo): void
-  onInstanceShared(id: string, manifest: InstanceManifestSchema): void
-  onDescriptorUpdate(sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>): void
+  onInstanceShared(id: string, manifest: InstanceManifest): void
+  onDescriptorUpdate(id: string, sdp: string, type: DescriptionType, candidates: Array<{ candidate: string; mid: string }>): void
   onHeartbeat(id: string, ping: number): void
-
-  broadcaster: MinecraftLanBroadcaster
+  onLanMessage(id: string, inf: LanServerInfo): void
 }

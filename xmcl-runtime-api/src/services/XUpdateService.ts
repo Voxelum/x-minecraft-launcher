@@ -1,4 +1,4 @@
-import { InstanceFile, InstanceManifestSchema } from '../entities/instanceManifest.schema'
+import { InstanceFile, InstanceManifest } from '../entities/instanceManifest.schema'
 import { ServiceKey } from './Service'
 
 export interface InstanceUpdate {
@@ -18,7 +18,7 @@ export interface InstanceUpdate {
   /**
    * The instance manifest return by the remote api server
    */
-  manifest: InstanceManifestSchema
+  manifest: InstanceManifest
 }
 
 export interface SetInstanceManifestOptions {
@@ -29,7 +29,7 @@ export interface SetInstanceManifestOptions {
   /**
    * The manifest to upload
    */
-  manifest: InstanceManifestSchema
+  manifest: InstanceManifest
   /**
    * The headers used to send to the server.
    *

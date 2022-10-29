@@ -10,6 +10,7 @@ import { AbstractService, ExposeServiceKey } from './Service'
 import { PeerService } from './PeerService'
 import { UserService } from './UserService'
 import { ImageStorage } from '../util/imageStore'
+import { readFile } from 'fs/promises'
 
 const OFFLINE_USER_ID = 'OFFLINE'
 
@@ -95,9 +96,13 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
             if (skin !== undefined) {
               if (skin) {
                 let url = skin.url
-                console.log(url)
                 if (!url.startsWith('http')) {
-                  url = await imageStore.addImage(url)
+                  let u = url
+                  if (u.startsWith('image://')) {
+                    u = url.substring('image://'.length)
+                  }
+                  url = `data:image/png;base64,${await readFile(u, 'base64')}`
+                  // url = await imageStore.addImage(url)
                 }
                 gameProfile.textures.SKIN.url = url
                 gameProfile.textures.SKIN.metadata = { model: skin.slim ? 'slim' : 'steve' }
@@ -110,7 +115,12 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
               if (cape) {
                 let url = cape
                 if (!url.startsWith('http')) {
-                  url = await imageStore.addImage(url)
+                  let u = url
+                  if (u.startsWith('image://')) {
+                    u = url.substring('image://'.length)
+                  }
+                  url = `data:image/png;base64,${await readFile(u, 'base64')}`
+                  // url = await imageStore.addImage(url)
                 }
                 gameProfile.textures.CAPE = { url }
               } else {

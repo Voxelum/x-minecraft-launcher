@@ -1,5 +1,5 @@
 import { checksum } from '@xmcl/core'
-import { InstanceFile, InstanceIOException, InstanceManifestSchema, InstanceUpdate, SetInstanceManifestOptions, XUpdateService as IXUpdateService, XUpdateServiceKey } from '@xmcl/runtime-api'
+import { InstanceFile, InstanceIOException, InstanceManifest, InstanceUpdate, SetInstanceManifestOptions, XUpdateService as IXUpdateService, XUpdateServiceKey } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
 import { createReadStream } from 'fs'
 import { unlink } from 'fs-extra'
@@ -107,7 +107,7 @@ export class XUpdateService extends AbstractService implements IXUpdateService {
       return undefined
     }
 
-    let manifest: InstanceManifestSchema
+    let manifest: InstanceManifest
     try {
       manifest = await (await request(instance.fileApi)).body.json()
     } catch (e) {
