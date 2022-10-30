@@ -49,7 +49,7 @@ export class DownloadAsarUpdateTask extends DownloadTask {
           }
           const expect = sha256
           const actual = await checksum(file, 'sha256')
-          if (!expect !== actual) {
+          if (expect !== actual) {
             throw new ChecksumNotMatchError('sha256', expect, actual, file, url)
           }
         },
