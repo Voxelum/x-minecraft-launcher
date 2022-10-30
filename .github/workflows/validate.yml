@@ -4,7 +4,7 @@ on:
   pull_request
 
 jobs:
-  build:
+  validate:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2

@@ -8,7 +8,7 @@ on:
       - 'xmcl-keystone-ui/**'
 
 jobs:
-  build:
+  build-web:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
