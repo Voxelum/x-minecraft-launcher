@@ -153,14 +153,14 @@ export function useQuiltVersions(minecraftVersion: Ref<string>) {
   })
   async function refresh(force = false) {
     if (force || loaderVersions.value.length === 0) {
-      const result = await getQuiltVersionList({ force, minecraftVersion: minecraftVersion.value })
+      const result = await getQuiltVersionList({ minecraftVersion: minecraftVersion.value })
       loaderVersions.value = markRaw(result)
     }
   }
 
   onMounted(refresh)
 
-  watch(minecraftVersion, () => refresh())
+  watch(minecraftVersion, () => refresh(true))
 
   return {
     installed,
@@ -212,12 +212,12 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
   })
 
   watch(minecraftVersion, () => {
-    refresh()
+    refresh(false, true)
   })
 
-  async function refresh(force = false) {
+  async function refresh(force = false, changed = false) {
     if (minecraftVersion.value) {
-      if (force || versions.value.length === 0) {
+      if (force || versions.value.length === 0 || changed) {
         const result = await getForgeVersionList({ minecraftVersion: minecraftVersion.value, force })
         versions.value = markRaw(result)
       }
@@ -263,6 +263,7 @@ export function useOptifineVersions(minecraftVersion: Ref<string>, forgeVersion:
   const { state } = useVersionService()
   const refreshing = useServiceBusy(InstallServiceKey, 'getOptifineVersionList')
 
+  let allVersions = [] as OptifineVersion[]
   const versions = ref([] as OptifineVersion[])
 
   const installed = computed(() => {
@@ -285,8 +286,10 @@ export function useOptifineVersions(minecraftVersion: Ref<string>, forgeVersion:
 
   async function refresh(force = false) {
     if (force || versions.value.length === 0) {
-      const result = await getOptifineVersionList(force)
-      versions.value = result.filter(v => v.mcversion === minecraftVersion.value)
+      allVersions = await getOptifineVersionList(force)
+      versions.value = allVersions.filter(v => v.mcversion === minecraftVersion.value)
+    } else {
+      versions.value = allVersions.filter(v => v.mcversion === minecraftVersion.value)
     }
   }
 
