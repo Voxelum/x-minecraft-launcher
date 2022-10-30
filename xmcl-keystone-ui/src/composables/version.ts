@@ -218,8 +218,15 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
   async function refresh(force = false, changed = false) {
     if (minecraftVersion.value) {
       if (force || versions.value.length === 0 || changed) {
-        const result = await getForgeVersionList({ minecraftVersion: minecraftVersion.value, force })
-        versions.value = markRaw(result)
+        try {
+          const result = await getForgeVersionList({ minecraftVersion: minecraftVersion.value, force })
+          versions.value = markRaw(result)
+        } catch (e) {
+          console.error(e)
+          if (changed) {
+            versions.value = []
+          }
+        }
       }
     }
   }
