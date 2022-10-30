@@ -365,6 +365,7 @@ function onSelectMinecraft(version: string) {
     runtime.minecraft = version
     runtime.forge = ''
     runtime.fabricLoader = ''
+    runtime.optifine = ''
   }
 }
 function onSelectForge(version: string) {
