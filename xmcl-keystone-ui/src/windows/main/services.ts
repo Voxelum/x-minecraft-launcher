@@ -97,7 +97,7 @@ class ReactiveInstanceModState extends InstanceModsState {
       if (existed !== -1) {
         set(this.mods, existed, res)
       } else {
-        this.mods.push(res)
+        this.mods = [...this.mods, res]
       }
     }
   }

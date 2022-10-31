@@ -112,7 +112,7 @@ const { show } = useDialog('instance-install')
 async function update() {
   if (latestVersion.value) {
     if (!pendingModpack.value) {
-      await installVersion({ version: latestVersion.value })
+      await installVersion({ version: latestVersion.value, project: project.value })
     } else {
       show(pendingModpack.value.path)
     }

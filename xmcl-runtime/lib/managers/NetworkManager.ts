@@ -46,6 +46,10 @@ export default class NetworkManager extends Manager {
     const service = serviceManager.get(BaseService)
     service.initialize().then(() => {
       maxConnection = service.state.maxSockets > 0 ? service.state.maxSockets : Number.POSITIVE_INFINITY
+      proxy.setProxyEnabled(service.state.httpProxyEnabled)
+      if (service.state.httpProxy) {
+        proxy.setProxy(new URL(service.state.httpProxy))
+      }
     })
     stateManager.subscribe('maxSocketsSet', (val) => {
       maxConnection = val > 0 ? val : Number.POSITIVE_INFINITY

@@ -27,7 +27,7 @@
           solo
           flat
           hide-details
-          :placeholder="$t('modrinth.searchText')"
+          :placeholder="t('modrinth.searchText')"
           @keypress.enter="_query = keyword"
         />
         <v-select
@@ -38,7 +38,7 @@
           class="max-w-40"
           hide-details
           flat
-          :label="$t('modrinth.sort.title')"
+          :label="t('modrinth.sort.title')"
           :items="sortOptions"
         />
         <v-select
@@ -47,7 +47,7 @@
           :items="pageSizeOptions"
           hide-details
           flat
-          :label="$t('modrinth.perPage')"
+          :label="t('modrinth.perPage')"
         />
         <v-pagination
           v-model="_page"
@@ -101,83 +101,68 @@
   </div>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import ModCard from './ModrinthModCard.vue'
 import Categories from './ModrinthCategories.vue'
 
-import { withDefault } from '@/util/props'
 import { useModrinth, useModrinthTags } from '../composables/modrinth'
 
-export default defineComponent({
-  components: { ModCard, Categories },
-  props: {
-    query: withDefault(String, () => ''),
-    gameVersion: withDefault(String, () => ''),
-    license: withDefault(String, () => ''),
-    category: withDefault<string[]>(Array, () => [] as string[]),
-    modLoader: withDefault(String, () => ''),
-    environment: withDefault(String, () => ''),
-    projectType: withDefault(String, () => 'mod'),
-    sortBy: withDefault(String, () => ''),
-    page: withDefault(Number, () => 1),
-    from: withDefault(String, () => ''),
-  },
-  setup(props) {
-    const { refresh: refreshTag, refreshing: refreshingTag, categories, modLoaders, environments, gameVersions, licenses } = useModrinthTags()
-    const { refresh, query, category, gameVersion, license, modLoader, environment, projectType, sortBy, page, projectTypes, ...rest } = useModrinth(props)
-    const { push } = useRouter()
-    const keyword = ref(props.query)
-    const onFiltered = (tag: string) => {
-      if (categories.value.find(c => c.name === tag)) {
-        selectCategory(tag)
-      } else if (modLoaders.value.find(l => l.name === tag)) {
-        modLoader.value = tag
-      }
-    }
-    const selectCategory = (cat: string) => {
-      if (category.value.indexOf(cat) === -1) {
-        category.value = [...category.value, cat]
-      } else {
-        category.value = category.value.filter(v => v !== cat)
-      }
-    }
-    onMounted(() => {
-      refresh()
-      refreshTag()
-    })
-    return {
-      selectCategory,
-      ...rest,
-      categories,
-      refreshingTag,
-      modLoaders,
-      environments,
-      keyword,
-      gameVersions,
-      licenses,
-      projectTypes,
-      _query: query,
-      _category: category,
-      _projectType: projectType,
-      _gameVersion: gameVersion,
-      _license: license,
-      _modLoader: modLoader,
-      _environment: environment,
-      _sortBy: sortBy,
-      _page: page,
-      refresh,
-      push,
-      onFiltered,
-    }
-  },
+const props = withDefaults(defineProps<{
+  query: string
+  gameVersion: string
+  license: string
+  category: string[]
+  modLoader: string
+  environment: string
+  projectType: string
+  sortBy: string
+  page: number
+  from: string
+}>(), {
+  query: () => '',
+  gameVersion: () => '',
+  license: () => '',
+  category: () => [] as string[],
+  modLoader: () => '',
+  environment: () => '',
+  projectType: () => 'mod',
+  sortBy: () => '',
+  page: () => 1,
+  from: () => '',
+})
+
+const { t } = useI18n()
+const { refresh: refreshTag, refreshing: refreshingTag, categories, modLoaders, environments, gameVersions, licenses } = useModrinthTags()
+const {
+  refresh, query: _query, category: _category, gameVersion: _gameVersion, license: _license, modLoader: _modLoader, environment: _environment, projectType: _projectType,
+  sortBy: _sortBy, page: _page, projectTypes,
+  refreshing, sortOptions, projects, pageSize, pageCount, pageSizeOptions,
+} = useModrinth(props)
+const { push } = useRouter()
+const keyword = ref(props.query)
+const onFiltered = (tag: string) => {
+  if (categories.value.find(c => c.name === tag)) {
+    selectCategory(tag)
+  } else if (modLoaders.value.find(l => l.name === tag)) {
+    _modLoader.value = tag
+  }
+}
+const selectCategory = (cat: string) => {
+  if (_category.value.indexOf(cat) === -1) {
+    _category.value = [..._category.value, cat]
+  } else {
+    _category.value = _category.value.filter(v => v !== cat)
+  }
+  console.log(_category.value)
+}
+onMounted(() => {
+  refresh()
+  refreshTag()
 })
 </script>
 
 <style>
-.modrinth
-  .theme--.v-text-field
-  > .v-input__control
-  > .v-input__slot:before {
+.modrinth .theme--.v-text-field>.v-input__control>.v-input__slot:before {
   border: none;
 }
 

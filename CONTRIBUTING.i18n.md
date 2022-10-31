@@ -5,8 +5,8 @@
 
 - [Git](https://git-scm.com/). You **must** install git to getting stared
 - [VSCode](https://code.visualstudio.com/). The highly recommended editor for translator to translate. It have integrated UI tool to help you find the translation key.
-- [NodeJS 16](https://nodejs.org/). If you want to test your translation locally, you need this. You can just install latest version.
-- [PNPM](https://pnpm.io/installation). If you want to test your translation locally, you need this. You can follow its installation page to install.
+- [Node.js 16](https://nodejs.org/). If you want to test your translation locally, you need this. You can just install latest version.
+- [pnpm](https://pnpm.io/installation). If you want to test your translation locally, you need this. You can follow its installation page to install.
 
 ## Getting Started
 
@@ -30,7 +30,7 @@ Under the folder you cloned, e.g. `x-minecraft-launcher`, run command
 pnpm install
 ```
 
-### Install I18n Extension
+### Install i18n Extension
 
 **Optional** if you are using VSCocde.
 

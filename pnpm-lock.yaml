@@ -104,7 +104,7 @@ importers:
       source-map-support: ^0.5.21
       tslib: ^2.3.1
       typescript: ^4.4.3
-      undici: ^5.11.0
+      undici: ^5.12.0
     devDependencies:
       '@microsoft/signalr': 6.0.6
       '@types/electron-devtools-installer': 2.2.2
@@ -158,7 +158,7 @@ importers:
       source-map-support: 0.5.21
       tslib: 2.4.0
       typescript: 4.7.4
-      undici: 5.11.0
+      undici: 5.12.0
 
   xmcl-keystone-ui:
     specifiers:
@@ -360,7 +360,7 @@ importers:
       source-map-support: ^0.5.21
       tslib: ^2.3.1
       typescript: ^4.4.3
-      undici: ^5.11.0
+      undici: ^5.12.0
       yazl: ^2.5.1
     dependencies:
       '@azure/msal-common': 6.4.0
@@ -409,7 +409,7 @@ importers:
       node-watch: 0.7.3
       normalize-url: 7.1.0
       semver: 7.3.7
-      undici: 5.11.0
+      undici: 5.12.0
       yazl: 2.5.1
     devDependencies:
       '@types/eventsource': 1.1.9
@@ -579,7 +579,7 @@ importers:
       '@xmcl/unzip': ^2.0.0
       http-cache-semantics: ^4.1.0
       nock: ^12.0.3
-      undici: ^5.11.0
+      undici: ^5.12.0
       yauzl: ^2.10.0
     dependencies:
       '@types/http-cache-semantics': 4.0.1
@@ -589,7 +589,7 @@ importers:
       '@xmcl/task': link:../task
       '@xmcl/unzip': link:../unzip
       http-cache-semantics: 4.1.0
-      undici: 5.11.0
+      undici: 5.12.0
       yauzl: 2.10.0
     devDependencies:
       '@types/node': 16.11.43
@@ -8659,8 +8659,8 @@ packages:
       which-boxed-primitive: 1.0.2
     dev: true
 
-  /undici/5.11.0:
-    resolution: {integrity: sha512-oWjWJHzFet0Ow4YZBkyiJwiK5vWqEYoH7BINzJAJOLedZ++JpAlCbUktW2GQ2DS2FpKmxD/JMtWUUWl1BtghGw==}
+  /undici/5.12.0:
+    resolution: {integrity: sha512-zMLamCG62PGjd9HHMpo05bSLvvwWOZgGeiWlN/vlqu3+lRo3elxktVGEyLMX+IO7c2eflLjcW74AlkhEZm15mg==}
     engines: {node: '>=12.18'}
     dependencies:
       busboy: 1.6.0

@@ -77,6 +77,7 @@ jobs:
       run: |
         mkdir asar
         mv "xmcl-electron-app/build/output/mac/X Minecraft Launcher.app/Contents/Resources/app.asar" asar/app-mac.asar
+        mv "xmcl-electron-app/build/output/mac/X Minecraft Launcher.app/Contents/Resources/app.asar.sha256" asar/app-mac.asar.sha256
     - name: Prepare Linux Asar
       if: ${{ runner.os == 'Linux' && startsWith(github.event.head_commit.message, 'chore(release)') }} 
       run: |
@@ -271,6 +272,9 @@ jobs:
         mv ./build/app-win.asar ./build/app-${{ steps.prepare_release.outputs.version }}-win.asar
         mv ./build/app-mac.asar ./build/app-${{ steps.prepare_release.outputs.version }}-mac.asar
         mv ./build/app-linux.asar ./build/app-${{ steps.prepare_release.outputs.version }}-linux.asar
+        mv ./build/app-win.asar.sha256 ./build/app-${{ steps.prepare_release.outputs.version }}-win.asar.sha256
+        mv ./build/app-mac.asar.sha256 ./build/app-${{ steps.prepare_release.outputs.version }}-mac.asar.sha256
+        mv ./build/app-linux.asar.sha256 ./build/app-${{ steps.prepare_release.outputs.version }}-linux.asar.sha256
     - name: Draft Release
       id: create_release
       uses: voxelum/create-release@xmcl

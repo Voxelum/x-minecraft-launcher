@@ -1,12 +1,5 @@
 AppAddInstanceDialog:
   downloadedNotification: 整合包 {name} 下载成功。是否现在创建整合包实例？
-AppLaunchBlockedDialog:
-  launchGeneralException: {}
-  launchInvalidJavaPath: {}
-  launchJavaNoPermission: {}
-  launchNoProperJava: {}
-  launchNoVersionInstalled: {}
-  launchUserStatusRefreshFailed: {}
 AppShareInstanceDialog:
   baseInfo: 分享的基本配置
   cancelShare: 取消分享
@@ -91,7 +84,8 @@ browseApp:
   delete: 删除
   launch: 启动并设置为默认
 cancel: 取消
-checkUpdate: 检查更新
+checkUpdate:
+  name: 检查更新
 confirm: 开始
 copyClipboard:
   success: 复制到剪贴板
@@ -503,9 +497,11 @@ launcherUpdate:
 liteloader:
   name: Liteloader
 localVersion:
+  auto: 自动选择
   delete: 删除本地版本
   deleteDescription: 这将删除本地版本游戏
   empty: 本地沒有安裝任何版本
+  hint: 直接启动某个本地版本
   refresh: 刷新本地版本
   reinstallDescription: 如果你觉得此版本安装的有问题，可以尝试重新安装该版本。
   reinstallTitle: 重新安装 {version}
@@ -519,6 +515,7 @@ logMonitor: 游戏日志检测
 login:
   dropHint: 将验证链接拖入此处手工验证
   forgetPassword: 忘记密码?
+  hint: 请点击添加账号登录
   login: 登陆
   manualLoginUrl: 如果浏览器没有自动打开，请点击此链接来验证!
   signup: 注册
@@ -894,6 +891,7 @@ setting:
     auto: 自动 (根据网络决定)
     official: 官方 (Mojang)
   appearance: 外观
+  appxUpdateHint: 启动器将下载并执行安装包，如果安装包解析失败，请尝试自行打开安装文件更新。
   autoDownload: 自动下载
   autoDownloadDescription: 自动下载最新的版本
   autoInstallOnAppQuit: 自动安装

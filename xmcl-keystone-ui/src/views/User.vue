@@ -29,6 +29,12 @@
         :user="selectedUser"
       />
       <div class="flex-grow" />
+      <Hint
+        v-if="users.length === 0"
+        :text="t('login.hint')"
+        class="h-full"
+        icon="login"
+      />
     </div>
     <delete-dialog
       :title="t('userAccount.removeTitle') "
@@ -60,6 +66,7 @@ import UserYggdrasilView from './UserYggdrasilView.vue'
 import { useBusy, useOperation, useService } from '@/composables'
 import { DropServiceInjectionKey } from '@/composables/dropService'
 import { injection } from '@/util/inject'
+import Hint from '@/components/Hint.vue'
 
 const { refreshUser: refreshAccount } = useService(UserServiceKey)
 const { handleUrl } = useService(BaseServiceKey)

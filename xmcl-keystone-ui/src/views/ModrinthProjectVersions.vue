@@ -174,10 +174,9 @@ const { getColorCode } = useVuetifyColor()
 
 const projectVersions: Ref<ProjectVersion[]> = ref([])
 const { t } = useI18n()
-const { semaphores } = useSemaphores()
 const isDownloading = (ver: ProjectVersion) => {
   const fileUrl = ver.files[0].url
-  return semaphores[getServiceSemaphoreKey(ModrinthServiceKey, 'installVersion', ver.id)] > 0 || !!state.downloading.find(v => v.url === fileUrl)
+  return !!state.downloading.find(v => v.url === fileUrl)
 }
 const gameVersions = computed(() => projectVersions.value.map(v => v.game_versions).reduce((a, b) => [...a, ...b], []))
 const gameVersion = ref('')
@@ -236,6 +235,7 @@ const onCreate = (v: ProjectVersion) => {
 // }])
 const refreshing = useServiceBusy(ModrinthServiceKey, 'getProjectVersions', computed(() => props.project))
 const { refresh } = useRefreshable(async () => {
+  console.log('refresh version')
   const result = await getProjectVersions(props.project)
   projectVersions.value = result
 })

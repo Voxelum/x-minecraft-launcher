@@ -85,7 +85,7 @@ export function useInstanceResourcePacks() {
         url: resource.uri,
         pack_format: resource.metadata.resourcepack.pack_format,
         description: resource.metadata.resourcepack.description,
-        acceptingRange: packFormatVersionRange[getResourcepackFormat(resource.metadata)] ?? '[*]',
+        acceptingRange: packFormatVersionRange[getResourcepackFormat(resource.metadata.resourcepack)] ?? '[*]',
         icon: isPersistedResource(resource) ? resource.icons?.[0] ?? '' : '',
         tags: [...resource.tags],
 

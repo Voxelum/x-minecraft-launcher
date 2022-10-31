@@ -4,6 +4,8 @@ import { ServiceKey, StatefulService } from './Service'
 
 export interface InstallProjectVersionOptions {
   version: ProjectVersion
+
+  project?: Project
   /**
    * Ignore the dependencies of the version.
    *

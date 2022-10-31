@@ -1,4 +1,4 @@
-import { InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState, isModResource, isPersistedResource, Resource, ResourceDomain } from '@xmcl/runtime-api'
+import { InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState, isModResource, isPersistedResource, Persisted, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
 import { ensureDir, FSWatcher, stat, unlink } from 'fs-extra'
 import watch from 'node-watch'
@@ -35,10 +35,22 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
   ) {
     super(app, () => new InstanceModsState())
     this.storeManager.subscribe('resources', (resources) => {
-      this.state.instanceModUpdateExisted(resources)
+      const toUpdates = [] as Persisted<Resource>[]
+      for (const res of resources) {
+        const existed = this.state.mods.findIndex(m => m.hash === res.hash)
+        if (existed !== -1) {
+          toUpdates.push(res)
+        }
+      }
+      if (toUpdates.length > 0) {
+        this.state.instanceModUpdateExisted(toUpdates)
+      }
     }).subscribe('resource', (r) => {
       if (r.domain === ResourceDomain.Mods) {
-        this.state.instanceModUpdateExisted([r])
+        const existed = this.state.mods.findIndex(m => m.hash === r.hash)
+        if (existed !== -1) {
+          this.state.instanceModUpdateExisted([r])
+        }
       }
     }).subscribeAll(['instanceMods', 'instanceModUpdate', 'instanceModRemove', 'instanceEdit', 'localVersionAdd', 'localVersionRemove', 'localVersions'], async () => {
       // await this.diagnoseMods()

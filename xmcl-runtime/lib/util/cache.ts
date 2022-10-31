@@ -22,3 +22,24 @@ export class LevelCache<T> {
   clear(): void | Promise<void> {
   }
 }
+
+export class InMemoryTtlCache<T> {
+  private cache: Record<string, [T, number]> = {}
+
+  get(key: string): T | undefined {
+    const entry = this.cache[key]
+    if (entry) {
+      const [v, expiredAt] = entry
+      if (expiredAt < Date.now()) {
+        delete this.cache[key]
+        return undefined
+      }
+      return v
+    }
+    return undefined
+  }
+
+  put(key: string, v: T, ttl?: number) {
+    this.cache[key] = [v, ttl ?? 120_000]
+  }
+}

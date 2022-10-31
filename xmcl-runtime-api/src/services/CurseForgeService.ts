@@ -1,4 +1,4 @@
-import type { Mod, File, FileModLoaderType, Pagination, ModCategory, SearchOptions } from '@xmcl/curseforge'
+import type { Mod, File, FileModLoaderType, Pagination, ModCategory, SearchOptions, FileRelationType } from '@xmcl/curseforge'
 import { ProjectType } from '../entities/curseforge'
 import { Persisted, Resource } from '../entities/resource'
 import { ServiceKey, StatefulService } from './Service'
@@ -88,6 +88,8 @@ export interface CurseForgeService extends StatefulService<CurseforgeState> {
    * @param searchOptions The search options
    */
   searchProjects(searchOptions: SearchOptions): Promise<{ data: Mod[]; pagination: Pagination }>
+
+  resolveFileDependencies(file: File): Promise<[File, FileRelationType][]>
   /**
    * Install a curseforge file to local storage.
    *
