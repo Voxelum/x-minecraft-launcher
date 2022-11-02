@@ -1,7 +1,5 @@
 browseApps: Browse Customized Launcher UI
 checkUpdate: Check Update
-fabricVersion:
-  empty: Cannot load the fabric version list for Minecraft {version}
 openUrl:
   cancel: Cancel
   message: >-

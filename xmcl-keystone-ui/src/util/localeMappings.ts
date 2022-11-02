@@ -5,4 +5,6 @@ export const localeMappings: Record<string, string> = {
   'en-US': 'English (The United State)',
   'en-UK': 'English (The United Kindom)',
   ru: 'Русский язык',
+  'es-ES': 'Español',
+  es: 'Español',
 }
