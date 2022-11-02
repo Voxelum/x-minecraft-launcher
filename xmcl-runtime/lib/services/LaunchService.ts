@@ -66,6 +66,18 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
     const maxMemory = instance.assignMemory === true && instance.maxMemory > 0 ? instance.maxMemory : undefined
 
     const yggdrasilHost = user.user ? this.userService.getAccountSystem(user.user?.authService)?.getYggdrasilHost?.() : undefined
+    let yggdrasilAgent: LaunchOption['yggdrasilAgent']
+    if (yggdrasilHost) {
+      try {
+        const jar = await this.externalAuthSkinService.installAuthLibInjection()
+        yggdrasilAgent = {
+          jar,
+          server: yggdrasilHost,
+        }
+      } catch (e) {
+        this.error('Fail to install authlib-injection:\n %o', e)
+      }
+    }
     /**
      * Build launch condition
      */
@@ -85,12 +97,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       },
       extraJVMArgs: instance.vmOptions,
       extraMCArgs: instance.mcOptions,
-      yggdrasilAgent: yggdrasilHost
-        ? {
-          jar: await this.externalAuthSkinService.installAuthLibInjection(),
-          server: yggdrasilHost,
-        }
-        : undefined,
+      yggdrasilAgent,
     }
 
     return generateArguments(option)
@@ -151,16 +158,18 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       }
 
       const yggdrasilHost = user.user ? this.userService.getAccountSystem(user.user?.authService)?.getYggdrasilHost?.() : undefined
-      let yggOptions: {
-        jar: string
-        server: string
-      } | undefined
+      let yggdrasilAgent: LaunchOption['yggdrasilAgent']
 
       if (yggdrasilHost) {
         this.state.launchStatus('injectingAuthLib')
-        yggOptions = {
-          jar: await this.externalAuthSkinService.installAuthLibInjection(),
-          server: yggdrasilHost,
+        try {
+          const jar = await this.externalAuthSkinService.installAuthLibInjection()
+          yggdrasilAgent = {
+            jar,
+            server: yggdrasilHost,
+          }
+        } catch (e) {
+          this.error('Fail to install authlib-injection:\n %o', e)
         }
       }
 
@@ -246,7 +255,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         extraMCArgs: instance.mcOptions,
         launcherBrand: options?.launcherBrand ?? '',
         launcherName: options?.launcherName ?? 'XMCL',
-        yggdrasilAgent: yggOptions,
+        yggdrasilAgent,
         prechecks,
       }
 

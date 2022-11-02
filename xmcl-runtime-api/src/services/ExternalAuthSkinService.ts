@@ -5,7 +5,6 @@ import { ServiceKey } from './Service'
 export const MissingAuthLibInjectorIssue: IssueKey<void> = 'missingAuthlibInjector'
 
 export interface ExternalAuthSkinService {
-  downloadCustomSkinLoader(type?: 'forge' | 'fabric'): Promise<Resource>
   installAuthLibInjection(): Promise<string>
 }
 

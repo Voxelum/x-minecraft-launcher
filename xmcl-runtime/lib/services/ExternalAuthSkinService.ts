@@ -1,15 +1,14 @@
 import { LibraryInfo, MinecraftFolder } from '@xmcl/core'
 import { DownloadTask } from '@xmcl/installer'
-import { ExternalAuthSkinService as IExternalAuthSkinService, ExternalAuthSkinServiceKey, IssueReportBuilder, MissingAuthLibInjectorIssue, ResourceDomain } from '@xmcl/runtime-api'
-import { ensureFile, readJson, writeFile } from 'fs-extra'
-import { join } from 'path'
+import { ExternalAuthSkinService as IExternalAuthSkinService, ExternalAuthSkinServiceKey, IssueReportBuilder, MissingAuthLibInjectorIssue } from '@xmcl/runtime-api'
+import { readJson, writeFile } from 'fs-extra'
 import { request } from 'undici'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { validateSha256 } from '../util/fs'
 import { Inject } from '../util/objectRegistry'
+import { BaseService } from './BaseService'
 import { DiagnoseService } from './DiagnoseService'
-import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Lock } from './Service'
 import { UserService } from './UserService'
 
@@ -23,7 +22,7 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
     @Inject(UserService) private userService: UserService,
-    @Inject(ResourceService) private resourceService: ResourceService,
+    @Inject(BaseService) private baseService: BaseService,
   ) {
     super(app)
     diagnoseService.register(
@@ -37,28 +36,17 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
       this.diagnoseAuthLibInjector(builder)
       this.diagnoseService.report(builder.build())
     })
-  }
 
-  async downloadCustomSkinLoader(type: 'forge' | 'fabric' = 'forge') {
-    const url = type === 'forge'
-      ? 'https://github.com/xfl03/MCCustomSkinLoader/releases/download/14.12/CustomSkinLoader_Forge-14.12.jar'
-      : 'https://github.com/xfl03/MCCustomSkinLoader/releases/download/14.12/CustomSkinLoader_Fabric-14.12.jar'
-    const destination = type === 'forge'
-      ? join(this.app.temporaryPath, 'CustomSkinLoader_Forge-14.12.jar')
-      : join(this.app.temporaryPath, 'CustomSkinLoader_Fabric-14.12.jar')
-    await ensureFile(destination)
-    await this.submit(new DownloadTask({
-      url,
-      destination,
-    }).setName('downloadCustomSkinLoader'))
-    const [res] = await this.resourceService.importResource({
-      resources: [{
-        path: destination,
-        domain: ResourceDomain.Mods,
-      }],
-      background: true,
+    this.networkManager.registerDispatchInterceptor((options) => {
+      const origin = options.origin instanceof URL ? options.origin : new URL(options.origin!)
+      if (origin.hostname === 'authlib-injector.yushi.moe') {
+        if (baseService.shouldOverrideApiSet()) {
+          const api = baseService.state.apiSets.find(a => a.name === baseService.state.apiSetsPreference) || baseService.state.apiSets[0]
+          options.origin = new URL(api.url).origin
+          options.path = `/mirrors/authlib-injector${options.path}`
+        }
+      }
     })
-    return res
   }
 
   async installAuthLibInjection(): Promise<string> {
@@ -71,21 +59,32 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
       const info = LibraryInfo.resolve(name)
       const path = mc.getLibraryByPath(info.path)
 
+      const url = new URL(content.download_url)
+      const allSets = this.baseService.getApiSets()
+      const urls = allSets.map(s => new URL(url.pathname.startsWith('/mirrors') ? url.pathname : `/mirrors/authlib-injector${url.pathname}`, new URL(s.url).origin)).map(u => u.toString())
+
+      if (urls.indexOf(url.toString()) === -1) {
+        urls.unshift(url.toString())
+      }
+
       await this.submit(new DownloadTask({
-        url: content.download_url,
+        url: urls,
         validator: {
           algorithm: 'sha256',
           hash: content.checksums.sha256,
         },
         destination: path,
+        ...this.networkManager.getDownloadBaseOptions(),
       }).setName('installAuthlibInjector'))
+
       return path
     }
 
     let path: string
 
     try {
-      const body = await (await request('https://authlib-injector.yushi.moe/artifact/latest.json')).body.json()
+      const response = await request('https://authlib-injector.yushi.moe/artifact/latest.json', { throwOnError: true })
+      const body = await response.body.json()
       await writeFile(jsonPath, JSON.stringify(body))
       path = await download(body)
     } catch (e) {
