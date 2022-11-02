@@ -18,3 +18,4 @@ nat-api
 p2p.network
 
 */build/output/*
+package-lock.json
