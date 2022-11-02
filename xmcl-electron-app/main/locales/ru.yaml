@@ -1,7 +1,5 @@
 browseApps: Смотреть кастомизированный интерфейс лаунчера
 checkUpdate: Проверить обновления
-fabricVersion:
-  empty: Не удаётся загрузить список версий fabric для Minecraft {version}
 openUrl:
   cancel: Отмена
   message: Лаунчер хочет открыть {url} в вашем браузере по умолчанию. Разрешить?

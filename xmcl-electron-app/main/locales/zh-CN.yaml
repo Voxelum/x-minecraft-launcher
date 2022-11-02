@@ -1,7 +1,5 @@
 browseApps: 浏览第三方启动器界面
 checkUpdate: 检查更新
-fabricVersion:
-  empty: 无法加载在 Minecraft {version} 下的 Fabric 版本列表
 openUrl:
   cancel: 取消
   message: 启动器想打开 {url}。你是否同意此操作？
