@@ -113,7 +113,7 @@ export function useTaskManager() {
     if (typeof result === 'function') {
       return t(id, param)
     }
-    return te(id + '.name') ? t(id + '.name', param) : id
+    return te(id + '.name', 'en') ? t(id + '.name', param) : id
   }
 
   let syncing: Promise<void> | undefined
