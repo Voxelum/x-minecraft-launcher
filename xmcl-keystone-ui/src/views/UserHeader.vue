@@ -49,15 +49,22 @@
         @click="refreshing ? emit('abort-refresh') : emit('refresh')"
       >
         <template v-if="hoverRefresh && refreshing">
-          <v-icon color="red">
+          <v-icon
+            color="red"
+            class="xl:(ml-[4px] mr-[8px]) m-0"
+          >
             close
           </v-icon>
         </template>
         <template v-else>
-          <v-icon left>
+          <v-icon
+            class="xl:(ml-[4px] mr-[8px]) m-0"
+          >
             refresh
           </v-icon>
-          {{ t('user.refreshAccount') }}
+          <span class="xl:inline hidden">
+            {{ t('user.refreshAccount') }}
+          </span>
         </template>
       </v-btn>
       <v-btn
@@ -66,10 +73,15 @@
         color="red"
         @click="emit('remove', selected ? selected.id : '')"
       >
-        <v-icon left>
+        <v-icon
+          left
+          class="lg:(ml-[4px] mr-[8px]) m-0"
+        >
           delete
         </v-icon>
-        {{ t('userAccount.removeTitle') }}
+        <span class="lg:inline hidden">
+          {{ t('userAccount.removeTitle') }}
+        </span>
       </v-btn>
       <v-spacer />
       <v-btn
@@ -79,10 +91,12 @@
         text
         @click="emit('login')"
       >
-        <v-icon left>
+        <v-icon>
           person_add
         </v-icon>
-        {{ t('userAccount.add') }}
+        <span>
+          {{ t('userAccount.add') }}
+        </span>
       </v-btn>
       <v-menu
         offset-y
@@ -93,8 +107,12 @@
             :disabled="usersToSwitch.length === 0"
             v-on="on"
           >
-            {{ t('userAccount.switch' ) }}
-            <v-icon right>
+            <span class="lg:inline hidden">
+              {{ t('userAccount.switch' ) }}
+            </span>
+            <v-icon
+              class="lg:(mr-[4px] ml-[8px]) m-0"
+            >
               swap_horiz
             </v-icon>
           </v-btn>
