@@ -53,6 +53,21 @@
           :quilt-loader="version.quiltLoader"
           :minecraft="version.minecraft"
         />
+        <v-chip
+          v-if="version.optifine"
+          label
+          outlined
+        >
+          <v-avatar left>
+            <img
+              :src="'image:builtin:optifine'"
+            >
+          </v-avatar>
+          <div>
+            Optifine
+            {{ version.optifine }}
+          </div>
+        </v-chip>
       </div>
       <div class="flex-grow" />
 
@@ -219,7 +234,7 @@ const { total, progress, name: taskName, pause, resume, status } = useTask((i) =
   if (i.path === 'installLibraries' && (p?.id === localVersion.value.id || p?.id === version.value.minecraft)) {
     return true
   }
-  if (i.path === 'installAssets' && (p?.id === localVersion.value.id || p?.id === version.value.minecraft)) {
+  if (i.path === 'installAssets' && (p?.id === localVersion.value.id || p?.id === version.value.minecraft || p?.id === version.value.minecraft.substring(version.value.minecraft.lastIndexOf('.')))) {
     return true
   }
   if (i.path === 'installForge' && p?.id === version.value.forge) {
