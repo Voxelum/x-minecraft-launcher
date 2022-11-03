@@ -105,9 +105,13 @@ export class ResourceService extends StatefulService<ResourceState> implements I
       await Promise.all(resources.map(async (r) => {
         if (r.metadata.fabric) {
           if (!(r.metadata.fabric instanceof Array) && r.metadata.fabric.id === 'fabric') {
-            const reParsed = await this.parseResourceMetadata(r)
-            await this.storage.put(reParsed.hash, reParsed)
-            return reParsed
+            try {
+              const reParsed = await this.parseResourceMetadata(r)
+              await this.storage.put(reParsed.hash, reParsed)
+              return reParsed
+            } catch {
+              return undefined
+            }
           }
         }
         return r
@@ -148,7 +152,11 @@ export class ResourceService extends StatefulService<ResourceState> implements I
       }
 
       // Wait all fixes are done
-      await Promise.all(promises)
+      try {
+        await Promise.all(promises)
+      } catch (e) {
+        this.error('Fail to fix resources: %o', e)
+      }
 
       // Commit all resources
       this.state.resources(toAdd)
@@ -158,10 +166,14 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         const batch = this.storage.batch()
         toUpdate.map(res => batch.put(res.hash, res))
         toRemove.map(res => batch.del(res.hash))
-        await batch.write()
+        await batch.write().catch((e) => {
+          this.error('Fail to commit overlap fixes: %o', e)
+        })
       }
 
-      await ensureDir(this.getAppDataPath('resource-images'))
+      await ensureDir(this.getAppDataPath('resource-images')).catch((e) => {
+        this.error('Fail to initialize resource-images folder: %o', e)
+      })
     })
     this.storage = database as any
   }
