@@ -317,7 +317,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
       if (optifineVersion.startsWith(minecraft)) {
         optifineVersion = optifineVersion.substring(minecraft.length)
       }
-      const localOptifine = local.find(v => v.optifine === optifineVersion)
+      const localOptifine = local.find(v => v.optifine === optifineVersion && v.forge === (forgeVersion || ''))
       if (localOptifine) {
         return localOptifine.id
       }
