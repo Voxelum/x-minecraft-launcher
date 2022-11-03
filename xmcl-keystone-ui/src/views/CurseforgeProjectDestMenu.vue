@@ -2,7 +2,7 @@
   <v-menu>
     <template #activator="{ on }">
       <v-btn
-        block
+        :block="block"
         :disabled="disabled"
         text
         v-on="on"
@@ -64,11 +64,14 @@ interface Item {
   path: string
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   value?: string
   from?: string
   disabled?: boolean
-}>()
+  block?: boolean
+}>(), {
+  block: true,
+})
 
 const emit = defineEmits(['input'])
 
