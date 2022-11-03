@@ -106,50 +106,55 @@
         <div class="flex-grow" />
 
       </span>
-      <CurseforgeProjectDestMenu
-        :value="props.installTo"
-        :disabled="project.project_type !== 'mod'"
-        @input="emit('destination', $event)"
-      />
-      <div class="flex items-center gap-2 mt-1 w-full">
-        <v-menu offset-y>
-          <template #activator="{ on, attrs }">
-            <v-btn
-              color="primary"
-              class="flex-grow"
-              :loading="loading || isDownloading"
-              v-bind="attrs"
-              v-on="on"
-              @click="onInstallClicked"
-            >
-              <v-icon
-                left
-                class="absolute left-0"
+
+      <div class="flex w-full flex-wrap gap-2">
+        <CurseforgeProjectDestMenu
+          :value="props.installTo"
+          :block="false"
+          :disabled="project.project_type !== 'mod'"
+          @input="emit('destination', $event)"
+        />
+        <div class="flex-grow" />
+        <div class="flex items-center gap-2 flex-shrink flex-grow-0">
+          <v-menu offset-y>
+            <template #activator="{ on, attrs }">
+              <v-btn
+                color="primary"
+                class="flex-grow"
+                :loading="loading || isDownloading"
+                v-bind="attrs"
+                v-on="on"
+                @click="onInstallClicked"
               >
-                keyboard_arrow_down
-              </v-icon>
-              <span class="w-full">
-                <v-icon left>
-                  download
+                <v-icon
+                  left
+                  class="absolute left-0"
+                >
+                  keyboard_arrow_down
                 </v-icon>
-                {{ t('modrinth.install') }}
-              </span>
-            </v-btn>
-          </template>
-          <v-list
-            class="max-h-100 overflow-auto"
-          >
-            <v-list-item
-              v-for="item of projectVersions"
-              :key="item.id"
-              class="border-l border-l-[3px] pl-3"
-              :style="{ borderColor: getColorCode(getColorForReleaseType(item.version_type)) }"
-              @click="onInstallItemClick(item)"
+                <span class="w-full">
+                  <v-icon left>
+                    download
+                  </v-icon>
+                  {{ t('modrinth.install') }}
+                </span>
+              </v-btn>
+            </template>
+            <v-list
+              class="max-h-100 overflow-auto"
             >
-              <v-list-item-title>{{ item.name }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+              <v-list-item
+                v-for="item of projectVersions"
+                :key="item.id"
+                class="border-l border-l-[3px] pl-3"
+                :style="{ borderColor: getColorCode(getColorForReleaseType(item.version_type)) }"
+                @click="onInstallItemClick(item)"
+              >
+                <v-list-item-title>{{ item.name }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
       </div>
     </div>
   </v-card>
