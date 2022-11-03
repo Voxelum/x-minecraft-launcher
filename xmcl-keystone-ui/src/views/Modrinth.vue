@@ -85,7 +85,7 @@
         :categories="categories.filter(c => c.project_type === projectType)"
         :game-versions="gameVersions"
         :licenses="licenses"
-        :loaders="modLoaders"
+        :loaders="filteredModloaders"
         :environment="environment"
         :mod-loader="modLoader"
         :game-version="gameVersion"
@@ -139,6 +139,7 @@ const {
   refreshing, sortOptions, projects, pageSize, pageCount, pageSizeOptions,
 } = useModrinth(props)
 const { push } = useRouter()
+const filteredModloaders = computed(() => modLoaders.value.filter(v => v.supported_project_types.indexOf(props.projectType) !== -1))
 const keyword = ref(props.query)
 const onFiltered = (tag: string) => {
   if (categories.value.find(c => c.name === tag)) {
