@@ -36,6 +36,26 @@
       v-if="refreshing"
       type="table-thead, table-tbody"
     />
+    <div
+      v-else-if="versionsError"
+      class="flex flex-col items-center gap-4"
+    >
+      <v-icon
+        color="error"
+        size="100"
+      >
+        error
+      </v-icon>
+      <div class="text-3xl font-bold">
+        {{ tError(versionsError) }}
+      </div>
+      <v-btn
+        color="error"
+        @click="refresh"
+      >
+        {{ t('refresh') }}
+      </v-btn>
+    </div>
     <table
       v-else
       class="w-full table-auto border-separate align-middle"
@@ -144,14 +164,15 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref } from 'vue'
-import { ProjectVersion } from '@xmcl/modrinth'
-import { getServiceSemaphoreKey, ModrinthServiceKey, Persisted, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
-import Markdown from 'markdown-it'
-import { useRefreshable, useSemaphores, useService, useServiceBusy } from '@/composables'
+import { useRefreshable, useService, useServiceBusy } from '@/composables'
+import { useLocaleError } from '@/composables/error'
 import { useVuetifyColor } from '@/composables/vuetify'
 import { getColorForReleaseType } from '@/util/color'
 import { getLocalDateString } from '@/util/date'
+import { ProjectVersion } from '@xmcl/modrinth'
+import { ModrinthServiceKey, Persisted, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import Markdown from 'markdown-it'
+import { Ref } from 'vue'
 
 const props = defineProps<{
   versions: string[]
@@ -169,6 +190,8 @@ const { state: resourceState } = useService(ResourceServiceKey)
 const render = (s: string) => {
   return markdown.render(s)
 }
+const versionsError = ref(undefined as any)
+const tError = useLocaleError()
 
 const { getColorCode } = useVuetifyColor()
 
@@ -235,9 +258,13 @@ const onCreate = (v: ProjectVersion) => {
 // }])
 const refreshing = useServiceBusy(ModrinthServiceKey, 'getProjectVersions', computed(() => props.project))
 const { refresh } = useRefreshable(async () => {
-  console.log('refresh version')
-  const result = await getProjectVersions(props.project)
-  projectVersions.value = result
+  versionsError.value = undefined
+  try {
+    const result = await getProjectVersions(props.project)
+    projectVersions.value = result
+  } catch (e) {
+    versionsError.value = e
+  }
 })
 onMounted(() => {
   refresh()

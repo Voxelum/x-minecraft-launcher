@@ -227,6 +227,7 @@ errors:
   DownloadAggregateError: Fail to download file.
   HeadersTimeoutError: HTTP Header timeout
   SocketError: Server socket error
+  DNSNotFoundError: DNS lookup error
 exception:
   http: >-
     HTTP request to {url} failed. Status code {statusCode}. {code}. Please retry

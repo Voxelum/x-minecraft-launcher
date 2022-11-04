@@ -76,6 +76,26 @@
         class="flex flex-col gap-3 overflow-auto"
         type="list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line"
       />
+      <div
+        v-if="searchError"
+        class="flex flex-col items-center gap-4"
+      >
+        <v-icon
+          color="error"
+          size="100"
+        >
+          error
+        </v-icon>
+        <div class="text-3xl font-bold">
+          {{ tError(searchError) }}
+        </div>
+        <v-btn
+          color="error"
+          @click="refresh"
+        >
+          {{ t('refresh') }}
+        </v-btn>
+      </div>
     </div>
     <div class="flex flex-col overflow-y-auto lg:col-span-3 lg:flex md:hidden">
       <Categories
@@ -106,6 +126,7 @@ import ModCard from './ModrinthModCard.vue'
 import Categories from './ModrinthCategories.vue'
 
 import { useModrinth, useModrinthTags } from '../composables/modrinth'
+import { useLocaleError } from '@/composables/error'
 
 const props = withDefaults(defineProps<{
   query: string
@@ -132,8 +153,10 @@ const props = withDefaults(defineProps<{
 })
 
 const { t } = useI18n()
+const tError = useLocaleError()
 const { refresh: refreshTag, refreshing: refreshingTag, categories, modLoaders, environments, gameVersions, licenses } = useModrinthTags()
 const {
+  error: searchError,
   refresh, query: _query, category: _category, gameVersion: _gameVersion, license: _license, modLoader: _modLoader, environment: _environment, projectType: _projectType,
   sortBy: _sortBy, page: _page, projectTypes,
   refreshing, sortOptions, projects, pageSize, pageCount, pageSizeOptions,

@@ -9,6 +9,26 @@
       height="3"
       :indeterminate="true"
     />
+    <div
+      v-if="refreshError"
+      class="flex flex-col items-center gap-4 h-full justify-center"
+    >
+      <v-icon
+        color="error"
+        size="100"
+      >
+        error
+      </v-icon>
+      <div class="text-3xl font-bold">
+        {{ tError(refreshError) }}
+      </div>
+      <v-btn
+        color="error"
+        @click="refresh"
+      >
+        {{ t('refresh') }}
+      </v-btn>
+    </div>
   </div>
   <div
     v-else
@@ -106,8 +126,11 @@ import Description from './ModrinthProjectDescription.vue'
 import ModrinthProjectGallery from './ModrinthProjectGallery.vue'
 import { AddInstanceDialogKey } from '../composables/instanceAdd'
 import { useDialog } from '../composables/dialog'
+import { useLocaleError } from '@/composables/error'
 
 const props = defineProps<{ id: string }>()
+const refreshError = ref(undefined as any)
+const tError = useLocaleError()
 
 const tab = ref(0)
 const viewedImage = ref('')
@@ -124,15 +147,19 @@ const { t } = useI18n()
 const { show } = useDialog(AddInstanceDialogKey)
 const { state: resourceState } = useService(ResourceServiceKey)
 const { state: instanceState } = useService(InstanceServiceKey)
-const { install } = useService(InstanceModsServiceKey)
 
 const { getProject, installVersion } = useService(ModrinthServiceKey)
 const project: Ref<undefined | Project> = ref(undefined)
 const installTo = ref(project.value?.project_type === 'mod' ? instanceState.path : '')
 const { refresh, refreshing } = useRefreshable(async () => {
-  const result = await getProject(props.id)
-  project.value = result
-  installTo.value = project.value?.project_type === 'mod' ? instanceState.path : ''
+  refreshError.value = undefined
+  try {
+    const result = await getProject(props.id)
+    project.value = result
+    installTo.value = project.value?.project_type === 'mod' ? instanceState.path : ''
+  } catch (e) {
+    refreshError.value = e
+  }
 })
 const onInstall = async (version: ProjectVersion) => {
   await installVersion({ version: version, instancePath: installTo.value, project: project.value })
