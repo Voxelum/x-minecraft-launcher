@@ -212,7 +212,6 @@ export class CacheHandler extends DispatchHandler {
     this.body = undefined
     this.buffers = []
     this.policy = undefined
-    super.onError(err)
   }
 
   onComplete(trailers: string[] | null): void {
@@ -298,7 +297,7 @@ export class CacheDispatcher extends Dispatcher {
 
   dispatch(opts: Dispatcher.DispatchOptions, handler: Dispatcher.DispatchHandlers): boolean {
     const dispatch = (cachedRequest?: CachedRequest) => {
-      const preflight = !!cachedRequest && opts.method === 'GET'
+      const preflight = false
       return this.dispatcher.dispatch(
         {
           ...opts,
