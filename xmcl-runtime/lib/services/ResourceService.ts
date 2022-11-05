@@ -214,6 +214,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
    * The key can be `hash`, `url` or `ino` of the file.
    */
   getResourceByKey(key: string | number): Persisted<Resource> | undefined {
+    if (key === EMPTY_RESOURCE_SHA1) return undefined
     return this.cache.get(key)
   }
 
@@ -227,7 +228,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
    */
   getOneResource(query: Query) {
     let res: Persisted<Resource> | undefined
-    if (query.hash) {
+    if (query.hash && query.hash !== EMPTY_RESOURCE_SHA1) {
       res = this.cache.get(query.hash)
       if (res) return res
     }
@@ -254,6 +255,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
   }
 
   getResource(key: string): Promise<Resource | undefined> {
+    if (key === EMPTY_RESOURCE_SHA1) return Promise.resolve(undefined)
     return this.storage.get(key)
   }
 
