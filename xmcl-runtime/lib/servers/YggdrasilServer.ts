@@ -65,9 +65,15 @@ export function createOfflineYggdrasilServer(getProfile: (username: string) => P
       const url = new URL(req.url, `http://${req.headers.host}`)
       const username = url.searchParams.get('username')!
       queryProfile(username).then((payload) => {
-        res.statusCode = 200
-        res.write(payload)
-        res.end()
+        if (payload) {
+          res.setHeader('content-type', 'application/json')
+          res.statusCode = 200
+          res.write(payload)
+          res.end()
+        } else {
+          res.statusCode = 204
+          res.end()
+        }
       }, () => {
         res.statusCode = 204
         res.end()
@@ -78,10 +84,15 @@ export function createOfflineYggdrasilServer(getProfile: (username: string) => P
       const needSigned = url.searchParams.get('unsigned') === 'false'
 
       queryProfile(uuid, needSigned).then((payload) => {
-        res.setHeader('content-type', 'application/json')
-        res.statusCode = 200
-        res.write(payload)
-        res.end()
+        if (payload) {
+          res.setHeader('content-type', 'application/json')
+          res.statusCode = 200
+          res.write(payload)
+          res.end()
+        } else {
+          res.statusCode = 204
+          res.end()
+        }
       }, () => {
         res.statusCode = 204
         res.end()
