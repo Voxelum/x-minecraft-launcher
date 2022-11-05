@@ -39,16 +39,18 @@ export class ResolveInstanceFileTask extends AbortableTask<void> {
     const modrinthProjects = [] as RequiredPick<InstanceFile, 'modrinth'>[]
     const modrinthFileHashProjects = [] as InstanceFile[]
     for (const file of this.files) {
-      if (file.curseforge) {
-        curseforgeProjects.push(file as any)
-      }
+      if (file.path.startsWith('resourcepacks') || file.path.startsWith('shaderpacks') || file.path.startsWith('mods')) {
+        if (file.curseforge) {
+          curseforgeProjects.push(file as any)
+        }
 
-      if (file.modrinth) {
-        modrinthProjects.push(file as any)
-      }
+        if (file.modrinth) {
+          modrinthProjects.push(file as any)
+        }
 
-      if (!file.modrinth && !file.curseforge) {
-        modrinthFileHashProjects.push(file)
+        if (!file.modrinth && !file.curseforge) {
+          modrinthFileHashProjects.push(file)
+        }
       }
     }
 
