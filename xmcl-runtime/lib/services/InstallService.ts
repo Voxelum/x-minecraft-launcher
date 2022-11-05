@@ -523,18 +523,32 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   private async installForgeInternal(options: _InstallForgeOptions) {
+    const validJavaPaths = this.javaService.state.all.filter(v => v.valid)
     const installOptions = this.getForgeInstallOptions()
 
-    let version: string | undefined
-    try {
-      this.log(`Start to install forge ${options.version} on ${options.mcversion}`)
-      version = await this.submit(installForgeTask(options, this.getPath(), installOptions).setName('installForge', { id: options.version }))
-      this.log(`Success to install forge ${options.version} on ${options.mcversion}`)
-    } catch (err) {
-      this.warn(`An error ocurred during download version ${options.version}@${options.mcversion}`)
-      this.warn(err)
-    }
+    validJavaPaths.sort((a, b) => a.majorVersion === 8 ? -1 : b.majorVersion === 8 ? 1 : -1)
 
+    let version: string | undefined
+    for (const java of validJavaPaths) {
+      try {
+        this.log(`Start to install forge ${options.version} on ${options.mcversion} by ${java.path}`)
+        version = await this.submit(installForgeTask(options, this.getPath(), {
+          ...installOptions,
+          java: java.path,
+        }).setName('installForge', { id: options.version }))
+        this.log(`Success to install forge ${options.version} on ${options.mcversion}`)
+        break
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message.indexOf('sun.security.validator.ValidatorException') !== -1) {
+            continue
+          }
+        }
+        this.warn(`An error ocurred during download version ${options.version}@${options.mcversion}`)
+        this.warn(err)
+        break
+      }
+    }
     return version
   }
 
