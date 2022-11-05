@@ -66,6 +66,7 @@
           <div class="flex-grow" />
           <v-btn
             text
+            :loading="joiningGroup"
             @click="onJoin()"
           >
             <template v-if="!state.group">
@@ -402,7 +403,7 @@ import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
 import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
-import { useService, useServiceBusy } from '@/composables'
+import { useBusy, useService, useServiceBusy } from '@/composables'
 import PlayerAvatar from '../components/PlayerAvatar.vue'
 import Hint from '@/components/Hint.vue'
 import { useCurrentUser } from '@/composables/user'
@@ -468,6 +469,8 @@ const deleting = ref('')
 const deletingName = computed(() => state.connections.find(c => c.id === deleting.value)?.userInfo.name)
 const joinGroupUrl = computed(() => `https://xmcl.app/peer?group=${state.group}&inviter=${gameProfile.value.name}`)
 const copied = ref(false)
+
+const joiningGroup = useBusy('joinGroup')
 
 watch(computed(() => state.group), (newVal) => {
   groupId.value = newVal
