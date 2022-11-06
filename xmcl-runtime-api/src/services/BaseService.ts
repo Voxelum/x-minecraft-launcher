@@ -8,6 +8,15 @@ export interface MigrateOptions {
 }
 
 export class BaseState implements SettingSchema {
+  globalMinMemory = 0
+  globalMaxMemory = 0
+  globalAssignMemory: 'auto' | boolean = false
+  globalVmOptions: string[] = []
+  globalMcOptions: string[] = []
+  globalFastLaunch = false
+  globalHideLauncher = false
+  globalShowLog = false
+
   locale = ''
 
   theme = 'dark' as 'dark' | 'light' | 'system'
@@ -64,9 +73,17 @@ export class BaseState implements SettingSchema {
     this.apiSetsPreference = config.apiSetsPreference
     this.httpProxy = config.httpProxy
     this.httpProxyEnabled = config.httpProxyEnabled
-    this.maxSockets = config.maxSockets
+    this.maxSockets = config.maxSockets || 16
     this.maxAPISockets = config.maxAPISockets || 0
     this.theme = config.theme
+    this.globalMinMemory = config.globalMinMemory
+    this.globalMaxMemory = config.globalMaxMemory
+    this.globalAssignMemory = config.globalAssignMemory
+    this.globalVmOptions = config.globalVmOptions
+    this.globalMcOptions = config.globalMcOptions
+    this.globalFastLaunch = config.globalFastLaunch
+    this.globalHideLauncher = config.globalHideLauncher
+    this.globalShowLog = config.globalShowLog
   }
 
   themeSet(theme: 'dark' | 'light' | 'system') {
@@ -135,6 +152,26 @@ export class BaseState implements SettingSchema {
 
   maxAPISocketsSet(val: number) {
     this.maxAPISockets = val
+  }
+
+  globalInstanceSetting(settings: {
+    globalMinMemory: number
+    globalMaxMemory: number
+    globalAssignMemory: boolean | 'auto'
+    globalVmOptions: string[]
+    globalMcOptions: string[]
+    globalFastLaunch: boolean
+    globalHideLauncher: boolean
+    globalShowLog: boolean
+  }) {
+    this.globalMinMemory = settings.globalMinMemory
+    this.globalMaxMemory = settings.globalMaxMemory
+    this.globalAssignMemory = settings.globalAssignMemory
+    this.globalVmOptions = settings.globalVmOptions
+    this.globalMcOptions = settings.globalMcOptions
+    this.globalFastLaunch = settings.globalFastLaunch
+    this.globalHideLauncher = settings.globalHideLauncher
+    this.globalShowLog = settings.globalShowLog
   }
 }
 

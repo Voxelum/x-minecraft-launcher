@@ -126,10 +126,12 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
        * current selected profile
        */
       const instance = this.instanceService.state.instance
+      const globalState = this.baseService.state
       const user = this.userService.state
       const gameProfile = user.gameProfile
+      const fastLaunch = instance.fastLaunch ?? this.baseService.state.globalFastLaunch
 
-      if (!options?.ignoreUserStatus && !instance.fastLaunch) {
+      if (!options?.ignoreUserStatus && !fastLaunch) {
         try {
           await this.userService.refreshUser()
         } catch (e) {
@@ -143,7 +145,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         }
       }
 
-      if (!options?.force && !instance.fastLaunch) {
+      if (!options?.force && !fastLaunch) {
         await this.semaphoreManager.wait('diagnose')
         const issues = this.diagnoseService.state.issues
         for (let problems = issues.filter(p => p.autoFix && p.parameters.length > 0), i = 0;
@@ -199,7 +201,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         })
       }
 
-      if (!options?.force && !instance.fastLaunch) {
+      if (!options?.force && !fastLaunch) {
         const resolvedVersion = version
         const resourceFolder = new MinecraftFolder(this.getPath())
         await Promise.all([
@@ -227,11 +229,14 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       if (!javaPath) {
         throw new LaunchException({ type: 'launchNoProperJava', javaPath: javaPath || '' }, 'Cannot launch without a valid java')
       }
+      const assignMemory = instance.assignMemory ?? globalState.globalAssignMemory
+      let minMemory: number | undefined = instance.minMemory ?? globalState.globalMinMemory
+      let maxMemory: number | undefined = instance.maxMemory ?? globalState.globalMaxMemory
 
-      const minMemory = instance.assignMemory === true && instance.minMemory > 0
-        ? instance.minMemory
-        : instance.assignMemory === 'auto' ? Math.floor((await this.baseService.getMemoryStatus()).free / 1024 / 1024 - 256) : undefined
-      const maxMemory = instance.assignMemory === true && instance.maxMemory > 0 ? instance.maxMemory : undefined
+      minMemory = assignMemory === true && minMemory > 0
+        ? minMemory
+        : assignMemory === 'auto' ? Math.floor((await this.baseService.getMemoryStatus()).free / 1024 / 1024 - 256) : undefined
+      maxMemory = assignMemory === true && maxMemory > 0 ? instance.maxMemory : undefined
       const prechecks = [LaunchPrecheck.checkNatives, LaunchPrecheck.linkAssets]
 
       /**
@@ -251,8 +256,8 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
           detached: true,
           cwd: minecraftFolder.root,
         },
-        extraJVMArgs: instance.vmOptions,
-        extraMCArgs: instance.mcOptions,
+        extraJVMArgs: instance.vmOptions.length === 0 ? globalState.globalVmOptions : instance.vmOptions,
+        extraMCArgs: instance.mcOptions.length === 0 ? globalState.globalMcOptions : instance.mcOptions,
         launcherBrand: options?.launcherBrand ?? '',
         launcherName: options?.launcherName ?? 'XMCL',
         yggdrasilAgent,

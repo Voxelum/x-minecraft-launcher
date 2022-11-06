@@ -63,4 +63,37 @@ export interface SettingSchema {
    * @default 16
    */
   maxAPISockets?: number
+
+  /**
+   * @default 0
+   */
+  globalMinMemory: number
+  /**
+   * @default 0
+   */
+  globalMaxMemory: number
+  /**
+   * @default false
+   */
+  globalAssignMemory: boolean | 'auto'
+  /**
+   * @default []
+   */
+  globalVmOptions: string[]
+  /**
+   * @default []
+   */
+  globalMcOptions: string[]
+  /**
+   * @default false
+   */
+  globalFastLaunch: boolean
+  /**
+   * @default true
+   */
+  globalHideLauncher: boolean
+  /**
+   * @default false
+   */
+  globalShowLog: boolean
 }

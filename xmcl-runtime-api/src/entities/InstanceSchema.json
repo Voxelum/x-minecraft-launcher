@@ -26,16 +26,14 @@
         },
         "showLog": {
             "description": "Should show a logger window after Minecraft launched",
-            "default": false,
             "type": "boolean"
         },
         "hideLauncher": {
             "description": "Should launcher hide after Minecraft launched",
-            "default": true,
             "type": "boolean"
         },
         "fastLaunch": {
-            "default": false,
+            "description": "Launch without checking the problems and account",
             "type": "boolean"
         },
         "version": {
@@ -54,7 +52,6 @@
         },
         "java": {
             "description": "The java path on the disk",
-            "default": "",
             "type": "string"
         },
         "resolution": {
@@ -85,15 +82,15 @@
             ]
         },
         "minMemory": {
-            "default": 0,
+            "description": "Can be override by global setting",
             "type": "number"
         },
         "maxMemory": {
-            "default": 0,
+            "description": "Can be override by global setting",
             "type": "number"
         },
         "assignMemory": {
-            "default": false,
+            "description": "Can be override by global setting",
             "enum": [
                 "auto",
                 false,
@@ -101,14 +98,12 @@
             ]
         },
         "vmOptions": {
-            "default": [],
             "type": "array",
             "items": {
                 "type": "string"
             }
         },
         "mcOptions": {
-            "default": [],
             "type": "array",
             "items": {
                 "type": "string"
@@ -234,29 +229,20 @@
         }
     },
     "required": [
-        "assignMemory",
         "author",
         "creationDate",
         "description",
-        "fastLaunch",
         "fileApi",
-        "hideLauncher",
         "icon",
-        "java",
         "lastAccessDate",
-        "maxMemory",
-        "mcOptions",
-        "minMemory",
         "modpackVersion",
         "name",
         "resolution",
         "runtime",
         "server",
-        "showLog",
         "tags",
         "url",
-        "version",
-        "vmOptions"
+        "version"
     ],
     "definitions": {
         "RuntimeVersions": {

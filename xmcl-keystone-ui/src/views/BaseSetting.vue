@@ -38,10 +38,10 @@ import BaseSettingSync from './BaseSettingSync.vue'
 
 const { instance } = useInstance()
 const isServer = useInstanceIsServer(instance)
-const { data, save, load } = useInstanceEdit()
+const edit = useInstanceEdit()
 const { t } = useI18n()
-provide(InstanceEditInjectionKey, { data, save, load })
-useAutoSaveLoad(save, load)
+provide(InstanceEditInjectionKey, edit)
+useAutoSaveLoad(edit.save, edit.load)
 
 </script>
 

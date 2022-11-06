@@ -147,7 +147,7 @@
               </v-icon>
             </v-btn>
           </template>
-          {{ t('setting.name', 2) }}
+          {{ t('baseSetting.title', 2) }}
         </v-tooltip>
 
         <HomeLaunchButton

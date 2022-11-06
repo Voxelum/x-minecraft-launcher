@@ -8,10 +8,17 @@
 
     <v-list-item>
       <v-list-item-content style="flex: 1">
-        <v-list-item-title>{{ t("instance.mcOptions") }}</v-list-item-title>
+        <v-list-item-title>
+          {{ t("instance.mcOptions") }}
+          <BaseSettingGlobalLabel
+            :global="isGlobalMcOptions"
+            @clear="resetMcOptions"
+            @click="gotoSetting"
+          />
+        </v-list-item-title>
         <v-list-item-subtitle>
           <v-text-field
-            v-model="data.mcOptions"
+            v-model="mcOptions"
             solo
             class="m-1 mt-2"
             hide-details
@@ -83,13 +90,15 @@ import { useNotifier } from '../composables/notifier'
 import { useLaunchPreview } from '../composables/launchPreview'
 import { injection } from '@/util/inject'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
+import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
 
 const { t } = useI18n()
 const { preview, refresh, command } = useLaunchPreview()
 const { notify } = useNotifier()
-const { data, save } = injection(InstanceEditInjectionKey)
+const { save, isGlobalMcOptions, resetMcOptions, mcOptions } = injection(InstanceEditInjectionKey)
 const isPreviewShown = ref(false)
 const previewText = computed(() => preview.value.join('\n'))
+const { push } = useRouter()
 
 async function showPreview() {
   await save()
@@ -102,6 +111,10 @@ async function copyToClipboard() {
   notify({ level: 'success', title: t('copyClipboard.success') })
   navigator.clipboard.writeText(command.value)
 }
+const gotoSetting = () => {
+  push('/setting')
+}
+
 </script>
 
 <style scoped=true>

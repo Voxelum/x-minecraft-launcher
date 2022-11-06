@@ -63,7 +63,6 @@ export * from './src/entities/shaderpack'
 export * from './src/entities/update'
 export * from './src/entities/user.schema'
 export * from './src/entities/user'
-export * from './src/entities/version.schema'
 export * from './src/entities/version'
 
 export * from './src/apps'

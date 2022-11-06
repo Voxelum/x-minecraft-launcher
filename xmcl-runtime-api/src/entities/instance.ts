@@ -20,9 +20,6 @@ export function createTemplate(): Instance {
     url: '',
     icon: '',
 
-    showLog: false,
-    hideLauncher: true,
-
     runtime: {
       minecraft: '',
       forge: '',
@@ -46,7 +43,9 @@ export function createTemplate(): Instance {
     tags: [],
 
     assignMemory: false,
-    fastLaunch: false,
+    showLog: undefined,
+    hideLauncher: undefined,
+    fastLaunch: undefined,
     upstream: undefined,
   }
   return base

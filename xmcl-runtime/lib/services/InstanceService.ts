@@ -366,13 +366,13 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       }
     }
 
-    if (typeof options.fileApi === 'string') {
+    if (typeof options.fileApi === 'string' && options.fileApi !== state.fileApi) {
       result.fileApi = options.fileApi
     }
 
     if ('maxMemory' in options && options.maxMemory !== state.maxMemory) {
       if (typeof options.maxMemory === 'undefined') {
-        result.maxMemory = 0
+        result.maxMemory = undefined
       } else if (typeof options.maxMemory === 'number') {
         result.maxMemory = Math.floor(options.maxMemory > 0 ? options.maxMemory : 0)
       } else {
@@ -381,12 +381,24 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
     if ('minMemory' in options && options.minMemory !== state.minMemory) {
       if (typeof options.minMemory === 'undefined') {
-        result.minMemory = 0
+        result.minMemory = undefined
       } else if (typeof options.minMemory === 'number') {
         result.minMemory = Math.floor(options.minMemory > 0 ? options.minMemory : 0)
       } else {
         throw new Error(`Invalid Argument: Expect minMemory to be number or undefined! Got ${typeof options.maxMemory}.`)
       }
+    }
+    if ('assignMemory' in options && options.assignMemory !== state.assignMemory) {
+      result.assignMemory = options.assignMemory
+    }
+    if ('showLog' in options && options.showLog !== state.showLog) {
+      result.showLog = options.showLog
+    }
+    if ('hideLauncher' in options && options.hideLauncher !== state.hideLauncher) {
+      result.hideLauncher = options.hideLauncher
+    }
+    if ('fastLaunch' in options && options.fastLaunch !== state.fastLaunch) {
+      result.fastLaunch = options.fastLaunch
     }
 
     if ('runtime' in options && options.runtime) {
@@ -418,14 +430,14 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
 
     if ('vmOptions' in options && options.vmOptions) {
-      const diff = options.vmOptions.length !== state.vmOptions.length || options.vmOptions.some((e, i) => e !== state.vmOptions[i])
+      const diff = options.vmOptions.length !== state.vmOptions?.length || options.vmOptions.some((e, i) => e !== state?.vmOptions[i])
       if (diff) {
         result.vmOptions = options.vmOptions
       }
     }
 
     if ('mcOptions' in options && options.mcOptions) {
-      const diff = options.mcOptions.length !== state.mcOptions.length || options.mcOptions.some((e, i) => e !== state.mcOptions[i])
+      const diff = options.mcOptions.length !== state.mcOptions?.length || options.mcOptions.some((e, i) => e !== state?.mcOptions[i])
       if (diff) {
         result.mcOptions = options.mcOptions
       }

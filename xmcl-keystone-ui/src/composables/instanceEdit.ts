@@ -1,16 +1,15 @@
 import { InjectionKey } from 'vue'
-import { InstanceServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
 
 export const InstanceEditInjectionKey: InjectionKey<ReturnType<typeof useInstanceEdit>> = Symbol('InstanceEdit')
 
 export function useInstanceEdit() {
   const { state, editInstance: edit } = useService(InstanceServiceKey)
-  const instance = computed(() => state.instances.find(s => s.path === state.path)!)
+  const { state: baseState } = useService(BaseServiceKey)
+  const instance = computed(() => state.instances.find(s => s.path === state.path))
 
   const data = reactive({
-    hideLauncher: false,
-    showLog: false,
     name: instance.value?.name ?? '',
 
     host: '', // mc.hypixel.com
@@ -21,40 +20,108 @@ export function useInstanceEdit() {
     url: '',
     fileServerApi: '',
 
-    vmOptions: '',
-    mcOptions: '',
-    maxMemory: instance.value?.maxMemory > 0 ? instance.value.maxMemory : 0,
-    minMemory: instance.value?.minMemory > 0 ? instance.value.minMemory : 0,
+    vmOptions: instance.value?.vmOptions?.join(' '),
+    mcOptions: instance.value?.mcOptions?.join(' '),
+    maxMemory: instance.value?.maxMemory,
+    minMemory: instance.value?.minMemory,
 
-    runtime: { ...instance.value.runtime },
+    runtime: {
+      minecraft: '',
+      ...(instance.value?.runtime ? instance.value.runtime : {}),
+    },
     version: '',
 
-    fastLaunch: false,
-    assignMemory: true as true | 'auto' | false,
+    fastLaunch: instance.value?.fastLaunch,
+    hideLauncher: instance.value?.hideLauncher,
+    showLog: instance.value?.showLog,
 
-    javaPath: '',
+    assignMemory: instance.value?.assignMemory,
+
+    javaPath: instance.value?.java,
 
     loading: true,
+  })
+
+  const isGlobalAssignMemory = computed(() => data.assignMemory === undefined)
+  const isGlobalMinMemory = computed(() => data.minMemory === undefined)
+  const isGlobalMaxMemory = computed(() => data.maxMemory === undefined)
+  const isGlobalVmOptions = computed(() => !data.vmOptions)
+  const isGlobalMcOptions = computed(() => !data.mcOptions)
+  const isGlobalFastLaunch = computed(() => data.fastLaunch === undefined)
+  const isGlobalHideLauncher = computed(() => data.hideLauncher === undefined)
+  const isGlobalShowLog = computed(() => data.showLog === undefined)
+  const resetAssignMemory = () => {
+    data.assignMemory = undefined
+    data.minMemory = undefined
+    data.maxMemory = undefined
+  }
+  const resetVmOptions = () => {
+    data.vmOptions = undefined
+  }
+  const resetMcOptions = () => {
+    data.mcOptions = undefined
+  }
+  const resetFastLaunch = () => {
+    data.fastLaunch = undefined
+  }
+  const resetHideLauncher = () => {
+    data.hideLauncher = undefined
+  }
+  const resetShowLog = () => {
+    data.showLog = undefined
+  }
+
+  const assignMemory = computed({
+    get: () => data.assignMemory ?? baseState.globalAssignMemory,
+    set: (v) => { data.assignMemory = v },
+  })
+  const minMemory = computed({
+    get: () => data.minMemory ?? baseState.globalMinMemory,
+    set: (v) => { data.minMemory = v },
+  })
+  const maxMemory = computed({
+    get: () => data.maxMemory ?? baseState.globalMaxMemory,
+    set: (v) => { data.maxMemory = v },
+  })
+  const vmOptions = computed({
+    get: () => data.vmOptions || baseState.globalVmOptions.join(' '),
+    set: (v) => { data.vmOptions = v },
+  })
+  const mcOptions = computed({
+    get: () => data.mcOptions || baseState.globalMcOptions.join(' '),
+    set: (v) => { data.mcOptions = v },
+  })
+  const fastLaunch = computed({
+    get: () => data.fastLaunch || baseState.globalFastLaunch,
+    set: (v) => { data.fastLaunch = v },
+  })
+  const hideLauncher = computed({
+    get: () => data.hideLauncher || baseState.globalHideLauncher,
+    set: (v) => { data.hideLauncher = v },
+  })
+  const showLog = computed({
+    get: () => data.showLog || baseState.globalShowLog,
+    set: (v) => { data.showLog = v },
   })
 
   async function save() {
     const payload = {
       name: data.name,
-      hideLauncher: data.hideLauncher,
       url: data.url,
-      showLog: data.showLog,
-      fileApi: data.fileServerApi || '',
+      fileApi: data.fileServerApi,
       minMemory: data.minMemory,
       maxMemory: data.maxMemory,
-      vmOptions: data.vmOptions.split(' ').filter(v => v.length !== 0),
-      mcOptions: data.mcOptions.split(' ').filter(v => v.length !== 0),
+      vmOptions: data.vmOptions?.split(' ').filter(v => v.length !== 0) || [],
+      mcOptions: data.mcOptions?.split(' ').filter(v => v.length !== 0) || [],
       assignMemory: data.assignMemory,
       version: data.version,
       runtime: data.runtime,
       fastLaunch: data.fastLaunch,
+      showLog: data.showLog,
+      hideLauncher: data.hideLauncher,
       java: data.javaPath,
     }
-    if (!instance.value.server) {
+    if (!instance.value?.server) {
       await edit({
         ...payload,
         author: data.author,
@@ -79,7 +146,7 @@ export function useInstanceEdit() {
       data.url = current.url
       data.showLog = current.showLog
       data.author = current.author
-      data.fileServerApi = current.fileApi || ''
+      data.fileServerApi = current.fileApi
       data.description = current.description || ''
       data.runtime = current.runtime
       data.version = current.version
@@ -89,10 +156,10 @@ export function useInstanceEdit() {
         data.port = current.server.port?.toString() || ''
       }
 
-      data.maxMemory = current.maxMemory <= 0 ? 0 : current.maxMemory
-      data.minMemory = current.minMemory <= 0 ? 0 : current.minMemory
-      data.vmOptions = current.vmOptions.join(' ')
-      data.mcOptions = current.mcOptions.join(' ')
+      data.maxMemory = current.maxMemory
+      data.minMemory = current.minMemory
+      data.vmOptions = current.vmOptions?.join(' ') || ''
+      data.mcOptions = current.mcOptions?.join(' ') || ''
       data.javaPath = current.java
       data.assignMemory = current.assignMemory
       data.fastLaunch = current.fastLaunch
@@ -100,6 +167,28 @@ export function useInstanceEdit() {
   }
 
   return {
+    isGlobalAssignMemory,
+    isGlobalMinMemory,
+    isGlobalMaxMemory,
+    isGlobalVmOptions,
+    isGlobalMcOptions,
+    isGlobalFastLaunch,
+    isGlobalHideLauncher,
+    isGlobalShowLog,
+    assignMemory,
+    fastLaunch,
+    hideLauncher,
+    showLog,
+    resetAssignMemory,
+    resetVmOptions,
+    resetMcOptions,
+    resetFastLaunch,
+    resetHideLauncher,
+    resetShowLog,
+    minMemory,
+    maxMemory,
+    mcOptions,
+    vmOptions,
     data,
     save,
     load,

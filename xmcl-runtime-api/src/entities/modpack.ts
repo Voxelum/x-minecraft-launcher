@@ -351,7 +351,7 @@ export function getMcbbsModpackFromInstance(instance: InstanceData): McbbsModpac
     author: instance.author,
     files: [],
     launchInfo: {
-      minMemory: instance.minMemory <= 0 ? undefined : instance.minMemory,
+      minMemory: instance.minMemory && instance.minMemory <= 0 ? undefined : instance.minMemory,
       launchArgument: instance.mcOptions,
       javaArgument: instance.vmOptions,
     },
