@@ -73,6 +73,9 @@ export default defineComponent({
         if (m.name === 'MultipleError') {
           return h('div')
         }
+        if (m.name === 'Error' && typeof m.message === 'string') {
+          return h('div', m.message)
+        }
         return h('div', m.name)
       }
       if (typeof props.value === 'string') {
