@@ -275,18 +275,22 @@
     </v-list-item>
 
     <v-list-item
-      @click="data.fastLaunch = !data.fastLaunch"
+      @click="fastLaunch = !fastLaunch"
     >
       <v-list-item-action>
         <v-checkbox
-          v-model="data.fastLaunch"
+          v-model="fastLaunch"
           hide-details
-          @click="data.fastLaunch = !data.fastLaunch"
+          @click="fastLaunch = !fastLaunch"
         />
       </v-list-item-action>
       <v-list-item-content>
         <v-list-item-title>
           {{ t("instanceSetting.fastLaunch") }}
+          <BaseSettingGlobalLabel
+            :global="isGlobalFastLaunch"
+            @clear="resetFastLaunch"
+          />
         </v-list-item-title>
         <v-list-item-subtitle>
           {{ t("instanceSetting.fastLaunchHint") }}
@@ -295,13 +299,13 @@
     </v-list-item>
 
     <v-list-item
-      @click="data.hideLauncher = !data.hideLauncher"
+      @click="hideLauncher = !hideLauncher"
     >
       <v-list-item-action>
         <v-checkbox
-          v-model="data.hideLauncher"
+          v-model="hideLauncher"
           hide-details
-          @click="data.hideLauncher = !data.hideLauncher"
+          @click="hideLauncher = !hideLauncher"
         />
       </v-list-item-action>
       <v-list-item-content>
@@ -309,21 +313,31 @@
           {{
             t("instanceSetting.hideLauncher")
           }}
+          <BaseSettingGlobalLabel
+            :global="isGlobalHideLauncher"
+            @clear="resetHideLauncher"
+          />
         </v-list-item-title>
       </v-list-item-content>
     </v-list-item>
     <v-list-item
-      @click="data.showLog = !data.showLog"
+      @click="showLog = !showLog"
     >
       <v-list-item-action>
         <v-checkbox
-          v-model="data.showLog"
+          v-model="showLog"
           hide-details
-          @click="data.showLog = !data.showLog"
+          @click="showLog = !showLog"
         />
       </v-list-item-action>
       <v-list-item-content>
-        <v-list-item-title>{{ t("instanceSetting.showLog") }}</v-list-item-title>
+        <v-list-item-title>
+          {{ t("instanceSetting.showLog") }}
+          <BaseSettingGlobalLabel
+            :global="isGlobalShowLog"
+            @clear="resetShowLog"
+          />
+        </v-list-item-title>
         <v-list-item-subtitle>
           {{ t("instanceSetting.showLogHint") }}
         </v-list-item-subtitle>
@@ -339,8 +353,20 @@ import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, use
 
 import { injection } from '@/util/inject'
 import { useLocalVersions } from '@/composables/version'
+import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
 
-const { data } = injection(InstanceEditInjectionKey)
+const {
+  data,
+  isGlobalFastLaunch,
+  fastLaunch,
+  resetFastLaunch,
+  isGlobalHideLauncher,
+  hideLauncher,
+  resetHideLauncher,
+  isGlobalShowLog,
+  showLog,
+  resetShowLog,
+} = injection(InstanceEditInjectionKey)
 const minecraft = computed(() => data.runtime.minecraft)
 const { items: minecraftItems, showAlpha, refresh: refreshMinecraft, refreshing: refreshingMinecraft, release } = useMinecraftVersionList(minecraft)
 const { items: forgeItems, canShowBuggy, recommendedOnly, refresh: refreshForge, refreshing: refreshingForge } = useForgeVersionList(minecraft, computed(() => data.runtime.forge ?? ''))

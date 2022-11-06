@@ -1,9 +1,6 @@
 /* eslint-disable no-redeclare */
-import { FTBModpackVersionManifest } from './ftb'
-import { InstanceFile } from './instanceManifest.schema'
 import _InstanceSchema from './InstanceSchema.json'
 import _InstancesSchema from './InstancesSchema.json'
-import { CurseforgeModpackManifest, ModrinthModpackManifest } from './modpack'
 import { Schema } from './schema'
 
 export const InstanceSchema: Schema<InstanceSchema> = _InstanceSchema
@@ -66,18 +63,16 @@ export interface InstanceData {
   description: string
   /**
    * Should show a logger window after Minecraft launched
-   * @default false
    */
-  showLog: boolean
+  showLog?: boolean
   /**
    * Should launcher hide after Minecraft launched
-   * @default true
    */
-  hideLauncher: boolean
+  hideLauncher?: boolean
   /**
-   * @default false
+   * Launch without checking the problems and account
    */
-  fastLaunch: boolean
+  fastLaunch?: boolean
   /**
    * The target version id to launch. It will be computed from "runtime"
    * @default ""
@@ -92,33 +87,32 @@ export interface InstanceData {
   runtime: RuntimeVersions
   /**
    * The java path on the disk
-   * @default ""
    */
-  java: string
+  java?: string
   /**
    * The resolution of the game
    */
   resolution: { width: number; height: number; fullscreen: boolean } | null
   /**
-    * @default 0
+   * Can be override by global setting
     */
-  minMemory: number
+  minMemory?: number
   /**
-    * @default 0
+   * Can be override by global setting
     */
-  maxMemory: number
+  maxMemory?: number
   /**
-   * @default false
+   * Can be override by global setting
    */
-  assignMemory: true | 'auto' | false
+  assignMemory?: true | 'auto' | false
   /**
-   * @default []
+   *
    */
-  vmOptions: string[]
+  vmOptions?: string[]
   /**
-   * @default []
+   *
    */
-  mcOptions: string[]
+  mcOptions?: string[]
   /**
    * @default ""
    */

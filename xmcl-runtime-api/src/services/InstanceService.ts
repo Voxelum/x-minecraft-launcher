@@ -145,36 +145,42 @@ export class InstanceState {
     }
 
     if ('minMemory' in settings) {
-      inst.minMemory = (typeof settings.minMemory === 'number') && settings.minMemory > 0 ? settings.minMemory : 0
+      inst.minMemory = (typeof settings.minMemory === 'number') && settings.minMemory > 0 ? settings.minMemory : undefined
     }
     if ('maxMemory' in settings) {
-      inst.maxMemory = (typeof settings.maxMemory === 'number') && settings.maxMemory > 0 ? settings.maxMemory : 0
+      inst.maxMemory = (typeof settings.maxMemory === 'number') && settings.maxMemory > 0 ? settings.maxMemory : undefined
     }
 
-    if (settings.vmOptions instanceof Array && settings.vmOptions.every(r => typeof r === 'string')) {
-      inst.vmOptions = Object.seal(settings.vmOptions)
+    if ('vmOptions' in settings) {
+      if (settings.vmOptions instanceof Array && settings.vmOptions.every(r => typeof r === 'string')) {
+        inst.vmOptions = Object.seal(settings.vmOptions)
+      }
     }
-    if (settings.mcOptions instanceof Array && settings.mcOptions.every(r => typeof r === 'string')) {
-      inst.mcOptions = Object.seal(settings.mcOptions)
+    if ('mcOptions' in settings) {
+      if (settings.mcOptions instanceof Array && settings.mcOptions.every(r => typeof r === 'string')) {
+        inst.mcOptions = Object.seal(settings.mcOptions)
+      }
+    }
+    if ('java' in settings) {
+      inst.java = settings.java
     }
 
     inst.url = settings.url ?? inst.url
     inst.icon = settings.icon ?? inst.icon
-    inst.java = settings.java ?? inst.java
     inst.modpackVersion = settings.modpackVersion ?? inst.modpackVersion
     inst.fileApi = settings.fileApi ?? inst.fileApi
     inst.upstream = settings.upstream ?? inst.upstream
 
-    if (typeof settings.showLog === 'boolean') {
+    if ('showLog' in settings) {
       inst.showLog = settings.showLog
     }
-    if (typeof settings.hideLauncher === 'boolean') {
+    if ('hideLauncher' in settings) {
       inst.hideLauncher = settings.hideLauncher
     }
-    if (typeof settings.fastLaunch === 'boolean') {
+    if ('fastLaunch' in settings) {
       inst.fastLaunch = settings.fastLaunch
     }
-    if (settings.assignMemory === 'auto' || typeof settings.assignMemory === 'boolean') {
+    if ('assignMemory' in settings && settings.assignMemory !== inst.assignMemory) {
       inst.assignMemory = settings.assignMemory
     }
   }

@@ -81,6 +81,48 @@
             "description": "Maximum number of sockets allowed for requesting API. Each request will use a new socket until the maximum is reached. Default: 16.",
             "default": 16,
             "type": "number"
+        },
+        "globalMinMemory": {
+            "default": 0,
+            "type": "number"
+        },
+        "globalMaxMemory": {
+            "default": 0,
+            "type": "number"
+        },
+        "globalAssignMemory": {
+            "default": false,
+            "enum": [
+                "auto",
+                false,
+                true
+            ]
+        },
+        "globalVmOptions": {
+            "default": [],
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "globalMcOptions": {
+            "default": [],
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "globalFastLaunch": {
+            "default": false,
+            "type": "boolean"
+        },
+        "globalHideLauncher": {
+            "default": false,
+            "type": "boolean"
+        },
+        "globalShowLog": {
+            "default": false,
+            "type": "boolean"
         }
     },
     "required": [
@@ -89,6 +131,14 @@
         "apiSetsPreference",
         "autoDownload",
         "autoInstallOnAppQuit",
+        "globalAssignMemory",
+        "globalFastLaunch",
+        "globalHideLauncher",
+        "globalMaxMemory",
+        "globalMcOptions",
+        "globalMinMemory",
+        "globalShowLog",
+        "globalVmOptions",
         "httpProxy",
         "httpProxyEnabled",
         "locale",

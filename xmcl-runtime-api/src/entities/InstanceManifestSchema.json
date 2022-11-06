@@ -17,22 +17,20 @@
             "type": "string"
         },
         "minMemory": {
-            "default": 0,
+            "description": "Can be override by global setting",
             "type": "number"
         },
         "maxMemory": {
-            "default": 0,
+            "description": "Can be override by global setting",
             "type": "number"
         },
         "vmOptions": {
-            "default": [],
             "type": "array",
             "items": {
                 "type": "string"
             }
         },
         "mcOptions": {
-            "default": [],
             "type": "array",
             "items": {
                 "type": "string"

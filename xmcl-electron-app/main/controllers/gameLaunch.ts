@@ -1,5 +1,5 @@
 import Controller from '@/Controller'
-import { InstanceService, LaunchService } from '@xmcl/runtime'
+import { BaseService, InstanceService, LaunchService } from '@xmcl/runtime'
 import { ControllerPlugin } from './plugin'
 
 /**
@@ -16,7 +16,7 @@ export const gameLaunch: ControllerPlugin = function (this: Controller) {
       if (this.mainWin && this.mainWin.isVisible()) {
         this.mainWin.webContents.send('minecraft-window-ready')
 
-        const { hideLauncher } = instance
+        const hideLauncher = instance.hideLauncher ?? this.app.serviceManager.get(BaseService).state.globalHideLauncher
         if (hideLauncher) {
           this.mainWin.hide()
         }
@@ -27,7 +27,8 @@ export const gameLaunch: ControllerPlugin = function (this: Controller) {
         this.app.warn('Cannot find active instance while Minecraft window ready! Perhaps something strange happened?')
         return
       }
-      if (this.loggerWin === undefined && instance.showLog) {
+      const showLog = instance.showLog ?? this.app.serviceManager.get(BaseService).state.globalShowLog
+      if (this.loggerWin === undefined && showLog) {
         this.createMonitorWindow()
       }
     }).on('minecraft-exit', (status) => {
@@ -36,7 +37,7 @@ export const gameLaunch: ControllerPlugin = function (this: Controller) {
         this.app.warn('Cannot find active instance while Minecraft exit! Perhaps something strange happened?')
         return
       }
-      const { hideLauncher } = instance
+      const hideLauncher = instance.hideLauncher ?? this.app.serviceManager.get(BaseService).state.globalHideLauncher
       if (hideLauncher) {
         if (this.mainWin) {
           this.mainWin.show()

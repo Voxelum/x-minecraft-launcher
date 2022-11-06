@@ -25,19 +25,8 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
       return state
     }, async () => {
       const data = await this.settingFile.read()
-      this.state.config({
-        locale: data.locale || this.app.getPreferredLocale() || this.app.getLocale(),
-        autoInstallOnAppQuit: data.autoInstallOnAppQuit,
-        autoDownload: data.autoDownload,
-        allowPrerelease: data.allowPrerelease,
-        apiSets: data.apiSets,
-        apiSetsPreference: data.apiSetsPreference,
-        httpProxy: data.httpProxy,
-        httpProxyEnabled: data.httpProxyEnabled,
-        theme: data.theme,
-        maxSockets: data.maxSockets || 16,
-      })
-      this.checkUpdate()
+      data.locale = data.locale || this.app.getPreferredLocale() || this.app.getLocale()
+      this.state.config(data)
     })
     app.gamePathReadySignal.promise.then(() => {
       this.state.root = app.gameDataPath
@@ -53,6 +42,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
       'httpProxyEnabledSet',
       'themeSet',
       'maxSocketsSet',
+      'globalInstanceSetting',
     ], () => {
       this.settingFile.write({
         locale: this.state.locale,
@@ -65,6 +55,15 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
         httpProxyEnabled: this.state.httpProxyEnabled,
         theme: this.state.theme,
         maxSockets: this.state.maxSockets,
+        globalJava: this.state.globalJava,
+        globalMinMemory: this.state.globalMinMemory,
+        globalMaxMemory: this.state.globalMaxMemory,
+        globalAssignMemory: this.state.globalAssignMemory,
+        globalVmOptions: this.state.globalVmOptions,
+        globalMcOptions: this.state.globalMcOptions,
+        globalFastLaunch: this.state.globalFastLaunch,
+        globalHideLauncher: this.state.globalHideLauncher,
+        globalShowLog: this.state.globalShowLog,
       })
     })
   }

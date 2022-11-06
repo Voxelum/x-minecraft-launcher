@@ -939,6 +939,8 @@ setting:
   darkThemeDescription: 选择深色或浅色主题
   general: 基本设置
   githubRelease: Github
+  globalSetting: 全局实例设置
+  globalSettingHint: 实例默认情况下会使用这些全局设置
   language: 语言
   languageDescription: 当前显示的语言
   latestVersion: 最新版本
@@ -968,6 +970,11 @@ setting:
   useBmclAPIDescription: 当你在大陆时，优先使用 BMCLAPI 来下载 Minecraft
   useProxy: HTTP 代理设置
   useProxyDescription: 使用代理服务器可以某些服务的访问
+settingLabel:
+  global: 全局配置
+  globalHint: 这个配置使用的是全局配置
+  local: 实例配置
+  localHint: 这个配置已被当前实例修改
 setup:
   dataRoot:
     description: 数据存储目录不是常规的 .minecraft 目录。因为 XMCL 的数据目录格式特殊，不建议将常规 .minecraft 目录设置为数据目录。

@@ -224,10 +224,10 @@ errors:
   BodyTimeoutError: HTTP Body timeout
   ChecksumNotMatchError: Checksum not matched! Expect {expect}. Actual {actual}.
   ConnectTimeoutError: Connection timeout to server.
+  DNSNotFoundError: DNS lookup error
   DownloadAggregateError: Fail to download file.
   HeadersTimeoutError: HTTP Header timeout
   SocketError: Server socket error
-  DNSNotFoundError: DNS lookup error
 exception:
   http: >-
     HTTP request to {url} failed. Status code {statusCode}. {code}. Please retry
@@ -942,6 +942,8 @@ setting:
   darkThemeDescription: Choose the dark or light theme
   general: General
   githubRelease: Github Release
+  globalSetting: Global Instance Setting
+  globalSettingHint: Instance will use these settings by default.
   language: Language
   languageDescription: The display language
   latestVersion: Latest Version
@@ -976,6 +978,11 @@ setting:
   useProxy: HTTP Proxy
   useProxyDescription: The proxy server address for the http request
   viewUpdate: View Update Detail
+settingLabel:
+  global: Global
+  globalHint: This setting will follow the global setting
+  local: Local
+  localHint: This setting is modified by current instance
 setup:
   dataRoot:
     description: >-
