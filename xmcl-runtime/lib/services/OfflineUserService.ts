@@ -52,8 +52,16 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
         })
 
         userService.registerAccountSystem('offline', {
-          getYggdrasilHost() {
-            return `http://localhost:${(server.address() as any).port}`
+          getYggdrasilHost: () => {
+            const address = server.address()
+            if (address) {
+              if (typeof address === 'string') {
+                return `http://localhost${address.substring(address.indexOf(':'))}`
+              }
+              return `http://localhost:${address.port}`
+            }
+            this.error(`Unexpected state. The OfflineYggdrasilServer does not initialized? Listening: ${server.listening}`)
+            return ''
           },
           async login({ username, properties }) {
             const auth = offline(username, properties?.uuid)
