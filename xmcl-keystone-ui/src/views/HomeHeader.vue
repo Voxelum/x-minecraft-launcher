@@ -237,7 +237,7 @@ const { total, progress, name: taskName, pause, resume, status } = useTask((i) =
   if (i.path === 'installAssets' && (p?.id === localVersion.value.id || p?.id === version.value.minecraft || p?.id === version.value.minecraft.substring(version.value.minecraft.lastIndexOf('.')))) {
     return true
   }
-  if (i.path === 'installForge' && p?.id === version.value.forge) {
+  if (i.path === 'installForge' && (p?.id === version.value.forge || p?.id === localVersion.value.id)) {
     return true
   }
   if (i.path === 'installOptifine' && p?.id === version.value.optifine) {
