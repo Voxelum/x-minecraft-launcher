@@ -2,6 +2,7 @@ import { LanServerInfo } from '@xmcl/client'
 import { createServer } from 'net'
 import { defineMessage, MessageType } from './message'
 import { ServerProxy } from '../ServerProxy'
+import { listen } from '../../../util/server'
 
 export const MessageLan: MessageType<LanServerInfo> = 'lan'
 
@@ -30,37 +31,7 @@ export const MessageLanEntry = defineMessage(MessageLan, async function (info) {
     socket.on('close', () => gameChannel.close())
     gameChannel.onClosed(() => socket.destroy())
   })
-  const findPort = async () => {
-    let port = info.port
-    for (; port <= 65535; ++port) {
-      const listened = await new Promise<boolean>((resolve, reject) => {
-        const handleError = (e: any) => {
-          if (e.code === 'EADDRINUSE') {
-            this.logger.error(`Fail to listen: ${port}. Expect: ${info.port}`)
-            resolve(false)
-          } else {
-            // should panic
-            reject(e)
-          }
-        }
-        server.addListener('error', handleError)
-        server.listen(port, () => {
-          this.logger.log(`Attached to listen: ${port}. Expect: ${info.port}`)
-          server.removeListener('error', handleError)
-          this.logger.log('Resolve true')
-          resolve(true)
-        })
-      })
-
-      this.logger.log(`listened: ${listened}`)
-      if (listened) {
-        break
-      }
-    }
-    return port
-  }
-
-  proxy = new ServerProxy(info.port, findPort(), server)
+  proxy = new ServerProxy(info.port, listen(server, info.port, (p) => p + 1), server)
   this.logger.log(`Create new server proxy: ${info.port}`)
   // must first push the proxy to list to avoid race condition
   this.proxies.push(proxy)

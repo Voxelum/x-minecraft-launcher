@@ -1,5 +1,4 @@
 import { InstanceManifest } from '@xmcl/runtime-api'
-// import { ipcRenderer } from 'electron'
 import { defineMessage, MessageType } from './message'
 
 export const MessageShareManifest: MessageType<{ manifest: InstanceManifest }> = 'instance-manifest'
@@ -10,9 +9,9 @@ export const MessageShareManifestEntry = defineMessage(MessageShareManifest, fun
   if (manifest) {
     for (const file of manifest.files) {
       if (file.downloads) {
-        file.downloads.push(`peer://${this.id}/${file.path}`)
+        file.downloads.push(`peer://${this.id}/sharing/${file.path}`)
       } else {
-        file.downloads = [`peer://${this.id}/${file.path}`]
+        file.downloads = [`peer://${this.id}/sharing/${file.path}`]
       }
     }
   }

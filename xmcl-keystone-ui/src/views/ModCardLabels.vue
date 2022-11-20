@@ -88,9 +88,9 @@ const getCompatibleIcon = (c?: CompatibleDetail) => {
 
 const getDepIcon = (name: string, icon?: string) => {
   if (icon) return icon
-  if (name === 'forge') return 'image:builtin:forge'
-  if (name === 'minecraft') return 'image:builtin:minecraft'
-  if (name === 'fabricloader' || name.startsWith('fabric-')) return 'image:builtin:fabric'
+  if (name === 'forge') return 'image://builtin/forge'
+  if (name === 'minecraft') return 'image://builtin/minecraft'
+  if (name === 'fabricloader' || name.startsWith('fabric-')) return 'image://builtin/fabric'
   return ''
 }
 const onBlur = () => {

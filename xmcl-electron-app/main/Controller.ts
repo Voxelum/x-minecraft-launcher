@@ -8,17 +8,15 @@ import loggerWinUrl from '@renderer/logger.html'
 import { LauncherAppController } from '@xmcl/runtime'
 import { InstalledAppManifest } from '@xmcl/runtime-api'
 import { Logger } from '@xmcl/runtime/lib/util/log'
-import { BrowserWindow, dialog, ipcMain, nativeTheme, session, shell, Tray } from 'electron'
-import { fromFile } from 'file-type'
+import { BrowserWindow, dialog, ipcMain, nativeTheme, protocol, ProtocolRequest, ProtocolResponse, session, shell, Tray } from 'electron'
 import { readFile } from 'fs/promises'
-import { isAbsolute, join } from 'path'
+import { join } from 'path'
 import { plugins } from './controllers'
 import ElectronLauncherApp from './ElectronLauncherApp'
 import en from './locales/en.yaml'
+import es from './locales/es-ES.yaml'
 import ru from './locales/ru.yaml'
 import zh from './locales/zh-CN.yaml'
-import es from './locales/es-ES.yaml'
-import { builtinIcons } from './utils/builtinIcons'
 import { createI18n } from './utils/i18n'
 import { darkIcon } from './utils/icons'
 import { trackWindowSize } from './utils/windowSizeTracker'
@@ -57,6 +55,43 @@ export default class Controller implements LauncherAppController {
     })
 
     this.logger = this.app.logManager.getLogger('Controller')
+
+    protocol.registerSchemesAsPrivileged([{
+      scheme: 'image',
+      privileges: {
+        stream: true,
+        corsEnabled: true,
+        supportFetchAPI: true,
+        bypassCSP: true,
+      },
+    }])
+
+    protocol.registerSchemesAsPrivileged([{
+      scheme: 'video',
+      privileges: {
+        stream: true,
+        corsEnabled: true,
+        supportFetchAPI: true,
+        bypassCSP: true,
+      },
+    }])
+  }
+
+  handle(...payload: any[]) {
+    return ipcMain.handle(payload[0], payload[1])
+  }
+
+  broadcast(channel: string, ...payload: any[]): void {
+    BrowserWindow.getAllWindows().forEach(w => {
+      try {
+        w.webContents.send(channel, ...payload)
+      } catch (e) {
+        this.logger.warn(`Drop message to ${channel} to ${w.getTitle()} as`)
+        if (e instanceof Error) {
+          this.logger.warn(e)
+        }
+      }
+    })
   }
 
   setupBrowserLogger(ref: BrowserWindow, name: string) {
@@ -171,50 +206,43 @@ export default class Controller implements LauncherAppController {
       }
       cb({ responseHeaders: detail.responseHeaders })
     })
-    restoredSession.protocol.registerFileProtocol('image', (req, callback) => {
-      const pathname = decodeURIComponent(req.url.replace('image://', ''))
 
-      if (pathname.startsWith('image:builtin:')) {
-        const name = pathname.substring('image:builtin:'.length)
-        if (builtinIcons[name]) {
-          callback({ path: builtinIcons[name] })
-        } else {
-          callback({ statusCode: 404 })
-        }
-      } else if (isAbsolute(pathname)) {
-        fromFile(pathname).then((type) => {
-          if (type && type.mime.startsWith('image/')) {
-            callback(pathname)
-          } else {
-            callback({ statusCode: 404 })
-          }
-        }).catch(() => {
-          callback({ statusCode: 404 })
-        })
-      } else if (pathname.length === 40) {
-        callback({ path: join(this.app.appDataPath, 'resource-images', pathname), mimeType: 'image/png' })
-      } else if (pathname.startsWith('peer/')) {
-        const path = pathname.substring('peer/'.length)
-        const peer = path.substring(0, path.indexOf('/'))
-        const imagePath = path.substring(path.indexOf('/') + 1)
-
-        // callback({ data:  })
-      } else {
-        callback({ statusCode: 404 })
+    const wellKnown = ['data', 'http', 'https']
+    const handler: (request: ProtocolRequest, callback: (response: ProtocolResponse) => void) => void = (request, callback) => {
+      let url: URL
+      try {
+        url = new URL(request.url)
+      } catch (e) {
+        url = new URL(request.url.replace('image://', 'image:///'))
       }
-    })
-    restoredSession.protocol.registerFileProtocol('video', (req, callback) => {
-      const pathname = decodeURIComponent(req.url.replace('video://', ''))
-      fromFile(pathname).then((type) => {
-        if (type && type.mime.startsWith('video/')) {
-          callback(pathname)
-        } else {
-          callback({ statusCode: 404 })
-        }
-      }).catch(() => {
-        callback({ statusCode: 404 })
+
+      const responseUrl = new URL(url.toString())
+      responseUrl.protocol = 'http:'
+
+      this.app.protocol.handle({
+        url,
+        headers: request.headers,
+        method: request.method,
+      }).then((resp) => {
+        callback({ statusCode: resp.status, data: resp.body, headers: resp.headers })
+      }, (err) => {
+        callback({ statusCode: 500, error: err })
       })
-    })
+    }
+
+    this.app.protocol.onRegistered = (protocol) => {
+      if (!wellKnown.includes(protocol)) {
+        this.logger.log(`Register custom protocol ${protocol} to electron`)
+        restoredSession.protocol.registerStreamProtocol(protocol, handler)
+      }
+    }
+
+    for (const protocol of this.app.protocol.getProtocols()) {
+      if (!wellKnown.includes(protocol)) {
+        this.logger.log(`Register custom protocol ${protocol} to electron`)
+        restoredSession.protocol.registerStreamProtocol(protocol, handler)
+      }
+    }
 
     const minWidth = man.minWidth ?? 800
     const minHeight = man.minHeight ?? 600

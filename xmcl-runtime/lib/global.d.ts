@@ -15,6 +15,29 @@ declare module '*?worker' {
   export default function (options?: WorkerOptions): Worker
 }
 
+declare module '*.png' {
+  /**
+   * The path of the static file
+   */
+  const path: string
+  export default path
+}
+declare module '*.svg' {
+  /**
+   * The path of the static file
+   */
+  const path: string
+  export default path
+}
+
+declare module '*.gif' {
+  /**
+   * The path of the static file
+   */
+  const path: string
+  export default path
+}
+
 declare module '*.vbs' {
   const path: string
   export default path

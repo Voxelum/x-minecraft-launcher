@@ -25,7 +25,7 @@ export default class TaskManager extends Manager {
 
   constructor(app: LauncherApp) {
     super(app)
-    app.handle('task-subscribe', (event) => {
+    app.controller.handle('task-subscribe', (event) => {
       if (this.pushers.has(event.sender)) {
         this.pushers.get(event.sender)!()
       }
@@ -35,11 +35,11 @@ export default class TaskManager extends Manager {
       this.pushers.set(event.sender, pusher)
       return Object.entries(this.record).map(([uuid, task]) => mapTaskToTaskPayload(uuid, task))
     })
-    app.handle('task-unsubscribe', (event) => {
+    app.controller.handle('task-unsubscribe', (event) => {
       const pusher = this.pushers.get(event.sender)
       if (pusher) { pusher() }
     })
-    app.handle('task-operation', (event, { type, id }) => {
+    app.controller.handle('task-operation', (event, { type, id }) => {
       if (!this.record[id]) {
         this.logger.warn(`Cannot ${type} a unknown task id ${id}`)
         return

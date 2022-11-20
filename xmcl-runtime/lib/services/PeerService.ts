@@ -5,6 +5,7 @@ import { AbortableTask, BaseTask } from '@xmcl/task'
 import { randomFill, randomUUID } from 'crypto'
 import { createWriteStream } from 'fs'
 import { ensureFile } from 'fs-extra'
+import { join } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { promisify } from 'util'
@@ -15,6 +16,8 @@ import { PeerGroup, TransferDescription } from '../entities/peer'
 import { PeerSession } from '../entities/peer/connection'
 import { MessageShareManifest } from '../entities/peer/messages/download'
 import { MessageLan } from '../entities/peer/messages/lan'
+import { kWorker, WorkerInterface } from '../entities/worker'
+import { ImageStorage } from '../util/imageStore'
 import { Inject } from '../util/objectRegistry'
 import { ExposeServiceKey, Lock, Singleton, StatefulService } from './Service'
 import { UserService } from './UserService'
@@ -39,25 +42,41 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   private group: PeerGroup | undefined
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(ImageStorage) private imageStorage: ImageStorage,
+    @Inject(kWorker) private worker: WorkerInterface,
     @Inject(UserService) private userService: UserService,
   ) {
     super(app, () => new PeerState(), async () => {
     })
 
-    app.registerUrlHandler((url) => {
-      const parsed = new URL(url, 'xmcl://launcher')
+    app.protocol.registerHandler('peer', ({ request, response }) => {
+      // handle peer protocol
+      if (request.url.protocol === 'peer:') {
+        const peer = this.peers[request.url.hostname]
+        if (peer) {
+          this.log(`Create read stream from peer protocol ${request.url} for peer ${peer}`)
+          response.status = 200
+          response.body = peer.createReadStream(request.url.pathname)
+        } else {
+          this.log(`Not found peer ${peer} from ${request.url}`)
+          response.status = 404
+        }
+      }
+    })
+    app.protocol.registerHandler('xmcl', ({ request, response }) => {
+      const parsed = request.url
       if (parsed.host === 'launcher' && parsed.pathname === '/peer') {
         const params = parsed.searchParams
         const group = params.get('group')
+
         if (!group) {
           this.warn(`Ignore illegal peer join for group=${group}`)
-          return false
+          response.status = 400
         } else {
           this.joinGroup(group)
-          return true
+          response.status = 200
         }
       }
-      return false
     })
 
     this.broadcaster.bind()
@@ -204,6 +223,9 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       },
       getSharedInstance: () => this.sharedManifest,
       getShadedInstancePath: () => this.shareInstancePath,
+      getSharedImagePath: (image) => {
+        return join(this.imageStorage.root, image)
+      },
     }, this)
 
     if (remoteId) {
@@ -320,7 +342,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           if (!peer) {
             throw new Error()
           }
-          return peer.createDownloadStream(filePath)
+          return peer.createReadStream(filePath)
         }
 
         this._total = this.total
@@ -328,7 +350,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
         this.update(0)
         await ensureFile(this.destination)
 
-        let valid = (await self.worker().checksum(this.destination, 'sha1')) === this.sha1
+        let valid = (await self.worker.checksum(this.destination, 'sha1')) === this.sha1
         let limit = 3
         while (!valid && limit > 0) {
           this.stream = createDownloadStream(this.url)
@@ -336,11 +358,11 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
             this.update(buf.length)
           })
           await pipeline(this.stream, createWriteStream(this.destination))
-          valid = (await self.worker().checksum(this.destination, 'sha1')) === this.sha1
+          valid = (await self.worker.checksum(this.destination, 'sha1')) === this.sha1
           limit -= 1
         }
         if (!valid) {
-          throw new ChecksumNotMatchError('sha1', this.sha1, await self.worker().checksum('sha1', this.destination), this.destination)
+          throw new ChecksumNotMatchError('sha1', this.sha1, await self.worker.checksum('sha1', this.destination), this.destination)
         }
         return true
       }

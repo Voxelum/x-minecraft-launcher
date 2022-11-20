@@ -7,7 +7,7 @@
   >
     <v-avatar :left="!!quiltLoader">
       <img
-        :src="'image:builtin:quilt'"
+        :src="'image://builtin/quilt'"
       >
     </v-avatar>
     <div v-if="quiltLoader">

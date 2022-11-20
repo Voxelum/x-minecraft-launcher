@@ -26,8 +26,8 @@ export default class ServiceManager extends Manager {
   constructor(app: LauncherApp, private preloadServices: ServiceConstructor[]) {
     super(app)
 
-    this.app.handle('service-call', (e, service: string, name: string, payload: any) => this.handleServiceCall(e.sender, service, name, payload))
-    this.app.handle('session', (_, id) => this.startServiceCall(id))
+    this.app.controller.handle('service-call', (e, service: string, name: string, payload: any) => this.handleServiceCall(e.sender, service, name, payload))
+    this.app.controller.handle('session', (_, id) => this.startServiceCall(id))
 
     for (const type of preloadServices) {
       const key = getServiceKey(type)

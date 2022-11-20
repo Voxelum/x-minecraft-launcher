@@ -61,7 +61,7 @@ export function createShortcutWin32(app: LauncherApp, exePath: string, outputDir
     iconIndex: 0,
   }
 
-  return app.createShortcut(outputPath, options)
+  return app.shell.createShortcut(outputPath, options)
 }
 
 export async function installWin32(url: string, appDir: string, man: AppManifest): Promise<InstalledAppManifest> {

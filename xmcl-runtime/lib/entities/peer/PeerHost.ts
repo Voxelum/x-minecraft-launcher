@@ -5,6 +5,7 @@ export interface PeerHost {
   getUserInfo(): ConnectionUserInfo
   getSharedInstance(): InstanceManifest | undefined
   getShadedInstancePath(): string
+  getSharedImagePath(image: string): string
 
   onIdentity(id: string, info: ConnectionUserInfo): void
   onInstanceShared(id: string, manifest: InstanceManifest): void

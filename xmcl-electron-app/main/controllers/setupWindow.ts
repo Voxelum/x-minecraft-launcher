@@ -14,7 +14,7 @@ export const setupWindow: ControllerPlugin = function (this: Controller) {
       getDiskInfo().then(resolve, () => resolve([]))
       setTimeout(() => { resolve([]) }, 4000)
     })
-    const defaultPath = join(this.app.getPath('home'), '.xmcl')
+    const defaultPath = join(this.app.host.getPath('home'), '.xmcl')
     const getPath = (driveSymbol: string) => {
       const parsedHome = parse(defaultPath)
       if (parsedHome.root.toLocaleLowerCase().startsWith(driveSymbol.toLocaleLowerCase())) {
@@ -23,7 +23,7 @@ export const setupWindow: ControllerPlugin = function (this: Controller) {
       return join(driveSymbol, '.xmcl')
     }
     return {
-      locale: this.app.getLocale(),
+      locale: this.app.host.getLocale(),
       minecraftPath: this.app.minecraftDataPath,
       defaultPath,
       drives: drives.map(d => ({

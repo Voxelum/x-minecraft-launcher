@@ -1,15 +1,15 @@
 import { getPlatform } from '@xmcl/core'
-import { InstalledAppManifest, ReleaseInfo } from '@xmcl/runtime-api'
-import { Task } from '@xmcl/task'
+import { InstalledAppManifest } from '@xmcl/runtime-api'
 import { ClassicLevel } from 'classic-level'
 import { EventEmitter } from 'events'
 import { ensureDir, readFile, writeFile } from 'fs-extra'
+import { createServer, Server } from 'http'
 import { join } from 'path'
-import type { Readable } from 'stream'
+import { Readable } from 'stream'
+import { pipeline } from 'stream/promises'
 import { setTimeout } from 'timers/promises'
 import { URL } from 'url'
 import { IS_DEV, LAUNCHER_NAME } from '../constant'
-import { Client } from '../engineBridge'
 import { Manager } from '../managers'
 import LogManager from '../managers/LogManager'
 import NetworkManager from '../managers/NetworkManager'
@@ -17,17 +17,23 @@ import SemaphoreManager from '../managers/SemaphoreManager'
 import ServiceManager from '../managers/ServiceManager'
 import ServiceStateManager from '../managers/ServiceStateManager'
 import TaskManager from '../managers/TaskManager'
-import TelemetryManager from '../managers/TelemetryManager'
-import WorkerManager from '../managers/WorkerManager'
+import { plugins } from '../plugins'
 import { AbstractService, ServiceConstructor } from '../services/Service'
 import { isSystemError } from '../util/error'
-import { ImageStorage } from '../util/imageStore'
 import { ObjectFactory } from '../util/objectRegistry'
 import { createPromiseSignal } from '../util/promiseSignal'
+import { listen } from '../util/server'
 import { Host } from './Host'
 import { LauncherAppController } from './LauncherAppController'
 import { LauncherAppManager } from './LauncherAppManager'
+import { LauncherAppUpdater } from './LauncherAppUpdater'
+import { LauncherProtocolHandler } from './LauncherProtocolHandler'
+import { Shell } from './Shell'
 import { LauncherAppKey } from './utils'
+
+export interface LauncherAppPlugin {
+  (app: LauncherApp): void
+}
 
 export interface Platform {
   /**
@@ -64,7 +70,7 @@ export interface LauncherApp {
   emit(channel: 'service-ready', service: AbstractService): boolean
 }
 
-export abstract class LauncherApp extends EventEmitter {
+export class LauncherApp extends EventEmitter {
   /**
    * Launcher %APPDATA%/xmcl path
    */
@@ -93,8 +99,6 @@ export abstract class LauncherApp extends EventEmitter {
   readonly serviceManager: ServiceManager
   readonly serviceStateManager: ServiceStateManager
   readonly taskManager: TaskManager
-  readonly telemetryManager: TelemetryManager
-  readonly workerManager: WorkerManager
   readonly semaphoreManager: SemaphoreManager
   readonly launcherAppManager: LauncherAppManager
 
@@ -104,64 +108,101 @@ export abstract class LauncherApp extends EventEmitter {
 
   readonly env = process.env.BUILD_TARGET === 'appx' ? 'appx' : process.env.BUILD_TARGET === 'appimage' ? 'appimage' : 'raw'
 
-  get version() { return this.getHost().getVersion() }
+  get version() { return this.host.getVersion() }
 
   protected managers: Manager[]
 
-  abstract readonly host: Host
+  readonly protocol = new LauncherProtocolHandler()
 
-  abstract readonly controller: LauncherAppController
+  readonly server: Server = createServer((req, res) => {
+    this.protocol.handle({
+      method: req.method,
+      url: new URL(req.url ?? '/', 'xmcl://launcher'),
+      headers: req.headers,
+      body: req,
+    }).then((resp) => {
+      res.statusCode = resp.status
+      for (const [k, v] of Object.entries(resp.headers)) {
+        res.setHeader(k, v)
+      }
+      if (resp.body instanceof Readable) {
+        pipeline(resp.body, res)
+      } else {
+        res.end(resp.body)
+      }
+    }, (e) => {
+      res.statusCode = 500
+      res.end()
+    })
+  })
 
-  abstract readonly builtinAppManifest: InstalledAppManifest
+  readonly gamePathReadySignal = createPromiseSignal()
 
-  abstract getAppInstallerStartUpUrl(): string
+  readonly gamePathMissingSignal = createPromiseSignal<boolean>()
 
-  abstract getPreloadServices(): ServiceConstructor[]
+  /**
+   * The controller is response to keep the communication between main process and renderer process
+   */
+  readonly controller: LauncherAppController
+  /**
+   * The updater of the launcher
+   */
+  readonly updater: LauncherAppUpdater
 
-  protected urlHandlers: Array<(url: string) => boolean> = []
-  protected urlResourceResolvers: Array<(url: string) => string | Buffer | Readable> = []
-
-  constructor() {
+  constructor(
+    readonly host: Host,
+    readonly shell: Shell,
+    getController: (app: LauncherApp) => LauncherAppController,
+    getUpdater: (app: LauncherApp) => LauncherAppUpdater,
+    readonly builtinAppManifest: InstalledAppManifest,
+    readonly preloads: ServiceConstructor[],
+  ) {
     super()
     this.gameDataPath = ''
     this.temporaryPath = ''
-
-    const appData = this.getHost().getPath('appData')
+    const appData = host.getPath('appData')
 
     this.appDataPath = join(appData, LAUNCHER_NAME)
     this.minecraftDataPath = join(appData, this.platform.name === 'osx' ? 'minecraft' : '.minecraft')
 
+    this.logManager = new LogManager(this)
     this.registry.register(LauncherAppKey, this)
     this.registry.register(ClassicLevel, new ClassicLevel(join(this.appDataPath, 'resources'), { keyEncoding: 'hex', valueEncoding: 'json' }))
-    this.registry.register(ImageStorage, new ImageStorage(join(this.appDataPath, 'resource-images')))
 
-    this.logManager = new LogManager(this)
+    for (const plugin of plugins) {
+      plugin(this)
+    }
 
-    this.serviceManager = new ServiceManager(this, this.getPreloadServices())
+    this.controller = getController(this)
+    this.updater = getUpdater(this)
+
+    this.serviceManager = new ServiceManager(this, preloads)
     this.serviceStateManager = new ServiceStateManager(this)
     this.networkManager = new NetworkManager(this, this.serviceManager, this.serviceStateManager)
 
     this.taskManager = new TaskManager(this)
-    this.telemetryManager = new TelemetryManager(this)
-    this.workerManager = new WorkerManager(this)
     this.semaphoreManager = new SemaphoreManager(this)
     this.launcherAppManager = new LauncherAppManager(this)
 
-    this.managers = [this.networkManager, this.taskManager, this.serviceStateManager, this.serviceManager, this.telemetryManager, this.workerManager, this.semaphoreManager, this.launcherAppManager, this.logManager]
+    this.managers = [this.networkManager, this.taskManager, this.serviceStateManager, this.serviceManager, this.semaphoreManager, this.launcherAppManager, this.logManager]
 
     const logger = this.logManager.getLogger('App')
     this.log = logger.log
     this.warn = logger.warn
     this.error = logger.error
+
+    this.localhostServerPort = listen(this.server, 25555, (cur) => cur + 7)
   }
 
   readonly registry: ObjectFactory = new ObjectFactory()
   private initialInstance = ''
   private preferredLocale = ''
 
-  readonly localhostServerPort = createPromiseSignal<number>()
+  readonly localhostServerPort: Promise<number>
 
-  abstract getHost(): Host
+  getAppInstallerStartUpUrl(): string {
+    return ''
+  }
 
   getInitialInstance() {
     return this.initialInstance
@@ -169,113 +210,6 @@ export abstract class LauncherApp extends EventEmitter {
 
   getPreferredLocale() {
     return this.preferredLocale
-  }
-
-  /**
-   * Register the handler for external url activate the app
-   * @param handler The external url
-   */
-  registerUrlHandler(handler: (url: string) => boolean) {
-    this.urlHandlers.push(handler)
-  }
-
-  /**
-   * Register the handler for internal resource
-   */
-  registerResourceUrlResolver(resolver: (url: string) => string | Buffer | Readable) {
-    this.urlResourceResolvers.push(resolver)
-  }
-
-  /**
-   * Broadcast a event with payload to client.
-   *
-   * @param channel The event channel to client
-   * @param payload The event payload to client
-   */
-  abstract broadcast(channel: string, ...payload: any[]): void
-
-  /**
-   * Handle a invoke operation from client
-   *
-   * @param channel The invoke channel to listen
-   * @param handler The listener callback will be called during this event received
-   */
-  abstract handle(channel: string, handler: (event: { sender: Client }, ...args: any[]) => any): void
-
-  /**
-   * A safe method that only open directory. If the `path` is a file, it won't execute it.
-   * @param file The directory path
-   */
-  abstract openDirectory(path: string): Promise<boolean>
-
-  /**
-   * Try to open a url in default browser. It will popup a message dialog to let user know.
-   * If user does not trust the url, it won't open the site.
-   * @param url The pending url
-   */
-  abstract openInBrowser(url: string): Promise<boolean>
-
-  /**
-   * Show the item in folder
-   * @param path The file path to show.
-   */
-  abstract showItemInFolder(path: string): void
-
-  abstract createShortcut(path: string, link: {
-    /**
-     * The Application User Model ID. Default is empty.
-     */
-    appUserModelId?: string
-    /**
-     * The arguments to be applied to `target` when launching from this shortcut.
-     * Default is empty.
-     */
-    args?: string
-    /**
-     * The working directory. Default is empty.
-     */
-    cwd?: string
-    /**
-     * The description of the shortcut. Default is empty.
-     */
-    description?: string
-    /**
-     * The path to the icon, can be a DLL or EXE. `icon` and `iconIndex` have to be set
-     * together. Default is empty, which uses the target's icon.
-     */
-    icon?: string
-    /**
-     * The resource ID of icon when `icon` is a DLL or EXE. Default is 0.
-     */
-    iconIndex?: number
-    /**
-     * The target to launch from this shortcut.
-     */
-    target: string
-    /**
-     * The Application Toast Activator CLSID. Needed for participating in Action
-     * Center.
-     */
-    toastActivatorClsid?: string
-  }): boolean
-
-  getLocale(): string { return this.host.getLocale() }
-
-  getLocaleCountryCode(): string { return this.host.getLocaleCountryCode() }
-
-  /**
-   * Handle the url activate the app
-   * @param url The url input
-   */
-  handleUrl(url: string) {
-    this.log(`Handle url ${url}`)
-    for (const handler of this.urlHandlers) {
-      if (handler(url)) {
-        return true
-      }
-    }
-    this.warn(`Unknown url ${url}`)
-    return false
   }
 
   /**
@@ -301,31 +235,9 @@ export abstract class LauncherApp extends EventEmitter {
     this.host.exit(code)
   }
 
-  /**
-   * Get the system provided path
-   */
-  getPath(key: 'home' | 'appData' | 'userData' | 'sessionData' | 'temp' | 'exe' | 'module' | 'desktop' | 'documents' | 'downloads' | 'music' | 'pictures' | 'videos' | 'recent' | 'logs' | 'crashDumps'): string {
-    return this.host.getPath(key)
-  }
-
   waitEngineReady(): Promise<void> {
     return this.host.whenReady()
   }
-
-  /**
-   * Check update for the x-minecraft-launcher-core
-   */
-  abstract checkUpdateTask(): Task<ReleaseInfo>
-
-  /**
-   * Download the update to the disk. You should first call `checkUpdate`
-   */
-  abstract downloadUpdateTask(updateInfo: ReleaseInfo): Task<void>
-
-  /**
-   * Install update and quit the app.
-   */
-  abstract installUpdateAndQuit(updateInfo: ReleaseInfo): Promise<void>
 
   relaunch(): void { this.host.relaunch() }
 
@@ -338,77 +250,6 @@ export abstract class LauncherApp extends EventEmitter {
   // setup code
 
   async start(): Promise<void> {
-    // const proxy = new ProxyDispatcher({
-    //   factory(connect) {
-    //     const downloadAgent = new Agent({
-    //       bodyTimeout: 15_000,
-    //       headersTimeout: 10_000,
-    //       connectTimeout: 10_000,
-    //       connect,
-    //       factory(origin, opts: Agent.Options) {
-    //         const dispatcher = new Pool(origin, opts)
-    //         const keys = Reflect.ownKeys(dispatcher)
-    //         const sym = keys.find(k => typeof k === 'symbol' && k.description === 'connections')
-    //         if (sym) { Object.defineProperty(dispatcher, sym, { get: () => 16 }) }
-    //         return dispatcher
-    //       },
-    //     })
-    //     const apiAgent = new Agent({
-    //       pipelining: 6,
-    //       bodyTimeout: 10_000,
-    //       headersTimeout: 10_000,
-    //       connectTimeout: 10_000,
-    //       connect,
-    //       factory(origin, opts: Agent.Options) {
-    //         let dispatcher: Dispatcher | undefined
-    //         // for (const factory of apiClientFactories) { dispatcher = factory(origin, opts) }
-    //         if (!dispatcher) { dispatcher = new Pool(origin, opts) }
-    //         if (dispatcher instanceof Pool) {
-    //           const keys = Reflect.ownKeys(dispatcher)
-    //           const kConnections = keys.find(k => typeof k === 'symbol' && k.description === 'connections')
-    //           if (kConnections) { Object.defineProperty(dispatcher, kConnections, { get: () => 16 }) }
-    //         }
-    //         return dispatcher
-    //       },
-    //     })
-    //     return new BiDispatcher(downloadAgent, apiAgent)
-    //   },
-    // })
-
-    // const dispatcher = new CacheDispatcher(proxy, new JsonCacheStorage({
-    //   get(k) { return store[k] },
-    //   async put(k, v) { store[k] = v },
-    // }))
-    // {
-    //   const res = request('https://authserver.ely.by/api/authlib-injector/sessionserver/session/minecraft/profile/42a0074dea15474cb7933bf0ad55fd75?unsigned=true', {
-    //     method: 'GET',
-    //     dispatcher,
-    //   })
-    // }
-    // {
-    //   const res = request('https://authserver.ely.by/api/authlib-injector/sessionserver/session/minecraft/profile/42a0074dea15474cb7933bf0ad55fd75?unsigned=true', {
-    //     method: 'GET',
-    //     dispatcher,
-    //   })
-    // }
-
-    // const store: Record<string, any> = {}
-    // const form = new FormData()
-    // form.append('file', readFileSync('C:\\Users\\CIJhn\\Documents\\CI010.png'), { contentType: 'image/png', filename: 'CI010.png' })
-    // form.append('model', 'steve')
-    // const response = await request('https://authserver.ely.by/api/authlib-injector/api/user/profile/42a0074dea15474cb7933bf0ad55fd75/skin', {
-    //   method: 'PUT',
-    //   body: form.getBuffer(),
-    //   headers: {
-    //     ...form.getHeaders(),
-    //     authorization: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpYXQiOjE2NjQ5ODEwNDUsImV4cCI6MTY2NTE1Mzg0NSwic2NvcGUiOiJtaW5lY3JhZnRfc2VydmVyX3Nlc3Npb24iLCJlbHktY2xpZW50LXRva2VuIjoiYV9wb0l5aWxwaDBYaHpvY1kweUt6VHlkcm5wSTUwMzM0SUJILS1VM3pveU91OTlyY2UwenlMTm1DMXNOODlLTnFIZERSaU5ZQUZXcklXSHA3NTBvSlZtT1hIdXRVczFJIiwic3ViIjoiZWx5fDQwODMzOTMifQ.JkKj5RIcLodvFHTPnTWYcas3y4sBFziwv8ptgRj3fXSlWdLzwOPswi775u3Sh_RRnlL5yCWYIFH9AlPA3iSOZQ',
-    //   },
-    //   dispatcher: dispatcher,
-    // })
-
-    // const text = await response.body.text()
-    // console.log(text)
-
     await Promise.all([
       this.setup(),
       this.waitEngineReady().then(() => {
@@ -416,9 +257,6 @@ export abstract class LauncherApp extends EventEmitter {
       })],
     )
   }
-
-  readonly gamePathReadySignal = createPromiseSignal()
-  readonly gamePathMissingSignal = createPromiseSignal<boolean>()
 
   /**
    * Determine the root of the project. By default, it's %APPDATA%/xmcl

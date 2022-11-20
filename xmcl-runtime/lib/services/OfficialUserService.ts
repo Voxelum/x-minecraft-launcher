@@ -63,7 +63,7 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
         },
         async (directRedirectToLauncher) => {
           if (IS_DEV) directRedirectToLauncher = true
-          const port = await app.localhostServerPort.promise ?? 25555
+          const port = await app.localhostServerPort ?? 25555
           return (directRedirectToLauncher ? `http://localhost:${port}/auth` : `https://xmcl.app/auth?port=${port}`)
         },
         (response) => {
@@ -136,8 +136,8 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
       setSkin: system.setSkin.bind(system),
     })
 
-    app.registerUrlHandler((url) => {
-      const parsed = new URL(url, 'xmcl://launcher')
+    app.protocol.registerHandler('xmcl', ({ request, response }) => {
+      const parsed = request.url
       if (parsed.host === 'launcher' && parsed.pathname === '/auth') {
         let error: Error | undefined
         if (parsed.searchParams.get('error')) {
@@ -148,9 +148,8 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
         }
         const code = parsed.searchParams.get('code') as string
         this.emit('microsoft-authorize-code', error, code)
-        return true
+        response.status = 200
       }
-      return false
     })
   }
 

@@ -64,7 +64,7 @@
         >
           <v-avatar left>
             <img
-              :src="'image:builtin:optifine'"
+              :src="'image://builtin/optifine'"
             >
           </v-avatar>
           <div>

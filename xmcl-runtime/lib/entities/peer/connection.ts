@@ -2,9 +2,10 @@ import { randomUUID } from 'crypto'
 import { createReadStream, existsSync } from 'fs'
 import debounce from 'lodash.debounce'
 import { createConnection } from 'net'
-import { DataChannel, DataChannelStream, DescriptionType, PeerConnection } from 'node-datachannel'
+import { DataChannel, DescriptionType, PeerConnection } from 'node-datachannel'
 import { join } from 'path'
 import { Readable } from 'stream'
+import { Logger } from '../../util/log'
 import { MessageGetSharedManifestEntry, MessageShareManifestEntry } from './messages/download'
 import { MessageHeartbeatPing, MessageHeartbeatPingEntry, MessageHeartbeatPongEntry } from './messages/heartbeat'
 import { MessageIdentity, MessageIdentityEntry } from './messages/identity'
@@ -13,8 +14,6 @@ import { MessageEntry, MessageHandler, MessageType } from './messages/message'
 import { PeerHost } from './PeerHost'
 import { ServerProxy } from './ServerProxy'
 import { iceServers } from './stun'
-import { Logger } from '/@main/util/log'
-import { createPromiseSignal } from '/@main/util/promiseSignal'
 
 const getRegistry = (entries: MessageEntry<any>[]) => {
   const reg: Record<string, MessageHandler<any>> = {}
@@ -103,34 +102,43 @@ export class PeerSession {
         this.setChannel(channel)
         this.logger.log('Metadata channel created')
       } else if (protocol === 'download') {
-        this.logger.log(`Receive peer file request: ${label}`)
-        let fileName = unescape(label)
-        if (fileName.startsWith('/')) {
-          fileName = fileName.substring(1)
+        this.logger.log(`Receive peer download request: ${label}`)
+        const path = unescape(label)
+        const createStream = (filePath: string) => {
+          if (filePath.startsWith('/sharing')) {
+            filePath = filePath.substring('/sharing'.length)
+            if (filePath.startsWith('/')) {
+              filePath = filePath.substring(1)
+            }
+            const man = this.host.getSharedInstance()
+            if (!man) {
+              return 'NO_PERMISSION'
+            }
+            if (!man.files.some(v => v.path === filePath)) {
+              return 'NO_PERMISSION'
+            }
+            const absPath = join(this.host.getShadedInstancePath(), filePath)
+            if (!existsSync(absPath)) {
+              return 'NOT_FOUND'
+            }
+            return createReadStream(absPath)
+          } else if (filePath.startsWith('/image')) {
+            filePath = filePath.substring('/image'.length)
+            if (filePath.startsWith('/')) {
+              filePath = filePath.substring(1)
+            }
+            return createReadStream(host.getSharedImagePath(filePath))
+          }
+          return 'NOT_FOUND'
         }
-        const sharedManifest = this.host.getSharedInstance()
-        const createStream = (file: string) => {
-          const man = sharedManifest
-          if (!man) {
-            return 'NO_PERMISSION'
-          }
-          if (!man.files.some(v => v.path === file)) {
-            return 'NO_PERMISSION'
-          }
-          const filePath = join(this.host.getShadedInstancePath(), file)
-          if (!existsSync(filePath)) {
-            return 'NOT_FOUND'
-          }
-          return createReadStream(filePath)
-        }
-        const result = createStream(fileName)
+        const result = createStream(path)
         if (typeof result === 'string') {
           // reject the file
-          this.logger.log(`Reject peer file request ${fileName} due to ${result}`)
+          this.logger.log(`Reject peer file request ${path} due to ${result}`)
           channel.sendMessage(result)
           channel.close()
         } else {
-          this.logger.log(`Process peer file request: ${fileName}`)
+          this.logger.log(`Process peer file request: ${path}`)
           result.on('data', (data: Buffer) => {
             channel.sendMessageBinary(data)
           })
@@ -167,7 +175,7 @@ export class PeerSession {
     this.setChannel(this.connection.createDataChannel(this.id, { ordered: true, protocol: 'metadata' }))
   }
 
-  createDownloadStream(file: string) {
+  createReadStream(file: string) {
     const readable = new Readable({
       read() {
       },

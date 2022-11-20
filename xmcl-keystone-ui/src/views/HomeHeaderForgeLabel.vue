@@ -7,7 +7,7 @@
   >
     <v-avatar :left="!!forge">
       <img
-        :src="'image:builtin:forge'"
+        :src="'image://builtin/forge'"
         alt="forge"
       >
     </v-avatar>

@@ -67,7 +67,7 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
   }
 
   async showDirectory(): Promise<void> {
-    await this.app.openDirectory(join(this.instanceService.state.path, 'mods'))
+    await this.app.shell.openDirectory(join(this.instanceService.state.path, 'mods'))
   }
 
   private async scanMods(dir: string) {

@@ -5,6 +5,7 @@ import { readFile, readJSON } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { kWorker, WorkerInterface } from '../entities/worker'
 import { exists } from '../util/fs'
 import { Inject } from '../util/objectRegistry'
 import { DiagnoseService } from './DiagnoseService'
@@ -20,6 +21,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(VersionService) private versionService: VersionService,
+    @Inject(kWorker) private worker: WorkerInterface,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
     @Inject(InstallService) private installService: InstallService,
   ) {
@@ -222,7 +224,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
 
   async diagnoseLibraries(builder: IssueReportBuilder, currentVersion: ResolvedVersion, minecraft: MinecraftFolder) {
     this.log(`Diagnose for version ${currentVersion.id} libraries`)
-    const librariesIssues = await diagnoseLibraries(currentVersion, minecraft, { strict: false, checksum: this.worker().checksum })
+    const librariesIssues = await diagnoseLibraries(currentVersion, minecraft, { strict: false, checksum: this.worker.checksum })
     builder.set(LibrariesIssueKey)
     if (librariesIssues.length > 0) {
       builder.set(LibrariesIssueKey, { version: currentVersion.id, libraries: librariesIssues })
@@ -245,7 +247,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     const objects: Record<string, { hash: string; size: number }> = (await readFile(minecraft.getAssetsIndex(currentVersion.assets), 'utf-8').then((b) => JSON.parse(b.toString()))).objects
 
     builder.set(AssetsIssueKey)
-    const assetsIssues = await diagnoseAssets(objects, minecraft, { strict, checksum: this.worker().checksum })
+    const assetsIssues = await diagnoseAssets(objects, minecraft, { strict, checksum: this.worker.checksum })
 
     if (assetsIssues.length > 0) {
       builder.set(AssetsIssueKey, { version: currentVersion.id, assets: assetsIssues })

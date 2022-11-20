@@ -1,9 +1,8 @@
-import { LauncherApp, LauncherAppController } from '@xmcl/runtime'
-import { InstalledAppManifest, ReleaseInfo } from '@xmcl/runtime-api'
-import { Host } from '@xmcl/runtime/lib/app/Host'
-import { AbstractService, ServiceConstructor } from '@xmcl/runtime/lib/services/Service'
+import { LauncherApp } from '@xmcl/runtime'
+import { ReleaseInfo } from '@xmcl/runtime-api'
+import { Shell } from '@xmcl/runtime/lib/app/Shell'
 import { Task } from '@xmcl/task'
-import { app, BrowserWindow, ipcMain, shell } from 'electron'
+import { app, shell } from 'electron'
 import { join } from 'path'
 import { URL } from 'url'
 import Controller from './Controller'
@@ -11,51 +10,11 @@ import defaultApp from './defaultApp'
 import { preloadServices } from './preloadServices'
 import { DownloadAppInstallerTask } from './utils/appinstaller'
 import { isDirectory } from './utils/fs'
-import { checkUpdateTask as _checkUpdateTask, DownloadAsarUpdateTask, DownloadFullUpdateTask, quitAndInstallAsar, quitAndInstallFullUpdate, setup } from './utils/updater'
+import { ElectronUpdater, setup } from './utils/updater'
 import { getWindowsUtils } from './utils/windowsUtils'
 
-export default class ElectronLauncherApp extends LauncherApp {
-  host: Host = app
-
-  controller: LauncherAppController = new Controller(this)
-
-  builtinAppManifest: InstalledAppManifest = defaultApp
-
+class ElectronShell implements Shell {
   showItemInFolder = shell.showItemInFolder
-
-  handle(...payload: any[]) {
-    return ipcMain.handle(payload[0], payload[1])
-  }
-
-  windowsUtils = getWindowsUtils(this)
-
-  getHost(): Host {
-    return app
-  }
-
-  /**
-   * Push a event with payload to client.
-   *
-   * @param channel The event channel to client
-   * @param payload The event payload to client
-   */
-  broadcast(channel: string, ...payload: any[]): void {
-    BrowserWindow.getAllWindows().forEach(w => {
-      try {
-        w.webContents.send(channel, ...payload)
-      } catch (e) {
-        this.warn(`Drop message to ${channel} to ${w.getTitle()} as`)
-        if (e instanceof Error) {
-          this.warn(e)
-        }
-      }
-    })
-  }
-
-  /**
-   * A safe method that only open directory. If the `path` is a file, it won't execute it.
-   * @param file The directory path
-   */
   async openDirectory(path: string) {
     if (await isDirectory(path)) {
       return shell.openPath(path).then(r => r !== '')
@@ -63,24 +22,9 @@ export default class ElectronLauncherApp extends LauncherApp {
     return false
   }
 
-  /**
-   * Try to open a url in default browser. It will popup a message dialog to let user know.
-   * If user does not trust the url, it won't open the site.
-   * @param url The pending url
-   */
   async openInBrowser(url: string) {
-    // if ([...BUILTIN_TRUSTED_SITES, ...this.trustedSites].indexOf(url) === -1) {
-    //     const result = await this.controller!.requestOpenExternalUrl(url);
-    //     if (result) {
-    //         this.trustedSites.push(url);
-    //         shell.openExternal(url);
-    //         return true;
-    //     }
-    // } else {
     await shell.openExternal(url)
     return true
-    // }
-    // return false;
   }
 
   createShortcut(path: string, details: {
@@ -130,30 +74,20 @@ export default class ElectronLauncherApp extends LauncherApp {
     // }
     return shell.writeShortcutLink(path, details)
   }
+}
 
-  checkUpdateTask(): Task<ReleaseInfo> {
-    return _checkUpdateTask.bind(this)()
+export default class ElectronLauncherApp extends LauncherApp {
+  constructor() {
+    super(app,
+      new ElectronShell(),
+      (app) => new Controller(app as ElectronLauncherApp),
+      (app) => new ElectronUpdater(app as ElectronLauncherApp),
+      defaultApp,
+      preloadServices,
+    )
   }
 
-  downloadUpdateTask(updateInfo: ReleaseInfo): Task<void> {
-    if (this.env === 'appx') {
-      return new DownloadAppInstallerTask(this)
-    }
-    if (updateInfo.incremental && this.env === 'raw') {
-      const updatePath = join(this.appDataPath, 'pending_update')
-      return new DownloadAsarUpdateTask(updatePath, updateInfo.name)
-        .map(() => undefined)
-    }
-    return new DownloadFullUpdateTask()
-  }
-
-  async installUpdateAndQuit(updateInfo: ReleaseInfo): Promise<void> {
-    if (updateInfo.incremental) {
-      await quitAndInstallAsar.bind(this)()
-    } else {
-      quitAndInstallFullUpdate()
-    }
-  }
+  windowsUtils = getWindowsUtils(this)
 
   getAppInstallerStartUpUrl(): string {
     if (this.windowsUtils) {
@@ -167,10 +101,6 @@ export default class ElectronLauncherApp extends LauncherApp {
       }
     }
     return ''
-  }
-
-  getPreloadServices(): ServiceConstructor<AbstractService>[] {
-    return preloadServices
   }
 
   waitEngineReady(): Promise<void> {
@@ -190,29 +120,16 @@ export default class ElectronLauncherApp extends LauncherApp {
 
     app.on('open-url', (event, url) => {
       event.preventDefault()
-      this.handleUrl(url)
+      this.protocol.handle({ url })
     }).on('second-instance', (e, argv) => {
       const last = argv[argv.length - 1]
       if (last.startsWith('xmcl://')) {
-        this.handleUrl(last)
+        this.protocol.handle({ url: last })
       }
     })
 
     await super.setup()
 
-    // if (this.platform.name === 'linux') {
-    //   try {
-    //     await setLinuxProtocol(app.getPath('home'), app.getPath('exe'))
-    //   } catch (e) {
-    //     this.error('Fail to set linux protocol! This might cause you cannot automatically login microsoft!')
-    //     this.error(e)
-    //   }
-    // }
-
     setup(this.serviceStateManager)
-  }
-
-  getLocale() {
-    return app.getLocale()
   }
 }

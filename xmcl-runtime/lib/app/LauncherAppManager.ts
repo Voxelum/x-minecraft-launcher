@@ -6,7 +6,6 @@ import { join } from 'path'
 import { request } from 'undici'
 import { URL } from 'url'
 import { LauncherApp } from '../app/LauncherApp'
-import { LauncherAppKey } from '../app/utils'
 import { Manager } from '../managers'
 import { isSystemError } from '../util/error'
 import { ENOENT_ERROR } from '../util/fs'
@@ -24,28 +23,25 @@ export class LauncherAppManager extends Manager implements AppsHost {
   constructor(app: LauncherApp) {
     super(app)
 
-    this.app.handle('get-installed-apps', () => this.getInstalledApps())
-    this.app.handle('install-app', (_, url) => this.installApp(url))
-    this.app.handle('uninstall-app', (_, url) => this.uninstallApp(url))
-    this.app.handle('get-app-info', (_, url) => this.getAppInfo(url))
-    this.app.handle('get-default-app', () => this.getDefaultApp())
-    this.app.handle('launch-app', (_, url) => this.bootAppByUrl(url))
-    this.app.handle('create-app-shortcut', (_, url) => this.createShortcut(url))
+    this.app.controller.handle('get-installed-apps', () => this.getInstalledApps())
+    this.app.controller.handle('install-app', (_, url) => this.installApp(url))
+    this.app.controller.handle('uninstall-app', (_, url) => this.uninstallApp(url))
+    this.app.controller.handle('get-app-info', (_, url) => this.getAppInfo(url))
+    this.app.controller.handle('get-default-app', () => this.getDefaultApp())
+    this.app.controller.handle('launch-app', (_, url) => this.bootAppByUrl(url))
+    this.app.controller.handle('create-app-shortcut', (_, url) => this.createShortcut(url))
 
-    app.registerUrlHandler((url) => {
-      const parsed = new URL(url, 'xmcl://launcher')
+    app.protocol.registerHandler('xmcl', ({ request, response }) => {
+      const parsed = request.url
       if (parsed.host === 'launcher' && parsed.pathname === '/app') {
         const params = parsed.searchParams
         const appUrl = params.get('url')
         if (appUrl) {
           this.logger.log(`Boot app from app url ${appUrl}!`)
           this.bootAppByUrl(appUrl)
-          return true
-        } else {
-          return false
+          response.status = 200
         }
       }
-      return false
     })
   }
 
@@ -82,10 +78,10 @@ export class LauncherAppManager extends Manager implements AppsHost {
       if (!appMan) {
         throw new Error(`Cannot find the app with url: ${url}`)
       }
-      createLinkWin32(this.app, this.app.getPath('exe'), this.app.getPath('desktop'), appMan, true)
+      createLinkWin32(this.app, this.app.host.getPath('exe'), this.app.host.getPath('desktop'), appMan, true)
 
-      const startMenuDir = join(this.app.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs')
-      createLinkWin32(this.app, this.app.getPath('exe'), startMenuDir, appMan, true)
+      const startMenuDir = join(this.app.host.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs')
+      createLinkWin32(this.app, this.app.host.getPath('exe'), startMenuDir, appMan, true)
     }
   }
 
@@ -135,8 +131,8 @@ export class LauncherAppManager extends Manager implements AppsHost {
     if (this.app.platform.name === 'windows') {
       const appMan = await this.getInstalledApp(url).catch(() => undefined)
       if (appMan) {
-        await removeShortcut(this.app.getPath('desktop'), appMan)
-        const startMenuDir = join(this.app.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs')
+        await removeShortcut(this.app.host.getPath('desktop'), appMan)
+        const startMenuDir = join(this.app.host.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs')
         await removeShortcut(startMenuDir, appMan)
       }
     }
@@ -165,12 +161,12 @@ export class LauncherAppManager extends Manager implements AppsHost {
       await writeFile(join(appDir, 'app.xmclx'), JSON.stringify(appMan))
 
       if (options.createDesktopShortcut) {
-        createLinkWin32(this.app, this.app.getPath('exe'), this.app.getPath('desktop'), appMan, true)
+        createLinkWin32(this.app, this.app.host.getPath('exe'), this.app.host.getPath('desktop'), appMan, true)
       }
 
       if (options.createStartMenuShortcut) {
-        const startMenuDir = join(this.app.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs')
-        createLinkWin32(this.app, this.app.getPath('exe'), startMenuDir, appMan, true)
+        const startMenuDir = join(this.app.host.getPath('appData'), 'Microsoft', 'Windows', 'Start Menu', 'Programs')
+        createLinkWin32(this.app, this.app.host.getPath('exe'), startMenuDir, appMan, true)
       }
 
       return appMan

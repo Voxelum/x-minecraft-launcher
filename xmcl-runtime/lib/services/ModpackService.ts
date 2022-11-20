@@ -11,6 +11,7 @@ import { Entry, ZipFile } from 'yauzl'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { readMetadata, resolveInstanceOptions } from '../entities/modpack'
+import { kWorker, WorkerInterface } from '../entities/worker'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { checksumFromStream, isFile, sha1ByPath } from '../util/fs'
 import { requireObject } from '../util/object'
@@ -58,6 +59,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     @Inject(VersionService) private versionService: VersionService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(InstallService) private installService: InstallService,
+    @Inject(kWorker) private worker: WorkerInterface,
     @Inject(CurseForgeService) curseforgeService: CurseForgeService,
     @Inject(InstanceInstallService) private instanceInstallService: InstanceInstallService,
   ) {
@@ -231,7 +233,7 @@ export class ModpackService extends AbstractService implements IModpackService {
         const ino = await stat(filePath)
         let resource = this.resourceService.getResourceByKey(ino.ino)
         if (!resource) {
-          const sha1 = await this.worker().checksum(filePath, 'sha1')
+          const sha1 = await this.worker.checksum(filePath, 'sha1')
           resource = this.resourceService.getResourceByKey(sha1)
         }
 
@@ -248,8 +250,8 @@ export class ModpackService extends AbstractService implements IModpackService {
               modrinthManifest?.files.push({
                 path: file.path,
                 hashes: {
-                  sha1: await this.worker().checksum(filePath, 'sha1'),
-                  sha256: await this.worker().checksum(filePath, 'sha256'),
+                  sha1: await this.worker.checksum(filePath, 'sha1'),
+                  sha256: await this.worker.checksum(filePath, 'sha256'),
                 },
                 downloads: availableDownloads,
                 fileSize: (await stat(filePath)).size,
