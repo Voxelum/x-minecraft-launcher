@@ -60,7 +60,7 @@
         size="28"
       >
         <img
-          :src="'image:builtin:minecraft'"
+          :src="'image://builtin/minecraft'"
         >
       </v-avatar>
       {{ instance.runtime.minecraft }}
@@ -70,7 +70,7 @@
           size="28"
         >
           <img
-            :src="'image:builtin:forge'"
+            :src="'image://builtin/forge'"
           >
         </v-avatar>
         {{ instance.runtime.forge }}
@@ -80,7 +80,7 @@
           size="28"
         >
           <img
-            :src="'image:builtin:fabric'"
+            :src="'image://builtin/fabric'"
           >
         </v-avatar>
         {{ instance.runtime.fabricLoader }}
@@ -90,7 +90,7 @@
           size="28"
         >
           <img
-            :src="'image:builtin:quilt'"
+            :src="'image://builtin/quilt'"
           >
         </v-avatar>
         {{ instance.runtime.quiltLoader }}
@@ -101,7 +101,7 @@
           size="28"
         >
           <img
-            :src="'image:builtin:optifine'"
+            :src="'image://builtin/optifine'"
           >
         </v-avatar>
         {{ instance.runtime.optifine }}
@@ -138,17 +138,17 @@ const favicon = computed(() => {
   }
   if (!instance.icon) {
     if (instance.runtime.forge) {
-      return 'image:builtin:forge'
+      return 'image://builtin/forge'
     } else if (instance.runtime.fabricLoader) {
-      return 'image:builtin:fabric'
+      return 'image://builtin/fabric'
     } else if (instance.runtime.quiltLoader) {
-      return 'image:builtin:quilt'
+      return 'image://builtin/quilt'
     } else if (instance.runtime.optifine) {
-      return 'image:builtin:optifine'
+      return 'image://builtin/optifine'
     } else if (instance.runtime.minecraft) {
-      return 'image:builtin:minecraft'
+      return 'image://builtin/minecraft'
     } else {
-      return 'image:builtin:craftingTable'
+      return 'image://builtin/craftingTable'
     }
   }
   return instance.icon

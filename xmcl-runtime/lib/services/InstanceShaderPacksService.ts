@@ -101,6 +101,6 @@ export class InstanceShaderPacksService extends AbstractService implements IInst
   }
 
   async showDirectory(): Promise<void> {
-    await this.app.openDirectory(join(this.instanceService.state.path, 'shaderpacks'))
+    await this.app.shell.openDirectory(join(this.instanceService.state.path, 'shaderpacks'))
   }
 }

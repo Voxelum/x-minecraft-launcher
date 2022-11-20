@@ -55,7 +55,7 @@
     <v-list-item v-if="showMinecraft">
       <v-list-item-action class="self-center">
         <img
-          :src="'image:builtin:minecraft'"
+          :src="'image://builtin/minecraft'"
           width="40"
         >
         <!-- <v-checkbox /> -->
@@ -102,7 +102,7 @@
     <v-list-item>
       <v-list-item-action class="self-center">
         <img
-          :src="'image:builtin:forge'"
+          :src="'image://builtin/forge'"
           width="40"
         >
       </v-list-item-action>
@@ -147,7 +147,7 @@
     <v-list-item>
       <v-list-item-action class="self-center">
         <img
-          :src="'image:builtin:fabric'"
+          :src="'image://builtin/fabric'"
           width="40"
         >
       </v-list-item-action>
@@ -188,7 +188,7 @@
     <v-list-item>
       <v-list-item-action class="self-center">
         <img
-          :src="'image:builtin:quilt'"
+          :src="'image://builtin/quilt'"
           style="width: 40px"
         >
       </v-list-item-action>
@@ -226,7 +226,7 @@
     <v-list-item>
       <v-list-item-action class="self-center">
         <img
-          :src="'image:builtin:optifine'"
+          :src="'image://builtin/optifine'"
           width="40px"
         >
       </v-list-item-action>

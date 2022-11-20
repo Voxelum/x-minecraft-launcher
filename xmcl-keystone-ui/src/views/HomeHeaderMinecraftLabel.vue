@@ -7,7 +7,7 @@
   >
     <v-avatar left>
       <img
-        :src="'image:builtin:minecraft'"
+        :src="'image://builtin/minecraft'"
       >
     </v-avatar>
     Minecraft

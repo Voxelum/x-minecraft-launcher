@@ -6,7 +6,7 @@
     @click="onClick()"
   >
     <v-avatar :left="!!fabricLoader">
-      <img :src="'image:builtin:fabric'">
+      <img :src="'image://builtin/fabric'">
     </v-avatar>
     <div v-if="fabricLoader">
       Fabric

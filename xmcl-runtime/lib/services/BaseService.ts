@@ -5,6 +5,7 @@ import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { IS_DEV } from '../constant'
+import { kTelemtrySession } from '../entities/telemetry'
 import { isSystemError } from '../util/error'
 import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
@@ -15,7 +16,9 @@ import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 export class BaseService extends StatefulService<BaseState> implements IBaseService {
   private settingFile = createSafeFile(this.getAppDataPath('setting.json'), SettingSchema, this, [this.getPath('setting.json')])
 
-  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
+  constructor(
+  @Inject(LauncherAppKey) app: LauncherApp,
+  ) {
     super(app, () => {
       const state = new BaseState()
       state.version = app.version
@@ -25,8 +28,9 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
       return state
     }, async () => {
       const data = await this.settingFile.read()
-      data.locale = data.locale || this.app.getPreferredLocale() || this.app.getLocale()
+      data.locale = data.locale || this.app.getPreferredLocale() || this.app.host.getLocale()
       this.state.config(data)
+      this.checkUpdate()
     })
     app.gamePathReadySignal.promise.then(() => {
       this.state.root = app.gameDataPath
@@ -70,7 +74,11 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
 
   async handleUrl(url: string) {
     this.emit('url-drop', url)
-    return this.app.handleUrl(url)
+    const response = await this.app.protocol.handle({ url })
+    if (response.status >= 200 && response.status < 300) {
+      return true
+    }
+    return false
   }
 
   /**
@@ -79,15 +87,15 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
    * @param url The pending url
    */
   openInBrowser(url: string) {
-    return this.app.openInBrowser(url)
+    return this.app.shell.openInBrowser(url)
   }
 
   /**
    * A electron provided function to show item in directory
-   * @param path The path to the file item
+   * @param item The path to the file item
    */
   showItemInDirectory(item: string) {
-    this.app.showItemInFolder(item)
+    this.app.shell.showItemInFolder(item)
   }
 
   /**
@@ -95,7 +103,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
    * @param path The directory path.
    */
   openDirectory(path: string) {
-    return this.app.openDirectory(path)
+    return this.app.shell.openDirectory(path)
   }
 
   /**
@@ -104,7 +112,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
   @Singleton()
   async quitAndInstall() {
     if (this.state.updateStatus === 'ready' && this.state.updateInfo) {
-      await this.app.installUpdateAndQuit(this.state.updateInfo)
+      await this.app.updater.installUpdateAndQuit(this.state.updateInfo)
     } else {
       this.warn('There is no update available!')
     }
@@ -118,7 +126,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
     if (IS_DEV) return
     try {
       this.log('Check update')
-      const info = await this.submit(this.app.checkUpdateTask())
+      const info = await this.submit(this.app.updater.checkUpdateTask())
       this.state.updateInfoSet(info)
       if (info.newUpdate) {
         this.state.updateStatusSet('pending')
@@ -139,7 +147,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
       throw new Error('Cannot download update if we don\'t check the version update!')
     }
     this.log(`Start to download update: ${this.state.updateInfo.name} incremental=${this.state.updateInfo.incremental}`)
-    await this.submit(this.app.downloadUpdateTask(this.state.updateInfo).setName('downloadUpdate'))
+    await this.submit(this.app.updater.downloadUpdateTask(this.state.updateInfo).setName('downloadUpdate'))
     this.state.updateStatusSet('ready')
   }
 
@@ -161,7 +169,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
     }
 
     task.addBuffer(Buffer.from(JSON.stringify({
-      sessionId: this.telemetryManager.getSessionId(),
+      sessionId: this.app.registry.get(kTelemtrySession),
       platform: os.platform(),
       arch: os.arch(),
       version: os.version(),

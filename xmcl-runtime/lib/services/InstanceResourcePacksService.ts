@@ -256,6 +256,6 @@ export class InstanceResourcePackService extends AbstractService implements IIns
   }
 
   async showDirectory(): Promise<void> {
-    await this.app.openDirectory(join(this.instanceService.state.path, 'resourcepacks'))
+    await this.app.shell.openDirectory(join(this.instanceService.state.path, 'resourcepacks'))
   }
 }

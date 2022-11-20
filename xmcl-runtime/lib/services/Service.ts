@@ -149,81 +149,6 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
   }
 }
 
-/**
- * A service method decorator to make sure this service call should run in singleton -- no second call at the time.
- * The later call will wait the first call end and return the first call result.
- */
-export function Expose<T extends AbstractService>(options: {
-  serializer?: ParamSerializer<T>
-  singleton?: boolean
-  lock?: (string | string[] | MutexSerializer<T>)
-}) {
-  const { serializer = IGNORE_PARAMS, singleton = false, lock } = options
-  return function (target: T, propertyKey: string, descriptor: PropertyDescriptor) {
-    const method = descriptor.value as Function
-
-    if (!Reflect.has(target, InstanceSymbol)) {
-      Object.defineProperty(target, InstanceSymbol, { value: {} })
-    }
-    const instances: Record<string, Promise<any> | undefined> = Reflect.get(target, InstanceSymbol)
-
-    descriptor.value = function (this: T, ...args: any[]) {
-      const exec = () => {
-        try {
-          const result = method.apply(this, args)
-          if (result instanceof Promise) {
-            return result
-          } else {
-            return Promise.resolve(result)
-          }
-        } catch (e) {
-          return Promise.reject(e)
-        }
-      }
-
-      if (lock) {
-        const keyOrKeys = typeof lock === 'function' ? lock.call(target, ...args) : lock
-        const keys = keyOrKeys instanceof Array ? keyOrKeys : [keyOrKeys]
-        const promises: Promise<() => void>[] = []
-        for (const key of keys) {
-          const lock = this.semaphoreManager.getLock(key)
-          promises.push(lock.acquireWrite())
-        }
-        this.log(`Acquire locks: ${keys.join(', ')}`)
-      }
-
-      Object.defineProperty(exec, 'name', { value: `${method.name}$Singleton$exec` })
-
-      let singletonKey: undefined | string
-      if (singleton) {
-        const serviceKey = getServiceKey(Object.getPrototypeOf(this).constructor)
-        singletonKey = getServiceSemaphoreKey(serviceKey, propertyKey, serializer.call(this, ...args))
-        const last = instances[singletonKey]
-        if (last) {
-          return last
-        }
-        this.log(`Acquire singleton ${singletonKey}`)
-        this.up(singletonKey)
-      }
-
-      const promise = exec().finally(() => {
-        if (singletonKey) {
-          this.log(`Release singleton ${singletonKey}`)
-          this.down(singletonKey)
-          delete instances[singletonKey]
-        }
-      })
-
-      if (singletonKey) {
-        instances[singletonKey] = promise
-      }
-
-      return promise
-    }
-    Object.defineProperty(descriptor.value, 'name', { value: `${method.name}$Singleton` })
-  }
-}
-
 export function ExposeServiceKey<T extends Function>(key: ServiceKey<T>) {
   return function (target: T) {
     Reflect.set(target, 'ServiceKey', key)
@@ -254,20 +179,16 @@ export abstract class AbstractService extends EventEmitter {
 
   get serviceManager() { return this.app.serviceManager }
 
-  get telemetryManager() { return this.app.telemetryManager }
-
   get taskManager() { return this.app.taskManager }
 
   get logManager() { return this.app.logManager }
 
   get storeManager() { return this.app.serviceStateManager }
 
-  get workerManager() { return this.app.workerManager }
-
   get semaphoreManager() { return this.app.semaphoreManager }
 
   emit(event: string, ...args: any[]): boolean {
-    this.app.broadcast('service-event', { service: getServiceKey(Object.getPrototypeOf(this).constructor), event, args })
+    this.app.controller.broadcast('service-event', { service: getServiceKey(Object.getPrototypeOf(this).constructor), event, args })
     return super.emit(event, ...args)
   }
 
@@ -280,13 +201,6 @@ export abstract class AbstractService extends EventEmitter {
    */
   protected submit<T>(task: Task<T>) {
     return this.taskManager.submit(task)
-  }
-
-  /**
-   * Get a worker for the code run another thread
-   */
-  protected worker() {
-    return this.workerManager.getWorker()
   }
 
   /**

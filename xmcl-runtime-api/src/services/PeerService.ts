@@ -1,5 +1,5 @@
 import { GenericEventEmitter } from '../events'
-import { InstanceManifest, InstanceManifest } from '../entities/instanceManifest.schema'
+import { InstanceManifest } from '../entities/instanceManifest.schema'
 import { ServiceKey, StatefulService } from './Service'
 import { GameProfileAndTexture } from '../entities/user.schema'
 

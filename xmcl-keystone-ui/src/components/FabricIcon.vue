@@ -1,6 +1,6 @@
 <template>
   <img
-    :src="'image:builtin:fabric'"
+    :src="'image://builtin/fabric'"
     width="24"
   >
 </template>

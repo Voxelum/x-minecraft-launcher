@@ -14,7 +14,7 @@ export default class ServiceStateManager extends Manager {
 
   constructor(app: LauncherApp) {
     super(app)
-    app.handle('sync', (_, serviceName, id) => {
+    app.controller.handle('sync', (_, serviceName, id) => {
       const service = app.serviceManager.getServiceByKey(serviceName)
       if (service) {
         return (service as AbstractService).initialize().then(() => {
@@ -25,7 +25,7 @@ export default class ServiceStateManager extends Manager {
         })
       }
     })
-    app.handle('commit', (event, serviceName, type, payload) => {
+    app.controller.handle('commit', (event, serviceName, type, payload) => {
       const stateProxy = this.registeredState[serviceName]
       stateProxy.commit(type, payload)
     })

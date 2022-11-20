@@ -14,9 +14,6 @@ export interface TransferDescription {
 }
 
 type RelayPeerMessage = {
-  type: 'HEARTBEAT'
-  id: string
-} | {
   type: 'DESCRIPTOR-ECHO'
   receiver: string
   sender: string
@@ -57,18 +54,17 @@ export class PeerGroup extends EventEmitter {
   readonly signals: Record<number, PromiseSignal<void>> = {}
 
   private messageQueue: RelayPeerMessage[] = []
+  private idBinary: Buffer
 
   #heartbeat = setInterval(() => {
     if (this.socket.readyState === this.socket.OPEN) {
-      this.send({
-        type: 'HEARTBEAT',
-        id: this.id,
-      })
+      this.socket.send(this.idBinary, { binary: true })
     }
   }, 4_000)
 
   constructor(readonly groupId: string, readonly id: string, headers?: Record<string, string>) {
     super()
+    this.idBinary = Buffer.from(id.replace(/-/g, '').match(/.{2}/g)!.map((v) => parseInt(v, 16)))
     this.socket = new WebSocket(`wss://api.xmcl.app/group/${groupId}`, {
       headers: {
         ...(headers || {}),
@@ -105,31 +101,33 @@ export class PeerGroup extends EventEmitter {
       }
     })
     socket.on('ping', heartbeat)
-    socket.on('message', (data) => {
+    socket.on('message', (data, isBinary) => {
+      if (isBinary && data instanceof Buffer) {
+        const id = [...data]
+          .map((b) => ('00' + b.toString(16)).slice(-2))
+          .join('')
+          .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5')
+        this.emit('heartbeat', id)
+        return
+      }
       try {
         const payload = JSON.parse(data.toString()) as RelayPeerMessage
-        if (payload.type === 'HEARTBEAT') {
-          if (payload.id !== id) {
-            this.emit('heartbeat', payload.id)
-          }
-        } else {
-          if (payload.receiver !== id) {
-            return
-          }
-          if (payload.type === 'DESCRIPTOR') {
-            this.send({
-              type: 'DESCRIPTOR-ECHO',
-              receiver: payload.sender,
-              sender: id,
-              id: payload.id,
-            })
-            this.emit('descriptor', payload.sender, payload.sdp, payload.sdpType, payload.candidates)
-          } else if (payload.type === 'DESCRIPTOR-ECHO') {
-            const signal = this.signals[payload.id]
-            if (signal) {
-              signal.resolve()
-              delete this.signals[payload.id]
-            }
+        if (payload.receiver !== id) {
+          return
+        }
+        if (payload.type === 'DESCRIPTOR') {
+          this.send({
+            type: 'DESCRIPTOR-ECHO',
+            receiver: payload.sender,
+            sender: id,
+            id: payload.id,
+          })
+          this.emit('descriptor', payload.sender, payload.sdp, payload.sdpType, payload.candidates)
+        } else if (payload.type === 'DESCRIPTOR-ECHO') {
+          const signal = this.signals[payload.id]
+          if (signal) {
+            signal.resolve()
+            delete this.signals[payload.id]
           }
         }
       } catch (e) {

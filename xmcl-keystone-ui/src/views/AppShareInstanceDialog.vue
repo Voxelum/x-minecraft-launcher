@@ -42,7 +42,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'image:builtin:minecraft'"
+                  :src="'image://builtin/minecraft'"
                   width="32"
                 >
               </template>
@@ -57,7 +57,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'image:builtin:forge'"
+                  :src="'image://builtin/forge'"
                   width="32"
                 >
               </template>
@@ -72,7 +72,7 @@
             >
               <template #prepend-inner>
                 <img
-                  :src="'image:builtin:fabric'"
+                  :src="'image://builtin/fabric'"
                   width="32"
                 >
               </template>

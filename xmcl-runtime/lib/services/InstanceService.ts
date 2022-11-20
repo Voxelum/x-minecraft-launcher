@@ -8,6 +8,7 @@ import { dirname, isAbsolute, join, relative, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { readLaunchProfile } from '../entities/launchProfile'
+import { kWorker, WorkerInterface } from '../entities/worker'
 import { exists, isDirectory, missing, readdirEnsured } from '../util/fs'
 import { assignShallow, requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
@@ -29,6 +30,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(UserService) private userService: UserService,
     @Inject(InstallService) private installService: InstallService,
+    @Inject(kWorker) private worker: WorkerInterface,
   ) {
     super(app, () => new InstanceState(), async () => {
       const { state } = this
@@ -461,7 +463,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
 
     // copy assets, library and versions
-    await this.worker().copyPassively([
+    await this.worker.copyPassively([
       { src: resolve(path, 'libraries'), dest: this.getPath('libraries') },
       { src: resolve(path, 'assets'), dest: this.getPath('assets') },
     ])

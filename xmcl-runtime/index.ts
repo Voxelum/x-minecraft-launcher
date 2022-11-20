@@ -40,5 +40,3 @@ export type { default as SemaphoreManager } from './lib/managers/SemaphoreManage
 export type { default as ServiceManager } from './lib/managers/ServiceManager'
 export type { default as ServiceStateManager } from './lib/managers/ServiceStateManager'
 export type { default as TaskManager } from './lib/managers/TaskManager'
-export type { default as TelemetryManager } from './lib/managers/TelemetryManager'
-export type { default as WorkerManager } from './lib/managers/WorkerManager'

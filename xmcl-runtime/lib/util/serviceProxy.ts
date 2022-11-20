@@ -36,7 +36,7 @@ export class ServiceStateProxy {
           // increment the checkpoint
           self.checkPointId += 1
           // broadcast commit event to client
-          app.broadcast('commit', serviceName, { mutation: { type: key, payload: value }, id: self.checkPointId })
+          app.controller.broadcast('commit', serviceName, { mutation: { type: key, payload: value }, id: self.checkPointId })
           // broadcast mutation to mutation subscriber
           eventBus.emit(key, value)
         }

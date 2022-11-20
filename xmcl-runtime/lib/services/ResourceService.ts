@@ -11,6 +11,7 @@ import { basename, dirname, extname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { getResourceFileName, persistResource, ResourceCache } from '../entities/resource'
+import { kWorker, WorkerInterface } from '../entities/worker'
 import { migrateToDatabase, upgradeResourceToV2 } from '../util/dataFix'
 import { checksum, copyPassively, linkOrCopy, readdirEnsured } from '../util/fs'
 import { ImageStorage } from '../util/imageStore'
@@ -83,6 +84,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ImageStorage) readonly imageStore: ImageStorage,
+    @Inject(kWorker) private worker: WorkerInterface,
     @Inject(ClassicLevel) database: ClassicLevel) {
     super(app, () => new ResourceState(), async () => {
       for (const domain of [
@@ -532,7 +534,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
         if (resource.hash) {
           result = this.getResourceByKey(resource.hash)
         } else {
-          const [sha1, fileType] = await this.worker().checksumAndFileType(resource.path, 'sha1')
+          const [sha1, fileType] = await this.worker.checksumAndFileType(resource.path, 'sha1')
           resource.hash = sha1
           resource.fileType = fileType
           result = this.getResourceByKey(sha1)
@@ -576,7 +578,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
    * @returns The new resource object with parsed metadata.
    */
   async parseResourceMetadata<T extends Resource>(resource: T): Promise<T> {
-    const { resource: result, icons } = await this.worker().parseResourceMetadata(resource)
+    const { resource: result, icons } = await this.worker.parseResourceMetadata(resource)
 
     const paths = await Promise.all(icons.map(async (icon) => this.imageStore.addImage(icon)))
     result.icons = result.icons ? ([...resource.icons!, ...paths]) : paths
@@ -598,7 +600,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     if (conflicted) {
       // Some file have the same path. Now we more trust the real file system
       // So we try to merge data in current database
-      const sha1 = await this.worker().checksum(filePath, 'sha1')
+      const sha1 = await this.worker.checksum(filePath, 'sha1')
 
       if (sha1 === resource.hash) {
         // The file is already imported...

@@ -109,7 +109,7 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
    */
   showLog(name: string) {
     const filePath = join(this.instanceService.state.path, 'logs', name)
-    this.app.showItemInFolder(filePath)
+    this.app.shell.showItemInFolder(filePath)
   }
 
   /**
@@ -118,6 +118,6 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
    */
   showCrash(name: string) {
     const filePath = join(this.instanceService.state.path, 'crash-reports', name)
-    this.app.showItemInFolder(filePath)
+    this.app.shell.showItemInFolder(filePath)
   }
 }

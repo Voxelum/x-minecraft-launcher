@@ -214,18 +214,18 @@ export class InstanceOptionsService extends StatefulService<InstanceOptionsState
   async showOptionsFileInFolder() {
     const optionTxt = join(this.watchingInstance, 'options.txt')
     if (await missing(optionTxt)) {
-      this.app.openDirectory(this.watchingInstance)
+      this.app.shell.openDirectory(this.watchingInstance)
     } else {
-      this.app.showItemInFolder(optionTxt)
+      this.app.shell.showItemInFolder(optionTxt)
     }
   }
 
   async showShaderOptionsInFolder() {
     const optionTxt = join(this.watchingInstance, 'optionsshaders.txt')
     if (await missing(optionTxt)) {
-      this.app.openDirectory(this.watchingInstance)
+      this.app.shell.openDirectory(this.watchingInstance)
     } else {
-      this.app.showItemInFolder(optionTxt)
+      this.app.shell.showItemInFolder(optionTxt)
     }
   }
 }

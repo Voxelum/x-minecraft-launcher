@@ -50,7 +50,7 @@
             >
               <v-avatar left>
                 <img
-                  :src="'image:builtin:minecraft'"
+                  :src="'image://builtin/minecraft'"
                   alt="minecraft"
                 >
               </v-avatar>
@@ -64,7 +64,7 @@
             >
               <v-avatar left>
                 <img
-                  :src="'image:builtin:forge'"
+                  :src="'image://builtin/forge'"
                   alt="forge"
                 >
               </v-avatar>
@@ -78,7 +78,7 @@
             >
               <v-avatar left>
                 <img
-                  :src="'image:builtin:fabric'"
+                  :src="'image://builtin/fabric'"
                   alt="fabric"
                 >
               </v-avatar>

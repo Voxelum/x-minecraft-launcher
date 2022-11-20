@@ -6,6 +6,7 @@ import watch from 'node-watch'
 import { basename, dirname, join, relative, sep } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { kWorker, WorkerInterface } from '../entities/worker'
 import { isDirectory, missing, readdirEnsured } from '../util/fs'
 import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
@@ -18,7 +19,9 @@ import { ExposeServiceKey, Singleton, StatefulService } from './Service'
 export class VersionService extends StatefulService<VersionState> implements IVersionService {
   private watcher: FSWatcher | undefined
 
-  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(kWorker) private worker: WorkerInterface,
+  ) {
     super(app, () => new VersionState(), async () => {
       await this.refreshVersions()
       const versions = this.getPath('versions')
@@ -70,7 +73,7 @@ export class VersionService extends StatefulService<VersionState> implements IVe
     if (mcPath === root) return
     this.log(`Try to migrate the version from ${mcPath}`)
     const copyTask = task('cloneMinecraft', async () => {
-      await this.worker().copyPassively([
+      await this.worker.copyPassively([
         { src: join(mcPath, 'libraries'), dest: join(root, 'libraries') },
         { src: join(mcPath, 'assets'), dest: join(root, 'assets') },
         { src: join(mcPath, 'versions'), dest: join(root, 'versions') },
@@ -157,11 +160,11 @@ export class VersionService extends StatefulService<VersionState> implements IVe
 
   async showVersionsDirectory() {
     const path = this.getPath('versions')
-    return this.app.openDirectory(path)
+    return this.app.shell.openDirectory(path)
   }
 
   async showVersionDirectory(version: string) {
     const path = this.getPath('versions', version)
-    return this.app.openDirectory(path)
+    return this.app.shell.openDirectory(path)
   }
 }

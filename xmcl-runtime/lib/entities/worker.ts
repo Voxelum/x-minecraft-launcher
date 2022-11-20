@@ -1,5 +1,6 @@
 import { Resource } from '@xmcl/runtime-api'
 import { FileType } from '../util/fs'
+import { InjectionKey } from '../util/objectRegistry'
 
 export interface WorkPayload {
   type: string
@@ -22,6 +23,7 @@ export interface WorkerResponse {
   result?: any
 }
 
+export const kWorker: InjectionKey<WorkerInterface> = Symbol('Worker')
 /**
  * The worker for cpu busy work
  */

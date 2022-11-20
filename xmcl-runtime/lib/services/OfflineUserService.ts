@@ -1,23 +1,19 @@
 import { OfflineUserService as IOfflineUserService, OfflineUserServiceKey, UserProfile } from '@xmcl/runtime-api'
-import { GameProfile, offline } from '@xmcl/user'
-import { Server } from 'http'
+import { offline } from '@xmcl/user'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { createOfflineYggdrasilServer } from '../servers/YggdrasilServer'
+import { ImageStorage } from '../util/imageStore'
 import { Inject } from '../util/objectRegistry'
 import { offlineModeDenylist } from '../util/offlineModeDenylist'
-import { AbstractService, ExposeServiceKey } from './Service'
 import { PeerService } from './PeerService'
+import { AbstractService, ExposeServiceKey } from './Service'
 import { UserService } from './UserService'
-import { ImageStorage } from '../util/imageStore'
-import { readFile } from 'fs/promises'
 
 const OFFLINE_USER_ID = 'OFFLINE'
 
 @ExposeServiceKey(OfflineUserServiceKey)
 export class OfflineUserService extends AbstractService implements IOfflineUserService {
   private _isAllowed = false
-  private server: Server | undefined
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ImageStorage) readonly imageStore: ImageStorage,
@@ -27,41 +23,21 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
     super(app, async () => {
       await userService.initialize()
 
-      const code = app.getLocaleCountryCode()
+      const code = app.host.getLocaleCountryCode()
 
       this._isAllowed = offlineModeDenylist.indexOf(code.toUpperCase()) === -1
       this._isAllowed = true
       if (this._isAllowed) {
-        const server = createOfflineYggdrasilServer(async (name) => {
-          const offline = userService.state.users[OFFLINE_USER_ID]
-          if (offline) {
-            const profiles = Object.values(offline.profiles)
-            const founded = profiles.find(p => p.name === name || p.id === name || p.id.replaceAll('-', '') === name)
-            if (founded) {
-              return founded
-            }
-          }
-          const founded = peerService.state.connections.map(c => c.userInfo).find(c => c.id === name || c.name === name)
-          if (founded) {
-            return founded
-          }
-          return undefined
-        }, imageStore.root)
-
-        await new Promise<void>((resolve) => {
-          server.listen(undefined, () => { resolve() })
-        })
-
         userService.registerAccountSystem('offline', {
           getYggdrasilHost: () => {
-            const address = server.address()
+            const address = app.server.address()
             if (address) {
               if (typeof address === 'string') {
-                return `http://localhost${address.substring(address.indexOf(':'))}`
+                return `http://localhost${address.substring(address.indexOf(':'))}/yggdrasil`
               }
-              return `http://localhost:${address.port}`
+              return `http://localhost:${address.port}/yggdrasil`
             }
-            this.error(`Unexpected state. The OfflineYggdrasilServer does not initialized? Listening: ${server.listening}`)
+            this.error(`Unexpected state. The OfflineYggdrasilServer does not initialized? Listening: ${app.server.listening}`)
             return ''
           },
           async login({ username, properties }) {
@@ -97,12 +73,12 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
               if (skin) {
                 let url = skin.url
                 if (!url.startsWith('http')) {
-                  let u = url
-                  if (u.startsWith('image://')) {
-                    u = url.substring('image://'.length)
-                  }
-                  url = `data:image/png;base64,${await readFile(u, 'base64')}`
-                  // url = await imageStore.addImage(url)
+                  // let u = url
+                  // if (u.startsWith('image://')) {
+                  //   u = url.substring('image://'.length)
+                  // }
+                  // url = `data:image/png;base64,${await readFile(u, 'base64')}`
+                  url = await imageStore.addImage(url)
                 }
                 gameProfile.textures.SKIN.url = url
                 gameProfile.textures.SKIN.metadata = { model: skin.slim ? 'slim' : 'steve' }
@@ -115,12 +91,12 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
               if (cape) {
                 let url = cape
                 if (!url.startsWith('http')) {
-                  let u = url
-                  if (u.startsWith('image://')) {
-                    u = url.substring('image://'.length)
-                  }
-                  url = `data:image/png;base64,${await readFile(u, 'base64')}`
-                  // url = await imageStore.addImage(url)
+                  // let u = url
+                  // if (u.startsWith('image://')) {
+                  //   u = url.substring('image://'.length)
+                  // }
+                  // url = `data:image/png;base64,${await readFile(u, 'base64')}`
+                  url = await imageStore.addImage(url)
                 }
                 gameProfile.textures.CAPE = { url }
               } else {
@@ -131,7 +107,6 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
           },
           async refresh(p) { return p },
         })
-        this.server = server
       }
     })
   }
@@ -152,10 +127,5 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
       }
     }
     this.userService.state.userProfile(builtin)
-  }
-
-  async dispose(): Promise<void> {
-    this.server?.close()
-    this.server = undefined
   }
 }

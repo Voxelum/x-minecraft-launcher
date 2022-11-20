@@ -1,4 +1,3 @@
-// import { ipcRenderer } from 'electron'
 import { defineMessage, MessageType } from './message'
 
 export const MessageHeartbeatPing: MessageType<{ time: number }> = 'heartbeat-ping'
@@ -9,5 +8,5 @@ export const MessageHeartbeatPingEntry = defineMessage(MessageHeartbeatPing, fun
 })
 
 export const MessageHeartbeatPongEntry = defineMessage(MessageHeartbeatPong, function (msg) {
-  this.host.onHeartbeat(this.id, Date.now() - msg.time)
+  this.host.onHeartbeat(this.id, Math.floor((Date.now() - msg.time) / 2))
 })

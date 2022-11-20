@@ -17,6 +17,9 @@ export class ObjectFactory {
     if (this.injections.has(Type)) {
       return this.injections.get(Type)
     }
+    if (typeof Type === 'symbol') {
+      return undefined
+    }
     const types = Reflect.get(Type, kParams)
     const params: any[] = new Array(types?.length ?? 0)
 

@@ -4,6 +4,7 @@ import { stat } from 'fs/promises'
 import { join, relative } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { kWorker, WorkerInterface } from '../entities/worker'
 import { readdirIfPresent } from '../util/fs'
 import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
@@ -19,6 +20,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(ResourceService) private resourceService: ResourceService,
+    @Inject(kWorker) private worker: WorkerInterface,
     @Inject(CurseForgeService) private curseforgeService: CurseForgeService,
     @Inject(ModrinthService) private modrinthService: ModrinthService,
   ) {
@@ -40,7 +42,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
           if (hash === 'sha1' && sha1) {
             result.sha1 = sha1
           } else {
-            result[hash] = await this.worker().checksum(file, hash)
+            result[hash] = await this.worker.checksum(file, hash)
           }
         }
       }
@@ -89,7 +91,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
         }
         if (relativePath.startsWith('resourcepacks') || relativePath.startsWith('shaderpacks') || relativePath.startsWith('mods')) {
           let resource = this.resourceService.getResourceByKey(ino)
-          const sha1 = resource?.hash ?? await this.worker().checksum(p, 'sha1')
+          const sha1 = resource?.hash ?? await this.worker.checksum(p, 'sha1')
           if (!resource) {
             resource = this.resourceService.getResourceByKey(sha1)
           }

@@ -90,9 +90,9 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       await this.userFile.write(userData)
     })
 
-    app.registerUrlHandler((url) => {
-      if (url.startsWith('authlib-injector:yggdrasil-server:')) {
-        const serverUrl = decodeURIComponent(url.substring('authlib-injector:yggdrasil-server:'.length))
+    app.protocol.registerHandler('authlib-injector', ({ request, response }) => {
+      if (request.url.pathname.startsWith('yggdrasil-server:')) {
+        const serverUrl = decodeURIComponent(request.url.pathname.substring('yggdrasil-server:'.length))
         const parsed = new URL(serverUrl)
         const domain = parsed.host
         // const userService = this.serviceManager.get(YggdrasilUserService)
@@ -109,10 +109,9 @@ export class UserService extends StatefulService<UserState> implements IUserServ
         //   texture: `${serverUrl}/user/profile/\${uuid}/\${type}`,
         // })
         // userService.emit('auth-profile-added', domain)
-        this.log(`Import the url ${url} as authlib-injector profile ${domain}`)
-        return true
+        // this.log(`Import the url ${url} as authlib-injector profile ${domain}`)
+        response.status = 200
       }
-      return false
     })
   }
 
