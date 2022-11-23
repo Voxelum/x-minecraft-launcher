@@ -46,6 +46,8 @@ export class PeerSession {
   private remoteId = ''
   #isClosed = false
 
+  public lastGameChannelId = undefined as undefined | number
+
   constructor(
     /**
      * The session id
@@ -86,23 +88,48 @@ export class PeerSession {
         const port = Number.parseInt(label)!
         this.logger.log(`Receive minecraft game connection: ${port}`)
         const socket = createConnection(port)
-        socket.on('data', (buf) => channel.sendMessageBinary(buf))
-        channel.onMessage((data) => socket.write(Buffer.from(data)))
+        const id = channel.getId()
+        let buffers: Buffer[] = []
+        let opened = false
+        socket.on('data', (buf) => {
+          if (opened) {
+            channel.sendMessageBinary(buf)
+          } else {
+            buffers.push(buf)
+          }
+        })
+        channel.onMessage((data) => {
+          socket.write(data)
+        })
         socket.on('close', () => {
-          this.logger.log(`Socket ${label} closed and close game channel ${channel.getId()}`)
-          channel.close()
+          this.logger.log(`Socket ${label} closed and close game channel ${id}`)
+          if (channel.isOpen()) {
+            channel.close()
+          }
         })
         channel.onClosed(() => {
-          this.logger.log(`Game connection ${channel.getId()} closed and destroy socket ${label}`)
+          this.logger.log(`Game connection ${id} closed and destroy socket ${label}`)
           socket.destroy()
+          channel.close()
         })
-        this.logger.log(`Create game channel to ${port}`)
+        channel.onOpen(() => {
+          this.logger.log(`Game data channel ${port}(${id}) is opened!`)
+          for (const buf of buffers) {
+            channel.sendMessageBinary(buf)
+          }
+          buffers = []
+          opened = true
+        })
+        channel.onError((e) => {
+          this.logger.error(`Game data channel ${port}(${id}) error: %o`, e)
+        })
+        this.logger.log(`Create game channel to ${port}(${id})`)
       } else if (protocol === 'metadata') {
         // this is a metadata channel
         this.setChannel(channel)
         this.logger.log('Metadata channel created')
       } else if (protocol === 'download') {
-        this.logger.log(`Receive peer download request: ${label}`)
+        this.logger.log(`Receive peer download request: ${label}(${channel.getId()})`)
         const path = unescape(label)
         const createStream = (filePath: string) => {
           if (filePath.startsWith('/sharing')) {
@@ -128,6 +155,12 @@ export class PeerSession {
               filePath = filePath.substring(1)
             }
             return createReadStream(host.getSharedImagePath(filePath))
+          } else if (filePath.startsWith('/assets')) {
+            filePath = filePath.substring('/assets'.length)
+            return createReadStream(join(host.getSharedAssetsPath(), filePath))
+          } else if (filePath.startsWith('/libraries')) {
+            filePath = filePath.substring('/libraries'.length)
+            return createReadStream(join(host.getSharedLibrariesPath(), filePath))
           }
           return 'NOT_FOUND'
         }
@@ -172,7 +205,10 @@ export class PeerSession {
   initiate() {
     // host
     this.logger.log('peer initialize')
-    this.setChannel(this.connection.createDataChannel(this.id, { ordered: true, protocol: 'metadata' }))
+    this.setChannel(this.connection.createDataChannel(this.id, {
+      ordered: true,
+      protocol: 'metadata',
+    }))
   }
 
   createReadStream(file: string) {
@@ -218,10 +254,15 @@ export class PeerSession {
       }
     })
     channel.onOpen(() => {
+      this.logger.log(`Create metadata channel on ${channel.getId()}`)
       const info = this.host.getUserInfo()
       this.send(MessageIdentity, { ...info })
     })
+    channel.onError((e) => {
+      this.logger.error('Fail to create metadata channel: %o', e)
+    })
     channel.onClosed(() => {
+      this.logger.log(`Metadata channel closed: ${channel.getId()}`)
       this.close()
     })
     this.channel = channel

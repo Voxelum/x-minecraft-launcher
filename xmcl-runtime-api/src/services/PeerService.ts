@@ -12,6 +12,13 @@ export type ConnectionState = 'closed' | 'connected' | 'connecting' | 'disconnec
 export type IceGatheringState = 'complete' | 'gathering' | 'new'
 export type SignalingState = 'closed' | 'have-local-offer' | 'have-local-pranswer' | 'have-remote-offer' | 'have-remote-pranswer' | 'stable'
 
+export interface SelectedCandidateInfo {
+  address: string
+  port: number
+  type: 'host' | 'prflx' | 'srflx' | 'relay'
+  transportType: 'udp' | 'tcp'
+}
+
 export interface ConnectionUserInfo extends GameProfileAndTexture {
   /**
    * The readable text
@@ -26,6 +33,10 @@ export interface PeerConnection {
   id: string
   userInfo: ConnectionUserInfo
   initiator: boolean
+  selectedCandidate?: {
+    local: SelectedCandidateInfo
+    remote: SelectedCandidateInfo
+  }
 
   localDescriptionSDP: string
   ping: number
@@ -84,6 +95,20 @@ export class PeerState {
     const conn = this.connections.find(c => c.id === update.id)
     if (conn) {
       conn.connectionState = update.connectionState
+    }
+  }
+
+  connectionSelectedCandidate({ id, local, remote }: {
+    id: string
+    local: SelectedCandidateInfo
+    remote: SelectedCandidateInfo
+  }) {
+    const conn = this.connections.find(c => c.id === id)
+    if (conn) {
+      conn.selectedCandidate = {
+        local,
+        remote,
+      }
     }
   }
 
