@@ -107,7 +107,9 @@ export class PeerGroup extends EventEmitter {
           .map((b) => ('00' + b.toString(16)).slice(-2))
           .join('')
           .replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5')
-        this.emit('heartbeat', id)
+        if (id !== this.id) {
+          this.emit('heartbeat', id)
+        }
         return
       }
       try {

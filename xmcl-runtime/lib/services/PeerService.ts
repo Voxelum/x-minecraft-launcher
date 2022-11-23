@@ -5,6 +5,7 @@ import { AbortableTask, BaseTask } from '@xmcl/task'
 import { randomFill, randomUUID } from 'crypto'
 import { createWriteStream } from 'fs'
 import { ensureFile } from 'fs-extra'
+import { initLogger, preload } from 'node-datachannel'
 import { join } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
@@ -12,6 +13,7 @@ import { promisify } from 'util'
 import { brotliCompress, brotliDecompress } from 'zlib'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { IS_DEV } from '../constant'
 import { PeerGroup, TransferDescription } from '../entities/peer'
 import { PeerSession } from '../entities/peer/connection'
 import { MessageShareManifest } from '../entities/peer/messages/download'
@@ -29,7 +31,6 @@ const pBrotliCompress = promisify(brotliCompress)
 export class PeerService extends StatefulService<PeerState> implements IPeerService {
   readonly peers: Record<string, PeerSession> = {}
 
-  readonly broadcaster = new MinecraftLanBroadcaster()
   readonly discover = new MinecraftLanDiscover()
   /**
    * The unique id of this host
@@ -48,6 +49,11 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   ) {
     super(app, () => new PeerState(), async () => {
     })
+
+    if (IS_DEV) {
+      initLogger('Verbose')
+      preload()
+    }
 
     app.protocol.registerHandler('peer', ({ request, response }) => {
       // handle peer protocol
@@ -79,21 +85,31 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       }
     })
 
-    this.broadcaster.bind()
     this.discover.bind().then(() => {
-      console.log('discover ready')
+      this.log('Minecraft LAN discover ready')
     })
 
     this.discover.on('discover', (info) => {
-      for (const conn of Object.values(this.peers)) {
-        if (conn.connection.state() !== 'connected') {
-          continue
+      const peers = Object.values(this.peers).filter(c => c.connection.state() === 'connected')
+      for (const conn of peers) {
+        const pair = conn.connection.getSelectedCandidatePair()
+        if (pair && pair.remote.type === 'host') {
+          if (conn.getRemoteId().localeCompare(this.id) > 0) {
+            // Same LAN, larger id will broadcast
+            return
+          }
         }
-        const selfMessage = conn.proxies.find(p => p.actualPortValue === info.port)
-        // do not echo the proxy server you created
-        if (!selfMessage) {
-          conn.send(MessageLan, info)
+
+        const isFromSelf = conn.proxies.find(p =>
+        // Port is created by yourself
+          p.actualPortValue === info.port)
+        if (isFromSelf) {
+          // do not echo the proxy server you created
+          return
         }
+      }
+      for (const conn of peers) {
+        conn.send(MessageLan, info)
       }
     })
   }
@@ -129,8 +145,8 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       const peer = Object.values(this.peers).find(p => p.getRemoteId() === sender)
       // Ask sender to connect to me :)
       if (!peer) {
-        this.log(`Not found the ${sender}. Initiate new connection`)
         if (this.id.localeCompare(sender) > 0) {
+          this.log(`Not found the ${sender}. Initiate new connection`)
           // Only if my id is greater than other's id, we try to initiate the connection.
           // This will have a total order in the UUID random space
 
@@ -208,7 +224,9 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
         })
       },
       onIdentity: (id, info) => this.state.connectionUserInfo({ id, info }),
-      onLanMessage: (_, msg) => { this.broadcaster.broadcast(msg) },
+      onLanMessage: (_, msg) => {
+        this.discover.broadcast(msg)
+      },
       getUserInfo: () => {
         const user = this.userService.state.user
         const profile = user?.profiles[user.selectedProfile]
@@ -223,9 +241,9 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       },
       getSharedInstance: () => this.sharedManifest,
       getShadedInstancePath: () => this.shareInstancePath,
-      getSharedImagePath: (image) => {
-        return join(this.imageStorage.root, image)
-      },
+      getSharedAssetsPath: () => this.getPath('assets'),
+      getSharedLibrariesPath: () => this.getPath('libraries'),
+      getSharedImagePath: (image) => join(this.imageStorage.root, image),
     }, this)
 
     if (remoteId) {
@@ -233,6 +251,15 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     }
 
     conn.connection.onStateChange((state) => {
+      const pair = conn.connection.getSelectedCandidatePair()
+      if (pair) {
+        this.log('Select pair %o', pair)
+        this.state.connectionSelectedCandidate({
+          id: conn.id,
+          remote: pair.remote as any,
+          local: pair.local as any,
+        })
+      }
       this.state.connectionStateChange({ id: conn.id, connectionState: state as any })
       if (state === 'closed') {
         if (conn.isClosed) {
@@ -273,6 +300,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       iceGatheringState: 'new',
       connectionState: 'new',
       sharing: undefined,
+      selectedCandidate: undefined,
     })
 
     this.peers[conn.id] = conn

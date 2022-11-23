@@ -36,7 +36,7 @@
           <v-btn
             :disabled="!state.group"
             text
-            @click="onCopy(joinGroupUrl)"
+            @click="onCopy(groupId)"
           >
             <v-icon
               v-if="!copied"
@@ -51,7 +51,7 @@
             >
               check
             </v-icon>
-            {{ copied ? t('multiplayer.copied') : t('multiplayer.inviteLink') }}
+            {{ copied ? t('multiplayer.copied') : t('multiplayer.copy') }}
           </v-btn>
 
           <div class="text-gray-400 text-sm lg:block hidden">
@@ -464,10 +464,8 @@ const tNatType = computed(() => ({
 }))
 
 const groupId = ref(state.group)
-const modified = computed(() => groupId.value !== state.group)
 const deleting = ref('')
 const deletingName = computed(() => state.connections.find(c => c.id === deleting.value)?.userInfo.name)
-const joinGroupUrl = computed(() => `https://xmcl.app/peer?group=${state.group}&inviter=${gameProfile.value.name}`)
 const copied = ref(false)
 
 const joiningGroup = useBusy('joinGroup')
