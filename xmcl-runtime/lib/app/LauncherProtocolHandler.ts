@@ -49,7 +49,7 @@ export class LauncherProtocolHandler {
   public onRegistered?: (protocol: string, handler: Handler) => void
 
   /**
-   * Register a handler for a specific protocol
+   * Register a http-like handler for a specific protocol
    *
    * @param protocol The protocol
    * @param handler The protocol handler
