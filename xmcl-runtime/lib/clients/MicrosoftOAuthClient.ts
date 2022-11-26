@@ -23,7 +23,7 @@ export class MicrosoftOAuthClient {
         clientId: this.clientId,
       },
       cache: {
-        cachePlugin: createPlugin('xmcl', account),
+        cachePlugin: createPlugin('xmcl', account, logger),
       },
       system: {
         loggerOptions: {
