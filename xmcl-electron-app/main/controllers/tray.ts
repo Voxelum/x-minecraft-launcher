@@ -1,7 +1,7 @@
 import Controller from '@/Controller'
-import { darkIco, darkIcon, darkTray, lightIcon, lightTray } from '@/utils/icons'
+import { darkIcon, darkTray, lightIcon, lightTray } from '@/utils/icons'
 import { BaseService } from '@xmcl/runtime'
-import { app, Menu, shell, Tray, nativeTheme } from 'electron'
+import { app, Menu, shell, Tray, nativeTheme, nativeImage, MenuItemConstructorOptions } from 'electron'
 import { ControllerPlugin } from './plugin'
 
 export const trayPlugin: ControllerPlugin = function (this: Controller) {
@@ -30,7 +30,7 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
     const showLogs = () => {
       shell.openPath(this.app.logManager.getLogRoot())
     }
-    return Menu.buildFromTemplate([
+    const options: MenuItemConstructorOptions[] = [
       {
         type: 'normal',
         label: t('checkUpdate'),
@@ -61,25 +61,47 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
           app.quit()
         },
       },
-    ])
+    ]
+    if (app.platform.name === 'osx') {
+      const show = () => {
+        const window = this.mainWin
+        window?.show()
+      }
+      options.unshift({
+        label: t('showLauncher'),
+        type: 'normal',
+        click: show,
+      })
+    }
+    return Menu.buildFromTemplate(options)
+  }
+
+  const getTrayImage = (dark: string, light: string) => {
+    const path = nativeTheme.shouldUseDarkColors ? darkTray : lightTray
+    if (this.app.platform.name === 'osx') {
+      const icon = nativeImage.createFromPath(path)
+      return icon.resize({ width: 20, height: 20 })
+    }
+    return path
   }
 
   this.app.once('engine-ready', () => {
-    const tray = new Tray(nativeTheme.shouldUseDarkColors ? darkTray : lightTray)
-    tray.on('click', () => {
-      if (this.app.platform.name === 'windows') {
+    const tray = new Tray(getTrayImage(darkTray, lightTray))
+    if (this.app.platform.name === 'windows') {
+      tray.on('double-click', () => {
         const window = this.mainWin
-        if (window && !window.isFocused()) {
-          window.focus()
+        if (window) {
+          if (window.isVisible()) {
+            if (!window.isFocused()) {
+              window.focus()
+            } else {
+              window.hide()
+            }
+          } else window.show()
         }
-      }
-    }).on('double-click', () => {
-      const window = this.mainWin
-      if (window) {
-        if (window.isVisible()) window.hide()
-        else window.show()
-      }
-    })
+      })
+    }
+
     tray.setToolTip(t('title'))
     tray.setContextMenu(createMenu())
     this.app.serviceStateManager.subscribe('config', () => {
@@ -103,6 +125,6 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
     if (app.dock) {
       app.dock.setIcon(nativeTheme.shouldUseDarkColors ? man.iconSets.darkDockIcon : man.iconSets.dockIcon)
     }
-    this.tray?.setImage(nativeTheme.shouldUseDarkColors ? man.iconSets.darkTrayIcon : man.iconSets.trayIcon)
+    this.tray?.setImage(getTrayImage(man.iconSets.darkTrayIcon, man.iconSets.trayIcon))
   })
 }
