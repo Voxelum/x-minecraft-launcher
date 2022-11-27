@@ -10,6 +10,29 @@
       <v-list-item-content>
         <v-list-item-title>
           {{
+            t("setting.layoutTitle")
+          }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          {{
+            t("setting.layoutDescription")
+          }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-action>
+        <v-select
+          v-model="layout"
+          filled
+          style="max-width: 185px"
+          hide-details
+          :items="layouts"
+        />
+      </v-list-item-action>
+    </v-list-item>
+    <v-list-item class="justify-center items-center">
+      <v-list-item-content>
+        <v-list-item-title>
+          {{
             t("setting.darkTheme")
           }}
         </v-list-item-title>
@@ -382,6 +405,10 @@ const { blurSidebar, blurAppBar } = useBarBlur()
 const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, backgroundColor, resetToDefault } = useColorTheme()
 const { state } = useService(BaseServiceKey)
 
+const layout = computed({
+  get: () => state.layout,
+  set: v => state.layoutSet(v),
+})
 const theme = computed({
   get: () => state.theme,
   set: v => state.themeSet(v),
@@ -395,6 +422,14 @@ const themes = computed(() => [{
 }, {
   text: t('setting.theme.system'),
   value: 'system',
+}])
+
+const layouts = computed(() => [{
+  text: t('setting.layout.default'),
+  value: 'default',
+}, {
+  text: t('setting.layout.focus'),
+  value: 'focus',
 }])
 
 const particleModes = computed(() => Object.entries({

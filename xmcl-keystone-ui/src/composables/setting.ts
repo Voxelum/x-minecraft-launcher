@@ -18,6 +18,11 @@ export function useUpdateSettings() {
   }
 }
 
+export function useInFocusMode() {
+  const { state } = useService(BaseServiceKey)
+  return computed(() => state.layout === 'focus')
+}
+
 export function useSettings() {
   const { state } = useService(BaseServiceKey)
 

@@ -49,6 +49,10 @@ export const createRouter = () => {
       //   component: GameSetting,
       // },
       {
+        path: '/instances',
+        component: () => import('@/views/Instances.vue'),
+      },
+      {
         path: '/resource-pack-setting',
         component: ResourcePack,
       },

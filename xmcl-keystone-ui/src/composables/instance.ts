@@ -18,7 +18,7 @@ export function useInstanceIsServer(i: Ref<Instance>) {
  * Use the general info of the instance
  */
 export function useInstance() {
-  const { state, editInstance } = useService(InstanceServiceKey)
+  const { state } = useService(InstanceServiceKey)
 
   const instance = computed(() => state.instance)
   const path = computed(() => state.path)
@@ -26,8 +26,6 @@ export function useInstance() {
     path,
     instance,
     refreshing: computed(() => useSemaphore('instance').value !== 0),
-    editInstance,
-    ...useServiceOnly(InstanceIOServiceKey, 'exportInstance'),
   }
 }
 
