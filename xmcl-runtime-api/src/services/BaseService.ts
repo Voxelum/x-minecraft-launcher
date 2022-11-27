@@ -8,6 +8,7 @@ export interface MigrateOptions {
 }
 
 export class BaseState implements SettingSchema {
+  layout: 'default' | 'focus' = 'default'
   globalMinMemory = 0
   globalMaxMemory = 0
   globalAssignMemory: 'auto' | boolean = false
@@ -67,6 +68,7 @@ export class BaseState implements SettingSchema {
 
   config(config: SettingSchema) {
     this.locale = config.locale
+    this.layout = config.layout
     this.autoDownload = config.autoDownload || false
     this.autoInstallOnAppQuit = config.autoDownload || false
     this.allowPrerelease = config.allowPrerelease || false
@@ -88,6 +90,10 @@ export class BaseState implements SettingSchema {
 
   themeSet(theme: 'dark' | 'light' | 'system') {
     this.theme = theme
+  }
+
+  layoutSet(layout: 'default' | 'focus') {
+    this.layout = layout
   }
 
   localeSet(language: string) {

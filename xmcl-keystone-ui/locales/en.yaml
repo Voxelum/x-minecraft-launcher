@@ -383,6 +383,7 @@ instanceTemplate:
   title: Template Setting
 instances:
   add: Add Local Game
+  choose: Select Instance
   importFolder: Import from Folder
   importFolderDescription: Import Minecraft to Launcher
   refreshServers: Refresh Servers
@@ -947,6 +948,11 @@ setting:
   language: Language
   languageDescription: The display language
   latestVersion: Latest Version
+  layout:
+    default: Default Layout
+    focus: Focus Layout
+  layoutDescription: The launcher layout reprensenting different UI logic
+  layoutTitle: Layout
   location: Store Location
   maxSockets: Per Host
   maxSocketsDescription: >-

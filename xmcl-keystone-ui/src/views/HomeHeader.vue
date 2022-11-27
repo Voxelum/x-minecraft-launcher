@@ -1,6 +1,10 @@
 <template>
   <div
-    class="flex flex-col flex-1 flex-grow-0 gap-3 max-w-full backdrop-filter backdrop-blur-sm"
+    class="flex flex-col flex-1 flex-grow-0 gap-3 max-w-full"
+    :class="{
+      'backdrop-filter': !isInFocusMode,
+      'backdrop-blur-sm': !isInFocusMode,
+    }"
   >
     <div
       class="flex w-full align-center max-h-20 gap-3 flex-grow-0 flex-1 items-baseline"
@@ -71,7 +75,10 @@
       </div>
       <div class="flex-grow" />
 
-      <div class="flex align-end gap-3 flex-1 flex-grow-0">
+      <div
+        v-if="!isInFocusMode"
+        class="flex align-end gap-3 flex-1 flex-grow-0"
+      >
         <v-tooltip
           :close-delay="0"
           top
@@ -163,51 +170,23 @@
 </template>
 
 <script lang=ts setup>
-import { AssetIndexIssueKey, AssetsIssueKey, BaseServiceKey, InstallProfileIssueKey, isIssue, LibrariesIssueKey, TaskState, VersionIssueKey, VersionJarIssueKey, VersionJsonIssueKey, VersionServiceKey } from '@xmcl/runtime-api'
+import { useService } from '@/composables'
+import { kInstanceContext } from '@/composables/instanceContext'
+import { useInFocusMode } from '@/composables/setting'
+import { injection } from '@/util/inject'
+import { BaseServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { useInstance, useInstanceVersion } from '../composables/instance'
 import { AppExportDialogKey } from '../composables/instanceExport'
-import { useTask } from '../composables/task'
 import HomeHeaderFabricLabel from './HomeHeaderFabricLabel.vue'
 import HomeHeaderForgeLabel from './HomeHeaderForgeLabel.vue'
 import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
 import HomeHeaderMinecraftLabel from './HomeHeaderMinecraftLabel.vue'
 import HomeHeaderQuiltLabel from './HomeHeaderQuiltLabel.vue'
 import HomeLaunchButton from './HomeLaunchButton.vue'
-import { useIssues, useService } from '@/composables'
 
-const { issues } = useIssues()
-const issue = computed(() => {
-  for (const i of issues.value) {
-    if (isIssue(AssetsIssueKey, i)) {
-      return i
-    }
-    if (isIssue(LibrariesIssueKey, i)) {
-      return i
-    }
-    if (isIssue(AssetIndexIssueKey, i)) {
-      return i
-    }
-    if (isIssue(VersionIssueKey, i)) {
-      return i
-    }
-    if (isIssue(VersionJsonIssueKey, i)) {
-      return i
-    }
-    if (isIssue(VersionJarIssueKey, i)) {
-      return i
-    }
-    if (isIssue(InstallProfileIssueKey, i)) {
-      return i
-    }
-  }
-  return undefined
-})
-
-const { path, instance, refreshing } = useInstance()
-const name = computed(() => instance.value.name)
-const version = computed(() => instance.value.runtime)
-const { localVersion } = useInstanceVersion()
+const { issue, task, path, refreshing, name, version, localVersion } = injection(kInstanceContext)
+const isInFocusMode = useInFocusMode()
+const { total, progress, name: taskName, pause, resume, status } = task
 const { openDirectory } = useService(BaseServiceKey)
 const { show: showLogDialog } = useDialog('log')
 const { show: showExport } = useDialog(AppExportDialogKey)
@@ -219,42 +198,6 @@ const onShowLocalVersion = () => {
     showVersionDirectory(localVersion.value.id)
   }
 }
-
-const { total, progress, name: taskName, pause, resume, status } = useTask((i) => {
-  const p = i.param as any
-  if (i.state === TaskState.Cancelled || i.state === TaskState.Succeed || i.state === TaskState.Failed) {
-    return false
-  }
-  if (i.path === 'installVersion' && p?.id === version.value.minecraft) {
-    return true
-  }
-  if (i.path === 'installVersion.jar' && (p?.id === localVersion.value.id || p?.id === version.value.minecraft)) {
-    return true
-  }
-  if (i.path === 'installLibraries' && (p?.id === localVersion.value.id || p?.id === version.value.minecraft)) {
-    return true
-  }
-  if (i.path === 'installAssets' && (p?.id === localVersion.value.id || p?.id === version.value.minecraft || p?.id === version.value.minecraft.substring(version.value.minecraft.lastIndexOf('.')))) {
-    return true
-  }
-  if (i.path === 'installForge' && (p?.id === version.value.forge || p?.id === localVersion.value.id)) {
-    return true
-  }
-  if (i.path === 'installOptifine' && p?.id === version.value.optifine) {
-    return true
-  }
-  if (i.path === 'installByProfile' && p?.id === localVersion.value.id) {
-    return true
-  }
-  if (i.path === 'installFabric' && p?.id === version.value.minecraft) {
-    return true
-  }
-  if (i.path === 'installInstance' && p.instance === path.value) {
-    // installing this instance
-    return true
-  }
-  return false
-})
 
 function showInstanceFolder() {
   openDirectory(path.value)

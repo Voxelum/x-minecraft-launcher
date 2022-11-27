@@ -117,12 +117,20 @@
             "type": "boolean"
         },
         "globalHideLauncher": {
-            "default": false,
+            "default": true,
             "type": "boolean"
         },
         "globalShowLog": {
             "default": false,
             "type": "boolean"
+        },
+        "layout": {
+            "default": "default",
+            "enum": [
+                "default",
+                "focus"
+            ],
+            "type": "string"
         }
     },
     "required": [
@@ -141,6 +149,7 @@
         "globalVmOptions",
         "httpProxy",
         "httpProxyEnabled",
+        "layout",
         "locale",
         "maxSockets",
         "theme"

@@ -5,25 +5,34 @@
     <home-header
       class="pt-10 pb-5 px-10"
     />
-    <v-divider class="mx-4" />
-    <!-- This is to fix strange hover color issue... -->
-    <v-divider class="border-transparent" />
-    <span class="flex flex-wrap p-10 flex-grow-0 gap-3 items-start">
-      <home-mod-card />
-      <home-resource-packs-card />
-      <home-shader-pack-card />
-      <home-saves-card />
-      <server-status-bar v-if="isServer" />
+    <template
+      v-if="!isFocusMode"
+    >
+      <v-divider class="mx-4" />
+      <!-- This is to fix strange hover color issue... -->
+      <v-divider
+        class="border-transparent"
+      />
+      <span
+        class="flex flex-wrap p-10 flex-grow-0 gap-3 items-start"
+      >
+        <home-mod-card />
+        <home-resource-packs-card />
+        <home-shader-pack-card />
+        <home-saves-card />
+        <server-status-bar v-if="isServer" />
       <!-- <HomeModrinthCard
         v-if="instance.upstream && instance.upstream.type === 'modrinth-modpack'"
         :path="instance.path"
         :upstream="instance.upstream"
-      /> -->
-    </span>
+        /> -->
+      </span>
+    </template>
 
-    <div class="flex absolute left-0 bottom-0 px-8 pb-[20px] gap-6">
-      <!-- <home-sync-button /> -->
-    </div>
+    <HomeFocusFooter
+      v-if="isFocusMode"
+      class="flex absolute left-0 bottom-0 px-8 pb-[26px] gap-6"
+    />
 
     <log-dialog />
     <game-exit-dialog />
@@ -37,27 +46,24 @@
 </template>
 
 <script lang=ts setup>
-import { BaseServiceKey } from '@xmcl/runtime-api'
-import { useInstance, useInstanceIsServer } from '../composables/instance'
+import { kInstanceContext, useInstanceContext } from '@/composables/instanceContext'
+import { useInFocusMode } from '@/composables/setting'
+import { useInstanceIsServer } from '../composables/instance'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import GameExitDialog from './AppGameExitDialog.vue'
 import AppLaunchBlockedDialog from './AppLaunchBlockedDialog.vue'
+import HomeFocusFooter from './HomeFocusFooter.vue'
 import HomeHeader from './HomeHeader.vue'
+import HomeInstallInstanceDialog from './HomeInstallInstanceDialog.vue'
 import JavaFixerDialog from './HomeJavaIssueDialog.vue'
 import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
 import LaunchStatusDialog from './HomeLaunchStatusDialog.vue'
 import LogDialog from './HomeLogDialog.vue'
 import HomeModCard from './HomeModCard.vue'
-import HomeProblemCard from './HomeProblemCard.vue'
 import HomeResourcePacksCard from './HomeResourcePacksCard.vue'
 import HomeSavesCard from './HomeSavesCard.vue'
 import ServerStatusBar from './HomeServerStatusBar.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
-import HomeSyncButton from './HomeSyncButton.vue'
-import HomeSyncDialog from './HomeSyncDialog.vue'
-import { useService } from '@/composables'
-import HomeModrinthCard from './HomeModrinthCard.vue'
-import HomeInstallInstanceDialog from './HomeInstallInstanceDialog.vue'
 
 const router = useRouter()
 
@@ -65,9 +71,14 @@ router.afterEach((r) => {
   document.title = `XMCL KeyStone - ${r.fullPath}`
 })
 
-const { instance } = useInstance()
+const context = useInstanceContext()
+
+provide(kInstanceContext, context)
+
+const instance = context.instance
 const isServer = useInstanceIsServer(instance)
 const { refresh } = useInstanceServerStatus(instance.value.path)
+const isFocusMode = useInFocusMode()
 
 onMounted(() => {
   if (isServer.value) {
