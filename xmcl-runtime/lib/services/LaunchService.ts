@@ -58,12 +58,16 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         fabric: instance.runtime.fabricLoader,
       })
     }
+    const globalState = this.baseService.state
     const version = instanceVersion.id
+    const assignMemory = instance.assignMemory ?? globalState.globalAssignMemory
+    let minMemory: number | undefined = instance.minMemory ?? globalState.globalMinMemory
+    let maxMemory: number | undefined = instance.maxMemory ?? globalState.globalMaxMemory
 
-    const minMemory = instance.assignMemory === true && instance.minMemory > 0
-      ? instance.minMemory
-      : instance.assignMemory === 'auto' ? Math.floor((await this.baseService.getMemoryStatus()).free / 1024 / 1024 - 256) : undefined
-    const maxMemory = instance.assignMemory === true && instance.maxMemory > 0 ? instance.maxMemory : undefined
+    minMemory = assignMemory === true && minMemory > 0
+      ? minMemory
+      : assignMemory === 'auto' ? Math.floor((await this.baseService.getMemoryStatus()).free / 1024 / 1024 - 256) : undefined
+    maxMemory = assignMemory === true && maxMemory > 0 ? instance.maxMemory : undefined
 
     const yggdrasilHost = user.user ? this.userService.getAccountSystem(user.user?.authService)?.getYggdrasilHost?.() : undefined
     let yggdrasilAgent: LaunchOption['yggdrasilAgent']
@@ -95,8 +99,8 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         detached: true,
         cwd: minecraftFolder.root,
       },
-      extraJVMArgs: instance.vmOptions,
-      extraMCArgs: instance.mcOptions,
+      extraJVMArgs: instance.vmOptions ?? globalState.globalVmOptions,
+      extraMCArgs: instance.mcOptions ?? globalState.globalMcOptions,
       yggdrasilAgent,
     }
 
@@ -256,8 +260,8 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
           detached: true,
           cwd: minecraftFolder.root,
         },
-        extraJVMArgs: instance.vmOptions.length === 0 ? globalState.globalVmOptions : instance.vmOptions,
-        extraMCArgs: instance.mcOptions.length === 0 ? globalState.globalMcOptions : instance.mcOptions,
+        extraJVMArgs: instance.vmOptions ?? globalState.globalVmOptions,
+        extraMCArgs: instance.mcOptions ?? globalState.globalMcOptions,
         launcherBrand: options?.launcherBrand ?? '',
         launcherName: options?.launcherName ?? 'XMCL',
         yggdrasilAgent,

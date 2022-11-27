@@ -244,7 +244,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
 // export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
 //   const { getLiteloaderVersionList } = useInstallService()
 
-//   const versions = ref([] as VersionLiteloaderSchema)
+//   const versions = ref([] as LiteloaderVersions)
 //   const refreshing = useServiceBusy(InstallServiceKey, 'getLiteloaderVersionList')
 //   onMounted(() => {
 //     watch(minecraftVersion, () => {

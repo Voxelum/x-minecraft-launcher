@@ -1,6 +1,6 @@
 import type { ResolvedLibrary, Version } from '@xmcl/core'
 import type { InstallProfile, LiteloaderVersion, MinecraftVersion, QuiltArtifactVersion } from '@xmcl/installer'
-import { ForgeVersion, OptifineVersion, VersionFabricSchema, VersionLiteloaderSchema, VersionMinecraftSchema } from '../entities/version.schema'
+import { ForgeVersion, OptifineVersion, FabricVersions, LiteloaderVersions, MinecraftVersions } from '../entities/version'
 import { ServiceKey } from './Service'
 
 export interface InstallOptifineOptions extends OptifineVersion {
@@ -84,19 +84,19 @@ export interface InstallService {
    * The minecraft version list
    * Request minecraft version list and cache in to store and disk.
    */
-  getMinecraftVersionList(force?: boolean): Promise<VersionMinecraftSchema>
+  getMinecraftVersionList(force?: boolean): Promise<MinecraftVersions>
   /**
    * Refresh forge remote versions cache from forge websites or BMCL API
    */
   getForgeVersionList(options: { force?: boolean; minecraftVersion: string }): Promise<ForgeVersion[]>
 
-  getLiteloaderVersionList(): Promise<VersionLiteloaderSchema>
+  getLiteloaderVersionList(): Promise<LiteloaderVersions>
 
   /**
    * Refresh fabric version list in the store.
    * @param force should the version be refresh regardless if we have already refreshed fabric version.
    */
-  getFabricVersionList(force?: boolean): Promise<VersionFabricSchema>
+  getFabricVersionList(force?: boolean): Promise<FabricVersions>
   /**
    * Refresh optifine version list from BMCL API
    */

@@ -1,6 +1,7 @@
 import { diagnose, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedLibrary, ResolvedVersion, Version } from '@xmcl/core'
-import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DEFAULT_VERSION_MANIFEST_URL, DownloadTask, FabricArtifactVersion, getFabricLoaderArtifact, getForgeVersionList, getLiteloaderVersionList, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, MinecraftVersionList, Options, QuiltArtifactVersion } from '@xmcl/installer'
-import { Asset, ForgeVersion, ForgeVersionList, GetQuiltVersionListOptions, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallQuiltOptions, InstallService as IInstallService, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LockKey, OptifineVersion, ResourceDomain, VersionFabricSchema, VersionForgeSchema, VersionLiteloaderSchema, VersionMinecraftSchema, VersionOptifineSchema, VersionQuiltSchema } from '@xmcl/runtime-api'
+import { parse as parseForge } from '@xmcl/forge-site-parser'
+import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DEFAULT_VERSION_MANIFEST_URL, DownloadTask, FabricArtifactVersion, getFabricLoaderArtifact, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, MinecraftVersionList, Options, QuiltArtifactVersion } from '@xmcl/installer'
+import { Asset, FabricVersions, ForgeVersion, GetQuiltVersionListOptions, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallQuiltOptions, InstallService as IInstallService, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LiteloaderVersions, LockKey, MinecraftVersions, OptifineVersion, ResourceDomain } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { ensureFile, readJson, readJSON, writeFile, writeJson } from 'fs-extra'
 import { request } from 'undici'
@@ -14,7 +15,6 @@ import { JavaService } from './JavaService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Lock, Singleton } from './Service'
 import { VersionService } from './VersionService'
-import { parse as parseForge } from '@xmcl/forge-site-parser'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -73,7 +73,7 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   @Singleton()
-  async getMinecraftVersionList(force?: boolean): Promise<VersionMinecraftSchema> {
+  async getMinecraftVersionList(force?: boolean): Promise<MinecraftVersions> {
     this.log('Start to refresh minecraft version metadata.')
     let metadata: MinecraftVersionList
 
@@ -158,7 +158,7 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   @Singleton()
-  async getLiteloaderVersionList(force?: boolean): Promise<VersionLiteloaderSchema> {
+  async getLiteloaderVersionList(force?: boolean): Promise<LiteloaderVersions> {
     throw new Error()
     // if (!force && this.refreshedLiteloader) {
     //   return this.liteloaderVersionJson.read()
@@ -180,7 +180,7 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   @Singleton()
-  async getFabricVersionList(force?: boolean): Promise<VersionFabricSchema> {
+  async getFabricVersionList(force?: boolean): Promise<FabricVersions> {
     this.log('Start to refresh fabric metadata')
 
     let yarns: FabricArtifactVersion[]
