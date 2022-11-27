@@ -29,6 +29,8 @@ const i18n = castToVueI18n(
   ),
 ) // `createI18n` which is provide `vue-i18n-bridge` has second argument, you **must** pass `VueI18n` constructor which is provide `vue-i18n`
 
+Vue.use(i18n)
+
 const app = new Vue(defineComponent({
   vuetify,
   i18n,
@@ -63,4 +65,4 @@ const app = new Vue(defineComponent({
   },
 }))
 
-app.mount('#app')
+app.$mount('#app')
