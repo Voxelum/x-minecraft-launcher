@@ -1,7 +1,198 @@
-import type { LibraryInfo, ResolvedVersion, Version } from '@xmcl/core'
+import type { LibraryInfo, Version } from '@xmcl/core'
 import { LocalVersionHeader } from '../services/VersionService'
 import { parseVersion, VersionRange } from '../util/mavenVersion'
 import { RuntimeVersions } from './instance.schema'
+
+export interface MinecraftVersion {
+  id: string
+  type: string
+  time: string
+  releaseTime: string
+  url: string
+}
+export interface ForgeDownload {
+  md5?: string
+  sha1: string
+  /**
+   * The url path to concat with forge maven
+   */
+  path: string
+}
+export interface ForgeVersion {
+  /**
+   * The minecraft version
+   */
+  mcversion: string
+  /**
+   * The forge version (without minecraft version)
+   */
+  version: string
+  /**
+   * @default ""
+   */
+  date: string
+  installer?: ForgeDownload
+  universal?: ForgeDownload
+  /**
+   * The changelog info
+   */
+  changelog?: ForgeDownload
+  mdk?: ForgeDownload
+  source?: ForgeDownload
+  launcher?: ForgeDownload
+  /**
+   * The type of the forge release. The `common` means the normal release.
+   * @default "common"
+   */
+  type: 'buggy' | 'recommended' | 'common' | 'latest'
+}
+
+interface LiteloaderVersionMeta {
+  version: string
+  url: string
+  file: string
+  mcversion: string
+  type: 'RELEASE' | 'SNAPSHOT'
+  md5: string
+  timestamp: string
+  libraries: Array<{
+    name: string
+    url?: string
+  }>
+  tweakClass: string
+}
+
+export interface MinecraftVersions {
+  /**
+   * @default { "snapshot": "", "release": "" }
+   */
+  latest: {
+    /**
+     * Snapshot version id of the Minecraft
+     * @default ""
+     */
+    snapshot: string
+    /**
+     * Release version id of the Minecraft, like 1.14.2
+     * @default ""
+     */
+    release: string
+  }
+  /**
+   * All the versions in list
+   * @default []
+   */
+  versions: MinecraftVersion[]
+}
+
+export interface LiteloaderVersions {
+  /**
+   * @default ""
+   */
+  timestamp: string
+  /**
+   * @default {}
+   */
+  meta: {
+    /**
+     * @default ""
+     */
+    description: string
+    /**
+     * @default ""
+     */
+    authors: string
+    /**
+     * @default ""
+     */
+    url: string
+    /**
+     * @default ""
+     */
+    updated: string
+    /**
+     * @default ""
+     */
+    updatedTime: number
+  }
+  /**
+   * @default {}
+   */
+  versions: {
+    [version: string]: {
+      snapshot?: LiteloaderVersionMeta
+      release?: LiteloaderVersionMeta
+    }
+  }
+}
+
+interface FabricArtifactVersion {
+  gameVersion?: string
+  separator?: string
+  build?: number
+  maven: string
+  version: string
+  stable: boolean
+}
+
+export interface FabricVersions {
+  /**
+   * @default []
+   */
+  yarns: FabricArtifactVersion[]
+
+  /**
+   * @default []
+   */
+  loaders: FabricArtifactVersion[]
+}
+
+export interface OptifineVersion {
+  /**
+   * The minecraft version
+   */
+  mcversion: string
+  /**
+   * The type of the optifine like HD_U
+   */
+  type: string
+  /**
+   * The patch of the optifine
+   */
+  patch: string
+}
+
+export interface QuiltArtifactVersion {
+  separator: string
+  build: number
+  /**
+    * e.g. "org.quiltmc:quilt-loader:0.16.1",
+    */
+  maven: string
+  version: string
+}
+
+export interface OptifineVersions {
+  /**
+     * @default []
+     */
+  versions: OptifineVersion[]
+  /**
+     * @default ""
+     */
+  etag: string
+}
+
+export interface QuiltVersions {
+  /**
+    * @default []
+    */
+  versions: QuiltArtifactVersion[]
+  /**
+    * @default ""
+    */
+  timestamp: string
+}
 
 export type Status = 'remote' | 'local' | 'loading'
 export interface PartialVersionResolver {

@@ -1,6 +1,6 @@
 // import NatAPI from 'nat-api'
 import { getNatInfoUDP, NatInfo } from '@xmcl/stun-client'
-import { UpnpClient } from '@xmcl/nat-api'
+// import { UpnpClient } from '@xmcl/nat-api'
 // import getNatType, { NatType } from 'nat-type-identifier'
 
 export class NatService {

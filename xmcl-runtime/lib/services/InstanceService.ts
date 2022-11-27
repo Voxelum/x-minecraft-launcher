@@ -430,14 +430,14 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
 
     if ('vmOptions' in options && options.vmOptions) {
-      const diff = options.vmOptions.length !== state.vmOptions?.length || options.vmOptions.some((e, i) => e !== state?.vmOptions[i])
+      const diff = options.vmOptions.length !== state.vmOptions?.length || options.vmOptions.some((e, i) => e !== state.vmOptions?.[i])
       if (diff) {
         result.vmOptions = options.vmOptions
       }
     }
 
     if ('mcOptions' in options && options.mcOptions) {
-      const diff = options.mcOptions.length !== state.mcOptions?.length || options.mcOptions.some((e, i) => e !== state?.mcOptions[i])
+      const diff = options.mcOptions.length !== state.mcOptions?.length || options.mcOptions.some((e, i) => e !== state.mcOptions?.[i])
       if (diff) {
         result.mcOptions = options.mcOptions
       }
