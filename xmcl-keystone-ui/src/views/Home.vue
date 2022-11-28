@@ -2,7 +2,7 @@
   <div
     class="flex flex-col home-page flex-1 min-h-0 overflow-auto max-h-full"
   >
-    <home-header
+    <HomeHeader
       class="pt-10 pb-5 px-10"
     />
     <template
@@ -16,11 +16,11 @@
       <span
         class="flex flex-wrap p-10 flex-grow-0 gap-3 items-start"
       >
-        <home-mod-card />
-        <home-resource-packs-card />
-        <home-shader-pack-card />
-        <home-saves-card />
-        <server-status-bar v-if="isServer" />
+        <HomeModCard />
+        <HomeResourcePacksCard />
+        <HomeShaderPackCard />
+        <HomeSavesCard />
+        <HomeServerStatusBar v-if="isServer" />
       <!-- <HomeModrinthCard
         v-if="instance.upstream && instance.upstream.type === 'modrinth-modpack'"
         :path="instance.path"
@@ -34,12 +34,12 @@
       class="flex absolute left-0 bottom-0 px-8 pb-[26px] gap-6"
     />
 
-    <log-dialog />
-    <game-exit-dialog />
-    <app-launch-blocked-dialog />
-    <home-launch-multi-instance-dialog />
-    <launch-status-dialog />
-    <java-fixer-dialog />
+    <HomeLogDialog />
+    <AppGameExitDialog />
+    <AppLaunchBlockedDialog />
+    <HomeLaunchMultiInstanceDialog />
+    <HomeLaunchStatusDialog />
+    <HomeJavaIssueDialog />
     <!-- <home-sync-dialog /> -->
     <HomeInstallInstanceDialog />
   </div>
@@ -50,19 +50,19 @@ import { kInstanceContext, useInstanceContext } from '@/composables/instanceCont
 import { useInFocusMode } from '@/composables/setting'
 import { useInstanceIsServer } from '../composables/instance'
 import { useInstanceServerStatus } from '../composables/serverStatus'
-import GameExitDialog from './AppGameExitDialog.vue'
+import AppGameExitDialog from './AppGameExitDialog.vue'
 import AppLaunchBlockedDialog from './AppLaunchBlockedDialog.vue'
 import HomeFocusFooter from './HomeFocusFooter.vue'
 import HomeHeader from './HomeHeader.vue'
 import HomeInstallInstanceDialog from './HomeInstallInstanceDialog.vue'
-import JavaFixerDialog from './HomeJavaIssueDialog.vue'
+import HomeJavaIssueDialog from './HomeJavaIssueDialog.vue'
 import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
-import LaunchStatusDialog from './HomeLaunchStatusDialog.vue'
-import LogDialog from './HomeLogDialog.vue'
+import HomeLaunchStatusDialog from './HomeLaunchStatusDialog.vue'
+import HomeLogDialog from './HomeLogDialog.vue'
 import HomeModCard from './HomeModCard.vue'
 import HomeResourcePacksCard from './HomeResourcePacksCard.vue'
 import HomeSavesCard from './HomeSavesCard.vue'
-import ServerStatusBar from './HomeServerStatusBar.vue'
+import HomeServerStatusBar from './HomeServerStatusBar.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
 
 const router = useRouter()
