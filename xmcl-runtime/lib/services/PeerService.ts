@@ -1,14 +1,15 @@
-import { MinecraftLanBroadcaster, MinecraftLanDiscover } from '@xmcl/client'
+import { MinecraftLanDiscover } from '@xmcl/client'
 import { ChecksumNotMatchError } from '@xmcl/installer'
 import { InstanceManifest, PeerService as IPeerService, PeerServiceKey, PeerState, ShareInstanceOptions } from '@xmcl/runtime-api'
 import { AbortableTask, BaseTask } from '@xmcl/task'
 import { randomFill, randomUUID } from 'crypto'
 import { createWriteStream } from 'fs'
 import { ensureFile } from 'fs-extra'
-import { initLogger, preload } from 'node-datachannel'
+import { IceServer, initLogger, preload } from 'node-datachannel'
 import { join } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
+import { request } from 'undici'
 import { promisify } from 'util'
 import { brotliCompress, brotliDecompress } from 'zlib'
 import LauncherApp from '../app/LauncherApp'
@@ -39,6 +40,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
   private sharedManifest: InstanceManifest | undefined
   private shareInstancePath = ''
+  private iceServers: IceServer[] = []
 
   private group: PeerGroup | undefined
 
@@ -48,6 +50,13 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     @Inject(UserService) private userService: UserService,
   ) {
     super(app, () => new PeerState(), async () => {
+      await userService.initialize()
+      this.fetchCredential()
+      this.storeManager.subscribe('userProfile', (profile) => {
+        if (profile.authService === 'microsoft' && this.iceServers.length === 0) {
+          this.fetchCredential()
+        }
+      })
     })
 
     if (IS_DEV) {
@@ -87,6 +96,12 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
     this.discover.bind().then(() => {
       this.log('Minecraft LAN discover ready')
+    }, (e) => {
+      this.error('Fail to bind Minecraft LAN discover: %o', e)
+    })
+
+    this.discover.socket.on('error', (e) => {
+      this.error('Minecraft discover socket error: %o', e)
     })
 
     this.discover.on('discover', (info) => {
@@ -101,7 +116,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
         }
 
         const isFromSelf = conn.proxies.find(p =>
-        // Port is created by yourself
+          // Port is created by yourself
           p.actualPortValue === info.port)
         if (isFromSelf) {
           // do not echo the proxy server you created
@@ -119,6 +134,45 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     this.group = undefined
     this.state.connectionGroup('')
     this.state.connectionGroupState('closed')
+  }
+
+  @Singleton()
+  async fetchCredential() {
+    this.log('Try to fetch rtc credential')
+    const officialAccount = await this.userService.getOfficialUserProfile()
+    if (officialAccount) {
+      this.log(`Use minecraft xbox ${officialAccount.username} to fetch rtc credential`)
+      const response = await request('https://api.xmcl.app/rtc/official', {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${officialAccount.accessToken}`,
+        },
+      })
+      if (response.statusCode === 200) {
+        const credential: {
+          password: string
+          username: string
+          uris: string[]
+        } = await response.body.json()
+        this.iceServers.splice(0, this.iceServers.length)
+        this.iceServers.push(...credential.uris
+          .filter(u => u.startsWith('turn:'))
+          .map(u => u.substring('turn:'.length))
+          .map(u => {
+            const [hostname, port] = u.split(':')
+            return {
+              username: credential.username,
+              password: credential.password,
+              hostname,
+              port: port ? Number.parseInt(port) : 3478,
+              relayType: 'TurnUdp' as any,
+            }
+          }))
+        this.log(`Updated the rtc credential by xbox ${officialAccount.username}.`)
+      } else {
+        this.error(`Fail to fetch the rtc credential by xbox ${officialAccount.username}. Status ${response.statusCode}.`)
+      }
+    }
   }
 
   @Lock('joinGroup')
@@ -155,14 +209,14 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
         }
       }
     })
-    group.on('descriptor', (sender, sdp, type, candidates) => {
+    group.on('descriptor', async (sender, sdp, type, candidates) => {
       let peer = Object.values(this.peers).find(p => p.getRemoteId() === sender)
       this.log(`Descriptor from ${sender}`)
       const newPeer = !peer
       if (!peer) {
         this.log(`Not found the ${sender}. Initiate new connection`)
         // Try to connect to the sender
-        this.initiate({ id: sender, initiate: false })
+        await this.initiate({ id: sender, initiate: false })
         peer = Object.values(this.peers).find(p => p.getRemoteId() === sender)!
       }
       this.log(`Set remote ${type} description: ${sdp}`)
@@ -194,7 +248,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     return JSON.parse((await pBrotliDecompress(Buffer.from(description, 'base64'))).toString('utf-8'))
   }
 
-  @Singleton(id => id)
+  @Singleton(ops => JSON.stringify(ops))
   async initiate(options?: {
     id?: string
     session?: string
@@ -206,7 +260,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
     this.log(`Create peer connection to ${remoteId}. Is initiator: ${initiator}`)
 
-    const conn = new PeerSession(sessionId, {
+    const conn = new PeerSession(sessionId, this.iceServers, {
       onHeartbeat: (id, ping) => this.state.connectionPing({ id, ping }),
       onInstanceShared: (id, manifest) => {
         this.state.connectionShareManifest({ id, manifest })
@@ -225,7 +279,11 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       },
       onIdentity: (id, info) => this.state.connectionUserInfo({ id, info }),
       onLanMessage: (_, msg) => {
-        this.discover.broadcast(msg)
+        if (!this.discover.isReady) {
+          // this.discover.bind()
+        } else {
+          this.discover.broadcast(msg)
+        }
       },
       getUserInfo: () => {
         const user = this.userService.state.user

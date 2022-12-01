@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto'
 import { createReadStream, existsSync } from 'fs'
 import debounce from 'lodash.debounce'
 import { createConnection } from 'net'
-import { DataChannel, DescriptionType, PeerConnection } from 'node-datachannel'
+import { DataChannel, DescriptionType, IceServer, PeerConnection } from 'node-datachannel'
 import { join } from 'path'
 import { Readable } from 'stream'
 import { Logger } from '../../util/log'
@@ -13,7 +13,7 @@ import { MessageLanEntry } from './messages/lan'
 import { MessageEntry, MessageHandler, MessageType } from './messages/message'
 import { PeerHost } from './PeerHost'
 import { ServerProxy } from './ServerProxy'
-import { iceServers } from './stun'
+import { iceServers as _iceServers } from './stun'
 
 const getRegistry = (entries: MessageEntry<any>[]) => {
   const reg: Record<string, MessageHandler<any>> = {}
@@ -53,16 +53,14 @@ export class PeerSession {
      * The session id
      */
     readonly id: string = randomUUID(),
+    readonly iceServers: (string | IceServer)[],
     readonly host: PeerHost,
     readonly logger: Logger,
     portBegin?: number,
   ) {
     this.connection = new PeerConnection(this.id, {
-      iceServers,
+      iceServers: [..._iceServers, ...iceServers],
       iceTransportPolicy: 'all',
-      enableIceTcp: true,
-      enableIceUdpMux: true,
-      disableAutoNegotiation: false,
       portRangeBegin: portBegin,
     })
 
