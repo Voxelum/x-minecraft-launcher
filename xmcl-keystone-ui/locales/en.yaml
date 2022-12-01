@@ -1072,6 +1072,11 @@ task:
   pause: Pause
   running: Running Tasks
 title: X Minecraft Launcher
+transportType:
+  host: Host Candidate
+  prflx: Peer Reflexive Candidate
+  relay: Relay Candidate
+  srflx: Server Reflexive Candidate
 universalDrop:
   enableModsAfterImport: Enable Mods After Import
   start: Import Started
