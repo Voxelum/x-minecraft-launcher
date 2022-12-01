@@ -255,6 +255,15 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     this.state.userProfileRemove(userId)
   }
 
+  async getOfficialUserProfile(): Promise<UserProfile | undefined> {
+    const official = Object.values(this.state.users).find(u => u.authService === 'microsoft')
+    if (official) {
+      await this.registeredAccountSystem.microsoft?.refresh(official)
+      return official
+    }
+    return undefined
+  }
+
   async abortLogin(): Promise<void> {
     this.loginController?.abort()
   }

@@ -9,10 +9,10 @@ export const MessageLan: MessageType<LanServerInfo> = 'lan'
 
 export const MessageLanEntry = defineMessage(MessageLan, async function (info) {
   const pair = this.connection.getSelectedCandidatePair()
-  if (pair && pair.remote.type === 'host') {
-    // 'host' means we are in same local network or public network
-    return
-  }
+  // if (pair && pair.remote.type === 'host') {
+  // 'host' means we are in same local network or public network
+  // return
+  // }
   // lan message from other peer
   let proxy = this.proxies.find(p =>
     // this port proxy is already created
@@ -37,8 +37,9 @@ export const MessageLanEntry = defineMessage(MessageLan, async function (info) {
     }
     const gameChannel = this.connection.createDataChannel(`${info.port}`, init)
 
+    const id = gameChannel.getId()
     if (!this.lastGameChannelId) {
-      this.lastGameChannelId = gameChannel.getId()
+      this.lastGameChannelId = id
     }
     // the data send before channel connected will be buffered
     let buffers: Buffer[] = []
@@ -57,24 +58,20 @@ export const MessageLanEntry = defineMessage(MessageLan, async function (info) {
     })
 
     socket.on('close', () => {
-      const id = gameChannel.getId()
       this.logger.log(`Close game channel due to socket closed ${info.port}(${id})`)
       if (gameChannel.isOpen()) {
         gameChannel.close()
       }
     })
     gameChannel.onClosed(() => {
-      const id = gameChannel.getId()
       this.logger.log(`Destroy socket due to game channel is closed ${info.port}(${id})`)
       socket.destroy()
       gameChannel.close()
     })
     gameChannel.onError((e) => {
-      const id = gameChannel.getId()
       this.logger.log(`Game channel ${info.port}(${id}) error: %o`, e)
     })
     gameChannel.onOpen(() => {
-      const id = gameChannel.getId()
       this.logger.log(`Game channel ${info.port}(${id}) opened!`)
 
       for (const buf of buffers) {

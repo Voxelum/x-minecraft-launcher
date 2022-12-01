@@ -4,7 +4,7 @@ AppShareInstanceDialog:
   baseInfo: 分享的基本配置
   cancelShare: 取消分享
   description: 分享后，你的联机伙伴将会可以通过你下载你分享的游戏资源
-  downloadDescription: 请选择你想从你的小伙伴那下载的文件。
+  downloadDescription: 请选择你想从你的小伙伴那下载的文件。文件将下载到当前实例中。
   downloadTitle: 从其他玩家那获得游戏资源
   downloadToLocal: 下载到当前实例种
   filesToDownload: 选择你想下载的文件
