@@ -307,23 +307,53 @@
               {{ c.userInfo.name || c.id }}
             </v-list-item-title>
             <v-list-item-subtitle class="flex gap-2 items-center">
-              <v-chip
-                label
-                small
-                :color="stateToColor[c.connectionState]"
+              <v-tooltip
+                right
+                transition="scroll-x-transition"
+                color="black"
               >
-                <v-icon left>
-                  signal_cellular_alt
-                </v-icon>
-                {{ t(`peerConnectionState.name`) }}:
-                {{ tConnectionStates[c.connectionState] }}
-                <template v-if="c.connectionState === 'connected'">
-                  ({{ c.ping }}ms)
+                <template #activator="{ on }">
+                  <v-chip
+                    label
+                    small
+                    :color="stateToColor[c.connectionState]"
+                    v-on="on"
+                  >
+                    <v-icon left>
+                      signal_cellular_alt
+                    </v-icon>
+                    {{ t(`peerConnectionState.name`) }}:
+                    {{ tConnectionStates[c.connectionState] }}
+                    <template v-if="c.connectionState === 'connected'">
+                      ({{ c.ping }}ms)
+                    </template>
+                  </v-chip>
                 </template>
-              </v-chip>
+
+                <template v-if="c.selectedCandidate">
+                  {{ tTransportType[c.selectedCandidate.local.type] }}
+                  {{ c.selectedCandidate.local.address }}:{{ c.selectedCandidate.local.port }}
+                  ->
+                  {{ tTransportType[c.selectedCandidate.remote.type] }}
+                  {{ c.selectedCandidate.remote.address }}:{{ c.selectedCandidate.remote.port }}
+                </template>
+              </v-tooltip>
+
               <!-- {{ c.ping }}ms -->
             </v-list-item-subtitle>
           </v-list-item-content>
+          <v-list-item-action
+            v-if="c.selectedCandidate"
+            class="self-center mr-5"
+          >
+            <v-list-item-subtitle>
+              {{ c.selectedCandidate.local.type }}
+              {{ c.selectedCandidate.local.address }}:{{ c.selectedCandidate.local.port }}
+              ->
+              {{ c.selectedCandidate.remote.type }}
+              {{ c.selectedCandidate.remote.address }}:{{ c.selectedCandidate.remote.port }}
+            </v-list-item-subtitle>
+          </v-list-item-action>
           <v-list-item-action
             v-if="c.signalingState === 'have-local-offer'"
             class="self-center mr-5"
@@ -452,6 +482,12 @@ const natColors = computed(() => ({
 const { state: natState, refreshNatType } = useService(NatServiceKey)
 const device = computed(() => natState.natDevice)
 
+const tTransportType = computed(() => ({
+  relay: t('transportType.relay'),
+  srflx: t('transportType.srflx'),
+  host: t('transportType.host'),
+  prflx: t('transportType.prflx'),
+}))
 const tNatType = computed(() => ({
   'Open Internet': t('natType.openInternet'),
   'Full Cone': t('natType.fullCone'),

@@ -812,6 +812,7 @@ peerConnectionState:
   connecting: 连接中
   disconnected: 掉线
   failed: 失败
+  name: 连接状态
   new: 等待连接
 peerGroupState:
   closed: 未加入小组
@@ -1053,6 +1054,11 @@ task:
   name: 任务 | 任务
   pause: 暂停
   running: 活跃任务
+transportType:
+  host: 公网地址
+  prflx: 同伴反射地址
+  relay: 转发地址
+  srflx: 服务端反射地址
 universalDrop:
   enableModsAfterImport: Mod 导入后自动启用
   start: 开始导入
