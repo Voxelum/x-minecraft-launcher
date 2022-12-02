@@ -47,7 +47,7 @@
 
 <script lang=ts setup>
 import { kInstanceContext, useInstanceContext } from '@/composables/instanceContext'
-import { useInFocusMode } from '@/composables/setting'
+import { useInFocusMode } from '@/composables/uiLayout'
 import { useInstanceIsServer } from '../composables/instance'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import AppGameExitDialog from './AppGameExitDialog.vue'

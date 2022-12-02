@@ -121,10 +121,12 @@
 
 <script lang=ts setup>
 import { useService } from '@/composables'
+import { injection } from '@/util/inject'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import PlayerAvatar from '../components/PlayerAvatar.vue'
 import { useBarBlur } from '../composables/background'
-import { useColorTheme } from '../composables/colorTheme'
+import { kColorTheme } from '../composables/colorTheme'
+import { kUILayout } from '../composables/uiLayout'
 import { useCurrentUser } from '../composables/user'
 import AppSideBarContentFocus from './AppSideBarContentFocus.vue'
 import AppSideBarContentNext from './AppSideBarContentNext.vue'
@@ -132,10 +134,11 @@ import AppSideBarContentNext from './AppSideBarContentNext.vue'
 const { state } = useService(BaseServiceKey)
 const { gameProfile } = useCurrentUser()
 const { blurSidebar } = useBarBlur()
-const useFocus = computed(() => state.layout === 'focus')
+const layout = injection(kUILayout)
+const useFocus = computed(() => layout.value === 'focus')
 
 const { t } = useI18n()
-const { sideBarColor } = useColorTheme()
+const { sideBarColor } = injection(kColorTheme)
 
 </script>
 

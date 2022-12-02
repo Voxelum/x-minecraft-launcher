@@ -172,7 +172,7 @@
 <script lang=ts setup>
 import { useService } from '@/composables'
 import { kInstanceContext } from '@/composables/instanceContext'
-import { useInFocusMode } from '@/composables/setting'
+import { useInFocusMode } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
 import { BaseServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'

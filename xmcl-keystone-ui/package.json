@@ -62,7 +62,6 @@
         "@typescript-eslint/eslint-plugin": "^5.6.0",
         "@typescript-eslint/parser": "^5.6.0",
         "@types/markdown-it": "^12.2.3",
-        "@vue/devtools": "^5.3.4",
         "chalk": "^4.1.2",
         "cross-env": "^5.2.1",
         "eslint": "~7",
@@ -83,7 +82,7 @@
         "vite-plugin-pwa": "^0.13.1",
         "vite-plugin-windicss": "^1.8.8",
         "vue-observe-visibility": "^0.4.6",
-        "vue-tsc": "^1.0.8",
+        "vue-tsc": "^1.0.10",
         "windicss": "^3.5.4"
     }
 }
