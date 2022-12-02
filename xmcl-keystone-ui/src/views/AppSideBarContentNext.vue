@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-auto">
+  <div class="overflow-auto h-full">
     <v-list
       v-context-menu="items"
       nav

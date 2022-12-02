@@ -1,5 +1,5 @@
 import Controller from '@/Controller'
-import { BrowserWindow, dialog, FindInPageOptions, ipcMain } from 'electron'
+import { app, BrowserWindow, dialog, FindInPageOptions, ipcMain } from 'electron'
 import { ControllerPlugin } from './plugin'
 import { platform } from 'os'
 
@@ -13,6 +13,21 @@ export enum Operation {
 
 export const windowController: ControllerPlugin = function (this: Controller) {
   const currentPlatform = platform()
+
+  app.on('browser-window-created', (_, win: BrowserWindow) => {
+    win.on('maximize', () => {
+      win.webContents.send('maximize', win.isMaximized())
+    })
+    win.on('enter-full-screen', () => {
+      win.webContents.send('maximize', win.fullScreen)
+    })
+    win.on('leave-full-screen', () => {
+      win.webContents.send('maximize', win.fullScreen)
+    })
+    win.on('minimize', () => {
+      win.webContents.send('minimize', win.isMaximized())
+    })
+  })
   ipcMain.handle('dialog:showOpenDialog', (event, ...args) => {
     return dialog.showOpenDialog(BrowserWindow.fromWebContents(event.sender)!, args[0])
   })
@@ -24,6 +39,10 @@ export const windowController: ControllerPlugin = function (this: Controller) {
   })
   ipcMain.handle('stop-find-in-page', (event) => {
     event.sender.stopFindInPage('clearSelection')
+  })
+  ipcMain.handle('isMaximized', (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender)
+    return window?.isMaximized()
   })
   ipcMain.handle('control', (event, operation: Operation) => {
     const window = BrowserWindow.fromWebContents(event.sender)
