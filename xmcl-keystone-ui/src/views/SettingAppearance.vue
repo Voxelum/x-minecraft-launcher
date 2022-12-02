@@ -392,23 +392,23 @@
   </v-list>
 </template>
 <script lang="ts" setup>
+import { useService } from '@/composables'
+import { kUILayout } from '@/composables/uiLayout'
+import { injection } from '@/util/inject'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { BackgroundType, useBackground, useBarBlur } from '../composables/background'
-import { useColorTheme } from '../composables/colorTheme'
-import { useService, useTheme } from '@/composables'
+import { kColorTheme } from '../composables/colorTheme'
 import SettingAppearanceColor from './SettingAppearanceColor.vue'
 
 const { showOpenDialog } = windowController
 const { t } = useI18n()
 const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, setBackgroundVideo, backgroundVideo } = useBackground()
 const { blurSidebar, blurAppBar } = useBarBlur()
-const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, backgroundColor, resetToDefault } = useColorTheme()
+const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, backgroundColor, resetToDefault } = injection(kColorTheme)
 const { state } = useService(BaseServiceKey)
 
-const layout = computed({
-  get: () => state.layout,
-  set: v => state.layoutSet(v),
-})
+const layout = injection(kUILayout)
+
 const theme = computed({
   get: () => state.theme,
   set: v => state.themeSet(v),

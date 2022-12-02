@@ -428,16 +428,17 @@
   </v-container>
 </template>
 <script lang=ts setup>
-import { BaseServiceKey, MappingInfo, NatServiceKey, PeerServiceKey, UserServiceKey } from '@xmcl/runtime-api'
+import Hint from '@/components/Hint.vue'
+import { useBusy, useService, useServiceBusy } from '@/composables'
+import { kColorTheme } from '@/composables/colorTheme'
+import { useCurrentUser } from '@/composables/user'
+import { injection } from '@/util/inject'
+import { BaseServiceKey, MappingInfo, NatServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
+import PlayerAvatar from '../components/PlayerAvatar.vue'
 import { useDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
 import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
-import { useBusy, useService, useServiceBusy } from '@/composables'
-import PlayerAvatar from '../components/PlayerAvatar.vue'
-import Hint from '@/components/Hint.vue'
-import { useCurrentUser } from '@/composables/user'
-import { useColorTheme } from '@/composables/colorTheme'
 
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
@@ -450,7 +451,7 @@ const { handleUrl } = useService(BaseServiceKey)
 const { gameProfile } = useCurrentUser()
 const isLoadingNetwork = useServiceBusy(NatServiceKey, 'refreshNatType')
 
-const { errorColor, successColor, warningColor } = useColorTheme()
+const { errorColor, successColor, warningColor } = injection(kColorTheme)
 
 const tGroupState = computed(() => ({
   connected: '✔️ ' + t('peerGroupState.connected'),

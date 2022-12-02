@@ -50,7 +50,6 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
     ], () => {
       this.settingFile.write({
         locale: this.state.locale,
-        layout: this.state.layout,
         autoInstallOnAppQuit: this.state.autoInstallOnAppQuit,
         autoDownload: this.state.autoDownload,
         allowPrerelease: this.state.allowPrerelease,

@@ -96,8 +96,4 @@ export interface SettingSchema {
    * @default false
    */
   globalShowLog: boolean
-  /**
-   * @default "default"
-   */
-  layout: 'default' | 'focus'
 }

@@ -29,7 +29,6 @@
 
 <script lang=ts setup>
 import { BaseServiceKey, UserServiceKey } from '@xmcl/runtime-api'
-import { useColorTheme } from '../composables/colorTheme'
 import { useDialog } from '../composables/dialog'
 import { LoginDialog } from '../composables/login'
 import LoginDialogLoginView from './AppLoginDialogForm.vue'
@@ -40,7 +39,6 @@ const { isShown, parameter } = useDialog(LoginDialog)
 const { inside } = useDropLink()
 
 // handle the not login issue
-const { primaryColor } = useColorTheme()
 
 const { state } = useService(UserServiceKey)
 const userProfile = computed(() => state.users[state.selectedUser.id])

@@ -123,14 +123,6 @@
         "globalShowLog": {
             "default": false,
             "type": "boolean"
-        },
-        "layout": {
-            "default": "default",
-            "enum": [
-                "default",
-                "focus"
-            ],
-            "type": "string"
         }
     },
     "required": [
@@ -149,7 +141,6 @@
         "globalVmOptions",
         "httpProxy",
         "httpProxyEnabled",
-        "layout",
         "locale",
         "maxSockets",
         "theme"

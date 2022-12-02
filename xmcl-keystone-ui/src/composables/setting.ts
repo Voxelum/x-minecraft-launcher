@@ -1,5 +1,7 @@
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useServiceBusy, useService } from '@/composables'
+import { injection } from '@/util/inject'
+import { kUILayout } from './uiLayout'
 
 export function useUpdateSettings() {
   const { state, checkUpdate } = useService(BaseServiceKey)
@@ -16,11 +18,6 @@ export function useUpdateSettings() {
     downloadingUpdate,
     updateInfo,
   }
-}
-
-export function useInFocusMode() {
-  const { state } = useService(BaseServiceKey)
-  return computed(() => state.layout === 'focus')
 }
 
 export function useSettings() {

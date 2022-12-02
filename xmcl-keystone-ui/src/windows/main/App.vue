@@ -5,12 +5,12 @@
     :class="{ 'dark': vuetify.theme.dark }"
     :style="cssVars"
   >
-    <background />
-    <system-bar />
+    <AppBackground />
+    <AppSystemBar />
     <div
       class="flex h-full overflow-auto relative"
     >
-      <side-bar />
+      <AppSideBar />
       <main
         class="flex top-0 bottom-0 right-0 overflow-auto max-h-full relative"
         :class="{ solid: !blurMainBody }"
@@ -23,17 +23,17 @@
         </transition>
       </main>
     </div>
-    <universal-drop-view />
-    <context-menu />
-    <notifier />
-    <feedback-dialog />
-    <login-dialog />
-    <task-dialog />
-    <add-instance-dialog />
-    <add-server-dialog />
-    <export-dialog />
-    <app-share-instance-dialog />
-    <app-instance-delete-dialog />
+    <AppDropDialog />
+    <ContextMenu />
+    <AppNotifier />
+    <AppFeedbackDialog />
+    <AppLoginDialog />
+    <AppTaskDialog />
+    <AppAddInstanceDialog />
+    <AppAddServerDialog />
+    <AppExportDialog />
+    <AppShareInstanceDialog />
+    <AppInstanceDeleteDialog />
   </v-app>
   <v-app
     v-else
@@ -41,45 +41,48 @@
     :class="{ 'dark': vuetify.theme.dark }"
     :style="cssVars"
   >
-    <system-bar />
+    <AppSystemBar />
     <div
       class="flex h-full overflow-auto relative"
     >
-      <setup @ready="shouldSetup = false" />
+      <Setup @ready="shouldSetup = false" />
     </div>
-    <feedback-dialog />
+    <AppFeedbackDialog />
   </v-app>
 </template>
 
 <script lang=ts setup>
+import '@/assets/common.css'
 import ContextMenu from '@/components/ContextMenu.vue'
+import { useExternalRoute, useI18nSync, useThemeSync } from '@/composables'
 import { useAuthProfileImportNotification } from '@/composables/authProfileImport'
 import { useBackground } from '@/composables/background'
-import { useColorTheme } from '@/composables/colorTheme'
-import { useDefaultErrorHandler } from '@/composables/errorHandler'
-import { useAllServices } from './services'
-import AddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
-import AddServerDialog from '@/views/AppAddServerDialog.vue'
-import Background from '@/views/AppBackground.vue'
-import UniversalDropView from '@/views/AppDropDialog.vue'
-import ExportDialog from '@/views/AppExportDialog.vue'
-import FeedbackDialog from '@/views/AppFeedbackDialog.vue'
-import AppInstanceDeleteDialog from '@/views/AppInstanceDeleteDialog.vue'
-import LoginDialog from '@/views/AppLoginDialog.vue'
-import Notifier from '@/views/AppNotifier.vue'
-import AppShareInstanceDialog from '@/views/AppShareInstanceDialog.vue'
-import SideBar from '@/views/AppSideBar.vue'
-import SystemBar from '@/views/AppSystemBar.vue'
-import TaskDialog from '@/views/AppTaskDialog.vue'
-import Setup from '@/views/Setup.vue'
-import '@/assets/common.css'
-import { useExternalRoute, useI18nSync, useThemeSync } from '@/composables'
+import { kColorTheme, useColorTheme } from '@/composables/colorTheme'
 import { useDropService } from '@/composables/dropService'
+import { useDefaultErrorHandler } from '@/composables/errorHandler'
+import { kUILayout, useUILayout } from '@/composables/uiLayout'
 import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
+import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
+import AppAddServerDialog from '@/views/AppAddServerDialog.vue'
+import AppBackground from '@/views/AppBackground.vue'
+import AppDropDialog from '@/views/AppDropDialog.vue'
+import AppExportDialog from '@/views/AppExportDialog.vue'
+import AppFeedbackDialog from '@/views/AppFeedbackDialog.vue'
+import AppInstanceDeleteDialog from '@/views/AppInstanceDeleteDialog.vue'
+import AppLoginDialog from '@/views/AppLoginDialog.vue'
+import AppNotifier from '@/views/AppNotifier.vue'
+import AppShareInstanceDialog from '@/views/AppShareInstanceDialog.vue'
+import AppSideBar from '@/views/AppSideBar.vue'
+import AppSystemBar from '@/views/AppSystemBar.vue'
+import AppTaskDialog from '@/views/AppTaskDialog.vue'
+import Setup from '@/views/Setup.vue'
+import { useAllServices } from './services'
 
-const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = useColorTheme()
+const colorTheme = useColorTheme()
+const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = colorTheme
 const { blurMainBody } = useBackground()
+provide(kColorTheme, colorTheme)
 
 const cssVars = computed(() => ({
   '--primary': primaryColor.value,
@@ -111,6 +114,7 @@ useAuthProfileImportNotification()
 useI18nSync()
 useThemeSync()
 useExternalRoute()
+provide(kUILayout, useUILayout())
 
 </script>
 

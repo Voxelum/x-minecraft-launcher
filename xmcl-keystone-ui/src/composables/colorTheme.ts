@@ -1,5 +1,8 @@
 import { useTheme } from '@/composables'
 import { useLocalStorageCacheStringValue } from '@/composables/cache'
+import { InjectionKey } from 'vue'
+
+export const kColorTheme: InjectionKey<ReturnType<typeof useColorTheme>> = Symbol('ColorTheme')
 
 export function useColorTheme() {
   const { darkTheme } = useTheme()
