@@ -1,3 +1,4 @@
+import { Platform } from '../entities/platform'
 import { Exception } from '../entities/exception'
 import { SettingSchema } from '../entities/setting.schema'
 import { ReleaseInfo } from '../entities/update'
@@ -55,7 +56,11 @@ export class BaseState implements SettingSchema {
   /**
    * The current operating system platform
    */
-  platform: 'linux' | 'win32' | 'darwin' = 'win32'
+  platform: Platform = {
+    name: 'unknown',
+    version: '',
+    arch: '',
+  }
 
   httpProxy = ''
 
@@ -140,10 +145,6 @@ export class BaseState implements SettingSchema {
 
   onlineSet(online: boolean) {
     this.online = online
-  }
-
-  platformSet(platform: 'linux' | 'win32' | 'darwin') {
-    this.platform = platform
   }
 
   maxSocketsSet(val: number) {

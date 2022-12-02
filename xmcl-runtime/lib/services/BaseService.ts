@@ -22,6 +22,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
     super(app, () => {
       const state = new BaseState()
       state.version = app.version
+      state.platform = app.platform
       state.build = app.build
       state.env = app.env
       state.root = app.gameDataPath

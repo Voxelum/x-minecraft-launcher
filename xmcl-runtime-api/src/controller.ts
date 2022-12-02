@@ -1,3 +1,5 @@
+import { GenericEventEmitter } from './events'
+
 /**
  * Port from electron
  */
@@ -80,7 +82,12 @@ export interface SaveDialogOptions {
   securityScopedBookmarks?: boolean
 }
 
-export interface WindowController {
+interface WindowControllerEventMap {
+  maximize: boolean
+  minimize: boolean
+}
+
+export interface WindowController extends GenericEventEmitter<WindowControllerEventMap> {
   /**
    * Show current window
    */

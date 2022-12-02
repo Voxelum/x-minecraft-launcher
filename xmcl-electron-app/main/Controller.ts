@@ -253,10 +253,12 @@ export default class Controller implements LauncherAppController {
       height: config.height > 0 ? config.height : undefined,
       minWidth: man.minWidth,
       minHeight: man.minHeight,
-      frame: false,
+      frame: true,
       backgroundColor: man.backgroundColor,
       vibrancy: man.vibrancy ? 'sidebar' : undefined, // or popover
       icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
+      titleBarStyle: this.app.platform.name === 'linux' ? 'default' : 'hidden',
+      trafficLightPosition: this.app.platform.name === 'osx' ? { x: 14, y: 10 } : undefined,
       webPreferences: {
         preload: indexPreload,
         session: restoredSession,
@@ -280,7 +282,8 @@ export default class Controller implements LauncherAppController {
       browser.show()
       browser.focus()
     })
-    browser.on('close', () => { })
+    browser.on('close', () => {
+    })
     browser.webContents.on('will-navigate', (event, url) => {
       event.preventDefault()
       if (!IS_DEV) {

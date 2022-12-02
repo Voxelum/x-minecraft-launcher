@@ -40,6 +40,7 @@ export * from './src/services/VersionService'
 export * from './src/services/PeerService'
 
 export * from './src/entities/component'
+export * from './src/entities/platform'
 export * from './src/entities/curseforge'
 export * from './src/entities/exception'
 export * from './src/entities/instance.schema'

@@ -1,5 +1,6 @@
 import { WindowController } from '@xmcl/runtime-api'
 import { contextBridge, ipcRenderer } from 'electron'
+import EventEmitter from 'events'
 
 export enum Operation {
   Minimize = 0,
@@ -23,10 +24,29 @@ function createController(): WindowController {
     return ipcRenderer.invoke('control', Operation.Minimize)
   }
   function maximize() {
-    return ipcRenderer.invoke('control', Operation.Maximize)
+    ipcRenderer.invoke('control', Operation.Maximize)
   }
+  ipcRenderer.on('maximize', (_, v) => {
+    emitter.emit('maximize', v)
+  })
+  ipcRenderer.on('minimize', (_, v) => {
+    emitter.emit('minimize', v)
+  })
+  const emitter = new EventEmitter()
 
   return {
+    on(channel, listener) {
+      emitter.on(channel, listener)
+      return this
+    },
+    once(channel, listener) {
+      emitter.once(channel, listener)
+      return this
+    },
+    removeListener(channel, listener) {
+      emitter.removeListener(channel, listener)
+      return this
+    },
     minimize,
     maximize,
     show,
