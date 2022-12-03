@@ -1,6 +1,6 @@
 import { MinecraftLanDiscover } from '@xmcl/client'
 import { ChecksumNotMatchError } from '@xmcl/installer'
-import { InstanceManifest, PeerService as IPeerService, PeerServiceKey, PeerState, ShareInstanceOptions } from '@xmcl/runtime-api'
+import { InstanceManifest, PeerService as IPeerService, PeerServiceKey, PeerState, ShareInstanceOptions, UpnpMapOptions } from '@xmcl/runtime-api'
 import { AbortableTask, BaseTask } from '@xmcl/task'
 import { randomFill, randomUUID } from 'crypto'
 import { createWriteStream } from 'fs'
@@ -22,6 +22,7 @@ import { MessageLan } from '../entities/peer/messages/lan'
 import { kWorker, WorkerInterface } from '../entities/worker'
 import { ImageStorage } from '../util/imageStore'
 import { Inject } from '../util/objectRegistry'
+import { NatService } from './NatService'
 import { ExposeServiceKey, Lock, Singleton, StatefulService } from './Service'
 import { UserService } from './UserService'
 
@@ -44,19 +45,77 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
   private group: PeerGroup | undefined
 
+  private portCandidate = 35565
+
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ImageStorage) private imageStorage: ImageStorage,
     @Inject(kWorker) private worker: WorkerInterface,
+    @Inject(NatService) natService: NatService,
     @Inject(UserService) private userService: UserService,
   ) {
     super(app, () => new PeerState(), async () => {
-      await userService.initialize()
-      this.fetchCredential()
-      this.storeManager.subscribe('userProfile', (profile) => {
-        if (profile.authService === 'microsoft' && this.iceServers.length === 0) {
-          this.fetchCredential()
+      const initCredential = async () => {
+        await userService.initialize()
+        await this.fetchCredential()
+        this.storeManager.subscribe('userProfile', (profile) => {
+          if (profile.authService === 'microsoft' && this.iceServers.length === 0) {
+            this.fetchCredential()
+          }
+        })
+      }
+      const initNat = async () => {
+        await natService.initialize()
+
+        const mappings = await natService.getMappings()
+        const existedMappings = mappings.filter(m => m.description.indexOf('XMCL Multiplayer') !== -1 && m.enabled)
+        const findPorts = () => {
+          let candidate = this.portCandidate
+          while (candidate < 60000) {
+            if (mappings.some(p => p.public.port === candidate ||
+              p.public.port === candidate + 1 ||
+              p.public.port === candidate + 2)) {
+              // port is occupied
+              candidate += 3
+            } else {
+              // candidate pass
+              break
+            }
+          }
+          return [[candidate, candidate], [candidate + 1, candidate + 1], [candidate + 2, candidate + 2]] as const
         }
-      })
+        if (existedMappings.length > 0) {
+          this.log('Reuse the existed upnp mapping %o', existedMappings)
+          this.portCandidate = existedMappings[0].private.port
+        } else {
+          const ports = findPorts()
+          const pendingMappings: UpnpMapOptions[] = []
+          for (const [priv, pub] of ports) {
+            pendingMappings.push({
+              description: `XMCL Multiplayer - udp - ${priv} - ${pub}`,
+              protocol: 'udp',
+              private: priv,
+              public: pub,
+              ttl: 24 * 60 * 60,
+            }, {
+              description: `XMCL Multiplayer - tcp - ${priv} - ${pub}`,
+              protocol: 'tcp',
+              private: priv,
+              public: pub,
+              ttl: 24 * 60 * 60,
+            })
+          }
+          this.log('Create new upnp mapping %o', pendingMappings)
+          await Promise.all(pendingMappings.map(n => natService.unmap({
+            protocol: n.protocol,
+            public: n.public,
+          })))
+          await Promise.all(pendingMappings.map(n => natService.map(n)))
+          this.portCandidate = ports[0][0]
+        }
+      }
+
+      initCredential()
+      initNat()
     })
 
     if (IS_DEV) {
@@ -302,7 +361,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       getSharedAssetsPath: () => this.getPath('assets'),
       getSharedLibrariesPath: () => this.getPath('libraries'),
       getSharedImagePath: (image) => join(this.imageStorage.root, image),
-    }, this)
+    }, this, this.portCandidate)
 
     if (remoteId) {
       conn.setRemoteId(remoteId)

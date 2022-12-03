@@ -347,10 +347,15 @@
             class="self-center mr-5"
           >
             <v-list-item-subtitle>
-              {{ c.selectedCandidate.local.type }}
+              <v-icon>
+                place
+              </v-icon>
+              {{ tTransportType[c.selectedCandidate.local.type] }}
               {{ c.selectedCandidate.local.address }}:{{ c.selectedCandidate.local.port }}
-              ->
-              {{ c.selectedCandidate.remote.type }}
+              <v-icon>
+                person_pin_circle
+              </v-icon>
+              {{ tTransportType[c.selectedCandidate.remote.type] }}
               {{ c.selectedCandidate.remote.address }}:{{ c.selectedCandidate.remote.port }}
             </v-list-item-subtitle>
           </v-list-item-action>
