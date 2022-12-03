@@ -76,6 +76,11 @@ export const config: Configuration = {
     ],
   },
   win: {
+    extraFiles: {
+      from: './build/extra',
+      to: '.',
+      filter: '*.dll',
+    },
     artifactName: process.env.BUILD_TARGET === 'appx'
       // eslint-disable-next-line no-template-curly-in-string
       ? 'xmcl-${version}-unsigned.${ext}'
