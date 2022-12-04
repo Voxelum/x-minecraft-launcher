@@ -1,5 +1,6 @@
 <template>
   <div class="flex flex-col max-h-full select-none h-full px-8 py-4 pb-0">
+    <ModTooltip />
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
       :active="loading"
@@ -7,43 +8,34 @@
       :indeterminate="true"
     />
 
-    <mod-header :show-compatible.sync="filterInCompatible" />
-
-    <!-- <div class="flex gap-2 p-2 underline">
-      <a>
-        Installed
-      </a>
-      <v-divider vertical />
-      <a>
-        Store
-      </a>
-    </div> -->
+    <ModHeader
+      :mod-loader-filters.sync="modLoaderFilters"
+      :count="enabledModCounts"
+    />
 
     <div
-      class="flex overflow-auto h-full flex-col container py-0"
+      class="flex overflow-auto h-full flex-col py-0"
       @dragend="onDragEnd"
       @dragover.prevent
       @drop="onDropToImport"
     >
-      <refreshing-tile
+      <RefreshingTile
         v-if="loading"
         class="h-full"
       />
-      <hint
+      <Hint
         v-else-if="items.length === 0"
         icon="save_alt"
         :text="t('mod.dropHint')"
         :absolute="true"
         class="h-full z-0"
       />
-      <transition-group
+      <div
         v-else
-        name="transition-list"
-        tag="div"
         class="flex flex-col overflow-auto h-full w-full"
         :class="{ 'selection-mode': isSelectionMode }"
       >
-        <mod-card
+        <ModCard
           v-for="(item, index) in items"
           :key="item.hash"
           v-observe-visibility="
@@ -62,19 +54,19 @@
           key="dummy"
           class="min-h-10"
         />
-      </transition-group>
-      <delete-dialog
+      </div>
+      <DeleteDialog
         :width="400"
         persistent
         :title="t('mod.deletion')"
         @cancel="cancelDelete()"
         @confirm="confirmDelete()"
       >
-        <mod-delete-view :items="deletingMods" />
-      </delete-dialog>
+        <ModDeleteView :items="deletingMods" />
+      </DeleteDialog>
     </div>
     <div class="absolute w-full left-0 bottom-0 flex items-center justify-center mb-5 pointer-events-none">
-      <float-button
+      <FloatButton
         class="pointer-events-auto"
         :deleting="isDraggingMod"
         :visible="isDraggingMod || isModified"
@@ -86,259 +78,42 @@
   </div>
 </template>
 
-<script lang=ts>
-import { Ref } from 'vue'
-import { useDrop, useOperation, useResourceOperation, useFilterCombobox, useService } from '@/composables'
-import { useLocalStorageCacheBool } from '@/composables/cache'
+<script lang=ts setup>
 import Hint from '@/components/Hint.vue'
 import RefreshingTile from '@/components/RefreshingTile.vue'
-import ModCard from './ModCard.vue'
-import FloatButton from './ModFloatButton.vue'
-import { ModItem, useInstanceMods } from '../composables/mod'
+import { useDrop, useResourceOperation } from '@/composables'
+import { useModDeletion } from '@/composables/modDelete'
+import { useModDragging } from '@/composables/modDraggable'
+import { useModFilter } from '@/composables/modFilter'
+import { useModSelection } from '@/composables/modSelection'
+import { kModTooltip, useModTooltip } from '@/composables/modTooltip'
+import { useModVisibleFilter } from '@/composables/modVisibility'
+import { ResourceDomain } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
-import ModHeader from './ModHeader.vue'
+import { useInstanceMods } from '../composables/mod'
+import ModCard from './ModCard.vue'
 import ModDeleteView from './ModDeleteView.vue'
-import { useDialog } from '../composables/dialog'
-import { InstanceModsServiceKey, ResourceDomain } from '@xmcl/runtime-api'
+import FloatButton from './ModFloatButton.vue'
+import ModHeader from './ModHeader.vue'
+import ModTooltip from './ModTooltip.vue'
 
-function setupDragMod(items: Ref<ModItem[]>, selectedMods: Ref<ModItem[]>, isSelectionMode: Ref<boolean>) {
-  const isDraggingMod = computed(() => items.value.some(i => i.dragged))
+const { importResource } = useResourceOperation()
+const { items: mods, commit, committing, isModified, loading, enabledModCounts } = useInstanceMods()
 
-  function onItemDragstart(mod: ModItem) {
-    if (isSelectionMode.value && mod.selected) {
-      for (const item of selectedMods.value) {
-        item.dragged = true
-      }
-    } else {
-      mod.dragged = true
-    }
-  }
-  function onDragEnd() {
-    for (const item of items.value) {
-      item.dragged = false
-    }
-  }
-  return {
-    isDraggingMod,
-    onDragEnd,
-    onItemDragstart,
-  }
-}
+provide(kModTooltip, useModTooltip())
 
-function setupDeletion(items: Ref<ModItem[]>) {
-  const { removeResource } = useResourceOperation()
-  const { uninstall } = useService(InstanceModsServiceKey)
-  const { show } = useDialog('deletion')
-  const { begin: beginDelete, cancel: cancelDelete, operate: confirmDelete, data: deletingMods } = useOperation<ModItem[]>([], (mods) => {
-    const enabled = mods.filter(m => m.enabled)
-    uninstall({ mods: enabled.map(m => m.resource) }).then(() => {
-      for (const mod of mods) {
-        removeResource(mod.hash)
-      }
-    })
-  })
-  function startDelete(item?: ModItem) {
-    const toDelete = items.value.filter(i => i.dragged || (i.selected))
-    if (toDelete.length > 0) {
-      beginDelete(toDelete)
-      show()
-    } else if (item) {
-      beginDelete([item])
-      show()
-    }
-  }
-  return {
-    deletingMods,
-    startDelete,
-    confirmDelete,
-    cancelDelete,
-  }
-}
+const filtered = useModFilter(mods)
+const visibleFiltered = useModVisibleFilter(filtered.items)
+const selection = useModSelection(filtered.items)
+const { isSelectionMode, selectedItems, onEnable, onClick } = selection
+const { t } = useI18n()
 
-function setupSelection(items: Ref<ModItem[]>) {
-  const isSelectionMode = ref(false)
-  const selectedItems = computed(() => items.value.filter(i => i.selected))
-
-  function select(start: number, end: number, value = true) {
-    if (!isSelectionMode.value) {
-      isSelectionMode.value = true
-    }
-    for (let i = start; i < end; ++i) {
-      items.value[i].selected = value
-    }
-  }
-  function selectOrUnselect(mod: ModItem) {
-    if (isSelectionMode.value) {
-      mod.selected = !mod.selected
-    }
-  }
-  let lastIndex = -1
-  function onClick(event: MouseEvent, index: number) {
-    if (lastIndex !== -1 && event.shiftKey) {
-      let min = lastIndex
-      let max = index
-      if (lastIndex > index) {
-        max = lastIndex
-        min = index
-      }
-      select(min + 1, max, items.value[lastIndex].selected)
-    }
-    if (event.ctrlKey) {
-      if (!isSelectionMode.value) {
-        isSelectionMode.value = true
-      }
-    }
-    selectOrUnselect(items.value[index])
-    lastIndex = index
-  }
-  function onKeyup(e: KeyboardEvent) {
-    if (e.key === 'Escape') {
-      isSelectionMode.value = false
-      for (const item of items.value) {
-        item.selected = false
-      }
-    }
-  }
-  function onKeyDown(e: KeyboardEvent) {
-    if ((e.key === 'a') && e.ctrlKey) {
-      console.log(`${items.value.length} select`)
-      select(0, items.value.length)
-      e.preventDefault()
-      return false
-    }
-    return true
-  }
-  function onEnable({ item, enabled }: { item: ModItem; enabled: boolean }) {
-    if (item.selected) {
-      selectedItems.value.forEach(i => { i.enabled = enabled })
-    } else {
-      item.enabled = enabled
-    }
-  }
-  onMounted(() => {
-    document.addEventListener('keydown', onKeyDown)
-    document.addEventListener('keyup', onKeyup)
-  })
-  onUnmounted(() => {
-    document.removeEventListener('keydown', onKeyDown)
-    document.removeEventListener('keyup', onKeyup)
-  })
-  return {
-    selectedItems,
-    onEnable,
-    onClick,
-    select,
-    isSelectionMode,
-  }
-}
-
-function setupVisibleFilter(items: Ref<ModItem[]>) {
-  const visibleCount = ref(30)
-  function onVisible(visible: boolean, index: number) {
-    if (!visible) {
-      // if (visibleCount.value > index + 40) {
-      //   visibleCount.value = index + 40
-      // }
-    } else if (visibleCount.value < index + 20) {
-      visibleCount.value += 20
-    } else if (visibleCount.value > index + 50) {
-      visibleCount.value -= 20
-    }
-  }
-  const mods = computed(() => items.value
-    .filter((m, i) => i < visibleCount.value))
-  return {
-    items: mods,
-    visibleCount,
-    onVisible,
-  }
-}
-
-function setupFilter(items: Ref<ModItem[]>) {
-  function getFilterOptions(item: ModItem) {
-    return [
-      { label: 'info', value: item.type, color: 'lime' },
-      { value: item.id, color: 'orange en-1' },
-      ...item.tags.map(t => ({ type: 'tag', value: t, label: 'label' })),
-    ]
-  }
-  const filterOptions = computed(() => items.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
-  const { filter } = useFilterCombobox<ModItem>(filterOptions, getFilterOptions, (v) => `${v.name} ${v.version} ${v.compatibility.minecraft?.version || ''}`)
-
-  const filterInCompatible = useLocalStorageCacheBool('ModSettingPage.filterInCompatible', false)
-
-  function isCompatibleMod(mod: ModItem) {
-    if (mod.enabled) {
-      return true
-    }
-    if (filterInCompatible.value) {
-      return mod.compatible !== false
-    }
-    return true
-  }
-  function group(list: ModItem[], mod: ModItem): ModItem[] {
-    if (list.find(v => v.hash === mod.hash)) return list
-    const existed = list.findIndex(v => v.id === mod.id && v.type === mod.type)
-    if (existed !== -1 && !list[existed].enabled && !mod.enabled) {
-      list.splice(existed + 1, 0, mod)
-      mod.subsequence = true
-    } else {
-      list.push(mod)
-      mod.subsequence = false
-    }
-    return list
-  }
-
-  const mods = computed(() => filter(items.value)
-    .filter(isCompatibleMod)
-    .sort((a, b) => (a.enabledState ? -1 : 1))
-    .reduce(group, []))
-
-  return {
-    items: mods,
-    filterInCompatible,
-  }
-}
-
-export default defineComponent({
-  components: {
-    ModCard,
-    FloatButton,
-    Hint,
-    RefreshingTile: RefreshingTile as any,
-    DeleteDialog,
-    ModHeader,
-    ModDeleteView,
-  },
-  setup() {
-    const { importResource } = useResourceOperation()
-    const { items: mods, commit, committing, isModified, loading } = useInstanceMods()
-
-    const filtered = setupFilter(mods)
-    const visibleFiltered = setupVisibleFilter(filtered.items)
-    const selection = setupSelection(filtered.items)
-    const { isSelectionMode, selectedItems } = selection
-    const { t } = useI18n()
-
-    const { onDrop: onDropToImport } = useDrop((file) => {
-      importResource({ resources: [{ path: file.path, domain: ResourceDomain.Mods }] })
-    })
-
-    return {
-      ...setupDragMod(filtered.items, selectedItems, isSelectionMode),
-      ...setupDeletion(mods),
-      filterInCompatible: filtered.filterInCompatible,
-      ...visibleFiltered,
-
-      t,
-      onDropToImport,
-      commit,
-      committing,
-      isModified,
-      loading,
-      ModCard,
-      ...selection,
-    }
-  },
+const { onDrop: onDropToImport } = useDrop((file) => {
+  importResource({ resources: [{ path: file.path, domain: ResourceDomain.Mods }] })
 })
+
+const { isDraggingMod, onDragEnd, onItemDragstart } = useModDragging(filtered.items, selectedItems, isSelectionMode)
+const { deletingMods, startDelete, confirmDelete, cancelDelete } = useModDeletion(mods)
+const { onVisible, items } = visibleFiltered
+const { modLoaderFilters } = filtered
 </script>

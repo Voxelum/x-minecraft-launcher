@@ -6,8 +6,8 @@
     outlined
     :draggable="!source.enabled"
     :class="{
-      incompatible: props.source.compatible === false,
-      maybe: props.source.compatible === 'maybe',
+      incompatible: isCompatible === false,
+      maybe: isCompatible === 'maybe',
       subsequence: source.subsequence === true,
       dragged: source.dragged,
     }"
@@ -32,7 +32,7 @@
       class="absolute top-0 left-0"
       stream
     />
-    <transition-group
+    <TransitionGroup
       class="layout justify-center align-center fill-height select-none"
       name="transition-list"
       tag="div"
@@ -81,8 +81,9 @@
           <text-component :source="source.description" />
         </v-card-text>
         <v-lazy>
-          <mod-card-labels
+          <ModCardLabels
             :source="source"
+            :compatibility="compatibility"
             :on-edit-tag="onEditTag"
             :on-delete-tag="onDeleteTag"
           />
@@ -100,33 +101,29 @@
           />
         </v-lazy>
       </v-flex>
-    </transition-group>
+    </TransitionGroup>
   </v-card>
 </template>
 
 <script lang=ts setup>
-import { Ref } from 'vue'
-import { BaseServiceKey } from '@xmcl/runtime-api'
+import unknownPack from '@/assets/unknown_pack.png'
+import { useTags } from '@/composables'
+import { useModCompatibility } from '@/composables/modCompatibility'
+import { useModItemContextMenuItems } from '@/composables/modContextMenu'
 import type Vue from 'vue'
-import { ContextMenuItem } from '../composables/contextMenu'
-import { useCurseforgeRoute, useMcWikiRoute } from '../composables/curseforgeRoute'
+import { Ref } from 'vue'
 import { ModItem } from '../composables/mod'
 import { vContextMenu } from '../directives/contextMenu'
 import { vSelectableCard } from '../directives/draggableCard'
 import { vLongPress } from '../directives/longPress'
 import ModCardLabels from './ModCardLabels.vue'
-import unknownPack from '@/assets/unknown_pack.png'
-import { useService, useTags } from '@/composables'
 
 const props = defineProps<{ source: ModItem; selection: boolean }>()
 const emit = defineEmits(['tags', 'enable', 'dragstart', 'select', 'delete', 'editTags', 'mouseenter', 'dragend', 'click'])
 
-const { openInBrowser, showItemInDirectory } = useService(BaseServiceKey)
-const { push } = useRouter()
-const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
-const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute()
-const { t } = useI18n()
+const modItem = computed(() => props.source)
 const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.source.tags, set(v) { emit('tags', v) } }), computed(() => props.source.selected))
+const { isCompatible, compatibility } = useModCompatibility(modItem)
 
 const onDeleteTag = removeTag
 const iconImage: Ref<Vue | null> = ref(null)
@@ -171,102 +168,7 @@ function emitSelect() {
   emit('select')
 }
 
-const contextMenuItems = computed(() => {
-  const items: ContextMenuItem[] = [{
-    text: t('mod.showFile', { file: props.source.path }),
-    children: [],
-    onClick: () => {
-      showItemInDirectory(props.source.path)
-    },
-    icon: 'folder',
-  }, {
-    text: t('tag.create'),
-    children: [],
-    onClick: () => {
-      createTag()
-    },
-    icon: 'add',
-  }]
-  if (props.source.selected) {
-    items.push({
-      text: t('tag.createSelected'),
-      children: [],
-      onClick: () => {
-        createTag(true)
-      },
-      icon: 'add',
-    })
-  }
-  items.push({
-    text: t('delete.name', { name: props.source.name }),
-    children: [],
-    onClick() {
-      emit('delete')
-    },
-    icon: 'delete',
-    color: 'error',
-  })
-  if (props.source.url) {
-    const url = props.source.url
-    items.push({
-      text: t('mod.openLink', { url }),
-      children: [],
-      onClick: () => {
-        openInBrowser(url)
-      },
-      icon: 'link',
-    })
-  }
-  if (props.source.curseforge) {
-    const curseforge = props.source.curseforge
-    items.push({
-      text: t('mod.showInCurseforge', { name: props.source.name }),
-      children: [],
-      onClick: () => {
-        goProjectAndRoute(curseforge.projectId, 'mc-mods')
-      },
-      icon: '$vuetify.icons.curseforge',
-    })
-  } else {
-    items.push({
-      text: t('mod.searchOnCurseforge', { name: props.source.name }),
-      children: [],
-      onClick: () => {
-        searchProjectAndRoute(props.source.name, 'mc-mods')
-      },
-      icon: 'search',
-    })
-  }
-  if (props.source.modrinth) {
-    const modrinth = props.source.modrinth
-    items.push({
-      text: t('mod.showInModrinth', { name: props.source.name }),
-      children: [],
-      onClick: () => {
-        push(`/modrinth/${modrinth.projectId}`)
-      },
-      icon: '$vuetify.icons.modrinth',
-    })
-  } else {
-    items.push({
-      text: t('mod.searchOnModrinth', { name: props.source.name }),
-      children: [],
-      onClick: () => {
-        push(`/modrinth?query=${props.source.name}`)
-      },
-      icon: 'search',
-    })
-  }
-  items.push({
-    text: t('mod.searchOnMcWiki', { name: props.source.name }),
-    children: [],
-    onClick: () => {
-      searchMcWiki(props.source.name)
-    },
-    icon: 'search',
-  })
-  return items
-})
+const contextMenuItems = useModItemContextMenuItems(modItem, () => emit('delete'), createTag)
 </script>
 
 <style scoped>

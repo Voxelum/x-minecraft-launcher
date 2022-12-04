@@ -1,74 +1,117 @@
 <template>
   <v-card
-    class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5 shadow"
+    class="rounded-lg py-1 pr-2 z-5 shadow"
     outlined
   >
-    <!-- <v-toolbar-title class="headline self-center pl-2">
-        {{ t("mod.name", 2) }}
-      </v-toolbar-title> -->
-    <!-- <v-spacer /> -->
-    <filter-combobox
-      class="pr-3 max-w-200 max-h-full"
-      :label="t('mod.filter')"
-    />
-    <!-- <v-tooltip bottom>
-      <template v-slot:activator="{ on }">-->
-    <div class="flex-grow" />
-    <v-btn
-      icon
-      @click="showDirectory()"
+    <div
+      class="flex flex-shrink flex-grow-0 items-center gap-2"
     >
-      <v-icon>folder</v-icon>
-    </v-btn>
+      <filter-combobox
+        class="pr-3 max-w-200 max-h-full"
+        :label="t('mod.filter')"
+      />
+      <v-select
+        class="max-w-40"
+        hide-details
+        label="Minecraft"
+        flat
+        solo
+        clearable
+      />
+      <v-btn-toggle
+        multiple
+        dense
+        :value="modLoaderFilters"
+        @change="emit('update:modLoaderFilters', $event)"
+      >
+        <v-btn
+          icon
+          text
+          value="forge"
+        >
+          <v-img
+            width="28"
+            :src="'image://builtin/forge'"
+          />
+        </v-btn>
 
-    <v-tooltip bottom>
-      <template #activator="{ on }">
         <v-btn
           icon
-          v-on="on"
-          @click="goToCurseforgeMods()"
+          text
+          value="fabric"
         >
-          <v-icon>
-            $vuetify.icons.curseforge
-          </v-icon>
+          <v-img
+            width="28"
+            :src="'image://builtin/fabric'"
+          />
         </v-btn>
-      </template>
-      {{ t(`mod.searchOnCurseforge`) }}
-    </v-tooltip>
-    <v-tooltip bottom>
-      <template #activator="{ on }">
+
         <v-btn
           icon
-          v-on="on"
-          @click="goToModrinthPage()"
+          text
+          value="quilt"
         >
-          <v-icon>
-            $vuetify.icons.modrinth
-          </v-icon>
+          <v-img
+            width="28"
+            :src="'image://builtin/quilt'"
+          />
         </v-btn>
-      </template>
-      {{ t(`modrinth.installFrom`) }}
-    </v-tooltip>
-    <v-tooltip bottom>
-      <template #activator="{ on }">
+
         <v-btn
           icon
-          v-on="on"
-          @click="emit('update:showCompatible', !showCompatible)"
+          text
+          value="optifine"
         >
-          <v-icon>
-            {{
-              showCompatible ? "visibility" : "visibility_off"
-            }}
-          </v-icon>
+          <v-img
+            width="28"
+            :src="'image://builtin/optifine'"
+          />
         </v-btn>
-      </template>
-      {{
-        showCompatible
-          ? t("mod.showIncompatible")
-          : t("mod.hideIncompatible")
-      }}
-    </v-tooltip>
+      </v-btn-toggle>
+      <div class="flex-grow" />
+      <v-btn
+        icon
+        @click="showDirectory()"
+      >
+        <v-icon>folder</v-icon>
+      </v-btn>
+
+      <v-tooltip bottom>
+        <template #activator="{ on }">
+          <v-btn
+            icon
+            v-on="on"
+            @click="goToCurseforgeMods()"
+          >
+            <v-icon>
+              $vuetify.icons.curseforge
+            </v-icon>
+          </v-btn>
+        </template>
+        {{ t(`mod.searchOnCurseforge`) }}
+      </v-tooltip>
+      <v-tooltip bottom>
+        <template #activator="{ on }">
+          <v-btn
+            icon
+            v-on="on"
+            @click="goToModrinthPage()"
+          >
+            <v-icon>
+              $vuetify.icons.modrinth
+            </v-icon>
+          </v-btn>
+        </template>
+        {{ t(`modrinth.installFrom`) }}
+      </v-tooltip>
+    </div>
+    <div
+      class="flex flex-shrink flex-grow-0 items-center justify-center gap-2"
+    >
+      <v-card-subtitle class="p-0 pt-2">
+        {{ t('mod.enabled', { count }) }}
+      </v-card-subtitle>
+    </div>
   </v-card>
 </template>
 <script lang="ts" setup>
@@ -77,9 +120,9 @@ import { useService } from '@/composables'
 import FilterCombobox from '@/components/FilterCombobox.vue'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 
-defineProps<{ showCompatible: boolean }>()
+defineProps<{ modLoaderFilters: string[]; count: number }>()
 
-const emit = defineEmits(['update:showCompatible'])
+const emit = defineEmits(['update:modLoaderFilters'])
 
 const { t } = useI18n()
 

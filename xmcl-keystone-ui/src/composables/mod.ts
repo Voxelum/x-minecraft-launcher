@@ -1,10 +1,21 @@
-import { computed, ref, Ref, watch } from 'vue'
-import { FabricModMetadata } from '@xmcl/mod-parser'
-import { Compatible, DepsCompatible, getModCompatibility, InstanceJavaServiceKey, InstanceModsServiceKey, InstanceServiceKey, isModCompatible, isModResource, isPersistedResource, resolveDepsCompatible, Resource, ResourceDomain, ResourceServiceKey, ResourceSourceModrinth } from '@xmcl/runtime-api'
 import { useRefreshable, useService, useServiceBusy } from '@/composables'
 import { isStringArrayEquals } from '@/util/equal'
 import { injection } from '@/util/inject'
+import { getModDependencies, ModDependencies } from '@/util/modDependencies'
 import { kStore } from '@/windows/main/store'
+import { InstanceJavaServiceKey, InstanceModsServiceKey, InstanceServiceKey, isModResource, isPersistedResource, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { computed, InjectionKey, ref, Ref, watch } from 'vue'
+
+export const kModsContext: InjectionKey<{
+  /**
+   * The current mods provided runtimes
+   */
+  runtime: Ref<Record<string, string>>
+  /**
+   * The current mdos provided icon map
+   */
+  icons: Ref<Record<string, string>>
+}> = Symbol('ModRuntime')
 
 /**
  * Contains some basic info of mod to display in UI.
@@ -32,12 +43,13 @@ export interface ModItem {
    */
   icon: string
 
+  modLoaders: string[]
+
   /**
    * The resource tag
    */
   tags: string[]
 
-  provideRuntime: Record<string, string>
   /**
    * The hash of the resource
    */
@@ -47,13 +59,9 @@ export interface ModItem {
    */
   url: string
 
-  type: 'fabric' | 'forge' | 'liteloader' | 'quilt' | 'unknown'
+  dependencies: ModDependencies
+  provideRuntime: Record<string, string>
 
-  compatible: Compatible
-
-  compatibility: DepsCompatible
-
-  dependenciesIcon: Record<string, string>
   /**
    * The pending enabled. Might be different from the actual enable state
    */
@@ -66,15 +74,7 @@ export interface ModItem {
   subsequence: boolean
 
   selected: boolean
-  hide: boolean
   dragged: boolean
-
-  curseforge?: {
-    projectId: number
-    fileId: number
-  }
-
-  modrinth?: ResourceSourceModrinth
 
   resource: Resource
 }
@@ -129,6 +129,9 @@ export function useInstanceMods() {
     enabledCache = enabled
   }
 
+  const iconMap: Ref<Record<string, string>> = ref({})
+  const enabledModCounts = ref(0)
+
   function updateItems() {
     const enabled = enabledCache
     const enabledItemHashes = enabledHashes.value
@@ -139,10 +142,11 @@ export function useInstanceMods() {
       ...disabled,
     ]
 
-    const iconMap: Record<string, string> = {}
+    const _iconMap: Record<string, string> = {}
+
     for (const item of result) {
       // Update icon map
-      iconMap[item.id] = item.icon
+      _iconMap[item.id] = item.icon
 
       // Update state
       const old = cachedDirectory.get(item.hash)
@@ -157,13 +161,9 @@ export function useInstanceMods() {
       cachedDirectory.set(item.hash, item)
     }
 
-    for (const item of result) {
-      for (const [id, entry] of Object.entries(item.compatibility)) {
-        item.dependenciesIcon[id] = iconMap[id]
-      }
-    }
-
+    iconMap.value = _iconMap
     items.value = result
+    enabledModCounts.value = enabled.length
   }
 
   const currentJava = computed(() => javaState.java)
@@ -185,7 +185,13 @@ export function useInstanceMods() {
     return runtime
   })
 
+  provide(kModsContext, {
+    runtime: currentRuntime,
+    icons: iconMap,
+  })
+
   const store = injection(kStore)
+
   store.subscribe((m) => {
     if (m.type === 'resource' || m.type === 'resources' || m.type === 'resourcesRemove') {
       updateItems()
@@ -210,39 +216,30 @@ export function useInstanceMods() {
   }
   function getModItemFromModResource(resource: Resource): ModItem {
     const isPersisted = isPersistedResource(resource)
-    const compatibility = computed(() => getModCompatibility(resource, currentRuntime.value))
-    const isCompatible = computed(() => resolveDepsCompatible(compatibility.value))
-    const modItem: ModItem = reactive({
+    const dependencies = markRaw(getModDependencies(resource))
+    const modItem: ModItem = ({
       path: resource.path,
       id: '',
       name: resource.path,
       version: '',
+      modLoaders: markRaw([]),
       description: '',
-      provideRuntime: {},
+      provideRuntime: markRaw({}),
       icon: resource.icons?.at(-1) ?? '',
-      compatibility,
-      compatible: isCompatible,
-      dependenciesIcon: {},
-      type: 'unknown',
+      dependencies,
       url: getUrl(resource),
       hash: resource.hash,
       tags: isPersisted ? [...resource.tags] : [],
       enabled: false,
       enabledState: false,
       subsequence: false,
-      hide: false,
       selected: false,
-      curseforge: resource.metadata.curseforge,
-      modrinth: resource.metadata.modrinth,
       dragged: false,
-      dependencies: {
-        minecraft: '',
-      },
       resource,
     })
     if (resource.metadata.forge) {
+      modItem.modLoaders.push('forge')
       const meta = resource.metadata.forge
-      modItem.type = 'forge'
       modItem.id = meta.modid
       modItem.name = meta.name
       modItem.version = meta.version
@@ -250,7 +247,7 @@ export function useInstanceMods() {
       modItem.provideRuntime[meta.modid] = meta.version
     } else if (resource.metadata.fabric) {
       const meta = resource.metadata.fabric instanceof Array ? resource.metadata.fabric[0] : resource.metadata.fabric
-      modItem.type = 'fabric'
+      modItem.modLoaders.push('fabric')
       modItem.id = meta.id
       modItem.version = meta.version
       modItem.name = meta.name ?? meta.id
@@ -265,22 +262,21 @@ export function useInstanceMods() {
       }
     } else if (resource.metadata.liteloader) {
       const meta = resource.metadata.liteloader
-      modItem.type = 'liteloader'
+      modItem.modLoaders.push('liteloader')
       modItem.name = meta.name
       modItem.version = meta.version ?? ''
       modItem.id = `${meta.name}`
       modItem.description = modItem.description ?? ''
       modItem.provideRuntime[meta.name] = meta.version ?? ''
     } else if (resource.metadata.quilt) {
+      modItem.modLoaders.push('quilt')
       const meta = resource.metadata.quilt
-      modItem.type = 'quilt'
       modItem.id = meta.quilt_loader.id
       modItem.version = meta.quilt_loader.version
       modItem.name = meta.quilt_loader.metadata?.name ?? meta.quilt_loader.id
       modItem.description = meta.quilt_loader.metadata?.description ?? ''
       modItem.provideRuntime[meta.quilt_loader.id] = meta.quilt_loader.version
     } else {
-      modItem.type = 'unknown'
       modItem.name = resource.fileName
     }
     if (!modItem.id) {
@@ -292,7 +288,7 @@ export function useInstanceMods() {
     if (!modItem.name) {
       modItem.name = resource.fileName
     }
-    return modItem
+    return reactive(modItem)
   }
 
   function getModItemFromResource(resource: Resource): ModItem {
@@ -305,13 +301,11 @@ export function useInstanceMods() {
       id: resource.hash,
       name: resource.fileName,
       provideRuntime: {},
-      compatible: 'maybe',
-      compatibility: {},
-      dependenciesIcon: {},
+      modLoaders: [],
+      dependencies: [],
       version: '',
       description: '',
       icon: resource.icons?.[0] || '',
-      type: 'unknown',
       url: getUrl(resource),
       hash: resource.hash,
       tags: isPersisted ? [...resource.tags] : [],
@@ -321,10 +315,7 @@ export function useInstanceMods() {
       hide: false,
       selected: false,
       dragged: false,
-      curseforge: resource.metadata.curseforge,
-      modrinth: resource.metadata.modrinth,
-      resource,
-      dependencies: { minecraft: '[*]' },
+      resource: markRaw(resource),
     })
   }
 
@@ -336,6 +327,7 @@ export function useInstanceMods() {
   return {
     isModified,
     items,
+    enabledModCounts,
     commit,
     committing,
     loading,

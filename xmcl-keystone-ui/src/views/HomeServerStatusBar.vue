@@ -11,9 +11,15 @@
         style="max-height: 64px;"
       >
       <div class="py-4">
-        <text-component :source="status.version.name" />
+        <text-component
+          :source="status.version.name"
+          localize
+        />
         <v-spacer />
-        <text-component :source="status.description" />
+        <text-component
+          :source="status.description"
+          localize
+        />
       </div>
     </v-card-text>
     <v-card-actions>

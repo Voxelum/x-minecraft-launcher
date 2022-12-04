@@ -10,38 +10,30 @@
     >
       {{ source.id }}
     </v-chip>
-    <v-tooltip
-      v-for="com of Object.entries(source.compatibility)"
-      :key="com[0]"
-      top
-      color="black"
-      transition="scroll-y-reverse-transition"
+    <v-chip
+      v-for="com of compatibility"
+      :key="com.modId"
+      small
+      label
+      outlined
+      @mouseenter="onEnter($event, com)"
+      @mouseleave="onLeave"
     >
-      <template #activator="{ on }">
-        <v-chip
-          small
-          label
-          outlined
-          v-on="on"
+      <v-avatar left>
+        <img
+          v-if="getDepIcon(com.modId, icons[com.modId])"
+          :src="getDepIcon(com.modId, icons[com.modId])"
         >
-          <v-avatar left>
-            <img
-              v-if="getDepIcon(com[0], source.dependenciesIcon[com[0]])"
-              :src="getDepIcon(com[0], source.dependenciesIcon[com[0]])"
-            >
-            <v-icon v-else>
-              $vuetify.icons.package
-            </v-icon>
-          </v-avatar>
-          {{ com[0] }}
-          {{ com[1].requirements || '⭕' }}
-          <v-avatar right>
-            {{ getCompatibleIcon(com[1]) }}
-          </v-avatar>
-        </v-chip>
-      </template>
-      {{ getCompatibleTooltip(com[1]) }}
-    </v-tooltip>
+        <v-icon v-else>
+          $vuetify.icons.package
+        </v-icon>
+      </v-avatar>
+      {{ com.modId }}
+      {{ com.requirements || '⭕' }}
+      <v-avatar right>
+        {{ getCompatibleIcon(com) }}
+      </v-avatar>
+    </v-chip>
 
     <v-chip
       v-for="(tag, index) in source.tags"
@@ -69,16 +61,22 @@
 </template>
 
 <script lang=ts setup>
-import { CompatibleDetail } from '@xmcl/runtime-api'
-import { ModItem } from '../composables/mod'
 import { useTheme } from '@/composables'
+import { kModTooltip } from '@/composables/modTooltip'
 import { getColor } from '@/util/color'
+import { injection } from '@/util/inject'
+import { CompatibleDetail } from '@/util/modCompatible'
+import { kModsContext, ModItem } from '../composables/mod'
 
-const props = defineProps<{
+defineProps<{
   source: ModItem
+  compatibility: CompatibleDetail[]
   onEditTag(event: Event, index: number): void
   onDeleteTag(tag: string): void
 }>()
+
+const { onLeave, onEnter } = injection(kModTooltip)
+const { icons } = injection(kModsContext)
 
 const getCompatibleIcon = (c?: CompatibleDetail) => {
   if (!c) return '❔'
@@ -93,20 +91,8 @@ const getDepIcon = (name: string, icon?: string) => {
   if (name === 'fabricloader' || name.startsWith('fabric-')) return 'image://builtin/fabric'
   return ''
 }
-const onBlur = () => {
-  console.log('blur')
-}
-const { t } = useI18n()
 const { darkTheme } = useTheme()
 
-const getCompatibleTooltip = (dep: CompatibleDetail) => {
-  const compatibleText = dep.compatible === 'maybe'
-    ? t('mod.maybeCompatible')
-    : dep.compatible
-      ? t('mod.compatible')
-      : t('mod.incompatible')
-  return compatibleText + t('mod.acceptVersion', { version: dep.requirements }) + ', ' + t('mod.currentVersion', { current: dep.version || '⭕' }) + '.'
-}
 </script>
 
 <style scoped>
