@@ -307,39 +307,20 @@
               {{ c.userInfo.name || c.id }}
             </v-list-item-title>
             <v-list-item-subtitle class="flex gap-2 items-center">
-              <v-tooltip
-                right
-                transition="scroll-x-transition"
-                color="black"
+              <v-chip
+                label
+                small
+                :color="stateToColor[c.connectionState]"
               >
-                <template #activator="{ on }">
-                  <v-chip
-                    label
-                    small
-                    :color="stateToColor[c.connectionState]"
-                    v-on="on"
-                  >
-                    <v-icon left>
-                      signal_cellular_alt
-                    </v-icon>
-                    {{ t(`peerConnectionState.name`) }}:
-                    {{ tConnectionStates[c.connectionState] }}
-                    <template v-if="c.connectionState === 'connected'">
-                      ({{ c.ping }}ms)
-                    </template>
-                  </v-chip>
+                <v-icon left>
+                  signal_cellular_alt
+                </v-icon>
+                {{ t(`peerConnectionState.name`) }}:
+                {{ tConnectionStates[c.connectionState] }}
+                <template v-if="c.connectionState === 'connected'">
+                  ({{ c.ping }}ms)
                 </template>
-
-                <template v-if="c.selectedCandidate">
-                  {{ tTransportType[c.selectedCandidate.local.type] }}
-                  {{ c.selectedCandidate.local.address }}:{{ c.selectedCandidate.local.port }}
-                  ->
-                  {{ tTransportType[c.selectedCandidate.remote.type] }}
-                  {{ c.selectedCandidate.remote.address }}:{{ c.selectedCandidate.remote.port }}
-                </template>
-              </v-tooltip>
-
-              <!-- {{ c.ping }}ms -->
+              </v-chip>
             </v-list-item-subtitle>
           </v-list-item-content>
           <v-list-item-action
@@ -408,13 +389,22 @@
             </v-btn>
           </v-list-item-action>
           <v-list-item-action class="self-center">
-            <v-btn
-              color="error"
-              icon
-              @click="startDelete(c.id)"
+            <v-tooltip
+              color="black"
+              top
             >
-              <v-icon>link_off</v-icon>
-            </v-btn>
+              <template #activator="{ on }">
+                <v-btn
+                  color="error"
+                  icon
+                  v-on="on"
+                  @click="startDelete(c.id)"
+                >
+                  <v-icon>link_off</v-icon>
+                </v-btn>
+              </template>
+              {{ t('multiplayer.disconnect') }}
+            </v-tooltip>
           </v-list-item-action>
         </v-list-item>
       </v-list>
@@ -425,6 +415,8 @@
         :title="t('multiplayer.disconnected')"
         :persistent="false"
         :width="400"
+        :confirm-icon="'link_off'"
+        :confirm="t('multiplayer.confirm')"
         @confirm="doDelete"
       >
         {{ t('multiplayer.disconnectDescription', { user: deletingName, id: deleting }) }}

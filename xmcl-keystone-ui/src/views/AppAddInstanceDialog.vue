@@ -45,13 +45,13 @@
           step="1"
           class="p-0"
         >
-          <template-content
+          <TemplateContent
             style="overflow: auto; max-height: 70vh; padding: 24px 24px 16px"
             :templates="templates"
             :value="selectedTemplate"
             @select="onSelect"
           />
-          <stepper-footer
+          <StepperFooter
             style="padding: 16px 24px"
             :disabled="creating"
             :creating="creating"
@@ -67,13 +67,13 @@
           <div
             style="overflow: auto; max-height: 70vh; padding: 24px 24px 16px"
           >
-            <base-content
+            <BaseContent
               :valid.sync="valid"
               @update:valid="valid = $event"
             />
-            <advance-content :valid.sync="valid" />
+            <AdvanceContent :valid.sync="valid" />
           </div>
-          <stepper-footer
+          <StepperFooter
             style="padding: 16px 24px"
             :disabled="!valid || creationData.name === '' || creationData.runtime.minecraft === ''"
             :creating="creating"
@@ -86,7 +86,7 @@
           step="3"
           class="overflow-auto max-h-[70vh]"
         >
-          <stepper-modpack-content
+          <StepperModpackContent
             v-if="canPreview"
             :modpack="selectedTemplate"
             :shown="isModpackContentShown"

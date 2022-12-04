@@ -19,6 +19,8 @@
           <v-divider />
           <v-tooltip
             :close-delay="0"
+            color="black"
+            transition="scroll-x-transition"
             right
           >
             <template #activator="{ on: tooltip }">
@@ -42,6 +44,8 @@
             {{ t('mod.name', 2) }}
           </v-tooltip>
           <v-tooltip
+            color="black"
+            transition="scroll-x-transition"
             :close-delay="0"
             right
           >
@@ -63,6 +67,8 @@
           </v-tooltip>
 
           <v-tooltip
+            color="black"
+            transition="scroll-x-transition"
             :close-delay="0"
             right
           >
@@ -87,6 +93,8 @@
       </div>
 
       <v-tooltip
+        color="black"
+        transition="scroll-x-transition"
         :close-delay="0"
         right
       >
@@ -108,6 +116,8 @@
       </v-tooltip>
 
       <v-tooltip
+        color="black"
+        transition="scroll-x-transition"
         :close-delay="0"
         right
       >
@@ -132,6 +142,8 @@
 
       <v-tooltip
         v-if="sideBarShowCurseforge"
+        color="black"
+        transition="scroll-x-transition"
         :close-delay="0"
         right
       >
@@ -156,6 +168,8 @@
 
       <v-tooltip
         v-if="sideBarShowModrinth"
+        color="black"
+        transition="scroll-x-transition"
         :close-delay="0"
         right
       >
@@ -180,6 +194,8 @@
 
       <v-tooltip
         v-if="sideBarShowFtb"
+        color="black"
+        transition="scroll-x-transition"
         :close-delay="0"
         right
       >

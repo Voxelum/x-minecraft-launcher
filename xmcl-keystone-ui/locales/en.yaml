@@ -726,6 +726,7 @@ multiplayer:
   currentIpTitle: Detectd Public IP
   currentNatTitle: 'Current network (NAT):'
   difficultyLevelHint: The level of difficulty to create a peer connection with other
+  disconnect: Disconnect
   disconnectDescription: Are you sure you want to disconnect with user {user}({id})?
   disconnected: disconnected
   enterRemoteToken: Enter Remote Token
