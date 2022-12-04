@@ -737,6 +737,7 @@ multiplayer:
   currentIpTitle: 检测到公网 IP
   currentNatTitle: 当前网络 (NAT) 环境
   difficultyLevelHint: 与他人联机难度由低到高
+  disconnect: 断开连接
   disconnectDescription: 你确定你要断开和 {user}({id}) 的连接么
   disconnected: 断开连接
   enterRemoteToken: 输入对方的令牌

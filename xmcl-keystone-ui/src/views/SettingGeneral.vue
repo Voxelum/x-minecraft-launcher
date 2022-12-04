@@ -65,6 +65,14 @@
           {{
             t("setting.useBmclAPI")
           }}
+          <a
+            class="underline primary ml-1"
+            href="https://bmclapidoc.bangbang93.com/"
+          >
+            <v-icon small>
+              question_mark
+            </v-icon>
+          </a>
         </v-list-item-title>
         <v-list-item-subtitle>
           {{

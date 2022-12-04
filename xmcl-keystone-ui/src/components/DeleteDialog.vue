@@ -32,9 +32,9 @@
           @click="onDelete"
         >
           <v-icon left>
-            delete
+            {{ confirmIcon ?? 'delete' }}
           </v-icon>
-          {{ t('delete.yes') }}
+          {{ confirm ?? t('delete.yes') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -47,6 +47,8 @@ import { useDialog } from '../composables/dialog'
 const props = defineProps<{
   title: string
   width?: number
+  confirm?: string
+  confirmIcon?: string
   persistent?: boolean
   dialog?: string
 }>()

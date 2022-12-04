@@ -25,19 +25,24 @@
       >
         <v-stepper-content
           step="1"
-          style="overflow: auto; max-height: 550px;"
+          class="p-0"
         >
-          <server-content
-            :status="status"
-            :pinging="pinging"
-            :accepting-version="acceptingVersion"
-            :valid.sync="valid"
-          />
-          <advance-content
-            :show-minecraft="false"
-            :valid.sync="valid"
-          />
-          <stepper-footer
+          <div
+            style="overflow: auto; max-height: 70vh; padding: 24px 24px 16px"
+          >
+            <ServerContent
+              :status="status"
+              :pinging="pinging"
+              :accepting-version="acceptingVersion"
+              :valid.sync="valid"
+            />
+            <AdvanceContent
+              :show-minecraft="false"
+              :valid.sync="valid"
+            />
+          </div>
+          <StepperFooter
+            style="padding: 16px 24px"
             :disabled="!valid || runtime.minecraft === ''"
             :creating="creating"
             create
@@ -52,7 +57,7 @@
             >
               {{ t('server.ping') }}
             </v-btn>
-          </stepper-footer>
+          </StepperFooter>
         </v-stepper-content>
       </v-stepper-items>
     </v-stepper>

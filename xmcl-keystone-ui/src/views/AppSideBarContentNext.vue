@@ -227,7 +227,6 @@
   </div>
 </template>
 <script setup lang="ts">
-import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import { useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { ContextMenuItem } from '@/composables/contextMenu'
