@@ -79,6 +79,5 @@ export * from './src/util/sdp'
 
 export { default as packFormatVersionRange } from './src/util/packFormatVersionRange'
 export { default as protocolToMinecraft } from './src/util/protocolToMinecraft'
-export * from './src/util/modCompatible'
 export * from './src/util/versionRange'
 export * from './src/util/mavenVersion'

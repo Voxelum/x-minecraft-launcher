@@ -1,4 +1,4 @@
-import { isRangeCompatible } from '@xmcl/runtime-api'
+import { isRangeCompatible } from '@/util/rangeCompatibale'
 import { computed, Ref } from 'vue'
 
 export function useRangeCompatible(range: Ref<string>, version: Ref<string>) {
