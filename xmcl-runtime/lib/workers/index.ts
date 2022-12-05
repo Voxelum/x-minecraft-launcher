@@ -2,11 +2,14 @@ import { checksum } from '@xmcl/core'
 import { Resource } from '@xmcl/runtime-api'
 import { createHash } from 'crypto'
 import { FileExtension, stream } from 'file-type'
-import { createReadStream } from 'fs'
+import fs, { createReadStream } from 'fs'
+import { gracefulify } from 'graceful-fs'
 import { MessagePort, parentPort } from 'worker_threads'
 import { parseResourceMetadata } from '../entities/resource'
 import { WorkerInterface, WorkPayload } from '../entities/worker'
 import { copyPassively, fileType, pipeline } from '../util/fs'
+
+gracefulify(fs)
 
 if (parentPort !== null) {
   main(parentPort)
