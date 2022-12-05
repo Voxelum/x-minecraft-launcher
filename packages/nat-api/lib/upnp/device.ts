@@ -1,5 +1,6 @@
 import fxparser from 'fast-xml-parser'
 import { Client, request } from 'undici'
+import { IncomingMessage, request as hrequest } from 'http'
 import url from 'url'
 
 export interface ServiceInfo {
@@ -127,30 +128,56 @@ export class Device {
       '</u:' + action + '>' +
       '</s:Body>' +
       '</s:Envelope>'
-    const res = await request(info.controlURL, {
+    const req = hrequest(info.controlURL, {
       method: 'POST',
-      dispatcher: this.client,
       headers: {
         'Content-Type': 'text/xml; charset="utf-8"',
         'Content-Length': Buffer.byteLength(body).toString(),
-        // connection: 'close',
+        connection: 'close',
         SOAPAction: JSON.stringify(info.service + '#' + action),
       },
-      body,
     })
+    req.write(body)
+    req.end()
+    const res = await new Promise<IncomingMessage>((resolve, reject) => {
+      req.once('response', resolve)
+      req.once('error', reject)
+    })
+    const rbody = async () => {
+      return new Promise<string>((resolve, reject) => {
+        const buf = [] as Buffer[]
+        res.on('data', (d) => {
+          buf.push(d)
+        })
+        res.on('end', () => {
+          resolve(Buffer.concat(buf).toString())
+        })
+      })
+    }
+    // const res = await request(info.controlURL, {
+    //   method: 'POST',
+    //   dispatcher: this.client,
+    //   headers: {
+    //     'Content-Type': 'text/xml; charset="utf-8"',
+    //     'Content-Length': Buffer.byteLength(body).toString(),
+    //     connection: 'close',
+    //     SOAPAction: JSON.stringify(info.service + '#' + action),
+    //   },
+    //   body,
+    // })
 
     if (res.statusCode !== 200) {
       // let body = ''
       const parser = new fxparser.XMLParser()
       if (res.headers['content-length'] && Number(res.headers['content-length']) > 0) {
-        const error = parser.parse(await res.body.text())['s:Envelope']['s:Body']['s:Fault']
+        const error = parser.parse(await rbody())['s:Envelope']['s:Body']['s:Fault']
         throw Object.assign(new Error(`Upnp action ${info.service}#${action} failed: ${res.statusCode}`), error)
       }
       // console.log(body)
       throw new Error(`Upnp action ${info.service}#${action} failed: ${res.statusCode}`)
     }
 
-    const data = await res.body.text()
+    const data = await rbody()
     const parser = new fxparser.XMLParser({ parseAttributeValue: true, ignoreAttributes: false })
 
     const parsedData = parser.parse(data)

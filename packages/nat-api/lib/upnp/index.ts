@@ -153,10 +153,10 @@ export class UpnpClient {
             port: parseInt(data.NewInternalPort, 10),
           },
           protocol: data.NewProtocol.toLowerCase(),
-          enabled: data.NewEnabled === '1',
+          enabled: data.NewEnabled === '1' || data.NewEnabled === 1,
           description: data.NewPortMappingDescription,
           ttl: parseInt(data.NewLeaseDuration, 10),
-          local: publicHost === address,
+          local: data.NewInternalClient === address.address,
         }
 
         results.push(result)
