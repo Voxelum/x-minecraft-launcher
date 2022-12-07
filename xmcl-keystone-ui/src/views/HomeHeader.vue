@@ -186,7 +186,7 @@ import HomeLaunchButton from './HomeLaunchButton.vue'
 
 const { issue, task, path, refreshing, name, version, localVersion } = injection(kInstanceContext)
 const isInFocusMode = useInFocusMode()
-const { total, progress, name: taskName, pause, resume, status } = task
+const { total, progress, pause, resume, status, name: taskName } = task
 const { openDirectory } = useService(BaseServiceKey)
 const { show: showLogDialog } = useDialog('log')
 const { show: showExport } = useDialog(AppExportDialogKey)

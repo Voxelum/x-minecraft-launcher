@@ -1,7 +1,7 @@
 import { computed, InjectionKey, onMounted, onUnmounted, reactive, Ref, ref } from 'vue'
 import { TaskItem } from '@/entities/task'
 
-import { TaskBatchUpdatePayloads, TaskPayload, TaskState } from '@xmcl/runtime-api'
+import { TaskAddedPayload, TaskBatchUpdatePayloads, TaskPayload, TaskState } from '@xmcl/runtime-api'
 
 export const kTaskManager: InjectionKey<ReturnType<typeof useTaskManager>> = Symbol('TASK_MANAGER')
 
@@ -16,7 +16,7 @@ class ChildrenWatcher {
 
   public dirty = false
 
-  constructor(private target: Ref<TaskItem[]>, init?: TaskItem[]) {
+  constructor(private target: TaskItem, init?: TaskItem[]) {
     if (init) {
       this.newChildren = init
       this.dirty = true
@@ -74,7 +74,7 @@ class ChildrenWatcher {
 
     // only show 10
     const result = sorted.slice(0, 10)
-    this.target.value = result
+    this.target.children = result
 
     updatedChildren.splice(0)
     newChildren.splice(0)
@@ -89,12 +89,10 @@ class ChildrenWatcher {
  * @returns
  */
 export function useTaskManager() {
-  const { t, te, tm, rt } = useI18n()
-  const dictionary: Record<string, TaskItem> = {}
-  const watchers: Record<string, ChildrenWatcher> = {}
+  const cache: Record<string, TaskItem> = {}
   const throughput = ref(0)
   /**
-   * All the root tasks
+   * All tasks
    */
   const tasks: Ref<TaskItem[]> = ref([])
 
@@ -108,86 +106,62 @@ export function useTaskManager() {
     taskMonitor.cancel(task.taskId)
   }
 
-  const tTask = (id: string, param: Record<string, any>) => {
-    const result = tm(id)
-    if (typeof result === 'function') {
-      return t(id, param)
-    }
-    return te(id + '.name', 'en') ? t(id + '.name', param) : id
-  }
-
   let syncing: Promise<void> | undefined
 
-  function mapAndRecordTaskItem(payload: TaskPayload): TaskItem {
-    const children = ref([])
-    const watcher = new ChildrenWatcher(children, payload.children.map(mapAndRecordTaskItem))
-    const localId = `${payload.uuid}@${payload.id}`
-    watchers[localId] = watcher
-    const item = reactive({
-      id: localId,
+  function getTaskItem(payload: TaskPayload | TaskAddedPayload): TaskItem {
+    const id = `${payload.uuid}@${payload.id}`
+    const item: TaskItem = {
+      id,
       taskId: payload.uuid,
-      title: computed(() => tTask(payload.path, payload.param)),
       time: new Date(payload.time),
-      message: payload.error ? Object.freeze(payload.error) : payload.from ?? payload.to ?? '',
-      from: payload.from,
+      message: 'error' in payload && payload.error ? markRaw(payload.error) : payload.from ?? payload.to ?? '',
+      from: payload.from ?? '',
       path: payload.path,
       param: payload.param,
-      to: payload.to,
+      to: payload.to ?? '',
       throughput: 0,
-      state: payload.state,
-      progress: payload.progress,
-      total: payload.total,
-      children,
-    })
-    dictionary[localId] = item
+      rawChildren: markRaw([]),
+      childrenDirty: false,
+      state: 'state' in payload ? payload.state : TaskState.Running,
+      progress: 'progress' in payload ? payload.progress : 0,
+      total: 'total' in payload ? payload.total : -1,
+      children: [],
+    }
+    if ('parentId' in payload) {
+      item.parentId = payload.parentId
+    }
     return item
   }
 
-  const taskUpdateHandler = async ({ adds, updates }: TaskBatchUpdatePayloads) => {
+  const onTaskUpdate = async ({ adds, updates }: TaskBatchUpdatePayloads) => {
     if (syncing) {
       await syncing
     }
     for (const add of adds) {
-      const { uuid, id, path, param, time, to, from, parentId } = add
-      const localId = `${uuid}@${id}`
-      const children = ref([] as TaskItem[])
-      const watcher = new ChildrenWatcher(children)
-      const item = reactive({
-        taskId: uuid,
-        id: localId,
-        title: computed(() => tTask(path, param)),
-        path,
-        param,
-        children,
-        time: new Date(time),
-        message: from ?? to ?? '',
-        from: from ?? '',
-        to: to ?? '',
-        throughput: 0,
-        state: TaskState.Running,
-        progress: 0,
-        total: -1,
-        parentId,
-      })
+      const { uuid, parentId, path, id: _id } = add
+      const id = `${uuid}@${_id}`
+      if (cache[id]) {
+        console.warn(`Skip for duplicated task ${id} ${path}`)
+        continue
+      }
+      const item = getTaskItem(add)
       if (typeof parentId === 'number') {
-        // leave
-        const parentLocalId = `${uuid}@${parentId}`
-        const parentWatcher = watchers[parentLocalId]
-        parentWatcher.addChild(item)
+        // this is child task
+        const parent = cache[`${uuid}@${parentId}`]
+        // Push to the static children and mark dirty
+        // We don't update the reactive children
+        // Until the consumer (task-viewer) need to render the children
+        parent.rawChildren?.push(item)
+        parent.childrenDirty = true
       } else {
         tasks.value.unshift(item)
       }
-      if (dictionary[localId]) {
-        console.warn(`Skip for duplicated task ${localId} ${item.title}`)
-        continue
-      }
-      watchers[localId] = watcher
-      dictionary[localId] = item
+      cache[id] = item
     }
     for (const update of updates) {
       const { uuid, id, time, to, from, progress, total, chunkSize, state, error } = update
       const localId = `${uuid}@${id}`
-      const item = dictionary[localId]
+      const item = cache[localId]
       if (item) {
         if (state !== undefined) {
           item.state = state
@@ -204,34 +178,29 @@ export function useTaskManager() {
           item.throughput += chunkSize
           throughput.value += chunkSize
         }
-        if (item.parentId !== undefined) {
-          const parentLocalId = `${uuid}@${item.parentId}`
-          const parentWatcher = watchers[parentLocalId]
-          parentWatcher.updateChild(item)
-        }
       } else {
         console.log(`Cannot apply update for task ${localId} as task not found.`)
+        console.log(cache)
       }
     }
-    Object.values(watchers).forEach((v) => v.update())
   }
 
   onMounted(() => {
     let _resolve: () => void
     syncing = new Promise((resolve) => { _resolve = resolve })
-    taskMonitor.on('task-update', taskUpdateHandler)
+    taskMonitor.on('task-update', onTaskUpdate)
     taskMonitor.subscribe().then((payload) => {
-      tasks.value = payload.map(mapAndRecordTaskItem)
+      tasks.value = payload.map(getTaskItem)
       _resolve()
     })
   })
   onUnmounted(() => {
     taskMonitor.unsubscribe()
-    taskMonitor.removeListener('task-update', taskUpdateHandler)
+    taskMonitor.removeListener('task-update', onTaskUpdate)
   })
 
   return {
-    dictionary,
+    dictionary: cache,
     throughput,
     tasks,
     pause,
