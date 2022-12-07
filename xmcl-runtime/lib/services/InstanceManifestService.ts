@@ -4,7 +4,7 @@ import { stat } from 'fs/promises'
 import { join, relative } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { kWorker, WorkerInterface } from '../entities/worker'
+import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
 import { readdirIfPresent } from '../util/fs'
 import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
@@ -20,7 +20,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(ResourceService) private resourceService: ResourceService,
-    @Inject(kWorker) private worker: WorkerInterface,
+    @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(CurseForgeService) private curseforgeService: CurseForgeService,
     @Inject(ModrinthService) private modrinthService: ModrinthService,
   ) {

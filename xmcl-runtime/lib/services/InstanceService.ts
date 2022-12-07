@@ -8,7 +8,7 @@ import { dirname, isAbsolute, join, relative, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { readLaunchProfile } from '../entities/launchProfile'
-import { kWorker, WorkerInterface } from '../entities/worker'
+import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
 import { exists, isDirectory, missing, readdirEnsured } from '../util/fs'
 import { assignShallow, requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
@@ -30,7 +30,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(UserService) private userService: UserService,
     @Inject(InstallService) private installService: InstallService,
-    @Inject(kWorker) private worker: WorkerInterface,
+    @Inject(kResourceWorker) private worker: ResourceWorker,
   ) {
     super(app, () => new InstanceState(), async () => {
       const { state } = this

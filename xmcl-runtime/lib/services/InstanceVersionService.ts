@@ -5,7 +5,7 @@ import { readFile, readJSON } from 'fs-extra'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { kWorker, WorkerInterface } from '../entities/worker'
+import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
 import { exists } from '../util/fs'
 import { Inject } from '../util/objectRegistry'
 import { DiagnoseService } from './DiagnoseService'
@@ -21,7 +21,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(VersionService) private versionService: VersionService,
-    @Inject(kWorker) private worker: WorkerInterface,
+    @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
     @Inject(InstallService) private installService: InstallService,
   ) {

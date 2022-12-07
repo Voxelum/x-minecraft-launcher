@@ -6,7 +6,8 @@ import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { ensureFile, rename, stat, Stats } from 'fs-extra'
 import { basename, dirname, extname, join } from 'path'
-import { linkOrCopy } from '../util/fs'
+import { checksum, linkOrCopy } from '../util/fs'
+import { isNonnull } from '../util/object'
 import resourceParsers from './resourceParsers'
 import { forgeModParser } from './resourceParsers/forgeMod'
 
@@ -114,6 +115,46 @@ export function getCurseforgeUrl(project: number, file: number): string {
 }
 export function getGithubUrl(owner: string, repo: string, release: string) {
   return `https://api.github.com/repos/${owner}/${repo}/releases/assets/${release}`
+}
+
+export async function validateResources(imageStore: string, resources: Resource[]) {
+  const removal: Resource[] = []
+  const update: Resource[] = []
+  const validate = async (resource: Resource) => {
+    if (!resource.storedPath) {
+      removal.push(resource)
+      return
+    }
+    if (!existsSync(resource.storedPath)) {
+      removal.push(resource)
+      return
+    }
+    let dirty = false
+    const fstat = await stat(resource.storedPath)
+    if (fstat.ino !== resource.ino || fstat.size !== resource.size) {
+      // Modified
+      resource.ino = fstat.ino
+      resource.size = fstat.size
+      dirty = true
+    }
+    if (dirty) {
+      const sha1 = await checksum(resource.path, 'sha1')
+      if (sha1 !== resource.hash) {
+        resource.hash = sha1
+      }
+
+      const { resource: parsed, icons } = await parseResourceMetadata(resource)
+      update.push(parsed)
+    }
+
+    return resource
+  }
+  const result = (await Promise.all(resources.map(validate))).filter(isNonnull)
+  return {
+    resources: result,
+    removal,
+    update,
+  }
 }
 
 export async function parseResourceMetadata(resource: Resource): Promise<{ resource: Resource; icons: Uint8Array[] }> {

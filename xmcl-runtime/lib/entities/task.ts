@@ -152,11 +152,26 @@ export function createTaskPusher (
 ) {
   const monitor = createTaskMonitor(emitter, (size) => {
     if (size > threshold) {
-      consume(monitor.flush())
+      const all = monitor.flush()
+      if (all.adds.length > 0) {
+        const ids = new Set()
+        for (const t of all.adds) {
+          ids.add(t.uuid)
+        }
+        logger.log(`!!!!ADD!!!!\n${[...ids].join('\n')}`)
+      }
+      consume(all)
     }
   })
   const flush = () => {
     const result = monitor.flush()
+    if (result.adds.length) {
+      const ids = new Set<string>()
+      for (const t of result.adds) {
+        ids.add(t.uuid)
+      }
+      logger.log(`!!!!ADD!!!!\n${[...ids].join('\n')}`)
+    }
     if (result.adds.length > 0 || result.updates.length > 0) {
       consume(result)
     }

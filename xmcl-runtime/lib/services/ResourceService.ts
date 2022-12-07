@@ -11,7 +11,7 @@ import { basename, dirname, extname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { getResourceFileName, persistResource, ResourceCache } from '../entities/resource'
-import { kWorker, WorkerInterface } from '../entities/worker'
+import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
 import { migrateToDatabase, upgradeResourceToV2 } from '../util/dataFix'
 import { checksum, copyPassively, linkOrCopy, readdirEnsured } from '../util/fs'
 import { ImageStorage } from '../util/imageStore'
@@ -84,7 +84,7 @@ export class ResourceService extends StatefulService<ResourceState> implements I
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ImageStorage) readonly imageStore: ImageStorage,
-    @Inject(kWorker) private worker: WorkerInterface,
+    @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(ClassicLevel) database: ClassicLevel) {
     super(app, () => new ResourceState(), async () => {
       for (const domain of [
@@ -220,10 +220,6 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     return this.cache.get(key)
   }
 
-  isResourceInCache(key: string | number) {
-    return !!this.cache.get(key)
-  }
-
   /**
    * Query resource in memory by the resource query
    * @param query The resource query.
@@ -256,9 +252,9 @@ export class ResourceService extends StatefulService<ResourceState> implements I
     throw new Error('Method not implemented.')
   }
 
-  getResource(key: string): Promise<Resource | undefined> {
-    if (key === EMPTY_RESOURCE_SHA1) return Promise.resolve(undefined)
-    return this.storage.get(key)
+  getResource(hash: string): Promise<Persisted<Resource> | undefined> {
+    if (hash === EMPTY_RESOURCE_SHA1) return Promise.resolve(undefined)
+    return this.storage.get(hash)
   }
 
   @Singleton(d => d)
