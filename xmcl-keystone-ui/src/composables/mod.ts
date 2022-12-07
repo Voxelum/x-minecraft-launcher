@@ -190,18 +190,6 @@ export function useInstanceMods() {
     icons: iconMap,
   })
 
-  const store = injection(kStore)
-
-  store.subscribe((m) => {
-    if (m.type === 'resource' || m.type === 'resources' || m.type === 'resourcesRemove') {
-      updateItems()
-    }
-    if (m.type === 'instanceModUpdateExisted') {
-      updateEnabledMods()
-      updateItems()
-    }
-  })
-
   watch(computed(() => state.mods), (val) => {
     updateEnabledMods()
     updateItems()

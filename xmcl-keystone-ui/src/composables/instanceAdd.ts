@@ -1,7 +1,6 @@
-import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, InstanceData, InstanceSchema, InstanceServiceKey, isCurseforgeModpackResource, isModrinthModpackResource, isMcbbsModpackResource, JavaServiceKey, McbbsModpackResource, ModpackResource, ModrinthModpackResource, RawModpackResource, ResourceDomain, ResourceServiceKey, ResourceType, RuntimeVersions, getInstanceConfigFromModrinthModpack, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, PeerServiceKey, InstanceManifest } from '@xmcl/runtime-api'
+import { useRefreshable, useService } from '@/composables'
+import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, FeedTheBeastServiceKey, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromModrinthModpack, InstanceData, InstanceManifest, InstanceSchema, isCurseforgeModpackResource, isMcbbsModpackResource, isModrinthModpackResource, JavaServiceKey, McbbsModpackResource, ModpackResource, ModrinthModpackResource, PeerServiceKey, RawModpackResource, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
 import { DialogKey } from './dialog'
-import { useFeedTheBeastVersionsCache } from './ftb'
-import { useService } from '@/composables'
 
 export const AddInstanceDialogKey: DialogKey<string> = 'add-instance-dialog'
 
@@ -41,11 +40,11 @@ export function useAllTemplate(data: InstanceData) {
   const { state: javaState } = useService(JavaServiceKey)
   const { state: peerState } = useService(PeerServiceKey)
 
-  peerState.connections.find(c => c.sharing)
+  const { getAllCachedModpackVersions } = useService(FeedTheBeastServiceKey)
 
-  const { refresh, refreshing, cache: ftb, dispose } = useFeedTheBeastVersionsCache()
+  const container = shallowRef([] as Array<Template>)
 
-  const allTemplates = computed(() => {
+  const { refresh, refreshing } = useRefreshable(async () => {
     const all = [] as Array<Template>
     all.push(...resourceState.modpacks.map((modpack) => {
       if (isCurseforgeModpackResource(modpack)) {
@@ -58,15 +57,19 @@ export function useAllTemplate(data: InstanceData) {
         return getModpackTemplate(modpack)
       }
     }))
-    all.push(...ftb.value.filter(f => f.name && f.targets).map(getFtbTemplate))
+    const ftb = await getAllCachedModpackVersions()
+    all.push(...ftb.filter(f => f.name && f.targets).map(getFtbTemplate))
 
     for (const c of peerState.connections) {
       if (c.sharing) {
         all.push(getPeerTemplate(c.id, c.userInfo.name, c.sharing))
       }
     }
-    return all
+    container.value = all
   })
+  const dispose = () => {
+    container.value = []
+  }
 
   function getPeerTemplate(id: string, name: string, man: InstanceManifest) {
     const result: Template = {
@@ -288,7 +291,7 @@ export function useAllTemplate(data: InstanceData) {
   }
 
   return {
-    templates: allTemplates,
+    templates: container,
     refresh,
     dispose,
     apply,
