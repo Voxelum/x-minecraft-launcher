@@ -11,7 +11,7 @@ import { Entry, ZipFile } from 'yauzl'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { readMetadata, resolveInstanceOptions } from '../entities/modpack'
-import { kWorker, WorkerInterface } from '../entities/worker'
+import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { checksumFromStream, isFile, sha1ByPath } from '../util/fs'
 import { requireObject } from '../util/object'
@@ -59,7 +59,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     @Inject(VersionService) private versionService: VersionService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(InstallService) private installService: InstallService,
-    @Inject(kWorker) private worker: WorkerInterface,
+    @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(CurseForgeService) curseforgeService: CurseForgeService,
     @Inject(InstanceInstallService) private instanceInstallService: InstanceInstallService,
   ) {
@@ -234,7 +234,7 @@ export class ModpackService extends AbstractService implements IModpackService {
         let resource = this.resourceService.getResourceByKey(ino.ino)
         if (!resource) {
           const sha1 = await this.worker.checksum(filePath, 'sha1')
-          resource = this.resourceService.getResourceByKey(sha1)
+          resource = await this.resourceService.getResource(sha1)
         }
 
         if (!file.override && resource) {

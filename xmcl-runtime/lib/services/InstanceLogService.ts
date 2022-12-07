@@ -1,14 +1,15 @@
+import { InstanceLogService as IInstanceLogService, InstanceLogServiceKey } from '@xmcl/runtime-api'
 import { readFile, remove } from 'fs-extra'
 import { isAbsolute, join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { EncodingWorker, kEncodingWorker } from '../entities/encodingWorker'
+import { UTF8 } from '../util/encoding'
+import { readdirIfPresent } from '../util/fs'
+import { Inject } from '../util/objectRegistry'
+import { gunzip } from '../util/zip'
 import { InstanceService } from './InstanceService'
 import { AbstractService, ExposeServiceKey, Singleton } from './Service'
-import { decode, guessEncodingByBuffer, UTF8 } from '../util/encoding'
-import { readdirIfPresent } from '../util/fs'
-import { gunzip } from '../util/zip'
-import { InstanceLogService as IInstanceLogService, InstanceLogServiceKey } from '@xmcl/runtime-api'
-import { Inject } from '../util/objectRegistry'
 
 /**
  * Provide the ability to list/read/remove log and crash reports of a instance.
@@ -17,6 +18,7 @@ import { Inject } from '../util/objectRegistry'
 export class InstanceLogService extends AbstractService implements IInstanceLogService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
+    @Inject(kEncodingWorker) private encoder: EncodingWorker,
   ) {
     super(app)
   }
@@ -53,8 +55,8 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
       if (name.endsWith('.gz')) {
         buf = await gunzip(buf)
       }
-      const encoding = await guessEncodingByBuffer(buf).catch(e => undefined)
-      const result = decode(buf, encoding || UTF8)
+      const encoding = await this.encoder.guessEncodingByBuffer(buf).catch(e => undefined)
+      const result = await this.encoder.decode(buf, encoding || UTF8)
       return result
     } catch (e) {
       this.error(e)
@@ -98,8 +100,8 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
     if (name.endsWith('.gz')) {
       buf = await gunzip(buf)
     }
-    const encoding = await guessEncodingByBuffer(buf).catch(() => undefined)
-    const result = decode(buf, encoding || UTF8)
+    const encoding = await this.encoder.guessEncodingByBuffer(buf).catch(() => undefined)
+    const result = await this.encoder.decode(buf, encoding || UTF8)
     return result
   }
 

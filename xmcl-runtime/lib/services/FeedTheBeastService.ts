@@ -1,26 +1,26 @@
-import { CachedFTBModpackVersionManifest, FeedTheBeastService as IFeedTheBeastService, FeedTheBeastServiceKey, FeedTheBeastState, FTBModpackManifest, FTBModpacksResult, FTBModpackVersionManifest, FTBVersionManifestStoreSchema, GetFTBModpackVersionOptions, SearchFTBModpackOptions } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, FeedTheBeastService as IFeedTheBeastService, FeedTheBeastServiceKey, FeedTheBeastState, FTBModpackManifest, FTBModpacksResult, FTBModpackVersionManifest, GetFTBModpackVersionOptions, SearchFTBModpackOptions } from '@xmcl/runtime-api'
+import { AbstractSublevel } from 'abstract-level'
+import { ClassicLevel } from 'classic-level'
 import { Client } from 'undici'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { FeedTheBeastClient } from '../clients/FeedTheBeastClient'
 import { InteroperableDispatcher } from '../dispatchers/dispatcher'
 import { Inject } from '../util/objectRegistry'
-import { createSafeFile } from '../util/persistance'
 import { ExposeServiceKey, StatefulService } from './Service'
 
 @ExposeServiceKey(FeedTheBeastServiceKey)
 export class FeedTheBeastService extends StatefulService<FeedTheBeastState> implements IFeedTheBeastService {
   private client: FeedTheBeastClient
 
-  private cache = createSafeFile(this.getAppDataPath('ftb.json'), FTBVersionManifestStoreSchema, this)
+  private db: AbstractSublevel<ClassicLevel<string, string>, string | Buffer, string, CachedFTBModpackVersionManifest>
 
-  private cachedVersions: CachedFTBModpackVersionManifest[] = []
-
-  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(ClassicLevel) leveldb: ClassicLevel,
+  ) {
     super(app, () => new FeedTheBeastState(), async () => {
-      const result = await this.cache.read()
-      this.cachedVersions = result.caches ?? []
     })
+    this.db = leveldb.sublevel<string, CachedFTBModpackVersionManifest>('ftb', { keyEncoding: 'string', valueEncoding: 'json' })
 
     const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
       if (origin.host === 'api.modpacks.ch') {
@@ -44,17 +44,11 @@ export class FeedTheBeastService extends StatefulService<FeedTheBeastState> impl
   }
 
   async getAllCachedModpackVersions(): Promise<CachedFTBModpackVersionManifest[]> {
-    return this.cachedVersions
+    return await this.db.values().all()
   }
 
   private async saveManifest(man: CachedFTBModpackVersionManifest) {
-    const existedIndex = this.cachedVersions.findIndex(v => v.id === man.id)
-    if (existedIndex !== -1) {
-      this.cachedVersions[existedIndex] = man
-    } else {
-      this.cachedVersions.push(man)
-    }
-    await this.cache.write({ caches: this.cachedVersions })
+    await this.db.put(man.id.toString(), man)
   }
 
   async searchModpacks(options?: SearchFTBModpackOptions): Promise<FTBModpacksResult> {
@@ -81,7 +75,7 @@ export class FeedTheBeastService extends StatefulService<FeedTheBeastState> impl
   async getModpackVersionManifest({ modpack, version }: GetFTBModpackVersionOptions): Promise<FTBModpackVersionManifest> {
     const modpackId = typeof modpack === 'number' ? modpack : modpack.id
     this.log(`Try get modpack version for modpackId=${modpackId}, versionId=${version.id}`)
-    const existed = this.cachedVersions.find(v => v.id === version.id)
+    const existed = await this.db.get(version.id.toString())
     if (existed && existed.updated >= version.updated) {
       return existed
     }
@@ -109,7 +103,6 @@ export class FeedTheBeastService extends StatefulService<FeedTheBeastState> impl
   }
 
   async removeModpackCache(id: number) {
-    this.cachedVersions = this.cachedVersions.filter(v => v.id !== id)
-    await this.cache.write({ caches: this.cachedVersions })
+    await this.db.del(id.toString())
   }
 }

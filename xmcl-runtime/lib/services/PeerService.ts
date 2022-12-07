@@ -19,7 +19,7 @@ import { PeerGroup, TransferDescription } from '../entities/peer'
 import { PeerSession } from '../entities/peer/connection'
 import { MessageShareManifest } from '../entities/peer/messages/download'
 import { MessageLan } from '../entities/peer/messages/lan'
-import { kWorker, WorkerInterface } from '../entities/worker'
+import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
 import { ImageStorage } from '../util/imageStore'
 import { Inject } from '../util/objectRegistry'
 import { NatService } from './NatService'
@@ -49,7 +49,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ImageStorage) private imageStorage: ImageStorage,
-    @Inject(kWorker) private worker: WorkerInterface,
+    @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(NatService) natService: NatService,
     @Inject(UserService) private userService: UserService,
   ) {

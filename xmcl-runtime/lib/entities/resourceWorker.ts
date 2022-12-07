@@ -23,14 +23,20 @@ export interface WorkerResponse {
   result?: any
 }
 
-export const kWorker: InjectionKey<WorkerInterface> = Symbol('Worker')
+export const kResourceWorker: InjectionKey<ResourceWorker> = Symbol('ResourceWorker')
 /**
  * The worker for cpu busy work
  */
-export interface WorkerInterface {
+export interface ResourceWorker {
   checksum(path: string, algorithm: string): Promise<string>
   checksumAndFileType(path: string, algorithm: string): Promise<[string, FileType]>
   fileType(path: string): Promise<FileType>
   parseResourceMetadata(resource: Resource): Promise<{ resource: Resource; icons: Uint8Array[] }>
+  validateResources(resource: Resource[]): Promise<{
+    removal: Resource[]
+    updates: Resource[]
+    resources: Resource[]
+    icons: Array<Uint8Array>
+  }>
   copyPassively(files: { src: string; dest: string }[]): Promise<void>
 }

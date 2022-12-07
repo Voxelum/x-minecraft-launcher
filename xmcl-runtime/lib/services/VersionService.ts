@@ -6,7 +6,7 @@ import watch from 'node-watch'
 import { basename, dirname, join, relative, sep } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { kWorker, WorkerInterface } from '../entities/worker'
+import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
 import { isDirectory, missing, readdirEnsured } from '../util/fs'
 import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
@@ -20,7 +20,7 @@ export class VersionService extends StatefulService<VersionState> implements IVe
   private watcher: FSWatcher | undefined
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(kWorker) private worker: WorkerInterface,
+    @Inject(kResourceWorker) private worker: ResourceWorker,
   ) {
     super(app, () => new VersionState(), async () => {
       await this.refreshVersions()
