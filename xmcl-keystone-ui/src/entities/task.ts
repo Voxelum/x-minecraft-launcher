@@ -1,7 +1,7 @@
 import type { TaskState } from '@xmcl/runtime-api'
 
 /**
- * The task item represent a sub task
+ * The task item represent a task or a sub task
  */
 export interface TaskItem {
   /**
@@ -10,17 +10,27 @@ export interface TaskItem {
   id: string
 
   /**
-     * The task root id
-     */
+    * The task root id
+    */
   taskId: string
 
+  /**
+   * The reactive children
+   */
   children: TaskItem[] | undefined
+  /**
+   * The non-reactive children reference
+   */
+  rawChildren: TaskItem[] | undefined
+  /**
+   * Is children dirty
+   */
+  childrenDirty: boolean
 
   time: Date
 
   path: string
   param: object
-  title: string
   from: string
   to: string
   message: object | string

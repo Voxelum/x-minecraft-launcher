@@ -17,13 +17,26 @@ export function useTasks() {
   return { tasks, pause, resume, cancel, throughput }
 }
 
+export function useTaskName() {
+  const { t, tm, te } = useI18n()
+  const tTask = (id: string, param: Record<string, any>) => {
+    const result = tm(id)
+    if (typeof result === 'function') {
+      return t(id, param)
+    }
+    return te(id + '.name', 'en') ? t(id + '.name', param) : id
+  }
+  return tTask
+}
+
 export function useTask(finder: (i: TaskItem) => boolean) {
   const proxy = injection(kTaskManager)
 
   const { tasks, pause, resume, cancel } = proxy
 
+  const tTask = useTaskName()
+  const name = computed(() => task.value ? tTask(task.value.path, task.value.param) : '')
   const task = computed(() => tasks.value.find(finder))
-  const name = computed(() => task.value?.title ?? '')
   const time = computed(() => task.value?.time ?? '')
   const status = computed(() => task.value?.state ?? TaskState.Idle)
   const progress = computed(() => task.value?.progress ?? -1)
