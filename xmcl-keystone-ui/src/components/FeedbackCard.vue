@@ -39,7 +39,7 @@
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useRefreshable, useService } from '@/composables'
 
-withDefaults(defineProps<{ icon: boolean; border: string }>(), { icon: true, border: 'left' })
+withDefaults(defineProps<{ icon?: boolean; border?: string }>(), { icon: true, border: 'left' })
 
 const { t } = useI18n()
 const { reportItNow } = useService(BaseServiceKey)
