@@ -28,7 +28,7 @@
     <v-list-item>
       <v-list-item-action class="self-center">
         <img
-          :src="'image://builtin/forge'"
+          :src="'image://builtin/minecraft'"
           width="40"
         >
       </v-list-item-action>
