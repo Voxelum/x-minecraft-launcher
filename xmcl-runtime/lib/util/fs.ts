@@ -2,7 +2,6 @@ import { checksum } from '@xmcl/core'
 import { isFileNoFound } from '@xmcl/runtime-api'
 import { AbortableTask, CancelledError } from '@xmcl/task'
 import { createHash } from 'crypto'
-import { fromFile } from 'file-type'
 import { FileExtension } from 'file-type/core'
 import { access, constants, copy, copyFile, ensureDir, FSWatcher, link, readdir, stat, symlink, unlink, watch } from 'fs-extra'
 import { platform } from 'os'
@@ -193,6 +192,7 @@ export function linkWithTimeoutOrCopy(from: string, to: string, timeout = 1500) 
 export type FileType = FileExtension | 'unknown' | 'directory'
 
 export async function fileType(path: string): Promise<FileType> {
+  const { fromFile } = await import('file-type')
   const result = await fromFile(path)
   return result?.ext ?? 'unknown'
 }

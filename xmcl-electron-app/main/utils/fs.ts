@@ -1,7 +1,5 @@
 import { checksum } from '@xmcl/core'
 import { createHash } from 'crypto'
-import { fromFile } from 'file-type'
-import { FileExtension } from 'file-type/core'
 import filenamify from 'filenamify'
 import { access, constants, copy, copyFile, ensureDir, FSWatcher, link, readdir, stat, unlink, watch } from 'fs-extra'
 import { extname, join, resolve } from 'path'
@@ -131,13 +129,6 @@ export function linkWithTimeoutOrCopy(from: string, to: string, timeout = 1500) 
   return linkWithTimeout(from, to, timeout).catch(() => {
     copy(from, to)
   })
-}
-
-export type FileType = FileExtension | 'unknown' | 'directory'
-
-export async function fileType(path: string): Promise<FileType> {
-  const result = await fromFile(path)
-  return result?.ext ?? 'unknown'
 }
 
 /**
