@@ -34,7 +34,12 @@ export const taskProgressPlugin: ControllerPlugin = function (this: Controller) 
     tasks.emitter.on('update', (uid, task) => {
       if (tasks.getActiveTask() === task) {
         if (this.activeWindow && !this.activeWindow.isDestroyed()) {
-          this.activeWindow.setProgressBar(task.progress / task.total)
+          const progress = task.progress / task.total
+          if (Number.isNaN(progress) || progress > 1) {
+            this.activeWindow.setProgressBar(-1)
+          } else {
+            this.activeWindow.setProgressBar(progress)
+          }
         }
       }
     })
