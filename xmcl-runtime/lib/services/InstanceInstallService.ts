@@ -13,7 +13,7 @@ import { Entry, ZipFile } from 'yauzl'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
-import { linkWithTimeoutOrCopy } from '../util/fs'
+import { linkWithTimeoutOrCopy, missing } from '../util/fs'
 import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { createPromiseSignal } from '../util/promiseSignal'
@@ -363,10 +363,15 @@ export class InstanceInstallService extends AbstractService implements IInstance
             this.resourceService.markResourceMetadata(sha1, metadata)
           }
         })
+        const renamedPath = destination.substring(0, destination.length - '.pending'.length)
         try {
-          await rename(destination, destination.substring(0, destination.length - '.pending'.length))
+          if (!await missing(renamedPath) && await missing(destination)) {
+            await rename(destination, renamedPath)
+          } else {
+            this.warn(`Skip to rename ${destination} -> ${renamedPath} as the file already existed`)
+          }
         } catch (e) {
-          this.error(`Fail to rename ${destination} -> ${destination.substring(0, destination.length - '.pending'.length)} \n%o`, e)
+          this.error(`Fail to rename ${destination} -> ${renamedPath} \n%o`, e)
           throw e
         }
       }
