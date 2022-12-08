@@ -114,11 +114,23 @@ export const config: Configuration = {
     target: process.env.BUILD_TARGET === 'appimage'
       ? 'AppImage'
       : [
-        'deb',
+        {
+          target: 'deb',
+          arch: [
+            'arm64',
+            'x64',
+          ],
+        },
         'rpm',
         'snap',
         'zip',
-        'tar.xz',
+        {
+          target: 'tar.xz',
+          arch: [
+            'arm64',
+            'x64',
+          ],
+        },
       ],
   },
   snap: {
