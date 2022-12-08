@@ -38,7 +38,7 @@
     />
     <div
       v-else-if="versionsError"
-      class="flex flex-col items-center gap-4"
+      class="flex flex-col items-center gap-4 my-10"
     >
       <v-icon
         color="error"

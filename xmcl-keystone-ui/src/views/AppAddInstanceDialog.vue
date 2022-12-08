@@ -297,12 +297,13 @@ watch(isShown, (shown) => {
     reset()
     return
   }
-  const id = parameter.value
-  if (id) {
-    refresh().then(() => {
+  refresh().then(() => {
+    const id = parameter.value
+    if (id) {
       selectedTemplate.value = templates.value.find(t => t.id === id.toString())
-    })
-  }
+    }
+  })
+
   step.value = 2
   valid.value = true
 })

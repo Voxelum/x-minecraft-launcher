@@ -1,8 +1,7 @@
 <template>
-  <v-container
-    fluid
+  <div
     style="z-index: 2; overflow: auto"
-    class="overflow-auto h-full"
+    class="overflow-auto h-full w-full p-2 px-8"
     @dragover.prevent
   >
     <v-layout
@@ -296,7 +295,7 @@
             class="absolute top-0"
             stream
           />
-          <v-list-item-avatar>
+          <v-list-item-avatar class="mr-4">
             <PlayerAvatar
               :dimension="40"
               :src="c.userInfo.avatar"
@@ -315,7 +314,9 @@
                 <v-icon left>
                   signal_cellular_alt
                 </v-icon>
-                {{ t(`peerConnectionState.name`) }}:
+                <span class="lg:inline hidden">
+                  {{ t(`peerConnectionState.name`) }}:
+                </span>
                 {{ tConnectionStates[c.connectionState] }}
                 <template v-if="c.connectionState === 'connected'">
                   ({{ c.ping }}ms)
@@ -327,17 +328,25 @@
             v-if="c.selectedCandidate"
             class="self-center mr-5"
           >
-            <v-list-item-subtitle>
-              <v-icon>
-                place
-              </v-icon>
-              {{ tTransportType[c.selectedCandidate.local.type] }}
-              {{ c.selectedCandidate.local.address }}:{{ c.selectedCandidate.local.port }}
-              <v-icon>
-                person_pin_circle
-              </v-icon>
-              {{ tTransportType[c.selectedCandidate.remote.type] }}
-              {{ c.selectedCandidate.remote.address }}:{{ c.selectedCandidate.remote.port }}
+            <v-list-item-subtitle class="flex flex-col">
+              <span>
+                <v-icon>
+                  place
+                </v-icon>
+                <span class="lg:inline hidden">
+                  {{ tTransportType[c.selectedCandidate.local.type] }}
+                </span>
+                {{ c.selectedCandidate.local.address }}:{{ c.selectedCandidate.local.port }}
+              </span>
+              <span>
+                <v-icon>
+                  person_pin_circle
+                </v-icon>
+                <span class="lg:inline hidden">
+                  {{ tTransportType[c.selectedCandidate.remote.type] }}
+                </span>
+                {{ c.selectedCandidate.remote.address }}:{{ c.selectedCandidate.remote.port }}
+              </span>
             </v-list-item-subtitle>
           </v-list-item-action>
           <v-list-item-action
@@ -422,7 +431,7 @@
         {{ t('multiplayer.disconnectDescription', { user: deletingName, id: deleting }) }}
       </DeleteDialog>
     </v-layout>
-  </v-container>
+  </div>
 </template>
 <script lang=ts setup>
 import Hint from '@/components/Hint.vue'
