@@ -1,11 +1,13 @@
 import { CachedFTBModpackVersionManifest, FeedTheBeastService as IFeedTheBeastService, FeedTheBeastServiceKey, FeedTheBeastState, FTBModpackManifest, FTBModpacksResult, FTBModpackVersionManifest, GetFTBModpackVersionOptions, SearchFTBModpackOptions } from '@xmcl/runtime-api'
-import { AbstractSublevel } from 'abstract-level'
 import { ClassicLevel } from 'classic-level'
+import { readJSON } from 'fs-extra'
+import { unlink } from 'fs/promises'
 import { Client } from 'undici'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { FeedTheBeastClient } from '../clients/FeedTheBeastClient'
 import { InteroperableDispatcher } from '../dispatchers/dispatcher'
+import { missing } from '../util/fs'
 import { Inject } from '../util/objectRegistry'
 import { ExposeServiceKey, StatefulService } from './Service'
 
@@ -13,14 +15,27 @@ import { ExposeServiceKey, StatefulService } from './Service'
 export class FeedTheBeastService extends StatefulService<FeedTheBeastState> implements IFeedTheBeastService {
   private client: FeedTheBeastClient
 
-  private db: AbstractSublevel<ClassicLevel<string, string>, string | Buffer, string, CachedFTBModpackVersionManifest>
+  private db: ClassicLevel<string, CachedFTBModpackVersionManifest>
 
-  constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(ClassicLevel) leveldb: ClassicLevel,
-  ) {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
     super(app, () => new FeedTheBeastState(), async () => {
+      const legacyPath = this.getAppDataPath('ftb.json')
+      if (!await missing(legacyPath)) {
+        const content: {
+          caches: CachedFTBModpackVersionManifest[]
+        } = await readJSON(legacyPath)
+        const batch = this.db.batch()
+        for (const m of content.caches) {
+          batch.put(m.id.toString(), m)
+        }
+        await batch.write()
+        await unlink(legacyPath)
+      }
     })
-    this.db = leveldb.sublevel<string, CachedFTBModpackVersionManifest>('ftb', { keyEncoding: 'string', valueEncoding: 'json' })
+    const cache = new ClassicLevel<string, CachedFTBModpackVersionManifest>(this.getAppDataPath('ftb-cache'), {
+      valueEncoding: 'json',
+    })
+    this.db = cache
 
     const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
       if (origin.host === 'api.modpacks.ch') {
@@ -75,7 +90,7 @@ export class FeedTheBeastService extends StatefulService<FeedTheBeastState> impl
   async getModpackVersionManifest({ modpack, version }: GetFTBModpackVersionOptions): Promise<FTBModpackVersionManifest> {
     const modpackId = typeof modpack === 'number' ? modpack : modpack.id
     this.log(`Try get modpack version for modpackId=${modpackId}, versionId=${version.id}`)
-    const existed = await this.db.get(version.id.toString())
+    const existed = await this.db.get(version.id.toString()).catch(() => undefined)
     if (existed && existed.updated >= version.updated) {
       return existed
     }
