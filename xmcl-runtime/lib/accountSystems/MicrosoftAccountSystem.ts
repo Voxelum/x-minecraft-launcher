@@ -119,6 +119,11 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       this.logger.error(e)
       throw new UserException({ type: 'userExchangeXboxTokenFailed', error: e.toString() })
     })
+
+    if (!xstsResponse || !xstsResponse.DisplayClaims || !xstsResponse.DisplayClaims.xui) {
+      throw new UserException({ type: 'userExchangeXboxTokenFailed', error: 'No xbox token' })
+    }
+
     this.logger.log('Successfully login Xbox')
 
     const mcResponse = await this.authenticator.loginMinecraftWithXBox(xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token, signal).catch((e) => {
