@@ -29,9 +29,11 @@
   </v-card>
 </template>
 <script lang="ts" setup>
+import { useService } from '@/composables'
+import { kModpacks } from '@/composables/modpack'
+import { injection } from '@/util/inject'
 import { File } from '@xmcl/curseforge'
-import { CurseForgeServiceKey, InstanceData, InstanceModsServiceKey, ModrinthServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
-import { useSemaphore, useService } from '@/composables'
+import { CurseForgeServiceKey, InstanceData } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   upstream: InstanceData['upstream'] & { type: 'curseforge-modpack'}
@@ -44,8 +46,8 @@ const { push } = useRouter()
 
 const hasUpdate = computed(() => files.value[0].id !== props.upstream.fileId)
 
-const { state: resourceState } = useService(ResourceServiceKey)
-const resource = computed(() => resourceState.modpacks.find(v => v.metadata.curseforge &&
+const { resources } = injection(kModpacks)
+const resource = computed(() => resources.value.find(v => v.metadata.curseforge &&
   v.metadata.curseforge.projectId === props.upstream.modId &&
   v.metadata.curseforge.fileId === props.upstream.fileId))
 

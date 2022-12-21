@@ -24,7 +24,7 @@ export default defineComponent({
       const simpleText = hint.children.length === 0
       function generate(node: RenderNode): ReturnType<typeof h> {
         return h('span', {
-          style: node.style,
+          style: node.style as any,
           attrs: { contenteditable: props.editable && simpleText },
           on: {
             input: (e: InputEvent) => {

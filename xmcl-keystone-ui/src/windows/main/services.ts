@@ -1,13 +1,9 @@
-import { del, set } from 'vue'
-import type { ResolvedVersion } from '@xmcl/core'
-import { BaseServiceKey, BaseState, CurseForgeServiceKey, CurseforgeState, DiagnoseServiceKey, DiagnoseState, ElyByServiceKey, EMPTY_JAVA, EMPTY_VERSION, FeedTheBeastServiceKey, FeedTheBeastState, GameProfileAndTexture, ImportServiceKey, InstallServiceKey, InstanceInstallServiceKey, InstanceIOServiceKey, InstanceJavaServiceKey, InstanceJavaState, InstanceLogServiceKey, InstanceManifestServiceKey, InstanceModsServiceKey, InstanceModsState, InstanceOptionsServiceKey, InstanceOptionsState, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceServerInfoServiceKey, InstanceServiceKey, InstanceShaderPacksServiceKey, InstanceState, InstanceVersionServiceKey, InstanceVersionState, JavaRecord, JavaServiceKey, JavaState, LaunchServiceKey, LaunchState, LittleSkinUserServiceKey, LocalVersionHeader, ModpackServiceKey, ModrinthServiceKey, ModrinthState, OfficialUserServiceKey, OfflineUserServiceKey, PeerServiceKey, PeerState, Persisted, Resource, ResourceDomain, ResourcePackPreviewServiceKey, ResourceServiceKey, ResourceState, SaveState, ServerInfoState, ServerStatusServiceKey, UserProfile, UserServiceKey, UserState, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
-import { GameProfile } from '@xmcl/user'
-import { ServiceFactory, kServiceFactory } from '@/composables'
+import { kServiceFactory } from '@/composables'
 import { injection } from '@/util/inject'
-import { NatDeviceInfo, NatServiceKey, NatState } from '@xmcl/runtime-api/src/services/NatService'
-
-// fix vue 2 reactivity
-// TODO: remove this in vue 3
+import type { ResolvedVersion } from '@xmcl/core'
+import { BaseServiceKey, BaseState, CurseForgeServiceKey, CurseforgeState, DiagnoseServiceKey, DiagnoseState, ElyByServiceKey, EMPTY_JAVA, EMPTY_VERSION, FeedTheBeastServiceKey, FeedTheBeastState, GameProfileAndTexture, ImportServiceKey, InstallServiceKey, InstanceInstallServiceKey, InstanceIOServiceKey, InstanceJavaServiceKey, InstanceJavaState, InstanceLogServiceKey, InstanceManifestServiceKey, InstanceModsServiceKey, InstanceModsState, InstanceOptionsServiceKey, InstanceOptionsState, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceServerInfoServiceKey, InstanceServiceKey, InstanceShaderPacksServiceKey, InstanceState, InstanceVersionServiceKey, InstanceVersionState, JavaRecord, JavaServiceKey, JavaState, LaunchServiceKey, LaunchState, LittleSkinUserServiceKey, LocalVersionHeader, ModpackServiceKey, ModrinthServiceKey, ModrinthState, NatDeviceInfo, NatServiceKey, NatState, OfficialUserServiceKey, OfflineUserServiceKey, PeerServiceKey, PeerState, Resource, ResourcePackPreviewServiceKey, ResourceServiceKey, SaveState, ServerInfoState, ServerStatusServiceKey, UserProfile, UserServiceKey, UserState, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
+import { GameProfile } from '@xmcl/user'
+import { del, set } from 'vue'
 
 class ReactiveInstanceJavaState extends InstanceJavaState {
   java = EMPTY_JAVA
@@ -52,42 +48,6 @@ class ReactiveUserState extends UserState {
 
   userProfile(user: UserProfile) {
     set(this.users, user.id, user)
-  }
-}
-
-class ReactiveResourceState extends ResourceState {
-  resource(res: Persisted<Resource>) {
-    let domain: Array<Resource> | undefined
-    switch (res.domain) {
-      case ResourceDomain.Mods:
-        domain = this.mods
-        break
-      case ResourceDomain.ResourcePacks:
-        domain = this.resourcepacks
-        break
-      case ResourceDomain.Saves:
-        domain = this.saves
-        break
-      case ResourceDomain.Modpacks:
-        domain = this.modpacks
-        break
-      case ResourceDomain.ShaderPacks:
-        domain = this.shaderpacks
-        break
-      case ResourceDomain.Unclassified:
-        domain = this.unclassified
-        break
-    }
-    if (domain) {
-      const index = domain.findIndex((r) => r.hash === res.hash)
-      if (index !== -1) {
-        set(domain, index, Object.freeze(res))
-      } else {
-        domain.push(Object.freeze(res) as any)
-      }
-    } else {
-      throw new Error(`Cannot accept resource for unknown domain [${res.domain}]`)
-    }
   }
 }
 
@@ -143,6 +103,7 @@ export function useAllServices() {
   factory.register(InstanceManifestServiceKey, () => undefined)
   factory.register(ElyByServiceKey, () => undefined)
   factory.register(OfflineUserServiceKey, () => undefined)
+  factory.register(ResourceServiceKey, () => undefined)
 
   factory.register(NatServiceKey, () => new ReactiveNatState())
   factory.register(FeedTheBeastServiceKey, () => new FeedTheBeastState())
@@ -159,7 +120,6 @@ export function useAllServices() {
   factory.register(JavaServiceKey, () => new JavaState())
   factory.register(VersionServiceKey, () => new VersionState())
   factory.register(LaunchServiceKey, () => new LaunchState())
-  factory.register(ResourceServiceKey, () => new ReactiveResourceState())
   factory.register(CurseForgeServiceKey, () => new CurseforgeState())
   factory.register(ModrinthServiceKey, () => new ModrinthState())
   factory.register(UserServiceKey, () => new ReactiveUserState())

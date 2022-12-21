@@ -244,7 +244,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
   }
 
   private async getDownloadFile(file: InstanceFile, instancePath: string, getEntry: (zipFile: string, entry: string) => Promise<readonly [ZipFile, Entry]>) {
-    const createFileLinkTask = (dest: string, res: Persisted<Resource>) => task('file', async () => {
+    const createFileLinkTask = (dest: string, res: Resource) => task('file', async () => {
       const fstat = await stat(dest).catch(() => undefined)
       if (fstat && fstat.ino === res.ino) {
         return
@@ -326,13 +326,11 @@ export class InstanceInstallService extends AbstractService implements IInstance
       urls.push(...file.downloads)
     }
 
-    const resource = this.resourceService.state.mods.find(r => r.hash === sha1) ||
-      this.resourceService.state.resourcepacks.find(r => r.hash === sha1) ||
-      this.resourceService.state.shaderpacks.find(r => r.hash === sha1)
+    const resource = await this.resourceService.getResourceByHash(sha1)
 
-    if (resource && await this.resourceService.validateResource(resource)) {
-      if ((metadata.modrinth && !resource.metadata.modrinth) || (metadata.curseforge && resource.metadata.curseforge) || (urls.length > 0 && urls.some(u => resource.uri.indexOf(u) === -1))) {
-        await this.resourceService.updateResource({ hash: resource.hash, metadata, uri: urls }).catch((e) => {
+    if (resource) {
+      if ((metadata.modrinth && !resource.metadata.modrinth) || (metadata.curseforge && resource.metadata.curseforge) || (urls.length > 0 && urls.some(u => resource.uris.indexOf(u) === -1))) {
+        await this.resourceService.updateResources([{ hash: resource.hash, metadata, uris: urls }]).catch((e) => {
           this.warn(`Fail to update existed resource ${resource.name}(${resource.hash}) metadata during instance install:`)
           this.warn(e)
         })
@@ -345,24 +343,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
     return createDownloadTask(file, destination, sha1).setName('file').map(async () => {
       if (pending) {
-        // Most be cache
-        await this.resourceService.importResource({
-          background: true,
-          resources: [{
-            path: destination,
-            domain: file.path.startsWith(ResourceDomain.Mods)
-              ? ResourceDomain.Mods
-              : file.path.startsWith(ResourceDomain.ResourcePacks)
-                ? ResourceDomain.ResourcePacks
-                : ResourceDomain.ShaderPacks,
-            metadata,
-          }],
-        }).catch(e => {
-          if (Object.keys(metadata).length > 0) {
-            this.log(`Fallback to mark resource ${destination} ${sha1}\n%o`, e)
-            this.resourceService.markResourceMetadata(sha1, metadata)
-          }
-        })
+        await this.resourceService.updateResources([{ hash: file.hashes.sha1, metadata }])
         const renamedPath = destination.substring(0, destination.length - '.pending'.length)
         try {
           if (!await missing(renamedPath) && await missing(destination)) {

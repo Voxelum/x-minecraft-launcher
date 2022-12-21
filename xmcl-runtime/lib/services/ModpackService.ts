@@ -231,10 +231,10 @@ export class ModpackService extends AbstractService implements IModpackService {
       const filePath = join(instancePath, file.path)
       if (file.path.startsWith('mods/') || file.path.startsWith('resourcepacks/') || file.path.startsWith('shaderpacks/')) {
         const ino = await stat(filePath)
-        let resource = this.resourceService.getResourceByKey(ino.ino)
+        let resource = await this.resourceService.getReosurceByIno(ino.ino)
         if (!resource) {
           const sha1 = await this.worker.checksum(filePath, 'sha1')
-          resource = await this.resourceService.getResource(sha1)
+          resource = await this.resourceService.getResourceByHash(sha1)
         }
 
         if (!file.override && resource) {
@@ -245,7 +245,7 @@ export class ModpackService extends AbstractService implements IModpackService {
             continue
           } else if (!file.override && resource) {
             // modrinth not allowed to include curseforge source by regulation
-            const availableDownloads = resource.uri.filter(u => isAllowInModrinthModpack(u, options.strictModeInModrinth))
+            const availableDownloads = resource.uris.filter(u => isAllowInModrinthModpack(u, options.strictModeInModrinth))
             if (availableDownloads.length > 0) {
               modrinthManifest?.files.push({
                 path: file.path,

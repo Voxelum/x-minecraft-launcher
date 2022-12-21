@@ -1,6 +1,8 @@
 import { useRefreshable, useService } from '@/composables'
-import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, FeedTheBeastServiceKey, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromModrinthModpack, InstanceData, InstanceManifest, InstanceSchema, isCurseforgeModpackResource, isMcbbsModpackResource, isModrinthModpackResource, JavaServiceKey, McbbsModpackResource, ModpackResource, ModrinthModpackResource, PeerServiceKey, RawModpackResource, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { injection } from '@/util/inject'
+import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, FeedTheBeastServiceKey, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromModrinthModpack, InstanceData, InstanceManifest, InstanceSchema, isCurseforgeModpackResource, isMcbbsModpackResource, isModrinthModpackResource, isRawModpackResource, JavaServiceKey, McbbsModpackResource, ModpackResource, ModrinthModpackResource, PeerServiceKey, RawModpackResource, ResourceDomain, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
 import { DialogKey } from './dialog'
+import { kModpacks } from './modpack'
 
 export const AddInstanceDialogKey: DialogKey<string> = 'add-instance-dialog'
 
@@ -36,27 +38,31 @@ export type TemplateSource = {
 }
 
 export function useAllTemplate(data: InstanceData) {
-  const { state: resourceState } = useService(ResourceServiceKey)
   const { state: javaState } = useService(JavaServiceKey)
   const { state: peerState } = useService(PeerServiceKey)
 
   const { getAllCachedModpackVersions } = useService(FeedTheBeastServiceKey)
 
   const container = shallowRef([] as Array<Template>)
+  const { resources } = injection(kModpacks)
 
   const { refresh, refreshing } = useRefreshable(async () => {
+    if (!active) {
+      return
+    }
     const all = [] as Array<Template>
-    all.push(...resourceState.modpacks.map((modpack) => {
+    all.push(...resources.value.map((modpack) => {
       if (isCurseforgeModpackResource(modpack)) {
         return getCurseforgeTemplate(modpack)
       } else if (isMcbbsModpackResource(modpack)) {
         return getMcbbsTemplate(modpack)
       } else if (isModrinthModpackResource(modpack)) {
         return getModrinthTemplate(modpack)
-      } else {
+      } else if (isRawModpackResource(modpack)) {
         return getModpackTemplate(modpack)
       }
-    }))
+      return undefined
+    }).filter((v): v is Template => !!v))
     const ftb = await getAllCachedModpackVersions()
     all.push(...ftb.filter(f => f.name && f.targets).map(getFtbTemplate))
 
@@ -67,7 +73,20 @@ export function useAllTemplate(data: InstanceData) {
     }
     container.value = all
   })
+
+  watch([resources, peerState], () => {
+    refresh()
+  })
+
+  let active = false
+
+  const setup = () => {
+    active = true
+    return refresh()
+  }
+
   const dispose = () => {
+    active = false
     container.value = []
   }
 
@@ -292,6 +311,7 @@ export function useAllTemplate(data: InstanceData) {
 
   return {
     templates: container,
+    setup,
     refresh,
     dispose,
     apply,

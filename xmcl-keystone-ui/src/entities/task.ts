@@ -30,7 +30,7 @@ export interface TaskItem {
   time: Date
 
   path: string
-  param: object
+  param: Record<string, any>
   from: string
   to: string
   message: object | string

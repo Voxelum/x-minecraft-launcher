@@ -1,12 +1,13 @@
+import { InstanceOptionsServiceKey, InstanceShaderPacksServiceKey, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { InstanceOptionsServiceKey, Persisted, ShaderPackResource, InstanceShaderPacksServiceKey, ResourceServiceKey, ResourceDomain } from '@xmcl/runtime-api'
 
-import { useServiceBusy, useService, useRefreshable } from '@/composables'
+import { useRefreshable, useService } from '@/composables'
+import { kShaderPacks, useShaderPacks } from './shaderPacks'
 
 export interface ShaderPackItem {
   name: string
   value: string
-  resource: Persisted<ShaderPackResource>
+  resource: Resource
   enabled: boolean
   description: string
   path: string
@@ -14,14 +15,13 @@ export interface ShaderPackItem {
 }
 
 export function useShaderpacks() {
-  const { state, updateResources, removeResource } = useService(ResourceServiceKey)
+  const { resources: shaderPacksResources, refreshing: loading } = inject(kShaderPacks, () => useShaderPacks(), true)
+  const { updateResources, removeResources } = useService(ResourceServiceKey)
   const { state: options, editShaderOptions } = useService(InstanceOptionsServiceKey)
   const { showDirectory } = useService(InstanceShaderPacksServiceKey)
-  const loading = useServiceBusy(ResourceServiceKey, 'load', ResourceDomain.ShaderPacks)
   const { t } = useI18n()
 
   const shaderPacks = ref([] as ShaderPackItem[])
-  const shaderPacksResources = computed(() => state.shaderpacks)
   const selectedShaderPack = ref(options.shaderoptions.shaderPack)
 
   const isModified = computed(() => selectedShaderPack.value !== options.shaderoptions.shaderPack)
@@ -45,7 +45,7 @@ export function useShaderpacks() {
       tags: [],
     }]
   }
-  function getShaderPackItemFromResource(res: Persisted<ShaderPackResource>): ShaderPackItem {
+  function getShaderPackItemFromResource(res: Resource): ShaderPackItem {
     const fileName = res.fileName
     return {
       name: res.name,
@@ -71,7 +71,7 @@ export function useShaderpacks() {
 
   async function removeShaderPack(item: ShaderPackItem) {
     if (!item.enabled && item.path) {
-      await removeResource(item.resource)
+      await removeResources([item.resource.hash])
     }
   }
 

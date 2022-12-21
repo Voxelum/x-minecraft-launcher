@@ -7,7 +7,6 @@ import { SaveState } from './services/InstanceSavesService'
 import { InstanceState } from './services/InstanceService'
 import { JavaState } from './services/JavaService'
 import { LaunchState } from './services/LaunchService'
-import { ResourceState } from './services/ResourceService'
 import { UserState } from './services/UserService'
 import { VersionState } from './services/VersionService'
 import { ServiceKey, StatefulService } from './services/Service'
@@ -31,7 +30,6 @@ export type AllServiceMutations =
   & Mutations<SaveState>
   & Mutations<JavaState>
   & Mutations<LaunchState>
-  & Mutations<ResourceState>
   & Mutations<UserState>
   & Mutations<VersionState>
   & Mutations<PeerState>

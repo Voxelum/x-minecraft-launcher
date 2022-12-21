@@ -65,14 +65,16 @@ import { InstanceData, ModpackServiceKey, ModrinthServiceKey, ResourceServiceKey
 import { useDialog } from '../composables/dialog'
 import { useService, useServiceBusy } from '@/composables'
 import { getLocalDateString } from '@/util/date'
+import { kModpacks } from '@/composables/modpack'
+import { injection } from '@/util/inject'
 
 const props = defineProps<{
   path: string
   upstream: InstanceData['upstream'] & { type: 'modrinth-modpack' }
 }>()
 
-const { state } = useService(ResourceServiceKey)
-const currentModpack = computed(() => state.modpacks.find(v => v.metadata.modrinth &&
+const { resources } = injection(kModpacks)
+const currentModpack = computed(() => resources.value.find(v => v.metadata.modrinth &&
   v.metadata.modrinth.projectId === props.upstream.projectId &&
   v.metadata.modrinth.versionId === props.upstream.versionId))
 
@@ -84,7 +86,7 @@ const currentVersion = ref(undefined as undefined | ProjectVersion)
 const latestVersion = ref(undefined as undefined | ProjectVersion)
 
 const hasUpdate = computed(() => latestVersion.value && latestVersion.value.id !== props.upstream.versionId)
-const pendingModpack = computed(() => !latestVersion.value ? undefined : state.modpacks.find(m => m.metadata.modrinth?.projectId === latestVersion.value?.project_id && m.metadata.modrinth?.versionId === latestVersion.value?.id))
+const pendingModpack = computed(() => !latestVersion.value ? undefined : resources.value.find(m => m.metadata.modrinth?.projectId === latestVersion.value?.project_id && m.metadata.modrinth?.versionId === latestVersion.value?.id))
 
 const refreshingLatestProjectVersion = useServiceBusy(ModrinthServiceKey, 'getLatestProjectVersion', computed(() => currentModpack.value?.hash ?? ''))
 const refreshingProject = useServiceBusy(ModrinthServiceKey, 'getProject')

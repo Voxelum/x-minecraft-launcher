@@ -1,5 +1,4 @@
-import { Resource } from '@xmcl/runtime-api'
-import { FileType } from '../util/fs'
+import { ResourceContext } from '../resourceCore'
 import { InjectionKey } from '../util/objectRegistry'
 
 export interface WorkPayload {
@@ -27,16 +26,7 @@ export const kResourceWorker: InjectionKey<ResourceWorker> = Symbol('ResourceWor
 /**
  * The worker for cpu busy work
  */
-export interface ResourceWorker {
+export interface ResourceWorker extends Pick<ResourceContext, 'hash' | 'parse' | 'hashAndFileType'> {
   checksum(path: string, algorithm: string): Promise<string>
-  checksumAndFileType(path: string, algorithm: string): Promise<[string, FileType]>
-  fileType(path: string): Promise<FileType>
-  parseResourceMetadata(resource: Resource): Promise<{ resource: Resource; icons: Uint8Array[] }>
-  validateResources(resource: Resource[]): Promise<{
-    removal: Resource[]
-    updates: Resource[]
-    resources: Resource[]
-    icons: Array<Uint8Array>
-  }>
   copyPassively(files: { src: string; dest: string }[]): Promise<void>
 }

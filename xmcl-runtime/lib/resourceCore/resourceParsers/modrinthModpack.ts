@@ -1,7 +1,7 @@
 import { ModrinthModpackManifest, ResourceDomain, ResourceType } from '@xmcl/runtime-api'
-import { ResourceParser } from '../resource'
+import type { IResourceParser } from './index'
 
-export const modrinthModpackParser: ResourceParser<ModrinthModpackManifest> = {
+export const modrinthModpackParser: IResourceParser<ModrinthModpackManifest> = {
   type: ResourceType.ModrinthModpack,
   domain: ResourceDomain.Modpacks,
   ext: '.mrpack',

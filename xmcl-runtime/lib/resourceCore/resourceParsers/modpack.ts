@@ -1,8 +1,8 @@
 import { Version } from '@xmcl/core'
 import { RuntimeVersions, ResourceType, ResourceDomain, resolveRuntimeVersion } from '@xmcl/runtime-api'
-import { ResourceParser } from '../resource'
+import type { IResourceParser } from './index'
 
-export const modpackParser: ResourceParser<{ root: string; runtime: RuntimeVersions }> = ({
+export const modpackParser: IResourceParser<{ root: string; runtime: RuntimeVersions }> = ({
   type: ResourceType.Modpack,
   domain: ResourceDomain.Modpacks,
   ext: '.zip',

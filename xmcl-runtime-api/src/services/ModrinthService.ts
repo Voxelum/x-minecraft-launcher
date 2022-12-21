@@ -37,7 +37,7 @@ export class ModrinthState {
 
 export interface InstallModrinthVersionResult {
   version: ProjectVersion
-  resources: Persisted<Resource>[]
+  resources: Resource[]
   dependencies: InstallModrinthVersionResult[]
 }
 

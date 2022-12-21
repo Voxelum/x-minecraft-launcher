@@ -24,7 +24,7 @@
       </main>
     </div>
     <AppDropDialog />
-    <ContextMenu />
+    <AppContextMenu />
     <AppNotifier />
     <AppFeedbackDialog />
     <AppLoginDialog />
@@ -53,13 +53,14 @@
 
 <script lang=ts setup>
 import '@/assets/common.css'
-import ContextMenu from '@/components/ContextMenu.vue'
+import AppContextMenu from '@/views/AppContextMenu.vue'
 import { useExternalRoute, useI18nSync, useThemeSync } from '@/composables'
 import { useAuthProfileImportNotification } from '@/composables/authProfileImport'
 import { useBackground } from '@/composables/background'
 import { kColorTheme, useColorTheme } from '@/composables/colorTheme'
 import { useDropService } from '@/composables/dropService'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
+import { kModpacks, useModpacks } from '@/composables/modpack'
 import { kUILayout, useUILayout } from '@/composables/uiLayout'
 import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
@@ -115,6 +116,7 @@ useI18nSync()
 useThemeSync()
 useExternalRoute()
 provide(kUILayout, useUILayout())
+provide(kModpacks, useModpacks())
 
 </script>
 

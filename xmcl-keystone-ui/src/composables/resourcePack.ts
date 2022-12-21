@@ -1,11 +1,11 @@
-import { computed, onMounted, ref, Ref, watch } from 'vue'
 import { PackMeta } from '@xmcl/resourcepack'
-import { InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, isPersistedResource, ResourceServiceKey, packFormatVersionRange, ResourcePackResource, Persisted } from '@xmcl/runtime-api'
+import { InstanceOptionsServiceKey, InstanceResourcePacksServiceKey, isPersistedResource, packFormatVersionRange, Persisted, Resource, ResourcePackResource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { computed, onMounted, ref, Ref, watch } from 'vue'
 
-import { useServiceBusy, useService } from '@/composables'
-import { isStringArrayEquals } from '@/util/equal'
 import unknownPack from '@/assets/unknown_pack.png'
-import { basename } from '@/util/basename'
+import { useService, useServiceBusy } from '@/composables'
+import { isStringArrayEquals } from '@/util/equal'
+import { kResourcePacks, useResourcePacks } from './resourcePacks'
 
 export interface ResourcePackItem extends PackMeta.Pack {
   /**
@@ -44,11 +44,13 @@ export interface ResourcePackItem extends PackMeta.Pack {
  */
 export function useInstanceResourcePacks() {
   const { state: gameSettingState, editGameSetting } = useService(InstanceOptionsServiceKey)
-  const { state: resourceState, updateResources } = useService(ResourceServiceKey)
+  const { resources, refreshing } = inject(kResourcePacks, () => useResourcePacks(), true)
+  const { updateResources } = useService(ResourceServiceKey)
   const { showDirectory } = useService(InstanceResourcePacksServiceKey)
   const { t } = useI18n()
 
-  const loading = useServiceBusy(InstanceOptionsServiceKey, 'editGameSetting')
+  const editing = useServiceBusy(InstanceOptionsServiceKey, 'editGameSetting')
+  const loading = computed(() => editing.value || refreshing.value)
   /**
    * The resource pack name array.
    * It's the REVERSED version of the resourcePacks array in options.txt (gamesetting).
@@ -76,13 +78,13 @@ export function useInstanceResourcePacks() {
   function getResourcepackFormat(meta: any) {
     return meta ? meta.format ?? meta.pack_format : 3
   }
-  function getResourcePackItem(resource: Persisted<ResourcePackResource>): ResourcePackItem {
+  function getResourcePackItem(resource: Resource): ResourcePackItem {
     if (resource.metadata.resourcepack) {
       return ({
         path: resource.path,
         name: resource.name,
         id: `file/${resource.fileName.endsWith('.zip') ? resource.fileName : resource.fileName + '.zip'}`,
-        url: resource.uri,
+        url: resource.uris,
         pack_format: resource.metadata.resourcepack.pack_format,
         description: resource.metadata.resourcepack.description,
         acceptingRange: packFormatVersionRange[getResourcepackFormat(resource.metadata.resourcepack)] ?? '[*]',
@@ -98,7 +100,7 @@ export function useInstanceResourcePacks() {
         path: resource.path,
         name: resource.name,
         id: `file/${resource.fileName.endsWith('.zip') ? resource.fileName : resource.fileName + '.zip'}`,
-        url: resource.uri,
+        url: resource.uris,
         pack_format: 0,
         description: '',
         acceptingRange: packFormatVersionRange[getResourcepackFormat(resource.metadata)] ?? '[*]',
@@ -190,7 +192,7 @@ export function useInstanceResourcePacks() {
     enabledResourcePackNames.value = arr.reverse()
   })
   onMounted(() => {
-    storage.value = resourceState.resourcepacks.map(getResourcePackItem)
+    storage.value = resources.value.map(getResourcePackItem)
 
     const arr = [...optionsResourcePacks.value.map((p) => ((p === 'vanilla' || p.startsWith('file/')) ? p : `file/${p}`))]
     if (arr.indexOf('vanilla') === -1) {
@@ -199,7 +201,7 @@ export function useInstanceResourcePacks() {
     enabledResourcePackNames.value = arr.reverse()
   })
 
-  watch(computed(() => resourceState.resourcepacks), (packs) => {
+  watch(resources, (packs) => {
     storage.value = packs.map(getResourcePackItem)
   })
 

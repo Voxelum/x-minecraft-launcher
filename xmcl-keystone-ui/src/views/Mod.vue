@@ -81,26 +81,34 @@
 <script lang=ts setup>
 import Hint from '@/components/Hint.vue'
 import RefreshingTile from '@/components/RefreshingTile.vue'
-import { useDrop, useResourceOperation } from '@/composables'
+import { useDrop, useService } from '@/composables'
 import { useModDeletion } from '@/composables/modDelete'
 import { useModDragging } from '@/composables/modDraggable'
 import { useModFilter } from '@/composables/modFilter'
 import { useModSelection } from '@/composables/modSelection'
-import { kModTooltip, useModTooltip } from '@/composables/modTooltip'
+import { kSharedTooltip, useSharedTooltip } from '@/composables/sharedTooltip'
 import { useModVisibleFilter } from '@/composables/modVisibility'
-import { ResourceDomain } from '@xmcl/runtime-api'
+import { ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { useInstanceMods } from '../composables/mod'
 import ModCard from './ModCard.vue'
 import ModDeleteView from './ModDeleteView.vue'
 import FloatButton from './ModFloatButton.vue'
 import ModHeader from './ModHeader.vue'
-import ModTooltip from './ModTooltip.vue'
+import ModTooltip from '../components/SharedTooltip.vue'
+import { CompatibleDetail } from '@/util/modCompatible'
 
-const { importResource } = useResourceOperation()
+const { importResources } = useService(ResourceServiceKey)
 const { items: mods, commit, committing, isModified, loading, enabledModCounts } = useInstanceMods()
 
-provide(kModTooltip, useModTooltip())
+provide(kSharedTooltip, useSharedTooltip<CompatibleDetail>((dep) => {
+  const compatibleText = dep.compatible === 'maybe'
+    ? t('mod.maybeCompatible')
+    : dep.compatible
+      ? t('mod.compatible')
+      : t('mod.incompatible')
+  return compatibleText + t('mod.acceptVersion', { version: dep.requirements }) + ', ' + t('mod.currentVersion', { current: dep.version || '⭕' }) + '.'
+}))
 
 const filtered = useModFilter(mods)
 const visibleFiltered = useModVisibleFilter(filtered.items)
@@ -109,7 +117,7 @@ const { isSelectionMode, selectedItems, onEnable, onClick } = selection
 const { t } = useI18n()
 
 const { onDrop: onDropToImport } = useDrop((file) => {
-  importResource({ resources: [{ path: file.path, domain: ResourceDomain.Mods }] })
+  importResources([{ path: file.path, domain: ResourceDomain.Mods }])
 })
 
 const { isDraggingMod, onDragEnd, onItemDragstart } = useModDragging(filtered.items, selectedItems, isSelectionMode)

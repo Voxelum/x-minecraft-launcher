@@ -24,12 +24,12 @@
       </v-alert>
 
       <v-list two-line>
-        <v-subheader v-if="storedSaves.length">
+        <v-subheader v-if="resourcesSave.length">
           {{ t('save.copyFrom.fromResource') }}
         </v-subheader>
 
         <v-list-item
-          v-for="(s, i) in storedSaves"
+          v-for="(s, i) in resourcesSave"
           :key="s.hash"
         >
           <v-list-item-action>
@@ -88,11 +88,11 @@
 </template>
 
 <script lang=ts setup>
-import { useServiceBusy, useSaveResource, useRefreshable } from '@/composables'
-import { InstanceSave, InstanceSavesServiceKey } from '@xmcl/runtime-api'
+import { useRefreshable, useService, useServiceBusy } from '@/composables'
+import { InstanceSave, InstanceSavesServiceKey, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useInstanceSaves } from '../composables/save'
 
-withDefaults(defineProps<{
+const props = withDefaults(defineProps<{
   value: boolean
 }>(), {
   value: false,
@@ -104,36 +104,49 @@ const loadedProfileSaves = ref([] as Array<InstanceSave>)
 const profilesCopyFrom = ref([] as boolean[])
 const resourcesCopyFrom = ref([] as boolean[])
 const error = ref(undefined as any)
+const resourcesSave = ref([] as Resource[])
 
 const { cloneSave, readAllInstancesSaves: loadAllPreviews, importSave } = useInstanceSaves()
-const { resources: storedSaves } = useSaveResource()
+const { getResources } = useService(ResourceServiceKey)
+
+const updateSaves = async () => {
+  const [store, profile] = await Promise.all([getResources(ResourceDomain.Saves), loadAllPreviews()])
+  resourcesSave.value = store
+  loadedProfileSaves.value = profile
+}
+const clearSaves = () => {
+  resourcesSave.value = []
+  loadedProfileSaves.value = []
+}
+
+watch(computed(() => props.value), (visible) => {
+  if (visible) updateSaves()
+  else clearSaves()
+})
+
+updateSaves()
+
 const nothingSelected = computed(() => profilesCopyFrom.value.every(v => !v) && resourcesCopyFrom.value.every(v => !v))
 const loadingSaves = useServiceBusy(InstanceSavesServiceKey, 'readAllInstancesSaves')
 
-onMounted(() => {
-  loadAllPreviews().then((all) => {
-    loadedProfileSaves.value = all
-  })
-  watch(() => loadedProfileSaves.value, () => {
-    profilesCopyFrom.value = new Array(loadedProfileSaves.value.length)
-  })
-  watch(storedSaves, () => {
-    resourcesCopyFrom.value = new Array(storedSaves.value.length)
-  })
+watch(() => loadedProfileSaves.value, () => {
+  profilesCopyFrom.value = new Array(loadedProfileSaves.value.length)
+})
+watch(resourcesSave, () => {
+  resourcesCopyFrom.value = new Array(resourcesSave.value.length)
 })
 
 const { refresh: startImport, refreshing: working } = useRefreshable(async () => {
   try {
     const profilesSaves = loadedProfileSaves.value.filter((_, i) => profilesCopyFrom.value[i])
-    const resourcesSaves = storedSaves.value.filter((_, i) => resourcesCopyFrom.value[i])
+    const resourcesSaves = resourcesSave.value.filter((_, i) => resourcesCopyFrom.value[i])
 
     if (resourcesSaves.length !== 0) {
-      await Promise.all(resourcesSaves.map(save => importSave({ path: save.path, saveRoot: save.metadata.save.root })))
+      await Promise.all(resourcesSaves.map(save => importSave({ path: save.path, saveRoot: save.metadata.save?.root })))
     }
 
     if (profilesSaves.length !== 0) {
       for (const s of profilesSaves) {
-        // TODO: fix
         await cloneSave({ saveName: s.name, destInstancePath: s.instanceName })
       }
     }

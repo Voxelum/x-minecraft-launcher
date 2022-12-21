@@ -62,7 +62,7 @@
 
 <script lang=ts setup>
 import { useTheme } from '@/composables'
-import { kModTooltip } from '@/composables/modTooltip'
+import { kSharedTooltip } from '@/composables/sharedTooltip'
 import { getColor } from '@/util/color'
 import { injection } from '@/util/inject'
 import { CompatibleDetail } from '@/util/modCompatible'
@@ -75,7 +75,7 @@ defineProps<{
   onDeleteTag(tag: string): void
 }>()
 
-const { onLeave, onEnter } = injection(kModTooltip)
+const { onLeave, onEnter } = injection(kSharedTooltip)
 const { icons } = injection(kModsContext)
 
 const getCompatibleIcon = (c?: CompatibleDetail) => {

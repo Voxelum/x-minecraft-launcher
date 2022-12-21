@@ -1,4 +1,4 @@
-import { Compatible, parseVersion, VersionRange } from '@xmcl/runtime-api'
+import { parseVersion, VersionRange } from '@xmcl/runtime-api'
 
 export function isRangeCompatible(range: string, version: string): 'maybe' | boolean {
   const versionRange = VersionRange.createFromVersionSpec(range)

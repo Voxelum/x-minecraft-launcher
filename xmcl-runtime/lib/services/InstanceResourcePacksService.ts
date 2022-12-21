@@ -30,11 +30,11 @@ export class InstanceResourcePackService extends AbstractService implements IIns
     @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
   ) {
     super(app)
-    this.storeManager.subscribe('instanceGameSettingsLoad', (payload) => {
+    this.storeManager.subscribe('instanceGameSettingsLoad', async (payload) => {
       if (payload.resourcePacks && this.active && !this.instanceService.isUnderManaged(this.active)) {
         for (const pack of payload.resourcePacks.filter(v => v !== 'vanilla')) {
           const fileName = pack.startsWith('file/') ? pack.substring('file/'.length) : pack
-          const existedResource = this.resourceService.state.resourcepacks.find(f => fileName === f.fileName)
+          const existedResource = await this.resourceService.getResourceUnder({ domain: ResourceDomain.ResourcePacks, fileName })
           const localFilePath = join(this.active, fileName)
           if (!existsSync(localFilePath)) {
             if (existedResource) {
@@ -203,22 +203,11 @@ export class InstanceResourcePackService extends AbstractService implements IIns
 
       this.log(`Import resourcepacks directories while linking: ${instancePath}`)
       await Promise.all(files.map(f => join(destPath, f)).map(async (filePath) => {
-        const [resource] = await this.resourceService.resolveResource([{ path: filePath, domain: ResourceDomain.ResourcePacks }])
+        const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.ResourcePacks }])
         if (isResourcePackResource(resource)) {
           this.log(`Add resource pack ${filePath}`)
         } else {
           this.warn(`Non resource pack resource added in /resourcepacks directory! ${filePath}`)
-        }
-        if (!isPersistedResource(resource)) {
-          await this.resourceService.importParsedResource(resource).catch((e) => {
-            this.warn(e)
-          })
-          this.log(`Found new resource in /resourcepacks directory! ${filePath}`)
-          // if (newRes) {
-          //   this.activeResourcePacks.push(newRes)
-          // }
-        } else {
-          // this.activeResourcePacks.push(resource)
         }
       }))
     }

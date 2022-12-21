@@ -76,7 +76,7 @@ function start() {
       resource: {
         name: preview.name,
         path: preview.path,
-        uri: preview.url,
+        uris: preview.url,
       },
       modpackPolicy: {
         import: true,

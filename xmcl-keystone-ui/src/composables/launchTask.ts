@@ -1,4 +1,4 @@
-import { TaskState } from '@xmcl/task'
+import { TaskState } from '@xmcl/runtime-api'
 import { useInstance, useInstanceVersion } from './instance'
 import { useTask } from './task'
 

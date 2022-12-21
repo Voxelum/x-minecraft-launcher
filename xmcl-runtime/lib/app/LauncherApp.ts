@@ -1,6 +1,5 @@
 import { getPlatform } from '@xmcl/core'
 import { InstalledAppManifest, Platform } from '@xmcl/runtime-api'
-import { ClassicLevel } from 'classic-level'
 import { EventEmitter } from 'events'
 import { ensureDir, readFile, writeFile } from 'fs-extra'
 import { createServer, Server } from 'http'
@@ -152,7 +151,6 @@ export class LauncherApp extends EventEmitter {
 
     this.logManager = new LogManager(this)
     this.registry.register(LauncherAppKey, this)
-    this.registry.register(ClassicLevel, new ClassicLevel(join(this.appDataPath, 'resources'), { keyEncoding: 'hex', valueEncoding: 'json' }))
 
     for (const plugin of plugins) {
       plugin(this)

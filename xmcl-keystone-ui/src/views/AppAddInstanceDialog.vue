@@ -99,7 +99,7 @@
 
 <script lang=ts setup>
 import { Ref } from 'vue'
-import { InstanceInstallServiceKey, ModpackServiceKey, PeerServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceInstallServiceKey, ModpackServiceKey, PeerServiceKey, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import AdvanceContent from '../components/StepperAdvanceContent.vue'
 import BaseContent from '../components/StepperBaseContent.vue'
 import StepperFooter from '../components/StepperFooter.vue'
@@ -116,12 +116,12 @@ const { isShown, parameter, show: showAddInstance } = useDialog(AddInstanceDialo
 const { show } = useDialog('task')
 const { create, reset, data: creationData } = useInstanceCreation()
 const router = useRouter()
-const { on } = useService(ResourceServiceKey)
+const { on, removeListener } = useService(ResourceServiceKey)
 const { importModpack } = useService(ModpackServiceKey)
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 const { t } = useI18n()
 const { notify } = useNotifier()
-const { templates, apply, refresh, dispose } = useAllTemplate(creationData)
+const { templates, apply, refresh, setup, dispose } = useAllTemplate(creationData)
 
 provide(CreateOptionKey, creationData)
 
@@ -252,7 +252,13 @@ const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
   isShown.value = false
 })
 
-on('modpackImport', ({ path, name }) => {
+on('resourceAdd', (r) => {
+  if (r.domain === ResourceDomain.Modpacks) {
+    onModpackAdded({ path: r.path, name: r.name })
+  }
+})
+
+const onModpackAdded = ({ path, name }: { path: string; name: string }) => {
   setTimeout(() => {
     if (!isShown.value) {
       notify({
@@ -265,7 +271,7 @@ on('modpackImport', ({ path, name }) => {
       })
     }
   }, 100)
-})
+}
 
 const { on: onPeerService, state: peerState } = useService(PeerServiceKey)
 
@@ -287,17 +293,25 @@ onPeerService('share', (event) => {
   }
 })
 
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    isShown.value = false
+  }
+})
+
 watch(isShown, (shown) => {
   if (creating.value) {
     return
   }
   if (!shown) {
-    selectedTemplate.value = undefined
-    dispose()
-    reset()
+    setTimeout(() => {
+      selectedTemplate.value = undefined
+      dispose()
+      reset()
+    }, 500)
     return
   }
-  refresh().then(() => {
+  setup().then(() => {
     const id = parameter.value
     if (id) {
       selectedTemplate.value = templates.value.find(t => t.id === id.toString())

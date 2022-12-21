@@ -1,10 +1,9 @@
-import { useRefreshable, useService, useServiceBusy } from '@/composables'
+import { useRefreshable, useService } from '@/composables'
 import { isStringArrayEquals } from '@/util/equal'
-import { injection } from '@/util/inject'
 import { getModDependencies, ModDependencies } from '@/util/modDependencies'
-import { kStore } from '@/windows/main/store'
-import { InstanceJavaServiceKey, InstanceModsServiceKey, InstanceServiceKey, isModResource, isPersistedResource, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceJavaServiceKey, InstanceModsServiceKey, InstanceServiceKey, isModResource, isPersistedResource, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import { computed, InjectionKey, ref, Ref, watch } from 'vue'
+import { kMods, useMods } from './mods'
 
 export const kModsContext: InjectionKey<{
   /**
@@ -84,11 +83,11 @@ export interface ModItem {
  */
 export function useInstanceMods() {
   const { state } = useService(InstanceModsServiceKey)
-  const { state: resourceState, updateResources } = useService(ResourceServiceKey)
+  const { updateResources } = useService(ResourceServiceKey)
   const { install, uninstall, showDirectory } = useService(InstanceModsServiceKey)
   const { state: javaState } = useService(InstanceJavaServiceKey)
-  const loading = useServiceBusy(ResourceServiceKey, 'load', ResourceDomain.Mods)
   const { state: instanceState } = useService(InstanceServiceKey)
+  const { resources, refreshing: loading } = inject(kMods, () => useMods(), true)
 
   const items: Ref<ModItem[]> = ref([])
   const pendingUninstallItems = computed(() => items.value.filter(i => !i.enabled && i.enabledState))
@@ -135,7 +134,7 @@ export function useInstanceMods() {
   function updateItems() {
     const enabled = enabledCache
     const enabledItemHashes = enabledHashes.value
-    const disabled = resourceState.mods.filter(res => !enabledItemHashes.has(res.hash)).map(getModItemFromModResource)
+    const disabled = resources.value.filter(res => !enabledItemHashes.has(res.hash)).map(getModItemFromModResource)
 
     const result = [
       ...enabled,
@@ -195,12 +194,12 @@ export function useInstanceMods() {
     updateItems()
   })
 
-  watch(computed(() => resourceState.mods), (val) => {
+  watch(resources, () => {
     updateItems()
   })
 
   function getUrl(resource: Resource) {
-    return resource.uri.find(u => u?.startsWith('http')) ?? ''
+    return resource.uris.find(u => u?.startsWith('http')) ?? ''
   }
   function getModItemFromModResource(resource: Resource): ModItem {
     const isPersisted = isPersistedResource(resource)

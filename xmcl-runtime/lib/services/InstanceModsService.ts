@@ -1,4 +1,4 @@
-import { InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState, isModResource, isPersistedResource, Persisted, Resource, ResourceDomain } from '@xmcl/runtime-api'
+import { InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState, isModResource, Resource, ResourceDomain, ResourceService as IResourceService } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
 import { ensureDir, FSWatcher, stat, unlink } from 'fs-extra'
 import watch from 'node-watch'
@@ -8,7 +8,6 @@ import { LauncherAppKey } from '../app/utils'
 import { AggregateExecutor } from '../util/aggregator'
 import { linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
 import { Inject } from '../util/objectRegistry'
-import { DiagnoseService } from './DiagnoseService'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
 import { ExposeServiceKey, Lock, Singleton, StatefulService } from './Service'
@@ -31,30 +30,22 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
-    @Inject(DiagnoseService) private diagnoseService: DiagnoseService,
   ) {
     super(app, () => new InstanceModsState())
-    this.storeManager.subscribe('resources', (resources) => {
-      const toUpdates = [] as Persisted<Resource>[]
-      for (const res of resources) {
-        const existed = this.state.mods.findIndex(m => m.hash === res.hash)
-        if (existed !== -1) {
-          toUpdates.push(res)
-        }
+    const listener = resourceService as IResourceService
+    listener.on('resourceAdd', (res) => {
+      const existed = this.state.mods.findIndex(m => m.hash === res.hash)
+      if (existed !== -1) {
+        this.state.instanceModUpdateExisted([res])
       }
-      if (toUpdates.length > 0) {
-        this.state.instanceModUpdateExisted(toUpdates)
+    }).on('resourceUpdate', (res) => {
+      const existed = this.state.mods.findIndex(m => m.hash === res.hash)
+      if (existed !== -1) {
+        this.state.instanceModUpdateExisted([res])
       }
-    }).subscribe('resource', (r) => {
-      if (r.domain === ResourceDomain.Mods) {
-        const existed = this.state.mods.findIndex(m => m.hash === r.hash)
-        if (existed !== -1) {
-          this.state.instanceModUpdateExisted([r])
-        }
-      }
-    }).subscribeAll(['instanceMods', 'instanceModUpdate', 'instanceModRemove', 'instanceEdit', 'localVersionAdd', 'localVersionRemove', 'localVersions'], async () => {
-      // await this.diagnoseMods()
-    }).subscribe('instanceSelect', () => {
+    })
+
+    this.storeManager.subscribe('instanceSelect', () => {
       this.refresh()
     })
 
@@ -74,11 +65,9 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
     const files = await readdirIfPresent(dir)
 
     const fileArgs = files.filter((file) => !file.startsWith('.') && !file.endsWith('.pending')).map((file) => join(dir, file))
-    const resources = await this.resourceService.resolveResource(fileArgs.map(f => ({ path: f, domain: ResourceDomain.Mods })))
-    const persisted = await Promise.all(resources
-      .filter((res) => res.fileType !== 'directory') // not show dictionary
-      .map(async (res) => !isPersistedResource(res) ? { ...(await this.resourceService.importParsedResource(res)), path: res.path } : Promise.resolve(res)))
-    return persisted
+
+    const resources = await this.resourceService.importResources(fileArgs.map(f => ({ path: f, domain: ResourceDomain.Mods })))
+    return resources.map((r, i) => ({ ...r, path: fileArgs[i] }))
   }
 
   async dispose() {
@@ -107,34 +96,17 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
     await ensureDir(basePath)
     await this.resourceService.whenReady(ResourceDomain.Mods)
     this.state.instanceMods({ instance: instancePath, resources: await this.scanMods(basePath) })
-    this.modsWatcher = watch(basePath, (event, name) => {
-      if (name.startsWith('.')) return
-      if (name.endsWith('.pending')) return
-      const filePath = name
+    this.modsWatcher = watch(basePath, async (event, filePath) => {
+      if (filePath.startsWith('.')) return
+      if (filePath.endsWith('.pending')) return
       if (event === 'update') {
-        this.resourceService.resolveResource([{ path: filePath, domain: ResourceDomain.Mods }]).then(([resource]) => {
-          if (isModResource(resource)) {
-            this.log(`Instance mod add ${filePath}`)
-          } else {
-            this.warn(`Non mod resource added in /mods directory! ${filePath}`)
-          }
-          if (resource.fileType === 'directory') {
-            // ignore directory
-            return
-          }
-          if (!isPersistedResource(resource)) {
-            this.resourceService.importParsedResource(resource).then((res) => {
-              this.addMod.push({ ...res, path: resource.path })
-            }, (e) => {
-              this.addMod.push(resource)
-              this.warn(`Fail to persist resource in /mods directory! ${filePath}`)
-              this.warn(e)
-            })
-            this.log(`Found new resource in /mods directory! ${filePath}`)
-          } else {
-            this.addMod.push(resource)
-          }
-        })
+        const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }])
+        if (isModResource(resource)) {
+          this.log(`Instance mod add ${filePath}`)
+        } else {
+          this.warn(`Non mod resource added in /mods directory! ${filePath}`)
+        }
+        this.addMod.push(resource)
       } else {
         const target = this.state.mods.find(r => r.path === filePath)
         if (target) {
@@ -201,7 +173,12 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
           this.warn(`Skip to uninstall unmanaged mod file on ${resource.path}!`)
         }
       } else {
-        promises.push(unlink(resource.path))
+        promises.push(unlink(resource.path).catch(e => {
+          if (e.code === 'ENOENT') {
+            // Force remove
+            this.state.instanceModRemove([resource])
+          }
+        }))
       }
     }
     await Promise.all(promises)
