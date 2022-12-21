@@ -1,7 +1,7 @@
 import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { File, FileModLoaderType, Mod, ModCategory, ModsSearchSortField } from '@xmcl/curseforge'
 import { CurseForgeServiceKey, Persisted, ProjectType, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
-import { useService, useServiceBusy } from '@/composables'
+import { useRefreshable, useService, useServiceBusy } from '@/composables'
 
 interface CurseforgeProps {
   type: string
@@ -89,42 +89,32 @@ export function useCurseforge(props: CurseforgeProps) {
     pages: 5,
     totalCount: 0,
     projects: [] as Mod[],
-    loading: false,
   })
   const index = computed(() => (currentPage.value - 1) * pageSize)
-  async function refresh() {
-    data.loading = true
-
-    for (let i = 0; i < 3; i++) {
-      try {
-        const { data: result, pagination } = await searchProjects({
-          pageSize,
-          index: index.value,
-          classId: currentSectionId.value,
-          sortField: currentSort.value,
-          gameVersion: currentVersion.value,
-          categoryId: categoryId.value,
-          searchFilter: currentKeyword.value,
-        })
-        data.totalCount = pagination.totalCount
-        data.projects = Object.freeze(result) as any
-        data.pages = Math.floor(data.totalCount / pageSize)
-        data.projects.forEach(p => Object.freeze(p))
-        data.projects.forEach(p => Object.freeze(p.categories))
-        break
-      } catch {
-        await new Promise((resolve) => setTimeout(resolve, 1500))
-      }
-    }
-
-    data.loading = false
-  }
+  const { refresh, refreshing, error } = useRefreshable(async function refresh() {
+    const { data: result, pagination } = await searchProjects({
+      pageSize,
+      index: index.value,
+      classId: currentSectionId.value,
+      sortField: currentSort.value,
+      gameVersion: currentVersion.value,
+      categoryId: categoryId.value,
+      searchFilter: currentKeyword.value,
+    })
+    data.totalCount = pagination.totalCount
+    data.projects = Object.freeze(result) as any
+    data.pages = Math.floor(data.totalCount / pageSize)
+    data.projects.forEach(p => Object.freeze(p))
+    data.projects.forEach(p => Object.freeze(p.categories))
+  })
   watch([currentPage, currentSort, currentVersion, currentKeyword, currentCategory, currentType], () => {
     refresh()
   })
   onMounted(() => { refresh() })
   return {
     ...toRefs(data),
+    refreshing,
+    error,
     categoryId,
     currentSort,
     currentVersion,
@@ -141,97 +131,45 @@ export function useCurseforge(props: CurseforgeProps) {
  * @param projectId The project id
  */
 export function useCurseforgeProjectFiles(projectId: number) {
-  const { state, fetchProjectFiles } = useService(CurseForgeServiceKey)
-  const { state: resourceState } = useService(ResourceServiceKey)
+  const { fetchProjectFiles } = useService(CurseForgeServiceKey)
   const data = reactive({
-    files: [] as readonly File[],
+    files: [] as File[],
     index: 0,
     pageSize: 0,
     totalCount: 0,
-    loading: false,
   })
-  const status = computed(() => data.files.map(file => {
-    const find = (m: Persisted<Resource>) => {
-      if (typeof m.metadata.curseforge === 'object') {
-        const s = m.metadata.curseforge
-        if (s.fileId === file.id) return true
-      }
-      return false
-    }
-    if (resourceState.mods.find(find)) return true
-    if (resourceState.resourcepacks.find(find)) return true
-    if (resourceState.modpacks.find(find)) return true
-    if (resourceState.saves.find(find)) return true
-
-    return false
-  }))
-  async function refresh() {
-    data.loading = true
-    try {
-      const f = await fetchProjectFiles({ modId: projectId })
-      data.files = Object.freeze(f.data)
-      data.index = f.pagination.index
-      data.pageSize = f.pagination.pageSize
-      data.totalCount = f.pagination.totalCount
-    } finally {
-      data.loading = false
-    }
-  }
+  const { refresh, refreshing, error } = useRefreshable(async () => {
+    const f = await fetchProjectFiles({ modId: projectId })
+    data.files = markRaw(f.data)
+    data.index = f.pagination.index
+    data.pageSize = f.pagination.pageSize
+    data.totalCount = f.pagination.totalCount
+  })
   onMounted(() => {
     refresh()
   })
   return {
     ...toRefs(data),
-    status,
     refresh,
+    refreshing,
+    error,
   }
-}
-
-export function useCurseforgeInstall(type: ProjectType, projectId: number) {
-  const { state, installFile } = useService(CurseForgeServiceKey)
-  const { state: resourceState } = useService(ResourceServiceKey)
-  function getFileStatus(file: File): 'downloading' | 'downloaded' | 'remote' {
-    const res = getFileResource(file)
-    if (res) {
-      return 'downloaded'
-    }
-    const downloading = state.downloading.find((f) => f.fileId === file.id)
-    return downloading ? 'downloading' : 'remote'
-  }
-  function getFileResource(file: File) {
-    if (file.downloadUrl) {
-      return resourceState.queryResource(file.downloadUrl)
-    } else {
-      return resourceState.queryResource(`curseforge:${file.modId}:${file.id}`)
-    }
-  }
-  async function install(file: File, toInstance?: string) {
-    const resource = await installFile({ file, type, projectId, instancePath: toInstance })
-    return resource
-  }
-
-  return { getFileStatus, install, getFileResource }
 }
 
 export function useCurseforgeProjectDescription(projectId: number) {
   const { fetchProjectDescription } = useService(CurseForgeServiceKey)
   const data = reactive({
     description: '',
-    loading: false,
   })
-  async function refresh() {
-    data.loading = true
-    try {
-      const des = await fetchProjectDescription(projectId)
-      data.description = des
-    } finally {
-      data.loading = false
-    }
-  }
+  const { refresh, refreshing, error } = useRefreshable(async function refresh() {
+    const des = await fetchProjectDescription(projectId)
+    data.description = des
+  })
+
   onMounted(() => {
     refresh()
   })
-  return { ...toRefs(data), refresh }
+  return { ...toRefs(data), refreshing, refresh, error }
 }
 /**
  * Hook to view the front page of the curseforge project.
@@ -241,13 +179,14 @@ export function useCurseforgeProject(projectId: number) {
   const { fetchProject } = useService(CurseForgeServiceKey)
   const project = ref(undefined as undefined | Mod)
   const refreshing = useServiceBusy(CurseForgeServiceKey, 'fetchProject', projectId.toString())
-  async function refresh() {
+  const { refresh, error } = useRefreshable(async function () {
     project.value = await fetchProject(projectId)
-  }
+  })
   onMounted(() => refresh())
   return {
     refreshing,
     project,
+    error,
   }
 }
 

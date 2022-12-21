@@ -38,33 +38,27 @@
         {{ (source.fileLength / 1024 / 1024).toFixed(2) }} MB
       </v-chip>
     </div>
-    <v-list-item-action v-if="!modpack">
+    <v-list-item-action>
       <v-btn
         text
-        :loading="getFileStatus(source) === 'downloading'"
-        :disabled="getFileStatus(source) === 'downloaded'"
-        @click="install(source)"
+        icon
+        :loading="isDownloading"
+        @click="onClick(source)"
+        @mouseenter="onMouseEnter($event, hasDownloaded)"
+        @mouseleave="onMouseLeave($event, hasDownloaded)"
       >
-        {{ getFileStatus(source) === 'downloaded' ? t('curseforge.installed') : t('curseforge.install') }}
-      </v-btn>
-    </v-list-item-action>
-    <v-list-item-action v-else>
-      <v-btn
-        text
-        :loading="getFileStatus(source) === 'downloading'"
-        :disabled="getFileStatus(source) === 'downloaded'"
-        @click="download(source)"
-      >
-        {{ getFileStatus(source) === 'downloaded' ? t('curseforge.downloaded') : t('curseforge.downloadOnly') }}
-      </v-btn>
-    </v-list-item-action>
-    <v-list-item-action v-if="modpack">
-      <v-btn
-        text
-        :loading="getFileStatus(source) === 'downloading'"
-        @click="install(source)"
-      >
-        {{ t('curseforge.install') }}
+        <template #loader>
+          <v-progress-circular
+            :value="percentage"
+            :size="24"
+            :width="2"
+          />
+        </template>
+        <template #default>
+          <v-icon>
+            {{ hasDownloaded ? 'add' : 'download' }}
+          </v-icon>
+        </template>
       </v-btn>
     </v-list-item-action>
   </v-list-item>
@@ -73,23 +67,29 @@
 <script lang=ts setup>
 import { File } from '@xmcl/curseforge'
 
+import { useTask } from '@/composables/task'
 import { getColorForReleaseType } from '@/util/color'
 import { getLocalDateString } from '@/util/date'
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     source: File
-    getFileStatus(file: File) : string
+    isDownloaded(file: File): boolean
     install(file: File): Promise<void>
-    download(file: File): Promise<void>
-    modpack: boolean
-  }>(),
-  { download: () => Promise.resolve() },
+    onMouseEnter(e: MouseEvent, downloaded: boolean): void
+    onMouseLeave(e: MouseEvent, downloaded: boolean): void
+  }>(), {},
 )
 
-const { t } = useI18n()
+const { name, progress, total } = useTask(t => t.path === 'installCurseforgeFile' && t.param.fileId === props.source.id)
+const isDownloading = computed(() => !!name.value)
+const percentage = computed(() => progress.value / total.value * 100)
+const hasDownloaded = computed(() => props.isDownloaded(props.source))
 const releases = ['', 'R', 'A', 'B']
 const getColor = getColorForReleaseType
+const onClick = (file: File) => {
+  props.install(file)
+}
 </script>
 
 <style>

@@ -63,7 +63,7 @@
       </div>
     </v-card-subtitle>
     <v-card-actions>
-      <DestMenu
+      <InstanceSelectMenu
         :value="destination"
         style="flex-grow: 1"
         :from="from"
@@ -74,8 +74,7 @@
 </template>
 <script lang="ts" setup>
 import { Mod } from '@xmcl/curseforge'
-import DestMenu from './CurseforgeProjectDestMenu.vue'
-
+import InstanceSelectMenu from '../components/InstanceSelectMenu.vue'
 import { getLocalDateString } from '@/util/date'
 
 const props = defineProps<{

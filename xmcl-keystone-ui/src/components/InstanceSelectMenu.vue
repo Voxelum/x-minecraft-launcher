@@ -10,7 +10,7 @@
         <v-icon left>
           keyboard_arrow_down
         </v-icon>
-        <span class="overflow-hidden whitespace-normal break-all lg:max-w-50 max-w-full">
+        <span class="overflow-ellipsis break-all lg:max-w-88 max-w-full">
           {{
             selected.path
               ? t("curseforge.installTo", { path: selected.name })

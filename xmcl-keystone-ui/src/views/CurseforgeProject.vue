@@ -6,80 +6,18 @@
       <div
         class="flex lg:flex-col lg:flex lg:gap-5 gap-2 flex-shrink"
       >
-        <Header
+        <CurseforgeProjectHeader
           :destination="destination"
-          :from="from"
+          :from="destination"
           :project="project"
-          :loading="refreshing"
+          :loading="refreshing && !project"
           @destination="destination = $event"
         />
-        <v-card
-          outlined
-          class="max-h-full overflow-auto flex flex-col md:hidden lg:flex"
-        >
-          <v-card-title class="text-md font-bold">
-            {{ t("curseforge.recentFiles") }}
-          </v-card-title>
-          <v-divider />
-          <v-skeleton-loader
-            v-if="!project"
-            type="list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line"
-          />
-          <v-list
-            v-else
-            class="overflow-auto"
-          >
-            <v-tooltip
-              v-for="file in project.latestFiles"
-              :key="file.id"
-              top
-            >
-              <template #activator="{ on }">
-                <v-list-item
-                  :v-ripple="getFileStatus(file) === 'remote'"
-                  v-on="on"
-                >
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      {{
-                        file.displayName
-                      }}
-                    </v-list-item-title>
-                    <v-list-item-subtitle>
-                      {{
-                        getLocalDateString(file.fileDate)
-                      }}
-                    </v-list-item-subtitle>
-                  </v-list-item-content>
-                  <v-list-item-action>
-                    <v-btn
-                      v-if="getFileStatus(file) !== 'downloading'"
-                      text
-                      icon
-                      :disabled="getFileStatus(file) === 'downloaded' && type !== 'modpacks'"
-                      @click="install(file)"
-                    >
-                      <v-icon>
-                        {{
-                          getFileStatus(file) === "downloaded" && type === 'modpacks'
-                            ? "add"
-                            : "download"
-                        }}
-                      </v-icon>
-                    </v-btn>
-                    <v-progress-circular
-                      v-else
-                      indeterminate
-                      :size="24"
-                      :width="2"
-                    />
-                  </v-list-item-action>
-                </v-list-item>
-              </template>
-              {{ file.fileName }}
-            </v-tooltip>
-          </v-list>
-        </v-card>
+        <CurseforgeProjectRecentFiles
+          :files="project ? project.latestFiles : undefined"
+          :from="destination"
+          :type="type"
+        />
       </div>
 
       <v-card
@@ -87,7 +25,7 @@
         class="flex flex-col w-full h-full overflow-auto flex-grow relative"
       >
         <v-tabs
-          v-model="data.tab"
+          v-model="tab"
           slider-color="yellow"
           class="flex-grow-0"
         >
@@ -97,19 +35,22 @@
           <v-tab :key="1">
             {{ t("curseforge.project.files") }}
           </v-tab>
-          <v-tab :key="2">
+          <v-tab
+            v-if="project && project.screenshots.length > 0"
+            :key="2"
+          >
             {{ t("curseforge.project.images") }}
           </v-tab>
         </v-tabs>
         <v-tabs-items
-          v-model="data.tab"
+          v-model="tab"
           class="h-full"
         >
           <v-tab-item
             :key="0"
             class="h-full max-h-full overflow-auto"
           >
-            <project-description
+            <CurseforgeProjectDescription
               :project="projectId"
             />
           </v-tab-item>
@@ -117,7 +58,7 @@
             :key="1"
             class="h-full max-h-full overflow-auto"
           >
-            <project-files
+            <CurseforgeProjectFiles
               class="overflow-auto"
               :project="projectId"
               :type="type"
@@ -125,39 +66,34 @@
             />
           </v-tab-item>
           <v-tab-item
+            v-if="project && project.screenshots.length > 0"
             :key="2"
             class="h-full max-h-full overflow-auto"
           >
-            <images
+            <CurseforgeProjectImages
               v-if="project"
               :screenshots="project.screenshots"
-              @image="viewImage"
+              @image="imageDialog.show"
             />
           </v-tab-item>
         </v-tabs-items>
       </v-card>
     </div>
-    <v-dialog v-model="data.viewingImage">
-      <v-img
-        contain
-        :src="data.viewedImage"
-      />
-    </v-dialog>
+    <ImageDialog />
   </div>
 </template>
 
 <script lang=ts setup>
-import { File } from '@xmcl/curseforge'
-import { InstanceServiceKey, ProjectType, ResourceServiceKey } from '@xmcl/runtime-api'
-import ProjectDescription from './CurseforgeProjectDescription.vue'
-import ProjectFiles from './CurseforgeProjectFiles.vue'
-import Images from './CurseforgeProjectImages.vue'
-import Header from './CurseforgeProjectHeader.vue'
-import { useCurseforgeInstall, useCurseforgeProject } from '../composables/curseforge'
-import { useDialog } from '../composables/dialog'
-import { AddInstanceDialogKey } from '../composables/instanceAdd'
+import ImageDialog from '@/components/ImageDialog.vue'
 import { useService } from '@/composables'
-import { getLocalDateString } from '@/util/date'
+import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
+import { InstanceServiceKey, ProjectType } from '@xmcl/runtime-api'
+import { useCurseforgeProject } from '../composables/curseforge'
+import CurseforgeProjectDescription from './CurseforgeProjectDescription.vue'
+import CurseforgeProjectFiles from './CurseforgeProjectFiles.vue'
+import CurseforgeProjectHeader from './CurseforgeProjectHeader.vue'
+import CurseforgeProjectImages from './CurseforgeProjectImages.vue'
+import CurseforgeProjectRecentFiles from './CurseforgeProjectRecentFiles.vue'
 
 const props = withDefaults(defineProps<{
   type: ProjectType
@@ -169,45 +105,15 @@ const props = withDefaults(defineProps<{
   from: '',
 })
 
-const { show } = useDialog(AddInstanceDialogKey)
 const projectId = computed(() => Number.parseInt(props.id, 10))
-const { project, refreshing } = useCurseforgeProject(projectId.value)
-const { install: installFile, getFileStatus } = useCurseforgeInstall(props.type as any, projectId.value)
-const { state: resourceState } = useService(ResourceServiceKey)
+const { project, refreshing, error } = useCurseforgeProject(projectId.value)
 const { state: instanceState } = useService(InstanceServiceKey)
 const destination = ref(props.from || instanceState.path)
 const { t } = useI18n()
+const tab = ref(0)
+const imageDialog = useImageDialog()
+provide(kImageDialog, imageDialog)
 
-const data = reactive({
-  tab: 0,
-  viewingImage: false,
-  viewedImage: '',
-})
-const dataRefs = toRefs(data)
-
-function viewImage(image: any) {
-  data.viewingImage = true
-  data.viewedImage = image.url
-}
-async function install(file: File) {
-  if (getFileStatus(file) === 'downloaded') {
-    const url = file.downloadUrl ?? `curseforge:${file.modId}:${file.id}`
-    show(resourceState.queryResource(url)!.path)
-  } else {
-    await installFile(file, destination.value)
-  }
-}
-watch(dataRefs.tab, () => {
-  switch (data.tab) {
-    case 1:
-      // projectFiles.refreshFiles();
-      break
-    case 2:
-      // projectImages.refreshImages();
-      break
-    default:
-  }
-})
 </script>
 
 <style>

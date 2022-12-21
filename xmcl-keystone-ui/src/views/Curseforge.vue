@@ -152,6 +152,11 @@
         class="flex flex-col gap-3 overflow-auto"
         type="list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line"
       />
+      <ErrorView
+        class="h-full"
+        :error="error"
+        @refresh="refresh"
+      />
     </div>
     <div class="flex flex-col overflow-auto md:hidden lg:flex min-w-[20%]">
       <Categories
@@ -173,6 +178,7 @@ import Categories from './CurseforgeCategories.vue'
 import { getLocalDateString } from '@/util/date'
 import { dedup } from '@/util/dedup'
 import { getExpectedSize } from '@/util/size'
+import ErrorView from '@/components/ErrorView.vue'
 
 interface CurseforgeProps {
   type: string
@@ -218,7 +224,8 @@ const {
   currentType,
   currentVersion,
   categoryId,
-  loading,
+  refreshing: loading,
+  error,
   pages,
   projects,
 } = useCurseforge(props)
