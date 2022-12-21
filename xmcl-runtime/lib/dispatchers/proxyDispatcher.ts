@@ -4,10 +4,10 @@ import { TlsOptions } from 'tls'
 import { Agent, buildConnector, Client, errors, Dispatcher } from 'undici'
 import { kClose, kDestroy } from 'undici/lib/core/symbols'
 import DispatcherBase from 'undici/lib/dispatcher-base'
-import { DispatchHandlers } from 'undici/types/dispatcher'
 import { URL } from 'url'
 import { buildHeaders } from './utils'
 
+type DispatchHandlers = Dispatcher.DispatchHandlers
 const { InvalidArgumentError, RequestAbortedError } = errors
 
 function defaultProtocolPort(protocol: string) {

@@ -111,7 +111,7 @@ export function Singleton<T extends AbstractService>(param: ParamSerializer<T> =
       Object.defineProperty(target, InstanceSymbol, { value: {} })
     }
     const method = descriptor.value as Function
-    const instances: Record<string, Promise<any> | undefined> = Reflect.get(target, InstanceSymbol)
+    const instances: Record<string, Promise<any> | undefined> = Reflect.get(target, InstanceSymbol) as any
     descriptor.value = function (this: T, ...args: any[]) {
       const exec = () => {
         try {
@@ -156,7 +156,7 @@ export function ExposeServiceKey<T extends Function>(key: ServiceKey<T>) {
 }
 
 export function getServiceKey<T extends Function>(target: T): ServiceKey<T> & string {
-  return Reflect.get(target, 'ServiceKey')
+  return Reflect.get(target, 'ServiceKey') as any
 }
 
 /**

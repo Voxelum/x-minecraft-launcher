@@ -1,5 +1,4 @@
 export * from './i18n'
-export * from './resource'
 export * from './router'
 export * from './saveLoad'
 export * from './selectionList'
