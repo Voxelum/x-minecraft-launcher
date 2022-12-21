@@ -10,13 +10,19 @@
             "request": "launch",
             "preLaunchTask": "dev",
             "program": "${workspaceFolder}/xmcl-electron-app/dist/index.js",
-            "args": ["--remote-debugging-port=9300", "--trace-uncaught", "--trace-deprecation"],
+            "args": [
+                "--remote-debugging-port=9300",
+                "--trace-uncaught",
+                "--trace-deprecation"
+            ],
             "sourceMaps": true,
             "resolveSourceMapLocations": [
                 "${workspaceFolder}/xmcl-electron-app/dist/**",
                 "!**/node_modules/**"
             ],
-            "outFiles": ["${workspaceFolder}/xmcl-electron-app/dist/*.js"],
+            "outFiles": [
+                "${workspaceFolder}/xmcl-electron-app/dist/*.js"
+            ],
             "runtimeExecutable": "${workspaceFolder}/xmcl-electron-app/node_modules/.bin/electron",
             "skipFiles": [
                 "<node_internals>/**",
@@ -25,7 +31,12 @@
             ],
             "cwd": "${workspaceFolder}/xmcl-electron-app/dist",
             "env": {
-                "NODE_ENV": "development"
+                "NODE_ENV": "development",
+            },
+            "windows": {
+                "env": {
+                    "Path": "${env:Path}${workspaceFolder}\\xmcl-electron-app\\build\\extra"
+                }
             }
         },
         {
