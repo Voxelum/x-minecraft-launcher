@@ -1,55 +1,51 @@
 <template>
-  <v-card
-    outlined
-    class="grid md:grid-cols-2 lg:grid-cols-1 3xl:grid-cols-2 p-6 gap-6 "
+  <div
+    class=""
   >
-    <div class="item">
-      <v-icon class="material-icon-outlined">
-        edit
-      </v-icon>
-      <div>
-        <span>{{ t('modrinth.avaiableFor') }}</span>
+    <v-subheader>
+      {{ t('modrinth.technicalInformation') }}
+    </v-subheader>
+    <div class="grid grid-cols-2 gap-1 gap-y-3 ">
+      <div class="item">
+        <v-icon class="material-icons-outlined">
+          desktop_windows
+        </v-icon>
+        <div>
+          <span>{{ t('modrinth.clientSide') }}</span>
+          {{ clientSide }}
+        </div>
+      </div>
+      <div class="item">
+        <v-icon class="material-icons-outlined">
+          storage
+        </v-icon>
+        <div>
+          <span>{{ t('modrinth.serverSide') }}</span>
+          {{ serverSide }}
+        </div>
+      </div>
+      <div class="item">
+        <v-icon class="material-icons-outlined">
+          description
+        </v-icon>
+        <div>
+          <span>{{ t('modrinth.license') }}</span>
+          <a :href="license.url">
+            {{ license.name }}
+          </a>
+        </div>
+      </div>
+      <div class="item">
+        <v-icon class="material-icons-outlined">
+          code
+        </v-icon>
+        <div>
+          <span>{{ t('modrinth.projectId') }}</span>
+          {{ projectId }}
+        </div>
       </div>
     </div>
-    <div class="item">
-      <v-icon class="material-icon-outlined">
-        desktop_windows
-      </v-icon>
-      <div>
-        <span>{{ t('modrinth.clientSide') }}</span>
-        {{ clientSide }}
-      </div>
-    </div>
-    <div class="item">
-      <v-icon class="material-icon-outlined">
-        storage
-      </v-icon>
-      <div>
-        <span>{{ t('modrinth.serverSide') }}</span>
-        {{ serverSide }}
-      </div>
-    </div>
-    <div class="item">
-      <v-icon class="material-icon-outlined">
-        description
-      </v-icon>
-      <div>
-        <span>{{ t('modrinth.license') }}</span>
-        <a :href="license.url">
-          {{ license.name }}
-        </a>
-      </div>
-    </div>
-    <div class="item">
-      <v-icon class="material-icon-outlined">
-        code
-      </v-icon>
-      <div>
-        <span>{{ t('modrinth.projectId') }}</span>
-        {{ projectId }}
-      </div>
-    </div>
-  </v-card>
+  </div>
 </template>
 <script lang="ts" setup>
 import { License } from '@xmcl/modrinth/types'
@@ -78,6 +74,10 @@ const { t } = useI18n()
 
 .item div {
   @apply flex flex-col;
+}
+
+span {
+  @apply dark:text-gray-400 text-gray-600;
 }
 
 </style>

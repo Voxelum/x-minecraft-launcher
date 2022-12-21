@@ -60,7 +60,7 @@
         v-if="!refreshing"
         class="flex flex-col gap-3 overflow-auto px-2.5"
       >
-        <ModCard
+        <ModrinthModCard
           v-for="mod in projects"
           :key="mod.project_id"
           v-ripple
@@ -76,29 +76,13 @@
         class="flex flex-col gap-3 overflow-auto"
         type="list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line"
       />
-      <div
-        v-if="searchError"
-        class="flex flex-col items-center gap-4"
-      >
-        <v-icon
-          color="error"
-          size="100"
-        >
-          error
-        </v-icon>
-        <div class="text-3xl font-bold">
-          {{ tError(searchError) }}
-        </div>
-        <v-btn
-          color="error"
-          @click="refresh"
-        >
-          {{ t('refresh') }}
-        </v-btn>
-      </div>
+      <ErrorView
+        :error="searchError"
+        @refresh="refresh"
+      />
     </div>
     <div class="flex flex-col overflow-y-auto lg:col-span-3 lg:flex md:hidden">
-      <Categories
+      <ModrinthCategories
         class="overflow-auto"
         :loading="refreshingTag"
         :environments="environments"
@@ -111,22 +95,24 @@
         :game-version="gameVersion"
         :license="license"
         :category="category"
+        :error="tagError"
         @select:modLoader="_modLoader = _modLoader === $event ? '' : $event"
         @select:gameVersion="_gameVersion = _gameVersion === $event ? '' : $event"
         @select:license="_license = _license === $event ? '' : $event"
         @select:category="selectCategory"
         @select:environment="_environment = _environment === $event ? '' : $event"
+        @refresh="refreshTag"
       />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import ModCard from './ModrinthModCard.vue'
-import Categories from './ModrinthCategories.vue'
+import ModrinthModCard from './ModrinthModCard.vue'
+import ModrinthCategories from './ModrinthCategories.vue'
 
 import { useModrinth, useModrinthTags } from '../composables/modrinth'
-import { useLocaleError } from '@/composables/error'
+import ErrorView from '@/components/ErrorView.vue'
 
 const props = withDefaults(defineProps<{
   query: string
@@ -153,8 +139,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { t } = useI18n()
-const tError = useLocaleError()
-const { refresh: refreshTag, refreshing: refreshingTag, categories, modLoaders, environments, gameVersions, licenses } = useModrinthTags()
+const { refresh: refreshTag, refreshing: refreshingTag, categories, modLoaders, environments, gameVersions, licenses, error: tagError } = useModrinthTags()
 const {
   error: searchError,
   refresh, query: _query, category: _category, gameVersion: _gameVersion, license: _license, modLoader: _modLoader, environment: _environment, projectType: _projectType,

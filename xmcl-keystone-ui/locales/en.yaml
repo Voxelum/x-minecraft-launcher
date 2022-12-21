@@ -334,6 +334,9 @@ installOptifine:
   jar: Generate Jar
   json: Generate Json
   name: Install Optifine
+installResource:
+  fail: Fail to install {file}
+  success: Install resource {file} successed
 installVersion:
   jar: Install Version Jar
   json: Install Version Json
@@ -594,7 +597,6 @@ modpack:
   url: URL
   urlHint: The home page url of your modpack
 modrinth:
-  avaiableFor: available for
   categories:
     128x: 128x
     16x: 16x
@@ -673,6 +675,8 @@ modrinth:
     required: Required
     server: Server
     unsupported: Unsupported
+  externalResources: External Resources
+  featuredVersions: Featured Versions
   followers: Followers
   gallery: Gallery
   gameVersions:
@@ -690,6 +694,7 @@ modrinth:
     name: Mod Loaders
   perPage: Per Page
   projectId: Project Id
+  projectMembers: Project Members
   projectType:
     mod: Mod
     modpack: Modpack
@@ -704,6 +709,7 @@ modrinth:
     relevance: Relevance
     title: Sort By
     updated: Recently updated
+  technicalInformation: Technical Information
   updateAt: Updated
   versions: Versions
 multiplayer:

@@ -1,5 +1,5 @@
 <template>
-  <div class="grid lg:grid-cols-3 gap-2 sm:grid-cols-2 p-4">
+  <div class="grid gap-2 grid-cols-2 p-4">
     <v-card
       v-for="g of gallery"
       :key="g.url"
@@ -14,7 +14,10 @@
         {{ g.title }}
       </v-card-title>
       <v-card-subtitle>
-        {{ getLocalDateString(g.created) }}
+        {{ g.description }}
+        <div>
+          {{ getLocalDateString(g.created) }}
+        </div>
       </v-card-subtitle>
     </v-card>
   </div>

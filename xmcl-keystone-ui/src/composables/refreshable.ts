@@ -2,9 +2,13 @@ import { ref } from 'vue'
 
 export function useRefreshable<T>(func: () => Promise<void>) {
   const refreshing = ref(false)
+  const error = ref(null as unknown)
   const refresh = () => {
     refreshing.value = true
-    return func().finally(() => { refreshing.value = false })
+    error.value = undefined
+    return func().catch((e) => {
+      error.value = e
+    }).finally(() => { refreshing.value = false })
   }
-  return { refreshing, refresh }
+  return { refreshing, refresh, error }
 }

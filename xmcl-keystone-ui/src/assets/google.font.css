@@ -5,6 +5,12 @@
     src: url(flUhRq6tzZclQEJ-Vdg-IuiaDsNc.woff2) format('woff2');
 }
 @font-face {
+  font-family: 'Material Icons Outlined';
+  font-style: normal;
+  font-weight: 400;
+  src: url(gok-H7zzDkdnRel8-DQ6KAXJ69wP1tGnf4ZGhUce.woff2) format('woff2');
+}
+@font-face {
   font-family: 'Roboto';
   font-style: normal;
   font-weight: 300;
@@ -44,13 +50,6 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* fallback */
-@font-face {
-  font-family: 'Material Icons Outlined';
-  font-style: normal;
-  font-weight: 400;
-  src: url(gok-H7zzDkdnRel8-DQ6KAXJ69wP1tGnf4ZGhUce.woff2) format('woff2');
-}
 
 .material-icons-outlined {
   font-family: 'Material Icons Outlined';
@@ -64,5 +63,6 @@
   white-space: nowrap;
   word-wrap: normal;
   direction: ltr;
+  -webkit-font-feature-settings: 'liga';
   -webkit-font-smoothing: antialiased;
 }

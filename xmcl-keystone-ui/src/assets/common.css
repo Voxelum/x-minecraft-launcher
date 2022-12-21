@@ -274,9 +274,29 @@ a {
     margin-bottom: 16px !important;
 }
 
+.markdown-body h1, .markdown-body h2 {
+    padding: 10px 0 5px;
+    border-bottom: 1px solid #b0bac5;
+}
+
+.markdown-body ul {
+    display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 40px;
+}
+
+.markdown-body h1 {
+    @apply text-2xl font-bold;
+    margin: 0.67em 0;
+}
 
 .markdown-body h2 {
     @apply text-xl font-bold;
+    margin: 0.67em 0;
 }
 
 .markdown-body h3 {

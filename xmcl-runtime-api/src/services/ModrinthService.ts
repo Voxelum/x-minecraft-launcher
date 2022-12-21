@@ -1,4 +1,4 @@
-import type { Category, GameVersion, License, Loader, Project, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
+import type { Category, GameVersion, License, Loader, Project, TeamMember, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
 import { Persisted, Resource } from '../entities/resource'
 import { ServiceKey, StatefulService } from './Service'
 
@@ -46,11 +46,13 @@ export interface ModrinthService extends StatefulService<ModrinthState> {
 
   getProject(projectId: string): Promise<Project>
 
-  getProjectVersions(projectId: string): Promise<ProjectVersion[]>
+  getProjectVersions(options: { projectId: string; featured?: boolean }): Promise<ProjectVersion[]>
 
   getProjectVersion(versionId: string): Promise<ProjectVersion>
 
   getLatestProjectVersion(projectId: string): Promise<ProjectVersion>
+
+  getProjectTeamMembers(projectId: string): Promise<TeamMember[]>
 
   getTags(): Promise<{ licenses: License[]; categories: Category[]; gameVersions: GameVersion[]; modLoaders: Loader[]; environments: string[] }>
 

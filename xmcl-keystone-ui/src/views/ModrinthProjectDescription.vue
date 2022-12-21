@@ -1,10 +1,8 @@
 <template>
-  <v-card class="rounded-b-xl">
-    <div
-      class="p-4 markdown-body"
-      v-html="htmlContent"
-    />
-  </v-card>
+  <div
+    class="p-4 markdown-body"
+    v-html="htmlContent"
+  />
 </template>
 <script lang="ts">
 import { required } from '@/util/props'
