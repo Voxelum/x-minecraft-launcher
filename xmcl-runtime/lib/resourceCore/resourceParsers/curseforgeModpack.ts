@@ -1,7 +1,7 @@
 import { CurseforgeModpackManifest, ResourceDomain, ResourceType } from '@xmcl/runtime-api'
-import { ResourceParser } from '../resource'
+import type { IResourceParser } from './index'
 
-export const curseforgeModpackParser: ResourceParser<CurseforgeModpackManifest> = {
+export const curseforgeModpackParser: IResourceParser<CurseforgeModpackManifest> = {
   type: ResourceType.CurseforgeModpack,
   domain: ResourceDomain.Modpacks,
   ext: '.zip',

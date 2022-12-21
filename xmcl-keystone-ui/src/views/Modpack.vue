@@ -11,7 +11,7 @@
       outlined
       elevation="1"
     >
-      <filter-combobox
+      <FilterCombobox
         class="pr-3 max-w-200 max-h-full"
         :label="t('modpack.filter')"
       />
@@ -67,12 +67,12 @@
         :absolute="true"
         class="h-full z-0"
       /> -->
-      <transition-group
+      <TransitionGroup
         name="transition-list"
         tag="div"
         class="flex flex-wrap overflow-auto h-full w-full gap-4 items-start"
       >
-        <modpack-card
+        <ModpackCard
           v-for="(item) in modpacks"
           :key="item.id"
           :item="item"
@@ -86,9 +86,9 @@
           key="dummy"
           class="min-h-10 min-w-[100vh]"
         />
-      </transition-group>
+      </TransitionGroup>
     </div>
-    <delete-dialog
+    <DeleteDialog
       :title="t('modpack.delete.title')"
       :width="450"
       persistent
@@ -99,9 +99,9 @@
       <p style="color: grey">
         {{ deleting ? deleting.path : '' }}
       </p>
-    </delete-dialog>
+    </DeleteDialog>
     <div class="absolute w-full bottom-0 flex items-center justify-center mb-10">
-      <delete-button
+      <DeleteButton
         :visible="!!dragging"
         :drop="onDrop"
       />
@@ -110,23 +110,25 @@
 </template>
 
 <script lang=ts setup>
-import { Ref } from 'vue'
 import FilterCombobox from '@/components/FilterCombobox.vue'
-import { useService, useServiceBusy, useFilterCombobox } from '@/composables'
-import { ResourceServiceKey, ResourceType, ResourceDomain, CachedFTBModpackVersionManifest, ModpackServiceKey, ModpackResource } from '@xmcl/runtime-api'
+import { useFilterCombobox, useService } from '@/composables'
+import { kModpacks } from '@/composables/modpack'
 import { isStringArrayEquals } from '@/util/equal'
+import { injection } from '@/util/inject'
+import { CachedFTBModpackVersionManifest, ModpackServiceKey, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { Ref } from 'vue'
+import DeleteDialog from '../components/DeleteDialog.vue'
+import { useDialog } from '../composables/dialog'
+import { useFeedTheBeastVersionsCache } from '../composables/ftb'
+import { AddInstanceDialogKey } from '../composables/instanceAdd'
+import { ModpackItem } from '../composables/modpack'
 import ModpackCard from './ModpackCard.vue'
 import DeleteButton from './ModpackDeleteButton.vue'
-import { useDialog } from '../composables/dialog'
-import DeleteDialog from '../components/DeleteDialog.vue'
-import { ModpackItem } from '../composables/modpack'
-import { AddInstanceDialogKey } from '../composables/instanceAdd'
-import { useFeedTheBeastVersionsCache } from '../composables/ftb'
 
 const { t } = useI18n()
 const { push } = useRouter()
 const dragging = ref(undefined as undefined | ModpackItem)
-const { state, removeResource, updateResources } = useService(ResourceServiceKey)
+const { removeResources, updateResources } = useService(ResourceServiceKey)
 const { showModpacksFolder } = useService(ModpackServiceKey)
 const items: Ref<ModpackItem[]> = ref([])
 const { show } = useDialog(AddInstanceDialogKey)
@@ -136,8 +138,8 @@ function getFilterOptions(item: ModpackItem) {
     ...item.tags.map(t => ({ type: 'tag', value: t, label: 'label' })),
   ]
 }
-const deleting = ref(undefined as undefined | ModpackResource)
-const refreshing = useServiceBusy(ResourceServiceKey, 'load', ResourceDomain.Modpacks)
+const deleting = ref(undefined as undefined | Resource)
+const { refreshing, resources } = injection(kModpacks)
 const filterOptions = computed(() => items.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
 const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (v) => `${v.name} ${v.author} ${v.version}`)
 const { refresh, refreshing: refreshingFtb, cache: ftb, dispose } = useFeedTheBeastVersionsCache()
@@ -154,7 +156,7 @@ function startDelete(item: ModpackItem) {
   }
 }
 function confirmDelete() {
-  removeResource(deleting.value!.path)
+  removeResources([deleting.value!.hash])
 }
 function onDrop() {
   if (dragging.value) {
@@ -165,7 +167,7 @@ function onDrop() {
 const goToCurseforge = () => { push('/curseforge/modpacks') }
 const goToModrinth = () => { push('/modrinth?projectType=modpack') }
 
-function getModpackItem (resource: ModpackResource): ModpackItem {
+function getModpackItem (resource: Resource): ModpackItem {
   const metadata = resource.metadata
   return reactive({
     resource,
@@ -194,7 +196,7 @@ function getModpackItemByFtb(resource: CachedFTBModpackVersionManifest): Modpack
 }
 onMounted(async () => {
   await refresh()
-  items.value = [...state.modpacks.map(getModpackItem), ...ftb.value.map(getModpackItemByFtb)].sort((a, b) => a.name.localeCompare(b.name))
+  items.value = [...resources.value.map(getModpackItem), ...ftb.value.map(getModpackItemByFtb)].sort((a, b) => a.name.localeCompare(b.name))
 })
 onUnmounted(() => {
   const editedResources = items.value
@@ -207,8 +209,8 @@ onUnmounted(() => {
   })))
   dispose()
 })
-watch(computed(() => state.modpacks), () => {
-  items.value = [...state.modpacks.map(getModpackItem), ...ftb.value.map(getModpackItemByFtb)]
+watch(resources, (v) => {
+  items.value = [...v.map(getModpackItem), ...ftb.value.map(getModpackItemByFtb)]
 })
 </script>
 

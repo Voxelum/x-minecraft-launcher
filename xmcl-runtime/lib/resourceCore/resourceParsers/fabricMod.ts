@@ -1,8 +1,8 @@
 import { FabricModMetadata, readFabricMod } from '@xmcl/mod-parser'
 import { ResourceType, ResourceDomain } from '@xmcl/runtime-api'
-import { ResourceParser } from '../resource'
+import type { IResourceParser } from './index'
 
-export const fabricModParser: ResourceParser<FabricModMetadata | FabricModMetadata[]> = ({
+export const fabricModParser: IResourceParser<FabricModMetadata | FabricModMetadata[]> = ({
   type: ResourceType.Fabric,
   domain: ResourceDomain.Mods,
   ext: '.jar',

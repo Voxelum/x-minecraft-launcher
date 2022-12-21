@@ -185,7 +185,7 @@ import { ResourcePackItem, useInstanceResourcePacks } from '../composables/resou
 import ResourcePackCard from './ResourcePackCard.vue'
 import FilterCombobox from '@/components/FilterCombobox.vue'
 import Hint from '@/components/Hint.vue'
-import { useDragTransferList, useDropImport, useFilterCombobox, useResourceOperation, useServiceBusy } from '@/composables'
+import { useDragTransferList, useDropImport, useFilterCombobox, useService, useServiceBusy } from '@/composables'
 
 function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {
   function getFilterOptions(item: ResourcePackItem) {
@@ -208,9 +208,8 @@ function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePac
 const filterText = ref('')
 const rightList: Ref<any> = ref(null)
 const leftList: Ref<any> = ref(null)
-const loading = useServiceBusy(ResourceServiceKey, 'load', ResourceDomain.ResourcePacks)
-const { enabled, disabled, add, remove, commit, insert, showDirectory } = useInstanceResourcePacks()
-const { removeResource } = useResourceOperation()
+const { enabled, disabled, add, remove, commit, insert, showDirectory, loading } = useInstanceResourcePacks()
+const { removeResources } = useService(ResourceServiceKey)
 const { push } = useRouter()
 const { path } = useInstanceBase()
 const { t } = useI18n()
@@ -249,7 +248,7 @@ function filterName(r: ResourcePackItem) {
 const { unselectedItems, selectedItems, filterOptions } = setupFilter(computed(() => disabled.value), computed(() => enabled.value))
 
 async function confirmDeletingPack() {
-  removeResource(data.deletingPack!.id)
+  removeResources([data.deletingPack!.id])
   data.deletingPack = null
 }
 

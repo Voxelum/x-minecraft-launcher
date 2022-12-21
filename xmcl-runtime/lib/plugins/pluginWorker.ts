@@ -38,7 +38,7 @@ export const pluginWorker: LauncherAppPlugin = async (app) => {
             threadWorker?.terminate()
             threadWorker = undefined
             destroyTimer = undefined
-          }, 1000 * 5)
+          }, 1000 * 60)
         }
       })
       return worker

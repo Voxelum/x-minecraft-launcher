@@ -1,5 +1,5 @@
 import { DownloadTask } from '@xmcl/installer'
-import { ImportFileOptions, ImportService as IImportService, ImportServiceKey, ImportUrlOptions, isPersistedResource, Resource, ResourceDomain } from '@xmcl/runtime-api'
+import { ImportFileOptions, ImportService as IImportService, ImportServiceKey, ImportUrlOptions, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { createHash } from 'crypto'
 import { ensureFile, unlink } from 'fs-extra'
 import { basename } from 'path'
@@ -7,8 +7,8 @@ import { request } from 'undici'
 import { URL } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { Inject } from '../util/objectRegistry'
 import { parseSourceControlUrl } from '../sourceControlUrlParser'
+import { Inject } from '../util/objectRegistry'
 import { ZipTask } from '../util/zip'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
@@ -24,11 +24,7 @@ export class ImportService extends AbstractService implements IImportService {
   }
 
   async importFile(options: ImportFileOptions): Promise<void> {
-    const resolved = await this.resourceService.resolvePartialResource(options.resource)
-    if (isPersistedResource(resolved)) {
-      return
-    }
-    const parsed = await this.resourceService.parseResourceMetadata(resolved)
+    const [parsed] = await this.resourceService.importResources([options.resource])
     const getInstancePath = (inst: string | boolean) => typeof inst === 'boolean' ? this.instanceService.state.path : inst
     const resolveOptions = () => {
       if (parsed.domain === ResourceDomain.Saves) {
@@ -56,11 +52,7 @@ export class ImportService extends AbstractService implements IImportService {
       const zipTask = new ZipTask(tempZipPath)
       await zipTask.includeAs(parsed.path, '')
       await zipTask.startAndWait()
-      const existed = await this.resourceService.resolvePartialResource({ path: tempZipPath })
-      if (!isPersistedResource(existed)) {
-        const resolvedZip = await this.resourceService.parseResourceMetadata(existed)
-        await this.resourceService.importParsedResource(resolvedZip)
-      }
+      await this.resourceService.importResources([{ path: tempZipPath }])
       await unlink(tempZipPath)
     }
     if (parsed.fileType === 'directory') {
@@ -75,7 +67,7 @@ export class ImportService extends AbstractService implements IImportService {
     } else {
       // the import object is a file
       if (shouldImport) {
-        await this.resourceService.importParsedResource(parsed)
+        await this.resourceService.importResources([{ path: parsed.path, domain: parsed.domain }])
       }
     }
 
@@ -88,10 +80,14 @@ export class ImportService extends AbstractService implements IImportService {
     const result = await this.processUrl(options.url)
 
     if (result) {
-      const [resource] = await this.resourceService.resolveResource([{
-        path: result.destination,
-        uri: [result.url, options.url],
-      }])
+      const resources = await this.resourceService.getResourcesByUris([result.url, options.url])
+      let resource = resources[0] || resources[1]
+      if (!resource) {
+        const resolved = await this.resourceService.resolveResources([{
+          path: result.destination,
+        }])
+        resource = resolved[0]
+      }
       return resource
     }
 

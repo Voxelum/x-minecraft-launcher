@@ -3,9 +3,9 @@ import { ImportServiceKey, ResourceServiceKey } from '@xmcl/runtime-api'
 
 export function useFileDrop() {
   const { importFile } = useService(ImportServiceKey)
-  const { resolveResource } = useService(ResourceServiceKey)
+  const { resolveResources } = useService(ResourceServiceKey)
   return {
     importFile,
-    resolveFile: resolveResource,
+    resolveFile: resolveResources,
   } as const
 }

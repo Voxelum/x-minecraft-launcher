@@ -2,6 +2,7 @@
 import { EncodingWorker } from '../entities/encodingWorker'
 import { setHandler } from './helper'
 import * as iconv from 'iconv-lite'
+import 'source-map-support/register'
 
 const AUTO_ENCODING_GUESS_MAX_BYTES = 512 * 128 // set an upper limit for the number of bytes we pass on to jschardet
 

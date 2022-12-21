@@ -159,10 +159,10 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
         const hashes = Object.entries(file.hashes)
         const urls = [file.url]
         if (version) {
-          urls.push(`modrinth:${version.project_id}:${version.id}`)
+          urls.push(`modrinth:${version.project_id}:${version.id}:${file.filename}`)
         }
 
-        let resource = this.resourceService.getOneResource({ url: urls })
+        let resource = (await this.resourceService.getResourcesByUris(urls)).reduce((a, b) => a || b, undefined)
         if (resource) {
           this.log(`The modrinth file ${file.filename}(${file.url}) existed in cache!`)
         } else {
@@ -174,7 +174,11 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
               algorithm: hashes[0][0],
               hash: hashes[0][1],
             },
-          }).setName('installModrinthFile')
+          }).setName('installModrinthFile', {
+            projectId: version.project_id,
+            versionId: version.id,
+            filename: file.filename,
+          })
 
           await this.taskManager.submit(task)
           const metadata = {
@@ -188,15 +192,12 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
               : undefined,
           }
 
-          const [result] = await this.resourceService.importResource({
-            resources: [{
-              path: destination,
-              uri: urls,
-              metadata,
-              icons: project.icon_url ? [project.icon_url] : [],
-            }],
-            background: true,
-          })
+          const [result] = await this.resourceService.importResources([{
+            path: destination,
+            uris: urls,
+            metadata,
+            icons: project.icon_url ? [project.icon_url] : [],
+          }])
 
           await unlink(destination).catch(() => undefined)
           this.log(`Install modrinth file ${file.filename}(${file.url}) success!`)
@@ -205,6 +206,7 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
         }
 
         if (instancePath) {
+          resource.path = resource.storedPath!
           await this.resourceService.install({ instancePath, resource })
         }
 

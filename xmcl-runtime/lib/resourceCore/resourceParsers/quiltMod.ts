@@ -1,8 +1,8 @@
 import { QuiltModMetadata, readQuiltMod } from '@xmcl/mod-parser'
 import { ResourceType, ResourceDomain } from '@xmcl/runtime-api'
-import { ResourceParser } from '../resource'
+import type { IResourceParser } from './index'
 
-export const quiltModParser: ResourceParser<QuiltModMetadata> = ({
+export const quiltModParser: IResourceParser<QuiltModMetadata> = ({
   type: ResourceType.Quilt,
   domain: ResourceDomain.Mods,
   ext: '.jar',

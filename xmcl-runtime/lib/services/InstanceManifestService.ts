@@ -1,4 +1,4 @@
-import { GetManifestOptions, InstanceFile, InstanceManifest, InstanceManifestService as IInstanceManifestService, InstanceManifestServiceKey, Resource, ResourceData, ResourceDomain } from '@xmcl/runtime-api'
+import { GetManifestOptions, InstanceFile, InstanceManifest, InstanceManifestService as IInstanceManifestService, InstanceManifestServiceKey, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { stat } from 'fs/promises'
 import { join, relative } from 'path'
@@ -13,7 +13,7 @@ import { ResolveInstanceFileTask } from './InstanceInstallService'
 import { InstanceService } from './InstanceService'
 import { ModrinthService } from './ModrinthService'
 import { ResourceService } from './ResourceService'
-import { ExposeServiceKey, AbstractService, Singleton } from './Service'
+import { AbstractService, ExposeServiceKey, Singleton } from './Service'
 
 @ExposeServiceKey(InstanceManifestServiceKey)
 export class InstanceManifestService extends AbstractService implements IInstanceManifestService {
@@ -27,7 +27,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
     super(app)
   }
 
-  @Singleton(p => p)
+  @Singleton(p => JSON.stringify(p))
   async getInstanceManifest(options?: GetManifestOptions): Promise<InstanceManifest> {
     // Ensure the resource service is initialized...
     await this.resourceService.initialize()
@@ -82,7 +82,9 @@ export class InstanceManifestService extends AbstractService implements IInstanc
 
       if (isDirectory) {
         const children = await readdirIfPresent(p)
-        await Promise.all(children.map(child => scan(join(p, child))))
+        await Promise.all(children.map(child => scan(join(p, child)).catch((e) => {
+          this.error('Fail to get manifest data for instance file %o', e)
+        })))
       } else {
         const localFile: InstanceFile = {
           path: relativePath,
@@ -90,10 +92,10 @@ export class InstanceManifestService extends AbstractService implements IInstanc
           hashes: {},
         }
         if (relativePath.startsWith('resourcepacks') || relativePath.startsWith('shaderpacks') || relativePath.startsWith('mods')) {
-          let resource = this.resourceService.getResourceByKey(ino)
+          let resource = await this.resourceService.getReosurceByIno(ino)
           const sha1 = resource?.hash ?? await this.worker.checksum(p, 'sha1')
           if (!resource) {
-            resource = this.resourceService.getResourceByKey(sha1)
+            resource = await this.resourceService.getResourceByHash(sha1)
           }
           if (resource?.metadata.modrinth) {
             localFile.modrinth = {
@@ -107,7 +109,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
               fileId: resource.metadata.curseforge.fileId,
             }
           }
-          localFile.downloads = resource?.uri && resource.uri.some(u => u.startsWith('http')) ? resource.uri.filter(u => u.startsWith('http')) : undefined
+          localFile.downloads = resource?.uris && resource.uris.some(u => u.startsWith('http')) ? resource.uris.filter(u => u.startsWith('http')) : undefined
           localFile.hashes = await resolveHashes(p, sha1)
 
           // No download url...
@@ -129,12 +131,13 @@ export class InstanceManifestService extends AbstractService implements IInstanc
     files.shift()
 
     const resolveTask = new ResolveInstanceFileTask(undecorated, this.curseforgeService, this.modrinthService)
-    // await this.taskManager.submit(task('getInstanceManifest', async function () {
-    //   await this.yield(task('scan', () => scan(instancePath)))
-    //   await this.yield(resolveTask)
-    // }))
+
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const logger = this
     await task('getInstanceManifest', async function () {
-      await this.yield(task('scan', () => scan(instancePath)))
+      await this.yield(task('scan', () => scan(instancePath).catch((e) => {
+        logger.error('Fail to get manifest data for instance file %o', e)
+      })))
       await this.yield(resolveTask).catch(() => undefined)
     }).startAndWait()
 

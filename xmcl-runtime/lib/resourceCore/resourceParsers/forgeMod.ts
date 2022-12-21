@@ -1,9 +1,9 @@
 import { ForgeModParseFailedError, readForgeMod } from '@xmcl/mod-parser'
 import { ForgeModCommonMetadata, ResourceType, ResourceDomain, normalizeForgeModMetadata, forceForgeModMetadata } from '@xmcl/runtime-api'
 import { basename } from 'path'
-import { ResourceParser } from '../resource'
+import type { IResourceParser } from './index'
 
-export const forgeModParser: ResourceParser<ForgeModCommonMetadata> = ({
+export const forgeModParser: IResourceParser<ForgeModCommonMetadata> = ({
   type: ResourceType.Forge,
   domain: ResourceDomain.Mods,
   ext: '.jar',

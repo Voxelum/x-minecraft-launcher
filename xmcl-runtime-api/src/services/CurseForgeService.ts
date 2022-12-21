@@ -1,13 +1,12 @@
-import type { Mod, File, FileModLoaderType, Pagination, ModCategory, SearchOptions, FileRelationType } from '@xmcl/curseforge'
+import type { File, FileModLoaderType, FileRelationType, Mod, ModCategory, Pagination, SearchOptions } from '@xmcl/curseforge'
 import { ProjectType } from '../entities/curseforge'
-import { Persisted, Resource } from '../entities/resource'
+import { Resource } from '../entities/resource'
 import { ServiceKey, StatefulService } from './Service'
 export interface InstallFileOptions {
   /**
    * The curseforge file
    */
   file: File
-  projectId: number
   type: ProjectType
   /**
    * Install this to the specific instance
@@ -51,7 +50,7 @@ export interface InstallFileResult {
   /**
    * All installed resource corresponding to the file
    */
-  resource: Persisted<Resource>
+  resource: Resource
   /**
    * All dependencies of this resource
    */

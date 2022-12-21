@@ -1,7 +1,7 @@
 import { McbbsModpackManifest, ResourceDomain, ResourceType } from '@xmcl/runtime-api'
-import { ResourceParser } from '../resource'
+import type { IResourceParser } from './index'
 
-export const mcbbsModpackParser: ResourceParser<McbbsModpackManifest> = {
+export const mcbbsModpackParser: IResourceParser<McbbsModpackManifest> = {
   type: ResourceType.McbbsModpack,
   domain: ResourceDomain.Modpacks,
   ext: '.zip',

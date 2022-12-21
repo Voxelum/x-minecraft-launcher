@@ -19,10 +19,11 @@ export class InstanceShaderPacksService extends AbstractService implements IInst
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {
     super(app)
-    this.storeManager.subscribe('instanceShaderOptions', (payload) => {
+    this.storeManager.subscribe('instanceShaderOptions', async (payload) => {
       if (payload.shaderPack && this.active && !this.instanceService.isUnderManaged(this.active)) {
         const fileName = payload.shaderPack
-        const existedResource = this.resourceService.state.shaderpacks.find(f => fileName === f.fileName)
+
+        const existedResource = await this.resourceService.getResourceUnder({ fileName, domain: ResourceDomain.ShaderPacks })
         const localFilePath = join(this.active!, fileName)
         if (!existsSync(localFilePath)) {
           if (existedResource) {
@@ -52,18 +53,11 @@ export class InstanceShaderPacksService extends AbstractService implements IInst
 
       this.log(`Import shaderpacks directories while linking: ${instancePath}`)
       await Promise.all(files.map(f => join(destPath, f)).map(async (filePath) => {
-        const [resource] = await this.resourceService.resolveResource([{ path: filePath, domain: ResourceDomain.ShaderPacks }])
+        const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.ShaderPacks }])
         if (isShaderPackResource(resource)) {
           this.log(`Add shader pack ${filePath}`)
         } else {
           this.warn(`Non shader pack resource added in /shaderpacks directory! ${filePath}`)
-        }
-        if (!isPersistedResource(resource)) {
-          await this.resourceService.importParsedResource(resource).catch((e) => {
-            this.emit('error', {})
-            this.warn(e)
-          })
-          this.log(`Found new resource in /shaderpacks directory! ${filePath}`)
         }
       }))
     }

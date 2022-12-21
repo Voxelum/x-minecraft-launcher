@@ -710,10 +710,7 @@ export class InstallService extends AbstractService implements IInstallService {
         url: urls,
         destination: path,
       }).setName('download'))
-      resourceService.importResource({
-        resources: [{ path, domain: ResourceDomain.Mods }],
-        background: true,
-      }).catch((e) => {
+      resourceService.importResources([{ path, domain: ResourceDomain.Mods }]).catch((e) => {
         error(`Fail to import optifine as mod! ${path}`)
         error(e)
       })

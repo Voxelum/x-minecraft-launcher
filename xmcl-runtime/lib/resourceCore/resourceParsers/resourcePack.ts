@@ -1,8 +1,8 @@
 import { PackMeta, readIcon, readPackMeta } from '@xmcl/resourcepack'
 import { ResourceType, ResourceDomain } from '@xmcl/runtime-api'
-import { ResourceParser } from '../resource'
+import type { IResourceParser } from './index'
 
-export const resourcePackParser: ResourceParser<PackMeta.Pack> = ({
+export const resourcePackParser: IResourceParser<PackMeta.Pack> = ({
   type: ResourceType.ResourcePack,
   domain: ResourceDomain.ResourcePacks,
   ext: '.zip',

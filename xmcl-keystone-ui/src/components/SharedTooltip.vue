@@ -12,8 +12,8 @@
 </template>
 
 <script lang="ts" setup>
-import { kModTooltip } from '@/composables/modTooltip'
+import { kSharedTooltip } from '@/composables/sharedTooltip'
 import { injection } from '@/util/inject'
 
-const { currentTooltip, x, y, isShown } = injection(kModTooltip)
+const { currentTooltip, x, y, isShown } = injection(kSharedTooltip)
 </script>

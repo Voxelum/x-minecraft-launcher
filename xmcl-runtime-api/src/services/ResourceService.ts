@@ -1,25 +1,20 @@
 import { Exception } from '../entities/exception'
-import { ModpackResource, ModResource, Persisted, Resource, ResourceDomain, ResourceMetadata, ResourcePackResource, SaveResource, ShaderPackResource } from '../entities/resource'
+import { Persisted, Resource, ResourceDomain, ResourceMetadata } from '../entities/resource'
 import { GenericEventEmitter } from '../events'
-import { ServiceKey, StatefulService } from './Service'
+import { ServiceKey } from './Service'
 
 export declare type FileTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 'resourcepack' | 'liteloader' | 'curseforge-modpack' | 'save'
 
 export type PartialResourcePath = Partial<Resource> & { path: string }
+export type ResolveResourceOptions = { path: string; domain?: ResourceDomain }
 export type PartialResourcePathResolved = PartialResourcePath & { hash: string; ino: number; fileType: string; size: number; fileName: string; name: string }
 export type PartialResourceHash = Partial<Resource> & { hash: string }
 export type ResourceKey = Resource | string
 
-export interface ImportResourceOptions {
-  resources: PartialResourcePath[]
-  /**
-   * Is import file task in background?
-   */
-  background?: boolean
-  /**
-   * If optional, the resource won't be import if we cannot parse it.
-   */
-  optional?: boolean
+export interface ImportResourceOptions extends ResolveResourceOptions {
+  uris?: string[]
+  metadata?: ResourceMetadata
+  icons?: string[]
 }
 
 export interface ExportResourceOptions {
@@ -29,8 +24,6 @@ export interface ExportResourceOptions {
 
 export interface QueryResourcesOptions {
   domain?: ResourceDomain
-  tags?: string[]
-  keyword?: string
   uris?: string[]
 }
 
@@ -38,167 +31,77 @@ export interface UpdateResourceOptions {
   resource: Resource | string
 }
 
-const domains = [
-  ResourceDomain.Mods,
-  ResourceDomain.ResourcePacks,
-  ResourceDomain.Saves,
-  ResourceDomain.Modpacks,
-  ResourceDomain.ShaderPacks,
-  ResourceDomain.Unclassified,
-] as const
-
-export class ResourceState {
-  [ResourceDomain.Mods] = [] as Array<Persisted<ModResource>>
-  [ResourceDomain.ResourcePacks] = [] as Array<Persisted<ResourcePackResource>>
-  [ResourceDomain.Saves] = [] as Array<Persisted<SaveResource>>
-  [ResourceDomain.Modpacks] = [] as Array<Persisted<ModpackResource>>
-  [ResourceDomain.ShaderPacks] = [] as Array<Persisted<ShaderPackResource>>
-  [ResourceDomain.Unclassified] = [] as Array<Persisted<ShaderPackResource>>
-
-  /**
-   * Query local resource by uri
-   */
-  get queryResource() {
-    return (url: string) => {
-      for (const domain of domains) {
-        const resources = this[domain]
-        for (const v of resources) {
-          const uris = v.uri
-          if (uris.some(u => u === url)) {
-            return v
-          }
-        }
-      }
-      return undefined
-    }
-  }
-
-  resource(res: Persisted<Resource>) {
-    let domain: Array<Resource> | undefined
-    switch (res.domain) {
-      case ResourceDomain.Mods:
-        domain = this.mods
-        break
-      case ResourceDomain.ResourcePacks:
-        domain = this.resourcepacks
-        break
-      case ResourceDomain.Saves:
-        domain = this.saves
-        break
-      case ResourceDomain.Modpacks:
-        domain = this.modpacks
-        break
-      case ResourceDomain.ShaderPacks:
-        domain = this.shaderpacks
-        break
-      case ResourceDomain.Unclassified:
-        domain = this.unclassified
-        break
-    }
-    if (domain) {
-      const index = domain.findIndex((r) => r.hash === res.hash)
-      if (index !== -1) {
-        domain[index] = Object.freeze(res)
-      } else {
-        domain.push(Object.freeze(res) as any)
-      }
-    } else {
-      throw new Error(`Cannot accept resource for unknown domain [${res.domain}]`)
-    }
-  }
-
-  resources(all: Persisted<Resource>[]) {
-    for (const res of all) {
-      if (domains.indexOf(res.domain) !== -1) {
-        const domain = this[res.domain] as Persisted<Resource>[]
-
-        const index = domain.findIndex((r) => r.hash === res.hash)
-        if (index !== -1) {
-          domain[index] = Object.freeze(res)
-        } else {
-          domain.push(Object.freeze(res) as any)
-        }
-      } else {
-        throw new Error(`Cannot accept resource for unknown domain [${res.domain}]`)
-      }
-    }
-  }
-
-  resourcesRemove(resources: Persisted<Resource>[]) {
-    const removal = new Set(resources.map((r) => r.hash))
-    const domains = new Set(resources.map((r) => r.domain))
-    for (const domain of domains) {
-      this[domain] = (this[domain] as Persisted<Resource>[]).filter((r) => !removal.has(r.hash)) as any
-    }
-  }
-}
-
 interface ResourceServiceEventMap {
   'error': ResourceException
 
-  'modpackImport': {
-    path: string
-    name: string
-  }
+  'resourceAdd': Resource
+  'resourceRemove': { sha1: string; domain: ResourceDomain }
+  'resourceUpdate': Resource
 }
 
 /**
  * Resource service to manage the mod, resource pack, saves, modpack resources.
  * It maintain a preview for resources in memory
  */
-export interface ResourceService extends StatefulService<ResourceState>, GenericEventEmitter<ResourceServiceEventMap> {
-  load(domain: ResourceDomain): Promise<void>
-
-  queryResources(query: QueryResourcesOptions): Promise<Resource[]>
+export interface ResourceService extends GenericEventEmitter<ResourceServiceEventMap> {
+  getResources(domain: ResourceDomain): Promise<Array<Resource>>
+  getReosurceByIno(ino: number): Promise<Resource | undefined>
+  getResourceByHash(sha1: string): Promise<Resource | undefined>
+  getResourcesByUris(uri: [string]): Promise<[Resource | undefined]>
+  getResourcesByUris(uri: [string, string]): Promise<[Resource | undefined, Resource | undefined]>
+  getResourcesByUris(uri: string[]): Promise<Array<Resource | undefined>>
   /**
-   * Get the resource metadata.
-   * @param key The key can be file path, ino, file hash (sha1)
+   * Remove resources from the disk
+   *
+   * @param hashes The sha1 array of the resources
    */
-  getResource(key: string): Promise<Resource | undefined>
+  removeResources(hashes: string[]): Promise<void>
   /**
-   * Remove a resource from the launcher
-   * @param resourceOrKey
-   */
-  removeResource(resourceOrKey: ResourceKey): Promise<void>
-  /**
-   * Remove resources from the launcher
-   * @param resourceOrKey
-   */
-  removeResources(resourceOrKey: ResourceKey[]): Promise<void>
-  /**
-   * Update the resource content.
+   * Update the resources content.
    *
    * You can update `name`, `tags` in this method.
    *
    * @param resource The update resource payload.
+   *
+   * @return The sha1 array of the resources are successfully updated
    */
-  updateResource(resource: PartialResourceHash): Promise<Persisted<Resource>>
-  updateResources(resources: PartialResourceHash[]): Promise<Persisted<Resource>[]>
+  updateResources(resources: [PartialResourceHash, PartialResourceHash]): Promise<[string, string]>
+  updateResources(resources: [PartialResourceHash]): Promise<[string]>
+  updateResources(resources: PartialResourceHash[]): Promise<string[]>
   /**
    * Parse files as resources.
    *
    * Input the partial resource (at least file path is provided).
    *
    * If the resource existed, it will return the existed persisted resource.
-   * @param partialResources The the partial resource to parse
+   * @param options The the partial resource to parse
    */
-  resolveResource(partialResources: PartialResourcePath[]): Promise<Resource[]>
+  resolveResources(options: [ResolveResourceOptions, ResolveResourceOptions]): Promise<[Resource, Resource]>
+  resolveResources(options: [ResolveResourceOptions]): Promise<[Resource]>
+  resolveResources(options: ResolveResourceOptions[]): Promise<Resource[]>
   /**
-   * Import the resource from the same disk. This will parse the file and import it into our db by hard link.
-   * If the file already existed, it will not re-import it again
+   * Try to import the resource to the storage. This will parse the file and import it into our db by hard link.
+   * If the file already existed, it will not re-import it again.
    *
    * The original file will not be modified.
    *
    * If the `optional` in `options` is `true`, then this will not import if the resource cannot be identified
    *
+   * The return resource will be has the `path`
+   *
    * @returns The resource resolved. If the resource cannot be resolved, it will goes to unclassified domain.
    */
-  importResource(options: ImportResourceOptions): Promise<Persisted<Resource>[]>
+  importResources(options: [ImportResourceOptions, ImportResourceOptions]): Promise<[Resource, Resource]>
+  importResources(options: [ImportResourceOptions]): Promise<[Resource]>
+  importResources(options: ImportResourceOptions[]): Promise<Resource[]>
   /**
    * Export the resources into target directory. This will simply copy the resource out.
-   * If a resource is not found, the export process will be abort. This is not a transaction process.
+   *
+   * @returns The path of the final exported resources
    */
-  exportResource(options: ExportResourceOptions): Promise<void>
+  exportResources(options: ExportResourceOptions): Promise<string[]>
+
+  install(options: { instancePath: string; resource: Resource }): Promise<void>
 }
 
 export const ResourceServiceKey: ServiceKey<ResourceService> = 'ResourceService'

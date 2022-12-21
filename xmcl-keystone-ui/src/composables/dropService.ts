@@ -30,7 +30,7 @@ export function useDropService() {
   const active = ref(false)
   const loading = ref(false)
   const previews = ref([] as FilePreview[])
-  const { resolveResource } = useService(ResourceServiceKey)
+  const { resolveResources } = useService(ResourceServiceKey)
   const { handleUrl } = useService(BaseServiceKey)
   const { previewUrl } = useService(ImportServiceKey)
   const suppressed = ref(false)
@@ -72,7 +72,7 @@ export function useDropService() {
                   object.name = result.name
                   object.path = result.path
                   object.status = 'idle'
-                  object.url = result.uri
+                  object.url = result.uris
                 } else {
                   object.status = 'failed'
                 }
@@ -100,7 +100,7 @@ export function useDropService() {
       }
     }
     loading.value = true
-    const result = await resolveResource(files.map(f => ({ path: f.path }))).finally(() => { loading.value = false })
+    const result = await resolveResources(files.map(f => ({ path: f.path }))).finally(() => { loading.value = false })
     for (let i = 0; i < result.length; i++) {
       const r = result[i]
       const f = files[i]

@@ -1,7 +1,7 @@
 import { ShaderPack, ResourceType, ResourceDomain } from '@xmcl/runtime-api'
-import { ResourceParser } from '../resource'
+import type { IResourceParser } from './index'
 
-export const shaderPackParser: ResourceParser<ShaderPack> = {
+export const shaderPackParser: IResourceParser<ShaderPack> = {
   type: ResourceType.ShaderPack,
   domain: ResourceDomain.ShaderPacks,
   ext: '.zip',

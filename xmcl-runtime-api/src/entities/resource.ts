@@ -94,8 +94,10 @@ export interface ResourceMetadata {
    */
   gitlab?: ResourceSourceGit
 }
-
-export interface ResourceData {
+/**
+ * The resource representing a file metadata
+ */
+export interface Resource {
   /**
    * Latest version is `2`
    */
@@ -112,14 +114,15 @@ export interface ResourceData {
    * The original file name when this resource is imported with extension.
    */
   fileName: string
-
+  /**
+   * The file type, can be `zip` or `directory`
+   */
   fileType: string
   /**
    * The size of the resource
    * @default 0
    */
   size: number
-
   /**
    * The tag on this file. Used for indexing.
    */
@@ -127,31 +130,37 @@ export interface ResourceData {
   /**
    * The uri of the resource. Used for indexing
    */
-  uri: string[]
+  uris: string[]
   /**
    * The expect domain of the resource. This decide where (which folder) the resource should go
    */
   domain: ResourceDomain
-
+  /**
+   * The icon urls
+   */
   icons?: string[]
-
+  /**
+   * The persisted resource file path
+   */
   storedPath?: string
+
   storedDate?: number
-
+  /**
+   * The resource metadata
+   */
   metadata: ResourceMetadata
-}
-
-export interface Resource extends ResourceData {
   /**
    * The path of the resource file
    */
   path: string
+  /**
+   * The ino of the file
+   */
   ino: number
 }
 
 export type Persisted<T extends Resource> = T & {
   storedPath: string
-  storedDate: number
 }
 
 export type ForgeResource<T extends Resource = Resource> = T & {
@@ -247,6 +256,10 @@ export function isModpackResource(resource: Resource): resource is ModpackResour
   return resource.domain === ResourceDomain.Modpacks
 }
 
+export function isRawModpackResource(resource: Resource): resource is RawModpackResource {
+  return !!resource.metadata.modpack
+}
+
 export function isCurseforgeModpackResource(resource: Resource): resource is CurseforgeModpackResource {
   return !!resource.metadata['curseforge-modpack']
 }
@@ -264,5 +277,5 @@ export function isSaveResource(resource: Resource): resource is SaveResource {
 }
 
 export function isPersistedResource<T extends Resource>(resource: T): resource is Persisted<T> {
-  return !!resource.storedDate && !!resource.storedPath
+  return !!resource.storedPath
 }

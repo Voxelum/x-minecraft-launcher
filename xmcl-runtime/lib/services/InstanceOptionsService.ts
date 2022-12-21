@@ -185,20 +185,26 @@ export class InstanceOptionsService extends StatefulService<InstanceOptionsState
     }
 
     if (diff.resourcePacks) {
-      diff.incompatibleResourcePacks = diff.resourcePacks.filter((path) => {
+      const incompatibleResourcePacks = [] as string[]
+      for (const path of diff.resourcePacks) {
         if (path === 'vanilla') {
-          return false
+          continue
         }
         const resourceName = path.startsWith('file/') ? path.substring('file/'.length) : path
-        const resource = this.resourceService.state.resourcepacks.find(r => `${r.fileName}` === resourceName)
-        if (resource) {
-          const versionRange = packFormatVersionRange[resource.metadata.resourcepack.pack_format]
+        const resource = await this.resourceService.getResourceUnder({ domain: ResourceDomain.ResourcePacks, fileName: resourceName })
+        if (resource && resource.metadata.resourcepack?.pack_format) {
+          const format = resource.metadata.resourcepack.pack_format
+          const versionRange = packFormatVersionRange[format]
           if (versionRange) {
-            return !isCompatible(versionRange, instance.runtime.minecraft)
+            if (!isCompatible(versionRange, instance.runtime.minecraft)) {
+              incompatibleResourcePacks.push(path)
+            } else {
+              continue
+            }
           }
         }
-        return true
-      })
+        incompatibleResourcePacks.push(path)
+      }
     }
 
     if (Object.keys(diff).length > 0) {

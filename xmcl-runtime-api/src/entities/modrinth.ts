@@ -1,3 +1,5 @@
+import { ProjectVersion } from '@xmcl/modrinth'
+
 export const modrinthDenyHost = ['edge.forgecdn.net', 'media.forgecdn.net']
 export const modrinthAllowHost = ['cdn.modrinth.com', 'github.com', 'raw.githubusercontent.com', 'gitlab.com']
 export function isAllowInModrinthModpack(url: string, strict = true) {
@@ -24,4 +26,11 @@ export interface ModrinthProjectHeader {
   type: 'mod' | 'modpack'
   summary: string
   websiteUrl: string
+}
+
+export function getModrinthVersionUrl(version: ProjectVersion) {
+  return version.files[0].url
+}
+export function getModrinthVersionUri(version: ProjectVersion) {
+  return `modrinth:${version.project_id}:${version.id}`
 }

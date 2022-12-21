@@ -1,8 +1,7 @@
-import { State, MutationKeys, MutationPayload } from '@xmcl/runtime-api'
+import { MutationKeys, MutationPayload, State } from '@xmcl/runtime-api'
 import { EventEmitter } from 'events'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
-import { LauncherAppKey } from '../app/utils'
 import { AbstractService } from '../services/Service'
 import { ServiceStateProxy } from '../util/serviceProxy'
 
