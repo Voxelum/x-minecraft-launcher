@@ -1,9 +1,7 @@
 import { createInMemoryCheckpointHandler, DefaultSegmentPolicy, DownloadAgent, DownloadBaseOptions, resolveAgent } from '@xmcl/installer'
 import { ClassicLevel } from 'classic-level'
-import { channel } from 'diagnostics_channel'
 import { join } from 'path'
-import { Agent, Client, DiagnosticsChannel, Dispatcher, Pool, setGlobalDispatcher } from 'undici'
-import { DispatchOptions } from 'undici/types/agent'
+import { Agent, Client, Dispatcher, Pool, setGlobalDispatcher } from 'undici'
 import { URL } from 'url'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
@@ -16,6 +14,8 @@ import { BaseService } from '../services/BaseService'
 import { createPromiseSignal } from '../util/promiseSignal'
 import ServiceManager from './ServiceManager'
 import ServiceStateManager from './ServiceStateManager'
+
+type DispatchOptions = Dispatcher.DispatchOptions
 
 export default class NetworkManager extends Manager {
   private inGFW = false

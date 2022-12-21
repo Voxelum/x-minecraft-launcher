@@ -258,7 +258,8 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   async getOfficialUserProfile(): Promise<UserProfile | undefined> {
     const official = Object.values(this.state.users).find(u => u.authService === 'microsoft')
     if (official) {
-      await this.registeredAccountSystem.microsoft?.refresh(official)
+      const controller = new AbortController()
+      await this.registeredAccountSystem.microsoft?.refresh(official, controller.signal)
       return official
     }
     return undefined

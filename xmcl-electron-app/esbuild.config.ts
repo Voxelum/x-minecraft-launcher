@@ -48,7 +48,7 @@ const config: BuildOptions = {
     pluginWorker(),
     plugin7Zip(path.resolve(__dirname, './node_modules')),
     pluginNode(),
-    yamlPlugin({}),
+    yamlPlugin({}) as any,
   ],
   external: ['electron'],
 }

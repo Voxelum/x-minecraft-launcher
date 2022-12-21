@@ -2,6 +2,7 @@
     "version": "0.32.9",
     "private": true,
     "license": "MIT",
+    "packageManager": "pnpm@7.15.0",
     "scripts": {
         "build": "pnpm run --prefix=xmcl-electron-app build",
         "build:all": "pnpm run --prefix=xmcl-electron-app build:all",
