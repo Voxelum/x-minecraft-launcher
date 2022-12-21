@@ -77,7 +77,7 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
   }
 
   const getTrayImage = (dark: string, light: string) => {
-    const path = nativeTheme.shouldUseDarkColors ? darkTray : lightTray
+    const path = nativeTheme.shouldUseDarkColors ? dark : light
     if (this.app.platform.name === 'osx') {
       const icon = nativeImage.createFromPath(path)
       return icon.resize({ width: 20, height: 20 })
@@ -92,11 +92,7 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
         const window = this.mainWin
         if (window) {
           if (window.isVisible()) {
-            if (!window.isFocused()) {
-              window.focus()
-            } else {
-              window.hide()
-            }
+            window.hide()
           } else window.show()
         }
       })
