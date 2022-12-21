@@ -1,6 +1,6 @@
 <template>
-  <v-card>
-    <div class="flex gap-5 mx-5 mt-3">
+  <v-card class="overflow-hidden">
+    <div class="flex gap-5 mx-5 mt-3 overflow-hidden">
       <v-select
         v-model="gameVersion"
         clearable
@@ -36,143 +36,54 @@
       v-if="refreshing"
       type="table-thead, table-tbody"
     />
-    <div
+    <ErrorView
       v-else-if="versionsError"
-      class="flex flex-col items-center gap-4 my-10"
-    >
-      <v-icon
-        color="error"
-        size="100"
-      >
-        error
-      </v-icon>
-      <div class="text-3xl font-bold">
-        {{ tError(versionsError) }}
-      </div>
-      <v-btn
-        color="error"
-        @click="refresh"
-      >
-        {{ t('refresh') }}
-      </v-btn>
-    </div>
-    <table
+      :error="versionsError"
+      @refresh="refresh"
+    />
+    <div
       v-else
-      class="w-full table-auto border-separate align-middle"
+      class="w-full overflow-hidden"
       style="border-spacing: 0.75em"
     >
-      <thead
-        class="text-gray-400 font-bold text-lg align-middle"
+      <div
+        class="text-gray-400 font-bold text-lg align-middle grid grid-cols-13 my-4"
       >
-        <tr>
-          <th
-            role="presentation"
-          />
-          <th class="text-left">
-            {{ t('modrinth.headers.version') }}
-          </th>
-          <th class="text-left">
-            {{ t('modrinth.headers.support') }}
-          </th>
-          <th class=" text-left">
-            {{ t('modrinth.headers.status') }}
-          </th>
-        </tr>
-      </thead>
-      <tbody
-        class="align-middle"
-      >
-        <template
-          v-for="version of items"
-        >
-          <tr
-            :key="version.id"
-            class="dark:text-gray-300 text-gray-700"
-          >
-            <td>
-              <v-btn
-                v-if="!modpack || !isDownloaded(version)"
-                icon
-                text
-                :loading="isDownloading(version)"
-                :disabled="isDownloaded(version)"
-                @click.stop="emit('install', version)"
-              >
-                <v-icon>file_download</v-icon>
-              </v-btn>
-              <v-btn
-                v-else
-                icon
-                text
-                @click.stop="onCreate(version)"
-              >
-                <v-icon> add </v-icon>
-              </v-btn>
-            </td>
-            <td>
-              <div>
-                {{ version.name }}
-              </div>
-              <div>
-                <span
-                  :style="{ color: getColorCode(getColorForReleaseType(version.version_type)),borderColor: getColorCode(getColorForReleaseType(version.version_type)) }"
-                  class="font-bold border-l border-l-[3px] pl-3"
-                >
-                  {{ t(`versionType.${version.version_type}`) }}
-                </span>
-                ·
-                {{ version.version_number }}
-              </div>
-            </td>
-            <td>
-              <div class="flex">
-                {{ version.loaders.join(', ') }}
-              </div>
-              <div class="flex">
-                {{ version.game_versions.join(', ') }}
-              </div>
-            </td>
-            <td>
-              <div>
-                {{ t('downloadCount', { count: version.downloads }) }}
-              </div>
-              <div>
-                {{ getLocalDateString(version.date_published) }}
-              </div>
-            </td>
-          </tr>
-          <tr
-            v-if="version.changelog"
-            :key="`${version.id}-changelog`"
-          >
-            <td />
-            <td
-              colspan="3"
-              :style="{ borderColor: getColorCode(getColorForReleaseType(version.version_type)) }"
-              class="border-l border-l-[3px] pl-3"
-            >
-              <div
-                class="text-gray-500 hover:text-black dark:hover:text-gray-300 text-gray-500 transition-colors"
-                v-html="render(version.changelog)"
-              />
-            </td>
-          </tr>
-        </template>
-      </tbody>
-    </table>
+        <div
+          role="presentation col-span-1"
+        />
+        <div class="col-span-4 text-left ">
+          {{ t('modrinth.headers.version') }}
+        </div>
+        <div class="col-span-4 text-left ">
+          {{ t('modrinth.headers.support') }}
+        </div>
+        <div class="col-span-4 text-left ">
+          {{ t('modrinth.headers.status') }}
+        </div>
+      </div>
+      <VirtualList
+        :data-component="ModrinthProjectVersionsTile"
+        :data-key="'id'"
+        class="v-list max-h-[100vh] h-full overflow-auto transition-none"
+        :data-sources="items"
+        :estimate-size="120"
+        :extra-props="{ isDownloaded, onInstall, relatedTasks }"
+      />
+    </div>
   </v-card>
 </template>
 
 <script lang="ts" setup>
-import { useRefreshable, useService, useServiceBusy } from '@/composables'
-import { useLocaleError } from '@/composables/error'
-import { useVuetifyColor } from '@/composables/vuetify'
-import { getColorForReleaseType } from '@/util/color'
-import { getLocalDateString } from '@/util/date'
+import ErrorView from '@/components/ErrorView.vue'
+import { kModrinthVersions, kModrinthVersionsStatus } from '@/composables/modrinthVersions'
+import { kTaskManager } from '@/composables/taskManager'
+import { TaskItem } from '@/entities/task'
+import { injection } from '@/util/inject'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { ModrinthServiceKey, Persisted, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
-import Markdown from 'markdown-it'
-import { Ref } from 'vue'
+import { TaskState } from '@xmcl/runtime-api'
+import ModrinthProjectVersionsTile from './ModrinthProjectVersionsTile.vue'
+import VirtualList from 'vue-virtual-scroll-list'
 
 const props = defineProps<{
   versions: string[]
@@ -180,27 +91,13 @@ const props = defineProps<{
   modpack: boolean
 }>()
 
-const emit = defineEmits(['install', 'create'])
+const emit = defineEmits(['install'])
+const onInstall = (v: ProjectVersion) => emit('install', v)
 
-const markdown = new Markdown({
-  html: true,
-})
-const { getProjectVersions, state } = useService(ModrinthServiceKey)
-const { state: resourceState } = useService(ResourceServiceKey)
-const render = (s: string) => {
-  return markdown.render(s)
-}
-const versionsError = ref(undefined as any)
-const tError = useLocaleError()
+const { versions: projectVersions, error: versionsError, refresh, refreshing } = injection(kModrinthVersions)
+const { isDownloaded } = injection(kModrinthVersionsStatus)
 
-const { getColorCode } = useVuetifyColor()
-
-const projectVersions: Ref<ProjectVersion[]> = ref([])
 const { t } = useI18n()
-const isDownloading = (ver: ProjectVersion) => {
-  const fileUrl = ver.files[0].url
-  return !!state.downloading.find(v => v.url === fileUrl)
-}
 const gameVersions = computed(() => projectVersions.value.map(v => v.game_versions).reduce((a, b) => [...a, ...b], []))
 const gameVersion = ref('')
 const releaseTypes = computed(() => [
@@ -211,70 +108,16 @@ const releaseTypes = computed(() => [
 const releaseType = ref('')
 const modLoaders = ['forge', 'fabric']
 const modLoader = ref('')
-const isDownloaded = (ver: ProjectVersion) => {
-  const fileUrl = ver.files[0].url
-  const find = (m: Persisted<Resource>) => {
-    if (m.uri.indexOf(fileUrl) !== -1) {
-      return true
-    }
-    if (m.metadata.modrinth) {
-      const s = m.metadata.modrinth
-    }
-    return false
-  }
-  return !!resourceState.mods.find(find) || !!resourceState.modpacks.find(find)
-}
 
-const onCreate = (v: ProjectVersion) => {
-  emit('create', v)
-}
-// const headers = computed(() => [{
-//   text: t('name'),
-//   value: 'name',
-//   // sortable: false,
-// }, {
-//   text: t('version.name', 1),
-//   value: 'version',
-//   // sortable: true,
-// }, {
-//   text: t('modrinth.modLoaders.name'),
-//   value: 'dependencies',
-// }, {
-//   text: t('modrinth.avaiableFor'),
-//   value: 'game_versions',
-// }, {
-//   text: t('versionType.name'),
-//   value: 'version_type',
-//   sortable: false,
-// }, {
-//   text: t('modrinth.downloads'),
-//   value: 'downloads',
-// }, {
-//   text: t('modrinth.createAt'),
-//   value: 'date_published',
-// }, {
-//   text: '',
-//   sortable: false,
-// }])
-const refreshing = useServiceBusy(ModrinthServiceKey, 'getProjectVersions', computed(() => props.project))
-const { refresh } = useRefreshable(async () => {
-  versionsError.value = undefined
-  try {
-    const result = await getProjectVersions(props.project)
-    projectVersions.value = result
-  } catch (e) {
-    versionsError.value = e
+const { tasks } = injection(kTaskManager)
+const relatedTasks = computed(() => {
+  const all = tasks.value.filter(t => t.state === TaskState.Running && t.path === 'installModrinthFile' && t.param.projectId === props.project)
+  const dict = {} as Record<string, TaskItem>
+  for (const t of all) {
+    dict[t.param.versionId] = t
   }
+  return dict
 })
-onMounted(() => {
-  refresh()
-})
-const filter = (value: any, search: string | null, item: ProjectVersion) => {
-  if (gameVersion.value) {
-    return item.game_versions.indexOf(gameVersion.value) !== -1
-  }
-  return true
-}
 const items = computed(() => projectVersions.value.filter(v => {
   if (gameVersion.value) {
     return v.game_versions.indexOf(gameVersion.value) !== -1
@@ -287,4 +130,6 @@ const items = computed(() => projectVersions.value.filter(v => {
   }
   return true
 }))
+
+onMounted(refresh)
 </script>

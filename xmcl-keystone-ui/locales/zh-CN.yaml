@@ -354,6 +354,9 @@ installOptifine:
   jar: 生成 Optifine Jar
   json: 生成 Json
   name: 安装 Optifine
+installResource:
+  fail: 安装 {file} 失败
+  success: '{file} 安装成功'
 installVersion:
   jar: 安装游戏JAR文件
   json: 安装游戏JSON文件
@@ -607,7 +610,6 @@ modpack:
   url: URL
   urlHint: 整合包的主页 URL 地址
 modrinth:
-  avaiableFor: 可用于
   categories:
     128x: 128x
     16x: 16x
@@ -686,6 +688,8 @@ modrinth:
     required: 必装
     server: 服务端
     unsupported: 不支持
+  externalResources: 第三方链接
+  featuredVersions: 推荐版本
   followers: 关注数
   gallery: 图片展示
   gameVersions:
@@ -703,6 +707,7 @@ modrinth:
     name: Mod 加载器
   perPage: 显示数量
   projectId: 项目 ID
+  projectMembers: 项目成员
   projectType:
     mod: Mod
     modpack: 整合包
@@ -717,6 +722,7 @@ modrinth:
     relevance: 相关性
     title: 排序
     updated: 更新时间
+  technicalInformation: 技术信息
   updateAt: 更新于
   versions: 版本
 multiplayer:

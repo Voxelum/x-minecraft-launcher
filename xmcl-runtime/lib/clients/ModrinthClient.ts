@@ -1,4 +1,4 @@
-import { Category, GameVersion, License, Loader, Project, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
+import { Category, GameVersion, License, Loader, Project, TeamMember, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
 import { Dispatcher, request } from 'undici'
 import { InMemoryTtlCache } from '../util/cache'
 
@@ -154,6 +154,15 @@ export class ModrinthClient {
       signal,
     })
     const result: Loader[] = await response.body.json()
+    return result
+  }
+
+  async getProjectTeamMembers(projectId: string, signal?: AbortSignal) {
+    const response = await request(`https://api.modrinth.com/v2/project/${projectId}/members`, {
+      dispatcher: this.dispatcher,
+      signal,
+    })
+    const result: TeamMember[] = await response.body.json()
     return result
   }
 }

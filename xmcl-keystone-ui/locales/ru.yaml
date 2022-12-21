@@ -420,7 +420,6 @@ modpack:
   url: Ссылка
   urlHint: Ссылка на домашнюю страницу вашего модпака
 modrinth:
-  avaiableFor: доступно для
   categories:
     adventure: Приключения
     challenging: Испытания

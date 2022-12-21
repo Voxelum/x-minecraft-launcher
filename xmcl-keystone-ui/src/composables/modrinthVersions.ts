@@ -8,19 +8,13 @@ import { useService } from './service'
 
 export const kModrinthVersions: InjectionKey<ReturnType<typeof useModrinthVersions>> = Symbol('kModrinthVersions')
 
-export function useModrinthVersions(project: Ref<string>) {
+export function useModrinthVersions(project: Ref<string>, featured?: boolean) {
   const versions: Ref<ProjectVersion[]> = ref([])
-  const error = ref(undefined as any)
   const { getProjectVersions } = useService(ModrinthServiceKey)
   const refreshing = useServiceBusy(ModrinthServiceKey, 'getProjectVersions', project.value)
-  const { refresh } = useRefreshable(async () => {
-    error.value = undefined
-    try {
-      const result = await getProjectVersions(project.value)
-      versions.value = result
-    } catch (e) {
-      error.value = e
-    }
+  const { refresh, error } = useRefreshable(async () => {
+    const result = await getProjectVersions({ projectId: project.value, featured })
+    versions.value = result
   })
   onMounted(() => {
     refresh()

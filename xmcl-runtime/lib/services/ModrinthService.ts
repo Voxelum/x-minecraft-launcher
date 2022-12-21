@@ -1,10 +1,9 @@
 import { DownloadTask } from '@xmcl/installer'
 import { Category, GameVersion, License, Loader, Project, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
 import { InstallModrinthVersionResult, InstallProjectVersionOptions, ModrinthService as IModrinthService, ModrinthServiceKey, ModrinthState } from '@xmcl/runtime-api'
-import { readJson, unlink } from 'fs-extra'
-import { writeFile } from 'fs/promises'
+import { unlink } from 'fs-extra'
 import { basename, join } from 'path'
-import { Client, Pool } from 'undici'
+import { Pool } from 'undici'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { ModrinthClient } from '../clients/ModrinthClient'
@@ -59,9 +58,9 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
     return project
   }
 
-  @Singleton(p => p)
-  async getProjectVersions(projectId: string): Promise<ProjectVersion[]> {
-    const versions: ProjectVersion[] = await this.client.getProjectVersions(projectId)
+  @Singleton(p => JSON.stringify(p))
+  async getProjectVersions({ projectId, featured }: { projectId: string; featured?: boolean }): Promise<ProjectVersion[]> {
+    const versions: ProjectVersion[] = await this.client.getProjectVersions(projectId, undefined, undefined, featured)
     this.log(`Get project version for version_id=${projectId}`)
     return versions
   }
@@ -87,6 +86,12 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
     const version: ProjectVersion = await this.client.getLatestProjectVersion(hash)
     this.log(`Get project version for hash=${hash}`)
     return version
+  }
+
+  async getProjectTeamMembers(projectId: string) {
+    const members = await this.client.getProjectTeamMembers(projectId)
+    this.log(`Get members of the project ${projectId}`)
+    return members
   }
 
   async getTags(): Promise<{ licenses: License[]; categories: Category[]; gameVersions: GameVersion[]; modLoaders: Loader[]; environments: string[] }> {

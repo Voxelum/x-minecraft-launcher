@@ -29,7 +29,7 @@ export function useModrinthTags() {
     environments: [] as string[],
   })
 
-  const { refresh, refreshing } = useRefreshable(async () => {
+  const { refresh, refreshing, error } = useRefreshable(async () => {
     const result = await getTags()
     data.gameVersions = result.gameVersions
     data.licenses = result.licenses
@@ -43,6 +43,7 @@ export function useModrinthTags() {
   return {
     ...toRefs(data),
     refresh,
+    error,
     refreshing,
   }
 }
@@ -52,7 +53,6 @@ export function useModrinth(props: ModrinthOptions) {
   const { t } = useI18n()
   const { replace } = useRouter()
   const router = useRouter()
-  const error = ref(undefined as any)
   const projectTypes = computed(() => [{
     value: 'mod',
     text: t('modrinth.projectType.mod'),
@@ -149,8 +149,7 @@ export function useModrinth(props: ModrinthOptions) {
 
   const refs = toRefs(data)
 
-  const { refresh, refreshing } = useRefreshable(async () => {
-    error.value = undefined
+  const { refresh, refreshing, error } = useRefreshable(async () => {
     const facets: string[][] = []
     if (gameVersion.value && gameVersion.value !== 'null') {
       facets.push([`versions:${gameVersion.value}`])
@@ -180,14 +179,9 @@ export function useModrinth(props: ModrinthOptions) {
     if (facets.length > 0) {
       facetsText = '[' + facets.map(v => '[' + v.map(v => JSON.stringify(v)).join(',') + ']').join(',') + ']'
     }
-    try {
-      const result = await searchProjects({ query: props.query, limit: data.pageSize, offset: (props.page - 1) * data.pageSize, index: sortBy.value, facets: facetsText })
-      data.pageCount = Math.floor(result.total_hits / data.pageSize)
-      data.projects = result.hits
-    } catch (e) {
-      console.error(e)
-      error.value = e
-    }
+    const result = await searchProjects({ query: props.query, limit: data.pageSize, offset: (props.page - 1) * data.pageSize, index: sortBy.value, facets: facetsText })
+    data.pageCount = Math.floor(result.total_hits / data.pageSize)
+    data.projects = result.hits
   })
 
   const debouncedRefresh = debounce(refresh)

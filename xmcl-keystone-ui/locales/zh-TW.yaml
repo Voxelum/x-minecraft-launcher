@@ -331,7 +331,6 @@ modpack:
   url: URL
   urlHint: 整合包的主頁 URL 地址
 modrinth:
-  avaiableFor: 可用於
   categories:
     adventure: 冒險
     cursed: Cursed
