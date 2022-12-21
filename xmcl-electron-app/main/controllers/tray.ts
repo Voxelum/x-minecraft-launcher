@@ -1,5 +1,5 @@
 import Controller from '@/Controller'
-import { darkIco, darkIcon, darkTray, lightIcon, lightTray } from '@/utils/icons'
+import { darkIco, darkIcon, darkTray, lightIcon, lightTray, macTray } from '@/utils/icons'
 import { BaseService } from '@xmcl/runtime'
 import { app, Menu, shell, Tray, nativeTheme } from 'electron'
 import { ControllerPlugin } from './plugin'
@@ -65,7 +65,8 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
   }
 
   this.app.once('engine-ready', () => {
-    const tray = new Tray(nativeTheme.shouldUseDarkColors ? darkTray : lightTray)
+    const trayIcon = process.platform === 'darwin' ? macTray : nativeTheme.shouldUseDarkColors ? darkTray : lightTray
+    const tray = new Tray(trayIcon)
     tray.on('click', () => {
       if (this.app.platform.name === 'windows') {
         const window = this.mainWin
