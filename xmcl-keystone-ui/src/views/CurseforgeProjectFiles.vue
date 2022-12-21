@@ -39,28 +39,33 @@
         <v-skeleton-loader type="list-item-avatar-three-line" />
         <v-skeleton-loader type="list-item-avatar-three-line" />
       </div>
-      <virtual-list
-        v-else
+      <ErrorView
+        :error="error"
+        @refresh="refresh"
+      />
+      <VirtualList
+        v-if="!error && !loading"
         class="v-list max-h-[100vh] h-full overflow-auto transition-none"
         :data-component="Tile"
         :data-key="'id'"
         :data-sources="filteredFiles"
         :estimate-size="56"
-        :extra-props="{ getFileStatus: getFileStatus, install: install, download: download, modpack: type === 'modpacks' }"
+        :extra-props="{ isDownloaded, install: install, onMouseEnter: tooltip.onEnter, onMouseLeave: tooltip.onLeave }"
       />
+      <SharedTooltip />
     </div>
   </div>
 </template>
 
 <script lang=ts setup>
-import VirtualList from 'vue-virtual-scroll-list'
+import { useCurseforgeInstall } from '@/composables/curseforgeInstall'
+import { kSharedTooltip, useSharedTooltip } from '@/composables/sharedTooltip'
 import { ProjectType } from '@xmcl/runtime-api'
-import { File } from '@xmcl/curseforge'
-
+import VirtualList from 'vue-virtual-scroll-list'
+import { useCurseforgeProjectFiles } from '../composables/curseforge'
 import Tile from './CurseforgeProjectFilesTile.vue'
-import { useDialog } from '../composables/dialog'
-import { useCurseforgeInstall, useCurseforgeProjectFiles } from '../composables/curseforge'
-import { AddInstanceDialogKey } from '../composables/instanceAdd'
+import SharedTooltip from '../components/SharedTooltip.vue'
+import ErrorView from '@/components/ErrorView.vue'
 
 const props = defineProps<{
   project: number
@@ -68,9 +73,15 @@ const props = defineProps<{
   from?: string
 }>()
 
-const { show: showAddInstanceDialog } = useDialog(AddInstanceDialogKey)
-const { files, loading, refresh } = useCurseforgeProjectFiles(props.project)
-const { install: installFile, getFileStatus, getFileResource } = useCurseforgeInstall(props.type, props.project)
+const { files, refreshing: loading, refresh, error } = useCurseforgeProjectFiles(props.project)
+
+const tooltip = useSharedTooltip<boolean>((v) => {
+  return v ? t('curseforge.install') : t('curseforge.downloadOnly')
+})
+provide(kSharedTooltip, tooltip)
+
+const { install, isDownloaded } = useCurseforgeInstall(files, computed(() => props.from), props.type)
+
 const { t } = useI18n()
 const releaseMappper = computed(() => [
   { text: t('curseforge.fileReleaseType.release'), value: 1 },
@@ -88,7 +99,7 @@ const releaseTypes = computed(() => {
   for (const file of files.value) {
     set.add(file.releaseType)
   }
-  return [...set].map(i => releaseMappper.value[i]).filter((v) => !!v)
+  return [...set].map(i => releaseMappper.value[i - 1]).filter((v) => !!v)
 })
 const gameVersion = ref('')
 const gameVersions = computed(() => {
@@ -100,29 +111,6 @@ const gameVersions = computed(() => {
   }
   return [...set]
 })
-async function install(file: File) {
-  const stat = getFileStatus(file)
-  if (props.type === 'modpacks') {
-    let filePath: string
-    if (stat === 'remote') {
-      const resource = await installFile(file)
-      filePath = resource.resource.path
-    } else {
-      const res = getFileResource(file)
-      if (res) {
-        filePath = res.path
-      } else {
-        throw new Error(`Cannot find installed curseforge file named ${file.displayName} fileId=${file.id} projectId=${file.modId}`)
-      }
-    }
-    showAddInstanceDialog(filePath)
-  } else {
-    await installFile(file, props.from)
-  }
-}
-async function download(file: File) {
-  await installFile(file, props.from)
-}
 const filteredFiles = computed(() => {
   const gameVersionVal = gameVersion.value
   const releaseTypeVal = releaseType.value
@@ -131,6 +119,7 @@ const filteredFiles = computed(() => {
         (!gameVersionVal || v.gameVersions.indexOf(gameVersionVal) !== -1),
   )
 })
+
 </script>
 
 <style>

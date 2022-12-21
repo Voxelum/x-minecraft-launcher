@@ -24,10 +24,11 @@
       :key="index"
       hover
       style="min-width: 100px"
-      @click="emit('image', img)"
+      @click="emit('image', img.url)"
     >
-      <v-img :src="img.url" />
+      <v-img :src="img.thumbnailUrl" />
       <v-card-title>{{ img.title }}</v-card-title>
+      <v-card-subtitle>{{ img.description }}</v-card-subtitle>
     </v-card>
   </div>
 </template>

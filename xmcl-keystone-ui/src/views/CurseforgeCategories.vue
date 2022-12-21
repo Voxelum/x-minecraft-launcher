@@ -1,34 +1,34 @@
 <template>
   <v-card
-    v-if="!refreshing"
-    outlined
-    class="p-2 rounded-lg flex flex-col h-[fit-content] overflow-auto"
-  >
-    <span
-      v-for="c of categories"
-      :key="c.id"
-      :class="{ selected: c.id === Number(selected) }"
-      class="item"
-      @click="emit('select', c.id)"
-    >
-      <v-avatar>
-        <img
-          contain
-          :src="c.iconUrl"
-        >
-      </v-avatar>
-      {{ tCategory(c.name) }}
-    </span>
-  </v-card>
-  <v-card
-    v-else
     outlined
     class="p-2 rounded-lg flex flex-col h-[fit-content] overflow-auto"
   >
     <v-skeleton-loader
+      v-if="refreshing"
       class="flex flex-col gap-3 overflow-auto"
       type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
     />
+    <ErrorView
+      :error="error"
+      @refresh="refresh"
+    />
+    <template v-if="!refreshing">
+      <span
+        v-for="c of categories"
+        :key="c.id"
+        :class="{ selected: c.id === Number(selected) }"
+        class="item"
+        @click="emit('select', c.id)"
+      >
+        <v-avatar>
+          <img
+            contain
+            :src="c.iconUrl"
+          >
+        </v-avatar>
+        {{ tCategory(c.name) }}
+      </span>
+    </template>
   </v-card>
 </template>
 <script lang="ts" setup>
@@ -36,6 +36,7 @@ import { ModCategory } from '@xmcl/curseforge'
 import { CurseForgeServiceKey } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
 import { useRefreshable } from '@/composables/refreshable'
+import ErrorView from '@/components/ErrorView.vue'
 
 const props = defineProps<{
   type: string
@@ -55,7 +56,7 @@ const categories = computed(() => {
 
 const tCategory = (k: string) => te(`curseforgeCategory.${k}`) ? t(`curseforgeCategory.${k}`) : k
 
-const { refresh, refreshing } = useRefreshable(async () => {
+const { refresh, refreshing, error } = useRefreshable(async () => {
   const result = await fetchCategories()
   allCategories.value = result
 })
