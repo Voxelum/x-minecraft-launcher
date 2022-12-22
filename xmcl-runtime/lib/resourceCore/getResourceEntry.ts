@@ -22,6 +22,12 @@ export async function getResourceEntry(path: string, context: ResourceContext, s
     }
   }
   const [sha1, fileType] = await context.hashAndFileType(path, status.size)
+  if (!skipCache) {
+    const cache = await context.sha1Snapshot.get(sha1).catch(() => undefined)
+    if (cache) {
+      return cache
+    }
+  }
   return {
     path,
     fileType,

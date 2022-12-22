@@ -286,7 +286,7 @@ export class ResourceService extends AbstractService implements IResourceService
       const storedPath = await tryPersistResource(resolved, this.getPath(), this.context)
       const resource = { ...resolved, storedPath }
 
-      this.log(`Persist newly added resource ${resource.path} -> ${resource.domain}`)
+      this.log(`Persist new resource ${resource.path} -> ${storedPath}`)
 
       return resource
     }))
