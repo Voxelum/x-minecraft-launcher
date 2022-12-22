@@ -117,6 +117,9 @@ watch(isShown, (s) => {
   if (s) {
     data.tab = 0
     loadLogs()
+  } else {
+    data.logs = []
+    data.crashes = []
   }
 })
 function goLog() {

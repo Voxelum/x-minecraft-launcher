@@ -1,50 +1,20 @@
 <template>
   <v-tab-item>
-    <div class="min-h-[420px] max-h-[70vh] overflow-auto visible-scroll">
+    <div class="min-h-[420px]">
       <transition
         name="fade-transition"
         mode="out-in"
-        class="overflow-auto visible-scroll"
       >
-        <v-list
+        <VirtualList
           v-if="content === '' && files.length !== 0"
           :key="0"
-          class="visible-scroll"
-        >
-          <v-list-item
-            v-for="i in files"
-            :key="i"
-            v-ripple
-            :disabled="pending"
-            @click="openFile(i)"
-          >
-            <v-list-item-avatar>
-              <v-icon>clear_all</v-icon>
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>{{ i }}</v-list-item-title>
-            </v-list-item-content>
-            <v-list-item-action>
-              <v-btn
-                icon
-                text
-                @click.prevent.stop="showFile(i)"
-              >
-                <v-icon>folder</v-icon>
-              </v-btn>
-            </v-list-item-action>
-            <v-list-item-action>
-              <v-btn
-                icon
-                color="error"
-                text
-                @click.prevent.stop="removeFile(i)"
-              >
-                <v-icon>delete</v-icon>
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-        </v-list>
+          class="visible-scroll v-list overflow-auto h-full max-h-[70vh]"
+          :data-component="HomeLogDialogTabItem"
+          data-key="id"
+          :data-sources="files.map((name, index) => ({ name, id: `${name}-${index}` }))"
+          :estimate-size="60"
+          :extra-props="{ openFile, removeFile, showFile, disabled: pending }"
+        />
         <div
           v-else-if="content === '' && files.length === 0"
           style="height: 420px"
@@ -95,6 +65,9 @@
 <script lang=ts setup>
 import { parseLog } from '@/util/log'
 import LogView from '@/components/LogView.vue'
+import VirtualList from 'vue-virtual-scroll-list'
+import HomeLogDialogTabItem from './HomeLogDialogTabItem.vue'
+import { useDialog } from '@/composables/dialog'
 
 const props = defineProps<{
   files: string[]
@@ -103,6 +76,7 @@ const props = defineProps<{
   showFile(file: string): void
   refreshing: boolean
 }>()
+const { isShown } = useDialog('log')
 
 const { t } = useI18n()
 const content = ref('')
@@ -129,6 +103,12 @@ const logs = computed(() => {
     }
   }
   return logLines.map(parseLog)
+})
+
+watch(isShown, (v) => {
+  if (!v) {
+    goBack()
+  }
 })
 </script>
 

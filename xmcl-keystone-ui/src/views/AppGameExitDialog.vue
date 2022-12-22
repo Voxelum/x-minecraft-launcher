@@ -26,7 +26,7 @@
         <v-icon>arrow_drop_down</v-icon>
       </v-btn>
     </v-toolbar>
-    <v-card class="overflow-auto max-h-200">
+    <v-card class="overflow-auto max-h-200 visible-scroll">
       <v-card-text>
         <div
           style="padding: 10px"

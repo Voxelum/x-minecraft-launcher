@@ -57,6 +57,7 @@ const levelClasses: Record<string, string> = reactive({
 
 .log-record {
   @apply px-2 leading-7 border-l-3 border-current;
+  content-visibility: auto;
 }
 
 .log-record:hover {
