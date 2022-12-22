@@ -42,13 +42,14 @@
       <v-btn
         text
         icon
-        :loading="isDownloading"
+        :loading="installingVersion || isDownloading"
         @click="onClick(source)"
         @mouseenter="onMouseEnter($event, hasDownloaded)"
         @mouseleave="onMouseLeave($event, hasDownloaded)"
       >
         <template #loader>
           <v-progress-circular
+            :indeterminate="installingVersion && !name"
             :value="percentage"
             :size="24"
             :width="2"
@@ -70,21 +71,22 @@ import { File } from '@xmcl/curseforge'
 import { useTask } from '@/composables/task'
 import { getColorForReleaseType } from '@/util/color'
 import { getLocalDateString } from '@/util/date'
+import { useServiceBusy } from '@/composables'
+import { CurseForgeServiceKey } from '@xmcl/runtime-api'
 
-const props = withDefaults(
-  defineProps<{
-    source: File
-    isDownloaded(file: File): boolean
-    install(file: File): Promise<void>
-    onMouseEnter(e: MouseEvent, downloaded: boolean): void
-    onMouseLeave(e: MouseEvent, downloaded: boolean): void
-  }>(), {},
-)
+const props = defineProps<{
+  source: File
+  isDownloaded(file: File): boolean
+  install(file: File): Promise<void>
+  onMouseEnter(e: MouseEvent, downloaded: boolean): void
+  onMouseLeave(e: MouseEvent, downloaded: boolean): void
+}>()
 
 const { name, progress, total } = useTask(t => t.path === 'installCurseforgeFile' && t.param.fileId === props.source.id)
 const isDownloading = computed(() => !!name.value)
-const percentage = computed(() => progress.value / total.value * 100)
+const percentage = computed(() => name.value ? (progress.value / total.value * 100) : -1)
 const hasDownloaded = computed(() => props.isDownloaded(props.source))
+const installingVersion = useServiceBusy(CurseForgeServiceKey, 'installFile', computed(() => props.source.id.toString()))
 const releases = ['', 'R', 'A', 'B']
 const getColor = getColorForReleaseType
 const onClick = (file: File) => {
