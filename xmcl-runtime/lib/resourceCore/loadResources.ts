@@ -46,7 +46,6 @@ export async function loadResources(folder: string, files: string[], context: Re
 
   const toUpdate: ResourceEntryCache[] = []
   const toCheck: ResourceEntryCache[] = []
-  console.profile()
   await Promise.all(files.map(async (file) => {
     const filePath = join(folder, file)
     const fstat = await stat(filePath).catch(() => undefined)
@@ -93,7 +92,6 @@ export async function loadResources(folder: string, files: string[], context: Re
   }).map(p => p.catch((e) => {
     context.logger.warn('Fail to load resource %o', e)
   })))
-  console.profileEnd()
 
   // remaining file should be removed
   const toRemove: ResourceEntryCache[] = Object.values(caches)

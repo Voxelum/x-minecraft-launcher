@@ -140,6 +140,7 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
     return deps
   }
 
+  @Singleton((o) => o.file.id)
   async installFile({ file, type, instancePath, ignoreDependencies }: InstallFileOptions): Promise<InstallFileResult> {
     requireString(type)
     requireObject(file)

@@ -9,7 +9,7 @@
           v-if="!isDownloaded(version)"
           icon
           text
-          :loading="relatedTasks[version.id]"
+          :loading="installingVersion || relatedTasks[version.id]"
           :disabled="isDownloaded(version)"
           @click.stop="onInstall(version)"
         >
@@ -17,7 +17,8 @@
             <v-progress-circular
               :size="24"
               :width="3"
-              :value="relatedTasks[version.id].progress / relatedTasks[version.id].total * 100"
+              :indeterminate="installingVersion && !relatedTasks[version.id]"
+              :value="relatedTasks[version.id] ? (relatedTasks[version.id].progress / relatedTasks[version.id].total * 100) : undefined"
             />
           </template>
           <v-icon class="material-icons-outlined">
@@ -91,6 +92,8 @@ import Markdown from 'markdown-it'
 import { getLocalDateString } from '@/util/date'
 import { getColorForReleaseType } from '@/util/color'
 import { TaskItem } from '@/entities/task'
+import { useServiceBusy } from '@/composables'
+import { ModrinthServiceKey } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   source: ProjectVersion
@@ -105,6 +108,7 @@ const { t } = useI18n()
 const markdown = new Markdown({
   html: true,
 })
+const installingVersion = useServiceBusy(ModrinthServiceKey, 'installVersion', computed(() => props.source.id))
 const render = (s: string) => {
   return markdown.render(s)
 }
