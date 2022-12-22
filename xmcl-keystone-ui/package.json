@@ -29,7 +29,7 @@
         "@xmcl/model": "workspace:1.0.22",
         "@xmcl/modrinth": "workspace:1.1.0",
         "@xmcl/resourcepack": "workspace:1.1.3",
-        "@xmcl/runtime-api": "workspace:0.16.2",
+        "@xmcl/runtime-api": "workspace:*",
         "@xmcl/server-info": "workspace:2.0.4",
         "@xmcl/text-component": "workspace:2.1.1",
         "@xmcl/user": "workspace:2.1.8",

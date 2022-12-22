@@ -33,7 +33,7 @@
         "@xmcl/nat-api": "workspace:0.3.2",
         "@xmcl/nbt": "workspace:2.0.3",
         "@xmcl/resourcepack": "workspace:1.1.3",
-        "@xmcl/runtime-api": "workspace:0.16.2",
+        "@xmcl/runtime-api": "workspace:*",
         "@xmcl/server-info": "workspace:2.0.4",
         "@xmcl/stun-client": "^1.0.0",
         "@xmcl/system": "workspace:2.2.3",
