@@ -37,7 +37,7 @@
       >
         <ModCard
           v-for="(item, index) in items"
-          :key="item.hash"
+          :key="item.hash + '-' + item.path"
           v-observe-visibility="
             // @ts-expect-error
             (visible) => onVisible(visible, index)"

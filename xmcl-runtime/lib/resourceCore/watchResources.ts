@@ -35,12 +35,14 @@ export function watchResources(folder: string, context: ResourceContext) {
       }
 
       // TODO: lock the path for handle watcher
-      const _entry = await getResourceEntry(path, context)
+      const cachedEntry = await context.fileNameSnapshots[domain].get(fileName).catch(() => undefined)
+      const _entry = await getResourceEntry(path, context, true)
       const entry: ResourceEntryCache = {
         fileName,
         domain,
         ..._entry,
       }
+
       // Update the entry
       const batch = context.snapshot.batch()
       batch.put(`!${domain}!${entry.fileName}`, entry)
@@ -54,7 +56,12 @@ export function watchResources(folder: string, context: ResourceContext) {
         const data = await upsertMetadata(metadata, uris, icons, name, entry.sha1, context)
         _metadata = data
       }
-      context.eventBus.emit('resourceAdd', generateResource(dirname(folder), entry, _metadata))
+
+      if (cachedEntry) {
+        context.eventBus.emit('resourceUpdate', generateResource(dirname(folder), entry, _metadata))
+      } else {
+        context.eventBus.emit('resourceAdd', generateResource(dirname(folder), entry, _metadata))
+      }
     }
   })
 }

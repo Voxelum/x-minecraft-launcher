@@ -43,24 +43,22 @@ export function useModFilter(items: Ref<ModItem[]>) {
     const modified: ModItem[] = []
     for (const mod of filteredCompatbile.value) {
       if (mod.enabledState) {
-        if (enabled[mod.id]) {
+        if (enabled[mod.name]) {
           mod.subsequence = true
-          enabled[mod.id].push(mod)
+          enabled[mod.name].push(mod)
         } else {
-          enabled[mod.id] = [mod]
+          enabled[mod.name] = [mod]
         }
-      } else if (mod.enabledState !== mod.enabled) {
-        modified.push(mod)
       } else {
-        if (disabled[mod.id]) {
+        if (disabled[mod.name]) {
           mod.subsequence = true
-          disabled[mod.id].push(mod)
+          disabled[mod.name].push(mod)
         } else {
-          disabled[mod.id] = [mod]
+          disabled[mod.name] = [mod]
         }
       }
     }
-    const grouped: ModItem[] = [...modified]
+    const grouped: ModItem[] = []
     for (const mod of Object.values(enabled)) {
       grouped.push(...mod)
     }

@@ -226,6 +226,17 @@ export function useInstanceMods() {
     })
     if (resource.metadata.forge) {
       modItem.modLoaders.push('forge')
+    }
+    if (resource.metadata.fabric) {
+      modItem.modLoaders.push('fabric')
+    }
+    if (resource.metadata.liteloader) {
+      modItem.modLoaders.push('liteloader')
+    }
+    if (resource.metadata.quilt) {
+      modItem.modLoaders.push('quilt')
+    }
+    if (resource.metadata.forge) {
       const meta = resource.metadata.forge
       modItem.id = meta.modid
       modItem.name = meta.name
@@ -234,7 +245,6 @@ export function useInstanceMods() {
       modItem.provideRuntime[meta.modid] = meta.version
     } else if (resource.metadata.fabric) {
       const meta = resource.metadata.fabric instanceof Array ? resource.metadata.fabric[0] : resource.metadata.fabric
-      modItem.modLoaders.push('fabric')
       modItem.id = meta.id
       modItem.version = meta.version
       modItem.name = meta.name ?? meta.id
@@ -249,14 +259,12 @@ export function useInstanceMods() {
       }
     } else if (resource.metadata.liteloader) {
       const meta = resource.metadata.liteloader
-      modItem.modLoaders.push('liteloader')
       modItem.name = meta.name
       modItem.version = meta.version ?? ''
       modItem.id = `${meta.name}`
       modItem.description = modItem.description ?? ''
       modItem.provideRuntime[meta.name] = meta.version ?? ''
     } else if (resource.metadata.quilt) {
-      modItem.modLoaders.push('quilt')
       const meta = resource.metadata.quilt
       modItem.id = meta.quilt_loader.id
       modItem.version = meta.quilt_loader.version

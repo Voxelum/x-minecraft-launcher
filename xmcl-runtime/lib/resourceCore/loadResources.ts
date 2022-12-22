@@ -47,6 +47,7 @@ export async function loadResources(folder: string, files: string[], context: Re
   const toUpdate: ResourceEntryCache[] = []
   const toCheck: ResourceEntryCache[] = []
   await Promise.all(files.map(async (file) => {
+    if (file.endsWith('.pending') && !file.startsWith('.')) return
     const filePath = join(folder, file)
     const fstat = await stat(filePath).catch(() => undefined)
     if (!fstat?.size) {
