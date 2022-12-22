@@ -110,27 +110,14 @@ export const config: Configuration = {
     category: 'Game',
     icon: 'icons/dark@256x256.png',
     // eslint-disable-next-line no-template-curly-in-string
-    artifactName: 'xmcl-${version}.${ext}',
+    artifactName: 'xmcl-${version}-${arch}.${ext}',
     target: process.env.BUILD_TARGET === 'appimage'
       ? 'AppImage'
       : [
-        {
-          target: 'deb',
-          arch: [
-            'arm64',
-            'x64',
-          ],
-        },
+        'deb',
         'rpm',
-        'snap',
         'zip',
-        {
-          target: 'tar.xz',
-          arch: [
-            'arm64',
-            'x64',
-          ],
-        },
+        'tar.xz',
       ],
   },
   snap: {
