@@ -104,6 +104,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
 
   private async getUpdateFromSelfHost(): Promise<ReleaseInfo> {
     const app = this.app
+    app.log('Try get update from selfhost')
     const { allowPrerelease, locale } = app.serviceManager.get(BaseService).state
     const url = `https://api.xmcl.app/latest?version=v${app.version}&prerelease=${allowPrerelease || false}`
     const response = await request(url, {
@@ -126,6 +127,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
     const platformString = app.platform.name === 'windows' ? 'win' : app.platform.name === 'osx' ? 'mac' : 'linux'
     const version = updateInfo.name.startsWith('v') ? updateInfo.name.substring(1) : updateInfo.name
     updateInfo.incremental = updateInfo.files.some(f => f.name === `app-${version}-${platformString}.asar`)
+    app.log(`Got incremental=${updateInfo.incremental} update from selfhost`)
 
     return updateInfo
   }
@@ -208,6 +210,10 @@ export class ElectronUpdater implements LauncherAppUpdater {
   checkUpdateTask(): Task<ReleaseInfo> {
     return task('checkUpdate', async () => {
       try {
+        if (this.app.env === 'appx') {
+          return this.getUpdateFromSelfHost()
+        }
+
         let newUpdate = false
         autoUpdater.once('update-available', () => {
           this.logger.log('Update available and set status to pending')
