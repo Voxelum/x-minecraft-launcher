@@ -1,5 +1,5 @@
 <template>
-  <v-card class="overflow-hidden">
+  <v-card class="h-full overflow-hidden flex flex-col">
     <div class="flex gap-5 mx-5 mt-3 overflow-hidden">
       <v-select
         v-model="gameVersion"
@@ -43,7 +43,7 @@
     />
     <div
       v-else
-      class="w-full overflow-hidden"
+      class="h-full overflow-auto"
       style="border-spacing: 0.75em"
     >
       <div
@@ -65,7 +65,7 @@
       <VirtualList
         :data-component="ModrinthProjectVersionsTile"
         :data-key="'id'"
-        class="v-list max-h-[100vh] h-full overflow-auto transition-none"
+        class="v-list overflow-auto transition-none"
         :data-sources="items"
         :estimate-size="120"
         :extra-props="{ isDownloaded, onInstall, relatedTasks }"
