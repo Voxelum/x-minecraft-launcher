@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col max-h-full select-none h-full px-8 py-4 pb-0">
+  <div class="flex flex-col max-h-full select-none h-full py-4 pb-0">
     <ModTooltip />
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
@@ -9,12 +9,13 @@
     />
 
     <ModHeader
+      class="mx-8"
       :mod-loader-filters.sync="modLoaderFilters"
       :count="enabledModCounts"
     />
 
     <div
-      class="flex overflow-auto h-full flex-col py-0"
+      class="flex overflow-auto h-full flex-col py-0 pb-4 visible-scroll"
       @dragend="onDragEnd"
       @dragover.prevent
       @drop="onDropToImport"
@@ -30,31 +31,31 @@
         :absolute="true"
         class="h-full z-0"
       />
-      <div
+      <v-virtual-scroll
         v-else
-        class="flex flex-col overflow-auto h-full w-full"
         :class="{ 'selection-mode': isSelectionMode }"
+        :items="items"
+        :bench="2"
+        class="overflow-auto max-h-full"
+        item-height="100"
       >
-        <ModCard
-          v-for="(item, index) in items"
-          :key="item.hash + '-' + item.path"
-          v-observe-visibility="
-            // @ts-expect-error
-            (visible) => onVisible(visible, index)"
-          :source="item"
-          :selection="isSelectionMode"
-          @enable="onEnable"
-          @dragstart="onItemDragstart(item)"
-          @tags="item.tags = $event"
-          @select="isSelectionMode = true;"
-          @click="onClick($event, index)"
-          @delete="startDelete(item)"
-        />
-        <div
-          key="dummy"
-          class="min-h-10"
-        />
-      </div>
+        <template #default="{ item, index }">
+          <div class="mx-8 invisible-scroll">
+            <ModCard
+              :key="item.path + '@' + item.hash"
+              :source="item"
+              :index="index"
+              :selection="isSelectionMode"
+              :on-enable="onEnable"
+              :on-tags="onTags"
+              :on-select="onSelect"
+              :on-item-dragstart="onItemDragstart"
+              :on-click="onClick"
+              :on-delete="startDelete"
+            />
+          </div>
+        </template>
+      </v-virtual-scroll>
       <DeleteDialog
         :width="400"
         persistent
@@ -87,10 +88,9 @@ import { useModDragging } from '@/composables/modDraggable'
 import { useModFilter } from '@/composables/modFilter'
 import { useModSelection } from '@/composables/modSelection'
 import { kSharedTooltip, useSharedTooltip } from '@/composables/sharedTooltip'
-import { useModVisibleFilter } from '@/composables/modVisibility'
 import { ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
-import { useInstanceMods } from '../composables/mod'
+import { ModItem, useInstanceMods } from '../composables/mod'
 import ModCard from './ModCard.vue'
 import ModDeleteView from './ModDeleteView.vue'
 import FloatButton from './ModFloatButton.vue'
@@ -111,9 +111,7 @@ provide(kSharedTooltip, useSharedTooltip<CompatibleDetail>((dep) => {
 }))
 
 const filtered = useModFilter(mods)
-const visibleFiltered = useModVisibleFilter(filtered.items)
-const selection = useModSelection(filtered.items)
-const { isSelectionMode, selectedItems, onEnable, onClick } = selection
+const { isSelectionMode, selectedItems, onEnable, onClick } = useModSelection(filtered.items)
 const { t } = useI18n()
 
 const { onDrop: onDropToImport } = useDrop((file) => {
@@ -122,6 +120,12 @@ const { onDrop: onDropToImport } = useDrop((file) => {
 
 const { isDraggingMod, onDragEnd, onItemDragstart } = useModDragging(filtered.items, selectedItems, isSelectionMode)
 const { deletingMods, startDelete, confirmDelete, cancelDelete } = useModDeletion(mods)
-const { onVisible, items } = visibleFiltered
-const { modLoaderFilters } = filtered
+const { modLoaderFilters, items } = filtered
+
+const onTags = (item: ModItem, tags: string[]) => {
+  item.tags = tags
+}
+const onSelect = () => {
+  isSelectionMode.value = true
+}
 </script>

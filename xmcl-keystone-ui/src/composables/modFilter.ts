@@ -40,7 +40,6 @@ export function useModFilter(items: Ref<ModItem[]>) {
   const mods = computed(() => {
     const enabled: Record<string, ModItem[]> = {}
     const disabled: Record<string, ModItem[]> = {}
-    const modified: ModItem[] = []
     for (const mod of filteredCompatbile.value) {
       if (mod.enabledState) {
         if (enabled[mod.name]) {

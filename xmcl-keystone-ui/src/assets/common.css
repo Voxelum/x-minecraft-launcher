@@ -91,6 +91,15 @@ html ::-webkit-scrollbar {
     /* background: transparent; */
 }
 
+
+.invisible-scroll ::-webkit-scrollbar,
+.invisible-scroll::-webkit-scrollbar {
+    display: none;
+    /* width: 0px; */
+    /* height: 0px; */
+    /* background: transparent; */
+}
+
 /* .card-list {
     max-width: 100%;
     padding: 0 10px 10px 10px;

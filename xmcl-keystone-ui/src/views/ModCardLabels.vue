@@ -1,7 +1,12 @@
 <template>
-  <div class="flex gap-1 flex-wrap mt-1">
+  <div
+    ref="container"
+    class="flex gap-1 mt-1 overflow-x-auto"
+    @wheel="onWheel"
+  >
     <v-chip
       small
+      class="mod-tag"
       :outlined="darkTheme"
       color="orange en-1"
       label
@@ -11,8 +16,9 @@
       {{ source.id }}
     </v-chip>
     <v-chip
-      v-for="com of compatibility"
-      :key="com.modId"
+      v-for="(com, i) in compatibility"
+      :key="com.modId + ' ' + i"
+      class="mod-tag"
       small
       label
       outlined
@@ -39,6 +45,7 @@
       v-for="(tag, index) in source.tags"
       :key="`${tag}-${index}`"
       :outlined="darkTheme"
+      class="mod-tag"
       small
       label
       :color="getColor(tag)"
@@ -50,7 +57,6 @@
     >
       <div
         contenteditable
-        class="max-w-50 overflow-auto"
         @input.stop="onEditTag($event, index)"
         @blur="onEditTag($event, 0)"
       >
@@ -93,56 +99,16 @@ const getDepIcon = (name: string, icon?: string) => {
 }
 const { darkTheme } = useTheme()
 
+const container = ref(null as null | HTMLElement)
+const onWheel = (e: WheelEvent) => {
+  container.value!.scrollLeft += (e.deltaY / 2)
+  e.preventDefault()
+}
+
 </script>
 
 <style scoped>
-
-.draggable-card:hover {
-  color: rgba(255,255,255, 0.9) !important;
-}
-.draggable-card:hover {
-  background-color: #388e3c;
-}
-
-.unknown:hover {
-  background-color: #bb724b;
-}
-.maybe:hover {
-  background-color: #679793 !important;
-}
-.title {
-  max-width: 100%;
-  white-space: nowrap;
-}
-.subsequence {
-  margin-left: 45px;
-}
-.incompatible.draggable-card:hover {
-  background-color: #e65100;
-}
-
-.dark .subsequence.draggable-card {
-  /* background-color: rgba(255, 255, 255, 0.15); */
-  border-color: rgba(255, 255, 255, 0.15);
-  background-color: rgba(52, 52, 52, 0.15);
-  /* border-color: #343434; */
-}
-.subsequence.draggable-card {
-  background-color: rgba(0, 0, 0, 0.1);
-  border-color: rgba(0, 0, 0, 0.1);
-}
-
-.subsequence.draggable-card:hover {
-  background-color: #388e3c;
-}
-.subsequence.incompatible.draggable-card:hover {
-  background-color: #e65100 !important;
-}
-.mod-card .avatar {
-  min-height: 50px;
-  max-height: 50px;
-  max-width:  50px;
-  min-width:  50px;
-  margin: 0 10px 0 0;
+.mod-tag {
+  overflow: unset;
 }
 </style>

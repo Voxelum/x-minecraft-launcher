@@ -1,7 +1,7 @@
 <template>
   <v-card
     v-selectable-card
-    v-long-press="emitSelect"
+    v-long-press="onSelect"
     v-context-menu="contextMenuItems"
     outlined
     :draggable="!source.enabled"
@@ -11,12 +11,10 @@
       subsequence: source.subsequence === true,
       dragged: source.dragged,
     }"
-    class="draggable-card mod-card rounded-lg transition-all duration-200 shadow min-w-200"
-    style="margin-top: 10px; padding: 0 10px; content-visibility: auto;"
+    class="draggable-card mod-card rounded-lg transition-all duration-200 shadow"
+    style="margin-top: 10px; padding: 0 10px;"
     @dragstart="onDragStart"
-    @dragend="emit('dragend', $event)"
-    @mouseenter="emit('mouseenter', $event)"
-    @click="emit('click', $event)"
+    @click="onClick($event, index)"
   >
     <v-progress-linear
       v-if="enabled !== source.enabledState"
@@ -44,7 +42,7 @@
       >
         <v-checkbox
           v-model="source.selected"
-          @input="emit('select')"
+          @input="onSelect()"
         />
       </v-flex>
       <v-flex
@@ -61,13 +59,12 @@
       </v-flex>
       <div
         :key="2"
-        class="flex-grow py-2"
+        class="flex-grow py-2 flex flex-col flex-1 overflow-x-auto"
       >
         <h3
           class="px-1"
         >
           <text-component
-            v-if="!source.subsequence"
             :source="source.name"
           />
           <span class="text-gray-400 text-sm">
@@ -75,19 +72,18 @@
           </span>
         </h3>
         <v-card-text
-          v-if="!source.subsequence"
-          class="px-1 py-0"
+          class="px-1 py-0 min-h-[22px] overflow-hidden overflow-ellipsis whitespace-nowrap"
         >
-          <text-component :source="source.description" />
-        </v-card-text>
-        <v-lazy>
-          <ModCardLabels
-            :source="source"
-            :compatibility="compatibility"
-            :on-edit-tag="onEditTag"
-            :on-delete-tag="onDeleteTag"
+          <text-component
+            :source="source.description"
           />
-        </v-lazy>
+        </v-card-text>
+        <ModCardLabels
+          :source="source"
+          :compatibility="compatibility"
+          :on-edit-tag="onEditTag"
+          :on-delete-tag="onDeleteTag"
+        />
       </div>
       <v-flex
         :key="3"
@@ -95,11 +91,9 @@
         @click.stop
         @mousedown.stop
       >
-        <v-lazy>
-          <v-switch
-            v-model="enabled"
-          />
-        </v-lazy>
+        <v-switch
+          v-model="enabled"
+        />
       </v-flex>
     </TransitionGroup>
   </v-card>
@@ -118,18 +112,27 @@ import { vSelectableCard } from '../directives/draggableCard'
 import { vLongPress } from '../directives/longPress'
 import ModCardLabels from './ModCardLabels.vue'
 
-const props = defineProps<{ source: ModItem; selection: boolean }>()
-const emit = defineEmits(['tags', 'enable', 'dragstart', 'select', 'delete', 'editTags', 'mouseenter', 'dragend', 'click'])
+const props = defineProps<{
+  source: ModItem
+  index: number
+  selection: boolean
+  onItemDragstart(mod: ModItem): void
+  onTags(item: ModItem, tags: string[]): void
+  onSelect(): void
+  onDelete(item: ModItem): void
+  onClick(event: MouseEvent, index: number): void
+  onEnable(event: { item: ModItem; enabled: boolean }): void
+}>()
 
 const modItem = computed(() => props.source)
-const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.source.tags, set(v) { emit('tags', v) } }), computed(() => props.source.selected))
+const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.source.tags, set(v) { props.onTags(props.source, v) } }), computed(() => props.source.selected))
 const { isCompatible, compatibility } = useModCompatibility(modItem)
 
 const onDeleteTag = removeTag
 const iconImage: Ref<Vue | null> = ref(null)
 const enabled = computed({
   get() { return props.source.enabled },
-  set(v: boolean) { emit('enable', { item: props.source, enabled: v }) },
+  set(v: boolean) { props.onEnable({ item: props.source, enabled: v }) },
 })
 
 function onDragStart(e: DragEvent) {
@@ -149,26 +152,23 @@ function onDragStart(e: DragEvent) {
   }
   e.dataTransfer!.effectAllowed = 'move'
   e.dataTransfer!.setData('id', props.source.url)
-  emit('dragstart', e)
+  props.onItemDragstart(props.source)
 }
 function onEditTag(event: Event, index: number) {
   if (event instanceof FocusEvent) {
     if (event.type === 'blur') {
-      emit('tags', [...props.source.tags])
+      props.onTags(props.source, [...props.source.tags])
     }
   } else if (event.target instanceof HTMLDivElement) {
     if ((event as any).inputType === 'insertParagraph' || ((event as any).inputType === 'insertText' && (event as any).data === null)) {
-      emit('tags', [...props.source.tags])
+      props.onTags(props.source, [...props.source.tags])
     } else {
       editTag(event.target.innerText, index)
     }
   }
 }
-function emitSelect() {
-  emit('select')
-}
 
-const contextMenuItems = useModItemContextMenuItems(modItem, () => emit('delete'), createTag)
+const contextMenuItems = useModItemContextMenuItems(modItem, () => props.onDelete(props.source), createTag)
 </script>
 
 <style scoped>
@@ -191,7 +191,7 @@ const contextMenuItems = useModItemContextMenuItems(modItem, () => emit('delete'
   white-space: nowrap;
 }
 .subsequence {
-  margin-left: 45px;
+  margin-left: 60px;
 }
 .incompatible.draggable-card:hover {
   background-color: #e65100;
