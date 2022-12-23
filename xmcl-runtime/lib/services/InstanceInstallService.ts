@@ -346,7 +346,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
         await this.resourceService.updateResources([{ hash: file.hashes.sha1, metadata }])
         const renamedPath = destination.substring(0, destination.length - '.pending'.length)
         try {
-          if (!await missing(renamedPath) && await missing(destination)) {
+          if (await missing(renamedPath) && (!await missing(destination))) {
             await rename(destination, renamedPath)
           } else {
             this.warn(`Skip to rename ${destination} -> ${renamedPath} as the file already existed`)
