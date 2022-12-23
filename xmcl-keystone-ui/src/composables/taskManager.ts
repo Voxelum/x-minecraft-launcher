@@ -110,6 +110,7 @@ export function useTaskManager() {
 
   function getTaskItem(payload: TaskPayload | TaskAddedPayload): TaskItem {
     const id = `${payload.uuid}@${payload.id}`
+    console.log(`Add task ${payload.path}(${id})`)
     const item: TaskItem = {
       id,
       taskId: payload.uuid,
@@ -157,6 +158,7 @@ export function useTaskManager() {
         tasks.value.unshift(item)
       }
       cache[id] = item
+      console.log(`Add task ${add.path}(${id})`)
     }
     for (const update of updates) {
       const { uuid, id, time, to, from, progress, total, chunkSize, state, error } = update
@@ -190,7 +192,11 @@ export function useTaskManager() {
     syncing = new Promise((resolve) => { _resolve = resolve })
     taskMonitor.on('task-update', onTaskUpdate)
     taskMonitor.subscribe().then((payload) => {
-      tasks.value = payload.map(getTaskItem)
+      const result = payload.map(getTaskItem)
+      tasks.value = result
+      for (const r of result) {
+        cache[r.id] = r
+      }
       _resolve()
     })
   })
