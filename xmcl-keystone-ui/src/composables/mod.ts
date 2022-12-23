@@ -253,9 +253,20 @@ export function useInstanceMods() {
       if (resource.metadata.fabric instanceof Array) {
         for (const mod of resource.metadata.fabric) {
           modItem.provideRuntime[mod.id] = mod.version
+          if (mod.provides) {
+            for (const alias of mod.provides) {
+              modItem.provideRuntime[alias] = mod.version
+            }
+          }
         }
       } else {
-        modItem.provideRuntime[resource.metadata.fabric.id] = resource.metadata.fabric.version
+        const mod = resource.metadata.fabric
+        modItem.provideRuntime[resource.metadata.fabric.id] = mod.version
+        if (mod.provides) {
+          for (const alias of mod.provides) {
+            modItem.provideRuntime[alias] = mod.version
+          }
+        }
       }
     } else if (resource.metadata.liteloader) {
       const meta = resource.metadata.liteloader
