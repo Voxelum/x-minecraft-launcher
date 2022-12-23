@@ -12,16 +12,19 @@ export const pluginWorker: LauncherAppPlugin = async (app) => {
   const logger = app.logManager.getLogger('WorkerManager')
   const checkUpdate = async (path: string) => {
     if (!IS_DEV) {
+      logger.log('Try to update worker js as this is PROD')
       const workerJsPath = path.replace('.unpacked', '')
       const asarWorkerJsPath = path
-      const realSha = await checksum(workerJsPath, 'sha1')
-      const expectSha = await checksum(asarWorkerJsPath, 'sha1')
+      const realSha = await checksum(workerJsPath, 'sha1').catch(e => undefined)
+      const expectSha = await checksum(asarWorkerJsPath, 'sha1').catch(e => undefined)
       if (realSha !== expectSha) {
         logger.log('The worker js checksum not matched. Replace with the asar worker js.')
         await writeFile(workerJsPath, await readFile(asarWorkerJsPath))
       } else {
         logger.log('The worker js checksum matched. Skip to replace asar worker js.')
       }
+    } else {
+      logger.log('Skip to update worker js as this is DEV')
     }
   }
   const createLazyWorker = (factory: () => Worker) => {
