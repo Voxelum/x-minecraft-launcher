@@ -11,7 +11,7 @@ function createResourceMonitor(): ISemaphoreChannel {
     emitter.emit('acquire', semaphores)
   })
   return {
-    subscribe(): Promise<Record<string, number>> {
+    subscribe(): Promise<[Record<string, number>, number]> {
       return ipcRenderer.invoke('semaphore')
     },
     unsubscribe(): Promise<void> {

@@ -30,14 +30,28 @@ export function useSemaphore(semaphore: string | Ref<string>) {
 
 export function useSemaphores() {
   const container: Record<string, number> = reactive({})
+  let totalOrder = 0
 
-  const { refresh, refreshing } = useRefreshable(() => resourceMonitor.subscribe().then((sem) => {
+  const { refresh, refreshing } = useRefreshable(() => resourceMonitor.subscribe().then(([sem, order]) => {
+    totalOrder = order
+    console.log(`Refreshed semaphores by total order ${totalOrder}`)
     for (const [key, val] of Object.entries(sem)) {
       set(container, key, val)
     }
   }))
 
-  resourceMonitor.on('acquire', (res) => {
+  resourceMonitor.on('acquire', ([res, order]) => {
+    const nextOrder = totalOrder + 1
+    if (nextOrder < order) {
+      if (!refreshing.value) {
+        refresh()
+      }
+      return
+    }
+    if (nextOrder > order) {
+      // discord old message
+      return
+    }
     const sem = res instanceof Array ? res : [res]
     for (const s of sem) {
       if (s in container) {
@@ -46,8 +60,20 @@ export function useSemaphores() {
         set(container, s, 1)
       }
     }
+    totalOrder = nextOrder
   })
-  resourceMonitor.on('release', (res) => {
+  resourceMonitor.on('release', ([res, order]) => {
+    const nextOrder = totalOrder + 1
+    if (nextOrder < order) {
+      if (!refreshing.value) {
+        refresh()
+      }
+      return
+    }
+    if (nextOrder > order) {
+      // discord old message
+      return
+    }
     const sem = res instanceof Array ? res : [res]
     for (const s of sem) {
       if (s in container) {
@@ -56,6 +82,7 @@ export function useSemaphores() {
         set(container, s, 0)
       }
     }
+    totalOrder = nextOrder
   })
 
   onMounted(() => {

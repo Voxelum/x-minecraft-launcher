@@ -13,16 +13,13 @@ export default class ServiceStateManager extends Manager {
 
   constructor(app: LauncherApp) {
     super(app)
-    app.controller.handle('sync', (_, serviceName, id) => {
+    app.controller.handle('sync', async (_, serviceName, id) => {
       const service = app.serviceManager.getServiceByKey(serviceName)
-      if (service) {
-        return (service as AbstractService).initialize().then(() => {
-          const stateProxy = this.registeredState[serviceName]
-          if (stateProxy) {
-            return stateProxy.takeSnapshot(id)
-          }
-        })
-      }
+      if (!service) return 'NOT_FOUND_SERVICE'
+      await (service as AbstractService).initialize()
+      const stateProxy = this.registeredState[serviceName]
+      if (!stateProxy) return 'NOT_STATE_SERVICE'
+      return stateProxy.takeSnapshot(id)
     })
     app.controller.handle('commit', (event, serviceName, type, payload) => {
       const stateProxy = this.registeredState[serviceName]

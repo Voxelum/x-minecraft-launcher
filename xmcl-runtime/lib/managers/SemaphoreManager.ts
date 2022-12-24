@@ -7,13 +7,17 @@ export default class SemaphoreManager extends Manager {
   private locks: Record<string, ReadWriteLock> = {}
 
   private semaphore: Record<string, number> = {}
+  /**
+   * Total order is used to check if client/server is sync
+   */
+  private order = 0
   private semaphoreWaiter: Record<string, Array<() => void>> = {}
   private logger = this.app.logManager.getLogger('SemaphoreManager')
 
   constructor(app: LauncherApp) {
     super(app)
     app.controller.handle('semaphore', () => {
-      return this.semaphore
+      return [this.semaphore, this.order]
     })
     app.controller.handle('semaphoreAbort', (_, key) => {
       this.logger.log(`Force release the semaphore: ${key}`)
@@ -44,7 +48,8 @@ export default class SemaphoreManager extends Manager {
     } else {
       this.semaphore[key] = 1
     }
-    this.app.controller.broadcast('acquire', key)
+    this.order += 1
+    this.app.controller.broadcast('acquire', [key, this.order])
   }
 
   wait(key: string) {
@@ -67,6 +72,7 @@ export default class SemaphoreManager extends Manager {
     } else {
       this.semaphore[key] = 0
     }
+    this.order += 1
     if (this.semaphore[key] === 0) {
       nextTick(() => {
         if (this.semaphore[key] === 0) {
@@ -78,6 +84,6 @@ export default class SemaphoreManager extends Manager {
         }
       })
     }
-    this.app.controller.broadcast('release', key)
+    this.app.controller.broadcast('release', [key, this.order])
   }
 }

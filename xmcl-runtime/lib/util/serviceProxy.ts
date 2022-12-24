@@ -70,9 +70,6 @@ export class ServiceStateProxy {
   takeSnapshot(currentId: number) {
     const checkPointId = this.checkPointId
     this.logger.log(`Sync from renderer: ${currentId}, service ${this.serviceName}: ${checkPointId}.`)
-    if (currentId === checkPointId) {
-      return undefined
-    }
     return {
       state: JSON.parse(JSON.stringify(this.snapshot)),
       length: checkPointId,

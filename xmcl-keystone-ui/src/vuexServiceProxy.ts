@@ -173,6 +173,11 @@ export class VuexServiceFactory implements ServiceFactory {
         return
       }
       const newId = lastId + 1
+      if (id <= lastId) {
+        // discard old packet
+        console.log(`Discard stale sync mutation ${id}(${mutation.type}) as last id is ${lastId}`)
+        return
+      }
       if (id !== newId) {
         console.log(`Sync conflict from main. Last id in renderer: ${lastId}. Sync from main ${id}`)
         sync()
@@ -184,7 +189,18 @@ export class VuexServiceFactory implements ServiceFactory {
     const sync = () => {
       this.store.commit('syncStart', { service })
       console.log(`Sync ${service}.`)
-      proxy.sync(lastId).then((syncInfo) => {
+      proxy.sync(lastId).then((result) => {
+        if (typeof result === 'string') {
+          if (result === 'NOT_FOUND_SERVICE') {
+            console.log(`Does not found service ${service}`)
+          } else if (result === 'NOT_STATE_SERVICE') {
+            console.log(`The service ${service} does not have state`)
+          } else {
+            console.log(`Fail to sync service ${service} ${result}`)
+          }
+          return
+        }
+        const syncInfo = result
         if (!syncInfo) {
           console.log(`The ${service} is not syncable.`)
           this.store.commit('sync', {})
@@ -198,6 +214,12 @@ export class VuexServiceFactory implements ServiceFactory {
 
         this.store.commit('sync', { [service]: state })
         lastId = length
+
+        for (const [id, m] of Object.entries(syncingQueue)) {
+          if (Number(id) > lastId) {
+            this.store.commit(m.type, m.payload)
+          }
+        }
 
         syncingQueue = {}
       })

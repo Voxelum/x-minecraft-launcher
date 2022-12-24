@@ -1,8 +1,8 @@
 import { GenericEventEmitter } from './events'
 
 interface SemaphoreChannelEventMap {
-  acquire: string[] | string
-  release: string[] | string
+  acquire: [string[] | string, number]
+  release: [string[] | string, number]
 }
 
 /**
@@ -12,7 +12,7 @@ export interface ResourceMonitor extends GenericEventEmitter<SemaphoreChannelEve
   /**
    * Subscribe the resource/semaphore update. This will make this object start to emit event
    */
-  subscribe(): Promise<Record<string, number>>
+  subscribe(): Promise<[Record<string, number>, number]>
   /**
    * Stop subscribe the resource/semaphore update.
    */
