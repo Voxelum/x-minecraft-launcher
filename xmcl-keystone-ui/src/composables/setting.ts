@@ -1,7 +1,5 @@
+import { useService, useServiceBusy } from '@/composables'
 import { BaseServiceKey } from '@xmcl/runtime-api'
-import { useServiceBusy, useService } from '@/composables'
-import { injection } from '@/util/inject'
-import { kUILayout } from './uiLayout'
 
 export function useUpdateSettings() {
   const { state, checkUpdate } = useService(BaseServiceKey)
@@ -42,7 +40,7 @@ export function useSettings() {
   const root = computed(() => state.root)
   const locales = computed(() => state.locales || [])
   const selectedLocale = computed({
-    get: () => locales.value.find(l => l === state.locale) || 'en',
+    get: () => locales.value.find(l => l.locale === state.locale)?.locale || 'en',
     set: v => state.localeSet(v),
   })
   const allowPrerelease = computed({
