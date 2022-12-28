@@ -1,5 +1,4 @@
 import { BaseState } from './services/BaseService'
-import { CurseforgeState } from './services/CurseForgeService'
 import { DiagnoseState } from './services/DiagnoseService'
 import { InstanceOptionsState } from './services/InstanceOptionsService'
 import { InstanceModsState } from './services/InstanceModsService'
@@ -22,7 +21,6 @@ export type StateOfServiceKey<K> = K extends ServiceKey<infer Serv>
 
 export type AllServiceMutations =
   Mutations<BaseState>
-  & Mutations<CurseforgeState>
   & Mutations<DiagnoseState>
   & Mutations<InstanceState>
   & Mutations<InstanceModsState>

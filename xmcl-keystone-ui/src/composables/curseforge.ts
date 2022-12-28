@@ -131,7 +131,7 @@ export function useCurseforge(props: CurseforgeProps) {
  * @param projectId The project id
  */
 export function useCurseforgeProjectFiles(projectId: number) {
-  const { fetchProjectFiles } = useService(CurseForgeServiceKey)
+  const { getModFiles } = useService(CurseForgeServiceKey)
   const data = reactive({
     files: [] as File[],
     index: 0,
@@ -139,7 +139,7 @@ export function useCurseforgeProjectFiles(projectId: number) {
     totalCount: 0,
   })
   const { refresh, refreshing, error } = useRefreshable(async () => {
-    const f = await fetchProjectFiles({ modId: projectId })
+    const f = await getModFiles({ modId: projectId })
     data.files = markRaw(f.data)
     data.index = f.pagination.index
     data.pageSize = f.pagination.pageSize
@@ -157,12 +157,12 @@ export function useCurseforgeProjectFiles(projectId: number) {
 }
 
 export function useCurseforgeProjectDescription(projectId: number) {
-  const { fetchProjectDescription } = useService(CurseForgeServiceKey)
+  const { getModDescription } = useService(CurseForgeServiceKey)
   const data = reactive({
     description: '',
   })
   const { refresh, refreshing, error } = useRefreshable(async function refresh() {
-    const des = await fetchProjectDescription(projectId)
+    const des = await getModDescription(projectId)
     data.description = des
   })
 
@@ -176,11 +176,11 @@ export function useCurseforgeProjectDescription(projectId: number) {
  * @param projectId The project id
  */
 export function useCurseforgeProject(projectId: number) {
-  const { fetchProject } = useService(CurseForgeServiceKey)
+  const { getMod } = useService(CurseForgeServiceKey)
   const project = ref(undefined as undefined | Mod)
-  const refreshing = useServiceBusy(CurseForgeServiceKey, 'fetchProject', projectId.toString())
+  const refreshing = useServiceBusy(CurseForgeServiceKey, 'getMod', projectId.toString())
   const { refresh, error } = useRefreshable(async function () {
-    project.value = await fetchProject(projectId)
+    project.value = await getMod(projectId)
   })
   onMounted(() => refresh())
   return {

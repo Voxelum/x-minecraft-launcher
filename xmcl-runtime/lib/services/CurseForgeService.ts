@@ -1,6 +1,6 @@
 import { File, FileModLoaderType, FileRelationType, SearchOptions } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
-import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, CurseforgeState, getCurseforgeFileUri, GetModFilesOptions, InstallFileOptions, InstallFileResult, ProjectType, ResourceDomain } from '@xmcl/runtime-api'
+import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, getCurseforgeFileUri, GetModFilesOptions, InstallFileOptions, InstallFileResult, ProjectType, ResourceDomain } from '@xmcl/runtime-api'
 import { unlink } from 'fs-extra'
 import { join } from 'path'
 import { Client } from 'undici'
@@ -11,16 +11,16 @@ import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { isNonnull, requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { ResourceService } from './ResourceService'
-import { ExposeServiceKey, Singleton, StatefulService } from './Service'
+import { AbstractService, ExposeServiceKey, Singleton } from './Service'
 
 @ExposeServiceKey(CurseForgeServiceKey)
-export class CurseForgeService extends StatefulService<CurseforgeState> implements ICurseForgeService {
+export class CurseForgeService extends AbstractService implements ICurseForgeService {
   readonly client: CurseforgeClient
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
-    super(app, () => new CurseforgeState())
+    super(app)
 
     const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
       if (origin.host === 'api.curseforge.com') {
@@ -41,35 +41,35 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
   }
 
   @Singleton(v => v.toString())
-  async fetchProject(projectId: number) {
+  async getMod(projectId: number) {
     this.log(`Fetch project: ${projectId}`)
     return await this.client.getMod(projectId)
   }
 
   @Singleton(v => v.toString())
-  async fetchProjectDescription(projectId: number) {
+  async getModDescription(projectId: number) {
     this.log(`Fetch project description: ${projectId}`)
     return await this.client.getModDescription(projectId)
   }
 
   @Singleton(v => v.modId)
-  async fetchProjectFiles(options: GetModFilesOptions) {
+  async getModFiles(options: GetModFilesOptions) {
     this.log(`Fetch project files: ${options.modId}`)
     return await this.client.getModFiles(options)
   }
 
   @Singleton((a, b) => `${a}-${b}`)
-  async fetchProjectFile(projectId: number, fileId: number) {
+  async getModFile(projectId: number, fileId: number) {
     this.log(`Fetch project file: ${projectId}-${fileId}`)
     return await this.client.getModFile(projectId, fileId)
   }
 
-  async fetchMods(modIds: number[]) {
+  async getModsByIds(modIds: number[]) {
     this.log(`Fetch mods ${modIds.length} files.`)
     return await this.client.getMods(modIds)
   }
 
-  async fetchModFiles(fileIds: number[]) {
+  async getModFilesByIds(fileIds: number[]) {
     this.log(`Fetch profile ${fileIds.length} files.`)
     return await this.client.getFiles(fileIds)
   }
@@ -112,7 +112,7 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
               modLoaderTypes.push(FileModLoaderType.Any)
             }
             for (const modLoaderType of modLoaderTypes) {
-              const files = await this.fetchProjectFiles({
+              const files = await this.getModFiles({
                 gameVersion,
                 modId: dep.modId,
                 modLoaderType,
@@ -163,70 +163,65 @@ export class CurseForgeService extends StatefulService<CurseforgeState> implemen
     this.log(`Try install file ${file.displayName}(${file.downloadUrl}) in type ${type}`)
     const resourceService = this.resourceService
     const networkManager = this.networkManager
-    try {
-      this.state.curseforgeDownloadFileStart({ fileId: file.id })
-      const destination = join(this.app.temporaryPath, file.fileName)
-      const project = await this.fetchProject(file.modId)
-      let dependencies: InstallFileResult[] = []
-      if (ignoreDependencies || type === 'modpacks') {
-        dependencies = []
-      } else {
-        const deps = await this.resolveFileDependencies(file)
-        dependencies = await Promise.all(deps.map(async ([file, relation]) => {
-          if (relation === 3) {
-            return await this.installFile({ file, type, instancePath, ignoreDependencies: true })
-          } else {
-            // Not enable by default
-            return await this.installFile({ file, type, ignoreDependencies: true })
-          }
-        }))
-      }
+    const destination = join(this.app.temporaryPath, file.fileName)
+    const project = await this.getMod(file.modId)
+    let dependencies: InstallFileResult[] = []
+    if (ignoreDependencies || type === 'modpacks') {
+      dependencies = []
+    } else {
+      const deps = await this.resolveFileDependencies(file)
+      dependencies = await Promise.all(deps.map(async ([file, relation]) => {
+        if (relation === 3) {
+          return await this.installFile({ file, type, instancePath, ignoreDependencies: true })
+        } else {
+          // Not enable by default
+          return await this.installFile({ file, type, ignoreDependencies: true })
+        }
+      }))
+    }
 
-      const domain = typeToDomain[type] ?? ResourceDomain.Unclassified
-      let resource = (await this.resourceService.getResourcesByUris(uris)).reduce((a, b) => a || b, undefined)
-      if (resource) {
-        this.log(`The curseforge file ${file.displayName}(${file.downloadUrl}) existed in cache!`)
-      } else {
-        const task = new DownloadTask({
-          ...networkManager.getDownloadBaseOptions(),
-          url: downloadUrls,
-          destination,
-        }).setName('installCurseforgeFile', { fileId: file.id })
-        await this.submit(task)
+    const domain = typeToDomain[type] ?? ResourceDomain.Unclassified
+    let resource = (await this.resourceService.getResourcesByUris(uris)).reduce((a, b) => a || b, undefined)
+    if (resource) {
+      this.log(`The curseforge file ${file.displayName}(${file.downloadUrl}) existed in cache!`)
+    } else {
+      const task = new DownloadTask({
+        ...networkManager.getDownloadBaseOptions(),
+        url: downloadUrls,
+        destination,
+      }).setName('installCurseforgeFile', { fileId: file.id })
+      await this.submit(task)
 
-        const icons = project.logo?.thumbnailUrl ? [project.logo.thumbnailUrl] : []
-        const [imported] = await resourceService.importResources([{
-          path: destination,
-          domain,
-          uris,
-          metadata: {
-            curseforge: {
-              projectId: file.modId,
-              fileId: file.id,
-            },
+      const icons = project.logo?.thumbnailUrl ? [project.logo.thumbnailUrl] : []
+      const [imported] = await resourceService.importResources([{
+        path: destination,
+        domain,
+        uris,
+        metadata: {
+          curseforge: {
+            projectId: file.modId,
+            fileId: file.id,
           },
-          icons,
-        }])
+        },
+        icons,
+      }])
 
-        resource = imported
-        this.log(`Install curseforge file ${file.displayName}(${file.downloadUrl}) success!`)
-        await unlink(destination).catch(() => undefined)
-      }
+      resource = imported
+      this.log(`Install curseforge file ${file.displayName}(${file.downloadUrl}) success!`)
+      await unlink(destination).catch(() => undefined)
+    }
 
-      if (instancePath && resource.domain !== ResourceDomain.Modpacks) {
-        resource.path = resource.storedPath!
-        resource.domain = domain
-        await this.resourceService.install({ instancePath, resource })
-      }
+    if (instancePath && resource.domain !== ResourceDomain.Modpacks) {
+      resource.path = resource.storedPath!
+      resource.domain = domain
+      await this.resourceService.install({ instancePath, resource })
+    }
 
-      return {
-        file,
-        mod: project,
-        resource,
-        dependencies: dependencies.filter(isNonnull),
-      }
-    } finally {
-      this.state.curseforgeDownloadFileEnd(file.id)
+    return {
+      file,
+      mod: project,
+      resource,
+      dependencies: dependencies.filter(isNonnull),
     }
   }
 }

@@ -54,7 +54,7 @@ const props = defineProps<{
   files: Array<{ projectID: number }>
 }>()
 
-const { fetchMods } = useService(CurseForgeServiceKey)
+const { getModsByIds } = useService(CurseForgeServiceKey)
 const { openInBrowser } = useService(BaseServiceKey)
 onMounted(() => {
   refresh()
@@ -66,7 +66,7 @@ watch(computed(() => props.files), () => {
 })
 
 const { refresh, refreshing } = useRefreshable(async () => {
-  const result = await fetchMods(props.files.map(f => f.projectID))
+  const result = await getModsByIds(props.files.map(f => f.projectID))
   mods.value = result
 })
 function getImage(mod: Mod) {

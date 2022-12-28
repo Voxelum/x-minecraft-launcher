@@ -1,6 +1,6 @@
-import type { Category, GameVersion, License, Loader, Project, TeamMember, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
-import { Persisted, Resource } from '../entities/resource'
-import { ServiceKey, StatefulService } from './Service'
+import type { Category, GameVersion, License, Loader, Project, ProjectVersion, SearchProjectOptions, SearchResult, TeamMember } from '@xmcl/modrinth'
+import { Resource } from '../entities/resource'
+import { ServiceKey } from './Service'
 
 export interface InstallProjectVersionOptions {
   version: ProjectVersion
@@ -23,25 +23,13 @@ export interface InstallProjectVersionOptions {
   instancePath?: string
 }
 
-export class ModrinthState {
-  downloading = [] as { url: string; taskId: string }[]
-
-  modrinthDownloadFileStart({ url, taskId }: { url: string; taskId: string }) {
-    this.downloading.push({ url, taskId })
-  }
-
-  modrinthDownloadFileEnd(url: string) {
-    this.downloading = this.downloading.filter((f) => f.url !== url)
-  }
-}
-
 export interface InstallModrinthVersionResult {
   version: ProjectVersion
   resources: Resource[]
   dependencies: InstallModrinthVersionResult[]
 }
 
-export interface ModrinthService extends StatefulService<ModrinthState> {
+export interface ModrinthService {
   searchProjects(options: SearchProjectOptions): Promise<SearchResult>
 
   getProject(projectId: string): Promise<Project>
@@ -50,7 +38,7 @@ export interface ModrinthService extends StatefulService<ModrinthState> {
 
   getProjectVersion(versionId: string): Promise<ProjectVersion>
 
-  getLatestProjectVersion(projectId: string): Promise<ProjectVersion>
+  getLatestProjectVersion(hash: string): Promise<ProjectVersion>
 
   getProjectTeamMembers(projectId: string): Promise<TeamMember[]>
 
