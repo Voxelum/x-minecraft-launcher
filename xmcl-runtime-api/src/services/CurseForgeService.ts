@@ -1,7 +1,7 @@
 import type { File, FileModLoaderType, FileRelationType, Mod, ModCategory, Pagination, SearchOptions } from '@xmcl/curseforge'
 import { ProjectType } from '../entities/curseforge'
 import { Resource } from '../entities/resource'
-import { ServiceKey, StatefulService } from './Service'
+import { ServiceKey } from './Service'
 export interface InstallFileOptions {
   /**
    * The curseforge file
@@ -18,18 +18,6 @@ export interface InstallFileOptions {
    * @default false
    */
   ignoreDependencies?: boolean
-}
-
-export class CurseforgeState {
-  downloading = [] as { fileId: number }[]
-
-  curseforgeDownloadFileStart({ fileId }: { fileId: number }) {
-    this.downloading.push({ fileId })
-  }
-
-  curseforgeDownloadFileEnd(fileId: number) {
-    this.downloading = this.downloading.filter((f) => f.fileId !== fileId)
-  }
 }
 
 export interface GetModFilesOptions {
@@ -61,27 +49,31 @@ export interface InstallFileResult {
  * A stateless service to request curseforge website.
  * The launcher backend will cache the curseforge data neither in memory or in disk.
  */
-export interface CurseForgeService extends StatefulService<CurseforgeState> {
+export interface CurseForgeService {
   fetchCategories(): Promise<ModCategory[]>
   /**
    * Fetch a curseforge project info
-   * @param projectId The curseforge project id
+   * @param modId The curseforge project id
    */
-  fetchProject(projectId: number): Promise<Mod>
+  getMod(modId: number): Promise<Mod>
   /**
    * Fetch a curseforge project description string
-   * @param projectId The curseforge project id
+   * @param modId The curseforge project id
    */
-  fetchProjectDescription(projectId: number): Promise<string>
+  getModDescription(modId: number): Promise<string>
   /**
    * Fetch all curseforge project files
    * @param options The curseforge project id
    */
-  fetchProjectFiles(options: GetModFilesOptions): Promise<{ data: File[]; pagination: Pagination }>
-
-  fetchModFiles(ids: number[]): Promise<File[]>
-
-  fetchMods(modIds: number[]): Promise<Mod[]>
+  getModFiles(options: GetModFilesOptions): Promise<{ data: File[]; pagination: Pagination }>
+  /**
+   * The mod files by files ids
+   */
+  getModFilesByIds(ids: number[]): Promise<File[]>
+  /**
+   * The mods by mod ids
+   */
+  getModsByIds(modIds: number[]): Promise<Mod[]>
   /**
    * Search curseforge projects by search options
    * @param searchOptions The search options
@@ -96,6 +88,10 @@ export interface CurseForgeService extends StatefulService<CurseforgeState> {
    * @param options The install file options
    */
   installFile(options: InstallFileOptions): Promise<InstallFileResult>
+}
+
+export function getInstallFileLockKey(options: InstallFileOptions): string {
+  return options.file.id + '-' + options.instancePath
 }
 
 export const CurseForgeServiceKey: ServiceKey<CurseForgeService> = 'CurseForgeService'

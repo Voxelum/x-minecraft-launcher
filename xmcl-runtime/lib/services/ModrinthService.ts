@@ -1,6 +1,6 @@
 import { DownloadTask } from '@xmcl/installer'
 import { Category, GameVersion, License, Loader, Project, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
-import { InstallModrinthVersionResult, InstallProjectVersionOptions, ModrinthService as IModrinthService, ModrinthServiceKey, ModrinthState } from '@xmcl/runtime-api'
+import { InstallModrinthVersionResult, InstallProjectVersionOptions, ModrinthService as IModrinthService, ModrinthServiceKey } from '@xmcl/runtime-api'
 import { unlink } from 'fs-extra'
 import { basename, join } from 'path'
 import { Pool } from 'undici'
@@ -10,12 +10,12 @@ import { ModrinthClient } from '../clients/ModrinthClient'
 import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { ResourceService } from './ResourceService'
-import { ExposeServiceKey, Singleton, StatefulService } from './Service'
+import { AbstractService, ExposeServiceKey, Singleton } from './Service'
 
 interface Tags { licenses: License[]; categories: Category[]; gameVersions: GameVersion[]; modLoaders: Loader[]; environments: string[] }
 
 @ExposeServiceKey(ModrinthServiceKey)
-export class ModrinthService extends StatefulService<ModrinthState> implements IModrinthService {
+export class ModrinthService extends AbstractService implements IModrinthService {
   readonly client: ModrinthClient
 
   private tags: Tags | undefined
@@ -23,15 +23,7 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
-    super(app, () => new ModrinthState(), async () => {
-      // const filePath = this.getAppDataPath('modrinth-tags.json')
-      // if (filePath) {
-      //   try {
-      //     const content = await readJson(filePath)
-      //     this.tags = content
-      //   } catch {
-      //   }
-      // }
+    super(app, async () => {
     })
     const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, opts) => {
       if (origin.hostname === 'api.modrinth.com') {
@@ -148,83 +140,78 @@ export class ModrinthService extends StatefulService<ModrinthState> implements I
     return deps
   }
 
-  @Singleton((o) => o.version.id)
+  @Singleton((o) => `${o.version.id}`)
   async installVersion({ version, project: proj, instancePath, ignoreDependencies }: InstallProjectVersionOptions): Promise<InstallModrinthVersionResult> {
-    this.state.modrinthDownloadFileStart({ url: version.files[0].url, taskId: '' })
-    try {
-      const project = proj ?? await this.getProject(version.project_id)
+    const project = proj ?? await this.getProject(version.project_id)
 
-      const dependencies = project.project_type !== 'modpack' && !ignoreDependencies
-        ? await Promise.all((await this.resolveDependencies(version)).map(version => this.installVersion({ version, instancePath, ignoreDependencies: true })))
-        : []
+    const dependencies = project.project_type !== 'modpack' && !ignoreDependencies
+      ? await Promise.all((await this.resolveDependencies(version)).map(version => this.installVersion({ version, instancePath, ignoreDependencies: true })))
+      : []
 
-      const resources = await Promise.all(version.files.map(async (file) => {
-        this.log(`Try install project version file ${file.filename} ${file.url}`)
-        const destination = join(this.app.temporaryPath, basename(file.filename))
-        const hashes = Object.entries(file.hashes)
-        const urls = [file.url]
-        if (version) {
-          urls.push(`modrinth:${version.project_id}:${version.id}:${file.filename}`)
-        }
-
-        let resource = (await this.resourceService.getResourcesByUris(urls)).reduce((a, b) => a || b, undefined)
-        if (resource) {
-          this.log(`The modrinth file ${file.filename}(${file.url}) existed in cache!`)
-        } else {
-          const task = new DownloadTask({
-            ...this.networkManager.getDownloadBaseOptions(),
-            url: file.url,
-            destination,
-            validator: {
-              algorithm: hashes[0][0],
-              hash: hashes[0][1],
-            },
-          }).setName('installModrinthFile', {
-            projectId: version.project_id,
-            versionId: version.id,
-            filename: file.filename,
-          })
-
-          await this.taskManager.submit(task)
-          const metadata = {
-            modrinth: version
-              ? {
-                projectId: version.project_id,
-                versionId: version.id,
-                filename: file.filename,
-                url: file.url,
-              }
-              : undefined,
-          }
-
-          const [result] = await this.resourceService.importResources([{
-            path: destination,
-            uris: urls,
-            metadata,
-            icons: project.icon_url ? [project.icon_url] : [],
-          }])
-
-          await unlink(destination).catch(() => undefined)
-          this.log(`Install modrinth file ${file.filename}(${file.url}) success!`)
-
-          resource = result
-        }
-
-        if (instancePath) {
-          resource.path = resource.storedPath!
-          await this.resourceService.install({ instancePath, resource })
-        }
-
-        return resource
-      }))
-
-      return {
-        version,
-        resources,
-        dependencies: dependencies.filter(isNonnull),
+    const resources = await Promise.all(version.files.map(async (file) => {
+      this.log(`Try install project version file ${file.filename} ${file.url}`)
+      const destination = join(this.app.temporaryPath, basename(file.filename))
+      const hashes = Object.entries(file.hashes)
+      const urls = [file.url]
+      if (version) {
+        urls.push(`modrinth:${version.project_id}:${version.id}:${file.filename}`)
       }
-    } finally {
-      this.state.modrinthDownloadFileEnd(version.files[0].url)
+
+      let resource = (await this.resourceService.getResourcesByUris(urls)).reduce((a, b) => a || b, undefined)
+      if (resource) {
+        this.log(`The modrinth file ${file.filename}(${file.url}) existed in cache!`)
+      } else {
+        const task = new DownloadTask({
+          ...this.networkManager.getDownloadBaseOptions(),
+          url: file.url,
+          destination,
+          validator: {
+            algorithm: hashes[0][0],
+            hash: hashes[0][1],
+          },
+        }).setName('installModrinthFile', {
+          projectId: version.project_id,
+          versionId: version.id,
+          filename: file.filename,
+        })
+
+        await this.taskManager.submit(task)
+        const metadata = {
+          modrinth: version
+            ? {
+              projectId: version.project_id,
+              versionId: version.id,
+              filename: file.filename,
+              url: file.url,
+            }
+            : undefined,
+        }
+
+        const [result] = await this.resourceService.importResources([{
+          path: destination,
+          uris: urls,
+          metadata,
+          icons: project.icon_url ? [project.icon_url] : [],
+        }])
+
+        await unlink(destination).catch(() => undefined)
+        this.log(`Install modrinth file ${file.filename}(${file.url}) success!`)
+
+        resource = result
+      }
+
+      if (instancePath) {
+        resource.path = resource.storedPath!
+        await this.resourceService.install({ instancePath, resource })
+      }
+
+      return resource
+    }))
+
+    return {
+      version,
+      resources,
+      dependencies: dependencies.filter(isNonnull),
     }
   }
 }
