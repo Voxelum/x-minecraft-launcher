@@ -157,7 +157,6 @@
 <script lang="ts" setup>
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { localeMappings } from '@/util/localeMappings'
 import { useSettings } from '../composables/setting'
 import { useService } from '@/composables'
 
@@ -189,7 +188,7 @@ const apiSetItems = computed(() =>
         value: v.name,
       }
     })))
-const locales = rawLocales.value.map(l => ({ text: localeMappings[l] ?? l, value: l }))
+const locales = computed(() => rawLocales.value.map(({ locale, name }) => ({ text: name, value: locale })))
 
 const { show } = useDialog('migration')
 

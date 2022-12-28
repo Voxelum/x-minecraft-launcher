@@ -24,7 +24,17 @@ export class BaseState implements SettingSchema {
   /**
    * All supported languages of the launcher
    */
-  locales: string[] = []
+  locales: {
+    /**
+     * The i18n locale key
+     */
+    locale: string
+    /**
+     * The human readable name of the locale
+     */
+    name: string
+  }[] = []
+
   updateInfo: ReleaseInfo | null = null
   updateStatus: 'ready' | 'none' | 'pending' = 'none'
   allowPrerelease = false
@@ -99,7 +109,16 @@ export class BaseState implements SettingSchema {
     this.locale = language
   }
 
-  localesSet(languages: string[]) {
+  localesSet(languages: {
+    /**
+     * The i18n locale key
+     */
+    locale: string
+    /**
+     * The human readable name of the locale
+     */
+    name: string
+  }[]) {
     this.locales = languages
   }
 

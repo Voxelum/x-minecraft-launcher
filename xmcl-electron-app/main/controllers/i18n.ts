@@ -2,10 +2,19 @@ import Controller from '@/Controller'
 import { BaseService } from '@xmcl/runtime'
 import { ControllerPlugin } from './plugin'
 
+export const localeMappings: Record<string, string> = {
+  'zh-CN': '简体中文',
+  'zh-TW': '繁體中文',
+  en: 'English',
+  ru: 'Русский язык',
+  'es-ES': 'Español',
+  fr: 'French',
+}
+
 export const i18n: ControllerPlugin = function (this: Controller) {
   this.app.once('engine-ready', () => {
     const baseService = this.app.serviceManager.get(BaseService)
-    baseService.state.localesSet(['en', 'zh-CN', 'zh-TW', 'ru', 'es-ES'])
+    baseService.state.localesSet(Object.entries(localeMappings).map(([locale, name]) => ({ locale, name })))
     this.app.log(`Set locale for the app ${baseService.state.locales}`)
     this.i18n.use(baseService.state.locale)
     this.app.serviceStateManager.subscribe('config', (c) => {
