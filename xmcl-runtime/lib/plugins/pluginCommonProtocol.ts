@@ -45,7 +45,7 @@ export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
       }
     } else if (!request.url.host) {
       // Absolute image path
-      const pathname = request.url.pathname.substring(1)
+      const pathname = decodeURIComponent(request.url.pathname.substring(1))
       const { fromFile } = await import('file-type')
       await fromFile(pathname).then((type) => {
         if (type && type.mime.startsWith('image/')) {
@@ -62,7 +62,7 @@ export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
   })
   app.protocol.registerHandler('video', async ({ request, response }) => {
     // Absolute video path
-    const pathname = request.url.pathname.substring(1)
+    const pathname = decodeURIComponent(request.url.pathname.substring(1))
     const { fromFile } = await import('file-type')
     await fromFile(pathname).then((type) => {
       if (type && type.mime.startsWith('video/')) {
@@ -71,7 +71,7 @@ export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
       } else {
         response.status = 404
       }
-    }).catch(() => {
+    }).catch((e) => {
       response.status = 404
     })
   })
