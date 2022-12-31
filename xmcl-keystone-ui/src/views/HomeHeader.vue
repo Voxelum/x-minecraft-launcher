@@ -23,7 +23,7 @@
       />
     </div>
     <div
-      class="flex align-end gap-3 flex-grow-0 flex-1 mt-4 "
+      class="flex gap-3 flex-grow-0 flex-1 mt-4 lg:flex-row flex-col "
     >
       <div
         class="flex flex-row items-start gap-3 flex-wrap flex-grow-0"
@@ -156,7 +156,6 @@
           </template>
           {{ t('baseSetting.title', 2) }}
         </v-tooltip>
-
         <HomeLaunchButton
           class="ml-4"
           :issue="issue"
@@ -166,6 +165,8 @@
         />
       </div>
     </div>
+
+    <v-divider />
   </div>
 </template>
 
@@ -183,6 +184,8 @@ import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
 import HomeHeaderMinecraftLabel from './HomeHeaderMinecraftLabel.vue'
 import HomeHeaderQuiltLabel from './HomeHeaderQuiltLabel.vue'
 import HomeLaunchButton from './HomeLaunchButton.vue'
+
+defineProps<{ focusMode: boolean }>()
 
 const { issue, task, path, refreshing, name, version, localVersion } = injection(kInstanceContext)
 const isInFocusMode = useInFocusMode()
