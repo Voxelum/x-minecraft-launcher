@@ -410,10 +410,10 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       for (const version of Object.keys(runtime)) {
         if (version in currentRuntime) {
           if (currentRuntime[version] !== runtime[version]) {
-            resultRuntime[version] = runtime[version]
+            resultRuntime[version] = runtime[version] || ''
           }
         } else {
-          resultRuntime[version] = runtime[version]
+          resultRuntime[version] = runtime[version] || ''
         }
       }
       if (Object.keys(resultRuntime).length > 0) {

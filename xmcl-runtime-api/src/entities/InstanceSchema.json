@@ -181,7 +181,6 @@
                     "required": [
                         "fileId",
                         "modId",
-                        "sha1",
                         "type"
                     ]
                 },
@@ -198,6 +197,9 @@
                             "type": "string"
                         },
                         "versionId": {
+                            "type": "string"
+                        },
+                        "sha1": {
                             "type": "string"
                         }
                     },

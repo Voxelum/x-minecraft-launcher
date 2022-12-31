@@ -39,7 +39,7 @@ export interface DialogKey<T> extends String { }
 /**
  * Use a shared dialog between pages
  */
-export function useDialog<T>(dialogName: DialogKey<T> = '') {
+export function useDialog<T>(dialogName: DialogKey<T> = '', onShown?: (param: T) => void, onHide?: () => void) {
   const { dialog, parameter } = injection(kDialogModel)
   const isShown = computed({
     get: () => dialog.value === dialogName,
@@ -65,6 +65,14 @@ export function useDialog<T>(dialogName: DialogKey<T> = '') {
       dialog.value = dialogName.toString()
     }
   }
+  watch(isShown, (value) => {
+    if (value) {
+      onShown?.(parameter.value)
+    } else {
+      onHide?.()
+    }
+  })
+
   return {
     dialog,
     parameter: parameter as Ref<T | undefined>,

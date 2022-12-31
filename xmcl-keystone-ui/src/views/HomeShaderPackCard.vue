@@ -1,5 +1,7 @@
 <template>
-  <v-card>
+  <v-card
+    class="flex flex-col h-full"
+  >
     <v-card-title>
       <v-icon
         left
@@ -8,7 +10,9 @@
       </v-icon>
       {{ t('shaderPack.name', 2) }}
     </v-card-title>
-    <v-card-text>
+    <v-card-text
+      class="flex-grow"
+    >
       {{ shaderPack ? t('shaderPack.enable', { name: shaderPack }) : t('shaderPack.empty') }}
     </v-card-text>
     <v-card-actions>

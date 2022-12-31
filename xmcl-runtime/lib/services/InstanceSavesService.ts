@@ -40,7 +40,7 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
       this.warn(e)
       return undefined
     })
-  }, 1000)
+  }, 2000)
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,

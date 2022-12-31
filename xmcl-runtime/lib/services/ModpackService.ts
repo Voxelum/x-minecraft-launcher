@@ -10,10 +10,9 @@ import { pipeline } from 'stream/promises'
 import { Entry, ZipFile } from 'yauzl'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { readMetadata, resolveInstanceOptions } from '../entities/modpack'
 import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
-import { checksumFromStream, isFile, sha1ByPath } from '../util/fs'
+import { checksumFromStream, isFile } from '../util/fs'
 import { requireObject } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { ZipTask } from '../util/zip'
@@ -112,7 +111,7 @@ export class ModpackService extends AbstractService implements IModpackService {
       resolveInstanceFiles: async (manifest: CurseforgeModpackManifest): Promise<InstanceFile[]> => {
         // curseforge or mcbbs
         const curseforgeFiles = manifest.files
-        const files = await curseforgeService.fetchModFiles(curseforgeFiles.map(f => f.fileID))
+        const files = await curseforgeService.getModFilesByIds(curseforgeFiles.map(f => f.fileID))
         const infos: InstanceFile[] = []
 
         for (let i = 0; i < files.length; i++) {
@@ -152,7 +151,7 @@ export class ModpackService extends AbstractService implements IModpackService {
         if (manifest.files) {
           // curseforge or mcbbs
           const curseforgeFiles = manifest.files.map(f => f).filter((f): f is ModpackFileInfoCurseforge => !('type' in f) || f.type === 'curse' || 'hashes' in f)
-          const files = await curseforgeService.fetchModFiles(curseforgeFiles.map(f => f.fileID))
+          const files = await curseforgeService.getModFilesByIds(curseforgeFiles.map(f => f.fileID))
 
           for (let i = 0; i < files.length; i++) {
             const file = files[i]
@@ -230,8 +229,8 @@ export class ModpackService extends AbstractService implements IModpackService {
     for (const file of files) {
       const filePath = join(instancePath, file.path)
       if (file.path.startsWith('mods/') || file.path.startsWith('resourcepacks/') || file.path.startsWith('shaderpacks/')) {
-        const ino = await stat(filePath)
-        let resource = await this.resourceService.getReosurceByIno(ino.ino)
+        const fStat = await stat(filePath)
+        let resource = await this.resourceService.getReosurceByIno(fStat.ino)
         if (!resource) {
           const sha1 = await this.worker.checksum(filePath, 'sha1')
           resource = await this.resourceService.getResourceByHash(sha1)
@@ -268,7 +267,7 @@ export class ModpackService extends AbstractService implements IModpackService {
         }
       }
       zipTask.addFile(filePath, `overrides/${file.path}`)
-      mcbbsManifest?.files!.push({ type: 'addon', force: false, path: file.path, hash: await sha1ByPath(filePath) })
+      mcbbsManifest?.files!.push({ type: 'addon', force: false, path: file.path, hash: await this.worker.checksum(filePath, 'sha1') })
     }
 
     if (curseforgeConfig) {
@@ -296,26 +295,41 @@ export class ModpackService extends AbstractService implements IModpackService {
   }
 
   async getInstallModpackProfile(path: string) {
-    if (!await isFile(path)) {
+    const fStat = await stat(path)
+    if (!fStat.isFile()) {
       throw new ModpackException({ type: 'requireModpackAFile', path }, `Cannot import modpack ${path}, since it's not a file!`)
     }
 
-    this.log(`Import modpack by path ${path}`)
+    const transformFile = (file: InstanceFile) => {
+      file.path = file.path.replaceAll('\\', '/')
+      return file
+    }
+
+    const transformInstance = <T extends { files: InstanceFile[] }>(o: T) => {
+      for (const file of o.files) transformFile(file)
+      return o
+    }
+
+    let resource = await this.resourceService.getReosurceByIno(fStat.ino)
+
+    if (resource && resource.metadata.instance) {
+      this.log(`Get modpack profile by cached ino ${path}`)
+      return transformInstance(resource.metadata.instance)
+    }
+
+    const hash = await this.worker.checksum(path, 'sha1')
+    resource = await this.resourceService.getResourceByHash(hash)
+    if (resource && resource.metadata.instance) {
+      this.log(`Get modpack profile by cached hash ${path}`)
+      return transformInstance(resource.metadata.instance)
+    }
+
+    this.log(`Parse modpack profile ${path}`)
 
     const zip = await open(path)
     const entries = await readAllEntries(zip)
 
-    const getManifestAndHandler = async () => {
-      for (const handler of Object.values(this.handlers)) {
-        const manifest = await handler.readMetadata(zip, entries).catch(e => undefined)
-        if (manifest) {
-          return [manifest, handler] as const
-        }
-      }
-      return [undefined, undefined]
-    }
-
-    const [manifest, handler] = await getManifestAndHandler()
+    const [manifest, handler] = await this.getManifestAndHandler(zip, entries)
 
     if (!manifest || !handler) throw new ModpackException({ type: 'invalidModpack', path })
 
@@ -323,27 +337,61 @@ export class ModpackService extends AbstractService implements IModpackService {
 
     const instanceFiles = await handler.resolveInstanceFiles(manifest)
     const files = (await Promise.all(entries
-      .filter((e) => !!handler.resolveUnpackPath(manifest, e))
+      .filter((e) => !!handler.resolveUnpackPath(manifest, e) && !e.fileName.endsWith('/'))
       .map(async (e) => {
         const sha1 = await checksumFromStream(await openEntryReadStream(zip, e), 'sha1')
-        const path = handler.resolveUnpackPath(manifest, e)!
+        const relativePath = handler.resolveUnpackPath(manifest, e)!
         const file: InstanceFile = {
-          path,
+          path: relativePath,
           size: e.uncompressedSize,
           hashes: {
             sha1,
             crc32: e.crc32.toString(),
           },
-          downloads: [`zip:${join(path, path)}`],
+          downloads: [
+            `zip:///${join(path, relativePath)}`,
+            `zip://${sha1}/${relativePath}`,
+          ],
         }
         return file
       })))
       .concat(instanceFiles)
+      .filter(f => !f.path.endsWith('/'))
+
+    for (const file of files) {
+      transformFile(file)
+    }
+
+    try {
+      // Update the resource
+      this.log(`Update instance resource modpack profile ${path}`)
+      await this.resourceService.updateResources([{
+        hash,
+        metadata: {
+          instance: {
+            instance,
+            files,
+          },
+        },
+      }])
+    } catch (e) {
+      this.error('Fail to update resource: %o', e)
+    }
 
     return {
       instance,
       files,
     }
+  }
+
+  private async getManifestAndHandler(zip: ZipFile, entries: Entry[]) {
+    for (const handler of Object.values(this.handlers)) {
+      const manifest = await handler.readMetadata(zip, entries).catch(e => undefined)
+      if (manifest) {
+        return [manifest, handler] as const
+      }
+    }
+    return [undefined, undefined]
   }
 
   /**
@@ -358,20 +406,12 @@ export class ModpackService extends AbstractService implements IModpackService {
     }
 
     this.log(`Import modpack by path ${path}`)
+    const hash = await this.worker.checksum(path, 'sha1')
+
     const zip = await open(path)
     const entries = await readAllEntries(zip)
 
-    const getManifestAndHandler = async () => {
-      for (const handler of Object.values(this.handlers)) {
-        const manifest = await handler.readMetadata(zip, entries).catch(e => undefined)
-        if (manifest) {
-          return [manifest, handler] as const
-        }
-      }
-      return [undefined, undefined]
-    }
-
-    const [manifest, handler] = await getManifestAndHandler()
+    const [manifest, handler] = await this.getManifestAndHandler(zip, entries)
 
     if (!manifest || !handler) throw new ModpackException({ type: 'invalidModpack', path })
 
@@ -383,14 +423,14 @@ export class ModpackService extends AbstractService implements IModpackService {
     })
 
     const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
-    const downloadable = await lock.write(async () => {
+    const [unzippedFiles, files] = await lock.write(async () => {
       // If this failed, it will be the unzip failed. Then it should be safe to just fully retry.
       // No partial info should be caught.
-      const [unzippedFiles, files] = await this.submit(this.installModpackTask(zip, entries, manifest, handler, instancePath))
+      const [unzippedFiles, files] = await this.submit(this.installModpackTask(path, zip, entries, manifest, handler, instancePath))
 
       this.log(`Install ${unzippedFiles.length} files from modpack!`)
 
-      return files
+      return [unzippedFiles, files]
     }).catch((e) => {
       this.error(`Fail to install modpack: ${path}`)
       this.error(e)
@@ -400,10 +440,23 @@ export class ModpackService extends AbstractService implements IModpackService {
       throw e
     })
 
+    config.name = config.name || basename(options.path)
+
+    // Update the resource
+    await this.resourceService.updateResources([{
+      hash,
+      metadata: {
+        instance: {
+          instance: config,
+          files: [...unzippedFiles, ...files],
+        },
+      },
+    }])
+
     // Try to install
     await this.instanceInstallService.installInstanceFiles({
       path: instancePath,
-      files: downloadable,
+      files,
     })
 
     if (options.mountAfterSucceed) {
@@ -423,14 +476,14 @@ export class ModpackService extends AbstractService implements IModpackService {
     return instancePath
   }
 
-  private installModpackTask<T>(zip: ZipFile, entries: Entry[], manifest: T, handler: ModpackHandler<T>, root: string) {
+  private installModpackTask<T>(zipPath: string, zip: ZipFile, entries: Entry[], manifest: T, handler: ModpackHandler<T>, instancePath: string) {
     return task('installModpack', async function () {
       // unzip
       const promises: Promise<InstanceFile>[] = []
       await this.yield(new UnzipTask(
         zip,
         entries.filter(e => !e.fileName.endsWith('/') && handler.resolveUnpackPath(manifest, e)),
-        root,
+        instancePath,
         (e) => handler.resolveUnpackPath(manifest, e)!,
         async (input, file) => {
           const hash = createHash('sha1')
@@ -440,12 +493,15 @@ export class ModpackService extends AbstractService implements IModpackService {
           })
           promises.push(pipeline(input, hash).then(() => {
             const sha1 = hash.digest('hex')
-            const relativePath = relative(root, file)
+            const relativePath = relative(instancePath, file)
             return {
               path: relativePath,
               hashes: { sha1 },
               size,
-              downloads: [`resource://${sha1}/${relativePath}`],
+              downloads: [
+                `zip:///${join(zipPath, relativePath)}`,
+                `zip://${sha1}/${relativePath}`,
+              ],
             }
           }))
         },

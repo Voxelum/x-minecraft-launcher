@@ -10,4 +10,4 @@ export interface CurseforgeProjectHeader {
 }
 
 export const getCurseforgeFileUrl = (f: File) => f.downloadUrl ?? (`curseforge:${f.modId}:${f.id}`)
-export const getCurseforgeFileUri = (f: File) => `curseforge:${f.modId}:${f.id}`
+export const getCurseforgeFileUri = (f: Pick<File, 'modId' | 'id'>) => `curseforge:${f.modId}:${f.id}`

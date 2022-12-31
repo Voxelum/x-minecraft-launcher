@@ -1,4 +1,5 @@
 /* eslint-disable no-redeclare */
+import { InstanceFile } from './instanceManifest.schema'
 import _InstanceSchema from './InstanceSchema.json'
 import _InstancesSchema from './InstancesSchema.json'
 import { Schema } from './schema'
@@ -148,15 +149,46 @@ export interface InstanceData {
     type: 'curseforge-modpack'
     modId: number
     fileId: number
+    sha1?: string
+  } | {
+    type: 'modrinth-modpack'
+    projectId: string
+    versionId: string
+    sha1?: string
+  } | {
+    type: 'ftb-modpack'
+    id: number
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export interface InstanceLockSchema {
+  /**
+   * The instance lock version
+   * @default 1
+   */
+  version: number
+  /**
+   * The upstream data for this locked instance file state
+   */
+  upstream?: {
+    type: 'curseforge-modpack'
+    modId: number
+    fileId: number
     sha1: string
   } | {
     type: 'modrinth-modpack'
     projectId: string
     versionId: string
+    sha1: string
   } | {
     type: 'ftb-modpack'
     id: number
   }
+  /**
+   * All the files
+   */
+  files: InstanceFile[]
 }
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare

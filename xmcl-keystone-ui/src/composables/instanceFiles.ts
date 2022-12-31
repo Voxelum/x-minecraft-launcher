@@ -1,10 +1,12 @@
 import { InjectionKey, Ref } from 'vue'
 import { InstanceFile } from '@xmcl/runtime-api'
 import { basename } from '@/util/basename'
+import { CSSProperties } from 'vue/types/jsx'
 
 export interface InstanceFileNode<T = never> {
   name: string
   id: string
+  style?: CSSProperties
   size: number
   data?: T
   children?: InstanceFileNode<T>[]
@@ -65,6 +67,7 @@ export function provideFileNodes<T>(files: Ref<InstanceFileNode<T>[]>) {
         cwd.push(edgeNode)
       }
       buildEdges(edgeNode.children!, remained, current, file)
+      edgeNode.children?.sort((a, b) => a.id.localeCompare(b.id))
     } else { // leaf
       cwd.push(file)
     }

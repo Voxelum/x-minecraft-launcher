@@ -215,6 +215,10 @@ export class ResourceService extends AbstractService implements IResourceService
         data.github = options.metadata.github
         dirty = true
       }
+      if (options.metadata?.instance) {
+        data.instance = options.metadata.instance
+        dirty = true
+      }
       if (options.icons) {
         data.icons = options.icons
         dirty = true

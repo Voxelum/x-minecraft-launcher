@@ -1,6 +1,7 @@
 import { useRefreshable, useService } from '@/composables'
 import { injection } from '@/util/inject'
-import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, FeedTheBeastServiceKey, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromModrinthModpack, InstanceData, InstanceManifest, InstanceSchema, isCurseforgeModpackResource, isMcbbsModpackResource, isModrinthModpackResource, isRawModpackResource, JavaServiceKey, McbbsModpackResource, ModpackResource, ModrinthModpackResource, PeerServiceKey, RawModpackResource, ResourceDomain, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { getUpstreamFromResource } from '@/util/upstream'
+import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, FeedTheBeastServiceKey, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromModrinthModpack, InstanceData, InstanceManifest, InstanceSchema, isCurseforgeModpackResource, isMcbbsModpackResource, isModrinthModpackResource, isRawModpackResource, JavaServiceKey, McbbsModpackResource, ModpackResource, ModrinthModpackResource, PeerServiceKey, RawModpackResource, RuntimeVersions } from '@xmcl/runtime-api'
 import { DialogKey } from './dialog'
 import { kModpacks } from './modpack'
 
@@ -131,15 +132,8 @@ export function useAllTemplate(data: InstanceData) {
         liteloader: '',
       },
       icon: modrinth.icons?.[0],
+      upstream: getUpstreamFromResource(modrinth),
       source: { type: 'modrinth', resource: modrinth },
-    }
-
-    if (modrinth.metadata.modrinth) {
-      result.upstream = {
-        type: 'modrinth-modpack',
-        projectId: modrinth.metadata.modrinth.projectId,
-        versionId: modrinth.metadata.modrinth.versionId,
-      }
     }
 
     return result
@@ -162,16 +156,8 @@ export function useAllTemplate(data: InstanceData) {
         optifine: '',
       },
       source: { type: 'curseforge', resource: curseforge },
+      upstream: getUpstreamFromResource(curseforge),
       icon: curseforge.icons?.[0],
-    }
-
-    if (curseforge.metadata.curseforge) {
-      result.upstream = {
-        type: 'curseforge-modpack',
-        modId: curseforge.metadata.curseforge.projectId,
-        fileId: curseforge.metadata.curseforge.fileId,
-        sha1: curseforge.hash,
-      }
     }
 
     return result

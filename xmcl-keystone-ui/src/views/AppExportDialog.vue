@@ -208,7 +208,7 @@
             v-if="refreshing"
             type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
           />
-          <instance-manifest-file-tree
+          <InstanceManifestFileTree
             v-model="data.selected"
             selectable
             :search="filterText"
@@ -264,7 +264,7 @@
                 </v-tooltip>
               </template>
             </template>
-          </instance-manifest-file-tree>
+          </InstanceManifestFileTree>
         </v-layout>
       </div>
       <v-card-actions class="gap-5 items-baseline">

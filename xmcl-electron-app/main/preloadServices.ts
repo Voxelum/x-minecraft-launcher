@@ -1,4 +1,4 @@
-import { BaseService, CurseForgeService, DiagnoseService, ElyByService, ExternalAuthSkinService, FeedTheBeastService, ImportService, InstallService, InstanceInstallService, InstanceIOService, InstanceJavaService, InstanceLogService, InstanceManifestService, InstanceModsService, InstanceOptionsService, InstanceResourcePackService, InstanceSavesService, InstanceService, InstanceShaderPacksService, InstanceVersionService, JavaService, LaunchService, LittleSkinUserService, ModpackService, ModrinthService, OfficialUserService, OfflineUserService, PeerService, ResourcePackPreviewService, ResourceService, ServerStatusService, UserService, VersionService } from '@xmcl/runtime'
+import { BaseService, CurseForgeService, InstanceUpdateService, DiagnoseService, ElyByService, ExternalAuthSkinService, FeedTheBeastService, ImportService, InstallService, InstanceInstallService, InstanceIOService, InstanceJavaService, InstanceLogService, InstanceManifestService, InstanceModsService, InstanceOptionsService, InstanceResourcePackService, InstanceSavesService, InstanceService, InstanceShaderPacksService, InstanceVersionService, JavaService, LaunchService, LittleSkinUserService, ModpackService, ModrinthService, OfficialUserService, OfflineUserService, PeerService, ResourcePackPreviewService, ResourceService, ServerStatusService, UserService, VersionService } from '@xmcl/runtime'
 import { NatService } from '@xmcl/runtime/lib/services/NatService'
 
 export const preloadServices = [
@@ -19,6 +19,7 @@ export const preloadServices = [
   InstanceSavesService,
   InstanceService,
   InstanceShaderPacksService,
+  InstanceUpdateService,
   InstanceVersionService,
   OfflineUserService,
   JavaService,

@@ -1,8 +1,8 @@
-import { ResourceMetadata } from '../entities/resource'
 import { Exception } from '../entities/exception'
+import { InstanceFile } from '../entities/instanceManifest.schema'
+import { ResourceMetadata } from '../entities/resource'
 import { EditInstanceOptions } from './InstanceService'
 import { ServiceKey } from './Service'
-import { InstanceFile } from '../entities/instanceManifest.schema'
 
 export interface ExportFileDirective {
   path: string

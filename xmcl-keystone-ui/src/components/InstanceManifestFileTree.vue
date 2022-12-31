@@ -36,7 +36,7 @@
       <div style="padding: 5px 0px;">
         <span
           style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px;"
-          :style="{ color: item.disabled ? 'grey' : darkTheme ? 'white' : 'black' }"
+          :style="{ color: item.disabled ? 'grey' : darkTheme ? 'white' : 'black', ...(item.style || {}) }"
         >{{ item.name }}</span>
         <div
           style="color: grey; font-size: 12px; font-style: italic; max-width: 300px;"
@@ -83,35 +83,36 @@ function getIcon(file: string) {
   }
   return 'insert_drive_file'
 }
+const translatedFiles = computed(() => ({
+  mods: t('intro.struct.mods'),
+  resourcepacks: t('intro.struct.resourcepacks'),
+  config: t('intro.struct.config'),
+  saves: t('intro.struct.saves'),
+  'options.txt': t('intro.struct.optionTxt'),
+  logs: t('intro.struct.logs'),
+  'optionsshaders.txt': t('intro.struct.optionShadersTxt'),
+} as Record<string, string>))
+const translatedMods = computed(() => ({
+  curseforge: t('exportModpackTarget.curseforge'),
+  modrinth: t('exportModpackTarget.modrinth'),
+  override: t('exportModpackTarget.override'),
+}))
+
 function getDescription(item: InstanceFileNode<any>) {
-  switch (item.id) {
-    case 'mods':
-      return t('intro.struct.mods')
-    case 'resourcepacks':
-      return t('intro.struct.resourcepacks')
-    case 'config':
-      return t('intro.struct.config')
-    case 'saves':
-      return t('intro.struct.saves')
-    case 'options.txt':
-      return t('intro.struct.optionTxt')
-    case 'logs':
-      return t('intro.struct.logs')
-    case 'optionsshaders.txt':
-      return t('intro.struct.optionShadersTxt')
-    default:
+  if (item.id in translatedFiles.value) {
+    return translatedFiles.value[item.id]
   }
   if (item.id.startsWith('mods/')) {
     let text = t('intro.struct.modJar')
     if (item.data) {
       if (item.data.curseforge) {
-        text += (' 🧬 ' + t('exportModpackTarget.curseforge'))
+        text += (' 🧬 ' + translatedMods.value.curseforge)
       }
       if (item.data.modrinth) {
-        text += (' 🧬 ' + t('exportModpackTarget.modrinth'))
+        text += (' 🧬 ' + translatedMods.value.modrinth)
       }
-      if (!item.data.modrinth) {
-        text += (' 🧬 ' + t('exportModpackTarget.override'))
+      if (!item.data.modrinth && !item.data.curseforge) {
+        text += (' 🧬 ' + translatedMods.value.override)
       }
     }
     return text
