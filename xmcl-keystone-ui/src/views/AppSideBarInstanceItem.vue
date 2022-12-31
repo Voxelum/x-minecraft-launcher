@@ -163,7 +163,6 @@ const items = computed(() => {
       onClick() {
         showDeleteDialog({ name: props.instance.name, path: props.instance.path })
       },
-      children: [],
     },
   ]
   return result

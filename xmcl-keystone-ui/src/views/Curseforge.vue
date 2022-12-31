@@ -6,7 +6,16 @@
       height="3"
       :indeterminate="true"
     />
-    <div class="flex flex-col gap-3 overflow-auto">
+    <div class="flex flex-col gap-3 overflow-auto relative">
+      <div class="absolute bottom-1 w-full z-10 transform scale-90 opacity-60 hover:(scale-100 opacity-100) transition">
+        <v-pagination
+          v-model="currentPage"
+          color="success"
+          :disabled="loading"
+          :length="pages"
+          :total-visible="12"
+        />
+      </div>
       <v-card
         class="flex py-1 rounded-lg flex-shrink flex-grow-0"
         outlined
@@ -43,112 +52,25 @@
           :placeholder="t('curseforge.search')"
           @keypress.enter="currentKeyword = keywordBuffer"
         />
-        <v-pagination
-          v-model="currentPage"
-          :disabled="loading"
-          :length="pages"
-          :total-visible="5"
-        />
       </v-card>
       <div
-        v-if="!loading"
+        v-if="!error && projects.length > 0"
         class="flex flex-col gap-3 overflow-auto flex-shrink flex-grow-0"
       >
-        <v-card
+        <CurseforgeCard
           v-for="proj in projects"
           :key="proj.id"
-          v-ripple
+          :proj="proj"
+          :current-type="currentType"
+          :from="from"
           :disabled="loading"
-          hover
-          outlined
-          exact
-          push
-          :to="`/curseforge/${currentType}/${proj.id}?from=${from || ''}`"
-          class="flex"
-        >
-          <v-img
-            :src="proj.logo.url"
-            max-width="120"
-            class="rounded"
-          >
-            <template #placeholder>
-              <v-layout
-                fill-height
-                align-center
-                justify-center
-                ma-0
-              >
-                <v-progress-circular
-                  indeterminate
-                  color="grey lighten-5"
-                />
-              </v-layout>
-            </template>
-          </v-img>
-          <div class="flex-grow">
-            <v-card-title>
-              {{ proj.name }}
-            </v-card-title>
-            <v-card-subtitle class="flex flex-wrap gap-4">
-              <div class="text-current">
-                <v-icon
-                  left
-                  small
-                >
-                  person
-                </v-icon>
-                {{ proj.authors[0].name }}
-              </div>
-              <div>
-                <v-icon
-                  left
-                  small
-                >
-                  event
-                </v-icon>
-                {{ getLocalDateString(proj.dateModified || proj.dateCreated) }}
-              </div>
-              <div>
-                <v-icon
-                  left
-                  small
-                >
-                  file_download
-                </v-icon>
-                {{ getExpectedSize(proj.downloadCount, '') }}
-              </div>
-            </v-card-subtitle>
-            <v-card-text>{{ proj.summary }}</v-card-text>
-          </div>
-          <div
-            class="p-4 flex flex-wrap gap-2 justify-start content-start"
-            @click.stop.prevent
-          >
-            <v-chip
-              v-for="cat of dedup(proj.categories, (v) => v.id)"
-              :key="cat.id"
-              label
-              outlined
-              @click="categoryId = categoryId === cat.id ? undefined : cat.id"
-            >
-              <v-tooltip top>
-                <template #activator="{ on }">
-                  <v-avatar>
-                    <img
-                      :src="cat.iconUrl"
-                      style="max-height:30px; max-width: 30px"
-                      v-on="on"
-                    >
-                  </v-avatar>
-                </template>
-                {{ cat.name }}
-              </v-tooltip>
-            </v-chip>
-          </div>
-        </v-card>
+          @category="categoryId = categoryId === $event ? undefined : $event"
+          @search="currentKeyword = $event"
+        />
+        <div class="min-h-14 w-full p-1" />
       </div>
       <v-skeleton-loader
-        v-else
+        v-if="loading && projects.length === 0"
         class="flex flex-col gap-3 overflow-auto"
         type="list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line"
       />
@@ -158,7 +80,7 @@
         @refresh="refresh"
       />
     </div>
-    <div class="flex flex-col overflow-auto md:hidden lg:flex min-w-[20%]">
+    <div class="flex flex-col overflow-auto md:hidden lg:flex min-w-[20%] max-w-[20%] select-none">
       <Categories
         :type="currentType"
         :selected="currentCategory"
@@ -175,10 +97,8 @@ import { useMinecraftVersions } from '../composables/version'
 import { vFocusOnSearch } from '../directives/focusOnSearch'
 import Categories from './CurseforgeCategories.vue'
 
-import { getLocalDateString } from '@/util/date'
-import { dedup } from '@/util/dedup'
-import { getExpectedSize } from '@/util/size'
 import ErrorView from '@/components/ErrorView.vue'
+import CurseforgeCard from './CurseforgeCard.vue'
 
 interface CurseforgeProps {
   type: string
@@ -212,6 +132,9 @@ const allTypes = computed(() => ['mc-mods', 'texture-packs', 'worlds', 'modpacks
   value: v,
 })))
 const keywordBuffer = ref(props.keyword)
+watch(() => props.keyword, (newKeyword) => {
+  keywordBuffer.value = newKeyword
+})
 const { versions, refresh, refreshing } = useMinecraftVersions()
 const mcVersions = computed(() => versions.value.filter(v => v.type === 'release').map(v => v.id))
 

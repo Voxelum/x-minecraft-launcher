@@ -221,14 +221,12 @@ const { t } = useI18n()
 const contextMenuItems = computed(() => {
   const items: ContextMenuItem[] = [{
     text: t('instance.showInstance', { file: props.instance.path }),
-    children: [],
     onClick: () => {
       showItemInDirectory(props.instance.path)
     },
     icon: 'folder',
   }, {
     text: t('delete.name', { name: props.instance.path }),
-    children: [],
     onClick: () => {
       emit('delete')
     },

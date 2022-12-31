@@ -109,7 +109,6 @@ const contextMenuItems: Ref<ContextMenuItem[]> = computed(() => {
     if (props.item.ftb) {
       return [{
         text: t('modpack.showInFtb', { name: props.item.name }),
-        children: [],
         onClick: () => {
           router.push(`/ftb/${props.item.ftb?.parent}`)
         },
@@ -120,14 +119,12 @@ const contextMenuItems: Ref<ContextMenuItem[]> = computed(() => {
   }
   const items: ContextMenuItem[] = [{
     text: t('tag.create'),
-    children: [],
     onClick: () => {
       createTag()
     },
     icon: 'add',
   }, {
     text: t('delete.name', { name: props.item.name }),
-    children: [],
     onClick: () => {
       emit('delete')
     },
@@ -137,7 +134,6 @@ const contextMenuItems: Ref<ContextMenuItem[]> = computed(() => {
   const res = props.item.resource
   items.unshift({
     text: t('modpack.showFile', { file: props.item.resource.path }),
-    children: [],
     onClick: () => {
       showItemInDirectory(res.path)
     },
@@ -147,7 +143,6 @@ const contextMenuItems: Ref<ContextMenuItem[]> = computed(() => {
     const curseforge = props.item.resource.metadata.curseforge
     items.push({
       text: t('modpack.showInCurseforge', { name: props.item.name }),
-      children: [],
       onClick: () => {
         goProjectAndRoute(curseforge.projectId, 'modpacks')
       },

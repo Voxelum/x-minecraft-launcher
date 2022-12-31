@@ -1,11 +1,10 @@
-import { ref } from 'vue'
+import { Ref, ref } from 'vue'
 
 export interface ContextMenuItem {
   text: string
   icon: string
   color?: string
   onClick: () => void
-  children: ContextMenuItem[]
 }
 
 const x = ref(0)

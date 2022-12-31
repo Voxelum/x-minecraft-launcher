@@ -33,24 +33,15 @@
   </v-menu>
 </template>
 
-<script lang=ts>
-import { defineComponent } from 'vue'
+<script lang=ts setup>
 import { useContextMenuData } from '../composables/contextMenu'
 
-export default defineComponent({
-  setup() {
-    const data = useContextMenuData()
-    document.addEventListener('keyup', (e) => {
-      if (e.key === 'Escape' && data.shown.value) {
-        data.shown.value = false
-        e.preventDefault()
-        e.stopPropagation()
-      }
-    }, { capture: true })
-    return data
-  },
-})
+const { x, y, items, shown } = useContextMenuData()
+document.addEventListener('keyup', (e) => {
+  if (e.key === 'Escape' && shown.value) {
+    shown.value = false
+    e.preventDefault()
+    e.stopPropagation()
+  }
+}, { capture: true })
 </script>
-
-<style>
-</style>
