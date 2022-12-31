@@ -138,6 +138,10 @@ curseforge:
   worlds:
     description: View and download worlds from Curseforge
     name: Worlds
+curseforgeCard:
+  currentFile: Current Modpack File
+  projectHint: This instance is created by curseforge project {mod} with file id = {file}
+  projectLastFile: Latest Modpack File
 dataMigration:
   apply: Apply Setting
   directoryCriteriaHint: Please make sure your new directory location is an EMPTY directory!
@@ -367,6 +371,12 @@ instanceAge:
   older: Older
   threeDay: In Three Days
   today: Today
+instanceFileOperation:
+  add: Add
+  backup-add: Replace (Backup)
+  backup-remove: Remove (Backup)
+  keep: Keep
+  remove: Remove
 instanceSetting:
   fastLaunch: Turbo Launch
   fastLaunchHint: Ignore the user status and existed unfixed problems
@@ -384,6 +394,11 @@ instanceTemplate:
   profile: This is a existed profile configuration
   server: This is a existed server configuration
   title: Template Setting
+instanceUpdate:
+  basic: Setting Update
+  files: File Updates
+  title: Update Instance
+  update: Start Update
 instances:
   add: Add Local Game
   choose: Select Instance
@@ -468,6 +483,7 @@ launcherUpdate:
   alreadyLatest: Up To Date
   installAndQuit: Restart to Install
   noUpdateAvailable: No Update Available
+  reinstall: Reinstall
   updateToThisVersion: Download and Install
 liteloader:
   name: LiteLoader
@@ -597,6 +613,7 @@ modpack:
   url: URL
   urlHint: The home page url of your modpack
 modrinth:
+  browseUrl: Open In Browser {url}
   categories:
     128x: 128x
     16x: 16x
@@ -663,7 +680,9 @@ modrinth:
     velocity: Velocity
     waterfall: Waterfall
     worldgen: World Gen
+    datapack: Data Pack
   clientSide: Client Side
+  copyTitle: Copy Text {title} to clipboard
   createAt: Created
   description: Description
   downloads: Downloads
@@ -700,6 +719,7 @@ modrinth:
     modpack: Modpack
     name: Project Type
     resourcePack: Resource Pack
+  quickSearch: Search {title}
   searchText: Search
   serverSide: Server Side
   sort:
@@ -712,6 +732,14 @@ modrinth:
   technicalInformation: Technical Information
   updateAt: Updated
   versions: Versions
+modrinthCard:
+  currentVersion: Current Version
+  projectHint: >
+    This instance is created by Modrinth modpack from <code class="rounded p-1"
+    style="background: rgba(123,123,123,0.2)">{title}</code> (project id:
+          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
+  projectLastUpdateDate: 'Project Last Updated At:'
+  projectLastUpdateVersion: Latest Version
 multiplayer:
   complete: Complete
   confirm: Confirm

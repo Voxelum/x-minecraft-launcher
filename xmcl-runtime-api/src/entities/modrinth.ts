@@ -31,6 +31,6 @@ export interface ModrinthProjectHeader {
 export function getModrinthVersionUrl(version: ProjectVersion) {
   return version.files[0].url
 }
-export function getModrinthVersionUri(version: ProjectVersion) {
+export function getModrinthVersionUri(version: Pick<ProjectVersion, 'project_id' | 'id'>) {
   return `modrinth:${version.project_id}:${version.id}`
 }

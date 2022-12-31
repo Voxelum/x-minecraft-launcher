@@ -99,6 +99,7 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
     this.modsWatcher = watch(basePath, async (event, filePath) => {
       if (filePath.startsWith('.')) return
       if (filePath.endsWith('.pending')) return
+      if (filePath.endsWith('.backup')) return
       if (event === 'update') {
         const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }])
         if (isModResource(resource)) {

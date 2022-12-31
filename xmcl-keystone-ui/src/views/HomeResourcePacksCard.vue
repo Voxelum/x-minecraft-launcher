@@ -1,5 +1,7 @@
 <template>
-  <v-card>
+  <v-card
+    class="flex flex-col h-full"
+  >
     <v-card-title>
       <v-icon
         left
@@ -8,7 +10,7 @@
       </v-icon>
       {{ t('resourcepack.name', 2) }}
     </v-card-title>
-    <v-card-text>
+    <v-card-text class="flex-grow">
       {{ t('resourcepack.enable', { count: resourcePackCount }) }}
     </v-card-text>
     <v-card-actions>

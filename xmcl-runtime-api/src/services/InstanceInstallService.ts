@@ -2,6 +2,9 @@ import { Exception, InstanceNotFoundException } from '../entities/exception'
 import { InstanceFile } from '../entities/instanceManifest.schema'
 import { ServiceKey } from './Service'
 
+export type InstanceFileOperation = 'remove' | 'add' | 'backup-add' | 'backup-remove'
+export type InstanceFileWithOperation = InstanceFile & { operation?: InstanceFileOperation }
+
 export interface InstallInstanceOptions {
   /**
    * The instance path
@@ -10,7 +13,7 @@ export interface InstallInstanceOptions {
   /**
    * The files to update
    */
-  files: Array<InstanceFile>
+  files: Array<InstanceFileWithOperation>
   /**
    * Generate the lock of the instance
    */
@@ -39,7 +42,7 @@ export interface InstanceInstallService {
    *
    * @return All pending instance installation
    */
-  checkInstanceInstall(): Promise<InstanceFile[]>
+  checkInstanceInstall(): Promise<InstanceFileWithOperation[]>
 }
 
 export type InstanceInstallExceptions = InstanceNotFoundException

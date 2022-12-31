@@ -2,8 +2,7 @@ import { checksum } from '@xmcl/core'
 import { isFileNoFound } from '@xmcl/runtime-api'
 import { AbortableTask, CancelledError } from '@xmcl/task'
 import { createHash } from 'crypto'
-import { FileExtension } from 'file-type/core'
-import { access, constants, copy, copyFile, ensureDir, FSWatcher, link, readdir, stat, symlink, unlink, watch } from 'fs-extra'
+import { access, constants, copy, copyFile, ensureDir, link, readdir, stat, symlink, unlink } from 'fs-extra'
 import { platform } from 'os'
 import { extname, join, resolve } from 'path'
 import { pipeline, Readable } from 'stream'
@@ -159,13 +158,6 @@ export async function createSymbolicLink(srcPath: string, destPath: string) {
   }
 }
 
-export function sha1(data: Buffer) {
-  return createHash('sha1').update(data).digest('hex')
-}
-
-export function sha1ByPath(path: string) {
-  return checksum(path, 'sha1')
-}
 
 export function swapExt(path: string, ext: string) {
   const existedExt = extname(path)
@@ -187,14 +179,6 @@ export function linkWithTimeoutOrCopy(from: string, to: string, timeout = 1500) 
   return linkWithTimeout(from, to, timeout).catch(() => {
     return copy(from, to)
   })
-}
-
-export type FileType = FileExtension | 'unknown' | 'directory'
-
-export async function fileType(path: string): Promise<FileType> {
-  const { fromFile } = await import('file-type')
-  const result = await fromFile(path)
-  return result?.ext ?? 'unknown'
 }
 
 /**

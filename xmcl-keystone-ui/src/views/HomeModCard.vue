@@ -1,12 +1,16 @@
 <template>
-  <v-card>
+  <v-card
+    class="flex flex-col h-full"
+  >
     <v-card-title>
       <v-icon left>
         extension
       </v-icon>
       Mods
     </v-card-title>
-    <v-card-text>
+    <v-card-text
+      class="flex-grow"
+    >
       <template v-if="refreshing > 0">
         <v-skeleton-loader type="paragraph" />
       </template>
@@ -28,8 +32,8 @@
   </v-card>
 </template>
 <script lang="ts" setup>
-import { InstanceModsServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
 import { useSemaphore, useService } from '@/composables'
+import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 
 const { state } = useService(InstanceModsServiceKey)
 const modCounts = computed(() => state.mods.length)

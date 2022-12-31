@@ -29,7 +29,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
 
   @Singleton(p => JSON.stringify(p))
   async getInstanceManifest(options?: GetManifestOptions): Promise<InstanceManifest> {
-    // Ensure the resource service is initialized...
+  // Ensure the resource service is initialized...
     await this.resourceService.initialize()
     const instancePath = options?.path || this.instanceService.state.path
 
@@ -39,8 +39,13 @@ export class InstanceManifestService extends AbstractService implements IInstanc
       const result: Record<string, string> = { }
       if (options?.hashes) {
         for (const hash of options.hashes) {
-          if (hash === 'sha1' && sha1) {
-            result.sha1 = sha1
+          if (hash === 'sha1') {
+            if (sha1) {
+              result.sha1 = sha1
+            } else {
+              result[hash] = await this.worker.checksum(file, hash)
+            }
+            continue
           } else {
             result[hash] = await this.worker.checksum(file, hash)
           }
@@ -130,7 +135,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
 
     files.shift()
 
-    const resolveTask = new ResolveInstanceFileTask(undecorated, this.curseforgeService, this.modrinthService)
+    const resolveTask = new ResolveInstanceFileTask(undecorated, this.curseforgeService.client, this.modrinthService.client)
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const logger = this

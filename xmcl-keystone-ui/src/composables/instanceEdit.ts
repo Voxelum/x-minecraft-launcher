@@ -27,7 +27,11 @@ export function useInstanceEdit() {
 
     runtime: {
       minecraft: '',
-      ...(instance.value?.runtime ? instance.value.runtime : {}),
+      forge: instance.value?.runtime.forge,
+      fabricLoader: instance.value?.runtime.fabricLoader,
+      quiltLoader: instance.value?.runtime.quiltLoader,
+      optifine: instance.value?.runtime.optifine,
+      liteloader: instance.value?.runtime.liteloader,
     },
     version: '',
 

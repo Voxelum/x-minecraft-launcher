@@ -126,6 +126,10 @@ curseforge:
   worlds:
     description: 从 Curseforge 上安装世界存档
     name: 世界存档
+curseforgeCard:
+  currentFile: 当前整合包文件
+  projectHint: 这个实例时通过 Curseforge 创建的。对应的 Curseforge id 是 {mod}，文件 id 是 {file}
+  projectLastFile: 最新版本文件
 curseforgeCategory:
   API and Library: API 和库
   Addons: 插件
@@ -386,6 +390,12 @@ instanceAge:
   older: 三天前
   threeDay: 三天内
   today: 今天
+instanceFileOperation:
+  add: 新增
+  backup-add: 备份并替换
+  backup-remove: 移除（备份）
+  keep: 保留
+  remove: 移除
 instanceSetting:
   fastLaunch: 快速启动
   fastLaunchHint: 启动时跳过刷新用户和没有修复的问题
@@ -403,6 +413,11 @@ instanceTemplate:
   profile: 这是一个已有的启动配置
   server: 这是一个已有的服务器启动配置
   title: 模板设置
+instanceUpdate:
+  basic: 设置更新
+  files: 文件更新
+  title: 更新实例
+  update: 开始更新实例
 instances:
   add: 新建本地游戏
   choose: 选择实例
@@ -497,6 +512,7 @@ launcherUpdate:
   alreadyLatest: 已经是最新
   installAndQuit: 重启并安装更新
   noUpdateAvailable: 目前没有可用更新
+  reinstall: 重新安装
   updateToThisVersion: 下载并安装
 liteloader:
   name: Liteloader
@@ -610,6 +626,7 @@ modpack:
   url: URL
   urlHint: 整合包的主页 URL 地址
 modrinth:
+  browseUrl: 在浏览器中打开 {url}
   categories:
     128x: 128x
     16x: 16x
@@ -676,7 +693,9 @@ modrinth:
     velocity: Velocity
     waterfall: Waterfall
     worldgen: 世界生成
+    datapack: 数据包
   clientSide: 客户端
+  copyTitle: 复制 "{title}" 到剪贴板
   createAt: 创建日期
   description: 详情
   downloads: 下载量
@@ -713,6 +732,7 @@ modrinth:
     modpack: 整合包
     name: 项目类型
     resourcePack: 资源包
+  quickSearch: 搜索 {title}
   searchText: 搜素
   serverSide: 服务端
   sort:
@@ -725,6 +745,14 @@ modrinth:
   technicalInformation: 技术信息
   updateAt: 更新于
   versions: 版本
+modrinthCard:
+  currentVersion: 当前版本
+  projectHint: >
+    这个实例是从 Modrinth 整合包 <code class="rounded bg-[rgba(123,123,123,0.2)] p-1">{
+    title}</code> (项目 ID:
+          <code class="rounded bg-[rgba(123,123,123,0.2)] p-1">{id}</code>) 创建的
+  projectLastUpdateDate: 该项目上次更新时间：
+  projectLastUpdateVersion: 最新版本
 multiplayer:
   complete: 完成
   confirm: 确定

@@ -53,7 +53,7 @@ export function useCurseforge(props: CurseforgeProps) {
   const currentCategory = computed({
     get() { return props.category },
     set(v: string) {
-      router.replace({ query: { ...router.currentRoute.query, category: v } })
+      router.replace({ query: { ...router.currentRoute.query, category: v, page: '1' } })
     },
   })
   const currentSort = computed({
@@ -101,6 +101,9 @@ export function useCurseforge(props: CurseforgeProps) {
       categoryId: categoryId.value,
       searchFilter: currentKeyword.value,
     })
+    console.log(pagination)
+    console.log(Math.floor(pagination.totalCount / pageSize))
+
     data.totalCount = pagination.totalCount
     data.projects = Object.freeze(result) as any
     data.pages = Math.floor(data.totalCount / pageSize)

@@ -1,10 +1,11 @@
 import { checksum } from '@xmcl/core'
 import { DownloadTask } from '@xmcl/installer'
-import { InstallInstanceOptions, InstanceFile, InstanceInstallService as IInstanceInstallService, InstanceInstallServiceKey, InstanceIOException, LockKey, Persisted, Resource, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
-import { AbortableTask, Task, task } from '@xmcl/task'
+import { InstallInstanceOptions, InstanceFile, InstanceFileWithOperation, InstanceInstallService as IInstanceInstallService, InstanceInstallServiceKey, InstanceIOException, LockKey, Resource, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
+import { AbortableTask, task } from '@xmcl/task'
 import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
 import { createWriteStream, existsSync } from 'fs'
-import { readFile, rename, stat, unlink, writeFile } from 'fs-extra'
+import { readFile, rename, stat, unlink } from 'fs-extra'
+import { writeFile } from 'atomically'
 import { join, relative } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
@@ -12,8 +13,10 @@ import { errors } from 'undici'
 import { Entry, ZipFile } from 'yauzl'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { CurseforgeClient } from '../clients/CurseforgeClient'
+import { ModrinthClient } from '../clients/ModrinthClient'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
-import { linkWithTimeoutOrCopy, missing } from '../util/fs'
+import { linkWithTimeoutOrCopy } from '../util/fs'
 import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { createPromiseSignal } from '../util/promiseSignal'
@@ -29,7 +32,7 @@ type RequiredPick<T, K extends keyof T> = T & Required<Pick<T, K>>
 export class ResolveInstanceFileTask extends AbortableTask<void> {
   private controller?: AbortController
 
-  constructor(private files: InstanceFile[], private curseforgeService: CurseForgeService, private modrinthService: ModrinthService) {
+  constructor(private files: InstanceFile[], private curseforgeClient: CurseforgeClient, private modrinthClient: ModrinthClient) {
     super()
     this.name = 'resolve'
   }
@@ -59,7 +62,7 @@ export class ResolveInstanceFileTask extends AbortableTask<void> {
 
     const processCurseforge = async () => {
       if (curseforgeProjects.length === 0) return
-      const result = await this.curseforgeService.client.getFiles(curseforgeProjects.map(p => p.curseforge.fileId), controller.signal)
+      const result = await this.curseforgeClient.getFiles(curseforgeProjects.map(p => p.curseforge.fileId), controller.signal)
       for (const r of result) {
         const p = curseforgeProjects.find(p => p.curseforge.fileId === r.id)!
         if (!p.downloads) { p.downloads = [] }
@@ -69,7 +72,7 @@ export class ResolveInstanceFileTask extends AbortableTask<void> {
 
     const processModrinth = async () => {
       if (modrinthProjects.length === 0) return
-      const result = await this.modrinthService.client.getProjectVersionsById(modrinthProjects.map(v => v.modrinth.versionId), controller.signal)
+      const result = await this.modrinthClient.getProjectVersionsById(modrinthProjects.map(v => v.modrinth.versionId), controller.signal)
       for (const r of result) {
         const p = modrinthProjects.find(p => p.modrinth.versionId === r.id)!
         if (!p.downloads) { p.downloads = [] }
@@ -79,7 +82,7 @@ export class ResolveInstanceFileTask extends AbortableTask<void> {
 
     const processModrinthLike = async () => {
       if (modrinthFileHashProjects.length === 0) return
-      const result = await this.modrinthService.client.getProjectVersionsByHash(modrinthFileHashProjects.filter(v => !!v.hashes.sha1).map(v => v.hashes.sha1), controller.signal)
+      const result = await this.modrinthClient.getProjectVersionsByHash(modrinthFileHashProjects.filter(v => !!v.hashes.sha1).map(v => v.hashes.sha1), controller.signal)
       for (const r of Object.entries(result)) {
         const p = modrinthFileHashProjects.find(p => p.hashes.sha1 === r[0])!
         if (!p.downloads) { p.downloads = [] }
@@ -170,7 +173,9 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
     await this.writeInstallProfile(instancePath, files)
 
-    const { curseforgeService, modrinthService, writeInstallProfile } = this
+    const { writeInstallProfile } = this
+    const curseforgeClient = this.curseforgeService.client
+    const modrinthClient = this.modrinthService.client
 
     const zipBarrier = createPromiseSignal()
     const zips = new Set<string>()
@@ -189,7 +194,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
     const updateInstanceTask = task('installInstance', async function () {
       await lock.write(async () => {
         try {
-          await this.yield(new ResolveInstanceFileTask(files, curseforgeService, modrinthService))
+          await this.yield(new ResolveInstanceFileTask(files, curseforgeClient, modrinthClient))
           await writeInstallProfile(instancePath, files)
         } catch {
           // Ignore
@@ -219,12 +224,21 @@ export class InstanceInstallService extends AbstractService implements IInstance
     const current = this.instanceService.state.path
     const profile = join(current, '.install-profile')
     if (existsSync(profile)) {
-      const fileContent = JSON.parse(await readFile(profile, 'utf-8'))
-      if (fileContent.lockVersion !== 0) {
-        throw new Error(`Cannot identify lockfile version ${fileContent.lockVersion}`)
+      try {
+        const fileContent = JSON.parse(await readFile(profile, 'utf-8'))
+        if (fileContent.lockVersion !== 0) {
+          throw new Error(`Cannot identify lockfile version ${fileContent.lockVersion}`)
+        }
+        const files = fileContent.files as InstanceFile[]
+        return files
+      } catch (e) {
+        if (e instanceof SyntaxError) {
+          this.error(`Fail to parse instance install profile ${profile} as syntex error`)
+          await unlink(profile).catch(() => undefined)
+        } else {
+          throw e
+        }
       }
-      const files = fileContent.files as InstanceFile[]
-      return files
     }
     return []
   }
@@ -243,10 +257,11 @@ export class InstanceInstallService extends AbstractService implements IInstance
     await unlink(filePath)
   }
 
-  private async getDownloadFile(file: InstanceFile, instancePath: string, getEntry: (zipFile: string, entry: string) => Promise<readonly [ZipFile, Entry]>) {
+  private async getDownloadFile(file: InstanceFileWithOperation, instancePath: string, getEntry: (zipFile: string, entry: string) => Promise<readonly [ZipFile, Entry]>) {
     const createFileLinkTask = (dest: string, res: Resource) => task('file', async () => {
       const fstat = await stat(dest).catch(() => undefined)
       if (fstat && fstat.ino === res.ino) {
+        // existed file, but same
         return
       }
       if (fstat) {
@@ -256,7 +271,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
       await linkWithTimeoutOrCopy(res.path, dest)
     })
 
-    const createDownloadTask = (file: InstanceFile, destination: string, sha1?: string): Task<any> => {
+    const createDownloadTask = async (file: InstanceFile, destination: string, sha1?: string) => {
       if (file.downloads) {
         const zip = file.downloads.find(u => u.startsWith('zip:'))
         const peerUrl = file.downloads.find(u => u.startsWith('peer://'))
@@ -280,10 +295,18 @@ export class InstanceInstallService extends AbstractService implements IInstance
           })
         } else if (zip) {
           // Unzip
-          const url = zip.substring('zip:'.length)
-          const zipPath = url.substring(0, url.length - file.path.length)
-          const promise = getEntry(zipPath, file.path)
-          return new UnzipFileTask(promise, destination)
+          const url = new URL(zip)
+          if (!url.host) {
+            let zipPath = zip.substring(7/* 'zip:///'.length */)
+            zipPath = zipPath.substring(0, zipPath.length - file.path.length)
+            return new UnzipFileTask(getEntry(zipPath, file.path), destination)
+          } else {
+            const res = await this.resourceService.getResourceByHash(url.host)
+            if (res) {
+              return new UnzipFileTask(getEntry(res.path, file.path), destination)
+            }
+            throw new Error(`Cannot resolve file! ${file.path}`)
+          }
         } else {
           throw new Error(`Cannot resolve file! ${file.path}`)
         }
@@ -301,8 +324,20 @@ export class InstanceInstallService extends AbstractService implements IInstance
     }
 
     if (!!sha1 && actualSha1 === sha1) {
+      if (file.operation === 'remove') {
+        await unlink(filePath).catch(() => undefined)
+      }
       // skip same file
       return undefined
+    }
+
+    if (file.operation === 'remove') {
+      await unlink(filePath).catch(() => undefined)
+      return
+    }
+    if (file.operation === 'backup-remove') {
+      await rename(filePath, filePath + '.backup')
+      return
     }
 
     const metadata: ResourceMetadata = {}
@@ -338,23 +373,22 @@ export class InstanceInstallService extends AbstractService implements IInstance
       return createFileLinkTask(filePath, resource)
     }
 
-    const pending = file.path.startsWith(ResourceDomain.Mods) || file.path.startsWith(ResourceDomain.ResourcePacks) || file.path.startsWith(ResourceDomain.ShaderPacks)
-    const destination = pending ? `${filePath}.pending` : filePath
+    const shouldPending = file.path.startsWith(ResourceDomain.Mods) || file.path.startsWith(ResourceDomain.ResourcePacks) || file.path.startsWith(ResourceDomain.ShaderPacks)
+    const destination = shouldPending ? `${filePath}.pending` : filePath
 
-    return createDownloadTask(file, destination, sha1).setName('file').map(async () => {
-      if (pending) {
+    const downloadTask = await createDownloadTask(file, destination, sha1)
+
+    return downloadTask.setName('file').map(async () => {
+      if (shouldPending) {
         await this.resourceService.updateResources([{ hash: file.hashes.sha1, metadata }])
         const renamedPath = destination.substring(0, destination.length - '.pending'.length)
-        try {
-          if (await missing(renamedPath) && (!await missing(destination))) {
-            await rename(destination, renamedPath)
-          } else {
-            this.warn(`Skip to rename ${destination} -> ${renamedPath} as the file already existed`)
-          }
-        } catch (e) {
-          this.error(`Fail to rename ${destination} -> ${renamedPath} \n%o`, e)
-          throw e
+        if (file.operation === 'backup-add') {
+          // backup legacy file
+          await rename(renamedPath, renamedPath + '.backup').catch(() => undefined)
         }
+        await rename(destination, renamedPath).catch(e => {
+          this.warn(`Skip to rename ${destination} -> ${renamedPath} as the file already existed`)
+        })
       }
       return undefined
     })
