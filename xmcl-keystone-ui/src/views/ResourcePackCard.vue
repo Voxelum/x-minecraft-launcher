@@ -146,14 +146,12 @@ const contextMenuItems = computed(() => {
   }
   const menuItems: ContextMenuItem[] = [{
     text: t('resourcepack.showFile', { file: props.pack.path }),
-    children: [],
     onClick: () => {
       showItemInDirectory(props.pack.path)
     },
     icon: 'folder',
   }, {
     text: t('tag.create'),
-    children: [],
     onClick() {
       createTag()
     },
@@ -162,7 +160,6 @@ const contextMenuItems = computed(() => {
   if (!props.isSelected) {
     menuItems.push({
       text: t('delete.name', { name: props.pack.name }),
-      children: [],
       onClick() {
         emit('delete')
       },
@@ -173,7 +170,6 @@ const contextMenuItems = computed(() => {
   if (props.pack.resource && props.pack.resource.metadata.curseforge) {
     menuItems.push({
       text: t('resourcepack.showInCurseforge', { name: props.pack.name }),
-      children: [],
       onClick: () => {
         goProjectAndRoute(props.pack.resource!.metadata.curseforge!.projectId, 'texture-packs')
       },
@@ -182,7 +178,6 @@ const contextMenuItems = computed(() => {
   } else {
     menuItems.push({
       text: t('resourcepack.searchOnCurseforge', { name: props.pack.name }),
-      children: [],
       onClick: () => {
         searchProjectAndRoute(props.pack.name, 'texture-packs')
       },

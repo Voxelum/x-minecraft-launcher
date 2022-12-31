@@ -16,14 +16,12 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
     const item = mod.value
     const items: ContextMenuItem[] = [{
       text: t('mod.showFile', { file: item.path }),
-      children: [],
       onClick: () => {
         showItemInDirectory(item.path)
       },
       icon: 'folder',
     }, {
       text: t('tag.create'),
-      children: [],
       onClick: () => {
         onCreateTag()
       },
@@ -32,7 +30,6 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
     if (item.selected) {
       items.push({
         text: t('tag.createSelected'),
-        children: [],
         onClick: () => {
           onCreateTag(true)
         },
@@ -41,7 +38,6 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
     }
     items.push({
       text: t('delete.name', { name: item.name }),
-      children: [],
       onClick() {
         onDelete()
       },
@@ -52,7 +48,6 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
       const url = item.url
       items.push({
         text: t('mod.openLink', { url }),
-        children: [],
         onClick: () => {
           openInBrowser(url)
         },
@@ -63,7 +58,6 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
       const curseforge = item.resource.metadata.curseforge
       items.push({
         text: t('mod.showInCurseforge', { name: item.name }),
-        children: [],
         onClick: () => {
           goProjectAndRoute(curseforge.projectId, 'mc-mods')
         },
@@ -72,7 +66,6 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
     } else {
       items.push({
         text: t('mod.searchOnCurseforge', { name: item.name }),
-        children: [],
         onClick: () => {
           searchProjectAndRoute(item.name, 'mc-mods')
         },
@@ -83,7 +76,6 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
       const modrinth = item.resource.metadata.modrinth
       items.push({
         text: t('mod.showInModrinth', { name: item.name }),
-        children: [],
         onClick: () => {
           push(`/modrinth/${modrinth.projectId}`)
         },
@@ -92,7 +84,6 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
     } else {
       items.push({
         text: t('mod.searchOnModrinth', { name: item.name }),
-        children: [],
         onClick: () => {
           push(`/modrinth?query=${item.name}`)
         },
@@ -101,7 +92,6 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
     }
     items.push({
       text: t('mod.searchOnMcWiki', { name: item.name }),
-      children: [],
       onClick: () => {
         searchMcWiki(item.name)
       },

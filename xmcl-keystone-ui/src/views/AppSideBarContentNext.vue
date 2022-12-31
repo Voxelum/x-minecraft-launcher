@@ -276,7 +276,6 @@ const items = computed(() => {
       onClick() {
         sideBarShowCurseforge.value = !sideBarShowCurseforge.value
       },
-      children: [],
     },
     {
       text: 'Modrinth',
@@ -284,7 +283,6 @@ const items = computed(() => {
       onClick() {
         sideBarShowModrinth.value = !sideBarShowModrinth.value
       },
-      children: [],
     },
     {
       text: 'Feed The Beast',
@@ -292,7 +290,6 @@ const items = computed(() => {
       onClick() {
         sideBarShowFtb.value = !sideBarShowFtb.value
       },
-      children: [],
     },
   ]
   return result

@@ -240,11 +240,12 @@
     </v-list-item>
 
     <v-list-item>
-      <!-- <v-list-item-action class="self-center">
-        <v-icon>
-          list
-        </v-icon>
-      </v-list-item-action> -->
+      <v-list-item-action class="self-center">
+        <img
+          :src="'image://builtin/craftingTable'"
+          width="40px"
+        >
+      </v-list-item-action>
       <v-list-item-content>
         <v-list-item-title>{{ t('localVersion.title', 1) }}</v-list-item-title>
         <v-list-item-subtitle>

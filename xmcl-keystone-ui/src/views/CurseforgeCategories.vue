@@ -16,15 +16,18 @@
       <span
         v-for="c of categories"
         :key="c.id"
+        v-ripple
         :class="{ selected: c.id === Number(selected) }"
         class="item"
         @click="emit('select', c.id)"
       >
         <v-avatar>
-          <img
+          <v-img
+            width="40"
+            height="40"
             contain
             :src="c.iconUrl"
-          >
+          />
         </v-avatar>
         {{ tCategory(c.name) }}
       </span>
@@ -68,7 +71,7 @@ onMounted(() => {
 
 <style scoped>
 .item {
-  @apply rounded-lg ml-2 hover:bg-[rgba(255,255,255,0.2)] cursor-pointer p-1 pl-3 flex items-center gap-2;
+  @apply rounded-lg ml-2 hover:bg-[rgba(255,255,255,0.2)] cursor-pointer p-0 pl-3 flex items-center gap-2;
 }
 
 .list-title {

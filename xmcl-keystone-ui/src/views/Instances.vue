@@ -4,15 +4,15 @@
       outlined
       class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5"
     >
-      <filter-combobox
+      <FilterCombobox
         class="flex-grow pr-2"
         :label="t('filter')"
       />
       <v-flex class="flex-grow-0">
-        <create-button />
+        <CreateButton />
       </v-flex>
       <v-flex class="flex-grow-0">
-        <import-button />
+        <ImportButton />
       </v-flex>
     </v-card>
 
@@ -23,7 +23,7 @@
       class="pt-2 h-full overflow-scroll"
       @dragover.prevent
     >
-      <instances-view
+      <InstancesView
         :instances="filteredInstances"
         @select="selectInstance"
         @dragstart="dragStart"
@@ -31,11 +31,11 @@
         @delete="startDeleteInstance"
       />
 
-      <instances-fab-button
+      <InstancesFabButton
         :deleting="draggingInstance.path !== ''"
         @drop="drop"
       />
-      <delete-dialog
+      <DeleteDialog
         :title="t('instance.delete')"
         :persistent="false"
         :width="400"
@@ -48,7 +48,7 @@
         <div style="color: grey">
           {{ deletingInstance.path }}
         </div>
-      </delete-dialog>
+      </DeleteDialog>
     </v-container>
   </div>
 </template>
@@ -73,14 +73,12 @@ const { show: showAddServerDialog } = useDialog('add-server-dialog')
 const contextMenuItems = computed(() => {
   const items: ContextMenuItem[] = [{
     text: t('instances.add'),
-    children: [],
     onClick: () => {
       showAddInstanceDialog()
     },
     icon: 'add',
   }, {
     text: t('instance.addServer'),
-    children: [],
     onClick: () => {
       showAddServerDialog()
     },

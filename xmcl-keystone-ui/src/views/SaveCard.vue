@@ -98,7 +98,6 @@ const items = computed(() => {
     icon: 'delete',
     color: 'red',
     onClick: () => { emit('remove') },
-    children: [],
   }]
   return result
 })

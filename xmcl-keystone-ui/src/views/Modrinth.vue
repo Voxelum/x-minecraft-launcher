@@ -6,7 +6,16 @@
       height="3"
       :indeterminate="true"
     />
-    <div class="flex flex-col gap-2 overflow-auto lg:col-span-9 md:col-span-12">
+    <div class="flex flex-col gap-2 overflow-auto lg:col-span-9 md:col-span-12 relative">
+      <div class="absolute bottom-3 w-full z-10 transform scale-90 opacity-60 hover:(scale-100 opacity-100) transition">
+        <v-pagination
+          v-model="_page"
+          :length="pageCount"
+          color="success"
+          :disabled="refreshing"
+          :total-visible="12"
+        />
+      </div>
       <v-card
         class="flex py-1 flex-shrink flex-grow-0"
         outlined
@@ -49,15 +58,10 @@
           flat
           :label="t('modrinth.perPage')"
         />
-        <v-pagination
-          v-model="_page"
-          :length="pageCount"
-          :total-visible="5"
-        />
       </v-card>
 
       <div
-        v-if="!refreshing"
+        v-if="!searchError && projects.length > 0"
         class="flex flex-col gap-3 overflow-auto px-2.5"
       >
         <ModrinthModCard
@@ -69,14 +73,18 @@
           class="cursor-pointer"
           @filter="onFiltered"
           @click="push(`/modrinth/${mod.project_id}`)"
+          @search="push(`/modrinth?query=${mod.title}`)"
         />
+
+        <div class="min-h-14 w-full p-1" />
       </div>
       <v-skeleton-loader
-        v-else
+        v-if="refreshing && projects.length === 0"
         class="flex flex-col gap-3 overflow-auto"
         type="list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line"
       />
       <ErrorView
+        class="h-full"
         :error="searchError"
         @refresh="refresh"
       />
@@ -149,6 +157,9 @@ const {
 const { push } = useRouter()
 const filteredModloaders = computed(() => modLoaders.value.filter(v => v.supported_project_types.indexOf(props.projectType) !== -1))
 const keyword = ref(props.query)
+watch(() => props.query, () => {
+  keyword.value = props.query
+})
 const onFiltered = (tag: string) => {
   if (categories.value.find(c => c.name === tag)) {
     selectCategory(tag)
@@ -162,7 +173,6 @@ const selectCategory = (cat: string) => {
   } else {
     _category.value = _category.value.filter(v => v !== cat)
   }
-  console.log(_category.value)
 }
 onMounted(() => {
   refresh()

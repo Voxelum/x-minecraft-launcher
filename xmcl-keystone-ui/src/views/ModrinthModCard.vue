@@ -1,11 +1,12 @@
 <template>
   <v-card
     v-ripple
+    v-context-menu="contextMenuItems"
     outlined
     hoverable
     :disabled="disabled"
     hover
-    class="rounded-lg p-4"
+    class="rounded-lg p-4 select-none"
     @click="emit('click')"
   >
     <div class="flex">
@@ -74,6 +75,8 @@
 import type { Category, SearchResultHit } from '@xmcl/modrinth'
 import { ModrinthCategoriesKey } from '../composables/modrinth'
 
+import { ContextMenuItem } from '@/composables/contextMenu'
+import { vContextMenu } from '@/directives/contextMenu'
 import { getLocalDateString } from '@/util/date'
 import { injection } from '@/util/inject'
 
@@ -82,12 +85,33 @@ const props = defineProps<{
   value: SearchResultHit
 }>()
 
-const emit = defineEmits(['filter', 'click'])
+const emit = defineEmits(['filter', 'click', 'search', 'browse'])
 const { t } = useI18n()
 
 const cates = injection(ModrinthCategoriesKey)
 const items = computed(() => {
   return props.value.categories.map(c => cates.value.find(cat => cat.name === c)).filter((c): c is Category => !!c)
+})
+
+const contextMenuItems = computed(() => {
+  const items: ContextMenuItem[] = [{
+    text: t('modrinth.quickSearch', { title: props.value.title }),
+    onClick() { emit('search') },
+    icon: 'search',
+  }, {
+    text: t('modrinth.copyTitle', { title: props.value.title }),
+    onClick() {
+      navigator.clipboard.writeText(props.value.title)
+    },
+    icon: 'content_paste',
+  }, {
+    text: t('modrinth.browseUrl', { url: `https://modrinth.com/${props.value.project_type}/${props.value.slug}` }),
+    onClick() {
+      window.location.href = `https://modrinth.com/${props.value.project_type}/${props.value.slug}`
+    },
+    icon: 'open_in_new',
+  }]
+  return items
 })
 
 </script>
