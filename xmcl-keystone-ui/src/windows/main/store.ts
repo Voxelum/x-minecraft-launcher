@@ -15,6 +15,7 @@ export function createStore(): Store<any> {
     mutations: {
       syncStart(state: any, service: string) { },
     },
+    strict: import.meta.env.DEV,
   }
   const store = new Vuex.Store(options)
   return store

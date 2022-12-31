@@ -3,30 +3,21 @@
     class="flex flex-col home-page flex-1 min-h-0 overflow-auto max-h-full"
   >
     <HomeHeader
-      class="pt-10 pb-5 px-10"
+      class="pt-10 pb-5 px-10 sticky top-0 z-10"
+      :focus-mode="isFocusMode"
     />
+
     <template
       v-if="!isFocusMode"
     >
-      <v-divider class="mx-4" />
       <!-- This is to fix strange hover color issue... -->
       <v-divider
         class="border-transparent"
       />
-      <span
-        class="flex flex-wrap p-10 flex-grow-0 gap-3 items-start"
-      >
-        <HomeModCard />
-        <HomeResourcePacksCard />
-        <HomeShaderPackCard />
-        <HomeSavesCard />
-        <HomeServerStatusBar v-if="isServer" />
-      <!-- <HomeModrinthCard
-        v-if="instance.upstream && instance.upstream.type === 'modrinth-modpack'"
-        :path="instance.path"
-        :upstream="instance.upstream"
-        /> -->
-      </span>
+      <HomeCardHost
+        :is-server="isServer"
+        :instance="instance"
+      />
     </template>
 
     <HomeFocusFooter
@@ -40,8 +31,7 @@
     <HomeLaunchMultiInstanceDialog />
     <HomeLaunchStatusDialog />
     <HomeJavaIssueDialog />
-    <!-- <home-sync-dialog /> -->
-    <HomeInstallInstanceDialog />
+    <HomeInstanceUpdateDialog />
   </div>
 </template>
 
@@ -52,18 +42,14 @@ import { useInstanceIsServer } from '../composables/instance'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import AppGameExitDialog from './AppGameExitDialog.vue'
 import AppLaunchBlockedDialog from './AppLaunchBlockedDialog.vue'
+import HomeCardHost from './HomeCardHost.vue'
 import HomeFocusFooter from './HomeFocusFooter.vue'
 import HomeHeader from './HomeHeader.vue'
-import HomeInstallInstanceDialog from './HomeInstallInstanceDialog.vue'
+import HomeInstanceUpdateDialog from './HomeInstanceUpdateDialog.vue'
 import HomeJavaIssueDialog from './HomeJavaIssueDialog.vue'
 import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
 import HomeLaunchStatusDialog from './HomeLaunchStatusDialog.vue'
 import HomeLogDialog from './HomeLogDialog.vue'
-import HomeModCard from './HomeModCard.vue'
-import HomeResourcePacksCard from './HomeResourcePacksCard.vue'
-import HomeSavesCard from './HomeSavesCard.vue'
-import HomeServerStatusBar from './HomeServerStatusBar.vue'
-import HomeShaderPackCard from './HomeShaderPackCard.vue'
 
 const router = useRouter()
 
