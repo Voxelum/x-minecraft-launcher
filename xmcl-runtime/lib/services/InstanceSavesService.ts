@@ -1,21 +1,19 @@
 import { UnzipTask } from '@xmcl/installer'
 import {
-  CloneSaveOptions, DeleteSaveOptions, ExportSaveOptions,
-  ImportSaveOptions, InstanceSave, InstanceSaveException, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey, isSaveResource, ResourceDomain, SaveState,
+CloneSaveOptions, DeleteSaveOptions, ExportSaveOptions,
+ImportSaveOptions, InstanceSave, InstanceSaveException, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey, isSaveResource, ResourceDomain, SaveState
 } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
-import { createHash } from 'crypto'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { ensureDir, ensureFile, FSWatcher, readdir, remove } from 'fs-extra'
 import throttle from 'lodash.throttle'
 import watch from 'node-watch'
 import { basename, extname, join, resolve } from 'path'
-import { pathToFileURL } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { findLevelRootOnPath, getInstanceSave, readInstanceSaveMetadata } from '../entities/save'
-import { copyPassively, isFile, missing, readdirIfPresent } from '../util/fs'
+import { copyPassively, missing, readdirIfPresent } from '../util/fs'
 import { isNonnull, requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { ZipTask } from '../util/zip'
@@ -31,6 +29,10 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
   private watcher: FSWatcher | undefined
 
   private watching = ''
+
+  private parking = false
+
+  private pending: Set<string> = new Set()
 
   private updateSave = throttle((filePath: string) => {
     readInstanceSaveMetadata(filePath, this.instanceService.state.instance.name).then((save) => {
@@ -51,6 +53,17 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
       this.mountInstanceSaves(path)
     })
 
+    this.storeManager.subscribe('launchCount', (count) => {
+      const newState = count > 0
+      if (newState !== this.parking) {
+        for (const p of this.pending) {
+          this.updateSave(p)
+        }
+        this.pending.clear()
+      }
+      this.parking = newState
+    })
+
     this.resourceService.registerInstaller(ResourceDomain.Saves, async (resource, instancePath) => {
       if (isSaveResource(resource)) {
         await this.importSave({
@@ -65,21 +78,6 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
   async dispose() {
     if (this.watcher) {
       this.watcher.close()
-    }
-  }
-
-  /**
-   * Return the instance's screenshots urls.
-   *
-   * If the provided path is not a instance, it will return empty array.
-   */
-  async getScreenshotUrls(path: string = this.instanceService.state.path) {
-    const screenshots = join(path, 'screenshots')
-    try {
-      const files = await readdir(screenshots)
-      return files.map(f => pathToFileURL(join(path, 'screenshots')).toString())
-    } catch (e) {
-      return []
     }
   }
 
@@ -145,7 +143,11 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
       const filePath = filename
       if (event === 'update') {
         if (this.state.saves.every((s) => s.path !== filename)) {
-          this.updateSave(filePath)
+          if (!this.parking) {
+            this.updateSave(filePath)
+          } else {
+            this.pending.add(filePath)
+          }
         }
       } else if (this.state.saves.some((s) => s.path === filename)) {
         this.state.instanceSaveRemove(filePath)
