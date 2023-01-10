@@ -34,13 +34,13 @@ export function createPlugin(serviceName: string, accountName: string, logger: L
       },
       async afterCacheAccess(cacheContext: TokenCacheContext): Promise<void> {
         if (cacheContext.cacheHasChanged) {
-          const currentCache = cacheContext.tokenCache.serialize()
-          const quad = Math.floor(currentCache.length / 4)
-          const part1 = currentCache.substring(0, quad)
-          const part2 = currentCache.substring(quad, quad + quad)
-          const part3 = currentCache.substring(quad + quad, quad + quad + quad)
-          const part4 = currentCache.substring(quad + quad + quad, currentCache.length)
           try {
+            const currentCache = cacheContext.tokenCache.serialize()
+            const quad = Math.floor(currentCache.length / 4)
+            const part1 = currentCache.substring(0, quad)
+            const part2 = currentCache.substring(quad, quad + quad)
+            const part3 = currentCache.substring(quad + quad, quad + quad + quad)
+            const part4 = currentCache.substring(quad + quad + quad, currentCache.length)
             await keytar.setPassword(`${serviceName}:1`, accountName, part1)
             await keytar.setPassword(`${serviceName}:2`, accountName, part2)
             await keytar.setPassword(`${serviceName}:3`, accountName, part3)
@@ -61,14 +61,20 @@ export function createPlugin(serviceName: string, accountName: string, logger: L
         return
       }
       if (secret) {
-        cacheContext.tokenCache.deserialize(secret)
+        try {
+          cacheContext.tokenCache.deserialize(secret)
+        } catch (e) {
+          logger.error('Fail to deserialize the credential cache %o', e)
+        }
       }
     },
     async afterCacheAccess(cacheContext: TokenCacheContext): Promise<void> {
-      const currentCache = cacheContext.tokenCache.serialize()
-      await keytar.setPassword(serviceName, accountName, currentCache).catch((e) => {
+      try {
+        const currentCache = cacheContext.tokenCache.serialize()
+        await keytar.setPassword(serviceName, accountName, currentCache)
+      } catch (e) {
         logger.error('Fail to serialzie the credential cache %o', e)
-      })
+      }
     },
   }
   return plugin
