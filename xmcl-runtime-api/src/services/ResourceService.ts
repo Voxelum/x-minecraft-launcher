@@ -50,6 +50,8 @@ export interface ResourceService extends GenericEventEmitter<ResourceServiceEven
   getResourcesByUris(uri: [string]): Promise<[Resource | undefined]>
   getResourcesByUris(uri: [string, string]): Promise<[Resource | undefined, Resource | undefined]>
   getResourcesByUris(uri: string[]): Promise<Array<Resource | undefined>>
+
+  getResourcesUnder(options: { fileNames: string[]; domain: ResourceDomain }): Promise<Array<Resource | undefined>>
   /**
    * Remove resources from the disk
    *

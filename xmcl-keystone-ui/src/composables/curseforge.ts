@@ -101,9 +101,6 @@ export function useCurseforge(props: CurseforgeProps) {
       categoryId: categoryId.value,
       searchFilter: currentKeyword.value,
     })
-    console.log(pagination)
-    console.log(Math.floor(pagination.totalCount / pageSize))
-
     data.totalCount = pagination.totalCount
     data.projects = Object.freeze(result) as any
     data.pages = Math.floor(data.totalCount / pageSize)

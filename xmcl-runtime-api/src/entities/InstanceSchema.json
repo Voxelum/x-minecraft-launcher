@@ -157,6 +157,13 @@
                 "type": "string"
             }
         },
+        "useLatest": {
+            "enum": [
+                "alpha",
+                false,
+                "release"
+            ]
+        },
         "upstream": {
             "anyOf": [
                 {

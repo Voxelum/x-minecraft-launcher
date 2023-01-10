@@ -41,7 +41,7 @@
         "@xmcl/runtime": "workspace:*",
         "@xmcl/runtime-api": "workspace:*",
         "@xmcl/task": "workspace:4.0.3",
-        "@xmcl/windows-utils": "^0.0.14",
+        "@xmcl/windows-utils": "^0.0.15",
         "builtin-modules": "^3.3.0",
         "chalk": "^4.1.2",
         "create-desktop-shortcuts": "^1.10.1",

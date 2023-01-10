@@ -40,6 +40,6 @@ export class InMemoryTtlCache<T> {
   }
 
   put(key: string, v: T, ttl?: number) {
-    this.cache[key] = [v, ttl ?? 120_000]
+    this.cache[key] = [v, Date.now() + (ttl ?? 120_000)]
   }
 }

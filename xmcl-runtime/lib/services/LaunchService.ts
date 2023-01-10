@@ -139,12 +139,6 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         try {
           await this.userService.refreshUser()
         } catch (e) {
-          // if (e instanceof UserException) {
-          //   throw new LaunchException({
-          //     type: 'launchUserStatusRefreshFailed',
-          //     userException: e.exception,
-          //   })
-          // }
           this.warn(`Fail to determine user status to launch: ${e}`)
         }
       }

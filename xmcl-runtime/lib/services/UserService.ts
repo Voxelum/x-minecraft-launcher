@@ -3,7 +3,6 @@ import { DownloadTask } from '@xmcl/installer'
 import {
   GameProfileAndTexture,
   LoginOptions,
-  RefreshSkinOptions,
   SaveSkinOptions,
   SkinPayload,
   UploadSkinOptions,

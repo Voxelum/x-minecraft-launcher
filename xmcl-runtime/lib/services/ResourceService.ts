@@ -99,6 +99,13 @@ export class ResourceService extends AbstractService implements IResourceService
     this.context = createResourceContext(this.getAppDataPath('resources-v2'), imageStore, this, this, worker)
   }
 
+  async getResourcesUnder({ fileNames, domain }: { fileNames: string[]; domain: ResourceDomain }): Promise<(Resource | undefined)[]> {
+    const cache = await this.context.fileNameSnapshots[domain].getMany(fileNames)
+    const metadata = await this.context.metadata.getMany(cache.map(c => c?.sha1 ?? ''))
+    const path = this.getPath()
+    return cache.map((c, i) => !c ? undefined : generateResource(path, c, metadata[i]))
+  }
+
   registerInstaller(domain: ResourceDomain, installer: (resource: Resource, path: string) => Promise<void>) {
     this.installers[domain] = installer
   }
