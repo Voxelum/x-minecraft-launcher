@@ -16,7 +16,7 @@
       <img
         v-fallback-img="unknownPack"
         class="rounded-2"
-        :src="unknownPack"
+        :src="pack.icon ?? unknownPack"
         contain
         width="60"
         height="60"

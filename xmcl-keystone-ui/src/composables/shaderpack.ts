@@ -12,6 +12,7 @@ export interface ShaderPackItem {
   description: string
   path: string
   tags: string[]
+  icon?: string
 }
 
 export function useShaderpacks() {
@@ -55,6 +56,7 @@ export function useShaderpacks() {
       description: res.path,
       path: res.path,
       tags: [...res.tags],
+      icon: res.icons?.[0],
     }
   }
   const { refresh: commit, refreshing: committing } = useRefreshable(async () => {

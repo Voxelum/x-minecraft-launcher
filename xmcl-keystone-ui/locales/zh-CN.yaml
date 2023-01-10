@@ -632,37 +632,54 @@ modrinth:
     16x: 16x
     256x: 256x
     32x: 32x
+    48x: 48x
     512x+: 512x+
     64x: 64x
     8x-: 8x-
     adventure: 冒险
+    atmosphere: 氛围
     audio: 音效
     blocks: 方块
+    bloom: 炫光 (Bloom)
     bukkit: Bukkit
     bungeecord: Bungeecord
+    "performance impact": 性能需求
+    resolutions: 分辨率
+    canvas: Canvas
+    cartoon: 卡通风格
+    categories: 分类
     challenging: 挑战
+    colored-lighting: 灯光着色
+    features: 特性
     combat: 战斗
     core-shaders: 光影
     cursed: 怪异
+    datapack: 数据包
     decoration: 装饰
     economy: 经济
     entities: 实体
     environment: 环境
     equipment: 装备
     fabric: Fabric
+    fantasy: 幻想
+    foliage: 优化植被
     fonts: 字体
     food: 食物
     forge: Forge
     game-mechanics: 游戏机制
     gui: 界面
+    high: 高
+    iris: Iris
     items: 物品
     kitchen-sink: 杂烩
     library: 程序库
     lightweight: 轻量
     liteloader: Liteloader
     locale: 本地化
+    low: 低
     magic: 魔法
     management: 管理
+    medium: 中等
     minecraft: Minecraft
     minigame: 小游戏
     misc: 杂项
@@ -671,14 +688,21 @@ modrinth:
     models: 模型
     modloader: Mod 加载器
     multiplayer: 多人游戏
-    name: 分类
+    optifine: Optifine
     optimization: 优化
     paper: Paper
+    path-tracing: 光线追踪
+    pbr: PBR
+    potato: 土豆（非常低）
     purpur: Purpur
     quests: 任务导向
     quilt: Quilt
     realistic: 真实风格
+    reflections: 水反
     rift: Rift
+    screenshot: 随便截图就能当壁纸
+    semi-realistic: 半真实风
+    shadows: 光影
     simplistic: 简约
     social: 社交
     spigot: Spigot
@@ -689,11 +713,11 @@ modrinth:
     transportation: 交通
     tweaks: Tweaks
     utility: 实用工具
+    vanilla: Vanilla
     vanilla-like: 原版风格
     velocity: Velocity
     waterfall: Waterfall
     worldgen: 世界生成
-    datapack: 数据包
   clientSide: 客户端
   copyTitle: 复制 "{title}" 到剪贴板
   createAt: 创建日期
@@ -732,6 +756,7 @@ modrinth:
     modpack: 整合包
     name: 项目类型
     resourcePack: 资源包
+    shader: 光影包
   quickSearch: 搜索 {title}
   searchText: 搜素
   serverSide: 服务端
@@ -821,6 +846,9 @@ natType:
   symmetricNat: 对称 NAT
   symmetricUDPFirewall: 对称 UDP 防火墙
   unknown: 未知
+news:
+  name: 新闻
+  readMore: 阅读更多
 next: 下一项
 'no': 否
 ok: 好的
@@ -919,6 +947,9 @@ save:
   importTitle: 导入存档
   manage: 管理存档
   name: 地图存档 | 地图存档
+screenshots:
+  goto: 显示文件夹
+  name: 截图
 server:
   acceptingMinecraftVersion: 接受 Minecraft 版本
   add: 添加服务器

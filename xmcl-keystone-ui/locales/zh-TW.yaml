@@ -333,6 +333,7 @@ modpack:
 modrinth:
   categories:
     adventure: 冒險
+    categories: 分類
     cursed: Cursed
     decoration: 裝飾
     equipment: 裝備
@@ -340,7 +341,6 @@ modrinth:
     library: 庫
     magic: 魔法
     misc: 雜項
-    name: 分類
     optimization: 優化
     storage: 存儲
     technology: 科技

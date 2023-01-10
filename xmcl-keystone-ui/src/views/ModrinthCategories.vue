@@ -13,26 +13,33 @@
       @refresh="emit('refresh')"
     />
     <template v-if="!loading && !error">
-      <span class="list-title">{{ t('modrinth.categories.name') }}</span>
-      <span
-        v-for="cat in categories"
-        :key="cat.name"
-        class="item"
-        @click="emit('select:category', cat.name)"
+      <template
+        v-for="g of Object.entries(groupedCategories)"
       >
-        <v-checkbox
-          :input-value="category.indexOf(cat.name) !== -1"
-          hide-details
-          class="mt-0 pt-0"
-        />
-        <div
-          class="w-5 max-w-5 flex justify-center"
-          v-html="cat.icon"
-        />
-        <div>
-          {{ t(`modrinth.categories.${cat.name}`, cat.name) }}
-        </div>
-      </span>
+        <span
+          :key="g[0]"
+          class="list-title"
+        >{{ t('modrinth.categories.' + g[0]) }}</span>
+        <span
+          v-for="cat in g[1]"
+          :key="g[0] + cat.name"
+          class="item"
+          @click="emit('select:category', cat.name)"
+        >
+          <v-checkbox
+            :input-value="category.indexOf(cat.name) !== -1"
+            hide-details
+            class="mt-0 pt-0"
+          />
+          <div
+            class="w-5 max-w-5 flex justify-center"
+            v-html="cat.icon"
+          />
+          <div>
+            {{ t(`modrinth.categories.${cat.name}`, cat.name) }}
+          </div>
+        </span>
+      </template>
       <span class="list-title">{{ t('modrinth.modLoaders.name') }}</span>
       <span
         v-for="l in loaders"
@@ -102,7 +109,7 @@ import ErrorView from '@/components/ErrorView.vue'
 
 const { t } = useI18n()
 const emit = defineEmits(['select:license', 'select:gameVersion', 'select:environment', 'select:modLoader', 'select:category', 'refresh'])
-defineProps<{
+const prosp = defineProps<{
   loading:boolean
   categories:Category[]
   category:string[]
@@ -116,6 +123,15 @@ defineProps<{
   license:String
   error: any
 }>()
+
+const groupedCategories = computed(() => {
+  const group: Record<string, Category[]> = {}
+  for (const g of prosp.categories) {
+    if (!group[g.header]) group[g.header] = []
+    group[g.header].push(g)
+  }
+  return group
+})
 </script>
 
 <style scoped>
