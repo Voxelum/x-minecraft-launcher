@@ -63,12 +63,12 @@
       </div>
     </v-card-subtitle>
     <v-card-actions>
-      <InstanceSelectMenu
+      <!-- <InstanceSelectMenu
         :value="destination"
         style="flex-grow: 1"
         :from="from"
         @input="emit('destination', $event)"
-      />
+      /> -->
     </v-card-actions>
   </v-card>
 </template>
