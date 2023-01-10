@@ -3,7 +3,7 @@
     class="flex flex-col home-page flex-1 min-h-0 overflow-auto max-h-full"
   >
     <HomeHeader
-      class="pt-10 pb-5 px-10 sticky top-0 z-10"
+      class="pt-10 mb-4 sticky top-0 z-10"
       :focus-mode="isFocusMode"
     />
 

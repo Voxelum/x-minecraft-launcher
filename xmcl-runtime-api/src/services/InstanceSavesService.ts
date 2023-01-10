@@ -114,12 +114,6 @@ export interface InstanceSavesService extends StatefulService<SaveState> {
    */
   readAllInstancesSaves(): Promise<InstanceSave[]>
   /**
-   * Return the instance's screenshots urls.
-   *
-   * If the provided path is not a instance, it will return empty array.
-   */
-  getScreenshotUrls(path?: string): Promise<string[]>
-  /**
    * Mount and load instances saves
    * @param path
    */
