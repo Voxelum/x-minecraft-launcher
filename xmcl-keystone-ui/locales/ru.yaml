@@ -603,20 +603,21 @@ modrinth:
     512x+: 512x+
     64x: 64x
     8x-: 8x-
-    adventure: Adventure
     audio: Audio
     blocks: Blocks
     bukkit: Bukkit
     bungeecord: Bungeecord
-    challenging: Challenging
-    combat: Combat
     core-shaders: Core-shaders
-    cursed: Cursed
-    decoration: Decoration
     economy: Economy
     entities: Entities
     environment: Environment
-    equipment: Equipment
+    adventure: Приключения
+    categories: Категории
+    challenging: Испытания
+    combat: Сражения
+    cursed: Странные
+    decoration: Косметика
+    equipment: Снаряжение
     fabric: Fabric
     fonts: Fonts
     food: Food
@@ -624,26 +625,26 @@ modrinth:
     game-mechanics: Game Mechanics
     gui: Gui
     items: Items
-    kitchen-sink: Kitchen Sink
-    library: Library
-    lightweight: Lightweight
     liteloader: Liteloader
     locale: Locale
-    magic: Magic
     management: Management
     minecraft: Minecraft
     minigame: Mini Games
-    misc: Misc
     mobs: Mobs
     modded: Modded
     models: Models
-    modloader: Mod Loader
-    multiplayer: Multiplayer
     name: Категории
-    optimization: Optimizations
     paper: Paper
     purpur: Purpur
-    quests: Quests
+    kitchen-sink: Всё подряд
+    library: Библиотека
+    lightweight: Легковесные
+    magic: Магия
+    misc: Разное
+    modloader: ModLoader
+    multiplayer: Сетевая игра
+    optimization: Оптимизация
+    quests: Квесты
     quilt: Quilt
     realistic: Realistic
     rift: Rift

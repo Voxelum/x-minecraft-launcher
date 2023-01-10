@@ -62,6 +62,9 @@ export function useModrinth(props: ModrinthOptions) {
   }, {
     value: 'resourcepack',
     text: t('modrinth.projectType.resourcePack'),
+  }, {
+    value: 'shader',
+    text: t('modrinth.projectType.shader'),
   }])
   const sortOptions = computed(() => [{
     name: '',
@@ -180,7 +183,7 @@ export function useModrinth(props: ModrinthOptions) {
       facetsText = '[' + facets.map(v => '[' + v.map(v => JSON.stringify(v)).join(',') + ']').join(',') + ']'
     }
     const result = await searchProjects({ query: props.query, limit: data.pageSize, offset: (props.page - 1) * data.pageSize, index: sortBy.value, facets: facetsText })
-    data.pageCount = Math.floor(result.total_hits / data.pageSize)
+    data.pageCount = Math.floor(result.total_hits / data.pageSize) + 1
     data.projects = result.hits
   })
 
