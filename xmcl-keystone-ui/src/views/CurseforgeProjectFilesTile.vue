@@ -8,15 +8,17 @@
         {{ releases[source.releaseType] }}
       </v-chip>
     </v-list-item-avatar>
-    <v-list-item-content>
-      <v-list-item-title>{{ source.displayName }}</v-list-item-title>
+    <v-list-item-content class="flex-grow">
+      <v-list-item-title :title="source.displayName">
+        {{ source.displayName }}
+      </v-list-item-title>
       <v-list-item-subtitle class>
         <div class="text-gray-400">
           {{ getLocalDateString(source.fileDate) }}
         </div>
       </v-list-item-subtitle>
     </v-list-item-content>
-    <div class="flex justify-end mr-2 gap-2">
+    <div class="flex justify-end mr-2 gap-2 flex-grow-0 flex-shrink">
       <v-chip
         v-if="source.gameVersions[0]"
         small

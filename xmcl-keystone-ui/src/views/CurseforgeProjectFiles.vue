@@ -7,6 +7,16 @@
     >
       <div class="flex gap-5 mx-5 mt-3">
         <v-select
+          v-model="modLoader"
+          clearable
+          hide-details
+          flat
+          solo
+          dense
+          :items="modLoaders"
+          :label="t('curseforge.file.modLoader')"
+        />
+        <v-select
           v-model="gameVersion"
           clearable
           hide-details
@@ -101,12 +111,29 @@ const releaseTypes = computed(() => {
   }
   return [...set].map(i => releaseMappper.value[i - 1]).filter((v) => !!v)
 })
+const modLoader = ref('')
+const modLoaders = computed(() => {
+  const set = new Set<string>()
+  for (const file of files.value) {
+    for (const ver of file.gameVersions) {
+      if (ver === 'Forge' || ver === 'Fabric' || ver === 'Quilt') {
+        set.add(ver)
+        if (set.size >= 2) {
+          break
+        }
+      }
+    }
+  }
+  return [...set]
+})
 const gameVersion = ref('')
 const gameVersions = computed(() => {
   const set = new Set<string>()
   for (const file of files.value) {
     for (const ver of file.gameVersions) {
-      set.add(ver)
+      if (ver !== 'Forge' && ver !== 'Fabric' && ver !== 'Quilt') {
+        set.add(ver)
+      }
     }
   }
   return [...set]
@@ -114,9 +141,11 @@ const gameVersions = computed(() => {
 const filteredFiles = computed(() => {
   const gameVersionVal = gameVersion.value
   const releaseTypeVal = releaseType.value
+  const modLoaderVal = modLoader.value
   return files.value.filter(v =>
     (!releaseTypeVal || (v.releaseType === releaseTypeVal)) &&
-        (!gameVersionVal || v.gameVersions.indexOf(gameVersionVal) !== -1),
+        (!gameVersionVal || v.gameVersions.indexOf(gameVersionVal) !== -1) &&
+        (!modLoaderVal || v.gameVersions.indexOf(modLoaderVal) !== -1),
   )
 })
 
