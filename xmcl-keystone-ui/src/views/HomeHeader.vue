@@ -1,13 +1,13 @@
 <template>
   <div
-    class="flex flex-col flex-1 flex-grow-0 gap-3 max-w-full"
+    class="flex flex-col flex-1 flex-grow-0 gap-3 max-w-full px-4"
     :class="{
       'backdrop-filter': !isInFocusMode,
       'backdrop-blur-sm': !isInFocusMode,
     }"
   >
     <div
-      class="flex w-full align-center max-h-20 gap-3 flex-grow-0 flex-1 items-baseline"
+      class="flex w-full align-center max-h-20 gap-3 flex-grow-0 flex-1 items-baseline px-6"
     >
       <span
         class="display-2 rounded-lg py-4 text-shadow text-shadow-lg"
@@ -23,7 +23,7 @@
       />
     </div>
     <div
-      class="flex gap-3 flex-grow-0 flex-1 mt-4 lg:flex-row flex-col "
+      class="flex gap-3 flex-grow-0 flex-1 mt-4 lg:flex-row flex-col px-6"
     >
       <div
         class="flex flex-row items-start gap-3 flex-wrap flex-grow-0"
@@ -156,6 +156,7 @@
           </template>
           {{ t('baseSetting.title', 2) }}
         </v-tooltip>
+        <v-spacer class="block lg:hidden" />
         <HomeLaunchButton
           class="ml-4"
           :issue="issue"
@@ -166,7 +167,7 @@
       </div>
     </div>
 
-    <v-divider />
+    <v-divider class="mt-2" />
   </div>
 </template>
 

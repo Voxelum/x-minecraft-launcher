@@ -1,33 +1,25 @@
 <template>
-  <v-card class="flex flex-col h-full">
-    <v-card-title>
-      <v-icon
-        left
-      >
-        map
-      </v-icon>
-      {{ t('save.name', 2) }}
-    </v-card-title>
-    <v-card-text class="flex-grow">
-      {{ t('save.createdWorlds', { count: savesLength }) }}
-    </v-card-text>
-    <v-card-actions>
-      <v-btn
-        text
-        color="teal accent-4"
-        @click="push('/save')"
-      >
-        {{ t('save.manage') }}
-      </v-btn>
-    </v-card-actions>
-  </v-card>
+  <HomeCardBase
+    icon="map"
+    :title="t('save.name', 2)"
+    :text="t('save.createdWorlds', { count: savesLength })"
+    :icons="icons"
+    :refreshing="false"
+    :button="t('save.manage')"
+    @navigate="push('/save')"
+  />
 </template>
 <script lang="ts" setup>
-import { InstanceModsServiceKey, InstanceOptionsServiceKey, InstanceSavesServiceKey } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
+import { InstanceSavesServiceKey } from '@xmcl/runtime-api'
+import HomeCardBase from './HomeCardBase.vue'
+
+const props = defineProps<{ row: number; rowCount: number }>()
 
 const { state } = useService(InstanceSavesServiceKey)
 const savesLength = computed(() => state.saves.length)
+const all = computed(() => state.saves.map(s => ({ name: s.name, icon: s.icon?.replace(/\\/g, '\\\\') })))
+const icons = computed(() => all.value.slice(0, props.row * props.rowCount))
 const { t } = useI18n()
 const { push } = useRouter()
 
