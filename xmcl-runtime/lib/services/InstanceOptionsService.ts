@@ -40,9 +40,13 @@ export class InstanceOptionsService extends StatefulService<InstanceOptionsState
           resourcePacks: [...(frame.resourcePacks || []), relative(resource.path, instancePath)],
         })
       } else {
-        await this.editGameSetting({
-          resourcePacks: [...this.state.options.resourcePacks, relative(resource.path, instancePath)],
-        })
+        if (this.state.options.resourcePacks instanceof Array) {
+          await this.editGameSetting({
+            resourcePacks: [...this.state.options.resourcePacks, relative(resource.path, instancePath)],
+          })
+        } else {
+          this.error(`Invalid options resourcepack ${this.state.options.resourcePacks}`)
+        }
       }
     })
 
@@ -126,6 +130,10 @@ export class InstanceOptionsService extends StatefulService<InstanceOptionsState
   async getGameOptions(instancePath: string) {
     const optionsPath = join(instancePath, 'options.txt')
     const result = await readFile(optionsPath, 'utf-8').then(parse, () => ({} as Frame))
+
+    if (typeof result.resourcePacks === 'string') {
+      result.resourcePacks = JSON.parse(result.resourcePacks)
+    }
 
     return result
   }

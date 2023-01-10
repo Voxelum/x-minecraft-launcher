@@ -285,21 +285,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
     this.log(`Try to mount instance ${path}`)
 
-    // const oldPath = this.state.path
     this.state.instanceSelect(path)
-
-    // const inst = this.state.all[oldPath]
-    // const expectPath = this.getPathUnder(filenamify(inst.name))
-    // try {
-    //   if (this.isUnderManaged(oldPath) && expectPath !== oldPath && !existsSync(expectPath)) {
-    //     this.log(`Migrate instance ${oldPath} -> ${expectPath}`)
-    //     await rename(path, expectPath)
-    //     this.state.instanceMove({ from: oldPath, to: expectPath })
-    //   }
-    // } catch (e) {
-    //   this.warn(`Fail to rename instance ${oldPath} -> ${expectPath}`)
-    //   this.warn(e)
-    // }
   }
 
   /**

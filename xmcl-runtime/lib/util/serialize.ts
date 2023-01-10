@@ -29,7 +29,7 @@ export class SafeJsonSerializer<T> implements Serializer<Buffer, T> {
         this.logger?.log(JSON.stringify(validation.errors))
       }
     }
-    return Buffer.from(JSON.stringify(deepCopy), 'utf-8')
+    return Buffer.from(JSON.stringify(deepCopy, undefined, 2), 'utf-8')
   }
 
   async deserialize(b: Buffer) {

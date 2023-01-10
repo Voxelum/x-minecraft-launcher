@@ -35,23 +35,17 @@ export interface LauncherAppPlugin {
 }
 
 export interface LauncherApp {
-  on(channel: 'peer-join', listener: (info: { description: string; type: 'offer' | 'answer' }) => void): this
   on(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
   on(channel: 'window-all-closed', listener: () => void): this
-  on(channel: 'service-ready', listener: (service: AbstractService) => void): this
   on(channel: 'engine-ready', listener: () => void): this
 
-  once(channel: 'peer-join', listener: (info: { description: string; type: 'offer' | 'answer' }) => void): this
   once(channel: 'app-booted', listener: (manifest: InstalledAppManifest) => void): this
   once(channel: 'window-all-closed', listener: () => void): this
-  once(channel: 'service-ready', listener: (service: AbstractService) => void): this
   once(channel: 'engine-ready', listener: () => void): this
 
-  emit(channel: 'peer-join', info: { description: string; type: 'offer' | 'answer' }): this
   emit(channel: 'app-booted', manifest: InstalledAppManifest): this
   emit(channel: 'window-all-closed'): boolean
   emit(channel: 'engine-ready'): boolean
-  emit(channel: 'service-ready', service: AbstractService): boolean
 }
 
 export class LauncherApp extends EventEmitter {

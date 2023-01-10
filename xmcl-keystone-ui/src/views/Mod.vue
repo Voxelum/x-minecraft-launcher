@@ -1,6 +1,6 @@
 <template>
   <div class="flex flex-col max-h-full select-none h-full py-4 pb-0">
-    <ModTooltip />
+    <SharedTooltip />
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
       :active="loading"
@@ -95,7 +95,7 @@ import ModCard from './ModCard.vue'
 import ModDeleteView from './ModDeleteView.vue'
 import FloatButton from './ModFloatButton.vue'
 import ModHeader from './ModHeader.vue'
-import ModTooltip from '../components/SharedTooltip.vue'
+import SharedTooltip from '../components/SharedTooltip.vue'
 import { CompatibleDetail } from '@/util/modCompatible'
 
 const { importResources } = useService(ResourceServiceKey)

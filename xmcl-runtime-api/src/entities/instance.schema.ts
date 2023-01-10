@@ -145,6 +145,8 @@ export interface InstanceData {
    */
   tags: string[]
 
+  useLatest?: false | 'release' | 'alpha'
+
   upstream?: {
     type: 'curseforge-modpack'
     modId: number

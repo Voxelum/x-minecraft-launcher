@@ -5,6 +5,7 @@
     transition="scroll-y-reverse-transition"
     :position-x="x"
     :position-y="y"
+    class="z-100"
     top
   >
     {{ currentTooltip }}
