@@ -7,4 +7,5 @@ export const localeMappings: Record<string, string> = {
   ru: 'Русский язык',
   'es-ES': 'Español',
   es: 'Español',
+  'fr': 'French',
 }

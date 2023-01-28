@@ -1,0 +1,23 @@
+browseApps: Parcourir l'UI Customisée du Launcher
+checkUpdate: Vérifier les mises à jour
+openUrl:
+  cancel: Annuler
+  message: >-
+    Le launcher souhaite ouvrir {url} dans votre navigateur par défaut.
+    Autorisez-vous cette opération ?
+  title: Ouvrir dans le Navigateur
+  trust: Faire confiance au site et ne plus afficher
+  'yes': 'Oui'
+quit: Quitter
+setup:
+  title: X Minecraft Launcher
+showDiagnosis: Afficher le Diagnostic
+showLauncher: Afficher le Launcher
+showLogsFolder: Afficher le Dossier de Logs
+task:
+  continue: Afficher dans le Launcher
+  fail: Une tâche a échoué
+  success: Succès d'une tâche
+title: X Minecraft Launcher
+urlFailed: "URL inconnue {url}. \nVeuillez vérifier votre URL ou contacter un développeur !"
+urlSuccess: "Réussite ! \nVous pouvez maintenant fermer cette fenêtre et revenir au launcher !"
