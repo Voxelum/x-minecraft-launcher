@@ -96,7 +96,7 @@ export default class LogManager extends Manager {
   }
 
   openLogger(name: string) {
-    const output = new PassThrough()
+    const output = new PassThrough({ transform(chunk, encode, cb) { cb(undefined, chunk + '\n') } })
 
     const log = baseTransform('INFO')
     const warn = baseTransform('WARN')

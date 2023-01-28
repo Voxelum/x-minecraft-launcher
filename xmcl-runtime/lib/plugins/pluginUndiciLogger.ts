@@ -1,5 +1,5 @@
 import { channel } from 'diagnostics_channel'
-import { DiagnosticsChannel } from 'undici'
+import { DiagnosticsChannel, Dispatcher } from 'undici'
 import { LauncherAppPlugin } from '../app/LauncherApp'
 
 export const pluginUndiciLogger: LauncherAppPlugin = (app) => {
@@ -40,5 +40,30 @@ export const pluginUndiciLogger: LauncherAppPlugin = (app) => {
   channel('undici:client:connected').subscribe((msg, name) => {
     const m: DiagnosticsChannel.ClientConnectedMessage = msg as any
     undici.log(`client:connected ${m.connectParams.protocol}//${m.connectParams.hostname}:${m.connectParams.port} ${m.connectParams.servername} -> ${m.socket.remoteAddress}`)
+  })
+  channel('undici:request:cache:headers').subscribe((msg: any, name) => {
+    const options = msg.options as Dispatcher.DispatchOptions
+    const modified = msg.modified as boolean
+    const body = msg.body as boolean
+    const precached = msg.precached as boolean
+    undici.log(`request:cache:headers ${options.method} ${options.origin}${options.path} modified=${modified} body=${body} precached=${precached}`)
+  })
+  channel('undici:request:cache:complete').subscribe((msg: any, name) => {
+    const options = msg.options as Dispatcher.DispatchOptions
+    const skip = msg.skip as boolean
+    const storeable = msg.storeable
+    undici.log(`request:cache:complete ${options.method} ${options.origin}${options.path} skip=${skip} storeable=${storeable}`)
+  })
+  channel('undici:request:cache:error').subscribe((msg: any, name) => {
+    const options = msg.options as Dispatcher.DispatchOptions
+    const skip = msg.skip as boolean
+    const storable = msg.storable as boolean
+    const retry = msg.retry as boolean
+    undici.log(`request:cache:error ${options.method} ${options.origin}${options.path} skip=${skip} storable=${storable} retry=${retry}`)
+  })
+  channel('undici:request:cache:timeout').subscribe((msg: any, name) => {
+    const options = msg.options as Dispatcher.DispatchOptions
+    const recovered = msg.recovered
+    undici.log(`request:cache:timeout ${options.method} ${options.origin}${options.path} recovered=${recovered}`)
   })
 }
