@@ -54,39 +54,40 @@
     </v-card>
 
     <div
-      class="flex overflow-auto h-full flex-col container py-0"
+      class="flex overflow-auto h-full flex-col container py-0 gap-4"
     >
       <refreshing-tile
         v-if="refreshing"
         class="h-full"
       />
-      <!-- <hint
-        v-else-if="modpacks.length === 0"
-        icon="save_alt"
-        :text="t('modpack.dropHint')"
-        :absolute="true"
-        class="h-full z-0"
-      /> -->
-      <TransitionGroup
-        name="transition-list"
-        tag="div"
-        class="flex flex-wrap overflow-auto h-full w-full gap-4 items-start"
-      >
-        <ModpackCard
-          v-for="(item) in modpacks"
-          :key="item.id"
-          :item="item"
-          @tags="item.tags = $event"
-          @dragstart="dragging = item"
-          @dragend="dragging = undefined"
-          @create="show(item.id)"
-          @delete="startDelete(item)"
-        />
-        <div
-          key="dummy"
-          class="min-h-10 min-w-[100vh]"
-        />
-      </TransitionGroup>
+      <template v-for="[group, packs] of Object.entries(grouped)">
+        <v-subheader
+          :key="group"
+        >
+          {{ group }}
+        </v-subheader>
+        <TransitionGroup
+          :key="group + 'list'"
+          name="transition-list"
+          tag="div"
+          class="flex flex-wrap flex-grow-0 gap-4 w-full items-start"
+        >
+          <ModpackCard
+            v-for="item of packs"
+            :key="item.id"
+            :item="item"
+            @tags="item.tags = $event"
+            @dragstart="dragging = item"
+            @dragend="dragging = undefined"
+            @create="show(item.id)"
+            @delete="startDelete(item)"
+          />
+        </TransitionGroup>
+      </template>
+      <div
+        key="dummy"
+        class="min-h-10 min-w-[100vw]"
+      />
     </div>
     <DeleteDialog
       :title="t('modpack.delete.title')"
@@ -144,6 +145,17 @@ const filterOptions = computed(() => items.value.map(getFilterOptions).reduce((a
 const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (v) => `${v.name} ${v.author} ${v.version}`)
 const { refresh, refreshing: refreshingFtb, cache: ftb, dispose } = useFeedTheBeastVersionsCache()
 const modpacks = computed(() => filter(items.value))
+const grouped = computed(() => {
+  const result: Record<string, ModpackItem[]> = {}
+  for (const p of modpacks.value) {
+    if (!result[p.name]) result[p.name] = []
+    result[p.name].push(p)
+  }
+  for (const v of Object.values(result)) {
+    v.sort((a, b) => (b.resource?.storedDate || 0) - (a.resource?.storedDate || 0))
+  }
+  return result
+})
 
 function showFolder() {
   showModpacksFolder()

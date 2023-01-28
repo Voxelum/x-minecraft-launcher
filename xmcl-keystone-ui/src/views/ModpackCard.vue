@@ -5,14 +5,14 @@
     outlined
     draggable
     hover
-    class="draggable-card rounded-lg transition-all duration-200 cursor-pointer max-w-[30%]"
+    width="250"
+    class="draggable-card rounded-lg transition-all duration-200 cursor-pointer"
     style="transition: all; transition-duration: 200ms;"
     @dragstart="$emit('dragstart')"
     @dragend="$emit('dragend')"
   >
     <v-img
       v-if="item.icon"
-      height="250"
       :src="item.icon"
     >
       <template #placeholder>
@@ -51,7 +51,10 @@
       </div>
     </v-card-subtitle>
     <v-divider class="mx-4" />
-    <div class="p-2 flex gap-2 flex-wrap">
+    <div
+      v-if="item.tags.length > 0"
+      class="p-2 flex gap-2 flex-wrap"
+    >
       <v-chip
         v-for="(tag, index) in item.tags"
         :key="tag"
