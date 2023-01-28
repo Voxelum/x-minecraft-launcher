@@ -26,6 +26,32 @@ export function useResourceEffect(onResourceEffect: () => void, targetDomain?: R
   })
 }
 
+export function useResourceSha1Discovery(sha1: Ref<string[]>) {
+  const { getResourcesByHashes } = useService(ResourceServiceKey)
+
+  const resources = shallowRef({} as Record<string, Resource>)
+  const updateStatus = async () => {
+    const hashes = sha1.value
+    const all = await getResourcesByHashes(hashes)
+    const result: Record<string, Resource> = {}
+    for (let i = 0; i < all.length; i++) {
+      const res = all[i]
+      if (res) {
+        result[hashes[i]] = res
+      }
+    }
+    resources.value = result
+  }
+
+  onMounted(updateStatus)
+  useResourceEffect(updateStatus)
+  watch(sha1, updateStatus)
+
+  return {
+    resources,
+  }
+}
+
 export function useResourceUrisDiscovery(uris: Ref<string[]>) {
   const { getResourcesByUris } = useService(ResourceServiceKey)
 

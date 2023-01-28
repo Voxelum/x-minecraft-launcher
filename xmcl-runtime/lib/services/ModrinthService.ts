@@ -1,7 +1,8 @@
 import { DownloadTask } from '@xmcl/installer'
 import { Category, GameVersion, License, Loader, Project, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
-import { InstallModrinthVersionResult, InstallProjectVersionOptions, ModrinthService as IModrinthService, ModrinthServiceKey } from '@xmcl/runtime-api'
+import { getModrinthVersionFileUri, getModrinthVersionUri, InstallModrinthVersionResult, InstallProjectVersionOptions, ModrinthService as IModrinthService, ModrinthServiceKey } from '@xmcl/runtime-api'
 import { unlink } from 'fs-extra'
+import { url } from 'inspector'
 import { basename, join } from 'path'
 import { Pool } from 'undici'
 import { LauncherApp } from '../app/LauncherApp'
@@ -148,13 +149,17 @@ export class ModrinthService extends AbstractService implements IModrinthService
       ? await Promise.all((await this.resolveDependencies(version)).map(version => this.installVersion({ version, instancePath, ignoreDependencies: true })))
       : []
 
+    const isSingleFile = version.files.length === 1
     const resources = await Promise.all(version.files.map(async (file) => {
       this.log(`Try install project version file ${file.filename} ${file.url}`)
       const destination = join(this.app.temporaryPath, basename(file.filename))
       const hashes = Object.entries(file.hashes)
       const urls = [file.url]
       if (version) {
-        urls.push(`modrinth:${version.project_id}:${version.id}:${file.filename}`)
+        urls.push(getModrinthVersionFileUri({ project_id: version.project_id, id: version.id, filename: file.filename }))
+        if (isSingleFile) {
+          urls.push(getModrinthVersionUri(version))
+        }
       }
 
       let resource = (await this.resourceService.getResourcesByUris(urls)).reduce((a, b) => a || b, undefined)

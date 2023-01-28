@@ -110,17 +110,17 @@ import ErrorView from '@/components/ErrorView.vue'
 const { t } = useI18n()
 const emit = defineEmits(['select:license', 'select:gameVersion', 'select:environment', 'select:modLoader', 'select:category', 'refresh'])
 const prosp = defineProps<{
-  loading:boolean
-  categories:Category[]
-  category:string[]
-  loaders:Loader[]
-  modLoader:String
-  environments:string[]
-  environment:String
-  gameVersions:GameVersion[]
-  gameVersion:String
-  licenses:License[]
-  license:String
+  loading: boolean
+  categories: Category[]
+  category: string[]
+  loaders: Loader[]
+  modLoader: string
+  environments: string[]
+  environment: string
+  gameVersions: GameVersion[]
+  gameVersion: string
+  licenses: License[]
+  license: string
   error: any
 }>()
 

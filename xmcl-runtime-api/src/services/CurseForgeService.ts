@@ -32,6 +32,11 @@ export interface GetModFilesOptions {
   pageSize?: number
 }
 
+export interface GetModFileOptions {
+  modId: number
+  fileId: number
+}
+
 export interface InstallFileResult {
   mod: Mod
   file: File
@@ -66,6 +71,7 @@ export interface CurseForgeService {
    * @param options The curseforge project id
    */
   getModFiles(options: GetModFilesOptions): Promise<{ data: File[]; pagination: Pagination }>
+  getModFile(options: GetModFileOptions): Promise<File>
   /**
    * The mod files by files ids
    */
@@ -81,6 +87,8 @@ export interface CurseForgeService {
   searchProjects(searchOptions: SearchOptions): Promise<{ data: Mod[]; pagination: Pagination }>
 
   resolveFileDependencies(file: File): Promise<[File, FileRelationType][]>
+
+  getFileChangelog(file: Pick<File, 'modId' | 'id'>): Promise<string>
   /**
    * Install a curseforge file to local storage.
    *

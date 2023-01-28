@@ -13,7 +13,7 @@
           {{ getExpectedSize(project.downloads, '') }}
         </span>
       </span>
-      <span>
+      <span class="">
         <v-icon
           class="material-icons-outlined text-gray-300 mb-2 mr-2"
         >
@@ -24,7 +24,7 @@
           {{ project.followers }}
         </span>
       </span>
-      <span class="flex gap-1 flex-grow-0">
+      <span class="">
         <v-icon
           class="material-icons-outlined text-gray-300"
           left
@@ -34,7 +34,7 @@
         <span>{{ t('modrinth.createAt') }}</span>
         {{ getLocalDateString(project.published) }}
       </span>
-      <span class="flex gap-1 flex-grow-0">
+      <span class="">
         <v-icon
           class="material-icons-outlined text-gray-300"
           left

@@ -12,6 +12,7 @@
       :responsive="true"
       :vertical-compact="true"
       :use-css-transforms="true"
+      @breakpoint-changed="onBreakpoint"
     >
       <GridItem
         v-for="item in layout"
@@ -31,6 +32,7 @@
         <!-- <span class="absolute left-0 top-0 z-10">
           {{ item.x }} {{ item.y }}
           {{ item.w }} {{ item.h }}
+          {{ 410 / item.h }}
         </span> -->
         <HomeModCard
           v-if="isType(item.i, CardType.Mod)"
@@ -53,7 +55,7 @@
         <HomeScreenshotCard
           v-else-if="isType(item.i, CardType.Screenshots)"
           :width="item.w"
-          :height="item.h * 32"
+          :height="screenshotHeight"
           :instance="instance"
         />
       </GridItem>
@@ -61,15 +63,15 @@
 
     <v-divider class="my-4" />
     <HomeServerStatusBar v-if="isServer" />
-    <HomeCurseforgeUpstream
+    <CurseforgeProject
       v-else-if="instance.upstream && instance.upstream.type === 'curseforge-modpack'"
-      :instance="instance"
-      :upstream="instance.upstream"
+      :id="instance.upstream.modId.toString()"
+      :type="'modpacks'"
+      :from="instance.path"
     />
-    <HomeModrinthUpstream
+    <ModrinthProject
       v-else-if="instance.upstream && instance.upstream.type === 'modrinth-modpack'"
-      :instance="instance"
-      :upstream="instance.upstream"
+      :id="instance.upstream.projectId.toString()"
     />
     <GridLayout
       v-else
@@ -102,26 +104,29 @@
 </template>
 <script lang="ts" setup>
 
+import { useLocalStorageCache } from '@/composables/cache'
+import { kUpstream } from '@/composables/instanceUpdate'
 import { useMojangNews } from '@/composables/mojangNews'
 import { kSharedTooltip, useSharedTooltip } from '@/composables/sharedTooltip'
 import { Instance } from '@xmcl/runtime-api'
+import debounce from 'lodash.debounce'
 import { GridItem, GridLayout } from 'vue-grid-layout'
 import SharedTooltip from '../components/SharedTooltip.vue'
-import HomeCurseforgeUpstream from './HomeCurseforgeUpstream.vue'
+import CurseforgeProject from './CurseforgeProject.vue'
 import HomeModCard from './HomeModCard.vue'
-import HomeModrinthUpstream from './HomeModrinthUpstream.vue'
 import HomeNewsCard from './HomeNewsCard.vue'
 import HomeResourcePacksCard from './HomeResourcePacksCard.vue'
 import HomeSavesCard from './HomeSavesCard.vue'
 import HomeScreenshotCard from './HomeScreenshotCard.vue'
 import HomeServerStatusBar from './HomeServerStatusBar.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
+import ModrinthProject from './ModrinthProject.vue'
 
 provide(kSharedTooltip, useSharedTooltip<string>((content) => {
   return content
 }))
 
-defineProps<{
+const props = defineProps<{
   isServer: boolean
   instance: Instance
 }>()
@@ -133,6 +138,8 @@ enum CardType {
   Save,
   Screenshots,
 }
+
+provide(kUpstream, computed(() => ({ upstream: props.instance.upstream, minecraft: props.instance.runtime.minecraft })))
 
 function rawType(type: CardType) {
   return type + ''
@@ -157,15 +164,13 @@ interface GridItemType {
 
 const cols = { lg: 12, md: 12, sm: 6, xs: 4, xxs: 4 }
 
-const layouts = reactive({
+const layouts = useLocalStorageCache('cardsLayout', () => ({
   md: [
     { x: 0, y: 0, w: 3, h: 9, minW: 2, minH: 4, i: rawType(CardType.Mod) },
     { x: 9, y: 0, w: 3, h: 9, minW: 2, minH: 4, i: rawType(CardType.ResourcePack) },
     { x: 3, y: 0, w: 3, h: 4, minW: 2, minH: 4, i: rawType(CardType.Save) },
     { x: 6, y: 0, w: 3, h: 4, minW: 2, minH: 4, i: rawType(CardType.ShaderPack) },
     { x: 3, y: 4, w: 6, h: 5, minW: 3, minH: 4, i: rawType(CardType.Screenshots) },
-    // { x: 0, y: 4, w: 4, h: 6, minW: 4, minH: 6, i: rawType(CardType.ServerStatus) },
-    // { x: 6, y: 4, w: 4, h: 4, minW: 3, minH: 4, i: rawType(CardType.Upstream) },
   ],
   lg: [
     { x: 0, y: 0, w: 3, h: 9, minW: 2, minH: 4, i: rawType(CardType.Mod) },
@@ -173,8 +178,6 @@ const layouts = reactive({
     { x: 3, y: 0, w: 3, h: 4, minW: 2, minH: 4, i: rawType(CardType.Save) },
     { x: 6, y: 0, w: 3, h: 4, minW: 2, minH: 4, i: rawType(CardType.ShaderPack) },
     { x: 3, y: 4, w: 6, h: 5, minW: 3, minH: 4, i: rawType(CardType.Screenshots) },
-    // { x: 0, y: 4, w: 4, h: 6, minW: 4, minH: 6, i: rawType(CardType.ServerStatus) },
-    // { x: 6, y: 4, w: 4, h: 4, minW: 3, minH: 4, i: rawType(CardType.Upstream) },
   ],
   sm: [
     { x: 0, y: 0, w: 2, h: 6, minW: 2, minH: 4, i: rawType(CardType.Mod) },
@@ -182,27 +185,27 @@ const layouts = reactive({
     { x: 2, y: 5, w: 2, h: 5, minW: 2, minH: 4, i: rawType(CardType.ShaderPack) },
     { x: 0, y: 6, w: 2, h: 4, minW: 2, minH: 4, i: rawType(CardType.Save) },
     { x: 4, y: 0, w: 2, h: 10, minW: 2, minH: 4, i: rawType(CardType.Screenshots) },
-    // { x: 0, y: 4, w: 4, h: 6, i: rawType(CardType.ServerStatus) },
-    // { x: 0, y: 4, w: 4, h: 4, i: rawType(CardType.Upstream) },
   ],
   xs: [
-    { x: 0, y: 0, w: 2, h: 6, i: rawType(CardType.Mod) },
-    { x: 2, y: 4, w: 2, h: 4, i: rawType(CardType.Save) },
-    { x: 2, y: 0, w: 2, h: 4, i: rawType(CardType.ResourcePack) },
-    { x: 0, y: 6, w: 2, h: 4, i: rawType(CardType.ShaderPack) },
-    // { x: 0, y: 4, w: 4, h: 6, i: rawType(CardType.ServerStatus) },
-    // { x: 0, y: 4, w: 4, h: 4, i: rawType(CardType.Upstream) },
-    // { x: 0, y: 4, w: 4, h: 4, i: rawType(CardType.Screenshots) },
+    { x: 0, y: 0, w: 2, h: 6, minW: 2, minH: 4, i: rawType(CardType.Mod) },
+    { x: 2, y: 4, w: 2, h: 4, minW: 2, minH: 4, i: rawType(CardType.Save) },
+    { x: 0, y: 6, w: 2, h: 6, minW: 2, minH: 4, i: rawType(CardType.ResourcePack) },
+    { x: 2, y: 0, w: 2, h: 4, minW: 2, minH: 4, i: rawType(CardType.ShaderPack) },
+    { x: 2, y: 8, w: 2, h: 4, minW: 1, minH: 4, i: rawType(CardType.Screenshots) },
   ],
-})
+}), JSON.stringify, JSON.parse)
 
-const layout = ref([
-  { x: 0, y: 0, w: 3, h: 4, minW: 2, minH: 4, i: rawType(CardType.Mod) },
-  { x: 3, y: 0, w: 3, h: 4, minW: 2, minH: 4, i: rawType(CardType.ResourcePack) },
-  { x: 6, y: 0, w: 3, h: 4, minW: 2, minH: 4, i: rawType(CardType.ShaderPack) },
-  { x: 9, y: 0, w: 3, h: 4, minW: 2, minH: 4, i: rawType(CardType.Save) },
-  { x: 6, y: 4, w: 4, h: 4, minW: 3, minH: 4, i: rawType(CardType.Screenshots) },
-] as GridItemType[])
+const layout = ref([] as GridItemType[])
+
+let lastBreakpoint = ''
+
+const onBreakpoint = (newBreakpoint: string) => {
+  if (lastBreakpoint) {
+    layouts.value[lastBreakpoint] = layout.value
+    localStorage.setItem('cardsLayout', JSON.stringify(layouts.value))
+  }
+  lastBreakpoint = newBreakpoint
+}
 
 const containerWidths = reactive({
   [CardType.Mod]: 0,
@@ -211,8 +214,19 @@ const containerWidths = reactive({
   [CardType.ShaderPack]: 0,
 } as Record<string, number>)
 
+const screenshotHeight = ref(0)
+
+const saveLayouts = debounce(() => {
+  localStorage.setItem('cardsLayout', JSON.stringify(layouts.value))
+}, 500)
+
 const onResized = (i: string, newH: number, newW: number, newHPx: number, newWPx: number) => {
   containerWidths[i] = newWPx
+  if (Number(i) === CardType.Screenshots) {
+    screenshotHeight.value = Number(newHPx)
+  }
+  layouts.value[lastBreakpoint] = layout.value
+  saveLayouts()
 }
 
 const getRowCount = (width: number) => width ? Math.floor((width - 34) / 30) : 7
@@ -243,7 +257,7 @@ onMounted(async () => {
       x,
       y,
       w: 3,
-      h: 10 + titleLines + textLine,
+      h: 6 + titleLines + textLine,
       i: i.toString(),
     }
     layout.push(newLayout)

@@ -187,7 +187,7 @@ export function useModrinth(props: ModrinthOptions) {
     data.projects = result.hits
   })
 
-  const debouncedRefresh = debounce(refresh)
+  const debouncedRefresh = debounce(refresh, 1000)
   const wrappedRefresh = () => {
     refreshing.value = true
     return debouncedRefresh()

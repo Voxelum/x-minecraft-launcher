@@ -57,24 +57,30 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
     this.resolvers.push(resolver)
   }
 
-  private async resolveOldFiles(instance: InstanceData, oldModpack?: string): Promise<InstanceFile[]> {
+  private async resolveOldFiles(instancePath: string, instance: InstanceData, oldModpack?: string): Promise<InstanceFile[]> {
     if (oldModpack) {
+      // If old modpack path present, try to get modpack content
       const profile = await this.modpackService.getInstallModpackProfile(oldModpack)
       return profile.files
     }
-    if (!instance.upstream) {
-      throw new Error()
-    }
-    const upstream = instance.upstream
 
-    for (const resolver of this.resolvers) {
-      const result = await resolver(upstream)
-      if (result) {
-        return result.files
+    if (instance.upstream) {
+      const upstream = instance.upstream
+
+      // Parse the upstream and get the modpack metadata alloc to it
+      for (const resolver of this.resolvers) {
+        const result = await resolver(upstream)
+        if (result) {
+          return result.files
+        }
       }
     }
 
-    throw new Error()
+    // Not found the related modpack metadata...
+    // Now directly get the current instance manfiest
+    const man = await this.instanceManifestService.getInstanceManifest({ path: instancePath, hashes: ['sha1'] })
+    const files = man.files.filter(f => f.path.startsWith('/mods'))
+    return files
   }
 
   async getInstanceUpdateProfile(options: UpgradeModpackOptions) {
@@ -84,7 +90,7 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
       throw new Error()
     }
 
-    const oldFiles = await this.resolveOldFiles(instance, options.oldModpack)
+    const oldFiles = await this.resolveOldFiles(instancePath, instance, options.oldModpack)
 
     const { files: newFiles, instance: instanceOptions } = await this.modpackService.getInstallModpackProfile(options.newModpack)
 

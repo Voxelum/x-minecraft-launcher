@@ -6,91 +6,105 @@
     <v-card-title class="text-md font-bold">
       {{ t("curseforge.recentFiles") }}
     </v-card-title>
-    <v-divider />
-    <v-skeleton-loader
-      v-if="!files"
-      type="list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line, list-item-avatar-three-line"
-    />
-    <v-list
-      v-else
-      class="overflow-auto"
-    >
-      <v-tooltip
-        v-for="file in files"
-        :key="file.id"
-        top
-      >
-        <template #activator="{ on }">
-          <v-list-item
-            :v-ripple="!isDownloaded(file) "
-            v-on="on"
-          >
-            <v-list-item-content>
-              <v-list-item-title>
-                {{
-                  file.displayName
-                }}
-              </v-list-item-title>
-              <v-list-item-subtitle>
-                {{
-                  getLocalDateString(file.fileDate)
-                }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action>
-              <v-btn
-                text
-                icon
-                :loading="getDownloadProgress(file) !== -1"
-                @click="install(file)"
-              >
-                <v-icon>
-                  {{
-                    isDownloaded(file)
-                      ? "add"
-                      : "download"
-                  }}
-                </v-icon>
-                <template #loader>
-                  <v-progress-circular
-                    :value="getDownloadProgress(file)"
-                    :size="24"
-                    :width="2"
-                  />
-                </template>
-              </v-btn>
-            </v-list-item-action>
-          </v-list-item>
-        </template>
-        {{ file.fileName }}
-      </v-tooltip>
+    <v-list>
+      <template v-for="g of Object.entries(grouped)">
+        <v-subheader
+          :key="g[0]"
+          class
+        >
+          Minecraft {{ g[0] }}
+        </v-subheader>
+        <CurseforgeProjectFileItem
+          v-for="file in g[1]"
+          :id="file.fileId"
+          :key="file.fileId + g[0]"
+          :upstream-file-id="upstream ? upstream.fileId : undefined"
+          :mod-id="project.id"
+          :name="file.filename"
+          :loader="modLoaders[file.modLoader] || ''"
+          :release-type="file.releaseType"
+          @install="install(file)"
+        />
+      </template>
     </v-list>
+
+    <v-card-title class="text-md font-bold">
+      {{ t("curseforge.authors") }}
+    </v-card-title>
+
+    <div class="mx-4 flex gap-4 flex-grow-0">
+      <a
+        v-for="a of project.authors"
+        :key="a.id"
+        :href="a.url"
+      >
+        {{ a.name }}
+      </a>
+    </div>
+
+    <v-card-title class="text-md font-bold">
+      {{ t("modrinth.categories.categories") }}
+    </v-card-title>
+
+    <div class="mx-4 flex flex-wrap gap-2 flex-grow-0">
+      <v-chip
+        v-for="a of project.categories"
+        :key="a.id"
+      >
+        <v-avatar
+          left
+        >
+          <img
+            :src="a.iconUrl"
+          >
+        </v-avatar>
+        <a :href="a.url">
+          {{ a.name }}
+        </a>
+      </v-chip>
+    </div>
   </v-card>
 </template>
 
 <script lang=ts setup>
-import { useCurseforgeInstall } from '@/composables/curseforgeInstall'
-import { kTaskManager } from '@/composables/taskManager'
-import { getLocalDateString } from '@/util/date'
+import { kCurseforgeInstall } from '@/composables/curseforgeInstall'
 import { injection } from '@/util/inject'
-import { File } from '@xmcl/curseforge'
-import { ProjectType, TaskState } from '@xmcl/runtime-api'
+import { FileIndex, FileModLoaderType, Mod } from '@xmcl/curseforge'
+import { ProjectType } from '@xmcl/runtime-api'
+import CurseforgeProjectFileItem from './CurseforgeProjectFileItem.vue'
 
 const props = defineProps<{
-  files?: File[]
+  project: Mod
   from: string
   type: ProjectType
+  upstream?: {
+    modId: number
+    fileId: number
+  }
 }>()
 
-const { t } = useI18n()
-const { install, isDownloaded } = useCurseforgeInstall(computed(() => props.files ?? []), computed(() => props.from), props.type)
-const taskManager = injection(kTaskManager)
-
-const getDownloadProgress = (file: File) => {
-  const task = taskManager.tasks.value.find(v => v.state === TaskState.Running && v.path === 'installCurseforgeFile' && v.param.fileId === file.id)
-  if (task) {
-    return task.progress / task.total * 100
-  }
-  return -1
+const modLoaders = {
+  [FileModLoaderType.Cauldron]: 'Cauldron',
+  [FileModLoaderType.Forge]: 'Forge',
+  [FileModLoaderType.Fabric]: 'Fabric',
+  [FileModLoaderType.Quilt]: 'Quilt',
+  [FileModLoaderType.LiteLoader]: 'LiteLoader',
+  [FileModLoaderType.Any]: '',
 }
+
+const { t } = useI18n()
+
+const { install, isDownloaded } = injection(kCurseforgeInstall)
+
+const grouped = computed(() => {
+  if (!props.project.latestFilesIndexes) return {}
+  const result: Record<string, FileIndex[]> = {}
+  for (const f of props.project.latestFilesIndexes) {
+    const v = f.gameVersion
+    if (!result[v]) result[v] = []
+    result[v].push(f)
+  }
+  return result
+})
+
 </script>

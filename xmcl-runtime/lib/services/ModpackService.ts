@@ -349,8 +349,8 @@ export class ModpackService extends AbstractService implements IModpackService {
             crc32: e.crc32.toString(),
           },
           downloads: [
-            `zip:///${join(path, relativePath)}`,
-            `zip://${sha1}/${relativePath}`,
+            `zip:///${path}?entry=${encodeURIComponent(e.fileName)}`,
+            `zip://${sha1}/${e.fileName}`,
           ],
         }
         return file

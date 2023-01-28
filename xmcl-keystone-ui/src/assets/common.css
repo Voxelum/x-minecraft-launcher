@@ -91,6 +91,12 @@ html ::-webkit-scrollbar {
     /* background: transparent; */
 }
 
+.vue-grid-item.vue-grid-placeholder {
+    background: rgba(0, 0, 0, 0.3) !important;
+}
+.dark .vue-grid-item.vue-grid-placeholder {
+    background: rgba(255, 255, 255, 0.5) !important;
+}
 
 .invisible-scroll ::-webkit-scrollbar,
 .invisible-scroll::-webkit-scrollbar {

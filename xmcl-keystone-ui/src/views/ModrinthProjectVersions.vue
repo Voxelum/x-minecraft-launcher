@@ -1,6 +1,6 @@
 <template>
-  <v-card class="h-full overflow-hidden flex flex-col">
-    <div class="flex gap-5 mx-5 mt-3 overflow-hidden">
+  <v-card class="flex flex-col">
+    <div class="flex gap-5 mx-5 mt-3 flex-shrink flex-grow-0">
       <v-select
         v-model="gameVersion"
         clearable
@@ -43,7 +43,6 @@
     />
     <div
       v-else
-      class="h-full overflow-auto"
       style="border-spacing: 0.75em"
     >
       <div
@@ -62,13 +61,20 @@
           {{ t('modrinth.headers.status') }}
         </div>
       </div>
-      <VirtualList
-        :data-component="ModrinthProjectVersionsTile"
-        :data-key="'id'"
-        class="v-list overflow-auto transition-none"
-        :data-sources="items"
-        :estimate-size="120"
-        :extra-props="{ isDownloaded, onInstall, relatedTasks }"
+      <v-list class="visible-scroll max-h-full overflow-auto transition-none">
+        <ModrinthProjectVersionsTile
+          v-for="i of visibleVersions"
+          :key="i.id"
+          :source="i"
+          @install="onInstall"
+        />
+      </v-list>
+      <v-pagination
+        v-model="page"
+        color="success"
+        class="mb-3"
+        :length="pages"
+        :total-visible="12"
       />
     </div>
   </v-card>
@@ -76,14 +82,10 @@
 
 <script lang="ts" setup>
 import ErrorView from '@/components/ErrorView.vue'
-import { kModrinthVersions, kModrinthVersionsStatus } from '@/composables/modrinthVersions'
-import { kTaskManager } from '@/composables/taskManager'
-import { TaskItem } from '@/entities/task'
+import { kModrinthInstall } from '@/composables/modrinthInstall'
+import { useModrinthVersions } from '@/composables/modrinthVersions'
 import { injection } from '@/util/inject'
-import { ProjectVersion } from '@xmcl/modrinth'
-import { TaskState } from '@xmcl/runtime-api'
 import ModrinthProjectVersionsTile from './ModrinthProjectVersionsTile.vue'
-import VirtualList from 'vue-virtual-scroll-list'
 
 const props = defineProps<{
   versions: string[]
@@ -91,11 +93,10 @@ const props = defineProps<{
   modpack: boolean
 }>()
 
-const emit = defineEmits(['install'])
-const onInstall = (v: ProjectVersion) => emit('install', v)
+const { onInstall } = injection(kModrinthInstall)
 
-const { versions: projectVersions, error: versionsError, refresh, refreshing } = injection(kModrinthVersions)
-const { isDownloaded } = injection(kModrinthVersionsStatus)
+// modrinth versions
+const { versions: projectVersions, error: versionsError, refresh, refreshing } = useModrinthVersions(computed(() => props.project))
 
 const { t } = useI18n()
 const gameVersions = computed(() => projectVersions.value.map(v => v.game_versions).reduce((a, b) => [...a, ...b], []))
@@ -109,15 +110,6 @@ const releaseType = ref('')
 const modLoaders = ['forge', 'fabric']
 const modLoader = ref('')
 
-const { tasks } = injection(kTaskManager)
-const relatedTasks = computed(() => {
-  const all = tasks.value.filter(t => t.state === TaskState.Running && t.path === 'installModrinthFile' && t.param.projectId === props.project)
-  const dict = {} as Record<string, TaskItem>
-  for (const t of all) {
-    dict[t.param.versionId] = t
-  }
-  return dict
-})
 const items = computed(() => projectVersions.value.filter(v => {
   if (gameVersion.value) {
     return v.game_versions.indexOf(gameVersion.value) !== -1
@@ -131,5 +123,11 @@ const items = computed(() => projectVersions.value.filter(v => {
   return true
 }))
 
-onMounted(refresh)
+const pageCount = 15
+const pages = computed(() => Math.ceil(items.value.length / pageCount))
+const page = ref(1)
+
+const visibleVersions = computed(() => {
+  return items.value.slice((page.value - 1) * pageCount, page.value * pageCount)
+})
 </script>

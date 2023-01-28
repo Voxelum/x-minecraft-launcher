@@ -75,8 +75,6 @@ const opened = ref([])
 
 const files = injection(FileNodesSymbol)
 
-console.log(files.value)
-
 function getIcon(file: string) {
   if (file.endsWith('.jar') || file.endsWith('.zip')) {
     return '$vuetify.icons.package'

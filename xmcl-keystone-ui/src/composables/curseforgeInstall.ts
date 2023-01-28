@@ -1,27 +1,38 @@
-import { File } from '@xmcl/curseforge'
-import { CurseForgeServiceKey, getCurseforgeFileUrl, ProjectType, ResourceServiceKey } from '@xmcl/runtime-api'
-import { Ref } from 'vue'
+import { File, FileIndex } from '@xmcl/curseforge'
+import { CurseForgeServiceKey, getCurseforgeFileUri, ProjectType, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InjectionKey, Ref } from 'vue'
 import { useDialog } from './dialog'
 import { AddInstanceDialogKey } from './instanceAdd'
+import { InstanceInstallDialog } from './instanceUpdate'
+import { useNotifier } from './notifier'
 import { useResourceUrisDiscovery } from './resources'
 import { useService } from './service'
-import { useNotifier } from './notifier'
 
-export function useCurseforgeInstall(files: Ref<File[]>, from: Ref<string | undefined>, type: ProjectType) {
-  const { installFile } = useService(CurseForgeServiceKey)
+export const kCurseforgeInstall: InjectionKey<ReturnType<typeof useCurseforgeInstall>> = Symbol('CurseforgeInstall')
+
+export function useCurseforgeInstall(modId: Ref<number>, files: Ref<Pick<File, 'modId' | 'id'>[]>, from: Ref<string | undefined>, type: Ref<ProjectType>, currentFileResource: Ref<Resource | undefined>) {
+  const { installFile, getModFile } = useService(CurseForgeServiceKey)
   const { install: installResource } = useService(ResourceServiceKey)
   const { t } = useI18n()
   const { notify } = useNotifier()
 
   const { show: showAddInstanceDialog } = useDialog(AddInstanceDialogKey)
-  const { resources } = useResourceUrisDiscovery(computed(() => files.value.map(getCurseforgeFileUrl)))
-  const isDownloaded = (file: File) => {
-    return !!resources.value[getCurseforgeFileUrl(file)]
+  const { show: showInstanceUpdateDialog } = useDialog(InstanceInstallDialog)
+  const { resources } = useResourceUrisDiscovery(computed(() => files.value.map(getCurseforgeFileUri)))
+  const isDownloaded = (file: Pick<File, 'modId' | 'id'>) => {
+    return !!resources.value[getCurseforgeFileUri(file)]
   }
-  async function install(file: File) {
-    const resource = resources.value[getCurseforgeFileUrl(file)]
+  async function install(input: File | FileIndex) {
+    const file = 'modId' in input ? input : await getModFile({ fileId: input.fileId, modId: modId.value })
+    const resource = resources.value[getCurseforgeFileUri(file)]
     if (resource) {
-      if (type === 'modpacks') {
+      if (currentFileResource.value) {
+        showInstanceUpdateDialog({
+          type: 'curseforge',
+          currentResource: currentFileResource.value,
+          resource: resource,
+        })
+      } else if (type.value === 'modpacks') {
         showAddInstanceDialog(resource.path)
       } else if (from.value) {
         installResource({ instancePath: from.value, resource }).then(() => {
@@ -36,7 +47,7 @@ export function useCurseforgeInstall(files: Ref<File[]>, from: Ref<string | unde
         })
       }
     } else {
-      await installFile({ file, type, instancePath: from.value })
+      await installFile({ file, type: type.value, instancePath: from.value })
     }
   }
   return {

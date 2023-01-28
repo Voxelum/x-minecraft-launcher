@@ -1,8 +1,9 @@
 <template>
-  <div class="flex flex-row lg:flex-col gap-2">
+  <div class="flex flex-row lg:flex-col gap-4 items-center">
     <v-img
       height="150"
       width="150"
+      max-width="150"
       :src="project.icon_url"
       class="rounded-lg"
     />

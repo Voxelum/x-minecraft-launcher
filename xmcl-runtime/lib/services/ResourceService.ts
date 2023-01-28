@@ -1,5 +1,5 @@
 /* eslint-disable no-dupe-class-members */
-import { ExportResourceOptions, ImportResourceOptions, PartialResourceHash, ResolveResourceOptions, Resource, ResourceDomain, ResourceService as IResourceService, ResourceServiceKey, ResourceType } from '@xmcl/runtime-api'
+import { ExportResourceOptions, ImportResourceOptions, PartialResourceHash, ResolveResourceOptions, Resource, ResourceDomain, ResourceMetadata, ResourceService as IResourceService, ResourceServiceKey, ResourceType } from '@xmcl/runtime-api'
 import { FSWatcher } from 'fs'
 import { ensureDir, unlink } from 'fs-extra'
 import { join } from 'path'
@@ -99,6 +99,16 @@ export class ResourceService extends AbstractService implements IResourceService
     this.context = createResourceContext(this.getAppDataPath('resources-v2'), imageStore, this, this, worker)
   }
 
+  async getResourceMetadataByHash(sha1: string): Promise<ResourceMetadata | undefined> {
+    const [metadata] = await this.context.metadata.getMany([sha1])
+    return metadata
+  }
+
+  async getResourcesMetadataByHashes(sha1: string[]): Promise<Array<ResourceMetadata | undefined>> {
+    const metadata = await this.context.metadata.getMany(sha1)
+    return metadata
+  }
+
   async getResourcesUnder({ fileNames, domain }: { fileNames: string[]; domain: ResourceDomain }): Promise<(Resource | undefined)[]> {
     const cache = await this.context.fileNameSnapshots[domain].getMany(fileNames)
     const metadata = await this.context.metadata.getMany(cache.map(c => c?.sha1 ?? ''))
@@ -156,6 +166,23 @@ export class ResourceService extends AbstractService implements IResourceService
     if (!fileCache) return undefined
     const metadata = await this.context.metadata.get(fileCache.sha1).catch(() => undefined)
     return generateResource(this.getPath(), fileCache, metadata)
+  }
+
+  async getResourcesByHashes(sha1: string[]): Promise<Array<Resource | undefined>> {
+    sha1 = sha1.map(s => s === EMPTY_RESOURCE_SHA1 ? '' : s)
+    const fileCaches = await this.context.sha1Snapshot.getMany(sha1)
+    const result: Promise<Resource | undefined>[] = []
+    for (let i = 0; i < fileCaches.length; i++) {
+      const file = fileCaches[i]
+      if (!file) {
+        result[i] = Promise.resolve(undefined)
+      } else {
+        result[i] = this.context.metadata.get(file.sha1).then(m => {
+          return generateResource(this.getPath(), file, m)
+        }, () => undefined)
+      }
+    }
+    return await Promise.all(result)
   }
 
   async getResourceByHash(sha1: string): Promise<Resource | undefined> {

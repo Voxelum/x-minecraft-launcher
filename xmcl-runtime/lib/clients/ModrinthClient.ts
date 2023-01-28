@@ -1,4 +1,5 @@
 import { Category, GameVersion, License, Loader, Project, TeamMember, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
+import { HTTPException } from '@xmcl/runtime-api'
 import { Dispatcher, request } from 'undici'
 import { InMemoryTtlCache } from '../util/cache'
 
@@ -117,6 +118,10 @@ export class ModrinthClient {
       dispatcher: this.dispatcher,
       signal,
     })
+    if (response.statusCode !== 200) {
+      const body = await response.body.json()
+      throw new HTTPException({ type: 'httpException', statusCode: response.statusCode, method: 'POST', body, code: '', url: `https://api.modrinth.com/v2/version_file/${hash}/update` })
+    }
     const version: ProjectVersion = await response.body.json()
     return version
   }
