@@ -10,6 +10,7 @@ declare module 'undici' {
        */
       cacheStrategy?: 'stale-while-revalidate' | 'cache-first' | 'network-only'
       connectTimeout?: number
+      skipOverride?: boolean
     }
     export interface RequestOptions {
       connectTimeout?: number

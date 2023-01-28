@@ -87,7 +87,7 @@ export default class NetworkManager extends Manager {
         })
         const apiAgent = new Agent({
           pipelining: 1,
-          bodyTimeout: 10_000,
+          bodyTimeout: 20_000,
           headersTimeout: 10_000,
           connectTimeout: 10_000,
           connect,

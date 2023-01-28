@@ -5,6 +5,8 @@ import { Agent, Dispatcher, errors, FormData } from 'undici'
 import { URL } from 'url'
 import { DispatchHandler } from './dispatcher'
 import { buildHeaders } from './utils'
+import { setTimeout } from 'timers/promises'
+import { channel } from 'diagnostics_channel'
 
 export interface StorageAdapter {
   get(key: string): Promise<any>
@@ -77,6 +79,11 @@ export class CachedRequest {
   }
 }
 
+const cacheHeaderChannel = channel('undici:request:cache:headers')
+const cacheCompleteChannel = channel('undici:request:cache:complete')
+const cacheErrorChannel = channel('undici:request:cache:error')
+const cacheTimeoutChannel = channel('undici:request:cache:timeout')
+
 /**
  * The cache handler for undici
  */
@@ -87,10 +94,17 @@ export class CacheHandler extends DispatchHandler {
    */
   private skip = false
 
+  private totalTimeout: AbortController
+  private waitingHeader = true
+
   constructor(handler: Dispatcher.DispatchHandlers,
     private options: Dispatcher.DispatchOptions,
     private cacheStorage: CacheStorage,
     private dispatcher: Dispatcher,
+    /**
+     * policy from cached request
+     */
+    private headers: string[] | undefined,
     /**
      * policy from cached request
      */
@@ -109,9 +123,24 @@ export class CacheHandler extends DispatchHandler {
     private preflight: boolean,
   ) {
     super(handler)
+    this.totalTimeout = new AbortController()
+    setTimeout(15_000, undefined, this.totalTimeout).then(() => this.onTimeout(), () => { /* aborted */ })
+  }
+
+  onTimeout() {
+    if (this.headers && this.body) {
+      cacheTimeoutChannel.publish({ options: this.options, recovered: true })
+      this.handler.onHeaders?.(200, this.headers, () => { })
+      this.handler.onData?.(this.body)
+      this.handler.onComplete?.(this.trailers || [])
+    } else {
+      cacheTimeoutChannel.publish({ options: this.options, recovered: false })
+      this.handler.onError?.(new Error('Timeout'))
+    }
   }
 
   onHeaders(statusCode: number, headers: string[] | null, resume: () => void): boolean {
+    this.totalTimeout.abort()
     if (this.policy) {
       const respHeaders = buildHeaders(headers?.map(v => v.toString()) ?? [])
       const reqHeaders = buildHeaders(this.options.headers || [])
@@ -132,7 +161,8 @@ export class CacheHandler extends DispatchHandler {
       if (!modified) {
         // 304 not modified, can use cached body
         const result = super.onHeaders(statusCode, headers, resume)
-        console.log(`[CACHE] ${this.options.method} ${this.options.origin}${this.options.path} -> 304 not modified!`)
+
+        cacheHeaderChannel.publish({ options: this.options, modified, body: !!this.body, headers, precached: true })
 
         if (this.body) { super.onData(this.body) }
         super.onComplete(this.trailers || null)
@@ -152,6 +182,8 @@ export class CacheHandler extends DispatchHandler {
         return false
       }
 
+      cacheHeaderChannel.publish({ options: this.options, modified, body: !!this.body, headers, precached: true })
+
       return super.onHeaders(statusCode, headers, resume)
     }
 
@@ -169,6 +201,8 @@ export class CacheHandler extends DispatchHandler {
       status: statusCode,
       headers: buildHeaders(headers?.map(v => v.toString()) ?? []),
     })
+
+    cacheHeaderChannel.publish({ options: this.options, modified: true, body: !!this.body, headers, precached: false })
 
     return super.onHeaders(statusCode, headers, resume)
   }
@@ -188,23 +222,26 @@ export class CacheHandler extends DispatchHandler {
 
   onError(err: Error): void {
     if (this.skip) {
-      console.log(`[CACHE] ${this.options.method} ${this.options.origin}${this.options.path} -> skip error`)
+      cacheErrorChannel.publish({ options: this.options, error: err, skip: this.skip })
       return
     }
 
     if (this.policy) {
       if (err instanceof errors.BodyTimeoutError || err instanceof errors.HeadersTimeoutError) {
+        cacheErrorChannel.publish({ options: this.options, error: err, skip: false, retry: true, storable: true })
         const cache = new CachedRequest(this.policy, this.body || Buffer.from([]), this.trailers || [])
         super.onHeaders(cache.getStatusCode(), cache.getHeaders(), () => { })
         if (this.body) { super.onData(this.body) }
         super.onComplete(this.trailers || [])
       } else {
+        cacheErrorChannel.publish({ options: this.options, error: err, skip: false, retry: false, storable: true })
         Object.assign(err, {
           [kCacheKey]: new CachedRequest(this.policy, this.body || Buffer.from([]), this.trailers || []),
         })
         super.onError(err)
       }
     } else {
+      cacheErrorChannel.publish({ options: this.options, error: err, skip: false, retry: false, storable: false })
       super.onError(err)
     }
 
@@ -217,14 +254,12 @@ export class CacheHandler extends DispatchHandler {
   onComplete(trailers: string[] | null): void {
     if (this.skip) {
       // Ignore completed if cache hit
-      console.log(`[CACHE] ${this.options.method} ${this.options.origin}${this.options.path} -> completed with cache hit`)
+      cacheCompleteChannel.publish({ options: this.options, skip: true })
       return
     }
 
     if (this.preflight) {
       // either we hit 304 or 405. We need do another GET request
-      console.log(`[CACHE] ${this.options.method} ${this.options.origin}${this.options.path} -> completed with preflight`)
-
       this.preflight = false
       this.dispatcher.dispatch({ ...this.options, method: 'GET' }, this)
 
@@ -233,14 +268,14 @@ export class CacheHandler extends DispatchHandler {
 
     if (this.policy?.storable()) {
       this.cacheStorage.put(this.options, new CachedRequest(this.policy, Buffer.concat(this.buffers), trailers || []))
-      console.log(`[CACHE] ${this.options.method} ${this.options.origin}${this.options.path} -> completed and put cache!`)
+      cacheCompleteChannel.publish({ options: this.options, skip: false, storeable: true })
 
       this.buffers = []
       this.policy = undefined
       this.body = undefined
       this.trailers = undefined
     } else {
-      console.log(`[CACHE] ${this.options.method} ${this.options.origin}${this.options.path} -> completed without storable!`)
+      cacheCompleteChannel.publish({ options: this.options, skip: false, storeable: false })
     }
 
     super.onComplete(trailers)
@@ -303,7 +338,7 @@ export class CacheDispatcher extends Dispatcher {
           ...opts,
           method: preflight ? 'HEAD' : opts.method,
         },
-        new CacheHandler(handler, opts, this.cache, this.dispatcher, cachedRequest?.policy, cachedRequest?.getBody(), cachedRequest?.getTrailers(), preflight),
+        new CacheHandler(handler, opts, this.cache, this.dispatcher, cachedRequest?.getHeaders(), cachedRequest?.policy, cachedRequest?.getBody(), cachedRequest?.getTrailers(), preflight),
       )
     }
 
