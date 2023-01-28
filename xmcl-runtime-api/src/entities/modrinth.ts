@@ -34,3 +34,7 @@ export function getModrinthVersionUrl(version: ProjectVersion) {
 export function getModrinthVersionUri(version: Pick<ProjectVersion, 'project_id' | 'id'>) {
   return `modrinth:${version.project_id}:${version.id}`
 }
+
+export function getModrinthVersionFileUri(version: Pick<ProjectVersion, 'project_id' | 'id'> & { filename: string }) {
+  return `modrinth:${version.project_id}:${version.id}:${version.filename}`
+}

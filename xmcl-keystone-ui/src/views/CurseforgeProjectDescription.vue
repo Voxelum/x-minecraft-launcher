@@ -28,7 +28,7 @@ import ErrorView from '@/components/ErrorView.vue'
 import { useCurseforgeProjectDescription } from '../composables/curseforge'
 
 const props = defineProps<{ project: number }>()
-const { refreshing, description, error, refresh } = useCurseforgeProjectDescription(props.project)
+const { refreshing, description, error, refresh } = useCurseforgeProjectDescription(props)
 const descriptionRef = ref(null as null | HTMLElement)
 
 watch(refreshing, (v) => {

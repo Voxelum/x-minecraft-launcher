@@ -6,32 +6,23 @@
     >
       <div class="flex justify-center">
         <v-btn
-          v-if="!isDownloaded(version)"
           icon
           text
-          :loading="installingVersion || relatedTasks[version.id]"
-          :disabled="isDownloaded(version)"
-          @click.stop="onInstall(version)"
+          :loading="installingVersion || tasks[version.id]"
+          :disabled="isSameFileWithUpstream"
+          @click.stop="onInstall()"
         >
           <template #loader>
             <v-progress-circular
               :size="24"
               :width="3"
-              :indeterminate="installingVersion && !relatedTasks[version.id]"
-              :value="relatedTasks[version.id] ? (relatedTasks[version.id].progress / relatedTasks[version.id].total * 100) : undefined"
+              :indeterminate="installingVersion && !tasks[version.id]"
+              :value="tasks[version.id] ? (tasks[version.id].progress / tasks[version.id].total * 100) : undefined"
             />
           </template>
           <v-icon class="material-icons-outlined">
-            file_download
+            {{ icon }}
           </v-icon>
-        </v-btn>
-        <v-btn
-          v-else
-          icon
-          text
-          @click.stop="onInstall(version)"
-        >
-          <v-icon> add </v-icon>
         </v-btn>
       </div>
       <div class="col-span-4">
@@ -91,16 +82,17 @@ import type { ProjectVersion } from '@xmcl/modrinth'
 import Markdown from 'markdown-it'
 import { getLocalDateString } from '@/util/date'
 import { getColorForReleaseType } from '@/util/color'
-import { TaskItem } from '@/entities/task'
 import { useServiceBusy } from '@/composables'
 import { ModrinthServiceKey } from '@xmcl/runtime-api'
+import { kModrinthVersionsStatus } from '@/composables/modrinthVersions'
+import { injection } from '@/util/inject'
+import { kUpstream } from '@/composables/instanceUpdate'
 
 const props = defineProps<{
   source: ProjectVersion
-  relatedTasks: Record<string, TaskItem>
-  isDownloaded(version: ProjectVersion): boolean
-  onInstall(version: ProjectVersion): void
 }>()
+
+const emit = defineEmits(['install'])
 
 const version = computed(() => props.source)
 const { getColorCode } = useVuetifyColor()
@@ -108,6 +100,24 @@ const { t } = useI18n()
 const markdown = new Markdown({
   html: true,
 })
+
+const { isDownloaded, tasks } = injection(kModrinthVersionsStatus)
+const _upstream = inject(kUpstream, undefined)
+const upstreamVersion = computed(() => {
+  return _upstream?.value.upstream?.type === 'modrinth-modpack' ? _upstream.value.upstream.versionId : ''
+})
+const onInstall = () => emit('install', props.source)
+
+const isVersionDownloaded = computed(() => isDownloaded(props.source))
+const isSameFileWithUpstream = computed(() => upstreamVersion.value === props.source.id)
+const icon = computed(() => {
+  if (upstreamVersion.value) {
+    return isVersionDownloaded.value ? 'upgrade' : 'file_download'
+  } else {
+    return isVersionDownloaded.value ? 'add' : 'file_download'
+  }
+})
+
 const installingVersion = useServiceBusy(ModrinthServiceKey, 'installVersion', computed(() => props.source.id))
 const render = (s: string) => {
   return markdown.render(s)

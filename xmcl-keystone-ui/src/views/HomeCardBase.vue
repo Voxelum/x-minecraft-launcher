@@ -22,7 +22,7 @@
           <v-avatar
             v-for="a of icons"
             :key="a.name"
-            :color="a.color"
+            :color="a.color ? a.color : !a.icon ? getColor(a.name) : undefined"
             size="30px"
             @mouseenter="onEnter($event, a.name)"
             @mouseleave="onLeave($event)"
@@ -51,6 +51,7 @@
 </template>
 <script lang="ts" setup>
 import { kSharedTooltip } from '@/composables/sharedTooltip'
+import { getColor } from '@/util/color'
 
 defineProps<{
   icon?: string

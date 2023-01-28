@@ -35,18 +35,16 @@ export async function serializeError(e: unknown): Promise<any> {
   }
 
   const serializeUndiciError = async (e: errors.UndiciError) => {
-    const options: Dispatcher.DispatchOptions = (e as any).options
-    const url = new URL(options.path, options.origin)
-    let body = ''
+    const options: Dispatcher.DispatchOptions | undefined = (e as any).options
+    let body = '' as string | object
     if (e instanceof errors.ResponseStatusCodeError) {
-      const b = e.body as BodyMixin
-      body = await b.text()
+      body = e.body || ''
     }
     return new HTTPException({
       type: 'httpException',
       code: (e as any).code,
-      method: options.method,
-      url: url.toString(),
+      method: options?.method || '',
+      url: options ? new URL(options?.path, options.origin).toString() : '',
       statusCode: e instanceof errors.ResponseStatusCodeError ? e.statusCode : 0,
       body,
     })

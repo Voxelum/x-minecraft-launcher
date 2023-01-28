@@ -1,10 +1,9 @@
-import { checksum } from '@xmcl/core'
 import { DownloadTask } from '@xmcl/installer'
 import { InstallInstanceOptions, InstanceFile, InstanceFileWithOperation, InstanceInstallService as IInstanceInstallService, InstanceInstallServiceKey, InstanceIOException, LockKey, Resource, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { AbortableTask, task } from '@xmcl/task'
 import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
 import { createWriteStream, existsSync } from 'fs'
-import { readFile, rename, stat, unlink } from 'fs-extra'
+import { ensureFile, readFile, rename, stat, unlink } from 'fs-extra'
 import { writeFile } from 'atomically'
 import { join, relative } from 'path'
 import { Readable } from 'stream'
@@ -26,6 +25,7 @@ import { ModrinthService } from './ModrinthService'
 import { PeerService } from './PeerService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Singleton } from './Service'
+import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
 
 type RequiredPick<T, K extends keyof T> = T & Required<Pick<T, K>>
 
@@ -117,18 +117,24 @@ export class ResolveInstanceFileTask extends AbortableTask<void> {
 class UnzipFileTask extends AbortableTask<void> {
   private stream: Readable | undefined
 
-  constructor(private getEntry: Promise<readonly [ZipFile, Entry]>, private destination: string) {
+  constructor(private getEntry: Promise<readonly [ZipFile, Entry | undefined]>, private destination: string) {
     super()
   }
 
   protected async process(): Promise<void> {
     const [zip, entry] = await this.getEntry
+    if (!entry) {
+      throw new Error(`Cannot find zip entry for ${this.destination}`)
+    }
     const stream = await openEntryReadStream(zip, entry)
+    this._total = entry.uncompressedSize
+    this.update(0)
     stream.on('data', (chunk) => {
-      // @ts-ignore
       this._progress += chunk.length
+      this.update(chunk.length)
     })
     this.stream = stream
+    await ensureFile(this.destination)
     await pipeline(stream, createWriteStream(this.destination))
   }
 
@@ -152,6 +158,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
     @Inject(PeerService) private peerService: PeerService,
     @Inject(CurseForgeService) private curseforgeService: CurseForgeService,
     @Inject(ModrinthService) private modrinthService: ModrinthService,
+    @Inject(kResourceWorker) private worker: ResourceWorker,
   ) {
     super(app)
   }
@@ -184,10 +191,10 @@ export class InstanceInstallService extends AbstractService implements IInstance
       zips.add(file)
       await zipBarrier.promise
       const [instance, entries] = zipInstances[file]
-      return [instance, entries.find(e => e.fileName === entry)!] as const
+      return [instance, entries.find(e => e.fileName === entry)] as const
     }
 
-    const getTask = (file: InstanceFile) => this.getDownloadFile(file, instancePath, getEntry)
+    const getTask = (file: InstanceFile) => this.getFileTask(file, instancePath, getEntry)
 
     const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
 
@@ -257,7 +264,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
     await unlink(filePath)
   }
 
-  private async getDownloadFile(file: InstanceFileWithOperation, instancePath: string, getEntry: (zipFile: string, entry: string) => Promise<readonly [ZipFile, Entry]>) {
+  private async getFileTask(file: InstanceFileWithOperation, instancePath: string, getEntry: (zipFile: string, entry: string) => Promise<readonly [ZipFile, Entry | undefined]>) {
     const createFileLinkTask = (dest: string, res: Resource) => task('file', async () => {
       const fstat = await stat(dest).catch(() => undefined)
       if (fstat && fstat.ino === res.ino) {
@@ -272,52 +279,60 @@ export class InstanceInstallService extends AbstractService implements IInstance
     })
 
     const createDownloadTask = async (file: InstanceFile, destination: string, sha1?: string) => {
-      if (file.downloads) {
-        const zip = file.downloads.find(u => u.startsWith('zip:'))
-        const peerUrl = file.downloads.find(u => u.startsWith('peer://'))
-        const hasHttp = file.downloads.some(u => u.startsWith('http'))
-        if (peerUrl && !hasHttp) {
-          // Download from peer
-          this.log(`Download ${destination} from peer ${peerUrl}`)
-          return this.peerService.createDownloadTask(peerUrl, destination, sha1 ?? '', file.size)
-        } else if (hasHttp) {
-          // HTTP download
-          return new DownloadTask({
-            ...this.networkManager.getDownloadBaseOptions(),
-            url: file.downloads.filter(u => u.startsWith('http')),
-            destination,
-            validator: sha1
-              ? {
-                hash: sha1,
-                algorithm: 'sha1',
-              }
-              : undefined,
-          })
-        } else if (zip) {
-          // Unzip
-          const url = new URL(zip)
-          if (!url.host) {
-            let zipPath = zip.substring(7/* 'zip:///'.length */)
-            zipPath = zipPath.substring(0, zipPath.length - file.path.length)
-            return new UnzipFileTask(getEntry(zipPath, file.path), destination)
-          } else {
-            const res = await this.resourceService.getResourceByHash(url.host)
-            if (res) {
-              return new UnzipFileTask(getEntry(res.path, file.path), destination)
-            }
-            throw new Error(`Cannot resolve file! ${file.path}`)
-          }
-        } else {
-          throw new Error(`Cannot resolve file! ${file.path}`)
-        }
-      } else {
+      if (!file.downloads) {
         throw new Error(`Cannot resolve file! ${file.path}`)
       }
+
+      const zipUrl = file.downloads.find(u => u.startsWith('zip:'))
+      const peerUrl = file.downloads.find(u => u.startsWith('peer://'))
+      const supportHttp = file.downloads.some(u => u.startsWith('http'))
+
+      if (zipUrl) {
+        const url = new URL(zipUrl)
+
+        if (!url.host) {
+          // Zip url with absolute path
+          const zipPath = decodeURI(url.pathname).substring(1)
+          const entry = url.searchParams.get('entry')
+          if (entry) {
+            const entryName = decodeURIComponent(entry)
+            return new UnzipFileTask(getEntry(zipPath, entryName), destination)
+          }
+        }
+
+        // Zip file using the sha1 resource relative apth
+        const resource = await this.resourceService.getResourceByHash(url.host)
+        if (resource) {
+          return new UnzipFileTask(getEntry(resource.path, file.path), destination)
+        }
+      }
+
+      if (supportHttp) {
+        // Prefer HTTP download than peer download
+        return new DownloadTask({
+          ...this.networkManager.getDownloadBaseOptions(),
+          url: file.downloads.filter(u => u.startsWith('http')),
+          destination,
+          validator: sha1
+            ? {
+              hash: sha1,
+              algorithm: 'sha1',
+            }
+            : undefined,
+        })
+      }
+
+      if (peerUrl) {
+        // Use peer download if none of above existed
+        return this.peerService.createDownloadTask(peerUrl, destination, sha1 ?? '', file.size)
+      }
+
+      throw new Error(`Cannot resolve file! ${file.path}`)
     }
 
     const sha1 = file.hashes.sha1
     const filePath = join(instancePath, file.path)
-    const actualSha1 = await checksum(filePath, 'sha1').catch(() => undefined)
+    const actualSha1 = await this.worker.checksum(filePath, 'sha1').catch(() => undefined)
 
     if (relative(instancePath, filePath).startsWith('..')) {
       return undefined

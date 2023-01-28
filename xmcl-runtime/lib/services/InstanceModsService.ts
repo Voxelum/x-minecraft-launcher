@@ -5,6 +5,7 @@ import watch from 'node-watch'
 import { dirname, join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { shouldIgnoreFile } from '../resourceCore'
 import { AggregateExecutor } from '../util/aggregator'
 import { linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
 import { Inject } from '../util/objectRegistry'
@@ -64,7 +65,7 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
   private async scanMods(dir: string) {
     const files = await readdirIfPresent(dir)
 
-    const fileArgs = files.filter((file) => !file.startsWith('.') && !file.endsWith('.pending')).map((file) => join(dir, file))
+    const fileArgs = files.filter((file) => !shouldIgnoreFile(file)).map((file) => join(dir, file))
 
     const resources = await this.resourceService.importResources(fileArgs.map(f => ({ path: f, domain: ResourceDomain.Mods })))
     return resources.map((r, i) => ({ ...r, path: fileArgs[i] }))
@@ -97,9 +98,7 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
     await this.resourceService.whenReady(ResourceDomain.Mods)
     this.state.instanceMods({ instance: instancePath, resources: await this.scanMods(basePath) })
     this.modsWatcher = watch(basePath, async (event, filePath) => {
-      if (filePath.startsWith('.')) return
-      if (filePath.endsWith('.pending')) return
-      if (filePath.endsWith('.backup')) return
+      if (shouldIgnoreFile(filePath)) return
       if (event === 'update') {
         const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }])
         if (isModResource(resource)) {
@@ -152,6 +151,36 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
     if (promises.length > 0) {
       await Promise.all(promises)
     }
+  }
+
+  async disable({ mods, path = this.state.instance }: InstallModsOptions) {
+    this.log(`Disable ${mods.length} mods from ${path}`)
+    const promises: Promise<void>[] = []
+    const instanceModsDir = join(path, ResourceDomain.Mods)
+    for (const resource of mods) {
+      if (dirname(resource.path) !== instanceModsDir) {
+        const founded = this.state.mods.find(m => m.ino === resource.ino) ??
+          this.state.mods.find(m => m.hash === resource.hash)
+        if (founded && founded.path !== resource.path) {
+          const realPath = join(instanceModsDir, founded.fileName)
+          if (existsSync(realPath)) {
+            promises.push(unlink(realPath))
+          } else {
+            this.warn(`Skip to uninstall unmanaged mod file on ${resource.path}!`)
+          }
+        } else {
+          this.warn(`Skip to uninstall unmanaged mod file on ${resource.path}!`)
+        }
+      } else {
+        promises.push(unlink(resource.path).catch(e => {
+          if (e.code === 'ENOENT') {
+            // Force remove
+            this.state.instanceModRemove([resource])
+          }
+        }))
+      }
+    }
+    await Promise.all(promises)
   }
 
   async uninstall(options: InstallModsOptions) {

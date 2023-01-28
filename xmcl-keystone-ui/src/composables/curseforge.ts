@@ -1,4 +1,4 @@
-import { computed, onMounted, reactive, ref, toRefs, watch } from 'vue'
+import { computed, InjectionKey, onMounted, reactive, Ref, ref, toRefs, watch } from 'vue'
 import { File, FileModLoaderType, Mod, ModCategory, ModsSearchSortField } from '@xmcl/curseforge'
 import { CurseForgeServiceKey, Persisted, ProjectType, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import { useRefreshable, useService, useServiceBusy } from '@/composables'
@@ -130,59 +130,69 @@ export function useCurseforge(props: CurseforgeProps) {
  * Hook to view the curseforge project downloadable files.
  * @param projectId The project id
  */
-export function useCurseforgeProjectFiles(projectId: number) {
+export function useCurseforgeProjectFiles(projectId: Ref<number>) {
   const { getModFiles } = useService(CurseForgeServiceKey)
-  const data = reactive({
-    files: [] as File[],
+  const files = inject(kCurseforgeFiles, ref([]))
+  const data = shallowReactive({
     index: 0,
-    pageSize: 0,
+    pageSize: 30,
     totalCount: 0,
+    gameVersion: undefined as string | undefined,
+    modLoaderType: undefined as FileModLoaderType | undefined,
   })
   const { refresh, refreshing, error } = useRefreshable(async () => {
-    const f = await getModFiles({ modId: projectId })
-    data.files = markRaw(f.data)
+    const f = await getModFiles({
+      modId: projectId.value,
+      index: data.index,
+      gameVersion: data.gameVersion,
+      pageSize: data.pageSize,
+      modLoaderType: data.modLoaderType,
+    })
+    files.value = markRaw(f.data)
     data.index = f.pagination.index
     data.pageSize = f.pagination.pageSize
     data.totalCount = f.pagination.totalCount
   })
-  onMounted(() => {
-    refresh()
-  })
+  onMounted(refresh)
+  watch(projectId, refresh)
   return {
     ...toRefs(data),
+    files,
     refresh,
     refreshing,
     error,
   }
 }
 
-export function useCurseforgeProjectDescription(projectId: number) {
+export const kCurseforgeFiles: InjectionKey<Ref<File[]>> = Symbol('CurseforgeFiles')
+
+export function useCurseforgeProjectDescription(props: { project: number }) {
   const { getModDescription } = useService(CurseForgeServiceKey)
   const data = reactive({
     description: '',
   })
   const { refresh, refreshing, error } = useRefreshable(async function refresh() {
-    const des = await getModDescription(projectId)
+    const des = await getModDescription(props.project)
     data.description = des
   })
 
-  onMounted(() => {
-    refresh()
-  })
+  onMounted(refresh)
+  watch(() => props.project, refresh)
   return { ...toRefs(data), refreshing, refresh, error }
 }
 /**
  * Hook to view the front page of the curseforge project.
  * @param projectId The project id
  */
-export function useCurseforgeProject(projectId: number) {
+export function useCurseforgeProject(projectId: Ref<number>) {
   const { getMod } = useService(CurseForgeServiceKey)
   const project = ref(undefined as undefined | Mod)
   const refreshing = useServiceBusy(CurseForgeServiceKey, 'getMod', projectId.toString())
   const { refresh, error } = useRefreshable(async function () {
-    project.value = await getMod(projectId)
+    project.value = markRaw(await getMod(projectId.value))
   })
   onMounted(() => refresh())
+  watch(projectId, refresh)
   return {
     refreshing,
     project,

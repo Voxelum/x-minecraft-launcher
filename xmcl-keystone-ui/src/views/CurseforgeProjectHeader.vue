@@ -13,9 +13,12 @@
       </template>
     </v-img>
     <v-card-title>
-      <span v-if="!loading && project">
+      <a
+        v-if="!loading && project"
+        :href="project.links.websiteUrl"
+      >
         {{ project.name }}
-      </span>
+      </a>
       <span v-else>
         <v-skeleton-loader type="heading" />
       </span>
@@ -74,7 +77,6 @@
 </template>
 <script lang="ts" setup>
 import { Mod } from '@xmcl/curseforge'
-import InstanceSelectMenu from '../components/InstanceSelectMenu.vue'
 import { getLocalDateString } from '@/util/date'
 
 const props = defineProps<{

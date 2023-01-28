@@ -34,6 +34,7 @@
     <AppExportDialog />
     <AppShareInstanceDialog />
     <AppInstanceDeleteDialog />
+    <ImageDialog />
   </v-app>
   <v-app
     v-else
@@ -79,6 +80,8 @@ import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import Setup from '@/views/Setup.vue'
 import { useAllServices } from './services'
+import ImageDialog from '@/components/ImageDialog.vue'
+import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
 
 const colorTheme = useColorTheme()
 const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = colorTheme
@@ -117,6 +120,7 @@ useThemeSync()
 useExternalRoute()
 provide(kUILayout, useUILayout())
 provide(kModpacks, useModpacks())
+provide(kImageDialog, useImageDialog())
 
 </script>
 

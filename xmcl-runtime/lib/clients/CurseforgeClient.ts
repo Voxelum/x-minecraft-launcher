@@ -114,6 +114,23 @@ export class CurseforgeClient {
     return result.data
   }
 
+  async getFileChangelog(modId: number, fileId: number, signal?: AbortSignal) {
+    const response = await request(`https://api.curseforge.com/v1/mods/${modId}/files/${fileId}/changelog`, {
+      method: 'GET',
+      headers: {
+        'x-api-key': this.apiKey,
+        accept: 'application/json',
+      },
+      dispatcher: this.dispatcher,
+      connectTimeout: 20_000,
+      headersTimeout: 20_000,
+      bodyTimeout: 10_000,
+      signal,
+    })
+    const result: { data: string } = await response.body.json()
+    return result.data
+  }
+
   async searchMods(options: SearchOptions, signal?: AbortSignal) {
     const query: Record<string, string | number | boolean> = {
       gameId: 432,

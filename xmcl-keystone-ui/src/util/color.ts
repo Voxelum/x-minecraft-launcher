@@ -20,9 +20,9 @@ export function getColorForReleaseType(type: 'release' | 'alpha' | 'beta' | 1 | 
   switch (type) {
     case 1:
     case 'release': return 'green'
-    case 2:
-    case 'alpha': return 'red'
     case 3:
+    case 'alpha': return 'red'
+    case 2:
     case 'beta': return 'orange'
     default:
       return ''

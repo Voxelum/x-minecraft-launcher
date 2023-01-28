@@ -35,6 +35,10 @@ export class CurseForgeService extends AbstractService implements ICurseForgeSer
     this.client = new CurseforgeClient(process.env.CURSEFORGE_API_KEY || '', dispatcher)
   }
 
+  getFileChangelog(file: Pick<File, 'modId' | 'id'>): Promise<string> {
+    return this.client.getFileChangelog(file.modId, file.id)
+  }
+
   @Singleton()
   async fetchCategories() {
     return await this.client.getCategories()
@@ -58,10 +62,10 @@ export class CurseForgeService extends AbstractService implements ICurseForgeSer
     return await this.client.getModFiles(options)
   }
 
-  @Singleton((a, b) => `${a}-${b}`)
-  async getModFile(projectId: number, fileId: number) {
-    this.log(`Fetch project file: ${projectId}-${fileId}`)
-    return await this.client.getModFile(projectId, fileId)
+  @Singleton((p) => `${p.modId}-${p.fileId}`)
+  async getModFile({ modId, fileId }: { modId: number; fileId: number }) {
+    this.log(`Fetch project file: ${modId}-${fileId}`)
+    return await this.client.getModFile(modId, fileId)
   }
 
   async getModsByIds(modIds: number[]) {
