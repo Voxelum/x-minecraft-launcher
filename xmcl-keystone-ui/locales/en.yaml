@@ -948,7 +948,6 @@ screenshots:
   empty: You don't have screenshot
   goto: Open Folder
   name: Screenshots
-  empty: You don't have screenshot
 server:
   acceptingMinecraftVersion: Accepting Minecraft Version
   add: Add Server
