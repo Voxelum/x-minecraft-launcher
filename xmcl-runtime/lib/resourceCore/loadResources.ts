@@ -2,6 +2,7 @@ import { ResourceDomain } from '@xmcl/runtime-api'
 import { stat, unlink } from 'fs/promises'
 import { basename, join } from 'path'
 import { parseMetadata } from './parseMetadata'
+import { shouldIgnoreFile } from './pathUtils'
 import { ResourceContext, ResourceEntryCache } from './ResourceContext'
 
 /**
@@ -47,7 +48,7 @@ export async function loadResources(folder: string, files: string[], context: Re
   const toUpdate: ResourceEntryCache[] = []
   const toCheck: ResourceEntryCache[] = []
   await Promise.all(files.map(async (file) => {
-    if (file.endsWith('.pending') && !file.startsWith('.')) return
+    if (shouldIgnoreFile(file)) return
     const filePath = join(folder, file)
     const fstat = await stat(filePath).catch(() => undefined)
     if (!fstat?.size) {

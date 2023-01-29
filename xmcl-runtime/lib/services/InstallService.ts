@@ -37,6 +37,9 @@ export class InstallService extends AbstractService implements IInstallService {
     })
 
     this.app.networkManager.registerDispatchInterceptor((options) => {
+      if (options.skipOverride) {
+        return
+      }
       const origin = options.origin instanceof URL ? options.origin : new URL(options.origin!)
       if (origin.host === 'meta.fabricmc.net') {
         if (this.baseService.shouldOverrideApiSet()) {
@@ -580,8 +583,22 @@ export class InstallService extends AbstractService implements IInstallService {
     try {
       this.log(`Start to install fabric: yarn ${options.yarn}, loader ${options.loader}.`)
       const result = await this.submit(task('installFabric', async () => {
-        const artifact = await getFabricLoaderArtifact(options.minecraft, options.loader)
-        return installFabric(artifact, this.getPath(), { side: 'client' })
+        const url = new URL('https://meta.fabricmc.net/v2/versions/loader/' + options.minecraft + '/' + options.loader)
+        const apis = this.baseService.getApiSets().map(a => a.url).concat(url.href)
+        let err: any
+        while (apis.length > 0) {
+          try {
+            const api = new URL(apis.shift()!)
+            url.host = api.host
+            const resp = await request(url.toString(), { throwOnError: true })
+            const artifact = await resp.body.json()
+            const result = await installFabric(artifact, this.getPath(), { side: 'client' })
+            return result
+          } catch (e) {
+            err = e
+          }
+        }
+        throw err
       }, { id: options.minecraft }))
       this.log(`Success to install fabric: yarn ${options.yarn}, loader ${options.loader}. The new version is ${result}`)
       return result

@@ -1,7 +1,7 @@
 <template>
   <v-tooltip
     v-model="isShown"
-    color="black"
+    :color="color"
     transition="scroll-y-reverse-transition"
     :position-x="x"
     :position-y="y"
@@ -16,5 +16,5 @@
 import { kSharedTooltip } from '@/composables/sharedTooltip'
 import { injection } from '@/util/inject'
 
-const { currentTooltip, x, y, isShown } = injection(kSharedTooltip)
+const { currentTooltip, x, y, isShown, color } = injection(kSharedTooltip)
 </script>

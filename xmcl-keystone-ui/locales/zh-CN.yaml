@@ -91,11 +91,13 @@ copyClipboard:
   success: 复制到剪贴板
 create: 创建
 curseforge:
+  authors: 作者
   createdDate: 创建日期
   downloadOnly: 只下載
   downloaded: 已下載
   file:
     gameVersion: 游戏版本
+    modLoader: Mod 加载器类型
     releaseType: 类型
     sortByDate: 日期
     sortByName: 文件名
@@ -587,7 +589,7 @@ mod:
   openLink: 打开 Mod 链接 {url}
   searchOnCurseforge: 在 Curseforge 上搜索
   searchOnMcWiki: 在 MC 百科中查找 {name}
-  searchOnModrinth: 在 Modrinth 中搜素 {name}
+  searchOnModrinth: 在 Modrinth 中搜索 {name}
   selected: 已选 Mods
   showFile: 打开 Mod 所在位置 {file}
   showInCurseforge: 在 Curseforge 上显示该 Mod
@@ -643,14 +645,11 @@ modrinth:
     bloom: 炫光 (Bloom)
     bukkit: Bukkit
     bungeecord: Bungeecord
-    "performance impact": 性能需求
-    resolutions: 分辨率
     canvas: Canvas
     cartoon: 卡通风格
     categories: 分类
     challenging: 挑战
     colored-lighting: 灯光着色
-    features: 特性
     combat: 战斗
     core-shaders: 光影
     cursed: 怪异
@@ -662,6 +661,7 @@ modrinth:
     equipment: 装备
     fabric: Fabric
     fantasy: 幻想
+    features: 特性
     foliage: 优化植被
     fonts: 字体
     food: 食物
@@ -693,12 +693,14 @@ modrinth:
     paper: Paper
     path-tracing: 光线追踪
     pbr: PBR
+    performance impact: 性能需求
     potato: 土豆（非常低）
     purpur: Purpur
     quests: 任务导向
     quilt: Quilt
     realistic: 真实风格
     reflections: 水反
+    resolutions: 分辨率
     rift: Rift
     screenshot: 随便截图就能当壁纸
     semi-realistic: 半真实风
@@ -758,7 +760,7 @@ modrinth:
     resourcePack: 资源包
     shader: 光影包
   quickSearch: 搜索 {title}
-  searchText: 搜素
+  searchText: 搜索
   serverSide: 服务端
   sort:
     downloads: 下载数量
@@ -948,6 +950,7 @@ save:
   manage: 管理存档
   name: 地图存档 | 地图存档
 screenshots:
+  empty: 你还没有截图
   goto: 显示文件夹
   name: 截图
 server:
@@ -1130,6 +1133,9 @@ universalDrop:
   start: 开始导入
   title: 将文件拖到这并导入为
   unknownResource: 无法解析
+upstream:
+  missingModpackMetadata: >-
+    无法找到当前实例使用的整合包元数据。虽然你不会因此没法更新到最新的整合包保本，但这样更新的结果可能不正确，强烈推荐重新创建新实例。若要更新请备份你的文件。
 user:
   accessToken: 访问令牌
   authMode: 验证服务

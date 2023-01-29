@@ -85,7 +85,7 @@ importers:
       '@xmcl/runtime': workspace:*
       '@xmcl/runtime-api': workspace:*
       '@xmcl/task': workspace:4.0.3
-      '@xmcl/windows-utils': ^0.0.14
+      '@xmcl/windows-utils': ^0.0.15
       builtin-modules: ^3.3.0
       chalk: ^4.1.2
       create-desktop-shortcuts: ^1.10.1
@@ -135,7 +135,7 @@ importers:
       '@xmcl/runtime': link:../xmcl-runtime
       '@xmcl/runtime-api': link:../xmcl-runtime-api
       '@xmcl/task': link:../xmcl/packages/task
-      '@xmcl/windows-utils': 0.0.14
+      '@xmcl/windows-utils': 0.0.15
       builtin-modules: 3.3.0
       chalk: 4.1.2
       create-desktop-shortcuts: 1.10.1
@@ -2342,8 +2342,8 @@ packages:
       vue-i18n:
         optional: true
     dependencies:
-      '@intlify/message-compiler': 9.3.0-beta.12
-      '@intlify/shared': 9.3.0-beta.12
+      '@intlify/message-compiler': 9.3.0-beta.16
+      '@intlify/shared': 9.3.0-beta.16
       jsonc-eslint-parser: 1.4.1
       source-map: 0.6.1
       vue-i18n: 8.28.2_vue@2.7.14
@@ -2432,11 +2432,11 @@ packages:
       source-map: 0.6.1
     dev: true
 
-  /@intlify/message-compiler/9.3.0-beta.12:
-    resolution: {integrity: sha512-A8/s7pb3v8nf6HG77qFPJntxgQKI9GXxGnkn7aO+b03/X/GkF/4WceDSAIk3i+yLeIgszeBn9GZ23tSg4sTEHA==}
+  /@intlify/message-compiler/9.3.0-beta.16:
+    resolution: {integrity: sha512-CGQI3xRcs1ET75eDQ0DUy3MRYOqTauRIIgaMoISKiF83gqRWg93FqN8lGMKcpBqaF4tI0JhsfosCaGiBL9+dnw==}
     engines: {node: '>= 14'}
     dependencies:
-      '@intlify/shared': 9.3.0-beta.11
+      '@intlify/shared': 9.3.0-beta.16
       source-map: 0.6.1
     dev: true
 
@@ -2449,8 +2449,8 @@ packages:
     engines: {node: '>= 14'}
     dev: true
 
-  /@intlify/shared/9.3.0-beta.12:
-    resolution: {integrity: sha512-WsmaS54sA8xuwezPKpa/OMoaX1v2VF2fCgAmYS6prDr2ir0CkUFWPm9A8ilmxzv4nkS61/v8+vf4lGGkn5uBdA==}
+  /@intlify/shared/9.3.0-beta.16:
+    resolution: {integrity: sha512-kXbm4svALe3lX+EjdJxfnabOphqS4yQ1Ge/iIlR8tvUiYRCoNz3hig1M4336iY++Dfx5ytEQJPNjIcknNIuvig==}
     engines: {node: '>= 14'}
     dev: true
 
@@ -2470,7 +2470,7 @@ packages:
         optional: true
     dependencies:
       '@intlify/bundle-utils': 3.4.0_vue-i18n@8.28.2
-      '@intlify/shared': 9.3.0-beta.12
+      '@intlify/shared': 9.3.0-beta.16
       '@rollup/pluginutils': 4.2.1
       '@vue/compiler-sfc': 3.2.45
       debug: 4.3.4
@@ -3547,8 +3547,8 @@ packages:
     resolution: {integrity: sha512-OrvzFEMGC9eSNvfHiIsa4GAUpslD64fS/LtI+WaXliL9122dDn2guxiwhvw8aWuBTS0HdbCCBjRtLXS6LbecWw==}
     dev: false
 
-  /@xmcl/windows-utils/0.0.14:
-    resolution: {integrity: sha512-qXo2NHXouEy0Zy1Np+yXndkc3yQlL5lr3mAmE8zb9QtHc2kfNFd1VAwqrcAAbD184j2d9c8gen3WmsQXi4o5Cw==}
+  /@xmcl/windows-utils/0.0.15:
+    resolution: {integrity: sha512-UZkmEF87mfpiTe9+O9dAggTK/OeLfd61qZhlDUNolw5UfjjjzmdNe7Crgo81AKuDXhkv21TYsj9jt3okPd4vlw==}
     dev: true
 
   /abstract-level/1.0.3:
