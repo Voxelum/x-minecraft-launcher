@@ -1,6 +1,6 @@
 import { GameProfile } from '@xmcl/user'
 import { Exception } from '../entities/exception'
-import { GameProfileAndTexture, UserProfile, UserSchema } from '../entities/user.schema'
+import { GameProfileAndTexture, UserProfile, UserSchema, YggdrasilApi } from '../entities/user.schema'
 import { GenericEventEmitter } from '../events'
 import { ServiceKey, StatefulService } from './Service'
 
@@ -82,6 +82,7 @@ interface UserServiceEventMap {
 export class UserState implements UserSchema {
   // user data
   users: Record<string, UserProfile> = {}
+  yggdrasilServices: YggdrasilApi[] = []
   selectedUser = {
     id: '',
   }
@@ -121,6 +122,8 @@ export class UserState implements UserSchema {
     if (typeof snapshot.users === 'object') {
       this.users = snapshot.users
     }
+
+    this.yggdrasilServices = snapshot.yggdrasilServices
   }
 
   gameProfileUpdate({ profile, userId }: { userId: string; profile: (GameProfileAndTexture | GameProfile) }) {
@@ -171,6 +174,10 @@ export class UserState implements UserSchema {
     if (user) {
       user.selectedProfile = profileId
     }
+  }
+
+  userYggdrasilServices(apis: YggdrasilApi[]) {
+    this.yggdrasilServices = apis
   }
 }
 
@@ -223,6 +230,16 @@ export interface UserService extends StatefulService<UserState>, GenericEventEmi
    * This might be influenced by locale regions .
    */
   getSupportedAccountSystems(): Promise<string[]>
+  /**
+   * Add a third-party account system satisfy the authlib-injector format
+   * @param url The account api url
+   */
+  addYggdrasilAccountSystem(url: string): Promise<void>
+  /**
+   * Remove a third-party account system satisfy the authlib-injector format
+   * @param url The account api url
+   */
+  removeYggdrasilAccountSystem(url: string): Promise<void>
   /**
    * Login new user account.
    */

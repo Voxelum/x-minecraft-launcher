@@ -17,7 +17,7 @@
           <div
             v-if="loading"
           >
-            <refreshing-tile />
+            <RefreshingTile />
           </div>
           <div
             v-else-if="dragover"
@@ -52,7 +52,7 @@
               {{ t("modpack.name", 0) }}
             </v-card-text>
           </div>
-          <preview-view
+          <PreviewView
             v-else
             :previews="previews"
             @remove="remove"
@@ -68,9 +68,9 @@
 import PreviewView from './AppDropDialogPreview.vue'
 import RefreshingTile from '@/components/RefreshingTile.vue'
 
-import { DropServiceInjectionKey } from '@/composables/dropService'
+import { kDropService } from '@/composables/dropService'
 import { injection } from '@/util/inject'
 
-const { active, loading, remove, cancel, previews, dragover } = injection(DropServiceInjectionKey)
+const { active, loading, remove, cancel, previews, dragover } = injection(kDropService)
 const { t } = useI18n()
 </script>

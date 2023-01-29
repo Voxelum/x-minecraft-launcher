@@ -185,7 +185,7 @@ const props = defineProps<{
 
 const { hide, isShown, parameter } = useDialog(LoginDialog)
 const { te, t } = useI18n()
-const { login, abortLogin, getSupportedAccountSystems } = useService(UserServiceKey)
+const { login, abortLogin, getSupportedAccountSystems, state } = useService(UserServiceKey)
 const { on } = useService(OfficialUserServiceKey)
 
 const data = reactive({
@@ -222,6 +222,8 @@ const passwordType = computed(() => data.useDeviceCode ? 'text' : 'password')
 
 const accountInput: Ref<any> = ref(null)
 const hovered = ref(false)
+
+// Account systems
 const accountSystems: Ref<string[]> = ref([])
 const accountSystemItems: Ref<ServiceItem[]> = computed(() => accountSystems.value
   .map((a) => ({ value: a, text: getUserServiceName(a) })))
@@ -229,6 +231,12 @@ const accountSystemItem = computed<ServiceItem>({
   get() { return accountSystemItems.value.find(a => a.value === authService.value)! },
   set(v) { authService.value = v as any as string },
 })
+const { refresh: refreshAccountSystem, refreshing: loadingAccountSystem } = useRefreshable(async () => {
+  const systems = await getSupportedAccountSystems()
+  accountSystems.value = systems
+})
+onMounted(refreshAccountSystem)
+watch(computed(() => state.yggdrasilServices), refreshAccountSystem)
 
 const { authService, history } = useSelectedServices()
 
@@ -240,13 +248,6 @@ const passwordLabel = computed(() => getUserServicePassword(authService.value))
 const passwordPlaceholder = computed(() => data.useDeviceCode ? t('userServices.microsoft.deviceCodeHint') : passwordLabel.value)
 const showDropHint = computed(() => isMicrosoft.value && props.inside && isLogining.value)
 const uuidLabel = computed(() => t('userServices.offline.uuid'))
-
-const { refresh: refreshAccountSystem, refreshing: loadingAccountSystem } = useRefreshable(async () => {
-  const systems = await getSupportedAccountSystems()
-  accountSystems.value = systems
-})
-
-refreshAccountSystem()
 
 const {
   usernameRules,

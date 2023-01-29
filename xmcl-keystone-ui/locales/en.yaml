@@ -943,6 +943,7 @@ save:
   manage: Manage Saves
   name: Save | Saves
 screenshots:
+  empty: You don't have screenshot
   goto: Open Folder
   name: Screenshots
 server:
@@ -1202,7 +1203,7 @@ userService:
   requireName: The name cannot be empty
   texture: Upload Texture API
   textureHint: Upload Texture by User ID and Access Token
-  title: User Services
+  title: Third-party User Services
   typeOfService: Choose the Service Type
   validateHint: Used to check if user's token still valid
 userServices:

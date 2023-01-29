@@ -70,6 +70,25 @@ export interface UserProfile {
   avatar?: string
 }
 
+export interface YggdrasilApi {
+  /**
+   * The base service url
+   */
+  url: string
+  /**
+   * It will use `url + '/sessionserver/session/minecraft/profile/${uuid}'` by default
+   */
+  profile?: string
+  /**
+   * It will use `url + "/api/user/profile/${uuid}/${type}"` by default
+   */
+  texture?: string
+  /**
+   * It will use `url + "/authserver"` by default
+   */
+  auth?: string
+}
+
 export interface UserSchema {
   /**
    * All saved user account through multiple services
@@ -93,4 +112,9 @@ export interface UserSchema {
    * @default ""
    */
   clientToken: string
+
+  /**
+   * The customized third-party yggrasil services satisfying the authlib-injector api format
+   */
+  yggdrasilServices: Array<YggdrasilApi>
 }
