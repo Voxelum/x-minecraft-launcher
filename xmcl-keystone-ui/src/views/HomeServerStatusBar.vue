@@ -1,6 +1,7 @@
 <template>
   <v-card
-    class="flex flex-col h-full"
+    color="transparent"
+    class="flex flex-col mb-10"
   >
     <v-card-title>
       {{ t('server.status') }}
