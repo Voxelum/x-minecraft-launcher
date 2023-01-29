@@ -1,6 +1,5 @@
 <template>
-  <v-card
-    color="transparent"
+  <div
     class="flex flex-col mb-10"
   >
     <v-card-title>
@@ -67,7 +66,7 @@
         {{ t('refresh') }}
       </v-btn>
     </v-card-actions>
-  </v-card>
+  </div>
 </template>
 
 <script lang=ts setup>

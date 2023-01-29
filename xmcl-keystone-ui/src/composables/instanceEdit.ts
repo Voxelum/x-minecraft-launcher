@@ -1,5 +1,5 @@
 import { InjectionKey } from 'vue'
-import { BaseServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey, InstanceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
 
 export const InstanceEditInjectionKey: InjectionKey<ReturnType<typeof useInstanceEdit>> = Symbol('InstanceEdit')
@@ -32,7 +32,7 @@ export function useInstanceEdit() {
       quiltLoader: instance.value?.runtime.quiltLoader,
       optifine: instance.value?.runtime.optifine,
       liteloader: instance.value?.runtime.liteloader,
-    },
+    } as RuntimeVersions,
     version: '',
 
     fastLaunch: instance.value?.fastLaunch,

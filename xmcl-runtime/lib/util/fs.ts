@@ -158,7 +158,6 @@ export async function createSymbolicLink(srcPath: string, destPath: string) {
   }
 }
 
-
 export function swapExt(path: string, ext: string) {
   const existedExt = extname(path)
   return path.substring(0, path.length - existedExt.length) + ext

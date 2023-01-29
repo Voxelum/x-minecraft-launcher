@@ -222,7 +222,7 @@ const { refresh, refreshing } = useRefreshable(async () => {
   if (path) {
     upgrade.value = await getInstanceUpdateProfile({
       instancePath: instancePath.value,
-      oldModpack: oldResource.value?.path,
+      oldModpack: oldResource.value && 'path' in oldResource.value ? oldResource.value.path : undefined,
       newModpack: newResource.value.path,
     })
   }
