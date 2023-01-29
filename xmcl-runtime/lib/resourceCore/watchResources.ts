@@ -4,6 +4,7 @@ import { basename, dirname } from 'path'
 import { generateResource } from './generateResource'
 import { getResourceEntry } from './getResourceEntry'
 import { parseMetadata } from './parseMetadata'
+import { shouldIgnoreFile } from './pathUtils'
 import { resolveDomain } from './resolveDomain'
 import { ResourceContext, ResourceEntryCache } from './ResourceContext'
 import { upsertMetadata } from './upsertMetadata'
@@ -13,7 +14,7 @@ export function watchResources(folder: string, context: ResourceContext) {
   return watch(folder, async (event, path) => {
     const fileName = basename(path)
     if (event === 'remove') {
-      if (path.endsWith('.json') || path.endsWith('.png') || path.endsWith('.pending')) {
+      if (path.endsWith('.json') || path.endsWith('.png') || shouldIgnoreFile(path)) {
         // json removed means the resource is totally removed
       } else {
         // Remove cached entry
@@ -30,7 +31,7 @@ export function watchResources(folder: string, context: ResourceContext) {
         }
       }
     } else {
-      if (path.endsWith('.png') || path.endsWith('.pending')) {
+      if (path.endsWith('.png') || shouldIgnoreFile(path)) {
         return
       }
 

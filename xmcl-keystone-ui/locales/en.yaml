@@ -102,11 +102,13 @@ copyClipboard:
   success: Copy to clipboard
 create: Create
 curseforge:
+  authors: Authors
   createdDate: Created Date
   downloadOnly: Download
   downloaded: Downloaded
   file:
     gameVersion: Game Version
+    modLoader: Mod Loader
     releaseType: Release Type
     sortByDate: Date
     sortByName: File Name
@@ -632,7 +634,6 @@ modrinth:
     canvas: Canvas
     cartoon: Cartoon
     categories: Categories
-    features: Features
     challenging: Challenging
     colored-lighting: Colored Lighting
     combat: Combat
@@ -646,6 +647,7 @@ modrinth:
     equipment: Equipment
     fabric: Fabric
     fantasy: Fantasy
+    features: Features
     foliage: Foliage
     fonts: Fonts
     food: Food
@@ -662,9 +664,7 @@ modrinth:
     locale: Locale
     low: Low
     magic: Magic
-    "performance impact": Performance Impact
     management: Management
-    resolutions: Resolutions
     medium: Medium
     minecraft: Minecraft
     minigame: Mini Games
@@ -679,12 +679,14 @@ modrinth:
     paper: Paper
     path-tracing: Path Tracing
     pbr: PBR
+    performance impact: Performance Impact
     potato: Potato
     purpur: Purpur
     quests: Quests
     quilt: Quilt
     realistic: Realistic
     reflections: Reflections
+    resolutions: Resolutions
     rift: Rift
     screenshot: Screenshot
     semi-realistic: Semi Realistic
@@ -946,6 +948,7 @@ screenshots:
   empty: You don't have screenshot
   goto: Open Folder
   name: Screenshots
+  empty: You don't have screenshot
 server:
   acceptingMinecraftVersion: Accepting Minecraft Version
   add: Add Server
@@ -1148,6 +1151,10 @@ universalDrop:
   start: Import Started
   title: Drop File(s) Here to Import as
   unknownResource: Unknown
+upstream:
+  missingModpackMetadata: |-
+    The old modpack metadata not found.
+                You can still upgrade, but the result might be wrong. Please backup your instance files.
 user:
   accessToken: Access Token
   authMode: Auth Service

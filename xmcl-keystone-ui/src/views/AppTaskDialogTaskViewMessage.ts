@@ -2,6 +2,7 @@ import { defineComponent, h } from 'vue'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
 import { required } from '@/util/props'
+import { useLocaleError } from '@/composables/error'
 
 export default defineComponent({
   props: {
@@ -10,6 +11,7 @@ export default defineComponent({
   setup(props, context) {
     const { t } = useI18n()
     const { showItemInDirectory } = useService(BaseServiceKey)
+    const tError = useLocaleError()
     return () => {
       const resolve = (m: any) => {
         if (m.name === 'DownloadAggregateError') {
@@ -58,6 +60,11 @@ export default defineComponent({
           return h('div', [
             h('div', ['🔗 ', h('a', { attrs: { href: url } }, url)]),
             t('errors.SocketError'),
+          ])
+        }
+        if (m.name === 'HTTPException') {
+          return h('div', [
+            tError(m),
           ])
         }
         if (m.name === 'ResponseStatusCodeError') {
