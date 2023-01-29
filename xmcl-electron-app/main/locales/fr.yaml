@@ -7,7 +7,7 @@ openUrl:
     Autorisez-vous cette opération ?
   title: Ouvrir dans le Navigateur
   trust: Faire confiance au site et ne plus afficher
-  'yes': 'Oui'
+  "yes": "Oui"
 quit: Quitter
 setup:
   title: X Minecraft Launcher

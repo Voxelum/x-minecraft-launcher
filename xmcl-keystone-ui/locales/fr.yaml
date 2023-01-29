@@ -1,6 +1,6 @@
 AppAddInstanceDialog:
   downloadedNotification: |-
-    Le modpack {nom} a été téléchargé. 
+    Le modpack {name} a été téléchargé. 
     Voulez-vous créer une instance pour cela ?
 AppShareInstanceDialog:
   baseInfo: Réglage de base
@@ -16,7 +16,7 @@ AppShareInstanceDialog:
   downloadToLocal: Télécharger dans l'instance actuelle
   filesToDownload: Choisissez les fichiers à télécharger
   filesToShare: Choisissez les fichiers à partager
-  instanceShare: '{user} vient de vous partager l''instance actuelle'
+  instanceShare: "{user} vient de vous partager l'instance actuelle"
   share: Partager
   shareNotifyTitle: Partager l'instance
   shareTitle: Partager des fichiers de jeu avec un autre joueur
@@ -136,7 +136,7 @@ curseforge:
     beta: Bêta
     release: Sortie
   install: Installer
-  installTo: Installer dans {chemin}
+  installTo: Installer dans {path}
   installToStorage: Installer sur le stockage
   installed: installée
   lastUpdate: Date de la dernière mise à jour
@@ -182,9 +182,9 @@ dataMigration:
     Migration des données. 
     Veuillez ne pas fermer le launcher ou vous perdrez vos données.
 delete:
-  name: Supprimer {nom}
-  'no': Non
-  'yes': Supprimer
+  name: Supprimer {name}
+  "no": Non
+  "yes": Supprimer
 description: Description
 detail: Détail
 diagnosis:
@@ -255,7 +255,7 @@ disk:
   available: Disponible
   used: Utilisé
 download: Télécharger
-downloadCount: '{count} téléchargements'
+downloadCount: "{count} téléchargements"
 edit: Éditer
 error:
   name: |-
@@ -308,9 +308,7 @@ feedback:
   qq: Groupe QQ
   qqDescription: >-
     Entrez dans le groupe de commentaires QQ et discutez directement avec les
-    auteurs. 
-
-    Numéro de groupe : {numéro}
+    auteurs. Numéro de groupe : {number}
   qqEnterGroup: Rejoindre
 filter: Filtre
 finish: Valider
@@ -482,8 +480,7 @@ launchBlocked:
   launchJavaNoPermission:
     description: >-
       Le launcher n'a pas la permission d'exécuter java <span class="highlight">
-      {javaPath} </span>. 
-
+      {javaPath} </span>.
       Modifiez l'autorisation du fichier java ou augmentez l'autorisation du
       launcher.
     title: Pas d'autorisation de lancement
@@ -524,19 +521,19 @@ launchFailed:
   latestLog: Dernier log
   title: Jeu terminé avec un code anormal
 launchGeneralException:
-  title: ''
+  title: ""
 launchInvalidJavaPath:
-  description: ''
-  title: ''
+  description: ""
+  title: ""
 launchJavaNoPermission:
-  description: ''
-  title: ''
+  description: ""
+  title: ""
 launchNoProperJava:
-  description: ''
-  title: ''
+  description: ""
+  title: ""
 launchNoVersionInstalled:
-  description: ''
-  title: ''
+  description: ""
+  title: ""
 launchStatus:
   checkingProblems: Vérification des problèmes
   injectingAuthLib: Configuration d'AuthLib tiers
@@ -545,8 +542,8 @@ launchStatus:
     Toujours en cours de lancement... Le démarrage du moteur graphique peut être
     lent...
 launchUserStatusRefreshFailed:
-  description: ''
-  title: ''
+  description: ""
+  title: ""
 launcherUpdate:
   alreadyLatest: À jour
   installAndQuit: Redémarrer pour installer
@@ -601,7 +598,7 @@ loginError:
     Échec de la vérification de la propriété du jeu. 
     Veuillez réessayer.
   connectionReset: Échec de la connexion car la connexion est réinitialisée par le serveur
-  fetchMinecraftProfileFailed: 'Échec de la récupération du profil Minecraft : {reason}'
+  fetchMinecraftProfileFailed: "Échec de la récupération du profil Minecraft : {reason}"
   illegalEmail: L'email doit être valide
   invalidCredentials: Nom d'utilisateur ou mot de passe invalide.
   loginMinecraftByXboxFailed: |-
@@ -643,7 +640,7 @@ mod:
     toujours. Êtes-vous sûr de vouloir faire ça?
   deletionRestHint: Et {rest} plus de Mods...
   dropHint: Déposez le fichier .jar/.litemod du mod ici pour l'importer.
-  enabled: '{count} Mods activés'
+  enabled: "{count} Mods activés"
   filter: Mods de filtrage
   hideIncompatible: Masquer les mods incompatibles
   import: Importer un Mod
@@ -829,10 +826,10 @@ multiplayer:
     italic;">Si vous devez connecter plusieurs pairs, vous devez créer <span
     style="font-weight: bold; color: rgba(245, 158, 11)">plusieurs</span>
     connexions.</span>"
-  createGroup: ''
+  createGroup: ""
   createLocalToken: Créer un token local
   currentIpTitle: IP Publique Détectée
-  currentNatTitle: 'Réseau actuel (NAT) :'
+  currentNatTitle: "Réseau actuel (NAT) :"
   difficultyLevelHint: Le niveau de difficulté pour créer une connexion entre pairs avec d'autres
   disconnect: Déconnecter
   disconnectDescription: Voulez-vous vraiment vous déconnecter avec l'utilisateur {user}({id}) ?
@@ -896,7 +893,7 @@ natType:
   symmetricUDPFirewall: Pare-feu UDP symétrique
   unknown: Inconnu
 next: Suivant
-'no': Non
+"no": Non
 ok: OK
 optifineVersion:
   disable: Désactiver Optifine
@@ -1037,7 +1034,7 @@ serverStatus:
 setting:
   allowPrerelease: Télécharger les bêtas
   allowPrereleaseDescription: La bêta peut être instable
-  alreadyLatest: ''
+  alreadyLatest: ""
   apiSets:
     auto: Auto (Déterminer par réseau)
     official: Officiel (Mojang)
@@ -1190,7 +1187,7 @@ shaderPack:
     options de shader dans ce cas)
   manage: Gérer les Shaderpacks
   name: Shaderpack
-  'off': Désactivé
+  "off": Désactivé
   offDescription: Désactiver le shader
   showFile: Afficher ce pack de shaders dans le dossier
 summery: Résumé
@@ -1203,7 +1200,7 @@ task:
   empty: Aucune tâche en cours d'exécution
   failed: Échec
   manager: Gestionnaire des tâches
-  nTaskRunning: '{count} tâches sont en cours d''exécution'
+  nTaskRunning: "{count} tâches sont en cours d'exécution"
   name: |-
     Tâche | 
     Tâches
@@ -1329,4 +1326,4 @@ versionType:
   beta: Bêta
   name: Statut
   release: Sortie
-'yes': Oui
+"yes": Oui

@@ -14,7 +14,7 @@ AppShareInstanceDialog:
   downloadToLocal: Скачать в текущий экземпляр
   filesToDownload: Выберите файлы для скачивания
   filesToShare: Выберите файлы которыми хотите поделиться
-  instanceShare: '{user} только что поделился с вами текущим экземпляром'
+  instanceShare: "{user} только что поделился с вами текущим экземпляром"
   share: Поделиться
   shareNotifyTitle: Поделиться экземпляром
   shareTitle: Поделитесь игровыми файлами с другим игроком
@@ -35,7 +35,7 @@ HomeJavaIssueDialog:
   incompatibleJava: Несовместимая Java
   incompatibleJavaHint: Текущая Java может быть несовместима с выбранным Minecraft!
   missingJava: Отсутствует Java
-  missingJavaHint: 'Лаунчер не может найти Java на вашем компьютере. Вы можете:'
+  missingJavaHint: "Лаунчер не может найти Java на вашем компьютере. Вы можете:"
   needDownloadHint: >-
     Не удаётся найти подходящую версию Java на вашем компьютере. Рекомендуем скачать
     новую.
@@ -54,7 +54,7 @@ HomeJavaIssueDialog:
     disabled: В базе данных не найдена Java {version}!
     message: Используйте имеющуюся Java {version} на вашем компьютере
     name: Сменить на {version}
-  recommendedVersionHint: {version} рекомендует использовать Java в диапазоне {range}。
+  recommendedVersionHint: "{version} рекомендует использовать Java в диапазоне {range}."
   selectMatchedHint: Найдены подходящие локальные версии Java. Можно выбрать эти локальные Java.
   selectSecondaryHint: >-
     Найдено несколько локальных версий Java, но они могут не соответствовать критериям.
@@ -155,8 +155,8 @@ dataMigration:
   waitReload: Перенос данных. Не закрывайте лаунчер, иначе вы потеряете свои данные.
 delete:
   name: Удалить {name}
-  'no': 'Нет'
-  'yes': Удалить
+  "no": "Нет"
+  "yes": Удалить
 description: Описание
 detail: Подробности
 diagnosis:
@@ -188,7 +188,7 @@ diagnosis:
     name: Неверное расположение java.
   missingAssets:
     message: Лаунчер установит assets вместо вас
-    name: 'Отсутствует asset: {name} | Отсутсвующий asset: {name} | Отсутствует assets: %{count}'
+    name: "Отсутствует asset: {name} | Отсутсвующий asset: {name} | Отсутствует assets: %{count}"
   missingAssetsIndex:
     message: Лаунчер скачает индексные assets вместо вас
     name: Отсутсвует индексный файл assets {version}.
@@ -214,7 +214,7 @@ disk:
   available: Доступно
   used: Использовано
 download: Скачать
-downloadCount: 'Скачиваний: {count}'
+downloadCount: "Скачиваний: {count}"
 edit: Изменить
 error:
   name: Ошибка | Ошибки
@@ -507,7 +507,7 @@ loginError:
     не работает!
   checkOwnershipFailed: Не удалось проверить право собственности на игру. Повторите попытку.
   connectionReset: Не удаётся войти, так как соединение сброшено сервером
-  fetchMinecraftProfileFailed: 'Не удаётся получить профиль Minecraft: {reason}'
+  fetchMinecraftProfileFailed: "Не удаётся получить профиль Minecraft: {reason}"
   illegalEmail: Электронная почта должна быть действующей
   invalidCredentials: Неверные учётные данные. Неверное имя пользователя или пароль.
   loginMinecraftByXboxFailed: >-
@@ -544,7 +544,7 @@ mod:
     это сделать?
   deletionRestHint: И ещё {rest} модов...
   dropHint: Перетащите мод .jar/.litemod сюда для импорта.
-  enabled: 'Модов включено: {count}'
+  enabled: "Модов включено: {count}"
   filter: Фильтр модов
   hideIncompatible: Скрыть несовместимые моды
   import: Импорт мода
@@ -726,10 +726,10 @@ multiplayer:
     rgba(255,255,255,0.7); font-style: italic;">Если вам нужно подключить несколько
     товарищей, вам нужно создать <span style="font-weight: bold; color: rgba(245,
     158, 11)">несколько</span> соединений.</span>"
-  createGroup: ''
+  createGroup: ""
   createLocalToken: Создать локальный токен
   currentIpTitle: Обнаружен общедоступный IP-адрес
-  currentNatTitle: 'Текущая сеть (NAT):'
+  currentNatTitle: "Текущая сеть (NAT):"
   difficultyLevelHint: Уровень сложности для установления связи с другими
   disconnect: Отключиться
   disconnectDescription: Точно отключиться от пользователя {user}({id})?
@@ -792,7 +792,7 @@ natType:
   symmetricUDPFirewall: Симметричный межсетевой экран UDP
   unknown: Неизвестно
 next: Далее
-'no': 'Нет'
+"no": "Нет"
 ok: ОК
 optifineVersion:
   disable: Отключить Optifine
@@ -841,7 +841,7 @@ resourcepack:
     Вы потеряете данные и метаданные этого текстурпака. Точно хотите
     сделать это?
   dropHint: Перетащите сюда папку/zip текстурпака для импорта.
-  enable: 'Включено текстурпаков: {count}'
+  enable: "Включено текстурпаков: {count}"
   filter: Фильтр текстурпаков
   import: Импорт текстурпака
   incompatible: >-
@@ -871,7 +871,7 @@ save:
     fromProfile: Из других экземпляров
     fromResource: Из управляемых ресурсов
     title: Импорт сохранения из управляемого источника
-  createdWorlds: 'Ваших миров: {count}'
+  createdWorlds: "Ваших миров: {count}"
   deleteHint: >-
     Эта операция не может быть отменена. Вы навсегда потеряете данные сохранения.
     Вы уверены, что хотите удалить это сохранение?
@@ -1047,7 +1047,7 @@ setup:
     language: Язык
     name: Установить язык
   path: Текущий путь
-  title: 'Добро пожаловать в X Minecraft Launcher. Перед запуском нам необходимо, чтобы вы '
+  title: "Добро пожаловать в X Minecraft Launcher. Перед запуском нам необходимо, чтобы вы "
 shaderPack:
   deletion: Удалить шейдер
   deletionHint: Это удалит файл шейдера {path} и будет невозможно восстановить его.
@@ -1060,7 +1060,7 @@ shaderPack:
     в этом разделе)
   manage: Управление шейдерами
   name: Шейдер
-  'off': 'Выкл'
+  "off": "Выкл"
   offDescription: Выключить шейдер
   showFile: Открыть этот шейдер в папке
 summery: Летний
@@ -1073,7 +1073,7 @@ task:
   empty: Нет запущенных задач
   failed: Не удалось
   manager: Диспетчер задач
-  nTaskRunning: 'Запущено задач: {count}'
+  nTaskRunning: "Запущено задач: {count}"
   name: Задача | Задачи
   pause: Пауза
   running: Запуск задач
@@ -1190,4 +1190,4 @@ versionType:
   beta: Бета
   name: Состояние
   release: Релиз
-'yes': 'Да'
+"yes": "Да"
