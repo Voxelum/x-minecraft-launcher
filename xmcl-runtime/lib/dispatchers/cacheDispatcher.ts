@@ -227,7 +227,7 @@ export class CacheHandler extends DispatchHandler {
     }
 
     if (this.policy) {
-      if (err instanceof errors.BodyTimeoutError || err instanceof errors.HeadersTimeoutError) {
+      if (err instanceof errors.HeadersTimeoutError) {
         cacheErrorChannel.publish({ options: this.options, error: err, skip: false, retry: true, storable: true })
         const cache = new CachedRequest(this.policy, this.body || Buffer.from([]), this.trailers || [])
         super.onHeaders(cache.getStatusCode(), cache.getHeaders(), () => { })
