@@ -9,9 +9,9 @@
     <v-list
       class="w-full overflow-auto"
     >
-      <file-list-tile
+      <FileListTile
         v-for="file in previews"
-        :key="file.name"
+        :key="file.title"
         :value="file"
         @remove="emit('remove', file)"
         @enable="setEnable(file, $event)"
@@ -50,16 +50,15 @@
 </template>
 
 <script lang=ts setup>
-
-import { useFileDrop } from '@/composables'
+import { PreviewItem, kDropService } from '@/composables/dropService'
+import { injection } from '@/util/inject'
 import FileListTile from './AppDropDialogFileListTile.vue'
-import { FilePreview } from '@/composables/dropService'
 
-const props = defineProps<{ previews: FilePreview[] }>()
+const props = defineProps<{ previews: PreviewItem[] }>()
 const emit = defineEmits(['cancel', 'remove'])
 
 const enableMods = ref(true)
-const { importFile } = useFileDrop()
+const { onImport } = injection(kDropService)
 const loading = computed(() => props.previews.some((v) => v.status === 'loading'))
 const pendings = computed(() => props.previews.filter((v) => (v.status === 'idle' || v.status === 'failed') && v.enabled))
 const disabled = computed(() => pendings.value.length === 0)
@@ -69,30 +68,9 @@ function cancel() {
   emit('cancel')
 }
 function start() {
-  const promises = [] as Promise<any>[]
-  for (const preview of pendings.value) {
-    preview.status = 'loading'
-    const promise = importFile({
-      resource: {
-        name: preview.name,
-        path: preview.path,
-        uris: preview.url,
-      },
-      modpackPolicy: {
-        import: true,
-      },
-    }).then(() => {
-      preview.status = 'saved'
-    }, (e) => {
-      console.log(`Failed to import resource ${preview.path}`)
-      console.log(e)
-      preview.status = 'failed'
-    })
-    promises.push(promise)
-  }
-  Promise.all(promises).then(() => cancel())
+  onImport(pendings.value)
 }
-function setEnable(file: FilePreview, enabled?: boolean) {
+function setEnable(file: PreviewItem, enabled?: boolean) {
   file.enabled = enabled ?? true
 }
 </script>

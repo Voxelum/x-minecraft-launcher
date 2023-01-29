@@ -28,28 +28,24 @@
 </template>
 
 <script lang=ts setup>
-import { BaseServiceKey, UserServiceKey } from '@xmcl/runtime-api'
+import { useService } from '@/composables'
+import { useDropLink } from '@/composables/dropLink'
+import { useCurrentUser } from '@/composables/user'
+import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { LoginDialog } from '../composables/login'
 import LoginDialogLoginView from './AppLoginDialogForm.vue'
-import { useService } from '@/composables'
-import { useDropLink } from '@/composables/dropLink'
 
-const { isShown, parameter } = useDialog(LoginDialog)
+const { isShown } = useDialog(LoginDialog)
 const { inside } = useDropLink()
 
 // handle the not login issue
 
-const { state } = useService(UserServiceKey)
-const userProfile = computed(() => state.users[state.selectedUser.id])
+const { userProfile } = useCurrentUser()
+
 const isPersistent = computed(() => {
   if (userProfile.value?.accessToken) {
     return false
-  }
-  for (const user of Object.values(state.users)) {
-    if (user.accessToken) {
-      return false
-    }
   }
   return true
 })

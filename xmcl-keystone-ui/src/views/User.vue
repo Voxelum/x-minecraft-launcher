@@ -64,7 +64,7 @@ import UserMicrosoftView from './UserMicrosoftView.vue'
 import UserMojangView from './UserMojangView.vue'
 import UserYggdrasilView from './UserYggdrasilView.vue'
 import { useBusy, useOperation, useService } from '@/composables'
-import { DropServiceInjectionKey } from '@/composables/dropService'
+import { kDropService } from '@/composables/dropService'
 import { injection } from '@/util/inject'
 import Hint from '@/components/Hint.vue'
 
@@ -85,7 +85,7 @@ const { begin: beginRemoveProfile, operate: confirmRemoveProfile, data: removing
 
 const removingUserName = computed(() => state.users[removingProfile.value]?.username ?? '')
 
-const { suppressed } = injection(DropServiceInjectionKey)
+const { suppressed } = injection(kDropService)
 
 const onRefreshAbort = () => {
   abortRefresh()

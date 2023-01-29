@@ -40,7 +40,10 @@
           :filter-text="filterText"
         />
       </v-tab-item>
-      <v-tab-item transition="slide-y-transition">
+      <v-tab-item
+        class="h-full overflow-auto"
+        transition="slide-y-transition"
+      >
         <Modpack />
       </v-tab-item>
     </v-tabs>

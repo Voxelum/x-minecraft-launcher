@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-4">
+  <div class="flex gap-4 md:flex-row flex-col-reverse">
     <div class="w-60">
       <UserSkinView
         class="flex overflow-auto relative justify-center items-center z-5"

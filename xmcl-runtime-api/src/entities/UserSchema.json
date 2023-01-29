@@ -31,12 +31,20 @@
             "description": "The client token of current client. The launcher will generate one at first launch.",
             "default": "",
             "type": "string"
+        },
+        "yggdrasilServices": {
+            "description": "The customized third-party yggrasil services satisfying the authlib-injector api format",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/YggdrasilApi"
+            }
         }
     },
     "required": [
         "clientToken",
         "selectedUser",
-        "users"
+        "users",
+        "yggdrasilServices"
     ],
     "definitions": {
         "UserProfile": {
@@ -245,6 +253,30 @@
                             "type": "string"
                         }
                     }
+                }
+            },
+            "required": [
+                "url"
+            ]
+        },
+        "YggdrasilApi": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "description": "The base service url",
+                    "type": "string"
+                },
+                "profile": {
+                    "description": "It will use `url + '/sessionserver/session/minecraft/profile/${uuid}'` by default",
+                    "type": "string"
+                },
+                "texture": {
+                    "description": "It will use `url + \"/api/user/profile/${uuid}/${type}\"` by default",
+                    "type": "string"
+                },
+                "auth": {
+                    "description": "It will use `url + \"/authserver\"` by default",
+                    "type": "string"
                 }
             },
             "required": [

@@ -7,25 +7,17 @@
   >
     <v-list-item-avatar>
       <v-icon :size="30">
-        {{ icon }}
+        {{ value.icon }}
       </v-icon>
     </v-list-item-avatar>
     <v-list-item-content style="">
       <v-list-item-title
         :class="{ 'text-gray-400': disabled }"
       >
-        {{ value.name }}
+        {{ value.title }}
       </v-list-item-title>
       <v-list-item-subtitle>
-        <template v-if="value.url && (value.status === 'loading' || value.status === 'failed')">
-          {{ value.url[0] }}
-        </template>
-        <template v-else>
-          {{ getExpectedSize(value.size, 'B') }}
-          <template v-if="value.url && value.url[0]">
-            {{ value.url.find(v => v.startsWith('http')) }}
-          </template>
-        </template>
+        {{ value.description }}
       </v-list-item-subtitle>
     </v-list-item-content>
     <v-list-item-action class="flex flex-row gap-4 justify-end items-center">
@@ -33,15 +25,15 @@
         v-if="'date' in value"
         label
       >
-        {{ t('existed') }} {{ typeName }}
+        {{ t('existed') }} {{ value.type }}
       </v-chip>
       <v-chip
-        v-else-if="typeName"
+        v-else-if="value.type"
         label
         outlined
         color="white"
       >
-        {{ typeName }}
+        {{ value.type }}
       </v-chip>
       <v-checkbox
         v-model="enabled"
@@ -88,77 +80,25 @@
 </template>
 
 <script lang=ts setup>
-import { ResourceDomain } from '@xmcl/runtime-api'
+import { PreviewItem } from '@/composables/dropService'
 
-import { FilePreview } from '@/composables/dropService'
-import { getExpectedSize } from '@/util/size'
-
-const iconMap: Record<string, string> = {
-  forge: '$vuetify.icons.package',
-  fabric: '$vuetify.icons.fabric',
-  unclassified: 'question_mark',
-  resourcepack: '$vuetify.icons.zip',
-  shaderpack: '$vuetify.icons.zip',
-  'curseforge-modpack': '$vuetify.icons.curseforge',
-  modpack: '$vuetify.icons.package',
-  'mcbbs-modpack': '$vuetify.icons.package',
-  save: '$vuetify.icons.zip',
-  'modrinth-modpack': '$vuetify.icons.modrinth',
-}
-
-const props = defineProps<{ value: FilePreview }>()
+const props = defineProps<{ value: PreviewItem }>()
 const emit = defineEmits(['enable', 'remove'])
 
 const { t } = useI18n()
 const disabled = computed(() => /* props.value.result?.type === 'unknown' || */
   props.value.status !== 'idle')
+
 const enabled = computed({
   get() { return props.value.enabled },
   set(v) { emit('enable', v) },
 })
 
-const icon = computed(() => props.value.result ? iconMap[props.value.result.domain] ?? 'question_mark' : 'question_mark')
 const tryEnable = () => {
   if (!disabled.value) {
     emit('enable')
   }
 }
-const typeName = computed(() => {
-  const types = [] as string[]
-  if (!props.value.result) {
-    return t('universalDrop.unknownResource')
-  }
-  for (const key of Object.keys(props.value.result.metadata)) {
-    switch (key) {
-      case 'forge':
-        types.push('Forge Mod')
-        break
-      case 'fabric':
-        types.push('Fabric Mod')
-        break
-      case 'resourcepack':
-        types.push(t('resourcepack.name', 0))
-        break
-      case 'mcbbs-modpack':
-      case 'modpack':
-        types.push(t('modpack.name', 0))
-        break
-      case 'save':
-        types.push(t('save.name', 0))
-        break
-      case 'curseforge-modpack':
-        types.push(t('modpack.name', 0))
-        break
-      case 'modrinth-modpack':
-        types.push(t('modrinth.projectType.modpack'))
-        break
-      case 'shaderpack':
-        types.push(t('shaderPack.name'))
-        break
-    }
-  }
-  return types.join(' | ')
-})
 </script>
 
 <style>

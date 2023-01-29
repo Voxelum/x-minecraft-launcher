@@ -59,7 +59,7 @@ import { useExternalRoute, useI18nSync, useThemeSync } from '@/composables'
 import { useAuthProfileImportNotification } from '@/composables/authProfileImport'
 import { useBackground } from '@/composables/background'
 import { kColorTheme, useColorTheme } from '@/composables/colorTheme'
-import { useDropService } from '@/composables/dropService'
+import { kDropService, useDropService } from '@/composables/dropService'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { kModpacks, useModpacks } from '@/composables/modpack'
 import { kUILayout, useUILayout } from '@/composables/uiLayout'
@@ -112,7 +112,7 @@ watch(successColor, (newColor) => { vuetify.theme.currentTheme.success = newColo
 watch(warningColor, (newColor) => { vuetify.theme.currentTheme.warning = newColor })
 
 useAllServices()
-useDropService()
+provide(kDropService, useDropService())
 useDefaultErrorHandler()
 useAuthProfileImportNotification()
 useI18nSync()

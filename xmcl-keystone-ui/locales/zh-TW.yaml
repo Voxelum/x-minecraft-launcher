@@ -639,7 +639,7 @@ userService:
   requireName: 服務器名不能為空
   texture: 皮膚上傳 API
   textureHint: 通過玩家 ID 和憑證來上傳皮膚
-  title: 配置驗證或玩家信息服務器
+  title: 第三方玩家信息服務
   typeOfService: 選擇配置類型
   validateHint: 用來檢驗玩家憑證有效性
 userServices:

@@ -1183,7 +1183,7 @@ userService:
   service: null
   texture: 皮肤上传 API
   textureHint: 通过玩家 ID 和凭证来上传皮肤
-  title: 配置验证或玩家信息服务器
+  title: 第三方玩家信息服务
   typeOfService: 选择配置类型
   validateHint: 用来检验玩家凭证有效性
 userServices:

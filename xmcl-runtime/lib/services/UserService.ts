@@ -14,12 +14,16 @@ import {
 } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
 import { readJSON } from 'fs-extra'
+import { Dispatcher, Pool } from 'undici'
+import { YggdrasilAccountSystem } from '../accountSystems/YggdrasilAccountSystem'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { YggdrasilThirdPartyClient } from '../clients/YggdrasilClient'
 import { LauncherProfile } from '../entities/launchProfile'
 import { requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
+import { joinUrl } from '../util/url'
 import { fitMinecraftLauncherProfileData } from '../util/userData'
 import { ExposeServiceKey, Lock, Singleton, StatefulService } from './Service'
 
@@ -42,6 +46,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   private loginController: AbortController | undefined
   private refreshController: AbortController | undefined
   private setSkinController: AbortController | undefined
+  private dispatcher: Dispatcher
 
   private registeredAccountSystem: Record<string, UserAccountSystem | undefined> = {}
 
@@ -54,7 +59,23 @@ export class UserService extends StatefulService<UserState> implements IUserServ
           id: '',
         },
         clientToken: '',
+        yggdrasilServices: data.yggdrasilServices,
       }
+
+      for (const api of data.yggdrasilServices) {
+        const parsed = new URL(api.url)
+        const domain = parsed.host
+        this.registerAccountSystem(domain, new YggdrasilAccountSystem(this, new YggdrasilThirdPartyClient(
+          // eslint-disable-next-line no-template-curly-in-string
+          joinUrl(api.url, api.profile || '/sessionserver/session/minecraft/profile/${uuid}'),
+          // eslint-disable-next-line no-template-curly-in-string
+          joinUrl(api.url, api.texture || '/api/user/profile/${uuid}/${type}'),
+          joinUrl(api.url, api.auth || '/authserver'),
+          () => this.state.clientToken,
+          this.dispatcher,
+        )))
+      }
+
       const mcdb = await this.getMinecraftAuthDb()
       fitMinecraftLauncherProfileData(result, data, mcdb)
       this.log(`Load ${Object.keys(result.users).length} users`)
@@ -75,43 +96,70 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       }
     })
 
+    this.dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
+      const hosts = this.state.yggdrasilServices.map(v => new URL(v.url).hostname)
+      if (hosts.indexOf(origin.hostname) !== -1) {
+        return new Pool(origin, {
+          ...options,
+          pipelining: 1,
+          connections: 6,
+          keepAliveMaxTimeout: 60_000,
+        })
+      }
+    })
+
     this.storeManager.subscribeAll([
       'userProfile',
       'userProfileRemove',
       'userGameProfileSelect',
+      'userYggdrasilServices',
       'userInvalidate',
     ], async () => {
       const userData: UserSchema = {
         users: this.state.users,
         selectedUser: this.state.selectedUser,
         clientToken: this.state.clientToken,
+        yggdrasilServices: this.state.yggdrasilServices,
       }
       await this.userFile.write(userData)
     })
 
     app.protocol.registerHandler('authlib-injector', ({ request, response }) => {
-      if (request.url.pathname.startsWith('yggdrasil-server:')) {
-        const serverUrl = decodeURIComponent(request.url.pathname.substring('yggdrasil-server:'.length))
-        const parsed = new URL(serverUrl)
-        const domain = parsed.host
-        // const userService = this.serviceManager.get(YggdrasilUserService)
-        // userService.registerFirstPartyApi(domain, {
-        //   hostName: serverUrl,
-        //   authenticate: '/authserver/authenticate',
-        //   refresh: '/authserver/refresh',
-        //   validate: '/authserver/validate',
-        //   invalidate: '/authserver/invalidate',
-        //   signout: '/authserver/signout',
-        // }, {
-        //   profile: `${serverUrl}/sessionserver/session/minecraft/profile/\${uuid}`,
-        //   profileByName: `${serverUrl}/users/profiles/minecraft/\${name}`,
-        //   texture: `${serverUrl}/user/profile/\${uuid}/\${type}`,
-        // })
-        // userService.emit('auth-profile-added', domain)
-        // this.log(`Import the url ${url} as authlib-injector profile ${domain}`)
-        response.status = 200
-      }
+      this.addYggdrasilAccountSystem(request.url.pathname)
     })
+  }
+
+  async removeYggdrasilAccountSystem(url: string): Promise<void> {
+    const all = this.state.yggdrasilServices
+    const parsed = new URL(url)
+    if (parsed.hostname !== 'littleskin.cn' && parsed.hostname !== 'ely.by') {
+      delete this.registeredAccountSystem[parsed.hostname]
+    }
+    this.state.userYggdrasilServices(all.filter(a => a.url !== url))
+  }
+
+  async addYggdrasilAccountSystem(url: string): Promise<void> {
+    if (url.startsWith('authlib-injector:')) url = url.substring('authlib-injector:'.length)
+    if (url.startsWith('yggdrasil-server:')) url = url.substring('yggdrasil-server:'.length)
+    url = decodeURIComponent(url)
+    const parsed = new URL(url)
+    const domain = parsed.host
+
+    if (parsed.hostname !== 'littleskin.cn' && parsed.hostname !== 'ely.by') {
+      this.registerAccountSystem(domain, new YggdrasilAccountSystem(this, new YggdrasilThirdPartyClient(
+      // eslint-disable-next-line no-template-curly-in-string
+        joinUrl(url, '/sessionserver/session/minecraft/profile/${uuid}'),
+        // eslint-disable-next-line no-template-curly-in-string
+        joinUrl(url, '/api/user/profile/${uuid}/${type}'),
+        joinUrl(url, '/authserver'),
+        () => this.state.clientToken,
+        this.dispatcher,
+      )))
+      this.log(`Add ${url} as yggdrasil (authlib-injector) api service ${domain}`)
+
+      const all = this.state.yggdrasilServices
+      this.state.userYggdrasilServices(all.filter(a => a.url !== url).concat({ url }))
+    }
   }
 
   @Lock('login')
