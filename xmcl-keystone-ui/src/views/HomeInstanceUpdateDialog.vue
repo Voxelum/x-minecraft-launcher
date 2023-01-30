@@ -5,10 +5,7 @@
     scrollable
     width="800"
   >
-    <v-card
-      shaped
-      color="secondary"
-    >
+    <v-card>
       <v-toolbar
         flat
         tabs
@@ -18,7 +15,7 @@
         </v-toolbar-title>
       </v-toolbar>
       <v-skeleton-loader
-        v-if="installing || refreshing"
+        v-if="refreshing"
         type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
       />
       <div
@@ -231,12 +228,10 @@ const { refresh, refreshing } = useRefreshable(async () => {
 const confirm = async () => {
   if (upgrade.value) {
     const { instance, files } = upgrade.value
-    console.log('he')
     await installInstanceFiles({
       path: instancePath.value,
       files: files.filter(f => f.operation !== 'keep').map(f => ({ ...f.file, operation: f.operation as InstanceFileOperation })),
     })
-    console.log('done')
     await editInstance({
       runtime: {
         minecraft: instance.runtime?.minecraft || oldRuntime.value.minecraft,

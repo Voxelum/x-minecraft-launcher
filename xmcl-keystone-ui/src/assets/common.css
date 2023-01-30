@@ -140,6 +140,20 @@ html ::-webkit-scrollbar {
         0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
 } */
 
+.dark .v-dialog .v-card {
+    background-color: #424242 !important;
+    border-color: #424242 !important;
+}
+
+:not(.dark) .v-dialog .v-card {
+    /* background-color: unset;
+    border-color: unset; */
+}
+
+.v-tooltip__content {
+    background-color: #000 !important;
+}
+
 .v-list-item {
     justify-content: center;
 }

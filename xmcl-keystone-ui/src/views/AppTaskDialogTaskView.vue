@@ -3,8 +3,24 @@
     flat
     style="min-height: 300px; max-height: 400px; max-width: 100%; overflow: auto;"
   >
+    <v-toolbar tabs>
+      <v-toolbar-title>{{ t('task.manager') }}</v-toolbar-title>
+      <v-spacer />
+      <v-btn
+        icon
+        @click="hide"
+      >
+        <v-icon>close</v-icon>
+      </v-btn>
+    </v-toolbar>
+
     <v-card-text>
-      {{ visible.length === 0 ? t('task.empty') : '' }}
+      <div
+        v-if="visible.length === 0"
+        class="mt-4"
+      >
+        {{ t('task.empty') }}
+      </div>
       <v-treeview
         v-model="data.tree"
         hoverable
@@ -183,7 +199,7 @@ const makeNonReactive = () => {
   }
 }
 
-const { isShown } = useDialog('task')
+const { isShown, hide } = useDialog('task')
 
 watch(isShown, (value) => {
   if (value) {

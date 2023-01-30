@@ -3,63 +3,68 @@
     v-model="isShown"
     :width="700"
   >
-    <v-toolbar
-      color="warning"
-      tabs
-    >
-      <v-toolbar-title class="white--text">
-        {{ t('logsCrashes.title') }}
-      </v-toolbar-title>
-      <v-spacer />
-      <v-btn
-        icon
-        @click="hide"
+    <v-card>
+      <v-toolbar
+        color="warning"
+        tabs
       >
-        <v-icon>close</v-icon>
-      </v-btn>
-
-      <template #extension>
-        <v-tabs
-          v-model="data.tab"
-          align-with-title
-          color="white"
+        <v-toolbar-title class="white--text">
+          {{ t('logsCrashes.title') }}
+        </v-toolbar-title>
+        <v-spacer />
+        <v-btn
+          icon
+          @click="hide"
         >
-          <v-tabs-slider color="yellow" />
-          <v-tab
-            :key="0"
-            :disabled="data.loadingList"
-            @click="goLog"
+          <v-icon>close</v-icon>
+        </v-btn>
+
+        <template #extension>
+          <v-tabs
+            v-model="data.tab"
+            align-with-title
+            color="white"
           >
-            {{ t('logsCrashes.logs') }}
-          </v-tab>
-          <v-tab
-            :key="1"
-            :disabled="data.loadingList"
-            @click="goCrash"
-          >
-            {{ t('logsCrashes.crashes') }}
-          </v-tab>
-        </v-tabs>
-      </template>
-    </v-toolbar>
-    <v-tabs-items v-model="data.tab">
-      <tab-item
-        :key="0"
-        :files="data.logs"
-        :refreshing="data.loadingList"
-        :get-file-content="getLogContent"
-        :remove-file="removeLog"
-        :show-file="showLog"
-      />
-      <tab-item
-        :key="1"
-        :files="data.crashes"
-        :refreshing="data.loadingList"
-        :get-file-content="getCrashReportContent"
-        :remove-file="removeCrashReport"
-        :show-file="showCrashReport"
-      />
-    </v-tabs-items>
+            <v-tabs-slider color="yellow" />
+            <v-tab
+              :key="0"
+              :disabled="data.loadingList"
+              @click="goLog"
+            >
+              {{ t('logsCrashes.logs') }}
+            </v-tab>
+            <v-tab
+              :key="1"
+              :disabled="data.loadingList"
+              @click="goCrash"
+            >
+              {{ t('logsCrashes.crashes') }}
+            </v-tab>
+          </v-tabs>
+        </template>
+      </v-toolbar>
+      <v-tabs-items
+        v-model="data.tab"
+        class="bg-transparent"
+      >
+        <TabItem
+          :key="0"
+          :files="data.logs"
+          :refreshing="data.loadingList"
+          :get-file-content="getLogContent"
+          :remove-file="removeLog"
+          :show-file="showLog"
+        />
+        <TabItem
+          :key="1"
+          :files="data.crashes"
+          :refreshing="data.loadingList"
+          :get-file-content="getCrashReportContent"
+          :remove-file="removeCrashReport"
+          :show-file="showCrashReport"
+        />
+      </v-tabs-items>
+    </v-card>
   </v-dialog>
 </template>
 

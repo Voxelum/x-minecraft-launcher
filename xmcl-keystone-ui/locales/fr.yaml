@@ -822,7 +822,7 @@ multiplayer:
     votre objet entrez ce texte dans la connexion de jointure <span>Un token ne
     peut être utilisé que pour <span style="color: red; font-weight: bold;">un
     pair</span> ! Vous ne pouvez pas envoyer le même jeton à plusieurs pairs
-    !</span> <br> <span style="color: rgba(255,255,255,0.7); font-style:
+    !</span> <br> <span class="hint-text" style="font-style:
     italic;">Si vous devez connecter plusieurs pairs, vous devez créer <span
     style="font-weight: bold; color: rgba(245, 158, 11)">plusieurs</span>
     connexions.</span>"

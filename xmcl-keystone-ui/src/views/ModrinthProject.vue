@@ -17,7 +17,7 @@
   </div>
   <div
     v-else
-    class="flex gap-4 p-4 lg:flex-row flex-col overflow-hidden"
+    class="flex gap-4 p-4 lg:flex-row flex-col"
   >
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"

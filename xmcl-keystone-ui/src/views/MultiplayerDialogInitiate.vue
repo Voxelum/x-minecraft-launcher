@@ -222,3 +222,16 @@ const { refresh: initiate } = useRefreshable(async () => {
 })
 
 </script>
+
+<style>
+
+.dark .hint-text {
+  color:
+    rgba(255,255,255,0.7);
+}
+
+.hint-text {
+  color:
+    rgba(0,0,0,0.7);
+}
+</style>

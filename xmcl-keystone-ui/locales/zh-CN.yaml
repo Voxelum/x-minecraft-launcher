@@ -790,7 +790,7 @@ multiplayer:
   copyLocalHint: >
     <span>一段令牌只能用<span style="color: red;
     font-weight:bold;">一次</span>！你不能将一个令牌发送给多个小伙伴！</span> <br> <span
-    style="color: rgba(255,255,255,0.7); font-style:
+    class="hint-text" style="font-style:
     italic;">如果有多个小伙伴要加入你需要<span style="font-weight: bold; color: rgba(245, 158,
     11)">多次</span>建立连接。</span>
   createGroup: ''
@@ -808,8 +808,7 @@ multiplayer:
     bold">本地令牌</span>发送给你的联机伙伴，你的联机伙伴在 <span class="v-chip v-chip--label
     v-size--small" style="text-font: bold"> 加入连接 </span> 中输入这段文字。 <br> 期间 ICE
     服务器可能需要时间收集足够信息来创建<span class="v-chip v-chip--label v-size--small"
-    style="text-font: bold">本地令牌</span>。 <br> <span style="color:
-    rgba(255,255,255,0.7);"> 你不需要等 ICE
+    style="text-font: bold">本地令牌</span>。 <br> <span class="hint-text"> 你不需要等 ICE
     服务器完全收集完毕，当下面的令牌已经有内容并且不怎么变化后，你可以提前将令牌复制给对方。 </span>
   groupId: 小组 ID
   illegalTokenDescription: 非法的令牌，请确认对方给你的令牌是完整、正确的。

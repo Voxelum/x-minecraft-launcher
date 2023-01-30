@@ -6,19 +6,7 @@
     style="max-height: 100%"
     class="task-dialog"
   >
-    <v-toolbar
-      tabs
-    >
-      <v-toolbar-title>{{ t('task.manager') }}</v-toolbar-title>
-      <v-spacer />
-      <v-btn
-        icon
-        @click="hide"
-      >
-        <v-icon>close</v-icon>
-      </v-btn>
-    </v-toolbar>
-    <task-view />
+    <TaskView />
   </v-dialog>
 </template>
 
@@ -28,7 +16,6 @@ import TaskView from './AppTaskDialogTaskView.vue'
 
 const { hide, isShown } = useDialog('task')
 const router = useRouter()
-const { t } = useI18n()
 
 router.afterEach((g) => {
   if (isShown.value) {

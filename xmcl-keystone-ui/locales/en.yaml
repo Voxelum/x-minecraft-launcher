@@ -777,8 +777,7 @@ multiplayer:
     "Please copy the local SDP text and send it to your object to have your
     object enter this text in the join connection <span>A token can be only used
     for <span style="color: red; font-weight: bold;">one peer</span>! You cannot
-    send the same token to multiple peer!</span> <br> <span style="color:
-    rgba(255,255,255,0.7); font-style: italic;">If you need to connect multiple
+    send the same token to multiple peer!</span> <br> <span class="hint-text" style="font-style: italic;">If you need to connect multiple
     peers, you need to create <span style="font-weight: bold; color: rgba(245,
     158, 11)">multiple</span> connections.</span>"
   createGroup: ''

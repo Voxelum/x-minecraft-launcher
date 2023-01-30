@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full w-full">
+  <v-card class="w-full w-full">
     <v-carousel
       hide-delimiters
       :height="height"
@@ -42,17 +42,18 @@
       </v-carousel-item>
     </v-carousel>
     <div class="v-card__title min-h-4 w-full absolute z-100 top-0" />
-  </div>
+  </v-card>
 </template>
 <script lang="ts" setup>
 import { useRefreshable, useService } from '@/composables'
 import { kImageDialog } from '@/composables/imageDialog'
 import { injection } from '@/util/inject'
-import { Instance, InstanceScreenshotServiceKey } from '@xmcl/runtime-api'
+import { Instance, InstanceScreenshotServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
 
 const props = defineProps<{ instance: Instance; width: number; height: number }>()
 
 const { getScreenshots, showScreenshot } = useService(InstanceScreenshotServiceKey)
+const { on } = useService(LaunchServiceKey)
 
 const urls = ref([] as string[])
 const { refresh, refreshing } = useRefreshable(async () => {
@@ -63,6 +64,8 @@ const { refresh, refreshing } = useRefreshable(async () => {
     urls.value = result
   }
 })
+
+on('minecraft-exit', refresh)
 
 const imageDialog = injection(kImageDialog)
 
