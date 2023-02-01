@@ -17,6 +17,7 @@ export class BaseState implements SettingSchema {
   globalFastLaunch = false
   globalHideLauncher = false
   globalShowLog = false
+  discordPresence = false
 
   locale = ''
 
@@ -99,6 +100,11 @@ export class BaseState implements SettingSchema {
     this.globalFastLaunch = config.globalFastLaunch
     this.globalHideLauncher = config.globalHideLauncher
     this.globalShowLog = config.globalShowLog
+    this.discordPresence = config.discordPresence
+  }
+
+  discordPresenceSet(presence: boolean) {
+    this.discordPresence = presence
   }
 
   themeSet(theme: 'dark' | 'light' | 'system') {

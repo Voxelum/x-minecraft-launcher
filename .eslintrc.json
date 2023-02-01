@@ -61,6 +61,7 @@
         "@typescript-eslint/no-unused-expressions": 2,
         "@typescript-eslint/no-unused-vars": 0,
         "import/no-absolute-path": 0,
+        "camelcase": 0,
         "space-before-function-paren": 0,
         "no-useless-constructor": 0,
         "no-unused-vars": 0,

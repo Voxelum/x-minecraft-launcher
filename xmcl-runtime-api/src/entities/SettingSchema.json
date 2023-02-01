@@ -123,6 +123,10 @@
         "globalShowLog": {
             "default": false,
             "type": "boolean"
+        },
+        "discordPresence": {
+            "default": true,
+            "type": "boolean"
         }
     },
     "required": [
@@ -131,6 +135,7 @@
         "apiSetsPreference",
         "autoDownload",
         "autoInstallOnAppQuit",
+        "discordPresence",
         "globalAssignMemory",
         "globalFastLaunch",
         "globalHideLauncher",

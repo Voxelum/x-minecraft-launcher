@@ -19,7 +19,9 @@
           v-model="data.name"
           small
           hide-details
-          solo
+          outlined
+          filled
+          dense
           :placeholder="`Minecraft ${data.runtime.minecraft}`"
         />
       </v-list-item-action>
@@ -57,7 +59,9 @@
           <template #default="{ on }">
             <v-text-field
               v-model="data.runtime.minecraft"
-              solo
+              outlined
+              filled
+              dense
               append-icon="arrow_drop_down"
               persistent-hint
               hide-details
@@ -102,7 +106,9 @@
           <template #default="{ on }">
             <v-text-field
               :value="data.runtime.forge"
-              solo
+              outlined
+              filled
+              dense
               append-icon="arrow_drop_down"
               :placeholder="t('forgeVersion.disable')"
               :empty-text="t('forgeVersion.empty', { version: data.runtime.minecraft })"
@@ -145,7 +151,9 @@
           <template #default="{ on }">
             <v-text-field
               :value="data.runtime.fabricLoader"
-              solo
+              outlined
+              filled
+              dense
               :placeholder="t('fabricVersion.disable')"
               hide-details
               append-icon="arrow_drop_down"
@@ -184,7 +192,9 @@
           <template #default="{ on }">
             <v-text-field
               :value="data.runtime.quiltLoader"
-              solo
+              outlined
+              filled
+              dense
               hide-details
               :placeholder="t('quiltVersion.disable')"
               append-icon="arrow_drop_down"
@@ -224,7 +234,9 @@
           <template #default="{ on }">
             <v-text-field
               :value="data.runtime.optifine"
-              solo
+              outlined
+              filled
+              dense
               hide-details
               :placeholder="t('optifineVersion.disable')"
               append-icon="arrow_drop_down"
@@ -261,7 +273,9 @@
           <template #default="{ on }">
             <v-text-field
               :value="data.version"
-              solo
+              outlined
+              filled
+              dense
               hide-details
               :placeholder="t('localVersion.auto')"
               append-icon="arrow_drop_down"

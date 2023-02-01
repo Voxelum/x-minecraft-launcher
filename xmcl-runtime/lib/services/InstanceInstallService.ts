@@ -332,12 +332,12 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
     const sha1 = file.hashes.sha1
     const filePath = join(instancePath, file.path)
-    const actualSha1 = await this.worker.checksum(filePath, 'sha1').catch(() => undefined)
 
     if (relative(instancePath, filePath).startsWith('..')) {
       return undefined
     }
 
+    const actualSha1 = await this.worker.checksum(filePath, 'sha1').catch(() => undefined)
     if (!!sha1 && actualSha1 === sha1) {
       if (file.operation === 'remove') {
         await unlink(filePath).catch(() => undefined)

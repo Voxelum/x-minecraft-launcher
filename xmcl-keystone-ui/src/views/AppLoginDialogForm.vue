@@ -2,18 +2,9 @@
   <div
     class="flex items-center justify-center flex-col flex-grow h-100vh moveable"
   >
-    <particles
-      v-if="isShown"
-      class="absolute w-full h-full"
-      :move-direction="direction"
-      :move-enabled="isShown"
-      :line-linked="false"
-      :move-random="true"
-      :particle-size="3"
-      :move-speed="6"
-      :opacity-random="true"
-      :hover-effect="false"
-      :click-effect="false"
+    <AppLoginDialogBackground
+      :value="isShown"
+      :auth-service="authService"
     />
     <hint
       v-if="showDropHint"
@@ -24,29 +15,7 @@
       v-else
       class="w-100 text-center z-10 non-moveable"
     >
-      <v-select
-        v-model="accountSystemItem"
-        outlined
-        prepend-inner-icon="vpn_key"
-        :items="accountSystemItems"
-        :label="t('user.authMode')"
-        flat
-      >
-        <!-- <template #append-outer>
-            <v-tooltip top>
-              <template #activator="{ on: onTooltip }">
-                <v-btn
-                  icon
-                  v-on="onTooltip"
-                  @click="emit('route', 'profile')"
-                >
-                  <v-icon>add</v-icon>
-                </v-btn>
-              </template>
-              {{ t('userService.add') }}
-            </v-tooltip>
-          </template> -->
-      </v-select>
+      <AppLoginDialogAccountSystemSelect v-model="authService" />
 
       <v-combobox
         ref="accountInput"
@@ -168,24 +137,20 @@
 import { Ref } from 'vue'
 import { isException, OfficialUserServiceKey, UserException, UserServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { LoginDialog, useSelectedServices } from '../composables/login'
+import { LoginDialog, useAccountSystemHistory } from '../composables/login'
 import { useLoginValidation } from '../composables/user'
 import Hint from '@/components/Hint.vue'
-import Particles from '@/components/Particles.vue'
 import { useBusy, useRefreshable, useService } from '@/composables'
-
-interface ServiceItem {
-  text: string
-  value: string
-}
+import AppLoginDialogAccountSystemSelect from './AppLoginDialogAccountSystemSelect.vue'
+import AppLoginDialogBackground from './AppLoginDialogBackground.vue'
 
 const props = defineProps<{
   inside: boolean
 }>()
 
 const { hide, isShown, parameter } = useDialog(LoginDialog)
-const { te, t } = useI18n()
-const { login, abortLogin, getSupportedAccountSystems, state } = useService(UserServiceKey)
+const { t } = useI18n()
+const { login, abortLogin } = useService(UserServiceKey)
 const { on } = useService(OfficialUserServiceKey)
 
 const data = reactive({
@@ -196,13 +161,6 @@ const data = reactive({
   useFast: false,
   microsoftUrl: '',
 })
-
-const getUserServiceName = (serv: string) => {
-  if (serv === 'microsoft') return t('userServices.microsoft.name')
-  if (serv === 'mojang') return t('userServices.mojang.name')
-  if (serv === 'offline') return t('userServices.offline.name')
-  return serv
-}
 const getUserServicePassword = (serv: string) => {
   if (serv === 'microsoft') return data.useDeviceCode ? t('userServices.microsoft.deviceCode') : t('userServices.microsoft.password')
   if (serv === 'mojang') return t('userServices.mojang.password')
@@ -216,29 +174,14 @@ const getUserServiceAccount = (serv: string) => {
   return t('userServices.mojang.account')
 }
 
+const { authService, history } = useAccountSystemHistory()
+
 const isPasswordReadonly = computed(() => isOffline.value || isMicrosoft.value)
 const isPasswordDisabled = computed(() => isPasswordReadonly.value && !data.useDeviceCode)
 const passwordType = computed(() => data.useDeviceCode ? 'text' : 'password')
 
 const accountInput: Ref<any> = ref(null)
 const hovered = ref(false)
-
-// Account systems
-const accountSystems: Ref<string[]> = ref([])
-const accountSystemItems: Ref<ServiceItem[]> = computed(() => accountSystems.value
-  .map((a) => ({ value: a, text: getUserServiceName(a) })))
-const accountSystemItem = computed<ServiceItem>({
-  get() { return accountSystemItems.value.find(a => a.value === authService.value)! },
-  set(v) { authService.value = v as any as string },
-})
-const { refresh: refreshAccountSystem, refreshing: loadingAccountSystem } = useRefreshable(async () => {
-  const systems = await getSupportedAccountSystems()
-  accountSystems.value = systems
-})
-onMounted(refreshAccountSystem)
-watch(computed(() => state.yggdrasilServices), refreshAccountSystem)
-
-const { authService, history } = useSelectedServices()
 
 const isLogining = useBusy('login')
 const isMicrosoft = computed(() => authService.value === 'microsoft')

@@ -82,20 +82,17 @@ export interface ModItem {
  * Open read/write for current instance mods
  */
 export function useInstanceMods() {
-  const { state } = useService(InstanceModsServiceKey)
+  const { state, enable, disable } = useService(InstanceModsServiceKey)
   const { updateResources } = useService(ResourceServiceKey)
   const { install, uninstall, showDirectory } = useService(InstanceModsServiceKey)
   const { state: javaState } = useService(InstanceJavaServiceKey)
   const { state: instanceState } = useService(InstanceServiceKey)
-  const { resources, refreshing: loading } = inject(kMods, () => useMods(), true)
 
   const items: Ref<ModItem[]> = ref([])
   const pendingUninstallItems = computed(() => items.value.filter(i => !i.enabled && i.enabledState))
   const pendingInstallItems = computed(() => items.value.filter(i => i.enabled && !i.enabledState))
   const pendingEditItems = computed(() => items.value.filter(i => (isPersistedResource(i.resource) && !isStringArrayEquals(i.tags, i.resource.tags))))
   const isModified = computed(() => pendingInstallItems.value.length > 0 || pendingUninstallItems.value.length > 0 || pendingEditItems.value.length > 0)
-
-  const cachedDirectory = new Map<string, ModItem>()
 
   const { refresh: commit, refreshing: committing } = useRefreshable(async () => {
     const promises: Promise<any>[] = []
@@ -106,63 +103,48 @@ export function useInstanceMods() {
       tags: i.tags,
     }))))
     if (pendingInstallItems.value.length > 0) {
-      promises.push(install({ mods: pendingInstallItems.value.map(v => v.resource) }))
+      promises.push(enable({ mods: pendingInstallItems.value.map(v => v.resource) }))
     }
     if (pendingUninstallItems.value.length > 0) {
-      promises.push(uninstall({ mods: pendingUninstallItems.value.map(v => v.resource) }))
+      promises.push(disable({ mods: pendingUninstallItems.value.map(v => v.resource) }))
     }
 
     await Promise.all(promises)
   })
 
-  const enabledHashes = computed(() => new Set(state.mods.map(m => m.hash)))
-  let enabledCache = [] as ModItem[]
-
-  function updateEnabledMods() {
-    const enabled = state.mods.map(getModItemFromResource)
-    for (const item of enabled) {
-      item.enabled = true
-      item.enabledState = true
-    }
-
-    enabledCache = enabled
-  }
-
+  const cachedItems = new Map<string, ModItem>()
   const iconMap: Ref<Record<string, string>> = ref({})
   const enabledModCounts = ref(0)
 
   function updateItems() {
-    const enabled = enabledCache
-    const enabledItemHashes = enabledHashes.value
-    const disabled = resources.value.filter(res => !enabledItemHashes.has(res.hash)).map(getModItemFromModResource)
+    const newItems = state.mods.map(getModItemFromResource)
+    for (const item of newItems) {
+      item.enabled = !item.path.endsWith('.disabled')
+      item.enabledState = item.enabled
+    }
 
-    const result = [
-      ...enabled,
-      ...disabled,
-    ]
+    const newIconMap: Record<string, string> = {}
 
-    const _iconMap: Record<string, string> = {}
-
-    for (const item of result) {
+    for (const item of newItems) {
       // Update icon map
-      _iconMap[item.id] = item.icon
+      newIconMap[item.id] = item.icon
 
       // Update state
-      const old = cachedDirectory.get(item.hash)
+      const old = cachedItems.get(item.hash)
       if (old) {
         item.selected = old.selected
         item.dragged = old.dragged
       }
     }
 
-    cachedDirectory.clear()
-    for (const item of result) {
-      cachedDirectory.set(item.hash, item)
+    cachedItems.clear()
+    for (const item of newItems) {
+      cachedItems.set(item.hash, item)
     }
 
-    iconMap.value = _iconMap
-    items.value = result
-    enabledModCounts.value = enabled.length
+    iconMap.value = newIconMap
+    items.value = newItems
+    enabledModCounts.value = newItems.filter(v => !v.path.endsWith('.disabled')).length
   }
 
   const currentJava = computed(() => javaState.java)
@@ -190,11 +172,6 @@ export function useInstanceMods() {
   })
 
   watch(computed(() => state.mods), (val) => {
-    updateEnabledMods()
-    updateItems()
-  })
-
-  watch(resources, () => {
     updateItems()
   })
 
@@ -326,7 +303,6 @@ export function useInstanceMods() {
   }
 
   onMounted(() => {
-    updateEnabledMods()
     updateItems()
   })
 
@@ -336,7 +312,6 @@ export function useInstanceMods() {
     enabledModCounts,
     commit,
     committing,
-    loading,
     showDirectory,
   }
 }

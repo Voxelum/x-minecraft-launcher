@@ -8,7 +8,7 @@
         :profile="gameProfile"
       />
     </div>
-    <v-card class="p-4 overflow-x-hidden flex flex-col flex-grow">
+    <v-card class="p-4 overflow-x-hidden flex flex-col flex-grow" p>
       <v-list-item>
         <v-list-item-avatar class="md:hidden lg:block">
           <v-icon>

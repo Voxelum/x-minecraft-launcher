@@ -42,6 +42,7 @@
         "@xmcl/unzip": "workspace:2.0.0",
         "@xmcl/user": "workspace:2.1.8",
         "@xmcl/world": "workspace:1.2.0",
+        "@xmcl/discord-rpc": "workspace:*",
         "abstract-level": "^1.0.3",
         "ajv": "^8.11.2",
         "applicationinsights": "^2.4.2",

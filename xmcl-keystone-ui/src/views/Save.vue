@@ -84,7 +84,7 @@
 </template>
 
 <script lang="ts">
-import { useOperation, useDrop } from '@/composables'
+import { useOperation, useDrop, useService } from '@/composables'
 import Hint from '@/components/Hint.vue'
 import SaveViewPageCopyFromDialog from './SaveCopyFromDialog.vue'
 import SaveViewPageCopyToDialog from './SaveCopyToDialog.vue'
@@ -94,6 +94,8 @@ import { useInstances } from '../composables/instance'
 import { useInstanceSaves } from '../composables/save'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
+import { usePresence } from '@/composables/presence'
+import { InstanceServiceKey } from '@xmcl/runtime-api'
 
 export default defineComponent({
   components: {
@@ -138,6 +140,9 @@ export default defineComponent({
       deleting.value = id
       show()
     }
+
+    const { state } = useService(InstanceServiceKey)
+    usePresence({ location: 'instance-saves', instance: state.instance.name })
 
     return {
       saves,

@@ -116,11 +116,12 @@
 </template>
 
 <script lang="ts" setup>
-import ModrinthModCard from './ModrinthModCard.vue'
 import ModrinthCategories from './ModrinthCategories.vue'
+import ModrinthModCard from './ModrinthModCard.vue'
 
-import { useModrinth, useModrinthTags } from '../composables/modrinth'
 import ErrorView from '@/components/ErrorView.vue'
+import { usePresence } from '@/composables/presence'
+import { useModrinth, useModrinthTags } from '../composables/modrinth'
 
 const props = withDefaults(defineProps<{
   query: string
@@ -178,6 +179,8 @@ onMounted(() => {
   refresh()
   refreshTag()
 })
+
+usePresence({ location: 'modrinth' })
 </script>
 
 <style>

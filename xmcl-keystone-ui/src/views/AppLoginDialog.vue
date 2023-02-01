@@ -44,7 +44,7 @@ const { inside } = useDropLink()
 const { userProfile } = useCurrentUser()
 
 const isPersistent = computed(() => {
-  if (userProfile.value?.accessToken) {
+  if (userProfile.value?.invalidated) {
     return false
   }
   return true

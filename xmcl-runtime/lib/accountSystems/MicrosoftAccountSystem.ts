@@ -6,12 +6,14 @@ import { MicrosoftAuthenticator } from '../clients/MicrosoftAuthenticator'
 import { MojangClient } from '../clients/MojangClient'
 import { MicrosoftOAuthClient } from '../clients/MicrosoftOAuthClient'
 import { normalizeSkinData } from '../entities/user'
+import { UserTokenStorage } from '../entities/userTokenStore'
 
 export class MicrosoftAccountSystem implements UserAccountSystem {
   constructor(
     private logger: Logger,
     private authenticator: MicrosoftAuthenticator,
     private mojangClient: MojangClient,
+    private userTokenStorage: UserTokenStorage,
     private oauthClient: MicrosoftOAuthClient,
   ) { }
 
@@ -22,16 +24,18 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     const code = properties.code || ''
     const authentication = await this.loginMicrosoft(options.username, code, useDeviceCode, directToLauncher, signal)
 
-    return {
+    const profile = {
       id: authentication.userId,
       username: options.username,
+      invalidated: false,
       authService: options.service,
-      accessToken: authentication.accessToken,
       expiredAt: authentication.expiredAt,
       profiles: toRecord(authentication.gameProfiles, p => p.id),
       selectedProfile: authentication.selectedProfile?.id ?? '',
       avatar: authentication.avatar,
     }
+    await this.userTokenStorage.put(profile, authentication.accessToken)
+    return profile
   }
 
   async refresh(user: UserProfile, signal: AbortSignal): Promise<UserProfile> {
@@ -42,14 +46,15 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       try {
         const { accessToken, expiredAt, gameProfiles, selectedProfile } = await this.loginMicrosoft(user.username, undefined, false, true, signal)
 
-        user.accessToken = accessToken
         user.expiredAt = expiredAt
         user.selectedProfile = selectedProfile?.id ?? ''
         user.profiles = toRecord(gameProfiles, v => v.id)
+        await this.userTokenStorage.put(user, accessToken)
       } catch (e) {
         this.logger.error(`Fail to refresh ${user.username}`)
         this.logger.error(e)
-        user.accessToken = ''
+        user.invalidated = true
+        await this.userTokenStorage.put(user, '')
       }
     }
 
@@ -57,13 +62,18 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
   }
 
   async setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, options: SkinPayload, signal: AbortSignal): Promise<UserProfile> {
+    const token = await this.userTokenStorage.get(userProfile)
+    if (!token) {
+      userProfile.invalidated = true
+      return userProfile
+    }
     if (typeof options.cape !== 'undefined') {
       if (options.cape === '') {
-        await this.mojangClient.hideCape(userProfile.accessToken, signal)
+        await this.mojangClient.hideCape(token, signal)
       } else {
         const target = gameProfile.capes?.find(c => c.url === options.cape)
         if (target) {
-          await this.mojangClient.showCape(target.id, userProfile.accessToken, signal)
+          await this.mojangClient.showCape(target.id, token, signal)
         } else {
           throw new Error(`Cannot upload new cape for Microsoft account: ${gameProfile.name}(${userProfile.username})`)
         }
@@ -71,13 +81,13 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     }
     if (typeof options.skin === 'object') {
       if (options.skin === null) {
-        await this.mojangClient.resetSkin(userProfile.accessToken, signal)
+        await this.mojangClient.resetSkin(token, signal)
       } else {
         const profile = await this.mojangClient.setSkin(
           `${gameProfile.name}.png`,
           await normalizeSkinData(options.skin?.url),
           options.skin?.slim ? 'slim' : 'classic',
-          userProfile.accessToken,
+          token,
           signal,
         )
         // @ts-ignore

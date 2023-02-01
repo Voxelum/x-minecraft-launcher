@@ -46,12 +46,9 @@ export interface UserProfile {
    */
   authService: string
   /**
-   * The access token of the user. The token is invalid either in
-   *
-   * - This access token value is set to empty string
-   * - The `expiredAt` is larger than `Date.now()`
+   * If the user profile is invalidated and should be re-login
    */
-  accessToken: string
+  invalidated: boolean
   /**
    * The expire time
    */

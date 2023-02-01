@@ -136,13 +136,13 @@
 </template>
 <script lang="ts"  setup>
 import ErrorView from '@/components/ErrorView.vue'
-import ImageDialog from '@/components/ImageDialog.vue'
 import { useService } from '@/composables'
-import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
+import { kImageDialog } from '@/composables/imageDialog'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { kModrinthInstall, useModrinthInstall } from '@/composables/modrinthInstall'
-import { kModrinthInstanceResource, useModrinthInstanceResource } from '@/composables/modrinthInstanceResource'
-import { kModrinthVersions, kModrinthVersionsHolder, kModrinthVersionsStatus, useModrinthVersions, useModrinthVersionsStatus } from '@/composables/modrinthVersions'
+import { useModrinthInstanceResource } from '@/composables/modrinthInstanceResource'
+import { kModrinthVersionsHolder, kModrinthVersionsStatus, useModrinthVersionsStatus } from '@/composables/modrinthVersions'
+import { usePresence } from '@/composables/presence'
 import { useRefreshable } from '@/composables/refreshable'
 import { injection } from '@/util/inject'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
@@ -200,4 +200,7 @@ if (_upstream && _upstream.value.upstream?.type === 'modrinth-modpack') {
   provide(kModrinthInstall, useModrinthInstall(project, status.tasks, installTo, status.getResource, computed(() => undefined)))
 }
 
+if (!_upstream) {
+  usePresence(computed(() => ({ location: 'modrinth-project', name: project.value?.title || '' })))
+}
 </script>

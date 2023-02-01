@@ -1,10 +1,10 @@
 <template>
   <div
-    class="flex flex-col px-8 py-4 overflow-auto w-full gap-4"
+    class="flex flex-col px-4 py-2 overflow-auto w-full gap-4"
     @dragover.prevent
     @drop="onDrop"
   >
-    <user-page-header
+    <UserPageHeader
       :users="users"
       :selected="selectedUser"
       :refreshing="refreshing"
@@ -15,16 +15,16 @@
       @select="onSelect"
       @remove="startDelete"
     />
-    <div class="h-full w-full">
-      <user-microsoft-view
+    <div class="h-full w-full px-4 mt-2">
+      <UserMicrosoftView
         v-if="selectedUser && selectedUser.authService === 'microsoft'"
         :user="selectedUser"
       />
-      <user-mojang-view
+      <UserMojangView
         v-else-if="selectedUser && selectedUser.authService === 'mojang'"
         :user="selectedUser"
       />
-      <user-yggdrasil-view
+      <UserYggdrasilView
         v-else-if="!!selectedUser"
         :user="selectedUser"
       />
@@ -36,7 +36,7 @@
         icon="login"
       />
     </div>
-    <delete-dialog
+    <DeleteDialog
       :title="t('userAccount.removeTitle') "
       :width="550"
       @confirm="confirmRemoveProfile()"
@@ -49,7 +49,7 @@
       <div style="color: grey">
         {{ t('user.id') }}: {{ removingProfile }}
       </div>
-    </delete-dialog>
+    </DeleteDialog>
   </div>
 </template>
 
@@ -67,6 +67,7 @@ import { useBusy, useOperation, useService } from '@/composables'
 import { kDropService } from '@/composables/dropService'
 import { injection } from '@/util/inject'
 import Hint from '@/components/Hint.vue'
+import { usePresence } from '@/composables/presence'
 
 const { refreshUser: refreshAccount } = useService(UserServiceKey)
 const { handleUrl } = useService(BaseServiceKey)
@@ -79,7 +80,7 @@ const { state, selectUser, removeUserProfile, abortRefresh } = useService(UserSe
 const userId = computed(() => state.selectedUser.id)
 const selectedUser = computed(() => users.value.find(u => u.id === userId.value))
 
-const isExpired = computed(() => !selectedUser.value?.accessToken || selectedUser.value.expiredAt < Date.now())
+const isExpired = computed(() => !selectedUser.value?.invalidated || selectedUser.value.expiredAt < Date.now())
 
 const { begin: beginRemoveProfile, operate: confirmRemoveProfile, data: removingProfile } = useOperation('', (v) => removeUserProfile(v))
 
@@ -128,6 +129,9 @@ function onDrop(e: DragEvent) {
 function onSelect(user: UserProfile) {
   selectUser(user.id)
 }
+
+usePresence({ location: 'user' })
+
 </script>
 
 <style>

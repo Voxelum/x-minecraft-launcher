@@ -37,6 +37,7 @@
 
 <script lang=ts setup>
 import { kInstanceContext, useInstanceContext } from '@/composables/instanceContext'
+import { usePresence } from '@/composables/presence'
 import { useInFocusMode } from '@/composables/uiLayout'
 import { useInstanceIsServer } from '../composables/instance'
 import { useInstanceServerStatus } from '../composables/serverStatus'
@@ -71,6 +72,14 @@ onMounted(() => {
     refresh()
   }
 })
+
+usePresence(computed(() => ({
+  location: 'instance',
+  instance: instance.value.name,
+  minecraft: instance.value.runtime.minecraft || '',
+  forge: instance.value.runtime.forge || '',
+  fabric: instance.value.runtime.fabricLoader || '',
+})))
 </script>
 
 <style>

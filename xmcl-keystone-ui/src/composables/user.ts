@@ -5,7 +5,7 @@ import { useService, useServiceBusy } from '@/composables'
 
 const NO_USER_PROFILE: UserProfile = Object.freeze({
   selectedProfile: '',
-  accessToken: '',
+  invalidated: true,
   authService: '',
   profileService: '',
   profiles: {},

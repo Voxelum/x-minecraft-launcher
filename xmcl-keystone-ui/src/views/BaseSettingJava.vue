@@ -97,7 +97,9 @@
             class="m-1 mt-2"
             hide-details
             required
-            solo
+            outlined
+            filled
+            dense
             :placeholder="t('instance.vmOptionsHint')"
           />
         </v-list-item-subtitle>

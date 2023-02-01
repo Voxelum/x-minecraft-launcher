@@ -1,0 +1,164 @@
+{
+    "type": "object",
+    "properties": {
+        "version": {
+            "description": "The instance lock version",
+            "default": 1,
+            "type": "number"
+        },
+        "upstream": {
+            "description": "The upstream data for this locked instance file state",
+            "anyOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "curseforge-modpack"
+                            ]
+                        },
+                        "modId": {
+                            "type": "number"
+                        },
+                        "fileId": {
+                            "type": "number"
+                        },
+                        "sha1": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "fileId",
+                        "modId",
+                        "sha1",
+                        "type"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "modrinth-modpack"
+                            ]
+                        },
+                        "projectId": {
+                            "type": "string"
+                        },
+                        "versionId": {
+                            "type": "string"
+                        },
+                        "sha1": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "projectId",
+                        "sha1",
+                        "type",
+                        "versionId"
+                    ]
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "ftb-modpack"
+                            ]
+                        },
+                        "id": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "type"
+                    ]
+                }
+            ]
+        },
+        "files": {
+            "description": "All the files",
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/InstanceFile"
+            }
+        }
+    },
+    "required": [
+        "files",
+        "version"
+    ],
+    "definitions": {
+        "InstanceFile": {
+            "description": "Represent an instance file",
+            "type": "object",
+            "properties": {
+                "path": {
+                    "description": "The path of the file relative to the instance root",
+                    "type": "string"
+                },
+                "hashes": {
+                    "description": "The hash of the instance file. The sha1 is required",
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "string"
+                    }
+                },
+                "downloads": {
+                    "description": "The download url of the instance file",
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "curseforge": {
+                    "description": "The associated curseforge project/file of the instance file",
+                    "type": "object",
+                    "properties": {
+                        "projectId": {
+                            "type": "number"
+                        },
+                        "fileId": {
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "fileId",
+                        "projectId"
+                    ]
+                },
+                "modrinth": {
+                    "description": "The associated modrinth project/version of the instance file",
+                    "type": "object",
+                    "properties": {
+                        "projectId": {
+                            "type": "string"
+                        },
+                        "versionId": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "projectId",
+                        "versionId"
+                    ]
+                },
+                "size": {
+                    "type": "number"
+                }
+            },
+            "required": [
+                "hashes",
+                "path",
+                "size"
+            ]
+        }
+    },
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": false
+}

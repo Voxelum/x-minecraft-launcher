@@ -20,6 +20,7 @@ import { PeerSession } from '../entities/peer/connection'
 import { MessageShareManifest } from '../entities/peer/messages/download'
 import { MessageLan } from '../entities/peer/messages/lan'
 import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
+import { kUserTokenStorage, UserTokenStorage } from '../entities/userTokenStore'
 import { ImageStorage } from '../util/imageStore'
 import { Inject } from '../util/objectRegistry'
 import { NatService } from './NatService'
@@ -51,6 +52,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     @Inject(ImageStorage) private imageStorage: ImageStorage,
     @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(NatService) natService: NatService,
+    @Inject(kUserTokenStorage) private tokenStorage: UserTokenStorage,
     @Inject(UserService) private userService: UserService,
   ) {
     super(app, () => new PeerState(), async () => {
@@ -200,11 +202,12 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     this.log('Try to fetch rtc credential')
     const officialAccount = await this.userService.getOfficialUserProfile()
     if (officialAccount) {
+      const token = await this.tokenStorage.get(officialAccount)
       this.log(`Use minecraft xbox ${officialAccount.username} to fetch rtc credential`)
       const response = await request('https://api.xmcl.app/rtc/official', {
         method: 'POST',
         headers: {
-          authorization: `Bearer ${officialAccount.accessToken}`,
+          authorization: `Bearer ${token}`,
         },
       })
       if (response.statusCode === 200) {

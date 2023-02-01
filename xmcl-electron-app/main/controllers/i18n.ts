@@ -15,7 +15,7 @@ export const i18n: ControllerPlugin = function (this: Controller) {
   this.app.once('engine-ready', () => {
     const baseService = this.app.serviceManager.get(BaseService)
     baseService.state.localesSet(Object.entries(localeMappings).map(([locale, name]) => ({ locale, name })))
-    this.app.log(`Set locale for the app ${baseService.state.locales}`)
+    this.app.log(`Set locale for the app ${baseService.state.locales.map(l => l.name)}`)
     this.i18n.use(baseService.state.locale)
     this.app.serviceStateManager.subscribe('config', (c) => {
       this.i18n.use(c.locale)

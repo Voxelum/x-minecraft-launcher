@@ -6,10 +6,12 @@ import { Logger } from '../util/log'
 import { toRecord } from '../util/object'
 import { YggdrasilThirdPartyClient } from '../clients/YggdrasilClient'
 import { normalizeGameProfile, normalizeSkinData } from '../entities/user'
+import { UserTokenStorage } from '../entities/userTokenStore'
 
 export class YggdrasilAccountSystem implements UserAccountSystem {
   constructor(private logger: Logger,
     private client: YggdrasilThirdPartyClient,
+    private storage: UserTokenStorage,
   ) {
   }
 
@@ -20,15 +22,17 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
         password: password ?? '',
         requestUser: true,
       }, signal)
+
       const userProfile: UserProfile = {
         id: auth.user!.id,
-        accessToken: auth.accessToken,
         username,
+        invalidated: false,
         profiles: toRecord(auth.availableProfiles.map(normalizeGameProfile), (v) => v.id),
         selectedProfile: auth.selectedProfile?.id ?? auth.availableProfiles[0]?.id ?? '',
         expiredAt: Date.now() + 86400_000,
         authService: service,
       }
+      await this.storage.put(userProfile, auth.accessToken)
 
       return userProfile
     } catch (e: any) {
@@ -54,25 +58,32 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
   }
 
   async refresh(userProfile: UserProfile, signal?: AbortSignal): Promise<UserProfile> {
-    const valid = await this.client.validate(userProfile.accessToken, signal)
+    const token = await this.storage.get(userProfile)
+
+    if (!token) {
+      userProfile.invalidated = true
+      return userProfile
+    }
+
+    const valid = await this.client.validate(token, signal)
 
     this.logger.log(`Validate ${userProfile.authService} user access token: ${valid ? 'valid' : 'invalid'}`)
 
     if (!valid) {
       try {
         const result = await this.client.refresh({
-          accessToken: userProfile.accessToken,
+          accessToken: token,
           requestUser: true,
         }, signal)
         this.logger.log(`Refreshed user access token for user: ${userProfile.id}`)
 
-        userProfile.accessToken = result.accessToken
+        await this.storage.put(userProfile, result.accessToken)
         userProfile.expiredAt = Date.now() + 86400_000
       } catch (e) {
         this.logger.error(e)
         this.logger.warn(`Invalid current user ${userProfile.id} accessToken!`)
 
-        userProfile.accessToken = ''
+        userProfile.invalidated = true
       }
     } else {
       userProfile.expiredAt = Date.now() + 86400_000
@@ -105,18 +116,23 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
   async setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, { cape, skin }: SkinPayload, signal?: AbortSignal): Promise<UserProfile> {
     this.logger.log(`Upload texture ${gameProfile.name}(${gameProfile.id})`)
 
+    const token = await this.storage.get(userProfile)
+    if (!token) {
+      userProfile.invalidated = true
+      return userProfile
+    }
     if (typeof cape === 'string' && gameProfile.uploadable?.indexOf('cape') !== -1) {
       if (cape === '') {
         await this.client.setTexture({
           uuid: gameProfile.id,
-          accessToken: userProfile.accessToken,
+          accessToken: token,
           type: 'cape',
         }, signal)
       } else {
         const data = await normalizeSkinData(cape)
         await this.client.setTexture({
           uuid: gameProfile.id,
-          accessToken: userProfile.accessToken,
+          accessToken: token,
           type: 'cape',
           texture: typeof data === 'string' ? { url: data } : { data: data },
         }, signal)
@@ -127,14 +143,14 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
       if (skin === null) {
         await this.client.setTexture({
           uuid: gameProfile.id,
-          accessToken: userProfile.accessToken,
+          accessToken: token,
           type: 'skin',
         }, signal)
       } else {
         const data = await normalizeSkinData(skin.url)
         await this.client.setTexture({
           uuid: gameProfile.id,
-          accessToken: userProfile.accessToken,
+          accessToken: token,
           type: 'skin',
           texture: typeof data === 'string'
             ? {

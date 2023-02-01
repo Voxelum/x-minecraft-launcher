@@ -8,7 +8,7 @@
       v-if="refreshing"
       type="list-item-avatar-two-line, list-item-avatar-two-line"
     />
-    <v-list>
+    <v-list color="transparent">
       <v-subheader>
         {{ t('modrinth.projectMembers') }}
       </v-subheader>

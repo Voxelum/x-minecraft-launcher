@@ -11,6 +11,7 @@ import { TokenCache } from '../util/TokenStorage'
 import { BaseService } from './BaseService'
 import { AbstractService, ExposeServiceKey } from './Service'
 import { UserService } from './UserService'
+import { kUserTokenStorage, UserTokenStorage } from '../entities/userTokenStore'
 
 const LITTLE_SKIN_HOST = 'littleskin.cn'
 
@@ -21,7 +22,8 @@ export class LittleSkinUserService extends AbstractService implements ILittleSki
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(UserService) private userService: UserService,
     @Inject(BaseService) private baseService: BaseService,
-    @Inject(TokenCache) private cache: TokenCache) {
+    @Inject(TokenCache) private cache: TokenCache,
+    @Inject(kUserTokenStorage) private tokenCache: UserTokenStorage) {
     super(app)
 
     const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
@@ -47,6 +49,7 @@ export class LittleSkinUserService extends AbstractService implements ILittleSki
         () => userService.state.clientToken,
         dispatcher,
       ),
+      tokenCache,
     )
 
     userService.registerAccountSystem(LITTLE_SKIN_HOST, {

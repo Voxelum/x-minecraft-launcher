@@ -177,7 +177,7 @@
 
 <script lang=ts setup>
 import { computed, onUnmounted, reactive, ref, Ref } from 'vue'
-import { ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceServiceKey, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
 import { useInstanceBase } from '../composables/instance'
@@ -186,6 +186,7 @@ import ResourcePackCard from './ResourcePackCard.vue'
 import FilterCombobox from '@/components/FilterCombobox.vue'
 import Hint from '@/components/Hint.vue'
 import { useDragTransferList, useDropImport, useFilterCombobox, useService, useServiceBusy } from '@/composables'
+import { usePresence } from '@/composables/presence'
 
 function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {
   function getFilterOptions(item: ResourcePackItem) {
@@ -274,6 +275,9 @@ function goPreview() {
 function goToCurseforge() {
   push(`/curseforge/texture-packs?from=${path.value}`)
 }
+
+const { state } = useService(InstanceServiceKey)
+usePresence({ location: 'instance-resourcepacks', instance: state.instance.name })
 </script>
 
 <style>

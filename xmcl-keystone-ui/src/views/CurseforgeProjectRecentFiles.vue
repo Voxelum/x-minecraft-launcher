@@ -6,7 +6,7 @@
     <v-card-title class="text-md font-bold">
       {{ t("curseforge.recentFiles") }}
     </v-card-title>
-    <v-list>
+    <v-list color="transparent">
       <template v-for="g of Object.entries(grouped)">
         <v-subheader
           :key="g[0]"

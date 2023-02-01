@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col max-h-full select-none h-full py-4 pb-0">
+  <div class="flex flex-col max-h-full select-none h-full pt-4 pb-0">
     <SharedTooltip />
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
@@ -12,10 +12,11 @@
       class="mx-8"
       :mod-loader-filters.sync="modLoaderFilters"
       :count="enabledModCounts"
+      @install="onInstall"
     />
 
     <div
-      class="flex overflow-auto h-full flex-col py-0 pb-4 visible-scroll"
+      class="flex overflow-auto h-full flex-col py-0 visible-scroll"
       @dragend="onDragEnd"
       @dragover.prevent
       @drop="onDropToImport"
@@ -40,10 +41,10 @@
         item-height="100"
       >
         <template #default="{ item, index }">
-          <div class="mx-8 invisible-scroll">
+          <div class="mx-8 invisible-scroll last:mb-4">
             <ModCard
               :key="item.path + '@' + item.hash"
-              :source="item"
+              :item="item"
               :index="index"
               :selection="isSelectionMode"
               :on-enable="onEnable"
@@ -88,7 +89,7 @@ import { useModDragging } from '@/composables/modDraggable'
 import { useModFilter } from '@/composables/modFilter'
 import { useModSelection } from '@/composables/modSelection'
 import { kSharedTooltip, useSharedTooltip } from '@/composables/sharedTooltip'
-import { ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceServiceKey, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { ModItem, useInstanceMods } from '../composables/mod'
 import ModCard from './ModCard.vue'
@@ -97,9 +98,16 @@ import FloatButton from './ModFloatButton.vue'
 import ModHeader from './ModHeader.vue'
 import SharedTooltip from '../components/SharedTooltip.vue'
 import { CompatibleDetail } from '@/util/modCompatible'
+import { usePresence } from '@/composables/presence'
 
 const { importResources } = useService(ResourceServiceKey)
-const { items: mods, commit, committing, isModified, loading, enabledModCounts } = useInstanceMods()
+const { items: mods, commit, committing, isModified, enabledModCounts } = useInstanceMods()
+const loading = false
+const { push } = useRouter()
+
+const onInstall = () => {
+  push('/mod-add')
+}
 
 provide(kSharedTooltip, useSharedTooltip<CompatibleDetail>((dep) => {
   const compatibleText = dep.compatible === 'maybe'
@@ -128,4 +136,6 @@ const onTags = (item: ModItem, tags: string[]) => {
 const onSelect = () => {
   isSelectionMode.value = true
 }
+const { state } = useService(InstanceServiceKey)
+usePresence({ location: 'instance-mods', instance: state.instance.name })
 </script>

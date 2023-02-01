@@ -23,6 +23,9 @@ export class ModrinthClient {
     const response = await request('https://api.modrinth.com/v2/search', {
       query,
       dispatcher: this.dispatcher,
+      headers: {
+        // 'cache-control': 'max-stale=3600',
+      },
       signal,
     })
     const result: SearchResult = await response.body.json()
@@ -31,14 +34,17 @@ export class ModrinthClient {
 
   async getProject(projectId: string, signal?: AbortSignal): Promise<Project> {
     if (projectId.startsWith('local-')) { projectId = projectId.slice('local-'.length) }
-    const cached = this.projectCache.get(projectId)
-    if (cached) return cached
+    // const cached = this.projectCache.get(projectId)
+    // if (cached) return cached
     const response = await request(`https://api.modrinth.com/v2/project/${projectId}`, {
       dispatcher: this.dispatcher,
       signal,
+      headers: {
+        // 'cache-control': 'max-stale=3600',
+      },
     })
     const project: Project = await response.body.json()
-    this.projectCache.put(projectId, project)
+    // this.projectCache.put(projectId, project)
     return project
   }
 
@@ -47,14 +53,17 @@ export class ModrinthClient {
     if (loaders) query.loaders = JSON.stringify(loaders)
     if (gameVersions) query.game_versions = JSON.stringify(gameVersions)
     if (featured !== undefined) query.featured = featured
-    const key = projectId + JSON.stringify(query)
-    const cached = this.versionCache.get(key)
-    if (cached) {
-      return cached
-    }
+    // const key = projectId + JSON.stringify(query)
+    // const cached = this.versionCache.get(key)
+    // if (cached) {
+    //   return cached
+    // }
     const response = await request(`https://api.modrinth.com/v2/project/${projectId}/version`, {
       query,
       dispatcher: this.dispatcher,
+      headers: {
+        // 'cache-control': 'max-stale=3600',
+      },
       signal,
     })
     if (response.statusCode !== 200) {
@@ -62,7 +71,7 @@ export class ModrinthClient {
       throw new Error(text)
     }
     const versions: ProjectVersion[] = await response.body.json()
-    this.versionCache.put(key, versions)
+    // this.versionCache.put(key, versions)
     return versions
   }
 
@@ -70,6 +79,9 @@ export class ModrinthClient {
     const response = await request(`https://api.modrinth.com/v2/version/${versionId}`, {
       dispatcher: this.dispatcher,
       signal,
+      headers: {
+        // 'cache-control': 'max-stale=3600',
+      },
     })
     const version: ProjectVersion = await response.body.json()
     return version
@@ -79,6 +91,9 @@ export class ModrinthClient {
     const response = await request('https://api.modrinth.com/v2/versions', {
       query: {
         ids: JSON.stringify(ids),
+      },
+      headers: {
+        // 'cache-control': 'max-stale=3600',
       },
       dispatcher: this.dispatcher,
       signal,
@@ -96,6 +111,7 @@ export class ModrinthClient {
         algorithm: 'sha1',
       }),
       headers: {
+        // 'cache-control': 'max-stale=3600',
         'content-type': 'application/json',
       },
       signal,
@@ -130,6 +146,9 @@ export class ModrinthClient {
     const response = await request('https://api.modrinth.com/v2/tag/license', {
       dispatcher: this.dispatcher,
       signal,
+      headers: {
+        // 'cache-control': 'max-stale=86400',
+      },
     })
     const result: License[] = await response.body.json()
     return result
@@ -139,6 +158,9 @@ export class ModrinthClient {
     const response = await request('https://api.modrinth.com/v2/tag/category', {
       dispatcher: this.dispatcher,
       signal,
+      headers: {
+        // 'cache-control': 'max-stale=86400',
+      },
     })
     const result: Category[] = await response.body.json()
     return result
@@ -148,6 +170,9 @@ export class ModrinthClient {
     const response = await request('https://api.modrinth.com/v2/tag/game_version', {
       dispatcher: this.dispatcher,
       signal,
+      headers: {
+        // 'cache-control': 'max-stale=86400',
+      },
     })
     const result: GameVersion[] = await response.body.json()
     return result
@@ -157,6 +182,9 @@ export class ModrinthClient {
     const response = await request('https://api.modrinth.com/v2/tag/loader', {
       dispatcher: this.dispatcher,
       signal,
+      headers: {
+        // 'cache-control': 'max-stale=86400',
+      },
     })
     const result: Loader[] = await response.body.json()
     return result
@@ -166,6 +194,9 @@ export class ModrinthClient {
     const response = await request(`https://api.modrinth.com/v2/project/${projectId}/members`, {
       dispatcher: this.dispatcher,
       signal,
+      headers: {
+        // 'cache-control': 'max-stale=3600',
+      },
     })
     const result: TeamMember[] = await response.body.json()
     return result

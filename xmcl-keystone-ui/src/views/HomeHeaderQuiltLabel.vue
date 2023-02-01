@@ -20,7 +20,6 @@
 <script lang=ts setup>
 
 defineProps<{
-  minecraft: string
   quiltLoader: string | undefined
 }>()
 

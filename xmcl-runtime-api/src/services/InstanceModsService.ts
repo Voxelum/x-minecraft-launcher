@@ -67,6 +67,9 @@ export interface InstanceModsService extends StatefulService<InstanceModsState> 
   refresh(force?: boolean): Promise<void>
 
   showDirectory(): Promise<void>
+
+  enable(options: InstallModsOptions): Promise<void>
+  disable(options: InstallModsOptions): Promise<void>
   /**
    * Install certain mods to the instance.
    * @param options The install options

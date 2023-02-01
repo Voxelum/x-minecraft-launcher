@@ -81,28 +81,13 @@
           <v-btn
             icon
             v-on="on"
-            @click="goToCurseforgeMods()"
+            @click="emit('install')"
           >
             <v-icon>
-              $vuetify.icons.curseforge
+              add
             </v-icon>
           </v-btn>
         </template>
-        {{ t(`mod.searchOnCurseforge`) }}
-      </v-tooltip>
-      <v-tooltip bottom>
-        <template #activator="{ on }">
-          <v-btn
-            icon
-            v-on="on"
-            @click="goToModrinthPage()"
-          >
-            <v-icon>
-              $vuetify.icons.modrinth
-            </v-icon>
-          </v-btn>
-        </template>
-        {{ t(`modrinth.installFrom`) }}
       </v-tooltip>
     </div>
     <div
@@ -122,7 +107,7 @@ import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 
 defineProps<{ modLoaderFilters: string[]; count: number }>()
 
-const emit = defineEmits(['update:modLoaderFilters'])
+const emit = defineEmits(['update:modLoaderFilters', 'install'])
 
 const { t } = useI18n()
 

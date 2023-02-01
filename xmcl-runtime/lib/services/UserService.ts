@@ -20,6 +20,7 @@ import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { YggdrasilThirdPartyClient } from '../clients/YggdrasilClient'
 import { LauncherProfile } from '../entities/launchProfile'
+import { kUserTokenStorage, UserTokenStorage } from '../entities/userTokenStore'
 import { requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
@@ -50,7 +51,8 @@ export class UserService extends StatefulService<UserState> implements IUserServ
 
   private registeredAccountSystem: Record<string, UserAccountSystem | undefined> = {}
 
-  constructor(@Inject(LauncherAppKey) app: LauncherApp) {
+  constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(kUserTokenStorage) private tokenStorage: UserTokenStorage) {
     super(app, () => new UserState(), async () => {
       const data = await this.userFile.read()
       const result: UserSchema = {
@@ -73,11 +75,11 @@ export class UserService extends StatefulService<UserState> implements IUserServ
           joinUrl(api.url, api.auth || '/authserver'),
           () => this.state.clientToken,
           this.dispatcher,
-        )))
+        ), tokenStorage))
       }
 
       const mcdb = await this.getMinecraftAuthDb()
-      fitMinecraftLauncherProfileData(result, data, mcdb)
+      fitMinecraftLauncherProfileData(result, data, mcdb, tokenStorage)
       this.log(`Load ${Object.keys(result.users).length} users`)
       if (!result.clientToken) {
         result.clientToken = randomUUID().replace(/-/g, '')
@@ -113,7 +115,6 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       'userProfileRemove',
       'userGameProfileSelect',
       'userYggdrasilServices',
-      'userInvalidate',
     ], async () => {
       const userData: UserSchema = {
         users: this.state.users,
@@ -147,14 +148,14 @@ export class UserService extends StatefulService<UserState> implements IUserServ
 
     if (parsed.hostname !== 'littleskin.cn' && parsed.hostname !== 'ely.by') {
       this.registerAccountSystem(domain, new YggdrasilAccountSystem(this, new YggdrasilThirdPartyClient(
-      // eslint-disable-next-line no-template-curly-in-string
+        // eslint-disable-next-line no-template-curly-in-string
         joinUrl(url, '/sessionserver/session/minecraft/profile/${uuid}'),
         // eslint-disable-next-line no-template-curly-in-string
         joinUrl(url, '/api/user/profile/${uuid}/${type}'),
         joinUrl(url, '/authserver'),
         () => this.state.clientToken,
         this.dispatcher,
-      )))
+      ), this.tokenStorage))
       this.log(`Add ${url} as yggdrasil (authlib-injector) api service ${domain}`)
 
       const all = this.state.yggdrasilServices

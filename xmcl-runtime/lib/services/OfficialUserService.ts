@@ -10,6 +10,7 @@ import { MojangClient } from '../clients/MojangClient'
 import { YggdrasilClient } from '../clients/YggdrasilClient'
 import { CLIENT_ID, IS_DEV } from '../constant'
 import { normalizeGameProfile } from '../entities/user'
+import { kUserTokenStorage, UserTokenStorage } from '../entities/userTokenStore'
 import { isSystemError } from '../util/error'
 import { toRecord } from '../util/object'
 import { Inject } from '../util/objectRegistry'
@@ -23,6 +24,7 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(BaseService) baseService: BaseService,
+    @Inject(kUserTokenStorage) private userTokenStorage: UserTokenStorage,
     @Inject(UserService) private userService: UserService) {
     super(app)
 
@@ -42,6 +44,7 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
     const system = new MicrosoftAccountSystem(this,
       new MicrosoftAuthenticator(dispatcher),
       this.mojangApi,
+      userTokenStorage,
       new MicrosoftOAuthClient(this,
         CLIENT_ID,
         async (url, signal) => {
@@ -100,18 +103,25 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
 
         const userProfile: UserProfile = {
           id: result.user!.id,
-          accessToken: result.accessToken,
           username: options.username,
+          invalidated: false,
           profiles: toRecord(result.availableProfiles.map(normalizeGameProfile), (v) => v.id),
           selectedProfile: result.selectedProfile?.id ?? '',
           expiredAt: Date.now() + 86400_000,
           authService: options.service,
         }
 
+        await this.userTokenStorage.put(userProfile, result.accessToken)
+
         return userProfile
       },
       refresh: async (user) => {
-        const valid = await legacyClient.validate(user.accessToken)
+        const token = await this.userTokenStorage.get(user)
+        if (!token) {
+          // TODO: error
+          return user
+        }
+        const valid = await legacyClient.validate(token)
 
         this.log(`Validate ${user.authService} user access token: ${valid ? 'valid' : 'invalid'}`)
 
@@ -120,12 +130,12 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
         }
         try {
           const result = await legacyClient.refresh({
-            accessToken: user.accessToken,
+            accessToken: token,
             requestUser: true,
           })
           this.log(`Refreshed user access token for user: ${user.id}`)
 
-          user.accessToken = result.accessToken
+          this.userTokenStorage.put(user, result.accessToken)
           user.expiredAt = Date.now() + 86400_000
         } catch (e) {
           this.error(e)
@@ -158,7 +168,11 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
     if (!user) {
       throw new Error()
     }
-    await this.mojangApi.setName(name, user.accessToken)
+    const token = await this.userTokenStorage.get(user)
+    if (!token) {
+      throw new Error()
+    }
+    await this.mojangApi.setName(name, token)
   }
 
   async getNameChangeInformation() {
@@ -166,7 +180,11 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
     if (!user) {
       throw new Error()
     }
-    const result = await this.mojangApi.getNameChangeInformation(user.accessToken)
+    const token = await this.userTokenStorage.get(user)
+    if (!token) {
+      throw new Error()
+    }
+    const result = await this.mojangApi.getNameChangeInformation(token)
     return result
   }
 
@@ -175,7 +193,11 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
     if (!user) {
       throw new Error()
     }
-    const result = await this.mojangApi.checkNameAvailability(name, user.accessToken)
+    const token = await this.userTokenStorage.get(user)
+    if (!token) {
+      throw new Error()
+    }
+    const result = await this.mojangApi.checkNameAvailability(name, token)
     return result
   }
 
@@ -184,7 +206,11 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
     if (!user) {
       throw new Error()
     }
-    await this.mojangApi.hideCape(user.accessToken)
+    const token = await this.userTokenStorage.get(user)
+    if (!token) {
+      throw new Error()
+    }
+    await this.mojangApi.hideCape(token)
   }
 
   async showCape(capeId: string) {
@@ -192,7 +218,11 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
     if (!user) {
       throw new Error()
     }
-    await this.mojangApi.showCape(capeId, user.accessToken)
+    const token = await this.userTokenStorage.get(user)
+    if (!token) {
+      throw new Error()
+    }
+    await this.mojangApi.showCape(capeId, token)
   }
 
   async verifySecurityLocation() {
@@ -200,7 +230,11 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
     if (!user) {
       throw new Error()
     }
-    return await this.mojangApi.verifySecurityLocation(user.accessToken)
+    const token = await this.userTokenStorage.get(user)
+    if (!token) {
+      throw new Error()
+    }
+    return await this.mojangApi.verifySecurityLocation(token)
   }
 
   async getSecurityChallenges() {
@@ -208,7 +242,11 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
     if (!user) {
       throw new Error()
     }
-    return await this.mojangApi.getSecurityChallenges(user.accessToken)
+    const token = await this.userTokenStorage.get(user)
+    if (!token) {
+      throw new Error()
+    }
+    return await this.mojangApi.getSecurityChallenges(token)
   }
 
   async submitSecurityChallenges(answers: MojangChallengeResponse[]) {
@@ -216,6 +254,10 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
     if (!user) {
       throw new Error()
     }
-    return await this.mojangApi.submitSecurityChallenges(answers, user.accessToken)
+    const token = await this.userTokenStorage.get(user)
+    if (!token) {
+      throw new Error()
+    }
+    return await this.mojangApi.submitSecurityChallenges(answers, token)
   }
 }

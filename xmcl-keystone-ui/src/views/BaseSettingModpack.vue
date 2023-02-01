@@ -1,6 +1,7 @@
 <template>
   <v-list
     class="base-settings"
+    color="transparent"
     two-line
     subheader
   >
@@ -21,7 +22,9 @@
           v-model="data.author"
           hide-details
           :placeholder="gameProfile.name"
-          solo
+          outlined
+          filled
+          dense
           required
         />
       </v-list-item-action>
@@ -35,7 +38,9 @@
           <v-text-field
             v-model="data.description"
             class="m-1 mt-2"
-            solo
+            outlined
+            filled
+            dense
             hide-details
             :placeholder="t('modpack.descriptionHint')"
           />
@@ -56,7 +61,9 @@
         <v-text-field
           v-model="data.url"
           class="m-1 mt-2"
-          solo
+          outlined
+          filled
+          dense
           hide-details
           :placeholder="t('modpack.urlHint')"
         />

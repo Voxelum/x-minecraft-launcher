@@ -5,6 +5,7 @@ import { EOL } from 'os'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { JavaValidation } from '../entities/java'
+import { kUserTokenStorage, UserTokenStorage } from '../entities/userTokenStore'
 import { Inject } from '../util/objectRegistry'
 import { BaseService } from './BaseService'
 import { DiagnoseService } from './DiagnoseService'
@@ -30,6 +31,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
     @Inject(InstanceJavaService) private instanceJavaService: InstanceJavaService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(JavaService) private javaService: JavaService,
+    @Inject(kUserTokenStorage) private userTokenStorage: UserTokenStorage,
     @Inject(UserService) private userService: UserService,
   ) {
     super(app, () => new LaunchState())
@@ -82,12 +84,13 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         this.error('Fail to install authlib-injection:\n %o', e)
       }
     }
+    const accessToken = user.user ? await this.userTokenStorage.get(user.user).catch(() => undefined) : undefined
     /**
      * Build launch condition
      */
     const option: LaunchOption = {
       gameProfile,
-      accessToken: user.user?.accessToken,
+      accessToken,
       properties: {},
       gamePath: minecraftFolder.root,
       resourcePath: this.getPath(),
@@ -236,13 +239,14 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         : assignMemory === 'auto' ? Math.floor((await this.baseService.getMemoryStatus()).free / 1024 / 1024 - 256) : undefined
       maxMemory = assignMemory === true && maxMemory > 0 ? instance.maxMemory : undefined
       const prechecks = [LaunchPrecheck.checkNatives, LaunchPrecheck.linkAssets]
+      const accessToken = user.user ? await this.userTokenStorage.get(user.user).catch(() => undefined) : undefined
 
       /**
        * Build launch condition
        */
       const option: LaunchOption = {
         gameProfile,
-        accessToken: user.user?.accessToken,
+        accessToken,
         properties: {},
         gamePath: minecraftFolder.root,
         resourcePath: this.getPath(),

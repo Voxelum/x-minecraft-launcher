@@ -17,7 +17,7 @@ import HomeCardBase from './HomeCardBase.vue'
 const props = defineProps<{ row: number; rowCount: number }>()
 
 const { state } = useService(InstanceModsServiceKey)
-const modCounts = computed(() => state.mods.length)
+const modCounts = computed(() => state.mods.filter(m => !m.path.endsWith('.disabled')).length)
 const mods = computed(() => {
   const icons: { name: string; icon?: string }[] = []
   for (const m of state.mods) {
