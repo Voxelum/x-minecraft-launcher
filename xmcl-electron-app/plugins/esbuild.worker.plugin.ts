@@ -1,5 +1,5 @@
 import { build as esbuild, Plugin } from 'esbuild'
-import { join, resolve } from 'path'
+import { basename, join, resolve } from 'path'
 import { cleanUrl } from './util'
 
 /**
@@ -24,17 +24,19 @@ export default function createWorkerPlugin(): Plugin {
           bundle: true,
           metafile: true,
           entryNames: '[dir]/[name].worker',
-          assetNames: 'assets/[name]',
+          assetNames: '[name]',
           entryPoints: [absoltePath],
           treeShaking: true,
           write: true,
-          absWorkingDir: outDir,
           outdir: outDir,
           sourcemap: build.initialOptions.sourcemap,
+          minifyWhitespace: build.initialOptions.minifyWhitespace,
+          minifySyntax: build.initialOptions.minifySyntax,
+          keepNames: true,
           platform: 'node',
           plugins: build.initialOptions.plugins,
         })
-        const fileName = (Object.keys(result.metafile?.outputs || {}).filter(v => v.endsWith('.js')))[0]
+        const fileName = basename((Object.keys(result.metafile?.outputs || {}).filter(v => v.endsWith('.js')))[0])
         return {
           errors: result.errors,
           warnings: result.warnings,

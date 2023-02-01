@@ -1,7 +1,7 @@
 import { Plugin } from 'esbuild'
 import { existsSync, readdir, readdirSync, readFile } from 'fs-extra'
 import { arch, platform } from 'os'
-import { dirname, join, resolve } from 'path'
+import { dirname, join, relative, resolve } from 'path'
 
 /**
  * Correctly handle native node import.
@@ -34,6 +34,13 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
           },
         )
       }
+      // Remove the side effect of classic-level to avoid it's bundled in worker script
+      // build.onResolve({ filter: /classic-level/g }, async ({ path, resolveDir }) => ({
+      //   path: require.resolve(path, {
+      //     paths: [resolveDir],
+      //   }),
+      //   sideEffects: false,
+      // }))
       // return empty js for sharp to prevent it include large binary
       build.onLoad(
         { filter: /^.+[\\/]node_modules[\\/].+[\\/]sharp[\\/]lib[\\/]index\.js$/g },
@@ -179,11 +186,11 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
           const candidates = parsed.filter(matchTags(runtime, abi))
           const winner = candidates.sort(compareTags(runtime))[0]
           if (!winner) throw new Error()
-          // if (winner) { return join(prebuilds, winner.file) }
-          const filePath = JSON.stringify(join(prebuilds, winner.file))
+          const targetPath = join(prebuilds, winner.file)
+          const relativePath = './' + relative(dir, targetPath).replace(/\\/g, '/')
           return {
-            contents: `module.exports = require(${filePath})`,
-            loader: 'js',
+            contents: `module.exports = require(${JSON.stringify(relativePath)})`,
+            resolveDir: dir,
           }
         },
       )

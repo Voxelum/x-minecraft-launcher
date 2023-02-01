@@ -1,4 +1,5 @@
 import { Plugin } from 'esbuild'
+import { readFile } from 'fs-extra'
 /**
  * Resolve native .node module
  */
@@ -15,9 +16,40 @@ export default function createNodePlugin(): Plugin {
             paths: [args.resolveDir],
           }),
           namespace: 'node-file',
+          pluginData: args.pluginData,
+          external: !!build.initialOptions.watch,
         }),
       )
 
+      // build.onLoad({ filter: /\.node$/, namespace: 'file' }, async (args) => {
+      //   if (args.pluginData && 'skip' in args.pluginData) {
+      //     return undefined
+      //   }
+      //   console.log('special load ', build.initialOptions.absWorkingDir, args)
+      //   const path = args.path.substring(0, args.path.length - 'node'.length) + 'post-node'
+      //   return ({
+      //     contents: `export * from ${JSON.stringify(path)};`,
+      //     loader: 'js',
+      //     pluginData: { skip: true },
+      //   })
+      // })
+
+      // build.onResolve(
+      //   { filter: /^.+\.post-node$$/ },
+      //   (args) => {
+      //     console.log('resolv ?node %o', args)
+      //     const path = args.path.substring(0, args.path.length - '.post-node'.length) + '.node'
+      //     return ({
+      //       path: require.resolve(path, {
+      //         paths: [args.resolveDir],
+      //       }),
+      //       namespace: 'NodeFile',
+      //       pluginData: args.pluginData,
+      //       external: !!build.initialOptions.watch,
+      //     })
+      //   },
+      // )
+      // Files in the "NodeFile" virtual namespace call "require()" on the
       // Files in the "node-file" virtual namespace call "require()" on the
       // path from esbuild of the ".node" file in the output directory.
       build.onLoad({ filter: /.*/, namespace: 'node-file' }, (args) => {
@@ -26,6 +58,7 @@ export default function createNodePlugin(): Plugin {
 try { const path = require(${JSON.stringify(args.path)}); module.exports = typeof path === 'string' ? require(path) : path }
 catch (e) { debugger; console.error('Fail to require native node module ' + ${JSON.stringify(args.path)}); console.error(e); }
         `,
+          pluginData: { skip: true },
         })
       })
 
@@ -38,6 +71,7 @@ catch (e) { debugger; console.error('Fail to require native node module ' + ${JS
           path: args.path,
           namespace: 'file',
           external: !!build.initialOptions.watch,
+          pluginData: args.pluginData,
         }),
       )
 

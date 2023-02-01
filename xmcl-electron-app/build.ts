@@ -24,31 +24,11 @@ async function writeHash(algorithm: string, path: string, destination: string) {
  * Use esbuild to build main process
  */
 async function buildMain(options: BuildOptions) {
-  const result = await esbuild({
+  await esbuild({
     ...options,
     outdir: resolve(__dirname, './dist'),
     entryPoints: [path.join(__dirname, './main/index.ts')],
   })
-
-  if (!result.metafile) {
-    throw new Error('Unexpected rollup config to build!')
-  }
-
-  /**
-   * Print the esbuild output
-   */
-  async function printOutput(options: Metafile) {
-    for (const [file, chunk] of Object.entries(options.outputs)) {
-      console.log(
-        `${chalk.gray('[write]')} ${chalk.cyan(file)}  ${(
-          chunk.bytes / 1024
-        ).toFixed(2)}kb`,
-      )
-    }
-  }
-  if (result.metafile) {
-    await printOutput(result.metafile)
-  }
 }
 
 /**

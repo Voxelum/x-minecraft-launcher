@@ -5,6 +5,7 @@ import pluginWorker from './plugins/esbuild.worker.plugin'
 import pluginVueDevtools from './plugins/esbuild.devtool.plugin'
 import pluginNode from './plugins/esbuild.node.plugin'
 import plugin7Zip from './plugins/esbuild.native.plugin'
+import pluginPrint from './plugins/esbuild.print.plugin'
 import pluginStatic from './plugins/esbuild.static.plugin'
 import { yamlPlugin } from 'esbuild-plugin-yaml'
 import { BuildOptions } from 'esbuild'
@@ -42,6 +43,7 @@ const config: BuildOptions = {
   },
   plugins: [
     pluginRenderer(),
+    pluginPrint(),
     pluginStatic(),
     pluginPreload(path.resolve(__dirname, './preload')),
     pluginVueDevtools(path.resolve(__dirname, '../extensions')),
