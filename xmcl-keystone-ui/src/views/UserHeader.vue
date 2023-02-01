@@ -1,5 +1,5 @@
 <template>
-  <v-card rounded>
+  <v-card outlined>
     <v-list-item three-line>
       <v-list-item-content>
         <div class="text-overline mb-4">

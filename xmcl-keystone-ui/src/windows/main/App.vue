@@ -12,7 +12,7 @@
     >
       <AppSideBar />
       <main
-        class="flex top-0 bottom-0 right-0 overflow-auto max-h-full relative"
+        class="flex flex-col top-0 bottom-0 right-0 overflow-auto max-h-full relative"
         :class="{ solid: !blurMainBody }"
       >
         <transition
@@ -124,7 +124,7 @@ provide(kImageDialog, useImageDialog())
 
 </script>
 
-<style>
+<style scoped>
 .clip-head {
   clip-path: inset(0px 30px 30px 0px) !important;
   width: 64px;
@@ -138,4 +138,10 @@ img {
   max-height: 100%;
   object-fit: contain;
 }
+
+/* main {
+  border-left: 1px solid hsla(0,0%,100%,.12);
+  border-top: 1px solid hsla(0,0%,100%,.12);
+  border-top-left-radius: 0.5rem;
+} */
 </style>

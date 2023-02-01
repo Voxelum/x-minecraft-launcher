@@ -17,7 +17,6 @@
 
 <script lang=ts setup>
 defineProps<{
-  minecraft: string
   fabricLoader: string | undefined
 }>()
 

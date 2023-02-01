@@ -19,7 +19,9 @@
         <v-list-item-subtitle>
           <v-text-field
             v-model="mcOptions"
-            solo
+            outlined
+            filled
+            dense
             class="m-1 mt-2"
             hide-details
             required

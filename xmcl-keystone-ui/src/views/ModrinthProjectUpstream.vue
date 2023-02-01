@@ -3,7 +3,7 @@
     outlined
     class="flex flex-col flex-shrink flex-grow-0 relative"
   >
-    <v-list>
+    <v-list color="transparent">
       <v-subheader>
         {{ t('modrinthCard.currentVersion') }}
       </v-subheader>

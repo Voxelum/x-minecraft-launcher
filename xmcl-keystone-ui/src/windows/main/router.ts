@@ -1,13 +1,15 @@
-import Router from 'vue-router'
 import BaseSetting from '@/views/BaseSetting.vue'
 import Curseforge from '@/views/Curseforge.vue'
 import CurseforgeProject from '@/views/CurseforgeProject.vue'
 import FeedTheBeast from '@/views/FeedTheBeast.vue'
 import FeedTheBeastProject from '@/views/FeedTheBeastProject.vue'
+import InstallResource from '@/views/InstallResource.vue'
+import Router from 'vue-router'
 // import GameSetting from '@/views/GameSetting.vue'
 import Home from '@/views/Home.vue'
 import Me from '@/views/Me.vue'
 import Mod from '@/views/Mod.vue'
+import ModAdd from '@/views/ModAdd.vue'
 import Modpack from '@/views/Modpack.vue'
 import Modrinth from '@/views/Modrinth.vue'
 import ModrinthProject from '@/views/ModrinthProject.vue'
@@ -16,6 +18,8 @@ import ResourcePack from '@/views/ResourcePack.vue'
 import Save from '@/views/Save.vue'
 import Setting from '@/views/Setting.vue'
 import ShaderPack from '@/views/ShaderPack.vue'
+import User from '@/views/User.vue'
+import VersionLocalView from '@/views/VersionLocalView.vue'
 
 export const createRouter = () => {
   const router = new Router({
@@ -33,6 +37,14 @@ export const createRouter = () => {
         component: Me,
       },
       {
+        path: '/user',
+        component: User,
+      },
+      {
+        path: '/install',
+        component: InstallResource,
+      },
+      {
         path: '/save',
         component: Save,
       },
@@ -43,6 +55,10 @@ export const createRouter = () => {
       {
         path: '/mod-setting',
         component: Mod,
+      },
+      {
+        path: '/mod-add',
+        component: ModAdd,
       },
       // {
       //   path: '/game-setting',
@@ -77,6 +93,10 @@ export const createRouter = () => {
       {
         path: '/modpack-setting',
         component: Modpack,
+      },
+      {
+        path: '/version-setting',
+        component: VersionLocalView,
       },
       {
         path: '/curseforge/:type',
@@ -122,8 +142,4 @@ export const createRouter = () => {
     ],
   })
   return router
-}
-
-export function castToRouter() {
-
 }

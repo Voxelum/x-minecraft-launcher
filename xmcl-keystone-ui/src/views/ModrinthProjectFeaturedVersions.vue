@@ -7,7 +7,7 @@
       :error="error"
       @refresh="refresh"
     />
-    <v-list>
+    <v-list color="transparent">
       <v-list-item
         v-for="version of featured"
         :key="version.id"

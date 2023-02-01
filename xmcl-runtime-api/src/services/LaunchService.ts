@@ -45,7 +45,10 @@ export interface LaunchOptions {
    * By default, it will be the current selected instance directory.
    */
   gameDirectory?: string
-
+  /**
+   * The instance to launch
+   */
+  instance?: string
   /**
    * Override the launch to server options
    */

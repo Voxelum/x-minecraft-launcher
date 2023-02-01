@@ -99,6 +99,7 @@ import Categories from './CurseforgeCategories.vue'
 
 import ErrorView from '@/components/ErrorView.vue'
 import CurseforgeCard from './CurseforgeCard.vue'
+import { usePresence } from '@/composables/presence'
 
 interface CurseforgeProps {
   type: string
@@ -152,5 +153,7 @@ const {
   pages,
   projects,
 } = useCurseforge(props)
+
+usePresence({ location: 'curseforge' })
 
 </script>

@@ -50,5 +50,6 @@
         "xmcl-electron-app/main/locales",
         "xmcl-keystone-ui/locales",
     ],
-    "npm.packageManager": "pnpm"
+    "npm.packageManager": "pnpm",
+    "discord.enabled": false
 }

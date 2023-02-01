@@ -21,4 +21,8 @@ import SettingGeneral from './SettingGeneral.vue'
 import SettingMigrationDialog from './SettingMigrationDialog.vue'
 import SettingGlobal from './SettingGlobal.vue'
 import SettingYggdrasilServices from './SettingYggdrasilServices.vue'
+import { usePresence } from '@/composables/presence'
+
+usePresence({ location: 'setting' })
+
 </script>

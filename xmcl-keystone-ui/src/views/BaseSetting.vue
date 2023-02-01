@@ -31,10 +31,12 @@ import { InstanceEditInjectionKey, useInstanceEdit } from '../composables/instan
 import BaseSettingGeneral from './BaseSettingGeneral.vue'
 import BaseSettingModpack from './BaseSettingModpack.vue'
 import BaseSettingServer from './BaseSettingServer.vue'
-import { useAutoSaveLoad } from '@/composables'
+import { useAutoSaveLoad, useService } from '@/composables'
 import BaseSettingLaunch from './BaseSettingLaunch.vue'
 import BaseSettingJava from './BaseSettingJava.vue'
 import BaseSettingSync from './BaseSettingSync.vue'
+import { usePresence } from '@/composables/presence'
+import { InstanceServiceKey } from '@xmcl/runtime-api'
 
 const { instance } = useInstance()
 const isServer = useInstanceIsServer(instance)
@@ -43,6 +45,8 @@ const { t } = useI18n()
 provide(InstanceEditInjectionKey, edit)
 useAutoSaveLoad(edit.save, edit.load)
 
+const { state } = useService(InstanceServiceKey)
+usePresence({ location: 'instance-setting', instance: state.instance.name })
 </script>
 
 <style scoped=true>

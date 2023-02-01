@@ -139,7 +139,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
         if (!found.valid) {
           this.state.javaUpdate({ ...found, valid: true })
         }
-        this.log(`Found in memory ${found.valid ? 'valid' : 'invalid'} java ${found.version} in ${javaPath}`)
+        this.log(`Found a cached & ${found.valid ? 'valid' : 'invalid'} java ${found.version} in ${javaPath}`)
       }
       return found
     }

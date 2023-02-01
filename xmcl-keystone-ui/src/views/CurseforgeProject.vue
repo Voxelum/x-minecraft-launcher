@@ -109,6 +109,7 @@ import { useService } from '@/composables'
 import { kLatestCurseforgeResource, useLatestCurseforgeResource } from '@/composables/curseforgeResource'
 import { kImageDialog } from '@/composables/imageDialog'
 import { kUpstream } from '@/composables/instanceUpdate'
+import { usePresence } from '@/composables/presence'
 import { injection } from '@/util/inject'
 import { File } from '@xmcl/curseforge'
 import { InstanceServiceKey, ProjectType } from '@xmcl/runtime-api'
@@ -192,6 +193,9 @@ const imageDialog = injection(kImageDialog)
 // Tab
 const tab = ref(0)
 
+if (!upstream) {
+  usePresence(computed(() => ({ location: 'curseforge-project', name: project.value?.name || props.id })))
+}
 </script>
 
 <style>

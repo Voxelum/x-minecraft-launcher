@@ -13,6 +13,9 @@ export function useColorTheme() {
   const darkAppBarColor = useLocalStorageCacheStringValue<string>('darkAppBarColor', '#111111FF')
   const darkSideBarColor = useLocalStorageCacheStringValue<string>('darkSideBarColor', '#111111FF')
 
+  const darkCardColor = useLocalStorageCacheStringValue<string>('darkAppBarColor', '#0c0c0ccc')
+  const lightCardColor = useLocalStorageCacheStringValue<string>('darkAppBarColor', '#111111FF')
+
   const darkPrimaryColor = useLocalStorageCacheStringValue<string>('darkPrimaryColor', '#4caf50')
   const darkBackground = useLocalStorageCacheStringValue<string>('darkBackground', '#121212')
   const darkInfoColor = useLocalStorageCacheStringValue<string>('darkInfoColor', '#2196F3')

@@ -4,12 +4,12 @@
     v-long-press="onSelect"
     v-context-menu="contextMenuItems"
     outlined
-    :draggable="!source.enabled"
+    :draggable="!item.enabled"
     :class="{
       incompatible: isCompatible === false,
       maybe: isCompatible === 'maybe',
-      subsequence: source.subsequence === true,
-      dragged: source.dragged,
+      subsequence: item.subsequence === true,
+      dragged: item.dragged,
     }"
     class="draggable-card mod-card rounded-lg transition-all duration-200 shadow"
     style="margin-top: 10px; padding: 0 10px;"
@@ -17,14 +17,14 @@
     @click="onClick($event, index)"
   >
     <v-progress-linear
-      v-if="enabled !== source.enabledState"
+      v-if="enabled !== item.enabledState"
       buffer-value="0"
       color="orange"
       class="absolute bottom-0 left-0"
       stream
     />
     <v-progress-linear
-      v-if="enabled !== source.enabledState"
+      v-if="enabled !== item.enabledState"
       buffer-value="0"
       color="orange"
       class="absolute top-0 left-0"
@@ -41,12 +41,12 @@
         :style="{ display: selection ? 'flex' : 'none !important' }"
       >
         <v-checkbox
-          v-model="source.selected"
+          v-model="item.selected"
           @input="onSelect()"
         />
       </v-flex>
       <v-flex
-        v-if="!source.subsequence"
+        v-if="!item.subsequence"
         :key="1"
         class="avatar"
       >
@@ -54,7 +54,7 @@
           ref="iconImage"
           :lazy-src="unknownPack"
           class="rounded object-contain image-render-pixel"
-          :src="source.icon"
+          :src="item.icon"
         />
       </v-flex>
       <div
@@ -65,21 +65,21 @@
           class="px-1"
         >
           <text-component
-            :source="source.name"
+            :source="item.name"
           />
           <span class="text-gray-400 text-sm">
-            {{ source.version }}
+            {{ item.version }}
           </span>
         </h3>
         <v-card-text
           class="px-1 py-0 min-h-[22px] overflow-hidden overflow-ellipsis whitespace-nowrap"
         >
           <text-component
-            :source="source.description"
+            :source="item.description"
           />
         </v-card-text>
         <ModCardLabels
-          :source="source"
+          :source="item"
           :compatibility="compatibility"
           :on-edit-tag="onEditTag"
           :on-delete-tag="onDeleteTag"
@@ -113,7 +113,7 @@ import { vLongPress } from '../directives/longPress'
 import ModCardLabels from './ModCardLabels.vue'
 
 const props = defineProps<{
-  source: ModItem
+  item: ModItem
   index: number
   selection: boolean
   onItemDragstart(mod: ModItem): void
@@ -124,26 +124,26 @@ const props = defineProps<{
   onEnable(event: { item: ModItem; enabled: boolean }): void
 }>()
 
-const modItem = computed(() => props.source)
-const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.source.tags, set(v) { props.onTags(props.source, v) } }), computed(() => props.source.selected))
+const modItem = computed(() => props.item)
+const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.item.tags, set(v) { props.onTags(props.item, v) } }), computed(() => props.item.selected))
 const { isCompatible, compatibility } = useModCompatibility(modItem)
 
 const onDeleteTag = removeTag
 const iconImage: Ref<Vue | null> = ref(null)
 const enabled = computed({
-  get() { return props.source.enabled },
-  set(v: boolean) { props.onEnable({ item: props.source, enabled: v }) },
+  get() { return props.item.enabled },
+  set(v: boolean) { props.onEnable({ item: props.item, enabled: v }) },
 })
 
 function onDragStart(e: DragEvent) {
-  if (props.source.enabled) {
+  if (props.item.enabled) {
     return
   }
   if (iconImage.value) {
     e.dataTransfer!.setDragImage(iconImage.value.$el!, 0, 0)
   } else {
     const img = document.createElement('img')
-    img.src = props.source.icon
+    img.src = props.item.icon
     img.style.maxHeight = '126px'
     img.style.maxWidth = '126px'
     img.style.objectFit = 'contain'
@@ -151,24 +151,24 @@ function onDragStart(e: DragEvent) {
     e.dataTransfer!.setDragImage(img, 0, 0)
   }
   e.dataTransfer!.effectAllowed = 'move'
-  e.dataTransfer!.setData('id', props.source.url)
-  props.onItemDragstart(props.source)
+  e.dataTransfer!.setData('id', props.item.url)
+  props.onItemDragstart(props.item)
 }
 function onEditTag(event: Event, index: number) {
   if (event instanceof FocusEvent) {
     if (event.type === 'blur') {
-      props.onTags(props.source, [...props.source.tags])
+      props.onTags(props.item, [...props.item.tags])
     }
   } else if (event.target instanceof HTMLDivElement) {
     if ((event as any).inputType === 'insertParagraph' || ((event as any).inputType === 'insertText' && (event as any).data === null)) {
-      props.onTags(props.source, [...props.source.tags])
+      props.onTags(props.item, [...props.item.tags])
     } else {
       editTag(event.target.innerText, index)
     }
   }
 }
 
-const contextMenuItems = useModItemContextMenuItems(modItem, () => props.onDelete(props.source), createTag)
+const contextMenuItems = useModItemContextMenuItems(modItem, () => props.onDelete(props.item), createTag)
 </script>
 
 <style scoped>

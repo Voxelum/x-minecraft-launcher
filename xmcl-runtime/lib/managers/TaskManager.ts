@@ -81,7 +81,7 @@ export default class TaskManager extends Manager {
           emitter.emit('fail', uid, task, e)
           Reflect.set(task, 'error', e)
 
-          logger.warn(`Task ${task.name}(${uid}) failed!`)
+          logger.warn(`Task ${task.path} (${Object.getPrototypeOf(task).constructor.name}) ${task.name}(${uid}) failed!`)
           if (error instanceof Array) {
             for (const e of error) {
               logger.warn(e)

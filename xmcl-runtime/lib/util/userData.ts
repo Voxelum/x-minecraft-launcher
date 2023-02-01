@@ -1,11 +1,12 @@
 import { UserSchema } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
 import { LauncherProfile } from '../entities/launchProfile'
+import { UserTokenStorage } from '../entities/userTokenStore'
 
 /**
  * Fit the user data from loaded user data and loaded launcher profile json
  */
-export function fitMinecraftLauncherProfileData(result: UserSchema, data: UserSchema, launchProfile: LauncherProfile) {
+export function fitMinecraftLauncherProfileData(result: UserSchema, data: UserSchema, launchProfile: LauncherProfile, tokenStorage: UserTokenStorage) {
   if (typeof data === 'object') {
     if (data.clientToken) {
       result.clientToken = data.clientToken
@@ -41,13 +42,14 @@ export function fitMinecraftLauncherProfileData(result: UserSchema, data: UserSc
           }, {} as { [key: string]: any })
         result.users[userId] = {
           id: userId,
+          invalidated: false,
           username: user.username,
-          accessToken: user.accessToken,
           authService: 'mojang',
           selectedProfile: profiles[launchProfile.selectedUser.profile] ? launchProfile.selectedUser.profile : Object.values(profiles)[0].id,
           expiredAt: 0,
           profiles,
         }
+        tokenStorage.put(result.users[userId], user.accessToken)
       }
     }
   }

@@ -63,9 +63,9 @@
                     "description": "The used auth service name",
                     "type": "string"
                 },
-                "accessToken": {
-                    "description": "The access token of the user. The token is invalid either in\n\n- This access token value is set to empty string\n- The `expiredAt` is larger than `Date.now()`",
-                    "type": "string"
+                "invalidated": {
+                    "description": "If the user profile is invalidated and should be re-login",
+                    "type": "boolean"
                 },
                 "expiredAt": {
                     "description": "The expire time",
@@ -88,10 +88,10 @@
                 }
             },
             "required": [
-                "accessToken",
                 "authService",
                 "expiredAt",
                 "id",
+                "invalidated",
                 "profiles",
                 "selectedProfile",
                 "username"

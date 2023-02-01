@@ -78,29 +78,34 @@ export function useResourceUrisDiscovery(uris: Ref<string[]>) {
   }
 }
 
-export function useDomainResources(domain: ResourceDomain) {
+export function useDomainResources(domain: ResourceDomain | Ref<ResourceDomain>) {
   const { getResources, on, removeListener } = useService(ResourceServiceKey)
 
   const resources = ref([] as Resource[])
 
   const { refresh, refreshing } = useRefreshable(async () => {
-    const all = await getResources(domain)
+    const all = await getResources(typeof domain === 'object' ? domain.value : domain)
     all.forEach(markRaw)
+    console.log(all)
     resources.value = all
   })
 
   onMounted(refresh)
+  if (typeof domain === 'object') {
+    console.log('domain!')
+    watch(domain, refresh)
+  }
 
   const onAdd = (r: Resource) => {
-    if (domain !== r.domain) return
+    if (typeof domain === 'object' ? domain.value : domain !== r.domain) return
     resources.value = [r, ...resources.value]
   }
   const onRemove = (r: { sha1: string; domain: ResourceDomain }) => {
-    if (domain !== r.domain) return
+    if (typeof domain === 'object' ? domain.value : domain !== r.domain) return
     resources.value = resources.value.filter(res => res.hash !== r.sha1)
   }
   const onUpdate = (r: Resource) => {
-    if (domain !== r.domain) return
+    if (typeof domain === 'object' ? domain.value : domain !== r.domain) return
     const index = resources.value.findIndex(res => res.hash === r.hash)
     resources.value[index] = r
     resources.value = [...resources.value]

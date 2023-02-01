@@ -117,6 +117,7 @@ import { vContextMenu } from '../directives/contextMenu'
 import { useService } from '@/composables'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import unknownServer from '@/assets/unknown_server.png'
+import { getInstanceIcon } from '@/util/favicon'
 
 const props = defineProps<{ instance: Instance }>()
 const emit = defineEmits(['drop'])
@@ -129,30 +130,7 @@ const { t } = useI18n()
 const { show: showDeleteDialog } = useDialog('delete-instance')
 const { status } = useInstanceServerStatus(props.instance.path)
 
-const favicon = computed(() => {
-  const instance = props.instance
-  if (status.value.favicon && status.value.favicon !== unknownServer) {
-    return status.value.favicon
-  } else if (instance.server) {
-    return unknownServer
-  }
-  if (!instance.icon) {
-    if (instance.runtime.forge) {
-      return 'image://builtin/forge'
-    } else if (instance.runtime.fabricLoader) {
-      return 'image://builtin/fabric'
-    } else if (instance.runtime.quiltLoader) {
-      return 'image://builtin/quilt'
-    } else if (instance.runtime.optifine) {
-      return 'image://builtin/optifine'
-    } else if (instance.runtime.minecraft) {
-      return 'image://builtin/minecraft'
-    } else {
-      return 'image://builtin/craftingTable'
-    }
-  }
-  return instance.icon
-})
+const favicon = computed(() => getInstanceIcon(props.instance, status.value))
 
 const items = computed(() => {
   const result: ContextMenuItem[] = [

@@ -47,6 +47,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
       'httpProxyEnabledSet',
       'themeSet',
       'maxSocketsSet',
+      'discordPresenceSet',
       'globalInstanceSetting',
     ], () => {
       this.settingFile.write({
@@ -68,6 +69,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
         globalFastLaunch: this.state.globalFastLaunch,
         globalHideLauncher: this.state.globalHideLauncher,
         globalShowLog: this.state.globalShowLog,
+        discordPresence: this.state.discordPresence,
       })
     })
   }

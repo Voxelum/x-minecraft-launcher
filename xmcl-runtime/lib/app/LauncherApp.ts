@@ -69,8 +69,6 @@ export class LauncherApp extends EventEmitter {
    */
   readonly temporaryPath: string
 
-  // properties
-
   readonly networkManager: NetworkManager
 
   readonly logManager: LogManager

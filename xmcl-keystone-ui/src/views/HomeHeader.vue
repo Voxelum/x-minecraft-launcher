@@ -42,36 +42,30 @@
           </v-avatar>
           {{ t('version.name', 2) }}: {{ !localVersion.id ? t('version.notInstalled') : localVersion.id }}
         </v-chip>
-        <HomeHeaderMinecraftLabel
-          :minecraft="version.minecraft"
+        <AvatarChip
+          :avatar="'image://builtin/minecraft'"
+          :text="`Minecraft ${version.minecraft}`"
         />
-        <HomeHeaderForgeLabel
-          :minecraft="version.minecraft"
-          :forge="version.forge"
+        <AvatarChip
+          v-if="version.forge"
+          :avatar="'image://builtin/forge'"
+          :text="`Forge ${version.forge}`"
         />
-        <HomeHeaderFabricLabel
-          :fabric-loader="version.fabricLoader"
-          :minecraft="version.minecraft"
+        <AvatarChip
+          v-if="version.fabricLoader"
+          :avatar="'image://builtin/fabric'"
+          :text="`Fabric ${version.fabricLoader}`"
         />
-        <HomeHeaderQuiltLabel
-          :quilt-loader="version.quiltLoader"
-          :minecraft="version.minecraft"
+        <AvatarChip
+          v-if="version.quiltLoader"
+          :avatar="'image://builtin/quilt'"
+          :text="`Quilt ${version.quiltLoader}`"
         />
-        <v-chip
+        <AvatarChip
           v-if="version.optifine"
-          label
-          outlined
-        >
-          <v-avatar left>
-            <img
-              :src="'image://builtin/optifine'"
-            >
-          </v-avatar>
-          <div>
-            Optifine
-            {{ version.optifine }}
-          </div>
-        </v-chip>
+          :avatar="'image://builtin/optifine'"
+          :text="`Optifine ${version.optifine}`"
+        />
       </div>
       <div class="flex-grow" />
 
@@ -172,6 +166,7 @@
 </template>
 
 <script lang=ts setup>
+import AvatarChip from '@/components/AvatarChip.vue'
 import { useService } from '@/composables'
 import { kInstanceContext } from '@/composables/instanceContext'
 import { useInFocusMode } from '@/composables/uiLayout'

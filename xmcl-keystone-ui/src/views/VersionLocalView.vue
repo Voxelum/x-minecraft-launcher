@@ -1,191 +1,194 @@
 <template>
-  <v-list
-    v-if="versions.length !== 0"
-    class="local-version-list overflow-auto h-full flex flex-col visible-scroll"
-    style="background: transparent"
-  >
-    <v-list-item class="flex justify-end">
-      <v-select
-        v-model="data.filteredMinecraft"
-        label="Minecraft"
-        class="max-w-40 flex-shrink flex-grow-0"
-        hide-details
-        flat
-        :items="minecraftVersions"
-        clearable
-      />
-    </v-list-item>
-    <v-divider />
-    <div
-      class="overflow-auto h-full flex flex-col flex-shrink flex-grow-0"
+  <div>
+    <v-list
+      v-if="versions.length !== 0"
+      class="local-version-list overflow-auto h-full flex flex-col visible-scroll"
+      style="background: transparent"
     >
-      <template v-for="(item) in versions">
-        <v-list-item
-          :key="item.id"
-          class="flex-grow-0 flex-1"
-          :class="{
-            selected: isSelected(item),
-            'en-1': isSelected(item),
-            'elevation-2': isSelected(item),
-          }"
-          style="margin: 0px 0;"
-        >
-          <v-list-item-avatar>
-            <v-btn
-              icon
-              style="cursor: pointer"
-              @click.stop="openVersionDir(item)"
-            >
-              <v-icon>folder</v-icon>
-            </v-btn>
-          </v-list-item-avatar>
-          <v-list-item-title
-            style="flex: 1 1 50%"
-            class="!flex-grow-0"
+      <v-list-item class="flex justify-end">
+        <v-select
+          v-model="data.filteredMinecraft"
+          label="Minecraft"
+          class="max-w-40 flex-shrink flex-grow-0"
+          hide-details
+          flat
+          :items="minecraftVersions"
+          clearable
+        />
+      </v-list-item>
+      <v-divider />
+      <div
+        class="overflow-auto h-full flex flex-col flex-shrink flex-grow-0"
+      >
+        <template v-for="(item) in versions">
+          <v-list-item
+            :key="item.id"
+            class="flex-grow-0 flex-1"
+            :class="{
+              selected: isSelected(item),
+              'en-1': isSelected(item),
+              'elevation-2': isSelected(item),
+            }"
+            style="margin: 0px 0;"
           >
-            {{ item.id }}
-          </v-list-item-title>
-          <v-list-item-subtitle class="!flex-grow flex">
-            {{ item.minecraft }}
-          </v-list-item-subtitle>
-          <v-list-item-action style="flex-direction: row; justify-content: flex-end;">
-            <v-btn
-              style="cursor: pointer"
-              icon
-              text
-              @mousedown.stop
-              @click.stop="startReinstall(item)"
+            <v-list-item-avatar>
+              <v-btn
+                icon
+                style="cursor: pointer"
+                @click.stop="openVersionDir(item)"
+              >
+                <v-icon>folder</v-icon>
+              </v-btn>
+            </v-list-item-avatar>
+            <v-list-item-title
+              style="flex: 1 1 50%"
+              class="!flex-grow-0"
             >
-              <v-icon>build</v-icon>
-            </v-btn>
-          </v-list-item-action>
-          <v-list-item-action style="flex-direction: row; justify-content: flex-end;">
-            <v-btn
-              style="cursor: pointer"
-              icon
-              color="error"
-              text
-              @mousedown.stop
-              @click.stop="startDelete(item)"
-            >
-              <v-icon>delete</v-icon>
-            </v-btn>
-          </v-list-item-action>
-        </v-list-item>
-      </template>
-    </div>
+              {{ item.id }}
+            </v-list-item-title>
+            <v-list-item-subtitle class="!flex-grow flex">
+              {{ item.minecraft }}
+            </v-list-item-subtitle>
+            <v-list-item-action style="flex-direction: row; justify-content: flex-end;">
+              <v-btn
+                style="cursor: pointer"
+                icon
+                text
+                @mousedown.stop
+                @click.stop="startReinstall(item)"
+              >
+                <v-icon>build</v-icon>
+              </v-btn>
+            </v-list-item-action>
+            <v-list-item-action style="flex-direction: row; justify-content: flex-end;">
+              <v-btn
+                style="cursor: pointer"
+                icon
+                color="error"
+                text
+                @mousedown.stop
+                @click.stop="startDelete(item)"
+              >
+                <v-icon>delete</v-icon>
+              </v-btn>
+            </v-list-item-action>
+          </v-list-item>
+        </template>
+      </div>
 
-    <v-dialog
-      v-model="data.deletingVersion"
-      max-width="290"
-    >
-      <v-card>
-        <v-card-title class="headline">
-          {{ t('localVersion.delete') }}
-        </v-card-title>
-        <v-card-text>{{ t('localVersion.deleteDescription') }}</v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            text
-            @click="cancelDeleting()"
+      <v-dialog
+        v-model="data.deletingVersion"
+        max-width="290"
+      >
+        <v-card>
+          <v-card-title class="headline">
+            {{ t('localVersion.delete') }}
+          </v-card-title>
+          <v-card-text>{{ t('localVersion.deleteDescription') }}</v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn
+              text
+              @click="cancelDeleting()"
+            >
+              {{ t('no') }}
+            </v-btn>
+            <v-btn
+              color="error en-1"
+              text
+              @click="confirmDeleting()"
+            >
+              {{ t('yes') }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-dialog
+        v-model="data.reinstallVersion"
+        max-width="390"
+      >
+        <v-card>
+          <v-card-title
+            class="headline"
           >
-            {{ t('no') }}
-          </v-btn>
-          <v-btn
-            color="error en-1"
-            text
-            @click="confirmDeleting()"
-          >
-            {{ t('yes') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-    <v-dialog
-      v-model="data.reinstallVersion"
-      max-width="390"
-    >
-      <v-card>
-        <v-card-title
-          class="headline"
-        >
-          {{ t('localVersion.reinstallTitle', { version: data.reinstallVersionId }) }}
-        </v-card-title>
-        <v-card-text>{{ t('localVersion.reinstallDescription') }}</v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            text
-            @click="cancelReinstall()"
-          >
-            {{ t('no') }}
-          </v-btn>
-          <v-btn
-            color="orange en-1"
-            text
-            @click="confirmReinstall()"
-          >
-            <v-icon left>
-              build
-            </v-icon>
-            {{ t('yes') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-list>
-  <v-container
-    v-else
-    fill-height
-  >
-    <v-layout
-      align-center
-      justify-center
-      row
+            {{ t('localVersion.reinstallTitle', { version: data.reinstallVersionId }) }}
+          </v-card-title>
+          <v-card-text>{{ t('localVersion.reinstallDescription') }}</v-card-text>
+          <v-card-actions>
+            <v-spacer />
+            <v-btn
+              text
+              @click="cancelReinstall()"
+            >
+              {{ t('no') }}
+            </v-btn>
+            <v-btn
+              color="orange en-1"
+              text
+              @click="confirmReinstall()"
+            >
+              <v-icon left>
+                build
+              </v-icon>
+              {{ t('yes') }}
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-list>
+    <v-container
+      v-else
       fill-height
     >
-      <v-flex
-        shrink
-        tag="h1"
-        class="white--text gap-3"
+      <v-layout
+        align-center
+        justify-center
+        row
+        fill-height
       >
-        <v-btn
-          large
-          color="primary"
-          :loading="refreshing"
-          @click="browseVersionsFolder"
+        <v-flex
+          shrink
+          tag="h1"
+          class="white--text gap-3"
         >
-          <v-icon left>
-            folder
-          </v-icon>
-          {{ t('localVersion.empty') }}
-        </v-btn>
-        <v-btn
-          large
-          color="primary"
-          :loading="refreshing"
-          @click="refresh"
-        >
-          {{ t('localVersion.refresh') }}
-        </v-btn>
-      </v-flex>
-    </v-layout>
-  </v-container>
+          <v-btn
+            large
+            color="primary"
+            :loading="refreshing"
+            @click="browseVersionsFolder"
+          >
+            <v-icon left>
+              folder
+            </v-icon>
+            {{ t('localVersion.empty') }}
+          </v-btn>
+          <v-btn
+            large
+            color="primary"
+            :loading="refreshing"
+            @click="refresh"
+          >
+            {{ t('localVersion.refresh') }}
+          </v-btn>
+        </v-flex>
+      </v-layout>
+    </v-container>
+  </div>
 </template>
 
 <script lang=ts setup>
 import { InstallServiceKey, LocalVersionHeader, versionCompare, VersionServiceKey } from '@xmcl/runtime-api'
 import { useLocalVersions } from '../composables/version'
 import { useRefreshable, useService } from '@/composables'
+import { usePresence } from '@/composables/presence'
 
 const props = withDefaults(defineProps<{
-  filterText: string
   value?: LocalVersionHeader
 }>(), {
-  filterText: '',
   value: undefined,
 })
+
+const filterText = ref('')
 
 const data = reactive({
   deletingVersion: false,
@@ -199,7 +202,7 @@ const data = reactive({
 const { reinstall } = useService(InstallServiceKey)
 const { localVersions } = useLocalVersions()
 const { deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions } = useService(VersionServiceKey)
-const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(props.filterText) !== -1).filter(v => !data.filteredMinecraft || v.minecraft === data.filteredMinecraft))
+const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(filterText.value) !== -1).filter(v => !data.filteredMinecraft || v.minecraft === data.filteredMinecraft))
 const minecraftVersions = computed(() => [...new Set(localVersions.value.map(v => v.minecraft))].sort(versionCompare).reverse())
 const { t } = useI18n()
 
@@ -243,6 +246,7 @@ const { refresh, refreshing } = useRefreshable(async () => {
   await refreshVersions()
 })
 
+usePresence({ location: 'versions' })
 </script>
 
 <style>

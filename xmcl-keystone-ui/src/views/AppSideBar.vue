@@ -13,36 +13,108 @@
       dense
       class="px-2 ml-1"
     >
-      <v-tooltip
-        color="black"
-        transition="scroll-x-transition"
-        :close-delay="0"
-        right
+      <v-list-group
+        v-model="expanding"
+        active-class="v-list-item--link"
+        class="non-moveable avatar"
       >
-        <template #activator="{ on: tooltip }">
-          <v-list-item
-            class="px-2 flex-grow-0 flex-1 non-moveable"
-            link
-            push
-            to="/me"
-            v-on="tooltip"
+        <template #activator>
+          <v-tooltip
+            color="black"
+            transition="scroll-x-transition"
+            :close-delay="0"
+            right
           >
-            <v-list-item-avatar
-              size="48"
-              class="hover:rounded-xl transition-all duration-300"
-              large
-            >
-              <PlayerAvatar
-                :src="gameProfile.textures.SKIN.url"
-                :dimension="48"
-              />
-            </v-list-item-avatar>
-
-            <v-list-item-title>{{ gameProfile.name }}</v-list-item-title>
-          </v-list-item>
+            <template #activator="{ on: tooltip }">
+              <v-list-item-avatar
+                size="48"
+                class="hover:rounded-xl transition-all duration-300"
+                large
+                @click="navToMe"
+                v-on="tooltip"
+              >
+                <PlayerAvatar
+                  :src="gameProfile.textures.SKIN.url"
+                  :dimension="48"
+                />
+              </v-list-item-avatar>
+            </template>
+            {{ t('myStuff') }}
+          </v-tooltip>
         </template>
-        {{ t('myStuff') }}
-      </v-tooltip>
+
+        <v-tooltip
+          :close-delay="0"
+          color="black"
+          transition="scroll-x-transition"
+          right
+        >
+          <template #activator="{ on: tooltip }">
+            <v-list-item
+              link
+              push
+              to="/user"
+              class="non-moveable"
+              v-on="tooltip"
+            >
+              <v-list-item-icon>
+                <v-icon>
+                  manage_accounts
+                </v-icon>
+              </v-list-item-icon>
+
+              <v-list-item-title v-text="'Text'" />
+            </v-list-item>
+          </template>
+          {{ t('user.info') }}
+        </v-tooltip>
+        <v-tooltip
+          color="black"
+          transition="scroll-x-transition"
+          :close-delay="0"
+          right
+        >
+          <template #activator="{ on: tooltip }">
+            <v-list-item
+              link
+              push
+              to="/version-setting"
+              class="non-moveable"
+              v-on="tooltip"
+            >
+              <v-list-item-icon>
+                <v-icon> power </v-icon>
+              </v-list-item-icon>
+              <v-list-item-title v-text="'Text'" />
+            </v-list-item>
+          </template>
+          {{ t('localVersion.title') }}
+        </v-tooltip>
+
+        <v-tooltip
+          color="black"
+          transition="scroll-x-transition"
+          :close-delay="0"
+          right
+        >
+          <template #activator="{ on: tooltip }">
+            <v-list-item
+              link
+              push
+              to="/modpack-setting"
+              class="non-moveable"
+              v-on="tooltip"
+            >
+              <v-list-item-icon>
+                <v-icon> inventory </v-icon>
+              </v-list-item-icon>
+              <v-list-item-title v-text="'Text'" />
+            </v-list-item>
+          </template>
+          {{ t('modpack.name', 2) }}
+        </v-tooltip>
+        <v-divider />
+      </v-list-group>
     </v-list>
 
     <AppSideBarContentFocus v-if="useFocus" />
@@ -139,6 +211,14 @@ const useFocus = computed(() => layout.value === 'focus')
 
 const { t } = useI18n()
 const { sideBarColor } = injection(kColorTheme)
+const { push, currentRoute } = useRouter()
+const expanding = ref(false)
+
+const navToMe = () => {
+  if (currentRoute.path !== 'me') {
+    push('/me')
+  }
+}
 
 </script>
 
@@ -173,5 +253,9 @@ const { sideBarColor } = injection(kColorTheme)
 .sidebar .theme--light.v-list-item--active:before {
   opacity: .25;
   background-color: gray;
+}
+
+.avatar .v-list-group__header.v-list-item--active:not(:hover):not(:focus):before {
+  opacity: .24;
 }
 </style>

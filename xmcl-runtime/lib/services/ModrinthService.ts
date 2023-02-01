@@ -1,6 +1,6 @@
 import { DownloadTask } from '@xmcl/installer'
 import { Category, GameVersion, License, Loader, Project, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
-import { getModrinthVersionFileUri, getModrinthVersionUri, InstallModrinthVersionResult, InstallProjectVersionOptions, ModrinthService as IModrinthService, ModrinthServiceKey } from '@xmcl/runtime-api'
+import { getModrinthVersionFileUri, getModrinthVersionUri, GetProjectVersionsOptions, InstallModrinthVersionResult, InstallProjectVersionOptions, ModrinthService as IModrinthService, ModrinthServiceKey } from '@xmcl/runtime-api'
 import { unlink } from 'fs-extra'
 import { url } from 'inspector'
 import { basename, join } from 'path'
@@ -52,8 +52,8 @@ export class ModrinthService extends AbstractService implements IModrinthService
   }
 
   @Singleton(p => JSON.stringify(p))
-  async getProjectVersions({ projectId, featured }: { projectId: string; featured?: boolean }): Promise<ProjectVersion[]> {
-    const versions: ProjectVersion[] = await this.client.getProjectVersions(projectId, undefined, undefined, featured)
+  async getProjectVersions({ projectId, featured, gameVersions, loaders }: GetProjectVersionsOptions): Promise<ProjectVersion[]> {
+    const versions: ProjectVersion[] = await this.client.getProjectVersions(projectId, loaders, gameVersions, featured)
     this.log(`Get project version for version_id=${projectId}`)
     return versions
   }
@@ -119,6 +119,7 @@ export class ModrinthService extends AbstractService implements IModrinthService
       }
       visited.add(version.project_id)
 
+      this.client.getProjectVersionsById(version.dependencies.map(d => d.version_id).filter(isNonnull))
       const deps = await Promise.all(version.dependencies.map(async (dep) => {
         if (dep.dependency_type === 'required') {
           if (dep.version_id) {

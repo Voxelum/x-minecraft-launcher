@@ -61,7 +61,10 @@
           {{ t('modrinth.headers.status') }}
         </div>
       </div>
-      <v-list class="visible-scroll max-h-full overflow-auto transition-none">
+      <v-list
+        color="transparent"
+        class="visible-scroll max-h-full overflow-auto transition-none"
+      >
         <ModrinthProjectVersionsTile
           v-for="i of visibleVersions"
           :key="i.id"

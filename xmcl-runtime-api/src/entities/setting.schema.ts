@@ -96,4 +96,8 @@ export interface SettingSchema {
    * @default false
    */
   globalShowLog: boolean
+  /**
+   * @default true
+   */
+  discordPresence: boolean
 }

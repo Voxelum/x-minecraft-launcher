@@ -17,6 +17,24 @@ importers:
     dependencies:
       '@actions/core': 1.9.0
 
+<<<<<<< HEAD
+  packages/discord-rpc:
+    specifiers:
+      '@types/node': ^16.*
+      '@types/ws': ^8.5.4
+      discord-api-types: ^0.37.31
+      tsx: ^3.12.1
+      undici: ^5.14.0
+      ws: 8.10.0
+    dependencies:
+      discord-api-types: 0.37.33
+      undici: 5.14.0
+      ws: 8.10.0
+    devDependencies:
+      '@types/node': 16.18.9
+      '@types/ws': 8.5.4
+      tsx: 3.12.1
+
   packages/nat-api:
     specifiers:
       '@types/node': ^17.0.8
@@ -65,6 +83,8 @@ importers:
       tslib: 2.4.0
       typescript: 4.7.4
 
+=======
+>>>>>>> 234315ea (refactor: Move discord rpc)
   xmcl-electron-app:
     specifiers:
       '@types/electron-devtools-installer': ^2.2.2
@@ -304,6 +324,7 @@ importers:
       '@xmcl/client': workspace:2.1.3
       '@xmcl/core': workspace:2.10.1
       '@xmcl/curseforge': workspace:1.0.0
+      '@xmcl/discord-rpc': workspace:*
       '@xmcl/forge-site-parser': workspace:2.0.8
       '@xmcl/gamesetting': workspace:2.0.2
       '@xmcl/installer': workspace:4.4.0
@@ -356,11 +377,13 @@ importers:
       ws: 8.10.0
       yazl: ^2.5.1
     dependencies:
+<<<<<<< HEAD
       '@azure/msal-common': 6.4.0
       '@azure/msal-node': 1.14.5
       '@xmcl/client': link:../xmcl/packages/client
       '@xmcl/core': link:../xmcl/packages/core
       '@xmcl/curseforge': link:../xmcl/packages/curseforge
+      '@xmcl/discord-rpc': link:../packages/discord-rpc
       '@xmcl/forge-site-parser': link:../xmcl/packages/forge-site-parser
       '@xmcl/gamesetting': link:../xmcl/packages/gamesetting
       '@xmcl/installer': link:../xmcl/packages/installer
@@ -402,6 +425,149 @@ importers:
       undici: 5.14.0
       ws: 8.10.0
       yazl: 2.5.1
+=======
+      '@azure/msal-common':
+        specifier: ^6.4.0
+        version: 6.4.0
+      '@azure/msal-node':
+        specifier: ^1.14.5
+        version: 1.14.5
+      '@xmcl/client':
+        specifier: workspace:*
+        version: link:../xmcl/packages/client
+      '@xmcl/core':
+        specifier: workspace:*
+        version: link:../xmcl/packages/core
+      '@xmcl/curseforge':
+        specifier: workspace:*
+        version: link:../xmcl/packages/curseforge
+      '@xmcl/discord-rpc':
+        specifier: workspace:*
+        version: link:../xmcl/packages/discord-rpc
+      '@xmcl/file-transfer':
+        specifier: workspace:*
+        version: link:../xmcl/packages/file-transfer
+      '@xmcl/forge-site-parser':
+        specifier: workspace:*
+        version: link:../xmcl/packages/forge-site-parser
+      '@xmcl/game-data':
+        specifier: workspace:*
+        version: link:../xmcl/packages/game-data
+      '@xmcl/gamesetting':
+        specifier: workspace:*
+        version: link:../xmcl/packages/gamesetting
+      '@xmcl/installer':
+        specifier: workspace:*
+        version: link:../xmcl/packages/installer
+      '@xmcl/mod-parser':
+        specifier: workspace:*
+        version: link:../xmcl/packages/mod-parser
+      '@xmcl/model':
+        specifier: workspace:*
+        version: link:../xmcl/packages/model
+      '@xmcl/modrinth':
+        specifier: workspace:*
+        version: link:../xmcl/packages/modrinth
+      '@xmcl/nat-api':
+        specifier: workspace:*
+        version: link:../xmcl/packages/nat-api
+      '@xmcl/nbt':
+        specifier: workspace:*
+        version: link:../xmcl/packages/nbt
+      '@xmcl/resourcepack':
+        specifier: workspace:*
+        version: link:../xmcl/packages/resourcepack
+      '@xmcl/runtime-api':
+        specifier: workspace:*
+        version: link:../xmcl-runtime-api
+      '@xmcl/stun-client':
+        specifier: ^1.0.0
+        version: 1.0.0
+      '@xmcl/system':
+        specifier: workspace:*
+        version: link:../xmcl/packages/system
+      '@xmcl/task':
+        specifier: workspace:*
+        version: link:../xmcl/packages/task
+      '@xmcl/text-component':
+        specifier: workspace:*
+        version: link:../xmcl/packages/text-component
+      '@xmcl/unzip':
+        specifier: workspace:*
+        version: link:../xmcl/packages/unzip
+      '@xmcl/user':
+        specifier: workspace:*
+        version: link:../xmcl/packages/user
+      abstract-level:
+        specifier: ^1.0.3
+        version: 1.0.3
+      ajv:
+        specifier: ^8.11.2
+        version: 8.11.2
+      applicationinsights:
+        specifier: ^2.4.2
+        version: 2.4.2
+      atomically:
+        specifier: ^2.0.0
+        version: 2.0.0
+      classic-level:
+        specifier: ^1.2.0
+        version: 1.2.0
+      fast-xml-parser:
+        specifier: ^4.0.12
+        version: 4.0.12
+      file-type:
+        specifier: ^16.5.4
+        version: 16.5.4
+      filenamify:
+        specifier: ^5.1.1
+        version: 5.1.1
+      form-data:
+        specifier: ^3.0.1
+        version: 3.0.1
+      fs-extra:
+        specifier: ^11.1.0
+        version: 11.1.0
+      graceful-fs:
+        specifier: ^4.2.10
+        version: 4.2.10
+      http-cache-semantics:
+        specifier: ^4.1.0
+        version: 4.1.0
+      iconv-lite:
+        specifier: ^0.6.3
+        version: 0.6.3
+      jschardet:
+        specifier: ^2.3.0
+        version: 2.3.0
+      keytar:
+        specifier: ^7.9.0
+        version: 7.9.0
+      lodash.debounce:
+        specifier: ^4.0.8
+        version: 4.0.8
+      lodash.throttle:
+        specifier: ^4.1.1
+        version: 4.1.1
+      node-datachannel:
+        specifier: ^0.4.2
+        version: 0.4.2
+      node-watch:
+        specifier: ^0.7.3
+        version: 0.7.3
+      normalize-url:
+        specifier: ^7.2.0
+        version: 7.2.0
+      undici:
+        specifier: ^5.21.2
+        version: 5.21.2
+      ws:
+        specifier: 8.10.0
+        version: 8.10.0
+      yazl:
+        specifier: ^2.5.1
+        version: 2.5.1
+>>>>>>> 234315ea (refactor: Move discord rpc)
     devDependencies:
       '@types/eventsource': 1.1.10
       '@types/fs-extra': 8.1.2
@@ -544,8 +710,81 @@ importers:
     devDependencies:
       nock: 12.0.3
 
+<<<<<<< HEAD
   xmcl/packages/curseforge/http:
     specifiers: {}
+=======
+  xmcl/packages/discord-rpc:
+    dependencies:
+      discord-api-types:
+        specifier: ^0.37.39
+        version: 0.37.39
+      undici:
+        specifier: ^5.21.2
+        version: 5.21.2
+    devDependencies:
+      '@types/node':
+        specifier: ~18
+        version: 18.15.11
+      tsx:
+        specifier: ^3.12.1
+        version: 3.12.6
+
+  xmcl/packages/eslint-config:
+    dependencies:
+      '@typescript-eslint/eslint-plugin':
+        specifier: ^5.57.0
+        version: 5.57.0(@typescript-eslint/parser@5.57.0)(eslint@8.37.0)(typescript@5.0.4)
+      '@typescript-eslint/parser':
+        specifier: ^5.57.0
+        version: 5.57.0(eslint@8.37.0)(typescript@5.0.4)
+      eslint:
+        specifier: ^8.37.0
+        version: 8.37.0
+      eslint-config-standard:
+        specifier: ^17.0.0
+        version: 17.0.0(eslint-plugin-import@2.27.5)(eslint-plugin-n@15.7.0)(eslint-plugin-promise@6.1.1)(eslint@8.37.0)
+      eslint-plugin-import:
+        specifier: ^2.27.5
+        version: 2.27.5(@typescript-eslint/parser@5.57.0)(eslint@8.37.0)
+      eslint-plugin-n:
+        specifier: ^15.7.0
+        version: 15.7.0(eslint@8.37.0)
+      eslint-plugin-promise:
+        specifier: ^6.1.1
+        version: 6.1.1(eslint@8.37.0)
+      typescript:
+        specifier: ^5.0.4
+        version: 5.0.4
+
+  xmcl/packages/file-transfer:
+    dependencies:
+      '@types/http-cache-semantics':
+        specifier: ^4.0.1
+        version: 4.0.1
+      http-cache-semantics:
+        specifier: ^4.1.1
+        version: 4.1.1
+      undici:
+        specifier: ^5.21.2
+        version: 5.21.2
+    devDependencies:
+      '@types/node':
+        specifier: ~18.15.11
+        version: 18.15.11
+      '@xmcl/eslint-config':
+        specifier: workspace:^*
+        version: link:../eslint-config
+      esbuild:
+        specifier: ^0.17.16
+        version: 0.17.16
+      eslint:
+        specifier: ^8.37.0
+        version: 8.37.0
+      typescript:
+        specifier: ^5.0.4
+        version: 5.0.4
+>>>>>>> 234315ea (refactor: Move discord rpc)
 
   xmcl/packages/forge-site-parser:
     specifiers:
@@ -959,7 +1198,11 @@ packages:
       '@babel/helper-plugin-utils': 7.20.2
       debug: 4.3.4
       lodash.debounce: 4.0.8
+<<<<<<< HEAD
       resolve: 1.22.1
+=======
+      resolve: 1.22.2
+>>>>>>> 234315ea (refactor: Move discord rpc)
       semver: 6.3.0
     transitivePeerDependencies:
       - supports-color
@@ -2691,7 +2934,11 @@ packages:
       builtin-modules: 3.3.0
       deepmerge: 4.2.2
       is-module: 1.0.0
+<<<<<<< HEAD
       resolve: 1.22.1
+=======
+      resolve: 1.22.2
+>>>>>>> 234315ea (refactor: Move discord rpc)
       rollup: 2.79.1
     dev: true
 
@@ -2797,7 +3044,7 @@ packages:
     resolution: {integrity: sha512-vQnTYvy4LpSojHjKdmg4nXFI1BAiYPvZ/k3ouczZAQnbDprk1xqxJiFmFHyy8y6MuUq3slz5erNMtn6n87uVKw==}
     dependencies:
       '@types/long': 4.0.2
-      '@types/node': 18.0.1
+      '@types/node': 18.11.16
     dev: true
 
   /@types/debug/4.1.7:
@@ -2843,13 +3090,13 @@ packages:
   /@types/fs-extra/8.1.2:
     resolution: {integrity: sha512-SvSrYXfWSc7R4eqnOzbQF4TZmfpNSM9FrSWLU3EUnWBuyZqNBOrv1B1JA3byUDPUl9z4Ab3jeZG2eDdySlgNMg==}
     dependencies:
-      '@types/node': 16.18.9
+      '@types/node': 18.11.16
     dev: true
 
   /@types/fs-extra/9.0.13:
     resolution: {integrity: sha512-nEnwB++1u5lVDM2UI4c1+5R+FYaKfaAzS4OococimjVm3nQw3TuzH5UNsocrcTBbhnerblyHj4A49qXbIiZdpA==}
     dependencies:
-      '@types/node': 16.18.9
+      '@types/node': 18.11.16
     dev: true
 
   /@types/glob/7.2.0:
@@ -2857,14 +3104,14 @@ packages:
     requiresBuild: true
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 16.18.9
+      '@types/node': 18.11.16
     dev: true
     optional: true
 
   /@types/graceful-fs/4.1.5:
     resolution: {integrity: sha512-anKkLmZZ+xm4p8JWBf4hElkM4XR+EZeA2M9BAkkTldmcyDY4mbdIJnRghDJH3Ov5ooY7/UAoENtmdMSkaAd7Cw==}
     dependencies:
-      '@types/node': 16.18.9
+      '@types/node': 18.11.16
     dev: true
 
   /@types/http-cache-semantics/4.0.1:
@@ -2881,7 +3128,7 @@ packages:
   /@types/keyv/3.1.4:
     resolution: {integrity: sha512-BQ5aZNSCpj7D6K2ksrRCTmKRLEpnPvWDiLPfoGyhZ++8YtiK9d/3DBKPJgry359X/P1PfruyYwvnvwFjuEiEIg==}
     dependencies:
-      '@types/node': 16.18.9
+      '@types/node': 18.11.16
     dev: true
 
   /@types/linkify-it/3.0.2:
@@ -2910,7 +3157,7 @@ packages:
   /@types/lzma-native/4.0.1:
     resolution: {integrity: sha512-JtD+glazM3mYYjTvCa72AblFg3VuGn8neRy3lviEkTDZUQJheqZZIaIxEGNq4Faln1aSeeL1H+7X3WH1xOUHKQ==}
     dependencies:
-      '@types/node': 16.18.9
+      '@types/node': 18.11.16
     dev: true
 
   /@types/markdown-it/12.2.3:
@@ -2943,13 +3190,10 @@ packages:
 
   /@types/node/16.18.9:
     resolution: {integrity: sha512-nhrqXYxiQ+5B/tPorWum37VgAiefi/wmfJ1QZKGKKecC8/3HqcTTJD0O+VABSPwtseMMF7NCPVT9uGgwn0YqsQ==}
+    dev: true
 
   /@types/node/17.0.45:
     resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
-    dev: true
-
-  /@types/node/18.0.1:
-    resolution: {integrity: sha512-CmR8+Tsy95hhwtZBKJBs0/FFq4XX7sDZHlGGf+0q+BRZfMbOTkzkj0AFAuTyXbObDIoanaBBW0+KEW+m3N16Wg==}
     dev: true
 
   /@types/node/18.11.16:
@@ -2990,7 +3234,7 @@ packages:
   /@types/responselike/1.0.0:
     resolution: {integrity: sha512-85Y2BjiufFzaMIlvJDvTTB8Fxl2xfLo4HgmHzVBz08w4wDePCTjYw66PdrolO0kzli3yam/YCgRufyo1DdQVTA==}
     dependencies:
-      '@types/node': 16.18.9
+      '@types/node': 18.11.16
     dev: true
 
   /@types/semver/7.3.13:
@@ -3032,7 +3276,13 @@ packages:
   /@types/ws/8.5.3:
     resolution: {integrity: sha512-6YOoWjruKj1uLf3INHH7D3qTXwFfEsg1kf3c0uDdSBJwfa/llkwIjrAGV7j7mVgGNbzTQ3HiHKKDXl6bJPD97w==}
     dependencies:
-      '@types/node': 16.18.9
+      '@types/node': 18.11.16
+    dev: true
+
+  /@types/ws/8.5.4:
+    resolution: {integrity: sha512-zdQDHKUgcX/zBc4GrwsE/7dVdAD8JR4EuiAXiiUhhfyIJXXb2+PrGshFyeXWQPMmmZ2XxgaqclgpIC7eTXc1mg==}
+    dependencies:
+      '@types/node': 18.11.16
     dev: true
 
   /@types/yargs-parser/21.0.0:
@@ -3048,12 +3298,12 @@ packages:
   /@types/yauzl/2.10.0:
     resolution: {integrity: sha512-Cn6WYCm0tXv8p6k+A8PvbDG763EDpBoTzHdA+Q/MF6H3sapGjCm9NzoaJncJS9tUKSuCoDs9XHxYYsQDgxR6kw==}
     dependencies:
-      '@types/node': 16.18.9
+      '@types/node': 18.11.16
 
   /@types/yazl/2.4.2:
     resolution: {integrity: sha512-T+9JH8O2guEjXNxqmybzQ92mJUh2oCwDDMSSimZSe1P+pceZiFROZLYmcbqkzV5EUwz6VwcKXCO2S2yUpra6XQ==}
     dependencies:
-      '@types/node': 16.18.9
+      '@types/node': 18.11.16
     dev: true
 
   /@typescript-eslint/eslint-plugin/5.46.1_zdqoa5yvrbjbsji6ailcmfxryu:
@@ -3540,7 +3790,11 @@ packages:
       '@vue/shared': 3.2.47
       estree-walker: 2.0.2
       magic-string: 0.25.9
+<<<<<<< HEAD
       postcss: 8.4.20
+=======
+      postcss: 8.4.22
+>>>>>>> 234315ea (refactor: Move discord rpc)
       source-map: 0.6.1
     dev: true
 
@@ -4102,10 +4356,17 @@ packages:
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
+<<<<<<< HEAD
       caniuse-lite: 1.0.30001439
       electron-to-chromium: 1.4.284
       node-releases: 2.0.8
       update-browserslist-db: 1.0.10_browserslist@4.21.4
+=======
+      caniuse-lite: 1.0.30001480
+      electron-to-chromium: 1.4.367
+      node-releases: 2.0.10
+      update-browserslist-db: 1.0.11(browserslist@4.21.5)
+>>>>>>> 234315ea (refactor: Move discord rpc)
     dev: true
 
   /buffer-alloc-unsafe/1.1.0:
@@ -4251,8 +4512,13 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
+<<<<<<< HEAD
   /caniuse-lite/1.0.30001439:
     resolution: {integrity: sha512-1MgUzEkoMO6gKfXflStpYgZDlFM7M/ck/bgfVCACO5vnAf0fXoNVHdWtqGU+MYca+4bL9Z5bpOVmR33cWW9G2A==}
+=======
+  /caniuse-lite@1.0.30001480:
+    resolution: {integrity: sha512-q7cpoPPvZYgtyC4VaBSN0Bt+PJ4c4EYRf0DrduInOz2SkFpHD5p3LnvEpqBp7UnJn+8x1Ogl1s38saUxe+ihQQ==}
+>>>>>>> 234315ea (refactor: Move discord rpc)
     dev: true
 
   /catering/2.1.1:
@@ -4867,6 +5133,15 @@ packages:
       path-type: 4.0.0
     dev: true
 
+<<<<<<< HEAD
+  /discord-api-types/0.37.33:
+    resolution: {integrity: sha512-ZMH5RU3q1pvYS+2wGUJ5Zvy8jMGTQ4wCpbDlIQDkbIL/k6kJwBPsXnCg81g2GywlOuf0f8ezakxVSe+sZuY6ig==}
+=======
+  /discord-api-types@0.37.39:
+    resolution: {integrity: sha512-hkhQsQyzsTJITp311WXvHZh9j4RAMfIk2hPmsWeOTN50QTpg6zqmJNfel9D/8lYNvsU01wzw9281Yke8NhYyHg==}
+>>>>>>> 234315ea (refactor: Move discord rpc)
+    dev: false
+
   /dmg-builder/23.6.0:
     resolution: {integrity: sha512-jFZvY1JohyHarIAlTbfQOk+HnceGjjAdFjVn3n8xlDWKsYNqbO4muca6qXEZTfGXeQMG7TYim6CeS5XKSfSsGA==}
     dependencies:
@@ -5013,8 +5288,13 @@ packages:
       - supports-color
     dev: true
 
+<<<<<<< HEAD
   /electron-to-chromium/1.4.284:
     resolution: {integrity: sha512-M8WEXFuKXMYMVr45fo8mq0wUrrJHheiKZf6BArTKk9ZBYCKJEOU5H8cdWgDT+qCVZf7Na4lVUaZsA+h6uA9+PA==}
+=======
+  /electron-to-chromium@1.4.367:
+    resolution: {integrity: sha512-mNuDxb+HpLhPGUKrg0hSxbTjHWw8EziwkwlJNkFUj3W60ypigLDRVz04vU+VRsJPi8Gub+FDhYUpuTm9xiEwRQ==}
+>>>>>>> 234315ea (refactor: Move discord rpc)
     dev: true
 
   /electron-updater/4.6.5:
@@ -7515,7 +7795,20 @@ packages:
       picocolors: 1.0.0
       source-map-js: 1.0.2
 
+<<<<<<< HEAD
   /prebuild-install/7.1.1:
+=======
+  /postcss@8.4.22:
+    resolution: {integrity: sha512-XseknLAfRHzVWjCEtdviapiBtfLdgyzExD50Rg2ePaucEesyh8Wv4VPdW0nbyDa1ydbrAxV19jvMT4+LFmcNUA==}
+    engines: {node: ^10 || ^12 || >=14}
+    dependencies:
+      nanoid: 3.3.6
+      picocolors: 1.0.0
+      source-map-js: 1.0.2
+    dev: true
+
+  /prebuild-install@7.1.1:
+>>>>>>> 234315ea (refactor: Move discord rpc)
     resolution: {integrity: sha512-jAXscXWMcCK8GgCoHOfIr0ODh5ai8mj63L2nWrjuAgXE6tDyYGnx4/8o/rCgU+B4JSyZBKbeZqzhtwtC3ovxjw==}
     engines: {node: '>=10'}
     hasBin: true
@@ -7754,6 +8047,17 @@ packages:
       is-core-module: 2.11.0
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
+<<<<<<< HEAD
+=======
+
+  /resolve@1.22.2:
+    resolution: {integrity: sha512-Sb+mjNHOULsBv818T40qSPeRiuWLyaGMa5ewydRLFimneixmVy2zdivRl+AF6jaYPC8ERxGDmFSiqui6SfPd+g==}
+    hasBin: true
+    dependencies:
+      is-core-module: 2.12.0
+      path-parse: 1.0.7
+      supports-preserve-symlinks-flag: 1.0.0
+>>>>>>> 234315ea (refactor: Move discord rpc)
     dev: true
 
   /responselike/1.0.2:
@@ -7797,7 +8101,11 @@ packages:
       jest-worker: 26.6.2
       rollup: 2.79.1
       serialize-javascript: 4.0.0
+<<<<<<< HEAD
       terser: 5.16.1
+=======
+      terser: 5.17.0
+>>>>>>> 234315ea (refactor: Move discord rpc)
     dev: true
 
   /rollup/2.79.1:
@@ -8276,8 +8584,13 @@ packages:
       unique-string: 2.0.0
     dev: true
 
+<<<<<<< HEAD
   /terser/5.16.1:
     resolution: {integrity: sha512-xvQfyfA1ayT0qdK47zskQgRZeWLoOQ8JQ6mIgRGVNwZKdQMU+5FkCBjmv4QjcrTzyZquRw2FVtlJSRUmMKQslw==}
+=======
+  /terser@5.17.0:
+    resolution: {integrity: sha512-3die3+pYW4mta4xF6K8Wtf7id8+oYyfqtAhjwzqY01+CfDSDMx/VA1Sp8sXWs5AVNIoAKoUfmp/gnPqRjBxuDA==}
+>>>>>>> 234315ea (refactor: Move discord rpc)
     engines: {node: '>=10'}
     hasBin: true
     dependencies:

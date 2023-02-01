@@ -17,6 +17,7 @@
       >
         <v-sheet
           v-if="i === ''"
+          color="transparent"
           class="h-full flex items-center justify-center"
         >
           <v-icon left>
