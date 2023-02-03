@@ -41,6 +41,8 @@ jobs:
         BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
         NODE_ENV: production
         CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
+        CSC_LINK: ${{ secrets.CODE_SIGN_BASE64 }}
+        CSC_KEY_PASSWORD: ${{ secrets.CODE_SIGN_PWD }}
     - name: Upload Build
       uses: actions/upload-artifact@v2
       with:
@@ -105,6 +107,8 @@ jobs:
         NODE_ENV: production
         CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
         BUILD_TARGET: appx
+        CSC_LINK: ${{ secrets.CODE_SIGN_BASE64 }}
+        CSC_KEY_PASSWORD: ${{ secrets.CODE_SIGN_PWD }}
     - name: Upload Build
       uses: actions/upload-artifact@v2
       with:
@@ -275,11 +279,6 @@ jobs:
         prerelease: false
         body: ${{ steps.prepare_release.outputs.changelog }}
         asset_dir_path: ./build
-    - name: Echo sign command
-      run: |
-        echo "Please use following script to sign the app in the PC with credential!"
-        echo "pnpm --package=https://github.com/Voxelum/xmcl-release-script dlx xmcl-release-script ${{ steps.create_release.outputs.release_id }}"
-      
     - name: Checkout Website
       uses: actions/checkout@v3
       with:

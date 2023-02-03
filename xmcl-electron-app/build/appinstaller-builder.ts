@@ -1,6 +1,6 @@
 import { writeFile } from 'fs-extra'
 
-function getAppInstallerContent(version: string) {
+function getAppInstallerContent(version: string, publisher: string) {
   const result = `<?xml version="1.0" encoding="utf-8"?>
   <AppInstaller
       xmlns="http://schemas.microsoft.com/appx/appinstaller/2018"
@@ -8,7 +8,7 @@ function getAppInstallerContent(version: string) {
       Uri="https://xmcl.blob.core.windows.net/releases/xmcl.appinstaller" >
       <MainPackage
           Name="XMCL"
-          Publisher="E=cijhn@hotmail.com, CN=&quot;Open Source Developer, Hongze Xu&quot;, O=Open Source Developer, L=Beijing, C=CN"
+          Publisher="${publisher}"
           Version="${version}.0"
           ProcessorArchitecture="x64"
           Uri="https://xmcl-release-ms.azureedge.net/releases/xmcl-${version}.appx" />
@@ -19,6 +19,6 @@ function getAppInstallerContent(version: string) {
   return result.padEnd(1024, ' ')
 }
 
-export async function buildAppInstaller(version: string, destination: string) {
-  await writeFile(destination, getAppInstallerContent(version))
+export async function buildAppInstaller(version: string, destination: string, publisher: string) {
+  await writeFile(destination, getAppInstallerContent(version, publisher))
 }

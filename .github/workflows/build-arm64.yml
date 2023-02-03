@@ -1,17 +1,7 @@
 name: Build Arm64
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - 'xmcl-runtime/**'
-      - 'xmcl-runtime-api/**'
-      - 'xmcl-keystone-ui/**'
-      - 'xmcl-electron-app/**'
-      - 'package.json'
-      - 'pnpm-lock.yaml'
-      - '.github/**'
+  workflow_dispatch
 
 jobs:
   build-linux-arm64:

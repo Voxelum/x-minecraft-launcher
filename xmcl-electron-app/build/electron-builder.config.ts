@@ -1,5 +1,7 @@
 import { Configuration } from 'electron-builder'
-import { version } from '../package.json'
+import { config as dotenv } from 'dotenv'
+
+dotenv()
 
 export const config: Configuration = {
   productName: 'X Minecraft Launcher',
@@ -36,12 +38,12 @@ export const config: Configuration = {
   artifactName: 'xmcl-${version}-${platform}-${arch}.${ext}',
   appx: {
     // eslint-disable-next-line no-template-curly-in-string
-    artifactName: 'xmcl-${version}-unsigned.${ext}',
+    artifactName: 'xmcl-${version}.${ext}',
     displayName: 'X Minecraft Launcher',
     applicationId: 'CI010.XMCL',
     identityName: 'XMCL',
     backgroundColor: 'transparent',
-    publisher: 'E=cijhn@hotmail.com, CN=&quot;Open Source Developer, Hongze Xu&quot;, O=Open Source Developer, L=Beijing, C=CN',
+    publisher: process.env.APPX_PUBLISHER,
     publisherDisplayName: 'CI010',
     setBuildNumber: true,
     languages: ['en-US', 'zh-CN', 'ru'],
@@ -83,9 +85,9 @@ export const config: Configuration = {
     },
     artifactName: process.env.BUILD_TARGET === 'appx'
       // eslint-disable-next-line no-template-curly-in-string
-      ? 'xmcl-${version}-unsigned.${ext}'
+      ? 'xmcl-${version}.${ext}'
       // eslint-disable-next-line no-template-curly-in-string
-      : 'xmcl-${version}-${platform}-${arch}-unsigned.${ext}',
+      : 'xmcl-${version}-${platform}-${arch}.${ext}',
     icon: 'icons/dark.ico',
     files: [
       '**/*.cs',
