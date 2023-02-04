@@ -10,8 +10,9 @@ import LauncherApp from '../app/LauncherApp'
 import { IS_DEV } from '../constant'
 import { Logger } from '../util/log'
 import { ZipTask } from '../util/zip'
+import { filterSensitiveData } from '../util/complaince'
 
-function formatMsg(message: any, options: any[]) { return options.length !== 0 ? format(message, ...options) : format(message) }
+function formatMsg(message: any, options: any[]) { return options.length !== 0 ? format(message, ...options.map(filterSensitiveData)) : format(message) }
 function baseTransform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}`) } }) }
 
 export default class LogManager extends Manager {

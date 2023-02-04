@@ -7,27 +7,27 @@ export const pluginUndiciLogger: LauncherAppPlugin = (app) => {
 
   channel('undici:request:create').subscribe((m, name) => {
     const msg: DiagnosticsChannel.RequestCreateMessage = m as any
-    undici.log(`request:create ${msg.request.method} ${msg.request.origin}${msg.request.path} ${msg.request.headers}`)
+    undici.log(`request:create ${msg.request.method} ${msg.request.origin}${msg.request.path}`)
   })
   channel('undici:request:bodySent').subscribe((m, name) => {
     const msg: DiagnosticsChannel.RequestBodySentMessage = m as any
-    undici.log(`request:bodySent ${msg.request.method} ${msg.request.origin}${msg.request.path} ${msg.request.headers}`)
+    undici.log(`request:bodySent ${msg.request.method} ${msg.request.origin}${msg.request.path}`)
   })
   channel('undici:request:headers').subscribe((m, name) => {
     const msg: DiagnosticsChannel.RequestHeadersMessage = m as any
-    undici.log(`request:headers ${msg.request.method} ${msg.request.origin}${msg.request.path} ${msg.request.headers} ${msg.response.statusCode} ${msg.response.headers}`)
+    undici.log(`request:headers ${msg.request.method} ${msg.request.origin}${msg.request.path} ${msg.response.statusCode} ${msg.response.headers}`)
   })
   channel('undici:request:trailers').subscribe((m, name) => {
     const msg = m as DiagnosticsChannel.RequestTrailersMessage
-    undici.log(`request:trailers ${msg.request.method} ${msg.request.origin}${msg.request.path} ${msg.request.headers} ${msg.trailers}`)
+    undici.log(`request:trailers ${msg.request.method} ${msg.request.origin}${msg.request.path} ${msg.trailers}`)
   })
   channel('undici:request:error').subscribe((m, name) => {
     const msg = m as DiagnosticsChannel.RequestErrorMessage
-    undici.error(`request:error ${msg.request.method} ${msg.request.origin}${msg.request.path} ${msg.request.headers}: %O`, msg.error)
+    undici.error(`request:error ${msg.request.method} ${msg.request.origin}${msg.request.path}: %O`, msg.error)
   })
   channel('undici:client:sendHeaders').subscribe((m, name) => {
     const msg: DiagnosticsChannel.ClientSendHeadersMessage = m as any
-    undici.log(`client:sendHeaders ${msg.request.method} ${msg.request.origin}${msg.request.path} ${msg.request.headers} ${msg.socket.remoteAddress}`)
+    undici.log(`client:sendHeaders ${msg.request.method} ${msg.request.origin}${msg.request.path} ${msg.socket.remoteAddress}`)
   })
   channel('undici:client:beforeConnect').subscribe((msg, name) => {
     const m = msg as DiagnosticsChannel.ClientBeforeConnectMessage
