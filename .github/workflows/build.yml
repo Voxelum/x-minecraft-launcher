@@ -34,6 +34,7 @@ jobs:
     - name: Install
       run: pnpm install --filter=!./xmcl-page
     - name: Build
+      if: ${{ runner.os != 'Windows' }} 
       run: |
         pnpm run --prefix xmcl-keystone-ui build
         pnpm run --prefix xmcl-electron-app build:all
@@ -41,8 +42,9 @@ jobs:
         BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
         NODE_ENV: production
         CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
-        CSC_LINK: ${{ secrets.CODE_SIGN_BASE64 }}
-        CSC_KEY_PASSWORD: ${{ secrets.CODE_SIGN_PWD }}
+        WIN_CSC_LINK: ${{ secrets.CODE_SIGN_BASE64 }}
+        APPX_PUBLISHER: ${{ secrets.APPX_PUBLISHER }}
+        WIN_CSC_KEY_PASSWORD: ${{ secrets.CODE_SIGN_PWD }}
     - name: Upload Build
       uses: actions/upload-artifact@v2
       with:
@@ -107,6 +109,7 @@ jobs:
         NODE_ENV: production
         CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
         BUILD_TARGET: appx
+        APPX_PUBLISHER: ${{ secrets.APPX_PUBLISHER }}
         CSC_LINK: ${{ secrets.CODE_SIGN_BASE64 }}
         CSC_KEY_PASSWORD: ${{ secrets.CODE_SIGN_PWD }}
     - name: Upload Build

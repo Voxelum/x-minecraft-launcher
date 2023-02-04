@@ -3,7 +3,7 @@ import { config as dotenv } from 'dotenv'
 
 dotenv()
 
-export const config: Configuration = {
+export const config = {
   productName: 'X Minecraft Launcher',
   appId: 'xmcl',
   directories: {
@@ -43,7 +43,7 @@ export const config: Configuration = {
     applicationId: 'CI010.XMCL',
     identityName: 'XMCL',
     backgroundColor: 'transparent',
-    publisher: process.env.APPX_PUBLISHER,
+    publisher: process.env.APPX_PUBLISHER ? Buffer.from(process.env.APPX_PUBLISHER!, 'base64').toString('utf8') : undefined,
     publisherDisplayName: 'CI010',
     setBuildNumber: true,
     languages: ['en-US', 'zh-CN', 'ru'],
@@ -83,6 +83,7 @@ export const config: Configuration = {
       to: '.',
       filter: '*.dll',
     },
+    certificateFile: undefined as string | undefined,
     artifactName: process.env.BUILD_TARGET === 'appx'
       // eslint-disable-next-line no-template-curly-in-string
       ? 'xmcl-${version}.${ext}'
@@ -127,4 +128,5 @@ export const config: Configuration = {
       'github',
     ],
   },
-}
+} satisfies Configuration
+
