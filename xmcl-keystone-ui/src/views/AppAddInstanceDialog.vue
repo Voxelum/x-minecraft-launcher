@@ -111,6 +111,7 @@ import { CreateOptionKey, useInstanceCreation } from '../composables/instanceCre
 import { useNotifier } from '../composables/notifier'
 
 import { useRefreshable, useService } from '@/composables'
+import { getFTBPath } from '@/util/ftb'
 
 const { isShown, parameter, show: showAddInstance } = useDialog(AddInstanceDialogKey)
 const { show } = useDialog('task')
@@ -161,7 +162,7 @@ const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
         await installInstanceFiles({
           path,
           files: template.source.manifest.files.map(f => ({
-            path: f.path + '/' + f.name,
+            path: getFTBPath(f),
             hashes: {
               sha1: f.sha1,
             },

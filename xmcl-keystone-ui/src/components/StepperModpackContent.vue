@@ -17,6 +17,7 @@ import { InstanceFileNode, provideFileNodes } from '../composables/instanceFiles
 import InstanceManifestFileTree from './InstanceManifestFileTree.vue'
 import StepperModpackContentCurseforge from './StepperModpackContentCurseforge.vue'
 import { basename } from '@/util/basename'
+import { getFTBPath } from '@/util/ftb'
 
 const props = defineProps<{
   modpack?: Template
@@ -32,7 +33,7 @@ const modrinthFiles = computed(() => props.modpack?.source.type === 'modrinth' ?
 provideFileNodes(computed(() => {
   function getFTBNode(file: FTBFile): InstanceFileNode {
     return {
-      id: file.path.replace('./', '') + file.name,
+      id: getFTBPath(file),
       name: file.name,
       size: file.size,
     }
