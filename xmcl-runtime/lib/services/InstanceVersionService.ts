@@ -38,10 +38,14 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
         try {
           this.fixingAll = true
           const { minecraft, forge, fabricLoader, optifine, quiltLoader } = issue
-          const version = await this.installRuntime({ minecraft, forge, fabricLoader, optifine, quiltLoader })
-          if (version) {
-            await this.versionService.refreshVersion(version)
-            await this.installService.installDependencies(version)
+          try {
+            const version = await this.installRuntime({ minecraft, forge, fabricLoader, optifine, quiltLoader })
+            if (version) {
+              await this.versionService.refreshVersion(version)
+              await this.installService.installDependencies(version)
+            }
+          } catch (e) {
+            this.warn('Fail to fix version issue %o', e)
           }
         } finally {
           this.fixingAll = false
@@ -83,7 +87,6 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
           if (quiltLoader) {
             await installService.installQuiltUnsafe({ version: quiltLoader, minecraftVersion: minecraft })
           }
-          // TODO: check liteloader
         } else {
           this.emit('error', new InstanceVersionException({ type: 'fixVersionNoVersionMetadata', minecraft }))
         }

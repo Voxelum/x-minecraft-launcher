@@ -227,11 +227,17 @@ edit: Edit
 error:
   name: Error | Errors
 errors:
+  BadForgeInstallerJarError: >-
+    Cannot parse forge installer jar file. Maybe the forge has new installer
+    file format? Contact developers if this issue persisted.
   BodyTimeoutError: HTTP Body timeout
   ChecksumNotMatchError: Checksum not matched! Expect {expect}. Actual {actual}.
   ConnectTimeoutError: Connection timeout to server.
   DNSNotFoundError: DNS lookup error
   DownloadAggregateError: Fail to download file.
+  DownloadFileSystemError: >-
+    Error during accessing the download file path. Please ensure the launcher
+    has permission to write on it.
   HeadersTimeoutError: HTTP Header timeout
   SocketError: Server socket error
 exception:
@@ -777,9 +783,10 @@ multiplayer:
     "Please copy the local SDP text and send it to your object to have your
     object enter this text in the join connection <span>A token can be only used
     for <span style="color: red; font-weight: bold;">one peer</span>! You cannot
-    send the same token to multiple peer!</span> <br> <span class="hint-text" style="font-style: italic;">If you need to connect multiple
-    peers, you need to create <span style="font-weight: bold; color: rgba(245,
-    158, 11)">multiple</span> connections.</span>"
+    send the same token to multiple peer!</span> <br> <span class="hint-text"
+    style="font-style: italic;">If you need to connect multiple peers, you need
+    to create <span style="font-weight: bold; color: rgba(245, 158,
+    11)">multiple</span> connections.</span>"
   createGroup: ''
   createLocalToken: Create Local Token
   currentIpTitle: Detectd Public IP

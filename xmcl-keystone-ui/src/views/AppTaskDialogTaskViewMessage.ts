@@ -14,6 +14,7 @@ export default defineComponent({
     const tError = useLocaleError()
     return () => {
       const resolve = (m: any) => {
+        markRaw(m)
         if (m.name === 'DownloadAggregateError') {
           return h('div', [
             h('div', [
@@ -82,6 +83,19 @@ export default defineComponent({
         }
         if (m.name === 'Error' && typeof m.message === 'string') {
           return h('div', m.message)
+        }
+        if (m.name === 'BadForgeInstallerJarError') {
+          return h('div', [
+            h('div', ['🔗 ', h('a', { attrs: { href: `file:///${m.jarPath}` } }, m.jarPath)]),
+            h('div', t('errors.BadForgeInstallerJarError')),
+          ])
+        }
+        if (m.name === 'DownloadFileSystemError') {
+          return h('div', [
+            h('div', ['🔗 ', h('a', { attrs: { href: `file:///${m.destination}` } }, m.destination)]),
+            h('div', t('errors.DownloadFileSystemError')),
+            m.message,
+          ])
         }
         return h('div', m.name)
       }

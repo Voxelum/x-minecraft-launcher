@@ -255,10 +255,12 @@ download: 下载
 downloadCount: '{count} 次下载'
 edit: 编辑
 errors:
+  BadForgeInstallerJarError: 无法解析 Forge 安装包 jar 文件。也许 Forge 有了新的安装包格式？如果经常遇到这个问题，请联系开发团队。
   BodyTimeoutError: 等待 HTTP 数据超时
   ChecksumNotMatchError: 文件校验失败！期望哈希值是 {expect}，实际获取到的是 {actual}。
   ConnectTimeoutError: 与服务器建立连接超时
   DownloadAggregateError: 下载文件失败。
+  DownloadFileSystemError: 无法访问下载目标路径，请确认启动器有权写入目标路径。
   HeadersTimeoutError: 等待 HTTP 头信息超时
   SocketError: 与服务器连接被断开
 exception:
@@ -790,9 +792,8 @@ multiplayer:
   copyLocalHint: >
     <span>一段令牌只能用<span style="color: red;
     font-weight:bold;">一次</span>！你不能将一个令牌发送给多个小伙伴！</span> <br> <span
-    class="hint-text" style="font-style:
-    italic;">如果有多个小伙伴要加入你需要<span style="font-weight: bold; color: rgba(245, 158,
-    11)">多次</span>建立连接。</span>
+    class="hint-text" style="font-style: italic;">如果有多个小伙伴要加入你需要<span
+    style="font-weight: bold; color: rgba(245, 158, 11)">多次</span>建立连接。</span>
   createGroup: ''
   createLocalToken: 创建本地令牌
   currentIpTitle: 检测到公网 IP

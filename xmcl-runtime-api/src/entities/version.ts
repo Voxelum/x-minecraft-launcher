@@ -318,7 +318,7 @@ export function isSameForgeVersion(forgeVersion: string, version: string, minecr
   if (i === -1) {
     return forgeVersion === version
   }
-  return forgeVersion === version.substring(i + 1)
+  return forgeVersion === version.substring(i + 1) || forgeVersion === version.substring(0, i)
 }
 export function isSameOptifineVersion(optifineVersion: string, version: string) {
   const i = version.indexOf('_')

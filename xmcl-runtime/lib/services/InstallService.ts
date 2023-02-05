@@ -538,6 +538,7 @@ export class InstallService extends AbstractService implements IInstallService {
         version = await this.submit(installForgeTask(options, this.getPath(), {
           ...installOptions,
           java: java.path,
+          inheritsFrom: options.mcversion,
         }).setName('installForge', { id: options.version }))
         this.log(`Success to install forge ${options.version} on ${options.mcversion}`)
         break
@@ -549,7 +550,7 @@ export class InstallService extends AbstractService implements IInstallService {
         }
         this.warn(`An error ocurred during download version ${options.version}@${options.mcversion}`)
         this.warn(err)
-        break
+        throw err
       }
     }
     return version
