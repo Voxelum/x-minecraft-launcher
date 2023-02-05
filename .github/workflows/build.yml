@@ -34,7 +34,6 @@ jobs:
     - name: Install
       run: pnpm install --filter=!./xmcl-page
     - name: Build
-      if: ${{ runner.os != 'Windows' }} 
       run: |
         pnpm run --prefix xmcl-keystone-ui build
         pnpm run --prefix xmcl-electron-app build:all
