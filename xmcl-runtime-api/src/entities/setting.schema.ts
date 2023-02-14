@@ -100,4 +100,8 @@ export interface SettingSchema {
    * @default true
    */
   discordPresence: boolean
+  /**
+   * @default false
+   */
+  developerMode: boolean
 }
