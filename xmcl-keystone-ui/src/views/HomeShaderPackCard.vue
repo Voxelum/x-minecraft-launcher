@@ -1,5 +1,6 @@
 <template>
   <v-card
+    :color="cardColor"
     class="flex flex-col h-full"
   >
     <v-card-title>
@@ -29,8 +30,11 @@
 <script lang="ts" setup>
 import { InstanceModsServiceKey, InstanceOptionsServiceKey } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
+import { injection } from '@/util/inject'
+import { kColorTheme } from '@/composables/colorTheme'
 
 const { state } = useService(InstanceOptionsServiceKey)
+const { cardColor } = injection(kColorTheme)
 const shaderPack = computed(() => state.shaderoptions.shaderPack)
 const { t } = useI18n()
 const { push } = useRouter()

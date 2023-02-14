@@ -13,8 +13,8 @@ export function useColorTheme() {
   const darkAppBarColor = useLocalStorageCacheStringValue<string>('darkAppBarColor', '#111111FF')
   const darkSideBarColor = useLocalStorageCacheStringValue<string>('darkSideBarColor', '#111111FF')
 
-  const darkCardColor = useLocalStorageCacheStringValue<string>('darkAppBarColor', '#0c0c0ccc')
-  const lightCardColor = useLocalStorageCacheStringValue<string>('darkAppBarColor', '#111111FF')
+  const darkCardColor = useLocalStorageCacheStringValue<string>('darkCardColor', '#0c0c0ccc')
+  const lightCardColor = useLocalStorageCacheStringValue<string>('darkCardColor', '#111111FF')
 
   const darkPrimaryColor = useLocalStorageCacheStringValue<string>('darkPrimaryColor', '#4caf50')
   const darkBackground = useLocalStorageCacheStringValue<string>('darkBackground', '#121212')
@@ -103,6 +103,16 @@ export function useColorTheme() {
       }
     },
   })
+  const cardColor = computed({
+    get: () => darkTheme.value ? darkCardColor.value : lightCardColor.value,
+    set: (v: string) => {
+      if (darkTheme.value) {
+        darkCardColor.value = v
+      } else {
+        lightCardColor.value = v
+      }
+    },
+  })
   const successColor = computed({
     get: () => darkTheme.value ? darkSuccessColor.value : lightSuccessColor.value,
     set: (v: string) => {
@@ -134,6 +144,7 @@ export function useColorTheme() {
     darkWarningColor.value = '#FB8C00'
     darkSuccessColor.value = '#4CAF50'
     darkAccentColor.value = '#00e676'
+    darkCardColor.value = '#0c0c0ccc'
   }
 
   function resetLightToDefault() {
@@ -146,6 +157,7 @@ export function useColorTheme() {
     lightWarningColor.value = '#FB8C00'
     lightSuccessColor.value = '#4CAF50'
     lightAccentColor.value = '#82B1FF'
+    lightCardColor.value = '#111111FF'
   }
 
   function resetToDefault() {
@@ -169,5 +181,6 @@ export function useColorTheme() {
     backgroundColor,
     successColor,
     infoColor,
+    cardColor,
   }
 }
