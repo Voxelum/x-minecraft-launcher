@@ -66,6 +66,10 @@ export function useSettings() {
     get: () => state.httpProxyEnabled,
     set: v => state.httpProxyEnabledSet(v),
   })
+  const developerMode = computed({
+    get: () => state.developerMode,
+    set: v => state.developerModeSet(v),
+  })
   const apiSets = computed(() => state.apiSets)
 
   onMounted(() => {
@@ -96,6 +100,7 @@ export function useSettings() {
 
   return {
     root,
+    developerMode,
     httpProxyEnabled,
     maxSockets,
     maxAPISockets,

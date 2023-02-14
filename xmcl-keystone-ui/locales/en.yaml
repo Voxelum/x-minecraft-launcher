@@ -1046,6 +1046,8 @@ setting:
     warningColor: Warning Color
   darkTheme: Theme
   darkThemeDescription: Choose the dark or light theme
+  developerMode: Developer Mode
+  developerModeDescription: Developer Mode is targeting to test your own written mod
   general: General
   githubRelease: Github Release
   globalSetting: Global Instance Setting

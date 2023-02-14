@@ -18,6 +18,7 @@ export class BaseState implements SettingSchema {
   globalHideLauncher = false
   globalShowLog = false
   discordPresence = false
+  developerMode = false
 
   locale = ''
 
@@ -101,6 +102,11 @@ export class BaseState implements SettingSchema {
     this.globalHideLauncher = config.globalHideLauncher
     this.globalShowLog = config.globalShowLog
     this.discordPresence = config.discordPresence
+    this.developerMode = config.developerMode
+  }
+
+  developerModeSet(developerMode: boolean) {
+    this.developerMode = developerMode
   }
 
   discordPresenceSet(presence: boolean) {

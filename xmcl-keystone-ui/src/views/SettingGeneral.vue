@@ -152,6 +152,23 @@
         />
       </v-list-item-action>
     </v-list-item>
+    <v-list-item>
+      <v-list-item-action class="self-center">
+        <v-checkbox v-model="developerMode" />
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{
+            t("setting.developerMode")
+          }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          {{
+            t("setting.developerModeDescription")
+          }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
   </v-list>
 </template>
 <script lang="ts" setup>
@@ -165,6 +182,7 @@ const { openDirectory } = useService(BaseServiceKey)
 const {
   root,
   proxy, httpProxyEnabled, apiSets, allowPrerelease,
+  developerMode,
   apiSetsPreference,
   selectedLocale,
   maxSockets,

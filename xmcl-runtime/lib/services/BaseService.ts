@@ -49,6 +49,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
       'maxSocketsSet',
       'discordPresenceSet',
       'globalInstanceSetting',
+      'developerModeSet',
     ], () => {
       this.settingFile.write({
         locale: this.state.locale,
@@ -70,6 +71,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
         globalHideLauncher: this.state.globalHideLauncher,
         globalShowLog: this.state.globalShowLog,
         discordPresence: this.state.discordPresence,
+        developerMode: this.state.developerMode,
       })
     })
   }
