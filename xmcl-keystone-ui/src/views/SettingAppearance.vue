@@ -116,6 +116,15 @@
         />
       </v-list-item-action>
       <v-list-item-action
+        primary
+        class="ml-[16px]"
+      >
+        <SettingAppearanceColor
+          v-model="cardColor"
+          :text="t('setting.colorTheme.cardColor')"
+        />
+      </v-list-item-action>
+      <v-list-item-action
         secondary
         class="ml-[16px]"
       >
@@ -404,7 +413,7 @@ const { showOpenDialog } = windowController
 const { t } = useI18n()
 const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, setBackgroundVideo, backgroundVideo } = useBackground()
 const { blurSidebar, blurAppBar } = useBarBlur()
-const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, backgroundColor, resetToDefault } = injection(kColorTheme)
+const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault } = injection(kColorTheme)
 const { state } = useService(BaseServiceKey)
 
 const layout = injection(kUILayout)

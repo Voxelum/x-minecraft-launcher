@@ -1,5 +1,8 @@
 <template>
-  <v-card class="flex flex-col h-full">
+  <v-card
+    class="flex flex-col h-full"
+    :color="cardColor"
+  >
     <v-card-title>
       <v-icon left>
         {{ icon }}
@@ -50,8 +53,10 @@
   </v-card>
 </template>
 <script lang="ts" setup>
+import { kColorTheme, useColorTheme } from '@/composables/colorTheme'
 import { kSharedTooltip } from '@/composables/sharedTooltip'
 import { getColor } from '@/util/color'
+import { injection } from '@/util/inject'
 
 defineProps<{
   icon?: string
@@ -62,6 +67,7 @@ defineProps<{
   icons: Array<{ name: string; icon?: string; color?: string }>
 }>()
 const emit = defineEmits(['navigate'])
+const { cardColor } = injection(kColorTheme)
 const tooltip = inject(kSharedTooltip)
 const onEnter = tooltip?.onEnter || (() => { })
 const onLeave = tooltip?.onLeave || (() => { })

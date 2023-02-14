@@ -3,6 +3,7 @@
     v-draggable-card
     v-selectable-card
     v-context-menu="contextMenuItems"
+    :color="cardColor"
     outlined
     hover
     :draggable="!pack.enabled && pack.path"
@@ -80,6 +81,8 @@ import { ShaderPackItem } from '../composables/shaderpack'
 import { vContextMenu } from '../directives/contextMenu'
 import { vFallbackImg } from '../directives/fallbackImage'
 import { vDraggableCard, vSelectableCard } from '../directives/draggableCard'
+import { injection } from '@/util/inject'
+import { kColorTheme } from '@/composables/colorTheme'
 
 const props = defineProps<{ pack: ShaderPackItem }>()
 const emit = defineEmits(['update:name', 'enable', 'tags', 'select', 'dragstart', 'dragend', 'delete'])
@@ -89,6 +92,7 @@ const { showItemInDirectory } = useService(BaseServiceKey)
 
 const builtin = computed(() => props.pack.value === 'OFF' || props.pack.value === '(internal)')
 const { createTag, editTag, removeTag: onRemoveTag } = useTags(computed({ get() { return props.pack.tags }, set(v) { emit('tags', v) } }))
+const { cardColor } = injection(kColorTheme)
 const contextMenuItems = computed(() => {
   if (builtin.value) {
     return []
