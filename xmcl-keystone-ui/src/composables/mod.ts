@@ -1,9 +1,8 @@
 import { useRefreshable, useService } from '@/composables'
 import { isStringArrayEquals } from '@/util/equal'
-import { getModDependencies, ModDependencies } from '@/util/modDependencies'
+import { getModDependencies, getModProvides, ModDependencies } from '@/util/modDependencies'
 import { InstanceJavaServiceKey, InstanceModsServiceKey, InstanceServiceKey, isModResource, isPersistedResource, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import { computed, InjectionKey, ref, Ref, watch } from 'vue'
-import { kMods, useMods } from './mods'
 
 export const kModsContext: InjectionKey<{
   /**
@@ -84,7 +83,7 @@ export interface ModItem {
 export function useInstanceMods() {
   const { state, enable, disable } = useService(InstanceModsServiceKey)
   const { updateResources } = useService(ResourceServiceKey)
-  const { install, uninstall, showDirectory } = useService(InstanceModsServiceKey)
+  const { showDirectory } = useService(InstanceModsServiceKey)
   const { state: javaState } = useService(InstanceJavaServiceKey)
   const { state: instanceState } = useService(InstanceServiceKey)
 
@@ -181,6 +180,7 @@ export function useInstanceMods() {
   function getModItemFromModResource(resource: Resource): ModItem {
     const isPersisted = isPersistedResource(resource)
     const dependencies = markRaw(getModDependencies(resource))
+    const provideRuntime = markRaw(getModProvides(resource))
     const modItem: ModItem = ({
       path: resource.path,
       id: '',
@@ -188,7 +188,7 @@ export function useInstanceMods() {
       version: '',
       modLoaders: markRaw([]),
       description: '',
-      provideRuntime: markRaw({}),
+      provideRuntime,
       icon: resource.icons?.at(-1) ?? '',
       dependencies,
       url: getUrl(resource),
@@ -219,46 +219,24 @@ export function useInstanceMods() {
       modItem.name = meta.name
       modItem.version = meta.version
       modItem.description = meta.description
-      modItem.provideRuntime[meta.modid] = meta.version
     } else if (resource.metadata.fabric) {
       const meta = resource.metadata.fabric instanceof Array ? resource.metadata.fabric[0] : resource.metadata.fabric
       modItem.id = meta.id
       modItem.version = meta.version
       modItem.name = meta.name ?? meta.id
       modItem.description = meta.description ?? ''
-
-      if (resource.metadata.fabric instanceof Array) {
-        for (const mod of resource.metadata.fabric) {
-          modItem.provideRuntime[mod.id] = mod.version
-          if (mod.provides) {
-            for (const alias of mod.provides) {
-              modItem.provideRuntime[alias] = mod.version
-            }
-          }
-        }
-      } else {
-        const mod = resource.metadata.fabric
-        modItem.provideRuntime[resource.metadata.fabric.id] = mod.version
-        if (mod.provides) {
-          for (const alias of mod.provides) {
-            modItem.provideRuntime[alias] = mod.version
-          }
-        }
-      }
     } else if (resource.metadata.liteloader) {
       const meta = resource.metadata.liteloader
       modItem.name = meta.name
       modItem.version = meta.version ?? ''
       modItem.id = `${meta.name}`
       modItem.description = modItem.description ?? ''
-      modItem.provideRuntime[meta.name] = meta.version ?? ''
     } else if (resource.metadata.quilt) {
       const meta = resource.metadata.quilt
       modItem.id = meta.quilt_loader.id
       modItem.version = meta.quilt_loader.version
       modItem.name = meta.quilt_loader.metadata?.name ?? meta.quilt_loader.id
       modItem.description = meta.quilt_loader.metadata?.description ?? ''
-      modItem.provideRuntime[meta.quilt_loader.id] = meta.quilt_loader.version
     } else {
       modItem.name = resource.fileName
     }

@@ -1,10 +1,10 @@
+import Router from 'vue-router'
 import BaseSetting from '@/views/BaseSetting.vue'
 import Curseforge from '@/views/Curseforge.vue'
 import CurseforgeProject from '@/views/CurseforgeProject.vue'
 import FeedTheBeast from '@/views/FeedTheBeast.vue'
 import FeedTheBeastProject from '@/views/FeedTheBeastProject.vue'
-import InstallResource from '@/views/InstallResource.vue'
-import Router from 'vue-router'
+import ModInstall from '@/views/ModInstall.vue'
 // import GameSetting from '@/views/GameSetting.vue'
 import Home from '@/views/Home.vue'
 import Me from '@/views/Me.vue'
@@ -41,10 +41,6 @@ export const createRouter = () => {
         component: User,
       },
       {
-        path: '/install',
-        component: InstallResource,
-      },
-      {
         path: '/save',
         component: Save,
       },
@@ -59,6 +55,10 @@ export const createRouter = () => {
       {
         path: '/mod-add',
         component: ModAdd,
+      },
+      {
+        path: '/mod-install',
+        component: ModInstall,
       },
       // {
       //   path: '/game-setting',
