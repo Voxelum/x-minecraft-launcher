@@ -82,6 +82,7 @@ import Setup from '@/views/Setup.vue'
 import { useAllServices } from './services'
 import ImageDialog from '@/components/ImageDialog.vue'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
+import { kModInstallList, useModInstallList } from '@/composables/modInstallList'
 
 const colorTheme = useColorTheme()
 const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = colorTheme
@@ -121,6 +122,7 @@ useExternalRoute()
 provide(kUILayout, useUILayout())
 provide(kModpacks, useModpacks())
 provide(kImageDialog, useImageDialog())
+provide(kModInstallList, useModInstallList())
 
 </script>
 

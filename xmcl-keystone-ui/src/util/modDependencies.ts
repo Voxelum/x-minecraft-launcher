@@ -1,5 +1,5 @@
 import { ForgeModMetadata } from '@xmcl/mod-parser'
-import { FabricResource, ForgeResource, isFabricResource, isForgeResource, Resource } from '@xmcl/runtime-api/src/entities/resource'
+import { FabricResource, ForgeResource, isFabricResource, isForgeResource, isLiteloaderResource, isQuiltResource, Resource } from '@xmcl/runtime-api'
 
 export type ModDependencies = ModDependency[]
 
@@ -102,4 +102,38 @@ export function getModDependencies(resource: Resource): ModDependencies {
     return getFabricModDependencies(resource)
   }
   return []
+}
+
+export function getModProvides(resource: Resource) {
+  const runtime: Record<string, string> = {}
+  if (isForgeResource(resource)) {
+    const meta = resource.metadata.forge
+    runtime[meta.modid] = meta.version
+  } else if (isFabricResource(resource)) {
+    const fabric = resource.metadata.fabric
+    if (fabric instanceof Array) {
+      for (const mod of fabric) {
+        runtime[mod.id] = mod.version
+        if (mod.provides) {
+          for (const alias of mod.provides) {
+            runtime[alias] = mod.version
+          }
+        }
+      }
+    } else {
+      runtime[fabric.id] = fabric.version
+      if (fabric.provides) {
+        for (const alias of fabric.provides) {
+          runtime[alias] = fabric.version
+        }
+      }
+    }
+  } else if (isLiteloaderResource(resource)) {
+    const meta = resource.metadata.liteloader
+    runtime[meta.name] = meta.version ?? ''
+  } else if (isQuiltResource(resource)) {
+    const meta = resource.metadata.quilt
+    runtime[meta.quilt_loader.id] = meta.quilt_loader.version
+  }
+  return runtime
 }

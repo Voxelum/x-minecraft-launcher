@@ -45,35 +45,7 @@
         />
 
         <div class="flex-grow" />
-        <v-menu offset-y>
-          <template #activator="{ on }">
-            <v-btn
-              icon
-              v-on="on"
-            >
-              <v-icon>
-                shopping_cart
-              </v-icon>
-            </v-btn>
-          </template>
-          <v-sheet
-            color="black"
-            class="p-2"
-          >
-            <div class="flex">
-              <v-btn text>
-                Pending
-              </v-btn>
-              <div class="flex-grow" />
-            </div>
-
-            <v-list class="overflow-auto max-h-100 rounded-lg">
-              <v-list-item>
-                <v-list-item-title>123123</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-sheet>
-        </v-menu>
+        <ModAddMenu />
       </div>
       <div
         class="flex flex-shrink flex-grow-0 items-center justify-center gap-2"
@@ -86,7 +58,7 @@
             <v-icon left>
               all_inclusive
             </v-icon>
-            All
+            {{ t('modSearchType.all') }}
             <div
               class="v-badge__badge primary static ml-1 w-[unset]"
             >
@@ -97,7 +69,7 @@
             <v-icon left>
               storage
             </v-icon>
-            Local
+            {{ t('modSearchType.local') }}
             <div
               class="v-badge__badge primary static ml-1 w-[unset]"
             >
@@ -174,21 +146,21 @@
             :hint="selected.modrinth"
             :loader="forge ? 'forge' : fabricLoader ? 'fabric' : ''"
             :minecraft="minecraft"
-            @install="onInstallModrinth"
+            @install="onInstallModrinth($event, selected)"
           />
           <ModAddCurseforgeDetail
             v-else-if="selected.curseforge"
             :mod="selected.curseforge"
             :loader="forge ? 'forge' : fabricLoader ? 'fabric' : ''"
             :minecraft="minecraft"
-            @install="onInstallCurseforge"
+            @install="onInstallCurseforge($event, selected)"
           />
           <ModAddResourceDetail
             v-else-if="selected.resource"
             :resources="selected.resource"
             :loader="forge ? 'forge' : fabricLoader ? 'fabric' : ''"
             :minecraft="minecraft"
-            @install="onInstallResource"
+            @install="onInstallResource($event, selected)"
           />
         </template>
       </div>
@@ -200,15 +172,19 @@
 import AvatarChip from '@/components/AvatarChip.vue'
 import { useDrop, useService } from '@/composables'
 import { useInstanceVersionBase } from '@/composables/instance'
+import { kModInstallList } from '@/composables/modInstallList'
+import { kMods, useMods } from '@/composables/mods'
 import { useModsSearch } from '@/composables/modSearch'
 import { kSharedTooltip, useSharedTooltip } from '@/composables/sharedTooltip'
+import { injection } from '@/util/inject'
 import { CompatibleDetail } from '@/util/modCompatible'
 import { getDiceCoefficient } from '@/util/sort'
-import { Mod } from '@xmcl/curseforge'
-import { Project, SearchResultHit } from '@xmcl/modrinth'
+import { File, Mod } from '@xmcl/curseforge'
+import { ProjectVersion, SearchResultHit } from '@xmcl/modrinth'
 import { Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import SharedTooltip from '../components/SharedTooltip.vue'
 import ModAddCurseforgeDetail from './ModAddCurseforgeDetail.vue'
+import ModAddMenu from './ModAddMenu.vue'
 import ModAddModrinthDetail from './ModAddModrinthDetail.vue'
 import ModAddResourceDetail from './ModAddResourceDetail.vue'
 
@@ -227,6 +203,8 @@ const { importResources } = useService(ResourceServiceKey)
 const tab = ref(0)
 const keyword = ref('')
 const { minecraft, forge, fabricLoader, quiltLoader } = useInstanceVersionBase()
+
+provide(kMods, useMods())
 
 const {
   modrinth, modrinthError, loadingModrinth,
@@ -316,16 +294,18 @@ provide(kSharedTooltip, useSharedTooltip<CompatibleDetail>((dep) => {
   return compatibleText + t('mod.acceptVersion', { version: dep.requirements }) + ', ' + t('mod.currentVersion', { current: dep.version || '⭕' }) + '.'
 }))
 
-const onInstallResource = (resource: Resource) => {
+const { add } = injection(kModInstallList)
 
+const onInstallResource = (resource: Resource, item: ModListItem) => {
+  add(resource, { icon: item.icon, name: item.title })
 }
 
-const onInstallCurseforge = (mod: Mod) => {
-
+const onInstallCurseforge = (mod: File, item: ModListItem) => {
+  add(mod, { icon: item.icon, name: item.title })
 }
 
-const onInstallModrinth = (project: Project) => {
-
+const onInstallModrinth = (project: ProjectVersion, item: ModListItem) => {
+  add(project, { icon: item.icon, name: item.title })
 }
 
 const { t } = useI18n()

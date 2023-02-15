@@ -20,7 +20,7 @@
         v-for="v of versions"
         :key="v.id"
         :source="v"
-        @install=""
+        @install="emit('install', v)"
       />
     </v-list>
     <v-skeleton-loader

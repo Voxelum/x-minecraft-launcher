@@ -587,6 +587,9 @@ mod:
   showInModrinth: Show {name} in Modrinth
   showIncompatible: Show Incompatible Mods
   unselected: Unselected Mods
+modSearchType:
+  all: All
+  local: Local
 modpack:
   author: Author Name
   authorHint: This might be used to sign on exported modpack (Curseforge)

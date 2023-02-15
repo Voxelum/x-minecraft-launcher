@@ -598,6 +598,9 @@ mod:
   showInModrinth: 在 Modrinth 中显示 {name}
   showIncompatible: 显示不兼容 Mods
   unselected: 未选 Mods
+modSearchType:
+  all: 所有
+  local: 本地
 modpack:
   author: 署名
   authorHint: 这个游戏/整合包的制作人
