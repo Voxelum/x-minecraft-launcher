@@ -1,7 +1,8 @@
 import { Persisted, Resource } from '@xmcl/runtime-api'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
-import { ensureFile, rename, stat } from 'fs-extra'
+import { ensureFile } from 'fs-extra/esm'
+import { rename, stat } from 'fs/promises'
 import { basename, dirname, extname, join } from 'path'
 import { linkOrCopy } from '../util/fs'
 

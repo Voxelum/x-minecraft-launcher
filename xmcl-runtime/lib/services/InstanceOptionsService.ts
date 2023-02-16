@@ -1,6 +1,7 @@
 import { Frame, parse } from '@xmcl/gamesetting'
 import { compareRelease, compareSnapshot, EditGameSettingOptions, EditShaderOptions, InstanceOptionException, InstanceOptionsService as IInstanceOptionsService, InstanceOptionsServiceKey, InstanceOptionsState, isCompatible, isReleaseVersion, isSnapshotPreview, packFormatVersionRange, parseShaderOptions, ResourceDomain, stringifyShaderOptions } from '@xmcl/runtime-api'
-import { FSWatcher, readFile, writeFile } from 'fs-extra'
+import { FSWatcher } from 'fs'
+import { readFile, writeFile } from 'fs/promises'
 import watch from 'node-watch'
 import { basename, join, relative } from 'path'
 import LauncherApp from '../app/LauncherApp'

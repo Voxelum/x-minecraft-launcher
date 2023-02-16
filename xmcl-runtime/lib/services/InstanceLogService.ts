@@ -1,5 +1,5 @@
 import { InstanceLogService as IInstanceLogService, InstanceLogServiceKey } from '@xmcl/runtime-api'
-import { readFile, remove } from 'fs-extra'
+import { unlink, readFile } from 'fs/promises'
 import { isAbsolute, join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -40,7 +40,7 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
   async removeLog(name: string) {
     const filePath = join(this.instanceService.state.path, 'logs', name)
     this.log(`Remove log ${filePath}`)
-    await remove(filePath)
+    await unlink(filePath)
   }
 
   /**
@@ -81,7 +81,7 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
   async removeCrashReport(name: string) {
     const filePath = join(this.instanceService.state.path, 'crash-reports', name)
     this.log(`Remove crash report ${filePath}`)
-    await remove(filePath)
+    await unlink(filePath)
   }
 
   /**

@@ -1,4 +1,5 @@
-import { access, chmod, constants } from 'fs-extra'
+import { access, chmod } from 'fs/promises'
+import { constants } from 'fs'
 import { isSystemError } from '../util/error'
 import { ENOENT_ERROR, EPERM_ERROR } from '../util/fs'
 import { isNonnull } from '../util/object'

@@ -1,7 +1,7 @@
 import { LibraryInfo, MinecraftFolder } from '@xmcl/core'
 import { DownloadTask } from '@xmcl/installer'
 import { ExternalAuthSkinService as IExternalAuthSkinService, ExternalAuthSkinServiceKey, IssueReportBuilder, MissingAuthLibInjectorIssue } from '@xmcl/runtime-api'
-import { readJson, writeFile } from 'fs-extra'
+import { readFile, writeFile } from 'fs/promises'
 import { request } from 'undici'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -88,7 +88,7 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
       await writeFile(jsonPath, JSON.stringify(body))
       path = await download(body)
     } catch (e) {
-      const content = await readJson(jsonPath).catch(() => undefined)
+      const content = await readFile(jsonPath, 'utf-8').then(JSON.parse).catch(() => undefined)
       if (content) {
         path = await download(content)
       } else {
@@ -109,7 +109,7 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
     builder.set(MissingAuthLibInjectorIssue)
     const doesAuthLibInjectionExisted = async () => {
       const jsonPath = this.getPath('authlib-injection.json')
-      const content = await readJson(jsonPath).catch(() => undefined)
+      const content = await readFile(jsonPath).then(JSON.parse).catch(() => undefined)
       if (!content) return false
       const info = LibraryInfo.resolve(`${AUTHLIB_ORG_NAME}:${content.version}`)
       const mc = new MinecraftFolder(this.getPath())

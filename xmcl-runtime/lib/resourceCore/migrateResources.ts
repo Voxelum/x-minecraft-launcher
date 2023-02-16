@@ -1,7 +1,7 @@
 import { Resource } from '@xmcl/runtime-api'
 import { ClassicLevel } from 'classic-level'
 import { existsSync } from 'fs'
-import { remove } from 'fs-extra'
+import { rm } from 'fs/promises'
 import { IResourceData, ResourceContext } from './ResourceContext'
 
 export async function migrateResources(legacyPath: string, context: ResourceContext) {
@@ -26,6 +26,6 @@ export async function migrateResources(legacyPath: string, context: ResourceCont
     context.logger.log(`Migrate ${batch.length} resource metadata`)
 
     await level.close()
-    await remove(legacyPath)
+    await rm(legacyPath, { recursive: true, force: true })
   }
 }

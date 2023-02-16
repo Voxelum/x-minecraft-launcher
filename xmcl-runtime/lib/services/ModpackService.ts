@@ -4,7 +4,7 @@ import { CurseforgeModpackManifest, EditInstanceOptions, ExportModpackOptions, g
 import { task } from '@xmcl/task'
 import { open, openEntryReadStream, readAllEntries, readEntry } from '@xmcl/unzip'
 import { createHash } from 'crypto'
-import { stat } from 'fs-extra'
+import { stat } from 'fs/promises'
 import { basename, join, relative } from 'path'
 import { pipeline } from 'stream/promises'
 import { Entry, ZipFile } from 'yauzl'

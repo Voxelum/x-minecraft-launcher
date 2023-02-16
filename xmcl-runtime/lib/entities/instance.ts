@@ -1,5 +1,5 @@
 import { MinecraftFolder, ResolvedVersion } from '@xmcl/core'
-import { readJson } from 'fs-extra'
+import { readJson } from 'fs-extra/esm'
 import { exists } from '../util/fs'
 import { ZipTask } from '../util/zip'
 

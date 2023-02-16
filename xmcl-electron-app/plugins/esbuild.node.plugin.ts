@@ -1,5 +1,4 @@
 import { Plugin } from 'esbuild'
-import { readFile } from 'fs-extra'
 /**
  * Resolve native .node module
  */

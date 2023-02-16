@@ -3,7 +3,7 @@ import { InstallInstanceOptions, InstanceFile, InstanceFileWithOperation, Instan
 import { AbortableTask, task } from '@xmcl/task'
 import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
 import { createWriteStream, existsSync } from 'fs'
-import { ensureFile, readFile, rename, stat, unlink } from 'fs-extra'
+import { readFile, rename, stat, unlink } from 'fs/promises'
 import { writeFile } from 'atomically'
 import { join, relative } from 'path'
 import { Readable } from 'stream'
@@ -26,6 +26,7 @@ import { PeerService } from './PeerService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Singleton } from './Service'
 import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
+import { ensureFile } from 'fs-extra/esm'
 
 type RequiredPick<T, K extends keyof T> = T & Required<Pick<T, K>>
 

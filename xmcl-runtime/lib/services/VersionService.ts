@@ -1,7 +1,9 @@
 import { ResolvedVersion, Version } from '@xmcl/core'
 import { filterForgeVersion, filterOptifineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary, LocalVersionHeader, VersionService as IVersionService, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
-import { ensureDir, FSWatcher, remove } from 'fs-extra'
+import { FSWatcher } from 'fs'
+import { ensureDir } from 'fs-extra/esm'
+import { rm } from 'fs/promises'
 import watch from 'node-watch'
 import { basename, dirname, join, relative, sep } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
@@ -154,7 +156,7 @@ export class VersionService extends StatefulService<VersionState> implements IVe
 
   async deleteVersion(version: string) {
     const path = this.getPath('versions', version)
-    await remove(path)
+    await rm(path, { recursive: true, force: true })
     this.state.localVersions(this.state.local.filter(v => v.id !== version))
   }
 

@@ -1,7 +1,9 @@
 import { checksum } from '@xmcl/core'
 import { createHash } from 'crypto'
 import filenamify from 'filenamify'
-import { access, constants, copy, copyFile, ensureDir, FSWatcher, link, readdir, stat, unlink, watch } from 'fs-extra'
+import { copy, ensureDir } from 'fs-extra/esm'
+import { access, copyFile, link, readdir, stat, unlink } from 'fs/promises'
+import { constants } from 'fs'
 import { extname, join, resolve } from 'path'
 import { pipeline } from 'stream'
 import { promisify } from 'util'
@@ -61,38 +63,6 @@ export async function clearDirectoryNarrow(dir: string) {
       await unlink(join(dir, f))
     }
   }))
-}
-
-export class FileStateWatcher<T> {
-  private watcher: FSWatcher | undefined
-
-  private state: T
-
-  private watching: string | undefined
-
-  // eslint-disable-next-line no-useless-constructor
-  constructor(private defaultState: T, private handler: (state: T, event: string, file: string) => T) {
-    this.state = defaultState
-  }
-
-  public watch(file: string) {
-    if (this.watching === file) return false
-    if (this.watcher) { this.watcher.close() }
-    this.watcher = watch(file, (event, file) => {
-      this.state = this.handler(this.state, event, file)
-    })
-    return true
-  }
-
-  public getStateAndReset() {
-    const state = this.state
-    this.state = this.defaultState
-    return state
-  }
-
-  close() {
-    this.watcher?.close()
-  }
 }
 
 export function getSuggestedFilename(name: string) {

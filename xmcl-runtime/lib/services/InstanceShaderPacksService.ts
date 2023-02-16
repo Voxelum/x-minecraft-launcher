@@ -1,5 +1,7 @@
-import { InstanceShaderPacksService as IInstanceShaderPacksServic, InstanceShaderPacksServiceKey, isPersistedResource, isShaderPackResource, ResourceDomain } from '@xmcl/runtime-api'
-import { ensureDir, existsSync, lstat, move, readdir, readlink, remove, unlink } from 'fs-extra'
+import { InstanceShaderPacksService as IInstanceShaderPacksServic, InstanceShaderPacksServiceKey, isShaderPackResource, ResourceDomain } from '@xmcl/runtime-api'
+import { existsSync } from 'fs'
+import { ensureDir } from 'fs-extra/esm'
+import { lstat, readdir, readlink, rename, rm, unlink } from 'fs/promises'
 import { join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -79,10 +81,10 @@ export class InstanceShaderPacksService extends AbstractService implements IInst
             // do not link if this is not an managed instance
             return
           } else {
-            await remove(destPath)
+            await rm(destPath, { recursive: true, force: true })
           }
         } else {
-          await move(destPath, `${destPath}_backup`)
+          await rename(destPath, `${destPath}_backup`)
         }
       }
     } else if (!this.instanceService.isUnderManaged(instancePath)) {

@@ -1,7 +1,7 @@
 import { InstanceSave, InstanceSaveMetadata, ResourceSaveMetadata, SaveMetadata } from '@xmcl/runtime-api'
 import { FileSystem } from '@xmcl/system'
 import { WorldReader } from '@xmcl/world'
-import { readdir } from 'fs-extra'
+import { readdir } from 'fs/promises'
 import { basename, join } from 'path'
 import { pathToFileURL } from 'url'
 import { exists, isDirectory } from '../util/fs'

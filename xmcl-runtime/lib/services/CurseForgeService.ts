@@ -1,7 +1,7 @@
 import { File, FileModLoaderType, FileRelationType, SearchOptions } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
 import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, getCurseforgeFileUri, GetModFilesOptions, InstallFileOptions, InstallFileResult, ProjectType, ResourceDomain } from '@xmcl/runtime-api'
-import { unlink } from 'fs-extra'
+import { unlink } from 'fs/promises'
 import { join } from 'path'
 import { Client } from 'undici'
 import LauncherApp from '../app/LauncherApp'

@@ -13,7 +13,7 @@ import {
   UserState,
 } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
-import { readJSON } from 'fs-extra'
+import { readFile } from 'fs/promises'
 import { Dispatcher, Pool } from 'undici'
 import { YggdrasilAccountSystem } from '../accountSystems/YggdrasilAccountSystem'
 import LauncherApp from '../app/LauncherApp'
@@ -186,7 +186,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   }
 
   async getMinecraftAuthDb() {
-    const data: LauncherProfile = await readJSON(this.getMinecraftPath('launcher_profile.json')).catch(() => ({}))
+    const data: LauncherProfile = await readFile(this.getMinecraftPath('launcher_profile.json'), 'utf-8').then(JSON.parse).catch(() => ({}))
     return data
   }
 

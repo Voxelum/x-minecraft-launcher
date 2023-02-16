@@ -1,6 +1,6 @@
 import filenamify from 'filenamify'
 import { createWriteStream, WriteStream } from 'fs'
-import { ensureDir } from 'fs-extra'
+import { ensureDir } from 'fs-extra/esm'
 import { readFile } from 'fs/promises'
 import { basename, join, resolve } from 'path'
 import { PassThrough, pipeline, Transform } from 'stream'

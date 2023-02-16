@@ -3,7 +3,7 @@ import { createHash } from 'crypto'
 import { build as electronBuilder, Configuration } from 'electron-builder'
 import { build as esbuild, BuildOptions } from 'esbuild'
 import { createReadStream, createWriteStream, existsSync } from 'fs'
-import { copy, readdir, remove, rename, stat, unlink } from 'fs-extra'
+import { copyFile, readdir, rename, rm, stat, symlink, unlink } from 'fs/promises'
 import path, { basename, dirname, join, resolve } from 'path'
 import { pipeline, Writable } from 'stream'
 import { promisify } from 'util'
@@ -146,7 +146,7 @@ async function installArm64() {
 }
 
 async function start() {
-  await remove(path.join(__dirname, './dist'))
+  await rm(path.join(__dirname, './dist'), { recursive: true, force: true })
 
   console.log(chalk.bold.underline('Build main process & preload'))
   const startTime = Date.now()
@@ -155,7 +155,7 @@ async function start() {
     `Build completed in ${((Date.now() - startTime) / 1000).toFixed(2)}s.\n`,
   )
 
-  await copy(path.join(__dirname, '../xmcl-keystone-ui/dist'), path.join(__dirname, './dist/renderer'))
+  await symlink(path.join(__dirname, '../xmcl-keystone-ui/dist'), path.join(__dirname, './dist/renderer')).catch(() => undefined)
 
   console.log()
   if (process.env.BUILD_TARGET) {
@@ -169,7 +169,7 @@ async function start() {
           path.join(__dirname, 'icons', f),
           path.join(__dirname, 'build', 'appx', f.substring(f.indexOf('@') + 1)),
         ] as const)
-      await Promise.all(storeFiles.map(v => copy(v[0], v[1])))
+      await Promise.all(storeFiles.map(v => copyFile(v[0], v[1])))
     }
     await buildElectron({
       ...electronBuilderConfig,
