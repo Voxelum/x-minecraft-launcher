@@ -6,7 +6,6 @@
  */
 
 // Set environment for development
-import 'source-map-support/register'
 import { app } from 'electron'
 import install, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import { autoUpdater } from 'electron-updater'

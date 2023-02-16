@@ -17,7 +17,7 @@ const config: BuildOptions = {
   assetNames: '[name]',
   entryNames: '[dir]/[name]',
   format: 'cjs',
-  sourcemap: process.env.NODE_ENV === 'production' ? false : 'linked',
+  sourcemap: true,
   minifyWhitespace: process.env.NODE_ENV === 'production',
   minifySyntax: process.env.NODE_ENV === 'production',
   treeShaking: true,
