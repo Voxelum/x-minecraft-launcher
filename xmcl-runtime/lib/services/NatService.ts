@@ -28,6 +28,10 @@ export class NatService extends StatefulService<NatState> implements INatService
     })
   }
 
+  async isSupported(): Promise<boolean> {
+    return this.client.promise.then(() => true, () => false)
+  }
+
   async getMappings() {
     try {
       const client = await this.client.promise

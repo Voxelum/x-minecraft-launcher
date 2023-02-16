@@ -75,6 +75,7 @@ export interface UpnpUnmapOptions {
 
 export interface NatService extends StatefulService<NatState> {
   refreshNatType(): Promise<void>
+  isSupported(): Promise<boolean>
   getMappings(): Promise<MappingInfo[]>
   map(options?: UpnpMapOptions): Promise<void>
   unmap(options?: UpnpUnmapOptions): Promise<void>

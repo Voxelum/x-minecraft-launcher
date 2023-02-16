@@ -64,7 +64,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
         })
       }
       const initNat = async () => {
-        await natService.initialize()
+        if (!await natService.isSupported()) return
 
         const mappings = await natService.getMappings()
         const existedMappings = mappings.filter(m => m.description.indexOf('XMCL Multiplayer') !== -1 && m.enabled)
