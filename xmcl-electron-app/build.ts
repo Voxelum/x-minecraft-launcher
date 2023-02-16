@@ -1,16 +1,24 @@
 import chalk from 'chalk'
 import { createHash } from 'crypto'
 import { build as electronBuilder, Configuration } from 'electron-builder'
-import { build as esbuild, BuildOptions, Metafile } from 'esbuild'
+import { build as esbuild, BuildOptions } from 'esbuild'
 import { createReadStream, createWriteStream, existsSync } from 'fs'
-import { copy, readdir, remove, stat } from 'fs-extra'
-import path, { resolve } from 'path'
-import { pipeline } from 'stream'
+import { copy, readdir, remove, rename, stat, unlink } from 'fs-extra'
+import path, { basename, dirname, join, resolve } from 'path'
+import { pipeline, Writable } from 'stream'
 import { promisify } from 'util'
 import { buildAppInstaller } from './build/appinstaller-builder'
 import { config as electronBuilderConfig } from './build/electron-builder.config'
 import esbuildConfig from './esbuild.config'
 import { version } from './package.json'
+// @ts-ignore
+import tfs from 'tar-fs'
+// @ts-ignore
+import { ensureFile } from 'fs-extra'
+import { platform } from 'os'
+import pump from 'pump'
+import { stream } from 'undici'
+import { createGunzip } from 'zlib'
 
 /**
  * @returns Hash string
@@ -76,6 +84,67 @@ async function buildElectron(config: Configuration, dir: boolean) {
   )
 }
 
+const currentPlatform = platform()
+async function installArm64() {
+  const downloadAndUnpack = async (tarPath: string) => {
+    const options = {
+      readable: true,
+      writable: true,
+      hardlinkAsFilesFallback: true,
+    }
+    let binaryName = ''
+    function updateName(entry: any) {
+      if (/\.node$/i.test(entry.name)) binaryName = entry.name
+    }
+
+    const dir = dirname(tarPath)
+    await ensureFile(tarPath)
+    await new Promise<void>((resolve, reject) => {
+      pump(
+        createReadStream(tarPath),
+        createGunzip(),
+        tfs.extract(dir, options).on('entry', updateName), (err: any) => {
+          if (err) return reject(err)
+          else resolve()
+        })
+    })
+
+    const unpackTo = resolve(__dirname, 'dist', basename(binaryName))
+    await unlink(unpackTo).catch(() => undefined)
+    await rename(join(dir, binaryName), unpackTo)
+  }
+
+  const download = async (url: string, dest: string) => await stream(url, {
+    method: 'GET',
+    throwOnError: true,
+    maxRedirections: 2,
+    opaque: createWriteStream(dest),
+  }, ({ opaque }) => opaque as Writable)
+
+  const urls = {
+    darwin: {
+      keytar: 'https://github.com/atom/node-keytar/releases/download/v7.9.0/keytar-v7.9.0-napi-v3-darwin-arm64.tar.gz',
+      nodeDataChannel: 'https://github.com/murat-dogan/node-datachannel/releases/download/v0.4.1/node-datachannel-v0.4.1-node-v93-darwin-arm64.tar.gz',
+      classicLevel: 'https://github.com/Level/classic-level/releases/download/v1.2.0/darwin-x64+arm64.tar.gz',
+    },
+    linux: {
+      keytar: 'https://github.com/atom/node-keytar/releases/download/v7.9.0/keytar-v7.9.0-napi-v3-linux-arm64.tar.gz',
+      nodeDataChannel: 'https://github.com/murat-dogan/node-datachannel/releases/download/v0.4.1/node-datachannel-v0.4.1-node-v93-linux-arm64.tar.gz',
+      classicLevel: 'https://github.com/Level/classic-level/releases/download/v1.2.0/linux-arm.tar.gz',
+    },
+  }
+
+  if (currentPlatform === 'darwin' || currentPlatform === 'linux') {
+    const result = await Promise.all(Object.entries(urls[currentPlatform]).map(async ([name, url]) => {
+      const tarGz = resolve(__dirname, `cache/${name}.tar.gz`)
+      await ensureFile(tarGz)
+      await download(url, tarGz)
+      return tarGz
+    }))
+    await Promise.all(result.map(downloadAndUnpack))
+  }
+}
+
 async function start() {
   await remove(path.join(__dirname, './dist'))
 
@@ -110,6 +179,24 @@ async function start() {
         }
       },
     }, dir)
+
+    if (currentPlatform !== 'win32') {
+      await installArm64()
+      for (const t of electronBuilderConfig.mac.target) {
+        t.arch = 'arm64'
+      }
+      for (const t of electronBuilderConfig.linux.target) {
+        t.arch = 'arm64'
+      }
+      await buildElectron({
+        ...electronBuilderConfig,
+        async artifactBuildCompleted(context) {
+          if (context.target && context.target.name === 'appx') {
+            await buildAppInstaller(version, path.join(__dirname, './build/output/xmcl.appinstaller'), electronBuilderConfig.appx!.publisher!)
+          }
+        },
+      }, dir)
+    }
   }
 }
 

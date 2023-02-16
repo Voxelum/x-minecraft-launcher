@@ -1,8 +1,9 @@
-import { Configuration } from 'electron-builder'
+import { Configuration, TargetConfiguration } from 'electron-builder'
 import { config as dotenv } from 'dotenv'
 
 dotenv()
 
+type ArchType = TargetConfiguration['arch']
 export const config = {
   productName: 'X Minecraft Launcher',
   appId: 'xmcl',
@@ -71,9 +72,11 @@ export const config = {
     target: [
       {
         target: 'zip',
+        arch: 'x64' as ArchType,
       },
       {
         target: 'dmg',
+        arch: 'x64' as ArchType,
       },
     ],
   },
@@ -115,12 +118,12 @@ export const config = {
     // eslint-disable-next-line no-template-curly-in-string
     artifactName: 'xmcl-${version}-${arch}.${ext}',
     target: process.env.BUILD_TARGET === 'appimage'
-      ? 'AppImage'
+      ? [{ target: 'AppImage', arch: 'x64' as ArchType }]
       : [
-        'deb',
-        'rpm',
-        'zip',
-        'tar.xz',
+        { target: 'deb', arch: 'x64' as ArchType },
+        { target: 'rpm', arch: 'x64' as ArchType },
+        { target: 'zip', arch: 'x64' as ArchType },
+        { target: 'tar.xz', arch: 'x64' as ArchType },
       ],
   },
   snap: {
