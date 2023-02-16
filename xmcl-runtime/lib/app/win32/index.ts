@@ -1,5 +1,5 @@
 import { AppManifest, InstalledAppManifest } from '@xmcl/runtime-api'
-import { ensureDir, unlink, writeFile } from 'fs-extra'
+import { unlink, writeFile } from 'fs/promises'
 // import generateIco from 'icon-gen/dist/lib/ico'
 import { join } from 'path'
 import { URL } from 'url'

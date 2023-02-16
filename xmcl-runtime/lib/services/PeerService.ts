@@ -4,7 +4,7 @@ import { InstanceManifest, PeerService as IPeerService, PeerServiceKey, PeerStat
 import { AbortableTask, BaseTask } from '@xmcl/task'
 import { randomFill, randomUUID } from 'crypto'
 import { createWriteStream } from 'fs'
-import { ensureFile } from 'fs-extra'
+import { ensureFile } from 'fs-extra/esm'
 import { IceServer, initLogger, preload } from 'node-datachannel'
 import { join } from 'path'
 import { Readable } from 'stream'

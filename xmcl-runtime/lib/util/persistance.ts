@@ -1,6 +1,7 @@
 import { Schema } from '@xmcl/runtime-api'
-import { writeFile } from 'atomically'
-import { copy, ensureFile, readFile } from 'fs-extra'
+import { writeFile, readFile } from 'atomically'
+import { ensureFile } from 'fs-extra/esm'
+import { copyFile } from 'fs/promises'
 import { missing } from './fs'
 import { Logger } from './log'
 import { SafeJsonSerializer } from './serialize'
@@ -23,7 +24,7 @@ export function createSafeFile<T>(path: string, schema: Schema<T>, logger: Logge
       if (await missing(path)) {
         for (const p of legacyPaths) {
           try {
-            await copy(p, path)
+            await copyFile(p, path)
             break
           } catch {
           }

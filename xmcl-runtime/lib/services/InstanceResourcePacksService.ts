@@ -1,7 +1,7 @@
-import { PackMeta } from '@xmcl/resourcepack'
-import { InstanceResourcePacksService as IInstanceResourcePacksService, InstanceResourcePacksServiceKey, isPersistedResource, isResourcePackResource, IssueReport, packFormatVersionRange, parseVersion, ResourceDomain, VersionRange } from '@xmcl/runtime-api'
+import { InstanceResourcePacksService as IInstanceResourcePacksService, InstanceResourcePacksServiceKey, isResourcePackResource, packFormatVersionRange, ResourceDomain } from '@xmcl/runtime-api'
 import { existsSync } from 'fs'
-import { ensureDir, lstat, move, readdir, readlink, remove, unlink } from 'fs-extra'
+import { ensureDir } from 'fs-extra/esm'
+import { lstat, readdir, readlink, rename, rm, unlink } from 'fs/promises'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -229,10 +229,10 @@ export class InstanceResourcePackService extends AbstractService implements IIns
             // await this.watchUnmanagedInstance(destPath)
             return
           } else {
-            await remove(destPath)
+            await rm(destPath, { recursive: true, force: true })
           }
         } else {
-          await move(destPath, `${destPath}_backup`)
+          await rename(destPath, `${destPath}_backup`)
         }
       }
     } else if (!this.instanceService.isUnderManaged(instancePath)) {

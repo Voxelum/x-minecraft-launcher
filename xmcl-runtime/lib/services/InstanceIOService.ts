@@ -2,7 +2,7 @@ import { MinecraftFolder } from '@xmcl/core'
 import { UnzipTask } from '@xmcl/installer'
 import { createTemplate, ExportInstanceOptions, InstanceIOService as IInstanceIOService, InstanceIOServiceKey, InstanceSchema, LockKey, RuntimeVersions } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
-import { mkdtemp, readdir, readJson, remove } from 'fs-extra'
+import { mkdtemp, readdir, readFile, rm } from 'fs/promises'
 import { tmpdir } from 'os'
 import { basename, join, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
@@ -66,7 +66,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
       releases.push(await this.semaphoreManager.getLock(LockKey.assets).acquireRead())
       const assetsJson = resolve(root, 'assets', 'indexes', `${version.assets}.json`)
       zipTask.addFile(assetsJson, `assets/indexes/${version.assets}.json`)
-      const objects = await readJson(assetsJson).then(manifest => manifest.objects)
+      const objects = await readFile(assetsJson, 'utf8').then(JSON.parse).then(manifest => manifest.objects)
       for (const hash of Object.keys(objects).map(k => objects[k].hash)) {
         zipTask.addFile(resolve(root, 'assets', 'objects', hash.substring(0, 2), hash), `assets/objects/${hash.substring(0, 2)}/${hash}`)
       }
@@ -162,7 +162,7 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
     await copyPassively(resolve(srcDirectory, 'libraries'), this.getPath('libraries'))
     await copyPassively(resolve(srcDirectory, 'versions'), this.getPath('versions'))
 
-    if (!isDir) { await remove(srcDirectory) }
+    if (!isDir) { await rm(srcDirectory, { recursive: true, force: true }) }
 
     return instancePath
   }

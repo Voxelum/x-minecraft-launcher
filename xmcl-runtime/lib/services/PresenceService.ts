@@ -44,17 +44,23 @@ export class PresenceService extends AbstractService implements IPresenceService
       }
     }).subscribe('connectionGroup', (id) => {
       if (this.discord.isConnected) {
-        this.current.state = id ? 'Multiplayer group ' + id : ''
+        this.current.state = id ? 'Group ' + id : ''
         this.current.partyId = id || undefined
-        this.current.partyMax = 20
+        if (id) {
+          this.current.partyMax = 20
+          this.current.partySize = 1
+        } else {
+          this.current.partyMax = undefined
+          this.current.partySize = undefined
+        }
         this.current.joinSecret = id ? id + 'secret' : undefined
         this.discord.user?.setActivity(this.current)
       }
     }).subscribe('connectionAdd', () => {
-      this.current.partySize = (this.current.partySize || 0) + 1
+      this.current.partySize = (this.current.partySize || 1) + 1
       this.discord.user?.setActivity(this.current)
     }).subscribe('connectionDrop', () => {
-      this.current.partySize = (this.current.partySize || 0) - 1
+      this.current.partySize = (this.current.partySize || 1) - 1
       this.discord.user?.setActivity(this.current)
     })
 

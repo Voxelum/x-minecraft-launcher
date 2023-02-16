@@ -1,7 +1,8 @@
 import { AppManifest, AppsHost, InstalledAppManifest } from '@xmcl/runtime-api'
 import { XMLParser } from 'fast-xml-parser'
 import filenamifyCombined from 'filenamify'
-import { ensureDir, readdir, readJson, readJSON, remove, stat, writeFile, writeJson } from 'fs-extra'
+import { ensureDir } from 'fs-extra/esm'
+import { readdir, readFile, rm, stat, writeFile } from 'fs/promises'
 import { join } from 'path'
 import { request } from 'undici'
 import { URL } from 'url'
@@ -57,13 +58,13 @@ export class LauncherAppManager extends Manager implements AppsHost {
   async bootAppByUrl(url: string): Promise<void> {
     await ensureDir(this.root)
     const app = await this.installApp(url)
-    await writeJson(join(this.root, 'apps.json'), { default: url })
+    await writeFile(join(this.root, 'apps.json'), JSON.stringify({ default: url }))
     await this.app.controller.activate(app)
   }
 
   async getDefaultApp(): Promise<string> {
     await ensureDir(this.root)
-    const config = await readJson(join(this.root, 'apps.json')).catch(() => undefined)
+    const config = await readFile(join(this.root, 'apps.json'), 'utf-8').then(JSON.parse, () => undefined)
     return config?.default ?? this.app.builtinAppManifest.url
   }
 
@@ -90,7 +91,7 @@ export class LauncherAppManager extends Manager implements AppsHost {
       return this.app.builtinAppManifest
     }
     const path = this.getAppRoot(url)
-    const validJson = await readJson(join(path, 'app.xmclx')).catch((e) => {
+    const validJson = await readFile(join(path, 'app.xmclx'), 'utf8').then(JSON.parse, (e) => {
       if (isSystemError(e) && e.code === ENOENT_ERROR) {
         return undefined
       }
@@ -104,7 +105,7 @@ export class LauncherAppManager extends Manager implements AppsHost {
       return this.app.builtinAppManifest
     }
     const path = this.getAppRoot(url)
-    return readJson(join(path, 'app.xmclx'))
+    return readFile(join(path, 'app.xmclx'), 'utf8').then(JSON.parse)
   }
 
   async getInstalledApps(): Promise<InstalledAppManifest[]> {
@@ -113,7 +114,7 @@ export class LauncherAppManager extends Manager implements AppsHost {
     const results = await Promise.all(files.map(async (file) => {
       const validFile = await stat(file).then(s => s.isFile() ? file : undefined, () => undefined)
       if (validFile) {
-        return readJSON(validFile)
+        return readFile(validFile, 'utf8').then(JSON.parse)
       }
     }))
     const apps = results.filter(v => !!v)
@@ -139,10 +140,10 @@ export class LauncherAppManager extends Manager implements AppsHost {
 
     const urlObj = new URL(url)
     const appDir = join(this.root, filenamifyCombined(urlObj.host + urlObj.pathname, { replacement: '@' }))
-    await remove(appDir)
+    await rm(appDir, { recursive: true, force: true })
 
     if (url === await this.getDefaultApp()) {
-      await writeJson(join(this.root, 'apps.json'), { default: this.app.builtinAppManifest.url })
+      await writeFile(join(this.root, 'apps.json'), JSON.stringify({ default: this.app.builtinAppManifest.url }))
     }
   }
 

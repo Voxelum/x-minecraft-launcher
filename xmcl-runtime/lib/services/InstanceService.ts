@@ -2,8 +2,8 @@ import { ResolvedVersion, Version } from '@xmcl/core'
 import { CreateInstanceOption, createTemplate, EditInstanceOptions, filterForgeVersion, filterOptifineVersion, getExpectVersion, Instance, InstanceException, InstanceSchema, InstanceService as IInstanceService, InstanceServiceKey, InstancesSchema, InstanceState, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, RuntimeVersions } from '@xmcl/runtime-api'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
-import { copy, ensureDir, move, readdir, remove } from 'fs-extra'
-import { rename } from 'fs/promises'
+import { ensureDir } from 'fs-extra/esm'
+import { copyFile, readdir, rename, rm } from 'fs/promises'
 import { dirname, isAbsolute, join, relative, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -312,7 +312,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
     const isManaged = this.isUnderManaged(path)
     if (isManaged && await exists(path)) {
-      await remove(path)
+      await rm(path, { recursive: true, force: true })
     }
   }
 
@@ -468,8 +468,8 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         const versionJson = resolve(versionRoot, `${v}.json`)
         const versionJar = resolve(versionRoot, `${v}.jar`)
         await Promise.all([
-          copy(versionJar, this.getPath('versions', v, `${v}.jar`), { overwrite: false, recursive: false }).catch(() => undefined),
-          copy(versionJson, this.getPath('versions', v, `${v}.json`), { overwrite: false, recursive: false }).catch(() => undefined),
+          copyFile(versionJar, this.getPath('versions', v, `${v}.jar`)).catch(() => undefined),
+          copyFile(versionJson, this.getPath('versions', v, `${v}.json`)).catch(() => undefined),
         ])
 
         const files = (await readdir(versionRoot)).filter(f => f !== '.DS_Store' && f !== `${v}.json` && f !== `${v}.jar`)

@@ -5,8 +5,9 @@ import {
 } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
 import filenamify from 'filenamify'
-import { existsSync } from 'fs'
-import { ensureDir, ensureFile, FSWatcher, readdir, remove } from 'fs-extra'
+import { existsSync, FSWatcher } from 'fs'
+import { ensureDir, ensureFile } from 'fs-extra/esm'
+import { readdir, rm } from 'fs/promises'
 import throttle from 'lodash.throttle'
 import watch from 'node-watch'
 import { basename, extname, join, resolve } from 'path'
@@ -217,7 +218,7 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
       throw new InstanceSaveException({ type: 'instanceDeleteNoSave', name: saveName })
     }
 
-    await remove(savePath)
+    await rm(savePath, { recursive: true, force: true })
   }
 
   async importSave(options: ImportSaveOptions) {

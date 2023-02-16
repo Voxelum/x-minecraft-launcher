@@ -1,5 +1,5 @@
 import { InstanceServerInfoService as IInstanceServerInfoService, InstanceServerInfoServiceKey, PINGING_STATUS, ServerInfoState } from '@xmcl/runtime-api'
-import { readFile } from 'fs-extra'
+import { readFile } from 'fs/promises'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'

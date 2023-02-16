@@ -1,7 +1,7 @@
 import { diagnoseAssetIndex, diagnoseAssets, diagnoseJar, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedVersion } from '@xmcl/core'
 import { diagnoseInstall, InstallProfile } from '@xmcl/installer'
 import { Asset, AssetIndexIssueKey, AssetsIssueKey, getExpectVersion, getResolvedVersion, InstallableLibrary, InstallProfileIssueKey, Instance, InstanceVersionException, InstanceVersionService as IInstanceVersionService, InstanceVersionServiceKey, InstanceVersionState, IssueReportBuilder, LibrariesIssueKey, LocalVersionHeader, RuntimeVersions, VersionIssueKey, VersionJarIssueKey } from '@xmcl/runtime-api'
-import { readFile, readJSON } from 'fs-extra'
+import { readFile } from 'fs/promises'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -272,7 +272,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     const installProfilePath = join(root, 'install_profile.json')
     builder.set(InstallProfileIssueKey)
     if (await exists(installProfilePath)) {
-      const installProfile: InstallProfile = await readJSON(installProfilePath)
+      const installProfile: InstallProfile = JSON.parse(await readFile(installProfilePath, 'utf8'))
       const report = await diagnoseInstall(installProfile, minecraft.root)
       let badInstall = false
       const librariesIssues: LibraryIssue[] = []

@@ -1,7 +1,8 @@
 /* eslint-disable no-dupe-class-members */
 import { ExportResourceOptions, ImportResourceOptions, PartialResourceHash, ResolveResourceOptions, Resource, ResourceDomain, ResourceMetadata, ResourceService as IResourceService, ResourceServiceKey, ResourceType } from '@xmcl/runtime-api'
 import { FSWatcher } from 'fs'
-import { ensureDir, unlink } from 'fs-extra'
+import { ensureDir } from 'fs-extra/esm'
+import { unlink } from 'fs/promises'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'

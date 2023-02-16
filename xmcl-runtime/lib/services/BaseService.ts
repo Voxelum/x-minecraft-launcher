@@ -1,5 +1,5 @@
 import { BaseService as IBaseService, BaseServiceException, BaseServiceKey, BaseState, MigrateOptions, SettingSchema } from '@xmcl/runtime-api'
-import { copy, readdir, remove, rename, stat } from 'fs-extra'
+import { readdir, rename, rm, stat } from 'fs/promises'
 import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
@@ -7,6 +7,7 @@ import { LauncherAppKey } from '../app/utils'
 import { IS_DEV } from '../constant'
 import { kTelemtrySession } from '../entities/telemetry'
 import { isSystemError } from '../util/error'
+import { copyPassively } from '../util/fs'
 import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
 import { ZipTask } from '../util/zip'
@@ -203,7 +204,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
           destination,
         })
       }
-      await remove(destination)
+      await rm(destination, { recursive: true, force: true })
     }
 
     await this.serviceManager.dispose()
@@ -217,7 +218,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
           if (e.code === 'EXDEV') {
             // cannot move file across disk
             this.warn(`Cannot move file across disk ${source} -> ${destination}. Use copy instead.`)
-            await copy(source, destination)
+            await copyPassively(source, destination)
             return
           }
         }

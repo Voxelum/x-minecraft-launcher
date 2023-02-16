@@ -1,10 +1,5 @@
-import { DownloadTask, UnzipTask } from '@xmcl/installer'
-import { joinUrl } from '@xmcl/installer/http/utils'
-import { CurseforgeModpackManifest, EditInstanceOptions, McbbsModpackManifest, ModpackFileInfoAddon, ModpackFileInfoCurseforge, ModrinthModpackManifest } from '@xmcl/runtime-api'
-import { CancelledError, task } from '@xmcl/task'
+import { CurseforgeModpackManifest, EditInstanceOptions, McbbsModpackManifest, ModpackFileInfoCurseforge, ModrinthModpackManifest } from '@xmcl/runtime-api'
 import { readEntry } from '@xmcl/unzip'
-import { ensureDir } from 'fs-extra'
-import { basename, join } from 'path'
 import { Entry, ZipFile } from 'yauzl'
 
 /**

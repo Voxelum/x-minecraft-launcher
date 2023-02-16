@@ -1,5 +1,5 @@
 import { BrowserWindow } from 'electron'
-import { writeJSON } from 'fs-extra'
+import { writeFile } from 'fs/promises'
 import debounce from 'lodash.debounce'
 
 export interface WindowsTransform {
@@ -17,7 +17,7 @@ export function trackWindowSize(browserWindow: BrowserWindow, config: WindowsTra
     config.height = height
     config.x = x
     config.y = y
-    writeJSON(configPath, config)
+    writeFile(configPath, JSON.stringify(config))
   }, 1000)
   browserWindow.on('resize', update)
   browserWindow.on('moved', update)

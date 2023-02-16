@@ -2,7 +2,7 @@ import chalk from 'chalk'
 import { createHash } from 'crypto'
 import { build as electronBuilder, Configuration } from 'electron-builder'
 import { createReadStream, createWriteStream, existsSync } from 'fs'
-import { stat } from 'fs-extra'
+import { stat } from 'fs/promises'
 import { pipeline } from 'stream'
 import { promisify } from 'util'
 

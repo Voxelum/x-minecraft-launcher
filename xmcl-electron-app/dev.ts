@@ -2,7 +2,6 @@ import chalk from 'chalk'
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
 import electron from 'electron'
 import { build, BuildResult } from 'esbuild'
-import { remove } from 'fs-extra'
 import { join, resolve } from 'path'
 import esbuildOptions from './esbuild.config'
 

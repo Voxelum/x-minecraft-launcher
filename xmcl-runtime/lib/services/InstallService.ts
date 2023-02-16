@@ -3,7 +3,8 @@ import { parse as parseForge } from '@xmcl/forge-site-parser'
 import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DEFAULT_VERSION_MANIFEST_URL, DownloadTask, FabricArtifactVersion, getFabricLoaderArtifact, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, MinecraftVersionList, Options, QuiltArtifactVersion } from '@xmcl/installer'
 import { Asset, FabricVersions, ForgeVersion, GetQuiltVersionListOptions, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallQuiltOptions, InstallService as IInstallService, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LiteloaderVersions, LockKey, MinecraftVersions, OptifineVersion, ResourceDomain } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
-import { ensureFile, readJson, readJSON, writeFile, writeJson } from 'fs-extra'
+import { ensureFile } from 'fs-extra/esm'
+import { readFile, writeFile } from 'fs/promises'
 import { request } from 'undici'
 import { URL } from 'url'
 import LauncherApp from '../app/LauncherApp'
@@ -384,9 +385,9 @@ export class InstallService extends AbstractService implements IInstallService {
           if (resolvedVersion.inheritances.length === 1 && resolvedVersion.inheritances[resolvedVersion.inheritances.length - 1] !== resolvedVersion.minecraftVersion) {
             // special packed version like PCL
             const jsonPath = location.getVersionJson(version)
-            const rawContent = await readJson(jsonPath)
+            const rawContent = JSON.parse(await readFile(jsonPath, 'utf8'))
             rawContent.assetIndex = sourceMinecraftVersion.assetIndex
-            await writeJson(jsonPath, rawContent)
+            await writeFile(jsonPath, JSON.stringify(rawContent))
             resolvedVersion = await Version.parse(location, version)
           }
         } else if (!resolvedVersion.assetIndex) {
@@ -735,8 +736,8 @@ export class InstallService extends AbstractService implements IInstallService {
       let id: string = await this.concat(installOptifineTask(path, minecraft, { java }))
 
       if (options.inheritFrom) {
-        const parentJson: Version = await readJSON(minecraft.getVersionJson(options.inheritFrom))
-        const json: Version = await readJSON(minecraft.getVersionJson(id))
+        const parentJson: Version = JSON.parse(await readFile(minecraft.getVersionJson(options.inheritFrom), 'utf8'))
+        const json: Version = JSON.parse(await readFile(minecraft.getVersionJson(id), 'utf8'))
         json.inheritsFrom = options.inheritFrom
         json.id = `${options.inheritFrom}-Optifine-${version}`
         if (installFromForge) {

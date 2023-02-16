@@ -15,6 +15,10 @@ declare module '*?worker' {
   export default function (options?: WorkerOptions): Worker
 }
 
+declare module 'fs-extra/esm' {
+  export * from 'fs-extra'
+}
+
 declare module '*.png' {
   /**
    * The path of the static file

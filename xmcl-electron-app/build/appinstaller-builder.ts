@@ -1,4 +1,4 @@
-import { writeFile } from 'fs-extra'
+import { writeFile } from 'fs/promises'
 
 function getAppInstallerContent(version: string, publisher: string) {
   const result = `<?xml version="1.0" encoding="utf-8"?>

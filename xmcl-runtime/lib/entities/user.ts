@@ -2,7 +2,7 @@
 
 import { GameProfileAndTexture } from '@xmcl/runtime-api'
 import { GameProfile } from '@xmcl/user'
-import { readFile } from 'fs-extra'
+import { readFile } from 'fs/promises'
 import { URL } from 'url'
 
 export interface OAuthTokenResponse {

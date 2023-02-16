@@ -1,7 +1,8 @@
 import { Plugin } from 'esbuild'
-import { existsSync, readdir, readdirSync, readFile } from 'fs-extra'
+import { existsSync } from 'fs'
+import { readdir, readFile } from 'fs/promises'
 import { arch, platform } from 'os'
-import { dirname, join, relative, resolve } from 'path'
+import { dirname, join, relative } from 'path'
 
 /**
  * Correctly handle native node import.
@@ -178,11 +179,11 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
           const armv = process.env.ARM_VERSION || (arch3 === 'arm64' ? '8' : vars.arm_version) || ''
           const uv = (process.versions.uv || '').split('.')[0]
           const dir = dirname(path)
-          const tuples = readdirSync(join(dir, 'prebuilds')).map(parseTuple)
+          const tuples = (await readdir(join(dir, 'prebuilds'))).map(parseTuple)
           const tuple = tuples.filter(matchTuple(platform8, arch3)).sort(compareTuples)[0]
           if (!tuple) throw new Error()
           const prebuilds = join(dir, 'prebuilds', tuple.name)
-          const parsed = readdirSync(prebuilds).map(parseTags)
+          const parsed = (await readdir(prebuilds)).map(parseTags)
           const candidates = parsed.filter(matchTags(runtime, abi))
           const winner = candidates.sort(compareTags(runtime))[0]
           if (!winner) throw new Error()

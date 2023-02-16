@@ -1,7 +1,6 @@
 import { CachedFTBModpackVersionManifest, FeedTheBeastService as IFeedTheBeastService, FeedTheBeastServiceKey, FeedTheBeastState, FTBModpackManifest, FTBModpacksResult, FTBModpackVersionManifest, GetFTBModpackVersionOptions, SearchFTBModpackOptions } from '@xmcl/runtime-api'
 import { ClassicLevel } from 'classic-level'
-import { readJSON } from 'fs-extra'
-import { unlink } from 'fs/promises'
+import { unlink, readFile } from 'fs/promises'
 import { Client } from 'undici'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -23,7 +22,7 @@ export class FeedTheBeastService extends StatefulService<FeedTheBeastState> impl
       if (!await missing(legacyPath)) {
         const content: {
           caches: CachedFTBModpackVersionManifest[]
-        } = await readJSON(legacyPath)
+        } = JSON.parse(await readFile(legacyPath, 'utf8'))
         const batch = this.db.batch()
         for (const m of content.caches) {
           batch.put(m.id.toString(), m)

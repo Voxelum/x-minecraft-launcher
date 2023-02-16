@@ -1,4 +1,4 @@
-import { readJson } from 'fs-extra'
+import { readFile } from 'fs/promises'
 import { join } from 'path'
 
 export interface LauncherProfile {
@@ -69,6 +69,6 @@ export interface LauncherProfile {
 
 export async function readLaunchProfile(minecraft: string) {
   const profilePath = join(minecraft, 'launcher_profiles.json')
-  const profile: LauncherProfile = await readJson(profilePath)
+  const profile: LauncherProfile = JSON.parse(await readFile(profilePath, 'utf8'))
   return profile
 }
