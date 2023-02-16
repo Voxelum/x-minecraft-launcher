@@ -12,6 +12,8 @@
     <v-menu
       v-model="showProblems"
       offset-y
+      :top="inFoucsMode"
+      :bottom="!inFoucsMode"
     >
       <template #activator="{ attrs }">
         <v-btn
@@ -78,6 +80,7 @@ import { LaunchStatusDialogKey, useLaunch } from '../composables/launch'
 import { LoginDialog } from '../composables/login'
 import { useBusy, useIssues, useRefreshable, useService, useServiceBusy } from '@/composables'
 import HomeProblemCard from './HomeProblemCard.vue'
+import { useInFocusMode } from '@/composables/uiLayout'
 
 const emit = defineEmits(['pause', 'resume'])
 const props = defineProps<{
@@ -85,6 +88,7 @@ const props = defineProps<{
   issue: Issue | undefined
 }>()
 
+const inFoucsMode = useInFocusMode()
 const { launch, status: launchStatus, launchCount } = useLaunch()
 const { missing: missingJava } = useJava()
 const { show: showLoginDialog } = useDialog(LoginDialog)
