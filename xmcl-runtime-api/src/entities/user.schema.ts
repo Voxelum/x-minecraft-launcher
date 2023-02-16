@@ -115,6 +115,7 @@ export interface UserSchema {
 
   /**
    * The customized third-party yggrasil services satisfying the authlib-injector api format
+   * @default []
    */
   yggdrasilServices: Array<YggdrasilApi>
 }

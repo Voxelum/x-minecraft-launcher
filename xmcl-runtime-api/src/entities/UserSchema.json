@@ -34,6 +34,7 @@
         },
         "yggdrasilServices": {
             "description": "The customized third-party yggrasil services satisfying the authlib-injector api format",
+            "default": [],
             "type": "array",
             "items": {
                 "$ref": "#/definitions/YggdrasilApi"
