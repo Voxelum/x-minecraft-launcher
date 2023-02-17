@@ -17,22 +17,26 @@ export class PresenceService extends AbstractService implements IPresenceService
     @Inject(BaseService) baseService: BaseService) {
     super(app, async () => {
       if (baseService.state.discordPresence) {
-        await this.discord.connect()
-        this.discord.subscribe('ACTIVITY_JOIN')
-        this.discord.subscribe('ACTIVITY_JOIN_REQUEST')
-        this.discord.subscribe('ACTIVITY_INVITE')
-        this.discord.on('ACTIVITY_JOIN', (arg) => {
-          console.log('ACTIVITY_JOIN')
-          console.log(arg)
-        })
-        this.discord.on('ACTIVITY_JOIN_REQUEST', (arg) => {
-          console.log('ACTIVITY_JOIN_REQUEST')
-          console.log(arg)
-        })
-        this.discord.on('ACTIVITY_JOIN', (arg) => {
-          console.log('ACTIVITY_JOIN')
-          console.log(arg)
-        })
+        try {
+          await this.discord.connect()
+          this.discord.subscribe('ACTIVITY_JOIN')
+          this.discord.subscribe('ACTIVITY_JOIN_REQUEST')
+          this.discord.subscribe('ACTIVITY_INVITE')
+          this.discord.on('ACTIVITY_JOIN', (arg) => {
+            console.log('ACTIVITY_JOIN')
+            console.log(arg)
+          })
+          this.discord.on('ACTIVITY_JOIN_REQUEST', (arg) => {
+            console.log('ACTIVITY_JOIN_REQUEST')
+            console.log(arg)
+          })
+          this.discord.on('ACTIVITY_JOIN', (arg) => {
+            console.log('ACTIVITY_JOIN')
+            console.log(arg)
+          })
+        } catch (e) {
+          // Ignore
+        }
       }
     })
 
@@ -71,7 +75,11 @@ export class PresenceService extends AbstractService implements IPresenceService
 
   async setActivity(activity: Activity): Promise<void> {
     if (!this.discord.isConnected) {
-      await this.discord.connect()
+      try {
+        await this.discord.connect()
+      } catch (e) {
+        return
+      }
     }
     const param = this.current
     this.current.largeImageKey = 'dark_512'

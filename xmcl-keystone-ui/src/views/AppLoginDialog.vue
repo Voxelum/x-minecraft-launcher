@@ -7,10 +7,7 @@
     transition="fade"
     @dragover.prevent
   >
-    <v-card
-      @dragover.prevent
-      @drop="onDrop"
-    >
+    <v-card>
       <LoginDialogLoginView
         :inside="inside"
       />
@@ -49,14 +46,6 @@ const isPersistent = computed(() => {
   }
   return true
 })
-const { handleUrl } = useService(BaseServiceKey)
-const onDrop = (e: DragEvent) => {
-  const url = e.dataTransfer?.getData('xmcl/url')
-  if (url) {
-    handleUrl(url)
-  }
-  inside.value = false
-}
 </script>
 
 <style>

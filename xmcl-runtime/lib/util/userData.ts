@@ -1,36 +1,59 @@
-import { UserSchema } from '@xmcl/runtime-api'
+import { UserProfile, UserSchema } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
+import { readFile } from 'fs/promises'
 import { LauncherProfile } from '../entities/launchProfile'
+import { loadYggdrasilApiProfile } from '../entities/user'
 import { UserTokenStorage } from '../entities/userTokenStore'
 
 /**
- * Fit the user data from loaded user data and loaded launcher profile json
+ * Fill the user data from loaded user data and loaded launcher profile json
+ * @param output The output user data
+ * @param input The loaded user data
  */
-export function fitMinecraftLauncherProfileData(result: UserSchema, data: UserSchema, launchProfile: LauncherProfile, tokenStorage: UserTokenStorage) {
-  if (typeof data === 'object') {
-    if (data.clientToken) {
-      result.clientToken = data.clientToken
-    } else {
-      result.clientToken = launchProfile?.clientToken ?? randomUUID().replace(/-/g, '')
-    }
+export async function preprocessUserData(output: UserSchema, input: UserSchema, minecraftJsonPath: string, tokenStorage: UserTokenStorage) {
+  try {
+    const minecraftProfile = await readFile(minecraftJsonPath, 'utf-8').then(JSON.parse).catch(() => undefined)
+    fillData(output, input, minecraftProfile, tokenStorage)
+  } catch {
+    // Ignore
+  }
 
-    if (data.selectedUser) {
-      result.selectedUser.id = data.selectedUser.id ?? result.selectedUser.id
-    }
-    result.users = data.users
-  } else {
-    // import mojang authDB
-    result.clientToken = launchProfile?.clientToken ?? randomUUID().replace(/-/g, '')
-
-    if (launchProfile.selectedUser) {
-      result.selectedUser.id = launchProfile.selectedUser.account
+  const checkToken = async (u: UserProfile) => {
+    try {
+      if ('accessToken' in u && typeof (u.accessToken) === 'string') {
+        const t = await tokenStorage.get(u)
+        if (!t) {
+          await tokenStorage.put(u, (u as any).accessToken)
+        }
+      }
+    } catch {
+      // Ignore
     }
   }
-  if (launchProfile?.clientToken === result.clientToken && launchProfile.authenticationDatabase) {
+
+  await Promise.all(Object.values(input.users).map(checkToken))
+}
+/**
+ * Fit the user data from loaded user data and loaded launcher profile json
+ */
+function fillData(output: UserSchema, input: UserSchema, launchProfile: LauncherProfile | undefined, tokenStorage: UserTokenStorage) {
+  output.clientToken = input.clientToken || launchProfile?.clientToken || randomUUID().replace(/-/g, '')
+  output.selectedUser.id = input.selectedUser.id ?? output.selectedUser.id
+  output.users = input.users
+  output.selectedUser.id = input.selectedUser.id || launchProfile?.selectedUser?.account || ''
+
+  for (const user of Object.values(output.users)) {
+    if (typeof user.expiredAt === 'undefined') {
+      user.expiredAt = -1
+    }
+  }
+
+  // Fill the user data from minecraft launcher profile
+  if (launchProfile?.clientToken === output.clientToken && launchProfile?.authenticationDatabase) {
     const adb = launchProfile.authenticationDatabase
     for (const userId of Object.keys(adb)) {
       const user = adb[userId]
-      if (!result.users[userId]) {
+      if (!output.users[userId]) {
         const profiles = Object.entries(user.profiles)
           .reduce((dict, [id, o]) => {
             dict[id] = {
@@ -40,7 +63,7 @@ export function fitMinecraftLauncherProfileData(result: UserSchema, data: UserSc
             }
             return dict
           }, {} as { [key: string]: any })
-        result.users[userId] = {
+        output.users[userId] = {
           id: userId,
           invalidated: false,
           username: user.username,
@@ -49,7 +72,7 @@ export function fitMinecraftLauncherProfileData(result: UserSchema, data: UserSc
           expiredAt: 0,
           profiles,
         }
-        tokenStorage.put(result.users[userId], user.accessToken)
+        tokenStorage.put(output.users[userId], user.accessToken)
       }
     }
   }

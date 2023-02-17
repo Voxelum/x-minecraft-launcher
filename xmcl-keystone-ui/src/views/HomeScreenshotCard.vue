@@ -1,5 +1,8 @@
 <template>
-  <v-card class="w-full w-full">
+  <v-card
+    class="w-full w-full"
+    :color="cardColor"
+  >
     <v-carousel
       hide-delimiters
       :height="height"
@@ -47,11 +50,14 @@
 </template>
 <script lang="ts" setup>
 import { useRefreshable, useService } from '@/composables'
+import { kColorTheme } from '@/composables/colorTheme'
 import { kImageDialog } from '@/composables/imageDialog'
 import { injection } from '@/util/inject'
 import { Instance, InstanceScreenshotServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
 
 const props = defineProps<{ instance: Instance; width: number; height: number }>()
+
+const { cardColor } = injection(kColorTheme)
 
 const { getScreenshots, showScreenshot } = useService(InstanceScreenshotServiceKey)
 const { on } = useService(LaunchServiceKey)

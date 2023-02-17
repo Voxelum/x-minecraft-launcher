@@ -48,7 +48,11 @@ export default class NetworkManager extends Manager {
       maxConnection = service.state.maxSockets > 0 ? service.state.maxSockets : Number.POSITIVE_INFINITY
       proxy.setProxyEnabled(service.state.httpProxyEnabled)
       if (service.state.httpProxy) {
-        proxy.setProxy(new URL(service.state.httpProxy))
+        try {
+          proxy.setProxy(new URL(service.state.httpProxy))
+        } catch (e) {
+          app.warn(`Fail to set url as it's not a valid url ${service.state.httpProxy}`, e)
+        }
       }
     })
     stateManager.subscribe('maxSocketsSet', (val) => {

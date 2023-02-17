@@ -67,6 +67,51 @@ export interface UserProfile {
   avatar?: string
 }
 
+export interface AuthlibInjectorApiProfile {
+  /**
+   * @default {}
+   */
+  meta: {
+    /**
+     * @default ""
+     */
+    serverName: string
+    /**
+     * @default ""
+     */
+    implementationName: string
+    /**
+     * @default ""
+     */
+    implementationVersion: string
+    /**
+     * @default {}
+     */
+    links: {
+      /**
+       * @default ""
+       */
+      homepage: string
+      /**
+       * @default ""
+       */
+      register: string
+    }
+    /**
+     * @default false
+     */
+    'feature.non_email_login': boolean
+  }
+  /**
+   * @default []
+   */
+  skinDomains: string[]
+  /**
+   * @default ""
+   */
+  signaturePublickey: string
+}
+
 export interface YggdrasilApi {
   /**
    * The base service url
@@ -84,6 +129,14 @@ export interface YggdrasilApi {
    * It will use `url + "/authserver"` by default
    */
   auth?: string
+  /**
+   * The cache for authlib injector compatible api
+   */
+  authlibInjector?: AuthlibInjectorApiProfile
+  /**
+   * The favicon of the service
+   */
+  favicon?: string
 }
 
 export interface UserSchema {

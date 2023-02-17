@@ -1,8 +1,9 @@
 /* eslint-disable camelcase */
 
-import { GameProfileAndTexture } from '@xmcl/runtime-api'
+import { AuthlibInjectorApiProfile, GameProfileAndTexture, YggdrasilApi } from '@xmcl/runtime-api'
 import { GameProfile } from '@xmcl/user'
 import { readFile } from 'fs/promises'
+import { request } from 'undici'
 import { URL } from 'url'
 
 export interface OAuthTokenResponse {
@@ -122,4 +123,54 @@ export async function normalizeSkinData(url: string) {
   } else {
     throw new Error('Unknown url protocol! Require a file or http/https protocol!')
   }
+}
+
+export async function loadYggdrasilApiProfile(url: string) {
+  const api: YggdrasilApi = { url }
+
+  async function loadHostFavicon() {
+    const parsedUrl = new URL(url)
+    try {
+      const resp = await request(parsedUrl.protocol + parsedUrl.host + '/favicon.ico')
+      if (resp.statusCode === 200) {
+        api.favicon = parsedUrl.protocol + parsedUrl.host + '/favicon.ico'
+      }
+    } catch {
+      try {
+        const resp = await request(parsedUrl.protocol + parsedUrl.host)
+        const body = await resp.body.text()
+        const match = body.match(/<link rel="shortcut icon" href="([^"]+)" \/>/)
+        if (match) {
+          api.favicon = match[1]
+        }
+      } catch (e) { }
+    }
+  }
+  async function loadMetadata() {
+    try {
+      const resp = await request(url)
+      const body = await resp.body.json() as AuthlibInjectorApiProfile
+
+      api.authlibInjector = {
+        meta: {
+          serverName: typeof body?.meta?.serverName === 'string' ? body.meta.serverName : '',
+          implementationName: typeof body?.meta?.implementationName === 'string' ? body.meta.implementationName : '',
+          implementationVersion: typeof body?.meta?.implementationVersion === 'string' ? body.meta.implementationVersion : '',
+          links: {
+            homepage: typeof body?.meta?.links?.homepage === 'string' ? body.meta.links.homepage : '',
+            register: typeof body?.meta?.links?.register === 'string' ? body.meta.links.register : '',
+          },
+          'feature.non_email_login': typeof body?.meta?.['feature.non_email_login'] === 'boolean' ? body.meta['feature.non_email_login'] : false,
+        },
+        signaturePublickey: typeof body?.signaturePublickey === 'string' ? body.signaturePublickey : '',
+        skinDomains: typeof body?.skinDomains === 'object' ? body.skinDomains : [],
+      }
+    } catch (e) {
+
+    }
+  }
+
+  await Promise.all([loadHostFavicon(), loadMetadata()])
+
+  return api
 }

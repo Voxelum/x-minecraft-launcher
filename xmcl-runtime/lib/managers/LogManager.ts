@@ -71,6 +71,10 @@ export default class LogManager extends Manager {
     return this.logRoot
   }
 
+  getEntries() {
+    return this.loggerEntries
+  }
+
   getLogger(tag: string): Logger {
     const { loggerEntries } = this
     return {
