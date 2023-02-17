@@ -15,7 +15,7 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ImageStorage) readonly imageStore: ImageStorage,
     @Inject(UserService) private userService: UserService,
-    @Inject(kUserTokenStorage) private userTokenStorage: UserTokenStorage,
+    @Inject(kUserTokenStorage) userTokenStorage: UserTokenStorage,
   ) {
     super(app, async () => {
       await userService.initialize()

@@ -13,7 +13,7 @@
     />
     <div
       v-else
-      class="w-100 text-center z-10 non-moveable"
+      class="min-w-100 text-center z-10 m-20 non-moveable"
     >
       <AppLoginDialogAccountSystemSelect v-model="authService" />
 
@@ -122,8 +122,9 @@
           t("login.forgetPassword")
         }}</a>
         <a
+          v-if="signUpLink"
           style="z-index: 20"
-          href="https://my.minecraft.net/en-us/store/minecraft/#register"
+          :href="signUpLink"
         >
           {{ t("login.signupDescription") }}
           {{ t("login.signup") }}
@@ -150,7 +151,7 @@ const props = defineProps<{
 
 const { hide, isShown, parameter } = useDialog(LoginDialog)
 const { t } = useI18n()
-const { login, abortLogin } = useService(UserServiceKey)
+const { login, abortLogin, state: userState } = useService(UserServiceKey)
 const { on } = useService(OfficialUserServiceKey)
 
 const data = reactive({
@@ -175,6 +176,14 @@ const getUserServiceAccount = (serv: string) => {
 }
 
 const { authService, history } = useAccountSystemHistory()
+
+const signUpLink = computed(() => {
+  if (authService.value === 'microsoft') return 'https://account.live.com/registration'
+  if (authService.value === 'mojang') return 'https://my.minecraft.net/en-us/store/minecraft/#register'
+  const api = userState.yggdrasilServices.find(a => new URL(a.url).host === authService.value)
+  const url = api?.authlibInjector?.meta.links.register
+  return url || ''
+})
 
 const isPasswordReadonly = computed(() => isOffline.value || isMicrosoft.value)
 const isPasswordDisabled = computed(() => isPasswordReadonly.value && !data.useDeviceCode)

@@ -1,5 +1,4 @@
 import { pluginCommonProtocol } from './pluginCommonProtocol'
-import { pluginElyAccountSystem } from './pluginElyAccountSystem'
 import { pluginImageStorage } from './pluginImageStore'
 import { pluginTelemetry } from './pluginTelemetry'
 import { pluginUndiciLogger } from './pluginUndiciLogger'
@@ -15,5 +14,4 @@ export const plugins = [
   pluginTelemetry,
   pluginImageStorage,
   pluginCommonProtocol,
-  pluginElyAccountSystem,
 ]

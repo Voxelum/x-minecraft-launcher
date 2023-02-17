@@ -14,9 +14,9 @@ import { version } from './package.json'
 // @ts-ignore
 import tfs from 'tar-fs'
 // @ts-ignore
+import pump from 'pump'
 import { ensureFile } from 'fs-extra'
 import { platform } from 'os'
-import pump from 'pump'
 import { stream } from 'undici'
 import { createGunzip } from 'zlib'
 

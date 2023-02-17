@@ -14,7 +14,7 @@ export interface LoginOptions {
   username: string
   password?: string
   /**
-   * The account services
+   * The account service name.
    */
   service: string
   /**
@@ -80,9 +80,15 @@ interface UserServiceEventMap {
 }
 
 export class UserState implements UserSchema {
-  // user data
+  /**
+   * The user id to user profile mapping
+   */
   users: Record<string, UserProfile> = {}
+  /**
+   * All user registered yggdrasil api
+   */
   yggdrasilServices: YggdrasilApi[] = []
+
   selectedUser = {
     id: '',
   }
@@ -98,28 +104,16 @@ export class UserState implements UserSchema {
     return user?.profiles[user.selectedProfile]
   }
 
-  get offline(): boolean {
-    return this.user?.authService === 'offline'
-  }
-
-  get isYggdrasilService(): boolean {
-    return this.user?.authService !== 'offline' && this.user?.authService !== 'microsoft'
-  }
-
   get isThirdPartyAuthentication(): boolean {
     const user = this.user
     return user?.authService !== 'mojang' && user?.authService !== 'offline' && user?.authService !== 'microsoft'
   }
 
-  userSnapshot(snapshot: UserSchema) {
-    this.clientToken = snapshot.clientToken
-    this.selectedUser.id = snapshot.selectedUser.id
-
-    if (typeof snapshot.users === 'object') {
-      this.users = snapshot.users
-    }
-
-    this.yggdrasilServices = snapshot.yggdrasilServices
+  userData(data: UserSchema) {
+    this.clientToken = data.clientToken
+    this.selectedUser.id = data.selectedUser.id
+    this.users = data.users
+    this.yggdrasilServices = data.yggdrasilServices
   }
 
   gameProfileUpdate({ profile, userId }: { userId: string; profile: (GameProfileAndTexture | GameProfile) }) {
@@ -168,7 +162,18 @@ export class UserState implements UserSchema {
   userYggdrasilServices(apis: YggdrasilApi[]) {
     this.yggdrasilServices = apis
   }
+
+  userYggdrasilServicePut(api: YggdrasilApi) {
+    const index = this.yggdrasilServices.findIndex((it) => it.url === api.url)
+    if (index >= 0) {
+      this.yggdrasilServices[index] = api
+    } else {
+      this.yggdrasilServices.push(api)
+    }
+  }
 }
+
+export const BUILTIN_USER_SERVICES = ['microsoft', 'mojang', 'offline']
 
 export interface UserService extends StatefulService<UserState>, GenericEventEmitter<UserServiceEventMap> {
   /**
@@ -214,10 +219,6 @@ export interface UserService extends StatefulService<UserState>, GenericEventEmi
    */
   setUserProfile(userProfile: UserProfile): Promise<void>
   /**
-   * Get all supported account systems.
-   */
-  getSupportedAccountSystems(): Promise<string[]>
-  /**
    * Add a third-party account system satisfy the authlib-injector format
    * @param url The account api url
    */
@@ -235,6 +236,9 @@ export interface UserService extends StatefulService<UserState>, GenericEventEmi
    * Abort current login
    */
   abortLogin(): Promise<void>
+  /**
+   * Abort the refresh user operation
+   */
   abortRefresh(): Promise<void>
 }
 
@@ -264,6 +268,9 @@ export type UserExceptions = {
   developerMessage: string
 } | {
   type: 'userAccessTokenExpired'
+} | {
+  type: 'loginServiceNotSupported'
+  service: string
 }
 
 export class UserException extends Exception<UserExceptions> { }

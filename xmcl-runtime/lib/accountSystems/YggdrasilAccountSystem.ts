@@ -1,23 +1,47 @@
-import { GameProfileAndTexture, LoginOptions, SkinPayload, UserException, UserProfile } from '@xmcl/runtime-api'
+import { GameProfileAndTexture, LoginOptions, SkinPayload, UserException, UserProfile, UserState } from '@xmcl/runtime-api'
 import { getTextures } from '@xmcl/user'
-import { UserAccountSystem } from '../services/UserService'
-import { isSystemError } from '../util/error'
-import { Logger } from '../util/log'
-import { toRecord } from '../util/object'
+import { Dispatcher } from 'undici'
 import { YggdrasilThirdPartyClient } from '../clients/YggdrasilClient'
 import { normalizeGameProfile, normalizeSkinData } from '../entities/user'
 import { UserTokenStorage } from '../entities/userTokenStore'
+import { isSystemError } from '../util/error'
+import { Logger } from '../util/log'
+import { toRecord } from '../util/object'
+import { joinUrl } from '../util/url'
+import { UserAccountSystem } from './AccountSystem'
 
 export class YggdrasilAccountSystem implements UserAccountSystem {
   constructor(private logger: Logger,
-    private client: YggdrasilThirdPartyClient,
+    private dispatcher: Dispatcher,
+    private userState: UserState,
     private storage: UserTokenStorage,
   ) {
   }
 
+  protected getClient(service: string) {
+    const api = this.userState.yggdrasilServices.find(s => new URL(s.url).hostname === service)
+
+    if (!api) return undefined
+
+    const client = new YggdrasilThirdPartyClient(
+      // eslint-disable-next-line no-template-curly-in-string
+      joinUrl(api.url, api.profile || '/sessionserver/session/minecraft/profile/${uuid}'),
+      // eslint-disable-next-line no-template-curly-in-string
+      joinUrl(api.url, api.texture || '/api/user/profile/${uuid}/${type}'),
+      joinUrl(api.url, api.auth || '/authserver'),
+      () => this.userState.clientToken,
+      this.dispatcher,
+    )
+
+    return client
+  }
+
   async login({ username, password, service }: LoginOptions, signal?: AbortSignal): Promise<UserProfile> {
+    const client = this.getClient(service)
+    if (!client) throw new UserException({ type: 'loginServiceNotSupported', service }, `Service ${service} is not supported`)
+
     try {
-      const auth = await this.client.login({
+      const auth = await client.login({
         username,
         password: password ?? '',
         requestUser: true,
@@ -58,6 +82,9 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
   }
 
   async refresh(userProfile: UserProfile, signal?: AbortSignal): Promise<UserProfile> {
+    const client = this.getClient(userProfile.authService)
+    if (!client) throw new UserException({ type: 'loginServiceNotSupported', service: userProfile.authService }, `Service ${userProfile.authService} is not supported`)
+
     const token = await this.storage.get(userProfile)
 
     if (!token) {
@@ -65,13 +92,13 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
       return userProfile
     }
 
-    const valid = await this.client.validate(token, signal)
+    const valid = await client.validate(token, signal)
 
     this.logger.log(`Validate ${userProfile.authService} user access token: ${valid ? 'valid' : 'invalid'}`)
 
     if (!valid) {
       try {
-        const result = await this.client.refresh({
+        const result = await client.refresh({
           accessToken: token,
           requestUser: true,
         }, signal)
@@ -90,7 +117,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     }
 
     for (const p of Object.values(userProfile.profiles)) {
-      const profile = await this.client.lookup(p.id, true, signal)
+      const profile = await client.lookup(p.id, true, signal)
       const textures = getTextures(profile)
       const skin = textures?.textures.SKIN
       const uploadable = profile.properties.uploadableTextures
@@ -114,6 +141,9 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
   }
 
   async setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, { cape, skin }: SkinPayload, signal?: AbortSignal): Promise<UserProfile> {
+    const client = this.getClient(userProfile.authService)
+    if (!client) throw new UserException({ type: 'loginServiceNotSupported', service: userProfile.authService }, `Service ${userProfile.authService} is not supported`)
+
     this.logger.log(`Upload texture ${gameProfile.name}(${gameProfile.id})`)
 
     const token = await this.storage.get(userProfile)
@@ -123,14 +153,14 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     }
     if (typeof cape === 'string' && gameProfile.uploadable?.indexOf('cape') !== -1) {
       if (cape === '') {
-        await this.client.setTexture({
+        await client.setTexture({
           uuid: gameProfile.id,
           accessToken: token,
           type: 'cape',
         }, signal)
       } else {
         const data = await normalizeSkinData(cape)
-        await this.client.setTexture({
+        await client.setTexture({
           uuid: gameProfile.id,
           accessToken: token,
           type: 'cape',
@@ -141,14 +171,14 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
 
     if (gameProfile.uploadable?.indexOf('skin') !== -1 && typeof skin === 'object') {
       if (skin === null) {
-        await this.client.setTexture({
+        await client.setTexture({
           uuid: gameProfile.id,
           accessToken: token,
           type: 'skin',
         }, signal)
       } else {
         const data = await normalizeSkinData(skin.url)
-        await this.client.setTexture({
+        await client.setTexture({
           uuid: gameProfile.id,
           accessToken: token,
           type: 'skin',
@@ -170,7 +200,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     }
 
     // Update the game profile
-    const newGameProfile = await this.client.lookup(gameProfile.id, true, signal)
+    const newGameProfile = await client.lookup(gameProfile.id, true, signal)
     const textures = getTextures(newGameProfile)
     const uploadable = newGameProfile.properties.uploadableTextures
 

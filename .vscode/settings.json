@@ -14,7 +14,6 @@
     },
     "typescript.preferences.quoteStyle": "single",
     "editor.tabSize": 2,
-    "typescript.tsdk": "node_modules/typescript/lib",
     "i18n-ally.enabledFrameworks": ["vue-sfc", "vue"],
     "i18n-ally.editor.preferEditor": true,
     "i18n-ally.keystyle": "nested",

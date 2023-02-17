@@ -109,7 +109,7 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
     builder.set(MissingAuthLibInjectorIssue)
     const doesAuthLibInjectionExisted = async () => {
       const jsonPath = this.getPath('authlib-injection.json')
-      const content = await readFile(jsonPath).then(JSON.parse).catch(() => undefined)
+      const content = await readFile(jsonPath, 'utf-8').then(JSON.parse).catch(() => undefined)
       if (!content) return false
       const info = LibraryInfo.resolve(`${AUTHLIB_ORG_NAME}:${content.version}`)
       const mc = new MinecraftFolder(this.getPath())

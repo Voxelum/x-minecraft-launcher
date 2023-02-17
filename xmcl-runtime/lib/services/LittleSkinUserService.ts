@@ -1,17 +1,17 @@
 /* eslint-disable camelcase */
 import { AddClosetOptions, GetClosetOptions, ListSkinResult, LittleSkinCharacter, LittleSkinUserService as ILittleSkinUserService, LittleSkinUserServiceKey, RenameClosetOptions, SetCharacterNameOptions, SetCharacterTextureOptions, UploadTextureOptions, UploadTextureResult } from '@xmcl/runtime-api'
-import { Client, FormData, Pool, request } from 'undici'
+import { FormData, Pool, request } from 'undici'
+import { YggdrasilAccountSystem } from '../accountSystems/YggdrasilAccountSystem'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { LittleSkinClient } from '../clients/LittleSkinClient'
-import { YggdrasilAccountSystem } from '../accountSystems/YggdrasilAccountSystem'
 import { YggdrasilThirdPartyClient } from '../clients/YggdrasilClient'
+import { kUserTokenStorage, UserTokenStorage } from '../entities/userTokenStore'
 import { Inject } from '../util/objectRegistry'
 import { TokenCache } from '../util/TokenStorage'
 import { BaseService } from './BaseService'
 import { AbstractService, ExposeServiceKey } from './Service'
 import { UserService } from './UserService'
-import { kUserTokenStorage, UserTokenStorage } from '../entities/userTokenStore'
 
 const LITTLE_SKIN_HOST = 'littleskin.cn'
 
@@ -23,7 +23,7 @@ export class LittleSkinUserService extends AbstractService implements ILittleSki
     @Inject(UserService) private userService: UserService,
     @Inject(BaseService) private baseService: BaseService,
     @Inject(TokenCache) private cache: TokenCache,
-    @Inject(kUserTokenStorage) private tokenCache: UserTokenStorage) {
+    @Inject(kUserTokenStorage) tokenCache: UserTokenStorage) {
     super(app)
 
     const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
@@ -40,15 +40,16 @@ export class LittleSkinUserService extends AbstractService implements ILittleSki
 
     const ygg = new YggdrasilAccountSystem(
       this,
-      new YggdrasilThirdPartyClient(
-        // eslint-disable-next-line no-template-curly-in-string
-        'https://littleskin.cn/api/yggdrasil/sessionserver/session/minecraft/profile/${uuid}',
-        // eslint-disable-next-line no-template-curly-in-string
-        'https://littleskin.cn/api/yggdrasil/api/user/profile/${uuid}/${type}',
-        'https://littleskin.cn/api/yggdrasil/authserver',
-        () => userService.state.clientToken,
-        dispatcher,
-      ),
+      // new YggdrasilThirdPartyClient(
+      //   // eslint-disable-next-line no-template-curly-in-string
+      //   'https://littleskin.cn/api/yggdrasil/sessionserver/session/minecraft/profile/${uuid}',
+      //   // eslint-disable-next-line no-template-curly-in-string
+      //   'https://littleskin.cn/api/yggdrasil/api/user/profile/${uuid}/${type}',
+      //   'https://littleskin.cn/api/yggdrasil/authserver',
+      //   () => userService.state.clientToken,
+      //   dispatcher,
+      // ),
+      dispatcher,
       tokenCache,
     )
 

@@ -80,7 +80,7 @@ const { state, selectUser, removeUserProfile, abortRefresh } = useService(UserSe
 const userId = computed(() => state.selectedUser.id)
 const selectedUser = computed(() => users.value.find(u => u.id === userId.value))
 
-const isExpired = computed(() => !selectedUser.value?.invalidated || selectedUser.value.expiredAt < Date.now())
+const isExpired = computed(() => !selectedUser.value || selectedUser.value?.invalidated || selectedUser.value.expiredAt < Date.now())
 
 const { begin: beginRemoveProfile, operate: confirmRemoveProfile, data: removingProfile } = useOperation('', (v) => removeUserProfile(v))
 
