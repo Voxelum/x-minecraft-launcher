@@ -37,10 +37,8 @@ export async function buildElectron(config: Configuration, dir: boolean) {
   }
 
   for (const file of files) {
-    const fstat = await stat(file)
     if (!file.endsWith('.blockmap')) {
       await writeHash('sha256', file, `${file}.sha256`)
-      await writeHash('sha1', file, `${file}.sha1`)
     }
   }
 

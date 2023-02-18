@@ -1,6 +1,7 @@
 import { getPlatform } from '@xmcl/core'
 import { InstalledAppManifest, Platform } from '@xmcl/runtime-api'
 import { EventEmitter } from 'events'
+import { readFileSync } from 'fs'
 import { ensureDir } from 'fs-extra/esm'
 import { readFile, writeFile } from 'fs/promises'
 import { createServer, Server } from 'http'
@@ -49,6 +50,16 @@ export interface LauncherApp {
   emit(channel: 'engine-ready'): boolean
 }
 
+const loadEnv = () => {
+  if (IS_DEV) return 'raw'
+  try {
+    const env = readFileSync(join(__dirname, 'target'), 'utf8')
+    return env
+  } catch {
+    return 'raw'
+  }
+}
+
 export class LauncherApp extends EventEmitter {
   /**
    * Launcher %APPDATA%/xmcl path
@@ -83,7 +94,7 @@ export class LauncherApp extends EventEmitter {
 
   readonly build: number = Number.parseInt(process.env.BUILD_NUMBER ?? '0', 10)
 
-  readonly env = process.env.BUILD_TARGET === 'appx' ? 'appx' : process.env.BUILD_TARGET === 'appimage' ? 'appimage' : 'raw'
+  readonly env = loadEnv()
 
   get version() { return this.host.getVersion() }
 
