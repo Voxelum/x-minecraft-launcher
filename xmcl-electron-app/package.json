@@ -1,7 +1,7 @@
 {
     "name": "xmcl",
     "private": true,
-    "main": "./dist/index.js",
+    "main": "./index.js",
     "version": "0.34.1",
     "author": "ci010 <cijhn@hotmail.com>",
     "description": "A great minecraft launcher in the future",
@@ -43,6 +43,7 @@
         "@xmcl/runtime-api": "workspace:*",
         "@xmcl/task": "workspace:4.0.3",
         "@xmcl/windows-utils": "^0.0.15",
+        "@electron/asar": "^3.2.3",
         "tar-fs": "^2.1.1",
         "pump": "^3.0.0",
         "builtin-modules": "^3.3.0",

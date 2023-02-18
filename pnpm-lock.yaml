@@ -87,8 +87,9 @@ importers:
 >>>>>>> 234315ea (refactor: Move discord rpc)
   xmcl-electron-app:
     specifiers:
+      '@electron/asar': ^3.2.3
       '@types/electron-devtools-installer': ^2.2.2
-      '@types/fs-extra': ^8.1.2
+      '@types/fs-extra': ^11.0.1
       '@types/graceful-fs': ^4.1.5
       '@types/lodash.debounce': ^4.0.7
       '@types/lodash.throttle': ^4.1.7
@@ -125,7 +126,7 @@ importers:
       fast-xml-parser: ^4.0.12
       file-type: ^16.5.4
       filenamify: ^5.1.1
-      fs-extra: ^10.1.0
+      fs-extra: ^11.1.0
       graceful-fs: ^4.2.10
       lodash.debounce: ^4.0.8
       node-datachannel: ^0.4.0
@@ -139,8 +140,9 @@ importers:
       typescript: ^4.9.4
       undici: ^5.14.0
     devDependencies:
+      '@electron/asar': 3.2.3
       '@types/electron-devtools-installer': 2.2.2
-      '@types/fs-extra': 8.1.2
+      '@types/fs-extra': 11.0.1
       '@types/graceful-fs': 4.1.5
       '@types/lodash.debounce': 4.0.7
       '@types/lodash.throttle': 4.1.7
@@ -177,7 +179,7 @@ importers:
       fast-xml-parser: 4.0.12
       file-type: 16.5.4
       filenamify: 5.1.1
-      fs-extra: 10.1.0
+      fs-extra: 11.1.0
       graceful-fs: 4.2.10
       lodash.debounce: 4.0.8
       node-datachannel: 0.4.0
@@ -309,7 +311,7 @@ importers:
       '@azure/msal-common': ^6.4.0
       '@azure/msal-node': ^1.14.5
       '@types/eventsource': ^1.1.10
-      '@types/fs-extra': ^8.1.2
+      '@types/fs-extra': ^11.0.1
       '@types/graceful-fs': ^4.1.5
       '@types/http-cache-semantics': ^4.0.1
       '@types/lodash.debounce': ^4.0.7
@@ -359,7 +361,7 @@ importers:
       file-type: ^16.5.4
       filenamify: ^5.1.1
       form-data: ^3.0.1
-      fs-extra: ^10.1.0
+      fs-extra: ^11.1.0
       graceful-fs: ^4.2.10
       http-cache-semantics: ^4.1.0
       iconv-lite: ^0.5.2
@@ -411,7 +413,7 @@ importers:
       file-type: 16.5.4
       filenamify: 5.1.1
       form-data: 3.0.1
-      fs-extra: 10.1.0
+      fs-extra: 11.1.0
       graceful-fs: 4.2.10
       http-cache-semantics: 4.1.0
       iconv-lite: 0.5.2
@@ -570,7 +572,7 @@ importers:
 >>>>>>> 234315ea (refactor: Move discord rpc)
     devDependencies:
       '@types/eventsource': 1.1.10
-      '@types/fs-extra': 8.1.2
+      '@types/fs-extra': 11.0.1
       '@types/graceful-fs': 4.1.5
       '@types/http-cache-semantics': 4.0.1
       '@types/lodash.debounce': 4.0.7
@@ -2239,6 +2241,19 @@ packages:
       ajv-keywords: 3.5.2_ajv@6.12.6
     dev: true
 
+  /@electron/asar/3.2.3:
+    resolution: {integrity: sha512-wmOfE6szYyqZhRIiLH+eyZEp+bGcJI0OD/SCvSUrfBE0jvauyGYO2ZhpWxmNCcDojKu5DYrsVqT5BOCZZ01XIg==}
+    engines: {node: '>=10.12.0'}
+    hasBin: true
+    dependencies:
+      chromium-pickle-js: 0.2.0
+      commander: 5.1.0
+      glob: 7.2.3
+      minimatch: 3.1.2
+    optionalDependencies:
+      '@types/glob': 7.2.0
+    dev: true
+
   /@electron/get/1.14.1:
     resolution: {integrity: sha512-BrZYyL/6m0ZXz/lDxy/nlVhQz+WF+iPS6qXolEU8atw7h6v1aYkjwJZ63m+bJMBTxDE66X+r2tPS4a/8C82sZw==}
     engines: {node: '>=8.6'}
@@ -3087,9 +3102,10 @@ packages:
     resolution: {integrity: sha512-rYzRmJSnm44Xb7FICRXEjwe/26ZiiS+VMGmuD17PevMP56cGgLEsaM955sYQW0S+K7h+mPOL70vGf1hi4WDjVA==}
     dev: true
 
-  /@types/fs-extra/8.1.2:
-    resolution: {integrity: sha512-SvSrYXfWSc7R4eqnOzbQF4TZmfpNSM9FrSWLU3EUnWBuyZqNBOrv1B1JA3byUDPUl9z4Ab3jeZG2eDdySlgNMg==}
+  /@types/fs-extra/11.0.1:
+    resolution: {integrity: sha512-MxObHvNl4A69ofaTRU8DFqvgzzv8s9yRtaPPm5gud9HDNvpB3GPQFvNuTWAI59B9huVGV5jXYJwbCsmBsOGYWA==}
     dependencies:
+      '@types/jsonfile': 6.1.1
       '@types/node': 18.11.16
     dev: true
 
@@ -3123,6 +3139,12 @@ packages:
 
   /@types/json5/0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
+    dev: true
+
+  /@types/jsonfile/6.1.1:
+    resolution: {integrity: sha512-GSgiRCVeapDN+3pqA35IkQwasaCh/0YFH5dEF6S88iDvEn901DjOeH3/QPY+XYP1DFzDZPvIvfeEgk+7br5png==}
+    dependencies:
+      '@types/node': 18.11.16
     dev: true
 
   /@types/keyv/3.1.4:
@@ -3198,7 +3220,6 @@ packages:
 
   /@types/node/18.11.16:
     resolution: {integrity: sha512-6T7P5bDkRhqRxrQtwj7vru+bWTpelgtcETAZEUSdq0YISKz8WKdoBukQLYQQ6DFHvU9JRsbFq0JH5C51X2ZdnA==}
-    dev: true
 
   /@types/offscreencanvas/2019.7.0:
     resolution: {integrity: sha512-PGcyveRIpL1XIqK8eBsmRBt76eFgtzuPiSTyKHZxnGemp2yzGzWpjYKAfK3wIMiU7eH+851yEpiuP8JZerTmWg==}
@@ -6278,6 +6299,15 @@ packages:
   /fs-extra/10.1.0:
     resolution: {integrity: sha512-oRXApq54ETRj4eMiFzGnHWGy+zo5raudjuxN0b8H7s/RU2oW0Wvsx9O0ACRN/kRq9E8Vu/ReskGB5o3ji+FzHQ==}
     engines: {node: '>=12'}
+    dependencies:
+      graceful-fs: 4.2.10
+      jsonfile: 6.1.0
+      universalify: 2.0.0
+    dev: true
+
+  /fs-extra/11.1.0:
+    resolution: {integrity: sha512-0rcTq621PD5jM/e0a3EJoGC/1TC5ZBCERW82LQuwfGnCa1V8w7dpYH1yNu+SLb6E5dkeCBzKEyLGlFrnr+dUyw==}
+    engines: {node: '>=14.14'}
     dependencies:
       graceful-fs: 4.2.10
       jsonfile: 6.1.0

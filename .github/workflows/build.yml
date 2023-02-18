@@ -38,7 +38,7 @@ jobs:
         pnpm run --prefix xmcl-keystone-ui build
         pnpm run --prefix xmcl-electron-app build:all
       env:
-        BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
+        BUILD_NUMBER: ${{ github.run_number }}
         NODE_ENV: production
         CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
         WIN_CSC_LINK: ${{ secrets.CODE_SIGN_BASE64 }}
@@ -51,12 +51,41 @@ jobs:
         path: |
           xmcl-electron-app/build/output/*.*
           xmcl-electron-app/build/output/nsis-web/*.*
-    - name: Upload Zip Build
+    - name: Upload Windows Zip Build
+      if: ${{ runner.os == 'Windows' }} 
       uses: actions/upload-artifact@v2
       with:
-        name: ${{ runner.os }}-zip
+        name: win-b${{ github.run_number }}
         path: |
-          xmcl-electron-app/build/output/*.zip
+          xmcl-electron-app/build/output/win-unpacked/*.*
+    - name: Upload Linux x64 Zip Build
+      if: ${{ runner.os == 'Linux' }} 
+      uses: actions/upload-artifact@v2
+      with:
+        name: linux-b${{ github.run_number }}-x64
+        path: |
+          xmcl-electron-app/build/output/linux-unpacked/*.*
+    - name: Upload Linux arm64 Zip Build
+      if: ${{ runner.os == 'Linux' }} 
+      uses: actions/upload-artifact@v2
+      with:
+        name: linux-b${{ github.run_number }}-arm64
+        path: |
+          xmcl-electron-app/build/output/linux-arm64-unpacked/*.*
+    - name: Upload Mac x64 Zip Build
+      if: ${{ runner.os == 'macOS' }} 
+      uses: actions/upload-artifact@v2
+      with:
+        name: mac-b${{ github.run_number }}-x64
+        path: |
+          xmcl-electron-app/build/output/mac/*.*
+    - name: Upload Mac arm64 Zip Build
+      if: ${{ runner.os == 'macOS' }} 
+      uses: actions/upload-artifact@v2
+      with:
+        name: mac-b${{ github.run_number }}-arm64
+        path: |
+          xmcl-electron-app/build/output/mac-arm64/*.*
     - name: Prepare Windows Asar
       if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }} 
       run: |
@@ -83,79 +112,10 @@ jobs:
         path: |
           asar/*.*
 
-  build-appx:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: recursive
-    - uses: pnpm/action-setup@v2.0.1
-      with:
-        version: 6.24.4
-    - name: Use Node.js 16
-      uses: actions/setup-node@v2
-      with:
-        node-version: 16
-        cache: 'pnpm'
-    - name: Install
-      run: pnpm install --filter=!./xmcl-page
-    - name: Build
-      run: |
-        pnpm run --prefix xmcl-keystone-ui build
-        pnpm run --prefix xmcl-electron-app build
-      env:
-        BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
-        NODE_ENV: production
-        CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
-        BUILD_TARGET: appx
-        APPX_PUBLISHER: ${{ secrets.APPX_PUBLISHER }}
-        CSC_LINK: ${{ secrets.CODE_SIGN_BASE64 }}
-        CSC_KEY_PASSWORD: ${{ secrets.CODE_SIGN_PWD }}
-    - name: Upload Build
-      uses: actions/upload-artifact@v2
-      with:
-        name: appx
-        path: |
-          xmcl-electron-app/build/output/*.*
-    
-  build-appimage:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        submodules: recursive
-    - uses: pnpm/action-setup@v2.0.1
-      with:
-        version: 6.24.4
-    - name: Use Node.js 16
-      uses: actions/setup-node@v2
-      with:
-        node-version: 16
-        cache: 'pnpm'
-    - name: Install
-      run: pnpm install --filter=!./xmcl-page
-    - name: Build
-      run: |
-        pnpm run --prefix xmcl-keystone-ui build
-        pnpm run --prefix xmcl-electron-app build
-      env:
-        BUILD_NUMBER: ${{ env.GITHUB_RUN_NUMBER }}
-        NODE_ENV: production
-        CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
-        BUILD_TARGET: appimage
-    - name: Upload Build
-      uses: actions/upload-artifact@v2
-      with:
-        name: appimage
-        path: |
-          xmcl-electron-app/build/output/*.*
-
   prepare-release:
     runs-on: ubuntu-latest
     needs: 
       - build
-      - build-appx
-      - build-appimage
     if: ${{ !startsWith(github.event.head_commit.message, 'chore(release)') }}
 
     steps:
@@ -211,8 +171,6 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build
-      - build-appx
-      - build-appimage
     steps:
     - uses: actions/checkout@v3
       with:
@@ -233,16 +191,6 @@ jobs:
       uses: actions/download-artifact@v2
       with:
         name: build
-        path: build
-    - name: Download Appx Build
-      uses: actions/download-artifact@v2
-      with:
-        name: appx
-        path: build
-    - name: Download AppImage Build
-      uses: actions/download-artifact@v2
-      with:
-        name: appimage
         path: build
     - name: Prepare Release
       id: prepare_release
