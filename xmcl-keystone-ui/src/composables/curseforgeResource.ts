@@ -1,7 +1,8 @@
 import { FileIndex } from '@xmcl/curseforge'
-import { getCurseforgeFileUri, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { getCurseforgeFileUri, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
+import { useResourceEffect } from './resources'
 import { useService } from './service'
 
 export function useLatestCurseforgeResource(modId: Ref<number>, fileIndex: Ref<FileIndex | undefined>) {
@@ -14,6 +15,7 @@ export function useLatestCurseforgeResource(modId: Ref<number>, fileIndex: Ref<F
     }
   })
   onMounted(refresh)
+  useResourceEffect(refresh, ResourceDomain.Modpacks)
   watch([modId, fileIndex], refresh)
   return {
     refresh,
