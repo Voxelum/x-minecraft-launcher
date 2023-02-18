@@ -228,6 +228,7 @@ const { refresh, refreshing } = useRefreshable(async () => {
 const confirm = async () => {
   if (upgrade.value) {
     const { instance, files } = upgrade.value
+    const upstream = newResource.value
     await installInstanceFiles({
       path: instancePath.value,
       files: files.filter(f => f.operation !== 'keep').map(f => ({ ...f.file, operation: f.operation as InstanceFileOperation })),
@@ -239,7 +240,7 @@ const confirm = async () => {
         fabricLoader: instance.runtime?.fabricLoader,
       },
       modpackVersion: instance.modpackVersion,
-      upstream: getUpstreamFromResource(newResource.value!),
+      upstream: getUpstreamFromResource(upstream!),
     })
     isShown.value = false
   }
