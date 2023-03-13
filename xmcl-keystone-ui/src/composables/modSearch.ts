@@ -1,20 +1,20 @@
 import { FileModLoaderType, Mod, ModsSearchSortField, Pagination } from '@xmcl/curseforge'
 import { SearchResult } from '@xmcl/modrinth'
-import { CurseForgeServiceKey, ModrinthServiceKey, Resource } from '@xmcl/runtime-api'
+import { CurseForgeServiceKey, InstanceData, ModrinthServiceKey, Resource } from '@xmcl/runtime-api'
 import { filter } from 'fuzzy'
 import debounce from 'lodash.debounce'
 import { Ref } from 'vue'
 import { kMods, useMods } from './mods'
 import { useService } from './service'
 
-export function useModsSearch(keyword: Ref<string>, minecraft: Ref<string>, forge: Ref<string | undefined>, fabricLoader: Ref<string | undefined>) {
-  const { resources, refreshing: loading } = inject(kMods, () => useMods(), true)
+export function useModsSearch(keyword: Ref<string>, runtime: Ref<InstanceData['runtime']>) {
+  const { resources, refreshing } = inject(kMods, () => useMods(), true)
   const { searchProjects: searchModrinth } = useService(ModrinthServiceKey)
   const { searchProjects: searchCurseforge } = useService(CurseForgeServiceKey)
 
   const isValidResource = (r: Resource) => {
-    const useForge = !!forge.value
-    const useFabric = !!fabricLoader.value
+    const useForge = !!runtime.value.forge
+    const useFabric = !!runtime.value.fabricLoader
     if (useForge) return !!r.metadata.forge
     if (useFabric) return !!r.metadata.fabric
     return false
@@ -33,7 +33,7 @@ export function useModsSearch(keyword: Ref<string>, minecraft: Ref<string>, forg
   } | undefined)
 
   const processModrinth = async (useForge: boolean, useFabric: boolean) => {
-    const facets = [`["versions:${minecraft.value}"]`, '["project_type:mod"]']
+    const facets = [`["versions:${runtime.value.minecraft}"]`, '["project_type:mod"]']
     if (useForge) {
       facets.push('["categories:forge"]')
     }
@@ -57,7 +57,7 @@ export function useModsSearch(keyword: Ref<string>, minecraft: Ref<string>, forg
         classId: 6, // mods
         sortField: ModsSearchSortField.Name,
         modLoaderType: useForge ? FileModLoaderType.Forge : useFabric ? FileModLoaderType.Fabric : FileModLoaderType.Any,
-        gameVersion: minecraft.value,
+        gameVersion: runtime.value.minecraft,
         searchFilter: keyword.value,
         pageSize: 20,
         index: 0,
@@ -69,10 +69,11 @@ export function useModsSearch(keyword: Ref<string>, minecraft: Ref<string>, forg
   const loadingModrinth = ref(false)
   const curseforgeError = ref(undefined as any)
   const loadingCurseforge = ref(false)
+  const loading = computed(() => loadingModrinth.value || loadingCurseforge.value)
 
   const onSearch = debounce(async () => {
-    const useForge = !!forge.value
-    const useFabric = !!fabricLoader.value
+    const useForge = !!runtime.value.forge
+    const useFabric = !!runtime.value.fabricLoader
 
     loadingModrinth.value = true
     processModrinth(useForge, useFabric).catch((e) => {
@@ -100,5 +101,6 @@ export function useModsSearch(keyword: Ref<string>, minecraft: Ref<string>, forg
     modrinth,
     curseforge,
     keyword,
+    loading,
   }
 }

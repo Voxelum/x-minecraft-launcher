@@ -1,19 +1,19 @@
 <template>
-  <div class="flex flex-col max-h-full h-full px-8 py-4">
+  <div class="flex flex-col max-h-full h-full mx-5">
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
       :active="loading"
       height="3"
       :indeterminate="true"
     />
-    <v-card
+    <!-- <v-toolbar-title class="headline text-bold">
+        {{ t('shaderPack.name', 2) }}
+      </v-toolbar-title> -->
+    <!-- <v-card
       class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5"
       outlined
       elevation="1"
     >
-      <!-- <v-toolbar-title class="headline text-bold">
-        {{ t('shaderPack.name', 2) }}
-      </v-toolbar-title> -->
       <FilterCombobox
         class="max-w-150 mr-2"
         :label="t('shaderPack.filter')"
@@ -25,7 +25,7 @@
       >
         <v-icon>folder</v-icon>
       </v-btn>
-    </v-card>
+    </v-card> -->
     <div
       class="flex overflow-auto h-full flex-col px-3"
       @dragover.prevent

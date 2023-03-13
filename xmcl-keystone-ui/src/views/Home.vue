@@ -1,11 +1,14 @@
 <template>
   <div
-    class="flex flex-col home-page flex-1 min-h-0 overflow-auto max-h-full"
+    class="flex flex-col home-page flex-1 overflow-auto max-h-full relative visible-scroll"
+    @wheel="onScroll"
   >
-    <HomeHeader
-      class="pt-10 mb-4 sticky top-0 z-10"
-      :focus-mode="isFocusMode"
-    />
+    <transition
+      name="fade-transition"
+      mode="out-in"
+    >
+      <HomeHeader class="sticky top-0 z-10" />
+    </transition>
 
     <template
       v-if="!isFocusMode"
@@ -14,10 +17,12 @@
       <v-divider
         class="border-transparent"
       />
-      <HomeCardHost
-        :is-server="isServer"
-        :instance="instance"
-      />
+      <transition
+        name="fade-transition"
+        mode="out-in"
+      >
+        <router-view />
+      </transition>
     </template>
 
     <HomeFocusFooter
@@ -32,18 +37,20 @@
     <HomeLaunchStatusDialog />
     <HomeJavaIssueDialog />
     <HomeInstanceUpdateDialog />
+    <SharedTooltip />
   </div>
 </template>
 
 <script lang=ts setup>
+import SharedTooltip from '@/components/SharedTooltip.vue'
+import { kFilterCombobox, useFilterComboboxData } from '@/composables'
 import { kInstanceContext, useInstanceContext } from '@/composables/instanceContext'
 import { usePresence } from '@/composables/presence'
+import { kCompact, useCompactScroll } from '@/composables/scrollTop'
 import { useInFocusMode } from '@/composables/uiLayout'
-import { useInstanceIsServer } from '../composables/instance'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import AppGameExitDialog from './AppGameExitDialog.vue'
 import AppLaunchBlockedDialog from './AppLaunchBlockedDialog.vue'
-import HomeCardHost from './HomeCardHost.vue'
 import HomeFocusFooter from './HomeFocusFooter.vue'
 import HomeHeader from './HomeHeader.vue'
 import HomeInstanceUpdateDialog from './HomeInstanceUpdateDialog.vue'
@@ -63,12 +70,13 @@ const context = useInstanceContext()
 provide(kInstanceContext, context)
 
 const instance = context.instance
-const isServer = useInstanceIsServer(instance)
 const { refresh } = useInstanceServerStatus(instance.value.path)
 const isFocusMode = useInFocusMode()
 
+provide(kFilterCombobox, useFilterComboboxData())
+
 onMounted(() => {
-  if (isServer.value) {
+  if (context.isServer.value) {
     refresh()
   }
 })
@@ -80,6 +88,11 @@ usePresence(computed(() => ({
   forge: instance.value.runtime.forge || '',
   fabric: instance.value.runtime.fabricLoader || '',
 })))
+
+const compact = ref(false)
+provide(kCompact, compact)
+const onScroll = useCompactScroll(compact)
+
 </script>
 
 <style>

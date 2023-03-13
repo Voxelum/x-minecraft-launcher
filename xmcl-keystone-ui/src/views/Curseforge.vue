@@ -136,10 +136,8 @@ const keywordBuffer = ref(props.keyword)
 watch(() => props.keyword, (newKeyword) => {
   keywordBuffer.value = newKeyword
 })
-const { versions, refresh, refreshing } = useMinecraftVersions()
+const { versions, refreshing } = useMinecraftVersions()
 const mcVersions = computed(() => versions.value.filter(v => v.type === 'release').map(v => v.id))
-
-onMounted(refresh)
 
 const {
   currentCategory,
@@ -152,6 +150,7 @@ const {
   error,
   pages,
   projects,
+  refresh,
 } = useCurseforge(props)
 
 usePresence({ location: 'curseforge' })

@@ -18,9 +18,10 @@
       <template #activator="{ attrs }">
         <v-btn
           :color="color"
-          x-large
+          :x-large="!compact"
+          :large="compact"
           v-bind="attrs"
-          class="!px-12 !py-6 text-lg"
+          class="px-12 text-lg transition-all"
           :loading="loading"
           @mouseenter="onMouseEnter"
           @mouseleave="onMouseLeave"
@@ -50,6 +51,7 @@
             {{ t("launch.launch") }}
             <v-icon
               v-if="launchStatus === 'idle'"
+              right
               class="text-2xl pl-3"
             >
               play_arrow
@@ -86,6 +88,7 @@ const emit = defineEmits(['pause', 'resume'])
 const props = defineProps<{
   status: TaskState
   issue: Issue | undefined
+  compact?: boolean
 }>()
 
 const inFoucsMode = useInFocusMode()

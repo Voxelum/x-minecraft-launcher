@@ -6,69 +6,11 @@
     <div
       class="flex flex-shrink flex-grow-0 items-center gap-2"
     >
-      <filter-combobox
+      <div class="flex-grow" />
+      <!-- <filter-combobox
         class="pr-3 max-w-200 max-h-full"
         :label="t('mod.filter')"
-      />
-      <v-select
-        class="max-w-40"
-        hide-details
-        label="Minecraft"
-        flat
-        solo
-        clearable
-      />
-      <v-btn-toggle
-        multiple
-        dense
-        :value="modLoaderFilters"
-        @change="emit('update:modLoaderFilters', $event)"
-      >
-        <v-btn
-          icon
-          text
-          value="forge"
-        >
-          <v-img
-            width="28"
-            :src="'image://builtin/forge'"
-          />
-        </v-btn>
-
-        <v-btn
-          icon
-          text
-          value="fabric"
-        >
-          <v-img
-            width="28"
-            :src="'image://builtin/fabric'"
-          />
-        </v-btn>
-
-        <v-btn
-          icon
-          text
-          value="quilt"
-        >
-          <v-img
-            width="28"
-            :src="'image://builtin/quilt'"
-          />
-        </v-btn>
-
-        <v-btn
-          icon
-          text
-          value="optifine"
-        >
-          <v-img
-            width="28"
-            :src="'image://builtin/optifine'"
-          />
-        </v-btn>
-      </v-btn-toggle>
-      <div class="flex-grow" />
+      /> -->
       <v-btn
         icon
         @click="showDirectory()"
@@ -76,19 +18,16 @@
         <v-icon>folder</v-icon>
       </v-btn>
 
-      <v-tooltip bottom>
-        <template #activator="{ on }">
-          <v-btn
-            icon
-            v-on="on"
-            @click="emit('install')"
-          >
-            <v-icon>
-              add
-            </v-icon>
-          </v-btn>
-        </template>
-      </v-tooltip>
+      <v-btn
+        large
+        color="primary"
+        @click="emit('install')"
+      >
+        Add
+        <v-icon right>
+          add
+        </v-icon>
+      </v-btn>
     </div>
     <div
       class="flex flex-shrink flex-grow-0 items-center justify-center gap-2"
@@ -105,7 +44,7 @@ import { useService } from '@/composables'
 import FilterCombobox from '@/components/FilterCombobox.vue'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 
-defineProps<{ modLoaderFilters: string[]; count: number }>()
+defineProps<{ count?: number }>()
 
 const emit = defineEmits(['update:modLoaderFilters', 'install'])
 

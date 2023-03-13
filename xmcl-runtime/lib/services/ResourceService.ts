@@ -1,5 +1,6 @@
 /* eslint-disable no-dupe-class-members */
 import { ExportResourceOptions, ImportResourceOptions, PartialResourceHash, ResolveResourceOptions, Resource, ResourceDomain, ResourceMetadata, ResourceService as IResourceService, ResourceServiceKey, ResourceType } from '@xmcl/runtime-api'
+import { ClassicLevel } from 'classic-level'
 import { FSWatcher } from 'fs'
 import { ensureDir } from 'fs-extra/esm'
 import { unlink } from 'fs/promises'
@@ -70,6 +71,14 @@ export class ResourceService extends AbstractService implements IResourceService
     @Inject(ImageStorage) readonly imageStore: ImageStorage,
     @Inject(kResourceWorker) private worker: ResourceWorker) {
     super(app, async () => {
+      try {
+        await this.context.snapshot.open()
+      } catch (e) {
+        if ((e as any).code === 'LEVEL_DATABASE_NOT_OPEN') {
+          await ClassicLevel.repair(this.getAppDataPath('resources-v2'))
+        }
+      }
+
       const mount = async (domain: ResourceDomain) => {
         const domainPath = this.getPath(domain)
         const files = await readdirEnsured(domainPath)

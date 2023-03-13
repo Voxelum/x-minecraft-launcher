@@ -18,12 +18,11 @@
     <v-chip
       v-for="(com, i) in compatibility"
       :key="com.modId + ' ' + i"
+      v-shared-tooltip="getTooltip(com)"
       class="mod-tag"
       small
       label
       outlined
-      @mouseenter="onEnter($event, com)"
-      @mouseleave="onLeave"
     >
       <v-avatar left>
         <img
@@ -67,8 +66,8 @@
 </template>
 
 <script lang=ts setup>
-import { useTheme } from '@/composables'
-import { kSharedTooltip } from '@/composables/sharedTooltip'
+import { useScrollRight, useTheme } from '@/composables'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getColor } from '@/util/color'
 import { injection } from '@/util/inject'
 import { CompatibleDetail } from '@/util/modCompatible'
@@ -81,13 +80,23 @@ defineProps<{
   onDeleteTag(tag: string): void
 }>()
 
-const { onLeave, onEnter } = injection(kSharedTooltip)
 const { icons } = injection(kModsContext)
 
 const getCompatibleIcon = (c?: CompatibleDetail) => {
   if (!c) return '❔'
   if (c.compatible === 'maybe') return '❔'
   return c.compatible ? '✔️' : '❌'
+}
+
+const { t } = useI18n()
+
+const getTooltip = (dep: CompatibleDetail) => {
+  const compatibleText = dep.compatible === 'maybe'
+    ? t('mod.maybeCompatible')
+    : dep.compatible
+      ? t('mod.compatible')
+      : t('mod.incompatible')
+  return compatibleText + t('mod.acceptVersion', { version: dep.requirements }) + ', ' + t('mod.currentVersion', { current: dep.version || '⭕' }) + '.'
 }
 
 const getDepIcon = (name: string, icon?: string) => {
@@ -100,10 +109,7 @@ const getDepIcon = (name: string, icon?: string) => {
 const { darkTheme } = useTheme()
 
 const container = ref(null as null | HTMLElement)
-const onWheel = (e: WheelEvent) => {
-  container.value!.scrollLeft += (e.deltaY / 2)
-  e.preventDefault()
-}
+const { onWheel } = useScrollRight(container)
 
 </script>
 

@@ -26,6 +26,7 @@
         :i="item.i"
         drag-allow-from=".v-card__title"
         drag-ignore-from=".no-drag"
+        :class="{ 'screenshot-item': Number(item.i) === CardType.Screenshots }"
         @container-resized="onResized"
         @resized="onResized"
       >
@@ -105,9 +106,10 @@
 <script lang="ts" setup>
 
 import { useLocalStorageCache } from '@/composables/cache'
+import { kInstanceContext } from '@/composables/instanceContext'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { useMojangNews } from '@/composables/mojangNews'
-import { kSharedTooltip, useSharedTooltip } from '@/composables/sharedTooltip'
+import { injection } from '@/util/inject'
 import { Instance } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { GridItem, GridLayout } from 'vue-grid-layout'
@@ -122,14 +124,7 @@ import HomeServerStatusBar from './HomeServerStatusBar.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
 import ModrinthProject from './ModrinthProject.vue'
 
-provide(kSharedTooltip, useSharedTooltip<string>((content) => {
-  return content
-}))
-
-const props = defineProps<{
-  isServer: boolean
-  instance: Instance
-}>()
+const { instance, isServer } = injection(kInstanceContext)
 
 enum CardType {
   Mod,
@@ -139,7 +134,7 @@ enum CardType {
   Screenshots,
 }
 
-provide(kUpstream, computed(() => ({ upstream: props.instance.upstream, minecraft: props.instance.runtime.minecraft })))
+provide(kUpstream, computed(() => ({ upstream: instance.value.upstream, minecraft: instance.value.runtime.minecraft })))
 
 function rawType(type: CardType) {
   return type + ''
@@ -220,10 +215,22 @@ const saveLayouts = debounce(() => {
   localStorage.setItem('cardsLayout', JSON.stringify(layouts.value))
 }, 500)
 
+let screenshotItem = undefined as undefined | HTMLElement
+
 const onResized = (i: string, newH: number, newW: number, newHPx: number, newWPx: number) => {
   containerWidths[i] = newWPx
   if (Number(i) === CardType.Screenshots) {
-    screenshotHeight.value = Number(newHPx)
+    if (!screenshotItem) {
+      screenshotItem = document.getElementsByClassName('screenshot-item').item(0) as HTMLElement
+    }
+    if (screenshotItem) {
+      nextTick().then(() => {
+        const h = screenshotItem!.style.height
+        screenshotHeight.value = Number(h.substring(0, h.length - 2))
+      })
+    } else {
+      screenshotHeight.value = Number(newHPx)
+    }
   }
   layouts.value[lastBreakpoint] = layout.value
   saveLayouts()
@@ -236,7 +243,6 @@ const saveRowCount = computed(() => getRowCount(containerWidths[CardType.Save]))
 
 const newsLayout = ref([] as GridItemType[])
 
-const { t } = useI18n()
 const { refresh, news } = useMojangNews()
 onMounted(async () => {
   await refresh()

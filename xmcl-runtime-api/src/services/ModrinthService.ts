@@ -41,6 +41,8 @@ export interface ModrinthService {
 
   getProject(projectId: string): Promise<Project>
 
+  getLocaledProject(projectId: string): Promise<Project>
+
   getProjectVersions(options: GetProjectVersionsOptions): Promise<ProjectVersion[]>
 
   getProjectVersion(versionId: string): Promise<ProjectVersion>

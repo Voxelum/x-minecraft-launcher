@@ -124,7 +124,9 @@ export class CacheHandler extends DispatchHandler {
   ) {
     super(handler)
     this.totalTimeout = new AbortController()
-    setTimeout(15_000, undefined, this.totalTimeout).then(() => this.onTimeout(), () => { /* aborted */ })
+    if (options.totalTimeout !== 0) {
+      setTimeout(options.totalTimeout || 15_000, undefined, this.totalTimeout).then(() => this.onTimeout(), () => { /* aborted */ })
+    }
   }
 
   onTimeout() {
@@ -300,7 +302,7 @@ export class JsonCacheStorage implements CacheStorage {
   }
 
   protected async getKey(opts: Agent.DispatchOptions) {
-    let key = `${opts.method}:${new URL(opts.path + opts.query ?? '', opts.origin).toString()}`
+    let key = `${opts.method}:${new URL(opts.path + (opts.query ?? ''), opts.origin).toString()}`
     if (opts.body && (opts.method === 'POST' || opts.method === 'PATCH' || opts.method === 'PUT')) {
       if (opts.body instanceof Readable) {
         // Do not support cache for readable

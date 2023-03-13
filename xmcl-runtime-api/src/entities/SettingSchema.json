@@ -127,6 +127,10 @@
         "discordPresence": {
             "default": true,
             "type": "boolean"
+        },
+        "developerMode": {
+            "default": false,
+            "type": "boolean"
         }
     },
     "required": [
@@ -135,6 +139,7 @@
         "apiSetsPreference",
         "autoDownload",
         "autoInstallOnAppQuit",
+        "developerMode",
         "discordPresence",
         "globalAssignMemory",
         "globalFastLaunch",

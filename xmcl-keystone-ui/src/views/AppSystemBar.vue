@@ -6,7 +6,7 @@
     class="flex w-full moveable p-0 flex-grow-0 gap-1"
     :style="{ 'backdrop-filter': `blur(${blurAppBar}px)` }"
   >
-    <span
+    <!-- <span
       v-if="alternativeBack"
       class="w-[76px]"
     />
@@ -20,7 +20,7 @@
       >
         arrow_back
       </v-icon>
-    </span>
+    </span> -->
 
     <div class="flex-grow " />
     <TaskSpeedMonitor />

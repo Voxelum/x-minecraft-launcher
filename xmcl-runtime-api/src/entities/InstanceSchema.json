@@ -5,6 +5,14 @@
             "default": 0,
             "type": "number"
         },
+        "lastPlayedDate": {
+            "default": 0,
+            "type": "number"
+        },
+        "playtime": {
+            "default": 0,
+            "type": "number"
+        },
         "creationDate": {
             "default": 0,
             "type": "number"
@@ -244,8 +252,10 @@
         "fileApi",
         "icon",
         "lastAccessDate",
+        "lastPlayedDate",
         "modpackVersion",
         "name",
+        "playtime",
         "resolution",
         "runtime",
         "server",

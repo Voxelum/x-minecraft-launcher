@@ -1,24 +1,28 @@
 <template>
   <div
-    class="flex flex-col h-full overflow-auto w-full me max-h-full px-4"
+    class="flex flex-col h-full overflow-auto w-full me max-h-full px-4 pl-6 py-4"
     @dragover.prevent
   >
     <section class="">
-      <v-subheader>
+      <h2>
         News
-      </v-subheader>
+      </h2>
       <div class="flex overflow-x-auto overflow-y-hidden row-span-4 w-full gap-4">
         <div
           v-for="n of news"
           :key="n.id"
+          class="flex flex-col gap-2"
         >
-          <div>{{ n.date }}</div>
+          <div class="text-sm v-subtitle">
+            {{ n.date }}
+          </div>
           <v-img
+            class="rounded-lg"
             :src="n.newsPageImage.url"
             :width="n.newsPageImage.dimensions.width / 2"
             :height="n.newsPageImage.dimensions.height / 2"
           >
-            <div class="hover:opacity-100 opacity-0 bg-[rgba(123,123,123,0.5)] w-full h-full transition-all duration-300 flex items-center justify-center">
+            <div class="cursor-pointer hover:opacity-100 opacity-0 bg-[rgba(123,123,123,0.5)] w-full h-full transition-all duration-300 flex items-center justify-center">
               {{ n.text }}
             </div>
           </v-img>
@@ -29,10 +33,10 @@
       </div>
     </section>
 
-    <section>
-      <v-subheader>
+    <section class="mt-4">
+      <h2>
         Recent Played
-      </v-subheader>
+      </h2>
       <div class="flex overflow-x-auto overflow-y-hidden row-span-4 w-full gap-4">
         <div
           v-for="i of sorted"
@@ -73,7 +77,7 @@ const { t } = useI18n()
 const { refresh, news } = useMojangNews()
 onMounted(refresh)
 const { instances } = useInstances()
-const sorted = computed(() => instances.value.sort((a, b) => a.lastAccessDate - b.lastAccessDate).slice(0, 5))
+const sorted = computed(() => [...instances.value].sort((a, b) => a.lastAccessDate - b.lastAccessDate).slice(0, 5))
 </script>
 
 <style>
@@ -88,5 +92,10 @@ const sorted = computed(() => instances.value.sort((a, b) => a.lastAccessDate - 
 .me .v-tabs-items {
   background: transparent !important;
   background-color: transparent !important;
+}
+</style>
+<style scoped>
+h2 {
+  @apply heading-2 mt-4 mb-2 text-lg;
 }
 </style>

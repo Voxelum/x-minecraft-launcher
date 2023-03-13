@@ -1,4 +1,4 @@
-import { File, FileModLoaderType, FileRelationType, SearchOptions } from '@xmcl/curseforge'
+import { File, FileModLoaderType, FileRelationType, Mod, SearchOptions } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
 import { CurseForgeService as ICurseForgeService, CurseForgeServiceKey, getCurseforgeFileUri, GetModFilesOptions, InstallFileOptions, InstallFileResult, ProjectType, ResourceDomain } from '@xmcl/runtime-api'
 import { unlink } from 'fs/promises'
@@ -7,21 +7,59 @@ import { Client } from 'undici'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { CurseforgeClient } from '../clients/CurseforgeClient'
+import { kUserTokenStorage, UserTokenStorage } from '../entities/userTokenStore'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { isNonnull, requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
+import { BaseService } from './BaseService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Singleton } from './Service'
+import { UserService } from './UserService'
 
 @ExposeServiceKey(CurseForgeServiceKey)
 export class CurseForgeService extends AbstractService implements ICurseForgeService {
   readonly client: CurseforgeClient
 
+  private getHeaders = async () => {
+    const profile = await this.userService.getOfficialUserProfile()
+    if (profile) {
+      const token = await this.tokenStorage.get(profile)
+      const locale = this.baseService.state.locale
+      return {
+        authorization: 'Bearer ' + token,
+        'accept-language': locale || '*',
+      }
+    }
+    return {} as Record<string, string>
+  }
+
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(BaseService) private baseService: BaseService,
+    @Inject(UserService) private userService: UserService,
+    @Inject(kUserTokenStorage) private tokenStorage: UserTokenStorage,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app)
 
+    // this.networkManager.registerDispatchInterceptor(async (options) => {
+    //   if (options.origin === 'https://api.curseforge.com') {
+    //     options.origin = 'https://api.xmcl.app'
+    //     options.path = '/curseforge' + options.path
+    //     if (options.headers) {
+    //       const profile = await userService.getOfficialUserProfile()
+    //       if (profile) {
+    //         const token = await tokenStorage.get(profile)
+    //         if (options.headers instanceof Array) {
+    //           options.headers?.push('authorization', 'Bearer ' + token)
+    //         } else {
+    //           options.headers.authorization = 'Bearer ' + token
+    //         }
+    //       }
+    //     }
+    //     options.totalTimeout = 0
+    //     options.headersTimeout = 0
+    //   }
+    // })
     const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
       if (origin.host === 'api.curseforge.com') {
         return new Client(origin, {
@@ -33,6 +71,16 @@ export class CurseForgeService extends AbstractService implements ICurseForgeSer
       }
     })
     this.client = new CurseforgeClient(process.env.CURSEFORGE_API_KEY || '', dispatcher)
+  }
+
+  getLocaledMod(modId: number): Promise<Mod> {
+    this.log(`Fetch locale project: ${modId}`)
+    return this.client.getMod(modId, { getHeaders: this.getHeaders, noTimeout: true, origin: 'https://api.xmcl.app/curseforge' })
+  }
+
+  getLocaledModDescription(modId: number): Promise<string> {
+    this.log(`Fetch project description: ${modId}`)
+    return this.client.getModDescription(modId, { getHeaders: this.getHeaders, noTimeout: true, origin: 'https://api.xmcl.app/curseforge' })
   }
 
   getFileChangelog(file: Pick<File, 'modId' | 'id'>): Promise<string> {

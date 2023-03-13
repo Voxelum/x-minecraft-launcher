@@ -1,5 +1,6 @@
 <template>
   <v-combobox
+    ref="filterCombobox"
     v-model="selectedFilterOptions"
     v-focus-on-search="() => true"
     tabindex="0"
@@ -10,12 +11,18 @@
     chips
     clearable
     hide-details
+    hide-no-data
     :allow-overflow="true"
+    class="filter-combobox invisible-scroll"
     prepend-inner-icon="filter_list"
     multiple
-    solo
-    flat
+    outlined
+    dense
+    :height="46"
+    :placeholder="placeholder"
+    filled
     @click:clear="clearFilterItems"
+    @wheel.native="onWheel"
   >
     <template #item="{ item, attrs }">
       <div class="w-full flex flex-grow-0 items-center">
@@ -42,6 +49,7 @@
         v-if="typeof item === 'object'"
         label
         outlined
+        class="overflow-visible"
         :color="item.color ? item.color : getColor(item.value)"
         :input-value="selected"
         close
@@ -57,6 +65,7 @@
       </v-chip>
       <v-chip
         v-else
+        class="overflow-visible"
         label
         outlined
         :input-value="selected"
@@ -71,13 +80,13 @@
 </template>
 <script lang="ts" setup>
 import { getColor } from '../util/color'
-import { FilterCombobox } from '../composables'
+import { kFilterCombobox, useScrollRight } from '../composables'
 import { vFocusOnSearch } from '../directives/focusOnSearch'
 import debounce from 'lodash.debounce'
 
-defineProps<{ label: String }>()
+defineProps<{ label?: string; placeholder?: string }>()
 
-const model = inject(FilterCombobox)
+const model = inject(kFilterCombobox)
 if (!model) { throw new Error('Please call useFilterCombobox in upper level') }
 
 const filterTextBuffer = ref(model.filteredText.value)
@@ -102,4 +111,19 @@ const {
   removeFilteredItem,
 } = model
 
+const filterCombobox = ref(null as any)
+const container = ref(null as any)
+onMounted(() => {
+  const el = filterCombobox.value.$el as HTMLElement
+  container.value = el.querySelector('.v-select__selections')
+})
+
+const { onWheel } = useScrollRight(container)
+
 </script>
+<style>
+.filter-combobox .v-select__selections {
+  flex-wrap: nowrap !important;
+  overflow-x: auto !important;
+}
+</style>

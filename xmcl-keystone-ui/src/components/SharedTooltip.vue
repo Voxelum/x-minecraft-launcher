@@ -13,8 +13,7 @@
 </template>
 
 <script lang="ts" setup>
-import { kSharedTooltip } from '@/composables/sharedTooltip'
-import { injection } from '@/util/inject'
+import { useSharedTooltipData } from '@/composables/sharedTooltip'
 
-const { currentTooltip, x, y, isShown, color } = injection(kSharedTooltip)
+const { currentTooltip, x, y, isShown, color } = useSharedTooltipData()
 </script>
