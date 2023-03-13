@@ -1,6 +1,11 @@
 <template>
-  <div class="flex flex-col max-h-full select-none h-full pt-4 pb-0">
-    <SharedTooltip />
+  <div
+    class="flex flex-col absolute top-0 left-0 max-h-full h-full w-full transition-all"
+    :class="{
+      'pt-35': compact,
+      'pt-47': !compact,
+    }"
+  >
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
       :active="loading"
@@ -8,15 +13,8 @@
       :indeterminate="true"
     />
 
-    <ModHeader
-      class="mx-8"
-      :mod-loader-filters.sync="modLoaderFilters"
-      :count="enabledModCounts"
-      @install="onInstall"
-    />
-
     <div
-      class="flex overflow-auto h-full flex-col py-0 visible-scroll"
+      class="flex overflow-auto h-full flex-col py-0"
       @dragend="onDragEnd"
       @dragover.prevent
       @drop="onDropToImport"
@@ -29,19 +27,19 @@
         v-else-if="items.length === 0"
         icon="save_alt"
         :text="t('mod.dropHint')"
-        :absolute="true"
-        class="h-full z-0"
+        class="h-full w-full z-0"
       />
       <v-virtual-scroll
         v-else
         :class="{ 'selection-mode': isSelectionMode }"
         :items="items"
         :bench="2"
-        class="overflow-auto max-h-full"
+        class="overflow-auto max-h-full visible-scroll"
         item-height="100"
+        @wheel.native="onScroll"
       >
         <template #default="{ item, index }">
-          <div class="mx-8 invisible-scroll last:mb-4">
+          <div class="mx-5 invisible-scroll last:mb-4">
             <ModCard
               :key="item.path + '@' + item.hash"
               :item="item"
@@ -88,36 +86,19 @@ import { useModDeletion } from '@/composables/modDelete'
 import { useModDragging } from '@/composables/modDraggable'
 import { useModFilter } from '@/composables/modFilter'
 import { useModSelection } from '@/composables/modSelection'
-import { kSharedTooltip, useSharedTooltip } from '@/composables/sharedTooltip'
+import { usePresence } from '@/composables/presence'
+import { kCompact, useCompactScroll } from '@/composables/scrollTop'
+import { injection } from '@/util/inject'
 import { InstanceServiceKey, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { ModItem, useInstanceMods } from '../composables/mod'
 import ModCard from './ModCard.vue'
 import ModDeleteView from './ModDeleteView.vue'
 import FloatButton from './ModFloatButton.vue'
-import ModHeader from './ModHeader.vue'
-import SharedTooltip from '../components/SharedTooltip.vue'
-import { CompatibleDetail } from '@/util/modCompatible'
-import { usePresence } from '@/composables/presence'
 
 const { importResources } = useService(ResourceServiceKey)
 const { items: mods, commit, committing, isModified, enabledModCounts } = useInstanceMods()
 const loading = false
-const { push } = useRouter()
-
-const onInstall = () => {
-  push('/mod-add')
-}
-
-provide(kSharedTooltip, useSharedTooltip<CompatibleDetail>((dep) => {
-  const compatibleText = dep.compatible === 'maybe'
-    ? t('mod.maybeCompatible')
-    : dep.compatible
-      ? t('mod.compatible')
-      : t('mod.incompatible')
-  return compatibleText + t('mod.acceptVersion', { version: dep.requirements }) + ', ' + t('mod.currentVersion', { current: dep.version || '⭕' }) + '.'
-}))
-
 const filtered = useModFilter(mods)
 const { isSelectionMode, selectedItems, onEnable, onClick } = useModSelection(filtered.items)
 const { t } = useI18n()
@@ -129,6 +110,8 @@ const { onDrop: onDropToImport } = useDrop((file) => {
 const { isDraggingMod, onDragEnd, onItemDragstart } = useModDragging(filtered.items, selectedItems, isSelectionMode)
 const { deletingMods, startDelete, confirmDelete, cancelDelete } = useModDeletion(mods)
 const { modLoaderFilters, items } = filtered
+const compact = injection(kCompact)
+const onScroll = useCompactScroll(compact)
 
 const onTags = (item: ModItem, tags: string[]) => {
   item.tags = tags

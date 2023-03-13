@@ -83,6 +83,11 @@ HomeSyncDialogPush:
 SettingMigrationDialog:
   selectRootDirectory: Select Root Directory
 add: Add
+ago:
+  day: '{duration} day ago | {duration} days ago'
+  hour: '{duration} hour ago | {duration} hours ago'
+  minute: '{duration} minute ago | {duration} minutes ago'
+  second: '{duration} second ago | {duration} seconds ago'
 authProfileAddedNotification: Auth Profile {name} Added
 author: Author
 back: Back
@@ -223,6 +228,11 @@ disk:
   used: Used
 download: Download
 downloadCount: '{count} downloads'
+duration:
+  day: '{duration} day | {duration} days'
+  hour: '{duration} hour | {duration} hours'
+  minute: '{duration} minute | {duration} minutes'
+  second: '{duration} second | {duration} seconds'
 edit: Edit
 error:
   name: Error | Errors
@@ -354,6 +364,7 @@ installVersion:
   json: Install Version Json
   name: Install Minecraft Client {version}
 instance:
+  addMod: Add Mod to instance
   addServer: Add Server
   current: Current Instance
   delete: Delete Profile
@@ -363,13 +374,16 @@ instance:
   fileApiHint: The url to synchronize instance files from a remote config server.
   gameVersion: Game Version
   includeVersion: Include Version | Include Versions
+  lastPlayed: Last Played
   launchArguments: Launch Arguments Preview
   mcOptions: Minecraft Options
   mcOptionsHint: Additional Minecraft launch arugments
   name: Profile Name
   nameHint: The name used to identify the game
+  neverPlayed: Never Played
   openCrashReportFolder: Open Crash Report Folder
   openLogFolder: Open Log Folder
+  playtime: Playtime
   requireName: The name is required
   showInstance: Show instance folder
   versionHint: The Minecraft version of this game
@@ -559,6 +573,7 @@ minecraftVersion:
   showAlpha: Show Snapshot
   snapshot: Snapshot
 mod:
+  showDirectory: Show mods directory
   acceptVersion: Accept {version}
   backToAllMods: Back to All Mods
   compatible: Compatible Mod.

@@ -9,6 +9,8 @@ input::-webkit-inner-spin-button {
     --warning-color: #e65100;
     --warning-color-decent: #c45920;
     --common-color: #424242;
+    --border-dark: hsla(0,0%,100%,.12);
+    --border-light: hsla(0,0%,100%,.12);
 }
 
 p {
@@ -43,30 +45,40 @@ p {
     transition: all 0.01s;
 }
 
+.transition-list-move,
 .transition-list-enter-active,
 .transition-list-leave-active {
-    transition: all 0.7s !important;
+    transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+    /* transition: all 0.7s !important; */
 }
 
 .transition-list-enter,
 .transition-list-leave-to {
     opacity: 0 !important;
-    transition: all 0.7s !important;
+    transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+    transform: scaleY(0.01) translate(30px, 0);
+    /* transition: all 0.7s !important; */
     /* transform: translateY(30px); */
 }
 
-.transition-list-move {
-    transition: transform 0.7s !important;
+.transition-list-leave-active {
+    position: absolute;
 }
+
+/* .transition-list-move {
+    transition: transform 0.7s !important;
+} */
 
 
 html ::-webkit-scrollbar {
     display: none;
+    z-index: 1000;
 }
 
 ::-webkit-scrollbar {
     width: 8px;
     cursor: pointer;
+    z-index: 1000;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -75,6 +87,7 @@ html ::-webkit-scrollbar {
     background: rgba(155, 155, 155, 0.5);
     transition: all 1s;
     border-radius: 2px;
+    z-index: 1000;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -105,40 +118,6 @@ html ::-webkit-scrollbar {
     /* height: 0px; */
     /* background: transparent; */
 }
-
-/* .card-list {
-    max-width: 100%;
-    padding: 0 10px 10px 10px;
-    margin: 0px 0px 0px 0px;
-    min-height: 80vh;
-    max-height: 80vh;
-}
-
-.card-list .list {
-    overflow: auto;
-    min-height: 73vh;
-    max-height: 73vh;
-}
-
-.card-list .v-input__slot {
-    box-shadow: none !important;
-    transition: background 0.3s cubic-bezier(0.25, 0.8, 0.5, 1),
-        box-shadow 0.3s cubic-bezier(0.25, 0.8, 0.5, 1) !important;
-    transition-property: background;
-    transition-duration: 0.3s;
-    transition-timing-function: cubic-bezier(0.25, 0.8, 0.5, 1);
-    transition-delay: 0s;
-}
-
-.card-list .v-input__slot:hover {
-    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
-        0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
-}
-
-.card-list .v-input--is-focused .v-input__control .v-input__slot {
-    box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
-        0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12) !important;
-} */
 
 .dark .v-dialog .v-card {
     background-color: #424242 !important;
@@ -221,8 +200,8 @@ html ::-webkit-scrollbar {
 /* Draggable card */
 
 .draggable-card {
-    transition: all !important;
-    transition-duration: 0.2s !important;
+    /* transition: all !important; */
+    /* transition-duration: 0.2s !important; */
 }
 
 .draggable-card.dragged {

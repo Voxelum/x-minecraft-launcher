@@ -3,7 +3,7 @@ import { Duplex } from 'stream'
 import { Dispatcher, errors, getGlobalDispatcher } from 'undici'
 
 export interface DispatchInterceptor {
-  (options: Dispatcher.DispatchOptions): void
+  (options: Dispatcher.DispatchOptions): void | Promise<void>
 }
 
 export class DispatchHandler implements Dispatcher.DispatchHandlers {
@@ -51,10 +51,14 @@ export class InteroperableDispatcher extends Dispatcher {
   }
 
   dispatch(options: Dispatcher.DispatchOptions, handler: Dispatcher.DispatchHandlers): boolean {
-    for (const interceptor of this.interceptors) {
-      interceptor(options)
+    const process = async () => {
+      for (const interceptor of this.interceptors) {
+        await interceptor(options)
+      }
+      this.dispatcher.dispatch(options, handler)
     }
-    return this.dispatcher.dispatch(options, handler)
+    process()
+    return true
   }
 
   destroy(): Promise<void>

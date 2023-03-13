@@ -64,7 +64,7 @@ export function useShaderpacks() {
   })
 
   function updateResourceTags() {
-    updateResources(shaderPacks.value.map(pack => ({
+    updateResources(shaderPacks.value.filter(pack => !!pack.resource).map(pack => ({
       tags: pack.tags,
       name: pack.name,
       hash: pack.resource.hash,

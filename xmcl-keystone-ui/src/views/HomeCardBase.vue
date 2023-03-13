@@ -25,10 +25,9 @@
           <v-avatar
             v-for="a of icons"
             :key="a.name"
+            v-shared-tooltip="a.name"
             :color="a.color ? a.color : !a.icon ? getColor(a.name) : undefined"
             size="30px"
-            @mouseenter="onEnter($event, a.name)"
-            @mouseleave="onLeave($event)"
           >
             <img
               v-if="a.icon"
@@ -53,8 +52,8 @@
   </v-card>
 </template>
 <script lang="ts" setup>
-import { kColorTheme, useColorTheme } from '@/composables/colorTheme'
-import { kSharedTooltip } from '@/composables/sharedTooltip'
+import { kColorTheme } from '@/composables/colorTheme'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getColor } from '@/util/color'
 import { injection } from '@/util/inject'
 
@@ -68,7 +67,4 @@ defineProps<{
 }>()
 const emit = defineEmits(['navigate'])
 const { cardColor } = injection(kColorTheme)
-const tooltip = inject(kSharedTooltip)
-const onEnter = tooltip?.onEnter || (() => { })
-const onLeave = tooltip?.onLeave || (() => { })
 </script>

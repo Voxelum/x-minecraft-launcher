@@ -7,10 +7,13 @@ import { Pool } from 'undici'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { ModrinthClient } from '../clients/ModrinthClient'
+import { kUserTokenStorage, UserTokenStorage } from '../entities/userTokenStore'
 import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
+import { BaseService } from './BaseService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Singleton } from './Service'
+import { UserService } from './UserService'
 
 interface Tags { licenses: License[]; categories: Category[]; gameVersions: GameVersion[]; modLoaders: Loader[]; environments: string[] }
 
@@ -20,7 +23,23 @@ export class ModrinthService extends AbstractService implements IModrinthService
 
   private tags: Tags | undefined
 
+  private getHeaders = async () => {
+    const profile = await this.userService.getOfficialUserProfile()
+    if (profile) {
+      const token = await this.tokenStorage.get(profile)
+      const locale = this.baseService.state.locale
+      return {
+        authorization: 'Bearer ' + token,
+        'accept-language': locale || '*',
+      }
+    }
+    return {} as Record<string, string>
+  }
+
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(BaseService) private baseService: BaseService,
+    @Inject(UserService) private userService: UserService,
+    @Inject(kUserTokenStorage) private tokenStorage: UserTokenStorage,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app, async () => {
@@ -48,6 +67,11 @@ export class ModrinthService extends AbstractService implements IModrinthService
     const project: Project = await this.client.getProject(projectId)
     this.log(`Got project for project_id=${projectId}`)
     return project
+  }
+
+  getLocaledProject(projectId: string): Promise<Project> {
+    if (projectId.startsWith('local-')) { projectId = projectId.slice('local-'.length) }
+    return this.client.getProject(projectId, { getHeaders: this.getHeaders, noTimeout: true, origin: 'https://api.xmcl.app/curseforge' })
   }
 
   @Singleton(p => JSON.stringify(p))

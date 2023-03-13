@@ -55,6 +55,7 @@
     <v-list-item-action v-if="icon">
       <v-btn
         text
+        v-shared-tooltip=""
         icon
         :disabled="isSameFileWithUpstream"
         :loading="progress !== -1"
@@ -80,6 +81,7 @@
 <script lang=ts setup>
 import { kCurseforgeInstall } from '@/composables/curseforgeInstall'
 import { kTaskManager } from '@/composables/taskManager'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getColorForReleaseType } from '@/util/color'
 import { getLocalDateString } from '@/util/date'
 import { injection } from '@/util/inject'
@@ -98,6 +100,7 @@ const props = defineProps<{
   size?: number
   date?: string
 }>()
+// const tooltip = useSharedTooltip<boolean>((v) => v ? t('curseforge.install') : t('curseforge.downloadOnly'))
 
 const { t } = useI18n()
 const releases = computed(() => ['', t('versionType.release'), 'Beta', 'Alpha'])

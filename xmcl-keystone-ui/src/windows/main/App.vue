@@ -35,6 +35,7 @@
     <AppShareInstanceDialog />
     <AppInstanceDeleteDialog />
     <ImageDialog />
+    <SharedTooltip />
   </v-app>
   <v-app
     v-else
@@ -83,6 +84,7 @@ import { useAllServices } from './services'
 import ImageDialog from '@/components/ImageDialog.vue'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
 import { kModInstallList, useModInstallList } from '@/composables/modInstallList'
+import SharedTooltip from '@/components/SharedTooltip.vue'
 
 const colorTheme = useColorTheme()
 const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = colorTheme

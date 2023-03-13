@@ -13,6 +13,14 @@
       dense
       class="px-2 ml-1"
     >
+      <v-list-item
+        class="non-moveable"
+        @click="goBack"
+      >
+        <v-icon class="text-[18px]">
+          arrow_back
+        </v-icon>
+      </v-list-item>
       <v-list-group
         v-model="expanding"
         active-class="v-list-item--link"
@@ -211,13 +219,17 @@ const useFocus = computed(() => layout.value === 'focus')
 
 const { t } = useI18n()
 const { sideBarColor } = injection(kColorTheme)
-const { push, currentRoute } = useRouter()
+const { push, back, currentRoute } = useRouter()
 const expanding = ref(false)
 
 const navToMe = () => {
   if (currentRoute.path !== 'me') {
     push('/me')
   }
+}
+
+function goBack() {
+  back()
 }
 
 </script>
@@ -228,6 +240,7 @@ const navToMe = () => {
   max-height: 100%;
   display: flex;
   flex-direction: column;
+  /* @apply rounded-r-xl border-r-[hsla(0,0%,100%,.12)]; */
 }
 
 </style>

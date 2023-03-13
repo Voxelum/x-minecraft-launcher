@@ -3,6 +3,7 @@
     v-selectable-card
     v-long-press="onSelect"
     v-context-menu="contextMenuItems"
+    :color="cardColor"
     outlined
     :draggable="!item.enabled"
     :class="{
@@ -11,7 +12,7 @@
       subsequence: item.subsequence === true,
       dragged: item.dragged,
     }"
-    class="draggable-card mod-card rounded-lg transition-all duration-200 shadow"
+    class="draggable-card mod-card rounded-lg transition-all duration-200 shadow px-3"
     style="margin-top: 10px; padding: 0 10px;"
     @dragstart="onDragStart"
     @click="onClick($event, index)"
@@ -102,8 +103,10 @@
 <script lang=ts setup>
 import unknownPack from '@/assets/unknown_pack.png'
 import { useTags } from '@/composables'
+import { kColorTheme } from '@/composables/colorTheme'
 import { useModCompatibility } from '@/composables/modCompatibility'
 import { useModItemContextMenuItems } from '@/composables/modContextMenu'
+import { injection } from '@/util/inject'
 import type Vue from 'vue'
 import { Ref } from 'vue'
 import { ModItem } from '../composables/mod'
@@ -124,6 +127,7 @@ const props = defineProps<{
   onEnable(event: { item: ModItem; enabled: boolean }): void
 }>()
 
+const { cardColor } = injection(kColorTheme)
 const modItem = computed(() => props.item)
 const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.item.tags, set(v) { props.onTags(props.item, v) } }), computed(() => props.item.selected))
 const { isCompatible, compatibility } = useModCompatibility(modItem)

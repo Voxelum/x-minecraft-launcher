@@ -4,7 +4,6 @@ import Curseforge from '@/views/Curseforge.vue'
 import CurseforgeProject from '@/views/CurseforgeProject.vue'
 import FeedTheBeast from '@/views/FeedTheBeast.vue'
 import FeedTheBeastProject from '@/views/FeedTheBeastProject.vue'
-import ModInstall from '@/views/ModInstall.vue'
 // import GameSetting from '@/views/GameSetting.vue'
 import Home from '@/views/Home.vue'
 import Me from '@/views/Me.vue'
@@ -20,6 +19,18 @@ import Setting from '@/views/Setting.vue'
 import ShaderPack from '@/views/ShaderPack.vue'
 import User from '@/views/User.vue'
 import VersionLocalView from '@/views/VersionLocalView.vue'
+import HomeCardHost from '@/views/HomeCardHost.vue'
+import HomeExtension from '@/views/HomeExtension.vue'
+import ModExtension from '@/views/ModExtension.vue'
+import SaveExtension from '@/views/SaveExtension.vue'
+import HomeActions from '@/views/HomeActions.vue'
+import ShaderPackActions from '@/views/ShaderPackActions.vue'
+import ModActions from '@/views/ModActions.vue'
+import ResourcePackActions from '@/views/ResourcePackActions.vue'
+import ResourcePackExtension from '@/views/ResourcePackExtension.vue'
+import ShaderPackExtension from '@/views/ShaderPackExtension.vue'
+import ModAddActions from '@/views/ModAddActions.vue'
+import ModAddExtension from '@/views/ModAddExtension.vue'
 
 export const createRouter = () => {
   const router = new Router({
@@ -27,6 +38,55 @@ export const createRouter = () => {
       {
         path: '/',
         component: Home,
+        children: [
+          {
+            path: '/',
+            components: {
+              default: HomeCardHost,
+              extensions: HomeExtension,
+              actions: HomeActions,
+            },
+          },
+          {
+            path: '/save',
+            components: {
+              default: Save,
+              extensions: SaveExtension,
+            },
+          },
+          {
+            path: '/mod-setting',
+            components: {
+              default: Mod,
+              extensions: ModExtension,
+              actions: ModActions,
+            },
+          },
+          {
+            path: '/resource-pack-setting',
+            components: {
+              default: ResourcePack,
+              extensions: ResourcePackExtension,
+              actions: ResourcePackActions,
+            },
+          },
+          {
+            path: '/shader-pack-setting',
+            components: {
+              default: ShaderPack,
+              extensions: ShaderPackExtension,
+              actions: ShaderPackActions,
+            },
+          },
+          {
+            path: '/install',
+            components: {
+              default: ModAdd,
+              extensions: ModAddExtension,
+              actions: ModAddActions,
+            },
+          },
+        ],
       },
       {
         path: '/setting',
@@ -41,24 +101,8 @@ export const createRouter = () => {
         component: User,
       },
       {
-        path: '/save',
-        component: Save,
-      },
-      {
         path: '/base-setting',
         component: BaseSetting,
-      },
-      {
-        path: '/mod-setting',
-        component: Mod,
-      },
-      {
-        path: '/mod-add',
-        component: ModAdd,
-      },
-      {
-        path: '/mod-install',
-        component: ModInstall,
       },
       // {
       //   path: '/game-setting',
@@ -67,14 +111,6 @@ export const createRouter = () => {
       {
         path: '/instances',
         component: () => import('@/views/Instances.vue'),
-      },
-      {
-        path: '/resource-pack-setting',
-        component: ResourcePack,
-      },
-      {
-        path: '/shader-pack-setting',
-        component: ShaderPack,
       },
       {
         path: '/multiplayer',

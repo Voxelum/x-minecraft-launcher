@@ -12,3 +12,12 @@ export function useScrollToOnMount(elem: Ref<null | import('vue').default | HTML
     }
   })
 }
+export function useScrollRight(container: Ref<HTMLElement | null>) {
+  const onWheel = (e: WheelEvent) => {
+    container.value!.scrollLeft += (e.deltaY / 2)
+    e.preventDefault()
+  }
+  return {
+    onWheel,
+  }
+}

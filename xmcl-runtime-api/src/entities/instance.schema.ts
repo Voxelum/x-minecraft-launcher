@@ -202,6 +202,14 @@ export interface InstanceSchema extends InstanceData {
   /**
    * @default 0
    */
+  lastPlayedDate: number
+  /**
+   * @default 0
+   */
+  playtime: number
+  /**
+   * @default 0
+   */
   creationDate: number
 }
 

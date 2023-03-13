@@ -313,6 +313,12 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       })
       const watcher = createMinecraftProcessWatcher(process)
       const errorLogs = [] as string[]
+      const startTime = Date.now()
+
+      this.instanceService.editInstance({
+        instancePath: instance.path,
+        lastPlayedDate: startTime,
+      })
 
       process.stderr?.on('data', (buf: any) => {
         const lines = buf.toString().split(EOL)
@@ -321,6 +327,14 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       watcher.on('error', (err) => {
         this.emit('error', new LaunchException({ type: 'launchGeneralException', error: err }))
       }).on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation }) => {
+        const endTime = Date.now()
+        const playTime = endTime - startTime
+
+        this.instanceService.editInstance({
+          instancePath: instance.path,
+          playtime: instance.playtime + playTime,
+        })
+
         this.log(`Minecraft exit: ${code}, signal: ${signal}`)
         if (crashReportLocation) {
           crashReportLocation = crashReportLocation.substring(0, crashReportLocation.lastIndexOf('.txt') + 4)

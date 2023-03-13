@@ -1,6 +1,6 @@
 <template>
   <div
-    class="relative"
+    class="relative w-full"
   >
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
@@ -28,6 +28,7 @@
         :size="file.fileLength"
         :date="file.fileDate"
         :release-type="file.releaseType"
+        @install="emit('install', file)"
       />
     </v-list>
     <v-skeleton-loader

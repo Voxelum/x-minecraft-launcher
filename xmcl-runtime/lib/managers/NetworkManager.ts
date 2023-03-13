@@ -25,20 +25,24 @@ export default class NetworkManager extends Manager {
   private logger = this.app.logManager.getLogger('NetworkManager')
 
   private apiDispatcher: Dispatcher
-  private downloadDispatcher: Dispatcher
   private downloadAgent: DownloadAgent
 
-  private dispatchInterceptors: Array<(opts: DispatchOptions) => void> = []
+  private dispatchInterceptors: Array<(opts: DispatchOptions) => void | Promise<void>> = []
 
   private apiClientFactories: Array<(origin: URL, options: Agent.Options) => Dispatcher | undefined>
-  private downloadClientFactories: Array<(origin: URL, options: Agent.Options) => Dispatcher | undefined>
 
   private userAgent: string
 
   constructor(app: LauncherApp, serviceManager: ServiceManager, stateManager: ServiceStateManager) {
     super(app)
-    const cache = new ClassicLevel(join(app.appDataPath, 'undici-cache'), {
+    const cachePath = join(app.appDataPath, 'undici-cache')
+    const cache = new ClassicLevel(cachePath, {
       valueEncoding: 'json',
+    })
+
+    cache.open().catch((e) => {
+      this.app.error('Fail to open undici cache. Try to fix the error', e)
+      return ClassicLevel.repair(cachePath)
     })
 
     let maxConnection = 16
@@ -133,9 +137,9 @@ export default class NetworkManager extends Manager {
     const apiDispatcher =
       new InteroperableDispatcher(
         [
-          (options) => {
+          async (options) => {
             for (const interceptor of this.dispatchInterceptors) {
-              interceptor(options)
+              await interceptor(options)
             }
             (options as any)[kUseDownload] = false
             const headers = buildHeaders(options.headers || {})
@@ -150,8 +154,6 @@ export default class NetworkManager extends Manager {
 
     setGlobalDispatcher(apiDispatcher)
 
-    const downloadClientFactories = [] as Array<(origin: URL, options: Agent.Options) => Dispatcher | undefined>
-
     this.downloadAgent = resolveAgent({
       segmentPolicy: new DefaultSegmentPolicy(4 * 1024 * 1024, 4),
       dispatcher: downloadDispatcher,
@@ -159,10 +161,8 @@ export default class NetworkManager extends Manager {
     })
 
     this.apiClientFactories = apiClientFactories
-    this.downloadClientFactories = downloadClientFactories
 
     this.apiDispatcher = apiDispatcher
-    this.downloadDispatcher = downloadDispatcher
   }
 
   getUserAgent() {
@@ -181,12 +181,7 @@ export default class NetworkManager extends Manager {
     return this.apiDispatcher
   }
 
-  registerDownloadFactoryInterceptor(interceptor: (origin: URL, options: Agent.Options) => Dispatcher | undefined) {
-    this.downloadClientFactories.unshift(interceptor)
-    return this.downloadDispatcher
-  }
-
-  registerDispatchInterceptor(interceptor: (opts: DispatchOptions) => void) {
+  registerDispatchInterceptor(interceptor: (opts: DispatchOptions) => void | Promise<void>) {
     this.dispatchInterceptors.unshift(interceptor)
   }
 

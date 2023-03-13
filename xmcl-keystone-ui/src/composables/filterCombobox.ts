@@ -1,5 +1,6 @@
 import { InjectionKey, Ref } from 'vue'
 import { filter as fuzzy } from 'fuzzy'
+import { injection } from '@/util/inject'
 
 export interface FilterOption {
   /**
@@ -16,11 +17,32 @@ export interface FilterOption {
   color?: string
 }
 
-export const FilterCombobox: InjectionKey<ReturnType<typeof useFilterCombobox>> = Symbol('FilterCombobox')
+export const kFilterCombobox: InjectionKey<ReturnType<typeof useFilterComboboxData>> = Symbol('FilterCombobox')
 
-export function useFilterCombobox<T>(filterOptions: Ref<FilterOption[]>, getFilterOptions: (item: T) => FilterOption[], keywordExtractor: (item: T) => string) {
+export function useFilterComboboxData() {
   const filteredText = ref('')
   const selectedFilterOptions = ref([] as Array<FilterOption | string>)
+  const filterOptions: Ref<FilterOption[]> = ref([])
+  function removeFilteredItem(index: number) {
+    selectedFilterOptions.value = selectedFilterOptions.value.filter((v, i) => i !== index)
+  }
+  function clearFilterItems() {
+    selectedFilterOptions.value = []
+  }
+
+  return {
+    selectedFilterOptions,
+    filterOptions,
+    filteredText,
+    clearFilterItems,
+    removeFilteredItem,
+  }
+}
+
+export function useFilterCombobox<T>(options: Ref<FilterOption[]>, getFilterOptions: (item: T) => FilterOption[], keywordExtractor: (item: T) => string) {
+  const { selectedFilterOptions, filterOptions, filteredText } = injection(kFilterCombobox)
+
+  watch(options, (ops) => { filterOptions.value = ops })
 
   function isValidItem(item: T) {
     const tags = selectedFilterOptions.value.filter(v => typeof v === 'object')
@@ -43,28 +65,7 @@ export function useFilterCombobox<T>(filterOptions: Ref<FilterOption[]>, getFilt
     return baseItems.filter(isValidItem)
   }
 
-  function removeFilteredItem(index: number) {
-    selectedFilterOptions.value = selectedFilterOptions.value.filter((v, i) => i !== index)
-  }
-  function clearFilterItems() {
-    selectedFilterOptions.value = []
-  }
-
-  provide(FilterCombobox, {
-    selectedFilterOptions,
-    filterOptions,
-    filteredText,
-    filter: filter as any,
-    removeFilteredItem,
-    clearFilterItems,
-  })
-
   return {
-    selectedFilterOptions,
-    filterOptions,
-    filteredText,
     filter,
-    removeFilteredItem,
-    clearFilterItems,
   }
 }

@@ -61,11 +61,14 @@ export interface CurseForgeService {
    * @param modId The curseforge project id
    */
   getMod(modId: number): Promise<Mod>
+
+  getLocaledMod(modId: number): Promise<Mod>
   /**
    * Fetch a curseforge project description string
    * @param modId The curseforge project id
    */
   getModDescription(modId: number): Promise<string>
+  getLocaledModDescription(modId: number): Promise<string>
   /**
    * Fetch all curseforge project files
    * @param options The curseforge project id

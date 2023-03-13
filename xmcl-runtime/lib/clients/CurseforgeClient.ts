@@ -2,6 +2,12 @@ import { File, Mod, ModCategory, ModsSearchSortField, Pagination, SearchOptions 
 import { GetModFilesOptions } from '@xmcl/runtime-api'
 import { Dispatcher, request } from 'undici'
 
+export interface CurseforgeClientOptions {
+  signal?: AbortSignal
+  origin?: string
+  getHeaders?: () => Promise<Record<string, string>>
+  noTimeout?: boolean
+}
 export class CurseforgeClient {
   constructor(private apiKey: string, private dispatcher?: Dispatcher) {
   }
@@ -20,27 +26,33 @@ export class CurseforgeClient {
     return categories.data
   }
 
-  async getMod(modId: number, signal?: AbortSignal) {
-    const response = await request(`https://api.curseforge.com/v1/mods/${modId}`, {
+  async getMod(modId: number, { signal, getHeaders, origin = 'https://api.curseforge.com', noTimeout }: CurseforgeClientOptions = {}) {
+    const response = await request(`${origin}/v1/mods/${modId}`, {
       dispatcher: this.dispatcher,
       headers: {
         'x-api-key': this.apiKey,
         accept: 'application/json',
+        ...(await getHeaders?.() || {}),
       },
       signal,
+      totalTimeout: noTimeout ? 0 : undefined,
+      headersTimeout: noTimeout ? 0 : undefined,
     })
     const result: { data: Mod } = await response.body.json()
     return result.data
   }
 
-  async getModDescription(modId: number, signal?: AbortSignal) {
-    const response = await request(`https://api.curseforge.com/v1/mods/${modId}/description`, {
+  async getModDescription(modId: number, { signal, getHeaders, origin = 'https://api.curseforge.com', noTimeout }: CurseforgeClientOptions = {}) {
+    const response = await request(`${origin}/v1/mods/${modId}/description`, {
       dispatcher: this.dispatcher,
       headers: {
         'x-api-key': this.apiKey,
         accept: 'application/json',
+        ...(await getHeaders?.() || {}),
       },
       signal,
+      totalTimeout: noTimeout ? 0 : undefined,
+      headersTimeout: noTimeout ? 0 : undefined,
     })
     const result: { data: string } = await response.body.json()
     return result.data

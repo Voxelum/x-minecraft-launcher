@@ -1,5 +1,6 @@
 <template>
-  <v-container
+  <div
+    class="w-full h-full overflow-hidden"
     :class="{ 'absoluted': absolute }"
     @click="$emit('click', $event)"
   >
@@ -37,7 +38,7 @@
         </v-btn>
       </div>
     </v-layout>
-  </v-container>
+  </div>
 </template>
 
 <script lang=ts setup>

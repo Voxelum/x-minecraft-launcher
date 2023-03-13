@@ -9,7 +9,7 @@ import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { readLaunchProfile } from '../entities/launchProfile'
 import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
-import { exists, isDirectory, missing, readdirEnsured } from '../util/fs'
+import { copyPassively, exists, isDirectory, missing, readdirEnsured } from '../util/fs'
 import { assignShallow, requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { createSafeFile, createSafeIO } from '../util/persistance'
@@ -175,6 +175,8 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     instance.runtime.minecraft = instance.runtime.minecraft || this.installService.getLatestRelease()
     instance.author = instance.author || this.userService.state.gameProfile?.name || ''
     instance.upstream = option.upstream
+    instance.playtime = option.playtime
+    instance.lastPlayedDate = option.lastPlayedDate
 
     if (option.server) {
       instance.server = option.server

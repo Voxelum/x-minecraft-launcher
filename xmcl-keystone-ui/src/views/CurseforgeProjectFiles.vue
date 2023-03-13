@@ -71,17 +71,14 @@
         :length="pages"
         :total-visible="12"
       />
-      <SharedTooltip />
     </div>
   </div>
 </template>
 
 <script lang=ts setup>
 import { kCurseforgeInstall } from '@/composables/curseforgeInstall'
-import { kSharedTooltip, useSharedTooltip } from '@/composables/sharedTooltip'
 import { ProjectType } from '@xmcl/runtime-api'
 import { useCurseforgeProjectFiles } from '../composables/curseforge'
-import SharedTooltip from '../components/SharedTooltip.vue'
 import ErrorView from '@/components/ErrorView.vue'
 import CurseforgeProjectFileItem from './CurseforgeProjectFileItem.vue'
 import { injection } from '@/util/inject'
@@ -104,9 +101,6 @@ const page = computed({
 const pages = computed(() => Math.ceil(totalCount.value / pageSize.value))
 
 watch([page, gameVersion, modLoaderType], () => refresh())
-
-const tooltip = useSharedTooltip<boolean>((v) => v ? t('curseforge.install') : t('curseforge.downloadOnly'))
-provide(kSharedTooltip, tooltip)
 
 const { install, isDownloaded } = injection(kCurseforgeInstall)
 

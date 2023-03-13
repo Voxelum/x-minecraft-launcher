@@ -1,11 +1,21 @@
 import { InjectionKey } from 'vue'
 
+const currentTooltip = ref('')
+const x = ref(0)
+const y = ref(0)
+const color = ref('black')
+const isShown = ref(false)
+
+export function useSharedTooltipData() {
+  return {
+    currentTooltip,
+    x,
+    y,
+    color,
+    isShown,
+  }
+}
 export function useSharedTooltip<T>(getTooltip: (v: T) => string) {
-  const currentTooltip = ref('')
-  const x = ref(0)
-  const y = ref(0)
-  const color = ref('black')
-  const isShown = ref(false)
   const onEnter = async (e: MouseEvent, val: T) => {
     const target = e.target as HTMLElement
     const rect = target.getBoundingClientRect()

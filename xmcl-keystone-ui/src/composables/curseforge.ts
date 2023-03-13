@@ -195,6 +195,7 @@ export function useCurseforgeProject(projectId: Ref<number>) {
   watch(projectId, refresh)
   return {
     refreshing,
+    refresh,
     project,
     error,
   }

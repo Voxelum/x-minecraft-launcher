@@ -86,13 +86,11 @@ export function useDomainResources(domain: ResourceDomain | Ref<ResourceDomain>)
   const { refresh, refreshing } = useRefreshable(async () => {
     const all = await getResources(typeof domain === 'object' ? domain.value : domain)
     all.forEach(markRaw)
-    console.log(all)
     resources.value = all
   })
 
   onMounted(refresh)
   if (typeof domain === 'object') {
-    console.log('domain!')
     watch(domain, refresh)
   }
 

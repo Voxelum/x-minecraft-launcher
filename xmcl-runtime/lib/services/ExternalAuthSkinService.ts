@@ -31,7 +31,7 @@ export class ExternalAuthSkinService extends AbstractService implements IExterna
         fix: async () => { await this.installAuthLibInjection() },
       })
 
-    this.storeManager.subscribeAll(['userGameProfileSelect', 'userProfile', 'userSnapshot'], async () => {
+    this.storeManager.subscribeAll(['userGameProfileSelect', 'userProfile'], async () => {
       const builder = new IssueReportBuilder()
       this.diagnoseAuthLibInjector(builder)
       this.diagnoseService.report(builder.build())

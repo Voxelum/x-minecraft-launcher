@@ -278,10 +278,86 @@
                 "auth": {
                     "description": "It will use `url + \"/authserver\"` by default",
                     "type": "string"
+                },
+                "authlibInjector": {
+                    "description": "The cache for authlib injector compatible api",
+                    "$ref": "#/definitions/AuthlibInjectorApiProfile"
+                },
+                "favicon": {
+                    "description": "The favicon of the service",
+                    "type": "string"
                 }
             },
             "required": [
                 "url"
+            ]
+        },
+        "AuthlibInjectorApiProfile": {
+            "type": "object",
+            "properties": {
+                "meta": {
+                    "default": {},
+                    "type": "object",
+                    "properties": {
+                        "serverName": {
+                            "default": "",
+                            "type": "string"
+                        },
+                        "implementationName": {
+                            "default": "",
+                            "type": "string"
+                        },
+                        "implementationVersion": {
+                            "default": "",
+                            "type": "string"
+                        },
+                        "links": {
+                            "default": {},
+                            "type": "object",
+                            "properties": {
+                                "homepage": {
+                                    "default": "",
+                                    "type": "string"
+                                },
+                                "register": {
+                                    "default": "",
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "homepage",
+                                "register"
+                            ]
+                        },
+                        "feature.non_email_login": {
+                            "default": false,
+                            "type": "boolean"
+                        }
+                    },
+                    "required": [
+                        "feature.non_email_login",
+                        "implementationName",
+                        "implementationVersion",
+                        "links",
+                        "serverName"
+                    ]
+                },
+                "skinDomains": {
+                    "default": [],
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "signaturePublickey": {
+                    "default": "",
+                    "type": "string"
+                }
+            },
+            "required": [
+                "meta",
+                "signaturePublickey",
+                "skinDomains"
             ]
         }
     },

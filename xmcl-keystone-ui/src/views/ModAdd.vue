@@ -1,6 +1,8 @@
 <template>
-  <div class="flex flex-col select-none h-full overflow-auto pb-0">
-    <SharedTooltip />
+  <div
+    class="flex flex-col select-none h-full overflow-auto pb-0"
+    @wheel.stop
+  >
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
       :active="loading"
@@ -8,309 +10,202 @@
       :indeterminate="true"
     />
 
-    <v-card
-      class="z-5 shadow m-4 rounded-lg"
-      outlined
+    <SplitPane
+      flex-left
+      :min-percent="30"
+      class="h-full overflow-auto py-0 w-full flex"
     >
-      <div
-        class="flex flex-shrink flex-grow-0 items-baseline gap-2 mb-4 p-3"
+      <template
+        #left
       >
-        <v-text-field
-          v-model="keyword"
-          prepend-inner-icon="search"
-          filled
-          dense
-          hide-details
-          :loading="loading"
-        />
-        <AvatarChip
-          v-if="minecraft"
-          :avatar="'image://builtin/minecraft'"
-          :text="'Minecraft ' + minecraft"
-        />
-        <AvatarChip
-          v-if="forge"
-          :avatar="'image://builtin/forge'"
-          :text="'Forge ' + forge"
-        />
-        <AvatarChip
-          v-if="fabricLoader"
-          :avatar="'image://builtin/fabric'"
-          :text="'Fabric ' + fabricLoader"
-        />
-        <AvatarChip
-          v-if="quiltLoader"
-          :avatar="'image://builtin/quilt'"
-          :text="'Quilt ' + quiltLoader"
-        />
-
-        <div class="flex-grow" />
-        <ModAddMenu />
-      </div>
-      <div
-        class="flex flex-shrink flex-grow-0 items-center justify-center gap-2"
-      >
-        <v-tabs
-          v-model="tab"
-          centered
-        >
-          <v-tab>
+        <div class="flex flex-grow-0 pl-4 items-center pr-4">
+          <v-subheader class="pl-0 py-2">
             <v-icon left>
-              all_inclusive
+              travel_explore
             </v-icon>
-            {{ t('modSearchType.all') }}
-            <div
-              class="v-badge__badge primary static ml-1 w-[unset]"
-            >
-              {{ mods.length + curseforgeCount + modrinthCount }}
-            </div>
-          </v-tab>
-          <v-tab>
-            <v-icon left>
-              storage
-            </v-icon>
-            {{ t('modSearchType.local') }}
-            <div
-              class="v-badge__badge primary static ml-1 w-[unset]"
-            >
-              {{ mods.length }}
-            </div>
-          </v-tab>
-          <v-tab :disabled="!curseforge || curseforge.data.length === 0">
-            <v-icon left>
-              $vuetify.icons.curseforge
-            </v-icon>
-            Curseforge
-            <div
-              class="v-badge__badge primary static ml-1 w-[unset]"
-            >
-              {{ curseforgeCount }}
-            </div>
-          </v-tab>
-          <v-tab :disabled="!modrinth || modrinth.hits.length === 0">
-            <v-icon left>
-              $vuetify.icons.modrinth
-            </v-icon>
-            Modrinth
-            <div
-              class="v-badge__badge primary static ml-1 w-[unset]"
-            >
-              {{ modrinthCount }}
-            </div>
-          </v-tab>
-        </v-tabs>
-      </div>
-    </v-card>
-
-    <div
-      class="h-full overflow-auto grid grid-cols-12 py-0 divide-x divide-dark-50"
-      @dragover.prevent
-      @drop="onDropToImport"
-    >
-      <v-virtual-scroll
-        :bench="2"
-        class="lg:col-span-7 col-span-5 h-full max-h-full visible-scroll overflow-auto mx-2"
-        :items="items"
-        item-height="68"
-      >
-        <template #default="{ item: p }">
-          <v-list-item
-            link
-            @click="onSelect(p)"
+            Search Result
+            <v-divider
+              vertical
+              class="mx-2"
+            />
+            <span>
+              {{ items.length }} items
+            </span>
+          </v-subheader>
+          <div class="flex-grow" />
+          <v-btn-toggle
+            v-model="modLoaderFilters"
+            multiple
+            dense
           >
-            <v-list-item-avatar>
+            <v-btn
+              icon
+              text
+              value="forge"
+            >
               <v-img
-                :src="p.icon"
+                width="28"
+                :src="'image://builtin/forge'"
               />
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>{{ p.title }}</v-list-item-title>
-              <v-list-item-subtitle>{{ p.description }}</v-list-item-subtitle>
-            </v-list-item-content>
-            <v-list-item-action>
-              <v-avatar
-                size="30px"
-              >
-                <v-icon>
-                  {{ p.modrinth ? '$vuetify.icons.modrinth' : p.curseforge ? '$vuetify.icons.curseforge' : 'folder' }}
-                </v-icon>
-              </v-avatar>
-            </v-list-item-action>
-          </v-list-item>
-        </template>
-      </v-virtual-scroll>
-      <div class="h-full overflow-auto lg:col-span-5 col-span-7">
-        <template v-if="!!selected">
-          <ModAddModrinthDetail
-            v-if="selected.modrinth"
-            :hint="selected.modrinth"
-            :loader="forge ? 'forge' : fabricLoader ? 'fabric' : ''"
-            :minecraft="minecraft"
-            @install="onInstallModrinth($event, selected)"
-          />
-          <ModAddCurseforgeDetail
-            v-else-if="selected.curseforge"
-            :mod="selected.curseforge"
-            :loader="forge ? 'forge' : fabricLoader ? 'fabric' : ''"
-            :minecraft="minecraft"
-            @install="onInstallCurseforge($event, selected)"
-          />
-          <ModAddResourceDetail
-            v-else-if="selected.resource"
-            :resources="selected.resource"
-            :loader="forge ? 'forge' : fabricLoader ? 'fabric' : ''"
-            :minecraft="minecraft"
-            @install="onInstallResource($event, selected)"
-          />
-        </template>
-      </div>
-    </div>
+            </v-btn>
+
+            <v-btn
+              icon
+              text
+              value="fabric"
+            >
+              <v-img
+                width="28"
+                :src="'image://builtin/fabric'"
+              />
+            </v-btn>
+
+            <v-btn
+              icon
+              text
+              value="quilt"
+            >
+              <v-img
+                width="28"
+                :src="'image://builtin/quilt'"
+              />
+            </v-btn>
+          </v-btn-toggle>
+        </div>
+
+        <v-virtual-scroll
+          :bench="2"
+          class="h-full max-h-full visible-scroll overflow-auto w-full"
+          :items="items"
+          item-height="68"
+        >
+          <template #default="{ item }">
+            <ModAddSearchItem
+              :item="item"
+              :selected="(selected && selected.id === item.id ) || false"
+              @click="onSelect(item)"
+            />
+          </template>
+        </v-virtual-scroll>
+      </template>
+      <template #right>
+        <SplitPane
+          :min-percent="30"
+          split="horizontal"
+        >
+          <template #left>
+            <div
+              class="h-full overflow-auto flex flex-grow"
+            >
+              <template v-if="!!selected">
+                <ModAddModrinthDetail
+                  v-if="selected.modrinth"
+                  :hint="selected.modrinth"
+                  :loader="forge ? 'forge' : fabricLoader ? 'fabric' : ''"
+                  :minecraft="minecraft"
+                  @install="onInstallModrinth($event, selected)"
+                />
+                <ModAddCurseforgeDetail
+                  v-else-if="selected.curseforge"
+                  :mod="selected.curseforge"
+                  :loader="forge ? 'forge' : fabricLoader ? 'fabric' : ''"
+                  :minecraft="minecraft"
+                  @install="onInstallCurseforge($event, selected)"
+                />
+                <ModAddResourceDetail
+                  v-else-if="selected.resource"
+                  :resources="selected.resource"
+                  :forge="selected.forge"
+                  :fabric="selected.fabric"
+                  :quilt="selected.quilt"
+                  :loader="forge ? 'forge' : fabricLoader ? 'fabric' : ''"
+                  :minecraft="minecraft"
+                  @install="onInstallResource($event, selected)"
+                />
+              </template>
+            </div>
+          </template>
+          <template #right>
+            <ModAddCartList />
+          </template>
+        </SplitPane>
+      </template>
+    </SplitPane>
   </div>
 </template>
 
 <script lang=ts setup>
-import AvatarChip from '@/components/AvatarChip.vue'
-import { useDrop, useService } from '@/composables'
-import { useInstanceVersionBase } from '@/composables/instance'
+import SplitPane from '@/components/SplitPane.vue'
+import { kInstanceContext } from '@/composables/instanceContext'
 import { kModInstallList } from '@/composables/modInstallList'
-import { kMods, useMods } from '@/composables/mods'
-import { useModsSearch } from '@/composables/modSearch'
-import { kSharedTooltip, useSharedTooltip } from '@/composables/sharedTooltip'
+import { ModListSearchItem } from '@/composables/modSearchItems'
+import { kCompact } from '@/composables/scrollTop'
 import { injection } from '@/util/inject'
-import { CompatibleDetail } from '@/util/modCompatible'
-import { getDiceCoefficient } from '@/util/sort'
-import { File, Mod } from '@xmcl/curseforge'
-import { ProjectVersion, SearchResultHit } from '@xmcl/modrinth'
-import { Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
-import SharedTooltip from '../components/SharedTooltip.vue'
+import { File } from '@xmcl/curseforge'
+import { ProjectVersion } from '@xmcl/modrinth'
+import { Resource } from '@xmcl/runtime-api'
+import ModAddCartList from './ModAddCartList.vue'
 import ModAddCurseforgeDetail from './ModAddCurseforgeDetail.vue'
-import ModAddMenu from './ModAddMenu.vue'
 import ModAddModrinthDetail from './ModAddModrinthDetail.vue'
 import ModAddResourceDetail from './ModAddResourceDetail.vue'
+import ModAddSearchItem from './ModAddSearchItem.vue'
 
-interface ModListItem {
-  id: string
-  icon: string
-  title: string
-  description: string
+const { modSearch, modSearchItems, minecraft, fabricLoader, forge, quiltLoader } = injection(kInstanceContext)
+const modLoaderFilters = ref([] as string[])
 
-  curseforge?: Mod
-  modrinth?: SearchResultHit
-  resource?: Resource[]
-}
-
-const { importResources } = useService(ResourceServiceKey)
-const tab = ref(0)
-const keyword = ref('')
-const { minecraft, forge, fabricLoader, quiltLoader } = useInstanceVersionBase()
-
-provide(kMods, useMods())
+onMounted(() => {
+  const items = [] as string[]
+  if (fabricLoader.value) {
+    items.push('fabric')
+  }
+  if (forge.value) {
+    items.push('forge')
+  }
+  if (quiltLoader.value) {
+    items.push('quilt')
+  }
+  modLoaderFilters.value = items
+})
 
 const {
   modrinth, modrinthError, loadingModrinth,
   curseforge, curseforgeError, loadingCurseforge,
+  loading,
   mods,
-} = useModsSearch(keyword, minecraft, forge, fabricLoader)
-const loading = computed(() => loadingModrinth.value || loadingCurseforge.value)
-const curseforgeCount = computed(() => curseforge.value ? curseforge.value.pagination.totalCount : 0)
-const modrinthCount = computed(() => modrinth.value ? modrinth.value.total_hits : 0)
-const disableModrinth = computed(() => tab.value !== 0 && tab.value !== 3)
-const disableCurseforge = computed(() => tab.value !== 0 && tab.value !== 2)
-const disableLocal = computed(() => tab.value !== 0 && tab.value !== 1)
-
+  keyword,
+} = modSearch
+const { items: searchItems } = modSearchItems
 const items = computed(() => {
-  const results: [ModListItem, number][] = []
-  const modr = modrinth.value
-  if (modr && !disableModrinth.value) {
-    for (const i of modr.hits) {
-      results.push([{
-        id: i.project_id,
-        icon: i.icon_url,
-        title: i.title,
-        description: i.description,
-        modrinth: i,
-      }, getDiceCoefficient(keyword.value, i.title)])
-    }
-  }
-  const cf = curseforge.value
-  if (cf && !disableCurseforge.value) {
-    for (const i of cf.data) {
-      results.push(([{
-        id: i.id.toString(),
-        icon: i.logo.url,
-        title: i.name,
-        description: i.summary,
-        curseforge: i,
-      }, getDiceCoefficient(keyword.value, i.name)]))
-    }
-  }
-  if (!disableLocal.value) {
-    const dict: Record<string, ModListItem> = {}
-    for (const m of mods.value) {
-      let description = ''
-      let name = ''
-      if (m.metadata.forge) {
-        description = m.metadata.forge.description
-        name = m.metadata.forge.name
-      } else if (m.metadata.fabric) {
-        if (m.metadata.fabric instanceof Array) {
-          description = m.metadata.fabric[0].description || ''
-          name = m.metadata.fabric[0].name || m.metadata.fabric[0].id || ''
-        } else {
-          description = m.metadata.fabric.description || ''
-          name = m.metadata.fabric.name || m.metadata.fabric.id || ''
-        }
-      }
-      if (!dict[name]) {
-        dict[name] = {
-          id: m.path,
-          icon: m.icons?.[0] ?? '',
-          title: name,
-          description: description,
-          resource: [m],
-        }
-        results.push(([dict[name], getDiceCoefficient(keyword.value, m.name)]))
-      } else {
-        dict[name].resource?.push(m)
-      }
-    }
-  }
+  const all = searchItems.value
+  const allowForge = modLoaderFilters.value.indexOf('forge') !== -1
+  const allowFabric = modLoaderFilters.value.indexOf('fabric') !== -1
+  const allowQuilt = modLoaderFilters.value.indexOf('quilt') !== -1
 
-  results.sort((a, b) => -a[1] + b[1])
-  return results.map(v => v[0])
+  return all.filter(a => (allowForge && a.forge) || (allowFabric && a.fabric) || (allowQuilt && a.quilt))
 })
 
-const selected = ref(undefined as undefined | ModListItem)
-const onSelect = (i: ModListItem) => {
+const selected = ref(undefined as undefined | ModListSearchItem)
+const onSelect = (i: ModListSearchItem) => {
   selected.value = i
 }
 
-provide(kSharedTooltip, useSharedTooltip<CompatibleDetail>((dep) => {
-  const compatibleText = dep.compatible === 'maybe'
-    ? t('mod.maybeCompatible')
-    : dep.compatible
-      ? t('mod.compatible')
-      : t('mod.incompatible')
-  return compatibleText + t('mod.acceptVersion', { version: dep.requirements }) + ', ' + t('mod.currentVersion', { current: dep.version || '⭕' }) + '.'
-}))
-
 const { add } = injection(kModInstallList)
 
-const onInstallResource = (resource: Resource, item: ModListItem) => {
-  add(resource, { icon: item.icon, name: item.title })
+const onInstallResource = (resource: Resource, item?: ModListSearchItem) => {
+  add(resource, { icon: item?.icon, name: item?.title })
 }
 
-const onInstallCurseforge = (mod: File, item: ModListItem) => {
-  add(mod, { icon: item.icon, name: item.title })
+const onInstallCurseforge = (mod: File, item?: ModListSearchItem) => {
+  add(mod, { icon: item?.icon, name: item?.title })
 }
 
-const onInstallModrinth = (project: ProjectVersion, item: ModListItem) => {
-  add(project, { icon: item.icon, name: item.title })
+const onInstallModrinth = (project: ProjectVersion, item?: ModListSearchItem) => {
+  add(project, { icon: item?.icon, name: item?.title })
 }
 
 const { t } = useI18n()
-
-const { onDrop: onDropToImport } = useDrop((file) => {
-  importResources([{ path: file.path, domain: ResourceDomain.Mods }])
+const compact = injection(kCompact)
+onMounted(() => {
+  compact.value = true
 })
 </script>

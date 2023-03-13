@@ -12,7 +12,10 @@
         >
           attach_file
         </v-icon>
-        <ErrorView :error="error" />
+        <ErrorView
+          :error="error"
+          @refresh="refresh"
+        />
         <CurseforgeProjectHeader
           :destination="destination"
           :from="destination"
@@ -136,7 +139,7 @@ const upstream = inject(kUpstream, undefined)
 
 // Curseforge Project
 const modId = computed(() => Number.parseInt(props.id, 10))
-const { project, refreshing, error } = useCurseforgeProject(modId)
+const { project, refreshing, error, refresh } = useCurseforgeProject(modId)
 
 // Curseforge files
 const files = ref([] as File[])

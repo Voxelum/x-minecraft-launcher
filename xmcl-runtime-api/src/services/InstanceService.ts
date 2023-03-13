@@ -170,6 +170,8 @@ export class InstanceState {
     inst.modpackVersion = settings.modpackVersion ?? inst.modpackVersion
     inst.fileApi = settings.fileApi ?? inst.fileApi
     inst.upstream = settings.upstream ?? inst.upstream
+    inst.playtime = settings.playtime ?? inst.playtime
+    inst.lastPlayedDate = settings.lastPlayedDate ?? inst.lastPlayedDate
 
     if ('showLog' in settings) {
       inst.showLog = settings.showLog

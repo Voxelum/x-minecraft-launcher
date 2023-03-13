@@ -72,6 +72,11 @@ MultiplayerDialogInitiate:
 SettingMigrationDialog:
   selectRootDirectory: 选择新的根目录
 add: 添加
+ago:
+  day: '{duration} 天前'
+  hour: '{duration} 小时前'
+  minute: '{duration} 分钟前'
+  second: '{duration} 秒前'
 authProfileAddedNotification: 已添加第三方验证 {name}
 author: 作者
 back: 返回
@@ -253,6 +258,11 @@ disk:
   used: 已用
 download: 下载
 downloadCount: '{count} 次下载'
+duration:
+  day: '{duration} 天'
+  hour: '{duration} 小时'
+  minute: '{duration} 分钟'
+  second: '{duration} 秒'
 edit: 编辑
 errors:
   BadForgeInstallerJarError: 无法解析 Forge 安装包 jar 文件。也许 Forge 有了新的安装包格式？如果经常遇到这个问题，请联系开发团队。
@@ -370,6 +380,7 @@ installVersion:
   json: 安装游戏JSON文件
   name: 安装%{id}的游戏本体
 instance:
+  addMod: 添加 Mod
   addServer: 添加服务器
   current: 当前实例
   delete: 删除游戏
@@ -379,12 +390,15 @@ instance:
   fileApiHint: 用于远程同步实例文件的链接
   gameVersion: 游戏版本
   includeVersion: 包含游戏版本
+  lastPlayed: 上次游玩
   launchArguments: 启动命令预览
   mcOptions: Minecraft 启动选项
   mcOptionsHint: 额外的 Minecraft 启动参数
   name: 名称
   nameHint: 名称便于以后识别
+  neverPlayed: 从未游玩
   openLogFolder: 打开日志文件夹
+  playtime: 游玩时间
   requireName: 必须填写名称
   showInstance: 显示文件夹
   versionHint: 这个游戏使用的Minecraft版本
@@ -593,6 +607,7 @@ mod:
   searchOnMcWiki: 在 MC 百科中查找 {name}
   searchOnModrinth: 在 Modrinth 中搜索 {name}
   selected: 已选 Mods
+  showDirectory: 显示 Mod 文件夹
   showFile: 打开 Mod 所在位置 {file}
   showInCurseforge: 在 Curseforge 上显示该 Mod
   showInModrinth: 在 Modrinth 中显示 {name}

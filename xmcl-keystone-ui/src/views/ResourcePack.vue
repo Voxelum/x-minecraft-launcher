@@ -1,133 +1,83 @@
 <template>
-  <div class="max-h-full h-full gap-2 px-8 py-4 pb-0 w-full flex flex-col">
+  <div class="resource-pack-page">
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
       :active="loading"
       height="3"
       :indeterminate="true"
     />
-    <v-card
-      outlined
-      class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2"
-      elevation="1"
-    >
-      <!-- <div class="headline align-middle self-center pl-2">
-        {{ t("resourcepack.name", 2) }}
-      </div> -->
-      <!-- <v-spacer /> -->
-      <filter-combobox
-        :label="t('resourcepack.filter')"
-        class="max-w-150 mr-2"
-      />
-      <div class="flex-grow" />
-      <v-btn
-        icon
-        @click="showDirectory()"
+    <!-- {{ t("resourcepack.name", 2) }} -->
+    <!-- t('resourcepack.filter') -->
+    <!-- <v-btn
+        @click="goPreview"
       >
-        <v-icon>folder</v-icon>
-      </v-btn>
-      <v-tooltip bottom>
-        <template #activator="{ on }">
-          <v-btn
-            icon
-            v-on="on"
-            @click="goToCurseforge()"
-          >
-            <v-icon>
-              $vuetify.icons.curseforge
-            </v-icon>
-          </v-btn>
-        </template>
-        {{ t(`resourcepack.searchOnCurseforge`, { name: t('resourcepack.name', 0) }) }}
-      </v-tooltip>
-      <!-- <v-btn
-          icon
-          style="margin-top: 12px; margin-bottom: 0"
-          @click="goPreview"
-        >
-          <span class="material-icons-outlined icon-image-preview">
-            preview
-          </span>
-      </v-btn>-->
+        <span class="material-icons-outlined icon-image-preview">
+          preview
+        </span>
+    </v-btn>-->
+
+    <v-card
+      ref="leftList"
+      class="h-full overflow-y-auto invisible-scroll flex flex-col"
+      @drop="stopDragging()"
+    >
+      <v-card-title class="justify-center sticky top-0 z-10">
+        {{
+          t("resourcepack.unselected")
+        }}
+      </v-card-title>
+      <Hint
+        v-if="unselectedItems.length === 0"
+        icon="save_alt"
+        :text="
+          t('resourcepack.dropHint')"
+        class="h-full"
+      />
+      <TransitionGroup
+        v-else
+        class="overflow-auto flex flex-col gap-1.5"
+        name="transition-list"
+        tag="div"
+      >
+        <ResourcePackCard
+          v-for="item in unselectedItems"
+          :key="item.path"
+          :pack="item"
+          :is-selected="false"
+          @tags="item.tags = $event"
+          @dragstart="startDragging()"
+          @dragend="stopDragging()"
+          @mouseup="stopDragging()"
+        />
+      </TransitionGroup>
     </v-card>
 
-    <div
-      class="h-full overflow-auto grid grid-cols-2 gap-8"
+    <v-card
+      ref="rightList"
+      class="h-full overflow-y-auto invisible-scroll flex flex-col"
+      @drop="stopDragging()"
     >
-      <div
-        ref="leftList"
-        class="h-full overflow-auto flex flex-col"
-        @drop="stopDragging()"
+      <v-card-title class="w-full justify-center sticky top-0 z-10">
+        {{
+          t("resourcepack.selected")
+        }}
+      </v-card-title>
+      <Hint
+        v-if="selectedItems.length === 0"
+        icon="save_alt"
+        :text="t('resourcepack.dropHint')"
+        class="h-full"
+      />
+      <TransitionGroup
+        v-else
+        name="transition-list"
+        tag="div"
+        class="overflow-auto flex flex-col gap-1.5"
       >
-        <v-card
-          outlined
-          class="rounded-lg"
+        <template
+          v-for="item in selectedItems"
         >
-          <v-card-title class="justify-center">
-            {{
-              t("resourcepack.unselected")
-            }}
-          </v-card-title>
-        </v-card>
-        <hint
-          v-if="unselectedItems.length === 0"
-          icon="save_alt"
-          :text="
-            t('resourcepack.dropHint')"
-          class="h-full"
-        />
-        <transition-group
-          v-else
-          class="list overflow-auto flex flex-col"
-          name="transition-list"
-          tag="div"
-        >
-          <resource-pack-card
-            v-for="item in unselectedItems"
-            :key="item.path"
-            :pack="item"
-            :is-selected="false"
-            @tags="item.tags = $event"
-            @dragstart="startDragging()"
-            @dragend="stopDragging()"
-            @mouseup="stopDragging()"
-          />
-          <div
-            key="dummy"
-            class="min-h-10"
-          />
-        </transition-group>
-      </div>
-
-      <div
-        ref="rightList"
-        class="h-full overflow-auto flex flex-col"
-        @drop="stopDragging()"
-      >
-        <v-card
-          outlined
-          class="rounded-lg"
-        >
-          <v-card-title class="w-full justify-center">
-            {{
-              t("resourcepack.selected")
-            }}
-          </v-card-title>
-        </v-card>
-        <hint
-          v-if="selectedItems.length === 0"
-          icon="save_alt"
-          :text="t('resourcepack.dropHint')"
-          class="h-full"
-        />
-        <transition-group
-          v-else
-          name="transition-list"
-          tag="div"
-          class="list overflow-auto flex flex-col"
-        >
-          <resource-pack-card
-            v-for="item in selectedItems"
+          <ResourcePackCard
             :key="item.path"
             :pack="item"
             :is-selected="true"
@@ -136,13 +86,9 @@
             @dragend="stopDragging()"
             @mouseup="stopDragging()"
           />
-          <div
-            key="dummy"
-            class="min-h-10"
-          />
-        </transition-group>
-      </div>
-    </div>
+        </template>
+      </TransitionGroup>
+    </v-card>
 
     <v-fab-transition>
       <v-btn
@@ -160,7 +106,7 @@
         <v-icon>delete</v-icon>
       </v-btn>
     </v-fab-transition>
-    <delete-dialog
+    <DeleteDialog
       :title="t('resourcepack.deletion', { pack: data.deletingPack ? data.deletingPack.name : '' })"
       :width="400"
       persistent
@@ -171,7 +117,7 @@
       <span class="text-gray-500">
         {{ data.deletingPack ? data.deletingPack.resource ? data.deletingPack.resource.path : '' : '' }}
       </span>
-    </delete-dialog>
+    </DeleteDialog>
   </div>
 </template>
 
@@ -187,6 +133,10 @@ import FilterCombobox from '@/components/FilterCombobox.vue'
 import Hint from '@/components/Hint.vue'
 import { useDragTransferList, useDropImport, useFilterCombobox, useService, useServiceBusy } from '@/composables'
 import { usePresence } from '@/composables/presence'
+import { kCompact } from '@/composables/scrollTop'
+import { injection } from '@/util/inject'
+
+const is = ref([1, 2, 3, 4, 5])
 
 function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {
   function getFilterOptions(item: ResourcePackItem) {
@@ -206,6 +156,11 @@ function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePac
   }
 }
 
+const compact = injection(kCompact)
+onMounted(() => {
+  compact.value = true
+})
+
 const filterText = ref('')
 const rightList: Ref<any> = ref(null)
 const leftList: Ref<any> = ref(null)
@@ -219,8 +174,8 @@ const data = reactive({
   deletingPack: null as ResourcePackItem | null,
 })
 const { show } = useDialog('deletion')
-const leftListElem = computed(() => leftList.value) as Ref<HTMLElement>
-const rightListElem = computed(() => rightList.value) as Ref<HTMLElement>
+const leftListElem = computed(() => leftList.value.$el) as Ref<HTMLElement>
+const rightListElem = computed(() => rightList.value.$el) as Ref<HTMLElement>
 useDragTransferList(
   leftListElem,
   rightListElem,
@@ -280,8 +235,8 @@ const { state } = useService(InstanceServiceKey)
 usePresence({ location: 'instance-resourcepacks', instance: state.instance.name })
 </script>
 
-<style>
-.card-list {
-  background: transparent;
+<style scoped>
+.resource-pack-page {
+  @apply flex flex-col overflow-auto h-full grid grid-cols-2 lg:(gap-8 px-8) px-4 gap-3 pb-4;
 }
 </style>

@@ -3,10 +3,13 @@ import { HTTPException } from '@xmcl/runtime-api'
 import { Dispatcher, request } from 'undici'
 import { InMemoryTtlCache } from '../util/cache'
 
+export interface ModrinthClientOptions {
+  signal?: AbortSignal
+  origin?: string
+  getHeaders?: () => Promise<Record<string, string>>
+  noTimeout?: boolean
+}
 export class ModrinthClient {
-  private projectCache = new InMemoryTtlCache<Project>()
-  private versionCache = new InMemoryTtlCache<ProjectVersion[]>()
-
   constructor(private dispatcher?: Dispatcher) { }
 
   async searchProjects(options: SearchProjectOptions, signal?: AbortSignal): Promise<SearchResult> {
@@ -32,16 +35,18 @@ export class ModrinthClient {
     return result
   }
 
-  async getProject(projectId: string, signal?: AbortSignal): Promise<Project> {
+  async getProject(projectId: string, { signal, getHeaders, noTimeout, origin = 'https://api.modrinth.com' }: ModrinthClientOptions = {}): Promise<Project> {
     if (projectId.startsWith('local-')) { projectId = projectId.slice('local-'.length) }
     // const cached = this.projectCache.get(projectId)
     // if (cached) return cached
-    const response = await request(`https://api.modrinth.com/v2/project/${projectId}`, {
+    const response = await request(`${origin}/v2/project/${projectId}`, {
       dispatcher: this.dispatcher,
       signal,
       headers: {
-        // 'cache-control': 'max-stale=3600',
+        ...(await getHeaders?.() || {}),
       },
+      totalTimeout: noTimeout ? 0 : undefined,
+      headersTimeout: noTimeout ? 0 : undefined,
     })
     const project: Project = await response.body.json()
     // this.projectCache.put(projectId, project)

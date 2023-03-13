@@ -1,14 +1,14 @@
 <template>
   <div
-    class="relative"
+    class="relative w-full"
   >
     <v-list
+      class="w-full"
       color="transparent"
     >
       <v-list-item
         v-for="r of resources"
         :key="r.path"
-        @click="emit('install', r)"
       >
         <v-list-item-avatar>
           <v-img :src="r.icons ? r.icons[0] : ''" />
@@ -19,10 +19,46 @@
           </v-list-item-title>
           <v-list-item-subtitle>
             {{ getExpectedSize(r.size) }}
+            <v-icon v-if="r.metadata.modrinth">
+              $vuetify.icons.modrinth
+            </v-icon>
+            <v-icon v-if="r.metadata.curseforge">
+              $vuetify.icons.curseforge
+            </v-icon>
           </v-list-item-subtitle>
         </v-list-item-content>
-        <v-list-item-action>
-          <v-btn icon>
+        <v-list-item-action class="flex flex-row flex-grow-0 items-center gap-1">
+          <v-avatar
+            v-if="forge"
+            size="30px"
+          >
+            <v-img
+              width="28"
+              :src="'image://builtin/forge'"
+            />
+          </v-avatar>
+          <v-avatar
+            v-if="fabric"
+            size="30px"
+          >
+            <v-img
+              width="28"
+              :src="'image://builtin/fabric'"
+            />
+          </v-avatar>
+          <v-avatar
+            v-if="quilt"
+            size="30px"
+          >
+            <v-img
+              width="28"
+              :src="'image://builtin/quilt'"
+            />
+          </v-avatar>
+          <v-btn
+            icon
+            @click="emit('install', r)"
+          >
             <v-icon>add</v-icon>
           </v-btn>
         </v-list-item-action>
@@ -39,6 +75,9 @@ defineProps<{
   resources: Resource[]
   loader: string
   minecraft: string
+  forge?: boolean
+  fabric?: boolean
+  quilt?: boolean
 }>()
 
 const emit = defineEmits(['install'])
