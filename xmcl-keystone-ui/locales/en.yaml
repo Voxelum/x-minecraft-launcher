@@ -379,6 +379,8 @@ instance:
   mcOptions: Minecraft Options
   mcOptionsHint: Additional Minecraft launch arugments
   name: Profile Name
+  icon: Profile Icon
+  iconUrl: Icon Url
   nameHint: The name used to identify the game
   neverPlayed: Never Played
   openCrashReportFolder: Open Crash Report Folder

@@ -172,6 +172,7 @@ export class InstanceState {
     inst.upstream = settings.upstream ?? inst.upstream
     inst.playtime = settings.playtime ?? inst.playtime
     inst.lastPlayedDate = settings.lastPlayedDate ?? inst.lastPlayedDate
+    inst.icon = settings.icon ?? inst.icon
 
     if ('showLog' in settings) {
       inst.showLog = settings.showLog

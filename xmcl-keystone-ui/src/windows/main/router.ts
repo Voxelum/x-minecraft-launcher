@@ -86,6 +86,14 @@ export const createRouter = () => {
               actions: ModAddActions,
             },
           },
+          {
+            path: '/base-setting',
+            components: {
+              default: BaseSetting,
+              extensions: HomeExtension,
+              actions: HomeActions,
+            },
+          },
         ],
       },
       {
@@ -99,10 +107,6 @@ export const createRouter = () => {
       {
         path: '/user',
         component: User,
-      },
-      {
-        path: '/base-setting',
-        component: BaseSetting,
       },
       // {
       //   path: '/game-setting',

@@ -1,62 +1,80 @@
 <template>
-  <v-container
-    fill-height
-    class="overflow-auto"
-  >
-    <v-layout
-      wrap
-      fill-height
+  <div class="mx-6">
+    <BaseSettingGeneral />
+    <BaseSettingSync />
+    <BaseSettingModpack v-if="!isServer" />
+    <BaseSettingServer v-else />
+    <BaseSettingJava />
+    <BaseSettingLaunch />
+
+    <v-snackbar
+      color="black"
+      :timeout="-1"
+
+      :value="edit.isModified"
     >
-      <v-flex
-        d-flex
-        xs12
-        tag="h2"
-        class="headline"
-      >
-        {{ t("BaseSetting.title") }}
-      </v-flex>
-      <BaseSettingGeneral />
-      <BaseSettingSync />
-      <BaseSettingModpack v-if="!isServer" />
-      <BaseSettingServer v-else />
-      <BaseSettingJava />
-      <BaseSettingLaunch />
-    </v-layout>
-  </v-container>
+      <div class="mr-4 text-button">
+        {{ t('instance.setting.unsaved') }}
+      </div>
+
+      <template #action="{ attrs }">
+        <div
+          class="flex gap-1 mr-2"
+          v-bind="attrs"
+        >
+          <v-btn
+            text
+            @click="onReset"
+          >
+            {{ t('instance.setting.reset') }}
+          </v-btn>
+
+          <v-btn
+            color="primary"
+            @click="edit.save"
+          >
+            {{ t('instance.setting.save') }}
+          </v-btn>
+        </div>
+      </template>
+    </v-snackbar>
+  </div>
 </template>
 
 <script lang=ts setup>
-import { useInstance, useInstanceIsServer } from '../composables/instance'
+import { useAutoSaveLoad } from '@/composables'
+import { kInstanceContext } from '@/composables/instanceContext'
+import { usePresence } from '@/composables/presence'
+import { injection } from '@/util/inject'
 import { InstanceEditInjectionKey, useInstanceEdit } from '../composables/instanceEdit'
 import BaseSettingGeneral from './BaseSettingGeneral.vue'
+import BaseSettingJava from './BaseSettingJava.vue'
+import BaseSettingLaunch from './BaseSettingLaunch.vue'
 import BaseSettingModpack from './BaseSettingModpack.vue'
 import BaseSettingServer from './BaseSettingServer.vue'
-import { useAutoSaveLoad, useService } from '@/composables'
-import BaseSettingLaunch from './BaseSettingLaunch.vue'
-import BaseSettingJava from './BaseSettingJava.vue'
 import BaseSettingSync from './BaseSettingSync.vue'
-import { usePresence } from '@/composables/presence'
-import { InstanceServiceKey } from '@xmcl/runtime-api'
 
-const { instance } = useInstance()
-const isServer = useInstanceIsServer(instance)
-const edit = useInstanceEdit()
+const { isServer, name, instance } = injection(kInstanceContext)
+const edit = useInstanceEdit(instance)
 const { t } = useI18n()
 provide(InstanceEditInjectionKey, edit)
-useAutoSaveLoad(edit.save, edit.load)
+useAutoSaveLoad(() => {}, edit.load)
 
-const { state } = useService(InstanceServiceKey)
-usePresence({ location: 'instance-setting', instance: state.instance.name })
+function onReset() {
+  edit.load()
+}
+
+usePresence({ location: 'instance-setting', instance: name.value })
 </script>
 
 <style scoped=true>
-.flex {
+/* .flex {
   padding: 6px 8px !important
-}
+} */
 
-.v-btn {
+/* .v-btn {
   margin: 0
-}
+} */
 </style>
 <style>
 .local-version .v-select__selection--comma {

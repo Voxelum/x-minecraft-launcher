@@ -129,14 +129,11 @@ import { useDialog } from '../composables/dialog'
 import { useInstanceBase } from '../composables/instance'
 import { ResourcePackItem, useInstanceResourcePacks } from '../composables/resourcePack'
 import ResourcePackCard from './ResourcePackCard.vue'
-import FilterCombobox from '@/components/FilterCombobox.vue'
 import Hint from '@/components/Hint.vue'
 import { useDragTransferList, useDropImport, useFilterCombobox, useService, useServiceBusy } from '@/composables'
 import { usePresence } from '@/composables/presence'
 import { kCompact } from '@/composables/scrollTop'
 import { injection } from '@/util/inject'
-
-const is = ref([1, 2, 3, 4, 5])
 
 function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {
   function getFilterOptions(item: ResourcePackItem) {
