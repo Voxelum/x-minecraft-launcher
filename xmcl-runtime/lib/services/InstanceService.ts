@@ -5,11 +5,13 @@ import { existsSync } from 'fs'
 import { ensureDir } from 'fs-extra/esm'
 import { copyFile, readdir, rename, rm } from 'fs/promises'
 import { dirname, isAbsolute, join, relative, resolve } from 'path'
+import { fileURLToPath } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { readLaunchProfile } from '../entities/launchProfile'
 import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
 import { copyPassively, exists, isDirectory, missing, readdirEnsured } from '../util/fs'
+import { ImageStorage } from '../util/imageStore'
 import { assignShallow, requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { createSafeFile, createSafeIO } from '../util/persistance'
@@ -31,6 +33,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     @Inject(UserService) private userService: UserService,
     @Inject(InstallService) private installService: InstallService,
     @Inject(kResourceWorker) private worker: ResourceWorker,
+    @Inject(ImageStorage) private imageStore: ImageStorage,
   ) {
     super(app, () => new InstanceState(), async () => {
       const { state } = this
@@ -430,6 +433,17 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       const diff = options.mcOptions.length !== state.mcOptions?.length || options.mcOptions.some((e, i) => e !== state.mcOptions?.[i])
       if (diff) {
         result.mcOptions = options.mcOptions
+      }
+    }
+
+    if ('icon' in result && result.icon) {
+      try {
+        const iconURL = new URL(result.icon)
+        if (iconURL.protocol === 'image:' && iconURL.host === '') {
+          result.icon = await this.imageStore.addImage(iconURL.pathname.substring(1))
+        }
+      } catch (e) {
+        this.error(e)
       }
     }
 

@@ -1,13 +1,12 @@
-import { InjectionKey } from 'vue'
-import { BaseServiceKey, InstanceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { InjectionKey, Ref } from 'vue'
+import { BaseServiceKey, Instance, InstanceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
 
 export const InstanceEditInjectionKey: InjectionKey<ReturnType<typeof useInstanceEdit>> = Symbol('InstanceEdit')
 
-export function useInstanceEdit() {
-  const { state, editInstance: edit } = useService(InstanceServiceKey)
+export function useInstanceEdit(instance: Ref<Instance | undefined>) {
+  const { editInstance: edit } = useService(InstanceServiceKey)
   const { state: baseState } = useService(BaseServiceKey)
-  const instance = computed(() => state.instances.find(s => s.path === state.path))
 
   const data = reactive({
     name: instance.value?.name ?? '',
@@ -42,6 +41,8 @@ export function useInstanceEdit() {
     assignMemory: instance.value?.assignMemory,
 
     javaPath: instance.value?.java,
+
+    icon: instance.value?.icon,
 
     loading: true,
   })
@@ -108,6 +109,79 @@ export function useInstanceEdit() {
     set: (v) => { data.showLog = v },
   })
 
+  const isModified = computed(() => {
+    const current = instance.value
+    if (!current) {
+      return true
+    }
+    if (current.name !== data.name) {
+      return true
+    }
+    if (current.url !== data.url) {
+      return true
+    }
+    if (current.fileApi !== data.fileServerApi) {
+      return true
+    }
+    if (current.minMemory !== data.minMemory) {
+      return true
+    }
+    if (current.maxMemory !== data.maxMemory) {
+      return true
+    }
+    if (current.vmOptions?.join(' ') !== data.vmOptions) {
+      return true
+    }
+    if (current.mcOptions?.join(' ') !== data.mcOptions) {
+      return true
+    }
+    if (current.assignMemory !== data.assignMemory) {
+      return true
+    }
+    if (current.version !== data.version) {
+      return true
+    }
+
+    if (current.runtime.minecraft !== data.runtime.minecraft) {
+      return true
+    }
+    if (current.runtime.forge !== data.runtime.forge) {
+      return true
+    }
+    if (current.runtime.fabricLoader !== data.runtime.fabricLoader) {
+      return true
+    }
+    if (current.runtime.quiltLoader !== data.runtime.quiltLoader) {
+      return true
+    }
+    if (current.runtime.optifine !== data.runtime.optifine) {
+      return true
+    }
+
+    if (current.fastLaunch !== data.fastLaunch) {
+      return true
+    }
+    if (current.showLog !== data.showLog) {
+      return true
+    }
+    if (current.hideLauncher !== data.hideLauncher) {
+      return true
+    }
+    if (current.java !== data.javaPath) {
+      return true
+    }
+    if (current.icon !== data.icon) {
+      return true
+    }
+    if (current.server?.host && current.server?.host !== data.host) {
+      return true
+    }
+    if (current.server?.port && current.server?.port !== Number.parseInt(data.port, 10)) {
+      return true
+    }
+    return false
+  })
+
   async function save() {
     const payload = {
       name: data.name,
@@ -124,6 +198,7 @@ export function useInstanceEdit() {
       showLog: data.showLog,
       hideLauncher: data.hideLauncher,
       java: data.javaPath,
+      icon: data.icon,
     }
     if (!instance.value?.server) {
       await edit({
@@ -140,6 +215,7 @@ export function useInstanceEdit() {
         },
       })
     }
+    data.icon = instance.value?.icon
   }
   function load() {
     data.loading = false
@@ -152,8 +228,13 @@ export function useInstanceEdit() {
       data.author = current.author
       data.fileServerApi = current.fileApi
       data.description = current.description || ''
-      data.runtime = current.runtime
+      data.runtime.fabricLoader = current.runtime.fabricLoader
+      data.runtime.forge = current.runtime.forge
+      data.runtime.minecraft = current.runtime.minecraft
+      data.runtime.optifine = current.runtime.optifine
+      data.runtime.quiltLoader = current.runtime.quiltLoader
       data.version = current.version
+      data.icon = current.icon
 
       if (current.server) {
         data.host = current.server.host
@@ -171,6 +252,7 @@ export function useInstanceEdit() {
   }
 
   return {
+    isModified,
     isGlobalAssignMemory,
     isGlobalMinMemory,
     isGlobalMaxMemory,

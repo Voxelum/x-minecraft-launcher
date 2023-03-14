@@ -7,7 +7,68 @@
     <v-subheader style="">
       {{ t("BaseSettingGeneral.title") }}
     </v-subheader>
+
     <v-list-item>
+      <v-list-item-action class="self-center">
+        <v-menu
+          :close-on-content-click="false"
+          :nudge-width="380"
+          offset-x
+        >
+          <template #activator="{ on, attrs }">
+            <v-avatar
+              v-ripple
+              size="40"
+              v-bind="attrs"
+              v-on="on"
+            >
+              <img
+                :src="data.icon"
+              >
+            </v-avatar>
+          </template>
+
+          <v-card>
+            <v-list>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title>
+                    {{ t('instance.icon') }}
+                  </v-list-item-title>
+                  <v-list-item-subtitle>Drop file or link URL here to set icon</v-list-item-subtitle>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+
+            <v-divider />
+
+            <v-list>
+              <v-list-item>
+                <v-text-field
+                  v-model="data.icon"
+                  :label="t('instance.iconUrl')"
+                  small
+                  hide-details
+                  outlined
+                  filled
+                  dense
+                />
+                <v-list-item-action>
+                  <v-btn
+                    icon
+                    @click="pickIconFile"
+                  >
+                    <v-icon>
+                      upload_file
+                    </v-icon>
+                  </v-btn>
+                </v-list-item-action>
+              </v-list-item>
+            </v-list>
+          </v-card>
+        </v-menu>
+      </v-list-item-action>
+
       <v-list-item-content>
         <v-list-item-title>{{ t("instance.name") }}</v-list-item-title>
         <v-list-item-subtitle>
@@ -47,7 +108,7 @@
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
-        <version-menu
+        <VersionMenu
           :is-clearable="false"
           :items="minecraftItems"
           :has-snapshot="true"
@@ -71,7 +132,7 @@
               v-on="on"
             />
           </template>
-        </version-menu>
+        </VersionMenu>
       </v-list-item-action>
     </v-list-item>
 
@@ -93,7 +154,7 @@
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
-        <version-menu
+        <VersionMenu
           :is-clearable="true"
           :items="forgeItems"
           :clear-text="t('forgeVersion.disable')"
@@ -120,7 +181,7 @@
               v-on="on"
             />
           </template>
-        </version-menu>
+        </VersionMenu>
       </v-list-item-action>
     </v-list-item>
     <v-list-item>
@@ -137,7 +198,7 @@
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
-        <version-menu
+        <VersionMenu
           :is-clearable="true"
           :items="fabricItems"
           :clear-text="t('fabricVersion.disable')"
@@ -164,7 +225,7 @@
               v-on="on"
             />
           </template>
-        </version-menu>
+        </VersionMenu>
       </v-list-item-action>
     </v-list-item>
     <v-list-item>
@@ -181,7 +242,7 @@
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
-        <version-menu
+        <VersionMenu
           :is-clearable="true"
           :items="quiltItems"
           :empty-text="t('quiltVersion.empty', { version: data.runtime.minecraft })"
@@ -205,7 +266,7 @@
               v-on="on"
             />
           </template>
-        </version-menu>
+        </VersionMenu>
       </v-list-item-action>
     </v-list-item>
 
@@ -223,7 +284,7 @@
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
-        <version-menu
+        <VersionMenu
           :is-clearable="true"
           :items="optifineItems"
           :clear-text="t('optifineVersion.disable')"
@@ -247,7 +308,7 @@
               v-on="on"
             />
           </template>
-        </version-menu>
+        </VersionMenu>
       </v-list-item-action>
     </v-list-item>
 
@@ -265,7 +326,7 @@
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
-        <version-menu
+        <VersionMenu
           :items="localItems"
           :empty-text="t('localVersion.empty')"
           @select="onSelectLocalVersion"
@@ -285,7 +346,7 @@
               v-on="on"
             />
           </template>
-        </version-menu>
+        </VersionMenu>
       </v-list-item-action>
     </v-list-item>
 
@@ -369,6 +430,7 @@ import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, use
 import { injection } from '@/util/inject'
 import { useLocalVersions } from '@/composables/version'
 import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
+import { useDialog } from '@/composables/dialog'
 
 const {
   data,
@@ -383,6 +445,7 @@ const {
   resetShowLog,
 } = injection(InstanceEditInjectionKey)
 const minecraft = computed(() => data.runtime.minecraft)
+const { showOpenDialog } = windowController
 const { items: minecraftItems, showAlpha, refresh: refreshMinecraft, refreshing: refreshingMinecraft, release } = useMinecraftVersionList(minecraft)
 const { items: forgeItems, canShowBuggy, recommendedOnly, refresh: refreshForge, refreshing: refreshingForge } = useForgeVersionList(minecraft, computed(() => data.runtime.forge ?? ''))
 const { items: fabricItems, showStableOnly, refresh: refreshFabric, refreshing: refreshingFabric } = useFabricVersionList(minecraft, computed(() => data.runtime.fabricLoader ?? ''))
@@ -398,6 +461,26 @@ const localItems = computed(() => {
     return result
   })
 })
+
+function pickIconFile() {
+  showOpenDialog({
+    title: t('instanceSetting.icon'),
+    filters: [
+      {
+        name: t('instanceSetting.icon'),
+        extensions: ['png', 'jpg', 'jpeg', 'bmp', 'gif'],
+      },
+    ],
+    properties: ['openFile'],
+  }).then((result) => {
+    if (result.canceled) return
+    const filePath = result.filePaths[0]
+    if (filePath) {
+      const url = new URL(`image:///${filePath}`)
+      data.icon = `image:///${filePath}`
+    }
+  })
+}
 
 function onSelectMinecraft(version: string) {
   if (data?.runtime) {
