@@ -1,8 +1,9 @@
-import { getModDependencies } from '@/util/modDependencies'
+import { getModCompatiblity } from '@/util/modCompatible'
+import { getModDependencies, ModDependency } from '@/util/modDependencies'
 import { File, FileRelationType } from '@xmcl/curseforge'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { CurseForgeServiceKey, InstanceModsServiceKey, ModrinthServiceKey, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
-import { InjectionKey, set } from 'vue'
+import { CurseForgeServiceKey, getCurseforgeFileUri, getModrinthVersionUri, InstanceModsServiceKey, ModrinthServiceKey, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InjectionKey } from 'vue'
 import { kMods, useMods } from './mods'
 import { useService } from './service'
 
@@ -26,21 +27,17 @@ export interface ModListFileItem {
   warning: {
     duplicated: string
     incompatible: boolean
-    // conflict:
   }
 
   enabled: boolean
 }
 
 export interface ModListFileItemParent extends ModListFileItem {
-  dependencies: ModListFileLeaveItem[]
-  embedded: ModListFileItem[]
-  incompatible: ModListFileItem[]
+  dependencies: ModListFileItemLeave[]
 }
 
-export type ModListFileLeaveItem = ModListFileItem & {
-  type: 'required' | 'optional'
-  parent: ModListFileItem
+export type ModListFileItemLeave = ModListFileItem & {
+  type: 'required' | 'optional' | 'embedded' | 'incompatible'
 }
 
 export const kModInstallList = Symbol('ModInstallList') as InjectionKey<ReturnType<typeof useModInstallList>>
@@ -48,7 +45,6 @@ export const kModInstallList = Symbol('ModInstallList') as InjectionKey<ReturnTy
 export function useModInstallList() {
   const mods = useMods()
   provide(kMods, mods)
-  const { getResourcesByUris } = useService(ResourceServiceKey)
   const { install } = useService(InstanceModsServiceKey)
 
   const list = ref([] as ModListFileItemParent[])
@@ -79,16 +75,18 @@ export function useModInstallList() {
     result.enabled = true
   }
 
-  function decorateLookup(result: ModListFileItem, curseforge?: File, modrinth?: ProjectVersion, project?: ModProject) {
+  function getLookups(curseforge?: File, modrinth?: ProjectVersion, project?: ModProject) {
+    const lookups = [] as string[]
     if (curseforge) {
-      result.lookups.push(`curseforge:${curseforge.modId}`)
+      lookups.push(getCurseforgeFileUri(curseforge))
     }
     if (modrinth) {
-      result.lookups.push(`modrinth:${modrinth.project_id}`)
+      lookups.push(getModrinthVersionUri(modrinth))
     }
     if (project?.name) {
-      result.lookups.push(`project:${project.name}`)
+      lookups.push(`project:${project.name}`)
     }
+    return lookups
   }
 
   async function add(item: File | ProjectVersion | Resource, project?: ModProject) {
@@ -100,7 +98,7 @@ export function useModInstallList() {
     const resource = 'path' in item ? item : undefined
     const result: ModListFileItemParent = {
       id,
-      lookups: [],
+      lookups: getLookups(curseforge, modrinth, project),
       name,
       icon: project?.icon,
       projectName: project?.name,
@@ -115,13 +113,9 @@ export function useModInstallList() {
       },
 
       enabled: true,
-      dependencies: [],
-      embedded: [],
-      incompatible: [],
+      dependencies: await getDependencies(curseforge, modrinth, resource),
     }
 
-    decorateLookup(result, curseforge, modrinth, project)
-    await refreshDependencies(result)
     refreshWarning(mutexDict, result, curseforge, modrinth, resource)
     list.value.push(result)
 
@@ -155,99 +149,119 @@ export function useModInstallList() {
 
   const { resolveDependencies: resolveModrinth, getProjectVersion } = useService(ModrinthServiceKey)
 
-  async function refreshDependencies(parent: ModListFileItemParent) {
-    const processCurseforge = async (curseforge: File) => {
-      const result = await resolveCurseforge(curseforge)
-      for (const [file, type] of result) {
-        const depType = type === FileRelationType.RequiredDependency
+  async function getCurseforgeDependencies(curseforge: File) {
+    const result = await resolveCurseforge(curseforge)
+    return result.map(([file, type]) => {
+      const item: ModListFileItemLeave = {
+        id: file.id.toString(),
+        name: file.displayName,
+        curseforge: file,
+        enabled: true,
+        type: type === FileRelationType.RequiredDependency
           ? 'required'
           : type === FileRelationType.OptionalDependency || type === FileRelationType.Tool
             ? 'optional'
             : type === FileRelationType.Incompatible
               ? 'incompatible'
-              : 'embedded'
-        const item = {
-          id: file.id.toString(),
-          name: file.displayName,
-          curseforge: file,
-          enabled: true,
-          warning: {
-            duplicated: '',
-            incompatible: false,
-          },
-          lookups: [],
-        }
-        decorateLookup(item, file)
-        if (depType === 'embedded') {
-          parent.embedded.push(item)
-        } else if (depType === 'incompatible') {
-          parent.embedded.push(item)
-        } else {
-          parent.dependencies.push({
-            ...item,
-            parent,
-            type: depType,
-            enabled: depType === 'required',
-          })
-        }
+              : 'embedded',
+        warning: {
+          duplicated: '',
+          incompatible: false,
+        },
+        lookups: getLookups(file),
+      }
+      return item
+    })
+  }
+  async function getModrinthDependencies(modrinth: ProjectVersion) {
+    const result = await resolveModrinth(modrinth)
+    const deps = modrinth.dependencies
+    return result.map(v => {
+      const dep = deps.find(d => (!d.version_id || d.version_id === v.id) && d.project_id === v.project_id)!
+      const item: ModListFileItemLeave = {
+        id: v.id.toString(),
+        name: v.name,
+        modrinth: v,
+        warning: {
+          duplicated: '',
+          incompatible: false,
+        },
+        type: dep.dependency_type,
+        enabled: dep.dependency_type === 'required',
+        lookups: getLookups(undefined, v),
+      }
+      return item
+    })
+  }
+  function getModId(res: Resource) {
+    if (res.metadata.forge) {
+      return res.metadata.forge.modid
+    }
+    if (res.metadata.fabric) {
+      if (res.metadata.fabric instanceof Array) {
+        return res.metadata.fabric[0].id
+      }
+      return res.metadata.fabric.id
+    }
+    if (res.metadata.quilt) {
+      return res.metadata.quilt.quilt_loader.id
+    }
+    return undefined
+  }
+  function getModResourceByDep(dep: ModDependency): Resource | undefined {
+    const all = mods.resources
+    for (const r of all.value) {
+      const modId = getModId(r)
+      if (modId === dep.modId) {
+        return r
       }
     }
-    const processModrinth = async (modrinth: ProjectVersion) => {
-      const result = await resolveModrinth(modrinth)
-      const deps = modrinth.dependencies
-      for (const v of result) {
-        const dep = deps.find(d => (!d.version_id || d.version_id === v.id) && d.project_id === v.project_id)
-        if (!dep) {
-          continue
-        }
-        const item = {
-          id: v.id.toString(),
-          name: v.name,
-          modrinth: v,
-          enabled: true,
-          warning: {
-            duplicated: '',
-            incompatible: false,
-          },
-          lookups: [],
-        }
-        decorateLookup(item, undefined, v)
-        if (dep.dependency_type === 'embedded') {
-          parent.embedded.push(item)
-        } else if (dep.dependency_type === 'incompatible') {
-          parent.incompatible.push(item)
-        } else {
-          parent.dependencies.push({
-            ...item,
-            parent,
-            type: dep.dependency_type,
-            enabled: dep.dependency_type === 'required',
-          })
-        }
+  }
+  async function getResourceDependencies(resource: Resource) {
+    const result = [] as ModListFileItemLeave[]
+    if (resource.metadata.curseforge) {
+      const mod = await getModFile({ fileId: resource.metadata.curseforge.fileId, modId: resource.metadata.curseforge.projectId }).catch(() => { })
+      if (mod) {
+        const deps = await getCurseforgeDependencies(mod).catch(() => [])
+        result.push(...deps)
       }
     }
-    if (parent.curseforge) {
-      await processCurseforge(parent.curseforge).catch(() => { })
-    } else if (parent.modrinth) {
-      await processModrinth(parent.modrinth).catch(() => { })
-    } else if (parent.resource) {
-      if (parent.resource.metadata.modrinth) {
-        const version = await getProjectVersion(parent.resource.metadata.modrinth.versionId).catch(() => { })
-        if (version) {
-          await processModrinth(version).catch(() => { })
-        }
+    if (resource.metadata.modrinth) {
+      const version = await getProjectVersion(resource.metadata.modrinth.versionId).catch(() => { })
+      if (version) {
+        const deps = await getModrinthDependencies(version).catch(() => [])
+        result.push(...deps)
       }
-      if (parent.resource.metadata.curseforge) {
-        const mod = await getModFile({ fileId: parent.resource.metadata.curseforge.fileId, modId: parent.resource.metadata.curseforge.projectId }).catch(() => { })
-        if (mod) {
-          await processCurseforge(mod).catch(() => { })
-        }
-      }
-      const dependencies = getModDependencies(parent.resource).filter(d => d.modId !== 'minecraft' && d.modId !== 'forge')
-      for (const dep of dependencies) {
+    }
 
+    const modDeps = getModDependencies(resource).filter(dep => dep.modId !== 'minecraft' && dep.modId !== 'forge')
+    for (const dep of modDeps) {
+      const resource = getModResourceByDep(dep)
+      const item: ModListFileItemLeave = {
+        id: dep.modId,
+        name: resource?.name || dep.modId,
+        warning: {
+          duplicated: '',
+          incompatible: false,
+        },
+        type: 'required',
+        enabled: !!resource,
+        lookups: getLookups(undefined, undefined, resource).concat(['mod:' + dep.modId]),
       }
+      result.push(item)
     }
+
+    return result
+  }
+  async function getDependencies(curseforge?: File, modrinth?: ProjectVersion, resource?: Resource) {
+    if (curseforge) {
+      return await getCurseforgeDependencies(curseforge).catch(() => [])
+    } else if (modrinth) {
+      return await getModrinthDependencies(modrinth).catch(() => [])
+    } else if (resource) {
+      return await getResourceDependencies(resource).catch(() => [])
+    }
+    return []
   }
 
   async function commit() {

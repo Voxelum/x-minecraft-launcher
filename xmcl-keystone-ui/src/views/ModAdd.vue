@@ -19,17 +19,23 @@
         #left
       >
         <div class="flex flex-grow-0 pl-4 items-center pr-4">
-          <v-subheader class="pl-0 py-2">
+          <v-subheader class="pl-0 py-2 responsive-header">
             <v-icon left>
               travel_explore
             </v-icon>
-            Search Result
+            <span class="search-text">
+              {{ t('modInstall.search') }}
+            </span>
             <v-divider
               vertical
               class="mx-2"
             />
             <span>
-              {{ items.length }} items
+              {{ t('items.count', { count: items.length }) }}
+              <span v-if="total">
+                /
+                {{ t('items.total', { total: total }) }}
+              </span>
             </span>
           </v-subheader>
           <div class="flex-grow" />
@@ -72,12 +78,12 @@
             </v-btn>
           </v-btn-toggle>
         </div>
-
         <v-virtual-scroll
           :bench="2"
           class="h-full max-h-full visible-scroll overflow-auto w-full"
           :items="items"
           item-height="68"
+          @scroll="onScroll"
         >
           <template #default="{ item }">
             <ModAddSearchItem
@@ -87,6 +93,14 @@
             />
           </template>
         </v-virtual-scroll>
+        <ErrorView
+          v-if="tab === 3 && modrinthError"
+          :error="modrinthError"
+        />
+        <ErrorView
+          v-if="tab === 2 && curseforgeError"
+          :error="curseforgeError"
+        />
       </template>
       <template #right>
         <SplitPane
@@ -123,6 +137,11 @@
                   @install="onInstallResource($event, selected)"
                 />
               </template>
+              <Hint
+                v-else
+                text="Search and select project"
+                icon="playlist_add"
+              />
             </div>
           </template>
           <template #right>
@@ -135,6 +154,8 @@
 </template>
 
 <script lang=ts setup>
+import ErrorView from '@/components/ErrorView.vue'
+import Hint from '@/components/Hint.vue'
 import SplitPane from '@/components/SplitPane.vue'
 import { kInstanceContext } from '@/composables/instanceContext'
 import { kModInstallList } from '@/composables/modInstallList'
@@ -152,6 +173,7 @@ import ModAddSearchItem from './ModAddSearchItem.vue'
 
 const { modSearch, modSearchItems, minecraft, fabricLoader, forge, quiltLoader } = injection(kInstanceContext)
 const modLoaderFilters = ref([] as string[])
+const { tab } = modSearchItems
 
 onMounted(() => {
   const items = [] as string[]
@@ -171,8 +193,6 @@ const {
   modrinth, modrinthError, loadingModrinth,
   curseforge, curseforgeError, loadingCurseforge,
   loading,
-  mods,
-  keyword,
 } = modSearch
 const { items: searchItems } = modSearchItems
 const items = computed(() => {
@@ -181,13 +201,23 @@ const items = computed(() => {
   const allowFabric = modLoaderFilters.value.indexOf('fabric') !== -1
   const allowQuilt = modLoaderFilters.value.indexOf('quilt') !== -1
 
-  return all.filter(a => (allowForge && a.forge) || (allowFabric && a.fabric) || (allowQuilt && a.quilt))
+  return all.filter(a => (allowForge && a.forge) || (allowFabric && a.fabric) || (allowQuilt && a.quilt) || a.modrinth || a.curseforge)
 })
 
 const selected = ref(undefined as undefined | ModListSearchItem)
 const onSelect = (i: ModListSearchItem) => {
   selected.value = i
 }
+
+const total = computed(() => {
+  if (tab.value === 3) {
+    return modrinth.value?.total_hits || 0
+  }
+  if (tab.value === 2) {
+    return curseforge.value?.pagination.totalCount || 0
+  }
+  return 0
+})
 
 const { add } = injection(kModInstallList)
 
@@ -203,9 +233,37 @@ const onInstallModrinth = (project: ProjectVersion, item?: ModListSearchItem) =>
   add(project, { icon: item?.icon, name: item?.title })
 }
 
+const onScroll = (e: Event) => {
+  const target = e.target as HTMLElement
+  if (!target) return
+  if (target.scrollTop + target.clientHeight >= target.scrollHeight - 100) {
+    if (modSearchItems.tab.value === 2) {
+      modSearch.loadMoreCurseforge()
+    } else if (modSearchItems.tab.value === 3) {
+      modSearch.loadMoreModrinth()
+    }
+  }
+}
+
 const { t } = useI18n()
 const compact = injection(kCompact)
 onMounted(() => {
   compact.value = true
 })
 </script>
+
+<style scoped>
+
+.search-text {
+  display: none;
+}
+@container (min-width: 260px) {
+  .search-text {
+    display: block;
+  }
+}
+.responsive-header {
+  container-type: size;
+  width: 100%;
+}
+</style>

@@ -12,7 +12,7 @@
     >
       <div
         v-if="!button"
-        class="headline text-center select-none"
+        class="headline text-center select-none text-button"
         :style="{ 'color': color }"
       >
         <v-icon
@@ -65,6 +65,10 @@ defineProps({
     default: 50,
   },
   button: {
+    type: Boolean,
+    default: false,
+  },
+  secondary: {
     type: Boolean,
     default: false,
   },

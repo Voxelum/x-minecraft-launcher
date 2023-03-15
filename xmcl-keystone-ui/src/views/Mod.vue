@@ -109,7 +109,7 @@ const { onDrop: onDropToImport } = useDrop((file) => {
 
 const { isDraggingMod, onDragEnd, onItemDragstart } = useModDragging(filtered.items, selectedItems, isSelectionMode)
 const { deletingMods, startDelete, confirmDelete, cancelDelete } = useModDeletion(mods)
-const { modLoaderFilters, items } = filtered
+const { items } = filtered
 const compact = injection(kCompact)
 const onScroll = useCompactScroll(compact)
 
