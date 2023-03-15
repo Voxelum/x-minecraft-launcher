@@ -32,36 +32,62 @@ export function useModsSearch(keyword: Ref<string>, runtime: Ref<InstanceData['r
     pagination: Pagination
   } | undefined)
 
-  const processModrinth = async (useForge: boolean, useFabric: boolean) => {
-    const facets = [`["versions:${runtime.value.minecraft}"]`, '["project_type:mod"]']
-    if (useForge) {
-      facets.push('["categories:forge"]')
-    }
-    if (useFabric) {
-      facets.push('["categories:fabric"]')
-    }
-    if (keyword.value) {
-      modrinth.value = await searchModrinth({
-        query: keyword.value,
-        facets: '[' + facets.join(',') + ']',
-        index: 'relevance',
-        offset: 0,
-        limit: 20,
-      })
+  const processModrinth = async (useForge: boolean, useFabric: boolean, offset: number, append: boolean) => {
+    try {
+      const facets = [`["versions:${runtime.value.minecraft}"]`, '["project_type:mod"]']
+      if (useForge) {
+        facets.push('["categories:forge"]')
+      }
+      if (useFabric) {
+        facets.push('["categories:fabric"]')
+      }
+      if (keyword.value) {
+        const result = await searchModrinth({
+          query: keyword.value,
+          facets: '[' + facets.join(',') + ']',
+          index: 'relevance',
+          offset,
+          limit: 20,
+        })
+        if (!append || !modrinth.value) {
+          modrinth.value = result
+        } else {
+          modrinth.value.hits.push(...result.hits)
+          modrinth.value.limit += result.limit
+          modrinth.value.offset = result.offset
+        }
+      }
+    } catch (e) {
+      modrinthError.value = e
+    } finally {
+      loadingModrinth.value = false
     }
   }
 
-  const processCurseforge = async (useForge: boolean, useFabric: boolean) => {
+  const processCurseforge = async (useForge: boolean, useFabric: boolean, offset: number, append: boolean) => {
     if (keyword.value) {
-      curseforge.value = await searchCurseforge({
-        classId: 6, // mods
-        sortField: ModsSearchSortField.Name,
-        modLoaderType: useForge ? FileModLoaderType.Forge : useFabric ? FileModLoaderType.Fabric : FileModLoaderType.Any,
-        gameVersion: runtime.value.minecraft,
-        searchFilter: keyword.value,
-        pageSize: 20,
-        index: 0,
-      })
+      try {
+        const result = await searchCurseforge({
+          classId: 6, // mods
+          sortField: ModsSearchSortField.Name,
+          modLoaderType: useForge ? FileModLoaderType.Forge : useFabric ? FileModLoaderType.Fabric : FileModLoaderType.Any,
+          gameVersion: runtime.value.minecraft,
+          searchFilter: keyword.value,
+          pageSize: 20,
+          index: offset,
+        })
+
+        if (!append || !curseforge.value) {
+          curseforge.value = result
+        } else {
+          curseforge.value.data.push(...result.data)
+          curseforge.value.pagination = result.pagination
+        }
+      } catch (e) {
+        curseforgeError.value = e
+      } finally {
+        loadingCurseforge.value = false
+      }
     }
   }
 
@@ -70,29 +96,48 @@ export function useModsSearch(keyword: Ref<string>, runtime: Ref<InstanceData['r
   const curseforgeError = ref(undefined as any)
   const loadingCurseforge = ref(false)
   const loading = computed(() => loadingModrinth.value || loadingCurseforge.value)
+  const modrinthPage = ref(0)
+  const curseforgePage = ref(0)
+  const canCurseforgeLoadMore = computed(() => {
+    return curseforge.value && curseforge.value.pagination.totalCount > (curseforge.value.pagination.index + curseforge.value.pagination.resultCount)
+  })
+  const canModrinthLoadMore = computed(() => {
+    return modrinth.value && modrinth.value.total_hits > (modrinth.value.offset + modrinth.value.limit)
+  })
+
+  const loadMoreCurseforge = debounce(async () => {
+    if (canCurseforgeLoadMore.value) {
+      curseforgePage.value += 1
+      loadingCurseforge.value = true
+      await processCurseforge(!!runtime.value.forge, !!runtime.value.fabricLoader, curseforgePage.value * 20, true)
+    }
+  }, 1000)
+  const loadMoreModrinth = debounce(async () => {
+    if (canModrinthLoadMore.value) {
+      modrinthPage.value += 1
+      loadingModrinth.value = true
+      await processModrinth(!!runtime.value.forge, !!runtime.value.fabricLoader, modrinthPage.value * 20, true)
+    }
+  }, 1000)
 
   const onSearch = debounce(async () => {
     const useForge = !!runtime.value.forge
     const useFabric = !!runtime.value.fabricLoader
-
     loadingModrinth.value = true
-    processModrinth(useForge, useFabric).catch((e) => {
-      modrinthError.value = e
-    }).finally(() => {
-      loadingModrinth.value = false
-    })
-
     loadingCurseforge.value = true
-    processCurseforge(useForge, useFabric).catch((e) => {
-      curseforgeError.value = e
-    }).finally(() => {
-      loadingCurseforge.value = false
-    })
+    modrinthPage.value = 0
+    curseforgePage.value = 0
+    processModrinth(useForge, useFabric, modrinthPage.value * 20, false)
+    processCurseforge(useForge, useFabric, curseforgePage.value * 20, false)
   }, 1000)
 
   watch(keyword, onSearch)
 
   return {
+    loadMoreCurseforge,
+    loadMoreModrinth,
+    canCurseforgeLoadMore,
+    canModrinthLoadMore,
     modrinthError,
     loadingModrinth,
     curseforgeError,

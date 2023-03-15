@@ -373,20 +373,24 @@ instance:
   fileApi: The synchronize file server API url
   fileApiHint: The url to synchronize instance files from a remote config server.
   gameVersion: Game Version
+  icon: Profile Icon
+  iconUrl: Icon Url
   includeVersion: Include Version | Include Versions
   lastPlayed: Last Played
   launchArguments: Launch Arguments Preview
   mcOptions: Minecraft Options
   mcOptionsHint: Additional Minecraft launch arugments
   name: Profile Name
-  icon: Profile Icon
-  iconUrl: Icon Url
   nameHint: The name used to identify the game
   neverPlayed: Never Played
   openCrashReportFolder: Open Crash Report Folder
   openLogFolder: Open Log Folder
   playtime: Playtime
   requireName: The name is required
+  setting:
+    reset: Reset
+    save: Save
+    unsaved: Your modification is unsaved!
   showInstance: Show instance folder
   versionHint: The Minecraft version of this game
   vmOptions: JVM Options
@@ -405,6 +409,7 @@ instanceSetting:
   fastLaunch: Turbo Launch
   fastLaunchHint: Ignore the user status and existed unfixed problems
   hideLauncher: Hide the launcher after launch
+  icon: Pick an image
   showLog: Show Minecraft Log
   showLogHint: This will popup a window to stream Minecraft log after game started
 instanceTemplate:
@@ -431,6 +436,9 @@ instances:
   refreshServers: Refresh Servers
 issue:
   name: Issues
+items:
+  count: '{count} items'
+  total: '{total} total'
 java:
   allocatedLong: Use system default java
   allocatedShort: Auto Allocated
@@ -575,7 +583,6 @@ minecraftVersion:
   showAlpha: Show Snapshot
   snapshot: Snapshot
 mod:
-  showDirectory: Show mods directory
   acceptVersion: Accept {version}
   backToAllMods: Back to All Mods
   compatible: Compatible Mod.
@@ -599,11 +606,16 @@ mod:
   searchOnCurseforge: Search in curseforge
   searchOnModrinth: Search {name} in Modrinth
   selected: Selected Mods
+  showDirectory: Show mods directory
   showFile: Show the mod path {file}
   showInCurseforge: Show the mod in curseforge
   showInModrinth: Show {name} in Modrinth
   showIncompatible: Show Incompatible Mods
   unselected: Unselected Mods
+modInstall:
+  install: Install
+  pending: Pending to install
+  search: Search Result
 modSearchType:
   all: All
   local: Local

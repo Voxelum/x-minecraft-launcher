@@ -9,8 +9,8 @@ input::-webkit-inner-spin-button {
     --warning-color: #e65100;
     --warning-color-decent: #c45920;
     --common-color: #424242;
-    --border-dark: hsla(0,0%,100%,.12);
-    --border-light: hsla(0,0%,100%,.12);
+    --border-dark: hsla(0, 0%, 100%, .12);
+    --border-light: hsla(0, 0%, 100%, .12);
 }
 
 p {
@@ -77,12 +77,21 @@ html ::-webkit-scrollbar {
 
 ::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
     cursor: pointer;
+    background: transparent;
     z-index: 1000;
+}
+
+::-webkit-resizer,
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+    background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
     width: 8px;
+    height: 8px;
     cursor: pointer;
     background: rgba(155, 155, 155, 0.5);
     transition: all 1s;
@@ -107,6 +116,7 @@ html ::-webkit-scrollbar {
 .vue-grid-item.vue-grid-placeholder {
     background: rgba(0, 0, 0, 0.3) !important;
 }
+
 .dark .vue-grid-item.vue-grid-placeholder {
     background: rgba(255, 255, 255, 0.5) !important;
 }

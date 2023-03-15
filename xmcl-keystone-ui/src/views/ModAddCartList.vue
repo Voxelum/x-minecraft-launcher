@@ -5,26 +5,26 @@
         <v-icon left>
           shopping_cart
         </v-icon>
-        Pending to Install
+        {{ t('modInstall.pending') }}
         <v-divider
           vertical
           class="mx-2"
         />
         <span class="">
-          {{ list.length }} items
+          {{ t('items.count', { count: list.length }) }}
         </span>
       </v-subheader>
       <div class="flex-grow" />
       <v-btn
         text
+        color="primary"
         :disabled="list.length === 0"
         @click="commit"
       >
         <v-icon left>
           save
         </v-icon>
-        <!-- {{ t('modSearch.install') }} -->
-        Install
+        {{ t('modInstall.install') }}
       </v-btn>
     </div>
     <v-list
@@ -32,11 +32,11 @@
       dense
       color="transparent"
     >
-      <v-list-item v-if="list.length === 0">
-        <v-list-item-content>
-          <v-list-item-title> No install yet </v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
+      <Hint
+        v-if="list.length === 0"
+        text="Select project and install file"
+        icon="add_shopping_cart"
+      />
       <template v-else>
         <template v-for="item of list">
           <ModAddMenuItem
@@ -57,6 +57,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import Hint from '@/components/Hint.vue'
 import ModAddMenuItem from '@/components/ModAddMenuItem.vue'
 import { kModInstallList } from '@/composables/modInstallList'
 import { injection } from '@/util/inject'

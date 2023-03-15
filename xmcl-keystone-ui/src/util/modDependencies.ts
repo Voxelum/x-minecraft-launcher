@@ -3,7 +3,7 @@ import { FabricResource, ForgeResource, isFabricResource, isForgeResource, isLit
 
 export type ModDependencies = ModDependency[]
 
-type ModDependency = {
+export type ModDependency = {
   modId: string
   versionRange: string
   semanticVersion?: string | string[]

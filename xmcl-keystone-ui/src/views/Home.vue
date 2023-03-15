@@ -7,7 +7,7 @@
       name="fade-transition"
       mode="out-in"
     >
-      <HomeHeader class="sticky top-0 z-10" />
+      <HomeHeader class="sticky top-0 z-20" />
     </transition>
 
     <template
