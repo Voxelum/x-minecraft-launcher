@@ -21,7 +21,7 @@
       </div>
     </template>
 
-    <UserHeader
+    <UserMenu
       :users="users"
       :selected="selectedUser"
       :refreshing="false"
@@ -37,17 +37,15 @@ import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import { useService } from '@/composables'
 import { useDialog } from '@/composables/dialog'
 import { LoginDialog } from '@/composables/login'
-import { useUsers } from '@/composables/user'
+import { kUserContext } from '@/composables/user'
 import { UserSkinRenderPaused } from '@/composables/userSkin'
-import { UserServiceKey } from '@xmcl/runtime-api'
-import UserHeader from './UserHeader.vue'
+import { injection } from '@/util/inject'
+import { BaseServiceKey, UserServiceKey } from '@xmcl/runtime-api'
+import UserMenu from './UserMenu.vue'
 
-const { users } = useUsers()
-const { state, selectUser, removeUserProfile, abortRefresh, refreshUser } = useService(UserServiceKey)
+const { users, userProfile: selectedUser, gameProfile: selectedUserGameProfile } = injection(kUserContext)
+const { selectUser, removeUserProfile, abortRefresh, refreshUser } = useService(UserServiceKey)
 const { show: showLoginDialog } = useDialog(LoginDialog)
-const userId = computed(() => state.selectedUser.id)
-const selectedUser = computed(() => users.value.find(u => u.id === userId.value))
-const selectedUserGameProfile = computed(() => selectedUser.value?.profiles[selectedUser.value?.selectedProfile])
 const isShown = ref(false)
 
 const { t } = useI18n()
@@ -66,4 +64,21 @@ function onAbortRefresh() {
   abortRefresh()
 }
 
+const { handleUrl } = useService(BaseServiceKey)
+function onDrop(e: DragEvent) {
+  const dataTransfer = e.dataTransfer!
+  if (dataTransfer.items.length > 0) {
+    for (let i = 0; i < dataTransfer.items.length; ++i) {
+      const item = dataTransfer.items[i]
+      if (item.kind === 'string') {
+        item.getAsString((content) => {
+          if (content.startsWith('authlib-injector:yggdrasil-server:')) {
+            handleUrl(content)
+          }
+        })
+        break
+      }
+    }
+  }
+}
 </script>

@@ -25,10 +25,9 @@
 </template>
 
 <script lang=ts setup>
-import { useService } from '@/composables'
 import { useDropLink } from '@/composables/dropLink'
-import { useCurrentUser } from '@/composables/user'
-import { BaseServiceKey } from '@xmcl/runtime-api'
+import { kUserContext } from '@/composables/user'
+import { injection } from '@/util/inject'
 import { useDialog } from '../composables/dialog'
 import { LoginDialog } from '../composables/login'
 import LoginDialogLoginView from './AppLoginDialogForm.vue'
@@ -38,7 +37,7 @@ const { inside } = useDropLink()
 
 // handle the not login issue
 
-const { userProfile } = useCurrentUser()
+const { userProfile } = injection(kUserContext)
 
 const isPersistent = computed(() => {
   if (userProfile.value?.invalidated) {

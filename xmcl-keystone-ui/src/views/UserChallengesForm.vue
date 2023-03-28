@@ -97,13 +97,14 @@
 </template>
 
 <script lang=ts>
-import { useCurrentUser, useMojangSecurity } from '../composables/user'
+import { injection } from '@/util/inject'
+import { kUserContext, useMojangSecurity } from '../composables/user'
 
 export default defineComponent({
   props: { show: Boolean },
   setup(props) {
     const { t } = useI18n()
-    const { userProfile } = useCurrentUser()
+    const { userProfile } = injection(kUserContext)
     const { submit, challenges, error, security, refreshing, loading, check } = useMojangSecurity(userProfile)
     function updateAnswer(index: number, content: string) {
       challenges.value[index].answer.answer = content

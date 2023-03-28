@@ -437,7 +437,6 @@
 import Hint from '@/components/Hint.vue'
 import { useBusy, useService, useServiceBusy } from '@/composables'
 import { kColorTheme } from '@/composables/colorTheme'
-import { useCurrentUser } from '@/composables/user'
 import { injection } from '@/util/inject'
 import { BaseServiceKey, MappingInfo, NatServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
@@ -454,7 +453,6 @@ const { state, joinGroup, leaveGroup, drop } = useService(PeerServiceKey)
 const connections = computed(() => state.connections)
 const { t } = useI18n()
 const { handleUrl } = useService(BaseServiceKey)
-const { gameProfile } = useCurrentUser()
 const isLoadingNetwork = useServiceBusy(NatServiceKey, 'refreshNatType')
 
 const { errorColor, successColor, warningColor } = injection(kColorTheme)

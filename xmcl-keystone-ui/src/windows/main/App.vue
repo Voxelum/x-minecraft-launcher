@@ -34,6 +34,8 @@
     <AppExportDialog />
     <AppShareInstanceDialog />
     <AppInstanceDeleteDialog />
+    <AppGameExitDialog />
+    <AppLaunchBlockedDialog />
     <ImageDialog />
     <SharedTooltip />
   </v-app>
@@ -55,24 +57,31 @@
 
 <script lang=ts setup>
 import '@/assets/common.css'
-import AppContextMenu from '@/views/AppContextMenu.vue'
+import ImageDialog from '@/components/ImageDialog.vue'
+import SharedTooltip from '@/components/SharedTooltip.vue'
 import { useExternalRoute, useI18nSync, useThemeSync } from '@/composables'
 import { useAuthProfileImportNotification } from '@/composables/authProfileImport'
 import { useBackground } from '@/composables/background'
 import { kColorTheme, useColorTheme } from '@/composables/colorTheme'
-import { kDropService, useDropService } from '@/composables/dropService'
+import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
+import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
+import { kModInstallList, useModInstallList } from '@/composables/modInstallList'
 import { kModpacks, useModpacks } from '@/composables/modpack'
 import { kUILayout, useUILayout } from '@/composables/uiLayout'
+import { kUserContext, useUserContext } from '@/composables/user'
 import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
 import AppAddServerDialog from '@/views/AppAddServerDialog.vue'
 import AppBackground from '@/views/AppBackground.vue'
+import AppContextMenu from '@/views/AppContextMenu.vue'
 import AppDropDialog from '@/views/AppDropDialog.vue'
 import AppExportDialog from '@/views/AppExportDialog.vue'
 import AppFeedbackDialog from '@/views/AppFeedbackDialog.vue'
+import AppGameExitDialog from '@/views/AppGameExitDialog.vue'
 import AppInstanceDeleteDialog from '@/views/AppInstanceDeleteDialog.vue'
+import AppLaunchBlockedDialog from '@/views/AppLaunchBlockedDialog.vue'
 import AppLoginDialog from '@/views/AppLoginDialog.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
 import AppShareInstanceDialog from '@/views/AppShareInstanceDialog.vue'
@@ -81,10 +90,6 @@ import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import Setup from '@/views/Setup.vue'
 import { useAllServices } from './services'
-import ImageDialog from '@/components/ImageDialog.vue'
-import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
-import { kModInstallList, useModInstallList } from '@/composables/modInstallList'
-import SharedTooltip from '@/components/SharedTooltip.vue'
 
 const colorTheme = useColorTheme()
 const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = colorTheme
@@ -115,13 +120,14 @@ watch(successColor, (newColor) => { vuetify.theme.currentTheme.success = newColo
 watch(warningColor, (newColor) => { vuetify.theme.currentTheme.warning = newColor })
 
 useAllServices()
-provide(kDropService, useDropService())
+provide(kDropHandler, useDropHandler())
 useDefaultErrorHandler()
 useAuthProfileImportNotification()
 useI18nSync()
 useThemeSync()
 useExternalRoute()
 provide(kUILayout, useUILayout())
+provide(kUserContext, useUserContext())
 provide(kModpacks, useModpacks())
 provide(kImageDialog, useImageDialog())
 provide(kModInstallList, useModInstallList())

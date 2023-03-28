@@ -1,4 +1,4 @@
-import { computed, reactive, Ref, toRefs } from 'vue'
+import { computed, InjectionKey, reactive, Ref, toRefs } from 'vue'
 import { GameProfileAndTexture, OfficialUserServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
 
 import { useService, useServiceBusy } from '@/composables'
@@ -19,29 +19,21 @@ const NO_GAME_PROFILE: GameProfileAndTexture = Object.freeze({
   textures: { SKIN: { url: '' } },
 })
 
-export function useProfileId(userId: Ref<string>, profileId: Ref<string>) {
-  const { state } = useService(UserServiceKey)
-  const userProfile = computed(() => state.users[userId.value] ?? NO_USER_PROFILE)
-  const gameProfile = computed(() => userProfile.value.profiles[profileId.value] ?? NO_GAME_PROFILE)
-  return { userProfile, gameProfile }
-}
+export const kUserContext: InjectionKey<ReturnType<typeof useUserContext>> = Symbol('UserContext')
 
-export function useCurrentUser() {
+export function useUserContext() {
   const { state } = useService(UserServiceKey)
   const userProfile: Ref<UserProfile> = computed(() => state.users[state.selectedUser.id] ?? NO_USER_PROFILE)
   const gameProfile: Ref<GameProfileAndTexture> = computed(() => userProfile.value.profiles[userProfile.value.selectedProfile] ?? NO_GAME_PROFILE)
+  const users = computed(() => Object.values(state.users))
 
   return {
+    users,
     userProfile,
     gameProfile,
   }
 }
 
-export function useUsers() {
-  const { state } = useService(UserServiceKey)
-  const users = computed(() => Object.values(state.users))
-  return { users }
-}
 export function useUserExpired(user: Ref<UserProfile | undefined>) {
   return computed(() => !user.value || user.value?.invalidated || user.value.expiredAt < Date.now())
 }

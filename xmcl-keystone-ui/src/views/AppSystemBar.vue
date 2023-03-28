@@ -75,7 +75,7 @@ import { useTaskCount } from '../composables/task'
 import TaskSpeedMonitor from '../components/TaskSpeedMonitor.vue'
 import { injection } from '@/util/inject'
 import { useWindowStyle } from '@/composables/windowStyle'
-import AppSystemBarAvatar from './AppSystemBarAvatar.vue'
+import AppSystemBarAvatar from './AppSystemBarUser.vue'
 
 const { appBarColor } = injection(kColorTheme)
 const { blurAppBar } = useBarBlur()
@@ -83,12 +83,7 @@ const { maximize, minimize, close } = windowController
 const { hideWindowControl, alternativeBack } = useWindowStyle()
 const { show: showFeedbackDialog } = useDialog('feedback')
 const { show: showTaskDialog } = useDialog('task')
-const router = useRouter()
 const { t } = useI18n()
 const { count } = useTaskCount()
-
-function goBack() {
-  router.back()
-}
 
 </script>
