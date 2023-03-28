@@ -6,7 +6,8 @@
     :position-x="x"
     :position-y="y"
     class="z-100"
-    top
+    :top="!left"
+    :left="left"
   >
     {{ currentTooltip }}
   </v-tooltip>
@@ -15,5 +16,5 @@
 <script lang="ts" setup>
 import { useSharedTooltipData } from '@/composables/sharedTooltip'
 
-const { currentTooltip, x, y, isShown, color } = useSharedTooltipData()
+const { currentTooltip, x, y, isShown, color, left } = useSharedTooltipData()
 </script>

@@ -5,9 +5,13 @@
   >
     <section class="">
       <h2>
-        News
+        {{ t('me.news') }}
       </h2>
-      <div class="flex overflow-x-auto overflow-y-hidden row-span-4 w-full gap-4">
+      <div
+        ref="container"
+        class="flex overflow-x-auto overflow-y-hidden row-span-4 w-full gap-4"
+        @wheel="onWheel"
+      >
         <div
           v-for="n of news"
           :key="n.id"
@@ -35,7 +39,7 @@
 
     <section class="mt-4">
       <h2>
-        Recent Played
+        {{ t('me.recentPlay') }}
       </h2>
       <div class="flex overflow-x-auto overflow-y-hidden row-span-4 w-full gap-4">
         <div
@@ -51,10 +55,14 @@
           >
           <v-card
             outlined
-            class="-mt-5 py-7 px-2 h-50 w-30 -mb-5"
+            class="-mt-5 py-7 px-2 h-30 w-35 -mb-5"
           >
-            {{ i.name }}
-            {{ getLocalDateString(i.lastAccessDate) }}
+            <div class="overflow-hidden overflow-ellipsis max-h-12 v-btn">
+              {{ i.name }}
+            </div>
+            <v-subheader>
+              {{ getAgoOrDate(i.lastAccessDate) }}
+            </v-subheader>
           </v-card>
           <v-btn class="primary">
             <v-icon>
@@ -70,7 +78,8 @@
 <script lang=ts setup>
 import { useInstances } from '@/composables/instance'
 import { useMojangNews } from '@/composables/mojangNews'
-import { getLocalDateString } from '@/util/date'
+import { useScrollRight } from '@/composables/scroll'
+import { getAgoOrDate, getLocalDateString } from '@/util/date'
 import { getInstanceIcon } from '@/util/favicon'
 
 const { t } = useI18n()
@@ -78,6 +87,9 @@ const { refresh, news } = useMojangNews()
 onMounted(refresh)
 const { instances } = useInstances()
 const sorted = computed(() => [...instances.value].sort((a, b) => a.lastAccessDate - b.lastAccessDate).slice(0, 5))
+
+const container = ref(null as null | HTMLElement)
+const { onWheel } = useScrollRight(container)
 </script>
 
 <style>

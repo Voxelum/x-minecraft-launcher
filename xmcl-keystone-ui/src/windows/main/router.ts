@@ -17,7 +17,6 @@ import ResourcePack from '@/views/ResourcePack.vue'
 import Save from '@/views/Save.vue'
 import Setting from '@/views/Setting.vue'
 import ShaderPack from '@/views/ShaderPack.vue'
-import User from '@/views/User.vue'
 import VersionLocalView from '@/views/VersionLocalView.vue'
 import HomeCardHost from '@/views/HomeCardHost.vue'
 import HomeExtension from '@/views/HomeExtension.vue'
@@ -103,10 +102,6 @@ export const createRouter = () => {
       {
         path: '/me',
         component: Me,
-      },
-      {
-        path: '/user',
-        component: User,
       },
       // {
       //   path: '/game-setting',

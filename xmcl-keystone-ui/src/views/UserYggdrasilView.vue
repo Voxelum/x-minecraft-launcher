@@ -1,13 +1,19 @@
 <template>
-  <div class="flex gap-2 justify-center flex-wrap max-w-full">
+  <div
+    ref="container"
+    class="flex gap-2 overflow-auto visible-scroll"
+    @wheel="onWheel"
+  >
     <div
       v-for="profile of user.profiles"
       :key="profile.id"
+      class="flex flex-col"
     >
       <UserSkinView
         :user="user"
         :profile="profile"
         :inspect="false"
+        @wheel.prevent.stop.native
       />
       <div class="my-2 flex items-center justify-center">
         <v-btn
@@ -38,7 +44,7 @@
 <script lang="ts" setup>
 import { OfflineUserServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
 import UserSkinView from './UserSkinView.vue'
-import { useService } from '@/composables'
+import { useScrollRight, useService } from '@/composables'
 
 const props = defineProps<{
   user: UserProfile
@@ -47,5 +53,7 @@ const props = defineProps<{
 const { removeGameProfile } = useService(OfflineUserServiceKey)
 const offline = computed(() => props.user.authService === 'offline')
 const { selectGameProfile } = useService(UserServiceKey)
+const container = ref(null)
+const { onWheel } = useScrollRight(container)
 
 </script>

@@ -1,6 +1,7 @@
 <template>
   <div
-    class="flex flex-col home-page flex-1 overflow-auto max-h-full relative visible-scroll"
+    class="flex flex-col home-page flex-1 max-h-full relative visible-scroll"
+    :style="{ overflow: 'overlay' }"
     @wheel="onScroll"
   >
     <transition

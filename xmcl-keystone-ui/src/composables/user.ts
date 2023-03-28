@@ -42,6 +42,9 @@ export function useUsers() {
   const users = computed(() => Object.values(state.users))
   return { users }
 }
+export function useUserExpired(user: Ref<UserProfile | undefined>) {
+  return computed(() => !user.value || user.value?.invalidated || user.value.expiredAt < Date.now())
+}
 
 export function useLoginValidation(isOffline: Ref<boolean>) {
   const { t } = useI18n()

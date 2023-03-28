@@ -34,48 +34,14 @@
             right
           >
             <template #activator="{ on: tooltip }">
-              <v-list-item-avatar
-                size="48"
-                class="hover:rounded-xl transition-all duration-300"
-                large
-                @click="navToMe"
-                v-on="tooltip"
-              >
-                <PlayerAvatar
-                  :src="gameProfile.textures.SKIN.url"
-                  :dimension="48"
-                />
-              </v-list-item-avatar>
+              <v-list-item-icon v-on="tooltip">
+                <v-icon> widgets </v-icon>
+              </v-list-item-icon>
             </template>
             {{ t('myStuff') }}
           </v-tooltip>
         </template>
 
-        <v-tooltip
-          :close-delay="0"
-          color="black"
-          transition="scroll-x-transition"
-          right
-        >
-          <template #activator="{ on: tooltip }">
-            <v-list-item
-              link
-              push
-              to="/user"
-              class="non-moveable"
-              v-on="tooltip"
-            >
-              <v-list-item-icon>
-                <v-icon>
-                  manage_accounts
-                </v-icon>
-              </v-list-item-icon>
-
-              <v-list-item-title v-text="'Text'" />
-            </v-list-item>
-          </template>
-          {{ t('user.info') }}
-        </v-tooltip>
         <v-tooltip
           color="black"
           transition="scroll-x-transition"
@@ -121,8 +87,86 @@
           </template>
           {{ t('modpack.name', 2) }}
         </v-tooltip>
-        <v-divider />
+
+        <v-tooltip
+          v-if="sideBarShowCurseforge"
+          color="black"
+          transition="scroll-x-transition"
+          :close-delay="0"
+          right
+        >
+          <template #activator="{ on: tooltip }">
+            <v-list-item
+              push
+              link
+              class="non-moveable"
+              to="/curseforge/mc-mods"
+              v-on="tooltip"
+            >
+              <v-list-item-icon>
+                <v-icon>
+                  $vuetify.icons.curseforge
+                </v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Curseforge</v-list-item-title>
+            </v-list-item>
+          </template>
+          Curseforge
+        </v-tooltip>
+
+        <v-tooltip
+          v-if="sideBarShowModrinth"
+          color="black"
+          transition="scroll-x-transition"
+          :close-delay="0"
+          right
+        >
+          <template #activator="{ on: tooltip }">
+            <v-list-item
+              push
+              link
+              class="non-moveable"
+              to="/modrinth"
+              v-on="tooltip"
+            >
+              <v-list-item-icon>
+                <v-icon>
+                  $vuetify.icons.modrinth
+                </v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Modrinth</v-list-item-title>
+            </v-list-item>
+          </template>
+          Modrinth
+        </v-tooltip>
+
+        <v-tooltip
+          v-if="sideBarShowFtb"
+          color="black"
+          transition="scroll-x-transition"
+          :close-delay="0"
+          right
+        >
+          <template #activator="{ on: tooltip }">
+            <v-list-item
+              push
+              link
+              class="non-moveable"
+              to="/ftb"
+              v-on="tooltip"
+            >
+              <v-list-item-icon>
+                <v-icon>
+                  $vuetify.icons.ftb
+                </v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>FTB</v-list-item-title>
+            </v-list-item>
+          </template>
+          Feed the Beast
+        </v-tooltip>
       </v-list-group>
+      <v-divider />
     </v-list>
 
     <AppSideBarContentFocus v-if="useFocus" />
@@ -201,6 +245,7 @@
 
 <script lang=ts setup>
 import { useService } from '@/composables'
+import { useLocalStorageCacheBool } from '@/composables/cache'
 import { injection } from '@/util/inject'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import PlayerAvatar from '../components/PlayerAvatar.vue'
@@ -212,10 +257,13 @@ import AppSideBarContentFocus from './AppSideBarContentFocus.vue'
 import AppSideBarContentNext from './AppSideBarContentNext.vue'
 
 const { state } = useService(BaseServiceKey)
-const { gameProfile } = useCurrentUser()
 const { blurSidebar } = useBarBlur()
 const layout = injection(kUILayout)
 const useFocus = computed(() => layout.value === 'focus')
+
+const sideBarShowCurseforge = useLocalStorageCacheBool('sideBarShowCurseforge', true)
+const sideBarShowModrinth = useLocalStorageCacheBool('sideBarShowModrinth', true)
+const sideBarShowFtb = useLocalStorageCacheBool('sideBarShowFtb', true)
 
 const { t } = useI18n()
 const { sideBarColor } = injection(kColorTheme)
