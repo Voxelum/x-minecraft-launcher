@@ -11,7 +11,7 @@
           class="mx-2"
         />
         <span class="">
-          {{ t('items.count', { count: list.length }) }}
+          {{ t('items.count', { count: itemCount }) }}
         </span>
       </v-subheader>
       <div class="flex-grow" />
@@ -63,5 +63,12 @@ import { kModInstallList } from '@/composables/modInstallList'
 import { injection } from '@/util/inject'
 
 const { list, remove, commit } = injection(kModInstallList)
+const itemCount = computed(() => {
+  let count = list.value.length
+  for (const item of list.value) {
+    count += item.dependencies.length
+  }
+  return count
+})
 const { t } = useI18n()
 </script>

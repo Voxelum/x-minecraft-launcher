@@ -204,6 +204,11 @@ delete:
   name: 删除 {name}
   'no': 取消
   'yes': 删除
+dependencies:
+  embedded: 内嵌
+  incompatible: 不兼容
+  optional: 可选
+  required: 必选
 description: 简介
 detail: 细节
 diagnosis:
@@ -389,6 +394,8 @@ instance:
   fileApi: 远程同步文件服务器 API 地址
   fileApiHint: 用于远程同步实例文件的链接
   gameVersion: 游戏版本
+  icon: 实例图标
+  iconUrl: 图片 URL
   includeVersion: 包含游戏版本
   lastPlayed: 上次游玩
   launchArguments: 启动命令预览
@@ -449,6 +456,9 @@ instances:
   refreshServers: 刷新服务器
 issue:
   name: 已知问题
+items:
+  count: '{count} 个'
+  total: 共 {total} 个
 java:
   allocatedLong: 启动器自动选择 Java
   allocatedShort: 自动分配
@@ -584,6 +594,9 @@ logsCrashes:
   logs: 日志
   placeholder: 没有找到文件
   title: 日志或崩溃报告
+me:
+  news: 新闻
+  recentPlay: 最近游玩
 minecraftVersion:
   empty: 无法加载 Minecraft 版本列表
   name: Minecraft 版本
@@ -620,6 +633,7 @@ mod:
   unselected: 未选 Mods
 modInstall:
   install: 安装
+  installed: 已安装
   pending: 安装列表
   search: 搜索结果
 modSearchType:

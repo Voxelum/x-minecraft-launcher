@@ -5,6 +5,9 @@ import { Resource } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 
 export interface ModListSearchItem {
+  divider?: boolean
+  installed?: Resource
+
   id: string
   icon: string
   title: string
@@ -22,7 +25,7 @@ export interface ModListSearchItem {
 export function useModSearchItems(keyword: Ref<string>, modrinth: Ref<SearchResult | undefined>, curseforge: Ref<{
   data: Mod[]
   pagination: Pagination
-} | undefined>, mods: Ref<Resource[]>) {
+} | undefined>, mods: Ref<Resource[]>, existedMods: Ref<Resource[]>) {
   const tab = ref(0)
   const disableModrinth = computed(() => tab.value !== 0 && tab.value !== 3)
   const disableCurseforge = computed(() => tab.value !== 0 && tab.value !== 2)
@@ -54,46 +57,73 @@ export function useModSearchItems(keyword: Ref<string>, modrinth: Ref<SearchResu
         }, getDiceCoefficient(keyword.value, i.name)]))
       }
     }
-    if (!disableLocal.value) {
-      const dict: Record<string, ModListSearchItem> = {}
-      for (const m of mods.value) {
-        let description = ''
-        let name = ''
-        if (m.metadata.forge) {
-          description = m.metadata.forge.description
-          name = m.metadata.forge.name
-        } else if (m.metadata.fabric) {
-          if (m.metadata.fabric instanceof Array) {
-            description = m.metadata.fabric[0].description || ''
-            name = m.metadata.fabric[0].name || m.metadata.fabric[0].id || ''
-          } else {
-            description = m.metadata.fabric.description || ''
-            name = m.metadata.fabric.name || m.metadata.fabric.id || ''
-          }
-        }
-        if (!dict[name]) {
-          dict[name] = {
-            id: m.path,
-            icon: m.icons?.[0] ?? '',
-            title: name,
-            description: description,
-            forge: m.metadata.forge !== undefined,
-            fabric: m.metadata.fabric !== undefined,
-            quilt: m.metadata.quilt !== undefined,
-            resource: [m],
-          }
-          results.push(([dict[name], getDiceCoefficient(keyword.value, m.name)]))
+    const grouped: Record<string, ModListSearchItem> = {}
+    const getItemForResource = (m: Resource) => {
+      let description = ''
+      let name = ''
+      if (m.metadata.forge) {
+        description = m.metadata.forge.description
+        name = m.metadata.forge.name
+      } else if (m.metadata.fabric) {
+        if (m.metadata.fabric instanceof Array) {
+          description = m.metadata.fabric[0].description || ''
+          name = m.metadata.fabric[0].name || m.metadata.fabric[0].id || ''
         } else {
-          dict[name].resource?.push(m)
-          if (m.metadata.forge) dict[name].forge = true
-          if (m.metadata.fabric) dict[name].fabric = true
-          if (m.metadata.quilt) dict[name].quilt = true
+          description = m.metadata.fabric.description || ''
+          name = m.metadata.fabric.name || m.metadata.fabric.id || ''
+        }
+      }
+      if (!grouped[name]) {
+        grouped[name] = {
+          id: m.path,
+          icon: m.icons?.[0] ?? '',
+          title: name,
+          description: description,
+          forge: m.metadata.forge !== undefined,
+          fabric: m.metadata.fabric !== undefined,
+          quilt: m.metadata.quilt !== undefined,
+          resource: [m],
+        }
+        return grouped[name]
+      } else {
+        if (!grouped[name].resource?.find((r) => r.path === m.path || r.ino === m.ino || r.storedPath === m.storedPath)) {
+          grouped[name].resource?.push(m)
+          if (m.metadata.forge) grouped[name].forge = true
+          if (m.metadata.fabric) grouped[name].fabric = true
+          if (m.metadata.quilt) grouped[name].quilt = true
+        }
+      }
+    }
+    const prepend: ModListSearchItem[] = []
+    for (const i of existedMods.value) {
+      const item = getItemForResource(i)
+      if (item) {
+        item.installed = i
+        prepend.push(item)
+      }
+    }
+
+    if (prepend.length > 0) {
+      prepend.push({
+        divider: true,
+        id: 'divider',
+        icon: '',
+        title: '',
+        description: '',
+      })
+    }
+    if (!disableLocal.value) {
+      for (const m of mods.value) {
+        const i = getItemForResource(m)
+        if (i) {
+          results.push([i, getDiceCoefficient(keyword.value, m.name)])
         }
       }
     }
 
     results.sort((a, b) => -a[1] + b[1])
-    return results.map(v => v[0])
+
+    return prepend.concat(results.map(v => v[0]))
   })
 
   return { items, tab }

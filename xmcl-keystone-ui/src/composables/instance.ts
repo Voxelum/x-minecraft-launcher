@@ -101,17 +101,14 @@ export function useInstanceGameSetting() {
  * Use references of all the version info of this instance
  */
 export function useInstanceVersion() {
-  const { state: instanceState } = useService(InstanceServiceKey)
   const { state: instanceVersionState } = useService(InstanceVersionServiceKey)
 
-  const id = computed(() => getExpectVersion(instanceState.instance.runtime))
   const localVersion = computed(() => instanceVersionState.versionHeader || EMPTY_VERSION)
   const folder = computed(() => localVersion.value?.id || 'unknown')
 
   return {
     ...useInstanceVersionBase(),
     localVersion,
-    id,
     folder,
   }
 }

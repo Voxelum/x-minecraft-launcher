@@ -1,11 +1,8 @@
-import { TaskState } from '@xmcl/runtime-api'
-import { useInstance, useInstanceVersion } from './instance'
+import { Instance, LocalVersionHeader, TaskState } from '@xmcl/runtime-api'
+import { Ref } from 'vue'
 import { useTask } from './task'
 
-export function useLaunchTask() {
-  const { path, instance } = useInstance()
-  const version = computed(() => instance.value.runtime)
-  const { localVersion } = useInstanceVersion()
+export function useLaunchTask(path: Ref<string>, version: Ref<Instance['runtime']>, localVersion: Ref<LocalVersionHeader>) {
   return useTask((i) => {
     const p = i.param as any
     if (i.state === TaskState.Cancelled || i.state === TaskState.Succeed || i.state === TaskState.Failed) {

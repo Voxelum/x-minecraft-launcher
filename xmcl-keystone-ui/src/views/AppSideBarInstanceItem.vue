@@ -148,9 +148,12 @@ const items = computed(() => {
 
 const navigate = () => {
   if (router.currentRoute.path !== '/') {
-    router.push('/')
+    router.push('/').then(() => {
+      mountInstance(props.instance.path)
+    })
+  } else {
+    mountInstance(props.instance.path)
   }
-  mountInstance(props.instance.path)
 }
 
 const onDragStart = (e: DragEvent) => {

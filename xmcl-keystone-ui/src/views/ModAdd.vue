@@ -18,7 +18,7 @@
       <template
         #left
       >
-        <div class="flex flex-grow-0 pl-4 items-center pr-4">
+        <div class="flex flex-grow-0 px-4 items-center">
           <v-subheader class="pl-0 py-2 responsive-header">
             <v-icon left>
               travel_explore
@@ -31,7 +31,7 @@
               class="mx-2"
             />
             <span>
-              {{ t('items.count', { count: items.length }) }}
+              {{ t('items.count', { count: counts.searched }) }}
               <span v-if="total">
                 /
                 {{ t('items.total', { total: total }) }}
@@ -87,10 +87,26 @@
         >
           <template #default="{ item }">
             <ModAddSearchItem
+              v-if="!item.divider"
               :item="item"
               :selected="(selected && selected.id === item.id ) || false"
               @click="onSelect(item)"
             />
+            <template v-else>
+              <v-subheader class="px-4 py-2 flex justify-center">
+                <v-divider class="mr-3" />
+                <v-icon left>
+                  archive
+                </v-icon>
+                <span class="mr-2">
+                  {{ t('modInstall.installed') }}
+                </span>
+                <span>
+                  {{ t('items.count', { count: counts.installed }) }}
+                </span>
+                <v-divider class="ml-3" />
+              </v-subheader>
+            </template>
           </template>
         </v-virtual-scroll>
         <ErrorView
@@ -129,12 +145,13 @@
                 <ModAddResourceDetail
                   v-else-if="selected.resource"
                   :resources="selected.resource"
+                  :installed="selected.installed"
                   :forge="selected.forge"
                   :fabric="selected.fabric"
                   :quilt="selected.quilt"
                   :loader="forge ? 'forge' : fabricLoader ? 'fabric' : ''"
                   :minecraft="minecraft"
-                  @install="onInstallResource($event, selected)"
+                  @install="onInstallResource($event, selected, selected?.installed)"
                 />
               </template>
               <Hint
@@ -201,7 +218,23 @@ const items = computed(() => {
   const allowFabric = modLoaderFilters.value.indexOf('fabric') !== -1
   const allowQuilt = modLoaderFilters.value.indexOf('quilt') !== -1
 
-  return all.filter(a => (allowForge && a.forge) || (allowFabric && a.fabric) || (allowQuilt && a.quilt) || a.modrinth || a.curseforge)
+  return all.filter(a => (allowForge && a.forge) || (allowFabric && a.fabric) || (allowQuilt && a.quilt) || a.modrinth || a.curseforge || a.divider || a.installed)
+})
+const counts = computed(() => {
+  let installed = 0
+  let searched = items.value.length
+  for (const item of items.value) {
+    if (item.divider) {
+      searched -= 1
+      break
+    }
+    installed += 1
+    searched -= 1
+  }
+  return {
+    installed,
+    searched: searched === 0 ? items.value.length : searched,
+  }
 })
 
 const selected = ref(undefined as undefined | ModListSearchItem)
@@ -219,10 +252,15 @@ const total = computed(() => {
   return 0
 })
 
-const { add } = injection(kModInstallList)
+const { add, addAsRemove } = injection(kModInstallList)
 
-const onInstallResource = (resource: Resource, item?: ModListSearchItem) => {
-  add(resource, { icon: item?.icon, name: item?.title })
+const onInstallResource = (resource: Resource, item?: ModListSearchItem, toRemove?: Resource) => {
+  if (!toRemove) {
+    add(resource, { icon: item?.icon, name: item?.title })
+  } else {
+    add(resource, { icon: item?.icon, name: item?.title })
+    addAsRemove(toRemove, { icon: item?.icon, name: item?.title })
+  }
 }
 
 const onInstallCurseforge = (mod: File, item?: ModListSearchItem) => {

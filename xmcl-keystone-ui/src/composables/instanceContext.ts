@@ -7,15 +7,15 @@ import { useModSearchItems } from './modSearchItems'
 
 export function useInstanceContext() {
   const issue = useLaunchIssue()
-  const task = useLaunchTask()
   const { path, instance, refreshing } = useInstance()
   const name = computed(() => instance.value.name)
   const version = computed(() => instance.value.runtime)
   const { localVersion, minecraft, forge, fabricLoader, folder, quiltLoader } = useInstanceVersion()
+  const task = useLaunchTask(path, version, localVersion)
   const isServer = useInstanceIsServer(instance)
 
   const modSearch = useModsSearch(ref(''), version)
-  const modSearchItems = useModSearchItems(modSearch.keyword, modSearch.modrinth, modSearch.curseforge, modSearch.mods)
+  const modSearchItems = useModSearchItems(modSearch.keyword, modSearch.modrinth, modSearch.curseforge, modSearch.mods, modSearch.existedMods)
 
   return {
     issue,

@@ -168,6 +168,11 @@ delete:
   name: Delete {name}
   'no': 'No'
   'yes': Delete
+dependencies:
+  embedded: Embedded
+  incompatible: Incompatible
+  optional: Optional
+  required: Required
 description: Description
 detail: Detail
 diagnosis:
@@ -576,6 +581,9 @@ logsCrashes:
   logs: Logs
   placeholder: No Files Found
   title: Logs or Crash Reports
+me:
+  news: News
+  recentPlay: Recent Play
 minecraftVersion:
   empty: Cannot load Minecraft versions
   name: Minecraft Version
@@ -614,6 +622,7 @@ mod:
   unselected: Unselected Mods
 modInstall:
   install: Install
+  installed: Installed
   pending: Pending to install
   search: Search Result
 modSearchType:
