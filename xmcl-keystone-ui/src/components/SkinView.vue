@@ -18,6 +18,7 @@ const props = withDefaults(defineProps<{
   slim?: boolean
   name?: string
   animation?: 'walking' | 'none' | 'idle' | 'running'
+  paused?: boolean
 }>(), {
   width: 210,
   height: 400,
@@ -45,6 +46,7 @@ const animationObject = computed(() => {
 })
 onUnmounted(() => {
   data.disposed = true
+  viewer?.dispose()
 })
 
 const emit = defineEmits(['model', 'dragover', 'drop'])
@@ -52,8 +54,10 @@ const emit = defineEmits(['model', 'dragover', 'drop'])
 let lastLoad = Promise.resolve()
 let lastCapeLoad = Promise.resolve()
 
+let viewer: SkinViewer
+
 onMounted(() => {
-  const viewer = new SkinViewer({
+  viewer = new SkinViewer({
     canvas: canvasRef.value!,
     width: props.width,
     height: props.height,
@@ -61,11 +65,8 @@ onMounted(() => {
     fov: 45,
     zoom: 0.5,
   })
-  viewer.animation = animationObject.value
 
-  watch(animationObject, (v) => {
-    viewer.animation = v
-  })
+  viewer.animation = animationObject.value
 
   lastLoad = viewer.loadSkin(props.skin || steveSkin, { model: typeof props.slim === 'undefined' ? 'auto-detect' : props.slim ? 'slim' : 'default' }).finally(() => {
     emit('model', viewer.playerObject.skin.modelType)
@@ -73,31 +74,43 @@ onMounted(() => {
   if (props.cape) {
     lastCapeLoad = viewer.loadCape(props.cape)
   }
+})
 
-  watch(() => props.skin, (v) => {
-    lastLoad = lastLoad.finally(() => {
-      return viewer.loadSkin(v || steveSkin, { model: typeof props.slim === 'undefined' ? 'auto-detect' : props.slim ? 'slim' : 'default' }).finally(() => {
-        emit('model', viewer.playerObject.skin.modelType)
-      })
-    })
-  })
+watch(animationObject, (v) => {
+  viewer.animation = v
+})
 
-  watch(() => props.cape, (v) => {
-    if (v) {
-      lastCapeLoad = lastCapeLoad.finally(() => viewer.loadCape(v))
-    } else {
-      viewer.resetCape()
-    }
-  })
-
-  watch(() => props.slim, (v) => {
-    viewer.loadSkin(props.skin || steveSkin, { model: typeof v === 'undefined' ? 'auto-detect' : v ? 'slim' : 'default' }).finally(() => {
+watch(() => props.skin, (v) => {
+  lastLoad = lastLoad.finally(() => {
+    return viewer.loadSkin(v || steveSkin, { model: typeof props.slim === 'undefined' ? 'auto-detect' : props.slim ? 'slim' : 'default' }).finally(() => {
       emit('model', viewer.playerObject.skin.modelType)
     })
   })
+})
 
-  watch(() => props.name, (v) => {
-    viewer.nameTag = v
+watch(() => props.cape, (v) => {
+  if (v) {
+    lastCapeLoad = lastCapeLoad.finally(() => viewer.loadCape(v))
+  } else {
+    viewer.resetCape()
+  }
+})
+
+watch(() => props.slim, (v) => {
+  viewer.loadSkin(props.skin || steveSkin, { model: typeof v === 'undefined' ? 'auto-detect' : v ? 'slim' : 'default' }).finally(() => {
+    emit('model', viewer.playerObject.skin.modelType)
   })
+})
+
+watch(() => props.name, (v) => {
+  viewer.nameTag = v
+})
+
+watch(() => props.paused, (paused) => {
+  if (paused) {
+    viewer.renderPaused = true
+  } else {
+    viewer.renderPaused = false
+  }
 })
 </script>

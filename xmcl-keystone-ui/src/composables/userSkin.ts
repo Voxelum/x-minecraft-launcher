@@ -79,3 +79,4 @@ export function useUserSkin(userId: Ref<string>, gameProfile: Ref<GameProfileAnd
 export const UserSkinModel: InjectionKey<ReturnType<typeof useUserSkin>> = Symbol('UserSkinModel')
 export const PlayerCapeModel: InjectionKey<Ref<string | undefined>> = Symbol('PlayerCapeModel')
 export const PlayerNameModel: InjectionKey<Ref<string>> = Symbol('PlayerNameModel')
+export const UserSkinRenderPaused: InjectionKey<Ref<boolean>> = Symbol('UserSkinRenderPaused')

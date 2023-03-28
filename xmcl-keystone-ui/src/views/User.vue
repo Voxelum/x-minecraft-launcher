@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col px-4 py-2 overflow-auto w-full gap-4"
+    class="flex flex-col px-4 py-4 overflow-auto w-full gap-4"
     @dragover.prevent
     @drop="onDrop"
   >
@@ -58,7 +58,7 @@ import { BaseServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
 import { LoginDialog } from '../composables/login'
-import { useUsers } from '../composables/user'
+import { useUserExpired, useUsers } from '../composables/user'
 import UserPageHeader from './UserHeader.vue'
 import UserMicrosoftView from './UserMicrosoftView.vue'
 import UserMojangView from './UserMojangView.vue'
@@ -80,7 +80,7 @@ const { state, selectUser, removeUserProfile, abortRefresh } = useService(UserSe
 const userId = computed(() => state.selectedUser.id)
 const selectedUser = computed(() => users.value.find(u => u.id === userId.value))
 
-const isExpired = computed(() => !selectedUser.value || selectedUser.value?.invalidated || selectedUser.value.expiredAt < Date.now())
+const isExpired = useUserExpired(selectedUser)
 
 const { begin: beginRemoveProfile, operate: confirmRemoveProfile, data: removingProfile } = useOperation('', (v) => removeUserProfile(v))
 

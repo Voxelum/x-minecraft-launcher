@@ -1,6 +1,6 @@
 <template>
   <div class="overflow-auto h-full">
-    <v-list
+    <!-- <v-list
       v-context-menu="items"
       nav
       dense
@@ -83,9 +83,9 @@
         </template>
         Feed the Beast
       </v-tooltip>
-    </v-list>
+    </v-list> -->
 
-    <v-divider class="!block mx-4" />
+    <!-- <v-divider class="!block mx-4" /> -->
     <v-list
       nav
       dense

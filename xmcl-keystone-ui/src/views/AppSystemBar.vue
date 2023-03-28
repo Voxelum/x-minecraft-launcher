@@ -6,21 +6,9 @@
     class="flex w-full moveable p-0 flex-grow-0 gap-1"
     :style="{ 'backdrop-filter': `blur(${blurAppBar}px)` }"
   >
-    <!-- <span
-      v-if="alternativeBack"
-      class="w-[76px]"
+    <span
+      class="w-[76px] h-1"
     />
-    <span class="p-0 flex flex-shrink flex-grow-0">
-      <v-icon
-        v-ripple
-        small
-        class="flex items-center py-2 hover:bg-[rgba(255,255,255,0.2)] cursor-pointer select-none non-moveable after:hidden"
-        style="width: 80px;"
-        @click="goBack"
-      >
-        arrow_back
-      </v-icon>
-    </span> -->
 
     <div class="flex-grow " />
     <TaskSpeedMonitor />
@@ -38,6 +26,8 @@
         {{ t('task.nTaskRunning', { count } ) }}
       </span>
     </div>
+    <AppSystemBarAvatar />
+
     <span class="p-0 flex flex-shrink flex-grow-0 h-full">
       <v-icon
         v-ripple
@@ -85,6 +75,7 @@ import { useTaskCount } from '../composables/task'
 import TaskSpeedMonitor from '../components/TaskSpeedMonitor.vue'
 import { injection } from '@/util/inject'
 import { useWindowStyle } from '@/composables/windowStyle'
+import AppSystemBarAvatar from './AppSystemBarAvatar.vue'
 
 const { appBarColor } = injection(kColorTheme)
 const { blurAppBar } = useBarBlur()

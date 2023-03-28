@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col items-center justify-center gap-4 relative "
+    class="flex flex-col items-center justify-center gap-2 relative "
     @mouseenter="hover = true"
     @mouseleave="hover = false"
   >
@@ -19,8 +19,9 @@
         </v-btn>
       </v-fab-transition>
     </div>
-    <skin-view
-      class="border rounded shadow-md"
+    <SkinView
+      class="rounded shadow-md"
+      :paused="paused"
       :skin="skin"
       :slim="inferModelType ? undefined : slim"
       :cape="cape"
@@ -44,7 +45,7 @@
           <v-icon>clear</v-icon>
         </v-btn>
       </v-fab-transition>
-      <speed-dial
+      <SpeedDial
         :value="hover || modified"
         :has-skin="canUploadSkin"
         :has-cape="canUploadCape"
@@ -71,7 +72,7 @@
       v-model="isImportSkinDialogShown"
       width="400"
     >
-      <import-skin-url-form @input="skin = $event" />
+      <ImportSkinUrlForm @input="skin = $event" />
     </v-dialog>
   </div>
 </template>
@@ -79,7 +80,7 @@
 <script lang=ts setup>
 import { GameProfileAndTexture, UserProfile } from '@xmcl/runtime-api'
 import { useNotifier } from '../composables/notifier'
-import { PlayerNameModel, usePlayerName, UserSkinModel, useUserSkin } from '../composables/userSkin'
+import { PlayerNameModel, usePlayerName, UserSkinModel, UserSkinRenderPaused, useUserSkin } from '../composables/userSkin'
 import ImportSkinUrlForm from './UserImportSkinUrlForm.vue'
 import SpeedDial from './UserSkinSpeedDial.vue'
 import SkinView from '@/components/SkinView.vue'
@@ -96,7 +97,9 @@ const { watcherTask } = useNotifier()
 const gameProfile = computed(() => props.profile)
 const selected = computed(() => props.user.selectedProfile === props.profile.id)
 const name = inject(PlayerNameModel, () => usePlayerName(gameProfile), true)
+
 const { skin, slim, save, exportTo, loading, modified, reset, inferModelType, cape, canUploadCape, canUploadSkin } = inject(UserSkinModel, () => useUserSkin(computed(() => props.user.id), gameProfile), true)
+const paused = inject(UserSkinRenderPaused, () => ref(false), true)
 const pending = computed(() => loading.value)
 const { showOpenDialog, showSaveDialog } = windowController
 const isImportSkinDialogShown = ref(false)
