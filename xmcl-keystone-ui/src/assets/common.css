@@ -65,10 +65,17 @@ p {
     position: absolute;
 }
 
+/* .v-list-item v-list-item--link {
+
+} */
+
 /* .transition-list-move {
     transition: transform 0.7s !important;
 } */
 
+.v-list-item, .v-list-item:hover:before, .v-list-item:focus:before {
+    border-radius: 0.25rem;
+}
 
 html ::-webkit-scrollbar {
     display: none;
