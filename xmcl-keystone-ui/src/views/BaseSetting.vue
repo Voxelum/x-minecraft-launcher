@@ -8,9 +8,9 @@
     <BaseSettingLaunch />
 
     <v-snackbar
-      color="black"
+      :color="snackbarColor"
+      :class="{ 'shake-animation': hasAnimation }"
       :timeout="-1"
-
       :value="edit.isModified"
     >
       <div class="mr-4 text-button">
@@ -43,6 +43,7 @@
 
 <script lang=ts setup>
 import { useAutoSaveLoad } from '@/composables'
+import { useBeforeLeave } from '@/composables/beforeLeave'
 import { kInstanceContext } from '@/composables/instanceContext'
 import { usePresence } from '@/composables/presence'
 import { injection } from '@/util/inject'
@@ -63,6 +64,21 @@ useAutoSaveLoad(() => {}, edit.load)
 function onReset() {
   edit.load()
 }
+
+const snackbarColor = ref('black')
+const hasAnimation = ref(false)
+useBeforeLeave(() => {
+  if (edit.isModified.value) {
+    snackbarColor.value = 'error'
+    hasAnimation.value = true
+    setTimeout(() => {
+      snackbarColor.value = 'black'
+      hasAnimation.value = false
+    }, 500)
+    return false
+  }
+  return true
+})
 
 usePresence({ location: 'instance-setting', instance: name.value })
 </script>
@@ -95,6 +111,33 @@ usePresence({ location: 'instance-setting', instance: name.value })
   margin-top: 0
 }
 
+.v-snack__wrapper {
+  transition-property: all !important;
+  transition-delay: 0ms;
+  transition-duration: 0.3s;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes shake {
+  0% { transform: translate(0, 0); }
+  10% { transform: translate(-10px, 0); }
+  20% { transform: translate(10px, 0); }
+  30% { transform: translate(-10px, 0); }
+  40% { transform: translate(10px, 0); }
+  50% { transform: translate(-10px, 0); }
+  60% { transform: translate(10px, 0); }
+  70% { transform: translate(-10px, 0); }
+  80% { transform: translate(10px, 0); }
+  90% { transform: translate(-10px, 0); }
+  100% { transform: translate(0, 0); }
+}
+
+.shake-animation {
+  animation-name: shake;
+  animation-duration: .5s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
 /* .base-settings .v-list__tile__content {
   flex-grow: 1
   max-width: 40%
