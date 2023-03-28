@@ -1,6 +1,6 @@
 import { parseVersion, VersionRange } from '@xmcl/runtime-api'
 import { satisfies } from 'semver'
-import { ModDependencies } from './modDependencies'
+import { ModDependencies, ModDependency } from './modDependencies'
 
 export type Compatible = 'maybe' | boolean
 
@@ -16,7 +16,7 @@ export type CompatibleDetail = {
   version: string
 }
 
-function resolveCompatible(deps: Compatible[]) {
+export function resolveCompatible(deps: Compatible[]) {
   const values = deps
   if (values.some(v => v === false)) {
     return false
@@ -27,13 +27,71 @@ function resolveCompatible(deps: Compatible[]) {
   return true
 }
 
-export function getModCompatiblity(dependencies: ModDependencies, runtime: Record<string, string>): CompatibleDetail[] {
+/**
+ * Resolve the compatibility of a mod dependency.
+ *
+ * @param dep The dependency
+ * @param version The version of the mod
+ */
+export function getModCompatiblity(dep: ModDependency, version: string): Compatible {
+  const id = dep.modId
+  let compatible: Compatible = 'maybe'
+  if (!version) {
+    // No such version
+    return false
+  }
+  if (dep.versionRange) {
+    // Resolve version range compability
+    const versionRange = dep.versionRange
+    const range = VersionRange.createFromVersionSpec(versionRange)
+    const currentVersion = parseVersion(version)
+    if (range) {
+      compatible = range.containsVersion(currentVersion)
+      if (!compatible) {
+        const res = range.restrictions[0]
+        if (Math.abs(res.lowerBound?.compareTo(currentVersion) ?? 100) === 1 ||
+            Math.abs(res.upperBound?.compareTo(currentVersion) ?? 100) === 1) {
+          compatible = 'maybe'
+        }
+      }
+    }
+    return compatible
+  }
+  if (dep.semanticVersion) {
+    // Resolve semanticVersion compability
+    const requirements = dep.semanticVersion
+    let compatible: Compatible = 'maybe'
+    if (typeof requirements === 'string') {
+      compatible = satisfies(version, requirements)
+      if (!compatible && id === 'minecraft' && version.split('.').length === 2) {
+        compatible = satisfies(version + '.0', requirements)
+      }
+    } else if (requirements) {
+      for (const v of requirements) {
+        if (satisfies(version, v)) {
+          compatible = true
+          break
+        }
+      }
+    }
+    return compatible
+  }
+
+  return compatible
+}
+
+/**
+ * Resolve the compatibility of a mod dependencies.
+ *
+ * @param dependencies All dependencies
+ * @param runtime All current mod versions
+ */
+export function getModsCompatiblity(dependencies: ModDependencies, runtime: Record<string, string>): CompatibleDetail[] {
   const result: CompatibleDetail[] = []
   for (const v of dependencies) {
     const id = v.modId
-    const current = runtime[id]
-    let compatible: Compatible = 'maybe'
-    if (!current) {
+    const version = runtime[id]
+    if (!version) {
       // No such version
       result.push({
         modId: id,
@@ -41,49 +99,12 @@ export function getModCompatiblity(dependencies: ModDependencies, runtime: Recor
         requirements: v.versionRange || v.semanticVersion || '[*]',
         version: '',
       })
-    } else if (v.versionRange) {
-      // Resolve version range compability
-      const versionRange = v.versionRange
-      const range = VersionRange.createFromVersionSpec(versionRange)
-      const currentVersion = parseVersion(current)
-      if (range) {
-        compatible = range.containsVersion(currentVersion)
-        if (!compatible) {
-          const res = range.restrictions[0]
-          if (Math.abs(res.lowerBound?.compareTo(currentVersion) ?? 100) === 1 ||
-            Math.abs(res.upperBound?.compareTo(currentVersion) ?? 100) === 1) {
-            compatible = 'maybe'
-          }
-        }
-      }
+    } else {
       result.push({
         modId: id,
-        compatible,
-        requirements: versionRange,
-        version: current,
-      })
-    } else if (v.semanticVersion) {
-      // Resolve semanticVersion compability
-      const requirements = v.semanticVersion
-      let compatible: Compatible = 'maybe'
-      if (typeof requirements === 'string') {
-        compatible = satisfies(current, requirements)
-        if (!compatible && id === 'minecraft' && runtime.minecraft.split('.').length === 2) {
-          compatible = satisfies(runtime.minecraft + '.0', requirements)
-        }
-      } else if (requirements) {
-        for (const v of requirements) {
-          if (satisfies(current, v)) {
-            compatible = true
-            break
-          }
-        }
-      }
-      result.push({
-        modId: id,
-        compatible,
-        requirements: requirements,
-        version: current,
+        compatible: getModCompatiblity(v, version),
+        requirements: v.versionRange || v.semanticVersion || '[*]',
+        version,
       })
     }
   }

@@ -1,6 +1,6 @@
 import { FileModLoaderType, Mod, ModsSearchSortField, Pagination } from '@xmcl/curseforge'
 import { SearchResult } from '@xmcl/modrinth'
-import { CurseForgeServiceKey, InstanceData, ModrinthServiceKey, Resource } from '@xmcl/runtime-api'
+import { CurseForgeServiceKey, InstanceData, InstanceModsServiceKey, ModrinthServiceKey, Resource } from '@xmcl/runtime-api'
 import { filter } from 'fuzzy'
 import debounce from 'lodash.debounce'
 import { Ref } from 'vue'
@@ -26,6 +26,14 @@ export function useModsSearch(keyword: Ref<string>, runtime: Ref<InstanceData['r
       },
     }).map((r) => r.original ? r.original : r as any as Resource).filter(isValidResource)
     : resources.value.filter(isValidResource))
+
+  const { state } = useService(InstanceModsServiceKey)
+  const existedMods = computed(() =>
+    keyword.value.length === 0
+      ? []
+      : state.mods.filter(m => m.fileName.toLocaleLowerCase().indexOf(keyword.value.toLocaleLowerCase()) !== -1)
+        .filter(isValidResource))
+
   const modrinth = ref(undefined as SearchResult | undefined)
   const curseforge = ref(undefined as {
     data: Mod[]
@@ -42,12 +50,13 @@ export function useModsSearch(keyword: Ref<string>, runtime: Ref<InstanceData['r
         facets.push('["categories:fabric"]')
       }
       if (keyword.value) {
+        const remain = append && modrinth.value ? modrinth.value.total_hits - offset : Number.MAX_SAFE_INTEGER
         const result = await searchModrinth({
           query: keyword.value,
           facets: '[' + facets.join(',') + ']',
           index: 'relevance',
           offset,
-          limit: 20,
+          limit: append ? Math.min(remain, 20) : 20,
         })
         if (!append || !modrinth.value) {
           modrinth.value = result
@@ -56,6 +65,8 @@ export function useModsSearch(keyword: Ref<string>, runtime: Ref<InstanceData['r
           modrinth.value.limit += result.limit
           modrinth.value.offset = result.offset
         }
+      } else {
+        modrinth.value = undefined
       }
     } catch (e) {
       modrinthError.value = e
@@ -67,13 +78,14 @@ export function useModsSearch(keyword: Ref<string>, runtime: Ref<InstanceData['r
   const processCurseforge = async (useForge: boolean, useFabric: boolean, offset: number, append: boolean) => {
     if (keyword.value) {
       try {
+        const remain = append && curseforge.value ? curseforge.value.pagination.totalCount - offset : Number.MAX_SAFE_INTEGER
         const result = await searchCurseforge({
           classId: 6, // mods
           sortField: ModsSearchSortField.Name,
           modLoaderType: useForge ? FileModLoaderType.Forge : useFabric ? FileModLoaderType.Fabric : FileModLoaderType.Any,
           gameVersion: runtime.value.minecraft,
           searchFilter: keyword.value,
-          pageSize: 20,
+          pageSize: append ? Math.min(20, remain) : 20,
           index: offset,
         })
 
@@ -88,6 +100,8 @@ export function useModsSearch(keyword: Ref<string>, runtime: Ref<InstanceData['r
       } finally {
         loadingCurseforge.value = false
       }
+    } else {
+      curseforge.value = undefined
     }
   }
 
@@ -143,6 +157,7 @@ export function useModsSearch(keyword: Ref<string>, runtime: Ref<InstanceData['r
     curseforgeError,
     loadingCurseforge,
     mods,
+    existedMods,
     modrinth,
     curseforge,
     keyword,

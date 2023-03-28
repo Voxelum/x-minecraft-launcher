@@ -28,6 +28,15 @@
           </v-list-item-subtitle>
         </v-list-item-content>
         <v-list-item-action class="flex flex-row flex-grow-0 items-center gap-1">
+          <v-btn
+            icon
+            text
+            @click="showFile(r)"
+          >
+            <v-icon>
+              folder
+            </v-icon>
+          </v-btn>
           <v-avatar
             v-if="forge"
             size="30px"
@@ -56,10 +65,13 @@
             />
           </v-avatar>
           <v-btn
+            :disabled="isInstalled(r)"
             icon
             @click="emit('install', r)"
           >
-            <v-icon>add</v-icon>
+            <v-icon>
+              {{ installed ? 'swap_horiz' : 'add' }}
+            </v-icon>
           </v-btn>
         </v-list-item-action>
       </v-list-item>
@@ -69,10 +81,11 @@
 <script setup lang="ts">
 import { useService } from '@/composables'
 import { getExpectedSize } from '@/util/size'
-import { ModrinthServiceKey, Resource } from '@xmcl/runtime-api'
+import { BaseServiceKey, Resource } from '@xmcl/runtime-api'
 
-defineProps<{
+const props = defineProps<{
   resources: Resource[]
+  installed: Resource | undefined
   loader: string
   minecraft: string
   forge?: boolean
@@ -82,13 +95,13 @@ defineProps<{
 
 const emit = defineEmits(['install'])
 
-const { getProjectVersions } = useService(ModrinthServiceKey)
-const getMajor = (v: string) => {
-  const split = v.split('.')
-  if (split.length > 1) {
-    return split[0] + '.' + split[1]
-  }
-  return v
+const isInstalled = (r: Resource) => {
+  return props.installed?.storedPath === r.path || props.installed?.path === r.path || props.installed?.path === r.storedPath || props.installed?.ino === r.ino
+}
+
+const { showItemInDirectory } = useService(BaseServiceKey)
+const showFile = (r: Resource) => {
+  showItemInDirectory(r.path)
 }
 
 </script>

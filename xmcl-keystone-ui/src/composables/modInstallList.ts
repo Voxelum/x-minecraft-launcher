@@ -2,7 +2,7 @@ import { getModCompatiblity } from '@/util/modCompatible'
 import { getModDependencies, ModDependency } from '@/util/modDependencies'
 import { File, FileRelationType } from '@xmcl/curseforge'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { CurseForgeServiceKey, getCurseforgeFileUri, getModrinthVersionUri, InstanceModsServiceKey, ModrinthServiceKey, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { CurseForgeServiceKey, getCurseforgeFileUri, getModrinthVersionUri, InstanceModsServiceKey, ModrinthServiceKey, Resource } from '@xmcl/runtime-api'
 import { InjectionKey } from 'vue'
 import { kMods, useMods } from './mods'
 import { useService } from './service'
@@ -15,7 +15,8 @@ export interface ModProject {
 export interface ModListFileItem {
   id: string
   name: string
-  lookups: string[]
+  remove?: boolean
+  mutex: string[]
 
   projectName?: string
   icon?: string
@@ -24,10 +25,10 @@ export interface ModListFileItem {
   modrinth?: ProjectVersion
   resource?: Resource
 
-  warning: {
-    duplicated: string
-    incompatible: boolean
-  }
+  warnings: Array<{
+    reason: 'duplicated' | 'incompatible'
+    target: string
+  }>
 
   enabled: boolean
 }
@@ -45,37 +46,49 @@ export const kModInstallList = Symbol('ModInstallList') as InjectionKey<ReturnTy
 export function useModInstallList() {
   const mods = useMods()
   provide(kMods, mods)
-  const { install } = useService(InstanceModsServiceKey)
+  const { install, disable } = useService(InstanceModsServiceKey)
 
   const list = ref([] as ModListFileItemParent[])
-  // store the id to item path
-  const mutexDict = {} as Record<string, string[]>
-  const persistedMutexDict = computed(() => {
-    const dict = {} as Record<string, string[]>
-    for (const item of mods.resources.value) {
-      // if (item.metadata)
-      // const id = item.id.toString()
-      // const path = item.path
-      // if (!dict[id]) {
-      //   dict[id] = []
-      // }
-      // dict[id].push(path)
-    }
-  })
-
-  function refreshWarning(dict: Record<string, string[]>, result: ModListFileItemParent, curseforge?: File, modrinth?: ProjectVersion, resource?: Resource) {
-    for (const key of result.lookups) {
-      if (dict[key]) {
-        const one = dict[key][0]
-        result.warning.duplicated = one.substring(one.indexOf(':') + 1)
-        return
+  const resourcesLookup = computed(() => {
+    const dict = {} as Record<string, [string, Resource][]>
+    for (const resource of mods.resources.value) {
+      const mods = getModIdVersion(resource)
+      for (const [id, version] of mods) {
+        if (!dict[id]) {
+          dict[id] = []
+        }
+        dict[id].push([version!, resource])
       }
     }
-    result.warning.duplicated = ''
-    result.enabled = true
+    return dict
+  })
+
+  /**
+   * dict of the id to item path
+   */
+  const mutexDict = {} as Record<string, string[]>
+
+  function getWarnings(dict: Record<string, string[]>, mutex: string[], name: string) {
+    const warnings = [] as Array<{
+      reason: 'duplicated' | 'incompatible'
+      target: string
+    }>
+    for (const key of mutex) {
+      if (dict[key] && dict[key].length > 0) {
+        // Only if multiple conflict or the first one is not itself
+        if (dict[key].length > 1 || dict[key][0] !== name) {
+          const one = dict[key][0]
+          warnings.push({
+            reason: 'duplicated',
+            target: one.substring(one.indexOf(':') + 1),
+          })
+        }
+      }
+    }
+    return warnings
   }
 
-  function getLookups(curseforge?: File, modrinth?: ProjectVersion, project?: ModProject) {
+  function getMutex(curseforge?: File, modrinth?: ProjectVersion, project?: ModProject) {
     const lookups = [] as string[]
     if (curseforge) {
       lookups.push(getCurseforgeFileUri(curseforge))
@@ -86,7 +99,38 @@ export function useModInstallList() {
     if (project?.name) {
       lookups.push(`project:${project.name}`)
     }
-    return lookups
+    return markRaw(lookups)
+  }
+
+  function addAsRemove(item: Resource, project?: ModProject) {
+    const id = item.path.toString()
+    const result: ModListFileItemParent = {
+      id,
+      mutex: [],
+      name: item.fileName,
+      icon: project?.icon,
+      projectName: project?.name,
+
+      warnings: [],
+      curseforge: undefined,
+      modrinth: undefined,
+      resource: item,
+
+      remove: true,
+
+      enabled: true,
+      dependencies: [],
+    }
+
+    list.value.push(result)
+
+    // add to mutex dict
+    for (const key of result.mutex) {
+      if (!mutexDict[key]) {
+        mutexDict[key] = []
+      }
+      mutexDict[key].push(result.name)
+    }
   }
 
   async function add(item: File | ProjectVersion | Resource, project?: ModProject) {
@@ -96,9 +140,10 @@ export function useModInstallList() {
     const curseforge = 'modId' in item ? item : undefined
     const modrinth = 'project_id' in item ? item : undefined
     const resource = 'path' in item ? item : undefined
+    const mutex = markRaw(getMutex(curseforge, modrinth, project))
     const result: ModListFileItemParent = {
       id,
-      lookups: getLookups(curseforge, modrinth, project),
+      mutex: mutex,
       name,
       icon: project?.icon,
       projectName: project?.name,
@@ -107,20 +152,25 @@ export function useModInstallList() {
       modrinth,
       resource,
 
-      warning: {
-        duplicated: '',
-        incompatible: false,
-      },
+      warnings: getWarnings(mutexDict, mutex, name),
 
       enabled: true,
       dependencies: await getDependencies(curseforge, modrinth, resource),
     }
 
-    refreshWarning(mutexDict, result, curseforge, modrinth, resource)
     list.value.push(result)
 
     // add to mutex dict
-    for (const key of result.lookups) {
+    for (const dep of result.dependencies) {
+      for (const key of dep.mutex) {
+        if (!mutexDict[key]) {
+          mutexDict[key] = []
+        }
+        mutexDict[key].push(dep.name)
+      }
+    }
+
+    for (const key of result.mutex) {
       if (!mutexDict[key]) {
         mutexDict[key] = []
       }
@@ -128,30 +178,43 @@ export function useModInstallList() {
     }
   }
 
-  function remove(item: string) {
-    const index = list.value.findIndex(i => i.id !== item)
+  function remove(id: string) {
+    const index = list.value.findIndex(i => i.id === id)
     const removed = list.value.splice(index, 1)[0]
 
     // remove from mutex dict
-    for (const key of removed.lookups) {
-      const index = mutexDict[key].findIndex(i => i === removed.id)
+
+    for (const dep of removed.dependencies) {
+      for (const key of dep.mutex) {
+        const index = mutexDict[key].findIndex(i => i === removed.name)
+        mutexDict[key].splice(index, 1)
+      }
+    }
+
+    for (const key of removed.mutex) {
+      const index = mutexDict[key].findIndex(i => i === removed.name)
       mutexDict[key].splice(index, 1)
     }
 
     for (const i of list.value) {
-      if (i.warning.duplicated) {
-        refreshWarning(mutexDict, i, i.curseforge, i.modrinth, i.resource)
+      if (i.warnings.length > 0) {
+        i.warnings = getWarnings(mutexDict, i.mutex, i.name)
+        for (const dep of i.dependencies) {
+          dep.warnings = getWarnings(mutexDict, dep.mutex, dep.name)
+        }
       }
     }
   }
 
-  const { resolveFileDependencies: resolveCurseforge, getModFile } = useService(CurseForgeServiceKey)
+  const { resolveFileDependencies: resolveCurseforge, getModFile, installFile } = useService(CurseForgeServiceKey)
 
-  const { resolveDependencies: resolveModrinth, getProjectVersion } = useService(ModrinthServiceKey)
+  const { resolveDependencies: resolveModrinth, getProjectVersion, installVersion } = useService(ModrinthServiceKey)
 
   async function getCurseforgeDependencies(curseforge: File) {
     const result = await resolveCurseforge(curseforge)
     return result.map(([file, type]) => {
+      const mutex = getMutex(file)
+      console.log(file)
       const item: ModListFileItemLeave = {
         id: file.id.toString(),
         name: file.displayName,
@@ -164,11 +227,8 @@ export function useModInstallList() {
             : type === FileRelationType.Incompatible
               ? 'incompatible'
               : 'embedded',
-        warning: {
-          duplicated: '',
-          incompatible: false,
-        },
-        lookups: getLookups(file),
+        warnings: getWarnings(mutexDict, mutex, file.displayName),
+        mutex,
       }
       return item
     })
@@ -178,44 +238,46 @@ export function useModInstallList() {
     const deps = modrinth.dependencies
     return result.map(v => {
       const dep = deps.find(d => (!d.version_id || d.version_id === v.id) && d.project_id === v.project_id)!
+      const mutex = getMutex(undefined, v)
       const item: ModListFileItemLeave = {
         id: v.id.toString(),
         name: v.name,
         modrinth: v,
-        warning: {
-          duplicated: '',
-          incompatible: false,
-        },
+        warnings: getWarnings(mutexDict, mutex, v.name),
         type: dep.dependency_type,
         enabled: dep.dependency_type === 'required',
-        lookups: getLookups(undefined, v),
+        mutex: mutex,
       }
       return item
     })
   }
-  function getModId(res: Resource) {
+  function getModIdVersion(res: Resource): [string, string][] | [] {
     if (res.metadata.forge) {
-      return res.metadata.forge.modid
+      return [[res.metadata.forge.modid, res.metadata.forge.version]]
     }
     if (res.metadata.fabric) {
       if (res.metadata.fabric instanceof Array) {
-        return res.metadata.fabric[0].id
+        return res.metadata.fabric.map(f => [f.id, f.version])
       }
-      return res.metadata.fabric.id
+      return [[res.metadata.fabric.id, res.metadata.fabric.version]]
     }
     if (res.metadata.quilt) {
-      return res.metadata.quilt.quilt_loader.id
+      return [[res.metadata.quilt.quilt_loader.id, res.metadata.quilt.quilt_loader.version]]
     }
-    return undefined
+    return []
   }
   function getModResourceByDep(dep: ModDependency): Resource | undefined {
-    const all = mods.resources
-    for (const r of all.value) {
-      const modId = getModId(r)
-      if (modId === dep.modId) {
-        return r
-      }
+    const resources = resourcesLookup.value[dep.modId]
+    if (!resources) return undefined
+    let fallback: Resource | undefined
+    for (const [version, r] of resources) {
+      const com = getModCompatiblity(dep, version)
+      // version is compatible
+      if (com && com !== 'maybe') return r
+      if (com === 'maybe' && !fallback) fallback = r
     }
+    // return fallback if no suitable version found
+    return fallback
   }
   async function getResourceDependencies(resource: Resource) {
     const result = [] as ModListFileItemLeave[]
@@ -234,19 +296,17 @@ export function useModInstallList() {
       }
     }
 
-    const modDeps = getModDependencies(resource).filter(dep => dep.modId !== 'minecraft' && dep.modId !== 'forge')
+    const modDeps = getModDependencies(resource).filter(dep => dep.modId !== 'minecraft' && dep.modId !== 'forge' && dep.modId !== 'fabricloader' && dep.modId !== 'fabric' && dep.modId !== 'java')
     for (const dep of modDeps) {
       const resource = getModResourceByDep(dep)
+      const mutex = getMutex(undefined, undefined, resource).concat(['mod:' + dep.modId])
       const item: ModListFileItemLeave = {
         id: dep.modId,
         name: resource?.name || dep.modId,
-        warning: {
-          duplicated: '',
-          incompatible: false,
-        },
+        warnings: getWarnings(mutexDict, mutex, resource?.name || dep.modId),
         type: 'required',
         enabled: !!resource,
-        lookups: getLookups(undefined, undefined, resource).concat(['mod:' + dep.modId]),
+        mutex,
       }
       result.push(item)
     }
@@ -265,12 +325,39 @@ export function useModInstallList() {
   }
 
   async function commit() {
-    const resources = list.value.filter(i => i.enabled && i.resource).map(l => l.resource!)
-    await install({ mods: resources })
+    const toInstall: Resource[] = []
+    const toRemove: Resource[] = []
+    const toInstallCurseforge: File[] = []
+    const toInstallModrinth: ProjectVersion[] = []
+    for (const i of list.value) {
+      if (i.enabled && i.resource) {
+        toInstall.push(i.resource)
+      } else if (i.enabled && i.resource) {
+        toRemove.push(i.resource)
+      } else if (i.enabled && i.curseforge) {
+        toInstallCurseforge.push(i.curseforge)
+      } else if (i.enabled && i.modrinth) {
+        toInstallModrinth.push(i.modrinth)
+      }
+    }
+
+    await Promise.all([
+      install({ mods: toInstall }),
+      disable({ mods: toRemove }),
+      toInstallCurseforge.map((r) => installFile({
+        file: r,
+        type: 'mc-mods',
+        ignoreDependencies: true,
+      })),
+      toInstallModrinth.map((r) => installVersion({
+        version: r,
+      })),
+    ])
   }
 
   return {
     list,
+    addAsRemove,
     add,
     remove,
     commit,
