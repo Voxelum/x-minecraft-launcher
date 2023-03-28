@@ -6,7 +6,7 @@
       color="transparent"
     >
       <div class="flex justify-center">
-        <UserSkinView
+        <UserSkin
           class="flex overflow-auto relative justify-center items-center z-5"
           inspect
           :user="user"
@@ -145,7 +145,7 @@
 import { NameAvailability, OfficialUserServiceKey, UserProfile } from '@xmcl/runtime-api'
 import PlayerCape from '../components/PlayerCape.vue'
 import { PlayerNameModel, usePlayerName, UserSkinModel, useUserSkin } from '../composables/userSkin'
-import UserSkinView from './UserSkinView.vue'
+import UserSkin from './UserSkin.vue'
 import { useRefreshable, useService } from '@/composables'
 
 const props = defineProps<{

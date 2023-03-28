@@ -9,7 +9,7 @@
       :key="profile.id"
       class="flex flex-col"
     >
-      <UserSkinView
+      <UserSkin
         :user="user"
         :profile="profile"
         :inspect="false"
@@ -43,7 +43,7 @@
 </template>
 <script lang="ts" setup>
 import { OfflineUserServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
-import UserSkinView from './UserSkinView.vue'
+import UserSkin from './UserSkin.vue'
 import { useScrollRight, useService } from '@/composables'
 
 const props = defineProps<{

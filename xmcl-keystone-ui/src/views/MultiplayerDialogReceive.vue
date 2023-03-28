@@ -112,13 +112,14 @@
   </v-dialog>
 </template>
 <script lang=ts setup>
+import { useRefreshable, useService, useServiceBusy } from '@/composables'
+import { kUserContext } from '@/composables/user'
+import { injection } from '@/util/inject'
 import { createAnswerAppUrl, PeerServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { useCurrentUser } from '../composables/user'
-import { useRefreshable, useService, useServiceBusy } from '@/composables'
 
 const { isShown, parameter } = useDialog('peer-receive')
-const { gameProfile } = useCurrentUser()
+const { gameProfile } = injection(kUserContext)
 
 const service = useService(PeerServiceKey)
 const connection = computed(() => service.state.connections.find(c => c.id === id.value))

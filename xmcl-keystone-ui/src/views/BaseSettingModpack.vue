@@ -73,12 +73,12 @@
 </template>
 
 <script lang="ts" setup>
-import { useCurrentUser } from '../composables/user'
 import { injection } from '@/util/inject'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
+import { kUserContext } from '../composables/user'
 
 const { data } = injection(InstanceEditInjectionKey)
-const { gameProfile } = useCurrentUser()
+const { gameProfile } = injection(kUserContext)
 const { t } = useI18n()
 </script>
 

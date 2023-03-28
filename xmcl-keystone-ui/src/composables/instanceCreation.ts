@@ -1,8 +1,9 @@
-import { InjectionKey, reactive, ToRefs, toRefs } from 'vue'
-import { InstanceData, InstanceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
-import { useCurrentUser } from './user'
-import { useMinecraftVersions } from './version'
 import { useService } from '@/composables'
+import { injection } from '@/util/inject'
+import { InstanceData, InstanceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import { InjectionKey, reactive } from 'vue'
+import { kUserContext } from './user'
+import { useMinecraftVersions } from './version'
 
 export const CreateOptionKey: InjectionKey<InstanceData> = Symbol('CreateOption')
 
@@ -10,7 +11,7 @@ export const CreateOptionKey: InjectionKey<InstanceData> = Symbol('CreateOption'
  * Hook to create a general instance
  */
 export function useInstanceCreation() {
-  const { gameProfile } = useCurrentUser()
+  const { gameProfile } = injection(kUserContext)
   const { createAndMount: createAndSelect } = useService(InstanceServiceKey)
   const { release } = useMinecraftVersions()
   const data = reactive<InstanceData>({

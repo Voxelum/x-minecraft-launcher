@@ -3,7 +3,7 @@
     outlined
   >
     <v-list>
-      <UserHeaderUserItem
+      <UserMenuUserItem
         v-if="selected"
         :user="selected"
         controls
@@ -13,17 +13,17 @@
       />
     </v-list>
 
-    <UserMicrosoftView
+    <UserMenuMicrosoft
       v-if="selected && selected.authService === 'microsoft'"
       class="w-full"
       :user="selected"
     />
-    <UserMojangView
+    <UserMenuMojang
       v-else-if="selected && selected.authService === 'mojang'"
       class="w-full"
       :user="selected"
     />
-    <UserYggdrasilView
+    <UserMenuYggdrasil
       v-else-if="!!selected"
       class="w-full"
       :user="selected"
@@ -33,7 +33,7 @@
     <v-list
       dense
     >
-      <UserHeaderUserItem
+      <UserMenuUserItem
         v-for="(item) of usersToSwitch"
         :key="item.id"
         link
@@ -68,10 +68,10 @@
 import { useDialog } from '@/composables/dialog'
 import { LoginDialog } from '@/composables/login'
 import { UserProfile } from '@xmcl/runtime-api'
-import UserHeaderUserItem from './UserHeaderUserItem.vue'
-import UserMicrosoftView from './UserMicrosoftView.vue'
-import UserMojangView from './UserMojangView.vue'
-import UserYggdrasilView from './UserYggdrasilView.vue'
+import UserMenuUserItem from './UserMenuUserItem.vue'
+import UserMenuMicrosoft from './UserMenuMicrosoft.vue'
+import UserMenuMojang from './UserMenuMojang.vue'
+import UserMenuYggdrasil from './UserMenuYggdrasil.vue'
 
 const emit = defineEmits(['refresh', 'abort-refresh', 'select', 'remove'])
 const { t } = useI18n()
