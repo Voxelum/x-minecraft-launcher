@@ -23,8 +23,12 @@
               v-on="on"
             >
               <img
+                v-if="data.icon"
                 :src="data.icon"
               >
+              <v-icon v-else>
+                add
+              </v-icon>
             </v-avatar>
           </template>
 
@@ -545,7 +549,6 @@ function onSelectLocalVersion(version: string) {
   data.runtime.fabricLoader = v.fabric
   data.runtime.optifine = v.optifine
   data.runtime.quiltLoader = v.quilt
-  console.log(v)
 }
 
 const { t } = useI18n()
