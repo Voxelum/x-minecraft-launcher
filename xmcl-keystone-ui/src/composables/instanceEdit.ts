@@ -4,6 +4,12 @@ import { useService } from '@/composables'
 
 export const InstanceEditInjectionKey: InjectionKey<ReturnType<typeof useInstanceEdit>> = Symbol('InstanceEdit')
 
+/**
+ * Edit the instance data model.
+ *
+ * @param instance The instance to edit
+ * @returns The instance edit data
+ */
 export function useInstanceEdit(instance: Ref<Instance | undefined>) {
   const { editInstance: edit } = useService(InstanceServiceKey)
   const { state: baseState } = useService(BaseServiceKey)

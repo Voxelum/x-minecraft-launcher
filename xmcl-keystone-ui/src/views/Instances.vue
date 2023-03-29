@@ -54,18 +54,18 @@
 </template>
 
 <script lang=ts setup>
-import { useOperation, useFilterCombobox } from '@/composables'
+import FilterCombobox from '@/components/FilterCombobox.vue'
+import { useFilterCombobox, useOperation, useService } from '@/composables'
+import { Instance, InstanceServiceKey } from '@xmcl/runtime-api'
+import DeleteDialog from '../components/DeleteDialog.vue'
+import { ContextMenuItem } from '../composables/contextMenu'
+import { useDialog } from '../composables/dialog'
 import { useInstances } from '../composables/instance'
-import ImportButton from './InstancesImportButton.vue'
+import { vContextMenu } from '../directives/contextMenu'
 import InstancesView from './InstancesCards.vue'
 import CreateButton from './InstancesCreateButton.vue'
-import DeleteDialog from '../components/DeleteDialog.vue'
 import InstancesFabButton from './InstancesFabButton.vue'
-import FilterCombobox from '@/components/FilterCombobox.vue'
-import { Instance } from '@xmcl/runtime-api'
-import { useDialog } from '../composables/dialog'
-import { vContextMenu } from '../directives/contextMenu'
-import { ContextMenuItem } from '../composables/contextMenu'
+import ImportButton from './InstancesImportButton.vue'
 
 const { show: showAddInstanceDialog } = useDialog('add-instance-dialog')
 const { show: showAddServerDialog } = useDialog('add-server-dialog')
@@ -88,7 +88,8 @@ const contextMenuItems = computed(() => {
   return items
 })
 
-const { mountInstance, deleteInstance, instances } = useInstances()
+const { instances } = useInstances()
+const { mountInstance, deleteInstance } = useService(InstanceServiceKey)
 const { push } = useRouter()
 const { t } = useI18n()
 

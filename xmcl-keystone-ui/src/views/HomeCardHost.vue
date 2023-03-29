@@ -1,6 +1,5 @@
 <template>
   <div class="select-none mx-4 relative">
-    <SharedTooltip />
     <GridLayout
       :layout.sync="layout"
       :responsive-layouts="layouts"
@@ -110,10 +109,8 @@ import { kInstanceContext } from '@/composables/instanceContext'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { useMojangNews } from '@/composables/mojangNews'
 import { injection } from '@/util/inject'
-import { Instance } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { GridItem, GridLayout } from 'vue-grid-layout'
-import SharedTooltip from '../components/SharedTooltip.vue'
 import CurseforgeProject from './CurseforgeProject.vue'
 import HomeModCard from './HomeModCard.vue'
 import HomeNewsCard from './HomeNewsCard.vue'

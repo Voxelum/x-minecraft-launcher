@@ -47,6 +47,8 @@ export function createTemplate(): Instance {
     hideLauncher: undefined,
     fastLaunch: undefined,
     upstream: undefined,
+    lastPlayedDate: 0,
+    playtime: 0,
   }
   return base
 }

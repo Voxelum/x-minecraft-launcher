@@ -68,12 +68,13 @@ import { useDialog } from '../composables/dialog'
 import { LaunchStatusDialogKey, useLaunch } from '../composables/launch'
 import { useService } from '@/composables'
 import VTypical from '@/components/VTyping.vue'
-import { useCurrentUser } from '../composables/user'
+import { injection } from '@/util/inject'
+import { kUserContext } from '@/composables/user'
 
 const { t } = useI18n()
 const { status } = useLaunch()
 const { on } = useService(LaunchServiceKey)
-const { userProfile } = useCurrentUser()
+const { userProfile } = injection(kUserContext)
 const { isShown, show, hide } = useDialog(LaunchStatusDialogKey)
 
 const launchingSteps = computed(() => [

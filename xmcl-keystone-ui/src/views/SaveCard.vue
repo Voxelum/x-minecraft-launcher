@@ -27,9 +27,10 @@
           {{ new Date(source.lastPlayed).toLocaleString() }}
         </div>
         <div class="flex gap-2">
-          <HomeHeaderMinecraftLabel
+          <AvatarChip
             small
-            :minecraft="source.gameVersion"
+            avatar="image://builtin/minecraft"
+            :text="`Minecraft ${source.gameVersion}`"
           />
 
           <v-chip
@@ -79,9 +80,9 @@ import unknownPack from '@/assets/unknown_pack.png'
 import { useService } from '@/composables'
 import { vFallbackImg } from '../directives/fallbackImage'
 import { vDataTransfer, vDataTransferImage, vDraggableCard } from '../directives/draggableCard'
-import HomeHeaderMinecraftLabel from './HomeHeaderMinecraftLabel.vue'
 import { vContextMenu } from '../directives/contextMenu'
 import { ContextMenuItem } from '../composables/contextMenu'
+import AvatarChip from '@/components/AvatarChip.vue'
 
 const props = defineProps<{
   exportSave(path:string): void
