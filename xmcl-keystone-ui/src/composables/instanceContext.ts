@@ -5,6 +5,9 @@ import { useLaunchTask } from './launchTask'
 import { useModsSearch } from './modSearch'
 import { useModSearchItems } from './modSearchItems'
 
+/**
+ * The context to hold the instance related data. This is used to share data between different components.
+ */
 export function useInstanceContext() {
   const issue = useLaunchIssue()
   const { path, instance, refreshing } = useInstance()

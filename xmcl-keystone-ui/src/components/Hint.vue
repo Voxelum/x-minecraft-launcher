@@ -75,7 +75,7 @@ defineProps({
 })
 </script>
 
-<style>
+<style scoped>
 .absoluted {
   position: absolute;
   left: 0;

@@ -32,26 +32,20 @@
     />
 
     <HomeLogDialog />
-    <AppGameExitDialog />
-    <AppLaunchBlockedDialog />
     <HomeLaunchMultiInstanceDialog />
     <HomeLaunchStatusDialog />
     <HomeJavaIssueDialog />
     <HomeInstanceUpdateDialog />
-    <SharedTooltip />
   </div>
 </template>
 
 <script lang=ts setup>
-import SharedTooltip from '@/components/SharedTooltip.vue'
 import { kFilterCombobox, useFilterComboboxData } from '@/composables'
 import { kInstanceContext, useInstanceContext } from '@/composables/instanceContext'
 import { usePresence } from '@/composables/presence'
 import { kCompact, useCompactScroll } from '@/composables/scrollTop'
 import { useInFocusMode } from '@/composables/uiLayout'
 import { useInstanceServerStatus } from '../composables/serverStatus'
-import AppGameExitDialog from './AppGameExitDialog.vue'
-import AppLaunchBlockedDialog from './AppLaunchBlockedDialog.vue'
 import HomeFocusFooter from './HomeFocusFooter.vue'
 import HomeHeader from './HomeHeader.vue'
 import HomeInstanceUpdateDialog from './HomeInstanceUpdateDialog.vue'

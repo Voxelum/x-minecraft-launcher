@@ -138,8 +138,4 @@ usePresence({ location: 'instance-setting', instance: name.value })
   animation-timing-function: ease-in-out;
   animation-iteration-count: infinite;
 }
-/* .base-settings .v-list__tile__content {
-  flex-grow: 1
-  max-width: 40%
-} */
 </style>

@@ -50,6 +50,7 @@ export class LittleSkinUserService extends AbstractService implements ILittleSki
       //   dispatcher,
       // ),
       dispatcher,
+      userService.state,
       tokenCache,
     )
 
