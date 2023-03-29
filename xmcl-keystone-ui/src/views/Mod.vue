@@ -24,7 +24,7 @@
         class="h-full"
       />
       <Hint
-        v-else-if="items.length === 0"
+        v-else-if="items.length === 0 || dragover"
         icon="save_alt"
         :text="t('mod.dropHint')"
         class="h-full w-full z-0"
@@ -84,6 +84,7 @@ import RefreshingTile from '@/components/RefreshingTile.vue'
 import { useDrop, useService } from '@/composables'
 import { useModDeletion } from '@/composables/modDelete'
 import { useModDragging } from '@/composables/modDraggable'
+import { useModDropHandler } from '@/composables/modDropHandler'
 import { useModFilter } from '@/composables/modFilter'
 import { useModSelection } from '@/composables/modSelection'
 import { usePresence } from '@/composables/presence'
@@ -106,6 +107,8 @@ const { t } = useI18n()
 const { onDrop: onDropToImport } = useDrop((file) => {
   importResources([{ path: file.path, domain: ResourceDomain.Mods }])
 })
+
+const { dragover } = useModDropHandler()
 
 const { isDraggingMod, onDragEnd, onItemDragstart } = useModDragging(filtered.items, selectedItems, isSelectionMode)
 const { deletingMods, startDelete, confirmDelete, cancelDelete } = useModDeletion(mods)

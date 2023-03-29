@@ -80,7 +80,7 @@
 </template>
 
 <script lang=ts setup>
-import { PreviewItem } from '@/composables/dropService'
+import { PreviewItem } from '@/composables/appDropHandler'
 
 const props = defineProps<{ value: PreviewItem }>()
 const emit = defineEmits(['enable', 'remove'])

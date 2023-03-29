@@ -50,15 +50,13 @@
 </template>
 
 <script lang=ts setup>
-import { PreviewItem, kDropService } from '@/composables/dropService'
-import { injection } from '@/util/inject'
+import { PreviewItem } from '@/composables/appDropHandler'
 import FileListTile from './AppDropDialogFileListTile.vue'
 
 const props = defineProps<{ previews: PreviewItem[] }>()
-const emit = defineEmits(['cancel', 'remove'])
+const emit = defineEmits(['cancel', 'remove', 'import'])
 
 const enableMods = ref(true)
-const { onImport } = injection(kDropService)
 const loading = computed(() => props.previews.some((v) => v.status === 'loading'))
 const pendings = computed(() => props.previews.filter((v) => (v.status === 'idle' || v.status === 'failed') && v.enabled))
 const disabled = computed(() => pendings.value.length === 0)
@@ -68,7 +66,7 @@ function cancel() {
   emit('cancel')
 }
 function start() {
-  onImport(pendings.value)
+  emit('import', pendings.value)
 }
 function setEnable(file: PreviewItem, enabled?: boolean) {
   file.enabled = enabled ?? true
