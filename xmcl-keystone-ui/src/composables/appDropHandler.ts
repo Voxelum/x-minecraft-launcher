@@ -1,7 +1,8 @@
+import { basename } from '@/util/basename'
+import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
-import { BaseServiceKey, ImportServiceKey, isPersistedResource, Resource, ResourceDomain, ResourceServiceKey, UserServiceKey } from '@xmcl/runtime-api'
-import { InjectionKey } from 'vue'
-import { basename } from '../util/basename'
+import { ImportServiceKey, isPersistedResource, Resource, ResourceDomain, ResourceServiceKey, UserServiceKey } from '@xmcl/runtime-api'
+import { kDropHandler } from './dropHandler'
 import { useService } from './service'
 
 export interface PreviewItem {
@@ -20,18 +21,72 @@ export interface PreviewItem {
   resource: Resource | undefined
 }
 
-export const kDropService: InjectionKey<ReturnType<typeof useDropService>> = Symbol('DropService')
-
-export function useDropService() {
-  const dragover = ref(false)
-  const active = ref(false)
+/**
+ * The common drop handler for app. This is the default behavior of dropping item to app.
+ */
+export function useAppDropHandler() {
   const loading = ref(false)
+  const active = ref(false)
   const previews = ref([] as PreviewItem[])
+  const { t } = useI18n()
+
+  const { registerHandler, dragover } = injection(kDropHandler)
+
+  registerHandler(() => {
+    active.value = true
+  }, async (dataTransfer) => {
+    if (dataTransfer.items.length > 0) {
+      for (let i = 0; i < dataTransfer.items.length; ++i) {
+        const item = dataTransfer.items[i]
+        if (item.kind === 'string') {
+          const content = await new Promise<string>((resolve) => item.getAsString(resolve))
+          if (content.startsWith('authlib-injector:yggdrasil-server:')) {
+            previewAuthService(content)
+          } else if (content.startsWith('https://github.com/') || content.startsWith('https://gitlab.com')) {
+            previewGitUrl(content)
+          }
+        }
+      }
+    }
+
+    const files = [] as Array<File>
+    if (dataTransfer.files.length > 0) {
+      for (let i = 0; i < dataTransfer.files.length; i++) {
+        const file = dataTransfer.files.item(i)!
+        if (previews.value.every(p => p.id !== file.path)) {
+          files.push(file)
+        }
+      }
+    }
+    loading.value = true
+    const result = await resolveResources(files.map(f => ({ path: f.path }))).finally(() => { loading.value = false })
+    for (let i = 0; i < result.length; i++) {
+      const r = result[i]
+      const f = files[i]
+      previews.value.push({
+        enabled: isPersistedResource(r),
+        id: f.path,
+
+        title: f.name,
+        description: getDescription(r, f.path),
+        icon: getIcon(r),
+        type: getType(r),
+        status: isPersistedResource(r) && r.domain !== ResourceDomain.Unclassified ? 'saved' : 'idle',
+
+        uris: [],
+        resource: r,
+      })
+    }
+    dragover.value = false
+    if (previews.value.length === 0) {
+      cancel()
+    }
+  }, () => {
+    if (previews.value.length === 0) cancel()
+  })
   const { resolveResources } = useService(ResourceServiceKey)
   const { addYggdrasilAccountSystem } = useService(UserServiceKey)
   const { previewUrl, importFile } = useService(ImportServiceKey)
-  const suppressed = ref(false)
-  const { t } = useI18n()
 
   const iconMap: Record<string, string> = {
     forge: '$vuetify.icons.package',
@@ -44,10 +99,6 @@ export function useDropService() {
     'mcbbs-modpack': '$vuetify.icons.package',
     save: '$vuetify.icons.zip',
     'modrinth-modpack': '$vuetify.icons.modrinth',
-  }
-
-  function getIcon(resource: Resource | undefined) {
-    return resource ? iconMap[resource.domain] ?? 'question_mark' : 'question_mark'
   }
 
   function getDescription(r: Resource | undefined, url: string) {
@@ -93,6 +144,10 @@ export function useDropService() {
       }
     }
     return types.join(' | ')
+  }
+
+  function getIcon(resource: Resource | undefined) {
+    return resource ? iconMap[resource.domain] ?? 'question_mark' : 'question_mark'
   }
 
   async function onImport(previews: PreviewItem[]) {
@@ -192,113 +247,28 @@ export function useDropService() {
     }
   }
 
-  async function onDrop(event: DragEvent) {
-    const dataTransfer = event.dataTransfer!
-
-    console.log(dataTransfer.types[0])
-    console.log(dataTransfer.dropEffect)
-    console.log(dataTransfer.getData('text/html'))
-    console.log(dataTransfer.getData('text/plain'))
-
-    if (dataTransfer.items.length > 0) {
-      for (let i = 0; i < dataTransfer.items.length; ++i) {
-        const item = dataTransfer.items[i]
-        if (item.kind === 'string') {
-          const content = await new Promise<string>((resolve) => item.getAsString(resolve))
-          if (content.startsWith('authlib-injector:yggdrasil-server:')) {
-            previewAuthService(content)
-          } else if (content.startsWith('https://github.com/') || content.startsWith('https://gitlab.com')) {
-            previewGitUrl(content)
-          }
-        }
-      }
-    }
-
-    const files = [] as Array<File>
-    if (dataTransfer.files.length > 0) {
-      for (let i = 0; i < dataTransfer.files.length; i++) {
-        const file = dataTransfer.files.item(i)!
-        if (previews.value.every(p => p.id !== file.path)) {
-          files.push(file)
-        }
-      }
-    }
-    loading.value = true
-    const result = await resolveResources(files.map(f => ({ path: f.path }))).finally(() => { loading.value = false })
-    for (let i = 0; i < result.length; i++) {
-      const r = result[i]
-      const f = files[i]
-      previews.value.push({
-        enabled: isPersistedResource(r),
-        id: f.path,
-
-        title: f.name,
-        description: getDescription(r, f.path),
-        icon: getIcon(r),
-        type: getType(r),
-        status: isPersistedResource(r) && r.domain !== ResourceDomain.Unclassified ? 'saved' : 'idle',
-
-        uris: [],
-        resource: r,
-      })
-    }
-    dragover.value = false
-    if (previews.value.length === 0) {
-      cancel()
-    }
-  }
   function remove(file: PreviewItem) {
     previews.value = previews.value.filter((p) => p.id !== file.id)
     if (previews.value.length === 0) {
       cancel()
     }
   }
+
   function cancel() {
     dragover.value = false
     active.value = false
     previews.value = []
   }
-  document.addEventListener('dragleave', (e) => {
-    if ((e as any).fromElement === null && e.dataTransfer!.effectAllowed === 'all') {
-      if (!dragover.value || previews.value.length > 0) {
-        dragover.value = false
-      } else {
-        cancel()
-      }
-    }
-  })
-  document.addEventListener('drop', (e) => {
-    if (!suppressed.value) {
-      onDrop(e)
-    }
-  })
-  document.addEventListener('dragover', (e) => {
-    if ((e as any).fromElement === null) {
-      if (e.dataTransfer!.effectAllowed === 'all') {
-        e.preventDefault()
-      }
-    }
-  })
-  document.addEventListener('dragenter', (e) => {
-    if ((e as any).fromElement === null) {
-      if (e.dataTransfer!.effectAllowed === 'all') {
-        if (!suppressed.value) {
-          active.value = true
-          dragover.value = true
-        }
-      }
-    }
-    e.dataTransfer!.dropEffect = 'copy'
-  })
 
   return {
-    dragover,
-    loading,
     active,
     previews,
-    suppressed,
     onImport,
+    previewAuthService,
+    previewGitUrl,
     remove,
+    dragover,
+    loading,
     cancel,
   }
 }

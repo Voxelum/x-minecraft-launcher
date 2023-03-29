@@ -57,6 +57,7 @@
             :previews="previews"
             @remove="remove"
             @cancel="cancel"
+            @import="onImport"
           />
         </v-card>
       </v-fade-transition>
@@ -65,12 +66,11 @@
 </template>
 
 <script lang=ts setup>
-import PreviewView from './AppDropDialogPreview.vue'
 import RefreshingTile from '@/components/RefreshingTile.vue'
+import PreviewView from './AppDropDialogPreview.vue'
+import { useAppDropHandler } from '@/composables/appDropHandler'
 
-import { kDropService } from '@/composables/dropService'
-import { injection } from '@/util/inject'
+const { active, loading, remove, cancel, previews, dragover, onImport } = useAppDropHandler()
 
-const { active, loading, remove, cancel, previews, dragover } = injection(kDropService)
 const { t } = useI18n()
 </script>
