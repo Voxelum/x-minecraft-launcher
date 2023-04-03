@@ -1,8 +1,9 @@
 import { computed, InjectionKey, provide, Ref, ref } from 'vue'
 
 import { injection } from '@/util/inject'
+import { useBroadcastChannel } from './broadcastChannel'
 
-export const kDialogModel: InjectionKey<{ dialog: Ref<string>; parameter: Ref<any> }> = Symbol('ShowingDialog')
+export const kDialogModel: InjectionKey<DialogModel> = Symbol('ShowingDialog')
 
 export function useZipFilter() {
   const { t } = useI18n()
@@ -22,16 +23,22 @@ export function useModrinthFilter() {
   return filter
 }
 
-export interface DialogModel {
-  dialog: Ref<string>
-  parameter: Ref<any>
-}
+export type DialogModel<T = any> = Ref<{
+  dialog: string
+  parameter: T
+}>
 
 export function useDialogModel(): DialogModel {
-  return {
-    dialog: ref(''),
-    parameter: ref(undefined),
-  }
+  const model = ref({ dialog: '', parameter: undefined })
+  const channel = new BroadcastChannel('dialog')
+  channel.addEventListener('message', (e) => {
+    if (e.data.dialog === model.value.dialog) return
+    model.value = e.data
+  })
+  watch(model, (value) => {
+    channel.postMessage(value)
+  })
+  return model
 }
 
 export interface DialogKey<T> extends String { }
@@ -39,10 +46,10 @@ export interface DialogKey<T> extends String { }
 /**
  * Use a shared dialog between pages
  */
-export function useDialog<T>(dialogName: DialogKey<T> = '', onShown?: (param: T) => void, onHide?: () => void) {
-  const { dialog, parameter } = injection(kDialogModel)
+export function useDialog<T = any>(dialogName: DialogKey<T> = '', onShown?: (param: T) => void, onHide?: () => void) {
+  const model = injection(kDialogModel)
   const isShown = computed({
-    get: () => dialog.value === dialogName,
+    get: () => model.value.dialog === dialogName,
     set: (v: boolean) => {
       if (v) {
         show()
@@ -52,30 +59,27 @@ export function useDialog<T>(dialogName: DialogKey<T> = '', onShown?: (param: T)
     },
   })
   function hide() {
-    if (dialog.value === dialogName) {
+    if (model.value.dialog === dialogName) {
       console.log(`hide ${dialogName}`)
-      dialog.value = ''
-      parameter.value = undefined
+      model.value = { dialog: '', parameter: undefined }
     }
   }
   function show(param?: T) {
-    if (dialog.value !== dialogName) {
+    if (model.value.dialog !== dialogName) {
       console.log(`show ${dialogName}`)
-      parameter.value = param
-      dialog.value = dialogName.toString()
+      model.value = { dialog: dialogName as string, parameter: param }
     }
   }
   watch(isShown, (value) => {
     if (value) {
-      onShown?.(parameter.value)
+      onShown?.(model.value.parameter)
     } else {
       onHide?.()
     }
   })
 
   return {
-    dialog,
-    parameter: parameter as Ref<T | undefined>,
+    dialog: model as DialogModel<T>,
     show,
     hide,
     isShown,

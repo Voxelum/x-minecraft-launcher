@@ -7,7 +7,7 @@ import { useService } from './service'
 
 export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => void, onCreateTag: (group?: boolean) => void) {
   const { t } = useI18n()
-  const { showItemInDirectory, openInBrowser } = useService(BaseServiceKey)
+  const { showItemInDirectory } = useService(BaseServiceKey)
   const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
   const { push } = useRouter()
   const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute()
@@ -49,7 +49,7 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
       items.push({
         text: t('mod.openLink', { url }),
         onClick: () => {
-          openInBrowser(url)
+          window.open(url, 'browser')
         },
         icon: 'link',
       })

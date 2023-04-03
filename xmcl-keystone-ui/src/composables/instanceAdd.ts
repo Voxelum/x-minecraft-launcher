@@ -1,7 +1,7 @@
 import { useRefreshable, useService } from '@/composables'
 import { injection } from '@/util/inject'
 import { getUpstreamFromResource } from '@/util/upstream'
-import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, FeedTheBeastServiceKey, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromModrinthModpack, InstanceData, InstanceManifest, InstanceSchema, isCurseforgeModpackResource, isMcbbsModpackResource, isModrinthModpackResource, isRawModpackResource, JavaServiceKey, McbbsModpackResource, ModpackResource, ModrinthModpackResource, PeerServiceKey, RawModpackResource, RuntimeVersions } from '@xmcl/runtime-api'
+import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromModrinthModpack, InstanceData, InstanceManifest, InstanceSchema, isCurseforgeModpackResource, isMcbbsModpackResource, isModrinthModpackResource, isRawModpackResource, JavaServiceKey, McbbsModpackResource, ModpackResource, ModrinthModpackResource, PeerServiceKey, RawModpackResource, RuntimeVersions } from '@xmcl/runtime-api'
 import { DialogKey } from './dialog'
 import { kModpacks } from './modpack'
 
@@ -42,8 +42,6 @@ export function useAllTemplate(data: InstanceData) {
   const { state: javaState } = useService(JavaServiceKey)
   const { state: peerState } = useService(PeerServiceKey)
 
-  const { getAllCachedModpackVersions } = useService(FeedTheBeastServiceKey)
-
   const container = shallowRef([] as Array<Template>)
   const { resources } = injection(kModpacks)
 
@@ -64,8 +62,8 @@ export function useAllTemplate(data: InstanceData) {
       }
       return undefined
     }).filter((v): v is Template => !!v))
-    const ftb = await getAllCachedModpackVersions()
-    all.push(...ftb.filter(f => f.name && f.targets).map(getFtbTemplate))
+    // const ftb = await getAllCachedModpackVersions()
+    // all.push(...ftb.filter(f => f.name && f.targets).map(getFtbTemplate))
 
     for (const c of peerState.connections) {
       if (c.sharing) {

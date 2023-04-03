@@ -45,7 +45,7 @@ export function useModrinthInstall(project: Ref<Project | undefined>, tasks: Ref
         })
       }
     } else {
-      await installVersion({ version, instancePath: installTo.value, project: project.value })
+      await installVersion({ version, instancePath: installTo.value, icon: project.value?.icon_url })
     }
   }
 

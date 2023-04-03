@@ -108,6 +108,7 @@ copyClipboard:
 create: Create
 curseforge:
   authors: Authors
+  category: Category
   createdDate: Created Date
   downloadOnly: Download
   downloaded: Downloaded
@@ -1078,6 +1079,7 @@ setting:
   colorTheme:
     appBarColor: App Bar
     backgroundColor: Background Color
+    cardColor: Card Color
     description: Change the colors in the theme
     errorColor: Error Color
     name: Theme Color

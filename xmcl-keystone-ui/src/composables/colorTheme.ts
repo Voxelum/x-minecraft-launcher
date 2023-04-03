@@ -7,14 +7,11 @@ export const kColorTheme: InjectionKey<ReturnType<typeof useColorTheme>> = Symbo
 export function useColorTheme() {
   const { darkTheme } = useTheme()
 
-  const lightAppBarColor = useLocalStorageCacheStringValue<string>('lightAppBarColor', '')
-  const lightSideBarColor = useLocalStorageCacheStringValue<string>('lightSideBarColor', '')
+  const lightAppBarColor = useLocalStorageCacheStringValue<string>('lightAppBarColor', '#e0e0e0FF')
+  const lightSideBarColor = useLocalStorageCacheStringValue<string>('lightSideBarColor', '#FFFFFFFF')
 
   const darkAppBarColor = useLocalStorageCacheStringValue<string>('darkAppBarColor', '#111111FF')
   const darkSideBarColor = useLocalStorageCacheStringValue<string>('darkSideBarColor', '#111111FF')
-
-  const darkCardColor = useLocalStorageCacheStringValue<string>('darkCardColor', '#0c0c0ccc')
-  const lightCardColor = useLocalStorageCacheStringValue<string>('darkCardColor', '#111111FF')
 
   const darkPrimaryColor = useLocalStorageCacheStringValue<string>('darkPrimaryColor', '#4caf50')
   const darkBackground = useLocalStorageCacheStringValue<string>('darkBackground', '#121212')
@@ -23,6 +20,7 @@ export function useColorTheme() {
   const darkWarningColor = useLocalStorageCacheStringValue<string>('darkWarningColor', '#FB8C00')
   const darkSuccessColor = useLocalStorageCacheStringValue<string>('darkSuccessColor', '#4CAF50')
   const darkAccentColor = useLocalStorageCacheStringValue<string>('darkAccentColor', '#00e676')
+  const darkCardColor = useLocalStorageCacheStringValue<string>('darkCardColor', '#0c0c0ccc')
 
   const lightPrimaryColor = useLocalStorageCacheStringValue<string>('lightPrimaryColor', '#1976D2')
   const lightBackground = useLocalStorageCacheStringValue<string>('lightBackground', '#FFFFFF')
@@ -31,6 +29,7 @@ export function useColorTheme() {
   const lightWarningColor = useLocalStorageCacheStringValue<string>('lightWarningColor', '#FB8C00')
   const lightSuccessColor = useLocalStorageCacheStringValue<string>('lightSuccessColor', '#4CAF50')
   const lightAccentColor = useLocalStorageCacheStringValue<string>('lightAccentColor', '#82B1FF')
+  const lightCardColor = useLocalStorageCacheStringValue<string>('lightCardColor', '#e0e0e080')
 
   const appBarColor = computed({
     get: () => darkTheme.value ? darkAppBarColor.value : lightAppBarColor.value,
@@ -148,8 +147,8 @@ export function useColorTheme() {
   }
 
   function resetLightToDefault() {
-    lightAppBarColor.value = ''
-    lightSideBarColor.value = ''
+    lightAppBarColor.value = '#e0e0e0FF'
+    lightSideBarColor.value = '#FFFFFFFF'
     lightPrimaryColor.value = '#1976D2'
     lightBackground.value = '#FFFFFF'
     lightInfoColor.value = '#2196F3'
@@ -157,7 +156,7 @@ export function useColorTheme() {
     lightWarningColor.value = '#FB8C00'
     lightSuccessColor.value = '#4CAF50'
     lightAccentColor.value = '#82B1FF'
-    lightCardColor.value = '#111111FF'
+    lightCardColor.value = '#e0e0e080'
   }
 
   function resetToDefault() {

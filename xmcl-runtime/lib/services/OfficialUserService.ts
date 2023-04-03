@@ -48,7 +48,7 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
       new MicrosoftOAuthClient(this,
         CLIENT_ID,
         async (url, signal) => {
-          baseService.openInBrowser(url)
+          this.app.shell.openInBrowser(url)
           this.emit('microsoft-authorize-url', url)
           return await new Promise<string>((resolve, reject) => {
             const abort = () => {
@@ -71,7 +71,7 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
         },
         (response) => {
           this.emit('device-code', response)
-          baseService.openInBrowser(response.verificationUri)
+          app.shell.openInBrowser(response.verificationUri)
         },
         dispatcher,
       ))

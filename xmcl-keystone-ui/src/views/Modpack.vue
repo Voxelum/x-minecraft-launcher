@@ -143,7 +143,7 @@ const deleting = ref(undefined as undefined | Resource)
 const { refreshing, resources } = injection(kModpacks)
 const filterOptions = computed(() => items.value.map(getFilterOptions).reduce((a, b) => [...a, ...b], []))
 const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (v) => `${v.name} ${v.author} ${v.version}`)
-const { refresh, refreshing: refreshingFtb, cache: ftb, dispose } = useFeedTheBeastVersionsCache()
+const { cache: ftb, dispose } = useFeedTheBeastVersionsCache()
 const modpacks = computed(() => filter(items.value))
 const grouped = computed(() => {
   const result: Record<string, ModpackItem[]> = {}
@@ -207,7 +207,6 @@ function getModpackItemByFtb(resource: CachedFTBModpackVersionManifest): Modpack
   })
 }
 onMounted(async () => {
-  await refresh()
   items.value = [...resources.value.map(getModpackItem), ...ftb.value.map(getModpackItemByFtb)].sort((a, b) => a.name.localeCompare(b.name))
 })
 onUnmounted(() => {

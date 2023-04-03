@@ -3,6 +3,9 @@
     outlined
     class="p-2 rounded-lg flex flex-col h-[fit-content] overflow-auto"
   >
+    <span
+      class="list-title"
+    >{{ t('curseforge.category') }}</span>
     <v-skeleton-loader
       v-if="refreshing"
       class="flex flex-col gap-3 overflow-auto"
@@ -21,14 +24,13 @@
         class="item"
         @click="emit('select', c.id)"
       >
-        <v-avatar>
-          <v-img
-            width="40"
-            height="40"
-            contain
-            :src="c.iconUrl"
-          />
-        </v-avatar>
+        <img
+          class="p-0.5"
+          width="30"
+          height="30"
+          contain
+          :src="c.iconUrl"
+        >
         {{ tCategory(c.name) }}
       </span>
     </template>
@@ -71,7 +73,7 @@ onMounted(() => {
 
 <style scoped>
 .item {
-  @apply rounded-lg ml-2 hover:bg-[rgba(255,255,255,0.2)] cursor-pointer p-0 pl-3 flex items-center gap-2;
+  @apply rounded-lg hover:bg-[rgba(255,255,255,0.2)] cursor-pointer p-0.5 flex items-center gap-2 justify-start;
 }
 
 .list-title {

@@ -34,7 +34,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   private yggdrasilAccountSystem: YggdrasilAccountSystem
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(kUserTokenStorage) tokenStorage: UserTokenStorage) {
+    @Inject(kUserTokenStorage) private tokenStorage: UserTokenStorage) {
     super(app, () => new UserState(), async () => {
       const data = await this.userFile.read()
       const userData: UserSchema = {
@@ -262,12 +262,13 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     this.state.userProfileRemove(userId)
   }
 
-  async getOfficialUserProfile(): Promise<UserProfile | undefined> {
+  async getOfficialUserProfile(): Promise<(UserProfile & { accessToken: string | undefined }) | undefined> {
     const official = Object.values(this.state.users).find(u => u.authService === 'microsoft')
     if (official) {
       const controller = new AbortController()
       await this.accountSystems.microsoft?.refresh(official, controller.signal)
-      return official
+      const accessToken = await this.tokenStorage.get(official)
+      return { ...official, accessToken }
     }
     return undefined
   }

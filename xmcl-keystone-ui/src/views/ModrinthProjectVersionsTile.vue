@@ -79,7 +79,6 @@
 <script lang="ts" setup>
 import { useVuetifyColor } from '@/composables/vuetify'
 import type { ProjectVersion } from '@xmcl/modrinth'
-import Markdown from 'markdown-it'
 import { getLocalDateString } from '@/util/date'
 import { getColorForReleaseType } from '@/util/color'
 import { useServiceBusy } from '@/composables'
@@ -87,6 +86,7 @@ import { ModrinthServiceKey } from '@xmcl/runtime-api'
 import { kModrinthVersionsStatus } from '@/composables/modrinthVersions'
 import { injection } from '@/util/inject'
 import { kUpstream } from '@/composables/instanceUpdate'
+import { useMarkdown } from '@/composables/markdown'
 
 const props = defineProps<{
   source: ProjectVersion
@@ -97,9 +97,7 @@ const emit = defineEmits(['install'])
 const version = computed(() => props.source)
 const { getColorCode } = useVuetifyColor()
 const { t } = useI18n()
-const markdown = new Markdown({
-  html: true,
-})
+const { render } = useMarkdown()
 
 const { isDownloaded, tasks } = injection(kModrinthVersionsStatus)
 const _upstream = inject(kUpstream, undefined)
@@ -119,8 +117,5 @@ const icon = computed(() => {
 })
 
 const installingVersion = useServiceBusy(ModrinthServiceKey, 'installVersion', computed(() => props.source.id))
-const render = (s: string) => {
-  return markdown.render(s)
-}
 
 </script>

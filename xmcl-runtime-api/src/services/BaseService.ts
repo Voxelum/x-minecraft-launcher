@@ -11,6 +11,7 @@ export interface MigrateOptions {
 export class BaseState implements SettingSchema {
   globalMinMemory = 0
   globalMaxMemory = 0
+  hideNews = false
   globalAssignMemory: 'auto' | boolean = false
   globalVmOptions: string[] = []
   globalMcOptions: string[] = []
@@ -212,12 +213,6 @@ export interface BaseService extends StatefulService<BaseState> {
    * let the launcher to handle a url open. The url can be xmcl:// protocol
    */
   handleUrl(url: string): Promise<boolean>
-  /**
-   * Try to open a url in default browser. It will popup a message dialog to let user know.
-   * If user does not trust the url, it won't open the site.
-   * @param url The pending url
-   */
-  openInBrowser: (url: string) => Promise<boolean>
   /**
    * A electron provided function to show item in directory
    * @param path The path to the file item

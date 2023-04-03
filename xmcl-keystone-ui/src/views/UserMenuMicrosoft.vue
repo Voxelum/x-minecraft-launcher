@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-4 md:flex-row flex-col-reverse">
+  <div class="flex gap-4 flex-row max-w-full">
     <v-card
       class="p-2 overflow-x-hidden flex flex-col flex-grow "
       flat
@@ -60,7 +60,7 @@
               <v-list-item-title>
                 {{ t('userCape.changeTitle') }}
               </v-list-item-title>
-              <v-list-item-subtitle class="overflow-auto">
+              <v-list-item-subtitle class="overflow-hidden max-w-100 whitespace-pre-wrap">
                 {{ t('userCape.description') }}
               </v-list-item-subtitle>
             </v-list-item-content>

@@ -1,9 +1,9 @@
+import { Category, ModrinthV2Client, SearchResultHit } from '@xmcl/modrinth'
 import { computed, InjectionKey, reactive, Ref, toRefs, watch } from 'vue'
-import { Category, GameVersion, License, Loader, SearchResultHit } from '@xmcl/modrinth'
-import { ModrinthServiceKey } from '@xmcl/runtime-api'
 
-import { useService, useRefreshable } from '@/composables'
 import debounce from 'lodash.debounce'
+import useSWRV from 'swrv'
+import { client } from '@/util/modrinthClients'
 
 export interface ModrinthOptions {
   query: string
@@ -20,36 +20,42 @@ export interface ModrinthOptions {
 export const ModrinthCategoriesKey: InjectionKey<Ref<Category[]>> = Symbol('ModrinthCategoriesKey')
 
 export function useModrinthTags() {
-  const { getTags } = useService(ModrinthServiceKey)
-  const data = reactive({
-    gameVersions: [] as GameVersion[],
-    licenses: [] as License[],
-    categories: [] as Category[],
-    modLoaders: [] as Loader[],
-    environments: [] as string[],
+  const { data, isValidating: refreshing, error } = useSWRV('/modrinth/tags', async () => {
+    const [gameVersions, licenses, categories, modLoaders] = await Promise.all([
+      client.getGameVersionTags(),
+      client.getLicenseTags(),
+      client.getCategoryTags(),
+      client.getLoaderTags(),
+    ])
+    return {
+      gameVersions,
+      licenses,
+      categories,
+      modLoaders,
+      environments: ['client', 'server'],
+    }
   })
 
-  const { refresh, refreshing, error } = useRefreshable(async () => {
-    const result = await getTags()
-    data.gameVersions = result.gameVersions
-    data.licenses = result.licenses
-    data.categories = result.categories
-    data.modLoaders = result.modLoaders
-    data.environments = result.environments
-  })
+  provide(ModrinthCategoriesKey, computed(() => data.value?.categories || []))
 
-  provide(ModrinthCategoriesKey, computed(() => data.categories))
+  const gameVersions = computed(() => data.value?.gameVersions || [])
+  const licenses = computed(() => data.value?.licenses || [])
+  const categories = computed(() => data.value?.categories || [])
+  const modLoaders = computed(() => data.value?.modLoaders || [])
+  const environments = computed(() => data.value?.environments || [])
 
   return {
-    ...toRefs(data),
-    refresh,
     error,
     refreshing,
+    gameVersions,
+    licenses,
+    categories,
+    modLoaders,
+    environments,
   }
 }
 
 export function useModrinth(props: ModrinthOptions) {
-  const { searchProjects } = useService(ModrinthServiceKey)
   const { t } = useI18n()
   const { replace } = useRouter()
   const router = useRouter()
@@ -152,7 +158,7 @@ export function useModrinth(props: ModrinthOptions) {
 
   const refs = toRefs(data)
 
-  const { refresh, refreshing, error } = useRefreshable(async () => {
+  const { data: searchData, isValidating: refreshing, error, mutate } = useSWRV('/modrinth/search', async () => {
     const facets: string[][] = []
     if (gameVersion.value && gameVersion.value !== 'null') {
       facets.push([`versions:${gameVersion.value}`])
@@ -182,12 +188,17 @@ export function useModrinth(props: ModrinthOptions) {
     if (facets.length > 0) {
       facetsText = '[' + facets.map(v => '[' + v.map(v => JSON.stringify(v)).join(',') + ']').join(',') + ']'
     }
-    const result = await searchProjects({ query: props.query, limit: data.pageSize, offset: (props.page - 1) * data.pageSize, index: sortBy.value, facets: facetsText })
-    data.pageCount = Math.floor(result.total_hits / data.pageSize) + 1
-    data.projects = result.hits
+    const result = await client.searchProjects({ query: props.query, limit: data.pageSize, offset: (props.page - 1) * data.pageSize, index: sortBy.value, facets: facetsText })
+    return result
   })
 
-  const debouncedRefresh = debounce(refresh, 1000)
+  watch(searchData, (result) => {
+    if (result) {
+      data.pageCount = Math.floor(result.total_hits / data.pageSize) + 1
+      data.projects = result.hits
+    }
+  })
+  const debouncedRefresh = debounce(() => mutate(), 1000)
   const wrappedRefresh = () => {
     refreshing.value = true
     return debouncedRefresh()

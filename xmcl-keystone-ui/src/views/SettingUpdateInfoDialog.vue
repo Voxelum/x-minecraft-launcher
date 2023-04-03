@@ -85,6 +85,7 @@
 
       style="width: 100%"
       to="https://github.com/voxelum/x-minecraft-launcher/releases"
+      target="browser"
       push
     >
       <v-container fill-height>
@@ -108,28 +109,28 @@
 
 <script lang=ts setup>
 import { useServiceBusy, useService } from '@/composables'
-import MarkdownIt from 'markdown-it'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { getLocalDateString } from '@/util/date'
+import { useMarkdown } from '@/composables/markdown'
 
 const { isShown } = useDialog('update-info')
 const { t } = useI18n()
-const renderer = new MarkdownIt()
+const { render } = useMarkdown()
 const installing = useServiceBusy(BaseServiceKey, 'quitAndInstall')
-const { state, openInBrowser, checkUpdate, downloadUpdate, quitAndInstall } = useService(BaseServiceKey)
+const { state, checkUpdate, downloadUpdate, quitAndInstall } = useService(BaseServiceKey)
 const checkingUpdate = useServiceBusy(BaseServiceKey, 'checkUpdate')
 const downloadingUpdate = useServiceBusy(BaseServiceKey, 'downloadUpdate')
 const updateInfo = computed(() => state.updateInfo)
 const updateStatus = computed(() => state.updateStatus)
-const body = computed(() => state.updateInfo?.useAutoUpdater ? state.updateInfo.body : renderer.render(state.updateInfo?.body ?? ''))
+const body = computed(() => state.updateInfo?.useAutoUpdater ? state.updateInfo.body : render(state.updateInfo?.body ?? ''))
 const isAppX = computed(() => state.env === 'appx')
 
 const openOfficialWebsite = () => {
-  openInBrowser('https://xmcl.app')
+  window.open('https://xmcl.app', 'browser')
 }
 const openGithub = () => {
-  openInBrowser('https://github.com/voxelum/x-minecraft-launcher/releases')
+  window.open('https://github.com/voxelum/x-minecraft-launcher/releases', 'browser')
 }
 </script>
 

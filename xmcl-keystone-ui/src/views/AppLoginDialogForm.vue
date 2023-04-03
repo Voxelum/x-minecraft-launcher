@@ -117,12 +117,14 @@
       <div class="mt-4">
         <a
           style="padding-right: 10px; z-index: 20"
+          target="browser"
           href="https://my.minecraft.net/en-us/password/forgot/"
         >{{
           t("login.forgetPassword")
         }}</a>
         <a
           v-if="signUpLink"
+          target="browser"
           style="z-index: 20"
           :href="signUpLink"
         >
@@ -149,7 +151,7 @@ const props = defineProps<{
   inside: boolean
 }>()
 
-const { hide, isShown, parameter } = useDialog(LoginDialog)
+const { hide, isShown, dialog } = useDialog(LoginDialog)
 const { t } = useI18n()
 const { login, abortLogin, state: userState } = useService(UserServiceKey)
 const { on } = useService(OfficialUserServiceKey)
@@ -269,18 +271,18 @@ on('device-code', (code) => {
 })
 
 function reset() {
-  if (!parameter.value) {
+  if (!dialog.value.parameter) {
     data.username = history.value[0] ?? ''
     data.password = ''
     data.microsoftUrl = ''
     usernameErrors.value = []
     passwordErrors.value = []
   } else {
-    data.username = parameter.value?.username ?? data.username
+    data.username = dialog.value.parameter?.username ?? data.username
     data.microsoftUrl = ''
-    authService.value = parameter.value?.service ?? authService.value
-    usernameErrors.value = parameter.value.error ? [parameter.value.error] : []
-    passwordErrors.value = parameter.value.error ? [parameter.value.error] : []
+    authService.value = dialog.value.parameter?.service ?? authService.value
+    usernameErrors.value = dialog.value.parameter.error ? [dialog.value.parameter.error] : []
+    passwordErrors.value = dialog.value.parameter.error ? [dialog.value.parameter.error] : []
   }
 }
 

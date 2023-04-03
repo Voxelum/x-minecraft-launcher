@@ -171,7 +171,7 @@ import { useDialog } from '../composables/dialog'
 import { provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
 import { useNotifier } from '../composables/notifier'
 
-const { isShown, parameter } = useDialog('share-instance')
+const { isShown, dialog } = useDialog('share-instance')
 
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)
@@ -180,7 +180,7 @@ const { state: instanceState } = useService(InstanceServiceKey)
 const { t } = useI18n()
 const { subscribeTask } = useNotifier()
 
-const sharing = computed(() => isShown.value && !parameter.value)
+const sharing = computed(() => isShown.value && !dialog.value.parameter)
 /**
  * The sharing user name. Only for sharing == false
  */
@@ -230,8 +230,8 @@ const onDownloadInstance = () => {
 
 watch(isShown, async (shown) => {
   if (shown) {
-    if (parameter.value) {
-      manifest.value = parameter.value as any
+    if (dialog.value.parameter) {
+      manifest.value = dialog.value.parameter as any
     } else {
       loading.value = true
       manifest.value = await getInstanceManifest({ path: instanceState.path, hashes: ['sha1'] }).finally(() => { loading.value = false })

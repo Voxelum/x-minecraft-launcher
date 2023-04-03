@@ -11,7 +11,6 @@ export const JavaIssueDialogKey: DialogKey<void> = 'java-issue'
 
 export function useJava() {
   const { state, resolveJava, installDefaultJava: installJava, refreshLocalJava } = useJavaService()
-  const { openInBrowser } = useService(BaseServiceKey)
   const all = computed(() => state.all)
   const missing = computed(() => state.missingJava)
   const refreshing = useServiceBusy(JavaServiceKey, 'refreshLocalJava')
@@ -27,6 +26,6 @@ export function useJava() {
     refreshLocalJava,
     refreshing,
     missing,
-    openJavaSite: () => openInBrowser('https://www.java.com/download/'),
+    openJavaSite: () => window.open('https://www.java.com/download/', 'browser'),
   }
 }

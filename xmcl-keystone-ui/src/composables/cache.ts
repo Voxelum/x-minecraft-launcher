@@ -43,6 +43,21 @@ export function useLocalStorageCache<T>(key: string, defaultValue: () => T, toSt
   watch(v, (n) => {
     localStorage.setItem(key, toString(n))
   })
+
+  const onStorage = (e: StorageEvent) => {
+    if (e.key === key) {
+      const v = deserialize(e.newValue ?? '')
+      if (v !== LOCAL_STORAGE_CACHE[key].value) {
+        LOCAL_STORAGE_CACHE[key].value = v
+      }
+    }
+  }
+
+  window.addEventListener('storage', onStorage)
+  onUnmounted(() => {
+    window.removeEventListener('storage', onStorage)
+  })
+
   LOCAL_STORAGE_CACHE[key] = v
   return v
 }

@@ -85,7 +85,11 @@ const onShowLocalVersion = () => {
 
 </script>
 <style scoped>
+
 .compact {
+  background: rgba(255, 255, 255, 0.5);
+}
+.dark .compact {
   background: rgba(0, 0, 0, 0.5);
 }
 

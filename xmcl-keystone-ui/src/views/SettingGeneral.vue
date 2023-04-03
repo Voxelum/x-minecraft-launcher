@@ -67,6 +67,7 @@
           }}
           <a
             class="underline primary ml-1"
+            target="browser"
             href="https://bmclapidoc.bangbang93.com/"
           >
             <v-icon small>

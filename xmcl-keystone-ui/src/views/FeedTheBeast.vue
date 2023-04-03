@@ -26,11 +26,11 @@
         />
       </v-card>
       <div
-        v-if="!refreshing"
+        v-if="!refreshing && data"
         class="flex flex-col gap-3 overflow-auto flex-shrink flex-grow-0"
       >
         <FeedTheBeastCard
-          v-for="modpack of modpacks"
+          v-for="modpack of data.packs"
           :id="modpack"
           :key="modpack"
         />
@@ -53,8 +53,6 @@ const props = defineProps<{ keyword?: string }>()
 
 const { t } = useI18n()
 const keywordBuffer = ref('')
-const { refresh, refreshing, currentKeyword, modpacks } = useFeedTheBeast(props)
-
-onMounted(refresh)
+const { refreshing, currentKeyword, data } = useFeedTheBeast(props)
 
 </script>

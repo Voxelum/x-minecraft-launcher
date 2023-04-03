@@ -24,7 +24,6 @@ export function useAsyncRoute() {
 }
 
 export function useExternalRoute() {
-  const { openInBrowser } = useService(BaseServiceKey)
   const router = useRouter()
   router.beforeEach((to, from, next) => {
     const full = to.fullPath.substring(1)
@@ -33,9 +32,9 @@ export function useExternalRoute() {
       console.log(`Prevent ${from.fullPath} -> ${to.fullPath}`)
       if (full.startsWith('external')) {
         console.log(full.substring('external/'.length))
-        openInBrowser(full.substring('external/'.length))
+        window.open(full.substring('external/'.length), 'browser')
       } else {
-        openInBrowser(full)
+        window.open(full, 'browser')
       }
     } else {
       console.log(`Route ${from.fullPath} -> ${to.fullPath}`)
