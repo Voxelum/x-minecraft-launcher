@@ -97,6 +97,7 @@ copyClipboard:
 create: 创建
 curseforge:
   authors: 作者
+  category: 分类
   createdDate: 创建日期
   downloadOnly: 只下載
   downloaded: 已下載
@@ -1071,6 +1072,7 @@ setting:
   colorTheme:
     appBarColor: 顶端栏
     backgroundColor: 背景颜色
+    cardColor: 卡片颜色
     description: 改变主题中的配色
     errorColor: 错误颜色
     name: 主题颜色

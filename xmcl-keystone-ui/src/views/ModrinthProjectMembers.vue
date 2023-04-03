@@ -45,7 +45,7 @@ const { refresh, refreshing, error } = useRefreshable(async () => {
 
 const onClick = (u: TeamMember) => {
   const url = `https://modrinth.com/user/${u.user.username}`
-  window.location.href = url
+  window.open(url, 'browser')
 }
 
 onMounted(refresh)

@@ -68,6 +68,7 @@
               <v-spacer />
               <a
                 style="z-index: 1;"
+                target="browser"
                 href="https://account.mojang.com/me/changeSecretQuestions"
               >{{ t('user.forgetChallenges') }}</a>
             </v-flex>

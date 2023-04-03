@@ -110,7 +110,7 @@ const contextMenuItems = computed(() => {
   }, {
     text: t('modrinth.browseUrl', { url: `https://modrinth.com/${props.value.project_type}/${props.value.slug}` }),
     onClick() {
-      window.location.href = `https://modrinth.com/${props.value.project_type}/${props.value.slug}`
+      window.open(`https://modrinth.com/${props.value.project_type}/${props.value.slug}`, 'browser')
     },
     icon: 'open_in_new',
   }]

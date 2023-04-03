@@ -109,7 +109,6 @@
         @select:license="_license = _license === $event ? '' : $event"
         @select:category="selectCategory"
         @select:environment="_environment = _environment === $event ? '' : $event"
-        @refresh="refreshTag"
       />
     </div>
   </div>
@@ -148,7 +147,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { t } = useI18n()
-const { refresh: refreshTag, refreshing: refreshingTag, categories, modLoaders, environments, gameVersions, licenses, error: tagError } = useModrinthTags()
+const { refreshing: refreshingTag, categories, modLoaders, environments, gameVersions, licenses, error: tagError } = useModrinthTags()
 const {
   error: searchError,
   refresh, query: _query, category: _category, gameVersion: _gameVersion, license: _license, modLoader: _modLoader, environment: _environment, projectType: _projectType,
@@ -177,7 +176,6 @@ const selectCategory = (cat: string) => {
 }
 onMounted(() => {
   refresh()
-  refreshTag()
 })
 
 usePresence({ location: 'modrinth' })

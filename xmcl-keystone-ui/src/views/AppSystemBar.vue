@@ -7,12 +7,25 @@
     :style="{ 'backdrop-filter': `blur(${blurAppBar}px)` }"
   >
     <span
-      class="w-[76px] h-1"
-    />
+      v-if="back"
+      class="p-0 flex flex-shrink flex-grow-0"
+    >
+      <v-icon
+        v-ripple
+        small
+        class="flex items-center py-2 hover:bg-[rgba(255,255,255,0.2)] cursor-pointer select-none non-moveable after:hidden"
+        style="width: 80px;"
+        @click="onBack"
+      >
+        arrow_back
+      </v-icon>
+    </span>
+    <slot />
 
     <div class="flex-grow " />
-    <TaskSpeedMonitor />
+    <TaskSpeedMonitor v-if="!noTask" />
     <div
+      v-if="!noTask"
       class="non-moveable hover:bg-[rgba(255,255,255,0.2)] cursor-pointer px-2 py-1 rounded transition-all flex flex-grow-0"
       @click="showTaskDialog()"
     >
@@ -26,7 +39,9 @@
         {{ t('task.nTaskRunning', { count } ) }}
       </span>
     </div>
-    <AppSystemBarAvatar />
+    <AppSystemBarAvatar
+      v-if="!noUser"
+    />
 
     <span class="p-0 flex flex-shrink flex-grow-0 h-full">
       <v-icon
@@ -77,6 +92,12 @@ import { injection } from '@/util/inject'
 import { useWindowStyle } from '@/composables/windowStyle'
 import AppSystemBarAvatar from './AppSystemBarUser.vue'
 
+defineProps<{
+  noUser?: boolean
+  noTask?: boolean
+  back?: boolean
+}>()
+
 const { appBarColor } = injection(kColorTheme)
 const { blurAppBar } = useBarBlur()
 const { maximize, minimize, close } = windowController
@@ -85,5 +106,7 @@ const { show: showFeedbackDialog } = useDialog('feedback')
 const { show: showTaskDialog } = useDialog('task')
 const { t } = useI18n()
 const { count } = useTaskCount()
+
+const { back: onBack } = useRouter()
 
 </script>

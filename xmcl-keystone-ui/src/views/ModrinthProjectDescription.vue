@@ -5,21 +5,17 @@
   />
 </template>
 <script lang="ts">
+import { useMarkdown } from '@/composables/markdown'
 import { required } from '@/util/props'
-import Markdown from 'markdown-it'
 
-const md = Markdown({
-  typographer: true,
-  html: true,
-  linkify: true,
-})
+const { render } = useMarkdown()
 
 export default defineComponent({
   props: {
     description: required(String),
   },
   setup(props) {
-    const htmlContent = computed(() => md.render(props.description))
+    const htmlContent = computed(() => render(props.description))
     return {
       htmlContent,
     }

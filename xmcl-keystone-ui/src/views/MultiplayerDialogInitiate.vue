@@ -153,7 +153,7 @@ import { useDialog } from '../composables/dialog'
 import { kUserContext } from '../composables/user'
 
 const { gameProfile } = injection(kUserContext)
-const { isShown, parameter } = useDialog('peer-initiate')
+const { isShown, dialog } = useDialog('peer-initiate')
 
 const service = useService(PeerServiceKey)
 const id = ref('')
@@ -172,8 +172,8 @@ const errorText = ref('')
 const error = computed(() => !!errorText.value)
 
 watch(isShown, (v) => {
-  if (v && typeof parameter.value === 'string') {
-    id.value = parameter.value
+  if (v && typeof dialog.value.parameter === 'string') {
+    id.value = dialog.value.parameter
     if (gatheringState.value === 'complete') {
       step.value = 3
     } else {

@@ -97,10 +97,10 @@
         >
           <template #activator="{ on: tooltip }">
             <v-list-item
-              push
               link
               class="non-moveable"
-              to="/curseforge/mc-mods"
+              target="_blank"
+              href="app.html?curseforge"
               v-on="tooltip"
             >
               <v-list-item-icon>
@@ -123,10 +123,10 @@
         >
           <template #activator="{ on: tooltip }">
             <v-list-item
-              push
               link
               class="non-moveable"
-              to="/modrinth"
+              target="_blank"
+              href="app.html?modrinth"
               v-on="tooltip"
             >
               <v-list-item-icon>

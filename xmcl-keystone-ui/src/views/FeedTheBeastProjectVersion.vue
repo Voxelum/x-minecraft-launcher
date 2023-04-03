@@ -82,14 +82,7 @@ import { InstanceFileNode, provideFileNodes } from '../composables/instanceFiles
 
 const props = defineProps<{ id: number; version: FTBVersion }>()
 
-const { versionManifest, refresh, refreshing } = useFeedTheBeastProjectVersion(computed(() => props.id), computed(() => props.version))
-
-watch([() => props.id, () => props.version], () => {
-  refresh()
-})
-onMounted(() => {
-  refresh()
-})
+const { versionManifest, refreshing } = useFeedTheBeastProjectVersion(computed(() => props.id), computed(() => props.version))
 
 const selected = ref([])
 

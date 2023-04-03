@@ -154,7 +154,10 @@
           }}
         </v-list-item-title>
         <v-list-item-subtitle>
-          <a href="https://github.com/MinecraftForge/MinecraftForge">https://github.com/MinecraftForge/MinecraftForge</a>
+          <a
+            target="browser"
+            href="https://github.com/MinecraftForge/MinecraftForge"
+          >https://github.com/MinecraftForge/MinecraftForge</a>
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
@@ -198,7 +201,10 @@
       <v-list-item-content>
         <v-list-item-title>Fabric</v-list-item-title>
         <v-list-item-subtitle>
-          <a href="https://fabricmc.net/">https://fabricmc.net/</a>
+          <a
+            target="browser"
+            href="https://fabricmc.net/"
+          >https://fabricmc.net/</a>
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
@@ -242,7 +248,10 @@
       <v-list-item-content>
         <v-list-item-title>Quilt</v-list-item-title>
         <v-list-item-subtitle>
-          <a href="https://quiltmc.org/">https://quiltmc.org/</a>
+          <a
+            target="browser"
+            href="https://quiltmc.org/"
+          >https://quiltmc.org/</a>
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>
@@ -284,7 +293,10 @@
       <v-list-item-content>
         <v-list-item-title>Optifine</v-list-item-title>
         <v-list-item-subtitle>
-          <a href="https://www.optifine.net/home">https://www.optifine.net/home</a>
+          <a
+            target="browser"
+            href="https://www.optifine.net/home"
+          >https://www.optifine.net/home</a>
         </v-list-item-subtitle>
       </v-list-item-content>
       <v-list-item-action>

@@ -6,6 +6,7 @@ import { CurseForgeServiceKey, getCurseforgeFileUri, getModrinthVersionUri, Inst
 import { InjectionKey } from 'vue'
 import { kMods, useMods } from './mods'
 import { useService } from './service'
+import { client } from '@/util/modrinthClients'
 
 export interface ModProject {
   icon?: string
@@ -208,13 +209,13 @@ export function useModInstallList() {
 
   const { resolveFileDependencies: resolveCurseforge, getModFile, installFile } = useService(CurseForgeServiceKey)
 
-  const { resolveDependencies: resolveModrinth, getProjectVersion, installVersion } = useService(ModrinthServiceKey)
+  const { installVersion } = useService(ModrinthServiceKey)
 
   async function getCurseforgeDependencies(curseforge: File) {
     const result = await resolveCurseforge(curseforge)
     return result.map(([file, type]) => {
       const mutex = getMutex(file)
-      console.log(file)
+      // TODO: should query to determine if enabled
       const item: ModListFileItemLeave = {
         id: file.id.toString(),
         name: file.displayName,
@@ -289,7 +290,7 @@ export function useModInstallList() {
       }
     }
     if (resource.metadata.modrinth) {
-      const version = await getProjectVersion(resource.metadata.modrinth.versionId).catch(() => { })
+      const version = await client.getProjectVersion(resource.metadata.modrinth.versionId).catch(() => { })
       if (version) {
         const deps = await getModrinthDependencies(version).catch(() => [])
         result.push(...deps)
@@ -332,27 +333,67 @@ export function useModInstallList() {
     for (const i of list.value) {
       if (i.enabled && i.resource) {
         toInstall.push(i.resource)
+        for (const dep of i.dependencies) {
+          if (dep.enabled && dep.resource) {
+            toInstall.push(dep.resource)
+          }
+        }
       } else if (i.enabled && i.resource) {
         toRemove.push(i.resource)
       } else if (i.enabled && i.curseforge) {
         toInstallCurseforge.push(i.curseforge)
+        for (const dep of i.dependencies) {
+          if (dep.enabled && dep.curseforge) {
+            toInstallCurseforge.push(dep.curseforge)
+          }
+        }
       } else if (i.enabled && i.modrinth) {
         toInstallModrinth.push(i.modrinth)
+        for (const dep of i.dependencies) {
+          if (dep.enabled && dep.modrinth) {
+            toInstallModrinth.push(dep.modrinth)
+          }
+        }
       }
     }
 
+    // Remove the mods install successfully.
+    // Keep the mods that failed to install.
+    const successedToInstall: Resource[] = []
+    const successedToRemove: Resource[] = []
+    const successedToInstallCurseforge: File[] = []
+    const successedToInstallModrinth: ProjectVersion[] = []
+
     await Promise.all([
-      install({ mods: toInstall }),
-      disable({ mods: toRemove }),
+      install({ mods: toInstall }).then(() => {
+        successedToInstall.push(...toInstall)
+      }),
+      disable({ mods: toRemove }).then(() => {
+        successedToRemove.push(...toRemove)
+      }),
       toInstallCurseforge.map((r) => installFile({
         file: r,
         type: 'mc-mods',
         ignoreDependencies: true,
+      }).then(() => {
+        successedToInstallCurseforge.push(r)
       })),
       toInstallModrinth.map((r) => installVersion({
         version: r,
+        ignoreDependencies: true,
+      }).then(() => {
+        successedToInstallModrinth.push(r)
       })),
     ])
+
+    // Remove the successed from list
+    list.value = list.value.filter(i => {
+      if (i.resource && successedToInstall.includes(i.resource)) return false
+      if (i.resource && successedToRemove.includes(i.resource)) return false
+      if (i.curseforge && successedToInstallCurseforge.includes(i.curseforge)) return false
+      if (i.modrinth && successedToInstallModrinth.includes(i.modrinth)) return false
+      return true
+    })
   }
 
   return {

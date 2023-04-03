@@ -104,4 +104,8 @@ export interface SettingSchema {
    * @default false
    */
   developerMode: boolean
+  /**
+   * @default false
+   */
+  hideNews: boolean
 }

@@ -67,7 +67,7 @@ export class LittleSkinUserService extends AbstractService implements ILittleSki
   async authenticate(): Promise<void> {
     const url = 'https://littleskin.cn/oauth/authorize?client_id=393&redirect_uri=http://localhost:25555/littleskin&response_type=code&scope'
     this.emit('authorize-url', url)
-    await this.baseService.openInBrowser(url)
+    await this.app.shell.openInBrowser(url)
     const code = await new Promise<string>((resolve, reject) => {
       const abort = () => {
         reject(new Error('Timeout to wait the auth code! Please try again later!'))

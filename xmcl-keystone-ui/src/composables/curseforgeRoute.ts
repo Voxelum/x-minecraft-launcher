@@ -17,9 +17,8 @@ export function useCurseforgeRoute() {
 }
 
 export function useMcWikiRoute() {
-  const { openInBrowser } = useService(BaseServiceKey)
   function searchProjectAndRoute(name: string) {
-    openInBrowser(`https://www.mcmod.cn/s?key=${name}`)
+    window.open(`https://www.mcmod.cn/s?key=${name}`, 'browser')
   }
   return {
     searchProjectAndRoute,

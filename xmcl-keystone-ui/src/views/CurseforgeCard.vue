@@ -125,7 +125,7 @@ const items = computed(() => {
   }, {
     text: t('modrinth.browseUrl', { url: `https://beta.curseforge.com/minecraft/${props.currentType}/${props.proj.slug}` }),
     onClick() {
-      window.location.href = `https://beta.curseforge.com/minecraft/${props.currentType}/${props.proj.slug}`
+      window.open(`https://beta.curseforge.com/minecraft/${props.currentType}/${props.proj.slug}`, 'browser')
     },
     icon: 'open_in_new',
   }]

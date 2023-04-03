@@ -134,6 +134,7 @@
                       > -->
                       <a
                         class="border-green-300 border border-dashed rounded pb-[2px]"
+                        target="browser"
                         href="https://docs.modrinth.com/docs/modpacks/format_definition/#downloads"
                         v-on="on"
                       >

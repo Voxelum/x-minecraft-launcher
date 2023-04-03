@@ -1,4 +1,4 @@
-import { Category, GameVersion, License, Loader, Project, TeamMember, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
+import type { Category, GameVersion, License, Loader, Project, TeamMember, ProjectVersion, SearchProjectOptions, SearchResult } from '@xmcl/modrinth'
 import { HTTPException } from '@xmcl/runtime-api'
 import { Dispatcher, request } from 'undici'
 import { InMemoryTtlCache } from '../util/cache'

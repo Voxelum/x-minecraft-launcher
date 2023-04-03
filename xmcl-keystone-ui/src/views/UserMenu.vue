@@ -1,6 +1,7 @@
 <template>
   <v-card
     outlined
+    class="overflow-y-auto max-h-90vh invisible-scroll"
   >
     <v-list>
       <UserMenuUserItem
@@ -15,17 +16,14 @@
 
     <UserMenuMicrosoft
       v-if="selected && selected.authService === 'microsoft'"
-      class="w-full"
       :user="selected"
     />
     <UserMenuMojang
       v-else-if="selected && selected.authService === 'mojang'"
-      class="w-full"
       :user="selected"
     />
     <UserMenuYggdrasil
       v-else-if="!!selected"
-      class="w-full"
       :user="selected"
     />
 

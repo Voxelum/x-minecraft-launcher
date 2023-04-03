@@ -121,19 +121,19 @@
 
 <script lang=ts setup>
 import { useFeedTheBeastProject } from '../composables/ftb'
-import MarkdownIt from 'markdown-it'
 import { useRefreshable, useService } from '@/composables'
 import FeedTheBeastProjectVersion from './FeedTheBeastProjectVersion.vue'
 import FeedTheBeastProjectChangelog from './FeedTheBeastProjectChangelog.vue'
 import { useDialog } from '../composables/dialog'
 import { AddInstanceDialogKey } from '../composables/instanceAdd'
-import { FeedTheBeastServiceKey } from '@xmcl/runtime-api'
+import { useMarkdown } from '@/composables/markdown'
+import { FTBClient } from '@/util/ftbClient'
 
-const parser = new MarkdownIt({ html: true })
+const { render } = useMarkdown()
 const props = defineProps<{ id: number }>()
 
 const { refresh, refreshing, manifest } = useFeedTheBeastProject(computed(() => props.id))
-const { getModpackVersionManifest } = useService(FeedTheBeastServiceKey)
+const { getModpackVersionManifest } = new FTBClient()
 const { show } = useDialog(AddInstanceDialogKey)
 
 const tab = ref(0)
@@ -141,7 +141,7 @@ const { t } = useI18n()
 const avatar = computed(() => manifest.value?.art.find(a => a.type === 'square') || manifest.value?.art[0])
 const title = computed(() => manifest.value?.name || '')
 const shortDescription = computed(() => manifest.value?.synopsis ?? '')
-const description = computed(() => manifest.value?.description ? parser.render(manifest.value.description) : '')
+const description = computed(() => manifest.value?.description ? render(manifest.value.description) : '')
 const installs = computed(() => manifest.value?.installs)
 const plays = computed(() => manifest.value?.plays)
 const versions = computed(() => manifest.value?.versions.reverse() || [])

@@ -31,6 +31,7 @@
         <v-list-item-action>
           <v-btn
             text
+            target="browser"
             href="https://github.com/Voxelum/x-minecraft-launcher/issues/new"
           >
             {{ t('feedback.githubOpenIssue') }}
@@ -50,6 +51,7 @@
         <v-list-item-action>
           <v-btn
             text
+            target="browser"
             href="https://kook.top/gqjSHh"
           >
             {{ t('feedback.qqEnterGroup') }}
@@ -70,6 +72,7 @@
         <v-list-item-action>
           <v-btn
             text
+            target="browser"
             href="https://discord.gg/W5XVwYY7GQ"
           >
             {{ t('feedback.discordJoin') }}

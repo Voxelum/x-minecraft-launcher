@@ -28,6 +28,12 @@ export const windowController: ControllerPlugin = function (this: Controller) {
       win.webContents.send('minimize', win.isMaximized())
     })
   })
+  ipcMain.handle('focus', (event) => {
+    const window = BrowserWindow.fromWebContents(event.sender)
+    if (window && !window.isFocused()) {
+      window.focus()
+    }
+  })
   ipcMain.handle('dialog:showOpenDialog', (event, ...args) => {
     return dialog.showOpenDialog(BrowserWindow.fromWebContents(event.sender)!, args[0])
   })

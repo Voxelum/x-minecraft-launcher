@@ -141,13 +141,12 @@ import { kImageDialog } from '@/composables/imageDialog'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { kModrinthInstall, useModrinthInstall } from '@/composables/modrinthInstall'
 import { useModrinthInstanceResource } from '@/composables/modrinthInstanceResource'
+import { useModrinthProject } from '@/composables/modrinthProject'
 import { kModrinthVersionsHolder, kModrinthVersionsStatus, useModrinthVersionsStatus } from '@/composables/modrinthVersions'
 import { usePresence } from '@/composables/presence'
-import { useRefreshable } from '@/composables/refreshable'
 import { injection } from '@/util/inject'
-import { Project, ProjectVersion } from '@xmcl/modrinth'
-import { InstanceServiceKey, ModrinthServiceKey } from '@xmcl/runtime-api'
-import { Ref } from 'vue'
+import { ProjectVersion } from '@xmcl/modrinth'
+import { InstanceServiceKey } from '@xmcl/runtime-api'
 import ModrinthProjectBasicInfo from './ModrinthProjectBasicInfo.vue'
 import ModrinthProjectDescription from './ModrinthProjectDescription.vue'
 import ModrinthProjectExternal from './ModrinthProjectExternal.vue'
@@ -170,17 +169,11 @@ const { t } = useI18n()
 const { state: instanceState } = useService(InstanceServiceKey)
 const projectId = computed(() => props.id)
 
+const { project, refreshing, refreshError, refresh } = useModrinthProject(projectId)
+
 // modrinth project
-const { getProject } = useService(ModrinthServiceKey)
-const project: Ref<undefined | Project> = ref(undefined)
+
 const installTo = ref(project.value?.project_type === 'mod' ? instanceState.path : '')
-const { refresh, refreshing, error: refreshError } = useRefreshable(async () => {
-  const result = await getProject(props.id)
-  project.value = result
-  installTo.value = project.value?.project_type === 'mod' ? instanceState.path : ''
-})
-onMounted(refresh)
-watch(projectId, refresh)
 
 // modrinth version status
 const holder = ref({} as Record<string, ProjectVersion>)

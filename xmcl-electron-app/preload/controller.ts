@@ -26,6 +26,9 @@ function createController(): WindowController {
   function maximize() {
     ipcRenderer.invoke('control', Operation.Maximize)
   }
+  function focus() {
+    ipcRenderer.invoke('focus')
+  }
   ipcRenderer.on('maximize', (_, v) => {
     emitter.emit('maximize', v)
   })
@@ -47,6 +50,7 @@ function createController(): WindowController {
       emitter.removeListener(channel, listener)
       return this
     },
+    focus,
     minimize,
     maximize,
     show,

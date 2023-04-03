@@ -118,7 +118,7 @@ import { injection } from '@/util/inject'
 import { createAnswerAppUrl, PeerServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 
-const { isShown, parameter } = useDialog('peer-receive')
+const { isShown, dialog } = useDialog('peer-receive')
 const { gameProfile } = injection(kUserContext)
 
 const service = useService(PeerServiceKey)
@@ -138,8 +138,8 @@ const error = computed(() => !!errorText.value)
 const copied = ref(false)
 
 watch(isShown, (v) => {
-  if (v && typeof parameter.value === 'string') {
-    id.value = parameter.value as string
+  if (v && typeof dialog.value.parameter === 'string') {
+    id.value = dialog.value.parameter as string
     step.value = 2
   } else {
     copied.value = false

@@ -52,16 +52,16 @@ import { useService } from '@/composables'
 const { t } = useI18n()
 const name = ref('')
 const path = ref('')
-const { parameter, isShown } = useDialog('delete-instance')
+const { dialog, isShown } = useDialog('delete-instance')
 watch(isShown, (shown) => {
   if (shown) {
-    name.value = (typeof parameter.value === 'object') ? (parameter.value as any).name ?? '' : ''
-    path.value = (typeof parameter.value === 'object') ? (parameter.value as any).path ?? '' : ''
+    name.value = (typeof dialog.value.parameter === 'object') ? (dialog.value.parameter).name ?? '' : ''
+    path.value = (typeof dialog.value.parameter === 'object') ? (dialog.value.parameter).path ?? '' : ''
   }
 })
 const { deleteInstance } = useService(InstanceServiceKey)
 const doDelete = () => {
-  const val = parameter.value
+  const val = dialog.value.parameter
   deleteInstance((val as any).path)
   isShown.value = false
 }

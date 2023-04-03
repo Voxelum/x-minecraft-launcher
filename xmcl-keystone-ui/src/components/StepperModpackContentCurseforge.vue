@@ -55,7 +55,6 @@ const props = defineProps<{
 }>()
 
 const { getModsByIds } = useService(CurseForgeServiceKey)
-const { openInBrowser } = useService(BaseServiceKey)
 onMounted(() => {
   refresh()
 })
@@ -75,9 +74,9 @@ function getImage(mod: Mod) {
 function onClick(mod: Mod) {
   if (mod.slug) {
     if (mod.classId === 6) {
-      openInBrowser(`https://www.curseforge.com/minecraft/mc-mods/${mod.slug}`)
+      window.open(`https://www.curseforge.com/minecraft/mc-mods/${mod.slug}`, 'browser')
     } else if (mod.classId === 12) {
-      openInBrowser(`https://www.curseforge.com/minecraft/texture-packs/${mod.slug}`)
+      window.open(`https://www.curseforge.com/minecraft/texture-packs/${mod.slug}`, 'browser')
     }
   }
 }

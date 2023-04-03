@@ -73,6 +73,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
         globalShowLog: this.state.globalShowLog,
         discordPresence: this.state.discordPresence,
         developerMode: this.state.developerMode,
+        hideNews: this.state.hideNews,
       })
     })
   }
@@ -84,15 +85,6 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
       return true
     }
     return false
-  }
-
-  /**
-   * Try to open a url in default browser. It will popup a message dialog to let user know.
-   * If user does not trust the url, it won't open the site.
-   * @param url The pending url
-   */
-  openInBrowser(url: string) {
-    return this.app.shell.openInBrowser(url)
   }
 
   /**

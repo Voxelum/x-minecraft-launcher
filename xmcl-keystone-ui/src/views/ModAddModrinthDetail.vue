@@ -32,10 +32,8 @@
 </template>
 <script setup lang="ts">
 import ErrorView from '@/components/ErrorView.vue'
-import { useRefreshable, useService } from '@/composables'
-import { kModrinthVersionsStatus, useModrinthVersionsStatus } from '@/composables/modrinthVersions'
-import { ProjectVersion, SearchResultHit } from '@xmcl/modrinth'
-import { ModrinthServiceKey } from '@xmcl/runtime-api'
+import { kModrinthVersionsStatus, useModrinthVersions, useModrinthVersionsStatus } from '@/composables/modrinthVersions'
+import { SearchResultHit } from '@xmcl/modrinth'
 import ModrinthProjectVersionsTile from './ModrinthProjectVersionsTile.vue'
 
 const props = defineProps<{
@@ -44,8 +42,6 @@ const props = defineProps<{
   minecraft: string
 }>()
 
-const { getProjectVersions } = useService(ModrinthServiceKey)
-const versions = ref([] as ProjectVersion[])
 const projectId = computed(() => props.hint.project_id)
 const emit = defineEmits(['install'])
 const getMajor = (v: string) => {
@@ -55,17 +51,10 @@ const getMajor = (v: string) => {
   }
   return v
 }
-const { refresh, refreshing, error } = useRefreshable(async () => {
-  const mcMajor = getMajor(props.minecraft)
-  const gameVersions = props.hint.versions.filter(v => getMajor(v) === mcMajor)
-  versions.value = await getProjectVersions({
-    projectId: projectId.value,
-    loaders: props.loader ? [props.loader] : undefined,
-    gameVersions,
-  })
-})
-onMounted(refresh)
-watch(projectId, refresh)
+const { error, refresh, refreshing, versions } = useModrinthVersions(projectId, false,
+  computed(() => props.loader ? [props.loader] : undefined),
+  computed(() => props.hint.versions.filter(v => getMajor(v) === getMajor(props.minecraft))))
+
 provide(kModrinthVersionsStatus, useModrinthVersionsStatus(versions, projectId))
 
 </script>

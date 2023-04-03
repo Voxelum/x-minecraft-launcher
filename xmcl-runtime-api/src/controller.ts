@@ -92,6 +92,8 @@ export interface WindowController extends GenericEventEmitter<WindowControllerEv
    * Show current window
    */
   show(): void
+
+  focus(): void
   /**
    * Hide current window
    */

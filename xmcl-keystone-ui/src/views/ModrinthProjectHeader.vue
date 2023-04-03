@@ -10,6 +10,7 @@
     <div class="flex flex-col gap-2 items-start">
       <a
         class="text-2xl font-bold"
+        target="browser"
         :href="`https://modrinth.com/${project.project_type}/${project.slug}`"
       >
         {{ project.title }}
@@ -36,26 +37,18 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { useRefreshable, useService } from '@/composables'
+import { useModrinthTags } from '@/composables/modrinth'
 import { Category, Project } from '@xmcl/modrinth'
-import { ModrinthServiceKey } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   project: Project
 }>()
 const { t } = useI18n()
-const { getTags } = useService(ModrinthServiceKey)
-const categories = ref([] as Category[])
+
+const { categories } = useModrinthTags()
 
 const categoryItems = computed(() => {
   return props.project.categories.map(id => categories.value.find(c => c.name === id)).filter((v): v is Category => !!v)
 })
-
-const { refresh } = useRefreshable(async () => {
-  const result = await getTags()
-  categories.value = result.categories
-})
-
-onMounted(refresh)
 
 </script>

@@ -113,7 +113,7 @@ import { useNotifier } from '../composables/notifier'
 import { useRefreshable, useService } from '@/composables'
 import { getFTBPath } from '@/util/ftb'
 
-const { isShown, parameter, show: showAddInstance } = useDialog(AddInstanceDialogKey)
+const { isShown, dialog, show: showAddInstance } = useDialog(AddInstanceDialogKey)
 const { show } = useDialog('task')
 const { create, reset, data: creationData } = useInstanceCreation()
 const router = useRouter()
@@ -313,7 +313,7 @@ watch(isShown, (shown) => {
     return
   }
   setup().then(() => {
-    const id = parameter.value
+    const id = dialog.value.parameter
     if (id) {
       selectedTemplate.value = templates.value.find(t => t.id === id.toString())
     }

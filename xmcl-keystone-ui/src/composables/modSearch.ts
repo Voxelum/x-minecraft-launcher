@@ -30,7 +30,7 @@ export function useModsSearch(keyword: Ref<string>, runtime: Ref<InstanceData['r
   const { state } = useService(InstanceModsServiceKey)
   const existedMods = computed(() =>
     keyword.value.length === 0
-      ? []
+      ? state.mods.filter(isValidResource)
       : state.mods.filter(m => m.fileName.toLocaleLowerCase().indexOf(keyword.value.toLocaleLowerCase()) !== -1)
         .filter(isValidResource))
 

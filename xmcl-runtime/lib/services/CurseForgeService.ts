@@ -23,7 +23,7 @@ export class CurseForgeService extends AbstractService implements ICurseForgeSer
   private getHeaders = async () => {
     const profile = await this.userService.getOfficialUserProfile()
     if (profile) {
-      const token = await this.tokenStorage.get(profile)
+      const token = profile.accessToken
       const locale = this.baseService.state.locale
       return {
         authorization: 'Bearer ' + token,
@@ -36,30 +36,10 @@ export class CurseForgeService extends AbstractService implements ICurseForgeSer
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(BaseService) private baseService: BaseService,
     @Inject(UserService) private userService: UserService,
-    @Inject(kUserTokenStorage) private tokenStorage: UserTokenStorage,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app)
 
-    // this.networkManager.registerDispatchInterceptor(async (options) => {
-    //   if (options.origin === 'https://api.curseforge.com') {
-    //     options.origin = 'https://api.xmcl.app'
-    //     options.path = '/curseforge' + options.path
-    //     if (options.headers) {
-    //       const profile = await userService.getOfficialUserProfile()
-    //       if (profile) {
-    //         const token = await tokenStorage.get(profile)
-    //         if (options.headers instanceof Array) {
-    //           options.headers?.push('authorization', 'Bearer ' + token)
-    //         } else {
-    //           options.headers.authorization = 'Bearer ' + token
-    //         }
-    //       }
-    //     }
-    //     options.totalTimeout = 0
-    //     options.headersTimeout = 0
-    //   }
-    // })
     const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
       if (origin.host === 'api.curseforge.com') {
         return new Client(origin, {

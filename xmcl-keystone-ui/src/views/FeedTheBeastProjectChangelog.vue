@@ -7,30 +7,21 @@
       :indeterminate="true"
     />
     <div
+      v-if="changelog"
       class="p-4 markdown"
-      v-html="changelog"
+      v-html="render(changelog)"
     />
+    <ErrorView :error="error" />
   </v-card>
 </template>
 
 <script lang=ts setup>
-import { FeedTheBeastServiceKey, FTBVersion } from '@xmcl/runtime-api'
-import { useRefreshable, useService } from '@/composables'
-import MarkdownIt from 'markdown-it'
+import ErrorView from '@/components/ErrorView.vue'
+import { useFeedTheBeastChangelog } from '@/composables/ftb'
+import { useMarkdown } from '@/composables/markdown'
+import { FTBVersion } from '@xmcl/runtime-api'
 
-const parser = new MarkdownIt({ html: true })
-
+const { render } = useMarkdown()
 const props = defineProps<{ id: number; version: FTBVersion }>()
-const { getModpackVersionChangelog } = useService(FeedTheBeastServiceKey)
-const changelog = ref('')
-const { refresh, refreshing } = useRefreshable(async () => {
-  const result = await getModpackVersionChangelog({ modpack: props.id, version: props.version })
-  changelog.value = parser.render(result)
-})
-
-watch([() => props.version], () => {
-  refresh()
-})
-
-onMounted(refresh)
+const { changelog, refreshing, error } = useFeedTheBeastChangelog(computed(() => props))
 </script>

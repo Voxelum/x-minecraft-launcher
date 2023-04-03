@@ -1,26 +1,26 @@
 import { TaskItem } from '@/entities/task'
 import { injection } from '@/util/inject'
 import { ProjectVersion } from '@xmcl/modrinth'
-import { getModrinthVersionFileUri, ModrinthServiceKey, TaskState } from '@xmcl/runtime-api'
+import { TaskState } from '@xmcl/runtime-api'
+import useSWRV from 'swrv'
 import { InjectionKey, Ref } from 'vue'
-import { useRefreshable } from './refreshable'
 import { useResourceUrisDiscovery } from './resources'
-import { useServiceBusy } from './semaphore'
-import { useService } from './service'
 import { kTaskManager } from './taskManager'
+import { client } from '@/util/modrinthClients'
 
 export const kModrinthVersions: InjectionKey<ReturnType<typeof useModrinthVersions>> = Symbol('kModrinthVersions')
 export const kModrinthVersionsHolder: InjectionKey<Ref<Record<string, ProjectVersion>>> = Symbol('ModrinthVersionsHolder')
 
-export function useModrinthVersions(project: Ref<string>, featured?: boolean) {
-  const versions: Ref<ProjectVersion[]> = ref([])
+export function useModrinthVersions(project: Ref<string>, featured?: boolean, loaders?: Ref<string[] | undefined>, gameVersions?: Ref<string[] | undefined>) {
   const holder = inject(kModrinthVersionsHolder)
-  const { getProjectVersions } = useService(ModrinthServiceKey)
-  const refreshing = useServiceBusy(ModrinthServiceKey, 'getProjectVersions', project.value)
-  const { refresh, error, refreshing: _refreshing } = useRefreshable(async () => {
-    const result = (await getProjectVersions({ projectId: project.value, featured })).map(markRaw)
-    versions.value = result
-    if (holder) {
+
+  const { mutate, error, isValidating: refreshing, data } = useSWRV(computed(() =>
+    `/modrinth/versions/${project.value}?featured=${featured || false}&loaders=${loaders?.value || ''}&gameVersions=${gameVersions?.value || ''}`), async () => {
+    const result = (await client.getProjectVersions(project.value, loaders?.value, gameVersions?.value, featured)).map(markRaw)
+    return result
+  })
+  watch(data, (result) => {
+    if (holder && result) {
       const newHolder = { ...holder.value }
       for (const v of result) {
         newHolder[v.id] = v
@@ -28,13 +28,11 @@ export function useModrinthVersions(project: Ref<string>, featured?: boolean) {
       holder.value = newHolder
     }
   })
-  onMounted(() => refresh())
-  watch(project, refresh)
   return {
-    refreshing: computed(() => refreshing.value || _refreshing.value),
-    refresh,
+    refreshing,
+    refresh: () => mutate(),
     error,
-    versions,
+    versions: computed(() => data.value || []),
   }
 }
 
@@ -60,5 +58,28 @@ export function useModrinthVersionsStatus(versions: Ref<ProjectVersion[]>, proje
     getResource,
     isDownloaded,
     tasks: relatedTasks,
+  }
+}
+
+export function useModrinthDependencies() {
+  const visited = new Set<string>()
+  const visit = async (version: ProjectVersion): Promise<ProjectVersion[]> => {
+    if (visited.has(version.project_id)) {
+      return []
+    }
+    visited.add(version.project_id)
+    // client.getProjectVersionsById(version.dependencies.map(d => d.version_id).filter((v): v is string => !!v))
+    const deps = await Promise.all(version.dependencies.map(async (dep) => {
+      if (dep.version_id) {
+        const depVersion = await client.getProjectVersion(dep.version_id)
+        const result = await visit(depVersion)
+        return [result, dep.dependency_type]
+      } else {
+        const versions = await client.getProjectVersions(dep.project_id, version.loaders, version.game_versions, undefined)
+        const result = await visit(versions[0])
+        return [result, dep.dependency_type]
+      }
+    }))
+    return [version, ...deps.filter((v): v is string => !!v).reduce((a, b) => a.concat(b), [])]
   }
 }

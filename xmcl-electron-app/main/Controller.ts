@@ -5,14 +5,14 @@ import indexPreload from '@preload/index'
 import monitorPreload from '@preload/monitor'
 import browserWinUrl from '@renderer/browser.html'
 import loggerWinUrl from '@renderer/logger.html'
-import { LauncherAppController } from '@xmcl/runtime'
+import { LauncherAppController, UserService } from '@xmcl/runtime'
 import { InstalledAppManifest } from '@xmcl/runtime-api'
 import { Logger } from '@xmcl/runtime/lib/util/log'
-import { BrowserWindow, dialog, ipcMain, nativeTheme, protocol, ProtocolRequest, ProtocolResponse, session, shell, Tray } from 'electron'
+import { BrowserWindow, DidCreateWindowDetails, Event, HandlerDetails, ProtocolRequest, ProtocolResponse, Session, Tray, WebContents, dialog, ipcMain, nativeTheme, protocol, session, shell } from 'electron'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
-import { plugins } from './controllers'
 import ElectronLauncherApp from './ElectronLauncherApp'
+import { plugins } from './controllers'
 import en from './locales/en.yaml'
 import es from './locales/es-ES.yaml'
 import ru from './locales/ru.yaml'
@@ -40,6 +40,56 @@ export default class Controller implements LauncherAppController {
    * During the app is parking, even if the all windows are closed, the app will keep open.
    */
   protected parking = false
+
+  protected activatedManifest: InstalledAppManifest | undefined
+
+  protected sharedSession: Session | undefined
+
+  private windowOpenHandler: Parameters<WebContents['setWindowOpenHandler']>[0] = (detail: HandlerDetails) => {
+    if (detail.frameName === 'browser') {
+      shell.openExternal(detail.url)
+    } else if (detail.frameName === '' || detail.frameName === 'app') {
+      const man = this.activatedManifest!
+      return {
+        action: 'allow',
+        overrideBrowserWindowOptions: {
+          vibrancy: man.vibrancy ? 'sidebar' : undefined, // or popover
+          icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
+          titleBarStyle: this.app.platform.name === 'linux' ? 'default' : 'hidden',
+          trafficLightPosition: this.app.platform.name === 'osx' ? { x: 14, y: 10 } : undefined,
+          minWidth: 600,
+          minHeight: 600,
+
+          webPreferences: {
+            contextIsolation: true,
+            nodeIntegration: false,
+            nodeIntegrationInWorker: false,
+            nodeIntegrationInSubFrames: false,
+            preload: indexPreload,
+            devTools: IS_DEV,
+          },
+        },
+      }
+    }
+    return { action: 'deny' }
+  }
+
+  private onWebContentCreateWindow = (window: BrowserWindow,
+    details: DidCreateWindowDetails) => {
+    window.webContents.setWindowOpenHandler(this.windowOpenHandler)
+    window.webContents.on('will-navigate', this.onWebContentWillNavigate)
+    window.webContents.on('did-create-window', this.onWebContentCreateWindow)
+  }
+
+  private onWebContentWillNavigate = (event: Event, url: string) => {
+    if (!IS_DEV) {
+      event.preventDefault()
+      shell.openExternal(url)
+    } else if (!url.startsWith('http://localhost')) {
+      event.preventDefault()
+      shell.openExternal(url)
+    }
+  }
 
   constructor(protected app: ElectronLauncherApp) {
     plugins.forEach(p => p.call(this))
@@ -94,7 +144,7 @@ export default class Controller implements LauncherAppController {
     })
   }
 
-  setupBrowserLogger(ref: BrowserWindow, name: string) {
+  private setupBrowserLogger(ref: BrowserWindow, name: string) {
     const stream = this.app.logManager.openWindowLog(name)
     const levels = ['', 'INFO', 'WARN', 'ERROR']
     ref.webContents.on('console-message', (e, level, message, line, id) => {
@@ -136,60 +186,9 @@ export default class Controller implements LauncherAppController {
     }
   }
 
-  async activate(app: InstalledAppManifest): Promise<void> {
-    this.logger.log(`Activate app ${app.name} ${app.url}`)
-    this.parking = true
-
-    // close the old window
-    if (this.mainWin) {
-      this.mainWin.close()
-    }
-
-    try {
-      await this.createAppWindow(this.app.launcherAppManager.getAppRoot(app.url), app)
-    } finally {
-      this.parking = false
-    }
-  }
-
-  async createBrowseWindow() {
-    const browser = new BrowserWindow({
-      title: 'XMCL Launcher Browser',
-      frame: false,
-      transparent: true,
-      resizable: false,
-      width: 860,
-      height: 450,
-      useContentSize: true,
-      vibrancy: 'sidebar', // or popover
-      icon: darkIcon,
-      webPreferences: {
-        preload: browsePreload,
-      },
-    })
-
-    browser.loadURL(browserWinUrl)
-    browser.on('ready-to-show', () => {
-      this.setWindowBlurEffect(browser)
-    })
-
-    this.browserRef = browser
-  }
-
-  async createAppWindow(appDir: string, man: InstalledAppManifest) {
-    const configPath = man === this.app.builtinAppManifest ? join(this.app.appDataPath, 'main-window-config.json') : join(appDir, 'window-config.json')
-    this.logger.log(`Creating app window by config ${configPath}`)
-    const configData = await readFile(configPath, 'utf-8').then((v) => JSON.parse(v)).catch(() => ({
-      width: -1,
-      height: -1,
-      x: null,
-      y: null,
-    }))
-    const config = {
-      width: typeof configData.width === 'number' ? configData.width as number : -1,
-      height: typeof configData.height === 'number' ? configData.height as number : -1,
-      x: typeof configData.x === 'number' ? configData.x as number : null,
-      y: typeof configData.y === 'number' ? configData.y as number : null,
+  private getSharedSession() {
+    if (this.sharedSession) {
+      return this.sharedSession
     }
 
     const restoredSession = session.fromPartition('persist:main')
@@ -200,11 +199,33 @@ export default class Controller implements LauncherAppController {
     }
 
     restoredSession.webRequest.onHeadersReceived((detail, cb) => {
-      if (detail.responseHeaders &&
-        detail.resourceType === 'image') {
-        detail.responseHeaders['Access-Control-Allow-Origin'] = ['*']
+      if (detail.responseHeaders /* && detail.resourceType === 'image' */) {
+        detail.responseHeaders['access-control-allow-origin'] = ['*']
       }
+
       cb({ responseHeaders: detail.responseHeaders })
+    })
+
+    let userService: UserService | undefined
+    restoredSession.webRequest.onBeforeSendHeaders((detail, cb) => {
+      if (!userService) userService = this.app.serviceManager.get(UserService)
+      if (detail.requestHeaders) {
+        detail.requestHeaders['User-Agent'] = this.app.networkManager.getUserAgent()
+      }
+      if (detail.url.startsWith('https://api.xmcl.app/modrinth') ||
+        detail.url.startsWith('https://api.xmcl.app/curseforge')
+      ) {
+        userService.getOfficialUserProfile().then(profile => {
+          if (profile && profile.accessToken) {
+            detail.requestHeaders.Authorization = `Bearer ${profile.accessToken}`
+          }
+          cb({ requestHeaders: detail.requestHeaders })
+        }).catch(() => {
+          cb({ requestHeaders: detail.requestHeaders })
+        })
+      } else {
+        cb({ requestHeaders: detail.requestHeaders })
+      }
     })
 
     const wellKnown = ['data', 'http', 'https']
@@ -248,6 +269,71 @@ export default class Controller implements LauncherAppController {
       }
     }
 
+    this.sharedSession = restoredSession
+
+    return restoredSession
+  }
+
+  async activate(manifest: InstalledAppManifest): Promise<void> {
+    this.logger.log(`Activate app ${manifest.name} ${manifest.url}`)
+    this.parking = true
+
+    // close the old window
+    if (this.mainWin) {
+      this.mainWin.close()
+    }
+
+    this.activatedManifest = manifest
+
+    try {
+      await this.createAppWindow(this.app.launcherAppManager.getAppRoot(manifest.url))
+    } finally {
+      this.parking = false
+    }
+  }
+
+  async createBrowseWindow() {
+    const browser = new BrowserWindow({
+      title: 'XMCL Launcher Browser',
+      frame: false,
+      transparent: true,
+      resizable: false,
+      width: 860,
+      height: 450,
+      useContentSize: true,
+      vibrancy: 'sidebar', // or popover
+      icon: darkIcon,
+      webPreferences: {
+        preload: browsePreload,
+      },
+    })
+
+    browser.loadURL(browserWinUrl)
+    browser.on('ready-to-show', () => {
+      this.setWindowBlurEffect(browser)
+    })
+
+    this.browserRef = browser
+  }
+
+  async createAppWindow(appDir: string) {
+    const man = this.activatedManifest!
+    const configPath = man === this.app.builtinAppManifest ? join(this.app.appDataPath, 'main-window-config.json') : join(appDir, 'window-config.json')
+    this.logger.log(`Creating app window by config ${configPath}`)
+    const configData = await readFile(configPath, 'utf-8').then((v) => JSON.parse(v)).catch(() => ({
+      width: -1,
+      height: -1,
+      x: null,
+      y: null,
+    }))
+    const config = {
+      width: typeof configData.width === 'number' ? configData.width as number : -1,
+      height: typeof configData.height === 'number' ? configData.height as number : -1,
+      x: typeof configData.x === 'number' ? configData.x as number : null,
+      y: typeof configData.y === 'number' ? configData.y as number : null,
+    }
+
+    const restoredSession = this.getSharedSession()
     const minWidth = man.minWidth ?? 800
     const minHeight = man.minHeight ?? 600
 
@@ -286,20 +372,10 @@ export default class Controller implements LauncherAppController {
       browser.show()
       browser.focus()
     })
-    browser.on('close', () => {
-    })
-    browser.webContents.on('will-navigate', (event, url) => {
-      event.preventDefault()
-      if (!IS_DEV) {
-        shell.openExternal(url)
-      } else if (!url.startsWith('http://localhost')) {
-        shell.openExternal(url)
-      }
-    })
-    browser.webContents.setWindowOpenHandler((detail) => {
-      shell.openExternal(detail.url)
-      return { action: 'deny' }
-    })
+    browser.webContents.on('will-navigate', this.onWebContentWillNavigate)
+    browser.webContents.on('did-create-window', this.onWebContentCreateWindow)
+    browser.webContents.setWindowOpenHandler(this.windowOpenHandler)
+
     this.setupBrowserLogger(browser, 'app')
 
     trackWindowSize(browser, config, configPath)

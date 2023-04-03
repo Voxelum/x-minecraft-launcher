@@ -138,13 +138,13 @@ import { useDialog } from '../composables/dialog'
 
 const selected = ref([] as string[])
 
-const { isShown, parameter } = useDialog(InstanceInstallDialog, () => {
+const { isShown, dialog } = useDialog(InstanceInstallDialog, () => {
   refresh()
 }, () => {
   upgrade.value = undefined
 })
-const oldResource = computed(() => parameter.value?.currentResource)
-const newResource = computed(() => parameter.value?.resource)
+const oldResource = computed(() => dialog.value.parameter?.currentResource)
+const newResource = computed(() => dialog.value.parameter?.resource)
 const { getInstanceUpdateProfile } = useService(InstanceUpdateServiceKey)
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 const { state, editInstance } = useService(InstanceServiceKey)
