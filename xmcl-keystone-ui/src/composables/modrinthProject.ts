@@ -1,6 +1,7 @@
 import { client, localeClient } from '@/util/modrinthClients'
 import useSWRV from 'swrv'
 import { Ref } from 'vue'
+import { kSWRVConfig } from './swrvConfig'
 
 export function useModrinthProject(id: Ref<string>) {
   const {
@@ -18,7 +19,7 @@ export function useModrinthProject(id: Ref<string>) {
       // localePromise.then((p) => { refresh(() => p[0]) })
     }
     return proj
-  })
+  }, inject(kSWRVConfig))
 
   return {
     project,

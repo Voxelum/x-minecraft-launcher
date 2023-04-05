@@ -7,6 +7,7 @@ import { InjectionKey, Ref } from 'vue'
 import { useResourceUrisDiscovery } from './resources'
 import { kTaskManager } from './taskManager'
 import { client } from '@/util/modrinthClients'
+import { kSWRVConfig } from './swrvConfig'
 
 export const kModrinthVersions: InjectionKey<ReturnType<typeof useModrinthVersions>> = Symbol('kModrinthVersions')
 export const kModrinthVersionsHolder: InjectionKey<Ref<Record<string, ProjectVersion>>> = Symbol('ModrinthVersionsHolder')
@@ -18,7 +19,7 @@ export function useModrinthVersions(project: Ref<string>, featured?: boolean, lo
     `/modrinth/versions/${project.value}?featured=${featured || false}&loaders=${loaders?.value || ''}&gameVersions=${gameVersions?.value || ''}`), async () => {
     const result = (await client.getProjectVersions(project.value, loaders?.value, gameVersions?.value, featured)).map(markRaw)
     return result
-  })
+  }, inject(kSWRVConfig))
   watch(data, (result) => {
     if (holder && result) {
       const newHolder = { ...holder.value }

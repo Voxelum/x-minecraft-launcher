@@ -1,16 +1,15 @@
+import { injection } from '@/util/inject'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { ContextMenuItem } from './contextMenu'
-import { useCurseforgeRoute, useMcWikiRoute } from './curseforgeRoute'
 import { ModItem } from './mod'
 import { useService } from './service'
+import { kMarketRoute } from './useMarketRoute'
 
 export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => void, onCreateTag: (group?: boolean) => void) {
   const { t } = useI18n()
   const { showItemInDirectory } = useService(BaseServiceKey)
-  const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
-  const { push } = useRouter()
-  const { searchProjectAndRoute: searchMcWiki } = useMcWikiRoute()
+  const { searchInCurseforge, goModrinthProject, goCurseforgeProject, searchInModrinth, searchInMcWiki } = injection(kMarketRoute)
 
   return computed(() => {
     const item = mod.value
@@ -59,7 +58,7 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
       items.push({
         text: t('mod.showInCurseforge', { name: item.name }),
         onClick: () => {
-          goProjectAndRoute(curseforge.projectId, 'mc-mods')
+          goCurseforgeProject(curseforge.projectId, 'mc-mods')
         },
         icon: '$vuetify.icons.curseforge',
       })
@@ -67,7 +66,7 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
       items.push({
         text: t('mod.searchOnCurseforge', { name: item.name }),
         onClick: () => {
-          searchProjectAndRoute(item.name, 'mc-mods')
+          searchInCurseforge(item.name, 'mc-mods')
         },
         icon: 'search',
       })
@@ -77,7 +76,7 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
       items.push({
         text: t('mod.showInModrinth', { name: item.name }),
         onClick: () => {
-          push(`/modrinth/${modrinth.projectId}`)
+          goModrinthProject(modrinth.projectId)
         },
         icon: '$vuetify.icons.modrinth',
       })
@@ -85,7 +84,7 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
       items.push({
         text: t('mod.searchOnModrinth', { name: item.name }),
         onClick: () => {
-          push(`/modrinth?query=${item.name}`)
+          searchInModrinth(item.name)
         },
         icon: 'search',
       })
@@ -93,7 +92,7 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
     items.push({
       text: t('mod.searchOnMcWiki', { name: item.name }),
       onClick: () => {
-        searchMcWiki(item.name)
+        searchInMcWiki(item.name)
       },
       icon: 'search',
     })

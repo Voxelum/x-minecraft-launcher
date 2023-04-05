@@ -85,7 +85,7 @@ import { getLocalDateString } from '@/util/date'
 
 const props = defineProps<{ id: number }>()
 
-const { refresh, refreshing, manifest } = useFeedTheBeastProject(computed(() => props.id))
+const { refreshing, manifest } = useFeedTheBeastProject(computed(() => props.id))
 const avatar = computed(() => manifest.value!.art.find(v => v.type === 'square')?.url ?? '')
 const title = computed(() => manifest.value?.name ?? '')
 const description = computed(() => manifest.value?.synopsis)

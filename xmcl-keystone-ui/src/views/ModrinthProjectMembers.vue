@@ -2,18 +2,20 @@
   <div>
     <ErrorView
       :error="error"
-      @refresh="refresh"
     />
     <v-skeleton-loader
-      v-if="refreshing"
+      v-if="isValidating"
       type="list-item-avatar-two-line, list-item-avatar-two-line"
     />
-    <v-list color="transparent">
+    <v-list
+      v-if="data"
+      color="transparent"
+    >
       <v-subheader>
         {{ t('modrinth.projectMembers') }}
       </v-subheader>
       <v-list-item
-        v-for="m of members"
+        v-for="m of data"
         :key="m.user.id"
         @click="onClick(m)"
       >
@@ -30,24 +32,22 @@
 </template>
 <script lang="ts" setup>
 import ErrorView from '@/components/ErrorView.vue'
-import { useRefreshable, useService } from '@/composables'
+import { kSWRVConfig } from '@/composables/swrvConfig'
+import { client } from '@/util/modrinthClients'
 import { TeamMember } from '@xmcl/modrinth'
-import { ModrinthServiceKey } from '@xmcl/runtime-api'
+import useSWRV from 'swrv'
 
 const props = defineProps<{ projectId: string }>()
 
 const { t } = useI18n()
-const { getProjectTeamMembers } = useService(ModrinthServiceKey)
-const members = ref([] as TeamMember[])
-const { refresh, refreshing, error } = useRefreshable(async () => {
-  members.value = await getProjectTeamMembers(props.projectId)
-})
+const { isValidating, error, data } = useSWRV(computed(() => `/modrinth/team/${props.projectId}`),
+  () => client.getProjectTeamMembers(props.projectId),
+  inject(kSWRVConfig),
+)
 
 const onClick = (u: TeamMember) => {
   const url = `https://modrinth.com/user/${u.user.username}`
   window.open(url, 'browser')
 }
-
-onMounted(refresh)
 
 </script>

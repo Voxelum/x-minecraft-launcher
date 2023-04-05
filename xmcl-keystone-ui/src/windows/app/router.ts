@@ -3,6 +3,8 @@ import CurseforgeProject from '@/views/CurseforgeProject.vue'
 import Router from 'vue-router'
 import Modrinth from '@/views/Modrinth.vue'
 import ModrinthProject from '@/views/ModrinthProject.vue'
+import FeedTheBeast from '@/views/FeedTheBeast.vue'
+import FeedTheBeastProject from '@/views/FeedTheBeastProject.vue'
 
 export const createRouter = () => {
   const router = new Router({
@@ -47,6 +49,16 @@ export const createRouter = () => {
         path: '/modrinth/:id',
         component: ModrinthProject,
         props: (route) => ({ id: route.path.split('/')[2] }),
+      },
+      {
+        path: '/ftb',
+        component: FeedTheBeast,
+        props: (route) => ({ keyword: route.query.keyword }),
+      },
+      {
+        path: '/ftb/:id',
+        component: FeedTheBeastProject,
+        props: (route) => ({ id: Number(route.params.id) }),
       },
     ],
   })

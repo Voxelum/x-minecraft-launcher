@@ -90,6 +90,8 @@ import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import Setup from '@/views/Setup.vue'
 import { useAllServices } from './services'
+import { kSWRVConfig, useSWRVConfig } from '@/composables/swrvConfig'
+import { kMarketRoute, useMarketRoute } from '@/composables/useMarketRoute'
 
 const colorTheme = useColorTheme()
 const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = colorTheme
@@ -131,6 +133,8 @@ provide(kUserContext, useUserContext())
 provide(kModpacks, useModpacks())
 provide(kImageDialog, useImageDialog())
 provide(kModInstallList, useModInstallList())
+provide(kSWRVConfig, useSWRVConfig())
+provide(kMarketRoute, useMarketRoute())
 
 </script>
 

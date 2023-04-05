@@ -132,7 +132,7 @@ import { FTBClient } from '@/util/ftbClient'
 const { render } = useMarkdown()
 const props = defineProps<{ id: number }>()
 
-const { refresh, refreshing, manifest } = useFeedTheBeastProject(computed(() => props.id))
+const { refreshing, manifest } = useFeedTheBeastProject(computed(() => props.id))
 const { getModpackVersionManifest } = new FTBClient()
 const { show } = useDialog(AddInstanceDialogKey)
 
