@@ -99,8 +99,7 @@
             <v-list-item
               link
               class="non-moveable"
-              target="_blank"
-              href="app.html?curseforge"
+              @click="goToCurseforge()"
               v-on="tooltip"
             >
               <v-list-item-icon>
@@ -125,8 +124,7 @@
             <v-list-item
               link
               class="non-moveable"
-              target="_blank"
-              href="app.html?modrinth"
+              @click="goToModrinth()"
               v-on="tooltip"
             >
               <v-list-item-icon>
@@ -149,10 +147,9 @@
         >
           <template #activator="{ on: tooltip }">
             <v-list-item
-              push
               link
               class="non-moveable"
-              to="/ftb"
+              @click="goToFtb()"
               v-on="tooltip"
             >
               <v-list-item-icon>
@@ -253,6 +250,7 @@ import { kColorTheme } from '../composables/colorTheme'
 import { kUILayout } from '../composables/uiLayout'
 import AppSideBarContentFocus from './AppSideBarContentFocus.vue'
 import AppSideBarContentNext from './AppSideBarContentNext.vue'
+import { kMarketRoute } from '@/composables/useMarketRoute'
 
 const { state } = useService(BaseServiceKey)
 const { blurSidebar } = useBarBlur()
@@ -273,6 +271,8 @@ const navToMe = () => {
     push('/me')
   }
 }
+
+const { goToCurseforge, goToModrinth, goToFtb } = injection(kMarketRoute)
 
 function goBack() {
   back()

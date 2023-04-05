@@ -66,19 +66,20 @@
 </template>
 
 <script lang=ts setup>
-import { Ref } from 'vue'
-import { BaseServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
-import { useRangeCompatible } from '../composables/compatible'
-import { ContextMenuItem } from '../composables/contextMenu'
-import { useCurseforgeRoute } from '../composables/curseforgeRoute'
-import { ResourcePackItem } from '../composables/resourcePack'
-import { vContextMenu } from '../directives/contextMenu'
-import { vFallbackImg } from '../directives/fallbackImage'
 import unknownPack from '@/assets/unknown_pack.png'
 import { useDragTransferItem, useService, useTags, useTheme } from '@/composables'
-import { getColor } from '@/util/color'
-import { vDraggableCard } from '../directives/draggableCard'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { getColor } from '@/util/color'
+import { injection } from '@/util/inject'
+import { BaseServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
+import { Ref } from 'vue'
+import { useRangeCompatible } from '../composables/compatible'
+import { ContextMenuItem } from '../composables/contextMenu'
+import { ResourcePackItem } from '../composables/resourcePack'
+import { kMarketRoute } from '../composables/useMarketRoute'
+import { vContextMenu } from '../directives/contextMenu'
+import { vDraggableCard } from '../directives/draggableCard'
+import { vFallbackImg } from '../directives/fallbackImage'
 
 const props = defineProps<{
   pack: ResourcePackItem
@@ -93,7 +94,7 @@ const { state } = useService(InstanceServiceKey)
 const runtime = computed(() => state.instance.runtime)
 const { compatible } = useRangeCompatible(computed(() => props.pack.acceptingRange ?? ''), computed(() => runtime.value.minecraft))
 const { t } = useI18n()
-const { searchProjectAndRoute, goProjectAndRoute } = useCurseforgeRoute()
+const { searchInCurseforge, goCurseforgeProject, searchInModrinth, goModrinthProject } = injection(kMarketRoute)
 const { showItemInDirectory } = useService(BaseServiceKey)
 const card: Ref<any> = ref(null)
 
@@ -149,7 +150,7 @@ const contextMenuItems = computed(() => {
     menuItems.push({
       text: t('resourcepack.showInCurseforge', { name: props.pack.name }),
       onClick: () => {
-        goProjectAndRoute(props.pack.resource!.metadata.curseforge!.projectId, 'texture-packs')
+        goCurseforgeProject(props.pack.resource!.metadata.curseforge!.projectId, 'texture-packs')
       },
       icon: '$vuetify.icons.curseforge',
     })
@@ -157,11 +158,30 @@ const contextMenuItems = computed(() => {
     menuItems.push({
       text: t('resourcepack.searchOnCurseforge', { name: props.pack.name }),
       onClick: () => {
-        searchProjectAndRoute(props.pack.name, 'texture-packs')
+        searchInCurseforge(props.pack.name, 'texture-packs')
       },
       icon: 'search',
     })
   }
+
+  if (props.pack.resource && props.pack.resource.metadata.modrinth) {
+    menuItems.push({
+      text: t('resourcepack.showInModrinth', { name: props.pack.name }),
+      onClick: () => {
+        goModrinthProject(props.pack.resource!.metadata.modrinth!.projectId)
+      },
+      icon: '$vuetify.icons.modrinth',
+    })
+  } else {
+    menuItems.push({
+      text: t('resourcepack.searchOnModrinth', { name: props.pack.name }),
+      onClick: () => {
+        searchInModrinth(props.pack.name)
+      },
+      icon: 'search',
+    })
+  }
+
   return menuItems
 })
 

@@ -87,14 +87,15 @@
   </v-card>
 </template>
 <script lang="ts" setup>
-import { Ref } from 'vue'
-import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useService, useTags } from '@/composables'
-import { ContextMenuItem } from '../composables/contextMenu'
-import { useCurseforgeRoute } from '../composables/curseforgeRoute'
-import { vContextMenu } from '../directives/contextMenu'
-import { ModpackItem } from '../composables/modpack'
 import { getLocalDateString } from '@/util/date'
+import { injection } from '@/util/inject'
+import { BaseServiceKey } from '@xmcl/runtime-api'
+import { Ref } from 'vue'
+import { ContextMenuItem } from '../composables/contextMenu'
+import { ModpackItem } from '../composables/modpack'
+import { kMarketRoute } from '../composables/useMarketRoute'
+import { vContextMenu } from '../directives/contextMenu'
 import { vDraggableCard } from '../directives/draggableCard'
 
 const props = defineProps<{ item: ModpackItem }>()
@@ -102,7 +103,7 @@ const emit = defineEmits(['tags', 'delete'])
 
 const { t } = useI18n()
 const { showItemInDirectory } = useService(BaseServiceKey)
-const { goProjectAndRoute } = useCurseforgeRoute()
+const { goCurseforgeProject, goModrinthProject } = injection(kMarketRoute)
 const router = useRouter()
 const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.item.tags, set(v) { emit('tags', v) } }))
 const onDeleteTag = removeTag
@@ -147,9 +148,19 @@ const contextMenuItems: Ref<ContextMenuItem[]> = computed(() => {
     items.push({
       text: t('modpack.showInCurseforge', { name: props.item.name }),
       onClick: () => {
-        goProjectAndRoute(curseforge.projectId, 'modpacks')
+        goCurseforgeProject(curseforge.projectId, 'modpacks')
       },
       icon: '$vuetify.icons.curseforge',
+    })
+  }
+  if (props.item.resource?.metadata.modrinth) {
+    const modrinth = props.item.resource.metadata.modrinth
+    items.push({
+      text: t('modpack.showInModrinth', { name: props.item.name }),
+      onClick: () => {
+        goModrinthProject(modrinth.projectId)
+      },
+      icon: '$vuetify.icons.modrinth',
     })
   }
   return items

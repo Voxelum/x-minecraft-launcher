@@ -32,6 +32,7 @@ export function useDialogModel(): DialogModel {
   const model = ref({ dialog: '', parameter: undefined })
   const channel = new BroadcastChannel('dialog')
   channel.addEventListener('message', (e) => {
+    console.log(e)
     if (e.data.dialog === model.value.dialog) return
     model.value = e.data
   })

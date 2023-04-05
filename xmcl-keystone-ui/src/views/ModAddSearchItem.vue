@@ -56,10 +56,11 @@
 
 <script lang="ts" setup>
 import { ContextMenuItem } from '@/composables/contextMenu'
-import { useCurseforgeRoute } from '@/composables/curseforgeRoute'
 import { ModListSearchItem } from '@/composables/modSearchItems'
+import { kMarketRoute } from '@/composables/useMarketRoute'
 import { vContextMenu } from '@/directives/contextMenu'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { injection } from '@/util/inject'
 
 const props = defineProps<{
   item: ModListSearchItem
@@ -67,8 +68,7 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits(['click'])
-const { goProjectAndRoute } = useCurseforgeRoute()
-const { push } = useRouter()
+const { goCurseforgeProject, goModrinthProject } = injection(kMarketRoute)
 const { t } = useI18n()
 
 const contextMenuItems = computed(() => {
@@ -79,7 +79,7 @@ const contextMenuItems = computed(() => {
       text: t('mod.searchOnCurseforge', { name: title }),
       icon: '$vuetify.icons.curseforge',
       onClick: () => {
-        goProjectAndRoute(curseforge.id, 'mc-mods')
+        goCurseforgeProject(curseforge.id, 'mc-mods')
       },
     })
   }
@@ -88,7 +88,7 @@ const contextMenuItems = computed(() => {
       text: t('mod.showInModrinth', { name: title }),
       icon: '$vuetify.icons.modrinth',
       onClick: () => {
-        push(`/modrinth/${modrinth.project_id}`)
+        goModrinthProject(modrinth.project_id)
       },
     })
   }

@@ -4,19 +4,22 @@ import useSWRV from 'swrv'
 import { Ref } from 'vue'
 import { useService } from './service'
 import { client } from '@/util/modrinthClients'
+import { kSWRVConfig } from './swrvConfig'
 
 export function useModrinthLatestVersion(sha1: Ref<string>, projectId: Ref<string>) {
-  const latestVersion = ref(undefined as undefined | ProjectVersion)
   const { getResourcesByUris } = useService(ResourceServiceKey)
   const latestVersionResource = ref(undefined as undefined | Resource)
-  const { isValidating: refreshing, error, mutate: refresh } = useSWRV(
-    computed(() => `/modrinth/version_file/${sha1.value}`), async () => {
-      const hash = sha1.value
-      if (!hash) return
-      latestVersion.value = await client.getLatestProjectVersion(hash)
-      const [resource] = await getResourcesByUris([latestVersion.value.files[0].url])
+  const { isValidating: refreshing, error, mutate: refresh, data: latestVersion } = useSWRV(
+    computed(() => `/modrinth/version_file/${sha1.value}`),
+    () => client.getLatestProjectVersion(sha1.value),
+    inject(kSWRVConfig))
+
+  watch(latestVersion, async (v) => {
+    if (v) {
+      const [resource] = await getResourcesByUris([v.files[0].url])
       latestVersionResource.value = resource
-    })
+    }
+  })
 
   return {
     latestVersion,

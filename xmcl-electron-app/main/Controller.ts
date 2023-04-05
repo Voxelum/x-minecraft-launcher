@@ -199,7 +199,9 @@ export default class Controller implements LauncherAppController {
     }
 
     restoredSession.webRequest.onHeadersReceived((detail, cb) => {
-      if (detail.responseHeaders /* && detail.resourceType === 'image' */) {
+      if (detail.responseHeaders &&
+        !detail.responseHeaders['access-control-allow-origin'] &&
+        !detail.responseHeaders['Access-Control-Allow-Origin']) {
         detail.responseHeaders['access-control-allow-origin'] = ['*']
       }
 
@@ -223,6 +225,9 @@ export default class Controller implements LauncherAppController {
         }).catch(() => {
           cb({ requestHeaders: detail.requestHeaders })
         })
+      } else if (detail.url.startsWith('https://api.curseforge.com')) {
+        detail.requestHeaders['x-api-key'] = process.env.CURSEFORGE_API_KEY || ''
+        cb({ requestHeaders: detail.requestHeaders })
       } else {
         cb({ requestHeaders: detail.requestHeaders })
       }

@@ -68,7 +68,7 @@
           v-for="mod in projects"
           :key="mod.project_id"
           v-ripple
-          :disabled="refreshing"
+          :disabled="false"
           :value="mod"
           class="cursor-pointer"
           @filter="onFiltered"

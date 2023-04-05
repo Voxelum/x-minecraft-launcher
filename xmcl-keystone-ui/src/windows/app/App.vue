@@ -19,13 +19,22 @@
         Modrinth
       </span>
       <span
-        v-else
+        v-else-if="router.currentRoute.path.startsWith('/curseforge')"
         class="flex items-center"
       >
         <v-icon small>
           $vuetify.icons.curseforge
         </v-icon>
         CurseForge
+      </span>
+      <span
+        v-else
+        class="flex items-center"
+      >
+        <v-icon small>
+          $vuetify.icons.ftb
+        </v-icon>
+        FeedTheBeast
       </span>
     </AppSystemBar>
     <div
@@ -67,6 +76,7 @@ import AppNotifier from '@/views/AppNotifier.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import { useAllServices } from './services'
+import { kSWRVConfig, useSWRVConfig } from '@/composables/swrvConfig'
 
 const colorTheme = useColorTheme()
 const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = colorTheme
@@ -87,6 +97,7 @@ useThemeSync()
 useExternalRoute()
 provide(kImageDialog, useImageDialog())
 const router = useRouter()
+provide(kSWRVConfig, useSWRVConfig())
 
 </script>
 

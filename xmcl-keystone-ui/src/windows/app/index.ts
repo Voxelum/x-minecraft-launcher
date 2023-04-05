@@ -1,28 +1,28 @@
 
-import Vue, { defineComponent, h, provide, getCurrentInstance } from 'vue'
+import TextComponent from '@/components/TextComponent'
+import { IssueHandler, kIssueHandlers, kSemaphores, kServiceFactory, useSemaphores } from '@/composables'
+import { kDialogModel, useDialogModel } from '@/composables/dialog'
+import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
+import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
+import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
+import { kTaskManager, useTaskManager } from '@/composables/taskManager'
+import { kVuetify } from '@/composables/vuetify'
+import { VuexServiceFactory } from '@/vuexServiceProxy'
+import messages from '@intlify/unplugin-vue-i18n/messages'
+import 'virtual:windi.css'
+import Vue, { defineComponent, getCurrentInstance, h, provide } from 'vue'
 import VueI18n from 'vue-i18n'
 import { castToVueI18n, createI18n } from 'vue-i18n-bridge'
 import VueObserveVisibility from 'vue-observe-visibility'
 import Router from 'vue-router'
 import Vuetify from 'vuetify'
 import Vuex from 'vuex'
-import { VuexServiceFactory } from '@/vuexServiceProxy'
+import '../../../locales/en.yaml'
+import '../../../locales/zh-CN.yaml'
 import App from './App.vue'
 import { createRouter } from './router'
 import { createStore, kStore } from './store'
 import vuetify from './vuetify'
-import TextComponent from '@/components/TextComponent'
-import { IssueHandler, kIssueHandlers, kServiceFactory, kSemaphores, useSemaphores, kAsyncRouteHandlers } from '@/composables'
-import { kVuetify } from '@/composables/vuetify'
-import 'virtual:windi.css'
-import { kDialogModel, useDialogModel } from '@/composables/dialog'
-import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
-import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
-import { kTaskManager, useTaskManager } from '@/composables/taskManager'
-import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
-import messages from '@intlify/unplugin-vue-i18n/messages'
-import '../../../locales/en.yaml'
-import '../../../locales/zh-CN.yaml'
 
 // to prevent the universal drop activated on self element dragging
 document.addEventListener('dragstart', (e) => {
@@ -82,7 +82,6 @@ const app = new Vue(defineComponent({
     provide(kIssueHandlers, new IssueHandler())
     provide(kServerStatusCache, useServerStatusCache())
     provide(kNotificationQueue, useNotificationQueue())
-    provide(kAsyncRouteHandlers, [])
 
     return () => h(App)
   },
@@ -92,8 +91,14 @@ Vue.component('TextComponent', TextComponent)
 
 app.$mount('#app')
 
-if (window.location.search.indexOf('modrinth') !== -1) {
-  router.replace('/modrinth')
-} else if (window.location.search.indexOf('curseforge') !== -1) {
-  router.replace('/curseforge/mc-mods')
+const params = window.location.search.substring(1)
+if (params.startsWith('route=')) {
+  const route = params.substring('route='.length)
+  router.replace(route)
 }
+
+window.addEventListener('message', (e) => {
+  if (e.data.route) {
+    router.replace(e.data.route)
+  }
+})

@@ -1,9 +1,10 @@
-import { Category, ModrinthV2Client, SearchResultHit } from '@xmcl/modrinth'
-import { computed, InjectionKey, reactive, Ref, toRefs, watch } from 'vue'
+import { Category, SearchResultHit } from '@xmcl/modrinth'
+import { InjectionKey, Ref, computed, reactive, toRefs, watch } from 'vue'
 
+import { client } from '@/util/modrinthClients'
 import debounce from 'lodash.debounce'
 import useSWRV from 'swrv'
-import { client } from '@/util/modrinthClients'
+import { kSWRVConfig, useOverrideSWRVConfig } from './swrvConfig'
 
 export interface ModrinthOptions {
   query: string
@@ -34,7 +35,7 @@ export function useModrinthTags() {
       modLoaders,
       environments: ['client', 'server'],
     }
-  })
+  }, inject(kSWRVConfig))
 
   provide(ModrinthCategoriesKey, computed(() => data.value?.categories || []))
 
@@ -96,8 +97,6 @@ export function useModrinth(props: ModrinthOptions) {
     pageSizeOptions: [5, 10, 15, 20],
   })
 
-  const getQueryString = (options: ModrinthOptions) => Object.entries(options).map(([key, val]) => `${key}=${val}`).join('&')
-
   const query = computed({
     get() { return props.query },
     set(query: string) {
@@ -158,7 +157,7 @@ export function useModrinth(props: ModrinthOptions) {
 
   const refs = toRefs(data)
 
-  const { data: searchData, isValidating: refreshing, error, mutate } = useSWRV('/modrinth/search', async () => {
+  const facetsText = computed(() => {
     const facets: string[][] = []
     if (gameVersion.value && gameVersion.value !== 'null') {
       facets.push([`versions:${gameVersion.value}`])
@@ -188,9 +187,17 @@ export function useModrinth(props: ModrinthOptions) {
     if (facets.length > 0) {
       facetsText = '[' + facets.map(v => '[' + v.map(v => JSON.stringify(v)).join(',') + ']').join(',') + ']'
     }
-    const result = await client.searchProjects({ query: props.query, limit: data.pageSize, offset: (props.page - 1) * data.pageSize, index: sortBy.value, facets: facetsText })
-    return result
+    return facetsText
   })
+  const { data: searchData, isValidating: refreshing, error, mutate } = useSWRV(
+    computed(() => `/modrinth/search?query=${props.query}&limit=${data.pageSize}&offset=${(props.page - 1) * data.pageSize}&index=${sortBy.value}&facets=${facetsText.value}`),
+    () => client.searchProjects({
+      query: props.query,
+      limit: data.pageSize,
+      offset: (props.page - 1) * data.pageSize,
+      index: sortBy.value,
+      facets: facetsText.value,
+    }), useOverrideSWRVConfig({ ttl: 30 * 1000 }))
 
   watch(searchData, (result) => {
     if (result) {

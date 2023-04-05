@@ -1,7 +1,7 @@
-import { computed, InjectionKey, onMounted, reactive, Ref, ref, toRefs, watch } from 'vue'
-import { File, FileModLoaderType, Mod, ModCategory, ModsSearchSortField } from '@xmcl/curseforge'
-import { CurseForgeServiceKey, Persisted, ProjectType, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
-import { useRefreshable, useService, useServiceBusy } from '@/composables'
+import { CurseforgeV1Client, File, FileModLoaderType, Mod, ModsSearchSortField } from '@xmcl/curseforge'
+import useSWRV from 'swrv'
+import { computed, InjectionKey, reactive, Ref, ref, toRefs, watch } from 'vue'
+import { kSWRVConfig, useOverrideSWRVConfig } from './swrvConfig'
 
 interface CurseforgeProps {
   type: string
@@ -15,12 +15,13 @@ interface CurseforgeProps {
   from: string
 }
 
+export const client = new CurseforgeV1Client('', {})
+
 /**
  * Hook to return the controller of curseforge preview page. Navigating the curseforge projects.
  */
 export function useCurseforge(props: CurseforgeProps) {
   const router = useRouter()
-  const { searchProjects } = useService(CurseForgeServiceKey)
   const pageSize = 10
 
   const currentType = computed({
@@ -91,29 +92,33 @@ export function useCurseforge(props: CurseforgeProps) {
     projects: [] as Mod[],
   })
   const index = computed(() => (currentPage.value - 1) * pageSize)
-  const { refresh, refreshing, error } = useRefreshable(async function refresh() {
-    const { data: result, pagination } = await searchProjects({
-      pageSize,
-      index: index.value,
-      classId: currentSectionId.value,
-      sortField: currentSort.value,
-      gameVersion: currentVersion.value,
-      categoryId: categoryId.value,
-      searchFilter: currentKeyword.value,
-    })
-    data.totalCount = pagination.totalCount
-    data.projects = Object.freeze(result) as any
-    data.pages = Math.floor(data.totalCount / pageSize)
-    data.projects.forEach(p => Object.freeze(p))
-    data.projects.forEach(p => Object.freeze(p.categories))
+  const { mutate, isValidating, error, data: _data } = useSWRV(
+    computed(() => `/curseforge/search?index=${index.value}&classId=${currentSectionId.value}&sortField=${currentSort.value}&gameVersion=${currentVersion.value}&categoryId=${categoryId.value}&searchFilter=${currentKeyword.value}`),
+    async () => {
+      const result = await client.searchMods({
+        pageSize,
+        index: index.value,
+        classId: currentSectionId.value,
+        sortField: currentSort.value,
+        gameVersion: currentVersion.value,
+        categoryId: categoryId.value,
+        searchFilter: currentKeyword.value,
+      })
+      return markRaw(result)
+    }, useOverrideSWRVConfig({
+      ttl: 30 * 1000,
+    }))
+
+  watch(_data, (v) => {
+    if (v) {
+      data.projects = markRaw(v.data)
+      data.totalCount = v.pagination.totalCount
+      data.pages = Math.ceil(v.pagination.totalCount / pageSize)
+    }
   })
-  watch([currentPage, currentSort, currentVersion, currentKeyword, currentCategory, currentType], () => {
-    refresh()
-  })
-  onMounted(() => { refresh() })
   return {
     ...toRefs(data),
-    refreshing,
+    refreshing: isValidating,
     error,
     categoryId,
     currentSort,
@@ -122,7 +127,7 @@ export function useCurseforge(props: CurseforgeProps) {
     currentPage,
     currentCategory,
     currentType,
-    refresh,
+    refresh: mutate,
   }
 }
 
@@ -131,7 +136,6 @@ export function useCurseforge(props: CurseforgeProps) {
  * @param projectId The project id
  */
 export function useCurseforgeProjectFiles(projectId: Ref<number>) {
-  const { getModFiles } = useService(CurseForgeServiceKey)
   const files = inject(kCurseforgeFiles, ref([]))
   const data = shallowReactive({
     index: 0,
@@ -140,21 +144,24 @@ export function useCurseforgeProjectFiles(projectId: Ref<number>) {
     gameVersion: undefined as string | undefined,
     modLoaderType: undefined as FileModLoaderType | undefined,
   })
-  const { refresh, refreshing, error } = useRefreshable(async () => {
-    const f = await getModFiles({
-      modId: projectId.value,
-      index: data.index,
-      gameVersion: data.gameVersion,
-      pageSize: data.pageSize,
-      modLoaderType: data.modLoaderType,
+  const { mutate: refresh, isValidating: refreshing, error, data: _data } = useSWRV(
+    computed(() => `/curseforge/${projectId.value}/files`), async () => {
+      return markRaw(await client.getModFiles({
+        modId: projectId.value,
+        index: data.index,
+        gameVersion: data.gameVersion,
+        pageSize: data.pageSize,
+        modLoaderType: data.modLoaderType,
+      }))
     })
-    files.value = markRaw(f.data)
-    data.index = f.pagination.index
-    data.pageSize = f.pagination.pageSize
-    data.totalCount = f.pagination.totalCount
+  watch(_data, (f) => {
+    if (f) {
+      files.value = markRaw(f.data)
+      data.index = f.pagination.index
+      data.pageSize = f.pagination.pageSize
+      data.totalCount = f.pagination.totalCount
+    }
   })
-  onMounted(refresh)
-  watch(projectId, refresh)
   return {
     ...toRefs(data),
     files,
@@ -167,49 +174,32 @@ export function useCurseforgeProjectFiles(projectId: Ref<number>) {
 export const kCurseforgeFiles: InjectionKey<Ref<File[]>> = Symbol('CurseforgeFiles')
 
 export function useCurseforgeProjectDescription(props: { project: number }) {
-  const { getModDescription } = useService(CurseForgeServiceKey)
-  const data = reactive({
-    description: '',
-  })
-  const { refresh, refreshing, error } = useRefreshable(async function refresh() {
-    const des = await getModDescription(props.project)
-    data.description = des
-  })
+  const { mutate: refresh, isValidating: refreshing, error, data: description } = useSWRV(
+    computed(() => `/curseforge/${props.project}/description`), async () => {
+      return await client.getModDescription(props.project)
+    }, inject(kSWRVConfig))
 
-  onMounted(refresh)
-  watch(() => props.project, refresh)
-  return { ...toRefs(data), refreshing, refresh, error }
+  return { description, refreshing, refresh, error }
 }
 /**
  * Hook to view the front page of the curseforge project.
  * @param projectId The project id
  */
 export function useCurseforgeProject(projectId: Ref<number>) {
-  const { getMod } = useService(CurseForgeServiceKey)
-  const project = ref(undefined as undefined | Mod)
-  const refreshing = useServiceBusy(CurseForgeServiceKey, 'getMod', projectId.toString())
-  const { refresh, error } = useRefreshable(async function () {
-    project.value = markRaw(await getMod(projectId.value))
-  })
-  onMounted(() => refresh())
-  watch(projectId, refresh)
+  const { data: project, isValidating, mutate, error } = useSWRV(computed(() => `/curseforge/${projectId.value}`), async function () {
+    return markRaw(await client.getMod(projectId.value))
+  }, inject(kSWRVConfig))
   return {
-    refreshing,
-    refresh,
+    refreshing: isValidating,
+    refresh: mutate,
     project,
     error,
   }
 }
 
 export function useCurseforgeCategories() {
-  const { fetchCategories } = useService(CurseForgeServiceKey)
-  const categories = ref([] as ModCategory[])
-  const refreshing = useServiceBusy(CurseForgeServiceKey, 'fetchCategories')
-  async function refresh() {
-    categories.value = await fetchCategories()
-  }
-  onMounted(() => {
-    refresh()
-  })
+  const { isValidating: refreshing, mutate: refresh, data: categories } = useSWRV('/curseforge/categories', async () => {
+    return markRaw(await client.getCategories())
+  }, inject(kSWRVConfig))
   return { categories, refreshing, refresh }
 }

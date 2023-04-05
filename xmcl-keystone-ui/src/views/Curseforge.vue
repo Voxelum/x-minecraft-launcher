@@ -63,7 +63,7 @@
           :proj="proj"
           :current-type="currentType"
           :from="from"
-          :disabled="loading"
+          :disabled="false"
           @category="categoryId = categoryId === $event ? undefined : $event"
           @search="currentKeyword = $event"
         />
