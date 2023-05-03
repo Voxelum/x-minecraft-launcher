@@ -73,14 +73,15 @@ onMounted(() => {
         // eslint-disable-next-line vue/no-mutating-props
         props.value.model.textures[key] = findRealTexturePath(props.value.model, key)
       }
-      const obj = new BlockModelFactory(props.value.textures).getObject(props.value.model)
+      // TODO: fix this
+      // const obj = new BlockModelFactory(props.value.textures).getObject(props.value.model)
 
-      if (currentObj) {
-        scene.remove(currentObj)
-      }
-      scene.add(obj)
-      currentObj = obj
-      obj.position.y += 2
+      // if (currentObj) {
+      //   scene.remove(currentObj)
+      // }
+      // scene.add(obj)
+      // currentObj = obj
+      // obj.position.y += 2
     }
 
     let currentObj: any

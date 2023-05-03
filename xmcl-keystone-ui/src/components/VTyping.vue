@@ -19,17 +19,17 @@ export default defineComponent({
       default: 1,
     },
   },
-  setup: ({ steps, loop, wrapper }) => {
+  setup: (props) => {
     const myRef = ref(null)
     onMounted(() => {
       const dom = myRef.value
       if (dom) {
-        if (loop === Infinity) {
-          typing(dom, ...steps, loopedTyping)
-        } else if (typeof loop === 'number' && loop > 0) {
-          typing(dom, ...Array(loop).fill(steps).flat())
+        if (props.loop === Infinity) {
+          typing(dom, ...props.steps, loopedTyping)
+        } else if (typeof props.loop === 'number' && props.loop > 0) {
+          typing(dom, ...Array(props.loop).fill(props.steps).flat())
         } else {
-          typing(dom, ...steps)
+          typing(dom, ...props.steps)
         }
       }
     })

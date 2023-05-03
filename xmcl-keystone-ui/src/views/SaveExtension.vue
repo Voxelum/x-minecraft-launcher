@@ -43,8 +43,8 @@
 <script lang="ts" setup>
 import { useDialog } from '@/composables/dialog'
 import { useInstanceSaves } from '@/composables/save'
-import { kCompact } from '@/composables/scrollTop';
-import { injection } from '@/util/inject';
+import { kCompact } from '@/composables/scrollTop'
+import { injection } from '@/util/inject'
 
 const { importSave } = useInstanceSaves()
 const { t } = useI18n()

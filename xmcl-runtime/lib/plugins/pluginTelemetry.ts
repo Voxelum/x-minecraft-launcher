@@ -44,25 +44,27 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   app.on('engine-ready', () => {
     const baseService = app.serviceManager.get(BaseService)
     process.on('uncaughtException', (e) => {
+      if (baseService.state.disableTelemetry) return
       if (appInsight.defaultClient) {
         appInsight.defaultClient.trackException({ exception: e })
       }
     })
     process.on('unhandledRejection', (e) => {
+      if (baseService.state.disableTelemetry) return
       if (appInsight.defaultClient) {
         appInsight.defaultClient.trackException({ exception: e as any }) // the applicationinsights will convert it to error automatically
       }
     })
     app.serviceManager.get(LaunchService)
       .on('minecraft-start', (options) => {
-        if (baseService.state.disableTelemtry) return
+        if (baseService.state.disableTelemetry) return
         appInsight.defaultClient.trackEvent({
           name: 'minecraft-start',
           properties: options,
         })
       })
       .on('minecraft-exit', ({ code, signal, crashReport }) => {
-        if (baseService.state.disableTelemtry) return
+        if (baseService.state.disableTelemetry) return
         const normalExit = code === 0
         const crashed = crashReport && crashReport.length > 0
         if (normalExit) {
@@ -82,7 +84,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       })
 
     app.serviceManager.get(UserService).on('user-login', (authService) => {
-      if (baseService.state.disableTelemtry) return
+      if (baseService.state.disableTelemetry) return
       appInsight.defaultClient.trackEvent({
         name: 'user-login',
         properties: {

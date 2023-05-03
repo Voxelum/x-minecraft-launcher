@@ -157,7 +157,7 @@ onUnmounted(() => {
 })
 </script>
 
-<style >
+<style>
 .java-select .v-select__selection {
   white-space: nowrap;
   overflow-x: hidden;

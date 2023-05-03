@@ -37,8 +37,8 @@ export interface SaveMetadata {
   cheat: boolean
   gameVersion: string
   difficulty: number
-  lastPlayed: bigint
-  time: bigint
+  lastPlayed: number
+  time: number
 
   advancements: number
 }

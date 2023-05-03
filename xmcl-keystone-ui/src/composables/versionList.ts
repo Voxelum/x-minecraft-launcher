@@ -119,7 +119,7 @@ export function useOptifineVersionList(minecraft: Ref<string>, forge: Ref<string
       const key = LockKey.version(`optifine-${minecraft.value}-${v.type}_${v.patch}`)
       const name = v.type + '_' + v.patch
       const result: VersionItem = reactive({
-        name: name,
+        name,
         description: v.patch,
         isSelected: computed(() => version.value === name),
         folder: computed(() => installed.value[`${v.type}_${v.patch}`] ?? ''),

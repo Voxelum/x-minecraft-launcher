@@ -41,7 +41,7 @@ export class MicrosoftOAuthClient {
               bodyTimeout: token,
               headersTimeout: token,
               signal,
-              dispatcher: dispatcher,
+              dispatcher,
             })
 
             const body = await response.body.json()
@@ -62,7 +62,7 @@ export class MicrosoftOAuthClient {
               method: 'POST',
               headers: options?.headers,
               body: options?.body,
-              dispatcher: dispatcher,
+              dispatcher,
               signal,
             })
 
@@ -107,7 +107,7 @@ export class MicrosoftOAuthClient {
         })
         if (result) {
           return {
-            result: result,
+            result,
             extra: options.extraScopes
               ? await app.acquireTokenSilent({
                 scopes: options.extraScopes,

@@ -678,6 +678,7 @@ modpack:
 modrinth:
   browseUrl: 在浏览器中打开 {url}
   categories:
+    folia: Folia
     128x: 128x
     16x: 16x
     256x: 256x

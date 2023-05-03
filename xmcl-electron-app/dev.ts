@@ -108,9 +108,9 @@ export async function dev() {
           console.log('electron main ready')
           reloadElectron()
         }
-      });
+      })
     },
-  };
+  }
 
   esbuildOptions.plugins.push(onEndPlugin)
   esbuild = await context({

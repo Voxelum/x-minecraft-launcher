@@ -119,7 +119,7 @@ export class ImportService extends AbstractService implements IImportService {
           await ensureFile(destination)
           await this.submit(new DownloadTask({
             ...this.networkManager.getDownloadBaseOptions(),
-            url: url,
+            url,
             validator: typeof md5 === 'string'
               ? {
                 hash: md5,

@@ -69,7 +69,7 @@ export async function loadResources(folder: string, files: string[], context: Re
           ctime: fstat.ctimeMs,
           mtime: fstat.mtimeMs,
           domain,
-          sha1: sha1,
+          sha1,
           fileType,
         })
       } else {

@@ -16,7 +16,7 @@ const i18n = castToVueI18n(
       locale: 'en',
       silentTranslationWarn: true,
       missingWarn: false,
-      messages: messages,
+      messages,
     },
     VueI18n,
   ),

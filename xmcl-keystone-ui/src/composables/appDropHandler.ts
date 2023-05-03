@@ -224,7 +224,7 @@ export function useAppDropHandler() {
     })
 
     if (!existed || existed.status === 'failed') {
-      const promise = previewUrl({ url: url })
+      const promise = previewUrl({ url })
       promise.then((result) => {
         object.resource = result
         if (result) {

@@ -84,7 +84,7 @@ export function useModSearchItems(keyword: Ref<string>, modrinth: Ref<SearchResu
           id: name,
           icon: m.icons?.[0] ?? '',
           title: name,
-          description: description,
+          description,
           forge: m.metadata.forge !== undefined,
           fabric: m.metadata.fabric !== undefined,
           quilt: m.metadata.quilt !== undefined,
@@ -101,7 +101,7 @@ export function useModSearchItems(keyword: Ref<string>, modrinth: Ref<SearchResu
       }
     }
     const prepend: ModListSearchItem[] = []
-    
+
     for (const i of existedMods.value) {
       const item = getItemForResource(i)
       if (item) {

@@ -16,7 +16,7 @@ export class DownloadAppInstallerTask extends BaseTask<void> {
     const destination = join(app.getPath('downloads'), 'X Minecraft Launcher.appinstaller')
     await download({
       url: 'https://xmcl.blob.core.windows.net/releases/xmcl.appinstaller',
-      destination: destination,
+      destination,
     })
     shell.showItemInFolder(destination)
     await setTimeout(1000)

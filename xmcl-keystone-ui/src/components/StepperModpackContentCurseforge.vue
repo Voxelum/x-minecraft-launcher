@@ -1,6 +1,6 @@
 <template>
   <v-list
-    v-if="!refreshing"
+    v-if="!refreshing && mods"
     color="transparent"
     two-line
   >
@@ -45,29 +45,17 @@
   />
 </template>
 <script lang="ts" setup>
-import { Ref } from 'vue'
+import { clientCurseforgeV1 } from '@/util/clients'
 import type { Mod } from '@xmcl/curseforge'
-import { BaseServiceKey, CurseForgeServiceKey } from '@xmcl/runtime-api'
-import { useRefreshable, useService } from '@/composables'
+import useSWRV from 'swrv'
 
 const props = defineProps<{
   files: Array<{ projectID: number }>
 }>()
 
-const { getModsByIds } = useService(CurseForgeServiceKey)
-onMounted(() => {
-  refresh()
-})
-const mods: Ref<Mod[]> = ref([])
+const { data: mods, isValidating: refreshing } = useSWRV(`/curseforge/files?${props.files.map(f => f.projectID)}`,
+  () => clientCurseforgeV1.getMods(props.files.map(f => f.projectID)))
 
-watch(computed(() => props.files), () => {
-  refresh()
-})
-
-const { refresh, refreshing } = useRefreshable(async () => {
-  const result = await getModsByIds(props.files.map(f => f.projectID))
-  mods.value = result
-})
 function getImage(mod: Mod) {
   return mod.logo ? mod.logo.thumbnailUrl : ''
 }

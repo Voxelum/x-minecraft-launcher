@@ -74,7 +74,7 @@
 import AvatarItem from '@/components/AvatarItem.vue'
 import FilterCombobox from '@/components/FilterCombobox.vue'
 import { kInstanceContext } from '@/composables/instanceContext'
-import { kCompact } from '@/composables/scrollTop';
+import { kCompact } from '@/composables/scrollTop'
 import { injection } from '@/util/inject'
 
 const { version } = injection(kInstanceContext)

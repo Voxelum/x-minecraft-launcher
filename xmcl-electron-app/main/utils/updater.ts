@@ -249,7 +249,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
           date: info.updateInfo.releaseDate,
           files: info.updateInfo.files.map(f => ({ name: basename(f.url), url: f.url })),
           useAutoUpdater: true,
-          newUpdate: newUpdate,
+          newUpdate,
           incremental: newVersion.major === currentVersion.major,
         }
 
