@@ -10,10 +10,8 @@ export function useWindowStyle() {
   windowController.on('minimize', (v) => {
     maximized.value = v
   })
-  const hideWindowControl = computed(() => state.platform.name === 'osx' || state.platform.name === 'linux')
-  const alternativeBack = computed(() => state.platform.name === 'osx' && !maximized.value)
+  const hideWindowControl = computed(() => state.platform.name === 'osx' || (state.platform.name === 'linux' && state.linuxTitlebar))
   return {
     hideWindowControl,
-    alternativeBack,
   }
 }

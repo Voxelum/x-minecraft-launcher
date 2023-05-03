@@ -29,6 +29,26 @@
         />
       </v-list-item-action>
     </v-list-item>
+    <v-list-item
+      class="justify-center items-center"
+    >
+      <v-list-item-action>
+        <v-checkbox v-model="linuxTitlebar" />
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{
+            t("setting.linuxTitlebar")
+          }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          {{
+            t("setting.linuxTitlebarDescription")
+          }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
+
     <v-list-item class="justify-center items-center">
       <v-list-item-content>
         <v-list-item-title>
@@ -415,6 +435,12 @@ const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType,
 const { blurSidebar, blurAppBar } = useBarBlur()
 const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault } = injection(kColorTheme)
 const { state } = useService(BaseServiceKey)
+
+const isLinux = computed(() => state.platform.name === 'linux')
+const linuxTitlebar = computed({
+  get: () => state.linuxTitlebar,
+  set: v => state.linuxTitlebarSet(v),
+})
 
 const layout = injection(kUILayout)
 

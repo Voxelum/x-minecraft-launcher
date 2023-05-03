@@ -1123,6 +1123,8 @@ setting:
     focus: Focus Layout
   layoutDescription: The launcher layout reprensenting different UI logic
   layoutTitle: Layout
+  linuxTitlebar: Native title bar
+  linuxTitlebarDescription: Use native linux title bar for launcher
   location: Store Location
   maxSockets: Per Host
   maxSocketsDescription: >-

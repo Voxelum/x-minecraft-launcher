@@ -108,4 +108,8 @@ export interface SettingSchema {
    * @default false
    */
   disableTelemetry: boolean
+  /**
+   * @default false
+   */
+  linuxTitlebar: boolean
 }
