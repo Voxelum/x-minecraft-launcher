@@ -5,7 +5,7 @@ import indexPreload from '@preload/index'
 import monitorPreload from '@preload/monitor'
 import browserWinUrl from '@renderer/browser.html'
 import loggerWinUrl from '@renderer/logger.html'
-import { LauncherAppController, UserService } from '@xmcl/runtime'
+import { BaseService, LauncherAppController, UserService } from '@xmcl/runtime'
 import { InstalledAppManifest } from '@xmcl/runtime-api'
 import { Logger } from '@xmcl/runtime/lib/util/log'
 import { BrowserWindow, DidCreateWindowDetails, Event, HandlerDetails, ProtocolRequest, ProtocolResponse, Session, Tray, WebContents, dialog, ipcMain, nativeTheme, protocol, session, shell } from 'electron'
@@ -55,7 +55,7 @@ export default class Controller implements LauncherAppController {
         overrideBrowserWindowOptions: {
           vibrancy: man.vibrancy ? 'sidebar' : undefined, // or popover
           icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
-          titleBarStyle: this.app.platform.name === 'linux' ? 'default' : 'hidden',
+          titleBarStyle: this.getTitlebarStyle(),
           trafficLightPosition: this.app.platform.name === 'osx' ? { x: 14, y: 10 } : undefined,
           minWidth: 600,
           minHeight: 600,
@@ -352,7 +352,7 @@ export default class Controller implements LauncherAppController {
       backgroundColor: man.backgroundColor,
       vibrancy: man.vibrancy ? 'sidebar' : undefined, // or popover
       icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
-      titleBarStyle: this.app.platform.name === 'linux' ? 'default' : 'hidden',
+      titleBarStyle: this.getTitlebarStyle(),
       trafficLightPosition: this.app.platform.name === 'osx' ? { x: 14, y: 10 } : undefined,
       webPreferences: {
         preload: indexPreload,
@@ -451,6 +451,13 @@ export default class Controller implements LauncherAppController {
         resolve({ path, instancePath, locale })
       })
     })
+  }
+
+  private getTitlebarStyle() {
+    return this.app.platform.name === 'linux' &&
+      this.app.serviceManager.get(BaseService).state.linuxTitlebar
+      ? 'default'
+      : 'hidden'
   }
 
   get activeWindow() {

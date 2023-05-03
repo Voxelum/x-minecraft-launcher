@@ -1104,6 +1104,8 @@ setting:
     focus: 聚焦布局
   layoutDescription: 不同的布局有不同的UI交互逻辑
   layoutTitle: 布局
+  linuxTitlebar: 原生顶端栏
+  linuxTitlebarDescription: 使用 Linux 系统原生的顶端栏
   location: 数据存储位置
   maxSockets: (每个网站)最大连接数
   maxSocketsDescription: 控制最大的并发 HTTP 链接数量。0 代表不限制数量。

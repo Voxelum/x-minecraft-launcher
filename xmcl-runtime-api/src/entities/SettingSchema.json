@@ -135,6 +135,10 @@
         "disableTelemetry": {
             "default": false,
             "type": "boolean"
+        },
+        "linuxTitlebar": {
+            "default": false,
+            "type": "boolean"
         }
     },
     "required": [
@@ -156,6 +160,7 @@
         "globalVmOptions",
         "httpProxy",
         "httpProxyEnabled",
+        "linuxTitlebar",
         "locale",
         "maxSockets",
         "theme"

@@ -20,6 +20,7 @@ export class BaseState implements SettingSchema {
   globalShowLog = false
   discordPresence = false
   developerMode = false
+  linuxTitlebar = false
 
   locale = ''
 
@@ -104,6 +105,8 @@ export class BaseState implements SettingSchema {
     this.globalShowLog = config.globalShowLog
     this.discordPresence = config.discordPresence
     this.developerMode = config.developerMode
+    this.disableTelemetry = config.disableTelemetry
+    this.linuxTitlebar = config.linuxTitlebar
   }
 
   developerModeSet(developerMode: boolean) {
@@ -189,6 +192,10 @@ export class BaseState implements SettingSchema {
 
   disableTelemetrySet(disable: boolean) {
     this.disableTelemetry = disable
+  }
+
+  linuxTitlebarSet(enabled: boolean) {
+    this.linuxTitlebar = enabled
   }
 
   globalInstanceSetting(settings: {
