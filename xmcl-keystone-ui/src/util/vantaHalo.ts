@@ -2,7 +2,7 @@
 /* eslint-disable */
 
 import { ShaderBase } from './vantaShaderBase'
-import { LinearFilter, RGBFormat, WebGLRenderTarget } from 'three'
+import { LinearFilter, RGBAFormat, WebGLRenderTarget } from 'three'
 import frag from './vantaHalo.glsl?raw'
 
 export class Halo extends ShaderBase {
@@ -35,7 +35,7 @@ export class Halo extends ShaderBase {
   }
 
   init() {
-    const pars = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBFormat }
+    const pars = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBAFormat }
     const width = this.width * window.devicePixelRatio / this.scale
     const height = this.height * window.devicePixelRatio / this.scale
     this.bufferTarget = new WebGLRenderTarget(width, height, pars)

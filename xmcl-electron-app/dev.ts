@@ -96,7 +96,7 @@ function reloadElectron() {
  */
 export async function dev() {
   const onEndPlugin: Plugin = {
-    name: 'on-end',
+    name: 'dev',
     setup(build) {
       build.onEnd((result) => {
         if (result.errors.length > 0) {

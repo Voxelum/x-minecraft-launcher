@@ -1,6 +1,6 @@
 // @ts-nocheck
 import ShaderBase, { VANTA } from 'vanta/src/_shaderBase.js'
-import { LinearFilter, RGBFormat, WebGLRenderTarget } from 'three'
+import { LinearFilter, RGBAFormat, WebGLRenderTarget } from 'three'
 
 class Halo extends ShaderBase {
   getDefaultOptions() {
@@ -26,7 +26,7 @@ class Halo extends ShaderBase {
   }
 
   onInit() {
-    const pars = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBFormat }
+    const pars = { minFilter: LinearFilter, magFilter: LinearFilter, format: RGBAFormat }
     const ww = this.width * window.devicePixelRatio / this.scale
     const hh = this.height * window.devicePixelRatio / this.scale
     this.bufferTarget = new WebGLRenderTarget(ww, hh, pars)

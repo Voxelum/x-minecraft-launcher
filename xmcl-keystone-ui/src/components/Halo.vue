@@ -16,9 +16,11 @@ import {
 } from 'three'
 
 // TODO: fix this after refactor halo
+// TODO: verify RGBAFormat vs RGBFormat
 window.THREE = {
   LinearFilter,
   WebGLRenderTarget,
+  RGBFormat: RGBAFormat,
   RGBAFormat,
   Vector3,
   Color,

@@ -1,5 +1,8 @@
 <template>
-  <v-list-item :class="{ child: child }">
+  <v-list-item
+    :class="{ child: child }"
+    :disabled="disabled"
+  >
     <v-list-item-action class="mr-6">
       <v-checkbox
         v-if="!item.remove"
@@ -53,6 +56,7 @@
       <v-btn
         v-if="!child"
         icon
+        :disabled="disabled"
         color="error"
         @click="emit('remove', item.id)"
       >
@@ -69,6 +73,7 @@ import { InstallListFileItem } from '@/composables/installList.js'
 const props = defineProps<{
   item: InstallListFileItem
   child?: boolean
+  disabled?: boolean
   type?: 'incompatible' | 'required' | 'optional' | 'embedded'
 }>()
 const emit = defineEmits(['remove'])
