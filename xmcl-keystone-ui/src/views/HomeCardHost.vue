@@ -74,7 +74,7 @@
       :id="instance.upstream.projectId.toString()"
     />
     <GridLayout
-      v-else
+      v-else-if="!hideNews"
       :layout.sync="newsLayout"
       :is-draggable="false"
       :col-num="12"
@@ -104,7 +104,7 @@
 </template>
 <script lang="ts" setup>
 
-import { useLocalStorageCache } from '@/composables/cache'
+import { useLocalStorageCache, useLocalStorageCacheBool } from '@/composables/cache'
 import { kInstanceContext } from '@/composables/instanceContext'
 import { kUpstream } from '@/composables/instanceUpdate'
 import { useMojangNews } from '@/composables/mojangNews'
@@ -233,6 +233,7 @@ const onResized = (i: string, newH: number, newW: number, newHPx: number, newWPx
   saveLayouts()
 }
 
+const hideNews = useLocalStorageCacheBool('hideNews', false)
 const getRowCount = (width: number) => width ? Math.floor((width - 34) / 30) : 7
 const resourcePackRowCount = computed(() => getRowCount(containerWidths[CardType.ResourcePack]))
 const modRowCount = computed(() => getRowCount(containerWidths[CardType.Mod]))

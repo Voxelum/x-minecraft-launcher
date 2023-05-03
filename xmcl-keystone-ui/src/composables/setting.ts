@@ -1,5 +1,6 @@
 import { useService, useServiceBusy } from '@/composables'
 import { BaseServiceKey } from '@xmcl/runtime-api'
+import { useLocalStorageCacheBool } from './cache'
 
 export function useUpdateSettings() {
   const { state, checkUpdate } = useService(BaseServiceKey)
@@ -20,6 +21,7 @@ export function useUpdateSettings() {
 
 export function useSettings() {
   const { state } = useService(BaseServiceKey)
+  const hideNews = useLocalStorageCacheBool('hideNews', false)
 
   const getProxy = () => {
     const proxy = state.httpProxy
@@ -70,6 +72,10 @@ export function useSettings() {
     get: () => state.developerMode,
     set: v => state.developerModeSet(v),
   })
+  const disableTelemetry = computed({
+    get: () => state.disableTelemetry,
+    set: v => state.disableTelemetrySet(v),
+  })
   const apiSets = computed(() => state.apiSets)
 
   onMounted(() => {
@@ -112,6 +118,8 @@ export function useSettings() {
     autoInstallOnAppQuit,
     apiSetsPreference,
     apiSets,
+    disableTelemetry,
+    hideNews,
   }
 }
 

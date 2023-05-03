@@ -131,6 +131,10 @@
         "developerMode": {
             "default": false,
             "type": "boolean"
+        },
+        "disableTelemetry": {
+            "default": false,
+            "type": "boolean"
         }
     },
     "required": [
@@ -140,6 +144,7 @@
         "autoDownload",
         "autoInstallOnAppQuit",
         "developerMode",
+        "disableTelemetry",
         "discordPresence",
         "globalAssignMemory",
         "globalFastLaunch",

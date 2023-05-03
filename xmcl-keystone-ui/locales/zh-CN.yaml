@@ -91,6 +91,10 @@ browseApp:
 cancel: 取消
 checkUpdate:
   name: 检查更新
+compatibleDetail:
+  current: 当前版本
+  id: Id
+  requirements: 兼容版本
 confirm: 开始
 copyClipboard:
   success: 复制到剪贴板
@@ -1084,10 +1088,14 @@ setting:
   darkThemeDescription: 选择深色或浅色主题
   developerMode: 开发者模式
   developerModeDescription: 开发者模式意在于帮助你测试你自己写的 Mod
+  disableTelemetry: 关闭遥测
+  disableTelemetryDescription: XMCL 会收集游戏启动以及用户登录事件
   general: 基本设置
   githubRelease: Github
   globalSetting: 全局实例设置
   globalSettingHint: 实例默认情况下会使用这些全局设置
+  hideNews: 隐藏新闻
+  hideNewsDescription: 隐藏实例页面下的新闻
   language: 语言
   languageDescription: 当前显示的语言
   latestVersion: 最新版本

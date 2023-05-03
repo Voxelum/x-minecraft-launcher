@@ -11,7 +11,7 @@ export interface MigrateOptions {
 export class BaseState implements SettingSchema {
   globalMinMemory = 0
   globalMaxMemory = 0
-  hideNews = false
+  disableTelemetry = false
   globalAssignMemory: 'auto' | boolean = false
   globalVmOptions: string[] = []
   globalMcOptions: string[] = []
@@ -185,6 +185,10 @@ export class BaseState implements SettingSchema {
 
   maxAPISocketsSet(val: number) {
     this.maxAPISockets = val
+  }
+
+  disableTelemetrySet(disable: boolean) {
+    this.disableTelemetry = disable
   }
 
   globalInstanceSetting(settings: {

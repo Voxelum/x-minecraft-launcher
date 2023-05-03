@@ -51,6 +51,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
       'discordPresenceSet',
       'globalInstanceSetting',
       'developerModeSet',
+      'disableTelemtrySet',
     ], () => {
       this.settingFile.write({
         locale: this.state.locale,
@@ -74,6 +75,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
         discordPresence: this.state.discordPresence,
         developerMode: this.state.developerMode,
         hideNews: this.state.hideNews,
+        disableTelemtry: this.state.disableTelemtry,
       })
     })
   }
