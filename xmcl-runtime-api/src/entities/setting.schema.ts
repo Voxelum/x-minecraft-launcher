@@ -107,5 +107,5 @@ export interface SettingSchema {
   /**
    * @default false
    */
-  hideNews: boolean
+  disableTelemetry: boolean
 }

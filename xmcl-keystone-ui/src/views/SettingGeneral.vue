@@ -59,6 +59,32 @@
         </v-btn>
       </v-list-item-action>
     </v-list-item>
+    <v-list-item @click="disableTelemetry = !disableTelemetry">
+      <v-list-item-action class="self-center">
+        <v-checkbox v-model="disableTelemetry" />
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{ t('setting.disableTelemetry') }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          {{ t('setting.disableTelemetryDescription') }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
+    <v-list-item @click="hideNews = !hideNews">
+      <v-list-item-action class="self-center">
+        <v-checkbox v-model="hideNews" />
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{ t('setting.hideNews') }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          {{ t('setting.hideNewsDescription') }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title>
@@ -187,6 +213,8 @@ const {
   apiSetsPreference,
   selectedLocale,
   maxSockets,
+  disableTelemetry,
+  hideNews,
   locales: rawLocales,
 } = useSettings()
 const { t } = useI18n()

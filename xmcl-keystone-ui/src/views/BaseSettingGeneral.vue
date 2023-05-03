@@ -39,7 +39,6 @@
                   <v-list-item-title>
                     {{ t('instance.icon') }}
                   </v-list-item-title>
-                  <v-list-item-subtitle>Drop file or link URL here to set icon</v-list-item-subtitle>
                 </v-list-item-content>
               </v-list-item>
             </v-list>

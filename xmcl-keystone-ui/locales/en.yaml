@@ -102,6 +102,9 @@ browseApp:
 cancel: Cancel
 checkUpdate:
   name: Check Update
+compatibleDetail:
+  current: Current
+  requirements: Requirements
 confirm: Start
 copyClipboard:
   success: Copy to clipboard
@@ -1104,10 +1107,14 @@ setting:
   darkThemeDescription: Choose the dark or light theme
   developerMode: Developer Mode
   developerModeDescription: Developer Mode is targeting to test your own written mod
+  disableTelemetry: Disable Telemetry
+  disableTelemetryDescription: XMCL will collect the game launch and user login events.
   general: General
   githubRelease: Github Release
   globalSetting: Global Instance Setting
   globalSettingHint: Instance will use these settings by default.
+  hideNews: Hide News
+  hideNewsDescription: This will hide the news under the instance page
   language: Language
   languageDescription: The display language
   latestVersion: Latest Version

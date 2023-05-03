@@ -104,15 +104,15 @@
                     "type": "object",
                     "properties": {
                         "SKIN": {
-                            "$ref": "#/definitions/GameProfile.Texture"
+                            "$ref": "#/definitions/YggdrasilTexture"
                         },
                         "CAPE": {
                             "description": "The data structure that hold the texture",
-                            "$ref": "#/definitions/GameProfile.Texture"
+                            "$ref": "#/definitions/YggdrasilTexture"
                         },
                         "ELYTRA": {
                             "description": "The data structure that hold the texture",
-                            "$ref": "#/definitions/GameProfile.Texture"
+                            "$ref": "#/definitions/YggdrasilTexture"
                         }
                     },
                     "required": [
@@ -235,7 +235,7 @@
                 "textures"
             ]
         },
-        "GameProfile.Texture": {
+        "YggdrasilTexture": {
             "description": "The data structure that hold the texture",
             "type": "object",
             "properties": {
