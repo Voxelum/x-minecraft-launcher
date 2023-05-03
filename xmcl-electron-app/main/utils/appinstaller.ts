@@ -1,5 +1,5 @@
 import ElectronLauncherApp from '@/ElectronLauncherApp'
-import { download } from '@xmcl/installer'
+import { download } from '@xmcl/file-transfer'
 import { BaseTask } from '@xmcl/task'
 import { app, shell } from 'electron'
 import { join } from 'path'

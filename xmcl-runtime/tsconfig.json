@@ -6,7 +6,7 @@
     "downlevelIteration": true,
     "resolveJsonModule": true,
     "lib": [
-      "ESNext"
+      "ESNext", "DOM"
     ],
     "strict": true,
     "moduleResolution": "node",

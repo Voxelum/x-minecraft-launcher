@@ -77,6 +77,8 @@ import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
 import { usePresence } from '@/composables/presence'
 import { InstanceServiceKey } from '@xmcl/runtime-api'
+import { injection } from '@/util/inject'
+import { kInstanceContext } from '@/composables/instanceContext'
 
 const { shaderPacks, selectedShaderPack, removeShaderPack, showDirectory, loading } = useShaderpacks()
 const draggingPack = ref(undefined as undefined | ShaderPackItem)
@@ -120,6 +122,6 @@ function getFilterOptions(item: ShaderPackItem) {
 const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (i) => i.name)
 const items = computed(() => filter(shaderPacks.value))
 
-const { state } = useService(InstanceServiceKey)
-usePresence({ location: 'instance-shaderpacks', instance: state.instance.name })
+const { name } = injection(kInstanceContext)
+usePresence(computed(() => t('presence.shaderPack', { instance: name.value })))
 </script>

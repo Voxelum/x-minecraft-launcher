@@ -127,9 +127,9 @@
             <div
               class="h-full overflow-auto flex flex-grow"
             >
-              <template v-if="!!selected">
+              <template v-if="selected">
                 <ModAddModrinthDetail
-                  v-if="selected.modrinth"
+                  v-if="selected.modrinth && selected"
                   :hint="selected.modrinth"
                   :loader="forge ? 'forge' : fabricLoader ? 'fabric' : ''"
                   :minecraft="minecraft"
@@ -151,7 +151,7 @@
                   :quilt="selected.quilt"
                   :loader="forge ? 'forge' : fabricLoader ? 'fabric' : ''"
                   :minecraft="minecraft"
-                  @install="onInstallResource($event, selected, selected?.installed)"
+                  @install="onInstallResource($event, selected, selected.installed)"
                 />
               </template>
               <Hint
@@ -175,7 +175,7 @@ import ErrorView from '@/components/ErrorView.vue'
 import Hint from '@/components/Hint.vue'
 import SplitPane from '@/components/SplitPane.vue'
 import { kInstanceContext } from '@/composables/instanceContext'
-import { kModInstallList } from '@/composables/modInstallList'
+import { kInstallList } from '@/composables/installList'
 import { ModListSearchItem } from '@/composables/modSearchItems'
 import { kCompact } from '@/composables/scrollTop'
 import { injection } from '@/util/inject'
@@ -252,23 +252,23 @@ const total = computed(() => {
   return 0
 })
 
-const { add, addAsRemove } = injection(kModInstallList)
+const { add, addAsRemove } = injection(kInstallList)
 
-const onInstallResource = (resource: Resource, item?: ModListSearchItem, toRemove?: Resource) => {
+const onInstallResource = (resource: Resource, item: ModListSearchItem, toRemove?: Resource) => {
   if (!toRemove) {
-    add(resource, { icon: item?.icon, name: item?.title })
+    add(resource, { icon: item.icon, uri: item.id, name: item.title })
   } else {
-    add(resource, { icon: item?.icon, name: item?.title })
-    addAsRemove(toRemove, { icon: item?.icon, name: item?.title })
+    add(resource, { icon: item.icon, uri: item.id, name: item.title })
+    addAsRemove(toRemove, { icon: item.icon, uri: item.id, name: item.title })
   }
 }
 
-const onInstallCurseforge = (mod: File, item?: ModListSearchItem) => {
-  add(mod, { icon: item?.icon, name: item?.title })
+const onInstallCurseforge = (mod: File, item: ModListSearchItem) => {
+  add(mod, { icon: item?.icon, uri: item.id, name: item?.title })
 }
 
-const onInstallModrinth = (project: ProjectVersion, item?: ModListSearchItem) => {
-  add(project, { icon: item?.icon, name: item?.title })
+const onInstallModrinth = (project: ProjectVersion, item: ModListSearchItem) => {
+  add(project, { icon: item.icon, uri: item.id, name: item.title })
 }
 
 const onScroll = (e: Event) => {

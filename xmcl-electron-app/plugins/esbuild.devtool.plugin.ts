@@ -9,7 +9,7 @@ export default function createVueDevtoolsPlugin(extensionLocation: string): Plug
   return {
     name: 'resolve-devtools',
     setup(build) {
-      if (build.initialOptions.watch) {
+      if (build.initialOptions) {
         build.onResolve({ filter: /vue-devtools/g }, async ({ path }) => ({
           path,
           namespace: 'devtools',

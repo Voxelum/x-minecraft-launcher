@@ -23,6 +23,7 @@ import SettingGlobal from './SettingGlobal.vue'
 import SettingYggdrasilServices from './SettingYggdrasilServices.vue'
 import { usePresence } from '@/composables/presence'
 
-usePresence({ location: 'setting' })
+const { t } = useI18n()
+usePresence(computed(() => t('presence.setting')))
 
 </script>

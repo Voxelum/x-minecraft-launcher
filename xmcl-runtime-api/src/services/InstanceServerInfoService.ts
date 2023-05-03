@@ -1,5 +1,5 @@
 import type { Status } from '@xmcl/client'
-import type { ServerInfo } from '@xmcl/server-info'
+import type { ServerInfo } from '@xmcl/game-data'
 import { UNKNOWN_STATUS } from '../entities/serverStatus'
 import { ServiceKey, StatefulService } from './Service'
 

@@ -56,14 +56,20 @@ export interface ResourceEntryPath extends ResourceEntry {
 export type ResourceSnapshotDatabase = AbstractLevel<Buffer, string, ResourceEntryCache>
 /**
  * The domains like `!mods!` or `!resourcepacks!` prefixed sub-level of `ResourceSnapshotDatabase`
+ *
+ * The key is the file name, and the value is the resource entry
  */
 export type ResourceFileNameSnapshotDatabase = AbstractSublevel<ResourceSnapshotDatabase, Buffer, string, ResourceEntryCache>
 /**
- * The `!sha1!` prefixed sub-level of `ResourceSnapshotDatabase`
+ * The `!sha1!` prefixed sub-level of `ResourceSnapshotDatabase`.
+ *
+ * The key is sha1 string, and the value is the resource entry
  */
 export type ResourceSha1SnapshotDatabase = AbstractSublevel<ResourceSnapshotDatabase, Buffer, string, ResourceEntryCache>
 /**
  * The `!ino!` prefixed sub-level of `ResourceSnapshotDatabase`
+ *
+ * The key is ino string, and the value is the resource entry
  */
 export type ResourceInoSnapshotDatabase = AbstractSublevel<ResourceSnapshotDatabase, Buffer, string, ResourceEntryCache>
 /**

@@ -64,10 +64,10 @@
   </v-list-item>
 </template>
 <script setup lang="ts">
-import { ModListFileItem } from '@/composables/modInstallList'
+import { InstallListFileItem } from '@/composables/installList.js'
 
 const props = defineProps<{
-  item: ModListFileItem
+  item: InstallListFileItem
   child?: boolean
   type?: 'incompatible' | 'required' | 'optional' | 'embedded'
 }>()

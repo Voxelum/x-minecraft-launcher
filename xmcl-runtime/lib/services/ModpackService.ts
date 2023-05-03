@@ -1,4 +1,4 @@
-import { HashAlgo } from '@xmcl/curseforge'
+import { CurseforgeV1Client, HashAlgo } from '@xmcl/curseforge'
 import { UnzipTask } from '@xmcl/installer'
 import { CurseforgeModpackManifest, EditInstanceOptions, ExportModpackOptions, getCurseforgeModpackFromInstance, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromModrinthModpack, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, getResolvedVersion, ImportModpackOptions, InstanceFile, isAllowInModrinthModpack, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
@@ -111,7 +111,7 @@ export class ModpackService extends AbstractService implements IModpackService {
       resolveInstanceFiles: async (manifest: CurseforgeModpackManifest): Promise<InstanceFile[]> => {
         // curseforge or mcbbs
         const curseforgeFiles = manifest.files
-        const files = await curseforgeService.getModFilesByIds(curseforgeFiles.map(f => f.fileID))
+        const files = await curseforgeService.client.getFiles(curseforgeFiles.map(f => f.fileID))
         const infos: InstanceFile[] = []
 
         for (let i = 0; i < files.length; i++) {
@@ -151,7 +151,7 @@ export class ModpackService extends AbstractService implements IModpackService {
         if (manifest.files) {
           // curseforge or mcbbs
           const curseforgeFiles = manifest.files.map(f => f).filter((f): f is ModpackFileInfoCurseforge => !('type' in f) || f.type === 'curse' || 'hashes' in f)
-          const files = await curseforgeService.getModFilesByIds(curseforgeFiles.map(f => f.fileID))
+          const files = await curseforgeService.client.getFiles(curseforgeFiles.map(f => f.fileID))
 
           for (let i = 0; i < files.length; i++) {
             const file = files[i]

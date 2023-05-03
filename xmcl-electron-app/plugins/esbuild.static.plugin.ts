@@ -25,7 +25,7 @@ export default function createStaticPlugin(): Plugin {
           loader: 'file',
         })
       })
-      if (!build.initialOptions.watch) {
+      if (!build.initialOptions.plugins!.find(v => v.name === 'dev')) {
         build.onResolve({ filter: /^.+\.png$/g }, async ({ path, resolveDir }) => {
           return ({
             path: path + '?static',

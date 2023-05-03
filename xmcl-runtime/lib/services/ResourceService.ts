@@ -209,6 +209,24 @@ export class ResourceService extends AbstractService implements IResourceService
     await Promise.all(resourcePaths.map(p => unlink(p)))
   }
 
+  async getResourcesByKeyword(keyword: string, domain: ResourceDomain): Promise<Array<Resource>> {
+    const all = this.context.fileNameSnapshots[domain]
+    const result = [] as Resource[]
+    const promises = [] as Promise<void>[]
+
+    for await (const [key, val] of all.iterator({ gte: keyword.substring(0, keyword.length - 2) })) {
+      if (key.includes(keyword)) {
+        promises.push(this.context.metadata.get(val.sha1).then(metadata => {
+          result.push(generateResource(this.getPath(), val, metadata))
+        }))
+      }
+    }
+
+    await Promise.all(promises)
+
+    return result
+  }
+
   updateResources(resources: [PartialResourceHash, PartialResourceHash]): Promise<[string, string]>
   updateResources(resources: [PartialResourceHash]): Promise<[string]>
   updateResources(resources: PartialResourceHash[]): Promise<string[]>

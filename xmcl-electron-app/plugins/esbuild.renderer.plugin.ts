@@ -15,7 +15,7 @@ export default function createRendererPlugin(): Plugin {
         const outDir = build.initialOptions.outdir
         return {
           contents:
-          build.initialOptions.watch
+          build.initialOptions.plugins!.find(v => v.name === 'dev')
             ? `export default "http://localhost:3000/${basename(clean)}"`
             : `import { join } from 'path'; import { pathToFileURL } from 'url'; export default pathToFileURL(join(__dirname, 'renderer', ${JSON.stringify(clean)})).toString();`,
           resolveDir: outDir,

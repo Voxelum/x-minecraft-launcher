@@ -64,6 +64,8 @@ import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
 import { usePresence } from '@/composables/presence'
 import { InstanceServiceKey } from '@xmcl/runtime-api'
+import { kInstanceContext } from '@/composables/instanceContext'
+import { injection } from '@/util/inject'
 
 export default defineComponent({
   components: {
@@ -109,8 +111,8 @@ export default defineComponent({
       show()
     }
 
-    const { state } = useService(InstanceServiceKey)
-    usePresence({ location: 'instance-saves', instance: state.instance.name })
+    const { name } = injection(kInstanceContext)
+    usePresence(computed(() => t('presence.save', { instance: name.value })))
 
     return {
       saves,

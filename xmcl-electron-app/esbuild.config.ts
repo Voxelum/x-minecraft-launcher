@@ -11,7 +11,7 @@ import { yamlPlugin } from 'esbuild-plugin-yaml'
 import { BuildOptions } from 'esbuild'
 import 'dotenv/config'
 
-const config: BuildOptions = {
+const config = {
   bundle: true,
   metafile: true,
   assetNames: '[name]',
@@ -53,6 +53,6 @@ const config: BuildOptions = {
     yamlPlugin({}) as any,
   ],
   external: ['electron'],
-}
+} satisfies BuildOptions
 
 export default config

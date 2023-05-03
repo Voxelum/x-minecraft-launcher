@@ -1,7 +1,7 @@
 import chalk from 'chalk'
 import { ChildProcessWithoutNullStreams, spawn } from 'child_process'
 import electron from 'electron'
-import { build, BuildResult } from 'esbuild'
+import { BuildContext, Plugin, context } from 'esbuild'
 import { join, resolve } from 'path'
 import esbuildOptions from './esbuild.config'
 
@@ -14,7 +14,7 @@ let electronProcess: ChildProcessWithoutNullStreams | null = null
 /**
  * The esbuild watch handle.
  */
-let esbuild: BuildResult | null = null
+let esbuild: BuildContext | null = null
 
 /**
  * Start electron process and inspect port 5858 with 9222 as debug port.
@@ -95,29 +95,31 @@ function reloadElectron() {
  * Start esbuild service for main process and preload script
  */
 export async function dev() {
-  // await remove(join(__dirname, './dist'))
-
-  const result = await build({
-    ...esbuildOptions,
-    outdir: resolve(__dirname, './dist'),
-    // publicPath: './dist',
-    publicPath: '.',
-    entryPoints: { index: join(__dirname, './main/index.dev.ts') },
-    incremental: true,
-    watch: {
-      onRebuild(err, result) {
-        if (err) {
-          console.warn(err)
+  const onEndPlugin: Plugin = {
+    name: 'on-end',
+    setup(build) {
+      build.onEnd((result) => {
+        if (result.errors.length > 0) {
+          for (const e of result.errors) {
+            // pretty print esbuild error message
+            console.error(e.text)
+          }
         } else {
           console.log('electron main ready')
           reloadElectron()
         }
-      },
+      });
     },
-  })
-  console.log('electron main ready')
+  };
 
-  return result
+  esbuildOptions.plugins.push(onEndPlugin)
+  esbuild = await context({
+    ...esbuildOptions,
+    outdir: resolve(__dirname, './dist'),
+    publicPath: '.',
+    entryPoints: { index: join(__dirname, './main/index.dev.ts') },
+  })
+  await esbuild.watch()
 }
 
 function terminate() {
@@ -125,8 +127,8 @@ function terminate() {
     electronProcess.kill()
     electronProcess = null
   }
-  if (esbuild && esbuild.stop) {
-    esbuild.stop()
+  if (esbuild) {
+    esbuild.dispose()
     esbuild = null
   }
 }

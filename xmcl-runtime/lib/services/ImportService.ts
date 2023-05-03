@@ -104,7 +104,7 @@ export class ImportService extends AbstractService implements IImportService {
         if (response.headers['content-type'] === 'application/octet-stream') {
           const md5 = response.headers['content-md5']
           let fileName = basename(url)
-          if (response.headers['content-disposition'] && response.headers['content-disposition'].startsWith('attachment;')) {
+          if (response.headers['content-disposition'] && typeof response.headers['content-disposition'] === 'string' && response.headers['content-disposition'].startsWith('attachment;')) {
             let disposition = response.headers['content-disposition']
             const start = disposition.indexOf('filename=')
             disposition = disposition.substring(start)

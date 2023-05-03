@@ -6,7 +6,7 @@ import useSWRV from 'swrv'
 import { InjectionKey, Ref } from 'vue'
 import { useResourceUrisDiscovery } from './resources'
 import { kTaskManager } from './taskManager'
-import { client } from '@/util/modrinthClients'
+import { clientModrinthV2 } from '@/util/clients'
 import { kSWRVConfig } from './swrvConfig'
 
 export const kModrinthVersions: InjectionKey<ReturnType<typeof useModrinthVersions>> = Symbol('kModrinthVersions')
@@ -17,7 +17,7 @@ export function useModrinthVersions(project: Ref<string>, featured?: boolean, lo
 
   const { mutate, error, isValidating: refreshing, data } = useSWRV(computed(() =>
     `/modrinth/versions/${project.value}?featured=${featured || false}&loaders=${loaders?.value || ''}&gameVersions=${gameVersions?.value || ''}`), async () => {
-    const result = (await client.getProjectVersions(project.value, loaders?.value, gameVersions?.value, featured)).map(markRaw)
+    const result = (await clientModrinthV2.getProjectVersions(project.value, loaders?.value, gameVersions?.value, featured)).map(markRaw)
     return result
   }, inject(kSWRVConfig))
   watch(data, (result) => {
@@ -59,28 +59,5 @@ export function useModrinthVersionsStatus(versions: Ref<ProjectVersion[]>, proje
     getResource,
     isDownloaded,
     tasks: relatedTasks,
-  }
-}
-
-export function useModrinthDependencies() {
-  const visited = new Set<string>()
-  const visit = async (version: ProjectVersion): Promise<ProjectVersion[]> => {
-    if (visited.has(version.project_id)) {
-      return []
-    }
-    visited.add(version.project_id)
-    // client.getProjectVersionsById(version.dependencies.map(d => d.version_id).filter((v): v is string => !!v))
-    const deps = await Promise.all(version.dependencies.map(async (dep) => {
-      if (dep.version_id) {
-        const depVersion = await client.getProjectVersion(dep.version_id)
-        const result = await visit(depVersion)
-        return [result, dep.dependency_type]
-      } else {
-        const versions = await client.getProjectVersions(dep.project_id, version.loaders, version.game_versions, undefined)
-        const result = await visit(versions[0])
-        return [result, dep.dependency_type]
-      }
-    }))
-    return [version, ...deps.filter((v): v is string => !!v).reduce((a, b) => a.concat(b), [])]
   }
 }

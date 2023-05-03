@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-redeclare */
-import { GameProfile } from '@xmcl/user'
+import { GameProfile, YggdrasilTexture } from '@xmcl/user'
 import { Schema } from './schema'
 import _UserSchema from './UserSchema.json'
 
@@ -10,9 +10,9 @@ export const UserSchema: Schema<UserSchema> = _UserSchema
 
 export interface GameProfileAndTexture extends GameProfile {
   textures: {
-    SKIN: GameProfile.Texture
-    CAPE?: GameProfile.Texture
-    ELYTRA?: GameProfile.Texture
+    SKIN: YggdrasilTexture
+    CAPE?: YggdrasilTexture
+    ELYTRA?: YggdrasilTexture
   }
 
   uploadable?: Array<'skin' | 'cape'>

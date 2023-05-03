@@ -76,8 +76,8 @@ onMounted(() => {
   }
 })
 
-usePresence(computed(() => ({
-  location: 'instance',
+const { t } = useI18n()
+usePresence(computed(() => t('presence.instance', {
   instance: instance.value.name,
   minecraft: instance.value.runtime.minecraft || '',
   forge: instance.value.runtime.forge || '',

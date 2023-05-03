@@ -197,7 +197,7 @@ const imageDialog = injection(kImageDialog)
 const tab = ref(0)
 
 if (!upstream) {
-  usePresence(computed(() => ({ location: 'curseforge-project', name: project.value?.name || props.id })))
+  usePresence(computed(() => t('presence.curseforgeProject', { name: project.value?.name || props.id })))
 }
 </script>
 

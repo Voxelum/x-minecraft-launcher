@@ -1,4 +1,4 @@
-import { createInMemoryCheckpointHandler, DefaultSegmentPolicy, DownloadAgent, DownloadBaseOptions, resolveAgent } from '@xmcl/installer'
+import { DefaultRangePolicy, DownloadAgent, DownloadBaseOptions, resolveAgent } from '@xmcl/file-transfer'
 import { ClassicLevel } from 'classic-level'
 import { join } from 'path'
 import { Agent, Client, Dispatcher, Pool, setGlobalDispatcher } from 'undici'
@@ -155,9 +155,9 @@ export default class NetworkManager extends Manager {
     setGlobalDispatcher(apiDispatcher)
 
     this.downloadAgent = resolveAgent({
-      segmentPolicy: new DefaultSegmentPolicy(4 * 1024 * 1024, 4),
+      rangePolicy: new DefaultRangePolicy(4 * 1024 * 1024, 4),
       dispatcher: downloadDispatcher,
-      checkpointHandler: createInMemoryCheckpointHandler(),
+      // checkpointHandler: createInMemoryCheckpointHandler(),
     })
 
     this.apiClientFactories = apiClientFactories

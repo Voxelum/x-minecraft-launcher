@@ -1,8 +1,10 @@
 import { TaskItem } from '@/entities/task'
+import { injection } from '@/util/inject'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
-import { ModrinthServiceKey, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useDialog } from './dialog'
+import { kInstallList } from './installList'
 import { AddInstanceDialogKey } from './instanceAdd'
 import { InstanceInstallDialog } from './instanceUpdate'
 import { useNotifier } from './notifier'
@@ -11,7 +13,7 @@ import { useService } from './service'
 export const kModrinthInstall: InjectionKey<ReturnType<typeof useModrinthInstall>> = Symbol('ModrinthInstall')
 
 export function useModrinthInstall(project: Ref<Project | undefined>, tasks: Ref<Record<string, TaskItem>>, installTo: Ref<string>, getResource: (version: ProjectVersion) => Resource, currentVersionResource: Ref<Resource | undefined>) {
-  const { installVersion } = useService(ModrinthServiceKey)
+  const { add } = injection(kInstallList)
   const { install } = useService(ResourceServiceKey)
   const { show: showInstanceUpdateDialog } = useDialog(InstanceInstallDialog)
   const { show } = useDialog(AddInstanceDialogKey)
@@ -23,6 +25,7 @@ export function useModrinthInstall(project: Ref<Project | undefined>, tasks: Ref
     // if version is installing, then skip to install
     if (tasks.value[version.id]) return
     const resource = getResource(version)
+
     if (resource) {
       if (currentVersionResource.value) {
         showInstanceUpdateDialog({
@@ -44,8 +47,13 @@ export function useModrinthInstall(project: Ref<Project | undefined>, tasks: Ref
           })
         })
       }
-    } else {
-      await installVersion({ version, instancePath: installTo.value, icon: project.value?.icon_url })
+    } else if (project.value) {
+      add(version, {
+        uri: version.id,
+        name: project.value?.title,
+        icon: project.value?.icon_url ?? '',
+      })
+      // await installVersion({ version, instancePath: installTo.value, icon: project.value?.icon_url })
     }
   }
 

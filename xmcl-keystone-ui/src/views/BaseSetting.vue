@@ -80,7 +80,8 @@ useBeforeLeave(() => {
   return true
 })
 
-usePresence({ location: 'instance-setting', instance: name.value })
+usePresence(computed(() => t('presence.instanceSetting', { instance: name.value })))
+
 </script>
 
 <style scoped=true>

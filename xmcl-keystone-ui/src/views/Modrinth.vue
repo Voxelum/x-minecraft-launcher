@@ -178,7 +178,7 @@ onMounted(() => {
   refresh()
 })
 
-usePresence({ location: 'modrinth' })
+usePresence(computed(() => t('presence.modrinth')))
 </script>
 
 <style>

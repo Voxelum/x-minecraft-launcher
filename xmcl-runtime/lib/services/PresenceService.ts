@@ -1,5 +1,5 @@
 import { Client, SetActivity } from '@xmcl/discord-rpc'
-import { PresenceService as IPresenceService, PresenceServiceKey, Activity } from '@xmcl/runtime-api'
+import { PresenceService as IPresenceService, PresenceServiceKey } from '@xmcl/runtime-api'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { Inject } from '../util/objectRegistry'
@@ -73,7 +73,7 @@ export class PresenceService extends AbstractService implements IPresenceService
     })
   }
 
-  async setActivity(activity: Activity): Promise<void> {
+  async setActivity(activity: string): Promise<void> {
     if (!this.discord.isConnected) {
       try {
         await this.discord.connect()
@@ -84,50 +84,48 @@ export class PresenceService extends AbstractService implements IPresenceService
     const param = this.current
     this.current.largeImageKey = 'dark_512'
     this.current.startTimestamp = Date.now()
-    switch (activity.location) {
-      case 'modrinth':
-        param.details = 'Viewing Modrinth'
-        break
-      case 'curseforge':
-        param.details = 'Viewing CurseForge'
-        break
-      case 'modpack':
-        param.details = 'Viewing Modpacks'
-        break
-      case 'setting':
-        param.details = 'Viewing Setting Page'
-        break
-      case 'user':
-        param.details = 'Viewing User Page'
-        break
-      case 'versions':
-        param.details = 'Viewing Versions Page'
-        break
-      case 'modrinth-project':
-        param.details = `Viewing ${activity.name} in Modrinth`
-        break
-      case 'curseforge-project':
-        param.details = `Viewing ${activity.name} in Curseforge`
-        break
-      case 'instance-mods':
-        param.details = 'Viewing Mods in ' + activity.instance
-        break
-      case 'instance-setting':
-        param.details = 'Viewing Settings in ' + activity.instance
-        break
-      case 'instance-saves':
-        param.details = 'Viewing Saves in ' + activity.instance
-        break
-      case 'instance-resourcepacks':
-        param.details = 'Viewing Resource Packs in ' + activity.instance
-        break
-      case 'instance-shaderpacks':
-        param.details = 'Viewing Shader Packs in ' + activity.instance
-        break
-      case 'instance':
-        param.details = 'Idle in Instance ' + activity.instance
-        break
-    }
+    this.current.details = activity
+    // switch (activity.location) {
+    //   case 'modrinth':
+    //     param.details = 'Viewing Modrinth'
+    //     break
+    //   case 'curseforge':
+    //     param.details = 'Viewing CurseForge'
+    //     break
+    //   case 'modpack':
+    //     param.details = 'Viewing Modpacks'
+    //     break
+    //   case 'setting':
+    //     param.details = 'Viewing Setting Page'
+    //     break
+    //   case 'versions':
+    //     param.details = 'Viewing Versions Page'
+    //     break
+    //   case 'modrinth-project':
+    //     param.details = `Viewing ${activity.name} in Modrinth`
+    //     break
+    //   case 'curseforge-project':
+    //     param.details = `Viewing ${activity.name} in Curseforge`
+    //     break
+    //   case 'instance-mods':
+    //     param.details = 'Viewing Mods in ' + activity.instance
+    //     break
+    //   case 'instance-setting':
+    //     param.details = 'Viewing Settings in ' + activity.instance
+    //     break
+    //   case 'instance-saves':
+    //     param.details = 'Viewing Saves in ' + activity.instance
+    //     break
+    //   case 'instance-resourcepacks':
+    //     param.details = 'Viewing Resource Packs in ' + activity.instance
+    //     break
+    //   case 'instance-shaderpacks':
+    //     param.details = 'Viewing Shader Packs in ' + activity.instance
+    //     break
+    //   case 'instance':
+    //     param.details = 'Idle in Instance ' + activity.instance
+    //     break
+    // }
     await this.discord.user?.setActivity(param)
   }
 }

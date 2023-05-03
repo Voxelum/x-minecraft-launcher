@@ -1,5 +1,6 @@
 import { AZURE_CDN, AZURE_MS_CDN, IS_DEV } from '@/constant'
-import { ChecksumNotMatchError, download, DownloadTask } from '@xmcl/installer'
+import { DownloadTask } from '@xmcl/installer'
+import { ChecksumNotMatchError, download } from '@xmcl/file-transfer'
 import { BaseService, ServiceStateManager } from '@xmcl/runtime'
 import { ReleaseInfo } from '@xmcl/runtime-api'
 import { LauncherAppUpdater } from '@xmcl/runtime/lib/app/LauncherAppUpdater'

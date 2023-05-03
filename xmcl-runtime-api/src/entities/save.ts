@@ -1,4 +1,4 @@
-import type { GameType } from '@xmcl/world'
+import type { GameType } from '@xmcl/game-data'
 
 /**
  * The brief info for a save under an instance
@@ -37,9 +37,8 @@ export interface SaveMetadata {
   cheat: boolean
   gameVersion: string
   difficulty: number
-  lastPlayed: number
-
-  time: number
+  lastPlayed: bigint
+  time: bigint
 
   advancements: number
 }

@@ -6,6 +6,8 @@ export default function createNodePlugin(): Plugin {
   return {
     name: 'resolve-node',
     setup(build) {
+      const isDev = build.initialOptions.plugins!.find(v => v.name === 'dev')
+
       // If a ".node" file is imported within a module in the "file" namespace, resolve
       // it to an absolute path and put it into the "node-file" virtual namespace.
       build.onResolve(
@@ -16,7 +18,7 @@ export default function createNodePlugin(): Plugin {
           }),
           namespace: 'node-file',
           pluginData: args.pluginData,
-          external: !!build.initialOptions.watch,
+          external: !!isDev,
         }),
       )
 
@@ -69,7 +71,7 @@ catch (e) { debugger; console.error('Fail to require native node module ' + ${JS
         (args) => ({
           path: args.path,
           namespace: 'file',
-          external: !!build.initialOptions.watch,
+          external: !!isDev,
           pluginData: args.pluginData,
         }),
       )

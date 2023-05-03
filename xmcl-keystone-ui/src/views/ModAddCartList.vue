@@ -59,10 +59,10 @@
 <script setup lang="ts">
 import Hint from '@/components/Hint.vue'
 import ModAddMenuItem from '@/components/ModAddMenuItem.vue'
-import { kModInstallList } from '@/composables/modInstallList'
+import { kInstallList } from '@/composables/installList.js'
 import { injection } from '@/util/inject'
 
-const { list, remove, commit } = injection(kModInstallList)
+const { list, remove, commit } = injection(kInstallList)
 const itemCount = computed(() => {
   let count = list.value.length
   for (const item of list.value) {

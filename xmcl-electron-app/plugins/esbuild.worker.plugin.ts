@@ -40,7 +40,7 @@ export default function createWorkerPlugin(): Plugin {
         return {
           errors: result.errors,
           warnings: result.warnings,
-          contents: build.initialOptions.watch
+          contents: build.initialOptions.plugins!.find(v => v.name === 'dev')
             ? `
           import { Worker } from 'worker_threads';
           export const path = ${JSON.stringify(join(outDir, fileName))};

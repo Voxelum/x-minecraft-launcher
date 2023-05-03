@@ -1,5 +1,5 @@
 import { OfficialUserService as IOfficialUserService, OfficialUserServiceKey, UserException, UserProfile } from '@xmcl/runtime-api'
-import { MojangChallengeResponse } from '@xmcl/user'
+import { MojangChallengeResponse, YggdrasilClient } from '@xmcl/user'
 import { Client } from 'undici'
 import { MicrosoftAccountSystem } from '../accountSystems/MicrosoftAccountSystem'
 import LauncherApp from '../app/LauncherApp'
@@ -7,7 +7,6 @@ import { LauncherAppKey } from '../app/utils'
 import { MicrosoftAuthenticator } from '../clients/MicrosoftAuthenticator'
 import { MicrosoftOAuthClient } from '../clients/MicrosoftOAuthClient'
 import { MojangClient } from '../clients/MojangClient'
-import { YggdrasilClient } from '../clients/YggdrasilClient'
 import { CLIENT_ID, IS_DEV } from '../constant'
 import { normalizeGameProfile } from '../entities/user'
 import { kUserTokenStorage, UserTokenStorage } from '../entities/userTokenStore'
@@ -78,18 +77,28 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
 
     userService.registerAccountSystem('microsoft', system)
 
-    const legacyClient = new YggdrasilClient('https://authserver.mojang.com', () => userService.state.clientToken, dispatcher)
+    const headers = {}
+    const options = {
+      dispatcher,
+      headers,
+    }
+    const legacyClient = new YggdrasilClient('https://authserver.mojang.com', options)
     userService.registerAccountSystem('mojang', {
       login: async (options) => {
-        const result = await legacyClient.login({ username: options.username, password: options.password ?? '', requestUser: true })
+        const result = await legacyClient.login({
+          username: options.username,
+          password: options.password ?? '',
+          requestUser: true,
+          clientToken: userService.state.clientToken
+        })
           .catch((e) => {
             if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {
               throw new UserException({ type: 'loginInternetNotConnected' }, e.message)
             } else if (e.error === 'ForbiddenOperationException' &&
-            e.errorMessage === 'Invalid credentials. Invalid username or password.') {
+              e.errorMessage === 'Invalid credentials. Invalid username or password.') {
               throw new UserException({ type: 'loginInvalidCredentials' }, e.message)
             } else if (e.error === 'ForbiddenOperationException' &&
-            e.errorMessage === 'Invalid credential information.') {
+              e.errorMessage === 'Invalid credential information.') {
               throw new UserException({ type: 'loginInvalidCredentials' }, e.message)
             } else if (isSystemError(e)) {
               if (e.code === 'ETIMEDOUT') {
@@ -121,7 +130,7 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
           // TODO: error
           return user
         }
-        const valid = await legacyClient.validate(token)
+        const valid = await legacyClient.validate(token, userService.state.clientToken)
 
         this.log(`Validate ${user.authService} user access token: ${valid ? 'valid' : 'invalid'}`)
 
@@ -132,6 +141,7 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
           const result = await legacyClient.refresh({
             accessToken: token,
             requestUser: true,
+            clientToken: userService.state.clientToken,
           })
           this.log(`Refreshed user access token for user: ${user.id}`)
 

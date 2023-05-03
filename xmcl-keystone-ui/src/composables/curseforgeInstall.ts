@@ -7,11 +7,15 @@ import { InstanceInstallDialog } from './instanceUpdate'
 import { useNotifier } from './notifier'
 import { useResourceUrisDiscovery } from './resources'
 import { useService } from './service'
+import { kInstallList } from './installList'
+import { injection } from '@/util/inject'
+import { clientCurseforgeV1 } from '@/util/clients'
+import { useCurseforgeProject } from './curseforge'
 
 export const kCurseforgeInstall: InjectionKey<ReturnType<typeof useCurseforgeInstall>> = Symbol('CurseforgeInstall')
 
 export function useCurseforgeInstall(modId: Ref<number>, files: Ref<Pick<File, 'modId' | 'id'>[]>, from: Ref<string | undefined>, type: Ref<ProjectType>, currentFileResource: Ref<Resource | undefined>) {
-  const { installFile, getModFile } = useService(CurseForgeServiceKey)
+  const { add } = injection(kInstallList)
   const { install: installResource } = useService(ResourceServiceKey)
   const { t } = useI18n()
   const { notify } = useNotifier()
@@ -22,8 +26,9 @@ export function useCurseforgeInstall(modId: Ref<number>, files: Ref<Pick<File, '
   const isDownloaded = (file: Pick<File, 'modId' | 'id'>) => {
     return !!resources.value[getCurseforgeFileUri(file)]
   }
+  const { project } = useCurseforgeProject(modId)
   async function install(input: File | FileIndex) {
-    const file = 'modId' in input ? input : await getModFile({ fileId: input.fileId, modId: modId.value })
+    const file = 'modId' in input ? input : await clientCurseforgeV1.getModFile(modId.value, input.fileId)
     const resource = resources.value[getCurseforgeFileUri(file)]
     if (resource) {
       if (currentFileResource.value) {
@@ -47,7 +52,14 @@ export function useCurseforgeInstall(modId: Ref<number>, files: Ref<Pick<File, '
         })
       }
     } else {
-      await installFile({ file, type: type.value, instancePath: from.value })
+      if (project.value) {
+        add(file, {
+          uri: file.modId.toString(),
+          name: project.value.name,
+          icon: project.value.logo.url,
+        })
+      }
+      // await installFile({ file, type: type.value, instancePath: from.value })
     }
   }
   return {
