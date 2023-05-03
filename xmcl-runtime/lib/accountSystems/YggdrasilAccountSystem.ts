@@ -110,6 +110,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
 
         await this.storage.put(userProfile, result.accessToken)
         userProfile.expiredAt = Date.now() + 86400_000
+        userProfile.invalidated = false
       } catch (e) {
         this.logger.error(e)
         this.logger.warn(`Invalid current user ${userProfile.id} accessToken!`)
@@ -118,6 +119,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
       }
     } else {
       userProfile.expiredAt = Date.now() + 86400_000
+      userProfile.invalidated = false
     }
 
     for (const p of Object.values(userProfile.profiles)) {
