@@ -88,7 +88,7 @@ export const kInstallList = Symbol('InstallList') as InjectionKey<ReturnType<typ
 export function useInstallList() {
   const mods = useMods()
   provide(kMods, mods)
-  const { install, disable } = useService(InstanceModsServiceKey)
+  const { install, uninstall } = useService(InstanceModsServiceKey)
   const { installFile } = useService(CurseForgeServiceKey)
   const { installVersion } = useService(ModrinthServiceKey)
 
@@ -289,7 +289,7 @@ export function useInstallList() {
         projectUri: ver.project_id,
         modrinth: ver,
         warnings: getWarnings(mutexDict, uris, ver.name),
-        type: type,
+        type,
         enabled: type === 'required',
         uris,
       }
@@ -332,29 +332,28 @@ export function useInstallList() {
         const deps = await getCurseforgeDependencies(mod).catch(() => [])
         result.push(...deps)
       }
-    }
-    if (resource.metadata.modrinth) {
+    } else if (resource.metadata.modrinth) {
       const version = await clientModrinthV2.getProjectVersion(resource.metadata.modrinth.versionId).catch(() => { })
       if (version) {
         const deps = await getModrinthDependencies(version).catch(() => [])
         result.push(...deps)
       }
-    }
-
-    const modDeps = getModDependencies(resource).filter(dep => dep.modId !== 'minecraft' && dep.modId !== 'forge' && dep.modId !== 'fabricloader' && dep.modId !== 'fabric' && dep.modId !== 'java')
-    for (const dep of modDeps) {
-      const resource = getModResourceByDep(dep)
-      const uris = getUris(undefined, undefined, undefined).concat(['mod:' + dep.modId])
-      const item: InstallListFileItemLeaf = {
-        id: dep.modId,
-        name: resource?.name || dep.modId,
-        projectUri: dep.modId,
-        warnings: getWarnings(mutexDict, uris, resource?.name || dep.modId),
-        type: 'required',
-        enabled: !!resource,
-        uris,
+    } else {
+      const modDeps = getModDependencies(resource).filter(dep => dep.modId !== 'minecraft' && dep.modId !== 'forge' && dep.modId !== 'fabricloader' && dep.modId !== 'fabric' && dep.modId !== 'java')
+      for (const dep of modDeps) {
+        const resource = getModResourceByDep(dep)
+        const uris = getUris(undefined, undefined, undefined).concat(['mod:' + dep.modId])
+        const item: InstallListFileItemLeaf = {
+          id: dep.modId,
+          name: resource?.name || dep.modId,
+          projectUri: dep.modId,
+          warnings: getWarnings(mutexDict, uris, resource?.name || dep.modId),
+          type: 'required',
+          enabled: !!resource,
+          uris,
+        }
+        result.push(item)
       }
-      result.push(item)
     }
 
     return result
@@ -376,14 +375,14 @@ export function useInstallList() {
     const toInstallCurseforge: [File, string | undefined][] = []
     const toInstallModrinth: [ProjectVersion, string | undefined][] = []
     for (const i of list.value) {
-      if (i.enabled && i.resource) {
+      if (i.enabled && i.resource && !i.remove) {
         toInstall.push(i.resource)
         for (const dep of i.dependencies) {
           if (dep.enabled && dep.resource) {
             toInstall.push(dep.resource)
           }
         }
-      } else if (i.enabled && i.resource) {
+      } else if (i.enabled && i.resource && i.remove) {
         toRemove.push(i.resource)
       } else if (i.enabled && i.curseforge) {
         toInstallCurseforge.push([i.curseforge, i.icon])
@@ -409,27 +408,32 @@ export function useInstallList() {
     const successedToInstallCurseforge: File[] = []
     const successedToInstallModrinth: ProjectVersion[] = []
 
-    await Promise.all([
-      install({ mods: toInstall }).then(() => {
-        successedToInstall.push(...toInstall)
-      }),
-      disable({ mods: toRemove }).then(() => {
-        successedToRemove.push(...toRemove)
-      }),
-      toInstallCurseforge.map(([file, icon]) => installFile({
-        file: file,
-        icon,
-        type: 'mc-mods',
-      }).then(() => {
-        successedToInstallCurseforge.push(file)
-      })),
-      toInstallModrinth.map(([version, icon]) => installVersion({
-        version,
-        icon,
-      }).then(() => {
-        successedToInstallModrinth.push(version)
-      })),
-    ])
+    try {
+      installing.value = true
+      await Promise.all([
+        install({ mods: toInstall }).then(() => {
+          successedToInstall.push(...toInstall)
+        }),
+        uninstall({ mods: toRemove }).then(() => {
+          successedToRemove.push(...toRemove)
+        }),
+        ...toInstallCurseforge.map(([file, icon]) => installFile({
+          file,
+          icon,
+          type: 'mc-mods',
+        }).then(() => {
+          successedToInstallCurseforge.push(file)
+        })),
+        ...toInstallModrinth.map(([version, icon]) => installVersion({
+          version,
+          icon,
+        }).then(() => {
+          successedToInstallModrinth.push(version)
+        })),
+      ])
+    } finally {
+      installing.value = false
+    }
 
     // Remove the successed from list
     list.value = list.value.filter(i => {
@@ -439,13 +443,31 @@ export function useInstallList() {
       if (i.modrinth && successedToInstallModrinth.includes(i.modrinth)) return false
       return true
     })
+
+    for (const key in mutexDict) {
+      mutexDict[key] = []
+    }
   }
 
+  const installing = ref(false)
+
   return {
+    installing,
     list,
     addAsRemove,
     add,
     remove,
     commit,
+  }
+}
+
+export function useInstallListProxy(): ReturnType<typeof useInstallList> {
+  return {
+    list: ref([]),
+    addAsRemove: () => { },
+    add: async () => { },
+    remove: () => { },
+    commit: async () => { },
+    installing: ref(false),
   }
 }

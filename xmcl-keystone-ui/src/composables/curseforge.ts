@@ -134,23 +134,21 @@ export function useCurseforge(props: CurseforgeProps) {
  * Hook to view the curseforge project downloadable files.
  * @param projectId The project id
  */
-export function useCurseforgeProjectFiles(projectId: Ref<number>) {
+export function useCurseforgeProjectFiles(projectId: Ref<number>, gameVersion: Ref<string | undefined>, modLoaderType: Ref<FileModLoaderType | undefined>) {
   const files = inject(kCurseforgeFiles, ref([]))
   const data = shallowReactive({
     index: 0,
     pageSize: 30,
     totalCount: 0,
-    gameVersion: undefined as string | undefined,
-    modLoaderType: undefined as FileModLoaderType | undefined,
   })
   const { mutate: refresh, isValidating: refreshing, error, data: _data } = useSWRV(
-    computed(() => `/curseforge/${projectId.value}/files`), async () => {
+    computed(() => `/curseforge/${projectId.value}/files?gameVersion=${gameVersion.value}&modLoaderType=${modLoaderType.value}&index=${data.index}`), async () => {
       return markRaw(await clientCurseforgeV1.getModFiles({
         modId: projectId.value,
         index: data.index,
-        gameVersion: data.gameVersion,
+        gameVersion: gameVersion.value,
         pageSize: data.pageSize,
-        modLoaderType: data.modLoaderType,
+        modLoaderType: modLoaderType.value,
       }))
     })
   watch(_data, (f) => {

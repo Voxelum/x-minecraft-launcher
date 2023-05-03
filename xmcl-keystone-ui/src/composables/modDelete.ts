@@ -6,14 +6,10 @@ import { useOperation } from './operation'
 import { useService } from './service'
 
 export function useModDeletion(items: Ref<ModItem[]>) {
-  const { removeResources } = useService(ResourceServiceKey)
   const { uninstall } = useService(InstanceModsServiceKey)
   const { show } = useDialog('deletion')
   const { begin: beginDelete, cancel: cancelDelete, operate: confirmDelete, data: deletingMods } = useOperation<ModItem[]>([], (mods) => {
-    const enabled = mods.filter(m => m.enabled)
-    uninstall({ mods: enabled.map(m => m.resource) }).then(() => {
-      removeResources(mods.map(m => m.hash))
-    })
+    uninstall({ mods: mods.map(m => m.resource) })
   })
   function startDelete(item?: ModItem) {
     const toDelete = items.value.filter(i => i.dragged || (i.selected))

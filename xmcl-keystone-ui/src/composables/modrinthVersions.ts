@@ -13,13 +13,14 @@ export const kModrinthVersions: InjectionKey<ReturnType<typeof useModrinthVersio
 export const kModrinthVersionsHolder: InjectionKey<Ref<Record<string, ProjectVersion>>> = Symbol('ModrinthVersionsHolder')
 
 export function useModrinthVersions(project: Ref<string>, featured?: boolean, loaders?: Ref<string[] | undefined>, gameVersions?: Ref<string[] | undefined>) {
-  const holder = inject(kModrinthVersionsHolder)
+  const holder = inject(kModrinthVersionsHolder, undefined)
 
   const { mutate, error, isValidating: refreshing, data } = useSWRV(computed(() =>
     `/modrinth/versions/${project.value}?featured=${featured || false}&loaders=${loaders?.value || ''}&gameVersions=${gameVersions?.value || ''}`), async () => {
-    const result = (await clientModrinthV2.getProjectVersions(project.value, loaders?.value, gameVersions?.value, featured)).map(markRaw)
-    return result
-  }, inject(kSWRVConfig))
+      const result = (await clientModrinthV2.getProjectVersions(project.value, { loaders: loaders?.value, gameVersions: gameVersions?.value, featured })).map(markRaw)
+      return result
+    }, inject(kSWRVConfig))
+
   watch(data, (result) => {
     if (holder && result) {
       const newHolder = { ...holder.value }

@@ -222,6 +222,8 @@ export class VuexServiceFactory implements ServiceFactory {
         }
 
         syncingQueue = {}
+      }, (e) => {
+        console.error(`Unexpected error for service ${service}:`, e)
       })
     }
 

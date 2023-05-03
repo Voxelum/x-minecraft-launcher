@@ -67,11 +67,13 @@
 
 <script lang=ts setup>
 import { useScrollRight, useTheme } from '@/composables'
+import { getCompatibleIcon } from '@/composables/compatibleIcon'
+import { useModCompatibleTooltip } from '@/composables/modCompatibleTooltip'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getColor } from '@/util/color'
 import { injection } from '@/util/inject'
 import { CompatibleDetail } from '@/util/modCompatible'
-import { kModsContext, ModItem } from '../composables/mod'
+import { ModItem, kModsContext } from '../composables/mod'
 
 defineProps<{
   source: ModItem
@@ -82,22 +84,7 @@ defineProps<{
 
 const { icons } = injection(kModsContext)
 
-const getCompatibleIcon = (c?: CompatibleDetail) => {
-  if (!c) return '❔'
-  if (c.compatible === 'maybe') return '❔'
-  return c.compatible ? '✔️' : '❌'
-}
-
-const { t } = useI18n()
-
-const getTooltip = (dep: CompatibleDetail) => {
-  const compatibleText = dep.compatible === 'maybe'
-    ? t('mod.maybeCompatible')
-    : dep.compatible
-      ? t('mod.compatible')
-      : t('mod.incompatible')
-  return compatibleText + t('mod.acceptVersion', { version: dep.requirements }) + ', ' + t('mod.currentVersion', { current: dep.version || '⭕' }) + '.'
-}
+const { getTooltip } = useModCompatibleTooltip()
 
 const getDepIcon = (name: string, icon?: string) => {
   if (icon) return icon

@@ -20,9 +20,7 @@ export function useModsSearch(keyword: Ref<string>, runtime: Ref<InstanceData['r
   }
   const mods = computed(() => keyword.value
     ? filter(keyword.value, resources.value, {
-      extract(r) {
-        return `${r.name} ${r.fileName}`
-      },
+      extract: (r) => `${r.name} ${r.fileName}`,
     }).map((r) => r.original ? r.original : r as any as Resource).filter(isValidResource)
     : resources.value.filter(isValidResource))
 

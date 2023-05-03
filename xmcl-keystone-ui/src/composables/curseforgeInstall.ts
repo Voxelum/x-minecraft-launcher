@@ -1,24 +1,24 @@
+import { clientCurseforgeV1 } from '@/util/clients'
 import { File, FileIndex } from '@xmcl/curseforge'
-import { CurseForgeServiceKey, getCurseforgeFileUri, ProjectType, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { CurseForgeServiceKey, ProjectType, Resource, ResourceServiceKey, getCurseforgeFileUri } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
+import { useCurseforgeProject } from './curseforge'
 import { useDialog } from './dialog'
+import { kInstallList } from './installList'
 import { AddInstanceDialogKey } from './instanceAdd'
 import { InstanceInstallDialog } from './instanceUpdate'
 import { useNotifier } from './notifier'
 import { useResourceUrisDiscovery } from './resources'
 import { useService } from './service'
-import { kInstallList } from './installList'
-import { injection } from '@/util/inject'
-import { clientCurseforgeV1 } from '@/util/clients'
-import { useCurseforgeProject } from './curseforge'
 
 export const kCurseforgeInstall: InjectionKey<ReturnType<typeof useCurseforgeInstall>> = Symbol('CurseforgeInstall')
 
 export function useCurseforgeInstall(modId: Ref<number>, files: Ref<Pick<File, 'modId' | 'id'>[]>, from: Ref<string | undefined>, type: Ref<ProjectType>, currentFileResource: Ref<Resource | undefined>) {
-  const { add } = injection(kInstallList)
+  const installList = inject(kInstallList, undefined)
   const { install: installResource } = useService(ResourceServiceKey)
   const { t } = useI18n()
   const { notify } = useNotifier()
+  const { installFile } = useService(CurseForgeServiceKey)
 
   const { show: showAddInstanceDialog } = useDialog(AddInstanceDialogKey)
   const { show: showInstanceUpdateDialog } = useDialog(InstanceInstallDialog)
@@ -35,7 +35,7 @@ export function useCurseforgeInstall(modId: Ref<number>, files: Ref<Pick<File, '
         showInstanceUpdateDialog({
           type: 'curseforge',
           currentResource: currentFileResource.value,
-          resource: resource,
+          resource,
         })
       } else if (type.value === 'modpacks') {
         showAddInstanceDialog(resource.path)
@@ -52,14 +52,15 @@ export function useCurseforgeInstall(modId: Ref<number>, files: Ref<Pick<File, '
         })
       }
     } else {
-      if (project.value) {
-        add(file, {
+      if (project.value && type.value === 'mc-mods' && installList) {
+        installList.add(file, {
           uri: file.modId.toString(),
           name: project.value.name,
           icon: project.value.logo.url,
         })
+      } else {
+        await installFile({ file, type: type.value })
       }
-      // await installFile({ file, type: type.value, instancePath: from.value })
     }
   }
   return {

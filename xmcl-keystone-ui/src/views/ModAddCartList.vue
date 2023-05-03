@@ -19,6 +19,7 @@
         text
         color="primary"
         :disabled="list.length === 0"
+        :loading="installing"
         @click="commit"
       >
         <v-icon left>
@@ -42,11 +43,13 @@
           <ModAddMenuItem
             :key="item.id"
             :item="item"
+            :disabled="installing"
             @remove="remove(item.id)"
           />
           <ModAddMenuItem
             v-for="child of item.dependencies"
             :key="child.id"
+            :disabled="installing"
             :item="child"
             child
             :type="child.type"
@@ -62,7 +65,7 @@ import ModAddMenuItem from '@/components/ModAddMenuItem.vue'
 import { kInstallList } from '@/composables/installList.js'
 import { injection } from '@/util/inject'
 
-const { list, remove, commit } = injection(kInstallList)
+const { list, remove, commit, installing } = injection(kInstallList)
 const itemCount = computed(() => {
   let count = list.value.length
   for (const item of list.value) {
