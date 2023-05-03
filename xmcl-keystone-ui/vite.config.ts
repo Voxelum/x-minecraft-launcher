@@ -37,6 +37,7 @@ export default defineConfig({
   },
   resolve: {
     alias: {
+      undici: 'undici-shim',
       '@': join(__dirname, './src'),
       '~main': join(__dirname, './src/windows/main'),
       '~logger': join(__dirname, './src/windows/logger'),
