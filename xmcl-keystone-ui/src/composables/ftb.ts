@@ -1,10 +1,7 @@
-import { Ref } from 'vue'
-import { FTBVersion, FTBModpackManifest, FTBModpackVersionManifest, CachedFTBModpackVersionManifest } from '@xmcl/runtime-api'
-import { useRefreshable, useService } from '@/composables'
-import { FTBClient } from '@/util/ftbClient'
+import { clientFTB } from '@/util/clients'
+import { CachedFTBModpackVersionManifest, FTBVersion } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
-import LocalStorageCache from 'swrv/dist/cache/adapters/localStorage'
-import { LocalStroageCache } from '@/util/localStorageCache'
+import { Ref } from 'vue'
 import { kSWRVConfig } from './swrvConfig'
 
 interface FeedTheBeastProps {
@@ -22,7 +19,7 @@ export function useFeedTheBeast(props: FeedTheBeastProps) {
   })
 
   const { data, isValidating: refreshing } = useSWRV(computed(() => `/ftb?keyword=${currentKeyword.value}`), async () => {
-    return !currentKeyword.value ? await client.getFeaturedModpacks() : await client.searchModpacks({ keyword: currentKeyword.value })
+    return !currentKeyword.value ? await clientFTB.getFeaturedModpacks() : await clientFTB.searchModpacks({ keyword: currentKeyword.value })
   }, inject(kSWRVConfig))
 
   return {
@@ -34,7 +31,7 @@ export function useFeedTheBeast(props: FeedTheBeastProps) {
 
 export function useFeedTheBeastProject(id: Ref<number>) {
   const { data: manifest, error, isValidating: refreshing, mutate } = useSWRV(computed(() => `/ftb/${id.value}`),
-    () => client.getModpackManifest(id.value), inject(kSWRVConfig))
+    () => clientFTB.getModpackManifest(id.value), inject(kSWRVConfig))
 
   return {
     manifest,
@@ -42,10 +39,9 @@ export function useFeedTheBeastProject(id: Ref<number>) {
     error,
   }
 }
-const client = new FTBClient()
 
 export function useFeedTheBeastChangelog(version: Ref<{ id: number; version: FTBVersion }>) {
-  const { data, error, isValidating } = useSWRV(computed(() => `/ftb/${version.value.id}/${version.value.version.id}/changelog`), () => client.getModpackVersionChangelog({
+  const { data, error, isValidating } = useSWRV(computed(() => `/ftb/${version.value.id}/${version.value.version.id}/changelog`), () => clientFTB.getModpackVersionChangelog({
     modpack: version.value.id,
     version: version.value.version,
   }), inject(kSWRVConfig))
@@ -58,7 +54,7 @@ export function useFeedTheBeastChangelog(version: Ref<{ id: number; version: FTB
 
 export function useFeedTheBeastProjectVersion(project: Ref<number>, version: Ref<FTBVersion>) {
   const { isValidating: refreshing, data: versionManifest, error } = useSWRV(computed(() => `/ftb/${version.value.id}/${version.value.id}`), async () => {
-    return client.getModpackVersionManifest({
+    return clientFTB.getModpackVersionManifest({
       modpack: project.value,
       version: version.value,
     })

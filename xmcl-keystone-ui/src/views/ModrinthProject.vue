@@ -194,6 +194,6 @@ if (_upstream && _upstream.value.upstream?.type === 'modrinth-modpack') {
 }
 
 if (!_upstream) {
-  usePresence(computed(() => ({ location: 'modrinth-project', name: project.value?.title || '' })))
+  usePresence(computed(() => t('presence.modrinthProject', { name: project.value?.title || '' })))
 }
 </script>

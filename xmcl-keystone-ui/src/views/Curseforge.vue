@@ -153,6 +153,6 @@ const {
   refresh,
 } = useCurseforge(props)
 
-usePresence({ location: 'curseforge' })
+usePresence(computed(() => t('presence.curseforge')))
 
 </script>

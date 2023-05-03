@@ -1,6 +1,7 @@
-import { CurseforgeV1Client, File, FileModLoaderType, Mod, ModsSearchSortField } from '@xmcl/curseforge'
+import { clientCurseforgeV1 } from '@/util/clients'
+import { File, FileModLoaderType, Mod, ModsSearchSortField } from '@xmcl/curseforge'
 import useSWRV from 'swrv'
-import { computed, InjectionKey, reactive, Ref, ref, toRefs, watch } from 'vue'
+import { InjectionKey, Ref, computed, reactive, ref, toRefs, watch } from 'vue'
 import { kSWRVConfig, useOverrideSWRVConfig } from './swrvConfig'
 
 interface CurseforgeProps {
@@ -14,8 +15,6 @@ interface CurseforgeProps {
   gameVersion: string
   from: string
 }
-
-export const client = new CurseforgeV1Client('', {})
 
 /**
  * Hook to return the controller of curseforge preview page. Navigating the curseforge projects.
@@ -95,7 +94,7 @@ export function useCurseforge(props: CurseforgeProps) {
   const { mutate, isValidating, error, data: _data } = useSWRV(
     computed(() => `/curseforge/search?index=${index.value}&classId=${currentSectionId.value}&sortField=${currentSort.value}&gameVersion=${currentVersion.value}&categoryId=${categoryId.value}&searchFilter=${currentKeyword.value}`),
     async () => {
-      const result = await client.searchMods({
+      const result = await clientCurseforgeV1.searchMods({
         pageSize,
         index: index.value,
         classId: currentSectionId.value,
@@ -146,7 +145,7 @@ export function useCurseforgeProjectFiles(projectId: Ref<number>) {
   })
   const { mutate: refresh, isValidating: refreshing, error, data: _data } = useSWRV(
     computed(() => `/curseforge/${projectId.value}/files`), async () => {
-      return markRaw(await client.getModFiles({
+      return markRaw(await clientCurseforgeV1.getModFiles({
         modId: projectId.value,
         index: data.index,
         gameVersion: data.gameVersion,
@@ -176,7 +175,7 @@ export const kCurseforgeFiles: InjectionKey<Ref<File[]>> = Symbol('CurseforgeFil
 export function useCurseforgeProjectDescription(props: { project: number }) {
   const { mutate: refresh, isValidating: refreshing, error, data: description } = useSWRV(
     computed(() => `/curseforge/${props.project}/description`), async () => {
-      return await client.getModDescription(props.project)
+      return await clientCurseforgeV1.getModDescription(props.project)
     }, inject(kSWRVConfig))
 
   return { description, refreshing, refresh, error }
@@ -187,7 +186,7 @@ export function useCurseforgeProjectDescription(props: { project: number }) {
  */
 export function useCurseforgeProject(projectId: Ref<number>) {
   const { data: project, isValidating, mutate, error } = useSWRV(computed(() => `/curseforge/${projectId.value}`), async function () {
-    return markRaw(await client.getMod(projectId.value))
+    return markRaw(await clientCurseforgeV1.getMod(projectId.value))
   }, inject(kSWRVConfig))
   return {
     refreshing: isValidating,
@@ -199,7 +198,7 @@ export function useCurseforgeProject(projectId: Ref<number>) {
 
 export function useCurseforgeCategories() {
   const { isValidating: refreshing, mutate: refresh, data: categories } = useSWRV('/curseforge/categories', async () => {
-    return markRaw(await client.getCategories())
+    return markRaw(await clientCurseforgeV1.getCategories())
   }, inject(kSWRVConfig))
   return { categories, refreshing, refresh }
 }

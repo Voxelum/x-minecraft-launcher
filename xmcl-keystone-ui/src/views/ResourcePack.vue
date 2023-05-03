@@ -134,6 +134,7 @@ import { useDragTransferList, useDropImport, useFilterCombobox, useService, useS
 import { usePresence } from '@/composables/presence'
 import { kCompact } from '@/composables/scrollTop'
 import { injection } from '@/util/inject'
+import { kInstanceContext } from '@/composables/instanceContext'
 
 function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {
   function getFilterOptions(item: ResourcePackItem) {
@@ -224,12 +225,9 @@ function onDropDelete(e: DragEvent) {
 function goPreview() {
   push('/resource-pack-preview')
 }
-function goToCurseforge() {
-  push(`/curseforge/texture-packs?from=${path.value}`)
-}
 
-const { state } = useService(InstanceServiceKey)
-usePresence({ location: 'instance-resourcepacks', instance: state.instance.name })
+const { name } = injection(kInstanceContext)
+usePresence(computed(() => t('presence.resourcePack', { instance: name.value })))
 </script>
 
 <style scoped>

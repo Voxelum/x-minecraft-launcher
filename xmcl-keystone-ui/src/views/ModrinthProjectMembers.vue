@@ -33,7 +33,7 @@
 <script lang="ts" setup>
 import ErrorView from '@/components/ErrorView.vue'
 import { kSWRVConfig } from '@/composables/swrvConfig'
-import { client } from '@/util/modrinthClients'
+import { clientModrinthV2 } from '@/util/clients.js'
 import { TeamMember } from '@xmcl/modrinth'
 import useSWRV from 'swrv'
 
@@ -41,7 +41,7 @@ const props = defineProps<{ projectId: string }>()
 
 const { t } = useI18n()
 const { isValidating, error, data } = useSWRV(computed(() => `/modrinth/team/${props.projectId}`),
-  () => client.getProjectTeamMembers(props.projectId),
+  () => clientModrinthV2.getProjectTeamMembers(props.projectId),
   inject(kSWRVConfig),
 )
 

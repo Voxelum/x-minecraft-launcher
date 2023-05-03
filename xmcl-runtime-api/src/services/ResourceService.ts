@@ -52,6 +52,8 @@ export interface ResourceService extends GenericEventEmitter<ResourceServiceEven
   getResourcesByUris(uri: [string, string]): Promise<[Resource | undefined, Resource | undefined]>
   getResourcesByUris(uri: string[]): Promise<Array<Resource | undefined>>
 
+  getResourcesByKeyword(keyword: string, domain: ResourceDomain): Promise<Array<Resource>>
+
   getResourceMetadataByHash(sha1: string): Promise<ResourceMetadata | undefined>
   getResourcesMetadataByHashes(sha1: string[]): Promise<Array<ResourceMetadata | undefined>>
 

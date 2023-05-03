@@ -922,6 +922,19 @@ peerIceGatheringState:
 peerSignalingState:
   have-local-offer: Waiting peer description
 popular: Popularity
+presence:
+  curseforge: Viewing CurseForge
+  curseforgeProject: Viewing {name} in Curseforge
+  instance: Idle in Instance {instance}
+  instanceSetting: 'Edit Instance Setting: {instance}'
+  mod: Viewing Mods in {instance}
+  modrinth: Viewing Modrinth
+  modrinthProject: Viewing {name} in Modrinth
+  resourcePack: Viewing Resource Packs in {instance}
+  save: Viewing Saves in {instance}
+  setting: Viewing Setting Page
+  shaderPack: Viewing Shader Packs in {instance}
+  version: Viewing Versions Page
 previous: Previous
 proxy:
   host: Host

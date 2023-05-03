@@ -123,5 +123,5 @@ const onSelect = () => {
   isSelectionMode.value = true
 }
 const { state } = useService(InstanceServiceKey)
-usePresence({ location: 'instance-mods', instance: state.instance.name })
+usePresence(computed(() => t('presence.mod', { instance: state.instance.name })))
 </script>

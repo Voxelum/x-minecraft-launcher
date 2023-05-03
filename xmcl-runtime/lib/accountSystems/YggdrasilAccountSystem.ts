@@ -1,13 +1,11 @@
 import { GameProfileAndTexture, LoginOptions, SkinPayload, UserException, UserProfile, UserState } from '@xmcl/runtime-api'
-import { getTextures } from '@xmcl/user'
+import { YggdrasilTexturesInfo, YggdrasilThirdPartyClient } from '@xmcl/user'
 import { Dispatcher } from 'undici'
-import { YggdrasilThirdPartyClient } from '../clients/YggdrasilClient'
 import { normalizeGameProfile, normalizeSkinData } from '../entities/user'
 import { UserTokenStorage } from '../entities/userTokenStore'
 import { isSystemError } from '../util/error'
 import { Logger } from '../util/log'
 import { toRecord } from '../util/object'
-import { joinUrl } from '../util/url'
 import { UserAccountSystem } from './AccountSystem'
 
 export class YggdrasilAccountSystem implements UserAccountSystem {
@@ -24,13 +22,17 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     if (!api) return undefined
 
     const client = new YggdrasilThirdPartyClient(
+      api.url,
+      {
+        dispatcher: this.dispatcher,
+      }
       // eslint-disable-next-line no-template-curly-in-string
-      joinUrl(api.url, api.profile || '/sessionserver/session/minecraft/profile/${uuid}'),
+      // joinUrl(api.url, api.profile || '/sessionserver/session/minecraft/profile/${uuid}'),
       // eslint-disable-next-line no-template-curly-in-string
-      joinUrl(api.url, api.texture || '/api/user/profile/${uuid}/${type}'),
-      joinUrl(api.url, api.auth || '/authserver'),
-      () => this.userState.clientToken,
-      this.dispatcher,
+      // joinUrl(api.url, api.texture || '/api/user/profile/${uuid}/${type}'),
+      // joinUrl(api.url, api.auth || '/authserver'),
+      // () => this.userState.clientToken,
+      // this.dispatcher,
     )
 
     return client
@@ -45,6 +47,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
         username,
         password: password ?? '',
         requestUser: true,
+        clientToken: this.userState.clientToken,
       }, signal)
 
       const userProfile: UserProfile = {
@@ -92,7 +95,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
       return userProfile
     }
 
-    const valid = await client.validate(token, signal)
+    const valid = await client.validate(token, this.userState.clientToken, signal)
 
     this.logger.log(`Validate ${userProfile.authService} user access token: ${valid ? 'valid' : 'invalid'}`)
 
@@ -101,6 +104,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
         const result = await client.refresh({
           accessToken: token,
           requestUser: true,
+          clientToken: this.userState.clientToken,
         }, signal)
         this.logger.log(`Refreshed user access token for user: ${userProfile.id}`)
 
@@ -118,7 +122,8 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
 
     for (const p of Object.values(userProfile.profiles)) {
       const profile = await client.lookup(p.id, true, signal)
-      const textures = getTextures(profile)
+      const texturesBase64 = profile.properties.textures
+      const textures = JSON.parse(Buffer.from(texturesBase64, 'base64').toString())
       const skin = textures?.textures.SKIN
       const uploadable = profile.properties.uploadableTextures
 
@@ -201,7 +206,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
 
     // Update the game profile
     const newGameProfile = await client.lookup(gameProfile.id, true, signal)
-    const textures = getTextures(newGameProfile)
+    const textures = JSON.parse(Buffer.from(newGameProfile.properties.textures, 'base64').toString()) as YggdrasilTexturesInfo
     const uploadable = newGameProfile.properties.uploadableTextures
 
     if (textures?.textures.SKIN) {

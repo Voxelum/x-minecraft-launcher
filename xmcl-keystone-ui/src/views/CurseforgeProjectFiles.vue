@@ -102,7 +102,7 @@ const pages = computed(() => Math.ceil(totalCount.value / pageSize.value))
 
 watch([page, gameVersion, modLoaderType], () => refresh())
 
-const { install, isDownloaded } = injection(kCurseforgeInstall)
+const { install } = injection(kCurseforgeInstall)
 
 const { t } = useI18n()
 const modLoader = computed({

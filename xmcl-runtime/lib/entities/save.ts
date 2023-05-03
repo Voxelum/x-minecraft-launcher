@@ -1,6 +1,6 @@
 import { InstanceSave, InstanceSaveMetadata, ResourceSaveMetadata, SaveMetadata } from '@xmcl/runtime-api'
 import { FileSystem } from '@xmcl/system'
-import { WorldReader } from '@xmcl/world'
+import { WorldReader } from '@xmcl/game-data'
 import { readdir } from 'fs/promises'
 import { basename, join } from 'path'
 import { pathToFileURL } from 'url'
@@ -81,8 +81,8 @@ export async function readSaveMetadata(save: string | Uint8Array | FileSystem | 
     gameVersion: level.Version.Name,
     difficulty: level.Difficulty,
     cheat: false,
-    time: level.Time.toNumber(),
-    lastPlayed: level.LastPlayed.toNumber(),
+    time: level.Time,
+    lastPlayed: level.LastPlayed,
     advancements,
   }
 }

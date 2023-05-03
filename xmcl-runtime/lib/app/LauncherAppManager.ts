@@ -182,7 +182,7 @@ export class LauncherAppManager extends Manager implements AppsHost {
     }
     const msg = await request(url)
 
-    if (msg.headers['content-type']?.startsWith('text/html')) {
+    if (typeof msg.headers['content-type'] === 'string' && msg.headers['content-type']?.startsWith('text/html')) {
       const parser = new XMLParser({
         ignoreAttributes: false,
         // preserveOrder: true,

@@ -1,7 +1,7 @@
 import { Category, SearchResultHit } from '@xmcl/modrinth'
 import { InjectionKey, Ref, computed, reactive, toRefs, watch } from 'vue'
 
-import { client } from '@/util/modrinthClients'
+import { clientModrinthV2 } from '@/util/clients'
 import debounce from 'lodash.debounce'
 import useSWRV from 'swrv'
 import { kSWRVConfig, useOverrideSWRVConfig } from './swrvConfig'
@@ -23,10 +23,10 @@ export const ModrinthCategoriesKey: InjectionKey<Ref<Category[]>> = Symbol('Modr
 export function useModrinthTags() {
   const { data, isValidating: refreshing, error } = useSWRV('/modrinth/tags', async () => {
     const [gameVersions, licenses, categories, modLoaders] = await Promise.all([
-      client.getGameVersionTags(),
-      client.getLicenseTags(),
-      client.getCategoryTags(),
-      client.getLoaderTags(),
+      clientModrinthV2.getGameVersionTags(),
+      clientModrinthV2.getLicenseTags(),
+      clientModrinthV2.getCategoryTags(),
+      clientModrinthV2.getLoaderTags(),
     ])
     return {
       gameVersions,
@@ -55,6 +55,18 @@ export function useModrinthTags() {
     environments,
   }
 }
+
+// export function useModrinthSearch() {
+//   return useSWRV(
+//     computed(() => `/modrinth/search?query=${props.query}&limit=${data.pageSize}&offset=${(props.page - 1) * data.pageSize}&index=${sortBy.value}&facets=${facetsText.value}`),
+//     () => clientModrinthV2.searchProjects({
+//       query: props.query,
+//       limit: data.pageSize,
+//       offset: (props.page - 1) * data.pageSize,
+//       index: sortBy.value,
+//       facets: facetsText.value,
+//     }), useOverrideSWRVConfig({ ttl: 30 * 1000 }))
+// }
 
 export function useModrinth(props: ModrinthOptions) {
   const { t } = useI18n()
@@ -191,7 +203,7 @@ export function useModrinth(props: ModrinthOptions) {
   })
   const { data: searchData, isValidating: refreshing, error, mutate } = useSWRV(
     computed(() => `/modrinth/search?query=${props.query}&limit=${data.pageSize}&offset=${(props.page - 1) * data.pageSize}&index=${sortBy.value}&facets=${facetsText.value}`),
-    () => client.searchProjects({
+    () => clientModrinthV2.searchProjects({
       query: props.query,
       limit: data.pageSize,
       offset: (props.page - 1) * data.pageSize,

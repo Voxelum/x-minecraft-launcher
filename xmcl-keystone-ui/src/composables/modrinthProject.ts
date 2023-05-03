@@ -1,4 +1,4 @@
-import { client, localeClient } from '@/util/modrinthClients'
+import { clientModrinthV2, clientModrinchV2Locale } from '@/util/clients'
 import useSWRV from 'swrv'
 import { Ref } from 'vue'
 import { kSWRVConfig } from './swrvConfig'
@@ -12,7 +12,7 @@ export function useModrinthProject(id: Ref<string>) {
   } = useSWRV(computed(() => `/modrinth/${id.value}`), async () => {
     // const localePromise = localeClient.getProject(id.value).then((v) => [v, false] as const)
     const [proj, needWait] = await Promise.race([
-      client.getProject(id.value).then((v) => [v, true] as const),
+      clientModrinthV2.getProject(id.value).then((v) => [v, true] as const),
       // localePromise,
     ])
     if (needWait) {

@@ -61,7 +61,7 @@ export interface InjectionKey<T> extends Symbol { }
 export interface InjectionFactoryKey<T, Args> extends Symbol { }
 
 export function Inject<T, V extends Constructor<T> | InjectionKey<T>>(con: V/* , ...args: V extends Constructor<T> ? ConstructorParameter<V, T> : never[] */) {
-  return (target: any, key: string, index: number) => {
+  return (target: any, _key: any, index: number) => {
     if (Reflect.has(target, kParams)) {
       Reflect.get(target, kParams)[index] = con
     } else {

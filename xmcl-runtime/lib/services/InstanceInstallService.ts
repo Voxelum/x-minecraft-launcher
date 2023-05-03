@@ -1,10 +1,13 @@
+import { CurseforgeV1Client } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
-import { InstallInstanceOptions, InstanceFile, InstanceFileWithOperation, InstanceInstallService as IInstanceInstallService, InstanceInstallServiceKey, InstanceIOException, LockKey, Resource, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
+import { ModrinthV2Client } from '@xmcl/modrinth'
+import { InstanceInstallService as IInstanceInstallService, InstallInstanceOptions, InstanceFile, InstanceFileWithOperation, InstanceIOException, InstanceInstallServiceKey, LockKey, Resource, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { AbortableTask, task } from '@xmcl/task'
 import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
-import { createWriteStream, existsSync } from 'fs'
-import { readFile, rename, stat, unlink } from 'fs/promises'
 import { writeFile } from 'atomically'
+import { createWriteStream, existsSync } from 'fs'
+import { ensureFile } from 'fs-extra/esm'
+import { readFile, rename, stat, unlink } from 'fs/promises'
 import { join, relative } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
@@ -12,8 +15,7 @@ import { errors } from 'undici'
 import { Entry, ZipFile } from 'yauzl'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { CurseforgeClient } from '../clients/CurseforgeClient'
-import { ModrinthClient } from '../clients/ModrinthClient'
+import { ResourceWorker, kResourceWorker } from '../entities/resourceWorker'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { linkWithTimeoutOrCopy } from '../util/fs'
 import { isNonnull } from '../util/object'
@@ -25,15 +27,13 @@ import { ModrinthService } from './ModrinthService'
 import { PeerService } from './PeerService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Singleton } from './Service'
-import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
-import { ensureFile } from 'fs-extra/esm'
 
 type RequiredPick<T, K extends keyof T> = T & Required<Pick<T, K>>
 
 export class ResolveInstanceFileTask extends AbortableTask<void> {
   private controller?: AbortController
 
-  constructor(private files: InstanceFile[], private curseforgeClient: CurseforgeClient, private modrinthClient: ModrinthClient) {
+  constructor(private files: InstanceFile[], private curseforgeClient: CurseforgeV1Client, private modrinthClient: ModrinthV2Client) {
     super()
     this.name = 'resolve'
   }
@@ -83,7 +83,7 @@ export class ResolveInstanceFileTask extends AbortableTask<void> {
 
     const processModrinthLike = async () => {
       if (modrinthFileHashProjects.length === 0) return
-      const result = await this.modrinthClient.getProjectVersionsByHash(modrinthFileHashProjects.filter(v => !!v.hashes.sha1).map(v => v.hashes.sha1), controller.signal)
+      const result = await this.modrinthClient.getProjectVersionsByHash(modrinthFileHashProjects.filter(v => !!v.hashes.sha1).map(v => v.hashes.sha1), 'sha1', controller.signal)
       for (const r of Object.entries(result)) {
         const p = modrinthFileHashProjects.find(p => p.hashes.sha1 === r[0])!
         if (!p.downloads) { p.downloads = [] }

@@ -1,4 +1,4 @@
-import { GameProfile } from '@xmcl/user'
+import { GameProfile, YggdrasilTexture, YggdrasilTexturesInfo } from '@xmcl/user'
 import { sign } from 'crypto'
 import { Readable } from 'stream'
 import { finished } from 'stream/promises'
@@ -33,12 +33,12 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
     logger.log(`Get profile for ${id}: %o`, profile)
 
     const addr = `http://localhost:${await app.localhostServerPort}/yggdrasil`
-    const transformTexture = (text?: GameProfile.Texture) => {
+    const transformTexture = (text?: YggdrasilTexture) => {
       if (!text) return text
       return { ...text, url: `${addr}/textures?href=${encodeURIComponent(text.url)}` }
     }
     if (profile) {
-      const textureInfo: GameProfile.TexturesInfo = {
+      const textureInfo: YggdrasilTexturesInfo = {
         timestamp: Date.now(),
         profileId: profile.id,
         profileName: profile.name,

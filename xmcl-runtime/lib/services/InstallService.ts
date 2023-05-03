@@ -113,7 +113,7 @@ export class InstallService extends AbstractService implements IInstallService {
       const response = await request(`http://files.minecraftforge.net/net/minecraftforge/forge/index_${minecraftVersion}.html`, {
         maxRedirections: 2,
       })
-      if (response.headers['content-type']?.startsWith('application/json')) {
+      if (typeof response.headers['content-type'] === 'string' && response.headers['content-type']?.startsWith('application/json')) {
         interface BMCLForge {
           'branch': string // '1.9';
           'build': string // 1766;

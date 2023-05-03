@@ -1,4 +1,5 @@
 
+const firstBigrams = new Map()
 export function getDiceCoefficient(first: string, second: string) {
   first = first.replace(/\s+/g, '')
   second = second.replace(/\s+/g, '')
@@ -6,7 +7,7 @@ export function getDiceCoefficient(first: string, second: string) {
   if (first === second) return 1 // identical or empty
   if (first.length < 2 || second.length < 2) return 0 // if either is a 0-letter or 1-letter string
 
-  const firstBigrams = new Map()
+  firstBigrams.clear()
   for (let i = 0; i < first.length - 1; i++) {
     const bigram = first.substring(i, i + 2)
     const count = firstBigrams.has(bigram)

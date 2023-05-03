@@ -11,7 +11,8 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
   return {
     name: 'resolve-native-module',
     setup(build) {
-      if (build.initialOptions.watch) {
+      const isDev = build.initialOptions.plugins!.find(v => v.name === 'dev')
+      if (isDev) {
         build.onLoad(
           { filter: /^.+[\\/]node_modules[\\/].+[\\/]7zip-bin[\\/]index\.js$/g },
           async ({ path }) => {
@@ -196,7 +197,7 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         },
       )
 
-      if (!build.initialOptions.watch) {
+      if (!isDev) {
         const opts = build.initialOptions
         opts.loader = opts.loader || {}
         opts.loader['.dll'] = 'file'

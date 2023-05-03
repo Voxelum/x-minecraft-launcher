@@ -4,10 +4,16 @@ import { SearchResult, SearchResultHit } from '@xmcl/modrinth'
 import { Resource } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 
+/**
+ * Each search item represent a project of a mod
+ */
 export interface ModListSearchItem {
   divider?: boolean
   installed?: Resource
 
+  /**
+   * The id is representing the id of the project
+   */
   id: string
   icon: string
   title: string

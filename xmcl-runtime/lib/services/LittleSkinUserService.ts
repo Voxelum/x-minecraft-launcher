@@ -5,7 +5,6 @@ import { YggdrasilAccountSystem } from '../accountSystems/YggdrasilAccountSystem
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { LittleSkinClient } from '../clients/LittleSkinClient'
-import { YggdrasilThirdPartyClient } from '../clients/YggdrasilClient'
 import { kUserTokenStorage, UserTokenStorage } from '../entities/userTokenStore'
 import { Inject } from '../util/objectRegistry'
 import { TokenCache } from '../util/TokenStorage'

@@ -113,7 +113,7 @@ export class EventSource extends EventEmitter {
         // Handle HTTP redirects
         if (res.statusCode === 301 || res.statusCode === 302 || res.statusCode === 307) {
           const location = res.headers.location
-          if (!location) {
+          if (!location || location instanceof Array) {
             // Server sent redirect response without Location header.
             this.emit('error', new Event('error', { status: res.statusCode, message: ''/* res.statusMessage */ }))
             return

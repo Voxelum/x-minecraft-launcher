@@ -1,6 +1,7 @@
+import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { FileModLoaderType, Mod, ModsSearchSortField, Pagination } from '@xmcl/curseforge'
 import { SearchResult } from '@xmcl/modrinth'
-import { CurseForgeServiceKey, InstanceData, InstanceModsServiceKey, ModrinthServiceKey, Resource } from '@xmcl/runtime-api'
+import { InstanceData, InstanceModsServiceKey, Resource } from '@xmcl/runtime-api'
 import { filter } from 'fuzzy'
 import debounce from 'lodash.debounce'
 import { Ref } from 'vue'
@@ -9,8 +10,6 @@ import { useService } from './service'
 
 export function useModsSearch(keyword: Ref<string>, runtime: Ref<InstanceData['runtime']>) {
   const { resources, refreshing } = inject(kMods, () => useMods(), true)
-  const { searchProjects: searchModrinth } = useService(ModrinthServiceKey)
-  const { searchProjects: searchCurseforge } = useService(CurseForgeServiceKey)
 
   const isValidResource = (r: Resource) => {
     const useForge = !!runtime.value.forge
@@ -51,7 +50,7 @@ export function useModsSearch(keyword: Ref<string>, runtime: Ref<InstanceData['r
       }
       if (keyword.value) {
         const remain = append && modrinth.value ? modrinth.value.total_hits - offset : Number.MAX_SAFE_INTEGER
-        const result = await searchModrinth({
+        const result = await clientModrinthV2.searchProjects({
           query: keyword.value,
           facets: '[' + facets.join(',') + ']',
           index: 'relevance',
@@ -79,7 +78,7 @@ export function useModsSearch(keyword: Ref<string>, runtime: Ref<InstanceData['r
     if (keyword.value) {
       try {
         const remain = append && curseforge.value ? curseforge.value.pagination.totalCount - offset : Number.MAX_SAFE_INTEGER
-        const result = await searchCurseforge({
+        const result = await clientCurseforgeV1.searchMods({
           classId: 6, // mods
           sortField: ModsSearchSortField.Name,
           modLoaderType: useForge ? FileModLoaderType.Forge : useFabric ? FileModLoaderType.Fabric : FileModLoaderType.Any,
