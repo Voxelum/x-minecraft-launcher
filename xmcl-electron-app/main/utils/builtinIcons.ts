@@ -6,7 +6,7 @@ import forge from '../assets/forge.png'
 import fabric from '../assets/fabric.png'
 
 export const builtinIcons: Record<string, string> = {
-  craftingTable: craftingTable,
+  craftingTable,
   minecraft,
   quilt,
   optifine,

@@ -48,5 +48,5 @@ export function findBestMatch(mainString: string, targetStrings: string[]) {
 
   const bestMatch = ratings[bestMatchIndex]
 
-  return { ratings: ratings, bestMatch: bestMatch, bestMatchIndex: bestMatchIndex }
+  return { ratings, bestMatch, bestMatchIndex }
 }

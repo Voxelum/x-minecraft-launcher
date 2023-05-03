@@ -15,7 +15,7 @@ export function useLocaleError() {
       return [(e.code || ''), e.statusCode, JSON.stringify(e.body)].join(' ')
     }
     const str = JSON.stringify(e)
-    return str.trim() === "{}" ? e : str
+    return str.trim() === '{}' ? e : str
   }
   return tError
 }

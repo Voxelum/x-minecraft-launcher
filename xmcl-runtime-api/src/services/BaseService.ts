@@ -11,7 +11,6 @@ export interface MigrateOptions {
 export class BaseState implements SettingSchema {
   globalMinMemory = 0
   globalMaxMemory = 0
-  disableTelemetry = false
   globalAssignMemory: 'auto' | boolean = false
   globalVmOptions: string[] = []
   globalMcOptions: string[] = []
@@ -20,6 +19,7 @@ export class BaseState implements SettingSchema {
   globalShowLog = false
   discordPresence = false
   developerMode = false
+  disableTelemetry = false
   linuxTitlebar = false
 
   locale = ''

@@ -37,11 +37,8 @@
   </v-card>
 </template>
 <script lang="ts" setup>
-import { ModCategory } from '@xmcl/curseforge'
-import { CurseForgeServiceKey } from '@xmcl/runtime-api'
-import { useService } from '@/composables'
-import { useRefreshable } from '@/composables/refreshable'
 import ErrorView from '@/components/ErrorView.vue'
+import { useCurseforgeCategories } from '@/composables/curseforge'
 
 const props = defineProps<{
   type: string
@@ -51,23 +48,15 @@ const props = defineProps<{
 const emit = defineEmits(['select'])
 
 const { te, t } = useI18n()
-const { fetchCategories } = useService(CurseForgeServiceKey)
-const allCategories = ref([] as ModCategory[])
+const { refresh, refreshing, error, categories: allCategories } = useCurseforgeCategories()
 const categories = computed(() => {
   const result = allCategories.value
+  if (!result) return []
   const parent = result.find(c => c.slug === props.type)
   return result.filter(r => r.parentCategoryId === parent?.id)
 })
 
 const tCategory = (k: string) => te(`curseforgeCategory.${k}`) ? t(`curseforgeCategory.${k}`) : k
-
-const { refresh, refreshing, error } = useRefreshable(async () => {
-  const result = await fetchCategories()
-  allCategories.value = result
-})
-onMounted(() => {
-  refresh()
-})
 
 </script>
 

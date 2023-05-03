@@ -54,7 +54,7 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
             id: OFFLINE_USER_ID,
             invalidated: false,
             selectedProfile: auth.selectedProfile.id,
-            profiles: profiles,
+            profiles,
             expiredAt: Number.MAX_SAFE_INTEGER / 100 * 95,
             authService: 'offline',
             username: OFFLINE_USER_ID,

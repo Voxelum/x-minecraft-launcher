@@ -25,7 +25,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
       api.url,
       {
         dispatcher: this.dispatcher,
-      }
+      },
       // eslint-disable-next-line no-template-curly-in-string
       // joinUrl(api.url, api.profile || '/sessionserver/session/minecraft/profile/${uuid}'),
       // eslint-disable-next-line no-template-curly-in-string
@@ -171,7 +171,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
           uuid: gameProfile.id,
           accessToken: token,
           type: 'cape',
-          texture: typeof data === 'string' ? { url: data } : { data: data },
+          texture: typeof data === 'string' ? { url: data } : { data },
         }, signal)
       }
     }
@@ -200,7 +200,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
               metadata: {
                 model: skin.slim ? 'slim' : 'steve',
               },
-              data: data,
+              data,
             },
         }, signal)
       }

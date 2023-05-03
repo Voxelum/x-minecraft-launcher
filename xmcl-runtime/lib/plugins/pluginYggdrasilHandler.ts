@@ -151,7 +151,7 @@ export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
               method: request.method,
               url: new URL(target),
             },
-            response: response,
+            response,
             handle,
           })
 

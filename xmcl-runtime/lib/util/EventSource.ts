@@ -55,7 +55,7 @@ export class EventSource extends EventEmitter {
     const onConnectionClosed = (message?: any) => {
       if (this.readyState === EventSource.CLOSED) return
       this.readyState = EventSource.CONNECTING
-      this.emit('error', new Event('error', { message: message }))
+      this.emit('error', new Event('error', { message }))
 
       // The url may have been changed by a temporary redirect. If that's the case,
       // revert it now, and flag that we are no longer pointing to a new origin
@@ -240,7 +240,7 @@ export class EventSource extends EventEmitter {
           const type = eventName || 'message'
           this.emit(type, new MessageEvent(type, {
             data: data.slice(0, -1), // remove trailing newline
-            lastEventId: lastEventId,
+            lastEventId,
             origin: new URL(url).origin,
           }))
           data = ''

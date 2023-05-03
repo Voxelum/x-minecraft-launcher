@@ -243,7 +243,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       return
     }
 
-    this.state.userGameProfileSelect({ userId: this.state.selectedUser.id, profileId: profileId })
+    this.state.userGameProfileSelect({ userId: this.state.selectedUser.id, profileId })
   }
 
   @Singleton(id => id)

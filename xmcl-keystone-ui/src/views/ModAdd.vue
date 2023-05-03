@@ -136,14 +136,14 @@
                   @install="onInstallModrinth($event, selected)"
                 />
                 <ModAddCurseforgeDetail
-                  v-else-if="selected.curseforge"
+                  v-else-if="selected.curseforge && selected"
                   :mod="selected.curseforge"
                   :loader="forge ? 'forge' : fabricLoader ? 'fabric' : ''"
                   :minecraft="minecraft"
                   @install="onInstallCurseforge($event, selected)"
                 />
                 <ModAddResourceDetail
-                  v-else-if="selected.resource"
+                  v-else-if="selected.resource && selected"
                   :resources="selected.resource"
                   :loading="adding"
                   :installed="selected.installed"
@@ -153,7 +153,7 @@
                   :loader="forge ? 'forge' : fabricLoader ? 'fabric' : ''"
                   :minecraft="minecraft"
                   :runtime="instance.runtime"
-                  @install="onInstallResource($event, selected, selected.installed)"
+                  @install="onInstallResource($event, selected, selected?.installed)"
                 />
               </template>
               <Hint
@@ -261,26 +261,26 @@ const total = computed(() => {
 const { add, addAsRemove } = injection(kInstallList)
 const adding = ref(false)
 
-const onInstallResource = async (resource: Resource, item: ModListSearchItem, toRemove?: Resource) => {
+const onInstallResource = async (resource: Resource, item?: ModListSearchItem, toRemove?: Resource) => {
   try {
     adding.value = true
     if (!toRemove) {
-      await add(resource, { icon: item.icon, uri: item.id, name: item.title })
+      await add(resource, { icon: item!.icon, uri: item!.id, name: item!.title })
     } else {
-      await add(resource, { icon: item.icon, uri: item.id, name: item.title })
-      addAsRemove(toRemove, { icon: item.icon, uri: item.id, name: item.title })
+      await add(resource, { icon: item!.icon, uri: item!.id, name: item!.title })
+      addAsRemove(toRemove, { icon: item!.icon, uri: item!.id, name: item!.title })
     }
   } finally {
     adding.value = false
   }
 }
 
-const onInstallCurseforge = (mod: File, item: ModListSearchItem) => {
-  add(mod, { icon: item?.icon, uri: item.id, name: item?.title })
+const onInstallCurseforge = (mod: File, item?: ModListSearchItem) => {
+  add(mod, { icon: item!.icon, uri: item!.id, name: item!.title })
 }
 
-const onInstallModrinth = (project: ProjectVersion, item: ModListSearchItem) => {
-  add(project, { icon: item.icon, uri: item.id, name: item.title })
+const onInstallModrinth = (project: ProjectVersion, item?: ModListSearchItem) => {
+  add(project, { icon: item!.icon, uri: item!.id, name: item!.title })
 }
 
 const onScroll = (e: Event) => {

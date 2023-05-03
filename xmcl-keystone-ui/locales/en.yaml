@@ -668,6 +668,7 @@ modpack:
 modrinth:
   browseUrl: Open In Browser {url}
   categories:
+    folia: Folia
     128x: 128x
     16x: 16x
     256x: 256x

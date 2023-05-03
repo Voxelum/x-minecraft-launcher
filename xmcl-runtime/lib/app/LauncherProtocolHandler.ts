@@ -79,7 +79,7 @@ export class LauncherProtocolHandler {
       response: {
         headers: {},
       },
-      handle: handle,
+      handle,
     }
     await handle(context)
     return {

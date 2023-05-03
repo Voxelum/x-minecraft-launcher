@@ -238,7 +238,7 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
 
     if ('directory' in options) {
       if (!existsSync(join(path, 'level.dat'))) {
-        throw new InstanceSaveException({ type: 'instanceImportIllegalSave', path: path })
+        throw new InstanceSaveException({ type: 'instanceImportIllegalSave', path })
       }
 
       await copyPassively(options.directory, destinationDir)
@@ -246,7 +246,7 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
       // validate the source
       const levelRoot = options.saveRoot ?? await findLevelRootOnPath(path)
       if (!levelRoot) {
-        throw new InstanceSaveException({ type: 'instanceImportIllegalSave', path: path })
+        throw new InstanceSaveException({ type: 'instanceImportIllegalSave', path })
       }
 
       const zipFile = await open(path)

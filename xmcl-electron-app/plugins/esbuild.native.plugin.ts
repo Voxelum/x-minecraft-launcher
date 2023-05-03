@@ -82,7 +82,7 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         { filter: /^.+[\\/]node_modules[\\/].+[\\/]classic-level[\\/]binding\.js$/g },
         async ({ path, resolveDir }) => {
           return {
-            path: path,
+            path,
             pluginData: {
               resolveDir,
             },

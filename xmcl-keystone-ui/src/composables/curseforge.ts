@@ -195,8 +195,8 @@ export function useCurseforgeProject(projectId: Ref<number>) {
 }
 
 export function useCurseforgeCategories() {
-  const { isValidating: refreshing, mutate: refresh, data: categories } = useSWRV('/curseforge/categories', async () => {
+  const { error, isValidating: refreshing, mutate: refresh, data: categories } = useSWRV('/curseforge/categories', async () => {
     return markRaw(await clientCurseforgeV1.getCategories())
   }, inject(kSWRVConfig))
-  return { categories, refreshing, refresh }
+  return { categories, refreshing, refresh, error }
 }

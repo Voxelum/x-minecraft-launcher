@@ -89,7 +89,7 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
           username: options.username,
           password: options.password ?? '',
           requestUser: true,
-          clientToken: userService.state.clientToken
+          clientToken: userService.state.clientToken,
         })
           .catch((e) => {
             if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {

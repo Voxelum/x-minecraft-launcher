@@ -21,7 +21,7 @@ export default function createStaticPlugin(): Plugin {
         }
         return ({
           contents: await readFile(path),
-          resolveDir: resolveDir,
+          resolveDir,
           loader: 'file',
         })
       })

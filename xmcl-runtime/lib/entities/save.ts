@@ -81,8 +81,8 @@ export async function readSaveMetadata(save: string | Uint8Array | FileSystem | 
     gameVersion: level.Version.Name,
     difficulty: level.Difficulty,
     cheat: false,
-    time: level.Time,
-    lastPlayed: level.LastPlayed,
+    time: Number(level.Time),
+    lastPlayed: Number(level.LastPlayed),
     advancements,
   }
 }
