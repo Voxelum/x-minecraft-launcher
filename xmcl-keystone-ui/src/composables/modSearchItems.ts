@@ -81,7 +81,7 @@ export function useModSearchItems(keyword: Ref<string>, modrinth: Ref<SearchResu
       }
       if (!grouped[name]) {
         grouped[name] = {
-          id: m.path,
+          id: name,
           icon: m.icons?.[0] ?? '',
           title: name,
           description: description,
@@ -101,6 +101,7 @@ export function useModSearchItems(keyword: Ref<string>, modrinth: Ref<SearchResu
       }
     }
     const prepend: ModListSearchItem[] = []
+    
     for (const i of existedMods.value) {
       const item = getItemForResource(i)
       if (item) {

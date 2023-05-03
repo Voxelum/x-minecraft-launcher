@@ -82,6 +82,7 @@
 import Hint from '@/components/Hint.vue'
 import RefreshingTile from '@/components/RefreshingTile.vue'
 import { useDrop, useService } from '@/composables'
+import { kInstanceContext } from '@/composables/instanceContext'
 import { useModDeletion } from '@/composables/modDelete'
 import { useModDragging } from '@/composables/modDraggable'
 import { useModDropHandler } from '@/composables/modDropHandler'
@@ -92,13 +93,13 @@ import { kCompact, useCompactScroll } from '@/composables/scrollTop'
 import { injection } from '@/util/inject'
 import { InstanceServiceKey, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
-import { ModItem, useInstanceMods } from '../composables/mod'
+import { ModItem } from '../composables/mod'
 import ModCard from './ModCard.vue'
 import ModDeleteView from './ModDeleteView.vue'
 import FloatButton from './ModFloatButton.vue'
 
 const { importResources } = useService(ResourceServiceKey)
-const { items: mods, commit, committing, isModified, enabledModCounts } = useInstanceMods()
+const { mods: { items: mods, commit, committing, isModified } } = injection(kInstanceContext)
 const loading = false
 const filtered = useModFilter(mods)
 const { isSelectionMode, selectedItems, onEnable, onClick } = useModSelection(filtered.items)

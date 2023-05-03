@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col max-h-full select-none h-full px-8 py-4 pb-0 gap-3">
+  <div class="flex flex-col max-h-full select-none h-full  pb-0 gap-3 visible-scroll pl-7">
     <v-progress-linear
       v-show="refreshing"
       class="absolute top-0 z-10 m-0 p-0 left-0"
@@ -7,7 +7,7 @@
       :indeterminate="refreshing"
     />
     <v-card
-      class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5"
+      class="flex rounded-lg flex-shrink flex-grow-0 items-center px-2 py-2 gap-2 z-5 mr-8 mt-4"
       outlined
       elevation="1"
     >
@@ -54,7 +54,7 @@
     </v-card>
 
     <div
-      class="flex overflow-auto h-full flex-col container py-0 gap-4"
+      class="flex overflow-auto overflow-x-hidden h-full flex-col container py-0 gap-4"
     >
       <refreshing-tile
         v-if="refreshing"
@@ -125,6 +125,7 @@ import { AddInstanceDialogKey } from '../composables/instanceAdd'
 import { ModpackItem } from '../composables/modpack'
 import ModpackCard from './ModpackCard.vue'
 import DeleteButton from './ModpackDeleteButton.vue'
+import { useMarketRoute } from '@/composables/useMarketRoute'
 
 const { t } = useI18n()
 const { push } = useRouter()
@@ -175,9 +176,7 @@ function onDrop() {
     startDelete(dragging.value)
   }
 }
-
-const goToCurseforge = () => { push('/curseforge/modpacks') }
-const goToModrinth = () => { push('/modrinth?projectType=modpack') }
+const { goToCurseforge, goToModrinth } = useMarketRoute()
 
 function getModpackItem (resource: Resource): ModpackItem {
   const metadata = resource.metadata

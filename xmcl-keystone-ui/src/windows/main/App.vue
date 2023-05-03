@@ -59,16 +59,17 @@
 import '@/assets/common.css'
 import ImageDialog from '@/components/ImageDialog.vue'
 import SharedTooltip from '@/components/SharedTooltip.vue'
-import { useExternalRoute, useI18nSync, useThemeSync } from '@/composables'
+import { kFilterCombobox, useExternalRoute, useFilterComboboxData, useI18nSync, useThemeSync } from '@/composables'
 import { useAuthProfileImportNotification } from '@/composables/authProfileImport'
 import { useBackground } from '@/composables/background'
 import { kColorTheme, useColorTheme } from '@/composables/colorTheme'
 import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
-import { kInstallList, useInstallList } from '@/composables/installList'
 import { kModpacks, useModpacks } from '@/composables/modpack'
+import { kSWRVConfig, useSWRVConfig } from '@/composables/swrvConfig'
 import { kUILayout, useUILayout } from '@/composables/uiLayout'
+import { kMarketRoute, useMarketRoute } from '@/composables/useMarketRoute'
 import { kUserContext, useUserContext } from '@/composables/user'
 import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
@@ -90,8 +91,6 @@ import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import Setup from '@/views/Setup.vue'
 import { useAllServices } from './services'
-import { kSWRVConfig, useSWRVConfig } from '@/composables/swrvConfig'
-import { kMarketRoute, useMarketRoute } from '@/composables/useMarketRoute'
 
 const colorTheme = useColorTheme()
 const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = colorTheme
@@ -132,9 +131,9 @@ provide(kUILayout, useUILayout())
 provide(kUserContext, useUserContext())
 provide(kModpacks, useModpacks())
 provide(kImageDialog, useImageDialog())
-provide(kInstallList, useInstallList())
 provide(kSWRVConfig, useSWRVConfig())
 provide(kMarketRoute, useMarketRoute())
+provide(kFilterCombobox, useFilterComboboxData())
 
 </script>
 

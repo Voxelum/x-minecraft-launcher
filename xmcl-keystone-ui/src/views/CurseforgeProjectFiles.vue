@@ -82,6 +82,8 @@ import { useCurseforgeProjectFiles } from '../composables/curseforge'
 import ErrorView from '@/components/ErrorView.vue'
 import CurseforgeProjectFileItem from './CurseforgeProjectFileItem.vue'
 import { injection } from '@/util/inject'
+import { Ref } from 'vue'
+import { FileModLoaderType } from '@xmcl/curseforge'
 
 const props = defineProps<{
   project: number
@@ -92,15 +94,15 @@ const props = defineProps<{
   modLoaders?: string[]
 }>()
 
-const { files, refreshing: loading, refresh, error, pageSize, totalCount, index, gameVersion, modLoaderType } = useCurseforgeProjectFiles(computed(() => props.project))
+const gameVersion: Ref<string | undefined> = ref(undefined)
+const modLoaderType: Ref<FileModLoaderType | undefined> = ref(undefined)
+const { files, refreshing: loading, refresh, error, pageSize, totalCount, index } = useCurseforgeProjectFiles(computed(() => props.project), gameVersion, modLoaderType)
 
 const page = computed({
   set(page: number) { index.value = ((page - 1) * pageSize.value) },
   get() { return index.value / pageSize.value + 1 },
 })
 const pages = computed(() => Math.ceil(totalCount.value / pageSize.value))
-
-watch([page, gameVersion, modLoaderType], () => refresh())
 
 const { install } = injection(kCurseforgeInstall)
 

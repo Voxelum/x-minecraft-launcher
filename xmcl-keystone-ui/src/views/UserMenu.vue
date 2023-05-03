@@ -8,6 +8,7 @@
         v-if="selected"
         :user="selected"
         controls
+        :refreshing="refreshingUser"
         @remove="emit('remove')"
         @abort-refresh="emit('abort-refresh')"
         @refresh="emit('refresh')"
@@ -65,11 +66,12 @@
 <script lang="ts" setup>
 import { useDialog } from '@/composables/dialog'
 import { LoginDialog } from '@/composables/login'
-import { UserProfile } from '@xmcl/runtime-api'
+import { UserProfile, UserServiceKey } from '@xmcl/runtime-api'
 import UserMenuUserItem from './UserMenuUserItem.vue'
 import UserMenuMicrosoft from './UserMenuMicrosoft.vue'
 import UserMenuMojang from './UserMenuMojang.vue'
 import UserMenuYggdrasil from './UserMenuYggdrasil.vue'
+import { useServiceBusy } from '@/composables'
 
 const emit = defineEmits(['refresh', 'abort-refresh', 'select', 'remove'])
 const { t } = useI18n()
@@ -82,5 +84,5 @@ const props = defineProps<{
 const { show: showLoginDialog } = useDialog(LoginDialog)
 
 const usersToSwitch = computed(() => props.users.filter(v => props.selected ? (v.id !== props.selected.id) : true))
-
+const refreshingUser = useServiceBusy(UserServiceKey, 'refreshUser')
 </script>

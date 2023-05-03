@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="relative w-full"
-  >
+  <div class="relative w-full">
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
       :active="refreshing"
@@ -10,7 +8,7 @@
     />
 
     <v-list
-      v-if="!refreshing || versions.length !== 0"
+      v-if="!refreshing || files.length !== 0"
       color="transparent"
     >
       <ErrorView
@@ -18,7 +16,7 @@
         @refresh="refresh"
       />
       <CurseforgeProjectFileItem
-        v-for="file in versions"
+        v-for="file in files"
         :id="file.id"
         :key="file.id"
         :mod-id="modId"
@@ -40,11 +38,9 @@
 </template>
 <script setup lang="ts">
 import ErrorView from '@/components/ErrorView.vue'
-import { useRefreshable, useService } from '@/composables'
+import { useCurseforgeProjectFiles } from '@/composables/curseforge'
 import { kCurseforgeInstall, useCurseforgeInstall } from '@/composables/curseforgeInstall'
-import { kModrinthVersionsStatus, useModrinthVersionsStatus } from '@/composables/modrinthVersions'
-import { Mod, File } from '@xmcl/curseforge'
-import { CurseForgeServiceKey } from '@xmcl/runtime-api'
+import { Mod } from '@xmcl/curseforge'
 import CurseforgeProjectFileItem from './CurseforgeProjectFileItem.vue'
 
 const props = defineProps<{
@@ -53,30 +49,14 @@ const props = defineProps<{
   minecraft: string
 }>()
 
-const { getModFiles } = useService(CurseForgeServiceKey)
-const versions = ref([] as File[])
-const modId = computed(() => props.mod.id)
 const emit = defineEmits(['install'])
-const getMajor = (v: string) => {
-  const split = v.split('.')
-  if (split.length > 1) {
-    return split[0] + '.' + split[1]
-  }
-  return v
-}
-const { refresh, refreshing, error } = useRefreshable(async () => {
-  // const mcMajor = getMajor(props.minecraft)
-  const result = await getModFiles({
-    modId: props.mod.id,
-    gameVersion: props.minecraft,
-    modLoaderType: props.loader === 'fabric' ? 4 : props.loader === 'forge' ? 1 : 0,
-  })
 
-  versions.value = result.data
-})
-onMounted(refresh)
-watch(modId, refresh)
+const modId = computed(() => props.mod.id)
 
-provide(kCurseforgeInstall, useCurseforgeInstall(modId, versions, ref(undefined), ref('mc-mods'), ref(undefined)))
+const { files, refresh, refreshing, error } = useCurseforgeProjectFiles(modId,
+  computed(() => props.minecraft),
+  computed(() => props.loader === 'fabric' ? 4 : props.loader === 'forge' ? 1 : 0),
+)
+provide(kCurseforgeInstall, useCurseforgeInstall(modId, files, ref(undefined), ref('mc-mods'), ref(undefined)))
 
 </script>

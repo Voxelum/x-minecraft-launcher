@@ -1,7 +1,7 @@
 import { TaskItem } from '@/entities/task'
 import { injection } from '@/util/inject'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
-import { Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { ModrinthServiceKey, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useDialog } from './dialog'
 import { kInstallList } from './installList'
@@ -13,7 +13,8 @@ import { useService } from './service'
 export const kModrinthInstall: InjectionKey<ReturnType<typeof useModrinthInstall>> = Symbol('ModrinthInstall')
 
 export function useModrinthInstall(project: Ref<Project | undefined>, tasks: Ref<Record<string, TaskItem>>, installTo: Ref<string>, getResource: (version: ProjectVersion) => Resource, currentVersionResource: Ref<Resource | undefined>) {
-  const { add } = injection(kInstallList)
+  const installList = inject(kInstallList)
+  const { installVersion } = useService(ModrinthServiceKey)
   const { install } = useService(ResourceServiceKey)
   const { show: showInstanceUpdateDialog } = useDialog(InstanceInstallDialog)
   const { show } = useDialog(AddInstanceDialogKey)
@@ -31,7 +32,7 @@ export function useModrinthInstall(project: Ref<Project | undefined>, tasks: Ref
         showInstanceUpdateDialog({
           type: 'modrinth',
           currentResource: currentVersionResource.value,
-          resource: resource,
+          resource,
         })
       } else if (resource.domain === ResourceDomain.Modpacks) {
         show(resource.path)
@@ -48,12 +49,15 @@ export function useModrinthInstall(project: Ref<Project | undefined>, tasks: Ref
         })
       }
     } else if (project.value) {
-      add(version, {
-        uri: version.id,
-        name: project.value?.title,
-        icon: project.value?.icon_url ?? '',
-      })
-      // await installVersion({ version, instancePath: installTo.value, icon: project.value?.icon_url })
+      if (project.value.project_type === 'mod' && installList) {
+        installList.add(version, {
+          uri: version.id,
+          name: project.value?.title,
+          icon: project.value?.icon_url ?? '',
+        })
+      } else {
+        await installVersion({ version, icon: project.value?.icon_url })
+      }
     }
   }
 

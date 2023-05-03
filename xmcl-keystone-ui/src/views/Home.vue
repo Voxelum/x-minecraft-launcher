@@ -40,7 +40,7 @@
 </template>
 
 <script lang=ts setup>
-import { kFilterCombobox, useFilterComboboxData } from '@/composables'
+import { kInstallList, useInstallList } from '@/composables/installList'
 import { kInstanceContext, useInstanceContext } from '@/composables/instanceContext'
 import { usePresence } from '@/composables/presence'
 import { kCompact, useCompactScroll } from '@/composables/scrollTop'
@@ -63,12 +63,11 @@ router.afterEach((r) => {
 const context = useInstanceContext()
 
 provide(kInstanceContext, context)
+provide(kInstallList, useInstallList())
 
 const instance = context.instance
 const { refresh } = useInstanceServerStatus(instance.value.path)
 const isFocusMode = useInFocusMode()
-
-provide(kFilterCombobox, useFilterComboboxData())
 
 onMounted(() => {
   if (context.isServer.value) {

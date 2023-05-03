@@ -55,7 +55,6 @@
     <v-list-item-action v-if="icon">
       <v-btn
         text
-        v-shared-tooltip=""
         icon
         :disabled="isSameFileWithUpstream"
         :loading="progress !== -1"

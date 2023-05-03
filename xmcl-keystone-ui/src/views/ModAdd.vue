@@ -145,12 +145,14 @@
                 <ModAddResourceDetail
                   v-else-if="selected.resource"
                   :resources="selected.resource"
+                  :loading="adding"
                   :installed="selected.installed"
                   :forge="selected.forge"
                   :fabric="selected.fabric"
                   :quilt="selected.quilt"
                   :loader="forge ? 'forge' : fabricLoader ? 'fabric' : ''"
                   :minecraft="minecraft"
+                  :runtime="instance.runtime"
                   @install="onInstallResource($event, selected, selected.installed)"
                 />
               </template>
@@ -188,7 +190,7 @@ import ModAddModrinthDetail from './ModAddModrinthDetail.vue'
 import ModAddResourceDetail from './ModAddResourceDetail.vue'
 import ModAddSearchItem from './ModAddSearchItem.vue'
 
-const { modSearch, modSearchItems, minecraft, fabricLoader, forge, quiltLoader } = injection(kInstanceContext)
+const { modSearch, modSearchItems, minecraft, fabricLoader, forge, quiltLoader, instance } = injection(kInstanceContext)
 const modLoaderFilters = ref([] as string[])
 const { tab } = modSearchItems
 
@@ -241,6 +243,10 @@ const selected = ref(undefined as undefined | ModListSearchItem)
 const onSelect = (i: ModListSearchItem) => {
   selected.value = i
 }
+watch(items, (all) => {
+  const last = selected.value
+  selected.value = all.find(i => i.id === last?.id)
+})
 
 const total = computed(() => {
   if (tab.value === 3) {
@@ -253,13 +259,19 @@ const total = computed(() => {
 })
 
 const { add, addAsRemove } = injection(kInstallList)
+const adding = ref(false)
 
-const onInstallResource = (resource: Resource, item: ModListSearchItem, toRemove?: Resource) => {
-  if (!toRemove) {
-    add(resource, { icon: item.icon, uri: item.id, name: item.title })
-  } else {
-    add(resource, { icon: item.icon, uri: item.id, name: item.title })
-    addAsRemove(toRemove, { icon: item.icon, uri: item.id, name: item.title })
+const onInstallResource = async (resource: Resource, item: ModListSearchItem, toRemove?: Resource) => {
+  try {
+    adding.value = true
+    if (!toRemove) {
+      await add(resource, { icon: item.icon, uri: item.id, name: item.title })
+    } else {
+      await add(resource, { icon: item.icon, uri: item.id, name: item.title })
+      addAsRemove(toRemove, { icon: item.icon, uri: item.id, name: item.title })
+    }
+  } finally {
+    adding.value = false
   }
 }
 

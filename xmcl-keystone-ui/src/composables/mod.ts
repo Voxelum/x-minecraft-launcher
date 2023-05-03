@@ -1,7 +1,7 @@
 import { useRefreshable, useService } from '@/composables'
 import { isStringArrayEquals } from '@/util/equal'
 import { getModDependencies, getModProvides, ModDependencies } from '@/util/modDependencies'
-import { InstanceJavaServiceKey, InstanceModsServiceKey, InstanceServiceKey, isModResource, isPersistedResource, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceJavaServiceKey, InstanceModsServiceKey, InstanceServiceKey, isModResource, isPersistedResource, JavaRecord, Resource, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
 import { computed, InjectionKey, ref, Ref, watch } from 'vue'
 
 export const kModsContext: InjectionKey<{
@@ -80,12 +80,10 @@ export interface ModItem {
 /**
  * Open read/write for current instance mods
  */
-export function useInstanceMods() {
+export function useInstanceMods(runtimes: Ref<RuntimeVersions>, java: Ref<JavaRecord | undefined>) {
   const { state, enable, disable } = useService(InstanceModsServiceKey)
   const { updateResources } = useService(ResourceServiceKey)
   const { showDirectory } = useService(InstanceModsServiceKey)
-  const { state: javaState } = useService(InstanceJavaServiceKey)
-  const { state: instanceState } = useService(InstanceServiceKey)
 
   const items: Ref<ModItem[]> = ref([])
   const pendingUninstallItems = computed(() => items.value.filter(i => !i.enabled && i.enabledState))
@@ -146,12 +144,10 @@ export function useInstanceMods() {
     enabledModCounts.value = newItems.filter(v => !v.path.endsWith('.disabled')).length
   }
 
-  const currentJava = computed(() => javaState.java)
-
   const currentRuntime = computed(() => {
     const runtime: Record<string, string> = {
-      ...(instanceState.instance.runtime as any),
-      java: currentJava.value?.version.toString() ?? '',
+      ...(runtimes.value as any),
+      java: java.value?.version.toString() ?? '',
     }
     runtime.fabricloader = runtime.fabricLoader
     for (const i of items.value) {
