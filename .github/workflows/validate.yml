@@ -31,4 +31,10 @@ jobs:
       run: |
         pnpm run --prefix xmcl-keystone-ui build
         pnpm run --prefix xmcl-electron-app build
-
+      env:
+        BUILD_NUMBER: ${{ github.run_number }}
+        NODE_ENV: production
+        CURSEFORGE_API_KEY: ${{ secrets.CURSEFORGE_API_TOKEN }}
+        WIN_CSC_LINK: ${{ secrets.CODE_SIGN_BASE64 }}
+        APPX_PUBLISHER: ${{ secrets.APPX_PUBLISHER }}
+        WIN_CSC_KEY_PASSWORD: ${{ secrets.CODE_SIGN_PWD }}
