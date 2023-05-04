@@ -44,7 +44,7 @@ import { BaseServiceKey, UserServiceKey } from '@xmcl/runtime-api'
 import UserMenu from './UserMenu.vue'
 
 const { users, userProfile: selectedUser, gameProfile: selectedUserGameProfile } = injection(kUserContext)
-const { selectUser, removeUserProfile, abortRefresh, refreshUser } = useService(UserServiceKey)
+const { selectUser, abortRefresh, refreshUser } = useService(UserServiceKey)
 const { show: showLoginDialog } = useDialog(LoginDialog)
 const isShown = ref(false)
 
@@ -54,9 +54,13 @@ const onSelectUser = (user: string) => {
   selectUser(user)
 }
 function onRefresh() {
-  refreshUser().catch(() => {
-    showLoginDialog({ username: selectedUser.value?.username, service: selectedUser.value?.authService, error: t('login.userRelogin') })
-  })
+  if (users.value.length === 0) {
+    showLoginDialog()
+  } else {
+    refreshUser().catch(() => {
+      showLoginDialog({ username: selectedUser.value?.username, service: selectedUser.value?.authService, error: t('login.userRelogin') })
+    })
+  }
 }
 
 provide(UserSkinRenderPaused, computed(() => !isShown.value))
