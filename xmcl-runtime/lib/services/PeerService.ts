@@ -119,8 +119,15 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     })
 
     if (IS_DEV) {
-      initLogger('Verbose')
-      preload()
+      initLogger('Verbose', (level, message) => {
+        if (level === 'Info' || level === 'Debug' || level === 'Verbose') {
+          this.log(message)
+        } else if (level === 'Fatal' || level === 'Error') {
+          this.error(message)
+        } else if (level === 'Warning') {
+          this.warn(message)
+        }
+      })
     }
 
     app.protocol.registerHandler('peer', ({ request, response }) => {
