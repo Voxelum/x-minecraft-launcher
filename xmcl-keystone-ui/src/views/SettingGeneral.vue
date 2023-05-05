@@ -85,6 +85,19 @@
         </v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
+    <v-list-item @click="enableDiscord = !enableDiscord">
+      <v-list-item-action class="self-center">
+        <v-checkbox v-model="enableDiscord" />
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{ t('setting.enableDiscord') }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          {{ t('setting.enableDiscordDescription') }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
     <v-list-item>
       <v-list-item-content>
         <v-list-item-title>
@@ -215,6 +228,7 @@ const {
   maxSockets,
   disableTelemetry,
   hideNews,
+  enableDiscord,
   locales: rawLocales,
 } = useSettings()
 const { t } = useI18n()

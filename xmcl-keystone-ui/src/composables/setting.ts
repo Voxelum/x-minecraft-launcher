@@ -76,6 +76,10 @@ export function useSettings() {
     get: () => state.disableTelemetry,
     set: v => state.disableTelemetrySet(v),
   })
+  const enableDiscord = computed({
+    get: () => state.discordPresence,
+    set: (v) => state.discordPresenceSet(v),
+  })
   const apiSets = computed(() => state.apiSets)
 
   onMounted(() => {
@@ -108,6 +112,7 @@ export function useSettings() {
     root,
     developerMode,
     httpProxyEnabled,
+    enableDiscord,
     maxSockets,
     maxAPISockets,
     locales,
