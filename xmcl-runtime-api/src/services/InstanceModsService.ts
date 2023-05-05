@@ -33,6 +33,27 @@ export class InstanceModsState {
     }
   }
 
+  instanceModUpdates({ adds, remove }: { adds: Resource[]; remove: Resource[] }) {
+    const toRemoved = new Set(remove.map(p => p.hash))
+    const newMods = [...this.mods]
+
+    for (const res of adds) {
+      const existed = newMods.findIndex(m => m.hash === res.hash)
+      if (existed !== -1) {
+        newMods[existed] = res
+        // do not remove if the mod is re-updated
+        // usually this is rename case
+        if (toRemoved.has(res.hash)) toRemoved.delete(res.hash)
+      } else {
+        newMods.push(res)
+      }
+    }
+
+    const filtered = newMods.filter(m => !toRemoved.has(m.hash))
+
+    this.mods = filtered
+  }
+
   instanceModUpdateExisted(r: Resource[]) {
     for (const res of r) {
       const existed = this.mods.findIndex(m => m.hash === res.hash)

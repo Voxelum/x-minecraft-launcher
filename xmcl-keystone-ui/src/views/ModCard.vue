@@ -9,7 +9,6 @@
     :class="{
       incompatible: isCompatible === false,
       maybe: isCompatible === 'maybe',
-      subsequence: item.subsequence === true,
       dragged: item.dragged,
     }"
     class="draggable-card mod-card rounded-lg transition-all duration-200 shadow px-3"
@@ -17,20 +16,6 @@
     @dragstart="onDragStart"
     @click="onClick($event, index)"
   >
-    <v-progress-linear
-      v-if="enabled !== item.enabledState"
-      buffer-value="0"
-      color="orange"
-      class="absolute bottom-0 left-0"
-      stream
-    />
-    <v-progress-linear
-      v-if="enabled !== item.enabledState"
-      buffer-value="0"
-      color="orange"
-      class="absolute top-0 left-0"
-      stream
-    />
     <TransitionGroup
       class="layout justify-center align-center fill-height select-none"
       name="transition-list"
@@ -47,7 +32,6 @@
         />
       </v-flex>
       <v-flex
-        v-if="!item.subsequence"
         :key="1"
         class="avatar"
       >
@@ -194,30 +178,10 @@ const contextMenuItems = useModItemContextMenuItems(modItem, () => props.onDelet
   max-width: 100%;
   white-space: nowrap;
 }
-.subsequence {
-  margin-left: 60px;
-}
 .incompatible.draggable-card:hover {
   background-color: #e65100;
 }
 
-.dark .subsequence.draggable-card {
-  /* background-color: rgba(255, 255, 255, 0.15); */
-  border-color: rgba(255, 255, 255, 0.15);
-  background-color: rgba(52, 52, 52, 0.15);
-  /* border-color: #343434; */
-}
-.subsequence.draggable-card {
-  background-color: rgba(0, 0, 0, 0.1);
-  border-color: rgba(0, 0, 0, 0.1);
-}
-
-.subsequence.draggable-card:hover {
-  background-color: #388e3c;
-}
-.subsequence.incompatible.draggable-card:hover {
-  background-color: #e65100 !important;
-}
 .mod-card .avatar {
   min-height: 50px;
   max-height: 50px;

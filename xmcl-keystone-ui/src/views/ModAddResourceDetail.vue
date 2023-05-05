@@ -185,7 +185,6 @@ const showFile = (r: Resource) => {
 
 const { runtime } = injection(kModsContext)
 
-const { getTooltip } = useModCompatibleTooltip()
 const deps = computed(() => props.resources.map(getModDependencies).map(d => getModsCompatiblity(d, runtime.value)))
 const coreDeps = computed(() => deps.value.map(v => v.filter(d => d.modId === 'minecraft' || d.modId === 'forge' || d.modId === 'fabric' || d.modId === 'quilt' || d.modId === 'fabricloader')))
 

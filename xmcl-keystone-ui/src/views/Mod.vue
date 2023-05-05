@@ -19,12 +19,8 @@
       @dragover.prevent
       @drop="onDropToImport"
     >
-      <RefreshingTile
-        v-if="loading"
-        class="h-full"
-      />
       <Hint
-        v-else-if="items.length === 0 || dragover"
+        v-if="items.length === 0 || dragover"
         icon="save_alt"
         :text="t('mod.dropHint')"
         class="h-full w-full z-0"
@@ -65,16 +61,6 @@
         <ModDeleteView :items="deletingMods" />
       </DeleteDialog>
     </div>
-    <div class="absolute w-full left-0 bottom-0 flex items-center justify-center mb-5 pointer-events-none">
-      <FloatButton
-        class="pointer-events-auto"
-        :deleting="isDraggingMod"
-        :visible="isDraggingMod || isModified"
-        :loading="committing"
-        @drop="startDelete()"
-        @click="commit"
-      />
-    </div>
   </div>
 </template>
 
@@ -96,13 +82,11 @@ import DeleteDialog from '../components/DeleteDialog.vue'
 import { ModItem } from '../composables/mod'
 import ModCard from './ModCard.vue'
 import ModDeleteView from './ModDeleteView.vue'
-import FloatButton from './ModFloatButton.vue'
 
 const { importResources } = useService(ResourceServiceKey)
-const { mods: { items: mods, commit, committing, isModified } } = injection(kInstanceContext)
-const loading = false
+const { mods: { items: mods, updating: loading, updateTag, enableMod, disableMod } } = injection(kInstanceContext)
 const filtered = useModFilter(mods)
-const { isSelectionMode, selectedItems, onEnable, onClick } = useModSelection(filtered.items)
+const { isSelectionMode, selectedItems, onEnable, onClick } = useModSelection(filtered.items, enableMod, disableMod)
 const { t } = useI18n()
 
 const { onDrop: onDropToImport } = useDrop((file) => {
@@ -119,6 +103,7 @@ const onScroll = useCompactScroll(compact)
 
 const onTags = (item: ModItem, tags: string[]) => {
   item.tags = tags
+  updateTag(item)
 }
 const onSelect = () => {
   isSelectionMode.value = true

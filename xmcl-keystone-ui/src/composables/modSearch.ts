@@ -14,8 +14,10 @@ export function useModsSearch(keyword: Ref<string>, runtime: Ref<InstanceData['r
   const isValidResource = (r: Resource) => {
     const useForge = !!runtime.value.forge
     const useFabric = !!runtime.value.fabricLoader
+    const useQuilt = !!runtime.value.quiltLoader
     if (useForge) return !!r.metadata.forge
     if (useFabric) return !!r.metadata.fabric
+    if (useQuilt) return !!r.metadata.quilt
     return false
   }
   const mods = computed(() => keyword.value

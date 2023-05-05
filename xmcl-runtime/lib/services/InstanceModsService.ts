@@ -1,5 +1,5 @@
-import { InstallModsOptions, InstanceModsService as IInstanceModsService, InstanceModsServiceKey, InstanceModsState, isModResource, Resource, ResourceDomain, ResourceService as IResourceService } from '@xmcl/runtime-api'
-import { existsSync, FSWatcher } from 'fs'
+import { InstanceModsService as IInstanceModsService, ResourceService as IResourceService, InstallModsOptions, InstanceModsServiceKey, InstanceModsState, Resource, ResourceDomain, isModResource } from '@xmcl/runtime-api'
+import { FSWatcher, existsSync } from 'fs'
 import { ensureDir } from 'fs-extra/esm'
 import { rename, stat, unlink } from 'fs/promises'
 import watch from 'node-watch'
@@ -21,13 +21,17 @@ import { ExposeServiceKey, Lock, Singleton, StatefulService } from './Service'
 export class InstanceModsService extends StatefulService<InstanceModsState> implements IInstanceModsService {
   private modsWatcher: FSWatcher | undefined
 
-  private addMod = new AggregateExecutor<Resource, Resource[]>(v => v,
-    res => this.state.instanceModUpdate(res),
-    100)
-
-  private removeMod = new AggregateExecutor<Resource, Resource[]>(v => v,
-    res => this.state.instanceModRemove(res),
-    100)
+  private updateMod = new AggregateExecutor<[Resource, boolean], [Resource, boolean][]>(v => v,
+    (all) => {
+      const toAdd = [] as Resource[]
+      const toRemove = [] as Resource[]
+      for (const [r, isAdd] of all) {
+        if (isAdd) toAdd.push(r)
+        else toRemove.push(r)
+      }
+      this.state.instanceModUpdates({ adds: toAdd, remove: toRemove })
+    },
+    500)
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
@@ -107,12 +111,12 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
         } else {
           this.warn(`Non mod resource added in /mods directory! ${filePath}`)
         }
-        this.addMod.push(resource)
+        this.updateMod.push([resource, true])
       } else {
         const target = this.state.mods.find(r => r.path === filePath)
         if (target) {
           this.log(`Instance mod remove ${filePath}`)
-          this.removeMod.push(target)
+          this.updateMod.push([target, false])
         } else {
           this.warn(`Cannot remove the mod ${filePath} as it's not found in memory cache!`)
         }

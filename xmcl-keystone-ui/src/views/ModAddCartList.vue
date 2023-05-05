@@ -35,7 +35,7 @@
     >
       <Hint
         v-if="list.length === 0"
-        text="Select project and install file"
+        :text="t('modInstall.selectProjectHint')"
         icon="add_shopping_cart"
       />
       <template v-else>

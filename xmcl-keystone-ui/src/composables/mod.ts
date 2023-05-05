@@ -1,8 +1,8 @@
-import { useRefreshable, useService } from '@/composables'
-import { isStringArrayEquals } from '@/util/equal'
-import { getModDependencies, getModProvides, ModDependencies } from '@/util/modDependencies'
-import { InstanceJavaServiceKey, InstanceModsServiceKey, InstanceServiceKey, isModResource, isPersistedResource, JavaRecord, Resource, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
-import { computed, InjectionKey, ref, Ref, watch } from 'vue'
+import { useService } from '@/composables'
+import { AggregateExecutor } from '@/util/aggregator'
+import { ModDependencies, getModDependencies, getModProvides } from '@/util/modDependencies'
+import { InstanceModsServiceKey, JavaRecord, Resource, ResourceServiceKey, RuntimeVersions, isPersistedResource } from '@xmcl/runtime-api'
+import { InjectionKey, Ref, computed, ref, watch } from 'vue'
 
 export const kModsContext: InjectionKey<{
   /**
@@ -35,19 +35,22 @@ export interface ModItem {
    * Mod version
    */
   version: string
+  /**
+   * The mod description text
+   */
   description: string
   /**
    * Mod icon url
    */
   icon: string
-
+  /**
+   * The mod loaders
+   */
   modLoaders: string[]
-
   /**
    * The resource tag
    */
   tags: string[]
-
   /**
    * The hash of the resource
    */
@@ -56,25 +59,33 @@ export interface ModItem {
    * The universal location of the mod
    */
   url: string
-
-  dependencies: ModDependencies
-  provideRuntime: Record<string, string>
-
   /**
-   * The pending enabled. Might be different from the actual enable state
+   * All mod dependencies
+   */
+  dependencies: ModDependencies
+  /**
+   * The provided runtime
+   */
+  provideRuntime: Record<string, string>
+  /**
+   * If this mod is enabled. This is computed from the path suffix.
    */
   enabled: boolean
   /**
-   * The actual enabled state. Represent if the mod is moved to the mods folder.
+   * The backed resource
    */
-  enabledState: boolean
-
-  subsequence: boolean
-
-  selected: boolean
-  dragged: boolean
-
   resource: Resource
+
+  // State props
+
+  /**
+   * Is this mod is selected
+   */
+  selected: boolean
+  /**
+   * Is this mod is dragged
+   */
+  dragged: boolean
 }
 
 /**
@@ -86,40 +97,13 @@ export function useInstanceMods(runtimes: Ref<RuntimeVersions>, java: Ref<JavaRe
   const { showDirectory } = useService(InstanceModsServiceKey)
 
   const items: Ref<ModItem[]> = ref([])
-  const pendingUninstallItems = computed(() => items.value.filter(i => !i.enabled && i.enabledState))
-  const pendingInstallItems = computed(() => items.value.filter(i => i.enabled && !i.enabledState))
-  const pendingEditItems = computed(() => items.value.filter(i => (isPersistedResource(i.resource) && !isStringArrayEquals(i.tags, i.resource.tags))))
-  const isModified = computed(() => pendingInstallItems.value.length > 0 || pendingUninstallItems.value.length > 0 || pendingEditItems.value.length > 0)
-
-  const { refresh: commit, refreshing: committing } = useRefreshable(async () => {
-    const promises: Promise<any>[] = []
-
-    promises.push(updateResources(pendingEditItems.value.map(i => ({
-      ...i.resource,
-      name: i.name,
-      tags: i.tags,
-    }))))
-    if (pendingInstallItems.value.length > 0) {
-      promises.push(enable({ mods: pendingInstallItems.value.map(v => v.resource) }))
-    }
-    if (pendingUninstallItems.value.length > 0) {
-      promises.push(disable({ mods: pendingUninstallItems.value.map(v => v.resource) }))
-    }
-
-    await Promise.all(promises)
-  })
 
   const cachedItems = new Map<string, ModItem>()
   const iconMap: Ref<Record<string, string>> = ref({})
-  const enabledModCounts = ref(0)
+  const enabledModCounts = computed(() => items.value.filter(v => v.enabled).length)
 
-  function updateItems() {
-    const newItems = state.mods.map(getModItemFromResource)
-    for (const item of newItems) {
-      item.enabled = !item.path.endsWith('.disabled')
-      item.enabledState = item.enabled
-    }
-
+  function updateItems(resources: Resource[]) {
+    const newItems = resources.map(getModItemFromResource)
     const newIconMap: Record<string, string> = {}
 
     for (const item of newItems) {
@@ -139,9 +123,8 @@ export function useInstanceMods(runtimes: Ref<RuntimeVersions>, java: Ref<JavaRe
       cachedItems.set(item.hash, item)
     }
 
-    iconMap.value = newIconMap
+    iconMap.value = markRaw(newIconMap)
     items.value = newItems
-    enabledModCounts.value = newItems.filter(v => !v.path.endsWith('.disabled')).length
   }
 
   const currentRuntime = computed(() => {
@@ -151,7 +134,7 @@ export function useInstanceMods(runtimes: Ref<RuntimeVersions>, java: Ref<JavaRe
     }
     runtime.fabricloader = runtime.fabricLoader
     for (const i of items.value) {
-      if (i.enabled || i.enabledState) {
+      if (i.enabled) {
         for (const [key, val] of Object.entries(i.provideRuntime)) {
           runtime[key] = val
         }
@@ -166,17 +149,12 @@ export function useInstanceMods(runtimes: Ref<RuntimeVersions>, java: Ref<JavaRe
     icons: iconMap,
   })
 
-  watch(computed(() => state.mods), (val) => {
-    updateItems()
-  })
-
   function getUrl(resource: Resource) {
     return resource.uris.find(u => u?.startsWith('http')) ?? ''
   }
-  function getModItemFromModResource(resource: Resource): ModItem {
+
+  function getModItemFromResource(resource: Resource): ModItem {
     const isPersisted = isPersistedResource(resource)
-    const dependencies = markRaw(getModDependencies(resource))
-    const provideRuntime = markRaw(getModProvides(resource))
     const modItem: ModItem = ({
       path: resource.path,
       id: '',
@@ -184,18 +162,16 @@ export function useInstanceMods(runtimes: Ref<RuntimeVersions>, java: Ref<JavaRe
       version: '',
       modLoaders: markRaw([]),
       description: '',
-      provideRuntime,
+      provideRuntime: markRaw(getModProvides(resource)),
       icon: resource.icons?.at(-1) ?? '',
-      dependencies,
+      dependencies: markRaw(getModDependencies(resource)),
       url: getUrl(resource),
       hash: resource.hash,
       tags: isPersisted ? [...resource.tags] : [],
-      enabled: false,
-      enabledState: false,
-      subsequence: false,
+      enabled: !resource.path.endsWith('.disabled'),
       selected: false,
       dragged: false,
-      resource,
+      resource: markRaw(resource),
     })
     if (resource.metadata.forge) {
       modItem.modLoaders.push('forge')
@@ -248,44 +224,55 @@ export function useInstanceMods(runtimes: Ref<RuntimeVersions>, java: Ref<JavaRe
     return reactive(modItem)
   }
 
-  function getModItemFromResource(resource: Resource): ModItem {
-    if (isModResource(resource)) {
-      return getModItemFromModResource(resource)
-    }
-    const isPersisted = isPersistedResource(resource)
-    return reactive({
-      path: resource.path,
-      id: resource.hash,
-      name: resource.fileName,
-      provideRuntime: {},
-      modLoaders: [],
-      dependencies: [],
-      version: '',
-      description: '',
-      icon: resource.icons?.[0] || '',
-      url: getUrl(resource),
-      hash: resource.hash,
-      tags: isPersisted ? [...resource.tags] : [],
-      enabled: false,
-      enabledState: false,
-      subsequence: false,
-      hide: false,
-      selected: false,
-      dragged: false,
-      resource: markRaw(resource),
-    })
+  const updating = ref(false)
+  const executor = new AggregateExecutor<[ModItem, 'enable' | 'disable' | 'update'], [ModItem, 'enable' | 'disable' | 'update'][]>(
+    (v) => v, (cmd) => {
+      const toEnable = cmd.filter(c => c[1] === 'enable')
+      const toDisable = cmd.filter(c => c[1] === 'disable')
+      const toUpdate = cmd.filter(c => c[1] === 'update')
+      Promise.all([
+        enable({ mods: toEnable.map(e => e[0].resource) }),
+        disable({ mods: toDisable.map(e => e[0].resource) }),
+        updateResources(toUpdate.map(([item]) => ({
+          ...item.resource,
+          name: item.name,
+          tags: item.tags,
+        }))),
+      ]).finally(() => {
+        updating.value = false
+      })
+    }, 800)
+
+  function enableMod(item: ModItem) {
+    updating.value = true
+    executor.push([item, 'enable'])
+  }
+
+  function disableMod(item: ModItem) {
+    updating.value = true
+    executor.push([item, 'disable'])
+  }
+
+  function updateTag(item: ModItem) {
+    updating.value = true
+    executor.push([item, 'update'])
   }
 
   onMounted(() => {
-    updateItems()
+    updateItems(state.mods)
+  })
+
+  watch(computed(() => state.mods), (val) => {
+    updateItems(val)
   })
 
   return {
-    isModified,
     items,
+    updating,
+    enableMod,
+    disableMod,
+    updateTag,
     enabledModCounts,
-    commit,
-    committing,
     showDirectory,
   }
 }

@@ -158,7 +158,7 @@
               </template>
               <Hint
                 v-else
-                text="Search and select project"
+                :text="t('modInstall.searchHint')"
                 icon="playlist_add"
               />
             </div>
