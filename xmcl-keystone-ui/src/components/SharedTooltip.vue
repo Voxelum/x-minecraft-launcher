@@ -17,4 +17,10 @@
 import { useSharedTooltipData } from '@/composables/sharedTooltip'
 
 const { currentTooltip, x, y, isShown, color, left } = useSharedTooltipData()
+
+const router = useRouter()
+router.afterEach(() => {
+  isShown.value = false
+})
+
 </script>
