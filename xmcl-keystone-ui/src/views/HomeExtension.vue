@@ -107,6 +107,7 @@ import { getAgoOrDate, getHumanizeDuration, TimeUnit } from '@/util/date'
 import { injection } from '@/util/inject'
 import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
 import HomeLaunchButton from './HomeLaunchButton.vue'
+import useSWRV from 'swrv'
 
 const { issue, task, version, instance } = injection(kInstanceContext)
 const isInFocusMode = useInFocusMode()
@@ -114,7 +115,7 @@ const { total, progress, pause, resume, status, name: taskName } = task
 const { t } = useI18n()
 
 const compact = injection(kCompact)
-const lastPlayedText = computed(() => {
+const { data: lastPlayedText } = useSWRV(computed(() => `${instance.value.path}/lastPlay`), () => {
   const i = instance.value
   const date = i.lastPlayedDate
   if (!date) {
@@ -135,22 +136,23 @@ const lastPlayedText = computed(() => {
     case TimeUnit.Day:
       return t('ago.day', { duration: ago }, { plural: ago })
   }
-})
+}, { revalidateOnFocus: true })
+
 const playTimeText = computed(() => {
   if (!instance.value.playtime) {
     return t('instance.neverPlayed')
   }
-  const [value, unit] = getHumanizeDuration(instance.value.playtime)
+  const [text, value, unit] = getHumanizeDuration(instance.value.playtime)
 
   switch (unit) {
     case TimeUnit.Hour:
-      return t('duration.hour', { duration: value }, { plural: value })
+      return t('duration.hour', { duration: text }, { plural: value })
     case TimeUnit.Minute:
-      return t('duration.minute', { duration: value }, { plural: value })
+      return t('duration.minute', { duration: text }, { plural: value })
     case TimeUnit.Second:
-      return t('duration.second', { duration: value }, { plural: value })
+      return t('duration.second', { duration: text }, { plural: value })
     case TimeUnit.Day:
-      return t('duration.day', { duration: value }, { plural: value })
+      return t('duration.day', { duration: text }, { plural: value })
   }
 })
 
