@@ -2,7 +2,7 @@
   <HomeCardBase
     title="Mod"
     icon="extension"
-    :text="t('mod.enabled', { count: enabledModCounts }) "
+    :text="t('mod.enabled', { count: enabledModCounts })"
     :icons="icons"
     :refreshing="refreshing > 0"
     :button="t('mod.manage')"

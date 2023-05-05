@@ -9,9 +9,6 @@
       </v-icon>
       {{ title }}
     </v-card-title>
-    <!-- <v-card-subtitle>
-      别忘了开 Modloader 哦……
-    </v-card-subtitle> -->
     <v-card-text class="flex-grow">
       <template v-if="refreshing">
         <v-skeleton-loader type="paragraph" />
@@ -60,6 +57,7 @@ import { injection } from '@/util/inject'
 defineProps<{
   icon?: string
   title: string
+  subtitle?: string
   text: string
   button: string
   refreshing: boolean

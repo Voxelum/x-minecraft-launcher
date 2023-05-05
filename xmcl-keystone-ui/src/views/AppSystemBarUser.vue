@@ -24,8 +24,6 @@
     <UserMenu
       :users="users"
       :selected="selectedUser"
-      :refreshing="false"
-      :expired="false"
       @select="onSelectUser"
       @refresh="onRefresh"
       @abort-refresh="onAbortRefresh"
@@ -40,7 +38,7 @@ import { LoginDialog } from '@/composables/login'
 import { kUserContext } from '@/composables/user'
 import { UserSkinRenderPaused } from '@/composables/userSkin'
 import { injection } from '@/util/inject'
-import { BaseServiceKey, UserServiceKey } from '@xmcl/runtime-api'
+import { UserServiceKey } from '@xmcl/runtime-api'
 import UserMenu from './UserMenu.vue'
 
 const { users, userProfile: selectedUser, gameProfile: selectedUserGameProfile } = injection(kUserContext)
@@ -53,6 +51,11 @@ const onSelectUser = (user: string) => {
   isShown.value = false
   selectUser(user)
 }
+watch(selectedUser, (show) => {
+  if (show && users.value.length === 0) {
+    showLoginDialog()
+  }
+})
 function onRefresh() {
   if (users.value.length === 0) {
     showLoginDialog()
@@ -66,23 +69,5 @@ function onRefresh() {
 provide(UserSkinRenderPaused, computed(() => !isShown.value))
 function onAbortRefresh() {
   abortRefresh()
-}
-
-const { handleUrl } = useService(BaseServiceKey)
-function onDrop(e: DragEvent) {
-  const dataTransfer = e.dataTransfer!
-  if (dataTransfer.items.length > 0) {
-    for (let i = 0; i < dataTransfer.items.length; ++i) {
-      const item = dataTransfer.items[i]
-      if (item.kind === 'string') {
-        item.getAsString((content) => {
-          if (content.startsWith('authlib-injector:yggdrasil-server:')) {
-            handleUrl(content)
-          }
-        })
-        break
-      }
-    }
-  }
 }
 </script>

@@ -615,6 +615,7 @@ mod:
   manage: Manage Mods
   maybeCompatible: Maybe Compatible.
   name: Mod | Mods
+  noModLoaderHint: Don't forget to enable a modloader to use mods!
   openLink: Open the mod url {url}
   searchOnCurseforge: Search in curseforge
   searchOnModrinth: Search {name} in Modrinth

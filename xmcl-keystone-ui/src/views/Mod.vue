@@ -84,14 +84,20 @@ import ModCard from './ModCard.vue'
 import ModDeleteView from './ModDeleteView.vue'
 
 const { importResources } = useService(ResourceServiceKey)
-const { mods: { items: mods, updating: loading, updateTag, enableMod, disableMod } } = injection(kInstanceContext)
+const { mods: { items: mods, updating, updateTag, enableMod, disableMod } } = injection(kInstanceContext)
 const filtered = useModFilter(mods)
 const { isSelectionMode, selectedItems, onEnable, onClick } = useModSelection(filtered.items, enableMod, disableMod)
 const { t } = useI18n()
 
+const importing = ref(false)
 const { onDrop: onDropToImport } = useDrop((file) => {
-  importResources([{ path: file.path, domain: ResourceDomain.Mods }])
+  importing.value = true
+  importResources([{ path: file.path, domain: ResourceDomain.Mods }]).finally(() => {
+    importing.value = false
+  })
 })
+
+const loading = computed(() => updating.value || importing.value)
 
 const { dragover } = useModDropHandler()
 

@@ -66,6 +66,20 @@
         :title="t('mod.name', { count: 2 })"
         :text="t('mod.enabled', { count: modCount })"
       />
+      <v-divider
+        v-if="noModLoader"
+        vertical
+      />
+      <AvatarItem
+        v-if="noModLoader"
+        v-ripple
+        class="cursor-pointer select-none"
+        responsive
+        icon="dangerous"
+        title="Modloader"
+        :text="t('mod.noModLoaderHint')"
+        @click="router.push('/base-setting')"
+      />
     </div>
     <div class="flex-grow" />
     <div
@@ -92,4 +106,8 @@ const modCount = computed(() => state.mods.filter(m => !m.path.endsWith('.disabl
 const { version } = injection(kInstanceContext)
 const compact = injection(kCompact)
 const { t } = useI18n()
+const noModLoader = computed(() =>
+  !version.value.forge && !version.value.fabricLoader && !version.value.quiltLoader,
+)
+const router = useRouter()
 </script>

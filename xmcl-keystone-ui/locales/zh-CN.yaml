@@ -625,6 +625,7 @@ mod:
   manage: 管理 Mods
   maybeCompatible: 也许兼容于当前版本。
   name: Mod | Mods
+  noModLoaderHint: 不要忘记请选择 Modloader 来使用 Mod
   openLink: 打开 Mod 链接 {url}
   searchOnCurseforge: 在 Curseforge 上搜索
   searchOnMcWiki: 在 MC 百科中查找 {name}

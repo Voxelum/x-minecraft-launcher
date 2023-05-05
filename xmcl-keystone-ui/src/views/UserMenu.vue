@@ -78,8 +78,6 @@ const { t } = useI18n()
 const props = defineProps<{
   selected: UserProfile | undefined
   users: UserProfile[]
-  refreshing: boolean
-  expired: boolean
 }>()
 const { show: showLoginDialog } = useDialog(LoginDialog)
 
