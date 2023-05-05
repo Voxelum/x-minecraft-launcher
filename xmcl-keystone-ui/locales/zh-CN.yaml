@@ -641,6 +641,8 @@ modInstall:
   installed: 已安装
   pending: 安装列表
   search: 搜索结果
+  searchHint: 搜索并选择 Mod
+  selectProjectHint: 添加 Mod 并安装
 modSearchType:
   all: 所有
   local: 本地
@@ -678,7 +680,6 @@ modpack:
 modrinth:
   browseUrl: 在浏览器中打开 {url}
   categories:
-    folia: Folia
     128x: 128x
     16x: 16x
     256x: 256x
@@ -711,6 +712,7 @@ modrinth:
     fabric: Fabric
     fantasy: 幻想
     features: 特性
+    folia: Folia
     foliage: 优化植被
     fonts: 字体
     food: 食物
@@ -1091,6 +1093,8 @@ setting:
   developerModeDescription: 开发者模式意在于帮助你测试你自己写的 Mod
   disableTelemetry: 关闭遥测
   disableTelemetryDescription: XMCL 会收集游戏启动以及用户登录事件
+  enableDiscord: 启用 Discord Presence
+  enableDiscordDescription: 根据 XMCL 实时更新 Discord 的状态
   general: 基本设置
   githubRelease: Github
   globalSetting: 全局实例设置
