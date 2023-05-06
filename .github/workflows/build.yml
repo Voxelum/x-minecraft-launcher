@@ -235,6 +235,9 @@ jobs:
         mv ./build/app-win.asar.sha256 ./build/app-${{ steps.prepare_release.outputs.version }}-win.asar.sha256
         mv ./build/app-mac.asar.sha256 ./build/app-${{ steps.prepare_release.outputs.version }}-mac.asar.sha256
         mv ./build/app-linux.asar.sha256 ./build/app-${{ steps.prepare_release.outputs.version }}-linux.asar.sha256
+    - name: Emit Version File
+      run: |
+        echo ${{ steps.prepare_release.outputs.version }}.${{ github.run_id }} > ./build/version
     - name: Draft Release
       id: create_release
       uses: voxelum/create-release@xmcl

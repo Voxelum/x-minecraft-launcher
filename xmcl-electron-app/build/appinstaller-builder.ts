@@ -9,7 +9,7 @@ function getAppInstallerContent(version: string, publisher: string) {
       <MainPackage
           Name="XMCL"
           Publisher="${publisher}"
-          Version="${version}.0"
+          Version="${version}.${process.env.BUILD_NUMBER || '0'}"
           ProcessorArchitecture="x64"
           Uri="https://xmcl-release-ms.azureedge.net/releases/xmcl-${version}.appx" />
       <UpdateSettings>
