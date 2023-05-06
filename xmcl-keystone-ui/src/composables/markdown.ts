@@ -1,6 +1,6 @@
 import MarkdownIt from 'markdown-it'
 // @ts-ignore
-import * as attr from 'markdown-it-link-attributes'
+import attr from 'markdown-it-link-attributes'
 
 export function useMarkdown() {
   const md = new MarkdownIt({

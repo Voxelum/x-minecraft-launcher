@@ -6,7 +6,6 @@ import { VitePWA } from 'vite-plugin-pwa'
 import WindiCSS from 'vite-plugin-windicss'
 import AutoImport from 'unplugin-auto-import/vite'
 import VueI18n from '@intlify/unplugin-vue-i18n/vite'
-import { fileURLToPath } from 'url'
 
 const entries = readdirSync(join(__dirname, './src'))
   .filter((f) => f.endsWith('.html'))
