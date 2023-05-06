@@ -13,6 +13,10 @@ on:
       - 'pnpm-lock.yaml'
       - '.github/**'
 
+# env:
+#   ELECTRON_CACHE: ~/.cache/electron
+#   ELECTRON_BUILDER_CACHE: ~/.cache/electron-builder
+
 jobs:
   build:
     runs-on: ${{ matrix.os }}
@@ -25,14 +29,22 @@ jobs:
         submodules: recursive
     - uses: pnpm/action-setup@v2.0.1
       with:
-        version: 7.13.2
+        version: 8.3.0
     - name: Use Node.js 16
       uses: actions/setup-node@v2
       with:
         node-version: 16
         cache: 'pnpm'
+    # - name: Restore cached Electron
+    #   id: cache-electron
+    #   uses: actions/cache/restore@v3
+    #   with:
+    #     path: |
+    #       ~/.cache/electron
+    #       ~/.cache/electron-builder
+    #     key: ${{ runner.os }}-electron
     - name: Install
-      run: pnpm install --filter=!./xmcl-page
+      run: pnpm install
     - name: Build
       run: |
         pnpm run --prefix xmcl-keystone-ui build
@@ -44,48 +56,54 @@ jobs:
         WIN_CSC_LINK: ${{ secrets.CODE_SIGN_BASE64 }}
         APPX_PUBLISHER: ${{ secrets.APPX_PUBLISHER }}
         WIN_CSC_KEY_PASSWORD: ${{ secrets.CODE_SIGN_PWD }}
+    # - name: Save cached Electron
+    #   uses: actions/cache/save@v3
+    #   with:
+    #     path: |
+    #       ~/.cache/electron
+    #       ~/.cache/electron-builder
+    #     key: ${{ runner.os }}-electron
     - name: Upload Build
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: build
         path: |
-          xmcl-electron-app/build/output/*.*
-          xmcl-electron-app/build/output/nsis-web/*.*
+          xmcl-electron-app/build/output/
     - name: Upload Windows Zip Build
       if: ${{ runner.os == 'Windows' }} 
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: win-b${{ github.run_number }}
         path: |
-          xmcl-electron-app/build/output/win-unpacked/*.*
+          xmcl-electron-app/build/output/win-unpacked/
     - name: Upload Linux x64 Zip Build
       if: ${{ runner.os == 'Linux' }} 
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: linux-b${{ github.run_number }}-x64
         path: |
-          xmcl-electron-app/build/output/linux-unpacked/*.*
+          xmcl-electron-app/build/output/linux-unpacked/
     - name: Upload Linux arm64 Zip Build
       if: ${{ runner.os == 'Linux' }} 
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: linux-b${{ github.run_number }}-arm64
         path: |
-          xmcl-electron-app/build/output/linux-arm64-unpacked/*.*
+          xmcl-electron-app/build/output/linux-arm64-unpacked/
     - name: Upload Mac x64 Zip Build
       if: ${{ runner.os == 'macOS' }} 
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: mac-b${{ github.run_number }}-x64
         path: |
-          xmcl-electron-app/build/output/mac/*.*
+          xmcl-electron-app/build/output/mac/
     - name: Upload Mac arm64 Zip Build
       if: ${{ runner.os == 'macOS' }} 
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: mac-b${{ github.run_number }}-arm64
         path: |
-          xmcl-electron-app/build/output/mac-arm64/*.*
+          xmcl-electron-app/build/output/mac-arm64/
     - name: Prepare Windows Asar
       if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }} 
       run: |
@@ -106,7 +124,7 @@ jobs:
         mv xmcl-electron-app/build/output/linux-unpacked/resources/app.asar.sha256 asar/app-linux.asar.sha256
     - name: Upload Asar
       if: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }} 
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: build
         path: |
@@ -125,7 +143,7 @@ jobs:
         fetch-depth: 0
     - uses: pnpm/action-setup@v2.0.1
       with:
-        version: 6.24.4
+        version: 8.3.0
     - name: Use Node.js 16
       uses: actions/setup-node@v2
       with:
@@ -178,7 +196,7 @@ jobs:
         submodules: recursive
     - uses: pnpm/action-setup@v2.0.1
       with:
-        version: 6.24.4
+        version: 8.3.0
     - name: Use Node.js 16
       uses: actions/setup-node@v2
       with:

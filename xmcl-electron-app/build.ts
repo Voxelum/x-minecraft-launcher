@@ -86,7 +86,7 @@ async function buildElectron(config: Configuration, dir: boolean) {
 
 const currentPlatform = platform()
 async function installArm64() {
-  const downloadAndUnpack = async (tarPath: string) => {
+  const unpack = async (tarPath: string) => {
     const options = {
       readable: true,
       writable: true,
@@ -112,6 +112,7 @@ async function installArm64() {
     const unpackTo = resolve(__dirname, 'dist', basename(binaryName))
     await unlink(unpackTo).catch(() => undefined)
     await rename(join(dir, binaryName), unpackTo)
+    console.log(`Download and unpack to ${unpackTo}`)
   }
 
   const download = async (url: string, dest: string) => await stream(url, {
@@ -130,7 +131,6 @@ async function installArm64() {
     linux: {
       keytar: 'https://github.com/atom/node-keytar/releases/download/v7.9.0/keytar-v7.9.0-napi-v3-linux-arm64.tar.gz',
       nodeDataChannel: 'https://github.com/murat-dogan/node-datachannel/releases/download/v0.4.1/node-datachannel-v0.4.1-node-v93-linux-arm64.tar.gz',
-      classicLevel: 'https://github.com/Level/classic-level/releases/download/v1.2.0/linux-arm.tar.gz',
     },
   }
 
@@ -141,7 +141,15 @@ async function installArm64() {
       await download(url, tarGz)
       return tarGz
     }))
-    await Promise.all(result.map(downloadAndUnpack))
+    await Promise.all(result.map(unpack))
+  }
+
+  if (currentPlatform === 'linux') {
+    // copy classic-level dependencies
+    const src = resolve(__dirname, `../xmcl-runtime/node_modules/classic-level/prebuilds/linux-arm64/node.napi.armv8.node`)
+    const dest = resolve(__dirname, `dist/node.napi.glib.node`)
+    await copyFile(src, dest)
+    console.log(`copy ${src} -> ${dest}`)
   }
 }
 
@@ -161,48 +169,22 @@ async function start() {
   if (process.env.BUILD_TARGET) {
     const dir = process.env.BUILD_TARGET === 'dir'
 
-    // Defer appx and appimage to last build
-    const lastBuildTarget = ['AppX', 'appx', 'AppImage', 'appimage']
-    // The per arch context for each build
-    const archContexts: Record<string, {
-      asarFile: string
-      distDir: string
-      targetsToWait: number
-      priorBuild: Promise<void>
-      priorBuildResolve: () => void
-    }> = {}
     await buildElectron({
       ...electronBuilderConfig,
       async beforePack(context) {
         const asarFile = join(context.appOutDir, 'resources', 'app.asar')
         const distDir = join(context.packager.projectDir, 'dist')
-        let targetsToWait = 0
-        for (const target of context.targets) {
-          if (!lastBuildTarget.includes(target.name)) {
-            targetsToWait += 1
-          }
-        }
-        let priorBuildResolve = () => { }
-        const priorBuild = new Promise<void>((resolve) => {
-          priorBuildResolve = resolve
-        })
-        archContexts[Arch[context.arch]] = {
-          asarFile,
-          distDir,
-          targetsToWait,
-          priorBuildResolve,
-          priorBuild,
-        }
 
         // Install arm64 dependencies
         if (context.arch === 3) {
           await installArm64()
         }
 
+        console.log('overwrite asar', asarFile)
+
         await asar.createPackage(distDir, asarFile)
       },
       async artifactBuildStarted(context) {
-        if (!context.arch) return
         if (context.targetPresentableName.toLowerCase() === 'appx') {
           const files = await readdir(path.join(__dirname, './icons'))
           const storeFiles = files.filter(f => f.endsWith('.png') &&
@@ -214,35 +196,13 @@ async function start() {
             ] as const)
           await Promise.all(storeFiles.map(v => ensureFile(v[1]).then(() => copyFile(v[0], v[1]))))
         }
-
-        const archContext = archContexts[Arch[context.arch!]]
-        if (archContext.targetsToWait > 0 && lastBuildTarget.includes(context.targetPresentableName)) {
-          // This is the target need to wait others finished
-          // Wait priority builds finish
-          await archContext.priorBuild
-          const { distDir, asarFile } = archContexts[Arch[context.arch!]]
-          await writeFile(join(distDir, 'target'), context.targetPresentableName.toLocaleLowerCase())
-          await unlink(asarFile).catch(() => undefined)
-          await asar.createPackage(distDir, asarFile)
-        }
       },
       async artifactBuildCompleted(context) {
-        if (!context.arch) return
-        const archContext = archContexts[Arch[context.arch]]
-        if (archContext.targetsToWait > 0 && context.target && !lastBuildTarget.includes(context.target.name)) {
-          archContext.targetsToWait -= 1
-          if (archContext.targetsToWait === 0) {
-            archContext.priorBuildResolve()
-          }
-        }
         if (context.target && context.target.name === 'appx') {
           await buildAppInstaller(version, path.join(__dirname, './build/output/xmcl.appinstaller'), electronBuilderConfig.appx!.publisher!)
         }
       },
     }, dir)
-    for (const c of Object.values(archContexts)) {
-      await unlink(join(c.distDir, 'target')).catch(() => undefined)
-    }
   }
 }
 
