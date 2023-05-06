@@ -1,9 +1,12 @@
-const core = require('@actions/core');
-const {  writeFileSync } = require('fs');
+const { writeFileSync } = require('fs');
 
-async function main(output) {
-    const body = core.getInput('body')
-    const version = core.getInput('version')
+const getInput = (name) => {
+    const val = process.env[`INPUT_${name.replace(/ /g, '_').toUpperCase()}`] || '';
+    return val
+}
+async function main() {
+    const body = getInput('body')
+    const version = getInput('version')
     const locales = ['en', 'zh']
 
     console.log(body)
@@ -25,7 +28,4 @@ async function main(output) {
     }
 }
 
-main(core ? core.setOutput : (k, v) => {
-    console.log(k)
-    console.log(v)
-});
+main();
