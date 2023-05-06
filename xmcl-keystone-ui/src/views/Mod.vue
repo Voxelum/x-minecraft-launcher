@@ -66,7 +66,6 @@
 
 <script lang=ts setup>
 import Hint from '@/components/Hint.vue'
-import RefreshingTile from '@/components/RefreshingTile.vue'
 import { useDrop, useService } from '@/composables'
 import { kInstanceContext } from '@/composables/instanceContext'
 import { useModDeletion } from '@/composables/modDelete'
@@ -90,9 +89,10 @@ const { isSelectionMode, selectedItems, onEnable, onClick } = useModSelection(fi
 const { t } = useI18n()
 
 const importing = ref(false)
-const { onDrop: onDropToImport } = useDrop((file) => {
+const { onDrop: onDropToImport } = useDrop((files) => {
   importing.value = true
-  importResources([{ path: file.path, domain: ResourceDomain.Mods }]).finally(() => {
+
+  importResources(files.map(f => ({ path: f.path, domain: ResourceDomain.Mods }))).finally(() => {
     importing.value = false
   })
 })

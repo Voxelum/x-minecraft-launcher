@@ -52,20 +52,19 @@
 </template>
 
 <script lang="ts">
-import { useOperation, useDrop, useService } from '@/composables'
 import Hint from '@/components/Hint.vue'
-import SaveViewPageCopyFromDialog from './SaveCopyFromDialog.vue'
-import SaveViewPageCopyToDialog from './SaveCopyToDialog.vue'
-import SaveViewPagePreviewCard from './SaveCard.vue'
-import SaveViewPageFloatButton from './SaveFloatButton.vue'
-import { useInstances } from '../composables/instance'
-import { useInstanceSaves } from '../composables/save'
+import { useDrop, useOperation } from '@/composables'
+import { kInstanceContext } from '@/composables/instanceContext'
+import { usePresence } from '@/composables/presence'
+import { injection } from '@/util/inject'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
-import { usePresence } from '@/composables/presence'
-import { InstanceServiceKey } from '@xmcl/runtime-api'
-import { kInstanceContext } from '@/composables/instanceContext'
-import { injection } from '@/util/inject'
+import { useInstances } from '../composables/instance'
+import { useInstanceSaves } from '../composables/save'
+import SaveViewPagePreviewCard from './SaveCard.vue'
+import SaveViewPageCopyFromDialog from './SaveCopyFromDialog.vue'
+import SaveViewPageCopyToDialog from './SaveCopyToDialog.vue'
+import SaveViewPageFloatButton from './SaveFloatButton.vue'
 
 export default defineComponent({
   components: {
@@ -97,7 +96,9 @@ export default defineComponent({
       copySave({ saveName: save, destInstancePath: instances })
     })
     const dragging = ref(false)
-    const { onDrop } = useDrop((file) => importSave({ path: file.path }))
+    const { onDrop } = useDrop((files) => {
+      files.map(f => ({ path: f.path })).forEach(importSave)
+    })
     function onDropSave(e: DragEvent) {
       if (!e.dataTransfer) return
       if (e.dataTransfer.files.length === 0) return
@@ -164,6 +165,3 @@ export default defineComponent({
   },
 })
 </script>
-
-<style>
-</style>
