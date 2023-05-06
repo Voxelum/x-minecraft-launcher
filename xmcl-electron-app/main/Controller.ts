@@ -59,6 +59,8 @@ export default class Controller implements LauncherAppController {
           trafficLightPosition: this.app.platform.name === 'osx' ? { x: 14, y: 10 } : undefined,
           minWidth: 600,
           minHeight: 600,
+          width: 1024,
+          height: 768,
 
           webPreferences: {
             contextIsolation: true,
@@ -79,6 +81,14 @@ export default class Controller implements LauncherAppController {
     window.webContents.setWindowOpenHandler(this.windowOpenHandler)
     window.webContents.on('will-navigate', this.onWebContentWillNavigate)
     window.webContents.on('did-create-window', this.onWebContentCreateWindow)
+    this.logger.log(`Try to open window ${details.url}`)
+    window.once('ready-to-show', () => {
+      window.loadURL(details.url).then(() => {
+        this.logger.log(`Opened window ${details.url}`)
+      }, (e) => {
+        this.logger.log(`Fail to open window ${details.url}`, e)
+      })
+    })
   }
 
   private onWebContentWillNavigate = (event: Event, url: string) => {

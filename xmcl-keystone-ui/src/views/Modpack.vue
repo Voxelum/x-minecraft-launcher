@@ -114,6 +114,7 @@
 import FilterCombobox from '@/components/FilterCombobox.vue'
 import { useFilterCombobox, useService } from '@/composables'
 import { kModpacks } from '@/composables/modpack'
+import { kMarketRoute } from '@/composables/useMarketRoute'
 import { isStringArrayEquals } from '@/util/equal'
 import { injection } from '@/util/inject'
 import { CachedFTBModpackVersionManifest, ModpackServiceKey, Resource, ResourceServiceKey } from '@xmcl/runtime-api'
@@ -125,10 +126,8 @@ import { AddInstanceDialogKey } from '../composables/instanceAdd'
 import { ModpackItem } from '../composables/modpack'
 import ModpackCard from './ModpackCard.vue'
 import DeleteButton from './ModpackDeleteButton.vue'
-import { useMarketRoute } from '@/composables/useMarketRoute'
 
 const { t } = useI18n()
-const { push } = useRouter()
 const dragging = ref(undefined as undefined | ModpackItem)
 const { removeResources, updateResources } = useService(ResourceServiceKey)
 const { showModpacksFolder } = useService(ModpackServiceKey)
@@ -176,7 +175,7 @@ function onDrop() {
     startDelete(dragging.value)
   }
 }
-const { goToCurseforge, goToModrinth } = useMarketRoute()
+const { goToCurseforge, goToModrinth } = injection(kMarketRoute)
 
 function getModpackItem (resource: Resource): ModpackItem {
   const metadata = resource.metadata
