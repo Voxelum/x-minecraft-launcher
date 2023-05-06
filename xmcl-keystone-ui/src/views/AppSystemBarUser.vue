@@ -54,6 +54,9 @@ const onSelectUser = (user: string) => {
 watch(selectedUser, (show) => {
   if (show && users.value.length === 0) {
     showLoginDialog()
+    nextTick().then(() => {
+      isShown.value = false
+    })
   }
 })
 function onRefresh() {
