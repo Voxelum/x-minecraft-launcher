@@ -1,10 +1,9 @@
 /* eslint-disable no-template-curly-in-string */
 import { config as dotenv } from 'dotenv'
-import { Configuration, TargetConfiguration } from 'electron-builder'
+import { Configuration } from 'electron-builder'
 
 dotenv()
 
-type ArchType = TargetConfiguration['arch']
 export const config = {
   productName: 'X Minecraft Launcher',
   appId: 'xmcl',
@@ -91,7 +90,6 @@ export const config = {
       '**/*.worker.js',
     ],
     target: [
-      'appx',
       {
         target: 'zip',
         arch: [
@@ -109,7 +107,6 @@ export const config = {
     icon: 'icons/dark@256x256.png',
     artifactName: 'xmcl-${version}-${arch}.${ext}',
     target: [
-      { target: 'AppImage', arch: ['x64', 'arm64'] },
       { target: 'deb', arch: ['x64', 'arm64'] },
       { target: 'rpm', arch: ['x64', 'arm64'] },
       { target: 'tar.xz', arch: ['x64', 'arm64'] },

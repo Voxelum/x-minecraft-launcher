@@ -25,7 +25,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
       state.version = app.version
       state.platform = app.platform
       state.build = app.build
-      state.env = app.env as any
+      state.env = app.env
       state.root = app.gameDataPath
       return state
     }, async () => {

@@ -50,16 +50,6 @@ export interface LauncherApp {
   emit(channel: 'engine-ready'): boolean
 }
 
-const loadEnv = () => {
-  if (IS_DEV) return 'raw'
-  try {
-    const env = readFileSync(join(__dirname, 'target'), 'utf8')
-    return env
-  } catch {
-    return 'raw'
-  }
-}
-
 export class LauncherApp extends EventEmitter {
   /**
    * Launcher %APPDATA%/xmcl path
@@ -94,7 +84,7 @@ export class LauncherApp extends EventEmitter {
 
   readonly build: number = Number.parseInt(process.env.BUILD_NUMBER ?? '0', 10)
 
-  readonly env = loadEnv()
+  readonly env: 'raw' | 'appx' | 'appimage' = process.env.RUNTIME as any || 'raw'
 
   get version() { return this.host.getVersion() }
 

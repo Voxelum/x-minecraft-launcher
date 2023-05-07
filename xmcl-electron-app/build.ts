@@ -34,11 +34,19 @@ async function writeHash(algorithm: string, path: string, destination: string) {
  * Use esbuild to build main process
  */
 async function buildMain(options: BuildOptions) {
+  await rm(path.join(__dirname, './dist'), { recursive: true, force: true })
+  console.log(chalk.bold.underline('Build main process & preload'))
+  const startTime = Date.now()
   await esbuild({
     ...options,
     outdir: resolve(__dirname, './dist'),
     entryPoints: [path.join(__dirname, './main/index.ts')],
   })
+  console.log(
+    `Build completed in ${((Date.now() - startTime) / 1000).toFixed(2)}s.\n`,
+  )
+  await copy(path.join(__dirname, '../xmcl-keystone-ui/dist'), path.join(__dirname, './dist/renderer'))
+  console.log()
 }
 
 /**
@@ -154,22 +162,11 @@ async function installArm64() {
 }
 
 async function start() {
-  await rm(path.join(__dirname, './dist'), { recursive: true, force: true })
-
-  console.log(chalk.bold.underline('Build main process & preload'))
-  const startTime = Date.now()
   await buildMain(esbuildConfig)
-  console.log(
-    `Build completed in ${((Date.now() - startTime) / 1000).toFixed(2)}s.\n`,
-  )
 
-  await copy(path.join(__dirname, '../xmcl-keystone-ui/dist'), path.join(__dirname, './dist/renderer'))
-
-  console.log()
   if (process.env.BUILD_TARGET) {
     const dir = process.env.BUILD_TARGET === 'dir'
-
-    await buildElectron({
+    const config: Configuration = {
       ...electronBuilderConfig,
       async beforePack(context) {
         const asarFile = join(context.appOutDir, 'resources', 'app.asar')
@@ -188,8 +185,8 @@ async function start() {
         if (context.targetPresentableName.toLowerCase() === 'appx') {
           const files = await readdir(path.join(__dirname, './icons'))
           const storeFiles = files.filter(f => f.endsWith('.png') &&
-          !f.endsWith('256x256.png') &&
-          !f.endsWith('tray.png'))
+            !f.endsWith('256x256.png') &&
+            !f.endsWith('tray.png'))
             .map((f) => [
               path.join(__dirname, 'icons', f),
               path.join(__dirname, 'build', 'appx', f.substring(f.indexOf('@') + 1)),
@@ -198,11 +195,32 @@ async function start() {
         }
       },
       async artifactBuildCompleted(context) {
+        if (!context.arch) return
         if (context.target && context.target.name === 'appx') {
           await buildAppInstaller(version, path.join(__dirname, './build/output/xmcl.appinstaller'), electronBuilderConfig.appx!.publisher!)
         }
       },
-    }, dir)
+    }
+
+    await buildElectron(config, dir)
+
+    const currentPlatform = platform()
+    const runtime = currentPlatform === 'win32'
+      ? 'appx'
+      : currentPlatform === 'linux'
+        ? 'appimage'
+        : undefined
+
+    if (!dir && runtime) {
+      // Build appx and appImage additionally
+      (config.win as any).target = ['appx'];
+      (config.linux as any).target = [{ target: 'AppImage', arch: ['x64', 'arm64'] }]
+
+      esbuildConfig.define['process.env.RUNTIME'] = `"${runtime}"`
+      await buildMain(esbuildConfig)
+
+      await buildElectron(config, dir)
+    }
   }
 }
 

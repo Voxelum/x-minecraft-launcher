@@ -27,6 +27,7 @@ const config = {
     'process.env.BUILD_NUMBER': JSON.stringify(process.env.BUILD_NUMBER) ?? '0',
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV) ?? '"development"',
     'process.env.CURSEFORGE_API_KEY': JSON.stringify(process.env.CURSEFORGE_API_KEY),
+    'process.env.RUNTIME': JSON.stringify(process.env.RUNTIME || 'raw'),
   },
   platform: 'node',
   loader: {
