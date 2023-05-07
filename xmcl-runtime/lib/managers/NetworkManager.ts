@@ -157,7 +157,11 @@ export default class NetworkManager extends Manager {
     this.downloadAgent = resolveAgent({
       rangePolicy: new DefaultRangePolicy(4 * 1024 * 1024, 4),
       dispatcher: downloadDispatcher,
-      // checkpointHandler: createInMemoryCheckpointHandler(),
+      checkpointHandler: {
+        lookup: async (url) => { return undefined },
+        put: async (url, checkpoint) => { },
+        delete: async (url) => { },
+      },
     })
 
     this.apiClientFactories = apiClientFactories

@@ -54,7 +54,6 @@
     </div>
     <AppContextMenu />
     <AppNotifier />
-    <AppTaskDialog />
     <ImageDialog />
     <SharedTooltip />
   </v-app>

@@ -30,7 +30,7 @@
               v-if="a.icon"
               :src="a.icon"
             >
-            <span v-else> {{ a.name[0].toUpperCase() }} </span>
+            <span v-else> {{ a.name[0]?.toUpperCase() }} </span>
           </v-avatar>
         </div>
       </template>

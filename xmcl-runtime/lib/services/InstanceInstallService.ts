@@ -67,7 +67,8 @@ export class ResolveInstanceFileTask extends AbortableTask<void> {
       for (const r of result) {
         const p = curseforgeProjects.find(p => p.curseforge.fileId === r.id)!
         if (!p.downloads) { p.downloads = [] }
-        p.downloads.push(...(r.downloadUrl ? [r.downloadUrl] : guessCurseforgeFileUrl(r.id, r.fileName)))
+        const url = r.downloadUrl ? [r.downloadUrl] : guessCurseforgeFileUrl(r.id, r.fileName)
+        p.downloads = [...new Set<string>([...url, ...p.downloads])]
       }
     }
 
@@ -77,7 +78,9 @@ export class ResolveInstanceFileTask extends AbortableTask<void> {
       for (const r of result) {
         const p = modrinthProjects.find(p => p.modrinth.versionId === r.id)!
         if (!p.downloads) { p.downloads = [] }
-        p.downloads.push(r.files[0].url)
+        if (p.downloads.indexOf(r.files[0].url) === -1) {
+          p.downloads.push(r.files[0].url)
+        }
       }
     }
 
@@ -279,7 +282,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
       await linkWithTimeoutOrCopy(res.path, dest)
     })
 
-    const createDownloadTask = async (file: InstanceFile, destination: string, sha1?: string) => {
+    const createDownloadTask = async (file: InstanceFile, destination: string, pending?: string, sha1?: string) => {
       if (!file.downloads) {
         throw new Error(`Cannot resolve file! ${file.path}`)
       }
@@ -314,6 +317,8 @@ export class InstanceInstallService extends AbstractService implements IInstance
           ...this.networkManager.getDownloadBaseOptions(),
           url: file.downloads.filter(u => u.startsWith('http')),
           destination,
+          pendingFile: pending,
+          skipRevalidate: true,
           validator: sha1
             ? {
               hash: sha1,
@@ -390,22 +395,18 @@ export class InstanceInstallService extends AbstractService implements IInstance
     }
 
     const shouldPending = file.path.startsWith(ResourceDomain.Mods) || file.path.startsWith(ResourceDomain.ResourcePacks) || file.path.startsWith(ResourceDomain.ShaderPacks)
-    const destination = shouldPending ? `${filePath}.pending` : filePath
+    const destination = filePath
+    const pending = shouldPending ? `${filePath}.pending` : undefined
 
-    const downloadTask = await createDownloadTask(file, destination, sha1)
+    const downloadTask = await createDownloadTask(file, destination, pending, sha1)
+
+    if (file.operation === 'backup-add') {
+      // backup legacy file
+      await rename(destination, destination + '.backup').catch(() => undefined)
+    }
 
     return downloadTask.setName('file').map(async () => {
-      if (shouldPending) {
-        await this.resourceService.updateResources([{ hash: file.hashes.sha1, metadata }])
-        const renamedPath = destination.substring(0, destination.length - '.pending'.length)
-        if (file.operation === 'backup-add') {
-          // backup legacy file
-          await rename(renamedPath, renamedPath + '.backup').catch(() => undefined)
-        }
-        await rename(destination, renamedPath).catch(e => {
-          this.warn(`Skip to rename ${destination} -> ${renamedPath} as the file already existed`)
-        })
-      }
+      await this.resourceService.updateResources([{ hash: file.hashes.sha1, metadata }])
       return undefined
     })
   }

@@ -1,6 +1,6 @@
-import { CurseforgeV1Client, HashAlgo } from '@xmcl/curseforge'
+import { File, HashAlgo } from '@xmcl/curseforge'
 import { UnzipTask } from '@xmcl/installer'
-import { CurseforgeModpackManifest, EditInstanceOptions, ExportModpackOptions, getCurseforgeModpackFromInstance, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromModrinthModpack, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, getResolvedVersion, ImportModpackOptions, InstanceFile, isAllowInModrinthModpack, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoCurseforge, ModpackService as IModpackService, ModpackServiceKey, ModrinthModpackManifest, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
+import { CurseforgeModpackManifest, EditInstanceOptions, ExportModpackOptions, ModpackService as IModpackService, ImportModpackOptions, InstanceFile, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoCurseforge, ModpackServiceKey, ModrinthModpackManifest, ResourceDomain, ResourceMetadata, getCurseforgeModpackFromInstance, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromModrinthModpack, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, getResolvedVersion, isAllowInModrinthModpack } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { open, openEntryReadStream, readAllEntries, readEntry } from '@xmcl/unzip'
 import { createHash } from 'crypto'
@@ -10,7 +10,7 @@ import { pipeline } from 'stream/promises'
 import { Entry, ZipFile } from 'yauzl'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
+import { ResourceWorker, kResourceWorker } from '../entities/resourceWorker'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
 import { checksumFromStream, isFile } from '../util/fs'
 import { requireObject } from '../util/object'
@@ -114,8 +114,21 @@ export class ModpackService extends AbstractService implements IModpackService {
         const files = await curseforgeService.client.getFiles(curseforgeFiles.map(f => f.fileID))
         const infos: InstanceFile[] = []
 
-        for (let i = 0; i < files.length; i++) {
-          const file = files[i]
+        const dict: Record<string, File> = {}
+        for (const file of files) {
+          if (dict[file.id]) {
+            this.warn(`Duplicated curseforge file return from curseforge API: ${file.id}`)
+          }
+          dict[file.id] = file
+        }
+
+        for (let i = 0; i < manifest.files.length; i++) {
+          const manifestFile = manifest.files[i]
+          const file = dict[manifestFile.fileID]
+          if (!file) {
+            this.warn(`Skip file ${manifestFile.fileID} because it is not found in curseforge API`)
+            continue
+          }
           const domain = file.fileName.endsWith('.jar') ? ResourceDomain.Mods : file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
           const sha1 = file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value
           infos.push({
@@ -336,6 +349,7 @@ export class ModpackService extends AbstractService implements IModpackService {
     const instance = handler.resolveInstanceOptions(manifest)
 
     const instanceFiles = await handler.resolveInstanceFiles(manifest)
+
     const files = (await Promise.all(entries
       .filter((e) => !!handler.resolveUnpackPath(manifest, e) && !e.fileName.endsWith('/'))
       .map(async (e) => {

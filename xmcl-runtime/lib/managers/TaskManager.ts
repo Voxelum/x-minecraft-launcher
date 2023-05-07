@@ -30,7 +30,12 @@ export default class TaskManager extends Manager {
         this.pushers.get(event.sender)!()
       }
       const pusher = createTaskPusher(this.logger, this.emitter, 500, 30, (payload) => {
-        event.sender.send('task-update', payload)
+        if (event.sender.isDestroyed()) {
+          pusher()
+          this.pushers.delete(event.sender)
+        } else {
+          event.sender.send('task-update', payload)
+        }
       })
       this.pushers.set(event.sender, pusher)
       return Object.entries(this.record).map(([uuid, task]) => mapTaskToTaskPayload(uuid, task))
@@ -38,6 +43,7 @@ export default class TaskManager extends Manager {
     app.controller.handle('task-unsubscribe', (event) => {
       const pusher = this.pushers.get(event.sender)
       if (pusher) { pusher() }
+      this.pushers.delete(event.sender)
     })
     app.controller.handle('task-operation', (event, { type, id }) => {
       if (!this.record[id]) {
