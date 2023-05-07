@@ -166,8 +166,24 @@ export class ModpackService extends AbstractService implements IModpackService {
           const curseforgeFiles = manifest.files.map(f => f).filter((f): f is ModpackFileInfoCurseforge => !('type' in f) || f.type === 'curse' || 'hashes' in f)
           const files = await curseforgeService.client.getFiles(curseforgeFiles.map(f => f.fileID))
 
+          const dict: Record<string, File> = {}
+          for (const file of files) {
+            if (dict[file.id]) {
+              this.warn(`Duplicated curseforge file return from curseforge API: ${file.id}`)
+            }
+            dict[file.id] = file
+          }
+
           for (let i = 0; i < files.length; i++) {
-            const file = files[i]
+            const manifestFile = manifest.files[i]
+            if (!('fileID' in manifestFile)) {
+              continue
+            }
+            const file = dict[manifestFile.fileID]
+            if (!file) {
+              this.warn(`Skip file ${manifestFile.fileID} because it is not found in curseforge API`)
+              continue
+            }
             const domain = file.fileName.endsWith('.jar') ? ResourceDomain.Mods : file.modules.some(f => f.name === 'META-INF') ? ResourceDomain.Mods : ResourceDomain.ResourcePacks
             const sha1 = file.hashes.find(v => v.algo === HashAlgo.Sha1)?.value
             infos.push({
