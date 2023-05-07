@@ -61,6 +61,7 @@ export default class Controller implements LauncherAppController {
           minHeight: 600,
           width: 1024,
           height: 768,
+          show: false,
 
           webPreferences: {
             contextIsolation: true,
@@ -81,13 +82,16 @@ export default class Controller implements LauncherAppController {
     window.webContents.setWindowOpenHandler(this.windowOpenHandler)
     window.webContents.on('will-navigate', this.onWebContentWillNavigate)
     window.webContents.on('did-create-window', this.onWebContentCreateWindow)
-    this.logger.log(`Try to open window ${details.url}`)
     window.once('ready-to-show', () => {
-      window.loadURL(details.url).then(() => {
-        this.logger.log(`Opened window ${details.url}`)
-      }, (e) => {
-        this.logger.log(`Fail to open window ${details.url}`, e)
-      })
+      window.show()
+    })
+    this.logger.log(`Try to open window ${details.url}`)
+    window.loadURL(details.url).then(() => {
+      this.logger.log(`Opened window ${details.url}`)
+      window.webContents.reload()
+    }, (e) => {
+      this.logger.log(`Fail to open window ${details.url}`, e)
+      window.webContents.reload()
     })
   }
 
