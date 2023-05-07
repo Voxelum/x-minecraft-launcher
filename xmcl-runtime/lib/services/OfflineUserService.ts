@@ -21,7 +21,7 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
       await userService.initialize()
 
       userService.registerAccountSystem('offline', {
-        getYggdrasilHost: () => {
+        getYggdrasilAuthHost: () => {
           const address = app.server.address()
           if (address) {
             if (typeof address === 'string') {

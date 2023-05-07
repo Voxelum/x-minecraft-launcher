@@ -71,7 +71,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       : assignMemory === 'auto' ? Math.floor((await this.baseService.getMemoryStatus()).free / 1024 / 1024 - 256) : undefined
     maxMemory = assignMemory === true && maxMemory > 0 ? instance.maxMemory : undefined
 
-    const yggdrasilHost = user.user ? this.userService.getAccountSystem(user.user?.authService)?.getYggdrasilHost?.() : undefined
+    const yggdrasilHost = user.user ? this.userService.getAccountSystem(user.user?.authService)?.getYggdrasilAuthHost?.(user.user?.authService) : undefined
     let yggdrasilAgent: LaunchOption['yggdrasilAgent']
     if (yggdrasilHost) {
       try {
@@ -160,7 +160,10 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         return false
       }
 
-      const yggdrasilHost = user.user ? this.userService.getAccountSystem(user.user?.authService)?.getYggdrasilHost?.() : undefined
+      const yggdrasilHost = user.user
+        ? this.userService.getAccountSystem(user.user?.authService)?.getYggdrasilAuthHost?.(user.user?.authService) ??
+          this.userService.yggdrasilAccountSystem.getYggdrasilAuthHost(user.user?.authService)
+        : undefined
       let yggdrasilAgent: LaunchOption['yggdrasilAgent']
 
       if (yggdrasilHost) {

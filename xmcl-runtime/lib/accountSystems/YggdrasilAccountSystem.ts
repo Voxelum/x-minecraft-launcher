@@ -16,6 +16,11 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
   ) {
   }
 
+  getYggdrasilAuthHost(service: string): string | undefined {
+    const api = this.userState.yggdrasilServices.find(s => new URL(s.url).hostname === service)
+    return api?.url
+  }
+
   protected getClient(service: string) {
     const api = this.userState.yggdrasilServices.find(s => new URL(s.url).hostname === service)
 

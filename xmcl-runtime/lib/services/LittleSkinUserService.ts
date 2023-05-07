@@ -1,13 +1,12 @@
 /* eslint-disable camelcase */
-import { AddClosetOptions, GetClosetOptions, ListSkinResult, LittleSkinCharacter, LittleSkinUserService as ILittleSkinUserService, LittleSkinUserServiceKey, RenameClosetOptions, SetCharacterNameOptions, SetCharacterTextureOptions, UploadTextureOptions, UploadTextureResult } from '@xmcl/runtime-api'
+import { AddClosetOptions, GetClosetOptions, LittleSkinUserService as ILittleSkinUserService, ListSkinResult, LittleSkinCharacter, LittleSkinUserServiceKey, RenameClosetOptions, SetCharacterNameOptions, SetCharacterTextureOptions, UploadTextureOptions, UploadTextureResult } from '@xmcl/runtime-api'
 import { FormData, Pool, request } from 'undici'
-import { YggdrasilAccountSystem } from '../accountSystems/YggdrasilAccountSystem'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { LittleSkinClient } from '../clients/LittleSkinClient'
-import { kUserTokenStorage, UserTokenStorage } from '../entities/userTokenStore'
-import { Inject } from '../util/objectRegistry'
+import { UserTokenStorage, kUserTokenStorage } from '../entities/userTokenStore'
 import { TokenCache } from '../util/TokenStorage'
+import { Inject } from '../util/objectRegistry'
 import { BaseService } from './BaseService'
 import { AbstractService, ExposeServiceKey } from './Service'
 import { UserService } from './UserService'
@@ -37,8 +36,8 @@ export class LittleSkinUserService extends AbstractService implements ILittleSki
     })
     this.client = new LittleSkinClient(dispatcher)
 
-    const ygg = new YggdrasilAccountSystem(
-      this,
+    // const ygg = new YggdrasilAccountSystem(
+    //   this,
       // new YggdrasilThirdPartyClient(
       //   // eslint-disable-next-line no-template-curly-in-string
       //   'https://littleskin.cn/api/yggdrasil/sessionserver/session/minecraft/profile/${uuid}',
@@ -48,19 +47,19 @@ export class LittleSkinUserService extends AbstractService implements ILittleSki
       //   () => userService.state.clientToken,
       //   dispatcher,
       // ),
-      dispatcher,
-      userService.state,
-      tokenCache,
-    )
+    //   dispatcher,
+    //   userService.state,
+    //   tokenCache,
+    // )
 
-    userService.registerAccountSystem(LITTLE_SKIN_HOST, {
-      getYggdrasilHost() {
-        return 'https://littleskin.cn/api/yggdrasil/authserver'
-      },
-      login: ygg.login.bind(ygg),
-      refresh: ygg.refresh.bind(ygg),
-      setSkin: ygg.setSkin.bind(ygg),
-    })
+    // userService.registerAccountSystem(LITTLE_SKIN_HOST, {
+    //   getYggdrasilHost() {
+    //     return 'https://littleskin.cn/api/yggdrasil/authserver'
+    //   },
+    //   login: ygg.login.bind(ygg),
+    //   refresh: ygg.refresh.bind(ygg),
+    //   setSkin: ygg.setSkin.bind(ygg),
+    // })
   }
 
   async authenticate(): Promise<void> {

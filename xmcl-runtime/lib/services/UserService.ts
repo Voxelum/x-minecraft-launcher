@@ -31,7 +31,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   private setSkinController: AbortController | undefined
   private accountSystems: Record<string, UserAccountSystem | undefined> = {}
 
-  private yggdrasilAccountSystem: YggdrasilAccountSystem
+  readonly yggdrasilAccountSystem: YggdrasilAccountSystem
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kUserTokenStorage) private tokenStorage: UserTokenStorage) {
