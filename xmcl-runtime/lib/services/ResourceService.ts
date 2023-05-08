@@ -156,7 +156,7 @@ export class ResourceService extends AbstractService implements IResourceService
   getResourcesByUris(uri: string[]): Promise<Array<Resource | undefined>>
   async getResourcesByUris(uri: string[]): Promise<Array<Resource | undefined>> {
     const hashes = await this.context.uri.getMany(uri)
-    const files = await this.context.sha1Snapshot.getMany(hashes.map(h => !h ? '' : h))
+    const files = await this.context.sha1Snapshot.getMany(hashes.map(h => !h ? 'NOOP' : h))
     const result: Promise<Resource | undefined>[] = []
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
@@ -179,7 +179,7 @@ export class ResourceService extends AbstractService implements IResourceService
   }
 
   async getResourcesByHashes(sha1: string[]): Promise<Array<Resource | undefined>> {
-    sha1 = sha1.map(s => s === EMPTY_RESOURCE_SHA1 ? '' : s)
+    sha1 = sha1.map(s => s === EMPTY_RESOURCE_SHA1 ? 'NOOP' : s)
     const fileCaches = await this.context.sha1Snapshot.getMany(sha1)
     const result: Promise<Resource | undefined>[] = []
     for (let i = 0; i < fileCaches.length; i++) {
