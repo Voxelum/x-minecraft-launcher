@@ -131,7 +131,6 @@
               hide-details
               :readonly="true"
               @click:append="on.click($event);"
-              @click="refreshMinecraft()"
               v-on="on"
             />
           </template>
@@ -230,7 +229,6 @@
               persistent-hint
               :readonly="true"
               @click:append="on.click($event);"
-              @click="refreshFabric()"
               v-on="on"
             />
           </template>
@@ -319,7 +317,6 @@
               persistent-hint
               :readonly="true"
               @click:append="on.click($event);"
-              @click="refreshOptifine()"
               v-on="on"
             />
           </template>
@@ -461,11 +458,11 @@ const {
 } = injection(InstanceEditInjectionKey)
 const minecraft = computed(() => data.runtime.minecraft)
 const { showOpenDialog } = windowController
-const { items: minecraftItems, showAlpha, refresh: refreshMinecraft, refreshing: refreshingMinecraft, release } = useMinecraftVersionList(minecraft)
+const { items: minecraftItems, showAlpha, refreshing: refreshingMinecraft, release } = useMinecraftVersionList(minecraft)
 const { items: forgeItems, canShowBuggy, recommendedOnly, refresh: refreshForge, refreshing: refreshingForge } = useForgeVersionList(minecraft, computed(() => data.runtime.forge ?? ''))
-const { items: fabricItems, showStableOnly, refresh: refreshFabric, refreshing: refreshingFabric } = useFabricVersionList(minecraft, computed(() => data.runtime.fabricLoader ?? ''))
+const { items: fabricItems, showStableOnly, refreshing: refreshingFabric } = useFabricVersionList(minecraft, computed(() => data.runtime.fabricLoader ?? ''))
 const { items: quiltItems, refresh: refreshQuilt, refreshing: refreshingQuilt } = useQuiltVersionList(minecraft, computed(() => data.runtime.quiltLoader ?? ''))
-const { items: optifineItems, refresh: refreshOptifine, refreshing: refreshingOptifine } = useOptifineVersionList(minecraft, computed(() => data.runtime.forge ?? ''), computed(() => data.runtime.optifine ?? ''))
+const { items: optifineItems, refreshing: refreshingOptifine } = useOptifineVersionList(minecraft, computed(() => data.runtime.forge ?? ''), computed(() => data.runtime.optifine ?? ''))
 const { localVersions } = useLocalVersions()
 const localItems = computed(() => {
   return localVersions.value.map(ver => {

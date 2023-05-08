@@ -24,7 +24,7 @@ export interface VersionMenuItem {
 }
 
 export function useMinecraftVersionList(version: Ref<string>) {
-  const { versions: vers, installed, refreshing, refresh, release } = useMinecraftVersions()
+  const { versions: vers, installed, refreshing, release } = useMinecraftVersions()
   const { t } = useI18n()
   const showAlpha = ref(false)
   const { semaphores } = injection(kSemaphores)
@@ -52,7 +52,6 @@ export function useMinecraftVersionList(version: Ref<string>) {
     release,
     showAlpha,
     items,
-    refresh,
     refreshing,
   }
 }
@@ -71,7 +70,7 @@ export function useForgeVersionList(minecraft: Ref<string>, version: Ref<string>
     return true
   }
   const items = computed(() => {
-    const result: VersionItem[] = versions.value
+    const result: VersionItem[] = (versions.value ?? [])
       .filter(filterForge).sort((a, b) => {
         if (a.date && b.date) {
           // @ts-ignore
@@ -112,7 +111,7 @@ export function useForgeVersionList(minecraft: Ref<string>, version: Ref<string>
 
 export function useOptifineVersionList(minecraft: Ref<string>, forge: Ref<string>, version: Ref<string>) {
   const { semaphores } = injection(kSemaphores)
-  const { versions, installed, refreshing, refresh } = useOptifineVersions(minecraft, forge)
+  const { versions, installed, refreshing } = useOptifineVersions(minecraft, forge)
 
   const items = computed(() => {
     return versions.value.map((v) => {
@@ -134,7 +133,6 @@ export function useOptifineVersionList(minecraft: Ref<string>, forge: Ref<string
   return {
     items,
     refreshing,
-    refresh,
   }
 }
 
@@ -142,13 +140,9 @@ export function useFabricVersionList(minecraft: Ref<string>, version: Ref<string
   const { semaphores } = injection(kSemaphores)
   const { t } = useI18n()
   const showStableOnly = ref(false)
-  const { yarnVersions, loaderVersions, refresh, refreshing, installed } = useFabricVersions(minecraft)
-  const isFabricSupported = computed(() => !!yarnVersions.value.find(v => v.gameVersion === minecraft.value))
+  const { versions, refreshing, installed } = useFabricVersions(minecraft)
   const items = computed(() => {
-    if (!isFabricSupported.value) {
-      return []
-    }
-    const result: VersionItem[] = loaderVersions.value
+    const result: VersionItem[] = versions.value
       .filter((v) => !showStableOnly.value || v.stable)
       .map((v) => {
         const key = LockKey.version(`fabric-${minecraft.value}-${v.version}`)
@@ -171,7 +165,6 @@ export function useFabricVersionList(minecraft: Ref<string>, version: Ref<string
 
   return {
     items,
-    refresh,
     refreshing,
     showStableOnly,
   }
@@ -181,7 +174,7 @@ export function useQuiltVersionList(minecraft: Ref<string>, version: Ref<string>
   const { semaphores } = injection(kSemaphores)
   const { versions, refresh, refreshing, installed } = useQuiltVersions(minecraft)
   const items = computed(() => {
-    const result: VersionItem[] = versions.value
+    const result: VersionItem[] = (versions.value ?? [])
       .map((v) => {
         return reactive({
           name: v.version,

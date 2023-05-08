@@ -110,7 +110,6 @@
                   :label="t('minecraftVersion.name')"
                   :readonly="true"
                   @click:append="on.keydown($event);"
-                  @click="refresh()"
                   v-on="on"
                 />
               </template>
@@ -154,7 +153,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['update:valid'])
 const { t } = useI18n()
-const { items, refresh, refreshing } = useMinecraftVersionList(computed(() => content.runtime.minecraft))
+const { items, refreshing } = useMinecraftVersionList(computed(() => content.runtime.minecraft))
 const content = injection(CreateOptionKey)
 const server = computed(() => content.server ?? { host: '', port: undefined })
 const serverField = ref('')

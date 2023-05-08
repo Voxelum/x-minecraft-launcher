@@ -1,7 +1,9 @@
-import { computed, onMounted, reactive, Ref, toRefs, watch } from 'vue'
-import { FabricArtifactVersion, MinecraftVersion } from '@xmcl/installer'
-import { ForgeVersion, InstallServiceKey, OptifineVersion, QuiltArtifactVersion, Status, VersionServiceKey } from '@xmcl/runtime-api'
 import { useService, useServiceBusy, useServiceOnly } from '@/composables'
+import { MinecraftVersion } from '@xmcl/installer'
+import { InstallServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
+import useSWRV from 'swrv'
+import { computed, reactive, Ref, toRefs } from 'vue'
+import { kSWRVConfig } from './swrvConfig'
 
 export function useVersions() {
   return useServiceOnly(VersionServiceKey, 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory')
@@ -27,10 +29,17 @@ export function useLocalVersions() {
 export function useMinecraftVersions() {
   const { state } = useVersionService()
   const { getMinecraftVersionList } = useService(InstallServiceKey)
-  const refreshing = useServiceBusy(InstallServiceKey, 'getMinecraftVersionList')
-  const versions = ref([] as MinecraftVersion[])
-  const release = ref(undefined as undefined | MinecraftVersion)
-  const snapshot = ref(undefined as undefined | MinecraftVersion)
+  const _refreshing = useServiceBusy(InstallServiceKey, 'getMinecraftVersionList')
+
+  const { data, isValidating, mutate, error } = useSWRV('/minecraft-versions',
+    () => getMinecraftVersionList(),
+    inject(kSWRVConfig))
+
+  const refreshing = computed(() => isValidating.value || _refreshing.value)
+
+  const versions = computed(() => !data.value ? [] : data.value.versions)
+  const release = computed(() => !data.value ? undefined : data.value.versions.find(v => v.id === data.value!.latest.release))
+  const snapshot = computed(() => !data.value ? undefined : data.value.versions.find(v => v.id === data.value!.latest.snapshot))
 
   const installed = computed(() => {
     const localVersions: { [k: string]: string } = {}
@@ -41,35 +50,14 @@ export function useMinecraftVersions() {
     }
     return localVersions
   })
-  const statuses = computed(() => {
-    const localVersions: { [k: string]: boolean } = {}
-    state.local.forEach((ver) => {
-      if (ver.minecraft) localVersions[ver.minecraft] = true
-    })
-    const statusMap: { [key: string]: 'local' | 'remote' } = {}
-    for (const ver of versions.value) {
-      statusMap[ver.id] = localVersions[ver.id] ? 'local' : 'remote'
-    }
-    return statusMap
-  })
-
-  const refresh = async (force = false) => {
-    if (force || versions.value.length === 0) {
-      const result = await getMinecraftVersionList(force)
-      versions.value = markRaw(result.versions)
-      release.value = result.versions.find(v => v.id === result.latest.release)
-      snapshot.value = result.versions.find(v => v.id === result.latest.snapshot)
-    }
-  }
 
   return {
+    error,
     installed,
-    statuses,
     versions,
     refreshing,
     release,
     snapshot,
-    refresh,
   }
 }
 
@@ -93,10 +81,21 @@ export function useMinecraftVersionFilter(filterText: Ref<string>) {
 
 export function useFabricVersions(minecraftVersion: Ref<string>) {
   const { getFabricVersionList } = useService(InstallServiceKey)
-  const refreshing = useServiceBusy(InstallServiceKey, 'getFabricVersionList')
+  const _refreshing = useServiceBusy(InstallServiceKey, 'getFabricVersionList')
   const { state } = useVersionService()
-  const loaderVersions = ref([] as FabricArtifactVersion[])
-  const yarnVersions = ref([] as FabricArtifactVersion[])
+
+  const { data: allVersions, isValidating, mutate, error } = useSWRV(`/fabric-versions/${minecraftVersion.value}`,
+    () => getFabricVersionList(),
+    inject(kSWRVConfig))
+
+  const versions = computed(() => {
+    const all = allVersions.value
+    if (!all) return []
+    if (!all.yarns.some(v => v.gameVersion === minecraftVersion.value)) return []
+    return all.loaders
+  })
+  const refreshing = computed(() => isValidating.value || _refreshing.value)
+
   const installed = computed(() => {
     const locals: { [k: string]: string } = {}
     for (const ver of state.local.filter(v => v.minecraft === minecraftVersion.value)) {
@@ -107,65 +106,40 @@ export function useFabricVersions(minecraftVersion: Ref<string>) {
   const getStatus = (version: string) => {
     return installed.value[`${minecraftVersion.value}-${version}`] ? 'local' : 'remote'
   }
-  const yarnStatus = computed(() => {
-    const statusMap: { [key: string]: Status } = {}
-    const locals: { [k: string]: boolean } = {}
-    yarnVersions.value.forEach((v) => {
-      statusMap[v.version] = locals[v.version] ? 'local' : 'remote'
-    })
-    return statusMap
-  })
-
-  async function refresh(force = false) {
-    if (force || loaderVersions.value.length === 0) {
-      const result = await getFabricVersionList(force)
-      loaderVersions.value = markRaw(result.loaders)
-      yarnVersions.value = markRaw(result.yarns)
-    }
-  }
-
-  onMounted(() => {
-    refresh()
-  })
 
   return {
-    loaderVersions,
-    yarnVersions,
-    refresh,
+    error,
+    versions,
     installed,
     refreshing,
     getStatus,
-    yarnStatus,
   }
 }
 
 export function useQuiltVersions(minecraftVersion: Ref<string>) {
   const { getQuiltVersionList } = useService(InstallServiceKey)
-  const refreshing = useServiceBusy(InstallServiceKey, 'getQuiltVersionList')
+  const _refreshing = useServiceBusy(InstallServiceKey, 'getQuiltVersionList')
   const { state } = useVersionService()
-  const loaderVersions = ref([] as QuiltArtifactVersion[])
+
+  const { data: versions, isValidating, mutate, error } = useSWRV(`/quilt-versions/${minecraftVersion.value}`,
+    () => minecraftVersion.value ? getQuiltVersionList({ minecraftVersion: minecraftVersion.value }).then(v => v.map(markRaw)) : [],
+    inject(kSWRVConfig))
+
+  const refreshing = computed(() => isValidating.value || _refreshing.value)
+
   const installed = computed(() => {
-    const locals: { [k: string]: string} = {}
+    const locals: { [k: string]: string } = {}
     for (const ver of state.local.filter(v => v.minecraft === minecraftVersion.value)) {
       if (ver.quilt) locals[ver.quilt] = ver.id
     }
     return locals
   })
-  async function refresh(force = false) {
-    if (force || loaderVersions.value.length === 0) {
-      const result = await getQuiltVersionList({ minecraftVersion: minecraftVersion.value })
-      loaderVersions.value = markRaw(result)
-    }
-  }
-
-  onMounted(refresh)
-
-  watch(minecraftVersion, () => refresh(true))
 
   return {
+    error,
     installed,
-    versions: loaderVersions,
-    refresh,
+    versions,
+    refresh: mutate,
     refreshing,
   }
 }
@@ -173,8 +147,13 @@ export function useQuiltVersions(minecraftVersion: Ref<string>) {
 export function useForgeVersions(minecraftVersion: Ref<string>) {
   const { getForgeVersionList } = useInstallService()
   const { state } = useVersionService()
-  const versions = ref([] as (readonly ForgeVersion[]))
-  const refreshing = useServiceBusy(InstallServiceKey, 'getForgeVersionList')
+  const _refreshing = useServiceBusy(InstallServiceKey, 'getForgeVersionList')
+
+  const { data: versions, isValidating, mutate, error } = useSWRV(`/forge-versions/${minecraftVersion.value}`,
+    () => minecraftVersion.value ? getForgeVersionList({ minecraftVersion: minecraftVersion.value }).then(v => v.map(markRaw)) : [],
+    inject(kSWRVConfig))
+
+  const refreshing = computed(() => isValidating.value || _refreshing.value)
 
   const recommended = computed(() => {
     const vers = versions.value
@@ -207,34 +186,11 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
     return localForgeVersion
   })
 
-  onMounted(() => {
-    refresh()
-  })
-
-  watch(minecraftVersion, () => {
-    refresh(false, true)
-  })
-
-  async function refresh(force = false, changed = false) {
-    if (minecraftVersion.value) {
-      if (force || versions.value.length === 0 || changed) {
-        try {
-          const result = await getForgeVersionList({ minecraftVersion: minecraftVersion.value, force })
-          versions.value = markRaw(result)
-        } catch (e) {
-          console.error(e)
-          if (changed) {
-            versions.value = []
-          }
-        }
-      }
-    }
-  }
-
   return {
+    error,
     installed,
     versions,
-    refresh,
+    refresh: mutate,
     refreshing,
     recommended,
     latest,
@@ -268,10 +224,15 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
 export function useOptifineVersions(minecraftVersion: Ref<string>, forgeVersion: Ref<string>) {
   const { getOptifineVersionList } = useInstallService()
   const { state } = useVersionService()
-  const refreshing = useServiceBusy(InstallServiceKey, 'getOptifineVersionList')
+  const _refreshing = useServiceBusy(InstallServiceKey, 'getOptifineVersionList')
 
-  let allVersions = [] as OptifineVersion[]
-  const versions = ref([] as OptifineVersion[])
+  const { data: allVersions, isValidating, mutate, error } = useSWRV('/optifine-versions',
+    () => minecraftVersion.value ? getOptifineVersionList().then(v => v.map(markRaw)) : [],
+    inject(kSWRVConfig))
+
+  const refreshing = computed(() => isValidating.value || _refreshing.value)
+
+  const versions = computed(() => allVersions.value?.filter(v => v.mcversion === minecraftVersion.value) ?? [])
 
   const installed = computed(() => {
     const localVersions: { [k: string]: string } = {}
@@ -283,27 +244,10 @@ export function useOptifineVersions(minecraftVersion: Ref<string>, forgeVersion:
     return localVersions
   })
 
-  watch(minecraftVersion, () => {
-    refresh()
-  })
-
-  onMounted(() => {
-    refresh()
-  })
-
-  async function refresh(force = false) {
-    if (force || versions.value.length === 0) {
-      allVersions = await getOptifineVersionList(force)
-      versions.value = allVersions.filter(v => v.mcversion === minecraftVersion.value)
-    } else {
-      versions.value = allVersions.filter(v => v.mcversion === minecraftVersion.value)
-    }
-  }
-
   return {
+    error,
     installed,
     versions,
-    refresh,
     refreshing,
   }
 }
