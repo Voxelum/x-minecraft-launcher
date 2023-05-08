@@ -184,7 +184,7 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   @Singleton()
-  async getFabricVersionList(force?: boolean): Promise<FabricVersions> {
+  async getFabricVersionList(): Promise<FabricVersions> {
     this.log('Start to refresh fabric metadata')
 
     let yarns: FabricArtifactVersion[]

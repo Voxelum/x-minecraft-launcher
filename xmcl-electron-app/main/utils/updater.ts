@@ -39,7 +39,7 @@ export class DownloadAsarUpdateTask extends DownloadTask {
       ],
       destination,
       validator: {
-        async validate(fd, file, url) {
+        async validate(file, url) {
           const missed = await stat(file).then(s => s.size === 0, () => false)
           if (missed) {
             return
