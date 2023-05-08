@@ -350,7 +350,10 @@ export class ResourceService extends AbstractService implements IResourceService
       const option = options[index]
 
       if (option.metadata || option.uris || option.icons) {
-        await upsertMetadata(option.metadata ?? {}, option.uris ?? [], option.icons ?? [], resolved.fileName, resolved.hash, this.context)
+        const data = await upsertMetadata(option.metadata ?? {}, option.uris ?? [], option.icons ?? [], resolved.fileName, resolved.hash, this.context)
+        resolved.icons = resolved.icons ? [...resolved.icons, ...data.icons] : data.icons
+        resolved.uris = resolved.uris ? [...resolved.uris, ...data.uris] : data.uris
+        resolved.metadata = data
       }
 
       const storedPath = await tryPersistResource(resolved, this.getPath(), this.context)
