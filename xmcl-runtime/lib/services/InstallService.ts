@@ -586,13 +586,20 @@ export class InstallService extends AbstractService implements IInstallService {
       this.log(`Start to install fabric: yarn ${options.yarn}, loader ${options.loader}.`)
       const result = await this.submit(task('installFabric', async () => {
         const url = new URL('https://meta.fabricmc.net/v2/versions/loader/' + options.minecraft + '/' + options.loader)
-        const apis = this.baseService.getApiSets().map(a => a.url).concat(url.href)
+        const apis = this.baseService.getApiSets().map(a => a.url + '/fabric-meta')
+        if (this.baseService.state.apiSetsPreference === 'mojang' || this.baseService.state.apiSetsPreference === '') {
+          apis.unshift(url.protocol + '//' + url.host)
+        } else {
+          apis.push(url.protocol + '//' + url.host)
+        }
         let err: any
         while (apis.length > 0) {
           try {
             const api = new URL(apis.shift()!)
-            url.host = api.host
-            const resp = await request(url.toString(), { throwOnError: true })
+            const realUrl = new URL(url.toString())
+            realUrl.host = api.host
+            realUrl.pathname = api.pathname + url.pathname
+            const resp = await request(realUrl.toString(), { throwOnError: true })
             const artifact = await resp.body.json()
             const result = await installFabric(artifact, this.getPath(), { side: 'client' })
             return result
