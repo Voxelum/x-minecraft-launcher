@@ -6,26 +6,18 @@
       height="3"
       :indeterminate="true"
     />
-    <!-- {{ t("resourcepack.name", 2) }} -->
-    <!-- t('resourcepack.filter') -->
-    <!-- <v-btn
-        @click="goPreview"
-      >
-        <span class="material-icons-outlined icon-image-preview">
-          preview
-        </span>
-    </v-btn>-->
-
     <v-card
       ref="leftList"
-      class="h-full overflow-y-auto invisible-scroll flex flex-col"
+      color="transparent"
+      flat
+      class="list invisible-scroll"
       @drop="stopDragging()"
     >
-      <v-card-title class="justify-center sticky top-0 z-10">
+      <v-subheader class="list-title">
         {{
           t("resourcepack.unselected")
         }}
-      </v-card-title>
+      </v-subheader>
       <Hint
         v-if="unselectedItems.length === 0"
         icon="save_alt"
@@ -35,7 +27,7 @@
       />
       <TransitionGroup
         v-else
-        class="overflow-auto flex flex-col gap-1.5"
+        class="transition-list"
         name="transition-list"
         tag="div"
       >
@@ -54,14 +46,16 @@
 
     <v-card
       ref="rightList"
-      class="h-full overflow-y-auto invisible-scroll flex flex-col"
+      color="transparent"
+      flat
+      class="list invisible-scroll"
       @drop="stopDragging()"
     >
-      <v-card-title class="w-full justify-center sticky top-0 z-10">
+      <v-subheader class="list-title">
         {{
           t("resourcepack.selected")
         }}
-      </v-card-title>
+      </v-subheader>
       <Hint
         v-if="selectedItems.length === 0"
         icon="save_alt"
@@ -72,7 +66,7 @@
         v-else
         name="transition-list"
         tag="div"
-        class="overflow-auto flex flex-col gap-1.5"
+        class="transition-list"
       >
         <template
           v-for="item in selectedItems"
@@ -122,19 +116,18 @@
 </template>
 
 <script lang=ts setup>
-import { computed, onUnmounted, reactive, ref, Ref } from 'vue'
-import { InstanceServiceKey, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
-import DeleteDialog from '../components/DeleteDialog.vue'
-import { useDialog } from '../composables/dialog'
-import { useInstanceBase } from '../composables/instance'
-import { ResourcePackItem, useInstanceResourcePacks } from '../composables/resourcePack'
-import ResourcePackCard from './ResourcePackCard.vue'
 import Hint from '@/components/Hint.vue'
-import { useDragTransferList, useDropImport, useFilterCombobox, useService, useServiceBusy } from '@/composables'
+import { useDragTransferList, useDropImport, useFilterCombobox, useService } from '@/composables'
+import { kInstanceContext } from '@/composables/instanceContext'
 import { usePresence } from '@/composables/presence'
 import { kCompact } from '@/composables/scrollTop'
 import { injection } from '@/util/inject'
-import { kInstanceContext } from '@/composables/instanceContext'
+import { ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { Ref, computed, onUnmounted, reactive, ref } from 'vue'
+import DeleteDialog from '../components/DeleteDialog.vue'
+import { useDialog } from '../composables/dialog'
+import { ResourcePackItem, useInstanceResourcePacks } from '../composables/resourcePack'
+import ResourcePackCard from './ResourcePackCard.vue'
 
 function setupFilter(disabled: Ref<ResourcePackItem[]>, enabled: Ref<ResourcePackItem[]>) {
   function getFilterOptions(item: ResourcePackItem) {
@@ -159,13 +152,18 @@ onMounted(() => {
   compact.value = true
 })
 
+watch(compact, (c) => {
+  if (!c) {
+    compact.value = true
+  }
+})
+
 const filterText = ref('')
 const rightList: Ref<any> = ref(null)
 const leftList: Ref<any> = ref(null)
 const { enabled, disabled, add, remove, commit, insert, showDirectory, loading } = useInstanceResourcePacks()
 const { removeResources } = useService(ResourceServiceKey)
 const { push } = useRouter()
-const { path } = useInstanceBase()
 const { t } = useI18n()
 const data = reactive({
   dragging: false,
@@ -233,5 +231,20 @@ usePresence(computed(() => t('presence.resourcePack', { instance: name.value }))
 <style scoped>
 .resource-pack-page {
   @apply flex flex-col overflow-auto h-full grid grid-cols-2 lg:(gap-8 px-8) px-4 gap-3 pb-4;
+}
+
+.list-title {
+  @apply w-full sticky top-0 z-10 flex-shrink-0 pl-0;
+  text-transform: uppercase;
+  text-indent: 0.0892857143em;
+  letter-spacing: .0892857143em;
+}
+
+.list {
+  @apply h-full overflow-y-auto flex flex-col;
+}
+
+.transition-list {
+  @apply overflow-auto flex flex-col gap-1.5 p-1;
 }
 </style>

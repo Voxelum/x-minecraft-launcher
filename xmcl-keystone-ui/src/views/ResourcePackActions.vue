@@ -8,16 +8,6 @@
     >
       <v-icon>folder</v-icon>
     </v-btn>
-    <v-btn
-      v-shared-tooltip="t('instance.addMod')"
-      icon
-      large
-      @click="onInstall"
-    >
-      <v-icon>
-        playlist_add
-      </v-icon>
-    </v-btn>
   </div>
 </template>
 <script lang="ts" setup>

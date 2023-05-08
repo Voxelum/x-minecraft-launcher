@@ -55,7 +55,7 @@
       </v-card>
       <div
         v-if="!error && projects.length > 0"
-        class="flex flex-col gap-3 overflow-auto flex-shrink flex-grow-0"
+        class="flex flex-col gap-3 overflow-auto flex-shrink flex-grow-0 px-2"
       >
         <CurseforgeCard
           v-for="proj in projects"
