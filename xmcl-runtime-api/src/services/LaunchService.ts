@@ -1,5 +1,8 @@
+import { JavaRecord } from 'src/entities/java'
 import { Exception } from '../entities/exception'
+import { Instance } from '../entities/instance'
 import { LaunchStatus } from '../entities/launch'
+import { UserProfile } from '../entities/user.schema'
 import { GenericEventEmitter } from '../events'
 import { ServiceKey, StatefulService } from './Service'
 import { UserExceptions } from './UserService'
@@ -38,7 +41,7 @@ export interface LaunchOptions {
   /**
    * Override selected version for current instance
    */
-  version?: string
+  version: string
   /**
    * Override launching directory.
    *
@@ -48,7 +51,16 @@ export interface LaunchOptions {
   /**
    * The instance to launch
    */
-  instance?: string
+  instance: Instance
+  
+  /**
+   * The user to launch
+   */
+  user: UserProfile
+  /**
+   * The java exe path
+   */
+  java: string
   /**
    * Override the launch to server options
    */

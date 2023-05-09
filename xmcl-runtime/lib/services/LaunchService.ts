@@ -13,7 +13,6 @@ import { BaseService } from './BaseService'
 import { DiagnoseService } from './DiagnoseService'
 import { ExternalAuthSkinService } from './ExternalAuthSkinService'
 import { InstallService } from './InstallService'
-import { InstanceJavaService } from './InstanceJavaService'
 import { InstanceResourcePackService } from './InstanceResourcePacksService'
 import { InstanceService } from './InstanceService'
 import { InstanceShaderPacksService } from './InstanceShaderPacksService'
@@ -32,7 +31,6 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
     @Inject(ExternalAuthSkinService) private externalAuthSkinService: ExternalAuthSkinService,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(InstallService) private installService: InstallService,
-    @Inject(InstanceJavaService) private instanceJavaService: InstanceJavaService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
     @Inject(InstanceResourcePackService) private instanceResourcePackService: InstanceResourcePackService,
     @Inject(InstanceShaderPacksService) private instanceShaderPacksService: InstanceShaderPacksService,
@@ -45,76 +43,77 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
   }
 
   async generateArguments() {
-    const instance = this.instanceService.state.instance
-    const user = this.userService.state
-    const gameProfile = user.gameProfile
+    // const instance = this.instanceService.state.instance
+    // const user = this.userService.state
+    // const gameProfile = user.gameProfile
 
-    const minecraftFolder = new MinecraftFolder(instance.path)
-    const instanceJava = this.instanceJavaService.state.java
-    if (!instanceJava) {
-      throw new Error('No valid java')
-    }
-    const javaPath = instanceJava.path
+    // const minecraftFolder = new MinecraftFolder(instance.path)
+    // const instanceJava = this.instanceJavaService.state.java
+    // if (!instanceJava) {
+    //   throw new Error('No valid java')
+    // }
+    // const javaPath = instanceJava.path
 
-    const instanceVersion = this.instanceVersionService.state.version
+    // const instanceVersion = this.instanceVersionService.state.version
 
-    if (!instanceVersion) {
-      throw new LaunchException({
-        type: 'launchNoVersionInstalled',
-        version: instance.version,
-        minecraft: instance.runtime.minecraft,
-        forge: instance.runtime.forge,
-        fabric: instance.runtime.fabricLoader,
-      })
-    }
-    const globalState = this.baseService.state
-    const version = instanceVersion.id
-    const assignMemory = instance.assignMemory ?? globalState.globalAssignMemory
-    let minMemory: number | undefined = instance.minMemory ?? globalState.globalMinMemory
-    let maxMemory: number | undefined = instance.maxMemory ?? globalState.globalMaxMemory
+    // if (!instanceVersion) {
+    //   throw new LaunchException({
+    //     type: 'launchNoVersionInstalled',
+    //     version: instance.version,
+    //     minecraft: instance.runtime.minecraft,
+    //     forge: instance.runtime.forge,
+    //     fabric: instance.runtime.fabricLoader,
+    //   })
+    // }
+    // const globalState = this.baseService.state
+    // const version = instanceVersion.id
+    // const assignMemory = instance.assignMemory ?? globalState.globalAssignMemory
+    // let minMemory: number | undefined = instance.minMemory ?? globalState.globalMinMemory
+    // let maxMemory: number | undefined = instance.maxMemory ?? globalState.globalMaxMemory
 
-    minMemory = assignMemory === true && minMemory > 0
-      ? minMemory
-      : assignMemory === 'auto' ? Math.floor((await this.baseService.getMemoryStatus()).free / 1024 / 1024 - 256) : undefined
-    maxMemory = assignMemory === true && maxMemory > 0 ? instance.maxMemory : undefined
+    // minMemory = assignMemory === true && minMemory > 0
+    //   ? minMemory
+    //   : assignMemory === 'auto' ? Math.floor((await this.baseService.getMemoryStatus()).free / 1024 / 1024 - 256) : undefined
+    // maxMemory = assignMemory === true && maxMemory > 0 ? instance.maxMemory : undefined
 
-    const yggdrasilHost = user.user ? this.userService.getAccountSystem(user.user?.authService)?.getYggdrasilAuthHost?.(user.user?.authService) : undefined
-    let yggdrasilAgent: LaunchOption['yggdrasilAgent']
-    if (yggdrasilHost) {
-      try {
-        const jar = await this.externalAuthSkinService.installAuthLibInjection()
-        yggdrasilAgent = {
-          jar,
-          server: yggdrasilHost,
-        }
-      } catch (e) {
-        this.error(new Error('Fail to install authlib-injection', { cause: e }))
-      }
-    }
-    const accessToken = user.user ? await this.userTokenStorage.get(user.user).catch(() => undefined) : undefined
-    /**
-     * Build launch condition
-     */
-    const option: LaunchOption = {
-      gameProfile,
-      accessToken,
-      properties: {},
-      gamePath: minecraftFolder.root,
-      resourcePath: this.getPath(),
-      javaPath,
-      minMemory,
-      maxMemory,
-      version,
-      extraExecOption: {
-        detached: true,
-        cwd: minecraftFolder.root,
-      },
-      extraJVMArgs: instance.vmOptions ?? globalState.globalVmOptions,
-      extraMCArgs: instance.mcOptions ?? globalState.globalMcOptions,
-      yggdrasilAgent,
-    }
+    // const yggdrasilHost = user.user ? this.userService.getAccountSystem(user.user?.authService)?.getYggdrasilAuthHost?.(user.user?.authService) : undefined
+    // let yggdrasilAgent: LaunchOption['yggdrasilAgent']
+    // if (yggdrasilHost) {
+    //   try {
+    //     const jar = await this.externalAuthSkinService.installAuthLibInjection()
+    //     yggdrasilAgent = {
+    //       jar,
+    //       server: yggdrasilHost,
+    //     }
+    //   } catch (e) {
+    //     this.error('Fail to install authlib-injection:\n %o', e)
+    //   }
+    // }
+    // const accessToken = user.user ? await this.userTokenStorage.get(user.user).catch(() => undefined) : undefined
+    // /**
+    //  * Build launch condition
+    //  */
+    // const option: LaunchOption = {
+    //   gameProfile,
+    //   accessToken,
+    //   properties: {},
+    //   gamePath: minecraftFolder.root,
+    //   resourcePath: this.getPath(),
+    //   javaPath,
+    //   minMemory,
+    //   maxMemory,
+    //   version,
+    //   extraExecOption: {
+    //     detached: true,
+    //     cwd: minecraftFolder.root,
+    //   },
+    //   extraJVMArgs: instance.vmOptions ?? globalState.globalVmOptions,
+    //   extraMCArgs: instance.mcOptions ?? globalState.globalMcOptions,
+    //   yggdrasilAgent,
+    // }
 
-    return generateArguments(option)
+    // return generateArguments(option)
+    return []
   }
 
   async kill() {
@@ -128,7 +127,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
    * Launch the current selected instance. This will return a boolean promise indeicate whether launch is success.
    * @returns Does this launch request success?
    */
-  async launch(options?: LaunchOptions) {
+  async launch(options: LaunchOptions) {
     try {
       if (this.state.status !== 'idle') {
         return false
@@ -136,14 +135,12 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
 
       this.state.launchStatus('checkingProblems')
 
-      /**
-       * current selected profile
-       */
-      const instance = this.instanceService.state.instance
       const globalState = this.baseService.state
-      const user = this.userService.state
-      const gameProfile = user.gameProfile
+      const instance = options.instance
+      const user = options.user
+      const gameProfile = user.profiles[user.selectedProfile]
       const fastLaunch = instance.fastLaunch ?? this.baseService.state.globalFastLaunch
+      const javaPath = options.java
 
       if (!options?.ignoreUserStatus && !fastLaunch) {
         try {
@@ -170,9 +167,9 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         return false
       }
 
-      const yggdrasilHost = user.user
-        ? this.userService.getAccountSystem(user.user?.authService)?.getYggdrasilAuthHost?.(user.user?.authService) ??
-        this.userService.yggdrasilAccountSystem.getYggdrasilAuthHost(user.user?.authService)
+      const yggdrasilHost = user
+        ? this.userService.getAccountSystem(user?.authService)?.getYggdrasilAuthHost?.(user?.authService) ??
+          this.userService.yggdrasilAccountSystem.getYggdrasilAuthHost(user?.authService)
         : undefined
       let yggdrasilAgent: LaunchOption['yggdrasilAgent']
 
@@ -201,8 +198,6 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
           this.warn(`Cannot use override version: ${options.version}`)
           this.warn(e)
         }
-      } else {
-        version = this.instanceVersionService.state.version
       }
 
       if (!version) {
@@ -236,10 +231,6 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
 
       this.log(`Will launch with ${version.id} version.`)
 
-      const instanceJava = this.instanceJavaService.state.java
-
-      const javaPath = instance.java || instanceJava?.path
-
       if (!javaPath) {
         throw new LaunchException({ type: 'launchNoProperJava', javaPath: javaPath || '' }, 'Cannot launch without a valid java')
       }
@@ -252,7 +243,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         : assignMemory === 'auto' ? Math.floor((await this.baseService.getMemoryStatus()).free / 1024 / 1024 - 256) : undefined
       maxMemory = assignMemory === true && maxMemory > 0 ? maxMemory : undefined
       const prechecks = [LaunchPrecheck.checkNatives, LaunchPrecheck.linkAssets]
-      const accessToken = user.user ? await this.userTokenStorage.get(user.user).catch(() => undefined) : undefined
+      const accessToken = user ? await this.userTokenStorage.get(user).catch(() => undefined) : undefined
 
       /**
        * Build launch condition
