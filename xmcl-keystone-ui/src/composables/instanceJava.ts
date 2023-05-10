@@ -1,8 +1,8 @@
-import type { JavaVersion, ResolvedVersion } from '@xmcl/core';
-import { Instance, Java, JavaRecord, JavaServiceKey, parseVersion } from '@xmcl/runtime-api';
-import useSWRV from 'swrv';
-import { Ref } from 'vue';
-import { useService } from './service';
+import type { JavaVersion, ResolvedVersion } from '@xmcl/core'
+import { Instance, Java, JavaRecord, JavaServiceKey, parseVersion } from '@xmcl/runtime-api'
+import useSWRV from 'swrv'
+import { Ref } from 'vue'
+import { useService } from './service'
 
 export enum JavaCompatibleState {
   Matched,
@@ -74,11 +74,10 @@ interface MissingJavaIssue extends BaseJavaIssue {
  */
 // export const MissingJavaIssueKey: IssueKey<MissingJavaIssue> = 'missingJava'
 
-
-export function useInstanceJava(instance: Ref<Instance>, version: Ref<ResolvedVersion>) {
+export function useInstanceJava(instance: Ref<Instance>, version: Ref<ResolvedVersion | undefined>) {
   const { resolveJava, state } = useService(JavaServiceKey)
 
-  const { data, mutate, isValidating, error } = useSWRV(`/instance/${instance.value.path}/java-version?version=${version.value.id}`, async () => {
+  const { data, mutate, isValidating, error } = useSWRV(`/instance/${instance.value.path}/java-version?version=${version.value?.id}`, async () => {
     return await computeJava(state.all, resolveJava, instance.value, version.value)
   })
 
@@ -102,7 +101,6 @@ interface VersionPreference {
   okay: (v: Java) => boolean
   requirement: string
 }
-
 
 function getSortedJava(allJava: JavaRecord[], { match, okay }: VersionPreference) {
   const records = [...allJava.filter(v => v.valid)]
@@ -131,7 +129,7 @@ function getSortedJava(allJava: JavaRecord[], { match, okay }: VersionPreference
   return [bad[0], JavaCompatibleState.VeryLikelyIncompatible] as const
 }
 
-async function computeJava(all: JavaRecord[], resolveJava: (path: string) => Promise<Java | undefined>, instance: Instance, selectedVersion: ResolvedVersion) {
+async function computeJava(all: JavaRecord[], resolveJava: (path: string) => Promise<Java | undefined>, instance: Instance, selectedVersion?: ResolvedVersion) {
   const { minecraft, forge } = instance.runtime
   const javaPath = instance.java
   let javaVersion = selectedVersion?.javaVersion
@@ -250,7 +248,7 @@ async function computeJava(all: JavaRecord[], resolveJava: (path: string) => Pro
           path: javaPath,
           version: '',
           majorVersion: -1,
-        }
+        },
       }
     }
 
@@ -266,7 +264,8 @@ async function computeJava(all: JavaRecord[], resolveJava: (path: string) => Pro
   }
 
   return {
-    recomendation: resultQuality !== JavaCompatibleState.Matched ? {
+    recomendation: resultQuality !== JavaCompatibleState.Matched
+? {
       recomendation: {
         selectedJava: resultJava,
         recommendedDownload: javaVersion,
@@ -281,10 +280,11 @@ async function computeJava(all: JavaRecord[], resolveJava: (path: string) => Pro
         ...resultJava,
         valid: true,
       },
-    } : undefined,
+    }
+: undefined,
     java: {
       ...resultJava,
       valid: true,
-    }
+    },
   }
 }

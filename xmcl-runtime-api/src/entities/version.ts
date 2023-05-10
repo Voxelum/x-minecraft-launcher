@@ -328,9 +328,14 @@ export function isSameOptifineVersion(optifineVersion: string, version: string) 
   return optifineVersion === version.substring(i + 1)
 }
 
-export function isVersionMatched(version: LocalVersionHeader, runtime: RuntimeVersions) {
+function isVersionMatched(version: LocalVersionHeader,
+  minecraft: string | undefined,
+  forge: string | undefined,
+  fabricLoader: string | undefined,
+  optifine: string | undefined,
+  quiltLoader: string | undefined,
+) {
   // compute version
-  const { minecraft, forge, fabricLoader, optifine, quiltLoader } = runtime
   if (version.minecraft !== minecraft) {
     return false
   }
@@ -374,10 +379,14 @@ export function isVersionMatched(version: LocalVersionHeader, runtime: RuntimeVe
   return true
 }
 
-export function getResolvedVersion(versions: LocalVersionHeader[], runtime: RuntimeVersions, id: string): LocalVersionHeader | undefined {
-  const idMatched = versions.find(v => v.id === id)
-  const runtimeMatched = versions.find(ver => isVersionMatched(ver, runtime))
-  return idMatched || runtimeMatched
+export function getResolvedVersion(versions: LocalVersionHeader[], id: string,
+  minecraft: string | undefined,
+  forge: string | undefined,
+  fabricLoader: string | undefined,
+  optifine: string | undefined,
+  quiltLoader: string | undefined,
+): LocalVersionHeader | undefined {
+  return versions.find(v => v.id === id) || versions.find(ver => isVersionMatched(ver, minecraft, forge, fabricLoader, optifine, quiltLoader))
 }
 
 export function getMinecraftVersionFormat(version: string): 'release' | 'snapshot' | 'beta' | 'alpha' | 'unknown' {
