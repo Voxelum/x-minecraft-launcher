@@ -17,8 +17,7 @@ export class InstanceScreenshotService extends AbstractService implements IInsta
     super(app)
   }
 
-  async getScreenshots(): Promise<string[]> {
-    const instancePath = this.instanceService.state.path
+  async getScreenshots(instancePath: string): Promise<string[]> {
     const screenshotsPath = join(instancePath, 'screenshots')
     if (!existsSync(screenshotsPath)) {
       return []

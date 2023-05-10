@@ -6,7 +6,7 @@ import { useModsSearch } from './modSearch'
 import { useModSearchItems } from './modSearchItems'
 import { useInstanceMods } from './mod'
 import { useService } from './service'
-import { InstanceJavaServiceKey } from '@xmcl/runtime-api'
+import { useInstanceOptions } from './instanceOptions'
 
 /**
  * The context to hold the instance related data. This is used to share data between different components.
@@ -22,6 +22,8 @@ export function useInstanceContext() {
   const java = computed(() => javaState.java)
   const isServer = useInstanceIsServer(instance)
 
+  const options = useInstanceOptions(instance)
+
   const modSearch = useModsSearch(ref(''), version)
   const modSearchItems = useModSearchItems(modSearch.keyword, modSearch.modrinth, modSearch.curseforge, modSearch.mods, modSearch.existedMods)
   const mods = useInstanceMods(version, java)
@@ -33,6 +35,7 @@ export function useInstanceContext() {
     name,
     mods,
     version,
+    options,
     localVersion,
     minecraft,
     forge,

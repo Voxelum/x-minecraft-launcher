@@ -3,6 +3,8 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
 import { useRefreshable, useService } from '@/composables'
 import { kShaderPacks, useShaderPacks } from './shaderPacks'
+import { kInstanceContext } from './instanceContext'
+import { injection } from '@/util/inject'
 
 export interface ShaderPackItem {
   name: string
@@ -16,23 +18,24 @@ export interface ShaderPackItem {
 }
 
 export function useShaderpacks() {
+  const { options: { state: options }, path } = injection(kInstanceContext)
   const { resources: shaderPacksResources, refreshing: loading } = inject(kShaderPacks, () => useShaderPacks(), true)
   const { updateResources, removeResources } = useService(ResourceServiceKey)
-  const { state: options, editShaderOptions } = useService(InstanceOptionsServiceKey)
+  const { editShaderOptions } = useService(InstanceOptionsServiceKey)
   const { showDirectory } = useService(InstanceShaderPacksServiceKey)
   const { t } = useI18n()
 
   const shaderPacks = ref([] as ShaderPackItem[])
-  const selectedShaderPack = ref(options.shaderoptions.shaderPack)
+  const selectedShaderPack = ref(options.value?.shaderoptions.shaderPack)
 
-  const isModified = computed(() => selectedShaderPack.value !== options.shaderoptions.shaderPack)
+  const isModified = computed(() => selectedShaderPack.value !== options.value?.shaderoptions.shaderPack)
 
   function getBuiltinItems(): ShaderPackItem[] {
     return [{
       name: t('shaderPack.off'),
       value: 'OFF',
       resource: null as any,
-      enabled: options.shaderoptions.shaderPack === 'OFF',
+      enabled: options.value?.shaderoptions.shaderPack === 'OFF',
       description: t('shaderPack.offDescription'),
       path: '',
       tags: [],
@@ -40,7 +43,7 @@ export function useShaderpacks() {
       name: t('shaderPack.internal'),
       value: '(internal)',
       resource: null as any,
-      enabled: options.shaderoptions.shaderPack === '(internal)',
+      enabled: options.value?.shaderoptions.shaderPack === '(internal)',
       description: t('shaderPack.internalDescription'),
       path: '',
       tags: [],
@@ -52,7 +55,7 @@ export function useShaderpacks() {
       name: res.name,
       value: fileName,
       resource: res,
-      enabled: fileName === options.shaderoptions.shaderPack,
+      enabled: fileName === options.value?.shaderoptions.shaderPack,
       description: res.path,
       path: res.path,
       tags: [...res.tags],
@@ -60,7 +63,7 @@ export function useShaderpacks() {
     }
   }
   const { refresh: commit, refreshing: committing } = useRefreshable(async () => {
-    editShaderOptions({ shaderPack: selectedShaderPack.value })
+    editShaderOptions({ instancePath: path.value, shaderPack: selectedShaderPack.value || '' })
   })
 
   function updateResourceTags() {

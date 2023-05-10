@@ -4,20 +4,15 @@ import { ServiceChannels, ServiceKey } from '@xmcl/runtime-api'
 import { contextBridge, ipcRenderer } from 'electron'
 import EventEmitter from 'events'
 
-async function waitSessionEnd(sessionId: number, listener: (task: string) => void) {
-  ipcRenderer.on(`session-${sessionId}`, (e, task) => listener(task))
-  try {
-    const { result, error } = await ipcRenderer.invoke('session', sessionId)
-    if (error) {
-      if (error.errorMessage) {
-        error.toString = () => error.errorMessage
-      }
-      return Promise.reject(error)
+async function waitSessionEnd(sessionId: number) {
+  const { result, error } = await ipcRenderer.invoke('session', sessionId)
+  if (error) {
+    if (error.errorMessage) {
+      error.toString = () => error.errorMessage
     }
-    return result
-  } finally {
-    ipcRenderer.removeAllListeners(`session-${sessionId}`)
+    return Promise.reject(error)
   }
+  return result
 }
 
 function createServiceChannels(): ServiceChannels {
@@ -68,7 +63,7 @@ function createServiceChannels(): ServiceChannels {
             if (typeof sessionId !== 'number') {
               throw new Error(`Cannot find service call named ${method as string} in ${serviceKey}`)
             }
-            return waitSessionEnd(sessionId, (id) => emitter.emit('task', { name: method, promise, sessionId, id }))
+            return waitSessionEnd(sessionId)
           })
           return promise
         },

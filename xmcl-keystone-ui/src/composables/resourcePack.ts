@@ -6,6 +6,8 @@ import unknownPack from '@/assets/unknown_pack.png'
 import { useService, useServiceBusy } from '@/composables'
 import { isStringArrayEquals } from '@/util/equal'
 import { kResourcePacks, useResourcePacks } from './resourcePacks'
+import { injection } from '@/util/inject'
+import { kInstanceContext } from './instanceContext'
 
 export interface ResourcePackItem extends PackMeta.Pack {
   /**
@@ -43,7 +45,8 @@ export interface ResourcePackItem extends PackMeta.Pack {
  * The hook return a reactive resource pack array.
  */
 export function useInstanceResourcePacks() {
-  const { state: gameSettingState, editGameSetting } = useService(InstanceOptionsServiceKey)
+  const { options: { state: options }, path } = injection(kInstanceContext)
+  const { editGameSetting } = useService(InstanceOptionsServiceKey)
   const { resources, refreshing } = inject(kResourcePacks, () => useResourcePacks(), true)
   const { updateResources } = useService(ResourceServiceKey)
   const { showDirectory } = useService(InstanceResourcePacksServiceKey)
@@ -57,7 +60,7 @@ export function useInstanceResourcePacks() {
    * It should be something like ['file/pack.zip', 'vanilla']
    */
   const enabledResourcePackNames: Ref<string[]> = ref([])
-  const optionsResourcePacks = computed(() => gameSettingState.options.resourcePacks)
+  const optionsResourcePacks = computed(() => options.value?.options.resourcePacks || [])
   /**
    * Enabled pack item
    */
@@ -179,7 +182,7 @@ export function useInstanceResourcePacks() {
      * Commit the change for current mods setting
      */
   function commit() {
-    editGameSetting({ resourcePacks: [...enabledResourcePackNames.value].reverse() })
+    editGameSetting({ instancePath: path.value, resourcePacks: [...enabledResourcePackNames.value].reverse() })
     const modified = storage.value.filter(v => v.resource).filter((v) => v.name !== v.resource!.name || !isStringArrayEquals(v.tags, v.resource!.tags))
     updateResources(modified.map(res => ({ ...res.resource!, name: res.name, tags: res.tags })))
   }

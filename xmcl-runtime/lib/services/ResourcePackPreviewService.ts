@@ -130,7 +130,7 @@ export class ResourcePackPreviewService extends AbstractService implements IReso
   }
 
   async loadModel(modelPath: string) {
-    await this.updateResourcePacks(this.instanceGameSettingService.state.options.resourcePacks)
+    // await this.updateResourcePacks(this.instanceGameSettingService.state.options.resourcePacks)
     this.log(`Load model ${modelPath}`)
 
     const model = await this.modelLoader.loadModel(modelPath)

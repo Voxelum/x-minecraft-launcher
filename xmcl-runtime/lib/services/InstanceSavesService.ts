@@ -1,11 +1,16 @@
 import { UnzipTask } from '@xmcl/installer'
 import {
   CloneSaveOptions, DeleteSaveOptions, ExportSaveOptions,
-  ImportSaveOptions, InstanceSave, InstanceSaveException, InstanceSavesService as IInstanceSavesService, InstanceSavesServiceKey, isSaveResource, ResourceDomain, SaveState,
+  InstanceSavesService as IInstanceSavesService,
+  ImportSaveOptions,
+  InstanceSaveException,
+  InstanceSavesServiceKey,
+  ResourceDomain, SaveState,
+  isSaveResource,
 } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
 import filenamify from 'filenamify'
-import { existsSync, FSWatcher } from 'fs'
+import { existsSync } from 'fs'
 import { ensureDir, ensureFile } from 'fs-extra/esm'
 import { readdir, rm } from 'fs/promises'
 import throttle from 'lodash.throttle'
@@ -20,51 +25,18 @@ import { Inject } from '../util/objectRegistry'
 import { ZipTask } from '../util/zip'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
-import { ExposeServiceKey, Singleton, StatefulService } from './Service'
+import { AbstractService, ExposeServiceKey } from './Service'
 
 /**
  * Provide the ability to preview saves data of an instance
  */
 @ExposeServiceKey(InstanceSavesServiceKey)
-export class InstanceSavesService extends StatefulService<SaveState> implements IInstanceSavesService {
-  private watcher: FSWatcher | undefined
-
-  private watching = ''
-
-  private parking = false
-
-  private pending: Set<string> = new Set()
-
-  private updateSave = throttle((filePath: string) => {
-    readInstanceSaveMetadata(filePath, this.instanceService.state.instance.name).then((save) => {
-      this.state.instanceSaveUpdate(save)
-    }).catch((e) => {
-      this.warn(`Parse save in ${filePath} failed. Skip it.`)
-      this.warn(e)
-      return undefined
-    })
-  }, 2000)
-
+export class InstanceSavesService extends AbstractService implements IInstanceSavesService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {
-    super(app, () => new SaveState())
-    this.storeManager.subscribe('instanceSelect', (path) => {
-      this.mountInstanceSaves(path)
-    })
-
-    this.storeManager.subscribe('launchCount', (count) => {
-      const newState = count > 0
-      if (newState !== this.parking) {
-        for (const p of this.pending) {
-          this.updateSave(p)
-        }
-        this.pending.clear()
-      }
-      this.parking = newState
-    })
-
+    super(app)
     this.resourceService.registerInstaller(ResourceDomain.Saves, async (resource, instancePath) => {
       if (isSaveResource(resource)) {
         await this.importSave({
@@ -76,84 +48,88 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
     })
   }
 
-  async dispose() {
-    if (this.watcher) {
-      this.watcher.close()
-    }
-  }
-
-  /**
-   * Load all registered instances' saves metadata
-   */
-  @Singleton()
-  async readAllInstancesSaves() {
-    const all: Array<InstanceSave> = []
-
-    for (const instance of this.instanceService.state.instances) {
-      const saveRoot = join(instance.path, 'saves')
-      const saves = await readdirIfPresent(saveRoot).then(a => a.filter(s => !s.startsWith('.')))
-      const metadatas = saves
-        .map(s => resolve(saveRoot, s))
-        .map((p) => getInstanceSave(p, instance.name))
-      all.push(...metadatas)
-    }
-    return all
+  async getInstanceSaves(path: string) {
+    const baseName = basename(path)
+    const saveRoot = join(path, 'saves')
+    const saves = await readdirIfPresent(saveRoot).then(a => a.filter(s => !s.startsWith('.')))
+    const metadatas = saves
+      .map(s => resolve(saveRoot, s))
+      .map((p) => getInstanceSave(p, baseName))
+    return metadatas
   }
 
   /**
    * Mount and load instances saves
    * @param path
    */
-  @Singleton()
-  async mountInstanceSaves(path: string) {
+  async watchSaves(path: string) {
     requireString(path)
 
+    const pending: Set<string> = new Set()
+    const baseName = basename(path)
     const savesDir = join(path, 'saves')
+    let parking = false
+    const state = this.storeManager.register('InstanceSaves/' + path, new SaveState(), () => {
+      watcher.close()
+      this.storeManager.unsubscribe('launchCount', onLaunch)
+    })
 
-    if (this.watching === savesDir) {
-      return
+    const updateSave = throttle((filePath: string) => {
+      readInstanceSaveMetadata(filePath, baseName).then((save) => {
+        state.instanceSaveUpdate(save)
+      }).catch((e) => {
+        this.warn(`Parse save in ${filePath} failed. Skip it.`)
+        this.warn(e)
+        return undefined
+      })
+    }, 2000)
+
+    const onLaunch = (count: number) => {
+      const newState = count > 0
+      if (newState !== parking) {
+        for (const p of pending) {
+          updateSave(p)
+        }
+        pending.clear()
+      }
+      parking = newState
     }
 
-    if (this.watcher) {
-      this.watcher.close()
-    }
-
-    this.log(`Mount saves directory: ${savesDir}`)
-
-    await ensureDir(savesDir)
-    try {
-      const savePaths = await readdir(savesDir)
-      const saves = await Promise.all(savePaths
-        .filter((d) => !d.startsWith('.'))
-        .map((d) => join(savesDir, d))
-        .map((p) => readInstanceSaveMetadata(p, this.instanceService.state.instance.name).catch((e) => {
-          this.warn(`Parse save in ${p} failed. Skip it.`)
-          this.warn(e)
-          return undefined
-        })))
-
-      this.log(`Found ${saves.length} saves in instance ${path}`)
-      this.state.instanceSaves(saves.filter(isNonnull))
-    } catch (e) {
-      // throw new GeneralException({ type: 'fsError', ...(e as any) }, `An error ocurred during parsing the save of ${path}`)
-    }
-
-    this.watching = savesDir
-    this.watcher = watch(savesDir, (event, filename) => {
+    const watcher = watch(savesDir, (event, filename) => {
       if (filename.startsWith('.')) return
       const filePath = filename
       if (event === 'update') {
-        if (this.state.saves.every((s) => s.path !== filename)) {
-          if (!this.parking) {
-            this.updateSave(filePath)
+        if (state.saves.every((s) => s.path !== filename)) {
+          if (!parking) {
+            updateSave(filePath)
           } else {
-            this.pending.add(filePath)
+            pending.add(filePath)
           }
         }
-      } else if (this.state.saves.some((s) => s.path === filename)) {
-        this.state.instanceSaveRemove(filePath)
+      } else if (state.saves.some((s) => s.path === filename)) {
+        state.instanceSaveRemove(filePath)
       }
     })
+
+    this.log(`Watch saves directory: ${savesDir}`)
+
+    await ensureDir(savesDir)
+
+    this.storeManager.subscribe('launchCount', onLaunch)
+    const savePaths = await readdir(savesDir)
+    const saves = await Promise.all(savePaths
+      .filter((d) => !d.startsWith('.'))
+      .map((d) => join(savesDir, d))
+      .map((p) => readInstanceSaveMetadata(p, baseName).catch((e) => {
+        this.warn(`Parse save in ${p} failed. Skip it.`)
+        this.warn(e)
+        return undefined
+      })))
+
+    this.log(`Found ${saves.length} saves in instance ${path}`)
+    state.instanceSaves(saves.filter(isNonnull))
+
+    return state
   }
 
   /**
@@ -162,12 +138,9 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
    * @param options
    */
   async cloneSave(options: CloneSaveOptions) {
-    let { srcInstancePath, destInstancePath, saveName, newSaveName } = options
+    const { srcInstancePath, destInstancePath, saveName, newSaveName } = options
 
     requireString(saveName)
-
-    srcInstancePath = srcInstancePath ?? this.instanceService.state.path
-    destInstancePath = destInstancePath ?? [this.instanceService.state.path]
 
     const destSaveName = newSaveName ?? saveName
 
@@ -206,9 +179,7 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
    * @param options
    */
   async deleteSave(options: DeleteSaveOptions) {
-    let { saveName, instancePath } = options
-
-    instancePath = instancePath ?? this.instanceService.state.path
+    const { saveName, instancePath } = options
 
     requireString(saveName)
 
@@ -223,8 +194,6 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
 
   async importSave(options: ImportSaveOptions) {
     let { instancePath, saveName } = options
-
-    instancePath = instancePath ?? this.instanceService.state.path
 
     if (!this.instanceService.state.all[instancePath]) {
       throw new Error(`Cannot find managed instance ${instancePath}`)
@@ -270,7 +239,7 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
   async exportSave(options: ExportSaveOptions) {
     requireObject(options)
 
-    const { instancePath = this.instanceService.state.path, saveName, zip = true, destination } = options
+    const { instancePath, saveName, zip = true, destination } = options
 
     requireString(saveName)
     requireString(destination)

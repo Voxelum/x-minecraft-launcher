@@ -4,7 +4,7 @@ export interface InstanceScreenshotService {
   /**
    * The urls of the screenshots
    */
-  getScreenshots(): Promise<string[]>
+  getScreenshots(instancePath: string): Promise<string[]>
 
   showScreenshot(url: string): Promise<void>
 }

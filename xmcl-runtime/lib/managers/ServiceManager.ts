@@ -1,11 +1,9 @@
 import { ServiceKey } from '@xmcl/runtime-api'
-import { Task } from '@xmcl/task'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
 import { Client } from '../engineBridge'
 import { AbstractService, ServiceConstructor, getServiceKey } from '../services/Service'
 import { serializeError } from '../util/error'
-
 interface ServiceCallSession {
   id: number
   name: string
@@ -111,27 +109,10 @@ export default class ServiceManager extends Manager {
       this.logger.error(new Error(`Cannot execute service call ${name} from service ${service}. No service exposed as ${service}.`))
     } else {
       if (name in serv) {
-        const tasks: Task<any>[] = []
         const sessionId = this.usedSession++
-        const taskManager = this.app.taskManager
-        const submit = (task: Task<any>) => {
-          const promise = taskManager.submit(task)
-          client.send(`session-${sessionId}`, (task.context as any).uuid)
-          tasks.push(task)
-          return promise
-        }
-        /**
-          * Create a proxy to this specific service call to record the tasks it submit
-          */
-        const servProxy: any = new Proxy(serv, {
-          get(target, key) {
-            if (key === 'submit') { return submit }
-            return Reflect.get(target, key)
-          },
-        })
 
         const session: ServiceCallSession = {
-          call: () => servProxy[name](payload),
+          call: () => (serv as any)[name](payload),
           name: `${service}.${name}`,
           pure: false,
           id: sessionId,

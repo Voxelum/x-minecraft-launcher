@@ -1,119 +1,88 @@
 import { Frame, parse } from '@xmcl/gamesetting'
-import { compareRelease, compareSnapshot, EditGameSettingOptions, EditShaderOptions, InstanceOptionException, InstanceOptionsService as IInstanceOptionsService, InstanceOptionsServiceKey, InstanceOptionsState, isCompatible, isReleaseVersion, isSnapshotPreview, packFormatVersionRange, parseShaderOptions, ResourceDomain, stringifyShaderOptions } from '@xmcl/runtime-api'
-import { FSWatcher } from 'fs'
+import { EditGameSettingOptions, EditShaderOptions, InstanceOptionsService as IInstanceOptionsService, InstanceOptionException, InstanceOptionsServiceKey, InstanceOptionsState, ResourceDomain, compareRelease, compareSnapshot, isCompatible, isReleaseVersion, isSnapshotPreview, packFormatVersionRange, parseShaderOptions, stringifyShaderOptions } from '@xmcl/runtime-api'
 import { readFile, writeFile } from 'fs/promises'
 import watch from 'node-watch'
 import { basename, join, relative } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { deepClone } from '../util/clone'
 import { isSystemError } from '../util/error'
 import { missing } from '../util/fs'
 import { requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
-import { ExposeServiceKey, Singleton, StatefulService } from './Service'
+import { AbstractService, ExposeServiceKey } from './Service'
 
 /**
  * The service to watch game setting (options.txt) and shader options (optionsshader.txt)
  */
 @ExposeServiceKey(InstanceOptionsServiceKey)
-export class InstanceOptionsService extends StatefulService<InstanceOptionsState> implements IInstanceOptionsService {
-  private watcher: FSWatcher | undefined
-
-  private watchingInstance = ''
-
+export class InstanceOptionsService extends AbstractService implements IInstanceOptionsService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
-    super(app, () => new InstanceOptionsState())
-    this.storeManager.subscribe('instanceSelect', (payload: string) => {
-      this.mount(payload)
-    })
-
+    super(app)
     resourceService.registerInstaller(ResourceDomain.ResourcePacks, async (resource, instancePath) => {
-      if (instancePath !== this.instanceService.state.path) {
-        const frame = await this.getGameOptions(instancePath)
-        await this.editGameSetting({
-          ...frame,
-          resourcePacks: [...(frame.resourcePacks || []), relative(resource.path, instancePath)],
-        })
-      } else {
-        if (this.state.options.resourcePacks instanceof Array) {
-          await this.editGameSetting({
-            resourcePacks: [...this.state.options.resourcePacks, relative(resource.path, instancePath)],
-          })
-        } else {
-          this.error(new Error(`Invalid options resourcepack ${this.state.options.resourcePacks}`))
-        }
-      }
+      await this.editGameSetting({
+        instancePath,
+        addResourcePack: [relative(resource.path, instancePath)],
+      })
     })
 
     resourceService.registerInstaller(ResourceDomain.ShaderPacks, async (resource, instancePath) => {
       await this.editShaderOptions({
         shaderPack: relative(resource.path, instancePath),
+        instancePath,
       })
     })
   }
 
-  async dispose() {
-    this.watcher?.close()
-  }
-
-  @Singleton()
-  async refresh() {
-    if (this.watchingInstance) {
-      this.mount(this.watchingInstance)
-    }
-  }
-
-  // TODO: use lock for this
-  @Singleton()
-  async mount(path: string) {
+  async watchOptions(path: string) {
     requireString(path)
+    const state = this.storeManager.register('InstaneOptions/' + path, new InstanceOptionsState())
 
-    if (this.watchingInstance !== path) {
-      this.log(`Start to watch instance options.txt in ${path}`)
-      this.watcher = watch(path, (event, file) => {
-        if (basename(file) === ('options.txt')) {
-          this.loadOptionsTxt(this.watchingInstance)
+    const loadShaderOptions = async (path: string) => {
+      try {
+        const result = await this.getShaderOptions(path)
+        state.instanceShaderOptions(result)
+      } catch (e) {
+        if (isSystemError(e)) {
+          this.warn(`An error ocurred during load shader options of ${path}.`)
+          this.warn(e)
         }
-        if (basename(file) === ('optionsshaders.txt')) {
-          this.loadShaderOptions(this.watchingInstance)
+        state.instanceShaderOptions({ shaderPack: '' })
+      }
+    }
+
+    const loadOptionsTxt = async (path: string) => {
+      try {
+        const result = await this.getGameOptions(path)
+        state.instanceGameSettingsLoad(result)
+      } catch (e) {
+        if (isSystemError(e)) {
+          this.warn(`An error ocurred during parse game options of ${path}.`)
+          this.warn(e)
         }
-      })
-      this.watchingInstance = path
-      await this.loadOptionsTxt(this.watchingInstance)
-      await this.loadShaderOptions(this.watchingInstance)
-    }
-  }
-
-  private async loadShaderOptions(path: string) {
-    try {
-      const result = await this.getShaderOptions(path)
-      this.state.instanceShaderOptions(result)
-    } catch (e) {
-      if (isSystemError(e)) {
-        this.warn(`An error ocurred during load shader options of ${path}.`)
-        this.warn(e)
+        state.instanceGameSettingsLoad({ resourcePacks: [] })
       }
-      this.state.instanceShaderOptions({ shaderPack: '' })
     }
-  }
 
-  private async loadOptionsTxt(path: string) {
-    try {
-      const result = await this.getGameOptions(path)
-      this.state.instanceGameSettingsLoad(result)
-    } catch (e) {
-      if (isSystemError(e)) {
-        this.warn(`An error ocurred during parse game options of ${path}.`)
-        this.warn(e)
+    this.log(`Start to watch instance options.txt in ${path}`)
+
+    const watcher = watch(path, (event, file) => {
+      if (basename(file) === ('options.txt')) {
+        loadOptionsTxt(path)
       }
-      this.state.instanceGameSettingsLoad({ resourcePacks: [] })
-    }
+      if (basename(file) === ('optionsshaders.txt')) {
+        loadShaderOptions(path)
+      }
+    })
+
+    await loadOptionsTxt(path)
+    await loadShaderOptions(path)
+
+    return state
   }
 
   /**
@@ -140,14 +109,12 @@ export class InstanceOptionsService extends StatefulService<InstanceOptionsState
   }
 
   async editShaderOptions(options: EditShaderOptions): Promise<void> {
-    const instancePath = options.instancePath ?? this.watchingInstance
+    const instancePath = options.instancePath
     const instance = this.instanceService.state.all[instancePath]
     if (!instance) {
       throw new InstanceOptionException({ type: 'instanceNotFound', instancePath: options.instancePath! })
     }
-    const current = instancePath !== this.watchingInstance
-      ? await this.getShaderOptions(instancePath)
-      : deepClone(this.state.shaderoptions)
+    const current = await this.getShaderOptions(instancePath)
 
     current.shaderPack = options.shaderPack
 
@@ -156,14 +123,12 @@ export class InstanceOptionsService extends StatefulService<InstanceOptionsState
   }
 
   async editGameSetting(options: EditGameSettingOptions) {
-    const instancePath = options.instancePath ?? this.watchingInstance
+    const instancePath = options.instancePath
     const instance = this.instanceService.state.all[instancePath]
     if (!instance) {
       throw new InstanceOptionException({ type: 'instanceNotFound', instancePath: options.instancePath! })
     }
-    const current = instancePath !== this.watchingInstance
-      ? await this.getGameOptions(instancePath)
-      : deepClone(this.state.options)
+    const current = await this.getGameOptions(instancePath)
 
     const diff: Frame = {}
     for (const key of Object.keys(options)) {
@@ -226,19 +191,19 @@ export class InstanceOptionsService extends StatefulService<InstanceOptionsState
     }
   }
 
-  async showOptionsFileInFolder() {
-    const optionTxt = join(this.watchingInstance, 'options.txt')
+  async showOptionsFileInFolder(path: string) {
+    const optionTxt = join(path, 'options.txt')
     if (await missing(optionTxt)) {
-      this.app.shell.openDirectory(this.watchingInstance)
+      this.app.shell.openDirectory(path)
     } else {
       this.app.shell.showItemInFolder(optionTxt)
     }
   }
 
-  async showShaderOptionsInFolder() {
-    const optionTxt = join(this.watchingInstance, 'optionsshaders.txt')
+  async showShaderOptionsInFolder(path: string) {
+    const optionTxt = join(path, 'optionsshaders.txt')
     if (await missing(optionTxt)) {
-      this.app.shell.openDirectory(this.watchingInstance)
+      this.app.shell.openDirectory(path)
     } else {
       this.app.shell.showItemInFolder(optionTxt)
     }

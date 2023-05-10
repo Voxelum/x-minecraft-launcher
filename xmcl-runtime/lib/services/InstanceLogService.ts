@@ -27,8 +27,8 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
    * List the log in current instances
    */
   @Singleton()
-  async listLogs() {
-    const files = await readdirIfPresent(join(this.instanceService.state.path, 'logs'))
+  async listLogs(instancePath: string) {
+    const files = await readdirIfPresent(join(instancePath, 'logs'))
     return files.filter(f => f.endsWith('.gz') || f.endsWith('.txt') || f.endsWith('.log'))
   }
 
@@ -37,8 +37,8 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
    * @param name The log file name
    */
   @Singleton(name => name)
-  async removeLog(name: string) {
-    const filePath = join(this.instanceService.state.path, 'logs', name)
+  async removeLog(instancePath: string, name: string) {
+    const filePath = join(instancePath, 'logs', name)
     this.log(`Remove log ${filePath}`)
     await unlink(filePath)
   }
@@ -48,9 +48,9 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
    * @param name The log file name
    */
   @Singleton(name => name)
-  async getLogContent(name: string) {
+  async getLogContent(instancePath: string, name: string) {
     try {
-      const filePath = join(this.instanceService.state.path, 'logs', name)
+      const filePath = join(instancePath, 'logs', name)
       let buf = await readFile(filePath)
       if (name.endsWith('.gz')) {
         buf = await gunzip(buf)
@@ -68,8 +68,8 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
    * List crash reports in current instance
    */
   @Singleton()
-  async listCrashReports() {
-    const files = await readdirIfPresent(join(this.instanceService.state.path, 'crash-reports'))
+  async listCrashReports(instancePath: string) {
+    const files = await readdirIfPresent(join(instancePath, 'crash-reports'))
     return files.filter(f => f.endsWith('.gz') || f.endsWith('.txt'))
   }
 
@@ -78,8 +78,8 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
    * @param name The crash report file name
    */
   @Singleton((name) => name)
-  async removeCrashReport(name: string) {
-    const filePath = join(this.instanceService.state.path, 'crash-reports', name)
+  async removeCrashReport(instancePath: string, name: string) {
+    const filePath = join(instancePath, 'crash-reports', name)
     this.log(`Remove crash report ${filePath}`)
     await unlink(filePath)
   }
@@ -89,12 +89,12 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
    * @param name The name of crash report
    */
   @Singleton((name) => name)
-  async getCrashReportContent(name: string) {
+  async getCrashReportContent(instancePath: string, name: string) {
     let filePath: string
     if (isAbsolute(name)) {
       filePath = name
     } else {
-      filePath = join(this.instanceService.state.path, 'crash-reports', name)
+      filePath = join(instancePath, 'crash-reports', name)
     }
     let buf = await readFile(filePath.trim())
     if (name.endsWith('.gz')) {
@@ -109,8 +109,8 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
    * Show the log file on disk. This will open a file explorer.
    * @param name The log file name
    */
-  showLog(name: string) {
-    const filePath = join(this.instanceService.state.path, 'logs', name)
+  showLog(instancePath: string, name: string) {
+    const filePath = join(instancePath, 'logs', name)
     this.app.shell.showItemInFolder(filePath)
   }
 
@@ -118,8 +118,8 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
    * Show a crash report on disk. This will open a file explorer.
    * @param name The crash report file name
    */
-  showCrash(name: string) {
-    const filePath = join(this.instanceService.state.path, 'crash-reports', name)
+  showCrash(instancePath: string, name: string) {
+    const filePath = join(instancePath, 'crash-reports', name)
     this.app.shell.showItemInFolder(filePath)
   }
 }
