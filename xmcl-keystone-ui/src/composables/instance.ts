@@ -46,35 +46,3 @@ export function useInstanceServerEdit(server: Ref<InstanceData['server']>) {
   })
   return result
 }
-
-export function useInstanceVersionBase() {
-  const { state } = useService(InstanceServiceKey)
-  const minecraft = computed(() => state.instance.runtime.minecraft)
-  const forge = computed(() => state.instance.runtime.forge)
-  const fabricLoader = computed(() => state.instance.runtime.fabricLoader)
-  const quiltLoader = computed(() => state.instance.runtime.quiltLoader)
-  const yarn = computed(() => state.instance.runtime.yarn)
-  return {
-    minecraft,
-    forge,
-    fabricLoader,
-    quiltLoader,
-    yarn,
-  }
-}
-
-/**
- * Use references of all the version info of this instance
- */
-export function useInstanceVersion() {
-  const { state: instanceVersionState } = useService(InstanceVersionServiceKey)
-
-  const localVersion = computed(() => instanceVersionState.versionHeader || EMPTY_VERSION)
-  const folder = computed(() => localVersion.value?.id || 'unknown')
-
-  return {
-    ...useInstanceVersionBase(),
-    localVersion,
-    folder,
-  }
-}
