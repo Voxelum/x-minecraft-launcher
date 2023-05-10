@@ -1,23 +1,22 @@
 import type { Frame as GameSetting } from '@xmcl/gamesetting'
-import { ShaderOptions } from '../entities/shaderpack'
 import { Exception, InstanceNotFoundException } from '../entities/exception'
-import { ServiceKey, StatefulService } from './Service'
+import { ShaderOptions } from '../entities/shaderpack'
+import { Disposable } from '../util/Disposable'
+import { ServiceKey } from './Service'
 export interface EditGameSettingOptions extends GameSetting {
   /**
    * The instance to edit game setting.
-   *
-   * By default this will be the selected instance.
    */
-  instancePath?: string
+  instancePath: string
+
+  addResourcePack?: string[]
 }
 
 export interface EditShaderOptions extends ShaderOptions {
   /**
    * The instance to edit shader config.
-   *
-   * By default this will be the selected instance.
    */
-  instancePath?: string
+  instancePath: string
 }
 
 export class InstanceOptionsState {
@@ -98,13 +97,17 @@ export class InstanceOptionsState {
 /**
  * The service for game options & shader options
  */
-export interface InstanceOptionsService extends StatefulService<InstanceOptionsState> {
-  mount(path: string): Promise<void>
+export interface InstanceOptionsService {
+  watchOptions(path: string): Promise<Disposable<InstanceOptionsState>>
   /**
-   * Refresh the game setting from options.txt file
+   * Get the shader setting of the specific instance
+   * @param instancePath The instance path
    */
-  refresh(): Promise<void>
   getShaderOptions(instancePath: string): Promise<ShaderOptions>
+  /**
+   * Get the game setting of the specific instance
+   * @param instancePath The instance path
+   */
   getGameOptions(instancePath: string): Promise<GameSetting>
   /**
    * Edit the game setting of current instance
@@ -119,9 +122,9 @@ export interface InstanceOptionsService extends StatefulService<InstanceOptionsS
   /**
    * Show open gamesetting instance
    */
-  showOptionsFileInFolder(): Promise<void>
+  showOptionsFileInFolder(instancePath: string): Promise<void>
 
-  showShaderOptionsInFolder(): Promise<void>
+  showShaderOptionsInFolder(instancePath: string): Promise<void>
 }
 
 export const InstanceOptionsServiceKey: ServiceKey<InstanceOptionsService> = 'InstanceOptionsService'

@@ -6,7 +6,7 @@ export interface InstallModsOptions {
   /**
    * The instance path to deploy. This will be the current path by default.
    */
-  path?: string
+  path: string
 }
 
 /**
@@ -77,19 +77,21 @@ export class InstanceModsState {
 /**
  * Provide the abilities to import/export mods files to instance
  */
-export interface InstanceModsService extends StatefulService<InstanceModsState> {
+export interface InstanceModsService {
   /**
    * Read all mods under the current instance
    */
-  mount(instancePath: string): Promise<void>
+  watch(instancePath: string): Promise<InstanceModsState>
   /**
-   * Refresh current mounted instance mods. It will reload the mods in state.
+   * Show instance /mods dictionary
+   * @param instancePath The instance path
    */
-  refresh(force?: boolean): Promise<void>
-
-  showDirectory(): Promise<void>
+  showDirectory(instancePath: string): Promise<void>
 
   enable(options: InstallModsOptions): Promise<void>
+  /**
+   * Mark a mod disabled
+   */
   disable(options: InstallModsOptions): Promise<void>
   /**
    * Install certain mods to the instance.

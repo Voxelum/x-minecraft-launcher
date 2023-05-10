@@ -1,7 +1,7 @@
 import type { Status } from '@xmcl/client'
 import type { ServerInfo } from '@xmcl/game-data'
 import { UNKNOWN_STATUS } from '../entities/serverStatus'
-import { ServiceKey, StatefulService } from './Service'
+import { ServiceKey } from './Service'
 
 export class ServerInfoWithStatus implements ServerInfo {
   status: Status = UNKNOWN_STATUS
@@ -42,15 +42,8 @@ export class ServerInfoState {
 /**
  * Provide the service to access the servers.dat for an instance.
  */
-export interface InstanceServerInfoService extends StatefulService<ServerInfoState> {
-  /**
-   * Refresh the data from server.dat file
-   */
-  refresh(): Promise<void>
-  /**
-   * Ping all server status in this instance server.dat file
-   */
-  pingServerStatus(): Promise<void>
+export interface InstanceServerInfoService {
+  watch(instancePath: string): Promise<ServerInfoState>
 }
 
 export const InstanceServerInfoServiceKey: ServiceKey<InstanceServerInfoService> = 'InstanceServerInfoService'

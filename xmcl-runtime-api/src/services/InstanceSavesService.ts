@@ -8,7 +8,7 @@ export interface ExportSaveOptions {
    *
    * This will be the active instance by default.
    */
-  instancePath?: string
+  instancePath: string
   /**
    * The save folder name to export.
    */
@@ -29,7 +29,7 @@ export interface ImportSaveOptionsBase {
    *
    * This will be the active instance by default.
    */
-  instancePath?: string
+  instancePath: string
   /**
    * The destination save folder name will be imported into.
    *
@@ -63,17 +63,17 @@ export interface DeleteSaveOptions {
   /**
    * The instance path of this save. If this is not presented, it will use selected instance.
    */
-  instancePath?: string
+  instancePath: string
 }
 export interface CloneSaveOptions {
   /**
    * The source instance path. If it is not presented, it will use selected instance.
    */
-  srcInstancePath?: string
+  srcInstancePath: string
   /**
    * The destination instance path. If it is not presented, it will use selected instance.
    */
-  destInstancePath?: string | string[]
+  destInstancePath: string | string[]
   /**
    * The save name to clone
    */
@@ -87,6 +87,7 @@ export interface CloneSaveOptions {
 
 export class SaveState {
   saves = [] as InstanceSaveMetadata[]
+
   instanceSaves(saves: InstanceSaveMetadata[]) {
     this.saves = saves
   }
@@ -108,16 +109,17 @@ export class SaveState {
 /**
  * Provide the ability to preview saves data of an instance
  */
-export interface InstanceSavesService extends StatefulService<SaveState> {
+export interface InstanceSavesService {
   /**
-   * Read all registered instances' saves metadata
+   * Read all saves under the instance folder
+   * @param path The instance folder path
    */
-  readAllInstancesSaves(): Promise<InstanceSave[]>
+  getInstanceSaves(path: string): Promise<InstanceSave[]>
   /**
    * Mount and load instances saves
    * @param path
    */
-  mountInstanceSaves(path: string): Promise<void>
+  watchSaves(path: string): Promise<SaveState>
   /**
    * Clone a save under an instance to one or multiple instances.
    *

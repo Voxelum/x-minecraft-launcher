@@ -1,9 +1,11 @@
-import { MutationKeys, MutationPayload, State } from '@xmcl/runtime-api'
+import { Disposable, MutationKeys, MutationPayload, State } from '@xmcl/runtime-api'
 import { EventEmitter } from 'events'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
 import { AbstractService } from '../services/Service'
 import { ServiceStateProxy } from '../util/serviceProxy'
+
+export const kStateKey = Symbol('StateKey')
 
 export default class ServiceStateManager extends Manager {
   private logger = this.app.logManager.getLogger('ServiceStateManager')
@@ -32,6 +34,11 @@ export default class ServiceStateManager extends Manager {
     return this
   }
 
+  unsubscribe<T extends MutationKeys>(key: T, listener: (payload: MutationPayload<T>) => void) {
+    this.eventBus.removeListener(key, listener)
+    return this
+  }
+
   subscribeAll(events: MutationKeys[], listener: () => void) {
     for (const e of events) {
       this.eventBus.addListener(e, listener)
@@ -39,7 +46,7 @@ export default class ServiceStateManager extends Manager {
     return this
   }
 
-  register<T extends State<T>>(serviceName: string, state: T): T {
+  register<T extends State<T>>(serviceName: string, state: T, dispose?: () => void): Disposable<T> {
     const proxy = new ServiceStateProxy(
       this.app,
       this.eventBus,
@@ -48,6 +55,7 @@ export default class ServiceStateManager extends Manager {
       this.logger,
     )
     this.registeredState[serviceName] = proxy
+    Object.defineProperty(state, kStateKey, serviceName)
     return state
   }
 }

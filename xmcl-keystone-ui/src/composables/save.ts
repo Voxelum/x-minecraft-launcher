@@ -1,10 +1,13 @@
 import { CloneSaveOptions, DeleteSaveOptions, ImportSaveOptions, InstanceSavesServiceKey } from '@xmcl/runtime-api'
 import { useInstanceBase } from './instance'
 import { useService } from '@/composables'
+import { injection } from '@/util/inject'
+import { kInstanceContext } from './instanceContext'
 
 export function useInstanceSaves() {
+  const {  } = injection(kInstanceContext)
   const { path } = useInstanceBase()
-  const { state, cloneSave, deleteSave, exportSave, readAllInstancesSaves, importSave, mountInstanceSaves } = useService(InstanceSavesServiceKey)
+  const { cloneSave, deleteSave, exportSave, importSave } = useService(InstanceSavesServiceKey)
   const refresh = () => mountInstanceSaves(path.value)
   return {
     refresh,

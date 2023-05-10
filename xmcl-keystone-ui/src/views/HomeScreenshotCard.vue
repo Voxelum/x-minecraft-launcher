@@ -64,7 +64,7 @@ const { on } = useService(LaunchServiceKey)
 
 const urls = ref([] as string[])
 const { refresh, refreshing } = useRefreshable(async () => {
-  const result = await getScreenshots()
+  const result = await getScreenshots(props.instance.path)
   if (result.length === 0) {
     urls.value = ['']
   } else {

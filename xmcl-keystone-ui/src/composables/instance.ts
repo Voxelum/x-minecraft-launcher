@@ -63,40 +63,6 @@ export function useInstanceVersionBase() {
   }
 }
 
-export function useInstanceGameSetting() {
-  const { state, refresh: _refresh, editGameSetting: edit, showOptionsFileInFolder: showInFolder } = useService(InstanceOptionsServiceKey)
-  const refresh = () => _refresh()
-  const fancyGraphics = computed(() => state.options.fancyGraphics)
-  const renderClouds = computed(() => state.options.renderClouds)
-  const ao = computed(() => state.options.ao)
-  const entityShadows = computed(() => state.options.entityShadows)
-  // const particles = computed(() => state.options.particles)
-  // const mipmapLevels = computed(() => state.options.mipmapLevels)
-  const useVbo = computed(() => state.options.useVbo)
-  const fboEnable = computed(() => state.options.fboEnable)
-  const enableVsync = computed(() => state.options.enableVsync)
-  const anaglyph3d = computed(() => state.options.anaglyph3d)
-
-  return {
-    fancyGraphics,
-    renderClouds,
-    ao,
-    entityShadows,
-    // particles,
-    // mipmapLevels,
-    useVbo,
-    fboEnable,
-    enableVsync,
-    anaglyph3d,
-    showInFolder,
-    refreshing: useServiceBusy(InstanceOptionsServiceKey, 'mount'),
-    refresh,
-    commit(settings: GameSetting) {
-      edit(settings)
-    },
-  }
-}
-
 /**
  * Use references of all the version info of this instance
  */
