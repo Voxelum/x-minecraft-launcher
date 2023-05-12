@@ -237,7 +237,7 @@ jobs:
         mv ./build/app-linux.asar.sha256 ./build/app-${{ steps.prepare_release.outputs.version }}-linux.asar.sha256
     - name: Emit Version File
       run: |
-        echo ${{ steps.prepare_release.outputs.version }}.${{ github.run_id }} > ./build/version
+        echo ${{ steps.prepare_release.outputs.version }}.${{ github.run_number }} > ./build/version
     - name: Draft Release
       id: create_release
       uses: voxelum/create-release@xmcl
