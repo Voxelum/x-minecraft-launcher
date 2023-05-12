@@ -155,7 +155,8 @@ async function installArm64() {
   if (currentPlatform === 'linux') {
     // copy classic-level dependencies
     const src = resolve(__dirname, '../xmcl-runtime/node_modules/classic-level/prebuilds/linux-arm64/node.napi.armv8.node')
-    const dest = resolve(__dirname, 'dist/node.napi.glib.node')
+    const dest = resolve(__dirname, 'dist/node.napi.glibc.node')
+    await unlink(dest).catch(() => { })
     await copyFile(src, dest)
     console.log(`copy ${src} -> ${dest}`)
   }
