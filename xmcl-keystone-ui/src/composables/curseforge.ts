@@ -111,6 +111,7 @@ export function useCurseforge(props: CurseforgeProps) {
   watch(_data, (v) => {
     if (v) {
       data.projects = markRaw(v.data)
+      v.pagination.totalCount = Math.min(1_0000, v.pagination.totalCount)
       data.totalCount = v.pagination.totalCount
       data.pages = Math.ceil(v.pagination.totalCount / pageSize)
     }
