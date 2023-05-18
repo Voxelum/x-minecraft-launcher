@@ -62,15 +62,14 @@ const tCategory = (k: string) => te(`curseforgeCategory.${k}`) ? t(`curseforgeCa
 
 <style scoped>
 .item {
-  @apply rounded-lg hover:bg-[rgba(255,255,255,0.2)] cursor-pointer p-0.5 flex items-center gap-2 justify-start;
+  @apply rounded-lg hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.2)] cursor-pointer p-0.5 flex items-center gap-2 justify-start transition-all;
 }
 
 .list-title {
   @apply font-bold text-lg py-1;
 }
-
 .selected {
-  @apply bg-[rgba(255,255,255,0.2)];
+  @apply bg-[rgba(0,0,0,0.1)] dark:bg-[rgba(255,255,255,0.2)];
 }
 
 </style>
