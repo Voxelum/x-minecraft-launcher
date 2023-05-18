@@ -61,7 +61,10 @@
     </v-list-item>
     <v-list-item @click="disableTelemetry = !disableTelemetry">
       <v-list-item-action class="self-center">
-        <v-checkbox v-model="disableTelemetry" />
+        <v-checkbox
+          v-model="disableTelemetry"
+          @click.stop
+        />
       </v-list-item-action>
       <v-list-item-content>
         <v-list-item-title>
@@ -74,7 +77,10 @@
     </v-list-item>
     <v-list-item @click="hideNews = !hideNews">
       <v-list-item-action class="self-center">
-        <v-checkbox v-model="hideNews" />
+        <v-checkbox
+          v-model="hideNews"
+          @click.stop
+        />
       </v-list-item-action>
       <v-list-item-content>
         <v-list-item-title>
@@ -87,7 +93,10 @@
     </v-list-item>
     <v-list-item @click="enableDiscord = !enableDiscord">
       <v-list-item-action class="self-center">
-        <v-checkbox v-model="enableDiscord" />
+        <v-checkbox
+          v-model="enableDiscord"
+          @click.stop
+        />
       </v-list-item-action>
       <v-list-item-content>
         <v-list-item-title>
@@ -192,9 +201,12 @@
         />
       </v-list-item-action>
     </v-list-item>
-    <v-list-item>
+    <v-list-item @click="developerMode = !developerMode">
       <v-list-item-action class="self-center">
-        <v-checkbox v-model="developerMode" />
+        <v-checkbox
+          v-model="developerMode"
+          @click.stop
+        />
       </v-list-item-action>
       <v-list-item-content>
         <v-list-item-title>

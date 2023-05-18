@@ -29,10 +29,10 @@
         />
       </v-list-item-action>
     </v-list-item>
-    <v-list-item
-      class="justify-center items-center"
-    >
-      <v-list-item-action>
+    <v-list-item @click="linuxTitlebar = !linuxTitlebar">
+      <v-list-item-action
+        class="self-center"
+      >
         <v-checkbox v-model="linuxTitlebar" />
       </v-list-item-action>
       <v-list-item-content>

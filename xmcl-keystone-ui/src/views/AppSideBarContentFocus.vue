@@ -1,6 +1,5 @@
 <template>
   <div class="h-full overflow-auto">
-    <v-divider />
     <v-list
       nav
       dense
@@ -114,32 +113,6 @@
         </template>
         {{ t('instances.choose') }}
       </v-tooltip>
-
-      <v-tooltip
-        color="black"
-        transition="scroll-x-transition"
-        :close-delay="0"
-        right
-      >
-        <template #activator="{ on: tooltip }">
-          <v-list-item
-            push
-            link
-            class="non-moveable"
-            to="/modpack-setting"
-            v-on="tooltip"
-          >
-            <v-list-item-icon>
-              <v-icon>
-                inventory
-              </v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Modpack</v-list-item-title>
-          </v-list-item>
-        </template>
-        {{ t('modpack.name', 2) }}
-      </v-tooltip>
-
       <v-spacer />
     </v-list>
   </div>
