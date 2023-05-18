@@ -118,7 +118,7 @@
         >
           <v-avatar left>
             <img
-              :src="'image:builtin:minecraft'"
+              :src="'image://builtin/minecraft'"
               alt="minecraft"
             >
             <!-- <v-icon>power</v-icon> -->
@@ -146,7 +146,7 @@
         >
           <v-avatar left>
             <img
-              :src="'image:builtin:forge'"
+              :src="'image://builtin/forge'"
               alt="forge"
             >
           </v-avatar>
@@ -163,7 +163,7 @@
             class="rounded-none"
           >
             <img
-              :src="'image:builtin:quilt'"
+              :src="'image://builtin/quilt'"
               alt="quilt"
             >
           </v-avatar>
@@ -177,7 +177,7 @@
         >
           <v-avatar left>
             <img
-              :src="'image:builtin:fabric'"
+              :src="'image://builtin/fabric'"
               alt="fabric"
             >
           </v-avatar>
