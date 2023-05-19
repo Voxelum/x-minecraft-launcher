@@ -1,5 +1,8 @@
 <template>
-  <div class="select-none mx-4 relative">
+  <div
+    v-if="!isFocus"
+    class="select-none mx-4 relative"
+  >
     <GridLayout
       :layout.sync="layout"
       :responsive-layouts="layouts"
@@ -101,8 +104,10 @@
       </GridItem>
     </GridLayout>
   </div>
+  <HomeFocus v-else />
 </template>
 <script lang="ts" setup>
+import { useInFocusMode } from '@/composables/uiLayout'
 
 import { useLocalStorageCache, useLocalStorageCacheBool } from '@/composables/cache'
 import { kInstanceContext } from '@/composables/instanceContext'
@@ -120,8 +125,11 @@ import HomeScreenshotCard from './HomeScreenshotCard.vue'
 import HomeServerStatusBar from './HomeServerStatusBar.vue'
 import HomeShaderPackCard from './HomeShaderPackCard.vue'
 import ModrinthProject from './ModrinthProject.vue'
+import HomeFocus from './HomeFocus.vue'
 
 const { instance, isServer } = injection(kInstanceContext)
+
+const isFocus = useInFocusMode()
 
 enum CardType {
   Mod,

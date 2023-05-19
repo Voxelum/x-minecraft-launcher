@@ -11,25 +11,20 @@
       <HomeHeader class="sticky top-0 z-20" />
     </transition>
 
-    <template
+    <!-- <template
       v-if="!isFocusMode"
-    >
-      <!-- This is to fix strange hover color issue... -->
-      <v-divider
-        class="border-transparent"
-      />
-      <transition
-        name="fade-transition"
-        mode="out-in"
-      >
-        <router-view />
-      </transition>
-    </template>
-
-    <HomeFocusFooter
-      v-if="isFocusMode"
-      class="flex absolute left-0 bottom-0 px-8 pb-[26px] gap-6"
+    > -->
+    <!-- This is to fix strange hover color issue... -->
+    <v-divider
+      class="border-transparent"
     />
+    <transition
+      name="fade-transition"
+      mode="out-in"
+    >
+      <router-view />
+    </transition>
+    <!-- </template> -->
 
     <HomeLogDialog />
     <HomeLaunchMultiInstanceDialog />

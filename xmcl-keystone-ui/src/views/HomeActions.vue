@@ -1,5 +1,8 @@
 <template>
-  <div class="">
+  <div
+    v-if="!isFocus"
+    class=""
+  >
     <v-btn
       v-shared-tooltip="t('modpack.export')"
       text
@@ -59,6 +62,9 @@ import { injection } from '@/util/inject'
 import { BaseServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { AppExportDialogKey } from '../composables/instanceExport'
+import { useInFocusMode } from '@/composables/uiLayout'
+
+const isFocus = useInFocusMode()
 
 const { path, refreshing, name, version, localVersion } = injection(kInstanceContext)
 const { openDirectory } = useService(BaseServiceKey)
