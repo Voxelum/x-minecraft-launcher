@@ -91,4 +91,5 @@ jobs:
         env:
           TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
           URL: ${{ format('https://xmcl-release-ms.azureedge.net/releases/xmcl-{0}.appx', steps.version.outputs.result) }}
+          VERSION: ${{ env.VERSION }}
       
