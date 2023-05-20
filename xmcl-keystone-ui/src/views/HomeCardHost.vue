@@ -64,7 +64,10 @@
       </GridItem>
     </GridLayout>
 
-    <v-divider class="my-4" />
+    <v-divider
+      v-if="instance.upstream || isServer || !hideNews"
+      class="my-4"
+    />
     <HomeServerStatusBar v-if="isServer" />
     <CurseforgeProject
       v-else-if="instance.upstream && instance.upstream.type === 'curseforge-modpack'"
@@ -107,8 +110,8 @@
   <HomeFocus v-else />
 </template>
 <script lang="ts" setup>
-import { useInFocusMode } from '@/composables/uiLayout'
 
+import { useInFocusMode } from '@/composables/uiLayout'
 import { useLocalStorageCache, useLocalStorageCacheBool } from '@/composables/cache'
 import { kInstanceContext } from '@/composables/instanceContext'
 import { kUpstream } from '@/composables/instanceUpdate'
