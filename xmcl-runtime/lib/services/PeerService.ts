@@ -114,8 +114,12 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
         }
       }
 
-      initCredential()
-      initNat()
+      initCredential().catch(e => {
+        this.warn('Fail to init credential', e)
+      })
+      initNat().catch((e) => {
+        this.warn('Fail to init nat', e)
+      })
     })
 
     if (IS_DEV) {

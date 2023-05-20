@@ -41,7 +41,10 @@ export class PresenceService extends AbstractService implements IPresenceService
 
     app.serviceStateManager.subscribe('discordPresenceSet', async (state) => {
       if (state) {
-        await this.discord.connect()
+        await this.discord.connect().catch(() => {
+          // TODO: hint user?
+          this.warn('Fail to connect to discord.')
+        })
       } else {
         await this.discord.destroy()
       }

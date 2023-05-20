@@ -199,10 +199,15 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
 
   @Lock('refresh')
   async refresh() {
-    if (this.state.versionHeader) {
-      const ver = await this.versionService.resolveLocalVersion(this.state.versionHeader.id)
-      this.state.instanceVersion(ver)
-    } else {
+    try {
+      if (this.state.versionHeader) {
+        const ver = await this.versionService.resolveLocalVersion(this.state.versionHeader.id)
+        this.state.instanceVersion(ver)
+      } else {
+        this.state.instanceVersion(undefined)
+      }
+    } catch (e) {
+      this.warn('Failed to refresh instance version', e)
       this.state.instanceVersion(undefined)
     }
   }

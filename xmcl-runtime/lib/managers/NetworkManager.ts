@@ -66,7 +66,11 @@ export default class NetworkManager extends Manager {
     const apiClientFactories = [] as Array<(origin: URL, options: Agent.Options) => Dispatcher | undefined>
 
     this.app.serviceStateManager.subscribe('httpProxySet', (p) => {
-      proxy.setProxy(new URL(p))
+      try {
+        proxy.setProxy(new URL(p))
+      } catch (e) {
+        app.warn(`Fail to set url as it's not a valid url ${p}`, e)
+      }
     })
     this.app.serviceStateManager.subscribe('httpProxyEnabledSet', (e) => {
       proxy.setProxyEnabled(e)

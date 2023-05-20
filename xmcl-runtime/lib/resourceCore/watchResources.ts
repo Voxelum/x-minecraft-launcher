@@ -5,7 +5,6 @@ import { generateResource } from './generateResource'
 import { getResourceEntry } from './getResourceEntry'
 import { parseMetadata } from './parseMetadata'
 import { shouldIgnoreFile } from './pathUtils'
-import { resolveDomain } from './resolveDomain'
 import { ResourceContext, ResourceEntryCache } from './ResourceContext'
 import { upsertMetadata } from './upsertMetadata'
 
@@ -53,9 +52,18 @@ export function watchResources(folder: string, context: ResourceContext) {
 
       let _metadata = await context.metadata.get(entry.sha1).catch(() => undefined)
       if (!_metadata) {
-        const { metadata, uris, icons, name } = await parseMetadata(path, entry.fileType, domain, context)
-        const data = await upsertMetadata(metadata, uris, icons, name, entry.sha1, context)
-        _metadata = data
+        try {
+          const { metadata, uris, icons, name } = await parseMetadata(path, entry.fileType, domain, context)
+          const data = await upsertMetadata(metadata, uris, icons, name, entry.sha1, context)
+          _metadata = data
+        } catch (e) {
+          if ((e as any).message === 'end of central directory record signature not found') {
+            // TODO: log telemetry?
+            context.logger.warn(`Invalid resource ${path}`)
+            return
+          }
+          throw e
+        }
       }
 
       if (cachedEntry) {
