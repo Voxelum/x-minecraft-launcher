@@ -9,8 +9,6 @@ openUrl:
   trust: Доверять этому сайту и не показывать это в следующий раз
   'yes': 'Да'
 quit: Выход
-setup:
-  title: Главная X Minecraft Launcher
 showDiagnosis: Показать диагностику
 showLauncher: Показать лаунчер
 showLogsFolder: Открыть папку с логами

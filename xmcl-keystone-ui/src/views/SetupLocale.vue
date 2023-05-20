@@ -34,16 +34,15 @@
   </v-list>
 </template>
 <script lang=ts setup>
-import localMapping from '@/assets/localeMapping.json'
+import localMapping from '../../../assets/locales.json'
 
 defineProps<{ value: string }>()
 
 const emit = defineEmits(['input'])
 
 const { t } = useI18n()
-const locales = [
-  'en',
-  'zh-CN',
-  'ru',
-].map(l => ({ text: (localMapping as any)[l] ?? l, value: l }))
+const locales = Object.entries(localMapping).forEach(([key, value]) => ({
+  text: value,
+  value: key,
+}))
 </script>

@@ -9,8 +9,6 @@ openUrl:
   trust: Trust this site and don't show next time
   'yes': 'Yes'
 quit: Quit
-setup:
-  title: X Minecraft Launcher 主页
 showDiagnosis: Show Diagnose
 showLauncher: Show Launcher
 showLogsFolder: Show Logs Folder

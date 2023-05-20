@@ -9,8 +9,6 @@ openUrl:
   trust: Faire confiance au site et ne plus afficher
   "yes": "Oui"
 quit: Quitter
-setup:
-  title: X Minecraft Launcher
 showDiagnosis: Afficher le Diagnostic
 showLauncher: Afficher le Launcher
 showLogsFolder: Afficher le Dossier de Logs

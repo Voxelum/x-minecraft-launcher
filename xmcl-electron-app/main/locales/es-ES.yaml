@@ -9,8 +9,6 @@ openUrl:
   trust: Confiar en este sitio y no volver a preguntar
   'yes': Sí
 quit: Salir
-setup:
-  title: Bienvenido a X Minecraft Launcher. Antes de comenzar, necesitamos que
 showDiagnosis: Mostrar diagnostico
 showLogsFolder: Mostrar carpeta de registros
 task:

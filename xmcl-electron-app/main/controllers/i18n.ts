@@ -1,15 +1,7 @@
 import Controller from '@/Controller'
 import { BaseService } from '@xmcl/runtime'
 import { ControllerPlugin } from './plugin'
-
-export const localeMappings: Record<string, string> = {
-  'zh-CN': '简体中文',
-  'zh-TW': '繁體中文',
-  en: 'English',
-  ru: 'Русский язык',
-  'es-ES': 'Español',
-  fr: 'French',
-}
+import localeMappings from '../../../assets/locales.json'
 
 export const i18n: ControllerPlugin = function (this: Controller) {
   this.app.once('engine-ready', () => {

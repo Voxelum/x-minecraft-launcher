@@ -58,38 +58,34 @@ This should start the launcher. You can switch to your language in setting page 
 ### Adding new language
 
 **Optional**.
-If you are adding a new language, you need to also go to the `xmcl-keystone-ui\src\util\localeMappings.ts` and add the new language key value there.
+If you are adding a new language, you need to also go to the `assets\locales.json` and add the new language key value there.
 
-Suppose you want to add `French` (`fr`), you can open the file `xmcl-keystone-ui\src\util\localeMappings.ts`
+Suppose you want to add `French` (`fr`), you can open the file `assets\locales.json`
 
-```ts
-export const localeMappings: Record<string, string> = {
-  'zh-CN': '简体中文',
-  'zh-TW': '繁體中文',
-  en: 'English',
-  'en-US': 'English (The United State)',
-  'en-UK': 'English (The United Kindom)',
-  ru: 'Русский язык',
+```json
+{
+  "zh-CN": "简体中文",
+  "zh-TW": "繁體中文",
+  "en": "English",
+  "ru": "Русский язык",
+  "es-ES": "Español"
 }
 ```
 
 adding a new line at the end
 
-```ts
-export const localeMappings: Record<string, string> = {
-  'zh-CN': '简体中文',
-  'zh-TW': '繁體中文',
-  en: 'English',
-  'en-US': 'English (The United State)',
-  'en-UK': 'English (The United Kindom)',
-  ru: 'Русский язык',
-  'fr': 'French',
+```json
+{
+  "zh-CN": "简体中文",
+  "zh-TW": "繁體中文",
+  "en": "English",
+  "ru": "Русский язык",
+  "es-ES": "Español",
+  'fr': 'French'
 }
 ```
 
 ### Send Pull Request
 
 Please follow the [github guide](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/proposing-changes-to-your-work-with-pull-requests/creating-a-pull-request) about how to send pull request.
-
-
 

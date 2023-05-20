@@ -7,8 +7,6 @@ openUrl:
   trust: 信任此網站，下次不再顯示
   'yes': 允許
 quit: 退出
-setup:
-  title: XMCL
 showDiagnosis: 顯示 Debug 信息
 showLogsFolder: 顯示日誌文件夾
 task:
