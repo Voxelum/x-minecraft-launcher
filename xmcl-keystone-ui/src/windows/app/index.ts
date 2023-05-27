@@ -94,11 +94,15 @@ app.$mount('#app')
 const params = window.location.search.substring(1)
 if (params.startsWith('route=')) {
   const route = params.substring('route='.length)
-  router.replace(route)
+  const base = '/' + route.split('/')[1]
+  router.replace(base)
+  if (route !== base) {
+    router.push(route)
+  }
 }
 
 window.addEventListener('message', (e) => {
   if (e.data.route) {
-    router.replace(e.data.route)
+    router.push(e.data.route)
   }
 })

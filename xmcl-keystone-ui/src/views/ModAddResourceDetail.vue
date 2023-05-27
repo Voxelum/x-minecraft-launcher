@@ -52,26 +52,26 @@
                     folder
                   </v-icon>
                 </v-btn>
-                <v-avatar
+                <v-btn
                   v-if="r.metadata.modrinth"
-                  size="30px"
+                  icon
+                  text
+                  @click="goModrinthProject(r.metadata.modrinth.projectId)"
                 >
-                  <v-icon
-                    size="26"
-                  >
+                  <v-icon>
                     $vuetify.icons.modrinth
                   </v-icon>
-                </v-avatar>
-                <v-avatar
+                </v-btn>
+                <v-btn
                   v-if="r.metadata.curseforge"
-                  size="30px"
+                  icon
+                  text
+                  @click="goCurseforgeProject(r.metadata.curseforge.projectId, 'mc-mods')"
                 >
-                  <v-icon
-                    size="26"
-                  >
+                  <v-icon>
                     $vuetify.icons.curseforge
                   </v-icon>
-                </v-avatar>
+                </v-btn>
                 <v-avatar
                   v-if="forge"
                   size="30px"
@@ -152,7 +152,7 @@
 import { useService } from '@/composables'
 import { getCompatibleIcon } from '@/composables/compatibleIcon'
 import { kModsContext } from '@/composables/mod'
-import { useModCompatibleTooltip } from '@/composables/modCompatibleTooltip'
+import { kMarketRoute } from '@/composables/useMarketRoute'
 import { injection } from '@/util/inject'
 import { getModsCompatiblity } from '@/util/modCompatible'
 import { getModDependencies } from '@/util/modDependencies'
@@ -184,7 +184,7 @@ const showFile = (r: Resource) => {
 }
 
 const { runtime } = injection(kModsContext)
-
+const { goCurseforgeProject, goModrinthProject } = injection(kMarketRoute)
 const deps = computed(() => props.resources.map(getModDependencies).map(d => getModsCompatiblity(d, runtime.value)))
 const coreDeps = computed(() => deps.value.map(v => v.filter(d => d.modId === 'minecraft' || d.modId === 'forge' || d.modId === 'fabric' || d.modId === 'quilt' || d.modId === 'fabricloader')))
 
