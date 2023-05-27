@@ -1,4 +1,4 @@
-import { GameProfileAndTexture, LoginOptions, SkinPayload, UserException, UserProfile } from '@xmcl/runtime-api'
+import { GameProfileAndTexture, LoginOptions, Skin, SkinPayload, UserException, UserProfile } from '@xmcl/runtime-api'
 import { Logger } from '../util/log'
 import { toRecord } from '../util/object'
 import { MicrosoftAuthenticator } from '../clients/MicrosoftAuthenticator'
@@ -153,14 +153,15 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     if (ownGame) {
       const gameProfileResponse = await this.mojangClient.getProfile(mcResponse.access_token, signal)
       this.logger.log('Successfully get game profile')
+      const skin: Skin | undefined = gameProfileResponse.skins?.[0]
       const gameProfiles: GameProfileAndTexture[] = [{
         ...gameProfileResponse,
         id: gameProfileResponse.id,
         name: gameProfileResponse.name,
         textures: {
           SKIN: {
-            url: gameProfileResponse.skins[0].url,
-            metadata: { model: gameProfileResponse.skins[0].variant === 'CLASSIC' ? 'steve' : 'slim' },
+            url: skin?.url,
+            metadata: { model: skin?.variant === 'CLASSIC' ? 'steve' : 'slim' },
           },
           CAPE: gameProfileResponse.capes.length > 0
             ? {

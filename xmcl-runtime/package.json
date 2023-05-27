@@ -57,7 +57,6 @@
         "http-cache-semantics": "^4.1.0",
         "iconv-lite": "^0.6.3",
         "jschardet": "^2.3.0",
-        "keytar": "^7.9.0",
         "lodash.debounce": "^4.0.8",
         "lodash.throttle": "^4.1.1",
         "node-datachannel": "0.4.1",

@@ -1,10 +1,9 @@
 import { getPlatform } from '@xmcl/core'
 import { InstalledAppManifest, Platform } from '@xmcl/runtime-api'
 import { EventEmitter } from 'events'
-import { readFileSync } from 'fs'
 import { ensureDir } from 'fs-extra/esm'
 import { readFile, writeFile } from 'fs/promises'
-import { createServer, Server } from 'http'
+import { Server, createServer } from 'http'
 import { join } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
@@ -19,7 +18,7 @@ import ServiceManager from '../managers/ServiceManager'
 import ServiceStateManager from '../managers/ServiceStateManager'
 import TaskManager from '../managers/TaskManager'
 import { plugins } from '../plugins'
-import { AbstractService, ServiceConstructor } from '../services/Service'
+import { ServiceConstructor } from '../services/Service'
 import { isSystemError } from '../util/error'
 import { ObjectFactory } from '../util/objectRegistry'
 import { createPromiseSignal } from '../util/promiseSignal'
@@ -31,6 +30,7 @@ import { LauncherAppUpdater } from './LauncherAppUpdater'
 import { LauncherProtocolHandler } from './LauncherProtocolHandler'
 import { Shell } from './Shell'
 import { LauncherAppKey } from './utils'
+import { SecretStorage } from './SecretStorage'
 
 export interface LauncherAppPlugin {
   (app: LauncherApp): void
@@ -72,7 +72,6 @@ export class LauncherApp extends EventEmitter {
   readonly temporaryPath: string
 
   readonly networkManager: NetworkManager
-
   readonly logManager: LogManager
   readonly serviceManager: ServiceManager
   readonly serviceStateManager: ServiceStateManager
@@ -130,6 +129,7 @@ export class LauncherApp extends EventEmitter {
   constructor(
     readonly host: Host,
     readonly shell: Shell,
+    readonly secretStorage: SecretStorage,
     getController: (app: LauncherApp) => LauncherAppController,
     getUpdater: (app: LauncherApp) => LauncherAppUpdater,
     readonly builtinAppManifest: InstalledAppManifest,

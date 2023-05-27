@@ -8,6 +8,9 @@ import { preloadServices } from './preloadServices'
 import { isDirectory } from './utils/fs'
 import { ElectronUpdater, setup } from './utils/updater'
 import { getWindowsUtils } from './utils/windowsUtils'
+import { ElectronSecretStorage } from './ElectronSecretStorage'
+import { join } from 'path'
+import { LAUNCHER_NAME } from '@xmcl/runtime/lib/constant'
 
 class ElectronShell implements Shell {
   showItemInFolder = shell.showItemInFolder
@@ -76,6 +79,7 @@ export default class ElectronLauncherApp extends LauncherApp {
   constructor() {
     super(app,
       new ElectronShell(),
+      new ElectronSecretStorage(join(app.getPath('appData'), LAUNCHER_NAME, 'secret')),
       (app) => new Controller(app as ElectronLauncherApp),
       (app) => new ElectronUpdater(app as ElectronLauncherApp),
       defaultApp,

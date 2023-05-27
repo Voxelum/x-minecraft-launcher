@@ -5,7 +5,6 @@ import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { LittleSkinClient } from '../clients/LittleSkinClient'
 import { UserTokenStorage, kUserTokenStorage } from '../entities/userTokenStore'
-import { TokenCache } from '../util/TokenStorage'
 import { Inject } from '../util/objectRegistry'
 import { BaseService } from './BaseService'
 import { AbstractService, ExposeServiceKey } from './Service'
@@ -20,8 +19,7 @@ export class LittleSkinUserService extends AbstractService implements ILittleSki
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(UserService) private userService: UserService,
     @Inject(BaseService) private baseService: BaseService,
-    @Inject(TokenCache) private cache: TokenCache,
-    @Inject(kUserTokenStorage) tokenCache: UserTokenStorage) {
+    @Inject(kUserTokenStorage) private cache: UserTokenStorage) {
     super(app)
 
     const dispatcher = this.networkManager.registerAPIFactoryInterceptor((origin, options) => {
@@ -102,83 +100,83 @@ export class LittleSkinUserService extends AbstractService implements ILittleSki
     if (user?.authService !== LITTLE_SKIN_HOST || !user) {
       throw new Error()
     }
-    const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
-    if (!token) {
+    // const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
+    // if (!token) {
       throw new Error()
-    }
-    return await this.client.getAllCharacters(token)
+    // }
+    // return await this.client.getAllCharacters(token)
   }
 
   async setCharacterName(options: SetCharacterNameOptions): Promise<void> {
-    const user = this.userService.state.user
-    if (user?.authService !== LITTLE_SKIN_HOST || !user) {
+    // const user = this.userService.state.user
+    // if (user?.authService !== LITTLE_SKIN_HOST || !user) {
       throw new Error()
-    }
-    const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
-    if (!token) {
-      throw new Error()
-    }
-    await this.client.setCharacterName(options, token)
+    // }
+    // const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
+    // if (!token) {
+    //   throw new Error()
+    // }
+    // await this.client.setCharacterName(options, token)
   }
 
   async setCharacterTexture(options: SetCharacterTextureOptions): Promise<void> {
-    const user = this.userService.state.user
-    if (user?.authService !== LITTLE_SKIN_HOST || !user) {
-      throw new Error()
-    }
-    const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
-    if (!token) {
-      throw new Error()
-    }
-    await this.client.setCharacterTexture(options, token)
+    // const user = this.userService.state.user
+    // if (user?.authService !== LITTLE_SKIN_HOST || !user) {
+    //   throw new Error()
+    // }
+    // const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
+    // if (!token) {
+    //   throw new Error()
+    // }
+    // await this.client.setCharacterTexture(options, token)
   }
 
   async addCloset(options: AddClosetOptions) {
-    const user = this.userService.state.user
-    if (user?.authService !== LITTLE_SKIN_HOST || !user) {
-      throw new Error()
-    }
-    const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
-    if (!token) {
-      throw new Error()
-    }
-    await this.client.addCloset(options, token)
+    // const user = this.userService.state.user
+    // if (user?.authService !== LITTLE_SKIN_HOST || !user) {
+    //   throw new Error()
+    // }
+    // const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
+    // if (!token) {
+    //   throw new Error()
+    // }
+    // await this.client.addCloset(options, token)
   }
 
   async renameCloset(options: RenameClosetOptions) {
-    const user = this.userService.state.user
-    if (user?.authService !== LITTLE_SKIN_HOST || !user) {
-      throw new Error()
-    }
-    const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
-    if (!token) {
-      throw new Error()
-    }
-    await this.client.renameCloset(options, token)
+    // const user = this.userService.state.user
+    // if (user?.authService !== LITTLE_SKIN_HOST || !user) {
+    //   throw new Error()
+    // }
+    // const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
+    // if (!token) {
+    //   throw new Error()
+    // }
+    // await this.client.renameCloset(options, token)
   }
 
   async deleteCloset(tid: number) {
-    const user = this.userService.state.user
-    if (user?.authService !== LITTLE_SKIN_HOST || !user) {
-      throw new Error()
-    }
-    const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
-    if (!token) {
-      throw new Error()
-    }
-    await this.client.deleteCloset(tid, token)
+    // const user = this.userService.state.user
+    // if (user?.authService !== LITTLE_SKIN_HOST || !user) {
+    //   throw new Error()
+    // }
+    // const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
+    // if (!token) {
+    //   throw new Error()
+    // }
+    // await this.client.deleteCloset(tid, token)
   }
 
   async getCloset(options: GetClosetOptions) {
-    const user = this.userService.state.user
-    if (user?.authService !== LITTLE_SKIN_HOST || !user) {
-      throw new Error()
-    }
-    const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
-    if (!token) {
-      throw new Error()
-    }
-    return await this.client.getCloset(options, token)
+    // const user = this.userService.state.user
+    // if (user?.authService !== LITTLE_SKIN_HOST || !user) {
+    //   throw new Error()
+    // }
+    // const token = await this.cache.getToken(LITTLE_SKIN_HOST, user.username)
+    // if (!token) {
+    //   throw new Error()
+    // }
+    // return await this.client.getCloset(options, token)
   }
 
   async listSkins(): Promise<ListSkinResult> {

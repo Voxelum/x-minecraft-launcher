@@ -3,6 +3,7 @@ import { AuthenticationResult, LogLevel, PublicClientApplication } from '@azure/
 import { Dispatcher, request } from 'undici'
 import { createPlugin } from '../util/credentialPlugin'
 import { Logger } from '../util/log'
+import { SecretStorage } from '../app/SecretStorage'
 
 export class MicrosoftOAuthClient {
   constructor(
@@ -11,6 +12,7 @@ export class MicrosoftOAuthClient {
     private getCode: (url: string, signal?: AbortSignal) => Promise<string>,
     private getRedirectUrl: (preferLocalHost: boolean) => Promise<string>,
     private deviceCodeCallback: (deviceCodeResponse: DeviceCodeResponse) => void,
+    private storage: SecretStorage,
     private dispatcher?: Dispatcher,
   ) {
   }
@@ -23,7 +25,7 @@ export class MicrosoftOAuthClient {
         clientId: this.clientId,
       },
       cache: {
-        cachePlugin: createPlugin('xmcl', account, this.logger),
+        cachePlugin: createPlugin('xmcl', account, this.logger, this.storage),
       },
       system: {
         loggerOptions: {

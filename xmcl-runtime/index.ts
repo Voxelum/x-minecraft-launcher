@@ -1,5 +1,6 @@
 export * from './lib/app/LauncherApp'
 export * from './lib/app/LauncherAppController'
+export * from './lib/app/SecretStorage'
 export * from './lib/services/BaseService'
 export * from './lib/services/CurseForgeService'
 export * from './lib/services/DiagnoseService'
