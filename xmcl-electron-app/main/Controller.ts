@@ -62,6 +62,7 @@ export default class Controller implements LauncherAppController {
           width: 1024,
           height: 768,
           show: false,
+          frame: this.getFrameOption(),
 
           webPreferences: {
             contextIsolation: true,
@@ -356,13 +357,15 @@ export default class Controller implements LauncherAppController {
     const minWidth = man.minWidth ?? 800
     const minHeight = man.minHeight ?? 600
 
+    await this.app.serviceManager.get(BaseService).initialize()
+
     const browser = new BrowserWindow({
       title: man.name,
       width: config.width > 0 ? config.width : undefined,
       height: config.height > 0 ? config.height : undefined,
       minWidth: man.minWidth,
       minHeight: man.minHeight,
-      frame: true,
+      frame: this.getFrameOption(),
       backgroundColor: man.backgroundColor,
       vibrancy: man.vibrancy ? 'sidebar' : undefined, // or popover
       icon: nativeTheme.shouldUseDarkColors ? man.iconSets.darkIcon : man.iconSets.icon,
@@ -465,6 +468,14 @@ export default class Controller implements LauncherAppController {
         resolve({ path, instancePath, locale })
       })
     })
+  }
+
+  private getFrameOption() {
+    if (this.app.platform.name === 'linux') {
+      return this.app.serviceManager.get(BaseService).state.linuxTitlebar
+    } else {
+      return true
+    }
   }
 
   private getTitlebarStyle() {
