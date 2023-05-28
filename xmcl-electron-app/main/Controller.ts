@@ -254,9 +254,9 @@ export default class Controller implements LauncherAppController {
       try {
         url = new URL(request.url)
       } catch (e) {
-        if (request.url.startsWith('image://')) {
+        if (request.url.startsWith('image://') && !request.url.startsWith('image:///')) {
           url = new URL(request.url.replace('image://', 'image:///'))
-        } else if (request.url.startsWith('video://')) {
+        } else if (request.url.startsWith('video://') && !request.url.startsWith('video:///')) {
           url = new URL(request.url.replace('video://', 'video:///'))
         } else throw new Error()
       }
