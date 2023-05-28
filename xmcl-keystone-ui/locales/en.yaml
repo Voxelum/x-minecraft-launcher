@@ -1204,6 +1204,7 @@ shaderPack:
   name: Shader Pack
   'off': 'Off'
   offDescription: Turn off the shader
+  showDirectory: Show shader pack directory
   showFile: Show this shader pack in folder
 summery: Summery
 tag:

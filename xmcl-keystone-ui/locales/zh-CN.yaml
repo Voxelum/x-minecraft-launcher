@@ -1169,6 +1169,7 @@ shaderPack:
   name: 光影包
   'off': 无
   offDescription: 关闭 shader 引擎
+  showDirectory: 显示光影文件夹
   showFile: 在文件夹中显示此 shader pack
 summery: 简介
 tag:

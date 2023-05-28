@@ -8,7 +8,7 @@
     >
       <v-icon>folder</v-icon>
     </v-btn>
-    <v-btn
+    <!-- <v-btn
       v-shared-tooltip="t('instance.addMod')"
       icon
       large
@@ -17,7 +17,7 @@
       <v-icon>
         playlist_add
       </v-icon>
-    </v-btn>
+    </v-btn> -->
   </div>
 </template>
 <script lang="ts" setup>
