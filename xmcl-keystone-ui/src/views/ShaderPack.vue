@@ -1,33 +1,13 @@
 <template>
-  <div class="flex flex-col max-h-full h-full mx-5">
+  <div class="flex flex-col pb-4 mx-5">
     <v-progress-linear
       class="absolute top-0 z-10 m-0 p-0 left-0"
       :active="loading"
       height="3"
       :indeterminate="true"
     />
-    <!-- <v-toolbar-title class="headline text-bold">
-        {{ t('shaderPack.name', 2) }}
-      </v-toolbar-title> -->
-    <!-- <v-card
-      class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5"
-      outlined
-      elevation="1"
-    >
-      <FilterCombobox
-        class="max-w-150 mr-2"
-        :label="t('shaderPack.filter')"
-      />
-      <v-spacer />
-      <v-btn
-        icon
-        @click="showDirectory()"
-      >
-        <v-icon>folder</v-icon>
-      </v-btn>
-    </v-card> -->
     <div
-      class="flex overflow-auto h-full flex-col px-3"
+      class="flex h-full flex-col px-3"
       @dragover.prevent
     >
       <transition-group
@@ -67,18 +47,16 @@
 </template>
 
 <script lang="ts" setup>
+import { useFilterCombobox } from '@/composables'
+import { kInstanceContext } from '@/composables/instanceContext'
+import { usePresence } from '@/composables/presence'
 import { useRefreshable } from '@/composables/refreshable'
-import FilterCombobox from '@/components/FilterCombobox.vue'
-import { ShaderPackItem, useShaderpacks } from '../composables/shaderpack'
-import DeleteButton from './ShaderPackDeleteButton.vue'
-import ShaderPackCard from './ShaderPackCard.vue'
-import { useFilterCombobox, useService } from '@/composables'
+import { injection } from '@/util/inject'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
-import { usePresence } from '@/composables/presence'
-import { InstanceServiceKey } from '@xmcl/runtime-api'
-import { injection } from '@/util/inject'
-import { kInstanceContext } from '@/composables/instanceContext'
+import { ShaderPackItem, useShaderpacks } from '../composables/shaderpack'
+import ShaderPackCard from './ShaderPackCard.vue'
+import DeleteButton from './ShaderPackDeleteButton.vue'
 
 const { shaderPacks, selectedShaderPack, removeShaderPack, showDirectory, loading } = useShaderpacks()
 const draggingPack = ref(undefined as undefined | ShaderPackItem)

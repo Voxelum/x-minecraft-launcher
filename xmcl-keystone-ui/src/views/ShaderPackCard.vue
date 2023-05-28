@@ -64,9 +64,8 @@
     </div>
     <div class="self-center flex-shrink pr-2">
       <v-switch
+        v-model="enabled"
         readonly
-        :value="pack.enabled"
-        @input="emit('enable', $event)"
       />
     </div>
   </v-card>
@@ -93,6 +92,11 @@ const { showItemInDirectory } = useService(BaseServiceKey)
 const builtin = computed(() => props.pack.value === 'OFF' || props.pack.value === '(internal)')
 const { createTag, editTag, removeTag: onRemoveTag } = useTags(computed({ get() { return props.pack.tags }, set(v) { emit('tags', v) } }))
 const { cardColor } = injection(kColorTheme)
+const enabled = computed({
+  get() { return props.pack.enabled },
+  set(v: boolean) { emit('enable', !props.pack.enabled) },
+})
+
 const contextMenuItems = computed(() => {
   if (builtin.value) {
     return []

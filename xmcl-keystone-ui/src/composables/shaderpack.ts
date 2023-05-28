@@ -77,12 +77,17 @@ export function useShaderpacks() {
     }
   }
 
+  function update(res: Resource[]) {
+    const items = res.filter(r => !r.path.endsWith('.txt')).map(getShaderPackItemFromResource)
+    shaderPacks.value = getBuiltinItems().concat(items)
+  }
+
   watch(shaderPacksResources, (res) => {
-    shaderPacks.value = getBuiltinItems().concat(res.map(getShaderPackItemFromResource))
+    update(res)
   })
 
   onMounted(() => {
-    shaderPacks.value = getBuiltinItems().concat(shaderPacksResources.value.map(getShaderPackItemFromResource))
+    update(shaderPacksResources.value)
   })
 
   onUnmounted(() => {
