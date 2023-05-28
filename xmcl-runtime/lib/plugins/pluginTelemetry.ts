@@ -7,6 +7,8 @@ import { kTelemtrySession, APP_INSIGHT_KEY } from '../entities/telemetry'
 import { LaunchService } from '../services/LaunchService'
 import { UserService } from '../services/UserService'
 import { BaseService } from '../services/BaseService'
+import { ResourceService } from '../services/ResourceService'
+import { Resource } from '@xmcl/runtime-api'
 
 export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   if (IS_DEV) {
@@ -111,6 +113,30 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
         severity: appInsight.Contracts.SeverityLevel.Warning,
         tagOverrides: {
           [contract.operationParentId]: tag,
+        },
+      })
+    })
+
+    app.serviceManager.get(ResourceService).on('resourceAdd', (res: Resource) => {
+      if (baseService.state.disableTelemetry) return
+      appInsight.defaultClient.trackEvent({
+        name: 'resource-metadata',
+        properties: {
+          fileName: res.fileName,
+          domain: res.domain,
+          sha1: res.hash,
+          metadata: res.metadata,
+        },
+      })
+    }).on('resourceUpdate', (res: Resource) => {
+      if (baseService.state.disableTelemetry) return
+      appInsight.defaultClient.trackEvent({
+        name: 'resource-metadata',
+        properties: {
+          fileName: res.fileName,
+          domain: res.domain,
+          sha1: res.hash,
+          metadata: res.metadata,
         },
       })
     })
