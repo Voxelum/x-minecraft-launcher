@@ -39,7 +39,8 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   const tags = appInsight.defaultClient.context.tags
   tags[contract.sessionId] = sessionId
   tags[contract.userId] = sessionId
-  tags[contract.applicationVersion] = `${app.version}#${app.build}`
+  tags[contract.applicationVersion] = IS_DEV ? '0.0.0' : `${app.version}#${app.build}`
+  tags[contract.operationParentId] = 'root'
 
   app.on('engine-ready', () => {
     const baseService = app.serviceManager.get(BaseService)
@@ -82,6 +83,37 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
           })
         }
       })
+
+    app.logManager.logBus.on('log', (tag, message) => {
+      if (baseService.state.disableTelemetry) return
+      appInsight.defaultClient.trackTrace({
+        message,
+        severity: appInsight.Contracts.SeverityLevel.Information,
+        tagOverrides: {
+          [contract.operationParentId]: tag,
+        },
+      })
+    })
+    app.logManager.logBus.on('error', (tag, message) => {
+      if (baseService.state.disableTelemetry) return
+      appInsight.defaultClient.trackTrace({
+        message,
+        severity: appInsight.Contracts.SeverityLevel.Error,
+        tagOverrides: {
+          [contract.operationParentId]: tag,
+        },
+      })
+    })
+    app.logManager.logBus.on('warn', (tag, message) => {
+      if (baseService.state.disableTelemetry) return
+      appInsight.defaultClient.trackTrace({
+        message,
+        severity: appInsight.Contracts.SeverityLevel.Warning,
+        tagOverrides: {
+          [contract.operationParentId]: tag,
+        },
+      })
+    })
 
     app.serviceManager.get(UserService).on('user-login', (authService) => {
       if (baseService.state.disableTelemetry) return

@@ -3,14 +3,14 @@ import { createWriteStream, WriteStream } from 'fs'
 import { ensureDir } from 'fs-extra/esm'
 import { readFile } from 'fs/promises'
 import { basename, join, resolve } from 'path'
-import { PassThrough, pipeline, Transform } from 'stream'
+import { EventEmitter, PassThrough, pipeline, Transform } from 'stream'
 import { format } from 'util'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
 import { IS_DEV } from '../constant'
+import { filterSensitiveData } from '../util/complaince'
 import { Logger } from '../util/log'
 import { ZipTask } from '../util/zip'
-import { filterSensitiveData } from '../util/complaince'
 
 function formatMsg(message: any, options: any[]) { return options.length !== 0 ? format(message, ...options.map(filterSensitiveData)) : format(message) }
 function baseTransform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}`) } }) }
@@ -25,6 +25,8 @@ export default class LogManager extends Manager {
   private openedStream: { [name: string]: WriteStream } = {}
 
   private hasError = false
+
+  readonly logBus = new EventEmitter()
 
   constructor(app: LauncherApp) {
     super(app)
@@ -76,17 +78,20 @@ export default class LogManager extends Manager {
   }
 
   getLogger(tag: string): Logger {
-    const { loggerEntries } = this
+    const { loggerEntries, logBus } = this
     return {
       log(message: any, ...options: any[]) {
+        logBus.emit('log', tag, formatMsg(message, options))
         loggerEntries.log.write(`[${tag}] ${formatMsg(message, options)}`)
       },
       warn(message: any, ...options: any[]) {
         if (message instanceof Error) { message = message.stack }
+        logBus.emit('warn', tag, formatMsg(message, options))
         loggerEntries.warn.write(`[${tag}] ${formatMsg(message, options)}`)
       },
       error(message: any, ...options: any[]) {
         if (message instanceof Error) { message = message.stack }
+        logBus.emit('error', tag, formatMsg(message, options))
         loggerEntries.error.write(`[${tag}] ${formatMsg(message, options)}`)
       },
     }
