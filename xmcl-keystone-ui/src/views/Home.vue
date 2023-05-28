@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="containerRef"
     class="flex flex-col home-page flex-1 max-h-full relative visible-scroll"
     :style="{ overflow: 'overlay' }"
     @wheel="onScroll"
@@ -53,6 +54,9 @@ const router = useRouter()
 
 router.afterEach((r) => {
   document.title = `XMCL KeyStone - ${r.fullPath}`
+  if (containerRef.value) {
+    containerRef.value.scrollTop = 0
+  }
 })
 
 const context = useInstanceContext()
@@ -62,7 +66,7 @@ provide(kInstallList, useInstallList())
 
 const instance = context.instance
 const { refresh } = useInstanceServerStatus(instance.value.path)
-const isFocusMode = useInFocusMode()
+const containerRef = ref(null as null | HTMLDivElement)
 
 onMounted(() => {
   if (context.isServer.value) {
