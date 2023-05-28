@@ -25,6 +25,12 @@ const builtin: Record<string, string> = {
  * 3. common `image:` with absolute file path
  */
 export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
+  const normalizePath = (path: string) => {
+    if (app.platform.name === 'windows') {
+      return decodeURIComponent(path.startsWith('/') ? path.substring(1) : path)
+    }
+    return decodeURIComponent(path.startsWith('//') ? path.substring(1) : path)
+  }
   app.protocol.registerHandler('image', async ({ request, response }) => {
     if (request.url.host === 'builtin') {
       // Builtin image
@@ -45,7 +51,7 @@ export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
       }
     } else if (!request.url.host) {
       // Absolute image path
-      const pathname = decodeURIComponent(request.url.pathname.substring(1))
+      const pathname = normalizePath(request.url.pathname)
       const { fromFile } = await import('file-type')
       await fromFile(pathname).then((type) => {
         if (type && type.mime.startsWith('image/')) {
@@ -62,7 +68,7 @@ export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
   })
   app.protocol.registerHandler('video', async ({ request, response }) => {
     // Absolute video path
-    const pathname = decodeURIComponent(request.url.pathname.substring(1))
+    const pathname = normalizePath(request.url.pathname)
     const { fromFile } = await import('file-type')
     await fromFile(pathname).then((type) => {
       if (type && type.mime.startsWith('video/')) {
