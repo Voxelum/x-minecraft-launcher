@@ -1,8 +1,9 @@
 import { UserProfile, UserSchema } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
-import { readFile } from 'fs/promises'
+import { existsSync } from 'fs'
+import { readFile, writeFile } from 'fs/promises'
+import { join } from 'path'
 import { LauncherProfile } from '../entities/launchProfile'
-import { loadYggdrasilApiProfile } from '../entities/user'
 import { UserTokenStorage } from '../entities/userTokenStore'
 
 /**
@@ -76,4 +77,22 @@ function fillData(output: UserSchema, input: UserSchema, launchProfile: Launcher
       }
     }
   }
+}
+
+export async function ensureLauncherProfile(dir: string) {
+  const profilePath = join(dir, 'launcher_profiles.json')
+  if (existsSync(profilePath)) {
+    return
+  }
+
+  const profile: LauncherProfile = {
+    clientToken: '',
+    profiles: {},
+    selectedUser: {} as any,
+    authenticationDatabase: {},
+    settings: {},
+  }
+
+  // Create empty profile for install
+  await writeFile(profilePath, JSON.stringify(profile, undefined, 2))
 }

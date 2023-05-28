@@ -19,7 +19,7 @@ import { kUserTokenStorage, UserTokenStorage } from '../entities/userTokenStore'
 import { requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
-import { preprocessUserData } from '../util/userData'
+import { ensureLauncherProfile, preprocessUserData } from '../util/userData'
 import { ExposeServiceKey, Lock, Singleton, StatefulService } from './Service'
 
 @ExposeServiceKey(UserServiceKey)
@@ -47,7 +47,9 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       }
 
       // This will fill the user data
-      await preprocessUserData(userData, data, this.getMinecraftPath('launcher_profile.json'), tokenStorage)
+      await preprocessUserData(userData, data, this.getMinecraftPath('launcher_profiles.json'), tokenStorage)
+      // Ensure the launcher profile
+      await ensureLauncherProfile(this.getPath())
 
       this.log(`Load ${Object.keys(userData.users).length} users`)
 
@@ -62,12 +64,12 @@ export class UserService extends StatefulService<UserState> implements IUserServ
           loadYggdrasilApiProfile('https://authserver.ely.by/api/authlib-injector').then(api => {
             this.state.userYggdrasilServicePut(api)
           })]).then(() => {
-          this.refreshUser()
-          if (this.state.selectedUser.id === '' && Object.keys(this.state.users).length > 0) {
-            const [userId, user] = Object.entries(this.state.users)[0]
-            this.selectUser(userId)
-          }
-        })
+            this.refreshUser()
+            if (this.state.selectedUser.id === '' && Object.keys(this.state.users).length > 0) {
+              const [userId, user] = Object.entries(this.state.users)[0]
+              this.selectUser(userId)
+            }
+          })
       } else {
         this.refreshUser()
         if (this.state.selectedUser.id === '' && Object.keys(this.state.users).length > 0) {
