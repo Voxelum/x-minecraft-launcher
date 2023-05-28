@@ -32,7 +32,7 @@ export class InstanceScreenshotService extends AbstractService implements IInsta
     const fileUrl = url.replace('image://', 'file://')
     const path = fileURLToPath(fileUrl)
 
-    if (execSync(path)) {
+    if (existsSync(path)) {
       this.app.shell.showItemInFolder(path)
     }
   }
