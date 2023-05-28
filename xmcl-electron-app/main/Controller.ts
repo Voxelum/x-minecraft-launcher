@@ -46,7 +46,7 @@ export default class Controller implements LauncherAppController {
   protected sharedSession: Session | undefined
 
   private windowOpenHandler: Parameters<WebContents['setWindowOpenHandler']>[0] = (detail: HandlerDetails) => {
-    if (detail.frameName === 'browser') {
+    if (detail.frameName === 'browser' || detail.disposition === 'background-tab') {
       shell.openExternal(detail.url)
     } else if (detail.frameName === '' || detail.frameName === 'app') {
       const man = this.activatedManifest!
