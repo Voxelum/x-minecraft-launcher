@@ -51,10 +51,10 @@ export function useAllTemplate(data: InstanceData) {
     }
     const all = [] as Array<Template>
     all.push(...resources.value.map((modpack) => {
-      if (isCurseforgeModpackResource(modpack)) {
-        return getCurseforgeTemplate(modpack)
-      } else if (isMcbbsModpackResource(modpack)) {
+      if (isMcbbsModpackResource(modpack)) {
         return getMcbbsTemplate(modpack)
+      } else if (isCurseforgeModpackResource(modpack)) {
+        return getCurseforgeTemplate(modpack)
       } else if (isModrinthModpackResource(modpack)) {
         return getModrinthTemplate(modpack)
       } else if (isRawModpackResource(modpack)) {
@@ -62,8 +62,6 @@ export function useAllTemplate(data: InstanceData) {
       }
       return undefined
     }).filter((v): v is Template => !!v))
-    // const ftb = await getAllCachedModpackVersions()
-    // all.push(...ftb.filter(f => f.name && f.targets).map(getFtbTemplate))
 
     for (const c of peerState.connections) {
       if (c.sharing) {
