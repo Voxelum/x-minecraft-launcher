@@ -41,7 +41,7 @@ defineProps<{ value: string }>()
 const emit = defineEmits(['input'])
 
 const { t } = useI18n()
-const locales = Object.entries(localMapping).forEach(([key, value]) => ({
+const locales = Object.entries(localMapping).map(([key, value]) => ({
   text: value,
   value: key,
 }))

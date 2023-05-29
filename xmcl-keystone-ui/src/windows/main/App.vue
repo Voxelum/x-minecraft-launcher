@@ -45,7 +45,10 @@
     :class="{ 'dark': vuetify.theme.dark }"
     :style="cssVars"
   >
-    <AppSystemBar />
+    <AppSystemBar
+      no-user
+      no-task
+    />
     <div
       class="flex h-full overflow-auto relative"
     >

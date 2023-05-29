@@ -121,7 +121,7 @@
   </v-card>
   <v-card
     v-else
-    style="height: 100%"
+    class="w-full h-full"
   >
     <v-container fill-height>
       <v-layout
