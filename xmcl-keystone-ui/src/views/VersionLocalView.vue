@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="visible-scroll h-full">
     <v-list
       v-if="versions.length !== 0"
-      class="local-version-list overflow-auto h-full flex flex-col visible-scroll"
+      class="local-version-list overflow-auto h-full flex flex-col"
       style="background: transparent"
     >
       <v-list-item class="flex justify-end">
