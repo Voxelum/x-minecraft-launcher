@@ -83,7 +83,7 @@ jobs:
       - name: Update version env
         run: |
           cat ./version
-          echo "VERSION=$(cat ./version)" >> $GITHUB_ENV
+          echo "VERSION=$(cat ./version)" >> "$GITHUB_ENV"
       - name: Create winget PR
         run: |
           iwr https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
