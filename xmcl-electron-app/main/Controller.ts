@@ -357,7 +357,9 @@ export default class Controller implements LauncherAppController {
     const minWidth = man.minWidth ?? 800
     const minHeight = man.minHeight ?? 600
 
-    await this.app.serviceManager.get(BaseService).initialize()
+    if (this.app.platform.name === 'linux') {
+      await this.app.serviceManager.get(BaseService).initialize()
+    }
 
     const browser = new BrowserWindow({
       title: man.name,
