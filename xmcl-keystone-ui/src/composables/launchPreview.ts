@@ -1,17 +1,25 @@
+import { useRefreshable, useService } from '@/composables'
 import { LaunchServiceKey } from '@xmcl/runtime-api'
-import { useService } from '@/composables'
+import { useLaunchOption } from './launch'
 
 export function useLaunchPreview() {
   const { generateArguments } = useService(LaunchServiceKey)
+  const { generateLaunchOptions } = useLaunchOption()
   const data = reactive({
     preview: [] as string[],
   })
   const wrapIfSpace = (s: string) => (s.indexOf(' ') !== -1 ? `"${s}"` : s)
-  const refresh = () => generateArguments().then((args) => { data.preview = args })
+  const { refresh, refreshing, error } = useRefreshable(async () => {
+    const options = await generateLaunchOptions()
+    const args = await generateArguments(options)
+    data.preview = args
+  })
   const command = computed(() => data.preview.map(wrapIfSpace).join(' '))
   return {
     command,
     ...toRefs(data),
+    refreshing,
+    error,
     refresh,
   }
 }

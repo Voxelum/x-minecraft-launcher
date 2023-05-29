@@ -1,7 +1,7 @@
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
-import { ImportServiceKey, isPersistedResource, Resource, ResourceDomain, ResourceServiceKey, UserServiceKey } from '@xmcl/runtime-api'
+import { ImportServiceKey, isPersistedResource, Resource, ResourceDomain, ResourceServiceKey, UserServiceKey, YggdrasilServiceKey } from '@xmcl/runtime-api'
 import { kDropHandler } from './dropHandler'
 import { useService } from './service'
 
@@ -85,7 +85,7 @@ export function useAppDropHandler() {
     if (previews.value.length === 0) cancel()
   })
   const { resolveResources } = useService(ResourceServiceKey)
-  const { addYggdrasilAccountSystem } = useService(UserServiceKey)
+  const { addYggdrasilService } = useService(YggdrasilServiceKey)
   const { previewUrl, importFile } = useService(ImportServiceKey)
 
   const iconMap: Record<string, string> = {
@@ -176,7 +176,7 @@ export function useAppDropHandler() {
         })
         promises.push(promise)
       } else if (preview.type === 'Yggdrasil') {
-        addYggdrasilAccountSystem(preview.id).then(() => {
+        addYggdrasilService(preview.id).then(() => {
           preview.status = 'saved'
         }, (e) => {
           console.log(e)

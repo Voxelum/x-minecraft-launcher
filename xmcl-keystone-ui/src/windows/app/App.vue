@@ -1,6 +1,6 @@
 <template>
   <v-app
-    class="overflow-auto h-full overflow-x-hidden max-h-[100vh]"
+    class="h-full max-h-[100vh] overflow-auto overflow-x-hidden"
     :class="{ 'dark': vuetify.theme.dark }"
     :style="cssVars"
   >
@@ -38,10 +38,10 @@
       </span>
     </AppSystemBar>
     <div
-      class="flex h-full overflow-auto relative"
+      class="relative flex h-full overflow-auto"
     >
       <main
-        class="flex flex-col top-0 bottom-0 right-0 overflow-auto max-h-full relative"
+        class="relative inset-y-0 right-0 flex max-h-full flex-col overflow-auto"
         :class="{ solid: !blurMainBody }"
       >
         <transition
@@ -54,49 +54,36 @@
     </div>
     <AppContextMenu />
     <AppNotifier />
-    <ImageDialog />
-    <SharedTooltip />
+    <AppImageDialog />
+    <AppSharedTooltip />
   </v-app>
 </template>
 
 <script lang=ts setup>
 import '@/assets/common.css'
-import ImageDialog from '@/components/ImageDialog.vue'
-import SharedTooltip from '@/components/SharedTooltip.vue'
-import { useExternalRoute, useI18nSync, useThemeSync } from '@/composables'
+import AppImageDialog from '@/components/AppImageDialog.vue'
+import AppSharedTooltip from '@/components/AppSharedTooltip.vue'
+import { useExternalRoute } from '@/composables'
 import { useBackground } from '@/composables/background'
-import { kColorTheme, useColorTheme } from '@/composables/colorTheme'
+import { kColorTheme } from '@/composables/colorTheme'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
-import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
+import { useNotifier } from '@/composables/notifier'
 import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
 import AppContextMenu from '@/views/AppContextMenu.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
-import AppTaskDialog from '@/views/AppTaskDialog.vue'
-import { useAllServices } from './services'
-import { kSWRVConfig, useSWRVConfig } from '@/composables/swrvConfig'
 
-const colorTheme = useColorTheme()
-const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = colorTheme
+const { cssVars } = injection(kColorTheme)
 const { blurMainBody } = useBackground()
-provide(kColorTheme, colorTheme)
-
-const cssVars = computed(() => ({
-  '--primary': primaryColor.value,
-  'background-color': backgroundColor.value,
-}))
 
 const vuetify = injection(kVuetify)
 
-useAllServices()
-useDefaultErrorHandler()
-useI18nSync()
-useThemeSync()
-useExternalRoute()
-provide(kImageDialog, useImageDialog())
+const { notify } = useNotifier()
+useDefaultErrorHandler(notify)
+
 const router = useRouter()
-provide(kSWRVConfig, useSWRVConfig())
+useExternalRoute(router)
 
 </script>
 

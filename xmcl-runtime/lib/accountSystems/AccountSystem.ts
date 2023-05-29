@@ -1,7 +1,6 @@
 import { LoginOptions, UserProfile, GameProfileAndTexture, SkinPayload } from '@xmcl/runtime-api'
 
 export interface UserAccountSystem {
-  getYggdrasilAuthHost?(service?: string): string | undefined
   /**
    * User login
    */

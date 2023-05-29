@@ -11,6 +11,8 @@ import install, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 import { autoUpdater } from 'electron-updater'
 import './index'
 
+console.log(`Process id=${process.pid}`)
+
 app.on('browser-window-created', (event, w) => {
   w.webContents.openDevTools({ mode: 'detach' })
 })

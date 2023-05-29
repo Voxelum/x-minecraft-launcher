@@ -57,8 +57,11 @@ import { BlockModel } from '@xmcl/resourcepack'
 import Displayer from './ResourcePackPreviewDisplayer.vue'
 import PreviewItem from './ResourcePackPreviewItem.vue'
 import { useBlockModelPreview, useBlockStateModels } from '../composables/useBlockModelPreview'
+import { injection } from '@/util/inject'
+import { kInstanceVersion } from '@/composables/instanceVersion'
 
 const text = ref('')
+const { minecraft } = injection(kInstanceVersion)
 const { listBlockStates, loadModel } = useBlockModelPreview()
 const loading = ref(true)
 let current: any
@@ -69,7 +72,7 @@ const data = reactive({
 const block: Ref<BlockStateJson | undefined> = ref(undefined)
 const { selects, selected } = useBlockStateModels(block)
 loading.value = true
-listBlockStates().then((json) => {
+listBlockStates(minecraft.value).then((json) => {
   data.models = json.map(j => Object.freeze({
     ...j,
     onClick() {

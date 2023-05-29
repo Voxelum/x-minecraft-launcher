@@ -1,12 +1,10 @@
 import { HTTPException } from '@xmcl/runtime-api'
 import { useDialog } from './dialog'
-import { useNotifier } from './notifier'
-
+import { Notify } from './notifier'
 import { useExceptionHandler } from '@/composables/exception'
 
-export function useDefaultErrorHandler() {
+export function useDefaultErrorHandler(notify: Notify) {
   const { t } = useI18n()
-  const { notify } = useNotifier()
   const { show } = useDialog('feedback')
   useExceptionHandler(HTTPException, (e) => {
     notify({

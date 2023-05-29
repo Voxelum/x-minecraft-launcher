@@ -1,6 +1,6 @@
 import { URL } from 'url'
 
-export const isValidateUrl = (url: string) => {
+export const isValidUrl = (url: string) => {
   try {
     // eslint-disable-next-line no-new
     return new URL(url)

@@ -1,16 +1,15 @@
-import { GetManifestOptions, InstanceFile, InstanceManifest, InstanceManifestService as IInstanceManifestService, InstanceManifestServiceKey, Resource, ResourceDomain } from '@xmcl/runtime-api'
+import { GetManifestOptions, InstanceManifestService as IInstanceManifestService, InstanceFile, InstanceManifest, InstanceManifestServiceKey, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { stat } from 'fs/promises'
 import { join, relative } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
+import { ResourceWorker, kResourceWorker } from '../entities/resourceWorker'
 import { readdirIfPresent } from '../util/fs'
 import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { CurseForgeService } from './CurseForgeService'
 import { ResolveInstanceFileTask } from './InstanceInstallService'
-import { InstanceService } from './InstanceService'
 import { ModrinthService } from './ModrinthService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Singleton } from './Service'
@@ -18,7 +17,6 @@ import { AbstractService, ExposeServiceKey, Singleton } from './Service'
 @ExposeServiceKey(InstanceManifestServiceKey)
 export class InstanceManifestService extends AbstractService implements IInstanceManifestService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(CurseForgeService) private curseforgeService: CurseForgeService,
@@ -28,12 +26,12 @@ export class InstanceManifestService extends AbstractService implements IInstanc
   }
 
   @Singleton(p => JSON.stringify(p))
-  async getInstanceManifest(options?: GetManifestOptions): Promise<InstanceManifest> {
+  async getInstanceManifest(options: GetManifestOptions): Promise<InstanceManifest> {
     // Ensure the resource service is initialized...
     await this.resourceService.initialize()
-    const instancePath = options?.path || this.instanceService.state.path
+    const instancePath = options?.path
 
-    const instance = this.instanceService.state.all[instancePath]
+    // const instance = this.instanceService.state.all[instancePath]
 
     const resolveHashes = async (file: string, sha1?: string) => {
       const result: Record<string, string> = {}
@@ -54,10 +52,10 @@ export class InstanceManifestService extends AbstractService implements IInstanc
       return result as any
     }
 
-    if (!instance) {
-      throw new Error('Instance not found')
-      // throw new InstanceIOException({ instancePath, type: 'instanceNotFound' })
-    }
+    // if (!instance) {
+    //   throw new Error('Instance not found')
+    //   // throw new InstanceIOException({ instancePath, type: 'instanceNotFound' })
+    // }
 
     const files = [] as Array<InstanceFile>
     const undecorated = [] as Array<InstanceFile>
@@ -167,13 +165,13 @@ export class InstanceManifestService extends AbstractService implements IInstanc
 
     return {
       files,
-      name: instance.name,
-      description: instance.description,
-      mcOptions: instance.mcOptions,
-      vmOptions: instance.vmOptions,
-      runtime: instance.runtime,
-      maxMemory: instance.maxMemory,
-      minMemory: instance.minMemory,
+      name: '', // instance.name,
+      description: '', // instance.description,
+      mcOptions: [], // instance.mcOptions,
+      vmOptions: [], // instance.vmOptions,
+      runtime: {} as any, // instance.runtime,
+      maxMemory: 0, // instance.maxMemory,
+      minMemory: 0, // instance.minMemory,
     }
   }
 }

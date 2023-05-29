@@ -1,5 +1,5 @@
 import { Frame, parse } from '@xmcl/gamesetting'
-import { EditGameSettingOptions, EditShaderOptions, InstanceOptionsService as IInstanceOptionsService, InstanceOptionException, InstanceOptionsServiceKey, InstanceOptionsState, ResourceDomain, compareRelease, compareSnapshot, isCompatible, isReleaseVersion, isSnapshotPreview, packFormatVersionRange, parseShaderOptions, stringifyShaderOptions } from '@xmcl/runtime-api'
+import { EditGameSettingOptions, EditShaderOptions, GameOptionsState, InstanceOptionsService as IInstanceOptionsService, InstanceOptionException, InstanceOptionsServiceKey, ResourceDomain, compareRelease, compareSnapshot, getInstanceGameOptionKey, isCompatible, isReleaseVersion, isSnapshotPreview, packFormatVersionRange, parseShaderOptions, stringifyShaderOptions } from '@xmcl/runtime-api'
 import { readFile, writeFile } from 'fs/promises'
 import watch from 'node-watch'
 import { basename, join, relative } from 'path'
@@ -9,7 +9,6 @@ import { isSystemError } from '../util/error'
 import { missing } from '../util/fs'
 import { requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
-import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey } from './Service'
 
@@ -19,14 +18,14 @@ import { AbstractService, ExposeServiceKey } from './Service'
 @ExposeServiceKey(InstanceOptionsServiceKey)
 export class InstanceOptionsService extends AbstractService implements IInstanceOptionsService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(InstanceService) private instanceService: InstanceService,
-    @Inject(ResourceService) private resourceService: ResourceService,
+    @Inject(ResourceService) resourceService: ResourceService,
   ) {
     super(app)
     resourceService.registerInstaller(ResourceDomain.ResourcePacks, async (resource, instancePath) => {
       await this.editGameSetting({
         instancePath,
-        addResourcePack: [relative(resource.path, instancePath)],
+        // TODO: implement this
+        // addResourcePack: [relative(resource.path, instancePath)],
       })
     })
 
@@ -38,51 +37,52 @@ export class InstanceOptionsService extends AbstractService implements IInstance
     })
   }
 
-  async watchOptions(path: string) {
+  async watch(path: string) {
     requireString(path)
-    const state = this.storeManager.register('InstaneOptions/' + path, new InstanceOptionsState())
 
-    const loadShaderOptions = async (path: string) => {
-      try {
-        const result = await this.getShaderOptions(path)
-        state.instanceShaderOptions(result)
-      } catch (e) {
-        if (isSystemError(e)) {
-          this.warn(`An error ocurred during load shader options of ${path}.`)
-          this.warn(e)
+    return this.storeManager.registerOrGet(getInstanceGameOptionKey(path), async () => {
+      const state = new GameOptionsState()
+
+      const loadShaderOptions = async (path: string) => {
+        try {
+          const result = await this.getShaderOptions(path)
+          state.shaderPack = result.shaderPack
+        } catch (e) {
+          if (isSystemError(e)) {
+            this.warn(`An error ocurred during load shader options of ${path}.`)
+            this.warn(e)
+          }
         }
-        state.instanceShaderOptions({ shaderPack: '' })
       }
-    }
 
-    const loadOptionsTxt = async (path: string) => {
-      try {
-        const result = await this.getGameOptions(path)
-        state.instanceGameSettingsLoad(result)
-      } catch (e) {
-        if (isSystemError(e)) {
-          this.warn(`An error ocurred during parse game options of ${path}.`)
-          this.warn(e)
+      const loadOptions = async (path: string) => {
+        try {
+          const result = await this.getGameOptions(path)
+          Object.assign(state, result)
+        } catch (e) {
+          if (isSystemError(e)) {
+            this.warn(`An error ocurred during parse game options of ${path}.`)
+            this.warn(e)
+          }
         }
-        state.instanceGameSettingsLoad({ resourcePacks: [] })
       }
-    }
 
-    this.log(`Start to watch instance options.txt in ${path}`)
+      this.log(`Start to watch instance options.txt in ${path}`)
 
-    const watcher = watch(path, (event, file) => {
-      if (basename(file) === ('options.txt')) {
-        loadOptionsTxt(path)
-      }
-      if (basename(file) === ('optionsshaders.txt')) {
-        loadShaderOptions(path)
-      }
+      const watcher = watch(path, (event, file) => {
+        if (basename(file) === ('options.txt')) {
+          loadOptions(path)
+        } else if (basename(file) === ('optionsshaders.txt')) {
+          loadShaderOptions(path)
+        }
+      })
+
+      await Promise.all([loadOptions(path), loadShaderOptions(path)])
+
+      return [state, () => {
+        watcher.close()
+      }]
     })
-
-    await loadOptionsTxt(path)
-    await loadShaderOptions(path)
-
-    return state
   }
 
   /**
@@ -110,10 +110,10 @@ export class InstanceOptionsService extends AbstractService implements IInstance
 
   async editShaderOptions(options: EditShaderOptions): Promise<void> {
     const instancePath = options.instancePath
-    const instance = this.instanceService.state.all[instancePath]
-    if (!instance) {
-      throw new InstanceOptionException({ type: 'instanceNotFound', instancePath: options.instancePath! })
-    }
+    // const instance = this.instanceService.state.all[instancePath]
+    // if (!instance) {
+    //   throw new InstanceOptionException({ type: 'instanceNotFound', instancePath: options.instancePath! })
+    // }
     const current = await this.getShaderOptions(instancePath)
 
     current.shaderPack = options.shaderPack
@@ -124,63 +124,25 @@ export class InstanceOptionsService extends AbstractService implements IInstance
 
   async editGameSetting(options: EditGameSettingOptions) {
     const instancePath = options.instancePath
-    const instance = this.instanceService.state.all[instancePath]
-    if (!instance) {
-      throw new InstanceOptionException({ type: 'instanceNotFound', instancePath: options.instancePath! })
-    }
     const current = await this.getGameOptions(instancePath)
 
     const diff: Frame = {}
-    for (const key of Object.keys(options)) {
-      if (key === 'instancePath') continue
-      if (key === 'resourcePacks') continue
-      if (key in current && (current as any)[key] !== (options as any)[key]) {
+    if (Object.keys(current).length !== 0) {
+      for (const key of Object.keys(options)) {
+        if (key === 'instancePath') continue
+        if (key in current && (current as any)[key] !== (options as any)[key]) {
+          (diff as any)[key] = (options as any)[key]
+        }
+      }
+    } else {
+      for (const key of Object.keys(options)) {
+        if (key === 'instancePath') continue
         (diff as any)[key] = (options as any)[key]
       }
     }
-    // resourcePacks:["vanilla","file/§lDefault§r..§l3D§r..Low§0§o.zip"]
-    if (options.resourcePacks) {
-      const mcversion = instance.runtime.minecraft
-      let resourcePacks: string[]
-      if ((isReleaseVersion(mcversion) && compareRelease(mcversion, '1.13.0') >= 0) ||
-        (isSnapshotPreview(mcversion) && compareSnapshot(mcversion, '17w43a') >= 0)) {
-        resourcePacks = options.resourcePacks
-          .map(r => (r !== 'vanilla' && !r.startsWith('file/') ? `file/${r}` : r))
-        if (resourcePacks.every((p) => p !== 'vanilla')) {
-          resourcePacks.unshift('vanilla')
-        }
-      } else {
-        resourcePacks = options.resourcePacks.filter(r => r !== 'vanilla')
-          .map(r => (r.startsWith('file/') ? r.substring(5) : r))
-      }
-      if (diff.resourcePacks?.length !== resourcePacks.length || diff.resourcePacks?.some((p, i) => p !== resourcePacks[i])) {
-        diff.resourcePacks = resourcePacks
-      }
+    if (diff.lang) {
+      diff.lang = diff.lang.toLowerCase().replace('-', '_')
     }
-
-    if (diff.resourcePacks) {
-      const incompatibleResourcePacks = [] as string[]
-      for (const path of diff.resourcePacks) {
-        if (path === 'vanilla') {
-          continue
-        }
-        const resourceName = path.startsWith('file/') ? path.substring('file/'.length) : path
-        const resource = await this.resourceService.getResourceUnder({ domain: ResourceDomain.ResourcePacks, fileName: resourceName })
-        if (resource && resource.metadata.resourcepack?.pack_format) {
-          const format = resource.metadata.resourcepack.pack_format
-          const versionRange = packFormatVersionRange[format]
-          if (versionRange) {
-            if (!isCompatible(versionRange, instance.runtime.minecraft)) {
-              incompatibleResourcePacks.push(path)
-            } else {
-              continue
-            }
-          }
-        }
-        incompatibleResourcePacks.push(path)
-      }
-    }
-
     if (Object.keys(diff).length > 0) {
       this.log(`Edit gamesetting: ${JSON.stringify(diff, null, 4)} to ${instancePath}`)
       const optionsTxtPath = join(instancePath, 'options.txt')

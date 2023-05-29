@@ -76,16 +76,18 @@
 </template>
 
 <script lang=ts setup>
-import { useInstances } from '@/composables/instance'
+import { kInstances } from '@/composables/instances'
 import { useMojangNews } from '@/composables/mojangNews'
 import { useScrollRight } from '@/composables/scroll'
-import { getAgoOrDate, getLocalDateString } from '@/util/date'
+import { getAgoOrDate } from '@/util/date'
 import { getInstanceIcon } from '@/util/favicon'
+import { injection } from '@/util/inject'
 
 const { t } = useI18n()
 const { refresh, news } = useMojangNews()
 onMounted(refresh)
-const { instances } = useInstances()
+
+const { instances } = injection(kInstances)
 const sorted = computed(() => [...instances.value].sort((a, b) => a.lastAccessDate - b.lastAccessDate).slice(0, 5))
 
 const container = ref(null as null | HTMLElement)

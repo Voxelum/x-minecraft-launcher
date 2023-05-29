@@ -77,7 +77,7 @@ import { useDialog } from '../composables/dialog'
 import { useRefreshable, useService } from '@/composables'
 
 const { showOpenDialog } = windowController
-const { migrate, state } = useService(BaseServiceKey)
+const { migrate } = useService(BaseServiceKey)
 const { t } = useI18n()
 
 const { isShown, hide } = useDialog('migration')

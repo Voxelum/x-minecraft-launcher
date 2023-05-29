@@ -440,9 +440,8 @@ import { InstanceEditInjectionKey } from '../composables/instanceEdit'
 import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useOptifineVersionList, useQuiltVersionList, VersionMenuItem } from '../composables/versionList'
 
 import { injection } from '@/util/inject'
-import { useLocalVersions } from '@/composables/version'
 import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
-import { useDialog } from '@/composables/dialog'
+import { kLocalVersions } from '@/composables/versionLocal'
 
 const {
   data,
@@ -458,14 +457,14 @@ const {
 } = injection(InstanceEditInjectionKey)
 const minecraft = computed(() => data.runtime.minecraft)
 const { showOpenDialog } = windowController
-const { items: minecraftItems, showAlpha, refreshing: refreshingMinecraft, release } = useMinecraftVersionList(minecraft)
-const { items: forgeItems, canShowBuggy, recommendedOnly, refresh: refreshForge, refreshing: refreshingForge } = useForgeVersionList(minecraft, computed(() => data.runtime.forge ?? ''))
-const { items: fabricItems, showStableOnly, refreshing: refreshingFabric } = useFabricVersionList(minecraft, computed(() => data.runtime.fabricLoader ?? ''))
-const { items: quiltItems, refresh: refreshQuilt, refreshing: refreshingQuilt } = useQuiltVersionList(minecraft, computed(() => data.runtime.quiltLoader ?? ''))
-const { items: optifineItems, refreshing: refreshingOptifine } = useOptifineVersionList(minecraft, computed(() => data.runtime.forge ?? ''), computed(() => data.runtime.optifine ?? ''))
-const { localVersions } = useLocalVersions()
+const { versions } = injection(kLocalVersions)
+const { items: minecraftItems, showAlpha, refreshing: refreshingMinecraft, release } = useMinecraftVersionList(minecraft, versions)
+const { items: forgeItems, canShowBuggy, recommendedOnly, refresh: refreshForge, refreshing: refreshingForge } = useForgeVersionList(minecraft, computed(() => data.runtime.forge ?? ''), versions)
+const { items: fabricItems, showStableOnly, refreshing: refreshingFabric } = useFabricVersionList(minecraft, computed(() => data.runtime.fabricLoader ?? ''), versions)
+const { items: quiltItems, refresh: refreshQuilt, refreshing: refreshingQuilt } = useQuiltVersionList(minecraft, computed(() => data.runtime.quiltLoader ?? ''), versions)
+const { items: optifineItems, refreshing: refreshingOptifine } = useOptifineVersionList(minecraft, computed(() => data.runtime.forge ?? ''), computed(() => data.runtime.optifine ?? ''), versions)
 const localItems = computed(() => {
-  return localVersions.value.map(ver => {
+  return versions.value.map(ver => {
     const result: VersionMenuItem = {
       name: ver.id,
       tag: ver.minecraft,
@@ -550,7 +549,7 @@ function onSelectOptifine(version: string) {
 }
 function onSelectLocalVersion(version: string) {
   data.version = version
-  const v = localVersions.value.find(ver => ver.id === version)!
+  const v = versions.value.find(ver => ver.id === version)!
   data.runtime.minecraft = v.minecraft
   data.runtime.forge = v.forge
   data.runtime.liteloader = v.liteloader

@@ -8,6 +8,17 @@ export interface UserGameProfile extends Omit<UserProfile, 'profiles'>, GameProf
 export const EMPTY_USER = Object.freeze({ id: '', username: '', profileService: '', authService: '', accessToken: '', profiles: [], properties: {} })
 export const EMPTY_GAME_PROFILE = Object.freeze({ id: '', name: '', textures: { SKIN: { url: '' } } })
 
+export function normalizeUserId(userId: string, authority: string) {
+  try {
+    // eslint-disable-next-line no-new
+    new URL(userId)
+    return userId
+  } catch {
+    const auth = new URL(authority)
+    auth.username = userId
+    return auth.toString()
+  }
+}
 /**
  * Minecraft new .minecraft/launcher_accounts.json
  */

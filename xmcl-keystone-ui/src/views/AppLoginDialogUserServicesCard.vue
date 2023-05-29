@@ -62,7 +62,6 @@ interface ServiceItem {
 }
 
 const emit = defineEmits(['route'])
-const { state } = useService(UserServiceKey)
 const { t } = useI18n()
 
 const data = reactive({

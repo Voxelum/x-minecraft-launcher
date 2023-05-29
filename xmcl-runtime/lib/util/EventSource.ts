@@ -1,5 +1,6 @@
 import EventEmitter from 'events'
 import { Client, Dispatcher, request } from 'undici'
+import { AnyError } from './error'
 
 const httpsOptions = [
   'pfx', 'key', 'passphrase', 'cert', 'ca', 'ciphers',
@@ -319,7 +320,7 @@ export class EventSource extends EventEmitter {
    */
   dispatchEvent(event: Event) {
     if (!event.type) {
-      throw new Error('UNSPECIFIED_EVENT_TYPE_ERR')
+      throw new AnyError('UNSPECIFIED_EVENT_TYPE_ERR')
     }
     // if event is instance of an CustomEvent (or has 'details' property),
     // send the detail object as the payload for the event

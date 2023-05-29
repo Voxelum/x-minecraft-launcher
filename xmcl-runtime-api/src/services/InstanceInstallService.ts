@@ -9,7 +9,7 @@ export interface InstallInstanceOptions {
   /**
    * The instance path
    */
-  path?: string
+  path: string
   /**
    * The files to update
    */
@@ -40,9 +40,10 @@ export interface InstanceInstallService {
   /**
    * Check if this instance has any pending install
    *
+   * @param path The instance path
    * @return All pending instance installation
    */
-  checkInstanceInstall(): Promise<InstanceFileWithOperation[]>
+  checkInstanceInstall(path: string): Promise<InstanceFileWithOperation[]>
 }
 
 export type InstanceInstallExceptions = InstanceNotFoundException

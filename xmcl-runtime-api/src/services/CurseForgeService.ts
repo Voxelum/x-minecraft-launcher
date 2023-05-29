@@ -1,4 +1,4 @@
-import type { File, FileModLoaderType, FileRelationType, Mod, ModCategory, Pagination, SearchOptions } from '@xmcl/curseforge'
+import type { File, FileModLoaderType } from '@xmcl/curseforge'
 import { ProjectType } from '../entities/curseforge'
 import { Resource } from '../entities/resource'
 import { ServiceKey } from './Service'

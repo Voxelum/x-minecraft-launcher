@@ -9,7 +9,7 @@ import createResourceWorker, { path as resourceWorkerPath } from '../workers/res
 import createEncodingWorker, { path as encodingWorkerPath } from '../workers/encodingWorkerEntry?worker'
 
 export const pluginWorker: LauncherAppPlugin = async (app) => {
-  const logger = app.logManager.getLogger('WorkerManager')
+  const logger = app.getLogger('WorkerManager')
   const checkUpdate = async (path: string) => {
     if (!IS_DEV) {
       logger.log('Try to update worker js as this is PROD')
@@ -27,7 +27,7 @@ export const pluginWorker: LauncherAppPlugin = async (app) => {
       logger.log('Skip to update worker js as this is DEV')
     }
   }
-  const createLazyWorker = (factory: () => Worker) => {
+  const createLazyWorker = <T>(factory: () => Worker, methods: Array<keyof T>): T => {
     let threadWorker: Worker | undefined
     let counter = 0
     let destroyTimer: undefined | ReturnType<typeof setTimeout>
@@ -37,55 +37,57 @@ export const pluginWorker: LauncherAppPlugin = async (app) => {
       worker.on('message', (message: 'idle' | object) => {
         if (message === 'idle') {
           destroyTimer = setTimeout(() => {
-            logger.log(`Dispose the worker ${factory}`)
-            threadWorker?.terminate()
-            threadWorker = undefined
-            destroyTimer = undefined
+            if (threadWorker) {
+              logger.log(`Dispose the worker ${factory}`)
+              threadWorker?.terminate()
+              threadWorker = undefined
+              destroyTimer = undefined
+            }
           }, 1000 * 60)
         }
       })
       return worker
     }
-    return new Proxy({} as any, {
-      get(_, method) {
-        return (...args: any[]) => {
-          const _id = counter++
-          return new Promise((resolve, reject) => {
-            // create worker if not presented
-            const worker = threadWorker || createWorker()
-            threadWorker = worker
-            const handler = (message: WorkerResponse | 'idle') => {
-              if (message === 'idle') {
-                return
-              }
-              const { error, result, id } = message
-              if (id === _id) {
-                worker.removeListener('message', handler)
-                if (error) {
-                  reject(error)
-                } else {
-                  resolve(result)
-                }
+    const obj = {} as T
+    for (const method of methods) {
+      (obj as any)[method] = (...args: any[]) => {
+        const _id = counter++
+        return new Promise((resolve, reject) => {
+          // create worker if not presented
+          const worker = threadWorker || createWorker()
+          threadWorker = worker
+          const handler = (message: WorkerResponse | 'idle') => {
+            if (message === 'idle') {
+              return
+            }
+            const { error, result, id } = message
+            if (id === _id) {
+              worker.removeListener('message', handler)
+              if (error) {
+                reject(error)
+              } else {
+                resolve(result)
               }
             }
-            worker.addListener('message', handler)
-            if (destroyTimer) {
-              clearTimeout(destroyTimer)
-            }
-            worker.postMessage({ type: method, id: _id, args })
-          })
-        }
-      },
-    })
+          }
+          worker.addListener('message', handler)
+          if (destroyTimer) {
+            clearTimeout(destroyTimer)
+          }
+          worker.postMessage({ type: method, id: _id, args })
+        })
+      }
+    }
+    return obj
   }
 
-  const resourceWorker: ResourceWorker = createLazyWorker(createResourceWorker)
+  const resourceWorker: ResourceWorker = createLazyWorker(createResourceWorker, ['checksum', 'copyPassively', 'hash', 'hashAndFileType', 'parse'])
   app.registry.register(kResourceWorker, resourceWorker)
 
-  const encodingWorker: EncodingWorker = createLazyWorker(createEncodingWorker)
+  const encodingWorker: EncodingWorker = createLazyWorker(createEncodingWorker, ['decode', 'guessEncodingByBuffer'])
   app.registry.register(kEncodingWorker, encodingWorker)
 
-  app.waitEngineReady().then(async () => {
+  app.waitEngineReady().then(() => {
     checkUpdate(resourceWorkerPath)
     checkUpdate(encodingWorkerPath)
   })

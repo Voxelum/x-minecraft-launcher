@@ -2,7 +2,7 @@ import { injection } from '@/util/inject'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { ContextMenuItem } from './contextMenu'
-import { ModItem } from './mod'
+import { ModItem } from './instanceModItems'
 import { useService } from './service'
 import { kMarketRoute } from './useMarketRoute'
 
@@ -14,9 +14,9 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
   return computed(() => {
     const item = mod.value
     const items: ContextMenuItem[] = [{
-      text: t('mod.showFile', { file: item.path }),
+      text: t('mod.showFile', { file: item.mod.path }),
       onClick: () => {
-        showItemInDirectory(item.path)
+        showItemInDirectory(item.mod.path)
       },
       icon: 'folder',
     }, {
@@ -36,15 +36,15 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
       })
     }
     items.push({
-      text: t('delete.name', { name: item.name }),
+      text: t('delete.name', { name: item.mod.name }),
       onClick() {
         onDelete()
       },
       icon: 'delete',
       color: 'error',
     })
-    if (item.url) {
-      const url = item.url
+    if (item.mod.url) {
+      const url = item.mod.url
       items.push({
         text: t('mod.openLink', { url }),
         onClick: () => {
@@ -53,10 +53,10 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
         icon: 'link',
       })
     }
-    if (item.resource.metadata.curseforge) {
-      const curseforge = item.resource.metadata.curseforge
+    if (item.mod.resource.metadata.curseforge) {
+      const curseforge = item.mod.resource.metadata.curseforge
       items.push({
-        text: t('mod.showInCurseforge', { name: item.name }),
+        text: t('mod.showInCurseforge', { name: item.mod.name }),
         onClick: () => {
           goCurseforgeProject(curseforge.projectId, 'mc-mods')
         },
@@ -64,17 +64,17 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
       })
     } else {
       items.push({
-        text: t('mod.searchOnCurseforge', { name: item.name }),
+        text: t('mod.searchOnCurseforge', { name: item.mod.name }),
         onClick: () => {
-          searchInCurseforge(item.name, 'mc-mods')
+          searchInCurseforge(item.mod.name, 'mc-mods')
         },
         icon: 'search',
       })
     }
-    if (item.resource.metadata.modrinth) {
-      const modrinth = item.resource.metadata.modrinth
+    if (item.mod.resource.metadata.modrinth) {
+      const modrinth = item.mod.resource.metadata.modrinth
       items.push({
-        text: t('mod.showInModrinth', { name: item.name }),
+        text: t('mod.showInModrinth', { name: item.mod.name }),
         onClick: () => {
           goModrinthProject(modrinth.projectId)
         },
@@ -82,17 +82,17 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
       })
     } else {
       items.push({
-        text: t('mod.searchOnModrinth', { name: item.name }),
+        text: t('mod.searchOnModrinth', { name: item.mod.name }),
         onClick: () => {
-          searchInModrinth(item.name)
+          searchInModrinth(item.mod.name)
         },
         icon: 'search',
       })
     }
     items.push({
-      text: t('mod.searchOnMcWiki', { name: item.name }),
+      text: t('mod.searchOnMcWiki', { name: item.mod.name }),
       onClick: () => {
-        searchInMcWiki(item.name)
+        searchInMcWiki(item.mod.name)
       },
       icon: 'search',
     })

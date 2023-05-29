@@ -1,5 +1,5 @@
-import Controller from '@/Controller'
+import { ElectronController } from '@/ElectronController'
 
 export interface ControllerPlugin {
-  (this: Controller): void
+  (this: ElectronController): void
 }

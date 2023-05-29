@@ -19,6 +19,10 @@ export class ServerInfoWithStatus implements ServerInfo {
   }
 }
 
+export function getServerInfoKey(path: string) {
+  return 'instance-server-data://' + path
+}
+
 export class ServerInfoState {
   /**
    * Cache loaded server info in servers.dat
@@ -31,18 +35,16 @@ export class ServerInfoState {
   instanceServerInfos(infos: ServerInfo[]): void {
     this.serverInfos = infos.map(m => new ServerInfoWithStatus(m))
   }
-
-  instanceServerStatusUpdate(current: Status[]) {
-    for (let i = 0; i < current.length; i++) {
-      this.serverInfos[i].status = current[i]
-    }
-  }
 }
 
 /**
  * Provide the service to access the servers.dat for an instance.
  */
 export interface InstanceServerInfoService {
+  /**
+   * Watch the server info in the instance folder.
+   * @param instancePath The instance folder path
+   */
   watch(instancePath: string): Promise<ServerInfoState>
 }
 

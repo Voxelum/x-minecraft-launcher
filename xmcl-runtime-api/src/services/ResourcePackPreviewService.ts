@@ -20,7 +20,7 @@ export interface CachedBlockModel {
 
 export interface ResourcePackPreviewService {
   loadModel(modelPath: string): Promise<CachedBlockModel>
-  getBlockStates(): Promise<BlockStateJson[]>
+  getBlockStates(gameVersion: string): Promise<BlockStateJson[]>
 }
 
 export const ResourcePackPreviewServiceKey: ServiceKey<ResourcePackPreviewService> = 'ResourcePackPreviewService'

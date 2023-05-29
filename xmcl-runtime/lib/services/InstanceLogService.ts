@@ -1,5 +1,5 @@
 import { InstanceLogService as IInstanceLogService, InstanceLogServiceKey } from '@xmcl/runtime-api'
-import { unlink, readFile } from 'fs/promises'
+import { readFile, unlink } from 'fs/promises'
 import { isAbsolute, join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -8,8 +8,8 @@ import { UTF8 } from '../util/encoding'
 import { readdirIfPresent } from '../util/fs'
 import { Inject } from '../util/objectRegistry'
 import { gunzip } from '../util/zip'
-import { InstanceService } from './InstanceService'
 import { AbstractService, ExposeServiceKey, Singleton } from './Service'
+import { AnyError } from '../util/error'
 
 /**
  * Provide the ability to list/read/remove log and crash reports of a instance.
@@ -17,7 +17,6 @@ import { AbstractService, ExposeServiceKey, Singleton } from './Service'
 @ExposeServiceKey(InstanceLogServiceKey)
 export class InstanceLogService extends AbstractService implements IInstanceLogService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(kEncodingWorker) private encoder: EncodingWorker,
   ) {
     super(app)
@@ -59,7 +58,7 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
       const result = await this.encoder.decode(buf, encoding || UTF8)
       return result
     } catch (e) {
-      this.error(new Error(`Fail to get log content "${name}"`, { cause: e }))
+      this.error(new AnyError('GetLogContentError', `Fail to get log content "${name}"`, { cause: e }))
       return ''
     }
   }

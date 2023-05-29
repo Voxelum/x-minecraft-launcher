@@ -102,7 +102,7 @@ function onException(e: LaunchExceptions) {
     extraText.value = ''
   } else if (e.type === 'launchNoVersionInstalled') {
     title.value = t('launchBlocked.launchNoVersionInstalled.title')
-    description.value = t('launchBlocked.launchNoVersionInstalled.description', { version: e.override || e.version || getExpectVersion(e) })
+    description.value = t('launchBlocked.launchNoVersionInstalled.description', { version: e.options?.version })
     unexpected.value = true
     extraText.value = ''
   } else if (e.type === 'launchUserStatusRefreshFailed') {

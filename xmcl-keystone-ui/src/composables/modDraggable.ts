@@ -1,5 +1,5 @@
 import { Ref } from 'vue'
-import { ModItem } from './mod'
+import { ModItem } from './instanceModItems'
 
 export function useModDragging(items: Ref<ModItem[]>, selectedMods: Ref<ModItem[]>, isSelectionMode: Ref<boolean>) {
   const isDraggingMod = computed(() => items.value.some(i => i.dragged))

@@ -1,7 +1,7 @@
 <template>
   <div
     ref="container"
-    class="flex gap-2 overflow-auto visible-scroll"
+    class="visible-scroll flex gap-2 overflow-auto"
     @wheel="onWheel"
   >
     <div
@@ -31,7 +31,7 @@
           text
           color="primary"
           :disabled="profile.id === user.selectedProfile"
-          @click="selectGameProfile(profile.id)"
+          @click="selectGameProfile(user, profile.id)"
         >
           <v-icon>
             {{ profile.id === user.selectedProfile ? 'check_circle' : 'done' }}
@@ -42,17 +42,30 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { OfflineUserServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
-import UserSkin from './UserSkin.vue'
 import { useScrollRight, useService } from '@/composables'
+import { AUTHORITY_DEV, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
+import UserSkin from './UserSkin.vue'
 
 const props = defineProps<{
   user: UserProfile
 }>()
 
-const { removeGameProfile } = useService(OfflineUserServiceKey)
-const offline = computed(() => props.user.authService === 'offline')
-const { selectGameProfile } = useService(UserServiceKey)
+const { selectUserGameProfile, removeUserGameProfile } = useService(UserServiceKey)
+const offline = computed(() => props.user.authority === AUTHORITY_DEV)
+const selectGameProfile = (userProfile: UserProfile, id: string) => {
+  selectUserGameProfile(userProfile, id)
+}
+
+async function removeGameProfile(name: string): Promise<void> {
+  const builtin = props.user
+  if (builtin && builtin.authority === AUTHORITY_DEV) {
+    const profile = Object.values(builtin.profiles).find(v => v.name === name || v.id === name)
+    if (profile) {
+      removeUserGameProfile(builtin, profile.id)
+    }
+  }
+}
+
 const container = ref(null)
 const { onWheel } = useScrollRight(container)
 

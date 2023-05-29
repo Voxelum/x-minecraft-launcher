@@ -1,81 +1,95 @@
 <template>
-  <v-card
-    ref="card"
-    v-draggable-card
-    v-context-menu="contextMenuItems"
-    draggable
-    :class="{ incompatible: !compatible }"
-    class="draggable-card cursor-pointer transition-all duration-150 invisible-scroll"
-    @dragstart="onDragStart"
-    @dragend.prevent="onDragEnd"
-    @mouseenter="hovered = true"
-    @mouseleave="hovered = false"
-  >
+  <div class="relative">
     <div
-      v-shared-tooltip="tooltip"
-      class="flex max-h-[125px] overflow-x-auto max-w-full"
+      class="min-h-1 absolute -top-1 left-0 z-10 max-h-1 min-w-full px-2"
     >
-      <img
-        ref="iconImage"
-        v-fallback-img="unknownPack"
-        style="image-rendering: pixelated"
-        class="select-none h-[125px]"
-        :src="pack.icon"
-        contain
+      <div
+        class="transition-300 min-h-1 max-h-1 min-w-full rounded transition-colors"
+        :class="{ 'bg-yellow-400': dragover > 0 }"
       >
-      <div class="flex flex-col overflow-x-auto gap-1 px-3">
-        <text-component
-          v-once
-          v-shared-tooltip="pack.name"
-          class="whitespace-nowrap w-full text-lg mt-2 font-semibold overflow-x-auto"
-          :source="pack.name"
-          editable
-          @edit="onEditPackName(pack, $event)"
-        />
-        <text-component
-          class="whitespace-normal break-words text-sm"
-          :source="pack.description"
-        />
+        {{ ' ' }}
       </div>
     </div>
-    <v-divider
-      v-show="pack.tags.length > 0"
-    />
-    <v-card-actions v-show="pack.tags.length > 0">
-      <div class="flex gap-2 flex-wrap">
-        <v-chip
-          v-for="(tag, index) in pack.tags"
-          :key="`${tag}-${index}`"
-          :outlined="darkTheme"
-          :color="getColor(tag)"
-          label
-          close
-          @click:close="onDeleteTag(tag)"
+    <v-card
+      ref="card"
+      v-draggable-card
+      v-context-menu="contextMenuItems"
+      draggable
+      :class="{ incompatible: !pack.compatible, 'border-yellow-300': pack.enabled }"
+      class="draggable-card invisible-scroll cursor-pointer border border-dashed border-transparent transition-all duration-150"
+      @dragstart="onDragStart"
+      @dragenter="onDragEnter"
+      @dragleave="onDragLeave"
+      @dragend.prevent="onDragEnd"
+      @mouseenter="hovered = true"
+      @mouseleave="hovered = false"
+      @drop="emit('drop', $event); onDragLeave()"
+    >
+      <div
+        v-shared-tooltip="tooltip"
+        class="flex max-h-[80px] max-w-full overflow-x-auto"
+      >
+        <img
+          ref="iconImage"
+          v-fallback-img="unknownPack"
+          style="image-rendering: pixelated"
+          class="h-[80px] select-none"
+          :src="pack.resourcePack.icon"
+          contain
         >
-          <span
-            contenteditable
-            class="max-w-90 sm:max-w-40 overflow-scroll"
-            :class="{ 'text-white': hovered }"
-            @input.stop="onEditTag($event, index)"
-            @blur="notifyTagChange(pack)"
-          >{{ tag }}</span>
-        </v-chip>
+        <div class="flex flex-col gap-1 overflow-x-auto px-3">
+          <text-component
+            v-once
+            v-shared-tooltip="name"
+            class="mt-2 w-full overflow-x-auto whitespace-nowrap text-lg font-semibold"
+            :source="name"
+            editable
+            @edit="onEditPackName(pack, $event)"
+          />
+          <text-component
+            class="whitespace-normal break-words text-sm"
+            :source="description"
+          />
+        </div>
       </div>
-    </v-card-actions>
-  </v-card>
+      <v-divider
+        v-show="pack.tags.length > 0"
+      />
+      <v-card-actions v-show="pack.tags.length > 0">
+        <div class="flex flex-wrap gap-2">
+          <v-chip
+            v-for="(tag, index) in pack.tags"
+            :key="`${tag}-${index}`"
+            :outlined="darkTheme"
+            :color="getColor(tag)"
+            label
+            close
+            @click:close="onDeleteTag(tag)"
+          >
+            <span
+              contenteditable
+              class="max-w-90 sm:max-w-40 overflow-scroll"
+              :class="{ 'text-white': hovered }"
+              @input.stop="onEditTag($event, index)"
+              @blur="notifyTagChange(pack)"
+            >{{ tag }}</span>
+          </v-chip>
+        </div>
+      </v-card-actions>
+    </v-card>
+  </div>
 </template>
 
 <script lang=ts setup>
 import unknownPack from '@/assets/unknown_pack.png'
 import { useDragTransferItem, useService, useTags, useTheme } from '@/composables'
+import { ResourcePackItem } from '@/composables/instanceResourcePackItem'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getColor } from '@/util/color'
 import { injection } from '@/util/inject'
-import { BaseServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
-import { useRangeCompatible } from '../composables/compatible'
 import { ContextMenuItem } from '../composables/contextMenu'
-import { ResourcePackItem } from '../composables/resourcePack'
 import { kMarketRoute } from '../composables/useMarketRoute'
 import { vContextMenu } from '../directives/contextMenu'
 import { vDraggableCard } from '../directives/draggableCard'
@@ -84,16 +98,18 @@ import { vFallbackImg } from '../directives/fallbackImage'
 const props = defineProps<{
   pack: ResourcePackItem
   isSelected: boolean
+  minecraft: string
 }>()
 
-const emit = defineEmits(['tags', 'dragstart', 'dragend', 'delete'])
+const emit = defineEmits(['tags', 'dragstart', 'dragend', 'delete', 'drop'])
 const { darkTheme } = useTheme()
 
-const iconImage: Ref<any> = ref(null)
-const { state } = useService(InstanceServiceKey)
-const runtime = computed(() => state.instance.runtime)
-const { compatible } = useRangeCompatible(computed(() => props.pack.acceptingRange ?? ''), computed(() => runtime.value.minecraft))
 const { t } = useI18n()
+const name = computed(() => props.pack.resourcePack.id === 'vanilla' ? t('resourcepack.defaultName') : props.pack.name)
+const description = computed(() => props.pack.resourcePack.id === 'vanilla' ? t('resourcepack.defaultName') : props.pack.resourcePack.description)
+
+const iconImage: Ref<any> = ref(null)
+
 const { searchInCurseforge, goCurseforgeProject, searchInModrinth, goModrinthProject } = injection(kMarketRoute)
 const { showItemInDirectory } = useService(BaseServiceKey)
 const card: Ref<any> = ref(null)
@@ -105,28 +121,35 @@ const { editTag, createTag, removeTag } = useTags(computed({
 }))
 const onDeleteTag = removeTag
 
-useDragTransferItem(computed(() => card.value?.$el as HTMLElement), props.pack.id, props.isSelected ? 'right' : 'left')
-const tags = ref([...props.pack.tags])
+useDragTransferItem(computed(() => card.value?.$el as HTMLElement), props.pack.resourcePack.id, props.isSelected ? 'right' : 'left')
 
-const tooltip = computed(() => compatible.value
+const dragover = ref(0)
+const onDragEnter = (e: DragEvent) => {
+  dragover.value += 1
+}
+const onDragLeave = () => {
+  dragover.value += -1
+}
+
+const tooltip = computed(() => props.pack.compatible
   ? t('resourcepack.compatible', {
-    format: props.pack.pack_format,
-    version: runtime.value.minecraft,
+    format: props.pack.resourcePack.pack_format,
+    version: props.minecraft,
   })
   : t('resourcepack.incompatible', {
-    accept: props.pack.acceptingRange,
-    actual: runtime.value.minecraft,
-    format: props.pack.pack_format,
+    accept: props.pack.resourcePack.acceptingRange,
+    actual: props.minecraft,
+    format: props.pack.resourcePack.pack_format,
   }))
 
 const contextMenuItems = computed(() => {
-  if (props.pack.id === 'vanilla') {
+  if (props.pack.resourcePack.id === 'vanilla') {
     return []
   }
   const menuItems: ContextMenuItem[] = [{
-    text: t('resourcepack.showFile', { file: props.pack.path }),
+    text: t('resourcepack.showFile', { file: props.pack.resourcePack.path }),
     onClick: () => {
-      showItemInDirectory(props.pack.path)
+      showItemInDirectory(props.pack.resourcePack.path)
     },
     icon: 'folder',
   }, {
@@ -146,11 +169,11 @@ const contextMenuItems = computed(() => {
       color: 'error',
     })
   }
-  if (props.pack.resource && props.pack.resource.metadata.curseforge) {
+  if (props.pack.resourcePack.resource && props.pack.resourcePack.resource.metadata.curseforge) {
     menuItems.push({
       text: t('resourcepack.showInCurseforge', { name: props.pack.name }),
       onClick: () => {
-        goCurseforgeProject(props.pack.resource!.metadata.curseforge!.projectId, 'texture-packs')
+        goCurseforgeProject(props.pack.resourcePack.resource!.metadata.curseforge!.projectId, 'texture-packs')
       },
       icon: '$vuetify.icons.curseforge',
     })
@@ -164,11 +187,11 @@ const contextMenuItems = computed(() => {
     })
   }
 
-  if (props.pack.resource && props.pack.resource.metadata.modrinth) {
+  if (props.pack.resourcePack.resource && props.pack.resourcePack.resource.metadata.modrinth) {
     menuItems.push({
       text: t('resourcepack.showInModrinth', { name: props.pack.name }),
       onClick: () => {
-        goModrinthProject(props.pack.resource!.metadata.modrinth!.projectId)
+        goModrinthProject(props.pack.resourcePack.resource!.metadata.modrinth!.projectId)
       },
       icon: '$vuetify.icons.modrinth',
     })
@@ -187,13 +210,13 @@ const contextMenuItems = computed(() => {
 
 function onDragStart(e: DragEvent) {
   e.dataTransfer!.effectAllowed = 'move'
-  if (props.pack.id !== 'vanilla') {
+  if (props.pack.resourcePack.id !== 'vanilla') {
     emit('dragstart', e)
   }
   e.dataTransfer!.setDragImage(iconImage.value, 0, 0)
 }
 function onDragEnd(e: DragEvent) {
-  if (props.pack.id !== 'vanilla') {
+  if (props.pack.resourcePack.id !== 'vanilla') {
     emit('dragend', e)
   }
 }

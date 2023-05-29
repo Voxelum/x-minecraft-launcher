@@ -19,7 +19,7 @@ export interface InstallAppOptions {
 }
 
 export class LauncherAppManager extends Manager implements AppsHost {
-  private logger = this.app.logManager.getLogger('LauncherAppManager')
+  private logger = this.app.getLogger('LauncherAppManager')
 
   constructor(app: LauncherApp) {
     super(app)
@@ -69,7 +69,7 @@ export class LauncherAppManager extends Manager implements AppsHost {
   }
 
   async createShortcut(url: string): Promise<void> {
-    if (this.app.platform.name === 'windows') {
+    if (this.app.platform.os === 'windows') {
       this.logger.log(`Try to create shortcut to app ${url}`)
       if (url === this.app.builtinAppManifest.url) {
         this.logger.log(`Skip to create shortcut builtin app ${url}`)
@@ -129,7 +129,7 @@ export class LauncherAppManager extends Manager implements AppsHost {
       return
     }
 
-    if (this.app.platform.name === 'windows') {
+    if (this.app.platform.os === 'windows') {
       const appMan = await this.getInstalledApp(url).catch(() => undefined)
       if (appMan) {
         await removeShortcut(this.app.host.getPath('desktop'), appMan)
@@ -157,7 +157,7 @@ export class LauncherAppManager extends Manager implements AppsHost {
     const urlObj = new URL(url)
     const appDir = join(this.root, filenamifyCombined(urlObj.host + urlObj.pathname, { replacement: '@' }))
     await ensureDir(appDir)
-    if (this.app.platform.name === 'windows') {
+    if (this.app.platform.os === 'windows') {
       const appMan = await installWin32(url, appDir, webMan)
       await writeFile(join(appDir, 'app.xmclx'), JSON.stringify(appMan))
 
@@ -171,7 +171,7 @@ export class LauncherAppManager extends Manager implements AppsHost {
       }
 
       return appMan
-    } /* else if (this.app.platform.name === 'osx') {
+    } /* else if (this.app.platform.os === 'osx') {
     } */
     throw new Error()
   }
@@ -204,8 +204,8 @@ export class LauncherAppManager extends Manager implements AppsHost {
           }
         }
       }
-      throw new Error('InvalidHTML')
+      throw new SyntaxError('InvalidHTML')
     }
-    throw new Error('NonHTML')
+    throw new SyntaxError('NonHTML')
   }
 }

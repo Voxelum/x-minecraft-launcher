@@ -1,191 +1,112 @@
 import { useRefreshable, useService } from '@/composables'
-import { injection } from '@/util/inject'
-import { getUpstreamFromResource } from '@/util/upstream'
-import { CachedFTBModpackVersionManifest, CurseforgeModpackResource, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromModrinthModpack, InstanceData, InstanceManifest, InstanceSchema, isCurseforgeModpackResource, isMcbbsModpackResource, isModrinthModpackResource, isRawModpackResource, JavaServiceKey, McbbsModpackResource, ModpackResource, ModrinthModpackResource, PeerServiceKey, RawModpackResource, RuntimeVersions } from '@xmcl/runtime-api'
+import { getFTBPath } from '@/util/ftb'
+import { CachedFTBModpackVersionManifest, InstanceManifest, JavaRecord, ModpackInstallProfile, ModpackServiceKey, PeerConnection, PeerServiceKey, Resource } from '@xmcl/runtime-api'
+import { Ref } from 'vue'
 import { DialogKey } from './dialog'
-import { kModpacks } from './modpack'
 
 export const AddInstanceDialogKey: DialogKey<string> = 'add-instance-dialog'
 
-export interface Template extends Partial<InstanceData> {
-  id: string
+export interface Template extends ModpackInstallProfile {
+  filePath: string
   name: string
-  runtime: Required<RuntimeVersions>
-  source: TemplateSource
+  type: 'curseforge' | 'mcbbs' | 'modpack' | 'modrinth' | 'instance' | 'ftb' | 'peer'
+  description: string
 }
 
-export type TemplateSource = {
-  type: 'curseforge'
-  resource: CurseforgeModpackResource
-} | {
-  type: 'mcbbs'
-  resource: McbbsModpackResource
-} | {
-  type: 'modpack'
-  resource: ModpackResource
-} | {
-  type: 'modrinth'
-  resource: ModrinthModpackResource
-} | {
-  type: 'instance'
-  instance: InstanceSchema
-} | {
-  type: 'ftb'
-  manifest: CachedFTBModpackVersionManifest
-} | {
-  type: 'peer'
-  id: string
-  manifest: InstanceManifest
-}
+export function useAllTemplate(javas: Ref<JavaRecord[]>, modpackResources: Ref<Resource[]>, peers: Ref<PeerConnection[]>) {
+  const { t } = useI18n()
+  const { getModpackInstallProfile } = useService(ModpackServiceKey)
 
-export function useAllTemplate(data: InstanceData) {
-  const { state: javaState } = useService(JavaServiceKey)
-  const { state: peerState } = useService(PeerServiceKey)
+  const templates = shallowRef([] as Array<Template>)
 
-  const container = shallowRef([] as Array<Template>)
-  const { resources } = injection(kModpacks)
+  const getResourceInstallProfile = async (modpack: Resource): Promise<ModpackInstallProfile> => {
+    if (modpack.metadata.instance) {
+      return modpack.metadata.instance
+    }
+
+    return await getModpackInstallProfile(modpack.path)
+  }
+
+  const getActionText = (type: string) => {
+    // if (type === 'instance') {
+    //   return template.source.instance.server ? t('instanceTemplate.server') : t('instanceTemplate.profile')
+    // }
+    if (type === 'mcbbs') return t('instanceTemplate.mcbbs')
+    if (type === 'curseforge') return t('instanceTemplate.curseforge')
+    if (type === 'modrinth') return t('instanceTemplate.modrinth')
+    return t('instanceTemplate.modpack')
+  }
 
   const { refresh, refreshing } = useRefreshable(async () => {
-    if (!active) {
-      return
-    }
     const all = [] as Array<Template>
-    all.push(...resources.value.map((modpack) => {
-      if (isMcbbsModpackResource(modpack)) {
-        return getMcbbsTemplate(modpack)
-      } else if (isCurseforgeModpackResource(modpack)) {
-        return getCurseforgeTemplate(modpack)
-      } else if (isModrinthModpackResource(modpack)) {
-        return getModrinthTemplate(modpack)
-      } else if (isRawModpackResource(modpack)) {
-        return getModpackTemplate(modpack)
-      }
-      return undefined
-    }).filter((v): v is Template => !!v))
 
-    for (const c of peerState.connections) {
+    const profiles = await Promise.all(modpackResources.value.map(getResourceInstallProfile))
+
+    for (const [i, profile] of profiles.entries()) {
+      const modpack = modpackResources.value[i]
+      const type = modpack.metadata['modrinth-modpack']
+      ? 'modrinth'
+      : modpack.metadata['curseforge-modpack']
+        ? 'curseforge'
+        : modpack.metadata['mcbbs-modpack'] ? 'mcbbs' : 'modpack'
+      const result: Template = reactive({
+        filePath: modpack.path,
+        name: profile.instance.name,
+        instance: markRaw(profile.instance),
+        files: markRaw(profile.files),
+        description: computed(() => getActionText(type)),
+        type: modpack.metadata['modrinth-modpack']
+          ? 'modrinth'
+          : modpack.metadata['curseforge-modpack']
+            ? 'curseforge'
+            : modpack.metadata['mcbbs-modpack'] ? 'mcbbs' : 'modpack',
+      })
+      all.push(result)
+    }
+
+    for (const c of peers.value) {
       if (c.sharing) {
         all.push(getPeerTemplate(c.id, c.userInfo.name, c.sharing))
       }
     }
-    container.value = all
+    templates.value = all
   })
 
-  watch([resources, peerState], () => {
-    refresh()
-  })
-
-  let active = false
-
-  const setup = () => {
-    active = true
-    return refresh()
-  }
-
-  const dispose = () => {
-    active = false
-    container.value = []
-  }
+  // watch([modpackResources, peers], () => {
+  //   refresh()
+  // })
 
   function getPeerTemplate(id: string, name: string, man: InstanceManifest) {
     const result: Template = {
-      id,
+      filePath: id,
       name: `${man.name ?? 'Instance'}@${name}`,
-      description: man.description,
-      runtime: {
-        minecraft: man.runtime.minecraft,
-        forge: man.runtime.forge ?? '',
-        fabricLoader: man.runtime.fabricLoader ?? '',
-        quiltLoader: man.runtime.quiltLoader ?? '',
-        optifine: man.runtime.optifine ?? '',
-        yarn: '',
-        liteloader: '',
+      description: '',
+      instance: {
+        name: `${man.name ?? 'Instance'}@${name}`,
+        description: man.description,
+        runtime: {
+          minecraft: man.runtime.minecraft,
+          forge: man.runtime.forge ?? '',
+          fabricLoader: man.runtime.fabricLoader ?? '',
+          quiltLoader: man.runtime.quiltLoader ?? '',
+          optifine: man.runtime.optifine ?? '',
+          yarn: '',
+          liteloader: '',
+        },
+        vmOptions: man.vmOptions,
+        mcOptions: man.mcOptions,
+        minMemory: man.minMemory,
+        maxMemory: man.maxMemory,
       },
-      vmOptions: man.vmOptions,
-      mcOptions: man.mcOptions,
-      minMemory: man.minMemory,
-      maxMemory: man.maxMemory,
-      source: { type: 'peer', id, manifest: man },
+      files: man.files,
+      type: 'peer',
+      // source: { type: 'peer', id, manifest: man },
     }
 
     return result
   }
 
-  function getModrinthTemplate(modrinth: ModrinthModpackResource): Template {
-    const config = getInstanceConfigFromModrinthModpack(modrinth.metadata['modrinth-modpack'])
-    const result: Template = {
-      id: modrinth.path,
-      name: config.name,
-      description: config.description ?? '',
-      modpackVersion: config.modpackVersion,
-      runtime: {
-        minecraft: config.runtime.minecraft,
-        forge: config.runtime.forge ?? '',
-        fabricLoader: config.runtime.fabricLoader ?? '',
-        quiltLoader: config.runtime.quiltLoader ?? '',
-        optifine: '',
-        yarn: '',
-        liteloader: '',
-      },
-      icon: modrinth.icons?.[0],
-      upstream: getUpstreamFromResource(modrinth),
-      source: { type: 'modrinth', resource: modrinth },
-    }
-
-    return result
-  }
-
-  function getCurseforgeTemplate(curseforge: CurseforgeModpackResource): Template {
-    const config = getInstanceConfigFromCurseforgeModpack(curseforge.metadata['curseforge-modpack'])
-    const result: Template = {
-      id: curseforge.path,
-      name: config.name,
-      author: config.author,
-      modpackVersion: config.modpackVersion,
-      runtime: {
-        minecraft: config.runtime.minecraft,
-        forge: config.runtime.forge ?? '',
-        quiltLoader: '',
-        fabricLoader: config.runtime.fabricLoader ?? '',
-        liteloader: '',
-        yarn: '',
-        optifine: '',
-      },
-      source: { type: 'curseforge', resource: curseforge },
-      upstream: getUpstreamFromResource(curseforge),
-      icon: curseforge.icons?.[0],
-    }
-
-    return result
-  }
-
-  function getMcbbsTemplate(res: McbbsModpackResource): Template {
-    const config = getInstanceConfigFromMcbbsModpack(res.metadata['mcbbs-modpack'])
-    const result: Template = {
-      id: res.path,
-      name: config.name,
-      author: config.author,
-      description: config.description,
-      runtime: {
-        minecraft: config.runtime.minecraft,
-        forge: config.runtime.forge,
-        fabricLoader: config.runtime.fabricLoader,
-        quiltLoader: '',
-        liteloader: '',
-        yarn: '',
-        optifine: '',
-      },
-      vmOptions: config.vmOptions,
-      mcOptions: config.mcOptions,
-      minMemory: config.minMemory,
-      icon: res.icons?.[0],
-      source: { type: 'mcbbs', resource: res },
-    }
-
-    return result
-  }
-
-  function getFtbTemplate(f: CachedFTBModpackVersionManifest): Template {
+  function getFtbTemplate(man: CachedFTBModpackVersionManifest): Template {
     const getVersion = (str?: string) => {
       if (!str) { return undefined }
       const match = /(\d+)\.(\d)+\.(\d+)(_\d+)?/.exec(str)
@@ -205,13 +126,13 @@ export function useAllTemplate(data: InstanceData) {
     }
 
     const getRuntime = () => {
-      const javaRuntime = f.targets.find(v => v.name === 'java')
+      const javaRuntime = man.targets.find(v => v.name === 'java')
       if (javaRuntime) {
         const parsedVersion = getVersion(javaRuntime.version)
         if (!parsedVersion) {
           return
         }
-        const majorMatched = javaState.all.filter(v => v.majorVersion === parsedVersion.majorVersion)
+        const majorMatched = javas.value.filter(v => v.majorVersion === parsedVersion.majorVersion)
         let selectedRecord = majorMatched[0]
         for (const v of majorMatched.slice(1)) {
           const currentPatch = getVersion(v.version)?.patch
@@ -228,75 +149,51 @@ export function useAllTemplate(data: InstanceData) {
         }
       }
     }
-
-    return {
-      id: `${f.parent}-${f.id.toString()}`,
-      name: `${f.projectName}-${f.name}`,
-      author: f.authors[0].name,
-      java: getRuntime() ?? '',
-      runtime: {
-        minecraft: f.targets.find(f => f.name === 'minecraft')?.version || '',
-        forge: f.targets.find(f => f.name === 'forge')?.version || '',
-        fabricLoader: '',
-        quiltLoader: '',
-        optifine: '',
-        liteloader: '',
-        yarn: '',
-      },
-      upstream: {
-        type: 'ftb-modpack',
-        id: f.id,
-      },
-      icon: f.iconUrl,
-      source: { type: 'ftb', manifest: f },
+    const runtime = {
+      minecraft: man.targets.find(f => f.name === 'minecraft')?.version || '',
+      forge: man.targets.find(f => f.name === 'forge')?.version || '',
+      fabricLoader: '',
+      quiltLoader: '',
+      optifine: '',
+      liteloader: '',
+      yarn: '',
     }
-  }
-
-  function getModpackTemplate(modpack: RawModpackResource): Template {
-    return {
-      id: modpack.path,
-      name: modpack.name,
-      runtime: {
-        minecraft: modpack.metadata.modpack.runtime.minecraft || '',
-        forge: modpack.metadata.modpack.runtime.forge || '',
-        fabricLoader: modpack.metadata.modpack.runtime.fabricLoader || '',
-        quiltLoader: modpack.metadata.modpack.runtime.quiltLoader || '',
-        optifine: modpack.metadata.modpack.runtime.optifine || '',
-        liteloader: modpack.metadata.modpack.runtime.liteloader || '',
-        yarn: modpack.metadata.modpack.runtime.yarn || '',
-      },
-      source: {
-        type: 'modpack',
-        resource: modpack,
-      },
-    }
-  }
-
-  function apply(template: Template) {
-    data.name = template.name
-    data.runtime = { ...template.runtime }
-    data.java = template.java ?? ''
-    data.showLog = template.showLog ?? false
-    data.hideLauncher = template.hideLauncher ?? true
-    data.vmOptions = [...template.vmOptions ?? []]
-    data.mcOptions = [...template.mcOptions ?? []]
-    data.maxMemory = template.maxMemory ?? 0
-    data.minMemory = template.minMemory ?? 0
-    data.author = template.author ?? ''
-    data.description = template.description ?? ''
-    data.url = template.url ?? ''
-    data.icon = template.icon ?? ''
-    data.modpackVersion = template.modpackVersion || ''
-    data.server = template.server ? { ...template.server } : null
-    data.upstream = template.upstream
+    return reactive({
+      filePath: `${man.parent}-${man.id.toString()}`,
+      name: '',
+      description: computed(() => t('instanceTemplate.ftb')),
+      instance: markRaw({
+        name: `${man.projectName}-${man.name}`,
+        author: man.authors[0].name,
+        java: getRuntime() ?? '',
+        runtime,
+        upstream: {
+          type: 'ftb-modpack',
+          id: man.id,
+        },
+        icon: man.iconUrl,
+      }),
+      files: markRaw(man.files.map(f => ({
+        path: getFTBPath(f),
+        hashes: {
+          sha1: f.sha1,
+        },
+        curseforge: f.curseforge
+          ? {
+            projectId: f.curseforge.project,
+            fileId: f.curseforge.file,
+          }
+          : undefined,
+        downloads: f.url ? [f.url] : undefined,
+        size: f.size,
+      }))),
+      type: 'ftb',
+    })
   }
 
   return {
-    templates: container,
-    setup,
+    templates,
     refresh,
-    dispose,
-    apply,
     refreshing,
   }
 }

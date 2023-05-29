@@ -53,3 +53,20 @@ export interface ResourceSaveMetadata extends SaveMetadata {
      */
   root: string
 }
+
+export class Saves {
+  saves = [] as InstanceSaveMetadata[]
+
+  instanceSaveUpdate(save: InstanceSaveMetadata) {
+    const existed = this.saves.find(s => s.path === save.path)
+    if (existed) {
+      Object.assign(existed, save)
+    } else {
+      this.saves.push(save)
+    }
+  }
+
+  instanceSaveRemove(save: string) {
+    this.saves = this.saves.filter((s) => s.path !== save)
+  }
+}

@@ -124,6 +124,7 @@ import CurseforgeProjectHeader from './CurseforgeProjectHeader.vue'
 import CurseforgeProjectImages from './CurseforgeProjectImages.vue'
 import CurseforgeProjectRecentFiles from './CurseforgeProjectRecentFiles.vue'
 import CurseforgeUpstreamCard from './CurseforgeUpstreamCard.vue'
+import { kInstance } from '@/composables/instance'
 
 const props = withDefaults(defineProps<{
   type: ProjectType
@@ -153,8 +154,8 @@ const allFiles = computed(() => {
 })
 
 // The instance source
-const { state: instanceState } = useService(InstanceServiceKey)
-const destination = ref(props.from || instanceState.path)
+const { path } = injection(kInstance)
+const destination = ref(props.from || path.value)
 
 // I18n
 const { t } = useI18n()

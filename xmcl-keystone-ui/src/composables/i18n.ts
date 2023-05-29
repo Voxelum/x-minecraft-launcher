@@ -1,16 +1,11 @@
-import { BaseServiceKey } from '@xmcl/runtime-api'
-import { InjectionKey } from 'vue'
-import VueI18n from 'vue-i18n'
 
-import { injection } from '../util/inject'
-import { useService } from './service'
-import { kVuetify } from './vuetify'
+import { Settings } from '@xmcl/runtime-api'
+import { Ref } from 'vue'
+import { Framework } from 'vuetify'
 
-export function useI18nSync() {
-  const { state } = useService(BaseServiceKey)
-  const framework = injection(kVuetify)
+export function useI18nSync(framework: Framework, state: Ref<Settings | undefined>) {
   const { locale } = useI18n()
-  watch(computed(() => state.locale), (newValue: string, oldValue: string) => {
+  watch(computed(() => state.value?.locale || ''), (newValue: string, oldValue: string) => {
     console.log(`Locale changed ${oldValue} -> ${newValue}`)
     locale.value = newValue
     const lang = framework.lang

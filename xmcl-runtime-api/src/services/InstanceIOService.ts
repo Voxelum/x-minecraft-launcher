@@ -1,3 +1,4 @@
+import { ResolvedVersion } from '@xmcl/core'
 import { Exception, InstanceNotFoundException } from '../entities/exception'
 import { ServiceKey } from './Service'
 
@@ -5,7 +6,11 @@ export interface ExportInstanceOptions {
   /**
    * The src path of the instance
    */
-  src?: string
+  src: string
+  /**
+   * The version of the instance
+   */
+  version: string
   /**
    * The dest path of the exported instance
    */

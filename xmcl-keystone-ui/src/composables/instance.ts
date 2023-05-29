@@ -1,48 +1,49 @@
-import { useSemaphore, useServiceBusy } from '@/composables/semaphore'
-import { useService } from '@/composables/service'
-import { Frame as GameSetting } from '@xmcl/gamesetting'
-import { DEFAULT_PROFILE, EMPTY_VERSION, Instance, InstanceData, InstanceOptionsServiceKey, InstanceServiceKey, InstanceVersionServiceKey } from '@xmcl/runtime-api'
-import { computed, Ref } from 'vue'
+import { Instance } from '@xmcl/runtime-api'
+import { InjectionKey, Ref, computed } from 'vue'
+import { useLocalStorageCacheStringValue } from './cache'
 
-export function useInstanceBase() {
-  const { state } = useService(InstanceServiceKey)
-  const path = computed(() => state.path)
-  return { path }
+export const kInstance: InjectionKey<ReturnType<typeof useInstance>> = Symbol('Instance')
+
+const EMPTY_INSTANCE: Instance = {
+  path: '',
+  name: '',
+  runtime: {
+    minecraft: '',
+  },
+  lastAccessDate: 0,
+  lastPlayedDate: 0,
+  playtime: 0,
+  creationDate: 0,
+  author: '',
+  description: '',
+  version: '',
+  url: '',
+  icon: '',
+  modpackVersion: '',
+  fileApi: '',
+  server: null,
+  tags: [],
 }
-
-export function useInstanceIsServer(i: Ref<Instance>) {
-  return computed(() => i.value.server !== null)
-}
-
 /**
  * Use the general info of the instance
  */
-export function useInstance() {
-  const { state } = useService(InstanceServiceKey)
+export function useInstance(path: Ref<string>, instances: Ref<Instance[]>) {
+  const instance = computed(() => instances.value.find(i => i.path === path.value) ?? EMPTY_INSTANCE)
+  const runtime = computed(() => instance.value.runtime)
+  const name = computed(() => instance.value.name)
+  const isServer = computed(() => instance.value.server !== null)
+  const select = (p: string) => {
+    path.value = p
+  }
 
-  const instance = computed(() => state.instances.find(i => i.path === state.path) ?? DEFAULT_PROFILE)
-  const path = computed(() => state.path)
   return {
+    instances,
     path,
+    runtime,
+    name,
+    isServer,
+    select,
     instance,
-    refreshing: computed(() => useSemaphore('instance').value !== 0),
+    refreshing: computed(() => false),
   }
-}
-
-/**
- * Hook of a view of all instances & some deletion/selection functions
- */
-export function useInstances() {
-  const { state } = useService(InstanceServiceKey)
-  return {
-    instances: computed(() => state.instances),
-  }
-}
-
-export function useInstanceServerEdit(server: Ref<InstanceData['server']>) {
-  const result = computed({
-    get: () => server.value ?? { host: '', port: undefined },
-    set: (v) => { server.value = v },
-  })
-  return result
 }

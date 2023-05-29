@@ -1,11 +1,10 @@
 import { GameProfileAndTexture, LoginOptions, Skin, SkinPayload, UserException, UserProfile } from '@xmcl/runtime-api'
-import { Logger } from '../util/log'
-import { toRecord } from '../util/object'
-import { MicrosoftAuthenticator } from '../clients/MicrosoftAuthenticator'
-import { MojangClient } from '../clients/MojangClient'
+import { MicrosoftAuthenticator, MojangClient } from '@xmcl/user'
 import { MicrosoftOAuthClient } from '../clients/MicrosoftOAuthClient'
 import { XBoxResponse, normalizeSkinData } from '../entities/user'
 import { UserTokenStorage } from '../entities/userTokenStore'
+import { Logger } from '../util/log'
+import { toRecord } from '../util/object'
 import { UserAccountSystem } from './AccountSystem'
 
 export class MicrosoftAccountSystem implements UserAccountSystem {
@@ -28,7 +27,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       id: authentication.userId,
       username: options.username,
       invalidated: false,
-      authService: options.service,
+      authority: options.authority,
       expiredAt: authentication.expiredAt,
       profiles: toRecord(authentication.gameProfiles, p => p.id),
       selectedProfile: authentication.selectedProfile?.id ?? '',

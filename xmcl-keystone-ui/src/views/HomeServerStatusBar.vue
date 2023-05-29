@@ -70,10 +70,13 @@
 </template>
 
 <script lang=ts setup>
-import { useInstanceServerStatus } from '../composables/serverStatus'
 import unknownServer from '@/assets/unknown_server.png'
+import { kInstance } from '@/composables/instance'
+import { injection } from '@/util/inject'
+import { useInstanceServerStatus } from '../composables/serverStatus'
 
-const { refresh, status, pinging } = useInstanceServerStatus()
+const { instance } = injection(kInstance)
+const { refresh, status, pinging } = useInstanceServerStatus(instance)
 const { t } = useI18n()
 onMounted(() => {
   if (status.value.ping <= 0) {

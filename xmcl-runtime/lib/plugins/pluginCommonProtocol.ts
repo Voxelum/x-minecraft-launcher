@@ -26,7 +26,7 @@ const builtin: Record<string, string> = {
  */
 export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
   const normalizePath = (path: string) => {
-    if (app.platform.name === 'windows') {
+    if (app.platform.os === 'windows') {
       return decodeURIComponent(path.startsWith('/') ? path.substring(1) : path)
     }
     return decodeURIComponent(path.startsWith('//') ? path.substring(1) : path)

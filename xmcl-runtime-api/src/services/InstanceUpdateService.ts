@@ -10,7 +10,7 @@ export interface UpdateInstanceOptions {
 }
 
 export type UpgradeModpackOptions = {
-  instancePath?: string
+  instancePath: string
   oldModpack?: string
   newModpack: string
 }

@@ -1,5 +1,4 @@
-import { InstanceModsService as IInstanceModsService, ResourceService as IResourceService, InstallModsOptions, InstanceModsServiceKey, InstanceModsState, Resource, ResourceDomain, isModResource } from '@xmcl/runtime-api'
-import { existsSync } from 'fs'
+import { InstanceModsService as IInstanceModsService, ResourceService as IResourceService, InstallModsOptions, InstanceModsServiceKey, InstanceModsState, Resource, ResourceDomain, MutableState, isModResource, getInstanceModStateKey } from '@xmcl/runtime-api'
 import { ensureDir } from 'fs-extra/esm'
 import { rename, stat, unlink } from 'fs/promises'
 import watch from 'node-watch'
@@ -35,78 +34,78 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
     await this.app.shell.openDirectory(join(path, 'mods'))
   }
 
-  async dispose() {
-  }
+  async watch(instancePath: string): Promise<MutableState<InstanceModsState>> {
+    return this.storeManager.registerOrGet(getInstanceModStateKey(instancePath), async () => {
+      enum Action { Add, Remove, Replace }
+      const updateMod = new AggregateExecutor<[Resource, Action], [Resource, Action][]>(v => v,
+        (all) => {
+          const toAdd = [] as Resource[]
+          const toRemove = [] as Resource[]
+          const toUpdate = [] as Resource[]
+          const visited = new Set<string>()
+          for (let i = all.length - 1; i >= 0; i--) {
+            const [r, action] = all[i]
+            if (visited.has(r.hash)) continue
+            if (action === Action.Add) toAdd.push(r)
+            else if (action === Action.Remove) toRemove.push(r)
+            else toUpdate.push(r)
+            visited.add(r.hash)
+          }
+          state.instanceModUpdates({ toAdd, toRemove, toUpdate })
+        },
+        500)
 
-  async watch(instancePath: string): Promise<InstanceModsState> {
-    const updateMod = new AggregateExecutor<[Resource, boolean], [Resource, boolean][]>(v => v,
-      (all) => {
-        const toAdd = [] as Resource[]
-        const toRemove = [] as Resource[]
-        const visited = new Set<string>()
+      const scan = async (dir: string) => {
+        const files = await readdirIfPresent(dir)
 
-        for (let i = all.length - 1; i >= 0; i--) {
-          const [r, isAdd] = all[i]
-          if (visited.has(r.hash)) continue
-          if (isAdd) toAdd.push(r)
-          else toRemove.push(r)
-          visited.add(r.hash)
-        }
-        state.instanceModUpdates({ adds: toAdd, remove: toRemove })
-      },
-      500)
+        const fileArgs = files.filter((file) => !shouldIgnoreFile(file)).map((file) => join(dir, file))
 
-    const scanMods = async (dir: string) => {
-      const files = await readdirIfPresent(dir)
-
-      const fileArgs = files.filter((file) => !shouldIgnoreFile(file)).map((file) => join(dir, file))
-
-      const resources = await this.resourceService.importResources(fileArgs.map(f => ({ path: f, domain: ResourceDomain.Mods })))
-      return resources.map((r, i) => ({ ...r, path: fileArgs[i] }))
-    }
-
-    const listener = this.resourceService as IResourceService
-    listener.on('resourceAdd', (res) => {
-      const existed = state.mods.findIndex(m => m.hash === res.hash)
-      if (existed !== -1) {
-        state.instanceModUpdateExisted([res])
+        const resources = await this.resourceService.importResources(fileArgs.map(f => ({ path: f, domain: ResourceDomain.Mods })))
+        return resources.map((r, i) => ({ ...r, path: fileArgs[i] }))
       }
-    }).on('resourceUpdate', (res) => {
-      const existed = state.mods.findIndex(m => m.hash === res.hash)
-      if (existed !== -1) {
-        state.instanceModUpdateExisted([res])
+
+      const state = new InstanceModsState()
+      const listener = this.resourceService as IResourceService
+      const onResourceUpdate = async (res: Resource) => {
+        updateMod.push([res, Action.Replace])
       }
-    })
 
-    const state = this.storeManager.register('InstanceMods/' + instancePath, new InstanceModsState())
+      listener.on('resourceAdd', onResourceUpdate)
+        .on('resourceUpdate', onResourceUpdate)
 
-    const basePath = join(instancePath, 'mods')
-    await ensureDir(basePath)
-    await this.resourceService.whenReady(ResourceDomain.Mods)
-    state.instanceMods({ instance: instancePath, resources: await scanMods(basePath) })
-    const modsWatcher = watch(basePath, async (event, filePath) => {
-      if (shouldIgnoreFile(filePath)) return
-      if (event === 'update') {
-        const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }])
-        if (isModResource(resource)) {
-          this.log(`Instance mod add ${filePath}`)
+      const basePath = join(instancePath, 'mods')
+      await ensureDir(basePath)
+      await this.resourceService.whenReady(ResourceDomain.Mods)
+      state.mods = await scan(basePath)
+
+      const watcher = watch(basePath, async (event, filePath) => {
+        if (shouldIgnoreFile(filePath)) return
+        if (event === 'update') {
+          const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }])
+          if (isModResource(resource)) {
+            this.log(`Instance mod add ${filePath}`)
+          } else {
+            this.warn(`Non mod resource added in /mods directory! ${filePath}`)
+          }
+          updateMod.push([resource, Action.Add])
         } else {
-          this.warn(`Non mod resource added in /mods directory! ${filePath}`)
+          const target = state.mods.find(r => r.path === filePath)
+          if (target) {
+            this.log(`Instance mod remove ${filePath}`)
+            updateMod.push([target, Action.Remove])
+          } else {
+            this.warn(`Cannot remove the mod ${filePath} as it's not found in memory cache!`)
+          }
         }
-        updateMod.push([resource, true])
-      } else {
-        const target = state.mods.find(r => r.path === filePath)
-        if (target) {
-          this.log(`Instance mod remove ${filePath}`)
-          updateMod.push([target, false])
-        } else {
-          this.warn(`Cannot remove the mod ${filePath} as it's not found in memory cache!`)
-        }
-      }
-    })
-    this.log(`Mounted on instance mods: ${basePath}`)
+      })
+      this.log(`Mounted on instance mods: ${basePath}`)
 
-    return state
+      return [state, () => {
+        watcher.close()
+        listener.removeListener('resourceAdd', onResourceUpdate)
+          .removeListener('resourceUpdate', onResourceUpdate)
+      }]
+    })
   }
 
   async install({ mods: resources, path }: InstallModsOptions) {
@@ -120,7 +119,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
       const dest = join(path, ResourceDomain.Mods, res.fileName)
       const [srcStat, destStat] = await Promise.all([stat(src), stat(dest).catch(() => undefined)])
 
-      let promise: Promise<void> | undefined
+      let promise: Promise<any> | undefined
       if (!destStat) {
         promise = linkWithTimeoutOrCopy(src, dest)
       } else if (srcStat.ino !== destStat.ino) {
@@ -186,27 +185,27 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
     const promises: Promise<void>[] = []
     const instanceModsDir = join(path, ResourceDomain.Mods)
     for (const resource of mods) {
-      if (dirname(resource.path) !== instanceModsDir) {
-        const founded = this.state.mods.find(m => m.ino === resource.ino) ??
-          this.state.mods.find(m => m.hash === resource.hash)
-        if (founded && founded.path !== resource.path) {
-          const realPath = join(instanceModsDir, founded.fileName)
-          if (existsSync(realPath)) {
-            promises.push(unlink(realPath))
-          } else {
-            this.warn(`Skip to uninstall unmanaged mod file on ${resource.path}!`)
-          }
-        } else {
-          this.warn(`Skip to uninstall unmanaged mod file on ${resource.path}!`)
-        }
-      } else {
-        promises.push(unlink(resource.path).catch(e => {
-          // if (e.code === 'ENOENT') {
-          //   // Force remove
-          //   this.state.instanceModRemove([resource])
-          // }
-        }))
-      }
+      // if (dirname(resource.path) !== instanceModsDir) {
+      //   const founded = this.state.mods.find(m => m.ino === resource.ino) ??
+      //     this.state.mods.find(m => m.hash === resource.hash)
+      //   if (founded && founded.path !== resource.path) {
+      //     const realPath = join(instanceModsDir, founded.fileName)
+      //     if (existsSync(realPath)) {
+      //       promises.push(unlink(realPath))
+      //     } else {
+      //       this.warn(`Skip to uninstall unmanaged mod file on ${resource.path}!`)
+      //     }
+      //   } else {
+      //     this.warn(`Skip to uninstall unmanaged mod file on ${resource.path}!`)
+      //   }
+      // } else {
+      promises.push(unlink(resource.path).catch(e => {
+        // if (e.code === 'ENOENT') {
+        //   // Force remove
+        //   this.state.instanceModRemove([resource])
+        // }
+      }))
+      // }
     }
     await Promise.all(promises)
     this.log(`Finish to uninstall ${mods.length} from ${path}`)

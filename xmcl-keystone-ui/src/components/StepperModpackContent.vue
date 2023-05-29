@@ -1,70 +1,42 @@
 <template>
   <div class="flex flex-col h-full overflow-auto">
-    <StepperModpackContentCurseforge
-      v-if="curseforgeFiles.length > 0"
-      :files="curseforgeFiles"
-    />
-    <InstanceManifestFileTree
-      v-if="ftbFiles.length > 0 || modrinthFiles.length > 0 || mcbbsAddonFiles.length > 0"
-      :value="[]"
-    />
+    <InstanceManifestFileTree :value="[]" />
   </div>
 </template>
 <script lang="ts" setup>
-import { FTBFile, ModpackFileInfoAddon, ModpackFileInfoCurseforge } from '@xmcl/runtime-api'
-import { Template } from '../composables/instanceAdd'
-import { InstanceFileNode, provideFileNodes } from '../composables/instanceFiles'
-import InstanceManifestFileTree from './InstanceManifestFileTree.vue'
-import StepperModpackContentCurseforge from './StepperModpackContentCurseforge.vue'
+import { InstanceFileNode, provideFileNodes } from '@/composables/instanceFileNodeData'
 import { basename } from '@/util/basename'
-import { getFTBPath } from '@/util/ftb'
+import { Template } from '../composables/instanceAdd'
+import InstanceManifestFileTree from './InstanceManifestFileTree.vue'
+import useSWRV from 'swrv'
+import { clientCurseforgeV1 } from '@/util/clients'
+import { InstanceFile } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   modpack?: Template
   shown: Boolean
 }>()
 
-const mcbbsFiles = computed(() => props.modpack?.source.type === 'mcbbs' ? props.modpack.source.resource.metadata['mcbbs-modpack'].files ?? [] : [])
-const mcbbsAddonFiles = computed(() => mcbbsFiles.value.filter((f): f is ModpackFileInfoAddon => f.type === 'addon'))
-const mcbbsCurseforgeFiles = computed(() => mcbbsFiles.value.filter((f): f is ModpackFileInfoCurseforge => f.type === 'curse'))
+const curseforgeFiles = computed(() => (props.modpack?.files ?? []).filter((v): v is (InstanceFile & { curseforge: { projectId: string } }) => !!v.curseforge))
 
-const curseforgeFiles = computed(() => props.modpack?.source.type === 'curseforge' ? props.modpack.source.resource.metadata['curseforge-modpack'].files : mcbbsCurseforgeFiles.value)
+const { data: mods } = useSWRV(computed(() => `/curseforge/files?${curseforgeFiles.value.map(f => f.curseforge.projectId)}`),
+  () => clientCurseforgeV1.getMods(curseforgeFiles.value.map(f => f.curseforge.projectId)))
 
-const ftbFiles = computed(() => props.modpack?.source.type === 'ftb' ? props.modpack.source.manifest.files : [])
-
-const modrinthFiles = computed(() => props.modpack?.source.type === 'modrinth' ? props.modpack.source.resource.metadata['modrinth-modpack'].files : [])
-
-provideFileNodes(computed(() => {
-  function getFTBNode(file: FTBFile): InstanceFileNode {
+const nodes = useSWRV(computed(() => mods.value && `/modpack/preview/${props.modpack?.filePath ?? ''}`), async (v) => {
+  if (!v) return
+  if (!props.modpack) return
+  return props.modpack.files.map((f) => {
+    const avatar = mods.value?.find(v => v.id === f.curseforge?.projectId)?.logo.thumbnailUrl
     return {
-      id: getFTBPath(file),
-      name: file.name,
-      size: file.size,
-    }
-  }
-  function getNode(file: { path: string; fileSize?: number; downloads: string[] }): InstanceFileNode {
-    return {
-      id: file.path,
-      name: basename(file.path),
-      size: file.fileSize ?? 0,
-    }
-  }
-  function getMcbbsNode(file: ModpackFileInfoAddon): InstanceFileNode {
-    return {
-      id: file.path,
-      name: basename(file.path),
-      size: 0,
-    }
-  }
+      path: f.path,
+      name: basename(f.path),
+      size: f.size ?? 0,
+      avatar,
+    } as InstanceFileNode<any>
+  })
+})
 
-  if (ftbFiles.value.length > 0) {
-    return ftbFiles.value.map(getFTBNode)
-  } else if (modrinthFiles.value.length > 0) {
-    return modrinthFiles.value.map(getNode)
-  } else {
-    return mcbbsAddonFiles.value.map(getMcbbsNode)
-  }
-}))
+provideFileNodes(computed(() => nodes.data.value ?? []))
 
 </script>
 

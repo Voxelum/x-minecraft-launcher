@@ -45,13 +45,16 @@
 <script lang="ts" setup>
 import { InstanceIOException, InstanceIOServiceKey, InstanceManifest, isException, XUpdateServiceKey, InstanceManifestServiceKey } from '@xmcl/runtime-api'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
-import { provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
 import { useService, useServiceBusy } from '@/composables'
+import { provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
+import { injection } from '@/util/inject'
+import { kInstance } from '@/composables/instance'
 
 const props = defineProps<{ shown: boolean }>()
 
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)
 const { uploadInstanceManifest } = useService(XUpdateServiceKey)
+const { path } = injection(kInstance)
 const gettingManifest = useServiceBusy(InstanceManifestServiceKey, 'getInstanceManifest')
 const uploadingInstanceManifest = useServiceBusy(XUpdateServiceKey, 'uploadInstanceManifest')
 const current = ref(undefined as undefined | InstanceManifest)
@@ -66,7 +69,7 @@ provideFileNodes(nodes)
 
 async function refresh() {
   errorText.value = ''
-  current.value = await getInstanceManifest()
+  current.value = await getInstanceManifest({ path: path.value })
   console.log(current.value)
 }
 
@@ -89,6 +92,7 @@ async function upload() {
     try {
       await uploadInstanceManifest({
         manifest: result,
+        path: path.value,
       })
     } catch (e) {
       if (isException(InstanceIOException, e)) {

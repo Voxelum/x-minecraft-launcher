@@ -90,6 +90,18 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         },
       )
 
+      // Intercept node_modules\better-sqlite3\lib\database.js
+      build.onLoad(
+        { filter: /^.+better-sqlite3[\\/]lib[\\/]database\.js$/g },
+        async ({ path }) => {
+          const content = (await readFile(path, 'utf-8')).replace(/require\('bindings'\)\('better_sqlite3\.node'\)/g, 'require(\'../build/Release/better_sqlite3.node\')')
+          return {
+            contents: content,
+            loader: 'js',
+          }
+        },
+      )
+
       build.onLoad(
         { filter: /^.+[\\/]node_modules[\\/].+[\\/]classic-level[\\/]binding\.js$/g },
         async ({ path }) => {

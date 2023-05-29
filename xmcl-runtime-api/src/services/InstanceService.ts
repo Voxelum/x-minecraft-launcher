@@ -1,8 +1,9 @@
+import { MutableState } from '../util/MutableState'
 import { Exception } from '../entities/exception'
-import { DEFAULT_PROFILE, Instance } from '../entities/instance'
+import { Instance } from '../entities/instance'
 import { InstanceSchema } from '../entities/instance.schema'
 import { DeepPartial } from '../util/object'
-import { ServiceKey, StatefulService } from './Service'
+import { ServiceKey } from './Service'
 
 export type CreateInstanceOption = Partial<Omit<InstanceSchema, 'lastAccessDate' | 'creationDate'>> & {
   path?: string
@@ -18,10 +19,6 @@ export interface EditInstanceOptions extends Partial<Omit<InstanceSchema, 'runti
    * If this is undefined, it will disable the server of this instance
    */
   server?: InstanceSchema['server']
-  /**
-    * The target instance path. If this is absent, it will use the selected instance.
-    */
-  instancePath?: string
 }
 
 export class InstanceState {
@@ -30,28 +27,9 @@ export class InstanceState {
    */
   all = {} as { [path: string]: Instance }
   /**
-  * Current selected path
-  */
-  path = '' as string
-
-  /**
    * All selected instances.
    */
   instances: Instance[] = []
-
-  // /**
-  //  * All selected instances.
-  //  */
-  // get instances() {
-  //   return Object.values(this.all)
-  // }
-
-  /**
-   * The selected instance config.
-   */
-  get instance(): Instance {
-    return this.instances.find(v => v.path === this.path) ?? DEFAULT_PROFILE
-  }
 
   instanceAdd(instance: Instance) {
     /**
@@ -73,19 +51,6 @@ export class InstanceState {
     this.instances = this.instances.filter(i => i.path !== path)
   }
 
-  instanceSelect(path: string) {
-    let inst = this.instances.find(i => i.path === (path || this.path))
-    if (inst) {
-      this.path = path
-    } else if (this.path === '') {
-      this.path = Object.keys(this.all)[0]
-    }
-    inst = this.instances.find(i => i.path === (path || this.path))
-    if (inst) {
-      inst.lastAccessDate = Date.now()
-    }
-  }
-
   instanceMove({ from, to }: { from: string; to: string }) {
     const inst = this.instances.find(i => i.path === from)
     if (inst) {
@@ -101,10 +66,9 @@ export class InstanceState {
    * @param settings The modified data
    */
   instanceEdit(settings: DeepPartial<InstanceSchema> & { path: string }) {
-    const inst = this.instances.find(i => i.path === (settings.path || this.path)) /* this.all[settings.path || this.path] */
+    const inst = this.instances.find(i => i.path === (settings.path)) /* this.all[settings.path || this.path] */
 
     if (!inst) {
-      console.error(`Cannot commit profile. Illegal State with missing profile ${this.path}`)
       return
     }
 
@@ -188,22 +152,14 @@ export class InstanceState {
 /**
  * Provide instance splitting service. It can split the game into multiple environment and dynamically deploy the resource to run.
  */
-export interface InstanceService extends StatefulService<InstanceState> {
+export interface InstanceService {
+  getSharedInstancesState(): Promise<MutableState<InstanceState>>
   /**
    * Create a managed instance (either a modpack or a server) under the managed folder.
    * @param option The creation option
    * @returns The instance path
    */
   createInstance(option: CreateInstanceOption): Promise<string>
-  /**
-   * Create a managed instance in storage.
-   */
-  createAndMount(payload: CreateInstanceOption): Promise<string>
-  /**
-   * Mount the instance as the current active instance.
-   * @param path the instance path
-   */
-  mountInstance(path: string): Promise<void>
   /**
    * Delete the managed instance from the disk
    * @param path The instance path
@@ -213,7 +169,7 @@ export interface InstanceService extends StatefulService<InstanceState> {
    * Edit the instance. If the `path` is not present, it will edit the current selected instance.
    * Otherwise, it will edit the instance on the provided path.
    */
-  editInstance(options: EditInstanceOptions): Promise<void>
+  editInstance(options: EditInstanceOptions & { instancePath: string }): Promise<void>
   /**
    * Add a directory as managed instance folder. It will try to load the instance.json.
    * If it's a common folder, it will try to create instance from the directory data.

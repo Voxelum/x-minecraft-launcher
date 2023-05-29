@@ -1,5 +1,5 @@
 import { checksum } from '@xmcl/core'
-import { InstanceFile, InstanceIOException, InstanceManifest, InstanceUpdate, SetInstanceManifestOptions, XUpdateService as IXUpdateService, XUpdateServiceKey } from '@xmcl/runtime-api'
+import { InstanceFile, InstanceIOException, InstanceManifest, InstanceUpdate, SetInstanceManifestOptions, XUpdateService as IXUpdateService, XUpdateServiceKey, UserState } from '@xmcl/runtime-api'
 import { randomUUID } from 'crypto'
 import { createReadStream } from 'fs'
 import { unlink } from 'fs/promises'
@@ -9,7 +9,7 @@ import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { missing } from '../util/fs'
 import { Inject } from '../util/objectRegistry'
-import { isValidateUrl, joinUrl } from '../util/url'
+import { isValidUrl, joinUrl } from '../util/url'
 import { ZipTask } from '../util/zip'
 import { InstanceService } from './InstanceService'
 import { AbstractService, Singleton } from './Service'
@@ -29,7 +29,7 @@ export class XUpdateService extends AbstractService implements IXUpdateService {
 
   @Singleton((o) => o.path)
   async uploadInstanceManifest({ path, manifest, headers, includeFileWithDownloads, forceJsonFormat }: SetInstanceManifestOptions): Promise<void> {
-    const instancePath = path || this.instanceService.state.path
+    const instancePath = path
 
     const instance = this.instanceService.state.all[instancePath]
 
@@ -41,7 +41,7 @@ export class XUpdateService extends AbstractService implements IXUpdateService {
       throw new InstanceIOException({ instancePath, type: 'instanceHasNoFileApi' })
     }
 
-    const url = isValidateUrl(instance.fileApi)
+    const url = isValidUrl(instance.fileApi)
     if (!url || (url.protocol !== 'http:' && url.protocol !== 'https')) {
       throw new InstanceIOException({ instancePath, type: 'instanceInvalidFileApi', url: instance.fileApi })
     }
@@ -72,7 +72,8 @@ export class XUpdateService extends AbstractService implements IXUpdateService {
       const start = Date.now()
       const allHeaders = headers ? { ...headers } : {}
       if (!allHeaders.Authorization) {
-        const token = this.getAccessToken(this.userService.state.user?.id ?? '')
+        // TODO: impl this
+        const token = this.getAccessToken(/* UserState.getUser(this.userService.state)?.id ?? '' */ '')
         allHeaders.Authorization = `Bearer ${token}`
       }
 
@@ -98,8 +99,8 @@ export class XUpdateService extends AbstractService implements IXUpdateService {
   }
 
   @Singleton(p => p)
-  async fetchInstanceUpdate(path?: string): Promise<InstanceUpdate | undefined> {
-    const instancePath = path || this.instanceService.state.path
+  async fetchInstanceUpdate(path: string): Promise<InstanceUpdate | undefined> {
+    const instancePath = path
 
     const instance = this.instanceService.state.all[instancePath]
 

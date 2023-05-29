@@ -117,12 +117,14 @@ import { kUserContext } from '@/composables/user'
 import { injection } from '@/util/inject'
 import { createAnswerAppUrl, PeerServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
+import { kPeerState } from '@/composables/peers'
 
 const { isShown, dialog } = useDialog('peer-receive')
 const { gameProfile } = injection(kUserContext)
+const { connections } = injection(kPeerState)
 
 const service = useService(PeerServiceKey)
-const connection = computed(() => service.state.connections.find(c => c.id === id.value))
+const connection = computed(() => connections.value.find(c => c.id === id.value))
 const localDescription = computed(() => connection.value?.localDescriptionSDP ? (connection.value?.localDescriptionSDP) : '')
 const localSdpUrl = computed(() => createAnswerAppUrl(localDescription.value, gameProfile.value.name))
 const { t } = useI18n()

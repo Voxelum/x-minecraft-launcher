@@ -1,10 +1,10 @@
 <template>
   <div
-    class="flex flex-col select-none h-full overflow-auto pb-0"
+    class="flex h-full select-none flex-col overflow-auto pb-0"
     @wheel.stop
   >
     <v-progress-linear
-      class="absolute top-0 z-10 m-0 p-0 left-0"
+      class="absolute left-0 top-0 z-10 m-0 p-0"
       :active="loading"
       height="3"
       :indeterminate="true"
@@ -13,13 +13,14 @@
     <SplitPane
       flex-left
       :min-percent="30"
-      class="h-full overflow-auto py-0 w-full flex"
+      :default-percent="30"
+      class="flex h-full w-full overflow-auto py-0"
     >
       <template
         #left
       >
-        <div class="flex flex-grow-0 px-4 items-center">
-          <v-subheader class="pl-0 py-2 responsive-header">
+        <div class="flex flex-grow-0 items-center px-4">
+          <v-subheader class="responsive-header py-2 pl-0">
             <v-icon left>
               travel_explore
             </v-icon>
@@ -80,7 +81,7 @@
         </div>
         <v-virtual-scroll
           :bench="2"
-          class="h-full max-h-full visible-scroll overflow-auto w-full"
+          class="visible-scroll h-full max-h-full w-full overflow-auto"
           :items="items"
           item-height="68"
           @scroll="onScroll"
@@ -93,7 +94,7 @@
               @click="onSelect(item)"
             />
             <template v-else>
-              <v-subheader class="px-4 py-2 flex justify-center">
+              <v-subheader class="flex justify-center px-4 py-2">
                 <v-divider class="mr-3" />
                 <v-icon left>
                   archive
@@ -125,7 +126,7 @@
         >
           <template #left>
             <div
-              class="h-full overflow-auto flex flex-grow"
+              class="flex h-full flex-grow overflow-auto"
             >
               <template v-if="selected">
                 <ModAddModrinthDetail
@@ -176,9 +177,11 @@
 import ErrorView from '@/components/ErrorView.vue'
 import Hint from '@/components/Hint.vue'
 import SplitPane from '@/components/SplitPane.vue'
-import { kInstanceContext } from '@/composables/instanceContext'
 import { kInstallList } from '@/composables/installList'
-import { ModListSearchItem } from '@/composables/modSearchItems'
+import { kInstance } from '@/composables/instance'
+import { kInstanceVersion } from '@/composables/instanceVersion'
+import { kModsSearch } from '@/composables/modSearch'
+import { ModListSearchItem, kModSearchItems } from '@/composables/modSearchItems'
 import { kCompact } from '@/composables/scrollTop'
 import { injection } from '@/util/inject'
 import { File } from '@xmcl/curseforge'
@@ -190,9 +193,10 @@ import ModAddModrinthDetail from './ModAddModrinthDetail.vue'
 import ModAddResourceDetail from './ModAddResourceDetail.vue'
 import ModAddSearchItem from './ModAddSearchItem.vue'
 
-const { modSearch, modSearchItems, minecraft, fabricLoader, forge, quiltLoader, instance } = injection(kInstanceContext)
+const { instance } = injection(kInstance)
+const { minecraft, fabricLoader, forge, quiltLoader } = injection(kInstanceVersion)
+
 const modLoaderFilters = ref([] as string[])
-const { tab } = modSearchItems
 
 onMounted(() => {
   const items = [] as string[]
@@ -212,8 +216,10 @@ const {
   modrinth, modrinthError, loadingModrinth,
   curseforge, curseforgeError, loadingCurseforge,
   loading,
-} = modSearch
-const { items: searchItems } = modSearchItems
+  loadMoreCurseforge,
+  loadMoreModrinth,
+} = injection(kModsSearch)
+const { items: searchItems, tab } = injection(kModSearchItems)
 const items = computed(() => {
   const all = searchItems.value
   const allowForge = modLoaderFilters.value.indexOf('forge') !== -1
@@ -287,10 +293,10 @@ const onScroll = (e: Event) => {
   const target = e.target as HTMLElement
   if (!target) return
   if (target.scrollTop + target.clientHeight >= target.scrollHeight - 100) {
-    if (modSearchItems.tab.value === 2) {
-      modSearch.loadMoreCurseforge()
-    } else if (modSearchItems.tab.value === 3) {
-      modSearch.loadMoreModrinth()
+    if (tab.value === 2) {
+      loadMoreCurseforge()
+    } else if (tab.value === 3) {
+      loadMoreModrinth()
     }
   }
 }

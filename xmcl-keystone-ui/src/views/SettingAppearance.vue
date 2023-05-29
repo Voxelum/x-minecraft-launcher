@@ -421,10 +421,9 @@
   </v-list>
 </template>
 <script lang="ts" setup>
-import { useService } from '@/composables'
+import { kSettingsState } from '@/composables/setting'
 import { kUILayout } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
-import { BaseServiceKey } from '@xmcl/runtime-api'
 import { BackgroundType, useBackground, useBarBlur } from '../composables/background'
 import { kColorTheme } from '../composables/colorTheme'
 import SettingAppearanceColor from './SettingAppearanceColor.vue'
@@ -434,19 +433,18 @@ const { t } = useI18n()
 const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, setBackgroundVideo, backgroundVideo } = useBackground()
 const { blurSidebar, blurAppBar } = useBarBlur()
 const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault } = injection(kColorTheme)
-const { state } = useService(BaseServiceKey)
+const { state } = injection(kSettingsState)
 
-const isLinux = computed(() => state.platform.name === 'linux')
 const linuxTitlebar = computed({
-  get: () => state.linuxTitlebar,
-  set: v => state.linuxTitlebarSet(v),
+  get: () => state.value?.linuxTitlebar ?? false,
+  set: v => state.value?.linuxTitlebarSet(v),
 })
 
 const layout = injection(kUILayout)
 
 const theme = computed({
-  get: () => state.theme,
-  set: v => state.themeSet(v),
+  get: () => state.value?.theme ?? 'system',
+  set: v => state.value?.themeSet(v),
 })
 const themes = computed(() => [{
   text: t('setting.theme.dark'),

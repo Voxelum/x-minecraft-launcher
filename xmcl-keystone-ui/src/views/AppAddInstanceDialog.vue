@@ -30,7 +30,7 @@
         </v-stepper-step>
         <v-divider />
         <v-stepper-step
-          :editable="canPreview"
+          editable
           :complete="step > 2"
           step="3"
         >
@@ -47,6 +47,7 @@
         >
           <TemplateContent
             style="overflow: auto; max-height: 70vh; padding: 24px 24px 16px"
+            :loading="refreshing"
             :templates="templates"
             :value="selectedTemplate"
             @select="onSelect"
@@ -68,14 +69,14 @@
             style="overflow: auto; max-height: 70vh; padding: 24px 24px 16px"
           >
             <BaseContent
-              :valid.sync="valid"
+              :valid="valid"
               @update:valid="valid = $event"
             />
             <AdvanceContent :valid.sync="valid" />
           </div>
           <StepperFooter
             style="padding: 16px 24px"
-            :disabled="!valid || creationData.name === '' || creationData.runtime.minecraft === ''"
+            :disabled="!valid || isInvalid"
             :creating="creating"
             create
             @create="onCreate"
@@ -87,7 +88,6 @@
           class="overflow-auto max-h-[70vh]"
         >
           <StepperModpackContent
-            v-if="canPreview"
             :modpack="selectedTemplate"
             :shown="isModpackContentShown"
           />
@@ -98,8 +98,7 @@
 </template>
 
 <script lang=ts setup>
-import { Ref } from 'vue'
-import { InstanceInstallServiceKey, ModpackServiceKey, PeerServiceKey, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceInstallServiceKey, PeerServiceKey, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import AdvanceContent from '../components/StepperAdvanceContent.vue'
 import BaseContent from '../components/StepperBaseContent.vue'
 import StepperFooter from '../components/StepperFooter.vue'
@@ -107,156 +106,127 @@ import StepperModpackContent from '../components/StepperModpackContent.vue'
 import TemplateContent from '../components/StepperTemplateContent.vue'
 import { useDialog } from '../composables/dialog'
 import { AddInstanceDialogKey, Template, useAllTemplate } from '../composables/instanceAdd'
-import { CreateOptionKey, useInstanceCreation } from '../composables/instanceCreation'
+import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
 import { useNotifier } from '../composables/notifier'
-
 import { useRefreshable, useService } from '@/composables'
-import { getFTBPath } from '@/util/ftb'
+import { kJavaContext } from '@/composables/java'
+import { injection } from '@/util/inject'
+import { kModpacks } from '@/composables/modpack'
+import { kUserContext } from '@/composables/user'
+import { kLocalVersions } from '@/composables/versionLocal'
+import { kInstances } from '@/composables/instances'
+import { kPeerState } from '@/composables/peers'
+import { kInstance } from '@/composables/instance'
 
-const { isShown, dialog, show: showAddInstance } = useDialog(AddInstanceDialogKey)
+const { isShown, dialog, show: showAddInstance, hide } = useDialog(AddInstanceDialogKey)
 const { show } = useDialog('task')
-const { create, reset, data: creationData } = useInstanceCreation()
+const { gameProfile } = injection(kUserContext)
+const { versions } = injection(kLocalVersions)
+const { instances } = injection(kInstances)
+const { path } = injection(kInstance)
+const { create, reset, data: creationData } = useInstanceCreation(gameProfile, versions, instances, path)
 const router = useRouter()
+
 const { on, removeListener } = useService(ResourceServiceKey)
-const { importModpack } = useService(ModpackServiceKey)
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 const { t } = useI18n()
 const { notify } = useNotifier()
-const { templates, apply, refresh, setup, dispose } = useAllTemplate(creationData)
+const { all } = injection(kJavaContext)
+const { resources } = injection(kModpacks)
+const { connections } = injection(kPeerState)
+const { templates, refreshing } = useAllTemplate(all, resources, connections)
 
-provide(CreateOptionKey, creationData)
+provide(kInstanceCreation, creationData)
 
 const valid = ref(false)
 const step = ref(2)
-const selectedTemplate: Ref<Template | undefined> = ref(undefined)
+const selectedTemplatePath = ref('')
 
+const selectedTemplate = computed(() => templates.value.find(f => f.filePath === selectedTemplatePath.value))
 const isModpackContentShown = computed(() => step.value === 3)
 const selectedTemplateName = computed(() => selectedTemplate.value?.name ?? '')
-const canPreview = computed(() => selectedTemplate.value?.source && selectedTemplate.value?.source.type !== 'instance')
 
 function quit() {
   if (creating.value) return
-  isShown.value = false
+  hide()
 }
 
 function onSelect(template: Template) {
-  selectedTemplate.value = template
+  selectedTemplatePath.value = template.filePath
 }
 
-watch(selectedTemplate, (newVal) => {
-  if (newVal) {
-    apply(newVal)
-    step.value = 2
-  }
+watch(selectedTemplate, (t) => {
+  if (!t) return
+  const instData = t.instance
+  creationData.name = instData.name
+  creationData.runtime = { ...instData.runtime }
+  creationData.java = instData.java ?? ''
+  creationData.showLog = instData.showLog ?? false
+  creationData.hideLauncher = instData.hideLauncher ?? true
+  creationData.vmOptions = [...instData.vmOptions ?? []]
+  creationData.mcOptions = [...instData.mcOptions ?? []]
+  creationData.maxMemory = instData.maxMemory ?? 0
+  creationData.minMemory = instData.minMemory ?? 0
+  creationData.author = instData.author ?? ''
+  creationData.description = instData.description ?? ''
+  creationData.url = instData.url ?? ''
+  creationData.icon = instData.icon ?? ''
+  creationData.modpackVersion = instData.modpackVersion || ''
+  creationData.server = instData.server ? { ...instData.server } : null
+  creationData.upstream = instData.upstream
+  step.value = 2
+})
+
+const isInvalid = computed(() => {
+  return creationData.name === '' || creationData.runtime.minecraft === '' || instances.value.some(i => i.name === creationData.name)
 })
 
 const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
   const template = selectedTemplate.value
   if (template) {
-    if (template.source.type === 'instance') {
-      await create()
+    try {
+      const resultInstancePath = await create()
       router.push('/')
-    } else if (template.source.type === 'ftb') {
-      try {
-        const path = await create()
-        await installInstanceFiles({
-          path,
-          files: template.source.manifest.files.map(f => ({
-            path: getFTBPath(f),
-            hashes: {
-              sha1: f.sha1,
-            },
-            curseforge: f.curseforge
-              ? {
-                projectId: f.curseforge.project,
-                fileId: f.curseforge.file,
-              }
-              : undefined,
-            downloads: f.url ? [f.url] : undefined,
-            size: f.size,
-          })),
-        })
-        notify({
-          title: t('importModpack.success', { modpack: template?.name }),
-          level: 'success',
-          full: true,
-          more() {
-            router.push('/')
-          },
-        })
-      } catch {
-        notify({
-          title: t('importModpack.failed', { modpack: template?.name }),
-          level: 'error',
-          full: true,
-          more() {
-            show()
-          },
-        })
-      }
-    } else if (template.source.type === 'peer') {
-      try {
-        const path = await create()
-        await installInstanceFiles({
-          path,
-          files: template.source.manifest.files,
-        })
-        notify({
-          title: t('importModpack.success', { modpack: template?.name }),
-          level: 'success',
-          full: true,
-          more() {
-            router.push('/')
-          },
-        })
-      } catch {
-        notify({
-          title: t('importModpack.failed', { modpack: template?.name }),
-          level: 'error',
-          full: true,
-          more() {
-            show()
-          },
-        })
-      }
-    } else {
-      try {
-        await importModpack({
-          path: template.source.resource.path,
-          instanceConfig: { ...creationData },
-          mountAfterSucceed: true,
-        })
-        notify({
-          title: t('importModpack.success', { modpack: template?.name }),
-          level: 'success',
-          full: true,
-          more() {
-            router.push('/')
-          },
-        })
-      } catch {
-        notify({
-          title: t('importModpack.failed', { modpack: template?.name }),
-          level: 'error',
-          full: true,
-          more() {
-            show()
-          },
-        })
-      }
+      await installInstanceFiles({
+        path: resultInstancePath,
+        files: template.files,
+      })
+      notify({
+        title: t('importModpack.success', { modpack: template?.name }),
+        level: 'success',
+        full: true,
+        more() {
+          router.push('/')
+        },
+      })
+    } catch {
+      notify({
+        title: t('importModpack.failed', { modpack: template?.name }),
+        level: 'error',
+        full: true,
+        more() {
+          show()
+        },
+      })
     }
   } else {
     await create()
     router.push('/')
   }
 
-  isShown.value = false
+  hide()
 })
 
-on('resourceAdd', (r) => {
-  if (r.domain === ResourceDomain.Modpacks) {
-    onModpackAdded({ path: r.path, name: r.name })
-  }
+const listener: any = undefined
+onMounted(() => {
+  on('resourceAdd', (r) => {
+    if (r.domain === ResourceDomain.Modpacks) {
+      onModpackAdded({ path: r.path, name: r.name })
+    }
+  })
+})
+onUnmounted(() => {
+  removeListener('resourceAdd', listener)
 })
 
 const onModpackAdded = ({ path, name }: { path: string; name: string }) => {
@@ -274,11 +244,11 @@ const onModpackAdded = ({ path, name }: { path: string; name: string }) => {
   }, 100)
 }
 
-const { on: onPeerService, state: peerState } = useService(PeerServiceKey)
+const { on: onPeerService } = useService(PeerServiceKey)
 
 onPeerService('share', (event) => {
   if (event.manifest) {
-    const conn = peerState.connections.find(c => c.id === event.id)
+    const conn = connections.value.find(c => c.id === event.id)
     if (conn) {
       notify({
         level: 'info',
@@ -296,7 +266,7 @@ onPeerService('share', (event) => {
 
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    isShown.value = false
+    hide()
   }
 })
 
@@ -306,18 +276,15 @@ watch(isShown, (shown) => {
   }
   if (!shown) {
     setTimeout(() => {
-      selectedTemplate.value = undefined
-      dispose()
+      selectedTemplatePath.value = ''
       reset()
     }, 500)
     return
   }
-  setup().then(() => {
-    const id = dialog.value.parameter
-    if (id) {
-      selectedTemplate.value = templates.value.find(t => t.id === id.toString())
-    }
-  })
+  const id = dialog.value.parameter
+  if (id) {
+    selectedTemplatePath.value = id
+  }
 
   step.value = 2
   valid.value = true

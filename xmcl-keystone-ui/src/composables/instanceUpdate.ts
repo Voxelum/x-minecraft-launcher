@@ -1,10 +1,9 @@
 import { injection } from '@/util/inject'
 import { File, FileIndex } from '@xmcl/curseforge'
-import { getCurseforgeFileUri, InstanceData, Resource, ResourceMetadata, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceData, Resource, ResourceMetadata, ResourceServiceKey, getCurseforgeFileUri } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { DialogKey } from './dialog'
 import { kModrinthInstall } from './modrinthInstall'
-import { useModrinthInstanceResource } from './modrinthInstanceResource'
 import { useModrinthLatestVersion } from './modrinthLatestVersion'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
@@ -105,8 +104,6 @@ export function useCurseforgeInstanceUpdate(props: {
 
   const { refresh: refreshCurrentResource, refreshing } = useRefreshable(async () => {
     const [resource] = await getResourcesByUris([getCurseforgeFileUri({ modId: props.upstream.modId, id: props.upstream.fileId })])
-    console.log(resource)
-    console.log(props.upstream)
     currentFileResource.value = resource
   })
 

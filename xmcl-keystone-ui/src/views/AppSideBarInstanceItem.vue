@@ -23,7 +23,7 @@
           link
           draggable
           class="px-2 flex-grow-0 flex-1 non-moveable sidebar-item"
-          :class="{'v-list-item--active': selectedInstance===instance.path}"
+          :class="{'v-list-item--active': path === instance.path}"
           v-on="tooltip"
           @click="navigate"
           @dragover.prevent
@@ -110,25 +110,27 @@
   </v-tooltip>
 </template>
 <script lang="ts" setup>
-import { Instance, InstanceServiceKey } from '@xmcl/runtime-api'
+import { kInstance } from '@/composables/instance'
+import { getInstanceIcon } from '@/util/favicon'
+import { injection } from '@/util/inject'
+import { Instance } from '@xmcl/runtime-api'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { useDialog } from '../composables/dialog'
-import { vContextMenu } from '../directives/contextMenu'
-import { useService } from '@/composables'
 import { useInstanceServerStatus } from '../composables/serverStatus'
-import unknownServer from '@/assets/unknown_server.png'
-import { getInstanceIcon } from '@/util/favicon'
+import { vContextMenu } from '../directives/contextMenu'
 
 const props = defineProps<{ instance: Instance }>()
 const emit = defineEmits(['drop'])
-const { mountInstance, state: instanceState } = useService(InstanceServiceKey)
+
 const router = useRouter()
-const selectedInstance = computed(() => instanceState.path)
+const { t } = useI18n()
+
+const { select, path } = injection(kInstance)
+const { show: showDeleteDialog } = useDialog('delete-instance')
+const { status } = useInstanceServerStatus(computed(() => props.instance))
+
 const dragging = ref(false)
 const dragover = ref(0)
-const { t } = useI18n()
-const { show: showDeleteDialog } = useDialog('delete-instance')
-const { status } = useInstanceServerStatus(props.instance.path)
 
 const favicon = computed(() => getInstanceIcon(props.instance, status.value))
 
@@ -149,10 +151,10 @@ const items = computed(() => {
 const navigate = () => {
   if (router.currentRoute.path !== '/') {
     router.push('/').then(() => {
-      mountInstance(props.instance.path)
+      select(props.instance.path)
     })
   } else {
-    mountInstance(props.instance.path)
+    select(props.instance.path)
   }
 }
 

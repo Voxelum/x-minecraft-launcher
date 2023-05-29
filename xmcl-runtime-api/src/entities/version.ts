@@ -1,5 +1,4 @@
 import type { LibraryInfo, Version } from '@xmcl/core'
-import { LocalVersionHeader } from '../services/VersionService'
 import { parseVersion, VersionRange } from '../util/mavenVersion'
 import { RuntimeVersions } from './instance.schema'
 
@@ -434,3 +433,58 @@ export function compareSnapshot(versionA: string, versionB: string) {
 }
 
 export const LATEST_RELEASE = { id: '1.18.1', type: 'release', url: 'https://launchermeta.mojang.com/v1/packages/6ad09383ac77f75147c38be806961099c02c1ef9/1.18.1.json', time: '2022-01-19T15:56:14+00:00', releaseTime: '2021-12-10T08:23:00+00:00' }
+
+export interface LocalVersionHeader {
+  path: string
+  id: string
+  inheritances: string[]
+  /**
+   * Minecraft version of this version. e.g. 1.7.10
+   * @default ""
+   */
+  minecraft: string
+  /**
+   * Forge version of this version. e.g. 14.23.5.2838
+   * @default ""
+   */
+  forge: string
+  /**
+   * Fabric loader version, e.g. 0.7.2+build.175
+   * @default ""
+   */
+  fabric: string
+  /**
+   * Optifine version e.g. HD_U_F1_pre6 or HD_U_E6
+   * @default ""
+   */
+  optifine: string
+  liteloader: string
+  quilt: string
+}
+
+export class LocalVersions {
+  /**
+   * All the local versions installed in the disk
+   */
+  local = [] as LocalVersionHeader[]
+
+  localVersions(local: LocalVersionHeader[]) {
+    local.forEach(Object.freeze)
+    this.local = local
+  }
+
+  localVersionAdd(local: LocalVersionHeader) {
+    Object.freeze(local)
+    const found = this.local.findIndex(l => l.id === local.id)
+    if (found !== -1) {
+      this.local[found] = local
+    } else {
+      this.local.push(local as any)
+      this.local = this.local.sort((a, b) => a.id.localeCompare(b.id))
+    }
+  }
+
+  localVersionRemove(folder: string) {
+    this.local = this.local.filter(v => v.id !== folder)
+  }
+}

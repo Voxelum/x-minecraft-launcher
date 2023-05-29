@@ -196,12 +196,14 @@ import unknownServer from '@/assets/unknown_server.png'
 import { useBusy, useService } from '@/composables'
 import { getBanner } from '@/util/banner'
 import { vDraggableCard } from '@/directives/draggableCard'
+import { kInstance } from '@/composables/instance'
+import { injection } from '@/util/inject'
 
 const props = defineProps<{ instance: Instance }>()
 const isBusy = useBusy(LockKey.instance(props.instance.path))
-const { state } = useService(InstanceServiceKey)
-const isSelected = computed(() => state.path === props.instance.path)
-const { status } = useInstanceServerStatus(props.instance.path)
+const { path } = injection(kInstance)
+const isSelected = computed(() => path.value === props.instance.path)
+const { status } = useInstanceServerStatus(computed(() => props.instance))
 const { showItemInDirectory } = useService(BaseServiceKey)
 
 const emit = defineEmits(['delete'])

@@ -20,7 +20,7 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
-    @Inject(ResourceService) private resourceService: ResourceService,
+    @Inject(ResourceService) resourceService: ResourceService,
     @Inject(InstanceManifestService) private instanceManifestService: InstanceManifestService,
     @Inject(ModpackService) private modpackService: ModpackService,
   ) {
@@ -33,7 +33,7 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
           if (res.metadata.instance) {
             return res.metadata.instance
           }
-          return await this.modpackService.getInstallModpackProfile(res.path).catch(() => undefined)
+          return await this.modpackService.getModpackInstallProfile(res.path).catch(() => undefined)
         }
       }
       return undefined
@@ -46,7 +46,7 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
           if (res.metadata.instance) {
             return res.metadata.instance
           }
-          return await this.modpackService.getInstallModpackProfile(res.path).catch(() => undefined)
+          return await this.modpackService.getModpackInstallProfile(res.path).catch(() => undefined)
         }
       }
       return undefined
@@ -60,7 +60,7 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
   private async resolveOldFiles(instancePath: string, instance: InstanceData, oldModpack?: string): Promise<InstanceFile[]> {
     if (oldModpack) {
       // If old modpack path present, try to get modpack content
-      const profile = await this.modpackService.getInstallModpackProfile(oldModpack)
+      const profile = await this.modpackService.getModpackInstallProfile(oldModpack)
       return profile.files
     }
 
@@ -84,7 +84,7 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
   }
 
   async getInstanceUpdateProfile(options: UpgradeModpackOptions) {
-    const instancePath = options.instancePath || this.instanceService.state.path
+    const instancePath = options.instancePath
     const instance = this.instanceService.state.all[instancePath]
     if (!instance) {
       throw new Error()
@@ -92,7 +92,7 @@ export class InstanceUpdateService extends AbstractService implements IInstanceU
 
     const oldFiles = await this.resolveOldFiles(instancePath, instance, options.oldModpack)
 
-    const { files: newFiles, instance: instanceOptions } = await this.modpackService.getInstallModpackProfile(options.newModpack)
+    const { files: newFiles, instance: instanceOptions } = await this.modpackService.getModpackInstallProfile(options.newModpack)
 
     const manifest = await this.instanceManifestService.getInstanceManifest({ path: instancePath, hashes: ['sha1'] })
 

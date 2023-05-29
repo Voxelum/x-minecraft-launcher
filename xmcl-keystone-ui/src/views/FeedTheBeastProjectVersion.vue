@@ -78,7 +78,7 @@
 import { FTBFile, FTBVersion } from '@xmcl/runtime-api'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { useFeedTheBeastProjectVersion } from '../composables/ftb'
-import { InstanceFileNode, provideFileNodes } from '../composables/instanceFiles'
+import { InstanceFileNode, provideFileNodes } from '@/composables/instanceFileNodeData'
 
 const props = defineProps<{ id: number; version: FTBVersion }>()
 
@@ -95,7 +95,7 @@ provideFileNodes(computed(() => {
   if (!man) { return [] }
   function getNode(file: FTBFile): InstanceFileNode {
     return {
-      id: file.path.replace('./', '') + file.name,
+      path: file.path.replace('./', '') + file.name,
       name: file.name,
       size: file.size,
     }

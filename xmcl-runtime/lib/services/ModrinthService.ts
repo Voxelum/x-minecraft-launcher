@@ -1,31 +1,29 @@
 import { DownloadTask } from '@xmcl/installer'
+import { ModrinthV2Client } from '@xmcl/modrinth'
 import { ModrinthService as IModrinthService, InstallModrinthVersionResult, InstallProjectVersionOptions, ModrinthServiceKey, ResourceDomain, getModrinthVersionFileUri, getModrinthVersionUri } from '@xmcl/runtime-api'
 import { unlink } from 'fs/promises'
 import { basename, join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { kDownloadOptions } from '../entities/downloadOptions'
 import { Inject } from '../util/objectRegistry'
 import { ResourceService } from './ResourceService'
-import { ModrinthV2Client } from '@xmcl/modrinth'
 import { AbstractService, ExposeServiceKey, Singleton } from './Service'
-import { InstanceService } from './InstanceService'
 
 @ExposeServiceKey(ModrinthServiceKey)
 export class ModrinthService extends AbstractService implements IModrinthService {
   readonly client = new ModrinthV2Client()
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
-    super(app, async () => {
-    })
+    super(app, async () => { })
   }
 
   @Singleton((o) => `${o.version.id}`)
   async installVersion({ version, icon, instancePath }: InstallProjectVersionOptions): Promise<InstallModrinthVersionResult> {
     const isSingleFile = version.files.length === 1
-    instancePath ||= this.instanceService.state.path
+    // instancePath ||= this.instanceService.state.path
     const resources = await Promise.all(version.files.map(async (file) => {
       this.log(`Try install project version file ${file.filename} ${file.url}`)
       const destination = join(this.app.temporaryPath, basename(file.filename))
@@ -38,12 +36,13 @@ export class ModrinthService extends AbstractService implements IModrinthService
         }
       }
 
-      let resource = (await this.resourceService.getResourcesByUris(urls)).reduce((a, b) => a || b, undefined)
+    const downloadOptions = await this.app.registry.get(kDownloadOptions)
+    let resource = (await this.resourceService.getResourcesByUris(urls)).reduce((a, b) => a || b, undefined)
       if (resource) {
         this.log(`The modrinth file ${file.filename}(${file.url}) existed in cache!`)
       } else {
         const task = new DownloadTask({
-          ...this.networkManager.getDownloadBaseOptions(),
+          ...downloadOptions,
           url: file.url,
           destination,
           validator: {
@@ -56,7 +55,7 @@ export class ModrinthService extends AbstractService implements IModrinthService
           filename: file.filename,
         })
 
-        await this.taskManager.submit(task)
+        await this.submit(task)
         const metadata = {
           modrinth: version
             ? {

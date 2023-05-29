@@ -151,14 +151,16 @@ import { injection } from '@/util/inject'
 import { createOfferAppUrl, PeerServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
 import { kUserContext } from '../composables/user'
+import { kPeerState } from '@/composables/peers'
 
 const { gameProfile } = injection(kUserContext)
+const { connections } = injection(kPeerState)
 const { isShown, dialog } = useDialog('peer-initiate')
 
 const service = useService(PeerServiceKey)
 const id = ref('')
 const gatheringState = computed(() => connection.value?.iceGatheringState)
-const connection = computed(() => service.state.connections.find(c => c.id === id.value))
+const connection = computed(() => connections.value.find(c => c.id === id.value))
 const localDescription = computed(() => connection.value ? (connection.value.localDescriptionSDP) : '')
 const localUrl = computed(() => createOfferAppUrl(localDescription.value, gameProfile.value.name))
 const { t } = useI18n()

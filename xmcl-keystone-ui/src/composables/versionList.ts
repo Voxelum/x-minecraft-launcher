@@ -1,5 +1,5 @@
 import { Ref } from 'vue'
-import { ForgeVersion, LockKey } from '@xmcl/runtime-api'
+import { ForgeVersion, LocalVersionHeader, LockKey } from '@xmcl/runtime-api'
 import { useFabricVersions, useForgeVersions, useMinecraftVersions, useOptifineVersions, useQuiltVersions } from './version'
 
 import { kSemaphores } from '@/composables'
@@ -23,8 +23,8 @@ export interface VersionMenuItem {
   tagColor?: string
 }
 
-export function useMinecraftVersionList(version: Ref<string>) {
-  const { versions: vers, installed, refreshing, release } = useMinecraftVersions()
+export function useMinecraftVersionList(version: Ref<string>, local: Ref<LocalVersionHeader[]>) {
+  const { versions: vers, installed, refreshing, release } = useMinecraftVersions(local)
   const { t } = useI18n()
   const showAlpha = ref(false)
   const { semaphores } = injection(kSemaphores)
@@ -56,8 +56,8 @@ export function useMinecraftVersionList(version: Ref<string>) {
   }
 }
 
-export function useForgeVersionList(minecraft: Ref<string>, version: Ref<string>) {
-  const { versions, refreshing, refresh, installed } = useForgeVersions(minecraft)
+export function useForgeVersionList(minecraft: Ref<string>, version: Ref<string>, local: Ref<LocalVersionHeader[]>) {
+  const { versions, refreshing, refresh, installed } = useForgeVersions(minecraft, local)
   const { semaphores } = injection(kSemaphores)
   const { t } = useI18n()
 
@@ -109,9 +109,9 @@ export function useForgeVersionList(minecraft: Ref<string>, version: Ref<string>
   }
 }
 
-export function useOptifineVersionList(minecraft: Ref<string>, forge: Ref<string>, version: Ref<string>) {
+export function useOptifineVersionList(minecraft: Ref<string>, forge: Ref<string>, version: Ref<string>, local: Ref<LocalVersionHeader[]>) {
   const { semaphores } = injection(kSemaphores)
-  const { versions, installed, refreshing } = useOptifineVersions(minecraft, forge)
+  const { versions, installed, refreshing } = useOptifineVersions(minecraft, forge, local)
 
   const items = computed(() => {
     return versions.value.map((v) => {
@@ -136,11 +136,11 @@ export function useOptifineVersionList(minecraft: Ref<string>, forge: Ref<string
   }
 }
 
-export function useFabricVersionList(minecraft: Ref<string>, version: Ref<string>) {
+export function useFabricVersionList(minecraft: Ref<string>, version: Ref<string>, local: Ref<LocalVersionHeader[]>) {
   const { semaphores } = injection(kSemaphores)
   const { t } = useI18n()
   const showStableOnly = ref(false)
-  const { versions, refreshing, installed } = useFabricVersions(minecraft)
+  const { versions, refreshing, installed } = useFabricVersions(minecraft, local)
   const items = computed(() => {
     const result: VersionItem[] = versions.value
       .filter((v) => !showStableOnly.value || v.stable)
@@ -170,9 +170,9 @@ export function useFabricVersionList(minecraft: Ref<string>, version: Ref<string
   }
 }
 
-export function useQuiltVersionList(minecraft: Ref<string>, version: Ref<string>) {
+export function useQuiltVersionList(minecraft: Ref<string>, version: Ref<string>, local: Ref<LocalVersionHeader[]>) {
   const { semaphores } = injection(kSemaphores)
-  const { versions, refresh, refreshing, installed } = useQuiltVersions(minecraft)
+  const { versions, refresh, refreshing, installed } = useQuiltVersions(minecraft, local)
   const items = computed(() => {
     const result: VersionItem[] = (versions.value ?? [])
       .map((v) => {

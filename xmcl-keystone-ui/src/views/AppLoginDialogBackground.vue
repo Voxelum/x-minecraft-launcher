@@ -1,7 +1,7 @@
 <template>
   <Particles
     v-if="value"
-    class="absolute w-full h-full"
+    class="absolute h-full w-full"
     :move-direction="direction"
     :move-enabled="value"
     :line-linked="false"
@@ -18,7 +18,7 @@ import Particles from '@/components/Particles.vue'
 
 const props = defineProps<{
   value: boolean
-  authService: string
+  seed: number
 }>()
 
 const direction = ref('top')
@@ -27,5 +27,5 @@ function nextDirection() {
   const i = Math.round(Math.random() * dirs.length)
   direction.value = dirs[i]
 }
-watch(() => props.authService, () => { nextDirection() })
+watch(() => props.seed, () => { nextDirection() })
 </script>

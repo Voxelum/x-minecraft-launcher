@@ -1,29 +1,119 @@
 /* eslint-disable no-dupe-class-members */
 
-import { ServiceChannels, ServiceKey } from '@xmcl/runtime-api'
+import { AllStates, ServiceChannels, ServiceKey, MutableState, StateMetadata } from '@xmcl/runtime-api'
 import { contextBridge, ipcRenderer } from 'electron'
 import EventEmitter from 'events'
 
-async function waitSessionEnd(sessionId: number) {
-  const { result, error } = await ipcRenderer.invoke('session', sessionId)
+function getPrototypeMetadata(T: { new(): object }, prototype: object, name: string) {
+  const methods = Object.getOwnPropertyNames(prototype)
+    .map((name) => [name, Object.getOwnPropertyDescriptor(prototype, name)?.value] as const)
+    .filter(([, v]) => v instanceof Function)
+  return {
+    name,
+    constructor: () => new T(),
+    methods: methods.map(([name, f]) => [name, (f as Function)] as [string, (this: any, ...args: any[]) => any]),
+    prototype,
+  }
+}
+
+const typeToStatePrototype: Record<string, StateMetadata> = AllStates.reduce((obj, cur) => {
+  obj[cur.name] = getPrototypeMetadata(cur, cur.prototype, cur.name)
+  return obj
+}, {} as Record<string, StateMetadata>)
+
+const kEmitter = Symbol('Emitter')
+
+function createMutableState<T extends object>(val: T): MutableState<T> {
+  const emitter = new EventEmitter()
+  Object.defineProperty(val, kEmitter, { value: emitter })
+  return Object.assign(val, {
+    subscribe(key: string, listener: (payload: any) => void) {
+      emitter.addListener(key, listener)
+      return this
+    },
+    unsubscribe(key: string, listener: (payload: any) => void) {
+      emitter.removeListener(key, listener)
+      return this
+    },
+    subscribeAll(listener: (payload: any) => void) {
+      emitter.addListener('*', listener)
+      return this
+    },
+    unsubscribeAll(listener: (payload: any) => void) {
+      emitter.removeListener('*', listener)
+      return this
+    },
+  }) as any
+}
+
+if (process.env.NODE_ENV === 'development') {
+  console.log('serivce.ts preload')
+}
+
+async function receive(_result: any, states: Record<string, WeakRef<MutableState<any>>>, pendingCommits: Record<string, { type: string; payload: any }[]>, gc: FinalizationRegistry<string>) {
+  if (typeof _result !== 'object') {
+    return
+  }
+  const { result, error } = _result
   if (error) {
     if (error.errorMessage) {
       error.toString = () => error.errorMessage
     }
     return Promise.reject(error)
   }
+
+  if (result && typeof result === 'object' && '__state__' in result) {
+    // recover state object
+    const id = result.id
+
+    if (states[id] && states[id].deref()) {
+      return states[id].deref()
+    }
+
+    const prototype = typeToStatePrototype[result.__state__]
+    if (!prototype) {
+      // Wrong version of runtime
+      throw new TypeError(`Unknown state object ${result.__state__}!`)
+    }
+
+    delete result.__state__
+    const state = createMutableState(result)
+
+    for (const [method, handler] of prototype.methods) {
+      // explictly bind to the state object under electron context isolation
+      state[method] = handler.bind(state)
+    }
+
+    gc.register(state, state.id)
+
+    states[id] = new WeakRef(state)
+
+    queueMicrotask(() => {
+    if (pendingCommits[id]) {
+      for (const mutation of pendingCommits[id]) {
+        // state[mutation.type]?.(mutation.payload);
+        (state as any)[kEmitter].emit(mutation.type, mutation.payload);
+        (state as any)[kEmitter].emit('*', mutation.type, mutation.payload)
+      }
+      delete pendingCommits[id]
+    }
+  })
+
+    return state
+  }
+
   return result
 }
 
 function createServiceChannels(): ServiceChannels {
-  const servicesEmitter = new Map<ServiceKey<any>, EventEmitter>()
-
-  ipcRenderer.on('commit', (event, serviceName, ...args) => {
-    const em = servicesEmitter.get(serviceName)
-    if (em) {
-      em.emit('commit', ...args)
-    }
+  const gc = new FinalizationRegistry<string>((id) => {
+    delete states[id]
+    ipcRenderer.invoke('deref', id)
+    console.log(`deref ${id}`)
   })
+  const servicesEmitter = new Map<ServiceKey<any>, EventEmitter>()
+  const states: Record<string, WeakRef<MutableState<object>>> = {}
+  const pendingCommits: Record<string, { type: string; payload: any }[]> = {}
 
   ipcRenderer.on('service-event', (_, { service, event, args }) => {
     const emitter = servicesEmitter.get(service)
@@ -32,7 +122,33 @@ function createServiceChannels(): ServiceChannels {
     }
   })
 
+  ipcRenderer.on('commit', (_, id, type, payload) => {
+    const state = states[id]?.deref()
+    if (state) {
+      // (state as any)[type]?.(payload);
+      (state as any)[kEmitter].emit(type, payload);
+      (state as any)[kEmitter].emit('*', type, payload)
+    } else {
+      // pending commit
+      if (!pendingCommits[id]) {
+        pendingCommits[id] = []
+      }
+      pendingCommits[id].push({ type, payload })
+    }
+  })
+
   return {
+    // deref(state) {
+    //   if (typeof state !== 'object' || !state) {
+    //     return
+    //   }
+    //   const emitter = (states[state.id] as any)[kEmitter] as EventEmitter
+    //   if (emitter) {
+    //     emitter.removeAllListeners()
+    //   }
+    //   delete states[state.id]
+    //   ipcRenderer.invoke('deref', state.id)
+    // },
     open(serviceKey) {
       if (!servicesEmitter.has(serviceKey)) {
         servicesEmitter.set(serviceKey, new EventEmitter())
@@ -40,12 +156,6 @@ function createServiceChannels(): ServiceChannels {
       const emitter = servicesEmitter.get(serviceKey)!
       return {
         key: serviceKey,
-        sync(id?: number) {
-          return ipcRenderer.invoke('sync', serviceKey, id)
-        },
-        commit(key: string, payload: any): void {
-          ipcRenderer.invoke('commit', serviceKey, key, payload)
-        },
         on(channel: any, listener: any) {
           emitter.on(channel, listener)
           return this
@@ -58,14 +168,9 @@ function createServiceChannels(): ServiceChannels {
           emitter.removeListener(channel, listener)
           return this
         },
-        call(method, payload) {
-          const promise: Promise<any> = ipcRenderer.invoke('service-call', serviceKey, method, payload).then((sessionId: any) => {
-            if (typeof sessionId !== 'number') {
-              throw new Error(`Cannot find service call named ${method as string} in ${serviceKey}`)
-            }
-            return waitSessionEnd(sessionId)
-          })
-          return promise
+        async call(method, ...payload) {
+          const result = await ipcRenderer.invoke('service-call', serviceKey, method, ...payload)
+          return receive(result, states, pendingCommits, gc)
         },
       }
     },

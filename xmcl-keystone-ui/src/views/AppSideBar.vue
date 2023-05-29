@@ -221,7 +221,7 @@
               <v-badge
                 right
                 overlap
-                :value="state.updateStatus !== 'none'"
+                :value="state?.updateStatus !== 'none'"
               >
                 <template #badge>
                   <span>{{ 1 }}</span>
@@ -241,21 +241,20 @@
 </template>
 
 <script lang=ts setup>
-import { useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
+import { kSettingsState } from '@/composables/setting'
+import { kMarketRoute } from '@/composables/useMarketRoute'
 import { injection } from '@/util/inject'
-import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useBarBlur } from '../composables/background'
 import { kColorTheme } from '../composables/colorTheme'
 import { kUILayout } from '../composables/uiLayout'
 import AppSideBarContentFocus from './AppSideBarContentFocus.vue'
 import AppSideBarContentNext from './AppSideBarContentNext.vue'
-import { kMarketRoute } from '@/composables/useMarketRoute'
 
-const { state } = useService(BaseServiceKey)
 const { blurSidebar } = useBarBlur()
 const layout = injection(kUILayout)
 const useFocus = computed(() => layout.value === 'focus')
+const { state } = injection(kSettingsState)
 
 const sideBarShowCurseforge = useLocalStorageCacheBool('sideBarShowCurseforge', true)
 const sideBarShowModrinth = useLocalStorageCacheBool('sideBarShowModrinth', true)

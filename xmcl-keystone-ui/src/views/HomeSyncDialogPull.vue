@@ -48,11 +48,12 @@ import { Ref } from 'vue'
 import { InstanceInstallServiceKey, InstanceIOServiceKey, InstanceUpdate, XUpdateServiceKey } from '@xmcl/runtime-api'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { kColorTheme } from '../composables/colorTheme'
-import { InstanceFileNode, provideFileNodes } from '../composables/instanceFiles'
 import Hint from '@/components/Hint.vue'
 import { useService, useServiceBusy } from '@/composables'
 import { basename } from '@/util/basename'
 import { injection } from '@/util/inject'
+import { kInstance } from '@/composables/instance'
+import { InstanceFileNode, provideFileNodes } from '@/composables/instanceFileNodeData'
 
 const props = defineProps<{ shown: boolean }>()
 
@@ -65,6 +66,7 @@ const updateFiles = computed(() => currentUpdate.value ? currentUpdate.value.upd
 const { errorColor } = injection(kColorTheme)
 const errorUrl = ref('')
 const { t } = useI18n()
+const { path } = injection(kInstance)
 
 const selected = ref([] as string[])
 const hasError = ref(false)
@@ -83,7 +85,7 @@ function useInstanceFileNodesFromUpdate(updates: Ref<InstanceUpdate['updates']>)
   function getFileNode({ operation, file }: InstanceUpdate['updates'][number]): InstanceFileNode<UpdateData> {
     return reactive({
       name: basename(file.path),
-      id: file.path,
+      path: file.path,
       size: 0,
       data: {
         operation,
@@ -97,7 +99,7 @@ provideFileNodes(useInstanceFileNodesFromUpdate(updateFiles))
 
 async function check() {
   hasError.value = false
-  currentUpdate.value = await fetchInstanceUpdate().catch((e) => {
+  currentUpdate.value = await fetchInstanceUpdate(path.value).catch((e) => {
     hasError.value = true
     console.log(e)
     errorUrl.value = e.exception?.url
@@ -108,7 +110,7 @@ async function check() {
 async function update() {
   const enabled = new Set(...selected.value)
   const result = updateFiles.value.filter(f => enabled.has(f.file.path)).map(f => f.file)
-  await installInstanceFiles({ files: result })
+  await installInstanceFiles({ files: result, path: path.value })
 }
 
 onMounted(check)

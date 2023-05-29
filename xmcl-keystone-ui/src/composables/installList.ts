@@ -3,8 +3,7 @@ import { getModDependencies, ModDependency } from '@/util/modDependencies'
 import { File, FileRelationType } from '@xmcl/curseforge'
 import { ProjectVersion } from '@xmcl/modrinth'
 import { CurseForgeServiceKey, getCurseforgeFileUri, getModrinthVersionUri, InstanceModsServiceKey, ModrinthServiceKey, Resource } from '@xmcl/runtime-api'
-import { InjectionKey } from 'vue'
-import { kMods, useMods } from './mods'
+import { InjectionKey, Ref } from 'vue'
 import { useService } from './service'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { resolveCurseforgeDependies } from '@/util/curseforgeDependencies'
@@ -85,9 +84,7 @@ export type InstallListFileItemLeaf = InstallListFileItem & {
 
 export const kInstallList = Symbol('InstallList') as InjectionKey<ReturnType<typeof useInstallList>>
 
-export function useInstallList() {
-  const mods = useMods()
-  provide(kMods, mods)
+export function useInstallList(instancePath: Ref<string>, mods: Ref<Resource[]>) {
   const { install, uninstall } = useService(InstanceModsServiceKey)
   const { installFile } = useService(CurseForgeServiceKey)
   const { installVersion } = useService(ModrinthServiceKey)
@@ -95,7 +92,7 @@ export function useInstallList() {
   const list = ref([] as InstallListFileItemParent[])
   const resourcesLookup = computed(() => {
     const dict = {} as Record<string, [string, Resource][]>
-    for (const resource of mods.resources.value) {
+    for (const resource of mods.value) {
       const mods = getModIdVersion(resource)
       for (const [id, version] of mods) {
         if (!dict[id]) {
@@ -413,12 +410,12 @@ export function useInstallList() {
       console.log(toInstallCurseforge)
       console.log(toInstallModrinth)
       await Promise.all([
-        install({ mods: toInstall }).then(() => {
+        install({ mods: toInstall, path: instancePath.value }).then(() => {
           successedToInstall.push(...toInstall)
         }, (e) => {
           console.error('Fail to install', e)
         }),
-        uninstall({ mods: toRemove }).then(() => {
+        uninstall({ mods: toRemove, path: instancePath.value }).then(() => {
           successedToRemove.push(...toRemove)
         }, (e) => {
           console.error('Fail to uninstall', e)
@@ -435,6 +432,7 @@ export function useInstallList() {
         ...toInstallModrinth.map(([version, icon]) => installVersion({
           version,
           icon,
+          instancePath: instancePath.value,
         }).then(() => {
           successedToInstallModrinth.push(version)
         }, (e) => {

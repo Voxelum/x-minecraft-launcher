@@ -5,7 +5,8 @@ import {
   ImportSaveOptions,
   InstanceSaveException,
   InstanceSavesServiceKey,
-  ResourceDomain, SaveState,
+  ResourceDomain, Saves,
+  getInstanceSaveKey,
   isSaveResource,
 } from '@xmcl/runtime-api'
 import { open, readAllEntries } from '@xmcl/unzip'
@@ -26,6 +27,7 @@ import { ZipTask } from '../util/zip'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey } from './Service'
+import { LaunchService } from './LaunchService'
 
 /**
  * Provide the ability to preview saves data of an instance
@@ -62,74 +64,79 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
    * Mount and load instances saves
    * @param path
    */
-  async watchSaves(path: string) {
+  async watch(path: string) {
     requireString(path)
 
-    const pending: Set<string> = new Set()
-    const baseName = basename(path)
-    const savesDir = join(path, 'saves')
-    let parking = false
-    const state = this.storeManager.register('InstanceSaves/' + path, new SaveState(), () => {
-      watcher.close()
-      this.storeManager.unsubscribe('launchCount', onLaunch)
-    })
+    return this.storeManager.registerOrGet(getInstanceSaveKey(path), async () => {
+      const pending: Set<string> = new Set()
+      const baseName = basename(path)
+      const savesDir = join(path, 'saves')
+      let parking = false
+      const state = new Saves()
 
-    const updateSave = throttle((filePath: string) => {
-      readInstanceSaveMetadata(filePath, baseName).then((save) => {
-        state.instanceSaveUpdate(save)
-      }).catch((e) => {
-        this.warn(`Parse save in ${filePath} failed. Skip it.`)
-        this.warn(e)
-        return undefined
-      })
-    }, 2000)
+      const updateSave = throttle((filePath: string) => {
+        readInstanceSaveMetadata(filePath, baseName).then((save) => {
+          state.instanceSaveUpdate(save)
+        }).catch((e) => {
+          this.warn(`Parse save in ${filePath} failed. Skip it.`)
+          this.warn(e)
+          return undefined
+        })
+      }, 2000)
 
-    const onLaunch = (count: number) => {
-      const newState = count > 0
-      if (newState !== parking) {
-        for (const p of pending) {
-          updateSave(p)
-        }
-        pending.clear()
-      }
-      parking = newState
-    }
-
-    const watcher = watch(savesDir, (event, filename) => {
-      if (filename.startsWith('.')) return
-      const filePath = filename
-      if (event === 'update') {
-        if (state.saves.every((s) => s.path !== filename)) {
-          if (!parking) {
-            updateSave(filePath)
-          } else {
-            pending.add(filePath)
+      const onLaunch = (count: number) => {
+        const newState = count > 0
+        if (newState !== parking) {
+          for (const p of pending) {
+            updateSave(p)
           }
+          pending.clear()
         }
-      } else if (state.saves.some((s) => s.path === filename)) {
-        state.instanceSaveRemove(filePath)
+        parking = newState
       }
+
+      await ensureDir(savesDir)
+      const watcher = watch(savesDir, (event, filename) => {
+        if (filename.startsWith('.')) return
+        const filePath = filename
+        if (event === 'update') {
+          if (state.saves.every((s) => s.path !== filename)) {
+            if (!parking) {
+              updateSave(filePath)
+            } else {
+              pending.add(filePath)
+            }
+          }
+        } else if (state.saves.some((s) => s.path === filename)) {
+          state.instanceSaveRemove(filePath)
+        }
+      })
+
+      this.log(`Watch saves directory: ${savesDir}`)
+
+      await ensureDir(savesDir)
+
+      // TOOD: handle this
+      // this.launchService.on('launch', () => onLaunch)
+      // this.storeManager.subscribe('launchCount', onLaunch)
+      const savePaths = await readdir(savesDir)
+      const saves = await Promise.all(savePaths
+        .filter((d) => !d.startsWith('.'))
+        .map((d) => join(savesDir, d))
+        .map((p) => readInstanceSaveMetadata(p, baseName).catch((e) => {
+          this.warn(`Parse save in ${p} failed. Skip it.`)
+          this.warn(e)
+          return undefined
+        })))
+
+      this.log(`Found ${saves.length} saves in instance ${path}`)
+      state.saves = saves.filter(isNonnull)
+
+      return [state, () => {
+        watcher.close()
+        // this.storeManager.unsubscribe('launchCount', onLaunch)
+      }]
     })
-
-    this.log(`Watch saves directory: ${savesDir}`)
-
-    await ensureDir(savesDir)
-
-    this.storeManager.subscribe('launchCount', onLaunch)
-    const savePaths = await readdir(savesDir)
-    const saves = await Promise.all(savePaths
-      .filter((d) => !d.startsWith('.'))
-      .map((d) => join(savesDir, d))
-      .map((p) => readInstanceSaveMetadata(p, baseName).catch((e) => {
-        this.warn(`Parse save in ${p} failed. Skip it.`)
-        this.warn(e)
-        return undefined
-      })))
-
-    this.log(`Found ${saves.length} saves in instance ${path}`)
-    state.instanceSaves(saves.filter(isNonnull))
-
-    return state
   }
 
   /**
@@ -152,12 +159,12 @@ export class InstanceSavesService extends AbstractService implements IInstanceSa
       throw new InstanceSaveException({ type: 'instanceCopySaveNotFound', src: srcSavePath, dest: destInstancePaths },
         `Cancel save copying of ${saveName}`)
     }
-    if (!this.instanceService.state.all[srcInstancePath]) {
-      throw new InstanceSaveException({
-        type: 'instanceNotFound',
-        instancePath: srcInstancePath,
-      }, `Cannot find managed instance ${srcInstancePath}`)
-    }
+    // if (!this.instanceService.state.all[srcInstancePath]) {
+    //   throw new InstanceSaveException({
+    //     type: 'instanceNotFound',
+    //     instancePath: srcInstancePath,
+    //   }, `Cannot find managed instance ${srcInstancePath}`)
+    // }
     if (destInstancePaths.some(p => !this.instanceService.state.all[p])) {
       const notFound = destInstancePaths.find(p => !this.instanceService.state.all[p])!
       throw new InstanceSaveException({

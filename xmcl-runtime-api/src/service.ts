@@ -1,30 +1,19 @@
 /* eslint-disable no-dupe-class-members */
 import { GenericEventEmitter } from './events'
-import { ServiceKey, StatefulService } from './services/Service'
+import { ServiceKey } from './services/Service'
+import { MutableState } from './util/MutableState';
 
-interface ServiceChannelEventMap {
+interface SyncableEventMap {
   commit: {
     mutation: { payload: any; type: string }
     id: number
   }
-  task: {
-    /**
-     * The service method name
-     */
-    name: string
-    /**
-     * The promise of the method call
-     */
-    promise: Promise<unknown>
-    /**
-     * The session id of the method call
-     */
-    sessionId: string
-    /**
-     * The task id
-     */
-    id: string
-  }
+}
+
+/**
+ * Low level syncable channel to communicate with server to sync state.
+ */
+export interface SyncableStateChannel<T> extends GenericEventEmitter<SyncableEventMap> {
 }
 
 /**
@@ -33,26 +22,31 @@ interface ServiceChannelEventMap {
 export type ServiceChannel<T> = {
   readonly key: ServiceKey<T>
   /**
-   * Send request to the service to get the latest state of the service.
-   * @param id The commit total order
-   */
-  sync(id?: number): Promise<{ state: T extends StatefulService<infer S> ? S : void; length: number }>
-  /**
-   * Commit a mutation to service state.
-   * @param key The mutation name
-   * @param payload The mutation payload
-   */
-  commit(key: string, payload: any): void
-  /**
    * Call a method of the service.
    * @param method The method name
    * @param payload The method payload
    */
   call<M extends keyof T, MT = T[M]>(
     method: M,
-    payload: MT extends (...args: any) => any ? Parameters<MT>[0] : never,
+    ...payload: MT extends (...args: infer A) => any ? A : never
   ): Promise<MT extends (...args: any) => any ? ReturnType<MT> : never>
-} & GenericEventEmitter<ServiceChannelEventMap>
+} & GenericEventEmitter<SyncableEventMap>
+
+export interface StateMetadata {
+  /**
+   * The name of the state
+   */
+  name: string
+  /**
+   * The constructor of the state
+   */
+  constructor: () => object
+  /**
+   * The methods of the state
+   */
+  methods: [string, (this: any, ...args: any[]) => any][]
+  prototype: object
+}
 
 export interface ServiceChannels {
   /**
@@ -64,4 +58,6 @@ export interface ServiceChannels {
    * @param serviceKey The service key
    */
   open<T>(serviceKey: ServiceKey<T>): ServiceChannel<T>
+
+  // deref(state: MutableState<any>): void
 }

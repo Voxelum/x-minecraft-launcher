@@ -32,7 +32,9 @@ export interface HTTPExceptions extends ExceptionBase {
   body: any
 }
 
-export class HTTPException extends Exception<HTTPExceptions> {}
+export class HTTPException extends Exception<HTTPExceptions> {
+  name = 'HTTPException'
+}
 
 export function isFileNoFound(e: unknown) {
   return typeof e === 'object' && e !== null && ('code' in e && (e as any).code === 'ENOENT')

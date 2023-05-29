@@ -18,6 +18,7 @@ export default function createPreloadPlugin(preloadSrc: string): Plugin {
         const result = await esbuild({
           bundle: true,
           metafile: true,
+          define: build.initialOptions.define,
           entryNames: '[dir]/[name]-preload',
           entryPoints: [absoltePath],
           treeShaking: true,

@@ -1,5 +1,5 @@
 import { DownloadTask } from '@xmcl/installer'
-import { ImportFileOptions, ImportService as IImportService, ImportServiceKey, ImportUrlOptions, Resource, ResourceDomain } from '@xmcl/runtime-api'
+import { ImportService as IImportService, ImportFileOptions, ImportServiceKey, ImportUrlOptions, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { createHash } from 'crypto'
 import { ensureFile } from 'fs-extra/esm'
 import { unlink } from 'fs/promises'
@@ -11,42 +11,40 @@ import { LauncherAppKey } from '../app/utils'
 import { parseSourceControlUrl } from '../sourceControlUrlParser'
 import { Inject } from '../util/objectRegistry'
 import { ZipTask } from '../util/zip'
-import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey } from './Service'
+import { kDownloadOptions } from '../entities/downloadOptions'
 
 @ExposeServiceKey(ImportServiceKey)
 export class ImportService extends AbstractService implements IImportService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
-    @Inject(InstanceService) private instanceService: InstanceService,
   ) {
     super(app)
   }
 
   async importFile(options: ImportFileOptions): Promise<void> {
     const [parsed] = await this.resourceService.importResources([options.resource])
-    const getInstancePath = (inst: string | boolean) => typeof inst === 'boolean' ? this.instanceService.state.path : inst
+    const getInstancePath = (inst: string | undefined) => inst
     const resolveOptions = () => {
       if (parsed.domain === ResourceDomain.Saves) {
         return {
           shouldImport: options.savePolicy?.import ?? false,
-          installToInstance: options.savePolicy?.installToInstance ?? options.installToInstance ?? true,
+          installToInstance: options.savePolicy?.installToInstance,
         }
       }
       if (parsed.domain === ResourceDomain.Modpacks) {
         return {
           shouldImport: options.modpackPolicy?.import ?? false,
-          installToInstance: options.modpackPolicy?.installToInstance ?? options.installToInstance ?? true,
+          installToInstance: options.modpackPolicy?.installToInstance,
         }
       }
       return {
         shouldImport: true,
-        installToInstance: options.installToInstance ?? true,
+        installToInstance: options.installToInstance,
       }
     }
     const { shouldImport, installToInstance } = resolveOptions()
-    const instancePath = getInstancePath(installToInstance)
     const packAndImport = async () => {
       // zip and import
       const tempZipPath = `${this.getTempPath(parsed.name)}.zip`
@@ -81,7 +79,7 @@ export class ImportService extends AbstractService implements IImportService {
         }
       }
       try {
-        await this.resourceService.install({ resource: parsed, instancePath })
+        await this.resourceService.install({ resource: parsed, instancePath: installToInstance })
       } catch {
         this.error(Object.assign(new Error('Fail to install resource to instance'), { resource: parsed }))
       }
@@ -128,8 +126,9 @@ export class ImportService extends AbstractService implements IImportService {
           }
           const destination = this.getTempPath(createHash('sha1').update(url).digest('hex'), fileName)
           await ensureFile(destination)
+          const downloadOptions = await this.app.registry.get(kDownloadOptions)
           await this.submit(new DownloadTask({
-            ...this.networkManager.getDownloadBaseOptions(),
+            ...downloadOptions,
             url,
             validator: typeof md5 === 'string'
               ? {

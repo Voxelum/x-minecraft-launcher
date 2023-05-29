@@ -2,7 +2,7 @@
   <v-dialog
     v-model="isShown"
     :width="380"
-    :persistent="status === 'launching'"
+    :persistent="true"
   >
     <v-card color="secondary">
       <v-container>
@@ -36,25 +36,19 @@
             />
           </div>
           <v-flex
-            class="mt-3 flex-col flex gap-1 mx-10 items-center justify-center"
+            class="my-3 flex-col flex gap-1 mx-10 items-center justify-center"
           >
             <VTypical
-              v-if="status !== 'checkingProblems'"
+              v-if="notReady || launching"
               class="blink"
               :steps="launchingSteps"
             />
-            <div
-              class="text-gray-500 transition-all"
-              :class="{ 'text-transparent': status !== 'checkingProblems' }"
-            >
-              {{ t('launchStatus.checkingProblems') + '...' }}
-            </div>
-            <div
+            <!-- <div
               class="transition-all text-transparent"
               :class="{ 'text-gray-500': status === 'injectingAuthLib' }"
             >
               {{ t('launchStatus.injectingAuthLib') + ` (${userProfile.authService})` + '...' }}
-            </div>
+            </div> -->
           </v-flex>
         </v-layout>
       </v-container>
@@ -63,19 +57,20 @@
 </template>
 
 <script lang=ts setup>
+import VTypical from '@/components/VTyping.vue'
+import { useService } from '@/composables'
+import { kUserContext } from '@/composables/user'
+import { injection } from '@/util/inject'
 import { LaunchServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { LaunchStatusDialogKey, useLaunch } from '../composables/launch'
-import { useService } from '@/composables'
-import VTypical from '@/components/VTyping.vue'
-import { injection } from '@/util/inject'
-import { kUserContext } from '@/composables/user'
+import { LaunchStatusDialogKey, kLaunchStatus } from '../composables/launch'
 
 const { t } = useI18n()
-const { status } = useLaunch()
+const { launching } = injection(kLaunchStatus)
 const { on } = useService(LaunchServiceKey)
 const { userProfile } = injection(kUserContext)
 const { isShown, show, hide } = useDialog(LaunchStatusDialogKey)
+const notReady = ref(false)
 
 const launchingSteps = computed(() => [
   t('launchStatus.launching'),
@@ -86,28 +81,20 @@ const launchingSteps = computed(() => [
 on('minecraft-window-ready', () => {
   if (isShown.value) {
     hide()
+    notReady.value = false
   }
 })
 on('minecraft-exit', () => {
   if (isShown.value) {
     hide()
+    notReady.value = false
   }
 })
 
-watch(status, (s) => {
-  switch (s) {
-    case 'checkingProblems':
-      show()
-      break
-    case 'injectingAuthLib':
-      show()
-      break
-    case 'launching':
-      show()
-      break
-    case 'idle':
-      break
-    default:
+watch(launching, (s) => {
+  if (s) {
+    show()
+    notReady.value = true
   }
 })
 </script>

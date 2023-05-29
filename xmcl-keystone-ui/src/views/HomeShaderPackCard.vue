@@ -28,14 +28,13 @@
   </v-card>
 </template>
 <script lang="ts" setup>
-import { InstanceModsServiceKey, InstanceOptionsServiceKey } from '@xmcl/runtime-api'
-import { useService } from '@/composables'
-import { injection } from '@/util/inject'
 import { kColorTheme } from '@/composables/colorTheme'
+import { kInstanceOptions } from '@/composables/instanceOptions'
+import { injection } from '@/util/inject'
 
-const { state } = useService(InstanceOptionsServiceKey)
 const { cardColor } = injection(kColorTheme)
-const shaderPack = computed(() => state.shaderoptions.shaderPack)
+const { gameOptions } = injection(kInstanceOptions)
+const shaderPack = computed(() => gameOptions.value?.shaderPack || '')
 const { t } = useI18n()
 const { push } = useRouter()
 

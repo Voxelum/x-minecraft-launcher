@@ -73,11 +73,10 @@
 <script lang=ts setup>
 import AvatarItem from '@/components/AvatarItem.vue'
 import FilterCombobox from '@/components/FilterCombobox.vue'
-import { kInstanceContext } from '@/composables/instanceContext'
+import { kInstance } from '@/composables/instance'
 import { kCompact } from '@/composables/scrollTop'
 import { injection } from '@/util/inject'
 
-const { version } = injection(kInstanceContext)
+const { runtime: version } = injection(kInstance)
 const compact = injection(kCompact)
-const { t } = useI18n()
 </script>

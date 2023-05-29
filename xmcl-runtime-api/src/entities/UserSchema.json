@@ -6,49 +6,15 @@
             "default": {},
             "type": "object",
             "additionalProperties": {
-                "$ref": "#/definitions/UserProfile"
-            }
-        },
-        "selectedUser": {
-            "description": "Contains the UUID-hashed account and the UUID of the currently selected user",
-            "default": {
-                "account": "",
-                "profile": ""
-            },
-            "type": "object",
-            "properties": {
-                "id": {
-                    "description": "The UUID-hashed key of the currently selected user",
-                    "default": "",
-                    "type": "string"
-                }
-            },
-            "required": [
-                "id"
-            ]
-        },
-        "clientToken": {
-            "description": "The client token of current client. The launcher will generate one at first launch.",
-            "default": "",
-            "type": "string"
-        },
-        "yggdrasilServices": {
-            "description": "The customized third-party yggrasil services satisfying the authlib-injector api format",
-            "default": [],
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/YggdrasilApi"
+                "$ref": "#/definitions/UserProfileCompatible"
             }
         }
     },
     "required": [
-        "clientToken",
-        "selectedUser",
-        "users",
-        "yggdrasilServices"
+        "users"
     ],
     "definitions": {
-        "UserProfile": {
+        "UserProfileCompatible": {
             "type": "object",
             "properties": {
                 "id": {
@@ -66,6 +32,10 @@
                 "invalidated": {
                     "description": "If the user profile is invalidated and should be re-login",
                     "type": "boolean"
+                },
+                "authority": {
+                    "description": "The authority url",
+                    "type": "string"
                 },
                 "expiredAt": {
                     "description": "The expire time",
@@ -88,7 +58,6 @@
                 }
             },
             "required": [
-                "authService",
                 "expiredAt",
                 "id",
                 "invalidated",
@@ -258,106 +227,6 @@
             },
             "required": [
                 "url"
-            ]
-        },
-        "YggdrasilApi": {
-            "type": "object",
-            "properties": {
-                "url": {
-                    "description": "The base service url",
-                    "type": "string"
-                },
-                "profile": {
-                    "description": "It will use `url + '/sessionserver/session/minecraft/profile/${uuid}'` by default",
-                    "type": "string"
-                },
-                "texture": {
-                    "description": "It will use `url + \"/api/user/profile/${uuid}/${type}\"` by default",
-                    "type": "string"
-                },
-                "auth": {
-                    "description": "It will use `url + \"/authserver\"` by default",
-                    "type": "string"
-                },
-                "authlibInjector": {
-                    "description": "The cache for authlib injector compatible api",
-                    "$ref": "#/definitions/AuthlibInjectorApiProfile"
-                },
-                "favicon": {
-                    "description": "The favicon of the service",
-                    "type": "string"
-                }
-            },
-            "required": [
-                "url"
-            ]
-        },
-        "AuthlibInjectorApiProfile": {
-            "type": "object",
-            "properties": {
-                "meta": {
-                    "default": {},
-                    "type": "object",
-                    "properties": {
-                        "serverName": {
-                            "default": "",
-                            "type": "string"
-                        },
-                        "implementationName": {
-                            "default": "",
-                            "type": "string"
-                        },
-                        "implementationVersion": {
-                            "default": "",
-                            "type": "string"
-                        },
-                        "links": {
-                            "default": {},
-                            "type": "object",
-                            "properties": {
-                                "homepage": {
-                                    "default": "",
-                                    "type": "string"
-                                },
-                                "register": {
-                                    "default": "",
-                                    "type": "string"
-                                }
-                            },
-                            "required": [
-                                "homepage",
-                                "register"
-                            ]
-                        },
-                        "feature.non_email_login": {
-                            "default": false,
-                            "type": "boolean"
-                        }
-                    },
-                    "required": [
-                        "feature.non_email_login",
-                        "implementationName",
-                        "implementationVersion",
-                        "links",
-                        "serverName"
-                    ]
-                },
-                "skinDomains": {
-                    "default": [],
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "signaturePublickey": {
-                    "default": "",
-                    "type": "string"
-                }
-            },
-            "required": [
-                "meta",
-                "signaturePublickey",
-                "skinDomains"
             ]
         }
     },

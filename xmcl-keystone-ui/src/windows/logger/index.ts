@@ -4,10 +4,10 @@ import VueI18n from 'vue-i18n'
 import { castToVueI18n, createI18n } from 'vue-i18n-bridge'
 import App from './App.vue'
 import { baseService } from './baseService'
-import vuetify from './vuetify'
 import { usePreferDark } from '@/composables'
 import { kVuetify } from '@/composables/vuetify'
 import messages from '@intlify/unplugin-vue-i18n/messages'
+import { vuetify } from '@/vuetify'
 
 Vue.use(VueI18n, { bridge: true })
 
@@ -37,16 +37,14 @@ const app = new Vue(defineComponent({
   setup(props, context) {
     provide(kVuetify, vuetify.framework)
 
-    baseService.sync().then(({ state }) => {
+    baseService.call('getSettings').then(state => state).then(state => {
       i18n.locale = state.locale
       updateTheme(state.theme)
-    })
-    baseService.on('commit', ({ mutation }) => {
-      if (mutation.type === 'localeSet') {
-        i18n.locale = mutation.payload
-      } else if (mutation.type === 'themeSet') {
-        updateTheme(mutation.payload)
-      }
+      state.subscribe('localeSet', (locale) => {
+        i18n.locale = locale
+      }).subscribe('themeSet', (theme) => {
+        updateTheme(state.theme)
+      })
     })
 
     const preferDark = usePreferDark()

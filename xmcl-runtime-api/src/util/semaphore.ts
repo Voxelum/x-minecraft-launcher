@@ -6,6 +6,8 @@ export const LockKey = {
   assets: 'assets',
   version: (v: string) => `versions/${v}`,
   instance: (p: string) => `instances/${p}`,
+  shaderpacks: (p: string) => `shaderpacks/${p}`,
+  resourcepacks: (p: string) => `resourcepacks/${p}`,
 }
 
 export function resolveLocks(lock: string): string[] {

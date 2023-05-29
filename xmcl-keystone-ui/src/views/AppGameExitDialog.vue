@@ -47,6 +47,8 @@
 
 <script lang=ts setup>
 import { useService } from '@/composables'
+import { kInstance } from '@/composables/instance'
+import { injection } from '@/util/inject'
 import { BaseServiceKey, InstanceLogServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
 
 const data = reactive({
@@ -57,6 +59,7 @@ const data = reactive({
   errorLog: '',
 })
 const { t } = useI18n()
+const { path } = injection(kInstance)
 const { getLogContent, getCrashReportContent, showLog } = useService(InstanceLogServiceKey)
 const { on } = useService(LaunchServiceKey)
 const { showItemInDirectory } = useService(BaseServiceKey)
@@ -70,12 +73,12 @@ function decorate(log: string) {
   return log
 }
 async function displayLog() {
-  const log = await getLogContent('latest.log')
+  const log = await getLogContent(path.value, 'latest.log')
   data.log = decorate(log)
   data.isShown = true
 }
 async function displayCrash() {
-  const log = await getCrashReportContent(data.crashReportLocation)
+  const log = await getCrashReportContent(path.value, data.crashReportLocation)
   data.log = decorate(log)
   data.isShown = true
 }
@@ -96,7 +99,7 @@ function openFolder() {
   if (data.isCrash) {
     showItemInDirectory(data.crashReportLocation)
   } else {
-    showLog('latest.log')
+    showLog(path.value, 'latest.log')
   }
 }
 </script>

@@ -1,4 +1,4 @@
-import Controller from '@/Controller'
+import { ElectronController } from '@/ElectronController'
 import { app, BrowserWindow, dialog, FindInPageOptions, ipcMain } from 'electron'
 import { ControllerPlugin } from './plugin'
 import { platform } from 'os'
@@ -11,7 +11,7 @@ export enum Operation {
   Close = 4,
 }
 
-export const windowController: ControllerPlugin = function (this: Controller) {
+export const windowController: ControllerPlugin = function (this: ElectronController) {
   const currentPlatform = platform()
 
   app.on('browser-window-created', (_, win: BrowserWindow) => {

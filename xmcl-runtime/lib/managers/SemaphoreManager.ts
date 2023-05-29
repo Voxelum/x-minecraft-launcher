@@ -12,7 +12,7 @@ export default class SemaphoreManager extends Manager {
    */
   private order = 0
   private semaphoreWaiter: Record<string, Array<() => void>> = {}
-  private logger = this.app.logManager.getLogger('SemaphoreManager')
+  private logger = this.app.getLogger('SemaphoreManager')
 
   constructor(app: LauncherApp) {
     super(app)

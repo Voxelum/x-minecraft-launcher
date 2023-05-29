@@ -88,9 +88,10 @@
 </template>
 
 <script lang=ts setup>
-import { useRefreshable, useService, useServiceBusy } from '@/composables'
+import { useRefreshable, useService } from '@/composables'
+import { kInstance } from '@/composables/instance'
+import { injection } from '@/util/inject'
 import { InstanceSave, InstanceSavesServiceKey, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
-import { useInstanceSaves } from '../composables/save'
 
 const props = withDefaults(defineProps<{
   value: boolean
@@ -106,14 +107,17 @@ const resourcesCopyFrom = ref([] as boolean[])
 const error = ref(undefined as any)
 const resourcesSave = ref([] as Resource[])
 
-const { cloneSave, readAllInstancesSaves: loadAllPreviews, importSave } = useInstanceSaves()
+// const { cloneSave, readAllInstancesSaves: loadAllPreviews, importSave } = useInstanceSaves()
+const { cloneSave, getInstanceSaves, importSave } = useService(InstanceSavesServiceKey)
 const { getResources } = useService(ResourceServiceKey)
 
-const updateSaves = async () => {
-  const [store, profile] = await Promise.all([getResources(ResourceDomain.Saves), loadAllPreviews()])
+const { path } = injection(kInstance)
+
+const { refresh: updateSaves, refreshing: loadingSaves } = useRefreshable(async () => {
+  const [store, profile] = await Promise.all([getResources(ResourceDomain.Saves), getInstanceSaves(path.value)])
   resourcesSave.value = store
   loadedProfileSaves.value = profile
-}
+})
 const clearSaves = () => {
   resourcesSave.value = []
   loadedProfileSaves.value = []
@@ -127,7 +131,7 @@ watch(computed(() => props.value), (visible) => {
 updateSaves()
 
 const nothingSelected = computed(() => profilesCopyFrom.value.every(v => !v) && resourcesCopyFrom.value.every(v => !v))
-const loadingSaves = useServiceBusy(InstanceSavesServiceKey, 'readAllInstancesSaves')
+// const loadingSaves = useServiceBusy(InstanceSavesServiceKey, 'readAllInstancesSaves')
 
 watch(() => loadedProfileSaves.value, () => {
   profilesCopyFrom.value = new Array(loadedProfileSaves.value.length)
@@ -142,12 +146,12 @@ const { refresh: startImport, refreshing: working } = useRefreshable(async () =>
     const resourcesSaves = resourcesSave.value.filter((_, i) => resourcesCopyFrom.value[i])
 
     if (resourcesSaves.length !== 0) {
-      await Promise.all(resourcesSaves.map(save => importSave({ path: save.path, saveRoot: save.metadata.save?.root })))
+      await Promise.all(resourcesSaves.map(save => importSave({ instancePath: path.value, path: save.path, saveRoot: save.metadata.save?.root })))
     }
 
     if (profilesSaves.length !== 0) {
       for (const s of profilesSaves) {
-        await cloneSave({ saveName: s.name, destInstancePath: s.instanceName })
+        await cloneSave({ srcInstancePath: path.value, saveName: s.name, destInstancePath: s.instanceName })
       }
     }
     emit('input', false)

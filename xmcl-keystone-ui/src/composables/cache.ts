@@ -28,7 +28,7 @@ export function clearInMemoryCache(key: string) {
 
 const LOCAL_STORAGE_CACHE: Record<string, Ref<any>> = {}
 
-export function useLocalStorageCache<T>(key: string, defaultValue: () => T, toString: (t: T) => string, fromString: (s: string) => T): Ref<T> {
+export function useLocalStorageCache<T>(key: string, defaultValue: () => T, toString: (t: T) => string, fromString: (s: string) => T, legacyKey?: string): Ref<T> {
   if (LOCAL_STORAGE_CACHE[key]) {
     const ref = LOCAL_STORAGE_CACHE[key]
     watch(ref, (n) => {
@@ -74,8 +74,8 @@ export function useLocalStorageCacheInt(key: string, defaultValue: number): Ref<
   return useLocalStorageCache(key, () => defaultValue, (n) => n.toString(), (s) => Number.parseInt(s, 10))
 }
 
-export function useLocalStorageCacheStringValue<T extends string = string>(key: string, defaultValue: T): Ref<T> {
-  return useLocalStorageCache(key, () => defaultValue, (s) => s, (s) => s as T)
+export function useLocalStorageCacheStringValue<T extends string = string>(key: string, defaultValue: T, legacyKey?: string): Ref<T> {
+  return useLocalStorageCache(key, () => defaultValue, (s) => s, (s) => s as T, legacyKey)
 }
 
 export function useLocalStorageCacheBool(key: string, defaultValue: boolean): Ref<boolean> {

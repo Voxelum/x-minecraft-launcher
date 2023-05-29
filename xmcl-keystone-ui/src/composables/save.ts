@@ -1,21 +1,19 @@
-import { CloneSaveOptions, DeleteSaveOptions, ImportSaveOptions, InstanceSavesServiceKey } from '@xmcl/runtime-api'
-import { useInstanceBase } from './instance'
 import { useService } from '@/composables'
-import { injection } from '@/util/inject'
-import { kInstanceContext } from './instanceContext'
+import { Instance, InstanceSavesServiceKey, Saves } from '@xmcl/runtime-api'
+import { Ref, InjectionKey } from 'vue'
+import { useState } from './syncableState'
 
-export function useInstanceSaves() {
-  const {  } = injection(kInstanceContext)
-  const { path } = useInstanceBase()
-  const { cloneSave, deleteSave, exportSave, importSave } = useService(InstanceSavesServiceKey)
-  const refresh = () => mountInstanceSaves(path.value)
+export const kInstanceSave: InjectionKey<ReturnType<typeof useInstanceSaves>> = Symbol('InstanceSave')
+
+export function useInstanceSaves(instance: Ref<Instance>) {
+  const { watch } = useService(InstanceSavesServiceKey)
+  const { state, isValidating, error } = useState(() => instance.value.path ? watch(instance.value.path) : undefined, Saves)
+
+  const saves = computed(() => state.value?.saves || [])
+
   return {
-    refresh,
-    cloneSave: (options: CloneSaveOptions) => cloneSave(options).finally(refresh),
-    deleteSave: (options: DeleteSaveOptions) => deleteSave(options).finally(refresh),
-    exportSave,
-    readAllInstancesSaves,
-    importSave: (options: ImportSaveOptions) => importSave(options).finally(refresh),
-    saves: computed(() => state.saves),
+    saves,
+    isValidating,
+    error,
   }
 }

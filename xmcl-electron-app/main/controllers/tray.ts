@@ -1,10 +1,11 @@
-import Controller from '@/Controller'
+import { ElectronController } from '@/ElectronController'
 import { darkIcon, darkTray, lightIcon, lightTray } from '@/utils/icons'
 import { BaseService } from '@xmcl/runtime'
 import { app, Menu, shell, Tray, nativeTheme, nativeImage, MenuItemConstructorOptions } from 'electron'
 import { ControllerPlugin } from './plugin'
+import { kSettings } from '@xmcl/runtime/lib/entities/settings'
 
-export const trayPlugin: ControllerPlugin = function (this: Controller) {
+export const trayPlugin: ControllerPlugin = function (this: ElectronController) {
   const { t } = this.i18n
   // nativeTheme.addListener('updated', () => {
   //   if (nativeTheme.shouldUseDarkColors) {
@@ -13,9 +14,9 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
 
   //   }
   // })
+  let checkUpdate: (() => void) | undefined
   const createMenu = () => {
     const app = this.app
-    const service = this.app.serviceManager.get(BaseService)
     const onBrowseAppClicked = () => {
       if (this.browserRef && !this.browserRef.isDestroyed()) {
         this.browserRef.show()
@@ -28,15 +29,16 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
       this.activeWindow?.webContents.openDevTools()
     }
     const showLogs = () => {
-      shell.openPath(this.app.logManager.getLogRoot())
+      // shell.openPath(this.app.logManager.getLogRoot())
     }
     const options: MenuItemConstructorOptions[] = [
       {
         type: 'normal',
         label: t('checkUpdate'),
-        click() {
-          service.checkUpdate()
+        click: () => {
+          checkUpdate?.()
         },
+        enabled: !!checkUpdate,
       },
       // {
       //   label: t('browseApps'),
@@ -53,6 +55,7 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
         label: t('showDiagnosis'),
         type: 'normal',
         click: diagnose,
+        role: 'toggleDevTools',
       },
       {
         label: t('quit'),
@@ -62,7 +65,7 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
         },
       },
     ]
-    if (app.platform.name === 'osx') {
+    if (app.platform.os === 'osx') {
       const show = () => {
         const window = this.mainWin
         window?.show()
@@ -71,6 +74,7 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
         label: t('showLauncher'),
         type: 'normal',
         click: show,
+        role: 'front',
       })
     }
     return Menu.buildFromTemplate(options)
@@ -78,16 +82,29 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
 
   const getTrayImage = (dark: string, light: string) => {
     const path = nativeTheme.shouldUseDarkColors ? dark : light
-    if (this.app.platform.name === 'osx') {
+    if (this.app.platform.os === 'osx') {
       const icon = nativeImage.createFromPath(path)
       return icon.resize({ width: 20, height: 20 })
     }
     return path
   }
 
-  this.app.once('engine-ready', () => {
+  this.app.once('engine-ready', async () => {
+    this.app.registry.get(BaseService).then(service => {
+      checkUpdate = () => service.checkUpdate()
+    })
+    this.app.registry.get(kSettings).then(state => {
+      state.subscribe('config', () => {
+        tray.setToolTip(t('title'))
+        tray.setContextMenu(createMenu())
+      }).subscribe('localeSet', () => {
+        tray.setToolTip(t('title'))
+        tray.setContextMenu(createMenu())
+      })
+    })
+
     const tray = new Tray(getTrayImage(darkTray, lightTray))
-    if (this.app.platform.name === 'windows') {
+    if (this.app.platform.os === 'windows') {
       tray.on('double-click', () => {
         const window = this.mainWin
         if (window) {
@@ -100,14 +117,7 @@ export const trayPlugin: ControllerPlugin = function (this: Controller) {
 
     tray.setToolTip(t('title'))
     tray.setContextMenu(createMenu())
-    this.app.serviceStateManager.subscribe('config', () => {
-      tray.setToolTip(t('title'))
-      tray.setContextMenu(createMenu())
-    })
-    this.app.serviceStateManager.subscribe('localeSet', () => {
-      tray.setToolTip(t('title'))
-      tray.setContextMenu(createMenu())
-    })
+
     if (app.dock) {
       app.dock.setIcon(nativeTheme.shouldUseDarkColors ? darkIcon : lightIcon)
     }

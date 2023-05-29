@@ -125,6 +125,7 @@
           >
             <ModrinthProjectVersions
               :versions="project.versions"
+              :mod-loaders="project.loaders"
               :project="project.id"
               :modpack="project.project_type === 'modpack'"
             />
@@ -157,6 +158,7 @@ import ModrinthProjectMembers from './ModrinthProjectMembers.vue'
 import ModrinthProjectTags from './ModrinthProjectTags.vue'
 import ModrinthProjectUpstream from './ModrinthProjectUpstream.vue'
 import ModrinthProjectVersions from './ModrinthProjectVersions.vue'
+import { kInstance } from '@/composables/instance'
 
 const props = defineProps<{ id: string }>()
 
@@ -166,14 +168,13 @@ const imageDialog = injection(kImageDialog)
 const tab = ref(0)
 
 const { t } = useI18n()
-const { state: instanceState } = useService(InstanceServiceKey)
 const projectId = computed(() => props.id)
 
 const { project, refreshing, refreshError, refresh } = useModrinthProject(projectId)
 
 // modrinth project
-
-const installTo = ref(project.value?.project_type === 'mod' ? instanceState.path : '')
+const { path } = inject(kInstance, ({ path: '' }) as any)
+const installTo = ref(project.value?.project_type === 'mod' ? path.value : '')
 
 // modrinth version status
 const holder = ref({} as Record<string, ProjectVersion>)

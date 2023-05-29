@@ -48,7 +48,7 @@
 
 <script lang="ts" setup>
 import { useFilterCombobox } from '@/composables'
-import { kInstanceContext } from '@/composables/instanceContext'
+import { kInstance } from '@/composables/instance'
 import { usePresence } from '@/composables/presence'
 import { useRefreshable } from '@/composables/refreshable'
 import { injection } from '@/util/inject'
@@ -100,6 +100,6 @@ function getFilterOptions(item: ShaderPackItem) {
 const { filter } = useFilterCombobox(filterOptions, getFilterOptions, (i) => i.name)
 const items = computed(() => filter(shaderPacks.value))
 
-const { name } = injection(kInstanceContext)
+const { name } = injection(kInstance)
 usePresence(computed(() => t('presence.shaderPack', { instance: name.value })))
 </script>

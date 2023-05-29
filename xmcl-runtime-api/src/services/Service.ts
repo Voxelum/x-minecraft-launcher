@@ -2,10 +2,6 @@
 
 export interface ServiceKey<T> extends String { }
 
-export interface StatefulService<M extends State<M>> {
-  state: M
-}
-
 export type NoPromiseType<T> = {
   [key in keyof T]: T[key] extends Promise<any> ? never : T[keyof T]
 }

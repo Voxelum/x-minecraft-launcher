@@ -178,11 +178,10 @@
 
 <script lang=ts setup>
 import { InstallServiceKey, LocalVersionHeader, versionCompare, VersionServiceKey } from '@xmcl/runtime-api'
-import { useLocalVersions } from '../composables/version'
 import { useRefreshable, useService } from '@/composables'
 import { usePresence } from '@/composables/presence'
-import { kInstanceContext } from '@/composables/instanceContext'
 import { injection } from '@/util/inject'
+import { kLocalVersions } from '@/composables/versionLocal'
 
 const props = withDefaults(defineProps<{
   value?: LocalVersionHeader
@@ -202,7 +201,7 @@ const data = reactive({
   filteredMinecraft: '',
 })
 const { reinstall } = useService(InstallServiceKey)
-const { localVersions } = useLocalVersions()
+const { versions: localVersions } = injection(kLocalVersions)
 const { deleteVersion, showVersionsDirectory, showVersionDirectory, refreshVersions } = useService(VersionServiceKey)
 const versions = computed(() => localVersions.value.filter(v => v.id.indexOf(filterText.value) !== -1).filter(v => !data.filteredMinecraft || v.minecraft === data.filteredMinecraft))
 const minecraftVersions = computed(() => [...new Set(localVersions.value.map(v => v.minecraft))].sort(versionCompare).reverse())

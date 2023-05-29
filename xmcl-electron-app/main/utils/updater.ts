@@ -1,13 +1,13 @@
 import { AZURE_CDN, AZURE_MS_CDN, IS_DEV } from '@/constant'
-import { DownloadTask } from '@xmcl/installer'
 import { ChecksumNotMatchError, download } from '@xmcl/file-transfer'
-import { BaseService, ServiceStateManager } from '@xmcl/runtime'
+import { DownloadTask } from '@xmcl/installer'
+import { BaseService } from '@xmcl/runtime'
 import { ReleaseInfo } from '@xmcl/runtime-api'
 import { LauncherAppUpdater } from '@xmcl/runtime/lib/app/LauncherAppUpdater'
 import { Logger } from '@xmcl/runtime/lib/util/log'
-import { BaseTask, task, Task } from '@xmcl/task'
+import { BaseTask, Task, task } from '@xmcl/task'
 import { spawn } from 'child_process'
-import { autoUpdater, CancellationToken, Provider, UpdateInfo, UpdaterSignal } from 'electron-updater'
+import { CancellationToken, Provider, UpdateInfo, UpdaterSignal, autoUpdater } from 'electron-updater'
 import { stat, writeFile } from 'fs/promises'
 import { closeSync, existsSync, open, rename, unlink } from 'original-fs'
 import { platform } from 'os'
@@ -19,6 +19,7 @@ import { promisify } from 'util'
 import ElectronLauncherApp from '../ElectronLauncherApp'
 import { DownloadAppInstallerTask } from './appinstaller'
 import { checksum } from './fs'
+import { GFW } from '@xmcl/runtime/lib/entities/gfw'
 
 /**
  * Only download asar file update.
@@ -104,13 +105,14 @@ export class ElectronUpdater implements LauncherAppUpdater {
   private logger: Logger
 
   constructor(private app: ElectronLauncherApp) {
-    this.logger = app.logManager.getLogger('ElectronUpdater')
+    this.logger = app.getLogger('ElectronUpdater')
   }
 
   private async getUpdateFromSelfHost(): Promise<ReleaseInfo> {
     const app = this.app
-    app.log('Try get update from selfhost')
-    const { allowPrerelease, locale } = app.serviceManager.get(BaseService).state
+    this.logger.log('Try get update from selfhost')
+    const baseService = await app.registry.get(BaseService)
+    const { allowPrerelease, locale } = await baseService.getSettings()
     const url = `https://api.xmcl.app/latest?version=v${app.version}&prerelease=${allowPrerelease || false}`
     const response = await request(url, {
       headers: {
@@ -129,10 +131,10 @@ export class ElectronUpdater implements LauncherAppUpdater {
       incremental: true,
     }
     updateInfo.newUpdate = `v${app.version}` !== updateInfo.name
-    const platformString = app.platform.name === 'windows' ? 'win' : app.platform.name === 'osx' ? 'mac' : 'linux'
+    const platformString = app.platform.os === 'windows' ? 'win' : app.platform.os === 'osx' ? 'mac' : 'linux'
     const version = updateInfo.name.startsWith('v') ? updateInfo.name.substring(1) : updateInfo.name
     updateInfo.incremental = updateInfo.files.some(f => f.name === `app-${version}-${platformString}.asar`)
-    app.log(`Got incremental=${updateInfo.incremental} update from selfhost`)
+    this.logger.log(`Got incremental=${updateInfo.incremental} update from selfhost`)
 
     return updateInfo
   }
@@ -141,8 +143,8 @@ export class ElectronUpdater implements LauncherAppUpdater {
     const appAsarPath = dirname(__dirname)
     const updateAsarPath = join(this.app.appDataPath, 'pending_update')
 
-    this.logger.log(`Install asar on ${this.app.platform.name} ${appAsarPath}`)
-    if (this.app.platform.name === 'windows') {
+    this.logger.log(`Install asar on ${this.app.platform.os} ${appAsarPath}`)
+    if (this.app.platform.os === 'windows') {
       const elevatePath = await ensureElevateExe(this.app.appDataPath)
 
       if (!existsSync(updateAsarPath)) {
@@ -227,8 +229,9 @@ export class ElectronUpdater implements LauncherAppUpdater {
           }
         })
         this.logger.log(`Check update via ${autoUpdater.getFeedURL()}`)
+        const gfw = await this.app.registry.get(GFW)
         const info = await autoUpdater.checkForUpdates()
-        if (this.app.networkManager.isInGFW && !injectedUpdate) {
+        if (await gfw.signal && !injectedUpdate) {
           injectedUpdate = true
           const provider: Provider<UpdateInfo> = (await (autoUpdater as any).clientPromise)
           const originalResolve = provider.resolveFiles
@@ -306,17 +309,3 @@ async function ensureElevateExe(appDataPath: string) {
 }
 
 let injectedUpdate = false
-
-export function setup(storeManager: ServiceStateManager) {
-  storeManager.subscribe('autoInstallOnAppQuitSet', (value) => {
-    autoUpdater.autoInstallOnAppQuit = value
-  }).subscribe('allowPrereleaseSet', (value) => {
-    autoUpdater.allowPrerelease = value
-  }).subscribe('autoDownloadSet', (value) => {
-    autoUpdater.autoDownload = value
-  }).subscribe('config', (config) => {
-    autoUpdater.autoInstallOnAppQuit = config.autoInstallOnAppQuit
-    autoUpdater.allowPrerelease = config.allowPrerelease
-    autoUpdater.autoDownload = config.autoDownload
-  })
-}

@@ -26,7 +26,7 @@
           verified
         </v-icon>
         <span>
-          {{ user.authService.toUpperCase() }}
+          {{ user.authority.toUpperCase() }}
           ({{ t('user.authService') }})
         </span>
       </v-list-item-subtitle>
@@ -38,7 +38,7 @@
           {{ expired ? 'cancel': 'check_circle' }}
         </v-icon>
         <span
-          v-if="user.authService !== 'offline'"
+          v-if="user.authority !== AUTHORITY_DEV"
           :style="{ color: getColorCode(expired ? 'red': 'primary') }"
         >
           {{ expired ? t('user.tokenExpired'): t('user.tokenValidUntil') }}
@@ -81,7 +81,7 @@
           >
             refresh
           </v-icon>
-          <span class="xl:inline hidden">
+          <span class="hidden xl:inline">
             {{ t('user.refreshAccount') }}
           </span>
         </template>
@@ -100,7 +100,7 @@
         >
           delete
         </v-icon>
-        <span class="lg:inline hidden">
+        <span class="hidden lg:inline">
           {{ t('userAccount.removeTitle') }}
         </span>
       </v-btn>
@@ -111,7 +111,7 @@
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import { useUserExpired } from '@/composables/user'
 import { useVuetifyColor } from '@/composables/vuetify'
-import { UserProfile } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, UserProfile } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   user: UserProfile

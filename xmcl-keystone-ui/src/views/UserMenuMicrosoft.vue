@@ -1,13 +1,13 @@
 <template>
-  <div class="flex gap-4 flex-row max-w-full">
+  <div class="flex max-w-full flex-row gap-4">
     <v-card
-      class="p-2 overflow-x-hidden flex flex-col flex-grow "
+      class="flex grow flex-col overflow-x-hidden p-2 "
       flat
       color="transparent"
     >
       <div class="flex justify-center">
         <UserSkin
-          class="flex overflow-auto relative justify-center items-center z-5"
+          class="z-5 relative flex items-center justify-center overflow-auto"
           inspect
           :user="user"
           :profile="gameProfile"
@@ -27,7 +27,7 @@
                 {{ t('user.nameHint') }}
               </v-list-item-subtitle>
             </v-list-item-content>
-            <v-list-item-action class="flex flex-row flex-grow-0">
+            <v-list-item-action class="flex grow-0 flex-row">
               <v-text-field
                 v-model="name"
                 dense
@@ -60,7 +60,7 @@
               <v-list-item-title>
                 {{ t('userCape.changeTitle') }}
               </v-list-item-title>
-              <v-list-item-subtitle class="overflow-hidden max-w-100 whitespace-pre-wrap">
+              <v-list-item-subtitle class="max-w-100 overflow-hidden whitespace-pre-wrap">
                 {{ t('userCape.description') }}
               </v-list-item-subtitle>
             </v-list-item-content>
@@ -86,7 +86,7 @@
                   align="center"
                   justify="center"
                 >
-                  <div class="min-h-[120px] min-w-[80px] border-dashed border-2 mt-4" />
+                  <div class="mt-4 min-h-[120px] min-w-[80px] border-2 border-dashed" />
                   <div class="text-sm font-bold text-white">
                     {{ t('userCape.noCape') }}
                   </div>
@@ -204,9 +204,9 @@ const changed = computed(() => {
 const { refresh: save, refreshing: saving } = useRefreshable(
   async function save() {
     if (name.value !== gameProfile.value.name) {
-      const result = await checkNameAvailability(name.value)
+      const result = await checkNameAvailability(props.user, name.value)
       if (result === NameAvailability.AVAILABLE) {
-        await setName(name.value)
+        await setName(props.user, name.value)
       } else if (result === NameAvailability.DUPLICATE) {
         nameError.value = t('nameError.duplicate')
       } else if (result === NameAvailability.NOT_ALLOWED) {

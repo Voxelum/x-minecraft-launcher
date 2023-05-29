@@ -25,7 +25,7 @@ export interface SetInstanceManifestOptions {
   /**
    * The path of the instance
    */
-  path?: string
+  path: string
   /**
    * The manifest to upload
    */
@@ -58,7 +58,7 @@ export interface XUpdateService {
    * Fetch the instance update and return the difference.
    * If this instance is not a remote hooked instance, this will return
    */
-  fetchInstanceUpdate(path?: string): Promise<InstanceUpdate | undefined>
+  fetchInstanceUpdate(path: string): Promise<InstanceUpdate | undefined>
   /**
     * Upload the instance manifest via `instance.fileApi`
     *

@@ -1,5 +1,7 @@
 import { useLocalStorageCacheBool, useLocalStorageCacheInt, useLocalStorageCacheStringValue } from '@/composables/cache'
 
+import { InjectionKey } from 'vue'
+
 export enum ParticleMode {
   PUSH = 'push',
   REMOVE = 'remove',
@@ -24,6 +26,7 @@ export function useBarBlur() {
     blurAppBar,
   }
 }
+export const kBackground: InjectionKey<ReturnType<typeof useBackground>> = Symbol('Background')
 
 export function useBackground() {
   const backgroundType = useLocalStorageCacheStringValue<BackgroundType>('backgroundType', BackgroundType.NONE)

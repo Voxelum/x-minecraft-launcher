@@ -41,24 +41,22 @@
 </template>
 
 <script lang="ts" setup>
-import { useDialog } from '@/composables/dialog'
-import { useInstanceSaves } from '@/composables/save'
 import { kCompact } from '@/composables/scrollTop'
 import { injection } from '@/util/inject'
 
-const { importSave } = useInstanceSaves()
+// const { importSave } = useInstanceSaves()
 const { t } = useI18n()
 const { showOpenDialog } = windowController
-const { isShown: isCopyFromDialogShown } = useDialog('save-copy-from')
-async function doImport() {
-  const { filePaths } = await showOpenDialog({
-    title: t('save.importTitle'),
-    message: t('save.importMessage'),
-    filters: [{ extensions: ['zip'], name: 'zip' }],
-  })
-  for (const file of filePaths) {
-    importSave({ path: file })
-  }
-}
+// const { isShown: isCopyFromDialogShown } = useDialog('save-copy-from')
+// async function doImport() {
+//   const { filePaths } = await showOpenDialog({
+//     title: t('save.importTitle'),
+//     message: t('save.importMessage'),
+//     filters: [{ extensions: ['zip'], name: 'zip' }],
+//   })
+//   for (const file of filePaths) {
+//     importSave({ path: file })
+//   }
+// }
 const compact = injection(kCompact)
 </script>

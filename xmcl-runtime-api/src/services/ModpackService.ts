@@ -1,3 +1,4 @@
+import { RuntimeVersions } from '../entities/instance.schema'
 import { Exception } from '../entities/exception'
 import { InstanceFile } from '../entities/instanceManifest.schema'
 import { ResourceMetadata } from '../entities/resource'
@@ -45,7 +46,7 @@ export interface ExportModpackOptions {
   /**
    * The instance path to be exported
    */
-  instancePath?: string
+  instancePath: string
   /**
   * The dest path of the exported instance
   */
@@ -103,6 +104,14 @@ export interface ImportModpackCreateInstanceOptions {
   mountAfterSucceed?: boolean
 }
 
+export interface ModpackInstallProfile {
+  instance: EditInstanceOptions & {
+    name: string
+    runtime: RuntimeVersions
+  }
+  files: InstanceFile[]
+}
+
 /**
  * Provide the abilities to import/export instance from/to modpack file.
  * For json format modpack like FTB, you can use the `InstanceIOService`
@@ -114,17 +123,9 @@ export interface ModpackService {
    */
   exportModpack(options: ExportModpackOptions): Promise<void>
   /**
-   * Import the curseforge modpack zip file to the instance.
-   * @param options The options provide instance directory path and curseforge modpack zip path
+   * Get modpack install profile from the modpack. Use the `installInstanceFiles` to create an instance.
    */
-  importModpack(options: ImportModpackOptions): Promise<string>
-  /**
-   * Preview the modpack content apply to the instance
-   */
-  getInstallModpackProfile(modpackPath: string): Promise<{
-    instance: EditInstanceOptions
-    files: InstanceFile[]
-  }>
+  getModpackInstallProfile(modpackPath: string): Promise<ModpackInstallProfile>
 
   showModpacksFolder(): Promise<void>
 }

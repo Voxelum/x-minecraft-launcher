@@ -3,12 +3,12 @@
     topbar
     window
     :color="appBarColor"
-    class="flex w-full moveable p-0 flex-grow-0 gap-1"
+    class="moveable flex w-full grow-0 gap-1 p-0"
     :style="{ 'backdrop-filter': `blur(${blurAppBar}px)` }"
   >
     <span
       v-if="back"
-      class="p-0 flex flex-shrink flex-grow-0"
+      class="flex shrink grow-0 p-0"
     >
       <div
         v-if="shouldShiftBackControl"
@@ -17,7 +17,7 @@
       <v-icon
         v-ripple
         small
-        class="flex items-center py-2 hover:bg-[rgba(255,255,255,0.2)] cursor-pointer select-none non-moveable after:hidden"
+        class="non-moveable flex cursor-pointer select-none items-center py-2 after:hidden hover:bg-[rgba(255,255,255,0.2)]"
         style="width: 80px;"
         @click="onBack"
       >
@@ -26,11 +26,11 @@
     </span>
     <slot />
 
-    <div class="flex-grow " />
+    <div class="grow " />
     <TaskSpeedMonitor v-if="!noTask" />
     <div
       v-if="!noTask"
-      class="non-moveable hover:bg-[rgba(255,255,255,0.2)] cursor-pointer px-2 py-1 rounded transition-all flex flex-grow-0"
+      class="non-moveable flex flex-grow-0 cursor-pointer rounded px-2 py-1 transition-all hover:bg-[rgba(255,255,255,0.2)]"
       @click="showTaskDialog()"
     >
       <v-icon>
@@ -47,11 +47,11 @@
       v-if="!noUser"
     />
 
-    <span class="p-0 flex flex-shrink flex-grow-0 h-full">
+    <span class="flex h-full shrink grow-0 p-0">
       <v-icon
         v-ripple
         tabindex="-1"
-        class="flex items-center px-3 py-1 xy-0 cursor-pointer select-none non-moveable hover:bg-[rgba(255,255,255,0.5)] after:hidden mr-0"
+        class="xy-0 non-moveable mr-0 flex cursor-pointer select-none items-center px-3 py-1 after:hidden hover:bg-[rgba(255,255,255,0.5)]"
 
         small
         @click="showFeedbackDialog"
@@ -62,7 +62,7 @@
         v-if="!hideWindowControl"
         v-ripple
         tabindex="-1"
-        class="flex items-center px-3 py-1 xy-0 cursor-pointer select-none non-moveable hover:bg-[rgba(255,255,255,0.5)] after:hidden mr-0"
+        class="xy-0 non-moveable mr-0 flex cursor-pointer select-none items-center px-3 py-1 after:hidden hover:bg-[rgba(255,255,255,0.5)]"
 
         small
         @click="minimize"
@@ -71,14 +71,14 @@
         v-if="!hideWindowControl"
         v-ripple
         tabindex="-1"
-        class="flex items-center px-3 py-1 top-0 cursor-pointer select-none non-moveable hover:bg-[rgba(255,255,255,0.5)] after:hidden mr-0"
+        class="non-moveable top-0 mr-0 flex cursor-pointer select-none items-center px-3 py-1 after:hidden hover:bg-[rgba(255,255,255,0.5)]"
         small
         @click="maximize"
       >crop_din</v-icon>
       <v-icon
         v-if="!hideWindowControl"
         v-ripple
-        class="flex items-center px-3 py-1 top-0 cursor-pointer select-none non-moveable hover:bg-[rgb(209,12,12)] after:hidden mr-0"
+        class="non-moveable top-0 mr-0 flex cursor-pointer select-none items-center px-3 py-1 after:hidden hover:bg-[rgb(209,12,12)]"
         small
         @click="close"
       >close</v-icon>

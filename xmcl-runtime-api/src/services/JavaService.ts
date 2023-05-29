@@ -1,14 +1,11 @@
 import { JavaVersion } from '@xmcl/core'
 import { JavaRecord } from '../entities/java'
 import { Java } from '../entities/java.schema'
-import { ServiceKey, StatefulService } from './Service'
+import { MutableState } from '../util/MutableState'
+import { ServiceKey } from './Service'
 
 export class JavaState {
   all = [] as JavaRecord[]
-
-  get missingJava() {
-    return this.all.length === 0
-  }
 
   javaUpdate(java: JavaRecord | JavaRecord[]) {
     if (java instanceof Array) {
@@ -35,12 +32,12 @@ export class JavaState {
   }
 
   javaRemove(java: JavaRecord) {
-    // TODO: remove in vue3
     this.all = this.all.filter(j => j.path !== java.path && j.version !== java.version)
   }
 }
 
-export interface JavaService extends StatefulService<JavaState> {
+export interface JavaService {
+  getJavaState(): Promise<MutableState<JavaState>>
   /**
    * Install a default jdk 8 or 16 to the a preserved location. It'll be installed under your launcher root location `jre` or `jre-next` folder
    */

@@ -32,7 +32,7 @@ export interface GameProfileAndTexture extends GameProfile {
   }>
 }
 
-export interface UserProfile {
+export interface UserProfileCompatible {
   /**
    * User id. Also means the localId in new account_json
    */
@@ -43,12 +43,17 @@ export interface UserProfile {
   username: string
   /**
    * The used auth service name
+   * @deprecated
    */
-  authService: string
+  authService?: string
   /**
    * If the user profile is invalidated and should be re-login
    */
   invalidated: boolean
+  /**
+   * The authority url
+   */
+  authority?: string
   /**
    * The expire time
    */
@@ -67,76 +72,39 @@ export interface UserProfile {
   avatar?: string
 }
 
-export interface AuthlibInjectorApiProfile {
+export interface UserProfile {
   /**
-   * @default {}
+   * User id. Also means the localId in new account_json
    */
-  meta: {
-    /**
-     * @default ""
-     */
-    serverName: string
-    /**
-     * @default ""
-     */
-    implementationName: string
-    /**
-     * @default ""
-     */
-    implementationVersion: string
-    /**
-     * @default {}
-     */
-    links: {
-      /**
-       * @default ""
-       */
-      homepage: string
-      /**
-       * @default ""
-       */
-      register: string
-    }
-    /**
-     * @default false
-     */
-    'feature.non_email_login': boolean
-  }
+  id: string
   /**
-   * @default []
+   * The username usually email
    */
-  skinDomains: string[]
+  username: string
   /**
-   * @default ""
+   * If the user profile is invalidated and should be re-login
    */
-  signaturePublickey: string
-}
-
-export interface YggdrasilApi {
+  invalidated: boolean
   /**
-   * The base service url
+   * The authority service uri.
    */
-  url: string
+  authority: string
   /**
-   * It will use `url + '/sessionserver/session/minecraft/profile/${uuid}'` by default
+   * The expire time
    */
-  profile?: string
+  expiredAt: number
   /**
-   * It will use `url + "/api/user/profile/${uuid}/${type}"` by default
+   * All available game profiles
    */
-  texture?: string
+  profiles: { [uuid: string]: GameProfileAndTexture }
   /**
-   * It will use `url + "/authserver"` by default
+   * Selected profile uuid
    */
-  auth?: string
+  selectedProfile: string
   /**
-   * The cache for authlib injector compatible api
+   * The avatar uri. This can be base64 data uri.
    */
-  authlibInjector?: AuthlibInjectorApiProfile
-  /**
-   * The favicon of the service
-   */
-  favicon?: string
+  avatar?: string
 }
 
 export interface UserSchema {
@@ -144,28 +112,5 @@ export interface UserSchema {
    * All saved user account through multiple services
    * @default {}
    */
-  users: { [account: string]: UserProfile }
-
-  /**
-   * Contains the UUID-hashed account and the UUID of the currently selected user
-   * @default { "account": "", "profile": "" }
-   */
-  selectedUser: {
-    /**
-     * The UUID-hashed key of the currently selected user
-     * @default ""
-     */
-    id: string
-  }
-  /**
-   * The client token of current client. The launcher will generate one at first launch.
-   * @default ""
-   */
-  clientToken: string
-
-  /**
-   * The customized third-party yggrasil services satisfying the authlib-injector api format
-   * @default []
-   */
-  yggdrasilServices: Array<YggdrasilApi>
+  users: { [account: string]: UserProfileCompatible }
 }

@@ -88,11 +88,7 @@
         :progress="progress"
       />
       <HomeLaunchButton
-        :issue="issue"
         :compact="compact"
-        :status="status"
-        @pause="pause"
-        @resume="resume"
       />
     </div>
   </div>
@@ -100,7 +96,6 @@
 
 <script lang=ts setup>
 import AvatarItem from '@/components/AvatarItem.vue'
-import { kInstanceContext } from '@/composables/instanceContext'
 import { kCompact } from '@/composables/scrollTop'
 import { useInFocusMode } from '@/composables/uiLayout'
 import { getAgoOrDate, getHumanizeDuration, TimeUnit } from '@/util/date'
@@ -108,10 +103,13 @@ import { injection } from '@/util/inject'
 import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
 import HomeLaunchButton from './HomeLaunchButton.vue'
 import useSWRV from 'swrv'
+import { kInstance } from '@/composables/instance'
+import { kInstanceVersion } from '@/composables/instanceVersion'
+import { kLaunchTask } from '@/composables/launchTask'
 
-const { issue, task, version, instance } = injection(kInstanceContext)
+const { instance, runtime: version } = injection(kInstance)
 const isInFocusMode = useInFocusMode()
-const { total, progress, pause, resume, status, name: taskName } = task
+const { total, progress, status, name: taskName } = injection(kLaunchTask)
 const { t } = useI18n()
 
 const compact = injection(kCompact)

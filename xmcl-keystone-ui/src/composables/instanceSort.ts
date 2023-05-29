@@ -1,12 +1,10 @@
-import { InstanceServiceKey } from '@xmcl/runtime-api'
-import { useService } from '@/composables'
 import { useLocalStorageCache } from '@/composables/cache'
+import { Instance } from '@xmcl/runtime-api'
+import { Ref } from 'vue'
 
-export function useSortedInstance() {
+export function useSortedInstance(instances: Ref<Instance[]>) {
   const ordered = useLocalStorageCache<string[]>('instancesOrder', () => [] as string[], JSON.stringify, JSON.parse)
-  const { state } = useService(InstanceServiceKey)
-  const unordered = computed(() => state.instances)
-
+  const unordered = instances
   const sorted = computed(() => unordered.value.slice().reverse().sort((a, b) => ordered.value.indexOf(a.path) - ordered.value.indexOf(b.path)))
 
   const setToPrevious = (instancePath: string, pivot: string) => {

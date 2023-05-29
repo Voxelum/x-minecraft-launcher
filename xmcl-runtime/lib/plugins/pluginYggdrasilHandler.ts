@@ -1,4 +1,5 @@
-import { GameProfile, YggdrasilTexture, YggdrasilTexturesInfo } from '@xmcl/user'
+import { AUTHORITY_DEV } from '@xmcl/runtime-api'
+import { YggdrasilTexture, YggdrasilTexturesInfo } from '@xmcl/user'
 import { sign } from 'crypto'
 import { Readable } from 'stream'
 import { finished } from 'stream/promises'
@@ -8,12 +9,12 @@ import { PeerService } from '../services/PeerService'
 import { UserService } from '../services/UserService'
 
 export const pluginYggdrasilHandler: LauncherAppPlugin = (app) => {
-  const logger = app.logManager.getLogger('YggdrasilServer')
+  const logger = app.getLogger('YggdrasilServer')
 
   const getProfile = async (name: string) => {
-    const userService = app.serviceManager.get(UserService)
-    const peerService = app.serviceManager.get(PeerService)
-    const offline = userService.state.users.OFFLINE
+    const userService = await app.registry.get(UserService)
+    const peerService = await app.registry.get(PeerService)
+    const offline = Object.values(userService.state.users).find(v => v.authority === AUTHORITY_DEV)
     if (offline) {
       const profiles = Object.values(offline.profiles)
       const founded = profiles.find(p => p.name === name || p.id === name || p.id.replaceAll('-', '') === name)

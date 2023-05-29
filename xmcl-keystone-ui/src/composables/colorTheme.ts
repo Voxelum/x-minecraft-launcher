@@ -1,12 +1,9 @@
-import { useTheme } from '@/composables'
 import { useLocalStorageCacheStringValue } from '@/composables/cache'
-import { InjectionKey } from 'vue'
+import { InjectionKey, Ref } from 'vue'
 
 export const kColorTheme: InjectionKey<ReturnType<typeof useColorTheme>> = Symbol('ColorTheme')
 
-export function useColorTheme() {
-  const { darkTheme } = useTheme()
-
+export function useColorTheme(darkTheme: Ref<boolean>) {
   const lightAppBarColor = useLocalStorageCacheStringValue<string>('lightAppBarColor', '#e0e0e0FF')
   const lightSideBarColor = useLocalStorageCacheStringValue<string>('lightSideBarColor', '#FFFFFFFF')
 
@@ -30,6 +27,11 @@ export function useColorTheme() {
   const lightSuccessColor = useLocalStorageCacheStringValue<string>('lightSuccessColor', '#4CAF50')
   const lightAccentColor = useLocalStorageCacheStringValue<string>('lightAccentColor', '#82B1FF')
   const lightCardColor = useLocalStorageCacheStringValue<string>('lightCardColor', '#e0e0e080')
+
+  const cssVars = computed(() => ({
+    '--primary': primaryColor.value,
+    'background-color': backgroundColor.value,
+  }))
 
   const appBarColor = computed({
     get: () => darkTheme.value ? darkAppBarColor.value : lightAppBarColor.value,
@@ -181,5 +183,6 @@ export function useColorTheme() {
     successColor,
     infoColor,
     cardColor,
+    cssVars,
   }
 }

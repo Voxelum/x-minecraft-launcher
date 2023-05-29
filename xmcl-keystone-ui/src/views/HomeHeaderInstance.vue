@@ -13,7 +13,7 @@
       >{{ name || `Minecraft ${version.minecraft}` }}</span>
       <AvatarItem
         v-ripple
-        :color="!localVersion.id ? 'warning' : 'primary'"
+        :color="!isResolvedVersion(resolvedVersion) ? 'warning' : 'primary'"
         icon="fact_check"
         class="cursor-pointer ml-2"
         :title="t('version.name', 2)"
@@ -181,7 +181,6 @@
           :progress="progress"
         />
         <HomeLaunchButton
-          :issue="issue"
           :compact="compact"
           :status="status"
           @pause="pause"
@@ -202,7 +201,6 @@
 <script lang=ts setup>
 import AvatarItem from '@/components/AvatarItem.vue'
 import { useService } from '@/composables'
-import { kInstanceContext } from '@/composables/instanceContext'
 import { kCompact } from '@/composables/scrollTop'
 import { useInFocusMode } from '@/composables/uiLayout'
 import { getLocalDateString } from '@/util/date'
@@ -212,17 +210,21 @@ import { useDialog } from '../composables/dialog'
 import { AppExportDialogKey } from '../composables/instanceExport'
 import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
 import HomeLaunchButton from './HomeLaunchButton.vue'
+import { kInstance } from '@/composables/instance'
+import { kLaunchTask } from '@/composables/launchTask'
+import { isResolvedVersion, kInstanceVersion } from '@/composables/instanceVersion'
 
-const { issue, task, path, refreshing, name, version, localVersion, instance } = injection(kInstanceContext)
+const { runtime: version, path, refreshing, name, instance } = injection(kInstance)
+const { resolvedVersion } = injection(kInstanceVersion)
 const isInFocusMode = useInFocusMode()
-const { total, progress, pause, resume, status, name: taskName } = task
+const { total, progress, pause, resume, status, name: taskName } = injection(kLaunchTask)
 const { openDirectory } = useService(BaseServiceKey)
 const { show: showLogDialog } = useDialog('log')
 const { show: showExport } = useDialog(AppExportDialogKey)
 const { t } = useI18n()
 const { showVersionDirectory } = useService(VersionServiceKey)
 
-const currentVersion = computed(() => !localVersion.value.id ? t('version.notInstalled') : localVersion.value.id)
+const currentVersion = computed(() => !isResolvedVersion(resolvedVersion.value) ? t('version.notInstalled') : resolvedVersion.value.id)
 const scrollTop = injection(kCompact)
 const compact = computed(() => scrollTop.value)
 const headerFontSize = computed(() => {
@@ -241,8 +243,8 @@ const lastPlayedText = computed(() => {
 })
 
 const onShowLocalVersion = () => {
-  if (localVersion.value.id) {
-    showVersionDirectory(localVersion.value.id)
+  if (isResolvedVersion(resolvedVersion.value)) {
+    showVersionDirectory(resolvedVersion.value.id)
   }
 }
 

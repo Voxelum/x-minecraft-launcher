@@ -45,9 +45,10 @@
   </v-dialog>
 </template>
 <script lang="ts" setup>
-import { InstanceServiceKey } from '@xmcl/runtime-api'
+import { kInstance } from '@/composables/instance'
+import { kInstances } from '@/composables/instances'
+import { injection } from '@/util/inject'
 import { useDialog } from '../composables/dialog'
-import { useService } from '@/composables'
 
 const { t } = useI18n()
 const name = ref('')
@@ -59,10 +60,10 @@ watch(isShown, (shown) => {
     path.value = (typeof dialog.value.parameter === 'object') ? (dialog.value.parameter).path ?? '' : ''
   }
 })
-const { deleteInstance } = useService(InstanceServiceKey)
+const { remove } = injection(kInstances)
 const doDelete = () => {
   const val = dialog.value.parameter
-  deleteInstance((val as any).path)
+  remove((val as any).path)
   isShown.value = false
 }
 

@@ -1,26 +1,9 @@
-import { JavaRecord } from 'src/entities/java'
+import { AUTHORITY_DEV } from '../util/authority'
 import { Exception } from '../entities/exception'
-import { Instance } from '../entities/instance'
-import { LaunchStatus } from '../entities/launch'
 import { UserProfile } from '../entities/user.schema'
 import { GenericEventEmitter } from '../events'
-import { ServiceKey, StatefulService } from './Service'
+import { ServiceKey } from './Service'
 import { UserExceptions } from './UserService'
-
-export class LaunchState {
-  status = 'idle' as LaunchStatus
-
-  activeCount = 0
-
-  launchCount(count: number) {
-    if (count < 0) count = 0
-    this.activeCount = count
-  }
-
-  launchStatus(status: LaunchStatus) {
-    this.status = status
-  }
-}
 
 interface LaunchServiceEventMap {
   'minecraft-window-ready': { pid?: number }
@@ -43,16 +26,9 @@ export interface LaunchOptions {
    */
   version: string
   /**
-   * Override launching directory.
-   *
-   * By default, it will be the current selected instance directory.
+   * The game directory of the minecraft
    */
-  gameDirectory?: string
-  /**
-   * The instance to launch
-   */
-  instance: Instance
-  
+  gameDirectory: string
   /**
    * The user to launch
    */
@@ -68,47 +44,83 @@ export interface LaunchOptions {
     host: string
     port?: number
   }
-
+  /**
+   * Support yushi's yggdrasil agent https://github.com/to2mbn/authlib-injector/wiki
+   */
+  yggdrasilAgent?: {
+    /**
+     * The jar file path of the authlib-injector
+     */
+    jar: string
+    /**
+     * The auth server url.
+     *
+     * If this input is {@link AUTHORITY_DEV}. This will be resolved to the localhost yggrasil server
+     */
+    server: string
+    /**
+     * The prefetched base64
+     */
+    prefetched?: string
+  }
+  /**
+   * Hide launcher after game started
+   */
+  hideLauncher?: boolean
+  /**
+   * Show log window after game started
+   */
+  showLog?: boolean
+  /**
+   * The launcher name
+   */
   launcherName?: string
-
+  /**
+   * The launcher brand
+   */
   launcherBrand?: string
-
+  /**
+   * The maximum memory to allocate
+   */
   maxMemory?: number
-
+  /**
+   * The minimum memory to allocate
+   */
   minMemory?: number
   /**
-   * Skip the issue checker
+   * Skip assets check before launch
    */
-  force?: boolean
-
-  ignoreUserStatus?: boolean
+  skipAssetsCheck?: boolean
+  /**
+   * The extra arguments for java vm
+   */
+  vmOptions?: string[]
+  /**
+   * The extra arguments for minecraft
+   */
+  mcOptions?: string[]
 }
 
-export interface LaunchService extends StatefulService<LaunchState>, GenericEventEmitter<LaunchServiceEventMap> {
+export interface LaunchService extends GenericEventEmitter<LaunchServiceEventMap> {
   /**
    * Generate useable launch arguments for current profile
    */
-  generateArguments(): Promise<string[]>
+  generateArguments(options: LaunchOptions): Promise<string[]>
   /**
    * Launch the current selected instance. This will return a boolean promise indicate whether launch is success.
-   * @returns Does this launch request success?
+   * @returns The process id. If the launch is failed, this will return undefined.
    */
-  launch(options?: LaunchOptions): Promise<boolean>
+  launch(options: LaunchOptions): Promise<number | undefined>
+  /**
+   * Kill the Minecraft process
+   * @param pid The process id
+   */
+  kill(pid: number): Promise<void>
 }
 
 export type LaunchExceptions = {
   type: 'launchNoVersionInstalled'
-  /**
-   * The override version in options
-   */
-  override?: string
-  /**
-   * The version in instance
-   */
-  version?: string
-  minecraft: string
-  forge?: string
-  fabric?: string
+  options?: LaunchOptions
 } | {
   /**
    * Unknown error

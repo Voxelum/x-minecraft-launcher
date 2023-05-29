@@ -168,15 +168,17 @@ import { InstanceInstallServiceKey, InstanceManifest, InstanceManifestServiceKey
 import { Ref } from 'vue'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
 import { useDialog } from '../composables/dialog'
-import { provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
 import { useNotifier } from '../composables/notifier'
+import { provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
+import { injection } from '@/util/inject'
+import { kInstance } from '@/composables/instance'
 
 const { isShown, dialog } = useDialog('share-instance')
 
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
 const { getInstanceManifest } = useService(InstanceManifestServiceKey)
 const { shareInstance } = useService(PeerServiceKey)
-const { state: instanceState } = useService(InstanceServiceKey)
+const { path } = injection(kInstance)
 const { t } = useI18n()
 const { subscribeTask } = useNotifier()
 
@@ -199,7 +201,7 @@ const vmOptions = computed(() => manifest.value?.vmOptions || [])
 const loading = ref(false)
 
 const onCancelShare = () => {
-  shareInstance({ manifest: undefined, instancePath: instanceState.path })
+  shareInstance({ manifest: undefined, instancePath: path.value })
   isShown.value = false
 }
 
@@ -208,7 +210,7 @@ const onShareInstance = () => {
     const man = { ...manifest.value }
     const allow = new Set(selected.value)
     man.files = man.files.filter(f => allow.has(f.path))
-    subscribeTask(shareInstance({ manifest: man, instancePath: instanceState.path }), t('AppShareInstanceDialog.shareNotifyTitle'))
+    subscribeTask(shareInstance({ manifest: man, instancePath: path.value }), t('AppShareInstanceDialog.shareNotifyTitle'))
     isShown.value = false
   }
 }
@@ -221,6 +223,7 @@ const onDownloadInstance = () => {
     files = files.filter(f => allow.has(f.path))
 
     subscribeTask(installInstanceFiles({
+      path: path.value,
       files,
     }), t('AppShareInstanceDialog.downloadNotifyTitle', { user: currentUser.value }))
 
@@ -234,7 +237,7 @@ watch(isShown, async (shown) => {
       manifest.value = dialog.value.parameter as any
     } else {
       loading.value = true
-      manifest.value = await getInstanceManifest({ path: instanceState.path, hashes: ['sha1'] }).finally(() => { loading.value = false })
+      manifest.value = await getInstanceManifest({ path: path.value, hashes: ['sha1'] }).finally(() => { loading.value = false })
     }
   }
 })

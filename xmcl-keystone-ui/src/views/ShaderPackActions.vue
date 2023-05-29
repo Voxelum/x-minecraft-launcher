@@ -4,7 +4,7 @@
       v-shared-tooltip="t('shaderPack.showDirectory')"
       icon
       large
-      @click="showDirectory()"
+      @click="showDirectory(path)"
     >
       <v-icon>folder</v-icon>
     </v-btn>
@@ -22,14 +22,13 @@
 </template>
 <script lang="ts" setup>
 import { useService } from '@/composables'
+import { kInstance } from '@/composables/instance'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { injection } from '@/util/inject'
 import { InstanceShaderPacksServiceKey } from '@xmcl/runtime-api'
 
 const { showDirectory } = useService(InstanceShaderPacksServiceKey)
+const { path } = injection(kInstance)
 
 const { t } = useI18n()
-const { push } = useRouter()
-const onInstall = () => {
-  push('/mod-add')
-}
 </script>

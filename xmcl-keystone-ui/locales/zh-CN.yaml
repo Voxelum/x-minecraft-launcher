@@ -939,6 +939,8 @@ peerIceGatheringState:
 peerSignalingState:
   have-local-offer: 等待对方的信息中
 popular: 热度
+presence:
+  instance: 浏览实例 {instance}
 previous: 上一步
 proxy:
   host: 服务器地址
@@ -950,6 +952,7 @@ refresh: 刷新
 refreshResource: 刷新资源
 remove: 移除
 resourcepack:
+  searchOnModrinth: '@:mod.searchOnModrinth'
   available: 可用的资源包
   compatible: 当前格式({format})可用于当前版本 {version}
   defaultDescription: Minecraft 的默认材质
