@@ -47,6 +47,5 @@ import { useLaunch } from '../composables/launch'
 
 const { t } = useI18n()
 const { isShown } = useDialog('multi-instance-launch')
-
-const { launch } = useLaunch()
+const launch = useLaunch()
 </script>

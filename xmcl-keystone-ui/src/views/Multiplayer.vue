@@ -16,12 +16,12 @@
       >
         <div class="flex items-center gap-2">
           <v-progress-circular
-            v-if="state.groupState ==='connecting'"
+            v-if="groupState ==='connecting'"
             indeterminate
             :size="20"
             :width="3"
           />
-          {{ tGroupState[state.groupState] }}
+          {{ tGroupState[groupState] }}
           <v-text-field
             v-model="groupId"
             class="max-w-40"
@@ -33,7 +33,7 @@
             @click="onCopy(groupId)"
           />
           <v-btn
-            :disabled="!state.group"
+            :disabled="!group"
             text
             @click="onCopy(groupId)"
           >
@@ -54,7 +54,7 @@
           </v-btn>
 
           <div class="text-gray-400 text-sm lg:block hidden">
-            <template v-if="state.group">
+            <template v-if="group">
               {{ t('multiplayer.copyGroupToFriendHint') }}
             </template>
             <template v-else>
@@ -68,7 +68,7 @@
             :loading="joiningGroup"
             @click="onJoin()"
           >
-            <template v-if="!state.group">
+            <template v-if="!group">
               <v-icon left>
                 add
               </v-icon>
@@ -221,14 +221,14 @@
               {{ t('multiplayer.currentNatTitle') }}
             </v-list-item-title>
             <v-list-item-subtitle>
-              <span v-if="natState.localIp">
-                {{ natState.localIp }}
+              <span v-if="localIp">
+                {{ localIp }}
               </span>
               <span>
                 {{ t('multiplayer.currentIpTitle') }}
               </span>
               <span class="font-bold">
-                {{ natState.externalIp }}{{ natState.externalPort ? `:${natState.externalPort}` : '' }}
+                {{ externalIp }}{{ externalPort ? `:${externalPort}` : '' }}
               </span>
             </v-list-item-subtitle>
           </v-list-item-content>
@@ -241,10 +241,10 @@
               <template #activator="{on}">
                 <span
                   class="font-bold"
-                  :style="{color: natColors[natState.natType]}"
+                  :style="{color: natColors[natType]}"
                   v-on="on"
                 >
-                  {{ natIcons[natState.natType] }}   {{ tNatType[natState.natType] }}
+                  {{ natIcons[natType] }}   {{ tNatType[natType] }}
                 </span>
               </template>
 
@@ -444,13 +444,16 @@ import PlayerAvatar from '../components/PlayerAvatar.vue'
 import { useDialog } from '../composables/dialog'
 import MultiplayerDialogInitiate from './MultiplayerDialogInitiate.vue'
 import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
+import { kUserContext } from '@/composables/user'
+import { kPeerState, usePeerState } from '@/composables/peers'
+import { useNatState } from '@/composables/nat'
 
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
 const { show: showReceive } = useDialog('peer-receive')
 const { show: showDelete } = useDialog('deletion')
-const { state, joinGroup, leaveGroup, drop } = useService(PeerServiceKey)
-const connections = computed(() => state.connections)
+const { joinGroup, leaveGroup, drop } = useService(PeerServiceKey)
+const { connections, group, groupState } = injection(kPeerState)
 const { t } = useI18n()
 const { handleUrl } = useService(BaseServiceKey)
 const isLoadingNetwork = useServiceBusy(NatServiceKey, 'refreshNatType')
@@ -484,8 +487,8 @@ const natColors = computed(() => ({
   'Symmetric NAT': errorColor.value,
   Unknown: t('natType.unknown'),
 }))
-const { state: natState, refreshNatType } = useService(NatServiceKey)
-const device = computed(() => natState.natDevice)
+const { refreshNatType } = useService(NatServiceKey)
+const { natDevice: device, natType, localIp, externalIp, externalPort } = useNatState()
 
 const tTransportType = computed(() => ({
   relay: t('transportType.relay'),
@@ -504,14 +507,14 @@ const tNatType = computed(() => ({
   Unknown: t('natType.unknown'),
 }))
 
-const groupId = ref(state.group)
+const groupId = ref(group.value)
 const deleting = ref('')
-const deletingName = computed(() => state.connections.find(c => c.id === deleting.value)?.userInfo.name)
+const deletingName = computed(() => connections.value.find(c => c.id === deleting.value)?.userInfo.name)
 const copied = ref(false)
 
 const joiningGroup = useBusy('joinGroup')
 
-watch(computed(() => state.group), (newVal) => {
+watch(group, (newVal) => {
   groupId.value = newVal
 })
 
@@ -539,7 +542,7 @@ const startUnmap = (m: MappingInfo) => {
 
 }
 const edit = (id: string, init: boolean) => {
-  const conn = state.connections.find(c => c.id === id)
+  const conn = connections.value.find(c => c.id === id)
   if (conn) {
     if (init) {
       show(id)
@@ -568,15 +571,16 @@ const onCopy = (val: string) => {
     setTimeout(() => { copied.value = false }, 3_000)
   }
 }
+
+const { gameProfile } = injection(kUserContext)
 const onJoin = () => {
-  if (!state.group) {
-    joinGroup(groupId.value)
+  if (!group.value) {
+    const buf = new Uint16Array(1)
+    window.crypto.getRandomValues(buf)
+    joinGroup(groupId.value || (gameProfile.value.name + '@' + buf[0]))
   } else {
     leaveGroup()
   }
-}
-const onCreate = () => {
-  joinGroup()
 }
 
 </script>

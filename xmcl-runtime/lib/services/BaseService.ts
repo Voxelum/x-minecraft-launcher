@@ -1,86 +1,48 @@
-import { BaseService as IBaseService, BaseServiceException, BaseServiceKey, BaseState, MigrateOptions, SettingSchema } from '@xmcl/runtime-api'
+import { BaseServiceException, BaseServiceKey, Environment, BaseService as IBaseService, MigrateOptions, MutableState, Settings } from '@xmcl/runtime-api'
 import { readdir, rename, rm, stat } from 'fs/promises'
 import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { IS_DEV } from '../constant'
-import { kTelemtrySession } from '../entities/telemetry'
+import { kClientToken } from '../entities/clientToken'
+import { PathResolver, kGameDataPath } from '../entities/gameDataPath'
+import { kSettings } from '../entities/settings'
 import { isSystemError } from '../util/error'
 import { copyPassively } from '../util/fs'
 import { Inject } from '../util/objectRegistry'
-import { createSafeFile } from '../util/persistance'
 import { ZipTask } from '../util/zip'
-import { ExposeServiceKey, Singleton, StatefulService } from './Service'
-import { AggregateExecutor } from '../util/aggregator'
+import { AbstractService, ExposeServiceKey, Singleton } from './Service'
+import { kLogRoot } from '../entities/log'
 
 @ExposeServiceKey(BaseServiceKey)
-export class BaseService extends StatefulService<BaseState> implements IBaseService {
-  private settingFile = createSafeFile(this.getAppDataPath('setting.json'), SettingSchema, this, [this.getPath('setting.json')])
-  private saver = new AggregateExecutor<void, void>(() => { }, () => this.settingFile.write({
-    locale: this.state.locale,
-    autoInstallOnAppQuit: this.state.autoInstallOnAppQuit,
-    autoDownload: this.state.autoDownload,
-    allowPrerelease: this.state.allowPrerelease,
-    apiSets: this.state.apiSets,
-    apiSetsPreference: this.state.apiSetsPreference,
-    httpProxy: this.state.httpProxy,
-    httpProxyEnabled: this.state.httpProxyEnabled,
-    theme: this.state.theme,
-    maxSockets: this.state.maxSockets,
-    globalMinMemory: this.state.globalMinMemory,
-    globalMaxMemory: this.state.globalMaxMemory,
-    globalAssignMemory: this.state.globalAssignMemory,
-    globalVmOptions: this.state.globalVmOptions,
-    globalMcOptions: this.state.globalMcOptions,
-    globalFastLaunch: this.state.globalFastLaunch,
-    globalHideLauncher: this.state.globalHideLauncher,
-    globalShowLog: this.state.globalShowLog,
-    discordPresence: this.state.discordPresence,
-    developerMode: this.state.developerMode,
-    disableTelemetry: this.state.disableTelemetry,
-    linuxTitlebar: this.state.linuxTitlebar,
-  }), 1000)
-
+export class BaseService extends AbstractService implements IBaseService {
   constructor(
     @Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(kGameDataPath) private getPath: PathResolver,
   ) {
-    super(app, () => {
-      const state = new BaseState()
-      state.version = app.version
-      state.platform = app.platform
-      state.build = app.build
-      state.env = app.env
-      state.root = app.gameDataPath
-      return state
-    }, async () => {
-      const data = await this.settingFile.read()
-      data.locale = data.locale || this.app.getPreferredLocale() || this.app.host.getLocale()
-      this.state.config(data)
+    super(app, async () => {
       this.checkUpdate()
     })
-    app.gamePathReadySignal.promise.then(() => {
-      this.state.root = app.gameDataPath
-    })
-    this.storeManager.subscribeAll([
-      'localeSet',
-      'allowPrereleaseSet',
-      'autoInstallOnAppQuitSet',
-      'autoDownloadSet',
-      'apiSetsPreferenceSet',
-      'apiSetsSet',
-      'httpProxySet',
-      'httpProxyEnabledSet',
-      'themeSet',
-      'maxSocketsSet',
-      'discordPresenceSet',
-      'globalInstanceSetting',
-      'developerModeSet',
-      'disableTelemetrySet',
-      'linuxTitlebarSet',
-    ], () => {
-      this.saver.push()
-    })
+  }
+
+  getGameDataDirectory(): Promise<string> {
+    return this.app.getGameDataPath()
+  }
+
+  async getSettings(): Promise<MutableState<Settings>> {
+    return this.app.registry.get(kSettings)
+  }
+
+  async getEnvironment(): Promise<Environment> {
+    return {
+      os: this.app.platform.os,
+      arch: this.app.platform.arch,
+      osRelease: this.app.platform.osRelease,
+      env: this.app.env,
+      version: this.app.version,
+      build: this.app.build,
+    }
   }
 
   async handleUrl(url: string) {
@@ -113,8 +75,9 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
    */
   @Singleton()
   async quitAndInstall() {
-    if (this.state.updateStatus === 'ready' && this.state.updateInfo) {
-      await this.app.updater.installUpdateAndQuit(this.state.updateInfo)
+    const settings = await this.getSettings()
+    if (settings.updateStatus === 'ready' && settings.updateInfo) {
+      await this.app.updater.installUpdateAndQuit(settings.updateInfo)
     } else {
       this.warn('There is no update available!')
     }
@@ -127,11 +90,12 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
   async checkUpdate() {
     if (IS_DEV) return
     try {
+      const settings = await this.getSettings()
       this.log('Check update')
       const info = await this.submit(this.app.updater.checkUpdateTask())
-      this.state.updateInfoSet(info)
+      settings.updateInfoSet(info)
       if (info.newUpdate) {
-        this.state.updateStatusSet('pending')
+        settings.updateStatusSet('pending')
       }
     } catch (e) {
       this.error(new Error('Check update failed', { cause: e }))
@@ -144,12 +108,13 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
    */
   @Singleton()
   async downloadUpdate() {
-    if (!this.state.updateInfo) {
+    const settings = await this.getSettings()
+    if (!settings.updateInfo) {
       throw new Error('Cannot download update if we don\'t check the version update!')
     }
-    this.log(`Start to download update: ${this.state.updateInfo.name} incremental=${this.state.updateInfo.incremental}`)
-    await this.submit(this.app.updater.downloadUpdateTask(this.state.updateInfo).setName('downloadUpdate'))
-    this.state.updateStatusSet('ready')
+    this.log(`Start to download update: ${settings.updateInfo.name} incremental=${settings.updateInfo.incremental}`)
+    await this.submit(this.app.updater.downloadUpdateTask(settings.updateInfo).setName('downloadUpdate'))
+    settings.updateStatusSet('ready')
   }
 
   quit() {
@@ -162,15 +127,17 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
 
   async reportItNow(options: { destination: string }): Promise<void> {
     const task = new ZipTask(options.destination)
-    const logsDir = this.logManager.getLogRoot()
+    const logsDir = await this.app.registry.get(kLogRoot)
     const files = await readdir(logsDir)
 
     for (const file of files) {
       task.addFile(join(logsDir, file), join('logs', file))
     }
 
+    const sessionId = await this.app.registry.get(kClientToken)
+
     task.addBuffer(Buffer.from(JSON.stringify({
-      sessionId: this.app.registry.get(kTelemtrySession),
+      sessionId,
       platform: os.platform(),
       arch: os.arch(),
       version: os.version(),
@@ -203,8 +170,6 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
       await rm(destination, { recursive: true, force: true })
     }
 
-    await this.serviceManager.dispose()
-
     const renameOrCopy = async () => {
       try {
         this.log(`Try to use rename to migrate the files: ${source} -> ${destination}`)
@@ -232,26 +197,6 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
 
     this.app.relaunch()
     this.app.quit()
-  }
-
-  public shouldOverrideApiSet() {
-    if (this.state.apiSetsPreference === 'mojang') {
-      return false
-    }
-    if (this.state.apiSetsPreference === '') {
-      return this.networkManager.isInGFW
-    }
-    return true
-  }
-
-  public getApiSets() {
-    const apiSets = this.state.apiSets
-    const api = apiSets.find(a => a.name === this.state.apiSetsPreference)
-    const allSets = apiSets.filter(a => a.name !== this.state.apiSetsPreference)
-    if (api) {
-      allSets.unshift(api)
-    }
-    return allSets
   }
 
   getMemoryStatus(): Promise<{ total: number; free: number }> {

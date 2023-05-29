@@ -25,7 +25,7 @@ export class SafeJsonSerializer<T> implements Serializer<Buffer, T> {
     const valid = validation(deepCopy)
     if (!valid) {
       if (validation.errors) {
-        this.logger?.error(new Error(`Error to serialize the datatype ${typeof data}:\n` + JSON.stringify(validation.errors)))
+        this.logger?.error(new Error(`Error to serialize the datatype ${typeof data}:\n` + JSON.stringify(validation.errors) + '\n' + JSON.stringify(data)))
       }
     }
     return Buffer.from(JSON.stringify(deepCopy, undefined, 2), 'utf-8')

@@ -310,13 +310,13 @@
 </template>
 
 <script lang=ts setup>
-import { useLocalVersions } from '@/composables/version'
-import { CreateOptionKey } from '../composables/instanceCreation'
-import { useJava } from '../composables/java'
+import { kInstanceCreation } from '../composables/instanceCreation'
+import { kJavaContext } from '../composables/java'
 import { VersionMenuItem, useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useOptifineVersionList, useQuiltVersionList } from '../composables/versionList'
 import VersionMenu from './VersionMenu.vue'
 
 import { injection } from '@/util/inject'
+import { kLocalVersions } from '@/composables/versionLocal'
 
 defineProps({
   valid: {
@@ -329,15 +329,15 @@ defineProps({
   },
 })
 
-const content = injection(CreateOptionKey)
+const content = injection(kInstanceCreation)
 const minecraft = computed(() => content.runtime.minecraft)
 const { t } = useI18n()
-const { items: minecraftItems, showAlpha, refreshing: refreshingMinecraft, release } = useMinecraftVersionList(minecraft)
-const { items: forgeItems, canShowBuggy, recommendedOnly, refresh: refreshForge, refreshing: refreshingForge } = useForgeVersionList(minecraft, computed(() => content.runtime.forge ?? ''))
-const { items: fabricItems, showStableOnly, refreshing: refreshingFabric } = useFabricVersionList(minecraft, computed(() => content.runtime.fabricLoader ?? ''))
-const { items: quiltItems, refresh: refreshQuilt, refreshing: refreshingQuilt } = useQuiltVersionList(minecraft, computed(() => content.runtime.quiltLoader ?? ''))
-const { items: optifineItems, refreshing: refreshingOptifine } = useOptifineVersionList(minecraft, computed(() => content.runtime.forge ?? ''), computed(() => content.runtime.optifine ?? ''))
-const { localVersions } = useLocalVersions()
+const { versions } = injection(kLocalVersions)
+const { items: minecraftItems, showAlpha, refreshing: refreshingMinecraft, release } = useMinecraftVersionList(minecraft, versions)
+const { items: forgeItems, canShowBuggy, recommendedOnly, refresh: refreshForge, refreshing: refreshingForge } = useForgeVersionList(minecraft, computed(() => content.runtime.forge ?? ''), versions)
+const { items: fabricItems, showStableOnly, refreshing: refreshingFabric } = useFabricVersionList(minecraft, computed(() => content.runtime.fabricLoader ?? ''), versions)
+const { items: quiltItems, refresh: refreshQuilt, refreshing: refreshingQuilt } = useQuiltVersionList(minecraft, computed(() => content.runtime.quiltLoader ?? ''), versions)
+const { items: optifineItems, refreshing: refreshingOptifine } = useOptifineVersionList(minecraft, computed(() => content.runtime.forge ?? ''), computed(() => content.runtime.optifine ?? ''), versions)
 
 recommendedOnly.value = false
 
@@ -347,13 +347,13 @@ watch(release, (r) => {
   }
 })
 
-const { all: javas } = useJava()
+const { all: javas } = injection(kJavaContext)
 const javaItems = computed(() => javas.value.map(java => ({
   text: `Java ${java.majorVersion} (${java.version})`,
   value: java.path,
 })))
 const localItems = computed(() => {
-  return localVersions.value.map(ver => {
+  return versions.value.map(ver => {
     const result: VersionMenuItem = {
       name: ver.id,
       tag: ver.minecraft,
@@ -366,7 +366,7 @@ function onSelectLocalVersion(version: string) {
   if (content.runtime) {
     content.version = version
     const runtime = content.runtime
-    const v = localVersions.value.find(ver => ver.id === version)!
+    const v = versions.value.find(ver => ver.id === version)!
     runtime.minecraft = v.minecraft
     runtime.forge = v.forge
     runtime.fabricLoader = v.fabric

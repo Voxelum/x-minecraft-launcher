@@ -1,8 +1,6 @@
 <template>
   <v-app class="h-full overflow-auto relative max-h-[100vh]">
-    <v-card
-      class="h-full flex flex-col overflow-auto"
-    >
+    <v-card class="h-full flex flex-col overflow-auto">
       <v-toolbar
         class="moveable w-full"
         flat
@@ -83,8 +81,14 @@ const tab = ref(0)
 // window.location.search.
 const currentTheme = ref('dark' as 'dark' | 'light' | 'system')
 
-watch(currentTheme, (val) => {
-  baseService.commit('themeSet', val)
+baseService.call('getSettings').then(settings => settings).then(settings => {
+  currentTheme.value = settings.theme
+  settings.subscribe('themeSet', (val) => {
+    currentTheme.value = val
+  })
+  watch(currentTheme, (val) => {
+    settings.themeSet(val)
+  })
 })
 
 const iconSets = {
@@ -169,16 +173,24 @@ function close() {
 .non-moveable {
   -webkit-app-region: no-drag;
 }
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.01s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+
+.fade-enter,
+.fade-leave-to
+
+/* .fade-leave-active below version 2.1.8 */
+  {
   opacity: 0;
 }
+
 .v-list__tile__content {
   margin-left: 7px;
 }
+
 .v-list__tile__title {
   overflow-x: auto;
   text-overflow: unset;

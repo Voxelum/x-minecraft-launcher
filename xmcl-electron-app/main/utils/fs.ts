@@ -26,14 +26,14 @@ export function isFile(file: string) {
   return stat(file).then((s) => s.isFile(), () => false)
 }
 export async function readdirIfPresent(path: string): Promise<string[]> {
-  if (!path) throw new Error('Path must not be undefined!')
+  if (!path) throw new TypeError('Path must not be undefined!')
   return readdir(path).catch((e) => {
     if (e.code === 'ENOENT') return []
     throw e
   })
 }
 export async function readdirEnsured(path: string) {
-  if (!path) throw new Error('Path must not be undefined!')
+  if (!path) throw new TypeError('Path must not be undefined!')
   await ensureDir(path)
   return readdir(path)
 }

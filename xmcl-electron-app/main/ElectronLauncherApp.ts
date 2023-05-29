@@ -2,15 +2,16 @@ import { LauncherApp } from '@xmcl/runtime'
 import { Shell } from '@xmcl/runtime/lib/app/Shell'
 import { app, shell } from 'electron'
 import { URL } from 'url'
-import Controller from './Controller'
+import { ElectronController } from './ElectronController'
 import defaultApp from './defaultApp'
-import { preloadServices } from './preloadServices'
+import { definedServices } from './definedServices'
 import { isDirectory } from './utils/fs'
-import { ElectronUpdater, setup } from './utils/updater'
+import { ElectronUpdater } from './utils/updater'
 import { getWindowsUtils } from './utils/windowsUtils'
 import { ElectronSecretStorage } from './ElectronSecretStorage'
 import { join } from 'path'
 import { LAUNCHER_NAME } from '@xmcl/runtime/lib/constant'
+import { pluginAutoUpdate } from './pluginAutoUpdate'
 
 class ElectronShell implements Shell {
   showItemInFolder = shell.showItemInFolder
@@ -80,14 +81,15 @@ export default class ElectronLauncherApp extends LauncherApp {
     super(app,
       new ElectronShell(),
       new ElectronSecretStorage(join(app.getPath('appData'), LAUNCHER_NAME, 'secret')),
-      (app) => new Controller(app as ElectronLauncherApp),
+      (app) => new ElectronController(app as ElectronLauncherApp),
       (app) => new ElectronUpdater(app as ElectronLauncherApp),
       defaultApp,
-      preloadServices,
+      definedServices,
+      [pluginAutoUpdate],
     )
   }
 
-  windowsUtils = getWindowsUtils(this)
+  windowsUtils = getWindowsUtils(this, this.logger)
 
   getAppInstallerStartUpUrl(): string {
     if (this.windowsUtils) {
@@ -129,7 +131,5 @@ export default class ElectronLauncherApp extends LauncherApp {
     })
 
     await super.setup()
-
-    setup(this.serviceStateManager)
   }
 }

@@ -1,5 +1,5 @@
-import { ResolvedVersion, Version } from '@xmcl/core'
-import { filterForgeVersion, filterOptifineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary, LocalVersionHeader, VersionService as IVersionService, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
+import { ResolvedVersion, Version, VersionParseError } from '@xmcl/core'
+import { filterForgeVersion, filterOptifineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary, LocalVersionHeader, VersionService as IVersionService, VersionServiceKey, LocalVersions, MutableState } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { FSWatcher } from 'fs'
 import { ensureDir } from 'fs-extra/esm'
@@ -13,18 +13,20 @@ import { isDirectory, missing, readdirEnsured } from '../util/fs'
 import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { ExposeServiceKey, Singleton, StatefulService } from './Service'
+import { PathResolver, kGameDataPath } from '../entities/gameDataPath'
 
 /**
  * The local version service maintains the installed versions on disk
  */
 @ExposeServiceKey(VersionServiceKey)
-export class VersionService extends StatefulService<VersionState> implements IVersionService {
+export class VersionService extends StatefulService<LocalVersions> implements IVersionService {
   private watcher: FSWatcher | undefined
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(kResourceWorker) private worker: ResourceWorker,
   ) {
-    super(app, () => new VersionState(), async () => {
+    super(app, () => new LocalVersions(), async () => {
       await this.refreshVersions()
       const versions = this.getPath('versions')
       await ensureDir(versions)
@@ -58,10 +60,13 @@ export class VersionService extends StatefulService<VersionState> implements IVe
         }
       })
     })
+    this.app.registryDisposer(async () => {
+      this.watcher?.close()
+    })
   }
 
-  async dispose() {
-    this.watcher?.close()
+  async getLocalVersions(): Promise<MutableState<LocalVersions>> {
+    return this.state
   }
 
   /**
@@ -82,7 +87,7 @@ export class VersionService extends StatefulService<VersionState> implements IVe
       ])
     })
     Reflect.set(copyTask, '_from', mcPath)
-    await this.taskManager.submit(copyTask)
+    await this.submit(copyTask)
   }
 
   private getHeader(ver: ResolvedVersion): LocalVersionHeader {
@@ -120,8 +125,13 @@ export class VersionService extends StatefulService<VersionState> implements IVe
       this.state.localVersionAdd(this.getHeader(version))
     } catch (e) {
       this.state.localVersionRemove(versionFolder)
-      this.warn(`An error occurred during refresh local version ${versionFolder}`)
-      this.warn(e)
+      const err = e as VersionParseError
+      if ('err' in err && err.err === 'MissingVersionJson') {
+        this.warn(`Missing version json for ${versionFolder}`)
+      } else {
+        this.warn(`An error occurred during refresh local version ${versionFolder}`)
+        this.warn(e)
+      }
     }
   }
 
@@ -141,8 +151,13 @@ export class VersionService extends StatefulService<VersionState> implements IVe
           return version
         }
       } catch (e) {
-        this.warn(`An error occurred during load local version ${versionId}`)
-        this.warn(e)
+        const err = e as VersionParseError
+        if ('error' in err && err.name === 'MissingVersionJson') {
+          this.warn(`Missing version json for ${versionId}`)
+        } else {
+          this.warn(`An error occurred during load local version ${versionId}`)
+          this.warn(e)
+        }
       }
     }))).filter(isNonnull)
 

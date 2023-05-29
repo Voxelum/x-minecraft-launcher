@@ -1,15 +1,13 @@
 import type { Frame as GameSetting } from '@xmcl/gamesetting'
 import { Exception, InstanceNotFoundException } from '../entities/exception'
 import { ShaderOptions } from '../entities/shaderpack'
-import { Disposable } from '../util/Disposable'
+import { MutableState } from '../util/MutableState'
 import { ServiceKey } from './Service'
 export interface EditGameSettingOptions extends GameSetting {
   /**
    * The instance to edit game setting.
    */
   instancePath: string
-
-  addResourcePack?: string[]
 }
 
 export interface EditShaderOptions extends ShaderOptions {
@@ -19,78 +17,57 @@ export interface EditShaderOptions extends ShaderOptions {
   instancePath: string
 }
 
-export class InstanceOptionsState {
-  options: {
-    resourcePacks: Array<string>
-    anaglyph3d: boolean | undefined
-    ao: any
-    useVbo: boolean | undefined
-    enableVsync: boolean | undefined
-    difficulty: any
-    entityShadows: boolean | undefined
-    fboEnable: boolean | undefined
-    fullscreen: boolean | undefined
-    renderDistance: GameSetting['renderDistance']
-    fancyGraphics: boolean | undefined
-    renderClouds: 'fast' | boolean | undefined
-  } = {
-    resourcePacks: [],
-    anaglyph3d: undefined,
-    ao: undefined,
-    useVbo: undefined,
-    enableVsync: undefined,
-    difficulty: undefined,
-    entityShadows: undefined,
-    fboEnable: undefined,
-    fullscreen: undefined,
-    renderDistance: undefined,
-    fancyGraphics: undefined,
-    renderClouds: undefined,
-  }
+export interface GameOptions {
+  resourcePacks: Array<string>
+  anaglyph3d: boolean | undefined
+  ao: any
+  useVbo: boolean | undefined
+  enableVsync: boolean | undefined
+  difficulty: any
+  entityShadows: boolean | undefined
+  fboEnable: boolean | undefined
+  fullscreen: boolean | undefined
+  renderDistance: GameSetting['renderDistance']
+  fancyGraphics: boolean | undefined
+  renderClouds: 'fast' | boolean | undefined
+  lang: string
+  shaderPack: string
+}
 
-  shaderoptions: ShaderOptions = {
-    shaderPack: '',
-  }
+export function getInstanceGameOptionKey(path: string) {
+  return 'instance-game-option://' + path
+}
 
-  instanceShaderOptions(options: ShaderOptions) {
-    Object.assign(this.shaderoptions, options)
-  }
+export class GameOptionsState implements GameOptions {
+  resourcePacks = []
+  anaglyph3d = undefined
+  ao = undefined
+  useVbo = undefined
+  enableVsync = undefined
+  difficulty = undefined
+  entityShadows = undefined
+  fboEnable = undefined
+  fullscreen = undefined
+  renderDistance = undefined
+  fancyGraphics = undefined
+  renderClouds = undefined
+  lang = ''
+  shaderPack = ''
 
-  /**
-   * Update the game settings in options.txt
-   * @param payload The new game settings.
-   */
-  instanceGameSettingsLoad(settings: GameSetting) {
-    const resourcePacks = settings.resourcePacks || []
-    Object.assign(this.options, settings)
-    this.options.resourcePacks = [...resourcePacks]
-    this.options.anaglyph3d = settings.anaglyph3d
-    this.options.ao = settings.ao
-    this.options.useVbo = settings.useVbo
-    this.options.enableVsync = settings.enableVsync
-    this.options.difficulty = settings.difficulty
-    this.options.entityShadows = settings.entityShadows
-    this.options.fboEnable = settings.fboEnable
-    this.options.fullscreen = settings.fullscreen
-    this.options.renderDistance = settings.renderDistance
-    this.options.fancyGraphics = settings.fancyGraphics
-    this.options.renderClouds = settings.renderClouds
-  }
-
-  instanceGameSettings(settings: GameSetting) {
-    const container = this.options as Record<string, any>
+  gameOptionsSet(settings: GameSetting) {
+    const container = this as Record<string, any>
     if (settings.resourcePacks && settings.resourcePacks instanceof Array) {
       container.resourcePacks = [...settings.resourcePacks]
     }
     for (const [key, value] of Object.entries(settings)) {
       if (key in container) {
         container[key] = value
-      } else {
-        container[key] = value
-        // TODO: remove in vue3
-        // set(container, key)
       }
     }
+  }
+
+  shaderPackSet(pack: string) {
+    this.shaderPack = pack
   }
 }
 
@@ -98,7 +75,7 @@ export class InstanceOptionsState {
  * The service for game options & shader options
  */
 export interface InstanceOptionsService {
-  watchOptions(path: string): Promise<Disposable<InstanceOptionsState>>
+  watch(path: string): Promise<MutableState<GameOptionsState>>
   /**
    * Get the shader setting of the specific instance
    * @param instancePath The instance path
@@ -131,4 +108,4 @@ export const InstanceOptionsServiceKey: ServiceKey<InstanceOptionsService> = 'In
 
 export type InstanceOptionExceptions = InstanceNotFoundException
 
-export class InstanceOptionException extends Exception<InstanceOptionExceptions> {}
+export class InstanceOptionException extends Exception<InstanceOptionExceptions> { }

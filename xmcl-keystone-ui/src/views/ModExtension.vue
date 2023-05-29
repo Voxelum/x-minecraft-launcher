@@ -95,15 +95,13 @@
 <script lang=ts setup>
 import AvatarItem from '@/components/AvatarItem.vue'
 import FilterCombobox from '@/components/FilterCombobox.vue'
-import { useService } from '@/composables'
-import { kInstanceContext } from '@/composables/instanceContext'
-import { injection } from '@/util/inject'
-import { InstanceModsServiceKey } from '@xmcl/runtime-api'
+import { kInstance } from '@/composables/instance'
+import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kCompact } from '@/composables/scrollTop'
+import { injection } from '@/util/inject'
 
-const { state } = useService(InstanceModsServiceKey)
-const modCount = computed(() => state.mods.filter(m => !m.path.endsWith('.disabled')).length)
-const { version } = injection(kInstanceContext)
+const { enabledModCounts: modCount } = injection(kInstanceModsContext)
+const { runtime: version } = injection(kInstance)
 const compact = injection(kCompact)
 const { t } = useI18n()
 const noModLoader = computed(() =>

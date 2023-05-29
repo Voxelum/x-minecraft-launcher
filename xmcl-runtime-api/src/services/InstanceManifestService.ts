@@ -7,7 +7,7 @@ export interface GetManifestOptions {
    *
    * If this does not present, it will be the current selected instance
    */
-  path?: string
+  path: string
   /**
    * The hash to get for each instance files
    */
@@ -18,7 +18,7 @@ export interface InstanceManifestService {
   /**
    * Compute the instance manifest for current local files.
    */
-  getInstanceManifest(options?: GetManifestOptions): Promise<InstanceManifest>
+  getInstanceManifest(options: GetManifestOptions): Promise<InstanceManifest>
 }
 
 export const InstanceManifestServiceKey: ServiceKey<InstanceManifestService> = 'InstanceManifestService'

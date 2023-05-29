@@ -1,8 +1,9 @@
 import type { JavaVersion, ResolvedVersion } from '@xmcl/core'
 import { Instance, Java, JavaRecord, JavaServiceKey, parseVersion } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
-import { Ref } from 'vue'
+import { InjectionKey, Ref } from 'vue'
 import { useService } from './service'
+import { InstanceResolveVersion, UnresolvedVersion } from './instanceVersion'
 
 export enum JavaCompatibleState {
   Matched,
@@ -10,81 +11,32 @@ export enum JavaCompatibleState {
   VeryLikelyIncompatible,
 }
 
-interface BaseJavaIssue {
-  /**
-    * The java version requirement string
-    */
-  requirement: string
-  /**
-    * Best matched java path to select. (Only present if there is a suitable java)
-    */
+export interface JavaRecommendation {
+  reason: 'missing' | 'incompatible' | 'invalid'
+  selectedJava?: Java
+  selectedJavaPath?: string
+  recommendedDownload?: JavaVersion
   recommendedVersion?: Java
   recommendedLevel?: JavaCompatibleState
-  /**
-    * Recommended to download java version automatically. (Please use this if there is no suitable java)
-    */
-  recommendedDownload?: JavaVersion
-  /**
-    * The selected game version.
-    *
-    * Might be empty if the current version is not downloaded.
-    */
   version: string
-  /**
-    * Current minecraft
-    */
   minecraft: string
-  /**
-    * Current forge
-    */
   forge: string
+  requirement: string
 }
 
-interface IncompatibleJavaIssue extends BaseJavaIssue {
-  /**
-   * The current java info. Can either be user assigned, or be launcher computed
-   */
-  selectedJava: Java
-}
+export const kInstanceJava: InjectionKey<ReturnType<typeof useInstanceJava>> = Symbol('InstanceJava')
 
-/**
- * Only present if user assigned java path
- */
-interface InvalidJavaIssue extends BaseJavaIssue {
-  /**
-   * The user assigned java path
-   */
-  selectedJavaPath: string
-}
+export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceResolveVersion | undefined>, all: Ref<JavaRecord[]>) {
+  const { resolveJava } = useService(JavaServiceKey)
 
-interface MissingJavaIssue extends BaseJavaIssue {
-
-}
-
-/**
- * Current java path is invalid. Like file not existed or java is broken.
- */
-// export const InvalidJavaIssueKey: IssueKey<InvalidJavaIssue> = 'invalidJava'
-/**
- * Current selected java might be incompatible with minecraft
- */
-// export const IncompatibleJavaIssueKey: IssueKey<IncompatibleJavaIssue> = 'incompatibleJava'
-/**
- * Cannot find proper java for fulfill the requirement
- */
-// export const MissingJavaIssueKey: IssueKey<MissingJavaIssue> = 'missingJava'
-
-export function useInstanceJava(instance: Ref<Instance>, version: Ref<ResolvedVersion | undefined>) {
-  const { resolveJava, state } = useService(JavaServiceKey)
-
-  const { data, mutate, isValidating, error } = useSWRV(`/instance/${instance.value.path}/java-version?version=${version.value?.id}`, async () => {
-    return await computeJava(state.all, resolveJava, instance.value, version.value)
+  const { data, mutate, isValidating, error } = useSWRV(() => instance.value.path && `/instance/${instance.value.path}/java-version?version=${version.value && 'id' in version.value ? version.value.id : undefined}`, async () => {
+    return await computeJava(all.value, resolveJava, instance.value, version.value)
   })
 
   const java = computed(() => data.value?.java)
   const recommendation = computed(() => data.value?.recomendation)
 
-  watch(computed(() => state.all), () => {
+  watch(all, () => {
     mutate()
   })
 
@@ -129,10 +81,11 @@ function getSortedJava(allJava: JavaRecord[], { match, okay }: VersionPreference
   return [bad[0], JavaCompatibleState.VeryLikelyIncompatible] as const
 }
 
-async function computeJava(all: JavaRecord[], resolveJava: (path: string) => Promise<Java | undefined>, instance: Instance, selectedVersion?: ResolvedVersion) {
+async function computeJava(all: JavaRecord[], resolveJava: (path: string) => Promise<Java | undefined>, instance: Instance, selectedVersion?: InstanceResolveVersion) {
   const { minecraft, forge } = instance.runtime
   const javaPath = instance.java
-  let javaVersion = selectedVersion?.javaVersion
+  let javaVersion = selectedVersion && 'javaVersion' in selectedVersion ? selectedVersion?.javaVersion : undefined
+  const versionId = selectedVersion && 'id' in selectedVersion ? selectedVersion.id : undefined
   const resolvedMcVersion = parseVersion(minecraft)
   const minecraftMinor = resolvedMcVersion.minorVersion!
 
@@ -211,12 +164,13 @@ async function computeJava(all: JavaRecord[], resolveJava: (path: string) => Pro
     // No java installed
     return {
       recomendation: {
+        reason: 'missing',
         recommendedDownload: javaVersion,
         requirement: versionPref.requirement,
-        version: selectedVersion?.id || '',
+        version: versionId || '',
         minecraft,
         forge: forge ?? '',
-      },
+      } as JavaRecommendation,
       java: undefined,
     }
   }
@@ -234,21 +188,22 @@ async function computeJava(all: JavaRecord[], resolveJava: (path: string) => Pro
       // Invalid java
       return {
         recomendation: {
+          reason: 'invalid',
           selectedJavaPath: javaPath,
           recommendedDownload: javaVersion,
           recommendedVersion: computedJava,
           recommendedLevel: resultQuality,
           requirement: versionPref.requirement,
-          version: selectedVersion?.id || '',
+          version: versionId || '',
           minecraft,
           forge: forge ?? '',
-        },
+        } as JavaRecommendation,
         java: {
           valid: false,
           path: javaPath,
           version: '',
           majorVersion: -1,
-        },
+        } as JavaRecord,
       }
     }
 
@@ -263,28 +218,30 @@ async function computeJava(all: JavaRecord[], resolveJava: (path: string) => Pro
     resultJava = record
   }
 
-  return {
-    recomendation: resultQuality !== JavaCompatibleState.Matched
-? {
+  return resultQuality !== JavaCompatibleState.Matched
+    ? {
+      // Incompatible
       recomendation: {
+        reason: 'incompatible',
         selectedJava: resultJava,
         recommendedDownload: javaVersion,
         recommendedVersion: computedJava,
         recommendedLevel: computedQuality,
-        version: selectedVersion?.id || '',
+        version: versionId || '',
         minecraft,
         forge: instance.runtime.forge || '',
         requirement: versionPref.requirement,
-      },
+      } as JavaRecommendation,
       java: {
         ...resultJava,
         valid: true,
-      },
+      } as JavaRecord,
     }
-: undefined,
-    java: {
-      ...resultJava,
-      valid: true,
-    },
-  }
+    : {
+      recomendation: undefined,
+      java: {
+        ...resultJava,
+        valid: true,
+      } as JavaRecord,
+    }
 }

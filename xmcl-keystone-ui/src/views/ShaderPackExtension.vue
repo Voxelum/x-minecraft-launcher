@@ -71,15 +71,14 @@
 <script lang=ts setup>
 import AvatarItem from '@/components/AvatarItem.vue'
 import FilterCombobox from '@/components/FilterCombobox.vue'
-import { useService } from '@/composables'
-import { kInstanceContext } from '@/composables/instanceContext'
+import { kInstance } from '@/composables/instance'
+import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kCompact } from '@/composables/scrollTop'
 import { injection } from '@/util/inject'
 import { FabricModMetadata } from '@xmcl/mod-parser'
-import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 
-const { state: modState } = useService(InstanceModsServiceKey)
-const { version } = injection(kInstanceContext)
+const { runtime: version } = injection(kInstance)
+const { mods } = injection(kInstanceModsContext)
 const shaderMod = computed(() => {
   if (version.value.optifine) {
     return {
@@ -89,9 +88,9 @@ const shaderMod = computed(() => {
       icon: 'image://builtin/optifine',
     }
   }
-  const shader = modState.mods.find(m => {
-    const forge = m.metadata.forge
-    const fabric = m.metadata.fabric
+  const shader = mods.value.find(m => {
+    const forge = m.resource.metadata.forge
+    const fabric = m.resource.metadata.fabric
     if (forge) {
       // optifine in forge
       return forge.modid === 'optifine'
@@ -123,14 +122,14 @@ const shaderMod = computed(() => {
       }
     }
   }
-  return shader?.metadata.forge
+  return shader?.resource.metadata.forge
     ? {
-      id: shader.metadata.forge.modid,
-      name: shader.metadata.forge.name,
-      version: shader.metadata.forge.version,
-      icon: shader.icons?.[0],
+      id: shader.resource.metadata.forge.modid,
+      name: shader.resource.metadata.forge.name,
+      version: shader.resource.metadata.forge.version,
+      icon: shader.icon,
     }
-    : shader?.metadata.fabric ? normalzieFabricResource(shader.metadata.fabric, shader.icons?.[0]) : undefined
+    : shader?.resource.metadata.fabric ? normalzieFabricResource(shader.resource.metadata.fabric, shader.icon) : undefined
 })
 const { t } = useI18n()
 const compact = injection(kCompact)

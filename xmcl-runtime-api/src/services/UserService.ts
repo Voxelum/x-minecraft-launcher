@@ -1,8 +1,9 @@
 import { GameProfile } from '@xmcl/user'
 import { Exception } from '../entities/exception'
-import { GameProfileAndTexture, UserProfile, UserSchema, YggdrasilApi } from '../entities/user.schema'
+import { GameProfileAndTexture, UserProfile } from '../entities/user.schema'
 import { GenericEventEmitter } from '../events'
-import { ServiceKey, StatefulService } from './Service'
+import { MutableState } from '../util/MutableState'
+import { ServiceKey } from './Service'
 
 export interface RefreshSkinOptions {
   gameProfileId?: string
@@ -14,9 +15,9 @@ export interface LoginOptions {
   username: string
   password?: string
   /**
-   * The account service name.
+   * The authority url.
    */
-  service: string
+  authority: string
   /**
    * Custom property for special login service
    */
@@ -33,7 +34,7 @@ export interface UploadSkinOptions {
   /**
    * The user id of this skin
    */
-  userId?: string
+  userId: string
   /**
    * The player skin data.
    * - `undefined` means we don't want to change skin
@@ -79,41 +80,14 @@ interface UserServiceEventMap {
   'auth-profile-added': string
 }
 
-export class UserState implements UserSchema {
+export class UserState {
   /**
    * The user id to user profile mapping
    */
   users: Record<string, UserProfile> = {}
-  /**
-   * All user registered yggdrasil api
-   */
-  yggdrasilServices: YggdrasilApi[] = []
 
-  selectedUser = {
-    id: '',
-  }
-
-  clientToken = ''
-
-  get user(): UserProfile | undefined {
-    return this.users[this.selectedUser.id]
-  }
-
-  get gameProfile() {
-    const user = this.user
-    return user?.profiles[user.selectedProfile]
-  }
-
-  get isThirdPartyAuthentication(): boolean {
-    const user = this.user
-    return user?.authService !== 'mojang' && user?.authService !== 'offline' && user?.authService !== 'microsoft'
-  }
-
-  userData(data: UserSchema) {
-    this.clientToken = data.clientToken
-    this.selectedUser.id = data.selectedUser.id
+  userData(data: { users: Record<string, UserProfile> }) {
     this.users = data.users
-    this.yggdrasilServices = data.yggdrasilServices
   }
 
   gameProfileUpdate({ profile, userId }: { userId: string; profile: (GameProfileAndTexture | GameProfile) }) {
@@ -130,9 +104,6 @@ export class UserState implements UserSchema {
   }
 
   userProfileRemove(userId: string) {
-    if (this.selectedUser.id === userId) {
-      this.selectedUser.id = ''
-    }
     delete this.users[userId]
   }
 
@@ -143,39 +114,15 @@ export class UserState implements UserSchema {
       current.expiredAt = user.expiredAt
       current.profiles = user.profiles
       current.username = user.username
+      current.selectedProfile = user.selectedProfile
     } else {
       this.users[user.id] = user
     }
   }
-
-  userSelect(id: string) {
-    this.selectedUser.id = id
-  }
-
-  userGameProfileSelect({ userId, profileId }: { userId: string; profileId: string }) {
-    const user = this.users[userId]
-    if (user) {
-      user.selectedProfile = profileId
-    }
-  }
-
-  userYggdrasilServices(apis: YggdrasilApi[]) {
-    this.yggdrasilServices = apis
-  }
-
-  userYggdrasilServicePut(api: YggdrasilApi) {
-    const index = this.yggdrasilServices.findIndex((it) => it.url === api.url)
-    if (index >= 0) {
-      this.yggdrasilServices[index] = api
-    } else {
-      this.yggdrasilServices.push(api)
-    }
-  }
 }
 
-export const BUILTIN_USER_SERVICES = ['microsoft', 'mojang', 'offline']
-
-export interface UserService extends StatefulService<UserState>, GenericEventEmitter<UserServiceEventMap> {
+export interface UserService extends GenericEventEmitter<UserServiceEventMap> {
+  getUserState(): Promise<MutableState<UserState>>
   /**
    * Refresh the current user login status.
    *
@@ -185,7 +132,7 @@ export interface UserService extends StatefulService<UserState>, GenericEventEmi
    *
    * @throw 'userAccessTokenExpired'
    */
-  refreshUser(): Promise<void>
+  refreshUser(userId: string): Promise<void>
   /**
    * Upload the skin to server. If the userId and profileId is not assigned,
    * it will use the selected user and selected profile.
@@ -201,33 +148,17 @@ export interface UserService extends StatefulService<UserState>, GenericEventEmi
    */
   saveSkin(options: SaveSkinOptions): Promise<void>
   /**
-   * Select user account.
-   * @param userId User to be select
-   */
-  selectUser(userId: string): Promise<void>
-  /**
-   * Select a profile in current user
-   * @param profileId The profile id
-   */
-  selectGameProfile(profileId: string): Promise<void>
-  /**
    * Remove the user profile. This will logout to the user
    */
-  removeUserProfile(userId: string): Promise<void>
+  removeUser(userProfile: UserProfile): Promise<void>
   /**
-   * Put a new user profile into storage
+   * Select game profile of a user.
    */
-  setUserProfile(userProfile: UserProfile): Promise<void>
+  selectUserGameProfile(userProfile: UserProfile, gameProfileId: string): Promise<void>
   /**
-   * Add a third-party account system satisfy the authlib-injector format
-   * @param url The account api url
+   * Remove the game profile of a user. This only supported for offline user currently.
    */
-  addYggdrasilAccountSystem(url: string): Promise<void>
-  /**
-   * Remove a third-party account system satisfy the authlib-injector format
-   * @param url The account api url
-   */
-  removeYggdrasilAccountSystem(url: string): Promise<void>
+  removeUserGameProfile(userProfile: UserProfile, gameProfileId: string): Promise<void>
   /**
    * Login new user account.
    */
@@ -240,6 +171,10 @@ export interface UserService extends StatefulService<UserState>, GenericEventEmi
    * Abort the refresh user operation
    */
   abortRefresh(): Promise<void>
+  /**
+   * Get mojang selected user id
+   */
+  getMojangSelectedUser(): Promise<string>
 }
 
 export const UserServiceKey: ServiceKey<UserService> = 'UserService'
@@ -264,7 +199,7 @@ export type UserExceptions = {
   type: 'userAccessTokenExpired'
 } | {
   type: 'loginServiceNotSupported'
-  service: string
+  authority: string
 }
 
 export class UserException extends Exception<UserExceptions> { }

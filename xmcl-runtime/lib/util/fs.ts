@@ -10,6 +10,7 @@ import { extname, join, resolve } from 'path'
 import { Readable, pipeline } from 'stream'
 import { promisify } from 'util'
 import { Logger } from './log'
+import { AnyError } from './error'
 
 const pip = promisify(pipeline)
 
@@ -43,14 +44,14 @@ export function isFile(file: string) {
   return stat(file).then((s) => s.isFile(), () => false)
 }
 export async function readdirIfPresent(path: string): Promise<string[]> {
-  if (!path) throw new Error('Path must not be undefined!')
+  if (!path) throw new TypeError('Path must not be undefined!')
   return readdir(path).catch((e) => {
     if (e.code === 'ENOENT') return []
     throw e
   })
 }
 export async function readdirEnsured(path: string) {
-  if (!path) throw new Error('Path must not be undefined!')
+  if (!path) throw new TypeError('Path must not be undefined!')
   await ensureDir(path)
   return readdir(path)
 }
@@ -162,11 +163,14 @@ export async function clearDirectoryNarrow(dir: string) {
 export async function createSymbolicLink(srcPath: string, destPath: string, logger: Logger) {
   try {
     await symlink(srcPath, destPath, 'dir')
+    return true
   } catch (e) {
     logger.warn(`Cannot create symbolic link ${srcPath} -> ${destPath} by dir, try junction: ${e}`)
     if ((e as any).code === EPERM_ERROR && platform() === 'win32') {
       await symlink(srcPath, destPath, 'junction')
+      return false
     }
+    throw e
   }
 }
 
@@ -182,14 +186,18 @@ export function linkOrCopy(from: string, to: string) {
 export function linkWithTimeout(from: string, to: string, timeout = 1500) {
   return new Promise<void>((resolve, reject) => {
     link(from, to).then(resolve, reject)
-    setTimeout(() => reject(new Error('timeout')), timeout)
+    setTimeout(() => reject(new AnyError('TimeoutError')), timeout)
   })
 }
 
-export function linkWithTimeoutOrCopy(from: string, to: string, timeout = 1500) {
-  return linkWithTimeout(from, to, timeout).catch(() => {
-    return copyFile(from, to)
-  })
+export async function linkWithTimeoutOrCopy(from: string, to: string, timeout = 1500) {
+  try {
+    await linkWithTimeout(from, to, timeout)
+    return true
+  } catch {
+    await copyFile(from, to)
+    return false
+  }
 }
 
 /**

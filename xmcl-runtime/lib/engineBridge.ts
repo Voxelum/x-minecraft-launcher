@@ -3,6 +3,8 @@
  */
 export interface Client {
   isDestroyed(): boolean
+
+  on(event: 'destroyed', listener: () => void): this
   /**
    * Send the message to the client in a specific channel
    */

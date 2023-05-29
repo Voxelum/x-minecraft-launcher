@@ -1,4 +1,4 @@
-import Controller from '@/Controller'
+import { ElectronController } from '@/ElectronController'
 import { ControllerPlugin } from './plugin'
 import { getDiskInfo } from 'node-disk-info'
 import { ipcMain } from 'electron'
@@ -8,7 +8,7 @@ import type Drive from 'node-disk-info/dist/classes/drive'
 /**
  * Handle setup window preset request
  */
-export const setupWindow: ControllerPlugin = function (this: Controller) {
+export const setupWindow: ControllerPlugin = function (this: ElectronController) {
   ipcMain.handle('preset', async () => {
     const drives = await new Promise<Drive[]>((resolve) => {
       getDiskInfo().then(resolve, () => resolve([]))

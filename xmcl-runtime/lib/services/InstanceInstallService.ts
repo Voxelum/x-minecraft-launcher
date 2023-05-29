@@ -1,7 +1,7 @@
 import { CurseforgeV1Client } from '@xmcl/curseforge'
 import { DownloadTask } from '@xmcl/installer'
 import { ModrinthV2Client } from '@xmcl/modrinth'
-import { InstanceInstallService as IInstanceInstallService, InstallInstanceOptions, InstanceFile, InstanceFileWithOperation, InstanceIOException, InstanceInstallServiceKey, LockKey, Resource, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
+import { InstanceInstallService as IInstanceInstallService, InstallInstanceOptions, InstanceFile, InstanceFileWithOperation, InstanceInstallServiceKey, LockKey, Resource, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { AbortableTask, task } from '@xmcl/task'
 import { open, openEntryReadStream, readAllEntries } from '@xmcl/unzip'
 import { writeFile } from 'atomically'
@@ -15,14 +15,15 @@ import { errors } from 'undici'
 import { Entry, ZipFile } from 'yauzl'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { kDownloadOptions } from '../entities/downloadOptions'
 import { ResourceWorker, kResourceWorker } from '../entities/resourceWorker'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
+import { AnyError } from '../util/error'
 import { linkWithTimeoutOrCopy } from '../util/fs'
 import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { createPromiseSignal } from '../util/promiseSignal'
 import { CurseForgeService } from './CurseForgeService'
-import { InstanceService } from './InstanceService'
 import { ModrinthService } from './ModrinthService'
 import { PeerService } from './PeerService'
 import { ResourceService } from './ResourceService'
@@ -128,7 +129,7 @@ class UnzipFileTask extends AbortableTask<void> {
   protected async process(): Promise<void> {
     const [zip, entry] = await this.getEntry
     if (!entry) {
-      throw new Error(`Cannot find zip entry for ${this.destination}`)
+      throw new AnyError('UnzipError', `Cannot find zip entry for ${this.destination}`)
     }
     const stream = await openEntryReadStream(zip, entry)
     this._total = entry.uncompressedSize
@@ -158,10 +159,6 @@ class UnzipFileTask extends AbortableTask<void> {
 export class InstanceInstallService extends AbstractService implements IInstanceInstallService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
-    @Inject(InstanceService) private instanceService: InstanceService,
-    @Inject(PeerService) private peerService: PeerService,
-    @Inject(CurseForgeService) private curseforgeService: CurseForgeService,
-    @Inject(ModrinthService) private modrinthService: ModrinthService,
     @Inject(kResourceWorker) private worker: ResourceWorker,
   ) {
     super(app)
@@ -170,23 +167,18 @@ export class InstanceInstallService extends AbstractService implements IInstance
   @Singleton((o) => o.path)
   async installInstanceFiles(options: InstallInstanceOptions): Promise<void> {
     const {
-      path,
+      path: instancePath,
       files,
     } = options
 
-    const instancePath = path || this.instanceService.state.path
-
-    const instance = this.instanceService.state.all[instancePath]
-
-    if (!instance) {
-      throw new InstanceIOException({ instancePath, type: 'instanceNotFound' })
-    }
-
     await this.writeInstallProfile(instancePath, files)
 
+    const curseforgeService: CurseForgeService = await this.app.registry.get(CurseForgeService)
+    const modrinthService: ModrinthService = await this.app.registry.get(ModrinthService)
+
     const { writeInstallProfile } = this
-    const curseforgeClient = this.curseforgeService.client
-    const modrinthClient = this.modrinthService.client
+    const curseforgeClient = curseforgeService.client
+    const modrinthClient = modrinthService.client
 
     const zipBarrier = createPromiseSignal()
     const zips = new Set<string>()
@@ -226,24 +218,23 @@ export class InstanceInstallService extends AbstractService implements IInstance
       await this.removeInstallProfile(instancePath)
     } catch (e) {
       await this.writeInstallProfile(instancePath, files)
-      throw new Error(`Fail to install instance ${instancePath}`, { cause: e })
+      throw new AnyError('InstallInstanceFilesError', `Fail to install instance ${instancePath}`, { cause: e })
     }
   }
 
-  async checkInstanceInstall() {
-    const current = this.instanceService.state.path
-    const profile = join(current, '.install-profile')
+  async checkInstanceInstall(path: string) {
+    const profile = join(path, '.install-profile')
     if (existsSync(profile)) {
       try {
         const fileContent = JSON.parse(await readFile(profile, 'utf-8'))
         if (fileContent.lockVersion !== 0) {
-          throw new Error(`Cannot identify lockfile version ${fileContent.lockVersion}`)
+          throw new AnyError('InstanceFileError', `Cannot identify lockfile version ${fileContent.lockVersion}`)
         }
         const files = fileContent.files as InstanceFile[]
         return files
       } catch (e) {
         if (e instanceof SyntaxError) {
-          this.error(new Error(`Fail to parse instance install profile ${profile} as syntex error`, { cause: e }))
+          this.error(new AnyError('InstanceFileError', `Fail to parse instance install profile ${profile} as syntex error`, { cause: e }))
           await unlink(profile).catch(() => undefined)
         } else {
           throw e
@@ -283,7 +274,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
     const createDownloadTask = async (file: InstanceFile, destination: string, pending?: string, sha1?: string) => {
       if (!file.downloads) {
-        throw new Error(Object.assign('Cannot create download file task', { file }))
+        throw new AnyError('DownloadFileError', 'Cannot create download file task', undefined, { file })
       }
 
       const zipUrl = file.downloads.find(u => u.startsWith('zip:'))
@@ -310,10 +301,11 @@ export class InstanceInstallService extends AbstractService implements IInstance
         }
       }
 
+      const downloadOptions = await this.app.registry.get(kDownloadOptions)
       if (supportHttp) {
         // Prefer HTTP download than peer download
         return new DownloadTask({
-          ...this.networkManager.getDownloadBaseOptions(),
+          ...downloadOptions,
           url: file.downloads.filter(u => u.startsWith('http')),
           destination,
           pendingFile: pending,
@@ -328,11 +320,14 @@ export class InstanceInstallService extends AbstractService implements IInstance
       }
 
       if (peerUrl) {
-        // Use peer download if none of above existed
-        return this.peerService.createDownloadTask(peerUrl, destination, sha1 ?? '', file.size)
+        if (this.app.registry.has(PeerService)) {
+          const peerService = await this.app.registry.get(PeerService)
+          // Use peer download if none of above existed
+          return peerService.createDownloadTask(peerUrl, destination, sha1 ?? '', file.size)
+        }
       }
 
-      throw new Error(`Cannot resolve file! ${file.path}`)
+      throw new AnyError('DownloadFileError', `Cannot resolve file! ${file.path}`)
     }
 
     const sha1 = file.hashes.sha1

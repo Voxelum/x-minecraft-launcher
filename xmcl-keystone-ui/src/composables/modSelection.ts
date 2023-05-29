@@ -1,5 +1,5 @@
 import { Ref } from 'vue'
-import { ModItem } from './mod'
+import { ModItem } from './instanceModItems'
 
 export function useModSelection(items: Ref<ModItem[]>, enable: (item: ModItem) => void, disable: (item: ModItem) => void) {
   const isSelectionMode = ref(false)
@@ -57,7 +57,7 @@ export function useModSelection(items: Ref<ModItem[]>, enable: (item: ModItem) =
   function onEnable({ item, enabled }: { item: ModItem; enabled: boolean }) {
     if (item.selected) {
       selectedItems.value.forEach(i => {
-        i.enabled = enabled
+        i.mod.enabled = enabled
         if (enabled) {
           enable(i)
         } else {
@@ -65,7 +65,7 @@ export function useModSelection(items: Ref<ModItem[]>, enable: (item: ModItem) =
         }
       })
     } else {
-      item.enabled = enabled
+      item.mod.enabled = enabled
       if (enabled) {
         enable(item)
       } else {

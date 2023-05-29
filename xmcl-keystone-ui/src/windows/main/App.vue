@@ -1,18 +1,18 @@
 <template>
   <v-app
     v-if="!shouldSetup"
-    class="overflow-auto h-full overflow-x-hidden max-h-[100vh]"
+    class="h-full max-h-[100vh] overflow-auto overflow-x-hidden"
     :class="{ 'dark': vuetify.theme.dark }"
     :style="cssVars"
   >
     <AppBackground />
     <AppSystemBar />
     <div
-      class="flex h-full overflow-auto relative"
+      class="relative flex h-full overflow-auto"
     >
       <AppSideBar />
       <main
-        class="flex flex-col top-0 bottom-0 right-0 overflow-auto max-h-full relative"
+        class="relative inset-y-0 right-0 flex max-h-full flex-col overflow-auto"
         :class="{ solid: !blurMainBody }"
       >
         <transition
@@ -36,12 +36,12 @@
     <AppInstanceDeleteDialog />
     <AppGameExitDialog />
     <AppLaunchBlockedDialog />
-    <ImageDialog />
-    <SharedTooltip />
+    <AppImageDialog />
+    <AppSharedTooltip />
   </v-app>
   <v-app
     v-else
-    class="overflow-auto h-full overflow-x-hidden max-h-[100vh]"
+    class="h-full max-h-[100vh] overflow-auto overflow-x-hidden"
     :class="{ 'dark': vuetify.theme.dark }"
     :style="cssVars"
   >
@@ -50,7 +50,7 @@
       no-task
     />
     <div
-      class="flex h-full overflow-auto relative"
+      class="relative flex h-full overflow-auto"
     >
       <Setup @ready="shouldSetup = false" />
     </div>
@@ -60,21 +60,15 @@
 
 <script lang=ts setup>
 import '@/assets/common.css'
-import ImageDialog from '@/components/ImageDialog.vue'
-import SharedTooltip from '@/components/SharedTooltip.vue'
-import { kFilterCombobox, useExternalRoute, useFilterComboboxData, useI18nSync, useThemeSync } from '@/composables'
+import AppImageDialog from '@/components/AppImageDialog.vue'
+import AppSharedTooltip from '@/components/AppSharedTooltip.vue'
 import { useAuthProfileImportNotification } from '@/composables/authProfileImport'
-import { useBackground } from '@/composables/background'
-import { kColorTheme, useColorTheme } from '@/composables/colorTheme'
-import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
+import { kBackground } from '@/composables/background'
+import { kColorTheme } from '@/composables/colorTheme'
 import { useDefaultErrorHandler } from '@/composables/errorHandler'
-import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
-import { kModpacks, useModpacks } from '@/composables/modpack'
-import { kSWRVConfig, useSWRVConfig } from '@/composables/swrvConfig'
-import { kUILayout, useUILayout } from '@/composables/uiLayout'
-import { kMarketRoute, useMarketRoute } from '@/composables/useMarketRoute'
-import { kUserContext, useUserContext } from '@/composables/user'
+import { useNotifier } from '@/composables/notifier'
 import { kVuetify } from '@/composables/vuetify'
+import { useVuetifyColorTheme } from '@/composables/vuetifyColorTheme'
 import { injection } from '@/util/inject'
 import AppAddInstanceDialog from '@/views/AppAddInstanceDialog.vue'
 import AppAddServerDialog from '@/views/AppAddServerDialog.vue'
@@ -93,50 +87,22 @@ import AppSideBar from '@/views/AppSideBar.vue'
 import AppSystemBar from '@/views/AppSystemBar.vue'
 import AppTaskDialog from '@/views/AppTaskDialog.vue'
 import Setup from '@/views/Setup.vue'
-import { useAllServices } from './services'
-
-const colorTheme = useColorTheme()
-const { primaryColor, accentColor, infoColor, errorColor, successColor, warningColor, backgroundColor } = colorTheme
-const { blurMainBody } = useBackground()
-provide(kColorTheme, colorTheme)
-
-const cssVars = computed(() => ({
-  '--primary': primaryColor.value,
-  'background-color': backgroundColor.value,
-}))
 
 const shouldSetup = ref(location.search.indexOf('setup') !== -1)
 
+const { cssVars, ...colorTheme } = injection(kColorTheme)
+
+// background
+const { blurMainBody } = injection(kBackground)
+
+// color theme sync
 const vuetify = injection(kVuetify)
+useVuetifyColorTheme(vuetify, colorTheme)
 
-if (primaryColor.value) { vuetify.theme.currentTheme.primary = primaryColor.value }
-if (accentColor.value) { vuetify.theme.currentTheme.accent = accentColor.value }
-if (infoColor.value) { vuetify.theme.currentTheme.info = infoColor.value }
-if (errorColor.value) { vuetify.theme.currentTheme.error = errorColor.value }
-if (successColor.value) { vuetify.theme.currentTheme.success = successColor.value }
-if (warningColor.value) { vuetify.theme.currentTheme.warning = warningColor.value }
-
-watch(primaryColor, (newColor) => { vuetify.theme.currentTheme.primary = newColor })
-watch(accentColor, (newColor) => { vuetify.theme.currentTheme.accent = newColor })
-watch(infoColor, (newColor) => { vuetify.theme.currentTheme.info = newColor })
-watch(errorColor, (newColor) => { vuetify.theme.currentTheme.error = newColor })
-watch(successColor, (newColor) => { vuetify.theme.currentTheme.success = newColor })
-watch(warningColor, (newColor) => { vuetify.theme.currentTheme.warning = newColor })
-
-useAllServices()
-provide(kDropHandler, useDropHandler())
-useDefaultErrorHandler()
-useAuthProfileImportNotification()
-useI18nSync()
-useThemeSync()
-useExternalRoute()
-provide(kUILayout, useUILayout())
-provide(kUserContext, useUserContext())
-provide(kModpacks, useModpacks())
-provide(kImageDialog, useImageDialog())
-provide(kSWRVConfig, useSWRVConfig())
-provide(kMarketRoute, useMarketRoute())
-provide(kFilterCombobox, useFilterComboboxData())
+// Notifier
+const { notify } = useNotifier()
+useDefaultErrorHandler(notify)
+useAuthProfileImportNotification(notify)
 
 </script>
 
@@ -154,10 +120,4 @@ img {
   max-height: 100%;
   object-fit: contain;
 }
-
-/* main {
-  border-left: 1px solid hsla(0,0%,100%,.12);
-  border-top: 1px solid hsla(0,0%,100%,.12);
-  border-top-left-radius: 0.5rem;
-} */
 </style>

@@ -1,6 +1,7 @@
 import { MojangChallenge, MojangChallengeResponse } from '@xmcl/user'
 import { GenericEventEmitter } from '../events'
 import { ServiceKey } from './Service'
+import { UserProfile } from '../entities/user.schema'
 
 interface OfficialUserServiceEventMap {
   'microsoft-authorize-url': string
@@ -51,14 +52,14 @@ export interface MicrosoftMinecraftProfile {
 }
 
 export interface OfficialUserService extends GenericEventEmitter<OfficialUserServiceEventMap> {
-  setName(name: string): Promise<void>
-  getNameChangeInformation(): Promise<NameChangeInformation>
-  checkNameAvailability(name: string): Promise<NameAvailability>
-  hideCape(): Promise<void>
-  showCape(capeId: string): Promise<void>
-  verifySecurityLocation(): Promise<boolean>
-  getSecurityChallenges(): Promise<MojangChallenge[]>
-  submitSecurityChallenges(answers: MojangChallengeResponse[]): Promise<void>
+  setName(userProfile: UserProfile, name: string): Promise<void>
+  getNameChangeInformation(userProfile: UserProfile): Promise<NameChangeInformation>
+  checkNameAvailability(userProfile: UserProfile, name: string): Promise<NameAvailability>
+  hideCape(userProfile: UserProfile): Promise<void>
+  showCape(userProfile: UserProfile, capeId: string): Promise<void>
+  verifySecurityLocation(userProfile: UserProfile): Promise<boolean>
+  getSecurityChallenges(userProfile: UserProfile): Promise<MojangChallenge[]>
+  submitSecurityChallenges(userProfile: UserProfile, answers: MojangChallengeResponse[]): Promise<void>
 }
 
 export const OfficialUserServiceKey: ServiceKey<OfficialUserService> = 'OfficialUserService'

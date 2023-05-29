@@ -3,9 +3,9 @@
     v-selectable-card
     v-long-press="onSelect"
     v-context-menu="contextMenuItems"
-    :color="cardColor"
+    :color="color"
     outlined
-    :draggable="!item.enabled"
+    :draggable="!item.mod.enabled"
     :class="{
       incompatible: isCompatible === false,
       maybe: isCompatible === 'maybe',
@@ -39,7 +39,7 @@
           ref="iconImage"
           :lazy-src="unknownPack"
           class="rounded object-contain image-render-pixel"
-          :src="item.icon"
+          :src="item.mod.icon"
         />
       </v-flex>
       <div
@@ -50,17 +50,17 @@
           class="px-1"
         >
           <text-component
-            :source="item.name"
+            :source="item.mod.name"
           />
           <span class="text-gray-400 text-sm">
-            {{ item.version }}
+            {{ item.mod.version }}
           </span>
         </h3>
         <v-card-text
           class="px-1 py-0 min-h-[22px] overflow-hidden overflow-ellipsis whitespace-nowrap"
         >
           <text-component
-            :source="item.description"
+            :source="item.mod.description"
           />
         </v-card-text>
         <ModCardLabels
@@ -93,7 +93,7 @@ import { useModItemContextMenuItems } from '@/composables/modContextMenu'
 import { injection } from '@/util/inject'
 import type Vue from 'vue'
 import { Ref } from 'vue'
-import { ModItem } from '../composables/mod'
+import { ModItem } from '../composables/instanceModItems'
 import { vContextMenu } from '../directives/contextMenu'
 import { vSelectableCard } from '../directives/draggableCard'
 import { vLongPress } from '../directives/longPress'
@@ -103,6 +103,8 @@ const props = defineProps<{
   item: ModItem
   index: number
   selection: boolean
+  color: string
+  runtime: Record<string, string>
   onItemDragstart(mod: ModItem): void
   onTags(item: ModItem, tags: string[]): void
   onSelect(): void
@@ -111,27 +113,26 @@ const props = defineProps<{
   onEnable(event: { item: ModItem; enabled: boolean }): void
 }>()
 
-const { cardColor } = injection(kColorTheme)
 const modItem = computed(() => props.item)
 const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.item.tags, set(v) { props.onTags(props.item, v) } }), computed(() => props.item.selected))
-const { isCompatible, compatibility } = useModCompatibility(modItem)
+const { isCompatible, compatibility } = useModCompatibility(modItem, computed(() => props.runtime))
 
 const onDeleteTag = removeTag
 const iconImage: Ref<Vue | null> = ref(null)
 const enabled = computed({
-  get() { return props.item.enabled },
+  get() { return props.item.mod.enabled },
   set(v: boolean) { props.onEnable({ item: props.item, enabled: v }) },
 })
 
 function onDragStart(e: DragEvent) {
-  if (props.item.enabled) {
+  if (props.item.mod.enabled) {
     return
   }
   if (iconImage.value) {
     e.dataTransfer!.setDragImage(iconImage.value.$el!, 0, 0)
   } else {
     const img = document.createElement('img')
-    img.src = props.item.icon
+    img.src = props.item.mod.icon
     img.style.maxHeight = '126px'
     img.style.maxWidth = '126px'
     img.style.objectFit = 'contain'
@@ -139,7 +140,7 @@ function onDragStart(e: DragEvent) {
     e.dataTransfer!.setDragImage(img, 0, 0)
   }
   e.dataTransfer!.effectAllowed = 'move'
-  e.dataTransfer!.setData('id', props.item.url)
+  e.dataTransfer!.setData('id', props.item.mod.url)
   props.onItemDragstart(props.item)
 }
 function onEditTag(event: Event, index: number) {

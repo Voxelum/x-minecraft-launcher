@@ -1,98 +1,47 @@
-import { InjectionKey, Ref } from 'vue'
-import { InstanceFile } from '@xmcl/runtime-api'
-import { basename } from '@/util/basename'
-import { CSSProperties } from 'vue/types/jsx'
+import { InstanceFile, InstanceInstallServiceKey } from '@xmcl/runtime-api'
+import { Ref, InjectionKey } from 'vue'
+import { useRefreshable } from './refreshable'
+import { useService } from './service'
 
-export interface InstanceFileNode<T = never> {
-  name: string
-  id: string
-  style?: CSSProperties
-  size: number
-  data?: T
-  children?: InstanceFileNode<T>[]
-}
+export const kInstanceFiles: InjectionKey<ReturnType<typeof useInstanceFiles>> = Symbol('InstanceFiles')
 
-export const FileNodesSymbol: InjectionKey<Ref<InstanceFileNode<any>[]>> = Symbol('InstanceFileNode')
+export function useInstanceFiles(instancePath: Ref<string>) {
+  const files: Ref<InstanceFile[]> = ref([])
+  const { checkInstanceInstall, installInstanceFiles } = useService(InstanceInstallServiceKey)
 
-export type InstanceFileExportData = {
-  forceOverride: boolean
-  client: string
-  server: string
-  downloads?: string[]
-  curseforge: boolean
-}
-
-export function useInstanceFileNodesFromLocal(local: Ref<InstanceFile[]>) {
-  function getFileNode(f: InstanceFile): InstanceFileNode<InstanceFileExportData> {
-    return reactive({
-      name: basename(f.path),
-      id: f.path,
-      size: f.size,
-      data: {
-        client: '',
-        server: '',
-        forceOverride: false,
-        downloads: f.downloads,
-        curseforge: !!f.curseforge,
-        modrinth: !!f.modrinth,
-      },
-      children: undefined,
-    })
-  }
-  const result = ref(local.value.map(getFileNode))
-  watch(local, (newVal) => {
-    if (newVal.length > 0) {
-      result.value = local.value.map(getFileNode)
-    } else {
-      result.value = []
-    }
+  let abortController = new AbortController()
+  const { refresh, error, refreshing } = useRefreshable(async () => {
+    if (!instancePath.value) { return }
+    abortController.abort()
+    abortController = new AbortController()
+    const abortSignal = abortController.signal
+    const result = await checkInstanceInstall(instancePath.value)
+    // If abort, just ignore this result
+    if (abortSignal.aborted) { return }
+    files.value = result
   })
-  return result
-}
 
-export function provideFileNodes<T>(files: Ref<InstanceFileNode<T>[]>) {
-  function buildEdges(cwd: InstanceFileNode<T>[], filePaths: string[], parent: string, file: InstanceFileNode<T>) {
-    const remained = filePaths.slice(1)
-    if (remained.length > 0) { // edge
-      const name = filePaths[0]
-      let edgeNode = cwd.find(n => n.name === name)
-      const current = parent ? (parent + '/' + name) : name
-      if (!edgeNode) {
-        edgeNode = {
-          name,
-          id: current,
-          size: 0,
-          children: [],
-        }
-        cwd.push(edgeNode)
+  async function install() {
+    if (files.value.length > 0) {
+      // has unfinished files
+      try {
+        await installInstanceFiles({ files: files.value, path: instancePath.value })
+      } finally {
+        refresh()
       }
-      buildEdges(edgeNode.children!, remained, current, file)
-      edgeNode.children?.sort((a, b) => a.id.localeCompare(b.id))
-    } else { // leaf
-      cwd.push(file)
+    } else {
+      refresh()
     }
   }
 
-  const leaves: Ref<InstanceFileNode<T>[]> = ref([])
-  const nodes: Ref<InstanceFileNode<T>[]> = ref([])
+  onMounted(() => refresh())
+  watch(instancePath, () => refresh())
 
-  function update(files: InstanceFileNode<T>[]) {
-    const leavesNodes = files
-    const result: InstanceFileNode<T>[] = []
-    for (const file of leavesNodes) {
-      buildEdges(result, file.id.split('/'), '', file)
-    }
-    leaves.value = leavesNodes
-    nodes.value = result
+  return {
+    files,
+    refreshing,
+    refresh,
+    error,
+    install,
   }
-
-  watch(files, (files) => {
-    update(files)
-  })
-
-  update(files.value)
-
-  provide(FileNodesSymbol, nodes)
-
-  return { nodes, leaves }
 }

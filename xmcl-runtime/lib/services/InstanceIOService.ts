@@ -7,12 +7,12 @@ import { tmpdir } from 'os'
 import { basename, join, resolve } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { kGameDataPath, PathResolver } from '../entities/gameDataPath'
 import { copyPassively, exists, isDirectory, isFile } from '../util/fs'
 import { requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { ZipTask } from '../util/zip'
 import { InstanceService } from './InstanceService'
-import { InstanceVersionService } from './InstanceVersionService'
 import { AbstractService, ExposeServiceKey } from './Service'
 import { VersionService } from './VersionService'
 
@@ -23,7 +23,7 @@ import { VersionService } from './VersionService'
 export class InstanceIOService extends AbstractService implements IInstanceIOService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstanceService) private instanceService: InstanceService,
-    @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
+    @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(VersionService) private versionService: VersionService,
   ) {
     super(app)
@@ -36,23 +36,14 @@ export class InstanceIOService extends AbstractService implements IInstanceIOSer
   async exportInstance(options: ExportInstanceOptions) {
     requireObject(options)
 
-    const { src = this.instanceService.state.path, destinationPath: dest, includeAssets = true, includeLibraries = true, files, includeVersionJar = true } = options
+    const { src, destinationPath: dest, includeAssets = true, includeLibraries = true, files, includeVersionJar = true } = options
 
-    if (!this.instanceService.state.all[src]) {
-      this.warn(`Cannot export unmanaged instance ${src}`)
-      return
-    }
+    // if (!this.instanceService.state.all[src]) {
+    //   this.warn(`Cannot export unmanaged instance ${src}`)
+    //   return
+    // }
 
-    const version = this.instanceVersionService.state.version
-
-    if (!version) {
-      // TODO: throw
-      this.emit('error', {
-        type: '',
-      })
-      this.warn(`Cannot export instance ${src} as its version is not installed!`)
-      return
-    }
+    const version = await this.versionService.resolveLocalVersion(options.version)
 
     const root = this.getPath()
     const from = src

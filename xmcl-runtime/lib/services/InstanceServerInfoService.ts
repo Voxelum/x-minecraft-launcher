@@ -1,5 +1,6 @@
-import { InstanceServerInfoService as IInstanceServerInfoService, InstanceServerInfoServiceKey, ServerInfoState } from '@xmcl/runtime-api'
+import { InstanceServerInfoService as IInstanceServerInfoService, InstanceServerInfoServiceKey, ServerInfoState, getServerInfoKey } from '@xmcl/runtime-api'
 import { readFile } from 'fs/promises'
+import watch from 'node-watch'
 import { join } from 'path'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -15,18 +16,32 @@ export class InstanceServerInfoService extends AbstractService implements IInsta
   }
 
   async watch(path: string) {
-    const state = this.storeManager.register('InstanceServerInfo/' + path, new ServerInfoState())
+    return this.storeManager.registerOrGet(getServerInfoKey(path), async () => {
+      const state = new ServerInfoState()
 
-    const serversPath = join(path, 'servers.dat')
-    if (await exists(serversPath)) {
-      const serverDat = await readFile(serversPath)
-      const infos = /* await readInfo(serverDat) */ undefined as any
-      this.log('Loaded server infos.')
-      state.instanceServerInfos(infos)
-    } else {
-      this.log('No server data found in instance.')
-    }
+      const serversPath = join(path, 'servers.dat')
 
-    return state
+      const update = async () => {
+        if (await exists(serversPath)) {
+          const serverDat = await readFile(serversPath)
+          const infos = /* await readInfo(serverDat) */ undefined as any
+          this.log('Loaded server infos.')
+          state.instanceServerInfos(infos)
+        } else {
+          this.log('No server data found in instance.')
+        }
+      }
+      const watcher = watch(path, (event, filePath) => {
+        if (event === 'update') {
+            update()
+        }
+      })
+
+      await update()
+
+      return [state, () => {
+        watcher.close()
+      }]
+    })
   }
 }

@@ -2,9 +2,9 @@ import { LocalStroageCache } from '@/util/localStorageCache'
 import { IConfig } from 'swrv'
 import { InjectionKey } from 'vue'
 
-export const kSWRVConfig: InjectionKey<IConfig> = Symbol('swrvConfig')
+export const kSWRVConfig: InjectionKey<ReturnType<typeof useSWRVConfig>> = Symbol('swrvConfig')
 
-export function useSWRVConfig(): IConfig {
+export function useSWRVConfig() {
   return {
     cache: new LocalStroageCache('/cache'),
     shouldRetryOnError: true,

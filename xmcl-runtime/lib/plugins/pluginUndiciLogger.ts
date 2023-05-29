@@ -3,7 +3,7 @@ import { DiagnosticsChannel, Dispatcher } from 'undici'
 import { LauncherAppPlugin } from '../app/LauncherApp'
 
 export const pluginUndiciLogger: LauncherAppPlugin = (app) => {
-  const undici = app.logManager.openLogger('undici')
+  const undici = app.getLogger('undici', 'undici')
 
   channel('undici:request:create').subscribe((m, name) => {
     const msg: DiagnosticsChannel.RequestCreateMessage = m as any
@@ -23,7 +23,7 @@ export const pluginUndiciLogger: LauncherAppPlugin = (app) => {
   })
   channel('undici:request:error').subscribe((m, name) => {
     const msg = m as DiagnosticsChannel.RequestErrorMessage
-    undici.error(`request:error ${msg.request.method} ${msg.request.origin}${msg.request.path}: %O`, msg.error)
+    undici.warn(`request:error ${msg.request.method} ${msg.request.origin}${msg.request.path}: %O`, msg.error)
   })
   channel('undici:client:sendHeaders').subscribe((m, name) => {
     const msg: DiagnosticsChannel.ClientSendHeadersMessage = m as any
@@ -35,7 +35,7 @@ export const pluginUndiciLogger: LauncherAppPlugin = (app) => {
   })
   channel('undici:client:connectError').subscribe((msg, name) => {
     const m: DiagnosticsChannel.ClientConnectErrorMessage = msg as any
-    undici.error(`client:connectError ${m.connectParams.protocol}${m.connectParams.hostname}:${m.connectParams.port} ${m.connectParams.servername} %O`, m.error)
+    undici.warn(`client:connectError ${m.connectParams.protocol}${m.connectParams.hostname}:${m.connectParams.port} ${m.connectParams.servername} %O`, m.error)
   })
   channel('undici:client:connected').subscribe((msg, name) => {
     const m: DiagnosticsChannel.ClientConnectedMessage = msg as any

@@ -1,5 +1,5 @@
 import { createSsdp, UpnpClient, UpnpMapOptions, UpnpUnmapOptions } from '@xmcl/nat-api'
-import { NatService as INatService, NatServiceKey, NatState } from '@xmcl/runtime-api'
+import { NatService as INatService, MutableState, NatServiceKey, NatState } from '@xmcl/runtime-api'
 import { getNatInfoUDP, sampleNatType } from '@xmcl/stun-client'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -26,6 +26,10 @@ export class NatService extends StatefulService<NatState> implements INatService
         this.client.reject(e)
       }
     })
+  }
+
+  async getNatState(): Promise<MutableState<NatState>> {
+    return this.state
   }
 
   async isSupported(): Promise<boolean> {

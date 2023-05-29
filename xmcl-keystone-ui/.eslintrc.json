@@ -15,6 +15,7 @@
     "extends": [
         "../.eslintrc.json",
         ".eslintrc-auto-import.json",
+        "plugin:tailwindcss/recommended",
         "plugin:vue/recommended"
     ],
     "parser": "vue-eslint-parser",
@@ -30,6 +31,8 @@
         "browser": true
     },
     "rules": {
+        "tailwindcss/no-custom-classname": "off",
+        "tailwindcss/migration-from-tailwind-2": "off",
         "vue/no-mutating-props": "off",
         "vue/multi-word-component-names": "off",
         "vue/no-v-text-v-html-on-component": "off"

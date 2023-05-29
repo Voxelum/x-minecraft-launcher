@@ -10,15 +10,15 @@
   />
 </template>
 <script lang="ts" setup>
-import { useService } from '@/composables'
-import { InstanceSavesServiceKey } from '@xmcl/runtime-api'
 import HomeCardBase from './HomeCardBase.vue'
+import { injection } from '@/util/inject'
+import { kInstanceSave } from '@/composables/save'
 
 const props = defineProps<{ row: number; rowCount: number }>()
 
-const { state } = useService(InstanceSavesServiceKey)
-const savesLength = computed(() => state.saves.length)
-const all = computed(() => state.saves.map(s => ({ name: s.name, icon: s.icon?.replace(/\\/g, '\\\\') })))
+const { saves } = injection(kInstanceSave)
+const savesLength = computed(() => saves.value.length)
+const all = computed(() => saves.value.map(s => ({ name: s.name, icon: s.icon?.replace(/\\/g, '\\\\') })))
 const icons = computed(() => all.value.slice(0, props.row * props.rowCount))
 const { t } = useI18n()
 const { push } = useRouter()

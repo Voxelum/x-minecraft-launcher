@@ -39,12 +39,17 @@ interface ResourceServiceEventMap {
   'resourceUpdate': Resource
 }
 
+export interface Pagination {
+  count: number
+  offset: number
+}
+
 /**
  * Resource service to manage the mod, resource pack, saves, modpack resources.
  * It maintain a preview for resources in memory
  */
 export interface ResourceService extends GenericEventEmitter<ResourceServiceEventMap> {
-  getResources(domain: ResourceDomain): Promise<Array<Resource>>
+  getResources(domain: ResourceDomain, pagination?: Pagination): Promise<Array<Resource>>
   getReosurceByIno(ino: number): Promise<Resource | undefined>
   getResourceByHash(sha1: string): Promise<Resource | undefined>
   getResourcesByHashes(sha1: string[]): Promise<Array<Resource | undefined>>
@@ -52,7 +57,7 @@ export interface ResourceService extends GenericEventEmitter<ResourceServiceEven
   getResourcesByUris(uri: [string, string]): Promise<[Resource | undefined, Resource | undefined]>
   getResourcesByUris(uri: string[]): Promise<Array<Resource | undefined>>
 
-  getResourcesByKeyword(keyword: string, domain: ResourceDomain): Promise<Array<Resource>>
+  getResourcesByKeyword(keyword: string, domain: ResourceDomain, pagination?: Pagination): Promise<Array<Resource>>
 
   getResourceMetadataByHash(sha1: string): Promise<ResourceMetadata | undefined>
   getResourcesMetadataByHashes(sha1: string[]): Promise<Array<ResourceMetadata | undefined>>
@@ -65,7 +70,7 @@ export interface ResourceService extends GenericEventEmitter<ResourceServiceEven
    */
   removeResources(hashes: string[]): Promise<void>
   /**
-   * Update the resources content.
+   * Upsert the resources content.
    *
    * You can update `name`, `tags` in this method.
    *

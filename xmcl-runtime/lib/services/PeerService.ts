@@ -1,11 +1,11 @@
 import { MinecraftLanDiscover } from '@xmcl/client'
 import { ChecksumNotMatchError } from '@xmcl/file-transfer'
-import { InstanceManifest, PeerService as IPeerService, PeerServiceKey, PeerState, ShareInstanceOptions, UpnpMapOptions } from '@xmcl/runtime-api'
+import { AUTHORITY_MICROSOFT, InstanceManifest, PeerService as IPeerService, MutableState, PeerServiceKey, PeerState, ShareInstanceOptions, UpnpMapOptions, UserState } from '@xmcl/runtime-api'
 import { AbortableTask, BaseTask } from '@xmcl/task'
 import { randomFill, randomUUID } from 'crypto'
 import { createWriteStream } from 'fs'
 import { ensureFile } from 'fs-extra/esm'
-import { IceServer, initLogger, preload } from 'node-datachannel'
+import { IceServer, initLogger } from 'node-datachannel'
 import { join } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
@@ -25,6 +25,7 @@ import { Inject } from '../util/objectRegistry'
 import { NatService } from './NatService'
 import { ExposeServiceKey, Lock, Singleton, StatefulService } from './Service'
 import { UserService } from './UserService'
+import { kGameDataPath, PathResolver } from '../entities/gameDataPath'
 
 const pBrotliDecompress = promisify(brotliDecompress)
 const pBrotliCompress = promisify(brotliCompress)
@@ -50,15 +51,16 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ImageStorage) private imageStorage: ImageStorage,
     @Inject(kResourceWorker) private worker: ResourceWorker,
+    @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(NatService) natService: NatService,
     @Inject(UserService) private userService: UserService,
   ) {
     super(app, () => new PeerState(), async () => {
       const initCredential = async () => {
-        await userService.initialize()
         await this.fetchCredential()
-        this.storeManager.subscribe('userProfile', (profile) => {
-          if (profile.authService === 'microsoft' && this.iceServers.length === 0) {
+        const state = await userService.getUserState()
+        state.subscribe('userProfile', (profile) => {
+          if (profile.authority === AUTHORITY_MICROSOFT && this.iceServers.length === 0) {
             this.fetchCredential()
           }
         })
@@ -123,23 +125,23 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     })
 
     if (IS_DEV) {
-      const logger = this.logManager.openLogger('wrtc')
+      const logger = this.app.getLogger('wrtc', 'wrtc')
       initLogger('Verbose', (level, message) => {
         if (level === 'Info' || level === 'Debug' || level === 'Verbose') {
           logger.log(message)
         } else if (level === 'Fatal' || level === 'Error') {
-          logger.error(message)
+          logger.warn(message)
         } else if (level === 'Warning') {
           logger.warn(message)
         }
       })
     } else {
-      const logger = this.logManager.openLogger('wrtc')
+      const logger = this.app.getLogger('wrtc', 'wrtc')
       initLogger('Info', (level, message) => {
         if (level === 'Info' || level === 'Debug' || level === 'Verbose') {
           logger.log(message)
         } else if (level === 'Fatal' || level === 'Error') {
-          logger.error(message)
+          logger.warn(message)
         } else if (level === 'Warning') {
           logger.warn(message)
         }
@@ -211,11 +213,17 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     })
   }
 
+  async getPeerState(): Promise<MutableState<PeerState>> {
+    return this.state
+  }
+
   async leaveGroup(): Promise<void> {
     this.group?.quit()
     this.group = undefined
     this.state.connectionGroup('')
     this.state.connectionGroupState('closed')
+    this.emit('connection-group', '')
+    this.emit('connection-group-state', 'closed')
   }
 
   @Singleton()
@@ -260,7 +268,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }
 
   @Lock('joinGroup')
-  async joinGroup(id?: string): Promise<void> {
+  async joinGroup(id: string): Promise<void> {
     if (this.group?.groupId && this.group.groupId === id) {
       return
     }
@@ -269,14 +277,6 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       this.group.quit()
     }
 
-    if (!id) {
-      const buf = Buffer.alloc(2)
-      await new Promise<Buffer>((resolve, reject) => randomFill(buf, (err, buf) => {
-        if (err) reject(err)
-        else resolve(buf)
-      }))
-      id = `${this.userService.state.gameProfile?.name ?? 'Player'}@${buf.readUint16BE()}`
-    }
     const group = new PeerGroup(id, this.id)
 
     group.on('heartbeat', (sender) => {
@@ -318,6 +318,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     })
     group.on('state', (state) => {
       this.state.connectionGroupState(state)
+      this.emit('connection-group-state', state)
     })
     group.on('error', (err) => {
       if (err instanceof Error) this.error(err)
@@ -326,6 +327,8 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     this.group = group
     this.state.connectionGroup(group.groupId)
     this.state.connectionGroupState(group.state)
+    this.emit('connection-group', group.groupId)
+    this.emit('connection-group-state', group.state)
   }
 
   protected async decode(description: string): Promise<TransferDescription> {
@@ -345,7 +348,10 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     this.log(`Create peer connection to ${remoteId}. Is initiator: ${initiator}`)
 
     const conn = new PeerSession(sessionId, this.iceServers, {
-      onHeartbeat: (id, ping) => this.state.connectionPing({ id, ping }),
+      onHeartbeat: (id, ping) => {
+        this.state.connectionPing({ id, ping })
+        this.emit('connection-ping', { id, ping })
+      },
       onInstanceShared: (id, manifest) => {
         this.state.connectionShareManifest({ id, manifest })
         this.emit('share', { id, manifest })
@@ -359,9 +365,13 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
         const payload = { sdp, id: this.id, session: id, candidates }
         pBrotliCompress(JSON.stringify(payload)).then((s) => s.toString('base64')).then((compressed) => {
           this.state.connectionLocalDescription({ id: payload.session, description: compressed })
+          this.emit('connection-local-description', { id: payload.session, description: compressed })
         })
       },
-      onIdentity: (id, info) => this.state.connectionUserInfo({ id, info }),
+      onIdentity: (id, info) => {
+        this.state.connectionUserInfo({ id, info })
+        this.emit('connection-user-info', { id, info })
+      },
       onLanMessage: (_, msg) => {
         if (!this.discover.isReady) {
           // this.discover.bind()
@@ -370,7 +380,8 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
         }
       },
       getUserInfo: () => {
-        const user = this.userService.state.user
+        // TODO: fix this
+        const user = Object.values(this.userService.state.users)[0]
         const profile = user?.profiles[user.selectedProfile]
         return {
           name: profile?.name ?? 'Player',
@@ -401,6 +412,11 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           remote: pair.remote as any,
           local: pair.local as any,
         })
+        this.emit('connection-selected-candidate', {
+          id: conn.id,
+          remote: pair.remote,
+          local: pair.local,
+        })
       }
       this.state.connectionStateChange({ id: conn.id, connectionState: state as any })
       if (state === 'closed') {
@@ -408,21 +424,25 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           // Close by user manually
           delete this.peers[conn.id]
           this.state.connectionDrop(conn.id)
+          this.emit('connection-drop', conn.id)
         } else {
           this.error(new Error(`Connection is closed unexpected! ${conn.id}`))
           if (this.group) {
             // Only delete if the group exist. Then it can re-connect automatically.
             delete this.peers[conn.id]
             this.state.connectionDrop(conn.id)
+            this.emit('connection-drop', conn.id)
           }
         }
       }
     })
     conn.connection.onSignalingStateChange((state) => {
       this.state.signalingStateChange({ id: conn.id, signalingState: state as any })
+      this.emit('signaling-state-change', { id: conn.id, signalingState: state })
     })
     conn.connection.onGatheringStateChange((state) => {
       this.state.iceGatheringStateChange({ id: conn.id, iceGatheringState: state as any })
+      this.emit('ice-gathering-state-change', { id: conn.id, iceGatheringState: state })
     })
 
     this.state.connectionAdd({

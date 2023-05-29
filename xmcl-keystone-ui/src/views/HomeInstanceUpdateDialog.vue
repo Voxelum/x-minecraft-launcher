@@ -128,13 +128,16 @@
 <script lang="ts" setup>
 import InstanceManifestFileTree from '@/components/InstanceManifestFileTree.vue'
 import { useRefreshable, useService, useServiceBusy } from '@/composables'
-import { InstanceFileNode, provideFileNodes } from '@/composables/instanceFiles'
+import { kInstances } from '@/composables/instances'
+import { InstanceFileNode, provideFileNodes } from '@/composables/instanceFileNodeData'
 import { InstanceInstallDialog } from '@/composables/instanceUpdate'
 import { useVuetifyColor } from '@/composables/vuetify'
 import { basename } from '@/util/basename'
+import { injection } from '@/util/inject'
 import { getUpstreamFromResource } from '@/util/upstream'
 import { EditInstanceOptions, InstanceFileOperation, InstanceFileUpdate, InstanceInstallServiceKey, InstanceServiceKey, InstanceUpdateServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
+import { kInstance } from '@/composables/instance'
 
 const selected = ref([] as string[])
 
@@ -147,11 +150,9 @@ const oldResource = computed(() => dialog.value.parameter?.currentResource)
 const newResource = computed(() => dialog.value.parameter?.resource)
 const { getInstanceUpdateProfile } = useService(InstanceUpdateServiceKey)
 const { installInstanceFiles } = useService(InstanceInstallServiceKey)
-const { state, editInstance } = useService(InstanceServiceKey)
-const { t } = useI18n()
-const instancePath = computed(() => state.path)
 
-const oldRuntime = computed(() => state.instance.runtime)
+const { edit } = injection(kInstances)
+const { t } = useI18n()
 
 const upgrade = ref(undefined as undefined | {
   instance: EditInstanceOptions
@@ -190,7 +191,7 @@ type FileOperationNode = InstanceFileNode<{ operation: InstanceFileUpdate['opera
 function getFileNode(f: InstanceFileUpdate): FileOperationNode {
   return {
     name: basename(f.file.path),
-    id: f.file.path,
+    path: f.file.path,
     size: f.file.size,
     style: {
       textDecorationLine: f.operation === 'remove' || f.operation === 'backup-remove' ? 'line-through' : '',
@@ -214,6 +215,8 @@ watch(upgrade, (newVal) => {
 
 const { leaves } = provideFileNodes(result)
 
+const { runtime: oldRuntime, path: instancePath } = injection(kInstance)
+
 const { refresh, refreshing } = useRefreshable(async () => {
   const path = newResource.value?.path
   if (path) {
@@ -233,7 +236,8 @@ const confirm = async () => {
       path: instancePath.value,
       files: files.filter(f => f.operation !== 'keep').map(f => ({ ...f.file, operation: f.operation as InstanceFileOperation })),
     })
-    await editInstance({
+    await edit({
+      instancePath: instancePath.value,
       runtime: {
         minecraft: instance.runtime?.minecraft || oldRuntime.value.minecraft,
         forge: instance.runtime?.forge,

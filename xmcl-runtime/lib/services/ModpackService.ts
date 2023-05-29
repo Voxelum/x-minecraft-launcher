@@ -1,30 +1,24 @@
 import { File, HashAlgo } from '@xmcl/curseforge'
-import { UnzipTask } from '@xmcl/installer'
-import { CurseforgeModpackManifest, EditInstanceOptions, ExportModpackOptions, ModpackService as IModpackService, ImportModpackOptions, InstanceFile, LockKey, McbbsModpackManifest, ModpackException, ModpackFileInfoCurseforge, ModpackServiceKey, ModrinthModpackManifest, ResourceDomain, ResourceMetadata, getCurseforgeModpackFromInstance, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromModrinthModpack, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, getResolvedVersion, isAllowInModrinthModpack } from '@xmcl/runtime-api'
-import { task } from '@xmcl/task'
+import { CurseforgeModpackManifest, ExportModpackOptions, ModpackService as IModpackService, InstanceFile, McbbsModpackManifest, ModpackException, ModpackFileInfoCurseforge, ModpackInstallProfile, ModpackServiceKey, ModrinthModpackManifest, ResourceDomain, ResourceMetadata, getCurseforgeModpackFromInstance, getInstanceConfigFromCurseforgeModpack, getInstanceConfigFromMcbbsModpack, getInstanceConfigFromModrinthModpack, getMcbbsModpackFromInstance, getModrinthModpackFromInstance, isAllowInModrinthModpack } from '@xmcl/runtime-api'
 import { open, openEntryReadStream, readAllEntries, readEntry } from '@xmcl/unzip'
-import { createHash } from 'crypto'
 import { stat } from 'fs/promises'
-import { basename, join, relative } from 'path'
-import { pipeline } from 'stream/promises'
+import { join } from 'path'
 import { Entry, ZipFile } from 'yauzl'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { PathResolver, kGameDataPath } from '../entities/gameDataPath'
 import { ResourceWorker, kResourceWorker } from '../entities/resourceWorker'
 import { guessCurseforgeFileUrl } from '../util/curseforge'
-import { checksumFromStream, isFile } from '../util/fs'
+import { AnyError } from '../util/error'
+import { checksumFromStream } from '../util/fs'
 import { requireObject } from '../util/object'
 import { Inject } from '../util/objectRegistry'
 import { ZipTask } from '../util/zip'
 import { BaseService } from './BaseService'
 import { CurseForgeService } from './CurseForgeService'
-import { InstallService } from './InstallService'
-import { InstanceInstallService } from './InstanceInstallService'
 import { InstanceService } from './InstanceService'
-import { InstanceVersionService } from './InstanceVersionService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey } from './Service'
-import { VersionService } from './VersionService'
 
 export interface ModpackDownloadableFile {
   destination: string
@@ -40,7 +34,7 @@ export interface ModpackHandler<M = any> {
   resolveUnpackPath(manifest: M, e: Entry): string | void
 
   readMetadata(zipFile: ZipFile, entries: Entry[]): Promise<M | undefined>
-  resolveInstanceOptions(manifest: M): EditInstanceOptions
+  resolveInstanceOptions(manifest: M): ModpackInstallProfile['instance']
   resolveInstanceFiles(manifest: M): Promise<InstanceFile[]>
 }
 
@@ -55,12 +49,9 @@ export class ModpackService extends AbstractService implements IModpackService {
     @Inject(BaseService) private baseService: BaseService,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(InstanceService) private instanceService: InstanceService,
-    @Inject(VersionService) private versionService: VersionService,
-    @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
-    @Inject(InstallService) private installService: InstallService,
     @Inject(kResourceWorker) private worker: ResourceWorker,
+    @Inject(kGameDataPath) private getPath: PathResolver,
     @Inject(CurseForgeService) curseforgeService: CurseForgeService,
-    @Inject(InstanceInstallService) private instanceInstallService: InstanceInstallService,
   ) {
     super(app)
 
@@ -224,7 +215,7 @@ export class ModpackService extends AbstractService implements IModpackService {
   async exportModpack(options: ExportModpackOptions) {
     requireObject(options)
 
-    const { instancePath = this.instanceService.state.path, destinationPath, files, name, version, gameVersion, author, emitCurseforge = true, emitMcbbs = true, emitModrinth = false } = options
+    const { instancePath, destinationPath, files, name, version, gameVersion, author, emitCurseforge = true, emitMcbbs = true, emitModrinth = false } = options
 
     const instance = this.instanceService.state.all[instancePath]
     if (!instance) {
@@ -316,14 +307,15 @@ export class ModpackService extends AbstractService implements IModpackService {
 
     try {
       await this.submit(zipTask)
-      this.instanceService.editInstance({ instancePath, modpackVersion: version })
+      // TODO: move this to client
+      // this.instanceService.editInstance({ instancePath, modpackVersion: version })
       this.baseService.showItemInDirectory(destinationPath)
     } finally {
       // TODO: handle
     }
   }
 
-  async getInstallModpackProfile(path: string) {
+  async getModpackInstallProfile(path: string): Promise<ModpackInstallProfile> {
     const fStat = await stat(path)
     if (!fStat.isFile()) {
       throw new ModpackException({ type: 'requireModpackAFile', path }, `Cannot import modpack ${path}, since it's not a file!`)
@@ -405,7 +397,7 @@ export class ModpackService extends AbstractService implements IModpackService {
         },
       }])
     } catch (e) {
-      this.error(new Error('Fail to update resource', { cause: e }))
+      this.error(new AnyError('ModpackInstallProfileError', 'Fail to update resource', { cause: e }))
     }
 
     return {
@@ -422,137 +414,6 @@ export class ModpackService extends AbstractService implements IModpackService {
       }
     }
     return [undefined, undefined]
-  }
-
-  /**
-   * Import the modpack zip file to the instance.
-   * @param options The options provide instance directory path and modpack zip path
-   */
-  async importModpack(options: ImportModpackOptions) {
-    const { path } = options
-
-    if (!await isFile(path)) {
-      throw new ModpackException({ type: 'requireModpackAFile', path }, `Cannot import modpack ${path}, since it's not a file!`)
-    }
-
-    this.log(`Import modpack by path ${path}`)
-    const hash = await this.worker.checksum(path, 'sha1')
-
-    const zip = await open(path)
-    const entries = await readAllEntries(zip)
-
-    const [manifest, handler] = await this.getManifestAndHandler(zip, entries)
-
-    if (!manifest || !handler) throw new ModpackException({ type: 'invalidModpack', path })
-
-    const config = handler.resolveInstanceOptions(manifest)
-
-    const getDistinctName = (names: string[], name: string) => {
-      let i = 1
-      while (names.includes(name)) {
-        name = `${name} (${i++})`
-      }
-      return name
-    }
-
-    const instancePath = await this.instanceService.createInstance({
-      ...config,
-      name: getDistinctName(this.instanceService.state.instances.map(i => i.name),
-        config.name || basename(options.path)),
-      ...options.instanceConfig,
-    })
-
-    const lock = this.semaphoreManager.getLock(LockKey.instance(instancePath))
-    const [unzippedFiles, files] = await lock.write(async () => {
-      // If this failed, it will be the unzip failed. Then it should be safe to just fully retry.
-      // No partial info should be caught.
-      const [unzippedFiles, files] = await this.submit(this.installModpackTask(path, zip, entries, manifest, handler, instancePath))
-
-      this.log(`Install ${unzippedFiles.length} files from modpack!`)
-
-      return [unzippedFiles, files]
-    }).catch((e) => {
-      this.error(new Error(`Fail to install modpack: ${path}`, { cause: e }))
-      if (!('instancePath' in options)) {
-        this.instanceService.deleteInstance(instancePath)
-      }
-      throw e
-    })
-
-    config.name = config.name || basename(options.path)
-
-    // Update the resource
-    await this.resourceService.updateResources([{
-      hash,
-      metadata: {
-        instance: {
-          instance: config,
-          files: [...unzippedFiles, ...files],
-        },
-      },
-    }])
-
-    // Try to install
-    await this.instanceInstallService.installInstanceFiles({
-      path: instancePath,
-      files,
-    })
-
-    if (options.mountAfterSucceed) {
-      await this.instanceService.mountInstance(instancePath)
-    }
-
-    const instance = this.instanceService.state.all[instancePath]
-    const versionHeader = getResolvedVersion(this.versionService.state.local, instance.runtime, instance.version)
-    const resolvedVersion = versionHeader ? await this.versionService.resolveLocalVersion(versionHeader.id) : undefined
-    if (!resolvedVersion) {
-      const version = await this.instanceVersionService.installRuntime(instance.runtime)
-      if (version) {
-        await this.installService.installDependencies(version)
-      }
-    }
-
-    return instancePath
-  }
-
-  private installModpackTask<T>(zipPath: string, zip: ZipFile, entries: Entry[], manifest: T, handler: ModpackHandler<T>, instancePath: string) {
-    return task('installModpack', async function () {
-      // unzip
-      const promises: Promise<InstanceFile>[] = []
-      await this.yield(new UnzipTask(
-        zip,
-        entries.filter(e => !e.fileName.endsWith('/') && handler.resolveUnpackPath(manifest, e)),
-        instancePath,
-        (e) => handler.resolveUnpackPath(manifest, e)!,
-        async (input, file) => {
-          const hash = createHash('sha1')
-          let size = 0
-          input.on('data', (buf) => {
-            size += buf.length
-          })
-          promises.push(pipeline(input, hash).then(() => {
-            const sha1 = hash.digest('hex')
-            const relativePath = relative(instancePath, file)
-            return {
-              path: relativePath,
-              hashes: { sha1 },
-              size,
-              downloads: [
-                `zip:///${join(zipPath, relativePath)}`,
-                `zip://${sha1}/${relativePath}`,
-              ],
-            }
-          }))
-        },
-      ).setName('unpack'))
-
-      const files = await this.yield(task('deploy', async () => {
-        // Downloadable files
-        return await handler.resolveInstanceFiles(manifest)
-      }))
-
-      return [await Promise.all(promises), files] as const
-    })
   }
 
   async showModpacksFolder(): Promise<void> {

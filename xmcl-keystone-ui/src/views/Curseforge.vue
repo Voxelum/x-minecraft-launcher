@@ -100,6 +100,8 @@ import Categories from './CurseforgeCategories.vue'
 import ErrorView from '@/components/ErrorView.vue'
 import CurseforgeCard from './CurseforgeCard.vue'
 import { usePresence } from '@/composables/presence'
+import { kLocalVersions } from '@/composables/versionLocal'
+import { injection } from '@/util/inject'
 
 interface CurseforgeProps {
   type: string
@@ -136,7 +138,8 @@ const keywordBuffer = ref(props.keyword)
 watch(() => props.keyword, (newKeyword) => {
   keywordBuffer.value = newKeyword
 })
-const { versions, refreshing } = useMinecraftVersions()
+const { versions: local } = injection(kLocalVersions)
+const { versions, refreshing } = useMinecraftVersions(local)
 const mcVersions = computed(() => versions.value.filter(v => v.type === 'release').map(v => v.id))
 
 const {

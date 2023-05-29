@@ -44,7 +44,8 @@
 <script lang=ts setup>
 import { useAutoSaveLoad } from '@/composables'
 import { useBeforeLeave } from '@/composables/beforeLeave'
-import { kInstanceContext } from '@/composables/instanceContext'
+import { kInstance } from '@/composables/instance'
+import { kInstances } from '@/composables/instances'
 import { usePresence } from '@/composables/presence'
 import { injection } from '@/util/inject'
 import { InstanceEditInjectionKey, useInstanceEdit } from '../composables/instanceEdit'
@@ -55,8 +56,9 @@ import BaseSettingModpack from './BaseSettingModpack.vue'
 import BaseSettingServer from './BaseSettingServer.vue'
 import BaseSettingSync from './BaseSettingSync.vue'
 
-const { isServer, name, instance } = injection(kInstanceContext)
-const edit = useInstanceEdit(instance)
+const { isServer, name, instance } = injection(kInstance)
+const { edit: _edit } = injection(kInstances)
+const edit = useInstanceEdit(instance, _edit)
 const { t } = useI18n()
 provide(InstanceEditInjectionKey, edit)
 useAutoSaveLoad(() => {}, edit.load)

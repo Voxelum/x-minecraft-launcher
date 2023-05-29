@@ -1,26 +1,36 @@
-import { EMPTY_VERSION, Instance, VersionServiceKey, getResolvedVersion } from '@xmcl/runtime-api'
-import { useService } from './service'
-import { Ref } from 'vue'
+import { EMPTY_VERSION, Instance, LocalVersionHeader, RuntimeVersions, VersionServiceKey, getResolvedVersion } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
+import { Ref, InjectionKey } from 'vue'
+import { useService } from './service'
+import type { ResolvedVersion } from '@xmcl/core'
 
 function useInstanceVersionBase(instance: Ref<Instance>) {
   const minecraft = computed(() => instance.value.runtime.minecraft)
   const forge = computed(() => instance.value.runtime.forge)
   const fabricLoader = computed(() => instance.value.runtime.fabricLoader)
   const quiltLoader = computed(() => instance.value.runtime.quiltLoader)
-  const runtime = computed(() => instance.value.runtime)
   return {
     minecraft,
     forge,
     fabricLoader,
     quiltLoader,
-    runtime,
   }
 }
+export const kInstanceVersion: InjectionKey<ReturnType<typeof useInstanceVersion>> = Symbol('InstanceVersion')
 
-export function useInstanceVersion(instance: Ref<Instance>) {
-  const { state, resolveLocalVersion } = useService(VersionServiceKey)
-  const versionHeader = computed(() => getResolvedVersion(state.local,
+export interface UnresolvedVersion {
+  requirements: RuntimeVersions
+}
+
+export type InstanceResolveVersion = UnresolvedVersion | ResolvedVersion
+
+export function isResolvedVersion(v?: InstanceResolveVersion): v is ResolvedVersion {
+  return !!v && 'id' in v
+}
+
+export function useInstanceVersion(instance: Ref<Instance>, local: Ref<LocalVersionHeader[]>) {
+  const { resolveLocalVersion } = useService(VersionServiceKey)
+  const versionHeader = computed(() => getResolvedVersion(local.value,
     instance.value.version,
     instance.value.runtime.minecraft,
     instance.value.runtime.forge,
@@ -29,14 +39,15 @@ export function useInstanceVersion(instance: Ref<Instance>) {
     instance.value.runtime.quiltLoader) || markRaw(EMPTY_VERSION))
   const folder = computed(() => versionHeader.value?.id || 'unknown')
 
-  const { isValidating, mutate, data: resolvedVersion, error } = useSWRV(`/instance/${instance.value.path}/version`, async () => {
+  const { isValidating, mutate, data: resolvedVersion, error } = useSWRV(() => instance.value.path && `/instance/${instance.value.path}/version`, async () => {
     if (versionHeader.value === EMPTY_VERSION || !versionHeader.value.id) {
-      return undefined
+      return { requirements: instance.value.runtime }
     }
-    return await resolveLocalVersion(versionHeader.value.id)
-  })
+    const resolvedVersion = await resolveLocalVersion(versionHeader.value.id)
+    return resolvedVersion
+  }, { revalidateOnFocus: false, errorRetryCount: 0, shouldRetryOnError: false })
 
-  watch([versionHeader], () => {
+  watch(versionHeader, () => {
     mutate()
   })
 

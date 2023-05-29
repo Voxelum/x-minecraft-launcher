@@ -954,6 +954,7 @@ refresh: Refresh
 refreshResource: Refresh Resources
 remove: Remove
 resourcepack:
+  searchOnModrinth: '@:mod.searchOnModrinth'
   available: Available
   compatible: Compatible format {format} with {version}
   defaultDescription: The default look and feel of Minecraft

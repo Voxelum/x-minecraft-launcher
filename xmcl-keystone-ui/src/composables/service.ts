@@ -1,27 +1,51 @@
+import { ServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey } from 'vue'
-import { ServiceKey, StatefulService } from '@xmcl/runtime-api'
 import { injection } from '../util/inject'
-
-export type StateOfService<Serv> = Serv extends StatefulService<infer State>
-  ? State : undefined
 
 export interface ServiceFactory {
   getService<T>(key: ServiceKey<T>): T
+}
 
-  register<T>(serviceKey: ServiceKey<T>, factory: () => StateOfService<T>): void
+export class ServiceFactoryImpl implements ServiceFactory {
+  private cache: Record<string, any | undefined> = {}
+
+  constructor() { }
+
+  private createProxy<T>(serviceKey: ServiceKey<T>) {
+    const channel = serviceChannels.open(serviceKey)
+
+    const service: Record<string, any> = new Proxy({
+      on: channel.on,
+      once: channel.once,
+      removeListener: channel.removeListener,
+    } as any, {
+      get(o, key, r) {
+        if (key in o) return o[key]
+        const f = (...payload: any[]) => channel.call(key as any, ...(payload as any))
+        o[key] = f
+        return f
+      },
+    })
+    return service
+  }
+
+  getService<T>(key: ServiceKey<T>): T {
+    const cached = this.cache[key.toString()]
+    if (!cached) {
+      const proxy = this.createProxy(key)
+      this.cache[key.toString()] = proxy
+      return proxy as T
+    }
+    return cached
+  }
+}
+
+export function useServiceFactory() {
+  return new ServiceFactoryImpl()
 }
 
 export const kServiceFactory: InjectionKey<ServiceFactory> = Symbol('SERVICES_KEY')
 
 export function useService<T = unknown>(name: ServiceKey<T>): T {
   return injection(kServiceFactory).getService(name)
-}
-
-export function useServiceOnly<T = unknown, Keys extends keyof T = keyof void>(name: ServiceKey<T>, ...keys: Keys[]): Pick<T, Keys> {
-  const seriv = injection(kServiceFactory).getService(name)
-  const service = {} as any
-  for (const key of keys) {
-    service[key] = seriv[key]
-  }
-  return service
 }

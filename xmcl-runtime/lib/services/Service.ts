@@ -1,18 +1,13 @@
-import { getServiceSemaphoreKey, ServiceKey, State } from '@xmcl/runtime-api'
+import { getServiceSemaphoreKey, MutableState, ServiceKey, State } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { join } from 'path'
 import { EventEmitter } from 'stream'
 import LauncherApp from '../app/LauncherApp'
 import { createPromiseSignal, PromiseSignal } from '../util/promiseSignal'
+import { AnyError } from '../util/error'
 
 export type ServiceConstructor<T extends AbstractService = AbstractService> = {
   new(...args: any[]): T
-}
-
-const STATE_SYMBOL = Symbol('Injected')
-
-export function isState(o: any) {
-  return o[STATE_SYMBOL]
 }
 
 export type MutexSerializer<T extends AbstractService> = (this: T, ...params: any[]) => string | string[]
@@ -169,19 +164,13 @@ export abstract class AbstractService extends EventEmitter {
 
   constructor(readonly app: LauncherApp, private initializer?: () => Promise<void>) {
     super()
-    const loggers = app.logManager.getLogger(Object.getPrototypeOf(this).constructor.name)
+    const loggers = app.getLogger(Object.getPrototypeOf(this).constructor.name)
     this.log = loggers.log
     this.warn = loggers.warn
     this.error = loggers.error
   }
 
-  get networkManager() { return this.app.networkManager }
-
-  get serviceManager() { return this.app.serviceManager }
-
   get taskManager() { return this.app.taskManager }
-
-  get logManager() { return this.app.logManager }
 
   get storeManager() { return this.app.serviceStateManager }
 
@@ -214,11 +203,6 @@ export abstract class AbstractService extends EventEmitter {
   protected getTempPath: (...args: string[]) => string = (...args) => join(this.app.temporaryPath, ...args)
 
   /**
-   * Return the path under game libraries/assets root
-   */
-  protected getPath: (...args: string[]) => string = (...args) => join(this.app.gameDataPath, ...args)
-
-  /**
    * Return the path under .minecraft folder
    */
   protected getMinecraftPath: (...args: string[]) => string = (...args) => join(this.app.minecraftDataPath, ...args)
@@ -234,13 +218,12 @@ export abstract class AbstractService extends EventEmitter {
    * If the service already initialized or initializing, it will wait the service initialization end.
    */
   async initialize(): Promise<void> {
-    await this.app.gamePathReadySignal.promise
     if (!this.initializeSignal) {
       this.initializeSignal = createPromiseSignal()
       if (this.initializer) {
         const startTime = Date.now()
         this.initializeSignal.accept(this.initializer().catch((e) => {
-          this.error(new Error('Fail to initialize', { cause: e }))
+          this.error(new AnyError('ServiceInitializeError', 'Fail to initialize', { cause: e }))
           throw e
         }).finally(() => {
           const endTime = Date.now()
@@ -252,8 +235,6 @@ export abstract class AbstractService extends EventEmitter {
     }
     await this.initializeSignal.promise
   }
-
-  async dispose(): Promise<void> { }
 
   log = (m: any, ...a: any[]) => {
   }
@@ -274,12 +255,15 @@ export abstract class AbstractService extends EventEmitter {
 }
 
 export abstract class StatefulService<M extends State<M>> extends AbstractService {
-  state: M
+  state: MutableState<M>
 
   constructor(app: LauncherApp, createState: () => M, initializer?: () => Promise<void>) {
     super(app, initializer)
     const state = createState()
-    Object.defineProperty(state, STATE_SYMBOL, { value: true })
-    this.state = app.serviceStateManager.register(getServiceKey(Object.getPrototypeOf(this).constructor), state)
+    this.state = app.serviceStateManager.register(getServiceKey(Object.getPrototypeOf(this).constructor), state, () => { })
+    app.serviceStateManager.ref(this.state)
+    app.registryDisposer(async () => {
+      this.app.serviceStateManager.deref(this.state)
+    })
   }
 }

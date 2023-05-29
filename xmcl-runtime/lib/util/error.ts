@@ -1,6 +1,5 @@
 import { HTTPException } from '@xmcl/runtime-api'
-import { Readable } from 'stream'
-import { BodyMixin, Dispatcher, errors, Response } from 'undici'
+import { Dispatcher, errors } from 'undici'
 
 export interface SystemError extends Error {
   /**
@@ -10,6 +9,24 @@ export interface SystemError extends Error {
   code: string
   syscall?: string
   path?: string
+}
+
+export class AnyError extends Error {
+  constructor(name: string, message?: string, options?: ErrorOptions, properties?: any) {
+    super(message, options)
+    this.name = name
+    if (properties) {
+      Object.assign(this, properties)
+    }
+  }
+
+  static make(name: string) {
+    return class extends AnyError {
+      constructor(message?: string, options?: ErrorOptions) {
+        super(name, message, options)
+      }
+    }
+  }
 }
 
 export interface SystemErrorWithSyscall extends SystemError {

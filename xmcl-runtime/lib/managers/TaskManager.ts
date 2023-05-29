@@ -9,7 +9,7 @@ import { serializeError } from '../util/error'
 
 export default class TaskManager extends Manager {
   readonly emitter: TaskEventEmitter = new EventEmitter()
-  private logger = this.app.logManager.getLogger('TaskManager')
+  private logger = this.app.getLogger('TaskManager')
 
   private pushers: Map<Client, () => void> = new Map()
 
@@ -111,13 +111,6 @@ export default class TaskManager extends Manager {
       },
     }
     return context
-  }
-
-  getTaskUUID(task: Task<any>): string {
-    if (task.state !== TaskState.Running) {
-      throw new Error('The task must be running')
-    }
-    return (task.context as any).uuid as string
   }
 
   /**

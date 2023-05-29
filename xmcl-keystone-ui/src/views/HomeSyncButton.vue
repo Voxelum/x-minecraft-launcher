@@ -1,6 +1,6 @@
 <template>
   <v-tooltip
-    v-if="state.instance.fileApi"
+    v-if="instance.fileApi"
     top
   >
     <template #activator="{ on }">
@@ -27,13 +27,15 @@
   </v-tooltip>
 </template>
 <script lang="ts" setup>
-import { InstanceServiceKey, XUpdateServiceKey } from '@xmcl/runtime-api'
+import { useServiceBusy } from '@/composables'
+import { kInstance } from '@/composables/instance'
+import { injection } from '@/util/inject'
+import { XUpdateServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { useService, useServiceBusy } from '@/composables'
 
 const { show } = useDialog('instance-sync')
 const checkingUpdate = useServiceBusy(XUpdateServiceKey, 'fetchInstanceUpdate')
-const { state } = useService(InstanceServiceKey)
 const { t } = useI18n()
+const { instance } = injection(kInstance)
 
 </script>

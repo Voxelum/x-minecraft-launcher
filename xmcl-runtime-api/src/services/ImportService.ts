@@ -10,11 +10,9 @@ export interface ImportModpackPolicy {
   /**
    * Should apply this modpack setting to an instance?
    *
-   * - If `true`, it will create a new instance with this modpack setting.
    * - If string, which should be a instance path, it will apply to the instance setting.
-   * @default true
    */
-  installToInstance?: boolean
+  installToInstance?: string
 }
 export interface ImportSavePolicy {
   /**
@@ -25,11 +23,9 @@ export interface ImportSavePolicy {
   /**
    * Should install this save to an instance?
    *
-   * - If `true`, it will apply to current selected instance.
    * - If string, which should be a instance path, it will apply to the instance setting.
-   * @default true
    */
-  installToInstance?: string | boolean
+  installToInstance?: string
 }
 export interface ImportFileOptions {
   resource: PartialResourcePath
@@ -44,11 +40,9 @@ export interface ImportFileOptions {
   /**
    * Should install this mod/resource pack to an instance?
    *
-   * - If `true`, it will apply to current selected instance.
    * - If string, which should be a instance path, it will apply to the instance setting.
-   * @default true
    */
-  installToInstance?: string | boolean
+  installToInstance?: string
   /**
    * Is import file task in background?
    */
@@ -71,11 +65,9 @@ export interface ImportOptionsBase {
   /**
   * Should install this mod/resource pack to an instance?
   *
-  * - If `true`, it will apply to current selected instance.
   * - If string, which should be a instance path, it will apply to the instance setting.
-  * @default true
   */
-  installToInstance?: string | boolean
+  installToInstance?: string
 }
 
 export interface ImportUrlOptions extends ImportOptionsBase {

@@ -1,6 +1,11 @@
 <template>
   <div class="template-content w-full">
+    <v-skeleton-loader
+      v-if="loading"
+      type="list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line, list-item-avatar-two-line"
+    />
     <v-list
+      v-else
       style="background: transparent"
       class="p-0"
       two-line
@@ -29,13 +34,13 @@
       <v-divider />
       <v-list-item
         v-for="p in items"
-        :key="p.id"
+        :key="p.filePath"
         ripple
         @click="emit('select', p)"
       >
         <v-list-item-avatar>
           <v-img
-            :src="p.icon ? p.icon : ''"
+            :src="p.instance.icon ? p.instance.icon : ''"
           />
         </v-list-item-avatar>
 
@@ -43,7 +48,7 @@
           <v-list-item-title>{{ p.name }}</v-list-item-title>
           <v-list-item-subtitle class="flex gap-1">
             <v-chip
-              v-if="p.runtime.minecraft"
+              v-if="p.instance.runtime.minecraft"
               outlined
               small
               label
@@ -54,10 +59,10 @@
                   alt="minecraft"
                 >
               </v-avatar>
-              {{ p.runtime.minecraft }}
+              {{ p.instance.runtime.minecraft }}
             </v-chip>
             <v-chip
-              v-if="p.runtime.forge"
+              v-if="p.instance.runtime.forge"
               outlined
               small
               label
@@ -68,10 +73,10 @@
                   alt="forge"
                 >
               </v-avatar>
-              {{ p.runtime.forge }}
+              {{ p.instance.runtime.forge }}
             </v-chip>
             <v-chip
-              v-if="p.runtime.fabricLoader"
+              v-if="p.instance.runtime.fabricLoader"
               outlined
               small
               label
@@ -82,13 +87,13 @@
                   alt="fabric"
                 >
               </v-avatar>
-              {{ p.runtime.fabricLoader }}
+              {{ p.instance.runtime.fabricLoader }}
             </v-chip>
           </v-list-item-subtitle>
         </v-list-item-content>
 
         <v-list-item-action>
-          <v-list-item-action-text>{{ getActionText(p) }}</v-list-item-action-text>
+          <v-list-item-action-text>{{ p.description }}</v-list-item-action-text>
         </v-list-item-action>
         <v-list-item-action>
           <v-checkbox
@@ -108,30 +113,20 @@ import { Template } from '../composables/instanceAdd'
 const props = defineProps<{
   value?: Template
   templates: Template[]
+  loading: boolean
 }>()
 
 const emit = defineEmits(['select'])
 
 const filterText = ref('')
-const versionFilterOptions = computed(() => props.templates.map(v => v.runtime.minecraft).filter((v): v is string => !!v))
+const versionFilterOptions = computed(() => props.templates.map(v => v.instance.runtime.minecraft).filter((v): v is string => !!v))
 const selectedVersionFilterOption = ref('')
 const searchTextRef: Ref<null | HTMLElement> = ref(null)
 const { t } = useI18n()
 
-const getActionText = (template: Template) => {
-  if (template.source.type === 'instance') {
-    return template.source.instance.server ? t('instanceTemplate.server') : t('instanceTemplate.profile')
-  }
-  if (template.source.type === 'mcbbs') return t('instanceTemplate.mcbbs')
-  if (template.source.type === 'curseforge') return t('instanceTemplate.curseforge')
-  if (template.source.type === 'modrinth') return t('instanceTemplate.modrinth')
-  if (template.source.type === 'ftb') return t('instanceTemplate.ftb')
-  return t('instanceTemplate.modpack')
-}
-
 const items = computed(() => props.templates.filter((template) => {
   if (selectedVersionFilterOption.value) {
-    if (template.runtime.minecraft !== selectedVersionFilterOption.value) return false
+    if (template.instance.runtime.minecraft !== selectedVersionFilterOption.value) return false
   }
   const searching = (filterText.value ?? '').toLowerCase()
   if (searching.length === 0) {
@@ -140,13 +135,13 @@ const items = computed(() => props.templates.filter((template) => {
   if (template.name.toLowerCase().indexOf(searching) !== -1) {
     return true
   }
-  if (template.runtime.minecraft.toLowerCase().indexOf(searching) !== -1) {
+  if (template.instance.runtime.minecraft.toLowerCase().indexOf(searching) !== -1) {
     return true
   }
-  if (template.runtime.forge.toLowerCase().indexOf(searching) !== -1) {
+  if (template.instance.runtime.forge?.toLowerCase().indexOf(searching) !== -1) {
     return true
   }
-  if (template.runtime.fabricLoader.toLowerCase().indexOf(searching) !== -1) {
+  if (template.instance.runtime.fabricLoader?.toLowerCase().indexOf(searching) !== -1) {
     return true
   }
   return false

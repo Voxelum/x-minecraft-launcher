@@ -1,6 +1,6 @@
+import { EditInstanceOptions, Instance, RuntimeVersions } from '@xmcl/runtime-api'
 import { InjectionKey, Ref, set } from 'vue'
-import { BaseServiceKey, Instance, InstanceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
-import { useService } from '@/composables'
+import { useGlobalSettings } from './setting'
 
 export const InstanceEditInjectionKey: InjectionKey<ReturnType<typeof useInstanceEdit>> = Symbol('InstanceEdit')
 
@@ -10,9 +10,11 @@ export const InstanceEditInjectionKey: InjectionKey<ReturnType<typeof useInstanc
  * @param instance The instance to edit
  * @returns The instance edit data
  */
-export function useInstanceEdit(instance: Ref<Instance | undefined>) {
-  const { editInstance: edit } = useService(InstanceServiceKey)
-  const { state: baseState } = useService(BaseServiceKey)
+export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditInstanceOptions & { instancePath: string }) => Promise<void>) {
+  const {
+    globalAssignMemory, globalFastLaunch, globalHideLauncher, globalMaxMemory,
+    globalMcOptions, globalMinMemory, globalShowLog, globalVmOptions,
+  } = useGlobalSettings()
 
   const data = reactive({
     name: instance.value?.name ?? '',
@@ -31,7 +33,7 @@ export function useInstanceEdit(instance: Ref<Instance | undefined>) {
     minMemory: instance.value?.minMemory,
 
     runtime: {
-      minecraft: '',
+      minecraft: instance.value?.runtime.minecraft,
       forge: instance.value?.runtime.forge,
       fabricLoader: instance.value?.runtime.fabricLoader,
       quiltLoader: instance.value?.runtime.quiltLoader,
@@ -83,35 +85,35 @@ export function useInstanceEdit(instance: Ref<Instance | undefined>) {
   }
 
   const assignMemory = computed({
-    get: () => data.assignMemory ?? baseState.globalAssignMemory,
+    get: () => data.assignMemory ?? globalAssignMemory.value,
     set: (v) => { data.assignMemory = v },
   })
   const minMemory = computed({
-    get: () => data.minMemory ?? baseState.globalMinMemory,
+    get: () => data.minMemory ?? globalMinMemory.value,
     set: (v) => { data.minMemory = v },
   })
   const maxMemory = computed({
-    get: () => data.maxMemory ?? baseState.globalMaxMemory,
+    get: () => data.maxMemory ?? globalMaxMemory.value,
     set: (v) => { data.maxMemory = v },
   })
   const vmOptions = computed({
-    get: () => data.vmOptions ?? baseState.globalVmOptions.join(' '),
+    get: () => data.vmOptions ?? globalVmOptions.value.join(' '),
     set: (v) => { data.vmOptions = v },
   })
   const mcOptions = computed({
-    get: () => data.mcOptions ?? baseState.globalMcOptions.join(' '),
+    get: () => data.mcOptions ?? globalMcOptions.value.join(' '),
     set: (v) => { data.mcOptions = v },
   })
   const fastLaunch = computed({
-    get: () => data.fastLaunch ?? baseState.globalFastLaunch,
+    get: () => data.fastLaunch ?? globalFastLaunch.value,
     set: (v) => { data.fastLaunch = v },
   })
   const hideLauncher = computed({
-    get: () => data.hideLauncher ?? baseState.globalHideLauncher,
+    get: () => data.hideLauncher ?? globalHideLauncher.value,
     set: (v) => { data.hideLauncher = v },
   })
   const showLog = computed({
-    get: () => data.showLog ?? baseState.globalShowLog,
+    get: () => data.showLog ?? globalShowLog.value,
     set: (v) => { data.showLog = v },
   })
 
@@ -142,6 +144,12 @@ export function useInstanceEdit(instance: Ref<Instance | undefined>) {
       return true
     }
     if (current.mcOptions?.join(' ') !== data.mcOptions) {
+      return true
+    }
+    if (current.author !== data.author) {
+      return true
+    }
+    if (current.description !== data.description) {
       return true
     }
     if (current.version !== data.version) {
@@ -207,12 +215,14 @@ export function useInstanceEdit(instance: Ref<Instance | undefined>) {
     if (!instance.value?.server) {
       await edit({
         ...payload,
+        instancePath: instance.value?.path,
         author: data.author,
         description: data.description,
       })
     } else {
       await edit({
         ...payload,
+        instancePath: instance.value?.path,
         server: {
           host: data.host,
           port: Number.parseInt(data.port, 10),

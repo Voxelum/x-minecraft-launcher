@@ -1,6 +1,6 @@
 import { JavaVersion } from '@xmcl/core'
 import { fetchJavaRuntimeManifest, installJavaRuntimeTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
-import { Java, JavaRecord, JavaSchema, JavaService as IJavaService, JavaServiceKey, JavaState } from '@xmcl/runtime-api'
+import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, MutableState, Settings } from '@xmcl/runtime-api'
 import { ensureFile } from 'fs-extra/esm'
 import { chmod, readFile } from 'fs/promises'
 import { dirname, join } from 'path'
@@ -11,16 +11,22 @@ import { JavaValidation, validateJavaPath } from '../entities/java'
 import { readdirIfPresent } from '../util/fs'
 import { requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
-import { createSafeFile } from '../util/persistance'
+import { SafeFile, createSafeFile } from '../util/persistance'
 import { BaseService } from './BaseService'
 import { ExposeServiceKey, Singleton, StatefulService } from './Service'
+import { PathResolver, kGameDataPath } from '../entities/gameDataPath'
+import { getApiSets, shouldOverrideApiSet } from '../entities/settings'
+import { GFW } from '../entities/gfw'
+import { kDownloadOptions } from '../entities/downloadOptions'
 
 @ExposeServiceKey(JavaServiceKey)
 export class JavaService extends StatefulService<JavaState> implements IJavaService {
-  protected readonly config = createSafeFile(this.getAppDataPath('java.json'), JavaSchema, this, [this.getPath('java.json')])
+  protected readonly config: SafeFile<JavaSchema>
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
-    @Inject(BaseService) private baseService: BaseService,
+    @Inject(Settings) private settings: Settings,
+    @Inject(GFW) private gfw: GFW,
+    @Inject(kGameDataPath) private getPath: PathResolver,
   ) {
     super(app, () => new JavaState(), async () => {
       const data = await this.config.read()
@@ -38,17 +44,22 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       }
       this.refreshLocalJava()
 
-      this.storeManager.subscribeAll(['javaUpdate', 'javaRemove'], () => {
+      this.state.subscribeAll(() => {
         this.config.write(this.state)
       })
     })
+    this.config = createSafeFile(this.getAppDataPath('java.json'), JavaSchema, this, [getPath('java.json')])
+  }
+
+  async getJavaState(): Promise<MutableState<JavaState>> {
+    return this.state
   }
 
   getInternalJavaLocation(version: JavaVersion) {
-    return this.app.platform.name === 'osx'
+    return this.app.platform.os === 'osx'
       ? this.getPath('jre', version.component, 'jre.bundle', 'Contents', 'Home', 'bin', 'java')
       : this.getPath('jre', version.component, 'bin',
-        this.app.platform.name === 'windows' ? 'java.exe' : 'java')
+        this.app.platform.os === 'windows' ? 'java.exe' : 'java')
   }
 
   getJavaForVersion(javaVersion: JavaVersion, validOnly = false) {
@@ -73,23 +84,24 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     const location = this.getInternalJavaLocation(target)
     this.log(`Try to install official java ${target} to ${location}`)
     let apiHost: string[] | undefined
-    if (this.baseService.shouldOverrideApiSet()) {
-      const apis = this.baseService.getApiSets()
+    if (shouldOverrideApiSet(this.settings, this.gfw.inside)) {
+      const apis = getApiSets(this.settings)
       apiHost = apis.map(a => new URL(a.url).hostname)
     }
+    const downloadOptions = await this.app.registry.get(kDownloadOptions)
     const manifest = await fetchJavaRuntimeManifest({
       apiHost,
-      ...this.networkManager.getDownloadBaseOptions(),
+      ...downloadOptions,
       target: target.component,
     })
     this.log(`Install jre runtime ${target.component} (${target.majorVersion}) ${manifest.version.name} ${manifest.version.released}`)
     const dest = this.getPath('jre', target.component)
 
     if (!apiHost) {
-      const apis = this.baseService.getApiSets()
+      const apis = getApiSets(this.settings)
       apiHost = apis.map(a => new URL(a.url).hostname)
 
-      if (!this.baseService.shouldOverrideApiSet()) {
+      if (!shouldOverrideApiSet(this.settings, this.gfw.inside)) {
         apiHost.unshift('https://launcher.mojang.com')
       }
     }
@@ -98,11 +110,11 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       manifest,
       apiHost,
       destination: dest,
-      ...this.networkManager.getDownloadBaseOptions(),
+      ...downloadOptions,
     }).setName('installJre')
     await ensureFile(location)
     await this.submit(task)
-    if (this.app.platform.name !== 'windows') {
+    if (this.app.platform.os !== 'windows') {
       await chmod(location, 0o765)
     }
     this.log(`Successfully install java internally ${location}`)
@@ -185,7 +197,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     if (this.state.all.length === 0 || force) {
       this.log('Force update or no local cache found. Scan java through the disk.')
       const commonLocations = [] as string[]
-      if (this.app.platform.name === 'windows') {
+      if (this.app.platform.os === 'windows') {
         let files = await readdirIfPresent('C:\\Program Files\\Java')
         files = files.map(f => join('C:\\Program Files\\Java', f, 'bin', 'java.exe'))
         commonLocations.push(...files)

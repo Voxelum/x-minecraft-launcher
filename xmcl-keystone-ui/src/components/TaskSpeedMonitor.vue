@@ -1,10 +1,10 @@
 <template>
   <div
-    class="flex flex-grow-0 flex-1 items-center text-gray-400"
+    class="flex flex-1 flex-grow-0 items-center text-gray-400"
     :class="{ 'text-gray-400': speed !== 0, 'text-transparent': speed === 0 }"
   >
     <v-icon
-      class="text-current mr-1"
+      class="mr-1 text-current"
     >
       downloading
     </v-icon>

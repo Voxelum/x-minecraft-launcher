@@ -1,33 +1,11 @@
-import { useService, useServiceBusy, useServiceOnly } from '@/composables'
+import { useService, useServiceBusy } from '@/composables'
 import { MinecraftVersion } from '@xmcl/installer'
-import { InstallServiceKey, VersionServiceKey } from '@xmcl/runtime-api'
+import { InstallServiceKey, LocalVersionHeader } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
-import { computed, reactive, Ref, toRefs } from 'vue'
+import { Ref, computed, reactive, toRefs } from 'vue'
 import { kSWRVConfig } from './swrvConfig'
 
-export function useVersions() {
-  return useServiceOnly(VersionServiceKey, 'deleteVersion', 'refreshVersion', 'refreshVersions', 'showVersionDirectory', 'showVersionsDirectory')
-}
-
-export function useInstallService() {
-  return useService(InstallServiceKey)
-}
-
-export function useVersionService() {
-  return useService(VersionServiceKey)
-}
-
-export function useLocalVersions() {
-  const { state } = useVersionService()
-  const localVersions = computed(() => state.local)
-
-  return {
-    localVersions,
-  }
-}
-
-export function useMinecraftVersions() {
-  const { state } = useVersionService()
+export function useMinecraftVersions(local: Ref<LocalVersionHeader[]>) {
   const { getMinecraftVersionList } = useService(InstallServiceKey)
   const _refreshing = useServiceBusy(InstallServiceKey, 'getMinecraftVersionList')
 
@@ -43,7 +21,7 @@ export function useMinecraftVersions() {
 
   const installed = computed(() => {
     const localVersions: { [k: string]: string } = {}
-    for (const ver of state.local) {
+    for (const ver of local.value) {
       if (!ver.forge && !ver.fabric && !ver.quilt && !ver.optifine) {
         localVersions[ver.minecraft] = ver.id
       }
@@ -79,10 +57,9 @@ export function useMinecraftVersionFilter(filterText: Ref<string>) {
   }
 }
 
-export function useFabricVersions(minecraftVersion: Ref<string>) {
+export function useFabricVersions(minecraftVersion: Ref<string>, local: Ref<LocalVersionHeader[]>) {
   const { getFabricVersionList } = useService(InstallServiceKey)
   const _refreshing = useServiceBusy(InstallServiceKey, 'getFabricVersionList')
-  const { state } = useVersionService()
 
   const { data: allVersions, isValidating, mutate, error } = useSWRV(`/fabric-versions/${minecraftVersion.value}`,
     () => getFabricVersionList(),
@@ -98,7 +75,7 @@ export function useFabricVersions(minecraftVersion: Ref<string>) {
 
   const installed = computed(() => {
     const locals: { [k: string]: string } = {}
-    for (const ver of state.local.filter(v => v.minecraft === minecraftVersion.value)) {
+    for (const ver of local.value.filter(v => v.minecraft === minecraftVersion.value)) {
       if (ver.fabric) locals[ver.fabric] = ver.id
     }
     return locals
@@ -116,10 +93,9 @@ export function useFabricVersions(minecraftVersion: Ref<string>) {
   }
 }
 
-export function useQuiltVersions(minecraftVersion: Ref<string>) {
+export function useQuiltVersions(minecraftVersion: Ref<string>, local: Ref<LocalVersionHeader[]>) {
   const { getQuiltVersionList } = useService(InstallServiceKey)
   const _refreshing = useServiceBusy(InstallServiceKey, 'getQuiltVersionList')
-  const { state } = useVersionService()
 
   const { data: versions, isValidating, mutate, error } = useSWRV(`/quilt-versions/${minecraftVersion.value}`,
     () => minecraftVersion.value ? getQuiltVersionList({ minecraftVersion: minecraftVersion.value }).then(v => v.map(markRaw)) : [],
@@ -129,7 +105,7 @@ export function useQuiltVersions(minecraftVersion: Ref<string>) {
 
   const installed = computed(() => {
     const locals: { [k: string]: string } = {}
-    for (const ver of state.local.filter(v => v.minecraft === minecraftVersion.value)) {
+    for (const ver of local.value.filter(v => v.minecraft === minecraftVersion.value)) {
       if (ver.quilt) locals[ver.quilt] = ver.id
     }
     return locals
@@ -144,9 +120,8 @@ export function useQuiltVersions(minecraftVersion: Ref<string>) {
   }
 }
 
-export function useForgeVersions(minecraftVersion: Ref<string>) {
-  const { getForgeVersionList } = useInstallService()
-  const { state } = useVersionService()
+export function useForgeVersions(minecraftVersion: Ref<string>, local: Ref<LocalVersionHeader[]>) {
+  const { getForgeVersionList } = useService(InstallServiceKey)
   const _refreshing = useServiceBusy(InstallServiceKey, 'getForgeVersionList')
 
   const { data: versions, isValidating, mutate, error } = useSWRV(`/forge-versions/${minecraftVersion.value}`,
@@ -174,7 +149,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
   })
   const installed = computed(() => {
     const localForgeVersion: { [k: string]: string } = {}
-    for (const ver of state.local.filter(v => v.minecraft === minecraftVersion.value)) {
+    for (const ver of local.value.filter(v => v.minecraft === minecraftVersion.value)) {
       const version = ver.forge
       localForgeVersion[version] = ver.id
       if (version) {
@@ -205,7 +180,7 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
 }
 
 // export function useLiteloaderVersions(minecraftVersion: Ref<string>) {
-//   const { getLiteloaderVersionList } = useInstallService()
+//   const { getLiteloaderVersionList } = useService(InstallServiceKey)
 
 //   const versions = ref([] as LiteloaderVersions)
 //   const refreshing = useServiceBusy(InstallServiceKey, 'getLiteloaderVersionList')
@@ -228,9 +203,8 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
 //   }
 // }
 
-export function useOptifineVersions(minecraftVersion: Ref<string>, forgeVersion: Ref<string>) {
-  const { getOptifineVersionList } = useInstallService()
-  const { state } = useVersionService()
+export function useOptifineVersions(minecraftVersion: Ref<string>, forgeVersion: Ref<string>, local: Ref<LocalVersionHeader[]>) {
+  const { getOptifineVersionList } = useService(InstallServiceKey)
   const _refreshing = useServiceBusy(InstallServiceKey, 'getOptifineVersionList')
 
   const { data: allVersions, isValidating, mutate, error } = useSWRV('/optifine-versions',
@@ -243,7 +217,7 @@ export function useOptifineVersions(minecraftVersion: Ref<string>, forgeVersion:
 
   const installed = computed(() => {
     const localVersions: { [k: string]: string } = {}
-    for (const ver of state.local.filter(v => v.minecraft === minecraftVersion.value && (forgeVersion.value ? forgeVersion.value === v.forge : true))) {
+    for (const ver of local.value.filter(v => v.minecraft === minecraftVersion.value && (forgeVersion.value ? forgeVersion.value === v.forge : true))) {
       if (ver.optifine) {
         localVersions[ver.optifine] = ver.id
       }

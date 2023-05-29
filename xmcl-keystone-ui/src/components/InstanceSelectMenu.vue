@@ -40,7 +40,7 @@
           }}
           <div class="flex-grow" />
           <v-chip
-            v-if="selectedPath === item.path"
+            v-if="path === item.path"
             color="primary"
             outlined
             label
@@ -55,9 +55,9 @@
 </template>
 
 <script lang=ts setup>
-import { useService } from '@/composables'
+import { kInstance } from '@/composables/instance'
 import { basename } from '@/util/basename'
-import { InstanceServiceKey } from '@xmcl/runtime-api'
+import { injection } from '@/util/inject'
 
 interface Item {
   name: string
@@ -71,17 +71,17 @@ const props = withDefaults(defineProps<{
   block?: boolean
 }>(), {
   block: true,
+  value: undefined,
+  from: undefined,
 })
 
 const emit = defineEmits(['input'])
 
-const { state } = useService(InstanceServiceKey)
+const { path, instances } = injection(kInstance)
 
-const instances = computed(() => state.instances)
-const selectedPath = computed(() => state.path)
 const { t } = useI18n()
 const defaultItem = computed(() => ({ name: t('curseforge.installToStorage'), path: '' }))
-const items = computed(() => instances.value.map(i => ({ path: i.path, name: i.name || i.runtime.minecraft })).sort((a, b) => !a.path ? -1 : a.path === selectedPath.value ? -1 : 1))
+const items = computed(() => instances.value.map(i => ({ path: i.path, name: i.name || i.runtime.minecraft })).sort((a, b) => !a.path ? -1 : a.path === path.value ? -1 : 1))
 const selected = computed({
   get() {
     const instance = instances.value.find(i => i.path === props.value)

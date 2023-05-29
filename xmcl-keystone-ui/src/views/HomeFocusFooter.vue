@@ -64,7 +64,6 @@
     <v-spacer />
     <HomeLaunchButton
       class="ml-4"
-      :issue="issue"
       :status="status"
       @pause="pause"
       @resume="resume"
@@ -74,22 +73,22 @@
 <script lang="ts" setup>
 import { useService } from '@/composables'
 import { useDialog } from '@/composables/dialog'
-import { kInstanceContext } from '@/composables/instanceContext'
+import { kInstance } from '@/composables/instance'
 import { AppExportDialogKey } from '@/composables/instanceExport'
+import { kLaunchTask } from '@/composables/launchTask'
 import { injection } from '@/util/inject'
-import { BaseServiceKey, InstanceServiceKey } from '@xmcl/runtime-api'
+import { BaseServiceKey } from '@xmcl/runtime-api'
 import HomeLaunchButton from './HomeLaunchButton.vue'
 import HomeSettingsSpeedDial from './HomeSettingsSpeedDial.vue'
 
-const { task, issue, refreshing } = injection(kInstanceContext)
-const { state } = useService(InstanceServiceKey)
-const { status, pause, resume } = task
+const { path, refreshing } = injection(kInstance)
+const { status, pause, resume } = injection(kLaunchTask)
 const { openDirectory } = useService(BaseServiceKey)
 const { show: showExport } = useDialog(AppExportDialogKey)
 const { show: showLogDialog } = useDialog('log')
 const { t } = useI18n()
 
 function showInstanceFolder() {
-  openDirectory(state.path)
+  openDirectory(path.value)
 }
 </script>

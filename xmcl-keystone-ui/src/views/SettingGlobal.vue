@@ -125,36 +125,45 @@
 </template>
 
 <script setup lang="ts">
-import { useService } from '@/composables'
-import { BaseServiceKey } from '@xmcl/runtime-api'
+import { useGlobalSettings } from '@/composables/setting'
 import SettingJavaMemory from './SettingJavaMemory.vue'
 import SettingJavaMemoryAssign from './SettingJavaMemoryAssign.vue'
 
 const { t } = useI18n()
-const { state } = useService(BaseServiceKey)
+const {
+  globalAssignMemory,
+  globalMaxMemory,
+  globalMinMemory,
+  globalVmOptions,
+  globalMcOptions,
+  globalFastLaunch,
+  globalHideLauncher,
+  globalShowLog,
+  setGlobalSettings,
+} = useGlobalSettings()
 
-const assignMemory = ref(state.globalAssignMemory)
-const minMem = ref(state.globalMinMemory)
-const maxMem = ref(state.globalMaxMemory)
-const vmOptions = ref(state.globalVmOptions.join(' '))
-const mcOptions = ref(state.globalMcOptions.join(' '))
-const fastLaunch = ref(state.globalFastLaunch)
-const hideLauncher = ref(state.globalHideLauncher)
-const showLog = ref(state.globalShowLog)
+const assignMemory = ref(globalAssignMemory.value)
+const minMem = ref(globalMinMemory.value)
+const maxMem = ref(globalMaxMemory.value)
+const vmOptions = ref(globalVmOptions.value.join(' '))
+const mcOptions = ref(globalMcOptions.value.join(' '))
+const fastLaunch = ref(globalFastLaunch.value)
+const hideLauncher = ref(globalHideLauncher.value)
+const showLog = ref(globalShowLog.value)
 
 onMounted(() => {
-  assignMemory.value = state.globalAssignMemory
-  minMem.value = state.globalMinMemory
-  maxMem.value = state.globalMaxMemory
-  vmOptions.value = state.globalVmOptions.join(' ')
-  mcOptions.value = state.globalMcOptions.join(' ')
-  fastLaunch.value = state.globalFastLaunch
-  hideLauncher.value = state.globalHideLauncher
-  showLog.value = state.globalShowLog
+  assignMemory.value = globalAssignMemory.value
+  minMem.value = globalMinMemory.value
+  maxMem.value = globalMaxMemory.value
+  vmOptions.value = globalVmOptions.value.join(' ')
+  mcOptions.value = globalMcOptions.value.join(' ')
+  fastLaunch.value = globalFastLaunch.value
+  hideLauncher.value = globalHideLauncher.value
+  showLog.value = globalShowLog.value
 })
 
 onUnmounted(() => {
-  state.globalInstanceSetting({
+  setGlobalSettings({
     globalAssignMemory: assignMemory.value,
     globalMaxMemory: maxMem.value,
     globalMinMemory: minMem.value,

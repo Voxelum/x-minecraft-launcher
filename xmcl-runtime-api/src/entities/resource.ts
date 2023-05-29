@@ -1,10 +1,9 @@
 import type { FabricModMetadata, LiteloaderModMetadata, QuiltModMetadata } from '@xmcl/mod-parser'
 import type { PackMeta } from '@xmcl/resourcepack'
-import { EditInstanceOptions } from '../services/InstanceService'
-import { InstanceFile } from './instanceManifest.schema'
 import { ForgeModCommonMetadata } from './mod'
 import { CurseforgeModpackManifest, McbbsModpackManifest, Modpack, ModrinthModpackManifest } from './modpack'
 import { ResourceSaveMetadata } from './save'
+import { ModpackInstallProfile } from '../services/ModpackService'
 
 export interface ResourceSourceCurseforge {
   /**
@@ -84,7 +83,7 @@ export interface ResourceMetadata {
    *
    * This should only existed in modpack resource
    */
-  instance?: { instance: EditInstanceOptions; files: InstanceFile[] }
+  instance?: ModpackInstallProfile
   /**
    * The github info for this source. If this is imported from github release, it will present.
    */

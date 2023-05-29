@@ -1,7 +1,7 @@
 <template>
   <div
     ref="containerRef"
-    class="flex flex-col home-page flex-1 max-h-full relative visible-scroll"
+    class="home-page visible-scroll relative flex max-h-full flex-1 flex-col"
     :style="{ overflow: 'overlay' }"
     @wheel="onScroll"
   >
@@ -37,18 +37,18 @@
 
 <script lang=ts setup>
 import { kInstallList, useInstallList } from '@/composables/installList'
-import { kInstanceContext, useInstanceContext } from '@/composables/instanceContext'
+import { kInstance } from '@/composables/instance'
 import { usePresence } from '@/composables/presence'
 import { kCompact, useCompactScroll } from '@/composables/scrollTop'
-import { useInFocusMode } from '@/composables/uiLayout'
+import { injection } from '@/util/inject'
 import { useInstanceServerStatus } from '../composables/serverStatus'
-import HomeFocusFooter from './HomeFocusFooter.vue'
 import HomeHeader from './HomeHeader.vue'
 import HomeInstanceUpdateDialog from './HomeInstanceUpdateDialog.vue'
 import HomeJavaIssueDialog from './HomeJavaIssueDialog.vue'
 import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
 import HomeLaunchStatusDialog from './HomeLaunchStatusDialog.vue'
 import HomeLogDialog from './HomeLogDialog.vue'
+import { kMods } from '@/composables/mods'
 
 const router = useRouter()
 
@@ -59,17 +59,15 @@ router.afterEach((r) => {
   }
 })
 
-const context = useInstanceContext()
+const { path, isServer, instance } = injection(kInstance)
+const mods = injection(kMods)
+provide(kInstallList, useInstallList(path, mods.resources))
 
-provide(kInstanceContext, context)
-provide(kInstallList, useInstallList())
-
-const instance = context.instance
-const { refresh } = useInstanceServerStatus(instance.value.path)
+const { refresh } = useInstanceServerStatus(instance)
 const containerRef = ref(null as null | HTMLDivElement)
 
 onMounted(() => {
-  if (context.isServer.value) {
+  if (isServer.value) {
     refresh()
   }
 })

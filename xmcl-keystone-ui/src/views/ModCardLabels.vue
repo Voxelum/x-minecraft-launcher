@@ -13,7 +13,7 @@
       style="margin-left: 1px;"
       @mousedown.stop
     >
-      {{ source.id }}
+      {{ source.mod.id }}
     </v-chip>
     <v-chip
       v-for="(com, i) in compatibility"
@@ -73,7 +73,8 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { getColor } from '@/util/color'
 import { injection } from '@/util/inject'
 import { CompatibleDetail } from '@/util/modCompatible'
-import { ModItem, kModsContext } from '../composables/mod'
+import { ModItem } from '@/composables/instanceModItems'
+import { kInstanceModsContext } from '@/composables/instanceMods'
 
 defineProps<{
   source: ModItem
@@ -82,7 +83,7 @@ defineProps<{
   onDeleteTag(tag: string): void
 }>()
 
-const { icons } = injection(kModsContext)
+const { modsIconsMap: icons } = injection(kInstanceModsContext)
 
 const { getTooltip } = useModCompatibleTooltip()
 

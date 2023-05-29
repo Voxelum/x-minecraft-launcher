@@ -7,27 +7,22 @@ import { isSystemError } from '../util/error'
 import { Logger } from '../util/log'
 import { toRecord } from '../util/object'
 import { UserAccountSystem } from './AccountSystem'
+import { isValidUrl } from '../util/url'
 
 export class YggdrasilAccountSystem implements UserAccountSystem {
   constructor(private logger: Logger,
     private dispatcher: Dispatcher,
-    private userState: UserState,
+    private clientToken: string,
     private storage: UserTokenStorage,
   ) {
   }
 
-  getYggdrasilAuthHost(service: string): string | undefined {
-    const api = this.userState.yggdrasilServices.find(s => new URL(s.url).hostname === service)
-    return api?.url
-  }
-
-  protected getClient(service: string) {
-    const api = this.userState.yggdrasilServices.find(s => new URL(s.url).hostname === service)
-
-    if (!api) return undefined
-
+  protected getClient(authority: string) {
+    if (!isValidUrl(authority)) {
+      throw new TypeError('Invalid authority url ' + authority)
+    }
     const client = new YggdrasilThirdPartyClient(
-      api.url,
+      authority,
       {
         dispatcher: this.dispatcher,
       },
@@ -43,16 +38,16 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
     return client
   }
 
-  async login({ username, password, service }: LoginOptions, signal?: AbortSignal): Promise<UserProfile> {
-    const client = this.getClient(service)
-    if (!client) throw new UserException({ type: 'loginServiceNotSupported', service }, `Service ${service} is not supported`)
+  async login({ username, password, authority }: LoginOptions, signal?: AbortSignal): Promise<UserProfile> {
+    const client = this.getClient(authority)
+    if (!client) throw new UserException({ type: 'loginServiceNotSupported', authority }, `Service ${authority} is not supported`)
 
     try {
       const auth = await client.login({
         username,
         password: password ?? '',
         requestUser: true,
-        clientToken: this.userState.clientToken,
+        clientToken: this.clientToken,
       }, signal)
 
       const userProfile: UserProfile = {
@@ -62,7 +57,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
         profiles: toRecord(auth.availableProfiles.map(normalizeGameProfile), (v) => v.id),
         selectedProfile: auth.selectedProfile?.id ?? auth.availableProfiles[0]?.id ?? '',
         expiredAt: Date.now() + 86400_000,
-        authService: service,
+        authority,
       }
       await this.storage.put(userProfile, auth.accessToken)
 
@@ -90,8 +85,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
   }
 
   async refresh(userProfile: UserProfile, signal?: AbortSignal): Promise<UserProfile> {
-    const client = this.getClient(userProfile.authService)
-    if (!client) throw new UserException({ type: 'loginServiceNotSupported', service: userProfile.authService }, `Service ${userProfile.authService} is not supported`)
+    const client = this.getClient(userProfile.authority)
 
     const token = await this.storage.get(userProfile)
 
@@ -100,16 +94,16 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
       return userProfile
     }
 
-    const valid = await client.validate(token, this.userState.clientToken, signal)
+    const valid = await client.validate(token, this.clientToken, signal)
 
-    this.logger.log(`Validate ${userProfile.authService} user access token: ${valid ? 'valid' : 'invalid'}`)
+    this.logger.log(`Validate ${userProfile.authority} user access token: ${valid ? 'valid' : 'invalid'}`)
 
     if (!valid) {
       try {
         const result = await client.refresh({
           accessToken: token,
           requestUser: true,
-          clientToken: this.userState.clientToken,
+          clientToken: this.clientToken,
         }, signal)
         this.logger.log(`Refreshed user access token for user: ${userProfile.id}`)
 
@@ -153,8 +147,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
   }
 
   async setSkin(userProfile: UserProfile, gameProfile: GameProfileAndTexture, { cape, skin }: SkinPayload, signal?: AbortSignal): Promise<UserProfile> {
-    const client = this.getClient(userProfile.authService)
-    if (!client) throw new UserException({ type: 'loginServiceNotSupported', service: userProfile.authService }, `Service ${userProfile.authService} is not supported`)
+    const client = this.getClient(userProfile.authority)
 
     this.logger.log(`Upload texture ${gameProfile.name}(${gameProfile.id})`)
 

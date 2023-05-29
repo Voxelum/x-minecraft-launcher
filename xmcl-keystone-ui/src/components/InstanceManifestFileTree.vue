@@ -18,8 +18,14 @@
       >
         {{ open ? 'folder_open' : 'folder' }}
       </v-icon>
+      <v-avatar v-else-if="item.avatar">
+        <v-img
+          :src="item.avatar"
+          style="width: 24px; height: 24px;"
+        />
+      </v-avatar>
       <v-icon v-else>
-        {{ getIcon(item.id) }}
+        {{ getIcon(item) }}
       </v-icon>
     </template>
 
@@ -55,8 +61,8 @@
 </template>
 
 <script lang=ts setup>
-import { FileNodesSymbol, InstanceFileNode } from '../composables/instanceFiles'
 import { useTheme } from '@/composables'
+import { FileNodesSymbol, InstanceFileNode } from '@/composables/instanceFileNodeData'
 
 import { injection } from '@/util/inject'
 import { getExpectedSize } from '@/util/size'
@@ -75,8 +81,8 @@ const opened = ref([])
 
 const files = injection(FileNodesSymbol)
 
-function getIcon(file: string) {
-  if (file.endsWith('.jar') || file.endsWith('.zip')) {
+function getIcon(file: InstanceFileNode<any>) {
+  if (file.path.endsWith('.jar') || file.path.endsWith('.zip')) {
     return '$vuetify.icons.package'
   }
   return 'insert_drive_file'
@@ -97,10 +103,10 @@ const translatedMods = computed(() => ({
 }))
 
 function getDescription(item: InstanceFileNode<any>) {
-  if (item.id in translatedFiles.value) {
-    return translatedFiles.value[item.id]
+  if (item.path in translatedFiles.value) {
+    return translatedFiles.value[item.path]
   }
-  if (item.id.startsWith('mods/')) {
+  if (item.path.startsWith('mods/')) {
     let text = t('intro.struct.modJar')
     if (item.data) {
       if (item.data.curseforge) {

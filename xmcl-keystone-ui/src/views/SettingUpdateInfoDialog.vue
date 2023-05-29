@@ -108,23 +108,28 @@
 </template>
 
 <script lang=ts setup>
-import { useServiceBusy, useService } from '@/composables'
+import { useService, useServiceBusy } from '@/composables'
+import { useEnvironment } from '@/composables/environment'
+import { useMarkdown } from '@/composables/markdown'
+import { kSettingsState } from '@/composables/setting'
+import { getLocalDateString } from '@/util/date'
+import { injection } from '@/util/inject'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { getLocalDateString } from '@/util/date'
-import { useMarkdown } from '@/composables/markdown'
 
 const { isShown } = useDialog('update-info')
 const { t } = useI18n()
 const { render } = useMarkdown()
 const installing = useServiceBusy(BaseServiceKey, 'quitAndInstall')
-const { state, checkUpdate, downloadUpdate, quitAndInstall } = useService(BaseServiceKey)
+const { downloadUpdate, quitAndInstall } = useService(BaseServiceKey)
 const checkingUpdate = useServiceBusy(BaseServiceKey, 'checkUpdate')
 const downloadingUpdate = useServiceBusy(BaseServiceKey, 'downloadUpdate')
-const updateInfo = computed(() => state.updateInfo)
-const updateStatus = computed(() => state.updateStatus)
-const body = computed(() => state.updateInfo?.useAutoUpdater ? state.updateInfo.body : render(state.updateInfo?.body ?? ''))
-const isAppX = computed(() => state.env === 'appx')
+const { state } = injection(kSettingsState)
+const updateInfo = computed(() => state.value?.updateInfo)
+const updateStatus = computed(() => state.value?.updateStatus)
+const body = computed(() => state.value?.updateInfo?.useAutoUpdater ? state.value?.updateInfo.body : render(state.value?.updateInfo?.body ?? ''))
+const env = useEnvironment()
+const isAppX = computed(() => env.value?.env === 'appx')
 
 const openOfficialWebsite = () => {
   window.open('https://xmcl.app', 'browser')

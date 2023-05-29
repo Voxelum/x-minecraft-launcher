@@ -1,7 +1,6 @@
-import { computed, InjectionKey, provide, Ref, ref } from 'vue'
+import { computed, InjectionKey, Ref, ref } from 'vue'
 
 import { injection } from '@/util/inject'
-import { useBroadcastChannel } from './broadcastChannel'
 
 export const kDialogModel: InjectionKey<DialogModel> = Symbol('ShowingDialog')
 

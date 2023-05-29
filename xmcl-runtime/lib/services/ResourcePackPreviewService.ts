@@ -51,24 +51,24 @@ export class ResourcePackPreviewService extends AbstractService implements IReso
         })
       }
     })
-    this.storeManager.subscribe('instanceGameSettings', (setting) => {
-      if (!this.active) {
-        return
-      }
-      if (setting.resourcePacks) {
-        this.updateResourcePacks(setting.resourcePacks)
-      }
-    })
+    // this.storeManager.subscribe('instanceGameSettings', (setting) => {
+    //   if (!this.active) {
+    //     return
+    //   }
+    //   if (setting.resourcePacks) {
+    //     this.updateResourcePacks(setting.resourcePacks)
+    //   }
+    // })
   }
 
-  protected getResourcePackPath(pack: string) {
+  protected getResourcePackPath(instancePath: string, pack: string) {
     if (pack === 'vanilla') {
-      const version = this.instanceVersionService.state.version?.minecraftVersion
-      const jarPath = new MinecraftFolder(this.getPath()).getVersionJar(version!)
-      return jarPath
+      // const version = this.instanceVersionService.state.version?.minecraftVersion
+      // const jarPath = new MinecraftFolder(this.getPath()).getVersionJar(version!)
+      // return jarPath
     }
     pack = pack.startsWith('file/') ? pack.substring(5) : pack
-    return join(this.instanceService.state.path, 'resourcepacks', pack)
+    return join(instancePath, 'resourcepacks', pack)
   }
 
   protected async loadResourcePack(path: string) {
@@ -77,15 +77,15 @@ export class ResourcePackPreviewService extends AbstractService implements IReso
     metadata.path = path
   }
 
-  protected async updateResourcePacks(resourcePacks: string[]) {
+  protected async updateResourcePacks(instancePath: string, resourcePacks: string[]) {
     // const release = await this.queue.waitInline()
 
     try {
       const loadedPacks = this.resourceManager.list as NamedResourcePackWrapper[]
 
-      const resourcePacksPaths = resourcePacks.map((name) => this.getResourcePackPath(name))
+      const resourcePacksPaths = resourcePacks.map((name) => this.getResourcePackPath(instancePath, name))
       if (resourcePacks.every((p) => p !== 'vanilla')) {
-        resourcePacksPaths.unshift(this.getResourcePackPath('vanilla'))
+        resourcePacksPaths.unshift(this.getResourcePackPath(instancePath, 'vanilla'))
       }
 
       this.log(`Load resource packs to preview: [${resourcePacks.join(', ')}]`)
@@ -142,9 +142,9 @@ export class ResourcePackPreviewService extends AbstractService implements IReso
     return { model, textures }
   }
 
-  async getBlockStates(): Promise<BlockStateJson[]> {
+  async getBlockStates(gameVersion: string): Promise<BlockStateJson[]> {
     // TODO: handle error
-    const gameVersion = this.instanceVersionService.state.version!.id
+    // const gameVersion = this.instanceVersionService.state.version!.id
     if (this.cachedJsonVersion === gameVersion && this.cachedBlocks) {
       // cache hit
       this.log(`Use cached ${this.cachedBlocks.length} blockstates from ${gameVersion}.jar`)

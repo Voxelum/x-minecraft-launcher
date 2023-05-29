@@ -1,91 +1,5 @@
 <template>
   <div class="overflow-auto h-full">
-    <!-- <v-list
-      v-context-menu="items"
-      nav
-      dense
-      class="px-2 ml-1"
-    >
-      <v-tooltip
-        v-if="sideBarShowCurseforge"
-        color="black"
-        transition="scroll-x-transition"
-        :close-delay="0"
-        right
-      >
-        <template #activator="{ on: tooltip }">
-          <v-list-item
-            push
-            link
-            class="non-moveable"
-            to="/curseforge/mc-mods"
-            v-on="tooltip"
-          >
-            <v-list-item-icon>
-              <v-icon>
-                $vuetify.icons.curseforge
-              </v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Curseforge</v-list-item-title>
-          </v-list-item>
-        </template>
-        Curseforge
-      </v-tooltip>
-
-      <v-tooltip
-        v-if="sideBarShowModrinth"
-        color="black"
-        transition="scroll-x-transition"
-        :close-delay="0"
-        right
-      >
-        <template #activator="{ on: tooltip }">
-          <v-list-item
-            push
-            link
-            class="non-moveable"
-            to="/modrinth"
-            v-on="tooltip"
-          >
-            <v-list-item-icon>
-              <v-icon>
-                $vuetify.icons.modrinth
-              </v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Modrinth</v-list-item-title>
-          </v-list-item>
-        </template>
-        Modrinth
-      </v-tooltip>
-
-      <v-tooltip
-        v-if="sideBarShowFtb"
-        color="black"
-        transition="scroll-x-transition"
-        :close-delay="0"
-        right
-      >
-        <template #activator="{ on: tooltip }">
-          <v-list-item
-            push
-            link
-            class="non-moveable"
-            to="/ftb"
-            v-on="tooltip"
-          >
-            <v-list-item-icon>
-              <v-icon>
-                $vuetify.icons.ftb
-              </v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>FTB</v-list-item-title>
-          </v-list-item>
-        </template>
-        Feed the Beast
-      </v-tooltip>
-    </v-list> -->
-
-    <!-- <v-divider class="!block mx-4" /> -->
     <v-list
       nav
       dense
@@ -93,7 +7,7 @@
     >
       <AppSideBarInstanceItem
         v-for="(i, index) of instances"
-        :key="i.path+'-'+index"
+        :key="i.path + ' ' + index"
         :instance="i"
         @drop="setToPrevious($event, i.path)"
       />
@@ -232,8 +146,8 @@ import { useLocalStorageCacheBool } from '@/composables/cache'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { useDialog } from '@/composables/dialog'
 import { AddInstanceDialogKey } from '@/composables/instanceAdd'
-import { useSortedInstance } from '@/composables/instanceSort'
-import { vContextMenu } from '@/directives/contextMenu'
+import { kInstances } from '@/composables/instances'
+import { injection } from '@/util/inject'
 import { InstanceServiceKey } from '@xmcl/runtime-api'
 import AppSideBarInstanceItem from './AppSideBarInstanceItem.vue'
 
@@ -242,7 +156,7 @@ const { t } = useI18n()
 const sideBarShowCurseforge = useLocalStorageCacheBool('sideBarShowCurseforge', true)
 const sideBarShowModrinth = useLocalStorageCacheBool('sideBarShowModrinth', true)
 const sideBarShowFtb = useLocalStorageCacheBool('sideBarShowFtb', true)
-const { instances, setToPrevious } = useSortedInstance()
+const { instances, setToPrevious } = injection(kInstances)
 const { showOpenDialog } = windowController
 const { addExternalInstance } = useService(InstanceServiceKey)
 

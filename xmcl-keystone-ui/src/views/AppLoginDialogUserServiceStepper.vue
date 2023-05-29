@@ -177,7 +177,6 @@ export default defineComponent({
   },
   setup(props, context) {
     const { t } = useI18n()
-    const { state } = useService(UserServiceKey)
     const urlRules = [
       (value: string) => !!HTTP_EXP.test(value) || t('userService.invalidUrl'),
     ]

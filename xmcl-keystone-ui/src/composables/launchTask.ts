@@ -1,6 +1,8 @@
 import { Instance, LocalVersionHeader, TaskState } from '@xmcl/runtime-api'
-import { Ref } from 'vue'
+import { Ref, InjectionKey } from 'vue'
 import { useTask } from './task'
+
+export const kLaunchTask: InjectionKey<ReturnType<typeof useLaunchTask>> = Symbol('LaunchTask')
 
 export function useLaunchTask(path: Ref<string>, version: Ref<Instance['runtime']>, localVersion: Ref<LocalVersionHeader>) {
   return useTask((i) => {
@@ -33,7 +35,7 @@ export function useLaunchTask(path: Ref<string>, version: Ref<Instance['runtime'
       return true
     }
     if (i.path === 'installInstance' && p.instance === path.value) {
-    // installing this instance
+      // installing this instance
       return true
     }
     return false

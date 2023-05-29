@@ -1,4 +1,5 @@
-import { ServiceKey, StatefulService } from './Service'
+import { MutableState } from '../util/MutableState'
+import { ServiceKey } from './Service'
 
 export type NatType = 'Blocked'| 'Open Internet'| 'Full Cone'| 'Symmetric UDP Firewall'| 'Restrict NAT'| 'Restrict Port NAT'| 'Symmetric NAT' | 'Unknown'
 
@@ -73,7 +74,8 @@ export interface UpnpUnmapOptions {
   public: Address | number | string
 }
 
-export interface NatService extends StatefulService<NatState> {
+export interface NatService {
+  getNatState(): Promise<MutableState<NatState>>
   refreshNatType(): Promise<void>
   isSupported(): Promise<boolean>
   getMappings(): Promise<MappingInfo[]>

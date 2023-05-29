@@ -5,14 +5,14 @@
     persistent
   >
     <v-stepper
-      v-model="step"
+      v-model="data.step"
       non-linear
     >
       <v-stepper-header>
         <v-stepper-step
-          :rules="[() => valid]"
+          :rules="[() => data.valid]"
           editable
-          :complete="step > 1"
+          :complete="data.step > 1"
           step="1"
         >
           {{ t('baseSetting.title') }}
@@ -34,17 +34,17 @@
               :status="status"
               :pinging="pinging"
               :accepting-version="acceptingVersion"
-              :valid.sync="valid"
+              :valid.sync="data.valid"
             />
             <AdvanceContent
               :show-minecraft="false"
-              :valid.sync="valid"
+              :valid.sync="data.valid"
             />
           </div>
           <StepperFooter
             style="padding: 16px 24px"
-            :disabled="!valid || runtime.minecraft === ''"
-            :creating="creating"
+            :disabled="!data.valid || creationData.runtime.minecraft === ''"
+            :creating="data.creating"
             create
             @create="onCreate"
             @quit="quit"
@@ -64,98 +64,75 @@
   </v-dialog>
 </template>
 
-<script lang=ts>
-import { withDefault } from '@/util/props'
+<script lang=ts setup>
 import { protocolToMinecraft } from '@xmcl/runtime-api'
 import AdvanceContent from '../components/StepperAdvanceContent.vue'
 import StepperFooter from '../components/StepperFooter.vue'
 import ServerContent from '../components/StepperServerContent.vue'
 import { useDialog } from '../composables/dialog'
-import { useInstanceCreation, CreateOptionKey } from '../composables/instanceCreation'
+import { useInstanceCreation, kInstanceCreation } from '../composables/instanceCreation'
 import { useServerStatus } from '../composables/serverStatus'
+import { injection } from '@/util/inject'
+import { kUserContext } from '@/composables/user'
+import { kLocalVersions } from '@/composables/versionLocal'
+import { kInstances } from '@/composables/instances'
+import { kInstance } from '@/composables/instance'
 
-export default defineComponent({
-  components: {
-    StepperFooter,
-    AdvanceContent,
-    ServerContent,
-  },
-  props: {
-    show: withDefault(Boolean, () => false),
-  },
-  setup(props) {
-    const { t } = useI18n()
-    const { create, reset: _reset, data: creationData } = useInstanceCreation()
-    const { isShown } = useDialog('add-server-dialog')
-    provide(CreateOptionKey, creationData)
-
-    const minecraftToProtocol: Record<string, number> = {}
-    for (const [key, val] of (Object.entries(protocolToMinecraft))) {
-      for (const p of val) {
-        minecraftToProtocol[p] = Number(key)
-      }
-    }
-
-    const protocol = computed(() => minecraftToProtocol[creationData.runtime.minecraft] ?? 498)
-    const data = reactive({
-      step: 1,
-      valid: false,
-      creating: false,
-      filterVersion: false,
-    })
-    const server = computed(() => creationData.server ?? { host: '', port: undefined })
-    const {
-      status,
-      acceptingVersion,
-      refresh,
-      pinging,
-      reset: resetServer,
-    } = useServerStatus(server, protocol)
-    const ready = computed(() => data.valid)
-
-    function reset() {
-      _reset()
-      creationData.server = null
-      resetServer()
-      creationData.name = ''
-      data.step = 1
-    }
-
-    function quit() {
-      isShown.value = false
-    }
-    async function onCreate() {
-      try {
-        data.creating = true
-        creationData.name = creationData.name || server.value.host
-        creationData.server = server.value
-        await create()
-        reset()
-        isShown.value = false
-      } finally {
-        data.creating = false
-      }
-    }
-    watch(() => props.show, (newVal) => {
-      if (newVal) {
-        reset()
-      }
-    })
-
-    return {
-      t,
-      ...toRefs(data),
-      ...creationData,
-      acceptingVersion,
-      refresh,
-      status,
-      ready,
-      onCreate,
-      quit,
-      pinging,
-      server,
-      isShown,
-    }
-  },
+const { t } = useI18n()
+const { gameProfile } = injection(kUserContext)
+const { versions } = injection(kLocalVersions)
+const { instances } = injection(kInstances)
+const { path } = injection(kInstance)
+const { create, reset: _reset, data: creationData } = useInstanceCreation(gameProfile, versions, instances, path)
+const { isShown } = useDialog('add-server-dialog', () => {
+  reset()
 })
+provide(kInstanceCreation, creationData)
+
+const minecraftToProtocol: Record<string, number> = {}
+for (const [key, val] of (Object.entries(protocolToMinecraft))) {
+  for (const p of val) {
+    minecraftToProtocol[p] = Number(key)
+  }
+}
+
+const protocol = computed(() => minecraftToProtocol[creationData.runtime.minecraft] ?? 498)
+const data = reactive({
+  step: 1,
+  valid: false,
+  creating: false,
+  filterVersion: false,
+})
+const server = computed(() => creationData.server ?? { host: '', port: undefined })
+const {
+  status,
+  acceptingVersion,
+  refresh,
+  pinging,
+  reset: resetServer,
+} = useServerStatus(server, protocol)
+
+function reset() {
+  _reset()
+  creationData.server = null
+  resetServer()
+  creationData.name = ''
+  data.step = 1
+}
+
+function quit() {
+  isShown.value = false
+}
+async function onCreate() {
+  try {
+    data.creating = true
+    creationData.name = creationData.name || server.value.host
+    creationData.server = server.value
+    await create()
+    reset()
+    isShown.value = false
+  } finally {
+    data.creating = false
+  }
+}
 </script>

@@ -92,6 +92,7 @@ import ModrinthProjectVersionsTile from './ModrinthProjectVersionsTile.vue'
 
 const props = defineProps<{
   versions: string[]
+  modLoaders: string[]
   project: string
   modpack: boolean
 }>()
@@ -110,7 +111,6 @@ const releaseTypes = computed(() => [
   { text: t('versionType.release'), value: 'release' },
 ])
 const releaseType = ref('')
-const modLoaders = ['forge', 'fabric']
 const modLoader = ref('')
 
 const items = computed(() => projectVersions.value.filter(v => {

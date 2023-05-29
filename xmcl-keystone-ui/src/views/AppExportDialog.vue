@@ -299,13 +299,15 @@
 import { InstanceIOServiceKey, InstanceFile, ModpackServiceKey, ExportFileDirective, isAllowInModrinthModpack, InstanceManifestServiceKey } from '@xmcl/runtime-api'
 import { inc } from 'semver'
 import { useDialog, useModrinthFilter, useZipFilter } from '../composables/dialog'
-import { useInstance, useInstanceVersion } from '../composables/instance'
 import { AppExportDialogKey } from '../composables/instanceExport'
-import { InstanceFileExportData, provideFileNodes, useInstanceFileNodesFromLocal } from '../composables/instanceFiles'
-import { useLocalVersions } from '../composables/version'
 import { useRefreshable, useService } from '@/composables'
 import { getExpectedSize } from '@/util/size'
 import InstanceManifestFileTree from '../components/InstanceManifestFileTree.vue'
+import { kInstance } from '@/composables/instance'
+import { injection } from '@/util/inject'
+import { kInstanceVersion } from '@/composables/instanceVersion'
+import { InstanceFileExportData, provideFileNodes, useInstanceFileNodesFromLocal } from '@/composables/instanceFileNodeData'
+import { kLocalVersions } from '@/composables/versionLocal'
 
 const { isShown, hide: cancel } = useDialog(AppExportDialogKey)
 const { exportInstance } = useService(InstanceIOServiceKey)
@@ -315,9 +317,10 @@ const { showSaveDialog } = windowController
 const { t } = useI18n()
 
 // base data
-const { folder } = useInstanceVersion()
-const { localVersions: _locals } = useLocalVersions()
-const { instance } = useInstance()
+const { instance } = injection(kInstance)
+const { folder } = injection(kInstanceVersion)
+const { versions: _locals } = injection(kLocalVersions)
+
 const name = computed(() => instance.value.name)
 const author = computed(() => instance.value.author)
 const modpackVersion = computed(() => instance.value.modpackVersion)
@@ -399,7 +402,7 @@ function reset() {
 
 // loading
 const { refresh, refreshing } = useRefreshable(async () => {
-  const manifest = await getInstanceManifest()
+  const manifest = await getInstanceManifest({ path: instance.value.path })
   const files = manifest.files
   let selected = [] as string[]
   selected = files
@@ -419,9 +422,9 @@ const selectedPaths = computed(() => new Set(data.selected))
 const exportFiles = computed(() => {
   const selected = selectedPaths.value
   const result: ExportFileDirective[] = leaves.value
-    .filter(n => selected.has(n.id))
+    .filter(n => selected.has(n.path))
     .map(l => ({
-      path: l.id,
+      path: l.path,
       env: l.data
         ? {
           client: l.data.client,
@@ -434,7 +437,7 @@ const exportFiles = computed(() => {
 
 const totalSize = computed(() => {
   const existed = selectedPaths.value
-  return leaves.value.filter(n => existed.has(n.id))
+  return leaves.value.filter(n => existed.has(n.path))
     .filter(n => !n.data || n.data.forceOverride || !canExport(n.data))
     .map(l => l.size)
     .reduce((a, b) => a + b, 0)
@@ -455,6 +458,7 @@ const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
     if (data.emitCurseforge || data.emitMcbbs || data.emitModrinth) {
       try {
         await exportModpack({
+          instancePath: instance.value.path,
           name: data.name,
           files: exportFiles.value,
           author: data.author,
@@ -472,6 +476,8 @@ const { refresh: confirm, refreshing: exporting } = useRefreshable(async () => {
     } else {
       const files = data.selected.filter(p => !!data.files.find(f => f.path === p))
       await exportInstance({
+        src: instance.value.path,
+        version: folder.value,
         destinationPath: filePath,
         includeLibraries: data.includeLibraries,
         includeAssets: data.includeAssets,

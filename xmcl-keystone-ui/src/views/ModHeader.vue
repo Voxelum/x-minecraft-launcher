@@ -13,7 +13,7 @@
       /> -->
       <v-btn
         icon
-        @click="showDirectory()"
+        @click="showDirectory(path)"
       >
         <v-icon>folder</v-icon>
       </v-btn>
@@ -39,9 +39,9 @@
   </v-card>
 </template>
 <script lang="ts" setup>
-import { useInstanceBase } from '../composables/instance'
 import { useService } from '@/composables'
-import FilterCombobox from '@/components/FilterCombobox.vue'
+import { kInstance } from '@/composables/instance'
+import { injection } from '@/util/inject'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 
 defineProps<{ count?: number }>()
@@ -52,13 +52,6 @@ const { t } = useI18n()
 
 const { showDirectory } = useService(InstanceModsServiceKey)
 
-const { push } = useRouter()
-const { path } = useInstanceBase()
-function goToCurseforgeMods() {
-  push(`/curseforge/mc-mods?from=${path.value}`)
-}
-function goToModrinthPage() {
-  push(`/modrinth?from=${path.value}`)
-}
+const { path } = injection(kInstance)
 
 </script>

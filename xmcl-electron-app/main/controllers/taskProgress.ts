@@ -1,4 +1,4 @@
-import Controller from '@/Controller'
+import { ElectronController } from '@/ElectronController'
 import { darkIcon } from '@/utils/icons'
 import { app, Notification } from 'electron'
 import { ControllerPlugin } from './plugin'
@@ -6,7 +6,7 @@ import { ControllerPlugin } from './plugin'
 /**
  * Setup task progress bar
  */
-export const taskProgressPlugin: ControllerPlugin = function (this: Controller) {
+export const taskProgressPlugin: ControllerPlugin = function (this: ElectronController) {
   const notify = (type: 'finish' | 'fail') => {
     const t = this.i18n.t
     if (this.activeWindow && this.activeWindow.isFocused()) {
