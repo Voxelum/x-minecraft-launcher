@@ -46,9 +46,9 @@ export class InstanceResourcePackService extends AbstractService implements IIns
     }).subscribe('instanceSelect', (instancePath) => {
       this.link(instancePath).catch((e) => {
         // TODO: decorate error
-        this.error(`Fail to link instance ${instancePath} resource pack!`)
-        this.error(e)
-        this.emit('error', new Error(`Fail to link instance ${instancePath} resource pack!`))
+        const err = new Error(`Fail to link instance ${instancePath} resource pack!`, { cause: e })
+        this.error(err)
+        this.emit('error', err)
       })
     }).subscribe('instanceGameSettingsLoad', async (payload) => {
       if ('resourcePacks' in payload) {

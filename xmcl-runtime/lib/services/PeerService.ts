@@ -179,11 +179,11 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     this.discover.bind().then(() => {
       this.log('Minecraft LAN discover ready')
     }, (e) => {
-      this.error('Fail to bind Minecraft LAN discover: %o', e)
+      this.error(new Error('Fail to bind Minecraft LAN discover', { cause: e }))
     })
 
     this.discover.socket.on('error', (e) => {
-      this.error('Minecraft discover socket error: %o', e)
+      this.error(new Error('Minecraft discover socket error', { cause: e }))
     })
 
     this.discover.on('discover', (info) => {
@@ -252,7 +252,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           }))
         this.log(`Updated the rtc credential by xbox ${officialAccount.username}.`)
       } else {
-        this.error(`Fail to fetch the rtc credential by xbox ${officialAccount.username}. Status ${response.statusCode}.`)
+        this.error(new Error(`Fail to fetch the rtc credential by xbox ${officialAccount.username}. Status ${response.statusCode}.`))
       }
     }
   }
@@ -318,7 +318,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       this.state.connectionGroupState(state)
     })
     group.on('error', (err) => {
-      this.error(err)
+      if (err instanceof Error) this.error(err)
     })
 
     this.group = group
@@ -407,7 +407,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           delete this.peers[conn.id]
           this.state.connectionDrop(conn.id)
         } else {
-          this.error(`Connection is closed unexpected! ${conn.id}`)
+          this.error(new Error(`Connection is closed unexpected! ${conn.id}`))
           if (this.group) {
             // Only delete if the group exist. Then it can re-connect automatically.
             delete this.peers[conn.id]

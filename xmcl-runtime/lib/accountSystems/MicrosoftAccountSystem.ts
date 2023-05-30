@@ -52,8 +52,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
         user.invalidated = false
         await this.userTokenStorage.put(user, accessToken)
       } catch (e) {
-        this.logger.error(`Fail to refresh ${user.username}`)
-        this.logger.error(e)
+        this.logger.error(new Error(`Fail to refresh ${user.username}`, { cause: e }))
         user.invalidated = true
         await this.userTokenStorage.put(user, '')
       }

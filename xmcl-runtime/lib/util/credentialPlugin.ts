@@ -29,7 +29,7 @@ export function createPlugin(serviceName: string, accountName: string, logger: L
           }
         } catch (e) {
           // Should not prevent the login
-          logger.error('Fail to deserialize the credential cache %o', e)
+          logger.error(new Error('Fail to deserialize the credential cache', { cause: e }))
         }
       },
       async afterCacheAccess(cacheContext: TokenCacheContext): Promise<void> {
@@ -46,7 +46,7 @@ export function createPlugin(serviceName: string, accountName: string, logger: L
             await storage.put(`${serviceName}:3`, accountName, part3)
             await storage.put(`${serviceName}:4`, accountName, part4)
           } catch (e) {
-            logger.error('Fail to serialzie the credential cache %o', e)
+            logger.error(new Error('Fail to serialzie the credential cache %o', { cause: e }))
           }
         }
       },
@@ -55,7 +55,7 @@ export function createPlugin(serviceName: string, accountName: string, logger: L
   const plugin: ICachePlugin = {
     async beforeCacheAccess(cacheContext: TokenCacheContext): Promise<void> {
       const secret = await storage.get(serviceName, accountName).catch((e) => {
-        logger.error('Fail to deserialize the credential cache %o', e)
+        logger.error(new Error('Fail to deserialize the credential cache', { cause: e }))
       })
       if (cacheContext.cacheHasChanged) {
         return
@@ -64,7 +64,7 @@ export function createPlugin(serviceName: string, accountName: string, logger: L
         try {
           cacheContext.tokenCache.deserialize(secret)
         } catch (e) {
-          logger.error('Fail to deserialize the credential cache %o', e)
+          logger.error(new Error('Fail to deserialize the credential cache', { cause: e }))
         }
       }
     },
@@ -73,7 +73,7 @@ export function createPlugin(serviceName: string, accountName: string, logger: L
         const currentCache = cacheContext.tokenCache.serialize()
         await storage.put(serviceName, accountName, currentCache)
       } catch (e) {
-        logger.error('Fail to serialzie the credential cache %o', e)
+        logger.error(new Error('Fail to serialzie the credential cache', { cause: e }))
       }
     },
   }

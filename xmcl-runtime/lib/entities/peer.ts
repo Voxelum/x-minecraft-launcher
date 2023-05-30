@@ -133,7 +133,7 @@ export class PeerGroup extends EventEmitter {
           }
         }
       } catch (e) {
-        console.error(e)
+        this.emit('error', e)
       }
     })
     socket.on('error', (e) => {
@@ -180,7 +180,7 @@ export class PeerGroup extends EventEmitter {
           return
         }
       } catch (e) {
-        console.error(e)
+        this.emit('error', e)
       }
     }
   }

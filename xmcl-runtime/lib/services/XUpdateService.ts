@@ -85,7 +85,7 @@ export class XUpdateService extends AbstractService implements IXUpdateService {
       })
 
       if (res.statusCode !== 201) {
-        this.error(`Fail to upload ${instancePath} to ${instance.fileApi} as server rejected. Status code: ${res.statusCode}, ${res.body}`)
+        this.error(new Error(`Fail to upload ${instancePath} to ${instance.fileApi} as server rejected. Status code: ${res.statusCode}, ${res.body}`))
         throw new InstanceIOException({ type: 'instanceSetManifestFailed', httpBody: res.body, statusCode: res.statusCode })
       }
 
@@ -111,7 +111,7 @@ export class XUpdateService extends AbstractService implements IXUpdateService {
     try {
       manifest = await (await request(instance.fileApi)).body.json()
     } catch (e) {
-      this.error(e)
+      if (e instanceof Error) this.error(e)
       throw new InstanceIOException({
         type: 'instanceNotFoundInApi',
         url: instance.fileApi,

@@ -117,7 +117,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
         userProfile.expiredAt = Date.now() + 86400_000
         userProfile.invalidated = false
       } catch (e) {
-        this.logger.error(e)
+        this.logger.warn(e)
         this.logger.warn(`Invalid current user ${userProfile.id} accessToken!`)
 
         userProfile.invalidated = true

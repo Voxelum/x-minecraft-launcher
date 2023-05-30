@@ -149,7 +149,7 @@ export class OfficialUserService extends AbstractService implements IOfficialUse
           this.userTokenStorage.put(user, result.accessToken)
           user.expiredAt = Date.now() + 86400_000
         } catch (e) {
-          this.error(e)
+          this.warn(e)
           this.warn(`Invalid current user ${user.id} accessToken!`)
         }
         return user

@@ -37,7 +37,7 @@ export class NatService extends StatefulService<NatState> implements INatService
       const client = await this.client.promise
       return client.getMappings()
     } catch (e) {
-      this.error(e)
+      if (e instanceof Error) this.error(e)
       return []
     }
   }

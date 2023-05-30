@@ -18,7 +18,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
   private settingFile = createSafeFile(this.getAppDataPath('setting.json'), SettingSchema, this, [this.getPath('setting.json')])
 
   constructor(
-  @Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(LauncherAppKey) app: LauncherApp,
   ) {
     super(app, () => {
       const state = new BaseState()
@@ -132,8 +132,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
         this.state.updateStatusSet('pending')
       }
     } catch (e) {
-      this.error('Check update failed')
-      this.error(e)
+      this.error(new Error('Check update failed', { cause: e }))
       throw e
     }
   }
@@ -224,8 +223,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
       await renameOrCopy()
       await this.app.migrateRoot(destination)
     } catch (e) {
-      this.error(`Fail to migrate with rename ${source} -> ${destination} with unknown error`)
-      this.error(e)
+      this.error(new Error(`Fail to migrate with rename ${source} -> ${destination} with unknown error`, { cause: e }))
       await this.app.migrateRoot(source).catch(() => { })
       throw e
     }

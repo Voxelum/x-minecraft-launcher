@@ -362,7 +362,7 @@ export class InstanceVersionService extends StatefulService<InstanceVersionState
     const id = this.instanceService.state.path
     const selected = this.instanceService.state.all[id]
     if (!selected) {
-      this.error(`Skip to diagnose version as no profile selected! ${id}`)
+      this.error(new Error(`Skip to diagnose version as no profile selected! ${id}`))
       return
     }
 

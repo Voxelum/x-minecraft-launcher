@@ -41,9 +41,8 @@ export class PresenceService extends AbstractService implements IPresenceService
 
     app.serviceStateManager.subscribe('discordPresenceSet', async (state) => {
       if (state) {
-        await this.discord.connect().catch(() => {
-          // TODO: hint user?
-          this.warn('Fail to connect to discord.')
+        await this.discord.connect().catch((e) => {
+          this.warn('Fail to connect to discord. %o', e)
         })
       } else {
         await this.discord.destroy()
@@ -60,14 +59,20 @@ export class PresenceService extends AbstractService implements IPresenceService
           this.current.partySize = undefined
         }
         this.current.joinSecret = id ? id + 'secret' : undefined
-        this.discord.user?.setActivity(this.current)
+        this.discord.user?.setActivity(this.current).catch((e) => {
+          this.warn('Fail to set discord presence. %o', e)
+        })
       }
     }).subscribe('connectionAdd', () => {
       this.current.partySize = (this.current.partySize || 1) + 1
-      this.discord.user?.setActivity(this.current)
+      this.discord.user?.setActivity(this.current).catch((e) => {
+        this.warn('Fail to set discord presence. %o', e)
+      })
     }).subscribe('connectionDrop', () => {
       this.current.partySize = (this.current.partySize || 1) - 1
-      this.discord.user?.setActivity(this.current)
+      this.discord.user?.setActivity(this.current).catch((e) => {
+        this.warn('Fail to set discord presence. %o', e)
+      })
     })
 
     this.discord = new Client({
@@ -90,6 +95,8 @@ export class PresenceService extends AbstractService implements IPresenceService
     this.current.largeImageKey = 'dark_512'
     this.current.startTimestamp = Date.now()
     this.current.details = activity
-    await this.discord.user?.setActivity(param)
+    await this.discord.user?.setActivity(param).catch((e) => {
+      this.warn('Fail to set discord presence. %o', e)
+    })
   }
 }

@@ -166,8 +166,11 @@ export class MicrosoftOAuthClient {
           scopes: options.extraScopes,
         }) ?? undefined
       } catch (e) {
-        this.logger.error(`Fail to acquire extra result for ${username}`)
-        this.logger.error(e)
+        if (e instanceof Error) {
+          this.logger.error(e)
+        } else {
+          this.logger.error(new Error(`Fail to acquire extra result for ${username}` + JSON.stringify(e)))
+        }
       }
     }
 

@@ -142,7 +142,6 @@ export class ElectronUpdater implements LauncherAppUpdater {
       const elevatePath = await ensureElevateExe(this.app.appDataPath)
 
       if (!existsSync(updateAsarPath)) {
-        this.logger.error(`No update found: ${updateAsarPath}`)
         throw new Error(`No update found: ${updateAsarPath}`)
       }
       const psPath = join(this.app.appDataPath, 'AutoUpdate.ps1')
@@ -201,8 +200,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
         await promisify(unlink)(appAsarPath + '.bk').catch(() => { })
         this.app.relaunch()
       } catch (e) {
-        this.logger.error(`Fail to rename update the file: ${appAsarPath}`)
-        this.logger.error(e)
+        this.logger.error(new Error(`Fail to rename update the file: ${appAsarPath}`, { cause: e }))
         await promisify(rename)(appAsarPath + '.bk', appAsarPath)
       }
     }

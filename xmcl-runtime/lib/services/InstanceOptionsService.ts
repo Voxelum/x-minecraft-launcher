@@ -46,7 +46,7 @@ export class InstanceOptionsService extends StatefulService<InstanceOptionsState
             resourcePacks: [...this.state.options.resourcePacks, relative(resource.path, instancePath)],
           })
         } else {
-          this.error(`Invalid options resourcepack ${this.state.options.resourcePacks}`)
+          this.error(new Error(`Invalid options resourcepack ${this.state.options.resourcePacks}`))
         }
       }
     })

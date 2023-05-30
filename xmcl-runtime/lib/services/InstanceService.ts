@@ -77,8 +77,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
             await this.mountInstance(instance.path)
             await this.instancesFile.write({ instances: Object.keys(this.state.all).map(normalizeInstancePath), selectedInstance: normalizeInstancePath(instance.path) })
           } catch (e) {
-            this.error(`Fail to initialize to ${initial}`)
-            this.error(e)
+            this.error(new Error(`Fail to initialize to ${initial}`, { cause: e }))
             await this.createAndMount({ name: 'Minecraft' })
           }
         } else {
@@ -443,7 +442,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           result.icon = await this.imageStore.addImage(iconURL.pathname.substring(1))
         }
       } catch (e) {
-        this.error(e)
+        if (e instanceof Error) this.error(e)
       }
     }
 
@@ -515,7 +514,8 @@ export class InstanceService extends StatefulService<InstanceState> implements I
           await this.createInstance(options)
         }
       } catch (e) {
-        this.error(e)
+        if (e instanceof Error) this.error(e)
+        // TODO: handle
       }
     }))
 

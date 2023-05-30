@@ -59,7 +59,7 @@ export class InstanceLogService extends AbstractService implements IInstanceLogS
       const result = await this.encoder.decode(buf, encoding || UTF8)
       return result
     } catch (e) {
-      this.error(e)
+      this.error(new Error(`Fail to get log content "${name}"`, { cause: e }))
       return ''
     }
   }

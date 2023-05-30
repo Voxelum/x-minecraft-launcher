@@ -81,7 +81,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
           server: yggdrasilHost,
         }
       } catch (e) {
-        this.error('Fail to install authlib-injection:\n %o', e)
+        this.error(new Error('Fail to install authlib-injection', { cause: e }))
       }
     }
     const accessToken = user.user ? await this.userTokenStorage.get(user.user).catch(() => undefined) : undefined
@@ -162,7 +162,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
 
       const yggdrasilHost = user.user
         ? this.userService.getAccountSystem(user.user?.authService)?.getYggdrasilAuthHost?.(user.user?.authService) ??
-          this.userService.yggdrasilAccountSystem.getYggdrasilAuthHost(user.user?.authService)
+        this.userService.yggdrasilAccountSystem.getYggdrasilAuthHost(user.user?.authService)
         : undefined
       let yggdrasilAgent: LaunchOption['yggdrasilAgent']
 
@@ -175,7 +175,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
             server: yggdrasilHost,
           }
         } catch (e) {
-          this.error('Fail to install authlib-injection:\n %o', e)
+          this.error(new Error('Fail to install authlib-injection', { cause: e }))
         }
       }
 
@@ -373,7 +373,6 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       if (e instanceof LaunchException) {
         throw e
       }
-      this.error(e)
       throw new LaunchException({ type: 'launchGeneralException', error: { ...(e as any), message: (e as any).message, stack: (e as any).stack } })
     }
   }

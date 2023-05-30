@@ -225,9 +225,8 @@ export class InstanceInstallService extends AbstractService implements IInstance
       await this.submit(updateInstanceTask)
       await this.removeInstallProfile(instancePath)
     } catch (e) {
-      this.error(`Fail to install instance ${options.path} \n%o`, e)
       await this.writeInstallProfile(instancePath, files)
-      throw e
+      throw new Error(`Fail to install instance ${options.path}`, { cause: e })
     }
   }
 
@@ -244,7 +243,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
         return files
       } catch (e) {
         if (e instanceof SyntaxError) {
-          this.error(`Fail to parse instance install profile ${profile} as syntex error`)
+          this.error(new Error(`Fail to parse instance install profile ${profile} as syntex error`, { cause: e }))
           await unlink(profile).catch(() => undefined)
         } else {
           throw e

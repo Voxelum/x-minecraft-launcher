@@ -29,14 +29,14 @@ export class InstanceManifestService extends AbstractService implements IInstanc
 
   @Singleton(p => JSON.stringify(p))
   async getInstanceManifest(options?: GetManifestOptions): Promise<InstanceManifest> {
-  // Ensure the resource service is initialized...
+    // Ensure the resource service is initialized...
     await this.resourceService.initialize()
     const instancePath = options?.path || this.instanceService.state.path
 
     const instance = this.instanceService.state.all[instancePath]
 
     const resolveHashes = async (file: string, sha1?: string) => {
-      const result: Record<string, string> = { }
+      const result: Record<string, string> = {}
       if (options?.hashes) {
         for (const hash of options.hashes) {
           if (hash === 'sha1') {
@@ -88,7 +88,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
       if (isDirectory) {
         const children = await readdirIfPresent(p)
         await Promise.all(children.map(child => scan(join(p, child)).catch((e) => {
-          this.error('Fail to get manifest data for instance file %o', e)
+          this.error(new Error('Fail to get manifest data for instance file', { cause: e }))
         })))
       } else {
         const localFile: InstanceFile = {
@@ -141,7 +141,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
     const logger = this
     await task('getInstanceManifest', async function () {
       await this.yield(task('scan', () => scan(instancePath).catch((e) => {
-        logger.error('Fail to get manifest data for instance file %o', e)
+        logger.error(new Error('Fail to get manifest data for instance file', { cause: e }))
       })))
       await this.yield(resolveTask).catch(() => undefined)
     }).startAndWait()

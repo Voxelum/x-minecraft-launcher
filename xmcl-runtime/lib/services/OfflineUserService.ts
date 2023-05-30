@@ -29,7 +29,7 @@ export class OfflineUserService extends AbstractService implements IOfflineUserS
             }
             return `http://localhost:${address.port}/yggdrasil`
           }
-          this.error(`Unexpected state. The OfflineYggdrasilServer does not initialized? Listening: ${app.server.listening}`)
+          this.error(new Error(`Unexpected state. The OfflineYggdrasilServer does not initialized? Listening: ${app.server.listening}`))
           return ''
         },
         async login({ username, properties }) {

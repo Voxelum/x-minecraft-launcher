@@ -119,7 +119,7 @@ export class PeerSession {
           opened = true
         })
         channel.onError((e) => {
-          this.logger.error(`Game data channel ${port}(${id}) error: %o`, e)
+          this.logger.error(new Error(`Game data channel ${port}(${id}) error`, { cause: e }))
         })
         this.logger.log(`Create game channel to ${port}(${id})`)
       } else if (protocol === 'metadata') {
@@ -257,7 +257,7 @@ export class PeerSession {
       this.send(MessageIdentity, { ...info })
     })
     channel.onError((e) => {
-      this.logger.error('Fail to create metadata channel: %o', e)
+      this.logger.error(new Error('Fail to create metadata channel', { cause: e }))
     })
     channel.onClosed(() => {
       this.logger.log(`Metadata channel closed: ${channel.getId()}`)

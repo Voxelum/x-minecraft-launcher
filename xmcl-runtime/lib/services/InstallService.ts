@@ -155,9 +155,7 @@ export class InstallService extends AbstractService implements IInstallService {
 
       return versions
     } catch (e) {
-      this.error(`Fail to fetch forge info of ${minecraftVersion}`)
-      this.error(e)
-      throw e
+      throw new Error(`Fail to fetch forge info of ${minecraftVersion}`, { cause: e })
     }
   }
 
@@ -737,8 +735,7 @@ export class InstallService extends AbstractService implements IInstallService {
         destination: path,
       }).setName('download'))
       resourceService.importResources([{ path, domain: ResourceDomain.Mods }]).catch((e) => {
-        error(`Fail to import optifine as mod! ${path}`)
-        error(e)
+        error(new Error(`Fail to import optifine as mod! ${path}`, { cause: e }))
       })
       let id: string = await this.concat(installOptifineTask(path, minecraft, { java }))
 

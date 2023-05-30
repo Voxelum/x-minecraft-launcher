@@ -83,13 +83,13 @@ export class ResourceService extends AbstractService implements IResourceService
         const domainPath = this.getPath(domain)
         const files = await readdirEnsured(domainPath)
         await loadResources(domainPath, files, this.context).catch(e => {
-          this.error(`Fail to load resources in domain ${domain} %o`, e)
+          this.error(new Error(`Fail to load resources in domain ${domain}`, { cause: e }))
         })
         this.log(`Warmed up ${domain} resources`)
         this.watchers[domain] = watchResources(domainPath, this.context)
       }
       await migrateResources(this.getAppDataPath('resources'), this.context).catch((e) => {
-        this.error('Fail to migrate the legacy resource %o', e)
+        this.error(new Error('Fail to migrate the legacy resource', { cause: e }))
       })
       for (const domain of [
         ResourceDomain.Mods,
@@ -103,7 +103,7 @@ export class ResourceService extends AbstractService implements IResourceService
       }
 
       await ensureDir(this.getAppDataPath('resource-images')).catch((e) => {
-        this.error('Fail to initialize resource-images folder: %o', e)
+        this.error(new Error('Fail to initialize resource-images folder', { cause: e }))
       })
     })
     this.context = createResourceContext(this.getAppDataPath('resources-v2'), imageStore, this, this, worker)

@@ -405,7 +405,7 @@ export class ModpackService extends AbstractService implements IModpackService {
         },
       }])
     } catch (e) {
-      this.error('Fail to update resource: %o', e)
+      this.error(new Error('Fail to update resource', { cause: e }))
     }
 
     return {
@@ -462,8 +462,7 @@ export class ModpackService extends AbstractService implements IModpackService {
 
       return [unzippedFiles, files]
     }).catch((e) => {
-      this.error(`Fail to install modpack: ${path}`)
-      this.error(e)
+      this.error(new Error(`Fail to install modpack: ${path}`, { cause: e }))
       if (!('instancePath' in options)) {
         this.instanceService.deleteInstance(instancePath)
       }

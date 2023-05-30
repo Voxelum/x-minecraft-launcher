@@ -147,8 +147,7 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
       }
       if (promise) {
         promises.push(promise.catch((e) => {
-          this.error(`Cannot deploy the resource from ${src} to ${dest}`)
-          this.error(e)
+          this.error(new Error(`Cannot deploy the resource from ${src} to ${dest}`, { cause: e }))
           throw e
         }))
       }

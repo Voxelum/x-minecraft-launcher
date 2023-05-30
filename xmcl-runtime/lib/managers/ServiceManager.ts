@@ -1,9 +1,9 @@
-import { Exception, ServiceKey } from '@xmcl/runtime-api'
+import { ServiceKey } from '@xmcl/runtime-api'
 import { Task } from '@xmcl/task'
 import { Manager } from '.'
 import LauncherApp from '../app/LauncherApp'
 import { Client } from '../engineBridge'
-import { AbstractService, getServiceKey, ServiceConstructor } from '../services/Service'
+import { AbstractService, ServiceConstructor, getServiceKey } from '../services/Service'
 import { serializeError } from '../util/error'
 
 interface ServiceCallSession {
@@ -70,7 +70,7 @@ export default class ServiceManager extends Manager {
    */
   private async startServiceCall(id: number) {
     if (!this.sessions[id]) {
-      this.logger.error(`Unknown service call session ${id}!`)
+      this.logger.error(new RangeError(`Unknown service call session ${id}!`))
     }
     const sess = this.sessions[id]
     const [serviceName, serviceMethod] = sess.name.split('.')
@@ -80,12 +80,9 @@ export default class ServiceManager extends Manager {
     } catch (e) {
       this.logger.warn(`Error during service call session ${id}(${this.sessions[id].name}):`)
       if (e instanceof Error) {
-        this.logger.error(e)
+        this.logger.error(e, serviceName)
       } else {
-        this.logger.error(JSON.stringify(e))
-      }
-      if (e instanceof Exception) {
-        this.logger.error(JSON.stringify(e.exception, null, 4))
+        this.logger.error(new Error(JSON.stringify(e)), serviceName)
       }
       const error = await serializeError(e)
       error.serviceName = serviceName
@@ -111,7 +108,7 @@ export default class ServiceManager extends Manager {
   private handleServiceCall(client: Client, service: string, name: string, payload: any): number | undefined {
     const serv = this.servicesMap[service]
     if (!serv) {
-      this.logger.error(`Cannot execute service call ${name} from service ${service}. No service exposed as ${service}.`)
+      this.logger.error(new Error(`Cannot execute service call ${name} from service ${service}. No service exposed as ${service}.`))
     } else {
       if (name in serv) {
         const tasks: Task<any>[] = []
@@ -144,7 +141,7 @@ export default class ServiceManager extends Manager {
 
         return sessionId
       }
-      this.logger.error(`Cannot execute service call ${name} from service ${service}. The service doesn't have such method!`)
+      this.logger.error(new Error(`Cannot execute service call ${name} from service ${service}. The service doesn't have such method!`))
     }
     return undefined
   }
@@ -163,8 +160,7 @@ export default class ServiceManager extends Manager {
   async dispose() {
     this.logger.log('Dispose all services')
     await Promise.all(Object.values(this.servicesMap).map((s) => s.dispose().catch((e) => {
-      this.logger.error(`Error during dispose ${Object.getPrototypeOf(s).constructor.name}:`)
-      this.logger.error(e)
+      this.logger.error(new Error(`Error during dispose ${Object.getPrototypeOf(s).constructor.name}:`, { cause: e }))
     })))
     this.logger.log('All services are disposed')
   }

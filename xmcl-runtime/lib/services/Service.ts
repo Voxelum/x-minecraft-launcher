@@ -240,8 +240,7 @@ export abstract class AbstractService extends EventEmitter {
       if (this.initializer) {
         const startTime = Date.now()
         this.initializeSignal.accept(this.initializer().catch((e) => {
-          this.error('Fail to initialize')
-          this.error(e)
+          this.error(new Error('Fail to initialize', { cause: e }))
           throw e
         }).finally(() => {
           const endTime = Date.now()
@@ -259,7 +258,7 @@ export abstract class AbstractService extends EventEmitter {
   log = (m: any, ...a: any[]) => {
   }
 
-  error = (m: any, ...a: any[]) => {
+  error = (e: Error) => {
   }
 
   warn = (m: any, ...a: any[]) => {

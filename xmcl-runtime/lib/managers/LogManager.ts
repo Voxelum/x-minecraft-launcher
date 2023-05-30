@@ -15,6 +15,14 @@ import { ZipTask } from '../util/zip'
 function formatMsg(message: any, options: any[]) { return options.length !== 0 ? format(message, ...options.map(filterSensitiveData)) : format(message) }
 function baseTransform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}`) } }) }
 
+function getMessageFromError(e: Error): string {
+  const message = e.stack ?? e.message
+  if (e.cause && e.cause instanceof Error) {
+    return `${message}\nCaused by: ${getMessageFromError(e.cause)}`
+  }
+  return message
+}
+
 export default class LogManager extends Manager {
   private loggerEntries = { log: baseTransform('INFO'), warn: baseTransform('WARN'), error: baseTransform('ERROR') }
 
@@ -89,10 +97,10 @@ export default class LogManager extends Manager {
         logBus.emit('warn', tag, formatMsg(message, options))
         loggerEntries.warn.write(`[${tag}] ${formatMsg(message, options)}`)
       },
-      error(message: any, ...options: any[]) {
-        if (message instanceof Error) { message = message.stack }
-        logBus.emit('error', tag, formatMsg(message, options))
-        loggerEntries.error.write(`[${tag}] ${formatMsg(message, options)}`)
+      error(e: Error, scope?: string) {
+        const message = getMessageFromError(e)
+        logBus.emit('error', scope ?? tag, message, e)
+        loggerEntries.error.write(`[${scope ?? tag}] ${message}`)
       },
     }
   }

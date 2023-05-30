@@ -36,8 +36,7 @@ export class InstanceServerInfoService extends StatefulService<ServerInfoState> 
           this.log('No server data found in instance.')
         }
       } catch (e) {
-        this.warn(`An error occured during loading server infos of ${this.watching}`)
-        this.error(e)
+        this.warn(new Error(`An error occured during loading server infos of ${this.watching}`, { cause: e }))
       }
     }
   }
