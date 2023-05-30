@@ -82,8 +82,7 @@ jobs:
             return '${{ github.event.release.tag_name }}'.substring(1);
       - name: Update version env
         run: |
-          cat ./version
-          echo "VERSION=$(cat ./version)" >> "$GITHUB_ENV"
+          echo "VERSION=$(cat ./version)" >> $env:GITHUB_ENV
       - name: Create winget PR
         run: |
           iwr https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
@@ -91,5 +90,4 @@ jobs:
         env:
           TOKEN: ${{ secrets.PAT_GITHUB_TOKEN }}
           URL: ${{ format('https://xmcl-release-ms.azureedge.net/releases/xmcl-{0}.appx', steps.version.outputs.result) }}
-          VERSION: ${{ env.VERSION }}
       
