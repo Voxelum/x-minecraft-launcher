@@ -163,7 +163,7 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
             url: skin?.url,
             metadata: { model: skin?.variant === 'CLASSIC' ? 'steve' : 'slim' },
           },
-          CAPE: gameProfileResponse.capes.length > 0
+          CAPE: gameProfileResponse.capes && gameProfileResponse.capes.length > 0
             ? {
               url: gameProfileResponse.capes[0].url,
             }
