@@ -2,10 +2,10 @@ import { diagnose, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedLib
 import { parse as parseForge } from '@xmcl/forge-site-parser'
 import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DEFAULT_VERSION_MANIFEST_URL, DownloadTask, FabricArtifactVersion, getFabricLoaderArtifact, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, MinecraftVersionList, Options, QuiltArtifactVersion } from '@xmcl/installer'
 import { Asset, FabricVersions, ForgeVersion, GetQuiltVersionListOptions, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallQuiltOptions, InstallService as IInstallService, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LiteloaderVersions, LockKey, MinecraftVersions, OptifineVersion, ResourceDomain } from '@xmcl/runtime-api'
-import { task } from '@xmcl/task'
+import { task, AbortableTask } from '@xmcl/task'
 import { ensureFile } from 'fs-extra/esm'
 import { readFile, writeFile } from 'fs/promises'
-import { request } from 'undici'
+import { request, errors } from 'undici'
 import { URL } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -580,33 +580,70 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   private async installFabricInternal(options: InstallFabricOptions) {
-    try {
-      this.log(`Start to install fabric: yarn ${options.yarn}, loader ${options.loader}.`)
-      const result = await this.submit(task('installFabric', async () => {
-        const url = new URL('https://meta.fabricmc.net/v2/versions/loader/' + options.minecraft + '/' + options.loader)
-        const apis = this.baseService.getApiSets().map(a => a.url + '/fabric-meta')
-        if (this.baseService.state.apiSetsPreference === 'mojang' || this.baseService.state.apiSetsPreference === '') {
+    class InstallFabricTask extends AbortableTask<string> {
+      private controller: AbortController | undefined
+      private apis: string[]
+
+      constructor(url: URL, apiSets: string[], preferDefault: boolean, private dest: string, id: string) {
+        super()
+        this.name = 'installFabric'
+        this.param = { id }
+        const apis = apiSets.map(a => a + '/fabric-meta')
+        if (preferDefault) {
           apis.unshift(url.protocol + '//' + url.host)
         } else {
           apis.push(url.protocol + '//' + url.host)
         }
+        this.apis = apis.map(a => new URL(a)).map(a => {
+          const realUrl = new URL(url.toString())
+          realUrl.host = a.host
+          realUrl.pathname = a.pathname + url.pathname
+          return realUrl.toString()
+        })
+        this._to = dest
+      }
+
+      protected async process(): Promise<string> {
         let err: any
-        while (apis.length > 0) {
+        this.controller = new AbortController()
+        while (this.apis.length > 0) {
           try {
-            const api = new URL(apis.shift()!)
-            const realUrl = new URL(url.toString())
-            realUrl.host = api.host
-            realUrl.pathname = api.pathname + url.pathname
-            const resp = await request(realUrl.toString(), { throwOnError: true })
+            const api = this.apis[0]
+            this._from = api
+            this.update(0)
+            const resp = await request(api, { throwOnError: true, signal: this.controller.signal })
             const artifact = await resp.body.json()
-            const result = await installFabric(artifact, this.getPath(), { side: 'client' })
+            const result = await installFabric(artifact, this.dest, { side: 'client' })
             return result
           } catch (e) {
             err = e
+            this.apis.shift()
           }
         }
         throw err
-      }, { id: options.minecraft }))
+      }
+
+      protected abort(): void {
+        this.controller?.abort()
+      }
+
+      protected isAbortedError(e: any): boolean {
+        return e instanceof errors.RequestAbortedError
+      }
+    }
+    try {
+      this.log(`Start to install fabric: yarn ${options.yarn}, loader ${options.loader}.`)
+      const path = this.getPath()
+      const baseService = this.baseService
+
+      const result = await this.submit(
+        new InstallFabricTask(
+          new URL('https://meta.fabricmc.net/v2/versions/loader/' + options.minecraft + '/' + options.loader),
+          baseService.getApiSets().map(a => a.url),
+          baseService.state.apiSetsPreference === 'mojang' || baseService.state.apiSetsPreference === '',
+          path,
+          options.minecraft,
+        ))
       this.log(`Success to install fabric: yarn ${options.yarn}, loader ${options.loader}. The new version is ${result}`)
       return result
     } catch (e) {
