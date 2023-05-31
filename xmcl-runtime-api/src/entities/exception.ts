@@ -6,8 +6,8 @@ export interface ExceptionBase {
 export type SelfContain<T> = T
 
 export class Exception<T extends ExceptionBase> extends Error {
-  constructor(readonly exception: T, message?: string) {
-    super(message)
+  constructor(readonly exception: T, message?: string, options?: ErrorOptions) {
+    super(message, options)
     this.name = Object.getPrototypeOf(this).constructor.name
   }
 }

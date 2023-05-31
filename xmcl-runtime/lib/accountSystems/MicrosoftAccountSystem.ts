@@ -4,7 +4,7 @@ import { toRecord } from '../util/object'
 import { MicrosoftAuthenticator } from '../clients/MicrosoftAuthenticator'
 import { MojangClient } from '../clients/MojangClient'
 import { MicrosoftOAuthClient } from '../clients/MicrosoftOAuthClient'
-import { normalizeSkinData } from '../entities/user'
+import { XBoxResponse, normalizeSkinData } from '../entities/user'
 import { UserTokenStorage } from '../entities/userTokenStore'
 import { UserAccountSystem } from './AccountSystem'
 
@@ -120,74 +120,93 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       signal,
     }).catch((e) => {
       this.logger.error(e)
-      throw new UserException({ type: 'userAcquireMicrosoftTokenFailed', error: e.toString() })
+      throw new UserException({ type: 'userAcquireMicrosoftTokenFailed' }, 'Failed to acquire Microsoft access token', { cause: e })
     })
+
+    const isBadXstsResponse = (xstsResponse: XBoxResponse) => !xstsResponse.DisplayClaims || !xstsResponse.DisplayClaims.xui
 
     this.logger.log('Successfully get Microsoft access token')
     const oauthAccessToken = result!.accessToken
-    const { xstsResponse, xboxGameProfile } = await this.authenticator.acquireXBoxToken(oauthAccessToken, signal).catch((e) => {
-      this.logger.error(e)
-      throw new UserException({ type: 'userExchangeXboxTokenFailed', error: e.toString() })
+    const { liveXstsResponse, minecraftXstsResponse } = await this.authenticator.acquireXBoxToken(oauthAccessToken, signal).catch((e) => {
+      throw new UserException({ type: 'userExchangeXboxTokenFailed' }, 'Failed to exchange Xbox token', { cause: e })
     })
 
-    if (!xstsResponse || !xstsResponse.DisplayClaims || !xstsResponse.DisplayClaims.xui) {
-      throw new UserException({ type: 'userExchangeXboxTokenFailed', error: 'No xbox token' })
-    }
+    const aquireAccessToken = async (xstsResponse: XBoxResponse) => {
+      if (isBadXstsResponse(xstsResponse)) {
+        throw new UserException({ type: 'userExchangeXboxTokenFailed' }, 'Invalid XSTS response ' + JSON.stringify(xstsResponse))
+      }
 
-    this.logger.log('Successfully login Xbox')
+      this.logger.log('Successfully login Xbox')
 
-    const mcResponse = await this.authenticator.loginMinecraftWithXBox(xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token, signal).catch((e) => {
-      this.logger.error(e)
-      throw new UserException({ type: 'userLoginMinecraftByXboxFailed', error: e.toString() })
-    })
-    this.logger.log('Successfully login Minecraft with Xbox')
+      const mcResponse = await this.authenticator.loginMinecraftWithXBox(xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token, signal).catch((e) => {
+        throw new UserException({ type: 'userLoginMinecraftByXboxFailed' }, 'Failed to login Minecraft with Xbox', { cause: e })
+      })
+      this.logger.log('Successfully login Minecraft with Xbox')
 
-    const ownershipResponse = await this.mojangClient.checkGameOwnership(mcResponse.access_token, signal).catch((e) => {
-      this.logger.error(e)
-      throw new UserException({ type: 'userCheckGameOwnershipFailed', error: e.toString() })
-    })
-    const ownGame = ownershipResponse.items.length > 0
-    this.logger.log(`Successfully check ownership: ${ownGame}`)
+      const ownershipResponse = await this.mojangClient.checkGameOwnership(mcResponse.access_token, signal).catch((e) => {
+        throw new UserException({ type: 'userCheckGameOwnershipFailed' }, 'Failed to check game ownership', { cause: e })
+      })
+      const ownGame = ownershipResponse.items.length > 0
+      this.logger.log(`Successfully check ownership: ${ownGame}`)
 
-    if (ownGame) {
-      const gameProfileResponse = await this.mojangClient.getProfile(mcResponse.access_token, signal)
-      this.logger.log('Successfully get game profile')
-      const skin: Skin | undefined = gameProfileResponse.skins?.[0]
-      const gameProfiles: GameProfileAndTexture[] = [{
-        ...gameProfileResponse,
-        id: gameProfileResponse.id,
-        name: gameProfileResponse.name,
-        textures: {
-          SKIN: {
-            url: skin?.url,
-            metadata: { model: skin?.variant === 'CLASSIC' ? 'steve' : 'slim' },
+      if (ownGame) {
+        const gameProfileResponse = await this.mojangClient.getProfile(mcResponse.access_token, signal)
+        this.logger.log('Successfully get game profile')
+        const skin: Skin | undefined = gameProfileResponse.skins?.[0]
+        const gameProfiles: GameProfileAndTexture[] = [{
+          ...gameProfileResponse,
+          id: gameProfileResponse.id,
+          name: gameProfileResponse.name,
+          textures: {
+            SKIN: {
+              url: skin?.url,
+              metadata: { model: skin?.variant === 'CLASSIC' ? 'steve' : 'slim' },
+            },
+            CAPE: gameProfileResponse.capes && gameProfileResponse.capes.length > 0
+              ? {
+                url: gameProfileResponse.capes[0].url,
+              }
+              : undefined,
           },
-          CAPE: gameProfileResponse.capes && gameProfileResponse.capes.length > 0
-            ? {
-              url: gameProfileResponse.capes[0].url,
-            }
-            : undefined,
-        },
-      }]
+        }]
+        return {
+          userId: mcResponse.username,
+          accessToken: mcResponse.access_token,
+          gameProfiles,
+          msAccessToken: extra?.accessToken,
+          selectedProfile: gameProfiles[0],
+          expiredAt: mcResponse.expires_in * 1000 + Date.now(),
+        }
+      }
       return {
         userId: mcResponse.username,
         accessToken: mcResponse.access_token,
-        gameProfiles,
+        gameProfiles: [],
         msAccessToken: extra?.accessToken,
-        selectedProfile: gameProfiles[0],
-        avatar: xboxGameProfile.profileUsers[0].settings.find(v => v.id === 'PublicGamerpic')?.value,
+        selectedProfile: undefined,
         expiredAt: mcResponse.expires_in * 1000 + Date.now(),
       }
     }
 
+    const acquireXboxAvatar = async (xstsResponse: XBoxResponse) => {
+      if (isBadXstsResponse(xstsResponse)) {
+        throw new Error('Invalid XSTS response ' + JSON.stringify(xstsResponse))
+      }
+      const xboxGameProfile = await this.authenticator.getXboxGameProfile(xstsResponse.DisplayClaims.xui[0].xid, xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token, signal)
+      return xboxGameProfile.profileUsers[0].settings.find(v => v.id === 'PublicGamerpic')?.value
+    }
+
+    const [profile, avatar] = await Promise.all([
+      aquireAccessToken(minecraftXstsResponse),
+      acquireXboxAvatar(liveXstsResponse).catch(e => {
+        this.logger.error(e)
+        return undefined
+      }),
+    ])
+
     return {
-      userId: mcResponse.username,
-      accessToken: mcResponse.access_token,
-      gameProfiles: [],
-      msAccessToken: extra?.accessToken,
-      selectedProfile: undefined,
-      avatar: xboxGameProfile.profileUsers[0].settings.find(v => v.id === 'PublicGamerpic')?.value,
-      expiredAt: mcResponse.expires_in * 1000 + Date.now(),
+      ...profile,
+      avatar,
     }
   }
 }
