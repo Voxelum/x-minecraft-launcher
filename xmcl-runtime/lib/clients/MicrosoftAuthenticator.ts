@@ -126,9 +126,8 @@ export class MicrosoftAuthenticator {
     const xblResponse: XBoxResponse = await this.authenticateXboxLive(oauthAccessToken, signal)
     const minecraftXstsResponse: XBoxResponse = await this.authorizeXboxLive(xblResponse.Token, 'rp://api.minecraftservices.com/', signal)
     const xstsResponse: XBoxResponse = await this.authorizeXboxLive(xblResponse.Token, 'http://xboxlive.com', signal)
-    const xboxGameProfile = await this.getXboxGameProfile(xstsResponse.DisplayClaims.xui[0].xid, xstsResponse.DisplayClaims.xui[0].uhs, xstsResponse.Token, signal)
 
-    return { xstsResponse: minecraftXstsResponse, xboxGameProfile }
+    return { minecraftXstsResponse, liveXstsResponse: xstsResponse }
   }
 
   /**

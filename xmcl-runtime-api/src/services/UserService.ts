@@ -247,19 +247,13 @@ export const UserServiceKey: ServiceKey<UserService> = 'UserService'
 export type UserExceptions = {
   type: 'loginInternetNotConnected' | 'loginInvalidCredentials' | 'loginGeneral' | 'loginTimeout' | 'loginReset'
 } | {
-  type: 'loginGeneral'
-} | {
   type: 'userAcquireMicrosoftTokenFailed'
-  error?: string
 } | {
   type: 'userExchangeXboxTokenFailed'
-  error?: string
 } | {
   type: 'userLoginMinecraftByXboxFailed'
-  error?: string
 } | {
   type: 'userCheckGameOwnershipFailed'
-  error?: string
 } | {
   type: 'fetchMinecraftProfileFailed'
   errorType: 'NOT_FOUND' | string
