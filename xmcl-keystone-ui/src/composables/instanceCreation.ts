@@ -4,6 +4,7 @@ import { InstanceData, InstanceServiceKey, RuntimeVersions } from '@xmcl/runtime
 import { InjectionKey, reactive } from 'vue'
 import { kUserContext } from './user'
 import { useMinecraftVersions } from './version'
+import { generateDistinctName } from '@/util/instanceName'
 
 export const CreateOptionKey: InjectionKey<InstanceData> = Symbol('CreateOption')
 
@@ -12,7 +13,7 @@ export const CreateOptionKey: InjectionKey<InstanceData> = Symbol('CreateOption'
  */
 export function useInstanceCreation() {
   const { gameProfile } = injection(kUserContext)
-  const { createAndMount: createAndSelect } = useService(InstanceServiceKey)
+  const { createAndMount: createAndSelect, state } = useService(InstanceServiceKey)
   const { release } = useMinecraftVersions()
   const data = reactive<InstanceData>({
     name: '',
@@ -43,6 +44,9 @@ export function useInstanceCreation() {
      * Commit this creation. It will create and select the instance.
      */
     create() {
+      if (!data.name) {
+        data.name = generateDistinctName(state.instances.map(i => i.name), data.runtime)
+      }
       return createAndSelect(data)
     },
     /**
