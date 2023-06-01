@@ -446,9 +446,19 @@ export class ModpackService extends AbstractService implements IModpackService {
     if (!manifest || !handler) throw new ModpackException({ type: 'invalidModpack', path })
 
     const config = handler.resolveInstanceOptions(manifest)
+
+    const getDistinctName = (names: string[], name: string) => {
+      let i = 1
+      while (names.includes(name)) {
+        name = `${name} (${i++})`
+      }
+      return name
+    }
+
     const instancePath = await this.instanceService.createInstance({
       ...config,
-      name: config.name || basename(options.path),
+      name: getDistinctName(this.instanceService.state.instances.map(i => i.name),
+        config.name || basename(options.path)),
       ...options.instanceConfig,
     })
 
