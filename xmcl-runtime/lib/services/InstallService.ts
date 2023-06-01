@@ -1,11 +1,11 @@
 import { diagnose, diagnoseLibraries, LibraryIssue, MinecraftFolder, ResolvedLibrary, ResolvedVersion, Version } from '@xmcl/core'
 import { parse as parseForge } from '@xmcl/forge-site-parser'
-import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DEFAULT_VERSION_MANIFEST_URL, DownloadTask, FabricArtifactVersion, getFabricLoaderArtifact, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, MinecraftVersionList, Options, QuiltArtifactVersion } from '@xmcl/installer'
-import { Asset, FabricVersions, ForgeVersion, GetQuiltVersionListOptions, InstallableLibrary, InstallFabricOptions, InstallForgeOptions as _InstallForgeOptions, InstallOptifineOptions, InstallQuiltOptions, InstallService as IInstallService, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LiteloaderVersions, LockKey, MinecraftVersions, OptifineVersion, ResourceDomain } from '@xmcl/runtime-api'
-import { task, AbortableTask } from '@xmcl/task'
+import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DEFAULT_VERSION_MANIFEST_URL, DownloadTask, FabricArtifactVersion, installAssetsTask, installByProfileTask, installFabric, InstallForgeOptions, installForgeTask, InstallJarTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, InstallProfile, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask, LiteloaderVersion, MinecraftVersion, MinecraftVersionList, Options, QuiltArtifactVersion } from '@xmcl/installer'
+import { InstallForgeOptions as _InstallForgeOptions, Asset, FabricVersions, ForgeVersion, GetQuiltVersionListOptions, InstallService as IInstallService, InstallableLibrary, InstallFabricOptions, InstallOptifineOptions, InstallQuiltOptions, InstallServiceKey, isFabricLoaderLibrary, isForgeLibrary, LiteloaderVersions, LockKey, MinecraftVersions, OptifineVersion, ResourceDomain } from '@xmcl/runtime-api'
+import { AbortableTask, task } from '@xmcl/task'
 import { ensureFile } from 'fs-extra/esm'
 import { readFile, writeFile } from 'fs/promises'
-import { request, errors } from 'undici'
+import { Dispatcher, errors, request } from 'undici'
 import { URL } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -108,52 +108,63 @@ export class InstallService extends AbstractService implements IInstallService {
       throw new Error('Empty Minecraft Version')
     }
 
+    const processBMCL = async (response: Dispatcher.ResponseData) => {
+      interface BMCLForge {
+        'branch': string // '1.9';
+        'build': string // 1766;
+        'mcversion': string // '1.9';
+        'modified': string // '2016-03-18T07:44:28.000Z';
+        'version': string // '12.16.0.1766';
+        files: {
+          format: 'zip' | 'jar' // zip
+          category: 'universal' | 'mdk' | 'installer'
+          hash: string
+        }[]
+      }
+      const bmclVersions: BMCLForge[] = await response.body.json()
+      return bmclVersions.map(v => ({
+        mcversion: v.mcversion,
+        version: v.version,
+        type: 'common',
+        date: v.modified,
+      } as ForgeVersion))
+    }
+    const processDefault = async (response: Dispatcher.ResponseData) => {
+      const text = await response.body.text()
+      const htmlVersions = parseForge(text)
+      return htmlVersions.versions.map(v => {
+        return {
+          mcversion: minecraftVersion,
+          version: v.version,
+          date: v.date,
+          type: v.type,
+          changelog: v.changelog,
+          installer: v.installer,
+          mdk: v.mdk,
+          universal: v.universal,
+          source: v.source,
+          launcher: v.launcher,
+          'installer-win': v['installer-win'],
+        } as ForgeVersion
+      })
+    }
+
     try {
-      let versions: ForgeVersion[]
       const response = await request(`http://files.minecraftforge.net/net/minecraftforge/forge/index_${minecraftVersion}.html`, {
         maxRedirections: 2,
       })
       if (typeof response.headers['content-type'] === 'string' && response.headers['content-type']?.startsWith('application/json')) {
-        interface BMCLForge {
-          'branch': string // '1.9';
-          'build': string // 1766;
-          'mcversion': string // '1.9';
-          'modified': string // '2016-03-18T07:44:28.000Z';
-          'version': string // '12.16.0.1766';
-          files: {
-            format: 'zip' | 'jar' // zip
-            category: 'universal' | 'mdk' | 'installer'
-            hash: string
-          }[]
-        }
-        const bmclVersions: BMCLForge[] = await response.body.json()
-        versions = bmclVersions.map(v => ({
-          mcversion: v.mcversion,
-          version: v.version,
-          type: 'common',
-          date: v.modified,
-        }))
+        return await processBMCL(response)
       } else {
-        const text = await response.body.text()
-        const htmlVersions = parseForge(text)
-        versions = htmlVersions.versions.map(v => {
-          return {
-            mcversion: minecraftVersion,
-            version: v.version,
-            date: v.date,
-            type: v.type,
-            changelog: v.changelog,
-            installer: v.installer,
-            mdk: v.mdk,
-            universal: v.universal,
-            source: v.source,
-            launcher: v.launcher,
-            'installer-win': v['installer-win'],
-          }
-        })
+        try {
+          return await processDefault(response)
+        } catch {
+          const response = await request(`http://bmclapi2.bangbang93.com/forge/minecraft/${minecraftVersion}`, {
+            maxRedirections: 2,
+          })
+          return await processBMCL(response)
+        }
       }
-
-      return versions
     } catch (e) {
       throw new Error(`Fail to fetch forge info of ${minecraftVersion}`, { cause: e })
     }
