@@ -16,7 +16,10 @@ function formatMsg(message: any, options: any[]) { return options.length !== 0 ?
 function baseTransform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}`) } }) }
 
 function getMessageFromError(e: Error): string {
-  const message = e.stack ?? e.message
+  let message = e.stack ?? e.message
+  if (e instanceof AggregateError) {
+    message = e.errors.map(getMessageFromError).join('\n')
+  }
   if (e.cause && e.cause instanceof Error) {
     return `${message}\nCaused by: ${getMessageFromError(e.cause)}`
   }
