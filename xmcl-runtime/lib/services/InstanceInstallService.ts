@@ -226,7 +226,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
       await this.removeInstallProfile(instancePath)
     } catch (e) {
       await this.writeInstallProfile(instancePath, files)
-      throw new Error(`Fail to install instance ${options.path}`, { cause: e })
+      throw new Error(`Fail to install instance ${instancePath}`, { cause: e })
     }
   }
 

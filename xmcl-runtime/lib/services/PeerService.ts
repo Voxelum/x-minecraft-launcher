@@ -251,6 +251,8 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
             }
           }))
         this.log(`Updated the rtc credential by xbox ${officialAccount.username}.`)
+      } else if (response.statusCode === 401) {
+        this.warn(`The xbox ${officialAccount.username} is not valid. Try to refresh the access token.`)
       } else {
         this.error(new Error(`Fail to fetch the rtc credential by xbox ${officialAccount.username}. Status ${response.statusCode}.`))
       }
