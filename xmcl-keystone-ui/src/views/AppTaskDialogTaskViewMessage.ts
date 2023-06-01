@@ -78,7 +78,7 @@ export default defineComponent({
         if (m.name === 'DownloadAbortError') {
           return h('div')
         }
-        if (m.name === 'MultipleError') {
+        if (m.name === 'AggregateError') {
           return h('div')
         }
         if (m.name === 'Error' && typeof m.message === 'string') {
