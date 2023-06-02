@@ -499,7 +499,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
               if (p.lastVersionId === version.id) {
                 options.name = p.name
                 options.java = p.javaDir
-                options.vmOptions = p.javaArgs.split(' ')
+                options.vmOptions = p.javaArgs?.split(' ') || []
                 break
               }
             }
