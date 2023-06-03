@@ -18,16 +18,18 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   const contract = new appInsight.Contracts.ContextTagKeys()
 
   const clientSessionFile = join(app.appDataPath, 'client_session')
-  let sessionId = ''
+  let clientSession = ''
   try {
     const session = await readFile(clientSessionFile).then(b => b.toString())
-    sessionId = session
+    clientSession = session
   } catch {
-    sessionId = randomUUID()
-    await writeFile(clientSessionFile, sessionId)
+    clientSession = randomUUID()
+    await writeFile(clientSessionFile, clientSession)
   }
 
-  app.registry.register(kTelemtrySession, sessionId)
+  const sessionId = randomUUID()
+
+  app.registry.register(kTelemtrySession, clientSession)
 
   appInsight.setup(APP_INSIGHT_KEY)
     .setDistributedTracingMode(appInsight.DistributedTracingModes.AI_AND_W3C)
@@ -40,7 +42,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
 
   const tags = appInsight.defaultClient.context.tags
   tags[contract.sessionId] = sessionId
-  tags[contract.userId] = sessionId
+  tags[contract.userId] = clientSession
   tags[contract.applicationVersion] = IS_DEV ? '0.0.0' : `${app.version}#${app.build}`
   tags[contract.operationParentId] = 'root'
 
