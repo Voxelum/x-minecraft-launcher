@@ -30,7 +30,11 @@ const LOCAL_STORAGE_CACHE: Record<string, Ref<any>> = {}
 
 export function useLocalStorageCache<T>(key: string, defaultValue: () => T, toString: (t: T) => string, fromString: (s: string) => T): Ref<T> {
   if (LOCAL_STORAGE_CACHE[key]) {
-    return LOCAL_STORAGE_CACHE[key]
+    const ref = LOCAL_STORAGE_CACHE[key]
+    watch(ref, (n) => {
+      localStorage.setItem(key, toString(n))
+    })
+    return ref
   }
   const result = localStorage.getItem(key)
   const deserialize = (val: string) => {
