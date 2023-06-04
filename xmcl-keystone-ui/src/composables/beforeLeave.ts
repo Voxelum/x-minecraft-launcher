@@ -1,4 +1,3 @@
-
 export function useBeforeLeave(hook: () => boolean) {
   const router = useRouter()
   let remove = () => { }

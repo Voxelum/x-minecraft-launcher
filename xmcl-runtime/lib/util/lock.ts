@@ -1,4 +1,3 @@
-
 import { promises as fs } from 'fs'
 import { pid } from 'process'
 import { Logger } from '@azure/msal-common'

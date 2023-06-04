@@ -1,4 +1,3 @@
-
 const firstBigrams = new Map()
 export function getDiceCoefficient(first: string, second: string) {
   first = first.replace(/\s+/g, '')

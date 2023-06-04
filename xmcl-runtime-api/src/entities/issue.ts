@@ -1,4 +1,3 @@
-
 export interface Issue<T = Record<string, any>> {
   id: string
   parameters: T[]

@@ -1,4 +1,3 @@
-
 import TextComponent from '@/components/TextComponent'
 import { IssueHandler, kIssueHandlers, kSemaphores, kServiceFactory, useSemaphores } from '@/composables'
 import { kDialogModel, useDialogModel } from '@/composables/dialog'

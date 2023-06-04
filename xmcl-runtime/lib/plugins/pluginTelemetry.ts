@@ -98,12 +98,12 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
         },
       })
     })
-    app.logManager.logBus.on('error', (tag, message: string, e: Error) => {
+    app.logManager.logBus.on('error', (tag, message: string, e?: Error) => {
       if (baseService.state.disableTelemetry) return
       appInsight.defaultClient.trackTrace({
         message,
         severity: appInsight.Contracts.SeverityLevel.Error,
-        properties: { ...e },
+        properties: e ? { ...e } : undefined,
         tagOverrides: {
           [contract.operationParentId]: tag,
         },
