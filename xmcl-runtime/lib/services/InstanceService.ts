@@ -224,11 +224,12 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       if (!existsSync(candidatePath)) {
         instance.path = candidatePath
       } else {
-        throw new InstanceException({
-          type: 'instanceNameDuplicated',
-          path: candidatePath,
-          name: payload.name,
-        })
+        // find the first available path
+        let i = 1
+        while (existsSync(candidatePath + i)) {
+          i++
+        }
+        instance.path = candidatePath + i
       }
     }
 
