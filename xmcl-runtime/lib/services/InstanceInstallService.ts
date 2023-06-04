@@ -385,10 +385,14 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
     if (resource) {
       if ((metadata.modrinth && !resource.metadata.modrinth) || (metadata.curseforge && resource.metadata.curseforge) || (urls.length > 0 && urls.some(u => resource.uris.indexOf(u) === -1))) {
-        await this.resourceService.updateResources([{ hash: resource.hash, metadata, uris: urls }]).catch((e) => {
-          this.warn(`Fail to update existed resource ${resource.name}(${resource.hash}) metadata during instance install:`)
-          this.warn(e)
-        })
+        if (!resource.hash) {
+          this.error(new TypeError('Invalid resource ' + JSON.stringify(resource)))
+        } else {
+          await this.resourceService.updateResources([{ hash: resource.hash, metadata, uris: urls }]).catch((e) => {
+            this.warn(`Fail to update existed resource ${resource.name}(${resource.hash}) metadata during instance install:`)
+            this.warn(e)
+          })
+        }
       }
       return createFileLinkTask(filePath, resource)
     }
