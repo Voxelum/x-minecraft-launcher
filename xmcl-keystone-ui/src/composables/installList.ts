@@ -410,12 +410,18 @@ export function useInstallList() {
 
     try {
       installing.value = true
+      console.log(toInstallCurseforge)
+      console.log(toInstallModrinth)
       await Promise.all([
         install({ mods: toInstall }).then(() => {
           successedToInstall.push(...toInstall)
+        }, (e) => {
+          console.error('Fail to install', e)
         }),
         uninstall({ mods: toRemove }).then(() => {
           successedToRemove.push(...toRemove)
+        }, (e) => {
+          console.error('Fail to uninstall', e)
         }),
         ...toInstallCurseforge.map(([file, icon]) => installFile({
           file,
@@ -423,12 +429,16 @@ export function useInstallList() {
           type: 'mc-mods',
         }).then(() => {
           successedToInstallCurseforge.push(file)
+        }, (e) => {
+          console.error('Fail to install curseforge', e)
         })),
         ...toInstallModrinth.map(([version, icon]) => installVersion({
           version,
           icon,
         }).then(() => {
           successedToInstallModrinth.push(version)
+        }, (e) => {
+          console.error('Fail to install modrinth', e)
         })),
       ])
     } finally {
@@ -443,6 +453,10 @@ export function useInstallList() {
       if (i.modrinth && successedToInstallModrinth.includes(i.modrinth)) return false
       return true
     })
+
+    if (list.value.length > 0) {
+      console.error(`Failed to install ${list.value.length} mods.`)
+    }
 
     for (const key in mutexDict) {
       mutexDict[key] = []
