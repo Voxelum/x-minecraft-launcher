@@ -1,4 +1,3 @@
-
 export interface LogRecord {
   tags: string[]
   level: string

@@ -1,4 +1,3 @@
-
 export interface Shell {
   /**
     * A safe method that only open directory. If the `path` is a file, it won't execute it.

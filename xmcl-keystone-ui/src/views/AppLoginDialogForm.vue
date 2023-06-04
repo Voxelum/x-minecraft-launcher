@@ -232,15 +232,15 @@ function handleError(e: unknown) {
     } else if (e.exception.type === 'userCheckGameOwnershipFailed') {
       const msg = t('loginError.checkOwnershipFailed')
       usernameErrors.value = [msg]
-      passwordErrors.value = [e.exception.error ?? msg]
+      passwordErrors.value = [msg]
     } else if (e.exception.type === 'userExchangeXboxTokenFailed') {
       const msg = t('loginError.loginXboxFailed')
       usernameErrors.value = [msg]
-      passwordErrors.value = [e.exception.error ?? msg]
+      passwordErrors.value = [msg]
     } else if (e.exception.type === 'userLoginMinecraftByXboxFailed') {
       const msg = t('loginError.loginMinecraftByXboxFailed')
       usernameErrors.value = [msg]
-      passwordErrors.value = [e.exception.error ?? msg]
+      passwordErrors.value = [msg]
     } else if (e.exception.type === 'loginReset') {
       const msg = t('loginError.connectionReset')
       usernameErrors.value = [msg]
@@ -252,7 +252,7 @@ function handleError(e: unknown) {
     } else if (e.exception.type === 'userAcquireMicrosoftTokenFailed') {
       const msg = t('loginError.acquireMicrosoftTokenFailed')
       usernameErrors.value = [msg]
-      passwordErrors.value = [e.exception.error ?? msg]
+      passwordErrors.value = [msg]
     }
   } else {
     const msg = t('loginError.requestFailed')

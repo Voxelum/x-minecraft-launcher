@@ -1,4 +1,3 @@
-
 <template>
   <v-list-item
     class="universal-drop-tile"

@@ -1,4 +1,3 @@
-
 import { AccentState, IS_DEV, WindowsBuild } from '@/constant'
 import browsePreload from '@preload/browse'
 import indexPreload from '@preload/index'
@@ -161,8 +160,17 @@ export default class Controller implements LauncherAppController {
 
   private setupBrowserLogger(ref: BrowserWindow, name: string) {
     const stream = this.app.logManager.openWindowLog(name)
+    const logBus = this.app.logManager.logBus
     const levels = ['', 'INFO', 'WARN', 'ERROR']
+    const tagName = `renderer-${name}`
     ref.webContents.on('console-message', (e, level, message, line, id) => {
+      if (level === 1) {
+        logBus.emit('log', tagName, message)
+      } else if (level === 2) {
+        logBus.emit('warn', tagName, message)
+      } else if (level === 3) {
+        logBus.emit('error', tagName, message)
+      }
       stream.write(`[${levels[level]}] [${new Date().toUTCString()}] [${id}]: ${message}\n`)
     })
     ref.once('close', () => {

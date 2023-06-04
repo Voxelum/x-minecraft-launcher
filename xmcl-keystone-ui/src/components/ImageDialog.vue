@@ -1,4 +1,3 @@
-
 <template>
   <v-dialog v-model="isShown">
     <v-img :src="image" />

@@ -1,4 +1,3 @@
-
 import { SecretStorage } from '@xmcl/runtime'
 import { safeStorage } from 'electron'
 import { ensureDir } from 'fs-extra'

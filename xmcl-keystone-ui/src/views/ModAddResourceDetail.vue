@@ -183,9 +183,8 @@ const showFile = (r: Resource) => {
   showItemInDirectory(r.path)
 }
 
-const { runtime } = injection(kModsContext)
 const { goCurseforgeProject, goModrinthProject } = injection(kMarketRoute)
-const deps = computed(() => props.resources.map(getModDependencies).map(d => getModsCompatiblity(d, runtime.value)))
+const deps = computed(() => props.resources.map(getModDependencies).map(d => getModsCompatiblity(d, props.runtime as any)))
 const coreDeps = computed(() => deps.value.map(v => v.filter(d => d.modId === 'minecraft' || d.modId === 'forge' || d.modId === 'fabric' || d.modId === 'quilt' || d.modId === 'fabricloader')))
 
 </script>

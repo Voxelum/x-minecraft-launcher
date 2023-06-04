@@ -1,11 +1,9 @@
-import { AppManifest } from '@xmcl/runtime-api'
 import { createWriteStream } from 'fs'
-import { stream } from 'undici'
 import { extname } from 'path'
-import { pipeline } from '../util/fs'
+import { Writable } from 'stream'
+import { stream } from 'undici'
 import { InjectionKey } from '../util/objectRegistry'
 import LauncherApp from './LauncherApp'
-import { Writable } from 'stream'
 
 export interface ResolvedIcon {
   src: string

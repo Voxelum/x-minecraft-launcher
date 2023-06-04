@@ -1,4 +1,3 @@
-
 const queryRE = /\?.*$/
 const hashRE = /#.*$/
 
