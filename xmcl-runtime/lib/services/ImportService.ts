@@ -73,7 +73,18 @@ export class ImportService extends AbstractService implements IImportService {
     }
 
     if (installToInstance) {
-      await this.resourceService.install({ resource: parsed, instancePath })
+      if (parsed.domain === ResourceDomain.Unclassified) {
+        if (parsed.path.endsWith('.jar')) {
+          parsed.domain = ResourceDomain.Mods
+        } else if (parsed.path.endsWith('.zip')) {
+          parsed.domain = ResourceDomain.ResourcePacks
+        }
+      }
+      try {
+        await this.resourceService.install({ resource: parsed, instancePath })
+      } catch {
+        this.error(Object.assign(new Error('Fail to install resource to instance'), { resource: parsed }))
+      }
     }
   }
 
