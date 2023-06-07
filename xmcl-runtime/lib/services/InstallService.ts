@@ -608,7 +608,7 @@ export class InstallService extends AbstractService implements IInstallService {
         this.apis = apis.map(a => new URL(a)).map(a => {
           const realUrl = new URL(url.toString())
           realUrl.host = a.host
-          realUrl.pathname = a.pathname + url.pathname
+          realUrl.pathname = (a.pathname === '/' ? '' : a.pathname) + url.pathname
           return realUrl.toString()
         })
         this._to = dest
@@ -622,7 +622,7 @@ export class InstallService extends AbstractService implements IInstallService {
             const api = this.apis[0]
             this._from = api
             this.update(0)
-            const resp = await request(api, { throwOnError: true, signal: this.controller.signal })
+            const resp = await request(api, { throwOnError: true, signal: this.controller.signal, skipOverride: true })
             const artifact = await resp.body.json()
             const result = await installFabric(artifact, this.dest, { side: 'client' })
             return result
@@ -652,6 +652,7 @@ export class InstallService extends AbstractService implements IInstallService {
           new URL('https://meta.fabricmc.net/v2/versions/loader/' + options.minecraft + '/' + options.loader),
           baseService.getApiSets().map(a => a.url),
           baseService.state.apiSetsPreference === 'mojang' || baseService.state.apiSetsPreference === '',
+        //  .baseService.shouldOverrideApiSet(),
           path,
           options.minecraft,
         ))
