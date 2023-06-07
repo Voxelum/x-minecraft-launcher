@@ -283,7 +283,7 @@ export class InstanceInstallService extends AbstractService implements IInstance
 
     const createDownloadTask = async (file: InstanceFile, destination: string, pending?: string, sha1?: string) => {
       if (!file.downloads) {
-        throw new Error(`Cannot resolve file! ${file.path}`)
+        throw new Error(Object.assign('Cannot create download file task', { file }))
       }
 
       const zipUrl = file.downloads.find(u => u.startsWith('zip:'))
@@ -409,7 +409,13 @@ export class InstanceInstallService extends AbstractService implements IInstance
     }
 
     return downloadTask.setName('file').map(async () => {
-      await this.resourceService.updateResources([{ hash: file.hashes.sha1, metadata }])
+      if (file.hashes.sha1) {
+        await this.resourceService.updateResources([{ hash: file.hashes.sha1, metadata }])
+      } else {
+        this.warn('Missing sha1 hash for file %o', file)
+        const sha1 = await this.worker.hash(destination, (await stat(destination)).size)
+        await this.resourceService.updateResources([{ hash: sha1, metadata }])
+      }
       return undefined
     })
   }
