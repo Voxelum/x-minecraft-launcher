@@ -464,6 +464,11 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       return false
     }
 
+    if (resolve(path).startsWith(this.getPath())) {
+      this.log(`Skip to add instance from root ${path}`)
+      return false
+    }
+
     // copy assets, library and versions
     await this.worker.copyPassively([
       { src: resolve(path, 'libraries'), dest: this.getPath('libraries') },
