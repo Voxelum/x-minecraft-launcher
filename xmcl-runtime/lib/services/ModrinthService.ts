@@ -8,12 +8,14 @@ import { Inject } from '../util/objectRegistry'
 import { ResourceService } from './ResourceService'
 import { ModrinthV2Client } from '@xmcl/modrinth'
 import { AbstractService, ExposeServiceKey, Singleton } from './Service'
+import { InstanceService } from './InstanceService'
 
 @ExposeServiceKey(ModrinthServiceKey)
 export class ModrinthService extends AbstractService implements IModrinthService {
   readonly client = new ModrinthV2Client()
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
+    @Inject(InstanceService) private instanceService: InstanceService,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
     super(app, async () => {
@@ -23,6 +25,7 @@ export class ModrinthService extends AbstractService implements IModrinthService
   @Singleton((o) => `${o.version.id}`)
   async installVersion({ version, icon, instancePath }: InstallProjectVersionOptions): Promise<InstallModrinthVersionResult> {
     const isSingleFile = version.files.length === 1
+    instancePath ||= this.instanceService.state.path
     const resources = await Promise.all(version.files.map(async (file) => {
       this.log(`Try install project version file ${file.filename} ${file.url}`)
       const destination = join(this.app.temporaryPath, basename(file.filename))
