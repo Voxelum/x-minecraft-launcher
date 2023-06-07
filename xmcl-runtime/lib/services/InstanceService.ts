@@ -10,7 +10,7 @@ import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { readLaunchProfile } from '../entities/launchProfile'
 import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
-import { copyPassively, exists, isDirectory, missing, readdirEnsured } from '../util/fs'
+import { copyPassively, exists, isDirectory, isPathDiskRootPath, missing, readdirEnsured } from '../util/fs'
 import { ImageStorage } from '../util/imageStore'
 import { assignShallow, requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
@@ -244,7 +244,9 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     instance.showLog = payload.showLog ?? instance.showLog
     instance.upstream = payload.upstream
 
-    await ensureDir(instance.path)
+    if (!isPathDiskRootPath(instance.path)) {
+      await ensureDir(instance.path)
+    }
     this.state.instanceAdd(instance)
 
     this.log('Created instance with option')

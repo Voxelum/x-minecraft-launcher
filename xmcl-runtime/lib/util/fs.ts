@@ -16,6 +16,14 @@ const pip = promisify(pipeline)
 export { pip as pipeline }
 export { checksum }
 
+export function isPathDiskRootPath(path: string): boolean {
+  if (platform() === 'win32') {
+    return /^[a-zA-Z]:\\$/.test(path)
+  } else {
+    return path === '/'
+  }
+}
+
 export async function checksumFromStream(s: Readable, alg: string) {
   const hash = createHash(alg)
   await pip(s, hash)
