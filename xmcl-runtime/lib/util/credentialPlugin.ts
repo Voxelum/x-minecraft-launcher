@@ -46,7 +46,7 @@ export function createPlugin(serviceName: string, accountName: string, logger: L
             await storage.put(`${serviceName}:3`, accountName, part3)
             await storage.put(`${serviceName}:4`, accountName, part4)
           } catch (e) {
-            logger.error(new Error('Fail to serialzie the credential cache %o', { cause: e }))
+            logger.error(new Error('Fail to serialzie the credential cache', { cause: e }))
           }
         }
       },
