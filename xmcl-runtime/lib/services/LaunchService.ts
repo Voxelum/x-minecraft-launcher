@@ -17,6 +17,8 @@ import { InstanceVersionService } from './InstanceVersionService'
 import { JavaService } from './JavaService'
 import { ExposeServiceKey, StatefulService } from './Service'
 import { UserService } from './UserService'
+import { InstanceResourcePackService } from './InstanceResourcePacksService'
+import { InstanceShaderPacksService } from './InstanceShaderPacksService'
 
 @ExposeServiceKey(LaunchServiceKey)
 export class LaunchService extends StatefulService<LaunchState> implements ILaunchService {
@@ -30,6 +32,8 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
     @Inject(InstallService) private installService: InstallService,
     @Inject(InstanceJavaService) private instanceJavaService: InstanceJavaService,
     @Inject(InstanceVersionService) private instanceVersionService: InstanceVersionService,
+    @Inject(InstanceResourcePackService) private instanceResourcePackService: InstanceResourcePackService,
+    @Inject(InstanceShaderPacksService) private instanceShaderPacksService: InstanceShaderPacksService,
     @Inject(JavaService) private javaService: JavaService,
     @Inject(kUserTokenStorage) private userTokenStorage: UserTokenStorage,
     @Inject(UserService) private userService: UserService,
@@ -155,6 +159,9 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
           await this.diagnoseService.fix(problems)
         }
       }
+
+      await this.instanceResourcePackService.ensureResourcePacks().catch((e) => this.error(e))
+      await this.instanceShaderPacksService.ensureShaderPacks().catch((e) => this.error(e))
 
       if (this.state.status === 'idle') { // check if we have cancel (set to ready) this launch
         return false

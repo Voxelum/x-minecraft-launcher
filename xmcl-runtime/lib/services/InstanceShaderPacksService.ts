@@ -11,13 +11,16 @@ import { Inject } from '../util/objectRegistry'
 import { InstanceService } from './InstanceService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Singleton } from './Service'
+import { InstanceOptionsService } from './InstanceOptionsService'
 
 @ExposeServiceKey(InstanceShaderPacksServiceKey)
 export class InstanceShaderPacksService extends AbstractService implements IInstanceShaderPacksServic {
   private active: string | undefined
+  private linked = false
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
+    @Inject(InstanceOptionsService) private gameSettingService: InstanceOptionsService,
     @Inject(InstanceService) private instanceService: InstanceService,
   ) {
     super(app)
@@ -39,6 +42,17 @@ export class InstanceShaderPacksService extends AbstractService implements IInst
     })
   }
 
+  async ensureShaderPacks() {
+    if (!this.active) return
+    if (this.linked) return
+    const fileName = this.gameSettingService.state.shaderoptions.shaderPack
+    const src = this.getPath(ResourceDomain.ShaderPacks, fileName)
+    const dest = join(this.active, ResourceDomain.ShaderPacks, fileName)
+    if (!existsSync(dest)) {
+      await linkWithTimeoutOrCopy(src, dest).catch((e) => this.error(e))
+    }
+  }
+
   @Singleton(p => p)
   async link(instancePath: string = this.instanceService.state.path) {
     const destPath = join(instancePath, 'shaderpacks')
@@ -50,7 +64,7 @@ export class InstanceShaderPacksService extends AbstractService implements IInst
       throw e
     })
     this.active = destPath
-    const loadAll = async () => {
+    const scan = async () => {
       const files = await readdir(destPath)
 
       this.log(`Import shaderpacks directories while linking: ${instancePath}`)
@@ -69,6 +83,7 @@ export class InstanceShaderPacksService extends AbstractService implements IInst
       if (stat.isSymbolicLink()) {
         if (await readlink(destPath) === srcPath) {
           this.log(`Skip linking the shaderpacks at domain as it already linked: ${instancePath}`)
+          this.linked = true
           return
         }
         this.log(`Relink the shaderpacks domain: ${instancePath}`)
@@ -76,13 +91,8 @@ export class InstanceShaderPacksService extends AbstractService implements IInst
       } else {
         // Import all directory content
         if (stat.isDirectory()) {
-          await loadAll()
-          if (!this.instanceService.isUnderManaged(instancePath)) {
-            // do not link if this is not an managed instance
-            return
-          } else {
-            await rm(destPath, { recursive: true, force: true })
-          }
+          await scan()
+          this.linked = false
         } else {
           await rename(destPath, `${destPath}_backup`)
         }
@@ -90,10 +100,17 @@ export class InstanceShaderPacksService extends AbstractService implements IInst
     } else if (!this.instanceService.isUnderManaged(instancePath)) {
       // do not link if this is not an managed instance
       await ensureDir(destPath)
+      this.linked = false
       return
     }
 
-    await createSymbolicLink(srcPath, destPath)
+    try {
+      await createSymbolicLink(srcPath, destPath, this)
+      this.linked = true
+    } catch (e) {
+      this.error(e as Error)
+      this.linked = false
+    }
   }
 
   async showDirectory(): Promise<void> {

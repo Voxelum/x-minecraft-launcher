@@ -19,9 +19,8 @@ import { AbstractService, ExposeServiceKey, Singleton } from './Service'
  */
 @ExposeServiceKey(InstanceResourcePacksServiceKey)
 export class InstanceResourcePackService extends AbstractService implements IInstanceResourcePacksService {
-  private packVersionToVersionRange: Record<number, string> = packFormatVersionRange
-
   private active: string | undefined
+  private linked = false
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
@@ -184,6 +183,24 @@ export class InstanceResourcePackService extends AbstractService implements IIns
   //   })
   // }
 
+  async ensureResourcePacks() {
+    if (!this.active) return
+    if (this.linked) return
+    const promises: Promise<void>[] = []
+    for (let fileName of this.gameSettingService.state.options.resourcePacks) {
+      if (fileName === 'vanilla') {
+        continue
+      }
+      fileName = fileName.startsWith('file/') ? fileName.slice(5) : fileName
+      const src = this.getPath(ResourceDomain.ResourcePacks, fileName)
+      const dest = join(this.active, ResourceDomain.ResourcePacks, fileName)
+      if (!existsSync(dest)) {
+        promises.push(linkWithTimeoutOrCopy(src, dest).catch((e) => this.error(e)))
+      }
+    }
+    await Promise.all(promises)
+  }
+
   @Singleton(p => p)
   async link(instancePath: string = this.instanceService.state.path): Promise<void> {
     await this.resourceService.whenReady(ResourceDomain.ResourcePacks)
@@ -198,7 +215,7 @@ export class InstanceResourcePackService extends AbstractService implements IIns
     this.active = destPath
     await this.resourceService.whenReady(ResourceDomain.ResourcePacks)
     await this.dispose()
-    const importAllResources = async () => {
+    const scan = async () => {
       const files = await readdir(destPath)
 
       this.log(`Import resourcepacks directories while linking: ${instancePath}`)
@@ -216,32 +233,36 @@ export class InstanceResourcePackService extends AbstractService implements IIns
       if (stat.isSymbolicLink()) {
         if (await readlink(destPath) === srcPath) {
           this.log(`Skip linking the resourcepacks at domain as it already linked: ${instancePath}`)
+          this.linked = true
+          return
         } else {
           this.log(`Relink the resourcepacks domain: ${instancePath}`)
           await unlink(destPath)
         }
       } else {
-        // Import all directory content
+        // Keep the dictionary and transport all files into it
         if (stat.isDirectory()) {
-          await importAllResources()
-          if (!this.instanceService.isUnderManaged(instancePath)) {
-            // do not link if this is not an managed instance
-            // await this.watchUnmanagedInstance(destPath)
-            return
-          } else {
-            await rm(destPath, { recursive: true, force: true })
-          }
+          // Import all directory content
+          await scan()
+          this.linked = false
         } else {
           await rename(destPath, `${destPath}_backup`)
         }
       }
     } else if (!this.instanceService.isUnderManaged(instancePath)) {
       // do not link if this is not an managed instance
-      // await this.watchUnmanagedInstance(destPath)
       await ensureDir(destPath)
+      this.linked = false
       return
     }
-    await createSymbolicLink(srcPath, destPath)
+
+    try {
+      await createSymbolicLink(srcPath, destPath, this)
+      this.linked = true
+    } catch (e) {
+      this.error(e as Error)
+      this.linked = false
+    }
   }
 
   async showDirectory(): Promise<void> {

@@ -4,7 +4,7 @@ import filenamify from 'filenamify'
 import { existsSync } from 'fs'
 import { ensureDir } from 'fs-extra/esm'
 import { copyFile, readdir, rename, rm } from 'fs/promises'
-import { dirname, isAbsolute, join, relative, resolve } from 'path'
+import { basename, dirname, isAbsolute, join, relative, resolve } from 'path'
 import { fileURLToPath } from 'url'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
@@ -466,7 +466,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       return false
     }
 
-    if (resolve(path).startsWith(this.getPath())) {
+    if (resolve(path).startsWith(this.getPath()) || this.getPath().startsWith(resolve(path))) {
       this.log(`Skip to add instance from root ${path}`)
       return false
     }
@@ -528,9 +528,10 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }))
 
     if (!isVersionIsolated) {
+      const folderName = dirname(path)
       const options: CreateInstanceOption = {
         path,
-        name: dirname(path),
+        name: isPathDiskRootPath(folderName) ? basename(path) : basename(folderName),
       }
       if (profile) {
         const sorted = Object.values(profile.profiles).sort((a, b) =>
@@ -575,7 +576,6 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         }
       }
 
-      const folderName = dirname(path)
       if (folderName === 'minecraft' || folderName === '.minecraft') {
         const name = getExpectVersion(options.runtime)
         options.name = name
