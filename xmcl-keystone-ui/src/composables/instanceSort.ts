@@ -7,11 +7,7 @@ export function useSortedInstance() {
   const { state } = useService(InstanceServiceKey)
   const unordered = computed(() => state.instances)
 
-  const sorted = computed(() => {
-    const result = unordered.value.slice().sort((a, b) => ordered.value.indexOf(a.path) - ordered.value.indexOf(b.path))
-    // console.log(result)
-    return result
-  })
+  const sorted = computed(() => unordered.value.slice().reverse().sort((a, b) => ordered.value.indexOf(a.path) - ordered.value.indexOf(b.path)))
 
   const setToPrevious = (instancePath: string, pivot: string) => {
     const targetIndex = sorted.value.findIndex(v => v.path === pivot)

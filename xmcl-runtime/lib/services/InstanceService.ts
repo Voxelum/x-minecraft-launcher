@@ -528,10 +528,9 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }))
 
     if (!isVersionIsolated) {
-      const folderName = dirname(path)
       const options: CreateInstanceOption = {
         path,
-        name: isPathDiskRootPath(folderName) ? basename(path) : basename(folderName),
+        name: '',
       }
       if (profile) {
         const sorted = Object.values(profile.profiles).sort((a, b) =>
@@ -576,11 +575,13 @@ export class InstanceService extends StatefulService<InstanceState> implements I
         }
       }
 
+      const dirPath = dirname(path)
+      const folderName = basename(dirPath)
       if (folderName === 'minecraft' || folderName === '.minecraft') {
         const name = getExpectVersion(options.runtime)
         options.name = name
       } else {
-        options.name = folderName
+        options.name = isPathDiskRootPath(dirPath) ? basename(path) : folderName
       }
 
       await this.createInstance(options)
