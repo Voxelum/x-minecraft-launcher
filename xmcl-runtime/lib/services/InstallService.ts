@@ -295,6 +295,7 @@ export class InstallService extends AbstractService implements IInstallService {
     const options: InstallForgeOptions = {
       ...this.networkManager.getDownloadBaseOptions(),
       java: this.javaService.getPreferredJava()?.path,
+      skipRevalidate: true,
     }
 
     const allSets = this.baseService.getApiSets()
@@ -315,6 +316,7 @@ export class InstallService extends AbstractService implements IInstallService {
       assetsDownloadConcurrency: 16,
       ...this.networkManager.getDownloadBaseOptions(),
       side: 'client',
+      skipRevalidate: true,
     }
 
     const allSets = this.baseService.getApiSets()
@@ -651,8 +653,7 @@ export class InstallService extends AbstractService implements IInstallService {
         new InstallFabricTask(
           new URL('https://meta.fabricmc.net/v2/versions/loader/' + options.minecraft + '/' + options.loader),
           baseService.getApiSets().map(a => a.url),
-          baseService.state.apiSetsPreference === 'mojang' || baseService.state.apiSetsPreference === '',
-        //  .baseService.shouldOverrideApiSet(),
+          baseService.shouldOverrideApiSet(),
           path,
           options.minecraft,
         ))
