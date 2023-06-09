@@ -233,8 +233,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
       }
     }
 
-    const mcVersions = await this.installService.getMinecraftVersionList()
-    instance.runtime.minecraft = instance.runtime.minecraft || mcVersions.latest.release
+    instance.runtime.minecraft = instance.runtime.minecraft || this.installService.getLatestRelease()
     instance.author = this.userService.state.gameProfile?.name ?? ''
     instance.creationDate = Date.now()
     instance.lastAccessDate = Date.now()
