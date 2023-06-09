@@ -33,12 +33,16 @@ export default class NetworkManager extends Manager {
 
   private userAgent: string
 
+  private cache: ClassicLevel
+
   constructor(app: LauncherApp, serviceManager: ServiceManager, stateManager: ServiceStateManager) {
     super(app)
     const cachePath = join(app.appDataPath, 'undici-cache')
     const cache = new ClassicLevel(cachePath, {
       valueEncoding: 'json',
     })
+
+    this.cache = cache
 
     cache.open().catch((e) => {
       this.app.error('Fail to open undici cache. Try to fix the error', e)
@@ -191,6 +195,10 @@ export default class NetworkManager extends Manager {
 
   registerDispatchInterceptor(interceptor: (opts: DispatchOptions) => void | Promise<void>) {
     this.dispatchInterceptors.unshift(interceptor)
+  }
+
+  dispose() {
+    return this.cache.close()
   }
 
   /**
