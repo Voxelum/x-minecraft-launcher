@@ -137,7 +137,7 @@ importModpack:
 importResource: 導入資源
 installAssets:
   asset: 下載資源文件%{hash}
-  assetsJson: 下載資源文件目錄
+  assetIndex: 下載資源文件目錄
   name: 下載遊戲資源文件
 installAuthlibInjector: 安裝 authlib-injector
 installCurseforgeFile: 安裝 Curseforge 文件

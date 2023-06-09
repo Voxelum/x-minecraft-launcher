@@ -5,7 +5,7 @@ function t(key) { /* noop */ }
 
 // Install assets
 t('installAssets.asset')
-t('installAssets.assetsJson')
+t('installAssets.assetIndex')
 t('installAssets.name')
 
 // Install Fabric

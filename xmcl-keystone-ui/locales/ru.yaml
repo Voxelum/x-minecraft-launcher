@@ -296,7 +296,7 @@ importResource: Импорт ресурса
 install: Установить
 installAssets:
   asset: Установить Asset {hash}
-  assetsJson: Проверить индексный файл assets
+  assetIndex: Проверить индексный файл assets
   name: Установить файлы Asset
 installAuthlibInjector: Установить authlib-injector
 installCurseforgeFile: Установить файл Curseforge
