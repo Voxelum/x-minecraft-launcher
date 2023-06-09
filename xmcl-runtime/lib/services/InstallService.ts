@@ -22,7 +22,7 @@ import { VersionService } from './VersionService'
  */
 @ExposeServiceKey(InstallServiceKey)
 export class InstallService extends AbstractService implements IInstallService {
-  private latestRelease = '1.19.2'
+  private latestRelease = '1.20'
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(BaseService) private baseService: BaseService,
