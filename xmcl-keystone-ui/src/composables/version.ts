@@ -150,7 +150,14 @@ export function useForgeVersions(minecraftVersion: Ref<string>) {
   const _refreshing = useServiceBusy(InstallServiceKey, 'getForgeVersionList')
 
   const { data: versions, isValidating, mutate, error } = useSWRV(`/forge-versions/${minecraftVersion.value}`,
-    () => minecraftVersion.value ? getForgeVersionList({ minecraftVersion: minecraftVersion.value }).then(v => v.map(markRaw)) : [],
+    async () => {
+      const version = minecraftVersion.value
+      const result = await version ? getForgeVersionList({ minecraftVersion: version }).then(v => v.map(markRaw)) : []
+      if (version !== minecraftVersion.value) {
+        return []
+      }
+      return result
+    },
     inject(kSWRVConfig))
 
   const refreshing = computed(() => isValidating.value || _refreshing.value)
