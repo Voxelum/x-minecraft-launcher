@@ -9,7 +9,7 @@ export interface LogRecord {
 
 export function parseTags(tags: string[]) {
   const [date, sourceAndLevel, location] = tags
-  const [source, level] = sourceAndLevel.indexOf('/') !== -1 ? sourceAndLevel.split('/') : [sourceAndLevel, 'INFO']
+  const [source, level] = sourceAndLevel?.indexOf('/') !== -1 ? sourceAndLevel?.split('/') : [sourceAndLevel, 'INFO']
   return {
     date,
     source,
