@@ -330,7 +330,7 @@ importResource: Import Resource
 install: Install
 installAssets:
   asset: Install Asset {hash}
-  assetsJson: Check Assets Index File
+  assetIndex: Check Assets Index File
   name: Install Asset Files
 installAuthlibInjector: Install authlib-injector
 installCurseforgeFile: Install Curseforge File
