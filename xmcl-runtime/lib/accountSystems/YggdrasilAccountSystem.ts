@@ -69,23 +69,23 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
       return userProfile
     } catch (e: any) {
       if (e.message && e.message.startsWith('getaddrinfo ENOTFOUND')) {
-        throw new UserException({ type: 'loginInternetNotConnected' }, e.message || e.errorMessage)
+        throw new UserException({ type: 'loginInternetNotConnected' }, e.message || e.errorMessage, { cause: e })
       } else if (e.error === 'ForbiddenOperationException' &&
         e.errorMessage === 'Invalid credentials. Invalid username or password.') {
-        throw new UserException({ type: 'loginInvalidCredentials' }, e.message || e.errorMessage)
+        throw new UserException({ type: 'loginInvalidCredentials' }, e.message || e.errorMessage, { cause: e })
       } else if (e.error === 'ForbiddenOperationException' &&
         e.errorMessage === 'Invalid credential information.') {
-        throw new UserException({ type: 'loginInvalidCredentials' }, e.message || e.errorMessage)
+        throw new UserException({ type: 'loginInvalidCredentials' }, e.message || e.errorMessage, { cause: e })
       } else if (e.error === 'IllegalArgumentException') {
-        throw new UserException({ type: 'loginInvalidCredentials' }, e.message || e.errorMessage)
+        throw new UserException({ type: 'loginInvalidCredentials' }, e.message || e.errorMessage, { cause: e })
       } else if (isSystemError(e)) {
         if (e.code === 'ETIMEDOUT') {
-          throw new UserException({ type: 'loginTimeout' }, e.message)
+          throw new UserException({ type: 'loginTimeout' }, e.message, { cause: e })
         } else if (e.code === 'ECONNRESET') {
-          throw new UserException({ type: 'loginReset' }, e.message)
+          throw new UserException({ type: 'loginReset' }, e.message, { cause: e })
         }
       }
-      throw new UserException({ type: 'loginGeneral' }, e.message)
+      throw new UserException({ type: 'loginGeneral' }, e.message, { cause: e })
     }
   }
 
