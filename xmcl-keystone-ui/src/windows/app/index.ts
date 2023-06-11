@@ -93,9 +93,12 @@ app.$mount('#app')
 const params = window.location.search.substring(1)
 if (params.startsWith('route=')) {
   const route = params.substring('route='.length)
-  const base = '/' + route.split('/')[1]
-  router.replace(base)
-  if (route !== base) {
+  const split = route.split('/')
+  if (split.length > 2) {
+    const base = split.slice(0, split.length - 1).join('/')
+    router.push(base)
+    router.push(route)
+  } else {
     router.push(route)
   }
 }
@@ -103,5 +106,6 @@ if (params.startsWith('route=')) {
 window.addEventListener('message', (e) => {
   if (e.data.route) {
     router.push(e.data.route)
+    windowController.focus()
   }
 })
