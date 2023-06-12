@@ -389,7 +389,7 @@ export class ResourceService extends AbstractService implements IResourceService
     const installer = this.installers[resource.domain]
 
     if (!installer) {
-      throw new Error(`Not found the resource installer for domain ${resource.domain}`)
+      throw Object.assign(new Error(`Not found the resource installer for domain ${resource.domain}`), { resource, name: 'InstallResourceError' })
     }
 
     await installer(resource, instancePath)
