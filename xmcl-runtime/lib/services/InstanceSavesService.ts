@@ -70,7 +70,7 @@ export class InstanceSavesService extends StatefulService<SaveState> implements 
         await this.importSave({
           instancePath,
           path: resource.path,
-          saveRoot: resource.metadata.save.root,
+          saveRoot: resource.metadata.save?.root,
         })
       }
     })
