@@ -217,7 +217,7 @@ export const resolveQuiltVersion: PartialVersionResolver = (v) => v.libraries.fi
   ?.name.split(':')[2] || ''
 
 export function isForgeLibrary(lib: LibraryInfo) {
-  return lib.groupId === 'net.minecraftforge' && (lib.artifactId === 'forge' || lib.artifactId === 'fmlloader')
+  return lib.groupId === 'net.minecraftforge' && (lib.artifactId === 'forge' || lib.artifactId === 'fmlloader' || lib.artifactId === 'minecraftforge')
 }
 
 export function isFabricLoaderLibrary(lib: LibraryInfo) {
