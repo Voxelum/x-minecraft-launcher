@@ -1,5 +1,5 @@
 import { DownloadTask } from '@xmcl/installer'
-import { ModrinthService as IModrinthService, InstallModrinthVersionResult, InstallProjectVersionOptions, ModrinthServiceKey, getModrinthVersionFileUri, getModrinthVersionUri } from '@xmcl/runtime-api'
+import { ModrinthService as IModrinthService, InstallModrinthVersionResult, InstallProjectVersionOptions, ModrinthServiceKey, ResourceDomain, getModrinthVersionFileUri, getModrinthVersionUri } from '@xmcl/runtime-api'
 import { unlink } from 'fs/promises'
 import { basename, join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
@@ -82,8 +82,12 @@ export class ModrinthService extends AbstractService implements IModrinthService
       }
 
       if (instancePath) {
-        resource.path = resource.storedPath!
-        await this.resourceService.install({ instancePath, resource })
+        if (resource.domain === ResourceDomain.Modpacks) {
+          this.log(`Skip to install modpack ${resource.name} (versionId=${version.id}, projectId=${version.project_id})`)
+        } else {
+          resource.path = resource.storedPath!
+          await this.resourceService.install({ instancePath, resource })
+        }
       }
 
       return resource
