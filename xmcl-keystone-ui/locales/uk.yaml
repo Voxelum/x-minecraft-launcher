@@ -191,7 +191,7 @@ diagnosis:
     name: "Немає asset: {name} | Відсутній asset: {name} | Немає assets: %{count}"
   missingAssetsIndex:
     message: Лаунчер завантажує індексні assets замість вас 
-	name: "Відсутня індексний файл assets {version}."
+    name: "Відсутня індексний файл assets {version}."
   missingAuthlibInjector:
     message: Для використання стороннього сервера авторизації потрібен authlib-injector!
     name: Authlib-injector відсутній
@@ -778,7 +778,7 @@ multiplayer:
   share: Поділитись конфігурацією екземпляра
   sharing: Обмін файлами...
   start: Почати
-  startNewP2PConnection:Натисніть «Почати», щоб створити нове однорангове з'єднання
+  startNewP2PConnection: Натисніть «Почати», щоб створити нове однорангове з'єднання
 myStuff: Мої матеріали
 name: Ім'я
 natType:
