@@ -19,7 +19,7 @@ import zh from './locales/zh-CN.yaml'
 import { createI18n } from './utils/i18n'
 import { darkIcon } from './utils/icons'
 import { trackWindowSize } from './utils/windowSizeTracker'
-import { createPromiseSignal } from '@xmcl/runtime/lib/util/promiseSignal'
+import { PromiseSignal, createPromiseSignal } from '@xmcl/runtime/lib/util/promiseSignal'
 
 export default class Controller implements LauncherAppController {
   protected windowsVersion?: { major: number; minor: number; build: number }
@@ -106,7 +106,7 @@ export default class Controller implements LauncherAppController {
     }
   }
 
-  private baseServiceSignal = createPromiseSignal()
+  private baseServiceSignal: PromiseSignal<void> | undefined
   private isFirstLaunch = false
 
   constructor(protected app: ElectronLauncherApp) {
@@ -371,6 +371,7 @@ export default class Controller implements LauncherAppController {
 
     if (this.app.platform.name === 'linux') {
       if (!this.isFirstLaunch) {
+        this.baseServiceSignal = createPromiseSignal()
         this.baseServiceSignal.accept(this.app.serviceManager.get(BaseService).initialize())
         await this.baseServiceSignal.promise.catch(() => { /* ignore */ })
       }
@@ -481,7 +482,9 @@ export default class Controller implements LauncherAppController {
 
   async processFirstLaunch(): Promise<{ path: string; instancePath: string; locale: string }> {
     this.isFirstLaunch = true
-    this.baseServiceSignal.reject(new Error('Abort base service init waiting since this is first laucnh'))
+    if (this.baseServiceSignal) {
+      this.baseServiceSignal.reject(new Error('Abort base service init waiting since this is first laucnh'))
+    }
     return new Promise<{ path: string; instancePath: string; locale: string }>((resolve) => {
       ipcMain.handleOnce('bootstrap', (_, path, instancePath, locale) => {
         resolve({ path, instancePath, locale })
