@@ -369,7 +369,7 @@
         <v-checkbox
           v-model="fastLaunch"
           hide-details
-          @click="fastLaunch = !fastLaunch"
+          @click.stop
         />
       </v-list-item-action>
       <v-list-item-content>
@@ -393,7 +393,7 @@
         <v-checkbox
           v-model="hideLauncher"
           hide-details
-          @click="hideLauncher = !hideLauncher"
+          @click.stop
         />
       </v-list-item-action>
       <v-list-item-content>
@@ -415,7 +415,7 @@
         <v-checkbox
           v-model="showLog"
           hide-details
-          @click="showLog = !showLog"
+          @click.stop
         />
       </v-list-item-action>
       <v-list-item-content>

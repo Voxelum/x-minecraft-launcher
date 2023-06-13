@@ -103,15 +103,15 @@ export function useInstanceEdit(instance: Ref<Instance | undefined>) {
     set: (v) => { data.mcOptions = v },
   })
   const fastLaunch = computed({
-    get: () => data.fastLaunch || baseState.globalFastLaunch,
+    get: () => data.fastLaunch ?? baseState.globalFastLaunch,
     set: (v) => { data.fastLaunch = v },
   })
   const hideLauncher = computed({
-    get: () => data.hideLauncher || baseState.globalHideLauncher,
+    get: () => data.hideLauncher ?? baseState.globalHideLauncher,
     set: (v) => { data.hideLauncher = v },
   })
   const showLog = computed({
-    get: () => data.showLog || baseState.globalShowLog,
+    get: () => data.showLog ?? baseState.globalShowLog,
     set: (v) => { data.showLog = v },
   })
 
@@ -135,10 +135,10 @@ export function useInstanceEdit(instance: Ref<Instance | undefined>) {
     if (current.maxMemory !== data.maxMemory) {
       return true
     }
-    if (current.vmOptions?.join(' ') !== data.vmOptions) {
+    if (current.vmOptions && current.vmOptions?.join(' ') !== data.vmOptions) {
       return true
     }
-    if (current.mcOptions?.join(' ') !== data.mcOptions) {
+    if (current.vmOptions && current.mcOptions?.join(' ') !== data.mcOptions) {
       return true
     }
     if (current.assignMemory !== data.assignMemory) {
