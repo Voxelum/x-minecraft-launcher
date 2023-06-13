@@ -5,7 +5,7 @@ import { Arch, build as electronBuilder, Configuration } from 'electron-builder'
 import { build as esbuild, BuildOptions } from 'esbuild'
 import { createReadStream, createWriteStream, existsSync } from 'fs'
 import { copy, ensureFile } from 'fs-extra'
-import { copyFile, readdir, rename, rm, stat, unlink, writeFile } from 'fs/promises'
+import { copyFile, mkdir, readdir, rename, rm, stat, unlink, writeFile } from 'fs/promises'
 import { platform } from 'os'
 import path, { basename, dirname, join, resolve } from 'path'
 import { pipeline, Writable } from 'stream'
@@ -35,6 +35,7 @@ async function writeHash(algorithm: string, path: string, destination: string) {
  */
 async function buildMain(options: BuildOptions) {
   await rm(path.join(__dirname, './dist'), { recursive: true, force: true })
+  await mkdir(path.join(__dirname, './dist'))
   console.log(chalk.bold.underline('Build main process & preload'))
   const startTime = Date.now()
   await esbuild({

@@ -108,6 +108,11 @@ pnpm install
   ```
 </details>
 
+#### 设置环境变量
+在`xmcl-electron-app`下创建`.env`文件来设置`CURSEFORGE_API_KEY`。`.env`文件已被添加到`.gitignore`文件中。
+
+**请注意保护好你的 CURSEFORGE API KEY**
+
 
 #### 运行启动器
 
