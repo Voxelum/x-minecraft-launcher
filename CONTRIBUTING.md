@@ -109,6 +109,11 @@ pnpm install
   ```
 </details>
 
+#### Set Environment Variables
+
+You should set the `CURSEFORGE_API_KEY` by creating a `.env` file under `xmcl-electron-app`. This `.env` file is added in `.gitignore` file.
+
+**DO NOT LEAK YOUR CURSEFORGE API KEY**
 
 #### Start Launcher
 
@@ -150,7 +155,7 @@ If you don't use VSCode to launch, it should close Electron and reload automatic
 
 ### Found something wrong in launcher core
 
-The launcher core is in [separated project](https://github.com/voxelum/minecraft-launcher-core-node) written in TypeScript. 
+The launcher core is in [separated project](https://github.com/voxelum/minecraft-launcher-core-node) written in TypeScript.
 
 Please open issue there if you identify any issue related to it.
 
@@ -161,9 +166,9 @@ Please open issue there if you identify any issue related to it.
 - Import your hook by `import { yourHook } from '/@/composables'` in your Vue file
 - Use hook in Vue file without directly access of Vuex
 
-### VSCode debugger 
+### VSCode debugger
 
-The project includes VSCode debugger configs. You can add breakpoint on line and debug. Currently, VSCode debugger method only supports debug on main process. 
+The project includes VSCode debugger configs. You can add breakpoint on line and debug. Currently, VSCode debugger method only supports debug on main process.
 
 (You can use Chrome Devtools for renderer process anyway)
 
