@@ -4,6 +4,7 @@ import electron from 'electron'
 import { BuildContext, Plugin, context } from 'esbuild'
 import { join, resolve } from 'path'
 import esbuildOptions from './esbuild.config'
+import { existsSync, mkdirSync } from 'fs'
 
 process.once('exit', terminate).once('SIGINT', terminate)
 
@@ -21,11 +22,15 @@ let esbuild: BuildContext | null = null
  */
 function startElectron() {
   const electronPath = electron as any as string
+  const cwd = join(__dirname, '../dist')
+  if (!existsSync(cwd)) {
+    mkdirSync(cwd)
+  }
   const spawnProcess = spawn(electronPath, [
     '--inspect=5858',
     '--remote-debugging-port=9222',
     join(__dirname, '../dist/index.js'),
-  ], { cwd: join(__dirname, '../dist') })
+  ], { cwd })
 
   function electronLog(data: string | Buffer) {
     const colorize = (line: string) => {

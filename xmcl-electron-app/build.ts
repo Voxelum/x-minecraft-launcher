@@ -35,7 +35,6 @@ async function writeHash(algorithm: string, path: string, destination: string) {
  */
 async function buildMain(options: BuildOptions) {
   await rm(path.join(__dirname, './dist'), { recursive: true, force: true })
-  await mkdir(path.join(__dirname, './dist'))
   console.log(chalk.bold.underline('Build main process & preload'))
   const startTime = Date.now()
   await esbuild({
