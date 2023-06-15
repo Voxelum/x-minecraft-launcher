@@ -2,7 +2,7 @@ AppAddInstanceDialog:
   downloadedNotification: Модпак {name} встановлен. Зробити для нього екземпляр?
 AppShareInstanceDialog:
   baseInfo: Базове налаштування
-  cancelShare: Не делілитись
+  cancelShare: Не розповсюджувати
   description: >-
     Після того як ви поділілись профілем, інші користувачі зможуть встановлювати ці файли через
     ваш ПК.
@@ -43,11 +43,11 @@ HomeJavaIssueDialog:
     message: Лаунчер завантажить и встановить Java з вхідного коду Mojang.
     name: Завантажити автоматично
   optionManualDownload:
-    message: Лаунчер перенаправить вас на сторінку завантаження Orecale JRE.
+    message: Лаунчер перекине вас на сторінку завантаження Oracle JRE.
     name: Завантажити вручну
   optionSelectJava:
     message: >-
-      Лаунчер не знайшов у вас Java. Вкажіть лаунчеру де он
+      Лаунчер не знайшов у вас Java. Вкажіть лаунчеру де він
       знаходиться.
     name: Оберіть Java на своєму комп'ютері 
   optionSwitch:
@@ -58,10 +58,10 @@ HomeJavaIssueDialog:
   selectMatchedHint: Знайдено відповідні локальні версії Java. Можна вибрати ці локальні Java.
   selectSecondaryHint: >-
     Знайдено кілька локальних версій Java, але вони можуть не відповідати критеріям.
-    Ви можете використовувати їх для запуску, але можуть бути проблеми.
+    Ви можете застосувати їх для запуску, але можливо будуть проблеми.
 HomeLaunchMultiInstanceDialog:
   confirm: Запустити
-  description: Ви запускаєте кілька екземплярів Minecraft. Ви впевнені?
+  description: Ви запустили кілька екземплярів Minecraft. Ви впевнені?
   title: Декілька екземплярів
 HomeSyncButton:
   update: Синхронізувати екземпляр
@@ -75,15 +75,15 @@ HomeSyncDialogPull:
   update: Оновити
 HomeSyncDialogPush:
   authError: >-
-    Неправильна автентифікація користувача. Переконайтеся, що у вас є привілей
-    завантажувати файли із сервера!
+    Неправильна авторизація користувача. Переконайтеся, що у вас є права
+    на завантажування файлі з серверу !
   refresh: Перезавантажити
   unknownError: Невідома помилка сервера. Повторіть спробу.
   upload: Завантажити екземпляр
 SettingMigrationDialog:
   selectRootDirectory: Виберіть кореневий каталог
 add: Добавить
-authProfileAddedNotification: Профіль автентифікації {name} доданий
+authProfileAddedNotification: Профіль аутифікації {name} доданий
 author: Автор
 back: Назад
 baseSetting:
@@ -109,7 +109,7 @@ curseforge:
     gameVersion: Версія гри
     releaseType: Тип випуску
     sortByDate: Дата
-    sortByName: Ім'я файлу
+    sortByName: Ім'я файла
   fileReleaseType:
     alpha: Альфа
     beta: Бета
@@ -151,12 +151,12 @@ dataMigration:
      лаунчер на цьому процесі!
   setRootDescription: Це змінить кореневу папку даних цього лаунчера та minecraft.
   setRootTitle: Встановити нове місце зберігання
-  unknownError: Невідома помилка! Повторіть спробу або зверніться до розробника!
+  unknownError: Невідома помилка! Спробуйте знову або зверніться до розробника!
   waitReload: Перенесення даних. Не закривайте лаунчер, інакше ви втратите дані.
 delete:
-  name: Вдалити {name}
+  name: Видалити {name}
   "no": "Ні"
-  "yes": Вдалити
+  "yes": Так
 description: Опис
 detail: Деталі
 diagnosis:
