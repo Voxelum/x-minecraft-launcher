@@ -65,7 +65,7 @@
       <v-card-text>{{ proj.summary }}</v-card-text>
     </div>
     <div
-      class="p-4 flex flex-wrap gap-2 justify-start content-start"
+      class="p-4 flex flex-grow-0 flex-wrap gap-2 justify-end content-start"
       @click.stop.prevent
     >
       <v-chip
