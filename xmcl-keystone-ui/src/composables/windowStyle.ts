@@ -11,7 +11,9 @@ export function useWindowStyle() {
     maximized.value = v
   })
   const hideWindowControl = computed(() => state.platform.name === 'osx' || (state.platform.name === 'linux' && state.linuxTitlebar))
+  const shouldShiftBackControl = computed(() => state.platform.name === 'osx')
   return {
+    shouldShiftBackControl,
     hideWindowControl,
   }
 }
