@@ -46,6 +46,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
         yggdrasilServices: [],
       }
 
+      const shouldRefillData = data.yggdrasilServices.length === 0 && Object.keys(data.users).length === 0
       // This will fill the user data
       await preprocessUserData(userData, data, this.getMinecraftPath('launcher_profiles.json'), tokenStorage)
       // Ensure the launcher profile
@@ -55,7 +56,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
 
       this.state.userData(userData)
 
-      if (userData.yggdrasilServices.length === 0) {
+      if (shouldRefillData) {
         // Initialize the data
         Promise.all([
           loadYggdrasilApiProfile('https://littleskin.cn/api/yggdrasil').then(api => {
