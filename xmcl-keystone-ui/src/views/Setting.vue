@@ -1,7 +1,7 @@
 <template>
   <v-container
     fluid
-    class="overflow-auto h-full"
+    class="overflow-auto h-full visible-scroll"
   >
     <SettingGeneral />
     <SettingYggdrasilServices />
