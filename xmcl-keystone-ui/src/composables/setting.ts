@@ -96,9 +96,12 @@ export function useSettings() {
 
   onUnmounted(() => {
     const p = proxy.value
-    const newValue = `http://${p.host}:${p.port}`
+    const newValue =
+      !p.host && !p.port
+        ? ''
+        : `http://${p.host}:${p.port}`
     if (newValue !== state.httpProxy) {
-      state.httpProxySet(`http://${p.host}:${p.port}`)
+      state.httpProxySet(newValue)
     }
     if (state.maxSockets !== maxSockets.value) {
       state.maxSocketsSet(Number(maxSockets.value))
