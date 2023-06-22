@@ -26,6 +26,7 @@
       :selected="selectedUser"
       @select="onSelectUser"
       @refresh="onRefresh"
+      @remove="onRemoveUser"
       @abort-refresh="onAbortRefresh"
     />
   </v-menu>
@@ -42,7 +43,7 @@ import { UserServiceKey } from '@xmcl/runtime-api'
 import UserMenu from './UserMenu.vue'
 
 const { users, userProfile: selectedUser, gameProfile: selectedUserGameProfile } = injection(kUserContext)
-const { selectUser, abortRefresh, refreshUser } = useService(UserServiceKey)
+const { selectUser, abortRefresh, refreshUser, removeUserProfile } = useService(UserServiceKey)
 const { show: showLoginDialog } = useDialog(LoginDialog)
 const isShown = ref(false)
 
@@ -51,7 +52,7 @@ const onSelectUser = (user: string) => {
   isShown.value = false
   selectUser(user)
 }
-watch(selectedUser, (show) => {
+watch(isShown, (show) => {
   if (show && users.value.length === 0) {
     showLoginDialog()
     nextTick().then(() => {
@@ -66,6 +67,13 @@ function onRefresh() {
     refreshUser().catch(() => {
       showLoginDialog({ username: selectedUser.value?.username, service: selectedUser.value?.authService, error: t('login.userRelogin') })
     })
+  }
+}
+async function onRemoveUser() {
+  const isLastOne = users.value.length <= 0
+  await removeUserProfile(selectedUser.value.id)
+  if (isLastOne) {
+    showLoginDialog()
   }
 }
 

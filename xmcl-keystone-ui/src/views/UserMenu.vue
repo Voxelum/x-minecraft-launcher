@@ -28,7 +28,7 @@
       :user="selected"
     />
 
-    <v-divider />
+    <v-divider v-if="usersToSwitch.length > 0" />
     <v-list
       dense
     >
