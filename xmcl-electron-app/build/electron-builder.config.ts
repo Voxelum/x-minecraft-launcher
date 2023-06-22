@@ -102,6 +102,7 @@ export const config = {
   linux: {
     desktop: {
       MimeType: 'x-scheme-handler/xmcl',
+      StartupWMClass: 'xmcl',
     },
     category: 'Game',
     icon: 'icons/dark@256x256.png',
