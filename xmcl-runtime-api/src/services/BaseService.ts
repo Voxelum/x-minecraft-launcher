@@ -92,8 +92,8 @@ export class BaseState implements SettingSchema {
     this.apiSetsPreference = config.apiSetsPreference
     this.httpProxy = config.httpProxy
     this.httpProxyEnabled = config.httpProxyEnabled
-    this.maxSockets = config.maxSockets || 16
-    this.maxAPISockets = config.maxAPISockets || 0
+    this.maxSockets = config.maxSockets ?? 16
+    this.maxAPISockets = config.maxAPISockets ?? 0
     this.theme = config.theme
     this.globalMinMemory = config.globalMinMemory
     this.globalMaxMemory = config.globalMaxMemory

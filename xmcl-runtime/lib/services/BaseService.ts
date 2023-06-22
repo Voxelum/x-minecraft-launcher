@@ -12,10 +12,35 @@ import { Inject } from '../util/objectRegistry'
 import { createSafeFile } from '../util/persistance'
 import { ZipTask } from '../util/zip'
 import { ExposeServiceKey, Singleton, StatefulService } from './Service'
+import { AggregateExecutor } from '../util/aggregator'
 
 @ExposeServiceKey(BaseServiceKey)
 export class BaseService extends StatefulService<BaseState> implements IBaseService {
   private settingFile = createSafeFile(this.getAppDataPath('setting.json'), SettingSchema, this, [this.getPath('setting.json')])
+  private saver = new AggregateExecutor<void, void>(() => { }, () => this.settingFile.write({
+    locale: this.state.locale,
+    autoInstallOnAppQuit: this.state.autoInstallOnAppQuit,
+    autoDownload: this.state.autoDownload,
+    allowPrerelease: this.state.allowPrerelease,
+    apiSets: this.state.apiSets,
+    apiSetsPreference: this.state.apiSetsPreference,
+    httpProxy: this.state.httpProxy,
+    httpProxyEnabled: this.state.httpProxyEnabled,
+    theme: this.state.theme,
+    maxSockets: this.state.maxSockets,
+    globalMinMemory: this.state.globalMinMemory,
+    globalMaxMemory: this.state.globalMaxMemory,
+    globalAssignMemory: this.state.globalAssignMemory,
+    globalVmOptions: this.state.globalVmOptions,
+    globalMcOptions: this.state.globalMcOptions,
+    globalFastLaunch: this.state.globalFastLaunch,
+    globalHideLauncher: this.state.globalHideLauncher,
+    globalShowLog: this.state.globalShowLog,
+    discordPresence: this.state.discordPresence,
+    developerMode: this.state.developerMode,
+    disableTelemetry: this.state.disableTelemetry,
+    linuxTitlebar: this.state.linuxTitlebar,
+  }), 1000)
 
   constructor(
     @Inject(LauncherAppKey) app: LauncherApp,
@@ -54,30 +79,7 @@ export class BaseService extends StatefulService<BaseState> implements IBaseServ
       'disableTelemetrySet',
       'linuxTitlebarSet',
     ], () => {
-      this.settingFile.write({
-        locale: this.state.locale,
-        autoInstallOnAppQuit: this.state.autoInstallOnAppQuit,
-        autoDownload: this.state.autoDownload,
-        allowPrerelease: this.state.allowPrerelease,
-        apiSets: this.state.apiSets,
-        apiSetsPreference: this.state.apiSetsPreference,
-        httpProxy: this.state.httpProxy,
-        httpProxyEnabled: this.state.httpProxyEnabled,
-        theme: this.state.theme,
-        maxSockets: this.state.maxSockets,
-        globalMinMemory: this.state.globalMinMemory,
-        globalMaxMemory: this.state.globalMaxMemory,
-        globalAssignMemory: this.state.globalAssignMemory,
-        globalVmOptions: this.state.globalVmOptions,
-        globalMcOptions: this.state.globalMcOptions,
-        globalFastLaunch: this.state.globalFastLaunch,
-        globalHideLauncher: this.state.globalHideLauncher,
-        globalShowLog: this.state.globalShowLog,
-        discordPresence: this.state.discordPresence,
-        developerMode: this.state.developerMode,
-        disableTelemetry: this.state.disableTelemetry,
-        linuxTitlebar: this.state.linuxTitlebar,
-      })
+      this.saver.push()
     })
   }
 
