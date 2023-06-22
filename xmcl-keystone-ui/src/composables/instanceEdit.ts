@@ -147,7 +147,6 @@ export function useInstanceEdit(instance: Ref<Instance | undefined>) {
     if (current.version !== data.version) {
       return true
     }
-
     if (current.runtime.minecraft !== data.runtime.minecraft) {
       return true
     }
@@ -163,7 +162,6 @@ export function useInstanceEdit(instance: Ref<Instance | undefined>) {
     if (current.runtime.optifine !== data.runtime.optifine) {
       return true
     }
-
     if (current.fastLaunch !== data.fastLaunch) {
       return true
     }

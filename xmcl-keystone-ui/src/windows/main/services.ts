@@ -1,7 +1,8 @@
 import { kServiceFactory } from '@/composables'
 import { injection } from '@/util/inject'
 import type { ResolvedVersion } from '@xmcl/core'
-import { BaseServiceKey, BaseState, CurseForgeServiceKey, DiagnoseServiceKey, DiagnoseState, EMPTY_JAVA, EMPTY_VERSION, GameProfileAndTexture, ImportServiceKey, InstallServiceKey, InstanceInstallServiceKey, InstanceIOServiceKey, InstanceJavaServiceKey, InstanceJavaState, InstanceLogServiceKey, InstanceManifestServiceKey, InstanceModsServiceKey, InstanceModsState, InstanceOptionsServiceKey, InstanceOptionsState, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceScreenshotServiceKey, InstanceServerInfoServiceKey, InstanceServiceKey, InstanceShaderPacksServiceKey, InstanceState, InstanceUpdateServiceKey, InstanceVersionServiceKey, InstanceVersionState, JavaRecord, JavaServiceKey, JavaState, LaunchServiceKey, LaunchState, LittleSkinUserServiceKey, LocalVersionHeader, ModpackServiceKey, ModrinthServiceKey, NatDeviceInfo, NatServiceKey, NatState, OfficialUserServiceKey, OfflineUserServiceKey, PeerServiceKey, PeerState, Resource, ResourcePackPreviewServiceKey, ResourceServiceKey, SaveState, ServerInfoState, ServerStatusServiceKey, UserProfile, UserServiceKey, UserState, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
+import { BaseServiceKey, BaseState, CurseForgeServiceKey, DiagnoseServiceKey, DiagnoseState, EMPTY_JAVA, EMPTY_VERSION, GameProfileAndTexture, ImportServiceKey, InstallServiceKey, InstanceInstallServiceKey, InstanceIOServiceKey, InstanceJavaServiceKey, InstanceJavaState, InstanceLogServiceKey, InstanceManifestServiceKey, InstanceModsServiceKey, InstanceModsState, InstanceOptionsServiceKey, InstanceOptionsState, InstanceResourcePacksServiceKey, InstanceSavesServiceKey, InstanceSchema, InstanceScreenshotServiceKey, InstanceServerInfoServiceKey, InstanceServiceKey, InstanceShaderPacksServiceKey, InstanceState, InstanceUpdateServiceKey, InstanceVersionServiceKey, InstanceVersionState, JavaRecord, JavaServiceKey, JavaState, LaunchServiceKey, LaunchState, LittleSkinUserServiceKey, LocalVersionHeader, ModpackServiceKey, ModrinthServiceKey, NatDeviceInfo, NatServiceKey, NatState, OfficialUserServiceKey, OfflineUserServiceKey, PeerServiceKey, PeerState, Resource, ResourcePackPreviewServiceKey, ResourceServiceKey, SaveState, ServerInfoState, ServerStatusServiceKey, UserProfile, UserServiceKey, UserState, VersionServiceKey, VersionState } from '@xmcl/runtime-api'
+import { DeepPartial } from '@xmcl/runtime-api/src/util/object'
 import { GameProfile } from '@xmcl/user'
 import { del, set } from 'vue'
 
@@ -85,6 +86,31 @@ class ReactiveNatState extends NatState {
   }
 }
 
+class ReactiveInstanceState extends InstanceState {
+  instanceEdit(settings: DeepPartial<InstanceSchema> & { path: string }): void {
+    super.instanceEdit(settings)
+    const inst = this.instances.find(i => i.path === (settings.path || this.path))!
+    if ('showLog' in settings) {
+      set(inst, 'showLog', settings.showLog)
+    }
+    if ('hideLauncher' in settings) {
+      set(inst, 'hideLauncher', settings.hideLauncher)
+    }
+    if ('fastLaunch' in settings) {
+      set(inst, 'fastLaunch', settings.fastLaunch)
+    }
+    if ('maxMemory' in settings) {
+      set(inst, 'maxMemory', settings.maxMemory)
+    }
+    if ('minMemory' in settings) {
+      set(inst, 'minMemory', settings.minMemory)
+    }
+    if ('assignMemory' in settings) {
+      set(inst, 'assignMemory', settings.assignMemory)
+    }
+  }
+}
+
 export function useAllServices() {
   const factory = injection(kServiceFactory)
 
@@ -118,7 +144,7 @@ export function useAllServices() {
   factory.register(InstanceModsServiceKey, () => new ReactiveInstanceModState())
   factory.register(InstanceSavesServiceKey, () => new SaveState())
   factory.register(InstanceServerInfoServiceKey, () => new ServerInfoState())
-  factory.register(InstanceServiceKey, () => new InstanceState())
+  factory.register(InstanceServiceKey, () => new ReactiveInstanceState())
   factory.register(JavaServiceKey, () => new JavaState())
   factory.register(VersionServiceKey, () => new VersionState())
   factory.register(LaunchServiceKey, () => new LaunchState())
