@@ -106,8 +106,8 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         detached: true,
         cwd: minecraftFolder.root,
       },
-      extraJVMArgs: instance.vmOptions ?? globalState.globalVmOptions,
-      extraMCArgs: instance.mcOptions ?? globalState.globalMcOptions,
+      extraJVMArgs: (instance.vmOptions && instance.vmOptions.length != 0) ? instance.vmOptions : globalState.globalVmOptions,
+      extraMCArgs: (instance.mcOptions && instance.mcOptions.length != 0) ? instance.mcOptions : globalState.globalMcOptions,
       yggdrasilAgent,
     }
 
