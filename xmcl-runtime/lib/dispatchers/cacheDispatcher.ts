@@ -297,7 +297,9 @@ export class JsonCacheStorage implements CacheStorage {
   async put(opts: Agent.DispatchOptions, req: CachedRequest): Promise<void> {
     const key = await this.getKey(opts)
     if (key) {
-      await this.adapter.put(key, req.toJSON(), req.policy.timeToLive())
+      await this.adapter.put(key, req.toJSON(), req.policy.timeToLive()).catch((e) => {
+        cacheErrorChannel.publish({ options: opts, error: e })
+      })
     }
   }
 

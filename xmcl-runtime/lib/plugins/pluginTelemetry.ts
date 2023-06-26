@@ -88,6 +88,14 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
         }
       })
 
+    appInsight.defaultClient.addTelemetryProcessor((envelope, contextObjects) => {
+      if (envelope.tags.sampleRate) {
+        envelope.sampleRate = envelope.tags.sampleRate
+        delete envelope.tags.sampleRate
+      }
+      return true
+    })
+
     app.logManager.logBus.on('log', (tag, message) => {
       if (baseService.state.disableTelemetry) return
       appInsight.defaultClient.trackTrace({
@@ -95,6 +103,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
         severity: appInsight.Contracts.SeverityLevel.Information,
         tagOverrides: {
           [contract.operationParentId]: tag,
+          sampleRate: 40,
         },
       })
     })
