@@ -1,4 +1,4 @@
-import { InjectionKey, Ref } from 'vue'
+import { InjectionKey, Ref, set } from 'vue'
 import { BaseServiceKey, Instance, InstanceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
 import { useService } from '@/composables'
 
@@ -56,8 +56,8 @@ export function useInstanceEdit(instance: Ref<Instance | undefined>) {
   const isGlobalAssignMemory = computed(() => data.assignMemory === undefined)
   const isGlobalMinMemory = computed(() => data.minMemory === undefined)
   const isGlobalMaxMemory = computed(() => data.maxMemory === undefined)
-  const isGlobalVmOptions = computed(() => !data.vmOptions)
-  const isGlobalMcOptions = computed(() => !data.mcOptions)
+  const isGlobalVmOptions = computed(() => data.vmOptions === undefined)
+  const isGlobalMcOptions = computed(() => data.mcOptions === undefined)
   const isGlobalFastLaunch = computed(() => data.fastLaunch === undefined)
   const isGlobalHideLauncher = computed(() => data.hideLauncher === undefined)
   const isGlobalShowLog = computed(() => data.showLog === undefined)
@@ -67,13 +67,13 @@ export function useInstanceEdit(instance: Ref<Instance | undefined>) {
     data.maxMemory = undefined
   }
   const resetVmOptions = () => {
-    data.vmOptions = undefined
+    set(data, 'vmOptions', undefined)
   }
   const resetMcOptions = () => {
-    data.mcOptions = undefined
+    set(data, 'mcOptions', undefined)
   }
   const resetFastLaunch = () => {
-    data.fastLaunch = undefined
+    set(data, 'fastLaunch', undefined)
   }
   const resetHideLauncher = () => {
     data.hideLauncher = undefined
@@ -95,11 +95,11 @@ export function useInstanceEdit(instance: Ref<Instance | undefined>) {
     set: (v) => { data.maxMemory = v },
   })
   const vmOptions = computed({
-    get: () => data.vmOptions || baseState.globalVmOptions.join(' '),
+    get: () => data.vmOptions ?? baseState.globalVmOptions.join(' '),
     set: (v) => { data.vmOptions = v },
   })
   const mcOptions = computed({
-    get: () => data.mcOptions || baseState.globalMcOptions.join(' '),
+    get: () => data.mcOptions ?? baseState.globalMcOptions.join(' '),
     set: (v) => { data.mcOptions = v },
   })
   const fastLaunch = computed({
@@ -135,10 +135,10 @@ export function useInstanceEdit(instance: Ref<Instance | undefined>) {
     if (current.maxMemory !== data.maxMemory) {
       return true
     }
-    if (current.vmOptions && current.vmOptions?.join(' ') !== data.vmOptions) {
+    if (current.vmOptions?.join(' ') !== data.vmOptions) {
       return true
     }
-    if (current.vmOptions && current.mcOptions?.join(' ') !== data.mcOptions) {
+    if (current.mcOptions?.join(' ') !== data.mcOptions) {
       return true
     }
     if (current.assignMemory !== data.assignMemory) {
@@ -193,8 +193,8 @@ export function useInstanceEdit(instance: Ref<Instance | undefined>) {
       fileApi: data.fileServerApi,
       minMemory: data.minMemory,
       maxMemory: data.maxMemory,
-      vmOptions: data.vmOptions?.split(' ').filter(v => v.length !== 0) || [],
-      mcOptions: data.mcOptions?.split(' ').filter(v => v.length !== 0) || [],
+      vmOptions: data.vmOptions?.split(' ').filter(v => v.length !== 0),
+      mcOptions: data.mcOptions?.split(' ').filter(v => v.length !== 0),
       assignMemory: data.assignMemory,
       version: data.version,
       runtime: data.runtime,
@@ -247,8 +247,8 @@ export function useInstanceEdit(instance: Ref<Instance | undefined>) {
 
       data.maxMemory = current.maxMemory
       data.minMemory = current.minMemory
-      data.vmOptions = current.vmOptions?.join(' ') || ''
-      data.mcOptions = current.mcOptions?.join(' ') || ''
+      data.vmOptions = current.vmOptions?.join(' ')
+      data.mcOptions = current.mcOptions?.join(' ')
       data.javaPath = current.java
       data.assignMemory = current.assignMemory
       data.fastLaunch = current.fastLaunch

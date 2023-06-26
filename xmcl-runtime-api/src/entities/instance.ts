@@ -14,8 +14,8 @@ export function createTemplate(): Instance {
     resolution: { width: 800, height: 400, fullscreen: false },
     minMemory: 0,
     maxMemory: 0,
-    vmOptions: [],
-    mcOptions: [],
+    vmOptions: undefined,
+    mcOptions: undefined,
 
     url: '',
     icon: '',

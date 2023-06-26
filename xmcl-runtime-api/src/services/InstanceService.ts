@@ -152,14 +152,10 @@ export class InstanceState {
     }
 
     if ('vmOptions' in settings) {
-      if (settings.vmOptions instanceof Array && settings.vmOptions.every(r => typeof r === 'string')) {
-        inst.vmOptions = Object.seal(settings.vmOptions)
-      }
+      inst.vmOptions = Object.seal(settings.vmOptions)
     }
     if ('mcOptions' in settings) {
-      if (settings.mcOptions instanceof Array && settings.mcOptions.every(r => typeof r === 'string')) {
-        inst.mcOptions = Object.seal(settings.mcOptions)
-      }
+      inst.mcOptions = Object.seal(settings.mcOptions)
     }
     if ('java' in settings) {
       inst.java = settings.java

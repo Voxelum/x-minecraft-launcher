@@ -108,6 +108,12 @@ class ReactiveInstanceState extends InstanceState {
     if ('assignMemory' in settings) {
       set(inst, 'assignMemory', settings.assignMemory)
     }
+    if ('vmOptions' in settings) {
+      set(inst, 'vmOptions', settings.vmOptions)
+    }
+    if ('mcOptions' in settings) {
+      set(inst, 'mcOptions', settings.mcOptions)
+    }
   }
 }
 
