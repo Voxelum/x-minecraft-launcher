@@ -25,9 +25,14 @@ export class InstanceModsService extends StatefulService<InstanceModsState> impl
     (all) => {
       const toAdd = [] as Resource[]
       const toRemove = [] as Resource[]
-      for (const [r, isAdd] of all) {
+      const visited = new Set<string>()
+
+      for (let i = all.length - 1; i >= 0; i--) {
+        const [r, isAdd] = all[i]
+        if (visited.has(r.hash)) continue
         if (isAdd) toAdd.push(r)
         else toRemove.push(r)
+        visited.add(r.hash)
       }
       this.state.instanceModUpdates({ adds: toAdd, remove: toRemove })
     },
