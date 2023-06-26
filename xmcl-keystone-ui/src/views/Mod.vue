@@ -17,7 +17,6 @@
       class="flex overflow-auto h-full flex-col py-0"
       @dragend="onDragEnd"
       @dragover.prevent
-      @drop="onDropToImport"
     >
       <Hint
         v-if="items.length === 0 || dragover"
@@ -66,7 +65,7 @@
 
 <script lang=ts setup>
 import Hint from '@/components/Hint.vue'
-import { useDrop, useService } from '@/composables'
+import { useService } from '@/composables'
 import { kInstanceContext } from '@/composables/instanceContext'
 import { useModDeletion } from '@/composables/modDelete'
 import { useModDragging } from '@/composables/modDraggable'
@@ -76,32 +75,20 @@ import { useModSelection } from '@/composables/modSelection'
 import { usePresence } from '@/composables/presence'
 import { kCompact, useCompactScroll } from '@/composables/scrollTop'
 import { injection } from '@/util/inject'
-import { InstanceServiceKey, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { ModItem } from '../composables/mod'
 import ModCard from './ModCard.vue'
 import ModDeleteView from './ModDeleteView.vue'
 
-const { importResources } = useService(ResourceServiceKey)
-const { mods: { items: mods, updating, updateTag, enableMod, disableMod } } = injection(kInstanceContext)
+const { mods: { items: mods, updating: loading, updateTag, enableMod, disableMod } } = injection(kInstanceContext)
 const filtered = useModFilter(mods)
 const { isSelectionMode, selectedItems, onEnable, onClick } = useModSelection(filtered.items, enableMod, disableMod)
 const { t } = useI18n()
 
-const importing = ref(false)
-const { onDrop: onDropToImport } = useDrop((files) => {
-  importing.value = true
-
-  importResources(files.map(f => ({ path: f.path, domain: ResourceDomain.Mods }))).finally(() => {
-    importing.value = false
-  })
-})
-
-const loading = computed(() => updating.value || importing.value)
-
 const { dragover } = useModDropHandler()
 
-const { isDraggingMod, onDragEnd, onItemDragstart } = useModDragging(filtered.items, selectedItems, isSelectionMode)
+const { onDragEnd, onItemDragstart } = useModDragging(filtered.items, selectedItems, isSelectionMode)
 const { deletingMods, startDelete, confirmDelete, cancelDelete } = useModDeletion(mods)
 const { items } = filtered
 const compact = injection(kCompact)
