@@ -91,8 +91,8 @@ const mem = computed({
     return [minMemory.value, maxMemory.value]
   },
   set(mem: [number, number]) {
-    emit('update:min', mem[0] / 1024 / 1024)
-    emit('update:max', mem[1] / 1024 / 1024)
+    emit('update:min', Math.floor(mem[0] / 1024 / 1024))
+    emit('update:max', Math.floor(mem[1] / 1024 / 1024))
   },
 })
 

@@ -250,7 +250,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
       minMemory = assignMemory === true && minMemory > 0
         ? minMemory
         : assignMemory === 'auto' ? Math.floor((await this.baseService.getMemoryStatus()).free / 1024 / 1024 - 256) : undefined
-      maxMemory = assignMemory === true && maxMemory > 0 ? instance.maxMemory : undefined
+      maxMemory = assignMemory === true && maxMemory > 0 ? maxMemory : undefined
       const prechecks = [LaunchPrecheck.checkNatives, LaunchPrecheck.linkAssets]
       const accessToken = user.user ? await this.userTokenStorage.get(user.user).catch(() => undefined) : undefined
 

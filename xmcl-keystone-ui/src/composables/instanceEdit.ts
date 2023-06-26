@@ -62,9 +62,9 @@ export function useInstanceEdit(instance: Ref<Instance | undefined>) {
   const isGlobalHideLauncher = computed(() => data.hideLauncher === undefined)
   const isGlobalShowLog = computed(() => data.showLog === undefined)
   const resetAssignMemory = () => {
-    data.assignMemory = undefined
-    data.minMemory = undefined
-    data.maxMemory = undefined
+    set(data, 'assignMemory', undefined)
+    set(data, 'minMemory', undefined)
+    set(data, 'maxMemory', undefined)
   }
   const resetVmOptions = () => {
     set(data, 'vmOptions', undefined)
@@ -129,19 +129,19 @@ export function useInstanceEdit(instance: Ref<Instance | undefined>) {
     if (current.fileApi !== data.fileServerApi) {
       return true
     }
-    if (current.minMemory !== data.minMemory) {
+    if (current.assignMemory !== data.assignMemory) {
       return true
     }
+    if (current.minMemory !== data.minMemory) {
+      return data.assignMemory === true
+    }
     if (current.maxMemory !== data.maxMemory) {
-      return true
+      return data.assignMemory === true
     }
     if (current.vmOptions?.join(' ') !== data.vmOptions) {
       return true
     }
     if (current.mcOptions?.join(' ') !== data.mcOptions) {
-      return true
-    }
-    if (current.assignMemory !== data.assignMemory) {
       return true
     }
     if (current.version !== data.version) {
