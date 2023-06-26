@@ -1,24 +1,26 @@
 import { createMinecraftProcessWatcher, diagnoseJar, diagnoseLibraries, generateArguments, launch, LaunchOption, LaunchPrecheck, MinecraftFolder, ResolvedVersion, Version } from '@xmcl/core'
-import { LaunchException, LaunchOptions, LaunchService as ILaunchService, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
+import { LaunchService as ILaunchService, LaunchException, LaunchOptions, LaunchServiceKey, LaunchState } from '@xmcl/runtime-api'
 import { ChildProcess } from 'child_process'
 import { EOL } from 'os'
 import LauncherApp from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
+import { EncodingWorker, kEncodingWorker } from '../entities/encodingWorker'
 import { JavaValidation } from '../entities/java'
 import { kUserTokenStorage, UserTokenStorage } from '../entities/userTokenStore'
+import { UTF8 } from '../util/encoding'
 import { Inject } from '../util/objectRegistry'
 import { BaseService } from './BaseService'
 import { DiagnoseService } from './DiagnoseService'
 import { ExternalAuthSkinService } from './ExternalAuthSkinService'
 import { InstallService } from './InstallService'
 import { InstanceJavaService } from './InstanceJavaService'
+import { InstanceResourcePackService } from './InstanceResourcePacksService'
 import { InstanceService } from './InstanceService'
+import { InstanceShaderPacksService } from './InstanceShaderPacksService'
 import { InstanceVersionService } from './InstanceVersionService'
 import { JavaService } from './JavaService'
 import { ExposeServiceKey, StatefulService } from './Service'
 import { UserService } from './UserService'
-import { InstanceResourcePackService } from './InstanceResourcePacksService'
-import { InstanceShaderPacksService } from './InstanceShaderPacksService'
 
 @ExposeServiceKey(LaunchServiceKey)
 export class LaunchService extends StatefulService<LaunchState> implements ILaunchService {
@@ -36,6 +38,7 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
     @Inject(InstanceShaderPacksService) private instanceShaderPacksService: InstanceShaderPacksService,
     @Inject(JavaService) private javaService: JavaService,
     @Inject(kUserTokenStorage) private userTokenStorage: UserTokenStorage,
+    @Inject(kEncodingWorker) private encoder: EncodingWorker,
     @Inject(UserService) private userService: UserService,
   ) {
     super(app, () => new LaunchState())
@@ -330,10 +333,28 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         lastPlayedDate: startTime,
       })
 
-      process.stderr?.on('data', (buf: any) => {
-        const lines = buf.toString().split(EOL)
+      const processError = async (buf: Buffer) => {
+        const encoding = await this.encoder.guessEncodingByBuffer(buf).catch(e => { })
+        const result = await this.encoder.decode(buf, encoding || UTF8)
+        this.emit('minecraft-stderr', { pid: process.pid, stderr: result })
+        const lines = result.split(EOL)
         errorLogs.push(...lines)
+        this.warn(result)
+      }
+      const processLog = async (buf: any) => {
+        const encoding = await this.encoder.guessEncodingByBuffer(buf).catch(e => undefined)
+        const result = await this.encoder.decode(buf, encoding || UTF8)
+        this.emit('minecraft-stdout', { pid: process.pid, stdout: result })
+      }
+
+      const errPromises = [] as Promise<any>[]
+      process.stderr?.on('data', async (buf: any) => {
+        errPromises.push(processError(buf))
       })
+      process.stdout?.on('data', (s) => {
+        processLog(s).catch(this.error)
+      })
+
       watcher.on('error', (err) => {
         this.emit('error', new LaunchException({ type: 'launchGeneralException', error: err }))
       }).on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation }) => {
@@ -349,26 +370,19 @@ export class LaunchService extends StatefulService<LaunchState> implements ILaun
         if (crashReportLocation) {
           crashReportLocation = crashReportLocation.substring(0, crashReportLocation.lastIndexOf('.txt') + 4)
         }
-        this.emit('minecraft-exit', {
-          pid: process.pid,
-          code,
-          signal,
-          crashReport,
-          crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
-          errorLog: errorLogs.join('\n'),
+        Promise.all(errPromises).catch((e) => { this.error(e) }).finally(() => {
+          this.emit('minecraft-exit', {
+            pid: process.pid,
+            code,
+            signal,
+            crashReport,
+            crashReportLocation: crashReportLocation ? crashReportLocation.replace('\r\n', '').trim() : '',
+            errorLog: errorLogs.join('\n'),
+          })
         })
         this.launchedProcesses = this.launchedProcesses.filter(p => p !== process)
       }).on('minecraft-window-ready', () => {
         this.emit('minecraft-window-ready', { pid: process.pid })
-      })
-      /* eslint-disable no-unused-expressions */
-      process.stdout?.on('data', (s) => {
-        const string = s.toString()
-        this.emit('minecraft-stdout', { pid: process.pid, stdout: string })
-      })
-      process.stderr?.on('data', (s: Buffer) => {
-        this.warn(s.toString('utf8'))
-        this.emit('minecraft-stderr', { pid: process.pid, stderr: s.toString() })
       })
       process.unref()
       this.state.launchStatus('idle')

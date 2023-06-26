@@ -431,8 +431,8 @@ importers:
         specifier: ^0.6.3
         version: 0.6.3
       jschardet:
-        specifier: ^2.3.0
-        version: 2.3.0
+        specifier: github:aadsm/jschardet
+        version: github.com/aadsm/jschardet/a1c060718ae8f273861fc223514004283893ca06
       lodash.debounce:
         specifier: ^4.0.8
         version: 4.0.8
@@ -3842,7 +3842,7 @@ packages:
       '@vue/compiler-dom': 3.3.0-beta.4
       '@vue/compiler-sfc': 3.3.0-beta.4
       '@vue/reactivity': 3.3.0-beta.4
-      '@vue/shared': 3.3.0-beta.4
+      '@vue/shared': 3.3.4
       minimatch: 9.0.0
       muggle-string: 0.2.2
       vue-template-compiler: 2.7.14
@@ -6973,11 +6973,6 @@ packages:
     dependencies:
       argparse: 2.0.1
 
-  /jschardet@2.3.0:
-    resolution: {integrity: sha512-6I6xT7XN/7sBB7q8ObzKbmv5vN+blzLcboDE1BNEsEfmRXJValMxO6OIRT69ylPBRemS3rw6US+CMCar0OBc9g==}
-    engines: {node: '>=0.1.90'}
-    dev: false
-
   /jsesc@0.5.0:
     resolution: {integrity: sha512-uZz5UnB7u4T9LvwmFqXii7pZSouaRPorGs5who1Ip7VO0wxanFvBL7GkM6dTHlgX+jhBApRetaWpnDabOeTcnA==}
     hasBin: true
@@ -9621,3 +9616,10 @@ packages:
   /yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+
+  github.com/aadsm/jschardet/a1c060718ae8f273861fc223514004283893ca06:
+    resolution: {tarball: https://codeload.github.com/aadsm/jschardet/tar.gz/a1c060718ae8f273861fc223514004283893ca06}
+    name: jschardet
+    version: 3.0.0
+    engines: {node: '>=0.1.90'}
+    dev: false

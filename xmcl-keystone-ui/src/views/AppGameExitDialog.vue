@@ -4,30 +4,30 @@
     :width="750"
     :persistent="true"
   >
-    <v-toolbar color="error">
-      <v-toolbar-title
-        class="white--text"
-      >
-        {{ data.isCrash ? t('launchFailed.crash') : t('launchFailed.title') }}
-      </v-toolbar-title>
-      <v-spacer />
-      <v-toolbar-items>
-        <v-btn
-          text
-          @click="openFolder"
+    <v-card class="overflow-auto visible-scroll flex flex-col max-h-[80vh]">
+      <v-toolbar color="error">
+        <v-toolbar-title
+          class="white--text"
         >
-          {{ data.isCrash ? t('instance.openCrashReportFolder') : t('instance.openLogFolder') }}
+          {{ data.isCrash ? t('launchFailed.crash') : t('launchFailed.title') }}
+        </v-toolbar-title>
+        <v-spacer />
+        <v-toolbar-items>
+          <v-btn
+            text
+            @click="openFolder"
+          >
+            {{ data.isCrash ? t('instance.openCrashReportFolder') : t('instance.openLogFolder') }}
+          </v-btn>
+        </v-toolbar-items>
+        <v-btn
+          icon
+          @click="data.isShown=false"
+        >
+          <v-icon>arrow_drop_down</v-icon>
         </v-btn>
-      </v-toolbar-items>
-      <v-btn
-        icon
-        @click="data.isShown=false"
-      >
-        <v-icon>arrow_drop_down</v-icon>
-      </v-btn>
-    </v-toolbar>
-    <v-card class="overflow-auto max-h-200 visible-scroll">
-      <v-card-text>
+      </v-toolbar>
+      <v-card-text class="overflow-auto flex flex-col">
         <div
           style="padding: 10px"
         >

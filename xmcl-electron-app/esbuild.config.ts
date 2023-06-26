@@ -7,6 +7,7 @@ import pluginNode from './plugins/esbuild.node.plugin'
 import plugin7Zip from './plugins/esbuild.native.plugin'
 import pluginPrint from './plugins/esbuild.print.plugin'
 import pluginStatic from './plugins/esbuild.static.plugin'
+import pluginJsdetect from './plugins/esbuild.jschardet.plugin'
 import { yamlPlugin } from 'esbuild-plugin-yaml'
 import { BuildOptions } from 'esbuild'
 import 'dotenv/config'
@@ -49,6 +50,7 @@ const config = {
     pluginPreload(path.resolve(__dirname, './preload')),
     pluginVueDevtools(path.resolve(__dirname, '../extensions')),
     pluginWorker(),
+    pluginJsdetect(),
     plugin7Zip(path.resolve(__dirname, './node_modules')),
     pluginNode(),
     yamlPlugin({}) as any,

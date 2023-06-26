@@ -3,6 +3,7 @@ import { EncodingWorker } from '../entities/encodingWorker'
 import { setHandler } from './helper'
 import * as iconv from 'iconv-lite'
 import 'source-map-support/register'
+import { detect } from 'jschardet'
 
 const AUTO_ENCODING_GUESS_MAX_BYTES = 512 * 128 // set an upper limit for the number of bytes we pass on to jschardet
 
@@ -11,9 +12,7 @@ const handler: EncodingWorker = {
     return iconv.decode(buffer, toNodeEncoding(encoding))
   },
   async guessEncodingByBuffer (buffer: Buffer): Promise<string | null> {
-    const jschardet = await import('jschardet')
-
-    const guessed = jschardet.detect(buffer.slice(0, AUTO_ENCODING_GUESS_MAX_BYTES)) // ensure to limit buffer for guessing due to https://github.com/aadsm/jschardet/issues/53
+    const guessed = detect(Buffer.from(buffer).subarray(0, AUTO_ENCODING_GUESS_MAX_BYTES)) // ensure to limit buffer for guessing due to https://github.com/aadsm/jschardet/issues/53
     if (!guessed || !guessed.encoding) {
       return null
     }
