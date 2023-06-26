@@ -8,7 +8,7 @@
       text
       icon
       :loading="refreshing"
-      @click="showExport"
+      @click="showExport()"
     >
       <v-icon>
         share
@@ -20,7 +20,7 @@
       class="ml-1.5"
       text
       icon
-      @click="showLogDialog"
+      @click="showLogDialog()"
     >
       <v-icon>
         subtitles

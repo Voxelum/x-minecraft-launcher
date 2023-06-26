@@ -49,6 +49,8 @@
       >
         <TabItem
           :key="0"
+          log
+          :visible="data.tab === 0 && isShown"
           :files="data.logs"
           :refreshing="data.loadingList"
           :get-file-content="getLogContent"
@@ -57,6 +59,7 @@
         />
         <TabItem
           :key="1"
+          :visible="data.tab === 1 && isShown"
           :files="data.crashes"
           :refreshing="data.loadingList"
           :get-file-content="getCrashReportContent"
@@ -129,6 +132,7 @@ watch(isShown, (s) => {
 })
 function goLog() {
   data.tab = 0
+
   loadLogs()
 }
 function goCrash() {

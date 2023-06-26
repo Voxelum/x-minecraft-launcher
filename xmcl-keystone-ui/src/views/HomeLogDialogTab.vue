@@ -1,7 +1,7 @@
 <template>
   <v-tab-item>
     <div class="min-h-[420px]">
-      <transition
+      <Transition
         name="fade-transition"
         mode="out-in"
       >
@@ -40,7 +40,7 @@
         <div
           v-else
           :key="1"
-          class="visible-scroll overflow-y-auto overflow-x-hidden max-h-[70vh]"
+          class="visible-scroll overflow-y-auto overflow-x-hidden max-h-[70vh] flex flex-col"
         >
           <v-card-title primary-title>
             {{ showedFile }}
@@ -55,9 +55,15 @@
               {{ t('back') }}
             </v-btn>
           </v-card-title>
-          <log-view :logs="logs" />
+          <div class="max-h-full flex flex-col overflow-y-auto">
+            <LogView
+              v-if="log"
+              :logs="logs"
+            />
+            <pre class="rounded mx-5 mb-5 p-5 bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] overflow-auto">{{ content }}</pre>
+          </div>
         </div>
-      </transition>
+      </Transition>
     </div>
   </v-tab-item>
 </template>
@@ -71,12 +77,13 @@ import { useDialog } from '@/composables/dialog'
 
 const props = defineProps<{
   files: string[]
+  log?: boolean
   getFileContent(file: string): Promise<string>
   removeFile(file: string): Promise<void>
   showFile(file: string): void
+  visible: boolean
   refreshing: boolean
 }>()
-const { isShown } = useDialog('log')
 
 const { t } = useI18n()
 const content = ref('')
@@ -105,7 +112,7 @@ const logs = computed(() => {
   return logLines.map(parseLog)
 })
 
-watch(isShown, (v) => {
+watch(() => props.visible, (v) => {
   if (!v) {
     goBack()
   }
