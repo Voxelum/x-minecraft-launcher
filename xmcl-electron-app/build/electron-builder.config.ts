@@ -105,7 +105,7 @@ export const config = {
       StartupWMClass: 'xmcl',
     },
     category: 'Game',
-    icon: 'icons/dark@256x256.png',
+    icon: 'icons/dark.icns',
     artifactName: 'xmcl-${version}-${arch}.${ext}',
     target: [
       { target: 'deb', arch: ['x64', 'arm64'] },
