@@ -77,23 +77,13 @@ async function buildElectron(config: Configuration, dir: boolean) {
     }
   }
 
-  if (existsSync('build/output/win-unpacked/resources/app.asar')) {
-    await writeHash('sha256', 'build/output/win-unpacked/resources/app.asar', 'build/output/win-unpacked/resources/app.asar.sha256')
-  }
-  if (existsSync('build/output/linux-unpacked/resources/app.asar')) {
-    await writeHash('sha256', 'build/output/linux-unpacked/resources/app.asar', 'build/output/linux-unpacked/resources/app.asar.sha256')
-  }
-  if (existsSync('build/output/mac/X Minecraft Launcher.app/Contents/Resources/app.asar')) {
-    await writeHash('sha256', 'build/output/mac/X Minecraft Launcher.app/Contents/Resources/app.asar', 'build/output/mac/X Minecraft Launcher.app/Contents/Resources/app.asar.sha256')
-  }
-
   console.log(
     `Build completed in ${((Date.now() - start) / 1000).toFixed(2)}s.`,
   )
 }
 
 const currentPlatform = platform()
-async function installArm64() {
+async function installArm64Dependencies() {
   const unpack = async (tarPath: string) => {
     const options = {
       readable: true,
@@ -173,14 +163,31 @@ async function start() {
         const asarFile = join(context.appOutDir, 'resources', 'app.asar')
         const distDir = join(context.packager.projectDir, 'dist')
 
+        const isArm = context.arch === 3
         // Install arm64 dependencies
-        if (context.arch === 3) {
-          await installArm64()
+        if (isArm) {
+          await installArm64Dependencies()
         }
 
         console.log('overwrite asar', asarFile)
 
         await asar.createPackage(distDir, asarFile)
+
+        const dest = isArm ? 'build/output/app-arm64.asar' : 'build/output/app.asar'
+        const destSha256 = dest + '.sha256'
+        if (existsSync('build/output/win-unpacked/resources/app.asar')) {
+          await copyFile('build/output/win-unpacked/resources/app.asar', dest)
+          await writeHash('sha256', dest, destSha256)
+        }
+        if (existsSync('build/output/linux-unpacked/resources/app.asar')) {
+          await copyFile('build/output/linux-unpacked/resources/app.asar', dest)
+          await writeHash('sha256', dest, destSha256)
+        }
+        if (existsSync('build/output/mac/X Minecraft Launcher.app/Contents/Resources/app.asar')) {
+          await copyFile('build/output/mac/X Minecraft Launcher.app/Contents/Resources/app.asar', dest)
+          await writeHash('sha256', dest, destSha256)
+        }
+
       },
       async artifactBuildStarted(context) {
         if (context.targetPresentableName.toLowerCase() === 'appx') {
