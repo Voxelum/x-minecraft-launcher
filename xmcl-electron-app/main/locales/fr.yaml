@@ -7,7 +7,7 @@ openUrl:
     Autorisez-vous cette opération ?
   title: Ouvrir dans le Navigateur
   trust: Faire confiance au site et ne plus afficher
-  "yes": "Oui"
+  'yes': Oui
 quit: Quitter
 showDiagnosis: Afficher le Diagnostic
 showLauncher: Afficher le Launcher
@@ -17,5 +17,9 @@ task:
   fail: Une tâche a échoué
   success: Succès d'une tâche
 title: X Minecraft Launcher
-urlFailed: "URL inconnue {url}. \nVeuillez vérifier votre URL ou contacter un développeur !"
-urlSuccess: "Réussite ! \nVous pouvez maintenant fermer cette fenêtre et revenir au launcher !"
+urlFailed: |-
+  URL inconnue {url}. 
+  Veuillez vérifier votre URL ou contacter un développeur !
+urlSuccess: |-
+  Réussite ! 
+  Vous pouvez maintenant fermer cette fenêtre et revenir au launcher !

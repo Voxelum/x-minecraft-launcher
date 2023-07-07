@@ -16,7 +16,7 @@ AppShareInstanceDialog:
   downloadToLocal: Télécharger dans l'instance actuelle
   filesToDownload: Choisissez les fichiers à télécharger
   filesToShare: Choisissez les fichiers à partager
-  instanceShare: "{user} vient de vous partager l'instance actuelle"
+  instanceShare: '{user} vient de vous partager la instance actuelle'
   share: Partager
   shareNotifyTitle: Partager l'instance
   shareTitle: Partager des fichiers de jeu avec un autre joueur
@@ -103,6 +103,13 @@ HomeSyncDialogPush:
 SettingMigrationDialog:
   selectRootDirectory: Sélectionnez le répertoire racine
 add: Ajouter
+ago:
+  day: "Il y a {duration} jour | Il y a {duration} jours"
+  hour: |-
+    Il y a {duration} heure | 
+    Il y a {duration} heures
+  minute: "Il y a {duration} minute | Il y a {duration} minutes"
+  second: "Il y a {duration} seconde | Il y a {duration} secondes"
 authProfileAddedNotification: Profil d'authentification {name} ajouté
 author: Auteur
 back: Revenir
@@ -118,16 +125,23 @@ browseApps: Parcourir l'interface utilisateur personnalisée du launcher
 cancel: Annuler
 checkUpdate:
   name: Vérifier la mise à jour
+compatibleDetail:
+  current: Actuel
+  id: Identifiant
+  requirements: Requiert
 confirm: Début
 copyClipboard:
   success: Copier dans le presse-papier
 create: Créer
 curseforge:
+  authors: Auteurs
+  category: Catégorie
   createdDate: Date de création
   downloadOnly: Télécharger
   downloaded: Téléchargé
   file:
     gameVersion: Version du jeu
+    modLoader: Modloader
     releaseType: Type de version
     sortByDate: Date
     sortByName: Nom de fichier
@@ -153,6 +167,13 @@ curseforge:
     images: Images
   recentFiles: Fichiers récents
   search: Rechercher
+  texture-packs:
+    description: Afficher et télécharger les packs de ressources de Curseforge
+    name: Pack de Ressources
+  totalDownloads: Téléchargements Totaux
+  worlds:
+    description: Voir et télécharger des mondes depuis Curseforge
+    name: Mondes
 curseforgeCategory:
   MCreator: MCreator
   Magic: Magie
@@ -183,8 +204,13 @@ dataMigration:
     Veuillez ne pas fermer le launcher ou vous perdrez vos données.
 delete:
   name: Supprimer {name}
-  "no": Non
-  "yes": Supprimer
+  'no': Non
+  'yes': Supprimer
+dependencies:
+  embedded: Embarqué
+  incompatible: Incompatible
+  optional: Facultatif
+  required: Requis
 description: Description
 detail: Détail
 diagnosis:
@@ -255,13 +281,26 @@ disk:
   available: Disponible
   used: Utilisé
 download: Télécharger
-downloadCount: "{count} téléchargements"
+downloadCount: '{count} téléchargements'
+duration:
+  day: "{duration} jour | {duration} jours"
+  hour: |-
+    {duration} heure | 
+    {duration} heures
+  minute: |-
+    {duration} minute | 
+    {duration} minutes
+  second: "{duration} seconde | {duration} secondes"
 edit: Éditer
 error:
   name: |-
     Erreur | 
     les erreurs
 errors:
+  BadForgeInstallerJarError: >-
+    Impossible d'analyser le fichier jar du programme d'installation de Forge. 
+    Peut-être que Forge a un nouveau format de fichier d'installation ? 
+    Contactez les développeurs si ce problème persiste.
   BodyTimeoutError: Délai d'expiration du body HTTP
   ChecksumNotMatchError: |-
     Checksum ne correspond pas ! 
@@ -270,6 +309,9 @@ errors:
   ConnectTimeoutError: Délai de connexion au serveur.
   DNSNotFoundError: Erreur de recherche DNS
   DownloadAggregateError: Échec du téléchargement du fichier.
+  DownloadFileSystemError: |-
+    Erreur lors de l'accès au chemin du fichier de téléchargement. 
+    Veuillez vous assurer que le launcher a la permission d'écrire dessus.
   HeadersTimeoutError: Délai d'expiration du Header HTTP
   SocketError: Erreur de socket du serveur
 exception:
@@ -295,16 +337,16 @@ fabricVersion:
   unstable: Instable
 feedback:
   channel: Salons
-  description: J'ai trouvé un bug ou je veux faire une suggestion
+  description: J'ai trouvé un bug ou je veux faire une suggestion...
   discord: Discord
-  discordDescription: Rejoindre le salon Discord
+  discordDescription: Rejoindre le serveur Discord
   discordJoin: Rejoindre
   github: Problème Github
   githubDescription: Ouvrez un problème Github pour dire ce que vous pensez
   githubOpenIssue: Github
   kook: Kook
   kookDescription: Kook est une application alternative à Discord en Chine continentale
-  name: Retour
+  name: Améliorer le launcher
   qq: Groupe QQ
   qqDescription: >-
     Entrez dans le groupe de commentaires QQ et discutez directement avec les
@@ -386,9 +428,10 @@ installVersion:
   json: Installer la version Json
   name: Installer le client Minecraft {version}
 instance:
-  addServer: Ajouter un serveur
+  addMod: Ajouter un Mod à l'instance
+  addServer: Ajouter un Serveur
   current: Instance actuelle
-  delete: Supprimer le profil
+  delete: Supprimer le Profil
   deleteHint: |-
     Les données d'instance seront définitivement déplacées du disque. 
     Tu es sûr de faire ça ?
@@ -398,17 +441,26 @@ instance:
     URL permettant de synchroniser les fichiers d'instance à partir d'un serveur
     de configuration distant.
   gameVersion: Version du jeu
+  icon: Icône de profil
+  iconUrl: URL de l'icône
   includeVersion: |-
     Inclure la version | 
     Inclure les versions
+  lastPlayed: Dernier Joué
   launchArguments: Aperçu des Arguments au Lancement
   mcOptions: Options Minecraft
   mcOptionsHint: Arguments supplémentaires pour le lancement de Minecraft
   name: Nom de profil
   nameHint: Le nom utilisé pour identifier le jeu
+  neverPlayed: Jamais Joué
   openCrashReportFolder: Ouvrir le dossier de rapport de crash
   openLogFolder: Ouvrir le dossier de logs
+  playtime: Temps de jeu
   requireName: Le nom est requis
+  setting:
+    reset: Réinitialiser
+    save: Sauvegarder
+    unsaved: Votre modification n'est pas enregistrée !
   showInstance: Afficher le dossier d'instances
   versionHint: La version Minecraft de ce jeu
   vmOptions: Options JVM
@@ -417,10 +469,17 @@ instanceAge:
   older: Plus âgée
   threeDay: Dans trois jours
   today: Aujourd'hui
+instanceFileOperation:
+  add: Ajouter
+  backup-add: Remplacer (Sauvegarde)
+  backup-remove: Supprimer (Sauvegarde)
+  keep: Laisser
+  remove: Retirer
 instanceSetting:
   fastLaunch: Lancement Turbo
   fastLaunchHint: Ignorer le statut de l'utilisateur et les problèmes non résolus existants
   hideLauncher: Masquer le launcher après le lancement
+  icon: Choisissez une image
   showLog: Afficher les logs de Minecraft
   showLogHint: >-
     Cela ouvrira une fenêtre pour afficher les logs Minecraft après le lancement
@@ -436,6 +495,11 @@ instanceTemplate:
   profile: Il s'agit d'une configuration de profil existante
   server: Il s'agit d'une configuration de serveur existante
   title: Paramètre du Template
+instanceUpdate:
+  basic: Mise à jour des Paramètres
+  files: Mise à jour des Fichiers
+  title: Mettre à jour l'Instance
+  update: Démarrer la Mise à Jour
 instances:
   add: Ajouter un jeu local
   choose: Sélectionner une Instance
@@ -444,6 +508,9 @@ instances:
   refreshServers: Actualiser les Serveurs
 issue:
   name: Problèmes
+items:
+  count: '{count} éléments'
+  total: '{total} total'
 java:
   allocatedLong: Utiliser l'exécutable Java par défaut du système
   allocatedShort: Attribué Automatiquement
@@ -465,7 +532,7 @@ java:
   switchVersion: Version Java modifiée
   systemMemory: Mémoire Système Actuelle
 launch:
-  launch: Lancement
+  launch: Jouer
 launchBlocked:
   ignore: Forcer le Lancement
   launchGeneralException:
@@ -480,9 +547,8 @@ launchBlocked:
   launchJavaNoPermission:
     description: >-
       Le launcher n'a pas la permission d'exécuter java <span class="highlight">
-      {javaPath} </span>.
-      Modifiez l'autorisation du fichier java ou augmentez l'autorisation du
-      launcher.
+      {javaPath} </span>. Modifiez l'autorisation du fichier java ou augmentez
+      l'autorisation du launcher.
     title: Pas d'autorisation de lancement
   launchNoProperJava:
     description: |-
@@ -520,20 +586,6 @@ launchFailed:
     Ceci est le log d'erreurs et le log le plus récent.
   latestLog: Dernier log
   title: Jeu terminé avec un code anormal
-launchGeneralException:
-  title: ""
-launchInvalidJavaPath:
-  description: ""
-  title: ""
-launchJavaNoPermission:
-  description: ""
-  title: ""
-launchNoProperJava:
-  description: ""
-  title: ""
-launchNoVersionInstalled:
-  description: ""
-  title: ""
 launchStatus:
   checkingProblems: Vérification des problèmes
   injectingAuthLib: Configuration d'AuthLib tiers
@@ -541,13 +593,11 @@ launchStatus:
   launchingSlow: >-
     Toujours en cours de lancement... Le démarrage du moteur graphique peut être
     lent...
-launchUserStatusRefreshFailed:
-  description: ""
-  title: ""
 launcherUpdate:
   alreadyLatest: À jour
   installAndQuit: Redémarrer pour installer
   noUpdateAvailable: Pas de mise à jour disponible
+  reinstall: Réinstaller
   updateToThisVersion: Télécharger et installer
 liteloader:
   name: LiteLoader
@@ -598,7 +648,7 @@ loginError:
     Échec de la vérification de la propriété du jeu. 
     Veuillez réessayer.
   connectionReset: Échec de la connexion car la connexion est réinitialisée par le serveur
-  fetchMinecraftProfileFailed: "Échec de la récupération du profil Minecraft : {reason}"
+  fetchMinecraftProfileFailed: 'Échec de la récupération du profil Minecraft : {reason}'
   illegalEmail: L'email doit être valide
   invalidCredentials: Nom d'utilisateur ou mot de passe invalide.
   loginMinecraftByXboxFailed: |-
@@ -622,6 +672,9 @@ logsCrashes:
   logs: Journaux
   placeholder: Aucun fichier trouvé
   title: Journaux ou rapports de plantage
+me:
+  news: Nouvelles
+  recentPlay: Joué Récemment
 minecraftVersion:
   empty: Impossible de charger les versions de Minecraft
   name: Version Minecraft
@@ -640,7 +693,7 @@ mod:
     toujours. Êtes-vous sûr de vouloir faire ça?
   deletionRestHint: Et {rest} plus de Mods...
   dropHint: Déposez le fichier .jar/.litemod du mod ici pour l'importer.
-  enabled: "{count} Mods activés"
+  enabled: '{count} mods activés'
   filter: Mods de filtrage
   hideIncompatible: Masquer les mods incompatibles
   import: Importer un Mod
@@ -648,15 +701,27 @@ mod:
   manage: Gérer les Mods
   maybeCompatible: Peut-être compatibles.
   name: Mod | Mods
+  noModLoaderHint: N'oubliez pas d'activer un modloader pour utiliser les mods !
   openLink: Ouvrir l'url du mod {url}
-  searchOnCurseforge: Rechercher dans Curseforge
+  searchOnCurseforge: Rechercher sur Curseforge
   searchOnModrinth: Rechercher {name} sur Modrinth
   selected: Mods sélectionnés
+  showDirectory: Dossier de mods
   showFile: Afficher le chemin du mod {file}
   showInCurseforge: Afficher le mod dans Curseforge
   showInModrinth: Afficher {name} sur Modrinth
   showIncompatible: Afficher les mods incompatibles
   unselected: Mods non sélectionnés
+modInstall:
+  install: Installer
+  installed: Installé
+  pending: En attente d'installation
+  search: Résultats
+  searchHint: Rechercher et sélectionner un projet
+  selectProjectHint: Sélectionnez le projet et installez le fichier
+modSearchType:
+  all: Tous
+  local: Local
 modpack:
   author: Nom de l'auteur
   authorHint: Cela peut être utilisé pour signer le modpack exporté (Curseforge)
@@ -693,8 +758,9 @@ modpack:
   showInCurseforge: Afficher {name} dans Curseforge
   showInFtb: Afficher {name} dans FTB
   url: URL
-  urlHint: L'url de la page d'accueil de votre modpack
+  urlHint: L'URL de la page d'accueil de votre modpack
 modrinth:
+  browseUrl: Ouvrir dans le Navigateur {url}
   categories:
     128x: 128x
     16x: 16x
@@ -704,33 +770,48 @@ modrinth:
     64x: 64x
     8x-: 8x-
     adventure: Aventure
+    atmosphere: Atmosphère
     audio: Audio
     blocks: Blocs
+    bloom: Flou lumineux
     bukkit: Bukkit
     bungeecord: Bungeecord
+    canvas: Canvas
+    cartoon: Caricatural
+    categories: Catégories
     challenging: Difficile
+    colored-lighting: Éclairage coloré
     combat: Combat
     core-shaders: Core-shaders
     cursed: Cursed
+    datapack: Data Pack
     decoration: Décoration
     economy: Économie
     entities: Entités
     environment: Environnement
     equipment: Équipement
     fabric: Fabric
+    fantasy: Fantaisie
+    features: Caractéristiques
+    folia: Folia
+    foliage: Feuillage
     fonts: Polices d'écriture
     food: Nourriture
     forge: Forge
     game-mechanics: Mécaniques du Jeu
     gui: GUI
+    high: Haut
+    iris: Iris
     items: Items
     kitchen-sink: Kitchen Sink
     library: Librairie
     lightweight: Lightweight
     liteloader: Liteloader
     locale: Locale
+    low: Faible
     magic: Magie
     management: Gestion
+    medium: Moyen
     minecraft: Minecraft
     minigame: Mini-jeux
     misc: Divers
@@ -740,13 +821,23 @@ modrinth:
     modloader: Mod Loader
     multiplayer: Multijoueur
     name: Catégories
+    optifine: Optifine
     optimization: Optimisations
     paper: Paper
+    path-tracing: Path Tracing
+    pbr: PBR
+    performance impact: Impact en Performance
+    potato: Minime
     purpur: Purpur
     quests: Quêtes
     quilt: Quilt
     realistic: Réaliste
+    reflections: Reflets
+    resolutions: Résolutions
     rift: Rift
+    screenshot: Capture d'écran
+    semi-realistic: Semi Réaliste
+    shadows: Ombres
     simplistic: Simpliste
     social: Social
     spigot: Spigot
@@ -757,11 +848,13 @@ modrinth:
     transportation: Transportation
     tweaks: Ajustements
     utility: Utilitaire
+    vanilla: Vanilla
     vanilla-like: Style Vanilla
     velocity: Velocity
     waterfall: Waterfall
     worldgen: Génération du Monde
   clientSide: Côté Client
+  copyTitle: Copier le texte {title} dans le presse-papiers
   createAt: Créé
   description: Description
   downloads: Téléchargements
@@ -774,8 +867,8 @@ modrinth:
     server: Serveur
     unsupported: Non pris en charge
   externalResources: Ressources externes
-  featuredVersions: Versions en vedette
-  followers: Followers
+  featuredVersions: Versions récentes
+  followers: Suivis
   gallery: Galerie
   gameVersions:
     name: Versions du jeu
@@ -794,10 +887,12 @@ modrinth:
   projectId: Identifiant du projet
   projectMembers: Membres du projet
   projectType:
-    mod: Mode
+    mod: Mod
     modpack: Modpack
     name: Type de projet
     resourcePack: Pack de Ressources
+    shader: Shader
+  quickSearch: Rechercher {titre}
   searchText: Rechercher
   serverSide: Côté Serveur
   sort:
@@ -810,6 +905,13 @@ modrinth:
   technicalInformation: Informations techniques
   updateAt: Mis à jour
   versions: Versions
+modrinthCard:
+  currentVersion: Version actuelle
+  projectHint: >
+    Cette instance est créée par le modpack Modrinth de <code class="rounded p-1"
+    style="background: rgba(123,123,123,0.2)">{title}</code> (id projet:
+          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
+  projectLastUpdateDate: Dernière mise à jour du projet :"
 multiplayer:
   complete: Compléter
   confirm: Confirmer
@@ -822,14 +924,13 @@ multiplayer:
     votre objet entrez ce texte dans la connexion de jointure <span>Un token ne
     peut être utilisé que pour <span style="color: red; font-weight: bold;">un
     pair</span> ! Vous ne pouvez pas envoyer le même jeton à plusieurs pairs
-    !</span> <br> <span class="hint-text" style="font-style:
-    italic;">Si vous devez connecter plusieurs pairs, vous devez créer <span
-    style="font-weight: bold; color: rgba(245, 158, 11)">plusieurs</span>
-    connexions.</span>"
-  createGroup: ""
+    !</span> <br> <span class="hint-text" style="font-style: italic;">Si vous
+    devez connecter plusieurs pairs, vous devez créer <span style="font-weight:
+    bold; color: rgba(245, 158, 11)">plusieurs</span> connexions.</span>"
+  createGroup: ''
   createLocalToken: Créer un token local
   currentIpTitle: IP Publique Détectée
-  currentNatTitle: "Réseau actuel (NAT) :"
+  currentNatTitle: 'Réseau actuel (NAT) :'
   difficultyLevelHint: Le niveau de difficulté pour créer une connexion entre pairs avec d'autres
   disconnect: Déconnecter
   disconnectDescription: Voulez-vous vraiment vous déconnecter avec l'utilisateur {user}({id}) ?
@@ -881,7 +982,7 @@ multiplayer:
   sharing: Partage de fichiers...
   start: Démarrer
   startNewP2PConnection: Cliquez sur le bouton Démarrer pour créer une nouvelle connexion homologue
-myStuff: Mes trucs
+myStuff: Mon inventaire
 name: Nom
 natType:
   blocked: Bloqué
@@ -893,7 +994,7 @@ natType:
   symmetricUDPFirewall: Pare-feu UDP symétrique
   unknown: Inconnu
 next: Suivant
-"no": Non
+'no': Non
 ok: OK
 optifineVersion:
   disable: Désactiver Optifine
@@ -917,6 +1018,19 @@ peerIceGatheringState:
 peerSignalingState:
   have-local-offer: En attente de la description du pair
 popular: Popularité
+presence:
+  curseforge: Explore CurseForge
+  curseforgeProject: Regarde {name} sur Curseforge
+  instance: Inactif dans l'instance {instance}
+  instanceSetting: "Modifie les paramètres de l'instance : {instance}"
+  mod: Regarde les mods dans {instance}
+  modrinth: Explore Modrinth
+  modrinthProject: Explore {name} sur Modrinth
+  resourcePack: Regarde les packs de ressources dans {instance}
+  save: Regarde les mondes dans {instance}
+  setting: Regarde la page des paramètres
+  shaderPack: Regarde les shaderpacks dans {instance}
+  version: Regarde l'onglet versions
 previous: Précédent
 proxy:
   host: Héberger
@@ -944,7 +1058,7 @@ resourcepack:
     Vous perdrez les données et les métadonnées de ce pack de ressources. 
     Vous êtes sûr de faire ça ?
   dropHint: Déposez le dossier/zip du pack de ressources ici pour l'importer.
-  enable: Le pack de ressources {count} est activé
+  enable: {count} packs de ressources activés
   filter: Filtrer les packs de ressources
   import: Importer le pack de ressources
   incompatible: >-
@@ -992,6 +1106,10 @@ save:
   importTitle: Importer une sauvegarde
   manage: Gérer les sauvegardes
   name: Sauvegarde | Sauvegardes
+screenshots:
+  empty: Vous n'avez pas de capture d'écran
+  goto: Ouvrir Dossier
+  name: Captures d'écran
 server:
   acceptingMinecraftVersion: Accepter la version Minecraft
   add: Ajouter un serveur
@@ -1034,7 +1152,6 @@ serverStatus:
 setting:
   allowPrerelease: Télécharger les bêtas
   allowPrereleaseDescription: La bêta peut être instable
-  alreadyLatest: ""
   apiSets:
     auto: Auto (Déterminer par réseau)
     official: Officiel (Mojang)
@@ -1081,6 +1198,7 @@ setting:
   colorTheme:
     appBarColor: Barre d'application
     backgroundColor: Couleur d'arrière plan
+    cardColor: Couleur de la carte
     description: Changer les couleurs du thème
     errorColor: Couleur d'erreur
     name: Couleur du thème
@@ -1090,10 +1208,20 @@ setting:
     warningColor: Couleur d'avertissement
   darkTheme: Thème
   darkThemeDescription: Choisissez le thème sombre ou clair
+  developerMode: Mode développeur
+  developerModeDescription: Le mode développeur vise à tester votre propre mod
+  disableTelemetry: Désactiver la télémétrie
+  disableTelemetryDescription: >-
+    XMCL collectera les événements de lancement du jeu et de connexion de
+    l'utilisateur.
+  enableDiscord: Activer la présence riche Discord
+  enableDiscordDescription: Cela affichera votre activité sur le launcher sur votre statut discord
   general: Général
   githubRelease: Version Github
   globalSetting: Paramètres d'instances global
   globalSettingHint: Les instances utiliseront ces paramètres par défaut.
+  hideNews: Masquer les nouvelles
+  hideNewsDescription: Cela masquera les nouvelles sous la page de l'instance
   language: Langue
   languageDescription: Langue d'affichage
   latestVersion: Dernière version
@@ -1104,6 +1232,8 @@ setting:
     La disposition du launcher représentant différentes logiques d'interface
     utilisateur
   layoutTitle: Mise en page
+  linuxTitlebar: Barre de titre native
+  linuxTitlebarDescription: Utiliser la barre de titre Linux native pour le launcher
   location: Emplacement du magasin
   maxSockets: Par hôte
   maxSocketsDescription: >-
@@ -1152,14 +1282,14 @@ setup:
       donné que la structure du répertoire de données XMCL est différente de
       celle vanilla, nous ne recommandons pas d'utiliser le répertoire commun
       .minecraft comme racine de données.
-    name: Définir la racine des données
+    name: définir la racine des données
   defaultPath: Chemin par défaut
   game:
     description: >-
       Choisissez le répertoire de jeu existant (.minecraft) pour importer les
       ressources existantes. Ainsi, vous pouvez identifier rapidement les mods,
       les packs de ressources, etc.
-    name: Importer un jeu existant
+    name: importer un jeu existant
   locale:
     description: >-
       Sélectionnez votre langue préférée si nous l'avons ! 
@@ -1168,17 +1298,17 @@ setup:
       vous pouvez visiter notre Github et mettre des pull requests pour traduire
       !
     language: Langue
-    name: Définir la langue
+    name: choisir la langue
   path: Chemin actuel
   title: |-
     Bienvenue dans le X Minecraft Launcher. 
-    Avant de commencer, nous avons besoin que vous
+    Avant de commencer, veuillez :
 shaderPack:
   deletion: Supprimer le shaderpack
   deletionHint: >-
     Cela supprimera le fichier du shaderpack {path} et ne pourra pas être
     annulé.
-  empty: Aucun shaderpack alloué
+  empty: Vous avez 0 shaderpack
   enable: Utilisation du shaderpack {name}
   filter: Filtrer les Shaderpacks
   internal: Shader Interne
@@ -1187,8 +1317,9 @@ shaderPack:
     options de shader dans ce cas)
   manage: Gérer les Shaderpacks
   name: Shaderpack
-  "off": Désactivé
+  'off': Désactivé
   offDescription: Désactiver le shader
+  showDirectory: Afficher le répertoire du shaderpack
   showFile: Afficher ce pack de shaders dans le dossier
 summery: Résumé
 tag:
@@ -1200,7 +1331,7 @@ task:
   empty: Aucune tâche en cours d'exécution
   failed: Échec
   manager: Gestionnaire des tâches
-  nTaskRunning: "{count} tâches sont en cours d'exécution"
+  nTaskRunning: '{count} tâches sont en cours d''exécution'
   name: |-
     Tâche | 
     Tâches
@@ -1217,10 +1348,15 @@ universalDrop:
   start: Importation commencée
   title: Déposez le ou les fichiers ici pour les importer en tant que
   unknownResource: Inconnu
+upstream:
+  missingModpackMetadata: |-
+    Les anciennes métadonnées du modpack sont introuvables.
+                
+    Vous pouvez toujours mettre à niveau, mais le résultat peut être erroné. Veuillez sauvegarder vos fichiers d'instance.
 user:
   accessToken: Token d'Accès
   authMode: Service d'Authentification
-  authService: Autoriser le Service
+  authService: Service d'Autorisation
   birth: Anniversaire Enregistré
   challenges: Répondez aux questions ci-dessous pour vérifier votre identité
   email: Adresse e-mail
@@ -1238,7 +1374,7 @@ user:
   refreshSkin: Rafraîchir le Skin
   submitChallenges: Soumettre les Réponses
   tokenExpired: Expiré
-  tokenValidUntil: Token Valide Jusqu'au
+  tokenValidUntil: Token valide jusqu'au
 userAccount:
   add: Ajouter un compte
   removeDescription: |-
@@ -1250,7 +1386,7 @@ userCape:
   changeTitle: Changer de cape
   description: >-
     Les capes sont des récompenses spéciales que les joueurs peuvent débloquer à
-    travers différents événements, campagnes et autres événements. 
+    travers différents événements et campagnes officiels.
 
     Ici, vous pouvez choisir entre les capes que vous possédez actuellement :
   noCape: Pas de Cape
@@ -1326,4 +1462,4 @@ versionType:
   beta: Bêta
   name: Statut
   release: Sortie
-"yes": Oui
+'yes': Oui
