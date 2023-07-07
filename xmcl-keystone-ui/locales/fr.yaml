@@ -1058,7 +1058,7 @@ resourcepack:
     Vous perdrez les données et les métadonnées de ce pack de ressources. 
     Vous êtes sûr de faire ça ?
   dropHint: Déposez le dossier/zip du pack de ressources ici pour l'importer.
-  enable: {count} packs de ressources activés
+  enable: "{count} packs de ressources activés"
   filter: Filtrer les packs de ressources
   import: Importer le pack de ressources
   incompatible: >-
