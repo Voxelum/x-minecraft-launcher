@@ -108,20 +108,24 @@ jobs:
       if: ${{ runner.os == 'Windows' && startsWith(github.event.head_commit.message, 'chore(release)') }} 
       run: |
         mkdir asar
-        mv xmcl-electron-app/build/output/win-unpacked/resources/app.asar asar/app-win.asar
-        mv xmcl-electron-app/build/output/win-unpacked/resources/app.asar.sha256 asar/app-win.asar.sha256
+        mv xmcl-electron-app/build/output/app.asar asar/app-win.asar
+        mv xmcl-electron-app/build/output/app.asar.sha256 asar/app-win.asar.sha256
     - name: Prepare macOS Asar
       if: ${{ runner.os == 'macOS' && startsWith(github.event.head_commit.message, 'chore(release)') }} 
       run: |
         mkdir asar
-        mv "xmcl-electron-app/build/output/mac/X Minecraft Launcher.app/Contents/Resources/app.asar" asar/app-mac.asar
-        mv "xmcl-electron-app/build/output/mac/X Minecraft Launcher.app/Contents/Resources/app.asar.sha256" asar/app-mac.asar.sha256
+        mv "xmcl-electron-app/build/output/app.asar" asar/app-mac.asar
+        mv "xmcl-electron-app/build/output/app-arm64.asar" asar/app-mac-arm64.asar
+        mv "xmcl-electron-app/build/output/app.asar.sha256" asar/app-mac.asar.sha256
+        mv "xmcl-electron-app/build/output/app-arm64.asar.sha256" asar/app-mac-arm64.asar.sha256
     - name: Prepare Linux Asar
       if: ${{ runner.os == 'Linux' && startsWith(github.event.head_commit.message, 'chore(release)') }} 
       run: |
         mkdir asar
-        mv xmcl-electron-app/build/output/linux-unpacked/resources/app.asar asar/app-linux.asar
-        mv xmcl-electron-app/build/output/linux-unpacked/resources/app.asar.sha256 asar/app-linux.asar.sha256
+        mv xmcl-electron-app/build/output/app.asar asar/app-linux.asar
+        mv xmcl-electron-app/build/output/app-arm64.asar asar/app-linux-arm64.asar
+        mv xmcl-electron-app/build/output/app.asar.sha256 asar/app-linux.asar.sha256
+        mv xmcl-electron-app/build/output/app-arm64.asar.sha256 asar/app-linux-arm64.asar.sha256
     - name: Upload Asar
       if: ${{ startsWith(github.event.head_commit.message, 'chore(release)') }} 
       uses: actions/upload-artifact@v3
@@ -231,10 +235,14 @@ jobs:
       run: |
         mv ./build/app-win.asar ./build/app-${{ steps.prepare_release.outputs.version }}-win.asar
         mv ./build/app-mac.asar ./build/app-${{ steps.prepare_release.outputs.version }}-mac.asar
+        mv ./build/app-mac-arm64.asar ./build/app-${{ steps.prepare_release.outputs.version }}-mac-arm64.asar
         mv ./build/app-linux.asar ./build/app-${{ steps.prepare_release.outputs.version }}-linux.asar
+        mv ./build/app-linux-arm64.asar ./build/app-${{ steps.prepare_release.outputs.version }}-linux-arm64.asar
         mv ./build/app-win.asar.sha256 ./build/app-${{ steps.prepare_release.outputs.version }}-win.asar.sha256
         mv ./build/app-mac.asar.sha256 ./build/app-${{ steps.prepare_release.outputs.version }}-mac.asar.sha256
+        mv ./build/app-mac-arm64.asar.sha256 ./build/app-${{ steps.prepare_release.outputs.version }}-mac-arm64.asar.sha256
         mv ./build/app-linux.asar.sha256 ./build/app-${{ steps.prepare_release.outputs.version }}-linux.asar.sha256
+        mv ./build/app-linux-arm64.asar.sha256 ./build/app-${{ steps.prepare_release.outputs.version }}-linux-arm64.asar.sha256
     - name: Emit Version File
       run: |
         echo ${{ steps.prepare_release.outputs.version }}.${{ github.run_number }} > ./build/version

@@ -31,11 +31,15 @@ export class DownloadAsarUpdateTask extends DownloadTask {
     let sha256 = ''
     version = version.startsWith('v') ? version.substring(1) : version
     const pl = platform()
-    const platformFlat = pl === 'win32' ? 'win' : pl === 'darwin' ? 'mac' : 'linux'
+    let platformFlag = pl === 'win32' ? 'win' : pl === 'darwin' ? 'mac' : 'linux'
+    const isArm = process.arch === 'arm64'
+    if (isArm) {
+      platformFlag += '-arm64'
+    }
     super({
       url: [
-        `${AZURE_CDN}/app-${version}-${platformFlat}.asar`,
-        `${AZURE_MS_CDN}/app-${version}-${platformFlat}.asar`,
+        `${AZURE_CDN}/app-${version}-${platformFlag}.asar`,
+        `${AZURE_MS_CDN}/app-${version}-${platformFlag}.asar`,
       ],
       destination,
       validator: {
