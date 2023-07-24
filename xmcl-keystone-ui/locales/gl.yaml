@@ -1,0 +1,247 @@
+AppAddInstanceDialog:
+  downloadedNotification: O rematou a descarga do paquete de mods {name}. ¿Queres crear unha instancia para el?
+AppShareInstanceDialog:
+  baseInfo: Configuración Básica
+  cancelShare: Cancelar Compartir
+  description: >-
+    Despois de compartir, outros compañeiros poderan descargar os archivos do
+    xogo que compartiste a través do teu PC.
+  downloadDescription: >-
+    Verifique os arquivos que o seu compañeiro lle proporcionou. Seleccione o
+    arquivo que desexa descargar.
+  downloadNotifyTitle: Descargar instancia de {user}
+  downloadTitle: Descargar arquivos de outros compañeiros
+  downloadToLocal: Descargar a instancia actual
+  filesToDownload: Elixa arquivos para descargar
+  filesToShare: Elixa arquivos para compartir
+  instanceShare: '{user} acaba de compartir arquivos do xogo contigo'
+  share: Compartir
+  shareNotifyTitle: Compartir Instancia
+  shareTitle: Comparte arquivos do xogo con outro xogador
+BaseSetting:
+  title: Axustes
+BaseSettingGeneral:
+  title: Xeral
+FeedTheBeast:
+  search: Buscar en FTB
+FeedTheBeastProject:
+  changelog: Rexistro de cambios
+  details: Detalles
+  install: Instalar {versión}
+  overview: Visión xeral
+  versions: Versións
+HomeJavaIssueDialog:
+  incompatibleJava: Java Incompatíbel
+  incompatibleJavaHint: ¡O Java actual pode ser incompatíbel co Minecraft seleccionado!
+  missingJava: Falta Java
+  missingJavaHint: 'O Lanzador non pode detectar ningún java na sua computadora. Podes:'
+  needDownloadHint: >-
+    Non se pode encontrar a versión de Java adecuada na tua computadora. Se
+    recomenda descargar unha nova versión.
+  optionAutoDownload:
+    message: O lanzador descargará e instalará Java dende a fonte de Mojang para ti.
+    name: Descargar Automáticamente
+  optionManualDownload:
+    message: O lanzador o redirixirá a páxina de descarga de Oracle JRE.
+    name: Descargar Manualmente
+  optionSelectJava:
+    message: >-
+      Tal vez o lanzador non encuentra Java na súa computadora. Podes decirlle ó
+      lanzador ónde está.
+    name: Seleccione Java na súa computadora
+  optionSwitch:
+    disabled: ¡Non se atopou ningunha {version} de Java na base de datos nestes intres!
+    message: Use a {version} de Java existente no seu PC
+    name: Cambiar a {version}
+  recommendedVersionHint: A {version} recomenda usar Java co rango {range}。
+  selectMatchedHint: >-
+    Se encontraron versións locais de Java adecuadas. Pode escoller estos Javas
+    locales.
+  selectSecondaryHint: >-
+    Atopei algunhas versións locais de Java, pero é posíbel que non se
+    axusten ós criterios. Todavía pode usalos para iniciar, pero este
+    problema seguirá aparecendo.
+HomeLaunchMultiInstanceDialog:
+  confirm: Sí, Lanzar
+  description: Estás lanzando varias instancias de Minecraft. ¿Está seguro?
+  title: Múltiples instancias
+HomeSyncButton:
+  update: Sincronizar Instancia
+HomeSyncDialog:
+  pull: Empuxar
+  push: Empuxar
+  title: Sincronización de Instancias
+HomeSyncDialogPull:
+  failText: Erro ó obter a actualización. {url}
+  refresh: Actualizar
+  update: Actualizar
+HomeSyncDialogPush:
+  authError: >-
+    Autenticación de usuario erronea. ¡Asegúrese de ter privilexios para
+    cargar arquivos do servidor!
+  refresh: Actualizar
+  unknownError: Erro descoñecido do servidor. Por favor, tentalo de novo.
+  upload: Cargar Instancia
+SettingMigrationDialog:
+  selectRootDirectory: Seleccionar Directorio Raíz
+add: Engadir
+authProfileAddedNotification: Perfil de Autenticación {name} Engadido
+author: Autor
+back: Atrás
+baseSetting:
+  title: Configuración Básica
+browse: Explorar
+browseApp:
+  createShortcut: Crear Acceso directo
+  default: DEFECTO
+  delete: Borrar
+  launch: Iniciar e configurar como predeterminado
+cancel: Cancelar
+confirm: Comezar
+copyClipboard:
+  success: Copiar o portapapeis
+create: Crear
+curseforge:
+  createdDate: Data de creación
+  downloadOnly: Descargar
+  downloaded: Descargado
+  file:
+    gameVersion: Versión do Xogo
+    releaseType: Tipo de Lanzamento
+    sortByDate: Data
+    sortByName: Nome do Arquivo
+  fileReleaseType:
+    alpha: Alfa
+    beta: Beta
+    release: Liberar
+  install: Instalar
+  installTo: Instalar en {path}
+  installToStorage: Instalar en Almacenamento
+  installed: Instalado
+  lastUpdate: Última Data de Actualización
+  mc-mods:
+    description: Ver e descargar paquetes de mods de Curseforge
+    name: Mods
+  modpacks:
+    description: Ver e descargar modpacks de Curseforge
+    name: Modpacks
+  name: Explorar Curseforge
+  project:
+    description: Descripción
+    files: Arquivos
+    images: Imáxes
+  recentFiles: Arquivos Recentes
+  search: Procurar
+  texture-packs:
+    description: Ver e descargar paquetes de recursos de Curseforge
+    name: Paquetes de recursos
+  totalDownloads: Descargas Totales
+  worlds:
+    description: Ver e descargar mundos de Curseforge
+    name: Mundos
+curseforgeCategory:
+  API and Library: API e Bibliotecas
+  Addons: Addons
+  Adventure: Aventura
+  Adventure and RPG: Aventura e RPG
+  Animated: Animación
+  Armor, Tools, and Weapons: Armadura, Ferramentas e Armas
+  Combat / PvP: Competitivo/PVP
+  Cosmetic: Apariencia/Decoración
+  Creation: Modo creativo
+  Data Packs: Paquete de datos
+  Education: Educación
+  Exploration: Exploración
+  Extra Large: De gran tamaño
+  FTB Official Pack: Paquete Oficial FTB
+  Fabric: Fabric
+  FancyMenu: FancyMenu
+  Font Packs: Pack de Fontes
+  Food: Comida
+  Game Map: Mapas de xogo
+  Hardcore: Difícil
+  MCreator: MCreator
+  Magic: Maxico
+  Map Based: Mapa Basado
+  Map and Information: Mapas e Información
+  Medieval: Medieval
+  Mini Game: Mini xogos
+  Miscellaneous: Misceláneos
+  Mod Support: Soporte para Mods
+  Modded World: Mod para mundos
+  Modern: Moderno
+  Multiplayer: Multixogador en línea
+  Parkour: Parkour
+  Photo Realistic: Foto realista
+  Puzzle: Puzzles
+  QoL: QoL
+  Quests: Tarefas
+  Redstone: Redstone
+  Sci-Fi: Ciencia Ficción
+  Server Utility: Ferramenta de Servidor
+  Skyblock: SkyBlock
+  Small / Light: Lixeiro
+  Steampunk: Steampunk
+  Storage: Almacenamento
+  Survival: Supervivencia
+  Tech: Tecnoloxía
+  Technology: Tecnoloxía
+  Traditional: Tradicional
+  Twitch Integration: integración Twitch
+  Utility & QoL: Utilidade y Qol
+  Vanilla+: Vanilla+
+  World Gen: Xerador de Mundos
+dataMigration:
+  apply: Aplicar Configuración
+  directoryCriteriaHint: ¡Asegúrese de que a sua nova ubicación de directorio sexa un directorio VACÍO!
+  migrationDestinationIsFile: ¡O destino de migración é un archivo! ¡Seleccione un directorio vacío!
+  migrationDestinationIsNotEmptyDirectory: >-
+    ¡O destino de migración non é un directorio vacío! ¡Asegúrese de
+    seleccionar un directorio vacío!
+  placeholder: Prema aquí para seleccionar o directorio
+  setRootCause: >-
+    ¡Perderá os seus datos (Mapas, Paquetes de Recursos, Mods) se pecha o Lanzador
+    en este proceso!
+  setRootDescription: Isto cambiará a carpeta de datos raíz de este lanzador e Minecraft.
+  setRootTitle: Establecer nunha nova ubicación de almacenamento
+  unknownError: ¡Erro Descoñecido! Volva a intentalo ou comuníquese co desarrollador.
+  waitReload: Migrando datos. Por favor, non peche o Lanzador ou perderás os teus datos.
+delete:
+  name: Eliminar {name}
+  'no': 'Non'
+  'yes': Borrar
+description: Descripción
+detail: Detalle
+diagnosis:
+  badInstall:
+    message: Prema para intentar reinstalar esta versión.
+    name: Instalación Erronea en {version}
+  corruptedAssets:
+    message: O Lanzador instalará assets por ti
+    name: 'Asset danado : {name} | Asset danado {name} | {count} Assets danados'
+  corruptedAssetsIndex:
+    message: O lanzador descargará o índice de assets para ti
+    name: O arquivo de índice de assets {version} está danado.
+  corruptedLibraries:
+    message: O lanzador instalará bibliotecas por ti
+    name: >-
+      Biblioteca danada: {name} | Biblioteca danada: {name} | {count}
+      Bibliotecas danadas
+  corruptedVersionJar:
+    message: Prema para instalar esta versión
+    name: A versión %{version} do jar de Minecraft está danada.
+  corruptedVersionJson:
+    message: Prema para instalar esta versión
+    name: Versión danada %{version} json.
+  incompatibleJava:
+    message: Preguntar o Lanzador que o descargue por ti.
+    name: ¡A versión de java {javaVersion} non é adecuada para {version}!
+  invalidJava:
+    message: Prema para iniciar con outra versión de java.
+    name: Ubicación de Java non válida.
+  missingAssets:
+    message: O Lanzador instalará assets por ti
+    name: 'Asset faltante: {name} | Asset faltante: {name} | Faltan %{count} assets.'
+  missingAssetsIndex:
+    message: O Lanzador descargará o índice de assets por ti
+    name: Falta o arquivo de índice de activos de {version}.
