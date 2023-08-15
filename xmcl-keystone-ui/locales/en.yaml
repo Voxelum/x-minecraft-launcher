@@ -1014,7 +1014,7 @@ save:
   manage: Manage Saves
   name: Save | Saves
 screenshots:
-  empty: You don't have screenshot
+  empty: You don't have screenshots
   goto: Open Folder
   name: Screenshots
 server:
@@ -1234,7 +1234,7 @@ universalDrop:
 upstream:
   missingModpackMetadata: |-
     The old modpack metadata not found.
-                You can still upgrade, but the result might be wrong. Please backup your instance files.
+    You can still upgrade, but the result might be wrong. Please backup your instance files.
 user:
   accessToken: Access Token
   authMode: Auth Service

@@ -83,6 +83,11 @@ HomeSyncDialogPush:
 SettingMigrationDialog:
   selectRootDirectory: Выберите корневой каталог
 add: Добавить
+ago:
+  day: "{duration} день назад | {duration} дней назад"
+  hour: "{duration} час назад | {duration} часов назад"
+  minute: "{duration} минуту назад | {duration} минут назад"
+  second: "{duration} секунду назад | {duration} секунд назад"
 authProfileAddedNotification: Профиль аутентификации {name} добавлен
 author: Автор
 back: Назад
@@ -97,16 +102,23 @@ browseApp:
 cancel: Отмена
 checkUpdate:
   name: Проверить обновление
+compatibleDetail:
+  current: Текущий
+  id: Номер
+  requirements: Требования
 confirm: Запуск
 copyClipboard:
   success: Скопировать в буфер обмена
 create: Создать
 curseforge:
+  authors: Авторы
+  category: Категория
   createdDate: Дата создания
   downloadOnly: Скачать
   downloaded: Скачано
   file:
     gameVersion: Версия игры
+    modLoader: Загрузчик модов
     releaseType: Тип выпуска
     sortByDate: Дата
     sortByName: Имя файла
@@ -138,6 +150,10 @@ curseforge:
   worlds:
     description: Просматривайте и скачивайте миры с Curseforge
     name: Миры
+curseforgeCard:
+  currentFile: Текущий файл модпака
+  projectHint: Этот экземпляр создан с помощью проекта curseforge {mod} с id файла= {file}
+  projectLastFile: Последний файл модпака
 dataMigration:
   apply: Применить настройку
   directoryCriteriaHint: Убедитесь что новый каталог является ПУСТЫМ каталогом!
@@ -157,6 +173,11 @@ delete:
   name: Удалить {name}
   "no": "Нет"
   "yes": Удалить
+dependencies:
+  embedded: Встроенные
+  incompatible: Несовместимые
+  optional: Необязательные
+  required: Необходимые
 description: Описание
 detail: Подробности
 diagnosis:
@@ -166,14 +187,16 @@ diagnosis:
   corruptedAssets:
     message: Лаунчер установит assets вместо вас
     name: >-
-      Повреждён asset: {name} | Повреждён asset {name} | Assets повреждено: {count}
+      Повреждён asset: {name} | Повреждён asset {name} | Assets
+      повреждено: {count}
   corruptedAssetsIndex:
     message: Лаунчер скачает индексный assets вместо вас
     name: Повреждён индексный файл assets {version}.
   corruptedLibraries:
     message: Лаунчер установит библиотеки вместо вас
     name: >-
-      Повреждена библиотека: {name} | Библиотека повреждена: {name} | Повреждено библиотек: {count}
+      Повреждена библиотека: {name} | Библиотека повреждена: {name} | Повреждено
+      библиотек: {count}
   corruptedVersionJar:
     message: Нажмите, чтобы установить эту версию
     name: Версия jar для Minecraft %{version} повреждена.
@@ -202,7 +225,7 @@ diagnosis:
     message: Лаунчер установит библиотеки вместо вас
     name: >-
       Библиотека {name} отсутствует | Отсутствует библиотека {name} | Отсутсвует библиотек: {count}
-      | Отсутствует {count} библиотеки
+      Отсутствует {count} библиотеки
   missingVersion:
     message: Нажмите, чтобы установить эту версию
     name: Версия {version} не установлена!
@@ -215,16 +238,27 @@ disk:
   used: Использовано
 download: Скачать
 downloadCount: "Скачиваний: {count}"
+duration:
+  day: "{duration} день | {duration} дней"
+  hour: "{duration} час | {duration} часов"
+  minute: "{duration} минута | {duration} минут"
+  second: "{duration} секунда | {duration} секунд"
 edit: Изменить
 error:
   name: Ошибка | Ошибки
 errors:
+  BadForgeInstallerJarError: >-
+    Не получилось скачать установочный jar файл forge. Возможно forge обновил
+    формат установочного файла. Свяжитесь с разработчиками если проблема сохраниться.
   BodyTimeoutError: Истекло время ожидания HTTP Body
   ChecksumNotMatchError: Контрольная сумма не совпадает! Должно быть {expect}. Сейчас {actual}.
   ConnectTimeoutError: Вышло время ожидания подключения к серверу.
   DNSNotFoundError: Ошибка поиска DNS
   DownloadAggregateError: Не удаётся скачать файл.
-  HeadersTimeoutError: Вышло время ожидания HTTP Header
+  DownloadFileSystemError: >-
+    Возникла ошибка доступа к расположению файла загрузки. Пожалуйста, убедитесь что лаунчер имеет
+    разрешение на запись.
+  HeadersTimeoutError: Вышло время ожидания HTTP заголовка
   SocketError: Ошибка сокета сервера
 exception:
   http: >-
@@ -340,6 +374,7 @@ installVersion:
   json: Установить версию Json
   name: Установить клиент Minecraft {version}
 instance:
+  addMod: Добавить мод
   addServer: Добавить сервер
   current: Текущий экземпляр
   delete: Удалить профиль
@@ -348,15 +383,24 @@ instance:
   fileApi: URL-адрес API синхронизации файлового сервера
   fileApiHint: URL-адрес для синхронизации файлов экземпляров с удалённого сервера конфигурации.
   gameVersion: Версия игры
+  icon: Иконка профиля
+  iconUrl: Ссылка на иконку
   includeVersion: Включать версию | Включать версии
+  lastPlayed: Последняя игра
   launchArguments: Предварительный просмотр аргументов запуска
   mcOptions: Параметры Minecraft
   mcOptionsHint: Дополнительные инструкции по запуску Minecraft
   name: Имя профиля
   nameHint: Название, используемое для идентификации игры
+  neverPlayed: Не играли
   openCrashReportFolder: Открыть папку отчётов о сбоях
   openLogFolder: Открыть папку логов
+  playtime: Время игры
   requireName: Имя обязательно
+  setting:
+    reset: Сбросить
+    save: Сохранить
+    unsaved: Изменения не сохранены!
   showInstance: Показать папку экземпляра
   versionHint: Версия игры для этой Minecraft
   vmOptions: Параметры JVM
@@ -365,10 +409,17 @@ instanceAge:
   older: Старые
   threeDay: В течение трёх дней
   today: Сегодня
+instanceFileOperation:
+  add: Добавить
+  backup-add: Заменить (Бэкап)
+  backup-remove: Удалить (Бэкап)
+  keep: Оставить
+  remove: Удалить
 instanceSetting:
   fastLaunch: Турбозапуск
   fastLaunchHint: Игнорировать статус пользователя и существующие нерешённые проблемы
   hideLauncher: Скрыть лаунчер после запуска
+  icon: Выберите изображение
   showLog: Показать логи Minecraft
   showLogHint: Это выведет окно для просмотра логов Minecraft после запуска игры
 instanceTemplate:
@@ -382,6 +433,11 @@ instanceTemplate:
   profile: Это существующая конфигурация профиля
   server: Это существующая конфигурация сервера
   title: Шаблон настройки
+instanceUpdate:
+  basic: Обновление настроек
+  files: Обновление файлов
+  title: Обновление экземпляра
+  update: Начать обновление
 instances:
   add: Добавить локальную игру
   choose: Выберать экземпляр
@@ -390,6 +446,9 @@ instances:
   refreshServers: Обновить серверы
 issue:
   name: Проблемы
+items:
+  count: "{count} предметов"
+  total: "{total} всего"
 java:
   allocatedLong: Использовать Java в системе по умолчанию
   allocatedShort: Автовыделение
@@ -466,6 +525,7 @@ launcherUpdate:
   alreadyLatest: Последняя версия
   installAndQuit: Перезапустите, чтобы установить
   noUpdateAvailable: Нет доступных обновлений
+  reinstall: Переустановить
   updateToThisVersion: Скачать и установить
 liteloader:
   name: LiteLoader
@@ -526,6 +586,9 @@ logsCrashes:
   logs: Логи
   placeholder: Файлы не найдены
   title: Логи или отчёты о сбоях
+me:
+  news: Новости
+  recentPlay: Последние игры
 minecraftVersion:
   empty: Не удаётся загрузить версии Minecraft
   name: Версия Minecraft
@@ -552,15 +615,27 @@ mod:
   manage: Управление модами
   maybeCompatible: Возможно совместим.
   name: Мод | Моды
+  noModLoaderHint: Не забудьте включить modloader для использование модов!
   openLink: Открыть ссылку на мод {url}
   searchOnCurseforge: Исать на curseforge
   searchOnModrinth: Искать {name} на Modrinth
   selected: Выбранные моды
+  showDirectory: Показать расположение модов
   showFile: Показать путь к моду {file}
   showInCurseforge: Показать мод на curseforge
   showInModrinth: Показать {name} на Modrinth
   showIncompatible: Показывать несовместимые моды
   unselected: Невыбранные моды
+modInstall:
+  install: Скачать
+  installed: Скачан
+  pending: Ожидает скачивания
+  search: Результаты поиска
+  searchHint: Найдите и выберите проект
+  selectProjectHint: Выберите проект и скачайте файл
+modSearchType:
+  all: Все
+  local: Локальные
 modpack:
   author: Имя автора
   authorHint: Это может быть использовано для подписи экспортированного модпака. (Curseforge)
@@ -595,6 +670,7 @@ modpack:
   url: Ссылка
   urlHint: Ссылка домашней страницы вашего модпака
 modrinth:
+  browseUrl: Открыть в браузере {url}
   categories:
     128x: 128x
     16x: 16x
@@ -603,51 +679,74 @@ modrinth:
     512x+: 512x+
     64x: 64x
     8x-: 8x-
-    audio: Audio
-    blocks: Blocks
+    adventure: Приключение
+    atmosphere: Атмосфера
+    audio: Звук
+    blocks: Блоки
+    bloom: Bloom
     bukkit: Bukkit
     bungeecord: Bungeecord
-    core-shaders: Core-shaders
-    economy: Economy
-    entities: Entities
-    environment: Environment
-    adventure: Приключения
+    canvas: Canvas
+    cartoon: Cartoon
     categories: Категории
-    challenging: Испытания
+    challenging: Challenging
+    colored-lighting: Цветное освещение
     combat: Сражения
+    core-shaders: Шейдеры
     cursed: Странные
+    datapack: Датапаки
     decoration: Косметика
+    economy: Экономика
+    entities: Entities
+    environment: Окружение
     equipment: Снаряжение
     fabric: Fabric
-    fonts: Fonts
-    food: Food
+    fantasy: Фантастика
+    features: Features
+    folia: Лист
+    foliage: Листва
+    fonts: Шрифты
+    food: Еда
     forge: Forge
-    game-mechanics: Game Mechanics
+    game-mechanics: Механики игры
     gui: Gui
-    items: Items
+    high: Высота
+    iris: Iris
+    items: Предметы
+    kitchen-sink: Кухонная мойка
+    library: Библиотека
+    lightweight: Упрощенный
     liteloader: Liteloader
     locale: Locale
+    low: Low
+    magic: Magic
     management: Management
+    medium: Medium
     minecraft: Minecraft
     minigame: Mini Games
+    misc: Misc
     mobs: Mobs
     modded: Modded
     models: Models
-    name: Категории
+    modloader: Mod Loader
+    multiplayer: Multiplayer
+    optifine: Optifine
+    optimization: Optimizations
     paper: Paper
+    path-tracing: Path Tracing
+    pbr: PBR
+    performance impact: Performance Impact
+    potato: Potato
     purpur: Purpur
-    kitchen-sink: Всё подряд
-    library: Библиотека
-    lightweight: Легковесные
-    magic: Магия
-    misc: Разное
-    modloader: ModLoader
-    multiplayer: Сетевая игра
-    optimization: Оптимизация
-    quests: Квесты
+    quests: Quests
     quilt: Quilt
     realistic: Realistic
+    reflections: Reflections
+    resolutions: Resolutions
     rift: Rift
+    screenshot: Screenshot
+    semi-realistic: Semi Realistic
+    shadows: Shadows
     simplistic: Simplistic
     social: Social
     spigot: Spigot
@@ -658,11 +757,13 @@ modrinth:
     transportation: Transportation
     tweaks: Tweaks
     utility: Utility
+    vanilla: Vanilla
     vanilla-like: Vanilla-like
     velocity: Velocity
     waterfall: Waterfall
     worldgen: World Gen
   clientSide: Client Side
+  copyTitle: Текст {title} скопирован в буфер обмена
   createAt: Создано
   description: Описание
   downloads: Скачиваний
@@ -699,6 +800,8 @@ modrinth:
     modpack: Модпак
     name: Тип проекта
     resourcePack: Пакет текстур
+    shader: Шейдер
+  quickSearch: Поиск {title}
   searchText: Поиск
   serverSide: Серверная часть
   sort:
@@ -711,6 +814,14 @@ modrinth:
   technicalInformation: Техническая информация
   updateAt: Обновлен
   versions: Версии
+modrinthCard:
+  currentVersion: Текущая версия
+  projectHint: >
+    Этот экземпляр создан с помощью Modrinth модпака <code class="rounded p-1"
+    style="background: rgba(123,123,123,0.2)">{title}</code> (project id:
+          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
+  projectLastUpdateDate: "Последнее обновление проекта:"
+  projectLastUpdateVersion: Последняя версия
 multiplayer:
   complete: Готовый
   confirm: Подтвердить
@@ -722,7 +833,8 @@ multiplayer:
     "Скопируйте текст локального SDP и отправьте его своему товарищу, чтобы ваш
     он ввёл этот текст в соединении присоединения <span>Токен может быть использован
     только для <span style="color: red; font-weight: bold;">ондого</span>! Нельзя
-    отправлять один и тот же токен нескольким узлам!</span> <br> <span class="hint-text" style="font-style: italic;">Если вам нужно подключить несколько
+    отправлять один и тот же токен нескольким узлам!</span> <br> <span class="hint-text"
+    style="font-style: italic;">Если вам нужно подключить несколько
     товарищей, вам нужно создать <span style="font-weight: bold; color: rgba(245,
     158, 11)">несколько</span> соединений.</span>"
   createGroup: ""
@@ -790,6 +902,9 @@ natType:
   symmetricNat: Симметричный NAT
   symmetricUDPFirewall: Симметричный межсетевой экран UDP
   unknown: Неизвестно
+news:
+  name: Новости
+  readMore: Подробнее
 next: Далее
 "no": "Нет"
 ok: ОК
@@ -815,6 +930,19 @@ peerIceGatheringState:
 peerSignalingState:
   have-local-offer: Описание ожидающего узла
 popular: Популярность
+presence:
+  curseforge: Просматривает CurseForge
+  curseforgeProject: Просматривает {name} в Curseforge
+  instance: Находится в {instance}
+  instanceSetting: "Настраивает: {instance}"
+  mod: Просматривает моды в {instance}
+  modrinth: Просматривает Modrinth
+  modrinthProject: Просматривает {name} в Modrinth
+  resourcePack: Просматривает ресурспаки в {instance}
+  save: Просматривает сохранения в {instance}
+  setting: Просматривает страницу настроек
+  shaderPack: Просматривает шейдерпаки в {instance}
+  version: Просматривает версии
 previous: Предыдущая
 proxy:
   host: Хост
@@ -885,6 +1013,10 @@ save:
   importTitle: Импорт сохранения
   manage: Управление сохранениями
   name: Сохранение | Сохранения
+screenshots:
+  empty: У вас нет скриншотов
+  goto: Открыть папку
+  name: Скриншоты
 server:
   acceptingMinecraftVersion: Принятие версии Minecraft
   add: Добавить сервер
@@ -968,6 +1100,7 @@ setting:
   colorTheme:
     appBarColor: Панель приложения
     backgroundColor: Цвет фона
+    cardColor: Цвет карточки
     description: Изменить цвета в теме
     errorColor: Цвет ошибки
     name: Цвет темы
@@ -977,10 +1110,18 @@ setting:
     warningColor: Цвет предупреждения
   darkTheme: Тема
   darkThemeDescription: Выберите тёмную или светлую тему
+  developerMode: Режим разработчика
+  developerModeDescription: Режим разработчика нацелен на тестирование ваших модов
+  disableTelemetry: Отключить сбор данных
+  disableTelemetryDescription: XMCL будет собирать информацию о запусках игр и входы в аккаунт.
+  enableDiscord: Включить активность Discord
+  enableDiscordDescription: Ваш статус лаунчера будет отображаться в discord
   general: Общие
   githubRelease: Github Release
   globalSetting: Глобальная настройка экземпляра
   globalSettingHint: Экземпляр будет использовать эти настройки по умолчанию.
+  hideNews: Скрыть новости
+  hideNewsDescription: Скрыть новости под страницей экземпляров
   language: Язык
   languageDescription: Язык интерфейса
   latestVersion: Последняя версия
@@ -989,6 +1130,8 @@ setting:
     focus: Макет фокусировки
   layoutDescription: Макет лаунчера, отражающий различную логику пользовательского интерфейса
   layoutTitle: Макет
+  linuxTitlebar: Нативный заголовок окна
+  linuxTitlebarDescription: Использовать нативный заголовок окна Linux для лаунчера
   location: Расположение хранилища
   maxSockets: На хост
   maxSocketsDescription: >-
@@ -1061,6 +1204,7 @@ shaderPack:
   name: Шейдер
   "off": "Выкл"
   offDescription: Выключить шейдер
+  showDirectory: Открыть расположение шейдеров
   showFile: Открыть этот шейдер в папке
 summery: Летний
 tag:
@@ -1087,6 +1231,10 @@ universalDrop:
   start: Импорт запущен
   title: Перетащите файл(ы) сюда, чтобы импортировать как
   unknownResource: Неизвестно
+upstream:
+  missingModpackMetadata: |-
+    Не найдена metadata старого модпака
+    Вы всё ещё можете обновиться, но в результате может возникнуть ошибка. Пожалуйста, сделайте бэкап своих файлов
 user:
   accessToken: Токен доступа
   authMode: Служба авторизации
