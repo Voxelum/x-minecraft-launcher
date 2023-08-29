@@ -1,8 +1,8 @@
-import { FileIndex } from '@xmcl/curseforge'
+import { File, FileIndex } from '@xmcl/curseforge'
 import { getCurseforgeFileUri, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useRefreshable } from './refreshable'
-import { useResourceEffect } from './resources'
+import { useResourceEffect, useResourceUrisDiscovery } from './resources'
 import { useService } from './service'
 
 export function useLatestCurseforgeResource(modId: Ref<number>, fileIndex: Ref<FileIndex | undefined>) {
@@ -22,6 +22,17 @@ export function useLatestCurseforgeResource(modId: Ref<number>, fileIndex: Ref<F
     refreshing,
     resource,
     fileIndex,
+  }
+}
+
+export function useCurseforgeFileResources(v: Ref<File[]>) {
+  const { resources } = useResourceUrisDiscovery(computed(() => v.value.map(v => getCurseforgeFileUri(v))))
+  const isDownloaded = (v: File) => !!resources.value[getCurseforgeFileUri(v)]
+  const getResource = (v: File) => resources.value[getCurseforgeFileUri(v)]
+  return {
+    resources,
+    getResource,
+    isDownloaded,
   }
 }
 

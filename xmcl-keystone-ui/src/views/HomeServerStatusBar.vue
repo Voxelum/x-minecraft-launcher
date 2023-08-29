@@ -1,11 +1,11 @@
 <template>
   <div
-    class="flex flex-col mb-10"
+    class="mb-10 flex flex-col"
   >
     <v-card-title>
       {{ t('server.status') }}
     </v-card-title>
-    <v-card-text class="flex flex-grow gap-4 items-center">
+    <v-card-text class="flex flex-grow items-center gap-4">
       <img
         :src="status.favicon || unknownServer"
         style="max-height: 64px;"

@@ -3,9 +3,9 @@ import { ensureDir } from 'fs-extra/esm'
 import { rename, stat, unlink } from 'fs/promises'
 import watch from 'node-watch'
 import { dirname, join } from 'path'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { shouldIgnoreFile } from '../resourceCore'
+import { shouldIgnoreFile } from '../resources'
 import { AggregateExecutor } from '../util/aggregator'
 import { linkWithTimeoutOrCopy, readdirIfPresent } from '../util/fs'
 import { Inject } from '../util/objectRegistry'
@@ -36,22 +36,10 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
 
   async watch(instancePath: string): Promise<MutableState<InstanceModsState>> {
     return this.storeManager.registerOrGet(getInstanceModStateKey(instancePath), async () => {
-      enum Action { Add, Remove, Replace }
+      const enum Action { Add = 0, Remove = 1, Replace = 2 }
       const updateMod = new AggregateExecutor<[Resource, Action], [Resource, Action][]>(v => v,
         (all) => {
-          const toAdd = [] as Resource[]
-          const toRemove = [] as Resource[]
-          const toUpdate = [] as Resource[]
-          const visited = new Set<string>()
-          for (let i = all.length - 1; i >= 0; i--) {
-            const [r, action] = all[i]
-            if (visited.has(r.hash)) continue
-            if (action === Action.Add) toAdd.push(r)
-            else if (action === Action.Remove) toRemove.push(r)
-            else toUpdate.push(r)
-            visited.add(r.hash)
-          }
-          state.instanceModUpdates({ toAdd, toRemove, toUpdate })
+          state.instanceModUpdates(all as any)
         },
         500)
 

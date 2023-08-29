@@ -1,6 +1,6 @@
 <template>
-  <v-app class="h-full overflow-auto relative max-h-[100vh]">
-    <v-card class="h-full flex flex-col overflow-auto">
+  <v-app class="relative h-full max-h-[100vh] overflow-auto">
+    <v-card class="flex h-full flex-col overflow-auto">
       <v-toolbar
         class="moveable w-full"
         flat
@@ -45,15 +45,15 @@
       </v-toolbar>
       <v-tabs-items
         v-model="tab"
-        class="flex-grow h-full overflow-auto"
+        class="h-full flex-grow overflow-auto"
       >
         <v-tab-item
           v-for="item in Object.entries(logsRecord)"
           :key="item[0]"
-          class="flex-grow h-full overflow-auto"
+          class="h-full flex-grow overflow-auto"
         >
           <log-view
-            class="flex-grow h-full overflow-auto"
+            class="h-full flex-grow overflow-auto"
             :logs="item[1]"
           />
         </v-tab-item>

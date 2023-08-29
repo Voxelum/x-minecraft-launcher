@@ -1,6 +1,6 @@
 import { Client, SetActivity } from '@xmcl/discord-rpc'
 import { PresenceService as IPresenceService, MutableState, PresenceServiceKey, Settings } from '@xmcl/runtime-api'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { Inject } from '../util/objectRegistry'
 import { BaseService } from './BaseService'

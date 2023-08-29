@@ -1,6 +1,6 @@
 import SQLite from 'better-sqlite3'
 import EventEmitter from 'events'
-import { IdentifierNode, Kysely, KyselyPlugin, OperationNodeTransformer, ParseJSONResultsPlugin, PluginTransformQueryArgs, PluginTransformResultArgs, PrimitiveValueListNode, QueryResult, RootOperationNode, SqliteDialect, UnknownRow, ValueListNode, ValueNode } from 'kysely'
+import { Kysely, KyselyPlugin, OperationNodeTransformer, ParseJSONResultsPlugin, PluginTransformQueryArgs, PluginTransformResultArgs, PrimitiveValueListNode, QueryResult, RootOperationNode, SqliteDialect, UnknownRow, ValueNode } from 'kysely'
 import { ImageStorage } from '../util/imageStore'
 import { Logger } from '../util/log'
 import { ResourceContext } from './ResourceContext'
@@ -26,12 +26,16 @@ class JSONTransformer extends OperationNodeTransformer {
   }
 
   protected override transformValue(node: ValueNode): ValueNode {
+    if (typeof node.value === 'object') {
+      return ValueNode.create(JSON.stringify(node.value))
+    }
     return node
   }
 
-  protected transformPrimitiveValueList(node: PrimitiveValueListNode): PrimitiveValueListNode {
+  protected override transformPrimitiveValueList(node: PrimitiveValueListNode): PrimitiveValueListNode {
     const values = node.values.map(v => typeof v === 'object' ? JSON.stringify(v) : v)
-    return PrimitiveValueListNode.create(values)
+    node = PrimitiveValueListNode.create(values)
+    return node
   }
 }
 
@@ -48,6 +52,12 @@ export function createResourceContext(root: string, imageStore: ImageStorage, ev
   const db = new Kysely<Database>({
     dialect,
     plugins: [new ParseJSONResultsPlugin(), new JSONPlugin()],
+    log: (e) => {
+      if (e.level === 'error') {
+        logger.log(e.query.sql)
+        logger.log(e.query.parameters)
+      }
+    },
   })
 
   const context: ResourceContext = {

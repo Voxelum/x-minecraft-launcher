@@ -1,4 +1,4 @@
-import { ResourceContext } from '../resourceCore'
+import { ResourceContext } from '../resources'
 import { InjectionKey } from '../util/objectRegistry'
 
 export interface WorkPayload {

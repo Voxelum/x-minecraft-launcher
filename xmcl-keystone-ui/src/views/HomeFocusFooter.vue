@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full items-end flex">
+  <div class="flex w-full items-end">
     <div>
       <HomeSettingsSpeedDial :refreshing="false" />
     </div>

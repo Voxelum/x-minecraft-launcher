@@ -3,7 +3,7 @@ import { unlink, writeFile } from 'fs/promises'
 // import generateIco from 'icon-gen/dist/lib/ico'
 import { join } from 'path'
 import { URL } from 'url'
-import LauncherApp from '../LauncherApp'
+import { LauncherApp } from '../LauncherApp'
 
 export async function removeShortcut(outputDir: string, man: InstalledAppManifest) {
   let outputPath = join(outputDir, `${man.name}.lnk`)

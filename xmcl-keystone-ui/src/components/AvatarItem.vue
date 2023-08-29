@@ -1,11 +1,11 @@
 <template>
   <div
-    class="flex flex-grow-0 items-center text-sm rounded pr-2"
+    class="flex flex-grow-0 items-center rounded pr-2 text-sm"
     @click="emit('click', $event)"
   >
     <v-avatar
       :left="true"
-      class="w-[34px] h-[34px]"
+      class="h-[34px] w-[34px]"
       :class="{ responsive }"
     >
       <img
@@ -19,10 +19,10 @@
 
     <div
       v-if="text"
-      class="whitespace-nowrap overflow-hidden overflow-ellipsis text"
+      class="text overflow-hidden overflow-ellipsis whitespace-nowrap"
     >
       <div
-        class="text-gray-300 font-semibold"
+        class="font-semibold text-gray-300"
         :style="{
           color: bgColor
         }"

@@ -597,7 +597,7 @@ universalDrop:
 user:
   accessToken: 訪問令牌
   authMode: 驗證服務
-  authService: 驗證服務器
+  authService: 驗證服務
   birth: 登記的生日
   challenges: 請回答下列問題來驗證你的身份
   email: 郵箱

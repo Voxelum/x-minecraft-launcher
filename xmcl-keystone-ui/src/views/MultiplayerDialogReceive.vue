@@ -20,7 +20,7 @@
         </div>
         <v-textarea
           v-model="remoteDescription"
-          class="flex-grow-0 mt-4"
+          class="mt-4 flex-grow-0"
           outlined
           :label="t('multiplayer.remoteToken')"
           :error="error"

@@ -14,7 +14,7 @@
       </li>
       <li
         v-if="rest > 0"
-        class="overflow-hidden break-all font-italic font-bold"
+        class="font-italic overflow-hidden break-all font-bold"
       >
         {{ t('mod.deletionRestHint', { rest }) }}
       </li>

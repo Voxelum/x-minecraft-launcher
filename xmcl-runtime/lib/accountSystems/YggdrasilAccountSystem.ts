@@ -80,7 +80,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
           throw new UserException({ type: 'loginReset' }, e.message, { cause: e })
         }
       }
-      throw new UserException({ type: 'loginGeneral' }, e.message, { cause: e })
+      throw new UserException({ type: 'loginGeneral' }, e.message || e.errorMessage, { cause: e })
     }
   }
 

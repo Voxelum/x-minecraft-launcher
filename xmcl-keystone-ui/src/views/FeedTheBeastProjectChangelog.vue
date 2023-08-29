@@ -1,14 +1,14 @@
 <template>
   <v-card class="rounded-b-xl">
     <v-progress-linear
-      class="absolute top-0 z-10 m-0 p-0 left-0"
+      class="absolute left-0 top-0 z-10 m-0 p-0"
       :active="refreshing"
       height="3"
       :indeterminate="true"
     />
     <div
       v-if="changelog"
-      class="p-4 markdown"
+      class="markdown p-4"
       v-html="render(changelog)"
     />
     <ErrorView :error="error" />

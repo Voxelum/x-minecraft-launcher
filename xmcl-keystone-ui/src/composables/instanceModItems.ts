@@ -1,6 +1,6 @@
 import { useService } from '@/composables'
 import { AggregateExecutor } from '@/util/aggregator'
-import { Mod } from '@/util/mod'
+import { ModFile } from '@/util/mod'
 import { Instance, InstanceModsServiceKey, ResourceServiceKey, isPersistedResource } from '@xmcl/runtime-api'
 import { Ref, computed, ref, watch } from 'vue'
 
@@ -8,7 +8,7 @@ import { Ref, computed, ref, watch } from 'vue'
  * Contains some basic info of mod to display in UI.
  */
 export interface ModItem {
-  mod: Mod
+  mod: ModFile
   /**
    * The resource tag
    */
@@ -26,7 +26,7 @@ export interface ModItem {
 /**
  * Open read/write for current instance mods
  */
-export function useInstanceModItems(instance: Ref<Instance>, mods: Ref<Mod[]>) {
+export function useInstanceModItems(instance: Ref<Instance>, mods: Ref<ModFile[]>) {
   const { enable, disable } = useService(InstanceModsServiceKey)
   const { updateResources } = useService(ResourceServiceKey)
   const { showDirectory } = useService(InstanceModsServiceKey)
@@ -34,7 +34,7 @@ export function useInstanceModItems(instance: Ref<Instance>, mods: Ref<Mod[]>) {
   const items: Ref<ModItem[]> = ref([])
   const cachedItems = new Map<string, ModItem>()
 
-  function updateItems(resources: Mod[]) {
+  function updateItems(resources: ModFile[]) {
     const newItems = resources.map(getItemFromMod)
 
     for (const item of newItems) {
@@ -54,7 +54,7 @@ export function useInstanceModItems(instance: Ref<Instance>, mods: Ref<Mod[]>) {
     items.value = newItems
   }
 
-  function getItemFromMod(mod: Mod): ModItem {
+  function getItemFromMod(mod: ModFile): ModItem {
     const isPersisted = isPersistedResource(mod.resource)
     const modItem: ModItem = ({
       mod,

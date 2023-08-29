@@ -19,7 +19,7 @@
     </v-list>
     <v-spacer />
     <v-divider />
-    <v-card-actions class="px-10 gap-4">
+    <v-card-actions class="gap-4 px-10">
       <v-btn
         large
         text

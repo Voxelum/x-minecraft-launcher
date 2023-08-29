@@ -11,7 +11,7 @@
     >
       <v-fade-transition>
         <v-card
-          class="w-full h-full items-center justify-center flex"
+          class="flex h-full w-full items-center justify-center"
           :elevation="14"
         >
           <div
@@ -21,7 +21,7 @@
           </div>
           <div
             v-else-if="dragover"
-            class="text-center select-none"
+            class="select-none text-center"
           >
             <v-icon
               :style="{ 'font-size': `${50}px` }"

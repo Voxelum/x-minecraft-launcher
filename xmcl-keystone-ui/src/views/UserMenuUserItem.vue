@@ -26,7 +26,7 @@
           verified
         </v-icon>
         <span>
-          {{ user.authority.toUpperCase() }}
+          {{ authority }}
           ({{ t('user.authService') }})
         </span>
       </v-list-item-subtitle>
@@ -111,7 +111,7 @@
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import { useUserExpired } from '@/composables/user'
 import { useVuetifyColor } from '@/composables/vuetify'
-import { AUTHORITY_DEV, UserProfile } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, UserProfile } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   user: UserProfile
@@ -125,4 +125,12 @@ const emit = defineEmits(['remove', 'refresh', 'abort-refresh'])
 const { t } = useI18n()
 const { getColorCode } = useVuetifyColor()
 const expired = useUserExpired(computed(() => props.user))
+const authority = computed(() => {
+  switch (props.user.authority) {
+    case AUTHORITY_MICROSOFT: return t('userServices.microsoft.name')
+    case AUTHORITY_MOJANG: return t('userServices.mojang.name')
+    case AUTHORITY_DEV: return t('userServices.offline.name')
+  }
+  return props.user.authority
+})
 </script>

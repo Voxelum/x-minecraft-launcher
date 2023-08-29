@@ -1,16 +1,16 @@
 <template>
   <div
-    class="flex gap-4 overflow-auto p-4 flex-col"
+    class="flex flex-col gap-4 overflow-auto p-4"
   >
     <v-progress-linear
-      class="absolute top-0 z-10 m-0 p-0 left-0"
+      class="absolute left-0 top-0 z-10 m-0 p-0"
       :active="refreshing"
       height="3"
       :indeterminate="true"
     />
     <v-card
       outlined
-      class="rounded-lg p-4 flex gap-6 flex-grow-0 flex-1"
+      class="flex flex-1 flex-grow-0 gap-6 rounded-lg p-4"
     >
       <img
         :src="avatar ? avatar.url : ''"
@@ -22,7 +22,7 @@
         </h2>
         <span class="text-lg">{{ shortDescription }}</span>
         <span class="flex-grow" />
-        <span class="flex gap-4 align-center">
+        <span class="align-center flex gap-4">
           <span v-if="installs">
             <v-icon>download</v-icon>
             {{ installs }}
@@ -47,7 +47,7 @@
             </template>
             <template #item="{ item, on }">
               <v-list-item
-                class="flex gap-4 justify-start"
+                class="flex justify-start gap-4"
                 v-on="on"
               >
                 <v-chip
@@ -79,7 +79,7 @@
     <v-card outlined>
       <v-tabs
         v-model="tab"
-        class="rounded-lg flex-grow-0 flex-1"
+        class="flex-1 flex-grow-0 rounded-lg"
       >
         <v-tab :key="0">
           {{ t('FeedTheBeastProject.overview') }}
@@ -95,7 +95,7 @@
         <v-tab-item :key="0">
           <v-card class="rounded-b-xl">
             <div
-              class="p-4 markdown-body"
+              class="markdown-body p-4"
               v-html="description"
             />
           </v-card>
@@ -125,7 +125,7 @@ import { useRefreshable, useService } from '@/composables'
 import FeedTheBeastProjectVersion from './FeedTheBeastProjectVersion.vue'
 import FeedTheBeastProjectChangelog from './FeedTheBeastProjectChangelog.vue'
 import { useDialog } from '../composables/dialog'
-import { AddInstanceDialogKey } from '../composables/instanceAdd'
+import { AddInstanceDialogKey } from '../composables/instanceTemplates'
 import { useMarkdown } from '@/composables/markdown'
 import { FTBClient } from '@/util/ftbClient'
 
@@ -161,12 +161,8 @@ watch(manifest, (m) => {
 
 const { refresh: install, refreshing: installing } = useRefreshable(async () => {
   if (selectedVersionInstance.value) {
-    await getModpackVersionManifest({ modpack: props.id, version: selectedVersionInstance.value })
     show(`${props.id}-${selectedVersionInstance.value.id}`)
   }
 })
 
 </script>
-
-<style>
-</style>

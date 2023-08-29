@@ -3,7 +3,7 @@ import { diagnoseInstall, InstallProfile, InstallProfileIssueReport } from '@xmc
 import { InstanceVersionService as IInstanceVersionService, InstanceVersionServiceKey } from '@xmcl/runtime-api'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
 import { exists } from '../util/fs'

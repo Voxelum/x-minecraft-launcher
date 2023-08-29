@@ -17,7 +17,7 @@
         <div class="flex items-center justify-center">
           <div>
             {{ t('multiplayer.startNewP2PConnection') }}
-            <p class="text-gray-400 text-sm">
+            <p class="text-sm text-gray-400">
               {{ t('multiplayer.joinConnection') }}
             </p>
           </div>
@@ -72,7 +72,7 @@
             @mousedown="copyLocalDescription"
           />
           <div v-html="t('multiplayer.copyLocalHint')" />
-          <div class="flex mt-3 gap-2 items-center justify-center text-amber-500">
+          <div class="mt-3 flex items-center justify-center gap-2 text-amber-500">
             <v-btn
               text
               outlined
@@ -117,7 +117,7 @@
         <v-textarea
           v-model="remoteDescription"
           outlined
-          class="flex-grow-0 mt-4"
+          class="mt-4 flex-grow-0"
           :label="t('multiplayer.enterRemoteToken')"
           :error="error"
           :error-messages="errorText"

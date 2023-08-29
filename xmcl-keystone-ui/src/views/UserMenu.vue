@@ -7,21 +7,17 @@
       name="fade-transition"
       mode="out-in"
     >
-      <template
-        v-if="!login"
-      >
-        <div
-          :key="0"
-        >
+      <template v-if="!login">
+        <div :key="0">
           <v-list>
             <UserMenuUserItem
               v-if="selected"
               :user="selected"
               controls
               :refreshing="refreshing"
-              @remove="emit('remove')"
-              @abort-refresh="emit('abort-refresh')"
-              @refresh="emit('refresh')"
+              @remove="onRemoveUser()"
+              @abort-refresh="abortRefresh()"
+              @refresh="onRefresh()"
             />
           </v-list>
 
@@ -39,25 +35,21 @@
           />
 
           <v-divider v-if="usersToSwitch.length > 0" />
-          <v-list
-            dense
-          >
+          <v-list dense>
             <UserMenuUserItem
               v-for="(item) of usersToSwitch"
               :key="item.id"
               link
               :user="item"
-              @click.native="emit('select', item.id)"
+              @click.native="onSelectUser(item.id)"
             />
           </v-list>
 
           <v-divider />
-          <v-list
-            dense
-          >
+          <v-list dense>
             <v-list-item
               color="primary"
-              @click="login=true"
+              @click="login = true"
             >
               <v-list-item-avatar>
                 <v-icon>
@@ -83,14 +75,17 @@
               text
               @click="login = false"
             >
-              <v-icon small>arrow_back</v-icon>
+              <v-icon small>
+                arrow_back
+              </v-icon>
             </v-btn>
           </div>
 
           <div class="flex flex-grow items-center justify-center">
-            <AppLoginDialogForm
+            <AppLoginForm
               :ref="formRef"
               :inside="false"
+              @login="reset()"
             />
           </div>
         </div>
@@ -99,34 +94,63 @@
   </v-card>
 </template>
 <script lang="ts" setup>
-import { AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, UserProfile } from '@xmcl/runtime-api'
-import AppLoginDialogForm from './AppLoginDialogForm.vue'
+import { useRefreshable, useService } from '@/composables'
+import { kUserContext, useUserExpired } from '@/composables/user'
+import { injection } from '@/util/inject'
+import { AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, UserServiceKey } from '@xmcl/runtime-api'
+import AppLoginForm from './AppLoginForm.vue'
 import UserMenuMicrosoft from './UserMenuMicrosoft.vue'
 import UserMenuMojang from './UserMenuMojang.vue'
 import UserMenuUserItem from './UserMenuUserItem.vue'
 import UserMenuYggdrasil from './UserMenuYggdrasil.vue'
 
-const emit = defineEmits(['refresh', 'abort-refresh', 'select', 'remove'])
 const { t } = useI18n()
-const props = defineProps<{
-  selected: UserProfile | undefined
-  users: UserProfile[]
-  refreshing: boolean
-}>()
-const login = ref(props.users.length === 0)
+const { users, select, userProfile: selected } = injection(kUserContext)
+const { abortRefresh, refreshUser, removeUser } = useService(UserServiceKey)
+const expired = useUserExpired(computed(() => selected.value))
 
-const formRef = ref<InstanceType<typeof AppLoginDialogForm> | null>(null)
+const props = defineProps<{ show: boolean }>()
+
+watch(() => props.show, (s) => {
+  if (!s) return
+  onRefresh()
+})
+
+const onSelectUser = (user: string) => {
+  select(user)
+}
+const formRef = ref<InstanceType<typeof AppLoginForm> | null>(null)
+const login = ref(users.value.length === 0)
+const { refresh: onRefresh, refreshing, error } = useRefreshable(async () => {
+  if (users.value.length === 0) {
+    login.value = true
+  } else if (selected.value?.id || selected.value.invalidated || expired.value) {
+    // Try to refresh
+    const authority = selected.value?.authority
+    await refreshUser(selected.value.id).catch((e) => {
+      console.error(e)
+      reset({ username: selected.value?.username, authority, error: t('login.userRelogin') })
+      login.value = true
+    })
+  }
+})
+
+async function onRemoveUser() {
+  const isLastOne = users.value.length <= 0
+  await removeUser(selected.value)
+  if (isLastOne) {
+    login.value = true
+  } else {
+    select(users.value[0].id)
+  }
+}
 
 const reset = (o?: { username?: string; password?: string; microsoftUrl?: string; authority?: string; error?: string }) => {
   formRef.value?.reset(o)
   login.value = false
 }
 
-defineExpose({
-  reset,
-})
-
-const usersToSwitch = computed(() => props.users.filter(v => props.selected ? (v.id !== props.selected.id) : true))
+const usersToSwitch = computed(() => users.value.filter(v => selected.value ? (v.id !== selected.value.id) : true))
 </script>
 <style scoped>
 .user-menu {

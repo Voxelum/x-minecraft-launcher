@@ -3,6 +3,21 @@ import { Ref } from 'vue'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
 
+export function useResourceAdd(onResourceEffect: (res: Resource) => void, targetDomain?: ResourceDomain) {
+  const { on, removeListener } = useService(ResourceServiceKey)
+  const onEffect = (res: Resource) => {
+    if (!targetDomain || res.domain === targetDomain) {
+      onResourceEffect(res)
+    }
+  }
+  onMounted(() => {
+    on('resourceAdd', onEffect)
+  })
+  onUnmounted(() => {
+    removeListener('resourceAdd', onEffect)
+  })
+}
+
 export function useResourceEffect(onResourceEffect: () => void, targetDomain?: ResourceDomain) {
   const { on, removeListener } = useService(ResourceServiceKey)
   const effect = ref(0)
@@ -52,18 +67,41 @@ export function useResourceSha1Discovery(sha1: Ref<string[]>) {
   }
 }
 
+export function useResourceUriStartsWithDiscovery(startsWith: Ref<string>) {
+  const { getResourcesByStartsWithUri } = useService(ResourceServiceKey)
+
+  const resources = shallowRef({} as Record<string, Resource | undefined>)
+  const updateStatus = async () => {
+    const all = await getResourcesByStartsWithUri(startsWith.value)
+    const result: Record<string, Resource> = {}
+    for (const r of all) {
+      for (const u of r.uris) {
+        result[u] = r
+      }
+    }
+    resources.value = result
+  }
+
+  onMounted(updateStatus)
+  useResourceEffect(updateStatus)
+  watch(startsWith, updateStatus)
+
+  return {
+    resources,
+  }
+}
+
 export function useResourceUrisDiscovery(uris: Ref<string[]>) {
   const { getResourcesByUris } = useService(ResourceServiceKey)
 
-  const resources = shallowRef({} as Record<string, Resource>)
+  const resources = shallowRef({} as Record<string, Resource | undefined>)
   const updateStatus = async () => {
     const allUris = uris.value
     const all = await getResourcesByUris(allUris)
     const result: Record<string, Resource> = {}
-    for (let i = 0; i < all.length; i++) {
-      const res = all[i]
-      if (res) {
-        result[allUris[i]] = res
+    for (const r of all) {
+      for (const u of r.uris) {
+        result[u] = r
       }
     }
     resources.value = result

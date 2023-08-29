@@ -15,7 +15,7 @@ export function useMarketRoute() {
   }
 
   let curseforgeWindow: Window | null = null
-  function goToCurseforge(route = '/curseforge/mc-mods') {
+  function goToCurseforge(route = '/curseforge/modpacks') {
     if (!curseforgeWindow || curseforgeWindow.closed) {
       curseforgeWindow = window.open('app.html?route=' + route, '_blank')
     } else {

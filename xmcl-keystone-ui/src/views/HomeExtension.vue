@@ -1,13 +1,13 @@
 <template>
   <div
-    class="flex flex-grow-0 flex-1 flex-row items-center justify-center"
+    class="flex flex-1 flex-grow-0 flex-row items-center justify-center"
     :class="{
       'mb-3': !compact,
       'mb-2': compact,
     }"
   >
     <div
-      class="flex flex-row items-center gap-1 flex-grow-0 justify-center"
+      class="flex flex-grow-0 flex-row items-center justify-center gap-1"
     >
       <AvatarItem
         :avatar="'image://builtin/minecraft'"
@@ -79,7 +79,7 @@
     <div class="flex-grow" />
     <div
       v-if="!isInFocusMode"
-      class="flex align-end gap-7 flex-1 flex-grow-0"
+      class="align-end flex flex-1 flex-grow-0 gap-7"
     >
       <HomeHeaderInstallStatus
         v-if="status === 1 || status === 3"

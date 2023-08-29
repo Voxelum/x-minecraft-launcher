@@ -2,7 +2,7 @@ import { BaseServiceException, BaseServiceKey, Environment, BaseService as IBase
 import { readdir, rename, rm, stat } from 'fs/promises'
 import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { IS_DEV } from '../constant'
 import { kClientToken } from '../entities/clientToken'

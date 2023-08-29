@@ -46,7 +46,7 @@
     />
     <v-list
       v-else
-      class="h-full flex flex-col overflow-auto p-0"
+      class="flex h-full flex-col overflow-auto p-0"
     >
       <v-list-item
         v-if="isClearable"
@@ -60,7 +60,7 @@
         <div class="flex-grow" />
       </v-list-item>
       <virtual-list
-        class="h-full overflow-y-auto max-h-[300px]"
+        class="h-full max-h-[300px] overflow-y-auto"
         :data-sources="filteredItems"
         :data-key="'name'"
         :data-component="VersionMenuListTile"

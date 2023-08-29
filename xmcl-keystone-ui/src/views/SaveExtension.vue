@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-shrink flex-grow-0 items-center gap-2 z-5"
+    class="z-5 flex flex-shrink flex-grow-0 items-center gap-2"
     outlined
     elevation="1"
     :class="{

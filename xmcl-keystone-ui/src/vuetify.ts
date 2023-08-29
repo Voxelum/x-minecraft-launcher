@@ -1,6 +1,7 @@
 import 'vuetify/dist/vuetify.min.css'
 import CurseforgeIcon from '@/components/CurseforgeIcon.vue'
 import FabricIcon from '@/components/FabricIcon.vue'
+import QuiltIcon from '@/components/QuiltIcon.vue'
 import ForgeIcon from '@/components/ForgeIcon.vue'
 import FTBIcon from '@/components/FTBIcon.vue'
 import JarFileIcon from '@/components/JarFileIcon.vue'
@@ -49,6 +50,9 @@ export const vuetify = new Vuetify({
       },
       fabric: {
         component: FabricIcon,
+      },
+      quilt: {
+        component: QuiltIcon,
       },
     },
   },

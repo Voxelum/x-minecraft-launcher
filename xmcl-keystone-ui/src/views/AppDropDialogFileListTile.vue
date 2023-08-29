@@ -19,7 +19,7 @@
         {{ value.description }}
       </v-list-item-subtitle>
     </v-list-item-content>
-    <v-list-item-action class="flex flex-row gap-4 justify-end items-center">
+    <v-list-item-action class="flex flex-row items-center justify-end gap-4">
       <v-chip
         v-if="'date' in value"
         label

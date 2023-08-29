@@ -25,7 +25,7 @@
     @wheel.native="onWheel"
   >
     <template #item="{ item, attrs }">
-      <div class="w-full flex flex-grow-0 items-center">
+      <div class="flex w-full flex-grow-0 items-center">
         <v-list-item-action>
           <v-checkbox
             :value="attrs.inputValue"

@@ -62,7 +62,7 @@
         "kysely": "^0.26.1",
         "lodash.debounce": "^4.0.8",
         "lodash.throttle": "^4.1.1",
-        "node-datachannel": "0.4.1",
+        "node-datachannel": "0.5.0-dev",
         "node-watch": "^0.7.3",
         "normalize-url": "^7.2.0",
         "undici": "^5.22.1",

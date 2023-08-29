@@ -1,6 +1,6 @@
 <template>
   <div
-    class="p-4 markdown-body"
+    class="markdown-body p-4"
     v-html="htmlContent"
   />
 </template>

@@ -2,7 +2,7 @@ import { InstanceServerInfoService as IInstanceServerInfoService, InstanceServer
 import { readFile } from 'fs/promises'
 import watch from 'node-watch'
 import { join } from 'path'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { exists } from '../util/fs'
 import { Inject } from '../util/objectRegistry'

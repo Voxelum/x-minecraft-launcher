@@ -7,7 +7,7 @@
     outlined
     hover
     :draggable="!pack.enabled && pack.path"
-    class="draggable-card flex duration-200 mt-2 flex-row flex-nowrap select-none"
+    class="draggable-card mt-2 flex select-none flex-row flex-nowrap duration-200"
     :class="{ enabled: pack.enabled }"
     @click="onSelect"
     @dragstart="emit('dragstart', pack)"
@@ -39,7 +39,7 @@
       </v-card-text>
       <v-card-text
         v-if="pack.tags.length > 0"
-        class="pt-0 flex gap-2 flex-wrap"
+        class="flex flex-wrap gap-2 pt-0"
       >
         <v-chip
           v-for="(tag, index) in pack.tags"
@@ -62,7 +62,7 @@
         </v-chip>
       </v-card-text>
     </div>
-    <div class="self-center flex-shrink pr-2">
+    <div class="flex-shrink self-center pr-2">
       <v-switch
         v-model="enabled"
         readonly

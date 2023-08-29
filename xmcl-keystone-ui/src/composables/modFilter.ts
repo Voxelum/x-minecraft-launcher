@@ -6,7 +6,7 @@ export function useModFilter(items: Ref<ModItem[]>) {
   function getFilterOptions(item: ModItem) {
     return [
       ...item.mod.modLoaders.map(tag => ({ label: 'info', value: tag, color: 'lime' })),
-      { value: item.mod.id, color: 'orange en-1' },
+      { value: item.mod.modId, color: 'orange en-1' },
       ...item.tags.map(t => ({ type: 'tag', value: t, label: 'label' })),
     ]
   }

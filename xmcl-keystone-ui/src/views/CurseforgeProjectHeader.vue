@@ -1,7 +1,7 @@
 <template>
   <v-card
     outlined
-    class="flex-shrink flex-grow-0 items-center gap-2 z-5 w-full min-w-60"
+    class="z-5 min-w-60 w-full flex-shrink flex-grow-0 items-center gap-2"
   >
     <v-img
       class="hidden lg:flex"
@@ -23,7 +23,7 @@
         <v-skeleton-loader type="heading" />
       </span>
     </v-card-title>
-    <v-card-subtitle class="lg:block flex justify-between pb-0">
+    <v-card-subtitle class="flex justify-between pb-0 lg:block">
       <div>
         <v-icon small>
           event

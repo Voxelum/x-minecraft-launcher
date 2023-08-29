@@ -2,7 +2,7 @@ import { createMinecraftProcessWatcher, diagnoseJar, diagnoseLibraries, launch, 
 import { AUTHORITY_DEV, LaunchService as ILaunchService, LaunchException, LaunchOptions, LaunchServiceKey } from '@xmcl/runtime-api'
 import { ChildProcess } from 'child_process'
 import { EOL } from 'os'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { EncodingWorker, kEncodingWorker } from '../entities/encodingWorker'
 import { JavaValidation } from '../entities/java'

@@ -1,9 +1,12 @@
 import { pluginClientToken } from './pluginClientToken'
 import { pluginCommonProtocol } from './pluginCommonProtocol'
+import { pluginCurseforgeClient } from './pluginCurseforgeClient'
+import { pluginCurseforgeModpackHandler } from './pluginCurseforgeModpackHandler'
 import { pluginGFW } from './pluginGFW'
 import { pluginGameDataPath } from './pluginGameDataPath'
 import { pluginImageStorage } from './pluginImageStore'
 import { pluginLogConsumer } from './pluginLogConsumer'
+import { pluginModrinthModpackHandler } from './pluginModrinthModpackHandler'
 import { pluginNetworkInterface } from './pluginNetworkInterface'
 import { pluginOfficialUserApi } from './pluginOfficialUserApi'
 import { pluginOffineUser } from './pluginOfflineUser'
@@ -25,11 +28,14 @@ export const plugins = [
   pluginNetworkInterface,
   pluginOfficialUserApi,
   pluginOffineUser,
+  pluginCurseforgeModpackHandler,
+  pluginModrinthModpackHandler,
   pluginServicesHandler,
   pluginSettings,
   pluginTelemetry,
   pluginUndiciLogger,
   pluginUserTokenStorage,
+  pluginCurseforgeClient,
   pluginWorker,
   pluginYggdrasilHandler,
 ]

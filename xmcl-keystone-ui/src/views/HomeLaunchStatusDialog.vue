@@ -20,7 +20,7 @@
             />
 
             <v-progress-circular
-              class="absolute top-[11px] left-[10px]"
+              class="absolute left-[10px] top-[11px]"
               color="error"
               :size="50"
               :width="4"
@@ -28,7 +28,7 @@
             />
 
             <v-progress-circular
-              class="absolute top-[21px] left-[20px]"
+              class="absolute left-[20px] top-[21px]"
               color="warning"
               :size="30"
               :width="4"
@@ -36,7 +36,7 @@
             />
           </div>
           <v-flex
-            class="my-3 flex-col flex gap-1 mx-10 items-center justify-center"
+            class="mx-10 my-3 flex flex-col items-center justify-center gap-1"
           >
             <VTypical
               v-if="notReady || launching"

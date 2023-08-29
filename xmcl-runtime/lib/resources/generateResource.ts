@@ -14,6 +14,8 @@ export type QueryOptions = {
 } | {
   uris: string[]
 } | {
+  startsWithUri: string
+} | {
   ino: number
 } | {
   domain: ResourceDomain
@@ -47,7 +49,13 @@ export async function getResourceAndMetadata(context: ResourceContext, query: Qu
   } else if ('ino' in query) {
     _query = _query.where('snapshots.ino', '=', query.ino)
   } else if ('uris' in query) {
-    _query = _query.where('snapshots.sha1', 'in', (eb) => eb.selectFrom('uris').select('uris.uri').where('uris.uri', 'in', query.uris))
+    // _query = _query.where('snapshots.sha1', 'in', (eb) => eb.selectFrom('uris').select('uris.uri').where('uris.uri', 'in', query.uris))
+    const uris = await context.db.selectFrom('uris').where('uris.uri', 'in', query.uris).select('uris.sha1').execute()
+    _query = _query.where('snapshots.sha1', 'in', uris.map(v => v.sha1))
+  } else if ('startsWithUri' in query) {
+    // _query = _query.where('snapshots.sha1', 'in', (eb) => eb.selectFrom('uris').select('uris.sha1').where('uris.uri', 'like', `${query.startsWithUri}%`))
+    const uris = await context.db.selectFrom('uris').where('uris.uri', 'like', `${query.startsWithUri}%`).select('uris.sha1').execute()
+    _query = _query.where('snapshots.sha1', 'in', uris.map(v => v.sha1))
   }
 
   const result = await _query

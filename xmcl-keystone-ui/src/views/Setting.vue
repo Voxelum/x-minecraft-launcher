@@ -1,7 +1,6 @@
 <template>
-  <v-container
-    fluid
-    class="overflow-auto h-full visible-scroll"
+  <div
+    class="visible-scroll h-full overflow-auto p-4 xl:px-20 2xl:px-40"
   >
     <SettingGeneral />
     <SettingYggdrasilServices />
@@ -10,7 +9,7 @@
     <SettingAppearance />
     <SettingUpdateInfoDialog />
     <SettingMigrationDialog />
-  </v-container>
+  </div>
 </template>
 
 <script lang=ts setup>

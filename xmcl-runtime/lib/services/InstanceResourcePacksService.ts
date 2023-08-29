@@ -1,6 +1,6 @@
 import { InstanceResourcePacksService as IInstanceResourcePacksService, InstanceResourcePacksServiceKey, LockKey, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { basename, join } from 'path'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { tryLink } from '../util/linkResourceFolder'
 import { Inject } from '../util/objectRegistry'

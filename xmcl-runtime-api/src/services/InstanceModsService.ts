@@ -14,43 +14,33 @@ export function getInstanceModStateKey(path: string) {
   return `instance-mods://${path}`
 }
 
+const enum Action { Add = 0, Remove = 1, Replace = 2 }
 export class InstanceModsState {
   /**
    * The mods under instance folder
    */
   mods = [] as Resource[]
 
-  instanceModUpdates({ toAdd, toRemove, toUpdate }: { toAdd: Resource[]; toRemove: Resource[]; toUpdate: Resource[] }) {
-    const toRemoved = new Set(toRemove.map(p => p.hash))
-    const newMods = [...this.mods]
-
-    for (const res of toAdd) {
-      const existed = newMods.findIndex(m => m.hash === res.hash)
-      if (existed !== -1) {
-        newMods[existed] = res
-        // do not remove if the mod is re-updated
-        // usually this is rename case
-        if (toRemoved.has(res.hash)) toRemoved.delete(res.hash)
-      } else {
-        newMods.push(res)
-      }
-    }
-
-    if (toRemove.length > 0) {
-      const filtered = newMods.filter(m => !toRemoved.has(m.hash))
-      this.mods = filtered
-    } else {
-      this.mods = newMods
-    }
-
-    if (toUpdate.length > 0) {
-      for (const res of toUpdate) {
-        const existed = this.mods.findIndex(m => m.hash === res.hash)
-        if (existed !== -1) {
-          this.mods[existed] = { ...res, path: this.mods[existed].path }
+  instanceModUpdates(ops: [Resource, Action][]) {
+    const mods = [...this.mods]
+    for (const [r, a] of ops) {
+      if (a === Action.Add) {
+        const index = mods.findIndex(m => m.path === r.path)
+        if (index === -1) {
+          mods.push(r)
+        } else if (process.env.NODE_ENV === 'development') {
+          // eslint-disable-next-line no-debugger
+          console.debug(`The mod ${r.path} is already in the list!`)
         }
+      } else if (a === Action.Remove) {
+        const index = mods.findIndex(m => m.path === r.path)
+        if (index !== -1) mods.splice(index, 1)
+      } else {
+        const index = mods.findIndex(m => m.path === r.path)
+        if (index !== -1) mods[index] = { ...r, path: mods[index].path }
       }
     }
+    this.mods = mods
   }
 }
 

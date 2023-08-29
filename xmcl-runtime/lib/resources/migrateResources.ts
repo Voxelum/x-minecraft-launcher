@@ -10,6 +10,10 @@ export class ResourceMigrateProvider implements MigrationProvider {
   }
 }
 
+/**
+ * Migrate the database to latest version
+ * @param db The sqldatabase
+ */
 export function migrate(db: Kysely<Database>) {
   const migrator = new Migrator({
     db,
@@ -46,18 +50,21 @@ async function up(db: Kysely<Database>): Promise<void> {
     .createTable('tags')
     .addColumn('sha1', 'char(40)', (col) => col.notNull().references('resources.sha1').onDelete('cascade'))
     .addColumn('tag', 'varchar', (col) => col.notNull())
+    .addUniqueConstraint('sha1_uri_unique', ['sha1', 'tag'])
     .execute()
 
   await db.schema
     .createTable('uris')
     .addColumn('sha1', 'char(40)', (col) => col.notNull().references('resources.sha1').onDelete('cascade'))
     .addColumn('uri', 'varchar', (col) => col.notNull())
+    .addUniqueConstraint('sha1_uri_unique', ['sha1', 'uri'])
     .execute()
 
   await db.schema
     .createTable('icons')
     .addColumn('sha1', 'char(40)', (col) => col.notNull().references('resources.sha1').onDelete('cascade'))
     .addColumn('icon', 'varchar', (col) => col.notNull())
+    .addUniqueConstraint('sha1_uri_unique', ['sha1', 'icon'])
     .execute()
 
   await db.schema
@@ -72,6 +79,30 @@ async function up(db: Kysely<Database>): Promise<void> {
     .execute()
 
   await db.schema
+    .createTable('modProject')
+    .addColumn('modid', 'varchar', (col) => col.notNull())
+    .addColumn('modloader', 'varchar')
+    .addColumn('modrinth', 'varchar')
+    .addColumn('modloader', 'varchar')
+    .addColumn('curseforge', 'varchar')
+    .addColumn('mcwiki', 'varchar')
+    .addPrimaryKeyConstraint('modloader_modid', ['modloader', 'modid'])
+    .execute()
+
+  await db.schema
+    .createTable('modFile')
+    .addColumn('modid', 'varchar')
+    .addColumn('version', 'varchar')
+    .addColumn('modloader', 'varchar')
+    .addColumn('modrinthProjectId', 'varchar')
+    .addColumn('modrinthProjectVersionId', 'varchar')
+    .addColumn('curseforgeProjectId', 'varchar')
+    .addColumn('curseforgeProjectFileId', 'varchar')
+    .addColumn('url', 'json')
+    .addPrimaryKeyConstraint('modloader_modid_version', ['modloader', 'modid', 'version'])
+    .execute()
+
+  await db.schema
     .createIndex('snapshots_ino_index')
     .on('snapshots')
     .column('ino')
@@ -82,8 +113,6 @@ async function up(db: Kysely<Database>): Promise<void> {
     .on('snapshots')
     .column('sha1')
     .execute()
-
-  console.log('done')
 }
 
 async function down(db: Kysely<Database>): Promise<void> {

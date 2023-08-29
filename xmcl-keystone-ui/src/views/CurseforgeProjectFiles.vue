@@ -1,11 +1,11 @@
 <template>
   <div
-    class="h-full flex overflow-auto"
+    class="flex h-full overflow-auto"
   >
     <div
-      class="flex flex-col h-full overflow-auto"
+      class="flex h-full flex-col overflow-auto"
     >
-      <div class="flex flex-shrink flex-grow-0 gap-5 mx-5 mt-3">
+      <div class="mx-5 mt-3 flex flex-shrink flex-grow-0 gap-5">
         <v-select
           v-model="modLoader"
           clearable
@@ -29,7 +29,7 @@
       </div>
       <div
         v-if="loading"
-        class="v-list max-h-[100vh] h-full overflow-auto"
+        class="v-list h-full max-h-[100vh] overflow-auto"
       >
         <v-skeleton-loader type="list-item-avatar-three-line" />
         <v-skeleton-loader type="list-item-avatar-three-line" />
@@ -45,7 +45,7 @@
       />
       <v-list
         v-if="!error && !loading"
-        class="h-full overflow-auto visible-scroll"
+        class="visible-scroll h-full overflow-auto"
       >
         <CurseforgeProjectFileItem
           v-for="file in files"

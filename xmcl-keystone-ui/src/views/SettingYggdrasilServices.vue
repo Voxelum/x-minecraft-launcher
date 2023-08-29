@@ -71,7 +71,7 @@ const items: Ref<(YggdrasilApi &{ new?: boolean })[]> = ref([])
 watch(services, (s) => {
   if (!s) return
   items.value = s.map(api => ({ ...api, new: false }))
-})
+}, { immediate: true })
 const { addYggdrasilService, removeYggdrasilService } = useService(YggdrasilServiceKey)
 const { t } = useI18n()
 

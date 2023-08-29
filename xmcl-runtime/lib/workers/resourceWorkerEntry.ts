@@ -2,11 +2,12 @@ import { checksum } from '@xmcl/core'
 import fs from 'fs'
 import { gracefulify } from 'graceful-fs'
 import { ResourceWorker } from '../entities/resourceWorker'
-import { hashAndFiletypeResource, hashResource, ResourceParser } from '../resourceCore'
+import { hashAndFiletypeResource, hashResource } from '../resources'
 import { copyPassively } from '../util/fs'
 import 'source-map-support/register'
 
 import { setHandler } from './helper'
+import { ResourceParser } from '../resourceParsers'
 
 gracefulify(fs)
 

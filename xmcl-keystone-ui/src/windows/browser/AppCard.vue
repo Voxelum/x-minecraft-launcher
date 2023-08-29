@@ -1,8 +1,8 @@
 <template>
   <div
-    class="flex gap-5 p-2 hover:bg-[rgba(255,255,255,0.1)] cursor-pointer transition-colors duration-400 rounded-xl"
+    class="duration-400 flex cursor-pointer gap-5 rounded-xl p-2 transition-colors hover:bg-[rgba(255,255,255,0.1)]"
   >
-    <div class="flex items-center flex-grow-0">
+    <div class="flex flex-grow-0 items-center">
       <img
         width="45px"
         height="45px"
@@ -12,7 +12,7 @@
       >
     </div>
     <div class="flex flex-col">
-      <span class="font-bold text-lg">{{ manifest.name }}</span>
+      <span class="text-lg font-bold">{{ manifest.name }}</span>
       <span class="text-gray-400">{{ manifest.description }}</span>
       <span class="text-light-800 max-w-240 overflow-auto">{{ manifest.url }}</span>
       <v-divider v-if="manifest.screenshots.length > 0" />
@@ -25,7 +25,7 @@
         </span>
       </div>
     </div>
-    <div class="flex items-center flex-grow-0 gap-1">
+    <div class="flex flex-grow-0 items-center gap-1">
       <v-chip
         v-if="defaultApp === manifest.url"
         color="primary"

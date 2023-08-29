@@ -2,7 +2,7 @@ import { randomUUID } from 'crypto'
 import { createReadStream, existsSync } from 'fs'
 import debounce from 'lodash.debounce'
 import { createConnection } from 'net'
-import { DataChannel, DescriptionType, IceServer, PeerConnection } from 'node-datachannel'
+import NDataChannel, { DataChannel, DescriptionType, IceServer, PeerConnection } from 'node-datachannel'
 import { join } from 'path'
 import { Readable } from 'stream'
 import { Logger } from '../../util/log'
@@ -58,7 +58,7 @@ export class PeerSession {
     readonly logger: Logger,
     portBegin?: number,
   ) {
-    this.connection = new PeerConnection(this.id, {
+    this.connection = new NDataChannel.PeerConnection(this.id, {
       iceServers: [..._iceServers, ...iceServers],
       iceTransportPolicy: 'all',
       portRangeBegin: portBegin,

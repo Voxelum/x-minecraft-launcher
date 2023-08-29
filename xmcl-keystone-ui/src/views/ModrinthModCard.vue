@@ -7,7 +7,7 @@
     hoverable
     :disabled="disabled"
     hover
-    class="rounded-lg p-4 select-none"
+    class="select-none rounded-lg p-4"
     @click="emit('click')"
   >
     <div class="flex">
@@ -16,15 +16,15 @@
         :src="value.icon_url"
         class="rounded-2xl"
       />
-      <div class="flex flex-col ml-3">
+      <div class="ml-3 flex flex-col">
         <div class="flex align-baseline">
-          <h2 class="text-2xl font-bold pr-2">
+          <h2 class="pr-2 text-2xl font-bold">
             {{ value.title }}
           </h2>
           <span class="secondary-text"> by {{ value.author }}</span>
         </div>
         {{ value.description }}
-        <div class="flex align-baseline gap-3 secondary-text mt-1">
+        <div class="secondary-text mt-1 flex gap-3 align-baseline">
           <span class="text-sm">
             <v-icon small>
               file_download
@@ -51,7 +51,7 @@
           </span>
         </div>
         <div
-          class="flex gap-2 mt-2 flex-wrap"
+          class="mt-2 flex flex-wrap gap-2"
           @click.stop.prevent
         >
           <v-chip

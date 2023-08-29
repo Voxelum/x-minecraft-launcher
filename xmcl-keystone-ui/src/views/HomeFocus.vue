@@ -1,7 +1,7 @@
 <template>
   <div>
     <HomeFocusFooter
-      class="flex absolute left-0 bottom-0 px-8 pb-[26px] gap-6"
+      class="absolute bottom-0 left-0 flex gap-6 px-8 pb-[26px]"
     />
   </div>
 </template>

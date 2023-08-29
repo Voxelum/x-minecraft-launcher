@@ -11,13 +11,13 @@
       maybe: isCompatible === 'maybe',
       dragged: item.dragged,
     }"
-    class="draggable-card mod-card rounded-lg transition-all duration-200 shadow px-3"
+    class="draggable-card mod-card rounded-lg px-3 shadow transition-all duration-200"
     style="margin-top: 10px; padding: 0 10px;"
     @dragstart="onDragStart"
     @click="onClick($event, index)"
   >
     <TransitionGroup
-      class="layout justify-center align-center fill-height select-none"
+      class="layout align-center fill-height select-none justify-center"
       name="transition-list"
       tag="div"
     >
@@ -38,13 +38,13 @@
         <v-img
           ref="iconImage"
           :lazy-src="unknownPack"
-          class="rounded object-contain image-render-pixel"
+          class="image-render-pixel rounded object-contain"
           :src="item.mod.icon"
         />
       </v-flex>
       <div
         :key="2"
-        class="flex-grow py-2 flex flex-col flex-1 overflow-x-auto"
+        class="flex flex-1 flex-grow flex-col overflow-x-auto py-2"
       >
         <h3
           class="px-1"
@@ -52,22 +52,23 @@
           <text-component
             :source="item.mod.name"
           />
-          <span class="text-gray-400 text-sm">
+          <span class="text-sm text-gray-400">
             {{ item.mod.version }}
           </span>
         </h3>
         <v-card-text
-          class="px-1 py-0 min-h-[22px] overflow-hidden overflow-ellipsis whitespace-nowrap"
+          class="min-h-[22px] overflow-hidden overflow-ellipsis whitespace-nowrap px-1 py-0"
         >
           <text-component
             :source="item.mod.description"
           />
         </v-card-text>
-        <ModCardLabels
-          :source="item"
+        <ModLabels
+          :modid="item.mod.modId"
+          :tags="item.tags"
           :compatibility="compatibility"
-          :on-edit-tag="onEditTag"
-          :on-delete-tag="onDeleteTag"
+          @edit-tag="onEditTag"
+          @delete-tag="onDeleteTag"
         />
       </div>
       <v-flex
@@ -87,17 +88,15 @@
 <script lang=ts setup>
 import unknownPack from '@/assets/unknown_pack.png'
 import { useTags } from '@/composables'
-import { kColorTheme } from '@/composables/colorTheme'
 import { useModCompatibility } from '@/composables/modCompatibility'
 import { useModItemContextMenuItems } from '@/composables/modContextMenu'
-import { injection } from '@/util/inject'
 import type Vue from 'vue'
 import { Ref } from 'vue'
 import { ModItem } from '../composables/instanceModItems'
 import { vContextMenu } from '../directives/contextMenu'
 import { vSelectableCard } from '../directives/draggableCard'
 import { vLongPress } from '../directives/longPress'
-import ModCardLabels from './ModCardLabels.vue'
+import ModLabels from './ModLabels.vue'
 
 const props = defineProps<{
   item: ModItem
@@ -115,7 +114,7 @@ const props = defineProps<{
 
 const modItem = computed(() => props.item)
 const { createTag, editTag, removeTag } = useTags(computed({ get: () => props.item.tags, set(v) { props.onTags(props.item, v) } }), computed(() => props.item.selected))
-const { isCompatible, compatibility } = useModCompatibility(modItem, computed(() => props.runtime))
+const { isCompatible, compatibility } = useModCompatibility(computed(() => props.item.mod.dependencies), computed(() => props.runtime))
 
 const onDeleteTag = removeTag
 const iconImage: Ref<Vue | null> = ref(null)
@@ -157,7 +156,7 @@ function onEditTag(event: Event, index: number) {
   }
 }
 
-const contextMenuItems = useModItemContextMenuItems(modItem, () => props.onDelete(props.item), createTag)
+const contextMenuItems = useModItemContextMenuItems(computed(() => modItem.value.mod), () => props.onDelete(props.item), createTag)
 </script>
 
 <style scoped>

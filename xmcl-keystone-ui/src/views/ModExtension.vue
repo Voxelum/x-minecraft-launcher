@@ -1,111 +1,180 @@
 <template>
-  <div
-    class="flex flex-grow-0 flex-1 flex-row items-center justify-center mt-4"
-    :class="{
-      'mb-4': !compact,
-      'mb-2': compact,
-    }"
-  >
+  <div class="mb-0 flex flex-col">
     <div
-      class="flex flex-row items-center gap-1 flex-grow-0 justify-center"
+      class="flex flex-1 flex-grow-0 flex-row items-center justify-center"
     >
-      <AvatarItem
-        responsive
-        :avatar="'image://builtin/minecraft'"
-        title="Minecraft"
-        :text="`${version.minecraft}`"
-      />
-      <v-divider vertical />
-      <AvatarItem
-        v-if="version.forge"
-        responsive
-        :avatar="'image://builtin/forge'"
-        title="Forge"
-        :text="`${version.forge}`"
-      />
-      <v-divider
-        v-if="version.forge"
-        vertical
-      />
-      <AvatarItem
-        v-if="version.fabricLoader"
-        responsive
-        :avatar="'image://builtin/fabric'"
-        title="Fabric"
-        :text="`${version.fabricLoader}`"
-      />
-      <v-divider
-        v-if="version.fabricLoader"
-        vertical
-      />
-      <AvatarItem
-        v-if="version.quiltLoader"
-        responsive
-        :avatar="'image://builtin/quilt'"
-        title="Quilt"
-        :text="`${version.quiltLoader}`"
-      />
-      <v-divider
-        v-if="version.quiltLoader"
-        vertical
-      />
-      <AvatarItem
-        v-if="version.optifine"
-        responsive
-        :avatar="'image://builtin/optifine'"
-        title="Optifine"
-        :text="`${version.optifine}`"
-      />
-      <v-divider
-        v-if="version.optifine"
-        vertical
-      />
-      <AvatarItem
-        responsive
-        icon="folder_zip"
-        :title="t('mod.name', { count: 2 })"
-        :text="t('mod.enabled', { count: modCount })"
-      />
-      <v-divider
-        v-if="noModLoader"
-        vertical
-      />
-      <AvatarItem
-        v-if="noModLoader"
-        v-ripple
-        class="cursor-pointer select-none"
-        responsive
-        icon="dangerous"
-        title="Modloader"
-        :text="t('mod.noModLoaderHint')"
-        @click="router.push('/base-setting')"
-      />
+      <div
+        class="flex flex-grow-0 flex-row items-center justify-center gap-1"
+      >
+        <AvatarItem
+          responsive
+          :avatar="'image://builtin/minecraft'"
+          title="Minecraft"
+          :text="`${version.minecraft}`"
+        />
+        <v-divider
+          v-if="version.forge"
+          vertical
+        />
+        <AvatarItem
+          v-if="version.forge"
+          responsive
+          :avatar="'image://builtin/forge'"
+          title="Forge"
+          :text="`${version.forge}`"
+        />
+        <v-divider
+          v-if="version.fabricLoader"
+          vertical
+        />
+        <AvatarItem
+          v-if="version.fabricLoader"
+          responsive
+          :avatar="'image://builtin/fabric'"
+          title="Fabric"
+          :text="`${version.fabricLoader}`"
+        />
+        <v-divider
+          v-if="version.quiltLoader"
+          vertical
+        />
+        <AvatarItem
+          v-if="version.quiltLoader"
+          responsive
+          :avatar="'image://builtin/quilt'"
+          title="Quilt"
+          :text="`${version.quiltLoader}`"
+        />
+        <v-divider
+          v-if="version.optifine"
+          vertical
+        />
+        <AvatarItem
+          v-if="version.optifine"
+          responsive
+          :avatar="'image://builtin/optifine'"
+          title="Optifine"
+          :text="`${version.optifine}`"
+        />
+        <!-- <v-divider
+          v-if="version.optifine"
+          vertical
+        /> -->
+        <!-- <AvatarItem
+          responsive
+          icon="folder_zip"
+          :title="t('mod.name', { count: 2 })"
+          :text="t('mod.enabled', { count: modCount })"
+        /> -->
+      </div>
+      <div class="flex-grow" />
+      <div
+        class="invisible-scroll flex justify-end overflow-x-auto"
+      >
+        <v-text-field
+          ref="searchTextField"
+          v-model="_keyword"
+          class="max-w-100"
+          small
+          hide-details
+          outlined
+          filled
+          dense
+          prepend-inner-icon="search"
+        />
+      </div>
     </div>
-    <div class="flex-grow" />
-    <div
-      class="flex items-center overflow-x-auto invisible-scroll pr-3 h-full "
+    <v-tabs
+      v-model="tab"
+      class="mt-3"
+      centered
+      background-color="transparent"
     >
-      <FilterCombobox
-        :placeholder="t('mod.filter')"
-      />
-    </div>
+      <v-tab>
+        <v-icon left>
+          all_inclusive
+        </v-icon>
+        {{ t('modSearchType.all') }}
+        <div
+          class="v-badge__badge primary static ml-1 w-[unset]"
+        >
+          {{ mods.length + curseforgeCount + modrinthCount }}
+        </div>
+      </v-tab>
+      <v-tab>
+        <v-icon left>
+          storage
+        </v-icon>
+        {{ t('modSearchType.local') }}
+        <div
+          class="v-badge__badge primary static ml-1 w-[unset]"
+        >
+          {{ mods.length }}
+        </div>
+      </v-tab>
+      <v-tab :disabled="!curseforge || curseforge.data.length === 0">
+        <v-icon left>
+          $vuetify.icons.curseforge
+        </v-icon>
+        Curseforge
+        <div
+          class="v-badge__badge primary static ml-1 w-[unset]"
+        >
+          {{ curseforgeCount }}
+        </div>
+      </v-tab>
+      <v-tab :disabled="!modrinth || modrinth.hits.length === 0">
+        <v-icon left>
+          $vuetify.icons.modrinth
+        </v-icon>
+        Modrinth
+        <div
+          class="v-badge__badge primary static ml-1 w-[unset]"
+        >
+          {{ modrinthCount }}
+        </div>
+      </v-tab>
+    </v-tabs>
   </div>
 </template>
 
 <script lang=ts setup>
 import AvatarItem from '@/components/AvatarItem.vue'
-import FilterCombobox from '@/components/FilterCombobox.vue'
 import { kInstance } from '@/composables/instance'
-import { kInstanceModsContext } from '@/composables/instanceMods'
-import { kCompact } from '@/composables/scrollTop'
+import { kModsSearch } from '@/composables/modSearch'
+import { kModSearchItems } from '@/composables/modSearchItems'
 import { injection } from '@/util/inject'
+import debounce from 'lodash.debounce'
 
-const { enabledModCounts: modCount } = injection(kInstanceModsContext)
+const search = debounce((v: string | undefined) => {
+  replace({ query: { ...route.query, keyword: v } })
+}, 800)
+const { replace } = useRouter()
+const route = useRoute()
+const _keyword = computed({
+  get: () => route.query.keyword as string ?? '',
+  set: (v) => { search(v) },
+})
+
 const { runtime: version } = injection(kInstance)
-const compact = injection(kCompact)
+const { modrinth, curseforge, mods } = injection(kModsSearch)
+const { tab } = injection(kModSearchItems)
+const curseforgeCount = computed(() => curseforge.value ? curseforge.value.pagination.totalCount : 0)
+const modrinthCount = computed(() => modrinth.value ? modrinth.value.total_hits : 0)
 const { t } = useI18n()
-const noModLoader = computed(() =>
-  !version.value.forge && !version.value.fabricLoader && !version.value.quiltLoader,
-)
-const router = useRouter()
+
+const searchTextField = ref(undefined as any)
+const onControlF = (e: KeyboardEvent) => {
+  if (e.ctrlKey && e.key === 'f') {
+    e.preventDefault()
+    e.stopPropagation()
+    searchTextField.value?.focus()
+  }
+}
+onMounted(() => {
+  document.addEventListener('keydown', onControlF)
+})
+onUnmounted(() => {
+  document.removeEventListener('keydown', onControlF)
+})
 </script>

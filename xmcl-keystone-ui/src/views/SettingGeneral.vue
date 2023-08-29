@@ -114,7 +114,7 @@
             t("setting.useBmclAPI")
           }}
           <a
-            class="underline primary ml-1"
+            class="primary ml-1 underline"
             target="browser"
             href="https://bmclapidoc.bangbang93.com/"
           >
@@ -155,7 +155,7 @@
           }}
         </v-list-item-subtitle>
       </v-list-item-content>
-      <v-list-item-action class="flex flex-row flex-grow-0 gap-1">
+      <v-list-item-action class="flex flex-grow-0 flex-row gap-1">
         <v-text-field
           v-model="proxy.host"
           :disabled="!httpProxyEnabled"
@@ -189,7 +189,7 @@
           }}
         </v-list-item-subtitle>
       </v-list-item-content>
-      <v-list-item-action class="flex flex-row flex-grow-0 gap-1">
+      <v-list-item-action class="flex flex-grow-0 flex-row gap-1">
         <v-text-field
           v-model="maxSockets"
           class="w-40"

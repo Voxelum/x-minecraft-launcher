@@ -1,11 +1,11 @@
 <template>
   <div
-    class="flex flex-col select-none overflow-auto h-full justify-start items-start w-full gap-5"
+    class="flex h-full w-full select-none flex-col items-start justify-start gap-5 overflow-auto"
     style="overflow: scroll;"
   >
     <div
       v-if="instancesByTime[0].length !== 0"
-      class="justify-center w-full flex flex-grow-0 flex-1"
+      class="flex w-full flex-1 flex-grow-0 justify-center"
       style="color: grey;"
     >
       {{ t('instanceAge.today') }}
@@ -34,7 +34,7 @@
 
     <div
       v-if="instancesByTime[1].length !== 0"
-      class="justify-center w-full flex flex-grow-0 flex-1"
+      class="flex w-full flex-1 flex-grow-0 justify-center"
       style="color: grey"
     >
       {{ t('instanceAge.threeDay') }}
@@ -61,7 +61,7 @@
 
     <div
       v-if="instancesByTime[2].length !== 0"
-      class="justify-center w-full flex flex-grow-0 flex-1"
+      class="flex w-full flex-1 flex-grow-0 justify-center"
       style="color: grey"
     >
       {{ t('instanceAge.older') }}

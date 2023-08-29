@@ -1,20 +1,19 @@
 /* eslint-disable quotes */
 import { DownloadTask } from '@xmcl/installer'
 import {
-  UserService as IUserService,
-  LoginOptions,
-  MutableState,
-  SaveSkinOptions, UploadSkinOptions,
-  UserProfile,
-  UserSchema,
-  UserServiceKey,
-  UserState,
-  normalizeUserId,
+UserService as IUserService,
+LoginOptions,
+MutableState,
+SaveSkinOptions, UploadSkinOptions,
+UserProfile,
+UserSchema,
+UserServiceKey,
+UserState,
+normalizeUserId,
 } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { UserAccountSystem } from '../accountSystems/AccountSystem'
-import { YggdrasilAccountSystem } from '../accountSystems/YggdrasilAccountSystem'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { kDownloadOptions } from '../entities/downloadOptions'
 import { PathResolver, kGameDataPath } from '../entities/gameDataPath'
@@ -24,6 +23,7 @@ import { Inject } from '../util/objectRegistry'
 import { SafeFile, createSafeFile } from '../util/persistance'
 import { ensureLauncherProfile, preprocessUserData } from '../util/userData'
 import { ExposeServiceKey, Lock, Singleton, StatefulService } from './Service'
+import { YggdrasilService } from './YggdrasilService'
 
 @ExposeServiceKey(UserServiceKey)
 export class UserService extends StatefulService<UserState> implements IUserService {
@@ -44,7 +44,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(kUserTokenStorage) private tokenStorage: UserTokenStorage,
     @Inject(kGameDataPath) private getPath: PathResolver,
-    @Inject(YggdrasilAccountSystem) private yggdrasilAccountSystem: YggdrasilAccountSystem) {
+    @Inject(YggdrasilService) private yggdrasilAccountSystem: YggdrasilService) {
     super(app, () => new UserState(), async () => {
       const data = await this.userFile.read()
       const userData = {
@@ -87,7 +87,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
 
   @Lock('login')
   async login(options: LoginOptions): Promise<UserProfile> {
-    const system = this.accountSystems[options.authority] || this.yggdrasilAccountSystem
+    const system = this.accountSystems[options.authority] || this.yggdrasilAccountSystem.yggdrasilAccountSystem
 
     this.loginController = new AbortController()
 
@@ -115,7 +115,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     const user = this.state.users[userId]
     const gameProfile = user.profiles[gameProfileId || user.selectedProfile]
 
-    const sys = this.accountSystems[user.authority] || this.yggdrasilAccountSystem
+    const sys = this.accountSystems[user.authority] || this.yggdrasilAccountSystem.yggdrasilAccountSystem
 
     if (skin) {
       if (typeof skin.slim !== 'boolean') skin.slim = false
@@ -155,7 +155,7 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       return
     }
 
-    const system = this.accountSystems[user.authority] || this.yggdrasilAccountSystem
+    const system = this.accountSystems[user.authority] || this.yggdrasilAccountSystem.yggdrasilAccountSystem
     this.refreshController = new AbortController()
 
     const newUser = await system.refresh(user, this.refreshController.signal).finally(() => {

@@ -1,7 +1,7 @@
 <template>
   <v-card
     outlined
-    class="p-4 rounded-lg flex flex-col h-[fit-content]"
+    class="flex h-[fit-content] flex-col rounded-lg p-4"
   >
     <v-skeleton-loader
       v-if="loading"
@@ -32,7 +32,7 @@
             class="mt-0 pt-0"
           />
           <div
-            class="w-5 max-w-5 flex justify-center"
+            class="max-w-5 flex w-5 justify-center"
             v-html="cat.icon"
           />
           <div>
@@ -53,7 +53,7 @@
           class="mt-0 pt-0"
         />
         <div
-          class="w-5 max-w-5 flex justify-center"
+          class="max-w-5 flex w-5 justify-center"
           v-html="l.icon"
         />
         {{ t(`modrinth.categories.${l.name}`,l.name) }}

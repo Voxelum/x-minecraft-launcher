@@ -2,7 +2,7 @@
 import { YggdrasilService as IYggdrasilService, YggdrasilApi, YggdrasilSchema, YggdrasilServiceKey } from '@xmcl/runtime-api'
 import { Pool } from 'undici'
 import { YggdrasilAccountSystem } from '../accountSystems/YggdrasilAccountSystem'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { Inject } from '../util/objectRegistry'
 import { AbstractService, ExposeServiceKey } from './Service'
@@ -76,9 +76,11 @@ export class YggdrasilService extends AbstractService implements IYggdrasilServi
 
     const api = await loadYggdrasilApiProfile(url)
     this.yggdrasilServices.push(api)
+    await this.yggdrasilFile.write({ yggdrasilServices: this.yggdrasilServices })
   }
 
   async removeYggdrasilService(url: string): Promise<void> {
     this.yggdrasilServices = this.yggdrasilServices.filter(a => a.url !== url)
+    await this.yggdrasilFile.write({ yggdrasilServices: this.yggdrasilServices })
   }
 }

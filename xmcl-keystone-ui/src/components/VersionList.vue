@@ -1,12 +1,12 @@
 <template>
   <div class="flex h-full flex-col overflow-auto">
     <v-progress-linear
-      class="absolute top-0 z-10 m-0 p-0 left-0"
+      class="absolute left-0 top-0 z-10 m-0 p-0"
       :active="refreshing"
       height="3"
       :indeterminate="true"
     />
-    <v-list-item class="flex-grow-0 flex-shrink flex-1 flex justify-end">
+    <v-list-item class="flex flex-1 flex-shrink flex-grow-0 justify-end">
       <slot name="header" />
     </v-list-item>
     <v-divider />
@@ -35,13 +35,13 @@
     </div>
     <v-list
       v-else-if="versions.length !== 0"
-      class="h-full flex flex-col overflow-auto flex-grow"
+      class="flex h-full flex-grow flex-col overflow-auto"
       style="background-color: transparent;"
     >
       <v-list-item
         v-if="canDisable"
         ripple
-        class="flex-grow-0 flex-1 justify-start"
+        class="flex-1 flex-grow-0 justify-start"
         @click="emit('disable')"
       >
         <v-list-item-avatar>

@@ -1,0 +1,152 @@
+<script setup lang="ts">
+import { Mod, ModFile } from '@/util/mod'
+import ModDetail, { ExternalResource, ModDetailData } from './ModDetail.vue'
+import { ModVersion } from './ModDetailVersion.vue'
+import { useService } from '@/composables'
+import { InstanceModsServiceKey } from '@xmcl/runtime-api'
+import { injection } from '@/util/inject'
+import { kInstance } from '@/composables/instance'
+import { useModDetailUpdate, useModDetailEnable } from '@/composables/modDetail'
+
+const props = defineProps<{
+  mod: Mod
+  files: ModFile[]
+}>()
+
+const emit = defineEmits<{
+  (event: 'delete', file: ModFile): void
+}>()
+
+const versions = computed(() => {
+  const files = props.files
+  const all: ModVersion[] = files.map((f) => {
+    const version: ModVersion = {
+      id: f.path,
+      name: f.resource.fileName,
+      version: f.version,
+      downloadCount: 0,
+      installed: true,
+      loaders: f.modLoaders,
+      minecraftVersion: f.dependencies.find((d) => d.modId === 'minecraft')?.semanticVersion as string,
+      type: 'release',
+      disabled: false,
+    }
+    return version
+  })
+  return all
+})
+
+const installedVersions = computed(() => {
+  const ver = props.mod.installed.map(v => versions.value.find(f => f.id === v.modId)).filter((v): v is ModVersion => !!v)
+  return ver
+})
+const selectedVersion = ref(installedVersions.value[0] ?? versions.value[0])
+provide('selectedVersion', selectedVersion)
+watch(installedVersions, (v) => {
+  if (v) {
+    selectedVersion.value = installedVersions.value[0]
+  } else {
+    selectedVersion.value = versions.value[0]
+  }
+})
+
+const { t } = useI18n()
+const model = computed(() => {
+  const file = props.files.find(f => f.modId === selectedVersion.value?.id)
+
+  const externals = computed(() => {
+    const file = props.files.find(f => f.modId === selectedVersion.value?.id)
+    const result: ExternalResource[] = []
+    if (file?.links.home) {
+      result.push({
+        icon: 'mdi-home',
+        name: 'Home',
+        url: file.links.home,
+      })
+    }
+    if (file?.links.issues) {
+      result.push({
+        icon: 'mdi-bug',
+        name: 'Issues',
+        url: file.links.issues,
+      })
+    }
+    if (file?.links.source) {
+      result.push({
+        icon: 'mdi-source-repository',
+        name: 'Source',
+        url: file.links.source,
+      })
+    }
+    if (file?.links.update) {
+      result.push({
+        icon: 'mdi-file-document',
+        name: 'Javadoc',
+        url: file.links.update,
+      })
+    }
+
+    return result
+  })
+
+  const result: ModDetailData = reactive({
+    id: props.mod.id,
+    icon: props.mod.icon,
+    title: props.mod.title,
+    description: props.mod.description,
+    categories: [],
+    externals: externals.value,
+    info: computed(() => file?.license ? [{ icon: 'description', name: t('modrinth.license'), value: file.license.name, url: file.license.url }] : []),
+    galleries: [],
+    author: computed(() => file?.authors.join(', ') ?? ''),
+    downloadCount: 0,
+    follows: 0,
+    url: computed(() => file?.links.home ?? ''),
+    htmlContent: props.mod.description,
+    installed: !!props.mod.installed,
+    enabled: computed(() => file?.enabled ?? false),
+  })
+  return result
+})
+
+const updating = useModDetailUpdate()
+const { enabled, installed, hasInstalledVersion } = useModDetailEnable(selectedVersion, computed(() => props.files), updating)
+const { path } = injection(kInstance)
+
+watch(() => props.mod, () => {
+  updating.value = false
+})
+
+const { install } = useService(InstanceModsServiceKey)
+const onDelete = async () => {
+  updating.value = true
+  emit('delete', props.mod.installed[0])
+}
+
+const onInstall = async () => {
+  updating.value = true
+
+  const file = props.files.find(f => f.modId === selectedVersion.value.id)
+  if (file) {
+    await install({ path: path.value, mods: [file.resource] })
+  }
+}
+
+</script>
+<template>
+  <ModDetail
+    :detail="model"
+    :dependencies="[]"
+    :enabled="enabled"
+    :has-installed-version="hasInstalledVersion"
+    :selected-installed="installed"
+    :loading="false"
+    :versions="versions"
+    :updating="updating"
+    :has-more="false"
+    :loading-versions="false"
+    @install="onInstall"
+    @delete="onDelete"
+    @enable="enabled = $event"
+  />
+</template>

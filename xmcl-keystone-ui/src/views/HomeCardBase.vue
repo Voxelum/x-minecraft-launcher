@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="flex flex-col h-full"
+    class="flex h-full flex-col"
     :color="cardColor"
   >
     <v-card-title>

@@ -5,14 +5,14 @@ import { AbortableTask, BaseTask } from '@xmcl/task'
 import { randomFill, randomUUID } from 'crypto'
 import { createWriteStream } from 'fs'
 import { ensureFile } from 'fs-extra/esm'
-import { IceServer, initLogger } from 'node-datachannel'
+import DataChannel from 'node-datachannel'
 import { join } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
 import { request } from 'undici'
 import { promisify } from 'util'
 import { brotliCompress, brotliDecompress } from 'zlib'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { IS_DEV } from '../constant'
 import { PeerGroup, TransferDescription } from '../entities/peer'
@@ -42,7 +42,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
   private sharedManifest: InstanceManifest | undefined
   private shareInstancePath = ''
-  private iceServers: IceServer[] = []
+  private iceServers: DataChannel.IceServer[] = []
 
   private group: PeerGroup | undefined
 
@@ -124,29 +124,29 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       })
     })
 
-    if (IS_DEV) {
-      const logger = this.app.getLogger('wrtc', 'wrtc')
-      initLogger('Verbose', (level, message) => {
-        if (level === 'Info' || level === 'Debug' || level === 'Verbose') {
-          logger.log(message)
-        } else if (level === 'Fatal' || level === 'Error') {
-          logger.warn(message)
-        } else if (level === 'Warning') {
-          logger.warn(message)
-        }
-      })
-    } else {
-      const logger = this.app.getLogger('wrtc', 'wrtc')
-      initLogger('Info', (level, message) => {
-        if (level === 'Info' || level === 'Debug' || level === 'Verbose') {
-          logger.log(message)
-        } else if (level === 'Fatal' || level === 'Error') {
-          logger.warn(message)
-        } else if (level === 'Warning') {
-          logger.warn(message)
-        }
-      })
-    }
+    // if (IS_DEV) {
+    //   const logger = this.app.getLogger('wrtc', 'wrtc')
+    //   DataChannel.initLogger('Verbose', (level, message) => {
+    //     if (level === 'Info' || level === 'Debug' || level === 'Verbose') {
+    //       logger.log(message)
+    //     } else if (level === 'Fatal' || level === 'Error') {
+    //       logger.warn(message)
+    //     } else if (level === 'Warning') {
+    //       logger.warn(message)
+    //     }
+    //   })
+    // } else {
+    //   const logger = this.app.getLogger('wrtc', 'wrtc')
+    //   DataChannel.initLogger('Info', (level, message) => {
+    //     if (level === 'Info' || level === 'Debug' || level === 'Verbose') {
+    //       logger.log(message)
+    //     } else if (level === 'Fatal' || level === 'Error') {
+    //       logger.warn(message)
+    //     } else if (level === 'Warning') {
+    //       logger.warn(message)
+    //     }
+    //   })
+    // }
 
     app.protocol.registerHandler('peer', ({ request, response }) => {
       // handle peer protocol

@@ -4,7 +4,7 @@
     :width="750"
     :persistent="true"
   >
-    <v-card class="overflow-auto visible-scroll flex flex-col max-h-[80vh]">
+    <v-card class="visible-scroll flex max-h-[80vh] flex-col overflow-auto">
       <v-toolbar color="error">
         <v-toolbar-title
           class="white--text"
@@ -27,19 +27,19 @@
           <v-icon>arrow_drop_down</v-icon>
         </v-btn>
       </v-toolbar>
-      <v-card-text class="overflow-auto flex flex-col">
+      <v-card-text class="flex flex-col overflow-auto">
         <div
           style="padding: 10px"
         >
           {{ data.isCrash ? t(`launchFailed.crash`) : t(`launchFailed.description`) }}
         </div>
-        <pre class="rounded p-5 bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] overflow-auto">{{ data.errorLog }}</pre>
+        <pre class="overflow-auto rounded bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]">{{ data.errorLog }}</pre>
         <div
           style="padding: 10px"
         >
           {{ t(`launchFailed.latestLog`) }}
         </div>
-        <pre class="rounded p-5 bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] overflow-auto">{{ data.log }}</pre>
+        <pre class="overflow-auto rounded bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]">{{ data.log }}</pre>
       </v-card-text>
     </v-card>
   </v-dialog>

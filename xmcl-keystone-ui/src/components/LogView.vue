@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-1 p-2 rounded text-sm visible-scroll">
+  <div class="visible-scroll flex flex-col gap-1 rounded p-2 text-sm">
     <div
       v-for="(l, index) of logs"
       :key="index"

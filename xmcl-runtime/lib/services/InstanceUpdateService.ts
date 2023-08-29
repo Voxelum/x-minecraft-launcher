@@ -1,5 +1,5 @@
 import { Instance, InstanceData, InstanceFile, InstanceFileUpdate, InstanceUpdateService as IInstanceUpdateService, InstanceUpdateServiceKey, UpdateInstanceOptions, UpgradeModpackOptions } from '@xmcl/runtime-api'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { Inject } from '../util/objectRegistry'
 import { InstanceManifestService } from './InstanceManifestService'

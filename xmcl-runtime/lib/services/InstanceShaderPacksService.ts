@@ -30,7 +30,8 @@ export class InstanceShaderPacksService extends AbstractService implements IInst
     if (!existsSync(dest)) {
       throw Object.assign(new Error(), { name: 'FileNotFound' })
     }
-    return await linkWithTimeoutOrCopy(src, dest)
+    await linkWithTimeoutOrCopy(src, dest)
+    return true
   }
 
   @Lock(p => LockKey.shaderpacks(p))

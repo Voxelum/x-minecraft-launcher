@@ -1,5 +1,5 @@
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
-import { Mod, getModItemFromResource } from '@/util/mod'
+import { ModFile, getModFileFromResource } from '@/util/mod'
 import { Mod as CFMod, FileModLoaderType, ModsSearchSortField, Pagination } from '@xmcl/curseforge'
 import { SearchResult } from '@xmcl/modrinth'
 import { InstanceData, Resource } from '@xmcl/runtime-api'
@@ -9,7 +9,7 @@ import { InjectionKey, Ref } from 'vue'
 
 export const kModsSearch: InjectionKey<ReturnType<typeof useModsSearch>> = Symbol('ModsSearch')
 
-export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, runtime: Ref<InstanceData['runtime']>, instanceMods: Ref<Mod[]>) {
+export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, runtime: Ref<InstanceData['runtime']>, instanceMods: Ref<ModFile[]>) {
   const isValidResource = (r: Resource) => {
     const useForge = !!runtime.value.forge
     const useFabric = !!runtime.value.fabricLoader
@@ -24,8 +24,8 @@ export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, 
     ? filter(keyword.value, resources.value, {
       extract: (r) => `${r.name} ${r.fileName}`,
     }).map((r) => r.original ? r.original : r as any as Resource)
-      .filter(isValidResource).map(getModItemFromResource)
-    : resources.value.filter(isValidResource).map(getModItemFromResource))
+      .filter(isValidResource).map(r => getModFileFromResource(r, runtime.value))
+    : resources.value.filter(isValidResource).map(r => getModFileFromResource(r, runtime.value)))
 
   const existedMods = computed(() =>
     keyword.value.length === 0
@@ -41,6 +41,7 @@ export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, 
 
   const processModrinth = async (useForge: boolean, useFabric: boolean, offset: number, append: boolean) => {
     try {
+      modrinthError.value = undefined
       const facets = [`["versions:${runtime.value.minecraft}"]`, '["project_type:mod"]']
       if (useForge) {
         facets.push('["categories:forge"]')
@@ -77,6 +78,7 @@ export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, 
   const processCurseforge = async (useForge: boolean, useFabric: boolean, offset: number, append: boolean) => {
     if (keyword.value) {
       try {
+        curseforgeError.value = undefined
         const remain = append && curseforge.value ? curseforge.value.pagination.totalCount - offset : Number.MAX_SAFE_INTEGER
         const result = await clientCurseforgeV1.searchMods({
           classId: 6, // mods
@@ -100,6 +102,8 @@ export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, 
         loadingCurseforge.value = false
       }
     } else {
+      curseforgeError.value = undefined
+      loadingCurseforge.value = false
       curseforge.value = undefined
     }
   }
@@ -133,7 +137,7 @@ export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, 
     }
   }, 1000)
 
-  const onSearch = debounce(async () => {
+  const onSearch = async () => {
     const useForge = !!runtime.value.forge
     const useFabric = !!runtime.value.fabricLoader
     loadingModrinth.value = true
@@ -142,7 +146,7 @@ export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, 
     curseforgePage.value = 0
     processModrinth(useForge, useFabric, modrinthPage.value * 20, false)
     processCurseforge(useForge, useFabric, curseforgePage.value * 20, false)
-  }, 1000)
+  }
 
   watch(keyword, onSearch)
 

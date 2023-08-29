@@ -1,9 +1,9 @@
 <template>
   <div
-    class="cursor-pointer select-none w-43"
+    class="w-43 cursor-pointer select-none"
     @click="showTask()"
   >
-    <span class="text-gray-400 text-sm font-bold text-center whitespace-nowrap">
+    <span class="whitespace-nowrap text-center text-sm font-bold text-gray-400">
       {{ name }}
     </span>
     <v-progress-linear
@@ -12,7 +12,7 @@
       :value="percentage"
       height="6"
     />
-    <span class="text-gray-400 text-sm font-bold text-center whitespace-nowrap">
+    <span class="whitespace-nowrap text-center text-sm font-bold text-gray-400">
       {{ getExpectedSize(Math.abs(progress)) + ' / ' + getExpectedSize(Math.abs(total)) }}
     </span>
   </div>

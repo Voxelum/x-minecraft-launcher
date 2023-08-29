@@ -109,10 +109,10 @@ export function watchResources(folder: string, context: ResourceContext) {
       }
 
       // TODO: make these two into one event
-      if (entry) {
-        context.eventBus.emit('resourceUpdate', generateResource(dirname(folder), entry, _metadata))
-      } else {
+      if ('path' in _entry) {
         context.eventBus.emit('resourceAdd', generateResource(dirname(folder), entry, _metadata))
+      } else {
+        context.eventBus.emit('resourceUpdate', generateResource(dirname(folder), entry, _metadata))
       }
     }
   })

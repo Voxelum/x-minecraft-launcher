@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-2 grid-cols-2 p-4">
+  <div class="grid grid-cols-2 gap-2 p-4">
     <v-card
       v-for="g of gallery"
       :key="g.url"

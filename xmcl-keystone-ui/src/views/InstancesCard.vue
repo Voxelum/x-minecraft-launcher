@@ -3,7 +3,7 @@
     v-draggable-card
     v-context-menu="contextMenuItems"
     :ripple="!isBusy"
-    class="draggable-card w-full flex flex-col"
+    class="draggable-card flex w-full flex-col"
     :color="isSelected ? 'primary' : ''"
     :dark="isSelected"
     outlined
@@ -16,7 +16,7 @@
   >
     <div
       v-if="isBusy"
-      class="absolute w-full h-full flex items-center justify-center"
+      class="absolute flex h-full w-full items-center justify-center"
     >
       <v-progress-circular
         class="z-10"
@@ -31,11 +31,11 @@
     >
       <v-layout
         fill-height
-        class="justify-center flex-col relative"
+        class="relative flex-col justify-center"
       >
         <v-flex
           flexbox
-          class="justify-center items-center"
+          class="items-center justify-center"
         >
           <!-- <v-icon left>
             {{ instance.server ? 'storage' : 'layers' }}
@@ -44,7 +44,7 @@
         </v-flex>
         <v-flex
           v-if="instance.server"
-          class="justify-center absolute bottom-0 w-full"
+          class="absolute bottom-0 w-full justify-center"
         >
           <v-chip
             color="green"
@@ -68,7 +68,7 @@
     </v-card-text>
 
     <v-card-actions>
-      <div class="flex flex-wrap flex-row justify-center gap-2">
+      <div class="flex flex-row flex-wrap justify-center gap-2">
         <v-chip
           v-if="instance.server"
           small

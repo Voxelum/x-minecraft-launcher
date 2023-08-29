@@ -102,6 +102,18 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
         },
       )
 
+      // Intercept node_modules\node-datachannel\lib\index.js
+      build.onLoad(
+        { filter: /^.+node-datachannel[\\/]lib[\\/]index\.js$/g },
+        async ({ path }) => {
+          const content = (await readFile(path, 'utf-8')).replace('const require = createRequire(import.meta.url)', '')
+          return {
+            contents: content,
+            loader: 'js',
+          }
+        },
+      )
+
       build.onLoad(
         { filter: /^.+[\\/]node_modules[\\/].+[\\/]classic-level[\\/]binding\.js$/g },
         async ({ path }) => {

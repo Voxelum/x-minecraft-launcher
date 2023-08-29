@@ -8,7 +8,7 @@
         <VirtualList
           v-if="content === '' && files.length !== 0"
           :key="0"
-          class="visible-scroll v-list overflow-auto h-full max-h-[70vh]"
+          class="visible-scroll v-list h-full max-h-[70vh] overflow-auto"
           :data-component="HomeLogDialogTabItem"
           data-key="id"
           :data-sources="files.map((name, index) => ({ name, id: `${name}-${index}` }))"
@@ -40,7 +40,7 @@
         <div
           v-else
           :key="1"
-          class="visible-scroll overflow-y-auto overflow-x-hidden max-h-[70vh] flex flex-col"
+          class="visible-scroll flex max-h-[70vh] flex-col overflow-y-auto overflow-x-hidden"
         >
           <v-card-title primary-title>
             {{ showedFile }}
@@ -55,12 +55,12 @@
               {{ t('back') }}
             </v-btn>
           </v-card-title>
-          <div class="max-h-full flex flex-col overflow-y-auto">
+          <div class="flex max-h-full flex-col overflow-y-auto">
             <LogView
               v-if="log"
               :logs="logs"
             />
-            <pre class="rounded mx-5 mb-5 p-5 bg-[rgba(0,0,0,0.1)] hover:bg-[rgba(0,0,0,0.2)] overflow-auto">{{ content }}</pre>
+            <pre class="mx-5 mb-5 overflow-auto rounded bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]">{{ content }}</pre>
           </div>
         </div>
       </Transition>

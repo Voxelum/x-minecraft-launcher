@@ -1,16 +1,16 @@
 <template>
   <div
     style="z-index: 2; overflow: auto"
-    class="overflow-auto h-full w-full p-2 px-8"
+    class="h-full w-full overflow-auto p-2 px-8"
     @dragover.prevent
   >
     <v-layout
-      class="overflow-auto h-full flex-col gap-2"
+      class="h-full flex-col gap-2 overflow-auto"
       @dragover.prevent
       @drop="onDrop"
     >
       <v-card
-        class="py-1 pl-2 rounded-lg flex-shrink flex-grow-0 pr-2 z-5"
+        class="z-5 flex-shrink flex-grow-0 rounded-lg px-2 py-1"
         outlined
         elevation="1"
       >
@@ -53,7 +53,7 @@
             {{ copied ? t('multiplayer.copied') : t('multiplayer.copy') }}
           </v-btn>
 
-          <div class="text-gray-400 text-sm lg:block hidden">
+          <div class="hidden text-sm text-gray-400 lg:block">
             <template v-if="group">
               {{ t('multiplayer.copyGroupToFriendHint') }}
             </template>
@@ -152,7 +152,7 @@
       <v-list
         two-line
         subheader
-        class="py-2 flex flex-col gap-2 justify-start"
+        class="flex flex-col justify-start gap-2 py-2"
         style="width: 100%; background: transparent;"
       >
         <v-subheader class>
@@ -161,7 +161,7 @@
 
         <v-list-item
           v-if="device"
-          class="flex-grow-0 flex-1"
+          class="flex-1 flex-grow-0"
         >
           <v-list-item-avatar>
             <v-icon>
@@ -172,7 +172,7 @@
             <v-list-item-title>
               {{ t("multiplayer.routerInfo") }}
             </v-list-item-title>
-            <v-list-item-subtitle class="flex gap-2 items-center">
+            <v-list-item-subtitle class="flex items-center gap-2">
               {{ device.friendlyName }}
             </v-list-item-subtitle>
           </v-list-item-content>
@@ -209,7 +209,7 @@
         </v-list-item>
 
         <v-list-item
-          class="flex-grow-0 flex-1"
+          class="flex-1 flex-grow-0"
         >
           <v-list-item-avatar>
             <v-icon>
@@ -281,7 +281,7 @@
         <v-list-item
           v-for="c of connections"
           :key="c.id"
-          class="flex-grow-0 flex-1"
+          class="flex-1 flex-grow-0"
         >
           <v-progress-linear
             v-if="c.sharing"
@@ -305,7 +305,7 @@
             <v-list-item-title>
               {{ c.userInfo.name || c.id }}
             </v-list-item-title>
-            <v-list-item-subtitle class="flex gap-2 items-center">
+            <v-list-item-subtitle class="flex items-center gap-2">
               <v-chip
                 label
                 small
@@ -314,7 +314,7 @@
                 <v-icon left>
                   signal_cellular_alt
                 </v-icon>
-                <span class="lg:inline hidden">
+                <span class="hidden lg:inline">
                   {{ t(`peerConnectionState.name`) }}:
                 </span>
                 {{ tConnectionStates[c.connectionState] }}
@@ -326,14 +326,14 @@
           </v-list-item-content>
           <v-list-item-action
             v-if="c.selectedCandidate"
-            class="self-center mr-5"
+            class="mr-5 self-center"
           >
             <v-list-item-subtitle class="flex flex-col">
               <span>
                 <v-icon>
                   place
                 </v-icon>
-                <span class="lg:inline hidden">
+                <span class="hidden lg:inline">
                   {{ tTransportType[c.selectedCandidate.local.type] }}
                 </span>
                 {{ c.selectedCandidate.local.address }}:{{ c.selectedCandidate.local.port }}
@@ -342,7 +342,7 @@
                 <v-icon>
                   person_pin_circle
                 </v-icon>
-                <span class="lg:inline hidden">
+                <span class="hidden lg:inline">
                   {{ tTransportType[c.selectedCandidate.remote.type] }}
                 </span>
                 {{ c.selectedCandidate.remote.address }}:{{ c.selectedCandidate.remote.port }}
@@ -351,7 +351,7 @@
           </v-list-item-action>
           <v-list-item-action
             v-if="c.signalingState === 'have-local-offer'"
-            class="self-center mr-5"
+            class="mr-5 self-center"
           >
             <v-list-item-subtitle>
               {{ t('peerSignalingState.have-local-offer') }}
@@ -359,7 +359,7 @@
           </v-list-item-action>
           <v-list-item-action
             v-if="c.iceGatheringState !== 'complete'"
-            class="self-center mr-5"
+            class="mr-5 self-center"
           >
             <v-list-item-subtitle>
               <div class="flex flex-grow-0 items-center gap-2">

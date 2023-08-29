@@ -1,6 +1,6 @@
 <template>
   <div
-    class="select-none h-full w-full flex items-center justify-center"
+    class="flex h-full w-full select-none items-center justify-center"
   >
     <v-progress-circular
       :size="100"

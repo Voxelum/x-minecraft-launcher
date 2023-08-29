@@ -17,7 +17,7 @@
   </v-container>
   <div
     v-else
-    class="grid lg:grid-cols-3 sm:grid-cols-2 gap-2 p-4"
+    class="grid gap-2 p-4 sm:grid-cols-2 lg:grid-cols-3"
   >
     <v-card
       v-for="(img, index) in screenshots"

@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full flex overflow-auto flex-col max-h-full">
+  <div class="flex h-full max-h-full flex-col overflow-auto">
     <v-card-text
       v-if="refreshing"
       class="overflow-auto"
@@ -15,7 +15,6 @@
       class="overflow-auto"
     >
       <div
-        ref="descriptionRef"
         class="overflow-auto"
         v-html="description"
       />
@@ -29,27 +28,6 @@ import { useCurseforgeProjectDescription } from '../composables/curseforge'
 
 const props = defineProps<{ project: number }>()
 const { refreshing, description, error, refresh } = useCurseforgeProjectDescription(props)
-const descriptionRef = ref(null as null | HTMLElement)
-
-watch(refreshing, (v) => {
-  if (!v) {
-    nextTick().then(() => {
-      const root = descriptionRef.value
-      if (root) {
-        const allLinks = root.getElementsByTagName('a')
-        for (const link of allLinks) {
-          if (link.href) {
-            const parsed = new URL(link.href)
-            const remoteUrl = parsed.searchParams.get('remoteUrl')
-            if (remoteUrl) {
-              link.href = decodeURIComponent(remoteUrl)
-            }
-          }
-        }
-      }
-    })
-  }
-})
 
 </script>
 

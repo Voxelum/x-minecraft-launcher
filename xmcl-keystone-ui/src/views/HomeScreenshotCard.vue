@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="w-full w-full"
+    class="w-full"
     :color="cardColor"
   >
     <v-carousel
@@ -9,7 +9,7 @@
       show-arrows-on-hover
       cycle
       interval="5000"
-      class="rounded h-full"
+      class="h-full rounded"
     >
       <v-carousel-item
         v-for="i of urls"
@@ -21,7 +21,7 @@
         <v-sheet
           v-if="i === ''"
           color="transparent"
-          class="h-full flex items-center justify-center"
+          class="flex h-full items-center justify-center"
         >
           <v-icon left>
             image
@@ -30,7 +30,7 @@
         </v-sheet>
         <div
           v-else
-          class="h-full flex items-end justify-center pb-4 opacity-0 hover:opacity-100 transition-opacity"
+          class="flex h-full items-end justify-center pb-4 opacity-0 transition-opacity hover:opacity-100"
         >
           <v-btn
             text
@@ -45,7 +45,7 @@
         </div>
       </v-carousel-item>
     </v-carousel>
-    <div class="v-card__title min-h-4 w-full absolute z-100 top-0" />
+    <div class="v-card__title min-h-4 z-100 absolute top-0 w-full" />
   </v-card>
 </template>
 <script lang="ts" setup>

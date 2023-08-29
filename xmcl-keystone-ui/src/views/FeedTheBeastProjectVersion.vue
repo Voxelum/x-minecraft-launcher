@@ -1,15 +1,15 @@
 <template>
   <div
-    class="flex gap-4 overflow-auto p-4 xl:flex-row flex-col"
+    class="flex flex-col gap-4 overflow-auto p-4 xl:flex-row"
   >
     <v-progress-linear
-      class="absolute top-0 z-10 m-0 p-0 left-0"
+      class="absolute left-0 top-0 z-10 m-0 p-0"
       :active="refreshing"
       height="3"
       :indeterminate="true"
     />
     <!-- {{ version }} -->
-    <div class="flex gap-5 mx-4">
+    <div class="mx-4 flex gap-5">
       <v-text-field
         v-if="minecraft"
         flat
@@ -102,11 +102,5 @@ provideFileNodes(computed(() => {
   }
   return man.files.map(getNode)
 }))
-// const { refresh, refreshing, manifest } = useFeedTheBeastProject(computed(() => props.id))
-
-// const avatar = computed(() => manifest.value?.art.find(a => a.type === 'square') || manifest.value?.art[0])
-// const title = computed(() => manifest.value?.name || '')
-// const shortDescription = computed(() => manifest.value?.synopsis ?? '')
-// const description = computed(() => manifest.value?.description ?? '')
 
 </script>

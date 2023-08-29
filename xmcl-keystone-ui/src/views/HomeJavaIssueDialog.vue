@@ -24,19 +24,19 @@
 
             <div
               v-if="needDownloadHint && !isMissingJava"
-              class="text-sm text-orange-400 italic border-l-3 pl-2"
+              class="border-l-3 pl-2 text-sm italic text-orange-400"
             >
               {{ t('HomeJavaIssueDialog.needDownloadHint') }}
             </div>
             <div
               v-else-if="recommendation?.recommendedVersion && recommendation?.recommendedLevel === 0"
-              class="text-sm text-orange-400 italic border-l-3 pl-2"
+              class="border-l-3 pl-2 text-sm italic text-orange-400"
             >
               {{ t('HomeJavaIssueDialog.selectMatchedHint') }}
             </div>
             <div
               v-else-if="recommendation?.recommendedVersion && recommendation?.recommendedLevel === 1"
-              class=" text-sm text-orange-400 italic border-l-3 pl-2"
+              class=" border-l-3 pl-2 text-sm italic text-orange-400"
             >
               {{ t('HomeJavaIssueDialog.selectSecondaryHint') }}
             </div>

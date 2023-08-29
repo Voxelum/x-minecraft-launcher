@@ -8,7 +8,7 @@ import { ensureFile } from 'fs-extra/esm'
 import { readFile, writeFile } from 'fs/promises'
 import { Dispatcher, errors, request } from 'undici'
 import { URL } from 'url'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { assertErrorWithCache, kCacheKey } from '../dispatchers/cacheDispatcher'
 import { kDownloadOptions } from '../entities/downloadOptions'
@@ -22,6 +22,7 @@ import { JavaService } from './JavaService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Lock, Singleton } from './Service'
 import { VersionService } from './VersionService'
+import { existsSync } from 'fs'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -385,7 +386,8 @@ export class InstallService extends AbstractService implements IInstallService {
     const option = this.getInstallOptions()
     const location = MinecraftFolder.from(this.getPath())
     try {
-      // this special logic is handling the asset index outdate issue.
+      // This special logic is handling the asset index outdate issue.
+      // The asset index is not updated when the minecraft version is updated.
       let resolvedVersion = await Version.parse(location, version)
       const list = await this.getMinecraftVersionList(true)
       let versionMeta = list.versions.find(v => v.id === resolvedVersion.minecraftVersion)
@@ -420,8 +422,10 @@ export class InstallService extends AbstractService implements IInstallService {
           resolvedVersion.assetIndex = localVersion.assetIndex
         }
       }
-      this.warn(`Install assets for ${version}:`)
-      await this.submit(installAssetsTask(resolvedVersion, option).setName('installAssets', { id: version }))
+      this.log(`Install assets for ${version}:`)
+      const jsonPath = location.getPath('assets', 'indexes', resolvedVersion.assets + '.json')
+      const prevalidSizeOnly = existsSync(jsonPath)
+      await this.submit(installAssetsTask(resolvedVersion, { ...option, prevalidSizeOnly }).setName('installAssets', { id: version }))
     } catch (e) {
       this.warn(`An error ocurred during assets for ${version}:`)
       this.warn(e)

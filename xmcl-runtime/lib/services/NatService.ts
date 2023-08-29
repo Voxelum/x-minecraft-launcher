@@ -1,7 +1,7 @@
 import { createSsdp, UpnpClient, UpnpMapOptions, UpnpUnmapOptions } from '@xmcl/nat-api'
 import { NatService as INatService, MutableState, NatServiceKey, NatState } from '@xmcl/runtime-api'
 import { getNatInfoUDP, sampleNatType } from '@xmcl/stun-client'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { Inject } from '../util/objectRegistry'
 import { createPromiseSignal } from '../util/promiseSignal'

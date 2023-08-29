@@ -31,10 +31,11 @@ export const pluginWorker: LauncherAppPlugin = async (app) => {
     let threadWorker: Worker | undefined
     let counter = 0
     let destroyTimer: undefined | ReturnType<typeof setTimeout>
+    const queue: Record<number, { resolve: (r: any) => void; reject: (e: any) => void }> = {}
     const createWorker = () => {
       const worker = factory()
       logger.log(`Awake the worker ${factory}`)
-      worker.on('message', (message: 'idle' | object) => {
+      worker.on('message', (message: 'idle' | WorkerResponse) => {
         if (message === 'idle') {
           destroyTimer = setTimeout(() => {
             if (threadWorker) {
@@ -44,7 +45,19 @@ export const pluginWorker: LauncherAppPlugin = async (app) => {
               destroyTimer = undefined
             }
           }, 1000 * 60)
+          return
         }
+        const { error, result, id } = message
+        const handler = queue[id]
+        if (!handler) {
+          return
+        }
+        if (error) {
+          handler.reject(error)
+        } else {
+          handler.resolve(result)
+        }
+        delete queue[id]
       })
       return worker
     }
@@ -54,27 +67,12 @@ export const pluginWorker: LauncherAppPlugin = async (app) => {
         const _id = counter++
         return new Promise((resolve, reject) => {
           // create worker if not presented
-          const worker = threadWorker || createWorker()
-          threadWorker = worker
-          const handler = (message: WorkerResponse | 'idle') => {
-            if (message === 'idle') {
-              return
-            }
-            const { error, result, id } = message
-            if (id === _id) {
-              worker.removeListener('message', handler)
-              if (error) {
-                reject(error)
-              } else {
-                resolve(result)
-              }
-            }
-          }
-          worker.addListener('message', handler)
+          queue[_id] = { resolve, reject }
+          threadWorker = threadWorker || createWorker()
           if (destroyTimer) {
             clearTimeout(destroyTimer)
           }
-          worker.postMessage({ type: method, id: _id, args })
+          threadWorker.postMessage({ type: method, id: _id, args })
         })
       }
     }

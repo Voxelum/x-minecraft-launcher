@@ -1,7 +1,7 @@
 <template>
   <v-card
     v-if="!data.fetching"
-    class="flex flex-col overflow-auto setup"
+    class="setup flex flex-col overflow-auto"
   >
     <v-card-title
       class="elevation-3 text-lg font-bold"
@@ -11,7 +11,7 @@
     <v-divider />
     <v-stepper
       v-model="data.step"
-      class="non-moveable flex flex-col overflow-auto h-full"
+      class="non-moveable flex h-full flex-col overflow-auto"
     >
       <v-stepper-header>
         <v-stepper-step
@@ -48,7 +48,7 @@
             v-model="locale"
           />
           <div class="flex-grow" />
-          <div class="flex flex-1 flex-grow-0 mt-5">
+          <div class="mt-5 flex flex-1 flex-grow-0">
             <div class="flex-grow" />
             <v-btn
               color="primary"
@@ -70,7 +70,7 @@
             :drives="data.drives"
           />
 
-          <div class="flex mt-5">
+          <div class="mt-5 flex">
             <v-btn
               text
               :disabled="data.loading"
@@ -98,7 +98,7 @@
           />
 
           <div class="flex-grow" />
-          <div class="flex flex-grow-0 mt-5 ">
+          <div class="mt-5 flex flex-grow-0 ">
             <v-btn
               text
               :disabled="data.loading"
@@ -121,7 +121,7 @@
   </v-card>
   <v-card
     v-else
-    class="w-full h-full"
+    class="h-full w-full"
   >
     <v-container fill-height>
       <v-layout

@@ -8,10 +8,10 @@
     <template #activator="{ on: tooltip }">
       <div class="relative">
         <div
-          class="absolute px-2 left-0 min-w-full min-h-1 max-h-1"
+          class="min-h-1 absolute left-0 max-h-1 min-w-full px-2"
         >
           <div
-            class="transition-colors transition-300 min-w-full min-h-1 max-h-1 rounded"
+            class="transition-300 min-h-1 max-h-1 min-w-full rounded transition-colors"
             :class="{ 'bg-yellow-400': dragover > 0, 'bg-transparent': dragover > 0 }"
           >
             {{ ' ' }}
@@ -22,7 +22,7 @@
           push
           link
           draggable
-          class="px-2 flex-grow-0 flex-1 non-moveable sidebar-item"
+          class="non-moveable sidebar-item flex-1 flex-grow-0 px-2"
           :class="{'v-list-item--active': path === instance.path}"
           v-on="tooltip"
           @click="navigate"
@@ -35,7 +35,7 @@
         >
           <v-list-item-avatar
             size="48"
-            class="hover:rounded transition-all duration-300"
+            class="transition-all duration-300 hover:rounded"
             large
           >
             <v-img

@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import { AddClosetOptions, GetClosetOptions, LittleSkinUserService as ILittleSkinUserService, ListSkinResult, LittleSkinCharacter, LittleSkinUserServiceKey, RenameClosetOptions, SetCharacterNameOptions, SetCharacterTextureOptions, UploadTextureOptions, UploadTextureResult } from '@xmcl/runtime-api'
 import { FormData, Pool, request } from 'undici'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { LittleSkinClient } from '../clients/LittleSkinClient'
 import { UserTokenStorage, kUserTokenStorage } from '../entities/userTokenStore'

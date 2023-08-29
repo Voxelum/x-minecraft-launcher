@@ -6,7 +6,7 @@
     draggable
     hover
     width="250"
-    class="draggable-card rounded-lg transition-all duration-200 cursor-pointer"
+    class="draggable-card cursor-pointer rounded-lg transition-all duration-200"
     style="transition: all; transition-duration: 200ms;"
     @dragstart="$emit('dragstart')"
     @dragend="$emit('dragend')"
@@ -53,7 +53,7 @@
     <v-divider class="mx-4" />
     <div
       v-if="item.tags.length > 0"
-      class="p-2 flex gap-2 flex-wrap"
+      class="flex flex-wrap gap-2 p-2"
     >
       <v-chip
         v-for="(tag, index) in item.tags"

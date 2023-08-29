@@ -1,50 +1,51 @@
 import { injection } from '@/util/inject'
+import { ModFile } from '@/util/mod'
 import { BaseServiceKey } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { ContextMenuItem } from './contextMenu'
-import { ModItem } from './instanceModItems'
 import { useService } from './service'
 import { kMarketRoute } from './useMarketRoute'
 
-export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => void, onCreateTag: (group?: boolean) => void) {
+export function useModItemContextMenuItems(modFile: Ref<ModFile | undefined>, onDelete: () => void, onCreateTag: (group?: boolean) => void) {
   const { t } = useI18n()
   const { showItemInDirectory } = useService(BaseServiceKey)
   const { searchInCurseforge, goModrinthProject, goCurseforgeProject, searchInModrinth, searchInMcWiki } = injection(kMarketRoute)
 
   return computed(() => {
-    const item = mod.value
+    const file = modFile.value
+    if (!file) return []
     const items: ContextMenuItem[] = [{
-      text: t('mod.showFile', { file: item.mod.path }),
+      text: t('mod.showFile', { file: file.path }),
       onClick: () => {
-        showItemInDirectory(item.mod.path)
+        showItemInDirectory(file.path)
       },
       icon: 'folder',
-    }, {
+    }, /* , {
       text: t('tag.create'),
       onClick: () => {
         onCreateTag()
       },
       icon: 'add',
-    }]
-    if (item.selected) {
-      items.push({
-        text: t('tag.createSelected'),
-        onClick: () => {
-          onCreateTag(true)
-        },
-        icon: 'add',
-      })
-    }
+    } */]
+    // if (item.selected) {
+    //   items.push({
+    //     text: t('tag.createSelected'),
+    //     onClick: () => {
+    //       onCreateTag(true)
+    //     },
+    //     icon: 'add',
+    //   })
+    // }
     items.push({
-      text: t('delete.name', { name: item.mod.name }),
+      text: t('delete.name', { name: file.name }),
       onClick() {
         onDelete()
       },
       icon: 'delete',
       color: 'error',
     })
-    if (item.mod.url) {
-      const url = item.mod.url
+    if (file.url) {
+      const url = file.url
       items.push({
         text: t('mod.openLink', { url }),
         onClick: () => {
@@ -53,10 +54,10 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
         icon: 'link',
       })
     }
-    if (item.mod.resource.metadata.curseforge) {
-      const curseforge = item.mod.resource.metadata.curseforge
+    if (file.resource.metadata.curseforge) {
+      const curseforge = file.resource.metadata.curseforge
       items.push({
-        text: t('mod.showInCurseforge', { name: item.mod.name }),
+        text: t('mod.showInCurseforge', { name: file.name }),
         onClick: () => {
           goCurseforgeProject(curseforge.projectId, 'mc-mods')
         },
@@ -64,17 +65,17 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
       })
     } else {
       items.push({
-        text: t('mod.searchOnCurseforge', { name: item.mod.name }),
+        text: t('mod.searchOnCurseforge', { name: file.name }),
         onClick: () => {
-          searchInCurseforge(item.mod.name, 'mc-mods')
+          searchInCurseforge(file.name, 'mc-mods')
         },
         icon: 'search',
       })
     }
-    if (item.mod.resource.metadata.modrinth) {
-      const modrinth = item.mod.resource.metadata.modrinth
+    if (file.resource.metadata.modrinth) {
+      const modrinth = file.resource.metadata.modrinth
       items.push({
-        text: t('mod.showInModrinth', { name: item.mod.name }),
+        text: t('mod.showInModrinth', { name: file.name }),
         onClick: () => {
           goModrinthProject(modrinth.projectId)
         },
@@ -82,17 +83,17 @@ export function useModItemContextMenuItems(mod: Ref<ModItem>, onDelete: () => vo
       })
     } else {
       items.push({
-        text: t('mod.searchOnModrinth', { name: item.mod.name }),
+        text: t('mod.searchOnModrinth', { name: file.name }),
         onClick: () => {
-          searchInModrinth(item.mod.name)
+          searchInModrinth(file.name)
         },
         icon: 'search',
       })
     }
     items.push({
-      text: t('mod.searchOnMcWiki', { name: item.mod.name }),
+      text: t('mod.searchOnMcWiki', { name: file.name }),
       onClick: () => {
-        searchInMcWiki(item.mod.name)
+        searchInMcWiki(file.name)
       },
       icon: 'search',
     })

@@ -122,6 +122,8 @@ export interface ModpackService {
    * @param options The curseforge modpack export options
    */
   exportModpack(options: ExportModpackOptions): Promise<void>
+  getModpackInstallManifest(modpackPath: string): Promise<ModpackInstallProfile['instance']>
+  getModpackInstallFiles(modpackPath: string): Promise<InstanceFile[]>
   /**
    * Get modpack install profile from the modpack. Use the `installInstanceFiles` to create an instance.
    */

@@ -27,7 +27,6 @@
     <AppContextMenu />
     <AppNotifier />
     <AppFeedbackDialog />
-    <AppLoginDialog />
     <AppTaskDialog />
     <AppAddInstanceDialog />
     <AppAddServerDialog />
@@ -80,7 +79,6 @@ import AppFeedbackDialog from '@/views/AppFeedbackDialog.vue'
 import AppGameExitDialog from '@/views/AppGameExitDialog.vue'
 import AppInstanceDeleteDialog from '@/views/AppInstanceDeleteDialog.vue'
 import AppLaunchBlockedDialog from '@/views/AppLaunchBlockedDialog.vue'
-import AppLoginDialog from '@/views/AppLoginDialog.vue'
 import AppNotifier from '@/views/AppNotifier.vue'
 import AppShareInstanceDialog from '@/views/AppShareInstanceDialog.vue'
 import AppSideBar from '@/views/AppSideBar.vue'

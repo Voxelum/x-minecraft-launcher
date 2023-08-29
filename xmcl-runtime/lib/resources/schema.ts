@@ -1,4 +1,4 @@
-import { ResourceMetadata, ResourceType } from '@xmcl/runtime-api'
+import { ResourceMetadata } from '@xmcl/runtime-api'
 
 export interface ResourceTable extends ResourceMetadata {
   sha1: string

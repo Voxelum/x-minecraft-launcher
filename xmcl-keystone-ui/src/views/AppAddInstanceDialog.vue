@@ -4,9 +4,7 @@
     width="900"
     :persistent="!creating"
   >
-    <v-stepper
-      v-model="step"
-    >
+    <v-stepper v-model="step">
       <v-stepper-header>
         <v-stepper-step
           :rules="[() => valid]"
@@ -30,7 +28,7 @@
         </v-stepper-step>
         <v-divider />
         <v-stepper-step
-          editable
+          :editable="selectedTemplatePath !== ''"
           :complete="step > 2"
           step="3"
         >
@@ -38,16 +36,14 @@
         </v-stepper-step>
       </v-stepper-header>
 
-      <v-stepper-items
-        class="visible-scroll"
-      >
+      <v-stepper-items class="visible-scroll">
         <v-stepper-content
           step="1"
           class="p-0"
         >
           <TemplateContent
             style="overflow: auto; max-height: 70vh; padding: 24px 24px 16px"
-            :loading="refreshing"
+            :loading="false"
             :templates="templates"
             :value="selectedTemplate"
             @select="onSelect"
@@ -65,15 +61,14 @@
           step="2"
           class="p-0"
         >
-          <div
-            style="overflow: auto; max-height: 70vh; padding: 24px 24px 16px"
-          >
+          <div style="overflow: auto; max-height: 70vh; padding: 24px 24px 16px">
             <BaseContent
               :valid="valid"
               @update:valid="valid = $event"
             />
             <AdvanceContent :valid.sync="valid" />
           </div>
+          {{ creating }}
           <StepperFooter
             style="padding: 16px 24px"
             :disabled="!valid || isInvalid"
@@ -85,11 +80,22 @@
         </v-stepper-content>
         <v-stepper-content
           step="3"
-          class="overflow-auto max-h-[70vh]"
+          class="p-0"
         >
           <StepperModpackContent
+            v-if="selectedTemplate"
+            style="padding: 16px 24px 0 24px"
+            class="max-h-[70vh] overflow-auto"
             :modpack="selectedTemplate"
-            :shown="isModpackContentShown"
+            :shown="step === 3"
+          />
+          <StepperFooter
+            style="padding: 16px 24px"
+            :disabled="!valid || isInvalid"
+            :creating="creating"
+            create
+            @create="onCreate"
+            @quit="quit"
           />
         </v-stepper-content>
       </v-stepper-items>
@@ -98,63 +104,83 @@
 </template>
 
 <script lang=ts setup>
-import { InstanceInstallServiceKey, PeerServiceKey, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { useRefreshable, useService } from '@/composables'
+import { kInstance } from '@/composables/instance'
+import { kInstances } from '@/composables/instances'
+import { kJavaContext } from '@/composables/java'
+import { kModpacks } from '@/composables/modpack'
+import { kPeerState } from '@/composables/peers'
+import { useResourceAdd } from '@/composables/resources'
+import { kUserContext } from '@/composables/user'
+import { kLocalVersions } from '@/composables/versionLocal'
+import { injection } from '@/util/inject'
+import { InstanceInstallServiceKey, PeerServiceKey, ResourceDomain } from '@xmcl/runtime-api'
 import AdvanceContent from '../components/StepperAdvanceContent.vue'
 import BaseContent from '../components/StepperBaseContent.vue'
 import StepperFooter from '../components/StepperFooter.vue'
 import StepperModpackContent from '../components/StepperModpackContent.vue'
 import TemplateContent from '../components/StepperTemplateContent.vue'
 import { useDialog } from '../composables/dialog'
-import { AddInstanceDialogKey, Template, useAllTemplate } from '../composables/instanceAdd'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
+import { AddInstanceDialogKey, Template, useInstanceTemplates } from '../composables/instanceTemplates'
 import { useNotifier } from '../composables/notifier'
-import { useRefreshable, useService } from '@/composables'
-import { kJavaContext } from '@/composables/java'
-import { injection } from '@/util/inject'
-import { kModpacks } from '@/composables/modpack'
-import { kUserContext } from '@/composables/user'
-import { kLocalVersions } from '@/composables/versionLocal'
-import { kInstances } from '@/composables/instances'
-import { kPeerState } from '@/composables/peers'
-import { kInstance } from '@/composables/instance'
 
-const { isShown, dialog, show: showAddInstance, hide } = useDialog(AddInstanceDialogKey)
-const { show } = useDialog('task')
-const { gameProfile } = injection(kUserContext)
-const { versions } = injection(kLocalVersions)
-const { instances } = injection(kInstances)
-const { path } = injection(kInstance)
-const { create, reset, data: creationData } = useInstanceCreation(gameProfile, versions, instances, path)
-const router = useRouter()
+// Dialog model
+const { isShown, dialog, show: showAddInstance, hide } = useDialog(AddInstanceDialogKey, () => {
+  if (creating.value) {
+    return
+  }
+  const id = dialog.value.parameter
+  if (id) {
+    selectedTemplatePath.value = id
+  }
 
-const { on, removeListener } = useService(ResourceServiceKey)
-const { installInstanceFiles } = useService(InstanceInstallServiceKey)
-const { t } = useI18n()
-const { notify } = useNotifier()
-const { all } = injection(kJavaContext)
-const { resources } = injection(kModpacks)
-const { connections } = injection(kPeerState)
-const { templates, refreshing } = useAllTemplate(all, resources, connections)
-
-provide(kInstanceCreation, creationData)
-
-const valid = ref(false)
-const step = ref(2)
-const selectedTemplatePath = ref('')
-
-const selectedTemplate = computed(() => templates.value.find(f => f.filePath === selectedTemplatePath.value))
-const isModpackContentShown = computed(() => step.value === 3)
-const selectedTemplateName = computed(() => selectedTemplate.value?.name ?? '')
-
+  step.value = 2
+  valid.value = true
+}, () => {
+  if (creating.value) {
+    return
+  }
+  setTimeout(() => {
+    selectedTemplatePath.value = ''
+    reset()
+  }, 500)
+})
 function quit() {
   if (creating.value) return
   hide()
 }
 
+const { t } = useI18n()
+
+// Templates
+const { all } = injection(kJavaContext)
+const { resources } = injection(kModpacks)
+const { connections } = injection(kPeerState)
+const { templates } = useInstanceTemplates(all, resources, connections, ref([]))
+
+// Instance create data
+const { gameProfile } = injection(kUserContext)
+const { versions } = injection(kLocalVersions)
+const { instances } = injection(kInstances)
+const { path } = injection(kInstance)
+const { create, reset, data: creationData } = useInstanceCreation(gameProfile, versions, instances, path)
+const isInvalid = computed(() => {
+  return creationData.name === '' || creationData.runtime.minecraft === '' || instances.value.some(i => i.name === creationData.name)
+})
+provide(kInstanceCreation, creationData)
+
+// Stepper model
+const valid = ref(false)
+const step = ref(2)
+
+// Selection
+const selectedTemplatePath = ref('')
+const selectedTemplate = computed(() => templates.value.find(f => f.filePath === selectedTemplatePath.value))
+const selectedTemplateName = computed(() => selectedTemplate.value?.name ?? '')
 function onSelect(template: Template) {
   selectedTemplatePath.value = template.filePath
 }
-
 watch(selectedTemplate, (t) => {
   if (!t) return
   const instData = t.instance
@@ -177,19 +203,20 @@ watch(selectedTemplate, (t) => {
   step.value = 2
 })
 
-const isInvalid = computed(() => {
-  return creationData.name === '' || creationData.runtime.minecraft === '' || instances.value.some(i => i.name === creationData.name)
-})
-
+// Install
+const { notify } = useNotifier()
+const { installInstanceFiles } = useService(InstanceInstallServiceKey)
+const router = useRouter()
+const { show: showTaskDialog } = useDialog('task')
 const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
   const template = selectedTemplate.value
   if (template) {
     try {
       const resultInstancePath = await create()
-      router.push('/')
+      if (router.currentRoute.path !== '/') router.push('/')
       await installInstanceFiles({
         path: resultInstancePath,
-        files: template.files,
+        files: await template.loadFiles(),
       })
       notify({
         title: t('importModpack.success', { modpack: template?.name }),
@@ -199,13 +226,15 @@ const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
           router.push('/')
         },
       })
+      reset()
+      selectedTemplatePath.value = ''
     } catch {
       notify({
         title: t('importModpack.failed', { modpack: template?.name }),
         level: 'error',
         full: true,
         more() {
-          show()
+          showTaskDialog()
         },
       })
     }
@@ -217,19 +246,7 @@ const { refreshing: creating, refresh: onCreate } = useRefreshable(async () => {
   hide()
 })
 
-const listener: any = undefined
-onMounted(() => {
-  on('resourceAdd', (r) => {
-    if (r.domain === ResourceDomain.Modpacks) {
-      onModpackAdded({ path: r.path, name: r.name })
-    }
-  })
-})
-onUnmounted(() => {
-  removeListener('resourceAdd', listener)
-})
-
-const onModpackAdded = ({ path, name }: { path: string; name: string }) => {
+useResourceAdd(({ path, name }) => {
   setTimeout(() => {
     if (!isShown.value) {
       notify({
@@ -242,10 +259,9 @@ const onModpackAdded = ({ path, name }: { path: string; name: string }) => {
       })
     }
   }, 100)
-}
+}, ResourceDomain.Modpacks)
 
 const { on: onPeerService } = useService(PeerServiceKey)
-
 onPeerService('share', (event) => {
   if (event.manifest) {
     const conn = connections.value.find(c => c.id === event.id)
@@ -269,32 +285,13 @@ window.addEventListener('keydown', (e) => {
     hide()
   }
 })
-
-watch(isShown, (shown) => {
-  if (creating.value) {
-    return
-  }
-  if (!shown) {
-    setTimeout(() => {
-      selectedTemplatePath.value = ''
-      reset()
-    }, 500)
-    return
-  }
-  const id = dialog.value.parameter
-  if (id) {
-    selectedTemplatePath.value = id
-  }
-
-  step.value = 2
-  valid.value = true
-})
 </script>
 
 <style>
 .v-stepper__step span {
   margin-right: 12px !important;
 }
+
 .v-stepper__step div {
   display: flex !important;
 }

@@ -1,5 +1,4 @@
 import { DownloadTask } from '@xmcl/installer'
-import { ModrinthV2Client } from '@xmcl/modrinth'
 import { ModrinthService as IModrinthService, InstallModrinthVersionResult, InstallProjectVersionOptions, ModrinthServiceKey, ResourceDomain, getModrinthVersionFileUri, getModrinthVersionUri } from '@xmcl/runtime-api'
 import { unlink } from 'fs/promises'
 import { basename, join } from 'path'
@@ -12,8 +11,6 @@ import { AbstractService, ExposeServiceKey, Singleton } from './Service'
 
 @ExposeServiceKey(ModrinthServiceKey)
 export class ModrinthService extends AbstractService implements IModrinthService {
-  readonly client = new ModrinthV2Client()
-
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
   ) {
@@ -37,7 +34,7 @@ export class ModrinthService extends AbstractService implements IModrinthService
       }
 
     const downloadOptions = await this.app.registry.get(kDownloadOptions)
-    let resource = (await this.resourceService.getResourcesByUris(urls)).reduce((a, b) => a || b, undefined)
+    let resource = (await this.resourceService.getResourcesByUris(urls))[0]
       if (resource) {
         this.log(`The modrinth file ${file.filename}(${file.url}) existed in cache!`)
       } else {

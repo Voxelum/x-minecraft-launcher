@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container class="overflow-auto max-h-60vh">
+    <v-container class="max-h-60vh overflow-auto">
       <v-skeleton-loader
         v-if="gettingManifest"
         type="list-item-avatar-three-line,list-item-avatar-three-line,list-item-avatar-three-line"

@@ -1,13 +1,13 @@
 <template>
-  <div class="flex gap-3 p-4 overflow-auto mb-1 curseforge">
+  <div class="curseforge mb-1 flex gap-3 overflow-auto p-4">
     <v-progress-linear
-      class="absolute top-0 z-10 m-0 p-0 left-0"
+      class="absolute left-0 top-0 z-10 m-0 p-0"
       :active="loading"
       height="3"
       :indeterminate="true"
     />
-    <div class="flex flex-col gap-3 overflow-auto relative">
-      <div class="absolute bottom-1 w-full z-10 transform scale-90 opacity-60 hover:(scale-100 opacity-100) transition">
+    <div class="relative flex flex-col gap-3 overflow-auto">
+      <div class="hover:(scale-100 opacity-100) absolute bottom-1 z-10 w-full scale-90 transform opacity-60 transition">
         <v-pagination
           v-model="currentPage"
           color="success"
@@ -17,10 +17,10 @@
         />
       </div>
       <v-card
-        class="flex py-1 rounded-lg flex-shrink flex-grow-0"
+        class="flex flex-shrink flex-grow-0 rounded-lg py-1"
         outlined
       >
-        <span class="flex items-center justify-center flex-shrink flex-1 min-w-36">
+        <span class="min-w-36 flex flex-1 flex-shrink items-center justify-center">
           <v-select
             v-model="currentType"
             flat
@@ -29,7 +29,7 @@
             hide-details
           />
         </span>
-        <span class="flex items-center justify-center flex-shrink flex-1 min-w-36">
+        <span class="min-w-36 flex flex-1 flex-shrink items-center justify-center">
           <v-select
             v-model="currentVersion"
             flat
@@ -55,7 +55,7 @@
       </v-card>
       <div
         v-if="!error && projects.length > 0"
-        class="flex flex-col gap-3 overflow-auto flex-shrink flex-grow-0 px-2"
+        class="flex flex-shrink flex-grow-0 flex-col gap-3 overflow-auto px-2"
       >
         <CurseforgeCard
           v-for="proj in projects"
@@ -80,7 +80,7 @@
         @refresh="refresh"
       />
     </div>
-    <div class="flex flex-col overflow-auto md:hidden lg:flex min-w-[20%] max-w-[20%] select-none">
+    <div class="flex min-w-[20%] max-w-[20%] select-none flex-col overflow-auto md:hidden lg:flex">
       <Categories
         :type="currentType"
         :selected="currentCategory"

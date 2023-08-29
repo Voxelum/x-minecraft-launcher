@@ -7,7 +7,7 @@
     <v-list-item>
       <v-layout
         row
-        class="gap-4 max-w-full"
+        class="max-w-full gap-4"
       >
         <v-flex d-flex>
           <v-select
