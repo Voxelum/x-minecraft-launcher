@@ -7,7 +7,8 @@ import { InjectionKey, Ref } from 'vue'
 import { useService } from './service'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { resolveCurseforgeDependies } from '@/util/curseforgeDependencies'
-import { resolveModrinthDependencies } from '@/util/modrinthDepdencies'
+import { resolveModrinthDependencies } from '@/util/modrinthDependencies'
+import { getCurseforgeRelationType } from '@/util/curseforge'
 
 export interface ProjectMetadata {
   /**
@@ -263,13 +264,7 @@ export function useInstallList(instancePath: Ref<string>, mods: Ref<Resource[]>)
         projectUri: file.modId.toString(),
         curseforge: file,
         enabled: true,
-        type: type === FileRelationType.RequiredDependency
-          ? 'required'
-          : type === FileRelationType.OptionalDependency || type === FileRelationType.Tool
-            ? 'optional'
-            : type === FileRelationType.Incompatible
-              ? 'incompatible'
-              : 'embedded',
+        type: getCurseforgeRelationType(type),
         warnings: getWarnings(mutexDict, uris, file.displayName),
         uris,
       }

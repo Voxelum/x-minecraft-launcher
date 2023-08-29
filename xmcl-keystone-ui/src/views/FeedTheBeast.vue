@@ -1,14 +1,14 @@
 <template>
-  <div class="flex gap-3 p-4 overflow-auto mb-1">
+  <div class="mb-1 flex gap-3 overflow-auto p-4">
     <v-progress-linear
-      class="absolute top-0 z-10 m-0 p-0 left-0"
+      class="absolute left-0 top-0 z-10 m-0 p-0"
       :active="refreshing"
       height="3"
       :indeterminate="true"
     />
     <div class="flex flex-col gap-3 overflow-auto">
       <v-card
-        class="flex py-1 rounded-lg flex-shrink flex-grow-0"
+        class="flex flex-shrink flex-grow-0 rounded-lg py-1"
         outlined
       >
         <v-text-field
@@ -27,7 +27,7 @@
       </v-card>
       <div
         v-if="!refreshing && data"
-        class="flex flex-col gap-3 overflow-auto flex-shrink flex-grow-0"
+        class="flex flex-shrink flex-grow-0 flex-col gap-3 overflow-auto"
       >
         <FeedTheBeastCard
           v-for="modpack of data.packs"

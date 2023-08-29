@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row lg:flex-col gap-4 items-center">
+  <div class="flex flex-row items-center gap-4 lg:flex-col">
     <v-img
       height="150"
       width="150"
@@ -7,7 +7,7 @@
       :src="project.icon_url"
       class="rounded-lg"
     />
-    <div class="flex flex-col gap-2 items-start">
+    <div class="flex flex-col items-start gap-2">
       <a
         class="text-2xl font-bold"
         target="browser"

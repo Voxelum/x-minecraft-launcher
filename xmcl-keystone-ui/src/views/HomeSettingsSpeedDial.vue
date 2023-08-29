@@ -28,7 +28,7 @@
           text
           icon
           :loading="refreshing"
-          to="/mod-setting"
+          to="/mod"
         >
           <v-tooltip
             :close-delay="0"

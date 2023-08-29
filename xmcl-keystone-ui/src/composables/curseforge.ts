@@ -151,7 +151,7 @@ export function useCurseforgeProjectFiles(projectId: Ref<number>, gameVersion: R
         pageSize: data.pageSize,
         modLoaderType: modLoaderType.value,
       }))
-    })
+    }, inject(kSWRVConfig))
   watch(_data, (f) => {
     if (f) {
       files.value = markRaw(f.data)
@@ -159,7 +159,7 @@ export function useCurseforgeProjectFiles(projectId: Ref<number>, gameVersion: R
       data.pageSize = f.pagination.pageSize
       data.totalCount = f.pagination.totalCount
     }
-  })
+  }, { immediate: true })
   return {
     ...toRefs(data),
     files,
@@ -174,7 +174,20 @@ export const kCurseforgeFiles: InjectionKey<Ref<File[]>> = Symbol('CurseforgeFil
 export function useCurseforgeProjectDescription(props: { project: number }) {
   const { mutate: refresh, isValidating: refreshing, error, data: description } = useSWRV(
     computed(() => `/curseforge/${props.project}/description`), async () => {
-      return await clientCurseforgeV1.getModDescription(props.project)
+      const text = await clientCurseforgeV1.getModDescription(props.project)
+      const root = document.createElement('div')
+      root.innerHTML = text
+      const allLinks = root.getElementsByTagName('a')
+      for (const link of allLinks) {
+        if (link.href) {
+          const parsed = new URL(link.href)
+          const remoteUrl = parsed.searchParams.get('remoteUrl')
+          if (remoteUrl) {
+            link.href = decodeURIComponent(remoteUrl)
+          }
+        }
+      }
+      return root.innerHTML
     }, inject(kSWRVConfig))
 
   return { description, refreshing, refresh, error }

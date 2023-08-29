@@ -1,6 +1,6 @@
 <template>
   <div
-    class="mb-0 flex flex-col flex-1 flex-grow-0 max-w-full transition-all header sticky"
+    class="header sticky mb-0 flex max-w-full flex-1 flex-grow-0 flex-col transition-all"
     :class="{
       'backdrop-filter': !isInFocusMode,
       'backdrop-blur-sm': !isInFocusMode,
@@ -11,20 +11,20 @@
     @wheel.stop
   >
     <div
-      class="flex w-full align-center max-h-20 flex-grow-0 flex-1 items-baseline pl-6 pr-6"
+      class="align-center flex max-h-20 w-full flex-1 flex-grow-0 items-baseline px-6"
     >
       <span
         :style="{
           fontSize: headerFontSize
         }"
-        class="text-shadow-lg transition-all whitespace-nowrap overflow-hidden overflow-ellipsis"
+        class="text-shadow-lg overflow-hidden overflow-ellipsis whitespace-nowrap transition-all"
       >{{ name || `Minecraft ${version.minecraft}` }}</span>
       <router-view name="route" />
       <AvatarItem
         v-ripple
         :color="!isResolvedVersion(resolvedVersion) ? 'warning' : 'primary'"
         icon="fact_check"
-        class="cursor-pointer ml-2"
+        class="ml-2 cursor-pointer"
         :title="t('version.name', 2)"
         :text="currentVersion"
         @click="onShowLocalVersion"

@@ -6,7 +6,7 @@
     :icons="icons"
     :refreshing="isValidating"
     :button="t('mod.manage')"
-    @navigate="push('/mod-setting')"
+    @navigate="push('/mods')"
   />
 </template>
 <script lang="ts" setup>

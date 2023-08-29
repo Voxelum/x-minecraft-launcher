@@ -1,6 +1,6 @@
 <template>
   <v-card
-    class="rounded-lg py-1 pr-2 z-5 shadow"
+    class="z-5 rounded-lg py-1 pr-2 shadow"
     outlined
   >
     <div

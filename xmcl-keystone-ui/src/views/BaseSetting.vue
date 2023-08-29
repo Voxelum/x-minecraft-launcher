@@ -13,13 +13,13 @@
       :timeout="-1"
       :value="edit.isModified"
     >
-      <div class="mr-4 text-button">
+      <div class="text-button mr-4">
         {{ t('instance.setting.unsaved') }}
       </div>
 
       <template #action="{ attrs }">
         <div
-          class="flex gap-1 mr-2"
+          class="mr-2 flex gap-1"
           v-bind="attrs"
         >
           <v-btn

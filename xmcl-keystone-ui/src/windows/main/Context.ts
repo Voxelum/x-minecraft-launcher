@@ -64,7 +64,7 @@ export default defineComponent({
     const options = useInstanceOptions(instance.instance)
     const saves = useInstanceSaves(instance.instance)
     const resourcePacks = useInstanceResourcePacks(options.gameOptions)
-    const mods = useInstanceMods(instance.instance, instanceJava.java)
+    const mods = useInstanceMods(instance.path, instance.runtime, instanceJava.java)
     const files = useInstanceFiles(instance.path)
     const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionHeader)
 

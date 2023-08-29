@@ -4,7 +4,7 @@ import { CurseForgeServiceKey, CurseForgeService as ICurseForgeService, InstallF
 import { unlink } from 'fs/promises'
 import { join } from 'path'
 import { Client } from 'undici'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { kDownloadOptions } from '../entities/downloadOptions'
 import { NetworkInterface, kNetworkInterface } from '../entities/networkInterface'
@@ -67,7 +67,7 @@ export class CurseForgeService extends AbstractService implements ICurseForgeSer
 
     const domain = typeToDomain[type] ?? ResourceDomain.Unclassified
     // Try to find the resource in cache
-    let resource = (await this.resourceService.getResourcesByUris(uris)).reduce((a, b) => a || b, undefined)
+    let resource = (await this.resourceService.getResourcesByUris(uris))[0]
     if (resource) {
       this.log(`The curseforge file ${file.displayName}(${file.downloadUrl}) existed in cache!`)
     } else {

@@ -3,7 +3,6 @@ import BaseSetting from '@/views/BaseSetting.vue'
 import Home from '@/views/Home.vue'
 import Me from '@/views/Me.vue'
 import Mod from '@/views/Mod.vue'
-import ModAdd from '@/views/ModAdd.vue'
 import Modpack from '@/views/Modpack.vue'
 import Multiplayer from '@/views/Multiplayer.vue'
 import ResourcePack from '@/views/ResourcePack.vue'
@@ -13,7 +12,6 @@ import ShaderPack from '@/views/ShaderPack.vue'
 import VersionLocalView from '@/views/VersionLocalView.vue'
 import HomeCardHost from '@/views/HomeCardHost.vue'
 import HomeExtension from '@/views/HomeExtension.vue'
-import ModExtension from '@/views/ModExtension.vue'
 import SaveExtension from '@/views/SaveExtension.vue'
 import HomeActions from '@/views/HomeActions.vue'
 import ShaderPackActions from '@/views/ShaderPackActions.vue'
@@ -21,8 +19,7 @@ import ModActions from '@/views/ModActions.vue'
 import ResourcePackActions from '@/views/ResourcePackActions.vue'
 import ResourcePackExtension from '@/views/ResourcePackExtension.vue'
 import ShaderPackExtension from '@/views/ShaderPackExtension.vue'
-import ModAddActions from '@/views/ModAddActions.vue'
-import ModAddExtension from '@/views/ModAddExtension.vue'
+import ModExtension from '@/views/ModExtension.vue'
 import Vue from 'vue'
 
 Vue.use(Router)
@@ -48,7 +45,7 @@ export const router = new Router({
           },
         },
         {
-          path: '/mod-setting',
+          path: '/mods',
           components: {
             default: Mod,
             extensions: ModExtension,
@@ -72,14 +69,6 @@ export const router = new Router({
           },
         },
         {
-          path: '/install',
-          components: {
-            default: ModAdd,
-            extensions: ModAddExtension,
-            actions: ModAddActions,
-          },
-        },
-        {
           path: '/base-setting',
           components: {
             default: BaseSetting,
@@ -97,10 +86,6 @@ export const router = new Router({
       path: '/me',
       component: Me,
     },
-    // {
-    //   path: '/game-setting',
-    //   component: GameSetting,
-    // },
     {
       path: '/instances',
       component: () => import('@/views/Instances.vue'),

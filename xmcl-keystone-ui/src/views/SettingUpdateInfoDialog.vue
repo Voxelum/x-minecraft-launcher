@@ -7,7 +7,7 @@
     <v-card
       v-if="updateInfo"
       outlined
-      class="overflow-auto visible-scroll max-h-90vh"
+      class="visible-scroll max-h-90vh overflow-auto"
     >
       <v-alert
         v-if="isAppX"

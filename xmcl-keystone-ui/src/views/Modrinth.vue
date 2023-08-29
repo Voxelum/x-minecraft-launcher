@@ -1,13 +1,13 @@
 <template>
-  <div class="gap-2 p-4 overflow-auto mb-1 modrinth w-full pb-0 grid grid-cols-12">
+  <div class="modrinth mb-1 grid w-full grid-cols-12 gap-2 overflow-auto p-4 pb-0">
     <v-progress-linear
-      class="absolute top-0 z-10 m-0 p-0 left-0"
+      class="absolute left-0 top-0 z-10 m-0 p-0"
       :active="refreshing"
       height="3"
       :indeterminate="true"
     />
-    <div class="flex flex-col gap-2 overflow-auto lg:col-span-9 md:col-span-12 relative">
-      <div class="absolute bottom-3 w-full z-10 transform scale-90 opacity-60 hover:(scale-100 opacity-100) transition">
+    <div class="relative flex flex-col gap-2 overflow-auto md:col-span-12 lg:col-span-9">
+      <div class="hover:(scale-100 opacity-100) absolute bottom-3 z-10 w-full scale-90 transform opacity-60 transition">
         <v-pagination
           v-model="_page"
           :length="pageCount"
@@ -17,10 +17,10 @@
         />
       </div>
       <v-card
-        class="flex py-1 flex-shrink flex-grow-0"
+        class="flex flex-shrink flex-grow-0 py-1"
         outlined
       >
-        <span class="flex items-center justify-center flex-shrink flex-1 min-w-36">
+        <span class="min-w-36 flex flex-1 flex-shrink items-center justify-center">
           <v-select
             v-model="_projectType"
             flat
@@ -89,7 +89,7 @@
         @refresh="refresh"
       />
     </div>
-    <div class="flex flex-col overflow-y-auto lg:col-span-3 lg:flex md:hidden">
+    <div class="flex flex-col overflow-y-auto md:hidden lg:col-span-3 lg:flex">
       <ModrinthCategories
         class="overflow-auto"
         :loading="refreshingTag"
@@ -140,7 +140,7 @@ const props = withDefaults(defineProps<{
   category: () => [] as string[],
   modLoader: () => '',
   environment: () => '',
-  projectType: () => 'mod',
+  projectType: () => 'modpack',
   sortBy: () => '',
   page: () => 1,
   from: () => '',

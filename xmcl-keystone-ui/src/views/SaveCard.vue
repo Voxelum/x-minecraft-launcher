@@ -12,7 +12,7 @@
     @dragstart="$emit('dragstart', $event)"
     @dragend="$emit('dragend', $event)"
   >
-    <div class="flex gap-4 items-center">
+    <div class="flex items-center gap-4">
       <img
         ref="icon"
         v-fallback-img="unknownPack"
@@ -23,7 +23,7 @@
       >
       <div class="flex flex-grow flex-col gap-1">
         <h3>{{ source.name }}</h3>
-        <div class="dark:text-gray-400 text-sm">
+        <div class="text-sm dark:text-gray-400">
           {{ new Date(source.lastPlayed).toLocaleString() }}
         </div>
         <div class="flex gap-2">

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="w-full h-full overflow-hidden"
+    class="h-full w-full overflow-hidden"
     :class="{ 'absoluted': absolute }"
     @click="$emit('click', $event)"
   >
@@ -12,7 +12,7 @@
     >
       <div
         v-if="!button"
-        class="headline text-center select-none text-button"
+        class="headline text-button select-none text-center"
         :style="{ 'color': color }"
       >
         <v-icon
@@ -25,7 +25,7 @@
       </div>
       <div
         v-else
-        class="headline text-center select-none"
+        class="headline select-none text-center"
       >
         <v-btn>
           <v-icon

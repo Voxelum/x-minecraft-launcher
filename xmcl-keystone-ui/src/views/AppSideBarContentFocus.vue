@@ -3,7 +3,7 @@
     <v-list
       nav
       dense
-      class="px-2 ml-1 overflow-auto flex flex-col justify-start flex-grow-0"
+      class="ml-1 flex flex-grow-0 flex-col justify-start overflow-auto px-2"
     >
       <div class="mb-1">
         <v-list-group
@@ -26,7 +26,7 @@
               <v-list-item
                 link
                 push
-                to="/mod-setting"
+                to="/mods"
                 class="non-moveable"
                 v-on="tooltip"
               >
@@ -125,7 +125,7 @@ const expanding = ref(false)
 const subRoutes = new Set([
   '/',
   '/base-setting',
-  '/mod-setting',
+  '/mods',
   '/resource-pack-setting',
   '/shader-pack-setting',
 ])

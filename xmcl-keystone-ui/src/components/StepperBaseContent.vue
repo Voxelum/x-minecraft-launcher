@@ -11,7 +11,7 @@
       style="background: transparent; width: 100%"
     >
       <v-list-item>
-        <div class="flex gap-4 mt-4">
+        <div class="mt-4 flex gap-4">
           <v-flex
             d-flex
             xs3

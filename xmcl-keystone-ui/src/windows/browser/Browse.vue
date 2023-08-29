@@ -1,15 +1,15 @@
 <template>
   <v-app
     style="background: transparent;"
-    class="overflow-auto max-h-[100vh] overflow-x-hidden"
+    class="max-h-[100vh] overflow-auto overflow-x-hidden"
   >
     <div class="flex flex-col overflow-auto overflow-x-hidden">
       <v-progress-linear v-if="refreshing && installed.length === 0" />
-      <div class="bg-[#303030] flex moveable flex-grow-0 flex-shrink gap-5">
+      <div class="moveable flex flex-shrink flex-grow-0 gap-5 bg-[#303030]">
         <span />
-        <span class="moveable flex-grow px-40 p-2 flex">
+        <span class="moveable flex flex-grow p-2 px-40">
           <v-btn
-            class="non-moveable mt-1.5 mx-2"
+            class="non-moveable mx-2 mt-1.5"
             :loading="refreshing"
             text
             icon
@@ -30,7 +30,7 @@
             @keypress.enter="onEnter"
           />
           <v-btn
-            class="non-moveable mt-1.5 mx-2"
+            class="non-moveable mx-2 mt-1.5"
             :loading="refreshing"
             text
             icon
@@ -39,22 +39,22 @@
             <v-icon>get_app</v-icon>
           </v-btn>
         </span>
-        <span class="p-0 flex flex-shrink flex-grow-0 align-top items-start">
+        <span class="flex flex-shrink flex-grow-0 items-start p-0 align-top">
           <v-icon
             v-ripple
-            class="flex items-center px-2 py-1 xy-0 cursor-pointer select-none non-moveable hover:bg-[rgba(255,255,255,0.5)]"
+            class="xy-0 non-moveable flex cursor-pointer select-none items-center px-2 py-1 hover:bg-[rgba(255,255,255,0.5)]"
             small
             @click="minimize"
           >minimize</v-icon>
           <v-icon
             v-ripple
-            class="flex items-center px-2 py-1 top-0 cursor-pointer select-none non-moveable hover:bg-[rgb(209,12,12)]"
+            class="non-moveable top-0 flex cursor-pointer select-none items-center px-2 py-1 hover:bg-[rgb(209,12,12)]"
             small
             @click="close"
           >close</v-icon>
         </span>
       </div>
-      <main class="p-2 flex-grow overflow-auto overflow-x-hidden ">
+      <main class="flex-grow overflow-auto overflow-x-hidden p-2 ">
         <AppCard
           v-for="app in installed"
           :key="app.url"

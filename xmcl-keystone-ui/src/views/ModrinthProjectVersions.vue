@@ -1,6 +1,6 @@
 <template>
   <v-card class="flex flex-col">
-    <div class="flex gap-5 mx-5 mt-3 flex-shrink flex-grow-0">
+    <div class="mx-5 mt-3 flex flex-shrink flex-grow-0 gap-5">
       <v-select
         v-model="gameVersion"
         clearable
@@ -46,7 +46,7 @@
       style="border-spacing: 0.75em"
     >
       <div
-        class="text-gray-400 font-bold text-lg align-middle grid grid-cols-13 my-4"
+        class="grid-cols-13 my-4 grid align-middle text-lg font-bold text-gray-400"
       >
         <div
           role="presentation col-span-1"

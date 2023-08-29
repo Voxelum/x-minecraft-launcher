@@ -1,6 +1,6 @@
 import { MutableState, State } from '@xmcl/runtime-api'
 import { Manager } from '.'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { EventEmitter } from 'events'
 import { Client } from '../engineBridge'
 import { ServiceStateContainer } from '../util/ServiceStateContainer'
@@ -13,7 +13,7 @@ export function isStateObject(v: object): v is MutableState<any> {
 }
 
 class MutableStateImpl {
-  constructor(private listener = new EventEmitter()) { }
+  constructor(private listener: EventEmitter) { }
 
   subscribe(key: string, listener: (payload: any) => void) {
     this.listener.addListener(key, listener)
@@ -77,12 +77,16 @@ export default class ServiceStateManager extends Manager {
       client.send('commit', container.id, type, payload)
     }
     state.subscribeAll(handler)
-    client.on('destroyed', () => {
+    const onDestroyed = () => {
       state.unsubscribeAll(handler)
       if (container.deref()) {
         delete this.containers[container.id]
       }
+    }
+    container.addDisposeListener(() => {
+      client.removeListener('destroyed', onDestroyed)
     })
+    client.on('destroyed', onDestroyed)
     return JSON.parse(JSON.stringify(state))
   }
 

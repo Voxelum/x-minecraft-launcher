@@ -1,26 +1,26 @@
+import { CurseforgeV1Client } from '@xmcl/curseforge'
+import { ModrinthV2Client } from '@xmcl/modrinth'
 import { GetManifestOptions, InstanceManifestService as IInstanceManifestService, InstanceFile, InstanceManifest, InstanceManifestServiceKey, Resource, ResourceDomain } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { stat } from 'fs/promises'
 import { join, relative } from 'path'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { ResourceWorker, kResourceWorker } from '../entities/resourceWorker'
 import { readdirIfPresent } from '../util/fs'
 import { isNonnull } from '../util/object'
 import { Inject } from '../util/objectRegistry'
-import { CurseForgeService } from './CurseForgeService'
-import { ResolveInstanceFileTask } from './InstanceInstallService'
-import { ModrinthService } from './ModrinthService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Singleton } from './Service'
+import { ResolveInstanceFileTask } from '../entities/instanceInstall'
 
 @ExposeServiceKey(InstanceManifestServiceKey)
 export class InstanceManifestService extends AbstractService implements IInstanceManifestService {
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(ResourceService) private resourceService: ResourceService,
     @Inject(kResourceWorker) private worker: ResourceWorker,
-    @Inject(CurseForgeService) private curseforgeService: CurseForgeService,
-    @Inject(ModrinthService) private modrinthService: ModrinthService,
+    @Inject(CurseforgeV1Client) private curseforgeClient: CurseforgeV1Client,
+    @Inject(ModrinthV2Client) private modrinthClient: ModrinthV2Client,
   ) {
     super(app)
   }
@@ -133,7 +133,7 @@ export class InstanceManifestService extends AbstractService implements IInstanc
 
     files.shift()
 
-    const resolveTask = new ResolveInstanceFileTask(undecorated, this.curseforgeService.client, this.modrinthService.client)
+    const resolveTask = new ResolveInstanceFileTask(undecorated, this.curseforgeClient, this.modrinthClient)
 
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const logger = this

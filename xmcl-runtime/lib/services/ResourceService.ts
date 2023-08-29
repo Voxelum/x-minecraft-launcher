@@ -1,10 +1,10 @@
 /* eslint-disable no-dupe-class-members */
 import { ExportResourceOptions, ResourceService as IResourceService, ImportResourceOptions, Pagination, PartialResourceHash, ResolveResourceOptions, Resource, ResourceDomain, ResourceMetadata, ResourceServiceKey } from '@xmcl/runtime-api'
-import { FSWatcher } from 'fs'
+import { FSWatcher, existsSync } from 'fs'
 import { ensureDir } from 'fs-extra/esm'
 import { unlink } from 'fs/promises'
 import { basename, join } from 'path'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { PathResolver, kGameDataPath } from '../entities/gameDataPath'
 import { ResourceWorker, kResourceWorker } from '../entities/resourceWorker'
@@ -23,6 +23,7 @@ import { ImageStorage } from '../util/imageStore'
 import { Inject } from '../util/objectRegistry'
 import { PromiseSignal, createPromiseSignal } from '../util/promiseSignal'
 import { AbstractService, ExposeServiceKey } from './Service'
+import { migrateLevelDBData } from '../resources/migrateLegacy'
 
 const EMPTY_RESOURCE_SHA1 = 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
 
@@ -48,7 +49,7 @@ export interface Query {
  */
 @ExposeServiceKey(ResourceServiceKey)
 export class ResourceService extends AbstractService implements IResourceService {
-  private readyPromises: Record<ResourceDomain, PromiseSignal<void>> = {
+  private signals: Record<ResourceDomain, PromiseSignal<void>> = {
     [ResourceDomain.Mods]: createPromiseSignal(),
     [ResourceDomain.Saves]: createPromiseSignal(),
     [ResourceDomain.ResourcePacks]: createPromiseSignal(),
@@ -88,26 +89,26 @@ export class ResourceService extends AbstractService implements IResourceService
       await migrate(this.context.db).catch((e) => {
         this.error(new Error('Fail to migrate the legacy resource', { cause: e }))
       })
-      for (const domain of [
-        ResourceDomain.Mods,
-        ResourceDomain.ResourcePacks,
-        ResourceDomain.Saves,
-        ResourceDomain.Modpacks,
-        ResourceDomain.ShaderPacks,
-        ResourceDomain.Unclassified,
-      ]) {
-        mount(domain).then(() => {
-          this.readyPromises[domain].resolve()
-        }, (e) => {
-          this.readyPromises[domain].reject(e)
+      const legacyPath = this.getAppDataPath('resources-v2')
+      if (existsSync(legacyPath)) {
+        await migrateLevelDBData(legacyPath, this.context, this).catch((e) => {
+          this.error(new Error('Fail to migrate the legacy leveldb', { cause: e }))
         })
       }
+
+      this.signals[ResourceDomain.Mods].accept(mount(ResourceDomain.Mods))
+      this.signals[ResourceDomain.ResourcePacks].accept(mount(ResourceDomain.ResourcePacks))
+      this.signals[ResourceDomain.Saves].accept(mount(ResourceDomain.Saves))
+      this.signals[ResourceDomain.Modpacks].accept(mount(ResourceDomain.Modpacks))
+      this.signals[ResourceDomain.ShaderPacks].accept(mount(ResourceDomain.ShaderPacks))
+      this.signals[ResourceDomain.Unclassified].accept(mount(ResourceDomain.Unclassified))
 
       await ensureDir(this.getAppDataPath('resource-images')).catch((e) => {
         this.error(new Error('Fail to initialize resource-images folder', { cause: e }))
       })
     })
     this.context = createResourceContext(this.getAppDataPath('resources.sqlite'), imageStore, this, this, worker)
+
     app.registryDisposer(async () => {
       for (const watcher of Object.values(this.watchers)) {
         watcher?.close()
@@ -137,12 +138,19 @@ export class ResourceService extends AbstractService implements IResourceService
     return metadata.map((c) => generateResource(path, c, c))
   }
 
+  /**
+   * Register a installer which will be called if the resource is installed to an instance.
+   * This function should apply the resource to the instance.
+   *
+   * @param domain The resource domain
+   * @param installer The installer function
+   */
   registerInstaller(domain: ResourceDomain, installer: (resource: Resource, path: string) => Promise<void>) {
     this.installers[domain] = installer
   }
 
   async whenReady(resourceDomain: ResourceDomain) {
-    return this.readyPromises[resourceDomain].promise
+    return this.signals[resourceDomain].promise
   }
 
   async getResources(domain: ResourceDomain, pagination?: Pagination): Promise<Resource[]> {
@@ -151,12 +159,14 @@ export class ResourceService extends AbstractService implements IResourceService
     return metadata.map((v) => generateResource(this.getPath(), v, v))
   }
 
-  getResourcesByUris(uri: [string]): Promise<[Resource | undefined]>
-  getResourcesByUris(uri: [string, string]): Promise<[Resource | undefined, Resource | undefined]>
-  getResourcesByUris(uri: string[]): Promise<Array<Resource | undefined>>
-  async getResourcesByUris(uri: string[]): Promise<Array<Resource | undefined>> {
+  async getResourcesByUris(uri: string[]): Promise<Array<Resource>> {
     const result = await getResourceAndMetadata(this.context, { uris: uri })
-    return result.map(r => r ? generateResource(this.getPath(), r, r) : undefined)
+    return result.map(r => generateResource(this.getPath(), r, r))
+  }
+
+  async getResourcesByStartsWithUri(uri: string): Promise<Resource[]> {
+    const result = await getResourceAndMetadata(this.context, { startsWithUri: uri })
+    return result.map(r => generateResource(this.getPath(), r, r))
   }
 
   async getReosurceByIno(ino: number): Promise<Resource | undefined> {
@@ -198,15 +208,17 @@ export class ResourceService extends AbstractService implements IResourceService
   async updateResources(resources: PartialResourceHash[]): Promise<string[]> {
     await this.context.db.transaction().execute(async (trx) => {
       for (const resource of resources) {
-        await trx.updateTable('resources')
-          .where('sha1', '=', resource.hash)
-          .set({
-            name: resource.name,
-            github: resource.metadata?.github,
-            curseforge: resource.metadata?.curseforge,
-            modrinth: resource.metadata?.modrinth,
-            instance: resource.metadata?.instance,
-          }).execute()
+        if (resource.name || resource.metadata?.github || resource.metadata?.curseforge || resource.metadata?.modrinth || resource.metadata?.instance) {
+          await trx.updateTable('resources')
+            .where('sha1', '=', resource.hash)
+            .set({
+              name: resource.name,
+              github: resource.metadata?.github,
+              curseforge: resource.metadata?.curseforge,
+              modrinth: resource.metadata?.modrinth,
+              instance: resource.metadata?.instance,
+            }).execute()
+        }
         // Upsert each tag
         if (resource.tags) {
           await trx.deleteFrom('tags').where('sha1', '=', resource.hash).execute()
@@ -224,6 +236,7 @@ export class ResourceService extends AbstractService implements IResourceService
         }
       }
     })
+    // TODO: fix this
     // this.emit('resourceUpdate', generateResource(this.getPath(), entry, metadata))
 
     return []

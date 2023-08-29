@@ -5,6 +5,7 @@ import { ENOENT_ERROR, createSymbolicLink } from './fs'
 import { Logger } from './log'
 
 /**
+ * Try to link folder as symbolic link to the resource folder.
  * @return `true` if linked, `false` means dictionary
  */
 export async function tryLink(srcPath: string, destPath: string, logger: Logger, isManaged: (path: string) => boolean) {
@@ -24,7 +25,7 @@ export async function tryLink(srcPath: string, destPath: string, logger: Logger,
       logger.log(`Relink the domain: ${destPath}`)
       await unlink(destPath)
     } else {
-      // Import all directory content
+      // Skip for directory
       if (stat.isDirectory()) {
         return false
       } else {

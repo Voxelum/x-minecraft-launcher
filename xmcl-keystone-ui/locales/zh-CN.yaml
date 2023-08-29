@@ -212,6 +212,7 @@ delete:
 dependencies:
   embedded: 内嵌
   incompatible: 不兼容
+  name: 依赖
   optional: 可选
   required: 必选
 description: 简介
@@ -263,6 +264,7 @@ diagnosis:
     message: 启动器将自动下载JAR文件
     name: '%{version}版本JAR文件缺失'
   problem: 1个潜在问题 | %{count}个潜在问题
+disable: 禁用
 disk:
   available: 可用
   used: 已用
@@ -274,6 +276,7 @@ duration:
   minute: '{duration} 分钟'
   second: '{duration} 秒'
 edit: 编辑
+enable: 启用
 errors:
   BadForgeInstallerJarError: 无法解析 Forge 安装包 jar 文件。也许 Forge 有了新的安装包格式？如果经常遇到这个问题，请联系开发团队。
   BodyTimeoutError: 等待 HTTP 数据超时
@@ -638,12 +641,16 @@ mod:
   showIncompatible: 显示不兼容 Mods
   unselected: 未选 Mods
 modInstall:
+  currentVersion: 当前版本
+  dependencyHint: 安装了其他版本 {version}
   install: 安装
+  installHint: 安装 {file} 个文件和 {dependencies} 个依赖文件
   installed: 已安装
   pending: 安装列表
   search: 搜索结果
   searchHint: 搜索并选择 Mod
   selectProjectHint: 添加 Mod 并安装
+  switch: 切换版本
 modSearchType:
   all: 所有
   local: 本地
@@ -952,7 +959,6 @@ refresh: 刷新
 refreshResource: 刷新资源
 remove: 移除
 resourcepack:
-  searchOnModrinth: '@:mod.searchOnModrinth'
   available: 可用的资源包
   compatible: 当前格式({format})可用于当前版本 {version}
   defaultDescription: Minecraft 的默认材质
@@ -970,6 +976,7 @@ resourcepack:
   manage: 管理资源包
   name: 资源包 | 资源包
   searchOnCurseforge: 在 Curseforge 中查找 {name}
+  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: 已选资源包
   showFile: 在文件夹中显示 {file}
   showInCurseforge: 在 Curseforge 中显示 {name}
@@ -1204,7 +1211,7 @@ upstream:
 user:
   accessToken: 访问令牌
   authMode: 验证服务
-  authService: 验证服务器
+  authService: 验证服务
   birth: 登记的生日
   challenges: 请回答下列问题来验证你的身份
   email: 邮箱

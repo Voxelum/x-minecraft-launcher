@@ -9,7 +9,7 @@
   >
     <v-card>
       <v-toolbar
-        class="flex-1 flex-grow-0 moveable"
+        class="moveable flex-1 flex-grow-0"
         tabs
         color="green en"
       >
@@ -27,7 +27,7 @@
         </v-btn>
       </v-toolbar>
       <div
-        class="max-h-[100vh] visible-scroll mx-0 justify-center items-center overflow-y-auto overflow-x-hidden px-6 py-2"
+        class="visible-scroll mx-0 max-h-[100vh] items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-2"
       >
         <v-subheader>{{ t('modpack.general') }}</v-subheader>
         <v-container
@@ -133,7 +133,7 @@
                         icon
                       > -->
                       <a
-                        class="border-green-300 border border-dashed rounded pb-[2px]"
+                        class="rounded border border-dashed border-green-300 pb-[2px]"
                         target="browser"
                         href="https://docs.modrinth.com/docs/modpacks/format_definition/#downloads"
                         v-on="on"
@@ -268,7 +268,7 @@
           </InstanceManifestFileTree>
         </v-layout>
       </div>
-      <v-card-actions class="gap-5 items-baseline">
+      <v-card-actions class="items-baseline gap-5">
         <v-btn
           text
           large
@@ -278,7 +278,7 @@
           {{ t('cancel') }}
         </v-btn>
         <v-spacer />
-        <div class="flex items-center justify-center text-center text-gray-500 flex-shrink flex-grow-0 text-sm">
+        <div class="flex flex-shrink flex-grow-0 items-center justify-center text-center text-sm text-gray-500">
           ~{{ getExpectedSize(totalSize) }}
         </div>
         <v-btn

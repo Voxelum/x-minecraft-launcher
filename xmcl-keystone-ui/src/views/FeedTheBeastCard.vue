@@ -11,7 +11,7 @@
     class="flex"
   >
     <div
-      class="flex items-center justify-center max-w-24 ml-2"
+      class="max-w-24 ml-2 flex items-center justify-center"
     >
       <v-img
         :src="avatar"
@@ -59,7 +59,7 @@
       <v-card-text>{{ description }}</v-card-text>
     </div>
     <div
-      class="p-4 flex flex-wrap gap-2"
+      class="flex flex-wrap gap-2 p-4"
       @click.stop.prevent
     >
       <v-chip

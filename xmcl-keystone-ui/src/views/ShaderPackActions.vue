@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-3 items-center justify-end">
+  <div class="flex items-center justify-end gap-3">
     <v-btn
       v-shared-tooltip="t('shaderPack.showDirectory')"
       icon

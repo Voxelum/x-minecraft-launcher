@@ -9,6 +9,7 @@ export class ServiceStateContainer {
    * The number of reference to this state
    */
   #ref = 0
+  #disposeListeners: (() => void)[] = []
 
   constructor(
     readonly id: string,
@@ -18,6 +19,16 @@ export class ServiceStateContainer {
   ) {
   }
 
+  #doDispose() {
+    this.emitter.removeAllListeners()
+    this.dispose()
+    this.#disposeListeners.forEach(l => l())
+  }
+
+  addDisposeListener(listener: () => void) {
+    this.#disposeListeners.push(listener)
+  }
+
   ref() {
     this.#ref++
   }
@@ -25,7 +36,7 @@ export class ServiceStateContainer {
   deref() {
     this.#ref--
     if (this.#ref <= 0) {
-      this.dispose()
+      this.#doDispose()
       return true
     }
     return false

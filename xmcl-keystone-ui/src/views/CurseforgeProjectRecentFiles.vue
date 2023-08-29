@@ -1,7 +1,7 @@
 <template>
   <v-card
     outlined
-    class="max-h-full overflow-auto flex flex-col md:hidden lg:flex"
+    class="flex max-h-full flex-col overflow-auto md:hidden lg:flex"
   >
     <v-card-title class="text-md font-bold">
       {{ t("curseforge.recentFiles") }}
@@ -32,7 +32,7 @@
       {{ t("curseforge.authors") }}
     </v-card-title>
 
-    <div class="mx-4 flex gap-4 flex-grow-0">
+    <div class="mx-4 flex flex-grow-0 gap-4">
       <a
         v-for="a of project.authors"
         :key="a.id"
@@ -46,7 +46,7 @@
       {{ t("modrinth.categories.categories") }}
     </v-card-title>
 
-    <div class="mx-4 flex flex-wrap gap-2 flex-grow-0">
+    <div class="mx-4 flex flex-grow-0 flex-wrap gap-2">
       <v-chip
         v-for="a of project.categories"
         :key="a.id"

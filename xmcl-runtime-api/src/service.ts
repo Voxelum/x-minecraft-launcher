@@ -1,7 +1,6 @@
 /* eslint-disable no-dupe-class-members */
 import { GenericEventEmitter } from './events'
 import { ServiceKey } from './services/Service'
-import { MutableState } from './util/MutableState';
 
 interface SyncableEventMap {
   commit: {

@@ -6,7 +6,7 @@
     class="flex-grow"
   >
     <v-subheader>{{ t("setting.appearance") }}</v-subheader>
-    <v-list-item class="justify-center items-center">
+    <v-list-item class="items-center justify-center">
       <v-list-item-content>
         <v-list-item-title>
           {{
@@ -49,7 +49,7 @@
       </v-list-item-content>
     </v-list-item>
 
-    <v-list-item class="justify-center items-center">
+    <v-list-item class="items-center justify-center">
       <v-list-item-content>
         <v-list-item-title>
           {{
@@ -72,7 +72,7 @@
         />
       </v-list-item-action>
     </v-list-item>
-    <v-list-item class="justify-center items-center">
+    <v-list-item class="items-center justify-center">
       <v-list-item-action class="self-center">
         <v-tooltip
           color="warning"
@@ -264,7 +264,7 @@
       <v-list-item-action class="mr-4">
         <v-select
           v-model="backgroundImageFit"
-          class="w-40 mr-4"
+          class="mr-4 w-40"
           filled
           hide-details
           :label="t('setting.backgroundImageFit.name')"
@@ -305,7 +305,7 @@
       <v-list-item-action class="mr-4">
         <v-select
           v-model="backgroundImageFit"
-          class="w-40 mr-4"
+          class="mr-4 w-40"
           filled
           hide-details
           :label="t('setting.backgroundImageFit.name')"

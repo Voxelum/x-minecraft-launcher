@@ -81,7 +81,9 @@ async function receive(_result: any, states: Record<string, WeakRef<MutableState
 
     for (const [method, handler] of prototype.methods) {
       // explictly bind to the state object under electron context isolation
-      state[method] = handler.bind(state)
+      state[method] = (...args: any[]) => {
+        ipcRenderer.invoke('commit', id, method, ...args)
+      }
     }
 
     gc.register(state, state.id)

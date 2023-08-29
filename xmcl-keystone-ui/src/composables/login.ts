@@ -25,12 +25,12 @@ export function useAuthorityItems(allowThirdparty: Ref<boolean>, services: Ref<Y
       {
         value: AUTHORITY_MICROSOFT,
         text: t('userServices.microsoft.name'),
-        icon: 'mdi-microsoft',
+        icon: 'gavel',
       },
       {
         value: AUTHORITY_MOJANG,
         text: t('userServices.mojang.name'),
-        icon: 'mdi-minecraft',
+        icon: 'spatial_tracking',
       },
     ] as AuthorityItem[]
 
@@ -38,13 +38,13 @@ export function useAuthorityItems(allowThirdparty: Ref<boolean>, services: Ref<Y
       items.push({
         value: AUTHORITY_DEV,
         text: t('userServices.offline.name'),
-        icon: 'mdi-account-off',
+        icon: 'wifi_off',
       })
       for (const api of services.value) {
         try {
           const host = new URL(api.url).host
           items.push({
-            value: host,
+            value: api.url,
             text: api.authlibInjector?.meta.serverName ?? host,
             icon: api.favicon ?? '',
           })

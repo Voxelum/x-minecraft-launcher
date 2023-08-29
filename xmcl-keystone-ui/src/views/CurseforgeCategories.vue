@@ -1,7 +1,7 @@
 <template>
   <v-card
     outlined
-    class="p-2 rounded-lg flex flex-col h-[fit-content] overflow-auto"
+    class="flex h-[fit-content] flex-col overflow-auto rounded-lg p-2"
   >
     <span
       class="list-title"

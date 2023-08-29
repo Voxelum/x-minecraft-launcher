@@ -1,13 +1,13 @@
 <template>
   <div
-    class="flex flex-grow-0 flex-1 mt-4 flex-row items-center justify-center pl-4 pr-6"
+    class="mt-4 flex flex-1 flex-grow-0 flex-row items-center justify-center pl-4 pr-6"
     :class="{
       'mb-4': !compact,
       'mb-2': compact,
     }"
   >
     <div
-      class="flex flex-row items-center gap-1 flex-grow-0 justify-center"
+      class="flex flex-grow-0 flex-row items-center justify-center gap-1"
     >
       <AvatarItem
         responsive
@@ -63,7 +63,7 @@
     </div>
     <div class="flex-grow" />
     <div
-      class="flex items-center overflow-x-auto invisible-scroll pr-3 h-full "
+      class="invisible-scroll flex h-full items-center overflow-x-auto pr-3 "
     >
       <FilterCombobox />
     </div>

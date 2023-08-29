@@ -38,7 +38,7 @@
       v-for="d of drives"
       :key="d.mounted"
       v-ripple
-      class="hover:bg-[rgba(123,123,123,0.5)] cursor-pointer rounded-lg m-2 mx-3"
+      class="m-2 mx-3 cursor-pointer rounded-lg hover:bg-[rgba(123,123,123,0.5)]"
       @click="onSelect(d)"
     >
       <v-list-item-avatar>
@@ -46,19 +46,19 @@
       </v-list-item-avatar>
 
       <v-list-item-content>
-        <v-list-item-title class="flex p-0 flex-grow-0 align-baseline w-full">
+        <v-list-item-title class="flex w-full flex-grow-0 p-0 align-baseline">
           {{ d.mounted }}
           <div class="flex-grow" />
 
           <span
-            class="text-[hsla(0,0%,100%,.7)] whitespace-normal"
+            class="whitespace-normal text-[hsla(0,0%,100%,.7)]"
             style="font-size: 14px;"
           >
             {{ d.selectedPath }}
           </span>
         </v-list-item-title>
         <v-progress-linear
-          class="p-0 my-2"
+          class="my-2 p-0"
           :value="d.used / (d.available + d.used) * 100"
         />
         <v-list-item-subtitle class="flex">

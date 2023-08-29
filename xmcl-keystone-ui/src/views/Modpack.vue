@@ -1,18 +1,18 @@
 <template>
-  <div class="flex flex-col max-h-full select-none h-full  pb-0 gap-3 visible-scroll pl-7">
+  <div class="visible-scroll flex h-full max-h-full select-none  flex-col gap-3 pb-0 pl-7">
     <v-progress-linear
       v-show="refreshing"
-      class="absolute top-0 z-10 m-0 p-0 left-0"
+      class="absolute left-0 top-0 z-10 m-0 p-0"
       height="3"
       :indeterminate="refreshing"
     />
     <v-card
-      class="flex rounded-lg flex-shrink flex-grow-0 items-center px-2 py-2 gap-2 z-5 mr-8 mt-4"
+      class="z-5 mr-8 mt-4 flex flex-shrink flex-grow-0 items-center gap-2 rounded-lg p-2"
       outlined
       elevation="1"
     >
       <FilterCombobox
-        class="pr-3 max-w-200 max-h-full"
+        class="max-w-200 max-h-full pr-3"
         :label="t('modpack.filter')"
       />
       <div class="flex-grow" />
@@ -54,7 +54,7 @@
     </v-card>
 
     <div
-      class="flex overflow-auto overflow-x-hidden h-full flex-col container py-0 gap-4"
+      class="container flex h-full flex-col gap-4 overflow-auto overflow-x-hidden py-0"
     >
       <refreshing-tile
         v-if="refreshing"
@@ -70,7 +70,7 @@
           :key="group + 'list'"
           name="transition-list"
           tag="div"
-          class="flex flex-wrap flex-grow-0 gap-4 w-full items-start"
+          class="flex w-full flex-grow-0 flex-wrap items-start gap-4"
         >
           <ModpackCard
             v-for="item of packs"
@@ -101,7 +101,7 @@
         {{ deleting ? deleting.path : '' }}
       </p>
     </DeleteDialog>
-    <div class="absolute w-full bottom-0 flex items-center justify-center mb-10">
+    <div class="absolute bottom-0 mb-10 flex w-full items-center justify-center">
       <DeleteButton
         :visible="!!dragging"
         :drop="onDrop"
@@ -122,7 +122,7 @@ import { Ref } from 'vue'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import { useDialog } from '../composables/dialog'
 import { useFeedTheBeastVersionsCache } from '../composables/ftb'
-import { AddInstanceDialogKey } from '../composables/instanceAdd'
+import { AddInstanceDialogKey } from '../composables/instanceTemplates'
 import { ModpackItem } from '../composables/modpack'
 import ModpackCard from './ModpackCard.vue'
 import DeleteButton from './ModpackDeleteButton.vue'
@@ -222,6 +222,3 @@ watch(resources, (v) => {
   items.value = [...v.map(getModpackItem), ...ftb.value.map(getModpackItemByFtb)]
 })
 </script>
-
-<style>
-</style>

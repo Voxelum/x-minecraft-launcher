@@ -6,12 +6,11 @@
     />
     <v-list
       v-else
-      style="background: transparent"
-      class="p-0"
+      class="min-h-[50vh] bg-transparent p-0"
       two-line
     >
       <v-list-item class="mb-2">
-        <div class="flex gap-3 w-full">
+        <div class="flex w-full gap-3">
           <v-select
             v-model="selectedVersionFilterOption"
             class="max-w-40"
@@ -108,7 +107,7 @@
 
 <script lang=ts setup>
 import { Ref } from 'vue'
-import { Template } from '../composables/instanceAdd'
+import { Template } from '../composables/instanceTemplates'
 
 const props = defineProps<{
   value?: Template
@@ -174,3 +173,4 @@ onUnmounted(() => {
   border: none;
 }
 </style>
+../composables/instanceTemplates

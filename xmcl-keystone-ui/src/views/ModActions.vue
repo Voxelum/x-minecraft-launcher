@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-3 items-center justify-end">
+  <div class="flex items-center justify-end gap-3">
     <v-btn
       v-shared-tooltip="t('mod.showDirectory')"
       icon
@@ -7,17 +7,6 @@
       @click="showDirectory(path)"
     >
       <v-icon>folder</v-icon>
-    </v-btn>
-    <v-btn
-      v-shared-tooltip="t('instance.addMod')"
-      icon
-      :disabled="noModLoader"
-      large
-      @click="onInstall"
-    >
-      <v-icon>
-        playlist_add
-      </v-icon>
     </v-btn>
   </div>
 </template>
@@ -30,12 +19,6 @@ import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 
 const { showDirectory } = useService(InstanceModsServiceKey)
 const { path, runtime: version } = injection(kInstance)
-const noModLoader = computed(() =>
-  !version.value.forge && !version.value.fabricLoader && !version.value.quiltLoader,
-)
 const { t } = useI18n()
 const { push } = useRouter()
-const onInstall = () => {
-  push('/install')
-}
 </script>

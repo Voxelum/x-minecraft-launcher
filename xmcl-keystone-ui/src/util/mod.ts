@@ -1,7 +1,30 @@
-import { Resource } from '@xmcl/runtime-api'
+import { ForgeModCommonMetadata, Resource, ResourceSourceCurseforge, ResourceSourceModrinth, RuntimeVersions } from '@xmcl/runtime-api'
 import { ModDependencies, getModDependencies, getModProvides } from './modDependencies'
+import { SearchResultHit } from '@xmcl/modrinth'
+import { Mod as CurseforgeMod } from '@xmcl/curseforge'
+import { FabricModMetadata, ForgeModMetadata, LiteloaderModMetadata, QuiltModMetadata } from '@xmcl/mod-parser'
 
-export interface Mod {
+interface ModMetadata {
+  /**
+   * The extenral links
+   */
+  links: {
+    home?: string
+    issues?: string
+    sources?: string
+    update?: string
+    irc?: string
+    [key: string]: string | undefined
+  }
+  /**
+   * The license
+   */
+  license?: { url?: string; name: string }
+}
+/**
+ * Contain the mod related data. Extracted from {@link Resource}
+ */
+export interface ModFile extends ModMetadata {
   /**
    * Path on disk
    */
@@ -9,7 +32,7 @@ export interface Mod {
   /**
    * The mod id
    */
-  id: string
+  modId: string
   /**
    * Mod display name
    */
@@ -18,6 +41,10 @@ export interface Mod {
    * Mod version
    */
   version: string
+  /**
+   * The authors
+   */
+  authors: string[]
   /**
    * The mod description text
    */
@@ -54,31 +81,126 @@ export interface Mod {
    * If this mod is enabled. This is computed from the path suffix.
    */
   enabled: boolean
+
+  curseforge?: ResourceSourceCurseforge
+  modrinth?: ResourceSourceModrinth
   /**
    * The backed resource
    */
   resource: Resource
 }
 
+/**
+ * Represent a mod project
+ */
+export interface Mod {
+  /**
+   * The id is representing the id of the project
+   */
+  id: string
+  icon: string
+  title: string
+  description: string
+  author: string
+
+  downloadCount?: number
+  followerCount?: number
+
+  forge?: boolean
+  fabric?: boolean
+  quilt?: boolean
+  /**
+   * The installed mod file
+   */
+  installed: ModFile[]
+  curseforge?: CurseforgeMod
+  curseforgeProjectId?: number
+  modrinth?: SearchResultHit
+  modrinthProjectId?: string
+  files?: ModFile[]
+}
+
 function getUrl(resource: Resource) {
   return resource.uris.find(u => u?.startsWith('http')) ?? ''
 }
 
-export function getModItemFromResource(resource: Resource): Mod {
-  const modItem: Mod = ({
+function getForgeModLinks(metadata: ForgeModMetadata) {
+  const links: ModFile['links'] = {}
+  if (metadata.modsToml && metadata.modsToml.length > 0) {
+    for (const m of metadata.modsToml) {
+      if (m.issueTrackerURL) {
+        links.issues = m.issueTrackerURL
+      }
+      if (m.updateJSONURL) {
+        links.update = m.updateJSONURL
+      }
+      if (m.displayURL) {
+        links.home = m.displayURL
+      }
+    }
+  } else if (metadata.mcmodInfo && metadata.mcmodInfo.length > 0) {
+    for (const m of metadata.mcmodInfo) {
+      if (m.updateUrl) {
+        links.update = m.updateUrl
+      }
+      if (m.url) {
+        links.home = m.url
+      }
+    }
+  } else if (metadata.manifestMetadata) {
+    links.home = metadata.manifestMetadata.url
+  }
+  return links
+}
+
+function getFabricLikeModLinks(contact?: FabricModMetadata['contact'] & { sources?: string | string[] }) {
+  const links: ModFile['links'] = {}
+  if (contact) {
+    if (contact.issues) {
+      links.issues = contact.issues
+    }
+    if (contact.homepage) {
+      links.home = contact.homepage
+    }
+    if (contact.sources) {
+      if (typeof contact.sources === 'string') {
+        links.sources = contact.sources
+      } else {
+        links.sources = contact.sources[0]
+        // links.push(...contact.sources.map(s => ({ url: s, name: 'Source' })))
+      }
+    }
+    if (contact.irc) {
+      links.irc = contact.irc
+    }
+    if (contact.email) {
+      links.email = contact.email
+    }
+  }
+  return links
+}
+
+export function getModFileFromResource(resource: Resource, runtime: RuntimeVersions): ModFile {
+  const modItem: ModFile = ({
     path: resource.path,
-    id: '',
+    modId: '',
     name: resource.path,
     version: '',
     modLoaders: markRaw([]),
     description: '',
+    authors: [],
+    links: {},
     provideRuntime: markRaw(getModProvides(resource)),
     icon: resource.icons?.at(-1) ?? '',
-    dependencies: markRaw(getModDependencies(resource)),
+    dependencies: runtime.fabricLoader
+      ? (getModDependencies(resource, true).map(markRaw))
+      : (getModDependencies(resource, false).map(markRaw)),
     url: getUrl(resource),
     hash: resource.hash,
     tags: resource.tags,
     enabled: !resource.path.endsWith('.disabled'),
+    curseforge: resource.metadata.curseforge && markRaw(resource.metadata.curseforge),
+    modrinth: resource.metadata.modrinth && markRaw(resource.metadata.modrinth),
     resource: markRaw(resource),
   })
   if (resource.metadata.forge) {
@@ -93,35 +215,66 @@ export function getModItemFromResource(resource: Resource): Mod {
   if (resource.metadata.quilt) {
     modItem.modLoaders.push('quilt')
   }
-  if (resource.metadata.forge) {
-    const meta = resource.metadata.forge
-    modItem.id = meta.modid
+  const applyForge = (meta: ForgeModCommonMetadata) => {
+    modItem.modId = meta.modid
     modItem.name = meta.name
     modItem.version = meta.version
     modItem.description = meta.description
-  } else if (resource.metadata.fabric) {
-    const meta = resource.metadata.fabric instanceof Array ? resource.metadata.fabric[0] : resource.metadata.fabric
-    modItem.id = meta.id
+    modItem.authors = meta.authors
+    modItem.links = getForgeModLinks(meta)
+  }
+  const applyFabric = (meta: FabricModMetadata) => {
+    modItem.modId = meta.id
     modItem.version = meta.version
     modItem.name = meta.name ?? meta.id
     modItem.description = meta.description ?? ''
-  } else if (resource.metadata.liteloader) {
-    const meta = resource.metadata.liteloader
-    modItem.name = meta.name
-    modItem.version = meta.version ?? ''
-    modItem.id = `${meta.name}`
-    modItem.description = modItem.description ?? ''
-  } else if (resource.metadata.quilt) {
-    const meta = resource.metadata.quilt
-    modItem.id = meta.quilt_loader.id
+    modItem.authors = meta.authors?.map(a => typeof a === 'string' ? a : a.name) ?? []
+    modItem.links = getFabricLikeModLinks(meta.contact)
+    modItem.license = typeof meta.license === 'string' ? { name: meta.license } : meta.license ? { name: meta.license?.[0] } : undefined
+  }
+  const applyQuilt = (meta: QuiltModMetadata) => {
+    modItem.modId = meta.quilt_loader.id
     modItem.version = meta.quilt_loader.version
     modItem.name = meta.quilt_loader.metadata?.name ?? meta.quilt_loader.id
     modItem.description = meta.quilt_loader.metadata?.description ?? ''
+    modItem.authors = meta.quilt_loader.metadata?.contributors ? Object.values(meta.quilt_loader.metadata?.contributors) : []
+    modItem.links = getFabricLikeModLinks(meta.quilt_loader.metadata?.contact as any)
+    const license = meta.quilt_loader.metadata?.license
+    modItem.license = typeof license === 'object'
+      ? license instanceof Array ? { name: license[0] } : { name: license.id, url: license.url }
+      : license ? { name: license } : undefined
+  }
+  const applyLiteloader = (meta: LiteloaderModMetadata) => {
+    modItem.name = meta.name
+    modItem.version = meta.version ?? ''
+    modItem.modId = `${meta.name}`
+    modItem.description = modItem.description ?? ''
+    modItem.authors = meta.author ? [meta.author] : []
+    if (meta.url) {
+      modItem.links = { home: meta.url }
+    }
+  }
+  if (runtime.fabricLoader) {
+    if (resource.metadata.fabric) applyFabric(resource.metadata.fabric instanceof Array ? resource.metadata.fabric[0] : resource.metadata.fabric)
+    else if (resource.metadata.quilt) applyQuilt(resource.metadata.quilt)
+    else if (resource.metadata.forge) applyForge(resource.metadata.forge)
+    else if (resource.metadata.liteloader) applyLiteloader(resource.metadata.liteloader)
+  } else if (runtime.quiltLoader) {
+    if (resource.metadata.quilt) applyQuilt(resource.metadata.quilt)
+    else if (resource.metadata.fabric) applyFabric(resource.metadata.fabric instanceof Array ? resource.metadata.fabric[0] : resource.metadata.fabric)
+    else if (resource.metadata.forge) applyForge(resource.metadata.forge)
+    else if (resource.metadata.liteloader) applyLiteloader(resource.metadata.liteloader)
   } else {
+    if (resource.metadata.forge) applyForge(resource.metadata.forge)
+    else if (resource.metadata.fabric) applyFabric(resource.metadata.fabric instanceof Array ? resource.metadata.fabric[0] : resource.metadata.fabric)
+    else if (resource.metadata.liteloader) applyLiteloader(resource.metadata.liteloader)
+    else if (resource.metadata.quilt) applyQuilt(resource.metadata.quilt)
+  }
+  if (!modItem.name) {
     modItem.name = resource.fileName
   }
-  if (!modItem.id) {
-    modItem.id = resource.fileName + resource.hash.slice(0, 4)
+  if (!modItem.modId) {
+    modItem.modId = resource.fileName + resource.hash.slice(0, 4)
   }
   if (!modItem.version) {
     modItem.version = '?'

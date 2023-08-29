@@ -17,16 +17,16 @@
         <v-list-item>
           <v-card
             outlined
-            class="flex flex-col gap-4 hover:bg-[rgba(0,0,0,0.2)] mb-6 p-2"
+            class="mb-6 flex flex-col gap-4 p-2 hover:bg-[rgba(0,0,0,0.2)]"
           >
-            <div class="flex items-center gap-5 w-full">
+            <div class="flex w-full items-center gap-5">
               <img
                 v-fallback-img="unknownServer"
                 :src="status.favicon || unknownServer"
                 class="rounded-lg p-1"
                 style="max-width: 80px; max-height: 80px; min-height: 80px;"
               >
-              <span class="flex-grow justify-center flex">
+              <span class="flex flex-grow justify-center">
                 <text-component
                   v-if="status.description"
                   :source="status.description"
@@ -41,7 +41,7 @@
                 :source="status.version.name"
               />
             </div>
-            <div class="flex gap-4 mb-2">
+            <div class="mb-2 flex gap-4">
               <v-flex d-flex>
                 <v-combobox
                   outlined

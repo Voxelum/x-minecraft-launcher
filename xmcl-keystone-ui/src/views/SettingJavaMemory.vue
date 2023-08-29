@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col">
     <v-progress-linear
-      class="rounded mt-3"
+      class="mt-3 rounded"
       :value="memoryProgress"
       color="blue"
       height="25"
@@ -14,7 +14,7 @@
           >
             memory
           </v-icon>
-          <strong class="flex items-center justify-center flex-grow-0">
+          <strong class="flex flex-grow-0 items-center justify-center">
             {{ t('java.systemMemory') }}
             {{ getExpectedSize(sysmem.free, 'B') }} / {{ getExpectedSize(sysmem.total, 'B') }}
           </strong>
@@ -23,7 +23,7 @@
     </v-progress-linear>
 
     <v-progress-linear
-      class="rounded mt-3"
+      class="mt-3 rounded"
       :active="assignMemory !== false"
       :value="minMemoryProgress"
       color="deep-orange"
@@ -50,7 +50,7 @@
       :max="sysmem.total"
       min="0"
       :step="step"
-      class="-mt-[25px] z-10"
+      class="z-10 -mt-[25px]"
       height="25"
       track-fill-color="transparent"
       track-color="transparent"

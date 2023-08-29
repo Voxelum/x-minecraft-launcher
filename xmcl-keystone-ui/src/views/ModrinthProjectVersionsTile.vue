@@ -2,7 +2,7 @@
   <div>
     <div
       :key="version.id"
-      class="dark:text-gray-300 text-gray-700 grid grid-cols-13 mt-3 mb-1"
+      class="grid-cols-13 mb-1 mt-3 grid text-gray-700 dark:text-gray-300"
     >
       <div class="flex justify-center">
         <v-btn
@@ -32,7 +32,7 @@
         <div class="mt-1">
           <span
             :style="{ color: getColorCode(getColorForReleaseType(version.version_type)),borderColor: getColorCode(getColorForReleaseType(version.version_type)) }"
-            class="font-bold border-l border-l-[3px] pl-3"
+            class="border-l-[3px] pl-3 font-bold"
           >
             {{ t(`versionType.${version.version_type}`) }}
           </span>
@@ -60,16 +60,16 @@
     <div
       v-if="version.changelog"
       :key="`${version.id}-changelog`"
-      class="grid grid-cols-13 my-1.5"
+      class="grid-cols-13 my-1.5 grid"
     >
       <div class="col-span-1" />
       <div
         colspan="3"
         :style="{ borderColor: getColorCode(getColorForReleaseType(version.version_type)) }"
-        class="border-l border-l-[3px] pl-3 col-span-12"
+        class="col-span-12 border-l-[3px] pl-3"
       >
         <div
-          class="text-gray-500 hover:text-black dark:hover:text-gray-300 text-gray-500 transition-colors"
+          class="text-gray-500 transition-colors hover:text-black dark:hover:text-gray-300"
           v-html="render(version.changelog)"
         />
       </div>

@@ -2,13 +2,13 @@
   <img
     v-if="backgroundType === BackgroundType.IMAGE"
     :src="backgroundImage"
-    class="absolute h-full w-full z-0"
+    class="absolute z-0 h-full w-full"
     :style="{ filter: `blur(${blur}px)`, 'object-fit': backgroundImageFit }"
   >
   <video
     v-else-if="backgroundType === BackgroundType.VIDEO"
     ref="videoRef"
-    class="absolute h-full w-full z-0 object-cover"
+    class="absolute z-0 h-full w-full object-cover"
     :style="{ filter: `blur(${blur}px)`, 'object-fit': backgroundImageFit }"
     :src="backgroundVideo"
     autoplay
@@ -17,7 +17,7 @@
   <Particles
     v-else-if="backgroundType === BackgroundType.PARTICLE"
     color="#dedede"
-    class="absolute w-full h-full z-0"
+    class="absolute z-0 h-full w-full"
     :style="{ filter: `blur(${blur}px)` }"
     :click-mode="particleMode"
   />

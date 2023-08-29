@@ -73,7 +73,9 @@ p {
     transition: transform 0.7s !important;
 } */
 
-.v-list-item, .v-list-item:hover:before, .v-list-item:focus:before {
+.v-list-item,
+.v-list-item:hover:before,
+.v-list-item:focus:before {
     border-radius: 0.25rem;
 }
 
@@ -278,6 +280,12 @@ a {
     display: unset;
 }
 
+.card>:last-child,
+.universal-body>:last-child {
+    -webkit-margin-after: 0;
+    margin-block-end: 0;
+}
+
 .markdown-body li,
 .markdown-body p {
     padding: 0 !important;
@@ -306,26 +314,48 @@ a {
 }
 
 .markdown-body details {
-    @apply rounded;
     border: 0.15rem solid #434956;
-}
-
-.markdown-body details summary {
-    @apply bg-gray-700 p-2;
+    border: 0.15rem solid #434956;
+    border-radius: .75rem;
+    padding: 0.5rem 0.5rem 0;
 }
 
 .markdown-body details ul {
-    @apply mt-2 mx-2;
+    margin-top: 0.5rem;
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
 }
 
-.markdown-body ul {
-    display: block;
-    list-style-type: disc;
-    margin-block-start: 1em;
-    margin-block-end: 1em;
-    margin-inline-start: 0px;
-    margin-inline-end: 0px;
-    padding-inline-start: 40px;
+.markdown-body details[open]>:last-child:not(summary),
+.markdown-body>:last-child {
+    margin-bottom: 0 !important;
+}
+
+.markdown-body details[open] {
+    padding: 0.5rem;
+    border-radius: .5rem;
+}
+
+.markdown-body details summary {
+    background-color: rgba(55, 65, 81, 1);
+    border-radius: .5rem;
+    cursor: pointer;
+    font-weight: 700;
+    margin: -0.5rem -0.5rem 0;
+    padding: 0.5rem 0.8rem;
+}
+
+.markdown-body details[open] summary {
+    border-radius: .5rem .5rem 0 0;
+    margin-bottom: 0.5rem;
+}
+
+.markdown-body details summary:hover {
+    background-color: #494f58;
+}
+
+.markdown-body details summary:hover {
+    filter: brightness(.85);
 }
 
 .markdown-body h1 {
@@ -339,9 +369,133 @@ a {
 }
 
 .markdown-body h3 {
-    @apply text-lg;
+    @apply text-lg font-bold;
+}
+
+.markdown-body ul {
+    display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 40px;
 }
 
 .markdown-body p {
     /* margin: 10px 0; */
 }
+
+.markdown-body pre code {
+    border-radius: 0;
+    font-size: 80%;
+    padding: 0;
+}
+
+.markdown-body pre code {
+    border-radius: 0;
+    font-size: 80%;
+    padding: 0;
+}
+
+.markdown-body code {
+    background-color: unset !important;
+    border-radius: .75rem;
+    color: #ecf9fb;
+    font-size: 80%;
+    padding: 0.2em 0.4em;
+}
+
+.markdown-body pre {
+    background-color: hsla(0, 0%, 100%, .1);
+    border-radius: .75rem;
+    margin-top: 1rem;
+    overflow-x: auto;
+    padding: 14px;
+}
+
+.markdown-body img, .markdown-body video {
+    display: inline;
+}
+
+/* Curseforge */
+
+.project-description {
+    position: relative;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.project-description h1,
+.project-description h2,
+.project-description h3,
+.project-description h4,
+.project-description h5,
+.project-description h6 {
+    display: block;
+    line-height: 145%;
+    margin-bottom: 24px;
+    font-size: medium
+}
+
+.project-description h1 {
+    font-size: 28px
+}
+
+.project-description h2 {
+    font-size: 22px
+}
+
+.project-description pre {
+    white-space: pre-wrap;
+    margin-bottom: 1rem
+}
+
+.project-description a {
+    text-decoration: underline
+}
+
+.project-description p {
+    margin-bottom: 1rem
+}
+
+.project-description img {
+    height: auto;
+    display: inline;
+    vertical-align: top
+}
+
+.project-description iframe,
+.project-description img {
+    max-width: 100%;
+    margin-bottom: 1rem
+}
+
+.project-description ul {
+    list-style: unset;
+    padding-left: 18px;
+    list-style-position: inside;
+    margin-bottom: 2rem
+}
+
+.project-description ol {
+    list-style: decimal;
+    margin-left: 1em
+}
+
+.project-description .codeStyle,
+.project-description code {
+    background-color: #262626;
+    display: inline-block;
+    vertical-align: middle;
+    white-space: pre-wrap;
+    overflow: auto;
+    padding: 2px 4px;
+    border: 1px solid #4d4d4d
+}
+
+.project-description hr {
+    margin-bottom: 12px
+}
+
+/* Curseforge end */

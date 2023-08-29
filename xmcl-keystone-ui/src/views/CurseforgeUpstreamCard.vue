@@ -1,7 +1,7 @@
 <template>
   <v-card
     outlined
-    class="flex flex-col flex-shrink flex-grow-0 relative"
+    class="relative flex flex-shrink flex-grow-0 flex-col"
   >
     <v-alert
       v-if="error"
@@ -57,7 +57,7 @@
     </v-subheader>
     <p
       v-if="changelog"
-      class="mx-4 mb-4 max-h-[45vh] rounded-md overflow-auto visible-scroll p-4 light:bg-[rgba(0,0,0,0.07)] light:hover:(bg-[rgba(0,0,0,0.05)]) dark:bg-[rgba(0,0,0,0.4)] dark:hover:(bg-[rgba(0,0,0,0.3)]) select-text"
+      class="visible-scroll light:bg-[rgba(0,0,0,0.07)] light:hover:(bg-[rgba(0,0,0,0.05)]) dark:hover:(bg-[rgba(0,0,0,0.3)]) mx-4 mb-4 max-h-[45vh] select-text overflow-auto rounded-md p-4 dark:bg-[rgba(0,0,0,0.4)]"
       v-html="changelog"
     />
   </v-card>

@@ -3,7 +3,7 @@ import { extname } from 'path'
 import { Writable } from 'stream'
 import { stream } from 'undici'
 import { InjectionKey } from '../util/objectRegistry'
-import LauncherApp from './LauncherApp'
+import { LauncherApp } from './LauncherApp'
 
 export interface ResolvedIcon {
   src: string

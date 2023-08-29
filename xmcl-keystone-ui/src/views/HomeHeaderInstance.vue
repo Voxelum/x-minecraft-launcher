@@ -1,21 +1,21 @@
 <template>
   <div
-    class="mb-4 flex flex-col flex-1 flex-grow-0 max-w-full transition-all header"
+    class="header mb-4 flex max-w-full flex-1 flex-grow-0 flex-col transition-all"
   >
     <div
-      class="flex w-full align-center max-h-20 flex-grow-0 flex-1 items-baseline pl-6 pr-6"
+      class="align-center flex max-h-20 w-full flex-1 flex-grow-0 items-baseline px-6"
     >
       <span
         :style="{
           fontSize: headerFontSize
         }"
-        class="text-shadow-lg transition-all whitespace-nowrap overflow-hidden overflow-ellipsis"
+        class="text-shadow-lg overflow-hidden overflow-ellipsis whitespace-nowrap transition-all"
       >{{ name || `Minecraft ${version.minecraft}` }}</span>
       <AvatarItem
         v-ripple
         :color="!isResolvedVersion(resolvedVersion) ? 'warning' : 'primary'"
         icon="fact_check"
-        class="cursor-pointer ml-2"
+        class="ml-2 cursor-pointer"
         :title="t('version.name', 2)"
         :text="currentVersion"
         @click="onShowLocalVersion"
@@ -103,10 +103,10 @@
       </v-tooltip>
     </div>
     <div
-      class="flex flex-grow-0 flex-1 mt-4 flex-row  items-center justify-center pl-4 pr-6"
+      class="mt-4 flex flex-1 flex-grow-0 flex-row  items-center justify-center pl-4 pr-6"
     >
       <div
-        class="flex flex-row items-center gap-1 flex-grow-0 justify-center"
+        class="flex flex-grow-0 flex-row items-center justify-center gap-1"
       >
         <AvatarItem
           :avatar="'image://builtin/minecraft'"
@@ -172,7 +172,7 @@
 
       <div
         v-if="!isInFocusMode"
-        class="flex align-end gap-7 flex-1 flex-grow-0"
+        class="align-end flex flex-1 flex-grow-0 gap-7"
       >
         <HomeHeaderInstallStatus
           v-if="status === 1 || status === 3"

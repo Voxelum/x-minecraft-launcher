@@ -1,14 +1,14 @@
 <template>
   <div
-    class="overflow-auto lg:p-4 p-2 lg:px-8 px-4 w-full"
+    class="w-full overflow-auto p-2 px-4 lg:p-4 lg:px-8"
   >
-    <div class="flex lg:flex-row md:flex-col flex-grow lg:gap-5 gap-2 h-full max-h-full overflow-auto">
+    <div class="flex h-full max-h-full flex-grow gap-2 overflow-auto md:flex-col lg:flex-row lg:gap-5">
       <div
-        class="flex lg:flex-col lg:flex lg:gap-5 gap-2 flex-shrink lg:(w-80 max-w-80)"
+        class="lg:(w-80 max-w-80) flex flex-shrink gap-2 lg:flex lg:flex-col lg:gap-5"
       >
         <v-icon
           v-if="upstream"
-          class="absolute z-9 lg:scale-400 scale-200 transform rotate-45"
+          class="z-9 lg:scale-400 scale-200 absolute rotate-45 transform"
         >
           attach_file
         </v-icon>
@@ -32,7 +32,7 @@
         />
       </div>
 
-      <div class="overflow-auto h-full flex-grow lg:gap-5 gap-2 flex flex-col">
+      <div class="flex h-full flex-grow flex-col gap-2 overflow-auto lg:gap-5">
         <CurseforgeUpstreamCard
           v-if="project && upstream && upstream.upstream && upstream.upstream.type === 'curseforge-modpack'"
           :mod-id="modId"
@@ -42,7 +42,7 @@
         />
         <v-card
           outlined
-          class="flex flex-col overflow-auto flex-grow relative"
+          class="relative flex flex-grow flex-col overflow-auto"
         >
           <v-tabs
             v-model="tab"

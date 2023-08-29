@@ -1,9 +1,9 @@
 <template>
-  <div class="overflow-auto h-full">
+  <div class="h-full overflow-auto">
     <v-list
       nav
       dense
-      class="px-2 ml-1 overflow-auto justify-start flex-grow-0"
+      class="ml-1 flex-grow-0 justify-start overflow-auto px-2"
     >
       <AppSideBarInstanceItem
         v-for="(i, index) of instances"
@@ -26,7 +26,7 @@
           <template #activator="{ on: tooltip }">
             <v-list-item-avatar
               size="48"
-              class="hover:rounded-xl transition-all duration-300 bg-[rgba(80,80,80,0.4)] hover:bg-green-500"
+              class="bg-[rgba(80,80,80,0.4)] transition-all duration-300 hover:rounded-xl hover:bg-green-500"
               large
               v-on="tooltip"
             >
@@ -55,7 +55,7 @@
           <template #activator="{ on: tooltip }">
             <v-list-item-avatar
               size="48"
-              class="hover:rounded-xl transition-all duration-300 bg-[rgba(80,80,80,0.4)] hover:bg-green-500"
+              class="bg-[rgba(80,80,80,0.4)] transition-all duration-300 hover:rounded-xl hover:bg-green-500"
               large
               v-on="tooltip"
             >
@@ -102,7 +102,7 @@
           <template #activator="{ on: tooltip }">
             <v-list-item-avatar
               size="48"
-              class="hover:rounded-xl transition-all duration-300 bg-[rgba(80,80,80,0.4)] hover:bg-green-500"
+              class="bg-[rgba(80,80,80,0.4)] transition-all duration-300 hover:rounded-xl hover:bg-green-500"
               large
               v-on="tooltip"
             >
@@ -145,7 +145,7 @@ import { useService } from '@/composables'
 import { useLocalStorageCacheBool } from '@/composables/cache'
 import { ContextMenuItem } from '@/composables/contextMenu'
 import { useDialog } from '@/composables/dialog'
-import { AddInstanceDialogKey } from '@/composables/instanceAdd'
+import { AddInstanceDialogKey } from '@/composables/instanceTemplates'
 import { kInstances } from '@/composables/instances'
 import { injection } from '@/util/inject'
 import { InstanceServiceKey } from '@xmcl/runtime-api'

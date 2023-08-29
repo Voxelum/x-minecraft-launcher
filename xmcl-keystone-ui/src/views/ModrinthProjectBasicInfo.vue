@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-col gap-2 items-start">
-    <span class="text-gray-400 grid grid-cols-2 w-full gap-x-1 gap-y-2">
+  <div class="flex flex-col items-start gap-2">
+    <span class="grid w-full grid-cols-2 gap-x-1 gap-y-2 text-gray-400">
       <span>
         <v-icon
           class="material-icons-outlined"
@@ -9,18 +9,18 @@
           file_download
         </v-icon>
         <span>{{ t('modrinth.downloads') }}</span>
-        <span class="text-2xl font-bold dark:text-gray-300 text-gray-600">
+        <span class="text-2xl font-bold text-gray-600 dark:text-gray-300">
           {{ getExpectedSize(project.downloads, '') }}
         </span>
       </span>
       <span class="">
         <v-icon
-          class="material-icons-outlined text-gray-300 mb-2 mr-2"
+          class="material-icons-outlined mb-2 mr-2 text-gray-300"
         >
           star_rate
         </v-icon>
         <span>{{ t('modrinth.followers') }}</span>
-        <span class="text-2xl font-bold dark:text-gray-300 text-gray-600">
+        <span class="text-2xl font-bold text-gray-600 dark:text-gray-300">
           {{ project.followers }}
         </span>
       </span>

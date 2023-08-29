@@ -2,6 +2,26 @@ import { parseVersion, VersionRange } from '@xmcl/runtime-api'
 import { satisfies } from 'semver'
 import { ModDependencies, ModDependency } from './modDependencies'
 
+const satisfiesMinecraft = (version: string, range: string) => {
+  if (version.split('.').length === 2) {
+    version += '.0'
+  }
+  range = range.split(' ').map((r) => {
+    const preReleaseIndex = r.indexOf('-')
+    if (preReleaseIndex !== -1) {
+      const preRange = r.substring(0, preReleaseIndex)
+      if (preRange.split('.').length === 2) {
+        r = preRange + '.0' + r.substring(preReleaseIndex)
+      }
+    }
+    if (r.indexOf('-') === r.length - 1) {
+      r = r.substring(0, r.length - 1)
+    }
+    return r
+  }).join(' ')
+  return satisfies(version, range, { includePrerelease: true })
+}
+
 export type Compatible = 'maybe' | boolean
 
 export type CompatibleDetail = {
@@ -62,13 +82,14 @@ export function getModCompatiblity(dep: ModDependency, version: string): Compati
     const requirements = dep.semanticVersion
     let compatible: Compatible = 'maybe'
     if (typeof requirements === 'string') {
-      compatible = satisfies(version, requirements)
-      if (!compatible && id === 'minecraft' && version.split('.').length === 2) {
-        compatible = satisfies(version + '.0', requirements)
+      if (id === 'minecraft') {
+        compatible = satisfiesMinecraft(version, requirements)
+      } else {
+        compatible = satisfies(version, requirements)
       }
     } else if (requirements) {
       for (const v of requirements) {
-        if (satisfies(version, v)) {
+        if (satisfiesMinecraft(version, v)) {
           compatible = true
           break
         }

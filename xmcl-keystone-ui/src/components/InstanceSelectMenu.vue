@@ -10,7 +10,7 @@
         <v-icon left>
           keyboard_arrow_down
         </v-icon>
-        <span class="overflow-ellipsis break-all lg:max-w-88 max-w-full">
+        <span class="lg:max-w-88 max-w-full overflow-ellipsis break-all">
           {{
             selected.path
               ? t("curseforge.installTo", { path: selected.name })
@@ -19,7 +19,7 @@
         </span>
       </v-btn>
     </template>
-    <v-list class="overflow-auto max-h-100">
+    <v-list class="max-h-100 overflow-auto">
       <v-list-item @click="onSelect(defaultItem)">
         <v-list-item-avatar>
           <v-icon>close</v-icon>

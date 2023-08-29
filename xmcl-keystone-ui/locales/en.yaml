@@ -142,6 +142,7 @@ curseforge:
     files: Files
     images: Images
   recentFiles: Recent Files
+  releasedDate: Released Date
   search: Search
   texture-packs:
     description: View and download resource packs from Curseforge
@@ -176,6 +177,7 @@ delete:
 dependencies:
   embedded: Embedded
   incompatible: Incompatible
+  name: Dependencies
   optional: Optional
   required: Required
 description: Description
@@ -233,6 +235,7 @@ diagnosis:
     message: Click to install this version
     name: Missing version jar for Minecraft %{version}
   problem: 1 Problem | %{count} Problems
+disable: Disable
 disk:
   available: Available
   used: Used
@@ -244,6 +247,7 @@ duration:
   minute: '{duration} minute | {duration} minutes'
   second: '{duration} second | {duration} seconds'
 edit: Edit
+enable: Enable
 error:
   name: Error | Errors
 errors:
@@ -627,12 +631,16 @@ mod:
   showIncompatible: Show Incompatible Mods
   unselected: Unselected Mods
 modInstall:
+  currentVersion: Selected Version
+  dependencyHint: Installed another version {version}
   install: Install
+  installHint: Will install {file} file with {dependencies} dependencies
   installed: Installed
   pending: Pending to install
   search: Search Result
   searchHint: Search and select project
   selectProjectHint: Select project and install file
+  switch: Swtich Version
 modSearchType:
   all: All
   local: Local
@@ -730,6 +738,7 @@ modrinth:
     models: Models
     modloader: Mod Loader
     multiplayer: Multiplayer
+    neoforge: NeoForge
     optifine: Optifine
     optimization: Optimizations
     paper: Paper
@@ -954,7 +963,6 @@ refresh: Refresh
 refreshResource: Refresh Resources
 remove: Remove
 resourcepack:
-  searchOnModrinth: '@:mod.searchOnModrinth'
   available: Available
   compatible: Compatible format {format} with {version}
   defaultDescription: The default look and feel of Minecraft
@@ -978,6 +986,7 @@ resourcepack:
   manage: Manage Resource Packs
   name: Resource Pack | Resource Packs
   searchOnCurseforge: Search {name} in curseforge
+  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Selected Resource Packs
   showFile: Show resource pack in folder {file}
   showInCurseforge: Show {name} in curseforge

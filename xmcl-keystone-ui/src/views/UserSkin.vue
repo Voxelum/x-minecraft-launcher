@@ -1,10 +1,10 @@
 <template>
   <div
-    class="flex flex-col items-center justify-center gap-2 relative "
+    class="relative flex flex-col items-center justify-center gap-2 "
     @mouseenter="hover = true"
     @mouseleave="hover = false"
   >
-    <div class="flex flex-shrink gap-4 flex-none absolute top-4">
+    <div class="absolute top-4 flex flex-none flex-shrink gap-4">
       <v-fab-transition>
         <v-btn
           v-if="inspect && modified"
@@ -31,7 +31,7 @@
       @drop.prevent="dropSkin"
       @dragover.prevent="() => { }"
     />
-    <div class="flex flex-shrink gap-4 flex-none absolute bottom-4">
+    <div class="absolute bottom-4 flex flex-none flex-shrink gap-4">
       <v-fab-transition>
         <v-btn
           v-show="!inspect && modified"

@@ -1,7 +1,7 @@
 <template>
   <v-chip
     v-shared-tooltip="global ? t('settingLabel.globalHint') : t('settingLabel.localHint')"
-    class="ml-2 mb-1"
+    class="mb-1 ml-2"
     label
     small
     dark

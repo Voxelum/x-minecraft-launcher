@@ -92,6 +92,7 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
   this.app.once('engine-ready', async () => {
     this.app.registry.get(BaseService).then(service => {
       checkUpdate = () => service.checkUpdate()
+      tray.setContextMenu(createMenu())
     })
     this.app.registry.get(kSettings).then(state => {
       state.subscribe('config', () => {

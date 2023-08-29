@@ -1,6 +1,6 @@
 import { OfficialUserService as IOfficialUserService, OfficialUserServiceKey, UserProfile } from '@xmcl/runtime-api'
 import { MojangChallengeResponse, MojangClient } from '@xmcl/user'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { UserTokenStorage, kUserTokenStorage } from '../entities/userTokenStore'
 import { AnyError } from '../util/error'

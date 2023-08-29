@@ -1,8 +1,8 @@
 <template>
-  <div class="h-full overflow-auto flex flex-col px-8 py-4 gap-3">
+  <div class="flex h-full flex-col gap-3 overflow-auto px-8 py-4">
     <v-card
       outlined
-      class="flex py-1 rounded-lg flex-shrink flex-grow-0 items-center pr-2 gap-2 z-5"
+      class="z-5 flex flex-shrink flex-grow-0 items-center gap-2 rounded-lg py-1 pr-2"
     >
       <FilterCombobox
         class="flex-grow pr-2"
@@ -20,7 +20,7 @@
       v-context-menu="contextMenuItems"
       grid-list-md
       text-xs-center
-      class="pt-2 h-full overflow-scroll"
+      class="h-full overflow-scroll pt-2"
       @dragover.prevent
     >
       <InstancesView

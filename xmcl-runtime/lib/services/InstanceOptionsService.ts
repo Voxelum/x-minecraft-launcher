@@ -3,7 +3,7 @@ import { EditGameSettingOptions, EditShaderOptions, GameOptionsState, InstanceOp
 import { readFile, writeFile } from 'fs/promises'
 import watch from 'node-watch'
 import { basename, join, relative } from 'path'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { isSystemError } from '../util/error'
 import { missing } from '../util/fs'
@@ -22,11 +22,11 @@ export class InstanceOptionsService extends AbstractService implements IInstance
   ) {
     super(app)
     resourceService.registerInstaller(ResourceDomain.ResourcePacks, async (resource, instancePath) => {
-      await this.editGameSetting({
-        instancePath,
+      // await this.editGameSetting({
+        // instancePath,
         // TODO: implement this
         // addResourcePack: [relative(resource.path, instancePath)],
-      })
+      // })
     })
 
     resourceService.registerInstaller(ResourceDomain.ShaderPacks, async (resource, instancePath) => {

@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="!!error"
-    class="flex flex-col items-center gap-4 my-10"
+    class="my-10 flex flex-col items-center gap-4"
   >
     <v-icon
       color="error"

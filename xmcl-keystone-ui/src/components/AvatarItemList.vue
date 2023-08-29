@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-row items-center gap-1 flex-grow-0 justify-center"
+    class="flex flex-grow-0 flex-row items-center justify-center gap-1"
   >
     <template
       v-for="(i) of items"

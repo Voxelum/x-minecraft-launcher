@@ -1,6 +1,6 @@
 import { Kysely } from 'kysely'
 import { EventEmitter } from 'stream'
-import { ParseResourceArgs, ParseResourceResult } from '../resourceCore/resourceParsers'
+import { ParseResourceArgs, ParseResourceResult } from '../resourceParsers'
 import { ImageStorage } from '../util/imageStore'
 import { Logger } from '../util/log'
 import { Database } from './schema'

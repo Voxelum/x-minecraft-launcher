@@ -9,7 +9,7 @@
       <v-list-item-subtitle class="divide divide-gray-400">
         <span>
           <span
-            class="border-l pl-1 border-l-width-[2px]"
+            class="border-l-width-[2px] border-l pl-1"
             :style="{ color: getColorForReleaseType(releaseType), ['border-color']: getColorForReleaseType(releaseType) }"
           >
             {{

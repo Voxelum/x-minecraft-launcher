@@ -313,7 +313,7 @@ export class LauncherApp extends EventEmitter {
     this.emit('root-migrated', newRoot)
   }
 
-  protected async getStartupUrl() {
+  protected async getStartupUrl(): Promise<string | undefined> {
     if (!IS_DEV && process.platform === 'win32') {
       this.logger.log(`Try to check the start up url: ${process.argv.join(' ')}`)
       if (process.argv.length > 1) {
@@ -329,16 +329,24 @@ export class LauncherApp extends EventEmitter {
         if (protocolOption) {
           const u = new URL(protocolOption)
           if (u.host === 'launcher' && u.pathname === '/app' && u.searchParams.has('url')) {
-            return u.searchParams.get('url')
+            return u.searchParams.get('url') as string
           }
         }
         this.logger.log('Didn\'t find xmcl:// protocol')
       }
     }
     this.logger.log('Didn\'t find the start up url, try to load from config file.')
-    const { default: url } = JSON.parse(await readFile(join(this.launcherAppManager.root, 'apps.json'), 'utf-8'))
 
-    return url
+    try {
+      const { default: url } = JSON.parse(await readFile(join(this.launcherAppManager.root, 'apps.json'), 'utf-8'))
+
+      return url
+    } catch (e) {
+      if (isSystemError(e) && e.code === 'ENOENT') {
+        return undefined
+      }
+      throw e
+    }
   }
 
   protected async onEngineReady() {
@@ -348,16 +356,22 @@ export class LauncherApp extends EventEmitter {
     let app: InstalledAppManifest
     try {
       const url = await this.getStartupUrl()
-      this.logger.log(`Try to use start up url ${url}`)
-      const existedApp = await this.launcherAppManager.tryGetInstalledApp(url)
-      if (existedApp) {
-        app = existedApp
+      if (url) {
+        this.logger.log(`Try to use start up url ${url}`)
+        const existedApp = await this.launcherAppManager.tryGetInstalledApp(url)
+        if (existedApp) {
+          app = existedApp
+        } else {
+          app = await this.launcherAppManager.installApp(url)
+        }
       } else {
-        app = await this.launcherAppManager.installApp(url)
+        throw new Error('No start up url')
       }
     } catch (e) {
-      this.logger.warn('Fail to use start up url:')
-      this.logger.warn(e)
+      if ((e as any).message !== 'No start up url') {
+        this.logger.warn('Fail to use start up url:')
+        this.logger.warn(e)
+      }
       try {
         const startUp = this.getAppInstallerStartUpUrl()
         if (startUp) {
@@ -378,5 +392,3 @@ export class LauncherApp extends EventEmitter {
     this.emit('engine-ready')
   }
 }
-
-export default LauncherApp

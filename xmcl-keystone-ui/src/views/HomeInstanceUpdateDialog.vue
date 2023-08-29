@@ -20,7 +20,7 @@
       />
       <div
         v-if="upgrade && !refreshing"
-        class="max-h-[100vh] visible-scroll mx-0 justify-center items-center overflow-y-auto overflow-x-hidden px-6 py-2"
+        class="visible-scroll mx-0 max-h-[100vh] items-center justify-center overflow-y-auto overflow-x-hidden px-6 py-2"
       >
         <v-subheader>
           {{ t('instanceUpdate.basic') }}
@@ -101,7 +101,7 @@
           </template>
         </InstanceManifestFileTree>
       </div>
-      <v-card-actions class="gap-5 items-baseline">
+      <v-card-actions class="items-baseline gap-5">
         <v-btn
           text
           large

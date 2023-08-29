@@ -94,13 +94,14 @@ export function getForgeModDependencies(resource: ForgeResource): ModDependencie
   return mods
 }
 
-export function getModDependencies(resource: Resource): ModDependencies {
-  if (isForgeResource(resource)) {
-    return getForgeModDependencies(resource)
+export function getModDependencies(resource: Resource, fabricFirst?: boolean): ModDependencies {
+  if (fabricFirst) {
+    if (isFabricResource(resource)) return getFabricModDependencies(resource)
+    if (isForgeResource(resource)) return getForgeModDependencies(resource)
+    return []
   }
-  if (isFabricResource(resource)) {
-    return getFabricModDependencies(resource)
-  }
+  if (isForgeResource(resource)) return getForgeModDependencies(resource)
+  if (isFabricResource(resource)) return getFabricModDependencies(resource)
   return []
 }
 
@@ -109,7 +110,9 @@ export function getModProvides(resource: Resource) {
   if (isForgeResource(resource)) {
     const meta = resource.metadata.forge
     runtime[meta.modid] = meta.version
-  } else if (isFabricResource(resource)) {
+  }
+
+  if (isFabricResource(resource)) {
     const fabric = resource.metadata.fabric
     if (fabric instanceof Array) {
       for (const mod of fabric) {
@@ -128,12 +131,17 @@ export function getModProvides(resource: Resource) {
         }
       }
     }
-  } else if (isLiteloaderResource(resource)) {
+  }
+
+  if (isLiteloaderResource(resource)) {
     const meta = resource.metadata.liteloader
     runtime[meta.name] = meta.version ?? ''
-  } else if (isQuiltResource(resource)) {
+  }
+
+  if (isQuiltResource(resource)) {
     const meta = resource.metadata.quilt
     runtime[meta.quilt_loader.id] = meta.quilt_loader.version
   }
+
   return runtime
 }

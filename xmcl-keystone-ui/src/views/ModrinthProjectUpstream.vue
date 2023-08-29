@@ -1,7 +1,7 @@
 <template>
   <v-card
     outlined
-    class="flex flex-col flex-shrink flex-grow-0 relative"
+    class="relative flex flex-shrink flex-grow-0 flex-col"
   >
     <v-list color="transparent">
       <v-subheader>

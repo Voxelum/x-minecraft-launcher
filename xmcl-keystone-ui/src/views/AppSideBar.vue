@@ -5,13 +5,13 @@
     width="200"
     :mini-variant="true"
     :color="sideBarColor"
-    class="sidebar z-10 moveable"
+    class="sidebar moveable z-10"
     :style="{ 'backdrop-filter': `blur(${blurSidebar}px)` }"
   >
     <v-list
       nav
       dense
-      class="px-2 ml-1"
+      class="ml-1 px-2"
     >
       <v-list-item
         class="non-moveable"
@@ -172,7 +172,7 @@
     <v-list
       nav
       dense
-      class="px-2 ml-1"
+      class="ml-1 px-2"
       style=""
     >
       <v-tooltip

@@ -19,7 +19,7 @@
 
       <v-container
         grid-list-sm
-        class="max-h-[70vh] visible-scroll"
+        class="visible-scroll max-h-[70vh]"
         style="overflow: auto;"
       >
         <v-card-text>

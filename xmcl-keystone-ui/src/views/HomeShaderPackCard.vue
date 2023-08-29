@@ -1,7 +1,7 @@
 <template>
   <v-card
     :color="cardColor"
-    class="flex flex-col h-full"
+    class="flex h-full flex-col"
   >
     <v-card-title>
       <v-icon

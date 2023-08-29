@@ -2,7 +2,7 @@
   <div class="visible-scroll h-full">
     <v-list
       v-if="versions.length !== 0"
-      class="local-version-list overflow-auto h-full flex flex-col"
+      class="local-version-list flex h-full flex-col overflow-auto"
       style="background: transparent"
     >
       <v-list-item class="flex justify-end">
@@ -18,12 +18,12 @@
       </v-list-item>
       <v-divider />
       <div
-        class="overflow-auto h-full flex flex-col flex-shrink flex-grow-0"
+        class="flex h-full flex-shrink flex-grow-0 flex-col overflow-auto"
       >
         <template v-for="(item) in versions">
           <v-list-item
             :key="item.id"
-            class="flex-grow-0 flex-1"
+            class="flex-1 flex-grow-0"
             :class="{
               selected: isSelected(item),
               'en-1': isSelected(item),
@@ -46,7 +46,7 @@
             >
               {{ item.id }}
             </v-list-item-title>
-            <v-list-item-subtitle class="!flex-grow flex">
+            <v-list-item-subtitle class="flex !flex-grow">
               {{ item.minecraft }}
             </v-list-item-subtitle>
             <v-list-item-action style="flex-direction: row; justify-content: flex-end;">

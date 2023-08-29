@@ -5,7 +5,7 @@
     :persistent="true"
   >
     <v-alert
-      class="mb-0 blocked-dialog"
+      class="blocked-dialog mb-0"
       border="left"
       type="error"
       prominent

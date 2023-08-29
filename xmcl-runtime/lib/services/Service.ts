@@ -2,7 +2,7 @@ import { getServiceSemaphoreKey, MutableState, ServiceKey, State } from '@xmcl/r
 import { Task } from '@xmcl/task'
 import { join } from 'path'
 import { EventEmitter } from 'stream'
-import LauncherApp from '../app/LauncherApp'
+import { LauncherApp } from '../app/LauncherApp'
 import { createPromiseSignal, PromiseSignal } from '../util/promiseSignal'
 import { AnyError } from '../util/error'
 

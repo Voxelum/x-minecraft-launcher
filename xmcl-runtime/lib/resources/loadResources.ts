@@ -18,7 +18,6 @@ async function addResource(file: string, sha1: string, fileType: string, domain:
     sha1,
     ...metadata,
   }
-  // TODO: Should lock for xxhash modification
   // Add fresh data
   await context.db.transaction().execute(async (trx) => {
     await trx.insertInto('resources').values(resourceTable).execute()

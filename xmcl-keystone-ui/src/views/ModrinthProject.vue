@@ -1,10 +1,10 @@
 <template>
   <div
     v-if="!project"
-    class="flex gap-4 overflow-auto p-4 lg:flex-row flex-col w-full"
+    class="flex w-full flex-col gap-4 overflow-auto p-4 lg:flex-row"
   >
     <v-progress-linear
-      class="absolute top-0 z-10 m-0 p-0 left-0"
+      class="absolute left-0 top-0 z-10 m-0 p-0"
       :active="refreshing"
       height="3"
       :indeterminate="true"
@@ -17,18 +17,18 @@
   </div>
   <div
     v-else
-    class="flex gap-4 p-4 lg:flex-row flex-col"
+    class="flex flex-col gap-4 p-4 lg:flex-row"
   >
     <v-progress-linear
-      class="absolute top-0 z-10 m-0 p-0 left-0"
+      class="absolute left-0 top-0 z-10 m-0 p-0"
       :active="refreshing"
       height="3"
       :indeterminate="true"
     />
-    <div class="flex flex-col flex-grow-0 flex-shrink gap-4 lg:max-w-[40%]">
+    <div class="flex flex-shrink flex-grow-0 flex-col gap-4 lg:max-w-[40%]">
       <v-icon
         v-if="_upstream"
-        class="absolute z-19 lg:scale-400 scale-200 transform rotate-45"
+        class="z-19 lg:scale-400 scale-200 absolute rotate-45 transform"
       >
         attach_file
       </v-icon>
@@ -42,27 +42,27 @@
           :install-to="installTo"
           @destination="installTo = $event"
         />
-        <v-divider class="w-full my-4" />
+        <v-divider class="my-4 w-full" />
         <ModrinthProjectBasicInfo :project="project" />
       </v-card>
       <v-card
         outlined
-        class="p-4 flex-col hidden lg:flex"
+        class="hidden flex-col p-4 lg:flex"
       >
         <ModrinthProjectExternal
           :project="project"
           :install-to="installTo"
         />
-        <v-divider class="w-full my-2" />
+        <v-divider class="my-2 w-full" />
         <ModrinthProjectFeaturedVersions
           :project="project"
           :install-to="installTo"
         />
-        <v-divider class="w-full my-2" />
+        <v-divider class="my-2 w-full" />
         <ModrinthProjectMembers
           :project-id="project.id"
         />
-        <v-divider class="w-full my-2" />
+        <v-divider class="my-2 w-full" />
         <ModrinthProjectTags
           :downloads="project.downloads"
           :license="project.license"
@@ -76,7 +76,7 @@
     </div>
 
     <div
-      class="flex flex-col flex-grow relative gap-4"
+      class="relative flex flex-grow flex-col gap-4"
     >
       <ModrinthProjectUpstream
         v-if="_upstream && _upstream.upstream && (_upstream.upstream.type === 'modrinth-modpack')"
@@ -88,7 +88,7 @@
       >
         <v-tabs
           v-model="tab"
-          class="rounded-lg flex-grow-0 flex-1"
+          class="flex-1 flex-grow-0 rounded-lg"
         >
           <v-tab :key="0">
             {{ t('modrinth.description') }}
@@ -143,7 +143,7 @@ import { kUpstream } from '@/composables/instanceUpdate'
 import { kModrinthInstall, useModrinthInstall } from '@/composables/modrinthInstall'
 import { useModrinthInstanceResource } from '@/composables/modrinthInstanceResource'
 import { useModrinthProject } from '@/composables/modrinthProject'
-import { kModrinthVersionsHolder, kModrinthVersionsStatus, useModrinthVersionsStatus } from '@/composables/modrinthVersions'
+import { kModrinthVersionsHolder, kModrinthVersionsStatus, useModrintTasks, useModrinthVersionsResources } from '@/composables/modrinthVersions'
 import { usePresence } from '@/composables/presence'
 import { injection } from '@/util/inject'
 import { ProjectVersion } from '@xmcl/modrinth'
@@ -180,8 +180,9 @@ const installTo = ref(project.value?.project_type === 'mod' ? path.value : '')
 const holder = ref({} as Record<string, ProjectVersion>)
 provide(kModrinthVersionsHolder, holder)
 const versions = computed(() => Object.values(holder.value))
-const status = useModrinthVersionsStatus(versions, projectId)
-provide(kModrinthVersionsStatus, status)
+const status = useModrinthVersionsResources(versions)
+const tasks = useModrintTasks(projectId)
+provide(kModrinthVersionsStatus, { ...status, tasks })
 
 const _upstream = inject(kUpstream)
 
@@ -189,9 +190,9 @@ if (_upstream && _upstream.value.upstream?.type === 'modrinth-modpack') {
   // In home page
   // Current instance resource
   const { resource: currentVersionResource } = useModrinthInstanceResource(projectId, computed(() => (_upstream.value.upstream?.type === 'modrinth-modpack' ? _upstream.value.upstream.sha1 : undefined) || ''))
-  provide(kModrinthInstall, useModrinthInstall(project, status.tasks, installTo, status.getResource, currentVersionResource))
+  provide(kModrinthInstall, useModrinthInstall(project, tasks, installTo, status.getResource, currentVersionResource))
 } else {
-  provide(kModrinthInstall, useModrinthInstall(project, status.tasks, installTo, status.getResource, computed(() => undefined)))
+  provide(kModrinthInstall, useModrinthInstall(project, tasks, installTo, status.getResource, computed(() => undefined)))
 }
 
 if (!_upstream) {

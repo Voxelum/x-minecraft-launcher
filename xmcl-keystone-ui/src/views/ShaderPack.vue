@@ -1,7 +1,7 @@
 <template>
-  <div class="flex flex-col pb-4 mx-5">
+  <div class="mx-5 flex flex-col pb-4">
     <v-progress-linear
-      class="absolute top-0 z-10 m-0 p-0 left-0"
+      class="absolute left-0 top-0 z-10 m-0 p-0"
       :active="loading"
       height="3"
       :indeterminate="true"
