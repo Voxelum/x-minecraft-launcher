@@ -1,0 +1,21 @@
+browseApps: Explorar a interfaz de usuario personalizada do iniciador
+checkUpdate: Buscar Actualizacións
+openUrl:
+  cancel: Cancelar
+  message: >-
+    O lanzador quere abrir {url} no teu navegador por defecto. Permites esta
+    operación?
+  title: Abrir no navegador
+  trust: Confiar neste sitio e non volver a preguntar
+  'yes': Sí
+quit: Salir
+showDiagnosis: Mostrar diagnose
+showLogsFolder: Mostrar carpeta de rexistros
+task:
+  continue: Ver no lanzador
+  fail: Unha operación fallou
+  success: Unha operación funcionou
+urlFailed: >-
+  Url non atopada {url}. Por favor revisa a URL ou contacta co
+  desarrollador
+urlSuccess: Feito! Xa podes pechar a lapela e volver ó launcher.
