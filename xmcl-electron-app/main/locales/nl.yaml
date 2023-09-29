@@ -1,0 +1,21 @@
+browseApps: Blader door de aangepaste Launcher-UI
+checkUpdate: Controleer voor updates
+openUrl:
+  cancel: Annuleer
+  message: >-
+    De launcher wilt {url} openen in je standaard browser.
+    Wil je deze operatie toestaan?
+  title: Open in browser
+  trust: Vertrouw deze site en laat hem de volgende keer niet meer zien
+  'ja': 'Ja'
+quit: Stop
+showDiagnosis: Toon diagnose
+showLauncher: Toon launcher
+showLogsFolder: Toon logboekmap
+task:
+  continue: Bekijk in launcher
+  fail: Eén taak is mislukt
+  success: Eén taak is gelukt
+title: X Minecraft Launcher
+urlFailed: Onbekende url {url}. Controlleer de url of contacteer een developer!
+urlSuccess: Gelukt! Nu kan je deze venster sluiten en terugkeren naar de launcher!
