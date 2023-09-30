@@ -27,7 +27,7 @@ FeedTheBeast:
 FeedTheBeastProject:
   changelog: Rexistro de cambios
   details: Detalles
-  install: Instalar {versión}
+  install: Instalar {version}
   overview: Visión xeral
   versions: Versións
 HomeJavaIssueDialog:
