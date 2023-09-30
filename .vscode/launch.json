@@ -37,7 +37,6 @@
             },
             "windows": {
                 "env": {
-                    "Path": "${env:Path}${workspaceFolder}\\xmcl-electron-app\\build\\extra"
                 }
             }
         },
