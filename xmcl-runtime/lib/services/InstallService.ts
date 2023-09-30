@@ -1,8 +1,8 @@
 import { MinecraftFolder, ResolvedLibrary, ResolvedVersion, Version } from '@xmcl/core'
 import { DownloadBaseOptions } from '@xmcl/file-transfer'
 import { parse as parseForge } from '@xmcl/forge-site-parser'
-import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DEFAULT_VERSION_MANIFEST_URL, DownloadTask, FabricArtifactVersion, InstallForgeOptions, InstallJarTask, InstallProfile, LiteloaderVersion, MinecraftVersion, MinecraftVersionList, Options, QuiltArtifactVersion, installAssetsTask, installByProfileTask, installFabric, installForgeTask, installLibrariesTask, installLiteloaderTask, installOptifineTask, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask } from '@xmcl/installer'
-import { Asset, FabricVersions, ForgeVersion, GetQuiltVersionListOptions, InstallService as IInstallService, InstallFabricOptions, InstallOptifineOptions, InstallQuiltOptions, InstallServiceKey, InstallableLibrary, LiteloaderVersions, LockKey, MinecraftVersions, MutableState, OptifineVersion, ResourceDomain, Settings, InstallForgeOptions as _InstallForgeOptions, isFabricLoaderLibrary, isForgeLibrary } from '@xmcl/runtime-api'
+import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DEFAULT_VERSION_MANIFEST_URL, DownloadTask, FabricArtifactVersion, InstallForgeOptions, InstallJarTask, InstallProfile, LiteloaderVersion, MinecraftVersion, MinecraftVersionList, Options, QuiltArtifactVersion, install, installAssetsTask, installByProfileTask, installFabric, installForgeTask, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask } from '@xmcl/installer'
+import { Asset, FabricVersions, ForgeVersion, GetQuiltVersionListOptions, InstallService as IInstallService, InstallFabricOptions, InstallNeoForgedOptions, InstallOptifineOptions, InstallQuiltOptions, InstallServiceKey, InstallableLibrary, LiteloaderVersions, LockKey, MinecraftVersions, MutableState, NeoForgedVersions, OptifineVersion, ResourceDomain, Settings, InstallForgeOptions as _InstallForgeOptions, isFabricLoaderLibrary, isForgeLibrary } from '@xmcl/runtime-api'
 import { AbortableTask, task } from '@xmcl/task'
 import { ensureFile } from 'fs-extra/esm'
 import { readFile, writeFile } from 'fs/promises'
@@ -23,6 +23,7 @@ import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Lock, Singleton } from './Service'
 import { VersionService } from './VersionService'
 import { existsSync } from 'fs'
+import { XMLParser } from 'fast-xml-parser'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -108,6 +109,21 @@ export class InstallService extends AbstractService implements IInstallService {
 
     this.latestRelease = metadata.latest.release
     return metadata
+  }
+
+  @Singleton()
+  async getNeoForgedVersionList() {
+    const response = await request('https://maven.neoforged.net/releases/net/neoforged/forge/maven-metadata.xml')
+    const body = await response.body.text()
+    const parser = new XMLParser()
+    const forgeMetadata = parser.parse(body)
+    const versions = forgeMetadata.metadata.versioning.versions
+    const result: NeoForgedVersions = {
+      latest: forgeMetadata.metadata.versioning.latest,
+      release: forgeMetadata.metadata.versioning.release,
+      versions: versions.version,
+    }
+    return result
   }
 
   @Singleton()
@@ -524,12 +540,40 @@ export class InstallService extends AbstractService implements IInstallService {
     }
   }
 
-  @Lock((v: _InstallForgeOptions) => LockKey.version(`forge-${v.mcversion}-${v.version}`))
-  async installForge(options: _InstallForgeOptions) {
-    return await this.installForgeInternal(options)
+  @Lock((v: InstallNeoForgedOptions) => LockKey.version(`neoforged-${v.minecraft}-${v.version}`))
+  async installNeoForged(options: InstallNeoForgedOptions) {
+    const validJavaPaths = this.javaService.state.all.filter(v => v.valid)
+    const installOptions = this.getForgeInstallOptions()
+
+    validJavaPaths.sort((a, b) => a.majorVersion === 8 ? -1 : b.majorVersion === 8 ? 1 : -1)
+
+    let version: string | undefined
+    for (const java of validJavaPaths) {
+      try {
+        this.log(`Start to install forge ${options.version} on ${options.minecraft} by ${java.path}`)
+        version = await this.submit(installNeoForgedTask(options.version, this.getPath(), {
+          ...installOptions,
+          java: java.path,
+          inheritsFrom: options.minecraft,
+        }).setName('installForge', { id: options.version }))
+        this.log(`Success to install forge ${options.version} on ${options.minecraft}`)
+        break
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message.indexOf('sun.security.validator.ValidatorException') !== -1) {
+            continue
+          }
+        }
+        this.warn(`An error ocurred during download version ${options.version}@${options.minecraft}`)
+        this.warn(err)
+        throw err
+      }
+    }
+    return version
   }
 
-  private async installForgeInternal(options: _InstallForgeOptions) {
+  @Lock((v: _InstallForgeOptions) => LockKey.version(`forge-${v.mcversion}-${v.version}`))
+  async installForge(options: _InstallForgeOptions) {
     const validJavaPaths = this.javaService.state.all.filter(v => v.valid)
     const installOptions = this.getForgeInstallOptions()
 

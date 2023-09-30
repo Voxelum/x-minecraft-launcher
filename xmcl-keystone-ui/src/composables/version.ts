@@ -120,6 +120,54 @@ export function useQuiltVersions(minecraftVersion: Ref<string>, local: Ref<Local
   }
 }
 
+export function useNeoForgedVersions(local: Ref<LocalVersionHeader[]>) {
+  const { getNeoForgedVersionList } = useService(InstallServiceKey)
+  const _refreshing = useServiceBusy(InstallServiceKey, 'getNeoForgedVersionList')
+
+  const { data, isValidating, mutate, error } = useSWRV('/neoforged-versions',
+    async () => {
+      const result = await getNeoForgedVersionList().then(markRaw)
+      return result
+    },
+    inject(kSWRVConfig))
+
+  const refreshing = computed(() => isValidating.value || _refreshing.value)
+
+  const recommended = computed(() => {
+    const vers = data.value
+    if (!vers) return undefined
+    return vers.release
+  })
+  const latest = computed(() => {
+    const vers = data.value
+    if (!vers) return undefined
+    return vers.latest
+  })
+  const versions = computed(() => {
+    const vers = data.value
+    if (!vers) return []
+    return vers.versions
+  })
+  const installed = computed(() => {
+    const localForgeVersion: { [k: string]: string } = {}
+    for (const ver of local.value) {
+      if (!ver.neoForged) continue
+      localForgeVersion[ver.neoForged] = ver.id
+    }
+    return localForgeVersion
+  })
+
+  return {
+    error,
+    installed,
+    versions,
+    refresh: mutate,
+    refreshing,
+    recommended,
+    latest,
+  }
+}
+
 export function useForgeVersions(minecraftVersion: Ref<string>, local: Ref<LocalVersionHeader[]>) {
   const { getForgeVersionList } = useService(InstallServiceKey)
   const _refreshing = useServiceBusy(InstallServiceKey, 'getForgeVersionList')

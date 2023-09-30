@@ -1,4 +1,4 @@
-import type { LibraryInfo, Version } from '@xmcl/core'
+import type { LibraryInfo, ResolvedVersion, Version } from '@xmcl/core'
 import { parseVersion, VersionRange } from '../util/mavenVersion'
 import { RuntimeVersions } from './instance.schema'
 
@@ -82,6 +82,12 @@ export interface MinecraftVersions {
    * @default []
    */
   versions: MinecraftVersion[]
+}
+
+export interface NeoForgedVersions {
+  latest: string
+  release: string
+  versions: string[]
 }
 
 export interface LiteloaderVersions {
@@ -230,6 +236,14 @@ export function isQuiltLibrary(lib: LibraryInfo) {
   return lib.groupId === 'org.quiltmc' && lib.artifactId === 'quilt-loader'
 }
 
+export function findNeoForgedVersion(minecraft: string, resolvedVersion: ResolvedVersion) {
+  const hasNeoForged = resolvedVersion.libraries.some(lib => lib.groupId === 'net.neoforged.fancymodloader')
+  if (!hasNeoForged) return ''
+  const forgeIndex = resolvedVersion.arguments.game.indexOf('--fml.forgeVersion')
+  const version = resolvedVersion.arguments.game[forgeIndex + 1]
+  return `${minecraft}-${version}` as string
+}
+
 export function filterForgeVersion(forgeVersion: string) {
   if (!forgeVersion) return forgeVersion
   const idx = forgeVersion.indexOf('-')
@@ -250,6 +264,7 @@ export const EMPTY_VERSION: LocalVersionHeader = Object.freeze({
   fabric: '',
   liteloader: '',
   quilt: '',
+  neoForged: '',
   optifine: '',
 })
 export interface LibrariesRecord {
@@ -330,6 +345,7 @@ export function isSameOptifineVersion(optifineVersion: string, version: string) 
 function isVersionMatched(version: LocalVersionHeader,
   minecraft: string | undefined,
   forge: string | undefined,
+  neoForged: string | undefined,
   fabricLoader: string | undefined,
   optifine: string | undefined,
   quiltLoader: string | undefined,
@@ -345,6 +361,16 @@ function isVersionMatched(version: LocalVersionHeader,
       return false
     }
   } else if (version.forge) {
+    return false
+  }
+
+  if (neoForged) {
+    // require neoForged
+    if (!version.neoForged || version.neoForged !== neoForged) {
+      // require neoForged but not neoForged
+      return false
+    }
+  } else if (version.neoForged) {
     return false
   }
 
@@ -381,11 +407,12 @@ function isVersionMatched(version: LocalVersionHeader,
 export function getResolvedVersion(versions: LocalVersionHeader[], id: string,
   minecraft: string | undefined,
   forge: string | undefined,
+  neoForged: string | undefined,
   fabricLoader: string | undefined,
   optifine: string | undefined,
   quiltLoader: string | undefined,
 ): LocalVersionHeader | undefined {
-  return versions.find(v => v.id === id) || versions.find(ver => isVersionMatched(ver, minecraft, forge, fabricLoader, optifine, quiltLoader))
+  return versions.find(v => v.id === id) || versions.find(ver => isVersionMatched(ver, minecraft, forge, neoForged, fabricLoader, optifine, quiltLoader))
 }
 
 export function getMinecraftVersionFormat(version: string): 'release' | 'snapshot' | 'beta' | 'alpha' | 'unknown' {
@@ -458,6 +485,10 @@ export interface LocalVersionHeader {
    * @default ""
    */
   optifine: string
+  /**
+   * NeoForged version of this version. e.g. 47.0.1
+   */
+  neoForged: string
   liteloader: string
   quilt: string
 }

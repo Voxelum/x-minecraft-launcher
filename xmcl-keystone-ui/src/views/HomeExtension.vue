@@ -28,6 +28,17 @@
         vertical
       />
       <AvatarItem
+        v-if="version.neoForged"
+        :avatar="'image://builtin/neoForged'"
+        responsive
+        title="NeoForged"
+        :text="`${version.neoForged}`"
+      />
+      <v-divider
+        v-if="version.neoForged"
+        vertical
+      />
+      <AvatarItem
         v-if="version.fabricLoader"
         :avatar="'image://builtin/fabric'"
         responsive

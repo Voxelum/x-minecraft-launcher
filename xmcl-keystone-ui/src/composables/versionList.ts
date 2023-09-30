@@ -1,6 +1,6 @@
 import { Ref } from 'vue'
 import { ForgeVersion, LocalVersionHeader, LockKey } from '@xmcl/runtime-api'
-import { useFabricVersions, useForgeVersions, useMinecraftVersions, useOptifineVersions, useQuiltVersions } from './version'
+import { useFabricVersions, useForgeVersions, useMinecraftVersions, useNeoForgedVersions, useOptifineVersions, useQuiltVersions } from './version'
 
 import { kSemaphores } from '@/composables'
 import { getLocalDateString } from '@/util/date'
@@ -53,6 +53,47 @@ export function useMinecraftVersionList(version: Ref<string>, local: Ref<LocalVe
     showAlpha,
     items,
     refreshing,
+  }
+}
+
+export function useNeoForgedVersionList(minecraft: Ref<string>, version: Ref<string>, local: Ref<LocalVersionHeader[]>) {
+  const { versions, installed, latest, recommended, refresh, refreshing, error } = useNeoForgedVersions(local)
+  const { semaphores } = injection(kSemaphores)
+  const { t } = useI18n()
+
+  const items = computed(() => {
+    const vers = versions.value
+    const result: VersionItem[] = vers
+      .filter(v => v.startsWith(minecraft.value))
+      .map(v => {
+        const key = LockKey.version(`neoforge-${v}`)
+        return reactive({
+          name: v,
+          status: computed(() => {
+            const status = semaphores[key] > 0 ? 'installing' : installed.value[v] ? 'local' : 'remote'
+            return status
+          }),
+          folder: computed(() => {
+            const folder = installed.value[v]
+            return folder ?? ''
+          }),
+          description: '',
+          isSelected: computed(() => version.value === v),
+          tag: recommended.value === v
+            ? t('forgeVersion.recommended')
+            : latest.value === v ? t('forgeVersion.latest') : '',
+          tagColor: recommended.value === v ? 'primary' : '',
+          instance: markRaw({ version }),
+        })
+      })
+    return result
+  })
+
+  return {
+    items,
+    refreshing,
+    refresh,
+    error,
   }
 }
 

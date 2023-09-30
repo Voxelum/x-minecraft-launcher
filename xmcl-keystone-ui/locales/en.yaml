@@ -208,6 +208,9 @@ diagnosis:
   incompatibleJava:
     message: You can ask Launcher to download it for you.
     name: The java version {javaVersion} does not suitable to {version}!
+  instanceFiles:
+    description: This might be incompleted installation last time
+    title: Install files to instances
   invalidJava:
     message: Click to use another java to launch.
     name: Invalid java location.
@@ -604,7 +607,7 @@ mod:
   backToAllMods: Back to All Mods
   compatible: Compatible Mod.
   currentVersion: Current {current}
-  deletion: Deleting Mod
+  deletion: Delete Mod
   deletionHint: >-
     You will lose this mod & its metadata forever. Are you sure you want to
     delete it? | You will lose these mod & these metadata forever. Are you sure
@@ -796,6 +799,7 @@ modrinth:
     version: Version
   install: Install
   installFrom: Install from Modrinth
+  issueUrl: Issue
   license: License
   licenses:
     name: Licenses
@@ -820,9 +824,11 @@ modrinth:
     relevance: Relevance
     title: Sort By
     updated: Recently updated
+  sourceUrl: Source
   technicalInformation: Technical Information
   updateAt: Updated
   versions: Versions
+  wikiUrl: Wiki
 modrinthCard:
   currentVersion: Current Version
   projectHint: >
@@ -911,6 +917,11 @@ natType:
   symmetricNat: Symmetric NAT
   symmetricUDPFirewall: Symmetric UDP Firewall
   unknown: Unknown
+neoForgeVersion:
+  disable: Disable NeoForged
+  empty: NeoForged does not support {version}
+neoForgedVersion:
+  name: NeoForged
 news:
   name: News
   readMore: Read More

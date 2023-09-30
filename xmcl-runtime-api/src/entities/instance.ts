@@ -28,6 +28,7 @@ export function createTemplate(): Instance {
       yarn: '',
       optifine: '',
       quiltLoader: '',
+      neoForged: '',
     },
     java: '',
     version: '',

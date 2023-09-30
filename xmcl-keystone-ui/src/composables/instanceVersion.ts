@@ -34,6 +34,7 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<LocalVers
     instance.value.version,
     instance.value.runtime.minecraft,
     instance.value.runtime.forge,
+    instance.value.runtime.neoForged,
     instance.value.runtime.fabricLoader,
     instance.value.runtime.optifine,
     instance.value.runtime.quiltLoader) || markRaw(EMPTY_VERSION))

@@ -9,7 +9,9 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
   const {
     getMinecraftVersionList,
     getForgeVersionList,
+    getNeoForgedVersionList,
     installForge,
+    installNeoForged,
     installMinecraft,
     installOptifine,
     installFabric,
@@ -26,7 +28,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     return data
   }
   async function install(runtime: RuntimeVersions) {
-    const { minecraft, forge, fabricLoader, quiltLoader, optifine } = runtime
+    const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged } = runtime
     const mcVersions = await getCacheOrFetch('/minecraft-versions', () => getMinecraftVersionList())
     const local = versions.value
     if (!local.find(v => v.id === minecraft)) {
@@ -44,6 +46,18 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
         forgeVersion = await installForge({ mcversion: minecraft, version: forgeVersionId, installer: found?.installer })
       } else {
         forgeVersion = localForge.id
+      }
+    }
+
+    if (neoForged) {
+      const localNeoForge = local.find(v => v.neoForged === neoForged && v.minecraft === minecraft)
+      if (!localNeoForge) {
+        const neoForgedVersion = await getCacheOrFetch('/neoforged-versions', () => getNeoForgedVersionList())
+        const found = neoForgedVersion.versions.find(v => v === neoForged)
+        const id = found ?? neoForged
+        forgeVersion = await installNeoForged({ version: id, minecraft })
+      } else {
+        forgeVersion = localNeoForge.id
       }
     }
 

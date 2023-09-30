@@ -19,6 +19,11 @@ export interface RuntimeVersions {
    */
   forge?: string
   /**
+   * NeoForged version of this version. e.g. 14.23.5.2838
+   * @default ""
+   */
+  neoForged?: string
+  /**
      * @default ""
      */
   liteloader?: string

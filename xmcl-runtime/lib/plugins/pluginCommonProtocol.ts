@@ -7,6 +7,7 @@ import quilt from '../../assets/quilt.svg'
 import optifine from '../../assets/optifine.gif'
 import forge from '../../assets/forge.png'
 import fabric from '../../assets/fabric.png'
+import neoForged from '../../assets/neoforged.png'
 
 const builtin: Record<string, string> = {
   craftingTable,
@@ -15,6 +16,7 @@ const builtin: Record<string, string> = {
   optifine,
   forge,
   fabric,
+  neoForged,
 }
 
 /**
