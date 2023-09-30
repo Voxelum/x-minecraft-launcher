@@ -1,6 +1,6 @@
 import type { ResolvedLibrary, Version } from '@xmcl/core'
 import type { InstallProfile, LiteloaderVersion, MinecraftVersion, QuiltArtifactVersion } from '@xmcl/installer'
-import { ForgeVersion, OptifineVersion, FabricVersions, LiteloaderVersions, MinecraftVersions } from '../entities/version'
+import { ForgeVersion, OptifineVersion, FabricVersions, LiteloaderVersions, MinecraftVersions, NeoForgedVersions } from '../entities/version'
 import { ServiceKey } from './Service'
 
 export interface InstallOptifineOptions extends OptifineVersion {
@@ -54,6 +54,17 @@ export interface InstallForgeOptions {
   version: string
 }
 
+export interface InstallNeoForgedOptions {
+  /**
+   * The minecraft version
+   */
+  minecraft: string
+  /**
+   * The forge version (without minecraft version)
+   */
+  version: string
+}
+
 export interface InstallFabricOptions {
   /**
    * Forcing fabric yarn version
@@ -89,6 +100,10 @@ export interface InstallService {
    * Refresh forge remote versions cache from forge websites or BMCL API
    */
   getForgeVersionList(options: { force?: boolean; minecraftVersion: string }): Promise<ForgeVersion[]>
+  /**
+   * Get the neo forge version list
+   */
+  getNeoForgedVersionList(): Promise<NeoForgedVersions>
 
   getLiteloaderVersionList(): Promise<LiteloaderVersions>
 
@@ -130,7 +145,11 @@ export interface InstallService {
    */
   installLibraries(libraries: InstallableLibrary[]): Promise<void>
   /**
-   * Install forge by forge version metadata
+   * Install neoForged to the minecraft
+   */
+  installNeoForged(options: InstallNeoForgedOptions): Promise<string | undefined>
+  /**
+   * Install forge by forge version metadata and minecraft
    */
   installForge(options: InstallForgeOptions): Promise<string | undefined>
   /**

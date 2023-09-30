@@ -279,6 +279,11 @@
                     "default": "",
                     "type": "string"
                 },
+                "neoForged": {
+                    "description": "NeoForged version of this version. e.g. 14.23.5.2838",
+                    "default": "",
+                    "type": "string"
+                },
                 "liteloader": {
                     "default": "",
                     "type": "string"

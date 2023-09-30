@@ -39,6 +39,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       quiltLoader: instance.value?.runtime.quiltLoader,
       optifine: instance.value?.runtime.optifine,
       liteloader: instance.value?.runtime.liteloader,
+      neoForged: instance.value?.runtime.neoForged,
     } as RuntimeVersions,
     version: '',
 
@@ -161,6 +162,9 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     if (current.runtime.forge !== data.runtime.forge) {
       return true
     }
+    if (current.runtime.neoForged !== data.runtime.neoForged) {
+      return true
+    }
     if (current.runtime.fabricLoader !== data.runtime.fabricLoader) {
       return true
     }
@@ -247,6 +251,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       data.runtime.minecraft = current.runtime.minecraft
       data.runtime.optifine = current.runtime.optifine
       data.runtime.quiltLoader = current.runtime.quiltLoader
+      data.runtime.neoForged = current.runtime.neoForged
       data.version = current.version
       data.icon = current.icon
 

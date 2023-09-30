@@ -141,6 +141,55 @@
     <v-list-item>
       <v-list-item-action class="self-center">
         <img
+          :src="'image://builtin/neoForged'"
+          width="40"
+        >
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title>
+          {{
+            t('neoForgedVersion.name')
+          }}
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          <a
+            target="browser"
+            href="https://github.com/neoforged/NeoForge"
+          >https://github.com/neoforged/NeoForge</a>
+        </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-action>
+        <VersionMenu
+          :is-clearable="true"
+          :items="neoForgedItems"
+          :clear-text="t('neoForgeVersion.disable')"
+          :refreshing="refreshingNeoForged"
+          @select="onSelectNeoForged"
+        >
+          <template #default="{ on }">
+            <v-text-field
+              :value="data.runtime.neoForged"
+              outlined
+              filled
+              dense
+              append-icon="arrow_drop_down"
+              :placeholder="t('neoForgeVersion.disable')"
+              :empty-text="t('neoForgeVersion.empty', { version: data.runtime.minecraft })"
+              hide-details
+              persistent-hint
+              :readonly="true"
+              @click:append="on.click($event);"
+              @click="refreshNeoForged()"
+              v-on="on"
+            />
+          </template>
+        </VersionMenu>
+      </v-list-item-action>
+    </v-list-item>
+
+    <v-list-item>
+      <v-list-item-action class="self-center">
+        <img
           :src="'image://builtin/forge'"
           width="40"
         >
@@ -437,7 +486,7 @@
 <script lang=ts setup>
 import VersionMenu from '../components/VersionMenu.vue'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
-import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useOptifineVersionList, useQuiltVersionList, VersionMenuItem } from '../composables/versionList'
+import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useNeoForgedVersionList, useOptifineVersionList, useQuiltVersionList, VersionMenuItem } from '../composables/versionList'
 
 import { injection } from '@/util/inject'
 import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
@@ -460,6 +509,7 @@ const { showOpenDialog } = windowController
 const { versions } = injection(kLocalVersions)
 const { items: minecraftItems, showAlpha, refreshing: refreshingMinecraft, release } = useMinecraftVersionList(minecraft, versions)
 const { items: forgeItems, canShowBuggy, recommendedOnly, refresh: refreshForge, refreshing: refreshingForge } = useForgeVersionList(minecraft, computed(() => data.runtime.forge ?? ''), versions)
+const { items: neoForgedItems, refresh: refreshNeoForged, refreshing: refreshingNeoForged } = useNeoForgedVersionList(minecraft, computed(() => data.runtime.neoForged ?? ''), versions)
 const { items: fabricItems, showStableOnly, refreshing: refreshingFabric } = useFabricVersionList(minecraft, computed(() => data.runtime.fabricLoader ?? ''), versions)
 const { items: quiltItems, refresh: refreshQuilt, refreshing: refreshingQuilt } = useQuiltVersionList(minecraft, computed(() => data.runtime.quiltLoader ?? ''), versions)
 const { items: optifineItems, refreshing: refreshingOptifine } = useOptifineVersionList(minecraft, computed(() => data.runtime.forge ?? ''), computed(() => data.runtime.optifine ?? ''), versions)
@@ -499,6 +549,7 @@ function onSelectMinecraft(version: string) {
     data.version = ''
     runtime.minecraft = version
     runtime.forge = ''
+    runtime.neoForged = ''
     runtime.fabricLoader = ''
     runtime.optifine = ''
   }
@@ -509,6 +560,19 @@ function onSelectForge(version: string) {
     runtime.forge = version
     if (version) {
       data.version = ''
+      runtime.neoForged = ''
+      runtime.fabricLoader = ''
+      runtime.quiltLoader = ''
+    }
+  }
+}
+function onSelectNeoForged(version: string) {
+  if (data?.runtime) {
+    const runtime = data?.runtime
+    runtime.neoForged = version
+    if (version) {
+      data.version = ''
+      runtime.forge = ''
       runtime.fabricLoader = ''
       runtime.quiltLoader = ''
     }
@@ -520,6 +584,7 @@ function onSelectFabric(version: string) {
     if (version) {
       data.version = ''
       runtime.forge = ''
+      runtime.neoForged = ''
       runtime.quiltLoader = ''
       runtime.optifine = ''
     }
@@ -532,6 +597,7 @@ function onSelectQuilt(version: string) {
     runtime.quiltLoader = version
     if (version) {
       data.version = ''
+      runtime.neoForged = ''
       runtime.forge = runtime.fabricLoader = ''
       runtime.optifine = ''
     }
@@ -554,6 +620,7 @@ function onSelectLocalVersion(version: string) {
   data.runtime.forge = v.forge
   data.runtime.liteloader = v.liteloader
   data.runtime.fabricLoader = v.fabric
+  data.runtime.neoForged = v.neoForged
   data.runtime.optifine = v.optifine
   data.runtime.quiltLoader = v.quilt
 }

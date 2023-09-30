@@ -239,6 +239,9 @@ diagnosis:
   incompatibleJava:
     message: 你可以选择自己让启动器帮你下载，或者自己下载
     name: 版本 {version} 可能不兼容 Java {javaVersion}!
+  instanceFiles:
+    description: 这可能是因为之前安装实例时没安装完
+    title: 实例文件缺失
   invalidJava:
     message: 请选择一个有效的 Java 路径.
     name: 当前 Java 路径已经失效
@@ -804,6 +807,7 @@ modrinth:
     version: 版本
   install: 安装
   installFrom: 从 Modrinth 安装
+  issueUrl: 反馈链接
   license: 协议
   licenses:
     name: 协议
@@ -828,9 +832,11 @@ modrinth:
     relevance: 相关性
     title: 排序
     updated: 更新时间
+  sourceUrl: 源码
   technicalInformation: 技术信息
   updateAt: 更新于
   versions: 版本
+  wikiUrl: 百科链接
 modrinthCard:
   currentVersion: 当前版本
   projectHint: >
@@ -905,6 +911,11 @@ natType:
   symmetricNat: 对称 NAT
   symmetricUDPFirewall: 对称 UDP 防火墙
   unknown: 未知
+neoForgeVersion:
+  disable: 不使用 NeoForged
+  empty: Neoforge 不支持 Minecraft {version}
+neoForgedVersion:
+  name: NeoForged
 news:
   name: 新闻
   readMore: 阅读更多
