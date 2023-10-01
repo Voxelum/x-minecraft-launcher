@@ -106,9 +106,11 @@ export default function createNativeModulePlugin(nodeModules: string): Plugin {
       build.onLoad(
         { filter: /^.+node-datachannel[\\/]lib[\\/]index\.js$/g },
         async ({ path }) => {
-          const content = (await readFile(path, 'utf-8')).replace('const require = createRequire(import.meta.url)', '')
           return {
-            contents: content,
+            contents: `
+            export {Audio,DataChannel,DescriptionType,PeerConnection,cleanup,initLogger,preload,setSctpSettings,RelayType,ReliabilityType,RtcpReceivingSession,Track,Video,Direction} from '../build/Release/node_datachannel.node';
+            export { default as DataChannelStream } from './datachannel-stream.js';
+            `,
             loader: 'js',
           }
         },

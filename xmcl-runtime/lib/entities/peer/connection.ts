@@ -1,18 +1,17 @@
-import { randomUUID } from 'crypto'
 import { createReadStream, existsSync } from 'fs'
 import debounce from 'lodash.debounce'
 import { createConnection } from 'net'
-import NDataChannel, { DataChannel, DescriptionType, IceServer, PeerConnection } from 'node-datachannel'
+import { DataChannel, DescriptionType, IceServer, PeerConnection } from 'node-datachannel'
 import { join } from 'path'
 import { Readable } from 'stream'
 import { Logger } from '../../util/log'
+import { PeerHost } from './PeerHost'
+import { ServerProxy } from './ServerProxy'
 import { MessageGetSharedManifestEntry, MessageShareManifestEntry } from './messages/download'
 import { MessageHeartbeatPing, MessageHeartbeatPingEntry, MessageHeartbeatPongEntry } from './messages/heartbeat'
 import { MessageIdentity, MessageIdentityEntry } from './messages/identity'
 import { MessageLanEntry } from './messages/lan'
 import { MessageEntry, MessageHandler, MessageType } from './messages/message'
-import { PeerHost } from './PeerHost'
-import { ServerProxy } from './ServerProxy'
 import { iceServers as _iceServers } from './stun'
 
 const getRegistry = (entries: MessageEntry<any>[]) => {
@@ -52,16 +51,18 @@ export class PeerSession {
     /**
      * The session id
      */
-    readonly id: string = randomUUID(),
+    readonly id: string,
     readonly iceServers: (string | IceServer)[],
     readonly host: PeerHost,
     readonly logger: Logger,
     portBegin?: number,
   ) {
-    this.connection = new NDataChannel.PeerConnection(this.id, {
+    this.connection = new PeerConnection(this.id, {
       iceServers: [..._iceServers, ...iceServers],
       iceTransportPolicy: 'all',
       portRangeBegin: portBegin,
+      portRangeEnd: portBegin,
+      enableIceUdpMux: true,
     })
 
     const updateDescriptor = debounce(() => {
@@ -187,6 +188,11 @@ export class PeerSession {
         // TODO: emit error for unknown protocol
       }
     })
+  }
+
+  isOnSameLan() {
+    // TODO: implement this
+    return false
   }
 
   setRemoteId(id: string) {
