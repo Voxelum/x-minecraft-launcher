@@ -1,11 +1,11 @@
 import { MinecraftLanDiscover } from '@xmcl/client'
 import { ChecksumNotMatchError } from '@xmcl/file-transfer'
-import { AUTHORITY_MICROSOFT, InstanceManifest, PeerService as IPeerService, MutableState, PeerServiceKey, PeerState, ShareInstanceOptions, UpnpMapOptions, UserState } from '@xmcl/runtime-api'
+import { AUTHORITY_MICROSOFT, InstanceManifest, PeerService as IPeerService, MutableState, PeerServiceKey, PeerState, ShareInstanceOptions } from '@xmcl/runtime-api'
 import { AbortableTask, BaseTask } from '@xmcl/task'
-import { randomFill, randomUUID } from 'crypto'
+import { randomBytes, randomUUID, getDiffieHellman } from 'crypto'
 import { createWriteStream } from 'fs'
 import { ensureFile } from 'fs-extra/esm'
-import DataChannel from 'node-datachannel'
+import { IceServer, initLogger } from 'node-datachannel'
 import { join } from 'path'
 import { Readable } from 'stream'
 import { pipeline } from 'stream/promises'
@@ -15,18 +15,18 @@ import { brotliCompress, brotliDecompress } from 'zlib'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { IS_DEV } from '../constant'
+import { kGameDataPath, PathResolver } from '../entities/gameDataPath'
 import { PeerGroup, TransferDescription } from '../entities/peer'
 import { PeerSession } from '../entities/peer/connection'
 import { MessageShareManifest } from '../entities/peer/messages/download'
 import { MessageLan } from '../entities/peer/messages/lan'
 import { kResourceWorker, ResourceWorker } from '../entities/resourceWorker'
 import { ImageStorage } from '../util/imageStore'
+import { mapLocalPort, parseCandidate } from '../util/mapAndGetPortCanidate'
 import { Inject } from '../util/objectRegistry'
 import { NatService } from './NatService'
 import { ExposeServiceKey, Lock, Singleton, StatefulService } from './Service'
 import { UserService } from './UserService'
-import { kGameDataPath, PathResolver } from '../entities/gameDataPath'
-import { mapAndGetPortCandidate } from '../util/mapAndGetPortCanidate'
 
 const pBrotliDecompress = promisify(brotliDecompress)
 const pBrotliCompress = promisify(brotliCompress)
@@ -37,13 +37,13 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
 
   readonly discover = new MinecraftLanDiscover()
   /**
-   * The unique id of this host
+   * The unique id of this host. Should start with local ip
    */
-  readonly id = randomUUID()
+  private id = ''
 
   private sharedManifest: InstanceManifest | undefined
   private shareInstancePath = ''
-  private iceServers: DataChannel.IceServer[] = []
+  private iceServers: IceServer[] = []
 
   private group: PeerGroup | undefined
 
@@ -53,7 +53,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     @Inject(ImageStorage) private imageStorage: ImageStorage,
     @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(kGameDataPath) private getPath: PathResolver,
-    @Inject(NatService) natService: NatService,
+    @Inject(NatService) private natService: NatService,
     @Inject(UserService) private userService: UserService,
   ) {
     super(app, () => new PeerState(), async () => {
@@ -70,36 +70,36 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       initCredential().catch(e => {
         this.warn('Fail to init credential', e)
       })
-      mapAndGetPortCandidate(natService, this.portCandidate, this).then(port => {
-        this.portCandidate = port
-      }, (e) => {
-        this.warn('Fail to init nat', e)
-      })
+      // mapAndGetPortCandidate(natService, this.portCandidate, this).then(port => {
+      //   this.portCandidate = port
+      // }, (e) => {
+      //   this.warn('Fail to init nat', e)
+      // })
     })
 
-    // if (IS_DEV) {
-    //   const logger = this.app.getLogger('wrtc', 'wrtc')
-    //   DataChannel.initLogger('Verbose', (level, message) => {
-    //     if (level === 'Info' || level === 'Debug' || level === 'Verbose') {
-    //       logger.log(message)
-    //     } else if (level === 'Fatal' || level === 'Error') {
-    //       logger.warn(message)
-    //     } else if (level === 'Warning') {
-    //       logger.warn(message)
-    //     }
-    //   })
-    // } else {
-    //   const logger = this.app.getLogger('wrtc', 'wrtc')
-    //   DataChannel.initLogger('Info', (level, message) => {
-    //     if (level === 'Info' || level === 'Debug' || level === 'Verbose') {
-    //       logger.log(message)
-    //     } else if (level === 'Fatal' || level === 'Error') {
-    //       logger.warn(message)
-    //     } else if (level === 'Warning') {
-    //       logger.warn(message)
-    //     }
-    //   })
-    // }
+    if (IS_DEV) {
+      const logger = this.app.getLogger('wrtc', 'wrtc')
+      initLogger('Verbose', (level, message) => {
+        if (level === 'Info' || level === 'Debug' || level === 'Verbose') {
+          logger.log(message)
+        } else if (level === 'Fatal' || level === 'Error') {
+          logger.warn(message)
+        } else if (level === 'Warning') {
+          logger.warn(message)
+        }
+      })
+    } else {
+      const logger = this.app.getLogger('wrtc', 'wrtc')
+      initLogger('Info', (level, message) => {
+        if (level === 'Info' || level === 'Debug' || level === 'Verbose') {
+          logger.log(message)
+        } else if (level === 'Fatal' || level === 'Error') {
+          logger.warn(message)
+        } else if (level === 'Warning') {
+          logger.warn(message)
+        }
+      })
+    }
 
     app.protocol.registerHandler('peer', ({ request, response }) => {
       // handle peer protocol
@@ -144,12 +144,8 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     this.discover.on('discover', (info) => {
       const peers = Object.values(this.peers).filter(c => c.connection.state() === 'connected')
       for (const conn of peers) {
-        const pair = conn.connection.getSelectedCandidatePair()
-        if (pair && pair.remote.type === 'host') {
-          if (conn.getRemoteId().localeCompare(this.id) > 0) {
-            // Same LAN, larger id will broadcast
-            return
-          }
+        if (conn.isOnSameLan()) {
+          return
         }
 
         const isFromSelf = conn.proxies.find(p =>
@@ -230,7 +226,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       this.group.quit()
     }
 
-    const group = new PeerGroup(id, this.id)
+    const group = new PeerGroup(id, await this.getId())
 
     group.on('heartbeat', (sender) => {
       const peer = Object.values(this.peers).find(p => p.getRemoteId() === sender)
@@ -288,6 +284,30 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     return JSON.parse((await pBrotliDecompress(Buffer.from(description, 'base64'))).toString('utf-8'))
   }
 
+  protected async getLocalIp(hideSubnet = false) {
+    const ip = await this.natService.getNatState().then((s) => s.localIp, () => '')
+    if (!ip) return ip
+    const isIPV6 = ip.split(':').length === 8
+    if (hideSubnet) {
+      if (isIPV6) {
+        return ip.split(':').slice(0, 4).join(':')
+      }
+      return ip.split('.').slice(0, 3).join('.')
+    }
+    return ip
+  }
+
+  protected async getId() {
+    if (this.id) return this.id
+    const ip = await this.getLocalIp()
+    if (ip) {
+      this.id = `${ip}-${randomBytes(8).toString('hex')}`
+    } else {
+      this.id = randomUUID()
+    }
+    return this.id
+  }
+
   @Singleton(ops => JSON.stringify(ops))
   async initiate(options?: {
     id?: string
@@ -296,9 +316,11 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }): Promise<string> {
     const initiator = !options?.id || options?.initiate || false
     const remoteId = options?.id
-    const sessionId = options?.session || randomUUID()
+    const sessionId = options?.session || `${await this.getLocalIp(true)}-${randomUUID()}`
 
     this.log(`Create peer connection to ${remoteId}. Is initiator: ${initiator}`)
+    const natService = this.natService
+    const privatePort = this.portCandidate
 
     const conn = new PeerSession(sessionId, this.iceServers, {
       onHeartbeat: (id, ping) => {
@@ -309,13 +331,22 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
         this.state.connectionShareManifest({ id, manifest })
         this.emit('share', { id, manifest })
       },
-      onDescriptorUpdate: (id, sdp, type, candidates) => {
+      onDescriptorUpdate: async (id, sdp, type, candidates) => {
         this.log(`Send local description ${remoteId}: ${sdp} ${type}`)
         this.log(candidates)
+
+        const candidate = candidates.find(c => c.candidate.indexOf('typ srflx') !== -1)
+        if (candidate) {
+          const [ip, port] = parseCandidate(candidate.candidate)
+          if (ip && port) {
+            const state = await natService.getNatState()
+            await mapLocalPort(natService, state.localIp, privatePort, Number(port), this)
+          }
+        }
         if (remoteId) {
           this.group?.sendLocalDescription(remoteId, sdp, type, candidates)
         }
-        const payload = { sdp, id: this.id, session: id, candidates }
+        const payload = { sdp, id: await this.getId(), session: id, candidates }
         pBrotliCompress(JSON.stringify(payload)).then((s) => s.toString('base64')).then((compressed) => {
           this.state.connectionLocalDescription({ id: payload.session, description: compressed })
           this.emit('connection-local-description', { id: payload.session, description: compressed })
@@ -350,7 +381,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       getSharedAssetsPath: () => this.getPath('assets'),
       getSharedLibrariesPath: () => this.getPath('libraries'),
       getSharedImagePath: (image) => join(this.imageStorage.root, image),
-    }, this, this.portCandidate)
+    }, this, privatePort)
 
     if (remoteId) {
       conn.setRemoteId(remoteId)

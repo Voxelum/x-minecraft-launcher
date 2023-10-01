@@ -29,6 +29,7 @@ export class NatService extends StatefulService<NatState> implements INatService
   }
 
   async getNatState(): Promise<MutableState<NatState>> {
+    await this.initialize()
     return this.state
   }
 
@@ -60,7 +61,7 @@ export class NatService extends StatefulService<NatState> implements INatService
   async refreshNatType(): Promise<void> {
     this.log('Start to sample the nat type')
 
-    const info = await getNatInfoUDP()
+    const info = await getNatInfoUDP({ stun: 'stun.qq.com' })
     if (info.type !== 'Blocked') {
       this.state.natInfoSet(info.externalIp, info.externalPort)
     }
@@ -70,6 +71,7 @@ export class NatService extends StatefulService<NatState> implements INatService
     const result = await sampleNatType({
       sampleCount: 3,
       retryInterval: 3_000,
+      stun: 'stun.qq.com',
     })
     if (result) {
       this.state.natTypeSet(result)
