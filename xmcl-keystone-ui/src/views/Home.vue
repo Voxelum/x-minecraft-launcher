@@ -36,7 +36,6 @@
 </template>
 
 <script lang=ts setup>
-import { kInstallList, useInstallList } from '@/composables/installList'
 import { kInstance } from '@/composables/instance'
 import { usePresence } from '@/composables/presence'
 import { kCompact, useCompactScroll } from '@/composables/scrollTop'
@@ -48,7 +47,6 @@ import HomeJavaIssueDialog from './HomeJavaIssueDialog.vue'
 import HomeLaunchMultiInstanceDialog from './HomeLaunchMultiInstanceDialog.vue'
 import HomeLaunchStatusDialog from './HomeLaunchStatusDialog.vue'
 import HomeLogDialog from './HomeLogDialog.vue'
-import { kMods } from '@/composables/mods'
 
 const router = useRouter()
 
@@ -59,9 +57,7 @@ router.afterEach((r) => {
   }
 })
 
-const { path, isServer, instance } = injection(kInstance)
-const mods = injection(kMods)
-provide(kInstallList, useInstallList(path, mods.resources))
+const { isServer, instance } = injection(kInstance)
 
 const { refresh } = useInstanceServerStatus(instance)
 const containerRef = ref(null as null | HTMLDivElement)

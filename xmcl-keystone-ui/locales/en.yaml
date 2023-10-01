@@ -644,6 +644,7 @@ modInstall:
   searchHint: Search and select project
   selectProjectHint: Select project and install file
   switch: Swtich Version
+  upgrade: Upgrade Mods
 modSearchType:
   all: All
   local: Local
@@ -1253,9 +1254,11 @@ universalDrop:
   title: Drop File(s) Here to Import as
   unknownResource: Unknown
 upstream:
-  missingModpackMetadata: |-
+  missingModpackMetadata: >-
     The old modpack metadata not found.
-    You can still upgrade, but the result might be wrong. Please backup your instance files.
+
+    You can still upgrade, but the result might be wrong. Please backup your
+    instance files.
 user:
   accessToken: Access Token
   authMode: Auth Service

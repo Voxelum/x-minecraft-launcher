@@ -654,6 +654,7 @@ modInstall:
   searchHint: 搜索并选择 Mod
   selectProjectHint: 添加 Mod 并安装
   switch: 切换版本
+  upgrade: 更新 Mods
 modSearchType:
   all: 所有
   local: 本地

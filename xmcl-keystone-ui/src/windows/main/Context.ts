@@ -15,9 +15,7 @@ import { kInstances, useInstances } from '@/composables/instances'
 import { kJavaContext, useJavaContext } from '@/composables/java'
 import { kLaunchTask, useLaunchTask } from '@/composables/launchTask'
 import { kModsSearch, useModsSearch } from '@/composables/modSearch'
-import { kModSearchItems, useModSearchItems } from '@/composables/modSearchItems'
 import { kModpacks, useModpacks } from '@/composables/modpack'
-import { kMods, useMods } from '@/composables/mods'
 import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
 import { kPeerState, usePeerState } from '@/composables/peers'
 import { kInstanceSave, useInstanceSaves } from '@/composables/save'
@@ -37,6 +35,9 @@ import { kBackground, useBackground } from '@/composables/background'
 import { kLaunchStatus, useLaunchStatus } from '@/composables/launch'
 import { vuetify } from '@/vuetify'
 import { kYggdrasilServices, useYggdrasilServices } from '@/composables/yggrasil'
+import { useDomainResources } from '@/composables/resources'
+import { ResourceDomain } from '@xmcl/runtime-api'
+import { kMods, useMods } from '@/composables/modSearchItems'
 
 export default defineComponent({
   setup(props, ctx) {
@@ -64,13 +65,13 @@ export default defineComponent({
     const options = useInstanceOptions(instance.instance)
     const saves = useInstanceSaves(instance.instance)
     const resourcePacks = useInstanceResourcePacks(options.gameOptions)
-    const mods = useInstanceMods(instance.path, instance.runtime, instanceJava.java)
+    const instanceMods = useInstanceMods(instance.path, instance.runtime, instanceJava.java)
     const files = useInstanceFiles(instance.path)
     const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionHeader)
 
-    const allMods = useMods()
-    const modsSearch = useModsSearch(ref(''), allMods.resources, instance.runtime, mods.mods)
-    const modSearchItems = useModSearchItems(modsSearch.keyword, modsSearch.modrinth, modsSearch.curseforge, modsSearch.mods, modsSearch.existedMods)
+    const modResources = useDomainResources(ResourceDomain.Mods)
+    const modsSearch = useModsSearch(ref(''), modResources.resources, instance.runtime, instanceMods.mods)
+    const mods = useMods(modsSearch.keyword, modsSearch.modrinth, modsSearch.curseforge, modsSearch.mods, modsSearch.existedMods)
 
     const versionDiagnose = useInstanceVersionDiagnose(instance.runtime, instanceVersion.resolvedVersion, localVersions.versions)
     const javaDiagnose = useInstanceJavaDiagnose(java.all, instanceJava.java, instanceJava.recommendation)
@@ -90,7 +91,7 @@ export default defineComponent({
     provide(kInstanceOptions, options)
     provide(kInstanceSave, saves)
     provide(kInstanceResourcePacks, resourcePacks)
-    provide(kInstanceModsContext, mods)
+    provide(kInstanceModsContext, instanceMods)
     provide(kInstanceFiles, files)
     provide(kLaunchTask, task)
 
@@ -99,9 +100,8 @@ export default defineComponent({
     provide(kInstanceFilesDiagnose, filesDiagnose)
     provide(kUserDiagnose, userDiagnose)
 
-    provide(kMods, allMods)
     provide(kModsSearch, modsSearch)
-    provide(kModSearchItems, modSearchItems)
+    provide(kMods, mods)
     provide(kModpacks, useModpacks())
 
     useI18nSync(vuetify.framework, settings.state)

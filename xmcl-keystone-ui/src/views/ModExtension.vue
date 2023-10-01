@@ -142,7 +142,7 @@
 import AvatarItem from '@/components/AvatarItem.vue'
 import { kInstance } from '@/composables/instance'
 import { kModsSearch } from '@/composables/modSearch'
-import { kModSearchItems } from '@/composables/modSearchItems'
+import { kMods } from '@/composables/modSearchItems'
 import { injection } from '@/util/inject'
 import debounce from 'lodash.debounce'
 
@@ -158,7 +158,7 @@ const _keyword = computed({
 
 const { runtime: version } = injection(kInstance)
 const { modrinth, curseforge, mods } = injection(kModsSearch)
-const { tab } = injection(kModSearchItems)
+const { tab } = injection(kMods)
 const curseforgeCount = computed(() => curseforge.value ? curseforge.value.pagination.totalCount : 0)
 const modrinthCount = computed(() => modrinth.value ? modrinth.value.total_hits : 0)
 const { t } = useI18n()

@@ -4,9 +4,9 @@ import { Mod as CurseforgeMod, Pagination } from '@xmcl/curseforge'
 import { SearchResult } from '@xmcl/modrinth'
 import { InjectionKey, Ref } from 'vue'
 
-export const kModSearchItems: InjectionKey<ReturnType<typeof useModSearchItems>> = Symbol('ModSearchItems')
+export const kMods: InjectionKey<ReturnType<typeof useMods>> = Symbol('ModSearchItems')
 
-export function useModSearchItems(
+export function useMods(
   keyword: Ref<string>,
   modrinth: Ref<SearchResult | undefined>,
   curseforge: Ref<{ data: CurseforgeMod[]; pagination: Pagination } | undefined>,
@@ -169,8 +169,11 @@ export function useModSearchItems(
       all.sort((a, b) => -a[1] + b[1])
     }
 
-    return [...installed.map(v => v[0]), 'divider' as const, ...all.map(v => v[0])]
+    return [installed.map(v => v[0]), all.map(v => v[0])]
   })
 
-  return { items, tab }
+  const installed = computed(() => items.value[0])
+  const search = computed(() => items.value[1])
+
+  return { installed, search, tab }
 }
