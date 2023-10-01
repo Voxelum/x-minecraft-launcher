@@ -53,7 +53,7 @@ export class NatService extends StatefulService<NatState> implements INatService
 
   async unmap(options: UpnpUnmapOptions) {
     const client = await this.client.promise
-    await client.unmap(options)
+    return await client.unmap(options)
   }
 
   @Singleton()

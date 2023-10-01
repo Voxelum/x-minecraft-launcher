@@ -1,7 +1,7 @@
 import { NatDeviceInfo, NatServiceKey, NatState } from '@xmcl/runtime-api'
+import { set } from 'vue'
 import { useService } from './service'
 import { useState } from './syncableState'
-import { set } from 'vue'
 
 export function useNatState() {
   const { getNatState } = useService(NatServiceKey)

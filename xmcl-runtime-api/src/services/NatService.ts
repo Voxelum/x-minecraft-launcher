@@ -80,7 +80,7 @@ export interface NatService {
   isSupported(): Promise<boolean>
   getMappings(): Promise<MappingInfo[]>
   map(options?: UpnpMapOptions): Promise<void>
-  unmap(options?: UpnpUnmapOptions): Promise<void>
+  unmap(options?: UpnpUnmapOptions): Promise<boolean>
 }
 
 export const NatServiceKey: ServiceKey<NatService> = 'NatService'
