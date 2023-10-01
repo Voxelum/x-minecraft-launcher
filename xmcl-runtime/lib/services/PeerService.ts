@@ -26,6 +26,7 @@ import { NatService } from './NatService'
 import { ExposeServiceKey, Lock, Singleton, StatefulService } from './Service'
 import { UserService } from './UserService'
 import { kGameDataPath, PathResolver } from '../entities/gameDataPath'
+import { mapAndGetPortCandidate } from '../util/mapAndGetPortCanidate'
 
 const pBrotliDecompress = promisify(brotliDecompress)
 const pBrotliCompress = promisify(brotliCompress)
@@ -65,61 +66,13 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           }
         })
       }
-      const initNat = async () => {
-        if (!await natService.isSupported()) return
-
-        const mappings = await natService.getMappings()
-        const existedMappings = mappings.filter(m => m.description.indexOf('XMCL Multiplayer') !== -1 && m.enabled)
-        const findPorts = () => {
-          let candidate = this.portCandidate
-          while (candidate < 60000) {
-            if (mappings.some(p => p.public.port === candidate ||
-              p.public.port === candidate + 1 ||
-              p.public.port === candidate + 2)) {
-              // port is occupied
-              candidate += 3
-            } else {
-              // candidate pass
-              break
-            }
-          }
-          return [[candidate, candidate], [candidate + 1, candidate + 1], [candidate + 2, candidate + 2]] as const
-        }
-        if (existedMappings.length > 0) {
-          this.log('Reuse the existed upnp mapping %o', existedMappings)
-          this.portCandidate = existedMappings[0].private.port
-        } else {
-          const ports = findPorts()
-          const pendingMappings: UpnpMapOptions[] = []
-          for (const [priv, pub] of ports) {
-            pendingMappings.push({
-              description: `XMCL Multiplayer - udp - ${priv} - ${pub}`,
-              protocol: 'udp',
-              private: priv,
-              public: pub,
-              ttl: 24 * 60 * 60,
-            }, {
-              description: `XMCL Multiplayer - tcp - ${priv} - ${pub}`,
-              protocol: 'tcp',
-              private: priv,
-              public: pub,
-              ttl: 24 * 60 * 60,
-            })
-          }
-          this.log('Create new upnp mapping %o', pendingMappings)
-          await Promise.all(pendingMappings.map(n => natService.unmap({
-            protocol: n.protocol,
-            public: n.public,
-          })))
-          await Promise.all(pendingMappings.map(n => natService.map(n)))
-          this.portCandidate = ports[0][0]
-        }
-      }
 
       initCredential().catch(e => {
         this.warn('Fail to init credential', e)
       })
-      initNat().catch((e) => {
+      mapAndGetPortCandidate(natService, this.portCandidate, this).then(port => {
+        this.portCandidate = port
+      }, (e) => {
         this.warn('Fail to init nat', e)
       })
     })
