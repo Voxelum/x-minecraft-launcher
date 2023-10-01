@@ -15,28 +15,37 @@
       :default-percent="30"
       class="flex h-full w-full overflow-auto py-0"
     >
-      <template
-        #left
-      >
+      <template #left>
         <div class="flex flex-grow-0 items-center px-4">
           <v-subheader class="responsive-header py-2 pl-0">
-            <v-icon left>
-              travel_explore
-            </v-icon>
-            <span class="search-text">
-              {{ t('modInstall.search') }}
-            </span>
+            <v-btn
+              text
+              small
+            >
+              <v-icon left>
+                upgrade
+              </v-icon>
+              <span>
+                {{ t('modInstall.upgrade') }}
+              </span>
+            </v-btn>
             <v-divider
               vertical
               class="mx-2"
             />
-            <span v-if="counts.searched > 0">
+            <!-- <span class="search-text">
+              {{ t('modInstall.search') }}
+            </span>
+            <span
+              v-if="counts.searched > 0"
+              class="ml-2"
+            >
               {{ t('items.count', { count: counts.searched }) }}
               <span v-if="total">
                 /
                 {{ t('items.total', { total: total }) }}
               </span>
-            </span>
+            </span> -->
           </v-subheader>
           <div class="flex-grow" />
           <v-btn-toggle
@@ -87,13 +96,13 @@
         >
           <template #default="{ item }">
             <ModItem
-              v-if="item !== 'divider'"
+              v-if="typeof item !== 'string'"
               :item="item"
               :selection-mode="false"
-              :selected="(selectedItem && selectedItem.id === item.id ) || false"
+              :selected="(selectedItem && selectedItem.id === item.id) || false"
               @click="onSelect(item)"
             />
-            <template v-else>
+            <template v-else-if="item === 'installed'">
               <v-subheader class="flex h-[81px] items-center justify-center px-4">
                 <v-divider class="mr-3" />
                 <v-icon left>
@@ -104,6 +113,44 @@
                 </span>
                 <span>
                   {{ t('items.count', { count: counts.installed }) }}
+                </span>
+                <v-divider class="ml-3" />
+              </v-subheader>
+            </template>
+            <template v-else-if="item === 'search'">
+              <v-subheader class="flex h-[81px] items-center justify-center px-4">
+                <v-divider class="mr-3" />
+                <v-icon left>
+                  archive
+                </v-icon>
+                <span class="mr-2">
+                  {{ t('modInstall.search') }}
+                </span>
+                <span v-if="counts.searched > 0">
+                  {{ t('items.count', { count: counts.searched }) }}
+                  <span v-if="total">
+                    /
+                    {{ t('items.total', { total: total }) }}
+                  </span>
+                </span>
+                <v-divider class="ml-3" />
+              </v-subheader>
+            </template>
+            <template v-else-if="item === 'update'">
+              <v-subheader class="flex h-[81px] items-center justify-center px-4">
+                <v-divider class="mr-3" />
+                <v-icon left>
+                  archive
+                </v-icon>
+                <span class="mr-2">
+                  {{ t('modInstall.search') }}
+                </span>
+                <span v-if="counts.searched > 0">
+                  {{ t('items.count', { count: counts.searched }) }}
+                  <span v-if="total">
+                    /
+                    {{ t('items.total', { total: total }) }}
+                  </span>
                 </span>
                 <v-divider class="ml-3" />
               </v-subheader>
@@ -120,9 +167,7 @@
         />
       </template>
       <template #right>
-        <div
-          class="flex h-full flex-grow-0 overflow-y-auto overflow-x-hidden"
-        >
+        <div class="flex h-full flex-grow-0 overflow-y-auto overflow-x-hidden">
           <ModDetailModrinth
             v-if="(selectedItem && selectedItem.modrinth) || selectedModrinthId"
             :modrinth="selectedItem?.modrinth"
@@ -165,7 +210,7 @@ import SplitPane from '@/components/SplitPane.vue'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kModsSearch } from '@/composables/modSearch'
-import { kModSearchItems } from '@/composables/modSearchItems'
+import { kMods } from '@/composables/modSearchItems'
 import { kCompact } from '@/composables/scrollTop'
 import { injection } from '@/util/inject'
 import { Mod } from '@/util/mod'
@@ -205,28 +250,19 @@ const {
   loadingCurseforge,
   loadingModrinth,
 } = injection(kModsSearch)
-const { items: searchItems, tab } = injection(kModSearchItems)
+const { search, installed, tab } = injection(kMods)
 const items = computed(() => {
-  const filter = (a: Mod | 'divider') => a === 'divider' ? true : (allowForge && a.forge) || (allowFabric && a.fabric) || (allowQuilt && a.quilt) || a.modrinth || a.curseforge || a.installed
   const allowForge = modLoaderFilters.value.indexOf('forge') !== -1
   const allowFabric = modLoaderFilters.value.indexOf('fabric') !== -1
   const allowQuilt = modLoaderFilters.value.indexOf('quilt') !== -1
-  return searchItems.value.filter(filter)
+  const filter = (a: Mod | string) => typeof a === 'string' ? true : (allowForge && a.forge) || (allowFabric && a.fabric) || (allowQuilt && a.quilt) || a.modrinth || a.curseforge || a.installed
+
+  return ['installed', ...installed.value.filter(filter), 'search', ...search.value.filter(filter)]
 })
 const counts = computed(() => {
-  let installed = 0
-  let searched = items.value.length
-  for (const item of items.value) {
-    if (item === 'divider') {
-      searched -= 1
-      break
-    }
-    installed += 1
-    searched -= 1
-  }
   return {
-    installed,
-    searched,
+    installed: installed.value.length,
+    searched: search.value.length,
   }
 })
 
@@ -305,15 +341,16 @@ onMounted(() => {
 </script>
 
 <style scoped>
-
 .search-text {
   display: none;
 }
+
 @container (min-width: 260px) {
   .search-text {
     display: block;
   }
 }
+
 .responsive-header {
   container-type: size;
   width: 100%;

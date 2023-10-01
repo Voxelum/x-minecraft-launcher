@@ -113,10 +113,19 @@ export interface Mod {
    * The installed mod file
    */
   installed: ModFile[]
+  /**
+   * The curseforge search result
+   */
   curseforge?: CurseforgeMod
   curseforgeProjectId?: number
+  /**
+   * The modrinth search result
+   */
   modrinth?: SearchResultHit
   modrinthProjectId?: string
+  /**
+   * The files under resources storage
+   */
   files?: ModFile[]
 }
 
