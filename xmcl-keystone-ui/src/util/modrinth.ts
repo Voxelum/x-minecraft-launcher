@@ -1,5 +1,7 @@
 import { clientModrinthV2 } from '@/util/clients'
 import { ProjectVersion } from '@xmcl/modrinth'
+import { RuntimeVersions } from '@xmcl/runtime-api'
+import { isNoModLoader } from './isNoModloader'
 export async function resolveModrinthDependencies(version: ProjectVersion) {
   const visited = new Set<string>()
   type VersionTuple = [ProjectVersion, 'required' | 'optional' | 'incompatible' | 'embedded']
@@ -29,4 +31,30 @@ export async function resolveModrinthDependencies(version: ProjectVersion) {
   tuples.shift()
 
   return tuples
+}
+
+export function getModrinthModLoaders(runtime: RuntimeVersions, allForNoModLoader = true) {
+  const noModLoader = isNoModLoader(runtime)
+  const modLoaders = [] as string[]
+  if (noModLoader && allForNoModLoader) {
+    modLoaders.push('forge', 'fabric', 'quilt', 'liteloader', 'neoforge')
+  } else {
+    if (runtime.forge) {
+      modLoaders.push('forge')
+    }
+    if (runtime.fabricLoader) {
+      modLoaders.push('fabric')
+    }
+    if (runtime.quiltLoader) {
+      modLoaders.push('quilt')
+    }
+    if (runtime.liteLoader) {
+      modLoaders.push('liteloader')
+    }
+    if (runtime.neoForged) {
+      modLoaders.push('neoforge')
+    }
+  }
+
+  return modLoaders
 }

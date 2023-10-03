@@ -1,4 +1,3 @@
-
 export interface LauncherProfile {
   /**
    * All the launcher profiles and their configurations.

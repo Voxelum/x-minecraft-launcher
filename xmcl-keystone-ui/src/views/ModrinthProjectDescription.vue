@@ -15,7 +15,7 @@ export default defineComponent({
     description: required(String),
   },
   setup(props) {
-    const htmlContent = computed(() => render(props.description))
+    const htmlContent = computed(() => render(props.description).replace(/font-size:[ 0-9]*px/g, ''))
     return {
       htmlContent,
     }

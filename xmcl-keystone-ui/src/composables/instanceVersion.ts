@@ -1,4 +1,4 @@
-import { EMPTY_VERSION, Instance, LocalVersionHeader, RuntimeVersions, VersionServiceKey, getResolvedVersion } from '@xmcl/runtime-api'
+import { EMPTY_VERSION, Instance, LocalVersionHeader, RuntimeVersions, VersionServiceKey, getExpectVersion, getResolvedVersion } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { Ref, InjectionKey } from 'vue'
 import { useService } from './service'
@@ -37,12 +37,13 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<LocalVers
     instance.value.runtime.neoForged,
     instance.value.runtime.fabricLoader,
     instance.value.runtime.optifine,
-    instance.value.runtime.quiltLoader) || markRaw(EMPTY_VERSION))
+    instance.value.runtime.quiltLoader) || { ...EMPTY_VERSION, id: getExpectVersion(instance.value.runtime) })
   const folder = computed(() => versionHeader.value?.id || 'unknown')
 
   const { isValidating, mutate, data: resolvedVersion, error } = useSWRV(() => instance.value.path && `/instance/${instance.value.path}/version`, async () => {
-    if (versionHeader.value === EMPTY_VERSION || !versionHeader.value.id) {
-      return { requirements: instance.value.runtime }
+    console.log('update instance version')
+    if (!versionHeader.value.path) {
+      return { requirements: { ...instance.value.runtime } }
     }
     const resolvedVersion = await resolveLocalVersion(versionHeader.value.id)
     return resolvedVersion

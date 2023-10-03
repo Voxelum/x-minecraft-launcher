@@ -1,6 +1,6 @@
 import { TaskItem } from '@/entities/task'
 import { Project, ProjectVersion } from '@xmcl/modrinth'
-import { ModrinthServiceKey, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, ModrinthServiceKey, Resource, ResourceDomain, ResourceServiceKey, getModrinthVersionFileUri, getModrinthVersionUri } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useDialog } from './dialog'
 import { AddInstanceDialogKey } from './instanceTemplates'
@@ -9,6 +9,21 @@ import { useNotifier } from './notifier'
 import { useService } from './service'
 
 export const kModrinthInstall: InjectionKey<ReturnType<typeof useModrinthInstall>> = Symbol('ModrinthInstall')
+
+export function useModrinthInstallVersion(path: Ref<string>) {
+  const { getResourcesByUris } = useService(ResourceServiceKey)
+  const { install: installMod } = useService(InstanceModsServiceKey)
+  const { installVersion } = useService(ModrinthServiceKey)
+  const installModrinthVersion = async (v: ProjectVersion, icon?: string) => {
+    const resources = await getResourcesByUris(v.files.map(f => getModrinthVersionFileUri({ project_id: v.project_id, filename: f.filename, id: v.id })))
+    if (resources.length > 0) {
+      await installMod({ mods: resources, path: path.value })
+    } else {
+      await installVersion({ version: v, icon, instancePath: path.value })
+    }
+  }
+  return installModrinthVersion
+}
 
 export function useModrinthInstall(project: Ref<Project | undefined>, tasks: Ref<Record<string, TaskItem>>, installTo: Ref<string>, getResource: (version: ProjectVersion) => Resource | undefined, currentVersionResource: Ref<Resource | undefined>) {
   const { installVersion } = useService(ModrinthServiceKey)

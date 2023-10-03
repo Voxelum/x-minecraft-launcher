@@ -171,6 +171,7 @@ export class ResourceService extends AbstractService implements IResourceService
 
   async getReosurceByIno(ino: number): Promise<Resource | undefined> {
     const metadata = await getResourceAndMetadata(this.context, { ino })
+    if (!metadata[0]) return undefined
     return generateResource(this.getPath(), metadata[0], metadata[0])
   }
 
@@ -208,6 +209,7 @@ export class ResourceService extends AbstractService implements IResourceService
   async updateResources(resources: PartialResourceHash[]): Promise<string[]> {
     await this.context.db.transaction().execute(async (trx) => {
       for (const resource of resources) {
+        // this.log(`Update resource ${JSON.stringify(resource, null, 4)}`)
         if (resource.name || resource.metadata?.github || resource.metadata?.curseforge || resource.metadata?.modrinth || resource.metadata?.instance) {
           await trx.updateTable('resources')
             .where('sha1', '=', resource.hash)
@@ -221,23 +223,25 @@ export class ResourceService extends AbstractService implements IResourceService
         }
         // Upsert each tag
         if (resource.tags) {
-          await trx.deleteFrom('tags').where('sha1', '=', resource.hash).execute()
-          await trx.insertInto('tags').values(resource.tags.map(t => ({ tag: t, sha1: resource.hash }))).execute()
+          // await trx.deleteFrom('tags').where('sha1', '=', resource.hash).execute()
+          await trx.insertInto('tags').values(resource.tags.map(t => ({ tag: t, sha1: resource.hash }))).onConflict((v) => v.doNothing()).execute()
         }
         // Upsert each uri
         if (resource.uris) {
-          await trx.deleteFrom('uris').where('sha1', '=', resource.hash).execute()
-          await trx.insertInto('uris').values(resource.uris.map(u => ({ uri: u, sha1: resource.hash }))).execute()
+          // await trx.deleteFrom('uris').where('sha1', '=', resource.hash).execute()
+          await trx.insertInto('uris').values(resource.uris.map(u => ({ uri: u, sha1: resource.hash }))).onConflict((v) => v.doNothing()).execute()
         }
         // Upsert each icon
         if (resource.icons) {
-          await trx.deleteFrom('icons').where('sha1', '=', resource.hash).execute()
-          await trx.insertInto('icons').values(resource.icons.map(i => ({ icon: i, sha1: resource.hash }))).execute()
+          // await trx.deleteFrom('icons').where('sha1', '=', resource.hash).execute()
+          await trx.insertInto('icons').values(resource.icons.map(i => ({ icon: i, sha1: resource.hash }))).onConflict((v) => v.doNothing()).execute()
         }
       }
     })
     // TODO: fix this
-    // this.emit('resourceUpdate', generateResource(this.getPath(), entry, metadata))
+    // this.context.db.selectFrom('resources').selectAll().where('sha1', 'in', resources.map(r => r.hash)).select('sha1').execute().then((result) => {
+    //   this.emit('resourceUpdate', generateResource(this.getPath(), entry, result))
+    // })
 
     return []
   }

@@ -1,11 +1,15 @@
 import { useSharedTooltipData } from '@/composables/sharedTooltip'
 import { FunctionDirective } from 'vue'
 
-export const vSharedTooltip: FunctionDirective<HTMLElement, string> = (el, bindings) => {
-  const { currentTooltip, x, y, color, left, isShown } = useSharedTooltipData()
+export const vSharedTooltip: FunctionDirective<HTMLElement, string | [string, string]> = (el, bindings) => {
+  const { currentTooltip, x, y, color, left, stack, isShown } = useSharedTooltipData()
   el.addEventListener('mouseenter', (e) => {
     const target = e.target as HTMLElement
     const rect = target.getBoundingClientRect()
+    if (isShown.value) {
+      stack.push([x.value, y.value, currentTooltip.value, left.value])
+    }
+
     if (bindings.modifiers.left) {
       left.value = true
     } else {
@@ -18,16 +22,34 @@ export const vSharedTooltip: FunctionDirective<HTMLElement, string> = (el, bindi
       x.value = rect.x
       y.value = rect.y + rect.width / 2
     }
-    currentTooltip.value = bindings.value
+    const val = bindings.value
+    color.value = 'black'
+    if (typeof val === 'string') {
+      currentTooltip.value = val
+    } else if (val instanceof Array) {
+      currentTooltip.value = val[0]
+      color.value = val[1]
+    }
     isShown.value = true
   })
   el.addEventListener('click', (e) => {
+    stack.pop()
     isShown.value = false
   })
   el.addEventListener('mouseleave', (e) => {
-    isShown.value = false
+    const last = stack.pop()
+    if (last) {
+      x.value = last[0]
+      y.value = last[1]
+      currentTooltip.value = last[2]
+      left.value = last[3]
+      isShown.value = true
+    } else {
+      isShown.value = false
+    }
   })
   el.addEventListener('DOMNodeRemoved', (e) => {
+    stack.pop()
     left.value = false
     isShown.value = false
   })

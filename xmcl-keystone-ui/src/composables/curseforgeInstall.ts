@@ -1,6 +1,6 @@
 import { clientCurseforgeV1 } from '@/util/clients'
 import { File, FileIndex } from '@xmcl/curseforge'
-import { CurseForgeServiceKey, ProjectType, Resource, ResourceServiceKey, getCurseforgeFileUri } from '@xmcl/runtime-api'
+import { CurseForgeServiceKey, InstanceModsServiceKey, ProjectType, Resource, ResourceServiceKey, getCurseforgeFileUri } from '@xmcl/runtime-api'
 import { InjectionKey, Ref } from 'vue'
 import { useCurseforgeProject } from './curseforge'
 import { useDialog } from './dialog'
@@ -13,8 +13,22 @@ import { useService } from './service'
 
 export const kCurseforgeInstall: InjectionKey<ReturnType<typeof useCurseforgeInstall>> = Symbol('CurseforgeInstall')
 
+export function useCurseforgeInstallModFile(path: Ref<string>) {
+  const { getResourcesByUris } = useService(ResourceServiceKey)
+  const { install: installMod } = useService(InstanceModsServiceKey)
+  const { installFile } = useService(CurseForgeServiceKey)
+  const installCurseforgeFile = async (v: File, icon?: string) => {
+    const resources = await getResourcesByUris([getCurseforgeFileUri(v)])
+    if (resources.length > 0) {
+      await installMod({ mods: resources, path: path.value })
+    } else {
+      await installFile({ file: v, icon, type: 'mc-mods', instancePath: path.value })
+    }
+  }
+  return installCurseforgeFile
+}
+
 export function useCurseforgeInstall(modId: Ref<number>, files: Ref<Pick<File, 'modId' | 'id'>[]>, from: Ref<string | undefined>, type: Ref<ProjectType>, currentFileResource: Ref<Resource | undefined>) {
-  const installList = inject(kInstallList, undefined)
   const { install: installResource } = useService(ResourceServiceKey)
   const { t } = useI18n()
   const { notify } = useNotifier()
@@ -52,15 +66,7 @@ export function useCurseforgeInstall(modId: Ref<number>, files: Ref<Pick<File, '
         })
       }
     } else {
-      if (project.value && type.value === 'mc-mods' && installList) {
-        installList.add(file, {
-          uri: file.modId.toString(),
-          name: project.value.name,
-          icon: project.value.logo.url,
-        })
-      } else {
-        await installFile({ file, type: type.value })
-      }
+      await installFile({ file, type: type.value, icon: project.value?.logo.url })
     }
   }
   return {

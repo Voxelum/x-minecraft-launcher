@@ -1,7 +1,7 @@
 <template>
   <v-list-item
     v-context-menu="contextMenuItems"
-    v-shared-tooltip="item.description || item.title"
+    v-shared-tooltip="[tooltip, hasUpdate ? 'primary' : 'black']"
     :input-value="selected"
     link
     @click="emit('click')"
@@ -15,7 +15,17 @@
       <v-checkbox hide-details />
     </v-list-item-action>
     <v-list-item-content>
-      <v-list-item-title>{{ item.title }}</v-list-item-title>
+      <v-badge
+        color="red"
+        dot
+        inline
+        :value="hasUpdate"
+        :offset-y="5"
+      >
+        <v-list-item-title>
+          {{ item.title }}
+        </v-list-item-title>
+      </v-badge>
       <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
       <v-list-item-subtitle class="invisible-scroll flex flex-grow-0 gap-2">
         <template
@@ -152,11 +162,14 @@ const props = defineProps<{
   item: Mod
   selectionMode: boolean
   selected: boolean
+  hasUpdate?: boolean
 }>()
 
 const emit = defineEmits(['click'])
 
 const { provideRuntime } = injection(kInstanceModsContext)
+const { t } = useI18n()
+const tooltip = computed(() => props.hasUpdate ? t('mod.hasUpdate') : props.item.description || props.item.title)
 const { isCompatible, compatibility } = useModCompatibility(computed(() => props.item.installed[0]?.dependencies || []), provideRuntime)
 const contextMenuItems = useModItemContextMenuItems(computed(() => props.item.installed?.[0] || props.item.files?.[0]), () => {
   // if (props.item.installed?.[0]) {

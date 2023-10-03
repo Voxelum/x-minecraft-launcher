@@ -21,6 +21,38 @@
             <v-btn
               text
               small
+              :disabled="installed.length === 0"
+              :loading="checkingUpgrade"
+              @click="checkUpgrade"
+            >
+              <template v-if="!checkedUpgrade">
+                <v-icon left>
+                  refresh
+                </v-icon>
+                <span>
+                  {{ t('modInstall.checkUpgrade') }}
+                </span>
+              </template>
+              <template v-else>
+                <v-icon
+                  color="primary"
+                  left
+                >
+                  check
+                </v-icon>
+                <span>
+                  {{ t('modInstall.checkedUpgrade') }}
+                </span>
+              </template>
+            </v-btn>
+            <div class="flex-grow" />
+
+            <v-btn
+              text
+              small
+              :disabled="Object.keys(plans).length === 0"
+              :loading="upgrading"
+              @click="upgrade"
             >
               <v-icon left>
                 upgrade
@@ -29,10 +61,10 @@
                 {{ t('modInstall.upgrade') }}
               </span>
             </v-btn>
-            <v-divider
+            <!-- <v-divider
               vertical
               class="mx-2"
-            />
+            /> -->
             <!-- <span class="search-text">
               {{ t('modInstall.search') }}
             </span>
@@ -47,45 +79,6 @@
               </span>
             </span> -->
           </v-subheader>
-          <div class="flex-grow" />
-          <v-btn-toggle
-            v-model="modLoaderFilters"
-            multiple
-            dense
-          >
-            <v-btn
-              icon
-              text
-              value="forge"
-            >
-              <v-img
-                width="28"
-                :src="'image://builtin/forge'"
-              />
-            </v-btn>
-
-            <v-btn
-              icon
-              text
-              value="fabric"
-            >
-              <v-img
-                width="28"
-                :src="'image://builtin/fabric'"
-              />
-            </v-btn>
-
-            <v-btn
-              icon
-              text
-              value="quilt"
-            >
-              <v-img
-                width="28"
-                :src="'image://builtin/quilt'"
-              />
-            </v-btn>
-          </v-btn-toggle>
         </div>
         <v-virtual-scroll
           :bench="2"
@@ -98,6 +91,7 @@
             <ModItem
               v-if="typeof item !== 'string'"
               :item="item"
+              :has-update="!!plans[item.id]"
               :selection-mode="false"
               :selected="(selectedItem && selectedItem.id === item.id) || false"
               @click="onSelect(item)"
@@ -114,29 +108,14 @@
                 <span>
                   {{ t('items.count', { count: counts.installed }) }}
                 </span>
+
+                <span v-if="Object.keys(plans).length">
+                  , {{ t('mod.toUpdate', { count: Object.keys(plans).length }) }}
+                </span>
                 <v-divider class="ml-3" />
               </v-subheader>
             </template>
             <template v-else-if="item === 'search'">
-              <v-subheader class="flex h-[81px] items-center justify-center px-4">
-                <v-divider class="mr-3" />
-                <v-icon left>
-                  archive
-                </v-icon>
-                <span class="mr-2">
-                  {{ t('modInstall.search') }}
-                </span>
-                <span v-if="counts.searched > 0">
-                  {{ t('items.count', { count: counts.searched }) }}
-                  <span v-if="total">
-                    /
-                    {{ t('items.total', { total: total }) }}
-                  </span>
-                </span>
-                <v-divider class="ml-3" />
-              </v-subheader>
-            </template>
-            <template v-else-if="item === 'update'">
               <v-subheader class="flex h-[81px] items-center justify-center px-4">
                 <v-divider class="mr-3" />
                 <v-icon left>
@@ -172,7 +151,8 @@
             v-if="(selectedItem && selectedItem.modrinth) || selectedModrinthId"
             :modrinth="selectedItem?.modrinth"
             :project-id="selectedModrinthId"
-            :loader="loader"
+            :updating="plans[selectedItem?.id ?? '']?.updating"
+            :runtime="runtime"
             :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
             :minecraft="minecraft"
           />
@@ -180,7 +160,8 @@
             v-else-if="(selectedItem && selectedItem.curseforge) || selectedCurseforgeId"
             :curseforge="selectedItem?.curseforge"
             :curseforge-id="Number(selectedCurseforgeId)"
-            :loader="loader"
+            :updating="plans[selectedItem?.id ?? '']?.updating"
+            :runtime="runtime"
             :minecraft="minecraft"
             :installed="selectedItem?.installed || getInstalledCurseforge(selectedCurseforgeId)"
           />
@@ -188,7 +169,7 @@
             v-else-if="selectedItem && selectedItem.files && selectedItem"
             :mod="selectedItem"
             :files="selectedItem.files"
-            :loader="loader"
+            :runtime="runtime"
             :installed="selectedItem.installed"
             :minecraft="minecraft"
           />
@@ -210,7 +191,7 @@ import SplitPane from '@/components/SplitPane.vue'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kModsSearch } from '@/composables/modSearch'
-import { kMods } from '@/composables/modSearchItems'
+import { kMods } from '@/composables/mods'
 import { kCompact } from '@/composables/scrollTop'
 import { injection } from '@/util/inject'
 import { Mod } from '@/util/mod'
@@ -218,19 +199,22 @@ import ModDetailCurseforge from './ModDetailCurseforge.vue'
 import ModDetailModrinth from './ModDetailModrinth.vue'
 import ModDetailResource from './ModDetailResource.vue'
 import ModItem from './ModItem.vue'
+import { kModUpgrade } from '@/composables/modUpgrade'
+import { kInstance } from '@/composables/instance'
 
-const { minecraft, fabricLoader, forge, quiltLoader } = injection(kInstanceVersion)
+const { minecraft } = injection(kInstanceVersion)
+const { runtime } = injection(kInstance)
 
 const modLoaderFilters = ref([] as string[])
 onMounted(() => {
   const items = [] as string[]
-  if (fabricLoader.value) {
+  if (runtime.value.fabricLoader) {
     items.push('fabric')
   }
-  if (forge.value) {
+  if (runtime.value.forge) {
     items.push('forge')
   }
-  if (quiltLoader.value) {
+  if (runtime.value.quiltLoader) {
     items.push('quilt')
   }
   modLoaderFilters.value = items
@@ -251,13 +235,21 @@ const {
   loadingModrinth,
 } = injection(kModsSearch)
 const { search, installed, tab } = injection(kMods)
+
+const { plans, refresh: checkUpgrade, refreshing: checkingUpgrade, checked: checkedUpgrade, upgrade, upgradeError, upgrading } = injection(kModUpgrade)
 const items = computed(() => {
   const allowForge = modLoaderFilters.value.indexOf('forge') !== -1
   const allowFabric = modLoaderFilters.value.indexOf('fabric') !== -1
   const allowQuilt = modLoaderFilters.value.indexOf('quilt') !== -1
   const filter = (a: Mod | string) => typeof a === 'string' ? true : (allowForge && a.forge) || (allowFabric && a.fabric) || (allowQuilt && a.quilt) || a.modrinth || a.curseforge || a.installed
 
-  return ['installed', ...installed.value.filter(filter), 'search', ...search.value.filter(filter)]
+  const filteredInstalled = installed.value
+  const installedItem = filteredInstalled.length > 0 ? ['installed', ...filteredInstalled] : []
+
+  const filteredSearch = search.value.filter(filter)
+  const searchItem = filteredSearch.length > 0 ? ['search', ...filteredSearch] : []
+
+  return [...installedItem, ...searchItem]
 })
 const counts = computed(() => {
   return {
@@ -272,7 +264,9 @@ const route = useRoute()
 const selectedId = computed({
   get: () => route.query.id as string | undefined,
   set: (v) => {
-    replace({ query: { ...route.query, id: v } })
+    if (route.query.id !== v) {
+      replace({ query: { ...route.query, id: v } })
+    }
   },
 })
 const selectedItem = computed(() => {
@@ -330,8 +324,6 @@ const onScroll = (e: Event) => {
     }
   }
 }
-
-const loader = computed(() => forge.value ? 'forge' : fabricLoader.value ? 'fabric' : '')
 
 const { t } = useI18n()
 const compact = injection(kCompact)

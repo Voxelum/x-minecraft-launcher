@@ -37,7 +37,8 @@ import { vuetify } from '@/vuetify'
 import { kYggdrasilServices, useYggdrasilServices } from '@/composables/yggrasil'
 import { useDomainResources } from '@/composables/resources'
 import { ResourceDomain } from '@xmcl/runtime-api'
-import { kMods, useMods } from '@/composables/modSearchItems'
+import { kMods, useMods } from '@/composables/mods'
+import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
 
 export default defineComponent({
   setup(props, ctx) {
@@ -72,6 +73,7 @@ export default defineComponent({
     const modResources = useDomainResources(ResourceDomain.Mods)
     const modsSearch = useModsSearch(ref(''), modResources.resources, instance.runtime, instanceMods.mods)
     const mods = useMods(modsSearch.keyword, modsSearch.modrinth, modsSearch.curseforge, modsSearch.mods, modsSearch.existedMods)
+    const modUpgrade = useModUpgrade(instance.path, instance.runtime, mods.installed)
 
     const versionDiagnose = useInstanceVersionDiagnose(instance.runtime, instanceVersion.resolvedVersion, localVersions.versions)
     const javaDiagnose = useInstanceJavaDiagnose(java.all, instanceJava.java, instanceJava.recommendation)
@@ -102,6 +104,7 @@ export default defineComponent({
 
     provide(kModsSearch, modsSearch)
     provide(kMods, mods)
+    provide(kModUpgrade, modUpgrade)
     provide(kModpacks, useModpacks())
 
     useI18nSync(vuetify.framework, settings.state)

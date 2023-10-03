@@ -1,14 +1,8 @@
 <template>
   <img
-    :src="'image://builtin/forge'"
+    :src="'image://builtin/neoForged'"
     width="24"
   >
 </template>
 <style type="text/css" scoped>
-.st0 {
-  fill: #dfa86a;
-}
-.st1 {
-  fill: #faf4f3;
-}
 </style>

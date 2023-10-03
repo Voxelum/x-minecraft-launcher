@@ -95,9 +95,10 @@ export class InstanceState {
       if (inst.runtime.minecraft !== settings.runtime.minecraft && typeof versions.minecraft === 'string') {
         // if minecraft version changed, all other related versions are rest.
         inst.runtime.minecraft = versions.minecraft
-        for (const versionType of Object.keys(inst.runtime).filter(v => v !== 'minecraft')) {
-          inst.runtime[versionType] = ''
-        }
+        inst.runtime.forge = ''
+        inst.runtime.neoForged = ''
+        inst.runtime.liteloader = ''
+        inst.runtime.optifine = ''
       }
 
       for (const versionType of Object.keys(versions).filter(v => v !== 'minecraft')) {
@@ -165,6 +166,10 @@ export interface InstanceService {
    * @param path The instance path
    */
   deleteInstance(path?: string): Promise<void>
+  /**
+   * Duplicate the instance.
+   */
+  duplicateInstance(path: string): Promise<string>
   /**
    * Edit the instance. If the `path` is not present, it will edit the current selected instance.
    * Otherwise, it will edit the instance on the provided path.

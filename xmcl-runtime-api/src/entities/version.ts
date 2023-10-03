@@ -295,13 +295,14 @@ export function isCompatible(range: string, version: string) {
   return vRange?.containsVersion(parseVersion(version)) || false
 }
 
-export function getExpectVersion({ minecraft, forge, liteloader, fabricLoader: fabric, optifine, quiltLoader }: RuntimeVersions) {
+export function getExpectVersion({ minecraft, forge, liteloader, fabricLoader: fabric, optifine, quiltLoader, neoForged }: RuntimeVersions) {
   let expectedId = minecraft
   if (typeof forge === 'string' && forge.length > 0) expectedId += `-forge${forge}`
   if (typeof liteloader === 'string' && liteloader.length > 0) expectedId += `-liteloader${liteloader}`
   if (typeof fabric === 'string' && fabric.length > 0) expectedId += `-fabric${fabric}`
   if (typeof optifine === 'string' && optifine.length > 0) expectedId += `-optifine_${optifine}`
   if (typeof quiltLoader === 'string' && quiltLoader.length > 0) expectedId += `-quilt${quiltLoader}`
+  if (typeof neoForged === 'string' && neoForged.length > 0) expectedId += `-neoforged${neoForged}`
   return expectedId
 }
 export function parseOptifineVersion(version: string): { type: string; patch: string } {

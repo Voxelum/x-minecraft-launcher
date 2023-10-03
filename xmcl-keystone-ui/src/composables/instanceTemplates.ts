@@ -1,4 +1,4 @@
-import { getFTBPath } from '@/util/ftb'
+import { getFTBTemplateAndFile } from '@/util/ftb'
 import { resolveModpackInstanceConfig } from '@/util/modpackFilesResolver'
 import { CachedFTBModpackVersionManifest, InstanceFile, InstanceManifest, JavaRecord, ModpackInstallProfile, ModpackServiceKey, PeerConnection, Resource } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
@@ -84,6 +84,7 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>, modpackResources:
           fabricLoader: man.runtime.fabricLoader ?? '',
           quiltLoader: man.runtime.quiltLoader ?? '',
           optifine: man.runtime.optifine ?? '',
+          neoForged: man.runtime.neoForged ?? '',
           yarn: '',
           liteloader: '',
         },
@@ -101,86 +102,12 @@ export function useInstanceTemplates(javas: Ref<JavaRecord[]>, modpackResources:
   }
 
   function getFtbTemplate(man: CachedFTBModpackVersionManifest): Template {
-    const getVersion = (str?: string) => {
-      if (!str) { return undefined }
-      const match = /(\d+)\.(\d)+\.(\d+)(_\d+)?/.exec(str)
-      if (match === null) { return undefined }
-      if (match[1] === '1') {
-        return {
-          version: str,
-          majorVersion: Number.parseInt(match[2]),
-          patch: Number.parseInt(match[4].substring(1)),
-        }
-      }
-      return {
-        version: str,
-        majorVersion: Number.parseInt(match[1]),
-        patch: Number.parseInt(match[3]),
-      }
-    }
-
-    const getRuntime = () => {
-      const javaRuntime = man.targets.find(v => v.name === 'java')
-      if (javaRuntime) {
-        const parsedVersion = getVersion(javaRuntime.version)
-        if (!parsedVersion) {
-          return
-        }
-        const majorMatched = javas.value.filter(v => v.majorVersion === parsedVersion.majorVersion)
-        let selectedRecord = majorMatched[0]
-        for (const v of majorMatched.slice(1)) {
-          const currentPatch = getVersion(v.version)?.patch
-          const selectedPatch = getVersion(selectedRecord.version)?.patch
-          if (!currentPatch || !selectedPatch) continue
-          const diff = Math.abs(currentPatch - parsedVersion.patch)
-          const selectedDiff = Math.abs(selectedPatch - parsedVersion.patch)
-          if (diff < selectedDiff) {
-            selectedRecord = v
-          }
-        }
-        if (selectedRecord) {
-          return selectedRecord.path
-        }
-      }
-    }
-    const runtime = {
-      minecraft: man.targets.find(f => f.name === 'minecraft')?.version || '',
-      forge: man.targets.find(f => f.name === 'forge')?.version || '',
-      fabricLoader: '',
-      quiltLoader: '',
-      optifine: '',
-      liteloader: '',
-      yarn: '',
-    }
-    const files = markRaw(man.files.map(f => ({
-      path: getFTBPath(f),
-      hashes: {
-        sha1: f.sha1,
-      },
-      curseforge: f.curseforge
-        ? {
-          projectId: f.curseforge.project,
-          fileId: f.curseforge.file,
-        }
-        : undefined,
-      downloads: f.url ? [f.url] : undefined,
-      size: f.size,
-    })))
+    const [instanceConfig, files] = getFTBTemplateAndFile(man, javas.value)
     return reactive({
       filePath: `${man.parent}-${man.id.toString()}`,
-      name: '',
+      name: `${man.projectName}-${man.name}`,
       description: computed(() => t('instanceTemplate.ftb')),
-      instance: markRaw({
-        name: `${man.projectName}-${man.name}`,
-        author: man.authors[0].name,
-        java: getRuntime() ?? '',
-        runtime,
-        upstream: {
-          type: 'ftb-modpack',
-          id: man.id,
-        },
-        icon: man.iconUrl,
-      }),
+      instance: markRaw(instanceConfig),
       loadingFiles: false,
       loadFiles: () => Promise.resolve(files),
       files,

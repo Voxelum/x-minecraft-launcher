@@ -1,4 +1,3 @@
-
 export type OnMutatedHandler = (mutation: { type: string; payload: any }, defaultHandler: (this: any, payload: any) => void) => void
 
 type Mutations<T> = {

@@ -149,7 +149,7 @@ export function useCurseforgeProjectFiles(projectId: Ref<number>, gameVersion: R
         index: data.index,
         gameVersion: gameVersion.value,
         pageSize: data.pageSize,
-        modLoaderType: modLoaderType.value,
+        modLoaderType: modLoaderType.value === 0 ? undefined : modLoaderType.value,
       }))
     }, inject(kSWRVConfig))
   watch(_data, (f) => {

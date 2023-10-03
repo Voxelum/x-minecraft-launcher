@@ -28,12 +28,12 @@ export function clearInMemoryCache(key: string) {
 
 const LOCAL_STORAGE_CACHE: Record<string, Ref<any>> = {}
 
-export function useLocalStorageCache<T>(key: string, defaultValue: () => T, toString: (t: T) => string, fromString: (s: string) => T, legacyKey?: string): Ref<T> {
+export function useLocalStorageCache<T>(key: string, defaultValue: () => T, toString: (t: T) => string, fromString: (s: string) => T, deep = false): Ref<T> {
   if (LOCAL_STORAGE_CACHE[key]) {
     const ref = LOCAL_STORAGE_CACHE[key]
     watch(ref, (n) => {
       localStorage.setItem(key, toString(n))
-    })
+    }, { deep })
     return ref
   }
   const result = localStorage.getItem(key)
@@ -46,7 +46,7 @@ export function useLocalStorageCache<T>(key: string, defaultValue: () => T, toSt
   }
   watch(v, (n) => {
     localStorage.setItem(key, toString(n))
-  })
+  }, { deep })
 
   const onStorage = (e: StorageEvent) => {
     if (e.key === key) {

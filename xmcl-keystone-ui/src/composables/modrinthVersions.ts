@@ -29,7 +29,7 @@ export function useModrinthVersions(project: Ref<string>, featured?: boolean, lo
       }
       holder.value = newHolder
     }
-  })
+  }, { immediate: true })
   return {
     refreshing,
     refresh: () => mutate(),

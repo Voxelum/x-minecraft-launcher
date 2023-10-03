@@ -1,7 +1,5 @@
 <template>
-  <div
-    class=""
-  >
+  <div class="">
     <v-subheader>
       {{ t('modrinth.technicalInformation') }}
     </v-subheader>
@@ -12,7 +10,7 @@
         </v-icon>
         <div>
           <span>{{ t('modrinth.clientSide') }}</span>
-          {{ clientSide }}
+          {{ getEnv(clientSide) }}
         </div>
       </div>
       <div class="item">
@@ -21,7 +19,7 @@
         </v-icon>
         <div>
           <span>{{ t('modrinth.serverSide') }}</span>
-          {{ serverSide }}
+          {{ getEnv(serverSide) }}
         </div>
       </div>
       <div class="item">
@@ -60,7 +58,12 @@ defineProps<{
   projectId: string
 }>()
 const { t } = useI18n()
-
+const getEnv = (v: string) => {
+  if (v === 'required') return t('modrinth.environments.required')
+  if (v === 'optional') return t('modrinth.environments.optional')
+  if (v === 'unsupported') return t('modrinth.environments.unsupported')
+  return v
+}
 </script>
 
 <style scoped>
@@ -69,7 +72,7 @@ const { t } = useI18n()
 }
 
 .item .v-icon {
- @apply rounded-full bg-[rgba(0,0,0,0.2)] p-2;
+  @apply rounded-full bg-[rgba(0, 0, 0, 0.2)] p-2;
 }
 
 .item div {
@@ -79,5 +82,4 @@ const { t } = useI18n()
 span {
   @apply dark:text-gray-400 text-gray-600;
 }
-
 </style>
