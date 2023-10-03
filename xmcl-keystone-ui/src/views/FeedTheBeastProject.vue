@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="flex flex-col gap-4 overflow-auto p-4"
-  >
+  <div class="flex flex-col gap-4 overflow-auto p-4">
     <v-progress-linear
       class="absolute left-0 top-0 z-10 m-0 p-0"
       :active="refreshing"
@@ -70,7 +68,8 @@
             <v-icon left>
               download
             </v-icon>
-            {{ t('FeedTheBeastProject.install', { version: selectedVersionInstance ? selectedVersionInstance.name : '' }) }}
+            {{ t('FeedTheBeastProject.install', { version: selectedVersionInstance ? selectedVersionInstance.name : '' })
+            }}
           </v-btn>
         </span>
       </div>
@@ -120,20 +119,22 @@
 </template>
 
 <script lang=ts setup>
-import { useFeedTheBeastProject } from '../composables/ftb'
+import { useFeedTheBeastProject, useFeedTheBeastVersionsCache } from '../composables/ftb'
 import { useRefreshable, useService } from '@/composables'
 import FeedTheBeastProjectVersion from './FeedTheBeastProjectVersion.vue'
 import FeedTheBeastProjectChangelog from './FeedTheBeastProjectChangelog.vue'
 import { useDialog } from '../composables/dialog'
 import { AddInstanceDialogKey } from '../composables/instanceTemplates'
 import { useMarkdown } from '@/composables/markdown'
-import { FTBClient } from '@/util/ftbClient'
+import { swrvGet } from '@/util/swrvGet'
+import { injection } from '@/util/inject'
+import { kSWRVConfig } from '@/composables/swrvConfig'
+import { clientFTB } from '@/util/clients'
 
 const { render } = useMarkdown()
 const props = defineProps<{ id: number }>()
 
 const { refreshing, manifest } = useFeedTheBeastProject(computed(() => props.id))
-const { getModpackVersionManifest } = new FTBClient()
 const { show } = useDialog(AddInstanceDialogKey)
 
 const tab = ref(0)
@@ -159,9 +160,28 @@ watch(manifest, (m) => {
   }
 })
 
+const { cache: cachedList } = useFeedTheBeastVersionsCache()
+const { cache, dedupingInterval } = injection(kSWRVConfig)
 const { refresh: install, refreshing: installing } = useRefreshable(async () => {
   if (selectedVersionInstance.value) {
-    show(`${props.id}-${selectedVersionInstance.value.id}`)
+    const version = selectedVersionInstance.value
+    // ensure the cached list has the version
+    const versionManifest = await swrvGet(`/ftb/${props.id}/${version.id}`, () => clientFTB.getModpackVersionManifest({
+      modpack: props.id,
+      version,
+    }), cache, dedupingInterval)
+    if (!cachedList.value.find(v => v.id === version.id)) {
+      cachedList.value.push({
+        ...versionManifest,
+        iconUrl: avatar.value?.url ?? '',
+        projectName: title.value ?? '',
+        authors: manifest.value?.authors ?? [],
+      })
+    }
+
+    setTimeout(() => {
+      show(`${props.id}-${version.id}`)
+    }, 1000)
   }
 })
 
