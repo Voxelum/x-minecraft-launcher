@@ -61,7 +61,7 @@ export default class TaskManager extends Manager {
           break
         case 'cancel':
           this.logger.log(`Request ${id} to cancel`)
-          this.record[id].cancel()
+          this.record[id].cancel(5000)
           break
         default:
       }
