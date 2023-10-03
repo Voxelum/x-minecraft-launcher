@@ -54,8 +54,7 @@ export function createResourceContext(root: string, imageStore: ImageStorage, ev
     plugins: [new ParseJSONResultsPlugin(), new JSONPlugin()],
     log: (e) => {
       if (e.level === 'error') {
-        logger.log(e.query.sql)
-        logger.log(e.query.parameters)
+        logger.warn(e.query.sql + '\n[' + e.query.parameters.join(', ') + ']')
       }
     },
   })

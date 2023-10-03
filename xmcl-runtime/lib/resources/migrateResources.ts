@@ -48,21 +48,21 @@ async function up(db: Kysely<Database>): Promise<void> {
 
   await db.schema
     .createTable('tags')
-    .addColumn('sha1', 'char(40)', (col) => col.notNull().references('resources.sha1').onDelete('cascade'))
+    .addColumn('sha1', 'char(40)', (col) => col.notNull()/* .references('resources.sha1').onDelete('cascade') */)
     .addColumn('tag', 'varchar', (col) => col.notNull())
     .addUniqueConstraint('sha1_uri_unique', ['sha1', 'tag'])
     .execute()
 
   await db.schema
     .createTable('uris')
-    .addColumn('sha1', 'char(40)', (col) => col.notNull().references('resources.sha1').onDelete('cascade'))
+    .addColumn('sha1', 'char(40)', (col) => col.notNull()/* .references('resources.sha1').onDelete('cascade') */)
     .addColumn('uri', 'varchar', (col) => col.notNull())
     .addUniqueConstraint('sha1_uri_unique', ['sha1', 'uri'])
     .execute()
 
   await db.schema
     .createTable('icons')
-    .addColumn('sha1', 'char(40)', (col) => col.notNull().references('resources.sha1').onDelete('cascade'))
+    .addColumn('sha1', 'char(40)', (col) => col.notNull()/* .references('resources.sha1').onDelete('cascade') */)
     .addColumn('icon', 'varchar', (col) => col.notNull())
     .addUniqueConstraint('sha1_uri_unique', ['sha1', 'icon'])
     .execute()
