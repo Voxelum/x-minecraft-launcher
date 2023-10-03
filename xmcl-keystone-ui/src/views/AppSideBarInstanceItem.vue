@@ -113,11 +113,12 @@
 import { kInstance } from '@/composables/instance'
 import { getInstanceIcon } from '@/util/favicon'
 import { injection } from '@/util/inject'
-import { Instance } from '@xmcl/runtime-api'
+import { Instance, InstanceServiceKey } from '@xmcl/runtime-api'
 import { ContextMenuItem } from '../composables/contextMenu'
 import { useDialog } from '../composables/dialog'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import { vContextMenu } from '../directives/contextMenu'
+import { useService } from '@/composables'
 
 const props = defineProps<{ instance: Instance }>()
 const emit = defineEmits(['drop'])
@@ -133,6 +134,7 @@ const dragging = ref(false)
 const dragover = ref(0)
 
 const favicon = computed(() => getInstanceIcon(props.instance, status.value))
+const { duplicateInstance } = useService(InstanceServiceKey)
 
 const items = computed(() => {
   const result: ContextMenuItem[] = [
@@ -142,6 +144,13 @@ const items = computed(() => {
       icon: 'delete',
       onClick() {
         showDeleteDialog({ name: props.instance.name, path: props.instance.path })
+      },
+    },
+    {
+      text: t('instance.duplicate'),
+      icon: 'file_copy',
+      onClick() {
+        duplicateInstance(props.instance.path)
       },
     },
   ]

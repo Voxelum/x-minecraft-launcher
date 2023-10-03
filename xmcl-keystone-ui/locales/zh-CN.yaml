@@ -401,6 +401,7 @@ instance:
   current: 当前实例
   delete: 删除游戏
   deleteHint: 游戏的数据将完全被移除。你确定继续此操作吗？
+  duplicate: 创建备份实例
   duplicatedName: 名字重复了！
   fileApi: 远程同步文件服务器 API 地址
   fileApiHint: 用于远程同步实例文件的链接
@@ -642,9 +643,12 @@ mod:
   showInCurseforge: 在 Curseforge 上显示该 Mod
   showInModrinth: 在 Modrinth 中显示 {name}
   showIncompatible: 显示不兼容 Mods
+  toUpdate: '{count} 个有新版本'
   unselected: 未选 Mods
 modInstall:
-  currentVersion: 当前版本
+  checkUpgrade: 检查 Mod 更新
+  checkedUpgrade: 已刷新更新列表
+  currentVersion: 已选版本
   dependencyHint: 安装了其他版本 {version}
   install: 安装
   installHint: 安装 {file} 个文件和 {dependencies} 个依赖文件
