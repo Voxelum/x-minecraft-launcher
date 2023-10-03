@@ -7,7 +7,7 @@ import { InjectionKey, Ref } from 'vue'
 import { useService } from './service'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { resolveCurseforgeDependies } from '@/util/curseforgeDependencies'
-import { resolveModrinthDependencies } from '@/util/modrinthDependencies'
+import { resolveModrinthDependencies } from '@/util/modrinth'
 import { getCurseforgeRelationType } from '@/util/curseforge'
 
 export interface ProjectMetadata {

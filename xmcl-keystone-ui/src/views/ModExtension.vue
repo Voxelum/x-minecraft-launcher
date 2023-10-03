@@ -142,7 +142,7 @@
 import AvatarItem from '@/components/AvatarItem.vue'
 import { kInstance } from '@/composables/instance'
 import { kModsSearch } from '@/composables/modSearch'
-import { kMods } from '@/composables/modSearchItems'
+import { kMods } from '@/composables/mods'
 import { injection } from '@/util/inject'
 import debounce from 'lodash.debounce'
 
@@ -162,6 +162,21 @@ const { tab } = injection(kMods)
 const curseforgeCount = computed(() => curseforge.value ? curseforge.value.pagination.totalCount : 0)
 const modrinthCount = computed(() => modrinth.value ? modrinth.value.total_hits : 0)
 const { t } = useI18n()
+
+const modLoaderFilters = ref([] as string[])
+onMounted(() => {
+  const items = [] as string[]
+  // if (fabricLoader.value) {
+  //   items.push('fabric')
+  // }
+  // if (forge.value) {
+  //   items.push('forge')
+  // }
+  // if (quiltLoader.value) {
+  //   items.push('quilt')
+  // }
+  modLoaderFilters.value = items
+})
 
 const searchTextField = ref(undefined as any)
 const onControlF = (e: KeyboardEvent) => {

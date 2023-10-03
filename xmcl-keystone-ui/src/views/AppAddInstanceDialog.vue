@@ -68,7 +68,6 @@
             />
             <AdvanceContent :valid.sync="valid" />
           </div>
-          {{ creating }}
           <StepperFooter
             style="padding: 16px 24px"
             :disabled="!valid || isInvalid"
@@ -124,19 +123,18 @@ import { useDialog } from '../composables/dialog'
 import { kInstanceCreation, useInstanceCreation } from '../composables/instanceCreation'
 import { AddInstanceDialogKey, Template, useInstanceTemplates } from '../composables/instanceTemplates'
 import { useNotifier } from '../composables/notifier'
+import { useFeedTheBeastVersionsCache } from '@/composables/ftb'
 
 // Dialog model
-const { isShown, dialog, show: showAddInstance, hide } = useDialog(AddInstanceDialogKey, () => {
+const { isShown, show: showAddInstance, hide } = useDialog(AddInstanceDialogKey, (param) => {
   if (creating.value) {
     return
   }
-  const id = dialog.value.parameter
-  if (id) {
-    selectedTemplatePath.value = id
-  }
+  selectedTemplatePath.value = param
 
   step.value = 2
   valid.value = true
+  windowController.focus()
 }, () => {
   if (creating.value) {
     return
@@ -157,7 +155,8 @@ const { t } = useI18n()
 const { all } = injection(kJavaContext)
 const { resources } = injection(kModpacks)
 const { connections } = injection(kPeerState)
-const { templates } = useInstanceTemplates(all, resources, connections, ref([]))
+const { cache: cachedList } = useFeedTheBeastVersionsCache()
+const { templates } = useInstanceTemplates(all, resources, connections, cachedList)
 
 // Instance create data
 const { gameProfile } = injection(kUserContext)

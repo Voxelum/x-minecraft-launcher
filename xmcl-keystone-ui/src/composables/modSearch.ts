@@ -1,5 +1,7 @@
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
+import { getCurseforgeModLoaderTypeFromRuntime } from '@/util/curseforge'
 import { ModFile, getModFileFromResource } from '@/util/mod'
+import { getModrinthModLoaders } from '@/util/modrinth'
 import { Mod as CFMod, FileModLoaderType, ModsSearchSortField, Pagination } from '@xmcl/curseforge'
 import { SearchResult } from '@xmcl/modrinth'
 import { InstanceData, Resource } from '@xmcl/runtime-api'
@@ -29,9 +31,9 @@ export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, 
 
   const existedMods = computed(() =>
     keyword.value.length === 0
-      ? instanceMods.value.filter(v => isValidResource(v.resource))
-      : instanceMods.value.filter(m => m.name.toLocaleLowerCase().indexOf(keyword.value.toLocaleLowerCase()) !== -1)
-        .filter(v => isValidResource(v.resource)))
+      ? instanceMods.value
+      : instanceMods.value.filter(m => m.name.toLocaleLowerCase().indexOf(keyword.value.toLocaleLowerCase()) !== -1),
+        )
 
   const modrinth = ref(undefined as SearchResult | undefined)
   const curseforge = ref(undefined as {
@@ -39,16 +41,12 @@ export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, 
     pagination: Pagination
   } | undefined)
 
-  const processModrinth = async (useForge: boolean, useFabric: boolean, offset: number, append: boolean) => {
+  const processModrinth = async (offset: number, append: boolean) => {
     try {
       modrinthError.value = undefined
       const facets = [`["versions:${runtime.value.minecraft}"]`, '["project_type:mod"]']
-      if (useForge) {
-        facets.push('["categories:forge"]')
-      }
-      if (useFabric) {
-        facets.push('["categories:fabric"]')
-      }
+      const modLoaders = getModrinthModLoaders(runtime.value)
+      facets.push('[' + modLoaders.map(m => `"categories:${m}"`).join(', ') + ']')
       if (keyword.value) {
         const remain = append && modrinth.value ? modrinth.value.total_hits - offset : Number.MAX_SAFE_INTEGER
         const result = await clientModrinthV2.searchProjects({
@@ -75,15 +73,17 @@ export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, 
     }
   }
 
-  const processCurseforge = async (useForge: boolean, useFabric: boolean, offset: number, append: boolean) => {
+  const processCurseforge = async (offset: number, append: boolean) => {
     if (keyword.value) {
       try {
+        const modLoaderType = getCurseforgeModLoaderTypeFromRuntime(runtime.value)
+
         curseforgeError.value = undefined
         const remain = append && curseforge.value ? curseforge.value.pagination.totalCount - offset : Number.MAX_SAFE_INTEGER
         const result = await clientCurseforgeV1.searchMods({
           classId: 6, // mods
           sortField: ModsSearchSortField.Name,
-          modLoaderType: useForge ? FileModLoaderType.Forge : useFabric ? FileModLoaderType.Fabric : FileModLoaderType.Any,
+          modLoaderType,
           gameVersion: runtime.value.minecraft,
           searchFilter: keyword.value,
           pageSize: append ? Math.min(20, remain) : 20,
@@ -126,26 +126,24 @@ export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, 
     if (canCurseforgeLoadMore.value) {
       curseforgePage.value += 1
       loadingCurseforge.value = true
-      await processCurseforge(!!runtime.value.forge, !!runtime.value.fabricLoader, curseforgePage.value * 20, true)
+      await processCurseforge(curseforgePage.value * 20, true)
     }
   }, 1000)
   const loadMoreModrinth = debounce(async () => {
     if (canModrinthLoadMore.value) {
       modrinthPage.value += 1
       loadingModrinth.value = true
-      await processModrinth(!!runtime.value.forge, !!runtime.value.fabricLoader, modrinthPage.value * 20, true)
+      await processModrinth(modrinthPage.value * 20, true)
     }
   }, 1000)
 
   const onSearch = async () => {
-    const useForge = !!runtime.value.forge
-    const useFabric = !!runtime.value.fabricLoader
     loadingModrinth.value = true
     loadingCurseforge.value = true
     modrinthPage.value = 0
     curseforgePage.value = 0
-    processModrinth(useForge, useFabric, modrinthPage.value * 20, false)
-    processCurseforge(useForge, useFabric, curseforgePage.value * 20, false)
+    processModrinth(modrinthPage.value * 20, false)
+    processCurseforge(curseforgePage.value * 20, false)
   }
 
   watch(keyword, onSearch)

@@ -3,6 +3,7 @@ import { CachedFTBModpackVersionManifest, FTBVersion } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { Ref } from 'vue'
 import { kSWRVConfig } from './swrvConfig'
+import { useLocalStorageCache } from './cache'
 
 interface FeedTheBeastProps {
   keyword?: string
@@ -68,7 +69,7 @@ export function useFeedTheBeastProjectVersion(project: Ref<number>, version: Ref
 }
 
 export function useFeedTheBeastVersionsCache() {
-  const ftb: Ref<CachedFTBModpackVersionManifest[]> = ref([])
+  const ftb: Ref<CachedFTBModpackVersionManifest[]> = useLocalStorageCache('cachedFTB', () => [], JSON.stringify, JSON.parse, true)
 
   function dispose() {
     ftb.value = []

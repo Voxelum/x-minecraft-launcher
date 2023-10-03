@@ -66,7 +66,9 @@ if (params.startsWith('route=')) {
 
 window.addEventListener('message', (e) => {
   if (e.data.route) {
-    router.push(e.data.route)
+    if (router.currentRoute.path !== e.data.route) {
+      router.push(e.data.route)
+    }
     windowController.focus()
   }
 })

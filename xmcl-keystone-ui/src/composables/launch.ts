@@ -1,6 +1,6 @@
 import { useService } from '@/composables'
 import { injection } from '@/util/inject'
-import { AUTHORITY_DEV, AuthlibInjectorServiceKey, BaseServiceKey, LaunchOptions, LaunchServiceKey, UserServiceKey } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, AuthlibInjectorServiceKey, BaseServiceKey, LaunchException, LaunchOptions, LaunchServiceKey, UserServiceKey, isException } from '@xmcl/runtime-api'
 import { InjectionKey } from 'vue'
 import { DialogKey } from './dialog'
 import { kInstance } from './instance'
@@ -36,11 +36,11 @@ export function useLaunchOption() {
   async function generateLaunchOptions() {
     const ver = resolvedVersion.value
     if (!ver || 'requirements' in ver) {
-      throw LaunchErrorCode.NO_VERSION
+      throw new LaunchException({ type: 'launchNoVersionInstalled' })
     }
     const javaRec = java.value
     if (!javaRec) {
-      throw LaunchErrorCode.NO_JAVA
+      throw new LaunchException({ type: 'launchNoProperJava', javaPath: '' })
     }
 
     let yggdrasilAgent: LaunchOptions['yggdrasilAgent']
@@ -132,9 +132,8 @@ export function useLaunch() {
       }
       await launch(options)
     } catch (e) {
-      if (e instanceof Error) {
-
-      }
+      console.error(e)
+      throw e
     } finally {
       launching.value = false
     }

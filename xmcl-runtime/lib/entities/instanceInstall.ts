@@ -126,6 +126,7 @@ class UnzipFileTask extends AbortableTask<void> {
     if (!entry) {
       throw new AnyError('UnzipError', `Cannot find zip entry for ${this.destination}`)
     }
+    await ensureDir(dirname(this.destination))
     const stream = await openEntryReadStream(zip, entry)
     this._total = entry.uncompressedSize
     this.update(0)
@@ -134,7 +135,6 @@ class UnzipFileTask extends AbortableTask<void> {
       this.update(chunk.length)
     })
     this.stream = stream
-    await ensureDir(dirname(this.destination))
     await pipeline(stream, createWriteStream(this.destination))
   }
 
@@ -217,7 +217,7 @@ export class FileDownloadHandler {
       await rename(destination, destination + '.backup').catch(() => undefined)
     }
 
-    return fileTask.setName('file').map(async () => ({
+    return fileTask.setName('file', { file: file.path }).map(async () => ({
       file,
       sha1: file.hashes.sha1 ? file.hashes.sha1 : await this.worker.hash(destination, (await stat(destination)).size),
       metadata,

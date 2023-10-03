@@ -13,6 +13,7 @@ import colors from 'vuetify/es5/util/colors'
 import ru from 'vuetify/src/locale/ru'
 import zhHans from 'vuetify/src/locale/zh-Hans'
 import Vue from 'vue'
+import NeoForgedIcon from './components/NeoForgedIcon.vue'
 
 Vue.use(Vuetify)
 
@@ -53,6 +54,9 @@ export const vuetify = new Vuetify({
       },
       quilt: {
         component: QuiltIcon,
+      },
+      neoForged: {
+        component: NeoForgedIcon,
       },
     },
   },

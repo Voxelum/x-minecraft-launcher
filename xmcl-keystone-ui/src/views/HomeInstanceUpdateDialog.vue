@@ -242,6 +242,8 @@ const confirm = async () => {
         minecraft: instance.runtime?.minecraft || oldRuntime.value.minecraft,
         forge: instance.runtime?.forge,
         fabricLoader: instance.runtime?.fabricLoader,
+        quiltLoader: instance.runtime?.quiltLoader,
+        neoForged: instance.runtime?.neoForged,
       },
       modpackVersion: instance.modpackVersion,
       upstream: getUpstreamFromResource(upstream!),

@@ -138,10 +138,6 @@ html ::-webkit-scrollbar {
     /* background: transparent; */
 }
 
-.dark .v-dialog .v-card {
-    background-color: #424242 !important;
-    border-color: #424242 !important;
-}
 
 :not(.dark) .v-dialog .v-card {
     /* background-color: unset;

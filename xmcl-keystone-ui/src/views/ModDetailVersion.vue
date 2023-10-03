@@ -108,6 +108,7 @@ const loaders = computed(() => props.version.loaders.map(l => {
   if (l.toLowerCase() === 'forge') return { icon: '$vuetify.icons.forge', loader: l }
   if (l.toLowerCase() === 'fabric') return { icon: '$vuetify.icons.fabric', loader: l }
   if (l.toLowerCase() === 'quilt') return { icon: '$vuetify.icons.quilt', loader: l }
+  if (l.toLowerCase() === 'neoforge') return { icon: '$vuetify.icons.neoForged', loader: l }
   return { loader: l }
 }))
 const { getColorCode } = useVuetifyColor()

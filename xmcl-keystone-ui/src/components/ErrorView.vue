@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="!!error"
-    class="my-10 flex flex-col items-center gap-4"
+    class="mx-5 my-10 flex flex-col items-center gap-4"
   >
     <v-icon
       color="error"
@@ -9,7 +9,7 @@
     >
       error
     </v-icon>
-    <div class="text-3xl font-bold">
+    <div class="max-w-full select-text break-all text-3xl font-bold">
       {{ tError(error) }}
     </div>
     <v-btn

@@ -86,6 +86,7 @@ export function useMods(
       if (instanceFile) {
         if (!item.installed.find((r) => r.path === m.path || r.resource.ino === m.resource.ino || r.resource.storedPath === m.resource.storedPath)) {
           item.installed.push(m)
+          console.log(`Add dupicated ${item.id}`, item)
         }
       }
     }
@@ -94,6 +95,8 @@ export function useMods(
       const item = getItemForMod(i, true)
       if (item) {
         installed.push([item, getDiceCoefficient(keyword.value, i.name)])
+      } else {
+        console.log('Skip for installed ', i)
       }
     }
     installed.sort((a, b) => a[0].title.localeCompare(b[0].title))

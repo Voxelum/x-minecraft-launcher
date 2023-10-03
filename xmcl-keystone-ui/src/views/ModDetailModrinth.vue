@@ -10,24 +10,29 @@ import { useModrinthTask, useModrinthVersions, useModrinthVersionsResources } fr
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
 import { ProjectVersion, SearchResultHit } from '@xmcl/modrinth'
-import { InstanceModsServiceKey, ModrinthServiceKey, Resource } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, ModrinthServiceKey, Resource, RuntimeVersions } from '@xmcl/runtime-api'
 import ModDetail, { ModDependency } from './ModDetail.vue'
 import { ModVersion } from './ModDetailVersion.vue'
+import { getModrinthModLoaders } from '@/util/modrinth'
+import { isNoModLoader } from '@/util/isNoModloader'
+import { useInstanceModLoaderDefault } from '@/util/instanceModLoaderDefault'
 
 const props = defineProps<{
   modrinth?: SearchResultHit
   projectId: string
   installed: ModFile[]
   minecraft: string
-  loader: string
+  runtime: RuntimeVersions
+  updating?: boolean
 }>()
 
 const projectId = computed(() => props.projectId)
 const { project, refreshing: loading } = useModrinthProject(projectId)
+
 const { versions, refreshing: loadingVersions } = useModrinthVersions(projectId,
   undefined,
-  computed(() => [props.loader]),
-  computed(() => [props.minecraft]))
+  computed(() => getModrinthModLoaders(props.runtime)),
+  computed(() => [props.runtime.minecraft]))
 
 const model = useModrinthModDetailData(projectId, project, computed(() => props.modrinth))
 const modVersions = useModrinthModDetailVersions(versions, computed(() => props.installed))
@@ -88,13 +93,19 @@ const installModrinthVersion = async (v: ProjectVersion) => {
   }
 }
 
-const updating = useModDetailUpdate()
+const innerUpdating = useModDetailUpdate()
+
+const installDefaultModLoader = useInstanceModLoaderDefault(path, computed(() => props.runtime))
 
 const install = async (mod: ModVersion) => {
   const v = versions.value.find(v => v.id === mod.id)
   if (!v) return
   try {
     installing.value = true
+    if (isNoModLoader(props.runtime)) {
+      // forge, fabric, quilt or neoforge
+      await installDefaultModLoader(v.loaders)
+    }
     if (!hasInstalledVersion.value) {
       await Promise.all(deps.value
         ?.filter((v) => v.type === 'required')
@@ -138,13 +149,13 @@ const installDependency = async (dep: ModDependency) => {
 }
 
 watch(() => props.modrinth, () => {
-  updating.value = false
+  innerUpdating.value = false
 })
 
-const { enabled, installed, hasInstalledVersion } = useModDetailEnable(selectedVersion, computed(() => props.installed), updating)
+const { enabled, installed, hasInstalledVersion } = useModDetailEnable(selectedVersion, computed(() => props.installed), innerUpdating)
 
 const onDelete = async () => {
-  updating.value = true
+  innerUpdating.value = true
   await uninstallMod({ path: path.value, mods: props.installed.map(i => i.resource) })
 }
 
@@ -163,7 +174,7 @@ const onOpenDependency = (dep: ModDependency) => {
     :selected-installed="installed"
     :has-installed-version="hasInstalledVersion"
     :versions="modVersions"
-    :updating="updating || installing"
+    :updating="innerUpdating || installing || updating"
     :loading-dependencies="isValidating"
     :dependencies="dependencies"
     :loading="loading"

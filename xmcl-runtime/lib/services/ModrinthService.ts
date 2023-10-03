@@ -19,9 +19,10 @@ export class ModrinthService extends AbstractService implements IModrinthService
 
   @Singleton((o) => `${o.version.id}`)
   async installVersion({ version, icon, instancePath }: InstallProjectVersionOptions): Promise<InstallModrinthVersionResult> {
-    const isSingleFile = version.files.length === 1
     // instancePath ||= this.instanceService.state.path
-    const resources = await Promise.all(version.files.map(async (file) => {
+    const primaryFiles = version.files.filter(f => f.primary)
+    const isSingleFile = primaryFiles.length === 1
+    const resources = await Promise.all(primaryFiles.map(async (file) => {
       this.log(`Try install project version file ${file.filename} ${file.url}`)
       const destination = join(this.app.temporaryPath, basename(file.filename))
       const hashes = Object.entries(file.hashes)

@@ -134,7 +134,12 @@ export function useDomainResources(domain: ResourceDomain | Ref<ResourceDomain>)
 
   const onAdd = (r: Resource) => {
     if (typeof domain === 'object' ? domain.value : domain !== r.domain) return
-    resources.value = [r, ...resources.value]
+    const index = resources.value.findIndex(res => res.hash === r.hash)
+    if (index !== -1) {
+      resources.value[index] = r
+    } else {
+      resources.value = [r, ...resources.value]
+    }
   }
   const onRemove = (r: { sha1: string; domain: ResourceDomain }) => {
     if (typeof domain === 'object' ? domain.value : domain !== r.domain) return

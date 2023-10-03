@@ -1,6 +1,6 @@
 <template>
   <div
-    class="contained w-full overflow-auto"
+    class="mod-detail contained w-full overflow-auto"
     @scroll="onScroll"
   >
     <div class="flex flex-grow gap-4 p-4">
@@ -161,7 +161,7 @@
                       v-if="item.installed"
                       small
                     >
-                      archive
+                      folder
                     </v-icon>
                   </v-list-item-avatar>
                 </v-list-item>
@@ -390,7 +390,7 @@
         <div class="px-1">
           <a
             v-for="item of detail.externals"
-            :key="item.url"
+            :key="item.name + item.url"
             :href="item.url"
             class="flex flex-grow-0 items-center gap-1"
           >
@@ -585,6 +585,14 @@ const onScroll = (e: Event) => {
 }
 </script>
 
+<style>
+.mod-detail .v-badge__badge.primary {
+  right: -10px;
+  height: 20px;
+  width: 20px;
+  font-size: 12px;
+}
+</style>
 <style scoped>
 .item {
   @apply flex items-center gap-2;

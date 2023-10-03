@@ -61,7 +61,7 @@ export function useFabricVersions(minecraftVersion: Ref<string>, local: Ref<Loca
   const { getFabricVersionList } = useService(InstallServiceKey)
   const _refreshing = useServiceBusy(InstallServiceKey, 'getFabricVersionList')
 
-  const { data: allVersions, isValidating, mutate, error } = useSWRV(`/fabric-versions/${minecraftVersion.value}`,
+  const { data: allVersions, isValidating, mutate, error } = useSWRV('/fabric-versions',
     () => getFabricVersionList(),
     inject(kSWRVConfig))
 

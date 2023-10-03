@@ -91,18 +91,9 @@ const onScroll = useCompactScroll(compact)
   -webkit-app-region: no-drag;
   user-select: auto;
 }
-.v-badge__badge.primary {
-  right: -10px;
-  height: 20px;
-  width: 20px;
-  font-size: 12px;
-}
 
 .pointer * {
   cursor: pointer !important;
 }
 
-.launch-button {
-  @apply p-10;
-}
 </style>

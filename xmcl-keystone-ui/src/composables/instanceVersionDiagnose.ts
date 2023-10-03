@@ -30,7 +30,7 @@ export function useInstanceVersionDiagnose(runtime: Ref<RuntimeVersions>, resolv
     }
   }
   async function update(version: InstanceResolveVersion) {
-    console.log('update')
+    console.log('update version diagnose')
 
     const abortSignal = abortController.signal
 
@@ -42,10 +42,10 @@ export function useInstanceVersionDiagnose(runtime: Ref<RuntimeVersions>, resolv
           await installDependencies(version)
         }
       }
-      issueItems.value = [{
-        title: t('diagnosis.missingVersion.name', { version: getExpectVersion(runtime) }),
-        description: t('diagnosis.missingVersion.message'),
-      }]
+      issueItems.value = [reactive({
+        title: computed(() => t('diagnosis.missingVersion.name', { version: getExpectVersion(runtime) })),
+        description: computed(() => t('diagnosis.missingVersion.message')),
+      })]
       return
     }
 
@@ -63,14 +63,14 @@ export function useInstanceVersionDiagnose(runtime: Ref<RuntimeVersions>, resolv
         }
       })
       items.push(jarIssue.type === 'corrupted'
-        ? {
-          title: t('diagnosis.corruptedVersionJar.name', options),
-          description: t('diagnosis.corruptedVersionJar.message'),
-        }
-        : {
-          title: t('diagnosis.missingVersionJar.name', options),
-          description: t('diagnosis.missingVersionJar.message'),
+        ? reactive({
+          title: computed(() => t('diagnosis.corruptedVersionJar.name', options)),
+          description: computed(() => t('diagnosis.corruptedVersionJar.message')),
         })
+        : reactive({
+          title: computed(() => t('diagnosis.missingVersionJar.name', options)),
+          description: computed(() => t('diagnosis.missingVersionJar.message')),
+        }))
     }
 
     const assetIndexIssue = await diagnoseAssetIndex(version)
@@ -81,14 +81,14 @@ export function useInstanceVersionDiagnose(runtime: Ref<RuntimeVersions>, resolv
         await installAssetsForVersion(version.id)
       })
       items.push(assetIndexIssue.type === 'corrupted'
-        ? {
-          title: t('diagnosis.corruptedAssetsIndex.name', { version: assetIndexIssue.version }),
-          description: t('diagnosis.corruptedAssetsIndex.message'),
-        }
-        : {
-          title: t('diagnosis.missingAssetsIndex.name', { version: assetIndexIssue.version }),
-          description: t('diagnosis.missingAssetsIndex.message'),
+        ? reactive({
+          title: computed(() => t('diagnosis.corruptedAssetsIndex.name', { version: assetIndexIssue.version })),
+          description: computed(() => t('diagnosis.corruptedAssetsIndex.message')),
         })
+        : reactive({
+          title: computed(() => t('diagnosis.missingAssetsIndex.name', { version: assetIndexIssue.version })),
+          description: computed(() => t('diagnosis.missingAssetsIndex.message')),
+        }))
     }
 
     const librariesIssue = await diagnoseLibraries(version)
@@ -100,14 +100,14 @@ export function useInstanceVersionDiagnose(runtime: Ref<RuntimeVersions>, resolv
         await installLibraries(librariesIssue.map(v => v.library))
       })
       items.push(librariesIssue.some(v => v.type === 'corrupted')
-        ? {
-          title: t('diagnosis.corruptedLibraries.name', 2, options),
-          description: t('diagnosis.corruptedLibraries.message'),
-        }
-        : {
-          title: t('diagnosis.missingLibraries.name', 2, options),
-          description: t('diagnosis.missingLibraries.message'),
+        ? reactive({
+          title: computed(() => t('diagnosis.corruptedLibraries.name', 2, options)),
+          description: computed(() => t('diagnosis.corruptedLibraries.message')),
         })
+        : reactive({
+          title: computed(() => t('diagnosis.missingLibraries.name', 2, options)),
+          description: computed(() => t('diagnosis.missingLibraries.message')),
+        }))
     }
 
     if (!assetIndexIssue) {
@@ -119,14 +119,14 @@ export function useInstanceVersionDiagnose(runtime: Ref<RuntimeVersions>, resolv
           await installAssets(assetsIssue.map(v => v.asset))
         })
         items.push(assetsIssue.some(v => v.type === 'corrupted')
-          ? {
-            title: t('diagnosis.corruptedAssets.name', 2, options),
-            description: t('diagnosis.corruptedAssets.message'),
-          }
-          : {
-            title: t('diagnosis.missingAssets.name', 2, options),
-            description: t('diagnosis.missingAssets.message'),
-          },
+          ? reactive({
+            title: computed(() => t('diagnosis.corruptedAssets.name', 2, options)),
+            description: computed(() => t('diagnosis.corruptedAssets.message')),
+          })
+          : reactive({
+            title: computed(() => t('diagnosis.missingAssets.name', 2, options)),
+            description: computed(() => t('diagnosis.missingAssets.message')),
+          }),
         )
       }
     }
@@ -137,10 +137,10 @@ export function useInstanceVersionDiagnose(runtime: Ref<RuntimeVersions>, resolv
       ops.push(async () => {
         await installByProfile(profileIssue.installProfile)
       })
-      items.push({
-        title: t('diagnosis.badInstall.name', { version: version.id }),
-        description: t('diagnosis.badInstall.message'),
-      })
+      items.push(reactive({
+        title: computed(() => t('diagnosis.badInstall.name', { version: version.id })),
+        description: computed(() => t('diagnosis.badInstall.message')),
+      }))
     }
     // TODO: handle error
     issueItems.value = items
