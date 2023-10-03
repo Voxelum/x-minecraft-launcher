@@ -67,6 +67,10 @@ async function receive(_result: any, states: Record<string, WeakRef<MutableState
     const id = result.id
 
     if (states[id] && states[id].deref()) {
+      console.log(`reuse state ${id}`)
+      const state = states[id].deref()
+      // try to overwrite the state
+      Object.assign(state, result)
       return states[id].deref()
     }
 

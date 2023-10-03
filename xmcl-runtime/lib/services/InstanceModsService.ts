@@ -35,7 +35,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
   }
 
   async watch(instancePath: string): Promise<MutableState<InstanceModsState>> {
-    return this.storeManager.registerOrGet(getInstanceModStateKey(instancePath), async () => {
+    return this.storeManager.registerOrGet(getInstanceModStateKey(instancePath), async (onDestroy) => {
       const enum Action { Add = 0, Remove = 1, Replace = 2 }
       const updateMod = new AggregateExecutor<[Resource, Action], [Resource, Action][]>(v => v,
         (all) => {
@@ -85,6 +85,11 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
             this.warn(`Cannot remove the mod ${filePath} as it's not found in memory cache!`)
           }
         }
+      })
+
+      watcher.on('close', () => {
+        this.log(`Unwatch on instance mods: ${basePath}`)
+        onDestroy()
       })
       this.log(`Mounted on instance mods: ${basePath}`)
 
