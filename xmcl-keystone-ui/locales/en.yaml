@@ -386,6 +386,7 @@ instance:
   current: Current Instance
   delete: Delete Profile
   deleteHint: The instance data will be moved from the disk forever. You sure to do this?
+  duplicate: Duplicate Instance
   duplicatedName: Duplicated Name
   fileApi: The synchronize file server API url
   fileApiHint: The url to synchronize instance files from a remote config server.
@@ -616,6 +617,7 @@ mod:
   dropHint: Drop mod's .jar/.litemod here to import.
   enabled: '{count} Mods enabled'
   filter: Filter Mods
+  hasUpdate: Mod has a new version!
   hideIncompatible: Hide Incompatible Mods
   import: Import Mod
   incompatible: Incompatible Mod.
@@ -632,8 +634,11 @@ mod:
   showInCurseforge: Show the mod in curseforge
   showInModrinth: Show {name} in Modrinth
   showIncompatible: Show Incompatible Mods
+  toUpdate: '{count} to update'
   unselected: Unselected Mods
 modInstall:
+  checkUpgrade: Check Mods Update
+  checkedUpgrade: Upgrade checked
   currentVersion: Selected Version
   dependencyHint: Installed another version {version}
   install: Install
@@ -679,6 +684,7 @@ modpack:
   showFile: Show File {file}
   showInCurseforge: Show {name} in Curseforge
   showInFtb: Show {name} in FTB
+  showInModrinth: Show {name} in Modrinth
   url: URL
   urlHint: The home page url of your modpack
 modrinth:

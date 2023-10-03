@@ -2,15 +2,15 @@ import { ResolvedVersion, Version } from '@xmcl/core'
 import { CreateInstanceOption, EditInstanceOptions, InstanceService as IInstanceService, Instance, InstanceException, InstanceSchema, InstanceServiceKey, InstanceState, InstancesSchema, MutableState, RuntimeVersions, createTemplate, filterForgeVersion, filterOptifineVersion, getExpectVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary } from '@xmcl/runtime-api'
 import filenamify from 'filenamify'
 import { existsSync } from 'fs'
-import { ensureDir } from 'fs-extra/esm'
-import { copyFile, readdir, rename, rm } from 'fs/promises'
+import { copy, ensureDir } from 'fs-extra/esm'
+import { copyFile, readdir, rename, rm, stat } from 'fs/promises'
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
 import { PathResolver, kGameDataPath } from '../entities/gameDataPath'
 import { readLaunchProfile } from '../entities/launchProfile'
 import { ResourceWorker, kResourceWorker } from '../entities/resourceWorker'
-import { exists, isDirectory, isPathDiskRootPath, readdirEnsured } from '../util/fs'
+import { exists, isDirectory, isPathDiskRootPath, linkWithTimeoutOrCopy, readdirEnsured } from '../util/fs'
 import { ImageStorage } from '../util/imageStore'
 import { assignShallow, requireObject, requireString } from '../util/object'
 import { Inject } from '../util/objectRegistry'
@@ -107,6 +107,20 @@ export class InstanceService extends StatefulService<InstanceState> implements I
 
   protected getPathUnder(...ps: string[]) {
     return this.getPath(INSTANCES_FOLDER, ...ps)
+  }
+
+  private getCandidatePath(name: string) {
+    const candidate = this.getPathUnder(filenamify(name))
+    if (!existsSync(candidate)) {
+      return candidate
+    } else {
+      // find the first available path
+      let i = 1
+      while (existsSync(candidate + i)) {
+        i++
+      }
+      return candidate + i
+    }
   }
 
   async loadInstance(path: string) {
@@ -218,17 +232,7 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     }
 
     if (!payload.path) {
-      const candidatePath = this.getPathUnder(filenamify(payload.name))
-      if (!existsSync(candidatePath)) {
-        instance.path = candidatePath
-      } else {
-        // find the first available path
-        let i = 1
-        while (existsSync(candidatePath + i)) {
-          i++
-        }
-        instance.path = candidatePath + i
-      }
+      instance.path = this.getCandidatePath(payload.name)
     }
 
     instance.runtime.minecraft = instance.runtime.minecraft || this.installService.getLatestRelease()
@@ -249,6 +253,75 @@ export class InstanceService extends StatefulService<InstanceState> implements I
     this.log(JSON.stringify(instance, null, 4))
 
     return instance.path
+  }
+
+  async duplicateInstance(path: string) {
+    requireString(path)
+
+    if (!this.state.all[path]) {
+      return ''
+    }
+
+    const instance = this.state.all[path]
+    const newPath = this.getCandidatePath(instance.name || basename(path))
+    const newName = basename(newPath)
+
+    await this.createInstance({
+      ...JSON.parse(JSON.stringify(instance)),
+      path: newPath,
+      name: newName,
+    })
+
+    let hasMods = false
+    let hasResourcepacks = false
+    let hasShaderpacks = false
+    await copy(path, newPath, {
+      filter: async (src, dest) => {
+        const relativePath = relative(path, src).replaceAll('\\', '/')
+        if (relativePath.startsWith('mods')) {
+          hasMods = true
+          return false
+        }
+        if (relativePath.startsWith('resourcepacks')) {
+          hasResourcepacks = true
+          return false
+        }
+        if (relativePath.startsWith('shaderpacks')) {
+          hasShaderpacks = true
+          return false
+        }
+        return true
+      },
+    })
+    if (hasMods) {
+      const modDirSrc = join(path, 'mods')
+      await ensureDir(join(newPath, 'mods'))
+      // hard link all source to new path
+      const files = await readdir(modDirSrc)
+      await Promise.all(files.map(f => linkWithTimeoutOrCopy(join(modDirSrc, f), join(newPath, 'mods', f))))
+    }
+    if (hasResourcepacks) {
+      const resourcepacksDirSrc = join(path, 'resourcepacks')
+      const status = await stat(resourcepacksDirSrc)
+      if (!status.isSymbolicLink()) {
+        // hard link all files
+        await ensureDir(join(newPath, 'resourcepacks'))
+        const files = await readdir(resourcepacksDirSrc)
+        await Promise.all(files.map(f => linkWithTimeoutOrCopy(join(resourcepacksDirSrc, f), join(newPath, 'resourcepacks', f))))
+      }
+    }
+    if (hasShaderpacks) {
+      const shaderpacksDirSrc = join(path, 'shaderpacks')
+      const status = await stat(shaderpacksDirSrc)
+      if (!status.isSymbolicLink()) {
+        // hard link all files
+        await ensureDir(join(newPath, 'shaderpacks'))
+        const files = await readdir(shaderpacksDirSrc)
+        await Promise.all(files.map(f => linkWithTimeoutOrCopy(join(shaderpacksDirSrc, f), join(newPath, 'shaderpacks', f))))
+      }
+    }
+
+    return newPath
   }
 
   /**
