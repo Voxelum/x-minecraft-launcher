@@ -13,8 +13,8 @@ interface LaunchServiceEventMap {
     minecraft: string
     forge: string
     fabricLoader: string
-  }
-  'minecraft-exit': { pid?: number; code?: number; signal?: string; crashReport?: string; crashReportLocation?: string; errorLog: string }
+  } & LaunchOptions
+  'minecraft-exit': LaunchOptions & { pid?: number; code?: number; signal?: string; duration: number; crashReport?: string; crashReportLocation?: string; errorLog: string }
   'minecraft-stdout': { pid?: number; stdout: string }
   'minecraft-stderr': { pid?: number; stdout: string }
   'error': LaunchException

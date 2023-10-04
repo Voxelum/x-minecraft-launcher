@@ -25,11 +25,6 @@ export class InstanceResourcePackService extends AbstractService implements IIns
     @Inject(InstanceOptionsService) gameSettingService: InstanceOptionsService,
   ) {
     super(app)
-    this.resourceService.registerInstaller(ResourceDomain.ResourcePacks, async (resource, path) => {
-      gameSettingService.editGameSetting({
-        instancePath: path,
-      })
-    })
   }
 
   async install(instancePath: string, resourcePack: string) {

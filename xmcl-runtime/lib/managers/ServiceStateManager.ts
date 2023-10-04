@@ -157,7 +157,7 @@ export default class ServiceStateManager extends Manager {
       return container.state
     }
     const onDestroy = () => {
-      while (!this.containers[id].deref()) { /* empty */ }
+      while (this.containers[id] && !this.containers[id].deref()) { /* empty */ }
       delete this.containers[id]
     }
     return this.register(id, ...await supplier(onDestroy))

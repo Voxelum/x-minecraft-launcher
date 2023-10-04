@@ -10,10 +10,12 @@ import { pluginModrinthModpackHandler } from './pluginModrinthModpackHandler'
 import { pluginNetworkInterface } from './pluginNetworkInterface'
 import { pluginOfficialUserApi } from './pluginOfficialUserApi'
 import { pluginOffineUser } from './pluginOfflineUser'
+import { pluginResourcePackLink } from './pluginResourcePackLink'
 import { pluginServicesHandler } from './pluginServicesHandler'
 import { pluginSettings } from './pluginSettings'
 import { pluginTelemetry } from './pluginTelemetry'
 import { pluginUndiciLogger } from './pluginUndiciLogger'
+import { pluginUserPlaytime } from './pluginUserPlaytime'
 import { pluginUserTokenStorage } from './pluginUserTokenStorage'
 import { pluginWorker } from './pluginWorker'
 import { pluginYggdrasilHandler } from './pluginYggdrasilHandler'
@@ -36,6 +38,8 @@ export const plugins = [
   pluginUndiciLogger,
   pluginUserTokenStorage,
   pluginCurseforgeClient,
+  pluginResourcePackLink,
+  pluginUserPlaytime,
   pluginWorker,
   pluginYggdrasilHandler,
 ]
