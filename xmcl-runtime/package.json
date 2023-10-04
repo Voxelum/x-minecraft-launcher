@@ -65,7 +65,7 @@
         "node-datachannel": "0.5.0-dev",
         "node-watch": "^0.7.3",
         "normalize-url": "^7.2.0",
-        "undici": "^5.22.1",
+        "undici": "5.22.1",
         "ws": "8.10.0",
         "yazl": "^2.5.1"
     },
@@ -87,6 +87,6 @@
         "source-map-support": "^0.5.21",
         "tslib": "^2.5.0",
         "tsx": "^3.12.6",
-        "typescript": "^5.0.4"
+        "typescript": "^5.2.2"
     }
 }

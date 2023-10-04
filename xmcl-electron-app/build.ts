@@ -187,7 +187,6 @@ async function start() {
           await copyFile('build/output/mac/X Minecraft Launcher.app/Contents/Resources/app.asar', dest)
           await writeHash('sha256', dest, destSha256)
         }
-
       },
       async artifactBuildStarted(context) {
         if (context.targetPresentableName.toLowerCase() === 'appx') {

@@ -9,8 +9,8 @@
     draggable
     class="white--text draggable-card p-2"
     style="margin-top: 10px; transition-duration: 0.2s; margin-bottom: 20px"
-    @dragstart="$emit('dragstart', $event)"
-    @dragend="$emit('dragend', $event)"
+    @dragstart="emit('dragstart', $event)"
+    @dragend="emit('dragend', $event)"
   >
     <div class="flex items-center gap-4">
       <img
@@ -89,7 +89,7 @@ const props = defineProps<{
   source: InstanceSaveMetadata
 }>()
 
-const emit = defineEmits(['remove'])
+const emit = defineEmits(['dragstart', 'dragend', 'remove'])
 const { showItemInDirectory } = useService(BaseServiceKey)
 
 const { t } = useI18n()
