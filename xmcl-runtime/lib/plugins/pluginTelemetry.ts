@@ -9,6 +9,7 @@ import { APP_INSIGHT_KEY, parseStack } from '../entities/telemetry'
 import { LaunchService } from '../services/LaunchService'
 import { ResourceService } from '../services/ResourceService'
 import { UserService } from '../services/UserService'
+import { NatService } from '../services/NatService'
 
 export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   if (IS_DEV) {
@@ -38,6 +39,18 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
 
   app.on('engine-ready', async () => {
     const settings = await app.registry.get(kSettings)
+    app.registry.getOrCreate(NatService).then(async (service) => {
+      const state = await service.getNatState()
+      if (state.natDevice) {
+        appInsight.defaultClient.trackEvent({
+          name: 'nat-device',
+          properties: {
+            natDeviceSupported: !!state.natDevice,
+          },
+        })
+      }
+    })
+
     process.on('uncaughtException', (e) => {
       if (settings.disableTelemetry) return
       if (appInsight.defaultClient) {

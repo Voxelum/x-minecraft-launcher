@@ -52,6 +52,11 @@
                 ]
             }
         },
+        "allowTurn": {
+            "description": "Allow turn server in p2p",
+            "default": false,
+            "type": "boolean"
+        },
         "httpProxy": {
             "description": "The http proxy address",
             "default": "",
@@ -143,6 +148,7 @@
     },
     "required": [
         "allowPrerelease",
+        "allowTurn",
         "apiSets",
         "apiSetsPreference",
         "autoDownload",

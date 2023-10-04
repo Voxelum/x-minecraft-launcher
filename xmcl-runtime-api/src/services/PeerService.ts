@@ -78,6 +78,9 @@ export class PeerState {
   }
 
   connectionAdd(connection: PeerConnection) {
+    if (this.connections.find(c => c.id === connection.id)) {
+      return
+    }
     this.connections.push(connection)
   }
 

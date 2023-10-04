@@ -39,6 +39,11 @@ export interface SettingSchema {
    */
   apiSets: Array<{ name: string; url: string }>
   /**
+   * Allow turn server in p2p
+   * @default false
+   */
+  allowTurn: boolean
+  /**
    * The http proxy address
    * @default ""
    */

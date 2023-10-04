@@ -1,6 +1,6 @@
 import { MinecraftLanDiscover } from '@xmcl/client'
 import { ChecksumNotMatchError } from '@xmcl/file-transfer'
-import { AUTHORITY_MICROSOFT, InstanceManifest, PeerService as IPeerService, MutableState, PeerServiceKey, PeerState, ShareInstanceOptions } from '@xmcl/runtime-api'
+import { AUTHORITY_MICROSOFT, InstanceManifest, PeerService as IPeerService, MutableState, PeerServiceKey, PeerState, Settings, ShareInstanceOptions } from '@xmcl/runtime-api'
 import { AbortableTask, BaseTask } from '@xmcl/task'
 import { randomBytes, randomUUID, getDiffieHellman } from 'crypto'
 import { createWriteStream } from 'fs'
@@ -27,6 +27,7 @@ import { Inject } from '../util/objectRegistry'
 import { NatService } from './NatService'
 import { ExposeServiceKey, Lock, Singleton, StatefulService } from './Service'
 import { UserService } from './UserService'
+import { kSettings } from '../entities/settings'
 
 const pBrotliDecompress = promisify(brotliDecompress)
 const pBrotliCompress = promisify(brotliCompress)
@@ -53,6 +54,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     @Inject(ImageStorage) private imageStorage: ImageStorage,
     @Inject(kResourceWorker) private worker: ResourceWorker,
     @Inject(kGameDataPath) private getPath: PathResolver,
+    @Inject(kSettings) private settings: Settings,
     @Inject(NatService) private natService: NatService,
     @Inject(UserService) private userService: UserService,
   ) {
@@ -322,7 +324,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     const natService = this.natService
     const privatePort = this.portCandidate
 
-    const conn = new PeerSession(sessionId, this.iceServers, {
+    const conn = new PeerSession(sessionId, this.settings.allowTurn ? this.iceServers : [], {
       onHeartbeat: (id, ping) => {
         this.state.connectionPing({ id, ping })
         this.emit('connection-ping', { id, ping })

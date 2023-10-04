@@ -268,6 +268,28 @@
           </v-list-item-action>
         </v-list-item>
 
+        <v-list-item
+          v-if="hasMicrosoft"
+          class="flex-1 flex-grow-0"
+        >
+          <v-list-item-avatar>
+            <v-icon>
+              swap_vert
+            </v-icon>
+          </v-list-item-avatar>
+          <v-list-item-content>
+            <v-list-item-title>
+              {{ t("multiplayer.allowTurn") }}
+            </v-list-item-title>
+            <v-list-item-subtitle class="flex items-center gap-2">
+              {{ t("multiplayer.allowTurnHint") }}
+            </v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-checkbox v-model="allowTurn" />
+          </v-list-item-action>
+        </v-list-item>
+
         <v-subheader class>
           {{ t("multiplayer.connections") }}
         </v-subheader>
@@ -438,7 +460,7 @@ import Hint from '@/components/Hint.vue'
 import { useBusy, useService, useServiceBusy } from '@/composables'
 import { kColorTheme } from '@/composables/colorTheme'
 import { injection } from '@/util/inject'
-import { BaseServiceKey, MappingInfo, NatServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
+import { AUTHORITY_MICROSOFT, BaseServiceKey, MappingInfo, NatServiceKey, PeerServiceKey } from '@xmcl/runtime-api'
 import DeleteDialog from '../components/DeleteDialog.vue'
 import PlayerAvatar from '../components/PlayerAvatar.vue'
 import { useDialog } from '../composables/dialog'
@@ -447,6 +469,7 @@ import MultiplayerDialogReceive from './MultiplayerDialogReceive.vue'
 import { kUserContext } from '@/composables/user'
 import { kPeerState, usePeerState } from '@/composables/peers'
 import { useNatState } from '@/composables/nat'
+import { kSettingsState } from '@/composables/setting'
 
 const { show } = useDialog('peer-initiate')
 const { show: showShareInstance } = useDialog('share-instance')
@@ -457,6 +480,20 @@ const { connections, group, groupState } = injection(kPeerState)
 const { t } = useI18n()
 const { handleUrl } = useService(BaseServiceKey)
 const isLoadingNetwork = useServiceBusy(NatServiceKey, 'refreshNatType')
+const { state } = injection(kSettingsState)
+const { users } = injection(kUserContext)
+const hasMicrosoft = computed(() => !!users.value.find(u => u.authority === AUTHORITY_MICROSOFT))
+
+const allowTurn = computed({
+  get() {
+    return state.value?.allowTurn
+  },
+  set(v) {
+    if (state.value) {
+      state.value.allowTurnSet(v ?? false)
+    }
+  },
+})
 
 const { errorColor, successColor, warningColor } = injection(kColorTheme)
 

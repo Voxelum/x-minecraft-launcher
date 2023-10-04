@@ -851,6 +851,8 @@ modrinthCard:
   projectLastUpdateDate: 该项目上次更新时间：
   projectLastUpdateVersion: 最新版本
 multiplayer:
+  allowTurn: 允许转发服务
+  allowTurnHint: 当你和你的朋友连不上时可以尝试允许转发服务，但是转发服务可能会增加你的联机延迟。使用时请注意。
   complete: 完成
   confirm: 确定
   connections: 用户连接管理

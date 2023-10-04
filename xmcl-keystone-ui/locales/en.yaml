@@ -845,6 +845,10 @@ modrinthCard:
   projectLastUpdateDate: 'Project Last Updated At:'
   projectLastUpdateVersion: Latest Version
 multiplayer:
+  allowTurn: Enable relay server
+  allowTurnHint: >-
+    Allow relay server if you cannot connect with your friend. However, using
+    relay server may slow down your connection. Use it with caution.
   complete: Complete
   confirm: Confirm
   connections: Connections

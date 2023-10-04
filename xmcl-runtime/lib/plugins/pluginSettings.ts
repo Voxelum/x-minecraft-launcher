@@ -18,6 +18,7 @@ export const pluginSettings: LauncherAppPlugin = (app) => {
       allowPrerelease: state.allowPrerelease,
       apiSets: state.apiSets,
       apiSetsPreference: state.apiSetsPreference,
+      allowTurn: state.allowTurn,
       httpProxy: state.httpProxy,
       httpProxyEnabled: state.httpProxyEnabled,
       theme: state.theme,

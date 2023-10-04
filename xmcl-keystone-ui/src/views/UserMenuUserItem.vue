@@ -81,9 +81,6 @@
           >
             refresh
           </v-icon>
-          <span class="hidden xl:inline">
-            {{ t('user.refreshAccount') }}
-          </span>
         </template>
       </v-btn>
     </v-list-item-action>
@@ -100,9 +97,6 @@
         >
           delete
         </v-icon>
-        <span class="hidden lg:inline">
-          {{ t('userAccount.removeTitle') }}
-        </span>
       </v-btn>
     </v-list-item-action>
   </v-list-item>

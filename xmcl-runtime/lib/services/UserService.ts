@@ -1,6 +1,7 @@
 /* eslint-disable quotes */
 import { DownloadTask } from '@xmcl/installer'
 import {
+AUTHORITY_MICROSOFT,
 UserService as IUserService,
 LoginOptions,
 MutableState,
@@ -178,7 +179,8 @@ export class UserService extends StatefulService<UserState> implements IUserServ
   }
 
   async getOfficialUserProfile(): Promise<(UserProfile & { accessToken: string | undefined }) | undefined> {
-    const official = Object.values(this.state.users).find(u => u.authority === 'microsoft')
+    await this.initialize()
+    const official = Object.values(this.state.users).find(u => u.authority === AUTHORITY_MICROSOFT)
     if (official) {
       const controller = new AbortController()
       await this.accountSystems.microsoft?.refresh(official, controller.signal)
