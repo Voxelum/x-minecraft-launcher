@@ -504,4 +504,19 @@ export class ElectronController implements LauncherAppController {
   get activeWindow() {
     return this.mainWin ?? this.loggerWin
   }
+
+  openDevTools() {
+    if (this.mainWin) {
+      this.mainWin.webContents.closeDevTools()
+      this.mainWin.webContents.openDevTools()
+    }
+    if (this.loggerWin) {
+      this.loggerWin.webContents.closeDevTools()
+      this.loggerWin.webContents.openDevTools()
+    }
+    if (this.browserRef) {
+      this.browserRef.webContents.closeDevTools()
+      this.browserRef.webContents.openDevTools()
+    }
+  }
 }

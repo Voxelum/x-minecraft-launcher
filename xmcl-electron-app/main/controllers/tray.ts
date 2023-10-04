@@ -25,8 +25,7 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
       }
     }
     const diagnose = () => {
-      this.activeWindow?.webContents.closeDevTools()
-      this.activeWindow?.webContents.openDevTools()
+      this.openDevTools()
     }
     const showLogs = () => {
       // shell.openPath(this.app.logManager.getLogRoot())
