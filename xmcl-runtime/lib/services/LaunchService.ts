@@ -1,4 +1,4 @@
-import { createMinecraftProcessWatcher, diagnoseJar, diagnoseLibraries, launch, LaunchOption, LaunchPrecheck, MinecraftFolder, ResolvedVersion, Version, generateArguments } from '@xmcl/core'
+import { createMinecraftProcessWatcher, diagnoseJar, diagnoseLibraries, launch, LaunchOption as ResolvedLaunchOptions, LaunchPrecheck, MinecraftFolder, ResolvedVersion, Version, generateArguments } from '@xmcl/core'
 import { AUTHORITY_DEV, LaunchService as ILaunchService, LaunchException, LaunchOptions, LaunchServiceKey } from '@xmcl/runtime-api'
 import { ChildProcess } from 'child_process'
 import { EOL } from 'os'
@@ -14,9 +14,15 @@ import { JavaService } from './JavaService'
 import { AbstractService, ExposeServiceKey } from './Service'
 import { kGameDataPath, PathResolver } from '../entities/gameDataPath'
 
+export interface LaunchPlugin {
+  onBeforeLaunch(input: LaunchOptions, output: ResolvedLaunchOptions): Promise<void>
+}
+
 @ExposeServiceKey(LaunchServiceKey)
 export class LaunchService extends AbstractService implements ILaunchService {
   private processes: Record<number, ChildProcess> = {}
+
+  private plugins: LaunchPlugin[] = []
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(InstallService) private installService: InstallService,
@@ -26,6 +32,10 @@ export class LaunchService extends AbstractService implements ILaunchService {
     @Inject(kEncodingWorker) private encoder: EncodingWorker,
   ) {
     super(app)
+  }
+
+  registerPlugin(plugin: LaunchPlugin) {
+    this.plugins.push(plugin)
   }
 
   getProcesses(): number[] {
@@ -47,7 +57,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
     /**
      * Build launch condition
      */
-    const launchOptions: LaunchOption = {
+    const launchOptions: ResolvedLaunchOptions = {
       gameProfile,
       accessToken,
       properties: {},
@@ -89,6 +99,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
         port: options.server?.port,
       }
     }
+
     return launchOptions
   }
 
@@ -186,6 +197,9 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
       const accessToken = user ? await this.userTokenStorage.get(user).catch(() => undefined) : undefined
       const launchOptions = this.#generateOptions(options, version, accessToken)
+      for (const plugin of this.plugins) {
+        await plugin.onBeforeLaunch(options, launchOptions)
+      }
 
       try {
         const result = await this.javaService.validateJavaPath(javaPath)
@@ -210,20 +224,15 @@ export class LaunchService extends AbstractService implements ILaunchService {
       const process = await launch(launchOptions)
       this.processes[process.pid!] = (process)
 
+      const watcher = createMinecraftProcessWatcher(process)
+      const errorLogs = [] as string[]
+      const startTime = Date.now()
       this.emit('minecraft-start', {
         pid: process.pid,
         minecraft: version.minecraftVersion,
         ...options,
+        startTime,
       })
-      const watcher = createMinecraftProcessWatcher(process)
-      const errorLogs = [] as string[]
-      const startTime = Date.now()
-
-      // TODO: move this to plugin system
-      // this.instanceService.editInstance({
-      //   instancePath: options.gameDirectory,
-      //   lastPlayedDate: startTime,
-      // })
 
       const processError = async (buf: Buffer) => {
         const encoding = await this.encoder.guessEncodingByBuffer(buf).catch(e => { })
@@ -252,12 +261,6 @@ export class LaunchService extends AbstractService implements ILaunchService {
       }).on('minecraft-exit', ({ code, signal, crashReport, crashReportLocation }) => {
         const endTime = Date.now()
         const playTime = endTime - startTime
-
-        // TODO: move this to plugin system
-        // this.instanceService.editInstance({
-        //   instancePath: options.gameDirectory,
-        //   // playtime: instance.playtime + playTime,
-        // })
 
         this.log(`Minecraft exit: ${code}, signal: ${signal}`)
         if (crashReportLocation) {
