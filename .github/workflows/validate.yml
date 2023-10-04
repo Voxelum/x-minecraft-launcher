@@ -23,10 +23,10 @@ jobs:
         pnpm install
     - name: Lint
       run: |
-        pnpm -r lint
+        pnpm lint
     - name: Check
       run: |
-        pnpm -r check
+        pnpm check
     - name: Build
       run: |
         pnpm run --prefix xmcl-keystone-ui build

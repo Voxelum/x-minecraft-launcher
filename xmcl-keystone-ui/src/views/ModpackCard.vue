@@ -8,8 +8,8 @@
     width="250"
     class="draggable-card cursor-pointer rounded-lg transition-all duration-200"
     style="transition: all; transition-duration: 200ms;"
-    @dragstart="$emit('dragstart')"
-    @dragend="$emit('dragend')"
+    @dragstart="emit('dragstart')"
+    @dragend="emit('dragend')"
   >
     <v-img
       v-if="item.icon"
@@ -67,7 +67,7 @@
           contenteditable
           class="max-w-50 overflow-auto"
           @input.stop="onEditTag($event, index)"
-          @blur="$emit('tags', [...item.tags])"
+          @blur="emit('tags', [...item.tags])"
         >
           {{ tag }}
         </div>
@@ -77,7 +77,7 @@
       <v-btn
         block
         text
-        @click="$emit('create')"
+        @click="emit('create')"
       >
         <v-icon>
           add
@@ -99,7 +99,7 @@ import { vContextMenu } from '../directives/contextMenu'
 import { vDraggableCard } from '../directives/draggableCard'
 
 const props = defineProps<{ item: ModpackItem }>()
-const emit = defineEmits(['tags', 'delete'])
+const emit = defineEmits(['tags', 'delete', 'dragstart', 'dragend', 'create'])
 
 const { t } = useI18n()
 const { showItemInDirectory } = useService(BaseServiceKey)

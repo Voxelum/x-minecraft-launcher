@@ -48,7 +48,7 @@
         "@xmcl/eslint-config": "workspace:*",
         "esbuild": "^0.17.16",
         "tslib": "^2.5.0",
-        "typescript": "^5.0.4",
+        "typescript": "^5.2.2",
         "typescript-json-schema": "^0.53.1"
     }
 }

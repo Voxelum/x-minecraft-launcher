@@ -75,7 +75,7 @@ export function useLocalStorageCacheInt(key: string, defaultValue: number): Ref<
 }
 
 export function useLocalStorageCacheStringValue<T extends string = string>(key: string, defaultValue: T, legacyKey?: string): Ref<T> {
-  return useLocalStorageCache(key, () => defaultValue, (s) => s, (s) => s as T, legacyKey)
+  return useLocalStorageCache(key, () => defaultValue, (s) => s, (s) => s as T)
 }
 
 export function useLocalStorageCacheBool(key: string, defaultValue: boolean): Ref<boolean> {

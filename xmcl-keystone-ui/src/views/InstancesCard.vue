@@ -12,7 +12,7 @@
     style="padding: 0;"
     hover
     :draggable="!isBusy"
-    @click="$emit('click', $event)"
+    @click="emit('click', $event)"
   >
     <div
       v-if="isBusy"
@@ -206,7 +206,7 @@ const isSelected = computed(() => path.value === props.instance.path)
 const { status } = useInstanceServerStatus(computed(() => props.instance))
 const { showItemInDirectory } = useService(BaseServiceKey)
 
-const emit = defineEmits(['delete'])
+const emit = defineEmits(['delete', 'click'])
 
 const image = computed(() => {
   if (status.value.favicon && status.value.favicon !== unknownServer) {
