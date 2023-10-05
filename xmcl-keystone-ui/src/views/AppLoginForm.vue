@@ -174,7 +174,8 @@ const getUserServiceAccount = (serv: string) => {
 // Authority items
 const { data: services } = injection(kYggdrasilServices)
 const { state: setting } = injection(kSettingsState)
-const items = useAuthorityItems(computed(() => !!setting.value?.developerMode), computed(() => services.value || []))
+const { users } = injection(kUserContext)
+const items = useAuthorityItems(computed(() => !!setting.value?.developerMode || users.value.some(u => u.authority === AUTHORITY_MICROSOFT)), computed(() => services.value || []))
 
 // Account history
 const { authority, history } = useAccountSystemHistory()
