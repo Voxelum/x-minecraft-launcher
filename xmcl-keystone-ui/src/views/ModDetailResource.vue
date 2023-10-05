@@ -11,10 +11,7 @@ import { useModDetailUpdate, useModDetailEnable } from '@/composables/modDetail'
 const props = defineProps<{
   mod: Mod
   files: ModFile[]
-}>()
-
-const emit = defineEmits<{
-  (event: 'delete', file: ModFile): void
+  installed: ModFile[]
 }>()
 
 const versions = computed(() => {
@@ -110,23 +107,26 @@ const model = computed(() => {
 })
 
 const updating = useModDetailUpdate()
-const { enabled, installed, hasInstalledVersion } = useModDetailEnable(selectedVersion, computed(() => props.files), updating)
+const { enabled, installed, hasInstalledVersion } = useModDetailEnable(selectedVersion, computed(() => props.installed), updating)
 const { path } = injection(kInstance)
 
 watch(() => props.mod, () => {
   updating.value = false
 })
 
-const { install } = useService(InstanceModsServiceKey)
+const { install, uninstall } = useService(InstanceModsServiceKey)
 const onDelete = async () => {
   updating.value = true
-  emit('delete', props.mod.installed[0])
+  const file = props.files.find(f => f.path === selectedVersion.value.id)
+  if (file) {
+    await uninstall({ path: path.value, mods: [file.resource] })
+  }
 }
 
 const onInstall = async () => {
   updating.value = true
 
-  const file = props.files.find(f => f.modId === selectedVersion.value.id)
+  const file = props.files.find(f => f.path === selectedVersion.value.id)
   if (file) {
     await install({ path: path.value, mods: [file.resource] })
   }

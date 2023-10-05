@@ -1,5 +1,6 @@
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
-import { getCurseforgeModLoaderTypeFromRuntime } from '@/util/curseforge'
+import { getCurseforgeModLoaderTypeFromRuntime, getCursforgeModLoadersFromString } from '@/util/curseforge'
+import { isNoModLoader } from '@/util/isNoModloader'
 import { ModFile, getModFileFromResource } from '@/util/mod'
 import { getModrinthModLoaders } from '@/util/modrinth'
 import { Mod as CFMod, FileModLoaderType, ModsSearchSortField, Pagination } from '@xmcl/curseforge'
@@ -11,14 +12,43 @@ import { InjectionKey, Ref } from 'vue'
 
 export const kModsSearch: InjectionKey<ReturnType<typeof useModsSearch>> = Symbol('ModsSearch')
 
-export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, runtime: Ref<InstanceData['runtime']>, instanceMods: Ref<ModFile[]>) {
+export enum ModLoaderFilter {
+  fabric = 'fabric',
+  forge = 'forge',
+  quilt = 'quilt',
+}
+
+export function useModsSearch(resources: Ref<Resource[]>, runtime: Ref<InstanceData['runtime']>, instanceMods: Ref<ModFile[]>) {
+  const modLoaderFilters = ref([] as ModLoaderFilter[])
+  const keyword: Ref<string> = ref('')
+
+  watch(runtime, (version) => {
+    const items = [] as ModLoaderFilter[]
+    if (isNoModLoader(version)) {
+      items.push(ModLoaderFilter.fabric, ModLoaderFilter.forge, ModLoaderFilter.quilt)
+    } else {
+      if (version.fabricLoader) {
+        items.push(ModLoaderFilter.fabric)
+      }
+      if (version.forge) {
+        items.push(ModLoaderFilter.forge)
+      }
+      if (version.quiltLoader) {
+        items.push(ModLoaderFilter.quilt, ModLoaderFilter.fabric)
+      }
+    }
+
+    modLoaderFilters.value = items
+  }, { immediate: true, deep: true })
+
+  const useForge = computed(() => modLoaderFilters.value.indexOf(ModLoaderFilter.forge) !== -1)
+  const useFabric = computed(() => modLoaderFilters.value.indexOf(ModLoaderFilter.fabric) !== -1)
+  const useQuilt = computed(() => modLoaderFilters.value.indexOf(ModLoaderFilter.quilt) !== -1)
+
   const isValidResource = (r: Resource) => {
-    const useForge = !!runtime.value.forge
-    const useFabric = !!runtime.value.fabricLoader
-    const useQuilt = !!runtime.value.quiltLoader
-    if (useForge) return !!r.metadata.forge
-    if (useFabric) return !!r.metadata.fabric
-    if (useQuilt) return !!r.metadata.quilt
+    if (useForge.value) return !!r.metadata.forge
+    if (useFabric.value) return !!r.metadata.fabric
+    if (useQuilt.value) return !!r.metadata.quilt
     return false
   }
 
@@ -33,7 +63,7 @@ export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, 
     keyword.value.length === 0
       ? instanceMods.value
       : instanceMods.value.filter(m => m.name.toLocaleLowerCase().indexOf(keyword.value.toLocaleLowerCase()) !== -1),
-        )
+  )
 
   const modrinth = ref(undefined as SearchResult | undefined)
   const curseforge = ref(undefined as {
@@ -45,8 +75,7 @@ export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, 
     try {
       modrinthError.value = undefined
       const facets = [`["versions:${runtime.value.minecraft}"]`, '["project_type:mod"]']
-      const modLoaders = getModrinthModLoaders(runtime.value)
-      facets.push('[' + modLoaders.map(m => `"categories:${m}"`).join(', ') + ']')
+      facets.push('[' + modLoaderFilters.value.map(m => `"categories:${m}"`).join(', ') + ']')
       if (keyword.value) {
         const remain = append && modrinth.value ? modrinth.value.total_hits - offset : Number.MAX_SAFE_INTEGER
         const result = await clientModrinthV2.searchProjects({
@@ -76,14 +105,12 @@ export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, 
   const processCurseforge = async (offset: number, append: boolean) => {
     if (keyword.value) {
       try {
-        const modLoaderType = getCurseforgeModLoaderTypeFromRuntime(runtime.value)
-
         curseforgeError.value = undefined
         const remain = append && curseforge.value ? curseforge.value.pagination.totalCount - offset : Number.MAX_SAFE_INTEGER
         const result = await clientCurseforgeV1.searchMods({
           classId: 6, // mods
           sortField: ModsSearchSortField.Name,
-          modLoaderType,
+          modLoaderTypes: getCursforgeModLoadersFromString(modLoaderFilters.value),
           gameVersion: runtime.value.minecraft,
           searchFilter: keyword.value,
           pageSize: append ? Math.min(20, remain) : 20,
@@ -149,6 +176,7 @@ export function useModsSearch(keyword: Ref<string>, resources: Ref<Resource[]>, 
   watch(keyword, onSearch)
 
   return {
+    modLoaderFilters,
     loadMoreCurseforge,
     loadMoreModrinth,
     canCurseforgeLoadMore,

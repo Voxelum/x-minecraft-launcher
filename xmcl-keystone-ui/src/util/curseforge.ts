@@ -1,6 +1,7 @@
 import { File, FileModLoaderType, FileRelationType } from '@xmcl/curseforge'
 import { RuntimeVersions } from '@xmcl/runtime-api'
 import { isNoModLoader } from './isNoModloader'
+import { ModLoaderFilter } from '@/composables/modSearch'
 
 export function getCurseforgeRelationType(type: FileRelationType) {
   return type === FileRelationType.RequiredDependency
@@ -14,6 +15,15 @@ export function getCurseforgeRelationType(type: FileRelationType) {
 
 export function getCursforgeFileModLoaders(file: File): string[] {
   return file.gameVersions.filter(v => !Number.isInteger(Number(v[0])))
+}
+
+export function getCursforgeModLoadersFromString(loaderTypes: ModLoaderFilter[]) {
+  const mapping = {
+    [ModLoaderFilter.fabric]: 'Fabric',
+    [ModLoaderFilter.forge]: 'Forge',
+    [ModLoaderFilter.quilt]: 'Quilt',
+  }
+  return loaderTypes.map(loaderType => mapping[loaderType])
 }
 
 export function getCurseforgeModLoaderTypeFromRuntime(runtime: RuntimeVersions, returnAnyIfNoModLoader = true) {

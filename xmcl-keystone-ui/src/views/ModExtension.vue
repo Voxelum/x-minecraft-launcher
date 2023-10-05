@@ -69,12 +69,50 @@
       </div>
       <div class="flex-grow" />
       <div
-        class="invisible-scroll flex justify-end overflow-x-auto"
+        class="invisible-scroll flex justify-end gap-4 overflow-x-auto"
       >
+        <v-btn-toggle
+          v-model="modLoaderFilters"
+          multiple
+          dense
+        >
+          <v-btn
+            icon
+            text
+            value="forge"
+          >
+            <v-img
+              width="28"
+              :src="'image://builtin/forge'"
+            />
+          </v-btn>
+
+          <v-btn
+            icon
+            text
+            value="fabric"
+          >
+            <v-img
+              width="28"
+              :src="'image://builtin/fabric'"
+            />
+          </v-btn>
+
+          <v-btn
+            icon
+            text
+            value="quilt"
+          >
+            <v-img
+              width="28"
+              :src="'image://builtin/quilt'"
+            />
+          </v-btn>
+        </v-btn-toggle>
         <v-text-field
           ref="searchTextField"
           v-model="_keyword"
-          class="max-w-100"
+          class="max-w-70"
           small
           hide-details
           outlined
@@ -157,26 +195,11 @@ const _keyword = computed({
 })
 
 const { runtime: version } = injection(kInstance)
-const { modrinth, curseforge, mods } = injection(kModsSearch)
+const { modrinth, curseforge, mods, modLoaderFilters } = injection(kModsSearch)
 const { tab } = injection(kMods)
 const curseforgeCount = computed(() => curseforge.value ? curseforge.value.pagination.totalCount : 0)
 const modrinthCount = computed(() => modrinth.value ? modrinth.value.total_hits : 0)
 const { t } = useI18n()
-
-const modLoaderFilters = ref([] as string[])
-onMounted(() => {
-  const items = [] as string[]
-  // if (fabricLoader.value) {
-  //   items.push('fabric')
-  // }
-  // if (forge.value) {
-  //   items.push('forge')
-  // }
-  // if (quiltLoader.value) {
-  //   items.push('quilt')
-  // }
-  modLoaderFilters.value = items
-})
 
 const searchTextField = ref(undefined as any)
 const onControlF = (e: KeyboardEvent) => {

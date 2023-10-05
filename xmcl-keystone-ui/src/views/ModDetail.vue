@@ -9,24 +9,34 @@
           width="128"
           height="128"
           class="rounded-xl"
-          :src="detail.icon"
+          :src="detail.icon || unknownServer"
         />
       </div>
       <div class="flex flex-col">
         <a
+          v-if="detail.url"
           class="text-2xl font-bold"
           target="browser"
           :href="detail.url"
         >
           {{ detail.title }}
         </a>
+        <span
+          v-else
+          class="text-2xl font-bold"
+        >
+          {{ detail.title }}
+        </span>
         <div class="flex flex-grow-0 items-center gap-2">
           {{ detail.author }}
           <v-divider
             v-if="detail.author"
             vertical
           />
-          <div class="flex flex-grow-0">
+          <div
+            v-if="detail.downloadCount"
+            class="flex flex-grow-0"
+          >
             <v-icon
               class="material-icons-outlined"
               left
@@ -36,7 +46,10 @@
             {{ detail.downloadCount }}
           </div>
           <v-divider vertical />
-          <div class="flex flex-grow-0">
+          <div
+            v-if="detail.follows"
+            class="flex flex-grow-0"
+          >
             <v-icon
               color="orange"
               left
@@ -447,6 +460,7 @@ import { getLocalDateString } from '@/util/date'
 import ModDetailVersion, { ModVersion } from './ModDetailVersion.vue'
 import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
+import unknownServer from '@/assets/unknown_server.png'
 
 const props = defineProps<{
   detail: ModDetailData

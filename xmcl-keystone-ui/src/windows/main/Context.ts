@@ -71,7 +71,7 @@ export default defineComponent({
     const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionHeader)
 
     const modResources = useDomainResources(ResourceDomain.Mods)
-    const modsSearch = useModsSearch(ref(''), modResources.resources, instance.runtime, instanceMods.mods)
+    const modsSearch = useModsSearch(modResources.resources, instance.runtime, instanceMods.mods)
     const mods = useMods(modsSearch.keyword, modsSearch.modrinth, modsSearch.curseforge, modsSearch.mods, modsSearch.existedMods)
     const modUpgrade = useModUpgrade(instance.path, instance.runtime, mods.installed)
 

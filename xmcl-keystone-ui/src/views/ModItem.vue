@@ -8,7 +8,7 @@
   >
     <v-list-item-avatar v-if="!selectionMode">
       <v-img
-        :src="item.icon"
+        :src="item.icon || unknownServer"
       />
     </v-list-item-avatar>
     <v-list-item-action v-else>
@@ -157,6 +157,7 @@ import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { Mod } from '@/util/mod'
 import ModLabels from './ModLabels.vue'
+import unknownServer from '@/assets/unknown_server.png'
 
 const props = defineProps<{
   item: Mod

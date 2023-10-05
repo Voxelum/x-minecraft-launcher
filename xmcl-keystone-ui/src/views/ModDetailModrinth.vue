@@ -16,6 +16,7 @@ import { ModVersion } from './ModDetailVersion.vue'
 import { getModrinthModLoaders } from '@/util/modrinth'
 import { isNoModLoader } from '@/util/isNoModloader'
 import { useInstanceModLoaderDefault } from '@/util/instanceModLoaderDefault'
+import { kModsSearch } from '@/composables/modSearch'
 
 const props = defineProps<{
   modrinth?: SearchResultHit
@@ -29,9 +30,11 @@ const props = defineProps<{
 const projectId = computed(() => props.projectId)
 const { project, refreshing: loading } = useModrinthProject(projectId)
 
+const { modLoaderFilters } = injection(kModsSearch)
+
 const { versions, refreshing: loadingVersions } = useModrinthVersions(projectId,
   undefined,
-  computed(() => getModrinthModLoaders(props.runtime)),
+  modLoaderFilters,
   computed(() => [props.runtime.minecraft]))
 
 const model = useModrinthModDetailData(projectId, project, computed(() => props.modrinth))

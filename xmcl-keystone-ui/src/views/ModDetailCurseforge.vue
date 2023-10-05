@@ -8,7 +8,7 @@ import { kImageDialog } from '@/composables/imageDialog'
 import { kInstance } from '@/composables/instance'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { useModDetailEnable, useModDetailUpdate } from '@/composables/modDetail'
-import { getCurseforgeModLoaderTypeFromRuntime, getCurseforgeRelationType, getCursforgeFileModLoaders } from '@/util/curseforge'
+import { getCurseforgeModLoaderTypeFromRuntime, getCurseforgeRelationType, getCursforgeFileModLoaders, getCursforgeModLoadersFromString } from '@/util/curseforge'
 import { TimeUnit, getAgoOrDate } from '@/util/date'
 import { injection } from '@/util/inject'
 import { ModFile } from '@/util/mod'
@@ -18,6 +18,7 @@ import ModDetail, { CategoryItem, ExternalResource, Info, ModDependency, ModDeta
 import { ModVersion } from './ModDetailVersion.vue'
 import { useInstanceModLoaderDefault } from '@/util/instanceModLoaderDefault'
 import { isNoModLoader } from '@/util/isNoModloader'
+import { kModsSearch } from '@/composables/modSearch'
 
 const { te, t } = useI18n()
 const tCategory = (k: string) => te(`curseforgeCategory.${k}`) ? t(`curseforgeCategory.${k}`) : k
@@ -49,6 +50,7 @@ const getDateString = (date: string) => {
 }
 
 const cursforgeModId = computed(() => props.curseforgeId)
+const { modLoaderFilters } = injection(kModsSearch)
 
 const { project: curseforgeProject, error: projectError, refreshing } = useCurseforgeProject(cursforgeModId)
 const curseforgeMod = computed(() => {
@@ -154,7 +156,7 @@ const releaseTypes: Record<string, 'release' | 'beta' | 'alpha'> = {
 }
 const { files, refreshing: loadingVersions, index, totalCount, pageSize } = useCurseforgeProjectFiles(cursforgeModId,
   computed(() => props.minecraft),
-  computed(() => getCurseforgeModLoaderTypeFromRuntime(props.runtime)))
+  computed(() => undefined))
 
 const modId = ref(0)
 const fileId = ref(undefined as number | undefined)
@@ -163,6 +165,10 @@ const { changelog, isValidating } = useCurseforgeChangelog(modId, fileId)
 const modVersions = computed(() => {
   const versions: ModVersion[] = []
   for (const file of files.value) {
+    const loaders = getCursforgeFileModLoaders(file)
+    if (!loaders.some(l => modLoaderFilters.value.indexOf(l.toLowerCase() as any) !== -1)) {
+      continue
+    }
     versions.push(reactive({
       id: file.id.toString(),
       name: file.displayName,
