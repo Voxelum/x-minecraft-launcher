@@ -1,35 +1,16 @@
-import 'virtual:windi.css'
-import Vue, { h } from 'vue'
-import VueI18n from 'vue-i18n'
-import { castToVueI18n, createI18n } from 'vue-i18n-bridge'
-import App from './App.vue'
-import { baseService } from './baseService'
 import { usePreferDark } from '@/composables'
 import { kVuetify } from '@/composables/vuetify'
-import messages from '@intlify/unplugin-vue-i18n/messages'
+import { i18n } from '@/i18n'
 import { vuetify } from '@/vuetify'
-
-Vue.use(VueI18n, { bridge: true })
+import 'virtual:windi.css'
+import Vue, { h } from 'vue'
+import App from './App.vue'
+import { baseService } from './baseService'
 
 const search = window.location.search.slice(1)
 const pairs = search.split('&').map((pair) => pair.split('='))
 const locale = pairs.find(p => p[0] === 'locale')?.[1] ?? 'en'
 const theme = pairs.find(p => p[0] === 'theme')?.[1] ?? 'dark'
-
-const i18n = castToVueI18n(
-  createI18n(
-    {
-      legacy: false,
-      locale: 'en',
-      silentTranslationWarn: true,
-      missingWarn: false,
-      messages,
-    },
-    VueI18n,
-  ),
-) // `createI18n` which is provide `vue-i18n-bridge` has second argument, you **must** pass `VueI18n` constructor which is provide `vue-i18n`
-
-Vue.use(i18n)
 
 const app = new Vue(defineComponent({
   vuetify,
@@ -42,7 +23,8 @@ const app = new Vue(defineComponent({
       updateTheme(state.theme)
       state.subscribe('localeSet', (locale) => {
         i18n.locale = locale
-      }).subscribe('themeSet', (theme) => {
+      })
+      state.subscribe('themeSet', (theme) => {
         updateTheme(state.theme)
       })
     })
