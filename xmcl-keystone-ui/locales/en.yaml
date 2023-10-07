@@ -626,7 +626,8 @@ mod:
   name: Mod | Mods
   noModLoaderHint: Don't forget to enable a modloader to use mods!
   openLink: Open the mod url {url}
-  searchOnCurseforge: Search in curseforge
+  search: Search Mods
+  searchOnCurseforge: Search {name} in curseforge
   searchOnModrinth: Search {name} in Modrinth
   selected: Selected Mods
   showDirectory: Show mods directory
@@ -644,6 +645,7 @@ modInstall:
   install: Install
   installHint: Will install {file} file with {dependencies} dependencies
   installed: Installed
+  noVersionSupported: Mod does not support current Minecraft version
   pending: Pending to install
   search: Search Result
   searchHint: Search and select project

@@ -112,13 +112,16 @@
         <v-text-field
           ref="searchTextField"
           v-model="_keyword"
-          class="max-w-70"
+          class="max-w-80 min-w-70"
+          :placeholder="t('mod.search')"
           small
           hide-details
           outlined
           filled
           dense
           prepend-inner-icon="search"
+          @focus="searchTextFieldFocused = true"
+          @blur="searchTextFieldFocused = false"
         />
       </div>
     </div>
@@ -185,7 +188,9 @@ import { injection } from '@/util/inject'
 import debounce from 'lodash.debounce'
 
 const search = debounce((v: string | undefined) => {
-  replace({ query: { ...route.query, keyword: v } })
+  if (v !== route.query.keyword) {
+    replace({ query: { ...route.query, keyword: v } })
+  }
 }, 800)
 const { replace } = useRouter()
 const route = useRoute()
@@ -201,18 +206,32 @@ const curseforgeCount = computed(() => curseforge.value ? curseforge.value.pagin
 const modrinthCount = computed(() => modrinth.value ? modrinth.value.total_hits : 0)
 const { t } = useI18n()
 
-const searchTextField = ref(undefined as any)
-const onControlF = (e: KeyboardEvent) => {
+const searchTextField = ref(undefined as any | undefined)
+const searchTextFieldFocused = ref(false)
+const onKeyPress = (e: KeyboardEvent) => {
+  // ctrl+f
   if (e.ctrlKey && e.key === 'f') {
     e.preventDefault()
     e.stopPropagation()
     searchTextField.value?.focus()
   }
+  // ctrl+a
+  if (searchTextFieldFocused.value && e.ctrlKey && e.key === 'a') {
+    e.preventDefault()
+    e.stopPropagation()
+    searchTextField.value?.$el.querySelector('input')?.select()
+  }
+  // esc
+  if (searchTextFieldFocused.value && e.key === 'Escape') {
+    e.preventDefault()
+    e.stopPropagation()
+    searchTextField.value?.blur()
+  }
 }
 onMounted(() => {
-  document.addEventListener('keydown', onControlF)
+  document.addEventListener('keydown', onKeyPress)
 })
 onUnmounted(() => {
-  document.removeEventListener('keydown', onControlF)
+  document.removeEventListener('keydown', onKeyPress)
 })
 </script>

@@ -1,4 +1,4 @@
-import { Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
+import { PartialResourceHash, Resource, ResourceDomain, ResourceServiceKey, applyUpdateToResource } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
 import { useRefreshable } from './refreshable'
 import { useService } from './service'
@@ -21,8 +21,10 @@ export function useResourceAdd(onResourceEffect: (res: Resource) => void, target
 export function useResourceEffect(onResourceEffect: () => void, targetDomain?: ResourceDomain) {
   const { on, removeListener } = useService(ResourceServiceKey)
   const effect = ref(0)
-  const onEffect = ({ domain }: { domain: ResourceDomain }) => {
-    if (!targetDomain || domain === targetDomain) {
+  const onEffect = ({ domain }: { domain?: ResourceDomain }) => {
+    if (!domain) {
+      effect.value += 1
+    } else if (!targetDomain || domain === targetDomain) {
       effect.value += 1
     }
   }
@@ -32,7 +34,7 @@ export function useResourceEffect(onResourceEffect: () => void, targetDomain?: R
   onMounted(() => {
     on('resourceAdd', onEffect)
     on('resourceRemove', onEffect)
-    on('resourceUpdate', onEffect)
+    on('resourceUpdate', onEffect as any)
   })
   onUnmounted(() => {
     removeListener('resourceAdd', onEffect)
@@ -145,11 +147,14 @@ export function useDomainResources(domain: ResourceDomain | Ref<ResourceDomain>)
     if (typeof domain === 'object' ? domain.value : domain !== r.domain) return
     resources.value = resources.value.filter(res => res.hash !== r.sha1)
   }
-  const onUpdate = (r: Resource) => {
-    if (typeof domain === 'object' ? domain.value : domain !== r.domain) return
-    const index = resources.value.findIndex(res => res.hash === r.hash)
-    resources.value[index] = r
-    resources.value = [...resources.value]
+  const onUpdate = (update: PartialResourceHash[]) => {
+    for (const u of update) {
+      const index = resources.value.findIndex(res => res.hash === u.hash)
+      if (index !== -1) {
+        const resource = resources.value[index]
+        applyUpdateToResource(resource, u)
+      }
+    }
   }
 
   onMounted(() => {

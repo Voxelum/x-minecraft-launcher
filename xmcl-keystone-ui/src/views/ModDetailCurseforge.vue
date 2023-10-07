@@ -185,6 +185,9 @@ const modVersions = computed(() => {
       progress: undefined,
     }))
   }
+  // if (versions.length === 0) {
+  console.log(files.value)
+  // }
   return versions
 })
 

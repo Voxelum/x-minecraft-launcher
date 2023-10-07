@@ -8,7 +8,7 @@ export declare type FileTypeHint = string | '*' | 'mods' | 'forge' | 'fabric' | 
 export type PartialResourcePath = Partial<Resource> & { path: string }
 export type ResolveResourceOptions = { path: string; domain?: ResourceDomain }
 export type PartialResourcePathResolved = PartialResourcePath & { hash: string; ino: number; fileType: string; size: number; fileName: string; name: string }
-export type PartialResourceHash = Partial<Resource> & { hash: string }
+export type PartialResourceHash = Partial<Pick<Resource, 'name' | 'icons' | 'metadata' | 'tags' | 'uris'>> & { hash: string }
 export type ResourceKey = Resource | string
 
 export interface ImportResourceOptions extends ResolveResourceOptions {
@@ -36,7 +36,7 @@ interface ResourceServiceEventMap {
 
   'resourceAdd': Resource
   'resourceRemove': { sha1: string; domain: ResourceDomain }
-  'resourceUpdate': Resource
+  'resourceUpdate': PartialResourceHash[]
 }
 
 export interface Pagination {

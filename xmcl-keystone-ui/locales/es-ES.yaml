@@ -245,3 +245,5 @@ diagnosis:
   missingAssetsIndex:
     message: Launcher descargará el índice de assets por ti
     name: Falta el archivo de índice de activos de {version}.
+mod:
+  searchOnCurseforge: Buscar {nombre} en curseforge

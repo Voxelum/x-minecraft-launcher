@@ -3,6 +3,8 @@ import { getDiceCoefficient } from '@/util/sort'
 import { Mod as CurseforgeMod, Pagination } from '@xmcl/curseforge'
 import { SearchResult } from '@xmcl/modrinth'
 import { InjectionKey, Ref } from 'vue'
+import { useModrinthProject } from './modrinthProject'
+import { useCurseforgeProject } from './curseforge'
 
 export const kMods: InjectionKey<ReturnType<typeof useMods>> = Symbol('ModSearchItems')
 
@@ -52,22 +54,58 @@ export function useMods(
 
       if (!item) {
         // Create new mod project
-        indices[name] = markRaw({
-          id: name,
-          author: m.authors[0] ?? '',
-          icon: m.icon,
-          title: name,
-          description: m.description,
-          forge: m.modLoaders.indexOf('forge') !== -1,
-          fabric: m.modLoaders.indexOf('fabric') !== -1,
-          quilt: m.modLoaders.indexOf('quilt') !== -1,
-          links: m.links,
-          license: m.license,
-          installed: instanceFile ? [m] : [],
-          modrinthProjectId: modrinthId,
-          curseforgeProjectId: curseforgeId,
-          files: [m],
-        })
+        if (modrinthId) {
+          const { project } = useModrinthProject(ref(modrinthId))
+          indices[name] = reactive({
+            id: name,
+            author: m.authors[0] ?? '',
+            icon: computed(() => project.value?.icon_url || m.icon),
+            title: computed(() => project.value?.title || name),
+            description: computed(() => project.value?.description || m.description),
+            forge: m.modLoaders.indexOf('forge') !== -1,
+            fabric: m.modLoaders.indexOf('fabric') !== -1,
+            quilt: m.modLoaders.indexOf('quilt') !== -1,
+            installed: instanceFile ? [m] : [],
+            downloadCount: computed(() => project.value?.downloads),
+            followerCount: computed(() => project.value?.followers),
+            modrinthProjectId: modrinthId,
+            curseforgeProjectId: curseforgeId,
+            files: [m],
+          })
+        } else if (curseforgeId) {
+          const { project } = useCurseforgeProject(ref(curseforgeId))
+          indices[name] = reactive({
+            id: name,
+            author: m.authors[0] ?? '',
+            icon: computed(() => project.value?.logo.url || m.icon),
+            title: computed(() => project.value?.name || name),
+            description: computed(() => project.value?.summary || m.description),
+            forge: m.modLoaders.indexOf('forge') !== -1,
+            fabric: m.modLoaders.indexOf('fabric') !== -1,
+            quilt: m.modLoaders.indexOf('quilt') !== -1,
+            downloadCount: computed(() => project.value?.downloadCount),
+            followerCount: computed(() => project.value?.thumbsUpCount),
+            installed: instanceFile ? [m] : [],
+            modrinthProjectId: modrinthId,
+            curseforgeProjectId: curseforgeId,
+            files: [m],
+          })
+        } else {
+          indices[name] = {
+            id: name,
+            author: m.authors[0] ?? '',
+            icon: m.icon,
+            title: name,
+            description: m.description,
+            forge: m.modLoaders.indexOf('forge') !== -1,
+            fabric: m.modLoaders.indexOf('fabric') !== -1,
+            quilt: m.modLoaders.indexOf('quilt') !== -1,
+            installed: instanceFile ? [m] : [],
+            modrinthProjectId: modrinthId,
+            curseforgeProjectId: curseforgeId,
+            files: [m],
+          }
+        }
 
         if (curseforgeId) indices[curseforgeId] = indices[name]
         if (modrinthId) indices[modrinthId] = indices[name]
@@ -105,12 +143,12 @@ export function useMods(
       for (const i of modr.hits) {
         if (indices[i.project_id.toString()]) {
           const mod = indices[i.project_id.toString()]
-          mod.icon = i.icon_url
+          // mod.icon = i.icon_url
           mod.title = i.title
           mod.author = i.author
-          mod.description = i.description
-          mod.downloadCount = i.downloads
-          mod.followerCount = i.follows
+          // mod.description = i.description
+          // mod.downloadCount = i.downloads
+          // mod.followerCount = i.follows
           mod.modrinth = i
         } else {
           const mod: Mod = {

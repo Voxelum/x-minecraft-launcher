@@ -12,7 +12,11 @@
       />
     </v-list-item-avatar>
     <v-list-item-action v-else>
-      <v-checkbox hide-details />
+      <v-checkbox
+        v-model="isChecked"
+        hide-details
+        @click.stop
+      />
     </v-list-item-action>
     <v-list-item-content>
       <v-badge
@@ -43,7 +47,10 @@
           <template
             v-if="item.downloadCount"
           >
-            <v-divider vertical />
+            <v-divider
+              v-if="item.author"
+              vertical
+            />
             <div
               class="flex flex-grow-0 "
             >
@@ -54,11 +61,11 @@
               >
                 file_download
               </v-icon>
-              {{ item.downloadCount }}
+              {{ getExpectedSize(item.downloadCount, '' ) }}
             </div>
           </template>
           <template
-            v-if="item.downloadCount"
+            v-if="item.followerCount"
           >
             <v-divider vertical />
             <div
@@ -158,16 +165,26 @@ import { injection } from '@/util/inject'
 import { Mod } from '@/util/mod'
 import ModLabels from './ModLabels.vue'
 import unknownServer from '@/assets/unknown_server.png'
+import { getExpectedSize } from '@/util/size'
 
 const props = defineProps<{
   item: Mod
   selectionMode: boolean
+  checked: boolean
   selected: boolean
   hasUpdate?: boolean
 }>()
 
-const emit = defineEmits(['click'])
+const emit = defineEmits(['click', 'checked'])
 
+const isChecked = computed({
+  get() {
+    return props.checked
+  },
+  set(v) {
+    emit('checked', v)
+  },
+})
 const { provideRuntime } = injection(kInstanceModsContext)
 const { t } = useI18n()
 const tooltip = computed(() => props.hasUpdate ? t('mod.hasUpdate') : props.item.description || props.item.title)

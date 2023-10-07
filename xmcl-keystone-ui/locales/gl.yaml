@@ -1,5 +1,7 @@
 AppAddInstanceDialog:
-  downloadedNotification: O rematou a descarga do paquete de mods {name}. ¿Queres crear unha instancia para el?
+  downloadedNotification: >-
+    O rematou a descarga do paquete de mods {name}. ¿Queres crear unha instancia
+    para el?
 AppShareInstanceDialog:
   baseInfo: Configuración Básica
   cancelShare: Cancelar Compartir
@@ -58,9 +60,9 @@ HomeJavaIssueDialog:
     Se encontraron versións locais de Java adecuadas. Pode escoller estos Javas
     locales.
   selectSecondaryHint: >-
-    Atopei algunhas versións locais de Java, pero é posíbel que non se
-    axusten ós criterios. Todavía pode usalos para iniciar, pero este
-    problema seguirá aparecendo.
+    Atopei algunhas versións locais de Java, pero é posíbel que non se axusten
+    ós criterios. Todavía pode usalos para iniciar, pero este problema seguirá
+    aparecendo.
 HomeLaunchMultiInstanceDialog:
   confirm: Sí, Lanzar
   description: Estás lanzando varias instancias de Minecraft. ¿Está seguro?
@@ -77,8 +79,8 @@ HomeSyncDialogPull:
   update: Actualizar
 HomeSyncDialogPush:
   authError: >-
-    Autenticación de usuario erronea. ¡Asegúrese de ter privilexios para
-    cargar arquivos do servidor!
+    Autenticación de usuario erronea. ¡Asegúrese de ter privilexios para cargar
+    arquivos do servidor!
   refresh: Actualizar
   unknownError: Erro descoñecido do servidor. Por favor, tentalo de novo.
   upload: Cargar Instancia
@@ -193,22 +195,24 @@ curseforgeCategory:
   World Gen: Xerador de Mundos
 dataMigration:
   apply: Aplicar Configuración
-  directoryCriteriaHint: ¡Asegúrese de que a sua nova ubicación de directorio sexa un directorio VACÍO!
+  directoryCriteriaHint: >-
+    ¡Asegúrese de que a sua nova ubicación de directorio sexa un directorio
+    VACÍO!
   migrationDestinationIsFile: ¡O destino de migración é un archivo! ¡Seleccione un directorio vacío!
   migrationDestinationIsNotEmptyDirectory: >-
-    ¡O destino de migración non é un directorio vacío! ¡Asegúrese de
-    seleccionar un directorio vacío!
+    ¡O destino de migración non é un directorio vacío! ¡Asegúrese de seleccionar
+    un directorio vacío!
   placeholder: Prema aquí para seleccionar o directorio
   setRootCause: >-
-    ¡Perderá os seus datos (Mapas, Paquetes de Recursos, Mods) se pecha o Lanzador
-    en este proceso!
+    ¡Perderá os seus datos (Mapas, Paquetes de Recursos, Mods) se pecha o
+    Lanzador en este proceso!
   setRootDescription: Isto cambiará a carpeta de datos raíz de este lanzador e Minecraft.
   setRootTitle: Establecer nunha nova ubicación de almacenamento
   unknownError: ¡Erro Descoñecido! Volva a intentalo ou comuníquese co desarrollador.
   waitReload: Migrando datos. Por favor, non peche o Lanzador ou perderás os teus datos.
 delete:
   name: Eliminar {name}
-  'no': 'Non'
+  'no': Non
   'yes': Borrar
 description: Descripción
 detail: Detalle
@@ -245,3 +249,5 @@ diagnosis:
   missingAssetsIndex:
     message: O Lanzador descargará o índice de assets por ti
     name: Falta o arquivo de índice de activos de {version}.
+mod:
+  searchOnCurseforge: Busca {name} en curseforge

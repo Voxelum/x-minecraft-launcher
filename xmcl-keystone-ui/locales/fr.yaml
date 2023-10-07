@@ -104,12 +104,12 @@ SettingMigrationDialog:
   selectRootDirectory: Sélectionnez le répertoire racine
 add: Ajouter
 ago:
-  day: "Il y a {duration} jour | Il y a {duration} jours"
+  day: Il y a {duration} jour | Il y a {duration} jours
   hour: |-
     Il y a {duration} heure | 
     Il y a {duration} heures
-  minute: "Il y a {duration} minute | Il y a {duration} minutes"
-  second: "Il y a {duration} seconde | Il y a {duration} secondes"
+  minute: Il y a {duration} minute | Il y a {duration} minutes
+  second: Il y a {duration} seconde | Il y a {duration} secondes
 authProfileAddedNotification: Profil d'authentification {name} ajouté
 author: Auteur
 back: Revenir
@@ -283,14 +283,14 @@ disk:
 download: Télécharger
 downloadCount: '{count} téléchargements'
 duration:
-  day: "{duration} jour | {duration} jours"
+  day: '{duration} jour | {duration} jours'
   hour: |-
     {duration} heure | 
     {duration} heures
   minute: |-
     {duration} minute | 
     {duration} minutes
-  second: "{duration} seconde | {duration} secondes"
+  second: '{duration} seconde | {duration} secondes'
 edit: Éditer
 error:
   name: |-
@@ -703,7 +703,7 @@ mod:
   name: Mod | Mods
   noModLoaderHint: N'oubliez pas d'activer un modloader pour utiliser les mods !
   openLink: Ouvrir l'url du mod {url}
-  searchOnCurseforge: Rechercher sur Curseforge
+  searchOnCurseforge: Rechercher sur Curseforge {name}
   searchOnModrinth: Rechercher {name} sur Modrinth
   selected: Mods sélectionnés
   showDirectory: Dossier de mods
@@ -908,8 +908,8 @@ modrinth:
 modrinthCard:
   currentVersion: Version actuelle
   projectHint: >
-    Cette instance est créée par le modpack Modrinth de <code class="rounded p-1"
-    style="background: rgba(123,123,123,0.2)">{title}</code> (id projet:
+    Cette instance est créée par le modpack Modrinth de <code class="rounded
+    p-1" style="background: rgba(123,123,123,0.2)">{title}</code> (id projet:
           <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
   projectLastUpdateDate: Dernière mise à jour du projet :"
 multiplayer:
@@ -1022,7 +1022,7 @@ presence:
   curseforge: Explore CurseForge
   curseforgeProject: Regarde {name} sur Curseforge
   instance: Inactif dans l'instance {instance}
-  instanceSetting: "Modifie les paramètres de l'instance : {instance}"
+  instanceSetting: 'Modifie les paramètres de l''instance : {instance}'
   mod: Regarde les mods dans {instance}
   modrinth: Explore Modrinth
   modrinthProject: Explore {name} sur Modrinth
@@ -1058,7 +1058,7 @@ resourcepack:
     Vous perdrez les données et les métadonnées de ce pack de ressources. 
     Vous êtes sûr de faire ça ?
   dropHint: Déposez le dossier/zip du pack de ressources ici pour l'importer.
-  enable: "{count} packs de ressources activés"
+  enable: '{count} packs de ressources activés'
   filter: Filtrer les packs de ressources
   import: Importer le pack de ressources
   incompatible: >-
@@ -1349,10 +1349,11 @@ universalDrop:
   title: Déposez le ou les fichiers ici pour les importer en tant que
   unknownResource: Inconnu
 upstream:
-  missingModpackMetadata: |-
+  missingModpackMetadata: >-
     Les anciennes métadonnées du modpack sont introuvables.
                 
-    Vous pouvez toujours mettre à niveau, mais le résultat peut être erroné. Veuillez sauvegarder vos fichiers d'instance.
+    Vous pouvez toujours mettre à niveau, mais le résultat peut être erroné.
+    Veuillez sauvegarder vos fichiers d'instance.
 user:
   accessToken: Token d'Accès
   authMode: Service d'Authentification

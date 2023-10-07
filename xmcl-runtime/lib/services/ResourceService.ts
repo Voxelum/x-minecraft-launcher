@@ -207,6 +207,7 @@ export class ResourceService extends AbstractService implements IResourceService
   updateResources(resources: [PartialResourceHash]): Promise<[string]>
   updateResources(resources: PartialResourceHash[]): Promise<string[]>
   async updateResources(resources: PartialResourceHash[]): Promise<string[]> {
+    if (resources.length === 0) return []
     await this.context.db.transaction().execute(async (trx) => {
       for (const resource of resources) {
         // this.log(`Update resource ${JSON.stringify(resource, null, 4)}`)
@@ -238,10 +239,8 @@ export class ResourceService extends AbstractService implements IResourceService
         }
       }
     })
-    // TODO: fix this
-    // this.context.db.selectFrom('resources').selectAll().where('sha1', 'in', resources.map(r => r.hash)).select('sha1').execute().then((result) => {
-    //   this.emit('resourceUpdate', generateResource(this.getPath(), entry, result))
-    // })
+
+    this.emit('resourceUpdate', resources)
 
     return []
   }

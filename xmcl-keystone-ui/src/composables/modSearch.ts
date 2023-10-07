@@ -30,7 +30,7 @@ export function useModsSearch(resources: Ref<Resource[]>, runtime: Ref<InstanceD
       if (version.fabricLoader) {
         items.push(ModLoaderFilter.fabric)
       }
-      if (version.forge) {
+      if (version.forge || version.neoForged) {
         items.push(ModLoaderFilter.forge)
       }
       if (version.quiltLoader) {

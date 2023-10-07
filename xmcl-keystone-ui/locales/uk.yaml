@@ -4,17 +4,17 @@ AppShareInstanceDialog:
   baseInfo: Базове налаштування
   cancelShare: Не розповсюджувати
   description: >-
-    Після того як ви поділілись профілем, інші користувачі зможуть встановлювати ці файли через
-    ваш ПК.
+    Після того як ви поділілись профілем, інші користувачі зможуть встановлювати
+    ці файли через ваш ПК.
   downloadDescription: >-
-    Перевірте файли, якими поділився ващ товариш. Оберіть потрібні файли
-    для встановлювання.
+    Перевірте файли, якими поділився ващ товариш. Оберіть потрібні файли для
+    встановлювання.
   downloadNotifyTitle: Встановити екземпляр від {user}
   downloadTitle: Встановити файли з інших пірів
   downloadToLocal: Встановити в поточний екземпляр
   filesToDownload: Оберіть файли для встановлення
   filesToShare: Оберіть файли котрими хочете поділиться
-  instanceShare: "{user} тільки що поділився з вами поточним экземпляром"
+  instanceShare: '{user} тільки що поділився з вами поточним экземпляром'
   share: Поділитись
   shareNotifyTitle: Поділитись экземпляром
   shareTitle: Поділитись ігровими файлами з іншим гравцем
@@ -35,10 +35,10 @@ HomeJavaIssueDialog:
   incompatibleJava: Несумістна Java
   incompatibleJavaHint: Поточна Java може бути несумістна з обраним Minecraft!
   missingJava: Відсутня Java
-  missingJavaHint: "Лаунчер не може знайти Java на вашому комп'ютері. Ви зможете:"
+  missingJavaHint: 'Лаунчер не може знайти Java на вашому комп''ютері. Ви зможете:'
   needDownloadHint: >-
-    Не вдалося знайти поточну версію Java на вашому комп'ютері. Рекомендуємо встановити
-    нову.
+    Не вдалося знайти поточну версію Java на вашому комп'ютері. Рекомендуємо
+    встановити нову.
   optionAutoDownload:
     message: Лаунчер завантажить и встановить Java з вхідного коду Mojang.
     name: Завантажити автоматично
@@ -46,19 +46,18 @@ HomeJavaIssueDialog:
     message: Лаунчер перекине вас на сторінку завантаження Oracle JRE.
     name: Завантажити вручну
   optionSelectJava:
-    message: >-
-      Лаунчер не знайшов у вас Java. Вкажіть лаунчеру де він
-      знаходиться.
-    name: Оберіть Java на своєму комп'ютері 
+    message: Лаунчер не знайшов у вас Java. Вкажіть лаунчеру де він знаходиться.
+    name: Оберіть Java на своєму комп'ютері
   optionSwitch:
     disabled: У базі данних не знайдена Java {version}!
     message: Використовуйте наявну Java {version} на вашом комп'ютері
     name: Змінити на {version}
-  recommendedVersionHint: "{version} рекомендує використовувати Java у діапазоні{range}."
+  recommendedVersionHint: '{version} рекомендує використовувати Java у діапазоні{range}.'
   selectMatchedHint: Знайдено відповідні локальні версії Java. Можна вибрати ці локальні Java.
   selectSecondaryHint: >-
-    Знайдено кілька локальних версій Java, але вони можуть не відповідати критеріям.
-    Ви можете застосувати їх для запуску, але можливо будуть проблеми.
+    Знайдено кілька локальних версій Java, але вони можуть не відповідати
+    критеріям. Ви можете застосувати їх для запуску, але можливо будуть
+    проблеми.
 HomeLaunchMultiInstanceDialog:
   confirm: Запустити
   description: Ви запустили кілька екземплярів Minecraft. Ви впевнені?
@@ -75,8 +74,8 @@ HomeSyncDialogPull:
   update: Оновити
 HomeSyncDialogPush:
   authError: >-
-    Неправильна авторизація користувача. Переконайтеся, що у вас є права
-    на завантажування файлі з серверу !
+    Неправильна авторизація користувача. Переконайтеся, що у вас є права на
+    завантажування файлі з серверу !
   refresh: Перезавантажити
   unknownError: Невідома помилка сервера. Повторіть спробу.
   upload: Завантажити екземпляр
@@ -143,10 +142,10 @@ dataMigration:
   directoryCriteriaHint: Переконайтеся, що новий каталог є ПУСТИМ каталогом!
   migrationDestinationIsFile: Місцем перенесення є файл! Виберіть пустий каталог!
   migrationDestinationIsNotEmptyDirectory: >-
-    Місце перенесення не є пустим каталогом! Переконайтеся, що обрано
-    порожній каталог!
+    Місце перенесення не є пустим каталогом! Переконайтеся, що обрано порожній
+    каталог!
   placeholder: Натисніть тут, щоб вибрати каталог
-  setRootCause: >-
+  setRootCause: |-
     Ви втратите дані (карти, текстурпаки, моди), якщо закриєте
      лаунчер на цьому процесі!
   setRootDescription: Це змінить кореневу папку даних цього лаунчера та minecraft.
@@ -155,8 +154,8 @@ dataMigration:
   waitReload: Перенесення даних. Не закривайте лаунчер, інакше ви втратите дані.
 delete:
   name: Видалити {name}
-  "no": "Ні"
-  "yes": Так
+  'no': Ні
+  'yes': Так
 description: Опис
 detail: Деталі
 diagnosis:
@@ -166,14 +165,16 @@ diagnosis:
   corruptedAssets:
     message: Лаунчер встановить assets замість вас
     name: >-
-      Пошкоджено asset: {name} | Пошкоджено asset {name} | Assets пошкоджено: {count}
+      Пошкоджено asset: {name} | Пошкоджено asset {name} | Assets пошкоджено:
+      {count}
   corruptedAssetsIndex:
     message: Лаунчер скачає індексний assets замість вас
     name: Пошкоджено індексний файл assets {version}.
   corruptedLibraries:
     message: Лаунчер встановить бібліотеки замість вас
     name: >-
-      Пошкоджено бібліотеку: {name} | Бібліотека пошкоджена: {name} | Пошкоджено бібліотек: {count}
+      Пошкоджено бібліотеку: {name} | Бібліотека пошкоджена: {name} | Пошкоджено
+      бібліотек: {count}
   corruptedVersionJar:
     message: Натисніть для встановлення цієї версії
     name: Версия jar для Minecraft %{version} пошкоджена.
@@ -188,12 +189,14 @@ diagnosis:
     name: Неправильне розташування java.
   missingAssets:
     message: Лаунчер встановить assets замість вас
-    name: "Немає asset: {name} | Відсутній asset: {name} | Немає assets: %{count}"
+    name: 'Немає asset: {name} | Відсутній asset: {name} | Немає assets: %{count}'
   missingAssetsIndex:
-    message: Лаунчер завантажує індексні assets замість вас 
-    name: "Відсутня індексний файл assets {version}."
+    message: Лаунчер завантажує індексні assets замість вас
+    name: Відсутня індексний файл assets {version}.
   missingAuthlibInjector:
-    message: Для використання стороннього сервера авторизації потрібен authlib-injector!
+    message: >-
+      Для використання стороннього сервера авторизації потрібен
+      authlib-injector!
     name: Authlib-injector відсутній
   missingJava:
     message: Натисніть, щоб вирішити цю проблему
@@ -201,7 +204,8 @@ diagnosis:
   missingLibraries:
     message: Лаунчер встановить бібліотеки замість вас
     name: >-
-      Бібліотека {name} відсутня | Відсутня бібліотека {name} | Відсутня бібліотека: {count}
+      Бібліотека {name} відсутня | Відсутня бібліотека {name} | Відсутня
+      бібліотека: {count}
        | Відсутня бібліотека {count}
   missingVersion:
     message: Натисніть для встановлення цієї версії
@@ -214,7 +218,7 @@ disk:
   available: Доступно
   used: Викоростовано
 download: Завантажити
-downloadCount: "Завантажень: {count}"
+downloadCount: 'Завантажень: {count}'
 edit: Змінити
 error:
   name: Помилка | Помилки
@@ -228,9 +232,9 @@ errors:
   SocketError: Помилка сокету сервера
 exception:
   http: >-
-    HTTP-запит з {url} не виконано. Код стану {statusCode}. {code}. Повторіть спробу
-    чи перевірте свій інтернет. Якщо ця помилка зберігається, надішліть звіт
-    команда розробників.
+    HTTP-запит з {url} не виконано. Код стану {statusCode}. {code}. Повторіть
+    спробу чи перевірте свій інтернет. Якщо ця помилка зберігається, надішліть
+    звіт команда розробників.
 existed: Існує
 exportModpackTarget:
   curseforge: Файл Curseforge
@@ -257,19 +261,21 @@ feedback:
   githubDescription: Відкрийте GitHub Issue, щоб розповісти про свою думку
   githubOpenIssue: Github
   kook: Kook
-  kookDescription: Kook - це альтернативний додаток для користувачів discord на материковій частині Китаю
+  kookDescription: >-
+    Kook - це альтернативний додаток для користувачів discord на материковій
+    частині Китаю
   name: Зворотній зв'язок
   qq: Група QQ
   qqDescription: >-
-    Вступіть у групу зворотного зв'язку QQ і поговоріть безпосередньо з авторами. Номер групи:
-    {number}
+    Вступіть у групу зворотного зв'язку QQ і поговоріть безпосередньо з
+    авторами. Номер групи: {number}
   qqEnterGroup: Приєднатися
 filter: Фільтр
 finish: Завершити
 forgeConfig:
   hint: >-
-    Запустіть гру з цим модом хоча б один раз, щоб ми могли виявити
-    його конфігураційний файл!
+    Запустіть гру з цим модом хоча б один раз, щоб ми могли виявити його
+    конфігураційний файл!
 forgeVersion:
   common: Загальний
   disable: Вимкнути Forge
@@ -346,7 +352,9 @@ instance:
   deleteHint: Дані екземпляра будуть переміщені з диска назавжди. Як зробити Цей?
   duplicatedName: Ім'я, що повторюється
   fileApi: URL-адреса API синхронізації файлового сервера
-  fileApiHint: URL-адреса для синхронізації файлів екземплярів із віддаленого сервера конфігурації.
+  fileApiHint: >-
+    URL-адреса для синхронізації файлів екземплярів із віддаленого сервера
+    конфігурації.
   gameVersion: Версія гри
   includeVersion: Увімкнути версію | Вмикати версії
   launchArguments: Попередній перегляд аргументів запуску
@@ -424,9 +432,9 @@ launchBlocked:
     title: Неверный путь к Java
   launchJavaNoPermission:
     description: >-
-      Лаунчер не має дозволу на виконання java <span
-      class="highlight"> {javaPath} </span>. Або змініть роздільну здатність файлу
-      java, або надайте дозвіл лаунчеру.
+      Лаунчер не має дозволу на виконання java <span class="highlight">
+      {javaPath} </span>. Або змініть роздільну здатність файлу java, або
+      надайте дозвіл лаунчеру.
     title: Немає дозволу на запуск
   launchNoProperJava:
     description: >-
@@ -434,7 +442,9 @@ launchBlocked:
       невірним?)
     title: Відповідна java не знайдено
   launchNoVersionInstalled:
-    description: Неможливо визначити версію <span class="highlight">{version}</span> для запуску.
+    description: >-
+      Неможливо визначити версію <span class="highlight">{version}</span> для
+      запуску.
     title: Версія не обрана
   launchUserStatusRefreshFailed:
     description: Неможливо оновити поточний статус користувача.
@@ -443,15 +453,17 @@ launchBlocked:
     Несподівано. Ви можете перезапустити лаунчер, щоб вирішити проблему.
     Зверніться до автора, якщо ця проблема залишається.
   userAcquireMicrosoftTokenFailed: >-
-    Не вдалося отримати токен Microsoft. Повторіть спробу або перевірте свій Microsoft
-    аккаунт.
-  userCheckGameOwnershipFailed: Не вдалось перевірити право власності на Minecraft. Повторіть спробу або перевірте свій Інтернет.
+    Не вдалося отримати токен Microsoft. Повторіть спробу або перевірте свій
+    Microsoft аккаунт.
+  userCheckGameOwnershipFailed: >-
+    Не вдалось перевірити право власності на Minecraft. Повторіть спробу або
+    перевірте свій Інтернет.
   userExchangeXboxTokenFailed: >-
-    Не вдалося обміняти токен xbox на токен Microsoft. Повторіть спробу або перевірте
-    свій інтернет.
+    Не вдалося обміняти токен xbox на токен Microsoft. Повторіть спробу або
+    перевірте свій інтернет.
   userLoginMinecraftByXboxFailed: >-
-    Не вдалося увійти до Minecraft за допомогою токена xbox. Повторіть спробу або перевірте
-    свій інтернет.
+    Не вдалося увійти до Minecraft за допомогою токена xbox. Повторіть спробу
+    або перевірте свій інтернет.
 launchFailed:
   crash: Гра вилетіла!
   description: Звіту про збій немає. Це логи помилок та останній журнал.
@@ -473,14 +485,14 @@ localVersion:
   auto: Автообчислення
   delete: Видалити локальну версію
   deleteDescription: >-
-    Ця операція видаляє локальну версію json та jar. Вам потрібно
-    знову завантажити їх, якщо ви хочете використовувати їх.
+    Ця операція видаляє локальну версію json та jar. Вам потрібно знову
+    завантажити їх, якщо ви хочете використовувати їх.
   empty: Версія не встановлена
   hint: Запустити конкретну локальну версію безпосередньо
   refresh: Оновити версії
   reinstallDescription: >-
-    Якщо ви рахуете, що встановлення даній версії має деякі проблеми, ви можете спробувати
-    перевстановити її.
+    Якщо ви рахуете, що встановлення даній версії має деякі проблеми, ви можете
+    спробувати перевстановити її.
   reinstallTitle: Перевстановити {version}
   title: Локальна версія | Локальні версії
 logLevel:
@@ -503,19 +515,19 @@ loginError:
     Неможливо отримати токен Microsoft. Це може бути проблема з Інтернетом.
     Повторіть спробу.
   badNetworkOrServer: >-
-    Перевірте: Підключення до інтернету! Або може бути сервер авторизації
-    не працює!
+    Перевірте: Підключення до інтернету! Або може бути сервер авторизації не
+    працює!
   checkOwnershipFailed: Не вдалось перевірити право власності на гру. Повторіть спробу.
   connectionReset: Не вдалося увійти, оскільки з'єднання скинуто сервером
-  fetchMinecraftProfileFailed: "Неможливо отримати профіль Minecraft: {reason}"
+  fetchMinecraftProfileFailed: 'Неможливо отримати профіль Minecraft: {reason}'
   illegalEmail: Електронна пошта має бути чинною
   invalidCredentials: Неправильні облікові дані. Неправильне ім'я користувача або пароль.
   loginMinecraftByXboxFailed: >-
-    Не вдалось обміняти токен Minecraft на токен XBox. Будь-ласка, переконайтесь, що у вас є
-    Minecraft на Xbox або повторіть спробу.
+    Не вдалось обміняти токен Minecraft на токен XBox. Будь-ласка,
+    переконайтесь, що у вас є Minecraft на Xbox або повторіть спробу.
   loginXboxFailed: >-
-    Не вдалось увійти в Xbox за допомогою токену Microsoft. Переконайтеся, що у вас пов'язаний
-    аккаунт xbox з аккаунтом Microsoft. Повторіть спробу.
+    Не вдалось увійти в Xbox за допомогою токену Microsoft. Переконайтеся, що у
+    вас пов'язаний аккаунт xbox з аккаунтом Microsoft. Повторіть спробу.
   requestFailed: Не вдалось увійти, ми не знаємо точної причини. Повторіть спробу.
   requireEmail: Потрібна електрона скринька
   requirePassword: Потрібен пароль
@@ -539,12 +551,12 @@ mod:
   currentVersion: Поточна {current}
   deletion: Видалення мода
   deletionHint: >-
-    Ви назавжди втрите цей мод та його методанні. Впевнені що хочете
-    видалити його? | Ви витратите цей мод и ці метадані назавжди. Впевнені
-    що хочете це зробити?
+    Ви назавжди втрите цей мод та його методанні. Впевнені що хочете видалити
+    його? | Ви витратите цей мод и ці метадані назавжди. Впевнені що хочете це
+    зробити?
   deletionRestHint: И ще {rest} модів...
   dropHint: Перетягніть мод .jar/.litemod сюди для імпорту.
-  enabled: "Модів включенно: {count}"
+  enabled: 'Модів включенно: {count}'
   filter: Фільтр модов
   hideIncompatible: Сховати несумістні моди
   import: Імпорт мода
@@ -553,7 +565,7 @@ mod:
   maybeCompatible: Можливо сумісний.
   name: Мод | Моди
   openLink: Відкрити посилання на мод {url}
-  searchOnCurseforge: Исать на curseforge
+  searchOnCurseforge: Исать на curseforge {name}
   searchOnModrinth: Пошук {name} на Modrinth
   selected: Обрані моди
   showFile: Показувати шлях до моду {file}
@@ -603,20 +615,20 @@ modrinth:
     512x+: 512x+
     64x: 64x
     8x-: 8x-
+    adventure: Пригоди
     audio: Аудіо
     blocks: Блоки
     bukkit: Bukkit
     bungeecord: Bungeecord
-    core-shaders: Ядро-шейдери
-    economy: Економіка
-    entities: Сутності
-    environment: Навколишнє середовище
-    adventure: Пригоди
     categories: Категорії
     challenging: Випробування
     combat: битви
+    core-shaders: Ядро-шейдери
     cursed: Дивні
     decoration: Косметика
+    economy: Економіка
+    entities: Сутності
+    environment: Навколишнє середовище
     equipment: Спорядження
     fabric: Fabric
     fonts: Fonts
@@ -625,25 +637,25 @@ modrinth:
     game-mechanics: Ігрова механіка
     gui: Gui
     items: Предмети
-    liteloader: Liteloader
-    locale: Locale
-    management: Управління
-    minecraft: Minecraft
-    minigame: Mini Games
-    mobs: Mobs
-    modded: Modded
-    models: Models
-    name: Категорії
-    paper: Paper
-    purpur: Purpur
     kitchen-sink: Все підряд
     library: Бібліотека
     lightweight: Легкові
+    liteloader: Liteloader
+    locale: Locale
     magic: Магія
+    management: Управління
+    minecraft: Minecraft
+    minigame: Mini Games
     misc: Різне
+    mobs: Mobs
+    modded: Modded
+    models: Models
     modloader: ModLoader
     multiplayer: Мережева гра
+    name: Категорії
     optimization: Оптимізація
+    paper: Paper
+    purpur: Purpur
     quests: Квести
     quilt: Quilt
     realistic: Realistic
@@ -718,23 +730,23 @@ multiplayer:
   copied: Скопійовано!
   copy: Копіювати
   copyGroupToFriendHint: Дозвольте своїм друзям приєднатися до групи з цього ідентифікатора
-  copyLocalHint: >
+  copyLocalHint: |
     "Скопіюйте текст локального SDP та надішліть його своєму товаришу, щоб ваш
      він ввів цей текст у з'єднанні приєднання <span>Токен може бути використаний
      тільки для <span style="color: red; font-weight: bold;">віндого</span>! Не можна
      відправляти той самий токен кільком вузлам!</span> <br> <span class="hint-text" style="font-style: italic;">Якщо вам потрібно підключити декілька
      товаришів, вам потрібно створити<span style="font-weight: bold; color: rgba(245,
     158, 11)">кілька</span> з'єднань.</span>"
-  createGroup: ""
+  createGroup: ''
   createLocalToken: Створити локальний токен
   currentIpTitle: Виявлено загальнодоступну IP-адресу
-  currentNatTitle: "Поточна мережа (NAT):"
+  currentNatTitle: 'Поточна мережа (NAT):'
   difficultyLevelHint: Рівень складності для встановлення зв'язку з іншими
   disconnect: Вимкнутись
   disconnectDescription: Точно відключитися від користувача {user}({id})?
   disconnected: Вимкнено
   enterRemoteToken: Введіть віддалений токен
-  enterRemoteTokenHint: >-
+  enterRemoteTokenHint: |-
     Як тільки товариш введе ваш токен, вам потрібно ввести його токен у текстове
      поле нижче. Натисніть кнопку «Підтвердити», щоб підключитися.
   gatheringIce: >
@@ -742,9 +754,9 @@ multiplayer:
      мережі. Якщо ви нетерплячі і ви маєте достатньо інформації, ви можете заздалегідь
      надати поточний SDP іншій стороні та натиснути далі, відправте <span
     class="v-chip v-chip--label v-size--small" style="text-font: bold">
-    локальний токен</span> своєму товаришу, ви можете ввести свій токен в області
-    <span class="v-chip v-chip--label v-size--small" style="text-font: bold">
-    Приєднатися до підключення</span>.<br> Серверу ICE може знадобитися
+    локальний токен</span> своєму товаришу, ви можете ввести свій токен в
+    області <span class="v-chip v-chip--label v-size--small" style="text-font:
+    bold"> Приєднатися до підключення</span>.<br> Серверу ICE може знадобитися
      деякий час для збору даних для створення <span class="v-chip v-chip--label
     v-size--small" style="text-font: bold">локального токена</span>.<br> Вам
      не потрібно чекати, доки статус ICE буде завершено. Якщо наведений нижче токен
@@ -753,9 +765,9 @@ multiplayer:
   illegalTokenDescription: Незаконний токен, переконайтеся, що токен від вашого товариша правильний
   initiateConnection: Почати підключення
   inviteLink: Посилання для запрошення
-  joinConnection: >-
-   Якщо ваш товариш вже почав висновок, вам необхідно приєднатися
-     для його підключення.
+  joinConnection: |-
+    Якщо ваш товариш вже почав висновок, вам необхідно приєднатися
+      для його підключення.
   joinManual: Приєднатися
   joinOrCreateGroup: Приєднатися/Створити групу
   joinOrCreateGroupHint: Отримайте ідентифікатор групи від своїх друзів або створіть групу
@@ -766,9 +778,11 @@ multiplayer:
   name: Мультиплеєр по локальній мережі
   networkInfo: Інформація про мережу
   next: Далі
-  placeholder: Приєднуйтесь до інших користувачів, щоб грати в Minecraft по локальній мережі!
+  placeholder: >-
+    Приєднуйтесь до інших користувачів, щоб грати в Minecraft по локальній
+    мережі!
   previous: назад
-  receiveHint: >-
+  receiveHint: |-
     Після того, як інша сторона введе ваш токен, ваше підключення буде створено
      автоматично. Тепер можна закрити діалогове вікно.
   receiveRemoteTokenHint: Введіть токен вашого товариша.
@@ -787,11 +801,11 @@ natType:
   openInternet: Відкритий Інтернет
   restrictNat: Обмеження NAT
   restrictPortNat: Обмеження порту NAT
-  symmetricNat:  Симетричний NAT
-  symmetricUDPFirewall:  Симетричний міжмережевий екран UDP
+  symmetricNat: Симетричний NAT
+  symmetricUDPFirewall: Симетричний міжмережевий екран UDP
   unknown: Невідомо
 next: Далі
-"no": "Ні"
+'no': Ні
 ok: ОК
 optifineVersion:
   disable: Вимкнути Optifine
@@ -832,15 +846,16 @@ resourcepack:
   defaultName: За замовчуванням
   delete:
     content: >-
-      Це призведе до видалення файлу текстурпаку з диска, і ми не зможемо його відновити.
+      Це призведе до видалення файлу текстурпаку з диска, і ми не зможемо його
+      відновити.
        Ви впевнені, що можете його відновити?
     title: Видалити текстурпак
   deletion: Вилучення {pack}
-  deletionHint: >-
+  deletionHint: |-
     Ви втратите дані та метадані цього текстурпак. Точно хочете
      зробити це?
   dropHint: Перетягніть сюди папку/zip текстури для імпорту.
-  enable: "Включено текстурпаків: {count}"
+  enable: 'Включено текстурпаків: {count}'
   filter: Фільтр текстурпаків
   import: Імпорт текстурпак
   incompatible: >-
@@ -863,15 +878,15 @@ save:
   copyFrom:
     cancel: Відміна
     confirm: Почати копіювання
-    description: >-
+    description: |-
       Можна розгорнути збереження на цьому примірнику з інших або з керованих
        ресурсів (curseforge)
     from: З {src}
     fromProfile: З інших екземплярів
     fromResource: З керованих ресурсів
     title: Імпорт збереження з керованого джерела
-  createdWorlds: "Ваших світів: {count}"
-  deleteHint: >-
+  createdWorlds: 'Ваших світів: {count}'
+  deleteHint: |-
     Ця операція не може бути скасована. Ви назавжди втратите дані збереження.
      Ви впевнені, що хочете видалити це збереження?
   deleteTitle: Видалити
@@ -891,13 +906,13 @@ server:
   create: Створити новий сервер
   creationHint: Вкажіть адресу сервера та пінг сервера
   delete:
-    description: >-
+    description: |-
       Це призведе до видалення всіх локальних даних про цей сервер.
        Як зробити це?
     name: Видалити
   edit: Змінити інформацію сервера
   error:
-    wrongVersion: >-
+    wrongVersion: |-
       Поточна вибрана версія не відповідає протоколу сервера!
        Це може призвести до помилок підключення до гри.
   expectedVersions: Підтримувані версії
@@ -929,7 +944,7 @@ setting:
     auto: Автоматично (Визначається мережею)
     official: Офіційний (Mojang)
   appearance: Зовнішній вигляд
-  appxUpdateHint: >-
+  appxUpdateHint: |-
     Лаунчер скачає та виконає установку. Якщо спливаюче вікно з установкою
      не з'явилося, запустіть його вручну.
   autoDownload: Автоскачування
@@ -992,7 +1007,8 @@ setting:
   location: Розташування сховища
   maxSockets: На хост
   maxSocketsDescription: >-
-    Обмежте максимальну кількість сокетів, дозволених за кожного хоста або для всіх хостів
+    Обмежте максимальну кількість сокетів, дозволених за кожного хоста або для
+    всіх хостів
      загалом. 0 означає відсутність обмежень.
   maxSocketsTitle: Максимальна кількість HTTP-сокетів
   name: Глобальне налаштування | Глобальні налаштування
@@ -1015,7 +1031,8 @@ setting:
   update: Оновити
   useBmclAPI: Використовувати BMCL API
   useBmclAPIDescription: >-
-    Використовуйте BMCLAPI для завантаження Minecraft, коли ви знаходитесь в материковому Китаї.
+    Використовуйте BMCLAPI для завантаження Minecraft, коли ви знаходитесь в
+    материковому Китаї.
      (Не допоможе, якщо ви не знаходитесь у материковому Китаї)
   useProxy: HTTP-прокси
   useProxyDescription: Адреса проксі-сервера для http-запиту
@@ -1027,26 +1044,28 @@ settingLabel:
   localHint: Ця установка змінюється поточним екземпляром
 setup:
   dataRoot:
-    description: >-
+    description: |-
       Корінь даних – це не звичайний каталог .minecraft. Оскільки дані XMCL
        структура каталогів відрізняється від ванільної, ми не рекомендуємо використовувати
        загальний каталог .minecraft як корінь даних.
     name: Встановити корінь даних
   defaultPath: Шлях за замовчуванням
   game:
-    description: >-
+    description: |-
       Виберіть існуючий каталог гри (.minecraft) для імпорту наявних ресурсів.
        Так ви зможете швидко визначити моди, текстурпаки тощо.
     name: Імпортувати існуючу гру
   locale:
-    description: >-
+    description: |-
       Виберіть бажану мову, якщо вона є! Якщо ви не бачите свого рідного
        мову і ви хочете допомогти, ви можете відвідати наш Github для відправки pull
        прохання про переклад!
     language: Мова
     name: Встановити мову
   path: Поточний шлях
-  title: "Ласкаво просимо до X Minecraft Launcher. Перед запуском нам необхідно, щоб ви"
+  title: >-
+    Ласкаво просимо до X Minecraft Launcher. Перед запуском нам необхідно, щоб
+    ви
 shaderPack:
   deletion: Видалити шейдер
   deletionHint: Це видалити файл шейдера {path} і неможливо буде відновити його.
@@ -1055,11 +1074,12 @@ shaderPack:
   filter: Фільтр шейдерів
   internal: Внутрішній шейдер
   internalDescription: >-
-    Увімкнути внутрішній конвеєр шейдерів за замовчуванням (Параметри шейдерів можна налаштувати
+    Увімкнути внутрішній конвеєр шейдерів за замовчуванням (Параметри шейдерів
+    можна налаштувати
      у цьому розділі)
   manage: Управління шейдерами
   name: Шейдер
-  "off": "Вимк"
+  'off': Вимк
   offDescription: Вимкнути шейдер
   showFile: Відкрити цей шейдер у папці
 summery: Літній
@@ -1072,7 +1092,7 @@ task:
   empty: Немає запущених завдань
   failed: Не вдалося
   manager: Диспетчер завдань
-  nTaskRunning: "Запущено задач: {count}"
+  nTaskRunning: 'Запущено задач: {count}'
   name: Завдання Завдання
   pause: Пауза
   running: Запуск завдань
@@ -1101,7 +1121,7 @@ user:
   name: Ім'я користувача
   nameHint: Ім'я, що відображається в грі
   profile: Профіль
-  profileMode:  Служба профілю
+  profileMode: Служба профілю
   refreshAccount: Оновити обліковий запис
   refreshSkin: Оновити скін
   submitChallenges: Надіслати відповіді
@@ -1114,10 +1134,10 @@ userAccount:
   switch: Змінити обліковий запис
 userCape:
   changeTitle: Змінити плащ
-  description: >-
-   Плащі - це спеціальні нагороди, які гравці можуть отримати у різних подіях,
-     кампанії та інших активностях. Тут ви можете вибрати між плащами якої ви
-     володієте в даний час:
+  description: |-
+    Плащі - це спеціальні нагороди, які гравці можуть отримати у різних подіях,
+      кампанії та інших активностях. Тут ви можете вибрати між плащами якої ви
+      володієте в даний час:
   noCape: Немає плащів
 userService:
   add: Додати дод. служби
@@ -1189,4 +1209,4 @@ versionType:
   beta: Бета
   name: Стан
   release: Реліз
-"yes": "Так"
+'yes': Так

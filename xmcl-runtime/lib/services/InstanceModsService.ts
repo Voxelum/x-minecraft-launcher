@@ -1,4 +1,4 @@
-import { InstanceModsService as IInstanceModsService, ResourceService as IResourceService, InstallModsOptions, InstanceModsServiceKey, InstanceModsState, Resource, ResourceDomain, MutableState, isModResource, getInstanceModStateKey } from '@xmcl/runtime-api'
+import { InstanceModsService as IInstanceModsService, ResourceService as IResourceService, InstallModsOptions, InstanceModsServiceKey, InstanceModsState, Resource, ResourceDomain, MutableState, isModResource, getInstanceModStateKey, PartialResourceHash, InstanceModUpdatePayload, InstanceModUpdatePayloadAction } from '@xmcl/runtime-api'
 import { ensureDir } from 'fs-extra/esm'
 import { rename, stat, unlink } from 'fs/promises'
 import watch from 'node-watch'
@@ -36,10 +36,9 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
 
   async watch(instancePath: string): Promise<MutableState<InstanceModsState>> {
     return this.storeManager.registerOrGet(getInstanceModStateKey(instancePath), async (onDestroy) => {
-      const enum Action { Add = 0, Remove = 1, Replace = 2 }
-      const updateMod = new AggregateExecutor<[Resource, Action], [Resource, Action][]>(v => v,
+      const updateMod = new AggregateExecutor<InstanceModUpdatePayload, InstanceModUpdatePayload[]>(v => v,
         (all) => {
-          state.instanceModUpdates(all as any)
+          state.instanceModUpdates(all)
         },
         500)
 
@@ -54,11 +53,11 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
 
       const state = new InstanceModsState()
       const listener = this.resourceService as IResourceService
-      const onResourceUpdate = async (res: Resource) => {
-        updateMod.push([res, Action.Replace])
+      const onResourceUpdate = async (res: PartialResourceHash[]) => {
+        updateMod.push([res, InstanceModUpdatePayloadAction.Update])
       }
 
-      listener.on('resourceAdd', onResourceUpdate)
+      listener
         .on('resourceUpdate', onResourceUpdate)
 
       const basePath = join(instancePath, 'mods')
@@ -75,12 +74,12 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
           } else {
             this.warn(`Non mod resource added in /mods directory! ${filePath}`)
           }
-          updateMod.push([resource, Action.Add])
+          updateMod.push([resource, InstanceModUpdatePayloadAction.Upsert])
         } else {
           const target = state.mods.find(r => r.path === filePath)
           if (target) {
             this.log(`Instance mod remove ${filePath}`)
-            updateMod.push([target, Action.Remove])
+            updateMod.push([target, InstanceModUpdatePayloadAction.Remove])
           } else {
             this.warn(`Cannot remove the mod ${filePath} as it's not found in memory cache!`)
           }

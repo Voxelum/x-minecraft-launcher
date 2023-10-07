@@ -1,4 +1,4 @@
-import { Resource } from '@xmcl/runtime-api'
+import { PartialResourceHash, Resource } from '@xmcl/runtime-api'
 import { Contracts } from 'applicationinsights'
 import { randomUUID } from 'crypto'
 import { LauncherAppPlugin } from '../app/LauncherApp'
@@ -150,13 +150,12 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
             metadata: res.metadata,
           },
         })
-      }).on('resourceUpdate', (res: Resource) => {
+      }).on('resourceUpdate', (res: PartialResourceHash) => {
         if (settings.disableTelemetry) return
         appInsight.defaultClient.trackEvent({
           name: 'resource-metadata',
           properties: {
-            fileName: res.fileName,
-            domain: res.domain,
+            name: res.name,
             sha1: res.hash,
             metadata: res.metadata,
           },

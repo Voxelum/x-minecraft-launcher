@@ -634,7 +634,8 @@ mod:
   name: Mod | Mods
   noModLoaderHint: 不要忘记请选择 Modloader 来使用 Mod
   openLink: 打开 Mod 链接 {url}
-  searchOnCurseforge: 在 Curseforge 上搜索
+  search: 搜索 Mods
+  searchOnCurseforge: 在 Curseforge 上搜索 {name}
   searchOnMcWiki: 在 MC 百科中查找 {name}
   searchOnModrinth: 在 Modrinth 中搜索 {name}
   selected: 已选 Mods
@@ -653,6 +654,7 @@ modInstall:
   install: 安装
   installHint: 安装 {file} 个文件和 {dependencies} 个依赖文件
   installed: 已安装
+  noVersionSupported: Mod 不支持当前 Minecraft 版本
   pending: 安装列表
   search: 搜索结果
   searchHint: 搜索并选择 Mod

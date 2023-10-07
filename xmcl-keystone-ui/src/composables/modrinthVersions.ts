@@ -8,6 +8,7 @@ import { useResourceUriStartsWithDiscovery, useResourceUrisDiscovery } from './r
 import { kTaskManager } from './taskManager'
 import { clientModrinthV2 } from '@/util/clients'
 import { kSWRVConfig } from './swrvConfig'
+import { getModrinthVersionKey } from '@/util/modrinth'
 
 export const kModrinthVersions: InjectionKey<ReturnType<typeof useModrinthVersions>> = Symbol('kModrinthVersions')
 export const kModrinthVersionsHolder: InjectionKey<Ref<Record<string, ProjectVersion>>> = Symbol('ModrinthVersionsHolder')
@@ -15,11 +16,10 @@ export const kModrinthVersionsHolder: InjectionKey<Ref<Record<string, ProjectVer
 export function useModrinthVersions(project: Ref<string>, featured?: boolean, loaders?: Ref<string[] | undefined>, gameVersions?: Ref<string[] | undefined>) {
   const holder = inject(kModrinthVersionsHolder, undefined)
 
-  const { mutate, error, isValidating: refreshing, data } = useSWRV(computed(() =>
-    `/modrinth/versions/${project.value}?featured=${featured}&loaders=${loaders?.value || ''}&gameVersions=${gameVersions?.value || ''}`), async () => {
-      const result = (await clientModrinthV2.getProjectVersions(project.value, { loaders: loaders?.value, gameVersions: gameVersions?.value, featured })).map(markRaw)
-      return result
-    }, inject(kSWRVConfig))
+  const { mutate, error, isValidating: refreshing, data } = useSWRV(computed(() => getModrinthVersionKey(project.value, featured, loaders?.value, gameVersions?.value)), async () => {
+    const result = (await clientModrinthV2.getProjectVersions(project.value, { loaders: loaders?.value, gameVersions: gameVersions?.value, featured })).map(markRaw)
+    return result
+  }, inject(kSWRVConfig))
 
   watch(data, (result) => {
     if (holder && result) {

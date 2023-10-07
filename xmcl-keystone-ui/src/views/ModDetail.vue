@@ -43,7 +43,7 @@
             >
               file_download
             </v-icon>
-            {{ detail.downloadCount }}
+            {{ getExpectedSize(detail.downloadCount, '') }}
           </div>
           <v-divider vertical />
           <div
@@ -103,7 +103,11 @@
               :class="{ 'theme--dark': isDark, 'theme--light': !isDark }"
             >
               <div class="v-card__subtitle overflow-hidden overflow-ellipsis whitespace-nowrap p-0">
-                {{ t('modInstall.installHint', { file: 1, dependencies: dependencies.length }) }}
+                {{
+                  versions.length > 0 ?
+                    t('modInstall.installHint', { file: 1, dependencies: dependencies.length })
+                    : t('modInstall.noVersionSupported')
+                }}
               </div>
             </div>
             <v-btn
@@ -344,12 +348,12 @@
             </v-card>
           </div>
         </v-tab-item>
-        <v-tab-item>
+        <v-tab-item class="h-full">
           <v-skeleton-loader
             v-if="loadingVersions"
             type="table-thead, table-tbody"
           />
-          <template v-else>
+          <template v-else-if="versions.length > 0">
             <ModDetailVersion
               v-for="version of versions"
               :key="version.id"
@@ -358,6 +362,13 @@
               @click="onVersionClicked"
             />
           </template>
+          <Hint
+            v-else
+            class="h-full"
+            :size="100"
+            icon="cancel"
+            :text="t('modInstall.noVersionSupported')"
+          />
         </v-tab-item>
       </v-tabs-items>
 
@@ -461,6 +472,8 @@ import ModDetailVersion, { ModVersion } from './ModDetailVersion.vue'
 import { kVuetify } from '@/composables/vuetify'
 import { injection } from '@/util/inject'
 import unknownServer from '@/assets/unknown_server.png'
+import Hint from '@/components/Hint.vue'
+import { getExpectedSize } from '@/util/size'
 
 const props = defineProps<{
   detail: ModDetailData

@@ -92,7 +92,8 @@
               v-if="typeof item !== 'string'"
               :item="item"
               :has-update="!!plans[item.id]"
-              :selection-mode="false"
+              :checked="selections[item.id] || false"
+              :selection-mode="selectionMode && item.installed && item.installed.length > 0"
               :selected="(selectedItem && selectedItem.id === item.id) || false"
               @click="onSelect(item)"
             />
@@ -204,22 +205,6 @@ import { kInstance } from '@/composables/instance'
 
 const { minecraft } = injection(kInstanceVersion)
 const { runtime } = injection(kInstance)
-
-const modLoaderFilters = ref([] as string[])
-onMounted(() => {
-  const items = [] as string[]
-  if (runtime.value.fabricLoader) {
-    items.push('fabric')
-  }
-  if (runtime.value.forge) {
-    items.push('forge')
-  }
-  if (runtime.value.quiltLoader) {
-    items.push('quilt')
-  }
-  modLoaderFilters.value = items
-})
-
 const { provideRuntime } = injection(kInstanceModsContext)
 
 watch(provideRuntime, v => console.log(v), { immediate: true })
@@ -238,15 +223,10 @@ const { search, installed, tab } = injection(kMods)
 
 const { plans, refresh: checkUpgrade, refreshing: checkingUpgrade, checked: checkedUpgrade, upgrade, upgradeError, upgrading } = injection(kModUpgrade)
 const items = computed(() => {
-  const allowForge = modLoaderFilters.value.indexOf('forge') !== -1
-  const allowFabric = modLoaderFilters.value.indexOf('fabric') !== -1
-  const allowQuilt = modLoaderFilters.value.indexOf('quilt') !== -1
-  const filter = (a: Mod | string) => typeof a === 'string' ? true : (allowForge && a.forge) || (allowFabric && a.fabric) || (allowQuilt && a.quilt) || a.modrinth || a.curseforge || a.installed
-
   const filteredInstalled = installed.value
   const installedItem = filteredInstalled.length > 0 ? ['installed', ...filteredInstalled] : []
 
-  const filteredSearch = search.value.filter(filter)
+  const filteredSearch = search.value
   const searchItem = filteredSearch.length > 0 ? ['search', ...filteredSearch] : []
 
   return [...installedItem, ...searchItem]
@@ -330,6 +310,37 @@ const compact = injection(kCompact)
 onMounted(() => {
   compact.value = true
 })
+
+const selectionMode = ref(false)
+const selections = ref({} as Record<string, boolean>)
+const onKeyPress = (e: KeyboardEvent) => {
+  // ctrl+a
+  if (e.ctrlKey && e.key === 'a') {
+    e.preventDefault()
+    e.stopPropagation()
+    selectionMode.value = true
+
+    const _selections: Record<string, boolean> = {}
+    for (const item of installed.value) {
+      if (typeof item !== 'string') {
+        _selections[item.id] = true
+      }
+    }
+    selections.value = _selections
+  }
+  // esc
+  if (e.key === 'Escape') {
+    selectionMode.value = false
+    selections.value = {}
+  }
+}
+onMounted(() => {
+  document.addEventListener('keydown', onKeyPress)
+})
+onUnmounted(() => {
+  document.removeEventListener('keydown', onKeyPress)
+})
+
 </script>
 
 <style scoped>

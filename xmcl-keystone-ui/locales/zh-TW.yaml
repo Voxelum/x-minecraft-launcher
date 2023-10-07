@@ -296,7 +296,7 @@ mod:
   maybeCompatible: 也許兼容於當前版本。
   name: Mod | Mods
   openLink: 打開 Mod 鏈接 {url}
-  searchOnCurseforge: 在 Curseforge 上搜索
+  searchOnCurseforge: 在 Curseforge 上搜索 {name}
   searchOnMcWiki: 在 MC 百科中查找 {name}
   searchOnModrinth: 在 Modrinth 中搜素 {name}
   selected: 已選 Mods

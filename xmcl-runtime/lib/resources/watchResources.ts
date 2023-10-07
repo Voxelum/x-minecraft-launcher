@@ -112,7 +112,7 @@ export function watchResources(folder: string, context: ResourceContext) {
       if ('path' in _entry) {
         context.eventBus.emit('resourceAdd', generateResource(dirname(folder), entry, _metadata))
       } else {
-        context.eventBus.emit('resourceUpdate', generateResource(dirname(folder), entry, _metadata))
+        context.eventBus.emit('resourceUpdate', [{ hash: _entry.sha1, metadata: _metadata, name: _metadata.name, uris: _metadata.uris, icons: _metadata.icons, tags: _metadata.tags }])
       }
     }
   })

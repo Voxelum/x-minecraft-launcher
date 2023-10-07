@@ -58,3 +58,11 @@ export function getModrinthModLoaders(runtime: RuntimeVersions, allForNoModLoade
 
   return modLoaders
 }
+
+export function getModrinthVersionKey(projectId: string, featured?: boolean, loaders?: string[] | undefined, gameVersions?: string[]) {
+  return `/modrinth/versions/${projectId}?featured=${featured}&loaders=${loaders?.join(',') || ''}&gameVersions=${gameVersions?.join(',') || ''}`
+}
+
+export function getModrinthProjectKey(projectId: string) {
+  return `/modrinth/${projectId}`
+}

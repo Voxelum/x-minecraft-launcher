@@ -1,12 +1,13 @@
-import { ModerinthApiError, ProjectVersion } from '@xmcl/modrinth'
+import { clientModrinthV2 } from '@/util/clients'
+import { injection } from '@/util/inject'
+import { getModrinthVersionKey } from '@/util/modrinth'
+import { swrvGet } from '@/util/swrvGet'
+import { ModerinthApiError } from '@xmcl/modrinth'
 import { Resource, ResourceServiceKey } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
 import { Ref } from 'vue'
 import { useService } from './service'
-import { clientModrinthV2 } from '@/util/clients'
 import { kSWRVConfig } from './swrvConfig'
-import { swrvGet } from '@/util/swrvGet'
-import { injection } from '@/util/inject'
 
 export function useModrinthLatestVersion(sha1: Ref<string>, projectId: Ref<string>) {
   const { getResourcesByUris } = useService(ResourceServiceKey)
@@ -21,7 +22,7 @@ export function useModrinthLatestVersion(sha1: Ref<string>, projectId: Ref<strin
         const err = e as ModerinthApiError
         if (err.status === 404) {
           // Not found
-          const versions = await swrvGet(`/modrinth/versions/${projectId.value}?featured=${undefined}&loaders=${''}&gameVersions=${''}`, async () => {
+          const versions = await swrvGet(getModrinthVersionKey(projectId.value, undefined, [], []), async () => {
             return clientModrinthV2.getProjectVersions(projectId.value)
           }, cache, dedupingInterval)
 

@@ -3,14 +3,18 @@ import { Mod, ModFile } from '@/util/mod'
 import ModDetail, { ExternalResource, ModDetailData } from './ModDetail.vue'
 import { ModVersion } from './ModDetailVersion.vue'
 import { useService } from '@/composables'
-import { InstanceModsServiceKey } from '@xmcl/runtime-api'
+import { InstanceModsServiceKey, PartialResourceHash, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
 import { injection } from '@/util/inject'
 import { kInstance } from '@/composables/instance'
 import { useModDetailUpdate, useModDetailEnable } from '@/composables/modDetail'
+import { clientModrinthV2 } from '@/util/clients'
+import { useInstanceModLoaderDefault } from '@/util/instanceModLoaderDefault'
+import { isNoModLoader } from '@/util/isNoModloader'
 
 const props = defineProps<{
   mod: Mod
   files: ModFile[]
+  runtime: RuntimeVersions
   installed: ModFile[]
 }>()
 
@@ -110,10 +114,21 @@ const updating = useModDetailUpdate()
 const { enabled, installed, hasInstalledVersion } = useModDetailEnable(selectedVersion, computed(() => props.installed), updating)
 const { path } = injection(kInstance)
 
-watch(() => props.mod, () => {
+const { updateResources } = useService(ResourceServiceKey)
+watch(() => props.mod, async () => {
   updating.value = false
+
+  const versions = await clientModrinthV2.getProjectVersionsByHash(props.files.map(f => f.hash), 'sha1')
+
+  const options = Object.entries(versions).map(([hash, version]) => {
+    const f = props.files.find(f => f.hash === hash)
+    if (f) return { hash: f.hash, metadata: { modrinth: { projectId: version.project_id, versionId: version.id } } }
+    return undefined
+  }).filter((v): v is any => !!v)
+  updateResources(options)
 })
 
+const installDefaultModLoader = useInstanceModLoaderDefault(path, computed(() => props.runtime))
 const { install, uninstall } = useService(InstanceModsServiceKey)
 const onDelete = async () => {
   updating.value = true
@@ -128,6 +143,11 @@ const onInstall = async () => {
 
   const file = props.files.find(f => f.path === selectedVersion.value.id)
   if (file) {
+    if (isNoModLoader(props.runtime)) {
+      // forge, fabric, quilt or neoforge
+      await installDefaultModLoader(file.modLoaders)
+    }
+
     await install({ path: path.value, mods: [file.resource] })
   }
 }
