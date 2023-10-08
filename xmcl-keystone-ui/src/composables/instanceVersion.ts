@@ -49,9 +49,9 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<LocalVers
     return resolvedVersion
   }, { revalidateOnFocus: false, errorRetryCount: 0, shouldRetryOnError: false })
 
-  watch(versionHeader, () => {
+  watch([versionHeader, local], () => {
     mutate()
-  })
+  }, { deep: true })
 
   return {
     ...useInstanceVersionBase(instance),
