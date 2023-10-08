@@ -9,8 +9,9 @@ export default function createJschardetPlugin(): Plugin {
     name: 'jschardet-import',
     setup(build) {
       if (build.initialOptions) {
-        build.onLoad({ filter: /universaldetectors\.js/g }, async ({ path }) => {
+        build.onLoad({ filter: /universaldetectors?\.js/g }, async ({ path }) => {
           const content = await readFile(path, 'utf-8')
+          console.log('replaced!!!')
           return {
             contents: content.replace('denormalizedEncodings = [];', 'const denormalizedEncodings = [];'),
             loader: 'js',
