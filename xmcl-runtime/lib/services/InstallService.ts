@@ -30,7 +30,7 @@ import { XMLParser } from 'fast-xml-parser'
  */
 @ExposeServiceKey(InstallServiceKey)
 export class InstallService extends AbstractService implements IInstallService {
-  private latestRelease = '1.20'
+  private latestRelease = '1.20.2'
 
   constructor(@Inject(LauncherAppKey) app: LauncherApp,
     @Inject(VersionService) private versionService: VersionService,

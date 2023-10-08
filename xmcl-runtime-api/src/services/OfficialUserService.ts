@@ -13,7 +13,6 @@ interface OfficialUserServiceEventMap {
     interval: number
     message: string
   }
-  'microsoft-authorize-code': [any, string]
 }
 
 export interface Skin {

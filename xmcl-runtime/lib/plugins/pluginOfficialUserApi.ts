@@ -76,6 +76,22 @@ export const pluginOfficialUserApi: LauncherAppPlugin = (app) => {
 
     userService.registerAccountSystem(AUTHORITY_MICROSOFT, system)
 
+    app.protocol.registerHandler('xmcl', ({ request, response }) => {
+      const parsed = request.url
+      if (parsed.host === 'launcher' && parsed.pathname === '/auth') {
+        let error: Error | undefined
+        if (parsed.searchParams.get('error')) {
+          const err = parsed.searchParams.get('error')!
+          const errDescription = parsed.searchParams.get('error')!
+          error = new Error(unescape(errDescription));
+          (error as any).error = err
+        }
+        const code = parsed.searchParams.get('code') as string
+        userService.emit('microsoft-authorize-code', error, code)
+        response.status = 200
+      }
+    })
+
     const headers = {}
     const legacyClient = new YggdrasilClient('https://authserver.mojang.com', {
       dispatcher,

@@ -56,12 +56,21 @@ export function useInstances() {
     await deleteInstance(instancePath)
     if (instancePath === lastSelected) {
       path.value = instances.value[Math.max(index - 1, 0)]?.path ?? ''
+      if (!path.value) {
+        createInstance({
+          name: 'Minecraft',
+        }).then(p => {
+          path.value = p
+        })
+      }
     }
   }
   watch(state, (newState) => {
     if (!newState?.instances.length) {
-      const path = createInstance({
+      createInstance({
         name: 'Minecraft',
+      }).then(p => {
+        path.value = p
       })
     }
   })
