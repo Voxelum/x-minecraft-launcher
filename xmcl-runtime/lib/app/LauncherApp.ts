@@ -174,7 +174,10 @@ export class LauncherApp extends EventEmitter {
 
     this.managers = [this.taskManager, this.serviceStateManager, this.semaphoreManager, this.launcherAppManager]
 
-    this.localhostServerPort = listen(this.server, 25555, (cur) => cur + 7)
+    this.localhostServerPort = listen(this.server, 25555, (cur) => cur + 7).then((port) => {
+      this.logger.log(`Localhost server is listening on port ${port}`)
+      return port
+    })
   }
 
   getAppInstallerStartUpUrl(): string {
