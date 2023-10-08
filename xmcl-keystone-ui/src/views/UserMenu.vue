@@ -72,6 +72,7 @@
         >
           <div class="relative">
             <v-btn
+              v-if="users.length > 0"
               text
               @click="login = false"
             >
