@@ -41,6 +41,7 @@ export function useInstanceVersionDiagnose(runtime: Ref<RuntimeVersions>, resolv
         if (version) {
           await installDependencies(version)
         }
+        await _update(resolvedVersion.value)
       }
       issueItems.value = [reactive({
         title: computed(() => t('diagnosis.missingVersion.name', { version: getExpectVersion(runtime) })),
