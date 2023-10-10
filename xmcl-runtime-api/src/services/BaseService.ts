@@ -21,7 +21,7 @@ export interface Environment extends Platform {
   /**
    * The container of the launcher. Will be raw if the launcher is just installed on system. Will be appx if it's appx.
    */
-  env: 'raw' | 'appx' | 'appimage'
+  env: 'raw' | 'appx' | 'appimage' | string
   /**
    * The version of the launcher
    */

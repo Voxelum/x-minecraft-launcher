@@ -144,18 +144,12 @@ importers:
       original-fs:
         specifier: ^1.2.0
         version: 1.2.0
-      pump:
-        specifier: ^3.0.0
-        version: 3.0.0
       semver:
         specifier: ^7.3.8
         version: 7.5.0
       source-map-support:
         specifier: ^0.5.21
         version: 0.5.21
-      tar-fs:
-        specifier: ^2.1.1
-        version: 2.1.1
       tslib:
         specifier: ^2.5.0
         version: 2.5.0

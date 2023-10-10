@@ -97,6 +97,7 @@ export const config = {
           'ia32',
         ],
       },
+      'appx'
     ],
   },
   linux: {

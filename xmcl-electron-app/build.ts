@@ -1,26 +1,19 @@
-import asar from '@electron/asar'
+import { rebuild } from '@electron/rebuild'
 import chalk from 'chalk'
 import { createHash } from 'crypto'
-import { Arch, build as electronBuilder, Configuration } from 'electron-builder'
-import { build as esbuild, BuildOptions } from 'esbuild'
-import { createReadStream, createWriteStream, existsSync } from 'fs'
+import { Configuration, build as electronBuilder } from 'electron-builder'
+import { BuildOptions, build as esbuild } from 'esbuild'
+import { createReadStream, createWriteStream } from 'fs'
 import { copy, ensureFile } from 'fs-extra'
-import { copyFile, mkdir, readdir, rename, rm, stat, unlink, writeFile } from 'fs/promises'
-import { platform } from 'os'
-import path, { basename, dirname, join, resolve } from 'path'
-import { pipeline, Writable } from 'stream'
+import { copyFile, readdir, rm, stat } from 'fs/promises'
+import path, { resolve } from 'path'
+import { pipeline } from 'stream'
 import { promisify } from 'util'
 import { buildAppInstaller } from './build/appinstaller-builder'
 import { config as electronBuilderConfig } from './build/electron-builder.config'
 import esbuildConfig from './esbuild.config'
 import { version } from './package.json'
-// @ts-ignore
-import pump from 'pump'
-// @ts-ignore
-import tfs from 'tar-fs'
-import { stream } from 'undici'
-import { createGunzip } from 'zlib'
-import { ensureFileSync } from 'fs-extra/esm'
+import createPrintPlugin from 'plugins/esbuild.print.plugin'
 
 /**
  * @returns Hash string
@@ -33,20 +26,21 @@ async function writeHash(algorithm: string, path: string, destination: string) {
 /**
  * Use esbuild to build main process
  */
-async function buildMain(options: BuildOptions) {
+async function buildMain(options: BuildOptions, slient = false) {
   await rm(path.join(__dirname, './dist'), { recursive: true, force: true })
-  console.log(chalk.bold.underline('Build main process & preload'))
+  if (!slient) console.log(chalk.bold.underline('Build main process & preload'))
   const startTime = Date.now()
+  if (!slient) options.plugins?.push(createPrintPlugin())
   await esbuild({
     ...options,
     outdir: resolve(__dirname, './dist'),
     entryPoints: [path.join(__dirname, './main/index.ts')],
   })
-  console.log(
-    `Build completed in ${((Date.now() - startTime) / 1000).toFixed(2)}s.\n`,
-  )
+  const time = ((Date.now() - startTime) / 1000).toFixed(2)
+  if (!slient) console.log(`Build completed in ${time}s.`,)
   await copy(path.join(__dirname, '../xmcl-keystone-ui/dist'), path.join(__dirname, './dist/renderer'))
-  console.log()
+  if (!slient) console.log('\n')
+  return time
 }
 
 /**
@@ -82,153 +76,48 @@ async function buildElectron(config: Configuration, dir: boolean) {
   )
 }
 
-const currentPlatform = platform()
-async function installArm64Dependencies() {
-  const unpack = async (tarPath: string) => {
-    const options = {
-      readable: true,
-      writable: true,
-      hardlinkAsFilesFallback: true,
-    }
-    let binaryName = ''
-    function updateName(entry: any) {
-      if (/\.node$/i.test(entry.name)) binaryName = entry.name
-    }
-
-    const dir = dirname(tarPath)
-    await ensureFile(tarPath)
-    await new Promise<void>((resolve, reject) => {
-      pump(
-        createReadStream(tarPath),
-        createGunzip(),
-        tfs.extract(dir, options).on('entry', updateName), (err: any) => {
-          if (err) return reject(err)
-          else resolve()
-        })
-    })
-
-    const unpackTo = resolve(__dirname, 'dist', basename(binaryName))
-    await unlink(unpackTo).catch(() => undefined)
-    await rename(join(dir, binaryName), unpackTo)
-    console.log(`Download and unpack to ${unpackTo}`)
-  }
-
-  const download = async (url: string, dest: string) => await stream(url, {
-    method: 'GET',
-    throwOnError: true,
-    maxRedirections: 2,
-    opaque: createWriteStream(dest),
-  }, ({ opaque }) => opaque as Writable)
-
-  const urls = {
-    darwin: {
-      keytar: 'https://github.com/atom/node-keytar/releases/download/v7.9.0/keytar-v7.9.0-napi-v3-darwin-arm64.tar.gz',
-      nodeDataChannel: 'https://github.com/murat-dogan/node-datachannel/releases/download/v0.4.1/node-datachannel-v0.4.1-node-v93-darwin-arm64.tar.gz',
-      classicLevel: 'https://github.com/Level/classic-level/releases/download/v1.2.0/darwin-x64+arm64.tar.gz',
-    },
-    linux: {
-      keytar: 'https://github.com/atom/node-keytar/releases/download/v7.9.0/keytar-v7.9.0-napi-v3-linux-arm64.tar.gz',
-      nodeDataChannel: 'https://github.com/murat-dogan/node-datachannel/releases/download/v0.4.1/node-datachannel-v0.4.1-node-v93-linux-arm64.tar.gz',
-    },
-  }
-
-  if (currentPlatform === 'darwin' || currentPlatform === 'linux') {
-    const result = await Promise.all(Object.entries(urls[currentPlatform]).map(async ([name, url]) => {
-      const tarGz = resolve(__dirname, `cache/${name}.tar.gz`)
-      await ensureFile(tarGz)
-      await download(url, tarGz)
-      return tarGz
-    }))
-    await Promise.all(result.map(unpack))
-  }
-
-  if (currentPlatform === 'linux') {
-    // copy classic-level dependencies
-    const src = resolve(__dirname, '../xmcl-runtime/node_modules/classic-level/prebuilds/linux-arm64/node.napi.armv8.node')
-    const dest = resolve(__dirname, 'dist/node.napi.glibc.node')
-    await unlink(dest).catch(() => { })
-    await copyFile(src, dest)
-    console.log(`copy ${src} -> ${dest}`)
-  }
-}
-
 async function start() {
-  await buildMain(esbuildConfig)
-
-  if (process.env.BUILD_TARGET) {
-    const dir = process.env.BUILD_TARGET === 'dir'
-    const config: Configuration = {
-      ...electronBuilderConfig,
-      async beforePack(context) {
-        const asarFile = join(context.appOutDir, 'resources', 'app.asar')
-        const distDir = join(context.packager.projectDir, 'dist')
-
-        const isArm = context.arch === 3
-        // Install arm64 dependencies
-        if (isArm) {
-          await installArm64Dependencies()
-        }
-
-        console.log('overwrite asar', asarFile)
-
-        await asar.createPackage(distDir, asarFile)
-
-        const dest = isArm ? 'build/output/app-arm64.asar' : 'build/output/app.asar'
-        const destSha256 = dest + '.sha256'
-        if (existsSync('build/output/win-unpacked/resources/app.asar')) {
-          await copyFile('build/output/win-unpacked/resources/app.asar', dest)
-          await writeHash('sha256', dest, destSha256)
-        }
-        if (existsSync('build/output/linux-unpacked/resources/app.asar')) {
-          await copyFile('build/output/linux-unpacked/resources/app.asar', dest)
-          await writeHash('sha256', dest, destSha256)
-        }
-        if (existsSync('build/output/mac/X Minecraft Launcher.app/Contents/Resources/app.asar')) {
-          await copyFile('build/output/mac/X Minecraft Launcher.app/Contents/Resources/app.asar', dest)
-          await writeHash('sha256', dest, destSha256)
-        }
-      },
-      async artifactBuildStarted(context) {
-        if (context.targetPresentableName.toLowerCase() === 'appx') {
-          const files = await readdir(path.join(__dirname, './icons'))
-          const storeFiles = files.filter(f => f.endsWith('.png') &&
-            !f.endsWith('256x256.png') &&
-            !f.endsWith('tray.png'))
-            .map((f) => [
-              path.join(__dirname, 'icons', f),
-              path.join(__dirname, 'build', 'appx', f.substring(f.indexOf('@') + 1)),
-            ] as const)
-          await Promise.all(storeFiles.map(v => ensureFile(v[1]).then(() => copyFile(v[0], v[1]))))
-        }
-      },
-      async artifactBuildCompleted(context) {
-        if (!context.arch) return
-        if (context.target && context.target.name === 'appx') {
-          await buildAppInstaller(version, path.join(__dirname, './build/output/xmcl.appinstaller'), electronBuilderConfig.appx!.publisher!)
-        }
-      },
-    }
-
-    await buildElectron(config, dir)
-
-    const currentPlatform = platform()
-    const runtime = currentPlatform === 'win32'
-      ? 'appx'
-      : currentPlatform === 'linux'
-        ? 'appimage'
-        : undefined
-
-    if (!dir && runtime) {
-      // Build appx and appImage additionally
-      (config.win as any).target = ['appx'];
-      (config.linux as any).target = [{ target: 'AppImage', arch: ['x64', 'arm64'] }]
-
-      esbuildConfig.define['process.env.RUNTIME'] = `"${runtime}"`
-      await buildMain(esbuildConfig)
-
-      await buildElectron(config, dir)
-    }
+  if (!process.env.BUILD_TARGET) {
+    await buildMain(esbuildConfig)
+    return
   }
+  const dir = process.env.BUILD_TARGET === 'dir'
+  const config: Configuration = {
+    ...electronBuilderConfig,
+    async beforeBuild(context) {
+      await rebuild({
+        buildPath: context.appDir,
+        electronVersion: context.electronVersion,
+        arch: context.arch,
+      })
+      console.log(`  ${chalk.blue('•')} rebuilt native modules ${chalk.blue('electron')}=${context.electronVersion} ${chalk.blue('arch')}=${context.arch}`)
+      const time = await buildMain(esbuildConfig, true)
+      console.log(`  ${chalk.blue('•')} compiled main process & preload in ${chalk.blue('time')}=${time}s`)
+    },
+    async artifactBuildStarted(context) {
+      if (context.targetPresentableName.toLowerCase() === 'appx') {
+        console.log(context.file)
+        console.log(`  ${chalk.blue('•')} copy appx icons`)
+        const files = await readdir(path.join(__dirname, './icons'))
+        const storeFiles = files.filter(f => f.endsWith('.png') &&
+          !f.endsWith('256x256.png') &&
+          !f.endsWith('tray.png'))
+          .map((f) => [
+            path.join(__dirname, 'icons', f),
+            path.join(__dirname, 'build', 'appx', f.substring(f.indexOf('@') + 1)),
+          ] as const)
+        await Promise.all(storeFiles.map(v => ensureFile(v[1]).then(() => copyFile(v[0], v[1]))))
+      }
+    },
+    async artifactBuildCompleted(context) {
+      if (!context.arch) return
+      if (context.target && context.target.name === 'appx') {
+        await buildAppInstaller(version, path.join(__dirname, './build/output/xmcl.appinstaller'), electronBuilderConfig.appx!.publisher!)
+      }
+    },
+  }
+
+  await buildElectron(config, dir)
 }
 
 start().catch((e) => {
