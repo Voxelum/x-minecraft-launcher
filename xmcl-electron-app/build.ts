@@ -89,6 +89,7 @@ async function start() {
         buildPath: context.appDir,
         electronVersion: context.electronVersion,
         arch: context.arch,
+        types: ['dev'],
       })
       console.log(`  ${chalk.blue('•')} rebuilt native modules ${chalk.blue('electron')}=${context.electronVersion} ${chalk.blue('arch')}=${context.arch}`)
       const time = await buildMain(esbuildConfig, true)
@@ -96,7 +97,6 @@ async function start() {
     },
     async artifactBuildStarted(context) {
       if (context.targetPresentableName.toLowerCase() === 'appx') {
-        console.log(context.file)
         console.log(`  ${chalk.blue('•')} copy appx icons`)
         const files = await readdir(path.join(__dirname, './icons'))
         const storeFiles = files.filter(f => f.endsWith('.png') &&
