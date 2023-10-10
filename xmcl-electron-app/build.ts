@@ -37,7 +37,7 @@ async function buildMain(options: BuildOptions, slient = false) {
     entryPoints: [path.join(__dirname, './main/index.ts')],
   })
   const time = ((Date.now() - startTime) / 1000).toFixed(2)
-  if (!slient) console.log(`Build completed in ${time}s.`,)
+  if (!slient) console.log(`Build completed in ${time}s.`)
   await copy(path.join(__dirname, '../xmcl-keystone-ui/dist'), path.join(__dirname, './dist/renderer'))
   if (!slient) console.log('\n')
   return time
