@@ -14,13 +14,13 @@
         "url": "https://github.com/voxelum/x-minecraft-launcher"
     },
     "scripts": {
-        "build": "cross-env NODE_ENV=development esbuild build.ts --bundle --platform=node --external:electron --external:electron-builder --external:esbuild --format=cjs | node",
+        "build": "cross-env NODE_ENV=development tsx build.ts",
         "build:appx": "cross-env NODE_ENV=production env BUILD_TARGET=appx npm run build",
         "build:all": "cross-env NODE_ENV=production cross-env BUILD_TARGET=production npm run build",
         "build:dir": "cross-env BUILD_TARGET=dir npm run build",
         "postinstall": "electron-rebuild --only better-sqlite3",
         "check": "tsc --noEmit --project tsconfig.json && tsc --noEmit --project preload/tsconfig.json",
-        "dev": "cross-env NODE_ENV=development esbuild dev.ts --bundle --platform=node --external:electron --external:esbuild --format=cjs | node",
+        "dev": "cross-env NODE_ENV=development tsx dev.ts",
         "lint": "eslint --ext .ts .",
         "lint:fix": "npm run lint -- --fix"
     },
@@ -45,6 +45,7 @@
         "@xmcl/runtime-api": "workspace:*",
         "@xmcl/task": "workspace:*",
         "@xmcl/windows-utils": "^0.0.15",
+        "better-sqlite3": "^8.5.1",
         "builtin-modules": "^3.3.0",
         "chalk": "^4.1.2",
         "create-desktop-shortcuts": "^1.10.1",
@@ -66,12 +67,10 @@
         "node-datachannel": "0.5.0-dev",
         "node-disk-info": "^1.3.0",
         "original-fs": "^1.2.0",
-        "pump": "^3.0.0",
         "semver": "^7.3.8",
         "source-map-support": "^0.5.21",
-        "tar-fs": "^2.1.1",
-        "better-sqlite3": "^8.5.1",
         "tslib": "^2.5.0",
+        "tsx": "^3.13.0",
         "typescript": "^5.2.2",
         "undici": "5.22.1"
     }

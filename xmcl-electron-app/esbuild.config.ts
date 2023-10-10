@@ -45,7 +45,6 @@ const config = {
   },
   plugins: [
     pluginRenderer(),
-    pluginPrint(),
     pluginStatic(),
     pluginPreload(path.resolve(__dirname, './preload')),
     pluginVueDevtools(path.resolve(__dirname, '../extensions')),

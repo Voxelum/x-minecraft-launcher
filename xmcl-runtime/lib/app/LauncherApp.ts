@@ -88,8 +88,6 @@ export class LauncherApp extends EventEmitter {
 
   readonly build: number = Number.parseInt(process.env.BUILD_NUMBER ?? '0', 10)
 
-  readonly env: 'raw' | 'appx' | 'appimage' = process.env.RUNTIME as any || 'raw'
-
   get version() { return this.host.getVersion() }
 
   protected managers: Manager[]
@@ -143,6 +141,7 @@ export class LauncherApp extends EventEmitter {
     getController: (app: LauncherApp) => LauncherAppController,
     getUpdater: (app: LauncherApp) => LauncherAppUpdater,
     readonly builtinAppManifest: InstalledAppManifest,
+    readonly env: string,
     services: ServiceConstructor[],
     _plugins: LauncherAppPlugin[],
   ) {

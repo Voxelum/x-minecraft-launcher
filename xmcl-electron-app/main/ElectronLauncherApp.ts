@@ -1,17 +1,17 @@
 import { LauncherApp } from '@xmcl/runtime'
 import { Shell } from '@xmcl/runtime/lib/app/Shell'
+import { LAUNCHER_NAME } from '@xmcl/runtime/lib/constant'
 import { app, shell } from 'electron'
+import { join } from 'path'
 import { URL } from 'url'
 import { ElectronController } from './ElectronController'
+import { ElectronSecretStorage } from './ElectronSecretStorage'
 import defaultApp from './defaultApp'
 import { definedServices } from './definedServices'
+import { pluginAutoUpdate } from './pluginAutoUpdate'
 import { isDirectory } from './utils/fs'
 import { ElectronUpdater } from './utils/updater'
 import { getWindowsUtils } from './utils/windowsUtils'
-import { ElectronSecretStorage } from './ElectronSecretStorage'
-import { join } from 'path'
-import { LAUNCHER_NAME } from '@xmcl/runtime/lib/constant'
-import { pluginAutoUpdate } from './pluginAutoUpdate'
 
 class ElectronShell implements Shell {
   showItemInFolder = shell.showItemInFolder
@@ -76,6 +76,20 @@ class ElectronShell implements Shell {
   }
 }
 
+const getEnv = () => {
+  const isAppImage = !!process.env.APPIMAGE
+  if (isAppImage) {
+    return 'appimage'
+  } else {
+    const currentPath = app.getPath('exe')
+    if (currentPath.includes('WindowsApps')) {
+      return 'appx'
+    } else {
+      return 'raw'
+    }
+  }
+}
+
 export default class ElectronLauncherApp extends LauncherApp {
   constructor() {
     super(app,
@@ -84,6 +98,7 @@ export default class ElectronLauncherApp extends LauncherApp {
       (app) => new ElectronController(app as ElectronLauncherApp),
       (app) => new ElectronUpdater(app as ElectronLauncherApp),
       defaultApp,
+      getEnv(),
       definedServices,
       [pluginAutoUpdate],
     )
