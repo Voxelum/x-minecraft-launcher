@@ -32,7 +32,6 @@ export const config = {
     filter: 'package.json',
   }],
   asarUnpack: [
-    '**/*.node',
     '**/*.worker.js',
   ],
   artifactName: 'xmcl-${version}-${platform}-${arch}.${ext}',
