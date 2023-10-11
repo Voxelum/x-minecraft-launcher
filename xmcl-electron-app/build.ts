@@ -3,17 +3,17 @@ import chalk from 'chalk'
 import { createHash } from 'crypto'
 import { Configuration, build as electronBuilder } from 'electron-builder'
 import { BuildOptions, build as esbuild } from 'esbuild'
-import { createReadStream, createWriteStream } from 'fs'
+import { createReadStream, createWriteStream, existsSync } from 'fs'
 import { copy, ensureFile } from 'fs-extra'
 import { copyFile, readdir, rm, stat } from 'fs/promises'
-import path, { resolve } from 'path'
+import path, { join, resolve } from 'path'
+import createPrintPlugin from 'plugins/esbuild.print.plugin'
 import { pipeline } from 'stream'
 import { promisify } from 'util'
 import { buildAppInstaller } from './build/appinstaller-builder'
 import { config as electronBuilderConfig } from './build/electron-builder.config'
 import esbuildConfig from './esbuild.config'
 import { version } from './package.json'
-import createPrintPlugin from 'plugins/esbuild.print.plugin'
 
 /**
  * @returns Hash string
@@ -100,6 +100,22 @@ async function start() {
       console.log(`  ${chalk.blue('•')} rebuilt native modules ${chalk.blue('electron')}=${context.electronVersion} ${chalk.blue('arch')}=${context.arch}`)
       const time = await buildMain(esbuildConfig, true)
       console.log(`  ${chalk.blue('•')} compiled main process & preload in ${chalk.blue('time')}=${time}s`)
+    },
+    async afterPack(context) {
+      const suffix = context.arch === 3 ? '-arm64' : context.arch === 0 ? '-ia32' : ''
+      const platformName = (process.platform === 'win32' ? 'win' : process.platform === 'darwin' ? 'mac' : 'linux') + suffix
+
+      const dest = `build/output/app-${version}-${platformName}.asar`
+      const destSha256 = dest + '.sha256'
+      let src = join(context.appOutDir, 'resources/app.asar')
+      if (!existsSync(src)) {
+        src = join(context.appOutDir, 'X Minecraft Launcher.app/Contents/Resources/app.asar')
+      } else if (!existsSync(src)) {
+        console.log(`  ${chalk.yellow('•')} fallback to ${chalk.yellow('Resources/app.asar')} for ${chalk.yellow('resources/app.asar')} not found`)
+      }
+      await copyFile(src, dest)
+      await writeHash('sha256', dest, destSha256)
+      console.log(`  ${chalk.blue('•')} prepare asar with checksum ${chalk.blue('from')}=${src} ${chalk.blue('to')}=${dest}`)
     },
     async artifactBuildStarted(context) {
       if (context.targetPresentableName.toLowerCase() === 'appx') {

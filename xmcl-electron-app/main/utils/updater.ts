@@ -33,9 +33,10 @@ export class DownloadAsarUpdateTask extends DownloadTask {
     version = version.startsWith('v') ? version.substring(1) : version
     const pl = platform()
     let platformFlag = pl === 'win32' ? 'win' : pl === 'darwin' ? 'mac' : 'linux'
-    const isArm = process.arch === 'arm64'
-    if (isArm) {
+    if (process.arch === 'arm64') {
       platformFlag += '-arm64'
+    } else if (process.arch === 'ia32') {
+      platformFlag += '-ia32'
     }
     super({
       url: [
