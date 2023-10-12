@@ -1,4 +1,4 @@
-import { GameProfileAndTexture, LoginOptions, SkinPayload, UserException, UserProfile, UserState } from '@xmcl/runtime-api'
+import { GameProfileAndTexture, LoginOptions, SkinPayload, UserException, UserProfile, UserState, normalizeUserId } from '@xmcl/runtime-api'
 import { YggdrasilTexturesInfo, YggdrasilThirdPartyClient } from '@xmcl/user'
 import { Dispatcher } from 'undici'
 import { normalizeGameProfile, normalizeSkinData } from '../entities/user'
@@ -51,7 +51,7 @@ export class YggdrasilAccountSystem implements UserAccountSystem {
       }, signal)
 
       const userProfile: UserProfile = {
-        id: auth.user!.id,
+        id: normalizeUserId(auth.user!.id, authority),
         username,
         invalidated: false,
         profiles: toRecord(auth.availableProfiles.map(normalizeGameProfile), (v) => v.id),

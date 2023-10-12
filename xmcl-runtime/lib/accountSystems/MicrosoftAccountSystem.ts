@@ -1,4 +1,4 @@
-import { GameProfileAndTexture, LoginOptions, Skin, SkinPayload, UserException, UserProfile } from '@xmcl/runtime-api'
+import { GameProfileAndTexture, LoginOptions, Skin, SkinPayload, UserException, UserProfile, normalizeUserId } from '@xmcl/runtime-api'
 import { MicrosoftAuthenticator, MojangClient } from '@xmcl/user'
 import { MicrosoftOAuthClient } from '../clients/MicrosoftOAuthClient'
 import { XBoxResponse, normalizeSkinData } from '../entities/user'
@@ -23,8 +23,8 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
     const code = properties.code || ''
     const authentication = await this.loginMicrosoft(options.username, code, useDeviceCode, directToLauncher, signal)
 
-    const profile = {
-      id: authentication.userId,
+    const profile: UserProfile = {
+      id: normalizeUserId(authentication.userId, options.authority),
       username: options.username,
       invalidated: false,
       authority: options.authority,
