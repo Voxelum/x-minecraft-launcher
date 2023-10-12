@@ -1,16 +1,16 @@
 /* eslint-disable quotes */
 import { DownloadTask } from '@xmcl/installer'
 import {
-AUTHORITY_MICROSOFT,
-UserService as IUserService,
-LoginOptions,
-MutableState,
-SaveSkinOptions, UploadSkinOptions,
-UserProfile,
-UserSchema,
-UserServiceKey,
-UserState,
-normalizeUserId,
+  AUTHORITY_MICROSOFT,
+  UserService as IUserService,
+  LoginOptions,
+  MutableState,
+  SaveSkinOptions, UploadSkinOptions,
+  UserException,
+  UserProfile,
+  UserSchema,
+  UserServiceKey,
+  UserState,
 } from '@xmcl/runtime-api'
 import debounce from 'lodash.debounce'
 import { UserAccountSystem } from '../accountSystems/AccountSystem'
@@ -95,7 +95,6 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     const profile = await system.login(options, this.loginController.signal)
       .finally(() => { this.loginController = undefined })
 
-    profile.id = normalizeUserId(profile.id, profile.authority)
     this.state.userProfile(profile)
     return profile
   }
@@ -128,7 +127,6 @@ export class UserService extends StatefulService<UserState> implements IUserServ
     const data = await sys.setSkin(user, gameProfile, options, this.setSkinController.signal).finally(() => {
       this.setSkinController = undefined
     })
-    data.id = normalizeUserId(data.id, data.authority)
     this.state.userProfile(data)
   }
 
@@ -163,8 +161,11 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       this.refreshController = undefined
     })
 
-    newUser.id = normalizeUserId(newUser.id, newUser.authority)
     this.state.userProfile(newUser)
+
+    if (newUser.invalidated) {
+      throw new UserException({ type: 'userAccessTokenExpired' })
+    }
   }
 
   async selectUserGameProfile(userProfile: UserProfile, gameProfileId: string): Promise<void> {

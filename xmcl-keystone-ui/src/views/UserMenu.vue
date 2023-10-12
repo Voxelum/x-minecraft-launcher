@@ -84,8 +84,8 @@
 
           <div class="flex flex-grow items-center justify-center">
             <AppLoginForm
-              :ref="formRef"
               :inside="false"
+              :options="options"
               @login="reset()"
             />
           </div>
@@ -112,15 +112,9 @@ const expired = useUserExpired(computed(() => selected.value))
 
 const props = defineProps<{ show: boolean }>()
 
-watch(() => props.show, (s) => {
-  if (!s) return
-  onRefresh()
-})
-
 const onSelectUser = (user: string) => {
   select(user)
 }
-const formRef = ref<InstanceType<typeof AppLoginForm> | null>(null)
 const login = ref(users.value.length === 0)
 const { refresh: onRefresh, refreshing, error } = useRefreshable(async () => {
   if (users.value.length === 0) {
@@ -136,6 +130,11 @@ const { refresh: onRefresh, refreshing, error } = useRefreshable(async () => {
   }
 })
 
+watch(() => props.show, (s) => {
+  if (!s) return
+  onRefresh()
+}, { immediate: true })
+
 async function onRemoveUser() {
   const isLastOne = users.value.length <= 0
   await removeUser(selected.value)
@@ -146,8 +145,9 @@ async function onRemoveUser() {
   }
 }
 
+const options = ref(undefined as any)
 const reset = (o?: { username?: string; password?: string; microsoftUrl?: string; authority?: string; error?: string }) => {
-  formRef.value?.reset(o)
+  options.value = o
   login.value = false
 }
 

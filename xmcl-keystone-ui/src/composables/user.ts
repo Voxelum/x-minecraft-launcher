@@ -52,6 +52,7 @@ export function useUserContext() {
         current.profiles = user.profiles
         current.username = user.username
         current.selectedProfile = user.selectedProfile
+        current.invalidated = user.invalidated
       } else {
         set(this.users, user.id, user)
       }

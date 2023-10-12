@@ -141,6 +141,7 @@ import { kYggdrasilServices } from '@/composables/yggrasil'
 
 const props = defineProps<{
   inside: boolean
+  options?: { username?: string; password?: string; microsoftUrl?: string; authority?: string; error?: string }
 }>()
 
 const emit = defineEmits(['seed', 'login'])
@@ -213,22 +214,6 @@ on('device-code', (code) => {
   data.password = code.userCode
   data.microsoftUrl = code.verificationUri
 })
-
-function reset(options?: { username?: string; password?: string; microsoftUrl?: string; authority?: string; error?: string }) {
-  if (!options) {
-    data.username = history.value[0] ?? ''
-    data.password = ''
-    data.microsoftUrl = ''
-    error.value = undefined
-  } else {
-    data.username = options?.username ?? data.username
-    data.microsoftUrl = ''
-    authority.value = options?.authority ?? authority.value
-    error.value = undefined
-  }
-}
-
-defineExpose({ reset })
 
 // Rules
 const {
@@ -321,6 +306,22 @@ const onMouseEnterLogin = () => {
 const onMouseLeaveLogin = () => {
   hovered.value = false
 }
+
+// Reset
+watch(() => props.options, (options) => {
+  if (!options) {
+    data.username = history.value[0] ?? ''
+    data.password = ''
+    data.microsoftUrl = ''
+    error.value = undefined
+  } else {
+    data.username = options?.username ?? data.username
+    data.microsoftUrl = ''
+    authority.value = options?.authority ?? authority.value
+    error.value = undefined
+  }
+}, { immediate: true })
+
 </script>
 
 <style>
