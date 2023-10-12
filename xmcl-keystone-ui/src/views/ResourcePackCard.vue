@@ -199,7 +199,7 @@ const contextMenuItems = computed(() => {
     menuItems.push({
       text: t('resourcepack.searchOnModrinth', { name: props.pack.name }),
       onClick: () => {
-        searchInModrinth(props.pack.name)
+        searchInModrinth(props.pack.name, 'resourcepack')
       },
       icon: 'search',
     })

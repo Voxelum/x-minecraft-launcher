@@ -85,7 +85,7 @@ export function useModItemContextMenuItems(modFile: Ref<ModFile | undefined>, on
       items.push({
         text: t('mod.searchOnModrinth', { name: file.name }),
         onClick: () => {
-          searchInModrinth(file.name)
+          searchInModrinth(file.name, 'mod')
         },
         icon: 'search',
       })

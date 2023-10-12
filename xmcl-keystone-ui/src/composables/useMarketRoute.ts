@@ -37,8 +37,8 @@ export function useMarketRoute() {
   function searchInCurseforge(name: string, type: ProjectType) {
     goToCurseforge(`/curseforge/${type}?keyword=${name}`)
   }
-  function searchInModrinth(name: string) {
-    goToModrinth(`/modrinth?query=${name}`)
+  function searchInModrinth(name: string, type: 'mod' | 'modpack' | 'resourcepack' | 'shader') {
+    goToModrinth(`/modrinth?query=${name}&projectType=${type}`)
   }
   function goCurseforgeProject(projectId: number, type: ProjectType) {
     goToCurseforge(`/curseforge/${type}/${projectId}`)
