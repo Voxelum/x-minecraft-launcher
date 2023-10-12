@@ -11,6 +11,7 @@ export function useSWRVConfig() {
     revalidateOnFocus: false,
     revalidateDebounce: 1500,
     dedupingInterval: 1000 * 60 * 10,
+    ttl: 1000 * 60 * 60 * 24,
   }
 }
 
