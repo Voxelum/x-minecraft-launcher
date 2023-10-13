@@ -26,6 +26,13 @@ declare module '*.png' {
   const path: string
   export default path
 }
+declare module '*.webp' {
+  /**
+   * The path of the static file
+   */
+  const path: string
+  export default path
+}
 declare module '*.svg' {
   /**
    * The path of the static file

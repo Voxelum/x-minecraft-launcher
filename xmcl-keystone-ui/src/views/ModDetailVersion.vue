@@ -105,6 +105,7 @@ export interface ModVersion {
 }
 
 const loaders = computed(() => props.version.loaders.map(l => {
+  if (l.toLowerCase() === 'vanilla') return { icon: '$vuetify.icons.minecraft', loader: l }
   if (l.toLowerCase() === 'forge') return { icon: '$vuetify.icons.forge', loader: l }
   if (l.toLowerCase() === 'fabric') return { icon: '$vuetify.icons.fabric', loader: l }
   if (l.toLowerCase() === 'quilt') return { icon: '$vuetify.icons.quilt', loader: l }
