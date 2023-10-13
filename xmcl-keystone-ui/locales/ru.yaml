@@ -645,7 +645,7 @@ modInstall:
   selectProjectHint: Выберите проект и скачайте файл
 modSearchType:
   all: Все
-  local: Локальные
+  local: Дисковый кэш
 modpack:
   author: Имя автора
   authorHint: >-

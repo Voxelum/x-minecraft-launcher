@@ -386,7 +386,7 @@ instance:
   current: Current Instance
   delete: Delete Profile
   deleteHint: The instance data will be moved from the disk forever. You sure to do this?
-  duplicate: Duplicate Instance
+  duplicate: Duplicate Game
   duplicatedName: Duplicated Name
   fileApi: The synchronize file server API url
   fileApiHint: The url to synchronize instance files from a remote config server.
@@ -654,7 +654,7 @@ modInstall:
   upgrade: Upgrade Mods
 modSearchType:
   all: All
-  local: Local
+  local: Disk Cache
 modpack:
   author: Author Name
   authorHint: This might be used to sign on exported modpack (Curseforge)
