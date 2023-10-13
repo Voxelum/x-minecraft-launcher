@@ -93,6 +93,17 @@ export function useFabricVersions(minecraftVersion: Ref<string>, local: Ref<Loca
   }
 }
 
+export function useLabyModManifests() {
+  const { getLabyModManifest } = useService(InstallServiceKey)
+  const { data: versions, isValidating, mutate, error } = useSWRV('/labymod',
+    () => getLabyModManifest(),
+    inject(kSWRVConfig))
+
+  return {
+    
+  }
+}
+
 export function useQuiltVersions(minecraftVersion: Ref<string>, local: Ref<LocalVersionHeader[]>) {
   const { getQuiltVersionList } = useService(InstallServiceKey)
   const _refreshing = useServiceBusy(InstallServiceKey, 'getQuiltVersionList')
@@ -256,7 +267,7 @@ export function useOptifineVersions(minecraftVersion: Ref<string>, forgeVersion:
   const _refreshing = useServiceBusy(InstallServiceKey, 'getOptifineVersionList')
 
   const { data: allVersions, isValidating, mutate, error } = useSWRV('/optifine-versions',
-    () => minecraftVersion.value ? getOptifineVersionList().then(v => v.map(markRaw)) : [],
+    () => getOptifineVersionList().then(v => v.map(markRaw)),
     inject(kSWRVConfig))
 
   const refreshing = computed(() => isValidating.value || _refreshing.value)
@@ -265,7 +276,9 @@ export function useOptifineVersions(minecraftVersion: Ref<string>, forgeVersion:
 
   const installed = computed(() => {
     const localVersions: { [k: string]: string } = {}
-    for (const ver of local.value.filter(v => v.minecraft === minecraftVersion.value && (forgeVersion.value ? forgeVersion.value === v.forge : true))) {
+    for (const ver of local.value) {
+      if (ver.minecraft !== minecraftVersion.value) continue
+      // if (forgeVersion.value && ver.forge !== forgeVersion.value) continue
       if (ver.optifine) {
         localVersions[ver.optifine] = ver.id
       }

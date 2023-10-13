@@ -27,6 +27,24 @@ export function useMods(
     a.curseforge = b.curseforge || a.curseforge
   }
 
+  const compareMod = (a: Mod, b: Mod) => {
+    const builtInOrder = ['minecraft', 'optifine', 'fabric', 'forge', 'liteloader']
+    const aBuiltIn = builtInOrder.indexOf(a.id)
+    const bBuiltIn = builtInOrder.indexOf(b.id)
+    // built-in mods always on the prior of the list
+    if (aBuiltIn !== -1 && bBuiltIn !== -1) {
+      return aBuiltIn - bBuiltIn
+    }
+    if (aBuiltIn !== -1) {
+      return -1
+    }
+    if (bBuiltIn !== -1) {
+      return 1
+    }
+    // compare the title
+    return a.title.localeCompare(b.title)
+  }
+
   const items = computed(() => {
     const all: [Mod, number][] = []
     /**
@@ -46,7 +64,7 @@ export function useMods(
         console.log('Skip for installed ', item)
       }
     }
-    installed.sort((a, b) => a[0].title.localeCompare(b[0].title))
+    installed.sort((a, b) => compareMod(a[0], b[0]))
 
     if (!disableModrinth.value) {
       for (const mod of modrinth.value) {

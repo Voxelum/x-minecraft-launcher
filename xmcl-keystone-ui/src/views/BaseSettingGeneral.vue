@@ -376,6 +376,50 @@
     <v-list-item>
       <v-list-item-action class="self-center">
         <img
+          :src="'image://builtin/labymod'"
+          width="40px"
+        >
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title>LabyMod</v-list-item-title>
+        <v-list-item-subtitle>
+          <a
+            target="browser"
+            href="https://www.labymod.net"
+          >https://www.labymod.net</a>
+        </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-action>
+        <VersionMenu
+          :is-clearable="true"
+          :items="optifineItems"
+          :clear-text="t('optifineVersion.disable')"
+          :empty-text="t('optifineVersion.empty', { version: data.runtime.minecraft })"
+          :refreshing="refreshingOptifine"
+          @select="onSelectOptifine"
+        >
+          <template #default="{ on }">
+            <v-text-field
+              :value="data.runtime.optifine"
+              outlined
+              filled
+              dense
+              hide-details
+              :placeholder="t('optifineVersion.disable')"
+              append-icon="arrow_drop_down"
+              persistent-hint
+              :readonly="true"
+              @click:append="on.click($event);"
+              v-on="on"
+            />
+          </template>
+        </VersionMenu>
+      </v-list-item-action>
+    </v-list-item>
+
+    <v-list-item>
+      <v-list-item-action class="self-center">
+        <img
           :src="'image://builtin/craftingTable'"
           width="40px"
         >

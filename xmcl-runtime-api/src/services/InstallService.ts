@@ -1,7 +1,8 @@
 import type { ResolvedLibrary, Version } from '@xmcl/core'
-import type { InstallProfile, LiteloaderVersion, MinecraftVersion, QuiltArtifactVersion } from '@xmcl/installer'
+import type { InstallProfile, LiteloaderVersion, MinecraftVersion, QuiltArtifactVersion, InstallLabyModOptions as IInstallLabyModOptions, LabyModManifest } from '@xmcl/installer'
 import { ForgeVersion, OptifineVersion, FabricVersions, LiteloaderVersions, MinecraftVersions, NeoForgedVersions } from '../entities/version'
 import { ServiceKey } from './Service'
+import { Resource } from '../entities/resource'
 
 export interface InstallOptifineOptions extends OptifineVersion {
   /**
@@ -87,6 +88,12 @@ export interface GetQuiltVersionListOptions {
   force?: boolean
 }
 
+export interface InstallLabyModOptions {
+  manifest: LabyModManifest
+  minecraftVersion: string
+  environment?: string
+}
+
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
  */
@@ -104,9 +111,10 @@ export interface InstallService {
    * Get the neo forge version list
    */
   getNeoForgedVersionList(): Promise<NeoForgedVersions>
-
+  /**
+   * Get liteloader version list in the store.
+   */
   getLiteloaderVersionList(): Promise<LiteloaderVersions>
-
   /**
    * Refresh fabric version list in the store.
    * @param force should the version be refresh regardless if we have already refreshed fabric version.
@@ -121,11 +129,20 @@ export interface InstallService {
    */
   getQuiltVersionList(options?: GetQuiltVersionListOptions): Promise<QuiltArtifactVersion[]>
   /**
+   * Get the labymod manifest
+   */
+  getLabyModManifest(): Promise<LabyModManifest>
+  /**
    * Install assets which defined in this version asset.json. If this version is not present, this will throw error！
    * @param version The local version id
    */
   installAssetsForVersion(version: string): Promise<void>
   installDependencies(version: string): Promise<void>
+  /**
+   * Install labymod to a minecraft version
+   * @param options The install option
+   */
+  installLabyModVersion(options: InstallLabyModOptions): Promise<string>
   /**
    * If you think a version is corrupted, you can try to reinstall this version
    * @param version The version to reinstall
@@ -160,7 +177,7 @@ export interface InstallService {
   /**
    * Install the optifine to the minecraft
    */
-  installOptifine(options: InstallOptifineOptions): Promise<string>
+  installOptifine(options: InstallOptifineOptions): Promise<[string, Resource]>
   /**
    * Install a specific liteloader version
    */

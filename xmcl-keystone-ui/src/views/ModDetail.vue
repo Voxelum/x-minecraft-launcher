@@ -13,14 +13,17 @@
         />
       </div>
       <div class="flex flex-col">
-        <a
+        <span
           v-if="detail.url"
-          class="text-2xl font-bold"
-          target="browser"
-          :href="detail.url"
         >
-          {{ detail.title }}
-        </a>
+          <a
+            class="text-2xl font-bold"
+            target="browser"
+            :href="detail.url"
+          >
+            {{ detail.title }}
+          </a>
+        </span>
         <span
           v-else
           class="text-2xl font-bold"
@@ -105,13 +108,13 @@
               <div class="v-card__subtitle overflow-hidden overflow-ellipsis whitespace-nowrap p-0">
                 {{
                   versions.length > 0 ?
-                    t('modInstall.installHint', { file: 1, dependencies: dependencies.length })
+                    t('modInstall.installHint', { file: 1, dependencies: dependencies.filter(d => d.type === 'required').length })
                     : t('modInstall.noVersionSupported')
                 }}
               </div>
             </div>
             <v-btn
-              v-if="selectedInstalled"
+              v-if="selectedInstalled && !noDelete"
               class="red"
               :loading="loadingVersions"
               :disabled="!selectedVersion || updating"
@@ -503,6 +506,7 @@ const props = defineProps<{
   selectedInstalled: boolean
   curseforgeBody?: boolean
   hasInstalledVersion: boolean
+  noDelete?: boolean
   noEnabled?: boolean
   hasMore: boolean
 }>()
@@ -637,7 +641,6 @@ const onScroll = (e: Event) => {
 .mod-detail .v-badge__badge.primary {
   right: -10px;
   height: 20px;
-  width: 20px;
   font-size: 12px;
 }
 </style>

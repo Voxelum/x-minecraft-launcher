@@ -6,8 +6,8 @@ import { ContextMenuItem } from './contextMenu'
 import { useService } from './service'
 import { kMarketRoute } from './useMarketRoute'
 
-export function useModItemContextMenuItems(modFile: Ref<ModFile | undefined>, onDelete: () => void, onCreateTag: (group?: boolean) => void) {
-  const { t } = useI18n()
+export function useModItemContextMenuItems(modFile: Ref<ModFile | undefined>, onDelete: () => void, onCreateTag: (group?: boolean) => void, onDisable: () => void) {
+  const { t, te } = useI18n()
   const { showItemInDirectory } = useService(BaseServiceKey)
   const { searchInCurseforge, goModrinthProject, goCurseforgeProject, searchInModrinth, searchInMcWiki } = injection(kMarketRoute)
 
@@ -38,11 +38,14 @@ export function useModItemContextMenuItems(modFile: Ref<ModFile | undefined>, on
     // }
     items.push({
       text: t('delete.name', { name: file.name }),
-      onClick() {
-        onDelete()
-      },
+      onClick: onDelete,
       icon: 'delete',
       color: 'error',
+    }, {
+      onClick: onDisable,
+      text: file.enabled ? t('disable') + ' ' + file.name : t('enable') + ' ' + file.name,
+      color: 'grey',
+      icon: file.enabled ? 'flash_off' : 'flash_on',
     })
     if (file.url) {
       const url = file.url
@@ -90,13 +93,15 @@ export function useModItemContextMenuItems(modFile: Ref<ModFile | undefined>, on
         icon: 'search',
       })
     }
-    items.push({
-      text: t('mod.searchOnMcWiki', { name: file.name }),
-      onClick: () => {
-        searchInMcWiki(file.name)
-      },
-      icon: 'search',
-    })
+    if (te('mod.searchOnMcWiki')) {
+      items.push({
+        text: t('mod.searchOnMcWiki', { name: file.name }),
+        onClick: () => {
+          searchInMcWiki(file.name)
+        },
+        icon: 'search',
+      })
+    }
     return items
   })
 }

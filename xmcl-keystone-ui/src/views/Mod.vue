@@ -149,7 +149,7 @@
       <template #right>
         <div class="flex h-full flex-grow-0 overflow-y-auto overflow-x-hidden">
           <ModDetailModrinth
-            v-if="(selectedItem && selectedItem.modrinth) || selectedModrinthId"
+            v-if="shouldShowModrinth"
             :modrinth="selectedItem?.modrinth"
             :project-id="selectedModrinthId"
             :updating="plans[selectedItem?.id ?? '']?.updating"
@@ -158,7 +158,7 @@
             :minecraft="minecraft"
           />
           <ModDetailCurseforge
-            v-else-if="(selectedItem && selectedItem.curseforge) || selectedCurseforgeId"
+            v-else-if="shouldShowCurseforge"
             :curseforge="selectedItem?.curseforge"
             :curseforge-id="Number(selectedCurseforgeId)"
             :updating="plans[selectedItem?.id ?? '']?.updating"
@@ -167,12 +167,17 @@
             :installed="selectedItem?.installed || getInstalledCurseforge(selectedCurseforgeId)"
           />
           <ModDetailResource
-            v-else-if="selectedItem && selectedItem.files && selectedItem"
+            v-else-if="selectedItem && selectedItem.files"
             :mod="selectedItem"
             :files="selectedItem.files"
             :runtime="runtime"
             :installed="selectedItem.installed"
             :minecraft="minecraft"
+          />
+          <ModDetailOptifine
+            v-else-if="selectedItem && selectedItem.id === 'optifine'"
+            :mod="selectedItem"
+            :runtime="runtime"
           />
           <Hint
             v-else
@@ -202,6 +207,9 @@ import ModDetailResource from './ModDetailResource.vue'
 import ModItem from './ModItem.vue'
 import { kModUpgrade } from '@/composables/modUpgrade'
 import { kInstance } from '@/composables/instance'
+import ModDetailOptifine from './ModDetailOptifine.vue'
+import ModDetailMinecraft from './ModDetailMinecraft.vue'
+import { kInstanceDefaultSource } from '@/composables/instanceDefaultSource'
 
 const { minecraft } = injection(kInstanceVersion)
 const { runtime } = injection(kInstance)
@@ -267,6 +275,28 @@ const selectedCurseforgeId = computed(() => {
   }
   return selectedItem.value?.curseforgeProjectId || selectedItem.value?.curseforge?.id || undefined
 })
+
+const defaultSource = injection(kInstanceDefaultSource)
+
+const shouldShowModrinth = computed(() => {
+  const hasModrinth = selectedItem.value?.modrinth || selectedModrinthId.value
+  if (!hasModrinth) return false
+  const hasCurseforge = selectedItem.value?.curseforge || selectedCurseforgeId.value
+  if (defaultSource.value === 'curseforge' && hasCurseforge) {
+    return false
+  }
+  return true
+})
+const shouldShowCurseforge = computed(() => {
+  const hasCurseforge = selectedItem.value?.curseforge || selectedCurseforgeId.value
+  if (!hasCurseforge) return false
+  const hasModrinth = selectedItem.value?.modrinth || selectedModrinthId.value
+  if (defaultSource.value === 'modrinth' && hasModrinth) {
+    return false
+  }
+  return true
+})
+
 const onSelect = (i: Mod) => {
   selectedId.value = i.id
 }
@@ -285,10 +315,10 @@ watch(computed(() => route.fullPath), () => {
 
 const total = computed(() => {
   if (tab.value === 3) {
-    return modrinth.value?.total_hits || 0
+    return modrinth.value?.length || 0
   }
   if (tab.value === 2) {
-    return curseforge.value?.pagination.totalCount || 0
+    return curseforge.value?.length || 0
   }
   return 0
 })

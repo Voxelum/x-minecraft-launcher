@@ -212,15 +212,21 @@ export class ResourceService extends AbstractService implements IResourceService
       for (const resource of resources) {
         // this.log(`Update resource ${JSON.stringify(resource, null, 4)}`)
         if (resource.name || resource.metadata?.github || resource.metadata?.curseforge || resource.metadata?.modrinth || resource.metadata?.instance) {
+          const params = {
+            name: resource.name,
+            github: resource.metadata?.github,
+            curseforge: resource.metadata?.curseforge,
+            modrinth: resource.metadata?.modrinth,
+            instance: resource.metadata?.instance,
+          }
+          if (!params.name) delete params.name
+          if (!params.github) delete params.github
+          if (!params.curseforge) delete params.curseforge
+          if (!params.modrinth) delete params.modrinth
+          if (!params.instance) delete params.instance
           await trx.updateTable('resources')
             .where('sha1', '=', resource.hash)
-            .set({
-              name: resource.name,
-              github: resource.metadata?.github,
-              curseforge: resource.metadata?.curseforge,
-              modrinth: resource.metadata?.modrinth,
-              instance: resource.metadata?.instance,
-            }).execute()
+            .set(params).execute()
         }
         // Upsert each tag
         if (resource.tags) {

@@ -5,6 +5,7 @@ import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
 import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
 import { kInstance, useInstance } from '@/composables/instance'
+import { kInstanceDefaultSource, useInstanceDefaultSource } from '@/composables/instanceDefaultSource'
 import { kInstanceFiles, useInstanceFiles } from '@/composables/instanceFiles'
 import { kInstanceFilesDiagnose, useInstanceFilesDiagnose } from '@/composables/instanceFilesDiagnose'
 import { kInstanceJava, useInstanceJava } from '@/composables/instanceJava'
@@ -61,6 +62,7 @@ export default defineComponent({
     const settings = useSettingsState()
     const instanceVersion = useInstanceVersion(instance.instance, localVersions.versions)
     const instanceJava = useInstanceJava(instance.instance, instanceVersion.resolvedVersion, java.all)
+    const instanceDefaultSource = useInstanceDefaultSource(instance.path)
     const options = useInstanceOptions(instance.instance)
     const saves = useInstanceSaves(instance.instance)
     const resourcePacks = useInstanceResourcePacks(options.gameOptions)
@@ -86,6 +88,7 @@ export default defineComponent({
     provide(kLaunchStatus, useLaunchStatus())
 
     provide(kInstanceVersion, instanceVersion)
+    provide(kInstanceDefaultSource, instanceDefaultSource)
     provide(kInstanceJava, instanceJava)
     provide(kInstanceOptions, options)
     provide(kInstanceSave, saves)

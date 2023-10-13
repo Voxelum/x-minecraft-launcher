@@ -156,7 +156,7 @@ function onEditTag(event: Event, index: number) {
   }
 }
 
-const contextMenuItems = useModItemContextMenuItems(computed(() => modItem.value.mod), () => props.onDelete(props.item), createTag)
+const contextMenuItems = useModItemContextMenuItems(computed(() => modItem.value.mod), () => props.onDelete(props.item), createTag, () => {})
 </script>
 
 <style scoped>
