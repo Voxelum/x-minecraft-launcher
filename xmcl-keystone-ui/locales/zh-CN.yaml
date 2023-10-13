@@ -401,7 +401,7 @@ instance:
   current: 当前实例
   delete: 删除游戏
   deleteHint: 游戏的数据将完全被移除。你确定继续此操作吗？
-  duplicate: 创建备份实例
+  duplicate: 创建备份
   duplicatedName: 名字重复了！
   fileApi: 远程同步文件服务器 API 地址
   fileApiHint: 用于远程同步实例文件的链接
@@ -663,7 +663,7 @@ modInstall:
   upgrade: 更新 Mods
 modSearchType:
   all: 所有
-  local: 本地
+  local: 磁盘缓存
 modpack:
   author: 署名
   authorHint: 这个游戏/整合包的制作人

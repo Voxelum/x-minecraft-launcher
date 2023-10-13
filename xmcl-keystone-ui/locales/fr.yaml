@@ -721,7 +721,7 @@ modInstall:
   selectProjectHint: Sélectionnez le projet et installez le fichier
 modSearchType:
   all: Tous
-  local: Local
+  local: Cache disque
 modpack:
   author: Nom de l'auteur
   authorHint: Cela peut être utilisé pour signer le modpack exporté (Curseforge)
