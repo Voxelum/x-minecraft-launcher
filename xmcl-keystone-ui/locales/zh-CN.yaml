@@ -647,6 +647,7 @@ mod:
   showInCurseforge: 在 Curseforge 上显示该 Mod
   showInModrinth: 在 Modrinth 中显示 {name}
   showIncompatible: 显示不兼容 Mods
+  switchDefaultSource: 实例默认 Mod 下载源
   toUpdate: '{count} 个有新版本'
   unselected: 未选 Mods
 modInstall:

@@ -6,7 +6,7 @@ const y = ref(0)
 const color = ref('black')
 const isShown = ref(false)
 const left = ref(false)
-const stack = [] as [number, number, string, boolean][]
+const stack = [] as [number, number, string, string, boolean][]
 
 export function useSharedTooltipData() {
   return {

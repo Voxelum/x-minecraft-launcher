@@ -54,6 +54,7 @@
         "file-type": "^16.5.4",
         "filenamify": "^5.1.1",
         "form-data": "^3.0.1",
+        "node-disk-info": "^1.3.0",
         "fs-extra": "^11.1.0",
         "graceful-fs": "^4.2.10",
         "http-cache-semantics": "^4.1.0",

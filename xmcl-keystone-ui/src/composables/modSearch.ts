@@ -2,7 +2,6 @@ import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { getCursforgeModLoadersFromString } from '@/util/curseforge'
 import { isNoModLoader } from '@/util/isNoModloader'
 import { Mod, ModFile, getModFileFromResource } from '@/util/mod'
-import { getDiceCoefficient } from '@/util/sort'
 import { Mod as CFMod, ModsSearchSortField, Pagination } from '@xmcl/curseforge'
 import { SearchResult } from '@xmcl/modrinth'
 import { InstanceData, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
@@ -215,6 +214,15 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
     const _all: Mod[] = []
     const _installed: Mod[] = []
 
+    if (runtime.value.optifine) {
+      _installed.push(getOptifineAsMod())
+    } else {
+      const hasOptifine = keyword.value.toLowerCase().includes('optifine')
+      if (hasOptifine) {
+        _all.push(getOptifineAsMod())
+      }
+    }
+
     const processModFile = (m: ModFile, instanceFile: boolean) => {
       const curseforgeId = m.resource.metadata.curseforge?.projectId
       const modrinthId = m.resource.metadata.modrinth?.projectId
@@ -271,42 +279,6 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
       }
     }
 
-    if (false) {
-      const hasOptifine = keyword.value.toLowerCase().includes('optifine')
-      if (hasOptifine) {
-        const optifine = getOptifineAsMod()
-        if (runtime.value.optifine) {
-          _installed.push(optifine)
-        } else {
-          _all.push(optifine)
-        }
-      }
-
-      const hasForge = keyword.value.toLowerCase().includes('forge')
-      if (hasForge && modLoaderFilters.value.indexOf(ModLoaderFilter.forge) !== -1) {
-        // if (isNoModLoader(runtime.value) || runtime.value.forge) {
-          const forge = getForgeAsMod()
-          if (runtime.value.forge) {
-            _installed.push(forge)
-          } else {
-            _all.push(forge)
-          }
-        // }
-      }
-
-      const hasFabric = getDiceCoefficient(keyword.value, 'fabric')
-      if (hasFabric && modLoaderFilters.value.indexOf(ModLoaderFilter.fabric) !== -1) {
-        // if (isNoModLoader(runtime.value) || runtime.value.fabricLoader) {
-          const fabric = getFabricAsMod()
-          if (runtime.value.fabricLoader) {
-            _installed.push(fabric)
-          } else {
-            _all.push(fabric)
-          }
-        // }
-      }
-    }
-
     return markRaw([_all, _installed] as const)
   })
 
@@ -344,34 +316,6 @@ const getOptifineAsMod = () => {
     title: 'Optifine',
     author: 'sp614x',
     description: 'Optifine is a Minecraft optimization mod. It allows Minecraft to run faster and look better with full support for HD textures and many configuration options.',
-    installed: [],
-    downloadCount: 0,
-    followerCount: 0,
-  }
-  return result
-}
-
-const getForgeAsMod = () => {
-  const result: Mod = {
-    id: 'forge',
-    icon: 'image://builtin/forge',
-    title: 'Forge',
-    author: 'LexManos',
-    description: 'Forge is a Minecraft mod loader. It allows Minecraft to run faster and look better with full support for HD textures and many configuration options.',
-    installed: [],
-    downloadCount: 0,
-    followerCount: 0,
-  }
-  return result
-}
-
-const getFabricAsMod = () => {
-  const result: Mod = {
-    id: 'fabric',
-    icon: 'image://builtin/fabric',
-    title: 'Fabric',
-    author: 'FabricMC',
-    description: 'Fabric is a Minecraft mod loader. It allows Minecraft to run faster and look better with full support for HD textures and many configuration options.',
     installed: [],
     downloadCount: 0,
     followerCount: 0,

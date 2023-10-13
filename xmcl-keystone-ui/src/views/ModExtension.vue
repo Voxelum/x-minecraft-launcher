@@ -229,7 +229,7 @@ const onKeyPress = (e: KeyboardEvent) => {
   }
 }
 onMounted(() => {
-  document.addEventListener('keydown', onKeyPress)
+  document.addEventListener('keydown', onKeyPress, { capture: true })
 })
 onUnmounted(() => {
   document.removeEventListener('keydown', onKeyPress)

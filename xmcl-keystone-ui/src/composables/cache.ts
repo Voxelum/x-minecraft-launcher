@@ -26,44 +26,69 @@ export function clearInMemoryCache(key: string) {
   CACHE.delete(key)
 }
 
-const LOCAL_STORAGE_CACHE: Record<string, Ref<any>> = {}
-
 export function useLocalStorageCache<T>(key: string, defaultValue: () => T, toString: (t: T) => string, fromString: (s: string) => T, deep = false): Ref<T> {
-  if (LOCAL_STORAGE_CACHE[key]) {
-    const ref = LOCAL_STORAGE_CACHE[key]
-    watch(ref, (n) => {
-      localStorage.setItem(key, toString(n))
-    }, { deep })
-    return ref
-  }
-  const result = localStorage.getItem(key)
   const deserialize = (val: string) => {
     try { return fromString(val) } catch { return defaultValue() }
   }
-  const v: Ref<T> = ref(result !== null ? deserialize(result) : defaultValue()) as any
-  if (!result) {
-    localStorage.setItem(key, toString(v.value))
+  const cache = localStorage.getItem(key)
+  const holder: Ref<T> = ref(cache !== null ? deserialize(cache) : defaultValue()) as any
+  if (!cache) {
+    localStorage.setItem(key, toString(holder.value))
   }
-  watch(v, (n) => {
+  watch(holder, (n) => {
     localStorage.setItem(key, toString(n))
   }, { deep })
 
   const onStorage = (e: StorageEvent) => {
     if (e.key === key) {
       const v = deserialize(e.newValue ?? '')
-      if (v !== LOCAL_STORAGE_CACHE[key].value) {
-        LOCAL_STORAGE_CACHE[key].value = v
+      if (v !== holder.value) {
+        holder.value = v
       }
     }
   }
 
-  window.addEventListener('storage', onStorage)
+  onMounted(() => {
+    window.addEventListener('storage', onStorage)
+  })
   onUnmounted(() => {
     window.removeEventListener('storage', onStorage)
   })
 
-  LOCAL_STORAGE_CACHE[key] = v
-  return v
+  return holder
+}
+
+export function useLocalStorageCacheRef<T>(key: Ref<string>, defaultValue: () => T, toString: (t: T) => string, fromString: (s: string) => T, deep = false): Ref<T> {
+  const deserialize = (val: string) => {
+    try { return fromString(val) } catch { return defaultValue() }
+  }
+  const cache = localStorage.getItem(key.value)
+  const holder: Ref<T> = ref(cache !== null ? deserialize(cache) : defaultValue()) as any
+  watch(key, (newKey) => {
+    const cache = localStorage.getItem(newKey)
+    holder.value = cache !== null ? deserialize(cache) : defaultValue()
+  })
+  watch(holder, (n) => {
+    localStorage.setItem(key.value, toString(n))
+  }, { deep })
+
+  const onStorage = (e: StorageEvent) => {
+    if (e.key === key.value) {
+      const v = deserialize(e.newValue ?? '')
+      if (v !== holder.value) {
+        holder.value = v
+      }
+    }
+  }
+
+  onMounted(() => {
+    window.addEventListener('storage', onStorage)
+  })
+  onUnmounted(() => {
+    window.removeEventListener('storage', onStorage)
+  })
+
+  return holder
 }
 
 export function useLocalStorageCacheFloat(key: string, defaultValue: number): Ref<number> {

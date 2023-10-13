@@ -7,7 +7,7 @@ export const vSharedTooltip: FunctionDirective<HTMLElement, string | [string, st
     const target = e.target as HTMLElement
     const rect = target.getBoundingClientRect()
     if (isShown.value) {
-      stack.push([x.value, y.value, currentTooltip.value, left.value])
+      stack.push([x.value, y.value, currentTooltip.value, color.value, left.value])
     }
 
     if (bindings.modifiers.left) {
@@ -42,7 +42,8 @@ export const vSharedTooltip: FunctionDirective<HTMLElement, string | [string, st
       x.value = last[0]
       y.value = last[1]
       currentTooltip.value = last[2]
-      left.value = last[3]
+      color.value = last[3]
+      left.value = last[4]
       isShown.value = true
     } else {
       isShown.value = false

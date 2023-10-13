@@ -1,9 +1,11 @@
 import { MinecraftFolder, ResolvedLibrary, ResolvedVersion, Version } from '@xmcl/core'
 import { DownloadBaseOptions } from '@xmcl/file-transfer'
 import { parse as parseForge } from '@xmcl/forge-site-parser'
-import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DEFAULT_VERSION_MANIFEST_URL, DownloadTask, FabricArtifactVersion, InstallForgeOptions, InstallJarTask, InstallProfile, LiteloaderVersion, MinecraftVersion, MinecraftVersionList, Options, QuiltArtifactVersion, install, installAssetsTask, installByProfileTask, installFabric, installForgeTask, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask } from '@xmcl/installer'
-import { Asset, FabricVersions, ForgeVersion, GetQuiltVersionListOptions, InstallService as IInstallService, InstallFabricOptions, InstallNeoForgedOptions, InstallOptifineOptions, InstallQuiltOptions, InstallServiceKey, InstallableLibrary, LiteloaderVersions, LockKey, MinecraftVersions, MutableState, NeoForgedVersions, OptifineVersion, ResourceDomain, Settings, InstallForgeOptions as _InstallForgeOptions, isFabricLoaderLibrary, isForgeLibrary } from '@xmcl/runtime-api'
+import { DEFAULT_FORGE_MAVEN, DEFAULT_RESOURCE_ROOT_URL, DEFAULT_VERSION_MANIFEST_URL, DownloadTask, FabricArtifactVersion, InstallForgeOptions, InstallJarTask, InstallProfile, LabyModManifest, LiteloaderVersion, MinecraftVersion, MinecraftVersionList, Options, QuiltArtifactVersion, getLabyModManifest, installAssetsTask, installByProfileTask, installFabric, installForgeTask, installLabyMod4Task, installLibrariesTask, installLiteloaderTask, installNeoForgedTask, installOptifineTask, installQuiltVersion, installResolvedAssetsTask, installResolvedLibrariesTask, installVersionTask } from '@xmcl/installer'
+import { Asset, FabricVersions, ForgeVersion, GetQuiltVersionListOptions, InstallService as IInstallService, InstallFabricOptions, InstallLabyModOptions, InstallNeoForgedOptions, InstallOptifineOptions, InstallQuiltOptions, InstallServiceKey, InstallableLibrary, LiteloaderVersions, LockKey, MinecraftVersions, MutableState, NeoForgedVersions, OptifineVersion, Resource, ResourceDomain, Settings, InstallForgeOptions as _InstallForgeOptions, isFabricLoaderLibrary, isForgeLibrary } from '@xmcl/runtime-api'
 import { AbortableTask, task } from '@xmcl/task'
+import { XMLParser } from 'fast-xml-parser'
+import { existsSync } from 'fs'
 import { ensureFile } from 'fs-extra/esm'
 import { readFile, writeFile } from 'fs/promises'
 import { Dispatcher, errors, request } from 'undici'
@@ -22,8 +24,6 @@ import { JavaService } from './JavaService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Lock, Singleton } from './Service'
 import { VersionService } from './VersionService'
-import { existsSync } from 'fs'
-import { XMLParser } from 'fast-xml-parser'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -124,6 +124,12 @@ export class InstallService extends AbstractService implements IInstallService {
       versions: versions.version,
     }
     return result
+  }
+
+  @Singleton()
+  async getLabyModManifest(): Promise<LabyModManifest> {
+    const manifest = await getLabyModManifest()
+    return manifest
   }
 
   @Singleton()
@@ -460,6 +466,14 @@ export class InstallService extends AbstractService implements IInstallService {
     await this.installDependenciesUnsafe(resolvedVersion)
   }
 
+  @Lock((v) => [LockKey.version(v.minecraftVersion)])
+  async installLabyModVersion(options: InstallLabyModOptions) {
+    const location = this.getPath()
+    const task = installLabyMod4Task(options.manifest, options.minecraftVersion, location, this.getInstallOptions())
+    const version = await this.submit(task)
+    return version
+  }
+
   private async installDependenciesUnsafe(resolvedVersion: ResolvedVersion) {
     const option = this.getInstallOptions()
     await this.submit(installLibrariesTask(resolvedVersion, option).setName('installLibraries', { id: resolvedVersion.id }))
@@ -708,15 +722,6 @@ export class InstallService extends AbstractService implements IInstallService {
 
   @Lock((v: InstallOptifineOptions) => LockKey.version(`optifine-${v.mcversion}-${v.type}_${v.patch}`))
   async installOptifine(options: InstallOptifineOptions) {
-    return await this.installOptifineInternal(options)
-  }
-
-  @Lock((v: InstallOptifineOptions) => LockKey.version(`optifine-${v.mcversion}-${v.type}_${v.patch}`))
-  async installOptifineUnsafe(options: InstallOptifineOptions) {
-    return await this.installOptifineInternal(options)
-  }
-
-  private async installOptifineInternal(options: InstallOptifineOptions) {
     const minecraft = new MinecraftFolder(this.getPath())
     const optifineVersion = `${options.type}_${options.patch}`
     const version = `${options.mcversion}_${optifineVersion}`
@@ -756,15 +761,13 @@ export class InstallService extends AbstractService implements IInstallService {
         `https://download.mcbbs.net/optifine/${options.mcversion}/${options.type}/${options.patch}`,
       )
     }
-    const id = await this.submit(task('installOptifine', async function () {
+    const result = await this.submit(task('installOptifine', async function () {
       await this.yield(new DownloadTask({
         ...downloadOptions,
         url: urls,
         destination: path,
       }).setName('download'))
-      resourceService.importResources([{ path, domain: ResourceDomain.Mods }]).catch((e) => {
-        error(new AnyError('InstallOptifineError', `Fail to import optifine as mod! ${path}`, { cause: e }))
-      })
+      const resources = await resourceService.importResources([{ path, domain: ResourceDomain.Mods }])
       let id: string = await this.concat(installOptifineTask(path, minecraft, { java }))
 
       if (options.inheritFrom) {
@@ -781,12 +784,12 @@ export class InstallService extends AbstractService implements IInstallService {
         await writeFile(dest, JSON.stringify(json, null, 4))
         id = json.id
       }
-      return id
+      return [id, resources[0]] as [string, Resource]
     }, { id: optifineVersion }))
 
-    this.log(`Succeed to install optifine ${version} on ${options.inheritFrom ?? options.mcversion}. ${id}`)
+    this.log(`Succeed to install optifine ${version} on ${options.inheritFrom ?? options.mcversion}. ${result[0]}`)
 
-    return id
+    return result
   }
 
   @Singleton()

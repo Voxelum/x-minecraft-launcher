@@ -638,6 +638,7 @@ mod:
   showInCurseforge: Show the mod in curseforge
   showInModrinth: Show {name} in Modrinth
   showIncompatible: Show Incompatible Mods
+  switchDefaultSource: Default Mod Source
   toUpdate: '{count} to update'
   unselected: Unselected Mods
 modInstall:

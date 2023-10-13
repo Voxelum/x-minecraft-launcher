@@ -19,6 +19,13 @@ declare module 'fs-extra/esm' {
   export * from 'fs-extra'
 }
 
+declare module '*.webp' {
+  /**
+   * The path of the static file
+   */
+  const path: string
+  export default path
+}
 declare module '*.png' {
   /**
    * The path of the static file

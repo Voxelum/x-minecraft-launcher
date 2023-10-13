@@ -1,6 +1,6 @@
 
 <script setup lang="ts">
-import { useOptifineVersions } from '@/composables/version'
+import { useMinecraftVersions, useOptifineVersions } from '@/composables/version'
 import { Mod } from '@/util/mod'
 import { InstallServiceKey, InstanceServiceKey, ResourceDomain, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
 import { ModVersion } from './ModDetailVersion.vue'
@@ -19,7 +19,7 @@ const props = defineProps<{
 }>()
 
 const { versions: localVersions } = injection(kLocalVersions)
-const { versions: optVersions, refreshing, installed } = useOptifineVersions(computed(() => props.runtime.minecraft), computed(() => props.runtime.forge || ''), localVersions)
+const { versions: mcVersions, refreshing, installed } = useMinecraftVersions(localVersions)
 
 const selectedVersion = ref(undefined as ModVersion | undefined)
 provide('selectedVersion', selectedVersion)
@@ -32,21 +32,21 @@ const { data: changelog, isValidating: loadingChangelog } = useSWRV(computed(() 
 }, inject(kSWRVConfig))
 
 const versions = computed(() => {
-  const files = optVersions.value
-  const all: ModVersion[] = files.map((f) => {
-    const version = `${f.type}_${f.patch}`
-    const id = `${f.mcversion}_${version}`
+  const versions = mcVersions.value
+  const all: ModVersion[] = versions.map((v) => {
+    const version = v.id
+    const id = v.id
     const modVersion: ModVersion = reactive({
       id,
       name: version,
       version,
       downloadCount: 0,
-      installed: props.runtime.optifine === version,
-      loaders: ['vanilla', 'forge'],
-      minecraftVersion: f.mcversion,
+      installed: props.runtime.minecraft === version,
+      loaders: ['vanilla'],
+      minecraftVersion: v.id,
       type: 'release',
       disabled: false,
-      changelog: computed(() => id === selectedVersion.value?.id ? changelog.value : undefined),
+      changelog: '',
       changelogLoading: loadingChangelog,
     })
     return modVersion
@@ -85,33 +85,16 @@ const updating = ref(false)
 const onInstall = async (m: ModVersion) => {
   try {
     updating.value = true
-    if (!runtime.value.forge) {
-      await editInstance({
-        instancePath: path.value,
-        runtime: {
-          ...runtime.value,
-          optifine: m.version,
-        },
-      })
-      const [mc, type, patch] = m.id.split('_')
-      if (installed.value[m.version]) {
-        const installedVersion = installed.value[m.version]
-        const filePath = localVersions.value.find(v => v.id === installedVersion)?.path
-      } else {
-        const [_, resource] = await installOptifine({ mcversion: mc, type, patch })
-      }
-    }
+    await editInstance({
+      instancePath: path.value,
+      runtime: {
+        ...runtime.value,
+        minecraft: m.version,
+      },
+    })
   } finally {
     updating.value = false
   }
-}
-
-const onDelete = () => {
-  const newRuntime = { ...runtime.value, optifine: '' }
-  editInstance({
-    instancePath: path.value,
-    runtime: newRuntime,
-  })
 }
 
 </script>
@@ -126,10 +109,10 @@ const onDelete = () => {
     :versions="versions"
     :updating="false"
     no-enabled
+    no-delete
     :has-more="false"
     :loading-versions="refreshing"
     :loading-dependencies="false"
     @install="onInstall"
-    @delete="onDelete"
   />
 </template>

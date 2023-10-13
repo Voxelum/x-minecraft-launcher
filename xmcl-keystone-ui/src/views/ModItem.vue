@@ -24,8 +24,24 @@
         :value="hasUpdate"
         :offset-y="5"
       >
-        <v-list-item-title>
-          {{ title || item.title }}
+        <v-list-item-title class="flex overflow-hidden">
+          <span class="max-w-full overflow-hidden overflow-ellipsis">
+            {{ title || item.title }}
+          </span>
+          <div class="flex-grow" />
+          <v-btn
+            v-if="item.installed.length > 0"
+            x-small
+            icon
+            @click.stop="onSettingClick"
+          >
+            <v-icon
+              class="v-list-item__subtitle"
+              size="15"
+            >
+              settings
+            </v-icon>
+          </v-btn>
         </v-list-item-title>
       </v-badge>
       <v-list-item-subtitle>{{ description || item.description }}</v-list-item-subtitle>
@@ -156,6 +172,7 @@ import { getExpectedSize } from '@/util/size'
 import { swrvGet } from '@/util/swrvGet'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 import ModLabels from './ModLabels.vue'
+import { useContextMenu } from '@/composables/contextMenu'
 
 const props = defineProps<{
   item: Mod
@@ -182,6 +199,7 @@ const title = ref(undefined as undefined | string)
 const description = ref(undefined as undefined | string)
 const downloadCount = ref(undefined as undefined | number)
 const followerCount = ref(undefined as undefined | number)
+const { open } = useContextMenu()
 
 watch(() => props.item, (newMod) => {
   if (newMod) {
@@ -223,11 +241,27 @@ const { provideRuntime } = injection(kInstanceModsContext)
 const { t } = useI18n()
 const tooltip = computed(() => props.hasUpdate ? t('mod.hasUpdate') : props.item.description || props.item.title)
 const { isCompatible, compatibility } = useModCompatibility(computed(() => props.item.installed[0]?.dependencies || []), provideRuntime)
-const { uninstall } = useService(InstanceModsServiceKey)
+const { uninstall, disable, enable } = useService(InstanceModsServiceKey)
 const { path } = injection(kInstance)
 const contextMenuItems = useModItemContextMenuItems(computed(() => props.item.installed?.[0] || props.item.files?.[0]), () => {
   if (props.item.installed) {
     uninstall({ path: path.value, mods: props.item.installed.map(i => i.resource) })
   }
-}, () => {})
+}, () => {}, () => {
+  if (props.item.installed.length > 0) {
+    if (props.item.installed[0].enabled) {
+      disable({ path: path.value, mods: props.item.installed.map(i => i.resource) })
+    } else {
+      enable({ path: path.value, mods: props.item.installed.map(i => i.resource) })
+    }
+  }
+})
+const onSettingClick = (event: MouseEvent) => {
+  const button = event.target as any // Get the button element
+  const rect = button.getBoundingClientRect() // Get the position of the button
+  const bottomLeftX = rect.left // X-coordinate of the bottom-left corner
+  const bottomLeftY = rect.bottom // Y-coordinate of the bottom-left corner
+
+  open(bottomLeftX, bottomLeftY, contextMenuItems.value)
+}
 </script>
