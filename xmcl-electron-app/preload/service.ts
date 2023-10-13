@@ -95,15 +95,15 @@ async function receive(_result: any, states: Record<string, WeakRef<MutableState
     states[id] = new WeakRef(state)
 
     queueMicrotask(() => {
-    if (pendingCommits[id]) {
-      for (const mutation of pendingCommits[id]) {
-        // state[mutation.type]?.(mutation.payload);
-        (state as any)[kEmitter].emit(mutation.type, mutation.payload);
-        (state as any)[kEmitter].emit('*', mutation.type, mutation.payload)
+      if (pendingCommits[id]) {
+        for (const mutation of pendingCommits[id]) {
+          // state[mutation.type]?.(mutation.payload);
+          (state as any)[kEmitter].emit(mutation.type, mutation.payload);
+          (state as any)[kEmitter].emit('*', mutation.type, mutation.payload)
+        }
+        delete pendingCommits[id]
       }
-      delete pendingCommits[id]
-    }
-  })
+    })
 
     return state
   }
@@ -117,12 +117,12 @@ function createServiceChannels(): ServiceChannels {
     ipcRenderer.invoke('deref', id)
     console.log(`deref ${id}`)
   })
-  const servicesEmitter = new Map<ServiceKey<any>, EventEmitter>()
+  const servicesEmitters = new Map<ServiceKey<any>, WeakRef<EventEmitter>>()
   const states: Record<string, WeakRef<MutableState<object>>> = {}
   const pendingCommits: Record<string, { type: string; payload: any }[]> = {}
 
   ipcRenderer.on('service-event', (_, { service, event, args }) => {
-    const emitter = servicesEmitter.get(service)
+    const emitter = servicesEmitters.get(service)?.deref()
     if (emitter) {
       emitter.emit(event, ...args)
     }
@@ -144,22 +144,17 @@ function createServiceChannels(): ServiceChannels {
   })
 
   return {
-    // deref(state) {
-    //   if (typeof state !== 'object' || !state) {
-    //     return
-    //   }
-    //   const emitter = (states[state.id] as any)[kEmitter] as EventEmitter
-    //   if (emitter) {
-    //     emitter.removeAllListeners()
-    //   }
-    //   delete states[state.id]
-    //   ipcRenderer.invoke('deref', state.id)
-    // },
     open(serviceKey) {
-      if (!servicesEmitter.has(serviceKey)) {
-        servicesEmitter.set(serviceKey, new EventEmitter())
+      const getEmitter = () => {
+        let emitter = servicesEmitters.get(serviceKey)?.deref()
+        if (!emitter) {
+          emitter = new EventEmitter()
+          servicesEmitters.set(serviceKey, new WeakRef(emitter))
+        }
+        return emitter
       }
-      const emitter = servicesEmitter.get(serviceKey)!
+
+      const emitter = getEmitter()
       return {
         key: serviceKey,
         on(channel: any, listener: any) {
