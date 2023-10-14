@@ -5,6 +5,7 @@
     style="width: 100%"
     :search="search"
     :items="files"
+    item-key="path"
     :open="opened"
     :selectable="selectable"
     open-on-click
@@ -125,6 +126,7 @@ function getDescription(item: InstanceFileNode<any>) {
 }
 watch(files, () => {
   opened.value = []
+  console.log(files.value)
 })
 </script>
 
