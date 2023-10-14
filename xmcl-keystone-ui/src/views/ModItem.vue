@@ -156,6 +156,9 @@
 </template>
 
 <script lang="ts" setup>
+import unknownServer from '@/assets/unknown_server.png'
+import { useService } from '@/composables'
+import { kInstance } from '@/composables/instance'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { useModCompatibility } from '@/composables/modCompatibility'
 import { useModItemContextMenuItems } from '@/composables/modContextMenu'
@@ -163,9 +166,9 @@ import { vContextMenu } from '@/directives/contextMenu'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { injection } from '@/util/inject'
 import { Mod } from '@/util/mod'
-import ModLabels from './ModLabels.vue'
-import unknownServer from '@/assets/unknown_server.png'
 import { getExpectedSize } from '@/util/size'
+import { InstanceModsServiceKey } from '@xmcl/runtime-api'
+import ModLabels from './ModLabels.vue'
 
 const props = defineProps<{
   item: Mod
@@ -189,9 +192,11 @@ const { provideRuntime } = injection(kInstanceModsContext)
 const { t } = useI18n()
 const tooltip = computed(() => props.hasUpdate ? t('mod.hasUpdate') : props.item.description || props.item.title)
 const { isCompatible, compatibility } = useModCompatibility(computed(() => props.item.installed[0]?.dependencies || []), provideRuntime)
+const { uninstall } = useService(InstanceModsServiceKey)
+const { path } = injection(kInstance)
 const contextMenuItems = useModItemContextMenuItems(computed(() => props.item.installed?.[0] || props.item.files?.[0]), () => {
-  // if (props.item.installed?.[0]) {
-  //   uninstall({ path: path.value, mods: [props.item.installed.resource] })
-  // }
+  if (props.item.installed) {
+    uninstall({ path: path.value, mods: props.item.installed.map(i => i.resource) })
+  }
 }, () => {})
 </script>
