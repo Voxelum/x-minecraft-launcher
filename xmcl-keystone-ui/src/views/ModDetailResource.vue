@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Mod, ModFile } from '@/util/mod'
-import ModDetail, { ExternalResource, ModDetailData } from './ModDetail.vue'
+import ModDetail, { ExternalResource, ModDetailData, Info } from './ModDetail.vue'
 import { ModVersion } from './ModDetailVersion.vue'
 import { useService } from '@/composables'
 import { InstanceModsServiceKey, PartialResourceHash, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
@@ -53,10 +53,10 @@ watch(installedVersions, (v) => {
 
 const { t } = useI18n()
 const model = computed(() => {
-  const file = props.files.find(f => f.modId === selectedVersion.value?.id)
+  const file = props.files.find(f => f.path === selectedVersion.value?.id)
 
   const externals = computed(() => {
-    const file = props.files.find(f => f.modId === selectedVersion.value?.id)
+    const file = props.files.find(f => f.path === selectedVersion.value?.id)
     const result: ExternalResource[] = []
     if (file?.links.home) {
       result.push({
@@ -90,6 +90,25 @@ const model = computed(() => {
     return result
   })
 
+  const info = computed(() => {
+    const result: Info[] = []
+    if (!file) return []
+    if (file.license) {
+      result.push({ icon: 'description', name: t('modrinth.license'), value: file.license.name, url: file.license.url })
+    }
+    const resource = file.resource
+    result.push({
+      icon: '123',
+      name: t('fileDetail.fileSize'),
+      value: resource.size.toString(),
+    }, {
+      icon: 'tag',
+      name: t('fileDetail.hash'),
+      value: resource.hash,
+    })
+    return result
+  })
+
   const result: ModDetailData = reactive({
     id: props.mod.id,
     icon: props.mod.icon,
@@ -97,7 +116,7 @@ const model = computed(() => {
     description: props.mod.description,
     categories: [],
     externals: externals.value,
-    info: computed(() => file?.license ? [{ icon: 'description', name: t('modrinth.license'), value: file.license.name, url: file.license.url }] : []),
+    info,
     galleries: [],
     author: computed(() => file?.authors.join(', ') ?? ''),
     downloadCount: 0,

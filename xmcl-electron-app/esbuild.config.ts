@@ -18,7 +18,7 @@ const config = {
   assetNames: '[name]',
   entryNames: '[dir]/[name]',
   format: 'cjs',
-  sourcemap: true,
+  sourcemap: 'inline',
   minifyWhitespace: process.env.NODE_ENV === 'production',
   minifySyntax: process.env.NODE_ENV === 'production',
   treeShaking: true,

@@ -68,7 +68,7 @@
         >
           <div class="flex items-end gap-2">
             <v-btn
-              v-if="selectedInstalled"
+              v-if="selectedInstalled && !noEnabled"
               :disabled="updating"
               small
               plain
@@ -437,14 +437,14 @@
           <v-subheader>
             {{ t('modrinth.technicalInformation') }}
           </v-subheader>
-          <div class="grid grid-cols-1 gap-1 gap-y-3">
+          <div class="grid grid-cols-1 gap-1 gap-y-3 overflow-auto overflow-y-hidden">
             <div
               v-for="item of detail.info"
               :key="item.name"
               class="item"
             >
               <v-icon>{{ item.icon }}</v-icon>
-              <div>
+              <div class="overflow-x-auto overflow-y-hidden">
                 <span>{{ item.name }}</span>
                 <a
                   v-if="item.url"
@@ -452,12 +452,27 @@
                 >
                   {{ item.value }}
                 </a>
-                <span
+                <v-chip
                   v-else
-                  class="select-text"
+                  v-shared-tooltip="item.value"
+                  v-ripple
+                  color="grey darken-4"
+                  class="cursor-pointer"
+                  small
+                  @click="onInfoClicked(item.value)"
                 >
-                  {{ item.value }}
-                </span>
+                  <span
+                    class=" select-text overflow-hidden overflow-ellipsis"
+                  >
+                    {{ item.value }}
+                  </span>
+                  <v-icon
+                    x-small
+                    right
+                  >
+                    content_copy
+                  </v-icon>
+                </v-chip>
               </div>
             </div>
           </div>
@@ -474,6 +489,7 @@ import { injection } from '@/util/inject'
 import unknownServer from '@/assets/unknown_server.png'
 import Hint from '@/components/Hint.vue'
 import { getExpectedSize } from '@/util/size'
+import { vSharedTooltip } from '@/directives/sharedTooltip'
 
 const props = defineProps<{
   detail: ModDetailData
@@ -487,6 +503,7 @@ const props = defineProps<{
   selectedInstalled: boolean
   curseforgeBody?: boolean
   hasInstalledVersion: boolean
+  noEnabled?: boolean
   hasMore: boolean
 }>()
 
@@ -604,6 +621,10 @@ const onInstall = () => {
   }
 }
 
+const onInfoClicked = (value: string) => {
+  navigator.clipboard.writeText(value)
+}
+
 const onScroll = (e: Event) => {
   const t = e.target as HTMLElement
   if (t.scrollTop + t.clientHeight >= t.scrollHeight && tab.value === 3) {
@@ -622,7 +643,7 @@ const onScroll = (e: Event) => {
 </style>
 <style scoped>
 .item {
-  @apply flex items-center gap-2;
+  @apply flex items-center gap-2 overflow-x-auto overflow-y-hidden w-full;
 }
 
 .item .v-icon {

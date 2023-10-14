@@ -8,9 +8,10 @@ export function swrvGetCache<T>(key: string, cache: SWRVCache<any>): T | undefin
   }
 }
 
-export async function swrvGet<T>(key: string, fetcher: () => Promise<T>,
+export async function swrvGet<T>(key: string, fetcher: (abortSignal?: AbortSignal) => Promise<T>,
   cache: SWRVCache<any>,
   dedupingInterval: number,
+  options?: { abortSignal?: AbortSignal; ttl?: number },
 ): Promise<T> {
   const cacheItem = cache?.get(key)
   const newData = cacheItem?.data
@@ -25,7 +26,7 @@ export async function swrvGet<T>(key: string, fetcher: () => Promise<T>,
       return newData.data
     }
   }
-  const result = await mutate(key, fetcher(), cache)
+  const result = await mutate(key, fetcher(options?.abortSignal), cache, options?.ttl)
   if (result.error) {
     throw result.error
   }

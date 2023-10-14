@@ -305,6 +305,9 @@ feedback:
     Enter the feedback QQ group and direct talk with authors. Group Number:
     {number}
   qqEnterGroup: Join
+fileDetail:
+  fileSize: File Size
+  hash: Hash
 filter: Filter
 finish: Finish
 forgeConfig:

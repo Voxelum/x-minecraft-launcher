@@ -322,6 +322,9 @@ feedback:
   qq: QQ 群
   qqDescription: 加入反馈群直接和作者聊聊吧，群号 {number}
   qqEnterGroup: 加群
+fileDetail:
+  fileSize: 文件大小
+  hash: 哈希值
 filter: 检索
 finish: 完成
 forgeConfig:

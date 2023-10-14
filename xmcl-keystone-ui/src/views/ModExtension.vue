@@ -139,10 +139,10 @@
         <div
           class="v-badge__badge primary static ml-1 w-[unset]"
         >
-          {{ mods.length + curseforgeCount + modrinthCount }}
+          {{ cachedMods.length + curseforgeCount + modrinthCount }}
         </div>
       </v-tab>
-      <v-tab>
+      <v-tab :disabled="cachedMods.length === 0">
         <v-icon left>
           storage
         </v-icon>
@@ -150,10 +150,10 @@
         <div
           class="v-badge__badge primary static ml-1 w-[unset]"
         >
-          {{ mods.length }}
+          {{ cachedMods.length }}
         </div>
       </v-tab>
-      <v-tab :disabled="!curseforge || curseforge.data.length === 0">
+      <v-tab :disabled="curseforge.length === 0">
         <v-icon left>
           $vuetify.icons.curseforge
         </v-icon>
@@ -164,7 +164,7 @@
           {{ curseforgeCount }}
         </div>
       </v-tab>
-      <v-tab :disabled="!modrinth || modrinth.hits.length === 0">
+      <v-tab :disabled="modrinth.length === 0">
         <v-icon left>
           $vuetify.icons.modrinth
         </v-icon>
@@ -200,10 +200,10 @@ const _keyword = computed({
 })
 
 const { runtime: version } = injection(kInstance)
-const { modrinth, curseforge, mods, modLoaderFilters } = injection(kModsSearch)
+const { modrinth, curseforge, cachedMods, modLoaderFilters } = injection(kModsSearch)
 const { tab } = injection(kMods)
-const curseforgeCount = computed(() => curseforge.value ? curseforge.value.pagination.totalCount : 0)
-const modrinthCount = computed(() => modrinth.value ? modrinth.value.total_hits : 0)
+const curseforgeCount = computed(() => curseforge.value ? curseforge.value.length : 0)
+const modrinthCount = computed(() => modrinth.value ? modrinth.value.length : 0)
 const { t } = useI18n()
 
 const searchTextField = ref(undefined as any | undefined)

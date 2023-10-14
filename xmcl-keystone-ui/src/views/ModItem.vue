@@ -7,9 +7,7 @@
     @click="emit('click')"
   >
     <v-list-item-avatar v-if="!selectionMode">
-      <v-img
-        :src="item.icon || unknownServer"
-      />
+      <v-img :src="icon || item.icon || unknownServer" />
     </v-list-item-avatar>
     <v-list-item-action v-else>
       <v-checkbox
@@ -27,14 +25,12 @@
         :offset-y="5"
       >
         <v-list-item-title>
-          {{ item.title }}
+          {{ title || item.title }}
         </v-list-item-title>
       </v-badge>
-      <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
+      <v-list-item-subtitle>{{ description || item.description }}</v-list-item-subtitle>
       <v-list-item-subtitle class="invisible-scroll flex flex-grow-0 gap-2">
-        <template
-          v-if="item.installed && (item.installed?.[0]?.tags.length + compatibility.length) > 0"
-        >
+        <template v-if="item.installed && (item.installed?.[0]?.tags.length + compatibility.length) > 0">
           <ModLabels
             :compatibility="compatibility"
             :tags="item.installed[0].tags"
@@ -44,16 +40,12 @@
           <div>
             {{ item.author }}
           </div>
-          <template
-            v-if="item.downloadCount"
-          >
+          <template v-if="downloadCount || item.downloadCount">
             <v-divider
               v-if="item.author"
               vertical
             />
-            <div
-              class="flex flex-grow-0 "
-            >
+            <div class="flex flex-grow-0 ">
               <v-icon
                 class="material-icons-outlined"
                 left
@@ -61,16 +53,12 @@
               >
                 file_download
               </v-icon>
-              {{ getExpectedSize(item.downloadCount, '' ) }}
+              {{ getExpectedSize(downloadCount || item.downloadCount || 0, '') }}
             </div>
           </template>
-          <template
-            v-if="item.followerCount"
-          >
+          <template v-if="followerCount || item.followerCount">
             <v-divider vertical />
-            <div
-              class="flex flex-grow-0"
-            >
+            <div class="flex flex-grow-0">
               <v-icon
                 left
                 small
@@ -79,34 +67,31 @@
               >
                 star_rate
               </v-icon>
-              {{ item.followerCount }}
+              {{ followerCount || item.followerCount }}
             </div>
           </template>
-          <template
-            v-if="item.modrinth || item.modrinthProjectId"
-          >
-            <v-divider
-              vertical
-            />
+          <template v-if="item.modrinth || item.modrinthProjectId">
+            <v-divider vertical />
             <div>
-              <v-icon
-                small
-              >
+              <v-icon small>
                 $vuetify.icons.modrinth
               </v-icon>
             </div>
           </template>
-          <template
-            v-if="item.curseforge || item.curseforgeProjectId"
-          >
-            <v-divider
-              vertical
-            />
+          <template v-if="item.curseforge || item.curseforgeProjectId">
+            <v-divider vertical />
             <div>
-              <v-icon
-                small
-              >
+              <v-icon small>
                 $vuetify.icons.curseforge
+              </v-icon>
+            </div>
+          </template>
+          {{ item.files }}
+          <template v-if="item.files && item.files.length > 0">
+            <v-divider vertical />
+            <div>
+              <v-icon small>
+                storage
               </v-icon>
             </div>
           </template>
@@ -144,9 +129,7 @@
           :src="'image://builtin/quilt'"
         />
       </v-avatar>
-      <v-avatar
-        size="30px"
-      >
+      <v-avatar size="30px">
         <v-icon>
           {{ item.modrinth ? '$vuetify.icons.modrinth' : item.curseforge ? '$vuetify.icons.curseforge' : 'inventory_2' }}
         </v-icon>
@@ -162,11 +145,15 @@ import { kInstance } from '@/composables/instance'
 import { kInstanceModsContext } from '@/composables/instanceMods'
 import { useModCompatibility } from '@/composables/modCompatibility'
 import { useModItemContextMenuItems } from '@/composables/modContextMenu'
+import { kSWRVConfig } from '@/composables/swrvConfig'
 import { vContextMenu } from '@/directives/contextMenu'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
 import { Mod } from '@/util/mod'
+import { getModrinthProjectKey } from '@/util/modrinth'
 import { getExpectedSize } from '@/util/size'
+import { swrvGet } from '@/util/swrvGet'
 import { InstanceModsServiceKey } from '@xmcl/runtime-api'
 import ModLabels from './ModLabels.vue'
 
@@ -188,6 +175,50 @@ const isChecked = computed({
     emit('checked', v)
   },
 })
+
+const config = injection(kSWRVConfig)
+const icon = ref(undefined as undefined | string)
+const title = ref(undefined as undefined | string)
+const description = ref(undefined as undefined | string)
+const downloadCount = ref(undefined as undefined | number)
+const followerCount = ref(undefined as undefined | number)
+
+watch(() => props.item, (newMod) => {
+  if (newMod) {
+    icon.value = undefined
+    title.value = undefined
+    description.value = undefined
+    downloadCount.value = undefined
+    followerCount.value = undefined
+
+    if (!newMod.curseforge && !newMod.modrinth) {
+      const { curseforgeProjectId, modrinthProjectId } = newMod
+      if (modrinthProjectId) {
+        swrvGet(getModrinthProjectKey(modrinthProjectId), () => clientModrinthV2.getProject(modrinthProjectId),
+          config.cache,
+          config.dedupingInterval, { ttl: config.ttl })
+          .then((project) => {
+            icon.value = project.icon_url
+            title.value = project.title
+            description.value = project.description
+            downloadCount.value = project.downloads
+            followerCount.value = project.followers
+          })
+      } else if (curseforgeProjectId) {
+        swrvGet(`/curseforge/${curseforgeProjectId}`, () => clientCurseforgeV1.getMod(curseforgeProjectId),
+          config.cache,
+          config.dedupingInterval, { ttl: config.ttl })
+          .then((project) => {
+            icon.value = project.logo?.url
+            title.value = project.name
+            description.value = project.summary
+            downloadCount.value = project.downloadCount
+            followerCount.value = project.thumbsUpCount
+          })
+      }
+    }
+  }
+}, { immediate: true })
 const { provideRuntime } = injection(kInstanceModsContext)
 const { t } = useI18n()
 const tooltip = computed(() => props.hasUpdate ? t('mod.hasUpdate') : props.item.description || props.item.title)

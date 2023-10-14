@@ -3,6 +3,7 @@ import CurseforgeIcon from '@/components/CurseforgeIcon.vue'
 import FabricIcon from '@/components/FabricIcon.vue'
 import QuiltIcon from '@/components/QuiltIcon.vue'
 import ForgeIcon from '@/components/ForgeIcon.vue'
+import MinecraftIcon from '@/components/MinecraftIcon.vue'
 import FTBIcon from '@/components/FTBIcon.vue'
 import JarFileIcon from '@/components/JarFileIcon.vue'
 import ModrinthIcon from '@/components/ModrinthIcon.vue'
@@ -33,6 +34,9 @@ export const vuetify = new Vuetify({
       },
       curseforge: {
         component: CurseforgeIcon,
+      },
+      minecraft: {
+        component: MinecraftIcon,
       },
       zip: {
         component: ZipFileIcon,

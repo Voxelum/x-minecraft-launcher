@@ -1,4 +1,7 @@
-import { kFilterCombobox, kSemaphores, useExternalRoute, useFilterComboboxData, useI18nSync, useSemaphores, useTheme, useThemeSync } from '@/composables'
+import { kFilterCombobox, kSemaphores, useExternalRoute, useFilterComboboxData, useI18nSync, useSemaphores, useThemeSync } from '@/composables'
+import { kBackground, useBackground } from '@/composables/background'
+import { kColorTheme, useColorTheme } from '@/composables/colorTheme'
+import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
 import { kExceptionHandlers, useExceptionHandlers } from '@/composables/exception'
 import { kImageDialog, useImageDialog } from '@/composables/imageDialog'
 import { kInstance, useInstance } from '@/composables/instance'
@@ -13,9 +16,12 @@ import { kInstanceVersion, useInstanceVersion } from '@/composables/instanceVers
 import { kInstanceVersionDiagnose, useInstanceVersionDiagnose } from '@/composables/instanceVersionDiagnose'
 import { kInstances, useInstances } from '@/composables/instances'
 import { kJavaContext, useJavaContext } from '@/composables/java'
+import { kLaunchStatus, useLaunchStatus } from '@/composables/launch'
 import { kLaunchTask, useLaunchTask } from '@/composables/launchTask'
 import { kModsSearch, useModsSearch } from '@/composables/modSearch'
+import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
 import { kModpacks, useModpacks } from '@/composables/modpack'
+import { kMods, useMods } from '@/composables/mods'
 import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
 import { kPeerState, usePeerState } from '@/composables/peers'
 import { kInstanceSave, useInstanceSaves } from '@/composables/save'
@@ -27,18 +33,10 @@ import { kUserContext, useUserContext } from '@/composables/user'
 import { kUserDiagnose, useUserDiagnose } from '@/composables/userDiagnose'
 import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
 import { kVuetify } from '@/composables/vuetify'
+import { kYggdrasilServices, useYggdrasilServices } from '@/composables/yggrasil'
+import { vuetify } from '@/vuetify'
 import 'virtual:windi.css'
 import { provide } from 'vue'
-import { kDropHandler, useDropHandler } from '@/composables/dropHandler'
-import { kColorTheme, useColorTheme } from '@/composables/colorTheme'
-import { kBackground, useBackground } from '@/composables/background'
-import { kLaunchStatus, useLaunchStatus } from '@/composables/launch'
-import { vuetify } from '@/vuetify'
-import { kYggdrasilServices, useYggdrasilServices } from '@/composables/yggrasil'
-import { useDomainResources } from '@/composables/resources'
-import { ResourceDomain } from '@xmcl/runtime-api'
-import { kMods, useMods } from '@/composables/mods'
-import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
 
 export default defineComponent({
   setup(props, ctx) {
@@ -70,9 +68,8 @@ export default defineComponent({
     const files = useInstanceFiles(instance.path)
     const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionHeader)
 
-    const modResources = useDomainResources(ResourceDomain.Mods)
-    const modsSearch = useModsSearch(modResources.resources, instance.runtime, instanceMods.mods)
-    const mods = useMods(modsSearch.keyword, modsSearch.modrinth, modsSearch.curseforge, modsSearch.mods, modsSearch.existedMods)
+    const modsSearch = useModsSearch(instance.runtime, instanceMods.mods)
+    const mods = useMods(modsSearch.keyword, modsSearch.modrinth, modsSearch.curseforge, modsSearch.cachedMods, modsSearch.instanceMods)
     const modUpgrade = useModUpgrade(instance.path, instance.runtime, mods.installed)
 
     const versionDiagnose = useInstanceVersionDiagnose(instance.runtime, instanceVersion.resolvedVersion, localVersions.versions)
