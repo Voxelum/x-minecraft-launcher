@@ -6,6 +6,7 @@ import { join, resolve } from 'path'
 import { WriteStream, createWriteStream, ensureDir } from 'fs-extra'
 import { IS_DEV } from '../constant'
 import { kLogRoot } from '../entities/log'
+import { isSystemError } from '../util/error'
 
 function formatMsg(message: any, options: any[]) { return options.length !== 0 ? format(message, ...options.map(filterSensitiveData)) : format(message) }
 function baseTransform(tag: string) { return new Transform({ transform(c, e, cb) { cb(undefined, `[${tag}] [${new Date().toLocaleString()}] ${c}`) } }) }
@@ -82,15 +83,30 @@ export const pluginLogConsumer: LauncherAppPlugin = (app) => {
   })
 
   if (IS_DEV) {
-    main.entries.log.on('data', (b) => {
+    let pipeIsBroken = false
+    const capturePipeError = (f: (...args: any[]) => void) => (...args: any[]) => {
+      try {
+        f(...args)
+      } catch (e) {
+        if (isSystemError(e)) {
+          if (e.code === 'EPIPE') {
+            pipeIsBroken = true
+          }
+        }
+      }
+    }
+    main.entries.log.on('data', capturePipeError((b) => {
+      if (pipeIsBroken) { return }
       console.log(b.toString())
-    })
-    main.entries.warn.on('data', (b) => {
+    }))
+    main.entries.warn.on('data', capturePipeError((b) => {
+      if (pipeIsBroken) { return }
       console.warn(b.toString())
-    })
-    main.entries.error.on('data', (b) => {
+    }))
+    main.entries.error.on('data', capturePipeError((b) => {
+      if (pipeIsBroken) { return }
       console.error(b.toString())
-    })
+    }))
   }
 
   const init = async () => {
