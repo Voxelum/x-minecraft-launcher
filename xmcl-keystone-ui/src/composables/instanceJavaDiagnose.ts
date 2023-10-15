@@ -16,16 +16,20 @@ export function useInstanceJavaDiagnose(all: Ref<JavaRecord[]>, java: Ref<JavaRe
         description: t('diagnosis.missingJava.message'),
       }
     }
-    if (javaRecommendation.value) {
-      return {
-        title: t('diagnosis.incompatibleJava.name', { version: javaRecommendation.value.version, javaVersion: javaRecommendation.value.requirement }),
-        description: t('diagnosis.incompatibleJava.message'),
-      }
-    }
     if (!java.value) {
       return {
         title: t('diagnosis.missingJava.name'),
         description: t('diagnosis.missingJava.message'),
+      }
+    }
+    if (javaRecommendation.value) {
+      return {
+        title: t('diagnosis.incompatibleJava.name', { version: javaRecommendation.value.version, javaVersion: javaRecommendation.value.requirement }),
+        description: t('diagnosis.incompatibleJava.message'),
+        color: 'warning',
+        onClick: () => {
+          showJavaDialog()
+        },
       }
     }
   })

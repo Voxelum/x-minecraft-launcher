@@ -4,7 +4,7 @@
     :persistent="isMissingJava"
     width="600"
   >
-    <v-card>
+    <v-card class="rounded-lg">
       <v-toolbar
         tabs
         color="orange en-3"
@@ -12,103 +12,98 @@
       >
         <v-toolbar-title>{{ title }}</v-toolbar-title>
       </v-toolbar>
-      <v-window
-        class="p-4"
+      <v-card-text class="flex flex-col gap-2 p-4">
+        <div>
+          {{ t('HomeJavaIssueDialog.recommendedVersionHint', { version: recommendation?.version, range: recommendation?.requirement }) }}
+          {{ hint }}
+        </div>
+
+        <div
+          v-if="needDownloadHint && !isMissingJava"
+          class="border-l-3 pl-2 text-sm italic text-orange-400"
+        >
+          {{ t('HomeJavaIssueDialog.needDownloadHint') }}
+        </div>
+        <div
+          v-else-if="recommendation?.recommendedVersion && recommendation?.recommendedLevel === 0"
+          class="border-l-3 pl-2 text-sm italic text-orange-400"
+        >
+          {{ t('HomeJavaIssueDialog.selectMatchedHint') }}
+        </div>
+        <div
+          v-else-if="recommendation?.recommendedVersion && recommendation?.recommendedLevel === 1"
+          class=" border-l-3 pl-2 text-sm italic text-orange-400"
+        >
+          {{ t('HomeJavaIssueDialog.selectSecondaryHint') }}
+        </div>
+      </v-card-text>
+
+      <v-list
+        nav
+        class="w-full px-4 pb-4"
       >
-        <v-window-item :value="0">
-          <v-card-text class="flex flex-col gap-2">
-            <div>
-              {{ t('HomeJavaIssueDialog.recommendedVersionHint', { version: recommendation?.version, range: recommendation?.requirement }) }}
-              {{ hint }}
-            </div>
+        <v-list-item
+          :color="recommendation?.recommendedLevel === 1 ? 'red' : recommendation?.recommendedLevel === 0 ? 'primary' : undefined"
+          :input-value="typeof recommendation?.recommendedLevel === 'number'"
+          :ripple="recommendation?.recommendedVersion"
+          :disabled="!recommendation?.recommendedVersion"
+          @click="selectLocalJava"
+        >
+          <v-list-item-content>
+            <v-list-item-title>{{ t('HomeJavaIssueDialog.optionSwitch.name', { version: recommendation?.recommendedVersion ? recommendation?.recommendedVersion.majorVersion : recommendation?.recommendedDownload ? recommendation?.recommendedDownload.majorVersion : '' }) }}</v-list-item-title>
+            <v-list-item-subtitle>{{ !recommendation?.recommendedVersion ? t('HomeJavaIssueDialog.optionSwitch.disabled', { version: recommendation?.recommendedDownload ? recommendation?.recommendedDownload.majorVersion : '' }) : t('HomeJavaIssueDialog.optionSwitch.message', { version: recommendation?.recommendedVersion.path }) }}</v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-icon v-if="!refreshing">
+              build
+            </v-icon>
+            <v-progress-circular
+              v-else
+              indeterminate
+              :size="24"
+            />
+          </v-list-item-action>
+        </v-list-item>
 
-            <div
-              v-if="needDownloadHint && !isMissingJava"
-              class="border-l-3 pl-2 text-sm italic text-orange-400"
-            >
-              {{ t('HomeJavaIssueDialog.needDownloadHint') }}
-            </div>
-            <div
-              v-else-if="recommendation?.recommendedVersion && recommendation?.recommendedLevel === 0"
-              class="border-l-3 pl-2 text-sm italic text-orange-400"
-            >
-              {{ t('HomeJavaIssueDialog.selectMatchedHint') }}
-            </div>
-            <div
-              v-else-if="recommendation?.recommendedVersion && recommendation?.recommendedLevel === 1"
-              class=" border-l-3 pl-2 text-sm italic text-orange-400"
-            >
-              {{ t('HomeJavaIssueDialog.selectSecondaryHint') }}
-            </div>
-          </v-card-text>
+        <v-list-item
+          v-if="recommendation?.recommendedDownload"
+          :color="recommendation?.recommendedLevel !== 0 ? 'success' : undefined"
+          :input-value="recommendation?.recommendedLevel !== 0"
+          :disabled="!recommendation?.recommendedDownload"
+          ripple
+          @click="downloadAndInstallJava"
+        >
+          <v-list-item-content>
+            <v-list-item-title>{{ t('HomeJavaIssueDialog.optionAutoDownload.name') }}</v-list-item-title>
+            <v-list-item-subtitle>{{ t('HomeJavaIssueDialog.optionAutoDownload.message', { version: recommendation?.recommendedDownload.majorVersion }) }}</v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-icon v-if="!downloadingJava">
+              build
+            </v-icon>
+            <v-progress-circular
+              v-else
+              indeterminate
+              :size="24"
+            />
+          </v-list-item-action>
+        </v-list-item>
 
-          <v-list
-            style="width: 100%"
-          >
-            <v-list-item
-              :color="recommendation?.recommendedLevel === 1 ? 'red' : recommendation?.recommendedLevel === 0 ? 'primary' : undefined"
-              :input-value="typeof recommendation?.recommendedLevel === 'number'"
-              :ripple="recommendation?.recommendedVersion"
-              :disabled="!recommendation?.recommendedVersion"
-              @click="selectLocalJava"
-            >
-              <v-list-item-content>
-                <v-list-item-title>{{ t('HomeJavaIssueDialog.optionSwitch.name', { version: recommendation?.recommendedVersion ? recommendation?.recommendedVersion.majorVersion : recommendation?.recommendedDownload ? recommendation?.recommendedDownload.majorVersion : '' }) }}</v-list-item-title>
-                <v-list-item-subtitle>{{ !recommendation?.recommendedVersion ? t('HomeJavaIssueDialog.optionSwitch.disabled', { version: recommendation?.recommendedDownload ? recommendation?.recommendedDownload.majorVersion : '' }) : t('HomeJavaIssueDialog.optionSwitch.message', { version: recommendation?.recommendedVersion.path }) }}</v-list-item-subtitle>
-              </v-list-item-content>
-              <v-list-item-action>
-                <v-icon v-if="!refreshing">
-                  build
-                </v-icon>
-                <v-progress-circular
-                  v-else
-                  indeterminate
-                  :size="24"
-                />
-              </v-list-item-action>
-            </v-list-item>
-
-            <v-list-item
-              v-if="recommendation?.recommendedDownload"
-              :color="recommendation?.recommendedLevel !== 0 ? 'success' : undefined"
-              :input-value="recommendation?.recommendedLevel !== 0"
-              :disabled="!recommendation?.recommendedDownload"
-              ripple
-              @click="downloadAndInstallJava"
-            >
-              <v-list-item-content>
-                <v-list-item-title>{{ t('HomeJavaIssueDialog.optionAutoDownload.name') }}</v-list-item-title>
-                <v-list-item-subtitle>{{ t('HomeJavaIssueDialog.optionAutoDownload.message', { version: recommendation?.recommendedDownload.majorVersion }) }}</v-list-item-subtitle>
-              </v-list-item-content>
-              <v-list-item-action>
-                <v-icon v-if="!downloadingJava">
-                  build
-                </v-icon>
-                <v-progress-circular
-                  v-else
-                  indeterminate
-                  :size="24"
-                />
-              </v-list-item-action>
-            </v-list-item>
-
-            <v-list-item
-              color="red"
-              :ripple="!downloadingJava"
-              :disabled="downloadingJava"
-              @click="findLocalJava"
-            >
-              <v-list-item-content>
-                <v-list-item-title>{{ t('HomeJavaIssueDialog.optionSelectJava.name') }}</v-list-item-title>
-                <v-list-item-subtitle>{{ t('HomeJavaIssueDialog.optionSelectJava.message') }}</v-list-item-subtitle>
-              </v-list-item-content>
-              <v-list-item-action>
-                <v-icon>arrow_right</v-icon>
-              </v-list-item-action>
-            </v-list-item>
-          </v-list>
-        </v-window-item>
-      </v-window>
+        <v-list-item
+          color="red"
+          :ripple="!downloadingJava"
+          :disabled="downloadingJava"
+          @click="findLocalJava"
+        >
+          <v-list-item-content>
+            <v-list-item-title>{{ t('HomeJavaIssueDialog.optionSelectJava.name') }}</v-list-item-title>
+            <v-list-item-subtitle>{{ t('HomeJavaIssueDialog.optionSelectJava.message') }}</v-list-item-subtitle>
+          </v-list-item-content>
+          <v-list-item-action>
+            <v-icon>arrow_right</v-icon>
+          </v-list-item-action>
+        </v-list-item>
+      </v-list>
     </v-card>
   </v-dialog>
 </template>
