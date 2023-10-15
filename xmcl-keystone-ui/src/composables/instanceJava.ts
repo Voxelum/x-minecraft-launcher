@@ -36,7 +36,7 @@ export function useInstanceJava(instance: Ref<Instance>, version: Ref<InstanceRe
   const java = computed(() => data.value?.java)
   const recommendation = computed(() => data.value?.recomendation)
 
-  watch(all, () => {
+  watch([all, version, computed(() => instance.value.java)], () => {
     mutate()
   })
 

@@ -87,7 +87,7 @@ export function useLaunchButton() {
       return {
         icon: 'play_arrow',
         text: t('launch.launch'),
-        color: javaIssue.value ? 'primary' : 'primary lighten-2',
+        color: !javaIssue.value ? 'primary' : 'primary darken-1',
         right: true,
         menu: javaIssue.value ? [javaIssue.value] : [],
         onClick: () => {
