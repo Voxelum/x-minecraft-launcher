@@ -11,7 +11,7 @@ export function useModItemContextMenuItems(modFile: Ref<ModFile | undefined>, on
   const { showItemInDirectory } = useService(BaseServiceKey)
   const { searchInCurseforge, goModrinthProject, goCurseforgeProject, searchInModrinth, searchInMcWiki } = injection(kMarketRoute)
 
-  return computed(() => {
+  return () => {
     const file = modFile.value
     if (!file) return []
     const items: ContextMenuItem[] = [{
@@ -41,12 +41,15 @@ export function useModItemContextMenuItems(modFile: Ref<ModFile | undefined>, on
       onClick: onDelete,
       icon: 'delete',
       color: 'error',
-    }, {
-      onClick: onDisable,
-      text: file.enabled ? t('disable') + ' ' + file.name : t('enable') + ' ' + file.name,
-      color: 'grey',
-      icon: file.enabled ? 'flash_off' : 'flash_on',
     })
+    if (file.modId.toLowerCase() !== 'optifine') {
+      items.push({
+        onClick: onDisable,
+        text: file.enabled ? t('disable') + ' ' + file.name : t('enable') + ' ' + file.name,
+        color: 'grey',
+        icon: file.enabled ? 'flash_off' : 'flash_on',
+      })
+    }
     if (file.url) {
       const url = file.url
       items.push({
@@ -103,5 +106,5 @@ export function useModItemContextMenuItems(modFile: Ref<ModFile | undefined>, on
       })
     }
     return items
-  })
+  }
 }
