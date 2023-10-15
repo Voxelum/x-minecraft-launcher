@@ -16,6 +16,7 @@ export interface LaunchMenuItem {
   icon?: string
   rightIcon?: string
   color?: string
+  onClick?: () => void
 }
 
 export function useLaunchButton() {
@@ -56,14 +57,6 @@ export function useLaunchButton() {
         menu: [userIssue.value],
         onClick: () => fixUserIssue(),
       }
-    } else if (javaIssue.value) {
-      return {
-        icon: 'get_app',
-        text: t('install'),
-        color: 'blue',
-        menu: [javaIssue.value],
-        onClick: () => fixJavaIssue(),
-      }
     } else if (versionIssues.value.length > 0) {
       return {
         icon: 'get_app',
@@ -80,12 +73,23 @@ export function useLaunchButton() {
         menu: [filesIssue.value],
         onClick: () => fixInstanceFileIssue(),
       }
+    } else if (javaIssue.value && !javaIssue.value.onClick) {
+      return {
+        icon: 'get_app',
+        text: t('install'),
+        color: 'blue',
+        menu: [javaIssue.value],
+        onClick: () => {
+          fixJavaIssue()
+        },
+      }
     } else {
       return {
         icon: 'play_arrow',
         text: t('launch.launch'),
-        color: 'primary',
+        color: javaIssue.value ? 'primary' : 'primary lighten-2',
         right: true,
+        menu: javaIssue.value ? [javaIssue.value] : [],
         onClick: () => {
           if (launching.value) {
             showLaunchStatusDialog()

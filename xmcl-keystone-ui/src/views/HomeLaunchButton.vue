@@ -12,6 +12,7 @@
     <v-menu
       v-model="showMenu"
       offset-y
+      transition="scroll-y-transition"
       :top="inFoucsMode"
       :bottom="!inFoucsMode"
     >
