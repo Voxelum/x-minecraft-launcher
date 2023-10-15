@@ -1,6 +1,6 @@
 <template>
   <v-list-item
-    v-context-menu="contextMenuItems"
+    v-context-menu="getContextMenuItems"
     v-shared-tooltip="[tooltip, hasUpdate ? 'primary' : 'black']"
     :input-value="selected"
     link
@@ -28,20 +28,23 @@
           <span class="max-w-full overflow-hidden overflow-ellipsis">
             {{ title || item.title }}
           </span>
-          <div class="flex-grow" />
-          <v-btn
+          <template
             v-if="item.installed.length > 0"
-            x-small
-            icon
-            @click.stop="onSettingClick"
           >
-            <v-icon
-              class="v-list-item__subtitle"
-              size="15"
+            <div class="flex-grow" />
+            <v-btn
+              x-small
+              icon
+              @click.stop="onSettingClick"
             >
-              settings
-            </v-icon>
-          </v-btn>
+              <v-icon
+                class="v-list-item__subtitle"
+                size="15"
+              >
+                settings
+              </v-icon>
+            </v-btn>
+          </template>
         </v-list-item-title>
       </v-badge>
       <v-list-item-subtitle>{{ description || item.description }}</v-list-item-subtitle>
@@ -102,7 +105,6 @@
               </v-icon>
             </div>
           </template>
-          {{ item.files }}
           <template v-if="item.files && item.files.length > 0">
             <v-divider vertical />
             <div>
@@ -243,7 +245,7 @@ const tooltip = computed(() => props.hasUpdate ? t('mod.hasUpdate') : props.item
 const { isCompatible, compatibility } = useModCompatibility(computed(() => props.item.installed[0]?.dependencies || []), provideRuntime)
 const { uninstall, disable, enable } = useService(InstanceModsServiceKey)
 const { path } = injection(kInstance)
-const contextMenuItems = useModItemContextMenuItems(computed(() => props.item.installed?.[0] || props.item.files?.[0]), () => {
+const getContextMenuItems = useModItemContextMenuItems(computed(() => props.item.installed?.[0] || props.item.files?.[0]), () => {
   if (props.item.installed) {
     uninstall({ path: path.value, mods: props.item.installed.map(i => i.resource) })
   }
@@ -262,6 +264,6 @@ const onSettingClick = (event: MouseEvent) => {
   const bottomLeftX = rect.left // X-coordinate of the bottom-left corner
   const bottomLeftY = rect.bottom // Y-coordinate of the bottom-left corner
 
-  open(bottomLeftX, bottomLeftY, contextMenuItems.value)
+  open(bottomLeftX, bottomLeftY, getContextMenuItems())
 }
 </script>
