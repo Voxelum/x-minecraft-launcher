@@ -24,7 +24,7 @@ export function useInstanceJavaDiagnose(all: Ref<JavaRecord[]>, java: Ref<JavaRe
     }
     if (javaRecommendation.value) {
       return {
-        title: t('diagnosis.incompatibleJava.name', { version: javaRecommendation.value.version, javaVersion: javaRecommendation.value.requirement }),
+        title: t('diagnosis.incompatibleJava.name', { version: javaRecommendation.value.requirement, javaVersion: javaRecommendation.value.selectedJava?.version || '' }),
         description: t('diagnosis.incompatibleJava.message'),
         color: 'warning',
         onClick: () => {
