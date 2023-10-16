@@ -366,6 +366,10 @@ installForge:
   library: 检查库
   name: 安装 Forge
   postProcessing: 处理 Minecraft Jar 文件
+installLabyMod:
+  name: 安装 LabyMod
+  asset: 安装资源 {name}
+  json: 生成 {version} JSON
 installInstance:
   file: 更新/安装实例文件 {file}
   name: 更新/安装实例
@@ -493,6 +497,9 @@ java:
   refresh: 刷新本地 Java
   switchVersion: 已切换 Java 版本
   systemMemory: 当前系统内存
+labyMod:
+  disable: 不使用 LabyMod
+  empty: LabyMod 不支持当前 Minecraft
 launch:
   launch: 启动
 launchBlocked:
@@ -925,10 +932,9 @@ natType:
   symmetricNat: 对称 NAT
   symmetricUDPFirewall: 对称 UDP 防火墙
   unknown: 未知
-neoForgeVersion:
+neoForgedVersion:
   disable: 不使用 NeoForged
   empty: Neoforge 不支持 Minecraft {version}
-neoForgedVersion:
   name: NeoForged
 news:
   name: 新闻

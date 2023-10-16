@@ -1,6 +1,6 @@
 <template>
   <v-list
-    three-line
+    two-line
     subheader
     style="background: transparent; width: 100%"
   >
@@ -52,7 +52,10 @@
         </v-flex>
       </v-layout>
     </v-list-item>
-    <v-list-item v-if="showMinecraft">
+    <v-list-item
+      v-if="showMinecraft"
+      class="mt-4"
+    >
       <v-list-item-action class="self-center">
         <img
           :src="'image://builtin/minecraft'"
@@ -92,6 +95,48 @@
               hide-details
               :readonly="true"
               @click:append="on.click($event);"
+              v-on="on"
+            />
+          </template>
+        </VersionMenu>
+      </v-list-item-action>
+    </v-list-item>
+    <v-list-item>
+      <v-list-item-action class="self-center">
+        <img
+          :src="'image://builtin/labymod'"
+          width="40px"
+        >
+      </v-list-item-action>
+      <v-list-item-content>
+        <v-list-item-title>LabyMod</v-list-item-title>
+        <v-list-item-subtitle>
+          <a
+            target="browser"
+            href="https://www.labymod.net"
+          >https://www.labymod.net</a>
+        </v-list-item-subtitle>
+      </v-list-item-content>
+      <v-list-item-action>
+        <VersionMenu
+          :is-clearable="true"
+          :items="labyModItems"
+          :clear-text="t('labyMod.disable')"
+          :empty-text="t('labyMod.empty')"
+          :has-snapshot="false"
+          :refreshing="refreshingLabyMod"
+          @select="onSelectLabyMod"
+        >
+          <template #default="{ on }">
+            <v-text-field
+              :value="content.runtime.labyMod"
+              outlined
+              append-icon="arrow_drop_down"
+              hide-details
+              persistent-hint
+              :readonly="true"
+              @click:append="on.click($event);"
+              @click="refreshLabyMod()"
               v-on="on"
             />
           </template>
@@ -312,7 +357,7 @@
 <script lang=ts setup>
 import { kInstanceCreation } from '../composables/instanceCreation'
 import { kJavaContext } from '../composables/java'
-import { VersionMenuItem, useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useOptifineVersionList, useQuiltVersionList } from '../composables/versionList'
+import { VersionMenuItem, useFabricVersionList, useForgeVersionList, useLabyModVersionList, useMinecraftVersionList, useOptifineVersionList, useQuiltVersionList } from '../composables/versionList'
 import VersionMenu from './VersionMenu.vue'
 
 import { injection } from '@/util/inject'
@@ -338,6 +383,7 @@ const { items: forgeItems, canShowBuggy, recommendedOnly, refresh: refreshForge,
 const { items: fabricItems, showStableOnly, refreshing: refreshingFabric } = useFabricVersionList(minecraft, computed(() => content.runtime.fabricLoader ?? ''), versions)
 const { items: quiltItems, refresh: refreshQuilt, refreshing: refreshingQuilt } = useQuiltVersionList(minecraft, computed(() => content.runtime.quiltLoader ?? ''), versions)
 const { items: optifineItems, refreshing: refreshingOptifine } = useOptifineVersionList(minecraft, computed(() => content.runtime.forge ?? ''), computed(() => content.runtime.optifine ?? ''), versions)
+const { items: labyModItems, refresh: refreshLabyMod, refreshing: refreshingLabyMod } = useLabyModVersionList(minecraft, computed(() => content.runtime.labyMod ?? ''), versions)
 
 recommendedOnly.value = false
 
@@ -372,6 +418,7 @@ function onSelectLocalVersion(version: string) {
     runtime.fabricLoader = v.fabric
     runtime.quiltLoader = v.quilt
     runtime.optifine = v.fabric
+    runtime.labyMod = v.labyMod
   }
 }
 function onSelectForge(version: string) {
@@ -381,6 +428,7 @@ function onSelectForge(version: string) {
     if (version) {
       runtime.fabricLoader = ''
       runtime.quiltLoader = ''
+      runtime.labyMod = ''
       runtime.optifine = ''
       content.version = ''
     }
@@ -393,6 +441,7 @@ function onSelectFabric(version: string) {
       runtime.forge = ''
       runtime.quiltLoader = ''
       runtime.optifine = ''
+      runtime.labyMod = ''
       content.version = ''
     }
     runtime.fabricLoader = version
@@ -405,6 +454,7 @@ function onSelectQuilt(version: string) {
       runtime.forge = runtime.fabricLoader = ''
       runtime.quiltLoader = version
       runtime.optifine = ''
+      runtime.labyMod = ''
       content.version = ''
     }
   }
@@ -415,8 +465,21 @@ function onSelectOptifine(version: string) {
     if (version) {
       runtime.quiltLoader = runtime.fabricLoader = ''
       runtime.optifine = version
+      runtime.labyMod = ''
       content.version = ''
     }
+  }
+}
+function onSelectLabyMod(version: string) {
+  if (content.runtime) {
+    const runtime = content.runtime
+    runtime.labyMod = version
+    // reset all except minecraft
+    runtime.forge = ''
+    runtime.fabricLoader = ''
+    runtime.quiltLoader = ''
+    runtime.optifine = ''
+    content.version = ''
   }
 }
 function onSelectMinecraft(version: string) {
@@ -425,6 +488,7 @@ function onSelectMinecraft(version: string) {
     runtime.minecraft = version
     runtime.forge = ''
     runtime.fabricLoader = ''
+    runtime.labyMod = ''
     content.version = ''
   }
 }

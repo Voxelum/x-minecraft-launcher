@@ -306,6 +306,11 @@
                     "description": "Optifine version e.g. HD_U_F1_pre6 or HD_U_E6",
                     "default": "",
                     "type": "string"
+                },
+                "labyMod": {
+                    "description": "The labyMod version",
+                    "default": "",
+                    "type": "string"
                 }
             },
             "required": [

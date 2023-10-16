@@ -138,7 +138,7 @@
       </v-list-item-action>
     </v-list-item>
 
-    <v-list-item>
+    <v-list-item v-if="!data.runtime.labyMod">
       <v-list-item-action class="self-center">
         <img
           :src="'image://builtin/neoForged'"
@@ -162,7 +162,7 @@
         <VersionMenu
           :is-clearable="true"
           :items="neoForgedItems"
-          :clear-text="t('neoForgeVersion.disable')"
+          :clear-text="t('neoForgedVersion.disable')"
           :refreshing="refreshingNeoForged"
           @select="onSelectNeoForged"
         >
@@ -173,8 +173,8 @@
               filled
               dense
               append-icon="arrow_drop_down"
-              :placeholder="t('neoForgeVersion.disable')"
-              :empty-text="t('neoForgeVersion.empty', { version: data.runtime.minecraft })"
+              :placeholder="t('neoForgedVersion.disable')"
+              :empty-text="t('neoForgedVersion.empty', { version: data.runtime.minecraft })"
               hide-details
               persistent-hint
               :readonly="true"
@@ -187,7 +187,7 @@
       </v-list-item-action>
     </v-list-item>
 
-    <v-list-item>
+    <v-list-item v-if="!data.runtime.labyMod">
       <v-list-item-action class="self-center">
         <img
           :src="'image://builtin/forge'"
@@ -238,7 +238,7 @@
         </VersionMenu>
       </v-list-item-action>
     </v-list-item>
-    <v-list-item>
+    <v-list-item v-if="!data.runtime.labyMod">
       <v-list-item-action class="self-center">
         <img
           :src="'image://builtin/fabric'"
@@ -284,7 +284,7 @@
         </VersionMenu>
       </v-list-item-action>
     </v-list-item>
-    <v-list-item>
+    <v-list-item v-if="!data.runtime.labyMod">
       <v-list-item-action class="self-center">
         <img
           :src="'image://builtin/quilt'"
@@ -329,7 +329,7 @@
       </v-list-item-action>
     </v-list-item>
 
-    <v-list-item>
+    <v-list-item v-if="!data.runtime.labyMod">
       <v-list-item-action class="self-center">
         <img
           :src="'image://builtin/optifine'"
@@ -373,10 +373,10 @@
       </v-list-item-action>
     </v-list-item>
 
-    <v-list-item>
+    <v-list-item v-if="data.runtime.labyMod">
       <v-list-item-action class="self-center">
         <img
-          :src="'image://builtin/labymod'"
+          :src="'image://builtin/labyMod'"
           width="40px"
         >
       </v-list-item-action>
@@ -392,24 +392,25 @@
       <v-list-item-action>
         <VersionMenu
           :is-clearable="true"
-          :items="optifineItems"
-          :clear-text="t('optifineVersion.disable')"
-          :empty-text="t('optifineVersion.empty', { version: data.runtime.minecraft })"
-          :refreshing="refreshingOptifine"
-          @select="onSelectOptifine"
+          :items="labyModItems"
+          :clear-text="t('labyMod.disable')"
+          :empty-text="t('labyMod.empty', { version: data.runtime.minecraft })"
+          :refreshing="refreshingLabyMod"
+          @select="onSelectLabyMod"
         >
           <template #default="{ on }">
             <v-text-field
-              :value="data.runtime.optifine"
+              :value="data.runtime.labyMod"
               outlined
               filled
               dense
               hide-details
-              :placeholder="t('optifineVersion.disable')"
+              :placeholder="t('labyMod.disable')"
               append-icon="arrow_drop_down"
               persistent-hint
               :readonly="true"
               @click:append="on.click($event);"
+              @click="refershLabyMod()"
               v-on="on"
             />
           </template>
@@ -530,7 +531,7 @@
 <script lang=ts setup>
 import VersionMenu from '../components/VersionMenu.vue'
 import { InstanceEditInjectionKey } from '../composables/instanceEdit'
-import { useFabricVersionList, useForgeVersionList, useMinecraftVersionList, useNeoForgedVersionList, useOptifineVersionList, useQuiltVersionList, VersionMenuItem } from '../composables/versionList'
+import { useFabricVersionList, useForgeVersionList, useLabyModVersionList, useMinecraftVersionList, useNeoForgedVersionList, useOptifineVersionList, useQuiltVersionList, VersionMenuItem } from '../composables/versionList'
 
 import { injection } from '@/util/inject'
 import BaseSettingGlobalLabel from './BaseSettingGlobalLabel.vue'
@@ -557,6 +558,7 @@ const { items: neoForgedItems, refresh: refreshNeoForged, refreshing: refreshing
 const { items: fabricItems, showStableOnly, refreshing: refreshingFabric } = useFabricVersionList(minecraft, computed(() => data.runtime.fabricLoader ?? ''), versions)
 const { items: quiltItems, refresh: refreshQuilt, refreshing: refreshingQuilt } = useQuiltVersionList(minecraft, computed(() => data.runtime.quiltLoader ?? ''), versions)
 const { items: optifineItems, refreshing: refreshingOptifine } = useOptifineVersionList(minecraft, computed(() => data.runtime.forge ?? ''), computed(() => data.runtime.optifine ?? ''), versions)
+const { items: labyModItems, refreshing: refreshingLabyMod, refresh: refershLabyMod } = useLabyModVersionList(minecraft, computed(() => data.runtime.labyMod ?? ''), versions)
 const localItems = computed(() => {
   return versions.value.map(ver => {
     const result: VersionMenuItem = {
@@ -657,6 +659,15 @@ function onSelectOptifine(version: string) {
     }
   }
 }
+function onSelectLabyMod(version: string) {
+  if (data.runtime) {
+    const runtime = data.runtime
+    runtime.labyMod = version
+    if (version) {
+      data.version = ''
+    }
+  }
+}
 function onSelectLocalVersion(version: string) {
   data.version = version
   const v = versions.value.find(ver => ver.id === version)!
@@ -667,6 +678,7 @@ function onSelectLocalVersion(version: string) {
   data.runtime.neoForged = v.neoForged
   data.runtime.optifine = v.optifine
   data.runtime.quiltLoader = v.quilt
+  data.runtime.labyMod = v.labyMod
 }
 
 const { t } = useI18n()

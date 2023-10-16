@@ -37,7 +37,8 @@ export function useInstanceVersion(instance: Ref<Instance>, local: Ref<LocalVers
     instance.value.runtime.neoForged,
     instance.value.runtime.fabricLoader,
     instance.value.runtime.optifine,
-    instance.value.runtime.quiltLoader) || { ...EMPTY_VERSION, id: getExpectVersion(instance.value.runtime) })
+    instance.value.runtime.quiltLoader,
+    instance.value.runtime.labyMod) || { ...EMPTY_VERSION, id: getExpectVersion(instance.value.runtime) })
   const folder = computed(() => versionHeader.value?.id || 'unknown')
 
   const { isValidating, mutate, data: resolvedVersion, error } = useSWRV(() => instance.value.path && `/instance/${instance.value.path}/version`, async () => {

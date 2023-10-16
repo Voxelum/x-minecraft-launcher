@@ -1,5 +1,5 @@
 import { ResolvedVersion, Version, VersionParseError } from '@xmcl/core'
-import { filterForgeVersion, filterOptifineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary, LocalVersionHeader, VersionService as IVersionService, VersionServiceKey, LocalVersions, MutableState, findNeoForgedVersion } from '@xmcl/runtime-api'
+import { filterForgeVersion, filterOptifineVersion, isFabricLoaderLibrary, isForgeLibrary, isOptifineLibrary, isQuiltLibrary, LocalVersionHeader, VersionService as IVersionService, VersionServiceKey, LocalVersions, MutableState, findNeoForgedVersion, findLabyModVersion } from '@xmcl/runtime-api'
 import { task } from '@xmcl/task'
 import { FSWatcher } from 'fs'
 import { ensureDir } from 'fs-extra/esm'
@@ -101,6 +101,7 @@ export class VersionService extends StatefulService<LocalVersions> implements IV
       fabric: ver.libraries.find(isFabricLoaderLibrary)?.version ?? '',
       optifine: filterOptifineVersion(ver.libraries.find(isOptifineLibrary)?.version ?? ''),
       quilt: ver.libraries.find(isQuiltLibrary)?.version ?? '',
+      labyMod: findLabyModVersion(ver),
       liteloader: '',
     }
   }

@@ -351,6 +351,10 @@ installForge:
   library: Install Library {lib}
   name: Install Forge
   postProcessing: Post Processing
+installLabyMod:
+  name: Install LabyMod
+  asset: Install Asset {name}
+  json: Generate JSON {version}
 installInstance:
   file: Update Instance File {file}
   name: Update Instance
@@ -480,6 +484,9 @@ java:
   refreshAfter: Please Refresh After you install the java.
   switchVersion: Java Version Changed
   systemMemory: Current System Memory
+labyMod:
+  disable: Disable LabyMod
+  empty: LabyMod does not support current Minecraft
 launch:
   launch: Launch
 launchBlocked:
@@ -935,10 +942,9 @@ natType:
   symmetricNat: Symmetric NAT
   symmetricUDPFirewall: Symmetric UDP Firewall
   unknown: Unknown
-neoForgeVersion:
+neoForgedVersion:
   disable: Disable NeoForged
   empty: NeoForged does not support {version}
-neoForgedVersion:
   name: NeoForged
 news:
   name: News

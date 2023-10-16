@@ -244,6 +244,10 @@ export function findNeoForgedVersion(minecraft: string, resolvedVersion: Resolve
   return `${minecraft}-${version}` as string
 }
 
+export function findLabyModVersion(resolvedVersion: ResolvedVersion) {
+  return resolvedVersion.libraries.find(l => l.groupId === 'net.labymod' && l.artifactId === 'LabyMod')?.version || ''
+}
+
 export function filterForgeVersion(forgeVersion: string) {
   if (!forgeVersion) return forgeVersion
   const idx = forgeVersion.indexOf('-')
@@ -265,6 +269,7 @@ export const EMPTY_VERSION: LocalVersionHeader = Object.freeze({
   liteloader: '',
   quilt: '',
   neoForged: '',
+  labyMod: '',
   optifine: '',
 })
 export interface LibrariesRecord {
@@ -295,7 +300,7 @@ export function isCompatible(range: string, version: string) {
   return vRange?.containsVersion(parseVersion(version)) || false
 }
 
-export function getExpectVersion({ minecraft, forge, liteloader, fabricLoader: fabric, optifine, quiltLoader, neoForged }: RuntimeVersions) {
+export function getExpectVersion({ minecraft, forge, liteloader, fabricLoader: fabric, optifine, quiltLoader, neoForged, labyMod }: RuntimeVersions) {
   let expectedId = minecraft
   if (typeof forge === 'string' && forge.length > 0) expectedId += `-forge${forge}`
   if (typeof liteloader === 'string' && liteloader.length > 0) expectedId += `-liteloader${liteloader}`
@@ -303,6 +308,7 @@ export function getExpectVersion({ minecraft, forge, liteloader, fabricLoader: f
   if (typeof optifine === 'string' && optifine.length > 0) expectedId += `-optifine_${optifine}`
   if (typeof quiltLoader === 'string' && quiltLoader.length > 0) expectedId += `-quilt${quiltLoader}`
   if (typeof neoForged === 'string' && neoForged.length > 0) expectedId += `-neoforged${neoForged}`
+  if (typeof labyMod === 'string' && labyMod.length > 0) expectedId += `-labymod${labyMod}`
   return expectedId
 }
 export function parseOptifineVersion(version: string): { type: string; patch: string } {
@@ -350,6 +356,7 @@ function isVersionMatched(version: LocalVersionHeader,
   fabricLoader: string | undefined,
   optifine: string | undefined,
   quiltLoader: string | undefined,
+  labyMod: string | undefined,
 ) {
   // compute version
   if (version.minecraft !== minecraft) {
@@ -372,6 +379,15 @@ function isVersionMatched(version: LocalVersionHeader,
       return false
     }
   } else if (version.neoForged) {
+    return false
+  }
+
+  if (labyMod) {
+    // require labyMod
+    if (!version.labyMod || version.labyMod !== labyMod) {
+      return false
+    }
+  } else if (version.labyMod) {
     return false
   }
 
@@ -412,8 +428,9 @@ export function getResolvedVersion(versions: LocalVersionHeader[], id: string,
   fabricLoader: string | undefined,
   optifine: string | undefined,
   quiltLoader: string | undefined,
+  labyMod: string | undefined,
 ): LocalVersionHeader | undefined {
-  return versions.find(v => v.id === id) || versions.find(ver => isVersionMatched(ver, minecraft, forge, neoForged, fabricLoader, optifine, quiltLoader))
+  return versions.find(v => v.id === id) || versions.find(ver => isVersionMatched(ver, minecraft, forge, neoForged, fabricLoader, optifine, quiltLoader, labyMod))
 }
 
 export function getMinecraftVersionFormat(version: string): 'release' | 'snapshot' | 'beta' | 'alpha' | 'unknown' {
@@ -492,6 +509,8 @@ export interface LocalVersionHeader {
   neoForged: string
   liteloader: string
   quilt: string
+
+  labyMod: string
 }
 
 export class LocalVersions {

@@ -170,8 +170,6 @@ export abstract class AbstractService extends EventEmitter {
     this.error = loggers.error
   }
 
-  get taskManager() { return this.app.taskManager }
-
   get storeManager() { return this.app.serviceStateManager }
 
   get semaphoreManager() { return this.app.semaphoreManager }
@@ -189,7 +187,7 @@ export abstract class AbstractService extends EventEmitter {
    * @param task
    */
   protected submit<T>(task: Task<T>) {
-    return this.taskManager.submit(task)
+    return this.app.taskManager.submit(task)
   }
 
   /**

@@ -40,6 +40,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       optifine: instance.value?.runtime.optifine,
       liteloader: instance.value?.runtime.liteloader,
       neoForged: instance.value?.runtime.neoForged,
+      labyMod: instance.value?.runtime.labyMod,
     } as RuntimeVersions,
     version: '',
 
@@ -165,6 +166,9 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     if (current.runtime.neoForged !== data.runtime.neoForged) {
       return true
     }
+    if (current.runtime.labyMod !== data.runtime.labyMod) {
+      return true
+    }
     if (current.runtime.fabricLoader !== data.runtime.fabricLoader) {
       return true
     }
@@ -252,6 +256,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
       data.runtime.optifine = current.runtime.optifine
       data.runtime.quiltLoader = current.runtime.quiltLoader
       data.runtime.neoForged = current.runtime.neoForged
+      data.runtime.labyMod = current.runtime.labyMod
       data.version = current.version
       data.icon = current.icon
 
