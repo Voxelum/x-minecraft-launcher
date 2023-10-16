@@ -29,6 +29,7 @@ const props = defineProps<{
   minecraft: string
   runtime: RuntimeVersions
   updating?: boolean
+  modrinth?: boolean
 }>()
 const getDateString = (date: string) => {
   const result = getAgoOrDate(new Date(date).getTime())
@@ -329,7 +330,8 @@ const onOpenDependency = (dep: ModDependency) => {
     :loading-versions="loadingVersions"
     :updating="innerUpdating || updating || installing"
     :versions="modVersions"
-    curseforge-body
+    curseforge
+    :modrinth="modrinth"
     :loading-dependencies="loadingDependencies"
     @load-changelog="loadChangelog"
     @delete="onDelete"

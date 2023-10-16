@@ -154,6 +154,7 @@
             :project-id="selectedModrinthId"
             :updating="plans[selectedItem?.id ?? '']?.updating"
             :runtime="runtime"
+            :curseforge="!!selectedItem?.curseforge || !!selectedCurseforgeId"
             :installed="selectedItem?.installed || getInstalledModrinth(selectedModrinthId)"
             :minecraft="minecraft"
           />
@@ -163,6 +164,7 @@
             :curseforge-id="Number(selectedCurseforgeId)"
             :updating="plans[selectedItem?.id ?? '']?.updating"
             :runtime="runtime"
+            :modrinth="!!selectedItem?.modrinth || !!selectedModrinthId"
             :minecraft="minecraft"
             :installed="selectedItem?.installed || getInstalledCurseforge(selectedCurseforgeId)"
           />
@@ -175,7 +177,7 @@
             :minecraft="minecraft"
           />
           <ModDetailOptifine
-            v-else-if="selectedItem && selectedItem.id === 'optifine'"
+            v-else-if="selectedItem && selectedItem.id === 'OptiFine'"
             :mod="selectedItem"
             :runtime="runtime"
           />
@@ -208,7 +210,6 @@ import ModItem from './ModItem.vue'
 import { kModUpgrade } from '@/composables/modUpgrade'
 import { kInstance } from '@/composables/instance'
 import ModDetailOptifine from './ModDetailOptifine.vue'
-import ModDetailMinecraft from './ModDetailMinecraft.vue'
 import { kInstanceDefaultSource } from '@/composables/instanceDefaultSource'
 
 const { minecraft } = injection(kInstanceVersion)
