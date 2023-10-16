@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
@@ -88,7 +87,7 @@ const model = computed(() => {
 
 const { editInstance } = useService(InstanceServiceKey)
 const { installOptifineAsResource } = useService(InstallServiceKey)
-const { path, runtime } = injection(kInstance)
+const { path } = injection(kInstance)
 const updating = ref(false)
 const { install: installMod, uninstall: uninstallMod } = useService(InstanceModsServiceKey)
 const onInstall = async (m: ModVersion) => {
@@ -100,11 +99,11 @@ const onInstall = async (m: ModVersion) => {
     const type = restStr.substring(0, index)
     const patch = restStr.substring(index + 1)
 
-    if (!runtime.value.forge) {
+    if (!props.runtime.forge) {
       await editInstance({
         instancePath: path.value,
         runtime: {
-          ...runtime.value,
+          ...props.runtime,
           optifine: m.version,
         },
       })
@@ -125,8 +124,8 @@ const onInstall = async (m: ModVersion) => {
 }
 
 const onDelete = () => {
-  if (runtime.value.optifine) {
-    const newRuntime = { ...runtime.value, optifine: '' }
+  if (props.runtime.optifine) {
+    const newRuntime = { ...props.runtime, optifine: '' }
     editInstance({
       instancePath: path.value,
       runtime: newRuntime,
