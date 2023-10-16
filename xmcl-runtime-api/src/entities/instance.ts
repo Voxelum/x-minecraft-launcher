@@ -29,6 +29,7 @@ export function createTemplate(): Instance {
       optifine: '',
       quiltLoader: '',
       neoForged: '',
+      labyMod: '',
     },
     java: '',
     version: '',

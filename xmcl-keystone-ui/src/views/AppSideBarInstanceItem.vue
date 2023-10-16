@@ -75,6 +75,26 @@
         </v-avatar>
         {{ instance.runtime.forge }}
       </span>
+      <span v-if="instance.runtime.labyMod">
+        <v-avatar
+          size="28"
+        >
+          <img
+            :src="'image://builtin/labyMod'"
+          >
+        </v-avatar>
+        {{ instance.runtime.labyMod }}
+      </span>
+      <span v-if="instance.runtime.neoForged">
+        <v-avatar
+          size="28"
+        >
+          <img
+            :src="'image://builtin/neoForged'"
+          >
+        </v-avatar>
+        {{ instance.runtime.neoForged }}
+      </span>
       <span v-if="instance.runtime.fabricLoader">
         <v-avatar
           size="28"
@@ -95,7 +115,6 @@
         </v-avatar>
         {{ instance.runtime.quiltLoader }}
       </span>
-
       <span v-if="instance.runtime.optifine">
         <v-avatar
           size="28"

@@ -93,15 +93,11 @@ export function useFabricVersions(minecraftVersion: Ref<string>, local: Ref<Loca
   }
 }
 
-export function useLabyModManifests() {
+export function useLabyModManifest() {
   const { getLabyModManifest } = useService(InstallServiceKey)
-  const { data: versions, isValidating, mutate, error } = useSWRV('/labymod',
+  return useSWRV('/labymod',
     () => getLabyModManifest(),
     inject(kSWRVConfig))
-
-  return {
-    
-  }
 }
 
 export function useQuiltVersions(minecraftVersion: Ref<string>, local: Ref<LocalVersionHeader[]>) {

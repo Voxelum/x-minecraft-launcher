@@ -9,68 +9,19 @@
     <div
       class="flex flex-grow-0 flex-row items-center justify-center gap-1"
     >
-      <AvatarItem
-        :avatar="'image://builtin/minecraft'"
-        title="Minecraft"
-        responsive
-        :text="`${version.minecraft}`"
-      />
-      <v-divider vertical />
-      <AvatarItem
-        v-if="version.forge"
-        :avatar="'image://builtin/forge'"
-        responsive
-        title="Forge"
-        :text="`${version.forge}`"
-      />
-      <v-divider
-        v-if="version.forge"
-        vertical
-      />
-      <AvatarItem
-        v-if="version.neoForged"
-        :avatar="'image://builtin/neoForged'"
-        responsive
-        title="NeoForged"
-        :text="`${version.neoForged}`"
-      />
-      <v-divider
-        v-if="version.neoForged"
-        vertical
-      />
-      <AvatarItem
-        v-if="version.fabricLoader"
-        :avatar="'image://builtin/fabric'"
-        responsive
-        title="Fabric"
-        :text="`${version.fabricLoader}`"
-      />
-      <v-divider
-        v-if="version.fabricLoader"
-        vertical
-      />
-      <AvatarItem
-        v-if="version.quiltLoader"
-        :avatar="'image://builtin/quilt'"
-        responsive
-        title="Quilt"
-        :text="`${version.quiltLoader}`"
-      />
-      <v-divider
-        v-if="version.quiltLoader"
-        vertical
-      />
-      <AvatarItem
-        v-if="version.optifine"
-        :avatar="'image://builtin/optifine'"
-        responsive
-        title="Optifine"
-        :text="`${version.optifine}`"
-      />
-      <v-divider
-        v-if="version.optifine"
-        vertical
-      />
+      <template v-for="ver of versions">
+        <AvatarItem
+          :key="ver.title"
+          :avatar="ver.icon"
+          :title="ver.title"
+          responsive
+          :text="ver.version"
+        />
+        <v-divider
+          :key="`${ver.title}-divider`"
+          vertical
+        />
+      </template>
       <AvatarItem
         icon="schedule"
         :title="t('instance.playtime')"
@@ -115,7 +66,6 @@ import HomeHeaderInstallStatus from './HomeHeaderInstallStatus.vue'
 import HomeLaunchButton from './HomeLaunchButton.vue'
 import useSWRV from 'swrv'
 import { kInstance } from '@/composables/instance'
-import { kInstanceVersion } from '@/composables/instanceVersion'
 import { kLaunchTask } from '@/composables/launchTask'
 
 const { instance, runtime: version } = injection(kInstance)
@@ -124,6 +74,60 @@ const { total, progress, status, name: taskName } = injection(kLaunchTask)
 const { t } = useI18n()
 
 const compact = injection(kCompact)
+const versions = computed(() => {
+  const ver = version.value
+  const result: Array<{icon: string; title: string; version: string}> = []
+  if (ver.minecraft) {
+    result.push({
+      icon: 'image://builtin/minecraft',
+      title: 'Minecraft',
+      version: ver.minecraft,
+    })
+  }
+  if (ver.forge) {
+    result.push({
+      icon: 'image://builtin/forge',
+      title: 'Forge',
+      version: ver.forge,
+    })
+  }
+  if (ver.neoForged) {
+    result.push({
+      icon: 'image://builtin/neoForged',
+      title: 'NeoForged',
+      version: ver.neoForged,
+    })
+  }
+  if (ver.fabricLoader) {
+    result.push({
+      icon: 'image://builtin/fabric',
+      title: 'Fabric',
+      version: ver.fabricLoader,
+    })
+  }
+  if (ver.quiltLoader) {
+    result.push({
+      icon: 'image://builtin/quilt',
+      title: 'Quilt',
+      version: ver.quiltLoader,
+    })
+  }
+  if (ver.optifine) {
+    result.push({
+      icon: 'image://builtin/optifine',
+      title: 'Optifine',
+      version: ver.optifine,
+    })
+  }
+  if (ver.labyMod) {
+    result.push({
+      icon: 'image://builtin/labyMod',
+      title: 'LabyMod',
+      version: ver.labyMod,
+    })
+  }
+  return result
+})
 const { data: lastPlayedText } = useSWRV(computed(() => `${instance.value.path}/lastPlay`), () => {
   const i = instance.value
   const date = i.lastPlayedDate

@@ -10,12 +10,14 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     getMinecraftVersionList,
     getForgeVersionList,
     getNeoForgedVersionList,
+    getLabyModManifest,
     installForge,
     installNeoForged,
     installMinecraft,
     installOptifine,
     installFabric,
     installQuilt,
+    installLabyModVersion,
   } = useService(InstallServiceKey)
 
   const getCacheOrFetch = async <T>(key: string, fetcher: () => Promise<T>) => {
@@ -28,7 +30,7 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
     return data
   }
   async function install(runtime: RuntimeVersions) {
-    const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged } = runtime
+    const { minecraft, forge, fabricLoader, quiltLoader, optifine, neoForged, labyMod } = runtime
     const mcVersions = await getCacheOrFetch('/minecraft-versions', () => getMinecraftVersionList())
     const local = versions.value
     if (!local.find(v => v.id === minecraft)) {
@@ -73,7 +75,8 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
       const index = optifineVersion.lastIndexOf('_')
       const type = optifineVersion.substring(0, index)
       const patch = optifineVersion.substring(index + 1)
-      return await installOptifine({ type, patch, mcversion: minecraft, inheritFrom: forgeVersion })
+      const [ver] = await installOptifine({ type, patch, mcversion: minecraft, inheritFrom: forgeVersion })
+      return ver
     } else if (forgeVersion) {
       return forgeVersion
     }
@@ -93,6 +96,18 @@ export function useInstanceVersionInstall(versions: Ref<LocalVersionHeader[]>) {
       }
       return await installQuilt({ version: quiltLoader, minecraftVersion: minecraft })
     }
+
+    if (labyMod) {
+      const localLabyMod = local.find(v => v.labyMod === labyMod)
+      if (localLabyMod) {
+        return localLabyMod.id
+      }
+
+      const manifest = await getCacheOrFetch('/labymod', () => getLabyModManifest())
+
+      return await installLabyModVersion({ manifest, minecraftVersion: minecraft })
+    }
+
     return minecraft
   }
 

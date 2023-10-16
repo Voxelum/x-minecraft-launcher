@@ -12,6 +12,10 @@ export function getInstanceIcon(instance: InstanceData, status: ServerStatus | u
   if (!instance.icon) {
     if (instance.runtime.forge) {
       return 'image://builtin/forge'
+    } else if (instance.runtime.neoForged) {
+      return 'image://builtin/neoForged'
+    } else if (instance.runtime.labyMod) {
+      return 'image://builtin/labyMod'
     } else if (instance.runtime.fabricLoader) {
       return 'image://builtin/fabric'
     } else if (instance.runtime.quiltLoader) {

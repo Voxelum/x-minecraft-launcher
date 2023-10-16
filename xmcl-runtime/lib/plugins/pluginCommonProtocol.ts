@@ -7,7 +7,7 @@ import quilt from '../../assets/quilt.svg'
 import optifine from '../../assets/optifine.webp'
 import forge from '../../assets/forge.png'
 import fabric from '../../assets/fabric.png'
-import labymod from '../../assets/labymod.webp'
+import labyMod from '../../assets/labymod.webp'
 import neoForged from '../../assets/neoforged.png'
 
 const builtin: Record<string, string> = {
@@ -17,7 +17,7 @@ const builtin: Record<string, string> = {
   optifine,
   forge,
   fabric,
-  labymod,
+  labyMod,
   neoForged,
 }
 

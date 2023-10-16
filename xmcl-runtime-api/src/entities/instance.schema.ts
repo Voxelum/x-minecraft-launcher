@@ -47,6 +47,11 @@ export interface RuntimeVersions {
    * @default ""
    */
   optifine?: string
+  /**
+   * The labyMod version
+   * @default ""
+   */
+  labyMod?: string
 
   [id: string]: undefined | string
 }

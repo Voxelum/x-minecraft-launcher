@@ -1,7 +1,6 @@
 import { Ref } from 'vue'
 import { ForgeVersion, LocalVersionHeader, LockKey } from '@xmcl/runtime-api'
-import { useFabricVersions, useForgeVersions, useMinecraftVersions, useNeoForgedVersions, useOptifineVersions, useQuiltVersions } from './version'
-
+import { useFabricVersions, useForgeVersions, useLabyModManifest, useMinecraftVersions, useNeoForgedVersions, useOptifineVersions, useQuiltVersions } from './version'
 import { kSemaphores } from '@/composables'
 import { getLocalDateString } from '@/util/date'
 import { injection } from '@/util/inject'
@@ -242,5 +241,31 @@ export function useQuiltVersionList(minecraft: Ref<string>, version: Ref<string>
     items,
     refresh,
     refreshing,
+  }
+}
+
+export function useLabyModVersionList(minecraft: Ref<string>, version: Ref<string>, local: Ref<LocalVersionHeader[]>) {
+  const { data, isValidating, mutate } = useLabyModManifest()
+
+  const items = computed(() => {
+    const manifest = data.value
+    if (!manifest) { return [] }
+    const mcVersion = manifest.minecraftVersions.find(v => v.tag === minecraft.value)
+    if (!mcVersion) { return [] }
+    const result: VersionItem[] = [reactive({
+      name: manifest.labyModVersion,
+      status: 'remote',
+      description: manifest.commitReference,
+      folder: computed(() => local.value.find((v) => v.labyMod === manifest.labyModVersion)?.path ?? ''),
+      isSelected: computed(() => version.value === manifest.labyModVersion),
+      instance: markRaw(mcVersion),
+    })]
+    return result
+  })
+
+  return {
+    items,
+    refreshing: isValidating,
+    refresh: () => mutate(),
   }
 }

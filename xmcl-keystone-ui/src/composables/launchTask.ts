@@ -25,6 +25,9 @@ export function useLaunchTask(path: Ref<string>, version: Ref<Instance['runtime'
     if (i.path === 'installForge' && (p?.id === version.value.forge || p?.id === localVersion.value.id || p?.id === version.value.neoForged)) {
       return true
     }
+    if (i.path === 'installLabyMod' && (p?.version === version.value.labyMod)) {
+      return true
+    }
     if (i.path === 'installOptifine' && p?.id === version.value.optifine) {
       return true
     }
