@@ -25,6 +25,7 @@ const props = defineProps<{
   minecraft: string
   runtime: RuntimeVersions
   updating?: boolean
+  curseforge?: boolean
 }>()
 
 const projectId = computed(() => props.projectId)
@@ -182,6 +183,8 @@ const onOpenDependency = (dep: ModDependency) => {
     :dependencies="dependencies"
     :loading="loading"
     :loading-versions="loadingVersions"
+    modrinth
+    :curseforge="curseforge"
     @open-dependency="onOpenDependency"
     @show-image="imageDialog.show($event.url, { description: $event.description, date: $event.date })"
     @install="install"

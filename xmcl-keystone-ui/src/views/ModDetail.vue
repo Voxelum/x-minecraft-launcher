@@ -67,7 +67,7 @@
           {{ detail.description }}
         </div>
         <div
-          class="my-2 flex flex-col gap-2 lg:flex-row lg:items-end"
+          class="my-2 flex flex-col gap-2 lg:flex-row lg:flex-wrap lg:items-end"
         >
           <div class="flex items-end gap-2">
             <v-btn
@@ -139,8 +139,8 @@
             >
               <template #activator="{ on, attrs }">
                 <div
-                  class="flex cursor-pointer text-gray-600 dark:text-gray-400"
-                  :style="{ display: versions.length > 0 ? 'block' : 'hidden' }"
+                  class="cursor-pointer text-gray-600 dark:text-gray-400"
+                  :class="{ flex: versions.length > 0, hidden: versions.length === 0 }"
                   :loading="loadingVersions"
                   v-bind="attrs"
                   v-on="on"
@@ -323,7 +323,7 @@
           <div
             v-else
             class="markdown-body select-text whitespace-normal"
-            :class="{ 'project-description': curseforgeBody }"
+            :class="{ 'project-description': curseforge }"
             v-html="detail.htmlContent"
           />
         </v-tab-item>
@@ -376,6 +376,28 @@
       </v-tabs-items>
 
       <aside>
+        <template v-if="curseforge || modrinth">
+          <v-subheader>
+            {{ t('modInstall.source') }}
+          </v-subheader>
+          <span class="flex flex-wrap gap-2 px-2">
+            <v-icon
+              v-if="modrinth"
+            >
+              $vuetify.icons.modrinth
+            </v-icon>
+            <v-icon
+              v-if="curseforge"
+            >
+              $vuetify.icons.curseforge
+            </v-icon>
+          </span>
+
+          <v-divider
+            class="mt-4 w-full"
+          />
+        </template>
+
         <v-subheader v-if="detail.categories.length > 0">
           {{ t('modrinth.categories.categories') }}
         </v-subheader>
@@ -440,7 +462,7 @@
           <v-subheader>
             {{ t('modrinth.technicalInformation') }}
           </v-subheader>
-          <div class="grid grid-cols-1 gap-1 gap-y-3 overflow-auto overflow-y-hidden">
+          <div class="grid grid-cols-1 gap-1 gap-y-3 overflow-auto overflow-y-hidden pr-2">
             <div
               v-for="item of detail.info"
               :key="item.name"
@@ -504,11 +526,12 @@ const props = defineProps<{
   versions: ModVersion[]
   loadingVersions: boolean
   selectedInstalled: boolean
-  curseforgeBody?: boolean
   hasInstalledVersion: boolean
   noDelete?: boolean
   noEnabled?: boolean
   hasMore: boolean
+  curseforge?: boolean
+  modrinth?: boolean
 }>()
 
 const emit = defineEmits<{

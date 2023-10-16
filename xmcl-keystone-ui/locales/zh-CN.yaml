@@ -663,6 +663,7 @@ modInstall:
   search: 搜索结果
   searchHint: 搜索并选择 Mod
   selectProjectHint: 添加 Mod 并安装
+  source: Mod 来源
   switch: 切换版本
   upgrade: 更新 Mods
 modSearchType:

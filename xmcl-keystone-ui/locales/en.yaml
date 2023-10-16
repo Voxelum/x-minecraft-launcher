@@ -654,6 +654,7 @@ modInstall:
   search: Search Result
   searchHint: Search and select project
   selectProjectHint: Select project and install file
+  source: Mod Source
   switch: Swtich Version
   upgrade: Upgrade Mods
 modSearchType:
