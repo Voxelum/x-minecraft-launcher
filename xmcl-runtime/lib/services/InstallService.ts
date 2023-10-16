@@ -24,6 +24,7 @@ import { JavaService } from './JavaService'
 import { ResourceService } from './ResourceService'
 import { AbstractService, ExposeServiceKey, Lock, Singleton } from './Service'
 import { VersionService } from './VersionService'
+import { missing } from '../util/fs'
 
 /**
  * Version install service provide some functions to install Minecraft/Forge/Liteloader, etc. version
@@ -718,6 +719,37 @@ export class InstallService extends AbstractService implements IInstallService {
       version: options.version,
     })
     return version
+  }
+
+  async installOptifineAsResource(options: InstallOptifineOptions) {
+    const optifineVersion = `${options.type}_${options.patch}`
+    const version = `${options.mcversion}_${optifineVersion}`
+    const path = new MinecraftFolder(this.getPath()).getLibraryByPath(`/optifine/OptiFine/${version}/OptiFine-${version}-universal.jar`)
+    const resourceService = this.resourceService
+    if (await missing(path)) {
+      const urls = [] as string[]
+      if (getApiSets(this.settings)[0].name === 'mcbbs') {
+        urls.push(
+          `https://download.mcbbs.net/optifine/${options.mcversion}/${options.type}/${options.patch}`,
+          `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
+        )
+      } else {
+        urls.push(
+          `https://bmclapi2.bangbang93.com/optifine/${options.mcversion}/${options.type}/${options.patch}`,
+          `https://download.mcbbs.net/optifine/${options.mcversion}/${options.type}/${options.patch}`,
+        )
+      }
+      const downloadOptions = await this.app.registry.get(kDownloadOptions)
+      await this.submit(task('installOptifine', async function () {
+        await this.yield(new DownloadTask({
+          ...downloadOptions,
+          url: urls,
+          destination: path,
+        }).setName('download'))
+      }))
+    }
+    const [resource] = await resourceService.importResources([{ path, domain: ResourceDomain.Mods }])
+    return resource
   }
 
   @Lock((v: InstallOptifineOptions) => LockKey.version(`optifine-${v.mcversion}-${v.type}_${v.patch}`))

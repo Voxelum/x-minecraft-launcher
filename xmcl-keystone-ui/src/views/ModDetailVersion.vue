@@ -66,7 +66,7 @@
       >
         <div
           v-if="!version.changelogLoading"
-          class="select-text text-gray-500 transition-colors hover:text-black dark:hover:text-gray-300"
+          class="markdown-body select-text text-gray-500 transition-colors hover:text-black dark:hover:text-gray-300"
           v-html="version.changelog"
         />
         <v-skeleton-loader
