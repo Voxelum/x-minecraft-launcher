@@ -1,25 +1,24 @@
 
 <script setup lang="ts">
-import { useOptifineVersions } from '@/composables/version'
-import { Mod } from '@/util/mod'
-import { InstallServiceKey, InstanceServiceKey, ResourceDomain, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
-import { ModVersion } from './ModDetailVersion.vue'
-import ModDetail, { ModDetailData } from './ModDetail.vue'
-import useSWRV from 'swrv'
-import { kSWRVConfig } from '@/composables/swrvConfig'
-import { useMarkdown } from '@/composables/markdown'
 import { useService } from '@/composables'
-import { injection } from '@/util/inject'
 import { kInstance } from '@/composables/instance'
-import { kLocalVersions } from '@/composables/versionLocal'
+import { useMarkdown } from '@/composables/markdown'
+import { useModDetailEnable } from '@/composables/modDetail'
+import { kSWRVConfig } from '@/composables/swrvConfig'
+import { useOptifineVersions } from '@/composables/version'
+import { injection } from '@/util/inject'
+import { Mod } from '@/util/mod'
+import { InstallServiceKey, InstanceModsServiceKey, InstanceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
+import useSWRV from 'swrv'
+import ModDetail, { ModDetailData } from './ModDetail.vue'
+import { ModVersion } from './ModDetailVersion.vue'
 
 const props = defineProps<{
   mod: Mod
   runtime: RuntimeVersions
 }>()
 
-const { versions: localVersions } = injection(kLocalVersions)
-const { versions: optVersions, refreshing, installed } = useOptifineVersions(computed(() => props.runtime.minecraft), computed(() => props.runtime.forge || ''), localVersions)
+const { versions: optVersions, refreshing } = useOptifineVersions(computed(() => props.runtime.minecraft), computed(() => props.runtime.forge || ''), computed(() => []))
 
 const selectedVersion = ref(undefined as ModVersion | undefined)
 provide('selectedVersion', selectedVersion)
@@ -28,7 +27,8 @@ const { render: renderMd } = useMarkdown()
 const { data: changelog, isValidating: loadingChangelog } = useSWRV(computed(() => selectedVersion.value && `https://www.optifine.net/changelog?f=OptiFine_${selectedVersion.value.id}.jar`), async (url) => {
   const res = await fetch(url)
   const text = await res.text()
-  return renderMd(text)
+  const [content] = text.split('\r\n\r\n')
+  return renderMd(content)
 }, inject(kSWRVConfig))
 
 const versions = computed(() => {
@@ -37,11 +37,11 @@ const versions = computed(() => {
     const version = `${f.type}_${f.patch}`
     const id = `${f.mcversion}_${version}`
     const modVersion: ModVersion = reactive({
-      id,
+      id: props.mod.installed[0].version === version ? props.mod.installed[0].path : id,
       name: version,
       version,
       downloadCount: 0,
-      installed: props.runtime.optifine === version,
+      installed: computed(() => props.runtime.optifine === version || props.mod.installed[0].version === version),
       loaders: ['vanilla', 'forge'],
       minecraftVersion: f.mcversion,
       type: 'release',
@@ -55,6 +55,15 @@ const versions = computed(() => {
 })
 
 selectedVersion.value = versions.value[0]
+
+const { data: optifineHome, isValidating: loadingDescription } = useSWRV('/optifine-home', async () => {
+  const response = await fetch('https://www.optifine.net/home')
+  const content = await response.text()
+  const parsed = new DOMParser().parseFromString(content, 'text/html')
+  const contentHTML = parsed.querySelector('.content')
+  return contentHTML?.innerHTML || ''
+}, inject(kSWRVConfig))
+const _optifineHome = computed(() => optifineHome.value || props.mod.description)
 
 const model = computed(() => {
   const result: ModDetailData = reactive({
@@ -70,7 +79,7 @@ const model = computed(() => {
     downloadCount: 0,
     follows: 0,
     url: 'https://www.optifine.net/home',
-    htmlContent: props.mod.description,
+    htmlContent: _optifineHome,
     installed: !!props.mod.installed,
     enabled: false,
   })
@@ -78,13 +87,19 @@ const model = computed(() => {
 })
 
 const { editInstance } = useService(InstanceServiceKey)
-const { installOptifine } = useService(InstallServiceKey)
-const { getResourcesByUris } = useService(ResourceServiceKey)
+const { installOptifineAsResource } = useService(InstallServiceKey)
 const { path, runtime } = injection(kInstance)
 const updating = ref(false)
+const { install: installMod, uninstall: uninstallMod } = useService(InstanceModsServiceKey)
 const onInstall = async (m: ModVersion) => {
   try {
     updating.value = true
+    const [mc, ...rest] = m.id.split('_')
+    const restStr = rest.join('_')
+    const index = restStr.lastIndexOf('_')
+    const type = restStr.substring(0, index)
+    const patch = restStr.substring(index + 1)
+
     if (!runtime.value.forge) {
       await editInstance({
         instancePath: path.value,
@@ -93,12 +108,15 @@ const onInstall = async (m: ModVersion) => {
           optifine: m.version,
         },
       })
-      const [mc, type, patch] = m.id.split('_')
-      if (installed.value[m.version]) {
-        const installedVersion = installed.value[m.version]
-        const filePath = localVersions.value.find(v => v.id === installedVersion)?.path
+    } else {
+      if (hasInstalledVersion.value) {
+        const oldFiles = props.mod.installed.map(i => i.resource)
+        const resource = await installOptifineAsResource({ mcversion: mc, type, patch })
+        await installMod({ path: path.value, mods: [resource] })
+        await uninstallMod({ path: path.value, mods: oldFiles })
       } else {
-        const [_, resource] = await installOptifine({ mcversion: mc, type, patch })
+        const resource = await installOptifineAsResource({ mcversion: mc, type, patch })
+        await installMod({ path: path.value, mods: [resource] })
       }
     }
   } finally {
@@ -107,24 +125,31 @@ const onInstall = async (m: ModVersion) => {
 }
 
 const onDelete = () => {
-  const newRuntime = { ...runtime.value, optifine: '' }
-  editInstance({
-    instancePath: path.value,
-    runtime: newRuntime,
-  })
+  if (runtime.value.optifine) {
+    const newRuntime = { ...runtime.value, optifine: '' }
+    editInstance({
+      instancePath: path.value,
+      runtime: newRuntime,
+    })
+  }
+
+  if (props.mod.installed.length > 0) {
+    uninstallMod({ path: path.value, mods: props.mod.installed.map(i => i.resource) })
+  }
 }
+const { enabled, installed, hasInstalledVersion } = useModDetailEnable(selectedVersion, computed(() => props.mod.installed), updating)
 
 </script>
 <template>
   <ModDetail
     :detail="model"
     :dependencies="[]"
-    :enabled="false"
-    :has-installed-version="!!runtime.optifine"
-    :selected-installed="runtime.optifine === selectedVersion?.version"
-    :loading="false"
+    :enabled="enabled"
+    :has-installed-version="!!runtime.optifine || hasInstalledVersion"
+    :selected-installed="runtime.optifine === selectedVersion?.version || installed"
+    :loading="loadingDescription"
     :versions="versions"
-    :updating="false"
+    :updating="updating"
     no-enabled
     :has-more="false"
     :loading-versions="refreshing"

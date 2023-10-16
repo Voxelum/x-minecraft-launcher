@@ -10,6 +10,7 @@ import { useModDetailUpdate, useModDetailEnable } from '@/composables/modDetail'
 import { clientModrinthV2 } from '@/util/clients'
 import { useInstanceModLoaderDefault } from '@/util/instanceModLoaderDefault'
 import { isNoModLoader } from '@/util/isNoModloader'
+import { getExpectedSize } from '@/util/size'
 
 const props = defineProps<{
   mod: Mod
@@ -100,7 +101,7 @@ const model = computed(() => {
     result.push({
       icon: '123',
       name: t('fileDetail.fileSize'),
-      value: resource.size.toString(),
+      value: getExpectedSize(resource.size),
     }, {
       icon: 'tag',
       name: t('fileDetail.hash'),

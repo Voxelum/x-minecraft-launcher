@@ -214,16 +214,13 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
     const _all: Mod[] = []
     const _installed: Mod[] = []
 
-    if (runtime.value.optifine) {
-      _installed.push(getOptifineAsMod())
-    } else {
-      const hasOptifine = keyword.value.toLowerCase().includes('optifine')
-      if (hasOptifine) {
-        _all.push(getOptifineAsMod())
-      }
-    }
+    let hasOptifine = false
 
     const processModFile = (m: ModFile, instanceFile: boolean) => {
+      if (m.modId === 'OptiFine') {
+        hasOptifine = true
+        return getOptifineAsMod(m)
+      }
       const curseforgeId = m.resource.metadata.curseforge?.projectId
       const modrinthId = m.resource.metadata.modrinth?.projectId
       const name = m.name
@@ -279,6 +276,17 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
       }
     }
 
+    if (!hasOptifine) {
+      if (runtime.value.optifine) {
+        _installed.push(getOptifineAsMod())
+      } else {
+        const hasOptifine = keyword.value.toLowerCase().includes('optifine')
+        if (hasOptifine) {
+          _all.push(getOptifineAsMod())
+        }
+      }
+    }
+
     return markRaw([_all, _installed] as const)
   })
 
@@ -309,14 +317,14 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
   }
 }
 
-const getOptifineAsMod = () => {
+const getOptifineAsMod = (f?: ModFile) => {
   const result: Mod = {
-    id: 'optifine',
+    id: 'OptiFine',
     icon: 'image://builtin/optifine',
     title: 'Optifine',
     author: 'sp614x',
     description: 'Optifine is a Minecraft optimization mod. It allows Minecraft to run faster and look better with full support for HD textures and many configuration options.',
-    installed: [],
+    installed: f ? [f] : [],
     downloadCount: 0,
     followerCount: 0,
   }

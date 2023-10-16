@@ -179,6 +179,10 @@ export interface InstallService {
    */
   installOptifine(options: InstallOptifineOptions): Promise<[string, Resource]>
   /**
+   * Install the optifine uniersal jar as a resource
+   */
+  installOptifineAsResource(options: InstallOptifineOptions): Promise<Resource>
+  /**
    * Install a specific liteloader version
    */
   installLiteloader(meta: LiteloaderVersion): Promise<void>
