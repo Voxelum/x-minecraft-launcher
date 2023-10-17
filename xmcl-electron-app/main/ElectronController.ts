@@ -372,7 +372,9 @@ export class ElectronController implements LauncherAppController {
 
     // Ensure the settings is loaded
     if (this.app.platform.os === 'linux' && !this.settings) {
-      this.settings = await this.app.registry.get(kSettings)
+      if (!await this.app.isGameDataPathMissing()) {
+        this.settings = await this.app.registry.get(kSettings)
+      }
     }
 
     const browser = new BrowserWindow({
