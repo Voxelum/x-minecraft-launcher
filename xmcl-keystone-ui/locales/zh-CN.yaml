@@ -366,10 +366,6 @@ installForge:
   library: 检查库
   name: 安装 Forge
   postProcessing: 处理 Minecraft Jar 文件
-installLabyMod:
-  name: 安装 LabyMod
-  asset: 安装资源 {name}
-  json: 生成 {version} JSON
 installInstance:
   file: 更新/安装实例文件 {file}
   name: 更新/安装实例
@@ -378,6 +374,10 @@ installJre:
   decompress: 解压缩JRE文件到本地
   download: 下载压缩的JRE文件
   name: 安装Java运行库
+installLabyMod:
+  asset: 安装资源 {name}
+  json: 生成 {version} JSON
+  name: 安装 LabyMod
 installLibraries:
   library: 检查库文件
   name: 安装依赖运行库
@@ -627,7 +627,6 @@ minecraftVersion:
   snapshot: 快照版
 mod:
   acceptVersion: 推荐 {version}
-  backToAllMods: 返回所有 Mods
   compatible: 可用于当前版本。
   currentVersion: 当前是 {current}
   deletion: 删除 Mod

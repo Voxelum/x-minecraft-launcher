@@ -608,7 +608,6 @@ minecraftVersion:
   snapshot: Snapshot
 mod:
   acceptVersion: Принять {version}
-  backToAllMods: Назад ко всем модам
   compatible: Совместимый мод.
   currentVersion: Текущая {current}
   deletion: Удаление мода

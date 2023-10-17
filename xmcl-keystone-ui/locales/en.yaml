@@ -351,10 +351,6 @@ installForge:
   library: Install Library {lib}
   name: Install Forge
   postProcessing: Post Processing
-installLabyMod:
-  name: Install LabyMod
-  asset: Install Asset {name}
-  json: Generate JSON {version}
 installInstance:
   file: Update Instance File {file}
   name: Update Instance
@@ -363,6 +359,10 @@ installJre:
   decompress: Decompress JRE files to folder
   download: Download compressed JRE file
   name: Install Java Runtime Library
+installLabyMod:
+  asset: Install Asset {name}
+  json: Generate JSON {version}
+  name: Install LabyMod
 installLibraries:
   library: Install Library
   name: Install Libraries
@@ -615,7 +615,6 @@ minecraftVersion:
   snapshot: Snapshot
 mod:
   acceptVersion: Accept {version}
-  backToAllMods: Back to All Mods
   compatible: Compatible Mod.
   currentVersion: Current {current}
   deletion: Delete Mod

@@ -683,7 +683,6 @@ minecraftVersion:
   snapshot: Snapshot
 mod:
   acceptVersion: Accepter {version}
-  backToAllMods: Retour à tous les mods
   compatible: Mod compatible.
   currentVersion: Actuel {current}
   deletion: Suppression du Mod
