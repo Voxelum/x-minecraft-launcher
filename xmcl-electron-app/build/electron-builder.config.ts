@@ -77,17 +77,8 @@ export const config = {
     ],
   },
   win: {
-    extraFiles: {
-      from: './build/extra',
-      to: '.',
-      filter: '*.dll',
-    },
     certificateFile: undefined as string | undefined,
     icon: 'icons/dark.ico',
-    files: [
-      '**/*.cs',
-      '**/*.worker.js',
-    ],
     target: [
       {
         target: 'zip',
