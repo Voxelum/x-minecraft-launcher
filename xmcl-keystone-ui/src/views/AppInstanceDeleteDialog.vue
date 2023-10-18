@@ -60,10 +60,15 @@ watch(isShown, (shown) => {
     path.value = (typeof dialog.value.parameter === 'object') ? (dialog.value.parameter).path ?? '' : ''
   }
 })
-const { remove } = injection(kInstances)
+const router = useRouter()
+const { remove, selectedInstance } = injection(kInstances)
 const doDelete = () => {
   const val = dialog.value.parameter
   remove((val as any).path)
+  const instancePath = (val as any).path
+  if (router.currentRoute.fullPath !== '/' && selectedInstance.value === instancePath) {
+    router.push('/')
+  }
   isShown.value = false
 }
 
