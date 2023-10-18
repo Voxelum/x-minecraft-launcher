@@ -71,6 +71,10 @@ const snackbarColor = ref('black')
 const hasAnimation = ref(false)
 useBeforeLeave(() => {
   if (edit.isModified.value) {
+    if (edit.data.path !== instance.value.path) {
+      edit.load()
+      return true
+    }
     snackbarColor.value = 'error'
     hasAnimation.value = true
     setTimeout(() => {

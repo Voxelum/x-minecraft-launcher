@@ -17,6 +17,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
   } = useGlobalSettings()
 
   const data = reactive({
+    path: instance.value.path,
     name: instance.value?.name ?? '',
 
     host: '', // mc.hypixel.com
@@ -243,6 +244,7 @@ export function useInstanceEdit(instance: Ref<Instance>, edit: (instance: EditIn
     data.loading = false
     const current = instance.value
     if (current) {
+      data.path = current.path
       data.name = current.name
       data.hideLauncher = current.hideLauncher
       data.url = current.url
