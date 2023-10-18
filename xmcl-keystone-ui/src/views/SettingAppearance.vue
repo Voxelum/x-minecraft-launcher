@@ -424,13 +424,13 @@
 import { kSettingsState } from '@/composables/setting'
 import { kUILayout } from '@/composables/uiLayout'
 import { injection } from '@/util/inject'
-import { BackgroundType, useBackground, useBarBlur } from '../composables/background'
+import { BackgroundType, kBackground, useBackground, useBarBlur } from '../composables/background'
 import { kColorTheme } from '../composables/colorTheme'
 import SettingAppearanceColor from './SettingAppearanceColor.vue'
 
 const { showOpenDialog } = windowController
 const { t } = useI18n()
-const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, setBackgroundVideo, backgroundVideo } = useBackground()
+const { backgroundImage, setBackgroundImage, blur, particleMode, backgroundType, backgroundImageFit, volume, setBackgroundVideo, backgroundVideo } = injection(kBackground)
 const { blurSidebar, blurAppBar } = useBarBlur()
 const { sideBarColor, appBarColor, primaryColor, warningColor, errorColor, cardColor, backgroundColor, resetToDefault } = injection(kColorTheme)
 const { state } = injection(kSettingsState)

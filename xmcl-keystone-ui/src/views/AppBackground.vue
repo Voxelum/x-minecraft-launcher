@@ -30,10 +30,10 @@
 <script lang="ts" setup>
 import Halo from '@/components/Halo.vue'
 import Particles from '@/components/Particles.vue'
-import { BackgroundType, useBackground } from '../composables/background'
-import { Ref } from 'vue'
+import { injection } from '@/util/inject'
+import { BackgroundType, kBackground } from '../composables/background'
 
-const { blur, backgroundImage, backgroundType, particleMode, backgroundImageFit, backgroundVideo, volume } = useBackground()
+const { blur, backgroundImage, backgroundType, particleMode, backgroundImageFit, backgroundVideo, volume } = injection(kBackground)
 const videoRef = ref(null as null | HTMLVideoElement)
 
 watch(volume, (newVolume) => {
