@@ -15,7 +15,7 @@ export function useInstanceCreation(gameProfile: Ref<GameProfile>, versions: Ref
   const { release } = useMinecraftVersions(versions)
   const data = reactive<InstanceData>({
     name: '',
-    runtime: { forge: '', minecraft: release.value?.id || '', liteloader: '', fabricLoader: '', yarn: '' } as RuntimeVersions,
+    runtime: { forge: '', minecraft: release.value?.id || '', liteloader: '', fabricLoader: '', yarn: '', labyMod: '' } as RuntimeVersions,
     version: '',
     java: '',
     showLog: false,

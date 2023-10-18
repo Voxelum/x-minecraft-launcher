@@ -104,7 +104,7 @@
     <v-list-item>
       <v-list-item-action class="self-center">
         <img
-          :src="'image://builtin/labymod'"
+          :src="'image://builtin/labyMod'"
           width="40px"
         >
       </v-list-item-action>
@@ -143,7 +143,7 @@
         </VersionMenu>
       </v-list-item-action>
     </v-list-item>
-    <v-list-item>
+    <v-list-item v-if="isNotSelectingLabyMod">
       <v-list-item-action class="self-center">
         <img
           :src="'image://builtin/forge'"
@@ -191,7 +191,7 @@
         </VersionMenu>
       </v-list-item-action>
     </v-list-item>
-    <v-list-item>
+    <v-list-item v-if="isNotSelectingLabyMod">
       <v-list-item-action class="self-center">
         <img
           :src="'image://builtin/fabric'"
@@ -234,7 +234,7 @@
         </VersionMenu>
       </v-list-item-action>
     </v-list-item>
-    <v-list-item>
+    <v-list-item v-if="isNotSelectingLabyMod">
       <v-list-item-action class="self-center">
         <img
           :src="'image://builtin/quilt'"
@@ -275,7 +275,7 @@
         </VersionMenu>
       </v-list-item-action>
     </v-list-item>
-    <v-list-item>
+    <v-list-item v-if="isNotSelectingLabyMod">
       <v-list-item-action class="self-center">
         <img
           :src="'image://builtin/optifine'"
@@ -408,6 +408,9 @@ const localItems = computed(() => {
   })
 })
 
+const isNotSelectingLabyMod = computed(() => {
+  return content.runtime.labyMod === ''
+})
 function onSelectLocalVersion(version: string) {
   if (content.runtime) {
     content.version = version
