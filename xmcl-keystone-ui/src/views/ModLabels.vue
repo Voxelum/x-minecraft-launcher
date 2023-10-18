@@ -10,6 +10,7 @@
       class="mod-tag"
       :outlined="darkTheme"
       color="orange en-1"
+      :disabled="disabled"
       label
       style="margin-left: 1px;"
       @mousedown.stop
@@ -21,6 +22,7 @@
       :key="com.modId + ' ' + i"
       v-shared-tooltip="getTooltip(com)"
       class="mod-tag"
+      :disabled="disabled"
       small
       label
       outlined
@@ -48,6 +50,7 @@
       class="mod-tag"
       small
       label
+      :disabled="disabled"
       :color="getColor(tag)"
       style="margin-left: 1px;"
       close
@@ -79,6 +82,7 @@ import { kInstanceModsContext } from '@/composables/instanceMods'
 const props = defineProps<{
   modid?: string
   tags: string[]
+  disabled?: boolean
   compatibility: CompatibleDetail[]
 }>()
 
