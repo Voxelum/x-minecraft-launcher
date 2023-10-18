@@ -103,6 +103,8 @@ export interface Mod {
   description: string
   author: string
 
+  disabled?: boolean
+
   downloadCount?: number
   followerCount?: number
 

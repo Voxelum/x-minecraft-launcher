@@ -61,23 +61,6 @@
                 {{ t('modInstall.upgrade') }}
               </span>
             </v-btn>
-            <!-- <v-divider
-              vertical
-              class="mx-2"
-            /> -->
-            <!-- <span class="search-text">
-              {{ t('modInstall.search') }}
-            </span>
-            <span
-              v-if="counts.searched > 0"
-              class="ml-2"
-            >
-              {{ t('items.count', { count: counts.searched }) }}
-              <span v-if="total">
-                /
-                {{ t('items.total', { total: total }) }}
-              </span>
-            </span> -->
           </v-subheader>
         </div>
         <v-virtual-scroll
@@ -216,8 +199,6 @@ const { minecraft } = injection(kInstanceVersion)
 const { runtime } = injection(kInstance)
 const { provideRuntime } = injection(kInstanceModsContext)
 
-watch(provideRuntime, v => console.log(v), { immediate: true })
-
 const {
   modrinth, modrinthError,
   curseforge, curseforgeError,
@@ -225,8 +206,6 @@ const {
   loadMoreCurseforge,
   loadMoreModrinth,
   keyword,
-  loadingCurseforge,
-  loadingModrinth,
 } = injection(kModsSearch)
 const { search, installed, tab } = injection(kMods)
 

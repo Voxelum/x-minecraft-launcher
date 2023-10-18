@@ -229,6 +229,7 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
         obj.files?.push(m)
         if (instanceFile) {
           obj.installed?.push(m)
+          obj.disabled = !obj.installed[0].enabled
         }
       } else {
         const mod: Mod = markRaw({
@@ -236,6 +237,7 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
           author: m.authors[0] ?? '',
           icon: m.icon,
           title: name,
+          disabled: false,
           description: m.description,
           forge: m.modLoaders.indexOf('forge') !== -1,
           fabric: m.modLoaders.indexOf('fabric') !== -1,
@@ -258,6 +260,7 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
         }
         if (instanceFile) {
           mod.installed.push(m)
+          mod.disabled = !mod.installed[0].enabled
         }
         return mod
       }

@@ -2,6 +2,10 @@
   <v-list-item
     v-context-menu="getContextMenuItems"
     v-shared-tooltip="[tooltip, hasUpdate ? 'primary' : 'black']"
+    class="pointer-events-auto"
+    :class="{
+      'v-list-item--disabled': item.disabled
+    }"
     :input-value="selected"
     link
     @click="emit('click')"
@@ -51,6 +55,7 @@
       <v-list-item-subtitle class="invisible-scroll flex flex-grow-0 gap-2">
         <template v-if="item.installed && (item.installed?.[0]?.tags.length + compatibility.length) > 0">
           <ModLabels
+            :disabled="item.disabled"
             :compatibility="compatibility"
             :tags="item.installed[0].tags"
           />
