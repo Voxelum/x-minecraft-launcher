@@ -9,6 +9,7 @@ import { kUserDiagnose } from './userDiagnose'
 import { kLaunchTask } from './launchTask'
 import { kInstanceFiles } from './instanceFiles'
 import { kInstanceVersion } from './instanceVersion'
+import { kInstance } from './instance'
 
 export interface LaunchMenuItem {
   title: string
@@ -25,6 +26,7 @@ export function useLaunchButton() {
   const { show: showLaunchStatusDialog } = useDialog(LaunchStatusDialogKey)
   const { show: showMultiInstanceDialog } = useDialog('multi-instance-launch')
 
+  const { path } = injection(kInstance)
   const { issues: versionIssues, fix: fixVersionIssues, loading: loadingVersionIssues } = injection(kInstanceVersionDiagnose)
   const { issue: javaIssue, fix: fixJavaIssue } = injection(kInstanceJavaDiagnose)
   const { issue: filesIssue, fix: fixInstanceFileIssue } = injection(kInstanceFilesDiagnose)
@@ -34,7 +36,19 @@ export function useLaunchButton() {
   const { isValidating: isRefreshingVersion } = injection(kInstanceVersion)
 
   const { t } = useI18n()
+  const dirty = ref(false)
+  watch(path, () => {
+    dirty.value = true
+  })
   const launchButtonFacade = computed(() => {
+    console.log('update button facade')
+    if (
+      !loadingVersionIssues.value &&
+      !refreshingFiles.value &&
+      !isRefreshingVersion.value
+    ) {
+      dirty.value = false
+    }
     if (status.value === TaskState.Running) {
       return {
         icon: 'pause',
@@ -112,7 +126,8 @@ export function useLaunchButton() {
   const loading = computed(() => launching.value ||
     loadingVersionIssues.value ||
     refreshingFiles.value ||
-    isRefreshingVersion.value)
+    isRefreshingVersion.value ||
+    dirty.value)
   const right = computed(() => launchButtonFacade.value.right || false)
   const menuItems = computed<LaunchMenuItem[]>(() => launchButtonFacade.value.menu || [])
 
