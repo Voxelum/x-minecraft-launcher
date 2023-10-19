@@ -10,7 +10,7 @@
       <template v-for="(item, index) in items">
         <v-list-item
           :key="index"
-          @click="item.onClick"
+          @click="item.onClick?.()"
         >
           <v-list-item-avatar class="flex-grow-0">
             <v-icon :color="item.color ?? 'warning darken-1'">
