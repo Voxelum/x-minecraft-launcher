@@ -79,30 +79,6 @@ async function up(db: Kysely<Database>): Promise<void> {
     .execute()
 
   await db.schema
-    .createTable('modProject')
-    .addColumn('modid', 'varchar', (col) => col.notNull())
-    .addColumn('modloader', 'varchar')
-    .addColumn('modrinth', 'varchar')
-    .addColumn('modloader', 'varchar')
-    .addColumn('curseforge', 'varchar')
-    .addColumn('mcwiki', 'varchar')
-    .addPrimaryKeyConstraint('modloader_modid', ['modloader', 'modid'])
-    .execute()
-
-  await db.schema
-    .createTable('modFile')
-    .addColumn('modid', 'varchar')
-    .addColumn('version', 'varchar')
-    .addColumn('modloader', 'varchar')
-    .addColumn('modrinthProjectId', 'varchar')
-    .addColumn('modrinthProjectVersionId', 'varchar')
-    .addColumn('curseforgeProjectId', 'varchar')
-    .addColumn('curseforgeProjectFileId', 'varchar')
-    .addColumn('url', 'json')
-    .addPrimaryKeyConstraint('modloader_modid_version', ['modloader', 'modid', 'version'])
-    .execute()
-
-  await db.schema
     .createIndex('snapshots_ino_index')
     .on('snapshots')
     .column('ino')
