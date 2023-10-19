@@ -119,14 +119,19 @@ const login = ref(users.value.length === 0)
 const { refresh: onRefresh, refreshing, error } = useRefreshable(async () => {
   if (users.value.length === 0) {
     login.value = true
-  } else if (selected.value?.id || selected.value.invalidated || expired.value) {
-    // Try to refresh
-    const authority = selected.value?.authority
-    await refreshUser(selected.value.id).catch((e) => {
-      console.error(e)
-      reset({ username: selected.value?.username, authority, error: t('login.userRelogin') })
-      login.value = true
-    })
+  } else {
+    if (!selected.value.id) {
+      select(users.value[0].id)
+    }
+    if (selected.value?.id || selected.value.invalidated || expired.value) {
+      // Try to refresh
+      const authority = selected.value?.authority
+      await refreshUser(selected.value.id).catch((e) => {
+        console.error(e)
+        reset({ username: selected.value?.username, authority, error: t('login.userRelogin') })
+        login.value = true
+      })
+    }
   }
 })
 
