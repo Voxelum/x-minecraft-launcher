@@ -133,7 +133,7 @@ import { useBusy, useRefreshable, useService } from '@/composables'
 import { injection } from '@/util/inject'
 import { AUTHORITY_DEV, AUTHORITY_MICROSOFT, AUTHORITY_MOJANG, OfficialUserServiceKey, UserException, UserServiceKey, isException } from '@xmcl/runtime-api'
 import { Ref } from 'vue'
-import { useAccountSystemHistory, useAuthorityItems } from '../composables/login'
+import { useAccountSystemHistory, useAllowThirdparty, useAuthorityItems } from '../composables/login'
 import { kUserContext, useLoginValidation } from '../composables/user'
 import AppLoginAuthoritySelect from './AppLoginAuthoritySelect.vue'
 import { kSettingsState } from '@/composables/setting'
@@ -174,9 +174,7 @@ const getUserServiceAccount = (serv: string) => {
 
 // Authority items
 const { data: services } = injection(kYggdrasilServices)
-const { state: setting } = injection(kSettingsState)
-const { users } = injection(kUserContext)
-const items = useAuthorityItems(computed(() => !!setting.value?.developerMode || users.value.some(u => u.authority === AUTHORITY_MICROSOFT)), computed(() => services.value || []))
+const items = useAuthorityItems(useAllowThirdparty(), computed(() => services.value || []))
 
 // Account history
 const { authority, history } = useAccountSystemHistory()
