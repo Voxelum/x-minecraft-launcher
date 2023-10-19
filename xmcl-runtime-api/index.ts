@@ -66,6 +66,7 @@ export * from './src/services/UserService'
 export * from './src/services/VersionService'
 export * from './src/services/XUpdateService'
 export * from './src/services/YggdrasilService'
+export * from './src/services/ProjectMappingService'
 
 export * from './src/apps'
 export * from './src/bootstrap'

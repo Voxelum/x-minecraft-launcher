@@ -1,4 +1,4 @@
-import { PartialResourceHash, Resource } from '@xmcl/runtime-api'
+import { PartialResourceHash, Resource, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
 import { Contracts } from 'applicationinsights'
 import { randomUUID } from 'crypto'
 import { LauncherAppPlugin } from '../app/LauncherApp'
@@ -138,28 +138,84 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
       })
     })
 
+    const getPayload = (sha1: string, metadata: ResourceMetadata, name?: string, domain?: ResourceDomain) => {
+      interface ResourceTracingPayload {
+        name?: string
+        sha1: string
+        domain?: ResourceDomain
+        forge?: {
+          modId: string
+          version: string
+        }
+        fabric?: {
+          modId: string
+          version: string
+        }[]
+        curseforge?: {
+          projectId: number
+          fileId: number
+        }
+        modrinth?: {
+          projectId: string
+          versionId: string
+        }
+      }
+      const trace: ResourceTracingPayload = {
+        name,
+        sha1,
+        domain,
+      }
+      if (metadata.curseforge) {
+        trace.curseforge = {
+          projectId: metadata.curseforge.projectId,
+          fileId: metadata.curseforge.fileId,
+        }
+      }
+      if (metadata.modrinth) {
+        trace.modrinth = {
+          projectId: metadata.modrinth.projectId,
+          versionId: metadata.modrinth.versionId,
+        }
+      }
+      if (metadata.forge) {
+        trace.forge = {
+          modId: metadata.forge.modid,
+          version: metadata.forge.version,
+        }
+      }
+      if (metadata.fabric) {
+        if (metadata.fabric instanceof Array) {
+          trace.fabric = metadata.fabric.map(f => ({
+            modId: f.id,
+            version: f.version,
+          }))
+        } else {
+          trace.fabric = [{
+            modId: metadata.fabric.id,
+            version: metadata.fabric.version,
+          }]
+        }
+      }
+
+      return trace
+    }
+
     app.registry.get(ResourceService).then((resourceService) => {
       resourceService.on('resourceAdd', (res: Resource) => {
         if (settings.disableTelemetry) return
         appInsight.defaultClient.trackEvent({
-          name: 'resource-metadata',
-          properties: {
-            fileName: res.fileName,
-            domain: res.domain,
-            sha1: res.hash,
-            metadata: res.metadata,
-          },
+          name: 'resource-metadata-v2',
+          properties: getPayload(res.hash, res.metadata, res.name, res.domain),
         })
-      }).on('resourceUpdate', (res: PartialResourceHash) => {
+      })
+      resourceService.on('resourceUpdate', (res: PartialResourceHash) => {
         if (settings.disableTelemetry) return
-        appInsight.defaultClient.trackEvent({
-          name: 'resource-metadata',
-          properties: {
-            name: res.name,
-            sha1: res.hash,
-            metadata: res.metadata,
-          },
-        })
+        if (res.metadata) {
+          appInsight.defaultClient.trackEvent({
+            name: 'resource-metadata-v2',
+            properties: getPayload(res.hash, res.metadata, res.name),
+          })
+        }
       })
     })
 
