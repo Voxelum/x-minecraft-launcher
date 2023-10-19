@@ -50,8 +50,8 @@ export class ProxyDispatcher extends DispatcherBase {
   }) {
     super()
 
-    this.pConnect = buildConnector({ timeout: 10_000 })
-    const connector = buildConnector({ timeout: 10_000 })
+    this.pConnect = buildConnector({ timeout: 10_000, rejectUnauthorized: false })
+    const connector = buildConnector({ timeout: 10_000, rejectUnauthorized: false })
 
     const connect = async (opts: any, callback: buildConnector.Callback) => {
       if (!this.isProxyEnabled || !this.proxyClient) {
@@ -80,7 +80,11 @@ export class ProxyDispatcher extends DispatcherBase {
           return
         }
         const servername = opts.servername
-        connector({ ...opts, servername, httpSocket: socket }, callback)
+        connector({
+          ...opts,
+          servername,
+          httpSocket: socket,
+        }, callback)
       } catch (err) {
         callback(err as Error, null)
       }
