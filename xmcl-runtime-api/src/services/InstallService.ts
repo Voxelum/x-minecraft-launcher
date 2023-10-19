@@ -152,7 +152,7 @@ export interface InstallService {
    * Install assets to the version
    * @param version The local version id
    */
-  installAssets(assets: Asset[]): Promise<void>
+  installAssets(assets: Asset[], version?: string, force?: boolean): Promise<void>
   /**
    * Download and install a minecraft version
    */
@@ -160,7 +160,7 @@ export interface InstallService {
   /**
    * Install provided libraries to game.
    */
-  installLibraries(libraries: InstallableLibrary[]): Promise<void>
+  installLibraries(libraries: InstallableLibrary[], version?: string, force?: boolean): Promise<void>
   /**
    * Install neoForged to the minecraft
    */

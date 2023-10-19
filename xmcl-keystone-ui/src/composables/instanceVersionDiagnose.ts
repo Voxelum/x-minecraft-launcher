@@ -98,7 +98,7 @@ export function useInstanceVersionDiagnose(runtime: Ref<RuntimeVersions>, resolv
     if (librariesIssue.length > 0) {
       const options = { named: { count: librariesIssue.length } }
       ops.push(async () => {
-        await installLibraries(librariesIssue.map(v => v.library))
+        await installLibraries(librariesIssue.map(v => v.library), version.id, librariesIssue.length < 15)
       })
       items.push(librariesIssue.some(v => v.type === 'corrupted')
         ? reactive({
@@ -117,7 +117,7 @@ export function useInstanceVersionDiagnose(runtime: Ref<RuntimeVersions>, resolv
       if (assetsIssue.length > 0) {
         const options = { named: { count: assetsIssue.length } }
         ops.push(async () => {
-          await installAssets(assetsIssue.map(v => v.asset))
+          await installAssets(assetsIssue.map(v => v.asset), version.id, assetsIssue.length < 15)
         })
         items.push(assetsIssue.some(v => v.type === 'corrupted')
           ? reactive({

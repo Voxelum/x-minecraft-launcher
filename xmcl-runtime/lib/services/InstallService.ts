@@ -7,7 +7,7 @@ import { AbortableTask, task } from '@xmcl/task'
 import { XMLParser } from 'fast-xml-parser'
 import { existsSync } from 'fs'
 import { ensureFile } from 'fs-extra/esm'
-import { readFile, writeFile } from 'fs/promises'
+import { readFile, unlink, writeFile } from 'fs/promises'
 import { Dispatcher, errors, request } from 'undici'
 import { URL } from 'url'
 import { LauncherApp } from '../app/LauncherApp'
@@ -503,10 +503,22 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   @Lock(LockKey.assets)
-  async installAssets(assets: Asset[], version?: string) {
+  async installAssets(assets: Asset[], version?: string, force?: boolean) {
     const option = this.getInstallOptions()
     const location = this.getPath()
-    const task = installResolvedAssetsTask(assets, new MinecraftFolder(location), option).setName('installAssets', { id: version })
+    const folder = new MinecraftFolder(location)
+    if (force) {
+      // Remove assets before download
+      const promises = [] as Promise<void>[]
+      for (const a of assets) {
+        const path = folder.getAsset(a.hash)
+        if (path) {
+          promises.push(unlink(path).catch(() => { }))
+        }
+      }
+      await Promise.all(promises)
+    }
+    const task = installResolvedAssetsTask(assets, folder, option).setName('installAssets', { id: version })
     await this.submit(task)
   }
 
@@ -538,7 +550,7 @@ export class InstallService extends AbstractService implements IInstallService {
   }
 
   @Lock(LockKey.libraries)
-  async installLibraries(libraries: InstallableLibrary[], version?: string) {
+  async installLibraries(libraries: InstallableLibrary[], version?: string, force?: boolean) {
     let resolved: ResolvedLibrary[]
     if ('downloads' in libraries[0]) {
       resolved = Version.resolveLibraries(libraries)
@@ -546,8 +558,20 @@ export class InstallService extends AbstractService implements IInstallService {
       resolved = libraries as any
     }
     const option = this.getInstallOptions()
-    const task = installResolvedLibrariesTask(resolved, this.getPath(), option).setName('installLibraries', { id: version })
+    const folder = MinecraftFolder.from(this.getPath())
+    const task = installResolvedLibrariesTask(resolved, folder, option).setName('installLibraries', { id: version })
     try {
+      if (force) {
+        // remove lib before download
+        const promises = [] as Promise<void>[]
+        for (const lib of resolved) {
+          const path = folder.getLibraryByPath(lib.path)
+          if (path) {
+            promises.push(unlink(path).catch(() => { }))
+          }
+        }
+        await Promise.all(promises)
+      }
       await this.submit(task)
     } catch (e) {
       this.warn('An error ocurred during install libraries:')
