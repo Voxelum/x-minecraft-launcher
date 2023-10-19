@@ -143,46 +143,37 @@ export class MicrosoftAccountSystem implements UserAccountSystem {
       this.logger.log('Successfully login Minecraft with Xbox')
 
       const ownershipResponse = await this.mojangClient.checkGameOwnership(mcResponse.access_token, signal).catch((e) => {
-        throw new UserException({ type: 'userCheckGameOwnershipFailed' }, 'Failed to check game ownership', { cause: e })
+        this.logger.warn(new UserException({ type: 'userCheckGameOwnershipFailed' }, 'Failed to check game ownership', { cause: e }))
+        return { items: [] }
       })
       const ownGame = ownershipResponse.items.length > 0
       this.logger.log(`Successfully check ownership: ${ownGame}`)
 
-      if (ownGame) {
-        const gameProfileResponse = await this.mojangClient.getProfile(mcResponse.access_token, signal)
-        this.logger.log('Successfully get game profile')
-        const skin: Skin | undefined = gameProfileResponse.skins?.[0]
-        const gameProfiles: GameProfileAndTexture[] = [{
-          ...gameProfileResponse,
-          id: gameProfileResponse.id,
-          name: gameProfileResponse.name,
-          textures: {
-            SKIN: {
-              url: skin?.url,
-              metadata: { model: skin?.variant === 'CLASSIC' ? 'steve' : 'slim' },
-            },
-            CAPE: gameProfileResponse.capes && gameProfileResponse.capes.length > 0
-              ? {
-                url: gameProfileResponse.capes[0].url,
-              }
-              : undefined,
+      const gameProfileResponse = await this.mojangClient.getProfile(mcResponse.access_token, signal)
+      this.logger.log('Successfully get game profile')
+      const skin: Skin | undefined = gameProfileResponse.skins?.[0]
+      const gameProfiles: GameProfileAndTexture[] = [{
+        ...gameProfileResponse,
+        id: gameProfileResponse.id,
+        name: gameProfileResponse.name,
+        textures: {
+          SKIN: {
+            url: skin?.url,
+            metadata: { model: skin?.variant === 'CLASSIC' ? 'steve' : 'slim' },
           },
-        }]
-        return {
-          userId: mcResponse.username,
-          accessToken: mcResponse.access_token,
-          gameProfiles,
-          msAccessToken: extra?.accessToken,
-          selectedProfile: gameProfiles[0],
-          expiredAt: mcResponse.expires_in * 1000 + Date.now(),
-        }
-      }
+          CAPE: gameProfileResponse.capes && gameProfileResponse.capes.length > 0
+            ? {
+              url: gameProfileResponse.capes[0].url,
+            }
+            : undefined,
+        },
+      }]
       return {
         userId: mcResponse.username,
         accessToken: mcResponse.access_token,
-        gameProfiles: [],
+        gameProfiles,
         msAccessToken: extra?.accessToken,
-        selectedProfile: undefined,
+        selectedProfile: gameProfiles[0],
         expiredAt: mcResponse.expires_in * 1000 + Date.now(),
       }
     }
