@@ -1,15 +1,20 @@
-import { AccentState, IS_DEV, WindowsBuild } from '@/constant'
+import { AccentState, HAS_DEV_SERVER, IS_DEV, WindowsBuild } from '@/constant'
 import browsePreload from '@preload/browse'
 import indexPreload from '@preload/index'
 import monitorPreload from '@preload/monitor'
 import browserWinUrl from '@renderer/browser.html'
 import loggerWinUrl from '@renderer/logger.html'
-import { BaseService, LauncherAppController, UserService } from '@xmcl/runtime'
+import { LauncherAppController, UserService } from '@xmcl/runtime'
 import { InstalledAppManifest, Settings } from '@xmcl/runtime-api'
+import { Client } from '@xmcl/runtime/lib/engineBridge'
+import { kSettings } from '@xmcl/runtime/lib/entities/settings'
+import { kUserAgent } from '@xmcl/runtime/lib/entities/userAgent'
 import { Logger } from '@xmcl/runtime/lib/util/log'
 import { BrowserWindow, DidCreateWindowDetails, Event, HandlerDetails, ProtocolRequest, ProtocolResponse, Session, Tray, WebContents, dialog, ipcMain, nativeTheme, protocol, session, shell } from 'electron'
+import { createReadStream } from 'fs'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
+import { request } from 'undici'
 import ElectronLauncherApp from './ElectronLauncherApp'
 import { plugins } from './controllers'
 import en from './locales/en.yaml'
@@ -19,10 +24,6 @@ import zh from './locales/zh-CN.yaml'
 import { createI18n } from './utils/i18n'
 import { darkIcon } from './utils/icons'
 import { trackWindowSize } from './utils/windowSizeTracker'
-import { PromiseSignal, createPromiseSignal } from '@xmcl/runtime/lib/util/promiseSignal'
-import { Client } from '@xmcl/runtime/lib/engineBridge'
-import { kSettings } from '@xmcl/runtime/lib/entities/settings'
-import { kUserAgent } from '@xmcl/runtime/lib/entities/userAgent'
 
 export class ElectronController implements LauncherAppController {
   protected windowsVersion?: { major: number; minor: number; build: number }
@@ -91,21 +92,13 @@ export class ElectronController implements LauncherAppController {
     window.once('ready-to-show', () => {
       window.show()
     })
-    this.logger.log(`Try to open window ${details.url}`)
-    window.loadURL(details.url).then(() => {
-      this.logger.log(`Opened window ${details.url}`)
-      window.webContents.reload()
-    }, (e) => {
-      this.logger.log(`Fail to open window ${details.url}`, e)
-      window.webContents.reload()
-    })
   }
 
   private onWebContentWillNavigate = (event: Event, url: string) => {
     if (!IS_DEV) {
       event.preventDefault()
       shell.openExternal(url)
-    } else if (!url.startsWith('http://localhost')) {
+    } else if (!url.startsWith('http://localhost') && !url.startsWith('http://app')) {
       event.preventDefault()
       shell.openExternal(url)
     }
@@ -287,6 +280,49 @@ export class ElectronController implements LauncherAppController {
       })
     }
 
+    if (!HAS_DEV_SERVER) {
+      restoredSession.protocol.interceptStreamProtocol('http', (req, callback) => {
+        if (req.url.startsWith('http://app')) {
+          const parsed = new URL(req.url)
+          const realPath = join(__dirname, 'renderer', parsed.pathname)
+          this.logger.log(`Intercept http request ${req.url} -> ${realPath}`)
+          const mimeType =
+            parsed.pathname.endsWith('.js')
+              ? 'text/javascript'
+              : parsed.pathname.endsWith('.css')
+                ? 'text/css'
+                : parsed.pathname.endsWith('.html')
+                  ? 'text/html'
+                  : parsed.pathname.endsWith('.json')
+                    ? 'application/json'
+                    : parsed.pathname.endsWith('.png')
+                      ? 'image/png'
+                      : parsed.pathname.endsWith('.svg')
+                        ? 'image/svg+xml'
+                        : parsed.pathname.endsWith('.ico')
+                          ? 'image/x-icon'
+                          : parsed.pathname.endsWith('.woff')
+                            ? 'font/woff'
+                            : parsed.pathname.endsWith('.woff2')
+                              ? 'font/woff2'
+                              : parsed.pathname.endsWith('.ttf')
+                                ? 'font/ttf'
+                                // webp
+                                : parsed.pathname.endsWith('.webp') ? 'image/webp' : ''
+          callback({ statusCode: 200, mimeType, data: createReadStream(realPath) })
+        } else {
+          request(req.url, {
+            headers: req.headers,
+            method: req.method as any,
+          }).then((resp) => {
+            callback({ statusCode: resp.statusCode, headers: resp.headers as any, data: resp.body })
+          }, (err) => {
+            callback({ statusCode: 500, error: err })
+          })
+        }
+      })
+    }
+
     this.app.protocol.onRegistered = (protocol) => {
       if (!wellKnown.includes(protocol)) {
         this.logger.log(`Register custom protocol ${protocol} to electron`)
@@ -424,6 +460,7 @@ export class ElectronController implements LauncherAppController {
     if (await this.app.isGameDataPathMissing()) {
       url += '?setup'
     }
+    this.logger.log(url)
     browser.loadURL(url)
 
     this.logger.log(`Load main window url ${url}`)
@@ -508,17 +545,9 @@ export class ElectronController implements LauncherAppController {
   }
 
   openDevTools() {
-    if (this.mainWin) {
-      this.mainWin.webContents.closeDevTools()
-      this.mainWin.webContents.openDevTools()
-    }
-    if (this.loggerWin) {
-      this.loggerWin.webContents.closeDevTools()
-      this.loggerWin.webContents.openDevTools()
-    }
-    if (this.browserRef) {
-      this.browserRef.webContents.closeDevTools()
-      this.browserRef.webContents.openDevTools()
+    for (const win of BrowserWindow.getAllWindows()) {
+      win.webContents.closeDevTools()
+      win.webContents.openDevTools()
     }
   }
 }

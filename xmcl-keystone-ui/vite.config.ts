@@ -1,11 +1,10 @@
-import { join, resolve } from 'path'
-import createVuePlugin from '@vitejs/plugin-vue2'
-import { defineConfig } from 'vite'
-import { readdirSync } from 'fs'
-import { VitePWA } from 'vite-plugin-pwa'
-import WindiCSS from 'vite-plugin-windicss'
-import AutoImport from 'unplugin-auto-import/vite'
 import VueI18n from '@intlify/unplugin-vue-i18n/vite'
+import createVuePlugin from '@vitejs/plugin-vue2'
+import { readdirSync } from 'fs'
+import { join, resolve } from 'path'
+import AutoImport from 'unplugin-auto-import/vite'
+import { defineConfig } from 'vite'
+import WindiCSS from 'vite-plugin-windicss'
 
 const entries = readdirSync(join(__dirname, './src'))
   .filter((f) => f.endsWith('.html'))
@@ -55,10 +54,6 @@ export default defineConfig({
   },
   plugins: [
     createVuePlugin(),
-    VitePWA({
-      registerType: 'prompt',
-      manifest: false,
-    }),
     WindiCSS({
       config: {
         important: true,

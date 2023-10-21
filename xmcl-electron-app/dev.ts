@@ -118,6 +118,7 @@ export async function dev() {
   }
 
   esbuildOptions.plugins.push(onEndPlugin)
+  esbuildOptions.define['process.env.HAS_DEV_SERVER'] = 'true'
   esbuild = await context({
     ...esbuildOptions,
     outdir: resolve(__dirname, './dist'),

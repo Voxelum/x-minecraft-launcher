@@ -29,7 +29,7 @@ const config = {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV) ?? '"development"',
     'process.env.CURSEFORGE_API_KEY': JSON.stringify(process.env.CURSEFORGE_API_KEY),
     'process.env.RUNTIME': JSON.stringify(process.env.RUNTIME || 'raw'),
-  },
+  } as Record<string, string>,
   platform: 'node',
   loader: {
     '.png': 'file',
