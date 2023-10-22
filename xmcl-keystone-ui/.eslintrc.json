@@ -15,7 +15,7 @@
     "extends": [
         "../.eslintrc.json",
         ".eslintrc-auto-import.json",
-        "plugin:tailwindcss/recommended",
+        "@unocss",
         "plugin:vue/recommended"
     ],
     "parser": "vue-eslint-parser",

@@ -82,7 +82,7 @@ export const pluginNetworkInterface: LauncherAppPlugin = (app) => {
         connect,
         factory(origin, opts: Agent.Options) {
           let dispatcher: Dispatcher | undefined
-          for (const factory of apiClientFactories) { dispatcher = factory(origin, opts) }
+          for (const factory of apiClientFactories) { dispatcher = factory(typeof origin === 'string' ? new URL(origin) : origin, opts) }
           if (!dispatcher) { dispatcher = new Pool(origin, opts) }
           if (dispatcher instanceof Pool) {
             const keys = Reflect.ownKeys(dispatcher)

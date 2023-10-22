@@ -56,8 +56,8 @@ export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
     } else if (!request.url.host) {
       // Absolute image path
       const pathname = normalizePath(request.url.pathname)
-      const { fromFile } = await import('file-type')
-      await fromFile(pathname).then((type) => {
+      const { fileTypeFromFile } = await import('file-type')
+      await fileTypeFromFile(pathname).then((type) => {
         if (type && type.mime.startsWith('image/')) {
           response.status = 200
           response.headers = { 'content-type': type.mime }
@@ -73,8 +73,8 @@ export const pluginCommonProtocol: LauncherAppPlugin = (app) => {
   app.protocol.registerHandler('video', async ({ request, response }) => {
     // Absolute video path
     const pathname = normalizePath(request.url.pathname)
-    const { fromFile } = await import('file-type')
-    await fromFile(pathname).then((type) => {
+    const { fileTypeFromFile } = await import('file-type')
+    await fileTypeFromFile(pathname).then((type) => {
       if (type && type.mime.startsWith('video/')) {
         response.status = 200
         response.body = createReadStream(pathname)

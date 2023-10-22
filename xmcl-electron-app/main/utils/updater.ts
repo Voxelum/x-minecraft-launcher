@@ -88,8 +88,8 @@ export class DownloadFullUpdateTask extends BaseTask<void> {
 
   protected cancelTask(): Promise<void> {
     this.cancellationToken.cancel()
-    return new Promise((resolve) => {
-      autoUpdater.once('update-cancelled', resolve)
+    return new Promise<void>((resolve) => {
+      autoUpdater.once('update-cancelled', () => resolve())
     })
   }
 
@@ -122,7 +122,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
       },
       throwOnError: true,
     }).catch(() => request('https://xmcl.blob.core.windows.net/releases/latest_version.json'))
-    const result = await response.body.json()
+    const result = await response.body.json() as any
     const updateInfo: ReleaseInfo = {
       name: result.tag_name,
       body: result.body,
@@ -233,6 +233,10 @@ export class ElectronUpdater implements LauncherAppUpdater {
         this.logger.log(`Check update via ${autoUpdater.getFeedURL()}`)
         const gfw = await this.app.registry.get(GFW)
         const info = await autoUpdater.checkForUpdates()
+        
+        if (!info) return this.getUpdateFromSelfHost()
+
+        // TODO: check this
         if (await gfw.signal && !injectedUpdate) {
           injectedUpdate = true
           const provider: Provider<UpdateInfo> = (await (autoUpdater as any).clientPromise)

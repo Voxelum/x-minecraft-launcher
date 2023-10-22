@@ -110,7 +110,7 @@ export class XUpdateService extends AbstractService implements IXUpdateService {
 
     let manifest: InstanceManifest
     try {
-      manifest = await (await request(instance.fileApi)).body.json()
+      manifest = await (await request(instance.fileApi)).body.json() as any
     } catch (e) {
       if (e instanceof Error) this.error(e)
       throw new InstanceIOException({

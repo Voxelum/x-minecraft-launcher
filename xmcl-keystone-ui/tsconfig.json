@@ -22,7 +22,6 @@
     "jsx": "preserve",
     "types": [
       "vite/client",
-      "vite-plugin-pwa/client",
       "@xmcl/runtime-api/client",
       "@xmcl/runtime-api/monitorClient"
     ]

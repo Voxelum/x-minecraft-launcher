@@ -16,14 +16,14 @@ export async function hashResource(path: string, size: number) {
   return hash
 }
 export async function hashAndFiletypeResource(path: string, size: number) {
-  const fileType = await import('file-type')
+  const { fileTypeFromBuffer, fileTypeStream } = await import('file-type')
   if (size > THREASHOLD) {
     const hash = createHash('sha1').setEncoding('hex')
-    const readable = await fileType.stream(createReadStream(path))
+    const readable = await fileTypeStream(createReadStream(path))
     await pipeline(readable, hash)
     return [hash.read() as string, readable.fileType?.ext ?? ''] as [string, string]
   }
   const buf = await readFile(path)
   const hash = createHash('sha1').update(buf).digest('hex')
-  return [hash, (await fileType.fromBuffer(buf))?.ext ?? ''] as [string, string]
+  return [hash, (await fileTypeFromBuffer(buf))?.ext ?? ''] as [string, string]
 }

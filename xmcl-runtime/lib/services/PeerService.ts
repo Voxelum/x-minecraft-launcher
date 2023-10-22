@@ -218,11 +218,11 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
         },
       })
       if (response.statusCode === 200) {
-        const credential: {
+        const credential = await response.body.json() as {
           password: string
           username: string
           uris: string[]
-        } = await response.body.json()
+        }
         this.iceServers.splice(0, this.iceServers.length)
         this.iceServers.push(...credential.uris
           .filter(u => u.startsWith('turn:'))

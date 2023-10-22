@@ -102,7 +102,7 @@ export class InstallService extends AbstractService implements IInstallService {
         this.log('Found new minecraft version metadata. Update it.')
       }
 
-      metadata = await response.body.json()
+      metadata = await response.body.json() as any
     } catch (e) {
       assertErrorWithCache(e)
       metadata = JSON.parse(e[kCacheKey].getBody().toString())
@@ -154,7 +154,7 @@ export class InstallService extends AbstractService implements IInstallService {
           hash: string
         }[]
       }
-      const bmclVersions: BMCLForge[] = await response.body.json()
+      const bmclVersions = await response.body.json() as BMCLForge[]
       return bmclVersions.map(v => ({
         mcversion: v.mcversion,
         version: v.version,
@@ -232,7 +232,7 @@ export class InstallService extends AbstractService implements IInstallService {
     let yarns: FabricArtifactVersion[]
     try {
       const response = await request('https://meta.fabricmc.net/v2/versions/yarn')
-      yarns = await response.body.json()
+      yarns = await response.body.json() as any
       if (response.statusCode === 304) {
         this.log('Not found new fabric yarn metadata. Use cache')
       } else {
@@ -246,7 +246,7 @@ export class InstallService extends AbstractService implements IInstallService {
     let loaders: FabricArtifactVersion[]
     try {
       const response = await request('https://meta.fabricmc.net/v2/versions/loader')
-      loaders = await response.body.json()
+      loaders = await response.body.json() as any
       if (response.statusCode === 304) {
         this.log('Not found new fabric loader metadata. Use cache')
       } else {
@@ -275,7 +275,7 @@ export class InstallService extends AbstractService implements IInstallService {
       } else {
         this.log('Found new optifine version metadata. Update it.')
       }
-      versions = await response.body.json()
+      versions = await response.body.json() as any
     } catch (e) {
       assertErrorWithCache(e)
       versions = e[kCacheKey].getBodyJson() || []
@@ -291,9 +291,9 @@ export class InstallService extends AbstractService implements IInstallService {
         const url = `https://meta.fabricmc.net/v2/versions/intermediary/${options?.minecraftVersion}`
         const response = await request(url)
         if (response.statusCode === 200) {
-          return (await response.body.json()).length > 0
+          return (await response.body.json() as any).length > 0
         } else if (response.statusCode === 304) {
-          return (await response.body.json()).length > 0
+          return (await response.body.json() as any).length > 0
         }
         return false
       }
@@ -306,7 +306,7 @@ export class InstallService extends AbstractService implements IInstallService {
       if (statusCode >= 400) {
         throw new AnyError('QuiltVersionListError')
       }
-      versions = await body.json()
+      versions = await body.json() as any
       if (statusCode === 200) {
         this.log('Found new quilt metadata')
       } else if (statusCode === 304) {
@@ -686,7 +686,7 @@ export class InstallService extends AbstractService implements IInstallService {
             this._from = api
             this.update(0)
             const resp = await request(api, { throwOnError: true, signal: this.controller.signal, skipOverride: true })
-            const artifact = await resp.body.json()
+            const artifact = await resp.body.json() as any
             const result = await installFabric(artifact, this.dest, { side: 'client' })
             return result
           } catch (e) {

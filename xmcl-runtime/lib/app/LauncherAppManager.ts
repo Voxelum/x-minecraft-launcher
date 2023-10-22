@@ -199,7 +199,7 @@ export class LauncherAppManager extends Manager implements AppsHost {
         if (manifestNode) {
           const manifestUrl = manifestNode['@_href']
           if (manifestUrl) {
-            const man: AppManifest = await (await request(new URL(manifestUrl, url))).body.json()
+            const man = await (await request(new URL(manifestUrl, url))).body.json() as AppManifest
             return man
           }
         }

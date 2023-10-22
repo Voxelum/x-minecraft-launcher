@@ -38,7 +38,8 @@ import { kLocalVersions, useLocalVersions } from '@/composables/versionLocal'
 import { kVuetify } from '@/composables/vuetify'
 import { kYggdrasilServices, useYggdrasilServices } from '@/composables/yggrasil'
 import { vuetify } from '@/vuetify'
-import 'virtual:windi.css'
+import 'virtual:uno.css'
+
 import { provide } from 'vue'
 
 export default defineComponent({

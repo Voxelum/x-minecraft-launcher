@@ -20,6 +20,6 @@ async function getForgeList(minecraft: string) {
       'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36 Edg/83.0.478.45',
     },
   })
-  const forges: BMCLForge[] = await body.json()
+  const forges = await body.json() as BMCLForge[]
   return forges
 }

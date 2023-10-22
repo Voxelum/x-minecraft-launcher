@@ -19,7 +19,7 @@ export class LittleSkinClient {
       },
       dispatcher: this.dispatcher,
     })
-    const result: LittleSkinCharacter[] = await response.body.json()
+    const result = await response.body.json() as LittleSkinCharacter[]
     return result
   }
 
@@ -105,7 +105,7 @@ export class LittleSkinClient {
       },
       dispatcher: this.dispatcher,
     })
-    const body: ClosetResponse = await response.body.json()
+    const body: ClosetResponse = await response.body.json() as any
     return body
   }
 
