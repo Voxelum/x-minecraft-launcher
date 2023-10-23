@@ -4,7 +4,7 @@ import os, { freemem, totalmem } from 'os'
 import { join } from 'path'
 import { LauncherApp } from '../app/LauncherApp'
 import { LauncherAppKey } from '../app/utils'
-import { IS_DEV } from '../constant'
+import { HAS_DEV_SERVER } from '../constant'
 import { kClientToken } from '../entities/clientToken'
 import { PathResolver, kGameDataPath } from '../entities/gameDataPath'
 import { kSettings } from '../entities/settings'
@@ -88,7 +88,7 @@ export class BaseService extends AbstractService implements IBaseService {
    */
   @Singleton()
   async checkUpdate() {
-    if (IS_DEV) return
+    if (HAS_DEV_SERVER) return
     try {
       const settings = await this.getSettings()
       this.log('Check update')

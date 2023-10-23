@@ -15,7 +15,6 @@
     },
     "scripts": {
         "build": "cross-env NODE_ENV=development tsx build.ts",
-        "build:appx": "cross-env NODE_ENV=production env BUILD_TARGET=appx npm run build",
         "build:all": "cross-env NODE_ENV=production cross-env BUILD_TARGET=production npm run build",
         "build:dir": "cross-env BUILD_TARGET=dir npm run build",
         "postinstall": "electron-rebuild --only better-sqlite3",

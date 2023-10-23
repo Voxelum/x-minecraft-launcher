@@ -1,5 +1,5 @@
 import { PartialResourceHash, Resource, ResourceDomain, ResourceMetadata } from '@xmcl/runtime-api'
-import { Contracts } from 'applicationinsights'
+import type { Contracts } from 'applicationinsights'
 import { randomUUID } from 'crypto'
 import { LauncherAppPlugin } from '../app/LauncherApp'
 import { IS_DEV } from '../constant'
@@ -7,14 +7,12 @@ import { kClientToken } from '../entities/clientToken'
 import { kSettings } from '../entities/settings'
 import { APP_INSIGHT_KEY, parseStack } from '../entities/telemetry'
 import { LaunchService } from '../services/LaunchService'
+import { NatService } from '../services/NatService'
 import { ResourceService } from '../services/ResourceService'
 import { UserService } from '../services/UserService'
-import { NatService } from '../services/NatService'
 
 export const pluginTelemetry: LauncherAppPlugin = async (app) => {
-  if (IS_DEV) {
-    return
-  }
+  process.env.APPLICATIONINSIGHTS_CONFIGURATION_CONTENT = '{}'
   const appInsight = await import('applicationinsights')
   const contract = new appInsight.Contracts.ContextTagKeys()
 
@@ -36,6 +34,15 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
   tags[contract.userId] = clientSession
   tags[contract.applicationVersion] = IS_DEV ? '0.0.0' : `${app.version}#${app.build}`
   tags[contract.operationParentId] = 'root'
+
+  appInsight.defaultClient.trackEvent({
+    name: 'app-start',
+    properties: { },
+  })
+
+  app.registryDisposer(async () => {
+    appInsight.defaultClient.flush()
+  })
 
   app.on('engine-ready', async () => {
     const settings = await app.registry.get(kSettings)
@@ -99,7 +106,7 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
     })
 
     const createExceptionDetails = (msg?: string, name?: string, stack?: string) => {
-      const d = new Contracts.ExceptionDetails()
+      const d = new appInsight.Contracts.ExceptionDetails()
       d.message = msg?.substring(0, 32768) || ''
       d.typeName = name?.substring(0, 1024) || ''
       d.parsedStack = parseStack(stack) as any

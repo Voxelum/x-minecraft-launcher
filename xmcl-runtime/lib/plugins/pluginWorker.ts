@@ -1,7 +1,7 @@
 import { readFile, writeFile } from 'fs/promises'
 import { Worker } from 'worker_threads'
 import { LauncherAppPlugin } from '../app/LauncherApp'
-import { IS_DEV } from '../constant'
+import { HAS_DEV_SERVER } from '../constant'
 import { EncodingWorker, kEncodingWorker } from '../entities/encodingWorker'
 import { kResourceWorker, ResourceWorker, WorkerResponse } from '../entities/resourceWorker'
 import { checksum } from '../util/fs'
@@ -11,7 +11,7 @@ import createEncodingWorker, { path as encodingWorkerPath } from '../workers/enc
 export const pluginWorker: LauncherAppPlugin = async (app) => {
   const logger = app.getLogger('WorkerManager')
   const checkUpdate = async (path: string) => {
-    if (!IS_DEV) {
+    if (!HAS_DEV_SERVER) {
       logger.log('Try to update worker js as this is PROD')
       const workerJsPath = path.replace('.unpacked', '')
       const asarWorkerJsPath = path

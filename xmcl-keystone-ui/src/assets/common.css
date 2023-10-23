@@ -414,6 +414,12 @@ a {
     display: inline;
 }
 
+.markdown-body img {
+    height: auto;
+    max-width: 100%;
+    vertical-align: middle;
+}
+
 /* Curseforge */
 
 .project-description {

@@ -1,4 +1,4 @@
-import { AZURE_CDN, AZURE_MS_CDN, IS_DEV } from '@/constant'
+import { AZURE_CDN, AZURE_MS_CDN, HAS_DEV_SERVER } from '@/constant'
 import { ChecksumNotMatchError, download } from '@xmcl/file-transfer'
 import { DownloadTask } from '@xmcl/installer'
 import { BaseService } from '@xmcl/runtime'
@@ -281,7 +281,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
   }
 
   async installUpdateAndQuit(updateInfo: ReleaseInfo): Promise<void> {
-    if (IS_DEV) {
+    if (HAS_DEV_SERVER) {
       this.logger.log('Currently is development environment. Skip to install update')
       return
     }

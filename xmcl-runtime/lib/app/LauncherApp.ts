@@ -352,7 +352,7 @@ export class LauncherApp extends EventEmitter {
   }
 
   protected async onEngineReady() {
-    this.logger.log(`cwd: ${process.cwd()}`)
+    this.logger.log(`cwd: ${process.cwd()}. env: ${process.env.NODE_ENV}`)
 
     // start the app
     let app: InstalledAppManifest
