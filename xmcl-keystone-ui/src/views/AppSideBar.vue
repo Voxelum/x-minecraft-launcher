@@ -304,7 +304,7 @@ function goBack() {
   @apply flex flex-col flex-grow-0 h-full;
 }
 
-.sidebar .v-list .v-list-item--active, .v-list .v-list-item--active .v-icon {
+.sidebar .v-list .v-list-item--active .v-icon {
   /* color: #4caf50 !important; */
   color: var(--primary);
 }

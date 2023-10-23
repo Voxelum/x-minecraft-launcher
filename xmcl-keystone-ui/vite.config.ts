@@ -54,13 +54,7 @@ export default defineConfig({
   },
   plugins: [
     createVuePlugin(),
-    UnoCSS({
-      preprocess: (t) => {
-        if (t.includes('!')) return t;
-        return `!${t}`;
-      }
-    }),
-
+    UnoCSS({ }),
     VueI18n({
       include: [
         resolve(__dirname, 'locales/**'),

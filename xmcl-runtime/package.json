@@ -45,7 +45,7 @@
         "@xmcl/user": "workspace:*",
         "abstract-level": "^1.0.3",
         "ajv": "^8.11.2",
-        "applicationinsights": "^2.9.0",
+        "applicationinsights": "^2.7.0",
         "atomically": "^2.0.2",
         "better-sqlite3": "^9.0.0",
         "classic-level": "^1.2.0",

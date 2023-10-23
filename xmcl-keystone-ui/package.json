@@ -60,6 +60,7 @@
         "@types/three": "^0.150.1",
         "@unocss/eslint-config": "^0.56.5",
         "@unocss/preset-uno": "^0.56.5",
+        "@unocss/transformer-directives": "^0.56.5",
         "@vitejs/plugin-vue2": "^2.2.0",
         "@xmcl/eslint-config": "workspace:*",
         "chalk": "^4.1.2",
