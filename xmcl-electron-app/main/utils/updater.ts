@@ -233,7 +233,7 @@ export class ElectronUpdater implements LauncherAppUpdater {
         this.logger.log(`Check update via ${autoUpdater.getFeedURL()}`)
         const gfw = await this.app.registry.get(GFW)
         const info = await autoUpdater.checkForUpdates()
-        
+
         if (!info) return this.getUpdateFromSelfHost()
 
         // TODO: check this
