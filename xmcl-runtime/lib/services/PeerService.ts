@@ -37,6 +37,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   readonly peers: Record<string, PeerSession> = {}
 
   readonly discover = new MinecraftLanDiscover()
+  readonly discoverV6 = new MinecraftLanDiscover('udp6')
   /**
    * The unique id of this host. Should start with local ip
    */
@@ -143,7 +144,33 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       this.error(new Error('Minecraft discover socket error', { cause: e }))
     })
 
+    this.discoverV6.bind().then(() => {
+      this.log('Minecraft LAN V6 discover ready')
+    }, (e) => {
+      this.error(new Error('Fail to bind Minecraft LAN V6 discover', { cause: e }))
+    })
+
     this.discover.on('discover', (info) => {
+      const peers = Object.values(this.peers).filter(c => c.connection.state() === 'connected')
+      for (const conn of peers) {
+        if (conn.isOnSameLan()) {
+          return
+        }
+
+        const isFromSelf = conn.proxies.find(p =>
+          // Port is created by yourself
+          p.actualPortValue === info.port)
+        if (isFromSelf) {
+          // do not echo the proxy server you created
+          return
+        }
+      }
+      for (const conn of peers) {
+        conn.send(MessageLan, info)
+      }
+    })
+
+    this.discoverV6.on('discover', (info) => {
       const peers = Object.values(this.peers).filter(c => c.connection.state() === 'connected')
       for (const conn of peers) {
         if (conn.isOnSameLan()) {
@@ -363,6 +390,11 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           // this.discover.bind()
         } else {
           this.discover.broadcast(msg)
+        }
+        if (!this.discoverV6.isReady) {
+          // this.discoverV6.bind()
+        } else {
+          this.discoverV6.broadcast(msg)
         }
       },
       getUserInfo: () => {
