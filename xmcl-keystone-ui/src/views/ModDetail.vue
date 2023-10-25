@@ -41,7 +41,8 @@
             class="flex flex-grow-0"
           >
             <v-icon
-              class="material-icons-outlined"
+              class="material-icons-outlined pb-0.5"
+              :size="22"
               left
             >
               file_download
@@ -388,6 +389,8 @@
             </v-icon>
             <v-icon
               v-if="curseforge"
+              class="mt-0.5"
+              :size="30"
             >
               $vuetify.icons.curseforge
             </v-icon>

@@ -56,6 +56,8 @@ export const pluginTelemetry: LauncherAppPlugin = async (app) => {
           },
         })
       }
+    }, (e) => {
+      /* no-op */
     })
 
     process.on('uncaughtException', (e) => {

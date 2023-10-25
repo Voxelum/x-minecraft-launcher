@@ -21,7 +21,16 @@
           text
           v-on="on"
         >
-          <v-icon>{{ defaultSource === 'curseforge' ? '$vuetify.icons.curseforge' : '$vuetify.icons.modrinth' }}</v-icon>
+          <v-icon
+            v-if="defaultSource === 'curseforge'"
+            :size="28"
+            class="mt-0.5"
+          >
+            $vuetify.icons.curseforge
+          </v-icon>
+          <v-icon v-else>
+            $vuetify.icons.modrinth
+          </v-icon>
           <v-icon right>
             arrow_drop_down
           </v-icon>

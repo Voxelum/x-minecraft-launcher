@@ -154,7 +154,10 @@
         </div>
       </v-tab>
       <v-tab :disabled="curseforge.length === 0">
-        <v-icon left>
+        <v-icon
+          :size="28"
+          left
+        >
           $vuetify.icons.curseforge
         </v-icon>
         Curseforge
