@@ -41,7 +41,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   /**
    * The unique id of this host. Should start with local ip
    */
-  private id = ''
+  private id = randomUUID()
 
   private sharedManifest: InstanceManifest | undefined
   private shareInstancePath = ''
@@ -255,7 +255,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       this.group.quit()
     }
 
-    const group = new PeerGroup(id, await this.getId())
+    const group = new PeerGroup(id, this.id)
 
     group.on('heartbeat', (sender) => {
       const peer = Object.values(this.peers).find(p => p.getRemoteId() === sender)
@@ -326,17 +326,6 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     return ip
   }
 
-  protected async getId() {
-    if (this.id) return this.id
-    const ip = await this.getLocalIp()
-    if (ip) {
-      this.id = `${ip}-${randomBytes(8).toString('hex')}`
-    } else {
-      this.id = randomUUID()
-    }
-    return this.id
-  }
-
   @Singleton(ops => JSON.stringify(ops))
   async initiate(options?: {
     id?: string
@@ -345,7 +334,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }): Promise<string> {
     const initiator = !options?.id || options?.initiate || false
     const remoteId = options?.id
-    const sessionId = options?.session || `${await this.getLocalIp(true)}-${randomUUID()}`
+    const sessionId = options?.session || randomUUID() // `${await this.getLocalIp(true)}-${randomUUID()}`
 
     this.log(`Create peer connection to ${remoteId}. Is initiator: ${initiator}`)
     const natService = this.natService
@@ -375,7 +364,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
         if (remoteId) {
           this.group?.sendLocalDescription(remoteId, sdp, type, candidates)
         }
-        const payload = { sdp, id: await this.getId(), session: id, candidates }
+        const payload = { sdp, id: this.id, session: id, candidates }
         pBrotliCompress(JSON.stringify(payload)).then((s) => s.toString('base64')).then((compressed) => {
           this.state.connectionLocalDescription({ id: payload.session, description: compressed })
           this.emit('connection-local-description', { id: payload.session, description: compressed })
