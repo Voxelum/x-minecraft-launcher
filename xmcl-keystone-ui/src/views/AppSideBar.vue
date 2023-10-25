@@ -57,7 +57,11 @@
               v-on="tooltip"
             >
               <v-list-item-icon>
-                <v-icon> power </v-icon>
+                <v-icon
+                  :size="28"
+                >
+                  power
+                </v-icon>
               </v-list-item-icon>
               <v-list-item-title v-text="'Text'" />
             </v-list-item>
@@ -103,7 +107,10 @@
               v-on="tooltip"
             >
               <v-list-item-icon>
-                <v-icon>
+                <v-icon
+                  :size="28"
+                  class="mr-0.5"
+                >
                   $vuetify.icons.curseforge
                 </v-icon>
               </v-list-item-icon>
@@ -190,7 +197,9 @@
             v-on="tooltip"
           >
             <v-list-item-icon>
-              <v-icon>
+              <v-icon
+                :size="23"
+              >
                 hub
               </v-icon>
             </v-list-item-icon>
