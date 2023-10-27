@@ -53,7 +53,7 @@ const versions = computed(() => {
   return all.reverse()
 })
 
-selectedVersion.value = versions.value[0]
+selectedVersion.value = versions.value.find(v => v.installed) ?? versions.value[0]
 
 const { data: optifineHome, isValidating: loadingDescription } = useSWRV('/optifine-home', async () => {
   const response = await fetch('https://www.optifine.net/home')
