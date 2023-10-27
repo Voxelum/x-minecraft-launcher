@@ -14,6 +14,7 @@ export default defineComponent({
     const tError = useLocaleError()
     return () => {
       const resolve = (m: any) => {
+        if (!m) return h('div')
         markRaw(m)
         if (m.name === 'DownloadAggregateError') {
           return h('div', [
