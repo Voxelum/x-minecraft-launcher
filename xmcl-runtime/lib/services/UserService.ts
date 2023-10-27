@@ -62,6 +62,11 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       this.log(`Load ${Object.keys(userData.users).length} users`)
 
       this.state.userData(userData)
+
+      // Refresh all users
+      await Promise.all(Object.values(userData.users as Record<string, UserProfile>).map((user) => {
+        return this.refreshUser(user.id)
+      }))
     })
 
     this.userFile = createSafeFile(this.getAppDataPath('user.json'), UserSchema, this, [this.getPath('user.json')])
