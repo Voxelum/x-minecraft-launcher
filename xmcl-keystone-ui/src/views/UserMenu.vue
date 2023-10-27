@@ -141,7 +141,7 @@ watch(() => props.show, (s) => {
 }, { immediate: true })
 
 async function onRemoveUser() {
-  const isLastOne = users.value.length <= 0
+  const isLastOne = users.value.length <= 1
   await removeUser(selected.value)
   if (isLastOne) {
     login.value = true
