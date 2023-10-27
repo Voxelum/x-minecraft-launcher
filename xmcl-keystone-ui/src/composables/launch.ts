@@ -1,27 +1,20 @@
 import { useService } from '@/composables'
 import { injection } from '@/util/inject'
-import { AUTHORITY_DEV, AuthlibInjectorServiceKey, BaseServiceKey, LaunchException, LaunchOptions, LaunchServiceKey, UserServiceKey, isException } from '@xmcl/runtime-api'
-import { InjectionKey } from 'vue'
+import { ResolvedVersion } from '@xmcl/core'
+import { AUTHORITY_DEV, AuthlibInjectorServiceKey, BaseServiceKey, Instance, JavaRecord, LaunchException, LaunchOptions, LaunchServiceKey, UserProfile, UserServiceKey } from '@xmcl/runtime-api'
+import { InjectionKey, Ref } from 'vue'
 import { DialogKey } from './dialog'
-import { kInstance } from './instance'
-import { kInstanceJava } from './instanceJava'
-import { kInstanceVersion } from './instanceVersion'
-import { useGlobalSettings } from './setting'
-import { kUserContext } from './user'
+import { useGlobalSettings, useSettingsState } from './setting'
 
-export const LaunchStatusDialogKey: DialogKey<void> = 'launch-status'
+export const LaunchStatusDialogKey: DialogKey<boolean> = 'launch-status'
 
 export enum LaunchErrorCode {
   NO_VERSION = 'NO_VERSION',
   NO_JAVA = 'NO_JAVA',
 }
 
-export function useLaunchOption() {
-  const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalMcOptions, globalVmOptions, globalFastLaunch, globalHideLauncher, globalShowLog } = useGlobalSettings()
-  const { path, instance } = injection(kInstance)
-  const { resolvedVersion } = injection(kInstanceVersion)
-  const { java } = injection(kInstanceJava)
-  const { userProfile } = injection(kUserContext)
+export function useLaunchOption(instance: Ref<Instance>, resolvedVersion: Ref<ResolvedVersion | { requirements: Record<string, any> } | undefined>, java: Ref<JavaRecord | undefined>, userProfile: Ref<UserProfile>, globalState: ReturnType<typeof useSettingsState>) {
+  const { globalAssignMemory, globalMaxMemory, globalMinMemory, globalMcOptions, globalVmOptions, globalFastLaunch, globalHideLauncher, globalShowLog } = useGlobalSettings(globalState)
   const { getMemoryStatus } = useService(BaseServiceKey)
   const { getOrInstallAuthlibInjector } = useService(AuthlibInjectorServiceKey)
 
@@ -71,7 +64,7 @@ export function useLaunchOption() {
 
     const options: LaunchOptions = {
       version: instance.value.version || ver.id,
-      gameDirectory: path.value,
+      gameDirectory: instance.value.path,
       user: userProfile.value,
       java: javaRec.path,
       hideLauncher,
@@ -111,32 +104,3 @@ export function useLaunchStatus() {
 }
 
 export const kLaunchStatus: InjectionKey<ReturnType<typeof useLaunchStatus>> = Symbol('LaunchStatus')
-
-export function useLaunch() {
-  const { refreshUser } = useService(UserServiceKey)
-  const { launch } = useService(LaunchServiceKey)
-  const { userProfile } = injection(kUserContext)
-  const { generateLaunchOptions } = useLaunchOption()
-  const { launching, launchError } = injection(kLaunchStatus)
-
-  async function launchGame() {
-    try {
-      launching.value = true
-      const options = await generateLaunchOptions()
-
-      if (!options.skipAssetsCheck) {
-        try {
-          await refreshUser(userProfile.value.id)
-        } catch (e) {
-        }
-      }
-      await launch(options)
-    } catch (e) {
-      console.error(e)
-      throw e
-    } finally {
-      launching.value = false
-    }
-  }
-  return launchGame
-}

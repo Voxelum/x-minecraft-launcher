@@ -2,16 +2,22 @@
   <v-dialog
     v-model="isShown"
     :width="380"
-    :persistent="true"
   >
     <v-card color="secondary">
-      <v-container>
+      <v-card-title v-if="exiting">
+        Exit game?
+      </v-card-title>
+      <v-container
+        v-if="launching || !windowReady"
+      >
         <v-layout
           align-center
           justify-center
           column
         >
-          <div class="relative mt-8">
+          <div
+            class="relative mt-8"
+          >
             <v-progress-circular
               color="primary"
               :size="70"
@@ -35,11 +41,8 @@
               indeterminate
             />
           </div>
-          <v-flex
-            class="mx-10 my-3 flex flex-col items-center justify-center gap-1"
-          >
+          <v-flex class="mx-10 my-3 flex flex-col items-center justify-center gap-1">
             <VTypical
-              v-if="notReady || launching"
               class="blink"
               :steps="launchingSteps"
             />
@@ -52,25 +55,46 @@
           </v-flex>
         </v-layout>
       </v-container>
+
+      <div
+        v-if="exiting"
+        class="flex p-3"
+      >
+        <v-btn
+          text
+          @click="onCancel"
+        >
+          {{ t('cancel') }}
+        </v-btn>
+        <div class="flex-grow" />
+        <v-btn
+          text
+          color="red"
+          @click="onKill"
+        >
+          <v-icon left>
+            exit_to_app
+          </v-icon>
+          {{ t('yes') }}
+        </v-btn>
+      </div>
     </v-card>
   </v-dialog>
 </template>
 
 <script lang=ts setup>
 import VTypical from '@/components/VTyping.vue'
-import { useService } from '@/composables'
-import { kUserContext } from '@/composables/user'
+import { kInstanceLaunch } from '@/composables/instanceLaunch'
 import { injection } from '@/util/inject'
-import { LaunchServiceKey } from '@xmcl/runtime-api'
 import { useDialog } from '../composables/dialog'
-import { LaunchStatusDialogKey, kLaunchStatus } from '../composables/launch'
+import { LaunchStatusDialogKey } from '../composables/launch'
 
 const { t } = useI18n()
-const { launching } = injection(kLaunchStatus)
-const { on } = useService(LaunchServiceKey)
-const { userProfile } = injection(kUserContext)
-const { isShown, show, hide } = useDialog(LaunchStatusDialogKey)
-const notReady = ref(false)
+const { launching, windowReady, kill } = injection(kInstanceLaunch)
+const exiting = ref(false)
+const { isShown, show, hide } = useDialog(LaunchStatusDialogKey, (isKilling) => {
+  exiting.value = !!isKilling
+})
 
 const launchingSteps = computed(() => [
   t('launchStatus.launching'),
@@ -78,23 +102,18 @@ const launchingSteps = computed(() => [
   t('launchStatus.launchingSlow'),
 ])
 
-on('minecraft-window-ready', () => {
-  if (isShown.value) {
-    hide()
-    notReady.value = false
-  }
-})
-on('minecraft-exit', () => {
-  if (isShown.value) {
-    hide()
-    notReady.value = false
+watch(launching, (val) => {
+  if (val) {
+    show()
   }
 })
 
-watch(launching, (s) => {
-  if (s) {
-    show()
-    notReady.value = true
+const onKill = () => kill()
+const onCancel = () => hide()
+
+watch(windowReady, (ready) => {
+  if (ready && isShown.value) {
+    hide()
   }
 })
 </script>
@@ -110,5 +129,4 @@ watch(launching, (s) => {
     opacity: 0;
   }
 }
-
 </style>

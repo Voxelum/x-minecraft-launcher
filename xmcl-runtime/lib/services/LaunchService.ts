@@ -1,5 +1,5 @@
 import { createMinecraftProcessWatcher, diagnoseJar, diagnoseLibraries, launch, LaunchOption as ResolvedLaunchOptions, LaunchPrecheck, MinecraftFolder, ResolvedVersion, Version, generateArguments } from '@xmcl/core'
-import { AUTHORITY_DEV, LaunchService as ILaunchService, LaunchException, LaunchOptions, LaunchServiceKey } from '@xmcl/runtime-api'
+import { AUTHORITY_DEV, GameProcess, LaunchService as ILaunchService, LaunchException, LaunchOptions, LaunchServiceKey } from '@xmcl/runtime-api'
 import { ChildProcess } from 'child_process'
 import { EOL } from 'os'
 import { LauncherApp } from '../app/LauncherApp'
@@ -20,7 +20,7 @@ export interface LaunchPlugin {
 
 @ExposeServiceKey(LaunchServiceKey)
 export class LaunchService extends AbstractService implements ILaunchService {
-  private processes: Record<number, ChildProcess> = {}
+  private processes: Record<number, GameProcess & { process: ChildProcess }> = {}
 
   private plugins: LaunchPlugin[] = []
 
@@ -90,12 +90,15 @@ export class LaunchService extends AbstractService implements ILaunchService {
       throw (new Error(`Unexpected state. The OfflineYggdrasilServer does not initialized? Listening: ${this.app.server.listening}`))
     }
 
-    if (options.server) {
-      const ip = options.server.host === AUTHORITY_DEV
+    if (launchOptions.yggdrasilAgent) {
+      launchOptions.yggdrasilAgent.server = launchOptions.yggdrasilAgent.server === AUTHORITY_DEV
         ? getAddress()
-        : options.server.host
+        : launchOptions.yggdrasilAgent.server
+    }
+
+    if (options.server) {
       launchOptions.server = {
-        ip,
+        ip: options.server.host,
         port: options.server?.port,
       }
     }
@@ -222,7 +225,13 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
       // Launch
       const process = await launch(launchOptions)
-      this.processes[process.pid!] = (process)
+      const processData = {
+        pid: process.pid!,
+        options,
+        process,
+        ready: false,
+      }
+      this.processes[process.pid!] = processData
 
       const watcher = createMinecraftProcessWatcher(process)
       const errorLogs = [] as string[]
@@ -280,6 +289,7 @@ export class LaunchService extends AbstractService implements ILaunchService {
         })
         delete this.processes[process.pid!]
       }).on('minecraft-window-ready', () => {
+        processData.ready = true
         this.emit('minecraft-window-ready', { pid: process.pid, ...options })
       })
       process.unref()
@@ -297,7 +307,25 @@ export class LaunchService extends AbstractService implements ILaunchService {
     const process = this.processes[pid]
     delete this.processes[pid]
     if (process) {
-      process.kill()
+      process.process.kill()
     }
+  }
+
+  async getGameProcess(pid: number): Promise<GameProcess | undefined> {
+    const proc = this.processes[pid]
+    if (!proc) return undefined
+    return {
+      pid: proc.pid,
+      ready: proc.ready,
+      options: proc.options,
+    }
+  }
+
+  async getGameProcesses(): Promise<GameProcess[]> {
+    return Object.values(this.processes).map(v => ({
+      pid: v.pid,
+      ready: v.ready,
+      options: v.options,
+    }))
   }
 }

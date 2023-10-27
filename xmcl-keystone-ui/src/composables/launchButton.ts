@@ -1,7 +1,7 @@
 import { injection } from '@/util/inject'
 import { TaskState } from '@xmcl/runtime-api'
 import { useDialog } from './dialog'
-import { LaunchStatusDialogKey, kLaunchStatus, useLaunch } from './launch'
+import { LaunchStatusDialogKey } from './launch'
 import { kInstanceVersionDiagnose } from './instanceVersionDiagnose'
 import { kInstanceJavaDiagnose } from './instanceJavaDiagnose'
 import { kInstanceFilesDiagnose } from './instanceFilesDiagnose'
@@ -10,6 +10,7 @@ import { kLaunchTask } from './launchTask'
 import { kInstanceFiles } from './instanceFiles'
 import { kInstanceVersion } from './instanceVersion'
 import { kInstance } from './instance'
+import { kInstanceLaunch } from './instanceLaunch'
 
 export interface LaunchMenuItem {
   title: string
@@ -21,8 +22,6 @@ export interface LaunchMenuItem {
 }
 
 export function useLaunchButton() {
-  const launch = useLaunch()
-  const { launchCount, launching } = injection(kLaunchStatus)
   const { show: showLaunchStatusDialog } = useDialog(LaunchStatusDialogKey)
   const { show: showMultiInstanceDialog } = useDialog('multi-instance-launch')
 
@@ -34,6 +33,7 @@ export function useLaunchButton() {
   const { status, pause, resume } = injection(kLaunchTask)
   const { refreshing: refreshingFiles } = injection(kInstanceFiles)
   const { isValidating: isRefreshingVersion } = injection(kInstanceVersion)
+  const { launch, launching, count, kill } = injection(kInstanceLaunch)
 
   const { t } = useI18n()
   const dirty = ref(false)
@@ -62,6 +62,28 @@ export function useLaunchButton() {
         text: t('install'),
         color: 'blue',
         onClick: () => resume(),
+      }
+    } else if (launching.value) {
+      return {
+        icon: 'close',
+        text: t('launch.cancel'),
+        color: 'blue',
+        right: true,
+        menu: [],
+        onClick: () => {
+          kill()
+        },
+      }
+    } else if (count.value > 0) {
+      return {
+        icon: 'close',
+        text: t('launch.kill'),
+        color: 'blue',
+        right: true,
+        menu: [],
+        onClick: () => {
+          showLaunchStatusDialog(true)
+        },
       }
     } else if (userIssue.value) {
       return {
@@ -99,19 +121,13 @@ export function useLaunchButton() {
       }
     } else {
       return {
-        icon: 'play_arrow',
         text: t('launch.launch'),
         color: !javaIssue.value ? 'primary' : 'primary darken-1',
-        right: true,
+        leftIcon: 'play_arrow',
         menu: javaIssue.value ? [javaIssue.value] : [],
         onClick: () => {
-          if (launching.value) {
-            showLaunchStatusDialog()
-          } else if (launchCount.value >= 1) {
-            showMultiInstanceDialog()
-          } else {
-            launch()
-          }
+          launch()
+          showLaunchStatusDialog(false)
         },
       }
     }
@@ -128,7 +144,7 @@ export function useLaunchButton() {
     refreshingFiles.value ||
     isRefreshingVersion.value ||
     dirty.value)
-  const right = computed(() => launchButtonFacade.value.right || false)
+  const leftIcon = computed(() => launchButtonFacade.value.leftIcon)
   const menuItems = computed<LaunchMenuItem[]>(() => launchButtonFacade.value.menu || [])
 
   /**
@@ -143,13 +159,13 @@ export function useLaunchButton() {
   }
 
   return {
-    count: launchCount,
+    count,
     onClick,
     color,
     icon,
     text,
     loading,
-    right,
+    leftIcon,
     menuItems,
   }
 }

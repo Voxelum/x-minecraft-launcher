@@ -1,10 +1,11 @@
 import { useRefreshable, useService } from '@/composables'
+import { injection } from '@/util/inject'
 import { LaunchServiceKey } from '@xmcl/runtime-api'
-import { useLaunchOption } from './launch'
+import { kInstanceLaunch } from './instanceLaunch'
 
 export function useLaunchPreview() {
   const { generateArguments } = useService(LaunchServiceKey)
-  const { generateLaunchOptions } = useLaunchOption()
+  const { generateLaunchOptions } = injection(kInstanceLaunch)
   const data = reactive({
     preview: [] as string[],
   })

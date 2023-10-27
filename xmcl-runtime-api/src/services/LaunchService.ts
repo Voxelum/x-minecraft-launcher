@@ -6,17 +6,17 @@ import { ServiceKey } from './Service'
 import { UserExceptions } from './UserService'
 
 interface LaunchServiceEventMap {
-  'minecraft-window-ready': { pid?: number }
+  'minecraft-window-ready': { pid: number }
   'minecraft-start': {
-    pid?: number
+    pid: number
     version: string
     minecraft: string
     forge: string
     fabricLoader: string
   } & LaunchOptions
-  'minecraft-exit': LaunchOptions & { pid?: number; code?: number; signal?: string; duration: number; crashReport?: string; crashReportLocation?: string; errorLog: string }
-  'minecraft-stdout': { pid?: number; stdout: string }
-  'minecraft-stderr': { pid?: number; stdout: string }
+  'minecraft-exit': LaunchOptions & { pid: number; code?: number; signal?: string; duration: number; crashReport?: string; crashReportLocation?: string; errorLog: string }
+  'minecraft-stdout': { pid: number; stdout: string }
+  'minecraft-stderr': { pid: number; stdout: string }
   'error': LaunchException
 }
 
@@ -101,6 +101,12 @@ export interface LaunchOptions {
   mcOptions?: string[]
 }
 
+export interface GameProcess {
+  pid: number
+  ready: boolean
+  options: LaunchOptions
+}
+
 export interface LaunchService extends GenericEventEmitter<LaunchServiceEventMap> {
   /**
    * Generate useable launch arguments for current profile
@@ -116,6 +122,15 @@ export interface LaunchService extends GenericEventEmitter<LaunchServiceEventMap
    * @param pid The process id
    */
   kill(pid: number): Promise<void>
+  /**
+   * Get the game process
+   * @param pid The process id
+   */
+  getGameProcess(pid: number): Promise<GameProcess | undefined>
+  /**
+   * Get all game processes
+   */
+  getGameProcesses(): Promise<GameProcess[]>
 }
 
 export type LaunchExceptions = {

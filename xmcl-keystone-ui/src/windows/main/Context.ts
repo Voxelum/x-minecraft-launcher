@@ -10,6 +10,7 @@ import { kInstanceFiles, useInstanceFiles } from '@/composables/instanceFiles'
 import { kInstanceFilesDiagnose, useInstanceFilesDiagnose } from '@/composables/instanceFilesDiagnose'
 import { kInstanceJava, useInstanceJava } from '@/composables/instanceJava'
 import { kInstanceJavaDiagnose, useInstanceJavaDiagnose } from '@/composables/instanceJavaDiagnose'
+import { kInstanceLaunch, useInstanceLaunch } from '@/composables/instanceLaunch'
 import { kInstanceModsContext, useInstanceMods } from '@/composables/instanceMods'
 import { kInstanceOptions, useInstanceOptions } from '@/composables/instanceOptions'
 import { kInstanceResourcePacks, useInstanceResourcePacks } from '@/composables/instanceResourcePack'
@@ -69,6 +70,7 @@ export default defineComponent({
     const instanceMods = useInstanceMods(instance.path, instance.runtime, instanceJava.java)
     const files = useInstanceFiles(instance.path)
     const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionHeader)
+    const instanceLaunch = useInstanceLaunch(instance.instance, instanceVersion.resolvedVersion, instanceJava.java, user.userProfile, settings)
 
     const modsSearch = useModsSearch(instance.runtime, instanceMods.mods)
     const mods = useMods(modsSearch.keyword, modsSearch.modrinth, modsSearch.curseforge, modsSearch.cachedMods, modsSearch.instanceMods)
@@ -86,6 +88,7 @@ export default defineComponent({
     provide(kInstance, instance)
     provide(kLocalVersions, localVersions)
     provide(kLaunchStatus, useLaunchStatus())
+    provide(kInstanceLaunch, instanceLaunch)
 
     provide(kInstanceVersion, instanceVersion)
     provide(kInstanceDefaultSource, instanceDefaultSource)
