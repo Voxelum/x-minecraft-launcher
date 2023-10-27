@@ -14,6 +14,7 @@ import { kInstanceLaunch, useInstanceLaunch } from '@/composables/instanceLaunch
 import { kInstanceModsContext, useInstanceMods } from '@/composables/instanceMods'
 import { kInstanceOptions, useInstanceOptions } from '@/composables/instanceOptions'
 import { kInstanceResourcePacks, useInstanceResourcePacks } from '@/composables/instanceResourcePack'
+import { useInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { kInstanceVersion, useInstanceVersion } from '@/composables/instanceVersion'
 import { kInstanceVersionDiagnose, useInstanceVersionDiagnose } from '@/composables/instanceVersionDiagnose'
 import { kInstances, useInstances } from '@/composables/instances'
@@ -66,7 +67,8 @@ export default defineComponent({
     const instanceDefaultSource = useInstanceDefaultSource(instance.path)
     const options = useInstanceOptions(instance.instance)
     const saves = useInstanceSaves(instance.instance)
-    const resourcePacks = useInstanceResourcePacks(options.gameOptions)
+    const resourcePacks = useInstanceResourcePacks(instance.path, options.gameOptions)
+    useInstanceShaderPacks(instance.path)
     const instanceMods = useInstanceMods(instance.path, instance.runtime, instanceJava.java)
     const files = useInstanceFiles(instance.path)
     const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionHeader)
