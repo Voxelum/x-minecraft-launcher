@@ -219,7 +219,17 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
     const processModFile = (m: ModFile, instanceFile: boolean) => {
       if (m.modId === 'OptiFine') {
         hasOptifine = true
-        return getOptifineAsMod(m)
+        if (indices.OptiFine) {
+          indices.OptiFine.files?.push(m)
+          if (instanceFile) {
+            indices.OptiFine.installed?.push(m)
+          }
+          return
+        } else {
+          const mod = getOptifineAsMod(m)
+          indices.OptiFine = mod
+          return mod
+        }
       }
       const curseforgeId = m.resource.metadata.curseforge?.projectId
       const modrinthId = m.resource.metadata.modrinth?.projectId
