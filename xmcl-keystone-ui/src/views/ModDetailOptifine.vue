@@ -36,11 +36,11 @@ const versions = computed(() => {
     const version = `${f.type}_${f.patch}`
     const id = `${f.mcversion}_${version}`
     const modVersion: ModVersion = reactive({
-      id: props.mod.installed[0].version === version ? props.mod.installed[0].path : id,
+      id: props.mod.installed[0]?.version === version ? props.mod.installed[0].path : id,
       name: version,
       version,
       downloadCount: 0,
-      installed: computed(() => props.runtime.optifine === version || props.mod.installed[0].version === version),
+      installed: computed(() => props.runtime.optifine === version || props.mod.installed[0]?.version === version),
       loaders: ['vanilla', 'forge'],
       minecraftVersion: f.mcversion,
       type: 'release',
