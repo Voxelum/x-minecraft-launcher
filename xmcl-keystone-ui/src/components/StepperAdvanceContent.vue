@@ -409,7 +409,7 @@ const localItems = computed(() => {
 })
 
 const isNotSelectingLabyMod = computed(() => {
-  return content.runtime.labyMod === ''
+  return !content.runtime.labyMod
 })
 function onSelectLocalVersion(version: string) {
   if (content.runtime) {
