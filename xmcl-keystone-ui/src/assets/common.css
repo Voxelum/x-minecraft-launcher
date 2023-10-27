@@ -410,7 +410,8 @@ a {
     padding: 14px;
 }
 
-.markdown-body img, .markdown-body video {
+.markdown-body img,
+.markdown-body video {
     display: inline;
 }
 
@@ -419,6 +420,15 @@ a {
     max-width: 100%;
     vertical-align: middle;
 }
+
+
+.markdown-body iframe,
+.markdown-body video {
+    aspect-ratio: 16/9;
+    height: auto;
+    width: 100%;
+}
+
 
 /* Curseforge */
 

@@ -76,7 +76,7 @@
     </div>
 
     <div
-      class="relative flex flex-grow flex-col gap-4"
+      class="relative flex flex-grow flex-col gap-4 overflow-auto"
     >
       <ModrinthProjectUpstream
         v-if="_upstream && _upstream.upstream && (_upstream.upstream.type === 'modrinth-modpack')"
