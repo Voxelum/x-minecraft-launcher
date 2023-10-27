@@ -488,6 +488,8 @@ labyMod:
   disable: Disable LabyMod
   empty: LabyMod does not support current Minecraft
 launch:
+  cancel: Cancel
+  kill: Stop
   launch: Launch
 launchBlocked:
   ignore: Force Launch

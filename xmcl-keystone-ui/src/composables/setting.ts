@@ -33,8 +33,7 @@ export function useSettingsState() {
   return useState(getSettings, Settings)
 }
 
-export function useGlobalSettings() {
-  const { state } = injection(kSettingsState)
+export function useGlobalSettings({ state } = injection(kSettingsState)) {
   const globalAssignMemory = computed(() => state.value?.globalAssignMemory ?? false)
   const globalMinMemory = computed(() => state.value?.globalMinMemory ?? 0)
   const globalMaxMemory = computed(() => state.value?.globalMaxMemory ?? 0)

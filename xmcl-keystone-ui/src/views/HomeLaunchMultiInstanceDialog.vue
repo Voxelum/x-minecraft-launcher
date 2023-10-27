@@ -42,10 +42,11 @@
 </template>
 
 <script lang=ts setup>
+import { kInstanceLaunch } from '@/composables/instanceLaunch'
+import { injection } from '@/util/inject'
 import { useDialog } from '../composables/dialog'
-import { useLaunch } from '../composables/launch'
 
 const { t } = useI18n()
 const { isShown } = useDialog('multi-instance-launch')
-const launch = useLaunch()
+const { launch } = injection(kInstanceLaunch)
 </script>

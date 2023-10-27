@@ -7,7 +7,7 @@
     :value="count !== 0"
   >
     <template #badge>
-      <span>{{ count }}</span>
+      <span v-ripple>{{ count }}</span>
     </template>
     <v-menu
       v-model="showMenu"
@@ -23,36 +23,31 @@
           :large="compact"
           v-bind="attrs"
           class="px-12 text-lg transition-all"
-          :loading="loading"
           @mouseenter="onMouseEnter"
           @mouseleave="onMouseLeave"
           @click="onClick()"
         >
-          <template v-if="right">
-            <v-icon
-              class="-ml-1 pr-2 text-2xl"
-            >
-              {{ icon }}
-            </v-icon>
-            {{ text }}
-          </template>
-          <template v-else>
-            {{ text }}
-            <v-icon
-              v-if="!loading"
-              right
-              class="pl-3 text-2xl"
-            >
-              {{ icon }}
-            </v-icon>
-            <v-progress-circular
-              v-else
-              class="v-icon--right"
-              indeterminate
-              :size="20"
-              :width="2"
-            />
-          </template>
+          <v-icon
+            v-if="leftIcon"
+            class="-ml-1 pr-2 text-2xl"
+          >
+            {{ leftIcon }}
+          </v-icon>
+          {{ text }}
+          <v-icon
+            v-if="!loading && icon"
+            right
+            class="pl-3 text-2xl"
+          >
+            {{ icon }}
+          </v-icon>
+          <v-progress-circular
+            v-else-if="loading"
+            class="v-icon--right"
+            indeterminate
+            :size="20"
+            :width="2"
+          />
         </v-btn>
       </template>
       <HomeLaunchButtonMenu
@@ -72,7 +67,7 @@ defineProps<{ compact?: boolean }>()
 
 const inFoucsMode = useInFocusMode()
 
-const { onClick, color, icon, text, loading, right, count, menuItems } = useLaunchButton()
+const { onClick, color, icon, text, loading, leftIcon, count, menuItems } = useLaunchButton()
 
 let handle: any
 const showMenu = ref(false)

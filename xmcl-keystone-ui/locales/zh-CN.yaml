@@ -501,6 +501,8 @@ labyMod:
   disable: 不使用 LabyMod
   empty: LabyMod 不支持当前 Minecraft
 launch:
+  cancel: 中止
+  kill: 停止
   launch: 启动
 launchBlocked:
   ignore: 强行启动
