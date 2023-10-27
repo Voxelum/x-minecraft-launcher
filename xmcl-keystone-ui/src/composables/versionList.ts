@@ -154,7 +154,15 @@ export function useOptifineVersionList(minecraft: Ref<string>, forge: Ref<string
   const { versions, installed, refreshing } = useOptifineVersions(minecraft, forge, local)
 
   const items = computed(() => {
-    return versions.value.map((v) => {
+    return [...versions.value].sort((a, b) => {
+      const { patch, type } = a
+      // compare type first and then the patch
+      const result = type.localeCompare(b.type)
+      if (result === 0) {
+        return -patch.localeCompare(b.patch)
+      }
+      return -result
+    }).map((v) => {
       const key = LockKey.version(`optifine-${minecraft.value}-${v.type}_${v.patch}`)
       const name = v.type + '_' + v.patch
       const result: VersionItem = reactive({
