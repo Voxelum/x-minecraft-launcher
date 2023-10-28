@@ -1,7 +1,6 @@
 <template>
   <v-dialog
     v-model="data.isShown"
-    :width="750"
     :persistent="true"
   >
     <v-card class="visible-scroll flex max-h-[80vh] flex-col overflow-auto">
@@ -57,6 +56,14 @@ const data = reactive({
   isCrash: false,
   crashReportLocation: '',
   errorLog: '',
+})
+watch(() => data.isShown, (isShown) => {
+  if (!isShown) {
+    data.log = ''
+    data.isCrash = false
+    data.crashReportLocation = ''
+    data.errorLog = ''
+  }
 })
 const { t } = useI18n()
 const { path } = injection(kInstance)

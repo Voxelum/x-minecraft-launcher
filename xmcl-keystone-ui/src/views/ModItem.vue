@@ -2,7 +2,7 @@
   <v-list-item
     v-context-menu="getContextMenuItems"
     v-shared-tooltip="[tooltip, hasUpdate ? 'primary' : 'black']"
-    class="pointer-events-auto"
+    class="pointer-events-auto max-h-[91px] min-h-[91px]"
     :class="{
       'v-list-item--disabled': item.disabled
     }"

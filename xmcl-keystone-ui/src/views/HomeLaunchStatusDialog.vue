@@ -5,19 +5,15 @@
   >
     <v-card color="secondary">
       <v-card-title v-if="exiting">
-        Exit game?
+        {{ t('launchStatus.exit') }}
       </v-card-title>
-      <v-container
-        v-if="launching || !windowReady"
-      >
+      <v-container v-if="launching || !windowReady">
         <v-layout
           align-center
           justify-center
           column
         >
-          <div
-            class="relative mt-8"
-          >
+          <div class="relative mt-8">
             <v-progress-circular
               color="primary"
               :size="70"
@@ -108,7 +104,10 @@ watch(launching, (val) => {
   }
 })
 
-const onKill = () => kill()
+const onKill = () => {
+  kill()
+  hide()
+}
 const onCancel = () => hide()
 
 watch(windowReady, (ready) => {

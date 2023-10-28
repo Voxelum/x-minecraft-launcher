@@ -538,6 +538,7 @@ launchFailed:
   title: Game Exited with Abnormal Code
 launchStatus:
   checkingProblems: Checking Problems
+  exit: Exit Game?
   injectingAuthLib: Seting-up Thirdparty AuthLib
   launching: Launching...
   launchingSlow: Still launching... Starting graphic engine can be slow...
