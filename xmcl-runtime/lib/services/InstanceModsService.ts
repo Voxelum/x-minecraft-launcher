@@ -47,7 +47,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
 
         const fileArgs = files.filter((file) => !shouldIgnoreFile(file)).map((file) => join(dir, file))
 
-        const resources = await this.resourceService.importResources(fileArgs.map(f => ({ path: f, domain: ResourceDomain.Mods })))
+        const resources = await this.resourceService.importResources(fileArgs.map(f => ({ path: f, domain: ResourceDomain.Mods })), true)
         return resources.map((r, i) => ({ ...r, path: fileArgs[i] }))
       }
 
@@ -68,7 +68,7 @@ export class InstanceModsService extends AbstractService implements IInstanceMod
       const watcher = watch(basePath, async (event, filePath) => {
         if (shouldIgnoreFile(filePath)) return
         if (event === 'update') {
-          const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }])
+          const [resource] = await this.resourceService.importResources([{ path: filePath, domain: ResourceDomain.Mods }], true)
           if (isModResource(resource)) {
             this.log(`Instance mod add ${filePath}`)
           } else {

@@ -273,44 +273,52 @@ export class ResourceService extends AbstractService implements IResourceService
     return result
   }
 
-  importResources(resources: [ImportResourceOptions]): Promise<[Resource]>
-  importResources(resources: [ImportResourceOptions, ImportResourceOptions]): Promise<[Resource, Resource]>
-  importResources(resources: ImportResourceOptions[]): Promise<Resource[]>
-  async importResources(options: ImportResourceOptions[]): Promise<Resource[]> {
+  importResources(resources: [ImportResourceOptions], loose?: boolean): Promise<[Resource]>
+  importResources(resources: [ImportResourceOptions, ImportResourceOptions], loose?: boolean): Promise<[Resource, Resource]>
+  importResources(resources: ImportResourceOptions[], loose?: boolean): Promise<Resource[]>
+  async importResources(options: ImportResourceOptions[], loose?: boolean): Promise<Resource[]> {
     // We need to resolve the domain of the resource
     const resolved = await this.resolveResources(options)
     const result = await Promise.all(resolved.map(async (resolved, index) => {
-      if (resolved.fileType === 'directory') {
-        // Will not persist the dictionary as it cannot calculate hash
-        return resolved
+      try {
+        if (resolved.fileType === 'directory') {
+          // Will not persist the dictionary as it cannot calculate hash
+          return resolved
+        }
+        if (resolved.storedPath) {
+          return resolved
+        }
+
+        if (resolved.domain === ResourceDomain.Unclassified) {
+          resolved.domain = resolveDomain(resolved.metadata)
+        }
+
+        const option = options[index]
+
+        if (option.metadata || option.uris || option.icons) {
+          const data = await upsertMetadata(option.metadata ?? {}, option.uris ?? [], option.icons ?? [], resolved.fileName, resolved.hash, this.context)
+          resolved.icons = resolved.icons ? [...resolved.icons, ...data.icons] : data.icons
+          resolved.uris = resolved.uris ? [...resolved.uris, ...data.uris] : data.uris
+          resolved.metadata = data
+        }
+
+        const storedPathOrErr = await tryPersistResource(resolved, this.getPath(), this.context).catch(e => e)
+        if (typeof storedPathOrErr === 'string') {
+          const resource = { ...resolved, storedPath: storedPathOrErr }
+
+          this.log(`Persist new resource ${resource.path} -> ${storedPathOrErr}`)
+
+          return resource
+        }
+        if (loose) {
+          return resolved
+        }
+        throw storedPathOrErr
+      } catch (e) {
+        this.error(e as Error)
+        return undefined
       }
-      if (resolved.storedPath) {
-        return resolved
-      }
-
-      if (resolved.domain === ResourceDomain.Unclassified) {
-        resolved.domain = resolveDomain(resolved.metadata)
-      }
-
-      const option = options[index]
-
-      if (option.metadata || option.uris || option.icons) {
-        const data = await upsertMetadata(option.metadata ?? {}, option.uris ?? [], option.icons ?? [], resolved.fileName, resolved.hash, this.context)
-        resolved.icons = resolved.icons ? [...resolved.icons, ...data.icons] : data.icons
-        resolved.uris = resolved.uris ? [...resolved.uris, ...data.uris] : data.uris
-        resolved.metadata = data
-      }
-
-      const storedPath = await tryPersistResource(resolved, this.getPath(), this.context)
-      const resource = { ...resolved, storedPath }
-
-      this.log(`Persist new resource ${resource.path} -> ${storedPath}`)
-
-      return resource
-    }).map(r => r.catch(e => {
-      this.error(e)
-      return undefined
-    })))
+    }))
 
     return result.filter(r => r) as Resource[]
   }

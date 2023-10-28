@@ -6,6 +6,7 @@ import { dirname, extname, join } from 'path'
 import { linkOrCopy } from '../util/fs'
 import { getResourceEntry } from './getResourceEntry'
 import { ResourceContext } from './ResourceContext'
+import { isSystemError } from '../util/error'
 
 export async function tryPersistResource(resource: { fileName: string; domain: ResourceDomain; hash: string; path: string }, root: string, context: ResourceContext) {
   const backup = [
@@ -55,11 +56,17 @@ export async function tryPersistResource(resource: { fileName: string; domain: R
     existedEntry = await context.db.selectFrom('snapshots').where('domainedPath', '=', `${resource.domain}/${fileName}`).selectAll().executeTakeFirst()
   }
 
-  const fstat = await stat(filePath).catch(e => undefined)
+  const fstat = await stat(filePath).catch(e => {
+    if (isSystemError(e) && e.code === 'ENOENT') {
+      return undefined
+    }
+    throw e
+  })
 
   if (fstat) {
     // existed but not in database
     // this is a broken resource
+    context.logger.warn(`Resource ${filePath} is broken. Try to fix it.`)
     const localEntry = await getResourceEntry(filePath, context, true)
     if (localEntry.sha1 === resource.hash) {
       // The file is already imported...
