@@ -1,7 +1,7 @@
 import { ResourceDomain } from '@xmcl/runtime-api'
 import { randomBytes } from 'crypto'
 import filenamify from 'filenamify'
-import { rename } from 'fs/promises'
+import { rename, stat, unlink } from 'fs/promises'
 import { dirname, extname, join } from 'path'
 import { linkOrCopy } from '../util/fs'
 import { getResourceEntry } from './getResourceEntry'
@@ -53,6 +53,31 @@ export async function tryPersistResource(resource: { fileName: string; domain: R
     filePath = join(root, resource.domain, fileName)
 
     existedEntry = await context.db.selectFrom('snapshots').where('domainedPath', '=', `${resource.domain}/${fileName}`).selectAll().executeTakeFirst()
+  }
+
+  const fstat = await stat(filePath).catch(e => undefined)
+
+  if (fstat) {
+    // existed but not in database
+    // this is a broken resource
+    const localEntry = await getResourceEntry(filePath, context, true)
+    if (localEntry.sha1 === resource.hash) {
+      // The file is already imported...
+      // Recover db
+      await context.db.insertInto('snapshots').values({
+        domainedPath: entryName,
+        fileType: localEntry.fileType,
+        sha1: localEntry.sha1,
+        size: localEntry.size,
+        mtime: localEntry.mtime,
+        ctime: localEntry.ctime,
+        ino: localEntry.ino,
+      }).execute().catch(() => undefined)
+      return filePath
+    } else {
+      // Remove the file
+      await unlink(filePath)
+    }
   }
 
   if (dirname(resource.path) === dirname(filePath)) {

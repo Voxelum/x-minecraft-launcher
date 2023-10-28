@@ -6,6 +6,7 @@
     :icons="icons"
     :refreshing="isValidating"
     :button="t('mod.manage')"
+    :error="error"
     @navigate="push('/mods')"
   />
 </template>
@@ -16,7 +17,7 @@ import HomeCardBase from './HomeCardBase.vue'
 
 const props = defineProps<{ row: number; rowCount: number }>()
 
-const { mods, enabledModCounts, isValidating } = injection(kInstanceModsContext)
+const { mods, enabledModCounts, isValidating, error } = injection(kInstanceModsContext)
 const icons = computed(() => mods.value.filter(i => i.enabled).map((m) => ({ name: m.name + ' (' + m.version + ')', icon: m.icon }))
   .slice(0, props.row * props.rowCount))
 const { push } = useRouter()

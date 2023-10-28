@@ -1,7 +1,7 @@
 <template>
   <v-card
     class="flex h-full flex-col"
-    :color="cardColor"
+    :color="error ? 'red' : cardColor"
   >
     <v-card-title>
       <v-icon left>
@@ -14,7 +14,7 @@
         <v-skeleton-loader type="paragraph" />
       </template>
       <template v-else>
-        {{ text }}
+        {{ error ? (error.message || error) : text }}
         <div
           v-if="icons.length > 0"
           class="mt-4"
@@ -61,6 +61,7 @@ defineProps<{
   text: string
   button: string
   refreshing: boolean
+  error?: any
   icons: Array<{ name: string; icon?: string; color?: string }>
 }>()
 const emit = defineEmits(['navigate'])

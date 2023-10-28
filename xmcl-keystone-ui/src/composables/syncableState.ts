@@ -19,6 +19,7 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
     // Avoid calling dispose multiple times
     try {
       isValidating.value = true
+      error.value = undefined
       data = await fetcher(signal)
       if (!data || signal.aborted) { return }
       data.subscribeAll((mutation, payload) => {
@@ -28,6 +29,7 @@ export function useState<T extends object>(fetcher: (abortSignal: AbortSignal) =
     } catch (e) {
       if (signal.aborted) { return }
       error.value = e
+      state.value = undefined
       if (import.meta.env.DEV) console.error(e)
     } finally {
       isValidating.value = false

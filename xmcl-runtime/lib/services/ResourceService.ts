@@ -307,9 +307,12 @@ export class ResourceService extends AbstractService implements IResourceService
       this.log(`Persist new resource ${resource.path} -> ${storedPath}`)
 
       return resource
-    }))
+    }).map(r => r.catch(e => {
+      this.error(e)
+      return undefined
+    })))
 
-    return result
+    return result.filter(r => r) as Resource[]
   }
 
   async exportResources({ resources, targetDirectory }: ExportResourceOptions) {

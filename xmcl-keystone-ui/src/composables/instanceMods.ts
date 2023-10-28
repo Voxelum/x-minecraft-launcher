@@ -30,11 +30,17 @@ export function useInstanceMods(instancePath: Ref<string>, instanceRuntime: Ref<
   const enabledModCounts = computed(() => mods.value.filter(v => v.enabled).length)
 
   watch([computed(() => state.value?.mods), java], () => {
-    if (!state.value?.mods) return
+    if (!state.value?.mods) {
+      mods.value = []
+      return
+    }
     updateItems(state.value?.mods, instanceRuntime.value)
   })
   watch(instanceRuntime, () => {
-    if (!state.value?.mods) return
+    if (!state.value?.mods) {
+      mods.value = []
+      return
+    }
     updateItems(state.value?.mods, instanceRuntime.value)
   }, { deep: true })
 
