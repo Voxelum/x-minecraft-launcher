@@ -20,7 +20,7 @@ The `.xmclq` file is the basic file extension for json content of metadata.
 
 Open launcher from a file with custom extension to launch a brand new (maybe) launcher UI.
 
-This is ususally customized and provided by a server. It should contain the full metadata to recover the launcher UI.
+This is usually customized and provided by a server. It should contain the full metadata to recover the launcher UI.
 
 ### From Offline Bundle
 
