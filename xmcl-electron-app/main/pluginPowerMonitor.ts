@@ -15,7 +15,7 @@ export const pluginPowerMonitor: LauncherAppPlugin = async (app) => {
   const info = await elec.getGPUInfo('basic') as any
   const gpus = info?.gpuDevice?.filter((v: any) => v?.vendorId !== 5140)
     .map((v: any) => v.vendorId) || []
-  const { log, warn } = app.getLogger('GPUOptifimizer')
+  const { log, warn, error } = app.getLogger('GPUOptifimizer')
   if (gpus.length < 2) {
     log(`Detected GPUs: [${gpus.join(', ')}]`)
     return
@@ -37,7 +37,7 @@ export const pluginPowerMonitor: LauncherAppPlugin = async (app) => {
             await addRegistryKey(app, javaPath, powerMonitor.onBatteryPower ? PerformanceType.POWER_SAVING : PerformanceType.HIGH_PERFORMANCE)
             log('Assigned Minecraft JVM to high performance GPU')
           } catch (e) {
-            warn(`Failed to assign Minecraft JVM to high performance GPU: ${(e as any).message}`)
+            error(new Error('Failed to assign Minecraft JVM to high performance GPU', { cause: e }))
           }
         }
       },

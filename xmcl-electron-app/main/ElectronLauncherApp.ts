@@ -1,7 +1,7 @@
 import { LauncherApp } from '@xmcl/runtime'
 import { Shell } from '@xmcl/runtime/lib/app/Shell'
 import { LAUNCHER_NAME } from '@xmcl/runtime/lib/constant'
-import { app, shell } from 'electron'
+import { Menu, app, shell } from 'electron'
 import { join } from 'path'
 import { URL } from 'url'
 import { ElectronController } from './ElectronController'
@@ -144,6 +144,10 @@ export default class ElectronLauncherApp extends LauncherApp {
       if (last.startsWith('xmcl://')) {
         this.protocol.handle({ url: last })
       }
+    })
+
+    app.on('ready', () => {
+      Menu.setApplicationMenu(null)
     })
 
     await super.setup()
