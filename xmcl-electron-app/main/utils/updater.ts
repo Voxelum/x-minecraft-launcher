@@ -20,6 +20,7 @@ import ElectronLauncherApp from '../ElectronLauncherApp'
 import { DownloadAppInstallerTask } from './appinstaller'
 import { checksum } from './fs'
 import { GFW } from '@xmcl/runtime/lib/entities/gfw'
+import { ensureElevateExe } from './elevate'
 
 /**
  * Only download asar file update.
@@ -291,22 +292,6 @@ export class ElectronUpdater implements LauncherAppUpdater {
       autoUpdater.quitAndInstall()
     }
   }
-}
-
-async function ensureElevateExe(appDataPath: string) {
-  const elevate = join(appDataPath, 'elevate.exe')
-  await download({
-    url: [
-      `${AZURE_CDN}/elevate.exe`,
-      `${AZURE_MS_CDN}/elevate.exe`,
-    ],
-    validator: {
-      algorithm: 'sha1',
-      hash: 'd8d449b92de20a57df722df46435ba4553ecc802',
-    },
-    destination: elevate,
-  })
-  return elevate
 }
 
 let injectedUpdate = false
