@@ -56,8 +56,18 @@ export function useMods(
     const indices: Record<string, Mod> = {}
     const installed: [Mod, number][] = []
 
+    const insert = (mod: Mod) => {
+      indices[mod.id] = mod
+      if (mod.curseforgeProjectId) {
+        indices[mod.curseforgeProjectId] = mod
+      }
+      if (mod.modrinthProjectId) {
+        indices[mod.modrinthProjectId] = mod
+      }
+    }
+
     for (const item of instanceMods.value) {
-      indices[item.id] = item
+      insert(item)
       if (item) {
         installed.push([item, getDiceCoefficient(keyword.value, item.title)])
       } else {
@@ -71,8 +81,9 @@ export function useMods(
         if (indices[mod.id]) {
           const other = indices[mod.id]
           assignMod(other, mod)
+          insert(other)
         } else {
-          indices[mod.id] = mod
+          insert(mod)
           all.push([mod, getDiceCoefficient(keyword.value, mod.title)])
         }
       }
@@ -82,8 +93,9 @@ export function useMods(
         if (indices[mod.id]) {
           const other = indices[mod.id]
           assignMod(other, mod)
+          insert(mod)
         } else {
-          indices[mod.id] = mod
+          insert(mod)
           all.push(([mod, getDiceCoefficient(keyword.value, mod.title)]))
         }
       }
