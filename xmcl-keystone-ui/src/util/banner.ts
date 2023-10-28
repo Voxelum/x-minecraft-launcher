@@ -1,3 +1,4 @@
+import v120 from '@/assets/banners/1.20.webp'
 import v119 from '@/assets/banners/1.19.webp'
 import v118 from '@/assets/banners/1.18.webp'
 import v117 from '@/assets/banners/1.17.webp'
@@ -14,6 +15,7 @@ import v17 from '@/assets/banners/1.7.webp'
 import v16 from '@/assets/banners/1.6.webp'
 
 const dic = Object.freeze({
+  v120,
   v119,
   v118,
   v117,

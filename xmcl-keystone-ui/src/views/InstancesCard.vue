@@ -188,29 +188,31 @@
   </v-card>
 </template>
 <script lang=ts setup>
-import { BaseServiceKey, Instance, InstanceServiceKey, LockKey } from '@xmcl/runtime-api'
-import { ContextMenuItem } from '../composables/contextMenu'
+import unknownServer from '@/assets/unknown_server.png'
+import { useBusy } from '@/composables'
+import { kInstance } from '@/composables/instance'
+import { useInstanceContextMenuItems } from '@/composables/instanceContextMenu'
+import { vDraggableCard } from '@/directives/draggableCard'
+import { getBanner } from '@/util/banner'
+import { injection } from '@/util/inject'
+import { Instance, LockKey } from '@xmcl/runtime-api'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import { vContextMenu } from '../directives/contextMenu'
-import unknownServer from '@/assets/unknown_server.png'
-import { useBusy, useService } from '@/composables'
-import { getBanner } from '@/util/banner'
-import { vDraggableCard } from '@/directives/draggableCard'
-import { kInstance } from '@/composables/instance'
-import { injection } from '@/util/inject'
 
 const props = defineProps<{ instance: Instance }>()
 const isBusy = useBusy(LockKey.instance(props.instance.path))
 const { path } = injection(kInstance)
 const isSelected = computed(() => path.value === props.instance.path)
 const { status } = useInstanceServerStatus(computed(() => props.instance))
-const { showItemInDirectory } = useService(BaseServiceKey)
 
 const emit = defineEmits(['delete', 'click'])
 
 const image = computed(() => {
   if (status.value.favicon && status.value.favicon !== unknownServer) {
     return status.value.favicon
+  }
+  if (props.instance.icon) {
+    return props.instance.icon
   }
   const banner = getBanner(props.instance.runtime.minecraft)
   if (banner) {
@@ -219,25 +221,7 @@ const image = computed(() => {
   return unknownServer
 })
 const description = computed(() => props.instance.description)
-const { t } = useI18n()
-const contextMenuItems = computed(() => {
-  const items: ContextMenuItem[] = [{
-    text: t('instance.showInstance', { file: props.instance.path }),
-    onClick: () => {
-      showItemInDirectory(props.instance.path)
-    },
-    icon: 'folder',
-  }, {
-    text: t('delete.name', { name: props.instance.path }),
-    onClick: () => {
-      emit('delete')
-    },
-    color: 'error',
-    icon: 'delete',
-  }]
-
-  return items
-})
+const contextMenuItems = useInstanceContextMenuItems(computed(() => props.instance))
 
 </script>
 

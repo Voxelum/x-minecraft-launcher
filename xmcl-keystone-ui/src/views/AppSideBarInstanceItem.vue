@@ -130,14 +130,12 @@
 </template>
 <script lang="ts" setup>
 import { kInstance } from '@/composables/instance'
+import { useInstanceContextMenuItems } from '@/composables/instanceContextMenu'
 import { getInstanceIcon } from '@/util/favicon'
 import { injection } from '@/util/inject'
-import { Instance, InstanceServiceKey } from '@xmcl/runtime-api'
-import { ContextMenuItem } from '../composables/contextMenu'
-import { useDialog } from '../composables/dialog'
+import { Instance } from '@xmcl/runtime-api'
 import { useInstanceServerStatus } from '../composables/serverStatus'
 import { vContextMenu } from '../directives/contextMenu'
-import { useService } from '@/composables'
 
 const props = defineProps<{ instance: Instance }>()
 const emit = defineEmits(['drop'])
@@ -146,35 +144,14 @@ const router = useRouter()
 const { t } = useI18n()
 
 const { select, path } = injection(kInstance)
-const { show: showDeleteDialog } = useDialog('delete-instance')
 const { status } = useInstanceServerStatus(computed(() => props.instance))
 
 const dragging = ref(false)
 const dragover = ref(0)
 
 const favicon = computed(() => getInstanceIcon(props.instance, status.value))
-const { duplicateInstance } = useService(InstanceServiceKey)
 
-const items = computed(() => {
-  const result: ContextMenuItem[] = [
-    {
-      text: t('instance.delete'),
-      color: 'red',
-      icon: 'delete',
-      onClick() {
-        showDeleteDialog({ name: props.instance.name, path: props.instance.path })
-      },
-    },
-    {
-      text: t('instance.duplicate'),
-      icon: 'file_copy',
-      onClick() {
-        duplicateInstance(props.instance.path)
-      },
-    },
-  ]
-  return result
-})
+const items = useInstanceContextMenuItems(computed(() => props.instance))
 
 const navigate = () => {
   if (router.currentRoute.path !== '/') {
