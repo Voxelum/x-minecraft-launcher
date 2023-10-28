@@ -219,7 +219,7 @@ const { refresh: connect } = useRefreshable(async () => {
 
 const { refresh: initiate } = useRefreshable(async () => {
   step.value += 1
-  id.value = await service.initiate()
+  id.value = await service.initiate({ gameProfile: gameProfile.value })
   setTimeout(() => { freeze.value = false }, 4000)
   freeze.value = true
 })

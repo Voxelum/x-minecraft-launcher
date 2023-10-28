@@ -64,8 +64,10 @@ export class UserService extends StatefulService<UserState> implements IUserServ
       this.state.userData(userData)
 
       // Refresh all users
-      await Promise.all(Object.values(userData.users as Record<string, UserProfile>).map((user) => {
-        return this.refreshUser(user.id)
+      Promise.all(Object.values(userData.users as Record<string, UserProfile>).map((user) => {
+        return this.refreshUser(user.id).catch((e) => {
+          this.log(`Failed to refresh user ${user.id}`, e)
+        })
       }))
     })
 

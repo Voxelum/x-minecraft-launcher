@@ -1,6 +1,6 @@
 import { MinecraftLanDiscover } from '@xmcl/client'
 import { ChecksumNotMatchError } from '@xmcl/file-transfer'
-import { AUTHORITY_MICROSOFT, InstanceManifest, PeerService as IPeerService, MutableState, PeerServiceKey, PeerState, Settings, ShareInstanceOptions } from '@xmcl/runtime-api'
+import { AUTHORITY_MICROSOFT, GameProfileAndTexture, InstanceManifest, PeerService as IPeerService, MutableState, PeerServiceKey, PeerState, Settings, ShareInstanceOptions, UserProfile } from '@xmcl/runtime-api'
 import { AbortableTask, BaseTask } from '@xmcl/task'
 import { randomBytes, randomUUID, getDiffieHellman } from 'crypto'
 import { createWriteStream } from 'fs'
@@ -28,6 +28,7 @@ import { NatService } from './NatService'
 import { ExposeServiceKey, Lock, Singleton, StatefulService } from './Service'
 import { UserService } from './UserService'
 import { kSettings } from '../entities/settings'
+import { GameProfile } from '@xmcl/user'
 
 const pBrotliDecompress = promisify(brotliDecompress)
 const pBrotliCompress = promisify(brotliCompress)
@@ -246,7 +247,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
   }
 
   @Lock('joinGroup')
-  async joinGroup(id: string): Promise<void> {
+  async joinGroup(id: string, gameProfile?: GameProfileAndTexture): Promise<void> {
     if (this.group?.groupId && this.group.groupId === id) {
       return
     }
@@ -267,7 +268,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
           // This will have a total order in the UUID random space
 
           // Try to connect to the sender
-          this.initiate({ id: sender, initiate: true })
+          this.initiate({ id: sender, initiate: true, gameProfile })
         }
       }
     })
@@ -278,7 +279,7 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       if (!peer) {
         this.log(`Not found the ${sender}. Initiate new connection`)
         // Try to connect to the sender
-        await this.initiate({ id: sender, initiate: false })
+        await this.initiate({ id: sender, initiate: false, gameProfile })
         peer = Object.values(this.peers).find(p => p.getRemoteId() === sender)!
       }
       this.log(`Set remote ${type} description: ${sdp}`)
@@ -331,9 +332,11 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     id?: string
     session?: string
     initiate?: boolean
+    gameProfile?: GameProfileAndTexture
   }): Promise<string> {
     const initiator = !options?.id || options?.initiate || false
     const remoteId = options?.id
+    const gameProfile = options?.gameProfile
     const sessionId = options?.session || randomUUID() // `${await this.getLocalIp(true)}-${randomUUID()}`
 
     this.log(`Create peer connection to ${remoteId}. Is initiator: ${initiator}`)
@@ -387,9 +390,8 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
         }
       },
       getUserInfo: () => {
-        // TODO: fix this
-        const user = Object.values(this.userService.state.users)[0]
-        const profile = user?.profiles[user.selectedProfile]
+        const _user = Object.values(this.userService.state.users)[0]
+        const profile = gameProfile ?? Object.values(this.userService.state.users)[0]?.profiles[_user.selectedProfile]
         return {
           name: profile?.name ?? 'Player',
           avatar: profile?.textures.SKIN.url ?? '',
@@ -481,12 +483,13 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
     return conn.id
   }
 
-  async offer(offer: string): Promise<string> {
+  async offer(offer: string, gameProfile?: GameProfileAndTexture): Promise<string> {
     const o = await this.decode(offer) as TransferDescription
     const sess = await this.initiate({
       id: o.id,
       session: o.session,
       initiate: false,
+      gameProfile,
     })
     const peer = this.peers[sess]
     peer.connection.setRemoteDescription(o.sdp, 'offer' as any)

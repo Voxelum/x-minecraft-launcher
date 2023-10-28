@@ -1,8 +1,8 @@
-import { GenericEventEmitter } from '../events'
 import { InstanceManifest } from '../entities/instanceManifest.schema'
-import { ServiceKey } from './Service'
 import { GameProfileAndTexture } from '../entities/user.schema'
+import { GenericEventEmitter } from '../events'
 import { MutableState } from '../util/MutableState'
+import { ServiceKey } from './Service'
 
 export interface RTCSessionDescription {
   sdp: string
@@ -152,7 +152,7 @@ export interface PeerService extends GenericEventEmitter<PeerServiceEvents> {
   /**
    * Join a group. Then the group will automatically handle your connection between peers
    */
-  joinGroup(id: string): Promise<void>
+  joinGroup(id: string, user?: GameProfileAndTexture): Promise<void>
   /**
    * Leave the current group
    */
@@ -165,13 +165,13 @@ export interface PeerService extends GenericEventEmitter<PeerServiceEvents> {
    * Initiate a peer connection, and return the session description payload.
    * You need to manually send this offer payload to other user
    */
-  initiate(): Promise<string>
+  initiate(options?: { gameProfile?: GameProfileAndTexture }): Promise<string>
   /**
    * Receive the offer from other user, and create peer corresponding to it.
    *
    * @param offer The compressed `offer` sdp string from other user
    */
-  offer(offer: string): Promise<string>
+  offer(offer: string, gameProfile?: GameProfileAndTexture): Promise<string>
   /**
    * Receive the answer from other user. This will finally create the connection between you and other
    *

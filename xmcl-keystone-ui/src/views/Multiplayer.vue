@@ -614,7 +614,7 @@ const onJoin = () => {
   if (!group.value) {
     const buf = new Uint16Array(1)
     window.crypto.getRandomValues(buf)
-    joinGroup(groupId.value || (gameProfile.value.name + '@' + buf[0]))
+    joinGroup(groupId.value || (gameProfile.value.name + '@' + buf[0]), gameProfile.value)
   } else {
     leaveGroup()
   }

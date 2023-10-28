@@ -166,7 +166,7 @@ const { refresh: answer } = useRefreshable(async () => {
     if (remoteDescription.value === localDescription.value) {
       throw new Error('Cannot enter token from yourself!')
     }
-    id.value = await service.offer(remoteDescription.value)
+    id.value = await service.offer(remoteDescription.value, gameProfile.value)
     done.value = true
     step.value++
   } catch (e) {
