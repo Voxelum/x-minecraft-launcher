@@ -10,6 +10,9 @@ export function useLaunchTask(path: Ref<string>, version: Ref<Instance['runtime'
     if (i.state === TaskState.Cancelled || i.state === TaskState.Succeed || i.state === TaskState.Failed) {
       return false
     }
+    if (i.path === 'installJre') {
+      return true
+    }
     if (i.path === 'installVersion' && p?.id === version.value.minecraft) {
       return true
     }
