@@ -536,6 +536,7 @@ launchBlocked:
 launchFailed:
   crash: 游戏崩溃了！
   description: 没有找到崩溃报告，这里是游戏输出和最新的日志文件
+  failedToLaunch: 启动器启动失败
   latestLog: 最新日志文件
   title: 游戏未正常退出
 launchGeneralException:

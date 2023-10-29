@@ -13,7 +13,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
   const { launch, kill, on, getGameProcesses } = useService(LaunchServiceKey)
   const { generateLaunchOptions } = useLaunchOption(instance, resolvedVersion, java, userProfile, globalState)
   const launching = ref(false)
-  const error = ref<LaunchErrorCode | undefined>(undefined)
+  const error = ref<any | undefined>(undefined)
 
   const { data, mutate } = useSWRV(`/${instance.value.path}/games`, async () => {
     const processes = await getGameProcesses()
@@ -43,6 +43,7 @@ export function useInstanceLaunch(instance: Ref<Instance>, resolvedVersion: Ref<
   async function launchGame() {
     try {
       launching.value = true
+      error.value = undefined
       const options = await generateLaunchOptions()
 
       if (!options.skipAssetsCheck) {

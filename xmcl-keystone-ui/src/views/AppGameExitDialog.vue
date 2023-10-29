@@ -11,7 +11,7 @@
           {{ data.isCrash ? t('launchFailed.crash') : t('launchFailed.title') }}
         </v-toolbar-title>
         <v-spacer />
-        <v-toolbar-items>
+        <v-toolbar-items v-if="!data.launcherError">
           <v-btn
             text
             @click="openFolder"
@@ -30,7 +30,7 @@
         <div
           style="padding: 10px"
         >
-          {{ data.isCrash ? t(`launchFailed.crash`) : t(`launchFailed.description`) }}
+          {{ data.launcherError ? t('launchFailed.failedToLaunch') : data.isCrash ? t(`launchFailed.crash`) : t(`launchFailed.description`) }}
         </div>
         <pre class="overflow-auto rounded bg-[rgba(0,0,0,0.1)] p-5 hover:bg-[rgba(0,0,0,0.2)]">{{ data.errorLog }}</pre>
         <div
@@ -47,6 +47,7 @@
 <script lang=ts setup>
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
+import { kInstanceLaunch } from '@/composables/instanceLaunch'
 import { injection } from '@/util/inject'
 import { BaseServiceKey, InstanceLogServiceKey, LaunchServiceKey } from '@xmcl/runtime-api'
 
@@ -54,6 +55,7 @@ const data = reactive({
   isShown: false,
   log: '',
   isCrash: false,
+  launcherError: false,
   crashReportLocation: '',
   errorLog: '',
 })
@@ -61,6 +63,7 @@ watch(() => data.isShown, (isShown) => {
   if (!isShown) {
     data.log = ''
     data.isCrash = false
+    data.launcherError = false
     data.crashReportLocation = ''
     data.errorLog = ''
   }
@@ -70,6 +73,13 @@ const { path } = injection(kInstance)
 const { getLogContent, getCrashReportContent, showLog } = useService(InstanceLogServiceKey)
 const { on } = useService(LaunchServiceKey)
 const { showItemInDirectory } = useService(BaseServiceKey)
+const { error } = injection(kInstanceLaunch)
+
+watch(error, (e) => {
+  if (!e) return
+  data.launcherError = true
+  data.errorLog = JSON.stringify(e, null, 2)
+})
 function decorate(log: string) {
   // let lines = log.split('\n');
   // let result: string[] = [];
