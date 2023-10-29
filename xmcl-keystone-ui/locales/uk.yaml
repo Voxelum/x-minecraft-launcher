@@ -444,7 +444,7 @@ instanceSetting:
   hideLauncher: Сховати лаунчер після запуску
   icon: Оберіть зображення
   showLog: Показати логі Minecraft
-  showLogHint: Цей виводить вікно для перегляду логів Minecraft після запуску гри          
+  showLogHint: Цей виводить вікно для перегляду логів Minecraft після запуску гри
 instanceTemplate:
   curseforge: Цей модпак Curseforge
   ftb: Цей модпак FTB
