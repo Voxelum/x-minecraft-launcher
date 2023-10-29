@@ -52,9 +52,8 @@ export class ElectronController implements LauncherAppController {
   private settings: Settings | undefined
 
   private windowOpenHandler: Parameters<WebContents['setWindowOpenHandler']>[0] = (detail: HandlerDetails) => {
-    if (detail.frameName === 'browser' || detail.disposition === 'background-tab') {
-      shell.openExternal(detail.url)
-    } else if (detail.frameName === '' || detail.frameName === 'app') {
+    const url = new URL(detail.url)
+    if (url.host === 'app' || detail.frameName === '' || detail.frameName === 'app') {
       const man = this.activatedManifest!
       return {
         action: 'allow',
@@ -81,6 +80,8 @@ export class ElectronController implements LauncherAppController {
         },
       }
     }
+
+    shell.openExternal(detail.url)
     return { action: 'deny' }
   }
 
@@ -95,10 +96,7 @@ export class ElectronController implements LauncherAppController {
   }
 
   private onWebContentWillNavigate = (event: Event, url: string) => {
-    if (!IS_DEV) {
-      event.preventDefault()
-      shell.openExternal(url)
-    } else if (!url.startsWith('http://localhost') && !url.startsWith('http://app')) {
+    if (!url.startsWith(IS_DEV ? 'http://localhost' : 'http://app')) {
       event.preventDefault()
       shell.openExternal(url)
     }
