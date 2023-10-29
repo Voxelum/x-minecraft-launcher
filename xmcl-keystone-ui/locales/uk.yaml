@@ -246,7 +246,6 @@ disk:
   used: Викоростовано
 download: Завантажити
 downloadCount: 'Завантажень: {count}'
-edit: Змінити
 duration:
   day: '{duration} день | {duration} дні'
   hour: '{duration} година | {duration} години'
@@ -419,12 +418,10 @@ instance:
   openLogFolder: Відкрити папку логів
   requireName: Ім'я обов'язкове
   showInstance: Показати папку екземпляра
-  versionHint: Версія гри для цієї Minecraft
   setting:
     reset: Скидання
     save: Зберегти
     unsaved: Вашу модифікацію не збережено!
-  showInstance: Показати папку екземпляра
   versionHint: Версія Minecraft для цієї гри
   vmOptions: Параметри JVM
   vmOptionsHint: Додаткові аргументи, що передаються JVM
@@ -560,7 +557,6 @@ launcherUpdate:
   noUpdateAvailable: Немає доступних оновлень
   reinstall: Перевстановити
   updateToThisVersion: Завантажити та встановити
-  reinstall: Перевстановити
 liteloader:
   name: LiteLoader
 localVersion:
@@ -642,7 +638,6 @@ mod:
   dropHint: Перетягніть мод .jar/.litemod сюди для імпорту.
   enabled: 'Модів включенно: {count}'
   filter: Фільтр модов
-  hideIncompatible: Сховати несумістні моди
   import: Імпорт мода
   hideIncompatible: Приховати несумісні модифікації
   incompatible: Несумістні мод.
@@ -663,7 +658,6 @@ mod:
   unselected: Необрані моди
   switchDefaultSource: Джерело модифікації за замовчуванням
   toUpdate: '{count} на оновлення'
-  unselected: Unselected Mods
 modInstall:
   checkUpgrade: Перевірте оновлення модифікацій
   checkedUpgrade: Оновлення перевірено
@@ -728,7 +722,7 @@ modrinth:
     64x: 64x
     8x-: 8x-
     adventure: Пригоди
-   atmosphere: Атмосферний
+    atmosphere: Атмосферний
     audio: Аудіо
     blocks: Блоки
     bloom: Розквітний
@@ -761,7 +755,6 @@ modrinth:
     items: Предмети
     high: Важкий
     iris: Iris
-    items: Предмети
     kitchen-sink: Все підряд
     library: Бібліотека
     lightweight: Полегшений
@@ -1173,7 +1166,6 @@ setting:
     sideBarColor: Бічна панель
     warningColor: Колір попередження
   darkTheme: Тема
-  darkThemeDescription: Виберіть темну або світлу тему
   darkThemeDescription: Оберіть темну або світлу тему
   developerMode: Режим розробника
   developerModeDescription: Режим розробника призначений для тестування написаного вами мода
