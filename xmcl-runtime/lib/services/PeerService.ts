@@ -81,6 +81,14 @@ export class PeerService extends StatefulService<PeerState> implements IPeerServ
       // })
     })
 
+    app.registryDisposer(async () => {
+      for (const peer of Object.values(this.peers)) {
+        peer.close()
+      }
+      this.discover.destroy()
+      this.discoverV6.destroy()
+    })
+
     if (IS_DEV) {
       const logger = this.app.getLogger('wrtc', 'wrtc')
       initLogger('Verbose', (level, message) => {
