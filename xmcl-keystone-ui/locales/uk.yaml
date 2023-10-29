@@ -82,6 +82,11 @@ HomeSyncDialogPush:
 SettingMigrationDialog:
   selectRootDirectory: Виберіть кореневий каталог
 add: Добавить
+ago:
+  day: '{duration} день | {duration} дні'
+  hour: '{duration} година | {duration} години'
+  minute: '{duration} хвилина | {duration} хвилини'
+  second: '{duration} секунда | {duration} секунди'
 authProfileAddedNotification: Профіль аутифікації {name} доданий
 author: Автор
 back: Назад
@@ -96,11 +101,17 @@ browseApp:
 cancel: Відміна
 checkUpdate:
   name: Перевірити оновлення
+compatibleDetail:
+  current: Поточний
+  id: Id
+  requirements: Вимоги
 confirm: Запуск
 copyClipboard:
   success: Копіювати в буфер обміну
 create: Створити
 curseforge:
+  authors: Автори
+  category: Категорія
   createdDate: Дата створення
   downloadOnly: Завантажити
   downloaded: Завантажено
@@ -129,6 +140,7 @@ curseforge:
     files: Файли
     images: Зображення
   recentFiles: Останні файли
+  releasedDate: Дата виходу
   search: Пошук
   texture-packs:
     description: Переглядайте та завантажуйте текстурпаки з Curseforge
@@ -137,6 +149,10 @@ curseforge:
   worlds:
     description: Переглядайте та завантажуйте світи з Curseforge
     name: Світи
+curseforgeCard:
+  currentFile: Поточний файл модпакету
+  projectHint: Цей екземпляр створено проектом curseforge {mod} з ідентифікатором файлу = {file}.
+  projectLastFile: Останній файл модпаку
 dataMigration:
   apply: Застосувати налаштування
   directoryCriteriaHint: Переконайтеся, що новий каталог є ПУСТИМ каталогом!
@@ -156,6 +172,12 @@ delete:
   name: Видалити {name}
   'no': Ні
   'yes': Так
+dependencies:
+  embedded: Вбудований
+  incompatible: Несумісні
+  name: Залежності
+  optional: Забажанням
+  required: Required
 description: Опис
 detail: Деталі
 diagnosis:
@@ -165,6 +187,7 @@ diagnosis:
   corruptedAssets:
     message: Лаунчер встановить assets замість вас
     name: >-
+ 
       Пошкоджено asset: {name} | Пошкоджено asset {name} | Assets пошкоджено:
       {count}
   corruptedAssetsIndex:
@@ -184,6 +207,9 @@ diagnosis:
   incompatibleJava:
     message: Можна запросити лаунчер завантажити його за вас.
     name: Версія java {javaVersion} не підходить для {version}!
+  instanceFiles:
+    description: Це може бути незавершене встановлення минулого разу
+    title: Встановити файли до екземплярів
   invalidJava:
     message: Натисніть, щоб використовувати іншу java для запуску.
     name: Неправильне розташування java.
@@ -214,20 +240,34 @@ diagnosis:
     message: Натисніть для встановлення цієї версії
     name: Версія jar для Minecraft %{version} відсутня
   problem: 1 проблема | %{count} проблем
+disable: Вимкнути
 disk:
   available: Доступно
   used: Викоростовано
 download: Завантажити
 downloadCount: 'Завантажень: {count}'
 edit: Змінити
+duration:
+  day: '{duration} день | {duration} дні'
+  hour: '{duration} година | {duration} години'
+  minute: '{duration} хвилина | {duration} хвилини'
+  second: '{duration} секунда | {duration} секунди'
+edit: Редагувати
+enable: Увімкнути
 error:
   name: Помилка | Помилки
 errors:
+  BadForgeInstallerJarError: >-
+    Не вдається розібрати jar-файл інсталятора forge. Можливо, у forge новий формат файлу інсталятора
+    формат файлу інсталятора? Зверніться до розробників, якщо ця проблема не зникла.
   BodyTimeoutError: Сплив час очікування HTTP Body
   ChecksumNotMatchError: Контрольна сума не збігається! Має бути {expect}. Зараз {actual}.
   ConnectTimeoutError: Вийшов час очікування на підключення до сервера.
   DNSNotFoundError: Помилка пошуку DNS
   DownloadAggregateError: Неможливо завантажити файл.
+  DownloadFileSystemError: >-
+    Помилка під час доступу до шляху до файлу завантаження. 
+    Переконайтеся, що програма запуску має дозвіл на запис.
   HeadersTimeoutError: Вийшов час очікування HTTP Header
   SocketError: Помилка сокету сервера
 exception:
@@ -270,6 +310,9 @@ feedback:
     Вступіть у групу зворотного зв'язку QQ і поговоріть безпосередньо з
     авторами. Номер групи: {number}
   qqEnterGroup: Приєднатися
+fileDetail:
+  fileSize: Розмір Файлу
+  hash: Хеш
 filter: Фільтр
 finish: Завершити
 forgeConfig:
@@ -321,6 +364,10 @@ installJre:
   decompress: Розпакувати файли JRE у папку
   download: Завантажити стислий файл JRE
   name: Установити бібліотеку Java Runtime Library
+installLabyMod:
+  asset: Встановити ресурс {name}
+  json: Створити JSON {version}
+  name: Встановити LabyMod
 installLibraries:
   library: Встановити бібліотеку
   name: Встановити бібліотеку
@@ -346,37 +393,56 @@ installVersion:
   json: Встановити версію Json
   name: Встановити клієнт Minecraft {version}
 instance:
+  addMod: Додати модифікацію до екземпляра
   addServer: Добавить сервер
   current: Поточний екземпляр
   delete: Видалити профіль
   deleteHint: Дані екземпляра будуть переміщені з диска назавжди. Як зробити Цей?
+  duplicate: Дублікат гри
   duplicatedName: Ім'я, що повторюється
   fileApi: URL-адреса API синхронізації файлового сервера
   fileApiHint: >-
     URL-адреса для синхронізації файлів екземплярів із віддаленого сервера
     конфігурації.
   gameVersion: Версія гри
+  icon: Значок профілю
+  iconUrl: Значок Url
   includeVersion: Увімкнути версію | Вмикати версії
+  lastPlayed: Востаннє грали
   launchArguments: Попередній перегляд аргументів запуску
   mcOptions: Параметри Minecraft
   mcOptionsHint: Додаткові інструкції із запуску Minecraft
   name: Ім'я профілю
   nameHint: Назва, яка використовується для ідентифікації гри
+  neverPlayed: Ніколи не грав
   openCrashReportFolder: Відкрити папку звітів про збої
   openLogFolder: Відкрити папку логів
   requireName: Ім'я обов'язкове
   showInstance: Показати папку екземпляра
   versionHint: Версія гри для цієї Minecraft
+  setting:
+    reset: Скидання
+    save: Зберегти
+    unsaved: Вашу модифікацію не збережено!
+  showInstance: Показати папку екземпляра
+  versionHint: Версія Minecraft для цієї гри
   vmOptions: Параметри JVM
   vmOptionsHint: Додаткові аргументи, що передаються JVM
 instanceAge:
   older: Старі
   threeDay: В протягом трьох днів
   today: Сьогодні
+instanceFileOperation:
+  add: Додати
+  backup-add: Замінити (Резерв)
+  backup-remove: Видалити (Резерв)
+  keep: Тримай
+  remove: Видалити
 instanceSetting:
   fastLaunch: Швидкий запуск
   fastLaunchHint: Ігнорувати статус користувача та існуючі невирішені проблеми
   hideLauncher: Сховати лаунчер після запуску
+  icon: Оберіть зображення
   showLog: Показати логі Minecraft
   showLogHint: Цей виводить вікно для перегляду логів Minecraft після запуску гри
 instanceTemplate:
@@ -390,6 +456,11 @@ instanceTemplate:
   profile: Це існуюча конфігурація профілю
   server: Це існуюча конфігурація сервера
   title: Шаблон налаштування
+instanceUpdate:
+  basic: Оновлення налаштувань
+  files: Оновлення файлів
+  title: Оновити екземпляр
+  update: Почати оновлення
 instances:
   add: Додати локальну гру
   choose: Вибирати екземпляр
@@ -398,6 +469,9 @@ instances:
   refreshServers: Оновити сервери
 issue:
   name: Проблеми
+items:
+  count: '{count} предмети'
+  total: '{total} всього'
 java:
   allocatedLong: Використовувати Java у системі за замовчуванням
   allocatedShort: Автовиділення
@@ -418,7 +492,12 @@ java:
   refreshAfter: Оновити після встановлення java.
   switchVersion: Версія Java змінена
   systemMemory: Поточна системна пам'ять
+labyMod:
+  disable: Вимкнути LabyMod
+  empty: LabyMod не підтримує поточний Minecraft
 launch:
+  cancel: Відхильнути
+  kill: Зупинити
   launch: Почати
 launchBlocked:
   ignore: Примусовий запуск
@@ -471,6 +550,7 @@ launchFailed:
   title: Гра завершилася з аномальним кодом
 launchStatus:
   checkingProblems: Перевірка проблем
+  exit: Вийти З ГРИ?
   injectingAuthLib: Налаштування стороннього AuthLib
   launching: Запуск...
   launchingSlow: Все ще запускається... Запуск графічного двигуна може бути повільним.
@@ -478,7 +558,9 @@ launcherUpdate:
   alreadyLatest: Остання версія
   installAndQuit: Перезапустіть, щоб встановити
   noUpdateAvailable: Немає доступних оновлень
+  reinstall: Перевстановити
   updateToThisVersion: Завантажити та встановити
+  reinstall: Перевстановити
 liteloader:
   name: LiteLoader
 localVersion:
@@ -538,6 +620,9 @@ logsCrashes:
   logs: Логи
   placeholder: Файли не знайдено
   title: Логи або звіти про збої
+me:
+  news: Новини
+  recentPlay: Нещодавня гра
 minecraftVersion:
   empty: Не вдалося завантажити версію Minecraft
   name: Версія Minecraft
@@ -559,19 +644,45 @@ mod:
   filter: Фільтр модов
   hideIncompatible: Сховати несумістні моди
   import: Імпорт мода
+  hideIncompatible: Приховати несумісні модифікації
   incompatible: Несумістні мод.
   manage: Управління модами
   maybeCompatible: Можливо сумісний.
   name: Мод | Моди
   openLink: Відкрити посилання на мод {url}
   searchOnCurseforge: Исать на curseforge {name}
+  noModLoaderHint: Не забудьте увімкнути модлоадер для використання модів!
+  search: Пошук модифікацій
   searchOnModrinth: Пошук {name} на Modrinth
   selected: Обрані моди
   showFile: Показувати шлях до моду {file}
+  showDirectory: Показати каталог модифікацій
   showInCurseforge: Показувати мод на curseforge
   showInModrinth: Показувати {name} на Modrinth
   showIncompatible: Показувати несумістні моди
   unselected: Необрані моди
+  switchDefaultSource: Джерело модифікації за замовчуванням
+  toUpdate: '{count} на оновлення'
+  unselected: Unselected Mods
+modInstall:
+  checkUpgrade: Перевірте оновлення модифікацій
+  checkedUpgrade: Оновлення перевірено
+  currentVersion: Обрана версія
+  dependencyHint: Встановлено іншу версію {version}
+  install: Встановити
+  installHint: Буде встановлено файл {file} з залежностями {dependencies} залежностей
+  installed: Встановлено
+  noVersionSupported: Мод не підтримує поточну версію Minecraft
+  pending: Очікує на встановлення
+  search: Результат пошуку
+  searchHint: Пошук та вибір проекту
+  selectProjectHint: Виберіть проект та інсталяційний файл
+  source: Джерело мода
+  switch: Змінити версію
+  upgrade: Оновлення модифікацій
+modSearchType:
+  all: Всі
+  local: Кеш на диску
 modpack:
   author: Ім'я автора
   authorHint: Це може бути використане для підпису експортованого модпаку. (Curseforge)
@@ -603,9 +714,11 @@ modpack:
   showFile: Показати файл {file}
   showInCurseforge: Показати {name} в curseforge
   showInFtb: Показати {name} в FTB
+  showInModrinth: Показати {name} в Modrinth
   url: Посилання
   urlHint: Посилання домашньої сторінки вашого модпака
 modrinth:
+  browseUrl: Відкрити В Браузері {url}
   categories:
     128x: 128x
     16x: 16x
@@ -615,50 +728,75 @@ modrinth:
     64x: 64x
     8x-: 8x-
     adventure: Пригоди
+   atmosphere: Атмосферний
     audio: Аудіо
     blocks: Блоки
+    bloom: Розквітний
     bukkit: Bukkit
     bungeecord: Bungeecord
+    canvas: Полотно
+    cartoon: Карикатура
     categories: Категорії
     challenging: Випробування
-    combat: битви
+    colored-lighting: Кольорове освітлення
+    combat: Бойові
     core-shaders: Ядро-шейдери
-    cursed: Дивні
+    cursed: Проклятий
+    datapack: Data Pack
     decoration: Косметика
     economy: Економіка
     entities: Сутності
     environment: Навколишнє середовище
     equipment: Спорядження
     fabric: Fabric
-    fonts: Fonts
-    food: Food
+    fantasy: Фантастичні
+    features: Особливі
+    folia: Folia
+    foliage: Foliage
+    fonts: Шрифти
+    food: Їжа
     forge: Forge
-    game-mechanics: Ігрова механіка
-    gui: Gui
+    game-mechanics: Ігрова механіки
+    gui: ГРАФІЧНИЙ ІНТЕРФЕЙС
+    items: Предмети
+    high: Важкий
+    iris: Iris
     items: Предмети
     kitchen-sink: Все підряд
     library: Бібліотека
-    lightweight: Легкові
+    lightweight: Полегшений
     liteloader: Liteloader
     locale: Locale
+    low: Слабкий
     magic: Магія
     management: Управління
+    medium: Середній
     minecraft: Minecraft
-    minigame: Mini Games
+    minigame: Міні-ігри
     misc: Різне
     mobs: Mobs
-    modded: Modded
-    models: Models
+    modded: Модифікований
+    models: Моделі
     modloader: ModLoader
     multiplayer: Мережева гра
     name: Категорії
+    optifine: Optifine
     optimization: Оптимізація
     paper: Paper
+    path-tracing: Відстеження маршруту
+    pbr: PBR
+    performance impact: Вплив на продуктивність
+    potato: Potato(Картопляний ПК)
     purpur: Purpur
     quests: Квести
     quilt: Quilt
-    realistic: Realistic
+    realistic: Реалістичний
+    reflections: Рефлексіний
+    resolutions: Резолюціний
     rift: Rift
+    screenshot: Скріншот
+    semi-realistic: Напівреалістичні
+    shadows: Тінь
     simplistic: Спрощений
     social: Соціальний
     spigot: Spigot
@@ -669,11 +807,13 @@ modrinth:
     transportation: Транспорт
     tweaks: Твіки
     utility: Утиліта
-    vanilla-like: Ванільний
+    vanilla: Ванільний
+    vanilla-like: Ванільний+
     velocity: Velocity
     waterfall: Waterfall
     worldgen: World Gen
   clientSide: Клієнтська сторона
+  copyTitle: Копіювати текст {title} до буферу обміну
   createAt: Створено
   description: Опис
   downloads: Завантажень
@@ -697,6 +837,7 @@ modrinth:
     version: Версія
   install: Встановити
   installFrom: Встановити з Modrinth
+  issueUrl: Проблема
   license: Ліцензія
   licenses:
     name: Ліцензії
@@ -710,6 +851,8 @@ modrinth:
     modpack: Модпак
     name: Тип проекту
     resourcePack: Пакет текстури
+    shader: Шейдер
+  quickSearch: Пошук {title}
   searchText: Пошук
   serverSide: Серверна частина
   sort:
@@ -719,10 +862,24 @@ modrinth:
     relevance: Актуальність
     title: Сортувати за
     updated: Нещодавно оновлено
+  sourceUrl: Джерело
   technicalInformation: Технічна інформація
   updateAt: Оновлено
   versions: Версії
+  wikiUrl: Wiki
+modrinthCard:
+  currentVersion: Поточна версія
+  projectHint: >
+    Цей екземпляр створено за допомогою модпакету Modrinth з <code class="rounded p-1"
+    style="background: rgba(123,123,123,0.2)">{title}</code> (project id:
+          <code class="rounded p-1" style="background: rgba(123,123,123,0.2)">{id}</code>)
+  projectLastUpdateDate: 'Проект востаннє оновлювався о:'
+  projectLastUpdateVersion: Остання версія
 multiplayer:
+  allowTurn: Увімкнути сервер ретрансляції
+  allowTurnHint: >-
+    Дозволити ретрансляцію сервера, якщо ви не можете з'єднатися з другом. Однак, використання
+    ретрансляційного сервера може уповільнити ваше з'єднання. Використовуйте його з обережністю.
   complete: Готовий
   confirm: Підтвердити
   connections: Зв'язки
@@ -803,6 +960,13 @@ natType:
   symmetricNat: Симетричний NAT
   symmetricUDPFirewall: Симетричний міжмережевий екран UDP
   unknown: Невідомо
+neoForgedVersion:
+  disable: Вімкнути NeoForged
+  empty: NeoForged не підтримує {version}
+  name: NeoForged
+news:
+  name: Новини
+  readMore: Дізнатись Більше
 next: Далі
 'no': Ні
 ok: ОК
@@ -828,6 +992,19 @@ peerIceGatheringState:
 peerSignalingState:
   have-local-offer: Опис очікуваного вузла
 popular: Популярність
+presence:
+  curseforge: Переглянути CurseForge
+  curseforgeProject: Переглянути {name} в Curseforge
+  instance: Бездіяльність в інстанції {instance}
+  instanceSetting: 'Редагування параметрів екземпляра: {instance}'
+  mod: Перегляд модифікацій у розділі {instance}
+  modrinth: Перегляд Modrinth
+  modrinthProject: Перегляд {name} в Modrinth
+  resourcePack: Перегляд пакетів ресурсів у розділі {instance}
+  save: Перегляд Зберігається в {instance}
+  setting: Перегляд сторінки налаштувань
+  shaderPack: Перегляд шейдерних пакетів у програмі {instance}
+  version: Перегляд сторінки версій
 previous: Попередня
 proxy:
   host: Хост
@@ -863,6 +1040,7 @@ resourcepack:
   manage: Управління текстурпаками
   name: Текстурпак | Текстурпаки
   searchOnCurseforge: Шукати {name} на curseforge
+  searchOnModrinth: '@:mod.searchOnModrinth'
   selected: Вибрані текстурпаки
   showFile: Відкрити текстурпак {file} в папці
   showInCurseforge: Показати {name} на curseforge
@@ -899,6 +1077,10 @@ save:
   importTitle: Імпорт збереження
   manage: Управління збереженнями
   name: Збереження | Збереження
+screenshots:
+  empty: У вас немає скріншотів
+  goto: Відкрити папку
+  name: Скріншоти
 server:
   acceptingMinecraftVersion: Ухвалення версії Minecraft
   add: Додати сервер
@@ -982,6 +1164,7 @@ setting:
   colorTheme:
     appBarColor: Панель програми
     backgroundColor: Колір фону
+    cardColor: Колір картки
     description: Змінити кольори у темі
     errorColor: Колір помилки
     name: Колір теми
@@ -991,10 +1174,19 @@ setting:
     warningColor: Колір попередження
   darkTheme: Тема
   darkThemeDescription: Виберіть темну або світлу тему
-  general: Загальні
+  darkThemeDescription: Оберіть темну або світлу тему
+  developerMode: Режим розробника
+  developerModeDescription: Режим розробника призначений для тестування написаного вами мода
+  disableTelemetry: Вимкнути телеметрію
+  disableTelemetryDescription: XMCL збиратиме події запуску гри та входу користувача у гру.
+  enableDiscord: Увімкнути Discord Presence(Статус гри в Discord)
+  enableDiscordDescription: Це призведе до того, що стан вашої панелі запуску не буде оновлюватися всупереч
+  general: Загальні          
   githubRelease: Github Release
   globalSetting: Глобальне налаштування екземпляра
   globalSettingHint: Примірник буде використовувати ці параметри за промовчанням.
+  hideNews: Приховати Новини
+  hideNewsDescription: Це приховає новину під сторінкою екземпляра
   language: Мова
   languageDescription: Мова інтерфейсу
   latestVersion: остання версія
@@ -1003,7 +1195,9 @@ setting:
     focus: Макет фокусування
   layoutDescription: Макет лаунчера, що відображає різну логіку інтерфейсу користувача
   layoutTitle: Макет
-  location: Розташування сховища
+  linuxTitlebar: Рідний рядок заголовка
+  linuxTitlebarDescription: Використовувати рідний рядок заголовка linux для панелі запуску
+  location: Розташування сховища           
   maxSockets: На хост
   maxSocketsDescription: >-
     Обмежте максимальну кількість сокетів, дозволених за кожного хоста або для
@@ -1106,6 +1300,12 @@ universalDrop:
   start: Імпорт запущено
   title: Перетягніть файл(и) сюди, щоб імпортувати як
   unknownResource: Невідомо
+upstream:
+  missingModpackMetadata: >-
+    Метадані старого модпакету не знайдено.
+ 
+    Ви все ще можете оновити систему, але результат може бути неправильним. Будь ласка, створіть резервну копію
+    файли екземплярів.         
 user:
   accessToken: Токен доступу
   authMode: Служба авторизації
