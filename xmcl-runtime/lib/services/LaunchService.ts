@@ -201,7 +201,12 @@ export class LaunchService extends AbstractService implements ILaunchService {
       const accessToken = user ? await this.userTokenStorage.get(user).catch(() => undefined) : undefined
       const launchOptions = this.#generateOptions(options, version, accessToken)
       for (const plugin of this.plugins) {
-        await plugin.onBeforeLaunch(options, launchOptions)
+        try {
+          await plugin.onBeforeLaunch(options, launchOptions)
+        } catch (e) {
+          this.warn('Fail to run plugin')
+          this.error(e as any)
+        }
       }
 
       try {
@@ -296,10 +301,11 @@ export class LaunchService extends AbstractService implements ILaunchService {
 
       return process.pid
     } catch (e) {
+      this.error(e as Error)
       if (e instanceof LaunchException) {
         throw e
       }
-      throw new LaunchException({ type: 'launchGeneralException', error: { ...(e as any), message: (e as any).message, stack: (e as any).stack } })
+      throw new LaunchException({ type: 'launchGeneralException', error: { ...(e as any), message: (e as any).message, stack: (e as any).stack } }, e.message, { cause: e })
     }
   }
 

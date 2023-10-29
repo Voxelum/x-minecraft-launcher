@@ -111,7 +111,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       apiHost,
       destination: dest,
       ...downloadOptions,
-    }).setName('installJre')
+    }).setName('installJre', { version: target.majorVersion })
     await ensureFile(location)
     await this.submit(task)
     if (this.app.platform.os !== 'windows') {
