@@ -39,7 +39,7 @@ If you have winget, you can use winget to install
 winget install CI010.XMinecraftLauncher
 ```
 
-[中文 README](README.zh.md)
+[中文 README](README.zh.md) [Українська README](README.uk.md)
 
 ## Features
 
