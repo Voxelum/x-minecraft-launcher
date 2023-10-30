@@ -146,7 +146,7 @@ export default class ElectronLauncherApp extends LauncherApp {
       }
     })
 
-    app.on('ready', () => {
+    app.whenReady().then(() => {
       Menu.setApplicationMenu(null)
     })
 

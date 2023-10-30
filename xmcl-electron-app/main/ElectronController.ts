@@ -345,7 +345,7 @@ export class ElectronController implements LauncherAppController {
     this.parking = true
 
     // close the old window
-    if (this.mainWin) {
+    if (this.mainWin && !this.mainWin.isDestroyed()) {
       this.mainWin.close()
     }
 

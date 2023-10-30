@@ -2,7 +2,7 @@ import { JavaVersion } from '@xmcl/core'
 import { fetchJavaRuntimeManifest, installJavaRuntimeTask, parseJavaVersion, resolveJava, scanLocalJava } from '@xmcl/installer'
 import { JavaService as IJavaService, Java, JavaRecord, JavaSchema, JavaServiceKey, JavaState, MutableState, Settings } from '@xmcl/runtime-api'
 import { ensureFile } from 'fs-extra/esm'
-import { chmod, readFile } from 'fs/promises'
+import { chmod, readFile, readdir } from 'fs/promises'
 import { dirname, join } from 'path'
 import { URL } from 'url'
 import { LauncherApp } from '../app/LauncherApp'
@@ -34,14 +34,6 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
       this.log(`Loaded ${valid.length} java from cache.`)
       this.state.javaUpdate(valid)
 
-      const local = this.getInternalJavaLocation({ majorVersion: 8, component: 'jre-legacy' })
-      if (!this.state.all.map(j => j.path).some(p => p === local)) {
-        this.resolveJava(local)
-      }
-      const localAlpha = this.getInternalJavaLocation({ majorVersion: 16, component: 'java-runtime-alpha' })
-      if (!this.state.all.map(j => j.path).some(p => p === localAlpha)) {
-        this.resolveJava(local)
-      }
       this.refreshLocalJava()
 
       this.state.subscribeAll(() => {
@@ -55,7 +47,7 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
     return this.state
   }
 
-  getInternalJavaLocation(version: JavaVersion) {
+  getInternalJavaLocation(version: Pick<JavaVersion, 'component'>) {
     return this.app.platform.os === 'osx'
       ? this.getPath('jre', version.component, 'jre.bundle', 'Contents', 'Home', 'bin', 'java')
       : this.getPath('jre', version.component, 'bin',
@@ -78,9 +70,13 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
    * Install a default jdk 8 to the a preserved location. It'll be installed under your launcher root location `jre` folder
    */
   @Singleton()
-  async installDefaultJava(target: JavaVersion) {
-    requireObject(target)
-
+  async installDefaultJava(target?: JavaVersion) {
+    if (!target) {
+      target = {
+        majorVersion: 8,
+        component: 'jre-legacy',
+      }
+    }
     const location = this.getInternalJavaLocation(target)
     this.log(`Try to install official java ${target} to ${location}`)
     let apiHost: string[] | undefined
@@ -207,15 +203,6 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
 
       this.log(`Found ${infos.length} java.`)
       this.state.javaUpdate(infos)
-
-      const local = this.getInternalJavaLocation({ majorVersion: 8, component: 'jre-legacy' })
-      if (!this.state.all.map(j => j.path).some(p => p === local)) {
-        this.resolveJava(local)
-      }
-      const localAlpha = this.getInternalJavaLocation({ majorVersion: 16, component: 'java-runtime-alpha' })
-      if (!this.state.all.map(j => j.path).some(p => p === localAlpha)) {
-        this.resolveJava(local)
-      }
     } else {
       this.log(`Re-validate cached ${this.state.all.length} java locations.`)
       const javas: JavaRecord[] = []
@@ -235,6 +222,15 @@ export class JavaService extends StatefulService<JavaState> implements IJavaServ
         }
       }
       this.state.javaUpdate(javas)
+    }
+
+    const cached = await readdirIfPresent(this.getPath('jre'))
+    for (const component of cached) {
+      if (component.startsWith('.')) continue
+      const local = this.getInternalJavaLocation({ component })
+      if (!this.state.all.map(j => j.path).some(p => p === local)) {
+        this.resolveJava(local)
+      }
     }
   }
 }

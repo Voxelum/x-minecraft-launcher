@@ -20,8 +20,7 @@ export function useNotificationQueue() {
   return ref([] as LocalNotification[])
 }
 
-export function useNotifier() {
-  const queue = inject(kNotificationQueue)
+export function useNotifier(queue = inject(kNotificationQueue)) {
   if (!queue) throw new Error('Cannot init notifier hook!')
 
   const notify: Notify = (not) => {
