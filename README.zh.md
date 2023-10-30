@@ -41,7 +41,7 @@ winget install CI010.XMinecraftLauncher
 ```
 
 
-[English README](./README.md)
+[English README](./README.md) [Українська README](README.uk.md)
 
 ## 特性
 
