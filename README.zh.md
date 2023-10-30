@@ -90,6 +90,8 @@ winget install CI010.XMinecraftLauncher
 
 [0xc0000142](https://github.com/0xc0000142), 维护 winget.
 
+[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), 完全创建了乌克兰语翻译!
+
 [vanja-san](https://github.com/vanja-san), 提供给我们俄语翻译！
 
 [lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) 在启动核心上帮助了我.
