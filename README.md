@@ -90,6 +90,8 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 
 [0xc0000142](https://github.com/0xc0000142), maintaining the winget.
 
+[Marmur2020](https://github.com/Marmur2020) & [BANSAFAn](https://github.com/BANSAFAn), completely created a Ukrainian translation!
+
 [vanja-san](https://github.com/vanja-san), who provides Russian locale!
 
 [lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) helps me on Launcher core.
