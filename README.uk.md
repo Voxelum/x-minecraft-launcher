@@ -31,9 +31,9 @@
 
 ![home](assets/home.png)
 
-Visit the [official site](https://xmcl.app) to download the app!
+Відвідайте [оффіційну сторінку](https://xmcl.app) щоб завантажити програму!
 
-If you have winget, you can use winget to install
+Якщо у вас є winget, ви можете використовувати його для встановлення
 
 ```bash
 winget install CI010.XMinecraftLauncher
@@ -41,30 +41,30 @@ winget install CI010.XMinecraftLauncher
 
 [中文 README](README.zh.md)
 
-## Features
+## Можливості
 
-- 📥 **Download & auto complete**. Support download `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` from official or third party mirrors.
-- ⚡️ **Download Fast**. Reuse socket via HTTP/HTTPS agents, and download the files in parts concurrently.
-- 💻 **Cross platform**. The launcher is based on Electron, and supports 🗔 Windows 10/11, 🍎 MacOS, and 🐧 Linux.
-- 📚 **Multi-Instancing**. Users can create multiple instances to isolate the different versions, mods and launch settings.
-- 🗂 **Manage all resources**. Use (hard/symbolic) links to install resources in instances, keep your disk usage optimal. No copies of mods everywhere! 😆
-- 🔥 **Built-in support of CurseForge, Modrinth**. You can download resources inside the launcher.
-- 📦 **Support import/export** CurseForge & Modrinth modpacks with compliance!
-- 🔒 **Support multiple account systems**. Built-in Microsoft login and Mojang Yggdrasil API. It also has builtin support of [ely.by](https://ely.by/) and [littleskin.cn](https://littleskin.cn). You can also add third-party authentication servers!
-- 🔗 **Peer to peer connection between users**. You can play multiplayer over LAN even you are not in same physical LAN!
-- 🔑 **Code sign & modern packaging**. Under Windows, you can use `appx` and `appinstaller` to install the app. You won't receive blocking message from your browser or see SmartScreen errors anymore! 😎
+- 📥 **Завантаження та автоматичне завершення**. Підтримує завантаження `Minecraft`, `Forge`, `Fabric`, `Quilt`, `OptiFine`, `JVM` з офіційних або сторонніх дзеркал.
+- ⚡️ **Завантажуйте швидко**. Повторно використовуйте сокет через HTTP/HTTPS-агентів і завантажуйте файли частинами одночасно.
+- 💻 **Крос-платформенний**. Лаунчер створений на базі Electron, та підтримує 🗔 Windows 10/11, 🍎 MacOS, та 🐧 Linux.
+- 📚 **Мульти-Інсталяція**. Користувачі можуть створювати кілька екземплярів, щоб ізолювати різні версії, модифікації та налаштування запуску.
+- 🗂 **Керуйте всіма ресурсами**. Використовуйте (тверді/символічні) посилання для встановлення ресурсів в окремих випадках, щоб оптимально використовувати диск. Ніяких копій модів скрізь! 😆
+- 🔥 **Вбудована підтримка CurseForge, Modrinth**. Ви можете завантажити ресурси всередині лаунчера.
+- 📦 **Підтримка імпорту/експорту** CurseForge & Modrinth Модпаки з дотриманням вимог!
+- 🔒 **Підтримка декількох облікових записів**. Вбудований логін Microsoft та API Mojang Yggdrasil. Він також має вбудовану підтримку [ely.by](https://ely.by/) та [littleskin.cn](https://littleskin.cn). Ви також можете додати сторонні сервери автентифікації!
+- 🔗 **Однорангове з'єднання між користувачами**. Ви можете грати в багатокористувацьку гру по локальній мережі, навіть якщо ви не перебуваєте в одній фізичній локальній мережі!
+- 🔑 **Кодовий знак та сучасне пакування**. У Windows ви можете використовувати `appx` та `appinstaller` для встановлення програми. Ви більше не будете отримувати повідомлення про блокування від вашого браузера або бачити помилки SmartScreen! 😎
 
-## Contribute
+## Зробили внесок
 
-For general developer, see [Contributing](./CONTRIBUTING.md)
+Для загального розробника, дивіться [Внесок](./CONTRIBUTING.md)
 
-For i18n localization developer, please follow [Getting Started with Localization](./CONTRIBUTING.i18n.md)
+Для розробника локалізації i18n, будь ласка, перейдіть за посиланням [Початок роботи з локалізацією](./CONTRIBUTING.i18n.md)
 
-## LICENSE
+## ЛІЦЕНЗІЯ
 
 [MIT](LICENSE)
 
-## Sponsor (AFDIAN)
+## Спонсор (AFDIAN)
 
 <!-- afdian-start -->
 <div style="display: flex; align-items: center; justify-items:center; gap: 0.2em; flex-wrap: wrap;">
@@ -84,18 +84,20 @@ For i18n localization developer, please follow [Getting Started with Localizatio
 </div>
 <!-- afdian-end -->
 
-## Credit
+## Кредит
 
-[GodLeaveMe](https://github.com/GodLeaveMe), maintaining the AUR package registry.
+[GodLeaveMe](https://github.com/GodLeaveMe), ведення реєстру пакетів AUR.
 
-[0xc0000142](https://github.com/0xc0000142), maintaining the winget.
+[0xc0000142](https://github.com/0xc0000142), обслуговування winget.
 
-[vanja-san](https://github.com/vanja-san), who provides Russian locale!
+[Marmur2020](https://github.com/Marmur2020) та [BANSAFAn](https://github.com/BANSAFAn), повністю створили український переклад!
 
-[lukechu10](https://github.com/lukechu10) & [HoldYourWaffle](https://github.com/HoldYourWaffle) helps me on Launcher core.
+[vanja-san](https://github.com/vanja-san), хто надав російську мову!
 
-[laolarou726](https://github.com/laolarou726), who helps a lot on launcher design.
+[lukechu10](https://github.com/lukechu10) та [HoldYourWaffle](https://github.com/HoldYourWaffle) допомагає мені в ядрі програми запуску.
 
-Also special thanks to
+[laolarou726](https://github.com/laolarou726), який дуже допоміг в розробці панелі запуску.
+
+Також окрема подяка
 
 [Yricky](https://github.com/Yricky), [Jin](https://github.com/Indexyz), [LG](https://github.com/LasmGratel), [Phoebe](https://github.com/PhoebezZ), [Sumeng Wang](https://github.com/darkkingwsm), [Luca](https://github.com/LucaIsGenius), [Charles Tang](https://github.com/CharlesQT)
