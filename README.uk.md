@@ -90,7 +90,7 @@ winget install CI010.XMinecraftLauncher
 
 [0xc0000142](https://github.com/0xc0000142), обслуговування winget.
 
-[Marmur2020](https://github.com/Marmur2020) та [BANSAFAn](https://github.com/BANSAFAn), повністю створили український переклад!
+[Marmur2020](https://github.com/Marmur2020) та [BANSAFAn](https://github.com/BANSAFAn), повністю переклали українською мовою!
 
 [vanja-san](https://github.com/vanja-san), хто надав російську мову!
 
