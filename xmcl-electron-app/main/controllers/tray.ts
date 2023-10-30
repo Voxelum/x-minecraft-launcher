@@ -1,7 +1,7 @@
 import { ElectronController } from '@/ElectronController'
 import { darkIcon, darkTray, lightIcon, lightTray } from '@/utils/icons'
 import { BaseService } from '@xmcl/runtime'
-import { app, Menu, shell, Tray, nativeTheme, nativeImage, MenuItemConstructorOptions } from 'electron'
+import { app, Menu, Tray, nativeTheme, nativeImage, MenuItemConstructorOptions } from 'electron'
 import { ControllerPlugin } from './plugin'
 import { kSettings } from '@xmcl/runtime/lib/entities/settings'
 
@@ -53,7 +53,9 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
       {
         label: t('showDiagnosis'),
         type: 'normal',
-        click: diagnose,
+        click: () => {
+          diagnose()
+        },
         role: 'toggleDevTools',
       },
       {
@@ -67,13 +69,18 @@ export const trayPlugin: ControllerPlugin = function (this: ElectronController) 
     if (app.platform.os === 'osx') {
       const show = () => {
         const window = this.mainWin
-        window?.show()
+        if ((!window || window.isDestroyed()) && this.activatedManifest) {
+          this.activate(this.activatedManifest)
+        } else {
+          window?.show()
+        }
       }
       options.unshift({
         label: t('showLauncher'),
         type: 'normal',
-        click: show,
-        role: 'front',
+        click: () => {
+          show()
+        },
       })
     }
     return Menu.buildFromTemplate(options)

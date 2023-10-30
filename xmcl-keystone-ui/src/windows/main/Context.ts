@@ -47,7 +47,8 @@ export default defineComponent({
     provide(kSemaphores, useSemaphores())
     provide(kExceptionHandlers, useExceptionHandlers())
     provide(kServerStatusCache, useServerStatusCache())
-    provide(kNotificationQueue, useNotificationQueue())
+    const queue = useNotificationQueue()
+    provide(kNotificationQueue, queue)
 
     provide(kColorTheme, useColorTheme(computed(() => vuetify.framework.theme.dark)))
     provide(kBackground, useBackground())
@@ -79,7 +80,7 @@ export default defineComponent({
     const modUpgrade = useModUpgrade(instance.path, instance.runtime, mods.installed)
 
     const versionDiagnose = useInstanceVersionDiagnose(instance.runtime, instanceVersion.resolvedVersion, localVersions.versions)
-    const javaDiagnose = useInstanceJavaDiagnose(java.all, instanceJava.java, instanceJava.recommendation)
+    const javaDiagnose = useInstanceJavaDiagnose(java.all, instanceJava.java, instanceJava.recommendation, queue)
     const filesDiagnose = useInstanceFilesDiagnose(files.files, files.install)
     const userDiagnose = useUserDiagnose(user.userProfile)
 

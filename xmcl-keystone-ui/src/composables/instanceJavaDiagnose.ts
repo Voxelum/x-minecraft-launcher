@@ -4,16 +4,17 @@ import { useDialog } from './dialog'
 import { JavaCompatibleState, JavaRecommendation } from './instanceJava'
 import { JavaIssueDialogKey } from './java'
 import { LaunchMenuItem } from './launchButton'
-import { useNotifier } from './notifier'
+import { LocalNotification, useNotifier } from './notifier'
 import { useService } from './service'
 
 export const kInstanceJavaDiagnose: InjectionKey<ReturnType<typeof useInstanceJavaDiagnose>> = Symbol('InstanceJavaDiagnose')
 
-export function useInstanceJavaDiagnose(all: Ref<JavaRecord[]>, java: Ref<JavaRecord | undefined>, javaRecommendation: Ref<JavaRecommendation | undefined>) {
+export function useInstanceJavaDiagnose(all: Ref<JavaRecord[]>, java: Ref<JavaRecord | undefined>, javaRecommendation: Ref<JavaRecommendation | undefined>, queue: Ref<LocalNotification[]>) {
   const { t } = useI18n()
-  const { subscribeTask } = useNotifier()
+  const { subscribeTask } = useNotifier(queue)
   const { installDefaultJava } = useService(JavaServiceKey)
   const issue: Ref<LaunchMenuItem | undefined> = computed(() => {
+    console.log('update java diagnose')
     if (all.value.length === 0) {
       return {
         title: t('diagnosis.missingJava.name'),
