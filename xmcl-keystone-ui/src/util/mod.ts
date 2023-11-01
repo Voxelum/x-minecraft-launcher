@@ -1,8 +1,7 @@
+import { FabricModMetadata, ForgeModMetadata, LiteloaderModMetadata, QuiltModMetadata } from '@xmcl/mod-parser'
 import { ForgeModCommonMetadata, Resource, ResourceSourceCurseforge, ResourceSourceModrinth, RuntimeVersions } from '@xmcl/runtime-api'
 import { ModDependencies, getModDependencies, getModProvides } from './modDependencies'
-import { SearchResultHit } from '@xmcl/modrinth'
-import { Mod as CurseforgeMod } from '@xmcl/curseforge'
-import { FabricModMetadata, ForgeModMetadata, LiteloaderModMetadata, QuiltModMetadata } from '@xmcl/mod-parser'
+import { ProjectFile } from './search'
 
 interface ModMetadata {
   /**
@@ -24,7 +23,7 @@ interface ModMetadata {
 /**
  * Contain the mod related data. Extracted from {@link Resource}
  */
-export interface ModFile extends ModMetadata {
+export interface ModFile extends ModMetadata, ProjectFile {
   /**
    * Path on disk
    */
@@ -88,47 +87,6 @@ export interface ModFile extends ModMetadata {
    * The backed resource
    */
   resource: Resource
-}
-
-/**
- * Represent a mod project
- */
-export interface Mod {
-  /**
-   * The id is representing the id of the project
-   */
-  id: string
-  icon: string
-  title: string
-  description: string
-  author: string
-
-  disabled?: boolean
-
-  downloadCount?: number
-  followerCount?: number
-
-  forge?: boolean
-  fabric?: boolean
-  quilt?: boolean
-  /**
-   * The installed mod file
-   */
-  installed: ModFile[]
-  /**
-   * The curseforge search result
-   */
-  curseforge?: CurseforgeMod
-  curseforgeProjectId?: number
-  /**
-   * The modrinth search result
-   */
-  modrinth?: SearchResultHit
-  modrinthProjectId?: string
-  /**
-   * The files under resources storage
-   */
-  files?: ModFile[]
 }
 
 function getUrl(resource: Resource) {

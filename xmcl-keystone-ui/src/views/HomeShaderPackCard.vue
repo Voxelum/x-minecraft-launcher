@@ -29,12 +29,11 @@
 </template>
 <script lang="ts" setup>
 import { kColorTheme } from '@/composables/colorTheme'
-import { kInstanceOptions } from '@/composables/instanceOptions'
+import { kInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { injection } from '@/util/inject'
 
 const { cardColor } = injection(kColorTheme)
-const { gameOptions } = injection(kInstanceOptions)
-const shaderPack = computed(() => gameOptions.value?.shaderPack || '')
+const { shaderPack } = injection(kInstanceShaderPacks)
 const { t } = useI18n()
 const { push } = useRouter()
 

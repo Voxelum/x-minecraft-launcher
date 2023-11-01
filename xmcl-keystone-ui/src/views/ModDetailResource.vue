@@ -1,19 +1,20 @@
 <script setup lang="ts">
-import { Mod, ModFile } from '@/util/mod'
-import ModDetail, { ExternalResource, ModDetailData, Info } from './ModDetail.vue'
-import { ModVersion } from './ModDetailVersion.vue'
+import MarketProjectDetail, { ExternalResource, Info, ProjectDetail } from '@/components/MarketProjectDetail.vue'
+import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { useService } from '@/composables'
-import { InstanceModsServiceKey, PartialResourceHash, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
-import { injection } from '@/util/inject'
 import { kInstance } from '@/composables/instance'
-import { useModDetailUpdate, useModDetailEnable } from '@/composables/modDetail'
+import { useModDetailEnable, useModDetailUpdate } from '@/composables/modDetail'
 import { clientModrinthV2 } from '@/util/clients'
+import { injection } from '@/util/inject'
 import { useInstanceModLoaderDefault } from '@/util/instanceModLoaderDefault'
 import { isNoModLoader } from '@/util/isNoModloader'
+import { ModFile } from '@/util/mod'
+import { ProjectEntry } from '@/util/search'
 import { getExpectedSize } from '@/util/size'
+import { InstanceModsServiceKey, ResourceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
 
 const props = defineProps<{
-  mod: Mod
+  mod: ProjectEntry<ModFile>
   files: ModFile[]
   runtime: RuntimeVersions
   installed: ModFile[]
@@ -21,8 +22,8 @@ const props = defineProps<{
 
 const versions = computed(() => {
   const files = props.files
-  const all: ModVersion[] = files.map((f) => {
-    const version: ModVersion = {
+  const all: ProjectVersion[] = files.map((f) => {
+    const version: ProjectVersion = {
       id: f.path,
       name: f.resource.fileName,
       version: f.version,
@@ -39,7 +40,7 @@ const versions = computed(() => {
 })
 
 const installedVersions = computed(() => {
-  const ver = props.mod.installed.map(v => versions.value.find(f => f.id === v.modId)).filter((v): v is ModVersion => !!v)
+  const ver = props.mod.installed.map(v => versions.value.find(f => f.id === v.modId)).filter((v): v is ProjectVersion => !!v)
   return ver
 })
 const selectedVersion = ref(installedVersions.value[0] ?? versions.value[0])
@@ -110,7 +111,7 @@ const model = computed(() => {
     return result
   })
 
-  const result: ModDetailData = reactive({
+  const result: ProjectDetail = reactive({
     id: props.mod.id,
     icon: props.mod.icon,
     title: props.mod.title,
@@ -131,7 +132,14 @@ const model = computed(() => {
 })
 
 const updating = useModDetailUpdate()
-const { enabled, installed, hasInstalledVersion } = useModDetailEnable(selectedVersion, computed(() => props.installed), updating)
+const { install, uninstall, enable, disable } = useService(InstanceModsServiceKey)
+const { enabled, installed, hasInstalledVersion } = useModDetailEnable(
+  selectedVersion,
+  computed(() => props.installed),
+  updating,
+  (f) => enable({ path: path.value, mods: [f.resource] }),
+  (f) => disable({ path: path.value, mods: [f.resource] }),
+)
 const { path } = injection(kInstance)
 
 const { updateResources } = useService(ResourceServiceKey)
@@ -149,7 +157,6 @@ watch(() => props.mod, async () => {
 })
 
 const installDefaultModLoader = useInstanceModLoaderDefault(path, computed(() => props.runtime))
-const { install, uninstall } = useService(InstanceModsServiceKey)
 const onDelete = async () => {
   updating.value = true
   const file = props.files.find(f => f.path === selectedVersion.value.id)
@@ -174,7 +181,7 @@ const onInstall = async () => {
 
 </script>
 <template>
-  <ModDetail
+  <MarketProjectDetail
     :detail="model"
     :dependencies="[]"
     :enabled="enabled"
