@@ -65,7 +65,12 @@
           </div>
         </div>
         <div class="my-1">
-          {{ detail.description }}
+          <template v-if="detail.description.includes('§')">
+            <TextComponent :source="detail.description" />
+          </template>
+          <template v-else>
+            {{ detail.description }}
+          </template>
         </div>
         <div
           class="my-2 flex flex-col gap-2 lg:flex-row lg:flex-wrap lg:items-end"
@@ -128,7 +133,7 @@
               >
                 delete
               </v-icon>
-              {{ t('mod.deletion') }}
+              {{ t('delete.yes') }}
             </v-btn>
           </div>
 
@@ -322,11 +327,17 @@
             <v-skeleton-loader type="heading, list-item, paragraph, card, sentences, image, paragraph, paragraph" />
           </v-card-text>
           <div
-            v-else
+            v-else-if="detail.htmlContent"
             class="markdown-body select-text whitespace-normal"
             :class="{ 'project-description': curseforge }"
             v-html="detail.htmlContent"
           />
+          <template v-else-if="detail.description.includes('§')">
+            <TextComponent :source="detail.description" />
+          </template>
+          <template v-else>
+            {{ detail.description }}
+          </template>
         </v-tab-item>
         <v-tab-item>
           <div class="grid grid-cols-2 gap-2 p-4">
@@ -382,18 +393,29 @@
             {{ t('modInstall.source') }}
           </v-subheader>
           <span class="flex flex-wrap gap-2 px-2">
-            <v-icon
+            <v-btn
               v-if="modrinth"
+              text
+              icon
+              @click="goModrinthProject(modrinth)"
             >
-              $vuetify.icons.modrinth
-            </v-icon>
-            <v-icon
+              <v-icon>
+                $vuetify.icons.modrinth
+              </v-icon>
+            </v-btn>
+            <v-btn
               v-if="curseforge"
-              class="mt-0.5"
-              :size="30"
+              text
+              icon
+              @click="goCurseforgeProject(curseforge, 'mc-mods')"
             >
-              $vuetify.icons.curseforge
-            </v-icon>
+              <v-icon
+                class="mt-0.5"
+                :size="30"
+              >
+                $vuetify.icons.curseforge
+              </v-icon>
+            </v-btn>
           </span>
 
           <v-divider
@@ -407,10 +429,12 @@
         <span class="flex flex-wrap gap-2">
           <v-chip
             v-for="item of detail.categories"
-            :key="item.name"
+            :key="item.id"
             label
             outlined
             class="mr-2"
+            @mousedown.prevent
+            @click="emit('select:category', item.id)"
           >
             <v-avatar
               v-if="item.iconHTML"
@@ -510,56 +534,75 @@
   </div>
 </template>
 <script setup lang="ts">
-import { getLocalDateString } from '@/util/date'
-import ModDetailVersion, { ModVersion } from './ModDetailVersion.vue'
-import { kVuetify } from '@/composables/vuetify'
-import { injection } from '@/util/inject'
 import unknownServer from '@/assets/unknown_server.png'
 import Hint from '@/components/Hint.vue'
-import { getExpectedSize } from '@/util/size'
+import { kVuetify } from '@/composables/vuetify'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
+import { getLocalDateString } from '@/util/date'
+import { injection } from '@/util/inject'
+import { getExpectedSize } from '@/util/size'
+import ModDetailVersion, { ProjectVersion } from './MarketProjectDetailVersion.vue'
+import { useMarketRoute } from '@/composables/useMarketRoute'
 
 const props = defineProps<{
-  detail: ModDetailData
+  detail: ProjectDetail
+  versions: ProjectVersion[]
   enabled: boolean
   updating?: boolean
-  dependencies: ModDependency[]
-  loadingDependencies?: boolean
+  dependencies: ProjectDependency[]
   loading: boolean
-  versions: ModVersion[]
+  loadingDependencies?: boolean
   loadingVersions: boolean
   selectedInstalled: boolean
-  hasInstalledVersion: boolean
   noDelete?: boolean
   noEnabled?: boolean
   hasMore: boolean
-  curseforge?: boolean
-  modrinth?: boolean
+  curseforge?: number
+  modrinth?: string
 }>()
 
 const emit = defineEmits<{
-  (event: 'load-changelog', version: ModVersion): void
+  (event: 'load-changelog', version: ProjectVersion): void
   (event: 'show-image', img: ModGallery): void
   (event: 'load-more'): void
-  (event: 'install', version: ModVersion): void
-  (event: 'install-dependency', dep: ModDependency): void
+  (event: 'install', version: ProjectVersion): void
+  (event: 'install-dependency', dep: ProjectDependency): void
   (event: 'delete'): void
   (event: 'enable', value: boolean): void
-  (event: 'open-dependency', dep: ModDependency): void
+  (event: 'open-dependency', dep: ProjectDependency): void
+  (event: 'select:category', category: string): void
 }>()
 
-export interface ModDependency {
+export interface ProjectDependency {
   /**
-   * This is the project id
+   * The id of the dependency
    */
   id: string
   icon?: string
+  /**
+   * The title of the dependency
+   */
   title: string
+  /**
+   * The description of the dependency
+   */
   description: string
+  /**
+   * The version of the dependency that is required
+   */
   version: string
   type: 'required' | 'optional' | 'incompatible' | 'embedded'
+  /**
+   * The progress of the installation. <= 0 means not installing
+   */
   progress: number
+  /**
+   * The version of the dependency that is installed
+   */
   installedVersion?: string
+  /**
+   * The version of the dependency that is installed but different from the required version
+   */
   installedDifferentVersion?: string
 }
 
@@ -570,6 +613,7 @@ export interface ModGallery {
   url: string
 }
 export interface CategoryItem {
+  id: string
   name: string
   icon?: string
   iconUrl?: string
@@ -586,7 +630,7 @@ export interface Info {
   value: string
   url?: string
 }
-export interface ModDetailData {
+export interface ProjectDetail {
   id: string
   icon: string
   title: string
@@ -610,11 +654,14 @@ const _enabled = computed({
   },
 })
 
+const hasInstalledVersion = computed(() => props.versions.some(v => v.installed))
+
+const { goCurseforgeProject, goModrinthProject } = useMarketRoute()
 const vuetify = injection(kVuetify)
 const isDark = computed(() => vuetify.theme.dark)
 
-const selectedVersion = inject('selectedVersion', ref(props.versions.find(v => v.installed) || props.versions[0] as ModVersion | undefined))
-const onVersionClicked = (version: ModVersion) => {
+const selectedVersion = inject('selectedVersion', ref(props.versions.find(v => v.installed) || props.versions[0] as ProjectVersion | undefined))
+const onVersionClicked = (version: ProjectVersion) => {
   if (!selectedVersion.value || selectedVersion.value?.id === version.id) return
   selectedVersion.value = version
 }
@@ -643,7 +690,7 @@ const onSwitchVersion = () => {
 
 }
 
-const tDepType = (ty: ModDependency['type']) => t(`dependencies.${ty}`)
+const tDepType = (ty: ProjectDependency['type']) => t(`dependencies.${ty}`)
 
 const onInstall = () => {
   if (selectedVersion.value) {

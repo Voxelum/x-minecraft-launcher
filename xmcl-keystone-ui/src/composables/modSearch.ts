@@ -1,14 +1,14 @@
-import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
-import { getCursforgeModLoadersFromString } from '@/util/curseforge'
 import { isNoModLoader } from '@/util/isNoModloader'
-import { Mod, ModFile, getModFileFromResource } from '@/util/mod'
-import { Mod as CFMod, ModsSearchSortField, Pagination } from '@xmcl/curseforge'
-import { SearchResult } from '@xmcl/modrinth'
+import { ModFile, getModFileFromResource } from '@/util/mod'
 import { InstanceData, Resource, ResourceDomain, ResourceServiceKey } from '@xmcl/runtime-api'
-import debounce from 'lodash.debounce'
 import { InjectionKey, Ref } from 'vue'
+import { useModrinthSearch } from './modrinthSearch'
 import { useResourceEffect } from './resources'
 import { useService } from './service'
+import { useAggregateProjects, useProjectsFilterSearch } from './useAggregateProjects'
+import { CurseforgeBuiltinClassId, useCurseforgeSearch } from './curseforgeSearch'
+import { ProjectEntry } from '@/util/search'
+import { useTabMarketFilter } from './tab'
 
 export const kModsSearch: InjectionKey<ReturnType<typeof useModsSearch>> = Symbol('ModsSearch')
 
@@ -16,175 +16,6 @@ export enum ModLoaderFilter {
   fabric = 'fabric',
   forge = 'forge',
   quilt = 'quilt',
-}
-
-export function useModrinthSearch(keyword: Ref<string>, modLoaderFilters: Ref<ModLoaderFilter[]>, runtime: Ref<InstanceData['runtime']>) {
-  const modrinth = ref(undefined as SearchResult | undefined)
-  const modrinthError = ref(undefined as any)
-  const loadingModrinth = ref(false)
-  const modrinthPage = ref(0)
-
-  const processModrinth = async (offset: number, append: boolean) => {
-    try {
-      modrinthError.value = undefined
-      const facets = [`["versions:${runtime.value.minecraft}"]`, '["project_type:mod"]']
-      facets.push('[' + modLoaderFilters.value.map(m => `"categories:${m}"`).join(', ') + ']')
-      if (keyword.value) {
-        const remain = append && modrinth.value ? modrinth.value.total_hits - offset : Number.MAX_SAFE_INTEGER
-        const result = await clientModrinthV2.searchProjects({
-          query: keyword.value,
-          facets: '[' + facets.join(',') + ']',
-          index: 'relevance',
-          offset,
-          limit: append ? Math.min(remain, 20) : 20,
-        })
-        if (!append || !modrinth.value) {
-          modrinth.value = result
-        } else {
-          modrinth.value.hits.push(...result.hits)
-          modrinth.value.limit += result.limit
-          modrinth.value.offset = result.offset
-        }
-      } else {
-        modrinth.value = undefined
-      }
-    } catch (e) {
-      modrinthError.value = e
-    } finally {
-      loadingModrinth.value = false
-    }
-  }
-  const canModrinthLoadMore = computed(() => {
-    return modrinth.value && modrinth.value.total_hits > (modrinth.value.offset + modrinth.value.limit)
-  })
-  const loadMoreModrinth = debounce(async () => {
-    if (canModrinthLoadMore.value) {
-      modrinthPage.value += 1
-      loadingModrinth.value = true
-      await processModrinth(modrinthPage.value * 20, true)
-    }
-  }, 1000)
-
-  const onSearch = async () => {
-    loadingModrinth.value = true
-    modrinthPage.value = 0
-    processModrinth(modrinthPage.value * 20, false)
-  }
-
-  watch(keyword, onSearch)
-
-  const mods = computed(() => {
-    const modr = modrinth.value
-    if (!modr) return []
-    const mods: Mod[] = markRaw(modr.hits.map(i => ({
-      id: i.project_id,
-      icon: i.icon_url,
-      title: i.title,
-      author: i.author,
-      description: i.description,
-      downloadCount: i.downloads,
-      followerCount: i.follows,
-      modrinth: i,
-      installed: [],
-    })))
-    return mods
-  })
-
-  return {
-    modrinth: mods,
-    modrinthError,
-    loadMoreModrinth,
-    loadingModrinth,
-    canModrinthLoadMore,
-  }
-}
-
-export function useCurseforgeSearch(keyword: Ref<string>, modLoaderFilters: Ref<ModLoaderFilter[]>, runtime: Ref<InstanceData['runtime']>) {
-  const curseforge = ref(undefined as {
-    data: CFMod[]
-    pagination: Pagination
-  } | undefined)
-
-  const processCurseforge = async (offset: number, append: boolean) => {
-    if (keyword.value) {
-      try {
-        curseforgeError.value = undefined
-        const remain = append && curseforge.value ? curseforge.value.pagination.totalCount - offset : Number.MAX_SAFE_INTEGER
-        const result = await clientCurseforgeV1.searchMods({
-          classId: 6, // mods
-          sortField: ModsSearchSortField.Name,
-          modLoaderTypes: getCursforgeModLoadersFromString(modLoaderFilters.value),
-          gameVersion: runtime.value.minecraft,
-          searchFilter: keyword.value,
-          pageSize: append ? Math.min(20, remain) : 20,
-          index: offset,
-        })
-
-        if (!append || !curseforge.value) {
-          curseforge.value = result
-        } else {
-          curseforge.value.data.push(...result.data)
-          curseforge.value.pagination = result.pagination
-        }
-      } catch (e) {
-        curseforgeError.value = e
-      } finally {
-        loadingCurseforge.value = false
-      }
-    } else {
-      curseforgeError.value = undefined
-      loadingCurseforge.value = false
-      curseforge.value = undefined
-    }
-  }
-
-  const curseforgeError = ref(undefined as any)
-  const loadingCurseforge = ref(false)
-  const curseforgePage = ref(0)
-  const canCurseforgeLoadMore = computed(() => {
-    return curseforge.value && curseforge.value.pagination.totalCount > (curseforge.value.pagination.index + curseforge.value.pagination.resultCount)
-  })
-
-  const loadMoreCurseforge = debounce(async () => {
-    if (canCurseforgeLoadMore.value) {
-      curseforgePage.value += 1
-      loadingCurseforge.value = true
-      await processCurseforge(curseforgePage.value * 20, true)
-    }
-  }, 1000)
-
-  const onSearch = async () => {
-    loadingCurseforge.value = true
-    curseforgePage.value = 0
-    processCurseforge(curseforgePage.value * 20, false)
-  }
-
-  watch(keyword, onSearch)
-
-  const mods = computed(() => {
-    const cf = curseforge.value
-    if (!cf) return []
-    const mods: Mod[] = markRaw(cf.data.map(i => ({
-      id: i.id.toString(),
-      icon: i.logo?.url ?? '',
-      title: i.name,
-      author: i.authors[0].name,
-      description: i.summary,
-      downloadCount: i.downloadCount,
-      followerCount: i.thumbsUpCount,
-      curseforge: i,
-      installed: [],
-    })))
-    return mods
-  })
-
-  return {
-    curseforge: mods,
-    curseforgeError,
-    loadMoreCurseforge,
-    loadingCurseforge,
-    canCurseforgeLoadMore,
-  }
 }
 
 const kCached = Symbol('cached')
@@ -210,9 +41,9 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
   })
 
   const result = computed(() => {
-    const indices: Record<string, Mod> = {}
-    const _all: Mod[] = []
-    const _installed: Mod[] = []
+    const indices: Record<string, ProjectEntry<ModFile>> = {}
+    const _all: ProjectEntry<ModFile>[] = []
+    const _installed: ProjectEntry<ModFile>[] = []
 
     let hasOptifine = false
 
@@ -242,7 +73,7 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
           obj.disabled = !obj.installed[0].enabled
         }
       } else {
-        const mod: Mod = markRaw({
+        const mod: ProjectEntry<ModFile> = markRaw({
           id: name,
           author: m.authors[0] ?? '',
           icon: m.icon,
@@ -331,7 +162,7 @@ export function useLocalModsSearch(keyword: Ref<string>, modLoaderFilters: Ref<M
 }
 
 const getOptifineAsMod = (f?: ModFile) => {
-  const result: Mod = {
+  const result: ProjectEntry<ModFile> = {
     id: 'OptiFine',
     icon: 'image://builtin/optifine',
     title: 'Optifine',
@@ -346,7 +177,10 @@ const getOptifineAsMod = (f?: ModFile) => {
 
 export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMods: Ref<ModFile[]>) {
   const modLoaderFilters = ref([] as ModLoaderFilter[])
+  const curseforgeCategory = ref(undefined as number | undefined)
+  const modrinthCategories = ref([] as string[])
   const keyword: Ref<string> = ref('')
+  const { tab, disableCurseforge, disableLocal, disableModrinth } = useTabMarketFilter()
 
   watch(runtime, (version) => {
     const items = [] as ModLoaderFilter[]
@@ -367,13 +201,28 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
     modLoaderFilters.value = items
   }, { immediate: true, deep: true })
 
-  const { loadMoreModrinth, loadingModrinth, canModrinthLoadMore, modrinth, modrinthError } = useModrinthSearch(keyword, modLoaderFilters, runtime)
-  const { loadMoreCurseforge, loadingCurseforge, canCurseforgeLoadMore, curseforge, curseforgeError } = useCurseforgeSearch(keyword, modLoaderFilters, runtime)
+  const { loadMoreModrinth, loadingModrinth, canModrinthLoadMore, modrinth, modrinthError } = useModrinthSearch('mod', keyword, modLoaderFilters, modrinthCategories, runtime)
+  const { loadMoreCurseforge, loadingCurseforge, canCurseforgeLoadMore, curseforge, curseforgeError } = useCurseforgeSearch<ProjectEntry<ModFile>>(CurseforgeBuiltinClassId.mod, keyword, modLoaderFilters, curseforgeCategory, runtime)
   const { cached: cachedMods, instances, loadingCached } = useLocalModsSearch(keyword, modLoaderFilters, runtime, instanceMods)
   const loading = computed(() => loadingModrinth.value || loadingCurseforge.value || loadingCached.value)
 
+  const all = useAggregateProjects<ProjectEntry<ModFile>>(
+    computed(() => disableModrinth.value ? [] : modrinth.value ?? []),
+    computed(() => disableCurseforge.value ? [] : curseforge.value ?? []),
+    computed(() => disableLocal.value ? [] : cachedMods.value ?? []),
+    instances,
+  )
+
+  const items = useProjectsFilterSearch(
+    keyword,
+    all,
+    computed(() => !keyword.value && (modrinthCategories.value.length > 0 || curseforgeCategory.value !== undefined)),
+  )
+
   return {
     modLoaderFilters,
+    curseforgeCategory,
+    modrinthCategories,
     loadMoreCurseforge,
     loadMoreModrinth,
     canCurseforgeLoadMore,
@@ -389,5 +238,8 @@ export function useModsSearch(runtime: Ref<InstanceData['runtime']>, instanceMod
     curseforge,
     keyword,
     loading,
+    items,
+    all,
+    tab,
   }
 }

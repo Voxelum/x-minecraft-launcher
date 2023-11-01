@@ -8,6 +8,7 @@ import optifine from '../../assets/optifine.webp'
 import forge from '../../assets/forge.png'
 import fabric from '../../assets/fabric.png'
 import labyMod from '../../assets/labymod.webp'
+import iris from '../../assets/iris.webp'
 import neoForged from '../../assets/neoforged.png'
 
 const builtin: Record<string, string> = {
@@ -19,6 +20,7 @@ const builtin: Record<string, string> = {
   fabric,
   labyMod,
   neoForged,
+  iris,
 }
 
 /**

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import MarketProjectDetail, { ProjectDetail } from '@/components/MarketProjectDetail.vue'
+import { ProjectVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { useService } from '@/composables'
 import { kInstance } from '@/composables/instance'
 import { useMarkdown } from '@/composables/markdown'
@@ -6,20 +8,19 @@ import { useModDetailEnable } from '@/composables/modDetail'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { useOptifineVersions } from '@/composables/version'
 import { injection } from '@/util/inject'
-import { Mod } from '@/util/mod'
+import { ModFile } from '@/util/mod'
+import { ProjectEntry } from '@/util/search'
 import { InstallServiceKey, InstanceModsServiceKey, InstanceServiceKey, RuntimeVersions } from '@xmcl/runtime-api'
 import useSWRV from 'swrv'
-import ModDetail, { ModDetailData } from './ModDetail.vue'
-import { ModVersion } from './ModDetailVersion.vue'
 
 const props = defineProps<{
-  mod: Mod
+  mod: ProjectEntry<ModFile>
   runtime: RuntimeVersions
 }>()
 
 const { versions: optVersions, refreshing } = useOptifineVersions(computed(() => props.runtime.minecraft), computed(() => props.runtime.forge || ''), computed(() => []))
 
-const selectedVersion = ref(undefined as ModVersion | undefined)
+const selectedVersion = ref(undefined as ProjectVersion | undefined)
 provide('selectedVersion', selectedVersion)
 
 const { render: renderMd } = useMarkdown()
@@ -32,10 +33,10 @@ const { data: changelog, isValidating: loadingChangelog } = useSWRV(computed(() 
 
 const versions = computed(() => {
   const files = optVersions.value
-  const all: ModVersion[] = files.map((f) => {
+  const all: ProjectVersion[] = files.map((f) => {
     const version = `${f.type}_${f.patch}`
     const id = `${f.mcversion}_${version}`
-    const modVersion: ModVersion = reactive({
+    const modVersion: ProjectVersion = reactive({
       id: props.mod.installed[0]?.version === version ? props.mod.installed[0].path : id,
       name: version,
       version,
@@ -65,7 +66,7 @@ const { data: optifineHome, isValidating: loadingDescription } = useSWRV('/optif
 const _optifineHome = computed(() => optifineHome.value || props.mod.description)
 
 const model = computed(() => {
-  const result: ModDetailData = reactive({
+  const result: ProjectDetail = reactive({
     id: props.mod.id,
     icon: props.mod.icon,
     title: props.mod.title,
@@ -90,7 +91,7 @@ const { installOptifineAsResource } = useService(InstallServiceKey)
 const { path } = injection(kInstance)
 const updating = ref(false)
 const { install: installMod, uninstall: uninstallMod } = useService(InstanceModsServiceKey)
-const onInstall = async (m: ModVersion) => {
+const onInstall = async (m: ProjectVersion) => {
   try {
     updating.value = true
     const [mc, ...rest] = m.id.split('_')
@@ -140,7 +141,7 @@ const { enabled, installed, hasInstalledVersion } = useModDetailEnable(selectedV
 
 </script>
 <template>
-  <ModDetail
+  <MarketProjectDetail
     :detail="model"
     :dependencies="[]"
     :enabled="enabled"

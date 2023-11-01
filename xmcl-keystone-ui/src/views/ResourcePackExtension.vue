@@ -1,82 +1,51 @@
 <template>
-  <div
-    class="mt-4 flex flex-1 flex-grow-0 flex-row items-center justify-center pl-4 pr-6"
-    :class="{
-      'mb-4': !compact,
-      'mb-2': compact,
-    }"
-  >
+  <div class="mb-0 flex flex-col">
     <div
-      class="flex flex-grow-0 flex-row items-center justify-center gap-1"
+      class="flex flex-1 flex-grow-0 flex-row items-center justify-center"
     >
-      <AvatarItem
-        responsive
-        :avatar="'image://builtin/minecraft'"
-        title="Minecraft"
-        :text="`${version.minecraft}`"
-      />
-      <v-divider vertical />
-      <AvatarItem
-        v-if="version.forge"
-        responsive
-        :avatar="'image://builtin/forge'"
-        title="Forge"
-        :text="`${version.forge}`"
-      />
-      <v-divider
-        v-if="version.forge"
-        vertical
-      />
-      <AvatarItem
-        v-if="version.fabricLoader"
-        responsive
-        :avatar="'image://builtin/fabric'"
-        title="Fabric"
-        :text="`${version.fabricLoader}`"
-      />
-      <v-divider
-        v-if="version.fabricLoader"
-        vertical
-      />
-      <AvatarItem
-        v-if="version.quiltLoader"
-        responsive
-        :avatar="'image://builtin/quilt'"
-        title="Quilt"
-        :text="`${version.quiltLoader}`"
-      />
-      <v-divider
-        v-if="version.quiltLoader"
-        vertical
-      />
-      <AvatarItem
-        v-if="version.optifine"
-        responsive
-        :avatar="'image://builtin/optifine'"
-        title="Optifine"
-        :text="`${version.optifine}`"
-      />
-      <v-divider
-        v-if="version.optifine"
-        vertical
+      <div
+        class="flex flex-grow-0 flex-row items-center justify-center gap-1"
+      >
+        <AvatarItemList :items="extensionItems" />
+      </div>
+      <div class="flex-grow" />
+      <MarketTextFieldWithMenu
+        :keyword.sync="keyword"
+        :placeholder="t('search.placeholder')"
+        :modrinth-categories.sync="modrinthCategories"
+        modrinth-category-filter="resourcepack"
+        :curseforge-category.sync="curseforgeCategory"
+        curseforge-category-filter="texture-packs"
       />
     </div>
-    <div class="flex-grow" />
-    <div
-      class="invisible-scroll flex h-full items-center overflow-x-auto pr-3 "
-    >
-      <FilterCombobox />
-    </div>
+    <MarketExtensions
+      :tab.sync="tab"
+      :modrinth="modrinth.length"
+      :curseforge="curseforge.length"
+      :local="local.length"
+    />
   </div>
 </template>
 
 <script lang=ts setup>
-import AvatarItem from '@/components/AvatarItem.vue'
-import FilterCombobox from '@/components/FilterCombobox.vue'
+import AvatarItemList from '@/components/AvatarItemList.vue'
+import MarketExtensions from '@/components/MarketExtensions.vue'
+import MarketTextFieldWithMenu from '@/components/MarketTextFieldWithMenu.vue'
 import { kInstance } from '@/composables/instance'
-import { kCompact } from '@/composables/scrollTop'
+import { kResourcePackSearch } from '@/composables/resourcePackSearch'
+import { getExtensionItemsFromRuntime } from '@/util/extensionItems'
 import { injection } from '@/util/inject'
 
-const { runtime: version } = injection(kInstance)
-const compact = injection(kCompact)
+const { runtime } = injection(kInstance)
+const extensionItems = computed(() => {
+  return [{
+    icon: 'palette',
+    title: t('resourcepack.name', 2),
+    text: t('resourcepack.enable', { count: enabled.value.length }),
+  }, ...getExtensionItemsFromRuntime(runtime.value)]
+})
+
+const { keyword, modrinthCategories, tab, curseforgeCategory, modrinth, curseforge, enabled, items, local } = injection(kResourcePackSearch)
+
+const { t } = useI18n()
 </script>

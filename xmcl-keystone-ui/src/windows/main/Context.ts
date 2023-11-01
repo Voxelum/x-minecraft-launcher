@@ -14,7 +14,7 @@ import { kInstanceLaunch, useInstanceLaunch } from '@/composables/instanceLaunch
 import { kInstanceModsContext, useInstanceMods } from '@/composables/instanceMods'
 import { kInstanceOptions, useInstanceOptions } from '@/composables/instanceOptions'
 import { kInstanceResourcePacks, useInstanceResourcePacks } from '@/composables/instanceResourcePack'
-import { useInstanceShaderPacks } from '@/composables/instanceShaderPack'
+import { kInstanceShaderPacks, useInstanceShaderPacks } from '@/composables/instanceShaderPack'
 import { kInstanceVersion, useInstanceVersion } from '@/composables/instanceVersion'
 import { kInstanceVersionDiagnose, useInstanceVersionDiagnose } from '@/composables/instanceVersionDiagnose'
 import { kInstances, useInstances } from '@/composables/instances'
@@ -24,12 +24,13 @@ import { kLaunchTask, useLaunchTask } from '@/composables/launchTask'
 import { kModsSearch, useModsSearch } from '@/composables/modSearch'
 import { kModUpgrade, useModUpgrade } from '@/composables/modUpgrade'
 import { kModpacks, useModpacks } from '@/composables/modpack'
-import { kMods, useMods } from '@/composables/mods'
 import { kNotificationQueue, useNotificationQueue } from '@/composables/notifier'
 import { kPeerState, usePeerState } from '@/composables/peers'
+import { kResourcePackSearch, useResourcePackSearch } from '@/composables/resourcePackSearch'
 import { kInstanceSave, useInstanceSaves } from '@/composables/save'
 import { kServerStatusCache, useServerStatusCache } from '@/composables/serverStatus'
 import { kSettingsState, useSettingsState } from '@/composables/setting'
+import { kShaderPackSearch, useShaderPackSearch } from '@/composables/shaderPackSearch'
 import { kUILayout, useUILayout } from '@/composables/uiLayout'
 import { kMarketRoute, useMarketRoute } from '@/composables/useMarketRoute'
 import { kUserContext, useUserContext } from '@/composables/user'
@@ -69,15 +70,17 @@ export default defineComponent({
     const options = useInstanceOptions(instance.instance)
     const saves = useInstanceSaves(instance.instance)
     const resourcePacks = useInstanceResourcePacks(instance.path, options.gameOptions)
-    useInstanceShaderPacks(instance.path)
     const instanceMods = useInstanceMods(instance.path, instance.runtime, instanceJava.java)
+    const shaderPacks = useInstanceShaderPacks(instance.instance, instanceMods.mods, options.gameOptions)
     const files = useInstanceFiles(instance.path)
     const task = useLaunchTask(instance.path, instance.runtime, instanceVersion.versionHeader)
     const instanceLaunch = useInstanceLaunch(instance.instance, instanceVersion.resolvedVersion, instanceJava.java, user.userProfile, settings)
 
     const modsSearch = useModsSearch(instance.runtime, instanceMods.mods)
-    const mods = useMods(modsSearch.keyword, modsSearch.modrinth, modsSearch.curseforge, modsSearch.cachedMods, modsSearch.instanceMods)
-    const modUpgrade = useModUpgrade(instance.path, instance.runtime, mods.installed)
+    const modUpgrade = useModUpgrade(instance.path, instance.runtime, modsSearch.all)
+
+    const resourcePackSearch = useResourcePackSearch(instance.runtime, resourcePacks.enabled, resourcePacks.disabled)
+    const shaderPackSearch = useShaderPackSearch(instance.runtime, shaderPacks.shaderPack)
 
     const versionDiagnose = useInstanceVersionDiagnose(instance.runtime, instanceVersion.resolvedVersion, localVersions.versions)
     const javaDiagnose = useInstanceJavaDiagnose(java.all, instanceJava.java, instanceJava.recommendation, queue)
@@ -108,8 +111,10 @@ export default defineComponent({
     provide(kInstanceFilesDiagnose, filesDiagnose)
     provide(kUserDiagnose, userDiagnose)
 
+    provide(kInstanceShaderPacks, shaderPacks)
+    provide(kResourcePackSearch, resourcePackSearch)
+    provide(kShaderPackSearch, shaderPackSearch)
     provide(kModsSearch, modsSearch)
-    provide(kMods, mods)
     provide(kModUpgrade, modUpgrade)
     provide(kModpacks, useModpacks())
 

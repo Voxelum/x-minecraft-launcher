@@ -1,52 +1,57 @@
 <script setup lang="ts">
+import MarketProjectDetail, { ProjectDependency } from '@/components/MarketProjectDetail.vue'
+import { ProjectVersion as ProjectDetailVersion } from '@/components/MarketProjectDetailVersion.vue'
 import { useService } from '@/composables'
 import { kImageDialog } from '@/composables/imageDialog'
 import { kInstance } from '@/composables/instance'
-import { kInstanceModsContext } from '@/composables/instanceMods'
-import { useModDetailEnable, useModDetailUpdate, useModrinthModDetailData, useModrinthModDetailVersions } from '@/composables/modDetail'
+import { useModDetailEnable, useModDetailUpdate } from '@/composables/modDetail'
 import { useModrinthDependencies } from '@/composables/modrinthDependencies'
 import { useModrinthProject } from '@/composables/modrinthProject'
+import { useModrinthProjectDetailData, useModrinthProjectDetailVersions } from '@/composables/modrinthProjectDetailData'
 import { useModrinthTask, useModrinthVersions, useModrinthVersionsResources } from '@/composables/modrinthVersions'
 import { injection } from '@/util/inject'
-import { ModFile } from '@/util/mod'
-import { ProjectVersion, SearchResultHit } from '@xmcl/modrinth'
-import { InstanceModsServiceKey, ModrinthServiceKey, Resource, RuntimeVersions } from '@xmcl/runtime-api'
-import ModDetail, { ModDependency } from './ModDetail.vue'
-import { ModVersion } from './ModDetailVersion.vue'
-import { getModrinthModLoaders } from '@/util/modrinth'
-import { isNoModLoader } from '@/util/isNoModloader'
 import { useInstanceModLoaderDefault } from '@/util/instanceModLoaderDefault'
-import { kModsSearch } from '@/composables/modSearch'
+import { isNoModLoader } from '@/util/isNoModloader'
+import { ProjectFile } from '@/util/search'
+import { ProjectVersion, SearchResultHit } from '@xmcl/modrinth'
+import { ModrinthServiceKey, Resource, RuntimeVersions } from '@xmcl/runtime-api'
 
 const props = defineProps<{
   modrinth?: SearchResultHit
   projectId: string
-  installed: ModFile[]
-  minecraft: string
+  installed: ProjectFile[]
+  loaders: string[]
+  categories: string[]
   runtime: RuntimeVersions
+  allFiles: ProjectFile[]
   updating?: boolean
-  curseforge?: boolean
+  curseforge?: number
 }>()
 
 const projectId = computed(() => props.projectId)
 const { project, refreshing: loading } = useModrinthProject(projectId)
 
-const { modLoaderFilters } = injection(kModsSearch)
+const emit = defineEmits<{
+  (event: 'category', cat: string): void
+  (event: 'install', file: Resource[]): void
+  (event: 'uninstall', files: ProjectFile[]): void
+  (event: 'enable', file: ProjectFile): void
+  (event: 'disable', file: ProjectFile): void
+}>()
 
 const { versions, refreshing: loadingVersions } = useModrinthVersions(projectId,
   undefined,
-  modLoaderFilters,
+  computed(() => props.loaders),
   computed(() => [props.runtime.minecraft]))
 
-const model = useModrinthModDetailData(projectId, project, computed(() => props.modrinth))
-const modVersions = useModrinthModDetailVersions(versions, computed(() => props.installed))
+const model = useModrinthProjectDetailData(projectId, project, computed(() => props.modrinth))
+const modVersions = useModrinthProjectDetailVersions(versions, computed(() => props.installed))
 
 const imageDialog = injection(kImageDialog)
 
-const selectedVersion = ref(modVersions.value[0] as ModVersion | undefined)
+const selectedVersion = ref(modVersions.value[0] as ProjectDetailVersion | undefined)
 provide('selectedVersion', selectedVersion)
 
-const { mods } = injection(kInstanceModsContext)
 const { data: deps, isValidating, error } = useModrinthDependencies(computed(() => versions.value.find(v => v.id === selectedVersion.value?.id)))
 const dependencies = computed(() => {
   if (!deps.value) return []
@@ -54,21 +59,21 @@ const dependencies = computed(() => {
   return deps.value.map(({ recommendedVersion, versions, project, type }) => {
     // TODO: optimize this perf
     const file = computed(() => {
-      for (const mod of mods.value) {
-        if (mod.modrinth?.versionId === recommendedVersion.id) {
-          return mod
+      for (const file of props.allFiles) {
+        if (file.modrinth?.versionId === recommendedVersion.id) {
+          return file
         }
       }
     })
     const otherFile = computed(() => {
-      for (const mod of mods.value) {
-        if (mod.modrinth?.projectId === project.id && mod.modrinth?.versionId !== recommendedVersion.id) {
-          return mod
+      for (const file of props.allFiles) {
+        if (file.modrinth?.projectId === project.id && file.modrinth?.versionId !== recommendedVersion.id) {
+          return file
         }
       }
     })
     const task = useModrinthTask(computed(() => recommendedVersion.id))
-    const dep: ModDependency = reactive({
+    const dep: ProjectDependency = reactive({
       id: project.id,
       icon: project.icon_url,
       title: project.title,
@@ -85,24 +90,27 @@ const dependencies = computed(() => {
 
 const { path } = injection(kInstance)
 const { installVersion } = useService(ModrinthServiceKey)
-const { install: installMod, uninstall: uninstallMod } = useService(InstanceModsServiceKey)
-const installing = ref(false)
 const { getResource } = useModrinthVersionsResources(versions)
 const installModrinthVersion = async (v: ProjectVersion) => {
   const resource = getResource(v)
   if (resource) {
-    await installMod({ mods: [resource], path: path.value })
+    emit('install', [resource])
   } else {
-    await installVersion({ version: v, icon: project.value?.icon_url, instancePath: path.value })
+    const { resources } = await installVersion({ version: v, icon: project.value?.icon_url })
+    emit('install', resources)
   }
 }
 
 const innerUpdating = useModDetailUpdate()
+watch(() => props.modrinth, () => {
+  innerUpdating.value = false
+})
 
 const installDefaultModLoader = useInstanceModLoaderDefault(path, computed(() => props.runtime))
 
-const install = async (mod: ModVersion) => {
-  const v = versions.value.find(v => v.id === mod.id)
+const installing = ref(false)
+const install = async (version: ProjectDetailVersion) => {
+  const v = versions.value.find(v => v.id === version.id)
   if (!v) return
   try {
     installing.value = true
@@ -110,68 +118,64 @@ const install = async (mod: ModVersion) => {
       // forge, fabric, quilt or neoforge
       await installDefaultModLoader(v.loaders)
     }
-    if (!hasInstalledVersion.value) {
-      await Promise.all(deps.value
-        ?.filter((v) => v.type === 'required')
-        .filter(v => mods.value.every(m => m.modrinth?.projectId !== v.project.id))
-        .map((v) => installModrinthVersion(v.recommendedVersion)) ?? [])
-      await installModrinthVersion(v)
-    } else {
-      const resources = props.installed.map(i => i.resource)
-      await Promise.all(deps.value
-        ?.filter((v) => v.type === 'required')
-        .filter(v => mods.value.every(m => m.modrinth?.projectId !== v.project.id))
-        .map((v) => installModrinthVersion(v.recommendedVersion)) ?? [])
-      await installModrinthVersion(v)
-      await uninstallMod({ path: path.value, mods: resources })
+    const resources = [...props.installed]
+    await Promise.all(deps.value
+      ?.filter((v) => v.type === 'required')
+      .filter(v => props.allFiles.every(m => m.modrinth?.projectId !== v.project.id))
+      .map((v) => installModrinthVersion(v.recommendedVersion)) ?? [])
+    await installModrinthVersion(v)
+    if (hasInstalledVersion.value) {
+      emit('uninstall', resources)
     }
   } finally {
     installing.value = false
   }
 }
-const installDependency = async (dep: ModDependency) => {
-  const d = deps.value?.find(d => d.project.id === dep.id)
-  if (!d) return
-  const ver = d.recommendedVersion
+const installDependency = async (dep: ProjectDependency) => {
+  const resolvedDep = deps.value?.find(d => d.project.id === dep.id)
+  if (!resolvedDep) return
+  const version = resolvedDep.recommendedVersion
   try {
     installing.value = true
-    const resources = [] as Resource[]
+    const files = [] as ProjectFile[]
     if (dep.installedDifferentVersion) {
-      for (const mod of mods.value) {
-        if (mod.modrinth?.projectId === d.project.id) {
-          resources.push(mod.resource)
+      for (const file of props.allFiles) {
+        if (file.modrinth?.projectId === resolvedDep.project.id) {
+          files.push(file)
         }
       }
     }
-    await installModrinthVersion(ver)
-    if (resources.length > 0) {
-      await uninstallMod({ path: path.value, mods: resources })
+    await installModrinthVersion(version)
+    if (files.length > 0) {
+      emit('uninstall', files)
     }
   } finally {
     installing.value = false
   }
 }
 
-watch(() => props.modrinth, () => {
-  innerUpdating.value = false
-})
-
-const { enabled, installed, hasInstalledVersion } = useModDetailEnable(selectedVersion, computed(() => props.installed), innerUpdating)
+const { enabled, installed, hasInstalledVersion } = useModDetailEnable(
+  selectedVersion,
+  computed(() => props.installed),
+  innerUpdating,
+  f => emit('enable', f),
+  f => emit('disable', f),
+)
 
 const onDelete = async () => {
   innerUpdating.value = true
-  await uninstallMod({ path: path.value, mods: props.installed.map(i => i.resource) })
+  emit('uninstall', props.installed)
 }
 
 const { push, currentRoute } = useRouter()
-const onOpenDependency = (dep: ModDependency) => {
+const onOpenDependency = (dep: ProjectDependency) => {
   push({ query: { ...currentRoute.query, id: `modrinth:${dep.id}` } })
 }
 
 </script>
 
 <template>
-  <ModDetail
+  <MarketProjectDetail
     :detail="model"
     :has-more="false"
     :enabled="enabled"
@@ -183,7 +187,7 @@ const onOpenDependency = (dep: ModDependency) => {
     :dependencies="dependencies"
     :loading="loading"
     :loading-versions="loadingVersions"
-    modrinth
+    :modrinth="projectId"
     :curseforge="curseforge"
     @open-dependency="onOpenDependency"
     @show-image="imageDialog.show($event.url, { description: $event.description, date: $event.date })"
@@ -191,5 +195,6 @@ const onOpenDependency = (dep: ModDependency) => {
     @enable="enabled = $event"
     @delete="onDelete"
     @install-dependency="installDependency"
+    @select:category="emit('category', $event)"
   />
 </template>

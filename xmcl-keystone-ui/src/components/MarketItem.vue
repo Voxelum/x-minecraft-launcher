@@ -2,16 +2,31 @@
   <v-list-item
     v-context-menu="getContextMenuItems"
     v-shared-tooltip="[tooltip, hasUpdate ? 'primary' : 'black']"
-    class="pointer-events-auto max-h-[91px] min-h-[91px]"
+    :style="{
+      minHeight: height ? height + 'px' : undefined,
+      maxHeight: height ? height + 'px' : undefined
+    }"
+    style="pointer-events: initial;"
+    :draggable="draggable"
     :class="{
-      'v-list-item--disabled': item.disabled
+      'v-list-item--disabled': item.disabled,
+      'dragged-over': dragover > 0,
     }"
     :input-value="selected"
     link
+    @dragenter="onDragEnter"
+    @dragover="onDragOver"
+    @dragleave="onDragLeave"
+    @dragstart="onDragStart"
+    @dragend="onDragEnd"
+    @drop="onDrop"
     @click="emit('click')"
   >
     <v-list-item-avatar v-if="!selectionMode">
-      <v-img :src="icon || item.icon || unknownServer" />
+      <img
+        ref="iconImage"
+        :src="icon || item.icon || unknownServer"
+      >
     </v-list-item-avatar>
     <v-list-item-action v-else>
       <v-checkbox
@@ -22,6 +37,7 @@
     </v-list-item-action>
     <v-list-item-content>
       <v-badge
+        class="w-full"
         color="red"
         dot
         inline
@@ -33,7 +49,7 @@
             {{ title || item.title }}
           </span>
           <template
-            v-if="item.installed.length > 0"
+            v-if="item.installed.length > 0 && getContextMenuItems"
           >
             <div class="flex-grow" />
             <v-btn
@@ -51,71 +67,47 @@
           </template>
         </v-list-item-title>
       </v-badge>
-      <v-list-item-subtitle>{{ description || item.description }}</v-list-item-subtitle>
-      <v-list-item-subtitle class="invisible-scroll flex flex-grow-0 gap-2">
-        <template v-if="item.installed && (item.installed?.[0]?.tags.length + compatibility.length) > 0">
-          <ModLabels
-            :disabled="item.disabled"
-            :compatibility="compatibility"
-            :tags="item.installed[0].tags"
-          />
+      <v-list-item-subtitle>
+        <template v-if="description">
+          {{ description }}
+        </template>
+        <template v-else-if="item.description.includes('§')">
+          <TextComponent :source="item.description" />
         </template>
         <template v-else>
-          <div>
-            {{ item.author }}
-          </div>
-          <template v-if="downloadCount || item.downloadCount">
+          {{ item.description }}
+        </template>
+      </v-list-item-subtitle>
+      <v-list-item-subtitle class="invisible-scroll flex flex-grow-0 gap-2">
+        <slot
+          v-if="slots.labels"
+          name="labels"
+        />
+        <template v-else>
+          <template
+            v-for="(tag, i) of tags"
+          >
             <v-divider
-              v-if="item.author"
+              v-if="i > 0"
+              :key="i + 'divider'"
               vertical
             />
-            <div class="flex flex-grow-0 ">
+            <div
+              :key="i"
+              class="flex flex-grow-0"
+            >
               <v-icon
+                v-if="tag.icon"
                 class="material-icons-outlined"
-                left
+                :left="!!tag.text"
+                :color="tag.color"
                 small
               >
-                file_download
+                {{ tag.icon }}
               </v-icon>
-              {{ getExpectedSize(downloadCount || item.downloadCount || 0, '') }}
-            </div>
-          </template>
-          <template v-if="followerCount || item.followerCount">
-            <v-divider vertical />
-            <div class="flex flex-grow-0">
-              <v-icon
-                left
-                small
-                color="orange"
-                class="material-icons-outlined text-gray-300"
-              >
-                star_rate
-              </v-icon>
-              {{ followerCount || item.followerCount }}
-            </div>
-          </template>
-          <template v-if="item.modrinth || item.modrinthProjectId">
-            <v-divider vertical />
-            <div>
-              <v-icon small>
-                $vuetify.icons.modrinth
-              </v-icon>
-            </div>
-          </template>
-          <template v-if="item.curseforge || item.curseforgeProjectId">
-            <v-divider vertical />
-            <div>
-              <v-icon small>
-                $vuetify.icons.curseforge
-              </v-icon>
-            </div>
-          </template>
-          <template v-if="item.files && item.files.length > 0">
-            <v-divider vertical />
-            <div>
-              <v-icon small>
-                storage
-              </v-icon>
+              <span class="pt-[2px]">
+                {{ tag.text }}
+              </span>
             </div>
           </template>
         </template>
@@ -152,8 +144,10 @@
           :src="'image://builtin/quilt'"
         />
       </v-avatar>
-      <v-avatar size="30px">
-        <v-icon>
+      <v-avatar
+        size="30px"
+      >
+        <v-icon class="pt-2">
           {{ item.modrinth ? '$vuetify.icons.modrinth' : item.curseforge ? '$vuetify.icons.curseforge' : 'inventory_2' }}
         </v-icon>
       </v-avatar>
@@ -163,34 +157,31 @@
 
 <script lang="ts" setup>
 import unknownServer from '@/assets/unknown_server.png'
-import { useService } from '@/composables'
-import { useContextMenu } from '@/composables/contextMenu'
-import { kInstance } from '@/composables/instance'
-import { kInstanceModsContext } from '@/composables/instanceMods'
-import { useModCompatibility } from '@/composables/modCompatibility'
-import { useModItemContextMenuItems } from '@/composables/modContextMenu'
+import { ContextMenuItem, useContextMenu } from '@/composables/contextMenu'
 import { kSWRVConfig } from '@/composables/swrvConfig'
 import { vContextMenu } from '@/directives/contextMenu'
 import { vSharedTooltip } from '@/directives/sharedTooltip'
 import { clientCurseforgeV1, clientModrinthV2 } from '@/util/clients'
 import { injection } from '@/util/inject'
-import { ModFile } from '@/util/mod'
 import { getModrinthProjectKey } from '@/util/modrinth'
-import { ProjectEntry } from '@/util/search'
+import { ProjectEntry, ProjectFile } from '@/util/search'
 import { getExpectedSize } from '@/util/size'
 import { swrvGet } from '@/util/swrvGet'
-import { InstanceModsServiceKey } from '@xmcl/runtime-api'
-import ModLabels from './ModLabels.vue'
+import { Ref } from 'vue'
+import TextComponent from './TextComponent'
 
 const props = defineProps<{
-  item: ProjectEntry<ModFile>
+  item: ProjectEntry<ProjectFile>
   selectionMode: boolean
   checked: boolean
   selected: boolean
   hasUpdate?: boolean
+  height?: number
+  draggable?: boolean
+  getContextMenuItems?: () => ContextMenuItem[]
 }>()
-
-const emit = defineEmits(['click', 'checked'])
+const slots = useSlots()
+const emit = defineEmits(['click', 'checked', 'drop'])
 
 const isChecked = computed({
   get() {
@@ -208,6 +199,36 @@ const description = ref(undefined as undefined | string)
 const downloadCount = ref(undefined as undefined | number)
 const followerCount = ref(undefined as undefined | number)
 const { open } = useContextMenu()
+
+const dragover = ref(0)
+const onDragEnter = (e: DragEvent) => {
+  if (props.draggable) {
+    dragover.value += 1
+  }
+}
+const onDragLeave = () => {
+  if (props.draggable) {
+    dragover.value += -1
+  }
+}
+
+const iconImage: Ref<any> = ref(null)
+function onDragStart(e: DragEvent) {
+  e.dataTransfer!.effectAllowed = 'move'
+  e.dataTransfer?.setData('id', props.item.id)
+  e.dataTransfer!.setDragImage(iconImage.value, 0, 0)
+}
+function onDragEnd(e: DragEvent) {
+}
+function onDrop(e: DragEvent) {
+  dragover.value = 0
+  emit('drop', e.dataTransfer?.getData('id'))
+}
+function onDragOver(e: DragEvent) {
+  if (props.draggable) {
+    e.preventDefault()
+  }
+}
 
 watch(() => props.item, (newMod) => {
   if (newMod) {
@@ -245,31 +266,65 @@ watch(() => props.item, (newMod) => {
     }
   }
 }, { immediate: true })
-const { provideRuntime } = injection(kInstanceModsContext)
 const { t } = useI18n()
 const tooltip = computed(() => props.hasUpdate ? t('mod.hasUpdate') : props.item.description || props.item.title)
-const { isCompatible, compatibility } = useModCompatibility(computed(() => props.item.installed[0]?.dependencies || []), provideRuntime)
-const { uninstall, disable, enable } = useService(InstanceModsServiceKey)
-const { path } = injection(kInstance)
-const getContextMenuItems = useModItemContextMenuItems(computed(() => props.item.installed?.[0] || props.item.files?.[0]), () => {
-  if (props.item.installed) {
-    uninstall({ path: path.value, mods: props.item.installed.map(i => i.resource) })
-  }
-}, () => {}, () => {
-  if (props.item.installed.length > 0) {
-    if (props.item.installed[0].enabled) {
-      disable({ path: path.value, mods: props.item.installed.map(i => i.resource) })
-    } else {
-      enable({ path: path.value, mods: props.item.installed.map(i => i.resource) })
-    }
-  }
-})
 const onSettingClick = (event: MouseEvent) => {
   const button = event.target as any // Get the button element
   const rect = button.getBoundingClientRect() // Get the position of the button
   const bottomLeftX = rect.left // X-coordinate of the bottom-left corner
   const bottomLeftY = rect.bottom // Y-coordinate of the bottom-left corner
 
-  open(bottomLeftX, bottomLeftY, getContextMenuItems())
+  if (props.getContextMenuItems) {
+    open(bottomLeftX, bottomLeftY, props.getContextMenuItems())
+  }
 }
+
+const tags = computed(() => {
+  const tags: { icon?: string; text?: string; color?: string }[] = []
+
+  if (props.item.author) {
+    tags.push({
+      icon: 'person',
+      text: props.item.author,
+    })
+  }
+  if (downloadCount.value || props.item.downloadCount) {
+    tags.push({
+      icon: 'file_download',
+      text: getExpectedSize(downloadCount.value || props.item.downloadCount || 0, ''),
+    })
+  }
+  if (followerCount.value || props.item.followerCount) {
+    tags.push({
+      icon: 'star_rate',
+      color: 'orange',
+      text: (followerCount.value || props.item.followerCount || 0).toString(),
+    })
+  }
+  if (props.item.modrinth || props.item.modrinthProjectId) {
+    tags.push({
+      icon: '$vuetify.icons.modrinth',
+    })
+  }
+  if (props.item.curseforge || props.item.curseforgeProjectId) {
+    tags.push({
+      icon: '$vuetify.icons.curseforge',
+    })
+  }
+  if (props.item.files && props.item.files.length > 0 && props.item.files[0].resource.size) {
+    tags.push({
+      icon: 'storage',
+      text: getExpectedSize(props.item.files[0].resource.size),
+    })
+  }
+
+  return tags
+})
 </script>
+
+<style scoped>
+.dragged-over {
+  @apply border border-dashed border-transparent border-yellow-400;
+}
+
+</style>

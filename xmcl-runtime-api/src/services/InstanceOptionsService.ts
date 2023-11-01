@@ -102,6 +102,10 @@ export interface InstanceOptionsService {
   showOptionsFileInFolder(instancePath: string): Promise<void>
 
   showShaderOptionsInFolder(instancePath: string): Promise<void>
+
+  editIrisShaderOptions(options: EditShaderOptions): Promise<void>
+
+  getIrisShaderOptions(instancePath: string): Promise<Record<string, string>>
 }
 
 export const InstanceOptionsServiceKey: ServiceKey<InstanceOptionsService> = 'InstanceOptionsService'
